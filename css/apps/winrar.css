@@ -1,0 +1,124 @@
+/* ==========================================================================
+   WinRAR 2.x Classic Archiver
+   ========================================================================== */
+
+.winrar-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--win-bg, #c0c0c0);
+  font-family: var(--win-font, "MS Sans Serif", Tahoma, sans-serif);
+  font-size: 11px;
+}
+
+.winrar-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: #c0c0c0;
+  border-bottom: 1px solid #808080;
+  box-shadow: 0 1px 0 #fff;
+  flex-wrap: wrap;
+}
+
+.winrar-tool-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  min-width: 48px;
+  height: 44px;
+  background: #c0c0c0;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.winrar-tool-btn:hover {
+  border: 1px outset #fff;
+}
+
+.winrar-tool-btn:active {
+  border: 1px inset #fff;
+  background: #d4d0c8;
+}
+
+.winrar-tool-icon {
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.winrar-path-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  background: #c0c0c0;
+  border-bottom: 1px solid #808080;
+}
+
+.winrar-path-input {
+  flex: 1;
+  height: 20px;
+  padding: 1px 4px;
+  font-size: 11px;
+  background: #fff;
+  border: 2px inset #fff;
+}
+
+.winrar-file-table-wrap {
+  flex: 1;
+  background: #ffffff;
+  border: 2px inset #ffffff;
+  overflow: auto;
+  margin: 4px;
+}
+
+.winrar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  cursor: default;
+}
+
+.winrar-table th {
+  background: #d4d0c8;
+  border: 1px outset #fff;
+  padding: 3px 6px;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  font-weight: bold;
+}
+
+.winrar-table td {
+  padding: 2px 6px;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
+}
+
+.winrar-table tr:hover {
+  background: #e0e8f0;
+}
+
+.winrar-table tr.selected {
+  background: #000080;
+  color: #ffffff;
+}
+
+.winrar-status-bar {
+  display: flex;
+  gap: 4px;
+  padding: 2px 4px;
+  border-top: 1px solid #808080;
+  box-shadow: inset 0 1px 0 #fff;
+  font-size: 10px;
+}
+
+.winrar-status-cell {
+  padding: 2px 6px;
+  border: 1px inset #fff;
+  background: #c0c0c0;
+}

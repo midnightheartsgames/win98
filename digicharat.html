@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>★ Di Gi Charat (1999) — Official English Fan Club ★</title>
+  
+  <!-- Retro Stylesheet -->
+  <link rel="stylesheet" href="css/apps/digicharat.css">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      background-color: #120324;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Root mount point for Di Gi Charat Fansite -->
+  <div id="standalone_digi_mount"></div>
+
+  <!-- Di Gi Charat Web Engine -->
+  <script src="js/apps/digicharat-site.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const mount = document.getElementById('standalone_digi_mount');
+      if (window.diGiCharatSite && mount) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const hashSection = window.location.hash.replace('#', '');
+        const initialSection = urlParams.get('section') || hashSection || 'news';
+        mount.innerHTML = window.diGiCharatSite.renderSite(initialSection);
+        window.diGiCharatSite.attachEvents(mount);
+      }
+    });
+  </script>
+
+</body>
+</html>
+

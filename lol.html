@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>League of Legends 98</title>
+<link rel="stylesheet" href="css/apps/lol.css">
+<style>html,body{height:100%;margin:0;background:#008080}body{display:grid;place-items:center}.window{width:min(98vw,1100px);height:96vh;border:3px outset #ddd;display:flex;flex-direction:column;background:silver}.title{background:linear-gradient(90deg,navy,#1084d0);color:#fff;font:bold 12px Tahoma;padding:5px}#game{flex:1;min-height:0}</style></head>
+<body><main class="window"><div class="title">League of Legends 98</div><div id="game"></div></main>
+<script src="js/apps/lol/lol-data.js"></script><script src="js/apps/lol/lol-skins.js"></script><script src="js/apps/lol/lol-map.js"></script><script src="js/apps/lol/lol-core.js"></script><script src="js/apps/lol/lol-champs.js"></script><script src="js/apps/lol/lol-ai.js"></script><script src="js/apps/lol/lol-gfx.js"></script><script src="js/apps/lol/lol-models.js"></script><script src="js/apps/lol/lol-art.js"></script><script src="js/apps/lol/lol-icons.js"></script><script src="js/apps/lol/lol-render.js"></script><script src="js/apps/lol/lol-audio.js"></script><script src="js/apps/lol/lol-ui.js"></script><script src="js/apps/lol/lol-client.js"></script>
+<script>const el=document.getElementById('game');const ui=new LoL98.UI(el);window.lolui=ui;el.focus();addEventListener('pagehide',()=>ui.destroy(),{once:true});</script>
+</body></html>

@@ -1,0 +1,52 @@
+{
+  "id": "mines_entrance",
+  "name": "map.mines_entrance",
+  "w": 24,
+  "h": 20,
+  "music": "mines",
+  "region": "mines",
+  "bg": "#1a1410",
+  "battleBg": "mines",
+  "dark": 0.6,
+  "onEnter": "mines_enter",
+  "legend": {"[":"rail_v_mine","]":"rail_h_mine","o":"boulder_dark"},
+  "layers": {
+    "ground": [
+      "RRXXXXXXXXXXXXXXXXrrXXRR",
+      "RRRRRRRRRRRRRRRRRRrrRRRR",
+      "RRRRRRRRRRRRRRRRRRrrRRRR",
+      "RRrrrrrRRRrrrrrrrr[rrrRR",
+      "RR{rrrrrrrrrrrrrrr[rrrRR",
+      "RRrrrrrrrrrrrrrrr}}}}\"RR",
+      "RRRRRRRorrrrrrrrrr[rrrRR",
+      "RRRRRRRrrrrrrrorrr[rrrRR",
+      "RRRRRRRrrrrrrrrrrr[rr{RR",
+      "RRrrrorrrrrr]]]]]]]rrrRR",
+      "RR\"rrrrrrror[rrrrrrrrrRR",
+      "RRrrrrrrrrrr[rrrrrrrrrRR",
+      "RR{rrrrrrrrr[rrRRRRRrrRR",
+      "RRrrrrrorrrr[rrRRRRRorRR",
+      "RRrrrrrrrrrr[rrrrrrrr\"RR",
+      "RRrrrrrrrr}}}}rrrrrrorRR",
+      "RRrrrrrrrrrr[rrrrrrrr{RR",
+      "RRrrrrrrrrrr[rrrrrrrrrRR",
+      "RRrrrrrrrrrr[rrrrrrrrrRR",
+      "RRRRRRRRRRRrrRRRRRRRRRRR"
+    ]
+  },
+  "spawns": {"south":{"x":11,"y":18,"dir":"up"},"north":{"x":18,"y":3,"dir":"down"}},
+  "entities": [
+    {"id":"s0","kind":"warp","x":11,"y":19,"to":{"map":"shinryu_hill","spawn":"from_mines","dir":"down"}},
+    {"id":"s1","kind":"warp","x":12,"y":19,"to":{"map":"shinryu_hill","spawn":"from_mines","dir":"down"}},
+    {"id":"n0","kind":"warp","x":18,"y":0,"to":{"map":"mines_furnace","spawn":"south","dir":"up"}},
+    {"id":"n1","kind":"warp","x":19,"y":0,"to":{"map":"mines_furnace","spawn":"south","dir":"up"}},
+    {"id":"cart","kind":"prop","x":12,"y":12,"look":"minecart","text":"insp.mine_cart"},
+    {"id":"sign","kind":"prop","x":14,"y":17,"look":"signpost","text":"insp.mine_sign"},
+    {"id":"chest1","kind":"chest","x":3,"y":4,"look":"chest","item":"salve","count":2},
+    {"id":"ore","kind":"inspect","x":21,"y":14,"text":"insp.mine_ore"},
+    {"id":"helmet","kind":"inspect","x":4,"y":15,"text":"insp.mine_helmet"},
+    {"id":"lamp1","kind":"prop","x":9,"y":16,"look":"lantern","frame":"anim","solid":false},
+    {"id":"rat1","kind":"enemy","x":6,"y":12,"look":"molerat","troop":"t_mine_rats","chase":3,"move":{"type":"wander","radius":2}},
+    {"id":"rat2","kind":"enemy","x":19,"y":7,"look":"molerat","troop":"t_mine_rat","chase":3,"move":{"type":"wander","radius":2}}
+  ]
+}

@@ -1,0 +1,67 @@
+.mh98 { position: relative; width: 100%; height: 100%; min-height: 0; background: #000; overflow: hidden; outline: none; user-select: none; -webkit-user-select: none; font: 13px "Courier New", Courier, monospace; color: #e8e2c8; }
+.mh98-gl, .mh98-hud { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.mh98-gl { cursor: crosshair; }
+.mh98-hud { pointer-events: none; }
+.mh98-err { display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: 80%; padding: 12px 16px; background: #c0c0c0; color: #000; border: 2px outset #fff; font: 12px Tahoma, Arial, sans-serif; text-align: center; }
+.mh98-win { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; z-index: 2; }
+.mh98-panel { position: relative; max-width: 96%; max-height: 94%; overflow: auto; padding: 16px 22px; background: linear-gradient(180deg, rgba(46,48,34,0.96), rgba(24,26,18,0.97)); border: 2px solid #8a8458; box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #3a3a26, 0 10px 32px rgba(0,0,0,0.75); }
+.mh98-panel h2 { margin: 2px 0 12px; font: 26px Impact, "Arial Black", Arial, sans-serif; letter-spacing: 2px; color: #e8d8a0; text-align: center; text-transform: uppercase; text-shadow: 0 2px 0 #000; }
+.mh98-panel h2.red { color: #ff7050; }
+.mh98-panel h3 { margin: 12px 0 6px; font: bold 14px "Courier New", monospace; color: #d8c890; border-bottom: 1px solid #5a5638; text-transform: uppercase; letter-spacing: 1px; }
+.mh98 .dim { opacity: 0.8; }
+.mh98 .gold { color: #f0d070; }
+.mh98-center { text-align: center; }
+.mh98-small { min-width: 340px; }
+.mh98-wide { width: min(820px, 96%); }
+.mh98-btn { display: block; min-width: 240px; margin: 5px auto; padding: 7px 16px; font: bold 15px "Courier New", monospace; color: #f0e8c8; text-transform: uppercase; letter-spacing: 2px; background: linear-gradient(180deg, #5a5a3a, #34341e); border: 1px solid #9a9468; box-shadow: inset 0 1px 0 #7a7650, 0 1px 0 #000; cursor: pointer; }
+.mh98-btn:hover { color: #fff; background: linear-gradient(180deg, #7a6a2e, #4a3e1a); border-color: #e0c870; }
+.mh98-btn.sm { display: inline-block; min-width: 0; margin: 2px; padding: 3px 10px; font-size: 12px; letter-spacing: 0; }
+.mh98-btn.dim { background: linear-gradient(180deg, #3e3e2a, #26261a); }
+.mh98-menu.row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.mh98-menu.row .mh98-btn { min-width: 150px; margin: 6px 0 0; }
+.mh98-mainmenu { position: absolute; left: 5%; top: 50%; transform: translateY(-50%); background: rgba(16,16,10,0.78); min-width: 320px; }
+.mh98-logo { text-align: center; margin-bottom: 14px; }
+.mh98-logo-s { font: 18px Impact, "Arial Black", Arial; letter-spacing: 9px; color: #d8d0b0; }
+.mh98-logo-t { font: 50px Impact, "Arial Black", Arial; letter-spacing: 6px; color: #d8b048; text-shadow: 0 0 14px rgba(220,170,60,0.4), 0 3px 0 #000; line-height: 1; }
+.mh98-logo-e { font: italic 12px Georgia, serif; color: #a8a080; margin-top: 4px; }
+.mh98-foot { margin-top: 12px; text-align: center; font-size: 11px; color: #7a7458; }
+.mh98-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+.mh98-mission { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 7px 10px; background: rgba(0,0,0,0.35); border: 1px solid #5a5638; cursor: pointer; }
+.mh98-mission:hover { border-color: #e0c870; background: rgba(80,70,30,0.45); }
+.mh98-mission.off { opacity: 0.45; cursor: default; }
+.mh98-mission b { color: #e8d8a0; }
+.mh98-mission span { grid-column: 1; font-size: 11px; color: #a8a080; }
+.mh98-mission em { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-style: normal; font-size: 11px; color: #c8c098; }
+.mh98-list.small .mh98-mission { cursor: default; padding: 4px 8px; }
+.mh98-rib { display: inline-block; width: 26px; height: 10px; margin-left: 3px; border: 1px solid #000; vertical-align: middle; }
+.mh98-panel.paper { background: linear-gradient(180deg, #d8ceb0, #c4b894); color: #2a2418; border-color: #6a5a3a; }
+.mh98-panel.paper h2 { color: #3a2a18; text-shadow: none; text-align: left; margin: 2px 0 4px; }
+.mh98-panel.paper h3 { color: #4a3420; border-color: #8a7a58; }
+.mh98-dossier { position: relative; }
+.mh98-stamp { position: absolute; right: 0; top: 0; padding: 3px 10px; border: 3px double #a02018; color: #a02018; font: bold 15px "Courier New", monospace; transform: rotate(6deg); opacity: 0.85; }
+.mh98-dhead { display: flex; gap: 14px; align-items: center; margin-bottom: 10px; }
+.mh98-photo { width: 160px; height: 120px; box-shadow: 2px 3px 6px rgba(0,0,0,0.5); transform: rotate(-2deg); }
+.mh98-dsub { font-size: 12px; color: #8a7a58; letter-spacing: 1px; text-transform: uppercase; }
+.mh98-brief p { margin: 7px 0; line-height: 1.45; font-size: 13px; }
+.mh98-sign { text-align: right; font-style: italic; }
+.mh98-objs { margin: 4px 0; padding-left: 20px; line-height: 1.6; }
+.mh98-objs.big { font-size: 14px; list-style: none; padding-left: 4px; }
+.mh98-objs li.done { color: #90c070; }
+.mh98-objs li.failed { color: #e06040; }
+.mh98-panel.paper .mh98-objs li.done { color: #3a6a20; }
+.mh98-kit { margin: 6px 0 4px; font-size: 12px; color: #5a4a30; }
+.mh98-debrief { display: flex; gap: 20px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
+.mh98-debrief table { border-collapse: collapse; min-width: 260px; }
+.mh98-debrief td { padding: 4px 10px; border-bottom: 1px solid #4a4632; }
+.mh98-debrief td:last-child { text-align: right; color: #f0e0a0; font-weight: bold; }
+.mh98-awards { text-align: center; }
+.mh98-awards .lbl { font-size: 12px; color: #a8a080; text-transform: uppercase; letter-spacing: 1px; }
+.mh98-medalnames { font-size: 12px; color: #e8d8a0; max-width: 360px; }
+.mh98-case { display: block; max-width: 100%; margin: 0 auto 10px; }
+.mh98-opts { display: flex; flex-direction: column; gap: 4px; }
+.mh98-opt { display: grid; grid-template-columns: 1fr auto 110px auto; align-items: center; gap: 6px; padding: 3px 6px; background: rgba(0,0,0,0.3); }
+.mh98-opt b { text-align: center; color: #f0e8c0; }
+.mh98-help { margin: 0; padding-left: 18px; line-height: 1.8; }
+.mh98-code { display: flex; gap: 6px; justify-content: center; }
+.mh98-code input { width: 200px; padding: 5px 8px; font: bold 16px "Courier New", monospace; letter-spacing: 2px; text-transform: uppercase; background: #14140e; color: #f0e0a0; border: 1px solid #8a8458; }
+.mh98-credits p { text-align: center; margin: 8px 0; line-height: 1.4; }

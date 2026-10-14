@@ -1,0 +1,24 @@
+{
+  "tiles": [
+    { "id": "ps_rose", "name": "Огненная роза", "element": "fire", "value": 3, "rarity": 1 },
+    { "id": "ps_lily", "name": "Огненная лилия", "element": "fire", "value": 5, "rarity": 2 },
+    { "id": "ps_dragon", "name": "Цветок дракона", "element": "fire", "value": 8, "rarity": 3 },
+    { "id": "ps_jasmine", "name": "Жасмин", "element": "water", "value": 3, "rarity": 1 },
+    { "id": "ps_waterlily", "name": "Водяная лилия", "element": "water", "value": 5, "rarity": 2 },
+    { "id": "ps_peony", "name": "Лунный пион", "element": "water", "value": 8, "rarity": 3 },
+    { "id": "ps_chrys", "name": "Хризантема", "element": "earth", "value": 3, "rarity": 1 },
+    { "id": "ps_orchid", "name": "Каменная орхидея", "element": "earth", "value": 5, "rarity": 2 },
+    { "id": "ps_poppy", "name": "Барсучий мак", "element": "earth", "value": 8, "rarity": 3 },
+    { "id": "ps_daffodil", "name": "Нарцисс", "element": "air", "value": 3, "rarity": 1 },
+    { "id": "ps_iris", "name": "Ирис ветра", "element": "air", "value": 5, "rarity": 2 },
+    { "id": "ps_bison", "name": "Цветок бизона", "element": "air", "value": 8, "rarity": 3 },
+    { "id": "ps_lotus", "name": "Белый лотос", "element": "lotus", "value": 6, "rarity": 4 }
+  ],
+  "starter": ["ps_rose", "ps_rose", "ps_jasmine", "ps_jasmine", "ps_chrys", "ps_chrys", "ps_daffodil", "ps_daffodil", "ps_lily"],
+  "opponents": [
+    { "id": "lu", "name": "Старик Лу", "look": "paisho_lu", "deck": ["ps_rose", "ps_jasmine", "ps_chrys", "ps_daffodil", "ps_rose", "ps_jasmine", "ps_waterlily", "ps_chrys"], "reward": "ps_waterlily", "skill": 0, "flag": "paisho_lu" },
+    { "id": "rui", "name": "Матрос Жуй", "look": "paisho_rui", "deck": ["ps_lily", "ps_waterlily", "ps_orchid", "ps_iris", "ps_rose", "ps_jasmine", "ps_iris", "ps_orchid"], "reward": "ps_iris", "skill": 1, "flag": "paisho_rui" },
+    { "id": "xiao", "name": "Торговка Сяо", "look": "paisho_xiao", "deck": ["ps_dragon", "ps_peony", "ps_orchid", "ps_iris", "ps_lily", "ps_waterlily", "ps_poppy", "ps_lotus"], "reward": "ps_lotus", "skill": 2, "flag": "paisho_xiao" }
+  ],
+  "rules": { "handSize": 5, "rounds": 5, "winsNeeded": 3, "advantage": 3, "beats": { "water": "fire", "fire": "air", "air": "earth", "earth": "water" } }
+}

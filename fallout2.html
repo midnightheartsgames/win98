@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fallout 2 Demo — Храм Испытаний (Temple of Trials)</title>
+  <link rel="stylesheet" href="css/apps/fallout2.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    #standalone-root {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="standalone-root"></div>
+
+  <!-- Fallout 2 Engine Scripts -->
+  <script src="js/apps/fallout2/fallout2-audio.js"></script>
+  <script src="js/apps/fallout2/fallout2-special.js"></script>
+  <script src="js/apps/fallout2/fallout2-temple.js"></script>
+  <script src="js/apps/fallout2/fallout2-engine.js"></script>
+  <script src="js/apps/fallout2/fallout2-combat.js"></script>
+  <script src="js/apps/fallout2/fallout2-ui.js"></script>
+  <script src="js/apps/fallout2-app.js"></script>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const root = document.getElementById('standalone-root');
+      const app = new AppFallout2();
+      app.initGame(root);
+      window.appFallout2 = app;
+    });
+  </script>
+</body>
+</html>
+

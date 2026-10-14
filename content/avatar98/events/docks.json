@@ -1,0 +1,166 @@
+{
+  "pier_enter": [
+    { "if": "!arrived_rc", "then": [
+      { "flag": "arrived_rc" },
+      { "letterbox": true },
+      { "caption": "cap.rc", "frames": 200 },
+      { "camera": [17, 4], "frames": 60 },
+      { "wait": 30 },
+      { "camera": "player", "frames": 40 },
+      { "talk": "dk.arrive" },
+      { "letterbox": false }
+    ] }
+  ],
+  "pier_gao": [
+    { "if": "quest.radio_parts == 1", "then": [{ "talk": "dk.gao_give" }, { "give": "radio_parts" }, { "quest": "radio_parts", "step": 2 }], "else": [{ "talk": "dk.gao" }] }
+  ],
+  "pier_newsboy": [{ "talk": "dk.newsboy" }],
+  "pier_docker": [{ "talk": "dk.docker" }],
+  "pier_cop": [{ "talk": "dk.cop" }],
+  "pier_liao": [{ "talk": "dk.liao" }],
+  "dmarket_enter": [
+    { "if": "arrived_rc && !miri_theft", "then": [
+      { "letterbox": true },
+      { "actor": "miri_a", "look": "miri", "x": 20, "y": 14, "dir": "left" },
+      { "move": "player", "path": "u3" },
+      { "move": "miri_a", "path": "l4 d4", "speed": 2 },
+      { "emote": "f:tao", "icon": "!" },
+      { "talk": "dk.theft1" },
+      { "move": "miri_a", "path": "u4 r8 u7 r1", "speed": 2.5 },
+      { "remove": "miri_a" },
+      { "emote": "f:tao", "icon": "?" },
+      { "talk": "dk.theft2" },
+      { "flag": "miri_theft" },
+      { "restore": "map" },
+      { "letterbox": false },
+      { "caption": "cap.chase", "frames": 240 }
+    ] }
+  ],
+  "dmarket_block_n": [{ "talk": "dk.block_n" }, { "move": "player", "path": "d1" }],
+  "dmarket_wei": [
+    { "if": "!wei_met", "then": [{ "talk": "dk.wei_first" }, { "flag": "wei_met" }], "else": [{ "talk": "dk.wei" }] },
+    { "shop": "shop_docks" }
+  ],
+  "dmarket_tea": [{ "talk": "dk.tea" }],
+  "dmarket_fish": [
+    { "if": "quest.owl_cat == 2 && !item.dried_fish", "then": [
+      { "talk": "dk.fish_ask" },
+      { "choice": ["choice.fish_buy", "choice.fish_miri"], "branches": [
+        [{ "if": "gold >= 30", "then": [{ "gold": -30 }, { "talk": "dk.fish_buy" }, { "give": "dried_fish" }], "else": [{ "talk": "msg.no_money_d" }] }],
+        [{ "talk": "dk.fish_miri" }, { "give": "dried_fish" }, { "trust": { "miri": 1 } }]
+      ] }
+    ], "else": [{ "talk": "dk.fish" }] }
+  ],
+  "dmarket_citizen1": [{ "talk": "dk.citizen1" }],
+  "dmarket_citizen2": [{ "talk": "dk.citizen2" }],
+  "dmarket_cop": [{ "talk": "dk.cop_market" }],
+  "roofs_chase1_enter": [
+    { "if": "!chase1_seen", "then": [
+      { "flag": "chase1_seen" },
+      { "actor": "miri_a", "look": "miri", "x": 8, "y": 8, "dir": "left" },
+      { "talk": "dk.chase_start" },
+      { "move": "miri_a", "path": "r4 u1 r10", "speed": 3 },
+      { "remove": "miri_a" }
+    ] },
+    { "chase": "start" }
+  ],
+  "roofs_chase2_enter": [
+    { "chase": "start" },
+    { "if": "!chase2_seen", "then": [{ "flag": "chase2_seen" }, { "talk": "dk.chase_mid" }] }
+  ],
+  "chase_fail": [
+    { "talk": "dk.chase_fail" },
+    { "warp": "roofs_chase1", "spawn": "start", "dir": "right" }
+  ],
+  "chase_end": [
+    { "chase": "stop" },
+    { "flag": "chase_done" },
+    { "talk": "dk.chase_end" },
+    { "warp": "docks_alley", "spawn": "roof_drop", "dir": "down" }
+  ],
+  "alley_enter": [
+    { "if": "chase_done && !miri_joined", "then": [{ "call": "lanterns_scene" }] }
+  ],
+  "lanterns_scene": [
+    { "letterbox": true },
+    { "actor": "miri_a", "look": "miri", "x": 13, "y": 5, "dir": "down" },
+    { "actor": "shen_a", "look": "shen", "x": 13, "y": 8, "dir": "up" },
+    { "actor": "thug_a", "look": "thug", "x": 11, "y": 7, "dir": "up" },
+    { "actor": "thug_b", "look": "thug2", "x": 15, "y": 7, "dir": "up" },
+    { "camera": [13, 7], "frames": 40 },
+    { "talk": "dk.lanterns1" },
+    { "move": "player", "path": "l3 d2", "speed": 1.5 },
+    { "face": "shen_a", "dir": "right" },
+    { "battle": "t_red_lanterns" },
+    { "talk": "dk.lanterns2" },
+    { "move": "shen_a", "path": "d6", "speed": 2, "wait": false },
+    { "move": "thug_a", "path": "d6", "speed": 2, "wait": false },
+    { "move": "thug_b", "path": "d6", "speed": 2 },
+    { "remove": "shen_a" },
+    { "remove": "thug_a" },
+    { "remove": "thug_b" },
+    { "move": "miri_a", "path": "d2" },
+    { "talk": "dk.miri_story" },
+    { "choice": ["choice.miri_join", "choice.miri_part"], "branches": [
+      [{ "talk": "dk.miri_join" }, { "trust": { "miri": 1 } }],
+      [{ "talk": "dk.miri_part" }]
+    ] },
+    { "remove": "miri_a" },
+    { "join": "miri" },
+    { "give": "kupol_pass" },
+    { "talk": "dk.miri_after" },
+    { "flag": "miri_joined" },
+    { "flag": "lanterns_fought" },
+    { "restore": "map" },
+    { "camera": "player", "frames": 20 },
+    { "letterbox": false }
+  ],
+  "alley_owlcat": [
+    { "if": "quest.owl_cat == 1", "then": [{ "talk": "dk.owl_run" }, { "quest": "owl_cat", "step": 2 }], "else": [
+      { "if": "item.dried_fish", "then": [{ "talk": "dk.owl_catch" }, { "take": "dried_fish", "silent": true }, { "quest": "owl_cat", "step": 3 }, { "remove": "self" }], "else": [{ "talk": "dk.owl_nofish" }] }
+    ] }
+  ],
+  "alley_drunk": [{ "talk": "dk.drunk" }],
+  "plaza_enter": [
+    { "if": "miri_joined && !plaza_seen", "then": [{ "flag": "plaza_seen" }, { "talk": "dk.plaza_intro" }] }
+  ],
+  "plaza_ken": [
+    { "if": "quest.radio_parts == 0", "then": [{ "talk": "dk.ken_ask" }, { "quest": "radio_parts", "step": 1 }], "else": [
+      { "if": "quest.radio_parts == 1", "then": [{ "talk": "dk.ken_wait" }], "else": [
+        { "if": "quest.radio_parts == 2", "then": [
+          { "talk": "dk.ken_reward" },
+          { "take": "radio_parts", "silent": true },
+          { "give": "pocket_radio" },
+          { "give": "sign_lotus" },
+          { "quest": "radio_parts", "step": 3 },
+          { "quest": "radio_voices", "step": 1 }
+        ], "else": [{ "talk": "dk.ken_done" }] }
+      ] }
+    ] }
+  ],
+  "plaza_ou": [
+    { "if": "quest.owl_cat == 0", "then": [{ "talk": "dk.ou_ask" }, { "quest": "owl_cat", "step": 1 }], "else": [
+      { "if": "quest.owl_cat == 3", "then": [{ "talk": "dk.ou_reward" }, { "give": "sign_healer" }, { "give": "ginseng_tea", "count": 2 }, { "quest": "owl_cat", "step": 4 }, { "restore": "map" }], "else": [
+        { "if": "quest.owl_cat >= 4", "then": [{ "talk": "dk.ou_done" }], "else": [{ "talk": "dk.ou_wait" }] }
+      ] }
+    ] }
+  ],
+  "plaza_pushinka": [{ "talk": "dk.pushinka" }],
+  "plaza_newsboy": [{ "talk": "dk.newsboy2" }],
+  "plaza_guard": [{ "talk": "dk.guard" }],
+  "plaza_citizen": [{ "talk": "dk.plaza_citizen" }],
+  "plaza_gate": [
+    { "talk": "dk.gate_plan" },
+    { "choice": ["choice.go_station", "choice.not_ready"], "branches": [
+      [
+        { "talk": "dk.gate_go" },
+        { "sfx": "door_metal" },
+        { "fade": "out", "frames": 50 },
+        { "flag": "station_open" },
+        { "restore": "map" },
+        { "warp": "station_platform", "spawn": "south", "dir": "up", "fade": false }
+      ],
+      []
+    ] }
+  ]
+}

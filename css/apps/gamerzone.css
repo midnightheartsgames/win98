@@ -1,0 +1,283 @@
+.forum98-container {
+  min-height: 100%;
+  background: #ffffff;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 11px;
+  padding: 8px 12px 16px;
+}
+
+.forum98-page {
+  width: 95%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.forum98-header {
+  width: 100%;
+  border-collapse: collapse;
+  background: #333366;
+  border: 1px solid #000000;
+}
+
+.forum98-header td {
+  padding: 4px 8px;
+  color: #ffffff;
+}
+
+.forum98-logo {
+  font: italic 900 26px 'Arial Black', Arial, sans-serif;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.forum98-logo .web-gif {
+  vertical-align: -6px;
+}
+
+.forum98-logo span {
+  font: bold 12px Verdana, Arial, sans-serif;
+  color: #ffcc00;
+  margin-left: 6px;
+  vertical-align: 4px;
+}
+
+.forum98-toplinks {
+  text-align: right;
+  font-weight: bold;
+}
+
+.forum98-toplinks a {
+  color: #ffffff;
+}
+
+.forum98-crumbs {
+  margin: 8px 0;
+  font-size: 12px;
+}
+
+.forum98-crumbs .web-gif {
+  vertical-align: -3px;
+}
+
+.forum98-bar {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 4px;
+}
+
+.forum98-bar-right {
+  text-align: right;
+}
+
+.forum98-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 1px;
+  background: #000000;
+  table-layout: auto;
+}
+
+.forum98-th {
+  background: #333399;
+  color: #ffffff;
+  font-weight: bold;
+  text-align: left;
+  padding: 4px 5px;
+}
+
+.forum98-table td {
+  padding: 4px 5px;
+  vertical-align: middle;
+}
+
+.forum98-row-a td {
+  background: #eeeeee;
+}
+
+.forum98-row-b td {
+  background: #dddddd;
+}
+
+.forum98-icon-th,
+.forum98-icon-cell {
+  width: 18px;
+  text-align: center;
+}
+
+.forum98-num {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.forum98-thread-title {
+  font-weight: bold;
+  font-size: 12px;
+  color: #000080;
+}
+
+.forum98-small {
+  font-size: 10px;
+  color: #444444;
+}
+
+.forum98-author-th {
+  width: 140px;
+}
+
+.forum98-author-col {
+  width: 140px;
+  vertical-align: top !important;
+}
+
+.forum98-author-name {
+  color: #000080;
+  font-size: 12px;
+}
+
+.forum98-content-col {
+  vertical-align: top !important;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+}
+
+.forum98-post-meta {
+  font-size: 10px;
+  color: #444444;
+}
+
+.forum98-post-meta .web-gif {
+  vertical-align: -4px;
+}
+
+.forum98-post-hr {
+  margin: 4px 0 6px;
+}
+
+.forum98-quote {
+  margin: 4px 16px;
+  font-size: 11px;
+}
+
+.forum98-quote hr {
+  margin: 2px 0;
+}
+
+.forum98-code {
+  font: 12px 'Courier New', Courier, monospace;
+  background: #ffffff;
+  border: 1px solid #999999;
+  padding: 4px 6px;
+  margin: 4px 0;
+  white-space: pre-wrap;
+}
+
+.forum98-nav {
+  margin: 8px 0;
+}
+
+.forum98-form {
+  margin-top: 6px;
+}
+
+.forum98-form-label {
+  width: 140px;
+  font-weight: bold;
+  vertical-align: top !important;
+  padding-top: 7px !important;
+}
+
+.forum98-form textarea {
+  width: 100%;
+}
+
+.forum98-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  margin-bottom: 4px;
+}
+
+.forum98-toolbar .win-btn {
+  min-width: 26px;
+  padding: 1px 6px;
+  font-size: 11px;
+}
+
+.forum98-smilies-bar {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: 6px;
+}
+
+.forum98-smiley {
+  cursor: pointer;
+  line-height: 0;
+}
+
+.forum98-error {
+  color: #cc0000;
+  min-height: 14px;
+  margin-top: 3px;
+}
+
+.forum98-legend,
+.forum98-rules,
+.forum98-credit {
+  margin: 8px 0 0;
+}
+
+.forum98-legend .web-gif {
+  vertical-align: -4px;
+}
+
+.forum98-credit {
+  text-align: center;
+  color: #666666;
+  font-size: 10px;
+  border-top: 1px solid #cccccc;
+  padding-top: 6px;
+}
+
+.forum98-forum-name {
+  font-weight: bold;
+  font-size: 13px;
+  color: #000080;
+}
+
+.forum98-forum-about {
+  margin: 2px 0 1px;
+  font-size: 11px;
+}
+
+.forum98-last-th {
+  width: 150px;
+}
+
+.forum98-last {
+  width: 150px;
+  font-size: 10px;
+  color: #333333;
+  white-space: nowrap;
+}
+
+.forum98-fresh {
+  margin-top: 10px;
+}
+
+.forum98-pin {
+  color: #cc0000;
+}
+
+.forum98-locked {
+  margin: 8px 0;
+  padding: 4px 6px;
+  border: 1px solid #999999;
+  background: #ffffcc;
+  font-size: 12px;
+}
+
+.forum98-locked .web-gif {
+  vertical-align: -3px;
+}

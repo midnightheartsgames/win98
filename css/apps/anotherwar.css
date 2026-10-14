@@ -1,0 +1,257 @@
+.aw-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.aw-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 800px;
+  height: 600px;
+  transform-origin: center center;
+  overflow: hidden;
+  cursor: none;
+  font-family: 'Trebuchet MS', Tahoma, sans-serif;
+  color: #c8c8c8;
+}
+
+.aw-stage.aw-crisp .aw-canvas,
+.aw-stage.aw-crisp .aw-dollcanvas,
+.aw-stage.aw-crisp .aw-spr {
+  image-rendering: pixelated;
+}
+
+.aw-canvas,
+.aw-overlay,
+.aw-hud,
+.aw-layer,
+.aw-modal-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 800px;
+  height: 600px;
+}
+
+.aw-canvas { display: block; }
+.aw-overlay { pointer-events: none; overflow: hidden; }
+.aw-hud, .aw-layer, .aw-modal-layer { pointer-events: none; }
+.aw-layer > *, .aw-modal-layer > * { pointer-events: auto; }
+
+.aw-spr {
+  position: absolute;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.aw-hit { pointer-events: auto; }
+
+.aw-cursor {
+  position: absolute;
+  z-index: 50;
+  pointer-events: none;
+  background-repeat: no-repeat;
+}
+
+.aw-tip {
+  position: absolute;
+  z-index: 49;
+  display: none;
+  pointer-events: none;
+  font: 11px 'Trebuchet MS', Tahoma, sans-serif;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000, -1px 0 0 #000, 0 -1px 0 #000;
+  white-space: nowrap;
+}
+
+.aw-tip div + div { color: #c8c8c8; }
+
+.aw-fatal {
+  position: absolute;
+  inset: 180px 80px auto 80px;
+  padding: 18px;
+  border: 2px solid #6b5a3a;
+  background: #1b1712;
+  color: #e8d9b0;
+  font: 14px Georgia, serif;
+  white-space: pre-wrap;
+}
+
+.aw-loading { position: absolute; left: 0; top: 0; width: 800px; height: 600px; background: #000; z-index: 40; }
+.aw-loading-text { position: absolute; left: 0; right: 0; top: 520px; text-align: center; font: 13px 'Trebuchet MS', sans-serif; color: #d8d0b8; }
+.aw-loading-bar { position: absolute; left: 250px; top: 545px; width: 300px; height: 6px; background: #1c1a16; border: 1px solid #5e5440; }
+.aw-loading-fill { height: 100%; background: #b59a5c; width: 0; transition: width 0.15s; }
+
+.aw-wincanvas { position: absolute; left: 0; top: 0; }
+
+.aw-confirm { position: absolute; z-index: 45; }
+.aw-confirm-text { position: absolute; left: 20px; right: 20px; top: 30px; text-align: center; font: 15px Georgia, serif; color: #f0e6c8; }
+.aw-confirm-text div { margin-bottom: 4px; }
+.aw-confirm-row { position: absolute; left: 0; right: 0; bottom: 22px; display: flex; justify-content: center; gap: 24px; }
+
+.aw-btn {
+  min-width: 90px;
+  padding: 4px 14px;
+  border: 1px solid #7a6a45;
+  background: linear-gradient(#3b3326, #1f1a13);
+  color: #efe2bd;
+  font: 13px 'Trebuchet MS', sans-serif;
+  cursor: none;
+}
+
+.aw-btn:hover { color: #fff27a; border-color: #b59a5c; }
+.aw-btn-wide { width: 220px; margin: 4px auto; display: block; }
+
+.aw-hud-root { position: absolute; left: 0; top: 0; width: 800px; height: 600px; pointer-events: none; }
+.aw-bar { position: absolute; background-repeat: repeat; pointer-events: none; }
+.aw-hptext { position: absolute; left: 348px; top: 490px; width: 100px; text-align: center; font: bold 10px 'Trebuchet MS', sans-serif; color: #8c8c8c; pointer-events: none; }
+.aw-handbox { position: absolute; pointer-events: none; }
+.aw-small { position: absolute; font: 10px 'Trebuchet MS', sans-serif; pointer-events: none; }
+.aw-gray { color: #909090; }
+.aw-right { text-align: right; }
+.aw-handflag { position: absolute; left: 68px; top: 520px; width: 136px; text-align: center; font: bold 12px 'Trebuchet MS', sans-serif; color: #ff3a2a; pointer-events: none; }
+.aw-beltcell { position: absolute; }
+.aw-beltcell .aw-spr { transform-origin: center; }
+.aw-amount { position: absolute; right: 1px; bottom: 0; font: bold 9px Tahoma, sans-serif; color: #fff27a; text-shadow: 1px 1px 0 #000; pointer-events: none; }
+.aw-msgs { position: absolute; overflow: hidden; font: 9px Tahoma, 'Trebuchet MS', sans-serif; line-height: 11px; }
+.aw-msg { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.aw-btnarea { position: absolute; }
+.aw-target, .aw-target-hp { position: absolute; left: 345px; width: 235px; text-align: center; font: 12px 'Trebuchet MS', sans-serif; color: #9a9a9a; pointer-events: none; white-space: nowrap; overflow: hidden; }
+.aw-target { top: 5px; }
+.aw-target-hp { top: 20px; font-size: 11px; }
+.aw-team { position: absolute; left: 0; top: 0; }
+
+.aw-say {
+  position: absolute;
+  max-width: 300px;
+  font: bold 12px 'Trebuchet MS', sans-serif;
+  text-align: center;
+  white-space: pre-line;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+}
+
+.aw-float {
+  position: absolute;
+  font: bold 11px 'Trebuchet MS', sans-serif;
+  white-space: nowrap;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000;
+}
+
+.aw-fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
+.aw-pausemsg { position: absolute; left: 0; right: 0; top: 290px; text-align: center; font: bold 14px 'Trebuchet MS', sans-serif; color: #fff; display: none; animation: aw-blink 1s steps(2) infinite; }
+@keyframes aw-blink { 50% { opacity: 0; } }
+
+.aw-dlg { position: absolute; z-index: 30; pointer-events: auto; }
+.aw-dlg-log {
+  position: absolute;
+  left: 15px;
+  top: 10px;
+  right: 22px;
+  bottom: 22px;
+  overflow: hidden;
+  font: 14px Georgia, 'Times New Roman', serif;
+  line-height: 17px;
+  color: #e8e8e8;
+}
+.aw-dlg-npc { white-space: pre-wrap; margin-bottom: 10px; }
+.aw-dlg-chosen { white-space: pre-wrap; color: #7fc778; margin-bottom: 10px; }
+.aw-dlg-ans { white-space: pre-wrap; color: #9bd986; margin: 0 0 6px 10px; text-indent: -10px; }
+.aw-dlg-ans:hover { color: #f9f985; }
+.aw-dlg-more { position: absolute; left: 0; right: 0; bottom: 4px; text-align: center; font: 12px Georgia, serif; color: #f9f985; display: none; animation: aw-blink 1.2s steps(2) infinite; }
+
+.aw-inv, .aw-screen { position: absolute; left: 0; top: 0; width: 800px; height: 600px; background: #000; pointer-events: auto; }
+.aw-inv-content { position: absolute; left: 0; top: 0; }
+.aw-tab { position: absolute; text-align: center; font: 11px 'Trebuchet MS', sans-serif; color: #5c5c5c; pointer-events: none; }
+.aw-tab.on { color: #d0d0d0; }
+.aw-tab.off { color: #2c2c2c; }
+.aw-team-hp { position: absolute; text-align: center; font: 12px 'Trebuchet MS', sans-serif; color: #999; pointer-events: none; }
+.aw-desc { position: absolute; z-index: 20; display: none; pointer-events: none; }
+.aw-desc-body { position: relative; padding: 10px; display: flex; gap: 10px; align-items: flex-start; max-width: 380px; }
+.aw-desc-icon { position: relative; flex: none; }
+.aw-desc-text { font: 11px 'Trebuchet MS', sans-serif; color: #c8c8c8; max-width: 300px; }
+.aw-desc-name { color: #fff; font-weight: bold; margin-bottom: 4px; }
+.aw-desc-line { margin-bottom: 2px; }
+.aw-weight { position: absolute; left: 320px; top: 27px; white-space: nowrap; font: 11px 'Trebuchet MS', sans-serif; color: #c8c8c8; }
+.aw-red { color: #ff4a3a; }
+.aw-grid { position: absolute; }
+.aw-item { cursor: none; }
+.aw-item .aw-amount { right: 2px; bottom: 1px; }
+.aw-trade-cash { position: absolute; left: 236px; top: 442px; white-space: nowrap; font: 12px 'Trebuchet MS', sans-serif; color: #fff27a; }
+.aw-doll { position: absolute; }
+.aw-dollcanvas { position: absolute; pointer-events: none; }
+.aw-eqlist { position: absolute; left: 22px; top: 305px; width: 182px; font: 9px Tahoma, sans-serif; color: #9a9a9a; }
+.aw-eqrow { position: absolute; left: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 182px; }
+.aw-eqrow:hover { color: #fff27a; }
+.aw-drag { z-index: 30; opacity: 0.9; }
+
+.aw-center { transform: translateX(-50%); text-align: center; white-space: nowrap; }
+.aw-tim22, .aw-tim22s, .aw-tim28, .aw-tim32, .aw-geo14, .aw-sel, .aw-opt, .aw-title, .aw-menubtn, .aw-btnlabel { position: absolute; white-space: nowrap; }
+.aw-tim22 { font: 18px 'Times New Roman', serif; }
+.aw-tim22s { font: 16px 'Times New Roman', serif; }
+.aw-tim28 { font: 17px 'Times New Roman', serif; }
+.aw-tim32 { font: 24px 'Times New Roman', serif; }
+.aw-geo14 { font: 14px Georgia, serif; }
+.aw-lgray { color: #d2d2d2; }
+.aw-yellow { color: #fff27a; }
+
+.aw-diary { position: absolute; left: 240px; top: 58px; width: 515px; height: 400px; overflow: hidden; font: 13px Georgia, serif; color: #3b2a14; }
+.aw-diary-empty { font-style: italic; margin-top: 20px; }
+.aw-note { margin-bottom: 14px; }
+.aw-note-title { font-weight: bold; margin-bottom: 3px; }
+.aw-note-text { margin: 0 0 4px; text-indent: 16px; line-height: 16px; }
+.aw-maptab { position: absolute; font: 12px 'Trebuchet MS', sans-serif; color: #777; }
+.aw-maptab.on { color: #fff27a; }
+.aw-maptab.off { color: #333; }
+
+.aw-menubtn { font: bold 20px 'Times New Roman', serif; color: #a89c7e; letter-spacing: 1px; text-shadow: 1px 1px 0 #000; }
+.aw-menubtn.on { color: #fff; }
+.aw-ver { position: absolute; font: 10px Tahoma, sans-serif; color: #6d6451; }
+.aw-credits { position: absolute; left: 230px; top: 170px; width: 340px; height: 360px; overflow: hidden; text-align: center; font: 13px Georgia, serif; color: #e8dcb8; }
+.aw-cred-h { color: #fff27a; margin-top: 8px; }
+.aw-sel { font: italic 21px 'Palatino Linotype', 'Book Antiqua', Georgia, serif; color: #3a2d1d; }
+.aw-namein {
+  position: absolute;
+  height: 30px;
+  border: none;
+  background: transparent;
+  outline: none;
+  font: italic 22px 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  color: #3a2d1d;
+  text-align: center;
+  cursor: none;
+}
+.aw-namein::placeholder { color: #5a4630; opacity: 1; }
+.aw-seldesc { position: absolute; font: italic 14px 'Palatino Linotype', Georgia, serif; line-height: 17px; color: #2c200f; }
+.aw-small2 { font-size: 12px; }
+.aw-title { font: bold 20px 'Times New Roman', serif; color: #d9c79a; letter-spacing: 1px; text-shadow: 1px 1px 0 #000; }
+.aw-opt { font: 15px 'Trebuchet MS', sans-serif; color: #cfcfcf; }
+.aw-btnlabel { font: bold 13px 'Trebuchet MS', sans-serif; color: #c9bd8f; }
+.aw-slotinfo { position: absolute; font: 12px 'Trebuchet MS', sans-serif; color: #c8c8c8; line-height: 17px; }
+.aw-slot { position: absolute; padding: 6px 8px; box-sizing: border-box; font: 11px 'Trebuchet MS', sans-serif; color: #c8c8c8; }
+.aw-slot:hover { background: rgba(255, 242, 122, 0.08); }
+.aw-slot.empty { color: #6a6a6a; }
+.aw-slot-h { color: #fff27a; font-weight: bold; margin-bottom: 3px; }
+.aw-slot-b { white-space: pre-line; }
+.aw-gm { position: absolute; }
+.aw-gm-list { position: absolute; left: 0; right: 0; top: 24px; }
+.aw-helptab { position: absolute; left: 120px; top: 110px; width: 560px; font: 13px Georgia, serif; }
+.aw-helprow { display: flex; gap: 16px; margin-bottom: 5px; }
+.aw-helpk { width: 210px; text-align: right; color: #fff27a; }
+.aw-helpv { color: #e8e8e8; }
+
+.aw-popup { position: absolute; left: 0; top: 0; width: 800px; height: 600px; background: #000; z-index: 38; animation: aw-in 0.5s; }
+.aw-popup.out { animation: aw-out 0.4s forwards; }
+@keyframes aw-in { from { opacity: 0; } }
+@keyframes aw-out { to { opacity: 0; } }
+.aw-popup-text { position: absolute; left: 0; right: 0; top: 260px; text-align: center; font: 22px 'Times New Roman', serif; color: #e8e0c8; line-height: 34px; }
+.aw-popup-act { position: absolute; left: 0; right: 0; top: 380px; text-align: center; font: 26px 'Times New Roman', serif; color: #efe3c0; line-height: 34px; text-shadow: 2px 2px 0 #000; }
+.aw-popup-actn { font-size: 40px; color: #fff27a; margin-bottom: 8px; }
+.aw-actend-text { position: absolute; left: 150px; right: 150px; top: 500px; text-align: center; font: 14px Georgia, serif; color: #e8e0c8; text-shadow: 1px 1px 0 #000; }
+.aw-actend-btn { position: absolute; left: 330px; top: 560px; width: 140px; }

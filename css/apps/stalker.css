@@ -1,0 +1,425 @@
+.stalker-app {
+  --bg: #000000;
+  --fg: #aaaaaa;
+  --hi: #ffffff;
+  --dim: #555555;
+  --yel: #ffff55;
+  --red: #ff5555;
+  --cyan: #55ffff;
+  --grn: #55ff55;
+  --art: #55aa55;
+  --bar-bg: #aaaaaa;
+  --bar-fg: #000000;
+  --glow: rgba(255, 255, 255, 0.18);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 16px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  user-select: text;
+}
+
+.stalker-app[data-pal="green"] {
+  --bg: #010d02;
+  --fg: #2fbf3f;
+  --hi: #7dff8a;
+  --dim: #24903c;
+  --yel: #7dff8a;
+  --red: #b4ffbb;
+  --cyan: #7dff8a;
+  --grn: #7dff8a;
+  --art: #2fbf3f;
+  --bar-bg: #2fbf3f;
+  --bar-fg: #010d02;
+  --glow: rgba(60, 255, 90, 0.35);
+}
+
+.stalker-app[data-pal="amber"] {
+  --bg: #0d0700;
+  --fg: #d08a00;
+  --hi: #ffc040;
+  --dim: #946200;
+  --yel: #ffc040;
+  --red: #ffe0a0;
+  --cyan: #ffc040;
+  --grn: #ffc040;
+  --art: #d08a00;
+  --bar-bg: #d08a00;
+  --bar-fg: #0d0700;
+  --glow: rgba(255, 170, 30, 0.35);
+}
+
+.stalker-app.stl-crt {
+  text-shadow: 0 0 3px var(--glow);
+}
+
+.stalker-app.stl-crt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 2px, rgba(0, 0, 0, 0.32) 2px, rgba(0, 0, 0, 0.32) 3px);
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.75);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.stl-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--bar-bg);
+  color: var(--bar-fg);
+  padding: 0 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-shadow: none;
+}
+
+.stl-st-left {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stl-st-right {
+  display: flex;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.stl-st-rad.stl-hot {
+  animation: stl-blink 1s steps(1) infinite;
+}
+
+@keyframes stl-blink {
+  50% { color: var(--bg); }
+}
+
+.stl-screen {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px 4px;
+  cursor: text;
+}
+
+.stl-log {
+  max-width: 82ch;
+}
+
+.stl-block {
+  margin-bottom: 16px;
+}
+
+.stl-block p {
+  margin: 0 0 8px;
+}
+
+.stl-room {
+  color: var(--hi);
+  margin-bottom: 8px;
+}
+
+.stl-art,
+.stl-logo,
+.stl-pre {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 16px;
+  margin: 0 0 8px;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.stl-art {
+  color: var(--art);
+  user-select: none;
+}
+
+.stl-text {
+  color: var(--fg);
+}
+
+.stl-say {
+  color: var(--yel);
+}
+
+.stl-who {
+  color: var(--hi);
+}
+
+.stl-say.stl-cont {
+  padding-left: 2ch;
+}
+
+.stl-note {
+  color: var(--cyan);
+  border-left: 1ch double var(--cyan);
+  padding-left: 1ch;
+  margin: 0 0 8px;
+}
+
+.stl-voice {
+  color: var(--cyan);
+}
+
+.stl-alarm,
+.stl-alarm-in {
+  color: var(--red);
+}
+
+.stl-sys {
+  color: var(--dim);
+}
+
+.stl-center {
+  text-align: center;
+}
+
+.stl-task {
+  color: var(--grn);
+}
+
+.stl-echo {
+  color: var(--hi);
+  margin-bottom: 16px;
+}
+
+.stl-head {
+  color: var(--hi);
+  margin-bottom: 8px;
+}
+
+.stl-dim {
+  color: var(--dim);
+}
+
+.stl-menu {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.stalker-choice-btn {
+  display: flex;
+  gap: 1ch;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: var(--fg);
+  border: 0;
+  margin: 0;
+  padding: 0 1ch 0 0;
+  font: inherit;
+  text-shadow: inherit;
+  cursor: pointer;
+}
+
+.stalker-choice-btn:hover,
+.stalker-choice-btn:focus-visible {
+  background: var(--fg);
+  color: var(--bg);
+  outline: none;
+  text-shadow: none;
+}
+
+.stalker-choice-btn:hover .stl-num,
+.stalker-choice-btn:hover .stl-tag,
+.stalker-choice-btn:focus-visible .stl-num,
+.stalker-choice-btn:focus-visible .stl-tag {
+  color: var(--bg);
+}
+
+.stl-num {
+  color: var(--hi);
+  flex: 0 0 3ch;
+  text-align: right;
+}
+
+.stl-ct {
+  flex: 1;
+}
+
+.stl-tag {
+  color: var(--dim);
+}
+
+.stl-codex-row {
+  display: flex;
+  gap: 1ch;
+  margin-bottom: 4px;
+}
+
+.stl-codex-row.open b {
+  color: var(--hi);
+  font-weight: inherit;
+}
+
+.stl-codex-d {
+  display: block;
+  color: var(--fg);
+}
+
+.stl-title .stl-logo {
+  color: var(--red);
+  line-height: 1;
+  overflow: hidden;
+  padding-bottom: 2px;
+  margin-top: 8px;
+}
+
+.stl-title-sub {
+  color: var(--hi);
+  letter-spacing: 1.2ch;
+  margin: 4px 0 0 2ch;
+}
+
+.stl-title-ver {
+  color: var(--dim);
+  margin: 4px 0 0 2ch;
+}
+
+.stl-title-line {
+  color: var(--dim);
+  margin: 8px 0;
+}
+
+.stl-end {
+  border: 3px double var(--fg);
+  padding: 8px 2ch;
+  margin-bottom: 8px;
+}
+
+.stl-end-false {
+  border-color: var(--red);
+}
+
+.stl-end-alt {
+  border-color: var(--cyan);
+}
+
+.stl-end-true {
+  border-color: var(--yel);
+}
+
+.stl-end-badge {
+  display: inline-block;
+  background: var(--fg);
+  color: var(--bg);
+  padding: 0 1ch;
+  margin-bottom: 8px;
+  text-shadow: none;
+}
+
+.stl-end-false .stl-end-badge {
+  background: var(--red);
+}
+
+.stl-end-alt .stl-end-badge {
+  background: var(--cyan);
+}
+
+.stl-end-true .stl-end-badge {
+  background: var(--yel);
+}
+
+.stl-end-title {
+  color: var(--hi);
+  margin-bottom: 8px;
+}
+
+.stl-end-mark {
+  color: var(--dim);
+  text-align: center;
+  margin-top: 8px;
+}
+
+.stl-prompt {
+  position: relative;
+  display: flex;
+  padding: 2px 12px 4px;
+  color: var(--hi);
+  flex-shrink: 0;
+  white-space: pre;
+  overflow: hidden;
+  cursor: text;
+}
+
+.stl-gt {
+  margin-right: 1ch;
+}
+
+.stl-cursor {
+  display: inline-block;
+  width: 1ch;
+  background: var(--hi);
+  animation: stl-cursor 1.06s steps(1) infinite;
+}
+
+.stl-cursor::before {
+  content: '\00a0';
+}
+
+@keyframes stl-cursor {
+  50% { background: transparent; }
+}
+
+.stl-input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  border: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+.stl-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1ch;
+  padding: 0 4px;
+  background: var(--bg);
+  border-top: 1px solid var(--dim);
+  flex-shrink: 0;
+}
+
+.stl-key {
+  background: var(--bar-bg);
+  color: var(--bar-fg);
+  border: 0;
+  padding: 0 4px 0 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  text-shadow: none;
+}
+
+.stl-key b {
+  font-weight: inherit;
+  color: var(--hi);
+  background: var(--bg);
+  padding: 0 2px 0 4px;
+}
+
+.stl-key:hover {
+  background: var(--hi);
+}
+
+.stl-key.off {
+  background: var(--dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stl-cursor,
+  .stl-st-rad.stl-hot {
+    animation: none;
+  }
+}

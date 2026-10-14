@@ -1,0 +1,747 @@
+.bios-root {
+  font-family: 'Courier New', Courier, 'Lucida Console', monospace;
+  font-size: clamp(12px, 1.6vw, 17px);
+  line-height: 1.25;
+  letter-spacing: 0.5px;
+  user-select: none;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  text-rendering: optimizeSpeed;
+  box-sizing: border-box;
+}
+
+#bios-post-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  color: #c0c0c0;
+  z-index: 999999990;
+  display: none;
+  flex-direction: column;
+  padding: 18px 24px;
+  box-sizing: border-box;
+  overflow: hidden;
+  cursor: default;
+}
+
+#bios-post-screen.active {
+  display: flex;
+}
+
+.post-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.post-header-text {
+  flex: 1;
+  color: #ffffff;
+}
+
+.post-title-main {
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.post-title-sub {
+  color: #a0a0a0;
+  font-size: 0.95em;
+  margin-bottom: 4px;
+}
+
+.post-title-mb {
+  color: #ffff55;
+  font-size: 0.95em;
+  margin-top: 4px;
+}
+
+.post-energy-star {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid #ffff00;
+  padding: 4px 10px;
+  background-color: #000000;
+  color: #ffff00;
+  text-align: center;
+  width: 170px;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+
+.energy-star-title {
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #ffff00;
+  margin-bottom: 2px;
+}
+
+.energy-star-icon {
+  font-size: 26px;
+  color: #00ff66;
+  line-height: 1;
+  margin: 2px 0;
+}
+
+.energy-star-sub {
+  font-size: 9px;
+  font-weight: bold;
+  color: #ffff00;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+}
+
+.post-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  color: #c0c0c0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  margin-top: 10px;
+}
+
+.post-body::-webkit-scrollbar {
+  display: none;
+}
+
+.post-line {
+  min-height: 1.25em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.post-heading {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.post-gap {
+  margin-top: 6px;
+}
+
+.post-boot-line {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.post-white { color: #ffffff; }
+.post-yellow { color: #ffff55; }
+.post-cyan { color: #55ffff; }
+.post-dim { color: #808080; }
+
+.post-pci-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 0.92em;
+}
+
+.post-pci-table th,
+.post-pci-table td {
+  text-align: left;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+
+.post-pci-table th {
+  color: #55ffff;
+  border-bottom: 1px solid #808080;
+}
+
+.post-pci-table td {
+  color: #ffffff;
+}
+
+.post-footer {
+  margin-top: auto;
+  border-top: 1px solid #404040;
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.post-prompt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  color: #ffffff;
+}
+
+.post-chipset-id {
+  color: #808080;
+  font-size: 0.88em;
+}
+
+.post-action-hints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.post-action-btn {
+  background: #101010;
+  border: 1px solid #606060;
+  color: #ffff55;
+  font-family: inherit;
+  font-size: 0.85em;
+  padding: 3px 10px;
+  cursor: pointer;
+  white-space: pre;
+}
+
+.post-action-btn:focus-visible {
+  outline: 2px solid #ffff55;
+  outline-offset: 2px;
+}
+
+.post-halted {
+  margin: auto;
+  text-align: center;
+  max-width: 60ch;
+}
+
+.post-halted-title {
+  font-size: 2em;
+  font-weight: bold;
+  color: #ff5555;
+  margin-bottom: 10px;
+}
+
+.post-halted p {
+  margin: 10px 0;
+}
+
+.post-halted-actions {
+  justify-content: center;
+  margin-top: 20px;
+}
+
+#bios-setup-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999995;
+  display: none;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 12px 18px;
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+  background-color: var(--bios-bg);
+  color: var(--bios-title);
+}
+
+#bios-setup-screen.active {
+  display: flex;
+}
+
+#bios-setup-screen.theme-blue {
+  --bios-bg: #0000aa;
+  --bios-border: #aaaaaa;
+  --bios-header: #ffff55;
+  --bios-title: #ffffff;
+  --bios-active-bg: #aa0000;
+  --bios-active-text: #ffffff;
+  --bios-active-val: #ffff55;
+  --bios-opt-label: #ffffff;
+  --bios-opt-val: #55ffff;
+  --bios-dim: #00aaaa;
+  --bios-locked: #5555ff;
+  --bios-hover: rgba(255, 255, 255, 0.12);
+}
+
+#bios-setup-screen.theme-amber {
+  --bios-bg: #120800;
+  --bios-border: #ff8800;
+  --bios-header: #ffcc00;
+  --bios-title: #ffaa00;
+  --bios-active-bg: #ffaa00;
+  --bios-active-text: #000000;
+  --bios-active-val: #000000;
+  --bios-opt-label: #ffaa00;
+  --bios-opt-val: #ffdd44;
+  --bios-dim: #aa6a00;
+  --bios-locked: #7a4a00;
+  --bios-hover: rgba(255, 170, 0, 0.14);
+}
+
+#bios-setup-screen.theme-green {
+  --bios-bg: #021204;
+  --bios-border: #00aa33;
+  --bios-header: #88ff88;
+  --bios-title: #00ff55;
+  --bios-active-bg: #00ff55;
+  --bios-active-text: #000000;
+  --bios-active-val: #000000;
+  --bios-opt-label: #00ff55;
+  --bios-opt-val: #aaffaa;
+  --bios-dim: #00993a;
+  --bios-locked: #006622;
+  --bios-hover: rgba(0, 255, 85, 0.12);
+}
+
+#bios-setup-screen.theme-mono {
+  --bios-bg: #000000;
+  --bios-border: #808080;
+  --bios-header: #ffffff;
+  --bios-title: #ffffff;
+  --bios-active-bg: #ffffff;
+  --bios-active-text: #000000;
+  --bios-active-val: #000000;
+  --bios-opt-label: #ffffff;
+  --bios-opt-val: #ffffff;
+  --bios-dim: #a0a0a0;
+  --bios-locked: #606060;
+  --bios-hover: rgba(255, 255, 255, 0.12);
+}
+
+.bios-header {
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.bios-header-top {
+  color: var(--bios-dim);
+  font-size: 0.9em;
+}
+
+.bios-header-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--bios-header);
+  letter-spacing: 1px;
+}
+
+.bios-header-vendor {
+  color: var(--bios-title);
+  font-size: 0.95em;
+}
+
+.bios-main-frame {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  border: 2px solid var(--bios-border);
+  padding: 14px 20px;
+  gap: 24px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.bios-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 1em;
+  padding: 1.5em 10px 4px;
+}
+
+.bios-menu-item {
+  padding: 6px 12px;
+  color: var(--bios-title);
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.bios-menu-item.locked {
+  color: var(--bios-locked);
+}
+
+.bios-menu-item.active {
+  background: var(--bios-active-bg);
+  color: var(--bios-active-text);
+  border-color: var(--bios-title);
+}
+
+.bios-divider {
+  width: 2px;
+  background: var(--bios-border);
+  margin: 0 4px;
+}
+
+.bios-footer {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bios-status-line {
+  border: 1px solid var(--bios-border);
+  padding: 4px 10px;
+  min-height: 1.25em;
+  color: var(--bios-header);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bios-keys-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 2em;
+  font-size: 0.88em;
+  color: var(--bios-title);
+}
+
+.bios-key-tag {
+  color: var(--bios-header);
+  font-weight: bold;
+}
+
+.bios-touch-nav {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.bios-nav-btn {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--bios-border);
+  color: var(--bios-title);
+  font-family: inherit;
+  font-size: 0.82em;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.bios-nav-btn.accent {
+  color: var(--bios-header);
+  font-weight: bold;
+}
+
+.bios-nav-btn.confirm {
+  color: #55ff55;
+}
+
+.bios-nav-btn:focus-visible,
+.bios-modal-btn:focus-visible {
+  outline: 2px solid var(--bios-header, #ffff55);
+  outline-offset: 2px;
+}
+
+.bios-submenu-container {
+  flex: 1;
+  min-height: 0;
+  border: 2px solid var(--bios-border);
+  display: flex;
+  flex-direction: column;
+  padding: 10px 18px;
+  box-sizing: border-box;
+}
+
+.bios-option-list {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.bios-option-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 3px 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.bios-option-row.active {
+  background: var(--bios-active-bg);
+  border-color: var(--bios-title);
+}
+
+.bios-opt-label {
+  color: var(--bios-opt-label);
+  flex: 1;
+}
+
+.bios-opt-val {
+  color: var(--bios-opt-val);
+  font-weight: bold;
+  text-align: right;
+}
+
+.bios-option-row.locked .bios-opt-label,
+.bios-option-row.locked .bios-opt-val,
+.bios-option-row.locked .bios-drive-cols {
+  color: var(--bios-locked);
+}
+
+.bios-option-row.active .bios-opt-label,
+.bios-option-row.active.locked .bios-opt-label {
+  color: var(--bios-active-text);
+}
+
+.bios-option-row.active .bios-opt-val,
+.bios-option-row.active .bios-drive-cols {
+  color: var(--bios-active-val);
+}
+
+.bios-option-row.active.locked .bios-opt-val {
+  color: var(--bios-active-text);
+  opacity: 0.7;
+}
+
+.bios-option-row.drive-row {
+  display: grid;
+  grid-template-columns: 11em 1fr;
+}
+
+.bios-drive-cols {
+  display: grid;
+  grid-template-columns: 6.5em repeat(6, minmax(3.5em, 1fr)) 4em;
+  column-gap: 0.6em;
+  text-align: right;
+  color: var(--bios-opt-val);
+  font-weight: bold;
+}
+
+.bios-drive-cols span:first-child {
+  text-align: left;
+}
+
+.bios-option-row.drive-head {
+  cursor: default;
+  border-bottom: 1px solid var(--bios-border);
+  margin-top: 6px;
+}
+
+.drive-head .bios-opt-label,
+.drive-head .bios-drive-cols {
+  color: var(--bios-dim);
+  font-weight: normal;
+  font-size: 0.9em;
+}
+
+.bios-memory-panel {
+  border: 1px solid var(--bios-border);
+  padding: 6px 12px;
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 18px;
+  font-size: 0.9em;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.bios-mem-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.bios-mem-label { color: var(--bios-title); }
+.bios-mem-val { color: var(--bios-header); font-weight: bold; }
+
+.bios-cpu-name {
+  grid-column: 1 / -1;
+  color: var(--bios-opt-val);
+}
+
+.bios-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  z-index: 100;
+}
+
+.bios-modal-box {
+  background-color: #aa0000;
+  border: 3px double #ffffff;
+  color: #ffffff;
+  padding: 16px 24px;
+  text-align: center;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.6);
+  min-width: min(320px, 100%);
+  max-width: 500px;
+  box-sizing: border-box;
+}
+
+.bios-modal-box.help-box {
+  background-color: #0000aa;
+  border-color: #55ffff;
+  text-align: left;
+}
+
+.bios-modal-box.wide {
+  max-width: 720px;
+}
+
+.bios-modal-title {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #ffff55;
+  margin-bottom: 12px;
+}
+
+.bios-modal-note {
+  color: #ffffff;
+  font-size: 0.9em;
+}
+
+.bios-modal-input-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.bios-modal-input {
+  background: #000000;
+  border: 1px solid #ffffff;
+  color: #55ffff;
+  font-family: inherit;
+  font-size: 1em;
+  padding: 4px 10px;
+  width: 140px;
+  text-align: center;
+  outline: none;
+  text-transform: uppercase;
+}
+
+.bios-modal-input:focus {
+  border-color: #ffff55;
+}
+
+.bios-modal-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.bios-modal-btn {
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 0.9em;
+  padding: 3px 14px;
+  cursor: pointer;
+}
+
+.bios-help-body {
+  font-size: 0.92em;
+  line-height: 1.4;
+  color: #ffffff;
+  margin: 10px 0;
+}
+
+.bios-help-warn {
+  color: #ffff55;
+}
+
+.bios-hdd-auto-log {
+  font-family: inherit;
+  font-size: 0.85em;
+  line-height: 1.35;
+  text-align: left;
+  color: #ffffff;
+  margin: 10px 0;
+  background: #000000;
+  padding: 10px;
+  border: 1px solid #808080;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+@media (hover: hover) {
+  .post-action-btn:hover {
+    background: #303030;
+    border-color: #ffff55;
+  }
+
+  .bios-menu-item:not(.active):hover,
+  .bios-option-row[data-idx]:not(.active):hover {
+    background: var(--bios-hover);
+  }
+
+  .bios-nav-btn:hover {
+    background: var(--bios-active-bg);
+    color: var(--bios-active-text);
+  }
+
+  .bios-modal-btn:hover {
+    background: #ffff55;
+  }
+}
+
+@media (max-width: 640px) {
+  #bios-post-screen,
+  #bios-setup-screen {
+    padding: 10px 12px;
+  }
+
+  .post-energy-star {
+    display: none;
+  }
+
+  .post-pci-table th:nth-child(-n+3),
+  .post-pci-table td:nth-child(-n+3) {
+    display: none;
+  }
+
+  .bios-main-frame {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .bios-col {
+    justify-content: flex-start;
+    gap: 2px;
+    padding: 0;
+  }
+
+  .bios-divider {
+    width: auto;
+    height: 1px;
+    margin: 0;
+  }
+
+  .bios-submenu-container {
+    padding: 6px 8px;
+  }
+
+  .bios-status-line {
+    white-space: normal;
+  }
+
+  .bios-option-row.drive-row {
+    grid-template-columns: 1fr auto;
+  }
+
+  .bios-drive-cols {
+    grid-template-columns: 5em 4em;
+  }
+
+  .bios-drive-cols span:nth-child(n+3) {
+    display: none;
+  }
+}

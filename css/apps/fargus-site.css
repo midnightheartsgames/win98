@@ -1,0 +1,600 @@
+.fargus-page {
+  --fg-black: #000000;
+  --fg-yellow: #ffe600;
+  --fg-red: #cc0000;
+  --fg-silver: #c0c0c0;
+  --fg-dim: #808080;
+  --fg-white: #ffffff;
+  background: var(--fg-black);
+  color: var(--fg-silver);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  min-height: 100%;
+  padding: 10px 0 16px;
+  box-sizing: border-box;
+}
+
+.fargus-page a {
+  color: var(--fg-yellow);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.fargus-page a:hover {
+  color: var(--fg-white);
+}
+
+.fargus-frame {
+  width: 640px;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.fargus-head {
+  padding: 0 0 8px;
+  border-bottom: 2px solid var(--fg-yellow);
+}
+
+.fargus-head-row {
+  border-collapse: collapse;
+}
+
+.fargus-logo {
+  width: 124px;
+  vertical-align: top;
+}
+
+.fargus-logo a {
+  display: block;
+  line-height: 0;
+}
+
+.fargus-brand {
+  vertical-align: middle;
+  padding-left: 12px;
+}
+
+.fargus-name {
+  font-family: 'Arial Black', Arial, sans-serif;
+  font-size: 26px;
+  color: var(--fg-yellow);
+  line-height: 1.1;
+}
+
+.fargus-slogan {
+  margin-top: 4px;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--fg-white);
+}
+
+.fargus-nav {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--fg-dim);
+  white-space: nowrap;
+}
+
+.fargus-page a.fargus-nav-link {
+  display: inline-block;
+  margin-right: 2px;
+  padding: 3px 9px;
+  border: 1px solid var(--fg-yellow);
+  background: var(--fg-black);
+  color: var(--fg-yellow);
+  font-weight: bold;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.fargus-page a.fargus-nav-link:hover {
+  background: var(--fg-yellow);
+  color: var(--fg-black);
+}
+
+.fargus-page a.fargus-nav-link.is-active {
+  background: var(--fg-red);
+  border-color: var(--fg-red);
+  color: var(--fg-white);
+}
+
+.fargus-main {
+  padding: 10px 0 14px;
+  vertical-align: top;
+}
+
+.fargus-ticker {
+  overflow: hidden;
+  white-space: nowrap;
+  border: 1px solid var(--fg-red);
+  color: var(--fg-yellow);
+  font-weight: bold;
+  font-size: 11px;
+  padding: 2px 0;
+  margin-bottom: 10px;
+}
+
+.fargus-ticker span {
+  display: inline-block;
+  padding-left: 100%;
+  animation: fargus-marquee 26s steps(260) infinite;
+}
+
+@keyframes fargus-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fargus-ticker span {
+    animation: none;
+    padding-left: 6px;
+    white-space: normal;
+  }
+}
+
+.fargus-h {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: var(--fg-yellow);
+}
+
+.fargus-h3,
+.fargus-page h3 {
+  margin: 10px 0 6px;
+  font-size: 13px;
+  color: var(--fg-white);
+}
+
+.fargus-lead {
+  margin: 0 0 10px;
+  color: var(--fg-silver);
+}
+
+.fargus-small {
+  font-size: 11px;
+  color: var(--fg-dim);
+}
+
+.fargus-shelf {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+}
+
+.fargus-shelf td {
+  width: 25%;
+  padding: 4px 4px 12px;
+  vertical-align: top;
+  text-align: center;
+}
+
+.fargus-shelf-cap {
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.fargus-shelf-cap span {
+  color: var(--fg-dim);
+}
+
+.fargus-page a.fargus-cover-link {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.fargus-cover {
+  position: relative;
+  width: 112px;
+  height: 112px;
+  margin: 0 auto;
+  border: 1px solid var(--fg-dim);
+  border-left: 7px solid #606060;
+  box-shadow: 3px 3px 0 #303030;
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.fargus-cover-top {
+  background: var(--fg-black);
+  color: var(--fg-yellow);
+  font-family: 'Arial Black', Arial, sans-serif;
+  font-size: 9px;
+  text-align: left;
+  padding: 1px 3px;
+  height: 12px;
+  line-height: 12px;
+}
+
+.fargus-cover-pent {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 3px;
+  background: var(--fg-yellow);
+  clip-path: polygon(0 0, 100% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
+.fargus-cover-icon {
+  margin-top: 4px;
+  height: 32px;
+}
+
+.fargus-cover-title {
+  padding: 2px 4px;
+  font-family: Impact, 'Arial Black', sans-serif;
+  font-size: 12px;
+  line-height: 1.05;
+  height: 38px;
+  overflow: hidden;
+}
+
+.fargus-cover-sticker {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--fg-red);
+  color: var(--fg-white);
+  font-size: 7px;
+  font-weight: bold;
+  padding: 2px 0;
+}
+
+.fargus-cover.is-big {
+  width: 168px;
+  height: 168px;
+}
+
+.fargus-cover.is-big .fargus-cover-top {
+  font-size: 12px;
+  height: 16px;
+  line-height: 16px;
+}
+
+.fargus-cover.is-big .fargus-cover-icon {
+  margin-top: 12px;
+  height: 48px;
+}
+
+.fargus-cover.is-big .fargus-cover-title {
+  font-size: 19px;
+  height: 46px;
+}
+
+.fargus-cover.is-big .fargus-cover-sticker {
+  font-size: 10px;
+  padding: 3px 0;
+}
+
+.fargus-two {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fargus-two > tbody > tr > td {
+  vertical-align: top;
+  padding: 0 8px 0 0;
+}
+
+.fargus-two > tbody > tr > td.fargus-poll {
+  padding-left: 10px;
+}
+
+.fargus-news {
+  width: 62%;
+  border-right: 1px solid var(--fg-dim);
+}
+
+.fargus-news p {
+  margin: 0 0 7px;
+}
+
+.fargus-news b {
+  color: var(--fg-white);
+}
+
+.fargus-vote-form {
+  margin: 0;
+}
+
+.fargus-vote-opt {
+  display: block;
+  margin: 3px 0;
+  cursor: pointer;
+}
+
+.fargus-bar-row {
+  margin: 0 0 8px 22px;
+  font-size: 11px;
+}
+
+.fargus-bar {
+  display: inline-block;
+  height: 9px;
+  background: var(--fg-yellow);
+  border-right: 2px solid var(--fg-red);
+  vertical-align: middle;
+}
+
+.fargus-vote-actions {
+  margin-top: 8px;
+}
+
+.fargus-vote-msg {
+  margin-top: 4px;
+  color: var(--fg-yellow);
+  font-weight: bold;
+}
+
+.fargus-vote-full {
+  border: 1px solid var(--fg-dim);
+  padding: 10px 12px;
+}
+
+.fargus-btn {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 8px;
+  background: var(--fg-silver);
+  color: var(--fg-black);
+  border: 2px outset var(--fg-white);
+  cursor: pointer;
+}
+
+.fargus-btn:active {
+  border-style: inset;
+}
+
+.fargus-btn:focus-visible {
+  outline: 1px dotted var(--fg-yellow);
+  outline-offset: 1px;
+}
+
+.fargus-btn .web-gif {
+  vertical-align: -3px;
+}
+
+.fargus-counter {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.fargus-odo {
+  display: inline-block;
+  background: var(--fg-black);
+  border: 1px solid var(--fg-dim);
+  color: #33ff33;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 2px;
+  padding: 0 3px;
+}
+
+.fargus-price {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+}
+
+.fargus-price th {
+  background: var(--fg-yellow);
+  color: var(--fg-black);
+  font-size: 11px;
+  text-align: left;
+  padding: 3px 5px;
+}
+
+.fargus-price td {
+  border-bottom: 1px solid #404040;
+  padding: 5px;
+  vertical-align: top;
+}
+
+.fargus-price tr:nth-child(odd) td {
+  background: #101010;
+}
+
+.fargus-num {
+  font-family: 'Courier New', monospace;
+  color: var(--fg-white);
+  white-space: nowrap;
+}
+
+.fargus-c {
+  text-align: center;
+}
+
+.fargus-phrase {
+  color: var(--fg-white);
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.fargus-crumbs {
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.fargus-game {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.fargus-game-cover {
+  width: 184px;
+  vertical-align: top;
+}
+
+.fargus-game-info {
+  vertical-align: top;
+}
+
+.fargus-game-info h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: var(--fg-yellow);
+}
+
+.fargus-spec {
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.fargus-spec td {
+  padding: 1px 8px 1px 0;
+  vertical-align: top;
+}
+
+.fargus-spec td:first-child {
+  color: var(--fg-dim);
+  white-space: nowrap;
+}
+
+.fargus-text {
+  margin: 0 0 10px;
+  color: var(--fg-white);
+}
+
+.fargus-checks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fargus-checks li {
+  margin-bottom: 3px;
+}
+
+.fargus-checks .web-gif {
+  vertical-align: -3px;
+}
+
+.fargus-perls {
+  border-collapse: collapse;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.fargus-perls td {
+  padding: 3px 4px;
+  border-bottom: 1px dotted #404040;
+  vertical-align: top;
+}
+
+.fargus-en {
+  color: var(--fg-dim);
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  width: 45%;
+}
+
+.fargus-perls + .fargus-btn,
+.fargus-btn-play + .fargus-btn-play {
+  margin-top: 4px;
+}
+
+.fargus-note {
+  border: 1px solid var(--fg-red);
+  padding: 6px 8px;
+  margin-top: 10px;
+}
+
+.fargus-faq {
+  margin: 0 0 10px;
+}
+
+.fargus-faq dt {
+  color: var(--fg-white);
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.fargus-faq dt .web-gif {
+  vertical-align: -3px;
+}
+
+.fargus-faq dd {
+  margin: 2px 0 0 20px;
+}
+
+.fargus-status-log {
+  min-height: 16px;
+  color: var(--fg-yellow);
+}
+
+.fargus-status-log .web-gif {
+  vertical-align: -3px;
+}
+
+.fargus-book-form {
+  border: 1px solid var(--fg-dim);
+  padding: 6px;
+  margin-bottom: 12px;
+}
+
+.fargus-book-form td {
+  padding: 2px 4px;
+  vertical-align: top;
+}
+
+.fargus-input {
+  width: 420px;
+  background: var(--fg-white);
+  color: var(--fg-black);
+  border: 2px inset var(--fg-silver);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  padding: 2px;
+}
+
+.fargus-book-msg {
+  color: var(--fg-yellow);
+}
+
+.fargus-entry {
+  border-top: 1px solid #404040;
+  padding: 6px 0;
+}
+
+.fargus-entry-head {
+  color: var(--fg-dim);
+  font-size: 11px;
+}
+
+.fargus-entry-head b {
+  color: var(--fg-yellow);
+}
+
+.fargus-entry-text {
+  color: var(--fg-white);
+  margin: 2px 0;
+}
+
+.fargus-entry-reply {
+  margin-left: 16px;
+  color: var(--fg-silver);
+  font-style: italic;
+}
+
+.fargus-entry-reply b {
+  color: var(--fg-red);
+  font-style: normal;
+}
+
+.fargus-footer {
+  border-top: 2px solid var(--fg-yellow);
+  padding-top: 8px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--fg-dim);
+}
+
+.fargus-footer > div {
+  margin-bottom: 6px;
+}

@@ -1,0 +1,430 @@
+#desktop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 28px;
+  overflow: hidden;
+  background-color: var(--win-desktop-bg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: background-color 0.15s ease;
+}
+
+#desktop-icons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.desktop-icon {
+  position: absolute;
+  width: 74px;
+  min-height: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  cursor: default;
+  padding: 4px 2px;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.desktop-icon.dragging {
+  opacity: 0.8;
+  z-index: 1000 !important;
+}
+
+.desktop-icon-img {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 4px;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.desktop-icon-img > svg {
+  width: 32px;
+  height: 32px;
+}
+
+.desktop-icon-label {
+  color: #ffffff;
+  font-size: 11px;
+  line-height: 13px;
+  padding: 0 2px 1px;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+#desktop.has-wallpaper .desktop-icon-label {
+  background-color: var(--win-desktop-bg);
+}
+
+.desktop-icon.selected .desktop-icon-label {
+  background-color: var(--win-highlight);
+  color: var(--win-highlight-text);
+  outline: 1px dotted #ffff00;
+  outline-offset: -1px;
+}
+
+.desktop-icon.selected .desktop-icon-img {
+  filter: url(#win98-selected) brightness(1);
+}
+
+.win-svg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+#selection-box {
+  position: absolute;
+  border: 1px dotted #000000;
+  background-color: rgba(0, 0, 128, 0.2);
+  pointer-events: none;
+  display: none;
+  z-index: 99;
+}
+
+#context-menu {
+  position: fixed;
+  z-index: 15000000;
+  background-color: var(--win-bg);
+  min-width: 160px;
+  padding: 3px;
+  display: none;
+  box-shadow:
+    inset 1px 1px 0px var(--win-border-midlight),
+    inset -1px -1px 0px var(--win-border-darkest),
+    inset 2px 2px 0px var(--win-border-light),
+    inset -2px -2px 0px var(--win-border-dark);
+}
+
+.context-menu-item {
+  padding: 3px 20px 3px 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: default;
+  font-size: 11px;
+}
+
+.context-menu-item.checked {
+  position: relative;
+}
+
+.context-menu-item.checked::before {
+  content: '\2713';
+  position: absolute;
+  left: 5px;
+  font-size: 10px;
+}
+
+.context-menu-item:hover {
+  background-color: var(--win-highlight);
+  color: var(--win-highlight-text);
+}
+
+.context-menu-item.disabled {
+  color: var(--win-text-disabled);
+  text-shadow: 1px 1px 0 #fff;
+  pointer-events: none;
+}
+
+.context-menu-shortcut {
+  font-size: 11px;
+  color: inherit;
+  margin-left: 18px;
+  pointer-events: none;
+}
+
+.context-menu-item:hover .context-menu-shortcut {
+  color: var(--win-highlight-text);
+}
+
+#crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 20000000;
+  display: none;
+  background:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.12) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.015), rgba(0, 255, 0, 0.008), rgba(0, 0, 255, 0.015));
+  background-size: 100% 3px, 6px 100%;
+}
+
+#crt-overlay.active {
+  display: block;
+}
+
+body.crt-enabled::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: radial-gradient(circle at center, transparent 70%, rgba(0, 0, 0, 0.16) 100%);
+  pointer-events: none;
+  z-index: 19999999;
+}
+
+#boot-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  z-index: 99999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  cursor: wait;
+  transition: opacity 0.35s ease-out;
+}
+
+#boot-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot-sky {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.boot-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.5vmin;
+  margin-top: -6vh;
+}
+
+.boot-flag {
+  width: 30vmin;
+  height: 25vmin;
+  filter: drop-shadow(0.4vmin 0.5vmin 0.6vmin rgba(0, 0, 40, 0.35));
+}
+
+.boot-wordmark {
+  font-family: 'Franklin Gothic Medium', 'Franklin Gothic Demi', 'Arial Narrow', Arial, sans-serif;
+  color: #ffffff;
+  line-height: 1;
+  text-shadow: 0.3vmin 0.3vmin 0.5vmin rgba(0, 0, 50, 0.45);
+}
+
+.boot-ms {
+  font-size: 4.2vmin;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  margin-left: 0.6vmin;
+}
+
+.boot-ms sup {
+  font-size: 0.45em;
+  vertical-align: 0.9em;
+  margin-left: 0.1em;
+}
+
+.boot-win {
+  font-family: 'Franklin Gothic Heavy', 'Arial Black', 'Franklin Gothic Medium', Arial, sans-serif;
+  font-size: 12vmin;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: flex-start;
+}
+
+.boot-98 {
+  font-size: 0.5em;
+  margin-left: 0.12em;
+  margin-top: 0.02em;
+  color: #ffb23a;
+  letter-spacing: 0;
+}
+
+.boot-se {
+  font-family: Arial, sans-serif;
+  font-size: 2.2vmin;
+  font-weight: bold;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  margin: 0.8vmin 0 0 0.8vmin;
+  opacity: 0.9;
+}
+
+.boot-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4.5vh;
+  background: linear-gradient(90deg,
+    #000080 0%, #0030c0 12%, #2a7cff 25%, #9fd0ff 37%, #ffffff 50%,
+    #9fd0ff 63%, #2a7cff 75%, #0030c0 88%, #000080 100%);
+  background-size: 50% 100%;
+  animation: bootBand 1.4s linear infinite;
+}
+
+@keyframes bootBand {
+  from { background-position: 0 0; }
+  to { background-position: 50vw 0; }
+}
+
+#shutdown-dim {
+  position: fixed;
+  inset: 0;
+  z-index: 50000000;
+  display: none;
+  background-image: repeating-conic-gradient(#000 0 25%, transparent 0 50%);
+  background-size: 2px 2px;
+  image-rendering: pixelated;
+  cursor: default;
+}
+
+#shutdown-dim.active {
+  display: block;
+}
+
+.win-window.shutdown-modal {
+  z-index: 50000001 !important;
+}
+
+body.win-shutting-down #desktop-icons,
+body.win-shutting-down .win-window,
+body.win-shutting-down #start-menu,
+body.win-shutting-down #clippy-container,
+body.win-shutting-down .clippy-balloon {
+  visibility: hidden;
+}
+
+body.win-shutting-down,
+body.win-shutting-down * {
+  cursor: wait !important;
+}
+
+#shutdown-wait-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999999999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #000;
+  user-select: none;
+  cursor: none;
+}
+
+#shutdown-wait-screen.active {
+  display: flex;
+}
+
+.shutdown-wait-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 9vh;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 3.4vmin;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0.25vmin 0.25vmin 0 rgba(0, 0, 60, 0.8);
+  letter-spacing: 0.02em;
+}
+
+#shutdown-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999999999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background-color: #000000;
+  user-select: none;
+  cursor: none;
+}
+
+#shutdown-screen.active {
+  display: flex;
+}
+
+.shutdown-safe-canvas {
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+#dos-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: var(--win-font-mono);
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 20px;
+  z-index: 999999999;
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+#dos-screen.active {
+  display: flex;
+}
+
+.dos-output {
+  white-space: pre-wrap;
+  margin-bottom: 4px;
+}
+
+.dos-input-line {
+  display: flex;
+  align-items: center;
+}
+
+.dos-prompt {
+  color: #ffffff;
+  margin-right: 6px;
+}
+
+.dos-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-family: var(--win-font-mono);
+  font-size: 14px;
+  flex: 1;
+  caret-color: #ffffff;
+  padding: 0;
+  box-shadow: none !important;
+}

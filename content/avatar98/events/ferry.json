@@ -1,0 +1,69 @@
+{
+  "hold_enter": [
+    { "if": "!hold_intro", "then": [
+      { "flag": "hold_intro" },
+      { "title": "ttl.part2", "sub": "ttl.part2_sub", "frames": 220 },
+      { "fade": "in", "frames": 40 },
+      { "talk": "fe.hold_intro" }
+    ] }
+  ],
+  "hold_lu": [
+    { "if": "quest.paisho == 0", "then": [{ "talk": "fe.lu_intro" }, { "quest": "paisho", "step": 1 }] },
+    { "if": "paisho.lu", "then": [{ "talk": "fe.lu_again" }] },
+    { "talk": "fe.play_q" },
+    { "choice": ["choice.play", "choice.later"], "branches": [
+      [{ "paisho": "lu", "win": [{ "if": "quest.paisho == 1", "then": [{ "talk": "fe.lu_win" }, { "quest": "paisho", "step": 2 }], "else": [{ "talk": "fe.lu_win2" }] }], "lose": [{ "talk": "fe.lu_lose" }] }],
+      []
+    ] }
+  ],
+  "hold_rui": [
+    { "if": "!paisho.lu", "then": [{ "talk": "fe.rui_wait" }], "else": [
+      { "if": "!paisho.rui", "then": [{ "talk": "fe.rui_intro" }], "else": [{ "talk": "fe.rui_again" }] },
+      { "talk": "fe.play_q" },
+      { "choice": ["choice.play", "choice.later"], "branches": [
+        [{ "paisho": "rui", "win": [{ "if": "quest.paisho == 2", "then": [{ "talk": "fe.rui_win" }, { "quest": "paisho", "step": 3 }], "else": [{ "talk": "fe.rui_win2" }] }], "lose": [{ "talk": "fe.rui_lose" }] }],
+        []
+      ] }
+    ] }
+  ],
+  "hold_xiao": [
+    { "if": "!paisho.rui", "then": [{ "talk": "fe.xiao_wait" }], "else": [
+      { "if": "!paisho.xiao", "then": [{ "talk": "fe.xiao_intro" }], "else": [{ "talk": "fe.xiao_again" }] },
+      { "talk": "fe.play_q" },
+      { "choice": ["choice.play", "choice.later"], "branches": [
+        [{ "paisho": "xiao", "win": [{ "if": "quest.paisho == 3", "then": [{ "talk": "fe.xiao_win" }, { "give": "sign_counter" }, { "quest": "paisho", "step": 4 }], "else": [{ "talk": "fe.xiao_win2" }] }], "lose": [{ "talk": "fe.xiao_lose" }] }],
+        []
+      ] }
+    ] }
+  ],
+  "hold_sleeper": [{ "talk": "fe.sleeper" }],
+  "deck_enter": [{ "if": "!deck_seen", "then": [{ "flag": "deck_seen" }, { "talk": "fe.deck_intro" }] }],
+  "deck_liao": [{ "talk": "fe.liao" }],
+  "deck_sailor": [{ "talk": "fe.sailor" }],
+  "deck_night_talk": [
+    { "letterbox": true },
+    { "face": "player", "dir": "left" },
+    { "wait": 30 },
+    { "talk": "fe.night1" },
+    { "choice": ["choice.n1_a", "choice.n1_b", "choice.n1_c"], "branches": [
+      [{ "talk": "fe.n1_a" }, { "trust": { "tao": 1 } }],
+      [{ "talk": "fe.n1_b" }],
+      [{ "talk": "fe.n1_c" }, { "trust": { "tao": 2 } }]
+    ] },
+    { "talk": "fe.night2" },
+    { "choice": ["choice.n2_a", "choice.n2_b"], "branches": [
+      [{ "talk": "fe.n2_a" }, { "trust": { "tao": 1, "pipo": 1 } }],
+      [{ "talk": "fe.n2_b" }]
+    ] },
+    { "talk": "fe.night3" },
+    { "choice": ["choice.n3_a", "choice.n3_b"], "branches": [
+      [{ "talk": "fe.n3_a" }, { "trust": { "tao": 1 } }],
+      [{ "talk": "fe.n3_b" }]
+    ] },
+    { "talk": "fe.night_end" },
+    { "fade": "out", "frames": 80 },
+    { "letterbox": false },
+    { "title": "ttl.dawn", "sub": "ttl.dawn_sub", "frames": 180 },
+    { "worldmap": "sea" }
+  ]
+}

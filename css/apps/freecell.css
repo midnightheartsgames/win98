@@ -1,0 +1,142 @@
+.freecell-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background-color: var(--win-bg);
+  font-family: var(--win-font);
+  font-size: 11px;
+  user-select: none;
+}
+
+.fc-menubar {
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.fc-cards-left {
+  margin-left: auto;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+.freecell-board {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  background-color: #008000;
+}
+
+.fc-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 632px;
+  flex-shrink: 0;
+}
+
+.fc-cells {
+  display: flex;
+}
+
+.freecell-slot {
+  position: relative;
+  width: 71px;
+  height: 96px;
+  border-top: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-right: 1px solid #00ff00;
+  border-bottom: 1px solid #00ff00;
+}
+
+.freecell-slot .freecell-card {
+  position: absolute;
+  left: -1px;
+  top: -1px;
+}
+
+.fc-king {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 1px 1px 0 #000000,
+    inset -1px -1px 0 #00ff00;
+}
+
+.fc-king canvas {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+
+.freecell-cascades-row {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 8px;
+  padding: 12px 0 0 8px;
+  width: 640px;
+}
+
+.freecell-cascade {
+  position: relative;
+  width: 71px;
+  flex-shrink: 0;
+}
+
+.freecell-card {
+  position: absolute;
+  left: 0;
+  width: 71px;
+  height: 96px;
+  background-repeat: no-repeat;
+  background-size: 71px 96px;
+  image-rendering: pixelated;
+  cursor: default;
+}
+
+.freecell-card.selected {
+  filter: invert(1);
+}
+
+.fc-dlg {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px;
+  font-size: 11px;
+}
+
+.fc-dlg-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fc-dlg-row input {
+  width: 70px;
+}
+
+.fc-dlg-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.fc-dlg-group {
+  padding: 4px 10px 8px;
+  border: 1px solid var(--win-border-dark);
+  box-shadow: inset 1px 1px 0 var(--win-border-light), 1px 1px 0 var(--win-border-light);
+}
+
+.fc-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 50px 40px;
+  gap: 4px 8px;
+}

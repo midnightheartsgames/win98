@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Diablo 98</title>
+<link rel="stylesheet" href="css/apps/diablo.css">
+<style>html,body{height:100%;margin:0;background:#008080}body{display:grid;place-items:center}.window{width:min(98vw,1000px);height:96vh;border:3px outset #ddd;display:flex;flex-direction:column;background:silver}.title{background:linear-gradient(90deg,navy,#1084d0);color:#fff;font:bold 12px Tahoma;padding:5px}#game{flex:1;min-height:0}</style></head>
+<body><main class="window"><div class="title">Diablo</div><div id="game"></div></main>
+<script src="js/apps/diablo/diablo-data.js"></script><script src="js/apps/diablo/diablo-core.js"></script><script src="js/apps/diablo/diablo-render.js"></script><script src="js/apps/diablo/diablo-audio.js"></script><script src="js/apps/diablo/diablo-ui.js"></script>
+<script>const ui=new Diablo98.UI(document.getElementById('game'));addEventListener('pagehide',()=>ui.destroy(),{once:true});</script>
+</body></html>

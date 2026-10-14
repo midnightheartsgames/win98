@@ -1,0 +1,9 @@
+node_modules/
+dist/
+content/Fallout/
+content/Legion Arena/
+content/Another War/
+__pycache__/
+*.pyc
+*.log
+transcript*.jsonl

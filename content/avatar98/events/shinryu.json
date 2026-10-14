@@ -1,0 +1,265 @@
+{
+  "prologue_start": [
+    { "title": "ttl.prologue", "sub": "ttl.prologue_sub", "frames": 240 },
+    { "name": true },
+    { "vision": "on" },
+    { "music": "vision" },
+    { "letterbox": true },
+    { "fade": "in", "frames": 90 },
+    { "caption": "cap.vision", "frames": 180 },
+    { "talk": "pr.intro" },
+    { "letterbox": false }
+  ],
+  "vision_korra": [
+    { "letterbox": true },
+    { "actor": "korra_s", "look": "korra", "x": 7, "y": 23, "dir": "down" },
+    { "fx": "glow", "at": "korra_s" },
+    { "move": "player", "path": "u1" },
+    { "talk": "pr.korra" },
+    { "fx": "spirit", "at": "korra_s" },
+    { "remove": "korra_s" },
+    { "letterbox": false }
+  ],
+  "vision_jinhai": [
+    { "letterbox": true },
+    { "actor": "jinhai_s", "look": "jinhai", "x": 7, "y": 13, "dir": "down" },
+    { "fx": "glow", "at": "jinhai_s" },
+    { "move": "player", "path": "u1" },
+    { "talk": "pr.jinhai" },
+    { "fx": "spirit", "at": "jinhai_s" },
+    { "remove": "jinhai_s" },
+    { "letterbox": false }
+  ],
+  "vision_echo": [
+    { "letterbox": true },
+    { "music": "stop" },
+    { "actor": "echo_s", "look": "echo", "x": 7, "y": 4, "dir": "down" },
+    { "sfx": "heartbeat" },
+    { "wait": 40 },
+    { "sfx": "heartbeat" },
+    { "talk": "pr.echo" },
+    { "move": "echo_s", "path": "d2", "speed": 2 },
+    { "shake": 60, "power": 3 },
+    { "sfx": "roar" },
+    { "flash": "#ffffff", "frames": 40 },
+    { "fade": "out", "frames": 40, "color": "#ffffff" },
+    { "vision": "off" },
+    { "letterbox": false },
+    { "warp": "shinryu_forge", "spawn": "wake", "fade": false },
+    { "flag": "prologue_vision_done" },
+    { "wait": 30 },
+    { "music": "shinryu" },
+    { "caption": "cap.morning", "frames": 150 },
+    { "fade": "in", "frames": 40 },
+    { "talk": "pr.wake" },
+    { "emote": "player", "icon": "..." },
+    { "talk": "pr.wake2" },
+    { "caption": "tut.move", "frames": 300 },
+    { "flag": "woke_up" }
+  ],
+  "attract_vision": [
+    { "vision": "on" },
+    { "music": "vision" },
+    { "letterbox": true },
+    { "fade": "in", "frames": 60 },
+    { "caption": "cap.vision", "frames": 200 },
+    { "move": "player", "path": "u6", "speed": 0.6 },
+    { "actor": "korra_s", "look": "korra", "x": 7, "y": 23, "dir": "down" },
+    { "fx": "glow", "at": "korra_s" },
+    { "wait": 60 },
+    { "fx": "spirit", "at": "korra_s" },
+    { "remove": "korra_s" },
+    { "move": "player", "path": "u9", "speed": 0.6 },
+    { "actor": "jinhai_s", "look": "jinhai", "x": 7, "y": 13, "dir": "down" },
+    { "fx": "glow", "at": "jinhai_s" },
+    { "wait": 60 },
+    { "fx": "spirit", "at": "jinhai_s" },
+    { "remove": "jinhai_s" },
+    { "move": "player", "path": "u8", "speed": 0.6 },
+    { "actor": "echo_s", "look": "echo", "x": 7, "y": 5, "dir": "down" },
+    { "sfx": "heartbeat" },
+    { "wait": 50 },
+    { "shake": 50, "power": 3 },
+    { "flash": "#ffffff", "frames": 40 },
+    { "fade": "out", "frames": 50, "color": "#ffffff" },
+    { "remove": "echo_s" },
+    { "warp": "vision_vault", "spawn": "start", "fade": false },
+    { "call": "attract_vision" }
+  ],
+  "forge_enter": [
+    { "if": "night_cordon && !hana_farewell", "then": [{ "call": "farewell_scene" }] }
+  ],
+  "forge_hana": [
+    {
+      "if": "!hana_task",
+      "then": [
+        { "talk": "pr.hana_task" },
+        { "give": "hana_order" },
+        { "give": "sign_flame" },
+        { "talk": "pr.hana_signs" },
+        { "flag": "hana_task" },
+        { "caption": "tut.menu", "frames": 240 }
+      ],
+      "else": [
+        { "if": "night_cordon", "then": [{ "call": "hana_night_talk" }], "else": [
+          { "if": "kupol_arrived", "then": [{ "talk": "pr.hana_kupol" }], "else": [
+            { "if": "tutorial_battle_done && !order_delivered", "then": [{ "talk": "pr.hana_after_spirit" }], "else": [
+              { "if": "!order_delivered", "then": [{ "talk": "pr.hana_repeat" }], "else": [{ "talk": "pr.hana_busy" }] }
+            ] }
+          ] }
+        ] }
+      ]
+    }
+  ],
+  "forge_kenta": [{ "if": "kupol_arrived", "then": [{ "talk": "pr.kenta2" }], "else": [{ "talk": "pr.kenta" }] }],
+  "forge_bed": [{ "if": "hana_task", "then": [{ "talk": "pr.bed2" }], "else": [{ "talk": "pr.bed" }] }],
+  "forge_anvil": [{ "talk": "pr.anvil" }],
+  "forge_fire": [{ "talk": "pr.fire" }, { "if": "pipo_joined", "then": [{ "talk": "pr.fire_pipo" }, { "trust": { "pipo": 1 } }, { "flag": "pipo_fire_seen" }] }],
+  "lane_enter": [
+    { "if": "tutorial_battle_done && !lane_shrine_hint", "then": [{ "flag": "lane_shrine_hint" }, { "caption": "tut.shrine", "frames": 240 }] }
+  ],
+  "lane_not_yet_s": [{ "talk": "sh.not_yet_s" }, { "move": "player", "path": "u1" }],
+  "lane_not_yet_n": [{ "talk": "sh.not_yet_n" }, { "move": "player", "path": "d1" }],
+  "lane_oharu": [
+    { "if": "kupol_arrived && !oharu_advice", "then": [{ "talk": "sh.oharu_kupol" }, { "flag": "oharu_advice" }], "else": [
+      { "if": "oharu_advice && !mines_entered", "then": [{ "talk": "sh.oharu_go" }], "else": [
+        { "if": "!oharu_sign", "then": [{ "talk": "sh.oharu_first" }, { "give": "sign_insight" }, { "flag": "oharu_sign" }], "else": [{ "talk": "sh.oharu_repeat" }] }
+      ] }
+    ] }
+  ],
+  "lane_toshi": [
+    { "if": "quest.dog == 0", "then": [
+      { "talk": "sh.toshi_ask" },
+      { "choice": ["choice.dog_yes", "choice.dog_no"], "branches": [[{ "talk": "sh.toshi_yes" }, { "quest": "dog", "step": 1 }], [{ "talk": "sh.toshi_no" }]] }
+    ], "else": [
+      { "if": "quest.dog == 1", "then": [{ "talk": "sh.toshi_wait" }], "else": [
+        { "if": "quest.dog == 2", "then": [{ "talk": "sh.toshi_reward" }, { "give": "luck_charm" }, { "gold": 100 }, { "quest": "dog", "step": 3 }], "else": [{ "talk": "sh.toshi_done" }] }
+      ] }
+    ] }
+  ],
+  "lane_bublik": [{ "talk": "sh.bublik" }],
+  "hill_dog": [
+    { "emote": "self", "icon": "!" },
+    { "talk": "sh.dog_found" },
+    { "move": "self", "path": "d1 r1 d2", "speed": 2 },
+    { "remove": "self" },
+    { "quest": "dog", "step": 2 }
+  ],
+  "lane_meimei": [{ "if": "kupol_arrived", "then": [{ "talk": "sh.meimei2" }], "else": [{ "talk": "sh.meimei" }] }],
+  "lane_jiro": [{ "if": "kupol_arrived", "then": [{ "talk": "sh.jiro2" }], "else": [{ "talk": "sh.jiro" }] }],
+  "lane_villager": [{ "if": "kupol_arrived", "then": [{ "talk": "sh.villager2" }], "else": [{ "talk": "sh.villager" }] }],
+  "lane_soldier": [{ "if": "rand < 50", "then": [{ "talk": "sh.soldier" }], "else": [{ "talk": "sh.soldier2" }] }],
+  "market_enter": [{ "if": "hana_task && !tutorial_battle_done", "then": [{ "call": "market_spirit" }] }],
+  "market_spirit": [
+    { "letterbox": true },
+    { "actor": "spirit", "look": "bluewisp", "x": 15, "y": 10, "dir": "down" },
+    { "move": "player", "path": "l3", "speed": 1.5 },
+    { "camera": [19, 10], "frames": 30 },
+    { "talk": "sh.spirit_attack" },
+    { "move": "spirit", "path": "r5", "speed": 2 },
+    { "battle": "t_tutorial" },
+    { "remove": "spirit" },
+    { "talk": "sh.spirit_after" },
+    { "actor": "pipo_a", "look": "pipo", "x": 17, "y": 9, "dir": "down" },
+    { "emote": "pipo_a", "icon": "?" },
+    { "move": "pipo_a", "path": "r4 d1" },
+    { "talk": "sh.pipo_meet" },
+    { "choice": ["choice.pipo_yes", "choice.pipo_no"], "branches": [[{ "trust": { "pipo": 1 } }, { "talk": "sh.pipo_yes" }], [{ "talk": "sh.pipo_no" }]] },
+    { "remove": "pipo_a" },
+    { "join": "pipo" },
+    { "flag": "tutorial_battle_done" },
+    { "flag": "pipo_joined" },
+    { "camera": "player", "frames": 20 },
+    { "letterbox": false },
+    { "caption": "tut.pipo", "frames": 300 },
+    { "talk": "sh.after_pipo" }
+  ],
+  "market_gen": [
+    { "if": "!stone_got", "then": [{ "talk": "sh.gen_stone" }, { "flag": "stone_got" }], "else": [
+      { "if": "kupol_arrived", "then": [{ "talk": "sh.gen_kupol" }], "else": [{ "talk": "sh.gen" }] }
+    ] },
+    { "shop": "shop_shinryu" }
+  ],
+  "market_ho": [{ "if": "kupol_arrived", "then": [{ "talk": "sh.ho2" }], "else": [{ "talk": "sh.ho" }] }],
+  "market_fishwife": [{ "if": "kupol_arrived", "then": [{ "talk": "sh.fishwife2" }], "else": [{ "talk": "sh.fishwife" }] }],
+  "market_sakura": [{ "if": "kupol_arrived", "then": [{ "talk": "sh.sakura2" }], "else": [{ "talk": "sh.sakura" }] }],
+  "inn_yumi": [
+    { "talk": "sh.yumi" },
+    { "choice": ["choice.inn_rest", "choice.no_thanks"], "branches": [
+      [{ "if": "gold >= 20", "then": [{ "inn": 20 }, { "talk": "sh.yumi_rest" }], "else": [{ "inn": 20 }] }],
+      [{ "talk": "sh.yumi_no" }]
+    ] }
+  ],
+  "inn_lin": [
+    { "if": "kupol_arrived", "then": [{ "talk": "sh.lin_kupol" }], "else": [
+      { "if": "!lin_talked", "then": [{ "talk": "sh.lin" }, { "flag": "lin_talked" }], "else": [{ "talk": "sh.lin2" }] }
+    ] }
+  ],
+  "inn_patron": [{ "talk": "sh.patron" }],
+  "port_enter": [{ "if": "hana_farewell && !ferry_boarded", "then": [{ "call": "port_night" }] }],
+  "port_dao": [
+    { "if": "hana_farewell", "then": [{ "talk": "mi.dao_night" }], "else": [
+      { "if": "hana_task && !order_delivered && tutorial_battle_done", "then": [{ "call": "port_delivery" }], "else": [
+        { "if": "kupol_arrived", "then": [{ "talk": "sh.dao_after" }], "else": [{ "talk": "sh.dao_before" }] }
+      ] }
+    ] }
+  ],
+  "port_delivery": [
+    { "talk": "sh.dao_order" },
+    { "take": "hana_order" },
+    { "gold": 150 },
+    { "flag": "order_delivered" },
+    { "letterbox": true },
+    { "sfx": "gong" },
+    { "wait": 40 },
+    { "music": "kupol" },
+    { "camera": [23, 14], "frames": 60 },
+    { "flag": "kupol_arrived" },
+    { "restore": "map" },
+    { "flash": "#ffffff", "frames": 12 },
+    { "shake": 30, "power": 1 },
+    { "actor": "mei_a", "look": "inspector_mei", "x": 22, "y": 12, "dir": "up" },
+    { "actor": "sage_a", "look": "sage", "x": 21, "y": 13, "dir": "up" },
+    { "actor": "sage_b", "look": "sage2", "x": 23, "y": 13, "dir": "up" },
+    { "move": "sage_a", "path": "u3", "wait": false },
+    { "move": "sage_b", "path": "u3", "wait": false },
+    { "move": "mei_a", "path": "u3" },
+    { "face": "mei_a", "dir": "left" },
+    { "camera": [16, 8], "frames": 40 },
+    { "talk": "sh.kupol_arrival" },
+    { "sfx": "alert" },
+    { "wait": 12 },
+    { "sfx": "alert" },
+    { "wait": 12 },
+    { "sfx": "alert" },
+    { "talk": "sh.kupol_beep" },
+    { "emote": "player", "icon": "!" },
+    { "talk": "sh.kupol_isa" },
+    { "move": "mei_a", "path": "l6 u6", "wait": false },
+    { "move": "sage_a", "path": "l5 u6", "wait": false },
+    { "move": "sage_b", "path": "l7 u6" },
+    { "remove": "mei_a" },
+    { "remove": "sage_a" },
+    { "remove": "sage_b" },
+    { "camera": "player", "frames": 30 },
+    { "letterbox": false },
+    { "music": "shinryu" }
+  ],
+  "port_fisher": [{ "if": "kupol_arrived", "then": [{ "talk": "sh.fisher2" }], "else": [{ "talk": "sh.fisher" }] }],
+  "port_sailor": [{ "talk": "sh.sailor" }],
+  "port_docker": [{ "if": "kupol_arrived", "then": [{ "talk": "sh.docker2" }], "else": [{ "talk": "sh.docker" }] }],
+  "port_guard": [{ "talk": "sh.guard" }],
+  "hill_boards": [
+    { "if": "!oharu_advice", "then": [{ "talk": "sh.boards_closed" }], "else": [
+      { "talk": "sh.boards_burn" },
+      { "fx": "fire", "at": "boards0" },
+      { "fx": "fire", "at": "boards1" },
+      { "sfx": "fire2" },
+      { "shake": 16, "power": 2 },
+      { "flag": "boards_burned" },
+      { "restore": "map" },
+      { "talk": "sh.boards_after" }
+    ] }
+  ],
+  "hill_view": [{ "if": "kupol_arrived", "then": [{ "talk": "insp.hill_view2" }], "else": [{ "talk": "insp.hill_view" }] }]
+}

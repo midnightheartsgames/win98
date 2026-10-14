@@ -1,0 +1,262 @@
+.fdlg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 8px 10px;
+  font-size: 11px;
+}
+
+.fdlg-top,
+.fdlg-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fdlg-label {
+  width: 72px;
+  flex-shrink: 0;
+}
+
+.fdlg-top .fdlg-label {
+  width: auto;
+  margin-right: 4px;
+}
+
+.fdlg-folder {
+  flex: 1;
+  min-width: 0;
+}
+
+.fdlg-tool {
+  width: 23px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  outline: none;
+}
+
+.fdlg-tool svg {
+  width: 16px;
+  height: 16px;
+}
+
+.fdlg-tool:hover:not(:disabled) {
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-light),
+    inset -1px -1px 0 var(--win-border-dark);
+}
+
+.fdlg-tool:active:not(:disabled),
+.fdlg-tool.pressed {
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light);
+}
+
+.fdlg-tool.pressed {
+  background-image: repeating-conic-gradient(#c0c0c0 0 25%, #ffffff 0 50%);
+  background-size: 2px 2px;
+}
+
+.fdlg-tool:disabled svg {
+  filter: grayscale(1) contrast(0.35) brightness(1.35) drop-shadow(1px 1px 0 #ffffff);
+}
+
+.fdlg-tool-gap {
+  width: 4px;
+}
+
+.fdlg-files {
+  height: 132px;
+  background-color: #ffffff;
+  outline: none;
+  overflow: auto;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light),
+    inset 2px 2px 0 var(--win-border-darkest),
+    inset -2px -2px 0 var(--win-border-midlight);
+  padding: 2px;
+}
+
+.fdlg-list .fdlg-items {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  height: 100%;
+  column-gap: 12px;
+}
+
+.fdlg-item {
+  display: flex;
+  align-items: center;
+  height: 17px;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.fdlg-item-name {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+.fdlg-item-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.fdlg-item-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.fdlg-item-text {
+  padding: 0 1px;
+}
+
+.fdlg-item.selected .fdlg-item-text {
+  background-color: var(--win-highlight);
+  color: var(--win-highlight-text);
+  outline: 1px dotted #ffff00;
+  outline-offset: -1px;
+}
+
+.fdlg-item.selected .fdlg-item-icon {
+  filter: url(#win98-selected) brightness(1);
+}
+
+.fdlg-details {
+  padding: 2px 2px 2px 2px;
+}
+
+.fdlg-head {
+  position: sticky;
+  top: -2px;
+  display: grid;
+  grid-template-columns: 1fr 70px 110px;
+  margin: -2px -2px 1px;
+  z-index: 1;
+}
+
+.fdlg-head span {
+  padding: 2px 4px;
+  background-color: var(--win-bg);
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-light),
+    inset -1px -1px 0 var(--win-border-darkest),
+    inset -2px -2px 0 var(--win-border-dark);
+}
+
+.fdlg-details .fdlg-item {
+  display: grid;
+  grid-template-columns: 1fr 70px 110px;
+}
+
+.fdlg-item-size {
+  text-align: right;
+  padding-right: 6px;
+}
+
+.fdlg-item-type {
+  padding-left: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fdlg-name,
+.fdlg-type {
+  flex: 1;
+  min-width: 0;
+}
+
+.fdlg-row .win-btn {
+  width: 75px;
+  min-width: 75px;
+  margin-left: 12px;
+}
+
+.fdlg-combo {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.fdlg-folder {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 22px;
+  background-color: #ffffff;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light),
+    inset 2px 2px 0 var(--win-border-darkest),
+    inset -2px -2px 0 var(--win-border-midlight);
+  outline: none;
+  overflow: hidden;
+}
+
+.fdlg-combo-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.fdlg-combo-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.fdlg-combo-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 1px;
+}
+
+.fdlg-folder:focus .fdlg-combo-text {
+  background-color: var(--win-highlight);
+  color: var(--win-highlight-text);
+}
+
+.fdlg-combo-list {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 10;
+  max-height: 180px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+}
+
+.fdlg-combo.open .fdlg-combo-list {
+  display: block;
+}
+
+.fdlg-combo-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+  cursor: default;
+}
+
+.fdlg-combo-item:hover {
+  background-color: var(--win-highlight);
+  color: var(--win-highlight-text);
+}

@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>S.T.A.L.K.E.R. 98</title>
+<link rel="stylesheet" href="css/apps/stalker98.css">
+<style>html,body{height:100%;margin:0;background:#008080}body{display:grid;place-items:center}.window{width:min(98vw,1200px);height:96vh;border:3px outset #ddd;display:flex;flex-direction:column;background:silver}.title{background:linear-gradient(90deg,navy,#1084d0);color:#fff;font:bold 12px Tahoma;padding:5px}#game{flex:1;min-height:0}</style></head>
+<body><main class="window"><div class="title">S.T.A.L.K.E.R. 98: Тень Чернобыля</div><div id="game"></div></main>
+<script src="js/apps/stalker98/st-math.js"></script><script src="js/apps/stalker98/st-data.js"></script><script src="js/apps/stalker98/st-world.js"></script><script src="js/apps/stalker98/st-models.js"></script><script src="js/apps/stalker98/st-levels.js"></script><script src="js/apps/stalker98/st-game.js"></script><script src="js/apps/stalker98/st-ai.js"></script><script src="js/apps/stalker98/st-quests.js"></script><script src="js/apps/stalker98/st-tex.js"></script><script src="js/apps/stalker98/st-render.js"></script><script src="js/apps/stalker98/st-audio.js"></script><script src="js/apps/stalker98/st-windows.js"></script><script src="js/apps/stalker98/st-ui.js"></script>
+<script>const el=document.getElementById('game');const ui=new Stalker98.UI(el);window.stui=ui;el.focus();addEventListener('pagehide',()=>ui.destroy(),{once:true});</script>
+</body></html>

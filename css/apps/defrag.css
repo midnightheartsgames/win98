@@ -1,0 +1,134 @@
+.defrag-window {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--win-bg);
+  font-size: 11px;
+  user-select: none;
+}
+
+.defrag-map-wrap {
+  margin: 4px 4px 0;
+  padding: 2px;
+  background-color: #ffffff;
+  line-height: 0;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light),
+    inset 2px 2px 0 var(--win-border-darkest),
+    inset -2px -2px 0 var(--win-border-midlight);
+}
+
+.defrag-map-wrap.hidden,
+.defrag-info.hidden,
+.defrag-status.hidden,
+.defrag-buttons .hidden {
+  display: none;
+}
+
+.defrag-map {
+  image-rendering: pixelated;
+}
+
+.defrag-panel {
+  display: flex;
+  gap: 12px;
+  padding: 10px 10px 10px 12px;
+}
+
+.defrag-window.details .defrag-panel {
+  justify-content: flex-end;
+  padding: 8px 8px 6px;
+}
+
+.defrag-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.defrag-progress {
+  height: 20px;
+  padding: 3px;
+  background-color: #ffffff;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light);
+}
+
+.defrag-progress-fill {
+  height: 100%;
+  width: 0;
+  background-image: repeating-linear-gradient(90deg, #000080 0 7px, transparent 7px 9px);
+}
+
+.defrag-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.defrag-window.details .defrag-buttons {
+  flex-direction: row;
+}
+
+.defrag-buttons .win-btn {
+  min-width: 92px;
+}
+
+.defrag-select {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+}
+
+.defrag-select-main {
+  display: flex;
+  gap: 12px;
+}
+
+.defrag-select-icon,
+.defrag-select-icon svg {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.defrag-select-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.defrag-select-note {
+  line-height: 14px;
+}
+
+.defrag-select-buttons,
+.defrag-legend-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.defrag-legend-dlg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+}
+
+.defrag-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.defrag-legend-row canvas {
+  width: 8px;
+  height: 9px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}

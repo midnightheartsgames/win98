@@ -1,0 +1,58 @@
+{
+  "isa": {
+    "id": "isa",
+    "name": "Иса",
+    "look": "isa",
+    "combat": true,
+    "role": "Аватар · маг огня",
+    "base": { "hp": 72, "mp": 18, "atk": 12, "def": 9, "mag": 14, "res": 10, "spd": 22, "lck": 8 },
+    "growth": { "hp": 13, "mp": 3.2, "atk": 2.0, "def": 1.5, "mag": 2.4, "res": 1.6, "spd": 1.1, "lck": 0.6 },
+    "weaponType": "gloves",
+    "startEquip": { "weapon": "smith_gloves", "armor": "work_tunic" },
+    "stances": ["flame", "heat", "coal"],
+    "limitForms": ["cycle_flash"],
+    "signSlots": 2,
+    "bio": "Семнадцать лет, Шинрю. Внучка кузнеца Ханы. Скрывает, что она Аватар. Боится не опасности, а ответственности."
+  },
+  "tao": {
+    "id": "tao",
+    "name": "Тао",
+    "look": "tao",
+    "combat": true,
+    "role": "Маг земли и металла · механик",
+    "base": { "hp": 95, "mp": 12, "atk": 13, "def": 13, "mag": 10, "res": 9, "spd": 16, "lck": 6 },
+    "growth": { "hp": 17, "mp": 2.2, "atk": 2.2, "def": 2.2, "mag": 1.8, "res": 1.4, "spd": 0.8, "lck": 0.5 },
+    "weaponType": "staff",
+    "startEquip": { "weapon": "wrench_staff", "armor": "quilted_vest" },
+    "resource": "opora",
+    "resourceMax": 5,
+    "signSlots": 2,
+    "bio": "Двадцать четыре года. Механик монорельса, дезертир из «Купола». Прячет вину за иронией."
+  },
+  "miri": {
+    "id": "miri",
+    "name": "Мири",
+    "look": "miri",
+    "combat": true,
+    "role": "Блокировщица ци · карманница",
+    "base": { "hp": 70, "mp": 14, "atk": 12, "def": 8, "mag": 9, "res": 11, "spd": 26, "lck": 14 },
+    "growth": { "hp": 11, "mp": 2.4, "atk": 2.0, "def": 1.2, "mag": 1.4, "res": 1.8, "spd": 1.3, "lck": 1.2 },
+    "weaponType": "knuckles",
+    "startEquip": { "weapon": "brass_knuckles", "armor": "work_tunic" },
+    "speedMul": 1.5,
+    "signSlots": 2,
+    "bio": "Шестнадцать лет. Выросла на крышах Республиканского города. Не маг, но знает, куда ударить."
+  },
+  "pipo": {
+    "id": "pipo",
+    "name": "Пипо",
+    "look": "pipo",
+    "combat": false,
+    "role": "Дух-лисёнок",
+    "base": { "hp": 1, "mp": 0, "atk": 0, "def": 0, "mag": 0, "res": 0, "spd": 0, "lck": 0 },
+    "growth": { "hp": 0, "mp": 0, "atk": 0, "def": 0, "mag": 0, "res": 0, "spd": 0, "lck": 0 },
+    "passives": [{ "id": "sense" }, { "id": "drop_up", "value": 10 }],
+    "signSlots": 0,
+    "bio": "Маленький дух, увязавшийся за Исой. Чувствует тайники и умеет уговорить духовные лианы расступиться."
+  }
+}

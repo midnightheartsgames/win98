@@ -1,0 +1,253 @@
+.calc-container {
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  background-color: var(--win-bg);
+  user-select: none;
+}
+
+.calc-container > .win-menubar {
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.calc-display-wrap {
+  margin: 5px 6px 0;
+  height: 23px;
+  padding: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: #ffffff;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light),
+    inset 2px 2px 0 var(--win-border-darkest),
+    inset -2px -2px 0 var(--win-border-midlight);
+}
+
+.calc-display {
+  font-family: var(--win-font);
+  font-size: 11px;
+  color: #000000;
+  white-space: pre;
+  overflow: hidden;
+}
+
+.calc-btn {
+  height: 29px;
+  width: 36px;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background-color: var(--win-bg);
+  font-family: var(--win-font);
+  font-size: 11px;
+  font-weight: normal;
+  cursor: default;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-light),
+    inset -1px -1px 0 var(--win-border-darkest),
+    inset 2px 2px 0 var(--win-border-midlight),
+    inset -2px -2px 0 var(--win-border-dark);
+}
+
+.calc-btn:active:not(:disabled),
+.calc-btn.pressed {
+  padding: 2px 0 0 2px;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-darkest),
+    inset -1px -1px 0 var(--win-border-light),
+    inset 2px 2px 0 var(--win-border-dark),
+    inset -2px -2px 0 var(--win-border-midlight);
+}
+
+.calc-btn:disabled {
+  color: var(--win-text-disabled) !important;
+  text-shadow: 1px 1px 0 var(--win-border-light);
+}
+
+.calc-blue { color: #0000ff; }
+.calc-red { color: #ff0000; }
+.calc-purple { color: #800080; }
+
+.calc-mem-box,
+.calc-paren-box {
+  width: 28px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light);
+}
+
+.calc-clear-keys {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.calc-clear-keys .calc-btn {
+  width: auto;
+}
+
+.calc-standard .calc-top-row {
+  display: flex;
+  align-items: center;
+  margin: 8px 6px 0;
+}
+
+.calc-standard .calc-mem-box {
+  margin-left: 4px;
+}
+
+.calc-standard .calc-clear-keys {
+  width: 196px;
+  margin-left: 15px;
+}
+
+.calc-keys {
+  display: flex;
+  gap: 11px;
+  margin: 6px 6px 7px;
+}
+
+.calc-mem-col {
+  display: grid;
+  grid-auto-rows: 29px;
+  gap: 4px;
+}
+
+.calc-num-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 36px);
+  grid-auto-rows: 29px;
+  gap: 4px;
+}
+
+.calc-scientific .calc-btn {
+  height: 28px;
+}
+
+.calc-sci-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 6px 0;
+}
+
+.calc-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--win-border-dark);
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-light),
+    1px 1px 0 var(--win-border-light);
+}
+
+.calc-bases {
+  width: 208px;
+}
+
+.calc-angles {
+  width: 236px;
+}
+
+.calc-invhyp {
+  width: 116px;
+  gap: 16px;
+}
+
+.calc-sci-row .calc-clear-keys {
+  width: 236px;
+}
+
+.calc-sci-row .calc-mem-box,
+.calc-sci-row .calc-paren-box {
+  width: 36px;
+}
+
+.calc-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.calc-sci-keys {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 6px 6px 7px;
+}
+
+.calc-block {
+  display: grid;
+  grid-auto-rows: 28px;
+  gap: 4px;
+}
+
+.calc-fn-grid {
+  grid-template-columns: repeat(3, 36px);
+}
+
+.calc-sci-grid {
+  grid-template-columns: repeat(6, 36px);
+}
+
+.calc-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  height: 100%;
+  font-size: 11px;
+}
+
+.calc-stats-list {
+  flex: 1;
+  min-height: 90px;
+  overflow-y: auto;
+  background-color: #ffffff;
+  outline: none;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light),
+    inset 2px 2px 0 var(--win-border-darkest),
+    inset -2px -2px 0 var(--win-border-midlight);
+  padding: 2px;
+}
+
+.calc-stats-row {
+  padding: 0 2px;
+  text-align: right;
+  line-height: 14px;
+}
+
+.calc-stats-row.selected {
+  background-color: var(--win-highlight);
+  color: var(--win-highlight-text);
+}
+
+.calc-stats-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.calc-stats-buttons .win-btn {
+  min-width: 0;
+  padding: 0;
+}
+
+.calc-stats-count {
+  padding-left: 2px;
+}

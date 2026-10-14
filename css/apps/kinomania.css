@@ -1,0 +1,858 @@
+.km-page {
+  min-height: 100%;
+  box-sizing: border-box;
+  color: #000000;
+  font: 14px/1.3 'Times New Roman', Times, serif;
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(to bottom, #e9e1c6 0 7px, transparent 7px 14px),
+    linear-gradient(to bottom, #e9e1c6 0 7px, transparent 7px 14px),
+    linear-gradient(#111111, #111111);
+  background-size: 7px 14px, 7px 14px, 150px 100%;
+  background-position: 5px 4px, 138px 4px, 0 0;
+  background-repeat: repeat-y, repeat-y, no-repeat;
+}
+
+.km-page a {
+  color: #0000cc;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.km-page a:hover {
+  color: #cc0000;
+}
+
+.km-frame {
+  width: 790px;
+  border-collapse: collapse;
+}
+
+.km-left {
+  width: 150px;
+  padding: 0;
+}
+
+.km-main {
+  padding: 6px 12px 14px 16px;
+  background: #ffffff;
+}
+
+.km-strip {
+  padding: 12px 20px 24px 22px;
+  color: #e9e1c6;
+  font: 11px/1.3 Verdana, Arial, sans-serif;
+}
+
+.km-strip-logo {
+  text-align: center;
+  color: #ffcc00;
+  font: bold 14px/1.15 Arial, Helvetica, sans-serif;
+  letter-spacing: 3px;
+  margin-bottom: 4px;
+}
+
+.km-strip-head {
+  margin: 14px 0 6px;
+  padding: 1px 4px;
+  background: #ffcc00;
+  color: #111111;
+  font: bold 10px Arial, Helvetica, sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.km-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.km-menu li {
+  margin: 4px 0;
+  font-weight: bold;
+}
+
+.km-page .km-menu a {
+  color: #ffffff;
+}
+
+.km-page .km-menu a:hover,
+.km-page .km-menu-open a {
+  color: #ffcc00;
+}
+
+.km-menu-here {
+  color: #ffcc00;
+}
+
+.km-menu-here .web-gif {
+  vertical-align: -2px;
+}
+
+.km-page .km-strip-text a {
+  color: #ffcc00;
+  word-break: break-all;
+}
+
+.km-poll-q {
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.km-poll-row {
+  display: block;
+  margin: 2px 0;
+  cursor: pointer;
+}
+
+.km-poll-row input {
+  margin: 0 2px 0 0;
+  vertical-align: -2px;
+}
+
+.km-poll-go {
+  margin-top: 6px;
+}
+
+.km-poll-go .win-btn {
+  min-width: 0;
+  padding: 2px 6px;
+}
+
+.km-poll-res {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.km-poll-name {
+  padding-top: 3px;
+}
+
+.km-poll-track {
+  width: 80%;
+  background: #333333;
+  border: 1px solid #777777;
+}
+
+.km-poll-bar {
+  background: #ffcc00;
+}
+
+.km-poll-bar td {
+  height: 7px;
+  padding: 0;
+}
+
+.km-poll-pct {
+  text-align: right;
+  padding-left: 3px;
+  color: #ffffff;
+}
+
+.km-poll-total {
+  margin-top: 6px;
+  color: #ffcc00;
+}
+
+.km-banner-wrap {
+  width: 468px;
+  margin: 2px auto 8px;
+  text-align: center;
+}
+
+.km-page .km-banner {
+  display: flex;
+  align-items: center;
+  width: 468px;
+  height: 60px;
+  box-sizing: border-box;
+  border: 1px solid #000000;
+  text-decoration: none;
+  text-align: left;
+  font: 12px/1.25 Arial, Helvetica, sans-serif;
+}
+
+.km-banner-icon {
+  padding: 0 8px;
+  line-height: 0;
+}
+
+.km-banner-copy {
+  flex: 1;
+}
+
+.km-banner-copy b {
+  font-size: 15px;
+}
+
+.km-banner-cta {
+  margin: 0 8px;
+  padding: 3px 6px;
+  border: 2px outset #ffffff;
+  font: bold 12px Arial, Helvetica, sans-serif;
+  animation: km-blink 1s steps(1, end) infinite;
+}
+
+.km-page .km-ban-cinema { background: #000066; color: #ffffff; }
+.km-ban-cinema .km-banner-cta { background: #ffcc00; color: #000066; }
+.km-page .km-ban-mp3 { background: #006633; color: #ffff99; }
+.km-ban-mp3 .km-banner-cta { background: #ffff00; color: #006633; }
+.km-page .km-ban-games { background: #660000; color: #ffffff; }
+.km-ban-games .km-banner-cta { background: #c0c0c0; color: #660000; }
+
+.km-banner-note {
+  font: 9px Arial, Helvetica, sans-serif;
+  color: #808080;
+  margin-top: 1px;
+}
+
+.km-mast {
+  border-collapse: collapse;
+  border-bottom: 3px double #990000;
+}
+
+.km-logo {
+  padding-bottom: 4px;
+}
+
+.km-page .km-logo a {
+  color: #990000;
+  text-decoration: none;
+  font: italic bold 40px/1 'Times New Roman', Times, serif;
+  text-shadow: 2px 2px 0 #ffcc00;
+  letter-spacing: 1px;
+}
+
+.km-logo-yr {
+  color: #000000;
+  font-size: 26px;
+  vertical-align: top;
+}
+
+.km-tagline {
+  font: 11px Arial, Helvetica, sans-serif;
+  color: #555555;
+  letter-spacing: 2px;
+  margin-top: 3px;
+}
+
+.km-today {
+  font: 11px/1.45 Arial, Helvetica, sans-serif;
+  color: #333333;
+  white-space: nowrap;
+  vertical-align: bottom;
+  padding-bottom: 4px;
+}
+
+.km-charset {
+  color: #000000;
+}
+
+.km-ticker {
+  margin: 4px 0 10px;
+  border: 1px solid #990000;
+  background: #ffffcc;
+  color: #990000;
+  font: bold 12px Arial, Helvetica, sans-serif;
+  padding: 2px 0;
+}
+
+.km-body {
+  min-height: 300px;
+}
+
+.km-crumbs {
+  font: 11px Arial, Helvetica, sans-serif;
+  color: #555555;
+  margin-bottom: 4px;
+}
+
+.km-title {
+  font: bold 24px/1.15 'Times New Roman', Times, serif;
+  color: #990000;
+  margin: 4px 0 6px;
+}
+
+.km-byline {
+  font: italic 13px 'Times New Roman', Times, serif;
+  color: #444444;
+  margin-bottom: 8px;
+}
+
+.km-h {
+  font: bold 14px Arial, Helvetica, sans-serif;
+  color: #990000;
+  border-bottom: 1px solid #990000;
+  margin: 16px 0 6px;
+  padding-bottom: 2px;
+}
+
+.km-h .web-gif {
+  vertical-align: -2px;
+}
+
+.km-small {
+  font: 11px Arial, Helvetica, sans-serif;
+  color: #555555;
+}
+
+.km-lead {
+  border-collapse: collapse;
+  background: #ffffcc;
+  border: 1px solid #cc9900;
+}
+
+.km-lead td {
+  padding: 8px;
+}
+
+.km-lead-pic {
+  width: 132px;
+  text-align: center;
+}
+
+.km-kicker {
+  display: inline-block;
+  background: #cc0000;
+  color: #ffffff;
+  font: bold 10px Arial, Helvetica, sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 1px 5px;
+}
+
+.km-lead-title {
+  font: bold 19px/1.2 'Times New Roman', Times, serif;
+  margin: 4px 0 4px;
+}
+
+.km-lead-text {
+  margin: 0 0 6px;
+}
+
+.km-lead-links {
+  font: bold 12px Arial, Helvetica, sans-serif;
+}
+
+.km-still {
+  border-collapse: collapse;
+  background: #111111;
+  width: 120px;
+  margin: 0 auto;
+}
+
+.km-page .km-still td {
+  padding: 0;
+}
+
+.km-still-perf {
+  height: 9px;
+  background-image: linear-gradient(to right, #e9e1c6 0 6px, transparent 6px 11px);
+  background-size: 11px 5px;
+  background-position: 3px 2px;
+  background-repeat: repeat-x;
+}
+
+.km-page .km-still-pic {
+  height: 72px;
+  text-align: center;
+  vertical-align: middle;
+  background: #2b2b44;
+  border-left: 4px solid #111111;
+  border-right: 4px solid #111111;
+}
+
+.km-still-big {
+  width: 168px;
+}
+
+.km-still-big .km-still-pic {
+  height: 104px;
+}
+
+.km-still-cap {
+  font: 10px/1.25 Arial, Helvetica, sans-serif;
+  color: #444444;
+  text-align: center;
+  padding-top: 3px;
+}
+
+.km-figure {
+  width: 172px;
+  margin: 2px 0 8px 14px;
+  border-collapse: collapse;
+}
+
+.km-news {
+  margin: 0;
+}
+
+.km-news dt {
+  margin-top: 10px;
+}
+
+.km-news dd {
+  margin: 2px 0 0 26px;
+}
+
+.km-date {
+  font: bold 12px Arial, Helvetica, sans-serif;
+}
+
+.km-rub {
+  font: bold 11px Arial, Helvetica, sans-serif;
+}
+
+.km-rub-premieres { color: #990000; }
+.km-rub-series { color: #000099; }
+.km-rub-vhs { color: #006600; }
+.km-rub-future { color: #660099; }
+
+.km-page .km-headline {
+  font-weight: bold;
+}
+
+.km-new {
+  color: #ff0000;
+  font: bold 10px Arial, Helvetica, sans-serif;
+  animation: km-blink 1s steps(1, end) infinite;
+}
+
+.km-page .km-more {
+  font: 11px Arial, Helvetica, sans-serif;
+}
+
+.km-twin {
+  border-collapse: collapse;
+}
+
+.km-twin-l {
+  width: 50%;
+  padding-right: 10px;
+}
+
+.km-twin-r {
+  padding-left: 10px;
+}
+
+.km-grid {
+  border-collapse: collapse;
+  border: 1px solid #808080;
+  font: 12px Arial, Helvetica, sans-serif;
+  margin-bottom: 4px;
+}
+
+.km-grid th {
+  background: #990000;
+  color: #ffffff;
+  text-align: left;
+  border: 1px solid #808080;
+}
+
+.km-grid td {
+  border: 1px solid #c0c0c0;
+}
+
+.km-page .km-grid th,
+.km-page .km-grid td {
+  padding: 2px 5px;
+}
+
+.km-grid-wide tr:nth-child(even) td {
+  background: #f4f4ec;
+}
+
+.km-num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.km-chart {
+  margin: 0 0 4px;
+  padding-left: 22px;
+}
+
+.km-chart li {
+  margin-bottom: 2px;
+}
+
+.km-fresh {
+  margin: 0 0 4px;
+  padding-left: 22px;
+}
+
+.km-about {
+  margin: 0 0 4px;
+  color: #333333;
+}
+
+.km-standfirst {
+  margin: 0 0 10px;
+}
+
+.km-text {
+  font-size: 15px;
+  line-height: 1.38;
+}
+
+.km-text p {
+  margin: 0 0 10px;
+  text-indent: 20px;
+}
+
+.km-inset {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 10px 0;
+  padding: 6px 8px;
+  border: 1px solid #999999;
+  background: #f4f4f4;
+  font: 12px/1.35 Arial, Helvetica, sans-serif;
+}
+
+.km-source {
+  font-size: 12px;
+  color: #555555;
+}
+
+.km-pager {
+  text-align: center;
+  font: 12px/1.6 Arial, Helvetica, sans-serif;
+  padding: 6px 0;
+  border-top: 1px solid #c0c0c0;
+  border-bottom: 1px solid #c0c0c0;
+}
+
+.km-comment {
+  font: 13px/1.35 Arial, Helvetica, sans-serif;
+  padding: 2px 0;
+}
+
+.km-thin {
+  border: 0;
+  border-top: 1px solid #c0c0c0;
+  margin: 6px 0;
+}
+
+.km-rule {
+  border: 0;
+  border-top: 2px solid #990000;
+  margin: 10px 0;
+}
+
+.km-form {
+  margin: 12px 0 0;
+}
+
+.km-form-table {
+  border-collapse: collapse;
+  background: #eeeeee;
+  border: 1px solid #999999;
+  font: 12px Arial, Helvetica, sans-serif;
+}
+
+.km-form-table th {
+  background: #cccccc;
+  text-align: left;
+  border-bottom: 1px solid #999999;
+}
+
+.km-page .km-form-table th,
+.km-page .km-form-table td {
+  padding: 4px 6px;
+}
+
+.km-page .km-post-head td {
+  padding: 3px 5px;
+}
+
+.km-label {
+  font-weight: bold;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.km-form-table textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.km-form-table td .win-btn {
+  min-width: 0;
+  padding: 2px 10px;
+}
+
+.km-toolbar {
+  margin-bottom: 3px;
+}
+
+.km-page .km-toolbar .win-btn {
+  min-width: 22px;
+  padding: 1px 4px;
+  margin: 0 1px 2px 0;
+  line-height: 1;
+}
+
+.km-error {
+  color: #cc0000;
+  font-weight: bold;
+  min-height: 14px;
+}
+
+.km-toolline {
+  font: 12px Arial, Helvetica, sans-serif;
+  margin: 4px 0 8px;
+}
+
+.km-cats {
+  font: 12px/1.5 Arial, Helvetica, sans-serif;
+  margin: 0 0 6px;
+}
+
+.km-tree {
+  font: 13px/1.35 Arial, Helvetica, sans-serif;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.km-tree > li {
+  margin-bottom: 8px;
+}
+
+.km-page .km-tree-topic {
+  font-weight: bold;
+}
+
+.km-tree ul {
+  list-style: circle;
+  margin: 2px 0 0;
+  padding-left: 34px;
+}
+
+.km-rules {
+  font: 12px/1.4 Arial, Helvetica, sans-serif;
+}
+
+.km-post-head {
+  border-collapse: collapse;
+  background: #eeeedd;
+  border-bottom: 1px solid #999999;
+  font: 12px Arial, Helvetica, sans-serif;
+}
+
+.km-rank {
+  color: #666666;
+  font-size: 11px;
+}
+
+.km-post-text {
+  font: 13px/1.4 Arial, Helvetica, sans-serif;
+  padding: 6px 4px;
+}
+
+.km-sig {
+  font: italic 12px 'Times New Roman', Times, serif;
+  color: #666666;
+  padding: 0 4px;
+}
+
+.km-post-tools {
+  text-align: right;
+  font: 11px Arial, Helvetica, sans-serif;
+}
+
+.km-quote {
+  margin: 4px 0 4px 20px;
+  padding: 4px 6px;
+  border: 1px dashed #999999;
+  background: #f6f6f6;
+  color: #444444;
+  font-style: italic;
+}
+
+.km-spoiler {
+  background: #000000;
+  color: #000000;
+  padding: 0 3px;
+  cursor: pointer;
+}
+
+.km-spoiler:hover,
+.km-spoiler.is-open {
+  background: #ffffcc;
+  color: #990000;
+}
+
+.km-foot {
+  text-align: center;
+  font: 11px/1.5 Arial, Helvetica, sans-serif;
+  color: #444444;
+  margin-top: 16px;
+}
+
+.km-foot-nav {
+  margin-bottom: 6px;
+}
+
+.km-counter {
+  margin: 6px 0;
+}
+
+.km-odo span {
+  display: inline-block;
+  background: #000000;
+  color: #33ff33;
+  border: 1px solid #666666;
+  font: bold 13px/1.1 'Courier New', Courier, monospace;
+  padding: 0 2px;
+  margin: 0 1px 0 0;
+}
+
+.km-buttons {
+  margin: 6px 0;
+}
+
+.km-buttons .web-88 {
+  margin: 0 2px;
+}
+
+.km-page .km-88-top {
+  background: #ffffff;
+  color: #cc0000;
+}
+
+.km-88-ie {
+  background: #000080;
+  color: #ffffff;
+}
+
+.km-88-pad {
+  background: #ffffcc;
+  color: #000000;
+}
+
+.km-ring {
+  margin: 4px 0;
+}
+
+.km-copy {
+  color: #666666;
+  margin-top: 6px;
+}
+
+.km-count {
+  color: #e9e1c6;
+  text-align: center;
+}
+
+.km-count-n {
+  margin: 3px auto;
+  width: 64px;
+  background: #000000;
+  border: 2px inset #666666;
+  color: #ff3333;
+  font: bold 22px/1.2 'Courier New', Courier, monospace;
+}
+
+.km-page .km-count a {
+  color: #ffcc00;
+}
+
+.km-editorial {
+  margin: 14px 0 4px;
+  border-collapse: collapse;
+  background: #f4f4ec;
+  border: 1px solid #999999;
+  border-left: 4px solid #990000;
+}
+
+.km-editorial td {
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.km-editorial p {
+  margin: 0 0 6px;
+}
+
+.km-editorial-h {
+  font: bold 12px Arial, Helvetica, sans-serif;
+  color: #990000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.km-editorial-sig {
+  text-align: right;
+  font-style: italic;
+  color: #444444;
+}
+
+.km-score {
+  display: inline-block;
+  min-width: 26px;
+  padding: 1px 3px;
+  background: #990000;
+  color: #ffffff;
+  font: bold 13px Arial, Helvetica, sans-serif;
+  text-align: center;
+}
+
+.km-score small {
+  font-size: 9px;
+  color: #ffcc00;
+}
+
+.km-zal-mini {
+  margin: 4px 0;
+  font-size: 13px;
+}
+
+.km-review {
+  border-collapse: collapse;
+  margin: 8px 0;
+  border-bottom: 1px dotted #999999;
+}
+
+.km-review td {
+  padding: 2px 0 8px;
+}
+
+.km-review-score {
+  width: 44px;
+}
+
+.km-review-film {
+  font-size: 15px;
+}
+
+.km-review-text {
+  margin: 3px 0;
+  font-size: 14px;
+}
+
+.km-review-by {
+  font: italic 12px 'Times New Roman', Times, serif;
+  color: #555555;
+}
+
+.km-hist-date {
+  width: 120px;
+  white-space: nowrap;
+}
+
+@keyframes km-blink {
+  50% { visibility: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .km-new,
+  .km-banner-cta {
+    animation: none;
+  }
+}

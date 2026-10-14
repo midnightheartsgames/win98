@@ -1,0 +1,499 @@
+/* ==========================================================================
+   Win 98 / 2000 Win Task Manager (taskmgr.exe)
+   ========================================================================== */
+
+.taskmgr-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background: var(--win-bg, #c0c0c0);
+  font-family: var(--win-font, 'MS Sans Serif', Tahoma, sans-serif);
+  font-size: 11px;
+  color: var(--win-text, #000);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* --------------------------------------------------------------------------
+   Menu Bar
+   -------------------------------------------------------------------------- */
+.taskmgr-menubar {
+  display: flex;
+  background-color: var(--win-bg, #c0c0c0);
+  border-bottom: 1px solid var(--win-border-dark, #808080);
+  padding: 1px 2px;
+  position: relative;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.taskmgr-menu-item {
+  padding: 3px 6px;
+  cursor: default;
+  position: relative;
+}
+
+.taskmgr-menu-item:hover,
+.taskmgr-menu-item.active {
+  background-color: var(--win-highlight, #000080);
+  color: var(--win-highlight-text, #ffffff);
+}
+
+.taskmgr-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 180px;
+  background-color: var(--win-bg, #c0c0c0);
+  color: var(--win-text, #000000);
+  padding: 2px;
+  display: none;
+  flex-direction: column;
+  z-index: 9999;
+  box-shadow:
+    inset 1px 1px 0px #ffffff,
+    inset -1px -1px 0px #000000,
+    inset 2px 2px 0px #dfdfdf,
+    inset -2px -2px 0px #808080,
+    2px 2px 5px rgba(0, 0, 0, 0.35);
+}
+
+.taskmgr-menu-item.active .taskmgr-menu-dropdown {
+  display: flex;
+}
+
+.taskmgr-menu-option {
+  padding: 3px 14px 3px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.taskmgr-menu-option.checked::before {
+  content: '✔';
+  position: absolute;
+  left: 6px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.taskmgr-menu-option:hover {
+  background-color: var(--win-highlight, #000080);
+  color: var(--win-highlight-text, #ffffff);
+}
+
+.taskmgr-menu-option span.shortcut {
+  font-size: 10px;
+  opacity: 0.8;
+  margin-left: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   Tabs Header
+   -------------------------------------------------------------------------- */
+.taskmgr-tab-strip {
+  display: flex;
+  padding: 4px 6px 0 6px;
+  gap: 2px;
+  background: var(--win-bg, #c0c0c0);
+  border-bottom: 1px solid var(--win-border-light, #ffffff);
+  flex-shrink: 0;
+}
+
+.taskmgr-tab-btn {
+  padding: 3px 10px 4px 10px;
+  background: var(--win-bg, #c0c0c0);
+  border: 1px solid var(--win-border-dark, #808080);
+  border-bottom: none;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  box-shadow:
+    inset 1px 1px 0px #ffffff,
+    inset -1px 0px 0px #000000;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  outline: none;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+.taskmgr-tab-btn.active {
+  background: var(--win-bg, #c0c0c0);
+  font-weight: bold;
+  padding-top: 4px;
+  padding-bottom: 5px;
+  z-index: 2;
+  border-bottom: 1px solid var(--win-bg, #c0c0c0);
+  box-shadow:
+    inset 1px 1px 0px #ffffff,
+    inset -1px 0px 0px #000000;
+}
+
+/* --------------------------------------------------------------------------
+   Tab Content Body
+   -------------------------------------------------------------------------- */
+.taskmgr-body {
+  flex: 1;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.taskmgr-tab-pane {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.taskmgr-tab-pane.active {
+  display: flex;
+}
+
+/* --------------------------------------------------------------------------
+   Common Table View (Applications, Processes, Services)
+   -------------------------------------------------------------------------- */
+.taskmgr-table-container {
+  flex: 1;
+  background: #ffffff;
+  border: 2px inset #ffffff;
+  overflow: auto;
+  box-shadow:
+    inset 1px 1px 0px #808080,
+    inset -1px -1px 0px #ffffff,
+    inset 2px 2px 0px #000000,
+    inset -2px -2px 0px #dfdfdf;
+  margin-bottom: 8px;
+}
+
+.taskmgr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  table-layout: fixed;
+}
+
+.taskmgr-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--win-bg, #c0c0c0);
+}
+
+.taskmgr-th {
+  background: var(--win-bg, #c0c0c0);
+  padding: 2px 6px;
+  text-align: left;
+  font-weight: normal;
+  border: none;
+  box-shadow:
+    inset 1px 1px 0px #ffffff,
+    inset -1px -1px 0px #000000,
+    inset 2px 2px 0px #dfdfdf,
+    inset -2px -2px 0px #808080;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
+.taskmgr-th:active {
+  box-shadow:
+    inset 1px 1px 0px #000000,
+    inset -1px -1px 0px #ffffff,
+    inset 2px 2px 0px #808080,
+    inset -2px -2px 0px #dfdfdf;
+}
+
+.taskmgr-th.sort-asc::after {
+  content: ' ▲';
+  font-size: 8px;
+}
+
+.taskmgr-th.sort-desc::after {
+  content: ' ▼';
+  font-size: 8px;
+}
+
+.taskmgr-row {
+  cursor: pointer;
+}
+
+.taskmgr-row td {
+  padding: 2px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taskmgr-row:hover {
+  background-color: #f0f0f0;
+}
+
+.taskmgr-row.selected {
+  background-color: var(--win-highlight, #000080) !important;
+  color: var(--win-highlight-text, #ffffff) !important;
+}
+
+.taskmgr-app-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+}
+
+.taskmgr-app-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   Action Buttons Bar
+   -------------------------------------------------------------------------- */
+.taskmgr-actions-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.taskmgr-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   Performance Tab
+   -------------------------------------------------------------------------- */
+.taskmgr-perf-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.taskmgr-perf-charts-row {
+  display: flex;
+  gap: 8px;
+  height: 140px;
+  flex-shrink: 0;
+}
+
+.taskmgr-perf-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 6px 6px 6px;
+  background: var(--win-bg, #c0c0c0);
+  border: 2px groove #ffffff;
+}
+
+.taskmgr-perf-box legend {
+  padding: 0 4px;
+  font-size: 11px;
+}
+
+.taskmgr-perf-box-inner {
+  display: flex;
+  flex: 1;
+  gap: 6px;
+  align-items: stretch;
+  margin-top: 2px;
+}
+
+/* Vertical Level Meter */
+.taskmgr-gauge-container {
+  width: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.taskmgr-gauge-meter {
+  flex: 1;
+  width: 100%;
+  background: #000000;
+  border: 2px inset #ffffff;
+  display: flex;
+  flex-direction: column-reverse;
+  padding: 1px;
+  gap: 1px;
+  box-shadow:
+    inset 1px 1px 0px #808080,
+    inset -1px -1px 0px #ffffff;
+}
+
+.taskmgr-gauge-block {
+  width: 100%;
+  height: 2px;
+  background: #003300;
+}
+
+.taskmgr-gauge-block.lit {
+  background: #00ff00;
+  box-shadow: 0 0 2px #00ff00;
+}
+
+.taskmgr-gauge-block.lit-warn {
+  background: #ffff00;
+  box-shadow: 0 0 2px #ffff00;
+}
+
+.taskmgr-gauge-block.lit-crit {
+  background: #ff0000;
+  box-shadow: 0 0 2px #ff0000;
+}
+
+.taskmgr-gauge-value {
+  font-size: 10px;
+  text-align: center;
+  margin-top: 3px;
+  font-family: var(--win-font, 'MS Sans Serif', sans-serif);
+}
+
+/* CRT Oscilloscope Canvas */
+.taskmgr-graph-frame {
+  flex: 1;
+  background: #000000;
+  border: 2px inset #ffffff;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    inset 1px 1px 0px #808080,
+    inset -1px -1px 0px #ffffff;
+}
+
+.taskmgr-graph-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Statistics 4-Grid */
+.taskmgr-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.taskmgr-stats-box {
+  border: 2px groove #ffffff;
+  padding: 4px 8px 6px 8px;
+}
+
+.taskmgr-stats-box legend {
+  padding: 0 4px;
+}
+
+.taskmgr-stat-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+  font-size: 11px;
+}
+
+.taskmgr-stat-label {
+  color: #000;
+}
+
+.taskmgr-stat-val {
+  font-family: var(--win-font-mono, 'Fixedsys', monospace);
+  font-weight: normal;
+  text-align: right;
+}
+
+/* --------------------------------------------------------------------------
+   Networking Tab
+   -------------------------------------------------------------------------- */
+.taskmgr-net-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 8px;
+}
+
+.taskmgr-net-graph-box {
+  flex: 1;
+  border: 2px groove #ffffff;
+  padding: 4px 6px 6px 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+.taskmgr-net-stats-box {
+  border: 2px groove #ffffff;
+  padding: 6px 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Status Bar
+   -------------------------------------------------------------------------- */
+.taskmgr-statusbar {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--win-bg, #c0c0c0);
+  border-top: 1px solid var(--win-border-dark, #808080);
+  flex-shrink: 0;
+}
+
+.taskmgr-status-pane {
+  background: var(--win-bg, #c0c0c0);
+  padding: 2px 6px;
+  font-size: 11px;
+  box-shadow:
+    inset 1px 1px 0px #808080,
+    inset -1px -1px 0px #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taskmgr-status-pane:nth-child(1) { width: 110px; }
+.taskmgr-status-pane:nth-child(2) { width: 130px; }
+.taskmgr-status-pane:nth-child(3) { flex: 1; }
+
+/* --------------------------------------------------------------------------
+   Tray Icon
+   -------------------------------------------------------------------------- */
+.tray-taskmgr-icon {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: #000000;
+  border: 1px solid #808080;
+  box-shadow: inset 1px 1px 0 #000;
+  margin-right: 3px;
+  vertical-align: middle;
+}
+
+.tray-taskmgr-canvas {
+  width: 14px;
+  height: 14px;
+  display: block;
+}

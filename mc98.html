@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Minecraft 98</title>
+<link rel="stylesheet" href="css/apps/mc98.css">
+<style>html,body{height:100%;margin:0;background:#008080}body{display:grid;place-items:center}.window{width:min(98vw,1200px);height:96vh;border:3px outset #ddd;display:flex;flex-direction:column;background:silver}.title{background:linear-gradient(90deg,navy,#1084d0);color:#fff;font:bold 12px Tahoma;padding:5px}#game{flex:1;min-height:0}</style></head>
+<body><main class="window"><div class="title">Minecraft 98 Alpha</div><div id="game"></div></main>
+<script src="js/apps/mc98/mc-core.js"></script><script src="js/apps/mc98/mc-blocks.js"></script><script src="js/apps/mc98/mc-tex.js"></script><script src="js/apps/mc98/mc-gen.js"></script><script src="js/apps/mc98/mc-world.js"></script><script src="js/apps/mc98/mc-mesh.js"></script><script src="js/apps/mc98/mc-entity.js"></script><script src="js/apps/mc98/mc-game.js"></script><script src="js/apps/mc98/mc-audio.js"></script><script src="js/apps/mc98/mc-render.js"></script><script src="js/apps/mc98/mc-ui.js"></script>
+<script>const el=document.getElementById('game');const ui=new Mc98.UI(el,{standalone:true});window.mcui=ui;el.focus();addEventListener('pagehide',()=>ui.destroy(),{once:true});</script>
+</body></html>

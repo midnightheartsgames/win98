@@ -1,0 +1,402 @@
+.emu-page {
+  --em-plastic: #8a8a86;
+  --em-panel: #e0e0d8;
+  --em-dark: #202020;
+  --em-red: #c81010;
+  --em-link: #0000cc;
+  --em-line: #9a9a92;
+  --em-gray: #5a5a5a;
+  background: var(--em-plastic);
+  color: #000000;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  line-height: 1.45;
+  min-height: 100%;
+  padding: 10px 0 16px;
+  box-sizing: border-box;
+}
+
+.emu-page a {
+  color: var(--em-link);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.emu-page a:hover {
+  color: var(--em-red);
+}
+
+.emu-wrap {
+  width: 760px;
+  margin: 0 auto;
+  background: var(--em-panel);
+  border: 2px solid var(--em-dark);
+  box-shadow: 4px 4px 0 #3a3a3a;
+}
+
+.emu-top {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--em-dark);
+  color: #ffffff;
+}
+
+.emu-top td {
+  padding: 8px 12px;
+  vertical-align: middle;
+}
+
+.emu-page .emu-logo a {
+  text-decoration: none;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 34px;
+  letter-spacing: 2px;
+  text-shadow: 3px 3px 0 #555555;
+}
+
+.emu-logo-a {
+  color: var(--em-red);
+}
+
+.emu-logo-b {
+  color: #ffffff;
+}
+
+.emu-tag {
+  color: #b0b0a8;
+  font-size: 11px;
+}
+
+.emu-power {
+  width: 90px;
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  color: #b0b0a8;
+  white-space: nowrap;
+}
+
+.emu-led {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #ff2020;
+  border: 1px solid #600000;
+  vertical-align: 0;
+}
+
+.emu-carts {
+  width: 100%;
+  border-collapse: collapse;
+  background: #3a3a3a;
+}
+
+.emu-carts td {
+  width: 25%;
+  padding: 10px 6px 0;
+  vertical-align: bottom;
+  text-align: center;
+}
+
+.emu-page a.emu-cart {
+  display: block;
+  height: 54px;
+  padding: 6px 12px 0;
+  text-decoration: none;
+  clip-path: polygon(0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  box-sizing: border-box;
+}
+
+.emu-cart-label {
+  display: block;
+  background: #fcfcfc;
+  color: #000000;
+  border: 1px solid #000000;
+  font-family: 'Arial Black', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.emu-cart-sub {
+  display: block;
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+.emu-page a.emu-cart-nes { background: #f0c020; color: #000000; }
+.emu-page a.emu-cart-sega { background: #101010; color: #e0e0e0; }
+.emu-page a.emu-cart-sega .emu-cart-label { background: var(--em-red); color: #ffffff; }
+.emu-page a.emu-cart-snes { background: #a8a8b0; color: #000000; }
+.emu-page a.emu-cart-snes .emu-cart-label { background: #5040a0; color: #ffffff; }
+.emu-page a.emu-cart-gb { background: #c8c8c0; color: #000000; }
+.emu-page a.emu-cart-gb .emu-cart-label { background: #8bac0f; color: #0f380f; }
+
+.emu-page a.emu-cart:hover .emu-cart-label {
+  text-decoration: underline;
+}
+
+.emu-page a.emu-cart.is-active {
+  height: 62px;
+  margin-top: -8px;
+}
+
+.emu-links {
+  padding: 5px 12px;
+  border-bottom: 1px solid var(--em-line);
+  background: #d0d0c8;
+  font-weight: bold;
+}
+
+.emu-links b {
+  color: var(--em-red);
+}
+
+.emu-main {
+  padding: 10px 12px 14px;
+}
+
+.emu-h {
+  margin: 10px 0 6px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  color: var(--em-dark);
+  border-bottom: 2px solid var(--em-red);
+  padding-bottom: 2px;
+}
+
+.emu-h .emu-sub {
+  font-weight: normal;
+}
+
+.emu-sub {
+  color: var(--em-gray);
+  font-size: 10px;
+}
+
+.emu-split {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.emu-split > tbody > tr > td {
+  vertical-align: top;
+}
+
+.emu-split-main {
+  padding-right: 14px;
+}
+
+.emu-split-side {
+  width: 220px;
+}
+
+.emu-news {
+  margin: 0;
+}
+
+.emu-news dt {
+  font-weight: bold;
+  color: var(--em-red);
+}
+
+.emu-news dd {
+  margin: 0 0 6px 0;
+}
+
+.emu-toplist {
+  padding-left: 22px;
+  margin-bottom: 10px;
+}
+
+.emu-toplist li {
+  margin-bottom: 3px;
+}
+
+.emu-box {
+  border: 1px solid var(--em-dark);
+  background: #fcfcf4;
+  padding: 6px 8px;
+  margin-top: 8px;
+}
+
+.emu-roms {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+  background: #fcfcf4;
+}
+
+.emu-roms th {
+  background: var(--em-dark);
+  color: #ffffff;
+  text-align: left;
+  padding: 3px 6px;
+}
+
+.emu-roms td {
+  border-bottom: 1px solid var(--em-line);
+  padding: 4px 6px;
+  vertical-align: middle;
+}
+
+.emu-thumb-cell {
+  width: 68px;
+}
+
+.emu-thumb-cell a {
+  display: block;
+  line-height: 0;
+}
+
+.emu-shot {
+  image-rendering: pixelated;
+  border: 1px solid #000000;
+}
+
+.emu-thumb {
+  width: 64px;
+  height: 56px;
+}
+
+.emu-big {
+  width: 384px;
+  height: 336px;
+}
+
+.emu-r {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.emu-crumbs {
+  margin-bottom: 6px;
+}
+
+.emu-rom-h {
+  margin: 0 0 8px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+}
+
+.emu-rom-h span {
+  font-size: 14px;
+  color: var(--em-gray);
+  font-weight: normal;
+}
+
+.emu-rom {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.emu-rom > tbody > tr > td {
+  vertical-align: top;
+}
+
+.emu-rom-shot {
+  width: 392px;
+  padding-right: 12px;
+}
+
+.emu-facts {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.emu-facts td {
+  padding: 3px 6px;
+  border-bottom: 1px dotted var(--em-line);
+}
+
+.emu-facts td:first-child {
+  color: var(--em-gray);
+  width: 80px;
+}
+
+.emu-mono {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
+.emu-btn {
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  background: var(--em-red);
+  color: #ffffff;
+  border: 2px outset #f06060;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.emu-btn:active {
+  border-style: inset;
+}
+
+.emu-btn:focus-visible {
+  outline: 1px dotted #000000;
+  outline-offset: 2px;
+}
+
+.emu-status-msg {
+  margin-top: 6px;
+  min-height: 16px;
+}
+
+.emu-status-msg .web-gif {
+  vertical-align: -3px;
+}
+
+.emu-text {
+  font-size: 12px;
+  max-width: 640px;
+}
+
+.emu-cheat {
+  border: 1px solid var(--em-dark);
+  border-left: 6px solid #f0c020;
+  background: #fcfcf4;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+}
+
+.emu-history p {
+  font-size: 12px;
+  max-width: 620px;
+}
+
+.emu-footer {
+  background: var(--em-dark);
+  color: #b0b0a8;
+  padding: 8px 12px 12px;
+  text-align: center;
+}
+
+.emu-footer > div {
+  margin-bottom: 6px;
+}
+
+.emu-page .emu-footer > div a {
+  color: #f0c020;
+}
+
+.emu-r,
+.emu-facts td {
+  font-variant-numeric: tabular-nums;
+}
+
+.emu-linkbtn {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: #f0c020;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.emu-linkbtn:focus-visible {
+  outline: 1px dotted #f0c020;
+}

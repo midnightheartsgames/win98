@@ -1,0 +1,120 @@
+.dialup-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  background: var(--win-bg, #c0c0c0);
+  font-family: var(--win-font, "MS Sans Serif", Tahoma, sans-serif);
+  font-size: 11px;
+}
+
+.dialup-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #808080;
+  box-shadow: 0 1px 0 #ffffff;
+}
+
+.dialup-header-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.dialup-header .dialup-connection {
+  flex: 1;
+  min-width: 0;
+}
+
+.dialup-check {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-align: left !important;
+}
+
+.dialup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.dialup-field-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.dialup-field-row label {
+  text-align: left;
+  font-weight: normal;
+}
+
+.dialup-field-row input,
+.dialup-field-row select {
+  height: 22px;
+  font-size: 11px;
+  box-sizing: border-box;
+}
+
+.dialup-status-box {
+  background: #ffffff;
+  border: 2px inset #ffffff;
+  padding: 8px 10px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.dialup-anim-monitors {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.dialup-mon-screen-left.active {
+  fill: #00ff00 !important;
+  filter: drop-shadow(0 0 2px #00ff00);
+}
+
+.dialup-mon-screen-right.active {
+  fill: #00ffff !important;
+  filter: drop-shadow(0 0 2px #00ffff);
+}
+
+.dialup-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: auto;
+}
+
+#tray-dialup-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  margin: 0 1px;
+}
+
+#tray-dialup-icon:hover {
+  outline: 1px dotted #808080;
+}
+
+.dialup-check input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  flex: 0 0 13px;
+  border: none;
+}

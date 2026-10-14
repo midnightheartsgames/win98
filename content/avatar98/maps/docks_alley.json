@@ -1,0 +1,51 @@
+{
+  "id": "docks_alley",
+  "name": "map.docks_alley",
+  "w": 26,
+  "h": 20,
+  "music": "city_night",
+  "region": "rc",
+  "bg": "#1a1820",
+  "battleBg": "alley",
+  "radio": true,
+  "onEnter": "alley_enter",
+  "legend": {"A":"roof_rc","a":"walltop_rc","^":"walltop_rc","_":"cobble_rc","~":"water_harbor","N":"window_rc","c":"concrete_dark","B":"wall_brick_dark","n":"window_dark","k":"neon_pink","/":"laundry2"},
+  "layers": {
+    "ground": [
+      "^^^^^^^^^^^^^^^^^^^^^^^^^^",
+      "AAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "BBBNBBBBNBBkBBBZBBNBBBNBBB",
+      "BBBBBBBBBBBBBDBBBBBBBBBBBB",
+      "BccccccccccccccccccccccccB",
+      "Bcc////////////////////ccB",
+      "BcccccccccccccccccccccbbcB",
+      "BcccccBBBBcccccccccccccccB",
+      "BcccccBBBBccIccccccccccccB",
+      "ccccccBBBBcclccccccccccccB",
+      "ccccccBBBBccccccBBBBBccccB",
+      "BcccccBBBBccccccBBBBBccccB",
+      "BcccccccccccccccBBBBBccccB",
+      "BcccccccccccccccBBBBBccccB",
+      "BcccxccccccccccccccccccccB",
+      "BccxxcccccccxccccccccccccB",
+      "BccccccccccccccccccccxcccB",
+      "BccccccccccccccccccccccccB",
+      "BBBBBBBBBBBBBBBBBBBBBBBBBB"
+    ]
+  },
+  "spawns": {"west":{"x":1,"y":10,"dir":"right"},"roof_drop":{"x":21,"y":5,"dir":"down"},"hideout":{"x":13,"y":5,"dir":"down"}},
+  "entities": [
+    {"id":"w0","kind":"warp","x":0,"y":10,"to":{"map":"docks_market","spawn":"east","dir":"left"}},
+    {"id":"w1","kind":"warp","x":0,"y":11,"to":{"map":"docks_market","spawn":"east","dir":"left"}},
+    {"id":"hideout_door","kind":"inspect","x":13,"y":4,"text":"insp.hideout"},
+    {"id":"trophy","kind":"chest","x":16,"y":5,"look":"chest","item":"lantern_knuckles","if":"lanterns_fought"},
+    {"id":"chest2","kind":"chest","x":24,"y":18,"look":"chest","item":"smoke_bomb","count":2},
+    {"id":"owlcat","kind":"npc","x":4,"y":14,"look":"catowl","event":"alley_owlcat","if":"quest.owl_cat >= 1 && quest.owl_cat < 3","dir":"down"},
+    {"id":"drunk","kind":"npc","x":20,"y":16,"look":"citizen_m","event":"alley_drunk","dir":"left"},
+    {"id":"thugs1","kind":"enemy","x":11,"y":14,"look":"thug","troop":"t_docks_thugs","chase":4,"move":{"type":"wander","radius":2}},
+    {"id":"mix1","kind":"enemy","x":22,"y":10,"look":"thug2","troop":"t_docks_mix","chase":4,"move":{"type":"wander","radius":2}},
+    {"id":"graffiti","kind":"inspect","x":8,"y":7,"text":"insp.graffiti"},
+    {"id":"trash","kind":"inspect","x":3,"y":16,"text":"insp.trash","if":"miri_joined"}
+  ]
+}

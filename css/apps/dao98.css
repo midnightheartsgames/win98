@@ -1,0 +1,370 @@
+.dao98 { position: relative; width: 100%; height: 100%; min-height: 0; overflow: hidden; background: #000; outline: none; user-select: none; -webkit-user-select: none; font: 13px Georgia, 'Times New Roman', serif; color: #e8dcc0; --gold: #d8b060; --gold2: #f0d890; --dark: #140e08; --parch: #e6d3a8; --ink: #3a2410; --blood: #8a1010; }
+.dao98 canvas.da-gl, .dao98 canvas.da-ov { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+.dao98 canvas.da-gl { image-rendering: auto; }
+.dao98 .da-hud, .dao98 .da-layer { position: absolute; inset: 0; pointer-events: none; }
+.dao98 .da-hud > *, .dao98 .da-layer > * { pointer-events: auto; }
+.dao98 .da-hud.talk > :not(.da-toasts) { visibility: hidden; }
+.dao98 button { font: inherit; color: inherit; cursor: pointer; }
+.dao98 .da-fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 60; }
+.dao98 .dim, .dao98 .da-dim { color: #8a7a60; font-size: 12px; margin: 6px 0; }
+.dao98 .da-dim.center { text-align: center; }
+
+.dao98 .da-btn { background: linear-gradient(#4a3420, #22160c); border: 1px solid #8a6a3a; color: #f0dcb0; padding: 5px 14px; margin: 3px; border-radius: 2px; box-shadow: inset 0 1px 0 rgba(255, 220, 150, 0.2); text-shadow: 0 1px 1px #000; }
+.dao98 .da-btn:hover:not([disabled]) { background: linear-gradient(#6a4a28, #32200e); border-color: var(--gold); color: #fff; }
+.dao98 .da-btn[disabled] { opacity: 0.4; cursor: default; }
+.dao98 .da-btn.glow { border-color: var(--gold); box-shadow: 0 0 8px rgba(216, 176, 96, 0.5); }
+.dao98 .da-btnrow { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+.dao98 .da-btnrow.col { flex-direction: column; align-items: stretch; }
+
+.dao98 .da-pwrap { position: absolute; left: 8px; top: 8px; display: flex; flex-direction: column; gap: 8px; }
+.dao98 .da-party { display: flex; flex-direction: column; gap: 6px; }
+.dao98 .da-pm { position: relative; width: 70px; height: 70px; cursor: pointer; }
+.dao98 .da-pm svg { position: absolute; inset: 0; width: 70px; height: 70px; transform: rotate(90deg); }
+.dao98 .da-pm svg circle { fill: none; }
+.dao98 .da-pm .bg { stroke: #1a0e08; stroke-width: 6; }
+.dao98 .da-pm .bg2 { stroke: #1a0e08; stroke-width: 4; }
+.dao98 .da-pm .hp { stroke: #c21a14; stroke-width: 6; transition: stroke-dasharray 0.2s; }
+.dao98 .da-pm .mp { stroke-width: 4; transition: stroke-dasharray 0.2s; transform: scaleX(-1); transform-origin: 40px 40px; }
+.dao98 .da-pm .mp.mana { stroke: #3a6aea; }
+.dao98 .da-pm .mp.stam { stroke: #3aba3a; }
+.dao98 .da-pm img { position: absolute; left: 11px; top: 11px; width: 48px; height: 48px; border-radius: 50%; border: 2px solid #5a3a1a; box-shadow: inset 0 0 6px #000; background: #1a1612; }
+.dao98 .da-pm.lead img { border-color: var(--gold2); box-shadow: 0 0 10px rgba(240, 200, 100, 0.8); }
+.dao98 .da-pm.sel:not(.lead) img { border-color: #6ae06a; }
+.dao98 .da-pm.down img { filter: grayscale(1) brightness(0.45); }
+.dao98 .da-pm.hurt img { animation: dahurt 0.8s infinite; }
+@keyframes dahurt { 50% { box-shadow: 0 0 12px #f00; } }
+.dao98 .da-pm-lv { position: absolute; right: 0; top: 0; color: var(--gold2); font-weight: bold; font-size: 18px; text-shadow: 0 0 4px #000, 0 0 2px #f80; animation: dablink 1s infinite; }
+.dao98 .da-pm-name { position: absolute; left: 74px; top: 20px; white-space: nowrap; font-size: 12px; color: #e8dcc0; text-shadow: 0 0 3px #000, 0 0 2px #000; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+.dao98 .da-pm:hover .da-pm-name { opacity: 1; }
+.dao98 .da-pm-num { position: absolute; left: 2px; bottom: 0; font-size: 9px; color: #a08a60; text-shadow: 0 0 2px #000; }
+@keyframes dablink { 50% { opacity: 0.4; } }
+.dao98 .da-partybtns { display: flex; gap: 6px; padding-left: 8px; }
+.dao98 .da-rbtn { width: 26px; height: 26px; border-radius: 50%; background: radial-gradient(#4a3a28, #140c06); border: 1px solid #8a6a3a; padding: 0; display: grid; place-items: center; }
+.dao98 .da-rbtn img { width: 18px; height: 18px; }
+.dao98 .da-rbtn.on { box-shadow: 0 0 8px var(--gold); border-color: var(--gold2); }
+
+.dao98 .da-topbar { position: absolute; left: 50%; top: 0; transform: translateX(-50%); display: flex; gap: 2px; padding: 3px 18px 5px; background: linear-gradient(#2a1c10, #0c0804); border: 1px solid #6a4a24; border-top: none; border-radius: 0 0 16px 16px; box-shadow: 0 2px 8px #000, inset 0 -1px 0 rgba(216, 176, 96, 0.3); }
+.dao98 .da-tb { width: 34px; height: 30px; background: none; border: none; padding: 0; display: grid; place-items: center; filter: brightness(0.85); }
+.dao98 .da-tb img { width: 26px; height: 26px; }
+.dao98 .da-tb:hover, .dao98 .da-tb.on { filter: brightness(1.3) drop-shadow(0 0 4px #f0c060); }
+
+.dao98 .da-miniwrap { position: absolute; right: 10px; top: 8px; width: 150px; }
+.dao98 .da-mini { display: block; width: 150px; height: 150px; border-radius: 50%; }
+.dao98 .da-mini-ring { position: absolute; left: -6px; top: -6px; width: 162px; height: 162px; border-radius: 50%; border: 6px solid #3a2a18; box-shadow: inset 0 0 0 2px #a8884a, 0 0 0 1px #000, 0 3px 10px #000, inset 0 0 20px rgba(0, 0, 0, 0.8); pointer-events: none; }
+.dao98 .da-areaname { text-align: center; color: #c8b890; font-size: 12px; margin-top: 20px; text-shadow: 0 0 3px #000, 0 0 3px #000; font-variant: small-caps; letter-spacing: 1px; }
+.dao98 .da-target { position: absolute; left: 50%; top: 46px; transform: translateX(-50%); min-width: 220px; text-align: center; display: none; pointer-events: none; text-shadow: 0 0 3px #000, 0 0 2px #000; }
+.dao98 .da-target .nm { font-size: 15px; color: #ffb090; font-variant: small-caps; }
+.dao98 .da-target .rk { font-size: 11px; color: #c8b090; }
+.dao98 .da-target .rk-lt { color: #e8c060; }
+.dao98 .da-target .rk-boss, .dao98 .da-target .rk-elite { color: #ff6040; }
+.dao98 .da-target .bar { height: 7px; background: #200808; border: 1px solid #5a2a1a; margin: 3px auto; width: 200px; }
+.dao98 .da-target .bar i { display: block; height: 100%; background: linear-gradient(#e03a2a, #801008); }
+.dao98 .da-target .st { display: inline-block; font-size: 10px; background: rgba(60, 40, 10, 0.8); border: 1px solid #8a6a2a; padding: 0 4px; margin: 1px; }
+.dao98 .da-pause { position: absolute; left: 50%; top: 38%; transform: translateX(-50%); font-size: 28px; letter-spacing: 8px; color: var(--gold2); text-shadow: 0 0 10px #000, 0 0 3px #000; display: none; pointer-events: none; animation: dablink 1.4s infinite; }
+.dao98 .da-toasts { position: absolute; left: 50%; top: 96px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; z-index: 20; }
+.dao98 .da-toast { background: linear-gradient(90deg, rgba(20, 12, 6, 0), rgba(20, 12, 6, 0.85) 15%, rgba(20, 12, 6, 0.85) 85%, rgba(20, 12, 6, 0)); padding: 3px 40px; color: #e8dcc0; text-shadow: 0 1px 2px #000; transition: opacity 0.7s; white-space: nowrap; }
+.dao98 .da-toast.area { font-size: 22px; color: var(--gold2); background: none; font-variant: small-caps; letter-spacing: 3px; text-shadow: 0 0 8px #000, 0 0 3px #000; }
+.dao98 .da-toast.gold, .dao98 .da-toast.quest { color: var(--gold2); }
+.dao98 .da-toast.codex { color: #b0d0ff; }
+.dao98 .da-toast.item { color: #d8e8c0; }
+.dao98 .da-toast.good { color: #9aea8a; }
+.dao98 .da-toast.bad, .dao98 .da-toast.warn { color: #ff9070; }
+.dao98 .da-toast.out { opacity: 0; }
+.dao98 .da-log { position: absolute; left: 8px; bottom: 64px; width: 360px; font-size: 11px; line-height: 14px; text-shadow: 0 0 3px #000, 0 0 2px #000; pointer-events: none; font-family: Tahoma, Arial, sans-serif; }
+.dao98 .da-log.big { background: rgba(10, 6, 2, 0.75); border: 1px solid #5a3a1a; padding: 4px 6px; pointer-events: auto; opacity: 1; }
+.dao98 .da-log .crit { color: #ffe060; }
+.dao98 .da-log .miss { color: #9a9080; }
+.dao98 .da-log .bad { color: #ff7a60; }
+.dao98 .da-log .good { color: #9ae08a; }
+.dao98 .da-log .ab { color: #a8c8ff; }
+.dao98 .da-log .xp { color: #d8c080; }
+.dao98 .da-hint { position: absolute; left: 50%; bottom: 66px; transform: translateX(-50%); color: #f0e0b0; text-shadow: 0 0 3px #000, 0 0 3px #000; pointer-events: none; font-size: 13px; }
+
+.dao98 .da-qbar { position: absolute; left: 0; right: 0; bottom: 0; height: 54px; display: flex; align-items: center; gap: 6px; padding: 0 8px; background: linear-gradient(#2a1c10, #0a0604); border-top: 1px solid #8a6a3a; box-shadow: 0 -2px 8px #000; }
+.dao98 .da-qleft { display: flex; gap: 2px; }
+.dao98 .da-qslots { display: flex; gap: 3px; flex: 1; overflow: hidden; }
+.dao98 .da-qs { position: relative; width: 42px; height: 42px; padding: 0; background: #0c0804; border: 1px solid #5a4020; box-shadow: inset 0 0 6px #000; flex: none; }
+.dao98 .da-qs.small { width: 28px; height: 28px; display: grid; place-items: center; }
+.dao98 .da-qs.small img { width: 20px; height: 20px; }
+.dao98 .da-qs img { display: block; width: 100%; height: 100%; }
+.dao98 .da-qs:hover { border-color: var(--gold2); }
+.dao98 .da-qs .cd { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.72); pointer-events: none; }
+.dao98 .da-qs b { position: absolute; left: 2px; top: 0; font-size: 10px; color: #fff; text-shadow: 0 0 2px #000; font-family: Tahoma, sans-serif; }
+.dao98 .da-qs em { position: absolute; right: 2px; bottom: 0; font-size: 11px; color: #fff; font-style: normal; text-shadow: 0 0 2px #000, 0 0 2px #000; font-family: Tahoma, sans-serif; }
+.dao98 .da-qs.on { border-color: #6ad0ff; box-shadow: 0 0 8px #3a9aff, inset 0 0 8px #3a9aff; }
+.dao98 .da-qs.dis img { filter: grayscale(0.8) brightness(0.5); }
+.dao98 .da-xpbar { position: absolute; left: 0; right: 0; top: -4px; height: 3px; background: #1a1008; }
+.dao98 .da-xpbar i { display: block; height: 100%; background: linear-gradient(90deg, #a07020, #f0d070); }
+
+.dao98 .da-dialog { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+.dao98 .da-lb { position: absolute; left: 0; right: 0; height: 9%; background: #000; }
+.dao98 .da-lb.top { top: 0; }
+.dao98 .da-lb.bot { bottom: 0; height: 36%; background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.92) 22%, #000); }
+.dao98 .da-dbox { position: absolute; left: 10%; right: 10%; bottom: 3%; pointer-events: auto; }
+.dao98 .da-dspk { color: var(--gold2); font-size: 15px; font-variant: small-caps; letter-spacing: 1px; margin-bottom: 4px; text-align: center; }
+.dao98 .da-dtext { font-size: 16px; line-height: 23px; color: #f4ecd8; text-align: center; margin-bottom: 12px; text-shadow: 0 1px 2px #000; max-height: 110px; overflow: auto; }
+.dao98 .da-dtext.narr { font-style: italic; color: #cfc4a8; }
+.dao98 .da-dreplies { border-top: 1px solid rgba(216, 176, 96, 0.35); padding-top: 6px; max-height: 170px; overflow: auto; }
+.dao98 .da-reply { padding: 3px 8px; cursor: pointer; color: #d8ccb0; font-size: 15px; }
+.dao98 .da-reply:hover { color: #fff; background: linear-gradient(90deg, rgba(140, 100, 40, 0.35), rgba(0, 0, 0, 0)); }
+.dao98 .da-reply b { color: var(--gold); margin-right: 6px; }
+.dao98 .da-reply .chk { color: #ffb070; }
+.dao98 .da-reply.cont { color: #a89878; font-style: italic; }
+
+.dao98 .da-loot { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -55%); width: 300px; background: linear-gradient(#2a1c10, #120a04); border: 2px solid #8a6a3a; box-shadow: 0 0 20px #000; padding: 8px; }
+.dao98 .da-loot-t { text-align: center; color: var(--gold2); font-variant: small-caps; font-size: 16px; border-bottom: 1px solid #5a3a1a; margin-bottom: 6px; }
+.dao98 .da-loot-list { max-height: 260px; overflow: auto; }
+.dao98 .da-loot-row { display: flex; align-items: center; gap: 8px; padding: 3px; cursor: pointer; }
+.dao98 .da-loot-row:hover { background: rgba(140, 100, 40, 0.3); }
+.dao98 .da-loot-row img { width: 32px; height: 32px; }
+.dao98 .da-loot-row .coin, .dao98 .coins span { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff4b0, #c89020 60%, #6a4a10); box-shadow: 0 0 2px #000; vertical-align: -2px; margin: 0 3px; }
+.dao98 .da-loot-row .coin { width: 28px; height: 28px; margin: 2px; }
+.dao98 .da-loot-empty { text-align: center; color: #8a7a60; padding: 10px; }
+
+.dao98 .da-slides { position: absolute; inset: 0; z-index: 40; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+.dao98 .da-slides canvas { width: min(92%, 800px); aspect-ratio: 16 / 9; border: 1px solid #3a2a1a; box-shadow: 0 0 40px rgba(0, 0, 0, 0.9); }
+.dao98 .da-slide-text { width: min(86%, 760px); margin-top: 18px; font-size: 17px; line-height: 26px; text-align: center; color: #e8dcc0; animation: dafadein 1.2s; }
+.dao98 .da-slide-hint { position: absolute; bottom: 12px; right: 16px; color: #6a5a40; font-size: 11px; }
+@keyframes dafadein { from { opacity: 0; } to { opacity: 1; } }
+
+.dao98 .da-loading { position: absolute; inset: 0; z-index: 50; background: #000; transition: opacity 0.4s; }
+.dao98 .da-loading canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.6; }
+.dao98 .da-load-box { position: absolute; left: 8%; right: 8%; bottom: 8%; }
+.dao98 .da-load-title { font-size: 30px; color: var(--gold2); font-variant: small-caps; letter-spacing: 3px; text-shadow: 0 0 10px #000; }
+.dao98 .da-load-tip { margin: 8px 0 14px; color: #d8ccb0; font-style: italic; text-shadow: 0 0 4px #000; }
+.dao98 .da-load-bar { height: 6px; background: #1a0e06; border: 1px solid #6a4a24; }
+.dao98 .da-load-bar i { display: block; height: 100%; width: 40%; background: linear-gradient(90deg, #6a1010, #c83a1a); transition: width 0.3s; }
+
+.dao98 .da-death { position: absolute; inset: 0; z-index: 45; background: radial-gradient(rgba(60, 0, 0, 0.5), rgba(0, 0, 0, 0.92)); display: flex; flex-direction: column; align-items: center; justify-content: center; animation: dafadein 2s; }
+.dao98 .da-death-t { font-size: 40px; color: #c82a1a; font-variant: small-caps; letter-spacing: 6px; text-shadow: 0 0 12px #000; }
+.dao98 .da-death-s { margin: 12px; color: #c8b890; font-style: italic; }
+
+.dao98 .da-book { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); width: min(96%, 1000px); height: min(84%, 640px); display: flex; padding: 16px 14px; box-sizing: border-box; z-index: 25; background: linear-gradient(135deg, #3a2412, #1a0e06 40%, #2a1a0c); border: 3px solid #6a4a24; border-radius: 10px; box-shadow: 0 0 0 2px #000, 0 0 0 4px #a8844a, 0 10px 40px #000, inset 0 0 30px #000; }
+.dao98 .da-page { flex: 1; position: relative; min-width: 0; padding: 10px 18px 12px; overflow: hidden; display: flex; flex-direction: column; color: var(--ink); background: var(--blood) no-repeat, radial-gradient(ellipse at 50% 40%, #f0e2bc, #e0c898 70%, #b8945a); background-image: var(--blood), radial-gradient(ellipse at 50% 40%, #f0e2bc, #e0c898 70%, #b8945a); background-size: 180px, 100%; box-shadow: inset 0 0 28px rgba(90, 50, 10, 0.55); font-size: 13px; }
+.dao98 .da-page.L { border-radius: 6px 0 0 6px; background-position: 88% 90%, 0 0; }
+.dao98 .da-page.R { border-radius: 0 6px 6px 0; background-position: 6% 12%, 0 0; }
+.dao98 .da-spine { width: 10px; background: linear-gradient(90deg, #6a4a24, #2a1a0a, #6a4a24); box-shadow: 0 0 10px #000; }
+.dao98 .da-page h2 { margin: 0 0 6px; text-align: center; font-size: 22px; font-weight: normal; color: #3a2008; font-variant: small-caps; letter-spacing: 1px; border-bottom: 2px solid rgba(120, 70, 20, 0.35); padding-bottom: 4px; }
+.dao98 .da-page .pc { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: auto; }
+.dao98 .da-page h3 { margin: 8px 0 4px; font-size: 14px; color: #5a2a08; font-variant: small-caps; border-bottom: 1px solid rgba(120, 70, 20, 0.3); }
+.dao98 .da-close { position: absolute; right: 14px; top: 10px; background: none; border: none; color: #a81a10; font-size: 26px; font-weight: bold; text-shadow: 0 1px 0 #fff4c0; z-index: 3; }
+.dao98 .da-close:hover { color: #e02a10; }
+.dao98 .da-book.wide { flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(ellipse, #e8d6ae, #b8945a); color: var(--ink); }
+.dao98 .da-book.wide .da-page, .dao98 .da-book.wide .da-spine { display: none; }
+.dao98 .da-maptitle { font-size: 22px; font-variant: small-caps; color: #3a2008; }
+.dao98 .da-bigmap { max-width: 96%; max-height: 82%; border: 2px solid #6a4a24; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); }
+
+.dao98 .da-charhdr { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px; background: linear-gradient(90deg, rgba(0, 0, 0, 0), #3a240e 15%, #5a3a18 50%, #3a240e 85%, rgba(0, 0, 0, 0)); padding: 3px 0; }
+.dao98 .da-charhdr .nm { color: #f0dca0; font-size: 17px; min-width: 150px; text-align: center; text-shadow: 0 1px 2px #000; }
+.dao98 .da-charhdr button { background: none; border: none; color: #f0c860; font-size: 16px; text-shadow: 0 0 3px #000; }
+.dao98 .da-eq { display: flex; gap: 8px; justify-content: center; flex: 1; min-height: 0; }
+.dao98 .da-eqcol { display: flex; flex-direction: column; gap: 5px; }
+.dao98 .da-slot, .dao98 .da-setbtn { width: 56px; height: 56px; background: radial-gradient(#3a2a1a, #120a04); border: 2px solid #6a4a24; border-radius: 3px; box-shadow: inset 0 0 8px #000, 0 1px 2px rgba(0, 0, 0, 0.5); cursor: pointer; display: grid; place-items: center; }
+.dao98 .da-slot img { width: 52px; height: 52px; }
+.dao98 .da-slot img.ghost { width: 34px; height: 34px; opacity: 0.6; }
+.dao98 .da-slot:hover { border-color: #d8b060; }
+.dao98 .da-setbtn { height: 30px; color: #f0c860; font-weight: bold; }
+.dao98 .da-eqmid { position: relative; background: #000; border: 2px solid #4a3018; box-shadow: inset 0 0 16px #000; flex: 1; max-width: 220px; min-height: 290px; display: flex; align-items: center; justify-content: center; }
+.dao98 .da-preview canvas { display: block; cursor: grab; }
+.dao98 .da-preview img { width: 120px; }
+.dao98 .da-eqstats { position: absolute; left: 6px; font-size: 12px; color: #d8e8c0; text-shadow: 0 0 3px #000; font-family: Tahoma, sans-serif; }
+.dao98 .da-eqstats.top { top: 6px; }
+.dao98 .da-eqstats.bot { bottom: 6px; }
+.dao98 .da-eqstats div { margin: 2px 0; }
+.dao98 .da-eqstats .fat { color: #ff6a50; }
+.dao98 .ic { display: inline-block; width: 12px; height: 12px; margin-right: 5px; vertical-align: -1px; border-radius: 2px; }
+.dao98 .ic.hp { background: #d82a1a; border-radius: 50%; }
+.dao98 .ic.mana { background: #3a6aea; border-radius: 50%; }
+.dao98 .ic.stam { background: #3aba3a; border-radius: 50%; }
+.dao98 .ic.fatg { background: #b8481a; }
+.dao98 .ic.arm { background: #8a9aa0; clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%); }
+.dao98 .ic.def { background: #5ab05a; clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%); }
+.dao98 .ic.atk { background: #c8c060; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.dao98 .ic.dmg { background: #e05a3a; clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%); }
+.dao98 .da-approval { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 12px; }
+.dao98 .da-approval .bar, .dao98 .da-comp .bar { flex: 1; height: 8px; position: relative; background: linear-gradient(90deg, #6a1010, #6a6a50, #1a6a1a); border: 1px solid #3a2010; }
+.dao98 .da-approval .bar i, .dao98 .da-comp .bar i { position: absolute; top: -3px; width: 6px; height: 12px; margin-left: -3px; background: #f0e0a0; border: 1px solid #000; }
+.dao98 .da-xp { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 12px; }
+.dao98 .da-xp .bar, .dao98 .da-cap .bar { flex: 1; height: 8px; background: #2a1a0a; border: 1px solid #5a3a1a; }
+.dao98 .da-xp .bar i { display: block; height: 100%; background: linear-gradient(#f0d070, #a07020); }
+.dao98 .da-invtop { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.dao98 .coins { font-size: 14px; color: #3a2008; }
+.dao98 .coins .cs { background: radial-gradient(circle at 35% 35%, #fff, #a8a8b0 60%, #505058); }
+.dao98 .coins .cc { background: radial-gradient(circle at 35% 35%, #ffd0a0, #b8602a 60%, #5a2a10); }
+.dao98 .da-invtop select, .dao98 .da-tac select, .dao98 .da-beh select, .dao98 .da-saves select { background: #2a1a0c; color: #f0dcb0; border: 1px solid #8a6a3a; font: 12px Georgia, serif; padding: 2px; }
+.dao98 .da-invtabs { display: flex; gap: 3px; justify-content: center; margin-bottom: 5px; }
+.dao98 .da-invtab { width: 36px; height: 32px; padding: 0; background: radial-gradient(#4a3420, #1a0e06); border: 1px solid #6a4a24; border-radius: 3px; }
+.dao98 .da-invtab img { width: 24px; height: 24px; }
+.dao98 .da-invtab.on { border-color: #f0c860; box-shadow: 0 0 6px #f0c060; }
+.dao98 .da-invlist { flex: 1; overflow: auto; min-height: 0; border-top: 1px solid rgba(120, 70, 20, 0.3); }
+.dao98 .da-invrow { display: flex; align-items: center; gap: 8px; padding: 2px 4px; border-bottom: 1px solid rgba(140, 40, 20, 0.35); cursor: pointer; }
+.dao98 .da-invrow:hover { background: rgba(140, 90, 30, 0.2); }
+.dao98 .da-invrow img { width: 40px; height: 40px; flex: none; }
+.dao98 .da-invrow .n { flex: 1; font-size: 14px; }
+.dao98 .da-invrow.uniq .n { color: #8a4a00; font-weight: bold; }
+.dao98 .da-invrow.noreq .n { color: #a02a1a; }
+.dao98 .da-invrow .cnt { color: #5a3a1a; font-size: 12px; }
+.dao98 .da-invrow .price { color: #5a3a1a; font-size: 12px; white-space: nowrap; }
+.dao98 .da-empty { text-align: center; color: #8a6a40; padding: 20px; font-style: italic; }
+.dao98 .da-cap { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.dao98 .da-cap .bar i { display: block; height: 100%; background: linear-gradient(#c82a1a, #6a1008); }
+
+.dao98 .da-charinfo { text-align: center; font-size: 13px; color: #5a3a1a; margin-bottom: 6px; }
+.dao98 .da-charrow { display: flex; gap: 10px; }
+.dao98 .da-charrow .da-preview { background: #000; border: 2px solid #4a3018; }
+.dao98 .da-attrs { flex: 1; }
+.dao98 .da-attr { display: flex; align-items: center; gap: 6px; padding: 3px 0; border-bottom: 1px solid rgba(120, 70, 20, 0.25); }
+.dao98 .da-attr .an { flex: 1; }
+.dao98 .da-attr .av { min-width: 40px; text-align: right; font-weight: bold; }
+.dao98 .da-attr small { font-weight: normal; color: #8a6a40; }
+.dao98 .da-plus { width: 22px; height: 22px; padding: 0; background: linear-gradient(#5a8a2a, #2a4a0a); border: 1px solid #1a2a0a; color: #fff; font-weight: bold; border-radius: 3px; }
+.dao98 .da-plus.minus { background: linear-gradient(#8a3a2a, #4a0a0a); }
+.dao98 .da-points { color: #8a2a00; margin: 4px 0; }
+.dao98 .da-stats > div { display: flex; justify-content: space-between; padding: 3px 4px; border-bottom: 1px solid rgba(120, 70, 20, 0.25); }
+.dao98 .da-injuries div { color: #8a1a0a; margin: 2px 0; }
+.dao98 .da-bio { margin-top: 8px; font-style: italic; color: #5a3a1a; }
+.dao98 .da-lines { overflow: auto; flex: 1; }
+.dao98 .da-line { margin: 4px 0; }
+.dao98 .da-line .ln { font-size: 12px; color: #5a2a08; font-variant: small-caps; }
+.dao98 .da-lineicons { display: flex; gap: 14px; }
+.dao98 .da-abil { width: 38px; height: 38px; cursor: pointer; position: relative; border: 1px solid #3a2410; }
+.dao98 .da-abil img { width: 100%; height: 100%; display: block; }
+.dao98 .da-abil.locked img { filter: grayscale(1) brightness(0.45); }
+.dao98 .da-abil.open { box-shadow: 0 0 8px #e8a020; border-color: #f0c040; animation: dablink 1.6s infinite; }
+.dao98 .da-abil.known { border-color: #2a6a1a; box-shadow: 0 0 4px #3a8a2a; }
+.dao98 .da-lineicons .da-abil + .da-abil::before { content: ''; position: absolute; left: -14px; top: 18px; width: 14px; height: 2px; background: #8a6a3a; }
+.dao98 .da-skills .da-skill { display: flex; align-items: center; gap: 8px; padding: 5px 2px; border-bottom: 1px solid rgba(120, 70, 20, 0.25); }
+.dao98 .da-skill .sn { width: 170px; }
+.dao98 .da-skill .pips { display: flex; gap: 3px; }
+.dao98 .da-skill .pips i { width: 12px; height: 12px; border: 1px solid #5a3a1a; background: #d8c090; transform: rotate(45deg); }
+.dao98 .da-skill .pips i.on { background: #a02a0a; }
+.dao98 .da-skill .sd { flex: 1; font-size: 11px; color: #7a5a30; }
+.dao98 .da-tactics { flex: 1; overflow-y: auto; overflow-x: hidden; }
+.dao98 .da-tac { display: flex; align-items: center; gap: 4px; padding: 2px 0; border-bottom: 1px solid rgba(120, 70, 20, 0.2); font-size: 12px; }
+.dao98 .da-tac select { flex: 1 1 0; min-width: 0; }
+.dao98 .da-tac.off { opacity: 0.5; }
+.dao98 .da-tac button { background: none; border: 1px solid #8a6a3a; color: #5a3a1a; font-size: 9px; padding: 1px 3px; }
+.dao98 .da-beh label { display: block; margin: 6px 0; }
+.dao98 .da-help { font-size: 12px; color: #5a3a1a; line-height: 17px; margin-top: 10px; }
+.dao98 .da-jtabs { position: absolute; top: -30px; left: 30px; display: flex; gap: 4px; }
+.dao98 .da-jtab { background: linear-gradient(#4a3018, #1a0e06); border: 1px solid #8a6a3a; border-bottom: none; color: #d8c090; padding: 5px 16px; border-radius: 6px 6px 0 0; }
+.dao98 .da-jtab.on { background: linear-gradient(#e8d6ae, #c8a878); color: #3a2008; }
+.dao98 .da-qlist { flex: 1; overflow: auto; }
+.dao98 .da-qhead { font-variant: small-caps; color: #7a2a08; margin: 8px 0 3px; border-bottom: 1px solid rgba(120, 70, 20, 0.3); }
+.dao98 .da-qitem { padding: 3px 6px; cursor: pointer; }
+.dao98 .da-qitem img { width: 20px; height: 20px; vertical-align: middle; }
+.dao98 .da-qitem:hover { background: rgba(140, 90, 30, 0.2); }
+.dao98 .da-qitem.on { background: rgba(140, 40, 10, 0.25); font-weight: bold; }
+.dao98 .da-qitem.done { color: #7a6a50; text-decoration: line-through; }
+.dao98 .da-qitem.new::after { content: ' ✦'; color: #b02a00; }
+.dao98 .da-qitem.dim { color: #9a8a6a; }
+.dao98 .da-qtext p { margin: 0 0 10px; line-height: 19px; color: #6a5030; }
+.dao98 .da-qtext p.cur { color: #2a1406; }
+.dao98 .da-qtext.codex p { color: #2a1406; text-indent: 1.5em; }
+.dao98 .da-recipe > img { float: left; margin: 0 10px 6px 0; }
+.dao98 .da-recipe h3 + .ing, .dao98 .da-recipe h3:nth-of-type(2) { clear: both; }
+.dao98 .da-recipe .ing { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+.dao98 .da-recipe .miss { color: #a02a1a; }
+.dao98 .da-cards { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.dao98 .da-card { width: 100px; text-align: center; padding: 6px; border: 2px solid #8a6a3a; background: rgba(90, 60, 20, 0.15); cursor: pointer; font-size: 12px; }
+.dao98 .da-card img { width: 64px; height: 64px; border-radius: 50%; border: 2px solid #5a3a1a; display: block; margin: 0 auto 4px; }
+.dao98 .da-card b { display: block; }
+.dao98 .da-card span { color: #7a5a30; font-size: 11px; }
+.dao98 .da-card.on { border-color: #a02a0a; background: rgba(160, 40, 10, 0.2); box-shadow: 0 0 6px rgba(160, 40, 10, 0.5); }
+.dao98 .da-card.fixed { cursor: default; }
+.dao98 .da-comp { margin: 6px 0 10px; font-size: 12px; line-height: 17px; }
+.dao98 .da-comp .dim { font-style: italic; opacity: 0.75; }
+.dao98 .da-comp .bio { margin: 2px 0 5px; }
+
+.dao98 .da-gmenu, .dao98 .da-saves { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); min-width: 300px; max-width: 560px; padding: 16px 22px; z-index: 35; background: linear-gradient(#2a1a0c, #0c0602); border: 2px solid #8a6a3a; box-shadow: 0 0 0 2px #000, 0 0 30px #000; display: flex; flex-direction: column; align-items: stretch; }
+.dao98 .da-saves { z-index: 36; max-height: 80%; }
+.dao98 .da-saves.opts { overflow-y: auto; }
+.dao98 .da-saves.opts select { max-width: 240px; }
+.dao98 .da-opt-h { margin: 12px 0 2px; padding-top: 8px; border-top: 1px solid #5a4424; color: var(--gold2); font-variant: small-caps; letter-spacing: 1px; }
+.dao98 .da-voice-note:empty { display: none; }
+.dao98 .da-saves.wide { max-width: 720px; }
+.dao98 .da-gmenu-t { text-align: center; font-size: 20px; color: var(--gold2); font-variant: small-caps; letter-spacing: 2px; margin-bottom: 10px; }
+.dao98 .da-mbtn { background: none; border: none; border-bottom: 1px solid rgba(138, 106, 58, 0.3); color: #e0d0a8; padding: 8px; font-size: 16px; text-align: center; }
+.dao98 .da-mbtn:hover:not([disabled]) { color: #fff; text-shadow: 0 0 8px #f0a040; }
+.dao98 .da-mbtn[disabled] { opacity: 0.35; }
+.dao98 .da-saves .list { overflow: auto; max-height: 360px; }
+.dao98 .da-saverow { position: relative; padding: 6px 30px 6px 8px; border-bottom: 1px solid rgba(138, 106, 58, 0.3); cursor: pointer; color: #e0d0a8; }
+.dao98 .da-saverow:hover { background: rgba(140, 90, 30, 0.25); }
+.dao98 .da-saverow small { color: #9a8a6a; }
+.dao98 .da-saverow .del { position: absolute; right: 6px; top: 8px; background: none; border: none; color: #c83a2a; }
+.dao98 .da-saverow.new { color: var(--gold2); text-align: center; }
+.dao98 .da-saves label { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 6px 0; color: #e0d0a8; }
+.dao98 .da-saves p { color: #d8ccb0; line-height: 20px; }
+.dao98 .ach { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; max-height: 360px; overflow: auto; }
+.dao98 .ach div { border: 1px solid #4a3418; padding: 6px; opacity: 0.45; }
+.dao98 .ach div.on { opacity: 1; border-color: var(--gold); background: rgba(120, 80, 20, 0.2); }
+.dao98 .ach b { display: block; color: var(--gold2); }
+.dao98 .ach span { font-size: 11px; color: #c8b890; }
+
+.dao98 .da-menu { position: absolute; inset: 0; z-index: 10; }
+.dao98 .da-menubg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dao98 .da-logo { position: absolute; right: 5%; top: 5%; text-align: right; }
+.dao98 .da-logo .t1 { font-size: clamp(34px, 6vw, 74px); letter-spacing: 2px; font-family: 'Times New Roman', Georgia, serif; background: linear-gradient(#f4ecd8, #b8a8a0 45%, #6a5a58 55%, #d8c8c0); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 2px #000) drop-shadow(0 0 1px #6a0a0a); line-height: 1; }
+.dao98 .da-logo .t2 { font-size: clamp(16px, 2.2vw, 28px); letter-spacing: 8px; color: #f0e8d8; text-shadow: 0 1px 3px #000; margin-right: 4px; }
+.dao98 .da-logo .t3 { font-size: 13px; color: #c8401a; letter-spacing: 4px; text-shadow: 0 0 4px #000; }
+.dao98 .da-mlist { position: absolute; right: 5%; bottom: 10%; text-align: right; }
+.dao98 .da-mitem { font-size: clamp(13px, 1.4vw, 17px); color: #f0e0c0; padding: 3px 0; cursor: pointer; text-shadow: 0 1px 3px #000, 0 0 6px #000; }
+.dao98 .da-mitem:hover { color: #fff; text-shadow: 0 0 10px #ffb040, 0 1px 3px #000; }
+.dao98 .da-mitem.dis { color: #8a7a60; cursor: default; }
+.dao98 .da-conn { position: absolute; left: 0; bottom: 18px; padding: 3px 60px 3px 10px; color: #e8dcc0; background: linear-gradient(90deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0)); border-top: 1px solid #8a7a60; border-radius: 0 0 40px 0; font-size: 13px; }
+.dao98 .da-copy { position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); font-size: 10px; color: rgba(255, 220, 180, 0.4); }
+.dao98 .da-glerr { position: absolute; left: 20px; top: 20px; max-width: 360px; color: #ff9070; background: rgba(0, 0, 0, 0.7); padding: 8px; }
+.dao98 .da-credits { position: absolute; inset: 0; z-index: 40; background: #000; overflow: hidden; cursor: pointer; }
+.dao98 .da-credits .roll { position: absolute; left: 0; right: 0; text-align: center; animation: daroll 22s linear; top: 10%; }
+.dao98 .da-credits h2 { color: var(--gold2); font-size: 30px; font-variant: small-caps; }
+.dao98 .da-credits h3 { color: #c8401a; margin-top: 26px; font-variant: small-caps; }
+.dao98 .da-credits p { color: #e0d4b8; }
+@keyframes daroll { from { transform: translateY(80%); } to { transform: translateY(0); } }
+
+.dao98 .da-create { position: absolute; inset: 0; z-index: 10; }
+.dao98 .da-crbg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dao98 .da-crsteps { position: absolute; left: 0; right: 0; top: 10px; display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; }
+.dao98 .da-crsteps span { padding: 3px 10px; color: #8a7a60; border-bottom: 2px solid transparent; font-variant: small-caps; }
+.dao98 .da-crsteps span.on { color: var(--gold2); border-color: #c8401a; }
+.dao98 .da-crsteps span.done { color: #c8b890; }
+.dao98 .da-crview { position: absolute; left: 4%; top: 50px; bottom: 30px; width: 44%; display: flex; align-items: center; justify-content: center; }
+.dao98 .da-crview canvas { max-width: 100%; max-height: 100%; border: 1px solid #3a2a1a; box-shadow: 0 0 30px #000; cursor: grab; }
+.dao98 .da-crpanel { position: absolute; right: 4%; top: 50px; bottom: 30px; width: 44%; display: flex; flex-direction: column; background: linear-gradient(rgba(30, 18, 8, 0.92), rgba(10, 6, 2, 0.95)); border: 2px solid #6a4a24; box-shadow: 0 0 0 1px #000, 0 0 30px #000; padding: 12px 16px; box-sizing: border-box; }
+.dao98 .da-crbody { flex: 1; overflow: auto; }
+.dao98 .da-crbody h3 { color: var(--gold2); font-variant: small-caps; font-weight: normal; margin: 10px 0 6px; border-bottom: 1px solid rgba(216, 176, 96, 0.3); }
+.dao98 .da-crbody .da-attr { border-color: rgba(216, 176, 96, 0.2); color: #e8dcc0; }
+.dao98 .da-choices { display: flex; flex-wrap: wrap; gap: 5px; }
+.dao98 .da-choice { background: linear-gradient(#3a2614, #160c04); border: 1px solid #6a4a24; color: #e0d0a8; padding: 6px 12px; }
+.dao98 .da-choice:hover:not(.dis) { border-color: var(--gold); color: #fff; }
+.dao98 .da-choice.on { border-color: #d84a1a; background: linear-gradient(#6a2a10, #2a0a02); color: #fff; box-shadow: 0 0 8px rgba(216, 74, 26, 0.5); }
+.dao98 .da-choice.dis { opacity: 0.3; cursor: default; }
+.dao98 .da-crdesc { margin: 10px 0; line-height: 20px; color: #d8ccb0; }
+.dao98 .da-crdesc.story { font-style: italic; color: #c8b890; }
+.dao98 .da-swatches { display: flex; align-items: center; gap: 4px; margin: 6px 0; }
+.dao98 .da-swatches span { width: 70px; color: #c8b890; }
+.dao98 .da-swatches i { width: 22px; height: 22px; border: 2px solid #3a2a1a; cursor: pointer; border-radius: 50%; }
+.dao98 .da-swatches i.on { border-color: var(--gold2); box-shadow: 0 0 6px var(--gold); }
+.dao98 .da-input { width: 90%; padding: 6px; font: 18px Georgia, serif; background: #0c0804; color: var(--gold2); border: 1px solid #8a6a3a; outline: none; user-select: text; }
+.dao98 .da-abchoices { display: flex; flex-wrap: wrap; gap: 6px; }
+.dao98 .da-abch { display: flex; align-items: center; gap: 6px; padding: 4px 8px 4px 4px; border: 1px solid #4a3018; cursor: pointer; width: 46%; box-sizing: border-box; }
+.dao98 .da-abch img { width: 36px; height: 36px; }
+.dao98 .da-abch.on { border-color: #d84a1a; background: rgba(160, 50, 10, 0.3); }
+.dao98 .da-flash { position: absolute; left: 50%; top: 45%; transform: translateX(-50%); background: rgba(80, 10, 5, 0.9); color: #fff; padding: 8px 20px; border: 1px solid #c83a1a; z-index: 30; }
+
+.dao98 .da-world { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(96%, 900px); aspect-ratio: 900 / 620; z-index: 35; box-shadow: 0 0 40px #000; }
+.dao98 .da-world canvas { width: 100%; height: 100%; display: block; }
+.dao98 .da-world-t { position: absolute; left: 0; right: 0; top: 18px; text-align: center; font-size: 28px; font-variant: small-caps; color: #4a2008; letter-spacing: 4px; }
+.dao98 .da-world-info { position: absolute; left: 0; right: 0; bottom: 20px; text-align: center; color: #3a2008; font-style: italic; }
+.dao98 .da-world .close { position: absolute; right: 22px; bottom: 16px; }
+.dao98 .da-pin { position: absolute; transform: translate(-50%, -50%); cursor: pointer; text-align: center; }
+.dao98 .da-pin i { display: block; width: 14px; height: 14px; margin: 0 auto; border-radius: 50%; background: #6a5a40; border: 2px solid #2a1a0a; }
+.dao98 .da-pin.open i { background: #c8201a; box-shadow: 0 0 8px #ff4020; animation: dablink 1.2s infinite; }
+.dao98 .da-pin.here i { background: #2a6a1a; }
+.dao98 .da-pin span { font-size: 13px; color: #2a1406; text-shadow: 0 0 3px #f0e0b8; white-space: nowrap; }
+
+.dao98 .da-ending { position: absolute; inset: 0; z-index: 45; background: #000; display: flex; align-items: center; justify-content: center; }
+.dao98 .da-ending canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.55; }
+.dao98 .da-end-box { position: relative; max-width: 640px; padding: 20px 30px; background: rgba(10, 6, 2, 0.8); border: 2px solid #8a6a3a; animation: dafadein 2s; }
+.dao98 .da-end-box h2 { text-align: center; color: var(--gold2); font-variant: small-caps; letter-spacing: 3px; font-weight: normal; }
+.dao98 .da-end-box p { line-height: 21px; color: #e0d4b8; }
+.dao98 .da-end-box .stats { color: #a89878; font-style: italic; margin-top: 10px; }

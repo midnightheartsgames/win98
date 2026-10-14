@@ -1,0 +1,20 @@
+{
+  "shop_shinryu": {
+    "id": "shop_shinryu", "name": "Лавка Мастера Гэна", "keeper": "gen",
+    "stock": [
+      { "item": "salve" }, { "item": "jasmine_tea" }, { "item": "cold_compress" }, { "item": "eye_drops" }, { "item": "smelling_salts" },
+      { "item": "bola_net" }, { "item": "firecracker", "if": "kupol_arrived" }, { "item": "healer_balm", "if": "kupol_arrived" },
+      { "item": "work_tunic" }, { "item": "quilted_vest" }, { "item": "luck_charm", "if": "quest.dog >= 1" }
+    ]
+  },
+  "shop_docks": {
+    "id": "shop_docks", "name": "Лавка «Лиана»", "keeper": "vendor",
+    "stock": [
+      { "item": "salve" }, { "item": "healer_balm" }, { "item": "jasmine_tea" }, { "item": "ginseng_tea" }, { "item": "cold_compress" },
+      { "item": "eye_drops" }, { "item": "smelling_salts" }, { "item": "chi_needle" }, { "item": "panacea" }, { "item": "sun_ash" },
+      { "item": "firecracker" }, { "item": "bola_net" }, { "item": "smoke_bomb" }, { "item": "quilted_vest" }, { "item": "fire_lily" },
+      { "item": "dragonhide_gloves" }, { "item": "tempered_staff" }, { "item": "lantern_knuckles", "if": "party.miri" },
+      { "item": "koi_scale_armor", "if": "station_open" }, { "item": "basing_elixir", "if": "station_open" }
+    ]
+  }
+}

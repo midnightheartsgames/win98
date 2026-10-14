@@ -1,0 +1,7 @@
+{
+  "dog": { "id": "dog", "name": "Сбежавший пёс-утконос", "giver": "toshi", "region": "shinryu", "steps": ["quest.dog.1", "quest.dog.2"], "reward": "quest.dog.reward" },
+  "radio_parts": { "id": "radio_parts", "name": "Лампы для Мастера Кена", "giver": "ken", "region": "rc", "steps": ["quest.radio_parts.1", "quest.radio_parts.2"], "reward": "quest.radio_parts.reward" },
+  "owl_cat": { "id": "owl_cat", "name": "Пушинка бабушки Оу", "giver": "ou", "region": "rc", "steps": ["quest.owl_cat.1", "quest.owl_cat.2", "quest.owl_cat.3"], "reward": "quest.owl_cat.reward" },
+  "radio_voices": { "id": "radio_voices", "name": "Голоса эфира", "giver": "ken", "region": "rc", "steps": ["quest.radio_voices.1", "quest.radio_voices.2", "quest.radio_voices.3", "quest.radio_voices.4"], "reward": "quest.radio_voices.reward" },
+  "paisho": { "id": "paisho", "name": "Быстрая раздача", "giver": "lu", "region": "sea", "steps": ["quest.paisho.1", "quest.paisho.2", "quest.paisho.3"], "reward": "quest.paisho.reward" }
+}

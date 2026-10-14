@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wolfenstein 3D</title>
+<link rel="stylesheet" href="css/apps/wolf3d.css">
+<style>html,body{height:100%;margin:0;background:#008080}body{display:grid;place-items:center}.window{width:min(98vw,900px);height:96vh;border:3px outset #ddd;display:flex;flex-direction:column;background:silver}.title{background:linear-gradient(90deg,navy,#1084d0);color:#fff;font:bold 12px Tahoma;padding:5px}#game{flex:1;min-height:0}</style></head>
+<body><main class="window"><div class="title">Wolfenstein 3D</div><div id="game"></div></main>
+<script src="js/apps/wolf3d/wl-data.js"></script><script src="js/apps/wolf3d/wl-gfx.js"></script><script src="js/apps/wolf3d/wl-level.js"></script><script src="js/apps/wolf3d/wl-maps-e1.js"></script><script src="js/apps/wolf3d/wl-maps-e2.js"></script><script src="js/apps/wolf3d/wl-maps-e3.js"></script><script src="js/apps/wolf3d/wl-maps-e4.js"></script><script src="js/apps/wolf3d/wl-maps-e5.js"></script><script src="js/apps/wolf3d/wl-maps-e6.js"></script><script src="js/apps/wolf3d/wl-core.js"></script><script src="js/apps/wolf3d/wl-bot.js"></script><script src="js/apps/wolf3d/wl-render.js"></script><script src="js/apps/wolf3d/wl-audio.js"></script><script src="js/apps/wolf3d/wl-ui.js"></script>
+<script>const el=document.getElementById('game');const ui=new Wolf3D.UI(el);el.focus();addEventListener('pagehide',()=>ui.destroy(),{once:true});</script>
+</body></html>

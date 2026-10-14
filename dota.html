@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dota 98</title>
+<link rel="stylesheet" href="css/apps/dota.css">
+<style>html,body{height:100%;margin:0;background:#008080}body{display:grid;place-items:center}.window{width:min(98vw,1100px);height:96vh;border:3px outset #ddd;display:flex;flex-direction:column;background:silver}.title{background:linear-gradient(90deg,navy,#1084d0);color:#fff;font:bold 12px Tahoma;padding:5px}#game{flex:1;min-height:0}</style></head>
+<body><main class="window"><div class="title">Dota 98</div><div id="game"></div></main>
+<script src="js/apps/dota/dota-data.js"></script><script src="js/apps/dota/dota-cosmetics.js"></script><script src="js/apps/dota/dota-map.js"></script><script src="js/apps/dota/dota-core.js"></script><script src="js/apps/dota/dota-heroes.js"></script><script src="js/apps/dota/dota-ai.js"></script><script src="js/apps/dota/dota-gfx.js"></script><script src="js/apps/dota/dota-icons.js"></script><script src="js/apps/dota/dota-render.js"></script><script src="js/apps/dota/dota-audio.js"></script><script src="js/apps/dota/dota-ui.js"></script>
+<script>const el=document.getElementById('game');const ui=new Dota98.UI(el);window.dotaui=ui;el.focus();addEventListener('pagehide',()=>ui.destroy(),{once:true});</script>
+</body></html>

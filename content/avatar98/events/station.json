@@ -1,0 +1,151 @@
+{
+  "platform_enter": [
+    { "if": "!station_entered", "then": [
+      { "flag": "station_entered" },
+      { "title": "ttl.part3", "sub": "ttl.part3_sub", "frames": 220 },
+      { "fade": "in", "frames": 40 },
+      { "talk": "st.enter" }
+    ], "else": [{ "fade": "in", "frames": 20 }] }
+  ],
+  "platform_gate": [
+    { "talk": "st.gate" },
+    { "sfx": "switch" },
+    { "wait": 20 },
+    { "sfx": "door_metal" },
+    { "shake": 16, "power": 1 },
+    { "flag": "gate1_open" },
+    { "restore": "map" },
+    { "talk": "st.gate_open" }
+  ],
+  "kai_locker": [{ "if": "party.miri", "then": [{ "talk": "insp.kai_locker" }, { "trust": { "miri": 1 } }], "else": [{ "talk": "insp.kai_locker_solo" }] }],
+  "diary1": [
+    { "talk": "st.diary1" },
+    { "if": "party.miri && !diary_1", "then": [{ "talk": "st.diary1_miri" }, { "trust": { "miri": 1 } }] },
+    { "flag": "diary_1" }
+  ],
+  "yard_enter": [
+    { "if": "!yard_init", "then": [{ "flag": "yard_init" }, { "flag": "b2" }, { "flag": "b3" }, { "talk": "st.yard" }] }
+  ],
+  "tog_b1": [{ "if": "b1", "then": [{ "unflag": "b1" }], "else": [{ "flag": "b1" }] }],
+  "tog_b2": [{ "if": "b2", "then": [{ "unflag": "b2" }], "else": [{ "flag": "b2" }] }],
+  "tog_b3": [{ "if": "b3", "then": [{ "unflag": "b3" }], "else": [{ "flag": "b3" }] }],
+  "tog_b4": [{ "if": "b4", "then": [{ "unflag": "b4" }], "else": [{ "flag": "b4" }] }],
+  "yard_check": [
+    { "if": "b1 && b2 && b3 && b4", "then": [
+      { "flag": "power_ok" },
+      { "wait": 20 },
+      { "sfx": "door_metal" },
+      { "shake": 24, "power": 2 },
+      { "restore": "map" },
+      { "talk": "st.power_ok" }
+    ] }
+  ],
+  "yard_s1": [{ "if": "power_ok", "then": [{ "talk": "st.power_done" }], "else": [{ "sfx": "switch" }, { "if": "sw_s1", "then": [{ "unflag": "sw_s1" }], "else": [{ "flag": "sw_s1" }] }, { "call": "tog_b1" }, { "call": "tog_b2" }, { "call": "yard_check" }] }],
+  "yard_s2": [{ "if": "power_ok", "then": [{ "talk": "st.power_done" }], "else": [{ "sfx": "switch" }, { "if": "sw_s2", "then": [{ "unflag": "sw_s2" }], "else": [{ "flag": "sw_s2" }] }, { "call": "tog_b1" }, { "call": "tog_b2" }, { "call": "tog_b3" }, { "call": "yard_check" }] }],
+  "yard_s3": [{ "if": "power_ok", "then": [{ "talk": "st.power_done" }], "else": [{ "sfx": "switch" }, { "if": "sw_s3", "then": [{ "unflag": "sw_s3" }], "else": [{ "flag": "sw_s3" }] }, { "call": "tog_b2" }, { "call": "tog_b3" }, { "call": "tog_b4" }, { "call": "yard_check" }] }],
+  "yard_s4": [{ "if": "power_ok", "then": [{ "talk": "st.power_done" }], "else": [{ "sfx": "switch" }, { "if": "sw_s4", "then": [{ "unflag": "sw_s4" }], "else": [{ "flag": "sw_s4" }] }, { "call": "tog_b3" }, { "call": "tog_b4" }, { "call": "yard_check" }] }],
+  "diary2": [{ "talk": "st.diary2" }, { "flag": "diary_2" }],
+  "yard_door": [{ "talk": "st.yard_door" }],
+  "tunnels_enter": [
+    { "if": "!tunnels_seen", "then": [{ "flag": "tunnels_seen" }, { "talk": "st.tunnels" }] }
+  ],
+  "tunnel_vine1": [
+    { "talk": "st.pipo_vine" },
+    { "fx": "vine", "at": "vine1a" },
+    { "fx": "vine", "at": "vine1b" },
+    { "sfx": "vine" },
+    { "flag": "vine1_open" },
+    { "restore": "map" },
+    { "trust": { "pipo": 1 } },
+    { "talk": "st.pipo_vine_after" }
+  ],
+  "tunnel_vine2": [
+    { "talk": "st.pipo_vine2" },
+    { "fx": "vine", "at": "vine2a" },
+    { "fx": "vine", "at": "vine2b" },
+    { "sfx": "vine" },
+    { "flag": "vine2_open" },
+    { "restore": "map" }
+  ],
+  "secret_wall": [
+    { "if": "!radio_secret", "then": [{ "talk": "st.wall_plain" }], "else": [
+      { "talk": "st.wall_open" },
+      { "fx": "earth", "at": "self" },
+      { "sfx": "earth" },
+      { "shake": 24, "power": 2 },
+      { "flag": "secret_open" },
+      { "restore": "map" },
+      { "secret": "sh_guardian_room" }
+    ] }
+  ],
+  "guardian_fight": [
+    { "letterbox": true },
+    { "talk": "st.guardian_pre" },
+    { "letterbox": false },
+    { "battle": "t_guardian" },
+    { "flag": "guardian_defeated" },
+    { "talk": "st.guardian_after" },
+    { "fx": "spirit", "at": "self" },
+    { "restore": "map" }
+  ],
+  "labs_enter": [
+    { "if": "!labs_seen", "then": [{ "flag": "labs_seen" }, { "if": "party.miri", "then": [{ "talk": "st.labs" }] }] }
+  ],
+  "diary3": [{ "talk": "st.diary3" }, { "flag": "diary_3" }],
+  "diary4": [
+    { "talk": "st.diary4" },
+    { "if": "!diary_4", "then": [
+      { "give": "jinhai_pages" },
+      { "flag": "diary_4" },
+      { "if": "party.miri", "then": [{ "talk": "st.diary_react" }], "else": [{ "talk": "st.diary_react_solo" }] }
+    ] }
+  ],
+  "labs_lift": [
+    { "if": "!power_ok", "then": [{ "talk": "st.lift_off" }], "else": [
+      { "talk": "st.lift" },
+      { "sfx": "lift" },
+      { "warp": "station_reactor", "spawn": "lift", "dir": "up" }
+    ] }
+  ],
+  "reactor_enter": [
+    { "if": "!reactor_seen", "then": [
+      { "flag": "reactor_seen" },
+      { "if": "party.miri", "then": [{ "talk": "st.reactor1" }], "else": [{ "talk": "st.reactor1_solo" }] }
+    ] }
+  ],
+  "hound_fight": [
+    { "letterbox": true },
+    { "music": "kupol" },
+    { "talk": "st.hound_pre" },
+    { "letterbox": false },
+    { "battle": "t_boss_hound" },
+    { "flag": "hound_defeated" },
+    { "restore": "map" },
+    { "letterbox": true },
+    { "music": "stop" },
+    { "fx": "explosion", "at": "self" },
+    { "sfx": "boss_die" },
+    { "shake": 30, "power": 2 },
+    { "talk": "st.hound_after" },
+    { "call": "core_awaken" }
+  ],
+  "core_awaken": [
+    { "move": "player", "path": "u2", "speed": 0.6 },
+    { "talk": "st.core" },
+    { "sfx": "heartbeat" },
+    { "fx": "glow", "at": "core" },
+    { "wait": 30 },
+    { "talk": "st.core_touch" },
+    { "fx": "earth", "at": "player" },
+    { "sfx": "quake" },
+    { "shake": 40, "power": 3 },
+    { "learn": "isa", "tech": "stone_step" },
+    { "talk": "st.earth" },
+    { "flash": "#ffffff", "frames": 40 },
+    { "letterbox": false },
+    { "call": "finale_vision" }
+  ],
+  "reactor_core": [
+    { "if": "hound_defeated && !isa_earth", "then": [{ "call": "core_awaken" }], "else": [{ "talk": "st.core_idle" }] }
+  ]
+}

@@ -1,0 +1,5 @@
+#app_blender204 .win-window-body { padding: 0; overflow: hidden; background: #000; }
+.b204-root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #909090; }
+.b204-canvas { display: block; outline: none; image-rendering: pixelated; cursor: default; touch-action: none; user-select: none; }
+.b204-render { position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; }
+.b204-render canvas { display: block; image-rendering: pixelated; outline: none; }

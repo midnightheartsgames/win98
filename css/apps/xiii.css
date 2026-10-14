@@ -1,0 +1,60 @@
+.x13 { position: relative; width: 100%; height: 100%; min-height: 0; background: #120c08; overflow: hidden; outline: none; user-select: none; -webkit-user-select: none; font: 13px "Comic Sans MS", "Comic Neue", cursive; color: #1a0e06; cursor: crosshair; }
+.x13 canvas.x13-view, .x13 canvas.x13-hud { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.x13 canvas.x13-hud { pointer-events: none; }
+.x13-layer { position: absolute; inset: 0; display: none; z-index: 2; align-items: center; justify-content: center; }
+.x13-menu { cursor: default; }
+.x13-m-main { background: #e0782a; }
+.x13-title-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.x13-main-items { position: absolute; right: 6%; bottom: 9%; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.x13-item { position: relative; font: 400 clamp(15px, 3.3vh, 26px) Impact, "Arial Black", sans-serif; letter-spacing: 1px; text-transform: uppercase; color: #1a0e06; background: #f6e27a; border: 3px solid #1a0e06; box-shadow: 4px 4px 0 #1a0e06; padding: 4px 18px 3px; cursor: pointer; transform: rotate(-1deg); transition: transform 0.08s, background 0.08s; white-space: nowrap; }
+.x13-item:nth-child(2n) { transform: rotate(0.8deg); }
+.x13-item:hover { background: #fff6c0; transform: rotate(0deg) scale(1.05); }
+.x13-item:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 #1a0e06; }
+.x13-item.off { opacity: 0.45; pointer-events: none; }
+.x13-item.small { font-size: clamp(12px, 2.4vh, 18px); padding: 2px 12px; }
+.x13-glerr { position: absolute; top: 8px; left: 8px; right: 8px; background: #fff; border: 2px solid #1a0e06; padding: 6px; color: #a01810; font-size: 12px; }
+.x13-m-difficulty, .x13-m-chapters, .x13-m-dossier, .x13-m-options, .x13-m-credits, .x13-m-end, .x13-m-loading { background: radial-gradient(circle at 30% 30%, #f0a040 0 2px, transparent 3px) 0 0 / 14px 14px, linear-gradient(135deg, #e8903a, #a8341c); }
+.x13-m-pause, .x13-m-objectives, .x13-m-dead, .x13-m-failed, .x13-m-complete { background: rgba(10, 6, 4, 0.55); }
+.x13-page { position: relative; width: min(88%, 620px); max-height: 92%; overflow: auto; background: #f2ead4; border: 4px solid #1a0e06; box-shadow: 8px 8px 0 rgba(26, 14, 6, 0.85); padding: 14px 20px 16px; display: flex; flex-direction: column; gap: 10px; }
+.x13-page.wide { width: min(94%, 1000px); }
+.x13-page.narrow { width: min(80%, 440px); }
+.x13-head { font: 400 clamp(24px, 5.2vh, 44px) Impact, "Arial Black", sans-serif; letter-spacing: 2px; text-transform: uppercase; color: #c82818; text-shadow: 3px 3px 0 #1a0e06; -webkit-text-stroke: 1px #1a0e06; }
+.x13-head.red { color: #e02818; }
+.x13-cap { align-self: flex-start; background: #f6e27a; border: 2px solid #1a0e06; padding: 4px 10px; font-weight: bold; font-size: 13px; }
+.x13-col { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; margin: 4px 0 2px; }
+.x13-foot { display: flex; align-items: center; gap: 12px; margin-top: 6px; flex-wrap: wrap; }
+.x13-note { font-size: 12px; font-weight: bold; }
+.x13-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.x13-card { background: #fff; border: 3px solid #1a0e06; box-shadow: 3px 3px 0 #1a0e06; cursor: pointer; display: flex; flex-direction: column; transition: transform 0.08s; }
+.x13-card:hover { transform: rotate(-1.2deg) scale(1.04); }
+.x13-card.locked { filter: grayscale(1) brightness(0.8); cursor: default; }
+.x13-card.locked:hover { transform: none; }
+.x13-shot { position: relative; aspect-ratio: 4 / 3; background: repeating-linear-gradient(45deg, #e8b050 0 6px, #e09840 6px 12px) center / cover no-repeat; border-bottom: 3px solid #1a0e06; }
+.x13-num { position: absolute; left: 6px; top: 2px; font: 400 26px Georgia, serif; font-weight: bold; color: #d82a18; -webkit-text-stroke: 1px #1a0e06; text-shadow: 2px 2px 0 #1a0e06; }
+.x13-cname { font: 400 15px Impact, "Arial Black", sans-serif; text-transform: uppercase; padding: 4px 6px 0; }
+.x13-csub { font-size: 11px; padding: 0 6px 5px; color: #5a3a24; }
+.x13-best { font-size: 10px; padding: 0 6px 5px; color: #2a6a2a; font-weight: bold; }
+.x13-docs { display: flex; flex-direction: column; gap: 8px; }
+.x13-doc { background: #fff; border: 2px solid #1a0e06; padding: 6px 10px; font-size: 12px; }
+.x13-doc b { display: block; color: #a01a10; margin-bottom: 3px; }
+.x13-doc.locked { opacity: 0.55; }
+.x13-doc-level { display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px; padding: 3px 8px; background: #1a0e06; color: #f6e27a; font-size: 12px; }
+.x13-doc-level span { color: #e8dcc0; font-size: 11px; }
+.x13-opts { display: flex; flex-direction: column; gap: 6px; }
+.x13-opt { display: grid; grid-template-columns: 1fr 160px 44px; align-items: center; gap: 8px; font-weight: bold; font-size: 13px; }
+.x13-opt input[type=range] { width: 160px; accent-color: #c82818; }
+.x13-opt input[type=checkbox] { width: 18px; height: 18px; accent-color: #c82818; justify-self: start; }
+.x13-opt em { font-style: normal; font-size: 11px; }
+.x13-text p { margin: 0 0 8px; font-size: 13px; line-height: 1.4; }
+.x13-objs { display: flex; flex-direction: column; gap: 6px; font-weight: bold; }
+.x13-obj.done { color: #2a6a2a; text-decoration: line-through; }
+.x13-obj.failed { color: #a02010; }
+.x13-stats { border-collapse: collapse; font-weight: bold; font-size: 14px; }
+.x13-stats td { border-bottom: 2px dotted #8a6a4a; padding: 3px 12px 3px 0; }
+.x13-stats td:last-child { text-align: right; color: #a01a10; }
+.x13-loading { display: flex; flex-direction: column; align-items: center; gap: 6px; background: #f2ead4; border: 4px solid #1a0e06; box-shadow: 8px 8px 0 #1a0e06; padding: 22px 46px; }
+.x13-lnum { font: bold 64px Georgia, serif; color: #d82a18; -webkit-text-stroke: 2px #1a0e06; text-shadow: 4px 4px 0 #1a0e06; line-height: 1; }
+.x13-lname { font: 400 30px Impact, "Arial Black", sans-serif; text-transform: uppercase; letter-spacing: 2px; }
+.x13-lsub { font-weight: bold; }
+.x13-lbar { margin-top: 8px; background: #1a0e06; color: #f6e27a; padding: 3px 12px; font: 400 14px Impact, sans-serif; letter-spacing: 3px; }
+@media (max-width: 760px) { .x13-grid { grid-template-columns: repeat(3, 1fr); } }

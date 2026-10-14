@@ -1,0 +1,63 @@
+{
+  "finale_vision": [
+    { "fade": "out", "frames": 50, "color": "#ffffff" },
+    { "flag": "finale_vision" },
+    { "vision": "on" },
+    { "warp": "vision_vault", "spawn": "deep", "dir": "up", "fade": false },
+    { "music": "vision" },
+    { "letterbox": true },
+    { "actor": "echo_j", "look": "jinhai", "x": 7, "y": 8, "dir": "down" },
+    { "fade": "in", "frames": 60 },
+    { "wait": 30 },
+    { "talk": "fi.echo1" },
+    { "flash": "#8040c0", "frames": 30 },
+    { "shake": 30, "power": 2 },
+    { "remove": "echo_j" },
+    { "actor": "echo_s", "look": "echo", "x": 7, "y": 8, "dir": "down" },
+    { "talk": "fi.echo2" },
+    { "sfx": "roar" },
+    { "shake": 60, "power": 4 },
+    { "fade": "out", "frames": 60 },
+    { "vision": "off" },
+    { "letterbox": false },
+    { "warp": "rc_rooftop_final", "spawn": "final", "dir": "up", "fade": false }
+  ],
+  "rooftop_enter": [
+    { "if": "finale_vision && !finale_done", "then": [{ "call": "finale_scene" }], "else": [
+      { "if": "finale_done", "then": [{ "fade": "in", "frames": 30 }, { "music": "finale" }, { "talk": "fi.clean_loaded" }] }
+    ] }
+  ],
+  "finale_scene": [
+    { "music": "stop" },
+    { "hide": "f:tao" },
+    { "hide": "f:miri" },
+    { "hide": "f:pipo" },
+    { "actor": "tao_f", "look": "tao", "x": 9, "y": 9, "dir": "up" },
+    { "if": "party.miri", "then": [{ "actor": "miri_f", "look": "miri", "x": 13, "y": 9, "dir": "up" }] },
+    { "actor": "pipo_f", "look": "pipo", "x": 12, "y": 10, "dir": "up" },
+    { "letterbox": true },
+    { "fade": "in", "frames": 60 },
+    { "wait": 40 },
+    { "sfx": "radio_on" },
+    { "if": "party.miri", "then": [{ "talk": "fi.radio" }], "else": [{ "talk": "fi.radio_solo" }] },
+    { "sfx": "radio_off" },
+    { "tint": "#000010", "alpha": 0.45 },
+    { "shake": 10, "power": 1 },
+    { "if": "party.miri", "then": [{ "talk": "fi.dark" }, { "talk": "fi.talk1" }] },
+    { "music": "finale" },
+    { "if": "trust.tao >= 3 && trust.tao >= trust.miri", "then": [{ "face": "tao_f", "dir": "right" }, { "talk": "fi.tao_trust" }], "else": [
+      { "if": "trust.miri >= 2 && party.miri", "then": [{ "face": "miri_f", "dir": "left" }, { "talk": "fi.miri_trust" }], "else": [
+        { "if": "trust.pipo >= 3", "then": [{ "talk": "fi.pipo_trust" }] }
+      ] }
+    ] },
+    { "face": "tao_f", "dir": "up" },
+    { "talk": "fi.final" },
+    { "flag": "finale_done" },
+    { "flag": "chapter2_unlocked" },
+    { "fade": "out", "frames": 90 },
+    { "title": "ttl.chapter2", "sub": "ttl.chapter2_sub", "frames": 360 },
+    { "tint": "none" },
+    { "letterbox": false },
+    { "ending": "demo" }
+  ]
+}

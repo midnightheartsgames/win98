@@ -1,0 +1,95 @@
+JAN	ЯНВ
+FEB	ФЕВ
+MAR	МАР
+APR	АПР
+MAY	МАЙ
+JUN	ИЮН
+JUL	ИЮЛ
+AUG	АВГ
+SEP	СЕН
+OCT	ОКТ
+NOV	НОЯ
+DEC	ДЕК
+Nothing comes to mind.	Ничего не приходит в голову.
+Reading prototypes...	Чтение прототипов...
+You are now entering the world map.	Вы выходите на карту мира.
+The elevator is broken. Maybe you can use the ladder.	Лифт сломан. Может, удастся спуститься по лестнице.
+You see Zack Barstow, an Initiate of the Childred of the Cathedral.	Вы видите Зака Барстоу, посвящённого из Детей Собора.
+Welcome to the Children of the Cathedral. How might I help you today?	Добро пожаловать к Детям Собора. Чем могу помочь?
+What is the meaning of the universe?	В чём смысл вселенной?
+I'm hurt pretty bad. Think you can help me?	Мне здорово досталось. Сможешь помочь?
+How do you fix the water pump?	Как починить водяной насос?
+Can you tell me something about this place?	Расскажешь что-нибудь об этом месте?
+I am ill-suited for that. Perhaps if you talk to Laura, she will be willing give you the information you need to know.	Я для этого не гожусь. Поговорите с Лаурой, она расскажет всё, что вам нужно.
+Oh, fixing water pumps is easy. It's just a flag.	О, починить насос просто. Это всего лишь флаг.
+I don't have the tools to assist you with that problem. Please talk to one of my superiors.	Мне нечем вам помочь. Обратитесь к кому-нибудь из старших.
+Oh, that. That's just a flag.	А, это. Это всего лишь флаг.
+Please consult with Laura. I have told you all I know.	Обратитесь к Лауре. Я рассказал всё, что знаю.
+You see Dumar, an Acrolyte of the Children of the Cathedral.	Вы видите Думара, послушника из Детей Собора.
+Dumar pleads with you so cease your vicious attacks.	Думар умоляет вас перестать его бить.
+Greetings traveler. We have heard tales of one who traverses the Wasteland. How might we be of service to you today?	Приветствую, путник. Мы слышали о страннике, что бродит по Пустоши. Чем можем служить?
+Uh? Arrooo?	Э? Аррууу?
+The Wasteland is a rough place. I have been injured pretty bad. Can you you help me out with that?	В Пустоши несладко. Меня здорово потрепало. Подлечишь?
+I want you and your kinda slaughtered!	Чтоб тебя и всех твоих перерезали!
+Tell me a story.	Расскажи историю.
+Huh? Can't hear you. Can you speak up please?	А? Не слышу. Можно погромче?
+Who might I consult in order to become a member of this establishment?	К кому обратиться, чтобы вступить в вашу общину?
+I wish to comprehend the wisdom upon which you and your fellow followers have based this establishment of beliefs.	Я желаю постичь мудрость, на которой вы и ваши братья по вере построили своё учение.
+I'm sorry, but I am a bit too busy at the moment to relate the entire tale of the Children of the Cathedral. They are having me clean off the pews. Talk to Laura if you need information.	Простите, сейчас мне некогда пересказывать всю историю Детей Собора. Мне велели протереть скамьи. Если вам нужны сведения, поговорите с Лаурой.
+I am sorry, but your words are far to above me to understand what you said. Perhaps our wiser followers, like Laura, might be able to help you better than I.	Простите, ваши слова для меня слишком мудрёны. Кто-нибудь из наших мудрых, например Лаура, поможет вам лучше меня.
+I am truly sorry to hear about your ailment. Alas, I am merely an acrolyte and am unable to assist with your healing. Only the full members are granted training in the healing arts. 	Мне искренне жаль, что вы нездоровы. Увы, я всего лишь послушник и не могу вас исцелить. Врачеванию учат только полноправных членов общины. 
+Ah, child, it seems that you and I are speaking at different levels. Maybe if you talk to Laura, she can help you better than I can. Peace with you child.	Ах, дитя, похоже, мы говорим на разных языках. Поговори с Лаурой, она поможет тебе лучше меня. Мир тебе, дитя.
+Please talk to Laura. She can help you better than I can.	Поговорите с Лаурой. Она поможет вам лучше меня.
+We are really a peaceful people. Please do not shed blood within this holy place.	Мы мирные люди. Прошу, не проливайте кровь в этом святом месте.
+Once upon a time, there was a little traveller who walked around the world. He walked up to a young lady named Laura and asked her to tell him a story. The end.	Жил-был маленький путник, который ходил по свету. Однажды он подошёл к юной леди по имени Лаура и попросил рассказать ему историю. Конец.
+You see one of the acrolytes of the Children of the Cathedral.	Вы видите одного из послушников Детей Собора.
+Peace be with you. Please talk to Laura.	Мир вам. Поговорите с Лаурой.
+Laura taught me that we are all one people and should look to the good in them. She is very wise.	Лаура научила меня, что все мы один народ и в каждом надо искать хорошее. Она очень мудрая.
+Laura is a wise and wonderful person.	Лаура очень мудрая и чудесная.
+Go away.	Уходи.
+I don't like your kind.	Не люблю таких, как ты.
+If you have a problem with Set, you have a problem with me.	Если у тебя проблемы с Сетом, значит, и со мной тоже.
+You see Cindy crying.	Вы видите плачущую Синди.
+You see Lisa crying.	Вы видите плачущую Лизу.
+You see Sandy crying.	Вы видите плачущую Сэнди.
+You see Mary crying.	Вы видите плачущую Мэри.
+You see Stacy crying.	Вы видите плачущую Стейси.
+You see Susan crying.	Вы видите плачущую Сьюзан.
+You see Cindy.	Вы видите Синди.
+You see Lisa.	Вы видите Лизу.
+You see Sandy.	Вы видите Сэнди.
+You see Mary.	Вы видите Мэри.
+You see Stacy.	Вы видите Стейси.
+You see Susan.	Вы видите Сьюзан.
+Hello, 	Привет, 
+. Have you found the water chip yet?	. Ты уже ~нашёл|нашла~ водяной чип?
+No, not yet.	Нет, пока нет.
+I will. How are you doing?	Найду. Как ты?
+Oh . . . you don't understand me. I guess we really don't have much hope after all. Excuse me while I cry.	Ох... ты меня не понимаешь. Видно, надежды у нас и правда почти нет. Прости, мне нужно поплакать.
+Please find it before my baby dies of thirst.	Пожалуйста, найди его, пока мой малыш не умер от жажды.
+You've got to find it! Don't let us die like this!	Найди его, прошу! Не дай нам вот так умереть!
+Keep trying. I believe in you. I know you will do everything you can to save us.	Не сдавайся. Я в тебя верю. Знаю, ты сделаешь всё, чтобы нас спасти.
+I am afraid of what is happening. Someone has been stealing water and now everyone is on edge.	Мне страшно от того, что творится. Кто-то ворует воду, и теперь все на взводе.
+Who would do such a thing?	Кто мог такое сделать?
+What happened?	Что случилось?
+Some people have been accused and fights have broken out over it but nobody really knows.	Кое-кого уже обвинили, из-за этого были драки, но толком никто ничего не знает.
+Ok. Thanks.	Ладно. Спасибо.
+Some people reported that their water had been stolen. They weren't given more water but some friends shared with them. After this everybody got very paranoid and started guarding their water. A few days later someone knocked the guard out in the ration supply area and stole water.	Несколько человек заявили, что у них украли воду. Добавки им не дали, но друзья поделились. После этого все стали подозрительными и начали стеречь свою воду. А через несколько дней кто-то оглушил охранника у склада пайков и украл воду.
+That is terrible! What can I do?	Это ужасно! Чем я могу помочь?
+Maybe you can stop whoever is doing this.	Может, ты остановишь того, кто это делает.
+I'll take a look around.	Я осмотрюсь.
+You see Sammy.	Вы видите Сэмми.
+Speak to the Elder.  He has something important to tell you first.	Поговори со старейшиной. Сначала он хочет сказать тебе кое-что важное.
+Follow me.  I know the way to the lair.	Иди за мной. Я знаю дорогу к логову.
+Boy, I wish you had the guts to help us out.	Эх, хватило бы тебе духу нам помочь.
+All ready to go? Once we get to the lair, there is no coming back until the job is done.	~Готов|Готова~ идти? Как доберёмся до логова, назад пути не будет, пока не закончим дело.
+OK, I'll wait for here. Let me know when you're ready to go.	Ладно, подожду здесь. Скажи, когда будешь ~готов|готова~.
+RESOLUTION	РАЗРЕШЕНИЕ
+Window	По окну
+%s Kills	Убито: %s
+VID 208-197-88-125	ЛН 208-197-88-125
+VID 208-206-49-229	ЛН 208-206-49-229
+VID 208-206-49-227	ЛН 208-206-49-227
+Black	Нет
+Metal	Металл
+Leather	Кожа

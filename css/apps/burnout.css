@@ -1,0 +1,423 @@
+/**
+ * Burnout: Championship Drag Racing - Stylesheet
+ * 1998 Hot Rod & Bethesda retro racing styling, glowing LCD/LED gauges,
+ * paper Time Slip styling, and tuning shop layouts.
+ */
+
+.burnout-app-wrapper {
+  font-family: var(--win-font, 'Tahoma', 'Segoe UI', sans-serif);
+  user-select: none;
+}
+
+.burnout-menubar {
+  background: var(--win-bg, #c0c0c0);
+  border-bottom: 1px solid #808080;
+  font-size: 11px;
+}
+
+/* Title Screen */
+.burnout-title-screen {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #2c0909 0%, #0d0101 70%, #000000 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  box-sizing: border-box;
+  color: #ffffff;
+}
+
+.burnout-title-logos {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+}
+
+.burnout-logo-badge {
+  padding: 3px 12px;
+  font-family: 'Arial Black', Impact, sans-serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.burnout-logo-badge.bethesda {
+  background: #002244;
+  color: #ffffff;
+  border-color: #0088cc;
+}
+
+.burnout-logo-badge.hotrod {
+  background: #cc0000;
+  color: #ffff00;
+  border-color: #ff3300;
+}
+
+.burnout-logo-badge.mediatech {
+  background: #2c3e50;
+  color: #ecf0f1;
+}
+
+.burnout-title-hero {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.burnout-title-sub {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 13px;
+  color: #f39c12;
+  letter-spacing: 4px;
+  text-shadow: 0 0 8px rgba(243, 156, 18, 0.6);
+}
+
+.burnout-title-main {
+  font-family: Impact, 'Arial Black', sans-serif;
+  font-size: 58px;
+  letter-spacing: 6px;
+  color: #ff3300;
+  background: linear-gradient(180deg, #ffff00 0%, #ff5500 50%, #880000 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 12px rgba(255, 68, 0, 0.8));
+  line-height: 1.0;
+  margin: 4px 0;
+}
+
+.burnout-title-edition {
+  font-size: 10px;
+  color: #ecf0f1;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+/* Main Menu Buttons */
+.burnout-main-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.burnout-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 16px;
+  background: linear-gradient(180deg, #2a2a2a 0%, #151515 100%);
+  border: 2px solid #555555;
+  border-left-color: #777777;
+  border-top-color: #777777;
+  color: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.1s ease-in-out;
+}
+
+.burnout-menu-btn:hover {
+  background: linear-gradient(180deg, #880000 0%, #440000 100%);
+  border-color: #ff5500;
+  transform: translateX(4px);
+  box-shadow: 0 0 10px rgba(255, 68, 0, 0.5);
+}
+
+.burnout-btn-icon {
+  font-size: 22px;
+}
+
+.burnout-btn-text strong {
+  display: block;
+  font-size: 12px;
+  color: #f1c40f;
+  letter-spacing: 1px;
+}
+
+.burnout-btn-text small {
+  display: block;
+  font-size: 10px;
+  color: #bbbbbb;
+  margin-top: 2px;
+}
+
+.burnout-title-footer {
+  font-size: 9px;
+  color: #666666;
+  text-align: center;
+}
+
+/* Time Slip Receipt Overlay */
+.burnout-timeslip-overlay {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.burnout-timeslip-paper {
+  background: #fdfaf2;
+  color: #111111;
+  width: 320px;
+  padding: 16px 18px;
+  font-family: 'Courier New', Courier, monospace;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 0 1px #dcd3b8;
+  position: relative;
+  transform: rotate(-0.5deg);
+  border-radius: 2px;
+}
+
+.timeslip-header {
+  text-align: center;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.timeslip-track {
+  font-size: 12px;
+  color: #222;
+}
+
+.timeslip-date {
+  font-size: 9px;
+  color: #666;
+  margin: 2px 0 6px 0;
+}
+
+.timeslip-divider {
+  font-size: 10px;
+  color: #888;
+  letter-spacing: -1px;
+  margin: 4px 0;
+}
+
+.timeslip-table {
+  width: 100%;
+  font-size: 11px;
+  border-collapse: collapse;
+  margin: 4px 0;
+}
+
+.timeslip-table th {
+  font-size: 10px;
+  font-weight: bold;
+  border-bottom: 1px dashed #777;
+  padding: 3px 2px;
+  text-align: left;
+}
+
+.timeslip-table td {
+  padding: 2px 2px;
+  text-align: left;
+}
+
+.timeslip-table td.bold {
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.timeslip-table td.foul {
+  color: #c0392b;
+  font-weight: bold;
+}
+
+.timeslip-table tr.highlight {
+  background: #eee8d5;
+}
+
+/* Rubber Stamp */
+.timeslip-stamp {
+  font-family: Impact, 'Arial Black', sans-serif;
+  font-size: 20px;
+  text-align: center;
+  padding: 4px 10px;
+  margin: 10px auto;
+  border: 3px solid;
+  border-radius: 6px;
+  display: inline-block;
+  transform: rotate(-4deg);
+  width: 80%;
+  box-sizing: border-box;
+}
+
+.timeslip-stamp.win {
+  color: #c0392b;
+  border-color: #c0392b;
+  box-shadow: 0 0 4px rgba(192, 57, 43, 0.4);
+}
+
+.timeslip-stamp.lose {
+  color: #2980b9;
+  border-color: #2980b9;
+}
+
+.timeslip-actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  border-top: 1px dashed #aaa;
+  padding-top: 8px;
+}
+
+/* Garage & Dyno Panel */
+.burnout-garage-container {
+  width: 100%;
+  height: 100%;
+  background: #18191c;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.burnout-garage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #333;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.burnout-garage-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  flex: 1;
+}
+
+.burnout-fieldset {
+  border: 1px solid #444;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  background: #1e2024;
+  border-radius: 3px;
+}
+
+.burnout-fieldset legend {
+  font-weight: bold;
+  color: #f1c40f;
+  font-size: 11px;
+  padding: 0 5px;
+}
+
+.burnout-param-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 7px;
+  font-size: 11px;
+}
+
+.burnout-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.burnout-val {
+  min-width: 60px;
+  text-align: right;
+  font-family: monospace;
+  font-size: 11px;
+  color: #00ffcc;
+  font-weight: bold;
+}
+
+.burnout-dyno-panel {
+  background: #141518;
+  border: 1px solid #333;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.burnout-dyno-canvas-wrap {
+  border: 1px solid #222;
+  background: #000;
+  display: flex;
+  justify-content: center;
+}
+
+.burnout-dyno-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.burnout-stat-box {
+  background: #1c1d22;
+  border: 1px solid #333;
+  padding: 6px;
+  text-align: center;
+}
+
+.burnout-stat-label {
+  font-size: 8px;
+  color: #888;
+  font-weight: bold;
+}
+
+.burnout-stat-value {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 2px;
+}
+
+.burnout-stat-value.hp {
+  color: #ff3300;
+}
+
+.burnout-stat-value.tq {
+  color: #00d2ff;
+}
+
+.burnout-stat-value.et {
+  color: #f1c40f;
+}
+
+.burnout-car-summary {
+  font-size: 10px;
+  color: #aaa;
+  background: #0f1013;
+  border: 1px solid #282828;
+  padding: 6px 8px;
+  line-height: 1.4;
+}
+
+/* Help Dialog */
+.burnout-help-dialog {
+  background: #f0f0f0;
+  color: #000;
+  width: 480px;
+  max-width: 90%;
+  margin: 20px auto;
+  border: 2px outset #ffffff;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.burnout-help-content h4 {
+  margin: 8px 0 2px 0;
+  color: #000080;
+  font-size: 12px;
+}
+
+.burnout-help-content p {
+  margin: 0 0 6px 0;
+  font-size: 11px;
+}
+

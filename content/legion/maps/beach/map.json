@@ -1,0 +1,89 @@
+{
+ "W": 257,
+ "hmin": 0.0,
+ "hmax": 1472.3292236328125,
+ "light": {
+  "fog": [
+   189.0,
+   207.0,
+   255.0
+  ],
+  "fogStart": 0.0,
+  "fogEnd": 15000.0,
+  "sunDir": [
+   0.9,
+   -0.9,
+   -1.0
+  ],
+  "sun": [
+   500.0,
+   500.0,
+   500.0
+  ],
+  "ambient": [
+   75.0,
+   75.0,
+   95.0
+  ],
+  "unitDir": [
+   0.3,
+   -1.0,
+   0.3
+  ],
+  "unitSun": [
+   255.0,
+   255.0,
+   255.0
+  ],
+  "unitAmbient": [
+   225.0,
+   225.0,
+   225.0
+  ]
+ },
+ "trees": [
+  {
+   "u0": 0.0068359375,
+   "v0": 0.0,
+   "u1": 0.326171875,
+   "v1": 1.0,
+   "aspect": 0.64
+  },
+  {
+   "u0": 0.3349609375,
+   "v0": 0.0,
+   "u1": 0.6630859375,
+   "v1": 1.0,
+   "aspect": 0.6564102564102564
+  },
+  {
+   "u0": 0.71875,
+   "v0": 0.001953125,
+   "u1": 0.9453125,
+   "v1": 1.0,
+   "aspect": 0.45454545454545453
+  }
+ ],
+ "grass": true,
+ "tuft": true,
+ "wheat": false,
+ "grassMap": 256,
+ "forestMap": 256,
+ "water": [
+  6.1,
+  1.0,
+  0.01,
+  0.0002
+ ],
+ "lamps": null,
+ "grassTypes": [
+  "grass_shaded",
+  "grass_shaded",
+  "grass_shaded",
+  "grass_normal",
+  "grass_texture",
+  "grass_texture",
+  "grass_texture",
+  "grass_texture"
+ ]
+}

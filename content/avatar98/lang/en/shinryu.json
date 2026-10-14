@@ -1,0 +1,71 @@
+{
+  "strings": {
+    "ttl.prologue": "Prologue: The Forge",
+    "ttl.prologue_sub": "The Era of the Silent Cycle. 174 years after Avatar Korra",
+    "cap.vision": "The Vault of Past Lives",
+    "cap.morning": "Shinryu. Morning",
+    "tut.move": "Arrows — walk, Shift — run, Z — talk and examine",
+    "tut.menu": "C — menu: items, equipment, Signs",
+    "tut.pipo": "Pipo senses hidden things: glittering spots now show on maps",
+    "tut.shrine": "Shrines heal the party and save the game",
+    "map.vision_vault": "The Vault of Past Lives",
+    "map.shinryu_forge": "Hana's Forge",
+    "map.shinryu_lane": "Shinryu: Smiths' Lane",
+    "map.shinryu_market": "Shinryu: Market Square",
+    "map.shinryu_inn": "The Quiet Cove Inn",
+    "map.shinryu_port": "Shinryu Harbor",
+    "map.shinryu_hill": "Hikari Hill",
+    "quest.dog.1": "Toshi lost his platypus-dog Bagel. It seems he ran off to the hill.",
+    "quest.dog.2": "Bagel was found and ran home. Go see Toshi.",
+    "quest.dog.reward": "Bagel is home. Toshi gave you a luck charm.",
+    "choice.dog_yes": "I'll find Bagel.",
+    "choice.dog_no": "Sorry, Toshi, I'm in a hurry.",
+    "choice.pipo_yes": "Want to come with me, little one?",
+    "choice.pipo_no": "Go home to the forest. It's dangerous here.",
+    "choice.inn_rest": "Rest (20 yuan)",
+    "choice.no_thanks": "No, thanks",
+    "choice.shrine_save": "Save the game",
+    "choice.shrine_leave": "Leave"
+  },
+  "dialogue": {
+    "pr.intro": [
+      "voices|...can you hear?..",
+      "voices|...another one... fire... fire again...",
+      "isa:surprised|Where am I? I know this hall. I keep dreaming about it."
+    ],
+    "pr.korra": [
+      "korra|Don't be afraid. You've been here before, you just don't remember.",
+      "isa:surprised|You're... Avatar Korra? I saw your portrait in my schoolbook!",
+      "korra:happy|A schoolbook? I hope they at least got my nose right.",
+      "korra|This is the Vault. Everyone you have been stands here. You used to be able to walk all the way back, to the very first flame.",
+      "korra:sad|Now the road breaks off. I'm the only one you can really call. Well, me and him.",
+      "isa|«Everyone I have been»? I never asked to be anyone.",
+      "korra|Nobody did. Go on, he's waiting further in."
+    ],
+    "pr.jinhai": [
+      "jinhai|So, fire. After me came fire.",
+      "isa|You're Avatar Jinhai? They say you died at thirty-one. And nobody knows how.",
+      "jinhai:sad|I know. Knowing is what killed me.",
+      "jinhai|I listened to the silence, girl. Where our past lives should be speaking, it's quiet. Then the silence started listening to me.",
+      "isa:angry|You all speak in riddles! What am I supposed to do?",
+      "jinhai:angry|Don't go further. Whatever is there only pretends to be the past."
+    ],
+    "pr.echo": [
+      "voices|...at last...",
+      "voices|...another door... another flame...",
+      "echo|We remember you. We remember all of you.",
+      "echo|You call it a cycle. To us it is a cage.",
+      "isa:surprised|Who's there?! Show yourself!",
+      "echo|Wake up, little flame. We are coming soon."
+    ],
+    "pr.wake": [
+      "hana:angry|{player}! The sun's over the forge and you're still snoring like a badgermole!",
+      "isa:sad|Mmh... five more minutes...",
+      "hana:angry|Five minutes was an hour ago. Get down here, there's work!"
+    ],
+    "pr.wake2": [
+      "isa|That dream again. The Vault, Korra... and that voice.",
+      "isa:sad|Not a word to anyone. Especially now."
+    ]
+  }
+}

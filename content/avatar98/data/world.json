@@ -1,0 +1,15 @@
+{
+  "nodes": [
+    { "id": "shinryu", "name": "world.shinryu", "x": 70, "y": 172, "map": "shinryu_port", "spawn": "pier", "desc": "world.shinryu.desc" },
+    { "id": "sea", "name": "world.sea", "x": 170, "y": 132, "map": "ferry_hold", "spawn": "start", "if": "ferry_boarded", "desc": "world.sea.desc" },
+    { "id": "republic", "name": "world.republic", "x": 252, "y": 80, "map": "docks_pier", "spawn": "ferry", "if": "ferry_night_done", "desc": "world.republic.desc" },
+    { "id": "air_temple", "name": "world.air_temple", "x": 292, "y": 180, "map": "docks_pier", "spawn": "ferry", "if": "chapter2_unlocked", "desc": "world.air_temple.desc" },
+    { "id": "north_tribe", "name": "world.north", "x": 60, "y": 20, "map": "docks_pier", "spawn": "ferry", "if": "chapter3_unlocked", "desc": "world.north.desc" }
+  ],
+  "edges": [
+    { "a": "shinryu", "b": "sea", "if": "ferry_boarded" },
+    { "a": "sea", "b": "republic", "if": "ferry_night_done" },
+    { "a": "republic", "b": "air_temple", "if": "chapter2_unlocked" },
+    { "a": "republic", "b": "north_tribe", "if": "chapter3_unlocked" }
+  ]
+}

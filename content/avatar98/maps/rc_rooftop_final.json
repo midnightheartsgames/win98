@@ -1,0 +1,38 @@
+{
+  "id": "rc_rooftop_final",
+  "name": "map.rc_rooftop_final",
+  "w": 24,
+  "h": 16,
+  "music": "",
+  "region": "rc",
+  "bg": "#04060c",
+  "night": true,
+  "radio": true,
+  "onEnter": "rooftop_enter",
+  "legend": {"F":"roofwalk_night","*":"stars","B":"wall_brick_dark","n":"window_dark","I":"lamptop_teal"},
+  "layers": {
+    "ground": [
+      "************************",
+      "************************",
+      "************************",
+      "iiiiiiiiiiiiiiiiiiiiiiii",
+      "iFFFFFFFFFFFFFFFFFFFFFFi",
+      "iFFF<FFFFFFFFFFFFFFFFFFi",
+      "iFFFFFFFFFFFFFFFFFF>>FFi",
+      "iFFFFFFFFFFFFFFFFFFFFFFi",
+      "iFFFFFFFFFFFFFFFFFFFFFFi",
+      "iFFFFFFFFFFFFFFFFIFFFFFi",
+      "iFFJFFFFFFFFFFFFFlFFFFFi",
+      "iFFFFFFFFFFFFFFFFFFFFFFi",
+      "iiiiiiiiiiiiiiiiiiiiiiii",
+      "BnBBnBBnBBnBBnBBnBBnBBnB",
+      "BnBBnBBnBBnBBnBBnBBnBBnB",
+      "BBBBBBBBBBBBBBBBBBBBBBBB"
+    ]
+  },
+  "spawns": {"final":{"x":11,"y":9,"dir":"up"}},
+  "entities": [
+    {"id":"view","kind":"inspect","x":11,"y":4,"text":"insp.final_view"},
+    {"id":"tower","kind":"inspect","x":4,"y":5,"text":"insp.water_tower"}
+  ]
+}

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Аватар: Тихий цикл — демо</title>
+<style>
+html, body { height: 100%; margin: 0; background: #008080; }
+body { display: grid; place-items: center; }
+.window { width: min(98vw, 1000px); height: min(96vh, 790px); border: 3px outset #ddd; display: flex; flex-direction: column; background: silver; }
+.title { background: linear-gradient(90deg, navy, #1084d0); color: #fff; font: bold 12px Tahoma, sans-serif; padding: 5px; }
+#game { flex: 1; min-height: 0; position: relative; }
+</style>
+</head>
+<body>
+<main class="window"><div class="title">Аватар: Тихий цикл</div><div id="game"></div></main>
+<script src="js/apps/avatar98/avatar98.js"></script>
+<script>
+const el = document.getElementById('game');
+const params = new URLSearchParams(location.search);
+window.av98 = Avatar98.mount(el, { autostart: params.get('start') || undefined });
+el.focus();
+addEventListener('pagehide', () => window.av98.destroy(), { once: true });
+</script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+.find-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background-color: var(--win-bg);
+  font-size: 11px;
+}
+
+.find-menubar {
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.find-top {
+  display: flex;
+  gap: 10px;
+  padding: 8px 8px 10px;
+  flex-shrink: 0;
+}
+
+.find-tabs-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.find-tabs {
+  display: flex;
+  padding-left: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.find-tab {
+  padding: 3px 8px 2px;
+  margin-right: -1px;
+  margin-top: 2px;
+  background-color: var(--win-bg);
+  border: 1px solid var(--win-border-light);
+  border-bottom: none;
+  border-right-color: var(--win-border-darkest);
+  box-shadow: inset -1px 0 0 var(--win-border-dark);
+  border-radius: 3px 3px 0 0;
+  cursor: default;
+}
+
+.find-tab.active {
+  margin-top: 0;
+  padding: 4px 9px 4px;
+  margin-bottom: -1px;
+  margin-left: -2px;
+  margin-right: -3px;
+  z-index: 2;
+  position: relative;
+}
+
+.find-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 12px 10px 10px;
+  border: 1px solid var(--win-border-light);
+  border-right-color: var(--win-border-darkest);
+  border-bottom-color: var(--win-border-darkest);
+  box-shadow: inset -1px -1px 0 var(--win-border-dark);
+  min-height: 118px;
+}
+
+.find-panel.hidden,
+.find-results.hidden,
+.find-status.hidden {
+  display: none;
+}
+
+.find-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.find-row > label:first-child {
+  width: 104px;
+  flex-shrink: 0;
+}
+
+.find-row input[type="text"],
+.find-row select {
+  flex: 1;
+  min-width: 0;
+}
+
+.find-row .find-size {
+  flex: 0 0 50px;
+}
+
+.find-row .find-size-op {
+  flex: 0 0 100px;
+}
+
+.find-row-last {
+  padding-left: 110px;
+}
+
+.find-row > label.find-check {
+  width: auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.find-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-top: 20px;
+}
+
+.find-buttons .win-btn {
+  width: 92px;
+  white-space: nowrap;
+}
+
+.find-anim {
+  width: 32px;
+  height: 32px;
+  margin-top: 8px;
+}
+
+.find-anim svg {
+  width: 32px;
+  height: 32px;
+}
+
+.find-anim.busy svg {
+  animation: find-sweep 0.9s steps(4) infinite;
+}
+
+@keyframes find-sweep {
+  0% { transform: translate(-4px, 0); }
+  50% { transform: translate(4px, -3px); }
+  100% { transform: translate(-4px, 0); }
+}
+
+.find-results {
+  flex: 1;
+  min-height: 80px;
+  margin: 0 2px 2px;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  overflow: auto;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light),
+    inset 2px 2px 0 var(--win-border-darkest),
+    inset -2px -2px 0 var(--win-border-midlight);
+  padding: 2px;
+}
+
+.find-head,
+.find-item {
+  display: grid;
+  grid-template-columns: 150px 1fr 60px 110px;
+  align-items: center;
+}
+
+.find-head {
+  position: sticky;
+  top: -2px;
+  margin: -2px -2px 1px;
+  z-index: 1;
+}
+
+.find-head span {
+  padding: 2px 6px;
+  background-color: var(--win-bg);
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-light),
+    inset -1px -1px 0 var(--win-border-darkest),
+    inset -2px -2px 0 var(--win-border-dark);
+}
+
+.find-list {
+  outline: none;
+}
+
+.find-item {
+  height: 17px;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.find-item > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 4px;
+}
+
+.fi-name {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding-left: 2px !important;
+}
+
+.fi-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.fi-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.fi-label {
+  padding: 1px 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fi-size {
+  text-align: right;
+}
+
+.find-item.selected .fi-label {
+  background-color: var(--win-highlight);
+  color: var(--win-highlight-text);
+}
+
+.find-results.list-view .find-head {
+  display: none;
+}
+
+.find-results.list-view .find-item {
+  grid-template-columns: 1fr;
+}
+
+.find-results.list-view .find-item > span:not(.fi-name) {
+  display: none;
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Overwatch 98</title>
+<link rel="stylesheet" href="css/apps/ow98.css">
+<style>html,body{height:100%;margin:0;background:#008080}body{display:grid;place-items:center}.window{width:min(98vw,1280px);height:96vh;border:3px outset #ddd;display:flex;flex-direction:column;background:silver}.title{background:linear-gradient(90deg,navy,#1084d0);color:#fff;font:bold 12px Tahoma;padding:5px}#game{flex:1;min-height:0}</style></head>
+<body><main class="window"><div class="title">Overwatch 98</div><div id="game"></div></main>
+<script src="js/apps/ow98/ow-core.js"></script>
+<script src="js/apps/ow98/ow-data.js"></script>
+<script src="js/apps/ow98/ow-world.js"></script>
+<script src="js/apps/ow98/ow-nav.js"></script>
+<script src="js/apps/ow98/ow-maps-assault.js"></script>
+<script src="js/apps/ow98/ow-maps-escort.js"></script>
+<script src="js/apps/ow98/ow-maps-hybrid.js"></script>
+<script src="js/apps/ow98/ow-maps-control.js"></script>
+<script src="js/apps/ow98/ow-maps-range.js"></script>
+<script src="js/apps/ow98/ow-game.js"></script>
+<script src="js/apps/ow98/ow-modes.js"></script>
+<script src="js/apps/ow98/ow-kits.js"></script>
+<script src="js/apps/ow98/ow-kits2.js"></script>
+<script src="js/apps/ow98/ow-ai.js"></script>
+<script src="js/apps/ow98/ow-replay.js"></script>
+<script src="js/apps/ow98/ow-tex.js"></script>
+<script src="js/apps/ow98/ow-mesh.js"></script>
+<script src="js/apps/ow98/ow-models.js"></script>
+<script src="js/apps/ow98/ow-skins.js"></script>
+<script src="js/apps/ow98/ow-mocap.js"></script>
+<script src="js/apps/ow98/ow-clips.js"></script>
+<script src="js/apps/ow98/ow-clips2.js"></script>
+<script src="js/apps/ow98/ow-profile.js"></script>
+<script src="js/apps/ow98/ow-anim.js"></script>
+<script src="js/apps/ow98/ow-props.js"></script>
+<script src="js/apps/ow98/ow-fx.js"></script>
+<script src="js/apps/ow98/ow-render.js"></script>
+<script src="js/apps/ow98/ow-audio.js"></script>
+<script src="js/apps/ow98/ow-icons.js"></script>
+<script src="js/apps/ow98/ow-hud.js"></script>
+<script src="js/apps/ow98/ow-screens.js"></script>
+<script src="js/apps/ow98/ow-gallery.js"></script>
+<script src="js/apps/ow98/ow-ui.js"></script>
+<script>const el=document.getElementById('game');const ui=new Ow98.UI(el,{});window.owui=ui;el.focus();addEventListener('pagehide',()=>ui.destroy(),{once:true});</script>
+</body></html>

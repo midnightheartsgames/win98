@@ -1,0 +1,28 @@
+{
+  "families": {
+    "spirit": { "fire": 1.25, "spirit": 0.5, "chi": 0.5, "phys": 0.85 },
+    "forest": { "fire": 2.0, "earth": 0.75 },
+    "coal": { "fire": -0.5, "earth": 1.5, "metal": 1.5 },
+    "beast": { "fire": 1.25 },
+    "human": {},
+    "machine": { "earth": 1.75, "fire": 0.75 },
+    "spirittech": { "chi": 2.0 },
+    "metal": { "fire": 1.5, "metal": 0.5, "phys": 0.75 }
+  },
+  "names": {
+    "phys": "Физ.",
+    "fire": "Огонь",
+    "earth": "Земля",
+    "metal": "Металл",
+    "chi": "Ци",
+    "spirit": "Дух",
+    "spiritfam": "духи",
+    "forest": "духи леса",
+    "coal": "угольные",
+    "beast": "звери",
+    "human": "люди",
+    "machine": "механизмы",
+    "spirittech": "духотехника",
+    "metal_fam": "бронированные"
+  }
+}

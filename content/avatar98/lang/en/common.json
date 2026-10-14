@@ -1,0 +1,31 @@
+{
+  "strings": {
+    "world.shinryu": "Shinryu",
+    "world.shinryu.desc": "A provincial smiths' town on the Fire Nation coast.",
+    "world.sea": "Sea of Dawn",
+    "world.sea.desc": "The night cargo run of the Dawn Crane.",
+    "world.republic": "Republic City",
+    "world.republic.desc": "A metropolis of neon, monorails and spirit vines.",
+    "world.air_temple": "Southern Air Temple",
+    "world.air_temple.desc": "Chapter 2. Someone there may still remember.",
+    "world.north": "Northern Water Tribe",
+    "world.north.desc": "Far to the north. The way is closed for now.",
+    "quest.radio_parts.1": "Master Ken needs his box of tubes. Pick it up from Gao the docker at the pier.",
+    "quest.radio_parts.2": "You have the box. Bring it to Master Ken on the plaza.",
+    "quest.radio_parts.reward": "Ken built a pocket radio and gave it to you.",
+    "quest.owl_cat.1": "Granny Ou lost her cat-owl Fluffy. He was seen near the vine market.",
+    "quest.owl_cat.2": "Fluffy won't come to strangers. Get some dried fish from a vendor.",
+    "quest.owl_cat.3": "Fluffy is in your arms. Take him back to Granny Ou.",
+    "quest.owl_cat.reward": "Fluffy is home. Granny Ou gave you the Healer's Sign.",
+    "quest.radio_voices.1": "Catch 4 broadcasts between 88–108 MHz (0 of 4 found).",
+    "quest.radio_voices.2": "Catch 4 broadcasts between 88–108 MHz (1 of 4 found).",
+    "quest.radio_voices.3": "Catch 4 broadcasts between 88–108 MHz (2 of 4 found).",
+    "quest.radio_voices.4": "Catch 4 broadcasts between 88–108 MHz (3 of 4 found).",
+    "quest.radio_voices.reward": "All voices found. The empty channel named a place: «the wall behind the third column».",
+    "quest.paisho.1": "Play Quick Deal with Old Man Lu in the ferry hold.",
+    "quest.paisho.2": "Now Sailor Rui. They say he never forgives a mistake.",
+    "quest.paisho.3": "Last is Merchant Xiao. Rumor says she owns a White Lotus.",
+    "quest.paisho.reward": "All rivals beaten. Xiao gave you the Sign of Riposte."
+  },
+  "dialogue": {}
+}

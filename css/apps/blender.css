@@ -1,0 +1,36 @@
+#app_blender { min-width: 480px; min-height: 390px; }
+#app_blender .win-window-body { padding: 0; overflow: hidden; }
+.blender-app { position: relative; display: flex; flex-direction: column; width: 100%; height: 100%; min-height: 0; overflow: hidden; background: #404850; color: #d2d9df; font: 11px monospace; outline: none; user-select: none; }
+.blender-app * { box-sizing: border-box; }
+.blender-app canvas { image-rendering: pixelated; }
+.blender-top, .blender-header { flex-shrink: 0; display: flex; align-items: center; gap: 5px; padding: 4px 6px; background: #505a63; border-top: 1px solid #79838b; border-bottom: 1px solid #202830; min-height: 29px; overflow-x: auto; }
+.blender-top { background: #404850; }
+.blender-brand { color: #cad4db; margin-right: 14px; }
+.blender-spacer { flex: 1; }
+.blender-app button, .blender-app select, .blender-app input { border: 1px solid; border-color: #879199 #202830 #202830 #879199; border-radius: 0; background: #636e77; color: #eef1f3; font: 11px monospace; padding: 4px 7px; min-height: 22px; }
+.blender-app button { display: inline-flex; justify-content: center; align-items: center; white-space: nowrap; cursor: default; }
+.blender-app button:hover { background: #73808b; }
+.blender-app button:active, .blender-app button.active { background: #367c8c; border-color: #1e414c #86a7ae #86a7ae #1e414c; }
+.blender-app button:focus-visible, .blender-app input:focus-visible, .blender-app select:focus-visible { outline: 1px dotted #fff; outline-offset: -3px; }
+.blender-app button:disabled { opacity: .45; }
+.blender-view { flex: 1; min-height: 90px; position: relative; overflow: hidden; }
+.blender-viewport { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+.blender-divider { height: 5px; flex-shrink: 0; background: #202830; border-top: 1px solid #84909a; cursor: ns-resize; touch-action: none; }
+.blender-buttons { height: 215px; flex-shrink: 0; display: flex; flex-direction: column; overflow: hidden; }
+.blender-panels { display: flex; flex: 1; min-height: 0; gap: 9px; padding: 9px; overflow: auto; align-items: flex-start; }
+.blender-panel { border: 1px solid #232c34; box-shadow: inset 1px 1px #626f79; padding: 9px; min-width: 180px; background: #46515a; }
+.blender-panel h3 { margin: 0 0 10px; font-size: 11px; color: #afc4cc; }
+.blender-fields { display: grid; grid-template-columns: repeat(3,minmax(72px,1fr)); gap: 5px; }
+.blender-field { display: flex; flex-direction: column; gap: 5px; }
+.blender-field input { width: 76px; background: #343e46; padding: 3px; }
+.blender-actions { display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap; }
+.blender-status { flex-shrink: 0; height: 23px; display: flex; align-items: center; padding: 0 8px; border-top: 1px solid #68747d; background: #303840; overflow: hidden; }
+.blender-menu { position: absolute; z-index: 5; width: 166px; background: #56626b; padding: 3px; border: 1px solid; border-color: #9eabb4 #141c24 #141c24 #9eabb4; box-shadow: 3px 3px #172129; }
+.blender-menu button { width: 100%; justify-content: flex-start; border-color: transparent; background: transparent; height: 25px; }
+.blender-menu button:hover { background: #367c8c; }
+.blender-menu-title { padding: 7px; background: #303c45; margin-bottom: 3px; }
+.blender-help { position: absolute; z-index: 4; right: 12px; top: 40px; padding: 15px; background: #404b54; border: 1px solid #8c9aa5; box-shadow: 4px 4px #202830; max-width: calc(100% - 24px); line-height: 1.8; }
+.blender-help strong { color: #ffe58b; }
+.blender-help p { margin: 3px 0; }
+.blender-render { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: #202830; color: #ced7df; font: 11px monospace; gap: 8px; }
+.blender-render canvas { width: 320px; height: 240px; image-rendering: pixelated; border: 1px solid #101820; }

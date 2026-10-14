@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Хаято, Где плов?</title>
+<link rel="stylesheet" href="css/apps/plov.css">
+<style>html,body{height:100%;margin:0;background:#008080}body{display:grid;place-items:center}.window{width:min(98vw,1000px);height:min(96vh,790px);border:3px outset #ddd;display:flex;flex-direction:column;background:silver}.title{background:linear-gradient(90deg,navy,#1084d0);color:#fff;font:bold 12px Tahoma;padding:5px}#game{flex:1;min-height:0;position:relative}</style></head>
+<body><main class="window"><div class="title">Хаято, Где плов?</div><div id="game"></div></main>
+<script src="js/apps/plov/pl-core.js"></script><script src="js/apps/plov/pl-data.js"></script><script src="js/apps/plov/pl-sim.js"></script><script src="js/apps/plov/pl-ornament.js"></script><script src="js/apps/plov/pl-art.js"></script><script src="js/apps/plov/pl-icons.js"></script><script src="js/apps/plov/pl-scene.js"></script><script src="js/apps/plov/pl-audio.js"></script><script src="js/apps/plov/pl-ui.js"></script><script src="js/apps/plov/pl-ui-game.js"></script><script src="js/apps/plov/pl-ui-menu.js"></script>
+<script>const el=document.getElementById('game');const ui=new Plov.UI(el,{standalone:true});window.plui=ui;el.focus();addEventListener('pagehide',()=>ui.destroy(),{once:true});</script>
+</body></html>

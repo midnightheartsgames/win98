@@ -1,0 +1,317 @@
+/* ============================================================
+   Netscape 6 — «современный» скин 2001 года поверх Win 98
+   ============================================================ */
+
+.ns6 {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: #cdcdcd;
+  font-family: Tahoma, "MS Sans Serif", sans-serif;
+  font-size: 11px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ---------- Меню ---------- */
+.ns6-menubar {
+  display: flex;
+  background: linear-gradient(#e8e8e8, #c8c8c8);
+  border-bottom: 1px solid #8f8f8f;
+  padding: 1px 2px;
+  flex: 0 0 auto;
+}
+
+.ns6-menu-title {
+  padding: 2px 8px;
+  cursor: default;
+  user-select: none;
+}
+
+.ns6-menu-title:hover,
+.ns6-menu-title.active {
+  background: #000080;
+  color: #ffffff;
+}
+
+.ns6-dropdown {
+  position: absolute;
+  min-width: 190px;
+  background: #d4d0c8;
+  border: 1px solid #000;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
+  padding: 2px;
+  z-index: 40;
+}
+
+.ns6-dropdown-item {
+  padding: 3px 18px 3px 20px;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.ns6-dropdown-item:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.ns6-dropdown-sep {
+  height: 1px;
+  margin: 3px 2px;
+  background: #808080;
+  border-bottom: 1px solid #fff;
+}
+
+/* ---------- Панель навигации ---------- */
+.ns6-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 4px;
+  background: linear-gradient(#dedede, #b9b9b9);
+  border-bottom: 1px solid #8f8f8f;
+  flex: 0 0 auto;
+}
+
+.ns6-tbtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 7px;
+  font-family: inherit;
+  font-size: 11px;
+  color: #000;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.ns6-tbtn:hover:not(:disabled) {
+  background: linear-gradient(#ffffff, #d9d9d9);
+  border-color: #6f6f6f;
+}
+
+.ns6-tbtn:active:not(:disabled) {
+  background: linear-gradient(#b0b0b0, #d9d9d9);
+}
+
+.ns6-tbtn:disabled {
+  color: #909090;
+  cursor: default;
+}
+
+.ns6-tico {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.ns6-red { color: #c00000; }
+.ns6-tbtn:disabled .ns6-red { color: #909090; }
+
+.ns6-toolbar-spacer { flex: 1 1 auto; }
+
+/* Трёхмерный «логотип-двигатель» Netscape */
+.ns6-throbber {
+  width: 28px;
+  height: 28px;
+  border: 2px inset #9a9a9a;
+  background: radial-gradient(circle at 35% 30%, #2a4ea8, #05102c 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.ns6-throbber-inner {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: bold;
+  font-size: 18px;
+  color: #00e676;
+  text-shadow: 0 0 4px #00e676;
+}
+
+.ns6-throbber.spinning .ns6-throbber-inner {
+  animation: ns6-throb 0.9s linear infinite;
+}
+
+@keyframes ns6-throb {
+  0%   { transform: rotate(0deg)   scale(1);   color: #00e676; }
+  50%  { transform: rotate(180deg) scale(0.8); color: #ffd54f; }
+  100% { transform: rotate(360deg) scale(1);   color: #00e676; }
+}
+
+/* ---------- Строка адреса ---------- */
+.ns6-locationbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 5px;
+  background: #cfcfcf;
+  border-bottom: 1px solid #8f8f8f;
+  flex: 0 0 auto;
+}
+
+.ns6-loc-label {
+  color: #303030;
+}
+
+.ns6-address {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: #ffffff;
+  border: 2px inset #9a9a9a;
+  padding: 1px 3px;
+  min-width: 0;
+}
+
+.ns6-lock {
+  font-size: 10px;
+  opacity: 0.55;
+}
+
+.ns6-address-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font-family: Tahoma, "MS Sans Serif", sans-serif;
+  font-size: 11px;
+  background: transparent;
+  color: #000;
+}
+
+.ns6-gobtn {
+  font-family: inherit;
+  font-size: 11px;
+  padding: 2px 8px;
+  background: linear-gradient(#f0f0f0, #c6c6c6);
+  border: 1px solid #6f6f6f;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.ns6-gobtn:active {
+  background: linear-gradient(#b5b5b5, #dcdcdc);
+}
+
+/* ---------- Персональная панель ---------- */
+.ns6-personalbar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 5px;
+  background: linear-gradient(#d7d7d7, #c2c2c2);
+  border-bottom: 1px solid #8f8f8f;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.ns6-pbtn {
+  font-family: inherit;
+  font-size: 11px;
+  padding: 2px 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ns6-pbtn:hover {
+  background: #ffffff;
+  border-color: #7d7d7d;
+}
+
+.ns6-bookmarks-bar {
+  display: flex;
+  gap: 2px;
+  overflow: hidden;
+  border-left: 1px solid #9a9a9a;
+  margin-left: 4px;
+  padding-left: 4px;
+}
+
+.ns6-bm {
+  color: #00007d;
+}
+
+/* ---------- Область документа ---------- */
+.ns6-content {
+  flex: 1 1 auto;
+  border: 2px inset #9a9a9a;
+  margin: 2px;
+  background: #c0c0c0;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.ns6-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #c0c0c0;
+  display: block;
+}
+
+/* ---------- Строка состояния ---------- */
+.ns6-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 4px;
+  background: #cdcdcd;
+  border-top: 1px solid #8f8f8f;
+  flex: 0 0 auto;
+}
+
+.ns6-status-icon { font-size: 11px; }
+
+.ns6-status-text {
+  flex: 1 1 auto;
+  border: 1px inset #9a9a9a;
+  padding: 1px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #202020;
+}
+
+.ns6-progress {
+  width: 110px;
+  height: 12px;
+  border: 1px inset #9a9a9a;
+  background: #b8b8b8;
+  overflow: hidden;
+}
+
+.ns6-progress-fill {
+  height: 100%;
+  width: 0;
+  background: repeating-linear-gradient(90deg, #000080 0 6px, #3b5ccc 6px 10px);
+  transition: width 0.4s ease-out;
+}
+
+.ns6-status-lock {
+  border: 1px inset #9a9a9a;
+  padding: 0 3px;
+  font-size: 10px;
+}
+
+.ns6-component-bar {
+  display: flex;
+  gap: 3px;
+  border: 1px inset #9a9a9a;
+  padding: 0 3px;
+  font-size: 11px;
+}
+
+.ns6-component-bar span {
+  cursor: default;
+  opacity: 0.75;
+}
+
+.ns6-component-bar span:hover { opacity: 1; }

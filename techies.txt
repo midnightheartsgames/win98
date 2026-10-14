@@ -1,0 +1,101 @@
+Лучший источник с конкретными цифрами
+
+Самый полезный для AI-агента — старый гайд Icetag's Guide To Techies на DOTAFire. В разделе Skills перечислены практически все параметры старого Techies: радиусы, mana cost, cooldown, damage, длительность мин и т. д.
+
+Icetag's Guide To Techies — DOTAFire
+
+Хотя сама страница заведена ещё в 2012 году, приведённые там значения совпадают с теми, которые Valve впоследствии указывает как старые значения при переходе 6.81b → 6.82. Например, Valve подтверждает, что до 6.82 Land Mines наносили 300/400/500/600, Stasis Trap оглушала на 3/4/5/6, Remote Mines жили 8 минут и имели радиус 400/410/425, а Suicide наносил 650/850/1150/1550.
+
+Techies 04.09.2014 — snapshot для агента
+Способность	Параметры на релизе
+Land Mines — Q	Невидимая мина, автоматически взрывается от приблизившегося врага
+Cast Range	100
+Full Damage Radius	200
+Partial Damage Radius	500
+Damage	300 / 400 / 500 / 600
+Partial Damage	150 / 200 / 250 / 300
+Mana	125 / 150 / 175 / 205
+Cooldown	25 / 20 / 15 / 10
+Max mines	20
+Duration	пока не уничтожена/не взорвана
+Activation Delay	1.75 сек.
+Damage Type	Composite
+Buildings	наносит урон зданиям
+
+Значения урона, радиусов, mana/cooldown и лимита в 20 мин приведены в старом гайде. То, что задержка была именно 1.75 секунды, дополнительно подтверждается патчем 6.84, где Valve позже уменьшила её с 1.75 → 0.5. А официальный 6.82 подтверждает первоначальный Composite damage и 300/400/500/600.
+
+Stasis Trap — W	
+Cast Range	150
+Trigger Radius	200
+Stun Radius	450
+Stun	3 / 4 / 5 / 6 сек.
+Trap Duration	270 / 300 / 330 / 360 сек.
+Activation Delay	2 сек.
+Detonation Delay	2 сек.
+Mana	80 / 110 / 140 / 160
+Cooldown	20 / 16 / 13 / 10
+
+Особенно важно для воссоздания: радиус срабатывания был всего 200, хотя само оглушение имело радиус 450. В 6.82 Valve специально изменила 200 → 450. Задержки 2 + 2 секунды подтверждаются 6.84, где их уменьшили до 1.5 + 1.5.
+
+Suicide Squad, Attack! — E	
+Cast Range	100
+Full Damage Radius	200
+Partial Radius	500
+Full Damage	650 / 850 / 1150 / 1550
+Partial Damage	350 / 400 / 450 / 500
+Mana	100 / 125 / 150 / 175
+Cooldown	180 / 170 / 160 / 150
+Damage Type	Composite
+Death	Techies погибает от собственной способности
+Respawn	время возрождения уменьшается на 50%
+Kill credit	смерть считалась самоубийством — противник не получал обычную награду за убийство
+
+Старый гайд непосредственно приводит урон, радиусы, mana и cooldown. Valve в 6.82 подтверждает именно эти первоначальные значения и переход Composite → Physical.
+
+Remote Mines — R	
+Cast Range	500
+Aghanim Cast Range	700
+Damage Radius	400 / 410 / 425
+Damage	300 / 450 / 600
+Aghanim Damage	450 / 600 / 750
+Duration	480 сек. / 8 минут
+Vision	900
+Mana	200 / 240 / 300
+Cooldown	10 сек.
+Damage Type	Magical
+Buildings	не наносит урон зданиям
+Trigger	только вручную
+
+Эти значения практически полностью есть в старом гайде. Valve дополнительно подтверждает в 6.82 первоначальные 8 минут, 900 vision и радиусы 400/410/425.
+
+Focused Detonate
+
+Это отдельная дополнительная способность Techies:
+
+Global cast range → выбрать точку → взорвать все Remote Mines в радиусе 700.
+
+Cooldown был 1 секунда. Focused Detonate существовал уже в релизной версии; сама Valve прямо показывает REMOTE MINES & FOCUSED DETONATE на странице The Techies Update.
+
+Официальная страница Valve — The Techies Update
+
+И это важное отличие: Remote Mines сами от проходящего врага не взрывались. Они ставились скрыто, после чего игрок вручную активировал их.
+
+Ещё был Minefield Sign
+
+В день релиза Techies получил ещё Minefield Sign. GameSpot в статье именно от 4 сентября 2014 пишет, что способность позволяла поставить предупреждающий знак с 120-секундным cooldown, причём одновременно мог существовать только один знак.
+
+GameSpot — Dota 2 4th September Patch Content Analysis
+
+Изначально это была в основном декоративная/служебная способность. Значительно позже Valve привязала к знаку механику Aghanim's Scepter.
+
+Для AI-агента я бы дал именно эти 3 источника
+
+1. Оригинальный Techies Update Valve — чтобы понять задуманное поведение героя:
+Valve — The Techies Update
+
+2. Старый DOTAFire guide — чтобы получить практически все численные параметры:
+DOTAFire — Icetag's Guide To Techies
+
+3. Официальный Valve 6.82 — использовать «от обратного»: там Valve показывает, какие параметры были изменены относительно релизного Techies. Например 300/400/500/600 → 225/300/375/450.
+
+Valve — Update 6.82 / Rekindling Soul

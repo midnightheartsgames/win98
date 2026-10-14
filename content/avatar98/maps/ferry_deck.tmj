@@ -1,0 +1,3260 @@
+{
+ "type": "map",
+ "version": "1.10",
+ "tiledversion": "1.10.2",
+ "orientation": "orthogonal",
+ "renderorder": "right-down",
+ "infinite": false,
+ "width": 28,
+ "height": 16,
+ "tilewidth": 16,
+ "tileheight": 16,
+ "nextlayerid": 5,
+ "nextobjectid": 13,
+ "properties": [
+  {
+   "name": "name",
+   "type": "string",
+   "value": "map.ferry_deck"
+  },
+  {
+   "name": "music",
+   "type": "string",
+   "value": "sea"
+  },
+  {
+   "name": "region",
+   "type": "string",
+   "value": "sea"
+  },
+  {
+   "name": "bg",
+   "type": "string",
+   "value": "#0a1020"
+  },
+  {
+   "name": "onEnter",
+   "type": "string",
+   "value": "deck_enter"
+  },
+  {
+   "name": "night",
+   "type": "bool",
+   "value": true
+  }
+ ],
+ "tilesets": [
+  {
+   "firstgid": 1,
+   "name": "avatar98",
+   "image": "avatar98_tiles.png",
+   "tilewidth": 16,
+   "tileheight": 16,
+   "columns": 16,
+   "tilecount": 155,
+   "imagewidth": 256,
+   "imageheight": 160,
+   "tiles": [
+    {
+     "id": 0,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "grass"
+      }
+     ]
+    },
+    {
+     "id": 1,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "grass_dry"
+      }
+     ]
+    },
+    {
+     "id": 2,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "grass_night"
+      }
+     ]
+    },
+    {
+     "id": 3,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "flowers"
+      }
+     ]
+    },
+    {
+     "id": 4,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "dirt"
+      }
+     ]
+    },
+    {
+     "id": 5,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "dirt_dark"
+      }
+     ]
+    },
+    {
+     "id": 6,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "sand"
+      }
+     ]
+    },
+    {
+     "id": 7,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "cobble"
+      }
+     ]
+    },
+    {
+     "id": 8,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "cobble_rc"
+      }
+     ]
+    },
+    {
+     "id": 9,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "cobble_night"
+      }
+     ]
+    },
+    {
+     "id": 10,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "plaza"
+      }
+     ]
+    },
+    {
+     "id": 11,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "planks"
+      }
+     ]
+    },
+    {
+     "id": 12,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "planks_dark"
+      }
+     ]
+    },
+    {
+     "id": 13,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "deck"
+      }
+     ]
+    },
+    {
+     "id": 14,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "deck_night"
+      }
+     ]
+    },
+    {
+     "id": 15,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "tatami"
+      }
+     ]
+    },
+    {
+     "id": 16,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "carpet"
+      }
+     ]
+    },
+    {
+     "id": 17,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "checker"
+      }
+     ]
+    },
+    {
+     "id": 18,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "concrete"
+      }
+     ]
+    },
+    {
+     "id": 19,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "concrete_dark"
+      }
+     ]
+    },
+    {
+     "id": 20,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "grate"
+      }
+     ]
+    },
+    {
+     "id": 21,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "metal"
+      }
+     ]
+    },
+    {
+     "id": 22,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "metal_kupol"
+      }
+     ]
+    },
+    {
+     "id": 23,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "rock"
+      }
+     ]
+    },
+    {
+     "id": 24,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "rock_light"
+      }
+     ]
+    },
+    {
+     "id": 25,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "water"
+      }
+     ]
+    },
+    {
+     "id": 26,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "water_harbor"
+      }
+     ]
+    },
+    {
+     "id": 27,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "water_night"
+      }
+     ]
+    },
+    {
+     "id": 28,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "ember"
+      }
+     ]
+    },
+    {
+     "id": 29,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "vault"
+      }
+     ]
+    },
+    {
+     "id": 30,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "vault_dark"
+      }
+     ]
+    },
+    {
+     "id": 31,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "stars"
+      }
+     ]
+    },
+    {
+     "id": 32,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "void"
+      }
+     ]
+    },
+    {
+     "id": 33,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "roofwalk"
+      }
+     ]
+    },
+    {
+     "id": 34,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "roofwalk_tar"
+      }
+     ]
+    },
+    {
+     "id": 35,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "roofwalk_night"
+      }
+     ]
+    },
+    {
+     "id": 36,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "wall_fn"
+      }
+     ]
+    },
+    {
+     "id": 37,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "wall_fn_red"
+      }
+     ]
+    },
+    {
+     "id": 38,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "wall_wood"
+      }
+     ]
+    },
+    {
+     "id": 39,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "wall_brick"
+      }
+     ]
+    },
+    {
+     "id": 40,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "wall_brick_dark"
+      }
+     ]
+    },
+    {
+     "id": 41,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "wall_stone"
+      }
+     ]
+    },
+    {
+     "id": 42,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "wall_metal"
+      }
+     ]
+    },
+    {
+     "id": 43,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "wall_kupol"
+      }
+     ]
+    },
+    {
+     "id": 44,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "wall_rock"
+      }
+     ]
+    },
+    {
+     "id": 45,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "wall_concrete"
+      }
+     ]
+    },
+    {
+     "id": 46,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "wall_ship"
+      }
+     ]
+    },
+    {
+     "id": 47,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "walltop"
+      }
+     ]
+    },
+    {
+     "id": 48,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "walltop_rc"
+      }
+     ]
+    },
+    {
+     "id": 49,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "walltop_kupol"
+      }
+     ]
+    },
+    {
+     "id": 50,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "rocktop"
+      }
+     ]
+    },
+    {
+     "id": 51,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "roof_fn"
+      }
+     ]
+    },
+    {
+     "id": 52,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "roof_fn_eave"
+      }
+     ]
+    },
+    {
+     "id": 53,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "roof_fn_ridge"
+      }
+     ]
+    },
+    {
+     "id": 54,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "roof_green"
+      }
+     ]
+    },
+    {
+     "id": 55,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "roof_green_eave"
+      }
+     ]
+    },
+    {
+     "id": 56,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "roof_rc"
+      }
+     ]
+    },
+    {
+     "id": 57,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "window_fn"
+      }
+     ]
+    },
+    {
+     "id": 58,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "window_rc"
+      }
+     ]
+    },
+    {
+     "id": 59,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "window_dark"
+      }
+     ]
+    },
+    {
+     "id": 60,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "window_kupol"
+      }
+     ]
+    },
+    {
+     "id": 61,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "window_wood"
+      }
+     ]
+    },
+    {
+     "id": 62,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "door_wood"
+      }
+     ]
+    },
+    {
+     "id": 63,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "door_metal"
+      }
+     ]
+    },
+    {
+     "id": 64,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "doorway"
+      }
+     ]
+    },
+    {
+     "id": 65,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "doorway_rc"
+      }
+     ]
+    },
+    {
+     "id": 66,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "doorway_metal"
+      }
+     ]
+    },
+    {
+     "id": 67,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "noren_blue"
+      }
+     ]
+    },
+    {
+     "id": 68,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "noren_red"
+      }
+     ]
+    },
+    {
+     "id": 69,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "stairs"
+      }
+     ]
+    },
+    {
+     "id": 70,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "stairs_stone"
+      }
+     ]
+    },
+    {
+     "id": 71,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "ladder"
+      }
+     ]
+    },
+    {
+     "id": 72,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "fence"
+      }
+     ]
+    },
+    {
+     "id": 73,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "railing"
+      }
+     ]
+    },
+    {
+     "id": 74,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "railing_ship"
+      }
+     ]
+    },
+    {
+     "id": 75,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "crate"
+      }
+     ]
+    },
+    {
+     "id": 76,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "barrel"
+      }
+     ]
+    },
+    {
+     "id": 77,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "pot"
+      }
+     ]
+    },
+    {
+     "id": 78,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "table"
+      }
+     ]
+    },
+    {
+     "id": 79,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "table_set"
+      }
+     ]
+    },
+    {
+     "id": 80,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "counter"
+      }
+     ]
+    },
+    {
+     "id": 81,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "shelf"
+      }
+     ]
+    },
+    {
+     "id": 82,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "bookshelf"
+      }
+     ]
+    },
+    {
+     "id": 83,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "toolrack"
+      }
+     ]
+    },
+    {
+     "id": 84,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "forge"
+      }
+     ]
+    },
+    {
+     "id": 85,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "tree"
+      }
+     ]
+    },
+    {
+     "id": 86,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "tree_blossom"
+      }
+     ]
+    },
+    {
+     "id": 87,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "canopy"
+      }
+     ]
+    },
+    {
+     "id": 88,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "canopy_blossom"
+      }
+     ]
+    },
+    {
+     "id": 89,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "canopy_night"
+      }
+     ]
+    },
+    {
+     "id": 90,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "bush"
+      }
+     ]
+    },
+    {
+     "id": 91,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "bush_flower"
+      }
+     ]
+    },
+    {
+     "id": 92,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "boulder"
+      }
+     ]
+    },
+    {
+     "id": 93,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "boulder_dark"
+      }
+     ]
+    },
+    {
+     "id": 94,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "lamppost"
+      }
+     ]
+    },
+    {
+     "id": 95,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "lamptop"
+      }
+     ]
+    },
+    {
+     "id": 96,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "lamptop_teal"
+      }
+     ]
+    },
+    {
+     "id": 97,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "lantern_red"
+      }
+     ]
+    },
+    {
+     "id": 98,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "neon_teal"
+      }
+     ]
+    },
+    {
+     "id": 99,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "neon_pink"
+      }
+     ]
+    },
+    {
+     "id": 100,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "vine"
+      }
+     ]
+    },
+    {
+     "id": 101,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "vine_over"
+      }
+     ]
+    },
+    {
+     "id": 102,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "vine_drained"
+      }
+     ]
+    },
+    {
+     "id": 103,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "roots"
+      }
+     ]
+    },
+    {
+     "id": 104,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "rail_v"
+      }
+     ]
+    },
+    {
+     "id": 105,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "rail_h"
+      }
+     ]
+    },
+    {
+     "id": 106,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "rail_v_mine"
+      }
+     ]
+    },
+    {
+     "id": 107,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "rail_h_mine"
+      }
+     ]
+    },
+    {
+     "id": 108,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "rail_v_dead"
+      }
+     ]
+    },
+    {
+     "id": 109,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "rail_h_dead"
+      }
+     ]
+    },
+    {
+     "id": 110,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "rail_v_live"
+      }
+     ]
+    },
+    {
+     "id": 111,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "rail_h_live"
+      }
+     ]
+    },
+    {
+     "id": 112,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "platform_edge"
+      }
+     ]
+    },
+    {
+     "id": 113,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "pillar"
+      }
+     ]
+    },
+    {
+     "id": 114,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "pillar_kupol"
+      }
+     ]
+    },
+    {
+     "id": 115,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "pillar_red"
+      }
+     ]
+    },
+    {
+     "id": 116,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "pipe_h"
+      }
+     ]
+    },
+    {
+     "id": 117,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "pipe_v"
+      }
+     ]
+    },
+    {
+     "id": 118,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "pipe_h_dead"
+      }
+     ]
+    },
+    {
+     "id": 119,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "pipe_v_dead"
+      }
+     ]
+    },
+    {
+     "id": 120,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "machine"
+      }
+     ]
+    },
+    {
+     "id": 121,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "machine_kupol"
+      }
+     ]
+    },
+    {
+     "id": 122,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "crt"
+      }
+     ]
+    },
+    {
+     "id": 123,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "banner_kupol"
+      }
+     ]
+    },
+    {
+     "id": 124,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "banner_fn"
+      }
+     ]
+    },
+    {
+     "id": 125,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "cargo_red"
+      }
+     ]
+    },
+    {
+     "id": 126,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "cargo_blue"
+      }
+     ]
+    },
+    {
+     "id": 127,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "cargo_green"
+      }
+     ]
+    },
+    {
+     "id": 128,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "hull"
+      }
+     ]
+    },
+    {
+     "id": 129,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "statue"
+      }
+     ]
+    },
+    {
+     "id": 130,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "statue_gold"
+      }
+     ]
+    },
+    {
+     "id": 131,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "pit"
+      }
+     ]
+    },
+    {
+     "id": 132,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "street_far"
+      }
+     ]
+    },
+    {
+     "id": 133,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "ore"
+      }
+     ]
+    },
+    {
+     "id": 134,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "ore_blue"
+      }
+     ]
+    },
+    {
+     "id": 135,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "support"
+      }
+     ]
+    },
+    {
+     "id": 136,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "beam"
+      }
+     ]
+    },
+    {
+     "id": 137,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "beam_metal"
+      }
+     ]
+    },
+    {
+     "id": 138,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "chimney"
+      }
+     ]
+    },
+    {
+     "id": 139,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "watertower"
+      }
+     ]
+    },
+    {
+     "id": 140,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "acunit"
+      }
+     ]
+    },
+    {
+     "id": 141,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "laundry"
+      }
+     ]
+    },
+    {
+     "id": 142,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "laundry2"
+      }
+     ]
+    },
+    {
+     "id": 143,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "cables"
+      }
+     ]
+    },
+    {
+     "id": 144,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "stripe"
+      }
+     ]
+    },
+    {
+     "id": 145,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "reactor"
+      }
+     ]
+    },
+    {
+     "id": 146,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "signboard"
+      }
+     ]
+    },
+    {
+     "id": 147,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "signboard_rc"
+      }
+     ]
+    },
+    {
+     "id": 148,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "awning_red"
+      }
+     ]
+    },
+    {
+     "id": 149,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "awning_green"
+      }
+     ]
+    },
+    {
+     "id": 150,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "awning_blue"
+      }
+     ]
+    },
+    {
+     "id": 151,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "rug"
+      }
+     ]
+    },
+    {
+     "id": 152,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "scroll"
+      }
+     ]
+    },
+    {
+     "id": 153,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "empty"
+      }
+     ]
+    },
+    {
+     "id": 154,
+     "properties": [
+      {
+       "name": "tile",
+       "type": "string",
+       "value": "blackfloor"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "layers": [
+  {
+   "id": 1,
+   "type": "tilelayer",
+   "name": "ground",
+   "width": 28,
+   "height": 16,
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0,
+   "data": [
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    28,
+    28,
+    28,
+    28,
+    75,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    77,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    39,
+    39,
+    39,
+    39,
+    39,
+    75,
+    28,
+    28,
+    28,
+    28,
+    75,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    39,
+    39,
+    65,
+    39,
+    39,
+    75,
+    28,
+    28,
+    28,
+    28,
+    75,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    75,
+    28,
+    28,
+    28,
+    28,
+    75,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    136,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    75,
+    28,
+    28,
+    28,
+    28,
+    75,
+    15,
+    15,
+    15,
+    15,
+    15,
+    70,
+    15,
+    15,
+    15,
+    15,
+    136,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    75,
+    28,
+    28,
+    28,
+    28,
+    75,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    75,
+    28,
+    28,
+    28,
+    28,
+    75,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    76,
+    76,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    75,
+    28,
+    28,
+    28,
+    28,
+    75,
+    15,
+    76,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    77,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    15,
+    75,
+    28,
+    28,
+    28,
+    28,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    75,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28,
+    28
+   ]
+  },
+  {
+   "id": 2,
+   "type": "tilelayer",
+   "name": "deco",
+   "width": 28,
+   "height": 16,
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0,
+   "data": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": 3,
+   "type": "tilelayer",
+   "name": "over",
+   "width": 28,
+   "height": 16,
+   "opacity": 1,
+   "visible": true,
+   "x": 0,
+   "y": 0,
+   "data": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": 4,
+   "type": "objectgroup",
+   "name": "entities",
+   "objects": [
+    {
+     "id": 1,
+     "name": "hatch",
+     "type": "spawn",
+     "x": 128,
+     "y": 144,
+     "width": 16,
+     "height": 16,
+     "properties": [
+      {
+       "name": "dir",
+       "type": "string",
+       "value": "down"
+      }
+     ]
+    },
+    {
+     "id": 2,
+     "name": "bow",
+     "type": "spawn",
+     "x": 64,
+     "y": 128,
+     "width": 16,
+     "height": 16,
+     "properties": [
+      {
+       "name": "dir",
+       "type": "string",
+       "value": "left"
+      }
+     ]
+    },
+    {
+     "id": 3,
+     "name": "hatch_w",
+     "type": "warp",
+     "x": 128,
+     "y": 128,
+     "width": 16,
+     "height": 16,
+     "properties": [
+      {
+       "name": "to",
+       "type": "string",
+       "value": "{\"map\":\"ferry_hold\",\"spawn\":\"hatch\",\"dir\":\"down\"}"
+      }
+     ]
+    },
+    {
+     "id": 4,
+     "name": "liao",
+     "type": "npc",
+     "x": 336,
+     "y": 112,
+     "width": 16,
+     "height": 16,
+     "properties": [
+      {
+       "name": "look",
+       "type": "string",
+       "value": "boat_captain"
+      },
+      {
+       "name": "event",
+       "type": "string",
+       "value": "deck_liao"
+      },
+      {
+       "name": "dir",
+       "type": "string",
+       "value": "left"
+      }
+     ]
+    },
+    {
+     "id": 5,
+     "name": "sailor",
+     "type": "npc",
+     "x": 192,
+     "y": 160,
+     "width": 16,
+     "height": 16,
+     "properties": [
+      {
+       "name": "look",
+       "type": "string",
+       "value": "sailor"
+      },
+      {
+       "name": "event",
+       "type": "string",
+       "value": "deck_sailor"
+      },
+      {
+       "name": "move",
+       "type": "string",
+       "value": "{\"type\":\"wander\",\"radius\":2,\"wait\":90}"
+      }
+     ]
+    },
+    {
+     "id": 6,
+     "name": "lifeboat1",
+     "type": "prop",
+     "x": 96,
+     "y": 64,
+     "width": 16,
+     "height": 16,
+     "properties": [
+      {
+       "name": "look",
+       "type": "string",
+       "value": "boat"
+      },
+      {
+       "name": "text",
+       "type": "string",
+       "value": "insp.lifeboat"
+      }
+     ]
+    },
+    {
+     "id": 7,
+     "name": "lifeboat2",
+     "type": "prop",
+     "x": 352,
+     "y": 176,
+     "width": 16,
+     "height": 16,
+     "properties": [
+      {
+       "name": "look",
+       "type": "string",
+       "value": "boat"
+      },
+      {
+       "name": "text",
+       "type": "string",
+       "value": "insp.lifeboat"
+      }
+     ]
+    },
+    {
+     "id": 8,
+     "name": "lamp1",
+     "type": "prop",
+     "x": 112,
+     "y": 96,
+     "width": 16,
+     "height": 16,
+     "properties": [
+      {
+       "name": "look",
+       "type": "string",
+       "value": "lantern"
+      },
+      {
+       "name": "frame",
+       "type": "string",
+       "value": "anim"
+      },
+      {
+       "name": "solid",
+       "type": "bool",
+       "value": false
+      }
+     ]
+    },
+    {
+     "id": 9,
+     "name": "lamp2",
+     "type": "prop",
+     "x": 304,
+     "y": 96,
+     "width": 16,
+     "height": 16,
+     "properties": [
+      {
+       "name": "look",
+       "type": "string",
+       "value": "lantern"
+      },
+      {
+       "name": "frame",
+       "type": "string",
+       "value": "anim"
+      },
+      {
+       "name": "solid",
+       "type": "bool",
+       "value": false
+      }
+     ]
+    },
+    {
+     "id": 10,
+     "name": "hidden4",
+     "type": "hidden",
+     "x": 368,
+     "y": 176,
+     "width": 16,
+     "height": 16,
+     "properties": [
+      {
+       "name": "look",
+       "type": "string",
+       "value": "sparkle"
+      },
+      {
+       "name": "item",
+       "type": "string",
+       "value": "basing_elixir"
+      },
+      {
+       "name": "secret",
+       "type": "string",
+       "value": "sh_ferry"
+      }
+     ]
+    },
+    {
+     "id": 11,
+     "name": "bow_talk",
+     "type": "trigger",
+     "x": 48,
+     "y": 64,
+     "width": 48,
+     "height": 128,
+     "properties": [
+      {
+       "name": "event",
+       "type": "string",
+       "value": "deck_night_talk"
+      },
+      {
+       "name": "once",
+       "type": "string",
+       "value": "ferry_night_done"
+      }
+     ]
+    },
+    {
+     "id": 12,
+     "name": "mast",
+     "type": "inspect",
+     "x": 208,
+     "y": 144,
+     "width": 16,
+     "height": 16,
+     "properties": [
+      {
+       "name": "text",
+       "type": "string",
+       "value": "insp.mast"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

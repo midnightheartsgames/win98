@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>★★★ WebCinema '98 — Всемирный архив видеороликов Всемирной Паутины ★★★</title>
+  <style>
+    /* ==========================================================================
+       Pure Web 1.0 Retro Stylesheet (c) 1998 Cyberspace Media Ltd.
+       Optimized for Netscape Communicator 4.5 & Microslop Internet Explorer 5.0
+       ========================================================================== */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #000033;
+      background-image: radial-gradient(#222266 15%, transparent 16%), radial-gradient(#111144 15%, transparent 16%);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+      color: #00ffcc;
+      font-family: "Times New Roman", Times, serif;
+      margin: 0;
+      padding: 12px;
+    }
+
+    a {
+      color: #ffff00;
+      text-decoration: underline;
+    }
+    a:visited {
+      color: #ff9900;
+    }
+    a:hover {
+      color: #ff0055;
+      background: #000066;
+    }
+
+    .retro-container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: #05051a;
+      border: 3px outset #9999ff;
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.4), inset 1px 1px 0 #ffffff;
+      padding: 8px;
+    }
+
+    /* Top Marquee Bar */
+    .marquee-bar {
+      background: #800000;
+      color: #ffffff;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: bold;
+      font-size: 13px;
+      padding: 4px 6px;
+      border: 2px inset #ffffff;
+      margin-bottom: 8px;
+      text-shadow: 1px 1px 0 #000;
+    }
+
+    /* Site Header Banner */
+    .header-table {
+      width: 100%;
+      border: 2px ridge #00ffff;
+      background: linear-gradient(180deg, #000066 0%, #000022 100%);
+      margin-bottom: 10px;
+      padding: 8px;
+    }
+
+    .site-title {
+      font-family: "Impact", "Arial Black", sans-serif;
+      font-size: 38px;
+      color: #ffff00;
+      text-align: center;
+      letter-spacing: 2px;
+      text-shadow: 3px 3px 0 #ff0000, 5px 5px 0 #000000;
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    .site-subtitle {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      color: #ffffff;
+      text-align: center;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    .site-meta-bar {
+      text-align: center;
+      font-size: 11px;
+      color: #00ffaa;
+      font-family: monospace;
+      margin-top: 6px;
+    }
+
+    /* Dial-up Warning */
+    .modem-alert {
+      background: #332200;
+      border: 2px dashed #ffcc00;
+      color: #ffeedd;
+      font-family: Tahoma, sans-serif;
+      font-size: 11px;
+      padding: 6px 10px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Navigation Bar */
+    .nav-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+      background: #000080;
+      border: 2px outset #ffffff;
+    }
+
+    .nav-table td {
+      padding: 5px 8px;
+      text-align: center;
+      border: 1px solid #4444bb;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .nav-btn {
+      color: #ffffff;
+      text-decoration: none;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .nav-btn:hover {
+      color: #ffff00;
+      text-decoration: underline;
+    }
+
+    .nav-btn.active {
+      color: #00ffff;
+      background: #000044;
+      padding: 2px 6px;
+      border: 1px inset #00ffff;
+    }
+
+    /* Main Layout Table */
+    .layout-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .layout-left {
+      width: 68%;
+      vertical-align: top;
+      padding-right: 8px;
+    }
+
+    .layout-right {
+      width: 32%;
+      vertical-align: top;
+      padding-left: 8px;
+    }
+
+    /* ActiveMovie / Retro Video Player Box */
+    .player-window {
+      background: #c0c0c0;
+      border: 2px outset #ffffff;
+      box-shadow: 2px 2px 0 #000000;
+      color: #000000;
+      margin-bottom: 12px;
+      font-family: Tahoma, "MS Sans Serif", sans-serif;
+    }
+
+    .player-titlebar {
+      background: linear-gradient(90deg, #000080, #1084d0);
+      color: #ffffff;
+      padding: 3px 6px;
+      font-size: 11px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .player-titlebar-btns span {
+      display: inline-block;
+      width: 14px;
+      height: 12px;
+      background: #c0c0c0;
+      color: #000000;
+      border: 1px outset #ffffff;
+      font-size: 9px;
+      line-height: 11px;
+      text-align: center;
+      font-weight: bold;
+      margin-left: 2px;
+      cursor: default;
+    }
+
+    .player-screen-wrap {
+      background: #000000;
+      padding: 4px;
+      border-top: 1px solid #808080;
+      border-left: 1px solid #808080;
+      border-right: 1px solid #ffffff;
+      border-bottom: 1px solid #ffffff;
+      margin: 4px;
+      position: relative;
+    }
+
+    video.retro-video {
+      width: 100%;
+      height: auto;
+      max-height: 380px;
+      background: #000000;
+      display: block;
+      border: 1px solid #333333;
+    }
+
+    .player-hud {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #00ff00;
+      font-family: monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border: 1px solid #00ff00;
+      pointer-events: none;
+    }
+
+    .player-controls-bar {
+      padding: 4px 6px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      background: #c0c0c0;
+      font-size: 11px;
+    }
+
+    .win-btn {
+      background: #c0c0c0;
+      border-top: 1px solid #ffffff;
+      border-left: 1px solid #ffffff;
+      border-right: 1px solid #404040;
+      border-bottom: 1px solid #404040;
+      color: #000000;
+      font-family: Tahoma, "MS Sans Serif", sans-serif;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 2px 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .win-btn:active {
+      border-top: 1px solid #404040;
+      border-left: 1px solid #404040;
+      border-right: 1px solid #ffffff;
+      border-bottom: 1px solid #ffffff;
+      padding: 3px 7px 1px 9px;
+    }
+
+    .player-slider {
+      flex: 1;
+      height: 12px;
+      accent-color: #000080;
+      cursor: pointer;
+    }
+
+    .player-time-display {
+      font-family: monospace;
+      font-size: 11px;
+      background: #ffffff;
+      border: 1px inset #808080;
+      padding: 2px 5px;
+      min-width: 90px;
+      text-align: center;
+    }
+
+    /* Video Details Panel */
+    .video-info-box {
+      background: #001122;
+      border: 2px groove #00ffff;
+      padding: 8px;
+      margin-bottom: 12px;
+    }
+
+    .video-info-title {
+      font-family: Arial, sans-serif;
+      font-size: 17px;
+      font-weight: bold;
+      color: #ffff00;
+      margin-bottom: 4px;
+    }
+
+    .video-info-desc {
+      font-size: 13px;
+      color: #ddffff;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      font-family: monospace;
+      margin-top: 6px;
+      background: #000015;
+    }
+
+    .spec-table td, .spec-table th {
+      border: 1px solid #005577;
+      padding: 3px 6px;
+    }
+
+    .spec-table th {
+      background: #002244;
+      color: #ffcc00;
+      text-align: left;
+    }
+
+    /* Video Cards Grid */
+    .section-header {
+      background: linear-gradient(90deg, #ff0055, #8800aa, #002288);
+      color: #ffffff;
+      font-family: "Impact", Arial, sans-serif;
+      font-size: 18px;
+      letter-spacing: 1px;
+      padding: 4px 8px;
+      border: 2px outset #ffffff;
+      margin-bottom: 8px;
+      text-shadow: 1px 1px 0 #000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .video-card {
+      background: #080d20;
+      border: 2px solid #224488;
+      padding: 8px;
+      margin-bottom: 8px;
+      transition: border-color 0.2s;
+    }
+
+    .video-card:hover {
+      border-color: #00ffff;
+      background: #0c1432;
+    }
+
+    .video-card.active {
+      border: 2px solid #ffff00;
+      background: #151a3a;
+      box-shadow: 0 0 8px rgba(255, 255, 0, 0.4);
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .card-title {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      color: #ffff33;
+      cursor: pointer;
+    }
+
+    .card-title:hover {
+      text-decoration: underline;
+    }
+
+    .card-badge {
+      background: #ff0000;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      font-size: 9px;
+      font-weight: bold;
+      padding: 2px 4px;
+      border: 1px solid #ffff00;
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+
+    .card-meta {
+      font-family: monospace;
+      font-size: 11px;
+      color: #66ffcc;
+      margin: 4px 0;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: #cccccc;
+      margin-bottom: 6px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* Sidebar Boxes */
+    .side-box {
+      background: #050b18;
+      border: 2px groove #ffff00;
+      padding: 8px;
+      margin-bottom: 12px;
+    }
+
+    .side-box-title {
+      background: #ffaa00;
+      color: #000000;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 3px 6px;
+      margin: -8px -8px 8px -8px;
+      border-bottom: 1px solid #000;
+      text-transform: uppercase;
+    }
+
+    /* Dial-up Time Table */
+    .dialup-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      font-family: monospace;
+    }
+    .dialup-table td {
+      border: 1px solid #334466;
+      padding: 3px 4px;
+    }
+    .dialup-table tr:nth-child(even) {
+      background: #0a1122;
+    }
+
+    /* Guestbook / Comments */
+    .guestbook-box {
+      background: #000022;
+      border: 2px inset #9999ff;
+      padding: 8px;
+      margin-top: 12px;
+    }
+
+    .gb-form-row {
+      margin-bottom: 6px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 12px;
+      font-family: Arial, sans-serif;
+    }
+
+    .gb-input {
+      background: #ffffff;
+      border: 1px inset #808080;
+      font-family: Tahoma, sans-serif;
+      font-size: 12px;
+      padding: 3px;
+      color: #000000;
+      flex: 1;
+    }
+
+    .gb-comment-item {
+      border-bottom: 1px dashed #444488;
+      padding: 6px 0;
+      font-size: 12px;
+    }
+
+    .gb-author {
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      color: #ffff00;
+    }
+
+    .gb-dialup-tag {
+      font-family: monospace;
+      font-size: 10px;
+      color: #00ffaa;
+      background: #002244;
+      padding: 1px 4px;
+      border: 1px solid #005577;
+    }
+
+    .gb-text {
+      color: #ffffff;
+      margin-top: 3px;
+      font-family: Tahoma, sans-serif;
+      font-size: 12px;
+    }
+
+    /* Retro Footer & Badges */
+    .footer-box {
+      text-align: center;
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 2px ridge #00ffff;
+      font-size: 11px;
+      font-family: Arial, sans-serif;
+    }
+
+    .hit-counter-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #000000;
+      border: 2px inset #808080;
+      padding: 2px 6px;
+      margin: 8px 0;
+    }
+
+    .digit-box {
+      background: #001100;
+      color: #00ff00;
+      border: 1px solid #005500;
+      font-family: "Courier New", monospace;
+      font-weight: bold;
+      font-size: 16px;
+      padding: 1px 4px;
+      box-shadow: inset 0 0 3px #00ff00;
+    }
+
+    .retro-badge-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .retro-badge {
+      display: inline-block;
+      width: 88px;
+      height: 31px;
+      border: 1px outset #ffffff;
+      font-family: Arial, sans-serif;
+      font-size: 8px;
+      font-weight: bold;
+      line-height: 10px;
+      text-align: center;
+      padding-top: 4px;
+      color: #ffffff;
+      text-shadow: 1px 1px 0 #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .badge-ie {
+      background: linear-gradient(180deg, #0055aa, #001144);
+    }
+    .badge-notepad {
+      background: linear-gradient(180deg, #444444, #111111);
+      color: #00ff00;
+    }
+    .badge-quicktime {
+      background: linear-gradient(180deg, #111188, #000033);
+      color: #00ffff;
+    }
+    .badge-directx {
+      background: linear-gradient(180deg, #880000, #330000);
+      color: #ffcc00;
+    }
+    .badge-mpeg {
+      background: linear-gradient(180deg, #006644, #002211);
+      color: #ffff00;
+    }
+
+    .webring-box {
+      border: 2px dashed #ffff00;
+      padding: 6px;
+      margin: 8px auto;
+      max-width: 500px;
+      background: #000022;
+      color: #ffffff;
+    }
+
+    /* Blinking effect */
+    .blink {
+      animation: blink-anim 1s step-start infinite;
+    }
+    @keyframes blink-anim {
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="retro-container">
+    <!-- Top Marquee Bar -->
+    <div class="marquee-bar">
+      <marquee scrollamount="4" behavior="scroll" direction="left">
+        ★★★ ДОБРО ПОЖАЛОВАТЬ В WEBCINEMA '98 — ЦИФРОВОЙ ВИДЕОАРХИВ ВСЕМИРНОЙ ПАУТИНЫ! СВЕЖИЕ ТРЕЙЛЕРЫ HALF-LIFE, FALLOUT 2, НОВЫЙ КЛИП CAPTAIN JEFF И ПОЛНАЯ ЗАПИСЬ КОНЦЕРТА THE PRODIGY В МОСКВЕ (1997) В ФОРМАТЕ MPEG-1! ★★★ ЛУЧШИЙ ПРОСМОТР ЧЕРЕЗ INTERNET EXPLORER 5.0 ПРИ РАЗРЕШЕНИИ 800x600 ★★★
+      </marquee>
+    </div>
+
+    <!-- Header Table -->
+    <table class="header-table">
+      <tr>
+        <td style="width:70px; text-align:center; vertical-align:middle;">
+          <span style="font-size:40px;">🎬</span>
+        </td>
+        <td>
+          <h1 class="site-title">WEBCINEMA '98</h1>
+          <div class="site-subtitle">
+            Всемирный Каталог и Видеотека Эпохи MPEG-1, QuickTime 3.0 & ActiveMovie
+          </div>
+          <div class="site-meta-bar">
+            Сервер: <code>ftp.webcinema98.net</code> • Протокол: <code>HTTP/1.1 DirectStream</code> • Статус: <span style="color:#00ff00;">● ONLINE</span>
+          </div>
+        </td>
+        <td style="width:80px; text-align:center; vertical-align:middle;">
+          <span class="blink" style="color:#ffff00; font-weight:bold; font-size:12px; display:block; border:1px solid #ffff00; padding:2px; background:#ff0000;">★ NEW ★</span>
+          <span style="font-size:32px; margin-top:4px; display:block;">🎞️</span>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Dial-up Warning -->
+    <div class="modem-alert">
+      <span style="font-size:22px;">⚠️</span>
+      <div>
+        <strong>Справка модемного пользователя:</strong>
+        Видеоролики закодированы с битрейтом 400-900 кбит/с. При использовании модема 28.8k - 56k рекомендуется дождаться полной буферизации или скачать файл целиком перед просмотром! Для мгновенного запуска используйте ночной безлимитный доступ или выделенную линию ISDN.
+      </div>
+    </div>
+
+    <!-- Navigation / Category Filters -->
+    <table class="nav-table">
+      <tr>
+        <td><a class="nav-btn active" data-filter="all" id="btn-filter-all">Все видео (7)</a></td>
+        <td><a class="nav-btn" data-filter="games" id="btn-filter-games">🎮 Игровые трейлеры (4)</a></td>
+        <td><a class="nav-btn" data-filter="music" id="btn-filter-music">⚡ Рок и Концерты (2)</a></td>
+        <td><a class="nav-btn" data-filter="anime" id="btn-filter-anime">⚔️ Аниме и Кино (1)</a></td>
+        <td><a class="nav-btn" href="#guestbook">💬 Гостевая книга</a></td>
+        <td><a class="nav-btn" href="#specs">⚙️ Тех. параметры</a></td>
+      </tr>
+    </table>
+
+    <!-- Main Two-Column Layout -->
+    <table class="layout-table">
+      <tr>
+        <!-- Left Column: Video Player & Catalog -->
+        <td class="layout-left">
+          
+          <!-- ActiveMovie Embedded Player Box -->
+          <div class="player-window" id="player-box">
+            <div class="player-titlebar">
+              <span id="player-title-text">ActiveMovie™ Player 98 - The Prodigy Live Moscow 1997</span>
+              <div class="player-titlebar-btns">
+                <span>_</span>
+                <span>□</span>
+                <span>×</span>
+              </div>
+            </div>
+
+            <div class="player-screen-wrap">
+              <video class="retro-video" id="main-video" playsinline preload="metadata"></video>
+              <div class="player-hud" id="player-hud">STATUS: READY • 320x240 • DIRECTSHOW</div>
+            </div>
+
+            <div class="player-controls-bar">
+              <button class="win-btn" id="ctrl-play">▶ Пуск</button>
+              <button class="win-btn" id="ctrl-pause">❚❚ Пауза</button>
+              <button class="win-btn" id="ctrl-stop">■ Стоп</button>
+              <input type="range" class="player-slider" id="ctrl-slider" min="0" max="100" value="0" step="0.1">
+              <div class="player-time-display" id="ctrl-time">00:00 / 00:00</div>
+              <button class="win-btn" id="ctrl-mute">🔊 Звук</button>
+              <input type="range" id="ctrl-volume" min="0" max="1" step="0.05" value="0.8" style="width:60px; accent-color:#000080;">
+              <button class="win-btn" id="ctrl-fs">⛶ Во весь экран</button>
+            </div>
+          </div>
+
+          <!-- Video Details Card -->
+          <div class="video-info-box" id="video-info-box">
+            <div class="video-info-title" id="info-title">The Prodigy — Концерт на Манежной площади (Москва, 1997)</div>
+            <div class="video-info-desc" id="info-desc">
+              Легендарное историческое выступление The Prodigy в Москве, собравшее более 250,000 человек прямо под стенами Кремля. Телевизионная трансляция MTV Proshot.
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+              <div style="font-size:12px; color:#ffff00;">
+                Категория: <span id="info-cat" style="color:#ffffff;">Музыка и Концерты</span> |
+                Год: <span id="info-year" style="color:#ffffff;">1997</span> |
+                Рейтинг: <span id="info-rating" style="color:#ffcc00;">★★★★★</span>
+              </div>
+              <div>
+                <a class="win-btn" id="btn-download-clip" style="text-decoration:none;" download>
+                  💾 Скачать ролик (<span id="info-size-btn">44.1 MB</span>)
+                </a>
+              </div>
+            </div>
+
+            <!-- Technical Specs Table -->
+            <table class="spec-table" id="specs" style="margin-top:10px;">
+              <tr>
+                <th>Параметр</th>
+                <th>Значение</th>
+                <th>Параметр</th>
+                <th>Значение</th>
+              </tr>
+              <tr>
+                <td>Имя файла:</td>
+                <td id="spec-filename" style="color:#00ffcc;">Prodigy_Moscow_1997.mp4</td>
+                <td>Разрешение:</td>
+                <td id="spec-resolution" style="color:#ffff00;">480x360</td>
+              </tr>
+              <tr>
+                <td>Размер:</td>
+                <td id="spec-size" style="color:#ffff00;">44.1 MB</td>
+                <td>Длительность:</td>
+                <td id="spec-duration" style="color:#00ffcc;">39:56</td>
+              </tr>
+              <tr>
+                <td>Кодек видео:</td>
+                <td id="spec-codec" style="color:#ffffff;">MPEG-1 / Cinepak DirectStream</td>
+                <td>Частота кадров:</td>
+                <td id="spec-fps" style="color:#ffffff;">25 fps</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Video Catalog Section -->
+          <div class="section-header">
+            <span>📹 КАТАЛОГ ВИДЕОЗАПИСЕЙ СЕРВЕРА</span>
+            <span style="font-size:11px; font-family:Arial; font-weight:normal;">Выбор клипа для показа</span>
+          </div>
+
+          <div id="video-catalog-list">
+            <!-- Dynamically populated video cards -->
+          </div>
+
+        </td>
+
+        <!-- Right Column: Sidebar, Modem Estimates, Guestbook -->
+        <td class="layout-right">
+
+          <!-- Dial-up Estimate Box -->
+          <div class="side-box">
+            <div class="side-box-title">⏱️ Расчет времени скачивания</div>
+            <p style="font-size:11px; color:#cceeff; margin:0 0 6px 0;">
+              Расчетное время загрузки текущего ролика по модемам разной скорости:
+            </p>
+            <table class="dialup-table">
+              <tr>
+                <th>Скорость</th>
+                <th>Тип модема</th>
+                <th>Время</th>
+              </tr>
+              <tr>
+                <td><strong>28.8k</strong></td>
+                <td>V.34 Standard</td>
+                <td id="time-28k" style="color:#ff9999;">--</td>
+              </tr>
+              <tr>
+                <td><strong>33.6k</strong></td>
+                <td>USRobotics Sportster</td>
+                <td id="time-33k" style="color:#ffcc66;">--</td>
+              </tr>
+              <tr>
+                <td><strong>56.0k</strong></td>
+                <td>ZyXEL Omni 56K V.90</td>
+                <td id="time-56k" style="color:#ffff66;">--</td>
+              </tr>
+              <tr>
+                <td><strong>128k</strong></td>
+                <td>ISDN Dual Channel</td>
+                <td id="time-isdn" style="color:#66ff66;">--</td>
+              </tr>
+              <tr>
+                <td><strong>10 Mbps</strong></td>
+                <td>Выделенка / Ethernet</td>
+                <td style="color:#00ffff;">Мгновенно</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- QuickTime / ActiveMovie Banner -->
+          <div class="side-box" style="text-align:center;">
+            <div class="side-box-title">💾 Совместимые видеоплееры</div>
+            <div style="font-size:11px; color:#cccccc; line-height:1.4; margin-bottom:6px;">
+              Для плавного просмотра клипов без подтормаживаний рекомендуются:
+            </div>
+            <div style="font-size:11px; font-family:monospace; text-align:left; background:#000000; padding:6px; border:1px solid #334466;">
+              • Microslop ActiveMovie 1.0<br>
+              • Win Media Player 6.4<br>
+              • Apple QuickTime 3.0<br>
+              • RealPlayer G2 DirectShow
+            </div>
+          </div>
+
+          <!-- Retro Hot Links -->
+          <div class="side-box">
+            <div class="side-box-title">🌐 Ссылки нашего сервера</div>
+            <ul style="margin:0; padding-left:18px; font-size:12px; line-height:1.6;">
+              <li><a href="#" onclick="alert('Вы уже находитесь на главной странице WebCinema!'); return false;">Главный зал кинотеатра</a></li>
+              <li><a href="#" onclick="alert('Скачайте песню Maybe группы The Ink Spots в архиве MP3 Vault!'); return false;">Саундтрек Fallout (MP3)</a></li>
+              <li><a href="#" onclick="alert('Коды для Half-Life: god, noclip, give all'); return false;">Чит-коды к Half-Life 1</a></li>
+              <li><a href="#" onclick="alert('Посетите наш партнерский сайт GeoCities!'); return false;">Домашняя страница автора</a></li>
+            </ul>
+          </div>
+
+          <!-- Web Poll -->
+          <div class="side-box">
+            <div class="side-box-title">📊 Опрос киноманов 1998</div>
+            <div style="font-size:12px; color:#ffffff; font-weight:bold; margin-bottom:6px;">
+              Какое видео потрясло вас больше всего?
+            </div>
+            <form id="poll-form" style="font-size:11px; line-height:1.5;">
+              <label><input type="radio" name="poll" value="prodigy" checked> Концерт The Prodigy в Москве</label><br>
+              <label><input type="radio" name="poll" value="halflife"> Трейлер Half-Life 1</label><br>
+              <label><input type="radio" name="poll" value="fallout"> Вступительный ролик Fallout</label><br>
+              <label><input type="radio" name="poll" value="berserk"> Аниме-трейлер Berserk</label><br>
+              <button type="button" class="win-btn" id="btn-vote" style="margin-top:6px; width:100%;">Голосовать</button>
+            </form>
+            <div id="poll-results" style="display:none; font-size:11px; margin-top:6px; color:#ffff00;">
+              <div>The Prodigy: <strong>68%</strong> (1,842 голоса)</div>
+              <div>Half-Life 1: <strong>18%</strong> (492 голоса)</div>
+              <div>Fallout 1/2: <strong>10%</strong> (271 голос)</div>
+              <div>Berserk TV: <strong>4%</strong> (109 голосов)</div>
+            </div>
+          </div>
+
+        </td>
+      </tr>
+    </table>
+
+    <!-- Guestbook Section -->
+    <div class="guestbook-box" id="guestbook">
+      <div class="section-header" style="background:linear-gradient(90deg, #0055aa, #008855);">
+        <span>📖 ГОСТЕВАЯ КНИГА КИНОЗРИТЕЛЕЙ '98</span>
+        <span style="font-size:11px; font-family:Arial; font-weight:normal;">Оставьте свой след в Сети!</span>
+      </div>
+
+      <!-- New Comment Form -->
+      <div style="background:#0a122e; border:1px solid #4466aa; padding:8px; margin-bottom:10px;">
+        <div style="font-size:12px; font-weight:bold; color:#ffff00; margin-bottom:6px;">
+          ✍️ Добавить новую запись в Гостевую книгу:
+        </div>
+        <div class="gb-form-row">
+          <label style="width:110px;">Ваш псевдоним:</label>
+          <input type="text" class="gb-input" id="gb-nick" placeholder="Например: CyberHacker_98" value="Киноман_2000">
+        </div>
+        <div class="gb-form-row">
+          <label style="width:110px;">Ваш модем:</label>
+          <select class="gb-input" id="gb-modem">
+            <option value="ZyXEL Omni 56K">ZyXEL Omni 56K V.90</option>
+            <option value="USRobotics Sportster 33.6">USRobotics Sportster 33.6</option>
+            <option value="Motorola 28.8">Motorola Lifestyle 28.8</option>
+            <option value="ISDN 128K">ISDN Dual Channel 128K</option>
+            <option value="Ethernet 10M">Выделенная линия 10 Мбит/с</option>
+          </select>
+        </div>
+        <div class="gb-form-row">
+          <label style="width:110px;">Сообщение:</label>
+          <input type="text" class="gb-input" id="gb-text" placeholder="Напишите пару теплых слов о видеоархиве...">
+          <button class="win-btn" id="btn-add-comment" style="min-width:90px;">Отправить</button>
+        </div>
+      </div>
+
+      <!-- Comment Stream -->
+      <div id="guestbook-comments">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- Webring Banner -->
+    <div class="webring-box" style="text-align:center;">
+      <div style="font-weight:bold; font-size:12px; color:#ffcc00; margin-bottom:4px;">
+        [ Russian WebRing of Multimedia & Video 1998 ]
+      </div>
+      <div style="font-size:11px;">
+        Этот сайт входит в Российское Видеокольцо Всемирной Паутины!<br>
+        <a href="#" onclick="alert('Переход на предыдущий сайт кольца...'); return false;">&lt;&lt; Предыдущий сайт</a> |
+        <a href="#" onclick="alert('Сайт номер 42 в каталоге Видеокольца.'); return false;">Список участников</a> |
+        <a href="#" onclick="alert('Случайный сайт видеокольца!'); return false;">Случайный узел</a> |
+        <a href="#" onclick="alert('Переход на следующий сайт кольца...'); return false;">Следующий сайт &gt;&gt;</a>
+      </div>
+    </div>
+
+    <!-- Footer Box -->
+    <div class="footer-box">
+      <div>
+        Счетчик посещений веб-архива с 1 октября 1997 года:
+      </div>
+      <div class="hit-counter-wrap">
+        <span style="font-size:10px; color:#888;">VISITORS:</span>
+        <span class="digit-box" id="cnt-1">0</span>
+        <span class="digit-box" id="cnt-2">8</span>
+        <span class="digit-box" id="cnt-3">4</span>
+        <span class="digit-box" id="cnt-4">2</span>
+        <span class="digit-box" id="cnt-5">9</span>
+        <span class="digit-box" id="cnt-6">8</span>
+      </div>
+
+      <!-- 88x31 Vintage Badges -->
+      <div class="retro-badge-bar">
+        <div class="retro-badge badge-ie">
+          BEST VIEWED<br>WITH IE 5.0<br>800x600
+        </div>
+        <div class="retro-badge badge-notepad">
+          MADE WITH<br>MS NOTEPAD<br>HTML 3.2
+        </div>
+        <div class="retro-badge badge-quicktime">
+          QUICKTIME<br>POWERED<br>3.0 STREAM
+        </div>
+        <div class="retro-badge badge-directx">
+          DIRECTX 6.0<br>ACTIVEMOVIE<br>READY
+        </div>
+        <div class="retro-badge badge-mpeg">
+          MPEG-1<br>HI-FI STEREO<br>DIGITAL
+        </div>
+      </div>
+
+      <div style="color:#8888aa; margin-top:8px;">
+        Copyright © 1997-1998 WebCinema '98 Network. Все права защищены.<br>
+        Оптимизировано для Microslop Internet Explorer 4.0 / 5.0 и процессоров Intel Pentium II с технологией MMX™.
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ==========================================================================
+       WebCinema '98 Interactive Logic
+       ========================================================================== */
+    const videoData = [
+      {
+        id: 'prodigy_moscow',
+        title: 'The Prodigy - Live @ Manege Square Moscow (1997)',
+        titleRu: 'The Prodigy — Концерт на Манежной площади в Москве (27 сентября 1997)',
+        fileName: 'The Prodigy - Live @ 27 September 1997 - Russia, Moscow, Manege Square (MTV Proshot).mp4',
+        src: 'content/webvideo/The Prodigy - Live @ 27 September 1997 - Russia, Moscow, Manege Square (MTV Proshot).mp4',
+        category: 'music',
+        categoryName: 'Музыка и Концерты',
+        year: '1997',
+        duration: '39:56',
+        size: '44.1 MB',
+        resolution: '480x360',
+        codec: 'MPEG-1 Video Stream / 44.1 kHz Hi-Fi Stereo',
+        fps: '25 fps',
+        rating: '★★★★★',
+        dialupTimes: { '28k': '3.4 ч.', '33k': '2.9 ч.', '56k': '1.7 ч.', 'isdn': '46 мин.' },
+        badge: 'HOT! РЕЙВ ВЕКА',
+        desc: 'Легендарное историческое выступление The Prodigy в самом сердце Москвы, собравшее свыше 250,000 человек прямо под стенами Кремля. Телевизионная съемка MTV Proshot: безумная энергетика Кита Флинта, Максима Реалити и Лиама Хоулетта. Треки: Smack My Bitch Up, Breathe, Poison, Firestarter.'
+      },
+      {
+        id: 'halflife',
+        title: 'Half-Life 1 - Official E3 Showcase Trailer (1998)',
+        titleRu: 'Half-Life 1 — Официальный мировой трейлер шутера века (Sierra / Valve 1998)',
+        fileName: 'Half-Life 1 trailer.mp4',
+        src: 'content/webvideo/Half-Life 1 trailer.mp4',
+        category: 'games',
+        categoryName: 'Игровые трейлеры',
+        year: '1998',
+        duration: '1:44',
+        size: '2.3 MB',
+        resolution: '320x240',
+        codec: 'Cinepak AVI / DirectShow Stream 29.97 fps',
+        fps: '29.97 fps',
+        rating: '★★★★★',
+        dialupTimes: { '28k': '11 мин.', '33k': '9 мин.', '56k': '5.5 мин.', 'isdn': '2.4 мин.' },
+        badge: 'GOTY 1998',
+        desc: 'Шедевр Гейба Ньюэлла и Valve Software. Физик Гордон Фримен, исследовательский комплекс «Чёрная Меза», каскадный резонанс, нападение инопланетян из мира Зен и зачистка спецназом HECU. Игра года 1998!'
+      },
+      {
+        id: 'fallout1',
+        title: 'Fallout: A Post Nuclear Role Playing Game - Intro (1997)',
+        titleRu: 'Fallout 1 — Легендарный вступительный ролик («War. War never changes»)',
+        fileName: 'Fallout 1 Intro HD.mp4',
+        src: 'content/webvideo/Fallout 1 Intro HD.mp4',
+        category: 'games',
+        categoryName: 'Игровые трейлеры',
+        year: '1997',
+        duration: '2:48',
+        size: '6.3 MB',
+        resolution: '640x480',
+        codec: 'Interplay MVE Video / The Ink Spots «Maybe»',
+        fps: '30 fps',
+        rating: '★★★★★',
+        dialupTimes: { '28k': '30 мин.', '33k': '25 мин.', '56k': '15 мин.', 'isdn': '6.6 мин.' },
+        badge: 'КУЛЬТОВАЯ КЛАССИКА',
+        desc: 'Культовое начало эпопеи от Interplay Productions. Звучит бессмертная песня «Maybe» квартета The Ink Spots, черно-белый ламповый телевизор среди ядерных руин мира будущего и выход Выходца из Убежища 13.'
+      },
+      {
+        id: 'fallout2',
+        title: 'Fallout 2 - Official World Premiere Trailer (1998)',
+        titleRu: 'Fallout 2 — Официальный мировой трейлер (Black Isle Studios 1998)',
+        fileName: 'Fallout 2 Trailer.mp4',
+        src: 'content/webvideo/Fallout 2 Trailer.mp4',
+        category: 'games',
+        categoryName: 'Игровые трейлеры',
+        year: '1998',
+        duration: '1:30',
+        size: '3.0 MB',
+        resolution: '320x240',
+        codec: 'Interplay QuickTime AVI / Stereo Sound',
+        fps: '29.97 fps',
+        rating: '★★★★★',
+        dialupTimes: { '28k': '14 мин.', '33k': '12 мин.', '56k': '7.2 мин.', 'isdn': '3.1 мин.' },
+        badge: 'ХИТ СЕЗОНА',
+        desc: '«A Post Nuclear Role Playing Game». Деревня Арройо на грани гибели, поиски генератора Эдемских кущ (G.E.C.K.), зловещий Анклав во главе с президентом Ричардсоном и мутанты Пустоши.'
+      },
+      {
+        id: 'berserk',
+        title: 'Berserk TV 1997 - Official Nippon Television Trailer',
+        titleRu: 'Берсерк (1997) — Официальный трейлер культового аниме-сериала',
+        fileName: 'Berserk TV Trailer.mp4',
+        src: 'content/webvideo/Berserk TV Trailer.mp4',
+        category: 'anime',
+        categoryName: 'Аниме и Кино',
+        year: '1997',
+        duration: '1:40',
+        size: '2.6 MB',
+        resolution: '320x240',
+        codec: 'MPEG-1 Video Stream / NTSC 29.97 fps',
+        fps: '29.97 fps',
+        rating: '★★★★★',
+        dialupTimes: { '28k': '12.5 мин.', '33k': '10.5 мин.', '56k': '6.2 мин.', 'isdn': '2.7 мин.' },
+        badge: 'ШЕДЕВР АНИМЕ',
+        desc: 'Оригинальный телевизионный промо-ролик экранизации манги Кэнтаро Миуры с японского ТВ (Nippon Television). «Золотой Век»: Гатс, Гриффит, Каска, Отряд Сокола и гипнотический саундтрек Сусуму Хирасавы.'
+      },
+      {
+        id: 'anotherwar',
+        title: 'Trailer for Another War - Cinematic Teaser',
+        titleRu: 'Another War — Кинематографичный трейлер военной драмы',
+        fileName: 'Trailer for Another War.mp4',
+        src: 'content/webvideo/Trailer for Another War.mp4',
+        category: 'games',
+        categoryName: 'Игровые трейлеры',
+        year: '1998',
+        duration: '1:52',
+        size: '2.8 MB',
+        resolution: '320x240',
+        codec: 'MPEG/AVI Cinepak Video 30 fps',
+        fps: '30 fps',
+        rating: '★★★★★',
+        dialupTimes: { '28k': '13.3 мин.', '33k': '11.2 мин.', '56k': '6.7 мин.', 'isdn': '2.9 мин.' },
+        badge: 'EXCLUSIVE',
+        desc: 'Драматический кинематографический тизер о суровых реалиях войны, разрушенных городах и выживании в эпицентре масштабного вооруженного конфликта.'
+      },
+      {
+        id: 'captain_jeff',
+        title: 'Captain Jeff - Level One (Music Video)',
+        titleRu: 'Captain Jeff — Первый Уровень (Официальный клип)',
+        fileName: 'Captain Jeff - Первый Уровень.mp4',
+        src: 'content/webvideo/Captain Jeff - Первый Уровень.mp4',
+        category: 'music',
+        categoryName: 'Музыка и Концерты',
+        year: '1998',
+        duration: '3:24',
+        size: '5.3 MB',
+        resolution: '192x144',
+        codec: 'MPEG-4 Video / Stereo Audio',
+        fps: '25 fps',
+        rating: '★★★★★',
+        dialupTimes: { '28k': '25 мин.', '33k': '21 мин.', '56k': '12.6 мин.', 'isdn': '5.5 мин.' },
+        badge: 'NEW! КЛИП',
+        desc: 'Культовый музыкальный видеоклип «Первый Уровень» группы Captain Jeff! Олдскульный драйв, гитарный напор и ностальгическая атмосфера 90-х.'
+      }
+    ];
+
+    let currentVideoIndex = 0;
+    let currentFilter = 'all';
+
+    const videoEl = document.getElementById('main-video');
+    const hudEl = document.getElementById('player-hud');
+    const titleTextEl = document.getElementById('player-title-text');
+    const btnPlay = document.getElementById('ctrl-play');
+    const btnPause = document.getElementById('ctrl-pause');
+    const btnStop = document.getElementById('ctrl-stop');
+    const sliderEl = document.getElementById('ctrl-slider');
+    const timeDisplayEl = document.getElementById('ctrl-time');
+    const btnMute = document.getElementById('ctrl-mute');
+    const volEl = document.getElementById('ctrl-volume');
+    const btnFs = document.getElementById('ctrl-fs');
+
+    function formatTime(secs) {
+      if (isNaN(secs) || secs < 0) secs = 0;
+      const m = Math.floor(secs / 60);
+      const s = Math.floor(secs % 60);
+      return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    }
+
+    function selectVideo(index, autoPlay = false) {
+      currentVideoIndex = index;
+      const item = videoData[index];
+      if (!item) return;
+
+      // Update Player
+      videoEl.src = item.src;
+      videoEl.load();
+      titleTextEl.textContent = `ActiveMovie™ Player 98 - ${item.title}`;
+      hudEl.textContent = `LOADING • ${item.resolution} • ${item.fps}`;
+
+      if (autoPlay) {
+        videoEl.play().catch(() => {});
+      }
+
+      // Update Details Box
+      document.getElementById('info-title').textContent = item.titleRu;
+      document.getElementById('info-desc').textContent = item.desc;
+      document.getElementById('info-cat').textContent = item.categoryName;
+      document.getElementById('info-year').textContent = item.year;
+      document.getElementById('info-rating').textContent = item.rating;
+      document.getElementById('info-size-btn').textContent = item.size;
+
+      const downloadBtn = document.getElementById('btn-download-clip');
+      downloadBtn.href = item.src;
+      downloadBtn.setAttribute('download', item.fileName);
+
+      // Update Tech Specs
+      document.getElementById('spec-filename').textContent = item.fileName;
+      document.getElementById('spec-resolution').textContent = item.resolution;
+      document.getElementById('spec-size').textContent = item.size;
+      document.getElementById('spec-duration').textContent = item.duration;
+      document.getElementById('spec-codec').textContent = item.codec;
+      document.getElementById('spec-fps').textContent = item.fps;
+
+      // Update Dial-up Estimates
+      document.getElementById('time-28k').textContent = item.dialupTimes['28k'];
+      document.getElementById('time-33k').textContent = item.dialupTimes['33k'];
+      document.getElementById('time-56k').textContent = item.dialupTimes['56k'];
+      document.getElementById('time-isdn').textContent = item.dialupTimes['isdn'];
+
+      renderCatalog();
+    }
+
+    function renderCatalog() {
+      const container = document.getElementById('video-catalog-list');
+      container.innerHTML = '';
+
+      videoData.forEach((item, idx) => {
+        if (currentFilter !== 'all' && item.category !== currentFilter) {
+          return;
+        }
+
+        const isCurrent = (idx === currentVideoIndex);
+        const card = document.createElement('div');
+        card.className = `video-card ${isCurrent ? 'active' : ''}`;
+        card.innerHTML = `
+          <div class="card-header-row">
+            <span class="card-title" data-idx="${idx}">🎞️ ${item.titleRu}</span>
+            <span class="card-badge">${item.badge}</span>
+          </div>
+          <div class="card-meta">
+            📁 ${item.categoryName} • ⏱️ ${item.duration} • 💾 ${item.size} • 📺 ${item.resolution}
+          </div>
+          <div class="card-desc">${item.desc}</div>
+          <div class="card-actions">
+            <button class="win-btn btn-watch-now" data-idx="${idx}">▶ Смотреть ролик</button>
+            <a class="win-btn" href="${item.src}" download="${item.fileName}" style="text-decoration:none;">⬇ Скачать (${item.size})</a>
+          </div>
+        `;
+
+        card.querySelector('.card-title').addEventListener('click', () => {
+          selectVideo(idx, true);
+          document.getElementById('player-box').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        card.querySelector('.btn-watch-now').addEventListener('click', () => {
+          selectVideo(idx, true);
+          document.getElementById('player-box').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    // Video Player Event Handlers
+    videoEl.addEventListener('loadedmetadata', () => {
+      sliderEl.max = videoEl.duration || 100;
+      timeDisplayEl.textContent = `${formatTime(0)} / ${formatTime(videoEl.duration)}`;
+      hudEl.textContent = `READY • ${videoEl.videoWidth}x${videoEl.videoHeight} • BUFFER OK`;
+    });
+
+    videoEl.addEventListener('play', () => {
+      hudEl.textContent = `PLAYING • ${videoEl.videoWidth || 320}x${videoEl.videoHeight || 240} • DIRECTSTREAM`;
+      btnPlay.style.fontWeight = 'bold';
+    });
+
+    videoEl.addEventListener('pause', () => {
+      hudEl.textContent = `PAUSED • ${formatTime(videoEl.currentTime)}`;
+    });
+
+    videoEl.addEventListener('timeupdate', () => {
+      sliderEl.value = videoEl.currentTime;
+      timeDisplayEl.textContent = `${formatTime(videoEl.currentTime)} / ${formatTime(videoEl.duration)}`;
+    });
+
+    btnPlay.addEventListener('click', () => videoEl.play());
+    btnPause.addEventListener('click', () => videoEl.pause());
+    btnStop.addEventListener('click', () => {
+      videoEl.pause();
+      videoEl.currentTime = 0;
+      sliderEl.value = 0;
+      timeDisplayEl.textContent = `00:00 / ${formatTime(videoEl.duration)}`;
+      hudEl.textContent = `STOPPED • READY`;
+    });
+
+    sliderEl.addEventListener('input', () => {
+      videoEl.currentTime = sliderEl.value;
+    });
+
+    volEl.addEventListener('input', () => {
+      videoEl.volume = volEl.value;
+      videoEl.muted = false;
+      btnMute.textContent = volEl.value > 0 ? '🔊 Звук' : '🔇 Выкл';
+    });
+
+    btnMute.addEventListener('click', () => {
+      videoEl.muted = !videoEl.muted;
+      btnMute.textContent = videoEl.muted ? '🔇 Выкл' : '🔊 Звук';
+    });
+
+    btnFs.addEventListener('click', () => {
+      if (videoEl.requestFullscreen) videoEl.requestFullscreen();
+      else if (videoEl.webkitRequestFullscreen) videoEl.webkitRequestFullscreen();
+    });
+
+    // Filters
+    ['all', 'games', 'music', 'anime'].forEach(f => {
+      const btn = document.getElementById('btn-filter-' + f);
+      if (btn) {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = f;
+          renderCatalog();
+        });
+      }
+    });
+
+    // Guestbook System with LocalStorage
+    const defaultComments = [
+      { nick: 'Hacker_Neo_98', modem: 'USRobotics Sportster 33.6', text: 'Качал концерт The Prodigy всю ночь по ночному тарифу! 44 мегабайта — это жесть для телефонной линии, батя чуть модем в окно не выкинул! Но звук и видео просто бомба, Кит Флинт рвет Манежку в клочья!', date: '02.11.1998' },
+      { nick: 'Freeman_Gordon', modem: 'ISDN Dual Channel 128K', text: 'Трейлер Half-Life пересмотрел 10 раз! Графика на движке GoldSrc с цветным освещением и скелетной анимацией — это просто космос. Никакой Quake 2 рядом не стоял!', date: '04.11.1998' },
+      { nick: 'Chosen_One_Arroyo', modem: 'ZyXEL Omni 56K', text: 'Fallout 2 — игра века! Ролик про поиски G.E.C.K. сохранил в папку Мои документы. Всем поклонникам постапокалипсиса пламенный привет из Убежища 13!', date: '07.11.1998' },
+      { nick: 'BlackSwordsman', modem: 'Motorola Lifestyle 28.8', text: 'Наконец-то нашел опенинг/трейлер Berserk 1997 в хорошем качестве! Музыка Сусуму Хирасавы пробирает до мурашек. Спасибо автору за лучший видеоархив Рунета!', date: '10.11.1998' }
+    ];
+
+    function loadGuestbook() {
+      let saved = [];
+      try {
+        saved = JSON.parse(localStorage.getItem('webcinema_gb_comments') || '[]');
+      } catch (e) {}
+
+      const all = [...defaultComments, ...saved];
+      const container = document.getElementById('guestbook-comments');
+      container.innerHTML = all.map(c => `
+        <div class="gb-comment-item">
+          <div>
+            <span class="gb-author">${c.nick}</span>
+            <span class="gb-dialup-tag">[${c.modem}]</span>
+            <span style="font-size:10px; color:#8888aa; float:right;">${c.date}</span>
+          </div>
+          <div class="gb-text">${c.text}</div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('btn-add-comment').addEventListener('click', () => {
+      const nick = document.getElementById('gb-nick').value.trim() || 'Анонимный зритель';
+      const modem = document.getElementById('gb-modem').value;
+      const text = document.getElementById('gb-text').value.trim();
+
+      if (!text) {
+        alert('Пожалуйста, напишите текст сообщения перед отправкой в Гостевую книгу!');
+        return;
+      }
+
+      const newEntry = {
+        nick,
+        modem,
+        text,
+        date: new Date().toLocaleDateString('ru-RU')
+      };
+
+      try {
+        const saved = JSON.parse(localStorage.getItem('webcinema_gb_comments') || '[]');
+        saved.push(newEntry);
+        localStorage.setItem('webcinema_gb_comments', JSON.stringify(saved));
+      } catch (e) {}
+
+      document.getElementById('gb-text').value = '';
+      loadGuestbook();
+      alert('Ваша запись успешно добавлена в Гостевую книгу WebCinema 1998!');
+    });
+
+    // Web Poll
+    document.getElementById('btn-vote').addEventListener('click', () => {
+      document.getElementById('poll-form').style.display = 'none';
+      document.getElementById('poll-results').style.display = 'block';
+    });
+
+    // Initialize
+    selectVideo(0, false);
+    loadGuestbook();
+  </script>
+</body>
+</html>
+

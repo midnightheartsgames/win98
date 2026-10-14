@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Another War</title>
+<link rel="stylesheet" href="css/apps/anotherwar.css">
+<style>html,body{height:100%;margin:0;background:#008080}body{display:grid;place-items:center}.window{width:min(98vw,1040px);height:min(96vh,810px);border:3px outset #ddd;display:flex;flex-direction:column;background:silver}.title{background:linear-gradient(90deg,navy,#1084d0);color:#fff;font:bold 12px Tahoma;padding:5px}#game{flex:1;min-height:0;position:relative}</style></head>
+<body><main class="window"><div class="title">Another War</div><div id="game"></div></main>
+<script src="js/apps/anotherwar/aw-core.js"></script>
+<script src="js/apps/anotherwar/aw-rules.js"></script>
+<script src="js/apps/anotherwar/aw-data.js"></script>
+<script src="js/apps/anotherwar/aw-items.js"></script>
+<script src="js/apps/anotherwar/aw-walk.js"></script>
+<script src="js/apps/anotherwar/aw-script.js"></script>
+<script src="js/apps/anotherwar/aw-dialog.js"></script>
+<script src="js/apps/anotherwar/aw-actor.js"></script>
+<script src="js/apps/anotherwar/aw-combat.js"></script>
+<script src="js/apps/anotherwar/aw-ai.js"></script>
+<script src="js/apps/anotherwar/aw-world.js"></script>
+<script src="js/apps/anotherwar/aw-scripts.js"></script>
+<script src="js/apps/anotherwar/aw-specials.js"></script>
+<script src="js/apps/anotherwar/aw-texts.js"></script>
+<script src="js/apps/anotherwar/aw-notes.js"></script>
+<script src="js/apps/anotherwar/aw-dlg-town.js"></script>
+<script src="js/apps/anotherwar/aw-dlg-cafe.js"></script>
+<script src="js/apps/anotherwar/aw-dlg-prison.js"></script>
+<script src="js/apps/anotherwar/aw-dlg-graveyard.js"></script>
+<script src="js/apps/anotherwar/aw-dlg-shop.js"></script>
+<script src="js/apps/anotherwar/aw-dlg-forest.js"></script>
+<script src="js/apps/anotherwar/aw-assets.js"></script>
+<script src="js/apps/anotherwar/aw-gl.js"></script>
+<script src="js/apps/anotherwar/aw-audio.js"></script>
+<script src="js/apps/anotherwar/aw-ui.js"></script>
+<script src="js/apps/anotherwar/aw-ui-hud.js"></script>
+<script src="js/apps/anotherwar/aw-ui-dialog.js"></script>
+<script src="js/apps/anotherwar/aw-ui-inv.js"></script>
+<script src="js/apps/anotherwar/aw-ui-stat.js"></script>
+<script src="js/apps/anotherwar/aw-ui-menu.js"></script>
+<script src="js/apps/anotherwar/aw-game.js"></script>
+<script>const el=document.getElementById('game');const ui=new AW.UI(el,{standalone:true});window.awui=ui;ui.el.focus();addEventListener('pagehide',()=>ui.destroy(),{once:true});</script>
+</body></html>

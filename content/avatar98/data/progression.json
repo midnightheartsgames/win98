@@ -1,0 +1,7 @@
+{
+  "expBase": 12,
+  "expPow": 2.4,
+  "expLinear": 18,
+  "reserveExpShare": 0.5,
+  "signExpPerBattle": 3
+}

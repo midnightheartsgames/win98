@@ -1,0 +1,85 @@
+{
+  "stray_spirit": {
+    "id": "stray_spirit", "name": "Бродячий дух", "families": ["spirit"], "level": 1,
+    "stats": { "hp": 58, "mp": 0, "atk": 7, "def": 4, "mag": 7, "res": 4, "spd": 12, "lck": 2 },
+    "exp": 14, "gold": 6, "drops": [{ "item": "salve", "chance": 1 }], "look": "bluewisp", "scan": "scan.stray_spirit",
+    "ai": [{ "use": "attack", "weight": 2 }, { "use": "e_wisp_bump", "weight": 1 }]
+  },
+  "kupol_patrol": {
+    "id": "kupol_patrol", "name": "Патрульный «Купола»", "families": ["human"], "level": 2,
+    "stats": { "hp": 84, "mp": 12, "atk": 12, "def": 9, "mag": 10, "res": 7, "spd": 15, "lck": 4 },
+    "exp": 22, "gold": 18, "drops": [{ "item": "salve", "chance": 0.3 }], "steal": [{ "item": "jasmine_tea", "chance": 0.5 }], "look": "kupol_soldier", "scan": "scan.kupol_patrol",
+    "ai": [{ "use": "attack", "weight": 3 }, { "use": "e_shock_baton", "weight": 2 }, { "use": "e_spirit_rifle", "weight": 1 }]
+  },
+  "molerat": {
+    "id": "molerat", "name": "Кротокрыс", "families": ["beast"], "level": 2,
+    "stats": { "hp": 72, "mp": 0, "atk": 11, "def": 7, "mag": 4, "res": 4, "spd": 14, "lck": 3 },
+    "exp": 19, "gold": 8, "drops": [{ "item": "salve", "chance": 0.25 }], "steal": [{ "item": "salve", "chance": 0.6 }], "look": "molerat", "scan": "scan.molerat",
+    "ai": [{ "use": "attack", "weight": 3 }, { "use": "e_bite", "weight": 2 }, { "use": "e_burrow", "weight": 1 }]
+  },
+  "coal_spirit": {
+    "id": "coal_spirit", "name": "Угольный дух", "families": ["spirit", "coal"], "level": 3,
+    "stats": { "hp": 82, "mp": 24, "atk": 10, "def": 11, "mag": 12, "res": 12, "spd": 13, "lck": 3 },
+    "exp": 27, "gold": 12, "drops": [{ "item": "cold_compress", "chance": 0.35 }], "steal": [{ "item": "cold_compress", "chance": 0.6 }], "look": "coalspirit", "scan": "scan.coal_spirit",
+    "ai": [{ "use": "e_ember_spit", "weight": 3 }, { "use": "e_soot", "weight": 1, "if": "partyStatus.blind == 0" }, { "use": "attack", "weight": 2 }]
+  },
+  "thug": {
+    "id": "thug", "name": "Головорез «Красных фонарей»", "families": ["human"], "level": 6,
+    "stats": { "hp": 300, "mp": 20, "atk": 30, "def": 17, "mag": 18, "res": 12, "spd": 21, "lck": 8 },
+    "exp": 60, "gold": 45, "drops": [{ "item": "jasmine_tea", "chance": 0.2 }], "steal": [{ "item": "smoke_bomb", "chance": 0.45 }, { "item": "firecracker", "chance": 0.3 }], "look": "thug", "scan": "scan.thug",
+    "ai": [{ "use": "attack", "weight": 3 }, { "use": "e_lantern_toss", "weight": 2 }]
+  },
+  "pigeonpig": {
+    "id": "pigeonpig", "name": "Голубо-свин", "families": ["beast"], "level": 5,
+    "stats": { "hp": 240, "mp": 0, "atk": 26, "def": 12, "mag": 8, "res": 10, "spd": 27, "lck": 10 },
+    "exp": 48, "gold": 20, "drops": [{ "item": "eye_drops", "chance": 0.35 }], "steal": [{ "item": "salve", "chance": 0.7 }], "look": "pigeonpig", "scan": "scan.pigeonpig",
+    "ai": [{ "use": "attack", "weight": 3 }, { "use": "e_peck", "weight": 2 }]
+  },
+  "vine_crawler": {
+    "id": "vine_crawler", "name": "Лианный ползун", "families": ["spirit", "forest"], "level": 6,
+    "stats": { "hp": 340, "mp": 30, "atk": 28, "def": 14, "mag": 24, "res": 16, "spd": 17, "lck": 5 },
+    "exp": 66, "gold": 25, "drops": [{ "item": "chi_needle", "chance": 0.3 }], "steal": [{ "item": "jasmine_tea", "chance": 0.5 }], "look": "vinecrawler", "scan": "scan.vine_crawler",
+    "ai": [{ "use": "e_vine_lash", "weight": 3 }, { "use": "e_spores", "weight": 1 }, { "use": "attack", "weight": 1 }]
+  },
+  "kupol_trooper": {
+    "id": "kupol_trooper", "name": "Штурмовик «Купола»", "families": ["human", "metal", "spirittech"], "level": 8,
+    "stats": { "hp": 540, "mp": 30, "atk": 40, "def": 26, "mag": 34, "res": 18, "spd": 23, "lck": 8 },
+    "exp": 104, "gold": 60, "drops": [{ "item": "healer_balm", "chance": 0.25 }], "steal": [{ "item": "ginseng_tea", "chance": 0.45 }], "rare": { "item": "panacea", "chance": 0.08 }, "look": "kupol_trooper", "scan": "scan.kupol_trooper",
+    "ai": [{ "use": "attack", "weight": 2 }, { "use": "e_trooper_blast", "weight": 2 }, { "use": "e_trooper_grenade", "weight": 1 }]
+  },
+  "wasp_drone": {
+    "id": "wasp_drone", "name": "Дрон «Оса»", "families": ["machine", "spirittech"], "level": 8,
+    "stats": { "hp": 380, "mp": 40, "atk": 22, "def": 30, "mag": 37, "res": 20, "spd": 31, "lck": 6 },
+    "exp": 96, "gold": 50, "drops": [{ "item": "chi_needle", "chance": 0.3 }], "steal": [{ "item": "firecracker", "chance": 0.5 }], "look": "drone", "scan": "scan.wasp_drone",
+    "ai": [{ "use": "e_drone_laser", "weight": 3 }, { "use": "e_drone_jam", "weight": 1 }, { "use": "attack", "weight": 1 }]
+  },
+  "corrupt_vine": {
+    "id": "corrupt_vine", "name": "Искажённый лианник", "families": ["spirit", "forest"], "level": 9,
+    "stats": { "hp": 620, "mp": 40, "atk": 36, "def": 20, "mag": 40, "res": 24, "spd": 19, "lck": 6 },
+    "exp": 122, "gold": 40, "drops": [{ "item": "healer_balm", "chance": 0.3 }], "steal": [{ "item": "sun_ash", "chance": 0.25 }], "look": "corruptvine", "scan": "scan.corrupt_vine",
+    "ai": [{ "use": "e_wither", "weight": 2 }, { "use": "e_vine_lash", "weight": 2 }, { "use": "e_spores", "weight": 1 }]
+  },
+  "guardian": {
+    "id": "guardian", "name": "Дух-хранитель Лианы", "families": ["spirit"], "level": 12, "boss": true,
+    "stats": { "hp": 3600, "mp": 300, "atk": 42, "def": 30, "mag": 48, "res": 38, "spd": 29, "lck": 10 },
+    "exp": 420, "gold": 0, "drops": [{ "item": "guardian_heart", "chance": 1 }], "statusImmune": ["stun"], "look": "guardian", "scan": "scan.guardian",
+    "ai": [{ "use": "e_guard_strike", "weight": 3 }, { "use": "e_guard_roar", "weight": 2 }, { "use": "e_guard_seal", "weight": 1, "if": "turn > 2" }, { "use": "e_guard_light", "weight": 3, "if": "hpPct < 45", "every": 2 }],
+    "phases": [{ "when": "hpPct < 50", "say": "battle.guardian.half", "flash": "#c0e0ff", "statMul": { "mag": 1.15, "spd": 1.1 } }]
+  },
+  "captain_rou": {
+    "id": "captain_rou", "name": "Капитан Роу", "families": ["human"], "level": 5, "boss": true,
+    "stats": { "hp": 680, "mp": 80, "atk": 21, "def": 16, "mag": 17, "res": 14, "spd": 21, "lck": 8 },
+    "exp": 150, "gold": 160, "drops": [{ "item": "healer_balm", "chance": 1 }], "steal": [{ "item": "luck_charm", "chance": 0.6 }], "statusImmune": ["stun"], "look": "captain_rou", "scan": "scan.captain_rou",
+    "elem": { "fire": 1.25, "metal": 0.8, "phys": 0.9 },
+    "ai": [{ "use": "e_rou_slash", "weight": 3 }, { "use": "attack", "weight": 2 }, { "use": "e_rou_order", "weight": 2, "if": "allies > 1", "once": true }, { "use": "e_rou_guard", "weight": 2, "if": "hpPct < 70 && shield == 0", "every": 3 }],
+    "phases": [{ "when": "hpPct < 50", "say": "battle.rou.half", "flash": "#60c0f0", "statMul": { "atk": 1.15 }, "ai": [{ "use": "e_rou_slash", "weight": 3 }, { "use": "e_rou_barrage", "weight": 2 }, { "use": "attack", "weight": 1 }, { "use": "e_rou_guard", "weight": 2, "if": "shield == 0", "every": 3 }] }]
+  },
+  "hound": {
+    "id": "hound", "name": "Прототип «Гончая»", "families": ["machine", "spirittech"], "level": 10, "boss": true,
+    "stats": { "hp": 4600, "mp": 400, "atk": 41, "def": 40, "mag": 43, "res": 30, "spd": 26, "lck": 6 },
+    "exp": 900, "gold": 600, "drops": [{ "item": "basing_elixir", "chance": 1 }], "steal": [{ "item": "koi_scale_armor", "chance": 0.35 }], "statusImmune": ["stun"], "look": "hound", "scan": "scan.hound",
+    "elem": { "metal": 2.0, "fire": 0.3, "earth": 1.0, "phys": 0.5, "chi": 1.0 },
+    "ai": [{ "use": "e_hound_claw", "weight": 3 }, { "use": "e_hound_cannon", "weight": 2 }, { "use": "e_hound_siphon", "weight": 1, "if": "turn > 1" }],
+    "phases": [{ "when": "hpPct <= 55", "name": "«Гончая»: открытое ядро", "say": "battle.hound.core", "flash": "#80fff0", "look": "core", "elem": { "metal": 0.5, "fire": 2.0, "earth": 1.5, "phys": 1.0, "chi": 2.0 }, "statMul": { "def": 0.6, "res": 0.7, "spd": 1.15 }, "ai": [{ "use": "e_hound_claw", "weight": 2 }, { "use": "e_hound_overload", "weight": 2, "if": "status.charge" }, { "use": "e_hound_charge", "weight": 2, "if": "!status.charge" }, { "use": "e_hound_cannon", "weight": 1 }] }]
+  }
+}

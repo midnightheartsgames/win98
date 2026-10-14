@@ -1,0 +1,108 @@
+/* ==========================================================================
+   Totally Not A Virus (Smiley Screensaver 98) Styles
+   ========================================================================== */
+
+.virus-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--win-gray, #c0c0c0);
+  user-select: none;
+  overflow: hidden;
+  font-family: 'MS Sans Serif', Tahoma, sans-serif;
+  font-size: 11px;
+}
+
+.virus-header-banner {
+  background: linear-gradient(90deg, #ffcc00, #ff6600, #ff0066);
+  color: #000000;
+  font-weight: bold;
+  font-size: 11px;
+  text-align: center;
+  padding: 4px 6px;
+  border-bottom: 1px solid #000;
+  letter-spacing: 0.5px;
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.6);
+  animation: virusPulse 2s infinite alternate;
+}
+
+@keyframes virusPulse {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(45deg); }
+}
+
+/* Toolbar */
+.virus-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  background: #c0c0c0;
+  border-bottom: 1px solid #808080;
+  flex-wrap: wrap;
+}
+
+.virus-btn {
+  height: 24px;
+  padding: 2px 8px;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #000000;
+  border-bottom: 1px solid #000000;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.virus-btn:active {
+  border-top: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  padding-top: 3px;
+  padding-left: 9px;
+}
+
+.virus-btn.active {
+  background: #ffff99;
+  border-top: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  font-weight: bold;
+}
+
+/* Viewport Canvas */
+.virus-canvas-wrapper {
+  flex: 1;
+  position: relative;
+  background: #000022;
+  overflow: hidden;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+}
+
+.virus-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Fullscreen Overlay */
+.virus-fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000000;
+  z-index: 99999;
+  cursor: none;
+}
+

@@ -1,0 +1,37 @@
+{
+  "id": "shinryu_inn",
+  "name": "map.shinryu_inn",
+  "w": 16,
+  "h": 12,
+  "music": "shinryu",
+  "region": "shinryu",
+  "bg": "#000000",
+  "legend": {"N":"window_wood","K":"shelf","h":"table_set"},
+  "layers": {
+    "ground": [
+      "TTTTTTTTTTTTTTTT",
+      "THHNHHKKHHHNHHOT",
+      "T--------------T",
+      "TCCCC-----hh---T",
+      "T--------------T",
+      "T--hh------hh--T",
+      "T--------------T",
+      "T--hh---kk-----T",
+      "T-------kk-----T",
+      "T--------------T",
+      "THHHHHHuHHHHHHHT",
+      "0000000000000000"
+    ]
+  },
+  "spawns": {"door":{"x":7,"y":9,"dir":"up"}},
+  "entities": [
+    {"id":"door","kind":"warp","x":7,"y":10,"to":{"map":"shinryu_lane","spawn":"from_inn","dir":"down"}},
+    {"id":"yumi","kind":"npc","x":2,"y":2,"look":"innkeeper","event":"inn_yumi","dir":"down"},
+    {"id":"lin","kind":"npc","x":10,"y":6,"look":"lin","event":"inn_lin","dir":"down","if":"!night_cordon"},
+    {"id":"patron","kind":"npc","x":13,"y":4,"look":"fisher","event":"inn_patron","dir":"left"},
+    {"id":"paisho","kind":"prop","x":12,"y":8,"look":"paisho_table","text":"insp.inn_paisho"},
+    {"id":"menu","kind":"inspect","x":6,"y":1,"text":"insp.inn_menu"},
+    {"id":"books","kind":"inspect","x":14,"y":1,"text":"insp.inn_books"},
+    {"id":"stairs","kind":"inspect","x":12,"y":1,"text":"insp.inn_stairs"}
+  ]
+}

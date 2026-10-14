@@ -1,0 +1,119 @@
+/* ==========================================================================
+   Kaspersky AVP 3.0 Antivirus (AntiViral Toolkit Pro)
+   ========================================================================== */
+
+.avp-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--win-bg, #c0c0c0);
+  font-family: var(--win-font, "MS Sans Serif", Tahoma, sans-serif);
+  font-size: 11px;
+}
+
+.avp-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  background: linear-gradient(90deg, #145a32 0%, #27ae60 100%);
+  color: #ffffff;
+  border-bottom: 2px outset #ffffff;
+}
+
+.avp-header-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.avp-header-title h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.avp-header-title p {
+  margin: 2px 0 0 0;
+  font-size: 10px;
+  color: #d4efdf;
+}
+
+.avp-body {
+  flex: 1;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.avp-targets-box {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+}
+
+.avp-scan-path {
+  background: #ffffff;
+  border: 2px inset #ffffff;
+  padding: 4px 6px;
+  height: 20px;
+  font-family: monospace;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #000080;
+}
+
+.avp-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.avp-stat-card {
+  background: #d4d0c8;
+  border: 1px inset #fff;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.avp-stat-val {
+  font-size: 16px;
+  font-weight: bold;
+  color: #000080;
+  margin-top: 2px;
+}
+
+.avp-stat-val.danger {
+  color: #c0392b;
+}
+
+.avp-stat-val.success {
+  color: #27ae60;
+}
+
+.avp-progress-wrap {
+  height: 16px;
+  background: #ffffff;
+  border: 2px inset #ffffff;
+  padding: 1px;
+}
+
+.avp-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: repeating-linear-gradient(90deg, #000080 0px, #000080 8px, #c0c0c0 8px, #c0c0c0 10px);
+  transition: width 0.1s linear;
+}
+
+.avp-footer-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid #808080;
+  box-shadow: inset 0 1px 0 #fff;
+}

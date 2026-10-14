@@ -1,0 +1,82 @@
+.ms-container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--win-bg);
+  user-select: none;
+}
+
+.ms-container > .win-menubar {
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.ms-canvas {
+  display: block;
+  image-rendering: pixelated;
+  cursor: default;
+}
+
+.ms-custom {
+  display: flex;
+  gap: 12px;
+  padding: 12px 10px 10px 12px;
+}
+
+.ms-custom-fields {
+  display: grid;
+  grid-template-columns: auto 44px;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 8px;
+}
+
+.ms-custom-fields input {
+  width: 44px;
+}
+
+.ms-custom-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.ms-custom-buttons .win-btn {
+  min-width: 64px;
+}
+
+.ms-record {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  text-align: center;
+}
+
+.ms-record p {
+  line-height: 14px;
+}
+
+.ms-record input {
+  width: 150px;
+}
+
+.ms-best {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 12px 12px 10px;
+}
+
+.ms-best-grid {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  column-gap: 18px;
+  row-gap: 6px;
+}
+
+.ms-best-buttons {
+  display: flex;
+  justify-content: space-between;
+}

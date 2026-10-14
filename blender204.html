@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Blender</title>
+<link rel="stylesheet" href="css/apps/blender204.css">
+<style>html,body{height:100%;margin:0;background:#000;overflow:hidden}#blender{position:absolute;inset:0}</style></head>
+<body><div id="blender" class="b204-root"></div>
+<script src="js/apps/blender204/b2-assets.js"></script>
+<script src="js/apps/blender204/b2-math.js"></script>
+<script src="js/apps/blender204/b2-gl.js"></script>
+<script src="js/apps/blender204/b2-data.js"></script>
+<script src="js/apps/blender204/b2-ui.js"></script>
+<script src="js/apps/blender204/b2-screen.js"></script>
+<script src="js/apps/blender204/b2-app.js"></script>
+<script src="js/apps/blender204/b2-mesh.js"></script>
+<script src="js/apps/blender204/b2-texture.js"></script>
+<script src="js/apps/blender204/b2-view3d.js"></script>
+<script src="js/apps/blender204/b2-info.js"></script>
+<script src="js/apps/blender204/b2-buts.js"></script>
+<script src="js/apps/blender204/b2-buts-edit.js"></script>
+<script src="js/apps/blender204/b2-buts-display.js"></script>
+<script src="js/apps/blender204/b2-buts-shading.js"></script>
+<script src="js/apps/blender204/b2-buts-anim.js"></script>
+<script src="js/apps/blender204/b2-buts-misc.js"></script>
+<script src="js/apps/blender204/b2-edit.js"></script>
+<script src="js/apps/blender204/b2-transform.js"></script>
+<script src="js/apps/blender204/b2-object.js"></script>
+<script src="js/apps/blender204/b2-toolbox.js"></script>
+<script src="js/apps/blender204/b2-effects.js"></script>
+<script src="js/apps/blender204/b2-subsurf.js"></script>
+<script src="js/apps/blender204/b2-render.js"></script>
+<script src="js/apps/blender204/b2-fileops.js"></script>
+<script src="js/apps/blender204/b2-space-file.js"></script>
+<script src="js/apps/blender204/b2-scene.js"></script>
+<script src="js/apps/blender204/b2-anim.js"></script>
+<script src="js/apps/blender204/b2-space-ipo.js"></script>
+<script src="js/apps/blender204/b2-space-text.js"></script>
+<script src="js/apps/blender204/b2-space-oops.js"></script>
+<script src="js/apps/blender204/b2-space-image.js"></script>
+<script src="js/apps/blender204/b2-space-seq.js"></script>
+<script src="js/apps/blender204/b2-space-sound.js"></script>
+<script src="js/apps/blender204/b2-curve.js"></script>
+<script src="js/apps/blender204/b2-mball.js"></script>
+<script src="js/apps/blender204/b2-lattice.js"></script>
+<script src="js/apps/blender204/b2-paint.js"></script>
+<script src="js/apps/blender204/b2-radio.js"></script>
+<script src="js/apps/blender204/b2-game.js"></script>
+<script>
+const el = document.getElementById('blender');
+window.b204 = new B204.App(el, { onQuit: () => {}, noSplash: /nosplash/.test(location.search) });
+addEventListener('pagehide', () => window.b204.destroy(), { once: true });
+</script>
+</body></html>

@@ -1,0 +1,814 @@
+/**
+ * Fallout 2: Temple of Trials CSS Stylesheet
+ * Authentic post-apocalyptic retro steampunk/pip-boy UI
+ */
+
+#fallout2-app-root {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.fo-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  background: #000;
+  color: #00ff66;
+  font-family: 'Courier New', Courier, monospace;
+  user-select: none;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Canvas Container */
+.fo-canvas-container {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  background: #0f0c09;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+#fo-canvas {
+  display: block;
+  image-rendering: pixelated;
+  cursor: crosshair;
+  background: #0f0c09;
+}
+
+/* Bottom HUD Console */
+.fo-hud-console {
+  height: 110px;
+  background: linear-gradient(180deg, #3d3b37 0%, #201e1b 100%);
+  border-top: 3px solid #635f58;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.15), 0 -4px 10px rgba(0,0,0,0.8);
+  display: flex;
+  align-items: stretch;
+  padding: 6px 10px;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.fo-hud-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 2px inset #1c1a18;
+  background: #181614;
+  padding: 4px 8px;
+  box-sizing: border-box;
+}
+
+/* Stats (AP & HP) */
+.fo-hud-stats {
+  width: 170px;
+  gap: 4px;
+}
+
+.fo-label {
+  font-size: 10px;
+  color: #aa9c88;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.fo-ap-bulbs {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin: 2px 0;
+}
+
+.fo-ap-bulb {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid #111;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+.fo-ap-bulb.lit {
+  background: #33ff33;
+  box-shadow: 0 0 6px #33ff33, inset 0 0 2px #ffffff;
+}
+
+.fo-ap-bulb.dim {
+  background: #113311;
+  border-color: #051505;
+}
+
+.fo-hp-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0c0b0a;
+  border: 1px solid #332d26;
+  padding: 2px 6px;
+}
+
+.fo-hp-title {
+  font-size: 10px;
+  color: #ffaa33;
+  font-weight: bold;
+}
+
+.fo-hp-val {
+  font-size: 14px;
+  color: #33ff33;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px rgba(51, 255, 51, 0.6);
+}
+
+/* Active Weapon Card */
+.fo-hud-weapon {
+  width: 170px;
+  gap: 4px;
+  align-items: center;
+}
+
+.fo-slot-indicator {
+  font-size: 10px;
+  font-weight: bold;
+  color: #ffaa33;
+  letter-spacing: 1px;
+  text-align: center;
+  width: 100%;
+}
+
+.fo-weapon-card {
+  width: 100%;
+  height: 46px;
+  background: #25221e;
+  border: 2px outset #524d45;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+  box-sizing: border-box;
+  transition: background 0.1s;
+}
+
+.fo-weapon-card:hover {
+  background: #332f2a;
+}
+
+.fo-weapon-card:active {
+  border-style: inset;
+}
+
+.fo-weapon-controls {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}
+
+.fo-weapon-info {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  align-items: center;
+}
+
+.fo-weapon-name {
+  font-size: 12px;
+  font-weight: bold;
+  color: #ffff88;
+}
+
+.fo-weapon-ap {
+  font-size: 11px;
+  color: #33ff33;
+  font-weight: bold;
+}
+
+.fo-vats-badge {
+  font-size: 9px;
+  color: #888;
+  margin-top: 1px;
+  font-weight: bold;
+}
+
+.fo-vats-badge.active {
+  color: #ff4433;
+  text-shadow: 0 0 5px #ff4433;
+}
+
+/* Action Buttons */
+.fo-hud-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  width: 130px;
+}
+
+.fo-retro-btn {
+  background: #3c3832;
+  border: 2px outset #665f55;
+  color: #ddcfbe;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.fo-retro-btn:hover {
+  background: #4a453e;
+  color: #fff;
+}
+
+.fo-retro-btn:active {
+  border-style: inset;
+  background: #2b2723;
+}
+
+.fo-small-btn {
+  font-size: 10px;
+  padding: 2px 4px;
+  width: 100%;
+}
+
+.fo-btn-red {
+  background: #6b241c;
+  border-color: #9e362a;
+  color: #ffcccc;
+}
+
+.fo-btn-red:hover {
+  background: #872e24;
+}
+
+.fo-btn-yellow {
+  background: #6b5c1c;
+  border-color: #a38c2a;
+  color: #ffffcc;
+}
+
+/* CRT Terminal Message Log */
+.fo-hud-log {
+  flex: 1;
+  padding: 2px;
+  background: #000;
+  border: 2px inset #2a2520;
+}
+
+.fo-terminal-screen {
+  width: 100%;
+  height: 100%;
+  background: #081108;
+  border: 1px solid #143314;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 4px;
+  position: relative;
+}
+
+.fo-log-content {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  font-size: 11px;
+  line-height: 14px;
+  color: #44dd44;
+  text-shadow: 0 0 4px rgba(68, 221, 68, 0.6);
+}
+
+.fo-log-content::-webkit-scrollbar {
+  width: 6px;
+}
+.fo-log-content::-webkit-scrollbar-thumb {
+  background: #225522;
+}
+
+.fo-log-line {
+  margin-bottom: 2px;
+}
+
+/* Modals Overlay */
+.fo-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 500;
+}
+
+.fo-modal {
+  background: #2b2824;
+  border: 3px outset #635d54;
+  box-shadow: 0 0 20px rgba(0,0,0,0.9);
+  color: #ddcfbe;
+  width: 580px;
+  max-width: 95%;
+  max-height: 85%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.fo-modal-header {
+  background: #1a1816;
+  border-bottom: 2px solid #4a443c;
+  padding: 6px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #ffdd44;
+}
+
+.fo-close-btn {
+  background: #441111;
+  border: 1px outset #aa3333;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.fo-close-btn:hover {
+  background: #661a1a;
+}
+
+/* V.A.T.S. Modal */
+.fo-vats-content {
+  padding: 12px;
+}
+
+.fo-vats-target-info {
+  display: flex;
+  justify-content: space-between;
+  background: #181614;
+  padding: 6px;
+  font-size: 11px;
+  margin-bottom: 10px;
+  color: #33ff33;
+  border: 1px solid #3d372f;
+}
+
+.fo-vats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.fo-vats-row {
+  background: #1f1d1a;
+  border: 1px solid #3c3730;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fo-vats-part-name {
+  font-weight: bold;
+  color: #ffff88;
+  font-size: 12px;
+}
+
+.fo-vats-desc {
+  font-size: 9px;
+  color: #8f8576;
+}
+
+.fo-vats-select-btn {
+  margin-top: 4px;
+  color: #33ff33;
+  font-size: 13px;
+  padding: 4px;
+}
+
+/* Inventory Modal */
+.fo-inv-stats {
+  display: flex;
+  justify-content: space-between;
+  background: #1c1a17;
+  padding: 6px 12px;
+  font-size: 11px;
+  color: #ffdd44;
+  border-bottom: 1px solid #3a342c;
+}
+
+.fo-inv-slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: #141210;
+  padding: 8px 12px;
+  border-bottom: 2px inset #2a241c;
+}
+
+.fo-slot-box {
+  background: #221f1a;
+  border: 2px outset #4d463b;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  cursor: pointer;
+}
+
+.fo-slot-box:hover {
+  background: #2b2721;
+}
+
+.fo-slot-box.active-slot {
+  border: 2px inset #ffaa33;
+  background: #2a251b;
+  box-shadow: 0 0 6px rgba(255, 170, 51, 0.4);
+}
+
+.fo-slot-title {
+  font-size: 10px;
+  color: #aa9c88;
+  font-weight: bold;
+}
+
+.fo-slot-box.active-slot .fo-slot-title {
+  color: #ffaa33;
+}
+
+.fo-slot-item-name {
+  font-size: 11px;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.fo-inv-list {
+  padding: 10px;
+  overflow-y: auto;
+  max-height: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fo-inv-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1f1d1a;
+  border: 1px solid #3c3730;
+  padding: 6px 8px;
+}
+
+.fo-inv-item.equipped {
+  border-color: #33ff33;
+  background: #162416;
+}
+
+.fo-inv-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 75%;
+}
+
+.fo-inv-item-title {
+  font-weight: bold;
+  font-size: 12px;
+  color: #ffffaa;
+}
+
+.fo-inv-item-desc {
+  font-size: 10px;
+  color: #9c9284;
+}
+
+.fo-inv-item-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* Character Sheet */
+.fo-cha-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 12px;
+  gap: 16px;
+  background: #1a1816;
+}
+
+.fo-cha-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fo-cha-header {
+  font-size: 11px;
+  font-weight: bold;
+  color: #ffaa33;
+  border-bottom: 1px solid #4a3e2e;
+  padding-bottom: 2px;
+  margin-bottom: 4px;
+}
+
+.fo-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #c9bea9;
+}
+
+.fo-stat-row strong {
+  color: #33ff33;
+}
+
+/* Pip-Boy Modal */
+.fo-pip-content {
+  padding: 14px;
+  background: #081108;
+  color: #33ff33;
+  font-size: 12px;
+}
+
+.fo-pip-location {
+  color: #ffdd44;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.fo-pip-quest {
+  font-size: 13px;
+  font-weight: bold;
+  color: #33ff33;
+  margin-bottom: 10px;
+}
+
+.fo-pip-task-list {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fo-pip-task-list li.done {
+  color: #77aa77;
+  text-decoration: line-through;
+}
+
+.fo-pip-task-list li.active {
+  color: #ffff44;
+  font-weight: bold;
+}
+
+/* Cameron Dialogue */
+.fo-dialog-body {
+  display: flex;
+  padding: 12px;
+  gap: 12px;
+  background: #181614;
+}
+
+.fo-dialog-portrait {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.fo-portrait-box {
+  width: 100px;
+  height: 120px;
+  background: #2b1f18;
+  border: 2px inset #4a382c;
+  box-shadow: 0 0 10px rgba(0,0,0,0.8);
+  position: relative;
+}
+
+.fo-portrait-box::after {
+  content: '🗿';
+  font-size: 60px;
+  position: absolute;
+  top: 25px;
+  left: 20px;
+}
+
+.fo-portrait-name {
+  font-size: 11px;
+  font-weight: bold;
+  color: #ffaa33;
+}
+
+.fo-dialog-text-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fo-npc-speech {
+  background: #0f0d0b;
+  border: 1px solid #332d26;
+  padding: 8px;
+  font-size: 12px;
+  line-height: 16px;
+  color: #e3d8c8;
+}
+
+.fo-dialog-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fo-dlg-opt {
+  background: #28241f;
+  border: 1px solid #453e34;
+  color: #33ff33;
+  padding: 6px 8px;
+  text-align: left;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.fo-dlg-opt:hover {
+  background: #3d372e;
+  color: #fff;
+  border-color: #63594b;
+}
+
+/* Timer Modal */
+.fo-timer-content {
+  padding: 16px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fo-timer-btn-row {
+  display: flex;
+  gap: 8px;
+}
+
+/* Victory & Game Over */
+.fo-victory-content, .fo-gameover-content {
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.fo-vault-boy-art {
+  font-size: 48px;
+}
+
+.fo-vault-boy-art::before {
+  content: '👍⚡🏆';
+}
+
+/* Main Menu & Pause Overlays */
+.fo-menu-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(20, 24, 18, 0.94) 0%, rgba(5, 7, 4, 0.98) 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 600;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.fo-mainmenu-box {
+  background: #1c1a17;
+  border: 3px outset #635d54;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.95), inset 0 0 10px rgba(0, 0, 0, 0.8);
+  width: 540px;
+  max-width: 95%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.fo-mainmenu-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fo-mainmenu-logo {
+  font-size: 38px;
+  font-weight: 900;
+  color: #ffea47;
+  letter-spacing: 4px;
+  text-shadow: 0 0 12px rgba(255, 234, 71, 0.6), 2px 2px 0px #885500;
+  font-family: 'Impact', 'Arial Black', sans-serif;
+}
+
+.fo-mainmenu-sub {
+  font-size: 11px;
+  color: #aa9977;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+.fo-mainmenu-trial {
+  font-size: 14px;
+  color: #44dd44;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  margin-top: 4px;
+  text-shadow: 0 0 6px rgba(68, 221, 68, 0.5);
+}
+
+.fo-mainmenu-lore {
+  background: #110f0d;
+  border: 1px solid #332c24;
+  padding: 12px 16px;
+  font-size: 11px;
+  line-height: 16px;
+  color: #c9bea9;
+}
+
+.fo-mainmenu-buttons, .fo-pause-buttons {
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+  gap: 8px;
+}
+
+.fo-mm-btn {
+  font-size: 13px;
+  padding: 8px 12px;
+  letter-spacing: 1px;
+  background: #332d26;
+  border: 2px outset #665b4c;
+  color: #ffffaa;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.fo-mm-btn:hover {
+  background: #4a4136;
+  color: #ffffff;
+  border-color: #8c7e6a;
+  box-shadow: 0 0 8px rgba(255, 234, 71, 0.3);
+}
+
+.fo-mm-btn:active {
+  background: #24201b;
+  border-style: inset;
+}
+
+/* Pause Box */
+.fo-pause-box {
+  background: #1c1a17;
+  border: 3px outset #635d54;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.95);
+  width: 360px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.fo-pause-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffaa33;
+  letter-spacing: 2px;
+  text-shadow: 0 0 6px rgba(255, 170, 51, 0.5);
+}
+

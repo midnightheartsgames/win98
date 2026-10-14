@@ -1,0 +1,437 @@
+#ПРОГРАММИРОВАНИЕ
+
+@Ведущие программисты
+Tim Cain
+Chris Jones
+
+@Программисты
+Jesse L. Reynolds
+Kevin Weatherman
+Nick Kesting
+Robert Hertenstein 2
+Jess Heinig
+Jason Taylor
+
+@Программист версии для Макинтоша
+Tim Hume
+
+@Дополнительное программирование
+Mark Harrison (Lizard Byte)
+John Price
+Chris DeSalvo
+Mark Murakami
+Dan Spitzley
+Guido Henkel
+Michael Bernstein
+Thomas French
+
+@Технология роликов
+Paul Edelstein
+
+@Установщик и автозапуск
+Darren Monahan
+
+
+#ГРАФИКА
+
+@Арт-директор
+Leonard Boyarsky
+
+@Ведущие художники
+Jason Anderson
+Leonard Boyarsky
+Gary Platner
+
+@Художники
+Robert Collier
+Michael Dean
+Tramell Ray Isaac
+Eddie Rainwater
+Scott Rodenhizer
+Sharon Shellman
+
+@Дополнительная графика
+Peter Kroko
+Justin Sweet
+Joseph Cesario
+Cheryl Austin
+Jay Esparza (Tachyon)
+Geoff Gregor
+Arlene Sommers
+George Almond
+Erik Jamison
+Helena Wickberg
+James Doyle (Apples Animation)
+
+@Скульптор
+Scott Rodenhizer
+
+@Концепт-художник
+Tony Postma
+
+
+
+#ДИЗАЙН
+
+@Ведущий дизайнер
+Chris Taylor
+
+@Дизайнеры
+David Hendee
+Scott Bennie
+Brian Freyermuth
+Scott Campbell
+
+@Технический дизайнер
+Scott Everts
+
+@Дополнительный дизайн
+Robert Hertenstein 2
+Jess Heinig
+Nick Kesting
+Tim Cain
+Leonard Boyarsky
+Jason Anderson
+Fred Hatch
+Evan Chantland
+Erick Lujan
+Dennis Presnell
+Feargus Urquhart
+
+@Дизайн и диалоги
+Mark O'Green
+
+@Исходный дизайн игры
+Tim Cain
+Leonard Boyarsky
+Jason Anderson
+Jason Taylor
+Scott Campbell
+
+
+
+#ПРОИЗВОДСТВО
+
+@Продюсер
+Tim Cain
+
+@Помощник продюсера
+Fred Hatch
+
+@Директор подразделения
+Feargus Urquhart
+
+@Зам. директора подразделения
+Jeremy Barnes
+
+@Первый продюсер
+Tom Decker
+
+@Ассистент по производству
+Jason G. Suinn
+
+@Мальчик на побегушках
+Mike "Paco" Greene
+
+@Помощь с версией для Макинтоша
+Chris Benson
+
+
+
+#КОНТРОЛЬ КАЧЕСТВА
+
+@Директор по контролю качества
+Chad Allison
+
+@Заместитель директора по контролю качества
+Colin Totman
+
+@Ведущие тестеры версии для ПК
+Ron Hodge
+Greg "Moose" Baumeister
+
+@Тестеры версии для ПК
+Shanna SanPaolo
+Evan Chantland
+Ed Hyland
+Steve Reed
+James Chung
+Kaycee Vardaman
+Bill Field
+Richard Barker
+Rene Hakiki
+Erick Lujan
+Matt Kaupa
+Steve Victory
+Scot Humphreys
+Tim Anderson
+Darrell Jones
+
+@Ведущие тестеры версии для Макинтоша
+Jim Dodds
+Matt Murakami
+Steve McLafferty
+
+@Тестеры версии для Макинтоша
+Adam Chaney
+Dennis Presnell
+Savina Greene
+Kaycee Vardaman
+Scot Humphreys
+Mike Krueger
+Matt Golembiewski
+
+@Специалисты ИТ
+Bill Delk
+Steve Cabiness
+
+@Директор по совместимости
+Phuong Nguyen
+
+@Специалисты по совместимости
+Marc Duran
+Dan Forsyth
+Derek Gibbs
+Aaron Olalz
+John Parker
+
+
+
+#ЗВУК
+
+@Звукорежиссёр
+Charles Deenen
+
+@Мастеринг звука
+Craig Duman
+
+@Фоновая музыка ТВ
+Ronald Valdez
+
+@Сведение звука роликов
+Dave West
+
+@Звуковые эффекты роликов
+West Productions
+
+@Шумовики
+Doug Turner
+Gary Murello
+Larry Peacock
+
+@Монтаж шумов
+Caron Weidner
+
+@Сведение шумов
+Debby Ruby
+
+@Сведение шумов и шумовик
+Cecilia Perna
+
+@Шумы записаны в студии
+West Productions
+
+@Руководство шумами
+Charles Deenen
+Larry Peacock
+
+@Монтаж эффектов
+Michael Dickeson
+
+@Музыка
+Mark Morgan
+@для
+Four Bars Entertainment
+
+@Сведение звука вступления
+Charles Deenen
+
+@Музыкальный руководитель
+Brian Luzietti
+
+@Библиотекари звуковых эффектов
+Doug Rappaport
+Sergio Bustamante II
+Ron Valdez
+
+@Дизайн звуковых эффектов
+Charles Deenen
+Gregory Allen
+Larry Peacock
+EFX
+Weddington
+Caron Weidner
+
+@Монтаж голосов
+Doug Rappaport
+Sergio Bustamante II
+
+@Продюсер озвучки
+Fred Hatch
+
+@Звукоинженер озвучки
+Paul Hurtubise
+
+@Руководитель озвучки
+Chris Borders
+
+@Работа с актёрами
+Julie Morgavi
+
+@Озвучка записана в студии
+Hollywood Recording Services
+Hollywood, CA
+
+@Режиссура озвучки
+Jamie Thomason
+
+
+@ГОЛОСА ПЕРСОНАЖЕЙ
+
+Charlie Adler
+@Гарольд
+
+Richard Dean Anderson
+@Киллиан
+
+Jeff Bennett
+@Локсли
+
+Clancy Brown
+@Ромбус
+
+Jim Cummings
+@Сет, Гизмо, Создатель
+
+Keith David
+@Декер
+
+Brad Garrett
+@Гарри
+
+Tony Jay
+@Лейтенант
+
+Tress MacNeille
+@Джейн
+
+Ken Mars
+@Смотритель
+
+Richard Moll
+@Кэббот
+
+Ron Perlman
+@Бутч Харрис, рассказчик
+
+CCH Pounder
+@Ври
+
+Pam Segall
+@Николь
+
+Tony Shalub
+@Арадеш
+
+Kath Soucie
+@Лаура, Создатель
+
+Cree Summer
+@Танди
+
+David Warner
+@Морфеус
+
+Frank Welker
+@Мэксон
+
+@Дополнительные голоса
+Max the Dog
+
+
+
+"Maybe"
+@Исполняют Ink Spots
+@Предоставлено MCA Records
+@По договорённости с Universal Music Special Markets, Inc.
+
+"MAYBE"
+@Авторы: Allan Flynn и Frank Madden
+@Используется с разрешения EMI Robbins Catalog Inc. (ASCAP)
+
+@ВНИМАНИЕ: копирование, дублирование или
+@воспроизведение этой программы или любой её
+@части без письменного разрешения владельца
+@авторских прав нарушает федеральный закон.
+
+
+#МАРКЕТИНГ
+
+@Менеджер по связям с общественностью
+Genevieve Ostergard
+
+@Директор по маркетингу
+Paul Sackman
+
+@Менеджеры по маркетингу
+Mike Markin
+Craig Owens
+Michael Courtney
+
+@Младший менеджер по маркетингу
+Tod Mack
+
+@Менеджер по логистике
+Thom Dohner
+
+
+
+
+@Благодарим: Scott Everts за вклад в файл цитат
+@сверх всякого долга, Bomberman, Quake, Diablo,
+@Warcraft II, разные саундтреки, Brian Eno, холодильник
+@с газировкой (спасибо, Gus и Rusty!), дух Рождества
+@(Вперёд, Санта!), кошку Demo, Nicol, Tracy, Mary и Adam, Lisa
+@(за моральную поддержку), Jamal, маму T-Ray, двух Дональдов,
+@Teresa Brooks, Zeb Cook, Chris Avellone, Lunch Money, The Lunch
+@Court, Weez, Weaz, Irvine Spectrum, Wiz War, Dragon Dice, B5,
+@X-Files, Xena, Buffy, The Simpsons, ER, Jeepin' и
+@Last Minute Talking Dog за поимку того чёртова бага!
+
+@Особая благодарность участникам форума на сайте Fallout
+@за отзывы, предложения и сообщения об ошибках в демоверсии.
+@Ваши отзывы нам очень помогли!
+
+
+
+
+
+
+
+
+@Вот и всё!
+
+
+
+@Титров больше нет
+
+
+
+@Хватит смотреть
+
+
+
+
+
+
+
+
+
+@Fallout вам подарили Interplay Productions,
+@команда Fallout и буква Q.
+
+
+
+
+Хорошего дня!
+

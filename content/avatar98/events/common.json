@@ -1,0 +1,8 @@
+{
+  "common_shrine": [
+    { "talk": "sh.shrine" },
+    { "heal": "all" },
+    { "fx": "glow", "at": "player" },
+    { "choice": ["choice.shrine_save", "choice.shrine_leave"], "branches": [[{ "save": true }], []] }
+  ]
+}

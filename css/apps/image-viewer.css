@@ -1,0 +1,105 @@
+.imaging-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  background-color: var(--win-bg);
+  color: var(--win-text);
+  font-family: var(--win-font);
+  overflow: visible;
+}
+
+.imaging-toolbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 2px 4px 2px 10px;
+  background-color: var(--win-bg);
+  border-top: 1px solid var(--win-border-dark);
+  box-shadow: inset 0 1px 0 var(--win-border-light);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.imaging-toolbar::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 3px;
+  bottom: 3px;
+  width: 3px;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-light),
+    inset -1px -1px 0 var(--win-border-dark);
+}
+
+.imaging-tool-btn {
+  width: 23px;
+  height: 22px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: default;
+}
+
+.imaging-tool-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.imaging-tool-btn:hover {
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-light),
+    inset -1px -1px 0 var(--win-border-dark);
+}
+
+.imaging-tool-btn:active {
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light);
+}
+
+.imaging-tool-btn:active svg {
+  transform: translate(1px, 1px);
+}
+
+.imaging-separator {
+  width: 2px;
+  height: 20px;
+  margin: 0 4px;
+  border-left: 1px solid var(--win-border-dark);
+  border-right: 1px solid var(--win-border-light);
+}
+
+.imaging-viewport {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  background-color: #808080;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  position: relative;
+}
+
+.imaging-img-wrap {
+  box-shadow: none;
+  background: #ffffff;
+  display: inline-block;
+  line-height: 0;
+  transition: transform 0.1s ease;
+}
+
+.imaging-img {
+  max-width: none;
+  max-height: none;
+  display: block;
+}

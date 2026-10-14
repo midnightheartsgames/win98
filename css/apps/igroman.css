@@ -1,0 +1,717 @@
+/* ==========================================================================
+   ИГРОМАНИЯ (Сентябрь 1998) - CD Shell Stylesheet
+   Faithful recreation of Macromedia Director shell
+   ========================================================================== */
+
+.igroman-window {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  color: #000000;
+  font-family: 'Arial', 'Tahoma', 'MS Sans Serif', sans-serif;
+  user-select: none;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Color theme classes:
+   theme-red    (Pages 1-2: Содержание, Лицензия)
+   theme-blue   (Pages 3-21: ИГРАЕМ - Демо, Патчи, Видео)
+   theme-green  (Pages 22-24: ВООРУЖАЕМСЯ - Интернет, Софт, Winamp)
+   theme-purple (Page 25: СУПЕРБОНУС)
+*/
+.igroman-window.theme-red {
+  --sec-color: #e60000;
+  --sec-dark: #b30000;
+  --sec-bg: #ffe6e6;
+}
+.igroman-window.theme-blue {
+  --sec-color: #0078d7;
+  --sec-dark: #005a9e;
+  --sec-bg: #e6f2ff;
+}
+.igroman-window.theme-green {
+  --sec-color: #00a800;
+  --sec-dark: #007a00;
+  --sec-bg: #e6ffe6;
+}
+.igroman-window.theme-purple {
+  --sec-color: #d60093;
+  --sec-dark: #9e006c;
+  --sec-bg: #ffe6f7;
+}
+
+/* --- Header Area --- */
+.igroman-header {
+  position: relative;
+  height: 95px;
+  width: 100%;
+  flex-shrink: 0;
+  background: #ffffff;
+  border-bottom: 2px solid var(--sec-color);
+  display: flex;
+  align-items: flex-start;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Big grey background watermark */
+.igroman-watermark {
+  position: absolute;
+  left: 100px;
+  top: 5px;
+  font-family: 'Arial Black', 'Impact', sans-serif;
+  font-size: 82px;
+  font-weight: 900;
+  color: #ebebeb;
+  letter-spacing: 6px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Left target block */
+.igroman-target-box {
+  position: relative;
+  width: 130px;
+  height: 100%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.igroman-target-color-block {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 120px;
+  height: 60px;
+  background-color: var(--sec-color);
+  transition: background-color 0.2s;
+}
+
+.igroman-target-svg {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  z-index: 3;
+}
+
+.igroman-header-title-wrap {
+  position: relative;
+  z-index: 2;
+  margin-top: 18px;
+  margin-left: 10px;
+  flex: 1;
+}
+
+.igroman-header-title {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--sec-color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: inline-block;
+  line-height: 1.2;
+}
+
+/* --- Main Layout Body --- */
+.igroman-body {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Left Sidebar Menu --- */
+.igroman-sidebar {
+  width: 130px;
+  background-color: #dcdcdc;
+  display: flex;
+  flex-direction: column;
+  padding: 15px 6px 10px 6px;
+  box-sizing: border-box;
+  border-right: 1px solid #c0c0c0;
+  z-index: 5;
+}
+
+.igroman-nav-group {
+  margin-bottom: 12px;
+}
+
+.igroman-nav-title {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  color: #000000;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.5px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.igroman-nav-title:hover {
+  background-color: #c8c8c8;
+}
+
+.igroman-nav-title.active {
+  background-color: var(--sec-color);
+  color: #ffffff;
+}
+
+.igroman-nav-subs {
+  display: flex;
+  flex-direction: column;
+  margin-left: 6px;
+  margin-top: 2px;
+}
+
+.igroman-nav-subitem {
+  font-family: 'Arial', sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  color: #000000;
+  padding: 2px 5px;
+  cursor: pointer;
+  border-radius: 2px;
+  line-height: 1.3;
+}
+
+.igroman-nav-subitem:hover {
+  background-color: #c8c8c8;
+}
+
+.igroman-nav-subitem.active {
+  background-color: var(--sec-color);
+  color: #ffffff;
+}
+
+/* --- Main Content Stage --- */
+.igroman-stage {
+  flex: 1;
+  background-color: #ffffff;
+  padding: 18px 24px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Page 2: Содержание (Contents) */
+.igroman-toc-container {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 10px 15px;
+}
+
+.igroman-toc-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.igroman-toc-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 3px solid;
+  padding-bottom: 4px;
+  cursor: pointer;
+}
+
+.igroman-toc-header.red {
+  border-color: #e60000;
+  color: #e60000;
+}
+.igroman-toc-header.blue {
+  border-color: #0078d7;
+  color: #0078d7;
+}
+.igroman-toc-header.green {
+  border-color: #00a800;
+  color: #00a800;
+}
+.igroman-toc-header.purple {
+  border-color: #d60093;
+  color: #d60093;
+}
+
+.igroman-toc-title {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.igroman-toc-page-num {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.igroman-toc-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  margin-left: 20px;
+}
+
+.igroman-toc-item {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  color: #000000;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: color 0.15s, transform 0.1s;
+}
+
+.igroman-toc-item:hover {
+  color: var(--sec-color);
+  transform: translateX(4px);
+}
+
+/* Page 3: Список демоверсий (Screenshot media_1788550588341.png) */
+.igroman-demo-list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  width: 100%;
+  padding: 6px 0;
+  box-sizing: border-box;
+}
+
+.igroman-demo-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+}
+
+.igroman-demo-list-item {
+  font-family: 'Arial Black', 'Impact', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  color: #000000;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  padding: 1px 10px;
+  border-radius: 2px;
+  transition: color 0.12s, transform 0.1s;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.igroman-demo-list-item:hover {
+  color: #0078d7;
+  transform: scale(1.04);
+}
+
+/* Pages 4-19: Демоверсии (Games Layout) */
+.igroman-game-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.igroman-game-header-title {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  border-bottom: 2px solid #0078d7;
+  padding-bottom: 4px;
+}
+
+.igroman-game-cols {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+}
+
+.igroman-game-left-col {
+  flex: 1.1;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #000000;
+  text-align: justify;
+  border-right: 2px solid #0078d7;
+  padding-right: 18px;
+}
+
+.igroman-game-right-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.igroman-game-specs {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.igroman-game-specs b {
+  font-family: 'Arial Black', sans-serif;
+}
+
+.igroman-game-screenshot-frame {
+  width: 190px;
+  height: 130px;
+  background-color: #000000;
+  border: 2px solid #404040;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.igroman-game-screenshot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.igroman-game-action-wrap {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.igroman-btn-install {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #000000;
+  background-color: #dcdcdc;
+  border: 2px outset #ffffff;
+  padding: 6px 18px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.1s;
+}
+
+.igroman-btn-install:hover {
+  background-color: #e8e8e8;
+}
+
+.igroman-btn-install:active {
+  border-style: inset;
+  background-color: #c0c0c0;
+}
+
+/* Page 20: Патчи (Patches List) */
+.igroman-patches-title {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.igroman-patches-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 18px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 2px 6px;
+}
+
+.igroman-patch-item {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  color: #000000;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.igroman-patch-item:hover {
+  color: #0078d7;
+  background: #f0f8ff;
+}
+
+.igroman-patch-item.selected {
+  background-color: #0078d7;
+  color: #ffffff;
+}
+
+.igroman-patch-desc-box {
+  margin-top: 14px;
+  padding: 10px;
+  background-color: #f7f7f7;
+  border-left: 3px solid #0078d7;
+  font-size: 11px;
+  line-height: 1.5;
+  min-height: 48px;
+}
+
+/* Page 21: Видеоролики (Video list) */
+.igroman-video-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 15px;
+}
+
+.igroman-video-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border: 1px solid #d0d0d0;
+  background-color: #fafafa;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.igroman-video-item:hover {
+  background-color: #e6f2ff;
+  border-color: #0078d7;
+  transform: translateX(4px);
+}
+
+.igroman-video-name {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.igroman-video-info {
+  font-size: 11px;
+  color: #555555;
+}
+
+.igroman-video-play-badge {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 11px;
+  color: #0078d7;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Page 22: Вооружаемся - Интернет (Software list) */
+.igroman-soft-category {
+  margin-bottom: 16px;
+}
+
+.igroman-soft-subheading {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  color: #e60000;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.igroman-soft-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: 8px;
+}
+
+.igroman-soft-item {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  color: #000000;
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.igroman-soft-item:hover {
+  background-color: #e6ffe6;
+  color: #00a800;
+}
+
+.igroman-soft-item.selected {
+  background-color: #00a800;
+  color: #ffffff;
+}
+
+/* Page 24: Winamp Skins Gallery */
+.igroman-skins-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  max-height: 270px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.igroman-skin-card {
+  border: 1px solid #c0c0c0;
+  padding: 4px;
+  background-color: #fdfdfd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.igroman-skin-card:hover {
+  border-color: #00a800;
+  box-shadow: 0 2px 6px rgba(0,168,0,0.25);
+  transform: translateY(-2px);
+}
+
+.igroman-skin-thumb {
+  width: 110px;
+  height: 48px;
+  object-fit: cover;
+  border: 1px solid #404040;
+}
+
+.igroman-skin-name {
+  font-size: 9px;
+  font-weight: bold;
+  margin-top: 4px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+/* Page 1: Лицензионное соглашение */
+.igroman-license-box {
+  background: #fdfdfd;
+  border: 1px solid #a0a0a0;
+  padding: 14px;
+  height: 230px;
+  overflow-y: auto;
+  font-size: 11px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.igroman-license-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+}
+
+/* --- Bottom Footer Bar --- */
+.igroman-footer {
+  height: 40px;
+  width: 100%;
+  flex-shrink: 0;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 0 15px 0 0;
+  box-sizing: border-box;
+}
+
+.igroman-page-num-box {
+  width: 50px;
+  height: 28px;
+  background: #ffffff;
+  border: 2px solid #000000;
+  margin-left: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Arial Black', sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  color: #000000;
+  position: relative;
+  z-index: 3;
+}
+
+.igroman-footer-line {
+  flex: 1;
+  height: 2px;
+  background-color: #000000;
+  margin: 0 20px 0 10px;
+}
+
+.igroman-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 3;
+}
+
+.igroman-btn-exit {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  color: #000000;
+  text-transform: uppercase;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: color 0.1s;
+}
+
+.igroman-btn-exit:hover {
+  color: #e60000;
+}
+
+.igroman-arrow-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.igroman-btn-arrow {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000000;
+  user-select: none;
+  transition: transform 0.1s, color 0.1s;
+}
+
+.igroman-btn-arrow:hover {
+  color: var(--sec-color);
+  transform: scale(1.15);
+}
+
+.igroman-btn-arrow.disabled {
+  opacity: 0.2;
+  cursor: default;
+  pointer-events: none;
+}

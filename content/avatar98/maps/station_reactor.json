@@ -1,0 +1,47 @@
+{
+  "id": "station_reactor",
+  "name": "map.station_reactor",
+  "w": 26,
+  "h": 22,
+  "music": "station",
+  "region": "rc",
+  "bg": "#04080c",
+  "battleBg": "reactor",
+  "dark": 0.25,
+  "radio": true,
+  "onEnter": "reactor_enter",
+  "legend": {"K":"wall_kupol","k":"walltop_kupol","G":"pillar_kupol","%":"banner_kupol","[":"rail_v_dead","]":"rail_h_dead","d":"doorway_metal","&":"machine_kupol","u":"vine_drained","(":"pipe_h",")":"pipe_v","g":"grate","+":"reactor"},
+  "layers": {
+    "ground": [
+      "kkkkkkkkkkkkkkkkkkkkkkkkkk",
+      "MMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "MMMMMMMMMMMMMMMMMMMMMMMMMM",
+      "uuuEEEEEEgg++++ggEEEEEEuuu",
+      "uuuEEEEEEgg++++ggEEEEEEuuu",
+      "uuu((((((gg++++gg((((((uuu",
+      "uuuEEEEEEggggggggEEEEEEuuu",
+      "uuuEEEEEEggggggggEEEEEEuuu",
+      "uuuEggggggggggggggggggEuuu",
+      "uuuEggggggggggggggggggEuuu",
+      "uuuEggggggggggggggggggEuuu",
+      "uuuEEEEEEggggggggEEEEEEuuu",
+      "uuuEEEEEEggggggggEEEEEEuuu",
+      "uuuEEEEEEggggggggEEEEEEuuu",
+      "uuuEEEEEEggggggggEEEEEEuuu",
+      "uuuEEEEEEggggggggEEEEEEuuu",
+      "uuuEEEEEEEEggggEEEEEEEEuuu",
+      "uuuEEEEEEEEggggEEEEEEEEuuu",
+      "uuuEEEEEEEEggggEEEEEEEEuuu",
+      "uuuEEEEEEEEggggEEEEEEEEuuu",
+      "uuuEEEEEEEEggggEEEEEEEEuuu",
+      "EEEEEEEEEEEMMMMEEEEEEEEEEE"
+    ]
+  },
+  "spawns": {"lift":{"x":12,"y":19,"dir":"up"}},
+  "entities": [
+    {"id":"hound","kind":"npc","x":12,"y":9,"look":"hound","event":"hound_fight","if":"!hound_defeated","dir":"down"},
+    {"id":"core","kind":"prop","x":12,"y":7,"look":"core","frame":"anim","event":"reactor_core","solid":false},
+    {"id":"console1","kind":"prop","x":5,"y":9,"look":"terminal","frame":"anim","text":"insp.reactor_console"},
+    {"id":"console2","kind":"prop","x":20,"y":9,"look":"terminal","frame":"anim","text":"insp.reactor_console2"}
+  ]
+}

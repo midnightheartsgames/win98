@@ -1,0 +1,570 @@
+/* ICQ 98a Authentic Retro Messenger Styles */
+.icq-window {
+  background: var(--win-bg, #c0c0c0);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  font-family: var(--win-font, 'MS Sans Serif', sans-serif);
+  font-size: 11px;
+  position: relative;
+  overflow: hidden;
+}
+
+.icq-header-bar {
+  background: linear-gradient(90deg, #000080, #1084d0);
+  color: #fff;
+  padding: 4px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.icq-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.icq-brand-logo svg {
+  width: 16px;
+  height: 16px;
+  filter: drop-shadow(1px 1px 0px rgba(0,0,0,0.5));
+}
+
+.icq-header-uin {
+  background: #000050;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 1px 6px;
+  border: 1px inset #000040;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.icq-user-status-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  background: #d4d0c8;
+  border-bottom: 1px solid #808080;
+}
+
+.icq-user-status-row select {
+  font-size: 11px;
+  font-family: var(--win-font, 'MS Sans Serif', sans-serif);
+  padding: 1px;
+}
+
+.icq-quick-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 6px;
+  background: #c0c0c0;
+  border-bottom: 1px solid #808080;
+  font-size: 10px;
+  color: #333;
+}
+
+.icq-filter-chk {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.icq-filter-chk input {
+  margin: 0;
+  cursor: pointer;
+}
+
+.icq-contacts-list {
+  flex: 1;
+  background: #ffffff;
+  border: 2px inset #fff;
+  margin: 3px 4px 4px 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2px;
+}
+
+.icq-group-header {
+  font-weight: bold;
+  color: #000080;
+  padding: 3px 5px;
+  background: #eaeaea;
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #fff;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+
+.icq-group-header:hover {
+  background: #dcdcdc;
+}
+
+.icq-group-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icq-group-arrow {
+  font-size: 8px;
+  display: inline-block;
+  width: 10px;
+  text-align: center;
+  color: #555;
+}
+
+.icq-group-count {
+  font-size: 9px;
+  font-weight: normal;
+  color: #666;
+}
+
+.icq-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  cursor: pointer;
+  border-bottom: 1px dotted #f0f0f0;
+  position: relative;
+}
+
+.icq-contact-item:hover {
+  background: #eef3ff;
+}
+
+.icq-contact-item.selected {
+  background: #000080;
+  color: #ffffff;
+}
+
+.icq-contact-item.selected .icq-contact-uin,
+.icq-contact-item.selected .icq-contact-note {
+  color: #d0e0ff !important;
+}
+
+.icq-contact-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.icq-contact-row1 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.icq-contact-name {
+  font-weight: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icq-contact-uin {
+  color: #777;
+  font-size: 9px;
+  font-family: 'Courier New', monospace;
+}
+
+.icq-contact-note {
+  font-size: 9px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-style: italic;
+}
+
+.icq-unread-badge {
+  width: 8px;
+  height: 8px;
+  background: #ff0000;
+  border-radius: 50%;
+  animation: icq-blink 0.8s infinite;
+  display: inline-block;
+  margin-left: 2px;
+}
+
+@keyframes icq-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.icq-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid #000;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.icq-status-dot.online { background: #00ee00; }
+.icq-status-dot.away { background: #ffff00; }
+.icq-status-dot.dnd { background: #ff8800; }
+.icq-status-dot.na { background: #ff2222; }
+.icq-status-dot.offline { background: #888888; border-color: #555; }
+
+.icq-bottom-toolbar {
+  display: flex;
+  padding: 4px 6px;
+  background: var(--win-bg, #c0c0c0);
+  border-top: 1px solid #808080;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
+.btn-icq-menu {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: bold;
+  padding: 2px 6px;
+  min-width: 58px;
+}
+
+.btn-icq-menu svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* Authentic ICQ Popup Menu */
+.icq-menu-dropdown {
+  position: absolute;
+  bottom: 32px;
+  left: 6px;
+  background: var(--win-bg, #c0c0c0);
+  border: 2px outset #fff;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+  width: 195px;
+  z-index: 99999;
+  font-family: var(--win-font, 'MS Sans Serif', sans-serif);
+  font-size: 11px;
+  display: none;
+}
+
+.icq-menu-dropdown.show {
+  display: block;
+}
+
+.icq-menu-item {
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #000;
+}
+
+.icq-menu-item:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.icq-menu-item svg {
+  width: 14px;
+  height: 14px;
+}
+
+.icq-menu-separator {
+  height: 1px;
+  background: #808080;
+  border-bottom: 1px solid #fff;
+  margin: 3px 2px;
+}
+
+/* ICQ Chat Window */
+.icq-chat-window {
+  background: var(--win-bg, #c0c0c0);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 4px;
+  box-sizing: border-box;
+  font-family: var(--win-font, 'MS Sans Serif', sans-serif);
+  font-size: 11px;
+  position: relative;
+}
+
+.icq-chat-contact-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: #d4d0c8;
+  border: 1px inset #fff;
+  margin-bottom: 4px;
+}
+
+.icq-chat-contact-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: bold;
+}
+
+.icq-chat-contact-status-note {
+  font-size: 10px;
+  color: #555;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.icq-chat-toolbar {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 4px;
+}
+
+.icq-chat-toolbar .win-btn {
+  padding: 2px 6px;
+  font-size: 10px;
+}
+
+.icq-chat-history {
+  flex: 1;
+  background: #ffffff;
+  border: 2px inset #fff;
+  overflow-y: auto;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.icq-msg-bubble {
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.icq-msg-bubble .timestamp {
+  color: #888;
+  font-size: 9px;
+  font-family: 'Courier New', monospace;
+  margin-right: 4px;
+}
+
+.icq-msg-bubble .sender {
+  font-weight: bold;
+  color: #000080;
+}
+
+.icq-msg-bubble.me .sender {
+  color: #cc0000;
+}
+
+.icq-msg-system {
+  color: #005500;
+  font-size: 10px;
+  font-style: italic;
+  padding: 2px 0;
+  border-top: 1px dotted #ccc;
+  border-bottom: 1px dotted #ccc;
+  margin: 2px 0;
+}
+
+.icq-typing-indicator {
+  font-size: 10px;
+  color: #0000aa;
+  font-style: italic;
+  height: 16px;
+  line-height: 16px;
+  padding: 0 4px;
+  visibility: hidden;
+}
+
+.icq-typing-indicator.active {
+  visibility: visible;
+}
+
+.icq-emoticons-bar {
+  display: flex;
+  gap: 2px;
+  padding: 2px 4px;
+  background: #ece9d8;
+  border: 1px solid #999;
+  margin-bottom: 4px;
+  overflow-x: auto;
+}
+
+.icq-emoticon-btn {
+  padding: 1px 4px;
+  font-size: 11px;
+  background: #fff;
+  border: 1px solid #808080;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.icq-emoticon-btn:hover {
+  background: #e0e8ff;
+  border-color: #000080;
+}
+
+.icq-chat-input-row {
+  display: flex;
+  gap: 4px;
+}
+
+.icq-chat-input {
+  flex: 1;
+  border: 2px inset #fff;
+  padding: 4px 6px;
+  font-family: var(--win-font, 'MS Sans Serif', sans-serif);
+  font-size: 11px;
+}
+
+/* Dialog Styles: User Info / Search / File Transfer */
+.icq-tab-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.icq-tab-headers {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid #808080;
+  padding-left: 4px;
+}
+
+.icq-tab-btn {
+  padding: 3px 8px;
+  background: #c0c0c0;
+  border: 2px outset #fff;
+  border-bottom: none;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+  margin-bottom: -1px;
+}
+
+.icq-tab-btn.active {
+  background: #ece9d8;
+  font-weight: bold;
+  border-bottom: 1px solid #ece9d8;
+}
+
+.icq-tab-pane {
+  display: none;
+  background: #ece9d8;
+  border: 2px outset #fff;
+  border-top: none;
+  padding: 10px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.icq-tab-pane.active {
+  display: block;
+}
+
+.icq-form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+
+.icq-form-label {
+  width: 110px;
+  font-weight: bold;
+  color: #333;
+}
+
+.icq-form-input {
+  flex: 1;
+  border: 2px inset #fff;
+  padding: 3px 5px;
+  font-size: 11px;
+  font-family: var(--win-font, 'MS Sans Serif', sans-serif);
+}
+
+.icq-form-input[readonly] {
+  background: #e0e0e0;
+}
+
+/* File Transfer Simulator */
+.icq-transfer-box {
+  background: #fff;
+  border: 2px inset #fff;
+  padding: 8px;
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+
+.icq-progress-track {
+  height: 18px;
+  background: #e0e0e0;
+  border: 2px inset #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.icq-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #000080, #1084d0);
+  width: 0%;
+  transition: width 0.15s ease;
+}
+
+/* Search table */
+.icq-search-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 2px inset #fff;
+  font-size: 11px;
+}
+
+.icq-search-table th {
+  background: #d4d0c8;
+  border: 1px outset #fff;
+  padding: 3px 5px;
+  text-align: left;
+  font-weight: bold;
+}
+
+.icq-search-table td {
+  padding: 3px 5px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.icq-search-table tr:hover td {
+  background: #eef3ff;
+}
+
+.icq-search-table tr.selected td {
+  background: #000080;
+  color: #fff;
+}

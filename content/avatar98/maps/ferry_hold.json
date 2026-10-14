@@ -1,0 +1,47 @@
+{
+  "id": "ferry_hold",
+  "name": "map.ferry_hold",
+  "w": 22,
+  "h": 16,
+  "music": "sea",
+  "region": "sea",
+  "bg": "#000000",
+  "onEnter": "hold_enter",
+  "legend": {"K":"shelf"},
+  "layers": {
+    "ground": [
+      "TTTTTTTTTTTTTTTTTTTTTT",
+      "THHHHHHHHHHsHHHHHHHHHT",
+      "T##||||||b|||b||||x##T",
+      "T##||||||||||||||||##T",
+      "Tx|||||||||||||||||##T",
+      "T||||||||||||||||||||T",
+      "T||||||||||||||||||||T",
+      "T||||||||||||||||||||T",
+      "T||||||||||||||||||||T",
+      "T||||||||||||||||||||T",
+      "T||||||||||||||||||||T",
+      "T#|||||||||||||||||||T",
+      "T#||||||||||||||||||xT",
+      "T#||||||xx|||||||||b|T",
+      "THHHHHHHHHHHHHHHHHHHHT",
+      "TTTTTTTTTTTTTTTTTTTTTT"
+    ]
+  },
+  "spawns": {"start":{"x":11,"y":3,"dir":"down"},"hatch":{"x":11,"y":2,"dir":"down"}},
+  "entities": [
+    {"id":"hatch_w","kind":"warp","x":11,"y":1,"to":{"map":"ferry_deck","spawn":"hatch","dir":"down"}},
+    {"id":"table_lu","kind":"prop","x":6,"y":9,"look":"paisho_table","text":"insp.ferry_table"},
+    {"id":"lu","kind":"npc","x":5,"y":9,"look":"paisho_lu","event":"hold_lu","dir":"right"},
+    {"id":"table_rui","kind":"prop","x":15,"y":10,"look":"paisho_table","text":"insp.ferry_table"},
+    {"id":"rui","kind":"npc","x":16,"y":10,"look":"paisho_rui","event":"hold_rui","dir":"left"},
+    {"id":"xiao","kind":"npc","x":16,"y":5,"look":"paisho_xiao","event":"hold_xiao","dir":"down"},
+    {"id":"hammock1","kind":"prop","x":3,"y":6,"look":"bed"},
+    {"id":"hammock2","kind":"prop","x":18,"y":7,"look":"bed"},
+    {"id":"sleeper","kind":"npc","x":3,"y":7,"look":"sailor","event":"hold_sleeper","dir":"down"},
+    {"id":"cook","kind":"npc","x":10,"y":12,"look":"sailor","text":"fe.cook","dir":"up"},
+    {"id":"shrine","kind":"shrine","x":2,"y":12,"look":"shrine"},
+    {"id":"chest1","kind":"chest","x":19,"y":11,"look":"chest","item":"healer_balm"},
+    {"id":"crates","kind":"inspect","x":2,"y":3,"text":"insp.ferry_cargo"}
+  ]
+}

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fallout</title>
+<link rel="stylesheet" href="css/apps/fallout.css">
+<style>html,body{height:100%;margin:0;background:#000}#game{position:absolute;inset:0}</style></head>
+<body><div id="game"></div>
+<script src="js/apps/fallout/fo-core.js"></script>
+<script src="js/apps/fallout/fo-dat.js"></script>
+<script src="js/apps/fallout/fo-formats.js"></script>
+<script src="js/apps/fallout/fo-files.js"></script>
+<script src="js/apps/fallout/fo-exe.js"></script>
+<script src="js/apps/fallout/fo-gen.js"></script>
+<script src="js/apps/fallout/fo-hex.js"></script>
+<script src="js/apps/fallout/fo-art.js"></script>
+<script src="js/apps/fallout/fo-proto.js"></script>
+<script src="js/apps/fallout/fo-map.js"></script>
+<script src="js/apps/fallout/fo-color.js"></script>
+<script src="js/apps/fallout/fo-render.js"></script>
+<script src="js/apps/fallout/fo-light.js"></script>
+<script src="js/apps/fallout/fo-text.js"></script>
+<script src="js/apps/fallout/fo-acm.js"></script>
+<script src="js/apps/fallout/fo-sound.js"></script>
+<script src="js/apps/fallout/fo-mve.js"></script>
+<script src="js/apps/fallout/fo-path.js"></script>
+<script src="js/apps/fallout/fo-anim.js"></script>
+<script src="js/apps/fallout/fo-rules.js"></script>
+<script src="js/apps/fallout/fo-world.js"></script>
+<script src="js/apps/fallout/fo-vm.js"></script>
+<script src="js/apps/fallout/fo-scripts.js"></script>
+<script src="js/apps/fallout/fo-ops.js"></script>
+<script src="js/apps/fallout/fo-combat.js"></script>
+<script src="js/apps/fallout/fo-ai.js"></script>
+<script src="js/apps/fallout/fo-attack.js"></script>
+<script src="js/apps/fallout/fo-items.js"></script>
+<script src="js/apps/fallout/fo-travel.js"></script>
+<script src="js/apps/fallout/fo-save.js"></script>
+<script src="js/apps/fallout/fo-ui.js"></script>
+<script src="js/apps/fallout/fo-turns.js"></script>
+<script src="js/apps/fallout/fo-iface.js"></script>
+<script src="js/apps/fallout/fo-dialog.js"></script>
+<script src="js/apps/fallout/fo-inven.js"></script>
+<script src="js/apps/fallout/fo-barter.js"></script>
+<script src="js/apps/fallout/fo-charscr.js"></script>
+<script src="js/apps/fallout/fo-perkdlg.js"></script>
+<script src="js/apps/fallout/fo-select.js"></script>
+<script src="js/apps/fallout/fo-panels.js"></script>
+<script src="js/apps/fallout/fo-automap.js"></script>
+<script src="js/apps/fallout/fo-pipboy.js"></script>
+<script src="js/apps/fallout/fo-worldmap.js"></script>
+<script src="js/apps/fallout/fo-prefs.js"></script>
+<script src="js/apps/fallout/fo-movie.js"></script>
+<script src="js/apps/fallout/fo-endgame.js"></script>
+<script src="js/apps/fallout/fo-saveload.js"></script>
+<script src="js/apps/fallout/fo-viewer.js"></script>
+<script src="js/apps/fallout/fo-play.js"></script>
+<script src="js/apps/fallout/fo-menu.js"></script>
+<script src="js/apps/fallout/fo-game.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const game = new FO.Game(document.getElementById('game'), {
+  standalone: true,
+  lang: params.get('lang') === 'ru' ? 'ru' : 'en',
+  map: params.get('map') || 'V13ENT',
+  start: async g => {
+    if (params.get('map')) await FO.newGame(g, params.get('map'), +(params.get('tile') || -1), +(params.get('elev') || -1));
+    else await FO.boot(g);
+  }
+});
+window.fogame = game;
+game.el.focus();
+game.boot('content/Fallout/', 'content/fallout-ru/');
+addEventListener('pagehide', () => game.destroy(), { once: true });
+</script>
+</body></html>

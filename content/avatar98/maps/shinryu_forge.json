@@ -1,0 +1,42 @@
+{
+  "id": "shinryu_forge",
+  "name": "map.shinryu_forge",
+  "w": 20,
+  "h": 12,
+  "music": "shinryu",
+  "region": "shinryu",
+  "bg": "#000000",
+  "onEnter": "forge_enter",
+  "legend": {"N":"window_wood","K":"toolrack"},
+  "layers": {
+    "ground": [
+      "TTTTTTTTTTTTTTTTTTTT",
+      "THHNHHHOHTHHHNHHHKHT",
+      "TttttttttT------G-bT",
+      "TttttttttT--------xT",
+      "Ttttttttt---------bT",
+      "THHHH-HHHT--------KT",
+      "T-----------------xT",
+      "T--p----kk--------bT",
+      "T-------kk---------T",
+      "T------------------T",
+      "THHHHHHHHddHHHHHHHHT",
+      "00000000000000000000"
+    ]
+  },
+  "spawns": {"door":{"x":9,"y":9,"dir":"up"},"wake":{"x":3,"y":3,"dir":"down"},"farewell":{"x":13,"y":7,"dir":"up"}},
+  "entities": [
+    {"id":"bed","kind":"prop","x":2,"y":2,"look":"bed","event":"forge_bed"},
+    {"id":"isa_chest","kind":"chest","x":8,"y":2,"look":"chest","item":"salve","count":3},
+    {"id":"anvil","kind":"prop","x":14,"y":4,"look":"anvil","event":"forge_anvil"},
+    {"id":"hana","kind":"npc","x":15,"y":3,"look":"hana","event":"forge_hana","dir":"up"},
+    {"id":"kenta","kind":"npc","x":11,"y":7,"look":"apprentice","event":"forge_kenta","if":"!night_cordon","move":{"type":"turn","wait":90}},
+    {"id":"fire","kind":"inspect","x":16,"y":3,"event":"forge_fire"},
+    {"id":"shelf","kind":"inspect","x":7,"y":1,"text":"insp.isa_shelf"},
+    {"id":"rack","kind":"inspect","x":17,"y":2,"text":"insp.toolrack"},
+    {"id":"window","kind":"inspect","x":3,"y":1,"text":"insp.forge_window"},
+    {"id":"photo","kind":"inspect","x":13,"y":1,"text":"insp.forge_photo"},
+    {"id":"door0","kind":"warp","x":9,"y":10,"to":{"map":"shinryu_lane","spawn":"from_forge","dir":"down"}},
+    {"id":"door1","kind":"warp","x":10,"y":10,"to":{"map":"shinryu_lane","spawn":"from_forge","dir":"down"}}
+  ]
+}

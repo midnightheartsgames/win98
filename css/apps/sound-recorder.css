@@ -1,0 +1,145 @@
+.sndrec-window {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--win-bg);
+  user-select: none;
+  font-size: 11px;
+}
+
+.sndrec-menubar {
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.sndrec-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px 10px;
+  border-top: 1px solid var(--win-border-dark);
+  box-shadow: inset 0 1px 0 var(--win-border-light);
+}
+
+.sndrec-display-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sndrec-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 68px;
+  white-space: nowrap;
+}
+
+.sndrec-label.right {
+  align-items: flex-end;
+}
+
+.sndrec-scope-wrap {
+  width: 136px;
+  height: 46px;
+  padding: 2px;
+  background-color: #000000;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light),
+    inset 2px 2px 0 var(--win-border-darkest),
+    inset -2px -2px 0 var(--win-border-midlight);
+}
+
+.sndrec-scope-canvas {
+  display: block;
+  width: 132px;
+  height: 42px;
+  image-rendering: pixelated;
+}
+
+.sndrec-track {
+  position: relative;
+  height: 30px;
+  cursor: default;
+}
+
+.sndrec-channel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 9px;
+  height: 4px;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light),
+    inset 2px 2px 0 var(--win-border-darkest),
+    inset -2px -2px 0 var(--win-border-midlight);
+}
+
+.sndrec-thumb {
+  position: absolute;
+  top: 1px;
+  width: 11px;
+  height: 21px;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='11' height='21' shape-rendering='crispEdges'><path fill='%23c0c0c0' d='M1 1h8v14l-4 4-4-4z'/><path fill='%23ffffff' d='M0 0h10v1h-10zM0 1h1v15h-1zM1 16h1v1h-1zM2 17h1v1h-1zM3 18h1v1h-1zM4 19h1v1h-1z'/><path fill='%23dfdfdf' d='M1 1h8v1h-8zM1 2h1v13h-1z'/><path fill='%23000000' d='M10 0h1v16h-1zM9 16h1v1h-1zM8 17h1v1h-1zM7 18h1v1h-1zM6 19h1v1h-1zM5 20h1v1h-1z'/><path fill='%23808080' d='M9 1h1v15h-1zM8 16h1v1h-1zM7 17h1v1h-1zM6 18h1v1h-1zM5 19h1v1h-1z'/></svg>");
+}
+
+.sndrec-ticks {
+  position: absolute;
+  left: 5px;
+  right: 6px;
+  top: 24px;
+  height: 4px;
+}
+
+.sndrec-ticks span {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 4px;
+  background-color: #000000;
+}
+
+.sndrec-controls {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+}
+
+.sndrec-btn {
+  width: 48px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--win-bg);
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-light),
+    inset -1px -1px 0 var(--win-border-darkest),
+    inset 2px 2px 0 var(--win-border-midlight),
+    inset -2px -2px 0 var(--win-border-dark);
+}
+
+.sndrec-btn:active:not(:disabled) {
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-darkest),
+    inset -1px -1px 0 var(--win-border-light),
+    inset 2px 2px 0 var(--win-border-dark),
+    inset -2px -2px 0 var(--win-border-midlight);
+}
+
+.sndrec-btn:active:not(:disabled) svg {
+  transform: translate(1px, 1px);
+}
+
+.sndrec-btn:disabled svg {
+  filter: drop-shadow(1px 1px 0 #ffffff);
+}
+
+.sndrec-btn:disabled svg path {
+  fill: #808080;
+}

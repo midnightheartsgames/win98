@@ -1,0 +1,45 @@
+{
+  "id": "roofs_chase1",
+  "name": "map.roofs_chase1",
+  "w": 36,
+  "h": 16,
+  "music": "city_day",
+  "region": "rc",
+  "bg": "#3a4a60",
+  "radio": true,
+  "onEnter": "roofs_chase1_enter",
+  "chase": {"timer":60,"fail":"chase_fail"},
+  "legend": {"0":"street_far","F":"roofwalk","/":"laundry","-":"planks"},
+  "layers": {
+    "ground": [
+      "000000000000000000000000000000000000",
+      "000000000000000000000000000000000000",
+      "0000000000000000000000000FFFFFFFFFF0",
+      "0000000000000FFFFFFFFF000FFFFFFFFFF0",
+      "0FFFFFFFFF000FFFFFFFFF000FFF<FFFF<F0",
+      "0FFFJFFFFF000FFF>>FFFF000FFFFFFFFFF0",
+      "0FFFFFFFFF000FFFFFFFFF---FFFFFFFFFF0",
+      "0FFFFFFFFF000/////////000FFFFFFFFFFF",
+      "0FFFFFFFFF---FFFFFFFFF000FFFFFFFFFFF",
+      "0FFFFFFFFF000FFJFFFFFF000FFFFFFFFFF0",
+      "0FFFFFFFFF000FFFFFFJFF000FFFFFFFFFF0",
+      "0FFFFFFF>F000FFFFFFFFF000FFFFFJFFFF0",
+      "0FFFFFFFFF000FFFFFFFFF000F>FFFFFFFF0",
+      "0000000000000000000000000FFFFFFFFFF0",
+      "000000000000000000000000000000000000",
+      "000000000000000000000000000000000000"
+    ]
+  },
+  "spawns": {"start":{"x":2,"y":8,"dir":"right"},"mid":{"x":14,"y":8,"dir":"right"}},
+  "entities": [
+    {"id":"e0","kind":"warp","x":35,"y":7,"to":{"map":"roofs_chase2","spawn":"start","dir":"right"}},
+    {"id":"e1","kind":"warp","x":35,"y":8,"to":{"map":"roofs_chase2","spawn":"start","dir":"right"}},
+    {"id":"steam1","kind":"hazard","x":6,"y":6,"look":"steam","hazard":{"type":"steam","period":110,"on":45,"phase":0,"reset":"start"}},
+    {"id":"steam2","kind":"hazard","x":6,"y":9,"look":"steam","hazard":{"type":"steam","period":110,"on":45,"phase":55,"reset":"start"}},
+    {"id":"steam3","kind":"hazard","x":18,"y":8,"look":"steam","hazard":{"type":"steam","period":90,"on":40,"phase":20,"reset":"mid"}},
+    {"id":"crumble1","kind":"hazard","x":23,"y":6,"look":"crumble","hazard":{"type":"crumble","period":100,"on":40,"phase":0,"reset":"mid"}},
+    {"id":"spark1","kind":"hazard","x":29,"y":7,"look":"spark","hazard":{"type":"spark","period":80,"on":30,"phase":0,"reset":"mid"}},
+    {"id":"spark2","kind":"hazard","x":29,"y":8,"look":"spark","hazard":{"type":"spark","period":80,"on":30,"phase":40,"reset":"mid"}},
+    {"id":"hidden6","kind":"hidden","x":33,"y":5,"look":"sparkle","item":"sun_ash","secret":"sh_roofs"}
+  ]
+}

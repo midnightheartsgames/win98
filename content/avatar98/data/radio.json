@@ -1,0 +1,6 @@
+[
+  { "id": "news", "freq": 91.3, "name": "Радио Республики", "lines": "radio.news", "region": "rc", "flag": "radio_news" },
+  { "id": "jazz", "freq": 97.7, "name": "«Нефритовый лотос»: джаз до утра", "lines": "radio.jazz", "region": "rc", "flag": "radio_jazz" },
+  { "id": "pirate", "freq": 103.1, "name": "Волна «Красных фонарей»", "lines": "radio.pirate", "region": "rc", "flag": "radio_pirate" },
+  { "id": "numbers", "freq": 88.8, "name": "Пустой эфир", "lines": "radio.numbers", "region": "rc", "flag": "radio_secret" }
+]

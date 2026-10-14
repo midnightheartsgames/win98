@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Burnout: Championship Drag Racing (1998 Demo)</title>
+  <link rel="stylesheet" href="css/apps/burnout.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    #standalone-root {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="standalone-root">
+    <div class="burnout-app-wrapper" style="width:100%; height:100%; display:flex; flex-direction:column; background:#000;">
+      <!-- Main Viewport Container -->
+      <div class="burnout-viewport-container" id="burnout_viewport" style="flex:1; position:relative; overflow:hidden;">
+        <!-- 3D Race Canvas -->
+        <canvas id="burnout_canvas" style="width:100%; height:100%; display:block;"></canvas>
+
+        <!-- HTML UI Overlays (Title screen, Garage, Time Slip, Help) -->
+        <div id="burnout_overlay_root" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Burnout Engine Scripts -->
+  <script src="js/apps/burnout/burnout-audio.js"></script>
+  <script src="js/apps/burnout/burnout-physics.js"></script>
+  <script src="js/apps/burnout/burnout-render.js"></script>
+  <script src="js/apps/burnout/burnout-garage.js"></script>
+  <script src="js/apps/burnout/burnout-ui.js"></script>
+  <script src="js/apps/burnout-app.js"></script>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const root = document.getElementById('standalone-root');
+      const app = new AppBurnout();
+      app.initGame(root);
+      window.appBurnout = app;
+    });
+  </script>
+</body>
+</html>
+

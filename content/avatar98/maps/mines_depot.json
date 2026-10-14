@@ -1,0 +1,50 @@
+{
+  "id": "mines_depot",
+  "name": "map.mines_depot",
+  "w": 28,
+  "h": 20,
+  "music": "mines",
+  "region": "mines",
+  "bg": "#1a1410",
+  "battleBg": "depot",
+  "dark": 0.45,
+  "onEnter": "depot_enter",
+  "legend": {"[":"rail_v_mine","]":"rail_h_mine","o":"boulder_dark"},
+  "layers": {
+    "ground": [
+      "RRXXXXXXXXXXXXXXXXXXXXXXXXRR",
+      "RRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+      "RRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+      "RRrrrrrrrrrrrrrrrrrrrrrrR{RR",
+      "RR{rrrrrrrrrrrrrrrrrrrrrRRRR",
+      "RRrrrrrrrrrrrrrrrrrrrrrrRRRR",
+      "RRrrorrrrrrrrrrrrrrrrrrrRRRR",
+      "RRrrrrrrr}}}}rrrrr}}}}rrRRRR",
+      "RR\"rrrrrrrrrrrrrrrrrrrrrooRR",
+      "RRrrrrrrrrrrrrrrrrrrrrrrooRR",
+      "RR]]]]]]]]]]]]]]]]]]]]]]ooRR",
+      "RRrrrrrrrrrrrrrrrrrrrrrrooRR",
+      "RRrrrrrrrrrrrrrrrrrrrrrrRRRR",
+      "RRrrrrrrrrrrrrrrrrrrrr\"rRRRR",
+      "RRrrrrrrrrrrrrrrrrrrrrrrRRRR",
+      "RR{rrrrrorrrrrrrrrrrrrrrRRRR",
+      "RRrrrrrrrrrrrrrrrrrroorrRRRR",
+      "RRrrrrrrrrrrrrrrrrrrrrrrRRRR",
+      "RRrrrrrrrrrrrrrrrrrrrrrrRRRR",
+      "RRRRRRRRRRRRRrrRRRRRRRRRRRRR"
+    ]
+  },
+  "spawns": {"south":{"x":13,"y":18,"dir":"up"},"scene":{"x":15,"y":12,"dir":"up"}},
+  "entities": [
+    {"id":"s0","kind":"warp","x":13,"y":19,"to":{"map":"mines_furnace","spawn":"north","dir":"down"},"if":"!rou_defeated"},
+    {"id":"s1","kind":"warp","x":14,"y":19,"to":{"map":"mines_furnace","spawn":"north","dir":"down"},"if":"!rou_defeated"},
+    {"id":"cart","kind":"prop","x":16,"y":10,"look":"minecart","text":"insp.depot_cart"},
+    {"id":"tao_npc","kind":"npc","x":17,"y":10,"look":"tao","event":"depot_tao_talk","dir":"left","if":"!tao_met"},
+    {"id":"lamp1","kind":"prop","x":6,"y":4,"look":"lantern","frame":"anim","solid":false},
+    {"id":"lamp2","kind":"prop","x":20,"y":4,"look":"lantern","frame":"anim","solid":false},
+    {"id":"shrine","kind":"shrine","x":4,"y":16,"look":"shrine"},
+    {"id":"chest3","kind":"chest","x":22,"y":4,"look":"chest","item":"jasmine_tea","count":2},
+    {"id":"rubble","kind":"inspect","x":24,"y":9,"text":"insp.mine_rubble"},
+    {"id":"meet","kind":"trigger","x":6,"y":13,"w":16,"event":"depot_tao","once":"tao_met"}
+  ]
+}

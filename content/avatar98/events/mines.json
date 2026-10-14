@@ -1,0 +1,154 @@
+{
+  "mines_enter": [
+    { "if": "!mines_entered", "then": [{ "flag": "mines_entered" }, { "talk": "mi.enter" }, { "caption": "cap.mines", "frames": 200 }] }
+  ],
+  "furnace_enter": [
+    { "if": "!furnace_init", "then": [{ "flag": "furnace_init" }, { "flag": "furn_b" }, { "talk": "mi.furnace_enter" }] }
+  ],
+  "tog_fa": [{ "if": "furn_a", "then": [{ "unflag": "furn_a" }], "else": [{ "flag": "furn_a" }] }],
+  "tog_fb": [{ "if": "furn_b", "then": [{ "unflag": "furn_b" }], "else": [{ "flag": "furn_b" }] }],
+  "tog_fc": [{ "if": "furn_c", "then": [{ "unflag": "furn_c" }], "else": [{ "flag": "furn_c" }] }],
+  "tog_fd": [{ "if": "furn_d", "then": [{ "unflag": "furn_d" }], "else": [{ "flag": "furn_d" }] }],
+  "furnace_check": [
+    { "if": "furn_a && furn_b && furn_c && furn_d", "then": [
+      { "flag": "furnaces_lit" },
+      { "wait": 20 },
+      { "sfx": "door_metal" },
+      { "shake": 30, "power": 2 },
+      { "restore": "map" },
+      { "talk": "mi.furnace_done" }
+    ] }
+  ],
+  "furnace_a": [
+    { "if": "furnaces_lit", "then": [{ "talk": "mi.furnace_lit" }], "else": [
+      { "fx": "fire", "at": "self" }, { "sfx": "furnace" }, { "call": "tog_fa" }, { "call": "tog_fb" }, { "call": "furnace_check" }
+    ] }
+  ],
+  "furnace_b": [
+    { "if": "furnaces_lit", "then": [{ "talk": "mi.furnace_lit" }], "else": [
+      { "fx": "fire", "at": "self" }, { "sfx": "furnace" }, { "call": "tog_fa" }, { "call": "tog_fb" }, { "call": "tog_fc" }, { "call": "furnace_check" }
+    ] }
+  ],
+  "furnace_c": [
+    { "if": "furnaces_lit", "then": [{ "talk": "mi.furnace_lit" }], "else": [
+      { "fx": "fire", "at": "self" }, { "sfx": "furnace" }, { "call": "tog_fb" }, { "call": "tog_fc" }, { "call": "tog_fd" }, { "call": "furnace_check" }
+    ] }
+  ],
+  "furnace_d": [
+    { "if": "furnaces_lit", "then": [{ "talk": "mi.furnace_lit" }], "else": [
+      { "fx": "fire", "at": "self" }, { "sfx": "furnace" }, { "call": "tog_fc" }, { "call": "tog_fd" }, { "call": "furnace_check" }
+    ] }
+  ],
+  "furnace_reset": [
+    { "if": "furnaces_lit", "then": [{ "talk": "mi.furnace_lit" }], "else": [
+      { "sfx": "switch" }, { "unflag": "furn_a" }, { "flag": "furn_b" }, { "unflag": "furn_c" }, { "unflag": "furn_d" }, { "talk": "mi.reset" }
+    ] }
+  ],
+  "furnace_gate": [{ "talk": "mi.gate_closed" }],
+  "depot_enter": [{ "if": "!tao_met", "then": [{ "pose": "kneel", "as": "tao_npc" }] }],
+  "depot_tao_talk": [{ "talk": "mi.tao_talk" }],
+  "depot_tao": [
+    { "letterbox": true },
+    { "move": "player", "path": "u1" },
+    { "camera": [16, 10], "frames": 30 },
+    { "sfx": "metal" },
+    { "wait": 20 },
+    { "sfx": "metal" },
+    { "talk": "mi.tao_meet" },
+    { "pose": "none", "as": "tao_npc" },
+    { "face": "tao_npc", "dir": "player" },
+    { "choice": ["choice.tao_honest", "choice.tao_rude"], "branches": [[{ "talk": "mi.tao_honest" }, { "trust": { "tao": 1 } }], [{ "talk": "mi.tao_rude" }]] },
+    { "emote": "tao_npc", "icon": "!" },
+    { "talk": "mi.tao_listen" },
+    { "music": "kupol" },
+    { "actor": "rou_a", "look": "captain_rou", "x": 13, "y": 19, "dir": "up" },
+    { "actor": "sol_a", "look": "kupol_soldier", "x": 14, "y": 19, "dir": "up" },
+    { "actor": "sol_b", "look": "kupol_soldier", "x": 12, "y": 19, "dir": "up" },
+    { "camera": [14, 15], "frames": 30 },
+    { "move": "sol_a", "path": "u4", "wait": false },
+    { "move": "sol_b", "path": "u4", "wait": false },
+    { "move": "rou_a", "path": "u5" },
+    { "face": "player", "dir": "down" },
+    { "move": "tao_npc", "path": "l1 d2" },
+    { "face": "tao_npc", "dir": "down" },
+    { "talk": "mi.rou_arrive" },
+    { "remove": "tao_npc" },
+    { "join": "tao" },
+    { "talk": "mi.tao_battle_tip" },
+    { "battle": "t_boss_rou" },
+    { "flag": "rou_defeated" },
+    { "music": "kupol" },
+    { "talk": "mi.rou_after" },
+    { "actor": "sol_c", "look": "kupol_soldier", "x": 11, "y": 18, "dir": "up" },
+    { "actor": "sol_d", "look": "kupol_soldier", "x": 16, "y": 18, "dir": "up" },
+    { "move": "sol_c", "path": "u2", "wait": false },
+    { "move": "sol_d", "path": "u2" },
+    { "music": "stop" },
+    { "avatar": "on" },
+    { "talk": "mi.avatar_burst" },
+    { "fx": "avatar", "at": "player" },
+    { "sfx": "boom" },
+    { "move": "sol_a", "path": "d3", "speed": 4, "wait": false },
+    { "move": "sol_b", "path": "d3", "speed": 4, "wait": false },
+    { "move": "sol_c", "path": "d2", "speed": 4, "wait": false },
+    { "move": "sol_d", "path": "d2", "speed": 4, "wait": false },
+    { "move": "rou_a", "path": "d2", "speed": 3 },
+    { "pose": "ko", "as": "sol_a" },
+    { "pose": "ko", "as": "sol_b" },
+    { "flash": "#ffffff", "frames": 30 },
+    { "wait": 40 },
+    { "avatar": "off" },
+    { "pose": "kneel", "as": "player" },
+    { "flag": "avatar_revealed" },
+    { "talk": "mi.rou_flee" },
+    { "remove": "sol_a" },
+    { "remove": "sol_b" },
+    { "move": "rou_a", "path": "d4", "speed": 2, "wait": false },
+    { "move": "sol_c", "path": "d3", "speed": 2, "wait": false },
+    { "move": "sol_d", "path": "d3", "speed": 2 },
+    { "remove": "rou_a" },
+    { "remove": "sol_c" },
+    { "remove": "sol_d" },
+    { "pose": "none", "as": "player" },
+    { "camera": "player", "frames": 30 },
+    { "talk": "mi.after_reveal" },
+    { "letterbox": false },
+    { "fade": "out", "frames": 60 },
+    { "flag": "night_cordon" },
+    { "title": "ttl.night", "sub": "ttl.night_sub", "frames": 200 },
+    { "warp": "shinryu_forge", "spawn": "farewell", "dir": "up", "fade": false }
+  ],
+  "farewell_scene": [
+    { "tint": "#101840", "alpha": 0.45 },
+    { "letterbox": true },
+    { "music": "finale" },
+    { "fade": "in", "frames": 60 },
+    { "move": "hana", "path": "l2 d2" },
+    { "face": "hana", "dir": "down" },
+    { "talk": "mi.farewell" },
+    { "give": "ferry_ticket" },
+    { "give": "hana_pendant" },
+    { "talk": "mi.farewell2" },
+    { "choice": ["choice.hana_promise", "choice.hana_fear"], "branches": [[{ "talk": "mi.farewell_promise" }], [{ "talk": "mi.farewell_fear" }, { "trust": { "tao": 1 } }]] },
+    { "sfx": "alert" },
+    { "talk": "mi.farewell_go" },
+    { "flag": "hana_farewell" },
+    { "letterbox": false },
+    { "tint": "none" },
+    { "warp": "shinryu_port", "spawn": "dock", "dir": "down" }
+  ],
+  "hana_night_talk": [{ "talk": "mi.hana_night" }],
+  "port_night": [
+    { "tint": "#081030", "alpha": 0.5 },
+    { "music": "sea" },
+    { "talk": "mi.port_night" }
+  ],
+  "port_board_ferry": [
+    { "letterbox": true },
+    { "talk": "mi.board" },
+    { "flag": "ferry_boarded" },
+    { "tint": "none" },
+    { "letterbox": false },
+    { "worldmap": "shinryu" }
+  ]
+}

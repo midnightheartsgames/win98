@@ -1,0 +1,46 @@
+{
+  "id": "roofs_chase2",
+  "name": "map.roofs_chase2",
+  "w": 36,
+  "h": 18,
+  "music": "city_day",
+  "region": "rc",
+  "bg": "#3a4a60",
+  "radio": true,
+  "onEnter": "roofs_chase2_enter",
+  "chase": {"timer":60,"fail":"chase_fail"},
+  "legend": {"0":"street_far","F":"roofwalk","/":"laundry","-":"planks"},
+  "layers": {
+    "ground": [
+      "000000000000000000000000000000000000",
+      "000000000000000000000000000000000000",
+      "000000000000000000000000000000000000",
+      "000000000000FFFFFFFFFFF0000000000000",
+      "000000000000FFFFFFFFFFF0000000000000",
+      "0FFFFFFFF000FFF<FFFFFFF0000000000000",
+      "0FFF>FFFF000FFFFFFFFFFF000FFFFFFFFF0",
+      "0FFFFFFFF000FFFFFFFFFFF000FFJFFFFFF0",
+      "0FFFFFFFF---FFFFFFFFFFF000FFFFFFFFF0",
+      "0FFFFFFFF000FFFFFFFFFFF000/////////0",
+      "0FFFFFFFF000FFFFFFFFFFF000FFFFFFFFF0",
+      "0FFFFFJFF000FFFFFFFFFFF---FFFFFFFFF0",
+      "0FFFFFFFF000FF>FFFFFFFF000FFFFFFFFF0",
+      "000000000000FFFFFFFFJFF000FFFFFFFFF0",
+      "000000000000FFFFFFFFFFF000FFFFFFFFL0",
+      "00000000000000000000000000FFFFF>FFF0",
+      "00000000000000000000000000FFFFFFFFF0",
+      "000000000000000000000000000000000000"
+    ]
+  },
+  "spawns": {"start":{"x":1,"y":8,"dir":"right"},"mid":{"x":13,"y":8,"dir":"right"},"late":{"x":27,"y":11,"dir":"right"}},
+  "entities": [
+    {"id":"light1","kind":"hazard","x":15,"y":8,"look":"searchlight","hazard":{"type":"searchlight","period":120,"on":50,"phase":0,"reset":"mid"}},
+    {"id":"light2","kind":"hazard","x":17,"y":10,"look":"searchlight","hazard":{"type":"searchlight","period":120,"on":50,"phase":60,"reset":"mid"}},
+    {"id":"light3","kind":"hazard","x":19,"y":7,"look":"searchlight","hazard":{"type":"searchlight","period":100,"on":45,"phase":30,"reset":"mid"}},
+    {"id":"steam1","kind":"hazard","x":5,"y":8,"look":"steam","hazard":{"type":"steam","period":100,"on":45,"phase":10,"reset":"start"}},
+    {"id":"crumble1","kind":"hazard","x":24,"y":11,"look":"crumble","hazard":{"type":"crumble","period":90,"on":35,"phase":30,"reset":"mid"}},
+    {"id":"spark1","kind":"hazard","x":30,"y":12,"look":"spark","hazard":{"type":"spark","period":70,"on":28,"phase":0,"reset":"late"}},
+    {"id":"spark2","kind":"hazard","x":32,"y":10,"look":"spark","hazard":{"type":"spark","period":70,"on":28,"phase":35,"reset":"late"}},
+    {"id":"end","kind":"trigger","x":33,"y":13,"w":2,"h":3,"event":"chase_end"}
+  ]
+}
