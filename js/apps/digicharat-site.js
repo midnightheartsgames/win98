@@ -462,7 +462,7 @@ class DiGiCharatSite {
     const rating = this.getVideoRatings()[ep.id] || { count: 48, total: 236 };
     const comments = this.getVideoComments(ep.id);
     const track = this.currentSubtitleTrack;
-    const tracks = [['eng', 'English'], ['rus', 'Russian (cah4e3)'], ['comment', "Director's commentary"], ['off', 'Off']];
+    const tracks = [['eng', 'English'], ['rus', 'Russian (cah4e3)'], ['comment', "Director's commentary"], ['commentRus', 'Комментарии Режиссёра'], ['off', 'Off']];
     const prev = this.episodes.find(e => e.id === ep.id - 1);
     const next = this.episodes.find(e => e.id === ep.id + 1);
     return `
@@ -510,7 +510,7 @@ class DiGiCharatSite {
       <p>${ep.desc}</p>
       <table class="dg-specs" cellspacing="0">
         <tr><th>First aired</th><td>${ep.date}, TBS "Wonderful"</td><th>Studio</th><td>Madhouse</td></tr>
-        <tr><th>Director</th><td>Hiroaki Sakurai</td><th>File</th><td>MKV, 144p, 3 subtitle tracks</td></tr>
+        <tr><th>Director</th><td>Hiroaki Sakurai</td><th>File</th><td>MKV, 144p, 4 subtitle tracks</td></tr>
       </table>
       <div class="dg-rate">
         Rate this episode:
@@ -523,7 +523,7 @@ class DiGiCharatSite {
   }
 
   subtitleClass() {
-    return this.currentSubtitleTrack === 'comment' ? 'is-commentary' : this.currentSubtitleTrack === 'rus' ? 'is-russian' : '';
+    return ['comment', 'commentRus'].includes(this.currentSubtitleTrack) ? 'is-commentary' : this.currentSubtitleTrack === 'rus' ? 'is-russian' : '';
   }
 
   renderGallerySection() {

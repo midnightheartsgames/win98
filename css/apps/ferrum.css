@@ -1,0 +1,1422 @@
+.ferrum-page {
+  background-color: #084a29;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect width='40' height='40' fill='%23084a29'/><path d='M0 10H14L22 18H40M10 40V30L18 22' stroke='%230b5a32' stroke-width='3' fill='none'/><circle cx='22' cy='18' r='2.5' fill='%23a8832c'/><circle cx='10' cy='30' r='2.5' fill='%23a8832c'/></svg>");
+  color: #000000;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 10px 0 14px 0;
+  min-height: 100%;
+}
+
+.ferrum-page * {
+  box-sizing: border-box;
+}
+
+.ferrum-board {
+  width: 760px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+}
+
+.ferrum-board table {
+  border-collapse: collapse;
+}
+
+.ferrum-mast-svg,
+.ferrum-fingers-svg {
+  display: block;
+}
+
+.ferrum-topline {
+  background-color: #000000;
+  color: #9fe0b0;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+}
+
+.ferrum-topline td {
+  padding: 3px 8px;
+}
+
+.ferrum-topline-enc {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ferrum-post {
+  background-color: #300000;
+  color: #ff3a1e;
+  font-weight: bold;
+  padding: 0 3px;
+  border: 1px solid #5a1a1a;
+}
+
+.ferrum-enc {
+  background-color: #000000;
+  color: #9fe0b0;
+  border: 1px solid #2f6b44;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  padding: 0 5px;
+  margin-left: 3px;
+  cursor: pointer;
+}
+
+.ferrum-enc.is-active {
+  background-color: #9fe0b0;
+  color: #000000;
+  font-weight: bold;
+}
+
+.ferrum-nav {
+  background-color: #0b5a32;
+  border-top: 1px dashed #f4f4e8;
+}
+
+.ferrum-nav td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.ferrum-nav-tag {
+  width: 88px;
+  color: #f4f4e8;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 9px;
+  line-height: 1.2;
+  border-right: 1px solid #f4f4e8;
+  padding: 4px;
+}
+
+.ferrum-nav-cell {
+  padding: 4px 2px 3px 2px;
+}
+
+.ferrum-jp {
+  display: block;
+  cursor: pointer;
+  text-decoration: none;
+  color: #f4f4e8;
+  padding: 2px 0;
+  border: 1px solid #0b5a32;
+}
+
+.ferrum-jp:hover {
+  border: 1px solid #f4f4e8;
+}
+
+.ferrum-jp-no {
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 9px;
+  color: #b8d8c4;
+}
+
+.ferrum-jp-pins {
+  position: relative;
+  display: inline-block;
+  width: 26px;
+  height: 14px;
+  margin: 2px 0;
+}
+
+.ferrum-pin {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin: 3px 2px;
+  background-color: #d4a93c;
+  border: 2px solid #8a6a1c;
+}
+
+.ferrum-cap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 26px;
+  height: 14px;
+  background-color: #111111;
+  border-top: 2px solid #555555;
+  border-left: 2px solid #555555;
+  border-right: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+}
+
+.ferrum-jp-label {
+  display: block;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.ferrum-jp.is-active .ferrum-jp-label {
+  color: #f2d22e;
+}
+
+.ferrum-adrow {
+  background-color: #d8d8cc;
+  border-bottom: 1px solid #000000;
+}
+
+.ferrum-adrow td {
+  padding: 8px 10px;
+  vertical-align: middle;
+}
+
+.ferrum-adrow-ad {
+  width: 490px;
+}
+
+.ferrum-banner {
+  width: 468px;
+  height: 60px;
+  overflow: hidden;
+  border: 1px solid #000000;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.ferrum-bn-tag {
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.ferrum-bn-title {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.ferrum-bn-sub {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.ferrum-bn-0 {
+  background-color: #ffff00;
+  color: #000000;
+}
+
+.ferrum-bn-0 .ferrum-bn-tag {
+  color: #cc0000;
+}
+
+.ferrum-bn-1 {
+  background-color: #cc0000;
+  color: #ffffff;
+}
+
+.ferrum-bn-1 .ferrum-bn-tag {
+  color: #ffff00;
+}
+
+.ferrum-bn-2 {
+  background-color: #000080;
+  color: #ffffff;
+}
+
+.ferrum-bn-2 .ferrum-bn-title {
+  color: #ffff00;
+}
+
+.ferrum-bn-3 {
+  background-color: #ffffff;
+  color: #003399;
+}
+
+.ferrum-bn-3 .ferrum-bn-tag {
+  color: #cc6600;
+}
+
+.ferrum-bn-net {
+  font-size: 10px;
+  color: #333333;
+  margin-top: 3px;
+}
+
+.ferrum-adrow-issue {
+  font-size: 11px;
+  text-align: right;
+  line-height: 1.5;
+}
+
+.ferrum-status {
+  background-color: #ffffcc;
+  border: 1px solid #999966;
+  padding: 4px 8px;
+  margin-bottom: 10px;
+  font-size: 11px;
+}
+
+.ferrum-body {
+  padding: 12px 14px 16px 14px;
+  background-color: #ffffff;
+}
+
+.ferrum-h1 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 19px;
+  font-weight: bold;
+  color: #063d21;
+  margin: 0 0 6px 0;
+}
+
+.ferrum-h2 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: bold;
+  color: #063d21;
+  margin: 18px 0 6px 0;
+  padding-bottom: 2px;
+  border-bottom: 2px solid #0b5a32;
+}
+
+.ferrum-h3 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  color: #063d21;
+  margin: 0 0 6px 0;
+}
+
+.ferrum-intro {
+  margin: 0 0 10px 0;
+  max-width: 640px;
+}
+
+.ferrum-small {
+  font-size: 10px;
+  color: #444444;
+}
+
+.ferrum-link {
+  color: #0033cc;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ferrum-link:hover {
+  color: #cc0000;
+}
+
+.ferrum-num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ferrum-right {
+  text-align: right;
+}
+
+.ferrum-tt {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+}
+
+.ferrum-new {
+  background-color: #cc0000;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: bold;
+  padding: 0 3px;
+}
+
+.ferrum-btn {
+  background-color: #c0c0c0;
+  color: #000000;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+  padding: 3px 10px;
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.ferrum-btn:active {
+  border-top: 2px solid #404040;
+  border-left: 2px solid #404040;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+}
+
+.ferrum-mini-btn {
+  background-color: #c0c0c0;
+  color: #000000;
+  border: 1px outset #ffffff;
+  padding: 0 5px;
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.ferrum-input,
+.ferrum-select,
+.ferrum-textarea {
+  background-color: #ffffff;
+  color: #000000;
+  border: 2px inset #c0c0c0;
+  padding: 1px 3px;
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 11px;
+}
+
+.ferrum-select {
+  max-width: 100%;
+}
+
+.ferrum-kicker {
+  font-size: 10px;
+  color: #444444;
+  margin-bottom: 4px;
+}
+
+.ferrum-home-top td {
+  vertical-align: top;
+}
+
+.ferrum-lead {
+  padding-right: 14px;
+}
+
+.ferrum-lead-title {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #0033cc;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ferrum-lead-text {
+  margin: 8px 0;
+}
+
+.ferrum-passport-mini {
+  width: 100%;
+  font-size: 11px;
+  border: 1px solid #0b5a32;
+}
+
+.ferrum-passport-mini th {
+  width: 70px;
+  text-align: left;
+  vertical-align: top;
+  background-color: #e4efe7;
+  padding: 3px 6px;
+  border-bottom: 1px solid #b5cdbd;
+}
+
+.ferrum-passport-mini td {
+  padding: 3px 6px;
+  border-bottom: 1px solid #b5cdbd;
+}
+
+.ferrum-lead-links {
+  margin-top: 8px;
+  font-size: 11px;
+}
+
+.ferrum-cal-cell {
+  width: 236px;
+}
+
+.ferrum-cal {
+  border: 2px solid #000000;
+  background-color: #ffffff;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.ferrum-cal-month {
+  background-color: #cc0000;
+  color: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 3px;
+  border-bottom: 2px solid #000000;
+}
+
+.ferrum-cal-day {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 64px;
+  font-weight: bold;
+  color: #cc0000;
+  line-height: 1;
+  padding-top: 6px;
+}
+
+.ferrum-cal-wd {
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.ferrum-cal-note {
+  font-size: 11px;
+  padding: 6px 8px 8px 8px;
+  text-align: left;
+  border-top: 1px dashed #999999;
+  margin-top: 6px;
+}
+
+.ferrum-threat {
+  font-size: 11px;
+  border: 1px solid #000000;
+}
+
+.ferrum-threat th {
+  background-color: #000000;
+  color: #ffffff;
+  text-align: left;
+  padding: 2px 5px;
+}
+
+.ferrum-threat td {
+  padding: 3px 5px;
+  border-top: 1px solid #cccccc;
+  vertical-align: top;
+}
+
+.ferrum-journal td {
+  border-bottom: 1px dotted #888888;
+  padding: 6px 6px 6px 0;
+  vertical-align: top;
+}
+
+.ferrum-journal-date {
+  width: 52px;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  color: #063d21;
+}
+
+.ferrum-journal-cat {
+  width: 62px;
+  font-size: 10px;
+  font-weight: bold;
+  color: #444444;
+}
+
+.ferrum-journal-lead {
+  font-size: 11px;
+  color: #222222;
+  margin-top: 2px;
+}
+
+.ferrum-more {
+  text-align: right;
+  font-size: 11px;
+  margin: 6px 0 14px 0;
+}
+
+.ferrum-home-bottom {
+  border-top: 3px double #0b5a32;
+}
+
+.ferrum-hb-cell {
+  width: 33%;
+  vertical-align: top;
+  padding: 10px 10px 0 0;
+}
+
+.ferrum-index {
+  font-size: 11px;
+}
+
+.ferrum-index td {
+  padding: 2px 3px;
+  border-bottom: 1px dotted #999999;
+}
+
+.ferrum-poll-row {
+  display: block;
+  font-size: 11px;
+  margin: 3px 0 5px 0;
+  cursor: pointer;
+}
+
+.ferrum-poll-bar {
+  display: block;
+  height: 6px;
+  background-color: #dddddd;
+  border: 1px solid #888888;
+  margin-top: 2px;
+}
+
+.ferrum-poll-fill {
+  display: block;
+  height: 4px;
+  background-color: #0b5a32;
+}
+
+.ferrum-hb-thread {
+  font-size: 11px;
+  padding: 3px 0;
+  border-bottom: 1px dotted #999999;
+}
+
+.ferrum-rubrics {
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.ferrum-rubric {
+  display: inline-block;
+  margin: 0 12px 3px 0;
+  font-family: "Courier New", Courier, monospace;
+  color: #0033cc;
+  text-decoration: underline;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ferrum-rubric.is-active {
+  color: #000000;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.ferrum-files {
+  font-size: 11px;
+}
+
+.ferrum-files th {
+  text-align: left;
+  font-size: 10px;
+  color: #444444;
+  border-bottom: 1px solid #000000;
+  padding: 2px 4px;
+}
+
+.ferrum-files td {
+  padding: 5px 4px;
+  border-bottom: 1px dotted #888888;
+  vertical-align: top;
+}
+
+.ferrum-files-date {
+  width: 76px;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.ferrum-files-name {
+  width: 190px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 10px;
+  word-break: break-all;
+}
+
+.ferrum-files-act {
+  width: 84px;
+  text-align: right;
+}
+
+.ferrum-files-act .ferrum-mini-btn {
+  display: block;
+  width: 80px;
+  margin-bottom: 3px;
+}
+
+.ferrum-crumbs {
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.ferrum-protohead {
+  border: 2px solid #000000;
+  font-size: 12px;
+}
+
+.ferrum-protohead-cell {
+  border-right: 1px solid #000000;
+  padding: 4px 8px;
+  vertical-align: top;
+}
+
+.ferrum-protohead-stamp {
+  width: 104px;
+  padding: 5px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.ferrum-stamp {
+  border: 3px double #b00000;
+  color: #b00000;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1.2;
+  padding: 3px 4px;
+}
+
+.ferrum-article-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  line-height: 1.2;
+  margin: 14px 0 8px 0;
+  max-width: 660px;
+}
+
+.ferrum-article-lead {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.5;
+  max-width: 640px;
+  margin: 0 0 12px 0;
+}
+
+.ferrum-passport {
+  font-size: 11px;
+  border: 1px solid #0b5a32;
+  margin-bottom: 10px;
+}
+
+.ferrum-passport th {
+  width: 170px;
+  text-align: left;
+  vertical-align: top;
+  background-color: #e4efe7;
+  padding: 4px 8px;
+  border-bottom: 1px solid #b5cdbd;
+}
+
+.ferrum-passport td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #b5cdbd;
+}
+
+.ferrum-passport tr.is-verdict th,
+.ferrum-passport tr.is-verdict td {
+  background-color: #ffffcc;
+  font-weight: bold;
+}
+
+.ferrum-schematic {
+  background-color: #000000;
+  color: #66ff99;
+  border: 2px inset #c0c0c0;
+  padding: 8px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  line-height: 1.25;
+  overflow-x: auto;
+  white-space: pre;
+  margin: 10px 0;
+}
+
+.ferrum-article-body {
+  max-width: 640px;
+}
+
+.ferrum-article-body p {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+}
+
+.ferrum-article-body p.ferrum-sign {
+  font-style: italic;
+  text-align: right;
+}
+
+.ferrum-filebar {
+  background-color: #eeeeee;
+  border: 1px solid #999999;
+  padding: 6px 8px;
+  margin: 10px 0;
+  font-size: 11px;
+}
+
+.ferrum-prevnext {
+  font-size: 11px;
+  margin: 10px 0;
+}
+
+.ferrum-prevnext td {
+  width: 50%;
+  vertical-align: top;
+  padding: 4px 0;
+}
+
+.ferrum-remarks {
+  margin: 0 0 10px 0;
+  padding-left: 22px;
+}
+
+.ferrum-remarks li {
+  margin-bottom: 8px;
+}
+
+.ferrum-remark-reply {
+  margin: 4px 0 0 14px;
+  padding-left: 8px;
+  border-left: 3px solid #0b5a32;
+  font-size: 11px;
+  color: #063d21;
+}
+
+.ferrum-form td {
+  padding: 3px 6px 3px 0;
+  vertical-align: top;
+  font-size: 11px;
+}
+
+.ferrum-rig {
+  background-color: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+}
+
+.ferrum-rig-title {
+  background-color: #000080;
+  color: #ffffff;
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 3px 6px;
+}
+
+.ferrum-rig-controls {
+  padding: 8px;
+}
+
+.ferrum-rig-form td {
+  padding: 3px 8px 3px 0;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.ferrum-rig-form .ferrum-select {
+  width: 430px;
+}
+
+.ferrum-run {
+  margin-left: 8px;
+  font-weight: bold;
+  padding: 4px 12px;
+}
+
+.ferrum-rig-console {
+  padding: 0 8px 8px 8px;
+}
+
+.ferrum-q2con {
+  background-color: #000000;
+  color: #e0b000;
+  border: 2px inset #c0c0c0;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  line-height: 1.3;
+  padding: 6px;
+  margin: 0;
+  min-height: 150px;
+  white-space: pre;
+}
+
+.ferrum-warn {
+  background-color: #ffffcc;
+  border: 2px solid #cc0000;
+  padding: 6px 8px;
+  margin: 8px 0;
+  font-size: 11px;
+}
+
+.ferrum-warn ul {
+  margin: 4px 0 0 18px;
+  padding: 0;
+}
+
+.ferrum-ok {
+  background-color: #e4efe7;
+  border: 1px solid #0b5a32;
+  padding: 6px 8px;
+  margin: 8px 0;
+  font-size: 11px;
+}
+
+.ferrum-scores {
+  margin: 10px 0;
+  font-size: 11px;
+}
+
+.ferrum-scores th {
+  text-align: left;
+  border-bottom: 1px solid #000000;
+  padding: 3px 4px;
+}
+
+.ferrum-scores td {
+  padding: 5px 4px;
+  border-bottom: 1px dotted #888888;
+  white-space: nowrap;
+}
+
+.ferrum-meter {
+  display: inline-block;
+  width: 160px;
+  height: 10px;
+  background-color: #222222;
+  border: 1px solid #000000;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.ferrum-meter-fill {
+  display: block;
+  height: 8px;
+}
+
+.ferrum-meter-fill.is-up {
+  background-color: #33cc33;
+}
+
+.ferrum-meter-fill.is-down {
+  background-color: #ff9900;
+}
+
+.ferrum-meter-fill.is-ref {
+  background-color: #999999;
+}
+
+.ferrum-rigpass {
+  border: 1px solid #000000;
+  font-size: 12px;
+}
+
+.ferrum-rigpass td {
+  width: 25%;
+  padding: 5px 8px;
+  border-right: 1px solid #999999;
+}
+
+.ferrum-bench-desk td {
+  vertical-align: top;
+}
+
+.ferrum-desk-board {
+  width: 454px;
+  padding: 0 12px 12px 0;
+}
+
+.ferrum-desk-side {
+  padding-bottom: 12px;
+}
+
+.ferrum-desk-side .ferrum-select {
+  width: 160px;
+}
+
+.ferrum-board-svg {
+  display: block;
+  border: 1px solid #000000;
+}
+
+.ferrum-hot {
+  cursor: pointer;
+}
+
+.ferrum-jmp-form {
+  margin-top: 8px;
+  font-size: 11px;
+}
+
+.ferrum-jmp-form td {
+  padding: 3px 4px 3px 0;
+  border-bottom: 1px dotted #999999;
+}
+
+.ferrum-dos {
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+  background-color: #c0c0c0;
+}
+
+.ferrum-dos-title {
+  background-color: #000080;
+  color: #ffffff;
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 5px;
+}
+
+.ferrum-dos-screen {
+  background-color: #000000;
+  color: #c0c0c0;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  line-height: 1.3;
+  padding: 5px;
+  margin: 2px;
+  height: 160px;
+  overflow: hidden;
+  white-space: pre;
+}
+
+.ferrum-dos-checks {
+  font-size: 11px;
+  margin: 0 0 8px 0;
+  line-height: 1.8;
+}
+
+.ferrum-memo {
+  font-size: 11px;
+  border-top: 1px dotted #999999;
+  padding-top: 6px;
+}
+
+.ferrum-markets {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.ferrum-markets td {
+  border: 1px solid #000000;
+  padding: 4px 10px;
+  background-color: #eeeeee;
+  white-space: nowrap;
+}
+
+.ferrum-markets td.is-on {
+  background-color: #0b5a32;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.ferrum-markets td.ferrum-markets-rate {
+  border: none;
+  background-color: #ffffff;
+  font-size: 11px;
+  white-space: normal;
+}
+
+.ferrum-pricelist {
+  font-size: 11px;
+  border: 1px solid #000000;
+}
+
+.ferrum-pricelist th {
+  background-color: #000000;
+  color: #ffffff;
+  text-align: left;
+  padding: 3px 5px;
+}
+
+.ferrum-pricelist td {
+  padding: 3px 5px;
+  border-bottom: 1px solid #cccccc;
+  vertical-align: top;
+}
+
+.ferrum-pricelist tr.ferrum-pl-group td {
+  background-color: #e4efe7;
+  font-weight: bold;
+  color: #063d21;
+  border-top: 1px solid #0b5a32;
+  border-bottom: 1px solid #0b5a32;
+}
+
+.ferrum-pricelist tr.is-hit td {
+  background-color: #ffffcc;
+}
+
+.ferrum-pricelist td.is-cur {
+  font-weight: bold;
+}
+
+.ferrum-hit {
+  background-color: #cc0000;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: bold;
+  padding: 0 3px;
+}
+
+.ferrum-price-tools {
+  margin-top: 14px;
+}
+
+.ferrum-price-tools td {
+  vertical-align: top;
+}
+
+.ferrum-receipt-cell {
+  width: 380px;
+  padding-right: 16px;
+}
+
+.ferrum-receipt {
+  background-color: #fffff4;
+  border: 1px solid #999999;
+  border-top: 4px dotted #999999;
+  border-bottom: 4px dotted #999999;
+  padding: 8px 10px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.ferrum-receipt-head {
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px dashed #000000;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+
+.ferrum-receipt td {
+  padding: 1px 0;
+}
+
+.ferrum-receipt-slot {
+  font-weight: bold;
+  padding-top: 5px;
+}
+
+.ferrum-receipt .ferrum-select {
+  width: 100%;
+  font-size: 10px;
+}
+
+.ferrum-receipt-total td {
+  border-top: 1px dashed #000000;
+  font-weight: bold;
+  padding-top: 4px;
+}
+
+.ferrum-receipt-foot {
+  margin-top: 8px;
+  text-align: right;
+}
+
+.ferrum-loupe-cell .ferrum-select {
+  width: 200px;
+}
+
+.ferrum-loupe {
+  width: 230px;
+  margin: 10px 0;
+  border: 4px solid #333333;
+  background-color: #f4f4e8;
+  padding: 10px;
+  text-align: center;
+}
+
+.ferrum-loupe-x {
+  text-align: right;
+  font-size: 9px;
+  color: #666666;
+}
+
+.ferrum-loupe-code {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 20px;
+  font-weight: bold;
+  word-break: break-all;
+}
+
+.ferrum-loupe-part {
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+.ferrum-verdict {
+  display: inline-block;
+  border: 3px double #0b5a32;
+  color: #0b5a32;
+  font-weight: bold;
+  font-size: 11px;
+  padding: 3px 6px;
+}
+
+.ferrum-verdict.is-fake {
+  border-color: #cc0000;
+  color: #cc0000;
+}
+
+.ferrum-golded {
+  background-color: #0000aa;
+  color: #aaaaaa;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  border: 2px solid #000000;
+  padding: 4px;
+}
+
+.ferrum-golded td {
+  padding: 1px 6px;
+  vertical-align: top;
+}
+
+.ferrum-gd-head td {
+  color: #ffff55;
+  font-weight: bold;
+  border-bottom: 1px solid #55ffff;
+}
+
+.ferrum-gd-areas tr.is-cur td {
+  background-color: #00aaaa;
+  color: #000000;
+}
+
+.ferrum-gd-areas tr.is-cur .ferrum-gd-link {
+  color: #000000;
+}
+
+.ferrum-gd-link {
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ferrum-gd-link:hover {
+  color: #ffff55;
+  text-decoration: underline;
+}
+
+.ferrum-gd-bar {
+  background-color: #00aaaa;
+  color: #000000;
+  font-weight: bold;
+  padding: 1px 6px;
+  margin-top: 6px;
+}
+
+.ferrum-gd-right {
+  float: right;
+  text-align: right;
+}
+
+.ferrum-gd-hdr td.ferrum-gd-right {
+  float: none;
+}
+
+.ferrum-gd-list td {
+  color: #55ffff;
+  white-space: nowrap;
+  border-bottom: 1px dotted #5555ff;
+}
+
+.ferrum-gd-list td.ferrum-gd-subj {
+  white-space: normal;
+}
+
+.ferrum-pricelist td.ferrum-pl-war {
+  white-space: nowrap;
+}
+
+.ferrum-gd-msg {
+  margin-bottom: 10px;
+}
+
+.ferrum-gd-hdr {
+  color: #ffffff;
+  border-bottom: 1px solid #55ffff;
+}
+
+.ferrum-gd-k {
+  width: 60px;
+  color: #ffff55;
+}
+
+.ferrum-gd-dim {
+  color: #aaaaaa;
+}
+
+.ferrum-gd-text {
+  color: #ffffff;
+  padding: 6px 6px;
+  white-space: pre-wrap;
+  line-height: 1.4;
+}
+
+.ferrum-gd-tear {
+  color: #55ff55;
+  padding: 0 6px 4px 6px;
+}
+
+.ferrum-editor {
+  margin-top: 12px;
+  background-color: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+  font-size: 11px;
+}
+
+.ferrum-editor td {
+  padding: 4px 6px;
+  vertical-align: top;
+}
+
+.ferrum-editor-title {
+  background-color: #000080;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.ferrum-history td {
+  padding: 4px 8px 4px 0;
+  border-bottom: 1px dotted #999999;
+  vertical-align: top;
+}
+
+.ferrum-history-when {
+  width: 70px;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  color: #063d21;
+}
+
+.ferrum-staff-cell {
+  width: 33%;
+  vertical-align: top;
+  padding: 6px 10px 6px 0;
+}
+
+.ferrum-staff-cell p {
+  margin: 4px 0 0 0;
+  font-size: 11px;
+}
+
+.ferrum-equip {
+  font-size: 11px;
+  border: 1px solid #0b5a32;
+}
+
+.ferrum-equip th {
+  width: 190px;
+  text-align: left;
+  vertical-align: top;
+  background-color: #e4efe7;
+  padding: 3px 8px;
+  border-bottom: 1px solid #b5cdbd;
+}
+
+.ferrum-equip td {
+  padding: 3px 8px;
+  border-bottom: 1px solid #b5cdbd;
+}
+
+.ferrum-rules {
+  margin: 0 0 8px 0;
+  padding-left: 20px;
+}
+
+.ferrum-rules li {
+  margin-bottom: 4px;
+}
+
+.ferrum-footer {
+  background-color: #0b5a32;
+  color: #f4f4e8;
+  border-top: 1px dashed #f4f4e8;
+  font-size: 10px;
+}
+
+.ferrum-footer td {
+  padding: 8px 10px;
+  vertical-align: middle;
+}
+
+.ferrum-footer-text {
+  font-family: "Courier New", Courier, monospace;
+  line-height: 1.6;
+}
+
+.ferrum-link-silk {
+  color: #f2d22e;
+  text-decoration: underline;
+}
+
+.ferrum-footer-btns {
+  width: 290px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ferrum-88 {
+  display: inline-block;
+  width: 88px;
+  height: 31px;
+  margin-left: 4px;
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.1;
+  vertical-align: middle;
+  overflow: hidden;
+}
+
+.ferrum-88-top {
+  display: block;
+  font-size: 8px;
+  font-weight: normal;
+  background-color: #000000;
+  color: #ffffff;
+  padding: 1px 0;
+  margin-bottom: 2px;
+}
+
+.ferrum-odo {
+  font-family: "Courier New", Courier, monospace;
+  background-color: #000000;
+  color: #33ff66;
+  padding: 0 3px;
+  letter-spacing: 1px;
+}
+
+.ferrum-88-ie {
+  background-color: #000080;
+  color: #ffff00;
+}
+
+.ferrum-88-msk {
+  background-color: #cc0000;
+  color: #ffffff;
+}
+
+.ferrum-webring {
+  background-color: #ffffff;
+}
+
+.ferrum-page-raw {
+  background-color: #ffffff;
+  background-image: none;
+  padding: 10px;
+}
+
+.ferrum-apache {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 16px;
+  color: #000000;
+}
+
+.ferrum-apache h1 {
+  font-size: 32px;
+  margin: 0 0 16px 0;
+}
+
+.ferrum-apache address {
+  font-style: italic;
+}

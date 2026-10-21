@@ -51,6 +51,10 @@ class AppOgArkanoid {
       try {
         localStorage.setItem('office_games_scores_arkanoid', String(this.highScore));
       } catch (e) {}
+      if (window.appOfficeLauncher && window.appOfficeLauncher.win) window.appOfficeLauncher.populateList();
+      if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+        window.appClippy.onOfficeGameEvent('arkanoid', 'high_score', { score: this.highScore });
+      }
     }
   }
 
@@ -321,8 +325,8 @@ class AppOgArkanoid {
     if (this.gameState === 'ready') {
       this.gameState = 'playing';
       if (this.balls.length > 0) {
-        this.balls[0].vx = 2.2;
-        this.balls[0].vy = -3.8;
+        this.balls[0].vx = 1.4;
+        this.balls[0].vy = -2.3;
       }
       this.sndPaddle();
     } else if (this.gameState === 'playing' && this.paddle.laserTimer > 0) {
@@ -358,6 +362,9 @@ class AppOgArkanoid {
         if (iconEl && window.Icons) iconEl.innerHTML = window.Icons['game-manager'] || '';
       }
     }
+    if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+      window.appClippy.onOfficeGameEvent('arkanoid', this.bossMode ? 'boss_on' : 'boss_off');
+    }
   }
 
   initGame() {
@@ -367,7 +374,7 @@ class AppOgArkanoid {
     this.loadLevel(this.level);
     this.updateHUD();
 
-    this.lastFrameTime = performance.now();
+    this.lastFrameTime = 0;
     this.loop = this.gameLoop.bind(this);
     this.animId = requestAnimationFrame(this.loop);
   }
@@ -515,8 +522,8 @@ class AppOgArkanoid {
   }
 
   fireLasers() {
-    this.lasers.push({ x: this.paddle.x + 8, y: this.paddle.y - 4, vy: -7 });
-    this.lasers.push({ x: this.paddle.x + this.paddle.w - 8, y: this.paddle.y - 4, vy: -7 });
+    this.lasers.push({ x: this.paddle.x + 8, y: this.paddle.y - 4, vy: -4.5 });
+    this.lasers.push({ x: this.paddle.x + this.paddle.w - 8, y: this.paddle.y - 4, vy: -4.5 });
     this.sndLaser();
   }
 
@@ -525,10 +532,10 @@ class AppOgArkanoid {
       this.particles.push({
         x: x + Math.random() * 20,
         y: y + Math.random() * 10,
-        vx: (Math.random() - 0.5) * 4,
-        vy: (Math.random() - 0.5) * 4,
+        vx: (Math.random() - 0.5) * 2.2,
+        vy: (Math.random() - 0.5) * 2.2,
         color,
-        life: 18 + Math.floor(Math.random() * 10)
+        life: 26 + Math.floor(Math.random() * 12)
       });
     }
   }
@@ -538,8 +545,8 @@ class AppOgArkanoid {
       text,
       x,
       y,
-      vy: -0.8,
-      life: 25
+      vy: -0.5,
+      life: 40
     });
   }
 
@@ -562,7 +569,7 @@ class AppOgArkanoid {
       y,
       w: 16,
       h: 10,
-      vy: 1.8,
+      vy: 1.1,
       type: selected
     });
   }
@@ -570,18 +577,18 @@ class AppOgArkanoid {
   applyDrop(type) {
     this.sndDrop();
     if (type === 'L') {
-      this.paddle.laserTimer = 500;
+      this.paddle.laserTimer = 600;
       this.createFloatingText('ЛАЗЕР!', this.paddle.x + 10, this.paddle.y - 12);
     } else if (type === 'M') {
       const newBalls = [];
       this.balls.forEach(b => {
-        newBalls.push({ x: b.x, y: b.y, vx: b.vx * 0.9 - 1.2, vy: b.vy, r: b.r });
-        newBalls.push({ x: b.x, y: b.y, vx: b.vx * 0.9 + 1.2, vy: b.vy, r: b.r });
+        newBalls.push({ x: b.x, y: b.y, vx: b.vx * 0.9 - 0.7, vy: b.vy, r: b.r });
+        newBalls.push({ x: b.x, y: b.y, vx: b.vx * 0.9 + 0.7, vy: b.vy, r: b.r });
       });
       this.balls.push(...newBalls);
       this.createFloatingText('МУЛЬТИБОЛ!', this.paddle.x + 10, this.paddle.y - 12);
     } else if (type === 'W') {
-      this.paddle.wideTimer = 650;
+      this.paddle.wideTimer = 750;
       this.paddle.w = 84;
       this.createFloatingText('ШИРОКАЯ РАКЕТКА!', this.paddle.x + 5, this.paddle.y - 12);
     } else if (type === 'S') {
@@ -605,16 +612,22 @@ class AppOgArkanoid {
       return;
     }
 
+    const currentTime = now || ((window.performance && window.performance.now) ? window.performance.now() : Date.now());
+    if (currentTime - this.lastFrameTime < 16) {
+      return;
+    }
+    this.lastFrameTime = currentTime;
+
     this.update();
     this.draw();
   }
 
   update() {
     if (this.keys.left) {
-      this.paddle.x = Math.max(0, this.paddle.x - 5.5);
+      this.paddle.x = Math.max(0, this.paddle.x - 3.6);
     }
     if (this.keys.right) {
-      this.paddle.x = Math.min(320 - this.paddle.w, this.paddle.x + 5.5);
+      this.paddle.x = Math.min(320 - this.paddle.w, this.paddle.x + 3.6);
     }
 
     if (this.paddle.wideTimer > 0) {
@@ -708,8 +721,8 @@ class AppOgArkanoid {
       ) {
         b.y = this.paddle.y - b.r;
         const hitOffset = (b.x - (this.paddle.x + this.paddle.w / 2)) / (this.paddle.w / 2);
-        b.vx = hitOffset * 4.2;
-        b.vy = -Math.max(2.8, Math.sqrt(Math.max(16, 20 - b.vx * b.vx)));
+        b.vx = hitOffset * 2.4;
+        b.vy = -Math.max(1.8, Math.sqrt(Math.max(5.0, 7.2 - b.vx * b.vx)));
         this.sndPaddle();
       }
 

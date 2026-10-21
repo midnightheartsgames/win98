@@ -20,6 +20,7 @@ class AppOgHunt {
     this.muzzleFlash = 0;
 
     this.lastSecondTime = 0;
+    this.lastFrameTime = 0;
     this.targetSpawnTimer = 0;
     this.highScore = this.loadHighScore();
 
@@ -44,6 +45,10 @@ class AppOgHunt {
       try {
         localStorage.setItem('office_games_scores_hunt', String(this.highScore));
       } catch (e) {}
+      if (window.appOfficeLauncher && window.appOfficeLauncher.win) window.appOfficeLauncher.populateList();
+      if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+        window.appClippy.onOfficeGameEvent('hunt', 'high_score', { score: this.highScore });
+      }
     }
   }
 
@@ -249,6 +254,7 @@ class AppOgHunt {
     }
 
     this.lastSecondTime = (window.performance && window.performance.now) ? window.performance.now() : Date.now();
+    this.lastFrameTime = 0;
     this.updateHUD();
 
     this.loop = this.gameLoop.bind(this);
@@ -284,6 +290,9 @@ class AppOgHunt {
         if (titleTextEl) titleTextEl.textContent = 'Офисный Тир 98 (Охота на скрепки)';
         if (iconEl && window.Icons) iconEl.innerHTML = window.Icons['game-manager'] || '';
       }
+    }
+    if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+      window.appClippy.onOfficeGameEvent('hunt', this.bossMode ? 'boss_on' : 'boss_off');
     }
   }
 
@@ -385,6 +394,9 @@ class AppOgHunt {
         }
 
         this.createSparks(t.x + t.w / 2, t.y + t.h / 2, t.color);
+        if ((t.type === 'clippy' || t.type === 'paperclip') && window.appClippy && window.appClippy.onOfficeGameEvent) {
+          window.appClippy.onOfficeGameEvent('hunt', t.type === 'clippy' ? 'shot_clippy' : 'shot_paperclip', { points: t.points, score: this.score });
+        }
         break;
       }
     }
@@ -416,7 +428,7 @@ class AppOgHunt {
 
     let w = 26;
     let h = 24;
-    let speed = 1.8 + Math.random() * 2.2;
+    let speed = 0.9 + Math.random() * 0.9;
     let points = 25;
     let color = '#4090ff';
     let y = 30 + Math.random() * 160;
@@ -424,34 +436,34 @@ class AppOgHunt {
     if (chosenType === 'paperclip') {
       w = 28;
       h = 24;
-      speed = 1.6 + Math.random() * 1.8;
+      speed = 0.85 + Math.random() * 0.75;
       points = 50;
       color = '#aaaaaa';
     } else if (chosenType === 'airplane') {
       w = 32;
       h = 16;
-      speed = 3.2 + Math.random() * 2.2;
+      speed = 1.4 + Math.random() * 0.9;
       points = 35;
       color = '#ffffff';
       y = 20 + Math.random() * 110;
     } else if (chosenType === 'coffee') {
       w = 20;
       h = 20;
-      speed = 1.4 + Math.random() * 1.5;
+      speed = 0.75 + Math.random() * 0.65;
       points = 30;
       color = '#b08050';
       y = 70 + Math.random() * 120;
     } else if (chosenType === 'duck') {
       w = 24;
       h = 22;
-      speed = 1.2 + Math.random() * 1.2;
+      speed = 0.65 + Math.random() * 0.55;
       points = 20;
       color = '#ffdd00';
       y = 190 + Math.random() * 40;
     } else if (chosenType === 'clippy') {
       w = 26;
       h = 32;
-      speed = 2.4 + Math.random() * 2.0;
+      speed = 1.15 + Math.random() * 0.85;
       points = 100;
       color = '#ffd700';
       y = 30 + Math.random() * 90;
@@ -466,7 +478,7 @@ class AppOgHunt {
       w,
       h,
       vx,
-      vy: (Math.random() - 0.5) * 0.8,
+      vy: (Math.random() - 0.5) * 0.35,
       type: chosenType,
       points,
       color,
@@ -479,13 +491,13 @@ class AppOgHunt {
   createSparks(x, y, color) {
     for (let i = 0; i < 7; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const spd = 1.5 + Math.random() * 3.5;
+      const spd = 0.9 + Math.random() * 1.8;
       this.particles.push({
         x,
         y,
         vx: Math.cos(angle) * spd,
         vy: Math.sin(angle) * spd,
-        life: 14,
+        life: 24,
         color
       });
     }
@@ -496,8 +508,8 @@ class AppOgHunt {
       text,
       x,
       y,
-      vy: -1.2,
-      life: 26,
+      vy: -0.65,
+      life: 40,
       color
     });
   }
@@ -617,7 +629,7 @@ class AppOgHunt {
       ctx.lineWidth = 0.8;
       ctx.stroke();
     } else if (t.type === 'paperclip') {
-      t.flap = (t.flap + 0.3) % (Math.PI * 2);
+      t.flap = (t.flap + 0.14) % (Math.PI * 2);
       const wingY = Math.sin(t.flap) * 6;
 
       ctx.strokeStyle = '#d0d0d8';
@@ -754,7 +766,7 @@ class AppOgHunt {
       const p = this.particles[i];
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.15;
+      p.vy += 0.08;
       p.life--;
 
       ctx.fillStyle = p.color;
@@ -822,6 +834,10 @@ class AppOgHunt {
     if (this.bossMode) return;
 
     const currentTime = now || ((window.performance && window.performance.now) ? window.performance.now() : Date.now());
+    if (currentTime - this.lastFrameTime < 16) {
+      return;
+    }
+    this.lastFrameTime = currentTime;
 
     if (this.gameState === 'playing') {
       if (currentTime - this.lastSecondTime >= 1000) {
@@ -839,7 +855,7 @@ class AppOgHunt {
       for (let i = this.targets.length - 1; i >= 0; i--) {
         const t = this.targets[i];
         if (t.dead) {
-          t.fallSpeed += 0.4;
+          t.fallSpeed += 0.2;
           t.y += t.fallSpeed;
           if (t.y > 320) {
             this.targets.splice(i, 1);

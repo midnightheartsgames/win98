@@ -502,6 +502,29 @@ module.exports = {
       { steps: ['s3ui.newCASGame(); await __shots.sleep(3500);'] }
     ]
   },
+  korovany: {
+    page: 'korovany.html',
+    ready: '!!(window.kvui && kvui.state === "title")',
+    setup: [`window.kvStart = async (fac) => { kvui.newGame(fac, fac === 'elf' ? 'Ольха' : 'Гаврила'); await __shots.until(() => kvui.state === 'play' && kvui.game && kvui.game.pf === fac, 20000); await __shots.sleep(400); kvui.S.close(); kvui.toasts = []; return kvui.game; };
+    window.kvTp = (x, z, yaw, pitch) => { const g = kvui.game, p = g.player; p.x = x; p.z = z; p.y = g.world.groundAt(x, z); p.vx = p.vz = p.vy = 0; kvui.camYaw = yaw; kvui.camPitch = pitch; p.yaw = yaw; g.input.yaw = yaw; g.updateCells(); };
+    window.kvHour = h => { const g = kvui.game; g.time = Math.floor(g.time / 1440) * 1440 + h * 60; };`],
+    shots: [
+      { steps: [`const g = await kvStart('elf'); kvHour(9.5); const V = g.world.places.village; kvTp(V.x + 12, V.z + 44, -1.05, 0.16); kvui.camDist = 3.4; g.player.drawn = true; g.player.slot = 'ranged'; const el = g.actors.filter(a => a.fac === 'elf' && !a.player && a.role !== 'service').slice(0, 3); el.forEach((a, i) => { a.x = V.x + 2 - i * 3; a.z = V.z + 40 - i * 2; a.y = g.world.groundAt(a.x, a.z); a.ai.mode = 'post'; a.ai.post = { x: a.x, z: a.z, yaw: 1.4 }; }); g.updateCells(); await __shots.sleep(2500); kvui.toasts = []; await __shots.sleep(200);`] },
+      { steps: [`const g = kvui.game; kvHour(15.5); const K = Korovany; for (const w of g.wagons.slice()) w.gone = true; K.AI.launchCaravan(g, 'supply', { tag: 'shot' }); const ws = g.wagons.filter(w => w.tag === 'shot'); for (const w of ws) K.AI.wagonSkip(g, w, 2.6 - ws.indexOf(w) * 0.12); for (const w of ws) w.wait = 999; const w0 = ws[0]; const rx = Math.cos(w0.yaw), rz = Math.sin(w0.yaw), fx = Math.sin(w0.yaw), fz = -Math.cos(w0.yaw); const px = w0.x + rx * 8 - fx * 5.5, pz = w0.z + rz * 8 - fz * 5.5; const gd = w0.guards.map(id => g.byId.get(id)); const mx = (px + w0.x) / 2, mz = (pz + w0.z) / 2; gd[0].x = mx; gd[0].z = mz; gd[0].y = g.world.groundAt(mx, mz); g.updateCells(); g.computePose(gd[0]); g.kill(gd[0], g.player, 'wound'); for (let i = 0; i < 4; i++) g.decal(mx + (Math.random() - 0.5) * 1.5, mz + (Math.random() - 0.5) * 1.5, 0.45, 'blood'); kvTp(px, pz, Math.atan2(w0.x - px, -(w0.z - pz)) - 0.1, -0.1); g.player.drawn = true; g.player.slot = 'melee'; kvui.camDist = 3.8; gd.slice(1).forEach((a, i) => { a.x = w0.x + rx * 4.5 + fx * (i * 3 - 2); a.z = w0.z + rz * 4.5 + fz * (i * 3 - 2); a.y = g.world.groundAt(a.x, a.z); a.hostile.add(g.player.id); a.aware.set(g.player.id, { known: true, s: 1 }); a.drawn = true; }); g.updateCells(); await __shots.sleep(1300); kvui.toasts = []; kvui.drawPrompt = () => {}; await __shots.sleep(200);`] }
+    ]
+  },
+  catniss: {
+    page: 'catniss.html',
+    ready: '!!(window.cnui && cnui.S)',
+    size: [640, 480],
+    el: '.cnx-cv',
+    setup: [`localStorage.removeItem('catniss98_save'); cnui.save = Object.assign(Catniss.defaultSave(), { intro: true, lives: 7 }); cnui.opts.noAutoPause = true;
+    window.cnPlace = (id, cx, cy, face) => { cnui.go('play', { id }); const g = cnui.screen.game; g.player.x = cx * 16 + 1; g.player.y = (cy + 1) * 16 - g.player.h; g.player.face = face || 1; g.snapCamera(); return g; };`],
+    shots: [
+      { steps: [`const g = cnPlace('1-1', 176, 9); await __shots.sleep(3200); const p = g.player; p.x = 185 * 16; p.y = 8 * 16; p.vy = -90; p.vx = 105; p.face = 1; g.player.invul = 0; g.snapCamera(); await __shots.sleep(140);`] },
+      { steps: [`const g = cnPlace('4-3', 40, 11); await __shots.sleep(3600); const v = g.ents.find(e => e.type === 'van'); const p = g.player; p.x = 38 * 16; p.y = 7 * 16 - p.h; p.face = 1; g.player.invul = 0; g.snapCamera(); await __shots.until(() => v.st === 'expose', 9000); await __shots.sleep(500);`] }
+    ]
+  },
   plov: {
     page: 'plov.html',
     ready: '!!(window.plui && window.Plov)',
@@ -702,6 +725,65 @@ module.exports = {
       { steps: ['appScummQuest.changeRoom("rooftop", 40, 115); await __shots.sleep(1800);'] }
     ]
   }),
+  homm1: {
+    page: 'homm1.html',
+    ready: '!!(window.hmui && window.HoMM1)',
+    size: [640, 480],
+    el: '#homm1-canvas',
+    setup: [`hmui.audio.setMuted(true);`],
+    shots: [
+      {
+        steps: [`
+          hmui.menuFaction = 'knight';
+          hmui.menuMode = 'campaign';
+          hmui.menuCampaignIdx = 0;
+          hmui.startCampaignOrScenario();
+          hmui.modal = null;
+          const h = hmui.world.getHero(hmui.world.selectedHeroId);
+          if (h) {
+            hmui.world.revealFog('blue', h.x, h.y, 10);
+            hmui.centerCameraOnSelectedHero();
+            const path = HoMM1.findPath(hmui.world, h, h.x + 4, h.y + 2);
+            if (path && path.reachable) {
+              hmui.plannedPath = path;
+              hmui.plannedTarget = { x: h.x + 4, y: h.y + 2 };
+            }
+          }
+          hmui.render();
+          await __shots.sleep(400);
+        `]
+      },
+      {
+        steps: [`
+          const atkHero = HoMM1.createHero('kilburn', 'blue', new HoMM1.RNG(777));
+          atkHero.army = [
+            { unit: 'paladin', count: 6 },
+            { unit: 'swordsman', count: 14 },
+            { unit: 'archer', count: 24 },
+            { unit: 'griffin', count: 10 },
+            { unit: 'cavalry', count: 12 }
+          ];
+          const defHero = HoMM1.createHero('agar', 'red', new HoMM1.RNG(888));
+          defHero.army = [
+            { unit: 'dragon', count: 3 },
+            { unit: 'hydra', count: 7 },
+            { unit: 'minotaur', count: 12 },
+            { unit: 'centaur', count: 30 },
+            { unit: 'gargoyle', count: 18 }
+          ];
+          hmui.activeCombat = new HoMM1.Combat(atkHero, defHero, {
+            seed: 777,
+            terrain: 'dirt',
+            siege: { faction: 'warlock', hasCastle: true, hasTurrets: true }
+          });
+          hmui.modal = null;
+          hmui.screen = 'combat';
+          hmui.render();
+          await __shots.sleep(400);
+        `]
+      }
+    ]
+  },
   stalker: Object.assign(desktopGame('appStalker', 'app_stalker', 820, 640), {
     shots: [
       { steps: ['await __shots.sleep(2500); appStalker.finishTyping(); await __shots.sleep(200);'] },

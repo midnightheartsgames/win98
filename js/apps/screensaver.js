@@ -1,10 +1,7 @@
-/**
- * Win 98 3D Screensavers (3D Pipes & Starfield Simulation)
- * Renders full-screen canvas animations when idle or previewed from Display Properties.
- */
+
 class AppScreensaver {
   constructor() {
-    this.currentMode = 'pipes'; // 'pipes', 'starfield', 'none'
+    this.currentMode = 'pipes';
     this.idleTime = 0;
     this.timeoutSeconds = 180;
     this.isActive = false;
@@ -60,7 +57,6 @@ class AppScreensaver {
     this.canvas = this.overlay.querySelector('#screensaver-canvas');
     this.ctx = this.canvas.getContext('2d');
 
-    // Dismiss on any movement or key
     const dismiss = () => {
       if (this.isActive) {
         this.stop();
@@ -112,6 +108,10 @@ class AppScreensaver {
       this.initMatrix();
     } else if (mode === 'flying_win') {
       this.initFlyingWindows();
+    } else if (mode === 'maze') {
+      this.initMaze();
+    } else if (mode === 'text3d') {
+      this.initText3D();
     } else {
       this.initPipes();
     }
@@ -127,7 +127,6 @@ class AppScreensaver {
     }
   }
 
-  // --- 1. Starfield Simulation ---
   initStarfield() {
     const numStars = 400;
     this.stars = [];
@@ -180,7 +179,6 @@ class AppScreensaver {
     loop();
   }
 
-  // --- 2. Mystify Your Mind (Bouncing Neon Polygons) ---
   initMystify() {
     const cw = this.canvas.width;
     const ch = this.canvas.height;
@@ -214,12 +212,10 @@ class AppScreensaver {
       polys.forEach(poly => {
         poly.hue = (poly.hue + 0.5) % 360;
 
-        // Record current vertex snapshot
         const currentPoints = poly.vertices.map(v => ({ x: v.x, y: v.y }));
         poly.history.push(currentPoints);
         if (poly.history.length > maxHistory) poly.history.shift();
 
-        // Update vertices
         poly.vertices.forEach(v => {
           v.x += v.vx;
           v.y += v.vy;
@@ -227,7 +223,6 @@ class AppScreensaver {
           if (v.y <= 0 || v.y >= ch) v.vy *= -1;
         });
 
-        // Render historical wireframes
         poly.history.forEach((pts, idx) => {
           const alpha = (idx + 1) / poly.history.length;
           ctx.strokeStyle = `hsla(${poly.hue}, 100%, 65%, ${alpha})`;
@@ -248,7 +243,6 @@ class AppScreensaver {
     loop();
   }
 
-  // --- 3. 3D FlowerBox (Rotating Morphing 3D Cube) ---
   initFlowerBox() {
     const cw = this.canvas.width;
     const ch = this.canvas.height;
@@ -259,20 +253,18 @@ class AppScreensaver {
     let rotZ = 0;
     let morph = 0;
 
-    // Unit cube 8 vertices: (±1, ±1, ±1)
     const baseVerts = [
       [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
       [-1, -1, 1],  [1, -1, 1],  [1, 1, 1],  [-1, 1, 1]
     ];
 
-    // 6 faces: vertex indices
     const faces = [
-      { v: [0, 1, 2, 3], col: '#e74c3c' }, // Back (Red)
-      { v: [4, 5, 6, 7], col: '#3498db' }, // Front (Blue)
-      { v: [0, 1, 5, 4], col: '#2ecc71' }, // Top (Green)
-      { v: [2, 3, 7, 6], col: '#f1c40f' }, // Bottom (Yellow)
-      { v: [0, 3, 7, 4], col: '#9b59b6' }, // Left (Purple)
-      { v: [1, 2, 6, 5], col: '#e67e22' }  // Right (Orange)
+      { v: [0, 1, 2, 3], col: '#e74c3c' },
+      { v: [4, 5, 6, 7], col: '#3498db' },
+      { v: [0, 1, 5, 4], col: '#2ecc71' },
+      { v: [2, 3, 7, 6], col: '#f1c40f' },
+      { v: [0, 3, 7, 4], col: '#9b59b6' },
+      { v: [1, 2, 6, 5], col: '#e67e22' }
     ];
 
     const loop = () => {
@@ -290,25 +282,20 @@ class AppScreensaver {
       const cx = cw / 2;
       const cy = ch / 2;
 
-      // Transform and project vertices
       const proj = baseVerts.map(pt => {
         let x = pt[0];
         let y = pt[1];
         let z = pt[2];
 
-        // Rot X
         let y1 = y * Math.cos(rotX) - z * Math.sin(rotX);
         let z1 = y * Math.sin(rotX) + z * Math.cos(rotX);
 
-        // Rot Y
         let x2 = x * Math.cos(rotY) + z1 * Math.sin(rotY);
         let z2 = -x * Math.sin(rotY) + z1 * Math.cos(rotY);
 
-        // Rot Z
         let x3 = x2 * Math.cos(rotZ) - y1 * Math.sin(rotZ);
         let y3 = x2 * Math.sin(rotZ) + y1 * Math.cos(rotZ);
 
-        // Perspective
         const dist = 3.2;
         const pz = z2 + dist;
         const k = scale / pz;
@@ -320,13 +307,11 @@ class AppScreensaver {
         };
       });
 
-      // Sort faces by average depth for correct back-to-front rendering
       const sortedFaces = faces.map(f => {
         const avgZ = (proj[f.v[0]].z + proj[f.v[1]].z + proj[f.v[2]].z + proj[f.v[3]].z) / 4;
         return { ...f, avgZ };
       }).sort((a, b) => a.avgZ - b.avgZ);
 
-      // Render faces
       sortedFaces.forEach(f => {
         ctx.fillStyle = f.col;
         ctx.strokeStyle = '#ffffff';
@@ -351,7 +336,6 @@ class AppScreensaver {
     loop();
   }
 
-  // --- 4. 3D Pipes (Authentic Win98 OpenGL style 3D Screensaver) ---
   initPipes() {
     const ctx = this.ctx;
     const canvas = this.canvas;
@@ -363,7 +347,6 @@ class AppScreensaver {
       ctx.fillRect(0, 0, w, h);
     }
 
-    // Rich metallic materials with highlight and shadow stops
     const materials = [
       { name: 'Red',    base: '#e02828', light: '#ff8585', shadow: '#500505', cap: '#ff3b30' },
       { name: 'Blue',   base: '#2563eb', light: '#93c5fd', shadow: '#0f2766', cap: '#3b82f6' },
@@ -375,7 +358,6 @@ class AppScreensaver {
       { name: 'Silver', base: '#94a3b8', light: '#f1f5f9', shadow: '#1e293b', cap: '#cbd5e1' }
     ];
 
-    // 3D Grid dimensions based on aspect ratio (fills screen beautifully)
     const aspect = w / (h || 1);
     const gridX = Math.round(15 * Math.max(1, Math.min(2.2, aspect)));
     const gridY = 13;
@@ -383,22 +365,19 @@ class AppScreensaver {
     const cellSize = 38;
     const basePipeRadius = 9.0;
 
-    // 6 orthogonal 3D directions: +X, -X, +Y, -Y, +Z, -Z
     const DIRS = [
-      { dx: 1, dy: 0, dz: 0 },  // 0: +X
-      { dx: -1, dy: 0, dz: 0 }, // 1: -X
-      { dx: 0, dy: 1, dz: 0 },  // 2: +Y
-      { dx: 0, dy: -1, dz: 0 }, // 3: -Y
-      { dx: 0, dy: 0, dz: 1 },  // 4: +Z (Towards viewer)
-      { dx: 0, dy: 0, dz: -1 }  // 5: -Z (Into screen)
+      { dx: 1, dy: 0, dz: 0 },
+      { dx: -1, dy: 0, dz: 0 },
+      { dx: 0, dy: 1, dz: 0 },
+      { dx: 0, dy: -1, dz: 0 },
+      { dx: 0, dy: 0, dz: 1 },
+      { dx: 0, dy: 0, dz: -1 }
     ];
 
-    // Grid cell occupancy index
     const cellKey = (x, y, z) => `${x},${y},${z}`;
     const occupied = new Set();
 
-    // Camera setup with classic 3D viewing angle
-    // Yaw ~ -25 deg, Pitch ~ 18 deg
+
     const yaw = -0.44;
     const pitch = 0.30;
     const cosYaw = Math.cos(yaw), sinYaw = Math.sin(yaw);
@@ -408,23 +387,19 @@ class AppScreensaver {
     const cx = w / 2;
     const cy = h / 2;
 
-    // World to Screen 3D perspective projection
     const project = (gx, gy, gz) => {
-      // Center grid in world space
+
       const wx = (gx - gridX / 2 + 0.5) * cellSize;
       const wy = (gy - gridY / 2 + 0.5) * cellSize;
       const wz = (gz - gridZ / 2 + 0.5) * cellSize;
 
-      // Rotate Yaw around Y
       const x1 = wx * cosYaw - wz * sinYaw;
       const z1 = wx * sinYaw + wz * cosYaw;
       const y1 = wy;
 
-      // Rotate Pitch around X
       const y2 = y1 * cosPitch - z1 * sinPitch;
       const z2 = y1 * sinPitch + z1 * cosPitch + camDist;
 
-      // Safe depth clamp
       const zSafe = Math.max(100, z2);
       const scale = focalLength / zSafe;
 
@@ -437,12 +412,10 @@ class AppScreensaver {
       };
     };
 
-    // Stored completed scene elements (sorted by depth on render)
     const elements = [];
     let totalSegments = 0;
     const maxSegmentsBeforeReset = 550;
 
-    // Helper to find unoccupied random start node
     const findRandomStartNode = () => {
       for (let attempt = 0; attempt < 100; attempt++) {
         const x = Math.floor(Math.random() * gridX);
@@ -466,13 +439,11 @@ class AppScreensaver {
       return mat;
     };
 
-    // Create a new pipe leader
     const createPipeLeader = () => {
       const start = findRandomStartNode();
       occupied.add(cellKey(start.x, start.y, start.z));
       const mat = getNextMaterial();
 
-      // Initial joint / start cap sphere
       elements.push({
         type: 'sphere',
         x: start.x,
@@ -482,7 +453,6 @@ class AppScreensaver {
         isCap: true
       });
 
-      // Pick an initial valid direction
       const validDirs = [];
       for (let i = 0; i < DIRS.length; i++) {
         const nx = start.x + DIRS[i].dx;
@@ -524,12 +494,10 @@ class AppScreensaver {
       leaders.push(createPipeLeader());
     }
 
-    // Extrusion step duration in milliseconds (~230ms per grid step)
-    // Smooth, mesmerizing, hypnotic speed!
+
     const stepDuration = 230;
     let lastTime = (typeof performance !== 'undefined' ? performance.now() : Date.now());
 
-    // Shading helpers
     const drawSphere = (p, mat, isCap) => {
       if (!ctx || typeof ctx.beginPath !== 'function') return;
       const radius = p.r * (isCap ? 1.05 : 1.14);
@@ -561,7 +529,6 @@ class AppScreensaver {
       const dy = p2.y - p1.y;
       const len = Math.hypot(dx, dy);
 
-      // If segment is pointing directly along line of sight
       if (len < 1.0) {
         drawSphere(p2, mat, true);
         return;
@@ -570,7 +537,6 @@ class AppScreensaver {
       let nx = -dy / len;
       let ny = dx / len;
 
-      // Ensure normal points towards light direction (top-left) for consistent highlight
       const lightDot = nx * (-0.7) + ny * (-0.7);
       if (lightDot < 0) {
         nx = -nx;
@@ -583,7 +549,6 @@ class AppScreensaver {
       const ty = dy / len;
       const overlap = 0.8;
 
-      // Quad corners: Side A is illuminated, Side B is shaded (with subtle axial overlap to eliminate subpixel seams)
       const x1a = p1.x - tx * overlap + nx * r1, y1a = p1.y - ty * overlap + ny * r1;
       const x1b = p1.x - tx * overlap - nx * r1, y1b = p1.y - ty * overlap - ny * r1;
       const x2b = p2.x + tx * overlap - nx * r2, y2b = p2.y + ty * overlap - ny * r2;
@@ -598,14 +563,14 @@ class AppScreensaver {
       ctx.closePath();
 
       if (typeof ctx.createLinearGradient === 'function') {
-        // Gradient from illuminated side A to shaded side B
+
         const mx1 = (x1a + x2a) / 2;
         const my1 = (y1a + y2a) / 2;
         const mx2 = (x1b + x2b) / 2;
         const my2 = (y1b + y2b) / 2;
         const grad = ctx.createLinearGradient(mx1, my1, mx2, my2);
         grad.addColorStop(0.0, mat.light);
-        grad.addColorStop(0.25, '#ffffff'); // bright specular metallic highlight
+        grad.addColorStop(0.25, '#ffffff');
         grad.addColorStop(0.48, mat.light);
         grad.addColorStop(0.72, mat.base);
         grad.addColorStop(1.0, mat.shadow);
@@ -617,7 +582,6 @@ class AppScreensaver {
       ctx.restore();
     };
 
-    // Animation Loop
     const loop = (currentTime) => {
       if (!this.isActive) return;
 
@@ -625,19 +589,17 @@ class AppScreensaver {
       const dt = Math.min(50, Math.max(1, now - lastTime));
       lastTime = now;
 
-      // Update leaders progress
       leaders.forEach(leader => {
         if (!leader.alive) return;
 
         leader.progress += dt / stepDuration;
 
         if (leader.progress >= 1.0) {
-          // Segment finished!
+
           leader.progress = 0.0;
           leader.length++;
           totalSegments++;
 
-          // Commit finished segment to elements
           elements.push({
             type: 'pipe',
             x1: leader.fromX,
@@ -649,20 +611,16 @@ class AppScreensaver {
             mat: leader.mat
           });
 
-          // Mark target node occupied
           occupied.add(cellKey(leader.toX, leader.toY, leader.toZ));
 
-          // Previous position becomes corner
           const turnX = leader.toX;
           const turnY = leader.toY;
           const turnZ = leader.toZ;
 
-          // Update current position
           leader.fromX = leader.toX;
           leader.fromY = leader.toY;
           leader.fromZ = leader.toZ;
 
-          // Check if pipe should end
           if (leader.length >= leader.maxSegments) {
             elements.push({
               type: 'sphere',
@@ -676,8 +634,7 @@ class AppScreensaver {
             return;
           }
 
-          // Decide next direction:
-          // Check straight direction first
+
           const prevDir = leader.dirIndex;
           const sx = leader.fromX + DIRS[prevDir].dx;
           const sy = leader.fromY + DIRS[prevDir].dy;
@@ -690,8 +647,7 @@ class AppScreensaver {
             !occupied.has(cellKey(sx, sy, sz))
           );
 
-          // Find all available perpendicular directions (no 180-deg reversal)
-          const oppositeDir = prevDir ^ 1; // 0^1=1, 2^1=3, 4^1=5
+          const oppositeDir = prevDir ^ 1;
           const openTurns = [];
           for (let d = 0; d < 6; d++) {
             if (d === prevDir || d === oppositeDir) continue;
@@ -706,7 +662,7 @@ class AppScreensaver {
           }
 
           let nextDir = null;
-          // 65% chance to continue straight if available, otherwise turn
+
           if (isStraightOpen && (Math.random() < 0.65 || openTurns.length === 0)) {
             nextDir = prevDir;
           } else if (openTurns.length > 0) {
@@ -716,8 +672,8 @@ class AppScreensaver {
           }
 
           if (nextDir !== null) {
-            // If direction changed (it TURNED), place a joint sphere!
-            // If it continued straight, do not place a sphere so the pipe is a seamless continuous cylinder!
+
+
             if (nextDir !== prevDir) {
               elements.push({
                 type: 'sphere',
@@ -734,7 +690,7 @@ class AppScreensaver {
             leader.toY = leader.fromY + DIRS[nextDir].dy;
             leader.toZ = leader.fromZ + DIRS[nextDir].dz;
           } else {
-            // Trapped! Cap this pipe
+
             elements.push({
               type: 'sphere',
               x: turnX,
@@ -748,14 +704,12 @@ class AppScreensaver {
         }
       });
 
-      // Respawn dead leaders
       for (let i = 0; i < leaders.length; i++) {
         if (!leaders[i].alive) {
           leaders[i] = createPipeLeader();
         }
       }
 
-      // Check full reset condition
       if (totalSegments > maxSegmentsBeforeReset || occupied.size > (gridX * gridY * gridZ * 0.75)) {
         elements.length = 0;
         occupied.clear();
@@ -770,16 +724,13 @@ class AppScreensaver {
         }
       }
 
-      // Render all elements sorted by camera depth Z (Painter's Algorithm)
       if (ctx && typeof ctx.fillRect === 'function') {
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, w, h);
       }
 
-      // Prepare list of renderable items for depth sorting
       const renderables = [];
 
-      // 1. Static completed elements
       for (let i = 0; i < elements.length; i++) {
         const el = elements[i];
         if (el.type === 'sphere') {
@@ -804,7 +755,6 @@ class AppScreensaver {
         }
       }
 
-      // 2. Currently extruding active segments
       leaders.forEach(leader => {
         if (!leader.alive) return;
         const curX = leader.fromX + (leader.toX - leader.fromX) * leader.progress;
@@ -822,7 +772,6 @@ class AppScreensaver {
           mat: leader.mat
         });
 
-        // Current leading head cap
         renderables.push({
           type: 'sphere',
           depth: p2.z,
@@ -832,10 +781,8 @@ class AppScreensaver {
         });
       });
 
-      // Sort by depth descending: furthest items (largest z) drawn first, closest items (smallest z) drawn last!
       renderables.sort((a, b) => b.depth - a.depth);
 
-      // Draw all renderables in depth order
       for (let i = 0; i < renderables.length; i++) {
         const item = renderables[i];
         if (item.type === 'sphere') {
@@ -851,22 +798,18 @@ class AppScreensaver {
     this.animId = requestAnimationFrame(loop);
   }
 
-  // --- 5. The Matrix Digital Rain (Authentic 1999 Cyber Screensaver) ---
   initMatrix() {
     const cw = this.canvas.width;
     const ch = this.canvas.height;
     const ctx = this.ctx;
 
-    // Characters pool: authentic mix of Half-width Katakana, Latin letters, digits, and math symbols
     const chars = 'ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜﾝ0123456789ABCDEFZ$+-*=%<>~#:';
     const fontSize = 16;
     const columns = Math.ceil(cw / fontSize);
 
-    // Initial fill with deep pitch black
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, cw, ch);
 
-    // Track stream state for each column
     const streams = [];
     for (let i = 0; i < columns; i++) {
       streams.push({
@@ -881,7 +824,6 @@ class AppScreensaver {
     const loop = () => {
       if (!this.isActive) return;
 
-      // Phosphor decay trail effect
       ctx.fillStyle = 'rgba(0, 5, 0, 0.12)';
       ctx.fillRect(0, 0, cw, ch);
 
@@ -892,34 +834,31 @@ class AppScreensaver {
         const stream = streams[i];
         stream.y += stream.speed;
 
-        // Current head cell
         const headY = Math.floor(stream.y);
 
-        // Draw character cascade
         for (let j = 0; j < stream.length; j++) {
           const charY = headY - j;
           if (charY < 0) continue;
           const pixelY = charY * fontSize;
           if (pixelY > ch + fontSize) continue;
 
-          // Lazy populate random character for this slot
           if (!stream.chars[j] || Math.random() < 0.03) {
             stream.chars[j] = chars.charAt(Math.floor(Math.random() * chars.length));
           }
 
           if (j === 0) {
-            // Leading character: incandescent white with green aura
+
             ctx.fillStyle = '#ffffff';
             ctx.shadowColor = '#00ff66';
             ctx.shadowBlur = 10;
             ctx.fillText(stream.chars[j], stream.x + fontSize / 2, pixelY);
             ctx.shadowBlur = 0;
           } else if (j === 1) {
-            // Near head: vibrant lime green
+
             ctx.fillStyle = '#7dff9e';
             ctx.fillText(stream.chars[j], stream.x + fontSize / 2, pixelY);
           } else {
-            // Decay trail: emerald to dark matrix green
+
             const factor = 1 - (j / stream.length);
             const greenVal = Math.floor(255 * factor);
             ctx.fillStyle = `rgb(0, ${Math.max(35, greenVal)}, ${Math.floor(40 * factor)})`;
@@ -927,7 +866,6 @@ class AppScreensaver {
           }
         }
 
-        // Reset column if stream has passed the bottom
         if ((headY - stream.length) * fontSize > ch) {
           stream.y = Math.random() * -25;
           stream.speed = 0.35 + Math.random() * 0.65;
@@ -942,7 +880,6 @@ class AppScreensaver {
     this.animId = requestAnimationFrame(loop);
   }
 
-  // --- 6. 3D Flying Win (Retro Win 98 Logos Floating in Space) ---
   initFlyingWindows() {
     const cw = this.canvas.width;
     const ch = this.canvas.height;
@@ -969,7 +906,6 @@ class AppScreensaver {
       const cx = cw / 2;
       const cy = ch / 2;
 
-      // Sort by depth
       flags.sort((a, b) => b.z - a.z);
 
       for (let i = 0; i < flags.length; i++) {
@@ -997,7 +933,6 @@ class AppScreensaver {
           const quad = size * 0.44;
           const gap = size * 0.08;
 
-          // 4 classic Win colors: Red, Green, Blue, Yellow
           ctx.fillStyle = '#ff3333';
           ctx.fillRect(-half, -half, quad, quad);
           ctx.fillStyle = '#33cc33';
@@ -1011,6 +946,218 @@ class AppScreensaver {
         }
       }
 
+      this.animId = requestAnimationFrame(loop);
+    };
+
+    this.animId = requestAnimationFrame(loop);
+  }
+
+  initMaze() {
+    const cw = this.canvas.width;
+    const ch = this.canvas.height;
+    const ctx = this.ctx;
+
+    const map = [
+      [1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,1,0,0,0,0,0,1,0,1],
+      [1,0,1,0,1,0,1,1,1,0,1,0,1],
+      [1,0,1,0,0,0,1,0,0,0,0,0,1],
+      [1,0,1,1,1,1,1,0,1,1,1,0,1],
+      [1,0,0,0,0,0,1,0,0,0,1,0,1],
+      [1,1,1,0,1,0,1,1,1,0,1,0,1],
+      [1,0,0,0,1,0,0,0,1,0,0,0,1],
+      [1,0,1,1,1,1,1,0,1,1,1,0,1],
+      [1,0,1,0,0,0,1,0,0,0,1,0,1],
+      [1,0,1,0,1,0,1,1,1,0,1,0,1],
+      [1,0,0,0,1,0,0,0,0,0,0,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1]
+    ];
+
+    let gx = 1;
+    let gy = 1;
+    let dir = 0;
+    const dxArr = [1, 0, -1, 0];
+    const dyArr = [0, 1, 0, -1];
+
+    let px = 1.5;
+    let py = 1.5;
+    let angle = 0;
+    let targetX = 1.5;
+    let targetY = 1.5;
+    let targetAngle = 0;
+    let state = 'choose';
+
+    const chooseNextStep = () => {
+      const rightDir = (dir + 1) % 4;
+      const fwdDir = dir;
+      const leftDir = (dir + 3) % 4;
+      const backDir = (dir + 2) % 4;
+
+      if (map[gy + dyArr[rightDir]][gx + dxArr[rightDir]] === 0) {
+        dir = rightDir;
+        targetAngle += Math.PI / 2;
+        state = 'turn';
+      } else if (map[gy + dyArr[fwdDir]][gx + dxArr[fwdDir]] === 0) {
+        gx += dxArr[fwdDir];
+        gy += dyArr[fwdDir];
+        targetX = gx + 0.5;
+        targetY = gy + 0.5;
+        state = 'move';
+      } else if (map[gy + dyArr[leftDir]][gx + dxArr[leftDir]] === 0) {
+        dir = leftDir;
+        targetAngle -= Math.PI / 2;
+        state = 'turn';
+      } else {
+        dir = backDir;
+        targetAngle += Math.PI;
+        state = 'turn';
+      }
+    };
+
+    const cols = 160;
+    const colW = Math.ceil(cw / cols);
+
+    const loop = () => {
+      if (!this.isActive) return;
+
+      if (state === 'choose') {
+        chooseNextStep();
+      } else if (state === 'turn') {
+        const diff = targetAngle - angle;
+        if (Math.abs(diff) <= 0.06) {
+          angle = targetAngle;
+          gx += dxArr[dir];
+          gy += dyArr[dir];
+          targetX = gx + 0.5;
+          targetY = gy + 0.5;
+          state = 'move';
+        } else {
+          angle += Math.sign(diff) * 0.06;
+        }
+      } else if (state === 'move') {
+        const dx = targetX - px;
+        const dy = targetY - py;
+        const dist = Math.hypot(dx, dy);
+        if (dist <= 0.05) {
+          px = targetX;
+          py = targetY;
+          state = 'choose';
+        } else {
+          px += (dx / dist) * 0.05;
+          py += (dy / dist) * 0.05;
+        }
+      }
+
+      ctx.fillStyle = '#3a3a42';
+      ctx.fillRect(0, 0, cw, ch / 2);
+      ctx.fillStyle = '#5a5246';
+      ctx.fillRect(0, ch / 2, cw, ch / 2);
+
+      const fov = Math.PI / 3;
+      for (let i = 0; i < cols; i++) {
+        const rayAngle = angle - fov / 2 + (i / cols) * fov;
+        const rCos = Math.cos(rayAngle);
+        const rSin = Math.sin(rayAngle);
+
+        let dist = 0;
+        let hitSide = 0;
+        let hitX = 0;
+        let hitY = 0;
+        while (dist < 14) {
+          dist += 0.03;
+          hitX = px + rCos * dist;
+          hitY = py + rSin * dist;
+          const mx = Math.floor(hitX);
+          const my = Math.floor(hitY);
+          if (my < 0 || my >= map.length || mx < 0 || mx >= map[0].length || map[my][mx] === 1) {
+            const fx = hitX - mx;
+            const fy = hitY - my;
+            hitSide = (Math.min(fx, 1 - fx) < Math.min(fy, 1 - fy)) ? 0 : 1;
+            break;
+          }
+        }
+
+        const perpDist = Math.max(0.1, dist * Math.cos(rayAngle - angle));
+        const wallH = Math.min(ch * 1.5, (ch * 0.85) / perpDist);
+        const topY = (ch - wallH) / 2;
+
+        const shade = Math.max(0.22, Math.min(1, 1.15 - perpDist * 0.12)) * (hitSide ? 0.8 : 1.0);
+        const r = Math.floor(168 * shade);
+        const g = Math.floor(62 * shade);
+        const b = Math.floor(46 * shade);
+
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        ctx.fillRect(i * colW, topY, colW, wallH);
+
+        const texCoord = hitSide ? (hitX - Math.floor(hitX)) : (hitY - Math.floor(hitY));
+        if (Math.floor(texCoord * 4) % 2 === 0 && (texCoord * 16) % 4 < 0.35) {
+          ctx.fillStyle = `rgba(210, 200, 185, ${0.45 * shade})`;
+          ctx.fillRect(i * colW, topY, colW, wallH);
+        }
+      }
+
+      this.animId = requestAnimationFrame(loop);
+    };
+
+    this.animId = requestAnimationFrame(loop);
+  }
+
+  initText3D() {
+    const cw = this.canvas.width;
+    const ch = this.canvas.height;
+    const ctx = this.ctx;
+
+    let t = 0;
+    let vx = 3.2;
+    let vy = 2.4;
+    let cx = cw / 2;
+    let cy = ch / 2;
+
+    const loop = () => {
+      if (!this.isActive) return;
+      t += 0.035;
+      cx += vx;
+      cy += vy;
+      if (cx < 200 || cx > cw - 200) vx *= -1;
+      if (cy < 100 || cy > ch - 100) vy *= -1;
+
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, cw, ch);
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const label = `Win 98 SE  ${timeStr}`;
+
+      const scaleX = Math.cos(t);
+      const tiltY = Math.sin(t * 0.7) * 0.22;
+      const layers = 16;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.font = 'bold 56px "Times New Roman", serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      for (let i = layers; i >= 0; i--) {
+        ctx.save();
+        const depthOffset = (i - layers / 2) * 2.2;
+        ctx.translate(depthOffset * Math.sin(t), depthOffset * tiltY);
+        ctx.scale(Math.max(0.12, Math.abs(scaleX)), 1);
+        if (i === 0) {
+          const grad = ctx.createLinearGradient(0, -30, 0, 30);
+          grad.addColorStop(0, '#93c5fd');
+          grad.addColorStop(0.5, '#ffffff');
+          grad.addColorStop(1, '#2563eb');
+          ctx.fillStyle = grad;
+        } else {
+          const c = Math.floor(40 + ((layers - i) / layers) * 110);
+          ctx.fillStyle = `rgb(${Math.floor(c * 0.4)}, ${Math.floor(c * 0.7)}, ${c})`;
+        }
+        ctx.fillText(label, 0, 0);
+        ctx.restore();
+      }
+
+      ctx.restore();
       this.animId = requestAnimationFrame(loop);
     };
 

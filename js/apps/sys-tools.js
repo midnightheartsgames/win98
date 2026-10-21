@@ -1,14 +1,4 @@
-/**
- * Win 98 System Tools:
- * - MSConfig (System Configuration Utility)
- * - DxDiag (DirectX Diagnostic Tool)
- * - SysEdit (System Configuration Editor - MDI)
- * - CharMap (Character Map)
- * - ScanDisk (Drive Check)
- * - SndVol32 (Volume Control Mixer)
- * - CleanMgr (Disk Cleanup)
- * - Windowed MS-DOS Prompt (COMMAND.COM)
- */
+
 
 class AppSysTools {
   constructor() {}
@@ -164,9 +154,8 @@ class AppSysTools {
     });
   }
 
-  // ==========================================================
-  // 2. DirectX Diagnostic Tool (dxdiag)
-  // ==========================================================
+
+
   openDxDiag() {
     if (window.winManager && window.winManager.windows.has('app_dxdiag')) {
       window.winManager.bringToTop('app_dxdiag');
@@ -181,14 +170,14 @@ class AppSysTools {
     content.style.flexDirection = 'column';
 
     content.innerHTML = `
-      <!-- Property Sheet Tab Strip -->
+      
       <div style="display:flex; border-bottom:1px solid #808080; margin-bottom:8px;">
         <button class="win-tab-btn active" data-tab="tab-dx-sys" style="padding:3px 10px; font-weight:bold; font-size:11px; margin-bottom:-1px; border:1px solid #808080; border-bottom:none; background:var(--win-bg);">${this.t('dxdiag.tabSystem')}</button>
         <button class="win-tab-btn" data-tab="tab-dx-disp" style="padding:3px 10px; font-size:11px; margin-bottom:-1px; border:1px solid #808080; border-bottom:none; background:#d4d0c8;">${this.t('dxdiag.tabDisplay')}</button>
         <button class="win-tab-btn" data-tab="tab-dx-sound" style="padding:3px 10px; font-size:11px; margin-bottom:-1px; border:1px solid #808080; border-bottom:none; background:#d4d0c8;">${this.t('dxdiag.tabSound')}</button>
       </div>
 
-      <!-- Tab 1: System -->
+      
       <div class="dx-tab-content" id="tab-dx-sys" style="display:block;">
         <div style="display:flex; gap:12px; align-items:center; margin-bottom:8px;">
           <div style="width:36px; height:36px; flex-shrink:0;">${Icons['dxdiag']}</div>
@@ -209,7 +198,7 @@ class AppSysTools {
         </fieldset>
       </div>
 
-      <!-- Tab 2: Display -->
+      
       <div class="dx-tab-content" id="tab-dx-disp" style="display:none;">
         <div style="display:flex; gap:10px;">
           <fieldset class="bevel-groove" style="flex:1; padding:6px 8px; font-size:11px;">
@@ -228,7 +217,7 @@ class AppSysTools {
           </fieldset>
         </div>
 
-        <!-- 3D Canvas Test Area -->
+        
         <fieldset class="bevel-groove" style="margin-top:8px; padding:6px;">
           <legend>${isRu ? 'Интерактивный тест Direct3D' : 'Direct3D Interactive Test'}</legend>
           <div class="dxdiag-3d-viewport">
@@ -240,14 +229,14 @@ class AppSysTools {
         </fieldset>
       </div>
 
-      <!-- Tab 3: Sound -->
+      
       <div class="dx-tab-content" id="tab-dx-sound" style="display:none;">
         <fieldset class="bevel-groove" style="padding:8px 10px; font-size:11px;">
           <legend>${isRu ? 'Звуковое устройство' : 'Device'}</legend>
           <table class="dxdiag-info-table">
             <tr><td class="dxdiag-info-label">${isRu ? 'Устройство:' : 'Device:'}</td><td class="dxdiag-info-val">Creative Sound Blaster AWE64 Gold</td></tr>
             <tr><td class="dxdiag-info-label">${isRu ? 'Драйвер:' : 'Driver:'}</td><td class="dxdiag-info-val">sbawe64.vxd (Version 4.10.1998)</td></tr>
-            <tr><td class="dxdiag-info-label">${isRu ? 'Аппаратное ускорение:' : 'Acceleration:'}</td><td class="dxdiag-info-val">${isRu ? 'Полное (Full Acceleration)' : 'Full Acceleration'}</td></tr>
+            <tr><td class="dxdiag-info-label">${isRu ? 'Аппаратное ускорение:' : 'Acceleration:'}</td><td class="dxdiag-info-val">${isRu ? 'Полное' : 'Full Acceleration'}</td></tr>
           </table>
           <div style="margin-top:12px; display:flex; justify-content:center;">
             <button class="win-btn" id="btn-dx-test-sound" style="min-width:140px; font-weight:bold;">${this.t('dxdiag.testDSound')}</button>
@@ -258,7 +247,7 @@ class AppSysTools {
         </fieldset>
       </div>
 
-      <!-- Bottom Buttons -->
+      
       <div class="win-dialog-buttons" style="margin-top:12px; display:flex; justify-content:flex-end; gap:6px;">
         <button class="win-btn btn-dx-exit" style="font-weight:bold; min-width:70px;">${isRu ? 'Выход' : 'Exit'}</button>
       </div>
@@ -294,7 +283,6 @@ class AppSysTools {
       });
     });
 
-    // 3D Spinning Cube on Canvas
     const canvas = el.querySelector('#dx-cube-canvas');
     const ctx = canvas.getContext('2d');
     const statusText = el.querySelector('#dx-status-text');
@@ -328,11 +316,9 @@ class AppSysTools {
       for (let i = 0; i < vertices.length; i++) {
         const [x, y, z] = vertices[i];
 
-        // Rotate Y
         const x1 = x * Math.cos(rotY) + z * Math.sin(rotY);
         const z1 = -x * Math.sin(rotY) + z * Math.cos(rotY);
 
-        // Rotate X
         const y2 = y * Math.cos(rotX) - z1 * Math.sin(rotX);
         const z2 = y * Math.sin(rotX) + z1 * Math.cos(rotX) + 3.2;
 
@@ -351,7 +337,6 @@ class AppSysTools {
         ctx.stroke();
       });
 
-      // Draw DirectX logo in center
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 9px monospace';
       ctx.textAlign = 'center';
@@ -377,7 +362,7 @@ class AppSysTools {
 
     el.querySelector('#btn-dx-test-draw').addEventListener('click', () => {
       window.winManager.openDialog({
-        title: 'DirectDraw Test',
+        title: isRu ? 'Тест DirectDraw' : 'DirectDraw Test',
         icon: 'info',
         message: isRu ? 'Тест DirectDraw: Все проверки поверхности и блиттинга завершились успешно.' : 'DirectDraw Test: All surface and blitting tests completed with no errors.'
       });
@@ -402,9 +387,8 @@ class AppSysTools {
     el.querySelector('.btn-dx-exit').addEventListener('click', closeHandler);
   }
 
-  // ==========================================================
-  // 3. SysEdit (sysedit)
-  // ==========================================================
+
+
   openSysEdit() {
     if (window.winManager && window.winManager.windows.has('app_sysedit')) {
       window.winManager.bringToTop('app_sysedit');
@@ -515,9 +499,8 @@ class AppSysTools {
     });
   }
 
-  // ==========================================================
-  // 4. Character Map (charmap)
-  // ==========================================================
+
+
   openCharMap() {
     if (window.winManager && window.winManager.windows.has('app_charmap')) {
       window.winManager.bringToTop('app_charmap');
@@ -584,7 +567,6 @@ class AppSysTools {
       gridEl.style.fontFamily = fontSelect.value;
       lensEl.style.fontFamily = fontSelect.value;
 
-      // Render standard 32..255 characters
       for (let i = 32; i <= 255; i++) {
         const char = String.fromCharCode(i);
         const cell = document.createElement('div');
@@ -616,9 +598,8 @@ class AppSysTools {
     });
   }
 
-  // ==========================================================
-  // 5. ScanDisk (scandisk)
-  // ==========================================================
+
+
   openScanDisk() {
     if (window.winManager && window.winManager.windows.has('app_scandisk')) {
       window.winManager.bringToTop('app_scandisk');
@@ -648,7 +629,7 @@ class AppSysTools {
         </div>
       </div>
 
-      <!-- Sector Cluster Map -->
+      
       <div class="scandisk-sector-grid" id="sd-grid"></div>
 
       <div class="win-label-row">
@@ -656,12 +637,12 @@ class AppSysTools {
         <label for="sd-autofix" style="font-size:11px;">${this.t('scandisk.autoFix')}</label>
       </div>
 
-      <!-- Progress Bar -->
+      
       <div style="margin-top:8px; border:2px inset #fff; height:18px; background:#fff; position:relative; overflow:hidden;">
         <div id="sd-progress-bar" style="height:100%; width:0%; background:#000080; transition:width 0.1s linear;"></div>
       </div>
 
-      <!-- Bottom Buttons -->
+      
       <div class="win-dialog-buttons" style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
         <div style="font-size:11px; color:#555;" id="sd-status-lbl">${isRu ? 'Готов к проверке' : 'Ready to scan'}</div>
         <div style="display:flex; gap:6px;">
@@ -690,7 +671,6 @@ class AppSysTools {
     const statusLbl = el.querySelector('#sd-status-lbl');
     const btnStart = el.querySelector('#btn-sd-start');
 
-    // Create 100 clusters
     const clusters = [];
     for (let i = 0; i < 100; i++) {
       const c = document.createElement('div');
@@ -724,7 +704,14 @@ class AppSysTools {
           window.winManager.openDialog({
             title: isRu ? 'Результаты ScanDisk' : 'ScanDisk Results',
             icon: 'info',
-            message: `<strong>ScanDisk did not find any errors on drive C:</strong><br><br>
+            message: isRu
+              ? `<strong>ScanDisk не обнаружил ошибок на диске C:</strong><br><br>
+              Всего на диске: 13,048,832 КБ<br>
+              В 3,412 скрытых файлах: 24,576 КБ<br>
+              В 1,280 папках: 10,240 КБ<br>
+              В 14,892 файлах пользователя: 11,489,125 КБ<br>
+              Доступно на диске: 1,524,891 КБ`
+              : `<strong>ScanDisk did not find any errors on drive C:</strong><br><br>
               Total disk space: 13,048,832 KB<br>
               In 3,412 hidden files: 24,576 KB<br>
               In 1,280 directories: 10,240 KB<br>
@@ -751,9 +738,8 @@ class AppSysTools {
     });
   }
 
-  // ==========================================================
-  // 6. Volume Control (sndvol32)
-  // ==========================================================
+
+
   openVolumeControl() {
     if (window.winManager && window.winManager.windows.has('app_sndvol32')) {
       window.winManager.bringToTop('app_sndvol32');
@@ -779,7 +765,7 @@ class AppSysTools {
       </div>
 
       <div class="sndvol-container">
-        <!-- Master Volume -->
+        
         <div class="sndvol-channel">
           <div class="sndvol-label">${this.t('sndvol.master')}</div>
           <div style="font-size:9px; color:#555;">${this.t('sndvol.balance')}</div>
@@ -790,7 +776,7 @@ class AppSysTools {
           <label style="font-size:10px;"><input type="checkbox" class="sndvol-master-mute" id="sndvol-master-mute"${isMuted ? ' checked' : ''}> ${this.t('sndvol.mute')}</label>
         </div>
 
-        <!-- Wave -->
+        
         <div class="sndvol-channel">
           <div class="sndvol-label">${this.t('sndvol.wave')}</div>
           <div style="font-size:9px; color:#555;">${this.t('sndvol.balance')}</div>
@@ -801,7 +787,7 @@ class AppSysTools {
           <label style="font-size:10px;"><input type="checkbox"> ${this.t('sndvol.mute')}</label>
         </div>
 
-        <!-- MIDI Synth -->
+        
         <div class="sndvol-channel">
           <div class="sndvol-label">${this.t('sndvol.midi')}</div>
           <div style="font-size:9px; color:#555;">${this.t('sndvol.balance')}</div>
@@ -812,7 +798,7 @@ class AppSysTools {
           <label style="font-size:10px;"><input type="checkbox"> ${this.t('sndvol.mute')}</label>
         </div>
 
-        <!-- CD Audio -->
+        
         <div class="sndvol-channel">
           <div class="sndvol-label">${this.t('sndvol.cd')}</div>
           <div style="font-size:9px; color:#555;">${this.t('sndvol.balance')}</div>
@@ -872,9 +858,8 @@ class AppSysTools {
     }
   }
 
-  // ==========================================================
-  // 7. Disk Cleanup (cleanmgr)
-  // ==========================================================
+
+
   openCleanMgr() {
     if (window.winManager && window.winManager.windows.has('app_cleanmgr')) {
       window.winManager.bringToTop('app_cleanmgr');
@@ -899,7 +884,7 @@ class AppSysTools {
       <fieldset class="bevel-groove" style="padding:8px 10px; font-size:11px;">
         <legend>${isRu ? 'Удалить следующие файлы:' : 'Files to delete:'}</legend>
         <div style="display:flex; flex-direction:column; gap:6px; margin:4px 0;">
-          <label><input type="checkbox" checked id="cl-tmp-inet"> Temporary Internet Files (8,412 KB)</label>
+          <label><input type="checkbox" checked id="cl-tmp-inet"> ${isRu ? 'Временные файлы Интернета' : 'Temporary Internet Files'} (8,412 KB)</label>
           <label><input type="checkbox" checked id="cl-recycle"> ${isRu ? 'Корзина' : 'Recycle Bin'} (6,210 KB)</label>
           <label><input type="checkbox" checked id="cl-tmp"> ${isRu ? 'Временные файлы' : 'Temporary files'} (240 KB)</label>
         </div>
@@ -948,6 +933,15 @@ class AppSysTools {
     const winId = 'app_dos_prompt_' + Date.now();
     const content = document.createElement('div');
     content.className = 'dosprompt-window-wrap';
+    const isRu = () => typeof i18n !== 'undefined' && i18n.getLanguage() === 'ru';
+    const tr = (ru, en) => (isRu() ? ru : en);
+
+    let currentPath = ['My Computer', 'C:', 'WINDOWS'];
+    const formatPromptPath = () => {
+      const parts = currentPath.slice(1);
+      if (parts.length === 1) return parts[0] + '\\>';
+      return parts[0] + '\\' + parts.slice(1).join('\\').toUpperCase() + '>';
+    };
 
     content.innerHTML = `
       <div class="dosprompt-toolbar">
@@ -957,19 +951,31 @@ class AppSysTools {
         <button class="dosprompt-tool-btn" id="${winId}_btn_fullscreen" title="${this.t('dosprompt.fullscreen')}"><span>&#x26F6;</span></button>
         <div style="flex:1;"></div>
         <select style="height:18px; font-size:10px;" id="${winId}_font_select">
-          <option value="12px">Auto (8x12)</option>
+          <option value="12px">${tr('Авто', 'Auto')} (8x12)</option>
           <option value="14px">10x14</option>
           <option value="16px">12x16</option>
         </select>
       </div>
 
-      <div class="dosprompt-console-body" id="${winId}_console">
-        <div class="dosprompt-line">Microslop(R) Win 98\r\n(C)Copyright Microslop Corp 1981-1998.</div>
-        <div class="dosprompt-line" style="margin-bottom:6px;">Type 'help' for commands, 'exit' to close window.</div>
+      <div class="dosprompt-console-body" id="${winId}_console" style="position:relative;">
+        <div class="dosprompt-line">Microslop(R) Win 98\r\n   ${tr('(C)Корпорация Microslop 1981-1998.', '(C)Copyright Microslop Corp 1981-1998.')}</div>
+        <div class="dosprompt-line" style="margin-bottom:6px;">${tr('Введите help для списка команд, edit &lt;файл&gt; для редактора MS-DOS, exit для выхода.', 'Type \'help\' for commands, \'edit &lt;file&gt;\' for MS-DOS Editor, \'exit\' to close.')}</div>
         <div id="${winId}_history"></div>
         <div class="dosprompt-input-row">
-          <span>C:\\WINDOWS&gt;</span>
+          <span id="${winId}_prompt_lbl">C:\\WINDOWS&gt;</span>
           <input type="text" class="dosprompt-cli-input" id="${winId}_input" autofocus spellcheck="false">
+        </div>
+        <div id="${winId}_edit_overlay" style="display:none; position:absolute; inset:0; background:#0000aa; color:#ffffff; font-family:'Courier New',monospace; font-size:12px; flex-direction:column; z-index:20;">
+          <div style="background:#c0c0c0; color:#000; padding:2px 8px; display:flex; gap:14px; font-weight:bold;">
+            <span id="${winId}_ed_save" style="cursor:pointer;"></span>
+            <span id="${winId}_ed_exit" style="cursor:pointer;"></span>
+            <span style="margin-left:auto;" id="${winId}_ed_title">UNTITLED.TXT</span>
+          </div>
+          <textarea id="${winId}_ed_area" spellcheck="false" style="flex:1; background:#0000aa; color:#ffff55; border:2px double #ffffff; margin:4px; padding:6px; font-family:'Courier New',monospace; font-size:13px; resize:none; outline:none;"></textarea>
+          <div style="background:#00aaaa; color:#000; padding:2px 8px; display:flex; justify-content:space-between; font-weight:bold;">
+            <span id="${winId}_ed_keys"></span>
+            <span id="${winId}_ed_ver"></span>
+          </div>
         </div>
       </div>
     `;
@@ -978,8 +984,8 @@ class AppSysTools {
       id: winId,
       title: this.t('dosprompt.title'),
       icon: 'dos-prompt',
-      width: 580,
-      height: 380,
+      width: 600,
+      height: 400,
       resizable: true,
       minimizable: true,
       maximizable: true,
@@ -989,10 +995,25 @@ class AppSysTools {
     const el = dialog.element;
     const consoleBody = el.querySelector(`#${winId}_console`);
     const historyBox = el.querySelector(`#${winId}_history`);
+    const promptLbl = el.querySelector(`#${winId}_prompt_lbl`);
     const input = el.querySelector(`#${winId}_input`);
     const fontSelect = el.querySelector(`#${winId}_font_select`);
+    const editOverlay = el.querySelector(`#${winId}_edit_overlay`);
+    const editArea = el.querySelector(`#${winId}_ed_area`);
+    const editTitle = el.querySelector(`#${winId}_ed_title`);
+    let editingFileName = 'UNTITLED.TXT';
 
-    consoleBody.addEventListener('click', () => input.focus());
+    const renderEditorChrome = () => {
+      el.querySelector(`#${winId}_ed_save`).innerHTML = tr('<u>Ф</u>айл (Сохранить)', '<u>F</u>ile (Save)');
+      el.querySelector(`#${winId}_ed_exit`).innerHTML = tr('<u>В</u>ыход (Esc)', 'E<u>x</u>it (Esc)');
+      el.querySelector(`#${winId}_ed_keys`).textContent = tr('F1=Справка  Ctrl+S=Сохранить  Esc=Выход из редактора MS-DOS', 'F1=Help  Ctrl+S=Save  Esc=Exit MS-DOS Editor');
+      el.querySelector(`#${winId}_ed_ver`).textContent = tr('Редактор MS-DOS, версия 2.0.026', 'MS-DOS Editor Version 2.0.026');
+    };
+    renderEditorChrome();
+
+    consoleBody.addEventListener('click', () => {
+      if (editOverlay.style.display === 'none') input.focus();
+    });
     setTimeout(() => input.focus(), 80);
 
     fontSelect.addEventListener('change', () => {
@@ -1005,84 +1026,285 @@ class AppSysTools {
       if (window.appShutdown) window.appShutdown.triggerDosMode();
     });
 
+    const printLine = (txt) => {
+      const out = document.createElement('div');
+      out.className = 'dosprompt-line';
+      out.textContent = txt;
+      historyBox.appendChild(out);
+    };
+
+    const toDos83 = (name, isDir) => {
+      const upper = name.toUpperCase().replace(/\s+/g, '');
+      if (isDir) return upper.slice(0, 8).padEnd(8, ' ') + '     <DIR>     ';
+      const dot = upper.lastIndexOf('.');
+      const base = (dot > 0 ? upper.slice(0, dot) : upper).slice(0, 8).padEnd(8, ' ');
+      const ext = (dot > 0 ? upper.slice(dot + 1) : '').slice(0, 3).padEnd(3, ' ');
+      return `${base} ${ext} `;
+    };
+
+    const openDosEditor = (fname) => {
+      renderEditorChrome();
+      editingFileName = fname || 'UNTITLED.TXT';
+      editTitle.textContent = editingFileName.toUpperCase();
+      let existingContent = '';
+      if (window.vfs) {
+        const folder = window.vfs.resolvePath(currentPath);
+        if (folder && folder.children) {
+          const matchKey = Object.keys(folder.children).find(k => k.toLowerCase() === editingFileName.toLowerCase());
+          if (matchKey && folder.children[matchKey].content !== undefined) {
+            existingContent = folder.children[matchKey].content;
+            editingFileName = matchKey;
+          }
+        }
+      }
+      editArea.value = existingContent;
+      editOverlay.style.display = 'flex';
+      setTimeout(() => editArea.focus(), 40);
+      if (window.appClippy && typeof window.appClippy.onDosEditor === 'function') {
+        window.appClippy.onDosEditor(editingFileName);
+      }
+    };
+
+    const saveDosEditor = () => {
+      if (window.vfs) {
+        window.vfs.writeFile(currentPath, editingFileName, editArea.value);
+        if (window.appExplorer && window.appExplorer.refreshAll) window.appExplorer.refreshAll();
+      }
+    };
+
+    const closeDosEditor = () => {
+      editOverlay.style.display = 'none';
+      input.focus();
+    };
+
+    el.querySelector(`#${winId}_ed_save`).addEventListener('click', () => {
+      saveDosEditor();
+      closeDosEditor();
+      printLine(tr(`Файл ${editingFileName} сохранен.`, `Saved ${editingFileName}.`));
+    });
+    el.querySelector(`#${winId}_ed_exit`).addEventListener('click', closeDosEditor);
+    editArea.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeDosEditor();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        saveDosEditor();
+      }
+    });
+
+    const memTable = () => {
+      const row = (label, total, used, free) => `${label.padEnd(21, ' ')}${total.padStart(8, ' ')}   ${used.padStart(8, ' ')}   ${free.padStart(8, ' ')}`;
+      const rule = `${'-'.repeat(19)}  --------   --------   --------`;
+      return [
+        row(tr('Тип памяти', 'Memory Type'), tr('Всего', 'Total'), tr('Занято', 'Used'), tr('Свободно', 'Free')),
+        rule,
+        row(tr('Обычная', 'Conventional'), '640K', '42K', '598K'),
+        row(tr('Верхняя', 'Upper'), '155K', '24K', '131K'),
+        row(tr('Зарезервировано', 'Reserved'), '384K', '384K', '0K'),
+        row(tr('Дополнительная (XMS)', 'Extended (XMS)'), '64,512K', '8,192K', '56,320K'),
+        rule,
+        row(tr('Всего памяти', 'Total memory'), '65,691K', '8,642K', '57,049K')
+      ].join('\r\n');
+    };
+
     const execCommand = (rawCmd) => {
       const trimmed = rawCmd.trim();
       const parts = trimmed.split(/\s+/);
       const cmd = parts[0].toLowerCase();
       const args = parts.slice(1);
 
-      const promptLine = document.createElement('div');
-      promptLine.className = 'dosprompt-line';
-      promptLine.textContent = `C:\\WINDOWS> ${trimmed}`;
-      historyBox.appendChild(promptLine);
+      printLine(`${formatPromptPath()}${trimmed}`);
 
       if (cmd === 'exit') {
         window.winManager.closeWindow(winId);
         return;
       }
-
       if (cmd === 'cls') {
         historyBox.innerHTML = '';
         return;
       }
 
-      if (cmd === 'ver') {
-        const out = document.createElement('div');
-        out.className = 'dosprompt-line';
-        out.textContent = 'Win 98 [Version 4.10.1998]';
-        historyBox.appendChild(out);
-      } else if (cmd === 'date') {
-        const out = document.createElement('div');
-        out.className = 'dosprompt-line';
-        out.textContent = `Current date is: ${new Date().toLocaleDateString()}`;
-        historyBox.appendChild(out);
-      } else if (cmd === 'time') {
-        const out = document.createElement('div');
-        out.className = 'dosprompt-line';
-        out.textContent = `Current time is: ${new Date().toLocaleTimeString()}`;
-        historyBox.appendChild(out);
-      } else if (cmd === 'echo') {
-        const out = document.createElement('div');
-        out.className = 'dosprompt-line';
-        out.textContent = args.join(' ');
-        historyBox.appendChild(out);
-      } else if (cmd === 'mem') {
-        const out = document.createElement('div');
-        out.className = 'dosprompt-line';
-        out.textContent = `Memory Type         Total       Used       Free\r\n----------------  --------   --------   --------\r\nConventional          640K        42K       598K\r\nUpper                 155K        24K       131K\r\nReserved              384K       384K         0K\r\nExtended (XMS)     64,512K     8,192K    56,320K\r\n----------------  --------   --------   --------\r\nTotal memory       65,691K     8,642K    57,049K`;
-        historyBox.appendChild(out);
+      if (/^[acd]:$/i.test(cmd)) {
+        const drv = cmd.toUpperCase();
+        currentPath = ['My Computer', drv];
+        promptLbl.textContent = formatPromptPath();
+        return;
+      }
+
+      if (cmd === 'cd' || cmd === 'chdir') {
+        const target = args.join(' ').trim();
+        if (!target) {
+          printLine(formatPromptPath().slice(0, -1));
+        } else if (target === '\\' || target === '/') {
+          currentPath = currentPath.slice(0, 2);
+        } else if (target === '..') {
+          if (currentPath.length > 2) currentPath.pop();
+        } else if (window.vfs) {
+          const folder = window.vfs.resolvePath(currentPath);
+          const match = folder && folder.children
+            ? Object.keys(folder.children).find(k => k.toLowerCase() === target.toLowerCase())
+            : null;
+          if (match && (folder.children[match].type === 'folder' || folder.children[match].type === 'drive')) {
+            currentPath.push(match);
+          } else {
+            printLine(tr('Недопустимая папка', 'Invalid directory'));
+          }
+        }
+        promptLbl.textContent = formatPromptPath();
       } else if (cmd === 'dir') {
-        const out = document.createElement('div');
-        out.className = 'dosprompt-line';
-        out.textContent = ` Volume in drive C has no label.\r\n Volume Serial Number is 1998-0412\r\n Directory of C:\\WINDOWS\r\n\r\n.              <DIR>        04-12-98  11:11a\r\n..             <DIR>        04-12-98  11:11a\r\nSYSTEM         <DIR>        04-12-98  11:11a\r\nNOTEPAD  EXE         54,272  04-12-98  11:11a\r\nWIN      INI          1,024  04-12-98  11:11a\r\nSYSTEM   INI          2,048  04-12-98  11:11a\r\nREADME   TXT          2,048  04-12-98  11:11a\r\nCOMMAND  COM         93,880  04-12-98  11:11a\r\n         5 file(s)        153,272 bytes\r\n         3 dir(s)   1,524,891,648 bytes free`;
-        historyBox.appendChild(out);
+        const folder = window.vfs ? window.vfs.resolvePath(currentPath) : null;
+        const children = (folder && folder.children) ? folder.children : {};
+        const keys = Object.keys(children);
+        let filesCount = 0;
+        let dirsCount = 2;
+        let totalBytes = 0;
+        const drvLetter = currentPath[1][0];
+        const lines = [
+          tr(` Том в устройстве ${drvLetter} имеет метку WIN98_SE`, ` Volume in drive ${drvLetter} is WIN98_SE`),
+          tr(` Серийный номер тома: 1998-0412`, ` Volume Serial Number is 1998-0412`),
+          tr(` Содержимое папки ${formatPromptPath().slice(0, -1)}`, ` Directory of ${formatPromptPath().slice(0, -1)}`),
+          ``,
+          `.              <DIR>        04-23-99  10:22a`,
+          `..             <DIR>        04-23-99  10:22a`
+        ];
+        keys.forEach(k => {
+          const item = children[k];
+          const isDir = item.type === 'folder';
+          if (isDir) {
+            dirsCount++;
+            lines.push(`${toDos83(k, true)}   04-23-99  10:22a  ${k}`);
+          } else {
+            filesCount++;
+            const sz = item.content ? item.content.length : 4096;
+            totalBytes += sz;
+            lines.push(`${toDos83(k, false)}${String(sz).padStart(9, ' ')}  04-23-99  10:22a  ${k}`);
+          }
+        });
+        lines.push(tr(`         ${filesCount} файл(ов)     ${totalBytes.toLocaleString()} байт`, `         ${filesCount} file(s)     ${totalBytes.toLocaleString()} bytes`));
+        lines.push(tr(`         ${dirsCount} папок   1,524,891,648 байт свободно`, `         ${dirsCount} dir(s)   1,524,891,648 bytes free`));
+        printLine(lines.join('\r\n'));
+      } else if (cmd === 'tree') {
+        const folder = window.vfs ? window.vfs.resolvePath(currentPath) : null;
+        const lines = [tr('Структура папок тома WIN98_SE', 'Folder PATH listing for volume WIN98_SE'), `${formatPromptPath().slice(0, -1)}`];
+        const walk = (node, prefix) => {
+          if (!node || !node.children) return;
+          const dirs = Object.keys(node.children).filter(k => node.children[k].type === 'folder');
+          dirs.forEach((d, idx) => {
+            const last = idx === dirs.length - 1;
+            lines.push(`${prefix}${last ? '└───' : '├───'}${d}`);
+            walk(node.children[d], prefix + (last ? '    ' : '│   '));
+          });
+        };
+        walk(folder, '');
+        printLine(lines.join('\r\n'));
+      } else if (cmd === 'md' || cmd === 'mkdir') {
+        const name = args.join(' ').trim();
+        if (!name) {
+          printLine(tr('Отсутствует обязательный параметр', 'Required parameter missing'));
+        } else if (window.vfs && window.vfs.createFolder(currentPath, name)) {
+          if (window.appExplorer && window.appExplorer.refreshAll) window.appExplorer.refreshAll();
+        } else {
+          printLine(tr('Невозможно создать папку', 'Unable to create directory'));
+        }
+      } else if (cmd === 'del' || cmd === 'erase') {
+        const name = args.join(' ').trim();
+        const folder = window.vfs ? window.vfs.resolvePath(currentPath) : null;
+        const match = folder && folder.children
+          ? Object.keys(folder.children).find(k => k.toLowerCase() === name.toLowerCase())
+          : null;
+        if (match && window.vfs.deleteItem(currentPath, match)) {
+          if (window.appExplorer && window.appExplorer.refreshAll) window.appExplorer.refreshAll();
+        } else {
+          printLine(tr(`Файл не найден - ${name}`, `File not found - ${name}`));
+        }
+      } else if (cmd === 'copy') {
+        const src = args[0];
+        const dst = args[1];
+        const folder = window.vfs ? window.vfs.resolvePath(currentPath) : null;
+        const match = (src && folder && folder.children)
+          ? Object.keys(folder.children).find(k => k.toLowerCase() === src.toLowerCase())
+          : null;
+        if (match && dst) {
+          folder.children[dst] = JSON.parse(JSON.stringify(folder.children[match]));
+          window.vfs.save();
+          printLine(tr('        1 файл(ов) скопировано', '        1 file(s) copied'));
+        } else {
+          printLine(tr('Файл не найден или не может быть скопирован сам в себя', 'File cannot be copied onto itself or not found'));
+        }
+      } else if (cmd === 'ren' || cmd === 'rename') {
+        const oldName = args[0];
+        const newName = args[1];
+        const folder = window.vfs ? window.vfs.resolvePath(currentPath) : null;
+        const match = (oldName && folder && folder.children)
+          ? Object.keys(folder.children).find(k => k.toLowerCase() === oldName.toLowerCase())
+          : null;
+        if (match && newName && window.vfs.renameItem(currentPath, match, newName)) {
+          if (window.appExplorer && window.appExplorer.refreshAll) window.appExplorer.refreshAll();
+        } else {
+          printLine(tr('Файл с таким именем уже существует или файл не найден', 'Duplicate file name or file not found'));
+        }
+      } else if (cmd === 'attrib') {
+        const folder = window.vfs ? window.vfs.resolvePath(currentPath) : null;
+        if (folder && folder.children) {
+          const lines = Object.keys(folder.children).map(k => {
+            const it = folder.children[k];
+            const a = it.attrib || {};
+            return `${a.archive !== false ? 'A' : ' '}  ${a.system ? 'S' : ' '}${a.hidden ? 'H' : ' '}${a.readOnly ? 'R' : ' '}     ${formatPromptPath().slice(0, -1)}\\${k}`;
+          });
+          printLine(lines.join('\r\n') || tr('Подходящие файлы не найдены', 'No matching files'));
+        }
+      } else if (cmd === 'format') {
+        const drv = (args[0] || '').toUpperCase();
+        if (drv === 'A:') {
+          printLine(tr(
+            'Проверка текущего формата диска...\r\nФорматирование 1.44M\r\nФорматирование завершено.\r\n    1,457,664 байт всего на диске\r\n    1,457,664 байт доступно на диске',
+            'Checking existing disk format...\r\nFormatting 1.44M\r\nFormat complete.\r\n    1,457,664 bytes total disk space\r\n    1,457,664 bytes available on disk'
+          ));
+        } else {
+          printLine(tr('Невозможно отформатировать системный жесткий диск C:', 'Cannot format fixed system drive C:'));
+        }
+      } else if (cmd === 'edit') {
+        openDosEditor(args[0] || 'UNTITLED.TXT');
+      } else if (cmd === 'ver') {
+        printLine(tr('Win 98 [Версия 4.10.2222 A]', 'Win 98 [Version 4.10.2222 A]'));
+      } else if (cmd === 'date') {
+        printLine(tr(`Текущая дата: ${new Date().toLocaleDateString()}`, `Current date is: ${new Date().toLocaleDateString()}`));
+      } else if (cmd === 'time') {
+        printLine(tr(`Текущее время: ${new Date().toLocaleTimeString()}`, `Current time is: ${new Date().toLocaleTimeString()}`));
+      } else if (cmd === 'echo') {
+        printLine(args.join(' '));
+      } else if (cmd === 'mem') {
+        printLine(memTable());
       } else if (cmd === 'ping') {
         const host = args[0] || '127.0.0.1';
         const ip = host === 'localhost' || host === '127.0.0.1' ? '127.0.0.1' : '198.133.219.25';
-        const out = document.createElement('div');
-        out.className = 'dosprompt-line';
-        out.innerHTML = `Pinging ${host} [${ip}] with 32 bytes of data:<br>` +
-          `Reply from ${ip}: bytes=32 time=14ms TTL=128<br>` +
-          `Reply from ${ip}: bytes=32 time=12ms TTL=128<br>` +
-          `Reply from ${ip}: bytes=32 time=15ms TTL=128<br>` +
-          `Reply from ${ip}: bytes=32 time=11ms TTL=128<br><br>` +
-          `Ping statistics for ${ip}:<br>` +
-          `    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),<br>` +
-          `Approximate round trip times in milli-seconds:<br>` +
-          `    Minimum = 11ms, Maximum = 15ms, Average = 13ms`;
-        historyBox.appendChild(out);
+        const reply = (ms) => tr(`Ответ от ${ip}: число байт=32 время=${ms}мс TTL=128`, `Reply from ${ip}: bytes=32 time=${ms}ms TTL=128`);
+        printLine([
+          tr(`Обмен пакетами с ${host} [${ip}] по 32 байт:`, `Pinging ${host} [${ip}] with 32 bytes of data:`),
+          reply(14),
+          reply(12),
+          reply(15),
+          reply(11),
+          '',
+          tr(`Статистика Ping для ${ip}:`, `Ping statistics for ${ip}:`),
+          tr('    Пакетов: отправлено = 4, получено = 4, потеряно = 0 (0% потерь)', '    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)')
+        ].join('\r\n'));
+      } else if (cmd === 'ipconfig' || cmd === 'winipcfg') {
+        this.openWinIpCfg();
       } else if (cmd === 'type') {
-        const fname = (args[0] || '').toLowerCase();
-        const out = document.createElement('div');
-        out.className = 'dosprompt-line';
-        if (fname.includes('win.ini')) {
-          out.textContent = `[windows]\r\nload=\r\nrun=\r\nNullPort=None\r\nDeviceNotSelectedTimeout=15\r\nTransmissionRetryTimeout=45`;
-        } else if (fname.includes('readme')) {
-          out.textContent = `Welcome to Microslop Win 98 Second Edition!`;
+        const fname = args.join(' ').trim();
+        const folder = window.vfs ? window.vfs.resolvePath(currentPath) : null;
+        const match = (fname && folder && folder.children)
+          ? Object.keys(folder.children).find(k => k.toLowerCase() === fname.toLowerCase())
+          : null;
+        if (match && folder.children[match].content !== undefined) {
+          printLine(folder.children[match].content);
+        } else if (fname.toLowerCase().includes('win.ini')) {
+          printLine(`[windows]\r\nload=\r\nrun=\r\nNullPort=None`);
         } else {
-          out.textContent = `File not found - ${args[0] || ''}`;
+          printLine(tr(`Файл не найден - ${fname}`, `File not found - ${fname}`));
         }
-        historyBox.appendChild(out);
       } else if (cmd === 'calc') {
         if (window.appCalculator) window.appCalculator.open();
       } else if (cmd === 'notepad') {
@@ -1090,20 +1312,30 @@ class AppSysTools {
       } else if (cmd === 'winver') {
         if (window.appDialogs) window.appDialogs.openAboutWindows();
       } else if (cmd === 'clippy' || cmd === 'clippy.exe') {
-        const out = document.createElement('div');
-        out.className = 'dosprompt-line';
-        out.textContent = (window.appClippy ? window.appClippy.dosCommand(args) : ['Bad command or file name: "clippy"']).join('\r\n');
-        historyBox.appendChild(out);
+        printLine((window.appClippy ? window.appClippy.dosCommand(args) : [tr('Недопустимая команда или имя файла: "clippy"', 'Bad command or file name: "clippy"')]).join('\r\n'));
       } else if (cmd === 'help') {
-        const out = document.createElement('div');
-        out.className = 'dosprompt-line';
-        out.textContent = `Supported commands:\r\n  DIR      - Displays directory contents\r\n  VER      - Displays Win version\r\n  DATE     - Displays current date\r\n  TIME     - Displays current time\r\n  MEM      - Displays memory distribution\r\n  PING     - Pings network host (e.g. ping 127.0.0.1)\r\n  TYPE     - Displays contents of a file\r\n  ECHO     - Prints message\r\n  CLS      - Clears screen\r\n  CALC     - Launches Calculator\r\n  NOTEPAD  - Launches Notepad\r\n  WINVER   - Shows Win version dialog\r\n  CLIPPY   - Calls the Office Assistant (CLIPPY /? for options)\r\n  EXIT     - Closes MS-DOS prompt window`;
-        historyBox.appendChild(out);
+        printLine(tr(
+          `Поддерживаемые команды MS-DOS 7.10:\r\n` +
+          `  DIR / TREE / CD  - Просмотр папок и переход между ними\r\n` +
+          `  MD / DEL / COPY  - Создание папок, удаление и копирование файлов\r\n` +
+          `  REN / ATTRIB     - Переименование файлов и просмотр атрибутов\r\n` +
+          `  TYPE / EDIT      - Вывод файла или синий редактор MS-DOS\r\n` +
+          `  FORMAT A:        - Форматирование дискеты 3,5"\r\n` +
+          `  MEM / VER        - Сведения о памяти и версии системы\r\n` +
+          `  PING / WINIPCFG  - Сетевые программы\r\n` +
+          `  CLS / EXIT       - Очистка экрана или закрытие сеанса MS-DOS`,
+          `Supported MS-DOS 7.10 commands:\r\n` +
+          `  DIR / TREE / CD  - Navigate and list VFS directories\r\n` +
+          `  MD / DEL / COPY  - Create folders, delete or copy files\r\n` +
+          `  REN / ATTRIB     - Rename files or inspect file attributes\r\n` +
+          `  TYPE / EDIT      - View file or open blue-screen MS-DOS Editor\r\n` +
+          `  FORMAT A:        - Format 3.5" Floppy Disk\r\n` +
+          `  MEM / VER        - Display conventional/XMS memory and OS version\r\n` +
+          `  PING / WINIPCFG  - Network utilities\r\n` +
+          `  CLS / EXIT       - Clear screen or close MS-DOS Prompt`
+        ));
       } else if (cmd !== '') {
-        const out = document.createElement('div');
-        out.className = 'dosprompt-line';
-        out.textContent = `Bad command or file name: "${cmd}"`;
-        historyBox.appendChild(out);
+        printLine(tr(`Недопустимая команда или имя файла: "${cmd}"`, `Bad command or file name: "${cmd}"`));
       }
 
       consoleBody.scrollTop = consoleBody.scrollHeight;
@@ -1120,6 +1352,649 @@ class AppSysTools {
     if (initialCmd) {
       setTimeout(() => execCommand(initialCmd), 100);
     }
+  }
+
+  openWinIpCfg() {
+    if (window.winManager && window.winManager.windows.has('app_winipcfg')) {
+      window.winManager.bringToTop('app_winipcfg');
+      return;
+    }
+
+    const isRu = typeof i18n !== 'undefined' && i18n.getLanguage() === 'ru';
+    let ipAddr = '192.168.1.98';
+    let subnet = '255.255.255.0';
+    let gateway = '192.168.1.1';
+    let expanded = false;
+
+    const content = document.createElement('div');
+    content.style.cssText = 'padding:10px; font-family:Tahoma,sans-serif; font-size:11px; background:#c0c0c0; display:flex; flex-direction:column; gap:8px;';
+    content.innerHTML = `
+      <div id="ipcfg-extra" style="display:none;">
+        <fieldset style="border:1px groove #fff; padding:6px; margin-bottom:6px;">
+          <legend>${isRu ? 'Сведения об узле' : 'Host Information'}</legend>
+          <div style="display:grid; grid-template-columns:130px 1fr; gap:4px; align-items:center;">
+            <span>${isRu ? 'Имя узла:' : 'Host Name:'}</span>
+            <input type="text" class="win-inset" value="admin-pc.workgroup" readonly style="height:19px; padding:1px 4px;">
+            <span>${isRu ? 'DNS-серверы:' : 'DNS Servers:'}</span>
+            <input type="text" class="win-inset" value="194.87.0.50" readonly style="height:19px; padding:1px 4px;">
+            <span>${isRu ? 'Тип узла:' : 'Node Type:'}</span>
+            <input type="text" class="win-inset" value="${isRu ? 'Широковещательный' : 'Broadcast'}" readonly style="height:19px; padding:1px 4px;">
+          </div>
+        </fieldset>
+      </div>
+
+      <fieldset style="border:1px groove #fff; padding:8px;">
+        <legend>${isRu ? 'Сведения об адаптере Ethernet' : 'Ethernet Adapter Information'}</legend>
+        <select id="ipcfg-adapter-sel" class="win-select" style="width:100%; height:21px; margin-bottom:8px;">
+          <option value="eth">${isRu ? 'NE2000-совместимый адаптер Ethernet' : 'NE2000 Compatible Ethernet Adapter'}</option>
+          <option value="ppp">${isRu ? 'Адаптер PPP (удаленный доступ к сети)' : 'PPP Adapter (Dial-Up Networking)'}</option>
+        </select>
+        <div style="display:grid; grid-template-columns:130px 1fr; gap:5px; align-items:center;">
+          <span>${isRu ? 'Адрес адаптера:' : 'Adapter Address:'}</span>
+          <input type="text" id="ipcfg-mac" class="win-inset" value="00-A0-C9-1E-98-SE" readonly style="height:19px; padding:1px 4px; text-align:center;">
+          <span>${isRu ? 'IP-адрес:' : 'IP Address:'}</span>
+          <input type="text" id="ipcfg-ip" class="win-inset" value="${ipAddr}" readonly style="height:19px; padding:1px 4px; text-align:center;">
+          <span>${isRu ? 'Маска подсети:' : 'Subnet Mask:'}</span>
+          <input type="text" id="ipcfg-mask" class="win-inset" value="${subnet}" readonly style="height:19px; padding:1px 4px; text-align:center;">
+          <span>${isRu ? 'Основной шлюз:' : 'Default Gateway:'}</span>
+          <input type="text" id="ipcfg-gw" class="win-inset" value="${gateway}" readonly style="height:19px; padding:1px 4px; text-align:center;">
+        </div>
+      </fieldset>
+
+      <div style="display:flex; gap:4px; justify-content:space-between; margin-top:4px;">
+        <button class="win-btn default" id="ipcfg-ok" style="flex:1;">OK</button>
+        <button class="win-btn" id="ipcfg-release" style="flex:1;">${isRu ? 'Освободить' : 'Release'}</button>
+        <button class="win-btn" id="ipcfg-renew" style="flex:1;">${isRu ? 'Обновить' : 'Renew'}</button>
+        <button class="win-btn" id="ipcfg-more" style="flex:1;">${isRu ? 'Подробности >>' : 'More Info >>'}</button>
+      </div>
+    `;
+
+    const win = window.winManager.createWindow({
+      id: 'app_winipcfg',
+      title: isRu ? 'Настройка IP' : 'IP Configuration',
+      icon: 'network-cpl',
+      width: 390,
+      height: 255,
+      resizable: false,
+      minimizable: true,
+      maximizable: false,
+      isDialog: true,
+      content
+    });
+
+    const el = win.element;
+    const ipEl = el.querySelector('#ipcfg-ip');
+    const maskEl = el.querySelector('#ipcfg-mask');
+    const gwEl = el.querySelector('#ipcfg-gw');
+    const macEl = el.querySelector('#ipcfg-mac');
+    const extraEl = el.querySelector('#ipcfg-extra');
+    const moreBtn = el.querySelector('#ipcfg-more');
+
+    el.querySelector('#ipcfg-adapter-sel').addEventListener('change', (e) => {
+      if (e.target.value === 'ppp') {
+        macEl.value = '44-45-53-54-00-00';
+        ipEl.value = '195.34.32.118';
+        maskEl.value = '255.255.255.255';
+        gwEl.value = '195.34.32.1';
+      } else {
+        macEl.value = '00-A0-C9-1E-98-SE';
+        ipEl.value = '192.168.1.98';
+        maskEl.value = '255.255.255.0';
+        gwEl.value = '192.168.1.1';
+      }
+    });
+
+    el.querySelector('#ipcfg-release').addEventListener('click', () => {
+      ipEl.value = '0.0.0.0';
+      maskEl.value = '0.0.0.0';
+      gwEl.value = '0.0.0.0';
+    });
+
+    el.querySelector('#ipcfg-renew').addEventListener('click', () => {
+      ipEl.value = '192.168.1.98';
+      maskEl.value = '255.255.255.0';
+      gwEl.value = '192.168.1.1';
+      if (window.soundSys && window.soundSys.playNotification) window.soundSys.playNotification();
+    });
+
+    moreBtn.addEventListener('click', () => {
+      expanded = !expanded;
+      extraEl.style.display = expanded ? 'block' : 'none';
+      win.element.style.height = expanded ? '365px' : '255px';
+      moreBtn.textContent = expanded ? (isRu ? '<< Кратко' : '<< Less Info') : (isRu ? 'Подробности >>' : 'More Info >>');
+    });
+
+    el.querySelector('#ipcfg-ok').addEventListener('click', () => window.winManager.closeWindow('app_winipcfg'));
+  }
+
+  openMsInfo32() {
+    if (window.winManager && window.winManager.windows.has('app_msinfo32')) {
+      window.winManager.bringToTop('app_msinfo32');
+      return;
+    }
+
+    const isRu = typeof i18n !== 'undefined' && i18n.getLanguage() === 'ru';
+    const tr = (ru, en) => (isRu ? ru : en);
+    const sections = {
+      summary: {
+        title: tr('Сведения о системе', 'System Summary'),
+        rows: [
+          [tr('Имя ОС', 'OS Name'), 'Microslop Win 98 Second Edition'],
+          [tr('Версия', 'Version'), '4.10.2222 A'],
+          [tr('Изготовитель ОС', 'OS Manufacturer'), tr('Корпорация Microslop', 'Microslop Corporation')],
+          [tr('Имя системы', 'System Name'), 'ADMIN-PC'],
+          [tr('Процессор', 'Processor'), 'Intel Pentium II MMX GenuineIntel ~450 MHz'],
+          [tr('Версия BIOS', 'BIOS Version'), 'Award Modular BIOS v4.51PG, 04/23/99'],
+          [tr('Папка Win', 'Win Directory'), 'C:\\WINDOWS'],
+          [tr('Всего физической памяти', 'Total Physical Memory'), tr('64.00 МБ', '64.00 MB')],
+          [tr('Доступно физической памяти', 'Available Physical Memory'), tr('46.50 МБ', '46.50 MB')],
+          [tr('Виртуальная память', 'Virtual Memory'), tr('128.00 МБ (C:\\WIN386.SWP)', '128.00 MB (C:\\WIN386.SWP)')],
+          [tr('Свободные системные ресурсы', 'Free System Resources'), tr('88% (Система: 88%, GDI: 90%, Пользователь: 88%)', '88% (System: 88%, GDI: 90%, User: 88%)')]
+        ]
+      },
+      irq: {
+        title: tr('Аппаратные ресурсы — IRQ', 'Hardware Resources — IRQs'),
+        rows: [
+          ['IRQ 0', tr('Системный таймер', 'System timer')],
+          ['IRQ 1', tr('Стандартная клавиатура 101/102 или Microslop Natural Keyboard', 'Standard 101/102-Key or Microslop Natural Keyboard')],
+          ['IRQ 3', 'Sportster 56K Faxmodem PnP (COM2)'],
+          ['IRQ 4', tr('Последовательный порт (COM1)', 'Communications Port (COM1)')],
+          ['IRQ 5', 'Creative Sound Blaster AWE64 Gold'],
+          ['IRQ 6', tr('Стандартный контроллер гибких дисков', 'Standard Floppy Disk Controller')],
+          ['IRQ 8', tr('Системные CMOS/часы реального времени', 'System CMOS/real time clock')],
+          ['IRQ 10', tr('NE2000-совместимый адаптер Ethernet', 'NE2000 Compatible Ethernet Adapter')],
+          ['IRQ 11', tr('3D-ускоритель 3dfx Voodoo2', '3dfx Voodoo2 3D Accelerator')],
+          ['IRQ 12', tr('Порт PS/2-совместимой мыши', 'PS/2 Compatible Mouse Port')],
+          ['IRQ 14', tr('Первичный контроллер IDE (dual fifo)', 'Primary IDE controller (dual fifo)')],
+          ['IRQ 15', tr('Вторичный контроллер IDE (dual fifo)', 'Secondary IDE controller (dual fifo)')]
+        ]
+      },
+      dma: {
+        title: tr('Аппаратные ресурсы — DMA и ввод-вывод', 'Hardware Resources — DMA & I/O'),
+        rows: [
+          ['DMA 01', tr('Creative Sound Blaster AWE64, 8-битный DMA', 'Creative Sound Blaster AWE64 8-bit DMA')],
+          ['DMA 02', tr('Стандартный контроллер гибких дисков', 'Standard Floppy Disk Controller')],
+          ['DMA 04', tr('Контроллер прямого доступа к памяти', 'Direct memory access controller')],
+          ['DMA 05', tr('Creative Sound Blaster AWE64, 16-битный звук', 'Creative Sound Blaster AWE64 16-bit Audio')],
+          ['I/O 0000-000F', tr('Контроллер прямого доступа к памяти', 'Direct memory access controller')],
+          ['I/O 01F0-01F7', tr('Первичный контроллер IDE', 'Primary IDE controller')],
+          ['I/O 0220-022F', 'Sound Blaster AWE64 Gold'],
+          ['I/O 02F8-02FF', 'Sportster 56K Faxmodem (COM2)'],
+          ['I/O 0378-037F', tr('Порт принтера ECP (LPT1)', 'ECP Printer Port (LPT1)')]
+        ]
+      },
+      components: {
+        title: tr('Компоненты', 'Components'),
+        rows: [
+          [tr('Видеоадаптер', 'Display Adapter'), '3dfx Voodoo2 PCI 12MB (voodoo2.drv 4.10.01.0218)'],
+          [tr('Звуковое устройство', 'Sound Device'), 'Creative Sound Blaster AWE64 Gold (sbawe64.vxd)'],
+          [tr('Сетевой адаптер', 'Network Adapter'), tr('NE2000-совместимый Ethernet (ne2000.sys)', 'NE2000 Compatible Ethernet (ne2000.sys)')],
+          [tr('Дисковод CD-ROM', 'CD-ROM Drive'), tr('Дисковод ATAPI 32X CD-ROM (D:)', 'ATAPI 32X CD-ROM Drive (D:)')],
+          [tr('Модем', 'Modem'), 'U.S. Robotics 56K Voice INT V4.9.1 (COM2)'],
+          [tr('Версия DirectX', 'DirectX Version'), 'Microslop DirectX 6.1a (4.06.02.0436)']
+        ]
+      },
+      software: {
+        title: tr('Программная среда', 'Software Environment'),
+        rows: [
+          ['KERNEL32.DLL', tr('4.10.2222 — основной компонент ядра Win32', '4.10.2222 — Win32 Kernel core component')],
+          ['GDI32.DLL', tr('4.10.1998 — клиентская библиотека GDI', '4.10.1998 — GDI Client DLL')],
+          ['USER32.DLL', tr('4.10.2222 — клиент Win32 USER API', '4.10.2222 — Win32 USER API Client')],
+          ['SHELL32.DLL', tr('4.72.3612.1700 — общая библиотека оболочки Win', '4.72.3612.1700 — Win Shell Common Dll')],
+          ['EXPLORER.EXE', tr('4.72.3110.1 — оболочка Win 98', '4.72.3110.1 — Win 98 Shell')],
+          ['SYSTRAY.EXE', tr('4.10.2222 — службы области уведомлений', '4.10.2222 — System Tray Services')],
+          ['WINAMP.EXE', tr('2.10 — MP3-проигрыватель Nullsoft Winamp', '2.10 — Nullsoft Winamp MP3 Player')]
+        ]
+      }
+    };
+
+    const content = document.createElement('div');
+    content.style.cssText = 'display:flex; flex-direction:column; height:100%; background:#c0c0c0; font-family:Tahoma,sans-serif; font-size:11px;';
+    content.innerHTML = `
+      <div class="win-menubar">
+        <div class="win-menu-item">${tr('Файл', 'File')}
+          <div class="win-menu-dropdown">
+            <div class="win-dropdown-option" data-cmd="exit">${tr('Выход', 'Exit')}</div>
+          </div>
+        </div>
+        <div class="win-menu-item">${tr('Сервис', 'Tools')}
+          <div class="win-menu-dropdown">
+            <div class="win-dropdown-option" data-cmd="sfc">${tr('Проверка системных файлов', 'System File Checker')}</div>
+            <div class="win-dropdown-option" data-cmd="scanreg">${tr('Проверка реестра', 'Registry Checker')}</div>
+            <div class="win-dropdown-option" data-cmd="msconfig">${tr('Настройка системы (MSConfig)', 'System Configuration Utility')}</div>
+            <div class="win-dropdown-option" data-cmd="dxdiag">${tr('Средство диагностики DirectX', 'DirectX Diagnostic Tool')}</div>
+            <div class="win-dropdown-option" data-cmd="drwatson">Dr. Watson</div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1; display:flex; gap:4px; padding:4px; overflow:hidden;">
+        <div class="win-inset" style="width:195px; background:#fff; padding:4px; overflow-y:auto;" id="msinfo-tree">
+          <div class="msinfo-node active" data-sec="summary" style="padding:3px 6px; cursor:pointer; background:#000080; color:#fff; font-weight:bold;">🖥️ ${sections.summary.title}</div>
+          <div class="msinfo-node" data-sec="irq" style="padding:3px 6px 3px 16px; cursor:pointer;">⚙️ ${tr('Ресурсы — IRQ', 'Hardware — IRQs')}</div>
+          <div class="msinfo-node" data-sec="dma" style="padding:3px 6px 3px 16px; cursor:pointer;">⚙️ ${tr('Ресурсы — DMA и ввод-вывод', 'Hardware — DMA &amp; I/O')}</div>
+          <div class="msinfo-node" data-sec="components" style="padding:3px 6px 3px 16px; cursor:pointer;">🔌 ${sections.components.title}</div>
+          <div class="msinfo-node" data-sec="software" style="padding:3px 6px 3px 16px; cursor:pointer;">📦 ${sections.software.title}</div>
+        </div>
+        <div class="win-inset" style="flex:1; background:#fff; overflow:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:11px;">
+            <thead>
+              <tr style="background:#c0c0c0; text-align:left;">
+                <th style="border:1px outset #fff; padding:2px 6px; width:38%;">${tr('Параметр', 'Item')}</th>
+                <th style="border:1px outset #fff; padding:2px 6px;">${tr('Значение', 'Value')}</th>
+              </tr>
+            </thead>
+            <tbody id="msinfo-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="win-statusbar" style="padding:2px 6px;">${tr('Сведения о системе Microslop 4.10 — Готово', 'Microslop System Information 4.10 — Ready')}</div>
+    `;
+
+    const win = window.winManager.createWindow({
+      id: 'app_msinfo32',
+      title: tr('Сведения о системе Microslop', 'Microslop System Information'),
+      icon: 'msinfo32',
+      width: 600,
+      height: 410,
+      content
+    });
+
+    const el = win.element;
+    const tbody = el.querySelector('#msinfo-tbody');
+
+    const renderSec = (key) => {
+      const sec = sections[key] || sections.summary;
+      tbody.innerHTML = sec.rows.map((r, i) => `
+        <tr style="background:${i % 2 === 1 ? '#f8fafc' : '#fff'};">
+          <td style="padding:3px 6px; font-weight:bold; border-bottom:1px solid #eee;">${r[0]}</td>
+          <td style="padding:3px 6px; border-bottom:1px solid #eee;">${r[1]}</td>
+        </tr>
+      `).join('');
+    };
+    renderSec('summary');
+
+    el.querySelectorAll('.msinfo-node').forEach(n => {
+      n.addEventListener('click', () => {
+        el.querySelectorAll('.msinfo-node').forEach(x => {
+          x.style.background = 'transparent';
+          x.style.color = '#000';
+        });
+        n.style.background = '#000080';
+        n.style.color = '#fff';
+        renderSec(n.dataset.sec);
+      });
+    });
+
+    el.querySelectorAll('.win-menu-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const was = item.classList.contains('open');
+        el.querySelectorAll('.win-menu-item.open').forEach(i => i.classList.remove('open'));
+        if (!was) item.classList.add('open');
+      });
+    });
+    el.addEventListener('click', () => el.querySelectorAll('.win-menu-item.open').forEach(i => i.classList.remove('open')));
+
+    el.querySelectorAll('.win-dropdown-option').forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        el.querySelectorAll('.win-menu-item.open').forEach(i => i.classList.remove('open'));
+        const cmd = opt.dataset.cmd;
+        if (cmd === 'exit') window.winManager.closeWindow('app_msinfo32');
+        else if (cmd === 'sfc') this.openSfc();
+        else if (cmd === 'scanreg') this.openScanReg();
+        else if (cmd === 'msconfig') this.openMSConfig();
+        else if (cmd === 'dxdiag') this.openDxDiag();
+        else if (cmd === 'drwatson') {
+          window.winManager.openDialog({
+            title: tr('Dr. Watson для Win 98', 'Dr. Watson for Win 98'),
+            icon: 'info',
+            message: tr('Dr. Watson не обнаружил системных сбоев в текущем сеансе.', 'Dr. Watson detected no system faults in current user session.')
+          });
+        }
+      });
+    });
+  }
+
+  openSfc() {
+    if (window.winManager && window.winManager.windows.has('app_sfc')) {
+      window.winManager.bringToTop('app_sfc');
+      return;
+    }
+    const isRu = typeof i18n !== 'undefined' && i18n.getLanguage() === 'ru';
+    const scanningLabel = isRu ? 'Проверка: ' : 'Scanning: ';
+    const content = document.createElement('div');
+    content.style.cssText = 'padding:12px; font-family:Tahoma,sans-serif; font-size:11px; background:#c0c0c0; display:flex; flex-direction:column; gap:10px;';
+    content.innerHTML = `
+      <div style="display:flex; gap:10px; align-items:center;">
+        <div style="width:32px; height:32px;">${Icons['sfc'] || Icons['msinfo32']}</div>
+        <div>${isRu ? 'Программа проверки системных файлов проверяет целостность системных файлов Win 98 и восстанавливает поврежденные файлы.' : 'System File Checker scans the integrity of your operating system files and restores them if they are corrupted.'}</div>
+      </div>
+
+      <fieldset style="border:1px groove #fff; padding:10px;">
+        <legend>${isRu ? 'Выберите операцию' : 'Select an option'}</legend>
+        <label style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
+          <input type="radio" name="sfc-mode" value="scan" checked>
+          <span>${isRu ? 'Проверить файлы на наличие ошибок' : 'Scan for altered files'}</span>
+        </label>
+        <label style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+          <input type="radio" name="sfc-mode" value="extract">
+          <span>${isRu ? 'Извлечь файл с установочного диска:' : 'Extract one file from installation disk:'}</span>
+        </label>
+        <div style="padding-left:22px; display:flex; gap:6px;">
+          <input type="text" id="sfc-extract-name" class="win-inset" value="KERNEL32.DLL" style="flex:1; height:20px; padding:1px 4px;">
+        </div>
+      </fieldset>
+
+      <div id="sfc-scan-box" style="display:none;">
+        <div id="sfc-file-lbl" style="margin-bottom:4px;">${scanningLabel}C:\\WINDOWS\\SYSTEM\\KERNEL32.DLL</div>
+        <div class="win-inset" style="height:18px; background:#fff; padding:2px;">
+          <div id="sfc-bar" style="width:0%; height:100%; background:#000080;"></div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:4px;">
+        <button class="win-btn default" id="sfc-start-btn" style="min-width:75px;">${isRu ? 'Начать' : 'Start'}</button>
+        <button class="win-btn" id="sfc-close-btn" style="min-width:75px;">${isRu ? 'Закрыть' : 'Close'}</button>
+      </div>
+    `;
+
+    const win = window.winManager.createWindow({
+      id: 'app_sfc',
+      title: isRu ? 'Проверка системных файлов' : 'System File Checker',
+      icon: 'sfc',
+      width: 410,
+      height: 295,
+      resizable: false,
+      minimizable: true,
+      maximizable: false,
+      isDialog: true,
+      content
+    });
+
+    const el = win.element;
+    const scanBox = el.querySelector('#sfc-scan-box');
+    const fileLbl = el.querySelector('#sfc-file-lbl');
+    const bar = el.querySelector('#sfc-bar');
+    const startBtn = el.querySelector('#sfc-start-btn');
+
+    const files = [
+      'C:\\WINDOWS\\SYSTEM\\KERNEL32.DLL',
+      'C:\\WINDOWS\\SYSTEM\\GDI32.DLL',
+      'C:\\WINDOWS\\SYSTEM\\USER32.DLL',
+      'C:\\WINDOWS\\SYSTEM\\SHELL32.DLL',
+      'C:\\WINDOWS\\SYSTEM\\ADVAPI32.DLL',
+      'C:\\WINDOWS\\SYSTEM\\VOODOO2.DRV',
+      'C:\\WINDOWS\\SYSTEM\\VMM32.VXD',
+      'C:\\WINDOWS\\EXPLORER.EXE'
+    ];
+
+    startBtn.addEventListener('click', () => {
+      const mode = el.querySelector('input[name="sfc-mode"]:checked').value;
+      if (mode === 'extract') {
+        const fname = el.querySelector('#sfc-extract-name').value.trim() || 'KERNEL32.DLL';
+        if (window.vfs) {
+          window.vfs.writeFile(['My Computer', 'C:', 'WINDOWS', 'SYSTEM'], fname, 'MZ_CAB_EXTRACTED_WIN98_SE');
+        }
+        window.winManager.openDialog({
+          title: isRu ? 'Извлечение файла' : 'Extract File',
+          icon: 'info',
+          message: isRu
+            ? `Файл "${fname}" успешно извлечен из D:\\WIN98\\WIN98_22.CAB в папку C:\\WINDOWS\\SYSTEM.`
+            : `The file "${fname}" has been successfully extracted from D:\\WIN98\\WIN98_22.CAB to C:\\WINDOWS\\SYSTEM.`
+        });
+        return;
+      }
+
+      scanBox.style.display = 'block';
+      startBtn.disabled = true;
+      let step = 0;
+      const timer = setInterval(() => {
+        step++;
+        const pct = Math.min(100, step * 12.5);
+        bar.style.width = pct + '%';
+        fileLbl.textContent = scanningLabel + files[(step - 1) % files.length];
+        if (pct >= 100) {
+          clearInterval(timer);
+          startBtn.disabled = false;
+          if (window.soundSys && window.soundSys.playNotification) window.soundSys.playNotification();
+          window.winManager.openDialog({
+            title: isRu ? 'Проверка системных файлов' : 'System File Checker',
+            icon: 'info',
+            message: isRu
+              ? 'Проверка системных файлов завершена.\nИзмененных или поврежденных системных файлов не обнаружено.'
+              : 'System File Checker has finished scanning your computer.\nNo corrupted or modified system files were detected.'
+          });
+        }
+      }, 150);
+    });
+
+    el.querySelector('#sfc-close-btn').addEventListener('click', () => window.winManager.closeWindow('app_sfc'));
+  }
+
+  openScanReg() {
+    if (window.winManager && window.winManager.windows.has('app_scanreg')) {
+      window.winManager.bringToTop('app_scanreg');
+      return;
+    }
+    const isRu = typeof i18n !== 'undefined' && i18n.getLanguage() === 'ru';
+    const checkerTitle = isRu ? 'Проверка реестра Win' : 'Win Registry Checker';
+    const content = document.createElement('div');
+    content.style.cssText = 'padding:12px; font-family:Tahoma,sans-serif; font-size:11px; background:#c0c0c0; display:flex; flex-direction:column; gap:10px;';
+    content.innerHTML = `
+      <div style="display:flex; gap:10px; align-items:center;">
+        <div style="width:32px; height:32px;">${Icons['regedit'] || ''}</div>
+        <div>
+          <div style="font-weight:bold;">${checkerTitle}</div>
+          <div id="scanreg-status">${isRu ? 'Проверка системного реестра (SYSTEM.DAT, USER.DAT)...' : 'Scanning the System Registry (SYSTEM.DAT, USER.DAT)...'}</div>
+        </div>
+      </div>
+      <div class="win-inset" style="height:18px; background:#fff; padding:2px;">
+        <div id="scanreg-bar" style="width:0%; height:100%; background:#000080;"></div>
+      </div>
+    `;
+
+    const win = window.winManager.createWindow({
+      id: 'app_scanreg',
+      title: checkerTitle,
+      icon: 'regedit',
+      width: 350,
+      height: 140,
+      resizable: false,
+      minimizable: false,
+      maximizable: false,
+      isDialog: true,
+      content
+    });
+
+    const bar = win.element.querySelector('#scanreg-bar');
+    let pct = 0;
+    const timer = setInterval(() => {
+      pct += 20;
+      bar.style.width = pct + '%';
+      if (pct >= 100) {
+        clearInterval(timer);
+        window.winManager.closeWindow('app_scanreg');
+        window.winManager.openDialog({
+          title: checkerTitle,
+          icon: 'question',
+          message: isRu
+            ? 'Проверка системного реестра завершена без ошибок.\nСоздать резервную копию системного реестра (RB001.CAB) сейчас?'
+            : 'Win Registry Checker has scanned the system registry and found no errors.\nDo you want to back up the registry (RB001.CAB) again now?',
+          buttons: [
+            {
+              text: isRu ? 'Да' : 'Yes',
+              primary: true,
+              action: () => {
+                if (window.vfs) {
+                  window.vfs.writeFile(['My Computer', 'C:', 'WINDOWS'], 'RB001.CAB', 'MSCF_REGISTRY_BACKUP_SYSTEM_DAT_USER_DAT');
+                }
+                if (window.appClippy && typeof window.appClippy.onRegistryBackup === 'function') {
+                  setTimeout(() => window.appClippy.onRegistryBackup(), 600);
+                }
+                window.winManager.openDialog({
+                  title: checkerTitle,
+                  icon: 'info',
+                  message: isRu ? 'Резервная копия реестра сохранена в C:\\WINDOWS\\RB001.CAB.' : 'Registry backup completed (C:\\WINDOWS\\RB001.CAB).'
+                });
+              }
+            },
+            { text: isRu ? 'Нет' : 'No', action: () => {} }
+          ]
+        });
+      }
+    }, 140);
+  }
+
+  openScheduledTasks() {
+    if (window.winManager && window.winManager.windows.has('app_mstask')) {
+      window.winManager.bringToTop('app_mstask');
+      return;
+    }
+    const isRu = typeof i18n !== 'undefined' && i18n.getLanguage() === 'ru';
+    const tr = (ru, en) => (isRu ? ru : en);
+    const readyStatus = tr('Готово', 'Ready');
+    const tasks = [
+      { name: tr('Очистка диска (C:)', 'Disk Cleanup (C:)'), schedule: tr('Еженедельно — по пятницам в 20:00', 'Weekly — Every Friday at 8:00 PM'), nextRun: tr('Пятница 20:00', 'Friday 8:00 PM'), status: readyStatus, cmd: 'cleanmgr' },
+      { name: tr('Дефрагментация диска (C:)', 'Disk Defragmenter (C:)'), schedule: tr('Еженедельно — по средам в 22:00', 'Weekly — Every Wednesday at 10:00 PM'), nextRun: tr('Среда 22:00', 'Wednesday 10:00 PM'), status: readyStatus, cmd: 'defrag' },
+      { name: tr('ScanDisk, стандартная проверка (C:)', 'ScanDisk Standard (C:)'), schedule: tr('Ежедневно в 12:00', 'Daily at 12:00 PM'), nextRun: tr('Завтра 12:00', 'Tomorrow 12:00 PM'), status: readyStatus, cmd: 'scandisk' }
+    ];
+
+    const content = document.createElement('div');
+    content.style.cssText = 'display:flex; flex-direction:column; height:100%; background:#c0c0c0; font-family:Tahoma,sans-serif; font-size:11px;';
+    content.innerHTML = `
+      <div style="padding:6px; display:flex; gap:6px; border-bottom:1px solid #808080;">
+        <button class="win-btn" id="mstask-add-btn">➕ ${tr('Добавить задание...', 'Add Scheduled Task...')}</button>
+        <button class="win-btn" id="mstask-run-btn">▶ ${tr('Выполнить сейчас', 'Run Selected Now')}</button>
+      </div>
+      <div class="win-inset" style="flex:1; background:#fff; margin:4px; overflow:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:11px;">
+          <thead>
+            <tr style="background:#c0c0c0; text-align:left;">
+              <th style="border:1px outset #fff; padding:3px 6px;">${tr('Имя', 'Name')}</th>
+              <th style="border:1px outset #fff; padding:3px 6px;">${tr('Расписание', 'Schedule')}</th>
+              <th style="border:1px outset #fff; padding:3px 6px;">${tr('Следующий запуск', 'Next Run Time')}</th>
+              <th style="border:1px outset #fff; padding:3px 6px;">${tr('Состояние', 'Status')}</th>
+            </tr>
+          </thead>
+          <tbody id="mstask-tbody"></tbody>
+        </table>
+      </div>
+      <div class="win-statusbar" style="padding:2px 6px;">${tr('Планировщик заданий работает', 'Task Scheduler is active')}</div>
+    `;
+
+    const win = window.winManager.createWindow({
+      id: 'app_mstask',
+      title: tr('Назначенные задания', 'Scheduled Tasks'),
+      icon: 'mstask',
+      width: 560,
+      height: 310,
+      content
+    });
+
+    const el = win.element;
+    const tbody = el.querySelector('#mstask-tbody');
+    let selectedIdx = 0;
+
+    const renderTasks = () => {
+      tbody.innerHTML = tasks.map((t, idx) => `
+        <tr class="mstask-row" data-idx="${idx}" style="cursor:pointer; background:${idx === selectedIdx ? '#000080' : 'transparent'}; color:${idx === selectedIdx ? '#fff' : '#000'};">
+          <td style="padding:3px 6px;">⏰ ${t.name}</td>
+          <td style="padding:3px 6px;">${t.schedule}</td>
+          <td style="padding:3px 6px;">${t.nextRun}</td>
+          <td style="padding:3px 6px;">${t.status}</td>
+        </tr>
+      `).join('');
+      tbody.querySelectorAll('.mstask-row').forEach(r => {
+        r.addEventListener('click', () => {
+          selectedIdx = parseInt(r.dataset.idx, 10);
+          renderTasks();
+        });
+      });
+    };
+    renderTasks();
+
+    el.querySelector('#mstask-add-btn').addEventListener('click', () => {
+      tasks.push({
+        name: tr('Резервное копирование реестра Win', 'Win Registry Backup'),
+        schedule: tr('При загрузке системы', 'At System Startup'),
+        nextRun: tr('При следующей загрузке', 'Next Boot'),
+        status: readyStatus,
+        cmd: 'scanreg'
+      });
+      selectedIdx = tasks.length - 1;
+      renderTasks();
+    });
+
+    el.querySelector('#mstask-run-btn').addEventListener('click', () => {
+      const task = tasks[selectedIdx];
+      if (!task) return;
+      if (task.cmd === 'cleanmgr') this.openCleanMgr();
+      else if (task.cmd === 'defrag' && window.appDefrag) window.appDefrag.open();
+      else if (task.cmd === 'scandisk') this.openScanDisk();
+      else if (task.cmd === 'scanreg') this.openScanReg();
+    });
+  }
+
+  openDriveSpace() {
+    if (window.winManager && window.winManager.windows.has('app_drvspace')) {
+      window.winManager.bringToTop('app_drvspace');
+      return;
+    }
+    const isRu = typeof i18n !== 'undefined' && i18n.getLanguage() === 'ru';
+    const tr = (ru, en) => (isRu ? ru : en);
+    let compressed = false;
+    const plainRow = tr('💿 C:  WIN98_SE  (FAT32 без сжатия — свободно 1,454 МБ)', '💿 C:  WIN98_SE  (Uncompressed FAT32 — 1,454 MB Free)');
+    const compressBtnLabel = tr('Сжать диск...', 'Compress Drive...');
+
+    const content = document.createElement('div');
+    content.style.cssText = 'padding:10px; font-family:Tahoma,sans-serif; font-size:11px; background:#c0c0c0; display:flex; flex-direction:column; gap:10px;';
+    content.innerHTML = `
+      <div>${tr('Диски на этом компьютере:', 'Drives on this computer:')}</div>
+      <div class="win-inset" style="background:#fff; height:85px; padding:4px;">
+        <div style="padding:3px 6px; background:#000080; color:#fff;" id="drv-row-c">${plainRow}</div>
+        <div style="padding:3px 6px;">${tr('💾 A:  Дискета 3½ (1.44 МБ, съемный диск)', '💾 A:  3½ Floppy (1.44 MB Removable)')}</div>
+      </div>
+
+      <fieldset style="border:1px groove #fff; padding:8px;">
+        <legend>${tr('Состояние DriveSpace 3', 'DriveSpace 3 Status')}</legend>
+        <div id="drv-status-text">${tr('Диск C не сжат. Нажмите "Сжать диск...", чтобы увеличить свободное место с помощью DriveSpace 3.', 'Drive C is not compressed. Click Compress Drive to increase free space using DriveSpace 3.')}</div>
+      </fieldset>
+
+      <div style="display:flex; justify-content:flex-end; gap:6px;">
+        <button class="win-btn default" id="drv-compress-btn">${compressBtnLabel}</button>
+        <button class="win-btn" id="drv-close-btn">${tr('Закрыть', 'Close')}</button>
+      </div>
+    `;
+
+    const win = window.winManager.createWindow({
+      id: 'app_drvspace',
+      title: 'DriveSpace 3',
+      icon: 'drvspace',
+      width: 390,
+      height: 265,
+      resizable: false,
+      minimizable: true,
+      maximizable: false,
+      isDialog: true,
+      content
+    });
+
+    const el = win.element;
+    el.querySelector('#drv-compress-btn').addEventListener('click', () => {
+      compressed = !compressed;
+      el.querySelector('#drv-row-c').textContent = compressed
+        ? tr('💿 C:  WIN98_SE  (Сжат DriveSpace 3 — коэффициент 1.9:1 — свободно 2,610 МБ)', '💿 C:  WIN98_SE  (Compressed DriveSpace 3 — Ratio 1.9:1 — 2,610 MB Free)')
+        : plainRow;
+      el.querySelector('#drv-status-text').textContent = compressed
+        ? tr('Диск C сжат с помощью DriveSpace 3 (расчетный коэффициент сжатия: 1.9 к 1.0, основной диск H:).', 'Drive C is compressed with DriveSpace 3 (Estimated compression ratio: 1.9 to 1.0, Host drive H:).')
+        : tr('Диск C не сжат.', 'Drive C is not compressed.');
+      el.querySelector('#drv-compress-btn').textContent = compressed
+        ? tr('Распаковать', 'Uncompress')
+        : compressBtnLabel;
+      if (window.soundSys && window.soundSys.playNotification) window.soundSys.playNotification();
+    });
+    el.querySelector('#drv-close-btn').addEventListener('click', () => window.winManager.closeWindow('app_drvspace'));
   }
 }
 

@@ -546,5 +546,498 @@ test('core: program comments follow the option and he moves out of the way of in
   options.set('moveAway', true);
 });
 
+test('system: mouse click disable meme wakes Clippy with blocked-click count and interactive replies', () => {
+  clippy.visible = false;
+  clippy.running = false;
+  system.onMouseClicksRescued(4, 1);
+  assert.strictEqual(clippy.visible, true);
+  assert.strictEqual(clippy.running, true);
+  assert.ok(last().text.includes('отключили щелчки мыши'));
+  assert.ok(last().text.includes('4 раза'));
+  assert.strictEqual(last().actions.length, 3);
+  press('Зачем вообще нужна');
+  assert.ok(last().text.includes('Microslop'));
+  system.onMouseClicksRescued(0, 2);
+  assert.ok(last().text.includes('Опять эта галочка'));
+  press('Спасибо');
+  assert.ok(last().text.includes('Всегда пожалуйста'));
+});
+
+test('cpanel: Mouse Properties settings, disable mouse clicking blocker, and 5s Clippy rescue', () => {
+  const listeners = {};
+  global.window.addEventListener = (evt, fn) => {
+    if (!listeners[evt]) listeners[evt] = [];
+    listeners[evt].push(fn);
+  };
+  global.window.removeEventListener = (evt, fn) => {
+    if (!listeners[evt]) return;
+    listeners[evt] = listeners[evt].filter(x => x !== fn);
+  };
+  global.document = {
+    body: {
+      dataset: {},
+      classList: {
+        classes: new Set(),
+        add(c) { this.classes.add(c); },
+        remove(c) { this.classes.delete(c); }
+      },
+      appendChild() {}
+    },
+    createElement: () => ({
+      className: '',
+      style: {},
+      innerHTML: '',
+      appendChild() {}
+    })
+  };
+  global.Icons = new Proxy({}, { get: () => '<svg></svg>' });
+
+  const AppCPanel = eval(`${read('js/apps/cpanel-applets.js').replace('window.appCPanel = new AppCPanel();', '')}; AppCPanel`);
+  const cp = new AppCPanel();
+  assert.strictEqual(cp.rescueDelayMs, 5000);
+  assert.strictEqual(cp.mouseClicksDisabled, false);
+  assert.ok(cp.renderIsoMouseSvg(false, false).includes('id="vis-left"'));
+  assert.ok(cp.renderJackBoxSvg(true).includes('polygon'));
+  assert.ok(cp.renderCursorRoleSvg('dino', 'dino').includes('<svg'));
+
+  cp.saveMouseSettings({
+    handedness: 'left',
+    doubleClickSpeed: 8,
+    scheme: 'dino',
+    customSchemes: { Retro: '3d' },
+    pointerSpeed: 9,
+    pointerTrails: true,
+    trailLength: 7
+  });
+  assert.strictEqual(global.document.body.dataset.cursorScheme, 'dino');
+  assert.strictEqual(global.document.body.dataset.mouseHandedness, 'left');
+  assert.strictEqual(cp.loadMouseSettings().doubleClickSpeed, 8);
+
+  const mockChk = { checked: true };
+  const mockDesc = { classList: { add() {}, remove() {} }, textContent: '' };
+  const mockIso = { classList: { add() {}, remove() {} }, getBoundingClientRect: () => ({}) };
+  const mockDialogEl = {
+    querySelector(sel) {
+      if (sel === '#mouse-disable-clicks') return mockChk;
+      if (sel === '#mouse-disable-desc') return mockDesc;
+      if (sel === '#mouse-iso-svg') return mockIso;
+      return null;
+    }
+  };
+
+  cp.disableMouseClicking(mockDialogEl);
+  assert.strictEqual(cp.mouseClicksDisabled, true);
+  assert.strictEqual(global.document.body.classList.classes.has('win-mouse-clicks-disabled'), true);
+  assert.ok(listeners.mousedown && listeners.mousedown.length > 0);
+
+  let prevented = 0;
+  listeners.mousedown[0]({
+    type: 'mousedown',
+    preventDefault() { prevented++; },
+    stopPropagation() {},
+    stopImmediatePropagation() {}
+  });
+  listeners.mousedown[0]({
+    type: 'mousedown',
+    preventDefault() { prevented++; },
+    stopPropagation() {},
+    stopImmediatePropagation() {}
+  });
+  assert.strictEqual(prevented, 2);
+  assert.strictEqual(cp.blockedClicks, 2);
+
+  const spokenBefore = spoken.length;
+  cp.rescueMouseClicks(mockDialogEl);
+  assert.strictEqual(cp.mouseClicksDisabled, false);
+  assert.strictEqual(mockChk.checked, false);
+  assert.strictEqual(global.document.body.classList.classes.has('win-mouse-clicks-disabled'), false);
+  assert.ok(spoken.length > spokenBefore);
+  assert.ok(last().text.includes('2 раза'));
+});
+
+test('cpanel: Add/Remove Programs (appwiz.cpl) categories, tri-state state, uninstall, boot disk A:, and Clippy reactions', () => {
+  localStorage.removeItem('win98_appwiz_state');
+  const AppCPanel = eval(`${read('js/apps/cpanel-applets.js').replace('window.appCPanel = new AppCPanel();', '')}; AppCPanel`);
+  const cp = new AppCPanel();
+
+  const cats = cp.getAppWizCategories();
+  assert.strictEqual(cats.length, 9);
+  const state = cp.loadAppWizState();
+
+  const accCat = cats.find(c => c.id === 'accessibility');
+  const accInfo = cp.getCategoryInstallState(accCat, state.components);
+  assert.strictEqual(accInfo.status, 'partial');
+  assert.strictEqual(accInfo.checkedCount, 1);
+  assert.strictEqual(accInfo.total, 2);
+
+  const addrCat = cats.find(c => c.id === 'addressbook');
+  const addrInfo = cp.getCategoryInstallState(addrCat, state.components);
+  assert.strictEqual(addrInfo.status, 'all');
+
+  const swBefore = cp.getAppWizInstalledSoftware(state);
+  assert.ok(swBefore.some(a => a.id === 'office97' && a.isOffice));
+  assert.ok(swBefore.some(a => a.id === 'winrar'));
+
+  const winrarApp = swBefore.find(a => a.id === 'winrar');
+  cp.uninstallAppWizProgram(winrarApp, state);
+  const swAfter = cp.getAppWizInstalledSoftware(cp.loadAppWizState());
+  assert.ok(!swAfter.some(a => a.id === 'winrar'));
+
+  cp.createStartupDiskInVfs();
+  const driveA = window.vfs.resolvePath(['My Computer', 'A:']);
+  assert.ok(driveA && driveA.children['COMMAND.COM'] && driveA.children['OAKCDROM.SYS'] && driveA.children['FDISK.EXE']);
+
+  clippy.running = true;
+  clippy.visible = true;
+  system.lastOfficeSelectAt = 0;
+  assert.strictEqual(system.onAppWizOfficeSelected(), true);
+  assert.ok(last().text.includes('Microslop Office 97'));
+  press('Не бойся');
+  assert.ok(last().text.includes('WIN386.SWP'));
+
+  assert.strictEqual(system.onAppWizOfficeMaintenance('repair'), true);
+  assert.ok(last().text.includes('шаблоны'));
+
+  assert.strictEqual(system.onAppWizProgramRemoved(winrarApp), true);
+  assert.ok(last().text.includes('WinRAR'));
+
+  assert.strictEqual(system.onAppWizComponentsApplied({ added: [], removed: [{ id: 'ie5' }] }), true);
+  assert.ok(last().text.includes('Internet Explorer 5'));
+
+  assert.strictEqual(system.onAppWizComponentsApplied({ added: [], removed: [{ id: 'games' }] }), true);
+  assert.ok(last().text.includes('Сапёра'));
+
+  assert.strictEqual(system.onAppWizBootDiskCreated(), true);
+  assert.ok(last().text.includes('OAKCDROM.SYS'));
+
+  assert.strictEqual(system.onAppWizHelp('tab-appwiz-setup'), true);
+  assert.ok(last().text.includes('Установка Win'));
+});
+
+test('netscape: Clippy reacts to https://pennygachi.men/web98/ and Win98.zip download in Netscape 6', () => {
+  const AppClippy = eval(`${read('js/apps/clippy.js').replace('window.appClippy = new AppClippy();', '')}; AppClippy`);
+  const AppNetscape = eval(`${read('js/apps/netscape.js').replace('window.appNetscape = new AppNetscape();', '')}; AppNetscape`);
+
+  clippy.isNetscapeMinimized = AppClippy.prototype.isNetscapeMinimized;
+  clippy.identifyNetscapePageKey = AppClippy.prototype.identifyNetscapePageKey;
+  clippy.scrollNetscapeSection = AppClippy.prototype.scrollNetscapeSection;
+  clippy.reactToWeb98Download = AppClippy.prototype.reactToWeb98Download;
+  clippy.onNavigateNetscape = AppClippy.prototype.onNavigateNetscape;
+  clippy.tapScreen = () => { clippy.anims.push('tap'); };
+  clippy.countReaction = (k) => { clippy.reactions.push(k); };
+  window.appClippy = clippy;
+
+  assert.strictEqual(clippy.identifyNetscapePageKey('https://pennygachi.men/web98/'), 'web98');
+  assert.strictEqual(clippy.identifyNetscapePageKey('http://pennygachi.men/web98'), 'web98');
+  assert.strictEqual(clippy.identifyNetscapePageKey('https://pennygachi.men/web98/#download'), 'web98-download');
+  assert.strictEqual(clippy.identifyNetscapePageKey('https://pennygachi.men/web98/Win98.zip'), 'web98-download');
+  assert.strictEqual(clippy.identifyNetscapePageKey('https://example.com/'), null);
+
+  const ns = new AppNetscape();
+  ns.root = { querySelector: () => ({ disabled: false, style: {}, classList: { toggle() {}, remove() {} } }), querySelectorAll: () => [] };
+  ns.frame = { setAttribute() {}, removeAttribute() {}, style: {} };
+  ns.addressInput = { value: '' };
+  ns.statusText = { textContent: '' };
+  ns.progressBar = { style: {} };
+  ns.throbber = { classList: { toggle() {} } };
+
+  window.isOnline = true;
+  clippy._lastNsPageKey = null;
+  clippy._lastNsTime = 0;
+
+  ns.navigate('https://pennygachi.men/web98/');
+  assert.ok(last().text.includes('pennygachi.men/web98'));
+  assert.ok(last().text.includes('Win 98 Web Edition'));
+  assert.ok(last().text.includes('Clippy, awake'));
+
+  press('Скрепыш всё видит');
+  assert.ok(last().text.includes('девяти глав'));
+
+  press('Назад к обзору сайта');
+  assert.ok(last().text.includes('pennygachi.men/web98'));
+
+  press('44 игры');
+  assert.ok(last().text.includes('44 игр'));
+
+  press('Назад к обзору сайта');
+  press('Win98.zip');
+  assert.ok(last().text.includes('1067 дискет'));
+
+  press('Win 10 и 11');
+  assert.ok(last().text.includes('Win 2000'));
+
+  press('Вернуться к обзору сайта');
+  press('Win98.zip');
+  opened.length = 0;
+  press('Сохранить памятку в Блокнот');
+  assert.strictEqual(opened.length, 1);
+  assert.strictEqual(opened[0][0], 'WEB98_META.TXT');
+  assert.ok(opened[0][1].includes('https://pennygachi.men/web98/'));
+});
+
+test('cpanel: Power Management Properties (powercfg.cpl) schemes, custom save/delete, standby, and Clippy reactions', () => {
+  localStorage.removeItem('win98_power_settings');
+  const AppCPanel = eval(`${read('js/apps/cpanel-applets.js').replace('window.appCPanel = new AppCPanel();', '')}; AppCPanel`);
+  const cp = new AppCPanel();
+  window.appCPanel = cp;
+
+  clippy.onPowerHelp = (tab) => system.onPowerHelp(tab);
+  clippy.onPowerSettingsChanged = (prev, next, src) => system.onPowerSettingsChanged(prev, next, src);
+  clippy.onPowerSchemeSaved = (name, timers) => system.onPowerSchemeSaved(name, timers);
+  clippy.onPowerSchemeDeleted = (name) => system.onPowerSchemeDeleted(name);
+  clippy.onMonitorStandbyWake = () => system.onMonitorStandbyWake();
+  clippy.onHardDiskSpinDown = () => system.onHardDiskSpinDown();
+  clippy.onHardDiskWake = () => system.onHardDiskWake();
+
+  const defaults = cp.defaultPowerSettings();
+  assert.strictEqual(defaults.scheme, 'always_on');
+  assert.strictEqual(defaults.schemes.always_on.monitorTimeout, 15);
+  assert.strictEqual(defaults.schemes.always_on.diskTimeout, 60);
+  assert.strictEqual(defaults.schemes.home_office.monitorTimeout, 15);
+  assert.strictEqual(defaults.schemes.home_office.diskTimeout, 0);
+  assert.strictEqual(defaults.schemes.portable.monitorTimeout, 5);
+  assert.strictEqual(defaults.schemes.portable.diskTimeout, 15);
+  assert.strictEqual(defaults.showTrayIcon, false);
+
+  const opts = cp.getPowerTimeoutOptions();
+  assert.strictEqual(opts.length, 16);
+  assert.strictEqual(opts[0].value, 1);
+  assert.strictEqual(opts[opts.length - 1].value, 0);
+
+  clippy.running = true;
+  clippy.visible = true;
+
+  const beforePortable = cp.clonePowerSettings(cp.powerSettings);
+  const nextPortable = cp.clonePowerSettings(cp.powerSettings);
+  nextPortable.scheme = 'portable';
+  cp.savePowerSettings(nextPortable);
+  cp.applyPowerSettings(nextPortable, 'dialog');
+  assert.ok(system.onPowerSettingsChanged(beforePortable, nextPortable, 'dialog'));
+  assert.ok(last().text.includes('Портативный или ноутбук'));
+
+  press('Верни как было');
+  assert.strictEqual(cp.powerSettings.scheme, 'always_on');
+  assert.ok(last().text.includes('Вернул прежние настройки электропитания'));
+
+  const prevMon = cp.clonePowerSettings(cp.powerSettings);
+  const nextMon1 = cp.clonePowerSettings(cp.powerSettings);
+  cp.setSchemeTimers(nextMon1, 'always_on', 1, 60);
+  assert.ok(system.onPowerSettingsChanged(prevMon, nextMon1, 'dialog'));
+  assert.ok(last().text.includes('через 1 минуту'));
+
+  const nextMonNever = cp.clonePowerSettings(cp.powerSettings);
+  cp.setSchemeTimers(nextMonNever, 'always_on', 0, 60);
+  assert.ok(system.onPowerSettingsChanged(prevMon, nextMonNever, 'dialog'));
+  assert.ok(last().text.includes('никогда не отключается'));
+
+  const nextDiskNever = cp.clonePowerSettings(cp.powerSettings);
+  cp.setSchemeTimers(nextDiskNever, 'always_on', 15, 0);
+  assert.ok(system.onPowerSettingsChanged(prevMon, nextDiskNever, 'dialog'));
+  assert.ok(last().text.includes('никогда не останавливаются'));
+
+  const nextTray = cp.clonePowerSettings(cp.powerSettings);
+  nextTray.showTrayIcon = true;
+  assert.ok(system.onPowerSettingsChanged(prevMon, nextTray, 'dialog'));
+  assert.ok(last().text.includes('Значок электропитания появился'));
+
+  assert.ok(system.onPowerSchemeSaved('Ночной модем', { monitorTimeout: 2, diskTimeout: 30 }));
+  assert.ok(last().text.includes('Ночной модем'));
+
+  assert.ok(system.onPowerSchemeDeleted('Ночной модем'));
+  assert.ok(last().text.includes('удалена'));
+
+  assert.ok(system.onPowerHelp('tab-power-schemes'));
+  assert.ok(last().text.includes('схема управления питанием'));
+  assert.ok(system.onPowerHelp('tab-power-advanced'));
+  assert.ok(last().text.includes('Дополнительно'));
+
+  cp.enterMonitorStandby('tray');
+  assert.strictEqual(cp.monitorInStandby, true);
+  cp.wakeMonitorStandby();
+  assert.strictEqual(cp.monitorInStandby, false);
+  assert.ok(last().text.includes('Кинескоп снова прогрелся'));
+
+  cp.spinDownHardDisks('tray');
+  assert.strictEqual(cp.disksSpunDown, true);
+  assert.ok(last().text.includes('запарковал головки'));
+  cp.spinUpHardDisks();
+  assert.strictEqual(cp.disksSpunDown, false);
+  assert.ok(last().text.includes('5400 оборотов'));
+
+  const hits = help.search('как настроить электропитание и спящий режим');
+  assert.ok(hits.some(r => r.entry.id === 'power'));
+  window.winManager.activeWindowId = 'app_powercfg_cpl';
+  const sugg = help.suggestions().map(e => e.id);
+  assert.ok(sugg.includes('power'));
+});
+
+test('office_games_98: CD-ROM insert/eject, launcher, 8 games, boss cover stories, help, tips, and ICQ', () => {
+  spoken.length = 0;
+  opened.length = 0;
+  options.set('appReactions', true);
+  system.gameEventCooldowns = {};
+
+  const c = makeCore();
+  assert.strictEqual(c.isGameWindow('app_og_hunt'), true);
+  assert.strictEqual(c.isGameWindow('app_og_lines'), true);
+
+  window.vfs.cdRomState = { inserted: true, discId: 'office_games_98' };
+  c.reactToSwitch('genius');
+  assert.ok(c.spoken[c.spoken.length - 1].text.includes('ARKANOID.EXE'));
+
+  const reactions = c.getAppReactions();
+  for (const wid of [
+    'app_office_launcher', 'app_og_snake3d', 'app_og_arkanoid', 'app_og_rush',
+    'app_og_hunt', 'app_og_gems', 'app_og_lines', 'app_og_tetris', 'app_og_chairs'
+  ]) {
+    assert.ok(reactions.some(r => r.match(wid)), `missing reaction for ${wid}`);
+  }
+
+  system.onCdRomInserted('office_games_98', 'D:');
+  assert.ok(last().text.includes('Офисные игры ’98'));
+  assert.ok(last().actions.some(a => a.text.includes('LAUNCHER.EXE')));
+
+  window.winManager.windows.set('app_og_lines', { id: 'app_og_lines', isMinimized: false });
+  system.onCdRomEjected('office_games_98', 'D:');
+  assert.ok(last().text.includes('оперативную память'));
+  window.winManager.windows.delete('app_og_lines');
+
+  system.onCdRomEjected('office_games_98', 'D:');
+  assert.ok(last().text.includes('извлечён из привода D:'));
+
+  clippy.balloonOpen = () => false;
+  system.lastOgSelectAt = 0;
+  system.lastOgSelectedId = null;
+  system.onOfficeLauncherSelect({ id: 'hunt', title: 'Офисный Тир', scoreKey: 'office_games_scores_hunt' });
+  assert.ok(last().text.includes('Офисный Тир'));
+  assert.ok(last().text.includes('SKR-004') || last().text.includes('4 500 скрепок'));
+
+  system.onOfficeGameShortcut({ id: 'lines98', title: 'Цветные Линии 98', exePath: 'D:\\LINES98.EXE' });
+  assert.ok(last().text.includes('Цветные Линии 98.lnk'));
+
+  system.onOfficeLauncherHelp();
+  assert.ok(last().text.includes('2-НДФЛ'));
+
+  localStorage.setItem('office_games_scores_lines98', '240');
+  localStorage.setItem('office_games_scores_hunt', '110');
+  system.speakOfficeGamesRecords();
+  assert.ok(last().text.includes('350 очков'));
+  assert.ok(last().text.includes('Цветные Линии 98'));
+  const saveRecordsBtn = last().actions.find(a => a.text.includes('Выписать табель рекордов'));
+  assert.ok(saveRecordsBtn);
+  saveRecordsBtn.action();
+  assert.strictEqual(opened[opened.length - 1][0], 'ОФИСНЫЕ_РЕКОРДЫ_98.TXT');
+  assert.ok(opened[opened.length - 1][1].includes('Цветные Линии 98: 240 очк.'));
+
+  system.onOfficeGameEvent('tetris', 'boss_on');
+  assert.ok(last().text.includes('Опись документов постоянного хранения'));
+
+  system.onOfficeGameEvent('tetris', 'boss_off');
+  assert.ok(last().text.includes('Коридор чист'));
+
+  system.lastShotClippyAt = 0;
+  system.shotClippyCount = 0;
+  system.onOfficeGameEvent('hunt', 'shot_clippy');
+  assert.ok(last().text.includes('0,9 мм'));
+  system.lastShotClippyAt = 0;
+  system.onOfficeGameEvent('hunt', 'shot_clippy');
+  assert.ok(last().text.includes('CLIPPIT.ACS'));
+
+  system.shotPaperclipSeen = false;
+  system.onOfficeGameEvent('hunt', 'shot_paperclip');
+  assert.ok(last().text.includes('SKR-004'));
+
+  system.lastTetrisFourAt = 0;
+  system.onOfficeGameEvent('tetris', 'four_lines');
+  assert.ok(last().text.includes('ТЕТРИС (+800 очков)'));
+
+  system.lastOgHighScoreAt = 0;
+  system.onOfficeGameEvent('chairs', 'high_score', { score: 420 });
+  assert.ok(last().text.includes('420 очков'));
+  assert.ok(last().text.includes('Гонки на креслах 98'));
+
+  const helpHits = help.search('во что поиграть на диске офисные игры 98 цветные линии');
+  assert.ok(helpHits.some(r => r.entry.id === 'office-games'));
+
+  window.winManager.activeWindowId = 'app_og_hunt';
+  const ogSugg = help.suggestions().map(e => e.id);
+  assert.ok(ogSugg.includes('office-games'));
+  assert.ok(ogSugg.includes('boss'));
+
+  assert.strictEqual(tips.trigger('office-games-cd'), true);
+  assert.ok(last().text.includes('Офисные игры ’98'));
+
+  assert.ok(system.icqReply('посоветуй офисные игры на диске').includes('LAUNCHER.EXE'));
+  assert.ok(system.icqReply('охота на скрепки').includes('MOORHUNT.EXE'));
+  assert.ok(system.icqReply('цветные линии 98').includes('Цветных Линий 98'));
+});
+
+test('shell: safe mode, boot log, Hearts, floppy, registry, updates, printer, EDIT, network, windows', () => {
+  clippy.running = true;
+  clippy.visible = true;
+  clippy.annoyance = 'normal';
+  const restarts = [];
+  const tools = [];
+  window.appShutdown = { triggerRestart() { restarts.push(true); } };
+  window.appSysTools = { openSfc() { tools.push('sfc'); }, openScanReg() { tools.push('scanreg'); } };
+
+  assert.strictEqual(system.onSafeMode(), true);
+  assert.ok(last().text.includes('безопасном режиме'));
+  press('Что вообще');
+  assert.ok(last().text.includes('VGA'));
+  press('Проверить системные');
+  press('Проверить реестр');
+  assert.deepStrictEqual(tools, ['sfc', 'scanreg']);
+  press('Перезагрузиться');
+  assert.strictEqual(restarts.length, 1);
+
+  window.vfs.root.children['My Computer'].children['C:'].children['BOOTLOG.TXT'] = { type: 'file', content: '[000D1F40] Loading Device = C:\\WINDOWS\\HIMEM.SYS' };
+  assert.strictEqual(system.onBootLogged(), true);
+  assert.ok(last().text.includes('BOOTLOG.TXT'));
+  press('Открыть BOOTLOG');
+  assert.strictEqual(opened[opened.length - 1][0], 'BOOTLOG.TXT');
+
+  system.heartsQueenAt = 0;
+  assert.strictEqual(system.onHeartsEvent('queen'), true);
+  assert.ok(last().text.includes('Дама пик'));
+  assert.strictEqual(system.onHeartsEvent('queen'), false);
+  assert.strictEqual(system.onHeartsEvent('moon', { human: true }), true);
+  assert.ok(last().text.includes('сорвали банк'));
+  assert.strictEqual(system.onHeartsEvent('moon', { human: false, name: 'Ben' }), true);
+  assert.ok(last().text.startsWith('Ben:'));
+
+  assert.strictEqual(system.onFloppyFormatted({ system: true }), true);
+  assert.ok(last().text.includes('COMMAND.COM'));
+  assert.strictEqual(system.onRegistryBackup(), true);
+  assert.ok(last().text.includes('RB001.CAB'));
+  assert.strictEqual(system.onWinUpdateInstalled(['kb_y2k']), true);
+  assert.ok(last().text.includes('2000 года'));
+  assert.ok(system.winUpdateSiteReaction().text.includes('Обновление Win'));
+  assert.strictEqual(system.winUpdateSiteReaction(), null);
+  assert.strictEqual(system.onTestPagePrinted('HP LaserJet 4L', 'LPT1:'), true);
+  assert.ok(last().text.includes('HP LaserJet 4L'));
+  assert.strictEqual(system.onDosEditor('AUTOEXEC.BAT'), true);
+  assert.ok(last().text.includes('EDIT.COM'));
+  assert.strictEqual(system.onDosEditor('CONFIG.SYS'), false);
+  assert.strictEqual(system.onNetworkNeighborhood(), true);
+  assert.ok(last().text.includes('Гений'));
+  assert.strictEqual(system.onNetworkNeighborhood(), false);
+
+  const find = (id) => system.shellAppReactions().find(r => r.match(id));
+  assert.ok(find('app_hearts').text.includes('Червы'));
+  assert.strictEqual(find('app_hearts'), undefined);
+  assert.ok(find('fontview_Comic_Sans_MS').text.includes('Comic Sans'));
+  assert.strictEqual(find('fontview_Arial'), undefined);
+  assert.ok(find('app_mstask').text.includes('19 ноября'));
+
+  const depth = system.displayEffectReaction({ values: { colorDepth: { from: '32bit', to: '16color' } } });
+  assert.ok(depth.text.includes('Шестнадцать цветов'));
+
+  clippy.annoyance = 'quiet';
+  assert.strictEqual(system.onSafeMode(), false);
+  clippy.annoyance = 'normal';
+});
+
 console.log(`clippy: ${passed} passed`);
 process.exit(0);
+

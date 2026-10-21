@@ -572,7 +572,7 @@
 
   function layerOf(map) {
     let L = layers.get(map.id);
-    if (!L || L.map !== map) { L = map.def.zone && H.Station ? H.Station.buildLayer(map) : map.def.car && H.Train ? H.Train.buildLayer(map) : buildLayer(map); L.map = map; layers.set(map.id, L); }
+    if (!L || L.map !== map) { L = map.def.zone && H.Station ? H.Station.buildLayer(map) : map.def.land && H.Axel && H.Axel.LANDS[map.def.land] ? H.Axel.buildLayer(map) : map.def.land && H.Jarilo ? H.Jarilo.buildLayer(map) : map.def.car && H.Train ? H.Train.buildLayer(map) : buildLayer(map); L.map = map; layers.set(map.id, L); }
     return L;
   }
 
@@ -645,6 +645,26 @@
   }
 
   const OBJ = {
+    drift(P) {
+      P.ell(8, 21, 8, 2, 'rgba(60,80,120,0.3)');
+      P.ell(8, 17, 8, 5, '#b8c6d6'); P.ell(8, 16, 7, 4, '#e6eef6'); P.ell(6, 14, 4, 2, '#ffffff');
+      P(9, 11, 3, 2, '#2a4a8a'); P(10, 10, 2, 1, '#3a6ab8'); P.dot(12, 12, '#2a4a8a');
+    },
+    magflow(P, on) {
+      P.ell(8, 22, 7, 1.6, 'rgba(8,10,24,0.35)');
+      P(2, 6, 12, 16, '#3a3e48'); P(2, 6, 12, 1, '#7a808c'); P(2, 21, 12, 1, '#1a1c22');
+      P(4, 8, 8, 8, '#101828');
+      const col = on ? '#ffd040' : '#5a6a8a';
+      P(5, 11, 6, 2, col); P(7, 9, 2, 6, col); P(4, 9, 2, 2, col); P(10, 13, 2, 2, col);
+      P(4, 17, 2, 2, on ? '#5aff9a' : '#c83a3a'); P(7, 17, 2, 2, '#2a2c34'); P(10, 17, 2, 2, '#2a2c34');
+    },
+    domain(P, art) {
+      const C = { gold: ['#e8b040', '#ffe890', '#8a5a18'], crimson: ['#c83a4a', '#ff8a90', '#6a1a24'], shadow: ['#6a5ac8', '#c8b8ff', '#2a1e5a'], cavern: ['#3aa0a0', '#a8f0e8', '#1a4a4a'] }[art] || ['#e8b040', '#ffe890', '#8a5a18'];
+      P.ell(8, 22, 7, 1.6, 'rgba(8,10,24,0.35)');
+      P(7, 12, 2, 10, '#3a5a3a'); P(4, 16, 3, 1, '#4a7a4a'); P(9, 18, 3, 1, '#4a7a4a');
+      P.tri([8, 0, 2, 9, 8, 14], C[0]); P.tri([8, 0, 14, 9, 8, 14], C[2]); P.tri([8, 2, 5, 9, 8, 12], C[1]);
+      P.tri([2, 9, 0, 4, 6, 7], C[0]); P.tri([14, 9, 16, 4, 10, 7], C[2]);
+    },
     chest(P, open) {
       P.ell(8, 22, 7, 1.6, 'rgba(8,10,24,0.35)');
       const B = open ? '#a8a4a0' : '#ece6da', Bs = open ? '#7c7874' : '#b8ae9c', Au = open ? '#8a8070' : '#d8a840', Aud = open ? '#5a5248' : '#9a6e24';
@@ -832,7 +852,8 @@
     const g = c.getContext('2d');
     for (let ty = 0; ty < 4; ty++) for (let tx = 0; tx < 4; tx++) {
       const e = { x: tx + 5, y: ty + 9, T, v: (tx * 3 + ty * 5) % 4, nb: {}, same: {}, nb2: {}, edge: {}, railV: false };
-      groundTile(painter(g, tx * U, ty * U), T, theme, 'floor', e);
+      if (T.tex) T.tex(painter(g, tx * U, ty * U), e);
+      else groundTile(painter(g, tx * U, ty * U), T, theme, 'floor', e);
     }
     objects.set(key, c);
     return c;
@@ -869,6 +890,25 @@
         break;
       }
       case 'lever': put(objectCanvas('lever' + (st.on ? 1 : 0), 16, 24, P => OBJ.lever(P, st.on)), 0, -16); break;
+      case 'drift': {
+        const k = Math.sin(t * 5 + ph) > 0.85 ? 2 : 0;
+        put(objectCanvas('drift', 16, 24, OBJ.drift), k ? 2 : 0, -16);
+        break;
+      }
+      case 'magflow': {
+        const k = 0.5 + 0.5 * Math.sin(t * 3 + ph);
+        if (!st.on) { ctx.fillStyle = 'rgba(255,208,64,' + (0.18 + 0.2 * k).toFixed(3) + ')'; ctx.fillRect(px + 8, py - 6, 16, 2); }
+        put(objectCanvas('magflow' + (st.on ? 1 : 0), 16, 24, P => OBJ.magflow(P, st.on)), 0, -16);
+        break;
+      }
+      case 'domain': {
+        const k = 0.5 + 0.5 * Math.sin(t * 2 + ph), col = { gold: '255,210,90', crimson: '255,100,110', shadow: '170,150,255', cavern: '120,230,220' }[st.art] || '255,210,90';
+        const gr = ctx.createRadialGradient(px + 16, py - 4, 2, px + 16, py - 4, 34);
+        gr.addColorStop(0, 'rgba(' + col + ',' + (0.3 + 0.2 * k).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(' + col + ',0)');
+        ctx.fillStyle = gr; ctx.fillRect(px - 18, py - 38, 68, 72);
+        put(objectCanvas('domain|' + st.art, 16, 24, P => OBJ.domain(P, st.art)), 0, -16 - Math.round(k * 2) * 2);
+        break;
+      }
       case 'su_machine': {
         put(objectCanvas('suMachine', 80, 56, OBJ.suMachine), -64, -80);
         const k = 0.5 + 0.5 * Math.sin(t * 2 + ph);

@@ -463,6 +463,24 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
               content: '[Standard MIDI File: Passport.mid - Win 98 Sound Track]'
             };
           }
+          if (!musicFolder.children['ENLIGHT98.XM']) {
+            musicFolder.children['ENLIGHT98.XM'] = {
+              type: 'file',
+              name: 'ENLIGHT98.XM',
+              icon: 'file-xm',
+              app: 'fasttracker',
+              content: 'ENLIGHT98.XM'
+            };
+          }
+          if (!musicFolder.children['FUTURE_CREW.XM']) {
+            musicFolder.children['FUTURE_CREW.XM'] = {
+              type: 'file',
+              name: 'FUTURE_CREW.XM',
+              icon: 'file-xm',
+              app: 'fasttracker',
+              content: 'FUTURE_CREW.XM'
+            };
+          }
           this.saveToStorage();
         }
 
@@ -586,28 +604,275 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           icon: 'file-txt',
           content: this.getCreditCardAndSitesDocContent()
         };
+        if (!myDocs.children['HOMEWORK.BAS']) {
+          myDocs.children['HOMEWORK.BAS'] = {
+            type: 'file',
+            name: 'HOMEWORK.BAS',
+            icon: 'file-bas',
+            app: 'qbasic',
+            content: '10 CLS\n20 COLOR 14, 0\n30 PRINT "================================="\n40 PRINT " ПРИВЕТ ИЗ 1998 ГОДА! WIN 98 "\n50 PRINT "================================="\n60 COLOR 10, 0\n70 FOR I = 1 TO 5\n80   PRINT "Загрузка процессора Pentium II: "; I * 20; "%"\n90   SOUND 300 + I * 110, 2\n100 NEXT I\n110 COLOR 11, 0\n120 PRINT "Готово! Запуск Wolfenstein 3D..."\n130 END'
+          };
+        }
+        if (!myDocs.children['STARFIELD.BAS']) {
+          myDocs.children['STARFIELD.BAS'] = {
+            type: 'file',
+            name: 'STARFIELD.BAS',
+            icon: 'file-bas',
+            app: 'qbasic',
+            content: '10 SCREEN 13\n20 CLS\n30 FOR I = 1 TO 140\n40   X = INT(RND * 320)\n50   Y = INT(RND * 200)\n60   C = 7 + (I MOD 9)\n70   PSET (X, Y), C\n80 NEXT I\n90 FOR R = 42 TO 2 STEP -2\n100  C = 1 + (R MOD 14)\n110  CIRCLE (160, 100), R, C\n120 NEXT R\n130 BEEP\n140 END'
+          };
+        }
+        if (!myDocs.children['MANDEL.BAS']) {
+          myDocs.children['MANDEL.BAS'] = {
+            type: 'file',
+            name: 'MANDEL.BAS',
+            icon: 'file-bas',
+            app: 'qbasic',
+            content: '10 SCREEN 13\n20 CLS\n30 PRINT "Mandelbrot 3dfx FPU Test..."\n40 END'
+          };
+        }
+        if (!myDocs.children['NightOwl_BBS.ht']) {
+          myDocs.children['NightOwl_BBS.ht'] = {
+            type: 'file',
+            name: 'NightOwl_BBS.ht',
+            icon: 'file-ht',
+            app: 'hypertrm',
+            stationId: 'nightowl',
+            content: 'HyperTerminal Session\nStation=nightowl\nPhone=095-932-4812'
+          };
+        }
+        if (!myDocs.children['DemosGate_Fido.ht']) {
+          myDocs.children['DemosGate_Fido.ht'] = {
+            type: 'file',
+            name: 'DemosGate_Fido.ht',
+            icon: 'file-ht',
+            app: 'hypertrm',
+            stationId: 'demosgate',
+            content: 'HyperTerminal Session\nStation=demosgate\nPhone=812-315-9800'
+          };
+        }
+        if (!myDocs.children['SECRET_CLIP.CLP']) {
+          myDocs.children['SECRET_CLIP.CLP'] = {
+            type: 'file',
+            name: 'SECRET_CLIP.CLP',
+            icon: 'file-clp',
+            app: 'clipbrd',
+            content: '=== ДАМП БУФЕРА ОБМЕНА WIN 98 (SECRET_CLIP.CLP) ===\nПароль архиватора: 1998\nУзел FidoNet: Night Owl BBS 2:5020/98 (т. 095-932-4812)\nЧастота разгона шины FSB в BIOS: 112 МГц (CAS Latency 2)'
+          };
+        }
+        if (!myDocs.children['BC3000AD_MANUAL.PDF']) {
+          myDocs.children['BC3000AD_MANUAL.PDF'] = {
+            type: 'file',
+            name: 'BC3000AD_MANUAL.PDF',
+            icon: 'file-pdf',
+            app: 'acrobat',
+            content: 'BC3000AD_MANUAL.PDF'
+          };
+        }
+        if (!myDocs.children['VOODOO2_SPEC.PDF']) {
+          myDocs.children['VOODOO2_SPEC.PDF'] = {
+            type: 'file',
+            name: 'VOODOO2_SPEC.PDF',
+            icon: 'file-pdf',
+            app: 'acrobat',
+            content: 'VOODOO2_SPEC.PDF'
+          };
+        }
+        if (!myDocs.children['WIN98SE_RESKIT.PDF']) {
+          myDocs.children['WIN98SE_RESKIT.PDF'] = {
+            type: 'file',
+            name: 'WIN98SE_RESKIT.PDF',
+            icon: 'file-pdf',
+            app: 'acrobat',
+            content: 'WIN98SE_RESKIT.PDF'
+          };
+        }
         this.saveToStorage();
       }
 
       const winFolder = this.resolvePath(['My Computer', 'C:', 'WINDOWS']);
-      if (winFolder && winFolder.children && !winFolder.children['KODAKIMG.EXE']) {
-        winFolder.children['KODAKIMG.EXE'] = {
-          type: 'executable',
-          name: 'KODAKIMG.EXE',
-          icon: 'imaging',
-          app: 'imaging'
-        };
+      if (winFolder && winFolder.children) {
+        if (!winFolder.children['KODAKIMG.EXE']) {
+          winFolder.children['KODAKIMG.EXE'] = {
+            type: 'executable',
+            name: 'KODAKIMG.EXE',
+            icon: 'imaging',
+            app: 'imaging'
+          };
+        }
+        if (!winFolder.children['QBASIC.EXE']) {
+          winFolder.children['QBASIC.EXE'] = {
+            type: 'executable',
+            name: 'QBASIC.EXE',
+            icon: 'qbasic',
+            app: 'qbasic'
+          };
+        }
+        if (!winFolder.children['CDPLAYER.EXE']) {
+          winFolder.children['CDPLAYER.EXE'] = {
+            type: 'executable',
+            name: 'CDPLAYER.EXE',
+            icon: 'cdplayer',
+            app: 'cdplayer'
+          };
+        }
+        if (!winFolder.children['SYSMON.EXE']) {
+          winFolder.children['SYSMON.EXE'] = {
+            type: 'executable',
+            name: 'SYSMON.EXE',
+            icon: 'sysmon',
+            app: 'sysmon'
+          };
+        }
+        if (!winFolder.children['HYPERTRM.EXE']) {
+          winFolder.children['HYPERTRM.EXE'] = {
+            type: 'executable',
+            name: 'HYPERTRM.EXE',
+            icon: 'hypertrm',
+            app: 'hypertrm'
+          };
+        }
+        if (!winFolder.children['CLIPBRD.EXE']) {
+          winFolder.children['CLIPBRD.EXE'] = {
+            type: 'executable',
+            name: 'CLIPBRD.EXE',
+            icon: 'clipbrd',
+            app: 'clipbrd'
+          };
+        }
+        if (!winFolder.children['MIRC32.EXE']) {
+          winFolder.children['MIRC32.EXE'] = {
+            type: 'executable',
+            name: 'MIRC32.EXE',
+            icon: 'mirc',
+            app: 'mirc'
+          };
+        }
+        if (!winFolder.children['FT2.EXE']) {
+          winFolder.children['FT2.EXE'] = {
+            type: 'executable',
+            name: 'FT2.EXE',
+            icon: 'fasttracker',
+            app: 'fasttracker'
+          };
+        }
+        if (!winFolder.children['AR32E301.EXE']) {
+          winFolder.children['AR32E301.EXE'] = {
+            type: 'executable',
+            name: 'AR32E301.EXE',
+            icon: 'acrobat',
+            app: 'acrobat'
+          };
+        }
+        if (!winFolder.children['ACDC3223.EXE']) {
+          winFolder.children['ACDC3223.EXE'] = {
+            type: 'executable',
+            name: 'ACDC3223.EXE',
+            icon: 'acdsee',
+            app: 'acdsee'
+          };
+        }
+        if (!winFolder.children['EMULAND98.EXE']) {
+          winFolder.children['EMULAND98.EXE'] = {
+            type: 'executable',
+            name: 'EMULAND98.EXE',
+            icon: 'emulator',
+            app: 'emulator'
+          };
+        }
         this.saveToStorage();
       }
 
       const accFolder = this.resolvePath(['My Computer', 'C:', 'Program Files', 'Accessories']);
-      if (accFolder && accFolder.children && !accFolder.children['KODAKIMG.EXE']) {
-        accFolder.children['KODAKIMG.EXE'] = {
-          type: 'executable',
-          name: 'KODAKIMG.EXE',
-          icon: 'imaging',
-          app: 'imaging'
-        };
+      if (accFolder && accFolder.children) {
+        if (!accFolder.children['KODAKIMG.EXE']) {
+          accFolder.children['KODAKIMG.EXE'] = {
+            type: 'executable',
+            name: 'KODAKIMG.EXE',
+            icon: 'imaging',
+            app: 'imaging'
+          };
+        }
+        if (!accFolder.children['QBASIC.EXE']) {
+          accFolder.children['QBASIC.EXE'] = {
+            type: 'executable',
+            name: 'QBASIC.EXE',
+            icon: 'qbasic',
+            app: 'qbasic'
+          };
+        }
+        if (!accFolder.children['CDPLAYER.EXE']) {
+          accFolder.children['CDPLAYER.EXE'] = {
+            type: 'executable',
+            name: 'CDPLAYER.EXE',
+            icon: 'cdplayer',
+            app: 'cdplayer'
+          };
+        }
+        if (!accFolder.children['SYSMON.EXE']) {
+          accFolder.children['SYSMON.EXE'] = {
+            type: 'executable',
+            name: 'SYSMON.EXE',
+            icon: 'sysmon',
+            app: 'sysmon'
+          };
+        }
+        if (!accFolder.children['HYPERTRM.EXE']) {
+          accFolder.children['HYPERTRM.EXE'] = {
+            type: 'executable',
+            name: 'HYPERTRM.EXE',
+            icon: 'hypertrm',
+            app: 'hypertrm'
+          };
+        }
+        if (!accFolder.children['CLIPBRD.EXE']) {
+          accFolder.children['CLIPBRD.EXE'] = {
+            type: 'executable',
+            name: 'CLIPBRD.EXE',
+            icon: 'clipbrd',
+            app: 'clipbrd'
+          };
+        }
+        if (!accFolder.children['MIRC32.EXE']) {
+          accFolder.children['MIRC32.EXE'] = {
+            type: 'executable',
+            name: 'MIRC32.EXE',
+            icon: 'mirc',
+            app: 'mirc'
+          };
+        }
+        if (!accFolder.children['FT2.EXE']) {
+          accFolder.children['FT2.EXE'] = {
+            type: 'executable',
+            name: 'FT2.EXE',
+            icon: 'fasttracker',
+            app: 'fasttracker'
+          };
+        }
+        if (!accFolder.children['AR32E301.EXE']) {
+          accFolder.children['AR32E301.EXE'] = {
+            type: 'executable',
+            name: 'AR32E301.EXE',
+            icon: 'acrobat',
+            app: 'acrobat'
+          };
+        }
+        if (!accFolder.children['ACDC3223.EXE']) {
+          accFolder.children['ACDC3223.EXE'] = {
+            type: 'executable',
+            name: 'ACDC3223.EXE',
+            icon: 'acdsee',
+            app: 'acdsee'
+          };
+        }
+        if (!accFolder.children['EMULAND98.EXE']) {
+          accFolder.children['EMULAND98.EXE'] = {
+            type: 'executable',
+            name: 'EMULAND98.EXE',
+            icon: 'emulator',
+            app: 'emulator'
+          };
+        }
         this.saveToStorage();
       }
 
@@ -627,6 +892,22 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             name: 'WINAMP.EXE',
             icon: 'winamp',
             app: 'winamp'
+          };
+          this.saveToStorage();
+        }
+        if (!progFolder.children['EmuLand98']) {
+          progFolder.children['EmuLand98'] = {
+            type: 'folder',
+            name: 'EmuLand98',
+            icon: 'folder',
+            children: {
+              'EMULAND98.EXE': { type: 'executable', name: 'EMULAND98.EXE', icon: 'emulator', app: 'emulator' },
+              'NESTICLE.EXE': { type: 'executable', name: 'NESTICLE.EXE', icon: 'emulator', app: 'emulator', content: 'NESticle x.xx (Dendy / NES)' },
+              'GENECYST.EXE': { type: 'executable', name: 'GENECYST.EXE', icon: 'emulator', app: 'emulator', content: 'Genecyst x.xx (Sega Mega Drive)' },
+              'ZSNESW.EXE': { type: 'executable', name: 'ZSNESW.EXE', icon: 'emulator', app: 'emulator', content: 'ZSNES v0.80 (Super Nintendo)' },
+              'VGB98.EXE': { type: 'executable', name: 'VGB98.EXE', icon: 'emulator', app: 'emulator', content: 'Virtual GameBoy v0.98 (Game Boy)' },
+              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'file-txt', app: 'notepad', content: 'Emu-Land 98 Multi-Core Station (NESticle / Genecyst / ZSNES / Virtual GameBoy)\r\n==========================================================================\r\nПоддерживаемые форматы картриджей с сайта http://www.emuland98.ru:\r\n- .NES (Dendy / Nintendo Entertainment System)\r\n- .BIN (Sega Mega Drive / Genesis)\r\n- .SMC (Super Nintendo Entertainment System)\r\n- .GB  (Nintendo Game Boy DMG-01)\r\n\r\nСкачивайте проверенные GoodDump ROM-образы в Internet Explorer на http://www.emuland98.ru\r\nи открывайте их двойным щелчком из папки C:\\My Documents\\Downloads!' }
+            }
           };
           this.saveToStorage();
         }
@@ -1002,6 +1283,40 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
+        if (!gmInstalled.includes('korovany') && games.children['Korovany']) {
+          delete games.children['Korovany'];
+        } else if (gmInstalled.includes('korovany') && !games.children['Korovany']) {
+          games.children['Korovany'] = {
+            type: 'folder', name: 'Korovany', icon: 'folder', children: {
+              'KOROVANY.EXE': { type: 'executable', name: 'KOROVANY.EXE', icon: 'korovany', app: 'korovany' },
+              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Корованы\r\n==================================\r\nДжва Года Софт (2000) - Win 98 Edition, 3D accelerated\r\n\r\nСистемные требования: Pentium II 300 МГц, 64 MB RAM, 3D-ускоритель с 8 MB памяти, DirectX 6.\r\n\r\nУправление:\r\n[W/A/S/D] - идти   [Shift] - бежать   [Пробел] - прыжок   [C] - пригнуться\r\n[Мышь] - смотреть   [Левая кнопка] - удар, выстрел   [Правая кнопка] - блок\r\nКуда смотрите, туда и бьёте: вверх - голова, прямо - корпус, вниз - ноги.\r\n[1/2/3] - оружие / лук / факел   [R] - убрать оружие   [E] - говорить, обыскать, поджечь\r\n[B] - перевязать рану   [H] - зелье   [V] - от первого лица\r\n[I] - инвентарь и протезы   [M] - карта   [J] - журнал   [T] - ждать   [Q] - приказы войску\r\n[F5/F9] - быстрое сохранение / загрузка   [Esc] - меню\r\n\r\nОтрубленная рука или нога кровоточит. Перевяжите её (B) или идите к знахарке, иначе умрёте.\r\nПротезы ставит мастер Деревяшкин в Развилках.\r\n\r\nПо письму Кирилла.' },
+              'KIRILL.TXT': { type: 'file', name: 'KIRILL.TXT', icon: 'notepad', app: 'notepad', content: 'Здраствуйте. Я, Кирилл. Хотел бы чтобы вы сделали игру, 3Д-экшон суть такова...\r\n\r\n...P.S. Я джва года хочу такую игру.\r\n\r\nПисьмо целиком: главное меню игры, «Письмо Кирилла».' },
+              'SAVES': { type: 'folder', name: 'SAVES', icon: 'folder', children: {} }
+            }
+          };
+        }
+        if (!gmInstalled.includes('korovany') && games.children['Korovany']) {
+          delete games.children['Korovany'];
+        } else if (gmInstalled.includes('korovany') && !games.children['Korovany']) {
+          games.children['Korovany'] = {
+            type: 'folder', name: 'Korovany', icon: 'folder', children: {
+              'KOROVANY.EXE': { type: 'executable', name: 'KOROVANY.EXE', icon: 'korovany', app: 'korovany' },
+              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Корованы\r\n==================================\r\nДжва Года Софт (2000) - Win 98 Edition, 3D accelerated\r\n\r\nСистемные требования: Pentium II 300 МГц, 64 MB RAM, 3D-ускоритель с 8 MB памяти, DirectX 6.\r\n\r\nУправление:\r\n[W/A/S/D] - идти   [Shift] - бежать   [Пробел] - прыжок   [C] - пригнуться\r\n[Мышь] - смотреть   [Левая кнопка] - удар, выстрел   [Правая кнопка] - блок\r\nКуда смотрите, туда и бьёте: вверх - голова, прямо - корпус, вниз - ноги.\r\n[1/2/3] - оружие / лук / факел   [R] - убрать оружие   [E] - говорить, обыскать, поджечь\r\n[B] - перевязать рану   [H] - зелье   [V] - от первого лица\r\n[I] - инвентарь и протезы   [M] - карта   [J] - журнал   [T] - ждать   [Q] - приказы войску\r\n[F5/F9] - быстрое сохранение / загрузка   [Esc] - меню\r\n\r\nОтрубленная рука или нога кровоточит. Перевяжите её (B) или идите к знахарке, иначе умрёте.\r\nПротезы ставит мастер Деревяшкин в Развилках.\r\n\r\nПо письму Кирилла.' },
+              'KIRILL.TXT': { type: 'file', name: 'KIRILL.TXT', icon: 'notepad', app: 'notepad', content: 'Здраствуйте. Я, Кирилл. Хотел бы чтобы вы сделали игру, 3Д-экшон суть такова...\r\n\r\n...P.S. Я джва года хочу такую игру.\r\n\r\nПисьмо целиком: главное меню игры, «Письмо Кирилла».' },
+              'SAVES': { type: 'folder', name: 'SAVES', icon: 'folder', children: {} }
+            }
+          };
+        }
+        if (!gmInstalled.includes('catniss') && games.children['Catniss']) {
+          delete games.children['Catniss'];
+        } else if (gmInstalled.includes('catniss') && !games.children['Catniss']) {
+          games.children['Catniss'] = {
+            type: 'folder', name: 'Catniss', icon: 'folder', children: {
+              'CATNISS.EXE': { type: 'executable', name: 'CATNISS.EXE', icon: 'catniss', app: 'catniss' },
+              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Catniss\r\n==================================\r\nKotelok Games (2000) - Win 98 Edition, 320x240, 256 colors\r\n\r\nControls:\r\n[Left]/[Right], [A]/[D] - Run   [Z]/[Space] - Jump (hold to jump higher)   [X]/[Shift] - Pounce\r\nAgainst a wall in the air: hold toward the wall to cling, then [Z] to kick off\r\n[Down]+[Z] - Drop through a plank   [Esc]/[P] - Pause   [M] - Music on/off\r\nMap: [Enter] - Play   [C] - Choose a cat   [Q] - Aquarium   Gamepad supported.\r\n\r\nNine lives at most. Every 50 coins and every bowl of milk give one more.\r\nThe van OTLOV took the kittens. Bring all four home.\r\nTwelve goldfish in bags are hidden behind cracked walls and in other odd places.' }
+            }
+          };
+        }
         if (!gmInstalled.includes('plov') && games.children['HayatoPlov']) {
           delete games.children['HayatoPlov'];
         } else if (gmInstalled.includes('plov') && !games.children['HayatoPlov']) {
@@ -1127,6 +1442,17 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           };
         }
 
+        if (!gmInstalled.includes('worldcup98') && games.children['WorldCup98']) {
+          delete games.children['WorldCup98'];
+        } else if (gmInstalled.includes('worldcup98') && !games.children['WorldCup98']) {
+          games.children['WorldCup98'] = {
+            type: 'folder', name: 'WorldCup98', icon: 'folder', children: {
+              'WORLDCUP98.EXE': { type: 'executable', name: 'WORLDCUP98.EXE', icon: 'worldcup98', app: 'worldcup98' },
+              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'EA Sports World Cup 98 Demo (France 98)\r\n==================================\r\nEA Sports (1998) - Igromania CD Edition for Win 98\r\n\r\nControls:\r\n[WASD] / [Arrows] - Movement & Shot Aim\r\n[Shift] - Sprint\r\n[X] / [J] - Ground Pass / Switch Player\r\n[C] / [K] - Lob Pass & Wing Cross / Sliding Tackle\r\n[Space] / [Z] - Hold to Charge Shot (Volley in air) / Standing Tackle\r\n[E] / [V] - Skill Feint\r\n[1] / [2] / [3] - Live Tactical Mentality (Counter / Balanced / Pressing)' }
+            }
+          };
+        }
+
         if (!gmInstalled.includes('diablo') && games.children['Diablo']) {
           delete games.children['Diablo'];
         } else if (gmInstalled.includes('diablo') && !games.children['Diablo']) {
@@ -1137,6 +1463,61 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
+        this.saveToStorage();
+      }
+
+      const myComp = this.resolvePath(['My Computer']);
+      if (myComp && myComp.children) {
+        if (!myComp.children['A:']) {
+          myComp.children['A:'] = {
+            type: 'drive',
+            name: 'Диск 3,5 (A:)',
+            icon: 'drive-floppy',
+            driveType: 'floppy',
+            volumeLabel: 'BOOT98_FD',
+            children: {
+              'NOTES98.TXT': {
+                type: 'file',
+                name: 'NOTES98.TXT',
+                icon: 'file-txt',
+                app: 'notepad',
+                size: '1 KB',
+                content: 'Дискета 3,5" HD (1,44 МБ) — Verbatim DataLifePlus MF-2HD\r\nЗаметки по информатике и шпаргалка по QBasic / DOS.'
+              }
+            }
+          };
+        } else {
+          myComp.children['A:'].type = 'drive';
+          myComp.children['A:'].icon = 'drive-floppy';
+          myComp.children['A:'].driveType = 'floppy';
+          if (!myComp.children['A:'].children) myComp.children['A:'].children = {};
+        }
+        if (!myComp.children['Printers']) {
+          myComp.children['Printers'] = { type: 'action', name: 'Printers', icon: 'printers', action: 'printers-folder' };
+        }
+        if (!myComp.children['Scheduled Tasks']) {
+          myComp.children['Scheduled Tasks'] = { type: 'action', name: 'Scheduled Tasks', icon: 'mstask', action: 'scheduled-tasks' };
+        }
+        this.saveToStorage();
+      }
+
+      if (this.root && this.root.children) {
+        if (!this.root.children['Network Neighborhood']) {
+          this.root.children['Network Neighborhood'] = {
+            type: 'special',
+            name: 'Network Neighborhood',
+            icon: 'network',
+            children: this.getDefaultNetworkTree()
+          };
+          this.saveToStorage();
+        } else if (!this.root.children['Network Neighborhood'].children || Object.keys(this.root.children['Network Neighborhood'].children).length === 0) {
+          this.root.children['Network Neighborhood'].children = this.getDefaultNetworkTree();
+          this.saveToStorage();
+        }
+      }
+
+      if (games && games.children && !games.children['MSHEARTS.EXE']) {
+        games.children['MSHEARTS.EXE'] = { type: 'executable', name: 'MSHEARTS.EXE', icon: 'hearts', app: 'hearts' };
         this.saveToStorage();
       }
 
@@ -1163,10 +1544,85 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
         if (!cp.children['Internet']) {
           cp.children['Internet'] = { type: 'action', name: 'Internet Options', icon: 'inetcpl', action: 'internet-properties' };
         }
+        if (!cp.children['Taskbar']) {
+          cp.children['Taskbar'] = { type: 'action', name: 'Taskbar & Start Menu', icon: 'taskbar-props', action: 'taskbar-properties' };
+        }
+        if (!cp.children['Power Management']) {
+          cp.children['Power Management'] = { type: 'action', name: 'Power Management', icon: 'powercfg', action: 'power-properties' };
+        }
+        if (!cp.children['Sounds']) {
+          cp.children['Sounds'] = { type: 'action', name: 'Sounds', icon: 'sounds-cpl', action: 'sounds-properties' };
+        }
+        if (!cp.children['Keyboard']) {
+          cp.children['Keyboard'] = { type: 'action', name: 'Keyboard', icon: 'keyboard', action: 'keyboard-properties' };
+        }
+        if (!cp.children['Fonts']) {
+          cp.children['Fonts'] = { type: 'action', name: 'Fonts', icon: 'fonts', action: 'fonts-folder' };
+        }
+        if (!cp.children['Printers']) {
+          cp.children['Printers'] = { type: 'action', name: 'Printers', icon: 'printers', action: 'printers-folder' };
+        }
+        if (!cp.children['Network']) {
+          cp.children['Network'] = { type: 'action', name: 'Network', icon: 'network-cpl', action: 'network-properties' };
+        }
+        if (!cp.children['Accessibility Options']) {
+          cp.children['Accessibility Options'] = { type: 'action', name: 'Accessibility Options', icon: 'accessibility', action: 'accessibility-properties' };
+        }
+        if (!cp.children['Game Controllers']) {
+          cp.children['Game Controllers'] = { type: 'action', name: 'Game Controllers', icon: 'joystick', action: 'joystick-properties' };
+        }
+        if (!cp.children['Modems']) {
+          cp.children['Modems'] = { type: 'action', name: 'Modems', icon: 'modem', action: 'modem-properties' };
+        }
+        if (!cp.children['Passwords']) {
+          cp.children['Passwords'] = { type: 'action', name: 'Passwords', icon: 'passwords', action: 'passwords-properties' };
+        }
+        if (!cp.children['Users']) {
+          cp.children['Users'] = { type: 'action', name: 'Users', icon: 'users', action: 'users-properties' };
+        }
+        if (!cp.children['Scheduled Tasks']) {
+          cp.children['Scheduled Tasks'] = { type: 'action', name: 'Scheduled Tasks', icon: 'mstask', action: 'scheduled-tasks' };
+        }
         this.saveToStorage();
       }
 
       const winDir = this.resolvePath(['My Computer', 'C:', 'WINDOWS']);
+      if (winDir && winDir.children) {
+        if (!winDir.children['Fonts']) {
+          winDir.children['Fonts'] = {
+            type: 'folder',
+            name: 'Fonts',
+            icon: 'fonts',
+            children: this.getDefaultFontsTree()
+          };
+        } else if (!winDir.children['Fonts'].children || Object.keys(winDir.children['Fonts'].children).length === 0) {
+          winDir.children['Fonts'].children = this.getDefaultFontsTree();
+        }
+        if (!winDir.children['WELCOME.EXE']) {
+          winDir.children['WELCOME.EXE'] = { type: 'executable', name: 'WELCOME.EXE', icon: 'welcome', app: 'welcome' };
+        }
+        if (!winDir.children['WINIPCFG.EXE']) {
+          winDir.children['WINIPCFG.EXE'] = { type: 'executable', name: 'WINIPCFG.EXE', icon: 'network-cpl', app: 'winipcfg' };
+        }
+        if (!winDir.children['MSINFO32.EXE']) {
+          winDir.children['MSINFO32.EXE'] = { type: 'executable', name: 'MSINFO32.EXE', icon: 'msinfo32', app: 'msinfo32' };
+        }
+        if (!winDir.children['SFC.EXE']) {
+          winDir.children['SFC.EXE'] = { type: 'executable', name: 'SFC.EXE', icon: 'sfc', app: 'sfc' };
+        }
+        if (!winDir.children['SCANREGW.EXE']) {
+          winDir.children['SCANREGW.EXE'] = { type: 'executable', name: 'SCANREGW.EXE', icon: 'regedit', app: 'scanreg' };
+        }
+        if (!winDir.children['DRVSPACE.EXE']) {
+          winDir.children['DRVSPACE.EXE'] = { type: 'executable', name: 'DRVSPACE.EXE', icon: 'drvspace', app: 'drvspace' };
+        }
+        if (!winDir.children['MSHEARTS.EXE']) {
+          winDir.children['MSHEARTS.EXE'] = { type: 'executable', name: 'MSHEARTS.EXE', icon: 'hearts', app: 'hearts' };
+        }
+        if (!winDir.children['FONTVIEW.EXE']) {
+          winDir.children['FONTVIEW.EXE'] = { type: 'executable', name: 'FONTVIEW.EXE', icon: 'file-ttf', app: 'fontview' };
+        }
+      }
       if (winDir && winDir.children) {
         if (!winDir.children['MSCONFIG.EXE']) {
           winDir.children['MSCONFIG.EXE'] = { type: 'executable', name: 'MSCONFIG.EXE', icon: 'msconfig', app: 'msconfig' };
@@ -1240,6 +1696,11 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
                   demoFiles['nhl98demo.exe'].icon = 'setup-installer';
                   changed = true;
                 }
+                if (demoFiles['worldcup98.exe'] && demoFiles['worldcup98.exe'].gameId !== 'worldcup98') {
+                  demoFiles['worldcup98.exe'].gameId = 'worldcup98';
+                  demoFiles['worldcup98.exe'].icon = 'setup-installer';
+                  changed = true;
+                }
               }
               if (dDrive.children['video'] && dDrive.children['video'].children) {
                 const vids = dDrive.children['video'].children;
@@ -1266,6 +1727,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
   }
 
   ejectCdRom(drive = 'D:') {
+    const prevDiscId = this.cdRomState && this.cdRomState.inserted ? this.cdRomState.discId : null;
     this.cdRomState = {
       inserted: false,
       discId: null,
@@ -1294,6 +1756,9 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     }
     if (window.desktop && window.desktop.render) {
       window.desktop.render();
+    }
+    if (window.appClippy && window.appClippy.onCdRomEjected) {
+      window.appClippy.onCdRomEjected(prevDiscId, drive);
     }
   }
 
@@ -1335,6 +1800,9 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     }
     if (window.desktop && window.desktop.render) {
       window.desktop.render();
+    }
+    if (window.appClippy && window.appClippy.onCdRomInserted) {
+      window.appClippy.onCdRomInserted(discId, drive);
     }
   }
 
@@ -1503,7 +1971,8 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
         children: {
           'bc3k.exe': { type: 'executable', name: 'bc3k.exe', icon: 'file-exe', app: 'setup', content: 'Battlecruiser 3000AD Full Game' },
           'bc3k104b.exe': { type: 'executable', name: 'bc3k104b.exe', icon: 'file-exe', app: 'setup', content: 'Battlecruiser 3000AD Patch 1.04b' },
-          'ar32e301.exe': { type: 'executable', name: 'ar32e301.exe', icon: 'file-exe', app: 'setup', content: 'Adobe Acrobat Reader 3.01 Installer' }
+          'ar32e301.exe': { type: 'executable', name: 'ar32e301.exe', icon: 'acrobat', app: 'acrobat', content: 'Adobe Acrobat Reader 3.01' },
+          'BC3000AD_MANUAL.PDF': { type: 'file', name: 'BC3000AD_MANUAL.PDF', icon: 'file-pdf', app: 'acrobat', content: 'BC3000AD_MANUAL.PDF' }
         }
       },
       'demo': {
@@ -1520,7 +1989,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           'demour-nointro.exe': { type: 'executable', name: 'demour-nointro.exe', icon: 'file-exe', app: 'setup', content: 'Ultim@te Race Pro Demo (MicroProse)' },
           'lb2demo.exe': { type: 'executable', name: 'lb2demo.exe', icon: 'file-exe', app: 'setup', content: 'Jane\'s Longbow 2 Helicopter Demo' },
           'nhl98demo.exe': { type: 'executable', name: 'nhl98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'hockey', content: 'EA Sports NHL 98 Demo Installer' },
-          'worldcup98.exe': { type: 'executable', name: 'worldcup98.exe', icon: 'file-exe', app: 'setup', content: 'EA Sports World Cup 98 Demo' },
+          'worldcup98.exe': { type: 'executable', name: 'worldcup98.exe', icon: 'setup-installer', app: 'setup', gameId: 'worldcup98', content: 'EA Sports World Cup 98 Demo Installer' },
           'msgolf98.exe': { type: 'executable', name: 'msgolf98.exe', icon: 'file-exe', app: 'setup', content: 'Microslop Golf 1998 Edition Demo' },
           'nic_demo.exe': { type: 'executable', name: 'nic_demo.exe', icon: 'file-exe', app: 'setup', content: 'Nightmare Creatures Demo (Activision)' },
           'pcdemo.exe': { type: 'executable', name: 'pcdemo.exe', icon: 'file-exe', app: 'setup', content: 'Panzer Commander Tank Sim Demo' },
@@ -1589,6 +2058,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           'cc32r405.exe': { type: 'executable', name: 'cc32r405.exe', icon: 'file-exe', app: 'setup', content: 'Netscape Communicator 4.05 Russian' },
           'cc32e405.exe': { type: 'executable', name: 'cc32e405.exe', icon: 'file-exe', app: 'setup', content: 'Netscape Communicator 4.05 English' },
           'icq98a.exe': { type: 'executable', name: 'icq98a.exe', icon: 'file-exe', app: 'setup', content: 'Mirabilis ICQ98a Installer' },
+          'mirc32.exe': { type: 'executable', name: 'mirc32.exe', icon: 'mirc', app: 'mirc', content: 'mIRC32 v5.41 RusNet Client' },
           'the_bat.exe': { type: 'executable', name: 'the_bat.exe', icon: 'file-exe', app: 'setup', content: 'The Bat! 1.0 Email Client' },
           'windownload.exe': { type: 'executable', name: 'windownload.exe', icon: 'file-exe', app: 'setup', content: 'WinDownload 4.01' },
           'cppro.exe': { type: 'executable', name: 'cppro.exe', icon: 'file-exe', app: 'setup', content: 'ConnectionPal Professional' },
@@ -1617,11 +2087,12 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
         name: 'soft_u',
         icon: 'folder',
         children: {
-          'acdc3223.exe': { type: 'executable', name: 'acdc3223.exe', icon: 'file-exe', app: 'setup', content: 'ACDSee 32 v2.23' },
+          'acdc3223.exe': { type: 'executable', name: 'acdc3223.exe', icon: 'acdsee', app: 'acdsee', content: 'ACDSee 32 v2.23' },
+          'ft2.exe': { type: 'executable', name: 'ft2.exe', icon: 'fasttracker', app: 'fasttracker', content: 'FastTracker 98 v2.09 Demoscene Studio' },
           'iview283.exe': { type: 'executable', name: 'iview283.exe', icon: 'file-exe', app: 'setup', content: 'IrfanView 32 v2.83' },
-          'wintn975_616.exe': { type: 'executable', name: 'wintn975_616.exe', icon: 'file-exe', app: 'setup', content: 'Wintune 97 for Win 95/NT' },
-          'clibench.exe': { type: 'executable', name: 'clibench.exe', icon: 'file-exe', app: 'setup', content: 'CliBench MK II CPU & HDD Benchmark' },
-          'mon_test.exe': { type: 'executable', name: 'mon_test.exe', icon: 'file-exe', app: 'setup', content: 'Nokia Monitor Tester' },
+          'wintn975_616.exe': { type: 'executable', name: 'wintn975_616.exe', icon: 'wintune', app: 'wintune', content: 'Wintune 97 for Win 98' },
+          'clibench.exe': { type: 'executable', name: 'clibench.exe', icon: 'wintune', app: 'clibench', content: 'CliBench MK II CPU & HDD Benchmark' },
+          'mon_test.exe': { type: 'executable', name: 'mon_test.exe', icon: 'mon-test', app: 'mon_test', content: 'Nokia Monitor Tester' },
           'v95i319e.exe': { type: 'executable', name: 'v95i319e.exe', icon: 'file-exe', app: 'setup', content: 'McAfee VirusScan 3.19' },
           'tbw95807.exe': { type: 'executable', name: 'tbw95807.exe', icon: 'file-exe', app: 'setup', content: 'Thunderbyte Anti-Virus 8.07' },
           'dx6rus.exe': { type: 'executable', name: 'dx6rus.exe', icon: 'file-exe', app: 'setup', content: 'DirectX 6.0 Russian' },
@@ -1636,7 +2107,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
         icon: 'folder',
         children: {
           'Winamp192.exe': { type: 'executable', name: 'Winamp192.exe', icon: 'winamp', app: 'setup', gameId: 'winamp', content: 'Winamp 1.92 Setup' },
-          'cdex014.exe': { type: 'executable', name: 'cdex014.exe', icon: 'file-exe', app: 'setup', content: 'CDex 0.14 Audio Ripper' },
+          'cdex014.exe': { type: 'executable', name: 'cdex014.exe', icon: 'cdex', app: 'cdex', content: 'CDex 0.14 Audio Ripper' },
           'skins': {
             type: 'folder',
             name: 'skins',
@@ -1708,8 +2179,9 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
 
 6. Cyberspace Times (Ежедневная цифровая газета):
    http://www.retro-news98.com
-   - 8 авторских статей (релиз Half-Life, суд RIAA против MP3, дефолт, Y2K).
-   - Интерактивный опрос читателей с графиками и система комментариев.
+   - 20 больших статей и репортажей на первой полосе (Win 98 SE, Celeron 300A,
+     COMDEX и Voodoo2, Half-Life, Steam, суд RIAA против MP3, CIH, МКС «Заря», Y2K).
+   - Рубрикатор, тематический разворот, сохранение статей в .TXT, опрос и комментарии.
 
 7. Microslop Win 98 Web Portal (Официальный справочный портал):
    http://www.microslop.com
@@ -1766,6 +2238,177 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
 ================================================================`;
   }
 
+  getDefaultFontsTree() {
+    return {
+      'ARIAL.TTF': { type: 'file', name: 'ARIAL.TTF', icon: 'file-ttf', app: 'fontview', fontName: 'Arial (TrueType)', fontFamily: 'Arial, sans-serif', version: 'Version 2.76', size: '275 KB' },
+      'COMIC.TTF': { type: 'file', name: 'COMIC.TTF', icon: 'file-ttf', app: 'fontview', fontName: 'Comic Sans MS (TrueType)', fontFamily: '"Comic Sans MS", cursive', version: 'Version 2.00', size: '124 KB' },
+      'COUR.TTF': { type: 'file', name: 'COUR.TTF', icon: 'file-ttf', app: 'fontview', fontName: 'Courier New (TrueType)', fontFamily: '"Courier New", monospace', version: 'Version 2.76', size: '296 KB' },
+      'IMPACT.TTF': { type: 'file', name: 'IMPACT.TTF', icon: 'file-ttf', app: 'fontview', fontName: 'Impact (TrueType)', fontFamily: 'Impact, sans-serif', version: 'Version 2.20', size: '132 KB' },
+      'TAHOMA.TTF': { type: 'file', name: 'TAHOMA.TTF', icon: 'file-ttf', app: 'fontview', fontName: 'Tahoma (TrueType)', fontFamily: 'Tahoma, sans-serif', version: 'Version 2.60', size: '258 KB' },
+      'TIMES.TTF': { type: 'file', name: 'TIMES.TTF', icon: 'file-ttf', app: 'fontview', fontName: 'Times New Roman (TrueType)', fontFamily: '"Times New Roman", serif', version: 'Version 2.76', size: '322 KB' },
+      'TREBUC.TTF': { type: 'file', name: 'TREBUC.TTF', icon: 'file-ttf', app: 'fontview', fontName: 'Trebuchet MS (TrueType)', fontFamily: '"Trebuchet MS", sans-serif', version: 'Version 1.15', size: '68 KB' },
+      'VERDANA.TTF': { type: 'file', name: 'VERDANA.TTF', icon: 'file-ttf', app: 'fontview', fontName: 'Verdana (TrueType)', fontFamily: 'Verdana, sans-serif', version: 'Version 2.35', size: '136 KB' },
+      'SERIFE.FON': { type: 'file', name: 'SERIFE.FON', icon: 'file-fon', app: 'fontview', fontName: 'MS Sans Serif 8,10,12,14,18,24 (VGA res)', fontFamily: '"MS Sans Serif", Tahoma, sans-serif', version: 'Raster Font 4.10.1998', size: '64 KB' },
+      'VGASYS.FON': { type: 'file', name: 'VGASYS.FON', icon: 'file-fon', app: 'fontview', fontName: 'System (VGA res)', fontFamily: 'monospace', version: 'Raster Font 4.10.1998', size: '18 KB' }
+    };
+  }
+
+  getDefaultNetworkTree() {
+    return {
+      'Entire Network': {
+        type: 'folder',
+        name: 'Entire Network',
+        icon: 'network-group',
+        comment: 'Вся сеть (Microslop Network)',
+        children: {
+          'WORKGROUP': {
+            type: 'folder',
+            name: 'WORKGROUP',
+            icon: 'network-group',
+            comment: 'Рабочая группа офиса и дома',
+            children: {
+              'ADMIN-PC': {
+                type: 'folder',
+                name: 'ADMIN-PC',
+                icon: 'network-pc',
+                comment: 'Pentium II 350MHz (Главный ПК)',
+                children: {
+                  'SharedDocs': {
+                    type: 'folder',
+                    name: 'SharedDocs',
+                    icon: 'folder-shared',
+                    comment: 'Общие документы',
+                    children: {
+                      'LAN_PARTY_98.TXT': {
+                        type: 'file',
+                        name: 'LAN_PARTY_98.TXT',
+                        icon: 'file-txt',
+                        app: 'notepad',
+                        size: '2 KB',
+                        content: '=== СПИСОК НА СУББОТНИЙ LAN-ТУРНИР (ОКТЯБРЬ 1998) ===\r\n1. DOOM II / Quake II Deathmatch (IPX/SPX и TCP/IP 192.168.0.x)\r\n2. Червы (The Microslop Hearts Network) — стол создаёт Мишка!\r\n3. Не забыть коаксиальный Т-коннектор BNC и два терминатора 50 Ом!'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      'ADMIN-PC': {
+        type: 'folder',
+        name: 'ADMIN-PC',
+        icon: 'network-pc',
+        comment: 'Pentium II 350MHz (Этот компьютер)',
+        children: {
+          'SharedDocs': {
+            type: 'folder',
+            name: 'SharedDocs',
+            icon: 'folder-shared',
+            comment: 'Общие документы',
+            children: {
+              'LAN_PARTY_98.TXT': {
+                type: 'file',
+                name: 'LAN_PARTY_98.TXT',
+                icon: 'file-txt',
+                app: 'notepad',
+                size: '2 KB',
+                content: '=== СПИСОК НА СУББОТНИЙ LAN-ТУРНИР (ОКТЯБРЬ 1998) ===\r\n1. DOOM II / Quake II Deathmatch (IPX/SPX и TCP/IP 192.168.0.x)\r\n2. Червы (The Microslop Hearts Network) — стол создаёт Мишка!\r\n3. Не забыть коаксиальный Т-коннектор BNC и два терминатора 50 Ом!'
+              }
+            }
+          }
+        }
+      },
+      'FILESERVER': {
+        type: 'folder',
+        name: 'FILESERVER',
+        icon: 'network-pc',
+        comment: 'Файловый сервер 10Base-T (192.168.0.2)',
+        children: {
+          'Public': {
+            type: 'folder',
+            name: 'Public',
+            icon: 'folder-shared',
+            comment: 'Общий файлообменник',
+            children: {
+              'NET_README.TXT': {
+                type: 'file',
+                name: 'NET_README.TXT',
+                icon: 'file-txt',
+                app: 'notepad',
+                size: '3 KB',
+                content: 'Сервер рабочей группы WORKGROUP (Win NT 4.0 / Samba)\r\nIP-адрес: 192.168.0.2\r\nМаска подсети: 255.255.255.0\r\nСетевой принтер: \\\\FILESERVER\\HP_LaserJet_4L'
+              },
+              'WIN98_TIPS.TXT': {
+                type: 'file',
+                name: 'WIN98_TIPS.TXT',
+                icon: 'file-txt',
+                app: 'notepad',
+                size: '4 KB',
+                content: 'Полезные команды «Выполнить» в Win 98 SE:\r\n- winipcfg  (конфигурация IP)\r\n- msinfo32  (сведения о системе)\r\n- sfc       (проверка системных файлов)\r\n- scanregw  (проверка реестра)\r\n- drvspace  (уплотнение диска DriveSpace 3)\r\n- mshearts  (сетевая карточная игра Червы)'
+              }
+            }
+          },
+          'Drivers_98': {
+            type: 'folder',
+            name: 'Drivers_98',
+            icon: 'folder-shared',
+            comment: 'Драйверы 3dfx, Sound Blaster и Realtek',
+            children: {
+              'RTL8029.INF': {
+                type: 'file',
+                name: 'RTL8029.INF',
+                icon: 'file-txt',
+                app: 'notepad',
+                size: '5 KB',
+                content: '[Version]\r\nSignature="$CHICAGO$"\r\nClass=Net\r\nProvider=%Realtek%\r\nDriverVer=05/11/1998,4.10.1998\r\nAdapter=Realtek RTL8029(AS) PCI Ethernet Adapter'
+              },
+              'SB16AWE.INF': {
+                type: 'file',
+                name: 'SB16AWE.INF',
+                icon: 'file-txt',
+                app: 'notepad',
+                size: '4 KB',
+                content: '[Version]\r\nSignature="$CHICAGO$"\r\nClass=MEDIA\r\nAdapter=Creative Sound Blaster 16 / AWE64 PnP (A220 I5 D1 H5 P330)'
+              }
+            }
+          },
+          'HP LaserJet 4L': {
+            type: 'action',
+            name: 'HP LaserJet 4L',
+            icon: 'printer',
+            action: 'printers-folder',
+            comment: 'Сетевой лазерный принтер LPT1'
+          }
+        }
+      },
+      'MISHA-PC': {
+        type: 'folder',
+        name: 'MISHA-PC',
+        icon: 'network-pc',
+        comment: 'Компьютер Мишки (кв. 42, коаксиал RG-58)',
+        children: {
+          'DOOM_LAN': {
+            type: 'folder',
+            name: 'DOOM_LAN',
+            icon: 'folder-shared',
+            comment: 'Карты и конфиги для игры по сетке',
+            children: {
+              'DWANGO5.TXT': {
+                type: 'file',
+                name: 'DWANGO5.TXT',
+                icon: 'file-txt',
+                app: 'notepad',
+                size: '2 KB',
+                content: 'Лёха, заходи в Червы (MSHEARTS.EXE) или запускай DOOM по IPX!\r\nМой IP: 192.168.0.15, карточка Realtek 8029 на 10 Мбит/с.'
+              }
+            }
+          }
+        }
+      }
+    };
+  }
+
   getDefaultTree() {
     return {
       type: 'root',
@@ -1776,6 +2419,23 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           name: 'My Computer',
           icon: 'my-computer',
           children: {
+            'A:': {
+              type: 'drive',
+              name: 'Диск 3,5 (A:)',
+              icon: 'drive-floppy',
+              driveType: 'floppy',
+              volumeLabel: 'BOOT98_FD',
+              children: {
+                'NOTES98.TXT': {
+                  type: 'file',
+                  name: 'NOTES98.TXT',
+                  icon: 'file-txt',
+                  app: 'notepad',
+                  size: '1 KB',
+                  content: 'Дискета 3,5" HD (1,44 МБ) — Verbatim DataLifePlus MF-2HD\r\nЗаметки по информатике и шпаргалка по QBasic / DOS.'
+                }
+              }
+            },
             'C:': {
               type: 'drive',
               name: '(C:)',
@@ -1787,6 +2447,15 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
                   icon: 'folder',
                   children: {
                     'SYSTEM': { type: 'folder', name: 'SYSTEM', icon: 'folder', children: {} },
+                    'Fonts': { type: 'folder', name: 'Fonts', icon: 'fonts', children: this.getDefaultFontsTree() },
+                    'WELCOME.EXE': { type: 'executable', name: 'WELCOME.EXE', icon: 'welcome', app: 'welcome' },
+                    'WINIPCFG.EXE': { type: 'executable', name: 'WINIPCFG.EXE', icon: 'network-cpl', app: 'winipcfg' },
+                    'MSINFO32.EXE': { type: 'executable', name: 'MSINFO32.EXE', icon: 'msinfo32', app: 'msinfo32' },
+                    'SFC.EXE': { type: 'executable', name: 'SFC.EXE', icon: 'sfc', app: 'sfc' },
+                    'SCANREGW.EXE': { type: 'executable', name: 'SCANREGW.EXE', icon: 'regedit', app: 'scanreg' },
+                    'DRVSPACE.EXE': { type: 'executable', name: 'DRVSPACE.EXE', icon: 'drvspace', app: 'drvspace' },
+                    'MSHEARTS.EXE': { type: 'executable', name: 'MSHEARTS.EXE', icon: 'hearts', app: 'hearts' },
+                    'FONTVIEW.EXE': { type: 'executable', name: 'FONTVIEW.EXE', icon: 'file-ttf', app: 'fontview' },
                     'MEDIA': {
                       type: 'folder',
                       name: 'MEDIA',
@@ -1812,6 +2481,16 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
                     'SNDVOL32.EXE': { type: 'executable', name: 'SNDVOL32.EXE', icon: 'volume-mixer', app: 'sndvol32' },
                     'CLEANMGR.EXE': { type: 'executable', name: 'CLEANMGR.EXE', icon: 'cleanmgr', app: 'cleanmgr' },
                     'COMMAND.COM': { type: 'executable', name: 'COMMAND.COM', icon: 'dos-prompt', app: 'command' },
+                    'QBASIC.EXE': { type: 'executable', name: 'QBASIC.EXE', icon: 'qbasic', app: 'qbasic' },
+                    'CDPLAYER.EXE': { type: 'executable', name: 'CDPLAYER.EXE', icon: 'cdplayer', app: 'cdplayer' },
+                    'SYSMON.EXE': { type: 'executable', name: 'SYSMON.EXE', icon: 'sysmon', app: 'sysmon' },
+                    'HYPERTRM.EXE': { type: 'executable', name: 'HYPERTRM.EXE', icon: 'hypertrm', app: 'hypertrm' },
+                    'CLIPBRD.EXE': { type: 'executable', name: 'CLIPBRD.EXE', icon: 'clipbrd', app: 'clipbrd' },
+                    'MIRC32.EXE': { type: 'executable', name: 'MIRC32.EXE', icon: 'mirc', app: 'mirc' },
+                    'FT2.EXE': { type: 'executable', name: 'FT2.EXE', icon: 'fasttracker', app: 'fasttracker' },
+                    'AR32E301.EXE': { type: 'executable', name: 'AR32E301.EXE', icon: 'acrobat', app: 'acrobat' },
+                    'ACDC3223.EXE': { type: 'executable', name: 'ACDC3223.EXE', icon: 'acdsee', app: 'acdsee' },
+                    'EMULAND98.EXE': { type: 'executable', name: 'EMULAND98.EXE', icon: 'emulator', app: 'emulator' },
                     'WIN.INI': { type: 'file', name: 'WIN.INI', icon: 'file-txt', content: '[windows]\r\nload=\r\nrun=\r\nNullPort=None\r\nDeviceNotSelectedTimeout=15\r\nTransmissionRetryTimeout=45' },
                     'SYSTEM.INI': { type: 'file', name: 'SYSTEM.INI', icon: 'file-txt', content: '[boot]\r\nshell=Explorer.exe\r\nsystem.drv=system.drv\r\ndrivers=mmsystem.dll\r\n\r\n[386Enh]\r\nmouse=*vmouse\r\nnetwork=*vnetbios' },
                     'README.TXT': { type: 'file', name: 'README.TXT', icon: 'file-txt', content: 'Welcome to Microslop Win 98!\r\n\r\nThis is a nostalgic interactive web recreation.\r\nFeel free to explore, draw in Paint, calculate, or play Minesweeper.' }
@@ -1831,7 +2510,30 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
                       children: {
                         'MSPAINT.EXE': { type: 'executable', name: 'MSPAINT.EXE', icon: 'paint', app: 'paint' },
                         'CALC.EXE': { type: 'executable', name: 'CALC.EXE', icon: 'calculator', app: 'calculator' },
-                        'KODAKIMG.EXE': { type: 'executable', name: 'KODAKIMG.EXE', icon: 'imaging', app: 'imaging' }
+                        'KODAKIMG.EXE': { type: 'executable', name: 'KODAKIMG.EXE', icon: 'imaging', app: 'imaging' },
+                        'QBASIC.EXE': { type: 'executable', name: 'QBASIC.EXE', icon: 'qbasic', app: 'qbasic' },
+                        'CDPLAYER.EXE': { type: 'executable', name: 'CDPLAYER.EXE', icon: 'cdplayer', app: 'cdplayer' },
+                        'SYSMON.EXE': { type: 'executable', name: 'SYSMON.EXE', icon: 'sysmon', app: 'sysmon' },
+                        'HYPERTRM.EXE': { type: 'executable', name: 'HYPERTRM.EXE', icon: 'hypertrm', app: 'hypertrm' },
+                        'CLIPBRD.EXE': { type: 'executable', name: 'CLIPBRD.EXE', icon: 'clipbrd', app: 'clipbrd' },
+                        'MIRC32.EXE': { type: 'executable', name: 'MIRC32.EXE', icon: 'mirc', app: 'mirc' },
+                        'FT2.EXE': { type: 'executable', name: 'FT2.EXE', icon: 'fasttracker', app: 'fasttracker' },
+                        'AR32E301.EXE': { type: 'executable', name: 'AR32E301.EXE', icon: 'acrobat', app: 'acrobat' },
+                        'ACDC3223.EXE': { type: 'executable', name: 'ACDC3223.EXE', icon: 'acdsee', app: 'acdsee' },
+                        'EMULAND98.EXE': { type: 'executable', name: 'EMULAND98.EXE', icon: 'emulator', app: 'emulator' }
+                      }
+                    },
+                    'EmuLand98': {
+                      type: 'folder',
+                      name: 'EmuLand98',
+                      icon: 'folder',
+                      children: {
+                        'EMULAND98.EXE': { type: 'executable', name: 'EMULAND98.EXE', icon: 'emulator', app: 'emulator' },
+                        'NESTICLE.EXE': { type: 'executable', name: 'NESTICLE.EXE', icon: 'emulator', app: 'emulator', content: 'NESticle x.xx (Dendy / NES)' },
+                        'GENECYST.EXE': { type: 'executable', name: 'GENECYST.EXE', icon: 'emulator', app: 'emulator', content: 'Genecyst x.xx (Sega Mega Drive)' },
+                        'ZSNESW.EXE': { type: 'executable', name: 'ZSNESW.EXE', icon: 'emulator', app: 'emulator', content: 'ZSNES v0.80 (Super Nintendo)' },
+                        'VGB98.EXE': { type: 'executable', name: 'VGB98.EXE', icon: 'emulator', app: 'emulator', content: 'Virtual GameBoy v0.98 (Game Boy)' },
+                        'README.TXT': { type: 'file', name: 'README.TXT', icon: 'file-txt', app: 'notepad', content: 'Emu-Land 98 Multi-Core Station (NESticle / Genecyst / ZSNES / Virtual GameBoy)\r\n==========================================================================\r\nПоддерживаемые форматы картриджей с сайта http://www.emuland98.ru:\r\n- .NES (Dendy / Nintendo Entertainment System)\r\n- .BIN (Sega Mega Drive / Genesis)\r\n- .SMC (Super Nintendo Entertainment System)\r\n- .GB  (Nintendo Game Boy DMG-01)\r\n\r\nСкачивайте проверенные GoodDump ROM-образы в Internet Explorer на http://www.emuland98.ru\r\nи открывайте их двойным щелчком из папки C:\\My Documents\\Downloads!' }
                       }
                     },
                     'Internet Explorer': {
@@ -1879,6 +2581,20 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
                           icon: 'file-music',
                           app: 'winamp',
                           content: 'content/music/Intro.mp3'
+                        },
+                        'ENLIGHT98.XM': {
+                          type: 'file',
+                          name: 'ENLIGHT98.XM',
+                          icon: 'file-xm',
+                          app: 'fasttracker',
+                          content: 'ENLIGHT98.XM'
+                        },
+                        'FUTURE_CREW.XM': {
+                          type: 'file',
+                          name: 'FUTURE_CREW.XM',
+                          icon: 'file-xm',
+                          app: 'fasttracker',
+                          content: 'FUTURE_CREW.XM'
                         }
                       }
                     },
@@ -1948,6 +2664,71 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
                       icon: 'file-rtf',
                       app: 'wordpad',
                       content: '[RTF Document: Реферат по истории]'
+                    },
+                    'HOMEWORK.BAS': {
+                      type: 'file',
+                      name: 'HOMEWORK.BAS',
+                      icon: 'file-bas',
+                      app: 'qbasic',
+                      content: '10 CLS\n20 COLOR 14, 0\n30 PRINT "================================="\n40 PRINT " ПРИВЕТ ИЗ 1998 ГОДА! WIN 98 "\n50 PRINT "================================="\n60 COLOR 10, 0\n70 FOR I = 1 TO 5\n80   PRINT "Загрузка процессора Pentium II: "; I * 20; "%"\n90   SOUND 300 + I * 110, 2\n100 NEXT I\n110 COLOR 11, 0\n120 PRINT "Готово! Запуск Wolfenstein 3D..."\n130 END'
+                    },
+                    'STARFIELD.BAS': {
+                      type: 'file',
+                      name: 'STARFIELD.BAS',
+                      icon: 'file-bas',
+                      app: 'qbasic',
+                      content: '10 SCREEN 13\n20 CLS\n30 FOR I = 1 TO 140\n40   X = INT(RND * 320)\n50   Y = INT(RND * 200)\n60   C = 7 + (I MOD 9)\n70   PSET (X, Y), C\n80 NEXT I\n90 FOR R = 42 TO 2 STEP -2\n100  C = 1 + (R MOD 14)\n110  CIRCLE (160, 100), R, C\n120 NEXT R\n130 BEEP\n140 END'
+                    },
+                    'MANDEL.BAS': {
+                      type: 'file',
+                      name: 'MANDEL.BAS',
+                      icon: 'file-bas',
+                      app: 'qbasic',
+                      content: '10 SCREEN 13\n20 CLS\n30 PRINT "Mandelbrot 3dfx FPU Test..."\n40 END'
+                    },
+                    'NightOwl_BBS.ht': {
+                      type: 'file',
+                      name: 'NightOwl_BBS.ht',
+                      icon: 'file-ht',
+                      app: 'hypertrm',
+                      stationId: 'nightowl',
+                      content: 'HyperTerminal Session\nStation=nightowl\nPhone=095-932-4812'
+                    },
+                    'DemosGate_Fido.ht': {
+                      type: 'file',
+                      name: 'DemosGate_Fido.ht',
+                      icon: 'file-ht',
+                      app: 'hypertrm',
+                      stationId: 'demosgate',
+                      content: 'HyperTerminal Session\nStation=demosgate\nPhone=812-315-9800'
+                    },
+                    'SECRET_CLIP.CLP': {
+                      type: 'file',
+                      name: 'SECRET_CLIP.CLP',
+                      icon: 'file-clp',
+                      app: 'clipbrd',
+                      content: '=== ДАМП БУФЕРА ОБМЕНА WIN 98 (SECRET_CLIP.CLP) ===\nПароль архиватора: 1998\nУзел FidoNet: Night Owl BBS 2:5020/98 (т. 095-932-4812)\nЧастота разгона шины FSB в BIOS: 112 МГц (CAS Latency 2)'
+                    },
+                    'BC3000AD_MANUAL.PDF': {
+                      type: 'file',
+                      name: 'BC3000AD_MANUAL.PDF',
+                      icon: 'file-pdf',
+                      app: 'acrobat',
+                      content: 'BC3000AD_MANUAL.PDF'
+                    },
+                    'VOODOO2_SPEC.PDF': {
+                      type: 'file',
+                      name: 'VOODOO2_SPEC.PDF',
+                      icon: 'file-pdf',
+                      app: 'acrobat',
+                      content: 'VOODOO2_SPEC.PDF'
+                    },
+                    'WIN98SE_RESKIT.PDF': {
+                      type: 'file',
+                      name: 'WIN98SE_RESKIT.PDF',
+                      icon: 'file-pdf',
+                      app: 'acrobat',
+                      content: 'WIN98SE_RESKIT.PDF'
                     }
                   }
                 },
@@ -1957,6 +2738,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
                   icon: 'folder',
                   children: {
                     'WINMINE.EXE': { type: 'executable', name: 'WINMINE.EXE', icon: 'minesweeper', app: 'minesweeper' },
+                    'MSHEARTS.EXE': { type: 'executable', name: 'MSHEARTS.EXE', icon: 'hearts', app: 'hearts' },
                     'FREECELL.EXE': { type: 'executable', name: 'FREECELL.EXE', icon: 'freecell', app: 'freecell' }
                   }
                 },
@@ -1989,6 +2771,8 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
               driveType: 'cdrom',
               children: this.getIgromaniaCdTree()
             },
+            'Printers': { type: 'action', name: 'Printers', icon: 'printers', action: 'printers-folder' },
+            'Scheduled Tasks': { type: 'action', name: 'Scheduled Tasks', icon: 'mstask', action: 'scheduled-tasks' },
             'Control Panel': {
               type: 'special',
               name: 'Control Panel',
@@ -2001,10 +2785,29 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
                 'Mouse': { type: 'action', name: 'Mouse', icon: 'mouse', action: 'mouse-properties' },
                 'Multimedia': { type: 'action', name: 'Multimedia', icon: 'multimedia', action: 'multimedia-properties' },
                 'Add/Remove Programs': { type: 'action', name: 'Add/Remove Programs', icon: 'appwiz', action: 'appwiz-properties' },
-                'Internet': { type: 'action', name: 'Internet Options', icon: 'inetcpl', action: 'internet-properties' }
+                'Internet': { type: 'action', name: 'Internet Options', icon: 'inetcpl', action: 'internet-properties' },
+                'Taskbar': { type: 'action', name: 'Taskbar & Start Menu', icon: 'taskbar-props', action: 'taskbar-properties' },
+                'Power Management': { type: 'action', name: 'Power Management', icon: 'powercfg', action: 'power-properties' },
+                'Sounds': { type: 'action', name: 'Sounds', icon: 'sounds-cpl', action: 'sounds-properties' },
+                'Keyboard': { type: 'action', name: 'Keyboard', icon: 'keyboard', action: 'keyboard-properties' },
+                'Fonts': { type: 'action', name: 'Fonts', icon: 'fonts', action: 'fonts-folder' },
+                'Printers': { type: 'action', name: 'Printers', icon: 'printers', action: 'printers-folder' },
+                'Network': { type: 'action', name: 'Network', icon: 'network-cpl', action: 'network-properties' },
+                'Accessibility Options': { type: 'action', name: 'Accessibility Options', icon: 'accessibility', action: 'accessibility-properties' },
+                'Game Controllers': { type: 'action', name: 'Game Controllers', icon: 'joystick', action: 'joystick-properties' },
+                'Modems': { type: 'action', name: 'Modems', icon: 'modem', action: 'modem-properties' },
+                'Passwords': { type: 'action', name: 'Passwords', icon: 'passwords', action: 'passwords-properties' },
+                'Users': { type: 'action', name: 'Users', icon: 'users', action: 'users-properties' },
+                'Scheduled Tasks': { type: 'action', name: 'Scheduled Tasks', icon: 'mstask', action: 'scheduled-tasks' }
               }
             }
           }
+        },
+        'Network Neighborhood': {
+          type: 'special',
+          name: 'Network Neighborhood',
+          icon: 'network',
+          children: this.getDefaultNetworkTree()
         },
         'Recycle Bin': {
           type: 'recycle',
@@ -2114,6 +2917,9 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     if (name === 'Multimedia' || key === 'Multimedia') return window.i18n.t('cpanel.multimediaName');
     if (name === 'Add/Remove Programs' || key === 'Add/Remove Programs') return window.i18n.t('cpanel.appwizName');
     if (name === 'Internet Options' || key === 'Internet') return window.i18n.t('cpanel.inetName');
+    if (name === 'Taskbar & Start Menu' || key === 'Taskbar') return window.i18n.t('cpanel.taskbarName');
+    if (name === 'Power Management' || key === 'Power Management') return window.i18n.t('cpanel.powerName');
+    if (name === 'Start Menu' || key === 'Start Menu') return window.i18n.t('startmenu.rootName');
     if (name === 'Accessories') return window.i18n.t('start.accessories');
     if (name === 'Games') return window.i18n.t('start.games');
     if (name === 'Downloads' || key === 'Downloads' || name === 'downloads' || key === 'downloads') return window.i18n.t('app.myDownloads');
@@ -2123,6 +2929,20 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     if (name === 'Игромания (D:)' || key === 'Игромания (D:)') return window.i18n.t('cdrom.label');
     if (name === 'Офисные игры ’98 (D:)' || key === 'Офисные игры ’98 (D:)') return window.i18n.t('cdrom.officeLabel');
     if (name === 'Network Neighborhood' || key === 'Network Neighborhood' || name === 'Сетевое окружение' || key === 'Сетевое окружение') return window.i18n.t('app.network');
+    const isEn = window.i18n.getLanguage && window.i18n.getLanguage() === 'en';
+    if (key === 'A:' || name === 'Диск 3,5 (A:)' || name === '3½ Floppy (A:)') return isEn ? '3½ Floppy (A:)' : 'Диск 3,5 (A:)';
+    if (name === 'Fonts' || key === 'Fonts') return isEn ? 'Fonts' : 'Шрифты';
+    if (name === 'Printers' || key === 'Printers') return isEn ? 'Printers' : 'Принтеры';
+    if (name === 'Sounds' || key === 'Sounds') return isEn ? 'Sounds' : 'Звук';
+    if (name === 'Keyboard' || key === 'Keyboard') return isEn ? 'Keyboard' : 'Клавиатура';
+    if (name === 'Network' || key === 'Network') return isEn ? 'Network' : 'Сеть';
+    if (name === 'Accessibility Options' || key === 'Accessibility Options') return isEn ? 'Accessibility Options' : 'Специальные возможности';
+    if (name === 'Game Controllers' || key === 'Game Controllers') return isEn ? 'Game Controllers' : 'Игровые устройства';
+    if (name === 'Modems' || key === 'Modems') return isEn ? 'Modems' : 'Модемы';
+    if (name === 'Passwords' || key === 'Passwords') return isEn ? 'Passwords' : 'Пароли';
+    if (name === 'Users' || key === 'Users') return isEn ? 'Users' : 'Пользователи';
+    if (name === 'Scheduled Tasks' || key === 'Scheduled Tasks') return isEn ? 'Scheduled Tasks' : 'Назначенные задания';
+    if (name === 'Entire Network' || key === 'Entire Network') return isEn ? 'Entire Network' : 'Вся сеть';
     return name;
   }
 
@@ -2158,9 +2978,20 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     } else if (lower.endsWith('.rtf') || lower.endsWith('.doc') || lower.endsWith('.wri')) {
       icon = 'file-rtf';
       app = 'wordpad';
+    } else if (lower.endsWith('.ttf')) {
+      icon = 'file-ttf';
+      app = 'fontview';
+    } else if (lower.endsWith('.fon')) {
+      icon = 'file-fon';
+      app = 'fontview';
+    } else if (lower.endsWith('.bfc')) {
+      icon = 'briefcase';
     } else if (lower.endsWith('.acs') || lower.endsWith('.act')) {
       icon = 'file-actor';
       app = 'actor';
+    } else if (lower.endsWith('.nes') || lower.endsWith('.bin') || lower.endsWith('.smc') || lower.endsWith('.sfc') || lower.endsWith('.gb') || lower.endsWith('.gbc') || lower.endsWith('.smd') || lower.endsWith('.gen') || lower.endsWith('.sta')) {
+      icon = 'file-rom';
+      app = 'emulator';
     }
 
     if (typeof content === 'object' && content !== null && !Array.isArray(content)) {
@@ -2260,7 +3091,12 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     let restoredIcon = item.icon || (item.name.endsWith('.exe') ? 'file-exe' : 'file-txt');
     let restoredApp = item.app;
     if (!restoredApp) {
-      if (item.name.endsWith('.exe')) restoredApp = 'virus';
+      const lowerName = (item.name || '').toLowerCase();
+      if (lowerName.endsWith('.exe')) restoredApp = 'virus';
+      else if (lowerName.endsWith('.nes') || lowerName.endsWith('.bin') || lowerName.endsWith('.smc') || lowerName.endsWith('.gb') || lowerName.endsWith('.sta')) {
+        restoredApp = 'emulator';
+        restoredIcon = 'file-rom';
+      }
       else if (item.name.endsWith('.bmp') || item.name.endsWith('.png') || item.name.endsWith('.jpg')) {
         restoredApp = 'imaging';
         restoredIcon = 'file-bmp';
@@ -2313,7 +3149,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
   }
 
   getDesktopItems() {
-    const specialKeys = ['My Computer', 'Recycle Bin'];
+    const specialKeys = ['My Computer', 'Recycle Bin', 'Network Neighborhood'];
     if (!this.root || !this.root.children) return [];
     return Object.keys(this.root.children)
       .filter(key => !specialKeys.includes(key))
@@ -2379,6 +3215,14 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     this.saveToStorage();
     if (window.desktop && window.desktop.renderIcons) window.desktop.renderIcons();
     return true;
+  }
+
+  getNode(pathParts) {
+    return this.resolvePath(pathParts);
+  }
+
+  save() {
+    return this.saveToStorage();
   }
 }
 

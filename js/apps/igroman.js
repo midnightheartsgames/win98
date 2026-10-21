@@ -1,22 +1,17 @@
-/**
- * ИГРОМАНИЯ (Сентябрь 1998) - CD Multimedia Shell
- * Pixel-accurate web recreation of Macromedia Director 5/6 projector
- */
 class AppIgroman {
   constructor() {
-    this.currentPage = 2; // Default to Содержание (Table of Contents)
-    this.selectedPatchIndex = 1; // Default to Fallout patch (matches screenshot 3)
+    this.currentPage = 2;
+    this.selectedPatchIndex = 1;
     this.selectedSoftIndex = 0;
     this.winId = 'app_igroman';
     this.windowRef = null;
 
     if (window.gameManager) {
       window.gameManager.addListener(() => {
-        if (this.currentPage === 10 || this.currentPage === 18) this.updateView();
+        if (this.currentPage === 10 || this.currentPage === 15 || this.currentPage === 18) this.updateView();
       });
     }
 
-    // Database of 16 demo games (Pages 4 to 19, Page 3 is Demo List)
     this.games = [
       {
         page: 4,
@@ -149,6 +144,7 @@ class AppIgroman {
         req: 'Pentium-100, 16 MB RAM, видео SVGA с 1MB, Win 95, Необходим DirectX 5.0',
         desc: 'Игра EA Sports World Cup 98 дарит вам ещё одну возможность пережить все волнения только что завершившегося во Франции мундиаля! Реалистичные стадионы, официальный саундтрек Chumbawamba и 3D-анимация футболистов.',
         file: 'demo/worldcup98.exe',
+        isWorldCup98: true,
         previewColor: '#1d3557'
       },
       {
@@ -199,7 +195,6 @@ class AppIgroman {
       }
     ];
 
-    // Database of 24 patches (Page 20)
     this.patches = [
       { name: 'The Summoning', file: 'patch/SUMM_12.exe', desc: 'Данный патч сменит вашу версию игры на версию 1.2, устраняя некоторые ошибки предыдущей версии, в частности, проблемы со сбором камнеметательной машины гномов.' },
       { name: 'Fallout', file: 'patch/FALL11.exe', desc: 'Этот патч устраняет некоторые сбои в игре и убирает второе ограничение по времени. Теперь, найдя чип управления системой очистки воды, вам можно расслабиться: нападения супермутантов на Vault 13 не будет вообще.' },
@@ -227,7 +222,6 @@ class AppIgroman {
       { name: 'Jedi Knight: Dark Forces II', file: 'patch/jkupd101.exe', desc: 'Официальное обновление v1.01 для Dark Forces II: исправляет ошибки дуэлей на световых мечах и сетевой протокол DirectPlay.' }
     ];
 
-    // Database of 6 video trailers (Page 21)
     this.videos = [
       { name: 'Ultima: Ascension (Origin)', sub: '320х240, 58 сек', file: 'content/igromania/ascension.mp4' },
       { name: 'Heretic II (Activision)', sub: '160х120, 2 мин 31 сек', file: 'content/igromania/heretic.mp4' },
@@ -237,7 +231,6 @@ class AppIgroman {
       { name: 'Blackstone Chronicles (Mindscape)', sub: '320х240, 11 сек', file: 'content/igromania/Blckstn.mp4' }
     ];
 
-    // Database of popular Winamp skins
     this.popularSkins = [
       'ampman-s', 'antamp', 'atomamp', 'besttitanic', 'bfampski',
       'calamp', 'camo', 'cocaskin', 'commodore', 'daeskin',
@@ -305,23 +298,19 @@ class AppIgroman {
   buildWindowHTML() {
     return `
       <div class="igroman-window ${this.getThemeClass(this.currentPage)}" id="igroman_container">
-        <!-- Header -->
-        <div class="igroman-header" id="igroman_header">
+                <div class="igroman-header" id="igroman_header">
           <div class="igroman-watermark">ИГРОМАНИЯ</div>
           <div class="igroman-target-box">
             <div class="igroman-target-color-block"></div>
             <svg class="igroman-target-svg" viewBox="0 0 100 100" fill="none">
-              <!-- Target circles -->
-              <circle cx="50" cy="50" r="46" stroke="#ffffff" stroke-width="1.8" opacity="0.6"/>
+                            <circle cx="50" cy="50" r="46" stroke="#ffffff" stroke-width="1.8" opacity="0.6"/>
               <circle cx="50" cy="50" r="36" stroke="#ffffff" stroke-width="1.8"/>
               <circle cx="50" cy="50" r="26" stroke="#ffffff" stroke-width="1.8"/>
               <circle cx="50" cy="50" r="16" stroke="#ffffff" stroke-width="2"/>
-              <!-- Crosshair lines -->
-              <line x1="0" y1="50" x2="100" y2="50" stroke="#ffffff" stroke-width="2"/>
+                            <line x1="0" y1="50" x2="100" y2="50" stroke="#ffffff" stroke-width="2"/>
               <line x1="50" y1="0" x2="50" y2="100" stroke="#ffffff" stroke-width="2"/>
               <circle cx="50" cy="50" r="4.5" fill="#000000"/>
-              <!-- Crosshair center notch -->
-              <rect x="44" y="44" width="12" height="12" stroke="#000000" stroke-width="2" fill="none"/>
+                            <rect x="44" y="44" width="12" height="12" stroke="#000000" stroke-width="2" fill="none"/>
             </svg>
           </div>
           <div class="igroman-header-title-wrap">
@@ -329,10 +318,8 @@ class AppIgroman {
           </div>
         </div>
 
-        <!-- Body Area -->
-        <div class="igroman-body">
-          <!-- Left Sidebar Menu -->
-          <div class="igroman-sidebar" id="igroman_sidebar">
+                <div class="igroman-body">
+                    <div class="igroman-sidebar" id="igroman_sidebar">
             <div class="igroman-nav-group">
               <div class="igroman-nav-title ${this.currentPage === 2 ? 'active' : ''}" data-nav="2">СОДЕРЖАНИЕ</div>
             </div>
@@ -360,14 +347,11 @@ class AppIgroman {
             </div>
           </div>
 
-          <!-- Main Stage Content -->
-          <div class="igroman-stage" id="igroman_stage">
-            <!-- Dynamically populated -->
-          </div>
+                    <div class="igroman-stage" id="igroman_stage">
+                      </div>
         </div>
 
-        <!-- Footer Bar -->
-        <div class="igroman-footer">
+                <div class="igroman-footer">
           <div class="igroman-page-num-box" id="igroman_page_num">${this.currentPage}</div>
           <div class="igroman-footer-line"></div>
           <div class="igroman-footer-actions">
@@ -385,7 +369,6 @@ class AppIgroman {
   attachEvents(win) {
     const el = win.element;
 
-    // Sidebar navigation
     el.addEventListener('click', (e) => {
       const navTarget = e.target.closest('[data-nav]');
       if (navTarget) {
@@ -396,7 +379,6 @@ class AppIgroman {
       }
     });
 
-    // Arrow buttons
     const btnPrev = el.querySelector('#igroman_btn_prev');
     const btnNext = el.querySelector('#igroman_btn_next');
     const btnExit = el.querySelector('#igroman_btn_exit');
@@ -459,7 +441,6 @@ class AppIgroman {
     const btnNext = el.querySelector('#igroman_btn_next');
     const stage = el.querySelector('#igroman_stage');
 
-    // Update Theme
     container.className = `igroman-window ${this.getThemeClass(this.currentPage)}`;
     headerTitle.textContent = this.getSectionTitle(this.currentPage);
     pageNumEl.textContent = this.currentPage;
@@ -467,7 +448,6 @@ class AppIgroman {
     btnPrev.classList.toggle('disabled', this.currentPage <= 1);
     btnNext.classList.toggle('disabled', this.currentPage >= 26);
 
-    // Update Sidebar Active state
     el.querySelectorAll('.igroman-nav-title, .igroman-nav-subitem').forEach(item => {
       item.classList.remove('active');
     });
@@ -506,7 +486,6 @@ class AppIgroman {
       if (t) t.classList.add('active');
     }
 
-    // Render Stage Body
     stage.innerHTML = this.renderStageContent();
     this.bindStageEvents(stage);
   }
@@ -538,7 +517,6 @@ class AppIgroman {
     }
   }
 
-  // Page 1: Лицензионное соглашение
   renderLicensePage() {
     return `
       <div style="display:flex; flex-direction:column; height:100%;">
@@ -564,12 +542,10 @@ class AppIgroman {
     `;
   }
 
-  // Page 2: Содержание (Screenshot 1)
   renderContentsPage() {
     return `
       <div class="igroman-toc-container">
-        <!-- Section: ИГРАЕМ (3) -->
-        <div class="igroman-toc-section">
+                <div class="igroman-toc-section">
           <div class="igroman-toc-header blue" data-nav="3">
             <div class="igroman-toc-title">ИГРАЕМ</div>
             <div class="igroman-toc-page-num">3</div>
@@ -581,8 +557,7 @@ class AppIgroman {
           </div>
         </div>
 
-        <!-- Section: ВООРУЖАЕМСЯ (22) -->
-        <div class="igroman-toc-section">
+                <div class="igroman-toc-section">
           <div class="igroman-toc-header green" data-nav="22">
             <div class="igroman-toc-title">ВООРУЖАЕМСЯ</div>
             <div class="igroman-toc-page-num">22</div>
@@ -594,8 +569,7 @@ class AppIgroman {
           </div>
         </div>
 
-        <!-- Section: СУПЕРБОНУС (25) -->
-        <div class="igroman-toc-section">
+                <div class="igroman-toc-section">
           <div class="igroman-toc-header purple" data-nav="25">
             <div class="igroman-toc-title">СУПЕРБОНУС</div>
             <div class="igroman-toc-page-num">25</div>
@@ -608,7 +582,6 @@ class AppIgroman {
     `;
   }
 
-  // Page 3: Список демоверсий (Screenshot media_1788550588341.png)
   renderDemoListPage() {
     const listHtml = this.games.map(g => `
       <div class="igroman-demo-list-item" data-demo-page="${g.page}">
@@ -625,40 +598,29 @@ class AppIgroman {
     `;
   }
 
-  // Pages 4..19: Demo Games (Screenshot 2 for Page 16)
   renderGamePage(pageNum) {
     const game = this.games.find(g => g.page === pageNum) || this.games[0];
 
-    // For Polnaya Truba (Page 16), render the authentic scene
     let screenshotHtml = '';
     if (game.isPolnayaTruba) {
       screenshotHtml = `
         <svg viewBox="0 0 190 130" width="190" height="130" style="background:#5c544d;">
-          <!-- Concrete/metal wall -->
-          <rect width="190" height="130" fill="#665f57"/>
+                    <rect width="190" height="130" fill="#665f57"/>
           <line x1="0" y1="110" x2="190" y2="110" stroke="#333" stroke-width="1.5"/>
           <rect y="110" width="190" height="20" fill="#4d463f"/>
-          <!-- Pipe details -->
-          <rect x="10" y="20" width="16" height="85" fill="#3a332c"/>
+                    <rect x="10" y="20" width="16" height="85" fill="#3a332c"/>
           <rect x="165" y="15" width="18" height="90" fill="#3a332c"/>
-          <!-- Wall Gauge & Indicator -->
-          <circle cx="95" cy="45" r="14" fill="#332c25" stroke="#776e64" stroke-width="2"/>
+                    <circle cx="95" cy="45" r="14" fill="#332c25" stroke="#776e64" stroke-width="2"/>
           <circle cx="120" cy="42" r="4.5" fill="#ff2200"/>
-          <!-- 02-107 text on wall -->
-          <text x="100" y="80" font-family="'Courier New', monospace" font-weight="bold" font-size="12" fill="#201a14">02-107</text>
-          <!-- Glass jar with spring -->
-          <rect x="25" y="60" width="22" height="30" rx="3" fill="#88bbcc" opacity="0.75" stroke="#447788"/>
+                    <text x="100" y="80" font-family="'Courier New', monospace" font-weight="bold" font-size="12" fill="#201a14">02-107</text>
+                    <rect x="25" y="60" width="22" height="30" rx="3" fill="#88bbcc" opacity="0.75" stroke="#447788"/>
           <path d="M30 90 Q36 93 42 90 Q36 97 30 100 Q42 105 30 110" stroke="#111" stroke-width="2" fill="none"/>
-          <!-- Seesaw and creatures -->
-          <line x1="75" y1="108" x2="135" y2="98" stroke="#332211" stroke-width="3"/>
+                    <line x1="75" y1="108" x2="135" y2="98" stroke="#332211" stroke-width="3"/>
           <circle cx="105" cy="106" r="3" fill="#000"/>
-          <!-- Little alien guy -->
-          <ellipse cx="82" cy="100" rx="4" ry="7" fill="#e0e8d0"/>
+                    <ellipse cx="82" cy="100" rx="4" ry="7" fill="#e0e8d0"/>
           <circle cx="82" cy="91" r="3.5" fill="#e0e8d0"/>
-          <!-- Slime puddle -->
-          <ellipse cx="130" cy="112" rx="14" ry="4" fill="#6699aa" opacity="0.6"/>
-          <!-- Funny character -->
-          <circle cx="150" cy="102" r="7" fill="#ee9988"/>
+                    <ellipse cx="130" cy="112" rx="14" ry="4" fill="#6699aa" opacity="0.6"/>
+                    <circle cx="150" cy="102" r="7" fill="#ee9988"/>
           <ellipse cx="150" cy="93" rx="5" ry="4" fill="#ee9988"/>
         </svg>
       `;
@@ -672,17 +634,13 @@ class AppIgroman {
               <stop offset="100%" stop-color="#e67e22"/>
             </linearGradient>
           </defs>
-          <!-- Dusk Sky -->
-          <rect width="190" height="52" fill="url(#bo_sky)"/>
+                    <rect width="190" height="52" fill="url(#bo_sky)"/>
           <line x1="0" y1="52" x2="190" y2="52" stroke="#333" stroke-width="1.5"/>
-          <!-- 3D Track Perspective -->
-          <polygon points="15,130 175,130 110,52 80,52" fill="#1e1e24"/>
+                    <polygon points="15,130 175,130 110,52 80,52" fill="#1e1e24"/>
           <line x1="95" y1="52" x2="95" y2="130" stroke="#f1c40f" stroke-width="2"/>
-          <!-- Christmas Tree -->
-          <rect x="93.5" y="22" width="3" height="38" fill="#f1c40f"/>
+                    <rect x="93.5" y="22" width="3" height="38" fill="#f1c40f"/>
           <rect x="89" y="24" width="12" height="30" fill="#111"/>
-          <!-- Yellow Bulbs -->
-          <circle cx="92" cy="27" r="1.3" fill="#fff"/>
+                    <circle cx="92" cy="27" r="1.3" fill="#fff"/>
           <circle cx="98" cy="27" r="1.3" fill="#fff"/>
           <circle cx="92" cy="32" r="1.3" fill="#f39c12"/>
           <circle cx="98" cy="32" r="1.3" fill="#f39c12"/>
@@ -690,23 +648,38 @@ class AppIgroman {
           <circle cx="98" cy="37" r="1.3" fill="#f39c12"/>
           <circle cx="92" cy="43" r="1.6" fill="#2ecc71"/>
           <circle cx="98" cy="43" r="1.6" fill="#2ecc71"/>
-          <!-- Red Muscle Dragster -->
-          <rect x="42" y="84" width="40" height="22" rx="3" fill="#c0392b" stroke="#000" stroke-width="1"/>
+                    <rect x="42" y="84" width="40" height="22" rx="3" fill="#c0392b" stroke="#000" stroke-width="1"/>
           <rect x="36" y="86" width="9" height="18" fill="#111" rx="2"/>
           <rect x="76" y="91" width="7" height="11" fill="#111" rx="2"/>
           <rect x="52" y="77" width="8" height="8" fill="#ecf0f1"/>
           <polygon points="50,77 62,77 64,73 48,73" fill="#e74c3c"/>
-          <!-- Smoke from Burnout -->
-          <circle cx="36" cy="96" r="8" fill="#ecf0f1" opacity="0.75"/>
+                    <circle cx="36" cy="96" r="8" fill="#ecf0f1" opacity="0.75"/>
           <circle cx="27" cy="90" r="11" fill="#ecf0f1" opacity="0.6"/>
           <circle cx="20" cy="83" r="8" fill="#ecf0f1" opacity="0.4"/>
-          <!-- Blue Rival Car -->
-          <rect x="114" y="78" width="34" height="18" rx="2" fill="#2980b9" stroke="#000" stroke-width="1"/>
+                    <rect x="114" y="78" width="34" height="18" rx="2" fill="#2980b9" stroke="#000" stroke-width="1"/>
           <rect x="142" y="80" width="7" height="13" fill="#111"/>
           <rect x="110" y="82" width="7" height="11" fill="#111"/>
-          <!-- Header Banner -->
-          <rect x="4" y="4" width="82" height="12" fill="#cc0000" rx="1"/>
+                    <rect x="4" y="4" width="82" height="12" fill="#cc0000" rx="1"/>
           <text x="45" y="13" fill="#ffff00" font-family="'Arial Black'" font-size="7" text-anchor="middle">HOT ROD RACING</text>
+        </svg>
+      `;
+    } else if (game.isWorldCup98) {
+      screenshotHtml = `
+        <svg viewBox="0 0 190 130" width="190" height="130" style="background:#09152e; cursor:pointer;" id="worldcup98_screenshot_click" title="Нажмите для запуска EA Sports World Cup 98">
+          <rect width="190" height="130" fill="#09152e"/>
+          <rect x="12" y="20" width="166" height="98" rx="4" fill="#1e7e34" stroke="#ffffff" stroke-width="1.5"/>
+          <rect x="28" y="20" width="22" height="98" fill="#238c3b"/>
+          <rect x="72" y="20" width="22" height="98" fill="#238c3b"/>
+          <rect x="116" y="20" width="22" height="98" fill="#238c3b"/>
+          <line x1="95" y1="20" x2="95" y2="118" stroke="#ffffff" stroke-width="1.5"/>
+          <circle cx="95" cy="69" r="16" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+          <rect x="12" y="45" width="24" height="48" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+          <rect x="154" y="45" width="24" height="48" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+          <circle cx="78" cy="64" r="4" fill="#dc2626" stroke="#ffffff" stroke-width="1"/>
+          <circle cx="114" cy="72" r="4" fill="#1d4ed8" stroke="#ffffff" stroke-width="1"/>
+          <circle cx="97" cy="68" r="3" fill="#ffffff" stroke="#111111" stroke-width="1"/>
+          <rect x="18" y="4" width="154" height="13" fill="#1d4ed8" stroke="#facc15" stroke-width="1" rx="2"/>
+          <text x="95" y="13" fill="#fde047" font-family="'Arial Black', Impact, sans-serif" font-size="8" font-weight="bold" text-anchor="middle">EA SPORTS • WORLD CUP 98</text>
         </svg>
       `;
     } else if (game.isNhl98) {
@@ -719,33 +692,24 @@ class AppIgroman {
               <stop offset="100%" stop-color="#c5e3f6"/>
             </linearGradient>
           </defs>
-          <!-- Stadium Rink Background -->
-          <rect width="190" height="130" fill="#07192f"/>
-          <!-- Hockey Ice Rink -->
-          <rect x="15" y="15" width="160" height="100" rx="18" fill="url(#nhl_ice)" stroke="#3a6073" stroke-width="2"/>
-          <!-- Red Center Line -->
-          <line x1="95" y1="15" x2="95" y2="115" stroke="#cc2222" stroke-width="2"/>
-          <!-- Blue Lines -->
-          <line x1="55" y1="15" x2="55" y2="115" stroke="#1d4ed8" stroke-width="2"/>
+                    <rect width="190" height="130" fill="#07192f"/>
+                    <rect x="15" y="15" width="160" height="100" rx="18" fill="url(#nhl_ice)" stroke="#3a6073" stroke-width="2"/>
+                    <line x1="95" y1="15" x2="95" y2="115" stroke="#cc2222" stroke-width="2"/>
+                    <line x1="55" y1="15" x2="55" y2="115" stroke="#1d4ed8" stroke-width="2"/>
           <line x1="135" y1="15" x2="135" y2="115" stroke="#1d4ed8" stroke-width="2"/>
-          <!-- Center Face-off Circle -->
-          <circle cx="95" cy="65" r="18" fill="none" stroke="#1d4ed8" stroke-width="1.5"/>
+                    <circle cx="95" cy="65" r="18" fill="none" stroke="#1d4ed8" stroke-width="1.5"/>
           <circle cx="95" cy="65" r="3" fill="#1d4ed8"/>
-          <!-- Goal Creases -->
-          <path d="M 23 57 A 8 8 0 0 1 23 73 Z" fill="#93c5fd" stroke="#cc2222" stroke-width="1.5"/>
+                    <path d="M 23 57 A 8 8 0 0 1 23 73 Z" fill="#93c5fd" stroke="#cc2222" stroke-width="1.5"/>
           <line x1="23" y1="25" x2="23" y2="105" stroke="#cc2222" stroke-width="1.5"/>
           <path d="M 167 57 A 8 8 0 0 0 167 73 Z" fill="#93c5fd" stroke="#cc2222" stroke-width="1.5"/>
           <line x1="167" y1="25" x2="167" y2="105" stroke="#cc2222" stroke-width="1.5"/>
-          <!-- Faceoff Spots -->
-          <circle cx="40" cy="40" r="1.5" fill="#cc2222"/>
+                    <circle cx="40" cy="40" r="1.5" fill="#cc2222"/>
           <circle cx="40" cy="90" r="1.5" fill="#cc2222"/>
           <circle cx="150" cy="40" r="1.5" fill="#cc2222"/>
           <circle cx="150" cy="90" r="1.5" fill="#cc2222"/>
-          <!-- EA SPORTS Header Banner -->
-          <rect x="25" y="6" width="140" height="14" fill="#000066" rx="2"/>
+                    <rect x="25" y="6" width="140" height="14" fill="#000066" rx="2"/>
           <text x="95" y="16" fill="#ffff00" font-family="'Arial Black', Impact, sans-serif" font-size="8" font-weight="bold" text-anchor="middle">EA SPORTS • NHL '98</text>
-          <!-- Puck -->
-          <ellipse cx="98" cy="67" rx="3" ry="1.8" fill="#111111"/>
+                    <ellipse cx="98" cy="67" rx="3" ry="1.8" fill="#111111"/>
         </svg>
       `;
     } else {
@@ -763,12 +727,18 @@ class AppIgroman {
 
     const isBurnoutInstalled = (game.isBurnout && window.gameManager && window.gameManager.isInstalled('burnout'));
     const isHockeyInstalled = (game.isNhl98 && window.gameManager && window.gameManager.isInstalled('hockey'));
+    const isWorldCupInstalled = (game.isWorldCup98 && window.gameManager && window.gameManager.isInstalled('worldcup98'));
 
     let actionBtnHtml = '';
     if (isBurnoutInstalled) {
       actionBtnHtml = `
         <button class="igroman-btn-install" id="btn_launch_burnout" style="background:#008800;">ЗАПУСТИТЬ ИГРУ</button>
         <button class="win-btn" id="btn_reinstall_burnout" data-file="${game.file}" data-title="${game.title}" style="padding:4px 10px; font-size:11px;">Переустановить</button>
+      `;
+    } else if (isWorldCupInstalled) {
+      actionBtnHtml = `
+        <button class="igroman-btn-install" id="btn_launch_worldcup98" style="background:#008800;">ЗАПУСТИТЬ ИГРУ</button>
+        <button class="win-btn" id="btn_reinstall_worldcup98" data-file="${game.file}" data-title="${game.title}" style="padding:4px 10px; font-size:11px;">Переустановить</button>
       `;
     } else if (isHockeyInstalled) {
       actionBtnHtml = `
@@ -785,13 +755,11 @@ class AppIgroman {
       <div class="igroman-game-container">
         <div class="igroman-game-header-title">${game.title}</div>
         <div class="igroman-game-cols">
-          <!-- Left Column: Description -->
-          <div class="igroman-game-left-col">
+                    <div class="igroman-game-left-col">
             ${game.desc}
           </div>
 
-          <!-- Right Column: Specs & Screenshot -->
-          <div class="igroman-game-right-col">
+                    <div class="igroman-game-right-col">
             <div class="igroman-game-specs">
               <div><b>Разработчик:</b> ${game.dev}</div>
               <div><b>Издатель:</b> ${game.pub}</div>
@@ -813,7 +781,6 @@ class AppIgroman {
     `;
   }
 
-  // Page 20: Патчи и обновления (Screenshot 3)
   renderPatchesPage() {
     const selectedPatch = this.patches[this.selectedPatchIndex] || this.patches[0];
 
@@ -842,7 +809,6 @@ class AppIgroman {
     `;
   }
 
-  // Page 21: Видеоролики (Screenshot 4)
   renderVideosPage() {
     const videoItemsHtml = this.videos.map((v, idx) => `
       <div class="igroman-video-item" data-video-file="${v.file}" data-video-name="${v.name}">
@@ -866,12 +832,10 @@ class AppIgroman {
     `;
   }
 
-  // Page 22: Вооружаемся - Интернет (Screenshot 5)
   renderSoftInternetPage() {
     return `
       <div style="display:flex; flex-direction:column; height:100%;">
-        <!-- Section 1 -->
-        <div class="igroman-soft-category">
+                <div class="igroman-soft-category">
           <div class="igroman-soft-subheading">ЛУЧШИЕ ИНТЕРНЕТ–БРОДИЛКИ</div>
           <div class="igroman-soft-list">
             <div class="igroman-soft-item" data-install="soft_int/cc32r405.exe" data-title="Netscape Communicator 4.05 (русская версия)">
@@ -893,8 +857,7 @@ class AppIgroman {
           </div>
         </div>
 
-        <!-- Section 2 -->
-        <div class="igroman-soft-category">
+                <div class="igroman-soft-category">
           <div class="igroman-soft-subheading">ПРОГРАММЫ, КОТОРЫЕ ДЕЛАЮТ РАБОТУ В СЕТИ ПРОЩЕ И ПРИЯТНЕЕ</div>
           <div class="igroman-soft-list">
             <div class="igroman-soft-item" data-install="soft_int/cppro.exe" data-title="ConnectionPal Professional">
@@ -907,6 +870,10 @@ class AppIgroman {
             </div>
             <div class="igroman-soft-item" data-install="soft_int/icq98a.exe" data-title="ICQ98a">
               <span>ICQ98a <small style="color:#555;">(Ваш сетевой пейджер реального времени)</small></span>
+              <button class="win-btn" style="padding:1px 8px; font-size:10px;">Установить</button>
+            </div>
+            <div class="igroman-soft-item" data-install="soft_int/mirc32.exe" data-title="mIRC 32 v5.41 (RusNet)">
+              <span>mIRC 32 v5.41 <small style="color:#555;">(IRC-клиент для RusNet, DALnet и EFnet)</small></span>
               <button class="win-btn" style="padding:1px 8px; font-size:10px;">Установить</button>
             </div>
             <div class="igroman-soft-item" data-install="soft_int/the_bat.exe" data-title="The Bat!">
@@ -923,14 +890,12 @@ class AppIgroman {
     `;
   }
 
-  // Page 23: Программы для всех
   renderSoftAllPage() {
     return `
       <div style="display:flex; flex-direction:column; height:100%;">
         <div style="font-family:'Arial Black'; font-size:15px; color:#00a800; margin-bottom:10px;">ПРОГРАММЫ И УТИЛИТЫ ДЛЯ ВСЕХ</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:11px;">
-          <!-- Col 1 -->
-          <div>
+                    <div>
             <div style="font-family:'Arial Black'; color:#e60000; margin-bottom:4px;">ГРАФИКА И ВЬЮВЕРЫ</div>
             <div class="igroman-soft-item" data-install="soft_u/acdc3223.exe" data-title="ACDSee 32 v2.23">
               <span>ACDSee 32 v2.23</span>
@@ -943,7 +908,7 @@ class AppIgroman {
 
             <div style="font-family:'Arial Black'; color:#e60000; margin:8px 0 4px 0;">ТЕСТЫ И ДИАГНОСТИКА</div>
             <div class="igroman-soft-item" data-install="soft_u/wintn975_616.exe" data-title="Wintune 97">
-              <span>Wintune 97 for Win95/NT</span>
+              <span>Wintune 97 for Win 98</span>
               <button class="win-btn" style="font-size:10px;">Установить</button>
             </div>
             <div class="igroman-soft-item" data-install="soft_u/clibench.exe" data-title="CliBench MK II">
@@ -956,7 +921,6 @@ class AppIgroman {
             </div>
           </div>
 
-          <!-- Col 2 -->
           <div>
             <div style="font-family:'Arial Black'; color:#e60000; margin-bottom:4px;">АНТИВИРУСЫ</div>
             <div class="igroman-soft-item" data-install="soft_u/v95i319e.exe" data-title="McAfee VirusScan 3.19">
@@ -981,13 +945,16 @@ class AppIgroman {
               <span>PowerDesk Utilities 98</span>
               <button class="win-btn" style="font-size:10px;">Установить</button>
             </div>
+            <div class="igroman-soft-item" data-install="soft_u/ft2.exe" data-title="FastTracker 98 v2.09">
+              <span>FastTracker 98 v2.09 (XM/MOD Tracker)</span>
+              <button class="win-btn" style="font-size:10px;">Установить</button>
+            </div>
           </div>
         </div>
       </div>
     `;
   }
 
-  // Page 24: Winamp, 159 скинов и плагины
   renderWinampPage() {
     const skinCardsHtml = this.popularSkins.map(name => `
       <div class="igroman-skin-card" data-skin-name="${name}">
@@ -1000,14 +967,15 @@ class AppIgroman {
       <div style="display:flex; flex-direction:column; height:100%;">
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
           <div style="font-family:'Arial Black'; font-size:15px; color:#00a800;">WINAMP И ВСЕ–ВСЕ–ВСЕ</div>
-          <div style="display:flex; gap:8px;">
+          <div style="display:flex; gap:6px;">
             <button class="win-btn" id="btn_launch_winamp" style="font-weight:bold; padding:2px 8px;">Запустить WinAMP</button>
+            <button class="win-btn" data-install="winamp/cdex014.exe" data-title="CDex 0.14 Audio Ripper" style="padding:2px 8px;">CDex 0.14 (Граббер CD)</button>
             <button class="win-btn" id="btn_open_skins_html" style="padding:2px 8px;">Каталог HTML</button>
           </div>
         </div>
 
         <div style="font-size:11px; margin-bottom:8px; line-height:1.4;">
-          Коллекция из <b>159 лучших скинов</b> и 24 плагинов визуализации для культового проигрывателя <b>WinAMP 1.92</b>. Кликните по скину для предпросмотра и применения:
+          Коллекция из <b>159 лучших скинов</b> и 24 плагинов визуализации для культового проигрывателя <b>WinAMP 1.92</b>, а также граббер аудиодисков <b>CDex 0.14</b>. Кликните по скину для предпросмотра и применения:
         </div>
 
         <div class="igroman-skins-gallery">
@@ -1017,7 +985,6 @@ class AppIgroman {
     `;
   }
 
-  // Page 25: Супербонус - Battlecruiser 3000AD
   renderSuperbonusPage() {
     return `
       <div style="display:flex; flex-direction:column; height:100%;">
@@ -1040,7 +1007,6 @@ class AppIgroman {
     `;
   }
 
-  // Page 26: Завершение
   renderExitPage() {
     return `
       <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center;">
@@ -1059,13 +1025,11 @@ class AppIgroman {
   }
 
   bindStageEvents(stage) {
-    // License Accept / Decline
     const btnAccept = stage.querySelector('#btn_license_accept');
     const btnDecline = stage.querySelector('#btn_license_decline');
     if (btnAccept) btnAccept.addEventListener('click', () => this.goToPage(2));
     if (btnDecline) btnDecline.addEventListener('click', () => window.winManager.closeWindow(this.winId));
 
-    // Demo list items (Page 3)
     stage.querySelectorAll('.igroman-demo-list-item').forEach(item => {
       item.addEventListener('click', () => {
         const page = parseInt(item.getAttribute('data-demo-page'), 10);
@@ -1075,7 +1039,6 @@ class AppIgroman {
       });
     });
 
-    // Install game button
     const btnInstallGame = stage.querySelector('#btn_install_game');
     if (btnInstallGame) {
       btnInstallGame.addEventListener('click', () => {
@@ -1085,7 +1048,6 @@ class AppIgroman {
       });
     }
 
-    // Burnout Launch & Reinstall Buttons
     const btnLaunchBurnout = stage.querySelector('#btn_launch_burnout');
     if (btnLaunchBurnout) {
       btnLaunchBurnout.addEventListener('click', () => {
@@ -1112,7 +1074,32 @@ class AppIgroman {
       });
     }
 
-    // NHL 98 Launch & Reinstall Buttons
+    const btnLaunchWorldCup = stage.querySelector('#btn_launch_worldcup98');
+    if (btnLaunchWorldCup) {
+      btnLaunchWorldCup.addEventListener('click', () => {
+        if (window.soundSys) window.soundSys.playClick();
+        if (window.appWorldCup98) window.appWorldCup98.open();
+      });
+    }
+
+    const btnReinstallWorldCup = stage.querySelector('#btn_reinstall_worldcup98');
+    if (btnReinstallWorldCup) {
+      btnReinstallWorldCup.addEventListener('click', () => {
+        if (window.gameManager) window.gameManager.openSetupWizard('worldcup98');
+      });
+    }
+
+    const wcClickImg = stage.querySelector('#worldcup98_screenshot_click');
+    if (wcClickImg) {
+      wcClickImg.addEventListener('click', () => {
+        if (window.gameManager && window.gameManager.isInstalled('worldcup98')) {
+          if (window.appWorldCup98) window.appWorldCup98.open();
+        } else {
+          this.runInstallWizard('WORLD CUP 98', 'demo/worldcup98.exe');
+        }
+      });
+    }
+
     const btnLaunchHockey = stage.querySelector('#btn_launch_hockey');
     if (btnLaunchHockey) {
       btnLaunchHockey.addEventListener('click', () => {
@@ -1139,7 +1126,6 @@ class AppIgroman {
       });
     }
 
-    // Patch selection and install
     stage.querySelectorAll('.igroman-patch-item').forEach(item => {
       item.addEventListener('click', () => {
         const idx = parseInt(item.getAttribute('data-patch-idx'), 10);
@@ -1160,7 +1146,6 @@ class AppIgroman {
       });
     }
 
-    // Video click
     stage.querySelectorAll('.igroman-video-item').forEach(item => {
       item.addEventListener('click', () => {
         const file = item.getAttribute('data-video-file');
@@ -1172,7 +1157,6 @@ class AppIgroman {
       });
     });
 
-    // Soft install items
     stage.querySelectorAll('[data-install]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1182,7 +1166,6 @@ class AppIgroman {
       });
     });
 
-    // Winamp actions
     const btnLaunchWinamp = stage.querySelector('#btn_launch_winamp');
     if (btnLaunchWinamp) {
       btnLaunchWinamp.addEventListener('click', () => {
@@ -1223,7 +1206,6 @@ class AppIgroman {
       });
     });
 
-    // Battlecruiser buttons
     const btnBc3k = stage.querySelector('#btn_install_bc3k');
     if (btnBc3k) {
       btnBc3k.addEventListener('click', () => this.runInstallWizard('Battlecruiser 3000AD', 'bc3k/bc3k.exe'));
@@ -1237,30 +1219,69 @@ class AppIgroman {
       btnBc3kAcrobat.addEventListener('click', () => this.runInstallWizard('Adobe Acrobat Reader 3.01', 'bc3k/ar32e301.exe'));
     }
 
-    // Final exit
     const btnFinalExit = stage.querySelector('#btn_final_exit');
     if (btnFinalExit) {
       btnFinalExit.addEventListener('click', () => window.winManager.closeWindow(this.winId));
     }
   }
 
-  // Retro InstallShield Wizard modal
+  launchInstalledSoft(exePath) {
+    const p = String(exePath || '').toLowerCase();
+    if (p.includes('wintn975_616')) {
+      if (window.appWintune) window.appWintune.open('wintune');
+      return true;
+    }
+    if (p.includes('clibench')) {
+      if (window.appWintune) window.appWintune.open('clibench');
+      return true;
+    }
+    if (p.includes('mon_test')) {
+      if (window.appMonTest) window.appMonTest.open();
+      return true;
+    }
+    if (p.includes('cdex014')) {
+      if (window.appCDex) window.appCDex.open();
+      return true;
+    }
+    if (p.includes('acdc3223') || p.includes('acdsee')) {
+      if (window.appACDSee) window.appACDSee.open();
+      return true;
+    }
+    if (p.includes('ar32e301') || p.includes('acrobat')) {
+      if (window.appAcrobat) window.appAcrobat.open('BC3000AD_MANUAL.PDF');
+      return true;
+    }
+    if (p.includes('mirc32') || p.includes('mirc')) {
+      if (window.appMIRC) window.appMIRC.open();
+      return true;
+    }
+    if (p.includes('ft2') || p.includes('fasttracker')) {
+      if (window.appFastTracker) window.appFastTracker.open('ENLIGHT98.XM');
+      return true;
+    }
+    return false;
+  }
+
   runInstallWizard(appName, exePath) {
     if (window.soundSys) window.soundSys.playClick();
 
-    // Dedicated Bethesda Setup Wizard for Burnout Drag Racing
     if ((exePath === 'demo/burndemo.exe' || appName.toLowerCase().includes('burnout')) && window.gameManager) {
       window.gameManager.openSetupWizard('burnout');
       return;
     }
 
-    // Dedicated EA Sports Setup Wizard for NHL 98
+    if ((exePath === 'demo/worldcup98.exe' || appName.toLowerCase().includes('world cup')) && window.gameManager) {
+      window.gameManager.openSetupWizard('worldcup98');
+      return;
+    }
+
     if ((exePath === 'demo/nhl98demo.exe' || appName.toLowerCase().includes('nhl') || appName.toLowerCase().includes('хоккей')) && window.gameManager) {
       window.gameManager.openSetupWizard('hockey');
       return;
     }
 
     let percent = 0;
+    let finished = false;
     const dialogId = 'dlg_install_' + Date.now();
 
     const dlg = window.winManager.createWindow({
@@ -1305,6 +1326,9 @@ class AppIgroman {
     btnCancel.addEventListener('click', () => {
       cancelled = true;
       window.winManager.closeWindow(dialogId);
+      if (finished) {
+        this.launchInstalledSoft(exePath);
+      }
     });
 
     const interval = setInterval(() => {
@@ -1316,11 +1340,12 @@ class AppIgroman {
       percent += Math.floor(Math.random() * 15) + 10;
       if (percent >= 100) {
         percent = 100;
+        finished = true;
         clearInterval(interval);
         barEl.style.width = '100%';
         percentEl.textContent = '100%';
         statusEl.textContent = 'Установка успешно завершена!';
-        btnCancel.textContent = 'Готово';
+        btnCancel.textContent = 'Запустить / Готово';
         btnCancel.focus();
 
         if (window.soundSys) {

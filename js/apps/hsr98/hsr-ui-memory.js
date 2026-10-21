@@ -238,7 +238,7 @@
             c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
           }
           c.lineWidth = 1;
-          ['Белобог и окраины', 'Подземье', 'Холм Вечной Зимы'].forEach((l, i) => ui.text(l, 20, 318 - i * 104 - 46, { size: 10, bold: true, col: 'rgba(170,200,255,0.55)' }));
+          ['Белобог и окраины', 'Подземье', 'Холм вечнозимья'].forEach((l, i) => ui.text(l, 20, 318 - i * 104 - 46, { size: 10, bold: true, col: 'rgba(170,200,255,0.55)' }));
           for (let n = 1; n <= 15; n++) {
             const p = nodePos(n), on = n === this.sel, open = g.fhUnlocked(n), rec = g.fhRec(n);
             if (on) { const gl = c.createRadialGradient(p.x, p.y, 4, p.x, p.y, 34); gl.addColorStop(0, 'rgba(122,200,255,' + (0.35 + 0.15 * Math.sin(t * 4)) + ')'); gl.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = gl; c.fillRect(p.x - 34, p.y - 34, 68, 68); }

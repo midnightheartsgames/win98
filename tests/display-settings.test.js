@@ -208,13 +208,61 @@ console.log('--- Testing Display Settings Persistence ---');
 
 // Test 9: Display Properties dialog geometry and overflow containment
 {
-  const windowCss = fs.readFileSync(path.join(__dirname, '../css/window.css'), 'utf-8');
+  const windowCss = fs.readFileSync(path.join(__dirname, '../css/window.css'), 'utf-8').replace(/\r\n/g, '\n');
   assert.ok(windowCss.includes('.win-window.is-dialog .win-window-body {\n  overflow: hidden;\n}'), 'Dialog window body must contain overflow');
 
+  const cpanelCss = fs.readFileSync(path.join(__dirname, '../css/apps/cpanel-applets.css'), 'utf-8');
+  assert.ok(/\.disp-props \{[^}]*flex: 1;/.test(cpanelCss), 'Display properties fill the window body');
+  assert.ok(/\.disp-props > \.win-tab-panel \{[^}]*flex: 1;/.test(cpanelCss), 'Tab panel stretches down to the buttons');
+  assert.ok(!/\.disp-tab-content \{[^}]*min-height: 300px/.test(cpanelCss), 'Tabs no longer force a fixed height');
+  assert.ok(/\.disp-group \{[^}]*min-width: 0;/.test(cpanelCss), 'Fieldsets do not grow past the panel');
+
   const dialogsJs = fs.readFileSync(path.join(__dirname, '../js/apps/dialogs.js'), 'utf-8');
-  assert.ok(dialogsJs.includes("id: 'app_display_props'") && dialogsJs.includes('height: 485'), 'Display properties window height is >= 485');
-  assert.ok(dialogsJs.includes('margin-top:auto;') || dialogsJs.includes('margin-top: auto;'), 'Buttons container is docked with margin-top: auto');
+  assert.ok(dialogsJs.includes("id: 'app_display_props'") && dialogsJs.includes('height: 430'), 'Display properties window fits the Effects tab');
   console.log('PASS 9. Display Properties dialog geometry prevents button protrusion');
+}
+
+// Test 10: Visual effects settings, body classes and Clippy notification
+{
+  storage.clear();
+  const defaults = appDialogs.getDefaultDisplaySettings();
+  assert.equal(defaults.largeIcons, false);
+  assert.equal(defaults.iconColors, true);
+  assert.equal(defaults.animateUi, true);
+  assert.equal(defaults.fontSmoothing, true);
+  assert.equal(defaults.fullDrag, true);
+  assert.deepEqual(defaults.desktopIcons, {});
+
+  appDialogs.applyDisplaySettings({ ...defaults, iconColors: false, animateUi: false, fontSmoothing: false, fullDrag: false, largeIcons: true });
+  assert.ok(bodyClasses.has('fx-low-color'));
+  assert.ok(!bodyClasses.has('fx-animate'));
+  assert.ok(bodyClasses.has('fx-aliased-text'));
+  assert.ok(bodyClasses.has('fx-outline-drag'));
+  assert.ok(bodyClasses.has('fx-large-icons'));
+  appDialogs.applyDisplaySettings(defaults);
+  assert.ok(!bodyClasses.has('fx-low-color'));
+  assert.ok(bodyClasses.has('fx-animate'));
+  assert.ok(!bodyClasses.has('fx-aliased-text'));
+  assert.ok(!bodyClasses.has('fx-outline-drag'));
+  assert.ok(!bodyClasses.has('fx-large-icons'));
+
+  const diff = appDialogs.changedDisplayEffects(
+    { ...defaults, desktopIcons: { 'recycle-bin': 'folder' } },
+    { ...defaults, fullDrag: false, desktopIcons: { 'my-computer': 'clippy' } }
+  );
+  assert.deepEqual(diff.flags, { fullDrag: false });
+  assert.deepEqual(diff.icons.map(i => [i.slot, i.icon, i.previous]).sort(), [['my-computer', 'clippy', null], ['recycle-bin', null, 'folder']]);
+
+  const calls = [];
+  window.appClippy = { onDisplayEffectsChanged: (changes, source) => calls.push({ changes, source }) };
+  appDialogs.toggleCrt();
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].source, 'tray');
+  assert.deepEqual(calls[0].changes.flags, { crtEnabled: false });
+  appDialogs.setDisplayEffects({ crtEnabled: true }, 'clippy');
+  assert.equal(calls.length, 1, 'Clippy undo does not trigger another reaction');
+  delete window.appClippy;
+  console.log('PASS 10. Visual effects map to body classes and notify Clippy once per change');
 }
 
 console.log('ALL DISPLAY SETTINGS TESTS PASSED!');

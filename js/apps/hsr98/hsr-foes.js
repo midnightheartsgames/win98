@@ -151,6 +151,18 @@
     }
   }
 
+  function ipcArt(p, c) {
+    const skin = '#eccab4', hair = '#1a1a20';
+    seg(p, c.S, 42, 70, 40, 96, 6); seg(p, c.S, 58, 70, 60, 96, 6); p.poly('#101014', [34, 94, 46, 94, 46, 99, 33, 99]); p.poly('#101014', [54, 94, 66, 94, 67, 99, 54, 99]);
+    p.poly(c.S, [34, 34, 66, 34, 68, 72, 32, 72]); p.poly(c.Sh, [34, 34, 46, 34, 44, 72, 32, 72]);
+    p.poly(c.V, [45, 34, 55, 34, 50, 48]); p.poly(c.G, [49, 36, 51, 36, 51.4, 50, 50, 54, 48.6, 50]);
+    seg(p, c.S, 34, 38, 24, 60, 6); seg(p, c.S, 66, 38, 76, 60, 6); p.ell(skin, 24, 62, 3, 3); p.ell(skin, 76, 62, 3, 3);
+    p.ell(skin, 50, 24, 9, 10); p.poly(hair, [40, 22, 42, 12, 58, 12, 60, 22, 56, 16, 44, 16]);
+    p.poly('#101014', [42, 22, 49, 22, 49, 26, 42, 26]); p.poly('#101014', [51, 22, 58, 22, 58, 26, 51, 26]); seg(p, '#101014', 49, 23, 51, 23, 0.8);
+    if (c.gun) { p.poly('#2a2a34', [70, 56, 92, 52, 92, 58, 72, 62]); p.poly(c.G, [88, 52, 92, 52, 92, 58, 88, 58]); }
+    if (c.shield) { p.poly('#2a2a34', [70, 40, 90, 44, 88, 76, 72, 72]); p.poly(c.G, [74, 46, 86, 48, 85, 54, 74, 52]); }
+  }
+
   const ART = {
     reaver(p) {
       const A = '#2c2a3a', Ah = '#4e4c66', Ad = '#15131d', Au = '#f2c24e', Auh = '#fff2b0';
@@ -300,6 +312,7 @@
       p.poly('#6a4228', [56, 47, 71, 49, 73, 64, 60, 62]); seg(p, '#b83030', 38, 30, 64, 60, 2);
       p.ell('#c8ccd8', 38, 52, 3.2, 3.2); p.ell('#c8ccd8', 58, 52, 3.2, 3.2);
     },
+    dunn(p) { ART.lieutenant(p); },
     lieutenant(p) {
       seg(p, '#3a2e24', 33, 82, 18, 20, 2.8);
       star(p, '#5aa8f0', 17, 17, 13, 3.4); star(p, '#e0f4ff', 17, 17, 6, 1.6);
@@ -331,6 +344,23 @@
     },
     shadewalker(p) { knight(p, { A: '#2a4a9a', Ah: '#5a8ae0', Ad: '#16285a', Gl: '#70f0ff', St: '#bcd8f4' }); },
     incinerator(p) { knight(p, { A: '#6a2418', Ah: '#c0502a', Ad: '#3a100a', Gl: '#ffb040', St: '#f0d0a8' }); },
+    stormbringer(p) {
+      const A = '#1e3438', Ah = '#3e6a6a', Ad = '#0c1a1c', Gl = '#5af0c0', Wd = '#c8fff0', Bw = '#4a3a2a', Bh = '#8a6a44';
+      for (const [x, y, l] of [[18, 30, 22], [12, 52, 26], [80, 60, 18], [22, 76, 20]]) { curve(p, Gl, bez(x, y, x + l * 0.5, y - 6, x + l, y + 2, 8), 1.2, 0.4); }
+      p.poly(Ad, [34, 30, 66, 30, 76, 92, 62, 84, 50, 96, 38, 84, 24, 92]);
+      p.poly(A, [36, 30, 64, 30, 72, 88, 60, 80, 50, 90, 40, 80, 28, 88]);
+      p.poly(Ah, [36, 30, 48, 30, 44, 84, 40, 80, 28, 88]);
+      seg(p, Gl, 50, 34, 50, 78, 1.2); seg(p, Gl, 40, 40, 36, 70, 0.8); seg(p, Gl, 60, 40, 64, 70, 0.8);
+      seg(p, A, 38, 34, 26, 48, 5, 4); seg(p, A, 62, 34, 74, 44, 5, 4);
+      p.poly(Bw, [10, 44, 40, 40, 40, 46, 10, 50]); p.poly(Bh, [10, 44, 40, 40, 40, 42, 10, 46]);
+      curve(p, Bw, bez(20, 30, 14, 46, 20, 62, 10), 2.4, 1.6); seg(p, Wd, 20, 31, 20, 61, 0.6);
+      seg(p, Gl, 4, 47, 22, 46, 1.4); p.poly(Wd, [0, 47, 6, 44, 6, 50]);
+      p.ell(Ad, 74, 46, 4, 4); p.ell(Ad, 26, 48, 4, 4);
+      p.poly(Ad, [38, 8, 62, 8, 66, 30, 50, 36, 34, 30]); p.poly(A, [40, 10, 60, 10, 62, 28, 50, 33, 38, 28]);
+      p.poly(Ah, [40, 10, 50, 10, 50, 32, 38, 28]); p.poly(Ad, [44, 18, 56, 18, 55, 28, 45, 28]);
+      p.snap(Gl, 45, 21, 3.6, 2); p.snap(Gl, 51.4, 21, 3.6, 2);
+      shard(p, Ah, Gl, 50, 10, 10, -1.57, 3.4); shard(p, A, Gl, 40, 12, 9, -2.3, 3); shard(p, A, Gl, 60, 12, 9, -0.85, 3);
+    },
     prowler(p) { prowlerArt(p, { O: '#111a44', Oh: '#2c3c8e', Cr: '#3a78e8', Crh: '#a8dcff', Crd: '#1c3aa0', M: '#3c4056', Md: '#1e2030', E: '#ffa040', St: '#e0e8ff' }); },
     searing(p) { prowlerArt(p, { O: '#3a0e08', Oh: '#7a2410', Cr: '#e8542a', Crh: '#ffc080', Crd: '#9a2410', M: '#4a3a36', Md: '#241a18', E: '#ffe060', St: '#ffd8a0' }); },
     iceout(p) {
@@ -378,6 +408,27 @@
       seg(p, A, 38, 32, 32, 46, 5, 4.5); p.ell(Ad, 32, 47, 3.2, 3.2);
       p.ell(V, 32, 52, 3.5, 3.5); p.ell(Vh, 32, 52, 1.5, 1.5);
     },
+    ipc_field(p) { ipcArt(p, { S: '#18181e', Sh: '#3a3a46', G: '#d0a840', V: '#f2f2f4', gun: true }); },
+    ipc_security(p) { ipcArt(p, { S: '#18181e', Sh: '#3a3a46', G: '#c8283a', V: '#f2f2f4', shield: true }); },
+    ipc_leader(p) {
+      const B = '#24242e', Bh = '#4a4a5a', Bd = '#101016', G = '#d0a840', E = '#ff5a3a';
+      p.poly(Bd, [22, 92, 30, 66, 70, 66, 78, 92]); seg(p, Bd, 30, 92, 26, 99, 6); seg(p, Bd, 70, 92, 74, 99, 6);
+      p.ell(Bd, 50, 54, 32, 24); p.ell(B, 50, 52, 30, 22); p.ell(Bh, 40, 42, 12, 8);
+      p.poly(G, [20, 58, 80, 58, 78, 62, 22, 62]);
+      p.poly(Bd, [36, 30, 64, 30, 60, 46, 40, 46]); p.poly('#141418', [38, 36, 62, 36, 60, 42, 40, 42]); p.poly(E, [41, 38, 59, 38, 58, 40, 42, 40]);
+      seg(p, Bd, 20, 50, 6, 64, 8); seg(p, B, 20, 50, 6, 64, 6); p.poly(Bd, [74, 44, 98, 40, 98, 52, 74, 56]); p.poly(G, [92, 42, 98, 41, 98, 51, 92, 52]); p.ell(E, 97, 46, 2, 3);
+      seg(p, G, 50, 22, 50, 30, 1.6); p.ell(E, 50, 21, 2.4, 2.4);
+    },
+    mask(p, f) {
+      const B = '#3a2a6a', Bh = '#6a5aa8', Bd = '#1a1238', F = '#ece8f4', Fs = '#a8a4c0', G = '#c8b8ff', up = f ? -2 : 0;
+      p.ell(Bd, 50, 54 + up, 31, 31); p.ell(B, 50, 52 + up, 29, 29); p.ell(Bh, 41, 41 + up, 12, 10);
+      for (const [x, y, s] of [[50, 30, 6], [36, 42, 7], [64, 40, 7], [50, 56, 8], [32, 62, 6], [68, 62, 6], [50, 76, 5]]) {
+        p.ell(Fs, x, y + up, s, s + 1.5); p.ell(F, x - 0.6, y - 0.6 + up, s - 1, s + 0.5);
+        seg(p, Bd, x - s * 0.5, y - 1 + up, x - s * 0.15, y - 1 + up, 0.8); seg(p, Bd, x + s * 0.15, y - 1 + up, x + s * 0.5, y - 1 + up, 0.8);
+        seg(p, Bd, x - s * 0.3, y + s * 0.5 + up, x + s * 0.3, y + s * 0.5 + up, 0.7);
+      }
+      for (const [x, y] of [[20, 52], [80, 52], [50, 20], [50, 86]]) { p.ell(G, x, y + up, 1.6, 1.6); }
+    },
     weaver(p, f) {
       const B = '#2a2418', Bh = '#5a4a2c', Bd = '#14100a', G = '#ffd23a', Gh = '#fff6c0', Gd = '#c08a10', up = f ? -2 : 0;
       curve(p, Bd, bez(46, 66 + up, 38, 82, 30, 96, 8), 3, 1); curve(p, Bd, bez(54, 66 + up, 62, 84, 70, 96, 8), 3, 1); curve(p, Bd, bez(50, 68 + up, 52, 86, 48, 98, 8), 2.6, 0.8);
@@ -393,6 +444,23 @@
       p.ell(Gd, 50, 52 + up, 10, 10); p.ell(G, 50, 52 + up, 7.5, 7.5); p.ell(Gh, 48, 50 + up, 3.5, 3.5);
       for (const [x, y] of [[20, 30], [82, 28], [42, 6], [58, 4], [14, 30], [86, 32]]) { p.ell(Gd, x, y + up, 2.4, 2.4); p.ell(G, x, y + up, 1.4, 1.4); }
       star(p, Gh, 50, 52 + up, 13, 1.6);
+    },
+    decaying(p, f) {
+      const K = '#16141c', Kh = '#34303e', B = '#2a50b8', Bh = '#5a86e8', Bd = '#14286a', G = '#e8c860', Gh = '#fff2b0', Gd = '#8a6a20', S = '#e6e8f4', Sk = '#a8acc4', up = f ? -2 : 0;
+      p.poly(Gd, [78, 60 + up, 96, 96 + up, 90, 98 + up, 72, 64 + up]); p.poly(G, [76, 62 + up, 94, 96 + up, 92, 96 + up, 74, 62 + up]);
+      p.poly(K, [56, 34 + up, 70, 40 + up, 92, 70 + up, 78, 74 + up, 62, 56 + up]); p.poly(Kh, [60, 38 + up, 70, 42 + up, 88, 68 + up, 80, 70 + up]);
+      p.poly(Gh, [84, 68 + up, 92, 70 + up, 86, 74 + up]);
+      p.poly(Bd, [40, 40 + up, 56, 40 + up, 66, 90 + up, 48, 84 + up, 34, 90 + up]); p.poly(B, [42, 40 + up, 54, 40 + up, 60, 86 + up, 48, 80 + up, 38, 86 + up]); p.poly(Bh, [44, 42 + up, 48, 42 + up, 46, 80 + up, 40, 84 + up]);
+      p.poly(K, [42, 52 + up, 54, 52 + up, 56, 66 + up, 40, 66 + up]);
+      seg(p, K, 44, 66 + up, 40, 90 + up, 3); seg(p, K, 52, 66 + up, 56, 88 + up, 3); seg(p, Gd, 42, 76 + up, 44, 82 + up, 1.4); seg(p, Gd, 55, 74 + up, 54, 80 + up, 1.4);
+      p.poly(S, [42, 36 + up, 56, 36 + up, 52, 48 + up, 46, 48 + up]);
+      seg(p, K, 42, 40 + up, 30, 52 + up, 3); seg(p, K, 30, 52 + up, 24, 44 + up, 2.6); seg(p, K, 56, 40 + up, 64, 50 + up, 3);
+      seg(p, Gd, 22, 96 + up, 14, 20 + up, 1.6); seg(p, G, 21, 96 + up, 13, 20 + up, 0.8);
+      p.poly(Gd, [6, 18 + up, 14, 4 + up, 22, 18 + up, 14, 30 + up]); p.poly(G, [9, 18 + up, 14, 8 + up, 19, 18 + up, 14, 26 + up]); p.ell('#6ad8ff', 14, 18 + up, 2.6, 3.4); p.ell('#e4faff', 13.4, 17 + up, 1, 1.4);
+      p.poly(Gd, [2, 12 + up, 8, 16 + up, 4, 22 + up]); p.poly(Gd, [26, 12 + up, 20, 16 + up, 24, 22 + up]);
+      p.ell(Sk, 49, 30 + up, 6, 7); p.ell(S, 48.4, 29.4 + up, 5, 6);
+      p.poly(K, [40, 24 + up, 58, 24 + up, 60, 6 + up, 38, 6 + up]); p.poly(Kh, [40, 24 + up, 46, 24 + up, 44, 6 + up, 38, 6 + up]);
+      star(p, Gh, 49, 18 + up, 5, 1.2); p.poly(G, [44, 18 + up, 49, 12 + up, 54, 18 + up, 49, 21 + up]);
     },
     guardian(p) {
       const R = '#2a1a4a', Rh = '#4a3080', Rd = '#140a26', L = '#c890ff', Lh = '#f4e4ff', S = '#e8dcff', Sk = '#9a88c8';
@@ -460,6 +528,49 @@
       p.poly(Au, [47, 18, 50, 6, 53, 18]);
       gem(p, Th, V, 45, 25, 2.4); gem(p, Th, V, 55, 25, 2.4);
       p.poly(Nd, [44, 31, 50, 37, 56, 31, 54, 35, 50, 39, 46, 35]);
+    },
+    phantylia2(p, f) { ART.phantylia(p, f, true); },
+    skaracabaz_e(p, f) { ART.skaracabaz(p, f); },
+    skaracabaz_e2(p, f) { ART.skaracabaz(p, f); },
+    phantylia(p, f, dark) {
+      const S = dark ? '#c8c0d8' : '#e8f0e4', Sd = dark ? '#7a7090' : '#a8b8a4', G = dark ? '#3a2a5a' : '#2e6a4a', Gh = dark ? '#7a5ab0' : '#5ab07a', Gd = dark ? '#160c2a' : '#123424', V = dark ? '#c03a6a' : '#8a4ad8', Vh = dark ? '#ffb0d0' : '#d8b0ff', Au = '#e8c860', Auh = '#fff4b8', P = dark ? '#b06aff' : '#f0a0c8', Ph = '#ffe0f0', sw = f ? 2 : 0;
+      p.ell(dark ? 'rgba(190,120,255,0.22)' : 'rgba(170,255,200,0.18)', 50, 30, 30, 22);
+      for (const s of [-1, 1]) {
+        curve(p, Gd, bez(50 + s * 8, 70, 50 + s * 30, 78, 50 + s * 34, 92, 6), 4, 2);
+        curve(p, G, bez(50 + s * 8, 70, 50 + s * 28, 78, 50 + s * 32, 92, 6), 2.4, 1.2);
+        curve(p, Gd, bez(50 + s * 12, 40, 50 + s * 30, 34 - sw, 50 + s * 40, 20 - sw, 6), 3.4, 1.6);
+        curve(p, Gh, bez(50 + s * 12, 40, 50 + s * 29, 35 - sw, 50 + s * 39, 21 - sw, 6), 1.8, 0.8);
+        curve(p, Gd, bez(50 + s * 12, 48, 50 + s * 34, 52 + sw, 50 + s * 44, 44 + sw, 6), 3, 1.4);
+        for (const [x, y] of [[50 + s * 40, 20 - sw], [50 + s * 44, 44 + sw]]) { for (let i = 0; i < 5; i++) { const a = i * Math.PI * 0.4; p.ell(P, x + Math.cos(a) * 3, y + Math.sin(a) * 3, 2.4, 2.4); } p.ell(Auh, x, y, 1.6, 1.6); }
+      }
+      p.poly(Gd, [36, 96, 42, 58, 58, 58, 64, 96]); p.poly(G, [38, 96, 44, 60, 56, 60, 62, 96]);
+      for (const x of [42, 50, 58]) seg(p, Gd, x, 62, x + (x - 50) * 0.3, 96, 1.2);
+      p.poly(Sd, [40, 64, 42, 40, 58, 40, 60, 64, 50, 70]); p.poly(S, [42, 62, 44, 41, 56, 41, 58, 62, 50, 67]);
+      p.poly(V, [44, 46, 56, 46, 54, 60, 50, 64, 46, 60]); gem(p, Vh, V, 50, 52, f ? 4 : 3.4);
+      for (const s of [-1, 1]) { p.ell(Sd, 50 + s * 9, 42, 4, 4); seg(p, Sd, 50 + s * 10, 44, 50 + s * 16, 58, 2.6); }
+      p.ell(Sd, 50, 32, 7.4, 8.6); p.ell(S, 50, 31, 6.6, 8);
+      p.poly('#2a1a3a', [44, 30, 56, 30, 54, 34, 46, 34]); p.ell(Vh, 47, 32, 1.2, 1); p.ell(Vh, 53, 32, 1.2, 1);
+      for (const s of [-1, 1]) { p.poly(Gd, [50 + s * 3, 24, 50 + s * 14, 8, 50 + s * 10, 24]); p.poly(Gh, [50 + s * 4, 24, 50 + s * 13, 11, 50 + s * 9, 23]); }
+      p.ell(Au, 50, 12, 10, 3); p.ell(Auh, 50, 11, 8, 1.4);
+      p.poly(Au, [47, 22, 50, 10, 53, 22]);
+      for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + (i - 2.5) * 0.4; p.ell(P, 50 + Math.cos(a) * 16, 24 + Math.sin(a) * 12, 2, 2); }
+      p.ell(Ph, 50, 6, 2, 2);
+    },
+    lotus_ab(p, f) {
+      const G = '#2e6a3a', Gd = '#123018', P = '#f6b0d0', Ph = '#fff0f6', Pd = '#c06a96', Y = '#ffe070', o = f ? 2 : 0;
+      p.ell(Gd, 50, 92, 24, 5); p.ell(G, 50, 91, 22, 4);
+      curve(p, Gd, bez(50, 90, 44, 74, 50, 58, 6), 4, 3); curve(p, G, bez(50, 90, 44, 74, 50, 58, 6), 2.4, 1.8);
+      for (const s of [-1, 1]) { p.ell(Gd, 50 + s * 16, 78, 12, 5, s * 0.3); p.ell(G, 50 + s * 16, 77, 11, 4, s * 0.3); }
+      for (let i = 0; i < 7; i++) { const a = Math.PI + (i / 6) * Math.PI, x = 50 + Math.cos(a) * (16 + o), y = 50 + Math.sin(a) * 18; p.poly(Pd, [50, 56, x - 5, y + 6, x, y - 2, x + 5, y + 6]); p.poly(P, [50, 55, x - 3.6, y + 6, x, y, x + 3.6, y + 6]); }
+      p.ell(Pd, 50, 52, 12, 6); p.ell(P, 50, 51, 10, 5); p.ell(Y, 50, 48, 5, 3); p.ell(Ph, 49, 47, 2, 1.2);
+    },
+    lotus_de(p, f) {
+      const G = '#3a1a24', Gd = '#14060c', R = '#c8284a', Rh = '#ff8aa0', Rd = '#6a0e22', K = '#1a0a10', Y = '#ffd060', o = f ? 2 : 0;
+      p.ell(Gd, 50, 92, 24, 5); p.ell(G, 50, 91, 22, 4);
+      curve(p, Gd, bez(50, 90, 56, 74, 50, 58, 6), 4.4, 3); curve(p, G, bez(50, 90, 56, 74, 50, 58, 6), 2.6, 1.8);
+      for (const s of [-1, 1]) for (const y of [70, 80]) p.poly(K, [50 + s * 3, y, 50 + s * 12, y - 4, 50 + s * 4, y + 3]);
+      for (let i = 0; i < 7; i++) { const a = Math.PI + (i / 6) * Math.PI, x = 50 + Math.cos(a) * (18 + o), y = 48 + Math.sin(a) * 22; p.poly(Rd, [50, 56, x - 5, y + 7, x, y - 4, x + 5, y + 7]); p.poly(R, [50, 55, x - 3.4, y + 7, x, y - 1, x + 3.4, y + 7]); }
+      p.ell(Rd, 50, 52, 12, 6); p.ell(K, 50, 51, 10, 5); gem(p, Rh, R, 50, 48, f ? 4 : 3.4); p.ell(Y, 50, 40, 1.4, 4);
     },
     trotter(p, f) {
       const Bk = '#16161c', W = '#f2f2f4', Ws = '#c4c4d2', Au = '#e8b840', Auh = '#fff0b0', b = f ? -2 : 0;
@@ -555,6 +666,52 @@
       p.ell(Mk, 50, 22, 6.5, 8); p.ell(Ms, 52.5, 23, 3, 6.5);
       seg(p, '#3a3040', 48, 15, 51, 28, 0.9);
       p.snap('#1a1420', 46, 21, 2.5, 1); p.snap('#1a1420', 51.5, 21, 2.5, 1);
+    },
+    gynoid(q, f) {
+      const wx = x => 50 + (x - 50) * 1.3;
+      const p = { poly: (c, a) => q.poly(c, a.map((v, i) => (i % 2 ? v : wx(v)))), ell: (c, x, y, rx, ry) => q.ell(c, wx(x), y, rx * 1.3, ry), rect: (c, x, y, w, h) => q.rect(c, wx(x), y, w * 1.3, h) };
+      const W = '#e2e5fa', Ws = '#bbc8e7', Wd = '#8e9cc4', K = '#16203c', J = '#14161e', F = '#1d3074', Fh = '#3a52a8', B = '#1a2236', Br = '#2c3650', S = '#6ccefb';
+      for (const s of [-1, 1]) {
+        const X = x => 50 + s * x, c = s < 0 ? W : Ws;
+        p.poly(F, [X(7.6), 13, X(12.6), 1.4, X(10.8), 0.6, X(5.4), 10]);
+        p.poly(Fh, [X(7.4), 11.4, X(11.4), 2.2, X(10.6), 1.8, X(6.4), 9.6]);
+        p.ell(F, X(9.2), 16, 2, 3.2);
+        p.poly(Wd, [X(17.4), 31.6, X(12.4), 31.2, X(12.8), 44.6, X(17.6), 44.6]);
+        p.poly(c, [X(17), 31.8, X(12.8), 31.6, X(13.2), 44, X(17.2), 44]);
+        p.ell(J, X(15.2), 45.4, 2.4, 2.1);
+        p.poly(Wd, [X(17.8), 46.4, X(12.8), 46.4, X(13.2), 57.4, X(17.4), 57.4]);
+        p.poly(c, [X(17.4), 46.6, X(13.2), 46.6, X(13.6), 57, X(17), 57]);
+        p.poly(J, [X(17.4), 57, X(13), 57, X(12.6), 62.6, X(15.2), 64.2, X(17.6), 62]);
+        p.ell(Wd, X(13.6), 30.8, 5.4, 4.6);
+        p.ell(c, X(13.4), 30.2, 4.8, 3.9);
+        p.poly(c, [X(10), 55.6, X(1.6), 57, X(2.4), 72, X(8), 72]);
+        p.ell(J, X(5.4), 73.6, 3, 2.4);
+        p.poly(F, [X(8.6), 72.4, X(11.6), 69.8, X(9.8), 75.6]);
+        p.poly(c, [X(8), 75, X(2.6), 75, X(3), 88.6, X(7), 88.6]);
+        p.poly(Wd, [X(8), 75, X(7), 75, X(6.6), 88.6, X(7), 88.6]);
+        p.poly(c, [X(7.4), 88.4, X(2.6), 88.4, X(1.2), 94.6, X(6.8), 95.2]);
+        p.rect(J, s < 0 ? X(7.6) : X(6.4), 91.6, 1.2, 4.6);
+      }
+      p.rect(J, 47, 22.6, 6, 5);
+      p.rect(Br, 47.6, 24, 4.8, 0.8);
+      p.poly(W, [40, 27.6, 60, 27.6, 62, 33, 58.4, 40.6, 50, 42, 41.6, 40.6, 38, 33]);
+      p.poly(Ws, [52, 27.6, 60, 27.6, 62, 33, 58.4, 40.6, 52, 41.8]);
+      p.poly(Wd, [49.4, 29, 50.6, 29, 50.6, 41.6, 49.4, 41.6]);
+      for (const s of [-1, 1]) p.poly(Wd, [50 + s * 3, 36.6, 50 + s * 9.6, 33.4, 50 + s * 9.8, 34.4, 50 + s * 3.2, 37.6]);
+      p.rect('#2a3a66', 46.6, 31.4, 6.8, 4.4);
+      p.rect(f ? S : '#4a8ab8', 47.6, 32.4, 4.8, 2.4);
+      p.rect('#e4f8ff', 48, 32.6, 1.4, 0.8);
+      p.poly(B, [42, 41, 58, 41, 56.6, 50, 43.4, 50]);
+      for (const y of [43.4, 45.8, 48.2]) p.rect(Br, 43.4, y, 13.2, 0.7);
+      p.poly(B, [44, 55, 56, 55, 53, 60, 47, 60]);
+      p.poly(W, [39.6, 49.4, 60.4, 49.4, 61.4, 55, 55, 58.4, 50, 55.4, 45, 58.4, 38.6, 55]);
+      p.poly(Ws, [52, 49.4, 60.4, 49.4, 61.4, 55, 55, 58.4, 52, 56.6]);
+      p.poly(K, [47.4, 51.6, 52.6, 51.6, 50, 54.6]);
+      p.ell(Ws, 50, 14.6, 9.2, 10.2);
+      p.ell(W, 48.8, 13.6, 8, 9.2);
+      p.poly(K, [41.2, 11.6, 58.8, 11.6, 59.2, 19.6, 54.4, 23.4, 45.6, 23.4, 40.8, 19.6]);
+      p.poly('#3a4a78', [43.4, 13, 49.6, 13, 45.8, 19.4, 42.6, 18.2]);
+      if (f) p.rect(S, 53, 14, 3.2, 0.8);
     },
     hecate(p, f) {
       const D = '#1c141e', V = '#3a2a40', Vh = '#5e4a66', Cr = '#c81e40', Cd = '#7a1028', Cp = '#ff5a8a', Mk = '#f2eaee', Ms = '#b8a8b6', St = '#eaf6ff', Hl = '#ff4aa8', sw = f ? 1.4 : 0;
@@ -805,23 +962,23 @@
     flamespawn: { icon: [50, 44, 28], anim: true, float: true, aura: '255,120,60' }, frostspawn: { icon: [50, 44, 28], anim: true, float: true, aura: '120,190,255' },
     thunderspawn: { icon: [50, 44, 28], anim: true, float: true, aura: '190,120,255' }, windspawn: { icon: [50, 44, 30], anim: true, float: true, aura: '100,240,170' },
     baryon: { icon: [50, 52, 25], anim: true, float: true }, antibaryon: { icon: [50, 52, 25], anim: true, float: true, aura: '255,180,80' },
-    distorter: { icon: [50, 16, 16], aura: '255,80,210' }, weaver: { icon: [50, 48, 26], anim: true, float: true, aura: '255,210,60' }, guardian: { icon: [50, 22, 18], aura: '200,140,255' },
+    distorter: { icon: [50, 16, 16], aura: '255,80,210' }, weaver: { icon: [50, 48, 26], anim: true, float: true, aura: '255,210,60' }, mask: { icon: [50, 52, 30], anim: true, float: true, aura: '200,170,255' }, ipc_field: { icon: [50, 18, 14] }, ipc_security: { icon: [50, 18, 14] }, ipc_leader: { icon: [50, 34, 22], aura: '255,120,80' }, guardian: { icon: [50, 22, 18], aura: '200,140,255' }, decaying: { icon: [50, 26, 18], anim: true, float: true, aura: '240,200,90' },
     beetle: { icon: [50, 46, 24] }, hound: { icon: [30, 52, 24] }, spider: { icon: [50, 54, 26] }, direwolf: { icon: [50, 17, 16] },
-    soldier: { icon: [50, 15, 13] }, gunner: { icon: [50, 15, 13] }, cannoneer: { icon: [50, 12, 14] }, lieutenant: { icon: [50, 12, 14] },
+    soldier: { icon: [50, 15, 13] }, gunner: { icon: [50, 15, 13] }, cannoneer: { icon: [50, 12, 14] }, lieutenant: { icon: [50, 12, 14] }, dunn: { icon: [50, 12, 14] },
     vagrant: { icon: [50, 18, 13] }, shadewalker: { icon: [50, 15, 15], aura: '110,230,255' }, incinerator: { icon: [50, 15, 15], aura: '255,150,60' },
-    prowler: { icon: [52, 50, 28], aura: '90,160,255' }, searing: { icon: [52, 50, 28], aura: '255,120,50' }, iceout: { icon: [50, 32, 24], aura: '140,210,255' }, blazeout: { icon: [50, 30, 24], aura: '255,140,60' }, iceedge: { icon: [50, 52, 30] },
+    prowler: { icon: [52, 50, 28], aura: '90,160,255' }, searing: { icon: [52, 50, 28], aura: '255,120,50' }, iceout: { icon: [50, 32, 24], aura: '140,210,255' }, stormbringer: { icon: [50, 24, 20], aura: '90,240,190' }, blazeout: { icon: [50, 30, 24], aura: '255,140,60' }, iceedge: { icon: [50, 52, 30] },
     ethereal: { icon: [50, 34, 18], aura: '255,110,60' }, etherhound: { icon: [22, 50, 20], aura: '255,130,70' }, mimic: { icon: [50, 22, 16], anim: true, aura: '255,110,60' },
-    trotter: { icon: [48, 56, 30], anim: true }, juvsting: { icon: [50, 34, 20], anim: true, float: true, aura: '120,210,255' }, gnawsting: { icon: [50, 34, 22], anim: true, aura: '170,255,90' }, skaracabaz: { icon: [50, 28, 20], anim: true, aura: '80,230,210' }, doomsday: { icon: [50, 24, 20], anim: true, aura: '170,110,255' },
+    trotter: { icon: [48, 56, 30], anim: true }, juvsting: { icon: [50, 34, 20], anim: true, float: true, aura: '120,210,255' }, gnawsting: { icon: [50, 34, 22], anim: true, aura: '170,255,90' }, skaracabaz: { icon: [50, 28, 20], anim: true, aura: '80,230,210' }, phantylia: { icon: [50, 30, 18], anim: true, aura: '150,255,190' }, phantylia2: { icon: [50, 30, 18], anim: true, aura: '190,110,255' }, skaracabaz_e: { icon: [50, 28, 20], anim: true, aura: '80,230,210' }, skaracabaz_e2: { icon: [50, 28, 20], anim: true, aura: '140,120,255' }, lotus_ab: { icon: [50, 50, 22], anim: true, aura: '255,170,210' }, lotus_de: { icon: [50, 50, 22], anim: true, aura: '255,70,100' }, doomsday: { icon: [50, 24, 20], anim: true, aura: '170,110,255' },
     gepard_b: { figure: 'gepard', front: 'gepardShield' }, bronya_b: { figure: 'bronya', front: 'bronyaRifle', aura: '120,200,255' }, grizzly: { icon: [48, 46, 26], anim: true }, svarog_b: { icon: [50, 18, 15], anim: true, aura: '255,60,160' },
-    cocolia1: { figure: 'cocolia', front: 'cocoliaSpear', aura: '150,220,255' }, cocolia2: { icon: [50, 17, 13], anim: true, aura: '150,200,255' },
-    hecate: { icon: [50, 20, 17], anim: true, aura: '255,70,130' }, scar_nightmare: { icon: [50, 24, 20], anim: true, aura: '170,110,255' }
+    cocolia1: { figure: 'cocolia', front: 'cocoliaSpear', aura: '150,220,255' }, cocolia_echo: { figure: 'cocolia', front: 'cocoliaSpear', aura: '190,170,255' }, cocolia2: { icon: [50, 17, 13], anim: true, aura: '150,200,255' },
+    hecate: { icon: [50, 20, 17], anim: true, aura: '255,70,130' }, gynoid: { icon: [50, 16, 14], anim: true }, scar_nightmare: { icon: [50, 24, 20], anim: true, aura: '170,110,255' }
   };
 
   function lookFor(name) { return G.lookOf(name, null); }
 
   function idOf(data) {
     if (data && data.id && META[data.id]) return data.id;
-    const byShape = { bronya: 'bronya_b', cocolia: 'cocolia1', cocolia2: 'cocolia2', gepard: 'gepard_b', doomsday: 'doomsday', grizzly: 'grizzly', svarog: 'svarog_b' };
+    const byShape = { bronya: 'bronya_b', cocolia: 'cocolia1', cocolia2: 'cocolia2', gepard: 'gepard_b', doomsday: 'doomsday', grizzly: 'grizzly', svarog: 'svarog_b', swarmking: 'skaracabaz', phantylia: 'phantylia' };
     return (data && byShape[data.shape]) || 'reaver';
   }
 

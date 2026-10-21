@@ -15,7 +15,7 @@ class AppOgSnake3d {
 
     this.score = 0;
     this.level = 1;
-    this.speed = 170;
+    this.speed = 280;
     this.lastStepTime = 0;
     this.gameState = 'ready';
     this.bossMode = false;
@@ -45,6 +45,10 @@ class AppOgSnake3d {
       try {
         localStorage.setItem('office_games_scores_snake3d', String(this.highScore));
       } catch (e) {}
+      if (window.appOfficeLauncher && window.appOfficeLauncher.win) window.appOfficeLauncher.populateList();
+      if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+        window.appClippy.onOfficeGameEvent('snake3d', 'high_score', { score: this.highScore });
+      }
     }
   }
 
@@ -214,7 +218,7 @@ class AppOgSnake3d {
   initGame() {
     this.score = 0;
     this.level = 1;
-    this.speed = 170;
+    this.speed = 280;
     this.dir = { x: 1, y: 0 };
     this.nextDir = { x: 1, y: 0 };
 
@@ -265,6 +269,9 @@ class AppOgSnake3d {
         if (titleTextEl) titleTextEl.textContent = '3D Змейка 98';
         if (iconEl && window.Icons) iconEl.innerHTML = window.Icons['game-manager'] || '';
       }
+    }
+    if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+      window.appClippy.onOfficeGameEvent('snake3d', this.bossMode ? 'boss_on' : 'boss_off');
     }
   }
 
@@ -401,10 +408,10 @@ class AppOgSnake3d {
         this.score += f.points;
         if (f.type === 'coffee') {
           this.sndBonus();
-          this.speed = Math.max(80, this.speed - 6);
+          this.speed = Math.max(160, this.speed - 5);
         } else {
           this.sndEat();
-          this.speed = Math.max(90, this.speed - 3);
+          this.speed = Math.max(170, this.speed - 3);
         }
         this.foods.splice(i, 1);
         break;

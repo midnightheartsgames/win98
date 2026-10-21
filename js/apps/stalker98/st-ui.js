@@ -113,7 +113,7 @@
     }
     onKey(e, down) {
       const c = e.code;
-      if (['Tab', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'KeyF'].includes(c) || (e.ctrlKey && c !== 'KeyC')) e.preventDefault();
+      if (['Tab', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F9', 'KeyF'].includes(c) || (e.ctrlKey && c !== 'KeyC')) e.preventDefault();
       if (!down) { this.keys.delete(c); return; }
       this.audio.resume();
       if (this.state === 'intro') { if (c === 'Space' || c === 'Enter' || c === 'Escape') this.W.introNext(c === 'Escape'); return; }
@@ -135,7 +135,8 @@
       if (c === 'KeyM') { this.W.pda('map'); return; }
       if (c === 'F1') this.pend.quick = 1; if (c === 'F2') this.pend.quick = 2; if (c === 'F3') this.pend.quick = 3; if (c === 'F4') this.pend.quick = 4;
       if (c === 'F6' || c === 'F5') this.saveTo('quick');
-      if (c === 'F7' || c === 'F9') this.loadFrom('quick');
+      if (c === 'F9') this.loadFrom('quick');
+      if (c === 'F7') { this.W.spawner(); return; }
       void g;
     }
 
@@ -355,8 +356,8 @@
       this.bigText(c, 'S.T.A.L.K.E.R.', w / 2, h * 0.3, 44, '#c8b060');
       this.bigText(c, `${this.t('loading')}${this.loadingName ? ': ' + this.loadingName : ''}...`, w / 2, h * 0.52, 20, '#d0d0b0');
       const tips = this.lang === 'ru'
-        ? ['Совет: болт (клавиша 6) выдаёт аномалию раньше, чем она выдаст вас.', 'Совет: бинт останавливает кровотечение, аптечка — лечит.', 'Совет: артефакты на поясе фонят. Держите антирад под рукой.', 'Совет: присев, вы меньше заметны и точнее стреляете.', 'Совет: F6 — быстрое сохранение, F7 — быстрая загрузка.', 'Совет: изношенное оружие клинит. Следите за состоянием.']
-        : ['Tip: a bolt (key 6) reveals an anomaly before it reveals you.', 'Tip: bandages stop bleeding, medkits heal.', 'Tip: artifacts on your belt are radioactive. Keep anti-rads handy.', 'Tip: crouching makes you harder to spot and steadies your aim.', 'Tip: F6 quick save, F7 quick load.', 'Tip: worn weapons jam. Watch their condition.'];
+        ? ['Совет: болт (клавиша 6) выдаёт аномалию раньше, чем она выдаст вас.', 'Совет: бинт останавливает кровотечение, аптечка — лечит.', 'Совет: артефакты на поясе фонят. Держите антирад под рукой.', 'Совет: присев, вы меньше заметны и точнее стреляете.', 'Совет: F6 — быстрое сохранение, F9 — быстрая загрузка.', 'Совет: изношенное оружие клинит. Следите за состоянием.']
+        : ['Tip: a bolt (key 6) reveals an anomaly before it reveals you.', 'Tip: bandages stop bleeding, medkits heal.', 'Tip: artifacts on your belt are radioactive. Keep anti-rads handy.', 'Tip: crouching makes you harder to spot and steadies your aim.', 'Tip: F6 quick save, F9 quick load.', 'Tip: worn weapons jam. Watch their condition.'];
       this.tipIdx = this.tipIdx == null ? Math.floor(Math.random() * tips.length) : this.tipIdx;
       c.font = `15px ${FONT}`; c.fillStyle = '#a09a80'; c.textAlign = 'center'; c.fillText(tips[this.tipIdx % tips.length], w / 2, h * 0.8);
     }

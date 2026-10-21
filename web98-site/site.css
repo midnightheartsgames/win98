@@ -19,6 +19,26 @@
   --font-post: "Courier New", Courier, monospace;
   --gutter: clamp(16px, 4vw, 56px);
   --measure: 62ch;
+
+  /* Shared layer (../assets/mh.css): black bar over the BIOS screen */
+  --mh-bg: var(--ink);
+  --mh-line: #333333;
+  --mh-text: var(--paper);
+  --mh-muted: var(--vga-gray);
+  --mh-accent: var(--vga-yellow);
+  --mh-on-accent: var(--ink);
+  --mh-radius: 0;
+}
+
+/* The studio footer dressed as the Win 98 taskbar */
+.mh-foot {
+  --mh-foot-bg: var(--silver);
+  --mh-text: var(--ink);
+  --mh-muted: var(--text-soft);
+  --mh-line: var(--bevel-shadow);
+  --mh-accent: var(--navy);
+  border-top: 2px solid var(--bevel-light);
+  box-shadow: inset 0 1px 0 var(--silver), inset 0 -1px 0 var(--bevel-shadow);
 }
 
 *,
@@ -84,20 +104,6 @@ a {
   outline-offset: 3px;
 }
 
-.skip {
-  position: absolute;
-  left: 16px;
-  top: -100px;
-  z-index: 10;
-  padding: 8px 12px;
-  background: var(--paper);
-  color: var(--ink);
-}
-
-.skip:focus {
-  top: 16px;
-}
-
 .screen {
   margin: 0;
 }
@@ -139,7 +145,7 @@ a {
 }
 
 .post {
-  min-height: 100svh;
+  min-height: calc(100svh - 49px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -665,31 +671,6 @@ a {
   .boot-grid {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
-}
-
-.taskbar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px 24px;
-  padding: 12px var(--gutter);
-  background: var(--silver);
-  border-top: 2px solid var(--bevel-light);
-  box-shadow: inset 0 1px 0 var(--silver), inset 0 -1px 0 var(--bevel-shadow);
-  font-size: 0.85rem;
-}
-
-.taskbar a {
-  padding: 4px 10px;
-  border: 2px solid;
-  border-color: var(--bevel-shadow) var(--bevel-light) var(--bevel-light) var(--bevel-shadow);
-  color: var(--ink);
-  text-decoration: none;
-}
-
-.taskbar a:hover {
-  text-decoration: underline;
 }
 
 .window {

@@ -340,6 +340,34 @@
   outline-offset: 2px;
 }
 
+.emu-btn-alt {
+  background: #2b3a67;
+  border-color: #6b7fb8;
+}
+
+.emu-btn-sm {
+  font-size: 10px;
+  padding: 2px 6px;
+}
+
+.emu-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.emu-linkbtn-inline {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-weight: bold;
+  color: var(--em-link);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .emu-status-msg {
   margin-top: 6px;
   min-height: 16px;

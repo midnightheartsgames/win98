@@ -16,6 +16,11 @@ class Desktop {
     this.justDragged = false;
     this.justMarquee = false;
 
+    const iconSettings = this.readIconSettings();
+    this.largeIcons = iconSettings.large;
+    this.iconOverrides = iconSettings.overrides;
+    this.setLargeIconClass();
+
     if (window.gameManager) {
       window.gameManager.addListener(() => this.renderIcons());
     }
@@ -56,11 +61,75 @@ class Desktop {
     }
   }
 
+  readIconSettings() {
+    try {
+      const raw = typeof localStorage !== 'undefined' ? localStorage.getItem('win98_display_settings') : null;
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (parsed && typeof parsed === 'object') {
+        return {
+          large: parsed.largeIcons === true,
+          overrides: parsed.desktopIcons && typeof parsed.desktopIcons === 'object' ? { ...parsed.desktopIcons } : {}
+        };
+      }
+    } catch (e) {
+      console.warn('Failed to read desktop icon settings:', e);
+    }
+    return { large: false, overrides: {} };
+  }
+
+  setLargeIconClass() {
+    const list = typeof document !== 'undefined' && document.body && document.body.classList;
+    if (!list) return;
+    if (this.largeIcons) list.add('fx-large-icons');
+    else if (list.remove) list.remove('fx-large-icons');
+  }
+
+  systemIcon(defaultKey) {
+    const custom = this.iconOverrides && this.iconOverrides[defaultKey];
+    return custom && typeof Icons !== 'undefined' && Icons[custom] ? custom : defaultKey;
+  }
+
+  applyIconSettings(large, overrides) {
+    const nextLarge = Boolean(large);
+    const nextOverrides = overrides && typeof overrides === 'object' ? { ...overrides } : {};
+    const currentOverrides = this.iconOverrides || {};
+    const iconsChanged = Array.from(new Set(Object.keys(currentOverrides).concat(Object.keys(nextOverrides))))
+      .some(slot => currentOverrides[slot] !== nextOverrides[slot]);
+    const sizeChanged = nextLarge !== this.largeIcons;
+    if (!sizeChanged && !iconsChanged) return false;
+    this.iconOverrides = nextOverrides;
+    if (sizeChanged) this.regridIcons(nextLarge);
+    this.renderIcons();
+    return true;
+  }
+
+  regridIcons(large) {
+    const before = this.getGridMetrics();
+    const cells = {};
+    Object.keys(this.iconPositions).forEach(id => {
+      const p = this.iconPositions[id];
+      if (!p || typeof p.x !== 'number' || typeof p.y !== 'number') return;
+      cells[id] = {
+        col: Math.max(0, Math.round((p.x - 10) / before.cellWidth)),
+        row: Math.max(0, Math.round((p.y - 10) / before.cellHeight))
+      };
+    });
+    this.largeIcons = large;
+    this.setLargeIconClass();
+    const after = this.getGridMetrics();
+    Object.keys(cells).forEach(id => {
+      const { col, row } = cells[id];
+      if (col >= after.maxCols || row >= after.maxRows) delete this.iconPositions[id];
+      else this.iconPositions[id] = { x: 10 + col * after.cellWidth, y: 10 + row * after.cellHeight };
+    });
+    this.saveIconPositions();
+  }
+
   getGridMetrics() {
     const dWidth = (this.desktopEl && this.desktopEl.clientWidth) || (typeof window !== 'undefined' ? window.innerWidth : 800);
     const dHeight = (this.desktopEl && this.desktopEl.clientHeight) || (typeof window !== 'undefined' ? window.innerHeight - 28 : 572);
-    const cellWidth = 78;
-    const cellHeight = 76;
+    const cellWidth = this.largeIcons ? 94 : 78;
+    const cellHeight = this.largeIcons ? 92 : 76;
     const maxRows = Math.max(1, Math.floor((dHeight - 20) / cellHeight));
     const maxCols = Math.max(1, Math.floor((dWidth - 20) / cellWidth));
     return { dWidth, dHeight, cellWidth, cellHeight, maxRows, maxCols };
@@ -114,22 +183,59 @@ class Desktop {
     }
   }
 
-  clampToViewport(pos, { dWidth, dHeight }) {
+  clampToViewport(pos, { dWidth, dHeight, cellWidth = 78, cellHeight = 76 }) {
     return {
-      x: Math.max(0, Math.min(Math.max(0, dWidth - 74), pos.x)),
-      y: Math.max(0, Math.min(Math.max(0, dHeight - 72), pos.y))
+      x: Math.max(0, Math.min(Math.max(0, dWidth - (cellWidth - 4)), pos.x)),
+      y: Math.max(0, Math.min(Math.max(0, dHeight - (cellHeight - 4)), pos.y))
     };
   }
 
+  shownPositions(metrics) {
+    const { cellWidth, cellHeight, maxRows, maxCols } = metrics;
+    const iconW = cellWidth - 4;
+    const iconH = cellHeight - 4;
+    const placed = [];
+    const shown = {};
+    const overlaps = (x, y) => placed.some(p => Math.abs(p.x - x) < iconW && Math.abs(p.y - y) < iconH);
+    const displaced = [];
+    (this.icons || []).forEach(item => {
+      const stored = this.iconPositions[item.id] || { x: 10, y: 10 };
+      const clamped = this.clampToViewport(stored, metrics);
+      if (clamped.x === stored.x && clamped.y === stored.y) {
+        shown[item.id] = clamped;
+        placed.push(clamped);
+      } else {
+        displaced.push({ id: item.id, stored, clamped });
+      }
+    });
+    displaced.sort((a, b) => (a.stored.x - b.stored.x) || (a.stored.y - b.stored.y));
+    displaced.forEach(({ id, clamped }) => {
+      let best = null;
+      let bestDist = Infinity;
+      for (let col = 0; col < maxCols; col++) {
+        for (let row = 0; row < maxRows; row++) {
+          const { x, y } = this.clampToViewport({ x: 10 + col * cellWidth, y: 10 + row * cellHeight }, metrics);
+          const dist = Math.hypot(x - clamped.x, y - clamped.y);
+          if (dist < bestDist && !overlaps(x, y)) {
+            best = { x, y };
+            bestDist = dist;
+          }
+        }
+      }
+      shown[id] = best || clamped;
+      placed.push(shown[id]);
+    });
+    return shown;
+  }
+
   applyPositions() {
-    const metrics = this.getGridMetrics();
+    const shown = this.shownPositions(this.getGridMetrics());
     const iconEls = this.iconsContainer.querySelectorAll('.desktop-icon');
     iconEls.forEach(el => {
-      const pos = this.iconPositions[el.dataset.id];
+      const pos = shown[el.dataset.id];
       if (pos) {
-        const shown = this.clampToViewport(pos, metrics);
-        el.style.left = shown.x + 'px';
-        el.style.top = shown.y + 'px';
+        el.style.left = pos.x + 'px';
+        el.style.top = pos.y + 'px';
       }
     });
   }
@@ -205,10 +311,10 @@ class Desktop {
     const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
     const isBinEmpty = window.vfs ? window.vfs.getRecycleBinItems().length === 0 : false;
     return [
-      { id: 'my-computer', title: t('app.myComputer'), icon: 'my-computer', action: () => window.appExplorer && window.appExplorer.open(['My Computer']) },
-      { id: 'my-documents', title: t('app.myDocs'), icon: 'my-documents', action: () => window.appExplorer && window.appExplorer.open(['My Computer', 'C:', 'My Documents']) },
-      { id: 'network', title: t('app.network'), icon: 'network', action: () => window.winManager.openDialog({ title: t('network.title'), icon: 'network', message: t('network.msg') }) },
-      { id: 'recycle-bin', title: t('app.recycleBin'), icon: isBinEmpty ? 'recycle-bin-empty' : 'recycle-bin', action: () => window.appRecycleBin && window.appRecycleBin.open() },
+      { id: 'my-computer', title: t('app.myComputer'), icon: this.systemIcon('my-computer'), action: () => window.appExplorer && window.appExplorer.open(['My Computer']) },
+      { id: 'my-documents', title: t('app.myDocs'), icon: this.systemIcon('my-documents'), action: () => window.appExplorer && window.appExplorer.open(['My Computer', 'C:', 'My Documents']) },
+      { id: 'network', title: t('app.network'), icon: this.systemIcon('network'), action: () => window.appExplorer ? window.appExplorer.open(['Network Neighborhood']) : (window.winManager && window.winManager.openDialog({ title: t('network.title'), icon: 'network', message: t('network.msg') })) },
+      { id: 'recycle-bin', title: t('app.recycleBin'), icon: this.systemIcon(isBinEmpty ? 'recycle-bin-empty' : 'recycle-bin'), action: () => window.appRecycleBin && window.appRecycleBin.open() },
       { id: 'ie', title: 'Internet Explorer', icon: 'internet-explorer', action: () => window.appIE && window.appIE.open() },
       { id: 'netscape', title: 'Netscape 6', icon: 'netscape', action: () => window.appNetscape && window.appNetscape.open() },
       { id: 'notepad', title: t('app.notepad'), icon: 'notepad', action: () => window.appNotepad && window.appNotepad.open() },
@@ -222,7 +328,8 @@ class Desktop {
       { id: 'dialup', title: t('app.dialup'), icon: 'dialup', action: () => window.appDialUp && window.appDialUp.open() },
       { id: 'winrar', title: 'WinRAR 2.x', icon: 'winrar', action: () => window.appWinRAR && window.appWinRAR.open() },
       { id: 'freecell', title: t('app.freecell'), icon: 'freecell', action: () => window.appFreeCell && window.appFreeCell.open() },
-      { id: 'wordpad', title: t('app.wordpad'), icon: 'wordpad', action: () => window.appWordPad && window.appWordPad.open() }
+      { id: 'wordpad', title: t('app.wordpad'), icon: 'wordpad', action: () => window.appWordPad && window.appWordPad.open() },
+      { id: 'neko', title: 'Neko 98', icon: window.appNeko && window.appNeko.isClawd() ? 'clawd' : 'neko', action: () => window.appNeko && window.appNeko.open() }
     ];
   }
 
@@ -338,8 +445,20 @@ class Desktop {
       if (window.gameManager.isInstalled('falloutzp')) {
         list.push({ id: 'falloutzp', title: 'Fallout: Запорожье', icon: 'falloutzp', action: () => window.appFalloutZP && window.appFalloutZP.open() });
       }
+      if (window.gameManager.isInstalled('korovany')) {
+        list.push({ id: 'korovany', title: 'Корованы', icon: 'korovany', action: () => window.appKorovany && window.appKorovany.open() });
+      }
+      if (window.gameManager.isInstalled('korovany')) {
+        list.push({ id: 'korovany', title: 'Корованы', icon: 'korovany', action: () => window.appKorovany && window.appKorovany.open() });
+      }
+      if (window.gameManager.isInstalled('catniss')) {
+        list.push({ id: 'catniss', title: 'Catniss', icon: 'catniss', action: () => window.appCatniss && window.appCatniss.open() });
+      }
       if (window.gameManager.isInstalled('plov')) {
         list.push({ id: 'plov', title: 'Хаято, Где плов?', icon: 'plov', action: () => window.appPlov && window.appPlov.open() });
+      }
+      if (window.gameManager.isInstalled('homm1')) {
+        list.push({ id: 'homm1', title: 'Heroes of Might and Magic 98', icon: 'homm1', action: () => window.appHomm1 && window.appHomm1.open() });
       }
       if (window.gameManager.isInstalled('sims3')) {
         list.push({ id: 'sims3', title: 'The Sims 3', icon: 'sims3', action: () => window.appSims3 && window.appSims3.open() });
@@ -371,6 +490,9 @@ class Desktop {
       if (window.gameManager.isInstalled('hockey')) {
         list.push({ id: 'hockey', title: 'NHL 98', icon: 'hockey', action: () => window.appHockey && window.appHockey.open() });
       }
+      if (window.gameManager.isInstalled('worldcup98')) {
+        list.push({ id: 'worldcup98', title: 'World Cup 98', icon: 'worldcup98', action: () => window.appWorldCup98 && window.appWorldCup98.open() });
+      }
       if (window.gameManager.isInstalled('avp')) {
         const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
         list.push({ id: 'avp', title: t('app.avp'), icon: 'avp', action: () => window.appAVP && window.appAVP.open() });
@@ -395,6 +517,9 @@ class Desktop {
       }
       if (window.gameManager.isInstalled('steam')) {
         list.push({ id: 'steam', title: 'Steam', icon: 'steam', action: () => window.appSteam && window.appSteam.open() });
+      }
+      if (window.gameManager.isInstalled('esheep')) {
+        list.push({ id: 'esheep', title: 'eSheep 98', icon: 'esheep', action: () => window.appESheep && window.appESheep.open() });
       }
     }
 
@@ -427,7 +552,11 @@ class Desktop {
       desktopFiles.forEach(file => {
         let iconKey = file.icon;
         if (!iconKey) {
-          if (file.name.endsWith('.exe')) iconKey = (file.name === 'totally_not_a_virus.exe' ? 'file-virus' : 'file-exe');
+          if (file.type === 'folder') iconKey = 'folder';
+          else if (file.name.endsWith('.bfc')) iconKey = 'briefcase';
+          else if (file.name.endsWith('.ttf')) iconKey = 'file-ttf';
+          else if (file.name.endsWith('.fon')) iconKey = 'file-fon';
+          else if (file.name.endsWith('.exe')) iconKey = (file.name === 'totally_not_a_virus.exe' ? 'file-virus' : 'file-exe');
           else if (file.name.endsWith('.bmp') || file.name.endsWith('.png') || file.name.endsWith('.jpg')) iconKey = 'file-bmp';
           else if (file.name.endsWith('.avi') || file.name.endsWith('.mp4')) iconKey = 'file-video';
           else if (file.name.endsWith('.mp3') || file.name.endsWith('.wav') || file.name.endsWith('.mid')) iconKey = 'file-music';
@@ -436,6 +565,7 @@ class Desktop {
           else if (file.name.endsWith('.zip') || file.name.endsWith('.rar')) iconKey = 'winrar';
           else if (file.name.endsWith('.rtf') || file.name.endsWith('.doc')) iconKey = 'file-rtf';
           else if (/\.ac[st]$/i.test(file.name)) iconKey = 'file-actor';
+          else if (/\.(nes|bin|smd|gen|smc|sfc|gb|gbc|sta)$/i.test(file.name)) iconKey = 'file-rom';
           else if (file.name.endsWith('.url') || file.name.endsWith('.htm') || file.name.endsWith('.html')) iconKey = 'internet-explorer';
           else iconKey = 'file-txt';
         }
@@ -448,8 +578,22 @@ class Desktop {
           fileData: file,
           action: () => {
             const nameLower = (file.name || '').toLowerCase();
-            if (file.app === 'virus' || nameLower === 'totally_not_a_virus.exe') {
+            if (file.type === 'folder') {
+              if (window.appExplorer) window.appExplorer.open(['Desktop', file.name]);
+            } else if (file.type === 'briefcase' || nameLower.endsWith('.bfc')) {
+              if (window.appExplorer && window.appExplorer.openBriefcaseWindow) window.appExplorer.openBriefcaseWindow(file);
+            } else if (file.type === 'shortcut' && file.targetPath) {
+              if (window.appExplorer) window.appExplorer.open(file.targetPath);
+            } else if (nameLower.endsWith('.ttf') || nameLower.endsWith('.fon')) {
+              if (window.appCPanel && window.appCPanel.openFontViewer) window.appCPanel.openFontViewer(file);
+            } else if (file.app === 'virus' || nameLower === 'totally_not_a_virus.exe') {
               if (window.appVirus) window.appVirus.open();
+            } else if (file.app === 'emulator' || /^(emuland98|nesticle|genecyst|zsnesw|vgb98)\.exe$/.test(nameLower) || /\.(nes|bin|smd|gen|smc|sfc|gb|gbc|sta)$/.test(nameLower)) {
+              if (window.appEmulator) window.appEmulator.open(file.name, file.content, ['Desktop']);
+            } else if (file.app === 'esheep' || nameLower === 'sheep.exe' || nameLower === 'esheep.exe') {
+              if (window.appESheep) window.appESheep.open();
+            } else if (file.app === 'neko' || nameLower === 'neko.exe') {
+              if (window.appNeko) window.appNeko.open();
             } else if (file.app === 'blender204' || nameLower.endsWith('.blend')) {
               if (window.gameManager && !window.gameManager.isInstalled('blender204')) window.winManager.openDialog({ title: 'Blender 2.04', icon: 'error', message: 'Blender 2.04 is not installed.' });
               else if (window.appBlender204) window.appBlender204.open(nameLower.endsWith('.blend') ? { dir: ['Desktop'], name: file.name } : null);
@@ -520,18 +664,19 @@ class Desktop {
   renderIcons() {
     this.icons = this.computeCurrentIcons();
     this.ensureIconPositions();
-    const metrics = this.getGridMetrics();
+    const shown = this.shownPositions(this.getGridMetrics());
     this.iconsContainer.innerHTML = '';
+    const isSingleClick = window.appExplorer && window.appExplorer.folderOptions && window.appExplorer.folderOptions.clickMode === 'single';
     this.icons.forEach(item => {
       const el = document.createElement('div');
       el.className = 'desktop-icon';
       el.dataset.id = item.id;
       el.innerHTML = `
         <div class="desktop-icon-img">${Icons[item.icon] || Icons['folder']}${this.isShortcut(item) ? `<span class="shortcut-overlay">${Icons['shortcut-overlay']}</span>` : ''}</div>
-        <div class="desktop-icon-label">${item.title}</div>
+        <div class="desktop-icon-label"${isSingleClick ? ' style="text-decoration:underline;cursor:pointer;"' : ''}>${item.title}</div>
       `;
 
-      const pos = this.clampToViewport(this.iconPositions[item.id] || { x: 10, y: 10 }, metrics);
+      const pos = shown[item.id];
       el.style.left = pos.x + 'px';
       el.style.top = pos.y + 'px';
 
@@ -541,12 +686,19 @@ class Desktop {
         e.stopPropagation();
         if (this.justDragged || this.justMarquee) return;
         this.selectIcon(el, e.ctrlKey || e.shiftKey);
+        const single = window.appExplorer && window.appExplorer.folderOptions && window.appExplorer.folderOptions.clickMode === 'single';
+        if (single && !e.ctrlKey && !e.shiftKey) {
+          this.launchApp(item);
+        }
       });
 
       el.addEventListener('dblclick', (e) => {
         e.stopPropagation();
         if (this.justDragged || this.justMarquee) return;
-        this.launchApp(item);
+        const single = window.appExplorer && window.appExplorer.folderOptions && window.appExplorer.folderOptions.clickMode === 'single';
+        if (!single) {
+          this.launchApp(item);
+        }
       });
 
       this.iconsContainer.appendChild(el);
@@ -577,9 +729,11 @@ class Desktop {
 
       const dragItems = [];
       this.selectedIcons.forEach(iconEl => {
+        const iconObj = this.icons.find(ic => ic.id === iconEl.dataset.id);
         dragItems.push({
           el: iconEl,
           id: iconEl.dataset.id,
+          item: iconObj,
           startX: parseFloat(iconEl.style.left) || 0,
           startY: parseFloat(iconEl.style.top) || 0
         });
@@ -598,17 +752,17 @@ class Desktop {
         }
 
         if (isDragging) {
-          const { dWidth, dHeight } = this.getGridMetrics();
+          const { dWidth, dHeight, cellWidth, cellHeight } = this.getGridMetrics();
           dragItems.forEach(d => {
-            let newX = Math.max(0, Math.min(Math.max(0, dWidth - 74), d.startX + dx));
-            let newY = Math.max(0, Math.min(Math.max(0, dHeight - 72), d.startY + dy));
+            let newX = Math.max(0, Math.min(Math.max(0, dWidth - (cellWidth - 4)), d.startX + dx));
+            let newY = Math.max(0, Math.min(Math.max(0, dHeight - (cellHeight - 4)), d.startY + dy));
             d.el.style.left = newX + 'px';
             d.el.style.top = newY + 'px';
           });
         }
       };
 
-      const onMouseUp = () => {
+      const onMouseUp = (upEvent) => {
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
 
@@ -619,16 +773,62 @@ class Desktop {
             this.justDragged = false;
           }, 120);
 
-          dragItems.forEach(d => {
-            d.el.classList.remove('dragging');
-            const finalX = parseFloat(d.el.style.left) || 0;
-            const finalY = parseFloat(d.el.style.top) || 0;
-            this.iconPositions[d.id] = {
-              x: Math.round(finalX),
-              y: Math.round(finalY)
-            };
-          });
-          this.saveIconPositions();
+          let handledDrop = false;
+          if (dragItems.some(d => d.item && d.item.isFile) && upEvent && typeof upEvent.clientX === 'number' && window.vfs) {
+            const allIcons = this.iconsContainer.querySelectorAll('.desktop-icon');
+            let dropTargetId = null;
+            allIcons.forEach(targetEl => {
+              if (this.selectedIcons.has(targetEl)) return;
+              const tx = parseFloat(targetEl.style.left) || 0;
+              const ty = parseFloat(targetEl.style.top) || 0;
+              if (upEvent.clientX >= tx && upEvent.clientX <= tx + 74 && upEvent.clientY >= ty && upEvent.clientY <= ty + 72) {
+                dropTargetId = targetEl.dataset.id;
+              }
+            });
+            if (dropTargetId === 'recycle-bin') {
+              dragItems.forEach(d => {
+                if (d.item && d.item.isFile && d.item.fileData) {
+                  window.vfs.deleteItem(['Desktop'], d.item.fileData.name, true);
+                  delete this.iconPositions[d.id];
+                }
+              });
+              this.saveIconPositions();
+              this.renderIcons();
+              handledDrop = true;
+            } else if (dropTargetId) {
+              const targetItem = this.icons.find(ic => ic.id === dropTargetId);
+              if (targetItem && targetItem.isFile && targetItem.fileData && targetItem.fileData.type === 'folder') {
+                dragItems.forEach(d => {
+                  if (d.item && d.item.isFile && d.item.fileData && d.id !== dropTargetId) {
+                    const src = d.item.fileData;
+                    if (src.type === 'folder') {
+                      window.vfs.createFolder(['Desktop', targetItem.fileData.name], src.name);
+                    } else {
+                      window.vfs.createFile(['Desktop', targetItem.fileData.name], src.name, src.content || '', src.icon || 'file-txt');
+                    }
+                    window.vfs.deleteItem(['Desktop'], src.name, false);
+                    delete this.iconPositions[d.id];
+                  }
+                });
+                this.saveIconPositions();
+                this.renderIcons();
+                handledDrop = true;
+              }
+            }
+          }
+
+          if (!handledDrop) {
+            dragItems.forEach(d => {
+              d.el.classList.remove('dragging');
+              const finalX = parseFloat(d.el.style.left) || 0;
+              const finalY = parseFloat(d.el.style.top) || 0;
+              this.iconPositions[d.id] = {
+                x: Math.round(finalX),
+                y: Math.round(finalY)
+              };
+            });
+            this.saveIconPositions();
+          }
         } else if (!e.ctrlKey && !e.shiftKey && this.selectedIcons.size > 1) {
           this.clearSelection();
           this.selectIcon(el);
@@ -780,38 +980,253 @@ class Desktop {
     });
   }
 
+  toggleChannelBar(forceState) {
+    this.channelBarVisible = typeof forceState === 'boolean' ? forceState : !this.channelBarVisible;
+    let bar = document.getElementById('active-desktop-channel-bar');
+    if (!this.channelBarVisible) {
+      if (bar) bar.remove();
+      return;
+    }
+    if (!bar && this.desktopEl) {
+      const ru = window.i18n && window.i18n.getLanguage() === 'ru';
+      bar = document.createElement('div');
+      bar.id = 'active-desktop-channel-bar';
+      bar.innerHTML = `
+        <div class="channel-bar-header">
+          <span>Active Desktop</span>
+          <span class="channel-bar-close" title="${ru ? 'Закрыть' : 'Close'}">×</span>
+        </div>
+        <div class="channel-bar-item" data-url="http://windowsupdate.microslop.com">${Icons['win-update'] || ''}<span>${ru ? 'Обновление Win' : 'Win Update'}</span></div>
+        <div class="channel-bar-item" data-url="http://www.search98.com">${Icons['internet-explorer'] || ''}<span>${ru ? 'Путеводитель по каналам' : 'Channel Guide'}</span></div>
+        <div class="channel-bar-item" data-url="http://www.gazeta98.ru">${Icons['file-txt'] || ''}<span>${ru ? 'Новости и технологии' : 'News &amp; Tech'}</span></div>
+        <div class="channel-bar-item" data-url="http://www.steampowered.com">${Icons['joystick'] || ''}<span>${ru ? 'Игры и спорт' : 'Games &amp; Sports'}</span></div>
+        <div class="channel-bar-item" data-url="http://www.kinomania98.ru">${Icons['video-player'] || ''}<span>${ru ? 'Развлечения' : 'Entertainment'}</span></div>
+      `;
+      const closeBtn = bar.querySelector('.channel-bar-close');
+      if (closeBtn) closeBtn.addEventListener('click', () => this.toggleChannelBar(false));
+      bar.querySelectorAll('.channel-bar-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (window.appIE) window.appIE.open(btn.dataset.url);
+        });
+      });
+      this.desktopEl.appendChild(bar);
+    }
+  }
+
+  openRecycleBinProperties() {
+    const ru = window.i18n && window.i18n.getLanguage() === 'ru';
+    const items = window.vfs ? window.vfs.getRecycleBinItems() : [];
+    const html = `
+      <div class="win-dialog-body" style="padding:10px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+        <div class="win-tabs">
+          <div class="win-tab active">${ru ? 'Глобальные' : 'Global'}</div>
+          <div class="win-tab">${ru ? 'Диск C:' : 'Disk C:'}</div>
+        </div>
+        <div class="win-tab-panel" style="flex:1;padding:12px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="width:32px;height:32px;">${Icons['recycle-bin']}</div>
+            <div><b>${ru ? 'Корзина (Диск C:)' : 'Recycle Bin (Drive C:)'}</b><br><span style="font-size:11px;color:#444;">${ru ? 'Объектов в корзине:' : 'Items in Recycle Bin:'} ${items.length}</span></div>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+            <input type="checkbox" id="rb-no-bin"> ${ru ? 'Не помещать файлы в Корзину, а удалять сразу' : 'Do not move files to the Recycle Bin. Remove files immediately when deleted.'}
+          </label>
+          <fieldset style="border:1px groove #fff;padding:10px;margin-bottom:10px;">
+            <legend>${ru ? 'Максимальный размер Корзины (% от диска)' : 'Maximum size of Recycle Bin (percent of each drive)'}</legend>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input type="range" id="rb-size-slider" min="1" max="100" value="10" style="flex:1;">
+              <span id="rb-size-val" style="min-width:36px;font-weight:bold;">10%</span>
+            </div>
+          </fieldset>
+          <label style="display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" checked> ${ru ? 'Запрашивать подтверждение на удаление' : 'Display delete confirmation dialog'}
+          </label>
+        </div>
+        <div class="win-dialog-footer" style="margin-top:8px;">
+          <button class="win-btn default" id="rb-ok">OK</button>
+          <button class="win-btn" id="rb-cancel">${ru ? 'Отмена' : 'Cancel'}</button>
+        </div>
+      </div>
+    `;
+    const propWin = window.winManager.createWindow({
+      id: 'recycle_bin_props',
+      title: ru ? 'Свойства: Корзина' : 'Recycle Bin Properties',
+      icon: 'recycle-bin',
+      width: 360,
+      height: 320,
+      resizable: false,
+      maximizable: false,
+      minimizable: false,
+      content: html
+    });
+    const slider = propWin.querySelector('#rb-size-slider');
+    const valEl = propWin.querySelector('#rb-size-val');
+    if (slider && valEl) {
+      slider.addEventListener('input', () => { valEl.textContent = slider.value + '%'; });
+    }
+    propWin.querySelector('#rb-ok').addEventListener('click', () => window.winManager.closeWindow('recycle_bin_props'));
+    propWin.querySelector('#rb-cancel').addEventListener('click', () => window.winManager.closeWindow('recycle_bin_props'));
+  }
+
   openBackgroundContextMenu(x, y) {
     if (!window.contextMenu) return;
     const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
+    const ru = window.i18n && window.i18n.getLanguage() === 'ru';
+    const hasClip = Boolean(window.sharedFileClipboard && window.sharedFileClipboard.item);
+
+    const createDesktopFile = (defaultName, content, icon) => {
+      if (window.vfs) {
+        let name = defaultName;
+        let idx = 1;
+        while (window.vfs.exists(['Desktop'], name)) {
+          idx++;
+          const dot = defaultName.lastIndexOf('.');
+          name = dot > 0 ? `${defaultName.slice(0, dot)} (${idx})${defaultName.slice(dot)}` : `${defaultName} (${idx})`;
+        }
+        window.vfs.createFile(['Desktop'], name, content, icon);
+        this.renderIcons();
+      }
+    };
 
     window.contextMenu.show(x, y, [
-      { label: t('desktop.arrangeIcons'), action: () => this.arrangeIcons() },
+      {
+        label: 'Active Desktop',
+        submenu: [
+          {
+            label: ru ? 'Отображать как веб-страницу' : 'View as Web Page',
+            checked: Boolean(this.activeDesktopWeb),
+            action: () => {
+              this.activeDesktopWeb = !this.activeDesktopWeb;
+              this.toggleChannelBar(this.activeDesktopWeb);
+            }
+          },
+          {
+            label: ru ? 'Панель каналов' : 'Show Channel Bar',
+            checked: Boolean(this.channelBarVisible),
+            action: () => this.toggleChannelBar()
+          },
+          { separator: true },
+          {
+            label: ru ? 'Настроить рабочий стол...' : 'Customize my Desktop...',
+            action: () => window.appDialogs && window.appDialogs.openDisplayProperties()
+          },
+          {
+            label: ru ? 'Обновить' : 'Update Now',
+            action: () => this.renderIcons()
+          }
+        ]
+      },
+      {
+        label: t('desktop.arrangeIcons'),
+        action: () => this.arrangeIcons(),
+        submenu: [
+          { label: ru ? 'по имени' : 'by Name', action: () => this.arrangeIcons() },
+          { label: ru ? 'по типу' : 'by Type', action: () => this.arrangeIcons() },
+          { label: ru ? 'по размеру' : 'by Size', action: () => this.arrangeIcons() },
+          { label: ru ? 'по дате' : 'by Date', action: () => this.arrangeIcons() },
+          { separator: true },
+          { label: ru ? 'автоматически' : 'Auto Arrange', action: () => this.arrangeIcons() }
+        ]
+      },
       { label: t('desktop.lineUpIcons'), action: () => this.lineUpIcons() },
       { label: t('desktop.refresh'), action: () => this.renderIcons() },
       { separator: true },
-      { label: t('desktop.paste'), disabled: true },
-      { label: t('desktop.pasteShortcut'), disabled: true },
-      { separator: true },
-      { label: t('desktop.newTextDoc'), action: () => window.appNotepad && window.appNotepad.open() },
       {
-        label: t('desktop.newFolder'),
+        label: t('desktop.paste'),
+        disabled: !hasClip,
         action: () => {
-          window.winManager.openPromptDialog({
-            title: t('desktop.newFolder'),
-            icon: 'folder',
-            message: t('explorer.promptNewFolder'),
-            value: 'New Folder',
-            onOk: (name) => {
-              if (name && name.trim()) {
-                window.winManager.openDialog({
-                  title: 'Desktop',
-                  icon: 'folder',
-                  message: t('desktop.folderCreated', name.trim())
+          const clip = window.sharedFileClipboard;
+          if (!clip || !clip.item || !window.vfs) return;
+          const src = clip.item;
+          if (src.type === 'folder') {
+            window.vfs.createFolder(['Desktop'], src.name);
+          } else {
+            window.vfs.createFile(['Desktop'], src.name, src.content || '', src.icon || 'file-txt');
+          }
+          if (clip.mode === 'cut' && clip.sourcePath) {
+            window.vfs.deleteItem(clip.sourcePath, src.name, false);
+            window.sharedFileClipboard = null;
+          }
+          this.renderIcons();
+        }
+      },
+      {
+        label: t('desktop.pasteShortcut'),
+        disabled: !hasClip,
+        action: () => {
+          const clip = window.sharedFileClipboard;
+          if (!clip || !clip.item || !window.vfs) return;
+          const src = clip.item;
+          const targetPath = [...(clip.sourcePath || ['Desktop']), src.name];
+          window.vfs.writeFile(['Desktop'], ru ? `Ярлык для ${src.name}.lnk` : `Shortcut to ${src.name}.lnk`, {
+            type: 'shortcut',
+            icon: src.icon || 'file-txt',
+            targetPath
+          });
+          this.renderIcons();
+        }
+      },
+      { separator: true },
+      {
+        label: ru ? 'Создать' : 'New',
+        submenu: [
+          {
+            label: t('desktop.newFolder'),
+            action: () => {
+              window.winManager.openPromptDialog({
+                title: t('desktop.newFolder'),
+                icon: 'folder',
+                message: t('explorer.promptNewFolder'),
+                value: ru ? 'Новая папка' : 'New Folder',
+                onOk: (name) => {
+                  if (name && name.trim() && window.vfs) {
+                    window.vfs.createFolder(['Desktop'], name.trim());
+                    this.renderIcons();
+                  }
+                }
+              });
+            }
+          },
+          {
+            label: ru ? 'Ярлык' : 'Shortcut',
+            action: () => {
+              window.winManager.openPromptDialog({
+                title: ru ? 'Создание ярлыка' : 'Create Shortcut',
+                icon: 'folder',
+                message: ru ? 'Командная строка или объект:' : 'Command line or target:',
+                value: 'C:\\WINDOWS\\NOTEPAD.EXE',
+                onOk: (val) => {
+                  if (val && val.trim() && window.vfs) {
+                    const base = val.trim().split('\\').pop();
+                    window.vfs.writeFile(['Desktop'], ru ? `Ярлык для ${base}.lnk` : `Shortcut to ${base}.lnk`, {
+                      type: 'shortcut',
+                      icon: 'file-exe',
+                      targetPath: ['My Computer', 'C:', 'WINDOWS', base]
+                    });
+                    this.renderIcons();
+                  }
+                }
+              });
+            }
+          },
+          { separator: true },
+          {
+            label: ru ? 'Портфель' : 'Briefcase',
+            action: () => {
+              if (window.vfs) {
+                window.vfs.writeFile(['Desktop'], ru ? 'Портфель.bfc' : 'New Briefcase.bfc', {
+                  type: 'briefcase',
+                  icon: 'briefcase',
+                  files: []
                 });
+                this.renderIcons();
               }
             }
-          });
-        }
+          },
+          { label: ru ? 'Точечный рисунок' : 'Bitmap Image', action: () => createDesktopFile(ru ? 'Точечный рисунок.bmp' : 'New Bitmap Image.bmp', '', 'file-bmp') },
+          { label: t('desktop.newTextDoc'), action: () => createDesktopFile(ru ? 'Текстовый документ.txt' : 'New Text Document.txt', '', 'file-txt') },
+          { label: ru ? 'Документ WordPad' : 'WordPad Document', action: () => createDesktopFile(ru ? 'Документ WordPad.rtf' : 'New WordPad Document.rtf', '', 'file-rtf') },
+          { label: ru ? 'Звук Wave' : 'Wave Sound', action: () => createDesktopFile(ru ? 'Звук Wave.wav' : 'New Wave Sound.wav', '', 'file-music') }
+        ]
       },
       { separator: true },
       {
@@ -825,11 +1240,12 @@ class Desktop {
   openIconContextMenu(x, y, item) {
     if (!window.contextMenu || !item) return;
     const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
+    const ru = window.i18n && window.i18n.getLanguage() === 'ru';
 
     if (item.id === 'recycle-bin') {
       window.contextMenu.show(x, y, [
         { label: t('menu.open'), bold: true, action: () => this.launchApp(item) },
-        { label: t('menu.explore'), action: () => this.launchApp(item) },
+        { label: t('menu.explore'), action: () => window.appExplorer ? window.appExplorer.open(['Recycle Bin'], { showTree: true }) : this.launchApp(item) },
         {
           label: t('menu.emptyBin'),
           action: () => {
@@ -841,7 +1257,7 @@ class Desktop {
                 { text: t('btn.yes'), primary: true, isDefault: true, onClick: () => {
                   window.vfs && window.vfs.emptyRecycleBin && window.vfs.emptyRecycleBin();
                   const deskIcon = document.querySelector('.desktop-icon[data-id="recycle-bin"] .desktop-icon-img');
-                  if (deskIcon) deskIcon.innerHTML = Icons['recycle-bin-empty'];
+                  if (deskIcon) deskIcon.innerHTML = Icons[this.systemIcon('recycle-bin-empty')];
                 }},
                 { text: t('btn.no'), onClick: () => {} }
               ]
@@ -853,32 +1269,102 @@ class Desktop {
         { separator: true },
         {
           label: t('menu.properties'),
-          action: () => {
-            window.winManager.openDialog({
-              title: `${item.title} ${t('menu.properties')}`,
-              icon: item.icon,
-              message: `<b>${item.title}</b><br>${t('explorer.typeSystem')}<br>Location: Desktop<br>Space: 0 bytes used`
-            });
-          }
+          action: () => this.openRecycleBinProperties()
         }
       ]);
       return;
     }
 
+    if (item.id === 'network') {
+      window.contextMenu.show(x, y, [
+        { label: t('menu.open'), bold: true, action: () => this.launchApp(item) },
+        { label: t('menu.explore'), action: () => window.appExplorer && window.appExplorer.open(['Network Neighborhood'], { showTree: true }) },
+        { label: ru ? 'Найти компьютер...' : 'Find Computer...', action: () => window.appDialogs && window.appDialogs.openFindDialog() },
+        { label: ru ? 'Подключить сетевой диск...' : 'Map Network Drive...', action: () => window.winManager.openDialog({ title: ru ? 'Подключение сетевого диска' : 'Map Network Drive', icon: 'network', message: ru ? 'Диск Z: подключен к \\\\FILESERVER\\Public' : 'Drive Z: mapped to \\\\FILESERVER\\Public' }) },
+        { separator: true },
+        { label: t('menu.createShortcut'), action: () => {} },
+        { label: t('menu.rename'), action: () => {} },
+        { separator: true },
+        { label: t('menu.properties'), action: () => window.appCPanel && window.appCPanel.openNetworkProperties ? window.appCPanel.openNetworkProperties() : null }
+      ]);
+      return;
+    }
+
+    const sendToMenu = [
+      {
+        label: ru ? 'Диск 3,5 (A:)' : '3½ Floppy (A:)',
+        action: () => {
+          if (item.isFile && window.vfs) {
+            window.vfs.createFile(['My Computer', 'A:'], item.fileData.name, item.fileData.content || '', item.icon || 'file-txt');
+          }
+        }
+      },
+      {
+        label: ru ? 'Адресат' : 'Mail Recipient',
+        action: () => {
+          if (window.appOutlook) window.appOutlook.open();
+        }
+      },
+      {
+        label: ru ? 'Мои документы' : 'My Documents',
+        action: () => {
+          if (item.isFile && window.vfs) {
+            window.vfs.createFile(['My Computer', 'C:', 'My Documents'], item.fileData.name, item.fileData.content || '', item.icon || 'file-txt');
+          }
+        }
+      }
+    ];
+
     window.contextMenu.show(x, y, [
       { label: t('menu.open'), bold: true, action: () => this.launchApp(item) },
+      {
+        label: t('menu.explore'),
+        action: () => {
+          if (item.id === 'my-computer') window.appExplorer && window.appExplorer.open(['My Computer'], { showTree: true });
+          else if (item.id === 'my-documents') window.appExplorer && window.appExplorer.open(['My Computer', 'C:', 'My Documents'], { showTree: true });
+          else if (item.isFile && item.fileData && item.fileData.type === 'folder') window.appExplorer && window.appExplorer.open(['Desktop', item.fileData.name], { showTree: true });
+          else this.launchApp(item);
+        }
+      },
       { separator: true },
-      { label: t('menu.cut'), disabled: true },
-      { label: t('menu.copy'), disabled: true },
+      { label: ru ? 'Отправить' : 'Send To', submenu: sendToMenu },
+      { separator: true },
+      {
+        label: t('menu.cut'),
+        disabled: !item.isFile,
+        action: () => {
+          if (item.isFile) {
+            window.sharedFileClipboard = { mode: 'cut', item: { ...item.fileData }, sourcePath: ['Desktop'] };
+          }
+        }
+      },
+      {
+        label: t('menu.copy'),
+        disabled: !item.isFile,
+        action: () => {
+          if (item.isFile) {
+            window.sharedFileClipboard = { mode: 'copy', item: { ...item.fileData }, sourcePath: ['Desktop'] };
+          }
+        }
+      },
       { separator: true },
       {
         label: t('menu.createShortcut'),
         action: () => {
-          window.winManager.openDialog({
-            title: t('menu.createShortcut'),
-            icon: item.icon,
-            message: t('desktop.shortcutCreated', item.title)
-          });
+          if (item.isFile && window.vfs) {
+            window.vfs.writeFile(['Desktop'], ru ? `Ярлык для ${item.fileData.name}.lnk` : `Shortcut to ${item.fileData.name}.lnk`, {
+              type: 'shortcut',
+              icon: item.icon || 'file-txt',
+              targetPath: ['Desktop', item.fileData.name]
+            });
+            this.renderIcons();
+          } else {
+            window.winManager.openDialog({
+              title: t('menu.createShortcut'),
+              icon: item.icon,
+              message: t('desktop.shortcutCreated', item.title)
+            });
+          }
         }
       },
       {
@@ -917,7 +1403,11 @@ class Desktop {
             value: item.title,
             onOk: (newName) => {
               if (newName && newName.trim()) {
-                item.title = newName.trim();
+                const trimmed = newName.trim();
+                if (item.isFile && window.vfs) {
+                  window.vfs.renameItem(['Desktop'], item.fileData.name, trimmed);
+                }
+                item.title = trimmed;
                 this.renderIcons();
               }
             }
@@ -932,10 +1422,26 @@ class Desktop {
             if (window.appCPanel) window.appCPanel.openSystemProperties();
             return;
           }
+          if (item.id === 'ie') {
+            if (window.appCPanel) window.appCPanel.openInternetProperties();
+            return;
+          }
+          if (item.id === 'esheep' || (item.fileData && item.fileData.app === 'esheep')) {
+            if (window.appESheep) window.appESheep.openSettings();
+            return;
+          }
+          if (item.id === 'neko' || (item.fileData && item.fileData.app === 'neko')) {
+            if (window.appNeko) window.appNeko.openBasket();
+            return;
+          }
+          if (item.isFile && item.fileData && window.appExplorer && window.appExplorer.openPropertiesDialog) {
+            window.appExplorer.openPropertiesDialog(item.fileData, ['Desktop']);
+            return;
+          }
           window.winManager.openDialog({
             title: `${item.title} ${t('menu.properties')}`,
             icon: item.icon,
-            message: `<b>${item.title}</b><br>${t('explorer.typeApp')}<br>Location: C:\\Windows\\Desktop`
+            message: `<b>${item.title}</b><br>${t('explorer.typeApp')}<br>${ru ? 'Размещение' : 'Location'}: C:\\WINDOWS\\Desktop`
           });
         }
       }
@@ -963,20 +1469,18 @@ class ContextMenuManager {
     window.addEventListener('resize', () => this.hide());
   }
 
-  show(x, y, items) {
-    if (!this.el) return;
-    this.el.innerHTML = '';
-
+  renderMenuItems(container, items) {
     items.forEach(item => {
       if (item.separator) {
         const sep = document.createElement('div');
         sep.className = 'win-menu-separator';
-        this.el.appendChild(sep);
+        container.appendChild(sep);
         return;
       }
 
+      const hasSub = Array.isArray(item.submenu) && item.submenu.length > 0;
       const row = document.createElement('div');
-      row.className = 'context-menu-item' + (item.disabled ? ' disabled' : '') + (item.checked ? ' checked' : '');
+      row.className = 'context-menu-item' + (item.disabled ? ' disabled' : '') + (item.checked ? ' checked' : '') + (hasSub ? ' has-submenu' : '');
 
       const labelSpan = document.createElement('span');
       if (item.bold) {
@@ -986,7 +1490,17 @@ class ContextMenuManager {
       }
       row.appendChild(labelSpan);
 
-      if (item.shortcut) {
+      if (hasSub) {
+        const arr = document.createElement('span');
+        arr.className = 'context-menu-arrow';
+        arr.textContent = '▸';
+        row.appendChild(arr);
+
+        const subEl = document.createElement('div');
+        subEl.className = 'win-context-submenu';
+        this.renderMenuItems(subEl, item.submenu);
+        row.appendChild(subEl);
+      } else if (item.shortcut) {
         const sc = document.createElement('span');
         sc.className = 'context-menu-shortcut';
         sc.textContent = item.shortcut;
@@ -995,6 +1509,9 @@ class ContextMenuManager {
 
       if (!item.disabled && item.action) {
         row.addEventListener('click', (e) => {
+          if (e.target.closest('.win-context-submenu') && row.querySelector('.win-context-submenu') === e.target.closest('.win-context-submenu')) {
+            return;
+          }
           e.stopPropagation();
           if (window.soundSys) window.soundSys.playClick();
           this.hide();
@@ -1002,8 +1519,15 @@ class ContextMenuManager {
         });
       }
 
-      this.el.appendChild(row);
+      container.appendChild(row);
     });
+  }
+
+  show(x, y, items) {
+    if (!this.el) return;
+    this.el.innerHTML = '';
+
+    this.renderMenuItems(this.el, items);
 
     this.el.style.display = 'block';
     this.el.style.visibility = 'hidden';

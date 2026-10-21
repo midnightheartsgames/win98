@@ -987,7 +987,7 @@
 
 .icqsite-page {
   padding: 8px 14px 4px;
-  max-width: 640px;
+  max-width: 780px;
 }
 
 .icqsite-page p {
@@ -1023,7 +1023,35 @@
   white-space: nowrap;
 }
 
+.icqsite-filter-bar {
+  background: #eeffee;
+  border: 1px solid #009900;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+}
+
+.icqsite-search-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.icqsite-groups-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.btn-icqweb-group.active {
+  font-weight: bold;
+  background: #ccffcc;
+  border-style: inset;
+}
+
 .icqsite-people {
+  width: 100%;
   border-collapse: separate;
   border-spacing: 1px;
   background: #009900;
@@ -1033,12 +1061,58 @@
   background: #009900;
   color: #ffffff;
   text-align: left;
-  padding: 2px 6px;
+  padding: 3px 6px;
+  white-space: nowrap;
 }
 
 .icqsite-people td {
   background: #ffffff;
-  padding: 2px 6px;
+  padding: 3px 6px;
+  vertical-align: top;
+}
+
+.icqsite-people tr:nth-child(even) td {
+  background: #f6fff6;
+}
+
+.icqsite-uin-cell {
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.icqsite-uin-cell a {
+  color: #006600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.icqsite-group-tag {
+  color: #006600;
+}
+
+.icqsite-status-pill {
+  font-weight: bold;
+  white-space: nowrap;
+  margin-right: 4px;
+}
+
+.icqsite-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.icqsite-actions-cell {
+  white-space: nowrap;
+}
+
+.icqsite-actions-cell .win-btn {
+  padding: 1px 6px;
+  font-size: 10px;
 }
 
 .icqsite-download {

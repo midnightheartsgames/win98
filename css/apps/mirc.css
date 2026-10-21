@@ -1,0 +1,324 @@
+.mirc-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #c0c0c0;
+  color: #000000;
+  font-family: 'Tahoma', 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+  user-select: none;
+  position: relative;
+}
+
+.mirc-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 6px;
+  border-top: 1px solid #ffffff;
+  border-bottom: 1px solid #808080;
+  flex-wrap: wrap;
+}
+
+.mirc-tb-btn {
+  height: 23px;
+  padding: 0 7px;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  box-shadow: inset -1px -1px 0 #808080;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.mirc-tb-btn:active,
+.mirc-tb-btn.active {
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  box-shadow: inset 1px 1px 0 #808080;
+  background: #dfdfdf;
+}
+
+.mirc-tb-sep {
+  width: 1px;
+  height: 18px;
+  background: #808080;
+  border-right: 1px solid #ffffff;
+  margin: 0 2px;
+}
+
+.mirc-switchbar {
+  display: flex;
+  gap: 3px;
+  padding: 3px 6px;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-bottom: 1px solid #808080;
+  overflow-x: auto;
+}
+
+.mirc-tab-btn {
+  height: 22px;
+  padding: 0 9px;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  box-shadow: inset -1px -1px 0 #808080;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mirc-tab-btn.active {
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  box-shadow: inset 1px 1px 0 #808080;
+  background: #dfdfdf;
+  font-weight: bold;
+  color: #000080;
+}
+
+.mirc-tab-btn.unread {
+  color: #b80000;
+}
+
+.mirc-topic-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-top: 1px solid #ffffff;
+  border-bottom: 1px solid #808080;
+}
+
+.mirc-topic-input {
+  flex: 1;
+  height: 20px;
+  background: #ffffff;
+  color: #000000;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  padding: 1px 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+}
+
+.mirc-mdi-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 158px;
+  gap: 4px;
+  padding: 4px 6px;
+  overflow: hidden;
+}
+
+.mirc-mdi-body.status-mode {
+  grid-template-columns: 1fr;
+}
+
+.mirc-chat-pane {
+  background: #ffffff;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  padding: 6px 8px;
+  overflow-y: auto;
+  font-family: 'Fixedsys', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.38;
+  user-select: text;
+}
+
+.mirc-line {
+  word-break: break-word;
+  margin-bottom: 2px;
+}
+
+.mirc-line-system {
+  color: #008000;
+}
+
+.mirc-line-action {
+  color: #800080;
+  font-weight: bold;
+}
+
+.mirc-line-notice {
+  color: #804000;
+}
+
+.mirc-line-whois {
+  color: #000080;
+  background: #f2f6ff;
+  padding: 1px 4px;
+}
+
+.mirc-nick-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.mirc-mdi-body.status-mode .mirc-nick-pane {
+  display: none;
+}
+
+.mirc-nick-header {
+  background: #dfdfdf;
+  border: 1px solid #808080;
+  padding: 2px 5px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.mirc-nick-list {
+  flex: 1;
+  background: #ffffff;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  overflow-y: auto;
+  padding: 2px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.mirc-nick-item {
+  padding: 1px 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mirc-nick-item.selected {
+  background: #000080;
+  color: #ffffff;
+}
+
+.mirc-nick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+}
+
+.mirc-bottom-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 2px 6px 5px;
+  border-top: 1px solid #ffffff;
+}
+
+.mirc-color-strip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.mirc-color-swatch {
+  width: 14px;
+  height: 13px;
+  border: 1px solid #404040;
+  cursor: pointer;
+}
+
+.mirc-color-swatch.selected {
+  outline: 2px solid #000000;
+}
+
+.mirc-input-row {
+  display: flex;
+  gap: 4px;
+}
+
+.mirc-cmd-input {
+  flex: 1;
+  height: 22px;
+  background: #ffffff;
+  color: #000000;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  padding: 1px 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.mirc-modal-backdrop {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: 80;
+  align-items: center;
+  justify-content: center;
+}
+
+.mirc-modal-backdrop.open {
+  display: flex;
+}
+
+.mirc-modal {
+  width: 390px;
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+  box-shadow: inset -1px -1px 0 #808080;
+  display: flex;
+  flex-direction: column;
+}
+
+.mirc-modal-titlebar {
+  background: linear-gradient(90deg, #000080, #1084d0);
+  color: #ffffff;
+  font-weight: bold;
+  padding: 2px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mirc-modal-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.mirc-form-grid {
+  display: grid;
+  grid-template-columns: 125px 1fr;
+  gap: 5px 8px;
+  align-items: center;
+}
+
+.mirc-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding-top: 5px;
+  border-top: 1px solid #808080;
+}

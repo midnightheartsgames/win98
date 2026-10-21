@@ -94,16 +94,16 @@
   // ---------------------------------------------------------------- humans
   // acc: aiming skill 0..1; gear: weapons chosen at random; loot: extra items with chance
   const HUMANS = {
-    rookie: { faction: 'stalker', hp: 100, suit: 'jacket', weapons: ['pm', 'obrez', 'pm', 'fort', 'obrez'], acc: 0.42, look: 'rookie', loot: [['bread', 0.5], ['bandage', 0.4], ['vodka', 0.3], ['medkit', 0.2]], money: [50, 250], rank: 0 },
-    loner: { faction: 'stalker', hp: 110, suit: 'jacket', weapons: ['aks74u', 'toz', 'mp5', 'obrez'], acc: 0.55, look: 'loner', loot: [['sausage', 0.4], ['medkit', 0.35], ['bandage', 0.5], ['antirad', 0.3]], money: [150, 500], rank: 1 },
-    veteran: { faction: 'stalker', hp: 130, suit: 'stalker_suit', weapons: ['ak74', 'aks74u'], acc: 0.72, look: 'veteran', loot: [['medkit', 0.6], ['antirad', 0.5]], money: [300, 900], rank: 2 },
-    bandit: { faction: 'bandit', hp: 100, suit: 'bandit_jacket', weapons: ['pm', 'obrez', 'mp5', 'aks74u', 'pm', 'toz'], acc: 0.46, look: 'bandit', loot: [['vodka', 0.5], ['bread', 0.3], ['medkit', 0.2], ['bandage', 0.3]], money: [80, 400], rank: 0 },
-    bandit_boss: { faction: 'bandit', hp: 150, suit: 'bandit_coat', weapons: ['aks74u', 'ak74'], acc: 0.6, look: 'boss', loot: [['medkit', 0.8], ['vodka', 0.8], ['f1', 0.5]], money: [500, 1200], rank: 1 },
-    soldier: { faction: 'military', hp: 120, suit: 'military_suit', weapons: ['ak74', 'aks74u', 'ak74'], acc: 0.62, look: 'military', loot: [['medkit_army', 0.4], ['tourist', 0.5], ['rgd5', 0.4]], money: [50, 300], rank: 1 },
-    officer: { faction: 'military', hp: 120, suit: 'military_suit', weapons: ['ak74'], acc: 0.66, look: 'officer', loot: [['medkit_army', 0.8], ['f1', 0.6]], money: [400, 900], rank: 2 },
-    duty: { faction: 'duty', hp: 140, suit: 'military_suit', weapons: ['ak74'], acc: 0.7, look: 'duty', loot: [['medkit', 0.6], ['tourist', 0.4]], money: [100, 500], rank: 2 },
-    hostage: { faction: 'stalker', hp: 100, suit: 'jacket', weapons: [], acc: 0.4, look: 'hostage', loot: [['bread', 0.3]], money: [0, 60], rank: 0 },
-    trader: { faction: 'trader', hp: 1000, suit: null, weapons: [], acc: 0, look: 'trader', loot: [], money: [0, 0], rank: 3 }
+    rookie: { title: T('Сталкер-новичок', 'Rookie stalker'), faction: 'stalker', hp: 100, suit: 'jacket', weapons: ['pm', 'obrez', 'pm', 'fort', 'obrez'], acc: 0.42, look: 'rookie', loot: [['bread', 0.5], ['bandage', 0.4], ['vodka', 0.3], ['medkit', 0.2]], money: [50, 250], rank: 0 },
+    loner: { title: T('Опытный сталкер', 'Experienced stalker'), faction: 'stalker', hp: 110, suit: 'jacket', weapons: ['aks74u', 'toz', 'mp5', 'obrez'], acc: 0.55, look: 'loner', loot: [['sausage', 0.4], ['medkit', 0.35], ['bandage', 0.5], ['antirad', 0.3]], money: [150, 500], rank: 1 },
+    veteran: { title: T('Сталкер-ветеран', 'Veteran stalker'), faction: 'stalker', hp: 130, suit: 'stalker_suit', weapons: ['ak74', 'aks74u'], acc: 0.72, look: 'veteran', loot: [['medkit', 0.6], ['antirad', 0.5]], money: [300, 900], rank: 2 },
+    bandit: { title: T('Бандит', 'Bandit'), faction: 'bandit', hp: 100, suit: 'bandit_jacket', weapons: ['pm', 'obrez', 'mp5', 'aks74u', 'pm', 'toz'], acc: 0.46, look: 'bandit', loot: [['vodka', 0.5], ['bread', 0.3], ['medkit', 0.2], ['bandage', 0.3]], money: [80, 400], rank: 0 },
+    bandit_boss: { title: T('Главарь бандитов', 'Bandit boss'), faction: 'bandit', hp: 150, suit: 'bandit_coat', weapons: ['aks74u', 'ak74'], acc: 0.6, look: 'boss', loot: [['medkit', 0.8], ['vodka', 0.8], ['f1', 0.5]], money: [500, 1200], rank: 1 },
+    soldier: { title: T('Солдат', 'Soldier'), faction: 'military', hp: 120, suit: 'military_suit', weapons: ['ak74', 'aks74u', 'ak74'], acc: 0.62, look: 'military', loot: [['medkit_army', 0.4], ['tourist', 0.5], ['rgd5', 0.4]], money: [50, 300], rank: 1 },
+    officer: { title: T('Офицер', 'Officer'), faction: 'military', hp: 120, suit: 'military_suit', weapons: ['ak74'], acc: 0.66, look: 'officer', loot: [['medkit_army', 0.8], ['f1', 0.6]], money: [400, 900], rank: 2 },
+    duty: { title: T('Долговец', 'Duty soldier'), faction: 'duty', hp: 140, suit: 'military_suit', weapons: ['ak74'], acc: 0.7, look: 'duty', loot: [['medkit', 0.6], ['tourist', 0.4]], money: [100, 500], rank: 2 },
+    hostage: { title: T('Заложник', 'Hostage'), faction: 'stalker', hp: 100, suit: 'jacket', weapons: [], acc: 0.4, look: 'hostage', loot: [['bread', 0.3]], money: [0, 60], rank: 0 },
+    trader: { title: T('Торговец', 'Trader'), faction: 'trader', hp: 1000, suit: null, weapons: [], acc: 0, look: 'trader', loot: [], money: [0, 0], rank: 3 }
   };
 
   // ---------------------------------------------------------------- mutants
@@ -154,7 +154,7 @@
   const STR = {
     ru: {
       title: 'S.T.A.L.K.E.R.', subtitle: 'ТЕНЬ ЧЕРНОБЫЛЯ', edition: 'издание 98 года',
-      newGame: 'Новая игра', cont: 'Продолжить', load: 'Загрузить', save: 'Сохранить', options: 'Настройки', controls: 'Управление', credits: 'Авторы', quit: 'Выход', resume: 'Вернуться в игру', mainMenu: 'Главное меню', back: 'Назад',
+      newGame: 'Новая игра', cont: 'Продолжить', load: 'Загрузить', save: 'Сохранить', options: 'Настройки', controls: 'Управление', spawner: 'Спавнер', credits: 'Авторы', quit: 'Выход', resume: 'Вернуться в игру', mainMenu: 'Главное меню', back: 'Назад',
       skill: 'Сложность', loading: 'Загрузка', empty: 'пусто', quickSave: 'Быстрое сохранение', autoSave: 'Автосохранение', slot: 'Слот',
       saved: 'Игра сохранена', loaded: 'Игра загружена', noSave: 'Нет сохранения', saveFail: 'Не удалось сохранить (хранилище недоступно)',
       sens: 'Чувствительность мыши', invert: 'Инверсия мыши', fov: 'Поле зрения', sfx: 'Громкость звука', music: 'Громкость музыки', res: 'Разрешение', resLow: '320×240', resMed: '640×480', resHigh: '800×600', resFull: 'Полное', grass: 'Трава', bob: 'Покачивание', fps: 'Счётчик FPS', on: 'Вкл', off: 'Выкл', lang: 'Язык',
@@ -173,12 +173,12 @@
       help: [
         'W A S D — движение, Пробел — прыжок', 'Shift — бег (тратит выносливость), Ctrl — присесть', 'Q / E — выглянуть из-за угла',
         'ЛКМ — огонь, ПКМ — прицелиться, R — перезарядка', '1 нож, 2 пистолет, 3 автомат/ружьё, 4 граната, 5 бинокль, 6 болт', 'B — режим огня, колесо мыши — смена оружия',
-        'F — говорить / обыскать / подобрать', 'I — инвентарь, P или Tab — КПК, M — карта', 'L — фонарик', 'F1 аптечка, F2 бинт, F3 антирад, F4 еда', 'F6 — быстрое сохранение, F7 — быстрая загрузка', 'Esc — меню'
+        'F — говорить / обыскать / подобрать', 'I — инвентарь, P или Tab — КПК, M — карта', 'L — фонарик', 'F1 аптечка, F2 бинт, F3 антирад, F4 еда', 'F6 — быстрое сохранение, F9 — быстрая загрузка', 'F7 — спавнер', 'Esc — меню'
       ]
     },
     en: {
       title: 'S.T.A.L.K.E.R.', subtitle: 'SHADOW OF CHERNOBYL', edition: '1998 edition',
-      newGame: 'New game', cont: 'Continue', load: 'Load game', save: 'Save game', options: 'Options', controls: 'Controls', credits: 'Credits', quit: 'Quit', resume: 'Resume', mainMenu: 'Main menu', back: 'Back',
+      newGame: 'New game', cont: 'Continue', load: 'Load game', save: 'Save game', options: 'Options', controls: 'Controls', spawner: 'Spawner', credits: 'Credits', quit: 'Quit', resume: 'Resume', mainMenu: 'Main menu', back: 'Back',
       skill: 'Difficulty', loading: 'Loading', empty: 'empty', quickSave: 'Quick save', autoSave: 'Autosave', slot: 'Slot',
       saved: 'Game saved', loaded: 'Game loaded', noSave: 'No saved game', saveFail: 'Could not save (storage unavailable)',
       sens: 'Mouse sensitivity', invert: 'Invert mouse', fov: 'Field of view', sfx: 'Sound volume', music: 'Music volume', res: 'Resolution', resLow: '320×240', resMed: '640×480', resHigh: '800×600', resFull: 'Full', grass: 'Grass', bob: 'View bob', fps: 'FPS counter', on: 'On', off: 'Off', lang: 'Language',
@@ -197,7 +197,7 @@
       help: [
         'W A S D — move, Space — jump', 'Shift — sprint (uses stamina), Ctrl — crouch', 'Q / E — lean',
         'LMB — fire, RMB — aim, R — reload', '1 knife, 2 pistol, 3 rifle/shotgun, 4 grenade, 5 binoculars, 6 bolt', 'B — fire mode, mouse wheel — switch weapon',
-        'F — talk / search / pick up', 'I — inventory, P or Tab — PDA, M — map', 'L — flashlight', 'F1 medkit, F2 bandage, F3 anti-rad, F4 food', 'F6 — quick save, F7 — quick load', 'Esc — menu'
+        'F — talk / search / pick up', 'I — inventory, P or Tab — PDA, M — map', 'L — flashlight', 'F1 medkit, F2 bandage, F3 anti-rad, F4 food', 'F6 — quick save, F9 — quick load', 'F7 — spawner', 'Esc — menu'
       ]
     }
   };

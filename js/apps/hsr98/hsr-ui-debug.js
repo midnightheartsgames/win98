@@ -17,22 +17,24 @@
     { id: 'sig', label: 'Поиск сигнала: появление', icon: 'warp' },
     { id: 'conv', label: 'Призыв: появление', icon: 'warp' },
     { id: 'guild', label: 'Набор в отряд: появление', icon: 'warp' },
-    { id: 'mid', label: 'Полуночный канал: появление', icon: 'warp' }
+    { id: 'mid', label: 'Полуночный канал: появление', icon: 'warp' },
+    { id: 'con', label: 'Кон-Тон: появление', icon: 'warp' }
   ];
   const AIMS = [['auto', 'Как в бою'], ['all', 'Все враги'], ['one', 'Один враг'], ['none', 'Без врагов']];
   const AIM_TEXT = { single: 'один враг', blast: 'враг и соседи', all: 'все враги', allies: 'вся команда', self: 'сам герой' };
   const WARP_CUTS = [['full', 'Весь прыжок'], ['intro', 'Только появление']];
   const WARP_BANS = [['ev', 'Событийный'], ['std', 'Стандартный']];
-  const WARP_RES = [['new', 'Новый персонаж'], ['eid', 'Эйдолон +1'], ['credits', '+3 000 кредитов']];
+  const WARP_RES = [['new', 'Новый персонаж'], ['eid', 'Эйдолон +1'], ['max', 'Все эйдолоны открыты']];
   const EID_STAGES = [0, 1, 3, 6];
   const SHOW_FOES = ['reaver', 'eliminator', 'flamespawn'];
   const PARTNERS = ['march', 'danheng', 'himeko', 'welt'];
   const PV = { w: 224, h: 168 };
   const RAR_TXT = { 2: '#9ee0b0', 3: '#b8c4e8', 4: '#cfa2ff', 5: '#ffd45a' };
   const EIDOLON_NUM = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+  const TRACE_MODES = [['cap', 'до потолка уровня'], ['all', 'все узлы'], ['reset', 'сбросить']];
   const ROLLS = [['Минимальные', 0.8], ['Средние', 1], ['Максимальные', 1.2]];
   const KIND_NAME = { food: 'Расходник', exp: 'Опыт', key: 'Ключевой предмет', money: 'Валюта' };
-  const KIND_ORDER = ['food', 'exp', 'key'];
+  const KIND_ORDER = ['food', 'exp', 'mat', 'key'];
   const MONEY = {
     jade: { name: 'Звёздный нефрит', kind: 'money', rar: 5, text: 'Валюта Звёздного прыжка: ' + T.warpCost + ' нефрита за прыжок.' },
     credits: { name: 'Кредиты', kind: 'money', rar: 3, text: 'Деньги для магазинов и покупки слухов.' }
@@ -49,7 +51,7 @@
   const qtyOf = id => QTY[id] || QTY_ITEM;
   const freshState = () => ({
     tab: 0, row: 0, log: null,
-    ch: { i: 0, lvl: H.MAX_LVL, eid: 0 },
+    ch: { i: 0, lvl: H.MAX_LVL, eid: 0, tr: 0 },
     cn: { i: 0, sup: 1, n: 1 },
     rl: { set: 0, slot: 0, main: 'hpF', subs: ['critR', 'critD', 'atkP', 'spd'], lvl: 15, roll: 1 },
     it: { i: 0, q: 0 },
@@ -60,7 +62,7 @@
   const sceneKind = st => SCENE_KINDS[st.sc.kind].id;
   function sceneIds(kind) {
     if (kind === 'fus') return Object.keys(H.FUSIONS).filter(k => H.Fusions.SHOWS[k]);
-    if (kind === 'sig' || kind === 'conv' || kind === 'guild' || kind === 'mid') return charIds();
+    if (kind === 'sig' || kind === 'conv' || kind === 'guild' || kind === 'mid' || kind === 'con') return charIds();
     const has = kind === 'ult' ? H.Ults.SHOWS : kind === 'warp' ? H.WarpIntro.SHOWS : H.Eidolons.SCENES;
     return Object.keys(H.CHARS).filter(k => has[k]);
   }
@@ -128,6 +130,13 @@
     return show;
   }
 
+  function makeSpotlight(ui, id, S) {
+    const d = H.CHARS[id];
+    const show = new H.SpotlightShow(ui, [{ kind: 'char', id, pick: id, rar: d.rarity, name: d.name, res: WARP_RES[S.res][0] }], { ban: 'con' });
+    if (WARP_CUTS[S.cut][0] === 'intro') show.begin([0]);
+    return show;
+  }
+
   function makeGuild(ui, id, S) {
     const d = H.CHARS[id];
     const show = new H.ExplosionShow(ui, [{ kind: 'char', id, pick: id, rar: d.rarity, name: d.name, res: WARP_RES[S.res][0], gender: id === 'trail' ? S.gen || ui.game.state.gender : undefined }], { ban: 'guild' });
@@ -182,19 +191,29 @@
       const tab = TABS[st.tab].id;
       if (tab === 'chars') {
         const ids = charIds(), id = ids[st.ch.i], name = H.CHARS[id].name, owned = !!g.state.roster[id];
-        const tag = () => 'ур. ' + st.ch.lvl + ' · E' + st.ch.eid;
+        const trMode = TRACE_MODES[st.ch.tr || 0], tag = () => 'ур. ' + st.ch.lvl + ' · E' + st.ch.eid + ' · Следы ' + trMode[1];
+        const grant = k => { const res = g.debugChar(k, st.ch.lvl, st.ch.eid); g.fillTraces(k === 'trail_p' ? 'trail' : k, trMode[0]); return res; };
+        const outs = ui.debugOutfits(id), oi = H.clamp(st.ch.o || 0, 0, Math.max(0, outs.length - 1)), oid = outs[oi];
+        const outLabel = !oid ? 'нет нарядов' : oid === '*' ? 'Все наряды игры (' + Object.keys(H.OUTFITS).length + ')' : H.OUTFITS[oid].name + (g.ownsOutfit(oid) ? ' · есть' : '');
         return {
           rows: [
             { label: 'Персонаж', value: name, col: RAR_TXT[H.CHARS[id].rarity], step: d => { st.ch.i = wrapIdx(st.ch.i + d, ids.length); } },
             { label: 'Уровень', value: String(st.ch.lvl), step: d => { st.ch.lvl = H.clamp(st.ch.lvl + d * (shift() ? 10 : 1), 1, H.MAX_LVL); } },
-            { label: 'Эйдолоны', value: st.ch.eid ? 'E' + st.ch.eid + ' · до ' + EIDOLON_NUM[st.ch.eid - 1] : 'E0 · нет', step: d => { st.ch.eid = H.clamp(st.ch.eid + d, 0, 6); } }
+            { label: 'Эйдолоны', value: st.ch.eid ? 'E' + st.ch.eid + ' · до ' + EIDOLON_NUM[st.ch.eid - 1] : 'E0 · нет', step: d => { st.ch.eid = H.clamp(st.ch.eid + d, 0, 6); } },
+            { label: 'Наряд', value: outLabel, col: oid && oid !== '*' ? RAR_TXT[H.OUTFITS[oid].rarity] : null, fixed: outs.length < 2, step: d => { st.ch.o = wrapIdx(oi + d, outs.length); } },
+            { label: 'Следы', value: trMode[1], step: d => { st.ch.tr = wrapIdx((st.ch.tr || 0) + d, TRACE_MODES.length); } }
           ],
           acts: [
-            { label: owned ? 'Применить' : 'Выдать', icon: 'chars', fn: () => { const res = g.debugChar(id, st.ch.lvl, st.ch.eid); note((res === 'new' ? 'новый персонаж ' : 'изменён ') + name + ', ' + tag(), 'levelup'); } },
+            { label: owned ? 'Применить' : 'Выдать', icon: 'chars', fn: () => { const res = grant(id); note((res === 'new' ? 'новый персонаж ' : 'изменён ') + name + ', ' + tag(), 'levelup'); } },
+            { label: 'Наряд', icon: 'outfit', fn: () => {
+              if (!oid) { st.log = { text: 'у персонажа нет нарядов', t: ui.t }; ui.sfx('deny'); return; }
+              const list = oid === '*' ? Object.keys(H.OUTFITS) : [oid], worn = list.filter(x => g.debugOutfit(x, oid !== '*'));
+              note(oid === '*' ? 'все наряды (' + list.length + ')' : '«' + H.OUTFITS[oid].name + '»' + (worn.length ? ', надет' : ', персонажа нет в составе'), 'chest');
+            } },
             { label: 'Выдать всех', icon: 'team', fn: () => {
               const miss = ids.filter(k => !g.state.roster[k]);
               if (!miss.length) { st.log = { text: 'все персонажи уже в составе', t: ui.t }; ui.sfx('deny'); return; }
-              for (const k of miss) g.debugChar(k, st.ch.lvl, st.ch.eid);
+              for (const k of miss) grant(k);
               note('новых персонажей ' + miss.length + ', ' + tag(), 'levelup');
             } }
           ]
@@ -257,7 +276,7 @@
           { label: 'Баннер', value: WARP_BANS[S.ban][1], step: cycle(WARP_BANS, 'ban') },
           { label: 'Итог', value: WARP_RES[S.res][1], step: cycle(WARP_RES, 'res') }
         );
-        if (kind === 'sig' || kind === 'conv' || kind === 'guild' || kind === 'mid') rows.push(
+        if (kind === 'sig' || kind === 'conv' || kind === 'guild' || kind === 'mid' || kind === 'con') rows.push(
           { label: 'Ролик', value: WARP_CUTS[S.cut][1], step: cycle(WARP_CUTS, 'cut') },
           { label: 'Итог', value: WARP_RES[S.res][1], step: cycle(WARP_RES, 'res') }
         );
@@ -277,13 +296,16 @@
         ] };
       }
       const ids = itemIds(), id = ids[st.it.i], d = itemDef(id), q = qtyOf(id), n = q[Math.min(st.it.q, q.length - 1)];
+      const tl = st.it.tl || g.trailLevel();
       return {
         rows: [
           { label: 'Предмет', value: d.name, col: RAR_TXT[d.rar] || C.cream, step: k => { st.it.i = wrapIdx(st.it.i + k, ids.length); } },
-          { label: 'Количество', value: H.fmt(n), step: k => { st.it.q = H.clamp(Math.min(st.it.q, q.length - 1) + k, 0, q.length - 1); } }
+          { label: 'Количество', value: H.fmt(n), step: k => { st.it.q = H.clamp(Math.min(st.it.q, q.length - 1) + k, 0, q.length - 1); } },
+          { label: 'Ур. Освоения', value: String(tl), step: k => { st.it.tl = H.clamp(tl + k * (shift() ? 10 : 1), 1, H.TL_MAX); } }
         ],
         acts: [
-          { label: 'Выдать', icon: 'bag', fn: () => { g.give(MONEY[id] ? { [id]: n } : { items: { [id]: n } }); note(d.name + ' +' + H.fmt(n)); } }
+          { label: 'Выдать', icon: 'bag', fn: () => { g.give(MONEY[id] ? { [id]: n } : { items: { [id]: n } }); note(d.name + ' +' + H.fmt(n)); } },
+          { label: 'Уровень Освоения', icon: 'guide', fn: () => { note('уровень Освоения ' + g.setTrailLevel(tl), 'levelup'); } }
         ]
       };
     },
@@ -322,10 +344,16 @@
       }
     },
 
+    debugOutfits(id) {
+      const own = this.game.outfitsOf ? this.game.outfitsOf(id) : [];
+      return own.length ? own.concat('*') : [];
+    },
+
     debugCharPreview(c, st, x, y) {
       const ui = this, g = this.game, id = charIds()[st.ch.i], kitId = id === 'trail' ? g.kitOf('trail') : id, kit = H.CHARS[kitId], r = g.state.roster[id];
       G.rarityCell(c, x + 14, y + 14, 80, 80, kit.rarity);
-      G.drawPortrait(c, G.lookOf(kitId, g), x + 18, y + 18, 72);
+      const outs = ui.debugOutfits(id), oid = st.row === 3 ? outs[H.clamp(st.ch.o || 0, 0, Math.max(0, outs.length - 1))] : null;
+      G.drawPortrait(c, oid && oid !== '*' ? H.outfitLook(oid, g.state.gender) : G.lookOf(kitId, g), x + 18, y + 18, 72);
       ui.text(id === 'trail' ? g.state.name : kit.name, x + 106, y + 14, { size: 15, bold: true, serif: true, col: RAR_TXT[kit.rarity] });
       ui.text('★'.repeat(kit.rarity), x + 106, y + 34, { size: 12, col: RAR_TXT[kit.rarity] });
       G.pathIcon(c, kit.path, x + 106, y + 52, 14);
@@ -429,6 +457,12 @@
         preview.show.rt = ui.t % preview.show.length(preview.show.item());
         return preview.show.render();
       }
+      if (kind === 'con') {
+        const key = 'con|' + id;
+        if (preview.key !== key) { preview.key = key; preview.show = new H.SpotlightShow(ui, [{ kind: 'char', id, rar: H.CHARS[id].rarity, name: H.CHARS[id].name, res: 'new' }], { ban: 'con' }); preview.show.begin([0]); }
+        preview.show.rt = ui.t % preview.show.length(preview.show.item());
+        return preview.show.render();
+      }
       if (kind === 'mid') {
         const key = 'mid|' + id;
         if (preview.key !== key) { preview.key = key; preview.show = new H.MidnightShow(ui, [{ kind: 'char', id, rar: H.CHARS[id].rarity, name: H.CHARS[id].name, res: 'new' }], { ban: 'mid' }); preview.show.begin([0]); }
@@ -474,6 +508,10 @@
       if (kind === 'conv') {
         const L = this.debugSceneFrame(kind, id, S) && preview.show.length(preview.show.item()), own = H.CONVENE_CUTS[id];
         return ['Появление: ' + sec(L) + ' после ролика с приливом', own ? 'Своя сцена: ' + own.length + ' планов, затем поза и реплика.' : 'Волна со звёздами, затем берег' + (kit.rarity === 5 ? ' и звуковое кольцо.' : '.'), 'Призыв не тратит приливы и не пишет историю.'];
+      }
+      if (kind === 'con') {
+        const L = this.debugSceneFrame(kind, id, S) && preview.show.length(preview.show.item()), her = H.SpotKit.heroine(id);
+        return ['Появление: ' + sec(L) + ' после ролика с автобусом и прожектором', her ? 'Героиня Кон-Тона: под её тему, затем табличка и реплика.' : 'Прожектор, знак Пути на полу, вспышка и полароид, карточка жюри.', 'Прыжок не тратит нефрит и не пишется в историю.'];
       }
       if (kind === 'mid') {
         const L = this.debugSceneFrame(kind, id, S) && preview.show.length(preview.show.item()), ar = H.VELVET.arcanaOf(id);
@@ -534,9 +572,10 @@
         full: true, debug: true, show: null, all: !!all,
         begin(d) {
           if (d) { S.id = ids[wrapIdx(sceneAt(st).i + d, ids.length)]; ui.sfx('select'); }
-          this.show = cineKind(kind) ? makeCine(ui, kind, S.id, AIMS[S.aim][0]) : kind === 'sig' ? makeSignal(ui, S.id, S) : kind === 'conv' ? makeConvene(ui, S.id, S) : kind === 'guild' ? makeGuild(ui, S.id, S) : kind === 'mid' ? makeMidnight(ui, S.id, S) : makeWarp(ui, S.id, S);
+          this.show = cineKind(kind) ? makeCine(ui, kind, S.id, AIMS[S.aim][0]) : kind === 'sig' ? makeSignal(ui, S.id, S) : kind === 'conv' ? makeConvene(ui, S.id, S) : kind === 'guild' ? makeGuild(ui, S.id, S) : kind === 'mid' ? makeMidnight(ui, S.id, S) : kind === 'con' ? makeSpotlight(ui, S.id, S) : makeWarp(ui, S.id, S);
           if (kind === 'sig') { ui.audio.stopSong(0); ui.audio.song('signal', this.show.phase === 'cine' ? 0 : H.SIGNAL_CINE); }
           if (kind === 'mid') { ui.audio.stopSong(0); ui.audio.song('aria', this.show.phase === 'cine' ? 0 : H.MIDNIGHT_CINE); }
+          if (kind === 'con') { ui.audio.stopSong(0); ui.audio.song('ccc', this.show.phase === 'cine' ? H.SPOT_FILM_AT : H.SPOT_FILM_AT + H.SPOT_CINE); this.show.retheme(); }
         },
         stop() { this.show = null; this.all = false; ui.audio.stopSong(); },
         onClose() { ui.audio.stopSong(); },
@@ -562,7 +601,7 @@
           if (this.show) {
             if (code === 'Backspace') { this.stop(); return; }
             if (k === 'left' || k === 'right') { this.begin(k === 'left' ? -1 : 1); return; }
-            if (code === 'Enter' || code === 'NumpadEnter') { if (kind === 'warp' || kind === 'sig' || kind === 'conv' || kind === 'guild' || kind === 'mid') this.show.enter(); else this.show.skip(); }
+            if (code === 'Enter' || code === 'NumpadEnter') { if (kind === 'warp' || kind === 'sig' || kind === 'conv' || kind === 'guild' || kind === 'mid' || kind === 'con') this.show.enter(); else this.show.skip(); }
             else if (code === 'Escape') this.show.skip();
             if (this.show.done) this.next();
             return;

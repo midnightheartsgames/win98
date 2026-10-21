@@ -1,0 +1,1512 @@
+.ar-page {
+    min-height: 100%;
+    padding: 10px 0 16px;
+    box-sizing: border-box;
+    background-color: #333333;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23333333'/%3E%3Crect x='3' y='5' width='1' height='1' fill='%23666666'/%3E%3Crect x='15' y='2' width='2' height='1' fill='%23666666'/%3E%3Crect x='9' y='13' width='1' height='1' fill='%23999999'/%3E%3Crect x='20' y='17' width='1' height='1' fill='%23666666'/%3E%3Crect x='5' y='20' width='1' height='1' fill='%23000000'/%3E%3Crect x='17' y='10' width='1' height='1' fill='%23000000'/%3E%3C/svg%3E");
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #000000;
+}
+
+.ar-page a {
+    color: #993300;
+}
+
+.ar-page a:visited {
+    color: #663300;
+}
+
+.ar-page a:hover {
+    color: #ff6600;
+}
+
+.ar-frame {
+    width: 760px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    border: 2px solid #000000;
+    background-color: #cccccc;
+}
+
+.ar-mast {
+    padding: 0;
+    background-color: #000000;
+    line-height: 0;
+}
+
+.ar-mast-svg {
+    display: block;
+}
+
+.ar-signs {
+    background-color: #000000;
+    padding: 6px 8px 8px;
+    border-bottom: 2px solid #996633;
+    text-align: center;
+    line-height: 1;
+}
+
+.ar-page a.ar-sign {
+    display: inline-block;
+    margin: 0 2px;
+    padding: 4px 10px 5px;
+    background-color: #996633;
+    border-top: 2px solid #cc9966;
+    border-left: 2px solid #cc9966;
+    border-right: 2px solid #663300;
+    border-bottom: 2px solid #663300;
+    color: #000000;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.ar-page a.ar-sign:hover {
+    background-color: #cc9966;
+    color: #000000;
+}
+
+.ar-page a.ar-sign-on {
+    background-color: #ff6600;
+    border-top-color: #ffcc00;
+    border-left-color: #ffcc00;
+    border-right-color: #993300;
+    border-bottom-color: #993300;
+    color: #000000;
+}
+
+.ar-page a.ar-sign-alarm {
+    background-color: #cc0000;
+    border-top-color: #ff6666;
+    border-left-color: #ff6666;
+    border-right-color: #660000;
+    border-bottom-color: #660000;
+    color: #ffffff;
+}
+
+.ar-pass {
+    background-color: #333333;
+    border-bottom: 2px solid #000000;
+    padding: 5px 8px;
+    color: #cccccc;
+}
+
+.ar-pass-row {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ar-pass-row td {
+    padding: 0 5px;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-left: 1px solid #666666;
+}
+
+.ar-pass-row td:first-child {
+    border-left: none;
+    padding-left: 0;
+    white-space: normal;
+}
+
+.ar-pass .ar-pass-who b {
+    color: #ffffff;
+}
+
+.ar-pass a {
+    color: #ffcc00;
+}
+
+.ar-pass-purse {
+    color: #ffcc00;
+}
+
+.ar-cells {
+    display: inline-block;
+    margin-left: 4px;
+    vertical-align: middle;
+    line-height: 0;
+}
+
+.ar-cells span {
+    display: inline-block;
+    width: 5px;
+    height: 9px;
+    margin-right: 1px;
+}
+
+.ar-cell-off {
+    background-color: #000000;
+}
+
+.ar-cell-hp {
+    background-color: #cc0000;
+}
+
+.ar-cell-st {
+    background-color: #669933;
+}
+
+.ar-cell-tr {
+    background-color: #ffcc00;
+}
+
+.ar-cell-xp {
+    background-color: #336699;
+}
+
+.ar-cell-dur {
+    background-color: #666666;
+}
+
+.ar-notices {
+    padding: 0;
+    background-color: #cccccc;
+}
+
+.ar-alarm {
+    padding: 5px 10px;
+    background-color: #cc0000;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.ar-alarm a {
+    color: #ffff00;
+}
+
+.ar-tape {
+    padding: 5px 10px 5px 8px;
+    border-left: 6px solid #669933;
+    background-color: #ffffcc;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    color: #000000;
+}
+
+.ar-tape-warn {
+    border-left-color: #cc0000;
+    background-color: #ffcc99;
+}
+
+.ar-body {
+    padding: 12px;
+    vertical-align: top;
+}
+
+.ar-h2 {
+    margin: 0 0 6px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #663300;
+}
+
+.ar-small {
+    font-size: 10px;
+    color: #333333;
+}
+
+.ar-quiet {
+    color: #666666;
+    font-style: italic;
+}
+
+.ar-num {
+    text-align: right;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.ar-btn {
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    padding: 2px 8px;
+    background-color: #cccccc;
+    color: #000000;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #333333;
+    border-bottom: 2px solid #333333;
+    cursor: pointer;
+}
+
+.ar-btn:active {
+    border-top-color: #333333;
+    border-left-color: #333333;
+    border-right-color: #ffffff;
+    border-bottom-color: #ffffff;
+}
+
+.ar-btn:focus {
+    outline: 1px dotted #000000;
+    outline-offset: -4px;
+}
+
+.ar-btn-ember {
+    background-color: #ff6600;
+    border-top-color: #ffcc00;
+    border-left-color: #ffcc00;
+    border-right-color: #993300;
+    border-bottom-color: #993300;
+    font-weight: bold;
+}
+
+.ar-btn-quiet {
+    background-color: #999999;
+}
+
+.ar-btn-small {
+    padding: 1px 5px;
+    font-size: 10px;
+}
+
+.ar-btn-big {
+    padding: 5px 16px;
+    font-size: 13px;
+}
+
+.ar-btn-dim {
+    color: #666666;
+}
+
+.ar-linkbtn {
+    padding: 0;
+    border: none;
+    background: none;
+    color: #993300;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 11px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.ar-input {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    padding: 2px 4px;
+    background-color: #ffffff;
+    border-top: 2px solid #666666;
+    border-left: 2px solid #666666;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+}
+
+.ar-foot {
+    padding: 8px 12px 10px;
+    background-color: #000000;
+    color: #999999;
+    text-align: center;
+    font-size: 10px;
+}
+
+.ar-foot a {
+    color: #ffcc00;
+}
+
+.ar-buttons {
+    margin-bottom: 6px;
+}
+
+.ar-88 {
+    display: inline-block;
+    width: 84px;
+    height: 27px;
+    margin: 0 3px;
+    border: 2px solid #666666;
+    background-color: #333333;
+    color: #cccccc;
+    font-size: 9px;
+    line-height: 13px;
+    vertical-align: middle;
+}
+
+.ar-88-top {
+    background-color: #990000;
+    color: #ffffff;
+}
+
+.ar-88-count {
+    background-color: #000000;
+    color: #00ff00;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 16px;
+    line-height: 27px;
+    letter-spacing: 2px;
+}
+
+.ar-gate-top {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+}
+
+.ar-iron-pass {
+    position: relative;
+    width: 230px;
+    padding: 16px 18px 18px;
+    background-color: #666666;
+    border-top: 3px solid #999999;
+    border-left: 3px solid #999999;
+    border-right: 3px solid #333333;
+    border-bottom: 3px solid #333333;
+    color: #ffffff;
+    vertical-align: top;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.ar-rivet {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: #cccccc;
+    border-right: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+}
+
+.ar-rivet-tl {
+    left: 5px;
+    top: 5px;
+}
+
+.ar-rivet-tr {
+    right: 5px;
+    top: 5px;
+}
+
+.ar-rivet-bl {
+    left: 5px;
+    bottom: 5px;
+}
+
+.ar-rivet-br {
+    right: 5px;
+    bottom: 5px;
+}
+
+.ar-iron-head {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 15px;
+    font-weight: bold;
+    color: #ffcc99;
+}
+
+.ar-iron-no {
+    font-size: 11px;
+    color: #cccccc;
+    margin-bottom: 8px;
+}
+
+.ar-iron-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffcc;
+    padding: 2px 0;
+    border-bottom: 1px dashed #cccccc;
+    margin-bottom: 6px;
+    word-wrap: break-word;
+}
+
+.ar-iron-line {
+    font-size: 11px;
+}
+
+.ar-iron-stamp {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 2px 8px;
+    border: 3px double #cc0000;
+    color: #ff6666;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.ar-gate-intro {
+    padding: 0 0 0 16px;
+    vertical-align: top;
+    font-size: 12px;
+}
+
+.ar-gate-intro p {
+    margin: 0 0 8px;
+}
+
+.ar-steps-title {
+    margin-bottom: 2px;
+}
+
+.ar-steps {
+    margin: 0 0 8px 20px;
+    padding: 0;
+}
+
+.ar-ledger {
+    margin: 0;
+    padding: 12px 16px;
+    background-color: #ffffcc;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='22'%3E%3Crect y='21' width='8' height='1' fill='%23cccc99'/%3E%3C/svg%3E");
+    border: 1px solid #999966;
+    border-left: 24px solid #cc9966;
+}
+
+.ar-ledger-title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #663300;
+    margin-bottom: 6px;
+}
+
+.ar-ledger-note {
+    font-style: italic;
+    color: #333333;
+}
+
+.ar-ledger-submit {
+    text-align: right;
+    margin-bottom: 0;
+}
+
+.ar-pick {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 6px 0;
+}
+
+.ar-origin,
+.ar-order {
+    width: 33%;
+    padding: 8px;
+    border: 1px solid #999966;
+    background-color: #ffffff;
+    vertical-align: top;
+    text-align: left;
+}
+
+.ar-origin label,
+.ar-order label {
+    display: block;
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.ar-picked {
+    border: 2px solid #ff6600;
+    background-color: #ffcc99;
+}
+
+.ar-origin-perk {
+    margin: 4px 0;
+    padding: 3px 5px;
+    background-color: #ffffcc;
+    border-left: 3px solid #996633;
+}
+
+.ar-town {
+    margin-bottom: 12px;
+    border: 2px solid #000000;
+    background-color: #000000;
+}
+
+.ar-town-svg {
+    display: block;
+}
+
+.ar-hot {
+    cursor: pointer;
+}
+
+.ar-hot:hover .ar-hot-plate {
+    fill: #ff6600;
+}
+
+.ar-caption {
+    padding: 3px 8px;
+    color: #cccccc;
+    font-size: 10px;
+}
+
+.ar-board {
+    margin-bottom: 12px;
+    padding: 8px;
+    background-color: #663300;
+    border-top: 3px solid #996633;
+    border-left: 3px solid #996633;
+    border-right: 3px solid #330000;
+    border-bottom: 3px solid #330000;
+}
+
+.ar-board-head {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffcc99;
+    padding: 0 8px;
+}
+
+.ar-board-grid {
+    width: 100%;
+}
+
+.ar-note {
+    position: relative;
+    width: 33%;
+    padding: 12px 8px 8px;
+    background-color: #ffffcc;
+    border-right: 2px solid #330000;
+    border-bottom: 2px solid #330000;
+    vertical-align: top;
+}
+
+.ar-note-done {
+    background-color: #cccc99;
+}
+
+.ar-note-empty {
+    background: none;
+}
+
+.ar-nail {
+    position: absolute;
+    top: 3px;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    margin-left: -3px;
+    background-color: #333333;
+}
+
+.ar-note-title {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.ar-note-from {
+    font-size: 10px;
+    color: #333333;
+    border-left: 4px solid #000000;
+    padding-left: 4px;
+    margin: 2px 0 4px;
+}
+
+.ar-note-text {
+    margin-bottom: 4px;
+}
+
+.ar-note-foot {
+    font-size: 10px;
+}
+
+.ar-ticks {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    color: #993300;
+}
+
+.ar-note-pay {
+    color: #333333;
+}
+
+.ar-note-act {
+    margin-top: 4px;
+}
+
+.ar-paid {
+    color: #336600;
+    font-weight: bold;
+}
+
+.ar-chat {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid #000000;
+    background-color: #ffffff;
+}
+
+.ar-chat-bar {
+    padding: 3px 8px;
+    background-color: #000099;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.ar-chat-rooms {
+    width: 120px;
+    padding: 6px;
+    vertical-align: top;
+    background-color: #cccccc;
+    border-right: 2px solid #999999;
+}
+
+.ar-room {
+    padding: 2px 0;
+}
+
+.ar-room-on {
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #000099;
+    padding: 2px 4px;
+}
+
+.ar-chat-pane {
+    padding: 0;
+    vertical-align: top;
+}
+
+.ar-chat-log {
+    height: 180px;
+    overflow-y: scroll;
+    padding: 4px 6px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+}
+
+.ar-chat-line {
+    margin-bottom: 1px;
+}
+
+.ar-chat-time {
+    color: #999999;
+}
+
+.ar-chat-who {
+    color: #000099;
+    font-weight: bold;
+}
+
+.ar-chat-me {
+    color: #cc0000;
+    font-weight: bold;
+}
+
+.ar-chat-sys {
+    color: #669933;
+    font-weight: bold;
+}
+
+.ar-chat-roster {
+    width: 120px;
+    padding: 6px;
+    vertical-align: top;
+    background-color: #ffffcc;
+    border-left: 2px solid #999999;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 11px;
+}
+
+.ar-chat-roster-head {
+    font-family: Verdana, Arial, sans-serif;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.ar-chat-say {
+    padding: 5px 6px;
+    background-color: #cccccc;
+    border-top: 2px solid #999999;
+}
+
+.ar-chat-say form {
+    margin: 0;
+}
+
+.ar-chat-input {
+    width: 440px;
+}
+
+.ar-expedition {
+    margin-bottom: 8px;
+    padding: 6px 8px;
+    background-color: #ffffff;
+    border: 1px solid #666666;
+    border-left: 6px solid #ff6600;
+}
+
+.ar-map {
+    border: 2px solid #000000;
+    line-height: 0;
+    margin-bottom: 10px;
+}
+
+.ar-map-svg {
+    display: block;
+}
+
+.ar-map-live {
+    cursor: pointer;
+}
+
+.ar-map-node {
+    cursor: pointer;
+}
+
+.ar-sector {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+    background-color: #ffffff;
+    border: 1px solid #666666;
+}
+
+.ar-verst {
+    width: 90px;
+    padding: 10px;
+    vertical-align: top;
+    background-color: #999999;
+    text-align: center;
+}
+
+.ar-verst-post {
+    padding: 8px 0 10px;
+    background-color: #ffffff;
+    border: 3px solid #000000;
+    border-bottom-width: 12px;
+}
+
+.ar-verst-num {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 34px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.ar-verst-unit {
+    font-size: 10px;
+}
+
+.ar-sector-body {
+    padding: 10px 12px;
+    vertical-align: top;
+    font-size: 12px;
+}
+
+.ar-sector-body p {
+    margin: 6px 0;
+}
+
+.ar-sector-rule {
+    padding: 3px 6px;
+    background-color: #ffffcc;
+    border: 1px dotted #996633;
+    font-size: 11px;
+}
+
+.ar-scout {
+    font-style: italic;
+}
+
+.ar-blocked {
+    color: #cc0000;
+    font-weight: bold;
+}
+
+.ar-acts {
+    margin: 6px 0;
+    line-height: 2;
+}
+
+.ar-belt {
+    margin-top: 6px;
+    line-height: 2;
+}
+
+.ar-exits {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.ar-exit {
+    padding: 6px 8px;
+    vertical-align: top;
+    background-color: #ffffff;
+    border: 1px solid #666666;
+}
+
+.ar-exit-board {
+    display: inline-block;
+    margin-bottom: 3px;
+    padding: 2px 8px;
+    background-color: #996633;
+    color: #000000;
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: bold;
+    border-right: 2px solid #663300;
+    border-bottom: 2px solid #663300;
+}
+
+.ar-journal {
+    padding: 6px 10px;
+    background-color: #ffffcc;
+    border: 1px solid #999966;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 11px;
+}
+
+.ar-journal ul {
+    margin: 4px 0 0 16px;
+    padding: 0;
+}
+
+.ar-duel-place {
+    margin-bottom: 8px;
+    padding: 5px 8px;
+    background-color: #ffffcc;
+    border: 1px solid #999966;
+}
+
+.ar-duel {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border: 2px solid #000000;
+}
+
+.ar-duelist {
+    width: 150px;
+    padding: 8px;
+    vertical-align: top;
+    text-align: center;
+    background-color: #cccccc;
+    border-right: 2px solid #000000;
+}
+
+.ar-duelist-foe {
+    border-right: none;
+    border-left: 2px solid #000000;
+    background-color: #ffcc99;
+}
+
+.ar-duelist-name {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.ar-gauge {
+    margin-top: 3px;
+    text-align: left;
+    font-size: 10px;
+}
+
+.ar-fig {
+    display: block;
+    margin: 8px auto 2px;
+}
+
+.ar-zone {
+    cursor: pointer;
+}
+
+.ar-fig-self .ar-zone-on .ar-zf {
+    fill: #336699;
+}
+
+.ar-fig-foe .ar-zone-on .ar-zf {
+    fill: #ff6600;
+}
+
+.ar-zone:hover .ar-zf {
+    stroke: #ff6600;
+}
+
+.ar-fig-hint {
+    font-size: 10px;
+    color: #333333;
+}
+
+.ar-duel-mid {
+    padding: 8px 10px;
+    vertical-align: top;
+}
+
+.ar-duel-mid form {
+    margin: 0;
+}
+
+.ar-watch {
+    padding: 6px 8px;
+    margin-bottom: 8px;
+    background-color: #ffffcc;
+    border: 2px solid #996633;
+    font-size: 12px;
+}
+
+.ar-watch-dark {
+    background-color: #000000;
+    border-color: #333333;
+    color: #999999;
+}
+
+.ar-watch-head {
+    font-size: 10px;
+    font-weight: bold;
+    color: #996633;
+}
+
+.ar-watch-tell {
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-size: 13px;
+    margin: 2px 0 4px;
+}
+
+.ar-watch-note {
+    color: #cc0000;
+    font-weight: bold;
+}
+
+.ar-watch-read {
+    color: #336600;
+    font-weight: bold;
+}
+
+.ar-zone-radios {
+    margin-bottom: 4px;
+}
+
+.ar-zone-radios label {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.ar-stances {
+    margin: 6px 0;
+}
+
+.ar-stance {
+    display: block;
+    margin-bottom: 3px;
+    padding: 3px 5px;
+    border: 1px solid #999999;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
+.ar-stance-on {
+    border: 2px solid #ff6600;
+    background-color: #ffcc99;
+}
+
+.ar-stance-cant {
+    color: #999999;
+}
+
+.ar-cost {
+    font-family: "Courier New", Courier, monospace;
+    color: #336699;
+}
+
+.ar-stance-rule {
+    display: block;
+    font-size: 10px;
+    color: #333333;
+}
+
+.ar-go {
+    text-align: center;
+    margin: 8px 0 4px;
+}
+
+.ar-verdict {
+    padding: 10px;
+    text-align: center;
+    border: 3px double #000000;
+}
+
+.ar-verdict-win {
+    background-color: #ffffcc;
+}
+
+.ar-verdict-loss {
+    background-color: #ffcc99;
+}
+
+.ar-verdict-head {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.ar-protocol {
+    margin-top: 8px;
+    padding: 6px 10px;
+    background-color: #000000;
+    color: #cccccc;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 11px;
+}
+
+.ar-protocol-head {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+.ar-protocol ol {
+    margin: 4px 0 0 24px;
+    padding: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.ar-protocol li {
+    margin-bottom: 3px;
+}
+
+.ar-ring-top {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.ar-ring-art {
+    width: 150px;
+    vertical-align: top;
+    line-height: 0;
+    border: 2px solid #000000;
+}
+
+.ar-ring-rules {
+    padding: 0 0 0 14px;
+    vertical-align: top;
+    font-size: 12px;
+}
+
+.ar-ring-rules p {
+    margin: 0 0 6px;
+}
+
+.ar-listing {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border: 2px solid #000000;
+}
+
+.ar-listing th {
+    padding: 3px 6px;
+    background-color: #663300;
+    color: #ffffcc;
+    text-align: left;
+    font-size: 11px;
+}
+
+.ar-listing td {
+    padding: 5px 6px;
+    border-top: 1px solid #999999;
+    vertical-align: top;
+}
+
+.ar-quote {
+    color: #333333;
+    font-size: 10px;
+}
+
+.ar-forge-top {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.ar-forge-art {
+    width: 170px;
+    line-height: 0;
+    border: 2px solid #000000;
+    vertical-align: top;
+}
+
+.ar-forge-text {
+    padding: 0 0 0 14px;
+    vertical-align: top;
+    font-size: 12px;
+}
+
+.ar-forge-text p {
+    margin: 0 0 6px;
+}
+
+.ar-anvil {
+    margin-bottom: 12px;
+    padding: 8px;
+    background-color: #666666;
+    border-top: 2px solid #999999;
+    border-left: 2px solid #999999;
+    border-right: 2px solid #333333;
+    border-bottom: 2px solid #333333;
+}
+
+.ar-anvil-head,
+.ar-classifieds-head,
+.ar-sub {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.ar-anvil-head {
+    color: #ffffff;
+}
+
+.ar-anvil-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #cccccc;
+}
+
+.ar-anvil-table th {
+    padding: 3px 5px;
+    background-color: #333333;
+    color: #ffffff;
+    text-align: left;
+    font-size: 10px;
+}
+
+.ar-anvil-table td {
+    padding: 4px 5px;
+    border-top: 1px solid #999999;
+    vertical-align: middle;
+}
+
+.ar-worn {
+    padding: 0 3px;
+    background-color: #336699;
+    color: #ffffff;
+    font-size: 9px;
+}
+
+.ar-chalk {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+}
+
+.ar-chalk-frame {
+    padding: 10px 14px;
+    background-color: #333333;
+    border: 8px solid #996633;
+    color: #ffffff;
+}
+
+.ar-chalk-head {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 20px;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.ar-chalk-list {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+}
+
+.ar-chalk-list td {
+    padding: 3px 4px;
+    vertical-align: bottom;
+}
+
+.ar-chalk-item {
+    white-space: nowrap;
+}
+
+.ar-chalk-desc {
+    white-space: normal;
+    font-size: 10px;
+    color: #cccccc;
+}
+
+.ar-chalk-dots {
+    width: 30%;
+    border-bottom: 2px dotted #999999;
+}
+
+.ar-chalk-price {
+    white-space: nowrap;
+    color: #ffff99;
+    text-align: right;
+}
+
+.ar-classifieds {
+    padding: 8px;
+    background-color: #ffffff;
+    border: 1px solid #000000;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12px;
+}
+
+.ar-classifieds-head {
+    text-align: center;
+    border-bottom: 3px double #000000;
+    padding-bottom: 3px;
+}
+
+.ar-ads {
+    width: 100%;
+}
+
+.ar-ad {
+    width: 33%;
+    padding: 6px;
+    vertical-align: top;
+    border: 1px solid #000000;
+}
+
+.ar-ad-mine {
+    background-color: #ffffcc;
+    border: 2px solid #ff6600;
+}
+
+.ar-ad-head {
+    font-weight: bold;
+    text-transform: none;
+}
+
+.ar-ad-price {
+    margin: 3px 0;
+    font-weight: bold;
+}
+
+.ar-dossier {
+    padding: 14px 16px;
+    background-color: #ffffcc;
+    border: 1px solid #999966;
+    border-top: 14px solid #996633;
+}
+
+.ar-dossier-head {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    font-weight: bold;
+    border-bottom: 2px solid #000000;
+    margin-bottom: 10px;
+    padding-bottom: 3px;
+}
+
+.ar-dossier-top,
+.ar-dossier-mid {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.ar-photo {
+    width: 110px;
+    padding: 6px;
+    vertical-align: top;
+    text-align: center;
+    background-color: #ffffff;
+    border: 1px solid #666666;
+}
+
+.ar-dossier-fields {
+    padding-left: 12px;
+    vertical-align: top;
+}
+
+.ar-fields {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ar-fields td {
+    padding: 2px 4px;
+    border-bottom: 1px dotted #999966;
+    vertical-align: top;
+}
+
+.ar-fields td:first-child {
+    width: 110px;
+    font-family: "Courier New", Courier, monospace;
+    color: #333333;
+}
+
+.ar-stats {
+    width: 50%;
+    padding-right: 10px;
+    vertical-align: top;
+}
+
+.ar-slots {
+    vertical-align: top;
+}
+
+.ar-stat-table,
+.ar-slot-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border: 1px solid #666666;
+}
+
+.ar-stat-table td,
+.ar-slot-table td {
+    padding: 3px 5px;
+    border-bottom: 1px solid #cccccc;
+}
+
+.ar-slot-name {
+    width: 60px;
+    color: #333333;
+}
+
+.ar-bag {
+    width: 100%;
+}
+
+.ar-bag-cell {
+    width: 25%;
+    padding: 5px;
+    vertical-align: top;
+    background-color: #ffffff;
+    border: 1px solid #666666;
+}
+
+.ar-bag-worn {
+    border: 2px solid #336699;
+}
+
+.ar-bag-none {
+    background-color: #cccc99;
+    border: 1px dashed #999966;
+}
+
+.ar-bag-slot {
+    font-size: 9px;
+    color: #666666;
+}
+
+.ar-bag-name {
+    font-weight: bold;
+}
+
+.ar-bag-act {
+    margin-top: 4px;
+}
+
+.ar-dossier-foot {
+    margin: 10px 0 0;
+}
+
+.ar-paper {
+    padding: 14px 18px;
+    background-color: #ffffff;
+    border: 1px solid #000000;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 13px;
+    color: #000000;
+}
+
+.ar-paper-mast {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 34px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 4px double #000000;
+}
+
+.ar-paper-sub {
+    text-align: center;
+    font-style: italic;
+    font-size: 11px;
+    margin: 3px 0 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #000000;
+}
+
+.ar-paper-cols {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ar-paper-col {
+    width: 50%;
+    padding-right: 12px;
+    vertical-align: top;
+}
+
+.ar-paper-col p {
+    margin: 0 0 6px;
+}
+
+.ar-paper-col-r {
+    padding: 0 0 0 12px;
+    border-left: 1px solid #000000;
+}
+
+.ar-paper-h {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 8px 0 4px;
+    border-bottom: 1px solid #000000;
+}
+
+.ar-events {
+    margin: 0 0 6px 16px;
+    padding: 0;
+}
+
+.ar-inf {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.ar-inf td {
+    padding: 2px 3px;
+}
+
+.ar-inf-name {
+    width: 140px;
+}
+
+.ar-ladder {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 11px;
+}
+
+.ar-ladder th {
+    text-align: left;
+    border-bottom: 1px solid #000000;
+    padding: 2px 3px;
+}
+
+.ar-ladder td {
+    padding: 2px 3px;
+    border-bottom: 1px dotted #999999;
+}
+
+.ar-me td {
+    background-color: #ffff99;
+    font-weight: bold;
+}
+
+.ar-article {
+    margin-bottom: 8px;
+}
+
+.ar-article-date {
+    font-size: 10px;
+    font-style: italic;
+}
+
+.ar-article-title {
+    font-weight: bold;
+}
+
+.ar-empty {
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #666666;
+    font-size: 12px;
+}

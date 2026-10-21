@@ -286,6 +286,7 @@ input[type="radio"]:focus-visible {
 
 .win-menubar {
   display: flex;
+  flex-wrap: wrap;
   background-color: var(--win-bg);
   border-bottom: 1px solid var(--win-border-dark);
   box-shadow: 0 1px 0 var(--win-border-light);

@@ -1,32 +1,22 @@
-/**
- * Win 98 / 2000 Full-Featured Task Manager (taskmgr.exe)
- * Authentic 5-tab system: Applications, Processes, Performance, Networking, Services.
- * Features real-time CRT oscilloscope graphs, live CPU tray icon, process management,
- * priority controls, and deep integration with Win 98 shell and window manager.
- */
-
 class AppTaskManager {
   constructor() {
     this.winId = 'app_taskmgr';
     this.win = null;
     this.activeTab = 'applications';
 
-    // Selections
     this.selectedAppId = null;
     this.selectedProcPid = null;
     this.selectedServiceId = null;
 
-    // View Options
     this.showAllUsers = true;
     this.sortColumn = 'imageName';
     this.sortAsc = true;
-    this.updateSpeed = 1000; // ms (500, 1000, 2000, 0 = paused)
+    this.updateSpeed = 1000;
     this.alwaysOnTop = false;
     this.minimizeOnUse = false;
     this.hideWhenMinimized = false;
     this.showKernelTimes = true;
 
-    // System Statistics & History
     this.systemStartTime = Date.now();
     this.historyLen = 60;
     this.cpuHistory = new Array(this.historyLen).fill(2);
@@ -35,29 +25,21 @@ class AppTaskManager {
     this.netHistory = new Array(this.historyLen).fill(0);
 
     this.currentCpu = 2;
-    this.currentMem = 38400; // KB
-    this.peakMem = 46200; // KB
+    this.currentMem = 38400;
+    this.peakMem = 46200;
     this.bytesSent = 145;
     this.bytesRecv = 428;
     this.mouseActivity = 0;
 
-    // Process priority custom overrides: pid -> priority string
     this.priorityOverrides = new Map();
 
-    // Services Definition
     this.initServices();
-
-    // Mouse listener to create realistic CPU activity on desktop interaction
     this.initUserActivityListener();
-
-    // Global keyboard shortcuts (Ctrl+Shift+Esc, Ctrl+Alt+Del)
     this.initGlobalShortcuts();
 
-    // Background timer for updates and tray icon
     this.timer = null;
     this.startUpdateLoop();
 
-    // Language listener
     if (window.i18n) {
       window.i18n.addListener(() => {
         if (this.isOpen()) {
@@ -99,7 +81,6 @@ class AppTaskManager {
   initGlobalShortcuts() {
     if (typeof window === 'undefined' || !window.addEventListener) return;
     window.addEventListener('keydown', (e) => {
-      // Ctrl + Shift + Esc or Ctrl + Alt + Delete
       const isTaskMgrKey = (e.ctrlKey && e.shiftKey && e.key === 'Escape') ||
                            (e.ctrlKey && e.altKey && (e.key === 'Delete' || e.key === 'Del'));
       if (isTaskMgrKey) {
@@ -172,7 +153,9 @@ class AppTaskManager {
       { pid: 592, imageName: 'explorer.exe', cpu: 1.2, mem: 9420, priority: 'Normal', user: 'User', isShell: true },
       { pid: 712, imageName: 'soundman.exe', cpu: 0, mem: 1540, priority: 'Normal', user: 'User', isCritical: false },
       { pid: 836, imageName: 'taskmgr.exe', cpu: 1.1, mem: 3280, priority: 'High', user: 'User', isTaskmgr: true },
-      ...(window.clippySystem ? window.clippySystem.processList() : [])
+      ...(window.clippySystem ? window.clippySystem.processList() : []),
+      ...(window.appESheep ? window.appESheep.processList() : []),
+      ...(window.appNeko ? window.appNeko.processList() : [])
     ];
   }
 
@@ -322,6 +305,15 @@ class AppTaskManager {
     if (idLower === 'app_anotherwar') {
       return { pid, imageName: 'aw.exe', baseCpu: 26.0, mem: 61400, priority: 'Normal' };
     }
+    if (idLower === 'app_korovany') {
+      return { pid, imageName: 'korovany.exe', baseCpu: 34.0, mem: 96400, priority: 'Normal' };
+    }
+    if (idLower === 'app_korovany') {
+      return { pid, imageName: 'korovany.exe', baseCpu: 34.0, mem: 96400, priority: 'Normal' };
+    }
+    if (idLower === 'app_catniss') {
+      return { pid, imageName: 'catniss.exe', baseCpu: 14.0, mem: 18400, priority: 'Normal' };
+    }
     if (idLower === 'app_plov') {
       return { pid, imageName: 'plov.exe', baseCpu: 18.0, mem: 23800, priority: 'Normal' };
     }
@@ -373,6 +365,9 @@ class AppTaskManager {
     if (idLower.includes('hockey')) {
       return { pid, imageName: 'hockey98.exe', baseCpu: 12.0, mem: 16500, priority: 'Normal' };
     }
+    if (idLower.includes('worldcup98')) {
+      return { pid, imageName: 'worldcup98.exe', baseCpu: 16.0, mem: 22400, priority: 'Normal' };
+    }
     if (idLower.includes('blender')) {
       return { pid, imageName: 'blender.exe', baseCpu: 35.0, mem: 29500, priority: 'High' };
     }
@@ -400,8 +395,10 @@ class AppTaskManager {
     if (idLower.includes('outlook')) {
       return { pid, imageName: 'msimn.exe', baseCpu: 0.5, mem: 6200, priority: 'Normal' };
     }
+    if (idLower === 'app_esheep_cp' || idLower.includes('esheep')) {
+      return { pid, imageName: 'sheep.exe', baseCpu: 0.4, mem: 1420, priority: 'Normal' };
+    }
 
-    // Default executable fallback
     const rawName = id.replace(/^(app_|win_)/, '').split('_')[0];
     return {
       pid,
@@ -416,7 +413,6 @@ class AppTaskManager {
     const bg = this.getBackgroundProcesses();
     const wins = this.getWindowProcesses();
 
-    // Apply priority overrides to background processes as well
     bg.forEach(p => {
       if (this.priorityOverrides.has(p.pid)) {
         p.priority = this.priorityOverrides.get(p.pid);
@@ -426,28 +422,18 @@ class AppTaskManager {
     const all = [...bg, ...wins];
     return this.showAllUsers ? all : all.filter(p => p.user === 'User');
   }
-
-  // ------------------------------------------------------------------------
-  // Simulation and Metrics Tick
-  // ------------------------------------------------------------------------
   updateMetrics() {
     const procs = this.getAllProcesses();
-
-    // Calculate total CPU based on procs + user activity
     let totalCpu = 1.2;
     procs.forEach(p => {
       totalCpu += p.cpu;
     });
     totalCpu += this.mouseActivity;
     this.mouseActivity = Math.max(0, this.mouseActivity - 0.5);
-
-    // Subtle noise for realism
     totalCpu += (Math.random() * 1.5 - 0.7);
     this.currentCpu = Math.max(1, Math.min(100, Math.round(totalCpu)));
 
     const kernelShare = Math.max(0.5, Math.round(this.currentCpu * 0.28 * 10) / 10);
-
-    // Calculate total memory
     let totalMem = 28000;
     procs.forEach(p => {
       totalMem += p.mem;
@@ -457,8 +443,6 @@ class AppTaskManager {
     if (this.currentMem > this.peakMem) {
       this.peakMem = this.currentMem;
     }
-
-    // Network activity
     let netActive = 0;
     const isBrowserOpen = procs.some(p => p.imageName === 'iexplore.exe' || p.imageName === 'netscape.exe' || p.imageName === 'icq.exe');
     if (isBrowserOpen) {
@@ -469,8 +453,6 @@ class AppTaskManager {
       netActive = Math.round(Math.random() * 0.8);
       this.bytesRecv += Math.round(Math.random() * 2);
     }
-
-    // Push into ring buffers
     this.cpuHistory.shift();
     this.cpuHistory.push(this.currentCpu);
 
@@ -483,11 +465,7 @@ class AppTaskManager {
 
     this.netHistory.shift();
     this.netHistory.push(netActive);
-
-    // Update Tray Icon
     this.renderTrayCanvas();
-
-    // If window is open, update UI parts
     if (this.isOpen() && this.contentEl) {
       this.updateStatusPane();
       if (this.activeTab === 'performance') {
@@ -519,10 +497,6 @@ class AppTaskManager {
     this.startUpdateLoop();
     if (this.isOpen()) this.renderFull();
   }
-
-  // ------------------------------------------------------------------------
-  // UI Rendering: Master
-  // ------------------------------------------------------------------------
   renderFull() {
     if (!this.contentEl) return;
 
@@ -566,10 +540,6 @@ class AppTaskManager {
       this.renderServicesTableRows();
     }
   }
-
-  // ------------------------------------------------------------------------
-  // Menu Bar
-  // ------------------------------------------------------------------------
   renderMenuBarHtml() {
     return `
       <div class="taskmgr-menubar">
@@ -648,10 +618,6 @@ class AppTaskManager {
       </div>
     `;
   }
-
-  // ------------------------------------------------------------------------
-  // Tab Strip
-  // ------------------------------------------------------------------------
   renderTabStripHtml() {
     return `
       <div class="taskmgr-tab-strip">
@@ -673,10 +639,6 @@ class AppTaskManager {
       </div>
     `;
   }
-
-  // ------------------------------------------------------------------------
-  // Pane 1: Applications
-  // ------------------------------------------------------------------------
   renderApplicationsPaneHtml() {
     return `
       <div class="taskmgr-table-container">
@@ -821,10 +783,6 @@ class AppTaskManager {
     this.renderApplicationTableRows();
     this.updateMetrics();
   }
-
-  // ------------------------------------------------------------------------
-  // Pane 2: Processes
-  // ------------------------------------------------------------------------
   renderProcessesPaneHtml() {
     return `
       <div class="taskmgr-table-container">
@@ -855,8 +813,6 @@ class AppTaskManager {
   renderProcessTableRows() {
     const tbody = this.contentEl ? this.contentEl.querySelector('#taskmgr-procs-tbody') : null;
     if (!tbody) return;
-
-    // Update header sort classes
     this.contentEl.querySelectorAll('.taskmgr-th').forEach(th => {
       th.classList.remove('sort-asc', 'sort-desc');
       if (th.dataset.col === this.sortColumn) {
@@ -865,8 +821,6 @@ class AppTaskManager {
     });
 
     const procs = this.getAllProcesses();
-
-    // Sorting
     procs.sort((a, b) => {
       let vA = a[this.sortColumn];
       let vB = b[this.sortColumn];
@@ -996,6 +950,24 @@ class AppTaskManager {
       return;
     }
 
+    if (proc.isESheep) {
+      if (window.appESheep) window.appESheep.stop();
+      if (window.soundSys) window.soundSys.playClick();
+      this.selectedProcPid = null;
+      this.updateMetrics();
+      this.renderProcessTableRows();
+      return;
+    }
+
+    if (proc.isNeko) {
+      if (window.appNeko) window.appNeko.stop();
+      if (window.soundSys) window.soundSys.playClick();
+      this.selectedProcPid = null;
+      this.updateMetrics();
+      this.renderProcessTableRows();
+      return;
+    }
+
     if (proc.isShell) {
       const desktop = document.getElementById('desktop');
       const taskbar = document.getElementById('taskbar');
@@ -1023,16 +995,11 @@ class AppTaskManager {
       this.renderProcessTableRows();
     }
   }
-
-  // ------------------------------------------------------------------------
-  // Pane 3: Performance
-  // ------------------------------------------------------------------------
   renderPerformancePaneHtml() {
     return `
       <div class="taskmgr-perf-container">
         <div class="taskmgr-perf-charts-row">
-          <!-- CPU Usage Box -->
-          <fieldset class="taskmgr-perf-box">
+                    <fieldset class="taskmgr-perf-box">
             <legend>${this.t('taskmgr.perfCpuHistory')}</legend>
             <div class="taskmgr-perf-box-inner">
               <div class="taskmgr-gauge-container">
@@ -1045,8 +1012,7 @@ class AppTaskManager {
             </div>
           </fieldset>
 
-          <!-- Memory Usage Box -->
-          <fieldset class="taskmgr-perf-box">
+                    <fieldset class="taskmgr-perf-box">
             <legend>${this.t('taskmgr.perfMemHistory')}</legend>
             <div class="taskmgr-perf-box-inner">
               <div class="taskmgr-gauge-container">
@@ -1060,10 +1026,8 @@ class AppTaskManager {
           </fieldset>
         </div>
 
-        <!-- 4-Grid Statistics -->
-        <div class="taskmgr-stats-grid">
-          <!-- Commit Charge -->
-          <fieldset class="taskmgr-stats-box">
+                <div class="taskmgr-stats-grid">
+                    <fieldset class="taskmgr-stats-box">
             <legend>${this.t('taskmgr.perfCommit')}</legend>
             <div class="taskmgr-stat-row">
               <span class="taskmgr-stat-label">${this.t('taskmgr.total')}</span>
@@ -1079,8 +1043,7 @@ class AppTaskManager {
             </div>
           </fieldset>
 
-          <!-- Physical Memory -->
-          <fieldset class="taskmgr-stats-box">
+                    <fieldset class="taskmgr-stats-box">
             <legend>${this.t('taskmgr.perfPhysical')}</legend>
             <div class="taskmgr-stat-row">
               <span class="taskmgr-stat-label">${this.t('taskmgr.total')}</span>
@@ -1096,8 +1059,7 @@ class AppTaskManager {
             </div>
           </fieldset>
 
-          <!-- Kernel Memory -->
-          <fieldset class="taskmgr-stats-box">
+                    <fieldset class="taskmgr-stats-box">
             <legend>${this.t('taskmgr.perfKernel')}</legend>
             <div class="taskmgr-stat-row">
               <span class="taskmgr-stat-label">${this.t('taskmgr.total')}</span>
@@ -1113,8 +1075,7 @@ class AppTaskManager {
             </div>
           </fieldset>
 
-          <!-- Totals -->
-          <fieldset class="taskmgr-stats-box">
+                    <fieldset class="taskmgr-stats-box">
             <legend>${this.t('taskmgr.perfTotals')}</legend>
             <div class="taskmgr-stat-row">
               <span class="taskmgr-stat-label">${this.t('taskmgr.handles')}</span>
@@ -1140,28 +1101,20 @@ class AppTaskManager {
 
   renderPerformanceCanvases() {
     if (!this.contentEl) return;
-
-    // CPU Oscilloscope
     const cpuCanvas = this.contentEl.querySelector('#taskmgr-cpu-canvas');
     if (cpuCanvas) {
       this.drawOscilloscope(cpuCanvas, this.cpuHistory, 100, '#00ff00', this.showKernelTimes ? this.kernelHistory : null, '#ff3333');
     }
-
-    // CPU Meter
     const cpuMeter = this.contentEl.querySelector('#taskmgr-cpu-meter');
     const cpuVal = this.contentEl.querySelector('#taskmgr-cpu-val');
     if (cpuMeter && cpuVal) {
       this.renderVuMeter(cpuMeter, this.currentCpu, 100);
       cpuVal.textContent = `${this.currentCpu}%`;
     }
-
-    // Memory Oscilloscope
     const memCanvas = this.contentEl.querySelector('#taskmgr-mem-canvas');
     if (memCanvas) {
       this.drawOscilloscope(memCanvas, this.memHistory, 128, '#00ff00', null, null);
     }
-
-    // Memory Meter
     const memMeter = this.contentEl.querySelector('#taskmgr-mem-meter');
     const memVal = this.contentEl.querySelector('#taskmgr-mem-val');
     if (memMeter && memVal) {
@@ -1183,16 +1136,10 @@ class AppTaskManager {
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
-    // Black background
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, w, h);
-
-    // Dark green grid
     ctx.strokeStyle = '#003300';
     ctx.lineWidth = 1;
-
-    // Grid lines every 12px
     const gridSize = 12;
     ctx.beginPath();
     for (let x = 0; x <= w; x += gridSize) {
@@ -1204,13 +1151,9 @@ class AppTaskManager {
       ctx.lineTo(w, y + 0.5);
     }
     ctx.stroke();
-
-    // Draw secondary series (Kernel time red curve) if provided
     if (secondaryData && secondaryData.length > 1) {
       this.drawSeries(ctx, secondaryData, maxVal, w, h, secondaryColor);
     }
-
-    // Draw primary series (Green curve)
     if (data && data.length > 1) {
       this.drawSeries(ctx, data, maxVal, w, h, lineColor);
     }
@@ -1275,8 +1218,6 @@ class AppTaskManager {
 
     const procs = this.getAllProcesses();
     if (procsCount) procsCount.textContent = procs.length;
-
-    // System uptime calculation
     if (uptimeEl) {
       const diffSec = Math.floor((Date.now() - this.systemStartTime) / 1000);
       const hours = String(Math.floor(diffSec / 3600)).padStart(2, '0');
@@ -1285,10 +1226,6 @@ class AppTaskManager {
       uptimeEl.textContent = `${hours}:${mins}:${secs}`;
     }
   }
-
-  // ------------------------------------------------------------------------
-  // Pane 4: Networking
-  // ------------------------------------------------------------------------
   renderNetworkingPaneHtml() {
     return `
       <div class="taskmgr-net-container">
@@ -1329,10 +1266,6 @@ class AppTaskManager {
     if (sentEl) sentEl.textContent = this.t('taskmgr.netBytesSent', this.bytesSent);
     if (recvEl) recvEl.textContent = this.t('taskmgr.netBytesRecv', this.bytesRecv);
   }
-
-  // ------------------------------------------------------------------------
-  // Pane 5: Services
-  // ------------------------------------------------------------------------
   renderServicesPaneHtml() {
     return `
       <div class="taskmgr-table-container">
@@ -1409,10 +1342,6 @@ class AppTaskManager {
     if (window.soundSys) window.soundSys.playClick();
     this.renderServicesTableRows();
   }
-
-  // ------------------------------------------------------------------------
-  // Status Bar
-  // ------------------------------------------------------------------------
   renderStatusBarHtml() {
     return `
       <div class="taskmgr-statusbar">
@@ -1437,22 +1366,14 @@ class AppTaskManager {
       memEl.textContent = this.t('taskmgr.statusMem', memMB);
     }
   }
-
-  // ------------------------------------------------------------------------
-  // DOM Event Bindings
-  // ------------------------------------------------------------------------
   attachDomEvents() {
     if (!this.contentEl) return;
-
-    // Tabs switching
     this.contentEl.querySelectorAll('.taskmgr-tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         this.activeTab = btn.dataset.tab;
         this.renderFull();
       });
     });
-
-    // Menubar top items click
     this.contentEl.querySelectorAll('.taskmgr-menu-item').forEach(menu => {
       menu.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1461,15 +1382,11 @@ class AppTaskManager {
         if (!wasActive) menu.classList.add('active');
       });
     });
-
-    // Close menubar on outside click
     document.addEventListener('click', (e) => {
       if (this.contentEl && !e.target.closest('.taskmgr-menubar')) {
         this.contentEl.querySelectorAll('.taskmgr-menu-item').forEach(m => m.classList.remove('active'));
       }
     });
-
-    // Menu item actions
     this.contentEl.querySelectorAll('.taskmgr-menu-option').forEach(opt => {
       opt.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1477,8 +1394,6 @@ class AppTaskManager {
         this.handleMenuAction(opt.dataset.action);
       });
     });
-
-    // Applications buttons
     const btnEndTask = this.contentEl.querySelector('#taskmgr-btn-end-task');
     if (btnEndTask) {
       btnEndTask.addEventListener('click', () => {
@@ -1499,8 +1414,6 @@ class AppTaskManager {
         if (window.appDialogs) window.appDialogs.openRunDialog();
       });
     }
-
-    // Processes buttons & checkboxes
     const chkAllUsers = this.contentEl.querySelector('#taskmgr-chk-all-users');
     if (chkAllUsers) {
       chkAllUsers.addEventListener('change', (e) => {
@@ -1519,8 +1432,6 @@ class AppTaskManager {
         }
       });
     }
-
-    // Process table header sort
     this.contentEl.querySelectorAll('#taskmgr-procs-table .taskmgr-th').forEach(th => {
       th.addEventListener('click', () => {
         const col = th.dataset.col;
@@ -1533,8 +1444,6 @@ class AppTaskManager {
         this.renderProcessTableRows();
       });
     });
-
-    // Services buttons
     const btnStartSvc = this.contentEl.querySelector('#taskmgr-btn-start-service');
     if (btnStartSvc) {
       btnStartSvc.addEventListener('click', () => {
@@ -1624,10 +1533,6 @@ class AppTaskManager {
         break;
     }
   }
-
-  // ------------------------------------------------------------------------
-  // System Tray Integration (Green CPU Meter in Tray)
-  // ------------------------------------------------------------------------
   ensureTrayIcon() {
     const trayEl = document.getElementById('taskbar-tray');
     const clockEl = document.getElementById('tray-clock');
@@ -1677,28 +1582,18 @@ class AppTaskManager {
 
     const w = 14;
     const h = 14;
-
-    // Black background
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, w, h);
-
-    // Green border frame
     ctx.strokeStyle = '#004400';
     ctx.lineWidth = 1;
     ctx.strokeRect(0.5, 0.5, w - 1, h - 1);
-
-    // Green vertical fill representing current CPU %
     const fillH = Math.max(1, Math.round((this.currentCpu / 100) * (h - 2)));
     ctx.fillStyle = this.currentCpu > 85 ? '#ff0000' : (this.currentCpu > 60 ? '#ffff00' : '#00ff00');
     ctx.fillRect(2, h - 1 - fillH, w - 4, fillH);
-
-    // Update tooltip
     const trayBtn = document.getElementById('tray-taskmgr');
     if (trayBtn) {
       trayBtn.title = `${this.t('taskmgr.statusCpu')}: ${this.currentCpu}%`;
     }
   }
 }
-
-// Global instance initialization
 window.appTaskManager = new AppTaskManager();

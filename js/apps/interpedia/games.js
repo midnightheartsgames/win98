@@ -339,7 +339,7 @@ window.interpediaReg('quake2', 'games', {
       { label: 'Движок', value: 'Quake II engine (OpenGL и программный рендер)' },
       { label: 'Сеттинг', value: 'планета Строггос' },
       { label: 'Дополнения', value: 'The Reckoning, Ground Zero (1998)' },
-      { label: 'Следующая игра серии', value: 'Quake III Arena (декабрь 1999)' }
+      { label: 'Следующая игра серии', value: '[[quake3|Quake III Arena]] (декабрь 1999)' }
     ]
   },
   lead: `<strong>Quake II</strong> — шутер от первого лица id Software, изданный Activision 9 декабря 1997 года. Несмотря на название, сюжетно он не связан с [[quake|Quake]]: земной десант высаживается на планету Строггос, чтобы остановить кибернетическую расу строггов, и игрок — единственный уцелевший солдат.
@@ -371,9 +371,9 @@ Quake II стал эталоном для проверки компьютеро�
 </table>
 
 На движке Quake II также разрабатываются долгожданная Daikatana студии Ion Storm и Soldier of Fortune от Raven Software.` },
-    { id: 'q3', title: 'Quake III Arena', content: `2 декабря 1999 года вышла Quake III Arena — полностью сетевой шутер без сюжетной кампании, с противниками-ботами для одиночной игры. Её движок требует 3D-ускоритель и поддерживает изогнутые поверхности. Весной 1999 года id Software выпускала публичные тестовые версии Q3Test, которые скачали сотни тысяч игроков.` }
+    { id: 'q3', title: 'Quake III Arena', content: `2 декабря 1999 года вышла [[quake3|Quake III Arena]] — полностью сетевой шутер без сюжетной кампании, с противниками-ботами для одиночной игры. Её движок требует 3D-ускоритель и поддерживает изогнутые поверхности. Весной 1999 года id Software выпускала публичные тестовые версии Q3Test, которые скачали сотни тысяч игроков.` }
   ],
-  seeAlso: ['quake', 'doom', 'voodoo2', 'rivatnt', 'unreal'],
+  seeAlso: ['quake', 'quake3', 'doom', 'voodoo2', 'rivatnt', 'unreal'],
   references: [
     'Quake II: руководство пользователя. — Activision, 1997.',
     'Журнал Game.EXE, обзор Quake II, 1998.',
@@ -394,7 +394,7 @@ Quake II стал эталоном для проверки компьютеро�
       { label: 'Engine', value: 'Quake II engine (OpenGL and software renderers)' },
       { label: 'Setting', value: 'the planet Stroggos' },
       { label: 'Expansions', value: 'The Reckoning, Ground Zero (1998)' },
-      { label: 'Next in series', value: 'Quake III Arena (December 1999)' }
+      { label: 'Next in series', value: '[[quake3|Quake III Arena]] (December 1999)' }
     ]
   },
   lead: `<strong>Quake II</strong> is a first-person shooter by id Software, published by Activision on December 9, 1997. Despite the name, its story has nothing to do with [[quake|Quake]]: an Earth invasion force lands on the planet Stroggos to stop the cybernetic Strogg, and the player is the only surviving soldier.
@@ -426,9 +426,9 @@ With two [[voodoo2|Voodoo 2]] cards in SLI the game runs at 1024×768 above 60 f
 </table>
 
 Ion Storm's long-awaited Daikatana and Raven Software's Soldier of Fortune are also being built on the Quake II engine.` },
-    { id: 'q3', title: 'Quake III Arena', content: `Quake III Arena came out on December 2, 1999: a purely multiplayer shooter with no story campaign and bot opponents for single play. Its engine requires a 3D accelerator and supports curved surfaces. In spring 1999 id Software released public Q3Test builds that hundreds of thousands of players downloaded.` }
+    { id: 'q3', title: 'Quake III Arena', content: `[[quake3|Quake III Arena]] came out on December 2, 1999: a purely multiplayer shooter with no story campaign and bot opponents for single play. Its engine requires a 3D accelerator and supports curved surfaces. In spring 1999 id Software released public Q3Test builds that hundreds of thousands of players downloaded.` }
   ],
-  seeAlso: ['quake', 'doom', 'voodoo2', 'rivatnt', 'unreal'],
+  seeAlso: ['quake', 'quake3', 'doom', 'voodoo2', 'rivatnt', 'unreal'],
   references: [
     'Quake II user manual. Activision, 1997.',
     'Game.EXE magazine, Quake II review, 1998.',
@@ -672,7 +672,7 @@ window.interpediaReg('ut99', 'games', {
   },
   lead: `<strong>Unreal Tournament</strong> — сетевой шутер от первого лица Epic Games и Digital Extremes на движке [[unreal|Unreal]], вышедший 22 ноября 1999 года. Игра построена как вымышленный турнир будущего, в котором бойцы сражаются на аренах ради славы и призов.
 
-Почти одновременно с UT вышла Quake III Arena, и соперничество двух игр стало главной темой игровой прессы конца 1999 года. Unreal Tournament выделяется разнообразием командных режимов, умными ботами для одиночной игры и «мутаторами», меняющими правила матча.`,
+Почти одновременно с UT вышла [[quake3|Quake III Arena]], и соперничество двух игр стало главной темой игровой прессы конца 1999 года. Unreal Tournament выделяется разнообразием командных режимов, умными ботами для одиночной игры и «мутаторами», меняющими правила матча.`,
   sections: [
     { id: 'history', title: 'История', content: `После того как сетевой режим [[unreal|Unreal]] разочаровал игроков, Epic решила сделать отдельную игру, целиком посвящённую сражениям между людьми. Первоначально проект задумывался как официальное дополнение, но вырос в самостоятельную игру. Демоверсия вышла в сентябре 1999 года и быстро разошлась по Интернету и игровым [[cdrom|компакт-дискам]].` },
     { id: 'modes', title: 'Режимы игры', content: `<dl>
@@ -685,9 +685,9 @@ window.interpediaReg('ut99', 'games', {
     { id: 'weapons', title: 'Оружие', content: `Арсенал UT вырос из оружия Unreal. У каждого ствола два режима огня. Среди самых известных — шоковая винтовка, чей энергетический шар можно подорвать вторым выстрелом, флак-пушка, снайперская винтовка с выстрелами в голову и Redeemer — переносная ракета с ядерной боеголовкой, которой можно управлять из кабины. Комментатор объявляет серии побед: «Killing Spree», «Rampage», «Godlike».` },
     { id: 'bots', title: 'Боты и мутаторы', content: `Одиночная игра построена как лестница турнира против ботов — компьютерных противников с настраиваемым уровнем мастерства. Боты UT умеют пользоваться лифтами и прыжками с подрывом, защищают флаг и выполняют приказы командира. Мутаторы меняют правила: InstaGib даёт всем снайперские винтовки, убивающие одним попаданием, «низкая гравитация» превращает матч в полёты.` },
     { id: 'music', title: 'Музыка', content: `Саундтрек в трекерных форматах написали композиторы, вышедшие из [[demoscene|демосцены]]: Александр Брэндон, Михиль ван ден Бос, Эндрю «Necros» Сега и Петер «Skaven» Хайба из Future Crew, авторов [[secondreality|Second Reality]]. Музыка хранится в модульном формате и меняется в зависимости от карты.` },
-    { id: 'rivalry', title: 'UT и Quake III Arena', content: `Quake III Arena вышла 2 декабря 1999 года, через десять дней после UT. Обе игры — чисто сетевые шутеры, но с разными подходами: Quake III делает ставку на скорость и чистоту дуэлей, а UT — на разнообразие режимов и командную игру. Журналы и [[lanparty|клубы]] проводят сравнения, а игроки спорят на форумах, какая из игр станет главной в 2000 году.` }
+    { id: 'rivalry', title: 'UT и Quake III Arena', content: `[[quake3|Quake III Arena]] вышла 2 декабря 1999 года, через десять дней после UT. Обе игры — чисто сетевые шутеры, но с разными подходами: Quake III делает ставку на скорость и чистоту дуэлей, а UT — на разнообразие режимов и командную игру. Журналы и [[lanparty|клубы]] проводят сравнения, а игроки спорят на форумах, какая из игр станет главной в 2000 году.` }
   ],
-  seeAlso: ['unreal', 'quake2', 'halflife', 'lanparty', 'secondreality'],
+  seeAlso: ['unreal', 'quake3', 'quake2', 'halflife', 'lanparty', 'secondreality'],
   references: [
     'Unreal Tournament: руководство пользователя. — GT Interactive, 1999.',
     'Журнал «Страна игр», сравнение Unreal Tournament и Quake III Arena, декабрь 1999.'
@@ -712,7 +712,7 @@ window.interpediaReg('ut99', 'games', {
   },
   lead: `<strong>Unreal Tournament</strong> is an online first-person shooter by Epic Games and Digital Extremes on the [[unreal|Unreal]] engine, released on November 22, 1999. It is framed as a fictional future tournament in which fighters battle in arenas for fame and prizes.
 
-Quake III Arena came out almost at the same time, and the rivalry between the two games became the main topic of the gaming press at the end of 1999. Unreal Tournament stands out for its variety of team modes, smart bots for single play and "mutators" that change the rules of a match.`,
+[[quake3|Quake III Arena]] came out almost at the same time, and the rivalry between the two games became the main topic of the gaming press at the end of 1999. Unreal Tournament stands out for its variety of team modes, smart bots for single play and "mutators" that change the rules of a match.`,
   sections: [
     { id: 'history', title: 'History', content: `After [[unreal|Unreal]]'s multiplayer disappointed players, Epic decided to make a separate game devoted entirely to battles between people. It was first planned as an official add-on but grew into a standalone game. The demo came out in September 1999 and spread quickly over the Internet and magazine [[cdrom|cover discs]].` },
     { id: 'modes', title: 'Game modes', content: `<dl>
@@ -725,9 +725,9 @@ Quake III Arena came out almost at the same time, and the rivalry between the tw
     { id: 'weapons', title: 'Weapons', content: `UT's arsenal grew out of Unreal's. Every weapon has two firing modes. Among the most famous are the shock rifle, whose energy ball can be detonated with a second shot, the flak cannon, the sniper rifle with headshots, and the Redeemer, a portable nuclear missile that can be steered from the cockpit. An announcer calls out killing sprees: "Killing Spree", "Rampage", "Godlike".` },
     { id: 'bots', title: 'Bots and mutators', content: `Single play is a tournament ladder against bots, computer opponents with adjustable skill. UT bots use lifts and rocket jumps, guard the flag and follow the team leader's orders. Mutators change the rules: InstaGib gives everyone one-hit-kill rifles, and low gravity turns a match into a flying contest.` },
     { id: 'music', title: 'Music', content: `The tracker soundtrack was written by composers from the [[demoscene|demoscene]]: Alexander Brandon, Michiel van den Bos, Andrew "Necros" Sega and Peter "Skaven" Hajba of Future Crew, the group behind [[secondreality|Second Reality]]. The music is stored in module format and changes from map to map.` },
-    { id: 'rivalry', title: 'UT and Quake III Arena', content: `Quake III Arena came out on December 2, 1999, ten days after UT. Both are purely multiplayer shooters with different approaches: Quake III bets on speed and pure duels, UT on variety of modes and team play. Magazines and [[lanparty|clubs]] run comparisons, and players argue on forums about which game will rule in 2000.` }
+    { id: 'rivalry', title: 'UT and Quake III Arena', content: `[[quake3|Quake III Arena]] came out on December 2, 1999, ten days after UT. Both are purely multiplayer shooters with different approaches: Quake III bets on speed and pure duels, UT on variety of modes and team play. Magazines and [[lanparty|clubs]] run comparisons, and players argue on forums about which game will rule in 2000.` }
   ],
-  seeAlso: ['unreal', 'quake2', 'halflife', 'lanparty', 'secondreality'],
+  seeAlso: ['unreal', 'quake3', 'quake2', 'halflife', 'lanparty', 'secondreality'],
   references: [
     'Unreal Tournament user manual. GT Interactive, 1999.',
     'Strana Igr magazine, Unreal Tournament vs. Quake III Arena comparison, December 1999.'
@@ -1025,7 +1025,7 @@ window.interpediaReg('baldursgate', 'games', {
 </table>` },
     { id: 'reception', title: 'Отзывы', content: `Baldur's Gate признали одной из лучших ролевых игр десятилетия и вместе с [[fallout|Fallout]] относят к главным играм, вернувшим жанр на вершину. Отмечали объём игры — более ста часов, — сюжет и спутников; критиковали медленный поиск пути и частую смену пяти дисков. В российских [[lanparty|клубах]] игру проходили вместе: Baldur's Gate поддерживает совместную игру по сети.` }
   ],
-  seeAlso: ['fallout', 'fallout2', 'diablo', 'homm3'],
+  seeAlso: ['bioware98', 'fallout', 'fallout2', 'diablo', 'homm3'],
   references: [
     'Baldur\'s Gate: руководство пользователя. — Interplay, 1998.',
     'Computer Gaming World. Обзор Baldur\'s Gate. — 1999.',
@@ -1072,7 +1072,7 @@ The world is shown in isometric view over hand-painted high-resolution backgroun
 </table>` },
     { id: 'reception', title: 'Reception', content: `Baldur's Gate is counted among the best role-playing games of the decade and, together with [[fallout|Fallout]], among the games that put the genre back on top. Reviewers praised its size, over a hundred hours, its story and companions, and criticized slow pathfinding and frequent swapping of five discs. In Russian [[lanparty|clubs]] people played it together, since Baldur's Gate supports cooperative network play.` }
   ],
-  seeAlso: ['fallout', 'fallout2', 'diablo', 'homm3'],
+  seeAlso: ['bioware98', 'fallout', 'fallout2', 'diablo', 'homm3'],
   references: [
     'Baldur\'s Gate user manual. Interplay, 1998.',
     'Computer Gaming World, Baldur\'s Gate review, 1999.',
@@ -1306,7 +1306,7 @@ window.interpediaReg('starcraft', 'games', {
 
 Главное достижение игры — баланс трёх совершенно разных сторон, у каждой из которых свои постройки, войска и манера ведения войны. StarCraft стал одной из самых продаваемых игр 1998 года, а в Южной Корее превратился в национальное увлечение с профессиональными игроками и телевизионными трансляциями.`,
   sections: [
-    { id: 'development', title: 'Разработка', content: `Blizzard объявила StarCraft после успеха Warcraft II (1995). Первую версию, показанную на выставке E3 1996 года на движке Warcraft II, журналисты насмешливо окрестили «орками в космосе». Компания переработала игру практически с нуля: новый движок, изометрическая графика, по-настоящему разные расы. Выход несколько раз переносился и состоялся весной 1998 года.` },
+    { id: 'development', title: 'Разработка', content: `Blizzard объявила StarCraft после успеха [[warcraft2|Warcraft II]] (1995). Первую версию, показанную на выставке E3 1996 года на движке Warcraft II, журналисты насмешливо окрестили «орками в космосе». Компания переработала игру практически с нуля: новый движок, изометрическая графика, по-настоящему разные расы. Выход несколько раз переносился и состоялся весной 1998 года.` },
     { id: 'races', title: 'Расы', content: `<table class="interpedia-wikitable">
 <tr><th>Раса</th><th>Особенности</th><th>Примеры войск</th></tr>
 <tr><td>Терраны</td><td>универсальные; здания могут взлетать и перелетать, рабочие чинят технику</td><td>морпехи, осадные танки, крейсеры</td></tr>
@@ -1320,11 +1320,11 @@ window.interpediaReg('starcraft', 'games', {
 Дополнение Brood War (ноябрь 1998) продолжает историю: в борьбу вмешивается земной экспедиционный флот, а Керриган начинает собственную игру.` },
     { id: 'multiplayer', title: 'Сетевая игра и Battle.net', content: `До восьми игроков сражаются по локальной сети или через бесплатную службу Battle.net. Сетевые матчи требуют быстрой реакции и контроля сотен действий в минуту, и вокруг игры быстро сложилось соревновательное сообщество с рейтингами и турнирами.
 
-Редактор StarEdit, входящий в комплект, позволяет создавать собственные карты и сценарии с триггерами. Пользовательские карты превращают StarCraft в совершенно другие игры — от защиты башен до ролевых приключений.` },
+Редактор StarEdit, входящий в комплект, позволяет создавать собственные карты и сценарии с триггерами. Пользовательские карты превращают StarCraft в совершенно другие игры — от защиты башен до ролевых приключений и [[dota|командных арен 5 на 5]].` },
     { id: 'korea', title: 'Феномен Южной Кореи', content: `Особой популярности StarCraft достиг в Южной Корее, где после экономического кризиса 1997 года по всей стране открылись тысячи компьютерных клубов («PC-банги») с быстрым Интернетом. В 1999 году там начали проводить профессиональные лиги, а матчи показывают по телевидению. Лучшие игроки получают зарплату и спонсорские контракты, как спортсмены.` },
     { id: 'russia', title: 'StarCraft в России', content: `В России StarCraft вместе с [[quake2|Quake II]] — главная игра [[lanparty|компьютерных клубов]] конца 1990-х. Посетители проводят ночи за сетевыми партиями, а слова «раш зерглингами» знакомы каждому завсегдатаю. Игра распространяется и в виде пиратских сборников на [[gorbushka|Горбушке]] вместе с дополнением.` }
   ],
-  seeAlso: ['redalert', 'ageofempires', 'diablo', 'lanparty', 'homm3'],
+  seeAlso: ['warcraft2', 'dota', 'redalert', 'ageofempires', 'diablo', 'lanparty', 'homm3'],
   references: [
     'StarCraft: руководство пользователя. — Blizzard Entertainment, 1998.',
     'Computer Gaming World. Обзор StarCraft. — 1998.',
@@ -1352,7 +1352,7 @@ window.interpediaReg('starcraft', 'games', {
 
 The game's greatest achievement is the balance of three completely different sides, each with its own buildings, units and style of war. StarCraft became one of the best-selling games of 1998, and in South Korea it turned into a national passion with professional players and televised matches.`,
   sections: [
-    { id: 'development', title: 'Development', content: `Blizzard announced StarCraft after the success of Warcraft II (1995). The first version, shown at E3 1996 on the Warcraft II engine, was mockingly dubbed "orcs in space" by journalists. The company rebuilt the game almost from scratch: a new engine, isometric graphics and truly different races. The release slipped several times and came in spring 1998.` },
+    { id: 'development', title: 'Development', content: `Blizzard announced StarCraft after the success of [[warcraft2|Warcraft II]] (1995). The first version, shown at E3 1996 on the Warcraft II engine, was mockingly dubbed "orcs in space" by journalists. The company rebuilt the game almost from scratch: a new engine, isometric graphics and truly different races. The release slipped several times and came in spring 1998.` },
     { id: 'races', title: 'Races', content: `<table class="interpedia-wikitable">
 <tr><th>Race</th><th>Traits</th><th>Example units</th></tr>
 <tr><td>Terran</td><td>versatile; buildings can lift off and fly, workers repair machines</td><td>marines, siege tanks, battlecruisers</td></tr>
@@ -1366,11 +1366,11 @@ Each race needs its own strategy: the Zerg win by numbers and speed, the Protoss
 The Brood War expansion (November 1998) continues the story: an expeditionary fleet from Earth joins the fight, and Kerrigan begins playing her own game.` },
     { id: 'multiplayer', title: 'Multiplayer and Battle.net', content: `Up to eight players fight over a LAN or through the free Battle.net service. Online matches demand fast reactions and hundreds of actions per minute, and a competitive community with rankings and tournaments quickly formed around the game.
 
-The bundled StarEdit editor lets players build their own maps and trigger-driven scenarios. Custom maps turn StarCraft into entirely different games, from tower defense to role-playing adventures.` },
+The bundled StarEdit editor lets players build their own maps and trigger-driven scenarios. Custom maps turn StarCraft into entirely different games, from tower defense to role-playing adventures and [[dota|5v5 team battle arenas]].` },
     { id: 'korea', title: 'The South Korean phenomenon', content: `StarCraft became especially popular in South Korea, where thousands of computer clubs ("PC bangs") with fast Internet opened across the country after the 1997 economic crisis. In 1999 professional leagues began there, and matches are shown on television. The best players earn salaries and sponsorship deals like athletes.` },
     { id: 'russia', title: 'StarCraft in Russia', content: `In Russia StarCraft and [[quake2|Quake II]] are the main games of late-1990s [[lanparty|computer clubs]]. Visitors spend nights on network matches, and every regular knows what a "zergling rush" is. The game also circulates on pirate compilations with the expansion at [[gorbushka|Gorbushka]].` }
   ],
-  seeAlso: ['redalert', 'ageofempires', 'diablo', 'lanparty', 'homm3'],
+  seeAlso: ['warcraft2', 'dota', 'redalert', 'ageofempires', 'diablo', 'lanparty', 'homm3'],
   references: [
     'StarCraft user manual. Blizzard Entertainment, 1998.',
     'Computer Gaming World, StarCraft review, 1998.',
@@ -2065,3 +2065,654 @@ Money earned pays for repairs during the race and for upgrades to armor, power a
   ],
   categories: ['1997 Video Games', 'Driving Games', 'Video Game Controversies']
 });
+
+window.interpediaReg('warcraft2', 'games', {
+  title: 'Warcraft II: Tides of Darkness (1995)',
+  infobox: {
+    title: 'Warcraft II: Tides of Darkness',
+    badgeText: 'Blizzard Entertainment',
+    fields: [
+      { label: 'Разработчик', value: 'Blizzard Entertainment' },
+      { label: 'Издатель', value: 'Blizzard Entertainment' },
+      { label: 'Дата выхода', value: 'декабрь 1995' },
+      { label: 'Жанр', value: 'стратегия в реальном времени' },
+      { label: 'Платформа', value: '[[msdos|MS-DOS]], [[windows95|Win 95]], Macintosh' },
+      { label: 'Стороны', value: 'Альянс Лордерона, Орда орков' },
+      { label: 'Дополнение', value: 'Beyond the Dark Portal (1996)' },
+      { label: 'Переиздание', value: 'Warcraft II: Battle.net Edition (октябрь 1999)' }
+    ]
+  },
+  lead: `<strong>Warcraft II: Tides of Darkness</strong> — фэнтезийная стратегия в реальном времени компании Blizzard Entertainment, вышедшая в декабре 1995 года. Игра продолжает войну людей и орков, начатую в Warcraft: Orcs & Humans (1994), и переносит сражения на сушу, на море и в воздух: к золоту и лесу добавился третий ресурс, нефть для строительства военного флота.
+
+Переход к графике SVGA в разрешении 640×480, удобное выделение отрядов рамкой, «туман войны» и встроенный редактор карт сделали Warcraft II главным соперником серии [[redalert|Command & Conquer]] и заложили основу успеха [[starcraft|StarCraft]].`,
+  sections: [
+    { id: 'history', title: 'От Orcs & Humans к Tides of Darkness', content: `Первая часть серии, Warcraft: Orcs & Humans, вышла в ноябре 1994 года и показала, что формула стратегии в реальном времени отлично работает в мире меча и магии. Однако управление в ней оставалось громоздким: игрок мог выделять не более четырёх бойцов за раз, а экран вмещал лишь небольшой участок карты.
+
+Во второй части Blizzard перерисовала графику под высокое разрешение SVGA, увеличила предел выделения до девяти единиц и ввела контекстные команды правой кнопкой мыши. Кампания начинается после падения королевства Штормград: беженцы во главе с лордом Андуином Лотаром уплывают на север через Великое море и объединяют людей, эльфов, дворфов и гномов в Альянс Лордерона. Вождь Орды Оргрим Молот Рока заключает союз с лесными троллями, ограми и гоблинами и строит собственный флот.` },
+    { id: 'gameplay', title: 'Игровой процесс и туман войны', content: `Обе стороны добывают три ресурса: крестьяне и батраки рубят лес и носят золото из шахт, а танкеры качают нефть с морских вышек. Флот играет решающую роль на островных картах: эсминцы, линкоры и джаггернауты обстреливают берег, подводные лодки и гигантские черепахи топят корабли из-под воды, а транспортные суда перебрасывают пехоту и катапульты в тыл противника. В небе сражаются грифоны и драконы, а гоблинские дирижабли и гномьи вертолёты ведут разведку.
+
+Важным нововведением стал двухслойный «туман войны». Разведанная территория остаётся видна на карте, но если в секторе нет своих войск, её накрывает полупрозрачная пелена, скрывающая перемещения вражеской армии. Это заставляет постоянно патрулировать подступы к базе и береговую линию. Бойцы откликаются на повторные щелчки мышью комическими репликами, а заклинания паладинов, магов и рыцарей смерти (превращение врагов в овец, невидимость, буря и воскрешение скелетов) меняют исход схватки.` },
+    { id: 'editor', title: 'Редактор карт и сетевые матчи', content: `В комплект игры вошёл редактор Warcraft II Map Editor для [[windows95|Win 95]] и DOS, сохраняющий карты в файлах формата PUD. Игроки расставляют шахты, леса и стартовые базы, меняют характеристики войск и записывают собственные звуковые реплики. Тысячи любительских карт быстро разошлись по [[bbs|BBS]], архивам Интернета и сборникам на [[cdrom|компакт-дискам]].
+
+До восьми человек могут сражаться по локальной сети через протокол IPX или по [[modem56k|модему]]. В 1996 году программа Kali, имитирующая сеть IPX поверх интернет-соединения, превратила Warcraft II в одну из первых массовых сетевых стратегий. В российских [[lanparty|компьютерных клубах]] морские и сухопутные баталии на картах вроде Garden of War стали обязательной частью ночных дежурств.` },
+    { id: 'expansions', title: 'Beyond the Dark Portal и Battle.net Edition', content: `Весной 1996 года вышло дополнение Warcraft II: Beyond the Dark Portal, созданное студией Cyberlore Studios под контролем Blizzard. Экспедиция Альянса проходит сквозь Тёмный портал в родной мир орков, Дренор, чтобы раз и навсегда закрыть разлом между мирами. На карте появились герои с особыми портретами и завышенными параметрами: паладин Туралион, следопыт Аллерия, маг Кадгар, вождь Гром Задира и рыцарь смерти Терон Кровожад.
+
+В октябре 1999 года Blizzard выпустила переиздание Warcraft II: Battle.net Edition для [[windows95|Win 95]], [[windows98|Win 98]] и [[winnt4|Win NT]]. Оно объединило оригинал и дополнение, добавило поддержку бесплатной интернет-службы Battle.net, быстрые клавиши по образцу [[starcraft|StarCraft]] и рамку выделения на двенадцать бойцов. В сентябре 1999 года компания объявила о разработке трёхмерного продолжения Warcraft III, которое должно соединить стратегию с ролевой игрой и ожидается в 2000 году.` }
+  ],
+  seeAlso: ['starcraft', 'redalert', 'ageofempires', 'diablo', 'lanparty'],
+  references: [
+    'Warcraft II: Tides of Darkness — руководство пользователя. Blizzard Entertainment, 1995.',
+    'Warcraft II: Battle.net Edition — справочник по сетевой игре. Blizzard Entertainment, 1999.',
+    'Журнал «Магазин игрушек», обзор Warcraft II: Tides of Darkness, 1996.'
+  ],
+  links: [['http://www.blizzard.com', 'Официальный сайт Blizzard Entertainment'], ['http://www.cheatcc.com', 'Cheat Code Central: коды Warcraft II']],
+  categories: ['Видеоигры 1995 года', 'Стратегии в реальном времени', 'Blizzard Entertainment']
+}, {
+  title: 'Warcraft II: Tides of Darkness (1995)',
+  infobox: {
+    title: 'Warcraft II: Tides of Darkness',
+    badgeText: 'Blizzard Entertainment',
+    fields: [
+      { label: 'Developer', value: 'Blizzard Entertainment' },
+      { label: 'Publisher', value: 'Blizzard Entertainment' },
+      { label: 'Released', value: 'December 1995' },
+      { label: 'Genre', value: 'real-time strategy' },
+      { label: 'Platform', value: '[[msdos|MS-DOS]], [[windows95|Win 95]], Macintosh' },
+      { label: 'Factions', value: 'Alliance of Lordaeron, Orcish Horde' },
+      { label: 'Expansion', value: 'Beyond the Dark Portal (1996)' },
+      { label: 'Re-release', value: 'Warcraft II: Battle.net Edition (October 1999)' }
+    ]
+  },
+  lead: `<strong>Warcraft II: Tides of Darkness</strong> is a fantasy real-time strategy game from Blizzard Entertainment released in December 1995. Continuing the war between humans and orcs that began in Warcraft: Orcs & Humans (1994), it expands battles across land, sea and air and adds oil alongside gold and lumber to fuel naval fleets.
+
+High-resolution 640×480 SVGA graphics, convenient box selection, a two-layer "fog of war" and a bundled map editor made Warcraft II the chief rival to the [[redalert|Command & Conquer]] series and laid the foundation for [[starcraft|StarCraft]].`,
+  sections: [
+    { id: 'history', title: 'From Orcs & Humans to Tides of Darkness', content: `The first game in the series, Warcraft: Orcs & Humans, arrived in November 1994 and proved that the real-time strategy formula worked well in a sword-and-sorcery world. Its interface, however, remained stiff: players could select at most four soldiers at once, and the screen showed only a narrow patch of terrain.
+
+For the sequel Blizzard redrew all artwork in SVGA resolution, raised selection groups to nine units and introduced context-sensitive right-click orders. The story opens after the fall of Stormwind: refugees led by Lord Anduin Lothar sail north across the Great Sea and unite humans, elves, dwarves and gnomes into the Alliance of Lordaeron. Warchief Orgrim Doomhammer allies the Orcish Horde with forest trolls, ogres and goblins and builds an armada of his own.` },
+    { id: 'gameplay', title: 'Gameplay and fog of war', content: `Both factions gather three resources: peasants and peons chop lumber and haul gold from mines, while tankers pump oil from offshore rigs. Naval power decides island maps: destroyers, battleships and juggernauts shell the coast, submarines and giant turtles sink ships from below, and transports land footmen and catapults behind enemy lines. Gryphon riders and dragons clash in the sky while goblin zeppelins and gnomish flying machines scout ahead.
+
+A major addition was the two-stage fog of war. Explored terrain remains drawn on the map, but once friendly troops leave an area a gray shroud settles over it and hides enemy movements. Players must patrol coastlines and crossroads constantly. Clicking a unit repeatedly triggers humorous voice lines, while spells cast by paladins, mages and death knights (polymorphing enemies into sheep, invisibility, blizzard and raising skeletons) can turn a battle around.` },
+    { id: 'editor', title: 'Map editor and network play', content: `The box included the Warcraft II Map Editor for [[windows95|Win 95]] and DOS, which saves custom scenarios as PUD files. Players place gold mines, forests and starting bases, tweak unit statistics and record custom sound effects. Thousands of fan-made maps spread across [[bbs|BBSes]], Internet archives and magazine [[cdrom|CD-ROMs]].
+
+Up to eight players can fight over an IPX local network or by [[modem56k|modem]]. In 1996 the Kali utility, which emulates IPX over TCP/IP connections, turned Warcraft II into one of the earliest popular online strategy games. In [[lanparty|computer clubs]] naval and land battles on maps such as Garden of War became a staple of all-night sessions.` },
+    { id: 'expansions', title: 'Beyond the Dark Portal and Battle.net Edition', content: `In spring 1996 Blizzard and Cyberlore Studios released the expansion Warcraft II: Beyond the Dark Portal. An Alliance expedition marches through the Dark Portal into Draenor, the shattered homeworld of the orcs, to seal the rift forever. The campaigns rely on hero units with unique portraits and boosted stats, including the paladin Turalyon, ranger Alleria, mage Khadgar, chieftain Grom Hellscream and death knight Teron Gorefiend.
+
+In October 1999 Blizzard published Warcraft II: Battle.net Edition for [[windows95|Win 95]], [[windows98|Win 98]] and [[winnt4|Win NT]]. It combines the original game and expansion, adds free matchmaking over Battle.net, adopts [[starcraft|StarCraft]]-style hotkeys and raises unit selection to twelve. In September 1999 the company announced Warcraft III, a 3D role-playing strategy hybrid expected in 2000.` }
+  ],
+  seeAlso: ['starcraft', 'redalert', 'ageofempires', 'diablo', 'lanparty'],
+  references: [
+    'Warcraft II: Tides of Darkness user manual. Blizzard Entertainment, 1995.',
+    'Warcraft II: Battle.net Edition multiplayer guide. Blizzard Entertainment, 1999.',
+    'Computer Gaming World, Warcraft II: Tides of Darkness review, 1996.'
+  ],
+  links: [['http://www.blizzard.com', 'Blizzard Entertainment official site'], ['http://www.cheatcc.com', 'Cheat Code Central: Warcraft II codes']],
+  categories: ['1995 Video Games', 'Real-Time Strategy', 'Blizzard Entertainment']
+}, ['warcraft', 'wc2']);
+
+window.interpediaReg('quake3', 'games', {
+  title: 'Quake III Arena (1999)',
+  infobox: {
+    title: 'Quake III Arena',
+    badgeText: 'id Software / Activision',
+    fields: [
+      { label: 'Разработчик', value: 'id Software' },
+      { label: 'Издатель', value: 'Activision' },
+      { label: 'Дата выхода', value: '2 декабря 1999' },
+      { label: 'Жанр', value: 'сетевой шутер от первого лица' },
+      { label: 'Движок', value: 'id Tech 3 (только OpenGL)' },
+      { label: 'Режимы', value: 'Free For All, Tournament (1 на 1), Team Deathmatch, Capture the Flag' },
+      { label: 'Музыка', value: 'Sonic Mayhem, Front Line Assembly' },
+      { label: 'Требования', value: '[[pentium2|Pentium II]] 266, 64 МБ ОЗУ, 3D-ускоритель с OpenGL' }
+    ]
+  },
+  lead: `<strong>Quake III Arena</strong> — сетевой шутер от первого лица студии id Software, изданный Activision 2 декабря 1999 года. Впервые в истории серии разработчики полностью отказались от сюжетной кампании: бойцы разных эпох и миров перенесены загадочными Повелителями Арены на парящие в пустоте каменные и металлические площадки, чтобы бесконечно сражаться друг с другом.
+
+Игра вышла через десять дней после [[ut99|Unreal Tournament]] и разделила поклонников жанра на два лагеря. Quake III Arena требует обязательного наличия 3D-ускорителя с поддержкой OpenGL, выводит изогнутые поверхности и делает ставку на предельную скорость реакции, точность прицела и мастерство распрыжки.`,
+  sections: [
+    { id: 'concept', title: 'Отказ от сюжета и турнир на Арене', content: `После выхода [[quake2|Quake II]] Джон Кармак и геймдизайнеры id Software пришли к выводу, что большинство игроков проводит месяцы на сетевых серверах, тогда как одиночные уровни проходят один раз. В Quake III Arena одиночный режим построен как турнирная лестница из семи ярусов (Tiers) против компьютерных противников, ботов, и завершается поединком с непобедимым мастером Ксаэро (Xaero) на карте The Very End of You.
+
+У каждого бота свой характер, любимое оружие и манера поведения в чате. Инструктор Крэш (Crash) обучает новичка в первом ярусе, ветеран первой части Рейнджер (Ranger) и угрюмый сержант с сигарой Сардж (Sarge) предпочитают ракетницы, а охотница Хантер (Hunter) преследует жертву с молниемётом. В версии для каталога Steam в нашей системе доступны начальные ярусы арены (Trainee и Skilled) и быстрые схватки с ботами на классических картах Q3DM1 (Arena Gate) и Q3DM7 (Temple of Retribution).` },
+    { id: 'engine', title: 'Движок id Tech 3 и отказ от программного рендера', content: `Движок игры стал первой технологией id Software, в которой вообще нет программного рендеринга силами центрального процессора: для запуска необходима видеокарта с аппаратной поддержкой OpenGL, такая как [[voodoo2|3dfx Voodoo 2]], Voodoo 3, [[rivatnt|NVIDIA RIVA TNT]] или представленная осенью 1999 года GeForce 256.
+
+Главная графическая новинка движка — гладкие изогнутые поверхности на основе бикубических сплайнов Безье. Своды готических храмов, трубы, арки и винтовые колонны больше не состоят из рубленных многоугольников, а уровень детализации кривых настраивается под мощность видеокарты. Движок использует 32-битный цвет, систему многослойных шейдеров поверхностей, объёмный туман, порталы и зеркала. Модели персонажей разделены на три части (ноги, торс и голова), поэтому боец может бежать в одну сторону, а целиться и поворачивать корпус в другую.` },
+    { id: 'weapons', title: 'Арсенал, физика движения и награды', content: `Девять видов оружия выверены так, чтобы каждый ствол решал свою задачу:
+<ul>
+<li><strong>Перчатка с пилой (Gauntlet) и автомат (Machinegun)</strong> выдаются при возрождении; попадание перчаткой приносит сопернику обидную медаль «Humiliation».</li>
+<li><strong>Дробовик (Shotgun) и гранатомёт (Grenade Launcher)</strong> контролируют узкие коридоры и углы.</li>
+<li><strong>Ракетница (Rocket Launcher)</strong> позволяет подбрасывать врагов в воздух и совершать высокие прыжки с подрывом под ногами (rocket jump).</li>
+<li><strong>Молниемёт (Lightning Gun) и плазмаган (Plasma Gun)</strong> выжигают цель непрерывным лучом или очередью сгустков на средней дистанции.</li>
+<li><strong>Рельсотрон (Railgun)</strong> пробивает мгновенным спиральным лучом через всю карту и вознаграждает два попадания подряд медалью «Impressive».</li>
+<li><strong>BFG10K</strong> спрятана в самых опасных точках арены и накрывает площадку скорострельными зарядами плазмы.</li>
+</ul>
+
+Физика движения унаследовала и развила распрыжку с поворотом в воздухе (strafe-jumping): опытный игрок набирает скорость вдвое выше обычного бега и перелетает через пропасти с помощью пружинных площадок (jump pads) и телепортов. За борьбу вокруг усилителей Quad Damage (четырёхкратный урон), Haste (ускорение) и Regeneration (восстановление здоровья) разворачиваются главные дуэли.` },
+    { id: 'q3test', title: 'Q3Test, клубы и спор с Unreal Tournament', content: `Ещё весной 1999 года id Software выложила в Сеть бесплатную тестовую сборку Q3Test с двумя картами (Q3Test1 и Q3Test2), которую скачали сотни тысяч человек. К моменту декабрьского выхода вокруг игры уже сформировались кланы, а серверные модификации вроде InstaGib (дуэли только на рельсотронах с убийством одним лучом) и Rocket Arena начали переходить со второй части на третью.
+
+В российских [[lanparty|компьютерных клубах]] и на страницах журналов декабрь 1999 года прошёл под знаком спора «Quake III против [[ut99|Unreal Tournament]]». Сторонники UT хвалят разнообразие командных режимов и двойные выстрелы оружия, а приверженцы Quake III ценят чистую скорость дуэлей один на один в режиме Tournament, читаемость силуэтов на фоне стен и чёткую обратную связь каждого попадания.` }
+  ],
+  seeAlso: ['quake', 'quake2', 'ut99', 'voodoo2', 'rivatnt', 'lanparty'],
+  references: [
+    'Quake III Arena: руководство пользователя. Activision / id Software, декабрь 1999.',
+    'Журнал «Игромания», сравнение Quake III Arena и Unreal Tournament, декабрь 1999.',
+    'Журнал Game.EXE, тест 3D-ускорителей в Q3Test и Quake III Arena, 1999.'
+  ],
+  links: [['http://www.steampowered.com', 'Каталог Steam: Quake III Arena'], ['http://www.3dfx-zone.com', '3dfx Voodoo Zone: настройка OpenGL'], ['http://forum.games98.com', 'Форум GamerZone']],
+  categories: ['Видеоигры 1999 года', 'Шутеры от первого лица', 'id Software', 'Сетевые игры']
+}, {
+  title: 'Quake III Arena (1999)',
+  infobox: {
+    title: 'Quake III Arena',
+    badgeText: 'id Software / Activision',
+    fields: [
+      { label: 'Developer', value: 'id Software' },
+      { label: 'Publisher', value: 'Activision' },
+      { label: 'Released', value: 'December 2, 1999' },
+      { label: 'Genre', value: 'online first-person shooter' },
+      { label: 'Engine', value: 'id Tech 3 (OpenGL only)' },
+      { label: 'Modes', value: 'Free For All, Tournament (1v1), Team Deathmatch, Capture the Flag' },
+      { label: 'Music', value: 'Sonic Mayhem, Front Line Assembly' },
+      { label: 'Requirements', value: '[[pentium2|Pentium II]] 266, 64 MB RAM, OpenGL 3D accelerator' }
+    ]
+  },
+  lead: `<strong>Quake III Arena</strong> is a multiplayer first-person shooter developed by id Software and published by Activision on December 2, 1999. For the first time in the series, the studio dropped a traditional story campaign altogether: warriors from different eras and worlds are summoned by the mysterious Arena Eternal to fight endlessly across stone temples and suspended metal platforms in space.
+
+Released ten days after [[ut99|Unreal Tournament]], the game split shooter fans into two camps. Quake III Arena requires an OpenGL 3D accelerator, introduces curved surfaces and focuses on raw movement speed, aim precision and duel mastery.`,
+  sections: [
+    { id: 'concept', title: 'Dropping the story for the Arena Eternal', content: `After [[quake2|Quake II]], John Carmack and id Software's designers concluded that most players spent months on multiplayer servers while finishing single-player levels only once. In Quake III Arena, single-player mode is structured as a seven-tier tournament ladder against computer-controlled bots, culminating in a one-on-one duel against the grand master Xaero on the map The Very End of You.
+
+Every bot has a distinct personality, preferred weapon and chat banter. The drill instructor Crash teaches newcomers in the opening tier, the first game's veteran Ranger and cigar-chomping Sarge favor rocket launchers, and Hunter stalks targets with the lightning gun. The edition available in our system's Steam catalog includes the opening Trainee and Skilled tiers as well as instant skirmishes against bots on classic arenas such as Q3DM1 (Arena Gate) and Q3DM7 (Temple of Retribution).` },
+    { id: 'engine', title: 'The id Tech 3 engine and OpenGL requirement', content: `The game's engine is the first id Software technology with no software renderer at all: launching the game requires a video card with hardware OpenGL support, such as a [[voodoo2|3dfx Voodoo 2]], Voodoo 3, [[rivatnt|NVIDIA RIVA TNT]] or the GeForce 256 introduced in autumn 1999.
+
+Its signature visual advance is smooth curved surfaces built from bicubic Bézier patches. Gothic arches, pipes, domes and spiral columns no longer look chopped out of flat polygons, and the tessellation slider scales curve detail to match the player's card. The engine renders in 32-bit color with multi-pass surface shaders, volumetric fog, portals and mirrors. Character models are split into separate legs, torso and head meshes so a fighter can sprint in one direction while twisting at the waist to aim in another.` },
+    { id: 'weapons', title: 'Weapons, movement physics and medals', content: `Nine weapons are tuned so that each serves a distinct role in combat:
+<ul>
+<li><strong>Gauntlet and Machinegun</strong> are issued on spawn; a melee kill with the spinning blade awards the humiliating "Humiliation" medal.</li>
+<li><strong>Shotgun and Grenade Launcher</strong> dominate tight corridors and corners.</li>
+<li><strong>Rocket Launcher</strong> pops opponents into the air for mid-air follow-up shots and lets players rocket-jump to high ledges.</li>
+<li><strong>Lightning Gun and Plasma Gun</strong> melt targets with a continuous beam or rapid stream of plasma at medium range.</li>
+<li><strong>Railgun</strong> fires an instant spiral slug across the entire arena and rewards two consecutive hits with the announcer's "Impressive" medal.</li>
+<li><strong>BFG10K</strong> rests on the most exposed pedestals and blankets platforms in rapid-fire plasma blasts.</li>
+</ul>
+
+Movement physics refine air-turning and strafe-jumping: a skilled player builds momentum to twice normal running speed and vaults across chasms using jump pads and teleporters. Duels revolve around timing the respawn of Quad Damage, Haste, Regeneration and red armor.` },
+    { id: 'q3test', title: 'Q3Test, LAN clubs and the Unreal Tournament rivalry', content: `In spring 1999 id Software released Q3Test, a free public test build with two maps (Q3Test1 and Q3Test2) that hundreds of thousands of players downloaded. By the time the retail box shipped in December, clans had already formed and server rulesets such as InstaGib (one-hit-kill railgun duels) and Rocket Arena were migrating from the second game to the third.
+
+Across [[lanparty|computer clubs]] and magazine pages, December 1999 has been defined by the debate between Quake III Arena and [[ut99|Unreal Tournament]]. UT fans point to its team modes and alternate firing modes, while Quake III devotees prize the pure speed of one-on-one Tournament duels, clean enemy silhouettes against arena walls and crisp hit feedback.` }
+  ],
+  seeAlso: ['quake', 'quake2', 'ut99', 'voodoo2', 'rivatnt', 'lanparty'],
+  references: [
+    'Quake III Arena user manual. Activision / id Software, December 1999.',
+    'Igromania magazine, Quake III Arena vs. Unreal Tournament comparison, December 1999.',
+    'Game.EXE magazine, 3D accelerator benchmarks in Q3Test and Quake III Arena, 1999.'
+  ],
+  links: [['http://www.steampowered.com', 'Steam Catalog: Quake III Arena'], ['http://www.3dfx-zone.com', '3dfx Voodoo Zone: OpenGL setup'], ['http://forum.games98.com', 'GamerZone Forum']],
+  categories: ['1999 Video Games', 'First-Person Shooters', 'id Software', 'Online Games']
+}, ['q3a', 'quake3arena']);
+
+window.interpediaReg('maxpayne', 'games', {
+  title: 'Max Payne',
+  hatnote: 'Статья о нуарном боевике финской студии Remedy Entertainment и компании 3D Realms (издание для Win 98 в каталоге Steam).',
+  infobox: {
+    title: 'Max Payne',
+    badgeText: 'Remedy Entertainment / 3D Realms',
+    fields: [
+      { label: 'Разработчик', value: 'Remedy Entertainment' },
+      { label: 'Продюсер', value: '3D Realms (Скотт Миллер, Джордж Бруссард)' },
+      { label: 'Сценарист', value: 'Сэм Лейк (Сами Ярви)' },
+      { label: 'Жанр', value: 'боевик от третьего лица, неонуар' },
+      { label: 'Движок', value: 'Max-FX' },
+      { label: 'Место действия', value: 'Нью-Йорк во время снежной бури' },
+      { label: 'Особенность', value: 'замедление времени Bullet Time, страницы графического романа' },
+      { label: 'Издание в системе', value: 'Win 98 Edition (каталог Steam)' }
+    ]
+  },
+  lead: `<strong>Max Payne</strong> — кинематографический боевик от третьего лица финской студии Remedy Entertainment, создаваемый при участии продюсеров 3D Realms (авторов [[dukenukem3d|Duke Nukem 3D]]). Впервые показанный на выставках E3 в 1998 и 1999 годах и представленный в каталоге Steam в издании для [[windows98|Win 98]], проект соединяет мрачный полицейский детектив в заснеженном Нью-Йорке с акробатическими перестрелками в стиле гонконгских боевиков Джона Ву.
+
+Вместо привычных видеороликов история подаётся через озвученные полосы графического романа, а в бою игрок включает замедление времени Bullet Time и расстреливает гангстеров в затяжном прыжке с двумя береттами в руках.`,
+  sections: [
+    { id: 'remedy', title: 'От демосцены Future Crew к союзу с 3D Realms', content: `Студию Remedy Entertainment основали в 1995 году в финском городе Эспоо участники знаменитой группы [[demoscene|демосцены]] Future Crew, чьё демо [[secondreality|Second Reality]] (1993) прославилось на весь компьютерный мир. После выхода гоночного боевика с видом сверху Death Rally (1996) издатель 3D Realms предложил финским программистам взяться за полноценный трёхмерный проект под рабочим названием Dark Justice, переименованный позже в Max Heat и наконец в Max Payne.
+
+Сценарий написал друг основателей студии Сами Ярви под псевдонимом Сэм Лейк. Чтобы сэкономить бюджет на актёрах для графического романа, разработчики фотографировали самих себя, своих друзей и родственников в декорациях Хельсинки, а сам Сэм Лейк подарил главному герою собственное лицо с фирменной кривой ухмылкой.` },
+    { id: 'story', title: 'Сюжет: метель, «Валькирин» и первая часть «Американской мечты»', content: `Исповедь героя начинается на крыше небоскрёба под вой полицейских сирен, после чего действие возвращается на три года назад. У оперативника полиции Нью-Йорка Макса Пейна наркоманы, обезумевшие от нового синтетического наркотика «Валькирин» (Valkyr), убивают жену Мишель и новорождённую дочь. Макс переводится в Управление по борьбе с наркотиками (DEA) и уходит под прикрытие в мафиозную семью Пунчинелло.
+
+Когда на заброшенной станции метро «Роско-стрит» неизвестные убивают его единственного связного и друга Алекса Балдера, полиция объявляет самого Пейна убийцей. За одну бесконечную ночь на фоне сильнейшей в истории Нью-Йорка снежной бури Макс пробивается через станцию метро, притон в отеле Рико Муэрте, многоквартирные трущобы и готический ночной клуб «Рагна Рок» одержимого скандинавскими мифами гангстера Джека Люпино. В издании для [[windows98|Win 98]] представлены тренировочный полигон DEA, пролог и все девять глав первой части («The American Dream»).` },
+    { id: 'bullettime', title: 'Bullet Time, стрельба в прыжке и болеутоляющие', content: `Боевая система построена вокруг механики Bullet Time («время пули»). По нажатию клавиши течение времени замедляется в несколько раз, звук выстрелов становится гулким и низким, но прицел по-прежнему двигается со скоростью руки игрока. Одновременно с этим Макс может совершить уклоняющийся прыжок (Shootdodge) вперёд, назад или вбок, продолжая вести прицельный огонь в полёте, пока гильзы медленно звенят об пол.
+
+Здоровье не восстанавливается само и не пополняется аптечками на полу: Макс глотает баночки болеутоляющего (Painkillers), которые находит в шкафчиках ванных комнат и на столах охраны. В его плаще помещается целый арсенал: две беретты, обрез и помповый дробовик, пистолеты-пулемёты Ингрэм, гранаты, коктейли Молотова и снайперская винтовка, при выстреле из которой камера летит следом за самой пулей до самого попадания во врага. Для тех, кто прошёл основную историю, открываются режимы повышенной сложности Dead on Arrival (с ограничением на семь сохранений за главу) и гонка на время New York Minute, где за каждого убитого врага начисляются драгоценные секунды.` },
+    { id: 'maxfx', title: 'Движок Max-FX и фотографические текстуры', content: `Программисты Remedy написали собственный движок Max-FX с расчётом систем частиц, дыма, искр и динамических источников света. Каждая выпущенная пуля в игре представляет собой отдельный физический снаряд со своей скоростью и траекторией, а не мгновенный луч: на стенах остаются выбоины в штукатурке, кафельной плитке и деревянных панелях, а стёкла витрин разлетаются на осколки.
+
+Чтобы добиться достоверного вида нью-йоркских подворотен и станций подземки, художники Remedy отправились в Нью-Йорк в сопровождении телохранителей и отсняли тысячи фотографий кирпичной кладки, ржавых пожарных лестниц, граффити и облупившихся дверей. Эти снимки легли в основу текстур высокого разрешения, которые сделали Max Payne одной из самых зрелищных витрин для видеокарт класса [[rivatnt|RIVA TNT]] и GeForce.` }
+  ],
+  seeAlso: ['demoscene', 'secondreality', 'dukenukem3d', 'halflife', 'gta'],
+  references: [
+    'Max Payne: документация издания Win 98 Edition. Remedy Entertainment / 3D Realms.',
+    'Материалы показа Max Payne на выставке E3 1999 // Журнал Game.EXE, 1999.',
+    'Журнал «Страна игр», репортаж о студии Remedy Entertainment и движке Max-FX, 1999.'
+  ],
+  links: [['http://www.steampowered.com', 'Каталог Steam: Max Payne'], ['http://forum.games98.com', 'Форум GamerZone']],
+  categories: ['Боевики от третьего лица', 'Remedy Entertainment', '3D Realms', 'Неонуар']
+}, {
+  title: 'Max Payne',
+  hatnote: 'This article is about the neo-noir third-person action game by Remedy Entertainment and 3D Realms (Win 98 Edition in the Steam catalog).',
+  infobox: {
+    title: 'Max Payne',
+    badgeText: 'Remedy Entertainment / 3D Realms',
+    fields: [
+      { label: 'Developer', value: 'Remedy Entertainment' },
+      { label: 'Producer', value: '3D Realms (Scott Miller, George Broussard)' },
+      { label: 'Writer', value: 'Sam Lake (Sami Järvi)' },
+      { label: 'Genre', value: 'third-person shooter, neo-noir' },
+      { label: 'Engine', value: 'Max-FX' },
+      { label: 'Setting', value: 'New York City during the worst blizzard in history' },
+      { label: 'Signature features', value: 'Bullet Time slow motion, graphic novel panels' },
+      { label: 'System edition', value: 'Win 98 Edition (Steam catalog)' }
+    ]
+  },
+  lead: `<strong>Max Payne</strong> is a cinematic third-person shooter developed by the Finnish studio Remedy Entertainment in partnership with 3D Realms (creators of [[dukenukem3d|Duke Nukem 3D]]). Showcased at E3 in 1998 and 1999 and available in our system's Steam catalog in its [[windows98|Win 98]] Edition, the game blends a hard-boiled police thriller set during a New York blizzard with John Woo-inspired gunplay.
+
+Instead of conventional pre-rendered cutscenes, the story unfolds through voice-acted graphic novel pages, while combat lets the player trigger Bullet Time slow motion and dive through doorways firing dual Berettas.`,
+  sections: [
+    { id: 'remedy', title: 'From Future Crew on the demoscene to 3D Realms', content: `Remedy Entertainment was founded in 1995 in Espoo, Finland, by members of the legendary [[demoscene|demoscene]] group Future Crew, whose 1993 PC demo [[secondreality|Second Reality]] became a benchmark of computer art. Following Remedy's top-down combat racer Death Rally (1996), producer 3D Realms backed the studio on an ambitious 3D action game first pitched as Dark Justice, briefly called Max Heat and finally titled Max Payne.
+
+The script was written by Sami Järvi, a close friend of the founders credited under the pen name Sam Lake. To keep production lean while shooting the graphic novel sequences, the team photographed themselves, friends and relatives around Helsinki, and Sam Lake stepped in as the face model for Max himself, complete with his trademark grimace.` },
+    { id: 'story', title: 'Story: the blizzard, Valkyr and Part I "The American Dream"', content: `The story opens on the roof of a Manhattan skyscraper as police sirens wail below, then flashes back three years. NYPD detective Max Payne comes home to find his wife Michelle and baby daughter murdered by junkies high on a military designer drug called Valkyr. Max transfers to the DEA and goes deep undercover inside the Punchinello Mafia family.
+
+When his only handler and friend Alex Balder is gunned down on the platform of the derelict Roscoe Street subway station, the police frame Payne for the murder. Over one relentless night during the worst snowstorm in New York's history, Max shoots his way through the subway, a sleazy tenement hotel, mob-run slums and the gothic Ragna Rock nightclub of Norse-obsessed gangster Jack Lupino. The [[windows98|Win 98]] Edition in the Steam catalog includes the DEA training course, the prologue and all nine chapters of Part I ("The American Dream").` },
+    { id: 'bullettime', title: 'Bullet Time, Shootdodge and painkillers', content: `Gunfights revolve around Bullet Time. Pressing the time-slow key drops the world into slow motion and pitches gunfire down to a deep roar while keeping the crosshair responsive to the player's mouse. Combining Bullet Time with a directional movement key launches Max into a horizontal Shootdodge dive forward, backward or sideways, letting him clear a room in mid-air as brass shell casings clatter across the floorboards.
+
+Health does not regenerate and there are no glowing medkits: Max swallows bottles of painkillers scavenged from bathroom cabinets and guard desks. Under his leather trench coat he carries dual Berettas, pump-action and sawed-off shotguns, dual Ingram MAC-10 submachine guns, grenades, Molotov cocktails and a sniper rifle whose camera tracks the bullet in flight all the way to impact. Completing the story unlocks Dead on Arrival mode (which limits the player to seven saves per chapter) and New York Minute, a race against a ticking countdown clock replenished only by killing enemies.` },
+    { id: 'maxfx', title: 'The Max-FX engine and photo-sourced textures', content: `Remedy's programmers built the in-house Max-FX engine around particle systems, volumetric smoke, sparks and dynamic lighting. Every bullet fired in the game is simulated as an individual projectile with its own velocity and flight path rather than an instant ray: plaster, bathroom tile and wood paneling chip away where rounds strike, and plate-glass windows shatter into shards.
+
+To give the slums and subway stations an authentic look, Remedy's artists traveled to New York City with bodyguards and shot thousands of reference photographs of brickwork, rusted fire escapes, graffiti and peeling apartment doors. Those high-resolution textures made Max Payne a visual showcase for [[rivatnt|RIVA TNT]] and GeForce accelerators.` }
+  ],
+  seeAlso: ['demoscene', 'secondreality', 'dukenukem3d', 'halflife', 'gta'],
+  references: [
+    'Max Payne (Win 98 Edition) documentation. Remedy Entertainment / 3D Realms.',
+    'E3 1999 coverage of Max Payne // Game.EXE magazine, 1999.',
+    'Strana Igr magazine, feature on Remedy Entertainment and the Max-FX engine, 1999.'
+  ],
+  links: [['http://www.steampowered.com', 'Steam Catalog: Max Payne'], ['http://forum.games98.com', 'GamerZone Forum']],
+  categories: ['Third-Person Shooters', 'Remedy Entertainment', '3D Realms', 'Neo-Noir']
+}, ['maxpayne98']);
+
+window.interpediaReg('tekken3', 'games', {
+  title: 'Tekken 3 (1998)',
+  infobox: {
+    title: 'Tekken 3',
+    badgeText: 'Namco',
+    fields: [
+      { label: 'Разработчик', value: 'Namco' },
+      { label: 'Издатель', value: 'Namco' },
+      { label: 'Выход', value: 'март 1997 (автоматы), март 1998 (консоли), издание Tekken 3 98' },
+      { label: 'Жанр', value: 'трёхмерный файтинг' },
+      { label: 'Управление', value: '4 кнопки конечностей (левая/правая рука, левая/правая нога)' },
+      { label: 'Режимы', value: 'Arcade, Versus, Team Battle, Survival, Time Attack, Practice, Tekken Force, Tekken Ball' },
+      { label: 'Бойцов в ростере', value: 'более 20 (включая скрытых персонажей)' },
+      { label: 'Издание в системе', value: 'Tekken 3 98 (каталог Steam)' }
+    ]
+  },
+  lead: `<strong>Tekken 3</strong> — трёхмерный файтинг японской компании Namco, появившийся на аркадных автоматах System 12 весной 1997 года, перенесённый на домашние системы в марте 1998 года и представленный на ПК в издании <strong>Tekken 3 98</strong> в каталоге Steam. Турнир «Король Железного кулака 3» собирает мастеров боевых искусств со всего света спустя девятнадцать лет после событий второй части.
+
+В отличие от большинства файтингов, где кнопки отвечают за слабый, средний и сильный удар, в Tekken 3 каждая из четырёх кнопок привязана к конкретной конечности бойца, а свободный шаг вглубь экрана и подбрасывание соперника в воздух превращают поединок в скоростную шахматную партию.`,
+  sections: [
+    { id: 'system', title: 'Четыре конечности, шаг в сторону и воздушные серии', content: `Боевая схема Tekken 3 интуитивно понятна даже тем, кто впервые сел за клавиатуру или геймпад: две верхние кнопки наносят удары левой и правой рукой, две нижние — левой и правой ногой. Из этих четырёх клавиш и направлений складываются десятки приёмов, перехватов, бросков и непрерывных десятиударных серий (10-hit combos).
+
+Третья часть впервые сделала перемещение по третьей оси (sidestep) полноценным приёмом для всех бойцов: короткое нажатие вверх или вниз уводит персонажа на задний или передний план, позволяя пропустить прямолинейный выпад врага мимо себя и тут же наказать его в спину. Основа высокого мастерства — удары-подбросы (launchers), после которых беззащитного противника удерживают в воздухе серией точных попаданий (juggle), не давая ему упасть на татами.` },
+    { id: 'story', title: 'Третий турнир Железного кулака и школы единоборств', content: `По сюжету старейшина клана Мисима Хэйхати пробуждает в центральноамериканских руинах древнее божество боя Огра (Ogre). Огр выслеживает и повергает лучших мастеров мира, в том числе Дзюн Кадзаму. Её пятнадцатилетний сын Дзин Кадзама приходит к деду Хэйхати, обучается фамильному стилю карате Мисима и вступает в третий турнир, чтобы отомстить чудовищу.
+
+Каждый боец в ростере владеет узнаваемой школой единоборств, записанной с помощью захвата движений (motion capture):
+<ul>
+<li><strong>Карате стиля Мисима и Кёкусинкай</strong> (Дзин Кадзама, Хэйхати Мисима) и <strong>дзюдо с сокрушительными прямыми ударами</strong> (Пол Феникс).</li>
+<li><strong>Капоэйра</strong> (Эдди Гордо), чьи непрерывные вращения на руках и ногах стали грозой новичков и породили вечные споры в клубах о «честной игре».</li>
+<li><strong>Кунг-фу в стиле Джета Ли и Джеки Чана</strong> (Маршалл и Форест Лоу, а также полицейский Лэй Улун со стойками пяти зверей и «пьяным кулаком»).</li>
+<li><strong>Тхэквондо</strong> (Хваран), <strong>китайское кэмпо и багуачжан</strong> (Лин Сяоюй) и <strong>рестлинг с цепочками захватов</strong> (Кинг в маске ягуара).</li>
+<li><strong>Меченосец-ниндзя в механической броне</strong> (Ёсимицу) и <strong>боевое самбо</strong> (офицер спецназа Сергей Драгунов в расширенном ростере издания).</li>
+</ul>
+
+Среди секретных и необычных бойцов встречаются деревянный манекен Мокудзин, который в каждом раунде копирует стойку случайного участника, учёный доктор Босконович, сражающийся лёжа на спине, медведь Кума и маленький динозавр Гон.` },
+    { id: 'modes', title: 'Режимы игры: от командных боёв до Tekken Force и пляжного волейбола', content: `Помимо классической аркадной лестницы (Arcade) с открываемыми концовками за каждого героя и дуэлей вдвоём за одним экраном (Versus), Tekken 3 предлагает богатый набор режимов для компании друзей:
+<dl>
+<dt>Team Battle</dt><dd>командный матч до восьми бойцов с каждой стороны, где победитель раунда остаётся на арене с остатком здоровья против следующего соперника.</dd>
+<dt>Survival и Time Attack</dt><dd>испытание на бесконечную череду побед с одной полоской жизни и прохождение турнира на рекордное время.</dd>
+<dt>Practice</dt><dd>тренировочный зал с выводом списка команд, программируемым манекеном и отработкой сложных воздушных связок.</dd>
+<dt>Tekken Force</dt><dd>боковой боевик в духе классических beat 'em up, где игрок бежит слева направо через четыре уровня, раскидывая отряды охраны Tekken Force и собирая жареных цыплят для лечения.</dd>
+<dt>Tekken Ball</dt><dd>пляжный волейбол на берегу моря, в котором удары по мячу заряжают его разрушительной энергией и наносят урон сопернику на другой половине площадки.</dd>
+</dl>` },
+    { id: 'pc98', title: 'Tekken 3 98 на персональных компьютерах', content: `В конце 1990-х трёхмерные файтинги редко заглядывали на ПК в полном виде, поэтому появление Tekken 3 в клубах и на домашних машинах стало событием. В издании Tekken 3 98 из каталога Steam игра работает с частотой 60 кадров в секунду, поддерживает настройку управления для двух игроков на одной клавиатуре, просмотр всех приёмов прямо из меню паузы и смену костюмов бойцов. В перерывах между сетевыми партиями в [[quake3|Quake III Arena]] и [[starcraft|StarCraft]] вокруг одного монитора собираются зрители на быстрые турниры Team Battle восемь на восемь.` }
+  ],
+  seeAlso: ['quake3', 'ut99', 'lanparty', 'carmageddon'],
+  references: [
+    'Tekken 3: справочник приёмов и руководство игрока. Namco, 1998.',
+    'Журнал «Великий Dракон», полный разбор бойцов и связок Tekken 3, 1998.',
+    'Журнал «Страна игр», обзор Tekken 3, 1998.'
+  ],
+  links: [['http://www.steampowered.com', 'Каталог Steam: Tekken 3 98'], ['http://www.cheatcc.com', 'Cheat Code Central: секреты и бойцы Tekken 3']],
+  categories: ['Видеоигры 1998 года', 'Файтинги', 'Namco']
+}, {
+  title: 'Tekken 3 (1998)',
+  infobox: {
+    title: 'Tekken 3',
+    badgeText: 'Namco',
+    fields: [
+      { label: 'Developer', value: 'Namco' },
+      { label: 'Publisher', value: 'Namco' },
+      { label: 'Released', value: 'March 1997 (arcade), March 1998 (home), Tekken 3 98 edition' },
+      { label: 'Genre', value: '3D fighting game' },
+      { label: 'Controls', value: '4 limb buttons (left/right punch, left/right kick)' },
+      { label: 'Modes', value: 'Arcade, Versus, Team Battle, Survival, Time Attack, Practice, Tekken Force, Tekken Ball' },
+      { label: 'Roster', value: 'over 20 fighters (including unlockable characters)' },
+      { label: 'System edition', value: 'Tekken 3 98 (Steam catalog)' }
+    ]
+  },
+  lead: `<strong>Tekken 3</strong> is a 3D fighting game by the Japanese company Namco, first released on System 12 arcade hardware in spring 1997, brought home in March 1998 and available on the PC as <strong>Tekken 3 98</strong> in our system's Steam catalog. Set nineteen years after the second tournament, the King of Iron Fist Tournament 3 gathers martial artists from around the globe.
+
+Instead of assigning buttons to light, medium and heavy attacks, Tekken 3 maps its four attack buttons directly to the fighter's left punch, right punch, left kick and right kick, while three-dimensional sidestepping and aerial juggles turn every round into high-speed chess.`,
+  sections: [
+    { id: 'system', title: 'Four limbs, sidestepping and aerial juggles', content: `Tekken 3's control scheme makes immediate physical sense on either a gamepad or a keyboard: the two upper buttons throw left and right punches, and the two lower buttons throw left and right kicks. Combining those four buttons with directional taps produces dozens of strikes, reversals, chain throws and ten-hit combos.
+
+The third installment made movement along the depth axis (sidestepping) a core tool for the entire roster: a quick tap up or down steps into the background or foreground, letting a defender slip past a linear charge and punish the exposed back. High-level play centers on launchers that pop an opponent into the air, followed by carefully timed juggle strings before the opponent hits the mat.` },
+    { id: 'story', title: 'The third Iron Fist tournament and martial arts styles', content: `In the story, Mishima Zaibatsu patriarch Heihachi Mishima awakens an ancient fighting deity known as Ogre in Central American ruins. Ogre hunts down martial arts masters across the world, including Jun Kazama. Her fifteen-year-old son Jin Kazama seeks out his grandfather Heihachi, trains in Mishima-style karate and enters the tournament to avenge his mother.
+
+Every fighter on the roster practices a distinct martial art animated with motion capture:
+<ul>
+<li><strong>Mishima-style and Kyokushin karate</strong> (Jin Kazama, Heihachi Mishima) alongside <strong>judo and explosive single-strike karate</strong> (Paul Phoenix).</li>
+<li><strong>Capoeira</strong> (Eddy Gordo), whose spinning handstands and low sweeps terrorize newcomers and spark endless house-rule debates among friends.</li>
+<li><strong>Jeet Kune Do and five-animal kung fu</strong> (Forest Law and police detective Lei Wulong, complete with Drunken Fist stances).</li>
+<li><strong>Taekwondo</strong> (Hwoarang), <strong>Baguazhang and Piguazhang</strong> (Ling Xiaoyu) and <strong>lucha libre chain wrestling</strong> (the jaguar-masked King).</li>
+<li><strong>Sword-wielding ninjutsu</strong> (Yoshimitsu) and <strong>military combat sambo</strong> (special forces officer Sergei Dragunov in the edition's expanded roster).</li>
+</ul>
+
+Unlockable fighters include Mokujin, a centuries-old wooden training dummy that mimics a random fighter's style each round, the elderly scientist Dr. Boskonovitch who fights while lying on the ground, Heihachi's pet bear Kuma and the tiny dinosaur Gon.` },
+    { id: 'modes', title: 'Game modes: Team Battle, Tekken Force and Tekken Ball', content: `Beyond the single-player Arcade ladder (which unlocks a character ending for each fighter) and two-player local Versus matches, Tekken 3 packs modes built for groups of friends:
+<dl>
+<dt>Team Battle</dt><dd>squad matches of up to eight fighters per side, where the winner of a round stays in the ring with remaining health to face the next challenger.</dd>
+<dt>Survival and Time Attack</dt><dd>an endless gauntlet on a single life bar and a race to clear the tournament in record time.</dd>
+<dt>Practice</dt><dd>a training dojo with an on-screen command list, programmable dummy actions and combo counters.</dd>
+<dt>Tekken Force</dt><dd>a side-scrolling beat 'em up across four stages in which the player fights waves of Tekken Force soldiers and picks up roast chickens to restore health.</dd>
+<dt>Tekken Ball</dt><dd>beach volleyball where martial arts strikes charge the ball with kinetic energy that damages whoever fails to return it.</dd>
+</dl>` },
+    { id: 'pc98', title: 'Tekken 3 98 on the PC', content: `Full-featured 3D fighting games have been rare on the late-1990s PC, making the arrival of Tekken 3 98 in our system's Steam catalog a favorite for shared-keyboard matches. Running at a locked 60 frames per second, it supports two players on one keyboard, full move lists in the pause menu and alternate costumes. Between network rounds of [[quake3|Quake III Arena]] and [[starcraft|StarCraft]], players gather around a single monitor for eight-on-eight Team Battle brackets.` }
+  ],
+  seeAlso: ['quake3', 'ut99', 'lanparty', 'carmageddon'],
+  references: [
+    'Tekken 3 move list and player manual. Namco, 1998.',
+    'Official PlayStation Magazine, Tekken 3 review and fighter guide, 1998.',
+    'Strana Igr magazine, Tekken 3 review, 1998.'
+  ],
+  links: [['http://www.steampowered.com', 'Steam Catalog: Tekken 3 98'], ['http://www.cheatcc.com', 'Cheat Code Central: Tekken 3 unlockables']],
+  categories: ['1998 Video Games', 'Fighting Games', 'Namco']
+}, ['tekken', 'tekken398']);
+
+window.interpediaReg('dota', 'games', {
+  title: 'Defense of the Ancients и командные арены (Dota 98, League of Legends 98)',
+  hatnote: 'Статья о жанре командных тактических арен 5 на 5 и об изданиях Dota 98 и League of Legends 98 в каталоге Steam.',
+  infobox: {
+    title: 'Командные арены (Dota 98 / LoL 98)',
+    badgeText: 'Valve / Riot Games',
+    fields: [
+      { label: 'Жанр', value: 'командная тактическая арена в реальном времени (5 на 5)' },
+      { label: 'Истоки', value: 'пользовательские карты для [[starcraft|StarCraft]] (Aeon of Strife) и редакторов Blizzard' },
+      { label: 'Издания в системе', value: 'Dota 98, League of Legends 98 (каталог Steam)' },
+      { label: 'Формат матча', value: 'две команды по 5 героев, три линии (верхняя, средняя, нижняя), лес' },
+      { label: 'Главная цель', value: 'разрушить Древнюю твердыню (Ancient) или Нексус (Nexus) противника' },
+      { label: 'Платформа', value: '[[windows98|Win 98]]' }
+    ]
+  },
+  lead: `<strong>Defense of the Ancients</strong> (в нашем системном каталоге Steam — <strong>Dota 98</strong> и родственная ей <strong>League of Legends 98</strong>) — направление командных тактических игр в реальном времени, выросшее из любительских сценариев для редактора карт [[starcraft|StarCraft]]. Вместо того чтобы строить собственную базу и управлять сотней солдат, каждый из десяти участников матча контролирует ровно одного уникального героя в сражении пять на пять.
+
+Квадратная карта пересечена по диагонали рекой и разделена на три укреплённые дороги («линии»), по которым навстречу друг другу непрерывно идут волны управляемых компьютером пехотинцев. Задача команды — провести своих бойцов сквозь сторожевые башни и разрушить главное здание в центре вражеской крепости.`,
+  sections: [
+    { id: 'origins', title: 'От редактора StarEdit и карты Aeon of Strife к отдельному жанру', content: `Корни жанра лежат в редакторе кампаний StarEdit, вошедшем в комплект [[starcraft|StarCraft]] весной 1998 года. Система триггеров позволила энтузиастам создавать карты, совершенно не похожие на обычную добычу минералов и газа. Одной из самых популярных пользовательских карт на серверах Battle.net стала Aeon of Strife: в ней игроки отказывались от строительства казарм, выбирали по одному именному герою и вместе с потоками союзных войск пробивались по трём коридорам к базе противника.
+
+Идея объединила тактический контроль отряда из [[warcraft2|Warcraft II]] и StarCraft с прокачкой персонажа, уровнями и инвентарём из [[diablo|Diablo]]. В нашем каталоге Steam это направление представлено двумя самостоятельными играми для [[windows98|Win 98]] с полноценным трёхмерным полем боя и поддержкой ботов: <strong>Dota 98</strong> и <strong>League of Legends 98</strong>.` },
+    { id: 'mechanics', title: 'Три линии, добивание крипов и составные артефакты', content: `Поле боя делится на две половины: на юго-западе расположена база Светлых (Radiant в Dota 98 или синяя команда в Ущелье призывателей), на северо-востоке — крепость Тёмных (Dire или красная команда). Каждые полминуты из казарм выходят отряды пехотинцев и магов (крипов или миньонов) и маршируют по верхней (Top), средней (Mid) и нижней (Bot) линиям под прикрытием стреляющих башен.
+
+Золото достаётся лишь тому герою, который нанёс вражескому пехотинцу или башне последний, добивающий удар (last hit). Заработанные монеты тратятся в базовой и потайной лавках на сапоги скорости, клинки, посохи и свитки рецептов, из которых собираются мощные составные артефакты (такие как Blink Dagger для мгновенного скачка или посох Black King Bar). Между линиями раскинулся лес с лагерями нейтральных чудовищ, а на реке появляются руны усиления и логово гигантского босса: в Dota 98 это каменный великан Рошан, хранящий щит бессмертия Эгиду (Aegis of the Immortal), а в League of Legends 98 — стихийные Драконы и Барон Нашор.` },
+    { id: 'dota98', title: 'Dota 98: десять героев, курьеры и разрушаемый лес', content: `В издании <strong>Dota 98</strong> особое внимание уделено тонкостям позиционной борьбы. Здесь можно не только добивать чужих пехотинцев, но и жертвовать собственными ранеными крипами и даже башнями (deny), чтобы лишить соперника на линии золота и опыта. Предметы из лавки доставляет прямо на передовую управляемый ослик-курьер, а деревья в лесу можно вырубать, прокладывая неожиданные тропы для засады.
+
+В ростер Dota 98 входят десять разноплановых героев со своими ролями и озвучкой:
+<ul>
+<li><strong>Мастера засад и притяжения:</strong> мясник Pudge со смертоносным крюком Meat Hook, подтягивающим жертву сквозь деревья, и подрывники Techies, минирующие узкие проходы и руны связками бочек.</li>
+<li><strong>Воины ближнего боя:</strong> берсерк Axe, заставляющий врагов атаковать себя и рубящий раненых топором Culling Blade, мечник Juggernaut с вихрем клинка и неуязвимой серией ударов Omnislash, а также рыцарь Sven с оглушающим молотом и богатырской силой God's Strength.</li>
+<li><strong>Маги и стрелки:</strong> ледяная волшебница Crystal Maiden, повелительница огня и молний Lina, демонолог Lion с превращением врагов в лягушек и лучом Finger of Death, дальнобойный гном Sniper и космическая сущность Enigma, затягивающая всю команду противника в чёрную дыру Black Hole.</li>
+</ul>` },
+    { id: 'lol98', title: 'League of Legends 98: Ущелье призывателей и прятки в кустах', content: `<strong>League of Legends 98</strong> от студии Riot Games предлагает более динамичный взгляд на ту же формулу пяти на пять в Ущелье призывателей (Summoner's Rift). В ней нет добивания собственных союзных пехотинцев, а любой чемпион в затишье между схватками может за несколько секунд телепортироваться на базу за покупками клавишей Recall. Зато важную тактическую роль играют заросли высокой травы (кусты): шаг внутрь мгновенно делает чемпиона невидимым для врагов снаружи, пока кто-нибудь не поставит туда тотем обзора (вард).
+
+Десятка чемпионов League of Legends 98 охватывает все классические роли на карте: неутомимый рыцарь Демасии Гарен (Garen) и каменный исполин Мальфит (Malphite) держат удар в первой линии; минотавр Алистар (Alistar) и фея Лулу (Lulu) защищают союзников и подбрасывают врагов; маленькая волшебница Энни (Annie) обрушивает на головы противников огненного медведя Тибберса, а рунный маг Райз (Ryze) сковывает цели магической тюрьмой; наконец, ледяная лучница Эш (Ashe), безумная подрывница Джинкс (Jinx), мечник Мастер Йи (Master Yi) и разведчик-йордл Тимо (Teemo) с ядовитыми грибами решают исход поздней стадии боя.` }
+  ],
+  seeAlso: ['starcraft', 'warcraft2', 'diablo', 'lanparty'],
+  references: [
+    'Dota 98: справочник героев, предметов и механик арены. Каталог Steam.',
+    'League of Legends 98: руководство призывателя по Ущелью призывателей. Riot Games / каталог Steam.',
+    'Создание пользовательских сценариев в редакторе StarEdit // Журнал «Игромания», 1999.'
+  ],
+  links: [['http://www.steampowered.com', 'Каталог Steam: Dota 98 и League of Legends 98'], ['http://forum.games98.com', 'Форум GamerZone']],
+  categories: ['Стратегии в реальном времени', 'Сетевые игры', 'Модификации игр']
+}, {
+  title: 'Defense of the Ancients and Team Battle Arenas (Dota 98, League of Legends 98)',
+  hatnote: 'This article covers 5v5 team battle arena games and the Dota 98 and League of Legends 98 editions in the Steam catalog.',
+  infobox: {
+    title: 'Team Battle Arenas (Dota 98 / LoL 98)',
+    badgeText: 'Valve / Riot Games',
+    fields: [
+      { label: 'Genre', value: 'real-time 5v5 team tactical arena' },
+      { label: 'Origins', value: 'custom maps for [[starcraft|StarCraft]] (Aeon of Strife) and Blizzard editors' },
+      { label: 'System editions', value: 'Dota 98, League of Legends 98 (Steam catalog)' },
+      { label: 'Match format', value: 'two 5-hero teams, three lanes (Top, Mid, Bot) and a jungle' },
+      { label: 'Objective', value: 'destroy the enemy Ancient or Nexus stronghold' },
+      { label: 'Platform', value: '[[windows98|Win 98]]' }
+    ]
+  },
+  lead: `<strong>Defense of the Ancients</strong> (represented in our system's Steam catalog by <strong>Dota 98</strong> and its counterpart <strong>League of Legends 98</strong>) is a branch of real-time team tactical games that grew out of custom map scenarios built in [[starcraft|StarCraft]]'s editor. Instead of constructing a base and commanding dozens of troops, each of the ten players in a match controls a single hero in a five-on-five battle.
+
+A square arena bisected diagonally by a river is connected by three fortified roads ("lanes") along which computer-controlled waves of foot soldiers march continuously. Each team fights to push through enemy guard towers and shatter the main stronghold at the heart of the opposing base.`,
+  sections: [
+    { id: 'origins', title: 'From StarEdit and Aeon of Strife to a standalone genre', content: `The genre's roots lie in the StarEdit campaign editor shipped with [[starcraft|StarCraft]] in spring 1998. Its trigger system let mapmakers build scenarios that played nothing like standard mineral-and-gas harvesting. One of the most popular custom maps on Battle.net, Aeon of Strife, stripped away base building, gave each player a single named hero unit and sent waves of allied troops down three lanes toward the enemy citadel.
+
+That formula merged the real-time unit control of [[warcraft2|Warcraft II]] and StarCraft with the leveling, spells and item hunting of [[diablo|Diablo]]. In our system's Steam catalog the style is represented by two standalone [[windows98|Win 98]] titles with 3D battlefields and full AI bot support: <strong>Dota 98</strong> and <strong>League of Legends 98</strong>.` },
+    { id: 'mechanics', title: 'Three lanes, last-hitting and recipe items', content: `The map is split between two opposing fortresses: Radiant (or Blue team on Summoner's Rift) in the southwest corner and Dire (or Red team) in the northeast. Every thirty seconds, barracks spawn squads of melee and ranged troopers (creeps or minions) that march down the Top, Mid and Bot lanes under the protection of defensive towers.
+
+Gold is awarded only to the hero who lands the killing blow ("last hit") on an enemy creep or tower. Players spend their earnings at base and secret shops on boots, blades, staves and recipe scrolls that combine into powerful artifacts such as the teleporting Blink Dagger or magic-immune Black King Bar. Between the lanes lies a forested jungle inhabited by neutral monster camps, while the river holds power runes and the lair of the map's boss monster: Roshan in Dota 98, who drops the life-restoring Aegis of the Immortal, and the elemental Dragon and Baron Nashor in League of Legends 98.` },
+    { id: 'dota98', title: 'Dota 98: ten heroes, couriers and destructible trees', content: `<strong>Dota 98</strong> emphasizes lane control and map manipulation. In addition to last-hitting enemy troops, players can sacrifice their own low-health creeps and even friendly towers ("denying") to starve lane opponents of gold and experience. A donkey courier ferries purchased items from base to the front line, and trees in the jungle can be cut down to carve ambush paths.
+
+The Dota 98 roster features ten heroes with distinct roles and voice acting:
+<ul>
+<li><strong>Ambushers and initiators:</strong> the butcher Pudge, whose Meat Hook drags victims through trees, and the goblin demolitionists Techies, who rig narrow ramps and rune spots with land mines and remote barrels.</li>
+<li><strong>Front-line warriors:</strong> the berserker Axe, who forces nearby enemies to attack him and executes the wounded with Culling Blade; the swordsman Juggernaut with Blade Fury and his invulnerable Omnislash; and the rogue knight Sven with Storm Bolt and God's Strength.</li>
+<li><strong>Casters and marksmen:</strong> the frost mage Crystal Maiden, fire-and-lightning slayer Lina, demon witch Lion with Hex and Finger of Death, long-range keen marksman Sniper and the cosmic entity Enigma, whose Black Hole pulls an entire enemy team into a single vortex.</li>
+</ul>` },
+    { id: 'lol98', title: 'League of Legends 98: Summoner\'s Rift and brush stealth', content: `<strong>League of Legends 98</strong> from Riot Games offers a faster-paced take on five-on-five lane combat across Summoner's Rift. Friendly minions cannot be denied, and any champion can channel a Recall spell during a lull to teleport back to the fountain shop without walking. High grass ("brush") patches scattered along the lanes and river provide instant stealth: stepping into a bush hides a champion from outside view unless an enemy places a sight ward inside.
+
+Its ten-champion roster covers every tactical role: the Demacian warrior Garen and rock monolith Malphite anchor the front line; the minotaur Alistar and fae sorceress Lulu shield allies and knock airborne attackers away; the child pyromancer Annie drops her flaming bear Tibbers into teamfights while the rune mage Ryze locks down targets; and the frost archer Ashe, loose-cannon gunner Jinx, Wuju bladesman Master Yi and swift scout Teemo (who lines the jungle with poisonous mushroom traps) carry the late game.` }
+  ],
+  seeAlso: ['starcraft', 'warcraft2', 'diablo', 'lanparty'],
+  references: [
+    'Dota 98 hero, item and arena mechanics manual. Steam catalog.',
+    'League of Legends 98 Summoner\'s Rift guide. Riot Games / Steam catalog.',
+    'Building custom scenarios in StarEdit // Igromania magazine, 1999.'
+  ],
+  links: [['http://www.steampowered.com', 'Steam Catalog: Dota 98 and League of Legends 98'], ['http://forum.games98.com', 'GamerZone Forum']],
+  categories: ['Real-Time Strategy', 'Online Games', 'Video Game Mods']
+}, ['dota98', 'lol', 'lol98']);
+
+window.interpediaReg('bioware98', 'games', {
+  title: 'Ролевые игры BioWare: от Baldur\'s Gate к KOTOR 98 и Dragon Age 98',
+  hatnote: 'Статья о развитии отрядных ролевых игр канадской студии BioWare и об изданиях Star Wars: Knights of the Old Republic 98 и Dragon Age: Origins 98 в каталоге Steam.',
+  infobox: {
+    title: 'Ролевые игры BioWare (Win 98)',
+    badgeText: 'BioWare Corp.',
+    fields: [
+      { label: 'Разработчик', value: 'BioWare (Эдмонтон, Канада)' },
+      { label: 'Основатели', value: 'Рэй Музика, Грег Зещук (1995)' },
+      { label: 'Ключевая механика', value: 'отрядный тактический бой в реальном времени с активной паузой' },
+      { label: 'Игры на Infinity Engine', value: '[[baldursgate|Baldur\'s Gate]] (1998), Tales of the Sword Coast (1999)' },
+      { label: 'Трёхмерные главы в системе', value: 'Star Wars: KOTOR 98, Dragon Age: Origins 98 (каталог Steam)' },
+      { label: 'Платформа', value: '[[windows98|Win 98]]' }
+    ]
+  },
+  lead: `Канадская студия <strong>BioWare</strong>, основанная в 1995 году в Эдмонтоне врачами Рэем Музикой и Грегом Зещуком, за несколько лет превратилась из дебютанта в одного из главных разработчиков компьютерных ролевых игр. Выпустив в декабре 1998 года [[baldursgate|Baldur's Gate]], студия определила свой фирменный почерк: управление отрядом спутников с собственными убеждениями, разветвлённые диалоги с проверками морали и тактический бой в реальном времени, который в любую секунду ставится на паузу клавишей пробела.
+
+В нашем системном каталоге Steam развитие этого стиля в трёхмерной графике для [[windows98|Win 98]] представлено двумя крупными главами: космической одиссеей <strong>Star Wars: Knights of the Old Republic 98</strong> и тёмным фэнтези <strong>Dragon Age: Origins 98</strong>.`,
+  sections: [
+    { id: 'formula', title: 'Формула BioWare: активная пауза, отряд и моральный выбор', content: `До конца 1990-х компьютерные ролевые игры обычно делились на чисто пошаговые (как [[fallout|Fallout]]) и скоростные боевики в реальном времени (как [[diablo|Diablo]]). В [[baldursgate|Baldur's Gate]] программисты BioWare спрятали настольные броски кубиков внутрь непрерывного действия: раунды длятся по шесть секунд, но игрок в любой момент нажимает пробел, осматривает поле боя, назначает каждому члену отряда цепочку приказов или заклинаний и снова снимает игру с паузы.
+
+Вторая опора стиля студии — живые спутники в отряде. Напарники не просто несут лишние мечи и щиты: они вмешиваются в разговоры с жителями городов, спорят друг с другом на привалах, одобряют или осуждают поступки героя и могут покинуть группу или даже поднять оружие против командира, если тот перейдёт черту.` },
+    { id: 'kotor98', title: 'Star Wars: Knights of the Old Republic 98 — Старая Республика и Тарис', content: `В <strong>Star Wars: Knights of the Old Republic 98</strong> (сокращённо <strong>KOTOR 98</strong>) действие переносится во вселенную «Звёздных войн» за четыре тысячи лет до появления Галактической Империи, когда сотни рыцарей-джедаев сражаются против армады ситхов владыки Дарта Малака. В основе боевой системы лежат правила двадцатигранного кубика (d20): бой выглядит как кинематографическая дуэль на световых мечах и бластерах с перекатами и отражением лучей, но за кадром каждый раунд рассчитываются броски атаки, защиты и спасбросков.
+
+Издание в каталоге Steam охватывает полную первую главу саги. Герой приходит в себя на борту республиканского крейсера «Эндар Спайр» (Endar Spire), взятого на абордаж ситхами на орбите планеты-мегаполиса Тарис, пробивается к спасательным капсулам вместе с пилотом Картом Онаси и совершает аварийную посадку. Чтобы спасти рыцаря-джедая Бастилу Шан и вырваться с блокированной планеты на контрабандистском корабле «Эбоновый ястреб» (Ebon Hawk), отряду предстоит пройти три яруса Тариса: сияющий Верхний город, криминальный Нижний город с войной банд «Чёрных Вулкаров» и «Тайных Беков» и заражённое ракгулами Подземелье. По пути к герою присоединяются юная тви'лекка Мишн Вао, вуки Заалбар, дроид-взломщик T3-M4 и мандалорский ветеран Кандерос Ордо, а в кантинах и на арене можно сыграть в карточную игру пазаак (Pazaak) и поучаствовать в гонках на свуп-байках.` },
+    { id: 'dao98', title: 'Dragon Age: Origins 98 — шесть предысторий и битва при Остагаре', content: `Если KOTOR 98 опирается на космооперу LucasArts, то <strong>Dragon Age: Origins 98</strong> возвращает студию к классическому фэнтези и становится духовным наследником [[baldursgate|Baldur's Gate]] в собственном мире Тедас. Королевству Ферелден грозит Мор (Blight) — нашествие подземных порождений тьмы (Darkspawn), остановить которых способен лишь древний орден Серых Стражей.
+
+Главное художественное решение игры вынесено в подзаголовок Origins («Предыстории»). Перед тем как попасть в лагерь короля Кайлана при крепости Остагар, игрок не просто выбирает расу и класс в таблице, а лично проживает отдельную вступительную главу из жизни своего героя:
+<ol>
+<li><strong>Благородный человек</strong> защищает родовой замок Кусландов от ночного предательства эрла Хоу.</li>
+<li><strong>Маг Круга</strong> проходит смертельное Истязание (Harrowing) в Тень внутри Башни Магов у озера Каленхад.</li>
+<li><strong>Долийский эльф</strong> исследует древние руины со своим кочевым кланом и сталкивается с проклятым зеркалом Элувианом.</li>
+<li><strong>Городской эльф</strong> поднимает восстание против жестокого лорда в огороженном эльфинаже Денерима прямо в день собственной свадьбы.</li>
+<li><strong>Благородный гном</strong> плетёт династические интриги в подземном королевстве Орзаммар.</li>
+<li><strong>Гном-простолюдин</strong> из «неприкасаемых» пробивается наверх через подпольные бои на арене Хартии.</li>
+</ol>
+
+В издании из каталога Steam после выбранной предыстории наставник Дункан приводит рекрута в Остагар. Игроку предстоит пройти через Дикие земли Коркари за кровью порождений тьмы и старинными договорами в хижине ведьмы Флемет, выпить чашу в ритуале Посвящения, зажечь сигнальный костёр на вершине Башни Ишала (Tower of Ishal) в разгар предательства лорда Логейна и отступить через деревню Лотеринг вместе с Серым Стражем Алистером, ведьмой Морриган, бардом Лелианой и пленным великаном-кунари Стеном.` },
+    { id: 'comparison', title: 'Ролевая школа конца десятилетия', content: `Обе трёхмерные главы сохраняют возможность мгновенно менять угол обзора: можно вести героя с камерой из-за плеча, осматривая архитектуру Верхнего Тариса или разрушенные своды Остагара, а с началом тяжёлой схватки поднять камеру вверх и раздавать тактические команды во время паузы, как в классическом Infinity Engine. Благодаря сочетанию настольной математики, кинематографических бесед и живого отряда игры BioWare занимают особое место рядом с работами Black Isle Studios ([[fallout2|Fallout 2]], Planescape: Torment).` }
+  ],
+  seeAlso: ['baldursgate', 'fallout', 'fallout2', 'diablo', 'grimfandango'],
+  references: [
+    'Star Wars: Knights of the Old Republic 98 — руководство игрока и правила d20. BioWare / каталог Steam.',
+    'Dragon Age: Origins 98 — хроники Ферелдена и описание шести предысторий. BioWare / каталог Steam.',
+    'Интервью с основателями BioWare Рэем Музикой и Грегом Зещуком // Computer Gaming World, 1999.'
+  ],
+  links: [['http://www.steampowered.com', 'Каталог Steam: KOTOR 98 и Dragon Age: Origins 98'], ['http://www.lucasarts.com', 'Официальный сайт LucasArts'], ['http://www.igromania.ru', 'Журнал «Игромания»']],
+  categories: ['Ролевые игры', 'BioWare', 'Звёздные войны в играх']
+}, {
+  title: 'BioWare Role-Playing Games: From Baldur\'s Gate to KOTOR 98 and Dragon Age 98',
+  hatnote: 'This article covers the party-based role-playing games of Canadian studio BioWare and the Star Wars: Knights of the Old Republic 98 and Dragon Age: Origins 98 editions in the Steam catalog.',
+  infobox: {
+    title: 'BioWare RPGs (Win 98)',
+    badgeText: 'BioWare Corp.',
+    fields: [
+      { label: 'Developer', value: 'BioWare (Edmonton, Canada)' },
+      { label: 'Founders', value: 'Ray Muzyka, Greg Zeschuk (1995)' },
+      { label: 'Core mechanic', value: 'party-based real-time tactical combat with active pause' },
+      { label: 'Infinity Engine titles', value: '[[baldursgate|Baldur\'s Gate]] (1998), Tales of the Sword Coast (1999)' },
+      { label: '3D chapters in system', value: 'Star Wars: KOTOR 98, Dragon Age: Origins 98 (Steam catalog)' },
+      { label: 'Platform', value: '[[windows98|Win 98]]' }
+    ]
+  },
+  lead: `Founded in Edmonton, Canada, in 1995 by physicians Ray Muzyka and Greg Zeschuk, <strong>BioWare</strong> rose within a few years from newcomer to one of the leading studios in computer role-playing games. With the December 1998 release of [[baldursgate|Baldur's Gate]], the studio established its signature design: a party of opinionated companions, branching morality dialogues and real-time tactical combat that pauses at the tap of the spacebar.
+
+In our system's Steam catalog, the evolution of that design into full 3D for [[windows98|Win 98]] is represented by two major playable chapters: the space opera <strong>Star Wars: Knights of the Old Republic 98</strong> and the dark fantasy epic <strong>Dragon Age: Origins 98</strong>.`,
+  sections: [
+    { id: 'formula', title: 'The BioWare formula: active pause, party banter and morality', content: `Through the late 1990s computer RPGs tended to split between strictly turn-based systems (such as [[fallout|Fallout]]) and fast action clickfests (such as [[diablo|Diablo]]). In [[baldursgate|Baldur's Gate]], BioWare tucked tabletop dice rolls inside continuous real-time action: combat rounds tick every six seconds, yet pressing the spacebar freezes the battlefield so the player can inspect enemy positions, queue spells and target orders for each party member and unpause at will.
+
+Equally central are the companions who travel with the protagonist. Party members interject during conversations with townsfolk, argue with one another around camp, track approval of the hero's choices and will walk away or even draw weapons if pushed against their convictions.` },
+    { id: 'kotor98', title: 'Star Wars: Knights of the Old Republic 98 — the Old Republic and Taris', content: `<strong>Star Wars: Knights of the Old Republic 98</strong> (<strong>KOTOR 98</strong>) sets its story four thousand years before the Galactic Empire, during an all-out war between hundreds of Jedi Knights and the Sith armada of Darth Malak. Beneath the clashing lightsabers and blaster fire runs a twenty-sided die (d20) ruleset that resolves attack rolls, defense ratings, feats and Force powers round by round.
+
+The edition in our system's Steam catalog covers the complete opening act of the saga. Awakening aboard the Republic cruiser Endar Spire as Sith boarding parties overrun the decks above the city-world of Taris, the hero fights to the escape pods alongside Republic pilot Carth Onasi. Stranded under a planetary blockade, the party must search for the captured Jedi Bastila Shan and steal the smuggler vessel Ebon Hawk across three vertical tiers of Taris: the gleaming Upper City, the gang-torn Lower City contested by the Black Vulkars and Hidden Beks, and the rakghoul-infested Undercity. Along the way the crew grows to include the Twi'lek street thief Mission Vao, her Wookiee companion Zaalbar, the utility droid T3-M4 and Mandalorian mercenary Canderous Ordo, while cantinas and arenas offer Pazaak card tables, dueling rings and swoop bike time trials.` },
+    { id: 'dao98', title: 'Dragon Age: Origins 98 — six playable origins and the Battle of Ostagar', content: `Where KOTOR 98 builds on LucasArts space opera, <strong>Dragon Age: Origins 98</strong> returns BioWare to dark heroic fantasy as a spiritual successor to [[baldursgate|Baldur's Gate]] set in the original world of Thedas. The kingdom of Ferelden faces a Blight, an underground invasion of corrupted darkspawn that only the ancient order of Grey Wardens can stop.
+
+Its defining structural idea gives the game its subtitle: before ever reaching King Cailan's war camp at Ostagar, the player plays through one of six standalone opening chapters determined by race and background:
+<ol>
+<li><strong>Human Noble:</strong> defending Castle Cousland during a midnight betrayal by Arl Howe.</li>
+<li><strong>Circle Mage:</strong> surviving the Harrowing trial inside the Fade at the Circle Tower on Lake Calenhad.</li>
+<li><strong>Dalish Elf:</strong> exploring ancient forest ruins with a nomadic clan and uncovering a cursed Eluvian mirror.</li>
+<li><strong>City Elf:</strong> sparking an armed uprising inside Denerim's walled alienage on the hero's own wedding day.</li>
+<li><strong>Dwarf Noble:</strong> navigating royal succession and sibling treachery in the underground city of Orzammar.</li>
+<li><strong>Dwarf Commoner:</strong> clawing out of dust-town poverty through underground Proving arena fights for the Carta.</li>
+</ol>
+
+In the Steam catalog edition, recruiter Duncan brings the survivor of any chosen origin to Ostagar. From there the player ventures into the Korcari Wilds for darkspawn blood and ancient treaties at the hut of the witch Flemeth, undergoes the Joining ritual, fights to the top of the Tower of Ishal to light the signal beacon during Teyrn Loghain's betrayal, and regroups in the village of Lothering with fellow Warden Alistair, the shapeshifter Morrigan, bard Leliana and caged Qunari warrior Sten.` },
+    { id: 'comparison', title: 'Tactical camera and role-playing craft at the end of the decade', content: `Both 3D chapters let players shift seamlessly between an over-the-shoulder exploration view for walking the promenades of Upper Taris or the ruins of Ostagar and a high tactical angle for issuing paused combat orders, preserving the rhythm of the Infinity Engine in three dimensions. Alongside the work of Black Isle Studios ([[fallout2|Fallout 2]], Planescape: Torment), BioWare's games anchor story-driven PC role-playing at the close of the 1990s.` }
+  ],
+  seeAlso: ['baldursgate', 'fallout', 'fallout2', 'diablo', 'grimfandango'],
+  references: [
+    'Star Wars: Knights of the Old Republic 98 player manual and d20 rulebook. BioWare / Steam catalog.',
+    'Dragon Age: Origins 98 — Chronicles of Ferelden and Origin Stories guide. BioWare / Steam catalog.',
+    'Interview with BioWare founders Ray Muzyka and Greg Zeschuk // Computer Gaming World, 1999.'
+  ],
+  links: [['http://www.steampowered.com', 'Steam Catalog: KOTOR 98 and Dragon Age: Origins 98'], ['http://www.lucasarts.com', 'LucasArts official site'], ['http://www.igromania.ru', 'Igromania magazine']],
+  categories: ['Role-Playing Games', 'BioWare', 'Star Wars Video Games']
+}, ['kotor98', 'dao98', 'kotor', 'dao']);
+
+window.interpediaReg('gta', 'games', {
+  title: 'Grand Theft Auto и игры об открытом городе (Нижний Сити, Екатеринбург \'90)',
+  hatnote: 'Статья о серии криминальных боевиков студии DMA Design и об играх в открытом городе из каталога Steam (Grand Theft Auto: Нижний Сити и Grand Theft Auto: Екатеринбург \'90).',
+  infobox: {
+    title: 'Grand Theft Auto и открытый город',
+    badgeText: 'DMA Design / Rockstar / Нижний Сити / Екб \'90',
+    fields: [
+      { label: 'Основатель направления', value: 'DMA Design (Шотландия, 1997)' },
+      { label: 'Первые части', value: 'Grand Theft Auto (1997), London 1969 (1999), Grand Theft Auto 2 (октябрь 1999)' },
+      { label: 'Издания в системе', value: 'GTA: Нижний Сити (3D), GTA: Екатеринбург \'90 (вид сверху) в каталоге Steam' },
+      { label: 'Жанр', value: 'автомобильный боевик в открытом городе' },
+      { label: 'Ключевые механики', value: 'свободный угон транспорта, поручения по таксофону, уровни розыска, радиостанции' },
+      { label: 'Платформа', value: '[[msdos|MS-DOS]], [[windows95|Win 95]], [[windows98|Win 98]]' }
+    ]
+  },
+  lead: `<strong>Grand Theft Auto</strong> (сокращённо <strong>GTA</strong>) — серия криминальных автомобильных игр в открытом городе, начатая шотландской студией DMA Design в 1997 году и развитая в нашем системном каталоге Steam самостоятельными главами <strong>Grand Theft Auto: Екатеринбург '90</strong> и трёхмерной <strong>Grand Theft Auto: Нижний Сити</strong>.
+
+Вместо гоночной трассы с флажками или коридорных уровней перед игроком расстилается живой мегаполис с пешеходами, светофорами, патрульными машинами и радиостанциями, звучащими в салоне каждого угнанного автомобиля. Игрок сам решает, отвечать ли на звонок уличного таксофона ради очередного заказа мафии или устроить погоню с полицией через весь город.`,
+  sections: [
+    { id: 'dmadesign', title: 'От Race\'n\'Chase к Grand Theft Auto и GTA 2', content: `Шотландская студия DMA Design из города Данди, прославившаяся в начале 1990-х головоломкой Lemmings, разрабатывала игру под рабочим названием Race'n'Chase как обычный симулятор дорожной полиции. Во время тестирования выяснилось, что тестеры скучают при соблюдении правил, но приходят в восторг, когда из-за ошибки в коде полицейские машины начинают неистово таранить игрока на перекрёстках. Концепцию перевернули с ног на голову: главным героем стал угонщик на службе криминальных синдикатов.
+
+Вышедшая осенью 1997 года первая Grand Theft Auto показала сверху три американских мегаполиса: Либерти-Сити (по образцу Нью-Йорка), Сан-Андреас (Сан-Франциско) и Вайс-Сити (Майами). Чтобы перейти в следующий город, требовалось набрать миллион очков за заказные поручения, угон редких машин в портовые краны и уход от облав. Наряду с [[carmageddon|Carmageddon]] игра вызвала бурю в парламенте Великобритании и прессе, что лишь подогрело продажи. Весной 1999 года вышло дополнение про свингующий Лондон шестидесятых (London 1969), а в октябре 1999 года появилась Grand Theft Auto 2 с цветным ночным освещением для ускорителей [[voodoo2|3dfx Voodoo]] и системой репутации у трёх враждующих банд каждого района.` },
+    { id: 'ekb90', title: 'Grand Theft Auto: Екатеринбург \'90 — классический вид сверху на Урале', content: `Издание <strong>Grand Theft Auto: Екатеринбург '90</strong> в каталоге Steam бережно переносит механику и вертикальную камеру первых частей серии в уральский мегаполис осени 1990 года, на самом переломе эпох, когда Свердловск возвращал себе историческое имя. По проспекту Ленина, Плотинке у Городского пруда, улице Малышева, Втузгородку и промзонам Уралмаша снуют «Жигули», «Москвичи», «Волги» ГАЗ-24, жёлтые автобусы «Икарус» и грузовики ЗИЛ-130.
+
+Уличные таксофоны трезвонят у гастрономов и заводских проходных: кооператоры, цеховики и уралмашевские бригадиры поручают герою перегнать дефицитную партию видеомагнитофонов, перехватить инкассаторский фургон или уйти от погони по трамвайным путям. Шкала розыска растёт от свистка постового милиционера и жёлто-синих «канареек» ГАИ до перекрытия мостов отрядами ОМОНа и чёрных «Волг» КГБ.` },
+    { id: 'nizhny', title: 'Grand Theft Auto: Нижний Сити — полностью трёхмерный город на берегу Оки', content: `Если уральский выпуск верен двухмерной школе 1997 года, то <strong>Grand Theft Auto: Нижний Сити</strong> делает шаг, о котором читатели игровых журналов конца 1999 года только мечтали: переводит открытый криминальный город в честное трёхмерное пространство с видом из-за спины героя и из-за бампера автомобиля. Действие разворачивается жарким летом 2000 года на левом берегу Нижнего Новгорода, в Автозаводском и Ленинском районах. Главный герой Тёма Верещагин выходит на свободу и возвращается в родные кварталы, где за контроль над рынками, автосервисами и заводскими поставками борются местные группировки.
+
+Архитектура города воспроизведена с документальной точностью по реальным кварталам: проспект Ленина и площадь Киселёва, проходные Горьковского автозавода (ГАЗ), Соцгород, Парк культуры, набережная Оки и дворы, заставленные железными гаражами-«ракушками». Сюжетная кампания из двенадцати больших заданий дополнена телефонными контрактами, уличными гонками по ночным проспектам, поиском ста спрятанных по дворам кассет VHS, прыжками с трамплинов и работой в такси, скорой помощи и милицейском патруле.` },
+    { id: 'vehicles', title: 'Двадцать девять машин, шесть звёзд розыска и плёнка «Свема»', content: `Автопарк «Нижнего Сити» насчитывает 29 управляемых машин с разным весом, приводом и моделью повреждений: от потрёпанной «копейки» ВАЗ-2101, «девятки» цвета «мокрый асфальт», «Волги» ГАЗ-3110 и маршрутной «Газели» до иномарок девяностых, инкассаторского броневика, речного катера на Оке, восьмиколёсного бронетранспортёра БТР-80 и танка Т-72Б, который выезжает на улицы при максимальных шести звёздах розыска.
+
+Помимо оружия (от кастета, монтировки и пистолета ТТ до автомата АКМ, снайперской винтовки СВД и гранатомёта РПГ-7), в игре есть встроенный фотоаппарат. Игрок может в любой момент остановить машину на набережной под закатным небом, выбрать в видоискателе цветовую плёнку Kodak Gold, Fujicolor или чёрно-белую советскую «Свему ФН-64», настроить выдержку и сохранить снимок в личный фотоальбом.` }
+  ],
+  seeAlso: ['carmageddon', 'maxpayne', 'dukenukem3d', 'voodoo2'],
+  references: [
+    'Grand Theft Auto: руководство пользователя. DMA Design / BMG Interactive, 1997.',
+    'Grand Theft Auto: Нижний Сити — путеводитель по Автозаводскому и Ленинскому районам. Каталог Steam.',
+    'Grand Theft Auto: Екатеринбург \'90 — справочник водителя. Каталог Steam.'
+  ],
+  links: [['http://www.steampowered.com', 'Каталог Steam: GTA Нижний Сити и Екатеринбург \'90'], ['http://www.cheatcc.com', 'Cheat Code Central: коды Grand Theft Auto'], ['http://forum.games98.com', 'Форум GamerZone']],
+  categories: ['Видеоигры 1997 года', 'Видеоигры 1999 года', 'Автосимуляторы', 'Боевики']
+}, {
+  title: 'Grand Theft Auto and Open-City Crime Games (Nizhny City, Yekaterinburg \'90)',
+  hatnote: 'This article covers the open-city crime series started by DMA Design and the standalone editions in the Steam catalog (Grand Theft Auto: Nizhny City and Grand Theft Auto: Yekaterinburg \'90).',
+  infobox: {
+    title: 'Grand Theft Auto & Open-City Games',
+    badgeText: 'DMA Design / Rockstar / Nizhny City / Yekb \'90',
+    fields: [
+      { label: 'Genre pioneer', value: 'DMA Design (Scotland, 1997)' },
+      { label: 'Early entries', value: 'Grand Theft Auto (1997), London 1969 (1999), Grand Theft Auto 2 (October 1999)' },
+      { label: 'System editions', value: 'GTA: Nizhny City (3D), GTA: Yekaterinburg \'90 (top-down) in Steam catalog' },
+      { label: 'Genre', value: 'open-city driving and action game' },
+      { label: 'Core mechanics', value: 'free vehicle hijacking, payphone missions, police wanted levels, in-car radio' },
+      { label: 'Platform', value: '[[msdos|MS-DOS]], [[windows95|Win 95]], [[windows98|Win 98]]' }
+    ]
+  },
+  lead: `<strong>Grand Theft Auto</strong> (<strong>GTA</strong>) is a series of open-city crime and driving games started by the Scottish studio DMA Design in 1997 and expanded in our system's Steam catalog with two standalone chapters: the top-down <strong>Grand Theft Auto: Yekaterinburg '90</strong> and the fully 3D <strong>Grand Theft Auto: Nizhny City</strong>.
+
+Instead of a fenced race course or linear corridors, the game drops the player into a living city of pedestrians, traffic lights, police cruisers and radio stations specific to each stolen car. The player chooses whether to answer a ringing street payphone for a syndicate job or spark a six-star police chase across town.`,
+  sections: [
+    { id: 'dmadesign', title: 'From Race\'n\'Chase to Grand Theft Auto and GTA 2', content: `Founded in Dundee, Scotland, and famous in the early 1990s for the puzzle hit Lemmings, DMA Design originally prototyped the project under the working title Race'n'Chase as a straightforward cops-and-robbers driving game. Playtesting revealed that testers grew bored obeying traffic rules but had a blast when a pathfinding bug caused police cars to ram the player's vehicle aggressively off the road. The designers flipped the premise and cast the player as a wheelman working for rival crime bosses.
+
+Released in autumn 1997, the original Grand Theft Auto presented three American cities from a top-down camera: Liberty City (modeled on New York), San Andreas (San Francisco) and Vice City (Miami). Advancing to the next city required racking up a million points through payphone jobs, delivering rare cars to dockside cranes and escaping roadblocks. Like [[carmageddon|Carmageddon]], the game drew condemnation in the British Parliament and press, which only boosted its notoriety. Spring 1999 brought the period expansion London 1969, and October 1999 saw the release of Grand Theft Auto 2 with colored nighttime lighting for [[voodoo2|3dfx Voodoo]] accelerators and a three-way gang respect meter.` },
+    { id: 'ekb90', title: 'Grand Theft Auto: Yekaterinburg \'90 — top-down crime in the Urals', content: `<strong>Grand Theft Auto: Yekaterinburg '90</strong> in our system's Steam catalog adapts the vertical camera and arcade physics of the 1997 original to the Ural metropolis in autumn 1990, right at the historical crossroads when Sverdlovsk was reclaiming its pre-revolutionary name. Zhiguli sedans, Moskvich hatchbacks, GAZ-24 Volgas, yellow articulated Ikarus buses and ZIL-130 trucks crowd Lenin Avenue, the Plotinka dam on the City Pond, Malyshev Street and the factory gates of Uralmash.
+
+Street payphones ring outside state grocery stores and industrial yards as cooperative entrepreneurs and Uralmash gang leaders hire the driver to smuggle scarce VCR shipments, intercept payroll vans or outrun pursuers along tram tracks. The wanted meter escalates from a whistle-blowing beat militia officer and yellow-and-blue GAI patrol cars to OMON riot barricades and black KGB Volgas.` },
+    { id: 'nizhny', title: 'Grand Theft Auto: Nizhny City — a full 3D city on the Oka River', content: `While the Ural chapter honors the classic 2D overhead view, <strong>Grand Theft Auto: Nizhny City</strong> takes the leap late-1990s players have dreamed about: bringing the open-city crime formula into full 3D with a third-person camera on foot and behind the wheel. Set during the hot summer of 2000 on the left bank of Nizhny Novgorod across the Avtozavodsky and Leninsky districts, the story follows Tyoma Vereshchagin as he walks out of prison and returns to neighborhoods contested by local syndicates over markets, chop shops and factory supply lines.
+
+The city's layout recreates real Nizhny Novgorod landmarks: Lenin Avenue, Kiselyov Square, the monumental gates of the Gorky Automobile Plant (GAZ), the Sotsgorod housing blocks, the Oka River embankment and courtyards lined with corrugated metal shell garages. Alongside a twelve-mission story campaign, the city offers payphone contracts, midnight street races, a hundred hidden VHS tapes to collect, stunt jumps and side shifts in taxis, ambulances and militia patrol cars.` },
+    { id: 'vehicles', title: 'Twenty-nine vehicles, six wanted stars and Svema film', content: `Nizhny City's traffic spans 29 drivable vehicles with distinct weight, drivetrain behavior and damage modeling: from battered VAZ-2101 "Kopeyka" sedans, "wet asphalt" VAZ-2109 hatchbacks, GAZ-3110 Volgas and GAZelle minibuses to 1990s foreign imports, armored cash vans, patrol boats on the Oka, an eight-wheeled BTR-80 armored personnel carrier and a T-72B main battle tank deployed when the wanted meter hits all six stars.
+
+In addition to an arsenal ranging from brass knuckles, crowbars and TT pistols to AKM rifles, SVD sniper rifles and RPG-7 launchers, the game includes a built-in camera mode. Players can pull over along the river at sunset, load virtual rolls of Kodak Gold, Fujicolor or black-and-white Soviet Svema FN-64 film in the viewfinder, adjust exposure and save snapshots to a personal photo album.` }
+  ],
+  seeAlso: ['carmageddon', 'maxpayne', 'dukenukem3d', 'voodoo2'],
+  references: [
+    'Grand Theft Auto user manual. DMA Design / BMG Interactive, 1997.',
+    'Grand Theft Auto: Nizhny City — Avtozavodsky and Leninsky district guide. Steam catalog.',
+    'Grand Theft Auto: Yekaterinburg \'90 driver\'s handbook. Steam catalog.'
+  ],
+  links: [['http://www.steampowered.com', 'Steam Catalog: GTA Nizhny City and Yekaterinburg \'90'], ['http://www.cheatcc.com', 'Cheat Code Central: Grand Theft Auto codes'], ['http://forum.games98.com', 'GamerZone Forum']],
+  categories: ['1997 Video Games', '1999 Video Games', 'Driving Games', 'Action Games']
+}, ['gtann', 'gta90', 'grandtheftauto']);
+

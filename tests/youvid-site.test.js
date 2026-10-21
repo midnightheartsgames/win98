@@ -39,6 +39,56 @@ const FILES = [
   'js/apps/youvid/slay-motion.js',
   'js/apps/youvid/slay-script.js',
   'js/apps/youvid/slay.js',
+  'js/apps/youvid/linging-yard.js',
+  'js/apps/youvid/linging-cast.js',
+  'js/apps/youvid/linging-script.js',
+  'js/apps/youvid/linging.js',
+  'js/apps/youvid/konosuba-world.js',
+  'js/apps/youvid/konosuba-critters.js',
+  'js/apps/youvid/konosuba-cast.js',
+  'js/apps/youvid/konosuba-script.js',
+  'js/apps/youvid/konosuba.js',
+  'js/apps/youvid/otpusk-world.js',
+  'js/apps/youvid/otpusk-cast.js',
+  'js/apps/youvid/otpusk-beats.js',
+  'js/apps/youvid/otpusk-voice.js',
+  'js/apps/youvid/otpusk-motion.js',
+  'js/apps/youvid/otpusk-script.js',
+  'js/apps/youvid/otpusk.js',
+  'js/apps/youvid/pamparam-world.js',
+  'js/apps/youvid/pamparam-cast.js',
+  'js/apps/youvid/pamparam-script.js',
+  'js/apps/youvid/pamparam.js',
+  'js/apps/youvid/roman-world.js',
+  'js/apps/youvid/roman-cast.js',
+  'js/apps/youvid/roman-script.js',
+  'js/apps/youvid/roman.js',
+  'js/apps/youvid/sparkle-world.js',
+  'js/apps/youvid/sparkle-cast.js',
+  'js/apps/youvid/sparkle-script.js',
+  'js/apps/youvid/sparkle.js',
+  'js/apps/youvid/stray-set.js',
+  'js/apps/youvid/stray-script.js',
+  'js/apps/youvid/stray.js',
+  'js/apps/youvid/osudil-script.js',
+  'js/apps/youvid/osudil.js',
+  'js/apps/youvid/trek-script.js',
+  'js/apps/youvid/trek.js',
+  'js/apps/youvid/klee-faces.js',
+  'js/apps/youvid/klee-textures.js',
+  'js/apps/youvid/klee-cast.js',
+  'js/apps/youvid/klee-foes.js',
+  'js/apps/youvid/klee-world.js',
+  'js/apps/youvid/klee-cards.js',
+  'js/apps/youvid/klee-script.js',
+  'js/apps/youvid/klee.js',
+  'js/apps/youvid/nope-world.js',
+  'js/apps/youvid/nope-cast.js',
+  'js/apps/youvid/nope-script.js',
+  'js/apps/youvid/nope.js',
+  'js/apps/youvid/keanu-art.js',
+  'js/apps/youvid/keanu-script.js',
+  'js/apps/youvid/keanu.js',
   'js/apps/youvid-site.js'
 ];
 FILES.forEach(load);
@@ -58,7 +108,6 @@ test('IE routes youvid.com to the site before the video archive keys', () => {
   assert.strictEqual(ie.identifyPageKey('http://www.youvid.com/user/Hayato_me'), 'youvid');
   assert.ok(ie.getPageTitle('youvid').includes('YouVid'));
   assert.ok(ie.performSearch('youvid').some(r => r.url === 'http://www.youvid.com'));
-  assert.ok(ie.favorites.some(([url]) => url === 'http://www.youvid.com'));
 });
 
 test('every video is registered once with its mp3 soundtrack and real duration', () => {
@@ -100,7 +149,7 @@ test('channels follow the real channel data', () => {
   site.videos.forEach(v => site.thumbs(v).forEach(f => assert.ok(fs.existsSync(path.join(root, f)), f)));
   Object.values(site.channels).forEach(ch => {
     assert.ok(fs.existsSync(path.join(root, site.avatar(ch))), ch.user);
-    assert.ok(fs.existsSync(path.join(root, `content/YouVid/banners/${ch.user}.png`)), ch.user);
+    assert.ok(fs.existsSync(path.join(root, site.banner(ch))), ch.user);
   });
 });
 
@@ -110,6 +159,14 @@ test('every page renders and routes resolve', () => {
     'http://www.youvid.com/watch?v=jNQXAC9IVRw': 'Me at the zoo',
     'http://www.youvid.com/watch?v=hArMoNy_hsr': 'ГАРМОНИСТАМИ',
     'http://www.youvid.com/watch?v=i9AyI356ye4': 'Влад Савельев ложится спать',
+    'http://www.youvid.com/watch?v=Sav3lOtpusk': 'тотальное неуважение',
+    'http://www.youvid.com/watch?v=pAmPaRam98': 'Пампарам-пампарам,приветствую смотрящих',
+    'http://www.youvid.com/watch?v=wAk3UpR0mAn': 'WAKE UP ROMAN',
+    'http://www.youvid.com/watch?v=Str3yHarmon1': 'Стрей Не Оценил Губную Гармошку',
+    'http://www.youvid.com/watch?v=Str3yOsud1l': 'Стрей Осудил Наполовину',
+    'http://www.youvid.com/watch?v=Str3yTr3k98': 'Стрей Перепутал Трэк',
+    'http://www.youvid.com/user/streyosuzhdaet': 'СТРЕЙ ОСУЖДАЕТ',
+    'http://www.youvid.com/results?search_query=%D0%BF%D0%B0%D0%BC%D0%BF%D0%B0%D1%80%D0%B0%D0%BC': 'Пампарам-пампарам,приветствую смотрящих',
     'http://www.youvid.com/user/ebatoriyaplanet': 'Ебатория всех впускает',
     'http://www.youvid.com/browse?c=people': 'Влад Савельев ложится спать',
     'http://www.youvid.com/watch?v=vEryN1ceGdN': 'verynicegoodnice',
@@ -321,6 +378,124 @@ test('Теперь я extremely slay keeps the three shots, both lines and the h
   assert.ok(!/stylish stag|brewdog|john rose|hidden hearing|american crew|ralph lauren|chupa/i.test(text), 'real brands are replaced');
 });
 
+test('yo phone linging keeps the six shots, braid-to-handset transitions, macro close-up and m1s3n channel', () => {
+  const ling = clips.find(c => c.id === 'y0Ph0neL1ng');
+  assert.ok(ling && Math.abs(ling.duration - 15.79) < 0.05 && ling.aspect === 16 / 9);
+  assert.deepStrictEqual(ling.cuts, [0, 2.03, 6.23, 8.03, 8.9, 13.4]);
+  const v = site.video('y0Ph0neL1ng');
+  assert.strictEqual(v.channel, 'm1s3n');
+  assert.strictEqual(v.title, 'yo phone linging');
+  assert.strictEqual(v.category, 'comedy');
+  const ch = site.channels.m1s3n;
+  assert.strictEqual(ch.name, 'm1s3n');
+  assert.strictEqual(ch.theme, 'linging');
+  assert.strictEqual(ch.subs, 14800);
+  assert.deepStrictEqual(site.videosOf(ch).map(x => x.id), ['y0Ph0neL1ng']);
+  const Cast = window.LingingCast;
+  for (let t = 0; t <= ling.duration; t += 0.05) {
+    const st = ling.stage(t);
+    assert.ok(finite(st.camera.eye) && finite(st.camera.at) && Number.isFinite(st.camera.fov), `camera ${t}`);
+    const m = Cast.solve(st.pose);
+    Object.values(m.pts).forEach(p => assert.ok(finite(p) && p[1] > -0.1 && p[1] < 2.3, `joint at ${t}`));
+  }
+  assert.strictEqual(ling.stage(1.0).pose.chakram, true);
+  assert.strictEqual(ling.stage(1.0).pose.phoneMode, 'none');
+  assert.strictEqual(ling.stage(3.0).pose.phoneMode, 'cord');
+  assert.strictEqual(ling.stage(4.8).pose.phoneMode, 'ear');
+  assert.strictEqual(ling.stage(7.0).pose.chakram, true);
+  assert.strictEqual(ling.stage(8.45).shot, 3);
+  assert.strictEqual(ling.stage(8.45).pose.eyes, 'wide');
+  assert.strictEqual(ling.stage(8.45).pose.mouth, 'open');
+  assert.strictEqual(ling.stage(11.4).pose.phoneMode, 'offer');
+  assert.strictEqual(ling.stage(12.2).pose.phoneMode, 'drop');
+  assert.ok(ling.stage(12.4).pose.dropY > ling.stage(12.0).pose.dropY, 'handset drops downward');
+  assert.strictEqual(ling.stage(13.0).pose.gL, 'wave');
+  assert.strictEqual(ling.stage(14.5).shot, 5);
+  assert.ok(ling.voiceAt(2.8) > 0.3 && ling.voiceAt(15.2) === 0);
+  const page = site.renderSite('http://www.youvid.com/user/m1s3n');
+  assert.ok(page.includes('yv-theme-linging') && page.includes('Krampus Compliance'));
+  assert.ok(site.renderSite('http://www.youvid.com/watch?v=y0Ph0neL1ng').includes('yo phone linging'));
+  assert.ok(site.renderSite('http://www.youvid.com/browse?c=comedy').includes('yo phone linging'));
+  assert.ok(window.appIE.performSearch('m1s3n').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('yo phone linging').some(r => r.url === 'http://www.youvid.com'));
+});
+
+test('KONOSUBA 3 - Ending keeps all 18 shots, mansion/bath/meadow sets, giant toads and Crunchyroll channel', () => {
+  const kono = clips.find(c => c.id === 'k0n0SuBa3Ed');
+  assert.ok(kono && Math.abs(kono.duration - 90.14) < 0.05 && kono.aspect === 16 / 9);
+  assert.strictEqual(kono.cuts.length, 18);
+  assert.strictEqual(kono.cuts[0], 0);
+  for (let i = 1; i < kono.cuts.length; i++) assert.ok(kono.cuts[i] > kono.cuts[i - 1], `cut ${i}`);
+  const v = site.video('k0n0SuBa3Ed');
+  assert.strictEqual(v.channel, 'Crunchyroll');
+  assert.strictEqual(v.title, 'KONOSUBA 3 - Ending');
+  assert.strictEqual(v.category, 'film');
+  const ch = site.channels.Crunchyroll;
+  assert.strictEqual(ch.name, 'Crunchyroll');
+  assert.strictEqual(ch.theme, 'crunchy');
+  assert.strictEqual(ch.subs, 19400);
+  assert.strictEqual(ch.country, 'США');
+  assert.deepStrictEqual(site.videosOf(ch).map(x => x.id), ['k0n0SuBa3Ed']);
+  const Cast = window.KonosubaCast;
+  for (let t = 0; t <= kono.duration; t += 0.1) {
+    const st = kono.stage(t);
+    assert.ok(finite(st.camera.eye) && finite(st.camera.at) && Number.isFinite(st.camera.fov), `camera ${t}`);
+    st.cast.forEach(c => {
+      const m = Cast.solve(c.who, c.pose);
+      Object.values(m.pts).forEach(p => assert.ok(finite(p) && p[1] > -0.15 && p[1] < 3.2, `${c.who} joint at ${t}`));
+      if (!c.pose.up) ['ankleL', 'ankleR'].forEach(k => assert.ok(m.pts[k][1] >= 0.069, `${c.who} ${k} above floor at ${t}`));
+    });
+    if (st.tadpole && st.tadpole.ground !== undefined) assert.ok(st.tadpole.pos[1] >= st.tadpole.ground, `tadpole above floor at ${t}`);
+  }
+  assert.strictEqual(kono.stage(4.5).set, 'meadow');
+  assert.ok(kono.stage(4.5).chomusuke && kono.stage(4.5).tadpole);
+  assert.strictEqual(kono.stage(12.2).set, 'porch');
+  assert.strictEqual(kono.stage(12.2).cast[0].who, 'kazuma');
+  assert.strictEqual(kono.stage(17.0).set, 'hall');
+  assert.strictEqual(kono.stage(17.0).cast[0].who, 'aqua');
+  assert.strictEqual(kono.stage(22.0).set, 'sofa');
+  assert.ok(['annoyed', 'shut'].includes(kono.stage(22.0).cast[0].pose.eyes), 'Aqua is annoyed by the hopping tadpole');
+  assert.strictEqual(kono.stage(20.6).cast[0].pose.eyes, 'annoyed');
+  assert.ok(kono.stage(26.0).cast[0].pose.yaw > 0.5, 'Megumin turns toward Aqua');
+  assert.ok(kono.stage(26.0).cast[0].pose.pos[2] < kono.stage(26.0).cast[1].pose.pos[2], 'Megumin stands behind Aqua');
+  assert.ok(kono.stage(30.1).tadpole.stretch > 0 && kono.stage(30.1).cast[1].pose.eyes === 'shut', 'tail slaps Megumin');
+  assert.ok(kono.stage(37.5).tadpole.stretch > 0 && kono.stage(37.5).cast[2].pose.blush, 'tail slaps Darkness');
+  assert.strictEqual(kono.stage(22.0).tadpole.hold.who, 'aqua');
+  assert.strictEqual(kono.stage(26.8).set, 'gate');
+  assert.deepStrictEqual(kono.stage(26.8).cast.map(c => c.who), ['megumin', 'aqua']);
+  assert.strictEqual(kono.stage(31.7).cast[1].who, 'megumin');
+  assert.ok(['annoyed', 'shut'].includes(kono.stage(31.7).cast[1].pose.eyes));
+  assert.strictEqual(kono.stage(35.5).cast[0].who, 'darkness');
+  assert.deepStrictEqual(kono.stage(37.9).cast.map(c => c.who), ['aqua', 'megumin', 'darkness']);
+  assert.strictEqual(kono.stage(42.8).set, 'bath');
+  assert.strictEqual(kono.stage(42.8).cast.length, 4);
+  assert.strictEqual(kono.stage(42.8).tadpole.foam, true);
+  assert.strictEqual(kono.stage(50.3).set, 'water');
+  assert.strictEqual(kono.stage(50.3).tadpole.swim, true);
+  assert.strictEqual(kono.stage(56.5).set, 'bathLookup');
+  assert.strictEqual(kono.stage(61.3).set, 'meadow');
+  assert.strictEqual(kono.stage(65.0).set, 'bowl');
+  assert.strictEqual(kono.stage(67.6).set, 'field');
+  assert.strictEqual(kono.stage(67.6).toads.length, 2);
+  assert.strictEqual(kono.stage(70.4).cast.length, 4);
+  assert.strictEqual(kono.stage(76.5).cast[1].pose.eyes, 'shut');
+  assert.strictEqual(kono.stage(81.0).cast[0].who, 'aqua');
+  assert.strictEqual(kono.stage(81.0).cast[0].pose.eyes, 'terror');
+  assert.strictEqual(kono.stage(81.0).cast[0].pose.mouth, 'scream');
+  assert.strictEqual(kono.stage(86.8).toads.length, 2);
+  assert.strictEqual(kono.stage(86.8).toads.find(td => td.kind === 'green').tongueAt.who, 'aqua');
+  assert.ok(kono.stage(86.8).cast[0].pose.up[1] < 0, 'Aqua hangs upside down from the tongue');
+  assert.ok(kono.voiceAt(20.0) > 0.3 && kono.voiceAt(0.2) === 0);
+  const page = site.renderSite('http://www.youvid.com/user/Crunchyroll');
+  assert.ok(page.includes('yv-theme-crunchy') && page.includes('Официальный канал аниме'));
+  assert.ok(site.renderSite('http://www.youvid.com/watch?v=k0n0SuBa3Ed').includes('KONOSUBA 3 - Ending'));
+  assert.ok(site.renderSite('http://www.youvid.com/browse?c=film').includes('KONOSUBA 3 - Ending'));
+  assert.ok(window.appIE.performSearch('konosuba').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('коносуба').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('crunchyroll').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('чомуске').some(r => r.url === 'http://www.youvid.com'));
+});
+
 test('every character and foe referenced by the script exists', () => {
   const hay = clips.find(c => c.id === 'hArMoNy_hsr');
   const looks = window.HayatoCast.LOOKS;
@@ -340,6 +515,351 @@ test('every character and foe referenced by the script exists', () => {
     gs.forEach(g => assert.ok(window.HayatoCast.GESTURES[g], `gesture ${g} at ${s.start}`));
     if (s.o.ui) assert.strictEqual(typeof window.HayatoUI[s.o.ui], 'function', `ui ${s.o.ui} at ${s.start}`);
   });
+});
+
+test('Савельев берет отпуск follows the walk, the selfies, the leaf and the chapters', () => {
+  const clip = clips.find(c => c.id === 'Sav3lOtpusk');
+  const v = site.video('Sav3lOtpusk');
+  const S = window.OtpuskScript;
+  assert.ok(clip && v);
+  assert.ok(Math.abs(clip.duration - 905) < 0.5 && clip.aspect === 16 / 9);
+  assert.strictEqual(v.channel, 'EbatoriyaPlanet');
+  assert.strictEqual(v.title, 'Савельев берет отпуск тли тотальное неуважение');
+  assert.ok(site.videosOf(site.channels.EbatoriyaPlanet).some(x => x.id === 'Sav3lOtpusk'));
+  assert.strictEqual(v.chapters[0][0], 0);
+  for (let i = 1; i < v.chapters.length; i++) assert.ok(v.chapters[i][0] > v.chapters[i - 1][0], `chapter ${i}`);
+  v.chapters.forEach(([t, title]) => assert.ok(t < clip.duration && title.length > 3));
+  const beats = window.OtpuskBeats;
+  ['PLACE', 'ACT', 'CAM', 'OPARMS'].forEach(k => beats[k].forEach((row, i) => i && assert.ok(row[0] >= beats[k][i - 1][0], `${k} key ${i} at ${row[0]}`)));
+  for (let t = 0; t <= clip.duration; t += 0.25) {
+    const st = clip.stage(t);
+    assert.ok(finite(st.camera.eye) && finite(st.camera.at) && finite(st.camera.up), `camera ${t}`);
+    assert.ok(st.camera.eye[1] > 0.04 && st.camera.eye[1] < 8, `camera height ${t}`);
+    Object.values(st.m.pts).forEach(p => assert.ok(finite(p) && p[1] > -0.05 && p[1] < 2.4, `joint at ${t}`));
+    assert.ok(Math.abs(st.pose.p[0]) < 200 && Math.abs(st.pose.p[2]) < 20, `place ${t}`);
+  }
+  assert.strictEqual(clip.stage(50).op.mood, 'grin');
+  assert.strictEqual(clip.stage(822.5).op.mood, 'tongue');
+  assert.strictEqual(clip.stage(300).op, null);
+  assert.ok(clip.stage(790).pose.leaf && !clip.stage(700).pose.leaf);
+  assert.ok(clip.stage(600).props.some(p => p.bag === 'khaki') && !clip.stage(300).props.some(p => p.bag));
+  assert.ok(clip.stage(765).opArms.some(a => a.leaf));
+  assert.ok(clip.voiceAt(92.8) > 0.2, 'Vlad says he has to go');
+  assert.strictEqual(clip.voiceAt(106.5), 0, 'Vlad keeps his mouth shut while the operator talks');
+  assert.ok(S.OPV(106.5) > 0.2);
+  assert.ok(S.SEGS.length > 20, 'mocap segments');
+  const html = site.renderSite('http://www.youvid.com/watch?v=Sav3lOtpusk');
+  assert.strictEqual((html.match(/class="yv-chap"/g) || []).length, v.chapters.length);
+  assert.strictEqual((html.match(/class="yv-tick"/g) || []).length, v.chapters.length - 1);
+  assert.ok(html.includes('Содержание'));
+  assert.ok(!site.renderSite('http://www.youvid.com/watch?v=i9AyI356ye4').includes('yv-chap-list'));
+  const marks = v.chapters.map(() => ({ on: false, attrs: {}, classList: { toggle(c, on) { this.owner.on = on; } }, setAttribute(k, x) { this.attrs[k] = x; }, removeAttribute(k) { delete this.attrs[k]; } }));
+  marks.forEach(m => { m.classList.owner = m; });
+  const fake = { meta: v, chapButtons: marks };
+  window.YouVidPlayer.prototype.paintChapter.call(fake, 370);
+  const now = v.chapters.reduce((a, c, i) => (370 >= c[0] ? i : a), 0);
+  marks.forEach((m, i) => assert.strictEqual(m.on, i === now));
+  assert.strictEqual(marks[now].attrs['aria-current'], 'true');
+});
+
+test('Стрей Не Оценил Губную Гармошку keeps the webcam close-ups, headset fix, shout, grimace and live chat on StreyOsuzhdaet', () => {
+  const clip = clips.find(c => c.id === 'Str3yHarmon1');
+  const v = site.video('Str3yHarmon1');
+  const S = window.StrayScript;
+  assert.ok(clip && v && S && window.StraySet);
+  assert.ok(Math.abs(clip.duration - 23.24) < 0.05 && clip.aspect === 16 / 9);
+  assert.strictEqual(v.channel, 'StreyOsuzhdaet');
+  assert.strictEqual(v.title, 'Стрей Не Оценил Губную Гармошку');
+  assert.strictEqual(v.category, 'people');
+  assert.ok(site.videosOf(site.channels.StreyOsuzhdaet).some(x => x.id === 'Str3yHarmon1'));
+  assert.ok(fs.existsSync(path.join(root, clip.audio)));
+  for (let t = 0; t <= clip.duration; t += 0.05) {
+    const st = clip.stage(t);
+    assert.ok(finite(st.pose.p) && Number.isFinite(st.pose.yaw) && Number.isFinite(st.pose.pitch) && Number.isFinite(st.pose.roll), `pose ${t}`);
+    assert.ok(st.chat >= 0 && st.chat <= 1, `chat ${t}`);
+    assert.strictEqual(st.pose.face.split('|').length, 5);
+  }
+  assert.ok(clip.stage(12.6).pose.p[2] > clip.stage(0.5).pose.p[2] + 0.3, 'leans into the camera');
+  assert.ok(clip.stage(4.4).pose.hand && !clip.stage(1).pose.hand && !clip.stage(7).pose.hand, 'hand fixes the headset only around 4s');
+  assert.strictEqual(clip.stage(19.5).face.mouth, 'teeth');
+  assert.strictEqual(clip.stage(2.3).face.eyes, 'shut');
+  assert.strictEqual(clip.stage(18.0).face.eyes, 'wide');
+  assert.ok(clip.voiceAt(12.5) > 0.4);
+  assert.ok(clip.stage(22.5).chat > clip.stage(1).chat);
+  assert.ok(window.StraySet.CHAT.some(l => l[2].includes('Реклама пошла')));
+  assert.ok(site.renderSite('http://www.youvid.com/browse?c=people').includes('Стрей Не Оценил Губную Гармошку'));
+  assert.ok(window.appIE.performSearch('стрей').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('губная гармошка').some(r => r.url === 'http://www.youvid.com'));
+});
+
+test('Стрей Осудил Наполовину keeps the interrupted condemnation, half-condemnation laugh, monitor glances and live chat on StreyOsuzhdaet', () => {
+  const clip = clips.find(c => c.id === 'Str3yOsud1l');
+  const v = site.video('Str3yOsud1l');
+  const S = window.OsudilScript;
+  assert.ok(clip && v && S && window.StraySet);
+  assert.ok(Math.abs(clip.duration - 31.3) < 0.05 && clip.aspect === 16 / 9);
+  assert.strictEqual(v.channel, 'StreyOsuzhdaet');
+  assert.strictEqual(v.title, 'Стрей Осудил Наполовину');
+  assert.strictEqual(v.category, 'people');
+  assert.ok(site.videosOf(site.channels.StreyOsuzhdaet).some(x => x.id === 'Str3yOsud1l'));
+  assert.ok(fs.existsSync(path.join(root, clip.audio)));
+  for (let t = 0; t <= clip.duration; t += 0.05) {
+    const st = clip.stage(t);
+    assert.ok(finite(st.pose.p) && Number.isFinite(st.pose.yaw) && Number.isFinite(st.pose.pitch) && Number.isFinite(st.pose.roll), `pose ${t}`);
+    assert.ok(st.chat >= 0 && st.chat <= 1, `chat ${t}`);
+    assert.strictEqual(st.pose.face.split('|').length, 5);
+  }
+  assert.strictEqual(clip.stage(9.3).face.mouth, 'round');
+  assert.strictEqual(clip.stage(15.6).face.mouth, 'teeth');
+  assert.strictEqual(clip.stage(7.2).face.gaze, -1);
+  assert.ok(clip.stage(15.6).pose.p[2] > clip.stage(7.2).pose.p[2] + 0.1, 'leans closer on half-condemnation');
+  assert.ok(clip.stage(15.6).pose.hand && !clip.stage(2.0).pose.hand && !clip.stage(20.0).pose.hand);
+  assert.ok(clip.voiceAt(9.2) > 0.35 && clip.voiceAt(15.3) > 0.35);
+  assert.ok(clip.stage(30.0).chat > clip.stage(1.0).chat);
+  assert.ok(window.StraySet.CHAT.some(l => l[2].includes('вот наполовину его прошёл')));
+  assert.ok(site.renderSite('http://www.youvid.com/browse?c=people').includes('Стрей Осудил Наполовину'));
+  assert.ok(window.appIE.performSearch('осудил наполовину').some(r => r.url === 'http://www.youvid.com'));
+});
+
+test('nope.avi lives on the memes/ytp channel with its own avatar, banner and cover', () => {
+  const ch = site.channels.memes_ytp;
+  const v = site.video('n0p3Av1Eng1');
+  assert.ok(ch && v);
+  assert.strictEqual(ch.name, 'memes/ytp');
+  assert.strictEqual(ch.theme, 'ytp');
+  assert.strictEqual(v.channel, 'memes_ytp');
+  assert.deepStrictEqual(site.videosOf(ch).map(x => x.id), ['k3An4uH0rnY', 'n0p3Av1Eng1']);
+  assert.ok(!site.videosOf(site.channels.EbatoriyaPlanet).some(x => x.id === 'n0p3Av1Eng1'));
+  assert.ok(fs.existsSync(path.join(root, 'content/YouVid/avatars/memes_ytp.png')));
+  assert.ok(fs.existsSync(path.join(root, 'content/YouVid/banners/memes_ytp.png')));
+  assert.ok(site.renderSite('http://www.youvid.com/user/memes_ytp').includes('yv-theme-ytp'));
+  assert.ok(site.renderSite('http://www.youvid.com/channels').includes('memes/ytp'));
+});
+
+test('Стрей Перепутал Трэк keeps the StreyOsuzhdaet channel, donation readout, hand gesture, mug sip, monitor glow and live chat', () => {
+  const clip = clips.find(c => c.id === 'Str3yTr3k98');
+  const v = site.video('Str3yTr3k98');
+  const S = window.TrekScript;
+  const ch = site.channels.StreyOsuzhdaet;
+  assert.ok(clip && v && S && ch && window.StraySet);
+  assert.strictEqual(ch.name, 'СТРЕЙ ОСУЖДАЕТ');
+  assert.strictEqual(ch.theme, 'osuzhdaet');
+  assert.strictEqual(ch.subs, 18300);
+  assert.ok(Math.abs(clip.duration - 36.18) < 0.05 && clip.aspect === 16 / 9);
+  assert.strictEqual(v.channel, 'StreyOsuzhdaet');
+  assert.strictEqual(v.title, 'Стрей Перепутал Трэк');
+  assert.strictEqual(v.category, 'music');
+  assert.strictEqual(v.chapters.length, 9);
+  assert.deepStrictEqual(site.videosOf(ch).map(x => x.id).sort(), ['Str3yHarmon1', 'Str3yOsud1l', 'Str3yTr3k98']);
+  assert.ok(fs.existsSync(path.join(root, clip.audio)));
+  for (let t = 0; t <= clip.duration; t += 0.05) {
+    const st = clip.stage(t);
+    assert.ok(finite(st.pose.p) && Number.isFinite(st.pose.yaw) && Number.isFinite(st.pose.pitch) && Number.isFinite(st.pose.roll), `pose ${t}`);
+    assert.ok(st.chat >= 0 && st.chat <= 1, `chat ${t}`);
+    assert.strictEqual(st.pose.face.split('|').length, 5);
+  }
+  assert.strictEqual(clip.stage(21.4).face.mouth, 'round');
+  assert.strictEqual(clip.stage(27.0).face.mouth, 'round');
+  assert.strictEqual(clip.stage(23.5).face.mouth, 'teeth');
+  assert.strictEqual(clip.stage(26.8).face.gaze, -1);
+  assert.ok(clip.stage(18.0).pose.hand && !clip.stage(1.0).pose.hand && !clip.stage(25.0).pose.hand);
+  assert.ok([6.6, 17.8, 30.3].every(t => clip.stage(t).pose.hand && clip.stage(t).pose.hand.grip), 'hand grips the headset cup');
+  assert.ok(!clip.stage(19.5).pose.hand && !clip.stage(22.5).pose.hand, 'no hand during the shocked face and the readout');
+  assert.deepStrictEqual([19.5, 18.8].map(t => clip.stage(t).face.mouth), ['gasp', 'gasp']);
+  assert.strictEqual(clip.stage(19.5).face.eyes, 'pop');
+  assert.strictEqual(clip.stage(19.5).face.brows, 'high');
+  assert.strictEqual(clip.stage(8.0).face.eyes, 'pop');
+  assert.ok(clip.stage(2.5).pose.mug && !clip.stage(0.5).pose.mug && !clip.stage(10.0).pose.mug);
+  assert.ok(clip.stage(6.0).grade[0] > clip.stage(1.0).grade[0], 'monitor brightens when switching windows');
+  assert.ok(clip.voiceAt(21.4) > 0.35 && clip.voiceAt(24.4) > 0.35 && clip.voiceAt(34.0) > 0.35);
+  assert.ok(clip.stage(35.0).chat > clip.stage(1.0).chat);
+  assert.ok(S.CHAT.some(l => l[2].includes('\u041a\u0410\u0422\u041e\u0421 \u041f\u0415\u0420\u0415\u041f\u0423\u0422\u0410\u041b \u0422\u0420\u042d\u041a')));
+  assert.ok(site.renderSite('http://www.youvid.com/user/StreyOsuzhdaet').includes('yv-theme-osuzhdaet'));
+  assert.ok(site.renderSite('http://www.youvid.com/browse?c=music').includes('Стрей Перепутал Трэк'));
+  assert.ok(window.appIE.performSearch('перепутал трэк').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('стрей осуждает').some(r => r.url === 'http://www.youvid.com'));
+});
+
+test('Пампарам-пампарам,приветствую смотрящих keeps the wide workshop walk, bass-boost intro, both пам-парам lines and the greeting wave', () => {
+  const clip = clips.find(c => c.id === 'pAmPaRam98');
+  const v = site.video('pAmPaRam98');
+  const S = window.PamparamScript;
+  const Cast = window.PamparamCast;
+  assert.ok(clip && v && S && Cast);
+  assert.ok(Math.abs(clip.duration - 10.54) < 0.05 && clip.aspect === 16 / 9);
+  assert.deepStrictEqual(clip.cuts, [0]);
+  assert.strictEqual(v.channel, 'EbatoriyaPlanet');
+  assert.strictEqual(v.title, 'Пампарам-пампарам,приветствую смотрящих');
+  assert.strictEqual(v.category, 'people');
+  assert.ok(site.videosOf(site.channels.EbatoriyaPlanet).some(x => x.id === 'pAmPaRam98'));
+  for (let t = 0; t <= clip.duration; t += 0.05) {
+    const st = clip.stage(t);
+    assert.ok(finite(st.camera.eye) && finite(st.camera.at) && Number.isFinite(st.camera.fov) && st.camera.wide > 1.2, `camera ${t}`);
+    const m = Cast.solve(st.pose);
+    Object.values(m.pts).forEach(p => assert.ok(finite(p) && p[1] > -0.05 && p[1] < 2.3, `joint at ${t}`));
+  }
+  assert.ok(clip.stage(0.1).pose.p[0] < -1.4 && clip.stage(8.5).pose.p[0] > 3.4, 'walks across the workshop');
+  assert.ok(clip.stage(1.2).bass > 0.5 && clip.stage(7.0).bass === 0, 'bass-boost intro envelope');
+  assert.strictEqual(clip.stage(0.4).pose.gL, 'open');
+  assert.strictEqual(clip.stage(3.0).pose.gL, 'pocket');
+  assert.strictEqual(clip.stage(3.0).pose.gR, 'pocket');
+  assert.strictEqual(clip.voiceAt(1.5), 0);
+  assert.strictEqual(clip.stage(1.5).pose.mouth, 'shut');
+  assert.ok(clip.voiceAt(4.2) > 0.4 && S.speakerAt(4.2).part === 1);
+  assert.strictEqual(clip.voiceAt(6.05), 0);
+  assert.ok(clip.stage(5.9).pose.nk[1] < -0.15, 'turns head slightly between the two пам-парам lines');
+  assert.ok(clip.voiceAt(6.8) > 0.4 && S.speakerAt(6.8).part === 2);
+  assert.strictEqual(clip.voiceAt(8.3), 0);
+  assert.ok(clip.voiceAt(9.2) > 0.4 && S.speakerAt(9.2).line === 'Приветствую смотрящих');
+  const wave = clip.stage(9.2);
+  const mw = Cast.solve(wave.pose);
+  assert.strictEqual(wave.pose.gL, 'wave');
+  assert.strictEqual(wave.pose.gR, 'pocket');
+  assert.ok(mw.pts.wristL[1] > mw.pts.shoulderL[1] && mw.pts.wristL[0] > mw.pts.shoulderL[0], 'raises hand to wave at viewers');
+  assert.strictEqual(clip.stage(10.3).pose.gL, 'pocket');
+  assert.ok(window.appIE.performSearch('пампарам').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('приветствую смотрящих').some(r => r.url === 'http://www.youvid.com'));
+});
+
+test('WAKE UP ROMAN keeps the 8 shots, bedroom POV glasses sequence, phone screen and cab depot wakeup on EbatoriyaPlanet', () => {
+  const clip = clips.find(c => c.id === 'wAk3UpR0mAn');
+  const v = site.video('wAk3UpR0mAn');
+  const S = window.RomanScript;
+  const Cast = window.RomanCast;
+  assert.ok(clip && v && S && Cast);
+  assert.ok(Math.abs(clip.duration - 14.58) < 0.05 && clip.aspect === 16 / 9);
+  assert.deepStrictEqual(clip.cuts, [0, 2.13, 2.83, 4.33, 5.77, 7.53, 10.95, 14.25]);
+  assert.strictEqual(v.channel, 'EbatoriyaPlanet');
+  assert.strictEqual(v.title, 'WAKE UP ROMAN');
+  assert.strictEqual(v.category, 'comedy');
+  assert.ok(site.videosOf(site.channels.EbatoriyaPlanet).some(x => x.id === 'wAk3UpR0mAn'));
+  for (let t = 0; t <= clip.duration; t += 0.05) {
+    const st = clip.stage(t);
+    assert.ok(finite(st.camera.eye) && finite(st.camera.at) && Number.isFinite(st.camera.fov), `camera ${t}`);
+    (st.cast || []).forEach(c => {
+      const m = Cast.solve(c.who, c.pose);
+      Object.values(m.pts).forEach(p => assert.ok(finite(p) && p[1] > -0.1 && p[1] < 2.4, `${c.who} joint at ${t}`));
+    });
+  }
+  assert.strictEqual(clip.stage(0.1).fade, 0);
+  assert.strictEqual(clip.stage(1.0).set, 'bedroom');
+  assert.strictEqual(clip.stage(1.0).pov.kind, 'reach');
+  assert.strictEqual(clip.stage(1.0).phoneOnDesk, true);
+  assert.strictEqual(clip.stage(1.6).pov.hasPhone, true);
+  assert.strictEqual(clip.stage(2.5).pov.kind, 'holdPhone');
+  assert.strictEqual(clip.stage(2.5).pov.lit, true);
+  assert.strictEqual(clip.stage(3.5).cast[0].who, 'tohru');
+  assert.ok(clip.stage(3.5).cast[0].pose.glasses && clip.stage(3.5).blur > 0.5);
+  assert.ok(clip.stage(5.2).cast[0].pose.glasses.pos[2] > clip.stage(3.5).cast[0].pose.glasses.pos[2], 'glasses move toward the viewer');
+  assert.strictEqual(clip.stage(6.5).blur, 0);
+  assert.strictEqual(clip.stage(8.5).cast[0].pose.eyes, 'happy');
+  assert.strictEqual(clip.stage(10.2).pov.kind, 'holdPhone');
+  assert.strictEqual(clip.stage(11.5).set, 'depot');
+  assert.deepStrictEqual(clip.stage(11.5).cast.map(c => c.who), ['roman', 'niko']);
+  assert.strictEqual(clip.stage(11.5).subtitle, 'sub1');
+  assert.strictEqual(clip.stage(11.2).cast[0].pose.eyes, 'shut');
+  assert.strictEqual(clip.stage(12.2).cast[0].pose.eyes, 'wide');
+  assert.strictEqual(clip.stage(13.2).cast[0].pose.gL, 'open');
+  assert.strictEqual(clip.stage(14.4).shot, 7);
+  assert.deepStrictEqual(clip.stage(14.4).cast.map(c => c.who), ['niko']);
+  assert.ok(clip.voiceAt(11.1) > 0.4 && clip.voiceAt(0.1) === 0);
+  assert.ok(site.renderSite('http://www.youvid.com/watch?v=wAk3UpR0mAn').includes('WAKE UP ROMAN'));
+  assert.ok(site.renderSite('http://www.youvid.com/browse?c=comedy').includes('WAKE UP ROMAN'));
+  assert.ok(window.appIE.performSearch('wake up roman').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('роман').some(r => r.url === 'http://www.youvid.com'));
+});
+
+test('Sparkle Trailer - Monodrama keeps the HSR98 channel, 9 chapters, 3 outfits, props and full 124.92s choreography', () => {
+  const clip = clips.find(c => c.id === 'sPaRkL3Mono');
+  const v = site.video('sPaRkL3Mono');
+  const S = window.SparkleScript;
+  const Cast = window.SparkleCast;
+  const ch = site.channels.HSR98;
+  assert.ok(clip && v && S && Cast && ch);
+  assert.strictEqual(ch.name, 'HSR98');
+  assert.strictEqual(ch.site, 'hsr.hoyoverse.com');
+  assert.strictEqual(ch.theme, 'hsr');
+  assert.ok(Math.abs(clip.duration - 124.92) < 0.05 && clip.aspect === 16 / 9);
+  assert.strictEqual(v.channel, 'HSR98');
+  assert.strictEqual(v.title, 'Sparkle Trailer - Monodrama');
+  assert.strictEqual(v.category, 'games');
+  assert.strictEqual(v.chapters.length, 9);
+  assert.ok(site.videosOf(ch).some(x => x.id === 'sPaRkL3Mono'));
+  for (let t = 0; t <= clip.duration; t += 0.25) {
+    const st = clip.stage(t);
+    assert.ok(finite(st.camera.eye) && finite(st.camera.at) && Number.isFinite(st.camera.fov), `camera ${t}`);
+    (st.cast || []).forEach(c => {
+      const m = Cast.solve(c.pose);
+      Object.values(m.pts).forEach(p => assert.ok(finite(p) && p[1] > -0.1 && p[1] < 2.4, `joint at ${t}`));
+    });
+  }
+  assert.strictEqual(clip.stage(1.0).banner, 'logoIntro');
+  assert.strictEqual(clip.stage(4.5).set, 'penacony');
+  assert.strictEqual(clip.stage(4.5).cast[0].pose.mask, 'handR');
+  assert.strictEqual(clip.stage(7.5).cast[0].pose.mask, 'face');
+  assert.strictEqual(clip.stage(14.0).set, 'classroom');
+  assert.strictEqual(clip.stage(14.0).cast[0].pose.outfit, 'school');
+  assert.strictEqual(clip.stage(30.0).cast.length, 3);
+  assert.strictEqual(clip.stage(36.0).goldfish, true);
+  assert.strictEqual(clip.stage(48.0).cast[0].pose.prop, 'gun');
+  assert.strictEqual(clip.stage(57.0).banner, 'logoTitle');
+  assert.strictEqual(clip.stage(65.8).env.exposure, 0.96);
+  assert.strictEqual(clip.stage(80.0).fireworks, true);
+  assert.strictEqual(clip.stage(108.0).set, 'curtain');
+  assert.strictEqual(clip.stage(121.0).banner, 'logoOutro');
+  assert.ok(clip.voiceAt(60.0) > 0.3 && clip.voiceAt(0.2) === 0);
+  assert.ok(site.renderSite('http://www.youvid.com/watch?v=sPaRkL3Mono').includes('Sparkle Trailer - Monodrama'));
+  assert.ok(site.renderSite('http://www.youvid.com/user/HSR98').includes('yv-theme-hsr'));
+  assert.ok(window.appIE.performSearch('sparkle').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('искорка').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('hsr98').some(r => r.url === 'http://www.youvid.com'));
+});
+
+test('«Та-та-та!» Кли (Пиро) keeps the HSR98 channel, title cards, plaza, battle, Jean, hall and sunset timeline of 97.22s', () => {
+  const clip = clips.find(c => c.id === 'kL33T4T4T4a');
+  const v = site.video('kL33T4T4T4a');
+  const S = window.KleeScript;
+  const Cast = window.KleeCast;
+  const Cards = window.KleeCards;
+  const ch = site.channels.HSR98;
+  assert.ok(clip && v && S && Cast && Cards && ch);
+  assert.ok(Math.abs(clip.duration - 97.22) < 0.05 && clip.aspect === 16 / 9);
+  assert.ok(fs.existsSync(path.join(root, clip.audio)) && clip.audio === 'content/YouVid/klee.mp3');
+  assert.strictEqual(v.channel, 'HSR98');
+  assert.strictEqual(v.title, '«Та-та-та!» Кли (Пиро)');
+  assert.strictEqual(v.category, 'games');
+  assert.strictEqual(v.chapters.length, 14);
+  assert.ok(site.videosOf(ch).some(x => x.id === 'kL33T4T4T4a'));
+  assert.strictEqual(Cards.CARDS.length, 15);
+  for (let t = 0; t <= clip.duration; t += 0.1) {
+    const st = clip.stage(t);
+    assert.ok(finite(st.camera.eye) && finite(st.camera.at) && Number.isFinite(st.camera.fov), `camera ${t}`);
+    if (st.klee) Object.values(Cast.solveKlee(st.klee).pts).forEach(p => assert.ok(finite(p) && p[1] > -0.2 && p[1] < 3.5, `joint at ${t}`));
+    st.hilis.forEach(h => assert.ok(finite(h.pos), `hilichurl at ${t}`));
+  }
+  assert.strictEqual(clip.stage(2).kind, 'black');
+  assert.strictEqual(clip.stage(5.5).kind, 'cards');
+  assert.strictEqual(clip.stage(13.8).card, 14);
+  assert.strictEqual(clip.stage(15).set, 'plaza');
+  assert.ok(clip.stage(15).klee && !clip.stage(15).stelle && clip.stage(22).stelle, 'Stelle stands at the lattice door');
+  assert.strictEqual(clip.stage(25.8).overlay, 'title');
+  assert.strictEqual(clip.stage(32.3).overlay, 'comic');
+  assert.ok(clip.stage(29).hilis.length >= 3 && clip.stage(29).flames.length > 0, 'meadow battle with burning grass');
+  assert.ok(clip.stage(42.5).slimes.length > 0 && clip.stage(42.5).lake);
+  assert.ok(clip.stage(47).jeanLegs && clip.stage(49.5).jean && !clip.stage(49.5).klee);
+  assert.strictEqual(clip.stage(54).set, 'hall');
+  assert.ok(clip.stage(54).sigil >= 0 && clip.stage(65.5).sigil === -1);
+  assert.ok(clip.stage(67.5).golem && clip.stage(67.5).hex);
+  assert.strictEqual(clip.stage(71.5).env, 'night');
+  assert.strictEqual(clip.stage(70.42).env, 'purple');
+  assert.strictEqual(clip.stage(85.5).env, 'sunset');
+  assert.strictEqual(clip.stage(93).kind, 'logo');
+  assert.ok(clip.stage(61).set === 'hall' && clip.stage(61.5).klee, 'the door opens before Klee pops in');
+  assert.ok(clip.voiceAt(49.5) > 0.1 && clip.voiceAt(2) === 0);
+  assert.ok(site.renderSite('http://www.youvid.com/watch?v=kL33T4T4T4a').includes('Та-та-та'));
+  assert.ok(site.renderSite('http://www.youvid.com/user/HSR98').includes('Та-та-та'));
+  assert.ok(window.appIE.performSearch('klee').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('кли').some(r => r.url === 'http://www.youvid.com'));
 });
 
 test('on-screen text keeps profanity masked', () => {
@@ -486,6 +1006,53 @@ test('Clippy reacts to a finished video and to a posted comment', () => {
   site.state = site.loadState();
 });
 
+test('end-screen renders a 2x2 grid with hover titles, bottom replay button and loop toggle', () => {
+  localStorage.store = {};
+  site.state = site.loadState();
+  const html = site.renderSite('http://www.youvid.com/watch?v=y0Ph0neL1ng');
+  const gridIdx = html.indexOf('yv-end-grid');
+  const replayIdx = html.indexOf('yv-replay');
+  assert.ok(gridIdx > 0 && replayIdx > gridIdx, 'replay button is placed below the 2x2 grid');
+  const items = html.match(/class="yv-thumb yv-end-item"/g) || [];
+  assert.strictEqual(items.length, 4, 'end-screen shows a 2x2 block of 4 suggested videos');
+  assert.ok(html.includes('class="yv-end-item-title">Me at the zoo</span>'), 'suggested video includes hover title');
+  const loopIdx = html.indexOf('class="yv-loop');
+  const muteIdx = html.indexOf('class="yv-mute"');
+  assert.ok(loopIdx > 0 && muteIdx > loopIdx, 'loop icon is placed to the left of volume mute control');
+  const p = Object.create(window.YouVidPlayer.prototype);
+  const attrs = {};
+  const classes = new Set();
+  const loopBtn = {
+    classList: { toggle: (c, on) => (on ? classes.add(c) : classes.delete(c)) },
+    setAttribute: (k, v) => { attrs[k] = v; }
+  };
+  let replayed = 0;
+  Object.assign(p, {
+    state: 'playing',
+    time: 15,
+    looping: false,
+    site,
+    loopBtn,
+    clip: clips.find(c => c.id === 'y0Ph0neL1ng'),
+    meta: site.video('y0Ph0neL1ng'),
+    play() { replayed++; this.state = 'playing'; },
+    updateTime() {}
+  });
+  p.setLoop(true);
+  assert.strictEqual(p.looping, true);
+  assert.strictEqual(site.state.loop, true);
+  assert.ok(classes.has('yv-loop-on'));
+  assert.strictEqual(attrs['aria-pressed'], 'true');
+  p.finish();
+  assert.strictEqual(replayed, 1, 'finish restarts video when looping is enabled');
+  assert.strictEqual(p.time, 0);
+  assert.strictEqual(p.state, 'playing');
+  const htmlLoop = site.renderSite('http://www.youvid.com/watch?v=y0Ph0neL1ng');
+  assert.ok(htmlLoop.includes('yv-loop yv-loop-on') && htmlLoop.includes('aria-pressed="true"'));
+  localStorage.store = {};
+  site.state = site.loadState();
+});
+
 test('new source files contain zero comments', () => {
   const files = FILES.slice(2).concat(['css/apps/youvid-site.css', 'tools/youvid-shots.cjs', 'tests/youvid-site.test.js']);
   files.forEach(f => {
@@ -494,6 +1061,33 @@ test('new source files contain zero comments', () => {
     assert.ok(!/\/\*[\s\S]*?\*\//.test(stripped), `${f} has a block comment`);
     assert.ok(!/(^|[^:\\])\/\/[^\n]*/m.test(stripped.replace(/https?:\/\/[^\s'"`]*/g, '')), `${f} has a line comment`);
   });
+});
+
+test('Keanu Reeves is Extremely Horny lives on memes/ytp with 15 shots, boxed captions and cover stills', () => {
+  const clip = clips.find(c => c.id === 'k3An4uH0rnY');
+  const v = site.video('k3An4uH0rnY');
+  assert.ok(clip && v);
+  assert.ok(Math.abs(clip.duration - 23.1) < 0.05 && clip.aspect === 16 / 9);
+  assert.strictEqual(clip.audio, 'content/YouVid/Keanu Reeves is Extremely Horny.mp3');
+  assert.ok(fs.existsSync(path.join(root, clip.audio)));
+  assert.strictEqual(clip.cuts.length, 15);
+  assert.strictEqual(v.channel, 'memes_ytp');
+  assert.strictEqual(v.title, 'Keanu Reeves is Extremely Horny');
+  assert.strictEqual(clip.stage(1).shot.boxed, false);
+  assert.strictEqual(clip.stage(3).shot.caption, "I'll fuck it");
+  assert.strictEqual(clip.stage(6).shot.caption, 'Why do you cum?');
+  assert.strictEqual(clip.stage(8.5).shot.caption, 'Dick');
+  assert.strictEqual(clip.stage(11).shot.caption, 'Well cum');
+  assert.strictEqual(clip.stage(14).shot.caption, 'You can be cum');
+  assert.strictEqual(clip.stage(22).shot.caption, 'Getting cock');
+  assert.ok(clip.stage(17).zoom > clip.stage(15.5).zoom);
+  assert.ok(clip.voiceAt(5) >= 0);
+  [1, 2, 3].forEach(i => assert.ok(fs.existsSync(path.join(root, `content/YouVid/thumbs/k3An4uH0rnY-${i}.png`))));
+  assert.ok(site.renderSite('http://www.youvid.com/watch?v=k3An4uH0rnY').includes('Keanu Reeves is Extremely Horny'));
+  assert.ok(site.renderSite('http://www.youvid.com/user/memes_ytp').includes('Keanu Reeves is Extremely Horny'));
+  assert.ok(site.renderSite('http://www.youvid.com/browse?c=comedy').includes('Keanu Reeves is Extremely Horny'));
+  assert.ok(window.appIE.performSearch('keanu').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('киану').some(r => r.url === 'http://www.youvid.com'));
 });
 
 console.log(`\n${passed} youvid tests passed`);

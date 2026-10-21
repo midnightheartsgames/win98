@@ -1,0 +1,340 @@
+.sysmon-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #c0c0c0;
+  color: #000000;
+  font-family: 'Tahoma', 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+  user-select: none;
+  position: relative;
+}
+
+.sysmon-menubar {
+  display: flex;
+  gap: 2px;
+  padding: 2px 4px;
+  border-bottom: 1px solid #808080;
+}
+
+.sysmon-menu-item {
+  padding: 2px 6px;
+  cursor: pointer;
+  position: relative;
+}
+
+.sysmon-menu-item:hover,
+.sysmon-menu-item.open {
+  background: #000080;
+  color: #ffffff;
+}
+
+.sysmon-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 205px;
+  background: #c0c0c0;
+  color: #000000;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+  box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf;
+  padding: 2px;
+  z-index: 60;
+}
+
+.sysmon-menu-item.open .sysmon-dropdown {
+  display: block;
+}
+
+.sysmon-menu-opt {
+  padding: 3px 16px 3px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+  position: relative;
+  cursor: pointer;
+}
+
+.sysmon-menu-opt:hover {
+  background: #000080;
+  color: #ffffff;
+}
+
+.sysmon-menu-opt.checked::before {
+  content: '✓';
+  position: absolute;
+  left: 6px;
+  font-weight: bold;
+}
+
+.sysmon-menu-sep {
+  height: 1px;
+  background: #808080;
+  border-bottom: 1px solid #ffffff;
+  margin: 3px 2px;
+}
+
+.sysmon-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 6px;
+  border-top: 1px solid #ffffff;
+  border-bottom: 1px solid #808080;
+}
+
+.sysmon-tb-btn {
+  height: 23px;
+  min-width: 24px;
+  padding: 0 6px;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  box-shadow: inset -1px -1px 0 #808080;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.sysmon-tb-btn:active,
+.sysmon-tb-btn.active {
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  box-shadow: inset 1px 1px 0 #808080;
+  background: #dfdfdf;
+}
+
+.sysmon-tb-sep {
+  width: 1px;
+  height: 18px;
+  background: #808080;
+  border-right: 1px solid #ffffff;
+  margin: 0 3px;
+}
+
+.sysmon-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+  grid-auto-rows: minmax(128px, 1fr);
+  gap: 6px;
+  padding: 6px;
+  overflow-y: auto;
+  border-top: 1px solid #ffffff;
+}
+
+.sysmon-card {
+  display: flex;
+  flex-direction: column;
+  background: #c0c0c0;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.sysmon-card.selected {
+  outline: 1px dotted #000000;
+  outline-offset: -3px;
+}
+
+.sysmon-card-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 5px;
+  background: #808080;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+
+.sysmon-card.selected .sysmon-card-hdr {
+  background: #000080;
+}
+
+.sysmon-card-title {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sysmon-color-dot {
+  width: 8px;
+  height: 8px;
+  border: 1px solid #000000;
+  flex-shrink: 0;
+}
+
+.sysmon-card-body {
+  flex: 1;
+  position: relative;
+  background: #001c00;
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #dfdfdf;
+  border-bottom: 1px solid #dfdfdf;
+  display: flex;
+  min-height: 92px;
+}
+
+.sysmon-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.sysmon-numeric-box {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #001a00;
+  color: #00ff44;
+  font-family: 'Courier New', monospace;
+  gap: 4px;
+}
+
+.sysmon-num-big {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.sysmon-num-sub {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: #90d890;
+}
+
+.sysmon-statusbar {
+  display: grid;
+  grid-template-columns: 1fr 165px;
+  gap: 3px;
+  padding: 3px 4px 2px;
+  border-top: 1px solid #ffffff;
+}
+
+.sysmon-status-cell {
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  padding: 1px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sysmon-modal-backdrop {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.28);
+  z-index: 80;
+  align-items: center;
+  justify-content: center;
+}
+
+.sysmon-modal-backdrop.open {
+  display: flex;
+}
+
+.sysmon-modal {
+  width: 410px;
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+  box-shadow: inset -1px -1px 0 #808080;
+  display: flex;
+  flex-direction: column;
+}
+
+.sysmon-modal-titlebar {
+  background: linear-gradient(90deg, #000080, #1084d0);
+  color: #ffffff;
+  font-weight: bold;
+  padding: 2px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sysmon-modal-body {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.sysmon-add-cols {
+  display: grid;
+  grid-template-columns: 145px 1fr;
+  gap: 8px;
+}
+
+.sysmon-list-box {
+  height: 118px;
+  background: #ffffff;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.sysmon-list-item {
+  padding: 2px 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sysmon-list-item.selected {
+  background: #000080;
+  color: #ffffff;
+}
+
+.sysmon-explain-box {
+  background: #ffffe1;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  padding: 5px 7px;
+  min-height: 36px;
+  line-height: 1.3;
+}
+
+.sysmon-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding-top: 4px;
+  border-top: 1px solid #808080;
+}

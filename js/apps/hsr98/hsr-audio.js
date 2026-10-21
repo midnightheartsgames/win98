@@ -29,6 +29,29 @@
     aria: {
       parts: { inst: 'content/music/AriaOfTheSoul.mp3' },
       loop: [12, 181.102]
+    },
+    cccLobby: {
+      parts: { inst: 'content/music/ccc-minus.mp3' },
+      loop: [0.026, 12.949], vol: 0.6, bpm: 130, beat0: 0.026
+    },
+    ccc: {
+      parts: { inst: 'content/music/ccc-minus.mp3' },
+      loop: [29.564, 73.872], vol: 0.63, bpm: 130, beat0: 0.026
+    },
+    amanda: {
+      parts: { inst: 'content/music/ccc-amanda.mp3' },
+      loop: [0.042, 70.779], vol: 1, bpm: 95, beat0: 0.042
+    },
+    makoto: {
+      parts: { inst: 'content/music/ccc-makoto.mp3' },
+      loop: [0.039, 67.016], vol: 1.32, bpm: 86, beat0: 0.039
+    },
+    talleah: {
+      parts: { inst: 'content/music/ccc-talleah.mp3' },
+      loop: [11.748, 70.285], vol: 1.1, bpm: 164, beat0: 0.041
+    },
+    konosubaEd: {
+      parts: { inst: 'content/YouVid/KONOSUBA 3 - Ending.mp3' }
     }
   };
 
@@ -48,7 +71,8 @@
       this.sfxVol = sfx; this.musicVol = mus;
       if (this.master) this.master.gain.value = sfx;
       if (this.mus) this.ramp(this.mus.gain, this.layers ? 0 : mus, 0);
-      if (this.layers) this.ramp(this.layers.out.gain, mus, 0);
+      if (this.layers) this.ramp(this.layers.out.gain, this.themeL ? 0 : mus * ((SONGS[this.layers.id] || {}).vol || 1), 0);
+      if (this.themeL) this.ramp(this.themeL.out.gain, mus * ((SONGS[this.themeL.id] || {}).vol || 1), 0);
     }
     ramp(param, v, dur) {
       const t = this.ctx.currentTime;
@@ -115,7 +139,17 @@
         case 'glint': [91, 96].forEach((m, i) => this.tone(t + i * 0.06, 0.35, n(m), 'triangle', 0.08)); break;
         case 'text': this.tone(t, 0.02, 1600 + Math.random() * 200, 'square', 0.025); break;
         case 'step': this.noise(t, 0.04, 0.06, 1500); break;
+        case 'meow': this.tone(t, 0.12, 620, 'triangle', 0.1, null, 380); this.tone(t + 0.11, 0.24, 1000, 'triangle', 0.09, null, -460); break;
+        case 'purr': for (let i = 0; i < 16; i++) this.noise(t + i * 0.05, 0.045, 0.14, 150 + (i % 2) * 30); this.tone(t, 0.8, 52, 'sine', 0.05); break;
+        case 'hiss': this.noise(t, 0.55, 0.22, 5200, 3200, 0.2); break;
+        case 'sneeze': this.tone(t, 0.06, 900, 'triangle', 0.08, null, 400); this.noise(t + 0.06, 0.12, 0.3, 2200); this.noise(t + 0.1, 0.45, 0.25, 700, 180); break;
         case 'shutter': this.noise(t, 0.04, 0.4, 4200); this.tone(t + 0.035, 0.03, 2600, 'square', 0.05); this.noise(t + 0.08, 0.05, 0.3, 2800); break;
+        case 'beep': this.tone(t, 0.12, 1960, 'square', 0.07); this.tone(t + 0.13, 0.16, 2620, 'square', 0.07); break;
+        case 'snap': this.noise(t, 0.05, 0.5, 3600); this.tone(t, 0.04, 1400, 'square', 0.06, null, -800); break;
+        case 'clap': for (let i = 0; i < 14; i++) this.noise(t + i * 0.045 + Math.random() * 0.03, 0.05, 0.12 + Math.random() * 0.08, 1500 + Math.random() * 1200); break;
+        case 'cheer': this.noise(t, 1.4, 0.18, 900, 1400, 0.3); for (let i = 0; i < 10; i++) this.noise(t + i * 0.09 + Math.random() * 0.05, 0.05, 0.1, 1700 + Math.random() * 900); break;
+        case 'sparkle': [96, 100, 103, 108].forEach((m, i) => this.tone(t + i * 0.05, 0.3, n(m), 'triangle', 0.05)); break;
+        case 'scan': this.tone(t, 0.6, 600, 'sine', 0.06, null, 900); this.tone(t + 0.3, 0.3, 1500, 'triangle', 0.03); break;
         case 'strum': [52, 59, 64, 67, 71].forEach((m, i) => this.tone(t + i * 0.018, 0.9, n(m), 'sawtooth', 0.045)); this.noise(t, 0.08, 0.2, 2600); break;
         default: this.tone(t, 0.05, 800, 'square', 0.06);
       }
@@ -188,7 +222,7 @@
       const song = SONGS[id];
       if (!this.ctx || !song) return;
       const ctx = this.ctx, out = ctx.createGain(), parts = Object.keys(song.parts);
-      out.gain.value = this.musicVol; out.connect(ctx.destination);
+      out.gain.value = this.musicVol * (song.vol || 1); out.connect(ctx.destination);
       const L = this.layers = { id, out, t0: ctx.currentTime - from, gains: {}, passes: [], voice: null, timer: null };
       this.ramp(this.mus.gain, 0, 0.4);
       for (const part of parts) {
@@ -222,8 +256,37 @@
       L.voice = part;
       for (const p of Object.keys(L.gains)) if (p !== 'inst') this.ramp(L.gains[p].gain, p === part ? 1 : 0, 0.6);
     }
+    theme(id, from = 0, fadeIn = 0.3) {
+      this.stopTheme(0.1);
+      this.wantedTheme = id;
+      const song = SONGS[id];
+      if (!this.ctx || !song) return;
+      const ctx = this.ctx, out = ctx.createGain(), L = this.themeL = { id, out, src: null };
+      out.gain.value = 0; out.connect(ctx.destination);
+      this.ramp(out.gain, this.musicVol * (song.vol || 1), fadeIn);
+      if (this.layers) this.ramp(this.layers.out.gain, 0, fadeIn);
+      this.stem(song.parts.inst).then(buf => {
+        if (this.themeL !== L) return;
+        const src = ctx.createBufferSource(), [a, b] = song.loop || [0, buf.duration];
+        src.buffer = buf; src.loop = true; src.loopStart = a; src.loopEnd = b;
+        src.connect(out); src.start(ctx.currentTime + 0.02, Math.min(from, buf.duration - 0.05));
+        L.src = src;
+      }).catch(() => { });
+    }
+    stopTheme(fade = 0.5) {
+      this.wantedTheme = null;
+      const L = this.themeL;
+      if (!L) return;
+      this.themeL = null;
+      const end = this.ctx.currentTime + fade;
+      this.ramp(L.out.gain, 0, fade);
+      if (L.src) { try { L.src.stop(end + 0.05); } catch (e) { } }
+      setTimeout(() => { try { L.out.disconnect(); } catch (e) { } }, (fade + 0.2) * 1000);
+      if (this.layers) { const sg = SONGS[this.layers.id] || {}; this.ramp(this.layers.out.gain, this.musicVol * (sg.vol || 1), fade); }
+    }
     stopSong(fade = 0.8) {
       this.wantedSong = null;
+      this.stopTheme(fade);
       const L = this.layers;
       if (!L) return;
       this.layers = null;

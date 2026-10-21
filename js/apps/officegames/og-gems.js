@@ -25,6 +25,7 @@ class AppOgGems {
 
     this.floatingTexts = [];
     this.particles = [];
+    this.lastFrameTime = 0;
 
     this.highScore = this.loadHighScore();
 
@@ -47,6 +48,10 @@ class AppOgGems {
       try {
         localStorage.setItem('office_games_scores_gems', String(this.highScore));
       } catch (e) {}
+      if (window.appOfficeLauncher && window.appOfficeLauncher.win) window.appOfficeLauncher.populateList();
+      if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+        window.appClippy.onOfficeGameEvent('gems', 'high_score', { score: this.highScore });
+      }
     }
   }
 
@@ -226,6 +231,7 @@ class AppOgGems {
     this.isAnimating = false;
     this.floatingTexts = [];
     this.particles = [];
+    this.lastFrameTime = 0;
 
     this.createBoard();
     this.updateHUD();
@@ -310,6 +316,9 @@ class AppOgGems {
         if (iconEl && window.Icons) iconEl.innerHTML = window.Icons['game-manager'] || '';
       }
     }
+    if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+      window.appClippy.onOfficeGameEvent('gems', this.bossMode ? 'boss_on' : 'boss_off');
+    }
   }
 
   onKeyDown(e) {
@@ -374,7 +383,7 @@ class AppOgGems {
       setTimeout(() => {
         this.swapInGrid(r1, c1, r2, c2);
         this.isAnimating = false;
-      }, 200);
+      }, 300);
     }
   }
 
@@ -458,7 +467,7 @@ class AppOgGems {
 
     setTimeout(() => {
       this.dropGems();
-    }, 180);
+    }, 300);
   }
 
   dropGems() {
@@ -484,7 +493,7 @@ class AppOgGems {
       this.combo++;
       setTimeout(() => {
         this.processMatches(nextMatches);
-      }, 160);
+      }, 280);
     } else {
       this.isAnimating = false;
       if (this.movesLeft <= 0) {
@@ -500,13 +509,13 @@ class AppOgGems {
   createSparks(x, y, color) {
     for (let i = 0; i < 6; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const spd = 1.2 + Math.random() * 2.5;
+      const spd = 0.7 + Math.random() * 1.4;
       this.particles.push({
         x,
         y,
         vx: Math.cos(angle) * spd,
         vy: Math.sin(angle) * spd,
-        life: 12,
+        life: 26,
         color
       });
     }
@@ -517,8 +526,8 @@ class AppOgGems {
       text,
       x,
       y,
-      vy: -1.0,
-      life: 24,
+      vy: -0.55,
+      life: 40,
       color
     });
   }
@@ -672,11 +681,17 @@ class AppOgGems {
     }
   }
 
-  gameLoop() {
+  gameLoop(now) {
     if (!this.win) return;
     this.animId = requestAnimationFrame(this.loop);
 
     if (this.bossMode) return;
+
+    const currentTime = now || ((window.performance && window.performance.now) ? window.performance.now() : Date.now());
+    if (currentTime - this.lastFrameTime < 16) {
+      return;
+    }
+    this.lastFrameTime = currentTime;
 
     this.draw();
   }

@@ -439,6 +439,34 @@ assert.equal(new Set(unstacked.map(p => `${p.x},${p.y}`)).size, desktop.icons.le
 assert.deepEqual(desktop.iconPositions[desktop.icons[0].id], { x: 0, y: 10 }, 'First icon of a stack keeps its spot');
 console.log('PASS 10. Icons stacked on the same spot are spread to free grid cells');
 
+desktop.arrangeIcons();
+const beforeShrink = localStorage.getItem('win98_desktop_icon_positions');
+const shrinkHeight = 10 + 76 * Math.ceil(desktop.icons.length / 9) + 20;
+desktopEl.clientWidth = 9 * 78 + 30;
+desktopEl.clientHeight = shrinkHeight;
+window.innerWidth = desktopEl.clientWidth;
+window.innerHeight = shrinkHeight + 28;
+window.dispatchEvent({ type: 'resize' });
+const shrunkMetrics = desktop.getGridMetrics();
+assert.ok(shrunkMetrics.maxCols * shrunkMetrics.maxRows >= desktop.icons.length, 'Shrunk desktop still has a cell for every icon');
+const shrunkById = new Map();
+desktopIconsEl.querySelectorAll('.desktop-icon').forEach(el => shrunkById.set(el.dataset.id, { x: parseFloat(el.style.left), y: parseFloat(el.style.top) }));
+const shrunk = Array.from(shrunkById.values());
+assert.equal(shrunk.length, desktop.icons.length, 'Every icon is shown after shrinking');
+shrunk.forEach((a, i) => {
+  shrunk.slice(i + 1).forEach(b => {
+    assert.ok(Math.abs(a.x - b.x) >= 74 || Math.abs(a.y - b.y) >= 72, `Icons do not overlap after shrinking: ${JSON.stringify(a)} ${JSON.stringify(b)}`);
+  });
+  assert.ok(a.x <= shrunkMetrics.dWidth - 74 && a.y <= shrunkMetrics.dHeight - 72, 'Icons stay inside the shrunk desktop');
+});
+assert.equal(localStorage.getItem('win98_desktop_icon_positions'), beforeShrink, 'Shrinking does not overwrite saved positions');
+desktopEl.clientWidth = 800;
+desktopEl.clientHeight = 572;
+window.innerWidth = 800;
+window.innerHeight = 600;
+window.dispatchEvent({ type: 'resize' });
+console.log('PASS 11. Shrinking the desktop moves cut-off icons to free cells instead of stacking them');
+
 console.log('\n========================================');
 console.log('ALL DESKTOP ICONS DRAG TESTS PASSED!');
 console.log('========================================');

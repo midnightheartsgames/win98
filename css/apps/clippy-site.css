@@ -183,6 +183,7 @@
 .cc-fitting-info { flex: 1; min-width: 0; }
 .cc-worn-row { padding: 2px 0; }
 .cc-worn-slot { display: inline-block; min-width: 150px; color: #000080; }
+.cc-tryon-note { color: #b45309; font-size: 11px; }
 .cc-fitting-stats { margin: 8px 0 6px; }
 .cc-fitting-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
 .cc-hint { font-style: italic; }
@@ -215,6 +216,7 @@
 }
 
 .cc-card.equipped { border: 2px solid #16a34a; background: #f0fdf4; }
+.cc-card.trying { border: 2px dashed #d97706; background: #fffbeb; }
 .cc-card.locked { background: #f3f4f6; }
 .cc-card.locked .cc-card-preview { filter: grayscale(1) brightness(0.6); }
 

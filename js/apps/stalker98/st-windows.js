@@ -8,6 +8,8 @@
   const { clamp } = S;
   const D = S.DATA, IT = D.ITEMS, Q = () => S.QUESTS;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+  const SP_ATT = [null, 'friend', 'neutral', 'enemy'];
+  const SP_CHEATS = ['money1', 'money10', 'heal', 'repair', 'god', 'clear'];
 
   // ================================================================ icons
   const iconCache = {};
@@ -127,9 +129,9 @@
     pauseMenu() {
       const ui = this.ui, T = k => this.t(k);
       if (ui.state !== 'play' || !ui.game) return;
-      const html = `<h2>${esc(T('title'))}</h2><div class="st98-menu">${this.btn(T('resume'), 'res')}${this.btn(T('save'), 'save')}${this.btn(T('load'), 'load')}${this.btn(T('options'), 'opt')}${this.btn(T('controls'), 'ctl')}${this.btn(T('mainMenu'), 'menu')}</div>`;
+      const html = `<h2>${esc(T('title'))}</h2><div class="st98-menu">${this.btn(T('resume'), 'res')}${this.btn(T('save'), 'save')}${this.btn(T('load'), 'load')}${this.btn(T('options'), 'opt')}${this.btn(T('controls'), 'ctl')}${this.btn(T('spawner'), 'spawn')}${this.btn(T('mainMenu'), 'menu')}</div>`;
       const r = this.open('pause', html, 'st98-pausemenu'); this.escClose = true; this.onKey = null;
-      this.wire(r, { res: () => this.close(), save: () => this.slotMenu('save', () => this.pauseMenu()), load: () => this.slotMenu('load', () => this.pauseMenu()), opt: () => this.optionsMenu(() => this.pauseMenu()), ctl: () => this.controlsMenu(() => this.pauseMenu()), menu: () => ui.toMenu() });
+      this.wire(r, { res: () => this.close(), spawn: () => this.spawner(() => this.pauseMenu()), save: () => this.slotMenu('save', () => this.pauseMenu()), load: () => this.slotMenu('load', () => this.pauseMenu()), opt: () => this.optionsMenu(() => this.pauseMenu()), ctl: () => this.controlsMenu(() => this.pauseMenu()), menu: () => ui.toMenu() });
     }
     slotMenu(mode, back) {
       const ui = this.ui, T = k => this.t(k), idx = ui.saveIndex();
@@ -186,6 +188,122 @@
       const html = `<h2 class="red">${esc(T('youDied'))}</h2><p class="st98-center dim">${esc(T('deadHint'))}</p><div class="st98-menu">${last ? this.btn(T('loadLast'), 'last') : ''}${this.btn(T('load'), 'load')}${this.btn(T('toMenu'), 'menu')}</div>`;
       const r = this.open('dead', html, 'st98-pausemenu'); this.escClose = false;
       this.wire(r, { last: () => ui.loadFrom(last), load: () => this.slotMenu('load', () => this.deathScreen()), menu: () => ui.toMenu() });
+    }
+
+    spawner(back = null) {
+      const g = this.g, ui = this.ui; if (!g || ui.state !== 'play' || g.player.dead) return;
+      this.sp = Object.assign({ cat: 'weapon', sel: null, n: 1, weapon: 0, att: 0, scroll: 0 }, this.sp, { back, note: '' });
+      this.drawSpawner();
+    }
+    spawnerCats() {
+      const ru = this.ui.lang === 'ru', tr = (a, b) => (ru ? a : b);
+      const items = f => Object.values(IT).filter(d => f(d) && d.kind !== 'quest' && d.id !== 'bolt').map(d => ({ id: d.id, type: 'item' }));
+      const keys = (o, type, skip = []) => Object.keys(o).filter(k => !skip.includes(k)).map(id => ({ id, type }));
+      return [
+        { id: 'weapon', label: tr('Оружие', 'Weapons'), list: items(d => d.kind === 'weapon') },
+        { id: 'ammo', label: tr('Патроны', 'Ammo'), list: items(d => d.kind === 'ammo') },
+        { id: 'grenade', label: tr('Гранаты', 'Grenades'), list: items(d => d.kind === 'grenade') },
+        { id: 'suit', label: tr('Броня', 'Armour'), list: items(d => d.kind === 'suit') },
+        { id: 'med', label: tr('Медицина и еда', 'Meds and food'), list: items(d => d.kind === 'med' || d.kind === 'food') },
+        { id: 'art', label: tr('Артефакты', 'Artifacts'), list: items(d => d.kind === 'art') },
+        { id: 'misc', label: tr('Трофеи и снаряжение', 'Trophies and gear'), list: items(d => d.kind === 'part' || d.kind === 'misc') },
+        { id: 'human', label: tr('Люди', 'People'), list: keys(D.HUMANS, 'human', ['hostage', 'trader']) },
+        { id: 'mutant', label: tr('Мутанты', 'Mutants'), list: keys(D.MUTANTS, 'mutant') },
+        { id: 'anomaly', label: tr('Аномалии', 'Anomalies'), list: keys(D.ANOMALIES, 'anomaly') },
+        { id: 'cheat', label: tr('Разное', 'Misc'), list: SP_CHEATS.map(id => ({ id, type: 'cheat' })) }
+      ];
+    }
+    spawnerWeapons() { return Object.values(IT).filter(d => d.kind === 'weapon' && d.mag); }
+    spawnerEntry(e) {
+      const g = this.g, ru = this.ui.lang === 'ru', tr = (a, b) => (ru ? a : b);
+      if (e.type === 'item') {
+        const d = IT[e.id], wide = (d.kind === 'weapon' && d.slot === 'rifle') || d.kind === 'suit';
+        return { name: this.L(d.name), wide, pic: `<img src="${itemIcon(e.id, wide ? 128 : 64, 64)}" alt="">`, info: this.L(d.desc), max: 20 };
+      }
+      if (e.type === 'human') {
+        const h = D.HUMANS[e.id], guns = h.weapons.filter((w, i, a) => a.indexOf(w) === i).map(w => this.L(IT[w].name)).join(', ');
+        return { name: this.L(h.title), pic: `<canvas width="64" height="64" data-look="${esc(h.look)}"></canvas>`, sub: this.L(D.FACTIONS[h.faction].name), info: `${this.L(D.FACTIONS[h.faction].name)} · ${tr('здоровье', 'health')} ${h.hp} · ${this.L(IT[h.suit].name)} · ${guns}`, max: 10 };
+      }
+      if (e.type === 'mutant') {
+        const m = D.MUTANTS[e.id];
+        return { name: this.L(m.name), sub: `${tr('здоровье', 'health')} ${m.hp}`, info: `${tr('здоровье', 'health')} ${m.hp} · ${tr('укус', 'bite')} ${m.dmg} · ${tr('скорость', 'speed')} ${m.speed} ${tr('м/с', 'm/s')}${m.pack ? ' · ' + tr('охотится стаей', 'hunts in packs') : ''}${m.invis ? ' · ' + tr('невидимость', 'invisibility') : ''}`, max: 10 };
+      }
+      if (e.type === 'anomaly') {
+        const a = D.ANOMALIES[e.id], kind = { strike: tr('удар', 'strike'), burn: tr('огонь', 'fire'), shock: tr('электричество', 'electricity'), chem: tr('химия', 'chemical') }[a.type];
+        return { name: this.L(a.name), sub: kind, info: `${tr('радиус', 'radius')} ${a.r} ${tr('м', 'm')} · ${tr('урон', 'damage')} ${a.dmg} (${kind}) · ${tr('рождает', 'grows')}: ${a.arts.map(id => this.L(IT[id].name)).join(', ')}`, max: 5 };
+      }
+      const C = {
+        money1: [tr('+1 000 RU', '+1,000 RU'), tr('Добавить денег.', 'Add money.')],
+        money10: [tr('+10 000 RU', '+10,000 RU'), tr('Добавить много денег.', 'Add a lot of money.')],
+        heal: [tr('Вылечиться', 'Heal'), tr('Здоровье, выносливость и сытость на максимум. Радиация и кровотечение уходят.', 'Health, stamina and satiety to full. Radiation and bleeding are gone.')],
+        repair: [tr('Починить снаряжение', 'Repair gear'), tr('Всё оружие и костюмы в инвентаре станут как новые.', 'Every weapon and suit you carry becomes as good as new.')],
+        god: [`${tr('Бессмертие', 'God mode')}: ${g.god ? this.t('on') : this.t('off')}`, tr('Урон, радиация и аномалии вас не трогают.', 'Damage, radiation and anomalies do not touch you.')],
+        clear: [tr('Убрать созданных', 'Remove spawned'), tr('Убирает с этого уровня людей, мутантов и аномалии, созданных спавнером.', 'Removes the people, mutants and anomalies made by the spawner on this level.')]
+      }[e.id];
+      return { name: C[0], info: C[1], max: 1 };
+    }
+    drawSpawner() {
+      const sp = this.sp, ru = this.ui.lang === 'ru', tr = (a, b) => (ru ? a : b), cats = this.spawnerCats(), weapons = this.spawnerWeapons();
+      const cat = cats.find(c => c.id === sp.cat) || cats[0], sel = cat.list.find(e => e.id === sp.sel) || null, info = sel ? this.spawnerEntry(sel) : null;
+      const max = info ? info.max : 1; sp.n = clamp(sp.n, 1, max);
+      const atts = [tr('по группировке', 'by faction'), tr('друг', 'friend'), tr('нейтрал', 'neutral'), tr('враг', 'enemy')];
+      const card = e => { const x = this.spawnerEntry(e); return `<div class="st98-sp-card ${x.pic ? '' : 'txt'} ${x.wide ? 'wide' : ''} ${sp.sel === e.id ? 'sel' : ''}" data-sp="${esc(e.id)}">${x.pic || ''}<span>${esc(x.name)}</span>${x.sub ? `<i>${esc(x.sub)}</i>` : ''}</div>`; };
+      const stepper = (lbl, val, act) => `<div class="st98-sp-step"><span>${esc(lbl)}</span>${this.btn('◄', 'm_' + act, 'sm')}<b>${esc(val)}</b>${this.btn('►', 'p_' + act, 'sm')}</div>`;
+      let opts = '';
+      if (sel && sel.type !== 'cheat') opts += stepper(tr('Количество', 'Amount'), String(sp.n), 'n');
+      if (sel && sel.type === 'human') opts += stepper(tr('Оружие', 'Weapon'), sp.weapon ? this.L(weapons[sp.weapon - 1].name) : tr('случайное', 'random'), 'w') + stepper(tr('Отношение', 'Attitude'), atts[sp.att], 'a');
+      const html = `<div class="st98-head"><span>${esc(this.t('spawner'))}</span><button class="st98-x" data-act="close">✕</button></div>
+      <div class="st98-sp-body"><div class="st98-sp-cats">${cats.map(c => `<button class="st98-sp-cat ${c.id === cat.id ? 'on' : ''}" data-act="c_${c.id}">${esc(c.label)}</button>`).join('')}</div><div class="st98-sp-grid">${cat.list.map(card).join('')}</div></div>
+      <div class="st98-sp-bar"><div class="st98-sp-info">${info ? `<b>${esc(info.name)}</b><span>${esc(info.info)}</span>` : `<span class="dim">${esc(tr('Выберите, что создать. Двойной щелчок создаёт сразу.', 'Pick what to spawn. A double click spawns it at once.'))}</span>`}${sp.note ? `<em>${esc(sp.note)}</em>` : ''}</div>
+      <div class="st98-sp-opts">${opts}</div>${sel ? this.btn(sel.type === 'cheat' ? tr('Выполнить', 'Apply') : tr('Создать', 'Spawn'), 'go', 'st98-sp-go') : ''}</div>`;
+      const r = this.open('spawner', html, 'st98-spawn'); this.escClose = !sp.back;
+      const redraw = () => this.drawSpawner(), cycle = (k, d, n) => { sp[k] = (sp[k] + d + n) % n; redraw(); };
+      const acts = {
+        close: () => this.close(), go: () => this.spawnSelected(sel),
+        m_n: () => { sp.n = Math.max(1, sp.n - 1); redraw(); }, p_n: () => { sp.n = Math.min(max, sp.n + 1); redraw(); },
+        m_w: () => cycle('weapon', -1, weapons.length + 1), p_w: () => cycle('weapon', 1, weapons.length + 1),
+        m_a: () => cycle('att', -1, SP_ATT.length), p_a: () => cycle('att', 1, SP_ATT.length)
+      };
+      for (const c of cats) acts['c_' + c.id] = () => { sp.cat = c.id; sp.sel = null; sp.note = ''; sp.scroll = 0; redraw(); };
+      this.wire(r, acts);
+      r.querySelectorAll('[data-sp]').forEach(el => el.addEventListener('click', ev => {
+        ev.stopPropagation(); this.ui.audio.play('ui_click');
+        const id = el.dataset.sp, now = performance.now(), twice = sp.sel === id && now - (sp.clickT || 0) < 450;
+        sp.clickT = now;
+        if (twice) { const en = cat.list.find(x => x.id === id); if (en) this.spawnSelected(en); return; }
+        sp.sel = id; sp.note = ''; redraw();
+      }));
+      r.querySelectorAll('canvas[data-look]').forEach(cv => drawPortrait(cv.getContext('2d'), cv.dataset.look, 0, 0, cv.width));
+      const grid = r.querySelector('.st98-sp-grid'); grid.scrollTop = sp.scroll; grid.addEventListener('scroll', () => { sp.scroll = grid.scrollTop; });
+      this.onKey = c => {
+        if (c === 'F7') { this.close(); return true; }
+        if (c === 'Escape' && sp.back) { sp.back(); return true; }
+        if (c === 'Enter' && sel) { this.spawnSelected(sel); return true; }
+      };
+    }
+    spawnSelected(e) {
+      const g = this.g, sp = this.sp, ru = this.ui.lang === 'ru'; if (!g || !e) return;
+      const x = this.spawnerEntry(e), n = clamp(sp.n, 1, x.max), gun = sp.weapon ? this.spawnerWeapons()[sp.weapon - 1].id : null;
+      let made = 0, note = null;
+      if (e.type === 'item') made = g.spawnItems(e.id, n).length;
+      else if (e.type === 'cheat') note = this.spawnerCheat(e.id);
+      else for (let i = 0; i < n; i++) {
+        const a = e.type === 'human' ? g.spawnHuman(e.id, { i, weapon: gun, attitude: SP_ATT[sp.att] }) : e.type === 'mutant' ? g.spawnMutant(e.id, { i }) : g.spawnAnomaly(e.id, { i });
+        if (a) made++;
+      }
+      this.flush();
+      if (e.type !== 'item') this.ui.audio.play(e.type === 'cheat' ? 'pda' : 'ui_click');
+      sp.sel = e.id; sp.note = note || `${ru ? 'Создано' : 'Spawned'}: ${x.name}${made > 1 ? ' ×' + made : ''}`;
+      this.drawSpawner();
+    }
+    spawnerCheat(id) {
+      const g = this.g, ru = this.ui.lang === 'ru';
+      if (id === 'money1' || id === 'money10') { g.money += id === 'money1' ? 1000 : 10000; return `${this.t('money')}: ${g.money} RU`; }
+      if (id === 'heal') { g.healPlayer(); return ru ? 'Здоровье восстановлено' : 'Fully healed'; }
+      if (id === 'repair') { g.repairGear(); return ru ? 'Снаряжение как новое' : 'Gear is as good as new'; }
+      if (id === 'god') { g.god = !g.god; return `${ru ? 'Бессмертие' : 'God mode'}: ${g.god ? this.t('on') : this.t('off')}`; }
+      if (id === 'clear') return `${ru ? 'Убрано' : 'Removed'}: ${g.clearSpawned()}`;
+      return null;
     }
 
     // ================================================================ intro / ending slides (drawn on the HUD canvas)

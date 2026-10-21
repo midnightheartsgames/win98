@@ -115,7 +115,7 @@
       const s = this.state, su = s.su;
       return this.suTeam().map(k => {
         const st = this.suSpecStats(k), hp = su.hp[k];
-        return { key: k, charId: this.kitOf(k), name: k === 'trail' ? s.name : undefined, lvl: s.roster[k].lvl, stats: st, hp: hp == null ? st.hp : Math.min(hp, st.hp), energy: su.en[k] || 0, cone: this.coneEffect(k), sets: this.planarSets(k) };
+        return { key: k, charId: this.kitOf(k), name: k === 'trail' ? s.name : undefined, lvl: s.roster[k].lvl, stats: st, hp: hp == null ? st.hp : Math.min(hp, st.hp), energy: su.en[k] || 0, cone: this.coneEffect(k), sets: this.planarSets(k), tr: this.traceSpec(k), eid: s.roster[k].eid || 0 };
       });
     },
 
@@ -423,7 +423,8 @@
         res.pending = true;
       } else {
         if (!first) s.power -= rw.power;
-        this.give({ jade: res.jade, credits: res.credits, ornament: res.sets.map(x => ({ set: x.set, rl: x.rl })) });
+        if (first && w.id >= 3) res.tracks = 1;
+        this.give({ jade: res.jade, credits: res.credits, ornament: res.sets.map(x => ({ set: x.set, rl: x.rl })), items: res.tracks ? { tracks: res.tracks } : null });
       }
       su.result = res;
       this.pending = { type: 'ui', ui: 'su_end', res };

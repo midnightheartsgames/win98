@@ -738,13 +738,8 @@
     resultTag(c, r, a) {
       if (a <= 0) return;
       const ui = this.ui;
-      const lines = r.kind === 'char'
-        ? (r.res === 'new' ? [['Новый персонаж!', C.ok], ['присоединился к экипажу', C.cream]] : r.res === 'eid' ? [['Дубликат', C.sub], ['Эйдолон +1', C.gold]] : [['Дубликат', C.sub], ['+3 000 кредитов', C.gold]])
-        : r.sup > 1 ? [['Дубликат', C.sub], ['Наложение S' + r.sup, C.gold]] : [['Световой конус', C.sub], ['добавлен в инвентарь', C.cream]];
-      const x = W - 196, y = HGT - 104;
       c.save(); c.globalAlpha = a;
-      ui.win(x, y, 182, 50, { alpha: 0.9 });
-      lines.forEach(([s, col], i) => ui.text(s, x + 14, y + 10 + i * 16, { size: i ? 11 : 12, bold: !i, col }));
+      ui.resultTag(W - 196, HGT - 104, r, [['Новый персонаж!', C.ok], ['присоединился к экипажу', C.cream]]);
       c.restore();
     }
 
@@ -761,7 +756,7 @@
         c.save(); c.globalAlpha = k;
         ui.text(fit(ui, r.name, 118, 10, r.rar >= 4), p[0] * 2, p[1] * 2 - 2, { size: 10, bold: r.rar >= 4, align: 'center', col: r.rar >= 4 ? LIGHT[r.rar] : C.cream });
         if (r.kind === 'char' && q) {
-          const tag = r.res === 'new' ? 'НОВЫЙ' : r.res === 'eid' ? 'Эйдолон +1' : '+3000 кр.';
+          const tag = r.res === 'new' ? 'НОВЫЙ' : r.res === 'eid' ? 'Эйдолон +1' : r.res === 'max' ? 'Эйдолоны VI' : '+3000 кр.';
           const w = ui.measure(tag, 9, true) + 10, tx = q[0] * 2 - w + 6, ty = q[1] * 2 - 8;
           c.fillStyle = r.res === 'new' ? '#e8c060' : '#2a3060'; c.fillRect(tx, ty, w, 13);
           c.strokeStyle = '#1a1208'; c.strokeRect(tx + 0.5, ty + 0.5, w - 1, 12);
@@ -770,7 +765,9 @@
         c.restore();
       });
       const best = this.res.filter(r => r.rar >= 4).length, news = this.res.filter(r => r.kind === 'char' && r.res === 'new').length;
-      const note = '4★ и выше: ' + best + (news ? ' · новых персонажей: ' + news : '');
+      const sum = { starlight: 0, embers: 0 };
+      for (const r of this.res) { const gl = ui.glowOf(r); if (gl) sum[gl.cur] += gl.n; }
+      const note = '4★ и выше: ' + best + (news ? ' · новых персонажей: ' + news : '') + (sum.starlight ? ' · звёздный свет +' + sum.starlight : '') + (sum.embers ? ' · пепел +' + sum.embers : '');
       ui.text(note, W / 2, HGT - 42, { align: 'center', size: 11, col: C.sub });
       ui.hints([['Enter', 'Готово']], W / 2, HGT - 22, { align: 'center' });
     }

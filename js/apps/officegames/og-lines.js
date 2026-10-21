@@ -21,6 +21,7 @@ class AppOgLines {
     this.floatingTexts = [];
     this.particles = [];
     this.animTick = 0;
+    this.lastFrameTime = 0;
 
     this.colors = [
       '#e62e2e',
@@ -53,6 +54,10 @@ class AppOgLines {
       try {
         localStorage.setItem('office_games_scores_lines98', String(this.highScore));
       } catch (e) {}
+      if (window.appOfficeLauncher && window.appOfficeLauncher.win) window.appOfficeLauncher.populateList();
+      if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+        window.appClippy.onOfficeGameEvent('lines98', 'high_score', { score: this.highScore });
+      }
     }
   }
 
@@ -228,6 +233,7 @@ class AppOgLines {
     this.selected = null;
     this.floatingTexts = [];
     this.particles = [];
+    this.lastFrameTime = 0;
 
     this.board = [];
     for (let r = 0; r < this.size; r++) {
@@ -440,6 +446,9 @@ class AppOgLines {
         if (iconEl && window.Icons) iconEl.innerHTML = window.Icons['game-manager'] || '';
       }
     }
+    if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+      window.appClippy.onOfficeGameEvent('lines98', this.bossMode ? 'boss_on' : 'boss_off');
+    }
   }
 
   onKeyDown(e) {
@@ -527,13 +536,13 @@ class AppOgLines {
   createSparks(x, y, color) {
     for (let i = 0; i < 7; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const spd = 1.2 + Math.random() * 2.5;
+      const spd = 0.7 + Math.random() * 1.4;
       this.particles.push({
         x,
         y,
         vx: Math.cos(angle) * spd,
         vy: Math.sin(angle) * spd,
-        life: 14,
+        life: 26,
         color
       });
     }
@@ -544,8 +553,8 @@ class AppOgLines {
       text,
       x,
       y,
-      vy: -1.0,
-      life: 24,
+      vy: -0.55,
+      life: 40,
       color
     });
   }
@@ -590,7 +599,7 @@ class AppOgLines {
         const val = this.board[r][c];
         if (val !== -1) {
           const isSel = this.selected && this.selected.r === r && this.selected.c === c;
-          const bounce = isSel ? Math.sin(this.animTick * 0.2) * 3 : 0;
+          const bounce = isSel ? Math.sin(this.animTick * 0.1) * 2.5 : 0;
 
           const cx = x + this.cellSize / 2;
           const cy = y + this.cellSize / 2 + bounce;
@@ -664,11 +673,17 @@ class AppOgLines {
     }
   }
 
-  gameLoop() {
+  gameLoop(now) {
     if (!this.win) return;
     this.animId = requestAnimationFrame(this.loop);
 
     if (this.bossMode) return;
+
+    const currentTime = now || ((window.performance && window.performance.now) ? window.performance.now() : Date.now());
+    if (currentTime - this.lastFrameTime < 16) {
+      return;
+    }
+    this.lastFrameTime = currentTime;
 
     this.animTick++;
     this.draw();

@@ -23,6 +23,14 @@ class WindowManager {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         document.querySelectorAll('.win-menu-item.active').forEach(m => m.classList.remove('active'));
+        this.hideAltTabSwitcher();
+      }
+      this.handleGlobalShortcuts(e);
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'Alt' && this.altTabState && this.altTabState.active) {
+        this.commitAltTabSelection();
       }
     });
 
@@ -33,6 +41,145 @@ class WindowManager {
         }
       });
     });
+  }
+
+  handleGlobalShortcuts(e) {
+    if (e.key === 'Shift' && !e.repeat && !e.ctrlKey && !e.altKey && !e.metaKey) {
+      const now = Date.now();
+      if (!this.shiftPressTimes) this.shiftPressTimes = [];
+      this.shiftPressTimes = this.shiftPressTimes.filter(t => now - t < 2500);
+      this.shiftPressTimes.push(now);
+      if (this.shiftPressTimes.length >= 5) {
+        this.shiftPressTimes = [];
+        if (window.appCPanel && typeof window.appCPanel.openStickyKeysPrompt === 'function') {
+          window.appCPanel.openStickyKeysPrompt();
+        }
+      }
+      return;
+    }
+    if (e.key !== 'Shift' && this.shiftPressTimes) {
+      this.shiftPressTimes = [];
+    }
+
+    if (e.altKey && (e.key === 'Tab' || e.key === '`')) {
+      e.preventDefault();
+      this.cycleAltTab(e.shiftKey ? -1 : 1);
+      return;
+    }
+
+    if (e.altKey && e.key === 'F4') {
+      e.preventDefault();
+      if (this.activeWindowId && this.windows.has(this.activeWindowId)) {
+        this.closeWindow(this.activeWindowId);
+      } else if (window.appShutdown && typeof window.appShutdown.openDialog === 'function') {
+        window.appShutdown.openDialog();
+      }
+      return;
+    }
+
+    if ((e.ctrlKey && e.altKey && (e.key === 'Delete' || e.key === 'Backspace')) || (e.ctrlKey && e.shiftKey && e.key === 'Escape')) {
+      e.preventDefault();
+      if (window.appTaskManager && typeof window.appTaskManager.open === 'function') {
+        window.appTaskManager.open();
+      }
+      return;
+    }
+
+    const isWinChord = e.metaKey || (e.ctrlKey && e.altKey);
+    if (isWinChord && !e.shiftKey) {
+      const k = (e.key || '').toLowerCase();
+      if (k === 'r') {
+        e.preventDefault();
+        if (window.appDialogs && typeof window.appDialogs.openRunDialog === 'function') {
+          window.appDialogs.openRunDialog();
+        }
+      } else if (k === 'e') {
+        e.preventDefault();
+        if (window.appExplorer && typeof window.appExplorer.open === 'function') {
+          window.appExplorer.open(['My Computer'], { showTree: true });
+        }
+      } else if (k === 'd' || k === 'm') {
+        e.preventDefault();
+        if (window.taskbar && typeof window.taskbar.toggleShowDesktop === 'function') {
+          window.taskbar.toggleShowDesktop();
+        } else {
+          this.minimizeAll();
+        }
+      }
+    }
+  }
+
+  cycleAltTab(step = 1) {
+    const list = Array.from(this.windows.values()).sort((a, b) => (parseInt(b.element.style.zIndex || 0, 10)) - (parseInt(a.element.style.zIndex || 0, 10)));
+    if (list.length === 0) return;
+
+    if (!this.altTabState || !this.altTabState.active) {
+      this.altTabState = {
+        active: true,
+        list,
+        index: list.length > 1 ? 1 : 0
+      };
+    } else {
+      this.altTabState.list = list;
+      this.altTabState.index = (this.altTabState.index + step + list.length) % list.length;
+    }
+
+    let switcher = document.getElementById('alt-tab-switcher');
+    if (!switcher && document.body) {
+      switcher = document.createElement('div');
+      switcher.id = 'alt-tab-switcher';
+      document.body.appendChild(switcher);
+    }
+    if (!switcher) return;
+
+    const selectedWin = this.altTabState.list[this.altTabState.index] || this.altTabState.list[0];
+    switcher.innerHTML = `
+      <div class="alt-tab-icons">
+        ${this.altTabState.list.map((w, idx) => `
+          <div class="alt-tab-icon${idx === this.altTabState.index ? ' selected' : ''}" data-win-id="${w.id}">
+            ${(typeof Icons !== 'undefined' && Icons[w.icon]) || (typeof Icons !== 'undefined' && Icons['notepad']) || ''}
+          </div>
+        `).join('')}
+      </div>
+      <div class="alt-tab-title">${selectedWin ? selectedWin.title : ''}</div>
+    `;
+    switcher.classList.add('active');
+    switcher.querySelectorAll('.alt-tab-icon').forEach((iconEl, idx) => {
+      iconEl.addEventListener('click', () => {
+        this.altTabState.index = idx;
+        this.commitAltTabSelection();
+      });
+    });
+  }
+
+  commitAltTabSelection() {
+    if (!this.altTabState || !this.altTabState.active) return;
+    const target = this.altTabState.list[this.altTabState.index];
+    this.hideAltTabSwitcher();
+    if (target && this.windows.has(target.id)) {
+      if (target.isMinimized) {
+        this.restoreWindow(target.id);
+      } else {
+        this.bringToTop(target.id);
+      }
+    }
+  }
+
+  closeAllWindows() {
+    Array.from(this.windows.keys()).forEach(id => {
+      const win = this.windows.get(id);
+      if (!win) return;
+      win.beforeClose = null;
+      this.closeWindow(id);
+    });
+    this.hideAltTabSwitcher();
+    this.activeWindowId = null;
+  }
+
+  hideAltTabSwitcher() {
+    if (this.altTabState) this.altTabState.active = false;
+    const switcher = document.getElementById('alt-tab-switcher');
+    if (switcher) switcher.classList.remove('active');
   }
 
   deactivateAll() {
@@ -187,6 +334,8 @@ class WindowManager {
       resizable = true,
       minimizable = true,
       maximizable = true,
+      helpButton = false,
+      onHelp = null,
       isDialog = false,
       content = '',
       onClose = null
@@ -261,6 +410,18 @@ class WindowManager {
         this.toggleMaximize(id);
       });
       controls.appendChild(btnMax);
+    }
+
+    if (helpButton || onHelp) {
+      const btnHelp = document.createElement('button');
+      btnHelp.className = 'win-control-btn btn-help';
+      btnHelp.innerHTML = Icons['cap-help'] || '?';
+      btnHelp.title = t('start.help');
+      btnHelp.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (typeof onHelp === 'function') onHelp(e);
+      });
+      controls.appendChild(btnHelp);
     }
 
     const btnClose = document.createElement('button');
@@ -368,6 +529,26 @@ class WindowManager {
     return winObj;
   }
 
+  effectOn(className) {
+    const list = typeof document !== 'undefined' && document.body && document.body.classList;
+    return Boolean(list && typeof list.contains === 'function' && list.contains(className));
+  }
+
+  placeDragFrame(frame, box) {
+    frame.style.left = box.left + 'px';
+    frame.style.top = box.top + 'px';
+    frame.style.width = box.width + 'px';
+    frame.style.height = box.height + 'px';
+  }
+
+  openDragFrame() {
+    if (!this.effectOn('fx-outline-drag')) return null;
+    const frame = document.createElement('div');
+    frame.className = 'win-drag-outline';
+    document.body.appendChild(frame);
+    return frame;
+  }
+
   attachDrag(win, handleEl) {
     let startX = 0, startY = 0;
     let initialLeft = 0, initialTop = 0;
@@ -383,6 +564,9 @@ class WindowManager {
       const rect = win.element.getBoundingClientRect();
       initialLeft = rect.left;
       initialTop = rect.top;
+      const outline = this.effectOn('fx-outline-drag');
+      let frame = null;
+      let pending = null;
 
       const onMouseMove = (moveEvent) => {
         const dx = moveEvent.clientX - startX;
@@ -394,6 +578,13 @@ class WindowManager {
         newTop = Math.max(0, Math.min(window.innerHeight - 50, newTop));
         newLeft = Math.max(-win.element.offsetWidth + 100, Math.min(window.innerWidth - 100, newLeft));
 
+        if (outline) {
+          if (!frame) frame = this.openDragFrame();
+          pending = { left: newLeft, top: newTop };
+          if (frame) this.placeDragFrame(frame, { left: newLeft, top: newTop, width: rect.width, height: rect.height });
+          return;
+        }
+
         win.element.style.left = newLeft + 'px';
         win.element.style.top = newTop + 'px';
       };
@@ -401,6 +592,11 @@ class WindowManager {
       const onMouseUp = () => {
         window.removeEventListener('mousemove', onMouseMove);
         window.removeEventListener('mouseup', onMouseUp);
+        if (frame) frame.remove();
+        if (pending) {
+          win.element.style.left = pending.left + 'px';
+          win.element.style.top = pending.top + 'px';
+        }
         this.saveWindowBounds(win.id);
       };
 
@@ -427,6 +623,9 @@ class WindowManager {
         const startH = rect.height;
         const startL = rect.left;
         const startT = rect.top;
+        const outline = this.effectOn('fx-outline-drag');
+        let frame = null;
+        let pending = null;
 
         const onMouseMove = (moveEvent) => {
           const dx = moveEvent.clientX - startX;
@@ -457,6 +656,13 @@ class WindowManager {
             }
           }
 
+          if (outline) {
+            if (!frame) frame = this.openDragFrame();
+            pending = { left: newL, top: newT, width: newW, height: newH };
+            if (frame) this.placeDragFrame(frame, pending);
+            return;
+          }
+
           win.element.style.width = newW + 'px';
           win.element.style.height = newH + 'px';
           win.element.style.left = newL + 'px';
@@ -466,6 +672,13 @@ class WindowManager {
         const onMouseUp = () => {
           window.removeEventListener('mousemove', onMouseMove);
           window.removeEventListener('mouseup', onMouseUp);
+          if (frame) frame.remove();
+          if (pending) {
+            win.element.style.width = pending.width + 'px';
+            win.element.style.height = pending.height + 'px';
+            win.element.style.left = pending.left + 'px';
+            win.element.style.top = pending.top + 'px';
+          }
           this.saveWindowBounds(win.id);
         };
 
@@ -480,6 +693,7 @@ class WindowManager {
     if (!win || !win.resizable) return;
 
     const btnMax = win.element.querySelector('.btn-max');
+    const fromCaption = this.captionRect(win);
 
     if (win.isMaximized) {
       win.element.classList.remove('maximized');
@@ -507,6 +721,7 @@ class WindowManager {
         btnMax.title = window.i18n ? window.i18n.t('win.restore') : 'Restore';
       }
     }
+    this.animateCaption(fromCaption, this.captionRect(win));
     this.saveWindowBounds(id);
   }
 
@@ -514,8 +729,10 @@ class WindowManager {
     const win = this.windows.get(id);
     if (!win) return;
 
+    const fromCaption = win.isMinimized ? null : this.captionRect(win);
     win.isMinimized = true;
     win.element.classList.add('minimized');
+    this.animateCaption(fromCaption, this.taskbarButtonRect(id));
 
     if (window.taskbar) {
       window.taskbar.updateActiveState(null);
@@ -541,9 +758,42 @@ class WindowManager {
     const win = this.windows.get(id);
     if (!win) return;
 
+    const fromButton = win.isMinimized ? this.taskbarButtonRect(id) : null;
     win.isMinimized = false;
     win.element.classList.remove('minimized');
+    this.animateCaption(fromButton, this.captionRect(win));
     this.bringToTop(id);
+  }
+
+  captionRect(win) {
+    if (!this.effectOn('fx-animate') || !win || !win.element.getBoundingClientRect) return null;
+    const r = win.element.getBoundingClientRect();
+    if (!r.width) return null;
+    return { left: r.left + 3, top: r.top + 3, width: Math.max(0, r.width - 6) };
+  }
+
+  taskbarButtonRect(id) {
+    if (!this.effectOn('fx-animate')) return null;
+    const btn = window.taskbar && window.taskbar.windowButtons && window.taskbar.windowButtons.get(id);
+    if (!btn || !btn.getBoundingClientRect) return null;
+    const r = btn.getBoundingClientRect();
+    if (!r.width || r.top >= window.innerHeight) return null;
+    return { left: r.left, top: r.top + (r.height - 18) / 2, width: r.width };
+  }
+
+  animateCaption(from, to) {
+    if (!from || !to) return;
+    const caption = document.createElement('div');
+    caption.className = 'win-zoom-caption';
+    document.body.appendChild(caption);
+    if (typeof caption.animate !== 'function') {
+      caption.remove();
+      return;
+    }
+    const box = r => ({ left: r.left + 'px', top: r.top + 'px', width: r.width + 'px' });
+    const run = caption.animate([box(from), box(to)], { duration: 220, easing: 'ease-in-out', fill: 'forwards' });
+    run.onfinish = () => caption.remove();
+    run.oncancel = () => caption.remove();
   }
 
   closeWindow(id) {
@@ -607,6 +857,10 @@ class WindowManager {
         this.minimizeWindow(win.id);
       }
     });
+  }
+
+  minimizeAllWindows() {
+    this.minimizeAll();
   }
 
   cascadeWindows() {

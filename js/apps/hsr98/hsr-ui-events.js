@@ -6,8 +6,10 @@
     { id: 'comet', title: 'Подарок кометы', icon: 'spass' },
     { id: 'will', title: 'Воля Первопроходца', icon: 'pass' }
   ];
+  H.EVENT_TABS = EVENTS;
   const PX = 188, PY = 40, PW = 440, PH = 412;
   const STAMP = '#d0343e';
+  const MAIL_VIS = 6, MAIL_ROW = 56, LETTER_STEP = 8;
   const COMET_NAV = { right: [1, 2, 6, 4, 5, 6, 6], left: [0, 0, 1, 3, 3, 4, 2], up: [0, 1, 2, 0, 1, 2, 6], down: [3, 4, 5, 3, 4, 5, 6] };
   const pad2 = n => String(n).padStart(2, '0');
   const clockLeft = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return pad2(Math.floor(s / 3600)) + ':' + pad2(Math.floor(s / 60) % 60) + ':' + pad2(s % 60); };
@@ -33,6 +35,12 @@
       const label = H.fmt(n), bw = Math.round(this.measure(label, 9, true) + 6);
       c.fillStyle = '#0a0a10'; c.fillRect(x + s - bw, y + s - 12, bw, 12);
       this.text(label, x + s - bw / 2, y + s - 11, { align: 'center', size: 9, bold: true, col: '#ffffff', shadow: false });
+    },
+
+    outfitCell(c, id, x, y, s) {
+      G.rarityCell(c, x, y, s, s, H.OUTFITS[id].rarity);
+      G.drawPortrait(c, H.outfitLook(id, this.game.state.gender), x + 2, y + 1, s - 4);
+      G.menuIcon(c, 'outfit', x + s - 14, y + s - 14, 14, '#fff0c0');
     },
 
     openEventsNotice() {
@@ -65,10 +73,10 @@
     },
 
     openEvents(id) {
-      const ui = this, g = this.game;
+      const ui = this, g = this.game, tabs = () => EVENTS.filter(e => !e.show || e.show(g));
       this.push({
-        full: true, tab: Math.max(0, EVENTS.findIndex(e => e.id === id)), pick: 0,
-        ev() { return EVENTS[this.tab]; },
+        full: true, tab: Math.max(0, tabs().findIndex(e => e.id === id)), pick: 0,
+        ev() { return tabs()[this.tab] || tabs()[0]; },
         setTab(i) { if (i === this.tab) return; this.tab = i; this.pick = 0; ui.sfx('select'); },
         report(got) {
           if (!got || !got.length) { ui.sfx('deny'); return false; }
@@ -88,14 +96,16 @@
           ui.plate(12, 10, 'События');
           ui.closeBtn(W - 32, 10, () => this.key('back'));
           ui.win(PX, PY, PW, PH, { top: '#121848', bottom: '#060924' });
-          EVENTS.forEach((e, i) => ui.eventTab(c, e, i, i === this.tab, () => this.setTab(i)));
-          if (this.ev().id === 'comet') ui.cometPage(c, this); else ui.willPage(c, this);
+          tabs().forEach((e, i) => ui.eventTab(c, e, i, i === this.tab, () => this.setTab(i)));
+          const ev = this.ev();
+          if (ev.id === 'comet') ui.cometPage(c, this); else if (ev.id === 'will') ui.willPage(c, this); else ui[ev.page](c, this);
           ui.hints([['Q/E', 'Событие'], ['←↑↓→', 'Награда'], ['Enter', 'Получить'], ['F', 'Получить всё'], ['Esc', 'Назад']], 12, HGT - 18);
         },
         key(k, code) {
           if (k === 'back') { ui.pop(); return; }
-          if (code === 'KeyQ' || code === 'KeyE') { this.setTab((this.tab + (code === 'KeyQ' ? EVENTS.length - 1 : 1)) % EVENTS.length); return; }
+          if (code === 'KeyQ' || code === 'KeyE') { const n = tabs().length; this.setTab((this.tab + (code === 'KeyQ' ? n - 1 : 1)) % n); return; }
           if (code === 'KeyF') { this.claimAll(); return; }
+          if (this.ev().key) { this.ev().key(ui, this, k); return; }
           if (k === 'ok') { this.claim(this.pick); return; }
           if (!k || !COMET_NAV[k]) return;
           const next = this.ev().id === 'comet' ? COMET_NAV[k][this.pick] : Math.max(0, Math.min(H.TRAIL_WILL.length - 1, this.pick + (k === 'left' ? -1 : k === 'right' ? 1 : 0)));
@@ -106,7 +116,7 @@
 
     eventTab(c, e, i, on, pick) {
       const g = this.game, x = 12, y = PY + 4 + i * 66, w = on ? PX - 10 : PX - 18, h = 58;
-      const done = e.id === 'comet' ? H.COMET_GIFT.every((n, j) => g.state.comet.got[j]) : H.TRAIL_WILL.every(t => g.state.will.includes(t.lvl));
+      const done = e.done ? e.done(g) : e.id === 'comet' ? H.COMET_GIFT.every((n, j) => g.state.comet.got[j]) : H.TRAIL_WILL.every(t => g.state.will.includes(t.lvl));
       const bg = c.createLinearGradient(x, 0, x + w, 0);
       bg.addColorStop(0, on ? '#343a82' : '#141a44'); bg.addColorStop(1, on ? '#1c2256' : '#0c1030');
       c.fillStyle = '#000'; c.fillRect(x, y, w, h);
@@ -116,7 +126,7 @@
       G.rarityCell(c, x + 10, y + 9, 40, 40, 5);
       G.itemIcon(c, e.icon, x + 14, y + 12, 32);
       this.wrap(e.title, 90, 12).slice(0, 2).forEach((l, j) => this.text(l, x + 58, y + 7 + j * 14, { size: 12, bold: true, col: on ? C.gold : C.cream }));
-      const sub = done ? 'Всё получено' : e.id === 'comet' ? 'Вход: ' + g.cometTick().days + ' из ' + H.COMET_GIFT.length : 'Ур. освоения ' + g.state.roster.trail.lvl;
+      const sub = done ? 'Всё получено' : e.sub ? e.sub(g) : e.id === 'comet' ? 'Вход: ' + g.cometTick().days + ' из ' + H.COMET_GIFT.length : 'Ур. освоения ' + g.trailLevel();
       this.text(sub, x + 58, y + 39, { size: 10, col: done ? C.ok : C.sub });
       if (!done && g.eventReady(e.id)) this.badge(x + w - 12, y + 12);
       this.hit(x, y, w, h, pick);
@@ -197,7 +207,7 @@
     },
 
     willPage(c, scr) {
-      const g = this.game, lvl = g.state.roster.trail.lvl;
+      const g = this.game, lvl = g.trailLevel();
       const hx = PX + 4, hy = PY + 4, hw = PW - 8, hh = PH - 8;
       const sky = c.createLinearGradient(0, hy, 0, hy + hh);
       sky.addColorStop(0, '#0a1440'); sky.addColorStop(0.7, '#12225a'); sky.addColorStop(1, '#1c2a5e');
@@ -216,7 +226,7 @@
       this.text('Повышайте уровень освоения: на каждой станции пути ждёт награда.', hx + 12, hy + 82, { size: 10, col: '#c8d4f4' });
       const railY = PY + PH - 58, rx0 = PX + 18, rx1 = PX + PW - 18;
       const xs = H.TRAIL_WILL.map((w, i) => PX + 64 + i * 104);
-      const pts = [[1, rx0], ...H.TRAIL_WILL.map((w, i) => [w.lvl, xs[i]]), [H.MAX_LVL, rx1]];
+      const pts = [[1, rx0], ...H.TRAIL_WILL.map((w, i) => [w.lvl, xs[i]]), [H.TL_MAX, rx1]];
       let mx = rx1;
       for (let i = 1; i < pts.length; i++) if (lvl <= pts[i][0]) { const [l0, x0] = pts[i - 1], [l1, x1] = pts[i]; mx = x0 + (x1 - x0) * (lvl - l0) / Math.max(1, l1 - l0); break; }
       H.TRAIL_WILL.forEach((w, i) => {
@@ -260,7 +270,7 @@
     openMail() {
       const ui = this, g = this.game;
       const scr = this.push({
-        full: true,
+        full: true, sc: { top: 0 }, bsc: { top: 0 },
         list() { return g.mailbox(); },
         cur() { const l = this.list(); return l[Math.min(this.sel, l.length - 1)] || null; },
         read() { const x = this.cur(); if (x) g.readMail(x.m.id); },
@@ -281,26 +291,30 @@
           ui.closeBtn(W - 32, 10, () => this.key('back'));
           ui.win(12, 40, 226, 368, { top: '#121848', bottom: '#060924' });
           if (!list.length) ui.text('Пусто', 28, 56, { size: 11, col: C.dim });
-          list.slice(0, 6).forEach((x, i) => {
-            const y = 50 + i * 56, on = !!cur && cur.m.id === x.m.id, fresh = g.mailNew(x);
-            c.fillStyle = on ? 'rgba(242,220,154,0.2)' : i % 2 ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.15)'; c.fillRect(20, y, 210, 52);
+          const vis = MAIL_VIS, bar = list.length > vis, rw = bar ? 196 : 210, first = ui.listTop(this.sc, Math.min(this.sel, list.length - 1), list.length, vis);
+          ui.wheelZone(12, 40, 226, 368, d => { this.sc.top += d; });
+          list.slice(first, first + vis).forEach((x, j) => {
+            const i = first + j, y = 50 + j * MAIL_ROW, on = !!cur && cur.m.id === x.m.id, fresh = g.mailNew(x);
+            c.fillStyle = on ? 'rgba(242,220,154,0.2)' : i % 2 ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.15)'; c.fillRect(20, y, rw, 52);
             if (on) { c.fillStyle = C.brassHi; c.fillRect(20, y, 2, 52); }
             G.menuIcon(c, 'mail', 28, y + 12, 26, x.st.read ? '#7a82a8' : C.brassHi);
-            ui.wrap(x.m.title, 148, 11).slice(0, 2).forEach((l, j) => ui.text(l, 60, y + 6 + j * 13, { size: 11, bold: !x.st.read, col: x.st.read ? C.sub : C.cream }));
+            ui.wrap(x.m.title, rw - 62, 11).slice(0, 2).forEach((l, k) => ui.text(l, 60, y + 6 + k * 13, { size: 11, bold: !x.st.read, col: x.st.read ? C.sub : C.cream }));
             ui.text(dateOf(x.st.at), 60, y + 35, { size: 9, col: C.dim });
-            if (x.m.give && !x.st.got) G.itemIcon(c, 'jade', 206, y + 30, 18);
-            if (fresh && !x.st.read) ui.badge(222, y + 8);
-            ui.hit(20, y, 210, 52, () => this.select(i));
+            if (x.m.give && !x.st.got) G.itemIcon(c, 'jade', 20 + rw - 24, y + 30, 18);
+            if (fresh && !x.st.read) ui.badge(20 + rw - 8, y + 8);
+            ui.hit(20, y, rw, 52, () => this.select(i));
           });
+          if (bar) ui.scrollBar(222, 50, vis * MAIL_ROW - 4, this.sc, list.length, vis);
           const any = list.some(x => x.m.give && !x.st.got), old = list.some(x => x.st.read && (x.st.got || !x.m.give));
           ui.button(12, 414, 126, 26, 'Удалить прочитанные', () => this.askDelete(), { disabled: !old, size: 10 });
           ui.button(142, 414, 96, 26, 'Получить все', () => this.claimAll(), { disabled: !any, size: 10 });
-          ui.mailLetter(c, cur, () => this.claim());
-          ui.hints([['↑↓', 'Письмо'], ['Enter', 'Получить'], ['F', 'Получить все'], ['Del', 'Удалить прочитанные'], ['Esc', 'Назад']], 12, HGT - 18);
+          ui.mailLetter(c, cur, () => this.claim(), this.bsc);
+          ui.hints([['↑↓', 'Письмо'], ['PgUp/PgDn', 'Текст'], ['Enter', 'Получить'], ['F', 'Получить все'], ['Del', 'Удалить прочитанные'], ['Esc', 'Назад']], 12, HGT - 18);
         },
         key(k, code) {
           if (k === 'back') { ui.pop(); return; }
           if (k === 'up' || k === 'down') { this.select(this.sel + (k === 'up' ? -1 : 1)); return; }
+          if (code === 'PageUp' || code === 'PageDown') { this.bsc.top += (code === 'PageUp' ? -1 : 1) * Math.max(1, (this.bsc.vis || 2) - 2); return; }
           if (k === 'ok') { this.claim(); return; }
           if (code === 'KeyF') { this.claimAll(); return; }
           if (code === 'Delete') this.askDelete();
@@ -309,7 +323,7 @@
       scr.read();
     },
 
-    mailLetter(c, x, claim) {
+    mailLetter(c, x, claim, sc) {
       const lx = 246, ly = 40, lw = 382, lh = 412;
       this.win(lx, ly, lw, lh, { top: '#141a4c', bottom: '#070a26' });
       if (!x) {
@@ -339,22 +353,46 @@
       c.restore();
       const top = my + 32;
       c.fillStyle = 'rgba(201,164,92,0.45)'; c.fillRect(lx + 14, top - 8, lw - 28, 1);
-      let y = top;
-      for (const para of m.text) {
-        for (const l of this.wrap(para, lw - 40, 12)) { this.text(l, lx + 20, y, { size: 12, col: C.cream }); y += 16; }
-        y += 6;
-      }
+      const ay = ly + lh - 104, bottom = m.give ? ay - 16 : ly + lh - 12;
+      this.letterBody(m, lx, top, lw, bottom - top, sc || { top: 0 });
       if (!m.give) return;
-      const ay = ly + lh - 104;
       c.fillStyle = 'rgba(201,164,92,0.45)'; c.fillRect(lx + 14, ay - 10, lw - 28, 1);
       this.text('Вложения', lx + 20, ay, { size: 11, bold: true, col: C.sub });
-      const gifts = rewardList(m.give), cs = gifts.length > 3 ? 42 : 48, step = gifts.length > 3 ? 48 : 58;
+      const fits = [].concat(m.give.outfit || []).filter(id => H.OUTFITS && H.OUTFITS[id]).map(id => ['outfit', id]);
+      const gifts = fits.concat(rewardList(m.give)), cs = gifts.length > 3 ? 42 : 48, step = gifts.length > 3 ? 48 : 58;
       gifts.forEach(([id, n], i) => {
-        this.rewardCell(c, id, n, lx + 20 + i * step, ay + 18, cs);
+        if (id === 'outfit') this.outfitCell(c, n, lx + 20 + i * step, ay + 18, cs);
+        else this.rewardCell(c, id, n, lx + 20 + i * step, ay + 18, cs);
         if (st.got) { c.fillStyle = 'rgba(4,6,20,0.5)'; c.fillRect(lx + 20 + i * step, ay + 18, cs, cs); }
       });
       if (st.got) this.stamp(lx + lw - 84, ay + 42, 'Получено');
       else this.button(lx + lw - 150, ay + 30, 130, 28, 'Получить', claim, { active: true, bold: true });
+    },
+
+    letterBody(m, lx, top, lw, h, sc) {
+      const c = this.ctx, layout = width => {
+        const lines = [];
+        let y = 0;
+        for (const para of m.text) {
+          for (const l of this.wrap(para, width, 12)) { lines.push([l, y]); y += 16; }
+          y += 6;
+        }
+        return { lines, total: y - 6 };
+      };
+      let { lines, total } = layout(lw - 40);
+      const bar = total > h;
+      if (bar) ({ lines, total } = layout(lw - 56));
+      const n = Math.ceil(total / LETTER_STEP), vis = Math.floor(h / LETTER_STEP);
+      if (sc.id !== m.id) { sc.id = m.id; sc.top = 0; }
+      sc.vis = vis;
+      sc.top = bar ? Math.max(0, Math.min(Math.round(sc.top), n - vis)) : 0;
+      const off = sc.top * LETTER_STEP;
+      c.save(); c.beginPath(); c.rect(lx + 8, top - 2, lw - 16, h + 2); c.clip();
+      for (const [l, y] of lines) if (y + 16 > off && y < off + h) this.text(l, lx + 20, top + y - off, { size: 12, col: C.cream });
+      c.restore();
+      if (!bar) return;
+      this.wheelZone(lx, top, lw, h, d => { sc.top += d * 2; });
+      this.scrollBar(lx + lw - 24, top, h, sc, n, vis);
     },
 
     confirmMailDelete(n, done) {

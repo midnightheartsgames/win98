@@ -244,6 +244,21 @@ class GameManager {
         desc: 'Культовый хоккейный симулятор от EA Sports! Реалистичная физика шайбы, динамичные матчи, силовые приемы у бортов, броски в девятку и атмосфера настоящей ледовой арены.',
         launch: () => window.appHockey && window.appHockey.open()
       },
+      worldcup98: {
+        id: 'worldcup98',
+        title: 'World Cup 98',
+        subtitle: 'Официальный симулятор Чемпионата мира по футболу France 98',
+        developer: 'EA Sports (1998)',
+        price: 0,
+        priceDisplay: 'DEMO',
+        icon: 'worldcup98',
+        setupExe: 'worldcup98.exe',
+        targetExe: 'WORLDCUP98.EXE',
+        folder: 'WorldCup98',
+        fileSize: '16.8 MB (Igromania CD Edition)',
+        desc: 'Официальный футбольный симулятор Чемпионата мира 1998 года во Франции от EA Sports! 16 сборных, тактические схемы (4-4-2, 4-3-3, 3-5-2, 5-3-2), удары с лёта и подкрутка мяча, правило «Золотого гола», исторические сценарии World Cup Classics и серии пенальти.',
+        launch: () => window.appWorldCup98 && window.appWorldCup98.open()
+      },
       diablo: {
         id: 'diablo',
         steam: true,
@@ -427,8 +442,8 @@ class GameManager {
         setupExe: 'Setup_StarRail98.exe',
         targetExe: 'STARRAIL.EXE',
         folder: 'StarRail98',
-        fileSize: '3.3 MB (полная версия 1.4, установка 4,1 МБ)',
-        desc: 'Бесплатная игра, её можно загрузить и с официального сайта hsr.hoyoverse.com. Первопроходец просыпается на станции «Герта» со Стеллароном в груди и отправляется на Звёздном экспрессе на ледяную Ярило-VI. Пошаговые бои по шкале хода, общие очки навыка, абсолютные техники вне очереди, пробитие уязвимостей стихий. Контакт с врагами, совместные Слияния и Слухи, которые становятся правдой. Звёздный прыжок, световые конусы, реликвии, Симулятор и Эхо войны. Белобог, Подземье, Великая шахта, Заклёпочный городок и финальная битва с Коколией.',
+        fileSize: '3.3 MB (полная версия 1.6, установка 4,1 МБ)',
+        desc: 'Бесплатная игра, её можно загрузить и с официального сайта hsr.hoyoverse.com. Первопроходец просыпается на станции «Герта» со Стеллароном в груди и отправляется на Звёздном экспрессе на ледяную Ярило-VI. Пошаговые бои по шкале хода, общие очки навыка, абсолютные техники вне очереди, пробитие уязвимостей стихий. Контакт с врагами, совместные Слияния и Слухи, которые становятся правдой. Звёздный прыжок, световые конусы, реликвии, Симулятор и Эхо войны. Белобог, Подземье, Большая шахта, Заклёпкоград и финальная битва с Коколией.',
         genre: 'JRPG',
         tags: ['Пошаговые бои', 'Космос', 'Отряд героев', 'Сюжет'],
         shots: ['Бой на станции «Герта»', 'Административный район Белобога'],
@@ -795,6 +810,25 @@ class GameManager {
         shots: ['Легионеры в ближнем бою', 'Карта кампании'],
         launch: () => window.appLegion && window.appLegion.open()
       },
+      homm1: {
+        id: 'homm1',
+        steam: true,
+        title: 'Heroes of Might and Magic 98',
+        subtitle: 'Стратегический поход за корону Энрота',
+        developer: 'New World Computing (1995) / Win 98 Edition',
+        price: 24.99,
+        priceDisplay: '$24.99',
+        icon: 'homm1',
+        setupExe: 'Setup_HoMM1.exe',
+        targetExe: 'HEROES.EXE',
+        folder: 'HoMM1',
+        fileSize: '28.4 MB (CD-ROM Edition)',
+        desc: 'Лорд Морглин Айронфист бежал через портал в неизведанные земли Энрота, где за верховный трон спорят четыре правителя: рыцарь Айронфист, варвар Слэйер, волшебница Ламанда и чернокнижник Аламар. Полная кампания из восьми сценариев от Ворот Зари и Архипелага Древних до захвата Драконьего Острова и финального штурма крепости соперников, плюс шесть отдельных карт для свободной игры. Четыре класса замков и двадцать восемь видов существ от крестьян, кентавров и эльфов до грифонов, гидр, паладинов, циклопов, фениксов и чёрных драконов. Семь видов ресурсов, шахты, лесопилки и алхимические лаборатории, четыре этажа Магической гильдии с тридцатью тремя боевыми и походными заклинаниями, сорок артефактов, обелиски с картой клада и раскопки Истинного Артефакта, постройка кораблей на верфи, тактические битвы на поле 7 на 5 клеток и осады замков с катапультой.',
+        genre: 'Пошаговая стратегия',
+        tags: ['Фэнтези', 'Герои и магия', 'Замки', 'Тактический бой'],
+        shots: ['Поход по долине Когтя', 'Осада замка и тактический бой'],
+        launch: () => window.appHomm1 && window.appHomm1.open()
+      },
       anotherwar: {
         id: 'anotherwar',
         steam: true,
@@ -851,6 +885,63 @@ class GameManager {
         tags: ['Постапокалипсис', 'Открытый мир', 'Выбор и последствия', 'СССР', 'Сюжет'],
         shots: ['Тарасова груша, Вознесенка', 'Мост Преображенского на закате'],
         launch: () => window.appFalloutZP && window.appFalloutZP.open()
+      },
+      korovany: {
+        id: 'korovany',
+        steam: true,
+        title: 'Корованы',
+        subtitle: '3Д-экшон: лесные эльфы, охрана дворца и Злой',
+        developer: 'Джва Года Софт (2000) / Win 98 Edition',
+        price: 22.22,
+        priceDisplay: '$22.22',
+        icon: 'korovany',
+        setupExe: 'Setup_Korovany.exe',
+        targetExe: 'KOROVANY.EXE',
+        folder: 'Korovany',
+        fileSize: '310 MB (1 CD-ROM, 3D Accelerated)',
+        desc: 'Игра по письму Кирилла, который джва года хотел такую игру. Три стороны делят одну долину: лесные эльфы в густом западном лесу, охрана дворца на северном холме и Злой в старом форте в горах. Посередине Развилки, откуда во все стороны ходят корованы, запряжённые коровами. Их можно грабить. Играйте эльфом: отбивайте набеги солдат дворца и войска Злого, жгите их припасы. Играйте стражником: стойте на посту, ловите шпионов, ходите в набеги и слушайтесь воеводу, иначе выговор. Играйте Злым: вербуйте войско, отдавайте приказы и сами ведите армию на дворец. Удар попадает туда, куда вы смотрите: можно отрубить руку, ногу или голову, выколоть глаз. Без перевязки культя истекает кровью, без глаза не видно половины экрана, без ноги придётся ползти, пересесть в коляску или поставить протез. Вдали деревья нарисованы картинкой и становятся трёхмерными, когда подходишь. Трупы остаются лежать. Лавки, торг, дом в Развилках, навыки, переходы по карте. Сохраняться можно.',
+        genre: 'Экшен',
+        tags: ['Корованы', 'Открытый мир', 'Три стороны', 'Отрубание конечностей', 'Протезы'],
+        shots: ['Листва в густом лесу', 'Грабёж корована на тракте'],
+        launch: () => window.appKorovany && window.appKorovany.open()
+      },
+      korovany: {
+        id: 'korovany',
+        steam: true,
+        title: 'Корованы',
+        subtitle: '3Д-экшон: лесные эльфы, охрана дворца и Злой',
+        developer: 'Джва Года Софт (2000) / Win 98 Edition',
+        price: 22.22,
+        priceDisplay: '$22.22',
+        icon: 'korovany',
+        setupExe: 'Setup_Korovany.exe',
+        targetExe: 'KOROVANY.EXE',
+        folder: 'Korovany',
+        fileSize: '310 MB (1 CD-ROM, 3D Accelerated)',
+        desc: 'Игра по письму Кирилла, который джва года хотел такую игру. Три стороны делят одну долину: лесные эльфы в густом западном лесу, охрана дворца на северном холме и Злой в старом форте в горах. Посередине Развилки, откуда во все стороны ходят корованы, запряжённые коровами. Их можно грабить. Играйте эльфом: отбивайте набеги солдат дворца и войска Злого, жгите их припасы. Играйте стражником: стойте на посту, ловите шпионов, ходите в набеги и слушайтесь воеводу, иначе выговор. Играйте Злым: вербуйте войско, отдавайте приказы и сами ведите армию на дворец. Удар попадает туда, куда вы смотрите: можно отрубить руку, ногу или голову, выколоть глаз. Без перевязки культя истекает кровью, без глаза не видно половины экрана, без ноги придётся ползти, пересесть в коляску или поставить протез. Вдали деревья нарисованы картинкой и становятся трёхмерными, когда подходишь. Трупы остаются лежать. Лавки, торг, дом в Развилках, навыки, переходы по карте. Сохраняться можно.',
+        genre: 'Экшен',
+        tags: ['Корованы', 'Открытый мир', 'Три стороны', 'Отрубание конечностей', 'Протезы'],
+        shots: ['Листва в густом лесу', 'Грабёж корована на тракте'],
+        launch: () => window.appKorovany && window.appKorovany.open()
+      },
+      catniss: {
+        id: 'catniss',
+        steam: true,
+        title: 'Catniss',
+        subtitle: 'Платформер про рыжую кошку и девять жизней',
+        developer: 'Kotelok Games (2000) / Win 98 Edition',
+        price: 7.99,
+        priceDisplay: '$7.99',
+        icon: 'catniss',
+        setupExe: 'Setup_Catniss.exe',
+        targetExe: 'CATNISS.EXE',
+        folder: 'Catniss',
+        fileSize: '18 MB (1 CD-ROM)',
+        desc: 'Белый фургон «ОТЛОВ» увёз котят со двора, и на первом же ухабе трое из них выпрыгнули кто где. Рыжая кошка Catniss отправляется следом: через луговой двор с курами и овцами, сиреневые горы с волками, стройку с лентами транспортёров и паром котельной, к неоновому городу, где фургон прячет последнюю клетку. Бег, прыжок, наскок и кошачьи когти на стенах. Двенадцать уровней в четырёх мирах, погоня волков, лифты и вентиляторы на крышах, бой с фургоном. Девять жизней и миски молока, монеты и двенадцать золотых рыбок в пакетах, спрятанных за треснувшими стенами. Спасённые котята становятся играбельными, а полный аквариум открывает бонусный уровень. Поддерживается геймпад.',
+        genre: 'Платформер',
+        tags: ['Кошки', 'Пиксельная графика', 'Секреты', 'Бой с боссом', 'Геймпад'],
+        shots: ['Утро во дворе', 'Фургон «ОТЛОВ» в неоновом городе'],
+        launch: () => window.appCatniss && window.appCatniss.open()
       },
       plov: {
         id: 'plov',
@@ -1015,8 +1106,26 @@ class GameManager {
         targetExe: 'AVP.EXE',
         folder: 'AVP',
         fileSize: '6.2 MB (Full Security Suite)',
+        downloadUrl: 'http://www.avp.ru',
         desc: 'Профессиональный антивирусный комплекс Касперского (AntiViral Toolkit Pro)! Сканирование оперативной памяти, загрузочных секторов, дисков C: и D:, эвристический анализ и фирменный визг при обнаружении вирусов.',
         launch: () => window.appAVP && window.appAVP.open()
+      },
+      esheep: {
+        id: 'esheep',
+        isApp: true,
+        title: 'eSheep 98 (Sheep.exe)',
+        subtitle: 'Экранный питомец овечка По (Stray Sheep)',
+        developer: 'Fuji Television / Tatsutoshi Nomura (1995)',
+        price: 0,
+        priceDisplay: 'FREEWARE',
+        icon: 'esheep',
+        setupExe: 'Setup_eSheep.exe',
+        targetExe: 'SHEEP.EXE',
+        folder: 'eSheep',
+        fileSize: '340 KB (Freeware)',
+        downloadUrl: 'http://www.softstore98.com',
+        desc: 'Знаменитая настольная овечка По (Stray Sheep / Sheep.exe)! Падает с неба на панель задач и заголовки открытых окон, гуляет, прыгает, спит в четырёх позах, щиплет ромашки, чихает, карабкается по краям экрана, встречает чёрную овечку, падает горящим метеором в ванну и похищается летающей тарелкой НЛО.',
+        launch: () => window.appESheep && window.appESheep.open()
       }
     };
 
@@ -1103,6 +1212,9 @@ class GameManager {
   uninstallGame(id) {
     const game = this.catalog[id];
     if (!game || !this.state.installed.includes(id)) return;
+    if (id === 'esheep' && window.appESheep) {
+      window.appESheep.stop();
+    }
     this.state.installed = this.state.installed.filter(x => x !== id);
     if (window.vfs && window.vfs.resolvePath) {
       const base = game.isApp ? ['My Computer', 'C:', 'Program Files'] : ['My Computer', 'C:', 'Games'];
@@ -1571,6 +1683,14 @@ class GameManager {
               app: 'notepad',
               content: 'Антивирус Касперского AVP 3.0\r\n==================================\r\nЛаборатория Касперского (1998)\r\nAntiViral Toolkit Pro\r\n\r\nБазы сигнатур вирусов: 18.09.1998\r\nПоддержка проверки дисков C:, D: и оперативной памяти.'
             };
+          } else if (id === 'esheep') {
+            progFolder.children[game.folder].children['README.TXT'] = {
+              type: 'file',
+              name: 'README.TXT',
+              icon: 'notepad',
+              app: 'notepad',
+              content: 'eSheep 98 (Sheep.exe / Stray Sheep Poe)\r\n==================================\r\nFuji Television / Tatsutoshi Nomura (1995) - Microslop Win 98 Edition\r\n\r\nУправление:\r\n[Левая кнопка + перетаскивание] - схватить овечку По за загривок и перенести\r\n[Двойной щелчок по овечке] - пощекотать / подбросить овечку\r\n[Правая кнопка по овечке или значку в трее] - меню управления овечкой и стадом\r\n[Запуск SHEEP.EXE повторно] - добавить ещё одну овечку с неба\r\n\r\nОвечка По ходит по панели задач и заголовкам открытых окон,\r\nспит, щиплет ромашки, чихает, карабкается по краям экрана,\r\nвстречает чёрную овечку, падает метеором в ванну и похищается НЛО.'
+            };
           }
           window.vfs.saveToStorage();
         }
@@ -1702,12 +1822,20 @@ Battle:
 
 The full Roman campaign: 68 battles in 14 eras, from the wars in Latium to Philippi, the Arena and the encyclopedia.
 Command points are scarce. Plan well, then let your men fight.`;
+            } else if (id === 'homm1') {
+              readmeContent = `Heroes of Might and Magic: A Strategic Quest (Win 98 Edition)\r\n==================================\r\nNew World Computing (1995) - 640x480, 256 colors\r\n\r\nAdventure Map Controls:\r\n[Left Click on tile] - Plan A* path; click same tile again or press [M] to march\r\n[Right Click on tile] - Inspect terrain, town, mine or monster stack\r\n[Arrow Keys] - Scroll Adventure Map camera\r\n[T] / [Double Click Town] - Open Town Screen\r\n[H] - Hero Sheet & Artifacts   [C] - Cast Adventure Spell   [D] - Dig for Ultimate Artifact\r\n[E] - End Day (7 days per week, weekly creature growth on Day 1)\r\n[F5] - Save Game   [F9] - Load Game\r\n\r\nTown Screen:\r\nClick Castle to build (1 structure per day), Tavern to hire heroes, Mage Guild to study spells,\r\nor creature dwellings to recruit troops. Shift-click army slots to split stacks.\r\n\r\nTactical Combat (7x5 grid):\r\n[Left Click] - Move or Attack   [C] - Cast Spell   [Space]/[D] - Defend   [A] - Auto-Combat   [R] - Retreat`;
             } else if (id === 'fallout') {
               readmeContent = 'Fallout: A Post-Nuclear Role-Playing Game\r\n==================================\r\nInterplay Productions (1997) - Win 98 Edition, version 1.2, 640x480, 256 colors\r\n\r\nSystem requirements: Pentium 90 MHz, 16 MB RAM, SVGA video card (640x480, 256 colors), DirectX 3.0a, 2x CD-ROM, mouse.\r\n\r\nControls:\r\n[Left Click] - Walk or act with the current cursor   [Right Click] - Switch the walk and action cursors\r\n[Hold Left Button] on an object - Action menu: look, talk, use, skill, rotate\r\n[A] - Attack   [Space] - End turn   [Enter] - End combat   [N] - Weapon mode   [B] - Swap hands   [M] - Cursor mode\r\n[I] - Inventory   [C] - Character   [P] - Pip-Boy   [Z] - Pip-Boy clock   [S] - Skilldex   [Tab] - Automap   [O]/[Esc] - Options\r\n[1-8] - Sneak, Lockpick, Steal, Traps, First Aid, Doctor, Science, Repair\r\n[Home] - Center on you   [,]/[.] - Turn   [/] - Time   [+]/[-] - Brightness   [F1] - Help\r\n[F4]/[Ctrl+S] - Save   [F5]/[Ctrl+L] - Load   [F6] - Quick save   [F7] - Quick load   [F10]/[Ctrl+Q] - Quit\r\n\r\nVault 13, 5 December 2161. The water chip has failed and the vault has water for 150 days.\r\nThe Overseer has chosen you to find a new one.';
             } else if (id === 'falloutzp') {
               readmeContent = `Fallout: Запорожье\r\n==================================\r\nObsidian Entertainment (2001) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium III 600 MHz, 128 MB RAM, 3D accelerator with 32 MB (GeForce2 / Radeon), DirectX 8.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire / Swing   [Right Click] - Aim   [Shift] - Walk   [Space] - Jump\r\n[Ctrl] - Sneak   [E] - Use, talk, open   [R] - Reload   [F] - First / third person   [H] - Holster   [G] - Throw grenade\r\n[V] - S.T.R.E.L.A. targeting   [Tab] - Pioneer-77   [T] - Wait   [L] - Pioneer light   [1-8] - Hotkeys   [Wheel] - Next weapon\r\n[F5] - Quick save   [F9] - Quick load   [Esc] - Menu\r\n\r\nZaporozhye, 1 September 2280. The courier of the Main Post Office was shot on the bridge and thrown into the Dnieper.\r\nVoznesenovsky district and the island of Khortytsia are open from the start. Danger grows with distance from Voznesenka.\r\n\r\nMap of Zaporozhye based on OpenStreetMap data, (c) OpenStreetMap contributors, ODbL. Heights: SRTM, NASA.`;
             } else if (id === 'anotherwar') {
               readmeContent = 'Другая война (Another War)\r\n==================================\r\nMirage Interactive (2002) - Win 98 Edition, 800x600\r\n\r\nСистемные требования: Pentium II 433 МГц, 128 MB RAM, видеокарта с 8 MB памяти, DirectX 8.1.\r\n\r\nУправление:\r\n[Левая кнопка] - идти, осмотреть, подобрать   [Правая кнопка] - говорить, использовать, открыть\r\n[D] - достать или спрятать оружие   [Ctrl]+[Левая кнопка] - прицельный выстрел   [Enter] - атаковать ближайшего врага\r\n[R] - перезарядить   [E] - починить оружие   [1-7] - предметы на поясе   [W] - шаг или бег\r\n[F1-F8] - выбрать особый навык   [Пробел] - применить навык   [Backspace] - отменить выбор\r\n[I] - снаряжение   [S] - параметры   [N] - дневник   [M] - карта   [O] - настройки   [H]/[F10] - помощь\r\n[Ctrl+S] - сохранить   [Ctrl+L] - загрузить   [F11] - быстрое сохранение   [F12] - быстрая загрузка\r\n[P] - пауза   [Пробел]/[Enter] - пропустить реплику в сценке   [Esc] - меню\r\n\r\nАкт I. Аннет, оккупированная Франция. Выберите героя: Силач, Вор или Интеллектуал.\r\nВыберитесь из подвалов вместе с Иоганном и найдите способ уехать из города.\r\nПродолжение следует: впереди Югославия.';
+            } else if (id === 'korovany') {
+              readmeContent = 'Корованы\r\n==================================\r\nДжва Года Софт (2000) - Win 98 Edition, 3D accelerated\r\n\r\nСистемные требования: Pentium II 300 МГц, 64 MB RAM, 3D-ускоритель с 8 MB памяти, DirectX 6.\r\n\r\nУправление:\r\n[W/A/S/D] - идти   [Shift] - бежать   [Пробел] - прыжок   [C] - пригнуться\r\n[Мышь] - смотреть   [Левая кнопка] - удар, выстрел   [Правая кнопка] - блок\r\nКуда смотрите, туда и бьёте: вверх - голова, прямо - корпус, вниз - ноги.\r\n[1/2/3] - оружие / лук / факел   [R] - убрать оружие   [E] - говорить, обыскать, поджечь\r\n[B] - перевязать рану   [H] - зелье   [V] - от первого лица\r\n[I] - инвентарь и протезы   [M] - карта   [J] - журнал   [T] - ждать   [Q] - приказы войску\r\n[F5/F9] - быстрое сохранение / загрузка   [Esc] - меню\r\n\r\nОтрубленная рука или нога кровоточит. Перевяжите её (B) или идите к знахарке, иначе умрёте.\r\nПротезы ставит мастер Деревяшкин в Развилках.\r\n\r\nПо письму Кирилла.';
+            } else if (id === 'korovany') {
+              readmeContent = 'Корованы\r\n==================================\r\nДжва Года Софт (2000) - Win 98 Edition, 3D accelerated\r\n\r\nСистемные требования: Pentium II 300 МГц, 64 MB RAM, 3D-ускоритель с 8 MB памяти, DirectX 6.\r\n\r\nУправление:\r\n[W/A/S/D] - идти   [Shift] - бежать   [Пробел] - прыжок   [C] - пригнуться\r\n[Мышь] - смотреть   [Левая кнопка] - удар, выстрел   [Правая кнопка] - блок\r\nКуда смотрите, туда и бьёте: вверх - голова, прямо - корпус, вниз - ноги.\r\n[1/2/3] - оружие / лук / факел   [R] - убрать оружие   [E] - говорить, обыскать, поджечь\r\n[B] - перевязать рану   [H] - зелье   [V] - от первого лица\r\n[I] - инвентарь и протезы   [M] - карта   [J] - журнал   [T] - ждать   [Q] - приказы войску\r\n[F5/F9] - быстрое сохранение / загрузка   [Esc] - меню\r\n\r\nОтрубленная рука или нога кровоточит. Перевяжите её (B) или идите к знахарке, иначе умрёте.\r\nПротезы ставит мастер Деревяшкин в Развилках.\r\n\r\nПо письму Кирилла.';
+            } else if (id === 'catniss') {
+              readmeContent = 'Catniss\r\n==================================\r\nKotelok Games (2000) - Win 98 Edition, 320x240, 256 colors\r\n\r\nControls:\r\n[Left]/[Right], [A]/[D] - Run   [Z]/[Space] - Jump (hold to jump higher)   [X]/[Shift] - Pounce\r\nAgainst a wall in the air: hold toward the wall to cling, then [Z] to kick off\r\n[Down]+[Z] - Drop through a plank   [Esc]/[P] - Pause   [M] - Music on/off\r\nMap: [Enter] - Play   [C] - Choose a cat   [Q] - Aquarium   Gamepad supported.\r\n\r\nNine lives at most. Every 50 coins and every bowl of milk give one more.\r\nThe van OTLOV took the kittens. Bring all four home.\r\nTwelve goldfish in bags are hidden behind cracked walls and in other odd places.';
             } else if (id === 'plov') {
               readmeContent = 'Хаято, Где плов?\r\n==================================\r\nKishlak Soft (2000) - Win 98 Edition, 800x600, 16-bit color\r\n\r\nControls:\r\n[Left Click] - Walk and act, clicks queue up to five jobs   [Right Click]/[Q] - Cancel the jobs\r\n[Drag] - Drag guests from the gate to a table   [Tab] - Pick guests in the line   [1-6] - Seat them at table N\r\n[W/A/S/D]/[Arrows] - Walk   [Space]/[E] - Use what is next to you   [Esc]/[P] - Pause\r\n\r\nKeep the kazan busy: meat, carrots with onion, rice, then steam.\r\nGroups of three and four sit only on the topchans. Tea brews two pots at a time.\r\nA quarter of every day goes to the savings box. Spend it at the bazaar.';
             } else if (id === 'gtann') {
@@ -1742,6 +1870,8 @@ Console: map q3dm6, god, noclip, give all, addbot klesk 4.`;
               readmeContent = `Minecraft 98 Alpha\r\n==================================\r\nMojang Specifications (1999) - Win 98 Edition\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse]/[Arrows] - Look   [Left Click] - Dig   [Right Click] - Place / Use\r\n[Space] - Jump / Swim   [Shift] - Sneak   [Ctrl] - Sprint   [E] - Inventory   [Q] - Drop\r\n[1-9] / Mouse wheel - Hotbar   [Middle Click] - Pick block   [F3] - Debug   [Esc] - Pause\r\nCreative: double-tap Space to fly.\r\n\r\nPunch trees. Craft a workbench. Build a shelter before night.\r\nWorlds are saved automatically every minute and on exit.`;
             } else if (id === 'stalker98') {
               readmeContent = `S.T.A.L.K.E.R. 98: Shadow of Chernobyl\r\n==================================\r\nGSC Game World (2000) - fan remake for Win 98\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire   [Right Click] - Aim\r\n[Shift] - Sprint   [Ctrl]/[C] - Crouch   [Space] - Jump   [Q]/[E] - Lean\r\n[R] - Reload   [B] - Fire mode   [1-6] - Knife, pistol, rifle, grenade, binoculars, bolt\r\n[F] - Talk / Search / Pick up   [I] - Inventory   [P]/[Tab] - PDA   [M] - Map   [L] - Flashlight\r\n[F1-F4] - Medkit, bandage, anti-rad, food   [F6]/[F7] - Quick save/load   [Esc] - Menu\r\n\r\nLevels: Cordon, Garbage. Find Strelok.\r\nThe text quest STALKER.EXE is a different game.`;
+            } else if (id === 'worldcup98') {
+              readmeContent = `EA Sports World Cup 98 Demo (France 98)\r\n==================================\r\nEA Sports (1998) - Igromania CD Edition for Win 98\r\n\r\nControls:\r\n[WASD] / [Arrows] - Movement & Shot Aim\r\n[Shift] - Sprint\r\n[X] / [J] - Ground Pass / Switch Player\r\n[C] / [K] - Lob Pass & Wing Cross / Sliding Tackle\r\n[Space] / [Z] - Hold to Charge Shot (Volley in air) / Standing Tackle\r\n[E] / [V] - Skill Feint\r\n[1] / [2] / [3] - Live Tactical Mentality (Counter / Balanced / Pressing)`;
             } else if (id === 'hockey') {
               readmeContent = `NHL 98 Demo\r\n==================================\r\nEA Sports (1998)\r\n\r\nControls:\r\n[WASD] / [Arrows] - Movement\r\n[Space] - Shoot Puck / Body Check\r\n[X] / [Tab] - Pass Puck / Switch Player\r\n[Shift] - Speed Burst`;
             }

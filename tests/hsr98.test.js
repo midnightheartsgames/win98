@@ -2,16 +2,19 @@ const assert = require('node:assert/strict');
 const path = require('path');
 const DIR = path.join(__dirname, '../js/apps/hsr98');
 const H = require(path.join(DIR, 'hsr-core.js'));
-for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-memory', 'hsr-messenger', 'hsr-velvet']) require(path.join(DIR, f + '.js'));
+for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor']) require(path.join(DIR, f + '.js'));
 
 let checks = 0;
+const CCC_LATER = new Set();
+const notLater = k => !CCC_LATER.has(k);
 const ok = (c, m) => { assert.ok(c, m); checks++; };
 const eq = (a, b, m) => { assert.equal(a, b, m); checks++; };
 const t0 = Date.now();
 const log = [];
 
-const FX = new Set(['dmg', 'heal', 'hot', 'shield', 'taunt', 'buff', 'debuff', 'dot', 'freeze', 'imprison', 'delay', 'advance', 'energy', 'cleanse', 'dispel', 'selfCost', 'extendDots', 'killEnergy', 'magma', 'hookEnhance', 'resurge', 'bloom', 'invig', 'sync', 'yanqingUlt', 'svarogMarked', 'svMark', 'promise', 'frost', 'polarity', 'stance', 'shinra', 'eclipse', 'chaosAll', 'note', 'reinc', 'cue', 'maestro', 'notesAll', 'ember', 'elysium', 'elysiumAll', 'nightmare', 'steal', 'bind', 'drain', 'heist', 'purge', 'wet', 'freezeWet', 'chant', 'collapse', 'swing', 'cover', 'ecstasy', 'ecstasySpend', 'luck', 'onMe', 'tauntTo', 'cleanseAll', 'detonate', 'implant', 'implantAll', 'hpCost', 'hellscape', 'sentence', 'tallyReset', 'shuhuFull', 'freeSkill', 'stitch', 'stitchAll', 'analyze', 'wave', 'execute', 'allOut', ...H.FOURS.FX]);
-const G0bg = id => ['station', 'express', 'snow', 'city', 'under', 'rivet', 'hill'].includes(id);
+const FX = new Set(['dmg', 'heal', 'hot', 'shield', 'taunt', 'buff', 'debuff', 'dot', 'freeze', 'imprison', 'delay', 'advance', 'energy', 'cleanse', 'dispel', 'selfCost', 'extendDots', 'killEnergy', 'magma', 'hookEnhance', 'resurge', 'bloom', 'invig', 'sync', 'yanqingUlt', 'svarogMarked', 'svMark', 'promise', 'frost', 'polarity', 'stance', 'shinra', 'eclipse', 'chaosAll', 'note', 'reinc', 'cue', 'maestro', 'notesAll', 'ember', 'elysium', 'elysiumAll', 'nightmare', 'steal', 'bind', 'drain', 'heist', 'purge', 'wet', 'freezeWet', 'chant', 'collapse', 'swing', 'cover', 'ecstasy', 'ecstasySpend', 'luck', 'onMe', 'tauntTo', 'cleanseAll', 'detonate', 'implant', 'implantAll', 'hpCost', 'hellscape', 'sentence', 'tallyReset', 'shuhuFull', 'freeSkill', 'stitch', 'stitchAll', 'analyze', 'wave', 'execute', 'allOut', ...H.FOURS.FX, ...H.CONTON.FX, ...H.HARES.FX, ...H.FIVES.FX]);
+let afterJarilo = null;
+const G0bg = id => ['station', 'express', 'snow', 'city', 'under', 'rivet', 'hill', 'meadow'].includes(id);
 const TARGETS = new Set(['single', 'blast', 'all', 'bounce', 'ally', 'allies', 'self']);
 
 for (const [id, c] of Object.entries(H.CHARS)) {
@@ -32,16 +35,273 @@ for (const [id, f] of Object.entries(H.FUSIONS)) {
   ok(f.members.length >= 2 && new Set(f.members).size === f.members.length && f.members.every(m => H.CHARS[m]), 'fusion members ' + id);
   for (const x of f.fx) ok(FX.has(x.k), 'fusion fx ' + id);
 }
+{
+  const EX = require(path.join(__dirname, '../content/hsr-traces/extract.json'));
+  const LINE_IDS = { path: Object.keys(H.TRACE_PATH_LINES), foe: Object.keys(H.TRACE_FOE_LINES) };
+  const GATES = new Set([1, 30, 40, 50, 60, 70, 75, 80]);
+  eq(Object.keys(H.TRACES).sort().join(), Object.keys(H.CHARS).sort().join(), 'every kit has traces and every traces entry has a kit');
+  for (const [id, d] of Object.entries(H.TRACES)) {
+    const c = H.CHARS[id];
+    ok(d.cost === 4 || d.cost === 5, 'trace cost class ' + id);
+    eq(d.cost, id.startsWith('trail') ? 4 : c.rarity, 'trace cost class follows rarity ' + id);
+    ok(LINE_IDS.path.includes(d.mats[0]) && H.TRACE_PATH_LINES[d.mats[0]][0] === c.path, 'trace path line matches the path ' + id);
+    ok(LINE_IDS.foe.includes(d.mats[1]) && H.TRACE_ECHOES[d.mats[2]], 'trace foe line and echo ' + id);
+    eq(d.bonus.length, 3, 'three bonus abilities ' + id);
+    eq(d.stats.length, 10, 'ten stat nodes ' + id);
+    eq(d.eid.length, 6, 'six eidolons ' + id);
+    const ids = new Set(['a2', 'a4', 'a6', ...d.stats.map((s, i) => 's' + (i + 1))]);
+    for (const [name, text, pre] of d.bonus) {
+      ok(pre == null || ids.has(pre), 'bonus pre exists ' + id);
+      if (!d.own) ok(name && text && !/[—–#<>]|\[i\]|НР/.test(text + name), 'bonus text is clean ' + id + ' ' + name);
+    }
+    d.stats.forEach(([stat, value, gate, pre], i) => {
+      ok(H.TRACE_TIERS[stat] && H.TRACE_TIERS[stat].includes(value), 'stat node value is an original tier ' + id + ' s' + (i + 1));
+      ok(GATES.has(gate), 'stat node gate ' + id + ' s' + (i + 1));
+      ok(pre == null || (ids.has(pre) && pre !== 's' + (i + 1)), 'stat node pre ' + id + ' s' + (i + 1));
+    });
+    eq(d.stats.filter(s => s[2] === 75 || s[2] === 80).length, 2, 'two late stat nodes ' + id);
+    if (!d.own) for (const [name, text] of d.eid) ok(name && text && !/[—–#<>]|\[i\]|НР/.test(text + name) && !/\{[FM]#/.test(text), 'eidolon text is clean ' + id + ' ' + name);
+    eq(Object.keys(d.up).sort().join(), '3,5', 'eidolons III and V raise ability levels ' + id);
+    const ups = Object.values(d.up).flatMap(u => Object.entries(u));
+    eq(ups.map(([k]) => k).sort().join(), 'basic,skill,talent,ult', 'eidolons III and V cover every ability once ' + id);
+    ok(ups.every(([k, n]) => n === (k === 'basic' ? 1 : 2)), 'eidolon level steps ' + id);
+    ok(id.startsWith('trail') ? !!H.ITEMS[d.shadow] && H.ITEMS[d.shadow].path === c.path : !d.shadow, 'trailblazer shadow item ' + id);
+    eq(H.traceNodes(id).length, 18, 'trace node list ' + id);
+    for (const n of H.traceNodes(id)) {
+      if (n.kind === 'ability') for (let lv = 2; lv <= n.max; lv++) ok(H.traceCost(id, n.id, lv), 'ability step has a cost ' + id + ' ' + n.id + ' ' + lv);
+      if (n.kind === 'bonus' || n.kind === 'stat') {
+        const cost = H.traceCost(id, n.id);
+        ok(cost && cost.credits > 0 && Object.keys(cost.items).every(m => H.ITEMS[m] && H.ITEMS[m].kind === 'mat'), 'node cost ' + id + ' ' + n.id);
+      }
+    }
+  }
+  eq(Object.keys(EX.kits).length, 42, 'extract has the 42 original kits');
+  for (const [id, x] of Object.entries(EX.kits)) {
+    const d = H.TRACES[id];
+    ok(d && !d.own && d.src === x.src, 'traces of ' + id + ' come from the extract');
+    const st = x.nodes.filter(n => /^s\d/.test(n.id));
+    st.forEach((n, i) => {
+      eq(d.stats[i][0] + ' ' + d.stats[i][1] + ' ' + d.stats[i][2], n.stat[0] + ' ' + n.stat[1] + ' ' + n.gate, 'stat node matches original ' + id + ' ' + n.id);
+      eq(d.stats[i][3], n.pre[0] || null, 'stat node link matches original ' + id + ' ' + n.id);
+    });
+    for (const n of x.nodes) {
+      if (n.id === 'tech') continue;
+      const steps = /^[as]\d/.test(n.id) ? [[1, n.cost[0]]] : n.cost.map((c, i) => [i + 1, c]).slice(1);
+      for (const [lv, want] of steps) {
+        const got = H.traceCost(id, n.id, lv, true), w = { credits: 0, items: {} };
+        for (const [m, k] of want) { if (m === 'credits') w.credits += k; else w.items[m] = (w.items[m] || 0) + k; }
+        eq(JSON.stringify(got && { credits: got.credits, items: Object.fromEntries(Object.entries(got.items).sort()) }), JSON.stringify({ credits: w.credits, items: Object.fromEntries(Object.entries(w.items).sort()) }), 'trace cost matches original ' + id + ' ' + n.id + ' ' + lv);
+      }
+    }
+    for (const n of x.nodes.filter(n => /^(basic|skill|ult|talent)$/.test(n.id))) {
+      n.gates.forEach((g, i) => { if (i) eq(H.traceAbilityGate(n.id, i + 1), g, 'ability gate matches original ' + id + ' ' + n.id + ' ' + (i + 1)); });
+      eq(n.max, H.TRACE_ABILITIES.find(a => a[0] === n.id)[2], 'ability max level ' + id + ' ' + n.id);
+    }
+  }
+  eq(H.traceAbilityCap('skill', 1), 1, 'skill cap at level 1');
+  eq(H.traceAbilityCap('skill', 30), 3, 'skill cap at level 30');
+  eq(H.traceAbilityCap('skill', 70), 10, 'skill cap at level 70');
+  eq(H.traceAbilityCap('basic', 29), 1, 'basic cap below level 30');
+  eq(H.traceAbilityCap('basic', 80), 6, 'basic cap at level 80');
+  eq(H.traceCost('seele', 'skill', 10).credits, Math.round(300000 * H.TUNING.trCredit), 'credits follow trCredit');
+  for (const [mid, it] of Object.entries(H.ITEMS).filter(([, it]) => it.kind === 'mat')) {
+    ok(it.name && it.text && !/[—–]/.test(it.text + it.name) && it.rar >= 2 && it.rar <= 5, 'material item ' + mid);
+    if (EX.items[mid]) eq(it.name, EX.items[mid].name, 'material name is the official one ' + mid);
+  }
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-9;
+  const g = new H.Game({ seed: 3 });
+  eq(g.state.trv, 1, 'a new game is on the traces version');
+  const t0 = g.traceOf('trail');
+  ok(t0.lv.skill === 1 && t0.lv.basic === 1 && !t0.on.length, 'a new character starts with level 1 abilities and no nodes');
+  eq(g.traceNode('trail', 'skill').why, 'lvl', 'Skill level 2 waits for level 20');
+  eq(g.traceNode('trail', 'tech').why, 'max', 'the Technique is open from the start');
+  const s1 = g.traceNode('trail', 's1');
+  ok(s1.why === 'mats' && s1.cost.credits === Math.round(2000 * H.TUNING.trCredit) && s1.cost.items.legion1 === 2, 'the first stat node of the Trailblazer costs the original materials');
+  g.state.inv.items.legion1 = 3; g.state.credits = 1000;
+  ok(g.trace('trail', 's1') && g.traceOf('trail').on.includes('s1'), 'a stat node opens when the materials are there');
+  ok(g.state.credits === 1000 - s1.cost.credits && g.state.inv.items.legion1 === 1, 'the stat node spends credits and materials');
+  ok(g.events.some(e => e.t === 'trace' && e.id === 's1'), 'an upgrade emits a trace event');
+  eq(g.charStats('trail').atk, Math.round(H.statAt(H.CHARS.trail.base.atk, 1) * 1.04), 'the ATK node adds 4% ATK');
+  ok(!g.trace('trail', 's1'), 'an open node cannot be bought twice');
+  g.state.roster.trail.lvl = 30;
+  eq(g.traceNode('trail', 's2').why, 'pre', 'a node waits for the node before it');
+  Object.assign(g.state.inv.items, { dest1: 20, legion1: 20, echo_doom: 2 }); g.state.credits = 1e6;
+  ok(g.trace('trail', 'a2') && g.trace('trail', 's2'), 'the bonus ability opens the stat node behind it');
+  ok(g.trace('trail', 'skill') && g.trace('trail', 'skill') && g.traceNode('trail', 'skill').why === 'lvl', 'at level 30 the Skill stops at level 3');
+  eq(g.traceNode('trail', 'basic').to, 2, 'the Basic ATK grows from level 30');
+  const k = new H.Game({ seed: 3 });
+  k.addChar('seele', 50);
+  const r = k.state.roster.seele, seeleFx = H.TRACES.seele.eidFx;
+  H.TRACES.seele.eidFx = false;
+  r.eid = 3;
+  eq(k.baseStats('seele', 50, 3).atk, Math.round(H.statAt(H.CHARS.seele.base.atk, 50) * 1.12), 'before the rework an Eidolon still adds 4% base stats');
+  eq(k.traceLevel('seele', 'skill'), 1, 'before the rework Eidolon III does not raise the Skill');
+  H.TRACES.seele.eidFx = true;
+  eq(k.baseStats('seele', 50, 3).atk, H.statAt(H.CHARS.seele.base.atk, 50), 'a reworked Eidolon drops the flat 4%');
+  ok(k.traceLevel('seele', 'skill') === 3 && k.traceLevel('seele', 'talent') === 3 && k.traceLevel('seele', 'ult') === 1, 'Eidolon III of Seele raises the Skill and the Talent by 2');
+  r.eid = 6;
+  ok(k.traceLevel('seele', 'ult') === 3 && k.traceLevel('seele', 'basic') === 2, 'Eidolon V of Seele raises the Ultimate by 2 and the Basic ATK by 1');
+  const sp = k.traceSpec('seele');
+  ok(sp.skill === 3 && sp.ult === 3 && Array.isArray(sp.on), 'the battle spec carries the effective levels');
+  H.TRACES.seele.eidFx = seeleFx;
+  k.state.party = ['trail', 'seele'];
+  ok(k.partySpecs().every(p => p.tr && p.tr.on && p.eid === k.state.roster[p.key].eid), 'party specs carry the traces and the Eidolon');
+  const trial = k.partySpecs(['himeko']).find(p => p.trial);
+  ok(trial && trial.tr.skill === H.traceAbilityCap('skill', trial.lvl) && trial.eid === 0, 'a trial character fights with traces at the level cap');
+  const tr = k.state.roster.trail;
+  tr.eid = 2;
+  k.setPath('trail_p');
+  ok(tr.eid === 0 && tr.eidBy.trail === 2, 'each Trailblazer Path keeps its own Eidolons');
+  k.state.inv.items.shadow_pres = 1; k.state.inv.items.shadow_dest = 1;
+  ok(k.useShadow('shadow_dest') && tr.eidBy.trail === 3 && tr.eid === 0, 'a Shadow of Destruction raises the Destruction Eidolon');
+  ok(k.useShadow('shadow_pres') && tr.eid === 1 && !k.state.inv.items.shadow_pres, 'a Shadow of Preservation raises the Preservation Eidolon');
+  k.setPath('trail');
+  ok(tr.eid === 3 && tr.eidBy.trail_p === 1, 'switching back restores the Destruction Eidolons');
+  ok(!k.useShadow('shadow_pres'), 'a Shadow needs the item');
+  const old = H.newState();
+  delete old.trv;
+  old.roster.seele = { lvl: 50, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+  const og = new H.Game({ state: old, seed: 2 });
+  const ot = og.state.roster.seele.tr.seele;
+  ok(og.state.trv === 1 && ot.lv.skill === 6 && ot.lv.basic === 4 && ot.on.includes('a4') && !ot.on.includes('a6'), 'an old save gets the traces up to the level cap for free');
+  ok(og.state.roster.trail.tr.trail && og.state.roster.trail.tr.trail_p, 'an old save fills both Trailblazer Paths');
+  og.state.roster.seele.guest = true; og.state.roster.seele.tr = {};
+  ok(og.traceSpec('seele').on.includes('a4'), 'a guest fights with the traces of the level cap');
+  og.state.roster.seele.guest = false;
+  ok(og.traceSpec('seele', 70).on.includes('a6') && og.traceSpec('seele', 70).skill === 10, 'a level floor lifts the traces to its cap');
+  og.fillTraces('seele', 'reset');
+  eq(og.traceOf('seele').on.length, 0, 'the debug reset clears the traces');
+  og.state.roster.seele.lvl = 80;
+  og.state.credits = 1e8;
+  for (const m of Object.keys(H.ITEMS).filter(m => H.ITEMS[m].kind === 'mat')) og.state.inv.items[m] = 999;
+  eq(og.autoTraces('seele'), 5 + 9 + 9 + 9 + 3 + 10, 'autoTraces takes every step it can afford');
+  ok(H.traceNodes('seele').every(n => og.traceNode('seele', n.id).why === 'max'), 'after autoTraces every node is at its maximum');
+  og.fillTraces('seele', 'reset'); og.fillTraces('seele', 'all');
+  ok(og.traceOf('seele').on.length === 13 && og.traceOf('seele').lv.skill === 10, 'the debug grant can open every node');
+  const party = [{ charId: 'seele', lvl: 50, stats: k.charStats('seele'), tr: { basic: 1, skill: 1, ult: 1, talent: 1, on: [] } }, { charId: 'natasha', lvl: 50, stats: k.charStats('seele'), tr: { basic: 6, skill: 1, ult: 10, talent: 1, on: [] } }, { charId: 'seele', lvl: 50, stats: k.charStats('seele') }];
+  const b = new H.Battle({ party, enemies: ['reaver:20'], lvl: 20, seed: 1 });
+  H.TUNING.trLevels = false;
+  ok(b.abilityFor(b.allies[0], 'skill').ab === H.CHARS.seele.skill, 'ability levels stay out of battle while trLevels is off');
+  H.TUNING.trLevels = true;
+  ok(near(b.abilityFor(b.allies[0], 'skill').ab.fx[0].m, 1.1) && near(b.abilityFor(b.allies[0], 'ult').ab.fx.find(f => f.k === 'dmg').m, 4.25 * 0.6), 'level 1 Skill and Ultimate follow the original curves');
+  ok(near(b.abilityFor(b.allies[0], 'basic').ab.fx[0].m, 0.5) && b.abilityFor(b.allies[0], 'skill').ab === b.abilityFor(b.allies[0], 'skill').ab, 'level 1 Basic ATK deals half and the scaled ability is cached');
+  const heal = b.abilityFor(b.allies[1], 'skill').ab.fx;
+  ok(near(heal[0].m, 0.105 * 0.6667) && near(heal[0].flat, 20 * 0.6667) && near(heal[2].m, 0.072 * 0.6667) && heal[1] === H.CHARS.natasha.skill.fx[1], 'heals scale with the support curve and other effects stay');
+  ok(b.abilityFor(b.allies[2], 'skill').ab === H.CHARS.seele.skill && b.traceLv(b.allies[2], 'skill') === 10, 'a unit without traces fights at level 10');
+  ok(b.hasBonus(b.allies[2], 'a6') && !b.hasBonus(b.allies[0], 'a2') && !b.eidOn(b.allies[0], 1), 'bonus abilities and Eidolons read the unit');
+  H.TUNING.trLevels = true;
+}
+{
+  let now = new Date(2026, 9, 21, 10, 0).getTime();
+  const g = new H.Game({ seed: 11, clock: () => now });
+  const inv = g.state.inv.items, count = id => inv[id] || 0;
+  const fake = foes => ({ result: { reward: { foes } }, opts: {} });
+  const lows = [];
+  for (let i = 0; i < 40; i++) lows.push(...g.traceBattleLoot(fake([{ fam: 'spawn', lvl: 10 }, { fam: 'voidranger', lvl: 10 }]), {}));
+  ok(count('core1') > 10 && count('legion1') > 10 && !count('core2') && !count('legion3'), 'low level foes drop 2-star materials of their line');
+  for (let i = 0; i < 40; i++) g.traceBattleLoot(fake([{ fam: 'automaton', lvl: 45, elite: true }]), {});
+  ok(count('ancient2') > 10 && count('ancient3') > 0, 'high level elites drop 3 and 4-star materials');
+  for (let i = 0; i < 20; i++) g.traceBattleLoot(fake([{ fam: 'shade', lvl: 30 }]), {});
+  ok(count('silver1') + count('silver2') > 0, 'Shades drop the Silvermane line, as Shadewalkers do in the original');
+  const n0 = Object.values(inv).reduce((a, b) => a + b, 0);
+  for (let i = 0; i < 20; i++) {
+    g.traceBattleLoot(fake([{ fam: 'spawn', lvl: 30 }]), { calyx: { id: 'cx_hunt' } });
+    g.traceBattleLoot(Object.assign(fake([{ fam: 'spawn', lvl: 30 }]), { opts: { su: {} } }), {});
+    g.traceBattleLoot(fake([{ fam: 'ipc', lvl: 40 }, { fam: 'boss', lvl: 40, boss: true }]), {});
+  }
+  eq(Object.values(inv).reduce((a, b) => a + b, 0), n0, 'calyx, Simulated Universe, IPC and boss fights drop no foe materials');
+  g.traceBattleLoot(fake([]), { encId: 'doomsday' });
+  eq(count('echo_doom'), 2, 'the first win over the Doomsday Beast gives two Destroyer\'s Final Road');
+  g.traceBattleLoot(fake([]), { encId: 'doomsday' });
+  eq(count('echo_doom'), 2, 'the first win bonus is paid once');
+  const b = new H.Battle({ party: [{ charId: 'seele', lvl: 60, stats: g.baseStats('seele', 60, 0) }], enemies: ['flamespawn:10', 'reaver:10'], lvl: 10, seed: 2 });
+  b.start(); b.runAuto(3000);
+  ok(b.result.win && b.result.reward.foes.length === 2 && b.result.reward.foes.some(f => f.fam === 'spawn'), 'the battle reward lists the defeated foes with their families');
+  for (const k of Object.keys(inv)) delete inv[k];
+  const c = id => H.CALYX.find(x => x.id === id);
+  ok(['cx_hunt', 'cx_destruction', 'cx_preservation'].every(id => g.calyxOpen(c(id))) && !g.calyxOpen(c('cx_abundance')), 'the Hunt, Destruction and Preservation buds open from the start, the others where they grow');
+  ok(!g.calyxOpen(c('cx_memory')), 'the Bud of Remembrance waits for a Remembrance character');
+  g.addChar('phrolova', 1);
+  ok(g.calyxOpen(c('cx_memory')), 'a Remembrance character opens the Bud of Remembrance');
+  ok(!g.calyxOpen(c('cx_echo_doom')), 'the Doomsday Echo waits for the Express');
+  g.state.flags.express_intro = true;
+  ok(g.calyxOpen(c('cx_echo_doom')), 'the Doomsday Echo opens with the Express, as in the original');
+  ok(H.CALYX.filter(x => x.reward === 'path').length === 8 && H.CALYX.filter(x => x.reward === 'path').every(x => H.PATHS[x.path] && !/опыт/.test(x.text)), 'eight crimson buds give Path materials');
+  for (const [id, tier, line] of [['cx_hunt', 0, 'hunt'], ['cx_destruction', 3, 'dest'], ['cx_memory', 2, 'memo']]) {
+    for (const k of Object.keys(inv)) delete inv[k];
+    g.state.power = 100;
+    g.calyxReward({ id, tier, cost: 10 });
+    const rows = H.TRACE_CALYX_PATH[tier];
+    ok(g.state.power === 90 && rows.every((r, i) => (r ? count(line + (i + 1)) >= r[0] && count(line + (i + 1)) <= r[1] : !count(line + (i + 1)))), 'crimson bud ' + id + ' tier ' + (tier + 1) + ' pays its Path materials');
+  }
+  for (const k of Object.keys(inv)) delete inv[k];
+  g.calyxReward({ id: 'cx_exp', tier: 1, cost: 10 });
+  ok(count('exp1') >= 2 && count('core1') === 2 && count('core2') === 1, 'the golden bud also gives materials of its foes');
+  for (const k of Object.keys(inv)) delete inv[k];
+  g.state.power = 200;
+  const echo = { id: 'cx_echo_doom', tier: 3, cost: 30 };
+  for (let i = 0; i < 3; i++) ok(g.calyxReward(echo).length > 0, 'Echo of War reward ' + (i + 1) + ' of 3 this hour');
+  ok(count('echo_doom') >= 6 && count('echo_doom') <= 9 && g.state.power === 110, 'Echo of War tier IV gives two or three boss materials per win');
+  eq(g.echoLeft(), 0, 'three Echo rewards per hour');
+  ok(!g.calyxReward(echo).length && g.state.power === 110, 'a fourth Echo win in the hour gives nothing and costs no power');
+  now += 3600000;
+  ok(g.echoLeft() === 3 && g.calyxReward(echo).length > 0, 'the Echo limit refreshes every hour');
+  g.state.credits = 5000;
+  const e0 = count('echo_doom');
+  ok(g.buyRumor('rumor_echo') && count('echo_doom') === e0 + 2, 'the rumor «Эхо Зверя» finds two Destroyer\'s Final Road');
+  for (const k of Object.keys(inv)) delete inv[k];
+  inv.dest1 = 7;
+  ok(g.synth('dest1', 2) && count('dest1') === 1 && count('dest2') === 2, 'synthesis makes one material of the next tier from three');
+  ok(!g.synth('dest1') && !g.synth('dest2') && !g.synth('echo_doom'), 'synthesis needs three and stops at 4 stars and Echo materials');
+  inv.dest2 = 3;
+  ok(g.synth('dest2') && count('dest3') === 1, 'three 3-star materials make a 4-star one');
+  inv.legion1 = 4;
+  ok(g.exchange('legion1', 'scion1', 2) && count('scion1') === 2 && !count('legion1'), 'exchange turns two materials into one of the same tier');
+  ok(!g.exchangeOk('dest3', 'core3') && !g.exchangeOk('dest3', 'hunt2') && !g.exchangeOk('echo_doom', 'echo_ochema') && g.exchangeOk('dest3', 'hunt3'), 'exchange keeps the kind and the tier');
+  eq(g.synthList().length, (Object.keys(H.TRACE_PATH_LINES).length + Object.keys(H.TRACE_FOE_LINES).length) * 2, 'two synthesis recipes per material line');
+  g.state.credits = 1e6;
+  const bel = () => g.shopList('belobog'), si = () => bel().findIndex(e => e.id === 'shadow_pres');
+  ok(si() >= 0 && bel()[si()].left === 4 && /В наличии: 4/.test(bel()[si()].text), 'the Belobog shop sells four Shadows of Preservation');
+  ok(!g.buy('belobog', si(), 5) && g.buy('belobog', si(), 3) && bel()[si()].left === 1, 'the stock cannot be oversold');
+  ok(g.buy('belobog', si(), 1) && si() === -1 && count('shadow_pres') === 4, 'a sold out Shadow leaves the shop');
+  ok(['boulder', 'procure'].every(sh => g.shopList(sh).some(e => e.id === 'shadow_dest' && e.left === 2)), 'the Underworld shop and the station procurement sell the Shadow of Destruction, as in the original');
+  g.setTrailLevel(39);
+  ok(!g.supplyList('starlight').some(x => x.ref === 'tracks') && !g.supplyList('embers').some(x => x.ref === 'tracks'), 'Tracks of Destiny wait for Trailblaze Level 40 in the shops');
+  g.setTrailLevel(40);
+  const st = g.supplyList('starlight').find(x => x.ref === 'tracks'), em = g.supplyList('embers').find(x => x.ref === 'tracks');
+  ok(st && st.price === 50 && st.limit == null && em && em.price === 60 && em.limit === 2, 'Tracks of Destiny cost 50 Starlight without a limit and 60 Embers twice an hour');
+  ok(['scion1', 'scion2', 'artifex1', 'artifex2'].every(id => g.supplyList('embers').some(x => x.ref === id)), 'the Embers shop sells the Xianzhou materials');
+  eq(g.supplyList('embers').length, 10, 'the Embers shop fills two rows of cards');
+  ok(H.TL_REWARDS[19].items.shadow_dest === 1 && H.TL_REWARDS[30].items.shadow_dest === 1 && H.TL_REWARDS[19].items.hunt1 === 5, 'Trailblaze Levels 19 and 30 give a Shadow of Destruction');
+  ok([41, 46, 51, 56, 61, 66].every(l => H.TL_REWARDS[l].items.tracks === 1) && H.TL_REWARDS[18].items.dest1 === 5 && H.TL_REWARDS[24].items.abund1 === 5, 'the level rewards carry the original Trace materials');
+  ok(H.TL_REWARDS[20].items.pass === 1 && H.TL_REWARDS[20].items.erud1 === 5, 'the level rewards keep their old items');
+  const steps = Object.values(H.SCRIPTS).flat();
+  ok(steps.filter(x => x && x.give && x.give.items && x.give.items.shadow_pres === 1).length === 2, 'the story gives two Shadows of Preservation');
+  const pi = H.SCRIPTS.ret_will.findIndex(x => x && x.path === 'trail_p');
+  ok(pi >= 0 && H.SCRIPTS.ret_will[pi + 1].give.items.shadow_pres === 1, 'the first Shadow of Preservation comes with the power of Preservation');
+  for (const [map, cx] of [['hs_storage', 'cx_destruction'], ['hs_supply', 'cx_preservation']]) ok(Object.values(H.MAPS[map].marks).some(m => m.calyx === cx), 'the crimson bud ' + cx + ' grows on ' + map);
+  const old = H.newState();
+  delete old.trv;
+  Object.assign(old, { tlGot: [19, 41], mcPath: 'trail_p' });
+  Object.assign(old.flags, { first_doomsday: true, first_cocolia2: true, ending: true, su_clear_3: true, rumor_echo: true });
+  const og = new H.Game({ state: old, seed: 3 });
+  const oi = og.state.inv.items;
+  ok(oi.shadow_dest === 1 && oi.hunt1 === 5 && oi.tracks === 2 && oi.echo_doom === 4 && oi.echo_lament === 2 && oi.shadow_pres === 2, 'an old save gets back pay for the rewards it already took');
+  ok(og.state.flags.tr_first_doomsday && og.state.trBack && !og.traceBattleLoot(fake([]), { encId: 'doomsday' }).length, 'the back pay marks the first wins as paid');
+}
+
 for (const [id, e] of Object.entries(H.ENEMIES)) {
   ok(e.weak.length > 0 && e.weak.every(w => H.ELEMENTS[w]), 'enemy weak ' + id);
   ok(e.skills.length > 0, 'enemy skills ' + id);
   for (const s of e.skills) {
-    ok(['single', 'blast', 'all', 'self', 'summon', 'charge', 'lock', 'rally'].includes(s.t), 'enemy skill type ' + id + ' ' + s.n);
+    ok(['single', 'blast', 'all', 'self', 'summon', 'charge', 'lock', 'rally', 'havoc'].includes(s.t), 'enemy skill type ' + id + ' ' + s.n);
     if (s.next != null) ok(e.skills[s.next] && s.next !== e.skills.indexOf(s), 'enemy next ' + id);
     if (s.summon) ok(s.summon.every(x => H.ENEMIES[x]), 'summon ids ' + id);
   }
   if (e.pat) ok(e.pat.every(i => e.skills[i] && e.skills[i].t !== 'charge' || e.skills[i].next != null), 'pattern ' + id);
-  ok(e.fam === 'boss' || H.CONTACT[e.fam], 'contact family ' + id);
+  ok(e.fam === 'boss' || (e.noContact && e.fam === 'lotus') || H.CONTACT[e.fam], 'contact family ' + id);
 }
 for (const pool of Object.values(H.WARP_POOL)) for (const p of pool) ok(p.startsWith('cone:') ? H.CONES[p.slice(5)] : H.CHARS[p], 'warp pool ' + p);
 for (const [id, s] of Object.entries(H.SHOPS)) for (const e of s.items) { const p = e.split(':'); ok(p[0] === 'cone' ? H.CONES[p[1]] : p[0] === 'relic' ? H.CAVERN_SETS.includes(p[1]) && H.CAVERN_SLOTS.some(x => x.key === p[2]) && +p[3] > 0 : H.ITEMS[p[0]], 'shop item ' + id + ' ' + e); }
@@ -63,7 +323,7 @@ for (const [id, m] of Object.entries(H.MAPS)) {
   for (const oe of m.onEnter || []) ok(H.SCRIPTS[oe.script], 'onEnter script ' + oe.script);
   const solid = ch => H.TILES[ch] && H.TILES[ch].solid;
   const npcs = new Set();
-  for (const [ch, list] of Object.entries(marks)) if (m.marks[ch] && m.marks[ch].type === 'npc') list.forEach(([x, y]) => npcs.add(x + ',' + y));
+  for (const [ch, list] of Object.entries(marks)) if (m.marks[ch] && m.marks[ch].type === 'npc' && !m.marks[ch].if) list.forEach(([x, y]) => npcs.add(x + ',' + y));
   const start = (Object.entries(marks).find(([ch]) => m.marks[ch] && (m.marks[ch].type === 'spawn' || m.marks[ch].type === 'exit')) || [])[1][0];
   const seen = new Set([start.join(',')]), q = [start];
   while (q.length) {
@@ -80,7 +340,7 @@ for (const [id, m] of Object.entries(H.MAPS)) {
   for (const [ch, list] of Object.entries(marks)) for (const [x, y] of list) ok(seen.has(x + ',' + y), 'reachable ' + id + ' ' + ch + ' @' + x + ',' + y);
 }
 
-const UIS = new Set(['book', 'name', 'shop', 'rumor', 'warp', 'calyx', 'nav', 'databank', 'su', 'su_shop', 'fh', 'fh_shop', 'doc']);
+const UIS = new Set(['book', 'synth', 'name', 'shop', 'rumor', 'warp', 'calyx', 'nav', 'databank', 'su', 'su_shop', 'fh', 'fh_shop', 'doc', 'ksboard', 'ksrate', 'kslearn', 'kscard', 'ksreport', 'tlrewards']);
 for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCRIPTS))) {
   const labels = new Set(steps.filter(s => typeof s === 'string' && s[0] === '#').map(s => s.slice(1)));
   for (const st of steps) {
@@ -212,19 +472,20 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   ok(targets >= 15, 'story objectives point at the map');
   const st = H.newState();
   for (const f of ['intro', 'asta_met', 'hs_power', 'doom', 'express_intro', 'jarilo_arrive', 'plains_met', 'belobog_intro', 'sampo_met']) st.flags[f] = true;
-  Object.assign(st, { map: 'j_belobog', x: null, y: null, obj: 'Прогуляться по Белобогу: заглянуть в мастерскую «Нейвервинтер» (юго-восток)' });
+  Object.assign(st, { map: 'j_belobog', x: null, y: null, obj: 'Загляните в мастерскую «Незимье»' });
   const g = new H.Game({ state: st, seed: 2 });
   eq(g.destinations()[0].map, 'express', 'the Express stays the first destination');
   eq(g.routeExit('hs_base', 'hs_storage'), 'Ω', 'route from the base to storage uses the Space Elevator');
-  eq(g.routeExit('j_belobog', 'u_mine'), 'u', 'route from Belobog to the mine goes down the hatch');
+  eq(g.routeExit('j_belobog', 'u_mine'), 'b', 'route from Belobog to the mine takes the cable car');
+  eq(g.routeExit('j_backwater', 'u_mine'), 'u', 'route from the Backwater Pass to the mine goes down the hatch');
   eq(g.routeExit('u_rivet', 'j_everwinter'), 'w', 'route out of Rivet Town starts at its west exit');
   eq(g.routeExit('hs_base', 'hs_base'), null, 'no route inside the same area');
   const goal = g.objTarget();
-  ok(goal && goal.map === 'j_belobog' && goal.mark === 'v', 'objective target follows the current objective text');
+  ok(goal && goal.map === 'j_belobog' && goal.mark === 's', 'objective target follows the current objective text');
   const bel = g.navPoints('j_belobog');
   ok(bel.some(p => p.kind === 'shop' && p.shop === 'belobog') && bel.some(p => p.kind === 'rumor' && p.rumor === 'sampo_belobog'), 'Belobog map shows the shop and the rumor seller');
   ok(bel.some(p => p.kind === 'goal' && p.goal), 'the workshop gets an objective marker');
-  ok(bel.some(p => p.kind === 'exit' && p.to === 'j_fissures' && p.locked) && bel.some(p => p.kind === 'exit' && p.to === 'u_boulder' && p.locked), 'closed gates and the cordoned alley are locked exits');
+  ok(bel.some(p => p.kind === 'exit' && p.to === 'j_restricted' && p.locked) && bel.some(p => p.kind === 'exit' && p.to === 'j_backwater' && p.locked), 'closed gates and the cordoned alley are locked exits');
   ok(bel.every((p, i) => !i || bel[i - 1].x <= p.x), 'markers are ordered left to right');
   const exp = g.navPoints('express');
   for (const k of ['shop', 'warp', 'calyx', 'nav', 'anchor']) ok(exp.some(p => p.kind === k), 'Express map shows ' + k);
@@ -233,8 +494,8 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   ok(base.some(p => (p.kind === 'landing' && p.at === 'v') || p.landing === 'v'), 'the Herta station landing point is in the Master Control Zone');
   ok(!g.navPoints('hs_base').some(p => p.kind === 'landing'), 'the Base Zone has no landing point after the move');
   ok(base.filter(p => p.kind === 'shop').length === 2 && g.navPoints('hs_office').some(p => p.kind === 'su'), 'the control zone shows two shops and the office shows the Simulated Universe');
-  g.state.obj = 'Найти Олега в Великой шахте (восточный выход)';
-  ok(g.navPoints('j_belobog').some(p => p.kind === 'exit' && p.ch === 'u' && p.route), 'the exit toward an objective in another area is marked');
+  g.state.obj = 'Найти Олега в Большой шахте (южный выход)';
+  ok(g.navPoints('j_belobog').some(p => p.kind === 'exit' && p.ch === 'b' && p.route), 'the exit toward an objective in another area is marked');
   ok(g.areaOpen(g.areaOf('j_plains').area) && !g.areaOpen(g.areaOf('u_mine').area), 'areas open with the story');
   eq(g.expressWorld().id, 'jarilo', 'the Express is parked at Jarilo-VI after the introduction');
   ok(!g.worldOpen(H.WORLDS.find(w => w.id === 'luofu')), 'the Luofu route is not open');
@@ -245,14 +506,14 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   const on = g.teleportFor(g.navPoints('hs_storage').find(p => p.kind === 'anchor'));
   ok(on.ok && on.dest.kind === 'anchor' && on.dest.key === anc.key, 'an active anchor gives a teleport destination');
   const belA = bel.find(p => p.kind === 'anchor');
-  ok(belA.landing === 'a' && g.teleportFor(belA).ok && g.teleportFor(belA).dest.kind === 'map', 'the Belobog anchor doubles as the landing point before it is touched');
+  ok(belA.landing === 'v' && g.teleportFor(belA).ok && g.teleportFor(belA).dest.kind === 'map', 'the Belobog anchor doubles as the landing point before it is touched');
   g.state.flags.fled = true;
   ok(!g.teleportFor(g.navPoints('j_belobog').find(p => p.kind === 'anchor')).ok, 'Belobog is closed for teleports while the team hides underground');
-  const cc = g.chestCount('j_belobog');
-  ok(cc.total === 1 && cc.got === 0, 'chest counter per area');
-  g.state.opened['j_belobog:0'] = true;
-  eq(g.chestCount('j_belobog').got, 1, 'opened chests count');
-  eq(g.chestCount('u_mine').total, 3, 'rumor chests stay hidden from the counter until the rumor is bought');
+  const cc = g.chestCount('j_plains');
+  ok(cc.total === 4 && cc.got === 0, 'chest counter per area');
+  g.state.opened['j_plains:0'] = true;
+  eq(g.chestCount('j_plains').got, 1, 'opened chests count');
+  eq(g.chestCount('u_mine').total, 10, 'rumor chests stay hidden from the counter until the rumor is bought');
 }
 
 {
@@ -343,6 +604,16 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
   while (!bb.over && !en.broken && guard++ < 20) { if (bb.current) bb.act('basic', en); }
   ok(en.broken || en.dead, 'physical breaks reaver toughness');
   ok(t0h > 0, 'toughness defined');
+}
+{
+  const b = new H.Battle({ party: [mkSpec('kafka', 20), mkSpec('march', 20)], waves: [['reaver:5'], ['reaver:5']], lvl: 5, seed: 4 });
+  b.start();
+  for (const e of b.living) { e.hp = 0; e.dead = true; }
+  b.followUps();
+  eq(b.wave, 1, 'kill after the last cleanup still spawns the next wave');
+  for (const e of b.living) { e.hp = 0; e.dead = true; }
+  b.followUps();
+  ok(b.over && b.result.win, 'kill after the last cleanup still ends the battle');
 }
 {
   const b = new H.Battle({ party: [mkSpec('march', 20), mkSpec('danheng', 20)], enemies: ['reaver:10', 'reaver:10'], lvl: 10, seed: 5 });
@@ -805,6 +1076,841 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
   }
 }
 {
+  const T = H.TUNING, alive = H.battleStat.alive, spdOf = H.battleStat.spdOf, F = H.FIVES, IDS = F.IDS;
+  const TAGS = ['joke', 'cute', 'threat', 'science', 'kind', 'sing', 'bribe', 'silent', 'weird'];
+  const spec = (id, cone) => Object.assign(mkSpec(id, 30), { key: id }, cone ? { cone: { id: cone, fx: H.CONES[cone].fx, sup: 1 } } : {});
+  const fresh = (party, foes, seed, techs) => { const b = new H.Battle({ party: party.map(p => (typeof p === 'string' ? spec(p) : p)), enemies: foes, lvl: 20, seed: seed || 5, techs: techs || [] }); b.start(); b.drain(); return b; };
+  const turnOf = (b, id) => { let g = 0; while (!b.over && b.current && b.current.charId !== id && g++ < 60) { b.act('basic', b.living[0]); b.drain(); } return b.current && b.current.charId === id ? b.current : null; };
+  const tank = b => { for (const e of b.living) { e.hp = e.maxHp = 1e9; e.base.res = 0; } };
+  const named = (ev, label) => ev.filter(e => e.t === 'dmg' && e.label === label).length;
+  const FOES = ['reaver:20', 'reaver:20', 'reaver:20'];
+
+  eq(IDS.join(), 'jingyuan,luocha,imbibitor,fuxuan,jingliu,topaz,huohuo,argenti,ratio', 'nine 5-star heroes of versions 1.x');
+  eq(IDS.map(id => H.CHARS[id].path).join(), 'erudition,abundance,destruction,preservation,destruction,hunt,abundance,erudition,hunt', 'Paths follow the original');
+  eq(IDS.map(id => H.CHARS[id].elem).join(), 'elec,imag,imag,quant,ice,fire,wind,phys,imag', 'elements follow the original');
+  for (const id of IDS) {
+    const c = H.CHARS[id];
+    ok(c === F.KITS[id] && c.rarity === 5 && H.PATHS[c.path] && H.ELEMENTS[c.elem], 'version 1.6 kit ' + id);
+    ok(c.talent.length <= 99 && c.tech.name && c.tech.text && c.contact.length === 2 && c.contact.every(x => TAGS.includes(x.tag)), 'talent, technique and Contact fit ' + id);
+    for (const ab of [c.basic, c.skill, c.ult, c.moon, c.grand, ...(c.dracore || [])].filter(Boolean)) {
+      ok(TARGETS.has(ab.target) && ab.fx.every(f => FX.has(f.k)), 'ability ' + id + ' ' + ab.name);
+      if (ab.text) ok(!/[—–]/.test(ab.text) && !/[—–]/.test(ab.name), 'no dashes in ability text ' + id);
+    }
+  }
+  ok(!Object.values(H.WARP_POOL).some(p => p.some(x => IDS.includes(x) || IDS.some(i => x === 'cone:' + Object.keys(F.CONES).find(k => F.CONES[k].sig === i)))), 'the 1.6 heroes and their cones stay out of the standard pool');
+  for (const [k, cd] of Object.entries(F.CONES)) ok(H.CONES[k] === cd && cd.rarity === 5 && IDS.includes(cd.sig) && H.CHARS[cd.sig].path === cd.path && cd.fx && !/[—–]/.test(cd.text), 'signature cone ' + k);
+  for (const [k, f] of Object.entries(F.FUSIONS)) ok(H.FUSIONS[k] === f && f.members.every(m => H.CHARS[m]) && f.fx.every(x => FX.has(x.k)), 'version 1.6 fusion data ' + k);
+
+  {
+    let b = fresh(['jingyuan', 'march'], FOES);
+    const jy = b.allies[0], h = b.lordOf(jy);
+    ok(h && h.summon && h.flags.hits === T.jyBase && b.summons.includes(h), 'Jing Yuan summons the Lightning-Lord at the start');
+    ok(Math.abs(jy.energy - T.jyEnergy) < 1e-9, 'Savant Providence gives energy at the start');
+    tank(b);
+    let u = turnOf(b, 'jingyuan');
+    if (u) {
+      const spd0 = spdOf(h);
+      h.av = 1e7;
+      b.sp = 3; b.act('skill', b.living[0]); b.drain();
+      ok(h.flags.hits === T.jyBase + 2 && spdOf(h) === spd0 + 2 * T.jySpdStep, 'the Skill adds two hits and the Lord gets faster');
+      ok(jy.buffs.some(x => x.name === 'Военный маршал'), 'War Marshal raises CRIT Rate after the Skill');
+      jy.energy = jy.maxEnergy; b.ult(jy, null); b.drain();
+      ok(h.flags.hits === T.jyBase + 5, 'the Ultimate adds three hits');
+      b.lordHits(jy, 9);
+      eq(h.flags.hits, T.jyMax, 'the Lightning-Lord has ten hits at most');
+      b.lordTurn(h);
+      const ev = b.drain();
+      ok(named(ev, 'Повелитель молний') >= T.jyMax && ev.some(e => e.t === 'act' && e.u === h), 'the Lightning-Lord strikes as many times as it has hits');
+      ok(ev.filter(e => e.t === 'dmg' && e.label === 'Повелитель молний').every(e => e.src === jy), 'the Lord hits with the stats of Jing Yuan');
+      ok(h.flags.hits === T.jyBase && h.base.spd === T.jySpd, 'after its turn the Lord goes back to three hits and base speed');
+      jy.hp = 1; b.hit(b.living[0], jy, 0, { raw: 10 }); b.drain();
+      ok(!alive(jy) && !b.summons.includes(h) && h.gone, 'the Lord leaves when Jing Yuan falls');
+    }
+    b = fresh(['jingyuan', 'march'], FOES, 5, [{ charId: 'jingyuan', fx: 'jyTech' }]);
+    eq(b.lordOf(b.allies[0]).flags.hits, T.jyBase + T.jyTechHits, 'Spiritus Invocation adds three hits for the first turn');
+  }
+
+  {
+    const b = fresh(['luocha', 'march', 'seele'], FOES);
+    const lc = b.allies[0], sl = b.allies[2];
+    sl.hp = Math.round(sl.maxHp * 0.6);
+    b.hit(b.living[0], sl, 0, { raw: Math.round(sl.maxHp * 0.2) });
+    let ev = b.drain();
+    ok(ev.some(e => e.t === 'act' && e.u === lc && e.name === 'Молитва цветка бездны') && sl.hp > sl.maxHp * 0.4, 'an ally at half HP triggers the Abyss Flower prayer');
+    eq(lc.flags.flowers, 1, 'the triggered prayer gives an Abyss Flower');
+    sl.hp = Math.round(sl.maxHp * 0.55);
+    const hp1 = sl.hp;
+    b.hit(b.living[0], sl, 0, { raw: Math.round(sl.maxHp * 0.3) });
+    ev = b.drain();
+    ok(!ev.some(e => e.t === 'act' && e.u === lc) && sl.hp < hp1, 'the prayer waits two turns of Luocha before it triggers again');
+    b.addFlower(lc); b.drain();
+    ok(b.zoneOn(lc) && lc.flags.flowers === 0, 'two Abyss Flowers open the zone');
+    sl.hp = Math.round(sl.maxHp * 0.7);
+    const hp2 = sl.hp;
+    b.actN = (b.actN || 0) + 1;
+    b.hit(sl, b.living[0], 1, { kind: 'basic' });
+    ok(sl.hp > hp2, 'an attack on a foe in the zone heals the attacker');
+    const hp3 = sl.hp;
+    b.hit(sl, b.living[0], 1, { kind: 'basic' });
+    eq(sl.hp, hp3, 'the zone heals once per action');
+  }
+
+  {
+    const b = fresh(['imbibitor', 'march'], FOES);
+    const il = b.allies[0];
+    const u = turnOf(b, 'imbibitor');
+    if (u) {
+      b.sp = 2;
+      ok(b.act('skill', u) && b.current === il && il.flags.tier === 1, 'Dracore Libre keeps the turn and enhances the Basic ATK');
+      eq(b.sp, 2, 'Dracore Libre costs no Skill Point itself');
+      b.act('skill', u); b.drain();
+      eq(il.flags.tier, 2, 'the second enhancement needs two Skill Points');
+      b.act('skill', u); b.drain();
+      eq(il.flags.tier, 0, 'without a third Skill Point the enhancement wraps back to the plain attack');
+      b.act('skill', u); b.act('skill', u); b.drain();
+      eq(b.abilityFor(il, 'basic').ab.name, 'Божественное копьё', 'the Basic ATK button shows the enhanced attack');
+      tank(b);
+      b.act('basic', b.living[1]);
+      const ev = b.drain();
+      ok(b.sp === 0 && ev.filter(e => e.t === 'dmg' && e.src === il).length >= 5, 'Divine Spear spends two Skill Points and hits five times');
+      ok(il.flags.tier === 0, 'the enhancement is spent with the attack');
+    }
+    const b2 = fresh(['imbibitor', 'march'], FOES);
+    const il2 = b2.allies[0];
+    il2.energy = il2.maxEnergy; tank(b2); b2.ult(il2, b2.living[1]); b2.drain();
+    eq(il2.flags.scales, 2, 'the Ultimate gives two Squama Sacrosancta');
+    const u2 = turnOf(b2, 'imbibitor');
+    if (u2) {
+      b2.sp = 1; il2.flags.right = 0;
+      b2.act('skill', u2); b2.act('skill', u2); b2.act('skill', u2);
+      eq(il2.flags.tier, 3, 'Squama count as Skill Points for the enhancement');
+      b2.act('basic', b2.living[1]); b2.drain();
+      ok(il2.flags.scales === 0 && b2.sp === 0, 'Squama are spent before Skill Points');
+    }
+  }
+
+  {
+    const b = fresh(['fuxuan', 'seele', 'march'], FOES);
+    const fx = b.allies[0], sl = b.allies[1];
+    ok(b.allies.every(a => a.buffs.some(x => x.name === 'Уклонение от неудач' && x.s === 'dr')), 'Misfortune Avoidance lowers the damage the whole team takes');
+    const u = turnOf(b, 'fuxuan');
+    if (u) {
+      const max0 = sl.maxHp;
+      b.sp = 3; b.act('skill', fx); b.drain();
+      ok(b.matrixOn(fx) && sl.maxHp > max0 && sl.buffs.some(x => x.name === 'Знание' && x.s === 'critR'), 'the Matrix of Prescience gives Knowledge: max HP and CRIT Rate');
+      const fxHp = fx.hp, slHp = sl.hp;
+      b.hit(b.living[0], sl, 0, { raw: 100 }); b.drain();
+      ok(slHp - sl.hp === 100 - Math.round(100 * T.fxShare) && fx.hp < fxHp, 'the Matrix moves 65% of a hit on a teammate to Fu Xuan');
+      const fxHp2 = fx.hp, slHp2 = sl.hp;
+      b.hit(b.living[0], sl, 2, {}); b.drain();
+      ok(fx.hp < fxHp2 && slHp2 - sl.hp > 0, 'an enemy hit on a teammate is shared with Fu Xuan');
+      fx.hp = Math.round(fx.maxHp * 0.55);
+      const ch = fx.flags.fxCharges;
+      b.hit(b.living[0], fx, 0, { raw: Math.round(fx.maxHp * 0.1) }); b.drain();
+      ok(fx.flags.fxCharges === ch - 1 && fx.hp > fx.maxHp * 0.5, 'at half HP Fu Xuan heals most of the lost HP');
+    }
+    const b2 = fresh(['fuxuan', 'seele'], FOES, 5, [{ charId: 'fuxuan', fx: 'fxTech' }]);
+    ok(b2.matrixOn(b2.allies[0]), 'the technique starts the battle with the Matrix');
+  }
+
+  {
+    const b = fresh(['jingliu', 'march', 'natasha'], FOES);
+    const jl = b.allies[0], mt = b.allies[1];
+    let u = turnOf(b, 'jingliu');
+    if (u) {
+      b.sp = 3; tank(b);
+      b.act('skill', b.living[0]); b.drain();
+      eq(jl.flags.syz, 1, 'Transcendent Flash gives Syzygy');
+      u = turnOf(b, 'jingliu');
+      b.sp = 3;
+      b.act('skill', b.living[0]); b.drain();
+      ok(jl.flags.trans && jl.buffs.some(x => x.name === 'Спектральная трансмиграция'), 'two Syzygy start Spectral Transmigration');
+      ok(b.current === jl || jl.av === 0, 'Spectral Transmigration advances her action');
+      u = turnOf(b, 'jingliu');
+      if (u) {
+        ok(!b.act('basic', b.living[0]), 'the Basic ATK is locked in Spectral Transmigration');
+        eq(b.abilityFor(jl, 'skill').ab.name, 'Луна на застывшей реке', 'the Skill becomes Moon On Glacial River');
+        const sp = b.sp, mhp = mt.hp;
+        b.act('skill', b.living[1]);
+        const ev = b.drain();
+        ok(b.sp === sp && mt.hp < mhp && mt.hp >= 1, 'Moon On Glacial River costs no Skill Point and drains the team');
+        ok(ev.some(e => e.t === 'dmg' && e.label === 'Трансмиграция'), 'the drain shows up as damage on teammates');
+        ok(!jl.buffs.some(x => x.name === 'Трансмиграция: атака'), 'the drained ATK lasts only for that attack');
+      }
+      jl.flags.syz = 0;
+      b.fivesEnd(jl);
+      ok(!jl.flags.trans, 'the state ends when Syzygy runs out');
+    }
+  }
+
+  {
+    const b = fresh(['topaz', 'herta', 'march'], FOES);
+    const tz = b.allies[0], nb = b.numbyOf(tz);
+    ok(nb && nb.summon && b.summons.includes(nb), 'Topaz brings Numby into the turn order');
+    const u = turnOf(b, 'topaz');
+    if (u) {
+      tank(b);
+      b.sp = 3; b.act('skill', b.living[1]);
+      const ev = b.drain();
+      ok(b.living[1].buffs.some(x => x.name === 'Справка о задолженности') && b.living.filter(e => e.buffs.some(x => x.s === 'debt')).length === 1, 'the Skill puts Proof of Debt on one foe');
+      ok(named(ev, 'Счетовод') >= 1, 'Numby strikes the debtor with the Skill');
+      const debtor = b.living[1], av0 = nb.av;
+      b.actN = (b.actN || 0) + 1;
+      b.hit(b.allies[1], debtor, 0.25, { kind: 'follow' }); b.drain();
+      ok(nb.av < av0, 'a follow-up on the debtor hurries Numby');
+      const m1 = b.dmgCalc(tz, debtor, 1, { kind: 'follow' }, false), m0 = b.dmgCalc(tz, b.living[0], 1, { kind: 'follow' }, false);
+      ok(m1 > m0 * 1.3, 'Proof of Debt raises follow-up damage taken');
+      tz.energy = tz.maxEnergy; b.ult(tz, null); b.drain();
+      eq(nb.flags.wind, T.tzWindHits, 'Turn a Profit! gives Numby two boosted attacks');
+      b.numbyTurn(nb); b.drain();
+      eq(nb.flags.wind, T.tzWindHits - 1, 'a Numby attack spends a boosted attack');
+    }
+  }
+
+  {
+    const b = fresh(['huohuo', 'seele', 'march', 'natasha'], FOES);
+    const hh = b.allies[0], sl = b.allies[1];
+    eq(hh.flags.prov, T.hhStart, 'Fearful to Act gives Divine Provision at the start');
+    const u = turnOf(b, 'huohuo');
+    if (u) {
+      sl.hp = Math.round(sl.maxHp * 0.4);
+      b.sp = 3; b.act('skill', sl); b.drain();
+      ok(hh.flags.prov === T.hhTurns && sl.hp > sl.maxHp * 0.4, 'Talisman: Protection heals and gives Divine Provision');
+      sl.hp = Math.round(sl.maxHp * 0.6);
+      const hp = sl.hp, n = hh.flags.provN;
+      b.fivesTurn(sl); b.drain();
+      ok(sl.hp > hp && hh.flags.provN === n - 1, 'Divine Provision heals an ally at the start of the turn');
+      for (const a of b.allies) a.energy = 0;
+      hh.energy = hh.maxEnergy; b.ult(hh, null); b.drain();
+      ok(b.allies.slice(1).every(a => Math.abs(a.energy - a.maxEnergy * T.hhEnergy) < 1e-6) && hh.energy < hh.maxEnergy * T.hhEnergy, 'Tail: Spiritual Domination gives teammates energy, not Huohuo');
+      ok(b.allies.slice(1).every(a => a.buffs.some(x => x.name === 'Хвост: Духовное господство' && x.s === 'atkP')), 'the Ultimate raises teammates ATK');
+    }
+  }
+
+  {
+    const b = fresh(['argenti', 'march'], FOES);
+    const ag = b.allies[0];
+    ag.energy = 90;
+    ok(b.ultReady(ag) && ag.maxEnergy === 180, 'Argenti can play the small Ultimate from 90 energy');
+    tank(b);
+    b.ult(ag, null); b.drain();
+    ok(ag.energy < 90, 'the small Ultimate spends 90 energy');
+    ag.energy = 180;
+    eq(b.abilityFor(ag, 'ult').ab.name, 'Возложенное в «моём» саду величие', 'at 180 energy the Ultimate grows');
+    b.ult(ag, null);
+    const ev = b.drain();
+    ok(named(ev, 'Величие') === T.agBounces, 'the big Ultimate adds six random hits');
+    ok(ag.flags.apo >= 3 && ag.buffs.some(x => x.name === 'Апофеоз'), 'every foe hit gives Apotheosis');
+  }
+
+  {
+    const b = fresh(['ratio', 'silverwolf', 'pela'], FOES);
+    const ra = b.allies[0], t = b.living[0];
+    tank(b);
+    for (let i = 0; i < 3; i++) b.addBuff(t, { s: 'defDown', v: 0.01, turns: 9, name: 'Тест ' + i, debuff: true });
+    const d3 = b.dmgCalc(ra, t, 1, { kind: 'skill' }, false), d0 = b.dmgCalc(ra, b.living[1], 1, { kind: 'skill' }, false);
+    ok(d3 > d0 * 1.25, 'Deduction raises damage against a foe with three debuffs');
+    const u = turnOf(b, 'ratio');
+    if (u) {
+      for (let i = 3; i < 6; i++) b.addBuff(t, { s: 'defDown', v: 0.0, turns: 9, name: 'Тест ' + i, debuff: true });
+      b.sp = 3; b.act('skill', t);
+      const ev = b.drain();
+      ok(ev.some(e => e.t === 'act' && e.u === ra && e.kind === 'follow' && e.name === 'Я мыслю - я существую'), 'with many debuffs the Skill always brings the follow-up');
+    }
+    ra.energy = ra.maxEnergy; b.ult(ra, t); b.drain();
+    ok(t.buffs.some(x => x.name === 'Недальновидность мудрецов') && ra.flags.folly && ra.flags.folly.n === T.raFolly, 'Syllogistic Paradox puts Wiseman’s Folly on the target');
+    b.fivesAfter(b.allies[2], 'basic', [t]); b.followUps();
+    const ev2 = b.drain();
+    ok(ev2.some(e => e.t === 'act' && e.u === ra && e.kind === 'follow') && ra.flags.folly.n === T.raFolly - 1, 'a teammate attack on the Folly target brings a Ratio follow-up');
+  }
+
+  {
+    const b = fresh([spec('jingliu', 'ownsword'), 'march'], FOES);
+    const jl = b.allies[0], mt = b.allies[1];
+    b.hit(b.living[0], mt, 0, { raw: 5 }); b.hit(b.living[0], mt, 0, { raw: 5 }); b.hit(b.living[0], mt, 0, { raw: 5 }); b.drain();
+    ok(jl.flags.eclipse === 3 && jl.buffs.some(x => x.s === 'defIgnore'), 'I Shall Be My Own Sword counts hits on teammates');
+    const b2 = fresh([spec('topaz', 'blissful'), 'march'], FOES);
+    tank(b2);
+    const u = turnOf(b2, 'topaz');
+    if (u) { b2.act('basic', b2.living[0]); b2.drain(); ok(b2.living[0].buffs.some(x => x.s === 'tame'), 'Worrisome, Blissful tames the follow-up target'); }
+    const b3 = fresh([spec('argenti', 'gaze'), 'march'], FOES);
+    const ag = b3.allies[0];
+    ok(b3.dmgCalc(ag, b3.living[0], 1, { kind: 'ult' }, false) > b3.dmgCalc(ag, b3.living[0], 1, { kind: 'skill' }, false) * 1.5, 'An Instant Before A Gaze scales the Ultimate with max energy');
+  }
+
+  for (const [id, f] of Object.entries(F.FUSIONS)) {
+    const b = fresh(f.members, FOES);
+    tank(b);
+    for (const a of b.allies) a.energy = a.maxEnergy;
+    if (b.current) ok(b.fusion(id, b.living[1]), 'version 1.6 fusion executes ' + id);
+  }
+
+  const runs = [[['jingyuan', 'tingyun', 'march', 'natasha'], 'gepard2'], [['luocha', 'seele', 'pela', 'march'], 'cocolia2'], [['imbibitor', 'tingyun', 'huohuo', 'march'], 'svarog'], [['fuxuan', 'seele', 'bailu', 'pela'], 'cocolia2'], [['jingliu', 'luocha', 'fuxuan', 'pela'], 'cocolia2'], [['topaz', 'himeko', 'herta', 'natasha'], 'gepard2'], [['huohuo', 'blade', 'march', 'pela'], 'svarog'], [['argenti', 'march', 'natasha', 'pela'], 'gepard2'], [['ratio', 'silverwolf', 'pela', 'bailu'], 'svarog']];
+  for (const [party, enc] of runs) {
+    let wins = 0, stuck = 0;
+    for (let s = 1; s <= 6; s++) { const ab = new H.Battle({ party: party.map(id => mkSpec(id, 30)), enemies: H.ENCOUNTERS[enc].enemies, waves: H.ENCOUNTERS[enc].waves, boss: true, seed: s * 31 }); ab.start(); let n = 0; while (!ab.over && n++ < 800) if (!ab.autoStep()) { stuck++; break; } if (ab.result && ab.result.win) wins++; }
+    ok(wins >= 5 && !stuck, 'auto battle plays ' + party.join('+') + ' well vs ' + enc + ' (' + wins + '/6, stuck ' + stuck + ')');
+  }
+}
+{
+  const T = H.TUNING, alive = H.battleStat.alive, spdOf = H.battleStat.spdOf, C = H.CONTON, AVB = T.avBase;
+  const TAGS = ['joke', 'cute', 'threat', 'science', 'kind', 'sing', 'bribe', 'silent', 'weird'];
+  const near = (x, y) => Math.abs(x - y) < 1e-6;
+  eq(C.IDS.join(), 'makoto,amanda,talleah', 'three Cosplay Convention Crisis heroines');
+  ok(C.IDS.every(id => H.CHARS[id] === C.KITS[id]) && Object.keys(C.FUSIONS).every(id => H.FUSIONS[id] === C.FUSIONS[id]) && Object.keys(C.CONES).every(id => H.CONES[id] === C.CONES[id]), 'the Кон-Тон heroines, Fusions and cones are in the roster');
+  {
+    for (const id of C.IDS) {
+      const c = H.CHARS[id];
+      ok(c.faction === 'conton' && c.rarity === 5 && c.energy === 120 && H.PATHS[c.path] && H.ELEMENTS[c.elem], 'Кон-Тон kit ' + id);
+      ok(c.talent.length <= 99 && c.tech.name && c.tech.text && c.contact.length === 2 && c.contact.every(x => TAGS.includes(x.tag)), 'talent, technique and Contact of ' + id);
+      for (const ab of [c.basic, c.skill, c.ult, c.pbasic, c.pskill].filter(Boolean)) {
+        ok(TARGETS.has(ab.target) && ab.fx.every(f => FX.has(f.k)), 'ability ' + id + ' ' + ab.name);
+        if (ab.text) ok(!/[—–]/.test(ab.text), 'no dashes in ' + ab.name);
+      }
+    }
+    eq(C.IDS.map(id => H.CHARS[id].path).join(), 'hunt,preservation,remembrance', 'the Paths of the heroines');
+    eq(C.IDS.map(id => H.CHARS[id].elem).join(), 'imag,wind,quant', 'the elements of the heroines');
+    for (const [id, f] of Object.entries(C.FUSIONS)) ok(H.FUSIONS[id] === f && f.members.every(m => H.CHARS[m]) && f.fx.every(x => FX.has(x.k)), 'Кон-Тон Fusion ' + id);
+    for (const [id, cn] of Object.entries(C.CONES)) ok(H.CONES[id] === cn && H.PATHS[cn.path] && (!cn.sig || H.CHARS[cn.sig].path === cn.path) && cn.fx, 'Кон-Тон Light Cone ' + id);
+    ok(!Object.values(H.WARP_POOL).some(p => p.some(x => C.IDS.includes(x) || Object.keys(C.CONES).includes(x.replace('cone:', '')))), 'the heroines and their cones stay out of the standard pool');
+
+    const spec = (id, cone) => Object.assign(mkSpec(id, 30), { key: id, cone: cone || null }, ['makoto'].includes(id) ? { tr: { basic: 6, skill: 10, ult: 10, talent: 10, on: [] } } : {});
+    const fresh = (party, foes, seed, techs) => { const b = new H.Battle({ party: party.map(p => (typeof p === 'string' ? spec(p) : p)), enemies: foes, lvl: 20, seed: seed || 5, techs: techs || [] }); b.start(); b.drain(); return b; };
+    const turnOf = (b, id, log) => { let g = 0; while (!b.over && b.current && b.current.charId !== id && g++ < 60) { b.act('basic', b.living[0]); const ev = b.drain(); if (log) log.push(...ev); } return b.current && b.current.charId === id ? b.current : null; };
+    const tank = b => { for (const e of b.living) { e.hp = e.maxHp = 1e9; e.base.res = 0; } };
+    const has = (ev, t) => ev.some(e => e.t === t);
+
+    let b = fresh(['makoto', 'march'], ['reaver:20', 'reaver:20']);
+    tank(b);
+    let mk = b.allies[0];
+    const foe = b.living[0];
+    const cur0 = b.current;
+    b.current = null;
+    mk.av = 500; foe.av = 300;
+    b.stealTime(mk, foe);
+    b.current = cur0;
+    ok(near(foe.av, 300 + T.mkSteal * AVB / spdOf(foe)) && near(mk.av, 500 - T.mkSteal * AVB / spdOf(mk)), 'Ловкость рук moves 15% of a turn from the foe to Makoto');
+    eq(mk.flags.shiny, 1, 'a theft gives a Shiny');
+    ok(mk.buffs.some(x => x.name === 'Блестяшки' && near(x.v, T.mkShiny)), 'a Shiny raises CRIT DMG');
+    b.stealTime(mk, foe); b.stealTime(mk, foe);
+    ok(near(foe.flags.stolen, T.mkStealCap) && has(b.drain(), 'status'), 'a foe loses at most 30% of a turn to thefts between its own turns');
+    b.contonEnemy(foe);
+    eq(foe.flags.stolen, 0, 'the theft limit resets on the foe turn');
+    eq(mk.flags.shiny, 2, 'a theft blocked by the limit gives no Shiny');
+    b.setShiny(mk, 9);
+    eq(mk.flags.shiny, T.mkShinyMax, 'Shinies stop at three');
+    ok(b.contonDmg(mk, b.living.reduce((x, y) => (y.hp > x.hp ? y : x)), {}) === T.mkBig, 'Makoto hits the foe with the most HP harder');
+    b.living[0].hp = 5e8;
+    ok(b.contonDmg(mk, b.living[0], {}) === 0, 'other foes get no talent bonus');
+    const bb = fresh(['makoto', 'march'], ['svarog_b:20']);
+    bb.allies[0].av = 500;
+    bb.stealTime(bb.allies[0], bb.living[0]);
+    ok(near(bb.living[0].flags.stolen, T.mkStealBoss), 'a boss loses only 8% of its turn');
+
+    b = fresh(['makoto', 'march'], ['reaver:20', 'reaver:20', 'reaver:20']);
+    tank(b);
+    mk = turnOf(b, 'makoto');
+    ok(mk, 'Makoto gets a turn');
+    if (mk) {
+      const t = b.living[1];
+      b.act('skill', t);
+      ok(has(b.drain(), 'steal') && t.flags.stolen > 0, 'her Skill steals time');
+    }
+    mk = turnOf(b, 'makoto');
+    if (mk) {
+      b.living[2].maxHp = 3e9; b.living[2].hp = 2e9;
+      mk.energy = mk.maxEnergy;
+      b.setShiny(mk, 3);
+      b.ult(mk, mk);
+      const ev = b.drain();
+      ok(mk.flags.away === 'portal' && b.current !== mk && has(ev, 'away'), 'Прыжок между мирами takes Makoto away and ends her turn');
+      ok([...Array(40)].every(() => b.pickTarget(b.living[0]) !== mk), 'nobody can target Makoto in another dimension');
+      ok(!b.ultReady(mk), 'no Ultimate from another dimension');
+      const log = [];
+      const back = turnOf(b, 'makoto', log);
+      const heist = log.find(e => e.t === 'dmg' && e.label === 'Самая большая блестяшка');
+      ok(back && has(log, 'back') && heist && heist.crit && heist.u === b.living[2] && !back.flags.away && back.flags.shiny === 0, 'she returns at her next turn and robs the biggest foe with a sure crit');
+    }
+    b = fresh(['makoto', 'march'], ['reaver:20', 'reaver:20']);
+    mk = b.allies[0];
+    b.living.forEach(e => { e.maxHp = e.hp = 100; });
+    mk.flags.away = 'portal';
+    b.setShiny(mk, 3);
+    b.mkReturn(mk);
+    ok(b.drain().some(e => e.t === 'dmg' && e.label === 'Сдача'), 'the extra damage of the heist carries to the next foe');
+
+    b = fresh(['amanda', 'march'], ['reaver:20', 'reaver:20']);
+    tank(b);
+    let am = turnOf(b, 'amanda');
+    ok(am, 'Amanda gets a turn');
+    if (am) {
+      ok(!am.flags.pink && b.abilityFor(am, 'basic').ab === am.kit.basic && am.kit.basic.fx[0].e === 'phys', 'Amanda starts in everyday clothes and hits with her fist');
+      const mr = b.allies[1], sp0 = b.sp, e0 = mr.energy;
+      b.act('skill', am);
+      const ev = b.drain();
+      ok(am.flags.pink && b.current === am && b.phase === 'input' && b.sp === sp0 - 1, 'Превращение costs a Skill Point and keeps the turn');
+      ok(am.shield > 0 && am.flags.cocoon === am && has(ev, 'ccForm') && has(ev, 'applause') && mr.energy > e0, 'she gets a cocoon and the crowd applauds');
+      ok(b.abilityFor(am, 'basic').ab === am.kit.pbasic && b.abilityFor(am, 'skill').ab === am.kit.pskill, 'the pink form has its own Basic ATK and Skill');
+      b.act('skill', mr);
+      ok(mr.shield > 0 && mr.flags.cocoon === am, 'Кокон-сердце shields an ally');
+    }
+    b = fresh(['amanda', 'march'], ['reaver:20']);
+    am = b.allies[0];
+    const mar = b.allies[1], f1 = b.living[0];
+    f1.hp = f1.maxHp = 1e9;
+    b.hit(f1, mar, 0, { raw: Math.ceil(mar.hp - mar.maxHp * 0.2) });
+    let ev = b.drain();
+    ok(am.flags.pink && mar.flags.cocoon === am && mar.shield > 0 && ev.some(e => e.t === 'act' && e.call), 'Зов Защитницы: Amanda transforms out of turn and shields the ally under 30% HP');
+    const fh = f1.hp;
+    b.hit(f1, mar, 0, { raw: mar.shield + 5 });
+    ok(b.ccPops.length === 1 && !mar.flags.cocoon, 'a broken cocoon waits to burst');
+    b.cleanup();
+    ev = b.drain();
+    ok(f1.hp < fh && ev.some(e => e.t === 'act' && e.name === 'Кокон лопнул!'), 'the cocoon bursts into wind damage on every foe');
+    b.hit(f1, mar, 0, { raw: 5 });
+    b.cleanup();
+    ok(!b.drain().some(e => e.t === 'act' && e.name === 'Кокон лопнул!'), 'a cocoon bursts only once');
+    b = fresh([spec('amanda'), spec('march')], ['reaver:20'], 5, [{ charId: 'amanda', fx: 'amandaTech' }]);
+    ok(b.allies[0].flags.pink && b.allies[0].flags.cocoon, 'Звонок с работы: Amanda comes to the fight transformed');
+
+    b = fresh(['talleah', 'march'], ['reaver:20', 'reaver:20', 'reaver:20']);
+    tank(b);
+    const tl = b.allies[0];
+    ok(b.gynoids().length === 1 && b.gynoids()[0].owner === tl, 'the gynoids stand on the action rail');
+    let tt = turnOf(b, 'talleah');
+    ok(tt, 'Talleah gets a turn');
+    if (tt) {
+      const tgt = b.living[1];
+      b.act('skill', tgt);
+      ev = b.drain();
+      ok(b.ccSig === tgt && tgt.buffs.some(x => x.name === 'Сигнатура' && x.s === 'vuln') && has(ev, 'shackle'), 'Арест! puts the Signature and Shackles on the target');
+      ok(ev.some(e => e.t === 'act' && e.kind === 'summon' && e.u.id === 'gynoids'), 'the gynoids act at once after Арест!');
+    }
+    const e2 = b.living[2], hp2 = e2.hp;
+    b.shackle(tl, e2, 2);
+    b.contonEnemy(e2);
+    ok(e2.hp < hp2 && e2.flags.shackle && e2.flags.shackle.n === 1, 'Shackles hurt a foe before its action');
+    b.contonEnemy(e2);
+    ok(!e2.flags.shackle && !e2.buffs.some(x => x.name === 'Оковы'), 'the Shackles fall off after two actions');
+    const s0 = b.living[1], g0 = b.gynoids()[0];
+    b.setSig(s0);
+    g0.av = 500;
+    b.hit(tl, s0, 0, { raw: s0.hp + 10 });
+    ok(b.ccSig && b.ccSig !== s0 && alive(b.ccSig) && g0.av < 500, 'the Signature jumps to the biggest foe and the gynoids hurry');
+    tt = turnOf(b, 'talleah');
+    if (tt) {
+      tt.energy = tt.maxEnergy;
+      b.ult(tt, b.living[0]);
+      b.drain();
+      ok(g0.flags.squad === T.tlSquadTurns, 'Excelsior! calls the squad of five');
+      const n = b.living.length;
+      b.summonTurn(g0);
+      eq(b.drain().filter(e => e.t === 'dmg' && e.label === 'Гиноиды').length, n, 'the squad hits every foe');
+    }
+    b = fresh(['talleah', 'march'], ['reaver:20']);
+    const tl2 = b.allies[0], f2 = b.living[0];
+    f2.hp = f2.maxHp = 1e9;
+    turnOf(b, 'march');
+    b.hit(f2, tl2, 0, { raw: tl2.hp + 50 });
+    ev = b.drain();
+    ok(alive(tl2) && tl2.hp === 1 && tl2.flags.away === 'capsule' && has(ev, 'capsule'), 'the capsule saves Talleah from a lethal hit');
+    ok([...Array(30)].every(() => b.pickTarget(f2) !== tl2), 'nobody can target Talleah on the ship');
+    const back2 = turnOf(b, 'talleah');
+    ok(back2 && !back2.flags.away && back2.hp >= Math.round(back2.maxHp * T.tlCapsuleHp), 'Talleah comes back with half of her HP');
+    b.hit(f2, tl2, 0, { raw: tl2.hp + 50 });
+    ok(tl2.dead, 'the capsule works once per battle');
+    ok(!b.gynoids().length, 'the gynoids leave when Talleah falls');
+
+    b = fresh(['makoto', 'amanda', 'talleah', 'march'], ['reaver:20', 'reaver:20', 'reaver:20']);
+    tank(b);
+    for (const a of b.allies) a.energy = a.maxEnergy;
+    const tri = b.availableFusions().find(x => x.id === 'f_ccc3');
+    ok(tri && tri.ready, 'Втроём веселее is ready with all three heroines');
+    if (b.current && tri) {
+      b.fusion('f_ccc3', b.living[0]);
+      ev = b.drain();
+      ok(b.allies.every(a => a.flags.cocoon) && b.living.every(e => e.flags.shackle) && has(ev, 'applause'), 'Втроём веселее shackles every foe and gives every ally a cocoon');
+    }
+
+    const cone = fx => ({ id: fx, fx, sup: 1 });
+    b = fresh([spec('march', cone('cccstandee')), spec('natasha', cone('cccgorilla'))], ['reaver:20', 'reaver:20']);
+    const big = b.living[0];
+    ok(b.living.some(e => e.buffs.some(x => x.name === 'Под присмотром')), 'Портрет гориллы watches the biggest foe');
+    ok(near(b.contonDmg(b.allies[0], big, {}), 0.24), 'Картонный злодей hits healthy foes harder');
+    big.hp = big.maxHp * 0.5;
+    ok(b.contonDmg(b.allies[0], big, {}) === 0, 'and not wounded ones');
+    b = fresh([spec('makoto', cone('cccletter')), spec('march')], ['reaver:20', 'reaver:20']);
+    tank(b);
+    mk = turnOf(b, 'makoto');
+    if (mk) { b.act('skill', b.living[0]); b.drain(); ok(mk.buffs.some(x => x.name === 'Письмо с кошкой'), 'С любовью, Макото powers up after a theft'); }
+
+    const runs = [[['makoto', 'amanda', 'talleah', 'natasha'], 'svarog'], [['makoto', 'amanda', 'talleah', 'natasha'], 'cocolia1'], [['makoto', 'pela', 'amanda', 'natasha'], 'gepard2'], [['seele', 'talleah', 'march', 'natasha'], 'svarog']];
+    for (const [party, enc] of runs) {
+      let wins = 0, stuck = 0;
+      for (let s = 1; s <= 6; s++) { const ab = new H.Battle({ party: party.map(id => mkSpec(id, 30)), enemies: H.ENCOUNTERS[enc].enemies, waves: H.ENCOUNTERS[enc].waves, boss: true, seed: s * 31 }); ab.start(); let n = 0; while (!ab.over && n++ < 800) if (!ab.autoStep()) { stuck++; break; } if (ab.result && ab.result.win) wins++; }
+      ok(wins >= 5 && !stuck, 'auto battle plays ' + party.join('+') + ' well vs ' + enc + ' (' + wins + '/6, stuck ' + stuck + ')');
+    }
+  }
+}
+{
+  const T = H.TUNING, HA = H.HARES, CHAIN_NAME = 'Цепочка атак', near = (x, y) => Math.abs(x - y) < 1e-6;
+  const TAGS = ['joke', 'cute', 'threat', 'science', 'kind', 'sing', 'bribe', 'silent', 'weird'];
+  {
+    eq(HA.IDS.join(), 'billy,nicole,anby', 'three Cunning Hares');
+    for (const id of HA.IDS) {
+      const c = H.CHARS[id];
+      ok(c === HA.KITS[id] && c.faction === 'hares' && c.rarity === 4 && H.PATHS[c.path] && H.ELEMENTS[c.elem], 'Cunning Hares kit ' + id);
+      ok(c.talent.length <= 99 && c.tech.name && c.tech.text && c.link.name && c.link.text && c.contact.length === 2 && c.contact.every(x => TAGS.includes(x.tag)), 'talent, link, technique and Contact of ' + id);
+      for (const ab of [c.basic, c.skill, c.ult, c.enhanced].filter(Boolean)) {
+        ok(TARGETS.has(ab.target) && ab.fx.every(f => FX.has(f.k)), 'ability ' + id + ' ' + ab.name);
+        if (ab.text) ok(!/[—–]/.test(ab.text), 'no dashes in ' + ab.name);
+      }
+    }
+    eq(HA.IDS.map(id => H.CHARS[id].path).join(), 'erudition,nihility,hunt', 'the Paths of the hares');
+    eq(HA.IDS.map(id => H.CHARS[id].elem).join(), 'phys,quant,elec', 'the elements of the hares');
+    for (const [id, f] of Object.entries(HA.FUSIONS)) ok(H.FUSIONS[id] === f && f.members.every(m => H.CHARS[m]) && f.fx.every(x => FX.has(x.k)) && !/[—–]/.test(f.text), 'Cunning Hares Fusion ' + id);
+    for (const [id, cn] of Object.entries(HA.CONES)) ok(H.CONES[id] === cn && cn.rarity === 4 && H.CHARS[cn.sig].path === cn.path && cn.fx, 'Cunning Hares Light Cone ' + id);
+    ok(!Object.values(H.WARP_POOL).some(p => p.some(x => HA.IDS.includes(x) || Object.keys(HA.CONES).includes(x.replace('cone:', '')))), 'the hares and their cones stay out of the standard pool');
+
+    const spec = (id, cone) => Object.assign(mkSpec(id, 30), { key: id, cone: cone || null });
+    const cone = id => ({ id, fx: H.CONES[id].fx, sup: 1 });
+    const fresh = (party, foes, seed, techs) => { const b = new H.Battle({ party: party.map(p => (typeof p === 'string' ? spec(p) : p)), enemies: foes, lvl: 20, seed: seed || 5, techs: techs || [] }); b.start(); b.drain(); return b; };
+    const turnOf = (b, id, log) => { let g = 0; while (!b.over && g++ < 80 && !(b.canAct() && b.current.charId === id)) { if (b.chainReady()) b.chain(null); else if (b.canAct()) b.act('basic', b.living[0]); else break; const ev = b.drain(); if (log) log.push(...ev); } return b.canAct() && b.current.charId === id ? b.current : null; };
+    const tank = b => { for (const e of b.living) { e.hp = e.maxHp = 1e9; e.tough = e.maxTough = 1e6; } };
+    const has = (ev, t) => ev.some(e => e.t === t);
+    const unit = (b, id) => b.allies.find(a => a.charId === id);
+
+    let b = fresh(['billy', 'march'], ['gunner:20', 'gunner:20', 'gunner:20']);
+    tank(b);
+    let bl = turnOf(b, 'billy');
+    ok(bl, 'Billy gets a turn');
+    if (bl) {
+      b.act('basic', b.living[0]);
+      const ev = b.drain();
+      eq(ev.filter(e => e.t === 'dmg' && e.src === bl).length, 3, 'Огонь из всех стволов fires three shots');
+      eq(bl.flags.steady, 1, 'a Basic gives one level of С колена');
+      ok(near(b.haresDmg(bl, b.living[0], { kind: 'basic' }), T.steadyStep), 'С колена raises his damage');
+      bl = turnOf(b, 'billy'); b.act('basic', b.living[0]); b.drain();
+      bl = turnOf(b, 'billy'); b.act('basic', b.living[0]); b.drain();
+      eq(bl.flags.steady, T.steadyMax, 'С колена stops at two levels');
+      ok(near(b.haresDmg(bl, b.living[0], { isDot: true }), 0), 'С колена does not raise break or DoT damage');
+      bl = turnOf(b, 'billy');
+      const sp = b.sp;
+      b.act('skill', b.living[0]);
+      const ev2 = b.drain();
+      ok(b.sp === sp - 1 && ev2.filter(e => e.t === 'dmg' && e.src === bl).length === 3 && bl.flags.steady === 0, 'Время ликвидации hits all foes and resets С колена');
+      b.setSteady(bl, 2); b.haresSkip(bl);
+      eq(bl.flags.steady, 0, 'a skipped turn resets С колена');
+      b.setSteady(bl, 2); b.haresHurt(bl, bl.maxHp * 0.1);
+      eq(bl.flags.steady, 2, 'a light hit keeps С колена');
+      b.haresHurt(bl, bl.maxHp * T.steadyKnock);
+      eq(bl.flags.steady, 0, 'a heavy hit knocks him out of С колена');
+      b.push({ t: 'act', u: unit(b, 'march'), name: 'Контратака', kind: 'follow' });
+      eq(bl.flags.star || 0, 0, 'without a Physical ally or another hare there are no Star Knight charges');
+    }
+
+    b = fresh(['billy', 'clara'], ['gunner:20', 'gunner:20']);
+    tank(b);
+    bl = unit(b, 'billy');
+    b.push({ t: 'act', u: unit(b, 'clara'), name: 'Сварог', kind: 'follow' });
+    eq(bl.flags.star, 1, 'an ally follow-up gives Billy a charge when the link is on');
+    b.push({ t: 'act', u: bl, name: CHAIN_NAME, kind: 'chain' });
+    eq(bl.flags.star, 2, 'his own Chain Attack counts too');
+    b.push({ t: 'act', u: unit(b, 'clara'), name: 'Сварог', kind: 'follow' });
+    eq(bl.flags.star, T.starMax, 'charges stop at two');
+    ok(near(b.haresDmg(bl, b.living[0], { kind: 'ult' }), T.starTeam * 2), 'charges power up the Ultimate');
+    bl = turnOf(b, 'billy');
+    if (bl) { bl.energy = bl.maxEnergy; b.ult(bl, b.living[0]); b.drain(); eq(bl.flags.star, 0, 'the Ultimate spends the charges'); }
+
+    b = fresh(['nicole', 'seele', 'march'], ['gunner:20', 'gunner:20', 'gunner:20', 'gunner:20']);
+    tank(b);
+    let ni = turnOf(b, 'nicole');
+    ok(ni, 'Nicole gets a turn');
+    if (ni) {
+      const far = b.living[3], dd0 = b.dmgCalc(unit(b, 'seele'), far, 1, { kind: 'basic' }, false);
+      ok(b.adjacent(b.living, b.living[0]).length === 1, 'without the field a blast hits only neighbours');
+      b.act('skill', b.living[0]);
+      const ev = b.drain();
+      ok(b.fieldOn() && has(ev, 'field') && b.field.turns === T.fieldTurns, 'Сахарная пуля с начинкой opens the field for two of her turns');
+      eq(b.adjacent(b.living, b.living[0]).length, 3, 'in the field every foe is a neighbour of the target');
+      ok(near(b.haresDef(far), T.fieldDef), 'the field lowers DEF');
+      ok(b.dmgCalc(unit(b, 'seele'), far, 1, { kind: 'basic' }, false) > dd0, 'allies hit harder in the field');
+      ok(near(b.haresDmg(unit(b, 'seele'), far, { e: 'quant' }), T.fieldQuant), 'a Quantum ally gives Nicole the link: Quantum damage +25% in the field');
+      eq(ni.flags.caseShots, T.caseShots + 1, 'the case is loaded with two shots and a third from «Полный кейс»');
+      eq(b.abilityFor(ni, 'basic').kind, 'enhanced', 'loaded shots turn her Basic into Творю что хочу');
+      ni = turnOf(b, 'nicole');
+      const before = b.field.turns;
+      b.act('basic', b.living[1]);
+      const ev2 = b.drain();
+      ok(ev2.filter(e => e.t === 'dmg' && e.src === ni).length === 4 && ni.flags.caseShots === T.caseShots, 'Творю что хочу hits every foe in the field and spends a shot');
+      eq(b.field.turns, before, 'an enhanced shot keeps the field up through her turn');
+      b.field.turns = 1;
+      b.haresEnd(ni);
+      ok(!b.fieldOn() && b.field === null, 'the field closes when its turns run out');
+    }
+    b = fresh(['nicole', 'march'], ['gunner:20']);
+    b.setField(unit(b, 'nicole'), 2);
+    ok(near(b.haresDmg(unit(b, 'nicole'), b.living[0], { e: 'quant' }), 0), 'without a Quantum ally or a hare there is no Quantum bonus');
+    b = fresh(['nicole', 'march', 'natasha'], ['gunner:20', 'gunner:20']);
+    tank(b);
+    ni = turnOf(b, 'nicole');
+    if (ni) {
+      const ma = unit(b, 'march'), na = unit(b, 'natasha');
+      ma.energy = 0; na.energy = 0; ni.energy = ni.maxEnergy;
+      b.ult(ni, b.living[0]);
+      b.drain();
+      ok(ma.energy >= T.nicoleEnergy && na.energy >= T.nicoleEnergy && b.fieldOn(), 'Эфирная граната opens the field and gives the team energy');
+      const e0 = { march: ma.energy, natasha: na.energy };
+      b.act('basic', b.living[0]);
+      const log = [];
+      let g = 0;
+      while (b.nicoleNext && g++ < 20 && b.canAct()) { b.act('basic', b.living[0]); log.push(...b.drain()); }
+      ok(!b.nicoleNext && (ma.energy - e0.march >= T.nicoleNext || na.energy - e0.natasha >= T.nicoleNext), 'the next ally to act gets another 20 energy');
+    }
+
+    b = fresh(['anby', 'march'], ['gunner:20', 'gunner:20']);
+    tank(b);
+    let an = turnOf(b, 'anby');
+    ok(an, 'Anby gets a turn');
+    if (an) {
+      const p0 = b.preview('skill', b.living[0], an).rows.get(b.living[0]).tough;
+      for (let i = 1; i <= 3; i++) { an = turnOf(b, 'anby'); b.act('basic', b.living[0]); b.drain(); eq(an.flags.series, i, 'Турборазряд adds to the Series (' + i + ')'); }
+      an = turnOf(b, 'anby');
+      eq(b.abilityFor(an, 'basic').ab.name, 'Гром', 'the fourth Basic is Гром');
+      ok(near(b.voltMul(an), 1 + T.voltTough), 'Колебания напряжения is ready after the third hit');
+      ok(near(b.preview('skill', b.living[0], an).rows.get(b.living[0]).tough, p0 * (1 + T.voltTough)), 'the preview shows the heavier Skill');
+      b.act('basic', b.living[0]);
+      b.drain();
+      eq(an.flags.series, 0, 'Гром resets the Series');
+      an = turnOf(b, 'anby');
+      an.energy = an.maxEnergy;
+      b.ult(an, b.living[0]);
+      b.drain();
+      eq(an.flags.series, T.seriesMax, 'Овердрайв fills the Series');
+    }
+
+    const weakFoe = b2 => { for (const e of b2.living) { e.hp = e.maxHp = 1e9; e.maxTough = 20; e.tough = 1; e.broken = false; e.weak = Object.keys(H.ELEMENTS); } };
+    b = fresh(['anby', 'march', 'natasha'], ['gunner:20', 'gunner:20', 'gunner:20']);
+    weakFoe(b);
+    an = turnOf(b, 'anby');
+    if (an) weakFoe(b);
+    if (an) {
+      const t = b.living[1];
+      b.act('basic', t);
+      let ev = b.drain();
+      ok(b.phase === 'chain' && b.chainReady() && has(ev, 'chainAsk') && b.chainCur.tgt === t, 'a break with Anby in the team stops the battle for a Chain Attack');
+      ok(!b.chainCur.cands.includes(an) && b.chainCur.cands.length === 2, 'the breaker is not offered as a partner');
+      ok(!b.canAct() && !b.act('basic', t), 'nobody acts while the chain waits');
+      const ma = unit(b, 'march');
+      b.chain(ma);
+      ev = b.drain();
+      const hitEv = ev.find(e => e.t === 'dmg' && e.src === ma && e.u === t);
+      ok(ev.some(e => e.t === 'act' && e.kind === 'chain' && e.u === ma) && hitEv && hitEv.label === CHAIN_NAME, 'the partner hits the broken foe with a Chain Attack');
+      ok(ev.some(e => e.t === 'dmg' && e.src === ma && e.u !== t), 'the Chain Attack splashes the neighbours');
+      ok(b.chainReady() && b.chainCur.tgt !== t, 'a neighbour broken by the splash asks for its own chain');
+      let g = 0;
+      while (b.chainReady() && g++ < 6) { b.chain(null); ev.push(...b.drain()); }
+      ok(b.phase !== 'chain' && has(ev, 'chainEnd'), 'the battle goes on after the chain');
+    }
+    b = fresh(['anby', 'march', 'natasha'], ['gunner:20', 'gunner:20', 'gunner:20']);
+    weakFoe(b);
+    let ma = turnOf(b, 'march');
+    if (ma) weakFoe(b);
+    if (ma) {
+      b.act('basic', b.living[0]);
+      b.drain();
+      ok(b.phase === 'chain' && b.chainCur.by === ma, 'any ally break opens a Chain Attack while Anby is in the team');
+      b.chain(null);
+      const ev = b.drain();
+      ok(has(ev, 'chainSkip') && b.phase !== 'chain', 'the player may skip the chain');
+    }
+    b = fresh(['march', 'natasha'], ['gunner:20', 'gunner:20']);
+    weakFoe(b);
+    ma = turnOf(b, 'march');
+    if (ma) weakFoe(b);
+    if (ma) { b.act('basic', b.living[0]); b.drain(); ok(b.phase !== 'chain' && !b.chainQ.length, 'without Anby breaks open no chain'); }
+    b = fresh(['billy', 'anby', 'march', 'natasha'], ['gunner:20', 'gunner:20', 'gunner:20']);
+    weakFoe(b);
+    bl = turnOf(b, 'billy');
+    if (bl) weakFoe(b);
+    if (bl) {
+      b.act('skill', b.living[0]);
+      b.drain();
+      const asked = [];
+      let g = 0;
+      while (b.chainReady() && g++ < 6) { asked.push(b.chainCur.cands.slice()); b.chain(b.chainCur.cands[0]); b.drain(); }
+      ok(asked.length === 3, 'three breaks in one blow ask for three chains (' + asked.length + ')');
+      ok(asked[1].length === asked[0].length - 1 && asked[2].length === asked[0].length - 2, 'each partner chains once per blow');
+      ok(bl.flags.star >= 1, 'chains give Billy Star Knight charges');
+    }
+    b = fresh(['anby', 'billy', 'march'], ['gunner:20', 'gunner:20']);
+    weakFoe(b);
+    an = turnOf(b, 'anby');
+    if (an) weakFoe(b);
+    if (an) {
+      const pb = unit(b, 'billy'), e0 = pb.energy;
+      b.act('basic', b.living[0]);
+      b.drain();
+      b.chain(pb);
+      b.drain();
+      ok(pb.energy >= e0 + T.chainEnergy, 'Параллельный контур: a linked chain partner gets 10 energy');
+    }
+    if (H.CHARS.yu) {
+      b = fresh(['yu', 'anby', 'march'], ['gunner:20', 'gunner:20']);
+      weakFoe(b);
+      const yu = turnOf(b, 'yu');
+      if (yu) weakFoe(b);
+      if (yu) {
+        b.act('basic', b.living[0]);
+        b.drain();
+        ok(b.phase === 'chain', 'a Persona break first asks for the Chain Attack');
+        b.chain(unit(b, 'march'));
+        const ev = b.drain();
+        let g = 0;
+        while (b.chainReady() && g++ < 6) { b.chain(null); ev.push(...b.drain()); }
+        ok(has(ev, 'oneMore') && b.canAct() && b.current === yu, 'then One More gives the turn back');
+      }
+    }
+    b = fresh(['anby', 'march'], ['gunner:20', 'gunner:20']);
+    weakFoe(b);
+    an = turnOf(b, 'anby');
+    if (an) weakFoe(b);
+    if (an) {
+      b.act('basic', b.living[0]);
+      b.drain();
+      const was = b.chainReady();
+      let g = 0, okStep = true;
+      while (b.chainReady() && g++ < 6) okStep = b.autoStep() && okStep;
+      ok(was && okStep && b.phase !== 'chain' && b.drain().some(e => e.t === 'act' && e.kind === 'chain'), 'the auto battle answers the chain itself');
+    }
+
+    b = fresh(['nicole', 'miyabi', 'march'], ['gunner:20', 'gunner:20', 'gunner:20']);
+    tank(b);
+    const ni2 = turnOf(b, 'nicole');
+    if (ni2) {
+      for (const a of b.allies) a.energy = a.maxEnergy;
+      const mi = unit(b, 'miyabi'), f0 = mi.flags.frost || 0;
+      ok(b.fusion('f_katana', b.living[0]), 'Катана в залог can be cast');
+      b.drain();
+      ok(b.fieldOn() && mi.flags.frost >= Math.min(6, f0 + 3), 'Катана в залог opens the field and gives Miyabi Fallen Frost');
+    }
+    b = fresh(['billy', 'anby', 'nicole'], ['gunner:20', 'gunner:20']);
+    tank(b);
+    if (turnOf(b, 'billy')) {
+      for (const a of b.allies) a.energy = a.maxEnergy;
+      ok(b.fusion('f_hares', b.living[0]), '«Хитрые зайцы» в деле can be cast');
+      b.drain();
+      ok(b.fieldOn() && unit(b, 'billy').flags.star === T.starMax, 'the trio Fusion opens the field and fills Billy charges');
+    }
+
+    b = fresh([spec('nicole', cone('vault')), spec('march')], ['gunner:20', 'gunner:20']);
+    tank(b);
+    ni = turnOf(b, 'nicole');
+    if (ni) { b.act('skill', b.living[0]); b.drain(); ok(b.living[0].buffs.some(x => x.name === 'Сундук сокровищ'), 'Сундук сокровищ marks the foes hit by the Skill'); }
+    b = fresh([spec('billy', cone('starlight')), spec('march')], ['gunner:20']);
+    ok(near(b.haresDmg(unit(b, 'billy'), b.living[0], { kind: 'basic' }), 0.2), 'Реплика Звёздного двигателя powers up the Basic');
+    b = fresh([spec('anby', cone('battery')), spec('march')], ['gunner:20']);
+    b.push({ t: 'act', u: unit(b, 'anby'), name: CHAIN_NAME, kind: 'chain' });
+    ok(unit(b, 'anby').buffs.some(x => x.s === 'err' && x.name === 'Аккумулятор Демары II'), 'Аккумулятор Демары II speeds up energy after a chain');
+
+    b = fresh(['anby', 'march'], ['gunner:20', 'gunner:20'], 5, [{ charId: 'anby', fx: 'anbyTech' }, { charId: 'nicole', fx: 'nicoleTech' }]);
+    ok(b.allies.length === 2, 'techniques of absent hares do nothing harmful');
+    b = fresh(['billy', 'nicole', 'march'], ['gunner:20', 'gunner:20'], 5, [{ charId: 'billy', fx: 'billyTech' }, { charId: 'nicole', fx: 'nicoleTech' }]);
+    ok(unit(b, 'billy').flags.steady === 1 && b.fieldOn(), 'the techniques start С колена and the field');
+
+    const runs = [[['billy', 'nicole', 'anby', 'natasha'], 'svarog'], [['billy', 'nicole', 'anby', 'natasha'], 'cocolia1'], [['miyabi', 'nicole', 'march', 'natasha'], 'gepard2'], [['anby', 'sushang', 'march', 'natasha'], 'svarog']];
+    let chainsAll = 0;
+    for (const [party, enc] of runs) {
+      let wins = 0, stuck = 0, chains = 0;
+      for (let s = 1; s <= 6; s++) { const ab = new H.Battle({ party: party.map(id => mkSpec(id, 30)), enemies: H.ENCOUNTERS[enc].enemies, waves: H.ENCOUNTERS[enc].waves, boss: true, seed: s * 31 }); ab.start(); let n = 0; while (!ab.over && n++ < 900) { if (!ab.autoStep()) { stuck++; break; } chains += ab.drain().filter(e => e.t === 'act' && e.kind === 'chain').length; } if (ab.result && ab.result.win) wins++; }
+      ok(wins >= 5 && !stuck, 'auto battle plays ' + party.join('+') + ' well vs ' + enc + ' (' + wins + '/6, stuck ' + stuck + ')');
+      chainsAll += chains;
+    }
+    ok(chainsAll > 0, 'Chain Attacks happen in auto battles (' + chainsAll + ')');
+
+    for (const [id, st] of Object.entries(H.BANNERS.sig.stars)) eq(st.four.join(), HA.IDS.join(), 'the hares are the featured A agents of ' + id);
+    for (const [id, st] of Object.entries(H.BANNERS.amp.stars)) eq(st.four.join(), 'cone:starlight,cone:vault,cone:battery', 'the hares amplifiers are the featured 4★ cones of ' + id);
+    ok(![...Object.values(H.BANNERS.sig.stars).flatMap(x => x.four), ...H.BANNERS.sig.extra4, ...H.WARP_POOL.four].includes('danheng'), 'Dan Heng left Signal Search');
+    for (const ban of ['sig', 'amp']) {
+      const g = new H.Game({ seed: 11 });
+      g.state.jade = 1e9;
+      const B = g.bannerOf(ban), feat = B.four.map(x => x.replace('cone:', ''));
+      let four = 0, hit = 0, guarOk = true, strange = [];
+      for (let i = 0; i < 400; i++) {
+        let miss = g.pityOf(ban).guar4;
+        for (const r of g.warp(10, ban)) {
+          if (r.rar !== 4 || r.cameo) continue;
+          four++;
+          const id = r.kind === 'cone' ? r.id : r.pick;
+          if (feat.includes(id)) hit++; else if (miss) guarOk = false;
+          if (r.kind === 'char' && !feat.includes(id) && !H.WARP_POOL.four.includes(id) && !(H.BANNERS.sig.extra4 || []).includes(id)) strange.push(id);
+          miss = !feat.includes(id);
+        }
+      }
+      const want = ban === 'sig' ? [0.6, 0.73] : [0.75, 0.86];
+      ok(hit / four > want[0] && hit / four < want[1], ban + ': featured 4★ share ' + (hit / four).toFixed(2));
+      ok(guarOk && !strange.length, ban + ': a missed featured 4★ is guaranteed next, nothing else drops (' + strange.join() + ')');
+    }
+  }
+  ok(HA.IDS.every(id => H.CHARS[id] === HA.KITS[id]) && H.FUSIONS.f_hares && H.CONES.vault, 'the hares are in the roster');
+}
+{
+  const T = H.TUNING, CB = H.BANNERS.con, AB = H.BANNERS.alley, HER = ['makoto', 'amanda', 'talleah'], std5 = H.WARP_POOL.five.filter(x => !x.startsWith('cone:'));
+  ok(CB && AB && CB.pass === 'badge' && AB.pass === 'badge' && H.ITEMS.badge, 'the main stage and the Artists Alley sell for Кон-Тон badges');
+  eq(Object.keys(CB.stars).join(), HER.join(), 'the main stage offers Makoto, Amanda and Talleah');
+  eq(HER.map(id => CB.stars[id].four.join()).join(' / '), 'sampo,guinaifen,tingyun / march,arlan,hook / asta,herta,pela', 'each heroine brings her own three 4★');
+  ok(HER.every(id => H.CONES[AB.stars[id].cone].sig === id && AB.stars[id].four.every(f => H.CONES[f.slice(5)].rarity === 4)), 'the Alley sells each heroine her signature cone and three 4★ prints');
+  ok(new Set(HER.map(id => CB.stars[id].name)).size === 3 && HER.every(id => CB.stars[id].title.join(' ').length <= 24), 'three short banner names');
+  const g = new H.Game({ seed: 21 }), N = 20000;
+  g.state.jade = 0; g.state.inv.items.badge = N;
+  eq(g.defaultBanner(), 'con', 'badges open the main stage by default');
+  g.setStarOf('con', 'amanda');
+  const B = g.bannerOf('con');
+  ok(B.five === 'amanda' && B.featRate === T.conFeatured && B.four.join() === 'march,arlan,hook', 'the chosen heroine is the featured 5★ with her three 4★');
+  let five = 0, feat = 0, other = 0, std = 0, four = 0, four3 = 0, kaz = 0, guarOk = true;
+  for (let i = 0; i < N / 10; i++) {
+    let before = g.pityOf('con').guar5;
+    for (const r of g.warp(10, 'con')) {
+      if (r.rar === 5) { five++; if (r.pick === 'amanda') feat++; else if (HER.includes(r.pick)) other++; else if (std5.includes(r.pick)) std++; if (before && r.pick !== 'amanda') guarOk = false; before = false; }
+      if (r.rar === 4) { four++; if (B.four.includes(r.pick)) four3++; if (r.pick === 'kazuma') kaz++; }
+    }
+  }
+  ok(five / N > 0.02 && five / N < 0.027, 'about 2.3% 5★ with 1.2% a pull and the 60th pull (' + (five / N * 100).toFixed(2) + '%)');
+  ok(feat + std === five && !other, 'a 5★ is the chosen heroine or a standard 5★, never the other two heroines');
+  ok(feat / five > 0.6 && feat / five < 0.73, 'the 50/50 with the guarantee gives the heroine about two times in three (' + (feat / five).toFixed(2) + ')');
+  ok(guarOk, 'a lost 50/50 makes the next 5★ the chosen heroine');
+  ok(four3 / four > 0.55 && kaz / four > 0.004 && kaz / four < 0.02, 'the three 4★ come about half of the time with the guarantee, Kazuma about 1% (' + (four3 / four).toFixed(2) + ', ' + (kaz / four * 100).toFixed(2) + '%)');
+  ok(!g.state.inv.items.badge && g.state.warpNCon === N && g.state.warpLog[0].ban === 'con', 'every pull spends a badge and counts on the main stage');
+  ok(g.state.warpLog.some(e => e.off && e.rar === 5) && g.state.warpLog.some(e => e.cameo), 'the history marks lost 50/50 and Kazuma cameos');
+  const ga = new H.Game({ seed: 5 });
+  ga.state.jade = 0; ga.state.inv.items.badge = 3000;
+  ga.setStarOf('alley', 'talleah');
+  const AB2 = ga.bannerOf('alley');
+  ok(AB2.five === 'cone:cccpratia' && AB2.featRate === T.coneFeatured && AB2.pity5 === T.conePity5, 'the Alley features the signature cone with the cone rules');
+  const af = [], a4 = [];
+  for (let i = 0; i < 300; i++) for (const r of ga.warp(10, 'alley')) { if (r.rar === 5) af.push(r.pick); if (r.rar === 4 && r.kind === 'cone') a4.push(r.id); }
+  ok(af.length && af.every(p => p === 'cone:cccpratia' || H.WARP_POOL.five.includes(p)) && !af.some(p => p === 'cone:cccletter' || p === 'cone:cccmagic'), 'an Alley 5★ is the signature cone or a standard cone');
+  ok(a4.filter(id => ['cccgorilla', 'cccbadge', 'cccstandee'].includes(id)).length > a4.length * 0.6, 'Alley 4★ cones are mostly the three prints');
+  ok(ga.pityOf('alley') !== ga.pityOf('con') && ga.state.warpLog[0].ban === 'alley', 'the Alley keeps its own pity and history');
+  const gj = new H.Game({ seed: 2 });
+  gj.state.jade = T.warpCost * 10;
+  ok(gj.warp(10, 'con') && gj.state.jade === 0 && !gj.warp(1, 'con'), 'without badges a pull costs ' + T.warpCost + ' jade');
+  ok(!gj.conRegistered() && gj.conRegister() && gj.state.inv.items.badge === T.conRegBadges && !gj.conRegister(), 'registration gives one badge once');
+  let now = new Date(2026, 9, 16, 12, 0).getTime();
+  const gd = new H.Game({ seed: 4, clock: () => now });
+  ok(!gd.eventReady('conton'), 'the convent days wait for the Express');
+  gd.state.flags.express_intro = true;
+  ok(gd.conDays().days === 1 && gd.eventReady('conton'), 'the first login opens Thursday');
+  ok(gd.claimConDay(0) && gd.state.inv.items.badge === 2 && !gd.claimConDay(0) && !gd.claimConDay(1), 'Thursday gives two badges once, Friday waits');
+  now += 3600000; eq(gd.conDays().days, 1, 'a second login on the same day does not count');
+  for (let d = 0; d < 6; d++) { now += 86400000; gd.conDays(); }
+  eq(gd.conDays().days, 4, 'the convention lasts four days');
+  eq(gd.claimEvent('conton').length, 3, 'the other three days are claimed together');
+  ok(gd.state.inv.items.badge === 10 && !gd.eventReady('conton'), 'the four days give ten badges');
+  ok(!gd.bookPages('guests').some(x => x.who === 'Макото') && (gd.state.roster.makoto = { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 }) && gd.bookPages('guests').some(x => x.who === 'Макото'), 'Makoto signs the Express guestbook once she joins');
+  eq(H.CONTON_BANNER.DAYS.reduce((a, d) => a + d[1], 0) + T.conRegBadges + H.MAIL.find(m => m.id === 'v14_conton').give.items.badge, 21, 'the letter, the registration and the event give 21 badges');
+}
+{
   const T = H.TUNING, alive = H.battleStat.alive, KITS = H.INABA.KITS, P4 = Object.keys(KITS);
   const FX4 = FX;
   {
@@ -818,7 +1924,7 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
     eq(KITS.yu.skills.map(s => H.INABA.PERSONAS[s.persona].elem).join(), 'elec,ice,phys', 'Yu has one skill per Persona');
     eq([KITS.yu.rarity, KITS.kanji.rarity, KITS.rise.rarity, KITS.yosuke.rarity, KITS.chie.rarity, KITS.yukiko.rarity].join(), '5,5,5,4,4,4', 'rarities follow the banner plan');
 
-    const spec = id => Object.assign(mkSpec(id, 30), { key: id });
+    const spec = id => Object.assign(mkSpec(id, 30), { key: id }, id === 'kanji' ? { tr: { basic: 6, skill: 10, ult: 10, talent: 10, on: [] } } : {});
     const fresh = (party, foes, seed, techs) => { const b = new H.Battle({ party: party.map(spec), enemies: foes, lvl: 20, seed: seed || 5, techs: techs || [] }); b.start(); b.drain(); return b; };
     const turnOf = (b, id) => { let g = 0; while (!b.over && b.current && b.current.charId !== id && g++ < 40) { b.act('basic', b.living[0]); b.drain(); } return b.current && b.current.charId === id ? b.current : null; };
     const has = (ev, t) => ev.some(e => e.t === t);
@@ -1287,7 +2393,7 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
 
 {
   const T = H.TUNING;
-  const spec = id => Object.assign(mkSpec(id, 30), { key: id });
+  const spec = id => Object.assign(mkSpec(id, 30), { key: id }, ['kazuma', 'aqua'].includes(id) ? { tr: { basic: 6, skill: 10, ult: 10, talent: 10, on: [] } } : {});
   const fresh = (party, foes, seed, techs) => { const b = new H.Battle({ party: party.map(spec), enemies: foes, lvl: 20, seed: seed || 5, techs: techs || [] }); b.start(); b.drain(); return b; };
   const tough = b => { for (const e of b.living) e.hp = e.maxHp = 1e9; };
   const K = H.CHARS;
@@ -1564,12 +2670,22 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
   ok(da.taunt > 0 && ka.flags.luck === T.luckMax && !me.flags.collapse && b.living.every(e => e.tough < e.maxTough), 'Darkness holds them, Kazuma is lucky, Megumin stays up, every toughness drops');
 }
 
+function tracedSpecs(party) {
+  const g = new H.Game({ seed: 5 });
+  return party.map(([id, lvl]) => {
+    const key = id.startsWith('trail') ? 'trail' : id;
+    if (key === 'trail') { if (id === 'trail_p') g.setPath('trail_p'); g.state.roster.trail.lvl = lvl; }
+    else { g.addChar(id, lvl); g.state.roster[id].lvl = lvl; }
+    g.fillTraces(key, 'cap');
+    return { charId: id, lvl, stats: g.charStats(key), tr: g.traceSpec(key) };
+  });
+}
 function winRate(party, enc, n) {
   let w = 0;
   const e = H.ENCOUNTERS[enc];
   for (let s = 1; s <= n; s++) {
-    const specs = party.map(([id, l]) => mkSpec(id, l));
-    for (const t of e.trials || []) if (!specs.some(p => p.charId === t)) { if (specs.length >= 4) specs.pop(); specs.push(mkSpec(t, party[0][1])); }
+    const specs = tracedSpecs(party);
+    for (const t of e.trials || []) if (!specs.some(p => p.charId === t)) { if (specs.length >= 4) specs.pop(); const tp = H.tracePreset(t, party[0][1]); specs.push(Object.assign(mkSpec(t, party[0][1]), { tr: Object.assign({}, tp.lv, { on: tp.on }) })); }
     const b = new H.Battle({ party: specs, enemies: e.enemies, waves: e.waves, boss: e.boss, seed: s * 31 });
     b.start();
     const r = b.runAuto(600);
@@ -1581,7 +2697,7 @@ const bossParties = {
   tut: [['trail', 1], ['march', 1], ['danheng', 1]],
   doomsday: [['trail', 8], ['march', 8], ['danheng', 8]],
   gepard: [['trail', 16], ['march', 16], ['danheng', 16], ['himeko', 14]],
-  alley: [['trail', 16], ['march', 16], ['danheng', 16]],
+  bp_bronya: [['trail', 16], ['march', 16], ['danheng', 16]],
   seele: [['trail', 16], ['march', 16], ['danheng', 16], ['hook', 16]],
   mine: [['trail', 19], ['march', 19], ['danheng', 19], ['natasha', 19]],
   svarog: [['trail', 24], ['march', 24], ['natasha', 24], ['hook', 24]],
@@ -1593,6 +2709,2436 @@ for (const [enc, party] of Object.entries(bossParties)) {
   const r = winRate(party, enc, 12);
   log.push('winrate ' + enc + ' ' + r.toFixed(2));
   ok(r >= 0.5, 'encounter ' + enc + ' winnable with expected party (' + r + ')');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('himeko', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.himeko.eidFx, 'Himeko uses the reworked Traces and Eidolons');
+  const a2 = mk(['a2']); a2.start();
+  const h = a2.allies[0];
+  let burns = 0;
+  for (let i = 0; i < 40; i++) { const t = a2.enemies[i % 3]; t.dots = []; a2.actSerial = 100 + i; a2.hit(h, t, 0.01, { kind: 'basic' }); if (t.dots.some(d => d.type === 'burn')) burns++; }
+  ok(burns > 4 && burns < 36, 'A2 «Звёздный огонь» burns with a base chance on attacks (' + burns + '/40)');
+  const t0 = a2.enemies[0]; t0.dots = []; a2.actSerial = 999;
+  for (let i = 0; i < 20; i++) a2.hit(h, t0, 0.01, { kind: 'basic' });
+  ok(t0.dots.filter(d => d.type === 'burn').length <= 1, 'A2 rolls once per foe per action');
+  const a4 = mk(['a4']); a4.start();
+  const foe = a4.enemies[0];
+  eq(a4.traceDmg(a4.allies[0], foe, {}), 0, 'A4 needs a burning foe');
+  foe.dots.push({ type: 'burn', dmg: 5, turns: 2, src: a4.allies[0], stacks: 1 });
+  ok(near(a4.traceDmg(a4.allies[0], foe, {}), 0.2), 'A4 «Магма» adds 20% damage to burning foes');
+  const a6 = mk(['a6']); a6.start();
+  eq(a6.traceCrit(a6.allies[0], a6.enemies[0]), 0.15, 'A6 «Ориентир» adds CRIT Rate at high HP');
+  a6.allies[0].hp = Math.floor(a6.allies[0].maxHp * 0.7);
+  eq(a6.traceCrit(a6.allies[0], a6.enemies[0]), 0, 'A6 stops below 80% HP');
+  const t1 = mk([], 1, { talent: 1 }); t1.start();
+  const him = t1.allies[0]; him.flags.charges = 3;
+  const hp0 = t1.enemies.map(e => e.hp);
+  t1.followUps();
+  ok(him.flags.charges === 0 && t1.enemies.every((e, i) => e.hp < hp0[i]), 'the Victory Rush hits every foe');
+  ok(him.buffs.some(x => x.name === 'Детство' && x.s === 'spdP'), 'E1 gives SPD after the Victory Rush');
+  eq(t1.traceTalent(him), 0.5, 'the Victory Rush follows the Talent level');
+  const e2 = mk([], 2); e2.start();
+  e2.enemies[0].hp = 1;
+  ok(near(e2.traceDmg(e2.allies[0], e2.enemies[0], {}), 0.15) && !e2.traceDmg(e2.allies[0], e2.enemies[1], {}), 'E2 adds 15% damage to foes at half HP or lower');
+  const e4 = mk([], 4); e4.start();
+  const k4 = e4.allies[0]; k4.flags.charges = 0;
+  e4.acting = k4; e4.actKind = 'skill';
+  e4.doBreak(k4, e4.enemies[0], 'fire');
+  eq(k4.flags.charges, 2, 'E4 gives an extra charge when the Skill breaks a foe');
+  const e6 = mk([], 6); e6.start();
+  e6.kitFx(e6.allies[0], 'act', 'ult');
+  ok(e6.enemies.reduce((a, e) => a + (e.maxHp - e.hp), 0) > 0, 'E6 adds two random Ultimate hits');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('welt', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const slowFx = { s: 'spdP', chance: 0.75 };
+  ok(H.TRACES.welt.eidFx, 'Welt uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, ult: 1, talent: 1 }); l1.start();
+  const w1 = l1.allies[0];
+  ok(near(0.75 + l1.kitFx(w1, 'debuffChance', 'skill', slowFx), 0.65), 'the Skill slow chance starts at 65%');
+  ok(near(l1.kitFx(w1, 'imprisonDelay'), 0.32), 'Imprisonment delay starts at 32%');
+  eq(l1.traceTalent(w1), 0.5, 'the Talent hit follows the Talent level');
+  eq(l1.kitFx(w1, 'debuffChance', 'ult', slowFx), 0, 'only the Skill slow follows the Skill level');
+  const l10 = mk([], 4, { skill: 10, ult: 10 }); l10.start();
+  ok(near(0.75 + l10.kitFx(l10.allies[0], 'debuffChance', 'skill', slowFx), 1.1), 'E4 adds 35% to the 75% Skill slow chance');
+  ok(near(l10.kitFx(l10.allies[0], 'imprisonDelay'), 0.4), 'Imprisonment delay reaches 40% at level 10');
+  const a6 = mk(['a6']); a6.start();
+  eq(a6.traceDmg(a6.allies[0], a6.enemies[0], {}), 0, 'A6 needs a broken foe');
+  a6.enemies[0].broken = true;
+  ok(near(a6.traceDmg(a6.allies[0], a6.enemies[0], {}), 0.2), 'A6 «Наказание» adds 20% damage to broken foes');
+  const a2 = mk(['a2', 'a4']); a2.start();
+  const w2 = a2.allies[0], en0 = w2.energy;
+  a2.kitFx(w2, 'act', 'ult', {});
+  ok(a2.enemies.some(e => e.buffs.some(x => x.name === 'Возмездие' && x.s === 'vuln' && near(x.v, 0.12))), 'A2 «Возмездие» makes foes take 12% more damage');
+  ok(w2.energy - en0 >= 10, 'A4 «Суждение» restores 10 more Energy');
+  const e1 = mk([], 1); e1.start();
+  const w3 = e1.allies[0];
+  e1.kitFx(w3, 'act', 'ult', {});
+  eq(w3.flags.e1, 2, 'E1 charges the next 2 Basic ATKs or Skills');
+  const hp1 = e1.enemies[0].hp;
+  e1.kitFx(w3, 'act', 'basic', { main: e1.enemies[0] });
+  ok(e1.enemies[0].hp < hp1 && w3.flags.e1 === 1, 'E1 adds a hit to the Basic ATK target');
+  const e2 = mk([], 2); e2.start();
+  const w4 = e2.allies[0], en4 = w4.energy;
+  e2.kitFx(w4, 'talentHit');
+  ok(w4.energy - en4 >= 3, 'E2 restores Energy when the Talent triggers');
+  const e6 = mk([], 6); e6.start();
+  e6.kitFx(e6.allies[0], 'act', 'skill', {});
+  ok(e6.enemies.reduce((a, e) => a + (e.maxHp - e.hp), 0) > 0, 'E6 adds a random Skill hit');
+  const tb = mk([], 0, { talent: 10 }); tb.start();
+  const wt = tb.allies[0], foe = tb.enemies[0];
+  foe.buffs.push({ s: 'spdP', v: -0.1, turns: 2, name: 'Замедление', debuff: true });
+  const hpT = foe.hp;
+  tb.afterAction(wt, 'basic', new Set([foe]));
+  ok(foe.hp < hpT, 'the Talent hits slowed foes');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('herta', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.herta.eidFx, 'Herta uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  ok(near(0.4 * l1.traceTalent(l1.allies[0]), 0.25), 'the doll follow-up starts at 25% ATK');
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  ok(near(0.4 * l10.traceTalent(l10.allies[0]), 0.4), 'the doll follow-up reaches 40% ATK at level 10');
+  const a2 = mk(['a2', 'a6']); a2.start();
+  const h2 = a2.allies[0], f2 = a2.enemies[0];
+  ok(near(a2.traceDmg(h2, f2, { kind: 'skill' }), 0.25), 'A2 «Эффективность» adds 25% Skill damage to healthy foes');
+  f2.hp = Math.floor(f2.maxHp * 0.4);
+  eq(a2.traceDmg(h2, f2, { kind: 'skill' }), 0, 'A2 skips foes below half HP');
+  eq(a2.traceDmg(h2, f2, { kind: 'ult' }), 0, 'A6 needs a frozen foe');
+  f2.frozen = 1;
+  ok(near(a2.traceDmg(h2, f2, { kind: 'ult' }), 0.2), 'A6 «Оледенение» adds 20% Ultimate damage to frozen foes');
+  const a4 = mk(['a4']); a4.start();
+  eq(a4.kitFx(a4.allies[0], 'ccRes'), 0.35, 'A4 «Кукла» gives 35% control resistance');
+  let froze = 0;
+  for (let i = 0; i < 200; i++) { const h = a4.allies[0]; h.frozen = 0; if (a4.tryFreeze(a4.enemies[0], h, 1)) froze++; }
+  const plain = mk([]); plain.start();
+  let frozeP = 0;
+  for (let i = 0; i < 200; i++) { const h = plain.allies[0]; h.frozen = 0; if (plain.tryFreeze(plain.enemies[0], h, 1)) frozeP++; }
+  ok(froze < frozeP, 'A4 lets Herta resist freezes (' + froze + ' vs ' + frozeP + ')');
+  const e1 = mk([], 1); e1.start();
+  const foe1 = e1.enemies[0];
+  foe1.hp = Math.floor(foe1.maxHp * 0.4);
+  const hp1 = foe1.hp;
+  e1.kitFx(e1.allies[0], 'act', 'basic', { main: foe1 });
+  ok(foe1.hp < hp1, 'E1 adds Ice damage to the Basic ATK on hurt foes');
+  const hpFull = e1.enemies[1].hp;
+  e1.kitFx(e1.allies[0], 'act', 'basic', { main: e1.enemies[1] });
+  eq(e1.enemies[1].hp, hpFull, 'E1 skips foes above half HP');
+  const e2 = mk([], 4); e2.start();
+  const h4 = e2.allies[0];
+  for (let i = 0; i < 7; i++) { e2.crossed = new Set([e2.enemies[0]]); e2.followUps(); }
+  const st = h4.buffs.find(x => x.name === 'Всегда в погоне за победой');
+  ok(st && near(st.v, 0.15), 'E2 stacks CRIT Rate up to 15%');
+  ok(near(e2.traceDmg(h4, e2.enemies[1], { kind: 'follow' }), 0.1), 'E4 adds 10% to the doll follow-up');
+  const e6 = mk([], 6); e6.start();
+  e6.kitFx(e6.allies[0], 'act', 'ult', {});
+  ok(e6.allies[0].buffs.some(x => x.name === 'Никогда не предавай меня' && x.s === 'atkP' && near(x.v, 0.25)), 'E6 raises ATK after the Ultimate');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('asta', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.asta.eidFx, 'Asta uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { ult: 1, talent: 1 }); l1.start();
+  const u1 = l1.allies[0];
+  const blessing = l1.abilityFor(u1, 'ult').ab.fx.find(f => f.k === 'buff');
+  ok(near(blessing.v, 36), 'the Ultimate SPD boost starts at 36');
+  u1.flags.charge = 5; l1.astaAura(u1);
+  ok(near(l1.allies[1].buffs.find(x => x.name === 'Заряд Асты').v, 0.35), 'Charging gives 7% ATK per stack at Talent level 1');
+  const l10 = mk([], 0, { ult: 10, talent: 10 }); l10.start();
+  ok(near(l10.abilityFor(l10.allies[0], 'ult').ab.fx.find(f => f.k === 'buff').v, 50), 'the Ultimate SPD boost reaches 50 at level 10');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const u2 = a2.allies[0];
+  ok(a2.allies.every(a => a.buffs.some(x => x.name === 'Воспламенение' && x.s === 'fireP' && near(x.v, 0.18))), 'A4 «Воспламенение» gives all allies 18% Fire DMG');
+  let burns = 0;
+  for (let i = 0; i < 30; i++) { const t = a2.enemies[i % 3]; t.dots = []; a2.kitFx(u2, 'act', 'basic', { main: t }); if (t.dots.some(d => d.type === 'burn')) burns++; }
+  ok(burns > 10, 'A2 «Искры» burns the Basic ATK target (' + burns + '/30)');
+  u2.flags.charge = 4; a2.astaAura(u2);
+  ok(near(u2.buffs.find(x => x.name === 'Созвездие').v, 0.24), 'A6 «Созвездие» gives 6% DEF per Charging stack');
+  u2.hp = 0; a2.kitFx(u2, 'down');
+  ok(a2.allies.every(a => !a.buffs.some(x => x.name === 'Воспламенение' || x.name === 'Заряд Асты')), 'the auras end when Asta is down');
+  const e1 = mk([], 1); e1.start();
+  e1.kitFx(e1.allies[0], 'act', 'skill', {});
+  ok(e1.enemies.reduce((a, e) => a + (e.maxHp - e.hp), 0) > 0, 'E1 adds a random Skill hit');
+  const e2 = mk([], 2); e2.start();
+  const u3 = e2.allies[0];
+  e2.kitFx(u3, 'act', 'ult', {});
+  eq(e2.kitFx(u3, 'chargeDrop'), 0, 'E2 keeps Charging after the Ultimate');
+  eq(e2.kitFx(u3, 'chargeDrop'), 3, 'E2 works for one turn');
+  const e4 = mk([], 4); e4.start();
+  const u4 = e4.allies[0];
+  u4.flags.charge = 2; e4.astaAura(u4);
+  ok(u4.buffs.some(x => x.s === 'err' && near(x.v, 0.15)), 'E4 raises Energy Regeneration at 2 stacks');
+  u4.flags.charge = 1; e4.astaAura(u4);
+  ok(!u4.buffs.some(x => x.s === 'err'), 'E4 ends below 2 stacks');
+  const e6 = mk([], 6); e6.start();
+  eq(e6.kitFx(e6.allies[0], 'chargeDrop'), 2, 'E6 loses 1 stack less each turn');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv, hp) => new H.Battle({ party: [Object.assign(mkSpec('arlan', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }, hp != null ? { hp } : {}), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.arlan.eidFx, 'Arlan uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  eq(l1.traceTalent(l1.allies[0]), 0.5, 'the low-HP bonus follows the Talent level (36% at level 1)');
+  const probe = mk(['a2', 'a4']); probe.start();
+  const half = Math.round(probe.allies[0].maxHp * 0.4);
+  const a6 = mk(['a6'], 0, null, half); a6.start();
+  const g = a6.allies[0], hp6 = g.hp;
+  a6.hit(a6.enemies[0], g, 1, { e: 'phys' });
+  eq(g.hp, hp6, 'A6 «Отторжение» blocks the first hit when Arlan starts at half HP');
+  a6.hit(a6.enemies[0], g, 1, { e: 'phys' });
+  ok(g.hp < hp6, 'A6 blocks only one hit');
+  const full = mk(['a6']); full.start();
+  ok(!full.allies[0].flags.a6guard, 'A6 needs Arlan at half HP when the battle starts');
+  const a2 = probe, u2 = a2.allies[0];
+  u2.hp = Math.floor(u2.maxHp * 0.2);
+  const hp2 = u2.hp;
+  a2.kitFx(u2, 'kill', a2.enemies[0], true);
+  ok(u2.hp - hp2 >= u2.maxHp * 0.19, 'A2 «Воскрешение» heals 20% after a kill at low HP');
+  let dots = 0;
+  for (let i = 0; i < 100; i++) { u2.dots = []; a2.addDot(a2.enemies[0], u2, 'bleed', 10, 2); if (u2.dots.length) dots++; }
+  ok(dots > 30 && dots < 70, 'A4 «Выдержка» resists half of DoTs (' + dots + '/100)');
+  const e1 = mk([], 1); e1.start();
+  const u1 = e1.allies[0];
+  eq(e1.traceDmg(u1, e1.enemies[0], { kind: 'skill' }), 0, 'E1 needs half HP');
+  u1.hp = Math.floor(u1.maxHp * 0.4);
+  ok(near(e1.traceDmg(u1, e1.enemies[0], { kind: 'skill' }), 0.1), 'E1 adds 10% Skill damage at half HP');
+  const e2 = mk([], 2); e2.start();
+  const u3 = e2.allies[0];
+  u3.buffs.push({ s: 'atkP', v: -0.1, turns: 2, name: 'Слабость', debuff: true });
+  e2.kitFx(u3, 'act', 'skill');
+  ok(!u3.buffs.some(x => x.debuff), 'E2 removes a debuff on Skill');
+  const e4 = mk([], 4); e4.start();
+  const u4 = e4.allies[0];
+  e4.hit(e4.enemies[0], u4, 0, { raw: u4.hp + u4.shield + 10, e: 'phys' });
+  ok(!u4.dead && u4.hp === Math.round(u4.maxHp * 0.25), 'E4 saves Arlan from a killing blow');
+  e4.hit(e4.enemies[0], u4, 0, { raw: u4.hp + u4.shield + 10, e: 'phys' });
+  ok(u4.dead, 'E4 works once');
+  const late = mk([], 4); late.start();
+  late.allies[0].flags.turnsTaken = 3;
+  late.hit(late.enemies[0], late.allies[0], 0, { raw: late.allies[0].hp + 10, e: 'phys' });
+  ok(late.allies[0].dead, 'E4 ends after 2 turns');
+  const e6 = mk([], 6); e6.start();
+  const u6 = e6.allies[0], ultFx = e6.abilityFor(u6, 'ult').ab.fx.find(f => f.k === 'dmg');
+  eq(e6.kitFx(u6, 'adjM', ultFx), 0, 'E6 needs half HP');
+  u6.hp = Math.floor(u6.maxHp * 0.4);
+  eq(e6.kitFx(u6, 'adjM', ultFx), ultFx.m, 'E6 hits adjacent foes at the main multiplier');
+  ok(near(e6.traceDmg(u6, e6.enemies[0], { kind: 'ult' }), 0.2), 'E6 adds 20% Ultimate damage at half HP');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('trail_p', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.trail_p.eidFx, 'Trailblazer (Preservation) uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, ult: 1, talent: 1 }); l1.start();
+  const p1 = l1.allies[0];
+  ok(near(l1.abilityFor(p1, 'skill').ab.fx.find(f => f.k === 'buff').v, 0.4), 'the Skill damage reduction starts at 40%');
+  const u1 = l1.abilityFor(p1, 'ult').ab.fx.find(f => f.k === 'dmg');
+  ok(near(u1.m, 0.5) && near(u1.plusDef, 0.75), 'the Ultimate starts at 50% ATK + 75% DEF');
+  ok(near(l1.traceTalent(p1), 0.04 / 0.06), 'the Talent shield follows the Talent level');
+  const l10 = mk([], 0, { skill: 10, ult: 10 }); l10.start();
+  ok(near(l10.abilityFor(l10.allies[0], 'skill').ab.fx.find(f => f.k === 'buff').v, 0.5), 'the Skill damage reduction reaches 50% at level 10');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const p2 = a2.allies[0];
+  a2.kitFx(p2, 'act', 'skill', {});
+  ok(a2.allies.every(a => a.buffs.some(x => x.name === 'Сильные защищают слабых' && x.s === 'dr' && near(x.v, 0.15))), 'A2 lowers damage taken by the team after the Skill');
+  p2.hp = Math.floor(p2.maxHp * 0.5);
+  const hp2 = p2.hp;
+  a2.kitFx(p2, 'act', 'enhanced', {});
+  ok(p2.hp > hp2, 'A4 heals after the enhanced Basic ATK');
+  p2.shield = 50; p2.energy = 0;
+  a2.kitFx(p2, 'allyTurn', p2);
+  ok(p2.buffs.some(x => x.name === 'Действия важнее мысли' && x.s === 'atkP') && p2.energy > 0, 'A6 gives ATK and Energy when shielded at turn start');
+  a2.endTurn(p2);
+  ok(!p2.buffs.some(x => x.name === 'Действия важнее мысли' && x.turns > 0), 'A6 lasts until the end of the action');
+  const e1 = mk([], 1); e1.start();
+  const hp1 = e1.enemies[0].hp;
+  e1.kitFx(e1.allies[0], 'act', 'basic', { main: e1.enemies[0] });
+  ok(e1.enemies[0].hp < hp1, 'E1 adds DEF-based damage to the Basic ATK');
+  const e2 = mk([], 2); e2.start();
+  ok(e2.kitFx(e2.allies[0], 'shieldBonus') > 0, 'E2 strengthens the Talent shield');
+  const e4 = mk([], 4); e4.start();
+  ok(e4.allies[0].flags.magma >= 4, 'E4 starts the battle with 4 Magma Will');
+  const e6 = mk([], 6); e6.start();
+  for (let i = 0; i < 5; i++) e6.kitFx(e6.allies[0], 'act', 'ult', {});
+  ok(near(e6.allies[0].buffs.find(x => x.name === 'Бастионы, закаляющие город').v, 0.3), 'E6 stacks DEF up to 30%');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv, foes) => new H.Battle({ party: [Object.assign(mkSpec('bronya', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: foes || ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.bronya.eidFx, 'Bronya uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, ult: 1, talent: 1 }); l1.start();
+  const b1 = l1.allies[0];
+  ok(near(l1.abilityFor(b1, 'skill').ab.fx.find(f => f.k === 'buff').v, 0.33), 'the Skill DMG boost starts at 33%');
+  ok(near(l1.abilityFor(b1, 'ult').ab.fx.find(f => f.s === 'atkP').v, 0.33), 'the Ultimate ATK boost starts at 33%');
+  const av0 = b1.av;
+  l1.kitFx(b1, 'act', 'basic', {});
+  ok(b1.av < av0 || av0 === 0, 'the Talent advances Bronya after a Basic ATK');
+  eq(l1.traceTalent(b1), 0.5, 'the Talent advance follows the Talent level (15% at level 1)');
+  const basicFx = l1.abilityFor(b1, 'basic').ab.fx.find(f => f.k === 'dmg');
+  ok(!l1.critFlag(b1, basicFx), 'the Basic ATK does not always crit before A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  ok(a2.critFlag(a2.allies[0], a2.abilityFor(a2.allies[0], 'basic').ab.fx.find(f => f.k === 'dmg')), 'A2 «Приказ» makes the Basic ATK always crit');
+  ok(a2.allies.every(a => a.buffs.some(x => x.name === 'Поле боя' && x.s === 'defP' && near(x.v, 0.2))), 'A4 «Поле боя» raises team DEF at the start');
+  ok(a2.allies.every(a => a.buffs.some(x => x.name === 'Военная мощь' && x.s === 'dmgP' && near(x.v, 0.1))), 'A6 «Военная мощь» raises team DMG');
+  a2.allies[0].hp = 0; a2.kitFx(a2.allies[0], 'down');
+  ok(!a2.allies.some(a => a.buffs.some(x => x.name === 'Военная мощь')), 'A6 ends when Bronya is down');
+  const e1 = mk([], 1); e1.start();
+  let got = 0;
+  for (let i = 0; i < 40; i++) { e1.sp = 0; e1.allies[0].flags.e1cd = 0; e1.kitFx(e1.allies[0], 'act', 'skill', { ally: e1.allies[1] }); if (e1.sp === 1) got++; }
+  ok(got > 8 && got < 32, 'E1 refunds a Skill Point half of the time (' + got + '/40)');
+  e1.allies[0].flags.e1cd = 2; e1.sp = 0;
+  e1.kitFx(e1.allies[0], 'act', 'skill', { ally: e1.allies[1] });
+  eq(e1.sp, 0, 'E1 rests after a refund');
+  const e2 = mk([], 6); e2.start();
+  const m2 = e2.allies[1];
+  m2.buffs.push({ s: 'dmgP', v: 0.66, turns: 1, name: 'Приказ' });
+  e2.kitFx(e2.allies[0], 'act', 'skill', { ally: m2 });
+  eq(m2.buffs.find(x => x.name === 'Приказ').turns, 2, 'E6 extends the Skill DMG boost');
+  e2.kitFx(e2.allies[0], 'allyTurn', m2);
+  ok(m2.buffs.some(x => x.name === 'Быстрый марш' && x.s === 'spdP'), 'E2 speeds up the ordered ally on its turn');
+  const e4 = mk([], 4, null, ['vagrant:40', 'reaver:40']); e4.start();
+  const weak = e4.enemies.find(e => e.weak.includes('wind'));
+  ok(weak, 'the E4 test foe is weak to Wind');
+  const hp4 = weak.hp;
+  e4.afterAction(e4.allies[1], 'basic', new Set([weak]));
+  ok(weak.hp < hp4 && e4.ev.some(x => x.t === 'act' && x.name === 'Застань врага врасплох'), 'E4 follows an ally Basic ATK on a Wind-weak foe');
+  const hp4b = weak.hp;
+  e4.afterAction(e4.allies[1], 'basic', new Set([weak]));
+  eq(weak.hp, hp4b, 'E4 triggers once per Bronya turn');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('seele', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.seele.eidFx, 'Seele uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const s1 = l1.allies[0];
+  l1.seeleBuff(s1);
+  ok(near(s1.buffs.find(x => x.name === 'Усиление').v, 0.4), 'the Buffed state gives 40% DMG at Talent level 1');
+  ok(!s1.buffs.some(x => x.name === 'Усиление: кванты'), 'the Buffed state needs A4 for RES PEN');
+  const l10 = mk(['a4'], 0, { talent: 10 }); l10.start();
+  l10.seeleBuff(l10.allies[0]);
+  ok(near(l10.allies[0].buffs.find(x => x.name === 'Усиление').v, 0.8) && l10.allies[0].buffs.some(x => x.name === 'Усиление: кванты' && x.s === 'resPen' && near(x.v, 0.2)), 'A4 «Рваная рана» adds RES PEN to the Buffed state; DMG reaches 80% at level 10');
+  const a2 = mk(['a2', 'a6']); a2.start();
+  const s2 = a2.allies[0];
+  eq(a2.kitFx(s2, 'aggro'), 1, 'A2 needs half HP');
+  s2.hp = Math.floor(s2.maxHp * 0.4);
+  eq(a2.kitFx(s2, 'aggro'), 0.5, 'A2 «Путь в ночи» lowers the chance to be attacked');
+  s2.av = 1000;
+  a2.kitFx(s2, 'act', 'basic', {});
+  ok(s2.av < 1000, 'A6 «Рябь на воде» advances Seele after a Basic ATK');
+  const e1 = mk([], 1); e1.start();
+  eq(e1.traceCrit(e1.allies[0], e1.enemies[0]), 0, 'E1 needs a foe at 80% HP or lower');
+  e1.enemies[0].hp = Math.floor(e1.enemies[0].maxHp * 0.7);
+  eq(e1.traceCrit(e1.allies[0], e1.enemies[0]), 0.15, 'E1 adds 15% CRIT Rate');
+  const e2 = mk([], 2); e2.start();
+  const s3 = e2.allies[0];
+  s3.buffs.push({ s: 'spdP', v: 0.25, turns: 1, name: 'Ускорение' });
+  e2.kitFx(s3, 'allyTurn', s3);
+  e2.kitFx(s3, 'act', 'skill', {});
+  ok(s3.buffs.some(x => x.name === 'Ускорение 2'), 'E2 stacks the Skill SPD boost');
+  const e4 = mk([], 4); e4.start();
+  const s4 = e4.allies[0]; s4.energy = 0;
+  e4.kitFx(s4, 'kill', e4.enemies[0], true);
+  ok(s4.energy >= 15, 'E4 restores Energy on a kill');
+  const e6 = mk([], 6); e6.start();
+  const s6 = e6.allies[0], foe = e6.enemies[0];
+  e6.kitFx(s6, 'act', 'ult', { main: foe });
+  ok(foe.buffs.some(x => x.name === 'Вихрь бабочек' && x.src === s6), 'E6 marks the Ultimate target');
+  const hp6 = foe.hp;
+  e6.hit(e6.allies[1], foe, 0.01, { e: 'ice', kind: 'basic' });
+  ok(e6.ev.some(x => x.t === 'dmg' && x.u === foe && x.src === s6 && x.label === 'Вихрь бабочек') && foe.hp < hp6, 'E6 adds damage when an ally hits the marked foe');
+  s6.hp = 0; e6.kitFx(s6, 'down');
+  ok(!foe.buffs.some(x => x.name === 'Вихрь бабочек'), 'E6 marks end when Seele is down');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('gepard', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const kill = (b, u) => b.hit(b.enemies[0], u, 0, { raw: u.hp + u.shield + 10, e: 'phys' });
+  ok(H.TRACES.gepard.eidFx, 'Gepard uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const g1 = l1.allies[0];
+  kill(l1, g1);
+  ok(!g1.dead && g1.hp === Math.round(g1.maxHp * 0.25), 'the Talent revives with 25% HP at level 1');
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  kill(l10, l10.allies[0]);
+  eq(l10.allies[0].hp, Math.round(l10.allies[0].maxHp * 0.5), 'the Talent revives with 50% HP at level 10');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const g2 = a2.allies[0];
+  eq(a2.kitFx(g2, 'aggro'), 2, 'A2 «Принципиальность» doubles the chance to be attacked');
+  const spirit = g2.buffs.find(x => x.name === 'Боевой дух');
+  ok(spirit && spirit.s === 'atkP' && Math.abs(spirit.v * g2.base.atk - 0.35 * H.battleStat.defOf(g2)) <= g2.base.atk * 0.001, 'A6 «Боевой дух» adds 35% of DEF to ATK');
+  g2.energy = 0;
+  kill(a2, g2);
+  eq(g2.energy, g2.maxEnergy, 'A4 «Командование» refills Energy on revive');
+  const e1 = mk([], 1); e1.start();
+  eq(e1.kitFx(e1.allies[0], 'freezeChance', 'skill'), 0.35, 'E1 adds 35% to the Skill freeze chance');
+  const e2 = mk([], 2); e2.start();
+  const foe = e2.enemies[0];
+  e2.kitFx(e2.allies[0], 'froze', foe, 'skill');
+  foe.frozen = 1; foe.frozenSrc = e2.allies[0]; foe.frozenDmg = 1;
+  e2.startTurn(foe);
+  ok(foe.buffs.some(x => x.name === 'Затяжной холод' && x.s === 'spdP' && near(x.v, -0.2)), 'E2 slows the foe after the Skill freeze ends');
+  const e4 = mk([], 4); e4.start();
+  ok(e4.allies.every(a => a.buffs.some(x => x.name === 'Вера двигает горы' && x.s === 'res' && near(x.v, 0.2))), 'E4 raises team Effect RES');
+  e4.allies[0].hp = 0; e4.kitFx(e4.allies[0], 'down');
+  ok(!e4.allies[1].buffs.some(x => x.name === 'Вера двигает горы'), 'E4 ends when Gepard is down');
+  const e6 = mk([], 6, { talent: 10 }); e6.start();
+  const g6 = e6.allies[0]; g6.av = 500;
+  kill(e6, g6);
+  ok(g6.hp === g6.maxHp && g6.av === 0, 'E6 revives Gepard at full HP and lets him act at once');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('clara', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.clara.eidFx, 'Clara uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { ult: 1, talent: 1 }); l1.start();
+  const c1 = l1.allies[0], ult1 = l1.abilityFor(c1, 'ult').ab.fx;
+  ok(near(ult1.find(f => f.s === 'dr').v, 0.15), 'the Ultimate damage reduction starts at 15%');
+  eq(ult1.find(f => f.s === 'aggro').v, 4, 'the Ultimate taunt does not scale');
+  ok(near(ult1.find(f => f.k === 'promise').m, 0.6), 'the Enhanced Counter bonus starts at 60%');
+  eq(l1.traceTalent(c1), 0.5, 'the Counter follows the Talent level (80% at level 1)');
+  const l10 = mk([], 0, { ult: 10 }); l10.start();
+  ok(near(l10.abilityFor(l10.allies[0], 'ult').ab.fx.find(f => f.s === 'dr').v, 0.25), 'the Ultimate damage reduction reaches 25% at level 10');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const c2 = a2.allies[0];
+  eq(a2.kitFx(c2, 'ccRes'), 0.35, 'A4 «Под защитой» gives control resistance');
+  ok(near(a2.traceDmg(c2, a2.enemies[0], { kind: 'follow', label: 'Сварог' }), 0.3), 'A6 «Месть» adds 30% Counter damage');
+  eq(a2.traceDmg(c2, a2.enemies[0], { kind: 'skill', label: 'Сварог' }), 0, 'A6 skips the Skill');
+  let cleansed = 0;
+  for (let i = 0; i < 60; i++) { c2.buffs = c2.buffs.filter(x => !x.debuff); c2.buffs.push({ s: 'atkP', v: -0.1, turns: 2, name: 'Слабость', debuff: true }); a2.kitFx(c2, 'attacked', a2.enemies[0]); if (!c2.buffs.some(x => x.debuff)) cleansed++; }
+  ok(cleansed > 8 && cleansed < 40, 'A2 «Семейные узы» sometimes cleanses when attacked (' + cleansed + '/60)');
+  const e1 = mk([], 1); e1.start();
+  eq(e1.kitFx(e1.allies[0], 'keepMarks'), true, 'E1 keeps the Marks of Counter');
+  const e2 = mk([], 6); e2.start();
+  const c3 = e2.allies[0];
+  c3.flags.promise = 2;
+  e2.kitFx(c3, 'act', 'ult');
+  ok(c3.buffs.some(x => x.name === 'Крепкие объятия' && near(x.v, 0.3)) && c3.flags.promise === 3, 'E2 raises ATK and E6 adds an Enhanced Counter after the Ultimate');
+  eq(e2.kitFx(c3, 'counterOthers'), true, 'E6 lets Svarog guard other allies');
+  e2.kitFx(c3, 'attacked', e2.enemies[0]);
+  ok(c3.buffs.some(x => x.name === 'Тепло семьи' && near(x.v, 0.3)), 'E4 lowers damage taken after an attack');
+  e2.kitFx(c3, 'allyTurn', c3);
+  ok(!c3.buffs.some(x => x.name === 'Тепло семьи'), 'E4 ends at the start of her turn');
+  const cnt = mk([], 0, { talent: 10, ult: 10 }); cnt.start();
+  const c4 = cnt.allies[0], foe = cnt.enemies[1];
+  c4.flags.promise = 1; c4.flags.promiseM = 1;
+  const hpF = foe.hp;
+  cnt.svarogCounter(c4, foe, true);
+  ok(foe.hp < hpF && cnt.enemies.filter(e => e !== foe).every(e => e.buffs.some(x => x.s === 'svMark')), 'the Enhanced Counter splashes and marks adjacent foes');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv, foes) => new H.Battle({ party: [Object.assign(mkSpec('yanqing', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: foes || ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.yanqing.eidFx, 'Yanqing uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { ult: 1, talent: 1 }); l1.start();
+  const y1 = l1.allies[0];
+  l1.gainSync(y1);
+  ok(near(y1.buffs.find(x => x.name === 'Единение').v, 0.15) && near(y1.buffs.find(x => x.name === 'Единение: крит. урон').v, 0.15) && near(y1.flags.syncChance, 0.5), 'Soulsteel Sync starts at 15% CRIT Rate, 15% CRIT DMG and a 50% follow-up chance');
+  ok(near(l1.abilityFor(y1, 'ult').ab.fx.find(f => f.k === 'yanqingUlt').m, 0.3), 'the Ultimate CRIT DMG boost starts at 30%');
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  l10.gainSync(l10.allies[0]);
+  ok(near(l10.allies[0].flags.syncChance, 0.6), 'the follow-up chance reaches 60% at level 10');
+  const a2 = mk(['a2', 'a4', 'a6'], 0, null, ['reaver:40', 'flamespawn:40']); a2.start();
+  const y2 = a2.allies[0];
+  const iceWeak = a2.enemies.find(e => e.weak.includes('ice'));
+  const hp2 = iceWeak.hp;
+  a2.kitFx(y2, 'act', 'basic', { main: iceWeak });
+  ok(iceWeak.hp < hp2, 'A2 «Ледяная благодать» adds Ice damage to Ice-weak foes');
+  a2.gainSync(y2);
+  ok(y2.buffs.some(x => x.name === 'Единение: стойкость' && x.s === 'res' && near(x.v, 0.2)), 'A4 adds Effect RES during Soulsteel Sync');
+  a2.loseSync(y2);
+  ok(!y2.buffs.some(x => x.name.startsWith('Единение')), 'losing the Sync removes its traces too');
+  a2.kitFx(y2, 'hit', a2.enemies[0], {}, 10, true);
+  ok(y2.buffs.some(x => x.name === 'Степная сталь' && x.s === 'spdP'), 'A6 «Степная сталь» gives SPD on a crit');
+  const e1 = mk([], 4); e1.start();
+  const y3 = e1.allies[0], f3 = e1.enemies[0];
+  f3.frozen = 1;
+  const hp3 = f3.hp;
+  e1.kitFx(y3, 'act', 'skill', { main: f3 });
+  ok(f3.hp < hp3, 'E1 adds Ice damage to frozen foes');
+  e1.gainSync(y3);
+  ok(y3.buffs.some(x => x.name === 'Единение: ясность' && x.s === 'err'), 'E2 raises Energy Regeneration during Sync');
+  ok(near(H.battleStat.sv(y3, 'resPen'), 0.12), 'E4 gives Ice RES PEN at high HP');
+  y3.hp = Math.floor(y3.maxHp * 0.5);
+  eq(H.battleStat.sv(y3, 'resPen'), 0, 'E4 needs 80% HP');
+  const e6 = mk([], 6); e6.start();
+  const y6 = e6.allies[0];
+  y6.buffs.push({ s: 'critR', v: 0.6, turns: 1, name: 'Блаженный дождь' });
+  e6.kitFx(y6, 'kill', e6.enemies[0], true);
+  eq(y6.buffs.find(x => x.name === 'Блаженный дождь').turns, 2, 'E6 extends the Ultimate buffs on a kill');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('bailu', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const kill = (b, u) => b.hit(b.enemies[0], u, 0, { raw: u.hp + u.shield + 10, e: 'phys' });
+  ok(H.TRACES.bailu.eidFx, 'Bailu uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  ok(near(l1.traceTalent(l1.allies[0]), 0.036 / 0.054), 'the Talent heals follow the Talent level');
+  const inv = mk([]); inv.start();
+  const m1 = inv.allies[1];
+  inv.invigorate(2, inv.allies[0]);
+  eq(m1.buffs.find(x => x.s === 'invig').left, 2, 'Invigoration heals twice');
+  m1.hp = Math.floor(m1.maxHp * 0.3);
+  const ev1 = inv.ev.length;
+  for (let i = 0; i < 3; i++) inv.invigHeal(m1);
+  eq(inv.ev.slice(ev1).filter(x => x.t === 'status' && x.u === m1 && x.text === 'Оживление').length, 2, 'Invigoration stops after 2 heals');
+  const a4 = mk(['a2', 'a4', 'a6']); a4.start();
+  const m4 = a4.allies[1];
+  a4.invigorate(2, a4.allies[0]);
+  eq(m4.buffs.find(x => x.s === 'invig').left, 3, 'A4 adds a third Invigoration heal');
+  ok(near(H.battleStat.sv(m4, 'dr'), 0.1), 'A6 «Водное благословение» lowers damage taken with Invigoration');
+  m4.buffs = m4.buffs.filter(x => x.s !== 'invig');
+  eq(H.battleStat.sv(m4, 'dr'), 0, 'A6 needs Invigoration');
+  const max0 = m4.maxHp;
+  m4.hp = m4.maxHp - 5;
+  a4.heal(a4.allies[0], m4, 1000);
+  eq(m4.maxHp, max0 + Math.round(max0 * 0.1), 'A2 «Суть врачевания» raises Max HP on overhealing');
+  m4.buffs.find(x => x.name === 'Суть врачевания').turns = 0;
+  a4.endTurn(m4);
+  eq(m4.maxHp, max0, 'A2 Max HP boost ends');
+  const e1 = mk([], 1); e1.start();
+  const m6 = e1.allies[1]; m6.energy = 0;
+  e1.current = null; e1.acting = null;
+  e1.invigorate(1, e1.allies[0]);
+  e1.endTurn(m6);
+  ok(m6.energy >= 8, 'E1 gives Energy when Invigoration ends at full HP');
+  const e2 = mk([], 4); e2.start();
+  const b2 = e2.allies[0];
+  e2.kitFx(b2, 'act', 'ult');
+  ok(b2.buffs.some(x => x.name === 'Горшочек спящего дракона' && x.s === 'healP'), 'E2 raises Outgoing Healing after the Ultimate');
+  e2.acting = b2; e2.actKind = 'skill';
+  for (let i = 0; i < 4; i++) e2.heal(b2, e2.allies[1], 10);
+  ok(near(e2.allies[1].buffs.find(x => x.name === 'Изгнание зла').v, 0.3), 'E4 stacks DMG up to 30% from Skill heals');
+  const e6 = mk([], 6); e6.start();
+  const m7 = e6.allies[1];
+  kill(e6, m7); ok(!m7.dead, 'the Talent saves an ally once');
+  kill(e6, m7); ok(!m7.dead, 'E6 saves an ally a second time');
+  kill(e6, m7); ok(m7.dead, 'E6 stops after two saves');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('natasha', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.natasha.eidFx, 'Natasha uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  eq(l1.traceTalent(l1.allies[0]), 0.5, 'the low-HP heal bonus follows the Talent level (25% at level 1)');
+  const n1 = l1.allies[0], m1 = l1.allies[1];
+  m1.buffs.push({ s: 'atkP', v: -0.1, turns: 2, name: 'Слабость', debuff: true });
+  l1.useAbility(n1, l1.abilityFor(n1, 'skill').ab, m1, 'skill');
+  ok(m1.buffs.some(x => x.debuff), 'the Skill cleanses only with A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const n2 = a2.allies[0], m2 = a2.allies[1];
+  ok(n2.buffs.some(x => x.name === 'Лечение' && x.s === 'healP' && near(x.v, 0.1)), 'A4 «Лечение» raises Outgoing Healing');
+  m2.buffs.push({ s: 'atkP', v: -0.1, turns: 2, name: 'Слабость', debuff: true });
+  a2.useAbility(n2, a2.abilityFor(n2, 'skill').ab, m2, 'skill');
+  ok(!m2.buffs.some(x => x.debuff), 'A2 «Успокоение» lets the Skill cleanse');
+  eq(m2.buffs.find(x => x.s === 'hotMark' && x.name === 'Регенерация').turns, 3, 'A6 «Восстановление» extends the Skill heal-over-time');
+  const e1 = mk([], 4); e1.start();
+  const n3 = e1.allies[0];
+  n3.hp = Math.floor(n3.maxHp * 0.2); n3.energy = 0;
+  e1.kitFx(n3, 'attacked', e1.enemies[0]);
+  ok(n3.hp > n3.maxHp * 0.3 && n3.energy >= 5, 'E1 heals Natasha at low HP and E4 gives Energy when attacked');
+  n3.hp = Math.floor(n3.maxHp * 0.2);
+  e1.kitFx(n3, 'attacked', e1.enemies[0]);
+  ok(n3.hp <= n3.maxHp * 0.2 + 1, 'E1 works once per battle');
+  const e2 = mk([], 6); e2.start();
+  const m6 = e2.allies[1];
+  m6.hp = Math.floor(m6.maxHp * 0.2);
+  e2.kitFx(e2.allies[0], 'act', 'ult', {});
+  ok(m6.buffs.some(x => x.name === 'Клиническое исследование' && x.hot > 0), 'E2 gives low-HP allies a heal-over-time after the Ultimate');
+  const hp6 = e2.enemies[0].hp;
+  e2.kitFx(e2.allies[0], 'act', 'basic', { main: e2.enemies[0] });
+  ok(e2.enemies[0].hp < hp6, 'E6 adds HP-based damage to the Basic ATK');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('serval', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.serval.eidFx, 'Serval uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  ok(near(0.72 * l1.traceTalent(l1.allies[0]), 0.36), 'the Talent hit starts at 36% ATK');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const s2 = a2.allies[0];
+  ok(s2.energy >= 15, 'A4 «Вибрация струн» gives Energy at the start');
+  eq(a2.kitFx(s2, 'dotChance', 'skill', { type: 'shock' }), 0.2, 'A2 «Рок-н-ролл» adds 20% Shock chance');
+  a2.kitFx(s2, 'kill', a2.enemies[0], true);
+  ok(s2.buffs.some(x => x.name === 'Лихорадка' && x.s === 'atkP' && near(x.v, 0.2)), 'A6 «Лихорадка» raises ATK on a kill');
+  const e1 = mk([], 2); e1.start();
+  const s3 = e1.allies[0], mid = e1.enemies[1];
+  const side0 = e1.enemies[0].hp + e1.enemies[2].hp;
+  e1.kitFx(s3, 'act', 'basic', { main: mid });
+  ok(e1.enemies[0].hp + e1.enemies[2].hp < side0, 'E1 hits a foe next to the Basic ATK target');
+  s3.energy = 0;
+  e1.kitFx(s3, 'talentHit');
+  ok(s3.energy >= 4, 'E2 restores Energy when the Talent hits');
+  const e4 = mk([], 6); e4.start();
+  const s4 = e4.allies[0];
+  e4.kitFx(s4, 'act', 'ult', {});
+  ok(e4.enemies.filter(e => e.dots.some(d => d.type === 'shock')).length >= 2, 'E4 shocks foes with the Ultimate');
+  const sh = e4.enemies.find(e => e.dots.some(d => d.type === 'shock'));
+  ok(near(e4.traceDmg(s4, sh, {}), 0.3), 'E6 adds 30% damage to shocked foes');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('sampo', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.sampo.eidFx, 'Sampo uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { ult: 1, talent: 1 }); l1.start();
+  const s1 = l1.allies[0];
+  ok(near(0.52 * l1.traceTalent(s1), 0.2), 'Wind Shear starts at 20% ATK');
+  ok(near(l1.abilityFor(s1, 'ult').ab.fx.find(f => f.k === 'debuff').v, 0.18), 'the Ultimate DoT vulnerability grows with the Ultimate level');
+  for (let i = 0; i < 20 && !l1.enemies[0].dots.length; i++) l1.sampoShear(s1, l1.enemies[0], 1);
+  eq(l1.enemies[0].dots.find(d => d.type === 'shear').turns, 3, 'Wind Shear lasts 3 turns without A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const s2 = a2.allies[0], f2 = a2.enemies[0];
+  for (let i = 0; i < 20 && !f2.dots.length; i++) a2.sampoShear(s2, f2, 1);
+  eq(f2.dots.find(d => d.type === 'shear').turns, 4, 'A2 «Ловушка» extends Wind Shear');
+  eq(a2.kitFx(s2, 'takenCut', f2), 0.15, 'A6 «Перчинка» lowers damage from sheared foes');
+  eq(a2.kitFx(s2, 'takenCut', a2.enemies[1]), 0, 'A6 needs Wind Shear on the attacker');
+  const en = s2.energy;
+  a2.kitFx(s2, 'act', 'ult');
+  ok(s2.energy - en >= 10, 'A4 restores Energy after the Ultimate');
+  const e1 = mk([], 4); e1.start();
+  e1.kitFx(e1.allies[0], 'act', 'skill');
+  ok(e1.enemies.reduce((a, e) => a + (e.maxHp - e.hp), 0) > 0, 'E1 adds a random Skill hit');
+  const e2 = mk([], 2); e2.start();
+  const dead = e2.enemies[0];
+  dead.dots.push({ type: 'shear', dmg: 10, turns: 2, src: e2.allies[0], stacks: 1 });
+  e2.kitFx(e2.allies[0], 'kill', dead, true);
+  ok(e2.enemies.slice(1).some(e => e.dots.some(d => d.type === 'shear')), 'E2 spreads Wind Shear on a kill');
+  const e4 = mk([], 4); e4.start();
+  const f4 = e4.enemies[1];
+  f4.dots.push({ type: 'shear', dmg: 100, turns: 2, src: e4.allies[0], stacks: 5 });
+  const hp4 = f4.hp;
+  e4.kitFx(e4.allies[0], 'hit', f4, { kind: 'skill' });
+  ok(f4.hp < hp4 && e4.ev.some(x => x.t === 'dmg' && x.label === 'Глубже любовь'), 'E4 detonates part of a 5-stack Wind Shear');
+  const e6 = mk([], 6, { talent: 1 }); e6.start();
+  ok(near(e6.kitFx(e6.allies[0], 'shear').m, 0.15), 'E6 raises the Wind Shear multiplier');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('hook', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const burn = (b, t) => t.dots.push({ type: 'burn', dmg: 5, turns: 2, src: b.allies[0], stacks: 1 });
+  ok(H.TRACES.hook.eidFx, 'Hook uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const h1 = l1.allies[0];
+  ok(near(1.0 * l1.traceTalent(h1), 0.5), 'the Talent hit starts at 50% ATK');
+  burn(l1, l1.enemies[0]);
+  h1.hp = Math.floor(h1.maxHp * 0.5); h1.energy = 0;
+  const hpH = h1.hp;
+  l1.afterAction(h1, 'basic', new Set([l1.enemies[0]]));
+  ok(h1.energy >= 5 && h1.hp === hpH, 'the Talent gives Energy and heals only with A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const h2 = a2.allies[0];
+  burn(a2, a2.enemies[0]);
+  h2.hp = Math.floor(h2.maxHp * 0.5);
+  const hp2 = h2.hp;
+  a2.afterAction(h2, 'basic', new Set([a2.enemies[0]]));
+  ok(h2.hp > hp2, 'A2 «Невинность» heals Hook when the Talent triggers');
+  eq(a2.kitFx(h2, 'ccRes'), 0.35, 'A4 «Наивность» gives control resistance');
+  h2.av = 1000; const en = h2.energy;
+  a2.kitFx(h2, 'act', 'ult');
+  ok(h2.av < 1000 && h2.energy - en >= 5, 'A6 «Игра с огнём» advances Hook and gives Energy after the Ultimate');
+  const e1 = mk([], 4); e1.start();
+  const h3 = e1.allies[0];
+  h3.flags.enhancedUse = true;
+  ok(near(e1.traceDmg(h3, e1.enemies[0], { kind: 'skill' }), 0.2), 'E1 adds 20% to the Enhanced Skill');
+  e1.kitFx(h3, 'act', 'skill');
+  eq(e1.traceDmg(h3, e1.enemies[0], { kind: 'skill' }), 0, 'E1 ends after the Enhanced Skill');
+  eq(e1.kitFx(h3, 'dotTurns', 'skill', { type: 'burn' }), 1, 'E2 extends the Skill Burn');
+  let spread = 0;
+  for (let i = 0; i < 10 && !spread; i++) { e1.kitFx(h3, 'talentHit', e1.enemies[1]); spread = [0, 2].filter(k => e1.enemies[k].dots.some(d => d.type === 'burn')).length; }
+  ok(spread > 0, 'E4 spreads Burn to adjacent foes');
+  const e6 = mk([], 6); e6.start();
+  burn(e6, e6.enemies[0]);
+  ok(near(e6.traceDmg(e6.allies[0], e6.enemies[0], { kind: 'basic' }), 0.2), 'E6 adds 20% damage to burning foes');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('pela', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const weaken = t => t.buffs.push({ s: 'atkP', v: -0.1, turns: 2, name: 'Слабость', debuff: true });
+  ok(H.TRACES.pela.eidFx, 'Pela uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { ult: 1, talent: 1 }); l1.start();
+  const p1 = l1.allies[0], ult1 = l1.abilityFor(p1, 'ult').ab.fx;
+  ok(near(ult1.find(f => f.k === 'debuff').v, 0.3) && near(ult1.find(f => f.k === 'dmg').m, 0.6), 'the Ultimate DEF reduction follows its own curve (30% at level 1)');
+  ok(near(10 * l1.traceTalent(p1), 5), 'the Talent Energy starts at 5');
+  const l10 = mk([], 0, { ult: 10 }); l10.start();
+  ok(near(l10.abilityFor(l10.allies[0], 'ult').ab.fx.find(f => f.k === 'debuff').v, 0.4), 'the Ultimate DEF reduction reaches 40% at level 10');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const p2 = a2.allies[0], f2 = a2.enemies[0];
+  ok(a2.allies.every(a => a.buffs.some(x => x.name === 'Тайная стратегия' && x.s === 'ehr' && near(x.v, 0.1))), 'A4 raises team Effect Hit Rate');
+  eq(a2.traceDmg(p2, f2, {}), 0, 'A2 needs a debuffed foe');
+  weaken(f2);
+  ok(near(a2.traceDmg(p2, f2, {}), 0.2), 'A2 «Сокрушительный удар» adds 20% damage to debuffed foes');
+  a2.kitFx(p2, 'dispelled', a2.enemies[1]);
+  a2.kitFx(p2, 'act', 'skill', {});
+  a2.acting = p2;
+  ok(near(a2.traceDmg(p2, a2.enemies[1], {}), 0.2), 'A6 «Изничтожение» boosts the next attack after a dispel');
+  a2.kitFx(p2, 'act', 'basic', {});
+  eq(a2.traceDmg(p2, a2.enemies[1], {}), 0, 'A6 lasts for one attack');
+  a2.acting = null;
+  p2.hp = 0; a2.kitFx(p2, 'down');
+  ok(!a2.allies.some(a => a.buffs.some(x => x.name === 'Тайная стратегия')), 'A4 ends when Pela is down');
+  const e2 = mk([], 4); e2.start();
+  const p3 = e2.allies[0];
+  e2.kitFx(p3, 'dispelled', e2.enemies[0]);
+  ok(p3.buffs.some(x => x.name === 'Стремительное продвижение' && x.s === 'spdP'), 'E2 raises SPD after a dispel');
+  let resDown = false;
+  for (let i = 0; i < 20 && !resDown; i++) { e2.kitFx(p3, 'act', 'skill', { main: e2.enemies[1] }); resDown = e2.enemies[1].buffs.some(x => x.s === 'iceResDown'); }
+  ok(resDown, 'E4 lowers Ice RES with the Skill');
+  const e6 = mk([], 6); e6.start();
+  const p6 = e6.allies[0], f6 = e6.enemies[0];
+  weaken(f6);
+  e6.actSerial = 50;
+  e6.hit(p6, f6, 0.01, { e: 'ice', kind: 'basic' });
+  e6.hit(p6, f6, 0.01, { e: 'ice', kind: 'basic' });
+  eq(e6.ev.filter(x => x.t === 'dmg' && x.label === 'Преследование слабости').length, 1, 'E6 adds Ice damage once per action on debuffed foes');
+  const e1 = mk([], 1); e1.start();
+  e1.allies[0].energy = 0;
+  e1.kitFx(e1.allies[0], 'kill', e1.enemies[0], true);
+  ok(e1.allies[0].energy >= 5, 'E1 restores Energy on a kill');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('ruanmei', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.ruanmei.eidFx, 'Ruan Mei uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, ult: 1, talent: 1 }); l1.start();
+  const r1 = l1.allies[0], sk1 = l1.abilityFor(r1, 'skill').ab.fx, ul1 = l1.abilityFor(r1, 'ult').ab.fx;
+  ok(near(sk1.find(f => f.name === 'Обертон').v, 0.16) && near(sk1.find(f => f.name === 'Обертон: пробитие').v, 0.5), 'Overtone DMG starts at 16%, Break Efficiency stays at 50%');
+  ok(near(ul1.find(f => f.k === 'buff').v, 0.15) && near(ul1.find(f => f.k === 'bloom').m, 0.36), 'the Ultimate RES PEN and Thanatoplum Rebloom grow with the Ultimate level');
+  ok(near(l1.allies[1].buffs.find(x => x.name === 'Соматотипическая спираль').v, 0.08), 'the Talent SPD boost starts at 8%');
+  eq(l1.traceTalent(r1), 0.5, 'the Talent Break DMG follows the Talent level');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const r2 = a2.allies[0];
+  ok(a2.allies.every(a => a.buffs.some(x => x.name === 'Инертное дыхание' && x.s === 'breakE' && near(x.v, 0.2))), 'A2 raises team Break Effect');
+  r2.energy = 0;
+  a2.kitFx(r2, 'allyTurn', r2);
+  ok(r2.energy >= 5, 'A4 gives Energy at the start of her turn');
+  r2.base.breakE = 1.5;
+  for (const a of a2.livingAllies) a.buffs.push({ s: 'dmgP', v: 0.32, turns: 3, name: 'Обертон' });
+  a2.kitFx(r2, 'act', 'skill');
+  ok(a2.allies.every(a => near(a.buffs.find(x => x.name === 'Обертон').v, 0.32 + Math.min(0.36, Math.floor((H.battleStat.sv(r2, 'breakE') - 1.2 + 1e-9) / 0.1) * 0.06))), 'A6 adds Overtone DMG for Break Effect over 120%');
+  r2.hp = 0; a2.kitFx(r2, 'down');
+  ok(!a2.allies.some(a => a.buffs.some(x => x.name === 'Инертное дыхание' || x.name === 'Соматотипическая спираль')), 'her auras end when Ruan Mei is down');
+  const e1 = mk([], 6); e1.start();
+  const r3 = e1.allies[0];
+  for (const a of e1.livingAllies) a.buffs.push({ s: 'resPen', v: 0.25, turns: 2, name: 'Магический круг' });
+  e1.kitFx(r3, 'act', 'ult');
+  ok(e1.allies.every(a => a.buffs.some(x => x.name === 'Нейронный узор' && x.s === 'defIgnore') && a.buffs.find(x => x.name === 'Магический круг').turns === 3), 'E1 ignores DEF in the field and E6 extends the field');
+  const foe = e1.enemies[0];
+  eq(e1.traceDmg(e1.allies[1], foe, {}), 0, 'E2 needs a broken foe');
+  foe.broken = true;
+  ok(near(e1.traceDmg(e1.allies[1], foe, {}), 0.4), 'E2 helps the whole team against broken foes');
+  e1.kitFx(r3, 'break', foe, e1.allies[1]);
+  ok(r3.buffs.some(x => x.name === 'Мерцающий блеск зеркала' && x.s === 'breakE'), 'E4 raises Break Effect on a break');
+  eq(e1.kitFx(r3, 'spiralBreak'), 2, 'E6 adds 200% to the Talent Break DMG');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('kafka', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const dot = (b, t, type) => t.dots.push({ type, dmg: 100, turns: 2, src: b.allies[0], stacks: 1 });
+  ok(H.TRACES.kafka.eidFx, 'Kafka uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, ult: 1, talent: 1 }); l1.start();
+  const k1 = l1.allies[0];
+  ok(near(l1.kitFx(k1, 'detRatio', 'skill'), 0.6) && near(l1.kitFx(k1, 'detRatio', 'ult'), 0.8), 'detonation ratios start at 60% and 80%');
+  ok(near(1.4 * l1.traceTalent(k1), 0.42), 'the Talent follow-up starts at 42% ATK');
+  const f1 = l1.enemies[0];
+  dot(l1, f1, 'shock'); dot(l1, f1, 'burn');
+  const ev1 = l1.ev.length;
+  l1.detonate(k1, f1, 1, l1.kitFx(k1, 'detAll') === false ? 'shock' : null);
+  eq(l1.ev.slice(ev1).filter(x => x.t === 'dmg' && /детонация/.test(x.label || '')).length, 1, 'without A2 the Ultimate detonates only Shock');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const k2 = a2.allies[0], f2 = a2.enemies[0];
+  dot(a2, f2, 'shock'); dot(a2, f2, 'burn');
+  const ev2 = a2.ev.length;
+  a2.detonate(k2, f2, 1, a2.kitFx(k2, 'detAll') === false ? 'shock' : null);
+  eq(a2.ev.slice(ev2).filter(x => x.t === 'dmg' && /детонация/.test(x.label || '')).length, 2, 'A2 «Пытка» detonates every DoT');
+  eq(a2.kitFx(k2, 'dotChance', 'ult', { type: 'shock' }), 0.3, 'A6 «Шипы» raises the Shock chance');
+  k2.energy = 0;
+  a2.kitFx(k2, 'kill', f2, true);
+  ok(k2.energy >= 5, 'A4 «Разбой» gives Energy for a shocked kill');
+  const e1 = mk([], 4); e1.start();
+  const k3 = e1.allies[0], f3 = e1.enemies[1];
+  let vuln = false;
+  for (let i = 0; i < 20 && !vuln; i++) { e1.kitFx(k3, 'follow', f3); vuln = f3.buffs.some(x => x.name === 'Da Capo' && x.s === 'dotVuln'); }
+  ok(vuln, 'E1 raises DoT taken after the follow-up');
+  ok(near(e1.traceDmg(e1.allies[1], f3, { isDot: true }), 0.25) && e1.traceDmg(e1.allies[1], f3, {}) === 0, 'E2 raises team DoT damage');
+  k3.energy = 0;
+  e1.kitFx(k3, 'dotTick', f3, { type: 'shock' });
+  ok(k3.energy >= 2, 'E4 gives Energy when her Shock ticks');
+  const e6 = mk([], 6); e6.start();
+  const up = e6.kitFx(e6.allies[0], 'shockUp');
+  ok(up.turns === 1 && up.m > 1.56, 'E6 strengthens and extends her Shock');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('silverwolf', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const weaken = (t, n) => { for (let i = 0; i < n; i++) t.buffs.push({ s: 'atkP', v: -0.01, turns: 2, name: 'Слабость ' + i, debuff: true }); };
+  ok(H.TRACES.silverwolf.eidFx, 'Silver Wolf uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, ult: 1, talent: 1 }); l1.start();
+  const w1 = l1.allies[0];
+  ok(near(l1.abilityFor(w1, 'skill').ab.fx.find(f => f.k === 'debuff').v, 0.13 * 0.75) && near(l1.abilityFor(w1, 'ult').ab.fx.find(f => f.k === 'debuff').v, 0.36), 'Skill and Ultimate debuffs follow their own curves');
+  ok(near(l1.kitFx(w1, 'bug').chance, 0.6), 'the Bug chance starts at 60%');
+  let bug = null;
+  for (let i = 0; i < 30 && !bug; i++) { l1.plantBug(w1, l1.enemies[0], 1); bug = l1.enemies[0].buffs.find(x => x.debuff && x.turns === 3); }
+  ok(bug && Math.abs(bug.v) <= 0.05 + 1e-9, 'Bugs are half as strong at Talent level 1');
+  let imp = false;
+  for (let i = 0; i < 20 && !imp; i++) imp = l1.implant(w1, l1.enemies[1], 'fire');
+  ok(imp && l1.enemies[1].implant.turns === 2, 'the implanted Weakness lasts 2 turns without A4');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const w2 = a2.allies[0];
+  eq(a2.kitFx(w2, 'bug').turns, 1, 'A2 extends Bugs');
+  let imp2 = false;
+  for (let i = 0; i < 20 && !imp2; i++) imp2 = a2.implant(w2, a2.enemies[1], 'fire');
+  eq(a2.enemies[1].implant.turns, 3, 'A4 extends the implanted Weakness');
+  const f2 = a2.enemies[0];
+  weaken(f2, 3);
+  a2.kitFx(w2, 'act', 'skill', { main: f2 });
+  ok(f2.buffs.some(x => x.name === 'Примечание' && x.s === 'resDown' && near(x.v, 0.03)), 'A6 lowers RES of a foe with 3 debuffs');
+  const e1 = mk([], 4); e1.start();
+  const w3 = e1.allies[0], f3 = e1.enemies[0];
+  ok(e1.enemies.every(e => e.buffs.some(x => x.name === 'Бот-сеть' && near(x.v, -0.2))), 'E2 lowers enemy Effect RES');
+  weaken(f3, 3);
+  w3.energy = 0;
+  const hp3 = f3.hp;
+  e1.kitFx(w3, 'act', 'ult', { main: f3 });
+  ok(w3.energy >= 21 && f3.hp < hp3, 'E1 gives Energy and E4 adds hits per debuff after the Ultimate');
+  w3.hp = 0; e1.kitFx(w3, 'down');
+  ok(!e1.enemies.some(e => e.buffs.some(x => x.name === 'Бот-сеть')), 'E2 ends when Silver Wolf is down');
+  const e6 = mk([], 6); e6.start();
+  const f6 = e6.enemies[0];
+  weaken(f6, 7);
+  ok(near(e6.traceDmg(e6.allies[0], f6, {}), 1), 'E6 adds up to 100% damage for debuffs');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('blade', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.blade.eidFx, 'Blade uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, talent: 1 }); l1.start();
+  const b1 = l1.allies[0];
+  ok(near(l1.kitFx(b1, 'hellDmg'), 0.12), 'Hellscape DMG starts at 12%');
+  eq(l1.traceTalent(b1), 0.5, 'Shuhu\'s Gift follows the Talent level');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const b2 = a2.allies[0];
+  eq(H.battleStat.sv(b2, 'healIn'), 0, 'A2 needs half HP');
+  b2.hp = Math.floor(b2.maxHp * 0.4);
+  ok(near(H.battleStat.sv(b2, 'healIn'), 0.2), 'A2 «Бесконечная жизнь» raises healing at low HP');
+  a2.enemies[0].broken = true;
+  const hp2 = b2.hp;
+  a2.kitFx(b2, 'act', 'enhanced', { main: a2.enemies[0] });
+  ok(b2.hp > hp2, 'A4 heals after Forest of Swords on a broken foe');
+  ok(near(a2.traceDmg(b2, a2.enemies[1], { label: 'Дар Шуху', kind: 'follow' }), 0.2), 'A6 «Буря разрушения» adds 20% to Shuhu\'s Gift');
+  const e1 = mk([], 4); e1.start();
+  const b3 = e1.allies[0];
+  b3.flags.lastTally = Math.round(b3.maxHp * 0.5);
+  const hp3 = e1.enemies[0].hp;
+  e1.kitFx(b3, 'act', 'ult', { main: e1.enemies[0] });
+  ok(e1.enemies[0].hp < hp3, 'E1 adds damage from the HP lost before the Ultimate');
+  b3.buffs.push({ s: 'dmgP', v: 0.4, turns: 3, name: 'Адский пейзаж' });
+  eq(e1.traceCrit(b3, e1.enemies[0]), 0.15, 'E2 adds CRIT Rate in Hellscape');
+  const max0 = b3.maxHp;
+  b3.hp = Math.round(b3.maxHp * 0.6);
+  e1.consumeHp(b3, 0.2);
+  eq(b3.maxHp, max0 + Math.round(max0 * 0.2), 'E4 raises Max HP when HP drops below half');
+  const e6 = mk([], 6); e6.start();
+  const b6 = e6.allies[0];
+  eq(b6.flags.shuhuMax, 4, 'E6 lowers the Charge cap to 4');
+  b6.flags.shuhu = 4;
+  ok(e6.resolveShuhu(), 'Shuhu\'s Gift fires at 4 Charges with E6');
+  eq(e6.kitFx(b6, 'shuhuHp'), 0.5, 'E6 adds Max HP damage to Shuhu\'s Gift');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('lynx', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.lynx.eidFx, 'Lynx uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, talent: 1 }); l1.start();
+  const x1 = l1.allies[0], m1 = l1.allies[1];
+  ok(near(l1.kitFx(x1, 'survivalUp').k, 0.05 / 0.075), 'Survival Response Max HP follows the Skill level');
+  ok(near(l1.traceTalent(x1), 0.024 / 0.036), 'the Talent heal-over-time follows the Talent level');
+  l1.lynxHot(x1, m1);
+  eq(m1.buffs.find(x => x.name === 'Опыт выживания').turns, 2, 'the Talent heal lasts 2 turns without A6');
+  m1.flags.debuffBlock = 0;
+  const en = x1.energy;
+  l1.survival(x1, m1);
+  l1.foursHurt(m1);
+  eq(x1.energy, en, 'Survival Response gives Energy on hits only with A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const x2 = a2.allies[0], m2 = a2.allies[1];
+  a2.survival(x2, m2);
+  const en2 = x2.energy;
+  a2.foursHurt(m2);
+  ok(x2.energy > en2, 'A2 «Предварительная разведка» gives Energy when the target is attacked');
+  eq(a2.kitFx(x2, 'ccRes'), 0.35, 'A4 gives control resistance');
+  a2.lynxHot(x2, m2);
+  eq(m2.buffs.find(x => x.name === 'Опыт выживания').turns, 3, 'A6 extends the Talent heal');
+  const e1 = mk([], 4); e1.start();
+  const x3 = e1.allies[0], m3 = e1.allies[1];
+  m3.hp = Math.floor(m3.maxHp * 0.4);
+  eq(e1.kitFx(x3, 'healBonus', m3), 0.2, 'E1 heals low-HP allies harder');
+  e1.survival(x3, m3);
+  e1.addBuff(m3, { s: 'atkP', v: -0.1, turns: 2, name: 'Слабость', debuff: true });
+  ok(!m3.buffs.some(x => x.name === 'Слабость'), 'E2 blocks one debuff on a Survival Response target');
+  ok(m3.buffs.some(x => x.name === 'Вечер у тёплого костра' && x.s === 'atkP' && x.v > 0), 'E4 raises ATK with Survival Response');
+  const e6 = mk([], 6, { skill: 10 }); e6.start();
+  const x6 = e6.allies[0], m6 = e6.allies[1], max6 = m6.maxHp;
+  e6.survival(x6, m6);
+  eq(m6.maxHp - max6, Math.round(x6.maxHp * (H.TUNING.survivalHp + 0.06) + H.TUNING.survivalFlat * H.grow(x6.lvl)), 'E6 adds Max HP to Survival Response');
+  ok(m6.buffs.some(x => x.name === 'Рассвет над чертежами' && x.s === 'res'), 'E6 adds Effect RES');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('luka', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.luka.eidFx, 'Luka uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, ult: 1, talent: 1, basic: 1 }); l1.start();
+  const k1 = l1.allies[0];
+  ok(near(l1.kitFx(k1, 'bleedCap'), 1.3) && near(l1.kitFx(k1, 'lukaDet'), 0.68) && near(l1.kitFx(k1, 'markV'), 0.12), 'Bleed cap, uppercut detonation and the Ultimate mark start at level 1 values');
+  ok(near(l1.kitFx(k1, 'fistK'), 0.5), 'the enhanced Basic ATK follows the Basic ATK level');
+  k1.energy = 0;
+  l1.gainWill(k1, 1);
+  eq(k1.energy, 0, 'Fighting Will gives Energy only with A4');
+  const f1 = l1.enemies[0];
+  f1.buffs.push({ s: 'atkP', v: 0.1, turns: 3, name: 'Ярость' });
+  l1.useAbility(k1, l1.abilityFor(k1, 'skill').ab, f1, 'skill');
+  ok(f1.buffs.some(x => x.name === 'Ярость'), 'the Skill dispels only with A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const k2 = a2.allies[0], f2 = a2.enemies[0];
+  f2.buffs.push({ s: 'atkP', v: 0.1, turns: 3, name: 'Ярость' });
+  a2.useAbility(k2, a2.abilityFor(k2, 'skill').ab, f2, 'skill');
+  ok(!f2.buffs.some(x => x.name === 'Ярость'), 'A2 «Кинетическая перегрузка» lets the Skill dispel');
+  k2.energy = 0;
+  a2.gainWill(k2, 1);
+  ok(k2.energy > 0 || k2.flags.will >= 4, 'A4 «Остановка циркуляции» gives Energy per Fighting Will');
+  const e1 = mk([], 4); e1.start();
+  const k3 = e1.allies[0], f3 = e1.enemies[0];
+  f3.dots.push({ type: 'bleed', dmg: 50, turns: 2, src: k3, stacks: 1 });
+  e1.kitFx(k3, 'act', 'basic', { main: f3 });
+  ok(k3.buffs.some(x => x.name === 'Непрерывный бой'), 'E1 boosts damage after hitting a bleeding foe');
+  k3.flags.will = 0;
+  e1.kitFx(k3, 'act', 'skill', { main: f3 });
+  eq(k3.flags.will, 1, 'E2 adds Fighting Will on a Physical-weak foe');
+  e1.gainWill(k3, 2);
+  ok(near(k3.buffs.find(x => x.name === 'Несмотря ни на что').v, 0.15), 'E4 gives ATK per Fighting Will');
+  const e6 = mk([], 6); e6.start();
+  const k6 = e6.allies[0], f6 = e6.enemies[0];
+  const d6 = { type: 'bleed', dmg: 50, turns: 2, src: k6, stacks: 1 };
+  f6.dots.push(d6);
+  const ev6 = e6.ev.length;
+  e6.kitFx(k6, 'uppercut', f6, 4, d6);
+  eq(e6.ev.slice(ev6).filter(x => x.t === 'dmg' && x.label === 'Аплодисменты чемпиону').length, 4, 'E6 detonates Bleed once per jab');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('sushang', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.sushang.eidFx, 'Sushang uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, ult: 1, talent: 1 }); l1.start();
+  const s1 = l1.allies[0];
+  ok(near(l1.kitFx(s1, 'stanceK'), 0.5), 'Sword Stance follows the Skill level');
+  ok(near(l1.abilityFor(s1, 'ult').ab.fx.find(f => f.k === 'buff').v, 0.18), 'the Ultimate ATK boost starts at 18%');
+  l1.foursBreak(s1, l1.enemies[0]);
+  ok(near(s1.buffs.find(x => x.name === 'Плавный клинок').v, 0.15), 'the Talent SPD boost starts at 15%');
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  l10.foursBreak(l10.allies[0], l10.enemies[0]);
+  ok(near(l10.allies[0].buffs.find(x => x.name === 'Плавный клинок').v, 0.2), 'the Talent SPD boost reaches 20% at level 10');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const s2 = a2.allies[0];
+  s2.hp = Math.floor(s2.maxHp * 0.4);
+  eq(a2.kitFx(s2, 'aggro'), 0.5, 'A2 «Малое дитя» lowers aggro at low HP');
+  const k0 = a2.kitFx(s2, 'stanceK');
+  for (let i = 0; i < 12; i++) a2.kitFx(s2, 'stance', a2.enemies[0]);
+  ok(near(a2.kitFx(s2, 'stanceK'), k0 * 1.3), 'A4 «Отпор врагу» stacks Sword Stance damage up to 30%');
+  const e1 = mk([], 2); e1.start();
+  const s3 = e1.allies[0];
+  e1.kitFx(s3, 'stance', e1.enemies[0]);
+  ok(s3.buffs.some(x => x.name === 'Закалённое тело' && x.s === 'dr'), 'E2 lowers damage taken after Sword Stance');
+  e1.sp = 0;
+  const e1b = mk([], 1); e1b.start();
+  e1b.sp = 0; e1b.enemies[0].broken = true;
+  e1b.kitFx(e1b.allies[0], 'act', 'skill', { main: e1b.enemies[0] });
+  eq(e1b.sp, 1, 'E1 refunds a Skill Point on a broken foe');
+  const e6 = mk([], 6); e6.start();
+  const s6 = e6.allies[0];
+  ok(s6.buffs.some(x => x.name === 'Острый ум' && x.s === 'breakE') && s6.buffs.some(x => x.name === 'Плавный клинок'), 'E4 adds Break Effect and E6 starts with a SPD stack');
+  e6.foursBreak(s6, e6.enemies[0]);
+  ok(s6.buffs.some(x => x.name === 'Плавный клинок 2'), 'E6 stacks the Talent SPD boost twice');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('xueyi', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.xueyi.eidFx, 'Xueyi uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { ult: 1, talent: 1 }); l1.start();
+  const x1 = l1.allies[0];
+  const c1 = l1.abilityFor(x1, 'ult').ab.fx.find(f => f.k === 'castigation');
+  ok(near(c1.m, 1.5) && near(c1.bonus, 0.36), 'the Ultimate and its toughness bonus follow the Ultimate level');
+  eq(l1.traceTalent(x1), 0.5, 'the Karma follow-up follows the Talent level');
+  ok(!x1.buffs.some(x => x.name === 'Предзнаменующий замысел'), 'the Break Effect damage bonus needs A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const x2 = a2.allies[0], f2 = a2.enemies[0];
+  ok(x2.buffs.some(x => x.name === 'Предзнаменующий замысел' && x.v > 0), 'A2 «Предзнаменующий замысел» turns Break Effect into damage');
+  ok(near(a2.traceDmg(x2, f2, { kind: 'ult' }), 0.1), 'A4 adds Ultimate damage on foes with high toughness');
+  f2.tough = 0;
+  eq(a2.traceDmg(x2, f2, { kind: 'ult' }), 0, 'A4 needs half toughness');
+  a2.gainKarma(x2, 11);
+  eq(x2.flags.karmaBank, 3, 'A6 banks Karma over the cap');
+  a2.foursFollow();
+  eq(x2.flags.karma, 3, 'A6 returns the banked Karma after the follow-up');
+  const e1 = mk([], 4); e1.start();
+  const x3 = e1.allies[0];
+  ok(near(e1.traceDmg(x3, e1.enemies[0], { karma: true }), 0.4), 'E1 boosts the Karma follow-up');
+  eq(e1.kitFx(x3, 'karmaAny'), true, 'E2 lets the follow-up ignore weakness types');
+  x3.hp = Math.floor(x3.maxHp * 0.5);
+  const hp3 = x3.hp;
+  e1.kitFx(x3, 'karmaDone');
+  ok(x3.hp > hp3, 'E2 heals Xueyi after the follow-up');
+  e1.kitFx(x3, 'act', 'ult');
+  ok(x3.buffs.some(x => x.name === 'Карма, действие' && x.s === 'breakE'), 'E4 raises Break Effect after the Ultimate');
+  const e6 = mk([], 6); e6.start();
+  const x6 = e6.allies[0];
+  eq(x6.flags.karmaMax, 6, 'E6 lowers the Karma cap to 6');
+  e6.gainKarma(x6, 6);
+  eq(e6.karmaReady, x6, 'the follow-up triggers at 6 Karma with E6');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('tingyun', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.tingyun.eidFx, 'Tingyun uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, ult: 1, talent: 1 }); l1.start();
+  const t1 = l1.allies[0];
+  const bn = l1.kitFx(t1, 'bene');
+  ok(near(bn.atk, 0.25) && near(bn.cap, 0.15) && near(bn.hit, 0.2), 'Benediction starts at level 1 values');
+  ok(near(l1.kitFx(t1, 'omen').dmg, 0.2), 'the Ultimate DMG boost starts at 20%');
+  eq(l1.traceTalent(t1), 0.5, 'the Talent hit follows the Talent level');
+  t1.energy = 0;
+  l1.foursTurn(t1);
+  eq(t1.energy, 0, 'turn-start Energy needs A6');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const t2 = a2.allies[0];
+  t2.energy = 0;
+  a2.foursTurn(t2);
+  ok(t2.energy >= 5, 'A6 «Торжественный шаг» gives Energy at turn start');
+  ok(near(a2.traceDmg(t2, a2.enemies[0], { kind: 'basic' }), 0.4), 'A4 boosts the Basic ATK by 40%');
+  a2.kitFx(t2, 'act', 'skill');
+  ok(t2.buffs.some(x => x.name === 'Поддержание хорошего настроения' && x.s === 'spdP'), 'A2 raises SPD after the Skill');
+  const e1 = mk([], 4); e1.start();
+  const t3 = e1.allies[0], m3 = e1.allies[1];
+  e1.benediction(t3, m3);
+  e1.kitFx(t3, 'allyAfter', m3, 'ult');
+  ok(m3.buffs.some(x => x.name === 'Весенний ветер'), 'E1 speeds up the blessed ally after its Ultimate');
+  m3.energy = 0;
+  e1.actSerial = 7;
+  e1.kitFx(t3, 'allyKill', m3, e1.enemies[0]);
+  e1.kitFx(t3, 'allyKill', m3, e1.enemies[1]);
+  ok(m3.energy >= 5 && m3.energy < 10, 'E2 gives the blessed ally Energy once per turn on kills');
+  ok(near(e1.kitFx(t3, 'bene').hit, 0.4 * 0.75 + 0.2), 'E4 raises the Benediction hit');
+  const e6 = mk([], 6); e6.start();
+  const m6 = e6.allies[1];
+  m6.energy = 0;
+  e6.omen(e6.allies[0], m6);
+  ok(m6.energy >= 60 || m6.energy === m6.maxEnergy, 'E6 gives 10 more Energy with the Ultimate');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('hanya', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.hanya.eidFx, 'Hanya uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { ult: 1, talent: 1 }); l1.start();
+  const h1 = l1.allies[0], m1 = l1.allies[1], f1 = l1.enemies[0];
+  const ed1 = l1.kitFx(h1, 'edict');
+  ok(near(ed1.atk, 0.36) && near(ed1.spd, 0.15), 'the Ultimate starts at 36% ATK and 15% of her SPD');
+  ok(near(l1.sanction(h1), 0.15), 'the Talent DMG boost starts at 15%');
+  l1.burden(h1, f1);
+  f1.flags.burdenN = 1;
+  m1.energy = 0; h1.energy = 0;
+  l1.burdenCount(m1, f1);
+  ok(!m1.buffs.some(x => x.name === 'Ведение протокола') && h1.energy === 0, 'A2 ATK and A6 Energy need their traces');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const h2 = a2.allies[0], m2 = a2.allies[1], f2 = a2.enemies[0];
+  a2.burden(h2, f2);
+  f2.flags.burdenN = 1;
+  h2.energy = 0;
+  a2.burdenCount(m2, f2);
+  ok(m2.buffs.some(x => x.name === 'Ведение протокола') && h2.energy > 0, 'A2 gives ATK and A6 gives Energy on a Burden refund');
+  a2.sp = 0;
+  a2.kitFx(h2, 'allyKill', m2, f2);
+  eq(a2.sp, 1, 'A4 refunds a Skill Point when a Burdened foe dies early');
+  const e1 = mk([], 4); e1.start();
+  const h3 = e1.allies[0], m3 = e1.allies[1];
+  m3.buffs.push({ s: 'spd', v: 10, turns: 2, name: 'Указ' });
+  h3.av = 1000;
+  e1.actSerial = 3;
+  e1.kitFx(h3, 'allyKill', m3, e1.enemies[1]);
+  ok(h3.av < 1000, 'E1 advances Hanya when an Edict ally kills');
+  e1.kitFx(h3, 'act', 'skill');
+  ok(h3.buffs.some(x => x.name === 'Два взгляда'), 'E2 raises SPD after the Skill');
+  eq(e1.kitFx(h3, 'edict').turns, 1, 'E4 extends the Edict');
+  const e6 = mk([], 6, { talent: 10 }); e6.start();
+  ok(near(e6.sanction(e6.allies[0]), 0.4), 'E6 adds 10% to the Talent DMG boost');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('qingque', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.qingque.eidFx, 'Qingque uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, talent: 1 }); l1.start();
+  const q1 = l1.allies[0];
+  ok(near(l1.tileDmg(q1), 0.14), 'the Skill DMG stack starts at 14%');
+  l1.enterKong(q1);
+  ok(near(q1.buffs.find(x => x.name === 'Закрытый конг').v, 0.36), 'Hidden Hand ATK starts at 36%');
+  l1.sp = 0;
+  l1.kitFx(q1, 'act', 'skill');
+  eq(l1.sp, 0, 'the Skill refund needs A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const q2 = a2.allies[0];
+  ok(near(a2.tileDmg(q2), 0.28 * 0.75 + 0.1), 'A4 adds 10% per Skill stack');
+  a2.sp = 0;
+  a2.kitFx(q2, 'act', 'skill');
+  a2.kitFx(q2, 'act', 'skill');
+  eq(a2.sp, 1, 'A2 refunds one Skill Point once per battle');
+  a2.kitFx(q2, 'act', 'enhanced', {});
+  ok(q2.buffs.some(x => x.name === 'Кража конга' && x.s === 'spdP'), 'A6 raises SPD after the enhanced Basic ATK');
+  const e1 = mk([], 4); e1.start();
+  const q3 = e1.allies[0];
+  ok(near(e1.traceDmg(q3, e1.enemies[0], { kind: 'ult' }), 0.1), 'E1 boosts the Ultimate');
+  q3.energy = 0;
+  e1.drawTiles(q3, 2);
+  ok(q3.energy >= 2, 'E2 gives Energy per tile drawn');
+  q3.flags.autarky = true;
+  const hp3 = e1.enemies[1].hp;
+  e1.kitFx(q3, 'act', 'basic', { main: e1.enemies[1], adj: [] });
+  ok(e1.enemies[1].hp < hp3 && !q3.flags.autarky, 'E4 Autarky repeats the Basic ATK');
+  const e6 = mk([], 6); e6.start();
+  e6.sp = 0;
+  e6.kitFx(e6.allies[0], 'act', 'enhanced', {});
+  eq(e6.sp, 1, 'E6 refunds a Skill Point after the enhanced Basic ATK');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('yukong', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.yukong.eidFx, 'Yukong uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, ult: 1, talent: 1 }); l1.start();
+  const y1 = l1.allies[0];
+  ok(!l1.allies[1].buffs.some(x => x.name === 'Лук наследия'), 'the Imaginary DMG aura needs A4');
+  l1.setBow(y1, 2);
+  ok(near(l1.allies[1].buffs.find(x => x.name === 'Ревущая тетива').v, 0.4), 'Roaring Bowstrings ATK starts at 40%');
+  const k1 = l1.kitFx(y1, 'kestrel');
+  ok(near(k1.cr, 0.21) && near(k1.cd, 0.39), 'the Ultimate crit boosts start at level 1 values');
+  eq(l1.kitFx(y1, 'blockDebuff', {}), false, 'debuff block needs A2');
+  const hp1 = l1.enemies[0].hp;
+  y1.flags.arrowCd = 0;
+  l1.kitFx(y1, 'act', 'basic', { main: l1.enemies[0] });
+  ok(l1.enemies[0].hp < hp1, 'the Talent arrow adds an extra hit');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const y2 = a2.allies[0];
+  ok(a2.allies.every(a => a.buffs.some(x => x.name === 'Лук наследия')), 'A4 «Лук наследия» raises team Imaginary DMG');
+  a2.addBuff(y2, { s: 'atkP', v: -0.1, turns: 2, name: 'Слабость', debuff: true });
+  ok(!y2.buffs.some(x => x.name === 'Слабость'), 'A2 blocks a debuff');
+  a2.addBuff(y2, { s: 'atkP', v: -0.1, turns: 2, name: 'Слабость', debuff: true });
+  ok(y2.buffs.some(x => x.name === 'Слабость'), 'A2 then rests for 2 turns');
+  a2.setBow(y2, 2);
+  y2.energy = 0;
+  a2.foursAfter(a2.allies[1], 'basic', []);
+  ok(y2.energy >= 2, 'A6 gives Energy on ally actions under Bowstrings');
+  y2.hp = 0; a2.kitFx(y2, 'down');
+  ok(!a2.allies.some(a => a.buffs.some(x => x.name === 'Лук наследия')), 'A4 ends when Yukong is down');
+  const e1 = mk([], 4); e1.start();
+  const y3 = e1.allies[0], m3 = e1.allies[1];
+  ok(m3.buffs.some(x => x.name === 'Воздушный маршал'), 'E1 raises team SPD at the start');
+  y3.energy = 0; m3.energy = m3.maxEnergy;
+  e1.kitFx(y3, 'allyAfter', m3, 'basic', []);
+  e1.kitFx(y3, 'allyAfter', m3, 'basic', []);
+  ok(y3.energy >= 5 && y3.energy < 10, 'E2 gives Energy once per full ally');
+  e1.setBow(y3, 1);
+  ok(near(e1.traceDmg(y3, e1.enemies[0], {}), 0.3), 'E4 raises her damage under Bowstrings');
+  const e6 = mk([], 6); e6.start();
+  const y6 = e6.allies[0];
+  e6.kitFx(y6, 'act', 'ult', {});
+  eq(y6.flags.bow, 1, 'E6 grants a Bowstrings stack with the Ultimate');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('guinaifen', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.guinaifen.eidFx, 'Guinaifen uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { ult: 1, talent: 1 }); l1.start();
+  const g1 = l1.allies[0], f1 = l1.enemies[0];
+  ok(near(l1.kitFx(g1, 'burstV'), 0.72), 'the Ultimate Burn detonation starts at 72%');
+  l1.firekiss(g1, f1, true);
+  l1.firekiss(g1, f1, true);
+  ok(near(f1.buffs.find(x => x.name === 'Огненный поцелуй').v, 0.08), 'Firekiss starts at 4% per stack');
+  for (let i = 0; i < 5; i++) l1.useAbility(g1, l1.abilityFor(g1, 'basic').ab, l1.enemies[1], 'basic');
+  ok(!l1.enemies[1].dots.some(d => d.type === 'burn'), 'the Basic ATK burns only with A2');
+  f1.dots.push({ type: 'burn', dmg: 10, turns: 2, src: g1, stacks: 1 });
+  eq(l1.foursDmg(g1, f1, { kind: 'basic' }), 0, 'the bonus against burning foes needs A6');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const g2 = a2.allies[0], f2 = a2.enemies[0];
+  let burned = false;
+  for (let i = 0; i < 20 && !burned; i++) { a2.useAbility(g2, a2.abilityFor(g2, 'basic').ab, a2.enemies[1], 'basic'); burned = a2.enemies[1].dots.some(d => d.type === 'burn'); }
+  ok(burned, 'A2 «Высокий шест» lets the Basic ATK burn');
+  f2.dots.push({ type: 'burn', dmg: 10, turns: 2, src: g2, stacks: 1 });
+  ok(near(a2.foursDmg(g2, f2, { kind: 'basic' }), 0.2), 'A6 adds 20% damage to burning foes');
+  const e1 = mk([], 6); e1.start();
+  const g3 = e1.allies[0], f3 = e1.enemies[1];
+  const d3 = { type: 'burn', dmg: 10, turns: 2, src: g3, stacks: 1 };
+  f3.dots.push(d3);
+  let resDown = false;
+  for (let i = 0; i < 20 && !resDown; i++) { e1.kitFx(g3, 'act', 'skill', { main: f3, adj: [] }); resDown = f3.buffs.some(x => x.name === 'Поедание лапши'); }
+  ok(resDown, 'E1 lowers Effect RES with the Skill');
+  ok(d3.dmg > 10 && d3.e2, 'E2 strengthens an existing Burn');
+  g3.energy = 0;
+  e1.kitFx(g3, 'dotTick', f3, d3);
+  ok(g3.energy >= 2, 'E4 gives Energy when her Burn ticks');
+  for (let i = 0; i < 6; i++) e1.firekiss(g3, f3, true);
+  eq(f3.buffs.find(x => x.name === 'Огненный поцелуй').n, 4, 'E6 raises the Firekiss cap to 4');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('jingyuan', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.jingyuan.eidFx, 'Jing Yuan uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const j1 = l1.allies[0];
+  eq(l1.traceTalent(j1), 0.5, 'Lightning-Lord hits follow the Talent level (33% at level 1)');
+  eq(j1.energy, 0, 'start Energy needs A4');
+  l1.useAbility(j1, l1.abilityFor(j1, 'skill').ab, l1.enemies[0], 'skill');
+  ok(!j1.buffs.some(x => x.name === 'Военный маршал'), 'the Skill CRIT Rate boost needs A6');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const j2 = a2.allies[0];
+  ok(j2.energy >= 15, 'A4 «Предварительная подготовка» gives 15 Energy at the start');
+  a2.useAbility(j2, a2.abilityFor(j2, 'skill').ab, a2.enemies[0], 'skill');
+  ok(j2.buffs.some(x => x.name === 'Военный маршал' && near(x.v, 0.1)), 'A6 «Военный маршал» raises CRIT Rate after the Skill');
+  const e1 = mk([], 6); e1.start();
+  const j3 = e1.allies[0], lord = e1.lordOf(j3);
+  eq(e1.kitFx(j3, 'lordAdj'), 0.25, 'E1 raises the adjacent hit multiplier');
+  j3.energy = 0;
+  e1.lordTurn(lord);
+  ok(j3.energy >= 6, 'E4 gives Energy per Lightning-Lord hit');
+  ok(j3.buffs.some(x => x.name === 'Фаланга заслоняет солнце') && near(e1.traceDmg(j3, e1.enemies[0], { kind: 'skill' }), 0.2) && e1.traceDmg(j3, e1.enemies[0], { kind: 'follow' }) === 0, 'E2 boosts his own attacks after the Lightning-Lord acts');
+  ok(!e1.enemies.some(e => e.buffs.some(x => x.name === 'Слабость перед генералом')), 'E6 stacks clear after the Lightning-Lord turn');
+  e1.kitFx(j3, 'lordHit', e1.enemies[0]);
+  e1.kitFx(j3, 'lordHit', e1.enemies[0]);
+  e1.kitFx(j3, 'lordHit', e1.enemies[0]);
+  e1.kitFx(j3, 'lordHit', e1.enemies[0]);
+  ok(near(e1.enemies[0].buffs.find(x => x.name === 'Слабость перед генералом').v, 0.36), 'E6 stacks up to 36%');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('luocha', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.luocha.eidFx, 'Luocha uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, talent: 1 }); l1.start();
+  const c1 = l1.allies[0], m1 = l1.allies[1];
+  ok(near(l1.kitFx(c1, 'prayer', m1).k, 0.6667) && near(l1.kitFx(c1, 'zoneK'), 0.6667), 'Prayer and zone heals follow their levels');
+  m1.buffs.push({ s: 'atkP', v: -0.1, turns: 2, name: 'Слабость', debuff: true });
+  l1.abyssPrayer(c1, m1);
+  ok(m1.buffs.some(x => x.debuff), 'the Prayer cleanses only with A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const c2 = a2.allies[0], m2 = a2.allies[1];
+  m2.buffs.push({ s: 'atkP', v: -0.1, turns: 2, name: 'Слабость', debuff: true });
+  a2.abyssPrayer(c2, m2);
+  ok(!m2.buffs.some(x => x.debuff), 'A2 lets the Prayer cleanse');
+  eq(a2.kitFx(c2, 'ccRes'), 0.7, 'A6 gives 70% control resistance');
+  const e1 = mk([], 4); e1.start();
+  const c3 = e1.allies[0];
+  e1.openZone(c3);
+  ok(e1.allies.every(a => a.buffs.some(x => x.name === 'Омовение живых')) && e1.enemies.every(e => e.buffs.some(x => x.name === 'Тяжесть короны')), 'E1 and E4 work while the zone is up');
+  const m3 = e1.allies[1];
+  m3.hp = Math.floor(m3.maxHp * 0.4);
+  eq(e1.kitFx(c3, 'prayer', m3).heal, 0.3, 'E2 heals low-HP allies harder');
+  m3.hp = m3.maxHp;
+  ok(e1.kitFx(c3, 'prayer', m3).shield > 0, 'E2 shields healthy allies');
+  c3.hp = 0; e1.kitFx(c3, 'down');
+  ok(!e1.enemies.some(e => e.buffs.some(x => x.name === 'Тяжесть короны')), 'E4 ends when Luocha is down');
+  const e6 = mk([], 6); e6.start();
+  e6.kitFx(e6.allies[0], 'act', 'ult');
+  ok(e6.enemies.every(e => e.buffs.some(x => x.name === 'Прах к праху' && near(x.v, 0.2))), 'E6 lowers enemy RES after the Ultimate');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('imbibitor', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.imbibitor.eidFx, 'Imbibitor Lunae uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, talent: 1 }); l1.start();
+  const i1 = l1.allies[0], k1 = l1.ilK(i1);
+  ok(near(k1.right, 0.05) && near(k1.roar, 0.06), 'Righteous Heart and Outroar start at level 1 values');
+  eq(i1.energy, 0, 'start Energy needs A2');
+  const imagWeak = { side: 'enemy', weak: ['imag'], buffs: [] };
+  eq(l1.fivesCritD(i1, imagWeak, {}), 0, 'the Imaginary CRIT DMG bonus needs A6');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const i2 = a2.allies[0];
+  ok(i2.energy >= 15, 'A2 gives 15 Energy at the start');
+  eq(a2.kitFx(i2, 'ccRes'), 0.35, 'A4 gives control resistance');
+  ok(near(a2.fivesCritD(i2, imagWeak, {}), 0.24), 'A6 adds CRIT DMG against Imaginary-weak foes');
+  const e1 = mk([], 4); e1.start();
+  const i3 = e1.allies[0], k3 = e1.ilK(i3);
+  ok(k3.rightMax === 10 && k3.rightStep === 2, 'E1 raises the Righteous Heart cap and gain');
+  i3.av = 500; i3.flags.scales = 0;
+  e1.kitFx(i3, 'act', 'ult');
+  ok(i3.av === 0 && i3.flags.scales === 1, 'E2 advances him and adds a Dragon Scale after the Ultimate');
+  i3.flags.roar = 3;
+  e1.fivesEnd(i3);
+  eq(i3.flags.roar, 3, 'E4 keeps Outroar through the next turn');
+  e1.fivesEnd(i3);
+  eq(i3.flags.roar, 0, 'E4 Outroar ends after one more turn');
+  const e6 = mk([], 6); e6.start();
+  const i6 = e6.allies[0];
+  for (let k = 0; k < 4; k++) e6.kitFx(i6, 'allyAfter', e6.allies[1], 'ult', []);
+  ok(near(e6.ilK(i6).leapPen, 0.6), 'E6 stacks Imaginary RES PEN up to 60%');
+  i6.flags.leap = true;
+  e6.ilStrike(i6, { main: e6.enemies[0], adj: [] }, { hits: 1, m: 0.1 }, new Set(), 'enhanced');
+  eq(i6.flags.e6 || 0, 0, 'E6 stacks are spent by Fulgurant Leap');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('fuxuan', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const kill = (b, u) => b.hit(b.enemies[0], u, 0, { raw: (u.hp + u.shield) * 4 + 10, e: 'phys' });
+  ok(H.TRACES.fuxuan.eidFx, 'Fu Xuan uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, talent: 1 }); l1.start();
+  const f1 = l1.allies[0], m1 = l1.allies[1];
+  ok(near(m1.buffs.find(x => x.name === 'Уклонение от неудач').v, 0.1), 'Misfortune Avoidance starts at 10%');
+  l1.matrix(f1, 3);
+  ok(near(m1.buffs.find(x => x.name === 'Знание').v, 0.06), 'Knowledge CRIT Rate starts at 6%');
+  f1.energy = 0; l1.current = f1;
+  l1.matrix(f1, 3);
+  eq(f1.energy, 0, 'the recast Energy needs A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const f2 = a2.allies[0], m2 = a2.allies[1];
+  a2.matrix(f2, 3);
+  f2.energy = 0; a2.current = f2;
+  a2.matrix(f2, 3);
+  ok(f2.energy >= 20, 'A2 gives Energy when the Matrix is recast');
+  a2.current = null;
+  let froze = 0;
+  a2.actN = 100;
+  m2.frozen = 0; if (a2.tryFreeze(a2.enemies[0], m2, 1)) froze++;
+  m2.frozen = 0; if (a2.tryFreeze(a2.enemies[0], m2, 1)) froze++;
+  a2.actN = 101;
+  m2.frozen = 0; if (a2.tryFreeze(a2.enemies[0], m2, 1)) froze++;
+  eq(froze, 1, 'A6 blocks control for one enemy action per Matrix');
+  const e1 = mk([], 4); e1.start();
+  const f3 = e1.allies[0], m3 = e1.allies[1];
+  e1.matrix(f3, 3);
+  ok(near(H.battleStat.sv(m3, 'critD') - m3.base.critD, 0.3), 'E1 adds CRIT DMG to Knowledge');
+  f3.maxHp = f3.hp = 1e7;
+  e1.actN = 7;
+  kill(e1, m3);
+  ok(!m3.dead && m3.hp === Math.round(m3.maxHp * 0.7), 'E2 saves an ally under the Matrix');
+  e1.actN = 8;
+  kill(e1, m3);
+  ok(m3.dead, 'E2 works once per battle');
+  f3.energy = 0;
+  e1.kitFx(f3, 'teamAttacked', [f3], e1.enemies[0]);
+  ok(f3.energy >= 5, 'E4 gives Energy when Knowledge allies are attacked');
+  const e6 = mk([], 6); e6.start();
+  const f6 = e6.allies[0];
+  e6.matrix(f6, 3);
+  e6.hit(e6.enemies[0], e6.allies[1], 0, { raw: 100, e: 'phys' });
+  ok(f6.flags.e6tally > 0, 'E6 tallies HP lost under the Matrix');
+  const hp6 = e6.enemies[1].hp;
+  e6.kitFx(f6, 'act', 'ult');
+  ok(e6.enemies[1].hp < hp6 && f6.flags.e6tally === 0, 'E6 adds the tally to the Ultimate and resets it');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('jingliu', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.jingliu.eidFx, 'Jingliu uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const j1 = l1.allies[0];
+  ok(near(l1.kitFx(j1, 'transK').crit, 0.4) && near(l1.kitFx(j1, 'transK').cap, 0.9), 'Transmigration CRIT Rate and ATK cap start at level 1 values');
+  l1.syzygy(j1, 2);
+  ok(j1.flags.trans && !j1.buffs.some(x => x.name === 'Адское место'), 'Transmigration RES needs A2');
+  eq(l1.fivesDmg(j1, l1.enemies[0], { kind: 'ult' }), 0, 'the Transmigration Ultimate bonus needs A6');
+  const n1 = mk([]); n1.start();
+  const jn = n1.allies[0]; jn.av = 1000;
+  n1.useAbility(jn, n1.abilityFor(jn, 'skill').ab, n1.enemies[0], 'skill');
+  ok(!(jn.flags.pendingAdvance > 0), 'the Skill advance needs A4');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const j2 = a2.allies[0];
+  j2.av = 1000;
+  a2.useAbility(j2, a2.abilityFor(j2, 'skill').ab, a2.enemies[0], 'skill');
+  ok(j2.flags.pendingAdvance > 0, 'A4 advances Jingliu after the Skill');
+  j2.flags.syz = 0;
+  a2.syzygy(j2, 2);
+  ok(j2.buffs.some(x => x.name === 'Адское место' && x.s === 'res'), 'A2 raises Effect RES in Transmigration');
+  ok(near(a2.fivesDmg(j2, a2.enemies[0], { kind: 'ult' }), 0.2), 'A6 boosts the Transmigration Ultimate');
+  a2.syzygy(j2, -3);
+  a2.fivesEnd(j2);
+  ok(!j2.flags.trans && !j2.buffs.some(x => x.name === 'Адское место'), 'A2 RES ends with Transmigration');
+  const e1 = mk([], 4); e1.start();
+  const j3 = e1.allies[0], f3 = e1.enemies[1];
+  const hp3 = f3.hp;
+  e1.kitFx(j3, 'act', 'ult', { main: f3, adj: [] });
+  ok(j3.buffs.some(x => x.name === 'Лунная атака ворот Тяньгуань') && f3.hp < hp3, 'E1 boosts CRIT DMG and adds a hit on a lone target');
+  j3.flags.trans = true;
+  ok(near(e1.traceDmg(j3, f3, { kind: 'skill' }), 0.8), 'E2 boosts the next enhanced Skill after the Ultimate');
+  e1.kitFx(j3, 'act', 'skill', { main: f3, adj: [] });
+  eq(e1.traceDmg(j3, f3, { kind: 'skill' }), 0, 'E2 is spent by the enhanced Skill');
+  ok(e1.kitFx(j3, 'drainExtra', 1e6) === 0.3, 'E4 adds ATK from drained HP up to 30%');
+  const e6 = mk([], 6); e6.start();
+  const j6 = e6.allies[0];
+  e6.syzygy(j6, 2);
+  ok(j6.flags.syz === 3 && j6.flags.syzMax === 4 && j6.buffs.some(x => x.name === 'Затмение превращается в пустоту'), 'E6 adds a Syzygy stack, raises the cap and CRIT DMG');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('topaz', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'soldier:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.topaz.eidFx, 'Topaz uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, ult: 1, talent: 1 }); l1.start();
+  const t1 = l1.allies[0], nk = l1.numbyK(t1);
+  ok(near(nk.skill, 0.75) && near(nk.debt, 0.25) && near(nk.talent, 0.75) && near(nk.wind, 0.75) && near(nk.windCrit, 0.125), 'Numby, Proof of Debt and Windfall start at level 1 values');
+  l1.useAbility(t1, l1.abilityFor(t1, 'basic').ab, l1.enemies[0], 'basic');
+  ok(l1.ev.some(x => x.t === 'dmg' && x.label === 'Дефицит...'), 'the Basic ATK hits');
+  const fireWeak = l1.enemies.find(e => e.weak.includes('fire'));
+  eq(l1.fivesDmg(t1, fireWeak, {}), 0, 'the Fire weakness bonus needs A4');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const t2 = a2.allies[0];
+  ok(near(a2.fivesDmg(t2, a2.enemies.find(e => e.weak.includes('fire')), {}), 0.15), 'A4 adds damage to Fire-weak foes');
+  const h2 = a2.numbyOf(t2);
+  h2.flags.wind = 2; t2.energy = 0;
+  a2.numbyHit(t2, h2, a2.enemies[0], 'talent');
+  ok(t2.energy >= 10, 'A6 gives Energy for Windfall attacks');
+  const e1 = mk([], 4); e1.start();
+  const t3 = e1.allies[0], f3 = e1.enemies[0];
+  e1.setDebt(t3, f3);
+  e1.actSerial = 5; e1.hit(e1.allies[1], f3, 0.01, { e: 'ice', kind: 'follow' });
+  e1.actSerial = 6; e1.hit(e1.allies[1], f3, 0.01, { e: 'ice', kind: 'follow' });
+  e1.actSerial = 7; e1.hit(e1.allies[1], f3, 0.01, { e: 'ice', kind: 'follow' });
+  ok(near(f3.buffs.find(x => x.s === 'execCrit').v, 0.5), 'E1 stacks follow-up CRIT DMG taken up to 50%');
+  ok(near(e1.fivesCritD(t3, f3, { kind: 'follow' }) - e1.fivesCritD(t3, f3, { kind: 'basic' }), 0.5), 'E1 only helps follow-up attacks');
+  e1.setDebt(t3, e1.enemies[1]);
+  ok(!f3.buffs.some(x => x.s === 'execCrit'), 'E1 ends with Proof of Debt');
+  t3.energy = 0; t3.av = 1000;
+  e1.numbyTurn(e1.numbyOf(t3));
+  ok(t3.energy >= 5 && t3.av < 1000, 'E2 gives Energy and E4 advances Topaz on Numby turns');
+  const e6 = mk([], 6); e6.start();
+  const t6 = e6.allies[0];
+  e6.useAbility(t6, e6.abilityFor(t6, 'ult').ab, t6, 'ult');
+  eq(e6.numbyOf(t6).flags.wind, 3, 'E6 adds a Windfall attack');
+  ok(near(e6.numbyK(t6).pen, 0.1), 'E6 gives Numby Fire RES PEN');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('huohuo', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const kill = (b, u) => b.hit(b.enemies[0], u, 0, { raw: u.hp + u.shield + 10, e: 'phys' });
+  ok(H.TRACES.huohuo.eidFx, 'Huohuo uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { skill: 1, ult: 1, talent: 1 }); l1.start();
+  const h1 = l1.allies[0], k1 = l1.hhK(h1);
+  ok(near(k1.skill, 0.6667) && near(k1.talent, 0.6667) && near(k1.energy, 0.15) && near(k1.atk, 0.24), 'heals, Energy and ATK start at level 1 values');
+  eq(h1.flags.prov, 0, 'starting Divine Provision needs A2');
+  h1.energy = 0;
+  h1.flags.prov = 1; h1.flags.provN = 6;
+  l1.provHeal(h1, l1.allies[1]);
+  eq(h1.energy, 0, 'talent Energy needs A6');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const h2 = a2.allies[0];
+  eq(h2.flags.prov, 1, 'A2 starts the battle with Divine Provision');
+  eq(a2.kitFx(h2, 'ccRes'), 0.35, 'A4 gives control resistance');
+  h2.energy = 0;
+  a2.provHeal(h2, a2.allies[1]);
+  ok(h2.energy >= 1, 'A6 gives Energy on talent heals');
+  const e1 = mk([], 4); e1.start();
+  const h3 = e1.allies[0], m3 = e1.allies[1];
+  e1.giveProvision(h3);
+  ok(h3.flags.prov === 3 && m3.buffs.some(x => x.name === 'Одержимость хелиоби' && x.s === 'spdP'), 'E1 extends Divine Provision and raises team SPD');
+  m3.hp = Math.floor(m3.maxHp * 0.25);
+  ok(Math.abs(e1.kitFx(h3, 'healBonus', m3) - 0.6) < 0.005, 'E4 heals harder the lower the target HP');
+  kill(e1, m3);
+  ok(!m3.dead && m3.hp === Math.round(m3.maxHp * 0.5) && h3.flags.prov === 2, 'E2 saves an ally and shortens Divine Provision');
+  h3.flags.prov = 0; e1.kitFx(h3, 'provChanged');
+  ok(!m3.buffs.some(x => x.name === 'Одержимость хелиоби'), 'E1 SPD ends with Divine Provision');
+  const e6 = mk([], 6); e6.start();
+  e6.heal(e6.allies[0], e6.allies[1], 10);
+  ok(e6.allies[1].buffs.some(x => x.name === 'Единая цель, общая судьба' && near(x.v, 0.5)), 'E6 boosts the healed ally');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('argenti', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.argenti.eidFx, 'Argenti uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { ult: 1, talent: 1 }); l1.start();
+  const g1 = l1.allies[0];
+  eq(g1.energy, 0, 'enemy Energy on entry needs A4');
+  l1.addApo(g1, 2);
+  ok(near(g1.buffs.find(x => x.name === 'Апофеоз').v, 0.02), 'Apotheosis starts at 1% per stack');
+  ok(near(l1.kitFx(g1, 'bounceK'), 0.6), 'the 180-Energy Ultimate bounces follow the Ultimate level');
+  const apo1 = g1.flags.apo;
+  l1.fivesTurn(g1);
+  eq(g1.flags.apo, apo1, 'turn-start Apotheosis needs A2');
+  const low = l1.enemies[0]; low.hp = Math.floor(low.maxHp * 0.4);
+  eq(l1.fivesDmg(g1, low, {}), 0, 'the low-HP bonus needs A6');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const g2 = a2.allies[0];
+  ok(g2.energy >= 6, 'A4 «Щедрость» gives Energy for each foe');
+  const apo2 = g2.flags.apo || 0;
+  a2.fivesTurn(g2);
+  eq(g2.flags.apo, apo2 + 1, 'A2 «Благочестие» adds Apotheosis at turn start');
+  const low2 = a2.enemies[0]; low2.hp = Math.floor(low2.maxHp * 0.4);
+  ok(near(a2.fivesDmg(g2, low2, {}), 0.15), 'A6 «Отвага» boosts damage on low-HP foes');
+  const e1 = mk([], 4); e1.start();
+  const g3 = e1.allies[0];
+  ok(g3.flags.apo === 2 && near(g3.buffs.find(x => x.name === 'Изъян в царстве эстетики').v, 0.08), 'E4 starts with 2 Apotheosis and E1 adds CRIT DMG per stack');
+  e1.addApo(g3, 20);
+  eq(g3.flags.apo, 12, 'E4 raises the Apotheosis cap to 12');
+  e1.kitFx(g3, 'act', 'ult');
+  ok(g3.buffs.some(x => x.name === 'Смирение агата'), 'E2 raises ATK when 3 or more foes are present');
+  const e6 = mk([], 6); e6.start();
+  eq(e6.kitFx(e6.allies[0], 'ultDefIgnore', 'ult'), 0.3, 'E6 ignores 30% DEF with the Ultimate');
+  eq(e6.kitFx(e6.allies[0], 'ultDefIgnore', 'skill'), 0, 'E6 only affects the Ultimate');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('ratio', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const weaken = (t, n) => { for (let i = 0; i < n; i++) t.buffs.push({ s: 'atkP', v: -0.01, turns: 3, name: 'Слабость ' + i, debuff: true }); };
+  ok(H.TRACES.ratio.eidFx, 'Dr. Ratio uses the reworked Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const r1 = l1.allies[0], f1 = l1.enemies[0];
+  eq(l1.traceTalent(r1), 0.5, 'the follow-up follows the Talent level');
+  weaken(f1, 3);
+  l1.useAbility(r1, l1.abilityFor(r1, 'skill').ab, f1, 'skill');
+  ok(!r1.buffs.some(x => x.name === 'Обобщение') && !f1.buffs.some(x => x.name === 'Вывод'), 'Summation needs A2 and Inference needs A4');
+  eq(l1.fivesDmg(r1, f1, {}), 0, 'Deduction needs A6');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const r2 = a2.allies[0], f2 = a2.enemies[0];
+  weaken(f2, 3);
+  for (let i = 0; i < 10 && !f2.buffs.some(x => x.name === 'Вывод'); i++) a2.useAbility(r2, a2.abilityFor(r2, 'skill').ab, f2, 'skill');
+  ok(r2.buffs.some(x => x.name === 'Обобщение') && f2.buffs.some(x => x.name === 'Вывод'), 'A2 Summation and A4 Inference work on the Skill');
+  ok(a2.fivesDmg(r2, f2, {}) >= 0.3, 'A6 «Умозаключение» adds damage on foes with 3+ debuffs');
+  const e1 = mk(['a2'], 6); e1.start();
+  const r3 = e1.allies[0];
+  ok(near(r3.buffs.find(x => x.name === 'Обобщение').v, 0.1), 'E1 starts with 4 Summation stacks');
+  eq(e1.kitFx(r3, 'sumMax'), 4, 'E1 raises the Summation cap');
+  const f3 = e1.enemies[0];
+  f3.maxHp = f3.hp = 1e8;
+  weaken(f3, 2);
+  r3.energy = 0;
+  const ev3 = e1.ev.length;
+  e1.followQueue().push({ by: r3, t: f3, name: 'Я мыслю - я существую' });
+  e1.fivesFollow();
+  ok(e1.ev.slice(ev3).filter(x => x.t === 'dmg' && x.label === 'Божественное в деталях').length === 2 && r3.energy >= 15, 'E2 adds hits per debuff and E4 adds Energy');
+  ok(near(e1.traceDmg(r3, f3, { label: 'Я мыслю - я существую' }), 0.5), 'E6 boosts the follow-up');
+  e1.useAbility(r3, e1.abilityFor(r3, 'ult').ab, f3, 'ult');
+  eq(r3.flags.folly.n, 3, 'E6 adds a Wiseman\'s Folly charge');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv, mate) => new H.Battle({ party: [Object.assign(mkSpec('miyabi', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec(mate || 'yanagi', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.miyabi.eidFx && H.TRACES.miyabi.bonus.every(x => x[0]) && H.TRACES.miyabi.eid.every(x => x[0]), 'Miyabi has named Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const m1 = l1.allies[0];
+  ok(!m1.buffs.some(x => x.name === 'Мороз и вьюга'), 'Bask in Frost needs A2');
+  const f1 = l1.enemies[0];
+  l1.frostbite(m1, f1);
+  ok(near(f1.frostbite.dmg, H.battleStat.atkOf(m1) * H.TUNING.frostbiteDmg * 0.5), 'Frostbite follows the Talent level');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const m2 = a2.allies[0];
+  ok(m2.buffs.some(x => x.name === 'Мороз и вьюга'), 'A2 boosts Shimotsuki with a fitting teammate');
+  a2.kitFx(m2, 'chaos');
+  eq(a2.kitFx(m2, 'atkResPen', 'enhanced'), 0.3, 'A4 makes the next Shimotsuki pierce Ice RES after a Disorder');
+  a2.kitFx(m2, 'act', 'enhanced', {});
+  eq(a2.kitFx(m2, 'atkResPen', 'enhanced'), 0, 'A4 is spent by Shimotsuki');
+  m2.base.critR = 0.6;
+  eq(a2.kitFx(m2, 'icefireN'), 2, 'A6 doubles Icefire at high CRIT Rate');
+  const e1 = mk([], 4); e1.start();
+  const m3 = e1.allies[0], f3 = e1.enemies[0];
+  ok(m3.flags.frost === 6 && m3.buffs.some(x => x.name === 'Техника дыхания'), 'E2 starts with 6 Fallen Frost and CRIT Rate');
+  m3.flags.shimoLv = 3;
+  ok(near(e1.kitFx(m3, 'ultDefIgnore', 'enhanced'), 0.36), 'E1 ignores DEF per Fallen Frost spent');
+  e1.frostbite(m3, f3);
+  e1.kitFx(m3, 'act', 'enhanced', { main: f3 });
+  ok(!f3.frostbite && e1.allies[1].buffs.some(x => x.name === 'Иней на снегу'), 'E1 level 3 Shimotsuki consumes Frostburn for team Break Efficiency');
+  m3.energy = 0;
+  e1.frostbite(m3, e1.enemies[1]);
+  ok(m3.energy >= 10, 'E4 gives Energy on Frostburn Break');
+  const e6 = mk([], 6); e6.start();
+  const m6 = e6.allies[0];
+  m6.flags.frost = 2;
+  const ev6 = e6.ev.length;
+  e6.kitFx(m6, 'act', 'enhanced', { main: e6.enemies[0] });
+  ok(m6.flags.frost === 0 && e6.ev.slice(ev6).some(x => x.t === 'act' && x.name === 'Невероятный талант'), 'E6 spends leftover Fallen Frost on an extra Shimotsuki');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('yanagi', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('serval', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const kill = (b, u) => b.hit(b.enemies[0], u, 0, { raw: 50, e: 'phys' });
+  ok(H.TRACES.yanagi.eidFx && H.TRACES.yanagi.bonus.every(x => x[0]) && H.TRACES.yanagi.eid.every(x => x[0]), 'Yanagi has named Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const y1 = l1.allies[0];
+  ok(near(l1.kitFx(y1, 'eclipseV'), 0.2), 'Lunar Eclipse follows the Talent level');
+  y1.energy = 0;
+  l1.switchStance(y1);
+  ok(y1.energy === 0 && !y1.flags.gessou, 'stance traces need A2 and A6');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const y2 = a2.allies[0], f2 = a2.enemies[1];
+  y2.energy = 0;
+  a2.switchStance(y2);
+  ok(y2.energy >= 5 && y2.flags.gessou, 'A6 gives Energy and A2 arms Gessou with an Electric ally');
+  let shocked = false;
+  for (let i = 0; i < 10 && !shocked; i++) { y2.flags.gessou = true; f2.dots = []; a2.kitFx(y2, 'act', 'basic', { main: f2, adj: [] }); shocked = f2.dots.some(d => d.type === 'shock'); }
+  ok(shocked, 'A2 Gessou shocks with the next Basic ATK');
+  a2.kitFx(y2, 'act', 'skill', { main: f2, adj: [] });
+  ok(near(a2.traceDmg(y2, f2, {}), 0.2), 'A4 marks Gekka Ruten targets for more Electric damage');
+  const e1 = mk([], 4); e1.start();
+  const y3 = e1.allies[0], f3 = e1.enemies[0];
+  e1.addDot(e1.allies[1], f3, 'shock', 10, 2);
+  e1.addDot(e1.allies[1], e1.enemies[1], 'burn', 10, 2);
+  ok(y3.flags.clarity === 2 && y3.buffs.some(x => x.name === 'Ясность' && x.s === 'chaosP'), 'E1 gains Clarity from team anomalies');
+  const hp3 = y3.hp;
+  kill(e1, y3);
+  ok(y3.hp === hp3 && y3.flags.clarity === 1, 'E1 Clarity blocks an attack');
+  eq(e1.kitFx(y3, 'polarityUp', 'skill'), 0.5, 'E2 boosts Polarity Disorder from the Skill');
+  e1.kitFx(y3, 'dotTick', f3, { type: 'shock' });
+  ok(f3.buffs.some(x => x.name === 'Мастер шахмат' && x.s === 'defDown'), 'E4 exposes foes hit by her anomalies');
+  const e6 = mk([], 6); e6.start();
+  const y6 = e6.allies[0];
+  e6.useAbility(y6, e6.abilityFor(y6, 'skill').ab, e6.enemies[0], 'skill');
+  ok(y6.flags.shinra === 3 && y6.buffs.some(x => x.name === 'Нечеловеческая кровь' && x.s === 'atkP'), 'E6 grants 3 Shinrabanshou hits and ATK');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('billy', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('nicole', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.billy.eidFx && H.TRACES.billy.bonus.every(x => x[0]) && H.TRACES.billy.eid.every(x => x[0]), 'Billy has named Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const b1 = l1.allies[0];
+  l1.setSteady(b1, 2);
+  ok(near(l1.haresDmg(b1, l1.enemies[0], { kind: 'basic' }), 0.25), 'Steady Shot follows the Talent level');
+  l1.haresFollow(l1.allies[1], 'follow');
+  eq(b1.flags.star || 0, 0, 'Starlight Knight charges need A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const b2 = a2.allies[0];
+  b2.energy = 0;
+  a2.haresFollow(a2.allies[1], 'follow');
+  ok(b2.flags.star === 1 && b2.energy >= 5, 'A2 grants a Starlight Knight charge and A4 gives Energy');
+  a2.setSteady(b2, 2); b2.energy = 0;
+  a2.kitFx(b2, 'act', 'basic');
+  ok(b2.energy >= 3, 'A6 gives Energy for a Basic ATK at 2 Steady Shot stacks');
+  const e1 = mk([], 4); e1.start();
+  const b3 = e1.allies[0];
+  b3.energy = 0;
+  e1.kitFx(b3, 'act', 'basic'); e1.kitFx(b3, 'act', 'basic');
+  ok(b3.energy >= 3 && b3.energy < 6, 'E1 gives Energy once per turn');
+  e1.setSteady(b3, 2);
+  e1.haresHurt(b3, b3.maxHp);
+  eq(b3.flags.steady, 2, 'E2 keeps Steady Shot against heavy hits');
+  ok(near(e1.traceDmg(b3, e1.enemies[0], { kind: 'basic' }), 0.25), 'E2 boosts the Basic ATK');
+  eq(e1.traceCrit(b3, e1.enemies[0], { kind: 'skill' }), 0.32, 'E4 raises the Skill CRIT Rate');
+  const e6 = mk([], 6); e6.start();
+  const b6 = e6.allies[0];
+  for (let i = 0; i < 20; i++) e6.hit(b6, e6.enemies[0], 0.001, { kind: 'basic' });
+  ok(near(b6.buffs.find(x => x.name === 'Звёздный герой').v, 0.12), 'E6 stacks DMG every 10 hits');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('nicole', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('anby', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.nicole.eidFx && H.TRACES.nicole.bonus.every(x => x[0]) && H.TRACES.nicole.eid.every(x => x[0]), 'Nicole has named Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const n1 = l1.allies[0], f1 = l1.enemies[0];
+  l1.setField(n1, 2);
+  ok(near(l1.haresDef(f1), 0.1), 'the field DEF shred follows the Talent level');
+  eq(l1.haresDmg(l1.allies[1], f1, { e: 'quant' }), 0, 'the Quantum bonus in the field needs A2');
+  l1.haresFx({ k: 'caseLoad' }, n1, n1, {}, new Set());
+  eq(n1.flags.caseShots, 2, 'two enhanced shots without A4');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const n2 = a2.allies[0], f2 = a2.enemies[0];
+  a2.setField(n2, 2);
+  ok(near(a2.haresDmg(a2.allies[1], f2, { e: 'quant' }), 0.2), 'A2 adds Quantum damage in the field');
+  a2.haresFx({ k: 'caseLoad' }, n2, n2, {}, new Set());
+  eq(n2.flags.caseShots, 3, 'A4 loads a third enhanced shot');
+  n2.energy = 0;
+  a2.haresFx({ k: 'caseShot' }, n2, n2, {}, new Set());
+  ok(n2.energy >= 4, 'A6 gives Energy per enhanced shot');
+  const e1 = mk([], 4); e1.start();
+  const n3 = e1.allies[0];
+  eq(e1.kitFx(n3, 'fieldTurns', 'skill'), 1, 'E1 extends the Skill field');
+  ok(near(e1.traceDmg(n3, e1.enemies[0], { kind: 'skill' }), 0.16), 'E1 boosts the Skill');
+  n3.energy = 0;
+  e1.kitFx(n3, 'caseFired'); e1.kitFx(n3, 'caseFired');
+  ok(n3.energy >= 5 && n3.energy < 10, 'E2 gives Energy once per turn');
+  eq(e1.kitFx(n3, 'fieldTurns', 'ult'), 1, 'E4 extends the Ultimate field');
+  ok(near(e1.fieldK(n3).def, Math.round((0.2 * e1.traceTalent(n3) + 0.08) * 1000) / 1000), 'E4 deepens the DEF shred');
+  const e6 = mk([], 6); e6.start();
+  const n6 = e6.allies[0], f6 = e6.enemies[0];
+  e6.setField(n6, 2);
+  for (let i = 0; i < 12; i++) e6.hit(n6, f6, 0.001, { kind: 'basic' });
+  ok(near(f6.buffs.find(x => x.name === 'Разлагающее поле').v, 0.15), 'E6 stacks CRIT Rate taken up to 15%');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('anby', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('serval', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.anby.eidFx && H.TRACES.anby.bonus.every(x => x[0]) && H.TRACES.anby.eid.every(x => x[0]), 'Anby has named Traces and Eidolons');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const a1 = l1.allies[0];
+  a1.flags.series = 3;
+  ok(near(l1.voltMul(a1), 1 + H.TUNING.voltTough * 0.5), 'the Series 3 toughness bonus follows the Talent level');
+  a1.energy = 0;
+  l1.kitFx(a1, 'break', l1.enemies[0], l1.allies[1]);
+  eq(a1.energy, 0, 'break Energy needs A4');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const b2 = a2.allies[0], f2 = a2.enemies[0];
+  b2.energy = 0;
+  a2.kitFx(b2, 'break', f2, a2.allies[1]);
+  ok(b2.energy >= 5, 'A4 «Перегрузка» gives Energy on any break');
+  let shocked = false;
+  for (let i = 0; i < 10 && !shocked; i++) { f2.dots = []; a2.kitFx(b2, 'act', 'enhanced', { main: f2 }); shocked = f2.dots.some(d => d.type === 'shock'); }
+  ok(shocked, 'A6 «Шоковая волна» shocks with Thunder');
+  const e1 = mk([], 4); e1.start();
+  const b3 = e1.allies[0], m3 = e1.allies[1];
+  e1.kitFx(b3, 'act', 'enhanced', {});
+  ok(b3.buffs.some(x => x.name === 'Режим быстрой зарядки' && x.s === 'err'), 'E1 raises Energy Regeneration after Thunder');
+  e1.enemies[0].broken = true;
+  ok(near(e1.traceDmg(b3, e1.enemies[0], { kind: 'enhanced' }), 0.3), 'E2 boosts Thunder on broken foes');
+  b3.flags.series = 0;
+  ok(near(e1.voltMul(b3), 1.1), 'E2 raises the Skill toughness damage');
+  m3.energy = 0;
+  e1.kitFx(b3, 'act', 'ult', {});
+  ok(m3.energy >= 5, 'E4 gives Electric allies Energy with the Ultimate');
+  const e6 = mk([], 6); e6.start();
+  const b6 = e6.allies[0];
+  e6.kitFx(b6, 'act', 'skill', {});
+  ok(b6.flags.zaryad === 8 && near(e6.traceDmg(b6, e6.enemies[0], { kind: 'basic' }), 0.45), 'E6 grants 8 Charges that boost the Basic ATK');
+  e6.kitFx(b6, 'act', 'basic', {});
+  eq(b6.flags.zaryad, 7, 'E6 Basic ATK spends a Charge');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('phrolova', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.phrolova.eidFx && H.TRACES.phrolova.bonus.every(x => x[0]) && H.TRACES.phrolova.eid.every(x => x[0]), 'Phrolova has named Traces and Eidolons');
+  ok(new Set(H.TRACES.phrolova.eid.map(x => x[0])).size === 6, 'her Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const p1 = l1.allies[0];
+  eq(p1.flags.after || 0, 0, 'starting Aftersound needs A2');
+  const hp1 = l1.enemies[0].hp;
+  l1.playNote(p1, 'wind', null, true);
+  const d1 = hp1 - l1.enemies[0].hp;
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  const hp10 = l10.enemies[0].hp;
+  l10.playNote(l10.allies[0], 'wind', null, true);
+  ok(d1 < hp10 - l10.enemies[0].hp, 'Hecate notes follow the Talent level');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const p2 = a2.allies[0];
+  eq(p2.flags.after, H.TUNING.afterStart, 'A2 starts with Aftersound');
+  ok(near(a2.kitFx(p2, 'curtainUp'), 0.3) && near(a2.kitFx(p2, 'outroUp'), 0.15), 'A4 boosts the Curtain Call and A6 the Outro');
+  const e1 = mk([], 4); e1.start();
+  const p3 = e1.allies[0];
+  ok((p3.flags.notes || []).filter(n => n === 'cad').length >= 2, 'E1 starts with two Cadenza notes');
+  ok(near(e1.traceDmg(p3, e1.enemies[0], { kind: 'skill' }), 0.8) && near(e1.traceDmg(p3, e1.enemies[0], { kind: 'ult' }), 0.75), 'E1 and E2 boost the Skill and the Ultimate');
+  p3.flags.notes = ['str', 'wind', 'str', 'wind', 'str', 'wind'];
+  const af = p3.flags.after || 0;
+  e1.maestro(p3);
+  ok(p3.flags.maestro.left.every(n => n === 'cad') && p3.flags.after >= Math.min(H.TUNING.afterMax, af + 14), 'E2 grants Aftersound and E4 turns notes into Cadenza');
+  e1.playNote(p3, 'cad', null, true);
+  ok(e1.enemies.some(e => e.buffs.some(x => x.name === 'Кинжал, отсекающий одержимость')), 'E4 Cadenza lowers enemy ATK');
+  const e6 = mk([], 6); e6.start();
+  const p6 = e6.allies[0], f6 = e6.enemies[0], hp6 = f6.hp;
+  e6.kitFx(p6, 'act', 'skill', { main: f6 });
+  ok(f6.hp < hp6 && near(e6.traceDmg(p6, f6, { side: 'hecate', label: 'Геката' }), 0.24), 'E6 adds a Hecate apparition and boosts notes');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('scar', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.scar.eidFx && H.TRACES.scar.bonus.every(x => x[0]) && H.TRACES.scar.eid.every(x => x[0]), 'Scar has named Traces and Eidolons');
+  ok(new Set(H.TRACES.scar.eid.map(x => x[0])).size === 6, 'his Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  ok(l1.elysMul(l1.allies[0], 2) < l10.elysMul(l10.allies[0], 2), 'the Elysium burst follows the Talent level');
+  const s1 = l1.allies[0], f1 = l1.enemies[1];
+  l1.sealElysium(s1, f1, 2);
+  eq(f1.elys.embers, 0, 'a new Elysium has no embers without E1');
+  const hp1 = f1.hp;
+  l1.elysiumBurst(f1);
+  ok(f1.hp < hp1 && !f1.elys, 'the Elysium burst hits and clears the seal');
+  eq(l1.kitFx(s1, 'emberUp') || 0, 0, 'the extra ember needs A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const s2 = a2.allies[0];
+  eq(a2.kitFx(s2, 'emberUp'), 1, 'A2 adds one more ember');
+  ok(s2.buffs.some(x => x.name === 'Разгон' && x.cond === 'nightmare'), 'A4 raises ATK in the Aberrant Nightmare form');
+  s2.flags.nightmare = 1;
+  s2.hp = s2.maxHp;
+  const before = s2.hp;
+  a2.endNightmare(s2);
+  ok(near(before - s2.hp, Math.round(before * H.TUNING.nightmareCost * 0.5)), 'A6 halves the Price of Evolution');
+  ok(near(a2.kitFx(s2, 'nightmareHealUp'), 0.04), 'A6 raises the Nightmare heal');
+  const e1 = mk([], 4); e1.start();
+  const s3 = e1.allies[0], f3 = e1.enemies[0];
+  e1.sealElysium(s3, f3, 2);
+  eq(f3.elys.embers, 2, 'E1 lights a new Elysium with 2 embers');
+  ok(near(e1.kitFx(s3, 'burstDef'), 0.2), 'E2 makes the burst ignore DEF');
+  eq(e1.kitFx(s3, 'nightmareUp'), 1, 'E4 extends the Nightmare form');
+  const e6 = mk([], 6); e6.start();
+  const s6 = e6.allies[0];
+  ok(e6.kitFx(s6, 'burstAdj') === 1 && near(e6.traceDmg(s6, e6.enemies[0], { label: 'Разрыв Элизиума' }), 0.3), 'E6 boosts the burst and hits neighbours at full power');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('kazuma', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const luckCrit = u => u.buffs.filter(x => x.name === 'Удача').reduce((s, x) => s + x.v, 0);
+  ok(H.TRACES.kazuma.eidFx && H.TRACES.kazuma.bonus.every(x => x[0]) && H.TRACES.kazuma.eid.every(x => x[0]), 'Kazuma has named Traces and Eidolons');
+  ok(new Set(H.TRACES.kazuma.eid.map(x => x[0])).size === 6, 'his Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  const k1 = l1.allies[0], k10 = l10.allies[0];
+  eq(k1.flags.luck || 0, 0, 'starting Luck needs A2');
+  l1.setLuck(k1, 3); l10.setLuck(k10, 3);
+  ok(luckCrit(k1) < luckCrit(k10), 'Luck follows the Talent level');
+  const t1 = k1.buffs.find(x => x.name === 'Невероятная удача').v, t10 = k10.buffs.find(x => x.name === 'Невероятная удача').v;
+  ok(t1 < t10, 'the Talent CRIT bonus follows the Talent level');
+  const f1 = l1.enemies[0];
+  f1.flags.bound = 1;
+  eq(l1.traceDmg(k1, f1, { kind: 'basic' }), 0, 'the bound-target bonus needs A4');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const k2 = a2.allies[0], f2 = a2.enemies[0];
+  eq(k2.flags.luck, 1, 'A2 starts the fight with 1 Luck');
+  f2.flags.bound = 1;
+  ok(near(a2.traceDmg(k2, f2, { kind: 'basic' }), 0.3), 'A4 boosts shots at bound foes');
+  f2.flags.bound = 0;
+  a2.addBuff(f2, { s: 'atkP', v: -0.2, turns: 2, name: 'Без оружия', debuff: true }, true);
+  ok(near(a2.traceDmg(k2, f2, { kind: 'basic' }), 0.3), 'A4 boosts shots at disarmed foes');
+  a2.setLuck(k2, 5);
+  a2.useAbility(k2, k2.kit.ult, f2, 'ult');
+  eq(k2.flags.luck, 2, 'A6 keeps 2 Luck after the Grand Heist');
+  const e1 = mk([], 4); e1.start();
+  const k3 = e1.allies[0], f3 = e1.enemies[0];
+  f3.buffs.push({ s: 'atkP', v: 0.1, turns: 3, name: 'Бафф А' }, { s: 'defP', v: 0.1, turns: 3, name: 'Бафф Б' });
+  e1.useAbility(k3, k3.kit.skills[0], f3, 'skill');
+  ok(!f3.buffs.some(x => x.name === 'Бафф А' || x.name === 'Бафф Б'), 'E1 Steal takes two buffs');
+  ok(near(e1.kitFx(k3, 'bindUp'), 0.2), 'E2 raises the Bind chance');
+  const m3 = e1.allies[1];
+  m3.energy = 0;
+  e1.useAbility(k3, k3.kit.skills[2], m3, 'skill');
+  ok(m3.energy >= H.TUNING.drainEnergy + 10, 'E4 Drain Touch gives 10 more Energy');
+  const e6 = mk([], 6); e6.start();
+  const k6 = e6.allies[0];
+  e6.setLuck(k6, 5);
+  ok(near(e6.traceDmg(k6, e6.enemies[0], { kind: 'ult' }), 0.5), 'E6 boosts the Grand Heist at full Luck');
+  e6.setLuck(k6, 4);
+  eq(e6.traceDmg(k6, e6.enemies[0], { kind: 'ult' }), 0, 'E6 needs 5 Luck');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv, foes) => new H.Battle({ party: [Object.assign(mkSpec('aqua', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50), mkSpec('himeko', 50)], enemies: foes || ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const holy = H.UNHOLY.find(id => H.ENEMIES[id]) + ':40', plain = Object.keys(H.ENEMIES).find(id => !H.UNHOLY.includes(id) && !H.ENEMIES[id].boss) + ':40';
+  ok(H.TRACES.aqua.eidFx && H.TRACES.aqua.bonus.every(x => x[0]) && H.TRACES.aqua.eid.every(x => x[0]), 'Aqua has named Traces and Eidolons');
+  ok(new Set(H.TRACES.aqua.eid.map(x => x[0])).size === 6, 'her Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  ok(l1.tearsTalent(l1.allies[0]) < l10.tearsTalent(l10.allies[0]), 'Tears follow the Talent level');
+  const p1 = mk([], 0, null, [plain]); p1.start();
+  const q1 = p1.allies[0], f1 = p1.enemies[0];
+  f1.buffs.push({ s: 'atkP', v: 0.1, turns: 3, name: 'Бафф' });
+  p1.failNow = false;
+  p1.useAbility(q1, q1.kit.basic, f1, 'basic');
+  ok(f1.buffs.some(x => x.name === 'Бафф'), 'purging a normal enemy needs A2');
+  const p2 = mk(['a2', 'a4', 'a6'], 0, null, [plain]); p2.start();
+  const q2 = p2.allies[0], f2 = p2.enemies[0];
+  f2.buffs.push({ s: 'atkP', v: 0.1, turns: 3, name: 'Бафф' });
+  p2.useAbility(q2, q2.kit.basic, f2, 'basic');
+  ok(!f2.buffs.some(x => x.name === 'Бафф'), 'A2 Break Spell purges any enemy');
+  const m2 = p2.allies[1];
+  m2.hp = 0; m2.dead = true;
+  p2.reviveAlly(m2, q2);
+  eq(m2.hp, Math.round(m2.maxHp * (H.TUNING.reviveHp + 0.25)), 'A4 revives with 50% HP');
+  const h2 = p2.allies[2];
+  h2.buffs.push({ s: 'atkP', v: -0.1, turns: 3, name: 'Порча', debuff: true });
+  p2.kitFx(q2, 'act', 'ult', {});
+  ok(!h2.buffs.some(x => x.name === 'Порча'), 'A6 the Ultimate cleanses allies');
+  const e1 = mk([], 4, null, [holy]); e1.start();
+  const q3 = e1.allies[0];
+  q3.energy = 0;
+  e1.kitFx(q3, 'aquaFail');
+  eq(q3.energy, 10, 'E1 a failure gives Energy');
+  e1.kitFx(q3, 'act', 'skill', { ally: e1.allies[1] });
+  ok(e1.allies[1].buffs.some(x => x.name === 'Фокус с веером'), 'E2 Heal boosts the target');
+  ok(near(e1.traceDmg(q3, e1.enemies[0], { kind: 'basic' }), 0.4), 'E4 God Blow hits the undead harder');
+  const e6 = mk([], 6); e6.start();
+  const q6 = e6.allies[0], d6 = e6.allies[1], g6 = e6.allies[2];
+  d6.hp = 0; d6.dead = true; g6.hp = 0; g6.dead = true;
+  e6.kitFx(q6, 'act', 'ult', {});
+  ok(!d6.dead && !g6.dead && d6.hp > 0, 'E6 the Ultimate revives every fallen ally');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('megumin', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const T = H.TUNING;
+  ok(H.TRACES.megumin.eidFx && H.TRACES.megumin.bonus.every(x => x[0]) && H.TRACES.megumin.eid.every(x => x[0]), 'Megumin has named Traces and Eidolons');
+  ok(new Set(H.TRACES.megumin.eid.map(x => x[0])).size === 6, 'her Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  const g1 = l1.allies[0], g10 = l10.allies[0], f = { chant: true };
+  g1.flags.chant = 3; g10.flags.chant = 3;
+  ok(l1.axelMult(g1, f, l1.enemies[0], 1, true) < l10.axelMult(g10, f, l10.enemies[0], 1, true), 'Chant follows the Talent level');
+  ok(!g1.buffs.some(x => x.name === 'Алые глаза' || x.name === 'На спине у Казумы'), 'her bonus buffs need A2 and A4');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const g2 = a2.allies[0];
+  ok(g2.buffs.some(x => x.name === 'Алые глаза' && x.cond === 'chantFull'), 'A2 Crimson Eyes wait for a full Chant');
+  ok(g2.buffs.some(x => x.name === 'На спине у Казумы' && x.cond === 'collapse'), 'A4 protects her while she is drained');
+  a2.sp = 1;
+  a2.actKind = 'ult';
+  a2.kitFx(g2, 'kill', a2.enemies[0], true);
+  a2.kitFx(g2, 'kill', a2.enemies[1], true);
+  eq(a2.sp, 2, 'A6 one Skill Point per Explosion');
+  a2.kitFx(g2, 'act', 'ult');
+  eq(g2.flags.boomSp, 0, 'the next Explosion can restore a point again');
+  const e1 = mk([], 4); e1.start();
+  const g3 = e1.allies[0];
+  g3.energy = 0;
+  e1.useAbility(g3, g3.kit.skill, g3, 'skill');
+  eq(g3.energy, T.chantEnergy + 10, 'E1 Chant gives 10 more Energy');
+  ok(near(e1.kitFx(g3, 'ultDefIgnore', 'ult'), 0.2) && !e1.kitFx(g3, 'ultDefIgnore', 'basic'), 'E2 the Explosion ignores DEF');
+  for (const e of e1.enemies) e.maxHp = e.hp = 1e9;
+  e1.useAbility(g3, g3.kit.ult, e1.enemies[0], 'ult');
+  eq(g3.flags.collapse, Math.max(1, T.collapseTurns - 1), 'E4 shortens the drain');
+  const e6 = mk([], 6); e6.start();
+  const g6 = e6.allies[0];
+  eq(g6.flags.chantMax, T.chantMax + 1, 'E6 Chant stacks to 4');
+  for (let i = 0; i < 5; i++) { e6.sp = 5; e6.useAbility(g6, g6.kit.skill, g6, 'skill'); }
+  eq(g6.flags.chant, T.chantMax + 1, 'E6 four Chants stick');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('darkness', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.darkness.eidFx && H.TRACES.darkness.bonus.every(x => x[0]) && H.TRACES.darkness.eid.every(x => x[0]), 'Darkness has named Traces and Eidolons');
+  ok(new Set(H.TRACES.darkness.eid.map(x => x[0])).size === 6, 'her Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  const d1 = l1.allies[0], d10 = l10.allies[0];
+  l1.gainEcstasy(d1, 4); l10.gainEcstasy(d10, 4);
+  ok(l1.ecstDmg(d1) < l10.ecstDmg(d10), 'Ecstasy damage follows the Talent level');
+  ok(d1.buffs.find(x => x.name === 'Восторг').v < d10.buffs.find(x => x.name === 'Восторг').v, 'Ecstasy DEF follows the Talent level');
+  d1.hp = 100;
+  l1.hit(l1.enemies[0], d1, 0.01, {});
+  ok(d1.hp <= 100, 'the hit heal needs A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const d2 = a2.allies[0], m2 = a2.allies[1], f2 = a2.enemies[0];
+  d2.hp = Math.round(d2.maxHp / 2);
+  const hp2 = d2.hp;
+  d2.shield = 0;
+  a2.kitFx(d2, 'struck', f2);
+  ok(d2.hp > hp2, 'A2 Sweet Pain heals Darkness when struck');
+  d2.shield = 0; d2.buffs = d2.buffs.filter(x => x.s !== 'dr');
+  const hpA = d2.hp;
+  a2.coverHit(f2, d2, Math.round(d2.maxHp * 0.2), 'phys');
+  const lostA = hpA - d2.hp;
+  const n2 = mk([]); n2.start();
+  const dn = n2.allies[0];
+  dn.hp = hpA; dn.shield = 0; dn.buffs = dn.buffs.filter(x => x.s !== 'dr');
+  n2.coverHit(n2.enemies[0], dn, Math.round(dn.maxHp * 0.2), 'phys');
+  ok(lostA < hpA - dn.hp, 'A4 cuts the damage Darkness takes for allies');
+  ok(near(a2.traceDmg(d2, f2, { kind: 'enhanced' }), 0.3), 'A6 boosts the lucky hit');
+  const e1 = mk([], 4); e1.start();
+  const d3 = e1.allies[0];
+  const ec = d3.flags.ecstasy || 0;
+  e1.kitFx(d3, 'act', 'skill');
+  eq(d3.flags.ecstasy, ec + 1, 'E1 Decoy gives Ecstasy');
+  d3.flags.ecstasy = 0;
+  e1.useAbility(d3, d3.kit.ult, d3, 'ult');
+  ok(d3.flags.ecstasy === H.TUNING.ecstasyMax && d3.flags.cover >= 3, 'E2 the Ultimate gives 6 Ecstasy and E4 covers longer');
+  const e6 = mk([], 6); e6.start();
+  const d6 = e6.allies[0];
+  d6.hp = 1; d6.shield = 0;
+  e6.hit(e6.enemies[0], d6, 50, {});
+  ok(!d6.dead && near(d6.hp, Math.round(d6.maxHp * 0.3)), 'E6 Last Bastion saves her once');
+  d6.hp = 1; d6.shield = 0;
+  e6.hit(e6.enemies[0], d6, 50, {});
+  ok(d6.dead || d6.hp <= 0, 'Last Bastion works only once');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('yu', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const aoaHit = b => { const f = b.enemies[0]; f.maxHp = f.hp = 1e9; for (const e of b.enemies) e.broken = true; const hp = f.hp; b.allOut(b.allies[0]); return hp - f.hp; };
+  ok(H.TRACES.yu.eidFx && H.TRACES.yu.bonus.every(x => x[0]) && H.TRACES.yu.eid.every(x => x[0]), 'Yu has named Traces and Eidolons');
+  ok(new Set(H.TRACES.yu.eid.map(x => x[0])).size === 6, 'his Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  ok(aoaHit(l1) < aoaHit(l10), 'the All-Out Attack bonus follows the Talent level');
+  const n1 = mk([]); n1.start();
+  const y1 = n1.allies[0], f1 = n1.enemies[0];
+  f1.broken = true;
+  eq(n1.traceDmg(y1, f1, {}), 0, 'the broken-foe bonus needs A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const y2 = a2.allies[0], f2 = a2.enemies[0];
+  f2.broken = true;
+  ok(near(a2.traceDmg(y2, f2, {}), 0.2), 'A2 Courage hits broken foes harder');
+  y2.energy = 0;
+  a2.kitFx(y2, 'wildBreak');
+  eq(y2.energy, 10, 'A4 a Persona break gives Energy');
+  ok(near(a2.kitFx(y2, 'aoaUp'), 0.15), 'A6 boosts the All-Out Attack');
+  const e1 = mk([], 4); e1.start();
+  const y3 = e1.allies[0], f3 = e1.enemies[1];
+  ok(near(e1.traceDmg(y3, f3, { kind: 'ult' }), 0.3), 'E1 boosts Myriad Truths');
+  y3.flags.skillSel = 0;
+  e1.kitFx(y3, 'act', 'skill', { main: f3 });
+  ok(f3.buffs.some(x => x.name === 'Гроза над Инабой'), 'E2 Ziodyne lowers DEF more');
+  e1.sp = 1;
+  e1.kitFx(y3, 'act', 'ult', {});
+  eq(e1.sp, 2, 'E4 Myriad Truths restores a Skill Point');
+  const e6 = mk([], 6); e6.start();
+  const y6 = e6.allies[0];
+  y6.flags.oneMore = true;
+  ok(near(e6.traceDmg(y6, e6.enemies[1], {}), 0.4), 'E6 boosts the One More action');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('yosuke', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const strike = b => { const y = b.allies[0], t = b.enemies[0]; t.maxHp = t.hp = 1e9; t.broken = false; for (const e of b.enemies) if (e !== t) e.broken = true; b.strike = { u: y, near: b.enemies[1] }; const hp = t.hp; b.yosukeStrike(); return hp - t.hp; };
+  ok(H.TRACES.yosuke.eidFx && H.TRACES.yosuke.bonus.every(x => x[0]) && H.TRACES.yosuke.eid.every(x => x[0]), 'Yosuke has named Traces and Eidolons');
+  ok(new Set(H.TRACES.yosuke.eid.map(x => x[0])).size === 6, 'his Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  ok(strike(l1) < strike(l10), 'the Yosuke Strike follows the Talent level');
+  ok(!l1.enemies[0].dots.some(d => d.type === 'shear'), 'the strike wind needs A4');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const y2 = a2.allies[0], f2 = a2.enemies[0];
+  a2.kitFx(y2, 'act', 'skill');
+  ok(y2.buffs.some(x => x.name === 'Сукукадзя'), 'A2 Garula speeds Yosuke up');
+  for (let i = 0; i < 10 && !f2.dots.some(d => d.type === 'shear'); i++) strike(a2);
+  ok(f2.dots.some(d => d.type === 'shear'), 'A4 the strike leaves Wind Shear');
+  f2.buffs.push({ s: 'spdP', v: -0.12, turns: 2, name: 'Сукунда', debuff: true });
+  ok(near(a2.traceDmg(y2, f2, { label: 'Атака Ёсуке' }), 0.25) && a2.traceDmg(y2, f2, { kind: 'basic' }) === 0, 'A6 the strike hits slowed foes harder');
+  const e1 = mk([], 4); e1.start();
+  const y3 = e1.allies[0];
+  y3.energy = 0;
+  e1.kitFx(y3, 'strikeHit', e1.enemies[0]);
+  eq(y3.energy, 10, 'E1 the strike gives more Energy');
+  const av = e1.enemies.map(e => e.av);
+  e1.kitFx(y3, 'act', 'ult');
+  ok(e1.enemies.every((e, i) => e.av > av[i]), 'E2 Garudyne delays enemies more');
+  ok(near(e1.traceDmg(y3, e1.enemies[0], { label: 'Атака Ёсуке' }), 0.4), 'E4 Susano-o boosts the strike');
+  const e6 = mk([], 6); e6.start();
+  const y6 = e6.allies[0];
+  y6.flags.strike = false;
+  e6.kitFx(y6, 'strikeHit', e6.enemies[0]);
+  ok(y6.flags.strike && y6.flags.strike2, 'E6 the strike is ready once more');
+  y6.flags.strike = false;
+  e6.kitFx(y6, 'strikeHit', e6.enemies[0]);
+  ok(!y6.flags.strike, 'E6 only one extra strike before his turn');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('chie', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const chariot = b => b.allies[0].buffs.find(x => x.name === 'Колесница').v;
+  ok(H.TRACES.chie.eidFx && H.TRACES.chie.bonus.every(x => x[0]) && H.TRACES.chie.eid.every(x => x[0]), 'Chie has named Traces and Eidolons');
+  ok(new Set(H.TRACES.chie.eid.map(x => x[0])).size === 6, 'her Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  ok(chariot(l1) < chariot(l10), 'the Chariot CRIT bonus follows the Talent level');
+  eq(l1.kitFx(l1.allies[0], 'executeUp') || 0, 0, 'the wider knockout needs A4');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const c2 = a2.allies[0], f2 = a2.enemies[0];
+  a2.kitFx(c2, 'act', 'skill');
+  ok(c2.buffs.some(x => x.name === 'Ребеллион'), 'A2 Dragon Kick raises CRIT Rate');
+  f2.maxHp = 1e9; f2.hp = 3.5e8;
+  a2.useAbility(c2, c2.kit.ult, f2, 'ult');
+  ok(f2.hp <= 0, 'A4 the Galactic Punt knocks out a foe under 40%');
+  a2.kitFx(c2, 'break', a2.enemies[1], c2);
+  ok(c2.buffs.some(x => x.name === 'Тарукадзя'), 'A6 a break raises her ATK');
+  const m2 = a2.allies[1];
+  a2.kitFx(c2, 'break', a2.enemies[1], m2);
+  eq(c2.buffs.filter(x => x.name === 'Тарукадзя').length, 1, 'A6 needs her own break');
+  const e1 = mk([], 4); e1.start();
+  const c3 = e1.allies[0];
+  ok(near(e1.kitFx(c3, 'adjM', { adj: 0.6 }), 0.9), 'E1 Dragon Kick hits neighbours harder');
+  ok(near(e1.kitFx(c3, 'ultDefIgnore', 'ult'), 0.25) && !e1.kitFx(c3, 'ultDefIgnore', 'skill'), 'E2 the Galactic Punt ignores DEF');
+  ok(near(e1.kitFx(c3, 'critToughUp'), 0.5), 'E4 crits strip full toughness');
+  const e6 = mk([], 6); e6.start();
+  const c6 = e6.allies[0];
+  c6.energy = 0;
+  e6.actKind = 'ult';
+  e6.kitFx(c6, 'kill', e6.enemies[0]);
+  e6.kitFx(c6, 'kill', e6.enemies[1]);
+  ok(c6.energy >= c6.maxEnergy * 0.5 && c6.energy < c6.maxEnergy, 'E6 a punt kill returns half the Energy once');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('yukiko', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50), mkSpec('himeko', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const tickHeal = b => { const m = b.allies[1]; m.hp = 1; b.burnHeal(); return m.hp - 1; };
+  ok(H.TRACES.yukiko.eidFx && H.TRACES.yukiko.bonus.every(x => x[0]) && H.TRACES.yukiko.eid.every(x => x[0]), 'Yukiko has named Traces and Eidolons');
+  ok(new Set(H.TRACES.yukiko.eid.map(x => x[0])).size === 6, 'her Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  ok(tickHeal(l1) < tickHeal(l10), 'the burn heal follows the Talent level');
+  eq(l1.traceDmg(l1.allies[0], l1.enemies[0], { dot: true }), 0, 'the stronger Burn needs A6');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const y2 = a2.allies[0], f2 = a2.enemies[0];
+  for (let i = 0; i < 10 && !f2.dots.some(d => d.type === 'burn'); i++) a2.kitFx(y2, 'act', 'basic', { main: f2 });
+  ok(f2.dots.some(d => d.type === 'burn'), 'A2 the fan sets Burn');
+  const m2 = a2.allies[1], h2 = a2.allies[2];
+  m2.hp = 1; h2.hp = 1;
+  a2.kitFx(y2, 'act', 'skill', { ally: m2 });
+  ok(m2.hp === 1 && h2.hp > 1, 'A4 Mediarama heals the others');
+  ok(near(a2.traceDmg(y2, f2, { dot: true }), 0.25), 'A6 Burn hits harder');
+  const e1 = mk([], 4); e1.start();
+  const y3 = e1.allies[0], m3 = e1.allies[1];
+  ok(near(e1.traceDmg(y3, e1.enemies[0], { kind: 'ult' }), 0.3), 'E1 boosts Konohana Flame');
+  ok(e1.kitFx(y3, 'allySurvive', m3) && m3.hp === Math.round(m3.maxHp * 0.25), 'E2 Samarecarm saves an ally');
+  ok(!e1.kitFx(y3, 'allySurvive', e1.allies[2]), 'Samarecarm works once');
+  y3.energy = 0;
+  e1.burnHeal();
+  eq(y3.energy, 2, 'E4 a Burn tick gives Energy');
+  const e6 = mk([], 6); e6.start();
+  for (const a of e6.allies) a.hp = 1;
+  e6.burnHeal();
+  ok(e6.allies.every(a => a.hp > 1), 'E6 a Burn tick heals the whole team');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('kanji', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const T = H.TUNING;
+  const echoShare = b => { const k = b.allies[0], m = b.allies[1], f = b.enemies[1], p = b.enemies[0]; for (const e of b.enemies) e.maxHp = e.hp = 1e9; b.stitch(k, f, p); const hp = p.hp; b.stitchEcho(m, f, 1000, { kind: 'basic' }); return hp - p.hp; };
+  ok(H.TRACES.kanji.eidFx && H.TRACES.kanji.bonus.every(x => x[0]) && H.TRACES.kanji.eid.every(x => x[0]), 'Kanji has named Traces and Eidolons');
+  ok(new Set(H.TRACES.kanji.eid.map(x => x[0])).size === 6, 'his Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  l1.stitch(l1.allies[0], l1.enemies[0], l1.enemies[1]); l10.stitch(l10.allies[0], l10.enemies[0], l10.enemies[1]);
+  ok(l1.inabaDmg(l1.allies[0], l1.enemies[0], {}) < l10.inabaDmg(l10.allies[0], l10.enemies[0], {}), 'the stitched-foe bonus follows the Talent level');
+  const n1 = mk([]); n1.start();
+  const base = echoShare(n1);
+  eq(n1.allies[0].flags.stitch.turns, T.stitchTurns, 'the longer Stitch needs A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const k2 = a2.allies[0];
+  ok(echoShare(a2) > base, 'A4 the thread carries more damage');
+  eq(k2.flags.stitch.turns, T.stitchTurns + 1, 'A2 Stitch lasts a turn longer');
+  ok(k2.buffs.some(x => x.name === 'Номер один' && x.cond === 'stitch'), 'A6 raises ATK while the Stitch holds');
+  const e1 = mk([], 4); e1.start();
+  const k3 = e1.allies[0], a3 = e1.enemies[0], b3 = e1.enemies[1];
+  ok(near(e1.traceDmg(k3, a3, { kind: 'ult' }), 0.3), 'E1 boosts Primal Force');
+  for (let i = 0; i < 10 && !(a3.dots.some(d => d.type === 'shock') || b3.dots.some(d => d.type === 'shock')); i++) e1.stitch(k3, a3, b3);
+  ok(a3.dots.some(d => d.type === 'shock') || b3.dots.some(d => d.type === 'shock'), 'E2 Stitch shocks the pair');
+  ok(a3.buffs.some(x => x.name === 'Мастер вязания') && b3.buffs.some(x => x.name === 'Мастер вязания'), 'E4 Stitch lowers DEF of both');
+  const e6 = mk([], 6); e6.start();
+  ok(near(e6.kitFx(e6.allies[0], 'stitchUp'), 0.3), 'E6 the thread carries 30% more');
+}
+{
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('rise', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50), mkSpec('himeko', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const T = H.TUNING;
+  const warnShield = b => { const f = b.enemies[0]; b.analyze(b.allies[0], f, 3); for (const a of b.allies) a.shield = 0; b.riseWarn(f, { t: 'all' }, false); return b.allies[1].shield; };
+  ok(H.TRACES.rise.eidFx && H.TRACES.rise.bonus.every(x => x[0]) && H.TRACES.rise.eid.every(x => x[0]), 'Rise has named Traces and Eidolons');
+  ok(new Set(H.TRACES.rise.eid.map(x => x[0])).size === 6, 'her Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  ok(warnShield(l1) < warnShield(l10), 'the warning shield follows the Talent level');
+  ok(!l1.enemies[0].buffs.some(x => x.name === 'Скан слабостей'), 'the extra vulnerability needs A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const r2 = a2.allies[0], f2 = a2.enemies[0];
+  for (const a of a2.allies) a.energy = 0;
+  warnShield(a2);
+  ok(f2.buffs.some(x => x.name === 'Скан слабостей'), 'A2 her analysis adds vulnerability');
+  ok(a2.allies.every(a => a.energy >= 5), 'A6 the warning gives Energy');
+  a2.kitFx(r2, 'act', 'ult');
+  ok(a2.allies.every(a => a.buffs.some(x => x.name === 'Рисетт' && x.s === 'critD')), 'A4 Third Eye raises CRIT DMG');
+  const e1 = mk([], 4); e1.start();
+  const r3 = e1.allies[0], f3 = e1.enemies[0];
+  e1.useAbility(r3, r3.kit.skill, f3, 'skill');
+  eq(f3.buffs.find(x => x.name === 'Проанализирован').turns, T.analyzeTurns + 1, 'E1 analysis lasts longer');
+  r3.energy = 0;
+  e1.kitFx(r3, 'act', 'basic', { main: f3 });
+  eq(r3.energy, 10, 'E2 a beam at an analyzed foe gives Energy');
+  e1.kitFx(r3, 'act', 'ult');
+  ok(e1.allies.every(a => a.buffs.some(x => x.name === 'Концерт в Инабе')), 'E4 Third Eye raises team damage more');
+  const e6 = mk([], 6); e6.start();
+  const r6 = e6.allies[0];
+  e6.useAbility(r6, r6.kit.skill, e6.enemies[0], 'skill');
+  ok(e6.enemies.every(e => e6.analyzed(e)), 'E6 Full Analysis covers every foe');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('makoto', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const T = H.TUNING;
+  const shinyCd = u => u.buffs.filter(x => x.name === 'Блестяшки').reduce((s, x) => s + x.v, 0);
+  ok(H.TRACES.makoto.eidFx && H.TRACES.makoto.bonus.every(x => x[0]) && H.TRACES.makoto.eid.every(x => x[0]), 'Makoto has named Traces and Eidolons');
+  ok(new Set(H.TRACES.makoto.eid.map(x => x[0])).size === 6, 'her Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  l1.setShiny(l1.allies[0], 2); l10.setShiny(l10.allies[0], 2);
+  ok(shinyCd(l1.allies[0]) < shinyCd(l10.allies[0]), 'Shinies follow the Talent level');
+  const big = b => b.living.reduce((x, y) => (y.hp > x.hp ? y : x));
+  ok(l1.contonDmg(l1.allies[0], big(l1), {}) < l10.contonDmg(l10.allies[0], big(l10), {}), 'the biggest-foe bonus follows the Talent level');
+  const u1 = mk([], 0, { ult: 1 }); u1.start();
+  const u10 = mk([], 0, { ult: 10 }); u10.start();
+  ok(u1.kitFx(u1.allies[0], 'heistM') < u10.kitFx(u10.allies[0], 'heistM'), 'the Biggest Shiny follows the Ultimate level');
+  const n1 = mk([]); n1.start();
+  const m1 = n1.allies[0];
+  n1.setShiny(m1, 3);
+  n1.mkReturn(m1);
+  eq(m1.flags.shiny, 0, 'keeping a Shiny needs A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const m2 = a2.allies[0];
+  a2.setShiny(m2, 3);
+  for (const e of a2.enemies) e.maxHp = e.hp = 1e9;
+  a2.enemies[0].hp = 1e9 + 1;
+  a2.mkReturn(m2);
+  eq(m2.flags.shiny, 1, 'A2 keeps one Shiny after the heist');
+  a2.enemies[0].maxHp = a2.enemies[0].hp = 2e9;
+  ok(near(a2.traceCrit(m2, a2.enemies[0], {}), 0.15) && !a2.traceCrit(m2, a2.enemies[1], {}), 'A4 raises CRIT Rate against the biggest foe');
+  ok(near(a2.kitFx(m2, 'heistDef'), 0.2), 'A6 the heist ignores DEF');
+  const e1 = mk([], 4); e1.start();
+  const m3 = e1.allies[0];
+  ok(near(e1.traceDmg(m3, e1.enemies[0], { kind: 'skill' }), 0.3), 'E1 boosts Sleight of Hand');
+  ok(near(e1.kitFx(m3, 'portalUp'), 0.2), 'E2 returns from the portal sooner');
+  e1.setShiny(m3, 9);
+  eq(m3.flags.shiny, T.mkShinyMax + 1, 'E4 Shinies stack to 4');
+  const e6 = mk([], 6); e6.start();
+  ok(near(e6.traceDmg(e6.allies[0], e6.enemies[0], { label: 'Самая большая блестяшка' }), 0.4), 'E6 boosts the Biggest Shiny');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('amanda', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const pop = b => { const am = b.allies[0], m = b.allies[1], f = b.enemies[0]; for (const e of b.enemies) e.maxHp = e.hp = 1e9; b.ccPops.push({ by: am, at: m }); const hp = f.hp; b.contonCleanup(); return hp - f.hp; };
+  ok(H.TRACES.amanda.eidFx && H.TRACES.amanda.bonus.every(x => x[0]) && H.TRACES.amanda.eid.every(x => x[0]), 'Amanda has named Traces and Eidolons');
+  ok(new Set(H.TRACES.amanda.eid.map(x => x[0])).size === 6, 'her Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  ok(pop(l1) < pop(l10), 'the cocoon burst follows the Talent level');
+  const n1 = mk([]); n1.start();
+  const am1 = n1.allies[0];
+  am1.energy = 0;
+  n1.transform(am1, true);
+  eq(am1.energy, 0, 'the transform Energy needs A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const am2 = a2.allies[0], m2 = a2.allies[1];
+  am2.energy = 0;
+  a2.transform(am2, true);
+  eq(am2.energy, 30, 'A2 the transform gives Energy');
+  m2.buffs.push({ s: 'atkP', v: -0.1, turns: 3, name: 'Порча', debuff: true });
+  a2.cocoon(am2, m2, H.TUNING.amCocoon, H.TUNING.amCocoonFlat, 3);
+  ok(m2.shield > 0 && !m2.buffs.some(x => x.name === 'Порча'), 'A4 the cocoon cleanses');
+  ok(near(a2.traceDmg(am2, a2.enemies[0], { label: 'Кокон-сердце' }), 0.3), 'A6 the burst hits harder');
+  const e1 = mk([], 4); e1.start();
+  const am3 = e1.allies[0], m3 = e1.allies[1];
+  const n3 = mk([]); n3.start();
+  m3.shield = 0; n3.allies[1].shield = 0;
+  e1.cocoon(am3, m3, 0.45, 60, 3); n3.cocoon(n3.allies[0], n3.allies[1], 0.45, 60, 3);
+  ok(m3.shield > n3.allies[1].shield, 'E1 a stronger cocoon');
+  e1.transform(am3, true);
+  ok(am3.buffs.some(x => x.name === 'Розовая форма' && x.cond === 'pink'), 'E2 the pink form takes less damage');
+  pop(e1);
+  ok(e1.enemies.every(e => e.buffs.some(x => x.name === 'Слизни-мозгоеды')), 'E4 the burst lowers enemy DEF');
+  const e6 = mk([], 6); e6.start();
+  ok(near(e6.traceDmg(e6.allies[0], e6.enemies[0], { label: 'Кокон-сердце' }), 1), 'E6 the burst hits twice as hard');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('talleah', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  const T = H.TUNING;
+  const gyn = b => { const h = b.gynoids()[0], t = b.enemies[0]; for (const e of b.enemies) e.maxHp = e.hp = 1e9; b.setSig(t); const hp = t.hp; b.contonSummon(h); return { dmg: hp - t.hp, h }; };
+  const sigV = (b, t) => t.buffs.filter(x => x.name === 'Сигнатура').reduce((s, x) => s + x.v, 0);
+  ok(H.TRACES.talleah.eidFx && H.TRACES.talleah.bonus.every(x => x[0]) && H.TRACES.talleah.eid.every(x => x[0]), 'Talleah has named Traces and Eidolons');
+  ok(new Set(H.TRACES.talleah.eid.map(x => x[0])).size === 6, 'her Eidolon names are unique');
+  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l10 = mk([], 0, { talent: 10 }); l10.start();
+  ok(gyn(l1).dmg < gyn(l10).dmg, 'the gynoid strike follows the Talent level');
+  ok(near(sigV(l1, l1.enemies[0]), T.tlMark), 'the stronger Signature needs A2');
+  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const t2 = a2.allies[0];
+  t2.energy = 0;
+  gyn(a2);
+  ok(near(sigV(a2, a2.enemies[0]), T.tlMark + 0.1), 'A2 the Signature adds vulnerability');
+  ok(t2.energy >= 5, 'A4 gynoid strikes give Energy');
+  ok(near(a2.traceDmg(t2, a2.enemies[0], { label: 'Оковы' }), 0.3), 'A6 Shackles hit harder');
+  const e1 = mk([], 4); e1.start();
+  const t3 = e1.allies[0];
+  ok(near(e1.traceDmg(t3, e1.enemies[0], { kind: 'skill' }), 0.3), 'E1 boosts Arrest');
+  const n3 = mk([]); n3.start();
+  ok(gyn(e1).h.av < gyn(n3).h.av, 'E2 gynoids move faster');
+  t3.flags.away = 'capsule';
+  t3.hp = 1;
+  e1.contonTurn(t3);
+  eq(t3.hp, Math.round(t3.maxHp * (T.tlCapsuleHp + 0.3)), 'E4 the capsule returns her with 80% HP');
+  const e6 = mk([], 6); e6.start();
+  e6.shackle(e6.allies[0], e6.enemies[1], 1);
+  eq(e6.enemies[1].flags.shackle.n, 2, 'E6 Shackles last one action longer');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('danheng', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.danheng.eidFx, 'Dan Heng uses the reworked Traces and Eidolons');
+  const b0 = mk([], 0, { ult: 1 });
+  ok(near(b0.abilityFor(b0.allies[0], 'ult').ab.fx[0].vsSlow, 1.2 * 0.6), 'the bonus against slowed foes follows the Ultimate level');
+  const a2 = mk(['a2']); a2.start();
+  const d = a2.allies[0];
+  eq(a2.kitFx(d, 'aggro'), 1, 'A2 does nothing at high HP');
+  d.hp = Math.floor(d.maxHp * 0.4);
+  eq(a2.kitFx(d, 'aggro'), 0.5, 'A2 «Затаившийся дракон» halves the aggro at half HP or lower');
+  const a4 = mk(['a4']); a4.start();
+  let got = 0;
+  for (let i = 0; i < 40; i++) { a4.allies[0].buffs = []; a4.kitFx(a4.allies[0], 'after', 'basic', true); if (a4.allies[0].buffs.some(x => x.name === 'Тень отчаяния' && x.v === 0.2)) got++; }
+  ok(got > 8 && got < 32, 'A4 «Тень отчаяния» gives SPD +20% after about half of the attacks (' + got + '/40)');
+  a4.allies[0].buffs = []; a4.kitFx(a4.allies[0], 'after', 'skill', false);
+  ok(!a4.allies[0].buffs.length, 'A4 needs an attack');
+  const a6 = mk(['a6']); a6.start();
+  const foe = a6.enemies[0];
+  eq(a6.traceDmg(a6.allies[0], foe, { kind: 'basic' }), 0, 'A6 needs a slowed foe');
+  foe.buffs.push({ s: 'spdP', v: -0.12, turns: 2, name: 'Замедление', debuff: true });
+  ok(near(a6.traceDmg(a6.allies[0], foe, { kind: 'basic' }), 0.4) && !a6.traceDmg(a6.allies[0], foe, { kind: 'skill' }), 'A6 «Резкий ветер» adds 40% Basic ATK damage to slowed foes');
+  const e1 = mk([], 1); e1.start();
+  ok(e1.traceCrit(e1.allies[0], e1.enemies[0]) === 0.12, 'E1 raises CRIT Rate against healthy foes');
+  e1.enemies[0].hp = 1;
+  eq(e1.traceCrit(e1.allies[0], e1.enemies[0]), 0, 'E1 stops below half HP');
+  const t1 = mk([], 2, { talent: 1 }); t1.start();
+  t1.danhengTalent(t1.allies[0]);
+  ok(t1.allies[0].buffs.some(x => x.name === 'Верхом на ветре' && near(x.v, 0.18)) && t1.allies[0].flags.windCd === 1, 'the Talent follows its level and E2 shortens its cooldown');
+  const e4 = mk([], 4); e4.start();
+  const h = e4.allies[0];
+  h.av = 500; e4.acting = h; e4.actKind = 'ult'; e4.actSerial = 3;
+  e4.enemies[0].hp = 1; e4.hit(h, e4.enemies[0], 1, { kind: 'ult' });
+  eq(h.av, 0, 'E4 lets Dan Heng act again after an Ultimate kill');
+  const e6 = mk([], 6); e6.start();
+  const tgt = e6.enemies[0];
+  tgt.buffs.push({ s: 'spdP', v: -0.12, turns: 2, name: 'Замедление', debuff: true });
+  e6.kitFx(e6.allies[0], 'act', 'skill', { main: tgt });
+  e6.kitFx(e6.allies[0], 'act', 'skill', { main: tgt });
+  ok(near(tgt.buffs.find(x => x.name === 'Замедление').v, -0.2), 'E6 deepens the Skill slow by 8% once');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv, foes) => new H.Battle({ party: [Object.assign(mkSpec('march', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('seele', 50)], enemies: foes || ['reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.march.eidFx, 'March 7th uses the reworked Traces and Eidolons');
+  const a2 = mk(['a2', 'a4']); a2.start();
+  const [m, s] = a2.allies;
+  s.buffs.push({ s: 'atkP', v: -0.1, turns: 2, name: 'Тест', debuff: true });
+  a2.current = m; a2.phase = 'input';
+  a2.useAbility(m, a2.abilityFor(m, 'skill').ab, s, 'skill');
+  ok(!s.buffs.some(x => x.name === 'Тест') && s.shield > 0, 'A2 «Очищение» removes a debuff with the shield');
+  eq(s.shieldT, H.CHARS.march.skill.fx[0].turns + 1, 'A4 «Укрепление» keeps the shield one turn longer');
+  const plain = mk([]); plain.start(); plain.useAbility(plain.allies[0], plain.abilityFor(plain.allies[0], 'skill').ab, plain.allies[1], 'skill');
+  eq(plain.allies[1].shieldT, H.CHARS.march.skill.fx[0].turns, 'without A4 the shield keeps its turns');
+  const a6 = mk(['a6']); a6.start();
+  ok(near(a6.kitFx(a6.allies[0], 'freezeChance', 'ult'), 0.15) && !a6.kitFx(a6.allies[0], 'freezeChance', 'skill'), 'A6 «Ледяные чары» raises the Ultimate freeze chance by 15%');
+  const e1 = mk([], 1); e1.start();
+  const en0 = e1.allies[0].energy;
+  e1.kitFx(e1.allies[0], 'froze', e1.enemies[0], 'ult');
+  eq(e1.allies[0].energy - en0, 6, 'E1 gives 6 energy for every foe the Ultimate freezes');
+  const e2 = mk([], 2);
+  e2.allies[1].hp = 100;
+  e2.start();
+  ok(e2.allies[1].shield > 0 && !(e2.allies[0].shield > 0), 'E2 shields the ally with the lowest HP share at the start');
+  const e4 = mk([], 4); e4.start();
+  e4.startTurn(e4.allies[0]);
+  eq(e4.allies[0].flags.counters, 3, 'E4 adds a counter per turn');
+  const t1 = mk([], 0, { talent: 1 }); t1.start();
+  eq(t1.traceTalent(t1.allies[0]), 0.5, 'the counter follows the Talent level');
+  const e6 = mk([], 6); e6.start();
+  const ally = e6.allies[1];
+  e6.useAbility(e6.allies[0], e6.abilityFor(e6.allies[0], 'skill').ab, ally, 'skill');
+  ally.hp = 100;
+  e6.startTurn(ally);
+  ok(ally.hp > 100, 'E6 heals an ally under the Skill shield at the start of their turn');
+  const full = ally.hp = ally.maxHp; e6.startTurn(ally);
+  eq(ally.hp, full, 'E6 skips allies at full HP');
+}
+{
+  const near = (a, b) => Math.abs(a - b) < 1e-6;
+  const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('trail', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 })], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
+  ok(H.TRACES.trail.eidFx && H.TRACES.trail.curves.ult.length === 12, 'the Destruction Trailblazer uses the reworked Traces and Eidolons');
+  const b0 = mk([], 0, { ult: 1 });
+  ok(near(b0.abilityFor(b0.allies[0], 'ult').ab.fx[0].m, 2.7 * 0.6667) && near(b0.abilityFor(b0.allies[0], 'ult').ab.fx[0].adj, 1.62 * 0.6667), 'Stardust Ace follows the original Ultimate curve');
+  ok(near(b0.abilityFor(b0.allies[0], 'skill').ab.fx[0].m, 1.25 * 0.75), 'RIP Home Run follows the Skill curve');
+  const s0 = mk([]); s0.start();
+  const s1 = mk(['a2']); s1.start();
+  eq(s1.allies[0].energy - s0.allies[0].energy, 15, 'A2 «Готовность к бою» gives 15 energy at the start');
+  const t = mk(['a4'], 0, { talent: 1 }); t.start();
+  const u = t.allies[0];
+  t.doBreak(u, t.enemies[0], 'phys');
+  ok(u.buffs.some(x => x.s === 'atkP' && near(x.v, 0.1)) && u.buffs.some(x => x.s === 'defP' && x.v === 0.1), 'a break at Talent level 1 gives ATK +10% and A4 «Упорство» DEF +10%');
+  t.doBreak(u, t.enemies[1], 'phys'); t.doBreak(u, t.enemies[2], 'phys');
+  eq(u.flags.stacks, 2, 'the Talent stacks twice');
+  const t10 = mk([], 0, { talent: 10 }); t10.start(); t10.doBreak(t10.allies[0], t10.enemies[0], 'phys');
+  ok(t10.allies[0].buffs.some(x => x.s === 'atkP' && near(x.v, 0.2)) && !t10.allies[0].buffs.some(x => x.s === 'defP'), 'Talent level 10 gives ATK +20%, no DEF without A4');
+  const a6 = mk(['a6']); a6.start();
+  ok(near(a6.traceDmg(a6.allies[0], a6.enemies[0], { kind: 'skill', main: true }), 0.25) && !a6.traceDmg(a6.allies[0], a6.enemies[1], { kind: 'skill' }) && !a6.traceDmg(a6.allies[0], a6.enemies[0], { kind: 'basic', main: true }), 'A6 «Воля к битве» adds 25% damage to the main target of the Skill and the Ultimate');
+  const e1 = mk([], 1); e1.start();
+  const w = e1.allies[0], en0 = w.energy;
+  e1.acting = w; e1.actKind = 'ult'; e1.actSerial = 77;
+  for (const e of e1.enemies.slice(0, 2)) { e.hp = 1; e1.hit(w, e, 1, { kind: 'ult' }); }
+  eq(w.energy - en0, 2 * H.TUNING.energyKill + 10, 'E1 gives 10 energy once per Ultimate that defeats foes');
+  const e2 = new H.Battle({ party: [Object.assign(mkSpec('trail', 50), { tr: { basic: 4, skill: 6, ult: 6, talent: 6, on: [] }, eid: 2 })], enemies: ['reaver:40', 'flamespawn:40'], lvl: 40, seed: 4 });
+  e2.start();
+  const v = e2.allies[0], physWeak = e2.enemies.find(e => e.weak.includes('phys'));
+  v.hp = 100; e2.actSerial = 9;
+  e2.hit(v, physWeak, 0.1, { kind: 'basic' }); const hp1 = v.hp; e2.hit(v, physWeak, 0.1, { kind: 'basic' });
+  ok(physWeak && hp1 > 100 && v.hp === hp1, 'E2 heals once per action when hitting a foe weak to Physical');
+  e2.actSerial = 10; e2.hit(v, e2.enemies.find(e => !e.weak.includes('phys')), 0.1, { kind: 'basic' });
+  eq(v.hp, hp1, 'E2 does not heal on foes without the Physical weakness');
+  const e4 = mk([], 4); e4.start(); e4.enemies[0].broken = true;
+  ok(e4.traceCrit(e4.allies[0], e4.enemies[0]) === 0.25 && e4.traceCrit(e4.allies[0], e4.enemies[1]) === 0, 'E4 raises CRIT Rate against broken foes');
+  const e6 = mk([], 6); e6.start();
+  e6.acting = e6.allies[0]; e6.actKind = 'basic'; e6.enemies[0].hp = 1; e6.hit(e6.allies[0], e6.enemies[0], 1, { kind: 'basic' });
+  eq(e6.allies[0].flags.stacks, 1, 'E6 triggers the Talent on a kill');
+  const g = new H.Game({ seed: 2 });
+  g.state.roster.trail.eid = 5;
+  ok(g.traceLevel('trail', 'skill') === 3 && g.traceLevel('trail', 'ult') === 3 && g.traceLevel('trail', 'basic') === 2, 'Eidolons III and V raise the Skill, Talent, Ultimate and Basic ATK');
+  eq(g.baseStats('trail', 30, 5).atk, H.statAt(H.CHARS.trail.base.atk, 30), 'the reworked Eidolons drop the flat 4%');
+}
+{
+  const cx = id => H.CALYX.find(x => x.id === id);
+  ok(cx('cx_echo_ochema') && cx('cx_echo_ochema').mat === 'echo_ochema' && cx('cx_echo_ochema').waves.length === 2, 'the Echo of War «Семя бессмертия» gives Regret of Infinite Ochema in two phases');
+  ok(cx('cx_echo_borehole') && cx('cx_echo_borehole').mat === 'echo_borehole' && cx('cx_echo_borehole').need === 'first_sec_boss', 'the Echo of War «Старые кошмары червоточины» opens after the Seclusion Zone boss');
+  ok(Object.values(H.TRACE_ECHOES).every((e, i) => H.CALYX.some(c => c.mat === Object.keys(H.TRACE_ECHOES)[i])), 'every Echo material has an Echo of War');
+  const g = new H.Game({ seed: 8 });
+  g.state.flags.express_intro = true;
+  ok(g.calyxOpen(cx('cx_echo_ochema')) && !g.calyxOpen(cx('cx_echo_borehole')), 'Phantylia waits in the Simulator from the Express, the Swarm King after his story fight');
+  g.state.power = 200;
+  ok(g.startCalyx('cx_echo_ochema', 0), 'the Phantylia Echo starts');
+  const bw = g.battle.waves;
+  ok(bw.length === 2 && bw[0][0] === 'phantylia:12' && bw[0][1] === 'lotus_ab:10' && bw[1].filter(x => x.startsWith('lotus_de')).length === 2, 'phase one brings an Abundance Lotus, phase two two Destruction Lotuses');
+  g.battle = null; g.battleCtx = null;
+  ok(g.traceBattleLoot({ result: { reward: { foes: [] } }, opts: {} }, { encId: 'sec_boss' }).length && g.state.inv.items.echo_borehole === 2, 'the first win over the Swarm King gives two Past Evils');
+  const party = [mkSpec('seele', 50), mkSpec('gepard', 50)];
+  const sw = new H.Battle({ party, waves: [['skaracabaz_e:40', 'juvsting:38']], boss: true, seed: 3 });
+  sw.start();
+  const king = sw.enemies[0];
+  sw.echoSelfFx(king, { k: 'multiply' });
+  ok(king.flags.multiply && king.buffs.some(b => b.name === 'Размножение' && b.v < 0), 'Multiply lowers the damage the Swarm King takes');
+  const n0 = sw.living.length;
+  sw.hit(sw.allies[0], king, 0.5, { e: 'quant' });
+  ok(sw.living.length === n0 + 1 && sw.living.some(e => e.id === 'gnawsting'), 'every hit on a multiplying Swarm King releases a Gnaw Sting');
+  sw.hit(sw.allies[0], king, 0.5, { e: 'quant' }); sw.hit(sw.allies[0], king, 0.5, { e: 'quant' });
+  ok(sw.living.length <= 4, 'the swarm stops at three bugs');
+  sw.doBreak(sw.allies[0], king, 'ice');
+  ok(!king.flags.multiply && sw.living.filter(e => e.data.fam === 'swarm').every(e => e.broken), 'breaking a multiplying Swarm King breaks his whole swarm');
+  const ph = new H.Battle({ party: [mkSpec('seele', 50), mkSpec('gepard', 50)], waves: [['phantylia2:40', 'lotus_de:38', 'lotus_ab:38']], boss: true, seed: 5 });
+  ph.start();
+  const [boss, de, ab] = ph.enemies;
+  boss.lockTarget = ph.allies[1];
+  eq(ph.pickSkill(de).t, 'havoc', 'a Destruction Lotus answers the lock-on with Havoc');
+  const hp0 = ph.allies[1].hp;
+  ph.enemyTurn(de);
+  ok(hp0 - ph.allies[1].hp >= Math.round(ph.allies[1].maxHp * 0.3) - 1 || ph.allies[1].shield >= 0, 'Havoc hits the locked target for a share of its max HP');
+  boss.lockTarget = null;
+  eq(ph.pickSkill(de).t, 'single', 'without a lock-on the lotus casts its snare');
+  ph.sp = 1;
+  ph.echoSelfFx(ab, { k: 'spDrain', v: 1 });
+  eq(ph.sp, 0, 'Samsara takes a Skill Point');
+  ab.hp = 1; ph.hit(ph.allies[0], ab, 1, { e: 'wind' });
+  ok(ph.sp === 2 && !ab.hp, 'Moksha gives Skill Points back when the Abundance Lotus falls');
+  const bossHp = boss.hp, en0 = ph.allies[0].energy;
+  de.hp = 1; ph.hit(ph.allies[0], de, 1, { e: 'elec' });
+  ok(boss.hp < bossHp && ph.allies[0].energy >= en0 + 10, 'a fallen Destruction Lotus gives the team energy and hurts Phantylia');
+  const ph2 = new H.Battle({ party: [mkSpec('seele', 60)], waves: [['phantylia:30', 'lotus_ab:28']], boss: true, seed: 6 });
+  ph2.start();
+  ph2.enemies[0].hp = 1; ph2.hit(ph2.allies[0], ph2.enemies[0], 1, { e: 'wind' });
+  ok(ph2.enemies.every(e => e.dead), 'the lotuses wither when Phantylia falls');
+  const dl = new H.Battle({ party: [mkSpec('seele', 50)], enemies: ['phantylia:30'], boss: true, seed: 2 });
+  dl.start();
+  const av0 = dl.allies[0].av;
+  dl.enemies[0].planned = H.ENEMIES.phantylia.skills[2];
+  dl.enemyTurn(dl.enemies[0]);
+  ok(dl.allies[0].av > av0 || dl.allies[0].dead, 'Weaving Roots delays the target');
+}
+{
+  const econ = require(path.join(__dirname, '../tools/hsr-trace-econ.cjs'));
+  const near2 = (a, b) => Math.abs(a - b) < 1e-6;
+  ok(H.TUNING.trLevels === true, 'ability levels act in battle');
+  const mk = (tr, lvl) => new H.Battle({ party: [Object.assign(mkSpec('seele', lvl), tr ? { tr: { basic: 2, skill: 3, ult: 3, talent: 3, on: [] } } : {})], enemies: ['reaver:' + lvl], lvl, seed: 1 });
+  const plain = mk(false, 30), traced = mk(true, 30);
+  plain.start(); traced.start();
+  ok(Math.abs(traced.enemies[0].maxHp - Math.round(plain.enemies[0].maxHp * H.TUNING.trFoeHp[2])) <= 1 && near2(traced.enemies[0].base.atk, plain.enemies[0].base.atk * H.TUNING.trFoeAtk[2]), 'foes facing a team with traces follow the phase curve');
+  H.TUNING.trLevels = false;
+  const off = mk(true, 30); off.start();
+  eq(off.enemies[0].maxHp, plain.enemies[0].maxHp, 'without trLevels the foes keep their old strength');
+  H.TUNING.trLevels = true;
+  ok(H.TUNING.trFoeHp.length === 7 && H.TUNING.trFoeHp[6] === 1 && H.TUNING.trFoeHp.every((v, i, a) => !i || v >= a[i - 1]), 'the foe curve rises to full strength at phase 6');
+  eq(H.TUNING.treasure.join(), '3000,6000,12000,20000', 'the Bud of Treasures pays more on higher tiers');
+  const full = econ.needs('seele', 70);
+  ok(full.credits === Math.round(2680000 * H.TUNING.trCredit) && full.tracks === 8 && full.echo === 12, 'a full 5-star without the level 75 and 80 nodes costs the original materials');
+  const ev = rows => rows.reduce((a, r, i) => a + (r ? (r[0] + r[1]) / 2 : 0) * Math.pow(3, i), 0);
+  const crimson = Math.ceil((full.path[0] + 3 * full.path[1] + 9 * full.path[2]) / ev(H.TRACE_CALYX_PATH[3]));
+  const echo = Math.ceil(full.echo / ((H.TRACE_ECHO_N[3][0] + H.TRACE_ECHO_N[3][1]) / 2));
+  const tlCredits = Object.entries(H.TL_REWARDS).filter(([l]) => +l >= 41).reduce((a, [, r]) => a + (r.credits || 0), 0);
+  const treasure = Math.ceil(Math.max(0, full.credits - tlCredits) / H.TUNING.treasure[3]);
+  const hours = (crimson * 10 + echo * 30 + treasure * 10) / 120;
+  log.push('full 5-star: ' + crimson + ' crimson, ' + echo + ' echo, ' + treasure + ' treasure runs, ' + hours.toFixed(1) + ' h of power');
+  ok(hours <= 5, 'the first full 5-star takes at most five hours of Trailblaze Power (' + hours.toFixed(1) + ')');
+  const p2 = econ.needs('seele', 30);
+  ok(Math.ceil((p2.path[0] + 3 * p2.path[1]) / ev(H.TRACE_CALYX_PATH[1])) <= 3, 'the level 30 cap of a 5-star needs at most three crimson runs of tier II');
 }
 
 function drive(g, maxSteps = 4000) {
@@ -1613,6 +5159,7 @@ function drive(g, maxSteps = 4000) {
       }
       ok(out && out.win, 'script battle won');
       g.afterBattle();
+      for (const k of g.state.party) g.autoTraces(k);
       continue;
     }
     const p = g.pending;
@@ -1682,6 +5229,11 @@ function fightAll(g) {
   return wins;
 }
 function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster[k].lvl).join(' '); }
+function trInfo(g) {
+  const party = g.state.party.map(k => { const t = g.traceOf(k); return g.kitOf(k) + ' b' + t.lv.basic + ' s' + t.lv.skill + ' u' + t.lv.ult + ' t' + t.lv.talent + ' n' + t.on.length; }).join(', ');
+  const mats = Object.entries(g.state.inv.items).filter(([i]) => H.ITEMS[i].kind === 'mat').map(([i, n]) => i + ':' + n).join(' ');
+  return party + ' | credits ' + g.state.credits + ' | ' + mats;
+}
 
 {
   const g = new H.Game({ fresh: true, seed: 42 });
@@ -1785,7 +5337,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     ok(new Set(L.map(e => e.batch)).size === 1 && L.every(e => e.at > 0 && e.at === L[0].at), 'a ten-warp shares one batch and one timestamp');
     ok(L.every((e, i) => e.id === res[9 - i].id && e.rar === res[9 - i].rar && e.kind === res[9 - i].kind), 'history entries match the reveal order');
     ok(L.every(e => (e.rar >= 4 ? e.pity >= 1 : e.pity === 0)), '4★ and 5★ entries record the pity count');
-    ok(L.every(e => (e.kind === 'char' ? ['new', 'eid', 'credits'].includes(e.res) : e.sup >= 1)), 'history stores the character result or the cone superimposition');
+    ok(L.every(e => (e.kind === 'char' ? ['new', 'eid', 'max', 'credits'].includes(e.res) : e.sup >= 1)), 'history stores the character result or the cone superimposition');
   }
   const dests = g.destinations();
   const jar = dests.find(d => d.map === 'j_plains');
@@ -1797,11 +5349,25 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   fightAll(g);
   for (const k of g.state.party) g.autoEquip(k);
   log.push('before gepard ' + lv(g));
+  eq(g.map.ents.filter(e => e.kind === 'anchor').map(e => e.name).join(), 'Длинный склон,Точка посадки', 'the Snow Plains have the anchors of the original');
+  stepOn(g, 'q');
+  ok(g.state.flags.calyx_seen, 'the golden Calyx near the landing point shows the Calyx tutorial');
+  stepOn(g, 'm');
+  ok(g.state.flags.drift_seen && !g.state.flags.sampo_met, 'March sees the snowdrift move');
+  g.useExit(g.map.ents.find(e => e.ch === 'x'));
+  eq(g.map.id, 'j_plains', 'the city gate stays shut before the team finds a guide');
+  talk(g, 'n');
+  ok(g.state.flags.sampo_met && !g.state.flags.plains_met, 'Sampo climbs out of the snowdrift and offers to lead the way');
   stepOn(g, 't');
-  ok(g.state.flags.plains_met && g.state.flags.sampo_met && g.state.flags.belobog_intro, 'plains encounter and belobog reached');
+  ok(g.state.flags.plains_met && g.state.flags.sampo_met && !g.state.flags.belobog_intro, 'plains encounter, the team walks into the city');
   eq(g.map.id, 'j_belobog', 'in belobog');
+  g.useExit(g.map.ents.find(e => e.ch === 'f'));
+  eq(g.map.id, 'j_belobog', 'Qlipoth Fort is closed to visitors');
+  talk(g, 'z');
+  ok(g.state.flags.fort_audience && g.state.flags.belobog_intro && g.map.id === 'j_belobog', 'Gepard leads the team to Cocolia and back out of the fort');
+  eq(g.state.obj, 'Загляните в мастерскую «Незимье»', 'the first evening starts with the workshop');
   g.state.credits += 5000;
-  talk(g, 's');
+  talk(g, 'Ж');
   ok(g.state.flags.sampo_city, 'sampo met again in the city');
   ok(g.buyRumor('rumor_sword'), 'buy rumor');
   ok(g.shopList('belobog').some(e => e.id === 'sword_rumor'), 'rumor adds shop item');
@@ -1809,14 +5375,66 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   const lockExit = g.map.ents.find(e => e.ch === 'u');
   g.useExit(lockExit);
   eq(g.map.id, 'j_belobog', 'alley closed before the escape');
-  talk(g, 'v');
-  ok(g.state.flags.serval_met, 'serval met on the first evening');
+  g.useExit(g.map.ents.find(e => e.ch === 'b'));
+  eq(g.map.id, 'j_belobog', 'the cable car station is closed by the blockade');
+  talk(g, 's');
+  ok(g.state.flags.serval_fix && g.map.id === 'j_workshop' && !g.state.flags.serval_met, 'Serval invites the team in and asks for help with the machine');
+  {
+    const mach = g.map.ents.find(e => e.ch === 'м');
+    ok(adj(g, mach) && g.interact(), 'the machine can be used');
+    let guard = 0;
+    while (g.pending && g.pending.ui !== 'magflow' && guard++ < 20) g.resume();
+    eq(g.pending && g.pending.ui, 'magflow', 'the machine opens the Magflow Link');
+    g.resume(true);
+    drive(g);
+  }
+  ok(g.state.flags.serval_met && g.state.flags.mf_workshop, 'serval met on the first evening');
+  exitVia(g, 'x');
+  eq(g.map.id, 'j_belobog', 'back on the street');
+  stepOn(g, 't');
+  ok(g.state.flags.alley_seen, 'the cordoned alley by the hotel');
+  stepOn(g, 'm');
+  ok(g.state.flags.monument_seen && g.state.flags.evn_free, 'the Everwinter Monument ends the walk');
   talk(g, 'l');
+  ok(g.state.flags.pela_tour, 'Pela leads the children around the monument');
   for (const k of g.state.party) g.autoEquip(k);
   log.push('before alley ' + lv(g));
-  talk(g, 'h');
-  ok(g.state.flags.fled && g.state.flags.hatch_open && g.state.flags.underworld, 'arrest, escape and underworld');
+  exitVia(g, 'h');
+  ok(g.state.flags.hotel_in && g.map.id === 'j_hotel', 'the hotel lobby talk about Cocolia');
+  stepOn(g, 'r');
+  ok(g.state.flags.hotel_rest, 'goodnight in the corridor');
+  talk(g, 'b');
+  ok(g.state.flags.knock, 'the dream and the knock at the door');
+  exitVia(g, 'x');
+  ok(g.map.id === 'j_backwater' && g.state.flags.bp_in && !g.state.flags.fled, 'the arrest ends with the escape into the Backwater Pass');
+  {
+    const back = g.map.ents.find(e => e.ch === 'x');
+    g.useExit(back);
+    eq(g.map.id, 'j_backwater', 'there is no way back to the district during the chase');
+    stepOn(g, 'i');
+    ok(g.state.flags.bp_walk, 'March asks why Cocolia had them arrested');
+    stepOn(g, 'f');
+    ok(g.state.flags.bp_left, 'the left fork is blocked by the guards');
+    ok(g.blocked(16, 45), 'the guards stand in the left fork');
+    ok(g.blocked(24, 41), 'the first gate is shut');
+    const con = g.map.ents.find(e => e.ch === 'n');
+    ok(adj(g, con) && g.interact(), 'the Magflow controller can be used');
+    let guard = 0;
+    while (g.pending && g.pending.ui !== 'magflow' && guard++ < 20) g.resume();
+    eq(g.pending && g.pending.ui, 'magflow', 'the controller opens the Magflow Link of the gate');
+    g.resume(true);
+    drive(g);
+    ok(g.state.flags.mf_backwater && !g.blocked(24, 41), 'the solved Magflow Link opens the first gate');
+    ok(g.blocked(24, 36), 'the second gate waits for its switch');
+    stepOn(g, 't');
+    ok(g.state.flags.bp_spawn, 'the monsters guard the switch');
+    talk(g, 'e');
+  }
+  ok(g.state.flags.bp_lever && g.state.flags.fled && g.state.flags.hatch_open && g.state.flags.underworld, 'the switch, the ambush, Bronya and the smoke bomb');
+  eq(g.map.id, 'u_clinic', 'the team wakes up in Natasha\'s clinic');
+  exitVia(g, 'x');
   eq(g.map.id, 'u_boulder', 'in boulder town');
+  ok(g.state.flags.lost_world, 'the first look at Boulder Town');
   const up = g.map.ents.find(e => e.ch === 'u');
   g.useExit(up);
   eq(g.map.id, 'u_boulder', 'hatch locked while hunted');
@@ -1827,48 +5445,306 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   g.useExit(south);
   eq(g.map.id, 'u_boulder', 'rivet path locked');
   log.push('before seele ' + lv(g));
-  talk(g, 'h');
+  stepOn(g, 'Ψ');
+  ok(g.state.flags.hide_meet && g.state.flags.hide_go, 'March plays hide-and-seek with the Moles');
+  talk(g, 'Λ');
+  ok(g.state.flags.hide_p, 'the practice round finds Hook behind the barrel');
+  for (const ch of ['Φ', 'Ч', 'Ш']) talk(g, ch);
+  ok(g.state.flags.hide_done && g.state.roster.hook, 'all three Moles are found and Hook comes along');
+  stepOn(g, 'Ω');
+  ok(g.state.flags.club, 'Hook leads the team to the Fight Club');
+  exitVia(g, 'л');
+  eq(g.map.id, 'u_club', 'inside the Fight Club');
+  stepOn(g, 'Е');
+  ok(g.state.flags.ring_done, 'the ring fight with Dan Heng against the spiders');
+  exitVia(g, 'x');
+  ok(g.state.flags.rule8_out, 'March looks for Sampo outside');
+  talk(g, 'ц');
+  for (const ch of ['Ξ', 'Π', 'Σ']) stepOn(g, ch);
+  ok(g.state.flags.blade_1 && g.state.flags.blade_2, 'Sampo walks the team past the Gathering Place');
   ok(g.state.flags.moles && g.state.flags.seele_trial && g.state.roster.hook && g.state.roster.natasha, 'moles, seele fight, hook and natasha joined');
   ok(g.setParty(['trail', 'march', 'danheng', 'natasha']), 'set party');
   exitVia(g, 'e');
   eq(g.map.id, 'u_mine', 'in mine');
-  fightAll(g);
+  ok(g.state.flags.mine_in, 'Seele and Natasha explain the trouble at the entrance');
+  stepOn(g, 'А');
+  talk(g, 'П');
+  talk(g, 'Э');
+  ok(g.state.flags.mine_peak && g.state.flags.mine_elaine, 'Peak asleep on the bridge and Elaine with a sprained ankle');
+  stepOn(g, 'Б');
+  ok(g.state.flags.mine_lift && g.state.inv.items.findie, 'the vagrants at the lift drop Findie');
+  stepOn(g, 'Г');
+  ok(g.state.flags.mine_stand, 'the standoff with the vagrants near the anchor');
+  talk(g, 'В');
+  ok(g.state.flags.mine_search && g.findieTarget(), 'Findie starts searching for the cart parts');
+  talk(g, 'Ш');
+  talk(g, 'Щ');
+  ok(!g.findieTarget(), 'Findie falls silent once both parts are found');
+  talk(g, 'В');
+  ok(g.state.flags.mine_cart && !g.map.ents.some(e => e.ch === 'В' && g.visible(e)), 'the repaired cart clears the road');
+  stepOn(g, 'Д');
+  stepOn(g, 'Ы');
+  ok(g.state.flags.mine_wolf && g.state.flags.mine_ledge, 'the Direwolf and the ledge over the vein');
   for (const k of g.state.party) g.autoEquip(k);
   log.push('before grizzly ' + lv(g));
   stepOn(g, 't');
   ok(g.state.flags.mine_done, 'grizzly down, oleg met');
   exitVia(g, 'w');
-  ok(g.state.flags.night_talk, 'night at the grand hotel');
+  ok(g.state.flags.night_greet && !g.state.flags.night_talk, 'Oleg has arranged a room at the Goethe Grand Hotel');
+  talk(g, 'i');
+  eq(g.map.id, 'u_grandhotel', 'Gertie gives the key');
+  talk(g, 'b');
+  ok(g.state.flags.night_dream, 'the dream in the Cheap Room');
+  exitVia(g, 'x');
+  ok(g.state.flags.night_talk, 'the night walk with Bronya and Natasha\'s request');
   ok(g.setParty(['trail', 'march', 'natasha', 'hook']), 'set party with hook');
   exitVia(g, 'z');
   eq(g.map.id, 'u_rivet', 'rivet town');
-  ok(g.state.flags.rivet_intro, 'orphanage scene');
+  ok(g.state.flags.riv_in && !g.state.flags.rivet_intro, 'Seele looks for a vantage point');
+  stepOn(g, 'В');
+  ok(g.state.flags.riv_view, 'the view of the orphanage on the hill');
+  ok(g.blocked(22, 38) && g.blocked(8, 17), 'barricades close the main road and the cliff path');
+  stepOn(g, 'Б');
+  stepOn(g, 'Г');
+  ok(g.state.flags.riv_foe && g.state.flags.riv_rest, 'monsters on the street and the restaurant');
+  stepOn(g, 'Е');
+  talk(g, 'Ц');
+  ok(g.state.flags.riv_market && g.state.flags.riv_crates, 'the market crates are already empty');
+  talk(g, 'Э');
+  ok(g.state.flags.riv_eric && g.state.inv.items.box_plates, 'Bronya trades her medal and Eric gives up the plates and bandages');
+  stepOn(g, 'У');
+  stepOn(g, 'Ы');
+  ok(g.state.flags.riv_side && g.state.flags.riv_stairs, 'the trading street and the stairs to the orphanage');
+  exitVia(g, 'u');
+  eq(g.map.id, 'u_rivet2', 'the orphanage hill');
+  ok(g.state.flags.riv_hill, 'Seele is surprised the orphanage survived');
+  stepOn(g, 'Ф');
+  talk(g, 'Ж');
+  ok(g.state.flags.riv_ice, 'Ice Out of Space attacks at the junk piles');
+  talk(g, 'Г');
+  talk(g, 'К');
+  talk(g, 'Ц');
+  ok(g.state.flags.riv_slide && g.state.flags.riv_swing && g.state.flags.riv_brooch, 'the slide, the swing and the brooch');
+  talk(g, 'Я');
+  ok(g.state.flags.riv_play && g.state.inv.items.box_alcohol && !g.state.inv.items.owl_toy, 'the rubbing alcohol, and Bronya keeps her toy');
+  stepOn(g, 'Ш');
+  stepOn(g, 'Щ');
+  stepOn(g, 'Ч');
+  ok(g.state.flags.riv_clara && g.state.inv.items.box_pain, 'Clara and Perkins share the painkillers');
+  talk(g, 'Х');
+  ok(g.state.flags.rivet_intro, 'all the supplies for Natasha');
+  exitVia(g, 'y');
+  eq(g.map.id, 'u_rivet', 'down the cliff stairs');
+  ok(!g.blocked(8, 17) && !g.blocked(22, 38), 'Perkins cleared the cliff path and the main road is open');
   fightAll(g);
   for (const k of g.state.party) g.autoEquip(k);
+  ok(g.map.ents.some(e => e.ch === 'e' && e.kind === 'exit') && !g.state.flags.rot_guide, 'the avenue to the Robot Settlement waits for a guide');
+  exitVia(g, 'w');
+  ok(g.state.flags.rust_back, 'back in Boulder Town with the supplies');
+  exitVia(g, 'м');
+  talk(g, 'n');
+  ok(g.state.flags.rust_natasha && !g.state.inv.items.box_plates && !g.state.inv.items.box_alcohol && !g.state.inv.items.box_pain, 'Natasha gets the three boxes of supplies');
+  exitVia(g, 'x');
+  talk(g, 'o');
+  ok(g.state.flags.rust_done, 'Oleg plans the talks with Svarog');
+  talk(g, 'h');
+  ok(g.state.flags.rot_guide, 'Hook claims to be the guide, Sampo leads the way');
+  exitVia(g, 'z');
+  exitVia(g, 'e');
+  eq(g.map.id, 'u_settle', 'the Robot Settlement');
+  ok(g.state.flags.rot_in, 'March expected a cold lair and finds a camp');
+  stepOn(g, 'Ь');
+  stepOn(g, 'Ъ');
+  ok(g.state.flags.rot_gate && g.blocked(14, 22), 'the gate needs a permit');
+  talk(g, 'А');
+  ok(g.state.flags.rot_c1 && g.state.inv.items.cert1, 'the first robot fights and gives Level 1 Certification');
+  talk(g, 'В');
+  ok(g.state.flags.rot_c2 && g.state.inv.items.cert2, 'Level 2 Certification');
+  talk(g, 'Г');
+  ok(g.state.flags.rot_c3 && g.state.inv.items.cert3, 'the broken robot always fights for Level 3');
+  talk(g, 'i');
+  ok(g.state.flags.rot_gate1 && !g.blocked(14, 22) && !g.state.inv.items.cert3, 'the certificate opens the first gate');
+  stepOn(g, 'Щ');
+  talk(g, 'Я');
+  ok(g.state.flags.rot_timmy && g.blocked(14, 37), 'Timmy lets only Clara through and Sampo is gone');
+  exitVia(g, 'w');
+  eq(g.map.id, 'u_rivet', 'back to Rivet Town for Clara');
+  talk(g, 'П');
+  ok(g.state.flags.rot_store, 'the damaged Perkins in the storage room');
+  stepOn(g, 'Ч');
+  ok(g.state.flags.rot_blaze, 'Blaze Out of Space at the Tempering Workshop and Clara runs off');
+  exitVia(g, 'e');
+  stepOn(g, 'Ш');
+  ok(g.state.flags.rot_chase, 'Clara turns towards the lift');
+  exitVia(g, 'l');
+  eq(g.map.id, 'u_settle1', 'the lower level');
+  ok(g.state.flags.rot_lost, 'Clara is not where she was');
+  talk(g, 'k');
+  ok(g.state.flags.rot_found, 'Clara fights the energy supply device');
+  {
+    const dev = g.map.ents.find(e => e.ch === 'Ц');
+    ok(adj(g, dev) && g.interact(), 'the energy supply device');
+    for (let i = 0; i < 200 && (g.script || g.pending); i++) {
+      if (g.pending && g.pending.ui === 'magflow') g.resume(true);
+      else if (g.pending && g.pending.type === 'choice') g.resume(0);
+      else if (g.pending) g.resume();
+      else g.advanceScript();
+    }
+  }
+  ok(g.state.flags.mf_settle && g.state.flags.rot_fix, 'the Magflow Link lights the device and Clara agrees to help');
+  exitVia(g, 'l');
+  talk(g, 'К');
+  ok(g.state.flags.rot_gate2 && !g.blocked(14, 37), 'Timmy opens the second gate for Clara and her guests');
   log.push('before svarog ' + lv(g));
   stepOn(g, 't');
-  ok(g.state.flags.rivet_done, 'svarog stands down');
+  ok(g.state.flags.rivet_done, 'two rounds with Svarog, Clara shields him and the archive opens');
+  talk(g, 'n');
+  ok(g.state.flags.rot_end, 'Natasha is the real leader of Wildfire');
   exitVia(g, 'w');
+  exitVia(g, 'w');
+  ok(g.state.flags.fw_greet, 'the team talks it over on the way to the hotel');
+  talk(g, 'i');
+  talk(g, 'b');
+  ok(g.state.flags.fw_sleep, 'Seele and Bronya talk at the orphanage while the team sleeps');
+  exitVia(g, 'x');
+  ok(g.state.flags.fw_wake, 'March wakes the sleepyhead');
+  talk(g, 'o');
   ok(g.state.flags.returned, 'bronya letter');
   exitVia(g, 'u');
+  eq(g.map.id, 'j_backwater', 'Sampo leads the team up through the cafe in the Backwater Pass');
+  ok(!g.blocked(24, 41) && !g.blocked(24, 36) && !g.map.ents.some(e => e.ch === 'o' && g.visible(e)), 'after the chase the gates are open and the guards are gone');
+  exitVia(g, 'x');
   eq(g.map.id, 'j_belobog', 'back on surface');
-  talk(g, 'v');
-  ok(g.state.flags.finale_open && g.state.roster.serval, 'serval joined, gates open');
+  ok(g.state.flags.ret_city, 'Bronya faces Cocolia and the team sneaks into the district under curfew');
+  stepOn(g, 'ϑ');
+  ok(g.map.id === 'j_belobog' && g.player.x === g.map.marks['Ω'][0][0] && g.player.y === g.map.marks['Ω'][0][1], 'a patrol spots the team and sends it back to the alley');
+  stepOn(g, 'Λ');
+  eq(g.map.id, 'j_workshop', 'Serval lets the team in');
+  ok(g.state.flags.ret_hid && g.state.flags.ret_told, 'the team tells Serval everything');
+  talk(g, 's');
+  ok(g.state.flags.ret_plan, 'Serval knows where the Stellaron is and the way through the Restricted Zone');
+  stepOn(g, 'з');
+  ok(g.state.flags.finale_open && g.state.flags.serval_joined && g.state.roster.serval, 'Gepard drops by, then Serval joins');
+  exitVia(g, 'x');
+  for (const k of g.state.party) g.autoEquip(k);
+  exitVia(g, 'e');
+  eq(g.map.id, 'j_restricted', 'the Silvermane Guard Restricted Zone');
+  ok(g.state.flags.rz_in && g.blocked(42, 9), 'the guards keep the gate shut');
+  stepOn(g, 'Ъ');
+  ok(g.state.flags.rz_pass && !g.blocked(42, 9), 'Franz hands out temporary passes');
+  stepOn(g, 'В');
+  ok(g.state.flags.rz_view, 'the view of the gear bridge');
+  ok(!g.blocked(25, 5) && g.blocked(20, 10), 'the gear bridge points north and south');
+  talk(g, 'Т');
+  talk(g, 'У');
+  ok(g.state.flags.rz_t1 && g.state.flags.rz_t2, 'both terminals are dead');
+  talk(g, 'Ж');
+  ok(g.state.flags.rz_guard, 'the hub guard wants Dunn\'s key');
+  talk(g, 'Д');
+  ok(g.state.flags.rz_dunn && g.state.inv.items.rz_key, 'Dunn sees through Serval and loses the key');
+  talk(g, 'h');
+  ok(g.state.flags.rz_hubopen && !g.blocked(26, 36), 'the key opens the hub gate');
+  talk(g, 'Ц');
+  ok(g.state.flags.rz_hub, 'Serval reboots the Mechanism Energy Hub');
+  stepOn(g, 'Г');
+  ok(g.state.flags.rz_grizzly, 'the Automaton Grizzly guards the terminal');
+  talk(g, 'У');
+  ok(g.state.flags.rz_bridge && g.state.flags.rz_ew && !g.blocked(20, 10) && g.blocked(25, 5), 'the gear bridge turns west to the frontline');
   for (const k of g.state.party) g.autoEquip(k);
   log.push('before gepard2 ' + lv(g));
-  exitVia(g, 'e');
-  eq(g.map.id, 'j_fissures', 'fissures');
-  ok(g.state.flags.fissures_intro, 'gepard stands aside');
-  fightAll(g);
+  stepOn(g, 'Н');
+  ok(g.state.flags.rz_gepard, 'Gepard falls and Bronya\'s letter convinces him');
+  talk(g, 'Е');
+  eq(g.map.id, 'j_fissures', 'three waves at the gate, then into the Corridor');
+  ok(g.state.flags.fissures_intro, 'Serval stays with Gepard at the front');
+  stepOn(g, 'Ь');
+  talk(g, 'Ш');
+  ok(g.state.flags.cor_globe && g.state.inv.items.owl_toy, 'Bronya\'s snow globe on the roadside and the echoes');
+  stepOn(g, 'Ъ');
+  ok(g.state.flags.cor_gate && g.blocked(19, 28), 'the mechanism gate is shut');
+  talk(g, 'А');
+  talk(g, 'Г');
+  ok(g.state.flags.cor_h0 && g.state.flags.cor_h1, 'the first hub hums and the guarded hub below is on');
+  ok(g.blocked(24, 11), 'the gear bridge does not reach the west rim yet');
+  stepOn(g, 'З');
+  talk(g, 'Ж');
+  ok(g.state.flags.cor_ew && !g.blocked(24, 11) && g.blocked(27, 8), 'the controller turns the gear bridge to the east');
+  talk(g, 'Д');
+  ok(g.state.flags.cor_h2, 'the Stellaron voice at the second hub');
+  talk(g, 'Е');
+  ok(g.state.flags.cor_hubs && !g.blocked(19, 28), 'all three hubs open the mechanism gate');
+  stepOn(g, 'Ы');
+  stepOn(g, 'Ю');
+  for (const k of g.state.party) g.autoEquip(k);
+  stepOn(g, 'Я');
+  ok(g.state.flags.cor_guard && !g.blocked(18, 47), 'the Guardian Shadow falls and the fort gate opens');
+  stepOn(g, 'П');
+  for (const k of g.state.party) g.autoEquip(k);
+  stepOn(g, 'Ц');
+  ok(g.state.flags.cor_done, 'Cocolia\'s echo is defeated at the stairs');
   exitVia(g, 'e');
   eq(g.map.id, 'j_everwinter', 'everwinter');
+  const goTo = (map, mark) => { g.loadMap(map, mark); drive(g); };
+  ok(g.state.flags.everwinter_intro, 'the blizzard greets the team on Everwinter Hill');
+  talk(g, 'Х');
+  ok(g.state.flags.dawn_r1, 'the frozen Voidrangers on the mountain path');
+  stepOn(g, 'Т');
+  stepOn(g, 'У');
+  ok(g.state.flags.dawn_stairs && g.state.flags.dawn_top, 'the giant palm and the top of the stairs');
   fightAll(g);
   for (const k of g.state.party) g.autoEquip(k);
   log.push('before cocolia ' + lv(g));
-  stepOn(g, 't');
+  log.push('traces before cocolia ' + trInfo(g));
+  stepOn(g, 'Ф');
+  ok(g.state.flags.dawn_done && g.map.id === 'j_pathspace', 'the Engine of Creation, the cannon and the ice spear lead to the Path Space');
+  for (const ch of ['Г', 'С', 'Д', 'Б']) talk(g, ch);
+  ok(g.state.flags.ret_mem4, 'four memories in the Path Space');
+  for (const k of g.state.party) g.autoEquip(k);
+  talk(g, 'Ж');
   ok(g.state.flags.ending, 'story complete');
   eq(g.state.mcPath, 'trail_p', 'preservation path');
+  ok(g.map.id === 'u_boulder' && g.state.flags.swamp_in, 'the team goes down to Boulder Town');
+  exitVia(g, 'м');
+  ok(g.state.flags.swamp_told && g.state.flags.swamp_mine, 'Natasha hears the news and the miners come first');
+  goTo('u_camp', 'w');
+  ok(g.state.flags.swamp_camp, 'miners and vagrants together in the Vagrant Shelter');
+  talk(g, 'ӑ');
+  ok(g.state.flags.swamp_branch, 'Antonia hears the news and Welt writes to the group');
+  ok(g.calyxList().find(x => x.c.id === 'cx_echo_coco').open, 'Welt\'s message opens the Echo of War');
+  goTo('u_clinic', 'x');
+  ok(g.state.flags.swamp_back, 'back at the clinic');
+  goTo('u_settle', 'w');
+  talk(g, 'ӑ');
+  ok(g.state.flags.swamp_done && g.map.id === 'u_settle', 'Perkins leads to Clara and Svarog, mission 0001 is complete');
+  goTo('u_boulder', 'p');
+  talk(g, 'ӓ');
+  ok(g.state.flags.time_meet, 'Natasha waits at the cable car');
+  talk(g, 'О');
+  ok(g.state.flags.cable_open && g.map.id === 'j_belobog', 'the cable car carries the Underworld up');
+  talk(g, 'ӑ');
+  ok(g.state.flags.time_gepard, 'Gepard apologizes and invites the team');
+  stepOn(g, 'ӕ');
+  talk(g, 'ӗ');
+  ok(g.state.flags.crowned, 'Bronya takes the oath at the Everwinter Monument');
+  exitVia(g, 'f');
+  talk(g, 'ӑ');
+  ok(g.state.flags.time_done, 'Bronya says goodbye in Qlipoth Fort');
+  exitVia(g, 'x');
+  ok(g.state.flags.gal_in, 'the last walk in the Administrative District');
+  talk(g, 'ӛ');
+  ok(g.state.flags.gal_monument && g.state.flags.gal_ph, 'the photo at the monument with Pela and Hook');
+  exitVia(g, 'w');
+  ok(g.state.flags.gal_ws, 'the photo in the workshop');
+  goTo('j_hotel', 'x');
+  talk(g, 'b');
+  ok(g.state.flags.gal_sleep, 'a quiet night in the Goethe Hotel and Sampo on the TV');
+  talk(g, 'ӑ');
+  ok(g.state.flags.gal_meet, 'March and Dan Heng in the corridor');
+  goTo('j_belobog', 'h');
+  stepOn(g, 'ӏ');
+  ok(g.state.flags.jarilo_done, 'the chapter ends');
   eq(g.map.id, 'express', 'ending returns to express');
+  afterJarilo = g.serialize();
   ok(g.state.bank.enemies.cocolia2 && g.state.bank.enemies.cocolia2.kills >= 1, 'bank records cocolia');
   const list = g.calyxList();
   ok(list.find(x => x.c.id === 'cx_echo_coco').open, 'echo unlocked post game');
@@ -2106,7 +5982,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
 }
 
 {
-  const CH = H.CHAT, flags = new Set(['su_beta_done']);
+  const CH = H.CHAT, flags = new Set(['su_beta_done', 'ks_early']);
   for (const steps of Object.values(H.SCRIPTS)) for (const st of steps) if (st && st.flag) flags.add(st.flag);
   const ids = new Set();
   const paths = steps => {
@@ -2215,7 +6091,12 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   const g = new H.Game({ seed: 4, clock: () => now });
   const ver = H.MAIL.filter(m => !m.need);
   eq(g.mailbox().length, ver.length, 'a new game gets the version letters');
-  ok(ver.length === 5 && ver.every(m => m.give.jade === 300), 'five version letters with 300 jade each');
+  ok(ver.length === 10 && ver.filter(m => !['v14_conton', 'v14_hares', 'v16_traces'].includes(m.id)).every(m => m.give.jade === 300), 'seven version letters with 300 jade each, the Кон-Тон letter, the Cunning Hares letter and the Traces patch letter');
+  ok(H.MAIL.find(m => m.id === 'v16_traces').give.items.dest1 === 3 && H.MAIL.find(m => m.id === 'v16_traces').give.items.artifex1 === 3, 'the Traces patch letter brings three of every 2-star material');
+  ok(H.MAIL.find(m => m.id === 'v16_fives').give.items.spass === 10, 'the 1.6 letter brings ten Special Passes');
+  ok(H.MAIL.find(m => m.id === 'v15_supply').give.outfit === 'march_spring', 'the 1.5 letter brings Nascent Spring for March 7th');
+  ok(H.MAIL.find(m => m.id === 'v14_hares').give.items.tape === 10, 'the Cunning Hares letter brings ten Encrypted Master Tapes');
+  ok(H.MAIL.find(m => m.id === 'v14_conton').give.items.badge === 10, 'the Кон-Тон letter brings ten badges');
   ok(H.MAIL.find(m => m.id === 'v14_fours').give.items.pass === 10, 'the 1.4 letter brings ten Star Rail Passes');
   ok(H.MAIL.find(m => m.id === 'v13_signal').give.items.tape === 10, 'the 1.3 letter brings ten Encrypted Master Tapes');
   ok(H.MAIL.find(m => m.id === 'v13_signal').give.items.mana === 10, 'the 1.3 letter brings ten manatites for the Guild');
@@ -2244,16 +6125,17 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   const got = g.claimEvent('comet');
   eq(H.COMET_GIFT.reduce((a, b) => a + b, 0), 10, 'Comet Gift totals ten Special Passes');
   ok(got.length === 6 && g.state.inv.items.spass === sp0 + 10 && !g.eventReady('comet'), 'claiming the rest gives ten passes in total');
-  g.state.roster.trail.lvl = 4;
+  g.setTrailLevel(4);
   ok(!g.eventReady('will') && !g.claimWill(0), "Trailblazer's Will gives nothing below level 5");
-  g.state.roster.trail.lvl = 16;
+  g.setTrailLevel(16);
   const p0 = g.state.inv.items.pass || 0;
   eq(g.claimEvent('will').length, 2, 'levels 5 and 15 are claimed together');
   ok(g.state.inv.items.pass === p0 + 20 && !g.willReady(2), 'each station gives ten passes, level 25 waits');
-  g.state.roster.trail.lvl = 35;
+  g.setTrailLevel(35);
   const j0 = g.state.jade;
   g.claimWill(2); g.claimWill(3);
   ok(g.state.inv.items.pass === p0 + 40 && g.state.jade === j0 + 1600, 'levels 25 and 35 add ten passes and 800 jade each');
+  g.claimEvent('conton');
   ok(!g.alerts().events, 'nothing left to claim clears the events alert');
   const jm = g.state.jade, first = g.mailbox().find(x => x.m.give).m.id;
   g.readMail(first);
@@ -2262,8 +6144,11 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   ok(!g.state.quests.su_beta, 'the Simulated Universe quest waits for Herta\'s message');
   g.chatAuto('herta_test');
   eq(g.state.quests.su_beta, 'talk', 'Herta\'s message starts «Виртуальная вселенная: Первичный тест»');
-  ok(g.claimAllMail().length === 10 && g.state.jade === jm + 1500 && !g.alerts().mail, 'claim all takes the other letters and clears the alert');
-  eq(g.deleteReadMail(), 5, 'read and claimed letters can be deleted');
+  ok(!g.ownsOutfit('march_spring'), 'Nascent Spring waits in the 1.5 letter');
+  const claimed = g.claimAllMail();
+  ok(claimed.length === 31 && g.state.jade === jm + 2100 && !g.alerts().mail, 'claim all takes the other letters and clears the alert (' + claimed.length + ')');
+  ok(g.ownsOutfit('march_spring') && !g.outfitOf('march'), 'the 1.5 letter adds Nascent Spring to the collection without putting it on');
+  eq(g.deleteReadMail(), 10, 'read and claimed letters can be deleted');
   eq(g.mailbox().length, 0, 'the mailbox is empty after deleting');
   const back = new H.Game({ state: g.serialize(), clock: () => now });
   ok(!back.mailbox().length && back.state.comet.days === 7 && back.state.will.length === 4, 'events and mail survive a save');
@@ -2661,7 +6546,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     if (yb.ev.slice(e0).some(x => x.t === 'act' && x.u === u && x.name === 'Ледяной клинок')) follow++;
     if (yb.ev.slice(e0).some(x => x.t === 'status' && x.u === e && x.text === 'Заморозка')) frozen++;
   }
-  ok(follow >= 8 && follow <= 22, 'Sync gives a 50% follow-up after attacks (' + follow + '/30)');
+  ok(follow >= 11 && follow <= 26, 'Sync gives a 60% follow-up after attacks at Talent level 10 (' + follow + '/30)');
   ok(frozen > 0 && frozen <= follow, 'the follow-up can freeze (' + frozen + ')');
   y.gainSync(yq); yq.energy = yq.maxEnergy; turnOf(y, yq);
   ok(y.ult(yq, y.living[0]), 'Yanqing Ultimate fires');
@@ -2759,7 +6644,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     localStorage: { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) },
     requestAnimationFrame: () => 1
   });
-  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-su', 'hsr-ui-memory']) require(path.join(DIR, f + '.js'));
+  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-conductor', 'hsr-ui-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-traces']) require(path.join(DIR, f + '.js'));
   const G = H.Gfx;
   const lum = hex => { const n = parseInt(hex.slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255); };
   for (const id of Object.keys(H.CHARS)) {
@@ -2772,8 +6657,8 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   ok(lum(G.lookOf('arlan', null).skin) < 120 && lum(G.lookOf('arlan', null).hair) > 200, 'Arlan: dark skin, white hair');
   const pom = G.lookOf('pompom', null);
   ok(parseInt(pom.top.slice(1, 3), 16) > 150 && parseInt(pom.top.slice(3, 5), 16) < 80 && lum(pom.ear) < 80 && lum(pom.hair) > 200, 'Pom-Pom: red conductor hat and coat, dark ears, white fur');
-  ok(H.PomPom && typeof H.PomPom.draw === 'function' && typeof H.PomPom.bust === 'function', 'Pom-Pom 3D model is shared by the Warp and the 2D art');
-  ok(G.bustCanvas(pom, 64).width === 64 && G.bustCanvas(pom, 34).height === 34 && G.figureCanvas(pom).height === 96 && G.figureCanvas(pom, 2).width === 96, 'Pom-Pom bust and figure are rendered from the 3D model');
+  ok(H.PomPom && typeof H.PomPom.draw === 'function', 'Pom-Pom 3D model drives the Warp scene');
+  ok(G.bustCanvas(pom, 64).width === 64 && G.bustCanvas(pom, 34).height === 34 && G.figureCanvas(pom).height === 96 && G.figureCanvas(pom, 2).width === 96, 'Pom-Pom bust and figure are hand-drawn 2D art');
   for (const d of ['down', 'up', 'left', 'right']) for (const f of [0, 1, 3]) { const cv = G.spriteCanvas(pom, d, f); ok(cv.width === 36 && cv.height === 52, 'Pom-Pom field sprite ' + d + ' ' + f); }
   for (const id of Object.keys(H.CHARS)) { const cv = G.figureCanvas(G.lookOf(id, null), 2); ok(cv.width === 96 && cv.height === 192, 'double-size warp figure ' + id); }
   {
@@ -2825,7 +6710,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   for (const id of Object.keys(H.ITEMS)) { ok(G.ITEM_ART[id], 'item icon ' + id); G.itemCanvas(id); ok(H.ITEMS[id].rar >= 1 && H.ITEMS[id].rar <= 5, 'item rarity ' + id); }
   for (const id of ['jade', 'credits', 'power', 'tp']) ok(G.ITEM_ART[id], 'currency icon ' + id);
   for (const s of H.RELIC_SLOTS) G.itemCanvas('relic:' + s.key, 'thief');
-  for (const id of Object.keys(H.CONES)) { ok(G.CONE_SCENES[id], 'cone art ' + id); G.coneArt(id, 54, 76); }
+  for (const id of Object.keys(H.CONES).filter(notLater)) { ok(G.CONE_SCENES[id], 'cone art ' + id); G.coneArt(id, 54, 76); }
   for (const p of Object.keys(H.PATHS)) ok(G.PATH_ART[p], 'path icon ' + p);
   const stubCtx = makeCanvas(640, 480).getContext('2d');
   for (const [id, d] of Object.entries(H.ENEMIES)) {
@@ -2854,6 +6739,189 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   G.bgCanvas('sim', 640, 480); G.bgCanvas('stellaron', 640, 480);
   for (const [kind, st] of [['chest', { open: false }], ['chest', { open: true }], ['anchor', { on: true }], ['anchor', { on: false }], ['destr', {}], ['lever', { on: true }], ['lever', { on: false }], ['gate', {}], ['exit', { dir: 'left' }], ['exit', { dir: 'down', locked: true }]]) G.drawObject(stubCtx, kind, 64, 64, st, 1.2);
   G.drawCG(stubCtx, 'cocolia', 640, 480, 1);
+  {
+    const J = H.Jarilo, M = H.Magflow;
+    const rows = ['##########', '#HHWHHQHG#', '#HHWHHQHG#', '#HWWHHQHG#', '#..T.L.Y.#', '#,,"._=^|#', '#~~~RRB*K#', '#.P.C.X.D#', '##########'];
+    for (const land of Object.keys(J.LANDS)) {
+      const decor = Object.keys(J.DECOR).map((k, i) => [k, 1 + (i % 7), 4 + (i % 3)]).concat(Object.keys(J.LAYER).map((k, i) => [k, 2 + i, 2]));
+      const def = { land, theme: 'city', floor: '.', rows, decor };
+      const map = { id: 'jtest_' + land, def, w: rows[0].length, h: rows.length, tiles: rows };
+      const L = J.buildLayer(map);
+      ok(L.cv.width === map.w * G.TILE_U && L.cv.height === map.h * G.TILE_U && L.deco && L.land === land, 'the Jarilo layer of ' + land + ' has the map size');
+      ok(L.sprites.length >= Object.keys(J.DECOR).length && L.lights.length > 0, 'the Jarilo layer of ' + land + ' has sprites and lights');
+      H.Train.drawFx(stubCtx, L, map, 0, 0, 1, 640, 480, () => true);
+    }
+    for (const id of ['j_plains', 'j_belobog', 'u_boulder']) ok(H.MAPS[id].land && J.LANDS[H.MAPS[id].land], 'map ' + id + ' is drawn by the Jarilo art');
+    for (const id of Object.keys(M.PUZZLES)) {
+      const B = M.build(id);
+      ok(M.flow(B, M.solvedTurns(B)).done, 'the Magflow Link ' + id + ' can be solved');
+      ok(!M.flow(B, M.startTurns(B)).done, 'the Magflow Link ' + id + ' does not start solved');
+      ok(B.cells.every(c => !c.fixed || c.start === 0), 'the fixed modules of ' + id + ' start in place');
+    }
+    for (const art of ['magflow', 'domain']) for (const st of [{ on: true, art: 'gold' }, { on: false, art: 'crimson' }]) G.drawObject(stubCtx, art, 64, 64, st, 1.2);
+    const mg = new H.Game({ seed: 5 });
+    H.SCRIPTS.zz_mf_test = [{ magflow: 'mf_workshop', fail: 'no' }, { flag: 'mf_after' }, { end: true }, '#no', { flag: 'mf_failed' }];
+    mg.runScript('zz_mf_test');
+    eq(mg.pending && mg.pending.ui, 'magflow', 'a Magflow step waits for the puzzle');
+    mg.resume(false);
+    ok(mg.state.flags.mf_failed && !mg.state.flags.mf_workshop && !mg.script, 'leaving the puzzle takes the fail branch');
+    mg.runScript('zz_mf_test');
+    mg.resume(true);
+    ok(mg.state.flags.mf_workshop && mg.state.flags.mf_after, 'solving the puzzle sets its flag and the script goes on');
+    delete H.SCRIPTS.zz_mf_test;
+    const mroot = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
+    const mui = new H.UI(mroot, { onExit: noop });
+    mui.game = mg;
+    let res = null;
+    mui.openMagflow('mf_backwater', v => { res = v; });
+    const ms = mui.top();
+    ms.draw(mui.ctx);
+    const c0 = ms.cur;
+    ms.key('right');
+    ok(ms.cur !== c0, 'the arrows move between the modules');
+    const fixed = ms.turns.findIndex((t, i) => M.build('mf_backwater').cells[i].fixed);
+    const before = ms.turns[fixed];
+    ms.turn(fixed, 1);
+    eq(ms.turns[fixed], before, 'a module in a red frame does not turn');
+    ms.turns.forEach((t, i) => { while (ms.turns[i] !== 0 && !ms.done) ms.turn(i, 1); });
+    ok(ms.done > 0, 'turning every module into place lights the circuit');
+    for (let i = 0; i < 20; i++) { ms.tick(0.1); if (mui.top() === ms) ms.draw(mui.ctx); }
+    ok(res === true && mui.top() !== ms, 'the solved puzzle closes and reports success');
+    res = null;
+    mui.openMagflow('mf_workshop', v => { res = v; });
+    mui.top().key('back');
+    ok(res === false, 'Esc leaves the puzzle unsolved');
+    {
+      const C = H.Carts, B = C.build('cart4');
+      res = null;
+      mui.openCarts('cart4', v => { res = v; });
+      const cs = mui.top();
+      cs.draw(mui.ctx);
+      cs.key('right');
+      ok(cs.cur !== B.carts[0].i, 'the arrows move the cursor over the rails');
+      cs.cur = B.carts[0].i;
+      cs.key('ok');
+      ok(cs.sel === 0, 'Enter on a cart picks it up');
+      cs.key('back');
+      ok(cs.sel === -1 && mui.top() === cs, 'Esc puts the cart down first');
+      for (const m of C.solve(B)) {
+        if (m.t === 'sw') { cs.cur = B.turnouts[m.k]; cs.sel = -1; cs.key('ok'); }
+        else { cs.cur = cs.s.carts[m.ci].i; cs.sel = -1; cs.key('ok'); cs.key(['up', 'right', 'down', 'left'][m.d]); }
+        cs.draw(mui.ctx);
+      }
+      ok(cs.done > 0, 'the solution played with the keys solves the cart test');
+      for (let i = 0; i < 20; i++) { cs.tick(0.1); if (mui.top() === cs) cs.draw(mui.ctx); }
+      ok(res === true && mui.top() !== cs, 'the solved cart test closes and reports success');
+      mui.openCarts('cart1', v => { res = v; });
+      mui.top().key('KeyR', 'KeyR');
+      mui.top().key('back');
+      ok(res === false, 'Esc leaves the cart test unsolved');
+    }
+    mg.state.power = 200;
+    mui.openCalyx(noop, ['cx_exp']);
+    mui.top().draw(mui.ctx);
+    mui.screens.pop();
+    eq(H.CALYX.find(c => c.id === 'cx_exp').name, 'Чашелист (золотой): Бутон воспоминаний', 'the Calyx keeps its official name');
+  }
+
+  {
+    const GL = H.GLOW;
+    ok(GL.dup[4] === 8 && GL.dup[5] === 40 && GL.max[4] === 20 && GL.max[5] === 100, 'duplicates give 8 or 40 Undying Starlight, 20 or 100 once all Eidolons are open');
+    ok(GL.cone[3][0] === 'embers' && GL.cone[3][1] === 20 && GL.cone[4].join() === 'starlight,8' && GL.cone[5].join() === 'starlight,40', 'Light Cones give 20 Embers (3★) or 8/40 Starlight (4★/5★)');
+    let now = Date.UTC(1999, 6, 19, 10, 5);
+    const sg = new H.Game({ seed: 11, clock: () => now }), ss = sg.state;
+    ok(ss.starlight === 0 && ss.embers === 0 && ss.shop && ss.shop.back === null && Array.isArray(ss.outfits), 'a new game starts with empty Supply currencies');
+    ss.roster.asta = { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    eq(sg.addChar('asta', 1), 'eid', 'a duplicate 4★ gives an Eidolon');
+    eq(ss.starlight, 8, 'and 8 Undying Starlight');
+    ss.roster.asta.eid = 6;
+    eq(sg.addChar('asta', 1), 'max', 'a 4★ with six Eidolons reports max');
+    eq(ss.starlight, 28, 'and gives 20 Undying Starlight instead of credits');
+    ss.roster.himeko = { lvl: 1, exp: 0, eid: 6, cone: null, relics: {}, hp: null, energy: 0 };
+    sg.addChar('himeko', 1);
+    eq(ss.starlight, 128, 'a 5★ with six Eidolons gives 100 Undying Starlight');
+    ss.starlight = 0; ss.embers = 0; ss.jade = 1600 * 30;
+    let gotS = 0, gotE = 0, cones3 = 0, ok3 = true, ok45 = true;
+    for (let i = 0; i < 30; i++) for (const r of sg.warp(10, 'std')) {
+      if (r.glow) { if (r.glow.cur === 'starlight') gotS += r.glow.n; else gotE += r.glow.n; }
+      if (r.kind === 'cone' && r.rar === 3) { cones3++; ok3 = ok3 && r.glow.cur === 'embers' && r.glow.n === 20; }
+      if (r.kind === 'cone' && r.rar >= 4) ok45 = ok45 && r.glow.cur === 'starlight' && r.glow.n === GL.cone[r.rar][1];
+      if (r.kind === 'char' && r.res !== 'new') ok45 = ok45 && r.glow && r.glow.n === H.charGlow(r.res, H.CHARS[r.id].rarity);
+    }
+    ok(cones3 > 100 && ok3, 'every 3★ Light Cone from a Warp gives 20 Undying Embers');
+    ok(ok45, 'every 4★/5★ cone and duplicate character reports its Starlight');
+    ok(gotS === ss.starlight && gotE === ss.embers && gotS > 0, 'the Warp results add up to the Supply balances');
+    ok(ss.warpLog.filter(e => e.glow).length > 100, 'the Warp history remembers the gains');
+    const old = H.newState();
+    delete old.shop;
+    old.warpLog = [{ n: 5, kind: 'cone', id: 'arrows', rar: 3 }, { n: 4, kind: 'cone', id: 'trend', rar: 4 }, { n: 3, kind: 'char', id: 'himeko', rar: 5, res: 'eid' }, { n: 2, kind: 'char', id: 'asta', rar: 4, res: 'new' }, { n: 1, kind: 'char', id: 'arlan', rar: 4, res: 'credits' }];
+    const og = new H.Game({ state: old, seed: 2 });
+    ok(og.state.starlight === 48 && og.state.embers === 20, 'an old save gets Starlight and Embers for its past Warps');
+    ok(og.state.shop.back && og.state.shop.back.starlight === 48 && og.state.shop.back.embers === 20, 'the Supply notice remembers the back pay');
+    ok(new H.Game({ state: JSON.parse(JSON.stringify(og.state)), seed: 2 }).state.starlight === 48, 'the back pay is given once');
+    ok(og.supplyBack().starlight === 48 && og.state.shop.back === null, 'reading the back pay clears it');
+    ok(Object.values(H.SUPPLY).every(list => list.every(e => (e.item ? H.ITEMS[e.item] : e.cone ? H.CONES[e.cone] && H.CONES[e.cone].rarity === 5 : true))), 'Supply stock points to real items and 5★ Light Cones');
+    ok(H.SUPPLY_FOURS.length === 6 && H.SUPPLY_FOURS.flat().every(id => H.CHARS[id] && H.CHARS[id].rarity === 4), 'the Starlight shop rotates six pairs of 4★ characters');
+    const seen = new Set();
+    for (let h = 0; h < 6; h++) { now = Date.UTC(1999, 6, 19, 10 + h, 5); seen.add(sg.supplyFours().join()); }
+    eq(seen.size, 6, 'the character pair changes every hour and comes back after six hours');
+    now = Date.UTC(1999, 6, 19, 10, 5);
+    eq(sg.supplyRefresh() - now, 55 * 60000, 'the stock refreshes at the next full hour');
+    ss.starlight = 1000; ss.embers = 1000;
+    const lim = sg.supplyBuy('s_milkyway', 1);
+    ok(lim && lim.x.kind === 'cone' && ss.starlight === 400, 'a 5★ Light Cone costs 600 Starlight');
+    ok(sg.supplyFind('s_milkyway').block === 'limit' && sg.supplyBuy('s_milkyway', 1) === null && ss.starlight === 400, 'the cone is limited to one per hour');
+    now += 3600000;
+    ok(sg.supplyFind('s_milkyway').left === 1 && !sg.supplyFind('s_milkyway').block, 'the next hour restocks it');
+    const pass0 = ss.inv.items.pass || 0;
+    ok(sg.supplyBuy('e_pass', 3) && ss.inv.items.pass === pass0 + 3 && ss.embers === 1000 - 270, 'three Star Rail Passes cost 270 Embers');
+    ok(sg.supplyMax(sg.supplyFind('e_pass')) === 2 && sg.supplyBuy('e_pass', 3) === null, 'the pass limit counts what was bought this hour');
+    const c0 = ss.credits;
+    ok(sg.supplyBuy('e_credits', 2) && ss.credits === c0 + 20000, 'credits come in packs of 10 000');
+    const e2 = ss.inv.items.exp2 || 0;
+    ok(sg.supplyBuy('e_exp2', 4) && ss.inv.items.exp2 === e2 + 8, 'an Embers lot can hold two items');
+    ok(sg.supplyBuy('s_spass', 2) && sg.supplyFind('s_spass').left === null, 'passes for Starlight have no limit');
+    const four = sg.supplyFours()[0];
+    delete ss.roster[four];
+    const nb = sg.supplyBuy('s_four0', 1);
+    ok(nb && nb.res === 'new' && ss.roster[four], 'a 4★ from the shop joins the crew');
+    ss.roster[sg.supplyFours()[1]] = { lvl: 1, exp: 0, eid: 6, cone: null, relics: {}, hp: null, energy: 0 };
+    ok(sg.supplyFind('s_four1').block === 'max' && sg.supplyBuy('s_four1', 1) === null, 'a character with six Eidolons cannot be bought');
+    ss.starlight = 10;
+    ok(sg.supplyBuy('s_moment', 1) === null && ss.starlight === 10, 'a purchase without enough currency changes nothing');
+    const O = H.OUTFITS.march_spring, OL = H.outfitLook('march_spring');
+    ok(O && O.char === 'march' && O.price === 1680 && O.rarity === 5, 'Nascent Spring is a 5★ outfit for March 7th');
+    ok(OL.coat === 'frost' && OL.skin === H.CHARS.march.look.skin && OL.eye === H.CHARS.march.look.eye && !('belt' in OL) && OL.acc.some(a => a.startsWith('tiara')), 'the outfit look keeps her face and drops the old clothes');
+    ok(H.outfitLook('march_spring') === OL, 'the outfit look is built once');
+    ss.jade = 1000;
+    ok(!sg.buyOutfit('march_spring') && !sg.ownsOutfit('march_spring'), 'the outfit needs 1680 Stellar Jade');
+    ss.jade = 1700;
+    ok(sg.buyOutfit('march_spring') && ss.jade === 20 && sg.ownsOutfit('march_spring') && !sg.buyOutfit('march_spring'), 'the outfit is bought once');
+    ok(!sg.wearOutfit('march', 'nope') && !sg.wearOutfit('danheng', 'march_spring'), 'only her own outfits fit March 7th');
+    ss.roster.march = ss.roster.march || { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    ok(sg.wearOutfit('march', 'march_spring') && sg.outfitOf('march') === 'march_spring', 'March 7th wears it');
+    {
+      const TM = H.outfitLook('trail_trashlord', 'm'), TF = H.outfitLook('trail_trashlord', 'f'), G = H.Gfx, keepG = ss.gender;
+      ok(TM.coat === 'trashcan' && TF.coat === 'trashcan' && TM.back === H.CHARS.trail.look.back && TF.back === G.trailLook('f').back && TM !== TF && TF.low === 'pants' && TM.acc.some(x => x.startsWith('trashlid')) && TM.acc.some(x => x.startsWith('bat')), 'the trash can outfit keeps Caelus and Stelle apart');
+      ss.outfits.push('trail_trashlord'); ss.gender = 'f';
+      ok(sg.wearOutfit('trail', 'trail_trashlord') && G.lookOf('trail', sg) === TF && G.lookOf('trail_p', sg) === TF, 'Stelle wears the trash can in the game');
+      ss.gender = 'm';
+      ok(G.lookOf('trail', sg) === TM, 'Caelus wears his own version');
+      ok(sg.wearOutfit('trail', null) && G.lookOf('trail', sg) === G.trailLook('m'), 'the default Trailblazer look comes back');
+      ss.gender = keepG; ss.outfits = ss.outfits.filter(x => x !== 'trail_trashlord');
+    }
+    ok(H.wornLook('march', sg) === OL && H.wornLook('danheng', sg) === null, 'the worn look is found by roster key');
+    ok(sg.wearOutfit('march', null) && sg.outfitOf('march') === null, 'the default outfit comes back');
+    ss.outfits = []; ss.roster.march.outfit = 'march_spring';
+    ok(sg.outfitOf('march') === null, 'an outfit that is not owned is never worn');
+    eq(sg.outfitsOf('march').join(), 'march_spring', 'outfit list per character');
+    ok(!sg.ownsOutfit('kazuma_jersey') && H.OUTFITS.kazuma_jersey.price === 840, 'the tracksuit costs 840 Stellar Jade before the KonoSuba story ends');
+    ok(sg.give({ outfit: 'kazuma_jersey' }).join() === 'наряд «Спортивный костюм»' && sg.ownsOutfit('kazuma_jersey'), 'story rewards can give outfits');
+    ss.outfits = ss.outfits.filter(x => x !== 'kazuma_jersey'); ss.flags.ks_done = true;
+    ok(sg.ownsOutfit('kazuma_jersey') && !sg.buyOutfit('kazuma_jersey'), 'old saves with the KonoSuba story finished own the tracksuit');
+    delete ss.flags.ks_done;
+    ok(JSON.stringify(H.SCRIPTS.ks_finale || Object.values(H.SCRIPTS).find(sc => JSON.stringify(sc).includes('"flag":"ks_done"'))).includes('"outfit":"kazuma_jersey"'), 'the KonoSuba finale gives the tracksuit');
+  }
 
   const root = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
   const ui = new H.UI(root, { onExit: noop });
@@ -2867,7 +6935,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   eq(ui.mode, 'field', 'new game enters the field');
   {
     const g = ui.game, [home, alt] = ui.minimapDocks(), at0 = [g.player.x, g.player.y, g.player.dir], m0 = g.map.id;
-    g.loadMap('u_boulder', null, { silent: true });
+    g.loadMap('u_camp', null, { silent: true });
     const spots = [];
     for (let y = 0; y < g.map.h; y++) for (let x = 0; x < g.map.w; x++) if (!g.blocked(x, y)) spots.push([x, y]);
     const crowded = (dock, pad) => spots.find(([x, y]) => { g.placePlayer(x, y); return ui.minimapCrowded(dock, pad); });
@@ -2904,8 +6972,21 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     key('Enter'); frame(); release();
     ok(gs.roster.seele && gs.roster.seele.lvl === H.MAX_LVL - 10 && gs.roster.seele.eid === 2, 'the characters tab grants the chosen character, level and Eidolon');
     ok(/Зеле/.test(ui.debugState.log.text), 'the debug menu logs the grant');
+    ok(gs.roster.seele.tr.seele.lv.skill === H.traceAbilityCap('skill', gs.roster.seele.lvl) && gs.roster.seele.tr.seele.on.includes('a6'), 'the debug grant raises the Traces to the level cap');
     key('ArrowUp'); key('ArrowUp'); key('ArrowUp'); key('Enter'); frame(); release();
     ok(Object.keys(H.CHARS).filter(k => k !== 'trail_p').every(k => gs.roster[k]), '«Выдать всех» grants every character');
+    {
+      const dst = ui.debugState, chIds = Object.keys(H.CHARS).filter(k => k !== 'trail_p');
+      dst.ch.i = chIds.indexOf('march'); dst.ch.o = 0; dst.row = 3; frame();
+      eq(ui.debugForm(dst).rows[3].value, 'Зарождение весны', 'the characters tab lists the outfits of the character');
+      dst.row = 6; key('Enter'); frame(); release();
+      ok(ui.game.ownsOutfit('march_spring') && ui.game.outfitOf('march') === 'march_spring', 'the outfit button grants the outfit and puts it on');
+      key('ArrowUp'); key('ArrowUp'); key('ArrowUp'); key('ArrowRight'); dst.row = 6; key('Enter'); frame(); release();
+      ok(Object.keys(H.OUTFITS).every(id => ui.game.ownsOutfit(id)), 'the last choice grants every outfit of the game');
+      dst.ch.i = chIds.indexOf('danheng'); dst.ch.o = 0; frame();
+      ok(ui.debugForm(dst).rows[3].fixed && ui.debugForm(dst).rows[3].value === 'нет нарядов', 'a character without outfits says so');
+      gs.outfits = []; delete gs.roster.march.outfit; dst.ch.i = 0; dst.row = 0;
+    }
     key('Digit2'); frame();
     const cone0 = H.CONES[Object.keys(H.CONES).sort((a, b) => H.CONES[b].rarity - H.CONES[a].rarity)[0]];
     const n0 = gs.inv.cones.length;
@@ -2924,7 +7005,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     key('ArrowDown'); key('ArrowRight'); key('Enter'); frame(); release();
     eq(gs.jade, j1 + 1600, 'the items tab grants currencies');
     key('ArrowUp'); key('ArrowRight'); key('ArrowRight'); key('ArrowRight'); key('Enter'); frame(); release();
-    const it = Object.keys(H.ITEMS).sort((a, b) => ['food', 'exp', 'key'].indexOf(H.ITEMS[a].kind) - ['food', 'exp', 'key'].indexOf(H.ITEMS[b].kind))[1];
+    const it = Object.keys(H.ITEMS).sort((a, b) => ['food', 'exp', 'mat', 'key'].indexOf(H.ITEMS[a].kind) - ['food', 'exp', 'mat', 'key'].indexOf(H.ITEMS[b].kind))[1];
     ok(gs.inv.items[it] >= 1, 'the items tab grants items');
     {
       key('Digit4'); frame();
@@ -2963,7 +7044,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
       const idsOf = has => Object.keys(H.CHARS).filter(k => has[k]);
       const sceneKindOf = x => ['ult', 'fus', 'warp', 'eid', 'sig', 'conv'][x.sc.kind], EID_STAGE_LIST = [0, 1, 3, 6];
       const ultIds = idsOf(H.Ults.SHOWS), warpIds = idsOf(H.WarpIntro.SHOWS), eidIds = idsOf(H.Eidolons.SCENES), fusIds = Object.keys(H.FUSIONS), bank0 = gs.bank.fusions.join();
-      ok(ultIds.length === Object.keys(H.CHARS).length && warpIds.length >= 18 && eidIds.length === Object.keys(H.CHARS).length - 1, 'the scenes tab lists every ultimate, Warp intro and Eidolon picture');
+      ok(ultIds.length === Object.keys(H.CHARS).length && warpIds.length >= 18 && eidIds.length === Object.keys(H.CHARS).filter(notLater).length - 1, 'the scenes tab lists every ultimate, Warp intro and Eidolon picture');
       key('Digit5'); frame();
       eq(st.tab, 4, 'Digit5 opens the scenes tab');
       let thrown = null;
@@ -3219,6 +7300,104 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     ui.screens = [ph]; frame();
   }
   {
+    const keepScr = ui.screens.slice(), s = game.state, keepItems = JSON.parse(JSON.stringify(s.inv.items)), keepCredits = s.credits;
+    if (!s.roster.march) game.debugChar('march', 30, 0);
+    const keepMarch = JSON.parse(JSON.stringify(s.roster.march));
+    s.trBackSeen = true;
+    ui.screens = []; ui.openChars('march'); frame();
+    const cs = ui.top();
+    eq(cs.trSel, 'skill', 'the Traces start on the Skill');
+    cs.sec = 1; frame();
+    ok(!cs.trFocus, 'the Traces section opens without focus');
+    const spy = () => { const out = [], real = ui.text; ui.text = function (str, ...rest) { out.push(String(str)); return real.call(this, str, ...rest); }; frame(); delete ui.text; return out; };
+    let texts = spy();
+    ok(texts.includes('Следы') && texts.includes('Атака') && texts.includes('Талант') && texts.includes('A2'), 'the Traces section draws the ability line and the bonus stations');
+    key('Enter'); frame();
+    ok(cs.trFocus, 'Enter moves the focus onto the Traces');
+    key('ArrowLeft'); frame();
+    eq(cs.trSel, 'basic', 'left moves along the ability line');
+    key('ArrowRight'); key('ArrowRight'); frame();
+    eq(cs.trSel, 'ult', 'right moves on to the Ultimate');
+    key('ArrowDown'); frame();
+    ok(cs.trSel !== 'ult' && H.traceNodes('march').some(n => n.id === cs.trSel), 'down leaves the ability line for the tree');
+    s.roster.march.lvl = 30;
+    game.fillTraces('march', 'reset');
+    s.credits = 1e6;
+    Object.assign(s.inv.items, { legion1: 20, pres1: 20 });
+    delete s.inv.items.echo_doom;
+    cs.trSel = 's1'; key('Enter'); frame();
+    ok(game.traceOf('march').on.includes('s1') && cs.trFlash && cs.trFlash.id === 's1', 'Enter upgrades a node that has its materials and the node flashes');
+    texts = spy();
+    ok(texts.includes('Открыто полностью.') && texts.some(t => /Атака|Защита|урон|сопротивление/i.test(t)), 'the panel shows the open stat node');
+    cs.trSel = 'a2'; key('Enter'); frame();
+    ok(!game.traceOf('march').on.includes('a2') && ui.top() === cs, 'a missing Echo material blocks the bonus ability');
+    texts = spy();
+    ok(texts.some(t => t.startsWith('Где взять')) && texts.includes('0/1'), 'the panel shows the shortage and where to find it');
+    s.inv.items.echo_doom = 1;
+    key('Enter'); frame();
+    ok(ui.top() !== cs && !game.traceOf('march').on.includes('a2'), 'spending an Echo material asks first');
+    key('Enter'); frame();
+    ok(ui.top() === cs && game.traceOf('march').on.includes('a2') && !s.inv.items.echo_doom, 'confirming opens the bonus ability');
+    cs.trSel = 'a6'; key('Enter'); frame();
+    ok(!game.traceOf('march').on.includes('a6'), 'a node above the level stays closed');
+    const L = ui.traceLayout('march'), p = L.pos.talent, hit = ui.hits.filter(h => h.x === p.x - 15 && h.y === p.y - 15).pop();
+    ok(hit, 'every node takes clicks');
+    hit.fn(); frame();
+    eq(cs.trSel, 'talent', 'a click selects a node');
+    ok(Object.values(L.pos).every(q => q.x >= 186 && q.x <= 434 && q.y >= 60 && q.y <= 440), 'the tree stays between the section list and the panel');
+    for (const kit of Object.keys(H.TRACES)) {
+      const LL = ui.traceLayout(kit), pts = Object.entries(LL.pos).filter(([id]) => id !== 'root');
+      ok(pts.every(([, q]) => q.x >= 186 && q.x <= 434 && q.y >= 60 && q.y <= 440), 'the Traces tree of ' + kit + ' fits its area');
+      ok(pts.every(([a, q], i) => pts.every(([b, w], j) => j <= i || Math.hypot(q.x - w.x, q.y - w.y) >= 20)), 'no two Traces nodes of ' + kit + ' overlap');
+    }
+    key('Escape'); frame();
+    ok(!cs.trFocus && ui.top() === cs, 'Esc leaves the tree');
+    cs.sec = 3; frame();
+    texts = spy();
+    ok(texts.some(t => /^ур\. \d+$/.test(t)), 'the abilities section shows the ability levels');
+    cs.sec = 0; frame();
+    key('Enter'); frame();
+    const acts = ui.top();
+    ok(acts !== cs, 'Enter opens the actions');
+    texts = spy();
+    ok(texts.includes('Сменить конус'), 'the actions offer a cone change for the keyboard');
+    acts.sel = 2; key('Enter'); frame();
+    ok(ui.screens.length >= 2 && ui.top() !== acts && ui.top() !== cs, 'the cone change opens the cone picker');
+    ui.screens = []; ui.openInventory(2); frame();
+    eq(ui.top().tab, 2, 'the inventory opens on the materials tab');
+    const mats = ui.invEntries(2);
+    ok(mats.length && mats.every(e => e.d.kind === 'mat') && mats[0].d.mat === 'path', 'the materials tab lists the materials, Path lines first');
+    ui.top().sel = 0; key('Enter'); frame();
+    ok(ui.top().mode === 0, 'Enter on a material opens the Omni-Synthesizer');
+    for (const k of Object.keys(s.inv.items)) if (H.ITEMS[k].kind === 'mat') delete s.inv.items[k];
+    s.inv.items.dest1 = 7;
+    const sy = ui.top();
+    sy.sel = ui.synthRows(0).findIndex(r => r.from === 'dest1'); frame();
+    key('Enter'); frame();
+    ok(s.inv.items.dest2 === 1 && s.inv.items.dest1 === 4, 'the synthesizer turns three materials into one of the next tier');
+    key('KeyE'); frame();
+    eq(sy.mode, 1, 'E switches to the exchange');
+    sy.sel = ui.synthRows(1).findIndex(r => r.to === 'hunt1'); frame();
+    key('Enter'); frame();
+    ok(s.inv.items.hunt1 === 1 && s.inv.items.dest1 === 2, 'the exchange turns two materials into one of the same tier');
+    key('Escape'); frame();
+    s.inv.items.shadow_pres = 1;
+    const tr = s.roster.trail, before = tr.eid + ((tr.eidBy || {}).trail_p || 0) + ((tr.eidBy || {}).trail || 0);
+    ok(ui.useShadowFlow('shadow_pres') && tr.eid + ((tr.eidBy || {}).trail_p || 0) + ((tr.eidBy || {}).trail || 0) === before + 1, 'a Shadow from the inventory opens a Trailblazer Eidolon');
+    s.trBack = { tracks: 1 }; delete s.trBackSeen;
+    ui.screens = []; ui.openChars('march'); frame();
+    ok(ui.top().draw && !ui.top().trSel, 'an updated save first shows the Traces notice');
+    key('Enter'); frame();
+    ok(ui.top().trSel === 'skill' && s.trBackSeen, 'the notice closes into the character screen');
+    ui.screens = []; ui.openChars('march'); frame();
+    ok(ui.top().trSel === 'skill', 'the notice shows once');
+    ui.screens = []; ui.openCalyx(() => {}); frame();
+    texts = spy();
+    ok(texts.includes('Награда:'), 'the Simulator shows the drops of a calyx');
+    s.roster.march = keepMarch; s.inv.items = keepItems; s.credits = keepCredits;
+    ui.screens = keepScr; frame();
+  }
+  {
     const keepScr = ui.screens.slice(), keepRoster = JSON.parse(JSON.stringify(game.state.roster)), keepParty = game.state.party.slice();
     for (const k of Object.keys(H.CHARS)) if (k !== 'trail_p' && !game.state.roster[k]) game.debugChar(k, 10, 0);
     ui.screens = []; ui.openChars('march'); frame();
@@ -3243,6 +7422,142 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     for (const [name, open] of [['Archive', () => ui.openBank(null)], ['Save', () => ui.openSaves('save')], ['Load', () => ui.openSaves('load')], ['Controls', () => ui.openGuide()], ['Settings', () => ui.openSettings()]]) ok(closeOf(open), name + ' closes with its cross button');
     ui.screens = keepScr; frame();
   }
+  {
+    const keepScr = ui.screens, s0 = game.state, keep = { starlight: s0.starlight, embers: s0.embers, jade: s0.jade, shop: JSON.parse(JSON.stringify(s0.shop)), outfits: s0.outfits.slice(), pass: s0.inv.items.pass, credits: s0.credits };
+    const texts = [], realText = ui.text;
+    ui.text = function (str, ...rest) { texts.push(String(str)); return realText.call(this, str, ...rest); };
+    ui.screens = []; ui.openMenu(); frame();
+    ok(texts.includes('Снабжение') && !texts.includes('Управление'), 'the phone shows Supply where Controls was');
+    const ph = ui.top(); ph.rail = ph.railSel = 2; texts.length = 0; frame();
+    ok(texts.includes('Управление: клавиши поля, боя и карты'), 'Controls moved to the right rail under Settings');
+    ph.key('ok'); frame();
+    ok(ui.screens.length === 2, 'the rail opens Controls');
+    ui.screens = []; ui.openMenu(); frame();
+    const ph2 = ui.top(); ph2.sel = 10;
+    delete s0.flags.express_intro; texts.length = 0; ph2.key('ok'); frame();
+    ok(ui.screens.length === 1 && texts.some(t => t.includes('после знакомства с Экспрессом')), 'Supply waits for the Express like the Warp');
+    s0.flags.express_intro = true;
+    Object.assign(s0, { starlight: 900, embers: 700, jade: 3000 });
+    s0.shop = { hour: null, bought: {}, back: { starlight: 48, embers: 20 }, intro: false };
+    ph2.key('ok'); frame();
+    const intro = ui.top();
+    ok(!intro.full && s0.shop.intro && s0.shop.back === null && texts.includes('За прошлые прыжки начислено:'), 'the first visit explains the currencies and the back pay');
+    key('Enter'); frame();
+    const sup = ui.top();
+    ok(sup.full && sup.sec === 0 && sup.tab === 0, 'Supply opens on the Starlight shop');
+    texts.length = 0; frame();
+    ok(texts.includes('Неугасаемый звёздный свет') && texts.includes('Неугасаемый пепел') && texts.includes('Магазин обликов'), 'Supply shows both tabs and both sections');
+    key('KeyE'); frame();
+    ok(sup.tab === 1, 'Q/E switch the currency tab');
+    sup.sel = 1; key('Enter'); frame();
+    const buy = ui.top();
+    ok(buy.item().id === 'e_pass' && buy.n === 1, 'Enter opens the purchase window');
+    key('ArrowRight'); key('ArrowRight'); key('ArrowUp'); frame();
+    eq(buy.n, 5, 'the amount stops at the hourly limit');
+    key('ArrowLeft'); frame();
+    const p0 = s0.inv.items.pass || 0, e0 = s0.embers;
+    key('Enter'); frame();
+    ok(ui.top() === sup && s0.inv.items.pass === p0 + 4 && s0.embers === e0 - 360, 'buying four passes takes 360 Embers');
+    ok(ui.toasts.some(t => t.text === 'Получено: Звёздный пропуск ×4.'), 'the purchase is confirmed');
+    sup.sel = 1; key('Enter'); frame();
+    ok(ui.top().item().left === 1, 'the window remembers what is left this hour');
+    key('Escape'); frame();
+    s0.embers = 5; sup.sel = 2; key('Enter'); frame();
+    ok(ui.top() === sup && ui.toasts.some(t => t.text === 'Не хватает неугасаемого пепла.'), 'a lot without enough currency is refused with a reason');
+    key('Tab'); frame();
+    ok(sup.sec === 1, 'Tab opens the outfit shop');
+    texts.length = 0; frame();
+    ok(texts.includes('Зарождение весны') && texts.includes('Витрина моды'), 'the showcase shows Nascent Spring');
+    s0.outfits = []; delete s0.roster.march.outfit;
+    key('Enter'); frame();
+    const ob = ui.top();
+    key('Enter'); frame();
+    ok(game.ownsOutfit('march_spring') && s0.jade === 3000 - 1680 && ob.done, 'the outfit is bought for Stellar Jade');
+    key('Enter'); frame();
+    ok(game.outfitOf('march') === 'march_spring' && ui.top() === sup, 'the outfit can be worn right after the purchase');
+    ok(G.lookOf('march', game) === H.outfitLook('march_spring') && G.lookOf('march', null) === H.CHARS.march.look, 'the worn outfit replaces her look in the game');
+    for (const oid of Object.keys(H.OUTFITS)) {
+      const OL = H.outfitLook(oid);
+      G.bustCanvas(OL, 64); G.bustCanvas(OL, 34); G.figureCanvas(OL); G.figureCanvas(OL, 2);
+      for (const d of ['down', 'up', 'left', 'right']) for (const f of [0, 1, 3]) G.spriteCanvas(OL, d, f);
+      ok(H.CHARS[H.OUTFITS[oid].char] && H.OUTFITS[oid].scene, 'outfit ' + oid + ' has a bust, a figure, field sprites and a showcase scene');
+    }
+    const AQ = H.outfitLook('aqua_beach');
+    ok(H.OUTFITS.aqua_beach.char === 'aqua' && AQ.coat === 'bikini' && AQ.low === 'none' && !('skirtLen' in AQ) && !AQ.acc.some(x => /^(gembow|detsleeves|thighboots|bootvflap)/.test(x)) && AQ.acc.includes('barefoot') && AQ.acc.some(x => x.startsWith('hairtassel')), 'the Aqua beach outfit is a barefoot bikini that drops her bow, sleeves and boots');
+    const NB = H.outfitLook('nicole_bunny');
+    ok(H.OUTFITS.nicole_bunny.char === 'nicole' && H.OUTFITS.nicole_bunny.rarity === 4 && H.OUTFITS.nicole_bunny.price === 840 && NB.coat === 'bunnyvest' && NB.acc.some(x => x.startsWith('cattail')) && !NB.acc.some(x => /^(stocking1|rips|garter2|socks|choker)/.test(x)), 'the Nicole bunny outfit is a 4★ vest look with a leopard tail and no black stockings');
+    const MB = H.outfitLook('miyabi_blossom');
+    ok(H.OUTFITS.miyabi_blossom.char === 'miyabi' && H.OUTFITS.miyabi_blossom.name === 'Благородное цветение' && MB.coat === 'haori' && MB.low === 'skirt' && MB.acc.some(x => x.startsWith('foxears')) && !MB.acc.some(x => /^(tie|obi|goldtassel|haoritri|redcuff|skirtslit|sheath)/.test(x)), 'Dignified Blossom keeps the fox ears and swaps the coat for the haori dress');
+    const HF = H.outfitLook('hook_foreman');
+    ok(H.OUTFITS.hook_foreman.char === 'hook' && H.OUTFITS.hook_foreman.rarity === 4 && H.OUTFITS.hook_foreman.price === 840 && HF.coat === 'overalls' && HF.low === 'pants' && HF.acc.some(x => x.startsWith('minecap')) && HF.acc.some(x => x.startsWith('beltlamp')) && !HF.acc.some(x => /^(molehat|yoke|tiestripe|pouches|furcuffs|bow:|lantern)/.test(x)) && !('coatLen' in HF), 'the Hook miner outfit swaps the mole hat and coat for a fur cap with a lamp and bib overalls');
+    const AP = H.outfitLook('arlan_peppy');
+    ok(H.OUTFITS.arlan_peppy.char === 'arlan' && H.OUTFITS.arlan_peppy.rarity === 4 && H.OUTFITS.arlan_peppy.scene === 'walk' && AP.coat === 'hoodie' && AP.acc.some(x => x.startsWith('doghood')) && AP.acc.some(x => x.startsWith('lanyard')) && !AP.acc.some(x => /^(gauntlet|pauldronr|gear|harnessb|boots|kneepad|gloveR)/.test(x)) && !('neck' in AP), 'the Arlan Peppy outfit is a cream hoodie with a dog-ear hood and no security gear');
+    const HV = H.outfitLook('himeko_vermilion');
+    ok(H.OUTFITS.himeko_vermilion.char === 'himeko' && H.OUTFITS.himeko_vermilion.rarity === 5 && H.OUTFITS.himeko_vermilion.scene === 'eclipse' && HV.coat === 'valk' && HV.low === 'shorts' && HV.acc.some(x => x.startsWith('greatsword')) && HV.acc.some(x => x.startsWith('flamehorn')) && !HV.acc.some(x => /^(hairflower|peplum|capetassel|glove1|ruffle|lace|rose)/.test(x)) && !('lining' in HV), 'the Vermilion Knight outfit swaps the gown and cape for red armour, a flame ornament and a greatsword');
+    const MC = H.outfitLook('makoto_chocola');
+    ok(H.OUTFITS.makoto_chocola.char === 'makoto' && MC.coat === 'maid' && MC.low === 'skirt' && MC.acc.some(x => x.startsWith('maidcap')) && MC.acc.some(x => x.startsWith('catband')) && !MC.acc.some(x => /^(neon|glowcuff|hipblade|ankle|soles)/.test(x)), 'the Chocola cosplay is a maid dress with a cap and keeps the cat ears');
+    const MG = H.outfitLook('megumin_bakuen');
+    ok(MG.coat === 'shirt' && MG.capeZig && !MG.acc.some(x => /^(patchl|mstaff|stocking1|choker)/.test(x)) && MG.acc.some(x => x.startsWith('witchhat')), 'the Megumin school outfit keeps the hat and drops the eyepatch, staff and stocking');
+    ui.screens = []; ui.openChars('march'); frame();
+    const cs = ui.top();
+    cs.sec = 6; frame();
+    ok(texts.includes('Наряды') && texts.includes('Костюмы'), 'Outfits is the section under Information');
+    key('Enter'); frame();
+    ok(cs.outfitFocus && cs.outfitPick === 1, 'the outfit section opens on the worn outfit');
+    key('ArrowLeft'); key('Enter'); frame();
+    ok(game.outfitOf('march') === null, 'the default outfit can be worn again');
+    key('ArrowRight'); key('Enter'); frame();
+    ok(game.outfitOf('march') === 'march_spring', 'and Nascent Spring again');
+    s0.outfits = []; key('Enter'); frame();
+    ok(ui.top().full && ui.top().sec === 1 && ui.top() !== cs, 'an outfit that is not owned leads to the Supply showcase');
+    key('Escape'); frame();
+    ok(ui.top() === cs, 'leaving Supply returns to the character');
+    key('Escape'); frame();
+    ok(!cs.outfitFocus, 'Esc leaves the outfit cards');
+    ui.screens = []; ui.openChars('danheng'); frame();
+    ui.top().sec = 6; texts.length = 0; frame();
+    ok(texts.some(t => t.startsWith('Других нарядов')), 'characters without outfits say so');
+    {
+      const keepPets = { pets: s0.pets.slice(), pet: s0.pet, jade: s0.jade };
+      s0.pets = []; s0.pet = null; s0.jade = 1300;
+      ui.screens = []; ui.openSupply(); frame();
+      const ps = ui.top();
+      key('Tab'); key('Tab'); frame();
+      texts.length = 0; frame();
+      ok(ps.sec === 2 && texts.includes('Питомцы') && texts.includes('Привычки') && texts.includes('Чомусуке') && texts.includes('Купить'), 'Supply has a Pets section with Chomusuke and her habits');
+      for (const t of [0, 2, 4, 6, 8, 10, 12, 15]) { ui.t = t; frame(); }
+      key('Enter'); frame();
+      const pb = ui.top();
+      ok(pb !== ps && !pb.done, 'Enter opens the pet purchase window');
+      key('Enter'); frame();
+      ok(game.ownsPet('chomusuke') && s0.jade === 100 && pb.done, 'Chomusuke is bought for 1200 Stellar Jade');
+      key('Enter'); frame();
+      ok(ui.top() === ps && game.petOut() === 'chomusuke', 'the new pet can go along right after the purchase');
+      texts.length = 0; frame();
+      ok(texts.includes('Оставить на Экспрессе') && texts.some(t => t.startsWith('Пройдено вместе')), 'the owned pet shows its counters and the leave button');
+      key('Enter'); frame();
+      ok(game.petOut() === null && ui.toasts.some(t => t.text === 'Чомусуке осталась на Экспрессе.'), 'the pet can be left on the Express');
+      key('Enter'); frame();
+      ok(game.petOut() === 'chomusuke', 'and taken along again');
+      key('Tab'); frame();
+      ok(ps.sec === 0, 'Tab from Pets returns to the shop');
+      for (const v of ['front', 'back', 'side']) for (const pose of ['sit', 'walk', 'groom', 'yawn', 'squint', 'happy', 'fly', 'hiss', 'sleep']) for (const f of [0, 1]) ok(H.petCanvas('chomusuke', v, pose, f), 'pet art ' + v + ' ' + pose + ' ' + f);
+      const fake = { id: 'chomusuke', x: 3, y: 3, fx: 3, fy: 3, ox: 2, oy: 3, prog: 1, dir: 'down', still: 3, act: null, actT: 0.5, fly: false, say: 'Мрр.' };
+      for (const act of [null, 'sleep', 'groom', 'yawn', 'sneeze', 'pet', 'love', 'hiss', 'wake', 'look']) { fake.act = act; ui.drawPetField(ui.ctx, fake, 100, 100); ui.drawPetSay(ui.ctx, fake, 100, 100); }
+      fake.prog = 0.4; fake.fly = true; ui.drawPetField(ui.ctx, fake, 100, 100);
+      fake.fly = false; for (const d of ['up', 'down', 'left', 'right']) { fake.dir = d; ui.drawPetField(ui.ctx, fake, 100, 100); }
+      ok(H.petFrame(Object.assign({}, fake, { prog: 0.3, fly: true, ox: 2, x: 3 }), 0).pose === 'fly', 'a pet that falls behind flies');
+      Object.assign(s0, keepPets);
+    }
+    texts.length = 0;
+    ui.resultTag(10, 10, { kind: 'cone', rar: 3, sup: 1, glow: { cur: 'embers', n: 20 } }, []);
+    ui.resultTag(10, 10, { kind: 'char', rar: 5, res: 'max' }, []);
+    ok(texts.includes('+20 пепла') && texts.includes('+100 звёздного света') && texts.includes('Все эйдолоны открыты'), 'Warp result cards show the Starlight and Embers');
+    ui.text = realText;
+    Object.assign(s0, { starlight: keep.starlight, embers: keep.embers, jade: keep.jade, shop: keep.shop, outfits: keep.outfits, credits: keep.credits });
+    s0.inv.items.pass = keep.pass; delete s0.roster.march.outfit;
+    ui.screens = keepScr; ui.toasts = []; frame();
+  }
   ui.openChars('march');
   for (let s = 0; s < 5; s++) { ui.top().sec = s; frame(); key('KeyE'); frame(); }
   {
@@ -3257,7 +7572,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
       ok(needs.every(n => (!n.char || H.CHARS[n.char]) && (!n.eid || n.eid <= 6)), 'info ' + k + ' unlock conditions name real characters');
       texts.push(inf.full, inf.aka || '', inf.faction, inf.home || '', inf.about, ...(inf.intro || []).flatMap(q => [q.q, q.a, q.note]), ...(inf.extra || []).flatMap(e => [e.h, e.text]), ...inf.story.map(st => st.text), ...inf.voice.concat(inf.battle).flatMap(v => [v.h || v.t, v.text || '']));
     }
-    ok(Object.keys(H.CHARS).filter(k => k !== 'trail_p').every(k => H.INFO[k]), 'every roster character has an information page');
+    ok(Object.keys(H.CHARS).filter(k => k !== 'trail_p' && !CCC_LATER.has(k)).every(k => H.INFO[k]), 'every roster character has an information page');
     ok(texts.every(t => !/[—–]/.test(t) && !/Microsoft|Windows/.test(t)), 'info texts have no em dashes or real brand names');
     const cs = ui.top(), infoSec = 5, keepLvl = game.state.roster.march.lvl;
     cs.k = 'march'; cs.sec = infoSec; frame();
@@ -3331,8 +7646,9 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     ui.text = function (str, ...rest) { texts.push(String(str)); return realText.call(this, str, ...rest); };
     frame();
     const r = game.state.roster[cs.k], kitId = game.kitOf(cs.k), gain = game.baseStats(kitId, r.lvl, 4).hp - game.baseStats(kitId, r.lvl, 3).hp;
-    ok(texts.includes('Эйдолон IV') && texts.includes('закрыт') && texts.includes('+' + gain), 'the panel describes the selected Eidolon with its real stat gain');
-    ok(texts.some(t => t.includes('Дубликатов до открытия: ' + (4 - r.eid))), 'a locked Eidolon shows how many duplicates it needs');
+    const eidName = H.TRACES[kitId].eid[3][0];
+    ok(texts.includes('Эйдолон IV') && texts.includes('закрыт') && texts.some(t => t.includes('«' + eidName)) && (H.TRACES[kitId].eidFx ? !texts.some(t => /\+4%/.test(t)) && gain === 0 : texts.some(t => /\+4%/.test(t)) && gain > 0), 'the panel shows the official Eidolon, with the flat bonus only before the rework');
+    ok(texts.some(t => t.includes('до открытия: ' + (4 - r.eid))), 'a locked Eidolon shows how many duplicates or Shadows it needs');
     key('ArrowUp'); frame(); eq(cs.star, 3, 'up stays on the top node of the right side');
     key('ArrowDown'); frame(); eq(cs.star, 4, 'down moves along the right side');
     key('ArrowLeft'); key('ArrowLeft'); frame(); eq(cs.star, 2, 'left crosses the arch to the left side');
@@ -3346,7 +7662,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     key('Escape'); frame();
   }
   {
-    const E = H.Eidolons, keys = Object.keys(H.CHARS).filter(k => k !== 'trail_p'), R = game.state.roster, DASH = String.fromCharCode(8212);
+    const E = H.Eidolons, keys = Object.keys(H.CHARS).filter(k => k !== 'trail_p' && notLater(k)), R = game.state.roster, DASH = String.fromCharCode(8212);
     ok(E && keys.every(k => E.has(k)), 'every character has an Eidolon picture');
     for (const k of keys) {
       const sc = E.SCENES[k];
@@ -3395,7 +7711,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     ui.text = function (str, ...rest) { texts.push(String(str)); return H.UI.prototype.text.call(this, str, ...rest); };
     s2.star = 5; s2.starFocus = true; frame();
     delete ui.text;
-    ok(texts.includes('«' + E.SCENES.march.frags[5][0] + '»') && texts.some(t => t.includes('оживит героя')) && texts.includes(E.SCENES.march.title), 'the panel names the fragment, the picture and what Eidolon VI brings');
+    ok(texts.some(t => t.includes('«' + E.SCENES.march.frags[5][0])) && texts.some(t => t.includes('оживит героя')) && texts.includes(E.SCENES.march.title), 'the panel names the fragment, the picture and what Eidolon VI brings');
     const ctx = ui.ctx, look = H.Gfx.lookOf('march', game);
     let draws = 0;
     ctx.drawImage = () => { draws++; };
@@ -3417,6 +7733,55 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   ok(game.state.party.includes('seele') && game.state.party.length === 4, 'team slot filled from the picker');
   key('KeyL'); frame(); eq(game.state.party[0], 'seele', 'L makes the slot leader');
   ui.screens = [];
+  {
+    const s = game.state, before = s.party.slice();
+    ui.openTeam(); frame();
+    const team = ui.top();
+    eq(ui.hits.filter(h => h.w === 30 && h.h === 26).length, H.SQUADS, 'the team screen shows a number tab per squad');
+    key('KeyE'); frame();
+    ok(team.view === 1 && s.squad === 0 && s.party.join() === before.join(), 'an empty squad is shown but the battle party stays');
+    key('Enter'); frame(); ui.top().sel = ui.rosterKeys().indexOf('march'); key('Enter'); frame();
+    ok(s.squad === 1 && s.party.join() === 'march', 'the first member makes the empty squad active');
+    key('KeyQ'); frame();
+    ok(s.squad === 0 && s.party.join() === before.join(), 'Q returns to squad 1 with its members');
+    eq(game.squadOf(1).join(), 'march', 'squad 2 keeps its members while inactive');
+    key('Tab'); frame(); ok(team.over, 'Tab opens the squad overview');
+    key('ArrowDown'); key('Enter'); frame();
+    ok(!team.over && s.squad === 1 && team.view === 1, 'Enter in the overview switches to the chosen squad');
+    key('KeyQ'); frame(); eq(s.squad, 0, 'back on squad 1');
+    s.guest = { party: s.party.slice(), added: [] };
+    key('KeyE'); frame(); ok(team.view === 0 && s.squad === 0, 'squads do not switch while guests are in the team');
+    delete s.guest;
+    ui.screens = [];
+    const keys = ui.rosterKeys(), last = keys[keys.length - 1];
+    ui.openChars(last); frame(); key('KeyF'); frame();
+    ok(game.isFav(last) && !s.party.includes(last) && ui.rosterKeys().indexOf(last) === s.party.length && ui.rosterKeys().slice(0, s.party.length).join() === s.party.join(), 'F marks a favourite and lists it first after the squad');
+    key('KeyF'); frame(); ok(!game.isFav(last) && ui.rosterKeys().join() === keys.join(), 'F again clears the mark and the order');
+    {
+      const chars = ui.top(), btn = ui.hits.find(h => h.x === 12 && h.y === 408 && h.w === 170);
+      ok(!!btn, 'Characters has an All characters button at the bottom left');
+      btn.fn(); frame();
+      const all = ui.top(), cards = () => ui.hits.filter(h => h.w === 132 && h.h === 64);
+      ok(all !== chars && all.sel === ui.rosterKeys().indexOf(last) && cards().length === Math.min(20, keys.length - Math.round(all.sc.top) * 4), 'the button opens the grid of every character on the current one');
+      all.sel = 0; key('Enter'); frame();
+      ok(ui.top() === chars && chars.k === ui.rosterKeys()[0], 'Enter opens the picked character');
+      key('KeyL'); frame();
+      const again = ui.top(), pick = ui.rosterKeys()[ui.rosterKeys().length - 1];
+      again.sel = ui.rosterKeys().length - 1; key('KeyF'); frame();
+      ok(game.isFav(pick) && again.sel === ui.rosterKeys().indexOf(pick), 'F in the list marks a favourite and the cursor follows it');
+      key('KeyF'); frame(); key('Escape'); frame();
+      ok(!game.isFav(pick) && ui.top() === chars, 'Esc closes the list');
+    }
+    ui.screens = [];
+    for (const k of Object.keys(H.CHARS)) if (k !== 'trail_p' && !s.roster[k]) game.debugChar(k, 20, 0);
+    ui.openTeam(); frame(); key('Enter'); frame();
+    const pick = ui.top(), n = ui.rosterKeys().length, cards = () => ui.hits.filter(h => h.w === 132 && h.h === 64);
+    ok(n > 20 && cards().length === 20 && cards().every(h => h.y + h.h <= 402), 'the picker shows five rows inside the window');
+    pick.sel = n - 1; frame();
+    ok(pick.sc.top > 0 && cards().length === n - pick.sc.top * 4, 'the picker scrolls down to the last character');
+    ok(ui.wheels.length > 0 && ui.hits.some(h => h.w === 10), 'the picker has a wheel zone and a scroll bar');
+    ui.screens = [];
+  }
   for (let t = 0; t < 5; t++) { ui.openInventory(t); frame(); key('ArrowRight'); frame(); ui.screens = []; }
   ui.openInventory(0); key('Enter'); frame(); ui.screens = [];
   ui.openWarp(null); frame();
@@ -3572,8 +7937,10 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     game.state.evStar = 'ruanmei';
     key('ArrowDown'); frame(); eq(game.evStar(), 'seele', 'Down picks the next event hero');
     for (const id of ['kafka', 'silverwolf', 'blade']) { key('ArrowDown'); frame(); eq(game.evStar(), id, 'Down walks the Stellaron Hunters: ' + id); }
+    for (const id of H.FIVES.IDS) { key('ArrowDown'); frame(); eq(game.evStar(), id, 'Down walks the version 1.6 heroes: ' + id); }
+    ok(ui.hits.some(h => h.x > 530 && h.y < 60 && h.w === 64), 'the scrolled hero list has an arrow to go up');
     key('ArrowDown'); frame(); eq(game.evStar(), 'ruanmei', 'the hero list wraps around');
-    const card = ui.hits.find(h => h.x > 540 && h.y > 100 && h.y < 112);
+    const card = ui.hits.find(h => h.x > 540 && h.y > 100 && h.y < 120 && h.w === 56);
     ok(card, 'the hero picker has a card for Seele');
     ui.click({ clientX: card.x + card.w / 2, clientY: card.y + card.h / 2, button: 0 }); frame();
     eq(game.evStar(), 'seele', 'a click on the card picks Seele');
@@ -3594,9 +7961,172 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     key('Tab'); frame(); ok(eh.ban === 'conv' && eh.rows().every(e => e.ban === 'conv' || e.ban === 'forge'), 'Tab shows the Convene history');
     key('Tab'); frame(); ok(eh.ban === 'guild' && eh.rows().every(e => e.ban === 'guild'), 'Tab shows the Guild history');
     key('Tab'); frame(); ok(eh.ban === 'mid' && eh.rows().every(e => e.ban === 'mid' || e.ban === 'comp'), 'Tab shows the Midnight Channel history');
+    key('Tab'); frame(); ok(eh.ban === 'con' && eh.rows().every(e => e.ban === 'con' || e.ban === 'alley'), 'Tab shows the Кон-Тон history');
     key('Tab'); frame(); ok(eh.ban === 'std' && eh.rows().every(e => !e.ban), 'Tab shows the standard banner history');
     ui.screens = [];
   }
+    {
+      const T = H.TUNING;
+      game.state.inv.items.badge = 3;
+      delete game.state.flags.con_reg;
+      ui.screens = []; ui.openWarp(null); frame();
+      const cw = ui.top();
+      while (cw.ban !== 'con') { key('KeyE'); frame(); }
+      eq(cw.ban, 'con', 'Кон-Тон has its own Warp tab');
+      ok(H.EVENT_TABS.some(e => e.id === 'conton' && e.icon === 'badge'), 'the convention days have their event tab');
+      ok(ui.hits.some(h => h.w === 160 && h.h === 26), 'the registration desk covers the stage until the badge is taken');
+      cw.pull(1); frame();
+      ok(!cw.show && game.conRegistered() && game.state.inv.items.badge === 3 + T.conRegBadges, 'the first pull registers and gives a badge');
+      key('ArrowDown'); frame(); eq(game.starOf('con'), 'amanda', 'Down moves the spotlight to the next heroine');
+      key('Tab'); frame(); eq(cw.ban, 'alley', 'Tab opens the Artists Alley');
+      key('Tab'); frame();
+      cw.pull(1); frame();
+      ok(cw.show && game.state.warpLog[0].ban === 'con' && game.state.inv.items.badge === 2 + T.conRegBadges, 'a main stage pull spends a badge and plays a show');
+      ok(cw.show instanceof H.SpotlightShow && ui.audio.wantedSong === 'ccc', 'Кон-Тон plays the Spotlight scene over the minus track');
+      for (let i = 0; i < 8 && cw.show; i++) { key('Enter'); frame(); }
+      ok(!cw.show, 'the show closes');
+      game.pityOf('con').guar5 = true; game.pityOf('con').five = 52; frame();
+      cw.setChan('alley'); frame();
+      ui.screens = [];
+      delete game.state.inv.items.badge; game.state.warpBan = 'ev';
+      game.pityOf('con').guar5 = false; game.pityOf('con').five = 0;
+    }
+    {
+      const SG = H.SONGS, SK = H.SpotKit, bar = k => 0.026 + k * 240 / 130;
+      ok(SG.ccc.parts.inst === 'content/music/ccc-minus.mp3' && Math.abs(SG.ccc.loop[0] - bar(16)) < 0.01 && Math.abs(SG.ccc.loop[1] - bar(40)) < 0.01 && SG.ccc.bpm === 130, 'the minus loops bars 16 to 40 of its 130 BPM grid');
+      ok(Math.abs(SG.cccLobby.loop[1] - bar(7)) < 0.01 && Math.abs(H.SPOT_FILM_AT - bar(4)) < 0.01 && Math.abs(H.SPOT_CINE - 4 * 240 / 130) < 1e-6, 'the banner screen loops the intro and the film runs bars 4 to 8');
+      ok(Math.abs(SG.amanda.loop[1] - 70.779) < 0.01 && SG.amanda.bpm === 95 && Math.abs(SG.makoto.loop[1] - 67.016) < 0.01 && SG.makoto.bpm === 86 && Math.abs(SG.talleah.loop[0] - 11.748) < 0.01 && SG.talleah.bpm === 164, 'heroine themes loop as measured');
+      ok(['amanda', 'makoto', 'talleah'].every(id => SG[id].parts.inst === 'content/music/ccc-' + id + '.mp3'), 'heroine themes come from content/music');
+      ok(Math.abs(SK.THEME_AT.amanda - (0.042 + 14 * 240 / 95)) < 1e-6 && Math.abs(SK.THEME_AT.makoto - (0.039 + 240 / 86)) < 1e-6 && Math.abs(SK.THEME_AT.talleah - (0.041 + 6 * 240 / 164)) < 1e-6, 'a heroine theme starts on the bar of her scene');
+      ok(Object.values(SK.QUOTES).every(q => !/[—–]/.test(q) && q.length <= 60), 'Spotlight lines have no long dashes');
+      ok(!Object.values(SG).some(x => /Song \(final|CCC Song\.mp3/.test(JSON.stringify(x))), 'the song with vocals is never used in a pull');
+      const sres = [{ rar: 5, kind: 'char', id: 'amanda', name: H.CHARS.amanda.name, res: 'new' }, { rar: 4, kind: 'char', id: 'kazuma', name: H.CHARS.kazuma.name, res: 'new', cameo: true }, { rar: 3, kind: 'cone', id: 'arrows', name: H.CONES.arrows.name, sup: 1 }, { rar: 4, kind: 'char', id: 'march', name: H.CHARS.march.name, res: 'eid' }, { rar: 5, kind: 'cone', id: 'cccmagic', name: H.CONES.cccmagic.name, sup: 1 }];
+      const sp = new H.SpotlightShow(ui, sres, { ban: 'con' }), heard = [], sfx0 = ui.sfx;
+      ui.sfx = function (x) { heard.push(x); return sfx0.call(this, x); };
+      for (let tt = 0; tt < H.SPOT_CINE + 0.2; tt += 0.1) { sp.tick(0.1); sp.draw(ui.ctx); }
+      ok(sp.phase === 'reveal' && ['rumble', 'scan', 'beep', 'lever', 'star5', 'sparkle'].every(x => heard.includes(x)), 'the film plays the bus, the badge beep, the spotlight and the gold salute');
+      ok(sp.item().id === 'amanda' && ui.audio.wantedTheme === 'amanda', 'a new heroine brings in her theme');
+      for (let tt = 0; tt < 3.4; tt += 0.1) { sp.tick(0.1); sp.draw(ui.ctx); }
+      sp.enter(); sp.enter(); sp.draw(ui.ctx);
+      ok(sp.item().id === 'kazuma' && !ui.audio.wantedTheme, 'the next reveal fades the theme back to the minus');
+      ok(SK.QUOTES.kazuma === 'Я не косплеер. Я так всегда хожу.', 'Kazuma brings his own line to the convention');
+      for (let i = 0; i < 12 && sp.phase === 'reveal'; i++) { for (let tt = 0; tt < 3.4; tt += 0.2) { sp.tick(0.2); sp.draw(ui.ctx); } sp.enter(); }
+      ok(sp.phase === 'rack' && sp.res[sp.sel].rar === 5, 'the photo wall opens on a 5★ snapshot');
+      const s0 = sp.sel; sp.key('right'); ok(sp.sel === s0 + 1, 'arrows move along the photo wall');
+      for (let tt = 0; tt < 1.4; tt += 0.1) { sp.tick(0.1); sp.draw(ui.ctx); }
+      ok(sp.blinked, 'the gorilla blinks once when a 5★ hangs on the wall');
+      sp.enter(); ok(sp.done, 'Enter closes the photo wall');
+      ui.sfx = sfx0;
+      const one = new H.SpotlightShow(ui, [{ rar: 5, kind: 'char', id: 'talleah', name: H.CHARS.talleah.name, res: 'eid' }], { ban: 'con' });
+      one.skip(); ok(one.phase === 'reveal' && ui.audio.wantedTheme === 'talleah', 'Esc in a single pull goes straight to the heroine with her theme');
+      ok(Math.abs(SK.POSE_AT.talleah - (0.041 + 12 * 240 / 164)) < 1e-6, 'a repeat heroine starts her theme on the pose bar');
+      one.skip(); ok(one.done && !ui.audio.wantedTheme, 'closing the scene stops the theme');
+      const mcut = SK.CUTS.makoto, mbar = 240 / 86;
+      eq(mcut.map(x => x[0]).join(), 'bus,snap,vault,pose', 'Makoto scene beats');
+      ok(mcut.every(x => Math.abs(x[1] - mbar) < 1e-9) && Math.abs(SK.cutLen('makoto') - 4 * mbar) < 1e-9, 'each Makoto beat lasts one bar of her 86 BPM theme');
+      ok(Object.values(SK.CUT_LINES).every(L => Object.values(L).every(x => x.length <= 52 && !/[—–]/.test(x))), 'scene lines are short and have no long dashes');
+      const mk = new H.SpotlightShow(ui, [{ rar: 5, kind: 'char', id: 'makoto', name: H.CHARS.makoto.name, res: 'new' }], { ban: 'con' });
+      mk.begin([0]);
+      ok(Math.abs(mk.length(mk.item()) - (4 * mbar + SK.TAIL)) < 1e-9 && ui.audio.wantedTheme === 'makoto', 'a new Makoto plays her four-bar scene under her theme');
+      const mheard = [];
+      ui.sfx = function (x) { mheard.push(x); return sfx0.call(this, x); };
+      for (let tt = 0; tt < 4 * mbar + 0.3; tt += 0.1) { mk.tick(0.1); mk.draw(ui.ctx); }
+      ui.sfx = sfx0;
+      ok(['rumble', 'snap', 'whoosh', 'warp', 'star5'].every(x => mheard.includes(x)), 'Makoto scene plays the bus, the snap, the portal and the pose');
+      const mk2 = new H.SpotlightShow(ui, [{ rar: 5, kind: 'char', id: 'makoto', name: H.CHARS.makoto.name, res: 'eid' }], { ban: 'con' });
+      mk2.begin([0]);
+      ok(mk2.own(mk2.item()).length === 1 && mk2.own(mk2.item())[0][0] === 'pose' && Math.abs(mk2.length(mk2.item()) - (mbar + SK.TAIL)) < 1e-9, 'a repeat Makoto only strikes the pose');
+      mk.skip(); mk2.skip();
+      const acut = SK.CUTS.amanda, abar = 240 / 95;
+      eq(acut.map(x => x[0]).join(), 'call,moths,burst,blush', 'Amanda scene beats');
+      ok(acut.every(x => Math.abs(x[1] - abar) < 1e-9) && Math.abs(SK.THEME_AT.amanda + 2 * abar - SK.POSE_AT.amanda) < 1e-9, 'Amanda beats follow her 95 BPM theme and the burst lands on bar 16');
+      ok(H.CHARS.amanda.lanternLook && H.CHARS.amanda.lanternLook.acc.includes('lantern'), 'Amanda has her Lantern costume for the scene');
+      const am = new H.SpotlightShow(ui, [{ rar: 5, kind: 'char', id: 'amanda', name: H.CHARS.amanda.name, res: 'new' }], { ban: 'con' });
+      am.begin([0]);
+      const aheard = [];
+      ui.sfx = function (x) { aheard.push(x); return sfx0.call(this, x); };
+      for (let tt = 0; tt < 4 * abar + 0.3; tt += 0.1) { am.tick(0.1); am.draw(ui.ctx); }
+      ui.sfx = sfx0;
+      ok(['msg_in', 'sparkle', 'break', 'clap', 'cheer'].every(x => aheard.includes(x)), 'Amanda scene plays the phone, the moths, the burst and the applause');
+      const am2 = new H.SpotlightShow(ui, [{ rar: 5, kind: 'char', id: 'amanda', name: H.CHARS.amanda.name, res: 'eid' }], { ban: 'con' });
+      am2.begin([0]);
+      ok(am2.own(am2.item())[0][0] === 'burst' && am2.own(am2.item()).length === 1, 'a repeat Amanda only bursts out of the heart');
+      am.skip(); am2.skip();
+      const tcut = SK.CUTS.talleah, tbar = 240 / 164;
+      eq(tcut.map(x => x[0]).join(), 'lawn,knob,standee,salute', 'Talleah scene beats');
+      ok(tcut.every(x => Math.abs(x[1] - 2 * tbar) < 1e-9) && Math.abs(SK.THEME_AT.talleah + 6 * tbar - SK.POSE_AT.talleah) < 1e-9, 'each Talleah beat lasts two bars of her 164 BPM theme and the salute lands on bar 12');
+      const tl = new H.SpotlightShow(ui, [{ rar: 5, kind: 'char', id: 'talleah', name: H.CHARS.talleah.name, res: 'new' }], { ban: 'con' });
+      tl.begin([0]);
+      const theard = [];
+      ui.sfx = function (x) { theard.push(x); return sfx0.call(this, x); };
+      for (let tt = 0; tt < 8 * tbar + 0.3; tt += 0.1) { tl.tick(0.1); tl.draw(ui.ctx); }
+      ui.sfx = sfx0;
+      ok(['scan', 'deny', 'door', 'hit', 'tech', 'star5'].every(x => theard.includes(x)), 'Talleah scene plays the scan, the door, the standee and the salute');
+      const tl2 = new H.SpotlightShow(ui, [{ rar: 5, kind: 'char', id: 'talleah', name: H.CHARS.talleah.name, res: 'eid' }], { ban: 'con' });
+      tl2.begin([0]);
+      ok(tl2.own(tl2.item())[0][0] === 'salute' && tl2.own(tl2.item()).length === 1, 'a repeat Talleah only salutes');
+      tl.skip(); tl2.skip();
+      eq(SK.CUTS.kazuma.map(x => x[0]).join(), 'gate,steal,stage,pose', 'Kazuma convention beats');
+      ok(Math.abs(SK.cutLen('kazuma') - H.SPOT_CINE) < 1e-9, 'Kazuma scene runs four bars of the minus, 7.38 s');
+      ok(SK.CUT_LINES.kazuma.pose === SK.QUOTES.kazuma, 'Kazuma ends on his special line');
+      const kz = new H.SpotlightShow(ui, [{ rar: 4, kind: 'char', id: 'kazuma', name: H.CHARS.kazuma.name, res: 'new', cameo: true }], { ban: 'con' });
+      kz.begin([0]);
+      ok(!ui.audio.wantedTheme && kz.own(kz.item()).length === 4, 'Kazuma plays his own scene under the minus without a theme');
+      const kheard = [];
+      ui.sfx = function (x) { kheard.push(x); return sfx0.call(this, x); };
+      for (let tt = 0; tt < H.SPOT_CINE + 0.3; tt += 0.1) { kz.tick(0.1); kz.draw(ui.ctx); }
+      ui.sfx = sfx0;
+      ok(['deny', 'tech', 'cheer', 'steam'].every(x => kheard.includes(x)), 'Kazuma scene plays the gate, the Steal, the jury and the sigh');
+      kz.skip();
+      eq(SK.CUTS.welt.map(x => x[0]).join(), 'alley,flip,gravity,pose', 'Welt convention beats');
+      ok(Math.abs(SK.cutLen('welt') - H.SPOT_CINE) < 1e-9 && SK.QUOTES.welt.length <= 58 && Object.values(SK.CUT_LINES.welt).concat(SK.QUOTES.welt).every(s => !/[—–]/.test(s)), 'Welt scene runs four bars of the minus with short lines and no long dashes');
+      const wl = new H.SpotlightShow(ui, [{ rar: 5, kind: 'char', id: 'welt', name: H.CHARS.welt.name, res: 'new' }], { ban: 'con' });
+      wl.begin([0]);
+      ok(!ui.audio.wantedTheme && wl.own(wl.item()).length === 4, 'Welt plays his own scene under the minus without a theme');
+      const wheard = [];
+      ui.sfx = function (x) { wheard.push(x); return sfx0.call(this, x); };
+      for (let tt = 0; tt < H.SPOT_CINE + 0.3; tt += 0.1) { wl.tick(0.1); wl.draw(ui.ctx); }
+      ui.sfx = sfx0;
+      ok(['text', 'select', 'break_obj', 'debuff', 'cheer', 'star5'].every(x => wheard.includes(x)), 'Welt scene plays the pen, the flip book, the falling boxes, the gravity and the jury');
+      const wl2 = new H.SpotlightShow(ui, [{ rar: 5, kind: 'char', id: 'welt', name: H.CHARS.welt.name, res: 'eid' }], { ban: 'con' });
+      wl2.begin([0]);
+      ok(wl2.own(wl2.item()).length === 1 && wl2.own(wl2.item())[0][0] === 'gravity', 'a repeat Welt only catches the boxes');
+      wl.skip(); wl2.skip();
+      const STD4 = { march: ['selfie,pompom,pose', 'pompom', ['shutter', 'sparkle', 'cheer', 'star4']], danheng: ['desk,selfie,pose', 'selfie', ['text', 'ticket', 'shutter', 'deny', 'swing', 'star4']], asta: ['shop,gift,pose', 'gift', ['chest', 'confirm', 'sparkle', 'cheer', 'glint', 'star4']], arlan: ['search,found,pose', 'found', ['scan', 'glint', 'heal', 'cheer', 'tech', 'star4']], herta: ['dolls,spin,pose', 'spin', ['scan', 'text', 'deny', 'swing', 'break_obj', 'break', 'star4']], serval: ['gig,brother,pose', 'brother', ['strum', 'cheer', 'text', 'tech', 'star4']], natasha: ['teddy,shot,pose', 'shot', ['select', 'heal', 'step', 'deny', 'star4']], sampo: ['deal,chase,pose', 'chase', ['whoosh', 'chest', 'ticket', 'deny', 'step', 'star4']], hook: ['march,hide,pose', 'hide', ['step', 'cheer', 'whoosh', 'break_obj', 'ult', 'star4']], pela: ['report,books,pose', 'books', ['scan', 'beep', 'text', 'glint', 'sparkle', 'chest', 'tech', 'star4']], lynx: ['tent,family,pose', 'family', ['swing', 'door', 'text', 'deny', 'heal', 'star4']], luka: ['arm,snack,pose', 'snack', ['tech', 'hit', 'break', 'select', 'deny', 'crit', 'star4']], sushang: ['deeds,tales,pose', 'tales', ['confirm', 'buff', 'text', 'sparkle', 'ult', 'star4']], xueyi: ['book,chain,pose', 'chain', ['select', 'text', 'whoosh', 'debuff', 'deny', 'crit', 'star4']], tingyun: ['deal,tail,pose', 'tail', ['text', 'select', 'confirm', 'shutter', 'cheer', 'buff', 'star4']], hanya: ['judge,sister,pose', 'sister', ['text', 'clap', 'cheer', 'step', 'debuff', 'swing', 'star4']], qingque: ['table,win,pose', 'win', ['select', 'step', 'chest', 'crit', 'deny', 'glint', 'star4']], yukong: ['kite,traffic,pose', 'traffic', ['whoosh', 'cheer', 'swing', 'confirm', 'buff', 'star4']], guinaifen: ['juggle,stream,pose', 'stream', ['whoosh', 'clap', 'chest', 'beep', 'msg_in', 'break', 'star4']] };
+      for (const [id, [beats, brief, sounds]] of Object.entries(STD4)) {
+        eq(SK.CUTS[id].map(x => x[0]).join(), beats, id + ' convention beats');
+        ok(Math.abs(SK.cutLen(id) - H.SPOT_CINE / 2) < 1e-9 && SK.QUOTES[id].length <= 58 && !/[—–]/.test(SK.QUOTES[id]) && JSON.stringify(SK.CUT_LINES[id]).length > 20, id + ' scene runs two bars of the minus and ends on a short line');
+        const sh = new H.SpotlightShow(ui, [{ rar: 4, kind: 'char', id, name: H.CHARS[id].name, res: 'new' }], { ban: 'con' });
+        sh.begin([0]);
+        ok(!ui.audio.wantedTheme && sh.own(sh.item()).length === 3, id + ' plays an own scene under the minus without a theme');
+        const heard = [];
+        ui.sfx = function (x) { heard.push(x); return sfx0.call(this, x); };
+        for (let tt = 0; tt < H.SPOT_CINE / 2 + 0.3; tt += 0.1) { sh.tick(0.1); sh.draw(ui.ctx); }
+        ui.sfx = sfx0;
+        ok(sounds.every(x => heard.includes(x)), id + ' scene plays its sounds');
+        const rep = new H.SpotlightShow(ui, [{ rar: 4, kind: 'char', id, name: H.CHARS[id].name, res: 'dup' }], { ban: 'con' });
+        rep.begin([0]);
+        ok(rep.own(rep.item()).length === 1 && rep.own(rep.item())[0][0] === brief, 'a repeat ' + id + ' plays one beat');
+        sh.skip(); rep.skip();
+      }
+      const STD5 = { himeko: ['stand,sip,lamp,pose', 'sip', ['chest', 'steam', 'deny', 'break', 'whoosh', 'buff', 'star5']], bronya: ['mirror,door,parade,pose', 'parade', ['select', 'text', 'door', 'whoosh', 'clap', 'star5']], gepard: ['patrol,kids,wall,pose', 'wall', ['text', 'deny', 'cheer', 'shield', 'break', 'heal', 'star5']], clara: ['shy,coat,tree,pose', 'tree', ['select', 'cheer', 'whoosh', 'chest', 'steam', 'heal', 'shutter', 'star5']], yanqing: ['vendor,sheath,duel,pose', 'duel', ['glint', 'swing', 'chest', 'deny', 'crit', 'cheer', 'star5']], bailu: ['booth,candy,height,pose', 'candy', ['text', 'heal', 'sparkle', 'scan', 'deny', 'chest', 'shutter', 'star5']] };
+      for (const [id, [beats, brief, sounds]] of Object.entries(STD5)) {
+        eq(SK.CUTS[id].map(x => x[0]).join(), beats, id + ' convention beats');
+        ok(Math.abs(SK.cutLen(id) - H.SPOT_CINE) < 1e-9 && SK.QUOTES[id].length <= 58 && !/[—–]/.test(SK.QUOTES[id]), id + ' scene runs four bars of the minus and ends on a short line');
+        const sh = new H.SpotlightShow(ui, [{ rar: 5, kind: 'char', id, name: H.CHARS[id].name, res: 'new' }], { ban: 'con' });
+        sh.begin([0]);
+        ok(!ui.audio.wantedTheme && sh.own(sh.item()).length === 4, id + ' plays an own scene under the minus without a theme');
+        const heard = [];
+        ui.sfx = function (x) { heard.push(x); return sfx0.call(this, x); };
+        for (let tt = 0; tt < H.SPOT_CINE + 0.3; tt += 0.1) { sh.tick(0.1); sh.draw(ui.ctx); }
+        ui.sfx = sfx0;
+        ok(sounds.every(x => heard.includes(x)), id + ' scene plays its sounds');
+        const rep = new H.SpotlightShow(ui, [{ rar: 5, kind: 'char', id, name: H.CHARS[id].name, res: 'eid' }], { ban: 'con' });
+        rep.begin([0]);
+        ok(rep.own(rep.item()).length === 1 && rep.own(rep.item())[0][0] === brief, 'a repeat ' + id + ' plays one beat');
+        sh.skip(); rep.skip();
+      }
+    }
     {
       const T = H.TUNING;
       game.state.inv.items.vkey = 3;
@@ -3665,6 +8195,170 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
       game.battle = null; ui.mode = 'field'; ui.bt = null; game.state.party = party0;
     }
   {
+    const HA = H.HARES, party0 = game.state.party.slice(), seen = [], apply = ui.applyEvent, T = H.TUNING;
+    try {
+      for (const id of HA.IDS) game.state.roster[id] = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+      game.state.party = ['billy', 'nicole', 'anby', 'natasha'];
+      ui.applyEvent = function (e) { seen.push(e); return apply.call(this, e); };
+      game.startBattle({ enemies: ['gunner:20', 'gunner:20', 'gunner:20'], lvl: 20, bg: 'snow', music: 'battle' });
+      ui.drainGameEvents(); ui.bt.auto = false;
+      const hb = game.battle, idle = () => hb.phase === 'input' && !ui.bt.queue.length && !ui.bt.cur, open = () => ui.chainOpen();
+      const pump = () => { for (let i = 0; i < 900 && !idle() && !open() && !hb.over; i++) { ui.update(0.1); if (i % 5 === 0) ui.render(); } };
+      const of = id => hb.allies.find(a => a.charId === id);
+      const reach = id => { for (let i = 0; i < 30 && hb.current !== of(id); i++) { if (open()) ui.chainPick(null); else ui.doAct('basic'); pump(); } return hb.current === of(id); };
+      for (const e of hb.enemies) { e.hp = e.maxHp = e.dHp = e.hp * 10; e.tough = e.maxTough = 300; }
+      pump(); frame();
+      ok(reach('nicole'), 'the battle reaches Nicole');
+      hb.sp = 5; ui.bt.target = hb.living[1]; ui.pickAct('skill'); ui.confirmAct(); pump(); frame();
+      ok(ui.bt.field && ui.bt.field.turns >= 1 && seen.some(e => e.t === 'field' && e.on), 'the field dome shows under the foes');
+      const tags = []; ui.haresFoeTags(hb.living[0], tags);
+      ok(tags.includes('Защ −' + Math.round(T.fieldDef * 100) + '%'), 'foes in the field carry the DEF tag');
+      eq(of('nicole').dCase, T.caseShots, 'Nicole card shows her loaded shots');
+      ok(reach('anby'), 'the battle reaches Anby');
+      for (const e of hb.enemies) { e.tough = 1; e.broken = false; }
+      ui.bt.target = hb.living[1]; ui.pickAct('basic'); ui.confirmAct(); pump(); frame();
+      ok(open() && hb.phase === 'chain', 'a break opens the Chain Attack panel and the battle waits');
+      ui.doAct('basic'); frame();
+      ok(open(), 'commands do nothing while the panel is open');
+      const i0 = ui.chainIndex();
+      ui.battleKey('right', 'ArrowRight'); frame();
+      ok(ui.bt.chainSel === (i0 + 1) % hb.chainCur.cands.length, '→ moves the choice');
+      const want = hb.chainCur.cands[ui.chainIndex()];
+      ui.battleKey('ok', 'Enter');
+      for (let i = 0; i < 300 && !seen.some(e => e.t === 'act' && e.kind === 'chain'); i++) ui.update(0.05);
+      ok(seen.some(e => e.t === 'act' && e.kind === 'chain' && e.u === want), 'Enter sends the chosen partner into the chain');
+      pump(); frame();
+      if (!open()) { for (const e of hb.living) { e.tough = 1; e.broken = false; } for (let i = 0; i < 20 && !open(); i++) { if (idle()) { ui.bt.target = hb.living[0]; ui.doAct('basic'); } pump(); } }
+      ok(open(), 'another break asks again');
+      let g2 = 0;
+      while (open() && g2++ < 6) { ui.battleKey('back', 'Escape'); pump(); }
+      ok(!open() && seen.some(e => e.t === 'chainSkip') && seen.some(e => e.t === 'chainEnd'), 'Esc skips the next chain and the battle goes on');
+      for (const e of hb.enemies) { e.tough = 1; e.broken = false; }
+      ui.bt.auto = true;
+      const n0 = seen.filter(e => e.t === 'act' && e.kind === 'chain').length;
+      for (let i = 0; i < 900 && seen.filter(e => e.t === 'act' && e.kind === 'chain').length === n0 && !hb.over; i++) ui.update(0.1);
+      ok(seen.filter(e => e.t === 'act' && e.kind === 'chain').length > n0, 'the auto battle answers the chain panel by itself');
+    } finally {
+      ui.applyEvent = apply;
+      game.battle = null; ui.mode = 'field'; ui.bt = null; game.state.party = party0;
+      for (const id of H.HARES.IDS) delete game.state.roster[id];
+    }
+  }
+  {
+    const F5 = H.FIVES, party0 = game.state.party.slice();
+    const seen = [], apply = ui.applyEvent;
+    try {
+      for (const id of F5.IDS) game.state.roster[id] = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+      game.state.party = ['jingyuan', 'topaz', 'jingliu', 'imbibitor'];
+      ui.applyEvent = function (e) { seen.push(e); return apply.call(this, e); };
+      game.startBattle({ enemies: ['reaver:20', 'eliminator:20', 'flamespawn:20'], lvl: 20, bg: 'snow', music: 'battle' });
+      ui.drainGameEvents(); ui.bt.auto = false;
+      const cb = game.battle, idle = () => cb.phase === 'input' && !ui.bt.queue.length && !ui.bt.cur, pump = () => { for (let i = 0; i < 900 && !idle() && !cb.over; i++) { ui.update(0.1); if (i % 5 === 0) ui.render(); } };
+      const of = id => cb.allies.find(a => a.charId === id), jy = of('jingyuan'), tz = of('topaz'), jl = of('jingliu'), il = of('imbibitor');
+      for (const e of cb.enemies) e.hp = e.maxHp = e.dHp = e.hp * 20;
+      pump(); frame();
+      const f5 = ui.bt.five;
+      ok(f5 && f5.lord && f5.lord.u.id === 'lord' && f5.numby && f5.numby.u.id === 'numby', 'the Lightning-Lord and Numby appear on the field');
+      ok(ui.turnOrder(12).some(o => o.u.id === 'lord') && ui.turnOrder(12).some(o => o.u.id === 'numby'), 'both summons have a place on the action rail');
+      ok(ui.unitPos(f5.lord.u).x === ui.fivesPos(f5.lord.u).x && ui.unitPos(f5.numby.u).x !== ui.unitPos(f5.lord.u).x, 'floating text uses each summon spot');
+      for (let i = 0; i < 30 && cb.current !== tz; i++) { ui.doAct('basic'); pump(); }
+      if (cb.current === tz) {
+        cb.sp = 5; ui.bt.target = cb.living[1]; ui.pickAct('skill'); ui.confirmAct(); pump(); frame();
+        ok(cb.living.some(e => e.buffs.some(b => b.s === 'debt')) && seen.some(e => e.t === 'dmg' && e.label === 'Счетовод'), 'Topaz marks a debtor and Numby strikes it in the battle UI');
+      }
+      for (let i = 0; i < 30 && cb.current !== il; i++) { ui.doAct('basic'); pump(); }
+      if (cb.current === il) {
+        cb.sp = 3; ui.pickAct('skill'); ui.confirmAct(); pump(); frame();
+        ok(cb.current === il && il.flags.tier === 1, 'Dracore Libre in the UI keeps the turn and raises the enhancement');
+        eq(cb.abilityFor(il, 'basic').ab.name, 'Превосходство', 'the attack button now casts Transcendence');
+        ui.doAct('basic'); pump();
+      }
+      jl.flags.syz = 2; cb.enterTrans(jl); ui.pullEvents();
+      for (let i = 0; i < 30 && cb.current !== jl; i++) { ui.doAct('basic'); pump(); }
+      if (cb.current === jl) {
+        ui.bt.msg = null; ui.pickAct('basic');
+        ok(/трансмиграции/.test(ui.bt.msg || '') && cb.current === jl, 'the attack button is locked in Spectral Transmigration');
+        frame();
+      }
+      jy.hp = 1; cb.hit(cb.living[0], jy, 0, { raw: 10 }); ui.pullEvents(); pump(); for (let i = 0; i < 30; i++) ui.update(0.05);
+      ok(!ui.bt.five.lord, 'the Lightning-Lord fades out when Jing Yuan falls');
+    } finally {
+      ui.applyEvent = apply;
+      game.battle = null; ui.mode = 'field'; ui.bt = null; game.state.party = party0;
+      for (const id of F5.IDS) delete game.state.roster[id];
+    }
+  }
+  {
+    const CC = H.CONTON, party0 = game.state.party.slice();
+    const seen = [], apply = ui.applyEvent;
+    try {
+      for (const id of CC.IDS) game.state.roster[id] = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+      game.state.party = ['makoto', 'amanda', 'talleah', 'natasha'];
+      ui.applyEvent = function (e) { seen.push(e); return apply.call(this, e); };
+      game.startBattle({ enemies: ['reaver:20', 'eliminator:20', 'flamespawn:20'], lvl: 20, bg: 'snow', music: 'battle' });
+      ui.drainGameEvents(); ui.bt.auto = false;
+      const cb = game.battle, idle = () => cb.phase === 'input' && !ui.bt.queue.length && !ui.bt.cur, pump = () => { for (let i = 0; i < 900 && !idle() && !cb.over; i++) { ui.update(0.1); if (i % 5 === 0) ui.render(); } };
+      const of = id => cb.allies.find(a => a.charId === id), mk = of('makoto'), am = of('amanda'), tl = of('talleah'), na = of('natasha');
+      for (const e of cb.enemies) e.hp = e.maxHp = e.dHp = e.hp * 10;
+      pump(); frame();
+      ok(ui.bt.cc && ui.bt.cc.gyn && ui.bt.cc.gyn.u.id === 'gynoids', 'the gynoids appear next to the field when Talleah is in the team');
+      ok(ui.turnOrder(7).some(o => o.u.id === 'gynoids'), 'the gynoids have their own place on the action rail');
+      eq(ui.unitPos(ui.bt.cc.gyn.u).x, ui.gynoidPos().x, 'floating text over the gynoids uses their own spot, not Hecate');
+      for (let i = 0; i < 30 && !(cb.current === mk); i++) { ui.doAct('basic'); pump(); }
+      ok(cb.current === mk, 'the battle reaches Makoto');
+      cb.sp = 5; ui.bt.target = cb.living[0]; ui.pickAct('skill'); ui.confirmAct();
+      for (let i = 0; i < 80 && !seen.some(e => e.t === 'steal'); i++) frame(1, 0.05);
+      ok(seen.some(e => e.t === 'steal') && ui.bt.floats.some(f => /% хода$/.test(f.text)), '«Ловкость рук» shows the stolen turn share over the target');
+      pump(); frame();
+      ok(mk.dShiny >= 1 && mk.dShiny === mk.flags.shiny, 'Makoto card shows her Shinies after the Skill');
+      for (let i = 0; i < 30 && cb.current !== mk; i++) { ui.doAct('basic'); pump(); }
+      mk.energy = mk.maxEnergy; ui.doUlt(mk); pump(); frame();
+      ok(mk.flags.away === 'portal' || seen.some(e => e.t === 'back'), 'Makoto Ultimate sends her into the portal');
+      if (mk.flags.away === 'portal') { eq(mk.dAway, 'portal', 'her card turns into «В другом измерении»'); frame(); }
+      let cut = null;
+      for (let i = 0; i < 40 && !seen.some(e => e.t === 'back'); i++) { ui.doAct('basic'); for (let j = 0; j < 900 && !idle() && !cb.over; j++) { ui.update(0.1); if (ui.bt.cc.cut) cut = cut || ui.bt.cc.cut.kind; } }
+      eq(cut, 'heist', 'the return from the portal plays the red ring cut-in with «Мяу.»');
+      ok(!mk.dAway, 'the card is back to normal after the return');
+      na.hp = na.dHp = Math.round(na.maxHp * 0.2);
+      am.flags.pink = false; am.dPink = false;
+      cb.contonHurt(na); ui.pullEvents();
+      let call = false;
+      for (let i = 0; i < 90; i++) { ui.update(0.05); ui.render(); if (ui.bt.cc.cut && ui.bt.cc.cut.kind === 'call') call = true; }
+      ok(call, '«Зов Защитницы» plays its cut-in');
+      ok(am.dPink && ui.contonPortrait(ui.ctx, am, 0, 0, 58), 'Amanda card switches to the pink portrait');
+      ok(na.flags.cocoon === am && na.dShield > 0, 'the ally card gets the Cocoon heart frame');
+      const foe = cb.living[0];
+      cb.hit(foe, na, 0, { raw: na.shield + 1 }); cb.cleanup(); ui.pullEvents();
+      let burst = false;
+      for (let i = 0; i < 60; i++) { ui.update(0.05); ui.render(); if (ui.bt.cc.burst) burst = true; }
+      ok(burst, 'a popped Cocoon sends the pink and green swirl to the foes');
+      cb.shackle(tl, foe, 2); cb.contonEnemy(foe); ui.pullEvents();
+      let chain = false;
+      for (let i = 0; i < 40; i++) { ui.update(0.05); ui.render(); if (ui.bt.cc.chains.has(foe)) chain = true; }
+      ok(chain && foe.dShackle === 1, 'the Shackles flash when they strike and the tag counts down');
+      cb.setSig(foe); ui.pullEvents(); frame(10);
+      const tags = ['ПРОБИТ', 'Оковы', 'Сигнатура'];
+      ui.contonFoeTags(foe, tags);
+      eq(tags.join(), 'Оковы 1,ПРОБИТ', 'the enemy tags lead with the Shackle count and leave the Signature to the reticle');
+      cb.applause(mk); ui.pullEvents();
+      let clap = false;
+      for (let i = 0; i < 30; i++) { ui.update(0.05); ui.render(); if (ui.bt.cc.clap) clap = true; }
+      ok(clap, 'applause raises the crowd band');
+      for (const h of cb.gynoids()) h.flags.squad = 2;
+      frame(4);
+      tl.hp = 1; cb.hit(foe, tl, 0, { raw: 99 }); ui.pullEvents();
+      for (let i = 0; i < 60; i++) { ui.update(0.05); ui.render(); }
+      if (!cb.over) eq(tl.dAway, 'capsule', 'the capsule card shows «На корабле»');
+      const types = ['gynoids', 'mark', 'shackle', 'shiny', 'steal', 'away', 'back', 'capsule', 'ccForm', 'applause'];
+      eq(types.filter(t => !seen.some(e => e.t === t)).join(), '', 'every Con-Ton battle event reaches the battle screen');
+      ok(seen.every(e => !e.t || e.t !== 'act' || !e.call || e.hold > 0), 'cut-in acts hold the queue while they play');
+    } finally {
+      ui.applyEvent = apply;
+      game.battle = null; ui.mode = 'field'; ui.bt = null; game.state.party = party0;
+      for (const id of CC.IDS) delete game.state.roster[id];
+    }
+  }
+  {
     game.state.inv.items.tape = 12;
     game.state.jade = 0;
     ui.openWarp(noop); frame();
@@ -3727,7 +8421,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
       ok(H.FOURS.IDS.every(id => TV.SHOWS[id] && TV.SHOWS[id].length === 3 && TV.SHOWS[id][0].ch && !TV.SHOWS[id][2].ch), 'every version 1.4 hero has a channel that goes from a broadcast to a private moment without OSD');
       {
         const sig4 = new Set([...Object.values(H.BANNERS.sig.stars).flatMap(x => x.four), ...H.WARP_POOL.four, ...H.BANNERS.sig.extra4, 'kazuma'].filter(k => !k.startsWith('cone:')));
-        ok([...sig4].every(TV.has), 'every 4-star agent that Signal Search can give has a TV channel');
+        ok([...sig4].every(TV.has) && H.HARES.IDS.every(TV.has), 'every 4-star agent that Signal Search can give has a TV channel, the hares too');
       }
       ok(Object.entries(TV.SHOWS).every(([id, l]) => l.length === (H.CHARS[id].rarity === 4 ? 3 : 4)), '4-star agents get 3 programmes, 5-star agents get 4');
       ok(H.BANNERS.sig.extra4.includes('march') && !H.WARP_POOL.four.includes('march'), 'March 7 joins the Signal Search 4-star pool without changing the Star Rail Warp pool');
@@ -3891,6 +8585,20 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     ok(Date.now() - t0 < 30000, 'the Explosion scenes render in reasonable time');
   }
   ui.openShop('boulder', noop); frame(); key('ArrowDown'); key('Enter'); frame(); ui.screens = [];
+  {
+    const fl = ui.game.state.flags, was = !!fl.pc_rewards_done;
+    fl.pc_rewards_done = true;
+    ui.openTlRewards(noop); frame();
+    const scr = ui.screens[ui.screens.length - 1];
+    key('ArrowDown'); key('ArrowDown'); frame();
+    ok(scr.sel >= 1 && typeof scr.draw === 'function', 'conductor screen moves between tickets');
+    key('KeyF'); frame(); key('Enter'); frame();
+    ok(!ui.game.tlReadyCount(), 'conductor screen claims every ready ticket');
+    key('Escape'); frame();
+    ok(ui.screens.indexOf(scr) < 0, 'conductor screen closes on Esc');
+    ui.screens = [];
+    if (!was) delete fl.pc_rewards_done;
+  }
   ui.openRumors('sampo_belobog', noop); frame(); ui.screens = [];
   ui.openCalyx(noop); frame(); ui.screens = [];
   ui.openBank(null); for (let t = 0; t < 4; t++) { key('ArrowRight'); frame(); } ui.screens = [];
@@ -3941,7 +8649,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   {
     const keep = ui.game, sg = new H.Game({ state: Object.assign(H.newState(), { map: 'u_rivet', x: null, y: null }), seed: 8 });
     ui.game = sg; ui.screens = []; ui.dlg = null;
-    sg.runScript('rivet_intro'); frame(2);
+    sg.runScript('riv_enter'); frame(2);
     ok(ui.dlg && ui.hits.some(h => h.y < 380 && h.w > 60 && h.h === 19), 'the dialogue box shows the skip button');
     key('Tab'); frame();
     const pop = ui.top();
@@ -3952,12 +8660,24 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     ui.click({ clientX: btn.x + 4, clientY: btn.y + 4, button: 0 }); frame();
     ok(ui.top() && ui.top() !== pop, 'a click on the skip button opens the recap window');
     key('Tab'); frame(2);
-    ok(!sg.script && !sg.pending && sg.state.flags.rivet_intro && !ui.dlg, 'Tab in the recap window skips the scene');
+    ok(!sg.script && !sg.pending && sg.state.flags.riv_in && !ui.dlg, 'Tab in the recap window skips the scene');
     ui.openBank(null); ui.top().tab = 4; frame();
-    eq(ui.top().rows().map(r => r.label).join(), 'Старый приют', 'the Archive keeps the recap of the skipped scene');
+    eq(ui.top().rows().map(r => r.label).join(), 'Заклёпкоград', 'the Archive keeps the recap of the skipped scene');
     ui.screens = []; ui.game = keep;
   }
   ui.openMission(); frame(); ui.screens = [];
+  {
+    ui.openEvents('konosuba'); frame();
+    ok(ui.top().ev().id === 'konosuba', 'KonoSuba: the event tab opens');
+    ui.screens = [];
+    for (const open of [() => ui.openUi_kscard({}), () => ui.openUi_ksreport({ final: true }), () => ui.openUi_ksboard({}), () => ui.openUi_ksrate({})]) { open(); frame(); ui.screens = []; }
+    ui.openClipCredits('konosuba'); frame(3);
+    const cr = ui.top();
+    ok(cr && cr.live && !cr.done, 'KonoSuba: the credits play without WebGL');
+    cr.key('ok'); frame(); ok(ui.screens.includes(cr), 'KonoSuba: one press only arms the skip');
+    cr.key('ok'); frame();
+    ok(!ui.screens.includes(cr) && cr.done, 'KonoSuba: two presses skip the credits');
+  }
   {
     game.state.comet = { days: 0, last: null, got: [] }; game.state.will = [];
     ui.openEvents('comet'); frame();
@@ -3984,12 +8704,94 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     ok(game.state.mail[ml.cur().m.id].read, 'opening the mail reads the newest letter');
     key('Enter'); frame(); eq(game.state.jade, j + 300, 'Enter claims the letter gift');
     key('ArrowDown'); frame(); ok(game.state.mail[ml.cur().m.id].read, 'moving to a letter reads it');
-    key('KeyF'); frame(); eq(game.state.jade, j + 300 * H.MAIL.filter(m => m.give).length, 'F claims every letter');
+    key('KeyF'); frame(); eq(game.state.jade, j + H.MAIL.filter(m => m.give && (!m.need || game.cond(m.need))).reduce((a, m) => a + (m.give.jade || 0), 0), 'F claims every letter');
     for (const x of game.mailbox()) game.readMail(x.m.id);
     key('Delete'); frame(); ok(ui.top() !== ml, 'Del asks before deleting');
     key('ArrowLeft'); key('Enter'); frame();
     ok(ui.top() === ml && !game.mailbox().length && !game.alerts().mail, 'the confirmed delete empties the mailbox');
     frame(); ui.screens = [];
+  }
+  {
+    game.state.mail = {}; game.mailSync();
+    const all = game.mailbox();
+    ok(all.length > 6, 'the mailbox has more letters than fit on screen');
+    ui.openMail(); frame();
+    const ml = ui.top();
+    ok(ui.hits.some(h => h.x === 222 && h.w === 10) && ui.wheels.some(w => w.x === 12 && w.y === 40), 'the mail list has a scroll bar and a wheel zone');
+    for (let i = 1; i < all.length; i++) key('ArrowDown');
+    frame();
+    eq(ml.sc.top, all.length - 6, 'the mail list follows the cursor to the oldest letter');
+    ok(ui.hits.some(h => h.x === 20 && h.h === 52), 'the oldest letter row is drawn and clickable');
+    ml.sc.top = 0; frame();
+    ok(ui.hits.filter(h => h.x === 20 && h.h === 52).length === 6, 'the wheel position shows the newest six letters');
+    let long = -1;
+    for (let i = 0; i < all.length && long < 0; i++) { ml.select(i); frame(); if (ui.wheels.some(w => w.x === 246)) long = i; }
+    ok(long >= 0, 'a long letter gets its own scroll bar');
+    key('PageDown'); frame();
+    ok(ml.bsc.top > 0, 'PageDown scrolls the letter text');
+    ml.select(long === 0 ? 1 : 0); frame();
+    eq(ml.bsc.top, 0, 'another letter opens at its top');
+    ui.screens = [];
+  }
+  {
+    const s = game.state, k = ui.rosterKeys()[0], path = H.CHARS[game.kitOf(k)].path;
+    const ids = Object.keys(H.CONES), mine = ids.find(id => H.CONES[id].path === path), other = ids.find(id => H.CONES[id].path !== path);
+    const keep = s.inv.cones;
+    s.inv.cones = [{ uid: 'probe_a', id: other, sup: 1 }, { uid: 'probe_b', id: other, sup: 1 }, { uid: 'probe_c', id: mine, sup: 1 }];
+    ui.openChars(k); ui.top().sec = 0; frame();
+    const hit = ui.hits.find(h => h.x === 448 && h.w === 176 && h.h === 62);
+    ok(!!hit, 'the cone in Details is a click target');
+    hit.fn(); frame();
+    const pick = ui.top();
+    key('Enter'); frame();
+    ok(ui.top() !== pick && s.roster[k].cone === 'probe_c', 'the picker lists cones of the character Path first');
+    s.inv.cones = Array.from({ length: 50 }, (_, i) => ({ uid: 'probe_m' + i, id: ids[i % ids.length], sup: 1 }));
+    ui.openConePick(k); frame();
+    const many = ui.top(), cards = () => ui.hits.filter(h => h.w === 64 && h.h === 94);
+    ok(ui.hits.some(h => h.x === 600 && h.w === 10) && ui.wheels.some(w => w.x === 36 && w.y === 46) && cards().length === 24, 'the cone picker has a scroll bar and shows three rows');
+    many.sel = 49; frame();
+    ok(many.sc.top === 4 && cards().length === 50 - 32, 'the cone picker scrolls to the last row');
+    ui.wheel({ clientX: 300, clientY: 100, deltaY: -1 }); frame();
+    eq(many.sc.top, 3, 'the wheel scrolls the cone grid');
+    ui.screens = [];
+    s.inv.cones = keep;
+    for (const r of Object.values(s.roster)) if (String(r.cone).startsWith('probe_')) r.cone = null;
+    ui.screens = [];
+  }
+  {
+    const ids = Object.keys(H.OUTFITS);
+    const sup = ui.openSupply('fashion'); ui.screens = [sup]; frame();
+    ok(ids.length <= 2 || ui.hits.some(h => h.x === 614 && h.w === 10), 'the outfit shop has a scroll bar');
+    sup.fsel = ids.length - 1; frame();
+    eq(sup.fsc.top, Math.max(0, ids.length - 2), 'the outfit list scrolls to the last outfit');
+    const texts = [], realText = ui.text;
+    ui.text = function (str, ...rest) { texts.push(String(str)); return realText.call(this, str, ...rest); };
+    sup.fsel = 0; frame();
+    ok(texts.includes('Все наряды'), 'the outfit shop has the All outfits button');
+    key('KeyF'); frame();
+    const wr = ui.top();
+    ok(wr !== sup && wr.sel === 0, 'F opens the wardrobe on the shown outfit');
+    texts.length = 0; frame();
+    ok(texts.includes('В коллекции: ' + ids.filter(id => game.ownsOutfit(id)).length + ' из ' + ids.length) && ids.slice(0, 8).every(id => texts.some(t => H.OUTFITS[id].name.startsWith(t))), 'the wardrobe shows every outfit at once');
+    key('ArrowDown'); key('ArrowRight'); frame();
+    eq(wr.sel, 5, 'arrows move over the grid');
+    const want = wr.sel;
+    key('Enter'); frame();
+    ok(ui.top() === sup && sup.fsel === want, 'Enter puts the picked outfit on the showcase');
+    key('KeyF'); frame(); key('Escape'); frame();
+    ok(ui.top() === sup && sup.fsel === want, 'Esc closes the wardrobe without changing the showcase');
+    ui.text = realText; ui.screens = [];
+  }
+  {
+    const s = game.state, keep = s.warpLog;
+    s.warpLog = Array.from({ length: 40 }, (_, i) => ({ kind: 'cone', id: Object.keys(H.CONES)[0], rar: 3, ban: 'std', n: i + 1, at: Date.now(), pity: 1 }));
+    ui.openBank(null); const bank = ui.top(); bank.setTab(3); frame();
+    ok(ui.hits.some(h => h.x === 322 && h.w === 10) && ui.wheels.some(w => w.x === 32 && w.y === 80), 'the Express Archive list has a scroll bar');
+    bank.sel = 39; frame();
+    eq(bank.sc.top, 40 - 17, 'the archive list follows the cursor');
+    key('ArrowRight'); frame();
+    eq(bank.sc.top, 0, 'switching the tab resets the scroll');
+    s.warpLog = keep; ui.screens = [];
   }
   {
     const keepQuest = game.state.quests.su_beta, jade = game.state.jade;
@@ -4117,6 +8919,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   }
   game.startBattle({ enemies: ['reaver:10', 'eliminator:10'], lvl: 10, bg: 'station', music: 'battle' });
   ui.drainGameEvents(); frame(20);
+  for (let i = 0; i < 300 && (ui.bt.cur || ui.bt.queue.length); i++) frame();
   eq(ui.mode, 'battle', 'battle screen');
   key('KeyT'); frame(); key('Escape'); frame();
   key('F7'); frame();
@@ -4455,9 +9258,27 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
     ui.screens = []; ui.game = keepQ; ui.enterField();
   }
   {
+    const ps = H.newState();
+    Object.assign(ps, { map: 'express_cabin', x: null, y: null });
+    for (const [need] of H.PHOTOS) for (const f of need.split('&')) ps.flags[f] = true;
+    const pg = new H.Game({ state: ps, seed: 3 }), keepP = ui.game;
+    ui.game = pg; ui.screens = []; ui.dlg = null; ui.mode = 'field';
+    ui.openBook('photos');
+    const wall = ui.screens[ui.screens.length - 1];
+    ok(H.PHOTOS.length > 8, 'the photo wall has more than one page of photos');
+    wall.sel = 7; wall.key('right', 'ArrowRight');
+    eq(wall.sel, 8, 'an arrow past the last photo of a page opens the next page');
+    wall.key(null, 'KeyQ');
+    eq(wall.sel, 0, 'Q turns the photo wall back a page');
+    wall.key(null, 'KeyE');
+    eq(wall.sel, 8, 'E turns the photo wall forward a page');
+    frame();
+    ui.screens = []; ui.game = keepP; ui.enterField();
+  }
+  {
     const ms = H.newState();
     Object.assign(ms, { name: 'Стелла', gender: 'f', map: 'u_boulder', x: 8, y: 6 });
-    for (const m of H.TRAIL_MISSIONS.slice(0, 16)) for (const f of m.done.split('|')) ms.flags[f] = true;
+    for (const m of H.TRAIL_MISSIONS.slice(0, 17)) for (const f of m.done.split('|')) ms.flags[f] = true;
     ms.flags.events_note = true;
     const mg = new H.Game({ state: ms, seed: 5 }), keepM = ui.game;
     mg.setQuest('hook_treasure', 'talk');
@@ -4779,7 +9600,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   eq(H.TRACKS.boss.midi, H.TRACKS.battle.midi, 'bosses without their own theme play the Battle Theme MIDI');
   const THEMES = { order: 'Order.mid', svarog: 'Godfather.mid', doomsday: 'Dawn of Disaster.mid', gepard: 'Braving the Cold.mid' };
   for (const [id, file] of Object.entries(THEMES)) eq(H.TRACKS[id] && H.TRACKS[id].midi, 'content/music/' + file, 'track ' + id + ' plays ' + file);
-  const BOSS_THEMES = { doomsday: 'doomsday', gepard: 'gepard', gepard2: 'gepard', svarog: 'svarog', mine: 'boss', alley: 'order', seele: 'order' };
+  const BOSS_THEMES = { doomsday: 'doomsday', gepard: 'gepard', gepard2: 'gepard', svarog: 'svarog', mine: 'boss', bp_bronya: 'order', seele: 'order' };
   for (const [enc, music] of Object.entries(BOSS_THEMES)) eq(H.ENCOUNTERS[enc].music, music, 'encounter ' + enc + ' plays ' + music);
   eq(H.CALYX.find(c => c.boss === 'doomsday').music, 'doomsday', 'the Echo of War with the Doomsday Beast plays Dawn of Disaster');
   for (const id of Object.keys(H.MAPS)) {
@@ -4809,7 +9630,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   }
   ok(held >= 6, 'story scenes start the battle themes early (' + held + ')');
   const cocoliaFights = Object.entries(H.ENCOUNTERS).filter(([, e]) => (e.enemies || []).concat(...(e.waves || [])).some(x => /^cocolia/.test(x)));
-  ok(cocoliaFights.length === 2 && cocoliaFights.every(([, e]) => e.music === 'cocolia'), 'both Cocolia fights play Wildfire');
+  ok(cocoliaFights.length === 3 && cocoliaFights.every(([, e]) => e.music === 'cocolia'), 'the Cocolia fights and her echo play Wildfire');
   ok(Object.entries(H.ENCOUNTERS).every(([, e]) => !e.music || e.music === 'cocolia' || !(e.enemies || []).some(x => /^cocolia/.test(x))), 'no other fight uses the Cocolia theme');
   ok(H.CALYX.filter(c => /^cocolia/.test(c.boss || '')).every(c => c.music === 'cocolia'), 'the Echo of War with Cocolia plays Wildfire');
   eq(H.TRACKS.cocolia.midi, 'content/music/Cocolia Boss Theme.mid', 'the Cocolia track points to the Wildfire MIDI');
@@ -5131,6 +9952,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
 {
   const T = H.TRAIL_MISSIONS, Q = H.QUESTS;
   const storyFlags = new Set(['club']);
+  for (const m of Object.values(H.MAPS)) for (const e of Object.values(m.enemies || {})) if (e.unique) storyFlags.add('k_' + e.unique);
   for (const steps of Object.values(H.SCRIPTS)) for (const st of steps) if (st && st.flag) storyFlags.add(st.flag);
   eq(new Set(T.map(m => m.id)).size, T.length, 'Trailblaze mission ids are unique');
   for (const m of T) {
@@ -5175,7 +9997,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   ok(og.state.credits - c0 >= T.find(m => m.id === 'tb_icy').reward.credits, 'a finished Trailblaze mission pays its reward');
   ok(og.state.missions.seen.main === 0 && og.missionAlert(), 'the next Trailblaze mission is new until it is seen');
   const ml = og.missionList();
-  ok(ml[0].id === 'main' && ml[0].key === 'tb_travelers' && ml[0].text === og.state.obj && ml[0].place === 'Ярило-VI - Заснеженные окраины', 'the main mission shows the story objective and its place');
+  ok(ml[0].id === 'main' && ml[0].key === 'tb_travelers' && ml[0].text === og.state.obj && ml[0].place === 'Ярило-VI - Пригородные снежные поля', 'the main mission shows the story objective and its place');
   ok(ml.some(m => m.id === 'su_beta' && m.type === 'trail' && m.place === 'Космическая станция «Герта» - Офис Герты'), 'the Simulated Universe test is a Trailblaze mission in Herta\'s office');
   eq(og.missionTracked().id, 'main', 'the main mission is tracked by default');
   og.trackMission('su_beta');
@@ -5234,21 +10056,21 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   ok(!g.trailCurrent() && !g.missionList().length, 'after the Jarilo-VI story no Trailblaze mission is left');
   chats(g);
   eq(step(g, 'hook_foreman'), 'talk', 'Julian\'s group message starts «Сокровище старого бригадира»');
-  ok(g.missionList().some(m => m.id === 'hook_foreman' && m.type === 'comp' && m.ch === 'furnace' && m.place === 'Ярило-VI - Городок Булыжник'), 'the Hook mission is a Companion mission in Boulder Town');
+  ok(g.missionList().some(m => m.id === 'hook_foreman' && m.type === 'comp' && m.ch === 'furnace' && m.place === 'Ярило-VI - Камнеград'), 'the Hook mission is a Companion mission in Boulder Town');
   eq(g.missionTracked().id, 'hook_foreman', 'with no Trailblaze mission the companion mission is tracked');
   ok(g.cond(H.MAPS.u_mine.marks.k.need), 'the way to the vagrant camp opens with the mission');
   at(g, 'u_boulder', 'j');
   eq(step(g, 'hook_foreman'), 'mine', 'Julian sends you to the Great Mine');
   at(g, 'u_camp', 'z');
   ok(step(g, 'hook_foreman') === 'clinic' && g.map.id === 'u_boulder', 'after the fight Fersman goes to the clinic');
-  at(g, 'u_boulder', 'n');
+  at(g, 'u_clinic', 'n');
   eq(step(g, 'hook_foreman'), 'hook', 'Natasha shows up for the mission even with Natasha in the team');
   at(g, 'u_boulder', 'y');
   eq(step(g, 'hook_foreman'), 'shelter', 'Hook asks for help at the clinic');
   at(g, 'u_camp', 'h');
   eq(step(g, 'hook_foreman'), 'ask', 'Swetta names four suspects');
   for (const ch of ['k', 'l', 'n']) at(g, 'u_camp', ch);
-  eq(g.questStep('hook_foreman').text, 'Расспросить подозреваемых в лагере (3/4)', 'the step counts the questioned suspects');
+  eq(g.questStep('hook_foreman').text, 'Расспросить подозреваемых в Убежище (3/4)', 'the step counts the questioned suspects');
   const before = g.serialize();
   at(g, 'u_camp', 'o', ['Подсобник']);
   eq(step(g, 'hook_foreman'), 'clues', 'a wrong guess sends you to look for clues');
@@ -5266,7 +10088,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   at(g, 'u_boulder', 'b');
   eq(step(g, 'hook_foreman'), 'fersman', 'Balaway cannot fix the detector');
   const jf = g.state.jade;
-  at(g, 'u_boulder', 'g');
+  at(g, 'u_clinic', 'g');
   ok(step(g, 'hook_foreman') === 'done' && g.state.flags.hf_done && !g.state.inv.items.detector, 'Fersman takes the detector back and the mission ends');
   eq(g.state.jade - jf, Q.hook_foreman.reward.jade, 'the first mission pays its jade');
   at(g, 'u_boulder', 'j');
@@ -5281,7 +10103,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   ok(step(g, 'hook_treasure') === 'drill' && g.state.inv.items.marbles && g.state.inv.items.rusty_key, 'Julian\'s marbles and the key are found');
   at(g, 'u_rivet', 'j');
   eq(step(g, 'hook_treasure'), 'orphan', 'the drill is broken, so Hook remembers the orphanage');
-  at(g, 'u_rivet', 'o');
+  at(g, 'u_rivet2', 'o');
   eq(step(g, 'hook_treasure'), 'findie', 'after the monsters Findie finds two stashes');
   g.trackMission('hook_treasure');
   eq(g.questTarget().mark, 'p', 'the first stash is marked');
@@ -5289,7 +10111,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   ok(g.questStep('hook_treasure').text.endsWith('(1/2)') && g.questTarget().mark === 'q', 'the time capsule counts and the next stash is marked');
   at(g, 'u_rivet', 'q');
   ok(step(g, 'hook_treasure') === 'clinic' && g.state.inv.items.junjun && g.state.inv.items.capsule, 'Junjun and the capsule are dug up');
-  at(g, 'u_boulder', 'n');
+  at(g, 'u_clinic', 'n');
   ok(step(g, 'hook_treasure') === 'find' && !g.state.inv.items.junjun, 'Natasha keeps Junjun for repair');
   at(g, 'u_boulder', 'y');
   ok(step(g, 'hook_treasure') === 'done' && g.state.flags.ht_done, 'Hook decides to sell Junjun');
@@ -5302,7 +10124,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   ok(step(g, 'hook_gift') === 'tell' && g.state.inv.items.pamphlet, 'the auction staff gives a pamphlet');
   at(g, 'u_boulder', 'h');
   eq(step(g, 'hook_gift'), 'bear', 'Hook wants Junjun back from Natasha');
-  at(g, 'u_boulder', 'n');
+  at(g, 'u_clinic', 'n');
   ok(step(g, 'hook_gift') === 'auction' && g.state.inv.items.junjun && g.state.flags.hg_camp, 'Natasha returns Junjun');
   at(g, 'u_camp', 'p');
   ok(step(g, 'hook_gift') === 'buyers' && !g.state.inv.items.junjun, 'Junjun is registered for the auction');
@@ -5321,7 +10143,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   };
   play(g, 'no extra buyers');
   ok(step(g, 'hook_gift') === 'advice' && !g.state.flags.hg_won, 'with three buyers the probe goes to another bidder');
-  at(g, 'u_boulder', 'n');
+  at(g, 'u_clinic', 'n');
   eq(step(g, 'hook_gift'), 'party', 'Natasha turns out to be the other bidder');
   const jg = g.state.jade;
   at(g, 'u_boulder', 'h');
@@ -5347,7 +10169,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   ok(gw.state.flags.hg_x_wallet, 'the contract goes back to its owner');
   play(gw, 'all extra buyers');
   ok(step(gw, 'hook_gift') === 'wrap' && gw.state.flags.hg_won && gw.state.flags.hg_p600, 'with every buyer Hook wins the probe');
-  at(gw, 'u_boulder', 'n');
+  at(gw, 'u_clinic', 'n');
   at(gw, 'u_boulder', 'h');
   eq(step(gw, 'hook_gift'), 'done', 'the winning branch ends at the party too');
   log.push('hook chain ok, mission jade ' + T.reduce((a, m) => a + (m.reward.jade || 0), 0));
@@ -5449,7 +10271,7 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   const mirror = () => gf.map.ents.find(e => e.ch === 'm' && gf.visible(e));
   chats(gf);
   ok(!gf.chatThread('fh_call') && !mirror(), 'the Messenger stays silent below Trailblaze Level 21');
-  gf.state.roster.trail.lvl = 21;
+  gf.setTrailLevel(21);
   gf.chatSync();
   ok(gf.chatThread('fh_call') && H.CHAT.CONTACTS.messenger.mask === 'fh_met' && !gf.cond('fh_met'), 'at Trailblaze Level 21 an unknown contact writes');
   chats(gf);
@@ -5823,6 +10645,1052 @@ function lv(g) { return g.state.party.map(k => g.kitOf(k) + ':' + g.state.roster
   use('Ш', [0, 1]);
   ok(g.state.flags.throne && !ent('ц'), 'the Insighter climbs his throne of boxes');
   log.push('seclusion zone ok');
+}
+{
+  const old = Object.assign(H.newState(), { map: 'j_plains', x: 30, y: 15, opened: { 'j_plains:0': true, 'j_plains:3': true, 'j_plains:4': true, 'hs_base:1': true }, broken: { 'j_plains:13,5': true }, anchors: ['j_plains:0', 'hs_base:0'], lastAnchor: { map: 'j_plains', x: 22, y: 13 } });
+  Object.assign(old.flags, { express_intro: true, doom: true, jarilo_arrive: true });
+  old.hsv = 2;
+  delete old.jv;
+  const g = new H.Game({ state: old, seed: 3 });
+  eq(g.state.jv, new H.Game({ fresh: true, seed: 1 }).state.jv, 'an old save gets the Jarilo version mark');
+  eq(Object.keys(g.state.opened).filter(k => k.startsWith('j_plains:')).sort().join(), 'j_plains:0,j_plains:1,j_plains:2', 'old opened chests of the Snow Plains carry over by count');
+  ok(g.state.opened['hs_base:1'] && !Object.keys(g.state.broken).length, 'other maps keep their chests and the old crates are forgotten');
+  eq(g.state.anchors.filter(k => k.startsWith('j_plains:')).length, 2, 'a visited Snow Plains map unlocks both of its anchors');
+  eq(g.map.id, 'j_plains', 'the save loads on the Snow Plains');
+  ok(!g.blocked(g.player.x, g.player.y) && g.player.x > 50, 'the player lands at the landing point instead of the old coordinates');
+  eq(g.state.obj, 'Поищите следы цивилизации в Снежных полях', 'a save before Gepard gets the new objective');
+  const done = Object.assign(H.newState(), { map: 'j_belobog', x: 5, y: 5 });
+  Object.assign(done.flags, { express_intro: true, doom: true, jarilo_arrive: true, sampo_met: true, plains_met: true, belobog_intro: true });
+  done.hsv = 2;
+  const g2 = new H.Game({ state: done, seed: 3 });
+  ok(g2.state.flags.calyx_seen && g2.state.flags.drift_seen && g2.state.flags.sampo_met, 'a save past the Snow Plains skips the new plains scenes');
+  const fresh = new H.Game({ fresh: true, seed: 1 });
+  eq(fresh.state.jv, 10, 'a new game starts with the current Jarilo version');
+
+  const pg = new H.Game({ state: Object.assign(H.newState(), { map: 'j_plains', x: null, y: null }), seed: 4 });
+  Object.assign(pg.state.flags, { express_intro: true, jarilo_arrive: true });
+  pg.startBattle({ encId: 'gepard', fromScript: true });
+  const b = pg.battle;
+  b.start();
+  const boss = b.enemies.find(e => e.id === 'gepard_b');
+  boss.hp = Math.round(boss.maxHp * 0.25);
+  b.cleanup();
+  ok(b.over && b.result.win && !boss.dead, 'the fight with Gepard ends when his health drops to 30%');
+  pg.battle = null;
+  pg.battleCtx = null;
+  const ent = ch => pg.map.ents.find(e => e.ch === ch);
+  for (const [ch, ui, id] of [['k', 'calyx', 'cx_exp'], ['h', 'calyx', 'cx_hunt']]) {
+    ok(adj(pg, ent(ch)) && pg.interact(), 'the Calyx ' + ch + ' can be used');
+    ok(pg.pending && pg.pending.ui === ui && pg.pending.only[0] === id, 'the Calyx ' + ch + ' opens the domain ' + id);
+    pg.pending = null;
+  }
+  for (const [ch, doc] of [['j', 'vache_lab'], ['u', 'vache_letter']]) {
+    ok(adj(pg, ent(ch)) && pg.interact(), 'the readable ' + ch + ' can be read');
+    ok(pg.pending && pg.pending.doc === doc && H.DOCS[doc].text.length > 500, 'the readable ' + doc + ' has the text of the game');
+    pg.pending = null;
+  }
+  talk(pg, 'o');
+  ok(pg.state.flags.plains_roofs, 'the buried houses can be looked at');
+  ok(!pg.map.ents.some(e => e.ch === 'y' && pg.visible(e)), 'Lynx waits for the end of the story');
+  pg.state.flags.ending = true;
+  talk(pg, 'y');
+  ok(pg.pending === null && pg.shopList('lynx').length > 0, 'Lynx sells food on the Long Slope');
+  log.push('snow plains ok');
+}
+{
+  const g = new H.Game({ state: Object.assign(H.newState(), { map: 'j_belobog', x: 6, y: 38 }), seed: 5 });
+  Object.assign(g.state.flags, { express_intro: true, jarilo_arrive: true, plains_met: true });
+  const door = g.map.ents.find(e => e.ch === 'м');
+  ok(door && door.kind === 'exit' && door.def.to === 'j_museum', 'the museum door is on the west side of the Central Plaza');
+  talk(g, 'Ψ');
+  ok(!g.state.flags.mus_pass && g.map.id === 'j_belobog', 'the museum stays closed during the story');
+  g.state.flags.ending = true;
+  talk(g, 'Ψ');
+  ok(g.state.flags.mus_pass && g.map.id === 'j_museum', 'after the story the attendant leads the team into the museum');
+  eq(g.map.def.land, 'museum', 'the museum is drawn with its own interior');
+  const props = g.map.ents.filter(e => e.kind === 'prop' && /^mus_\d+$/.test(e.def.script));
+  eq(props.length, 82, 'the museum shows the 82 exhibits of the original');
+  for (const e of props) ok(adj(g, e) || g.map.def.rows[e.y + 1] && !g.blocked(e.x, e.y + 1), 'exhibit ' + e.def.script + ' can be reached');
+  for (const e of props) {
+    if (!adj(g, e)) { g.placePlayer(e.x, e.y + 1); g.player.dir = 'up'; }
+    ok(g.interact(), 'exhibit ' + e.def.script + ' can be looked at');
+    drive(g);
+  }
+  ok(H.DOCS.mus_alisa.text.includes('Алиса') && H.DOCS.mus_cocolia.text.includes('Коколия'), 'the portraits carry their captions');
+  {
+    const pe = g.map.ents.find(e => e.def.script === 'mus_77');
+    g.placePlayer(pe.x, pe.y + 1); g.player.dir = 'up';
+    ok(g.interact(), 'the portrait of Alisa Rand can be looked at');
+    let doc = null;
+    for (let i = 0; i < 20 && (g.script || g.pending); i++) { if (g.pending && g.pending.ui === 'doc') { doc = g.pending.doc; g.resume(); } else if (g.pending) g.resume(); else g.advanceScript(); }
+    eq(doc, 'mus_alisa', 'the portrait caption opens as a document');
+  }
+  for (const ch of ['Щ', 'Ы', 'Ь']) { talk(g, ch); ok(!g.script && !g.pending, 'the museum staff ' + ch + ' can be talked to'); }
+  ok(g.state.flags.uldan_met && g.state.flags.boris_met, 'Uldan and Boris remember the first talk');
+  const visitor = g.map.ents.find(e => e.kind === 'npc' && e.def.bark && e.def.bark.length > 1 && e.def.bark.some(l => l[0] !== '|'));
+  g.placePlayer(visitor.x, visitor.y + 1);
+  g.update(0.05, {});
+  const first = g.barkLine();
+  ok(first && first.x === visitor.x && first.y === visitor.y, 'a visitor starts talking when the team walks by');
+  let other = null;
+  for (let i = 0; i < 40 && g.barkLine(); i++) { g.update(0.2, {}); const l = g.barkLine(); if (l && (l.x !== visitor.x || l.y !== visitor.y)) other = l; }
+  ok(other, 'the visitor\'s companion answers above their own head');
+  ok(!g.barkLine(), 'the visitors fall silent after their exchange');
+  g.update(0.2, {});
+  ok(!g.barkLine(), 'the same visitors do not repeat themselves at once');
+  const exit = g.map.ents.find(e => e.kind === 'exit');
+  g.useExit(exit);
+  ok(g.map.id === 'j_belobog' && Math.abs(g.player.x - 6) <= 1 && Math.abs(g.player.y - 36) <= 1, 'the museum exit leads back to the plaza');
+  log.push('museum ok');
+}
+{
+  const g = new H.Game({ state: Object.assign(H.newState(), { map: 'j_backwater', x: null, y: null }), seed: 6 });
+  Object.assign(g.state.flags, { express_intro: true, jarilo_arrive: true, plains_met: true, fled: true, returned: true, ending: true, rivet_done: true, phone_called: true });
+  g.loadMap('j_backwater', 'u', { silent: true });
+  eq(g.map.def.land, 'backwater', 'the Backwater Pass is drawn as a Fragmentum street');
+  eq(g.map.def.anchors.join(), 'Особняк Гёте,Площадь отдыха,Транспортный узел', 'the three Space Anchors of the original');
+  eq(g.map.ents.filter(e => e.kind === 'chest').length, 9, 'seven chests and the two Formidable Foe chests');
+  const ent = ch => g.map.ents.find(e => e.ch === ch && g.visible(e));
+  for (const [ch, id] of [['k', 'cx_aether'], ['h', 'cx_abundance'], ['m', 'cx_mirage']]) {
+    ok(adj(g, ent(ch)) && g.interact(), 'the domain ' + id + ' can be used');
+    ok(g.pending && g.pending.ui === 'calyx' && g.pending.only[0] === id, 'the domain opens ' + id);
+    g.pending = null;
+  }
+  g.state.power = 200;
+  ok(g.startCalyx('cx_mirage', 1), 'the Stagnant Shadow can be challenged');
+  eq(g.battle.enemies.map(e => e.id).join(), 'decaying,weaver,weaver', 'the Shape of Mirage is the Decaying Shadow with two Imaginary Weavers');
+  g.battle = null;
+  g.battleCtx = null;
+  ok(g.map.ents.some(e => e.kind === 'enemy' && e.def.g.includes('blazeout') && g.visible(e)) && g.map.ents.some(e => e.kind === 'enemy' && e.def.unique === 'ff_bp1'), 'two Formidable Foes wait in the pass');
+  ok(!g.map.ents.some(e => (e.kind === 'trigger' || e.kind === 'lever') && g.visible(e)), 'the chase leaves no triggers behind');
+  talk(g, 'b');
+  ok(H.DOCS.bp_news1.text.includes('Александр') && H.DOCS.bp_news2.text.includes('Гёте') && /комендантск/i.test(H.DOCS.bp_news3.text), 'the bulletin board keeps the three old newspapers');
+  talk(g, 'p');
+  ok(g.state.flags.bp_call && H.DOCS.bp_clue.text.includes('Беатрис'), 'the phone in the Fragmentum rings after the district phone call');
+  talk(g, 'z');
+  ok(g.state.flags.bp_chair, 'the upside-down chair in the cafe can be set right');
+  {
+    const pu = ent('g');
+    ok(adj(g, pu) && g.interact(), 'the Leisure Plaza Magflow Link can be used');
+    let guard = 0;
+    while (g.pending && g.pending.ui !== 'magflow' && guard++ < 20) g.resume();
+    const jade = g.state.jade;
+    g.resume(true);
+    drive(g);
+    ok(g.state.flags.mf_leisure && g.state.jade > jade, 'the Leisure Plaza Magflow Link opens a cache');
+  }
+  for (const [ch, doc] of [['w', 'bp_friend'], ['j', 'bp_barista'], ['l', 'bp_estate']]) {
+    ok(adj(g, ent(ch)) && g.interact(), 'the readable ' + ch + ' can be read');
+    ok(g.pending && g.pending.doc === doc && H.DOCS[doc].text.length > 500, 'the readable ' + doc + ' has the text of the game');
+    g.pending = null;
+  }
+  log.push('backwater ok');
+}
+{
+  const g = new H.Game({ state: Object.assign(H.newState(), { map: 'u_boulder', x: null, y: null }), seed: 7 });
+  Object.assign(g.state.flags, { express_intro: true, fled: true, underworld: true, lost_world: true, hide_done: true, club: true, ring_done: true, rule8_out: true, moles: true, seele_trial: true, blade_1: true, blade_2: true });
+  g.loadMap('u_boulder', 'н', { silent: true });
+  eq(g.map.def.anchors.join(), 'Гранд-отель «Гёте»,Бойцовский клуб,Клиника Наташи', 'the three Space Anchors of Boulder Town');
+  eq(g.map.ents.filter(e => e.kind === 'chest').length, 7, 'seven treasures in Boulder Town');
+  for (const [ch, to] of [['л', 'u_club'], ['м', 'u_clinic'], ['н', 'u_grandhotel'], ['z', 'u_rivet'], ['e', 'u_mine'], ['p', 'j_cable'], ['u', 'j_backwater']]) ok(g.map.ents.some(e => e.ch === ch && e.kind === 'exit' && e.def.to === to), 'Boulder Town leads to ' + to);
+  talk(g, 'i');
+  ok(!g.script && !g.pending, 'Gertie talks about her hotel');
+  talk(g, 'Ю');
+  talk(g, 'ё');
+  ok(g.state.flags.bt_magic && !g.map.ents.some(e => e.ch === 'Ю' && g.visible(e)), 'the big chest hides Fragmentum monsters and the magician vanishes');
+  for (const [ch, doc] of [['ж', 'bt_ipc'], ['щ', 'bt_appraisal'], ['ш', 'bt_notice'], ['ъ', 'bt_board'], ['ы', 'bt_boxer'], ['ь', 'bt_flier'], ['э', 'bt_letter']]) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(adj(g, e) && g.interact(), 'the readable ' + ch + ' can be read');
+    ok(g.pending && g.pending.doc === doc && H.DOCS[doc].text.length > 300, 'the readable ' + doc + ' has the text of the game');
+    g.pending = null;
+  }
+  for (const ch of ['α', 'β', 'γ', 'δ', 'ε', 'ζ', 'η', 'θ', 'κ', 'λ', 'ю']) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    if (!e) continue;
+    ok(adj(g, e) && g.interact(), 'the investigation ' + ch + ' answers');
+    drive(g);
+  }
+  ok(g.state.flags.bt_t7 && g.state.flags.bt_eat_win, 'the trash can quiz and the eating championship');
+  g.loadMap('u_club', 'x', { silent: true });
+  {
+    const box = g.map.ents.find(e => e.ch === 'п');
+    ok(adj(g, box) && g.interact(), 'Scott\'s box can be tried');
+    let doc = null;
+    for (let i = 0; i < 20 && (g.script || g.pending); i++) { if (g.pending && g.pending.ui === 'doc') { doc = g.pending.doc; g.resume(); } else if (g.pending) g.resume(0); else g.advanceScript(); }
+    ok(g.state.flags.club_box_open && doc === 'club_report' && H.DOCS.club_report.text.includes('Беатрис'), 'the code 0-2-1-3 opens the box with the Guards\' report about Beatrice');
+  }
+  g.loadMap('u_clinic', 'x', { silent: true });
+  for (const [ch, doc] of [['ж', 'cl_list'], ['г', 'cl_certificate'], ['д', 'cl_dreams'], ['е', 'cl_fungi']]) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(adj(g, e) && g.interact() && g.pending && g.pending.doc === doc, 'the clinic readable ' + doc);
+    g.pending = null;
+  }
+  ok(['cl_mus1', 'cl_mus2', 'cl_mus3', 'cl_mus4'].every(k => H.DOCS[k].text.length > 800), 'the four books of «Белобожские музыканты»');
+  g.loadMap('u_grandhotel', 'x', { silent: true });
+  talk(g, 'г');
+  ok(g.state.flags.gh_card_done, 'the service rating card in the Cheap Room');
+  g.loadMap('u_boulder', 'н', { silent: true });
+  const praise = g.state.inv.items.praise || 0;
+  talk(g, 'i');
+  ok(g.state.flags.gh_card_given && (g.state.inv.items.praise || 0) > praise, 'Gertie thanks for the card with a Praise');
+  const old = Object.assign(H.newState(), { map: 'u_boulder', x: 30, y: 5 });
+  Object.assign(old.flags, { express_intro: true, jarilo_arrive: true, plains_met: true, belobog_intro: true, fled: true, underworld: true, club: true, moles: true, seele_trial: true, mine_done: true, night_talk: true });
+  old.hsv = 2;
+  old.jv = 3;
+  const og = new H.Game({ state: old, seed: 3 });
+  ok(og.state.flags.hide_done && og.state.flags.ring_done && og.state.flags.night_dream && og.state.flags.lost_world, 'an old save past the Fight Club and the night skips the new scenes');
+  ok(og.map.id === 'u_boulder' && !og.blocked(og.player.x, og.player.y), 'an old save in Boulder Town lands on a free spot of the new map');
+  ok(og.map.ents.some(e => e.ch === 'h' && og.visible(e)) || og.state.party.includes('hook'), 'Hook stays reachable in an old save');
+  log.push('boulder ok');
+}
+{
+  const C = H.Carts;
+  for (const id of Object.keys(C.PUZZLES)) {
+    const B = C.build(id), path = C.solve(B);
+    ok(path && path.length >= 2, 'the mine cart test ' + id + ' can be solved (' + (path ? path.length : 'none') + ' moves)');
+    let st = C.startState(B);
+    for (const m of path || []) st = m.t === 'push' ? C.push(B, st, m.ci, m.d) : C.toggle(B, st, m.k);
+    ok(C.solved(B, st), 'the solution of ' + id + ' puts every cart on its blocker');
+    ok(!C.solved(B, C.startState(B)), 'the mine cart test ' + id + ' does not start solved');
+  }
+  eq([1, 2, 3].map(d => Object.values(C.PUZZLES).filter(x => x.day === d).length).join(), '3,3,3', 'three cart tests a day for three days');
+  for (const [name, steps] of Object.entries(H.SCRIPTS)) for (const st of steps) if (st && st.carts) ok(C.PUZZLES[st.carts], 'carts step ' + name + ' ' + st.carts);
+  const g = new H.Game({ state: Object.assign(H.newState(), { map: 'u_camp', x: null, y: null }), seed: 8 });
+  Object.assign(g.state.flags, { express_intro: true, fled: true, underworld: true, mine_done: true });
+  g.loadMap('u_camp', 'w', { silent: true });
+  eq(g.map.def.anchors.join(), 'Убежище бродяг', 'the Vagrant Shelter has its Space Anchor');
+  ok(g.map.ents.some(e => e.ch === 'С' && g.visible(e)) && g.map.ents.some(e => e.ch === 'П' && g.visible(e)), 'Seele and Peak live in the shelter');
+  const master = g.map.ents.find(e => e.ch === 'О');
+  const play = () => {
+    ok(adj(g, master) && g.interact(), 'the senior mine cart operator answers');
+    for (let i = 0; i < 80 && (g.script || g.pending); i++) {
+      if (g.pending && g.pending.ui === 'carts') g.resume(true);
+      else if (g.pending && g.pending.type === 'choice') g.resume(0);
+      else if (g.pending) g.resume();
+      else g.advanceScript();
+    }
+  };
+  play();
+  ok(g.state.flags.cart_intro && g.state.flags.cart1 && g.state.flags.cart2 && g.state.flags.cart3 && !g.state.flags.cart4, 'the first night has three tests');
+  play();
+  ok(!g.state.flags.cart4, 'the next tests wait for another day');
+  g.state.days.cart = 'yesterday';
+  play();
+  ok(g.state.flags.cart6 && !g.state.flags.cart7, 'the second night has three more');
+  g.state.days.cart = 'yesterday';
+  play();
+  ok(g.state.flags.cart9 && g.state.flags.cart_done && !g.map.ents.some(e => e.ch === 'О' && g.visible(e)), 'the master\'s exam ends the cart tests');
+  g.loadMap('u_mine', 'w', { silent: true });
+  for (const [ch, id] of [['h', 'cx_nihility'], ['g', 'cx_credits'], ['m', 'cx_spike']]) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact() && g.pending && g.pending.only[0] === id, 'the mine domain ' + id);
+    g.pending = null;
+  }
+  ok(!g.map.ents.some(e => e.ch === 'n' && g.visible(e)), 'the Shape of Scorch waits for the end of the story');
+  for (const ch of ['Ж', 'З', 'И', 'Й', 'Л', 'Н', 'О', 'Р', 'С', 'Т']) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact() && g.pending && H.DOCS[g.pending.doc] && H.DOCS[g.pending.doc].text.length > 300, 'the mine readable ' + ch);
+    g.pending = null;
+  }
+  eq(g.map.def.anchors.length, 4, 'four Space Anchors in the Great Mine');
+  ok(g.map.ents.some(e => e.kind === 'enemy' && e.def.unique === 'ff_mine1') && g.map.ents.some(e => e.kind === 'enemy' && e.def.unique === 'trotter_mine'), 'a Formidable Foe and a Warp Trotter in the mine');
+  log.push('mine ok');
+}
+{
+  const g = new H.Game({ state: Object.assign(H.newState(), { map: 'u_rivet', x: null, y: null }), seed: 8 });
+  Object.assign(g.state.flags, { express_intro: true, fled: true, underworld: true, mine_done: true, night_talk: true, rivet_intro: true, riv_in: true, riv_eric: true, riv_hill: true, riv_play: true, riv_clara: true });
+  g.loadMap('u_rivet', 'w', { silent: true });
+  eq(g.map.def.anchors.join(), 'Вход,Заброшенный рынок', 'Rivet Town has the Entrance and Abandoned Market anchors');
+  eq(H.MAPS.u_rivet2.anchors.join(), 'Сиротский приют', 'the hill has the Orphanage anchor');
+  eq(g.map.def.chests.length, 8, 'eight treasures in Rivet Town');
+  for (const [ch, id] of [['z', 'cx_erudition'], ['l', 'cx_gust']]) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact() && g.pending && g.pending.only[0] === id, 'the Rivet Town domain ' + id);
+    g.pending = null;
+  }
+  ok(H.CALYX.find(c => c.id === 'cx_gust').boss === 'stormbringer' && H.ENEMIES.stormbringer.elite && H.ENEMIES.iceout.elite, 'the Shape of Gust is the Stormbringer and Ice Out of Space is an elite');
+  for (const ch of ['Ж', 'З', 'И', 'Й', 'Л', 'Н', 'О', 'Р', 'С']) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact() && g.pending && H.DOCS[g.pending.doc] && H.DOCS[g.pending.doc].text.length > 300, 'the Rivet Town readable ' + ch);
+    g.pending = null;
+  }
+  for (const u of ['ff_rivet1', 'ff_rivet2', 'ff_rivet3', 'trotter_rivet']) ok(g.map.ents.some(e => e.kind === 'enemy' && e.def.unique === u && g.visible(e)), 'Rivet Town has ' + u);
+  const drive = () => { for (let i = 0; i < 60 && (g.script || g.pending); i++) { if (g.pending && g.pending.type === 'choice') g.resume(g.pending.options ? g.pending.options.findIndex(o => o.ok !== false) : 0); else if (g.pending) g.resume(); else g.advanceScript(); } };
+  for (const id of ['march', 'danheng', 'natasha']) g.state.roster[id] = { lvl: 70, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+  g.state.roster.trail.lvl = 70;
+  g.state.party = ['trail', 'march', 'danheng', 'natasha'];
+  const win = me => { g.encounter(me, 'player'); g.battle.start(); g.battle.runAuto(800); return g.endBattle(); };
+  const voice = g.map.ents.find(e => e.ch === 'Т');
+  ok(adj(g, voice) && g.interact(), 'the window on the south plaza answers');
+  drive();
+  ok(g.state.flags.riv_window && !g.state.inv.items.musicbox, 'the blind girl waits for her sister');
+  const trotter = g.map.ents.find(e => e.kind === 'enemy' && e.def.unique === 'trotter_rivet');
+  const out = win(trotter);
+  ok(out && out.win && g.state.inv.items.ribbon, 'the Rivet Town Warp Trotter drops the Dirty Ribbon Tied to a Bell');
+  ok(!g.map.ents.some(e => e.ch === 'Ю' && g.visible(e)), 'the anxious woman is not there yet');
+  ok(adj(g, voice) && g.interact(), 'the window again');
+  for (let i = 0; i < 60 && (g.script || g.pending); i++) {
+    if (g.pending && g.pending.type === 'choice') { const k = g.pending.options.findIndex(o => /Это твоё/.test(o.text || o.label || o[0] || '')); g.resume(k < 0 ? 0 : k); }
+    else if (g.pending) g.resume(); else g.advanceScript();
+  }
+  ok(!g.state.inv.items.ribbon && g.state.inv.items.musicbox, 'the bell silences the voice and the music box is left on the sill');
+  const woman = g.map.ents.find(e => e.ch === 'Ю');
+  ok(woman && g.visible(woman), 'the anxious woman appears where the Warp Trotter was');
+  const praise = g.state.inv.items.praise || 0;
+  ok(adj(g, woman) && g.interact(), 'the anxious woman talks');
+  for (let i = 0; i < 60 && (g.script || g.pending); i++) {
+    if (g.pending && g.pending.type === 'choice') g.resume(0);
+    else if (g.pending) g.resume(); else g.advanceScript();
+  }
+  ok(g.state.flags.riv_echo && !g.state.inv.items.musicbox && (g.state.inv.items.praise || 0) === praise + 1 && !g.visible(woman), 'another echo fades into the Fragmentum');
+  g.loadMap('u_rivet2', 'x', { silent: true });
+  for (const ch of ['о', 'п', 'р']) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact() && g.pending && /музыканты (IV|V|VI)$/.test(H.DOCS[g.pending.doc].title), 'the orphanage book ' + ch);
+    g.pending = null;
+  }
+  eq(['cl_mus1', 'cl_mus2', 'cl_mus3', 'rv_mus4', 'rv_mus5', 'rv_mus6'].map(k => H.DOCS[k].text.slice(0, 12)).filter((t, i, a) => a.indexOf(t) === i).length, 6, 'six different volumes of the Musicians of Belobog');
+  const old = H.newState();
+  Object.assign(old.flags, { express_intro: true, fled: true, underworld: true, mine_done: true, night_talk: true, rivet_intro: true });
+  delete old.jv;
+  Object.assign(old, { map: 'u_rivet', x: 30, y: 7 });
+  const mg = new H.Game({ state: old, seed: 3 });
+  ok(mg.state.flags.riv_clara && mg.state.flags.riv_eric && mg.state.flags.riv_play, 'an old save past the orphanage keeps the new steps done');
+  ok(!mg.blocked(mg.player.x, mg.player.y), 'an old save on Rivet Town stands on a free tile');
+  const mid = H.newState();
+  Object.assign(mid.flags, { express_intro: true, fled: true, underworld: true, mine_done: true, night_talk: true });
+  delete mid.jv;
+  const mg2 = new H.Game({ state: Object.assign(mid, { map: 'u_boulder', x: null, y: null }), seed: 3 });
+  ok(!mg2.state.flags.riv_in && /Заклёпкоград/.test(mg2.state.obj), 'an old save before Rivet Town is sent there');
+  log.push('rivet ok');
+}
+{
+  const g = new H.Game({ state: Object.assign(H.newState(), { map: 'u_settle', x: null, y: null }), seed: 8 });
+  Object.assign(g.state.flags, { express_intro: true, fled: true, underworld: true, mine_done: true, night_talk: true, rivet_intro: true, rust_done: true, rot_guide: true, rot_in: true, rot_chase: true, rivet_done: true, rot_end: true });
+  g.loadMap('u_settle', 'w', { silent: true });
+  eq(g.map.def.anchors.join(), 'Лагерь бродяг,База Сварога', 'the upper level has the Vagrant Camp and Svarog\'s Base anchors');
+  eq(H.MAPS.u_settle1.anchors.join(), 'Станция преобразования энергии', 'the lower level has the Energy Conversion Station anchor');
+  eq(H.MAPS.u_settle.chests.length + H.MAPS.u_settle1.chests.length, 7, 'seven treasures in the Robot Settlement');
+  ok(!g.blocked(14, 22) && !g.blocked(14, 37), 'after the story both gates stay open');
+  for (const ch of ['З', 'И', 'Л', 'М', 'Ф', 'Х']) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact() && g.pending && H.DOCS[g.pending.doc] && H.DOCS[g.pending.doc].text.length > 300, 'the settlement readable ' + ch);
+    g.pending = null;
+  }
+  ok(g.map.ents.some(e => e.kind === 'npc' && e.def.bark && e.def.bark.some(l => /Бэдрок 88 градусов/.test(l))) && g.map.ents.some(e => e.kind === 'npc' && e.def.bark && e.def.bark.some(l => /узлу логического управления/.test(l))), 'the vagrants give away both quiz answers');
+  const run = (ch, pick) => {
+    const e = g.map.ents.find(x => x.ch === ch && g.visible(x));
+    ok(e && adj(g, e) && g.interact(), 'talk to ' + ch);
+    for (let i = 0; i < 120 && (g.script || g.pending); i++) {
+      if (g.pending && g.pending.type === 'choice') g.resume(pick ? Math.max(0, g.pending.options.findIndex(o => pick.test(o[0]))) : 0);
+      else if (g.pending) g.resume();
+      else g.advanceScript();
+    }
+  };
+  run('Ю');
+  ok(g.state.flags.st_rap_heard, 'Eunice raps as 88 Degrees Bedrock');
+  run('Э');
+  ok(g.state.flags.st_eric_met, 'Eric looks for Bronya to thank her');
+  run('f');
+  ok(!g.script && !g.pending, 'Svarog checks his memory module with Clara');
+  for (const u of ['ff_settle1', 'trotter_settle']) ok(g.map.ents.some(e => e.kind === 'enemy' && e.def.unique === u && g.visible(e)), 'the upper level has ' + u);
+  g.loadMap('u_settle1', 'l', { silent: true });
+  for (const u of ['ff_settle2', 'ff_settle3']) ok(g.map.ents.some(e => e.kind === 'enemy' && e.def.unique === u && g.visible(e)), 'the lower level has ' + u);
+  const cx = g.map.ents.find(e => e.ch === 'z');
+  ok(cx && adj(g, cx) && g.interact() && g.pending && g.pending.only[0] === 'cx_harmony', 'the Bud of Harmony');
+  g.pending = null;
+  for (const ch of ['О', 'Щ']) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact() && g.pending && H.DOCS[g.pending.doc], 'the lower level readable ' + ch);
+    g.pending = null;
+  }
+  const jade = g.state.jade, mf = g.map.ents.find(e => e.ch === 'f');
+  ok(adj(g, mf) && g.interact(), 'the east Magflow Link');
+  for (let i = 0; i < 30 && (g.script || g.pending); i++) { if (g.pending && g.pending.ui === 'magflow') g.resume(true); else if (g.pending) g.resume(); else g.advanceScript(); }
+  ok(g.state.flags.mf_settle2 && g.state.jade > jade, 'the Magflow Link opens the prospectors cache');
+  const sv = H.ENCOUNTERS.svarog2;
+  g.startBattle({ encId: 'svarog2' });
+  const b = g.battle;
+  b.start();
+  ok(sv.hpStart === 0.8 && Math.abs(b.enemies[0].hp / b.enemies[0].maxHp - 0.8) < 0.01, 'Svarog comes back at 80% HP');
+  ok(b.allies.every(a => a.buffs.some(x => x.name === 'Подкрепление Дикого Огня')), 'the team gets the Wildfire Reinforcements buff');
+  g.battle = null; g.battleCtx = null;
+  ok(H.ENCOUNTERS.svarog1.endAt === 0.7 && H.ENEMIES.blazeout.elite, 'the first round ends at 70% and Blaze Out of Space is an elite');
+  const old = H.newState();
+  Object.assign(old.flags, { express_intro: true, fled: true, underworld: true, mine_done: true, night_talk: true, rivet_intro: true, rust_back: true, rust_natasha: true, rust_done: true, rivet_done: true });
+  delete old.jv;
+  Object.assign(old, { map: 'u_rivet', x: 37, y: 9 });
+  const mg = new H.Game({ state: old, seed: 3 });
+  ok(mg.state.flags.rot_gate2 && mg.state.flags.rot_end && !mg.blocked(mg.player.x, mg.player.y), 'an old save past Svarog keeps the new steps done');
+  const mid = H.newState();
+  Object.assign(mid.flags, { express_intro: true, fled: true, underworld: true, mine_done: true, night_talk: true, rivet_intro: true, rust_back: true, rust_natasha: true, rust_done: true });
+  mid.jv = 6;
+  const mg2 = new H.Game({ state: Object.assign(mid, { map: 'u_boulder', x: null, y: null }), seed: 3 });
+  ok(!mg2.state.flags.rot_guide && /проводника/.test(mg2.state.obj), 'an old save before the Robot Settlement is sent to the guide');
+  log.push('settle ok');
+}
+{
+  const g = new H.Game({ state: Object.assign(H.newState(), { map: 'j_restricted', x: null, y: null }), seed: 8 });
+  Object.assign(g.state.flags, { express_intro: true, fled: true, underworld: true, rivet_done: true, returned: true, finale_open: true, rz_in: true, rz_pass: true, rz_bridge: true, rz_ew: true, rz_gepard: true, fissures_intro: true });
+  g.loadMap('j_restricted', 'x', { silent: true });
+  eq(g.map.def.anchors.join(), 'Пост стражи,Передовая Запретной зоны,Энергетический центр', 'three Space Anchors in the Restricted Zone');
+  eq(g.map.def.chests.length, 9, 'nine treasures in the Restricted Zone');
+  ok(!g.blocked(42, 9) && !g.blocked(26, 36) && !g.blocked(2, 9), 'after the story the gates are open');
+  for (const ch of ['О', 'Р', 'М']) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact() && g.pending && H.DOCS[g.pending.doc] && H.DOCS[g.pending.doc].text.length > 300, 'the Restricted Zone readable ' + ch);
+    g.pending = null;
+  }
+  for (const [ch, id] of [['l', 'cx_blaze'], ['z', 'cx_fist']]) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact() && g.pending && g.pending.only[0] === id, 'the Restricted Zone domain ' + id);
+    g.pending = null;
+  }
+  const drive2 = pick => { for (let i = 0; i < 60 && (g.script || g.pending); i++) { if (g.pending && g.pending.ui === 'magflow') g.resume(true); else if (g.pending && g.pending.type === 'choice') g.resume(pick || 0); else if (g.pending) g.resume(); else g.advanceScript(); } };
+  const term = g.map.ents.find(e => e.ch === 'У');
+  ok(!g.blocked(20, 10) && g.blocked(25, 5), 'the bridge stays turned to the frontline');
+  ok(adj(g, term) && g.interact(), 'the bridge terminal answers after the story');
+  drive2();
+  ok(!g.state.flags.rz_ew && g.blocked(20, 10) && !g.blocked(25, 5), 'the terminal turns the bridge back to north and south');
+  ok(adj(g, term) && g.interact(), 'the terminal again');
+  drive2();
+  ok(g.state.flags.rz_ew && !g.blocked(20, 10), 'and west again');
+  for (const ch of ['f', 'i']) {
+    const jade = g.state.jade, e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact(), 'the Magflow Link ' + ch);
+    drive2();
+    ok(g.state.jade > jade, 'the Magflow Link opens a cache ' + ch);
+  }
+  const praise = g.state.inv.items.praise || 0, barrel = g.map.ents.find(e => e.ch === 'Б');
+  ok(adj(g, barrel) && g.interact(), 'the barrel');
+  drive2();
+  ok(g.state.flags.rz_barrel && (g.state.inv.items.praise || 0) === praise + 1, 'the Public Property Protector rewards the remorse');
+  const dunn = g.map.ents.find(e => e.ch === 'д' && g.visible(e));
+  ok(dunn && adj(g, dunn) && g.interact(), 'Dunn at the Energy Hub after the story');
+  drive2();
+  ok(g.map.ents.some(e => e.kind === 'enemy' && e.def.unique === 'trotter_rz' && g.visible(e)), 'the Restricted Zone Warp Trotter');
+  ok(H.ENCOUNTERS.rz_waves.waves.length === 3 && H.ENCOUNTERS.rz_waves.trials[0] === 'gepard', 'three waves at the gate with Gepard');
+  const old = H.newState();
+  Object.assign(old.flags, { express_intro: true, fled: true, underworld: true, rivet_done: true, returned: true, finale_open: true, serval_joined: true, fissures_intro: true });
+  old.jv = 7;
+  const mg = new H.Game({ state: Object.assign(old, { map: 'j_fissures', x: null, y: null }), seed: 3 });
+  ok(mg.state.flags.rz_gepard && mg.state.flags.rz_ew && mg.state.flags.ret_gepard, 'an old save past the Restricted Zone keeps the new steps done');
+  const mid = H.newState();
+  Object.assign(mid.flags, { express_intro: true, fled: true, underworld: true, rivet_done: true, returned: true });
+  mid.jv = 7;
+  const mg2 = new H.Game({ state: Object.assign(mid, { map: 'j_belobog', x: null, y: null }), seed: 3 });
+  ok(mg2.state.flags.ret_city && !mg2.state.flags.ret_hid && /патрулям/.test(mg2.state.obj), 'an old save on the way to Serval sneaks past the patrols');
+  log.push('restricted ok');
+}
+{
+  const g = new H.Game({ state: Object.assign(H.newState(), { map: 'j_fissures', x: null, y: null }), seed: 8 });
+  Object.assign(g.state.flags, { express_intro: true, fled: true, underworld: true, rivet_done: true, finale_open: true, fissures_intro: true, cor_h0: true, cor_h1: true, cor_h2: true, cor_h3: true, cor_hubs: true, cor_guard: true, cor_inner: true, cor_done: true, cor_ew: true });
+  g.loadMap('j_fissures', 'w', { silent: true });
+  eq(g.map.def.anchors.join(), 'Укреплённая зона,Загрязнённая площадь,Командный центр,Древнее поле битвы: Передовая', 'four Space Anchors in the Corridor');
+  eq(g.map.def.chests.length, 12, 'twelve treasures in the Corridor');
+  ok(!g.blocked(19, 28) && !g.blocked(18, 47), 'after the story the mechanism gate and the fort gate are open');
+  for (const ch of ['Т', 'У', 'Ф', 'Х']) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact() && g.pending && H.DOCS[g.pending.doc] && H.DOCS[g.pending.doc].text.length > 300, 'the Corridor readable ' + ch);
+    g.pending = null;
+  }
+  for (const [ch, id] of [['l', 'cx_fulmination'], ['y', 'cx_rime'], ['z', 'cx_drifting']]) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact() && g.pending && g.pending.only[0] === id, 'the Corridor domain ' + id);
+    g.pending = null;
+  }
+  for (const u of ['ff_cor1', 'ff_cor2', 'ff_cor3', 'trotter_cor']) ok(g.map.ents.some(e => e.kind === 'enemy' && e.def.unique === u && g.visible(e)), 'the Corridor has ' + u);
+  const drive2 = () => { for (let i = 0; i < 60 && (g.script || g.pending); i++) { if (g.pending && g.pending.ui === 'magflow') g.resume(true); else if (g.pending && g.pending.type === 'choice') g.resume(0); else if (g.pending) g.resume(); else g.advanceScript(); } };
+  for (const ch of ['f', 'i']) {
+    const jade = g.state.jade, e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact(), 'the Corridor Magflow Link ' + ch);
+    drive2();
+    ok(g.state.jade > jade, 'the Corridor Magflow Link opens a cache ' + ch);
+  }
+  const ctrl = g.map.ents.find(e => e.ch === 'И');
+  ok(adj(g, ctrl) && g.interact(), 'the east bridge controller');
+  drive2();
+  ok(!g.state.flags.cor_ew && !g.blocked(27, 8) && g.blocked(24, 11), 'the controller turns the bridge back to the north');
+  ok(H.ENEMIES.cocolia_echo && H.ENCOUNTERS.cor_echo.boss && H.ITEMS.owl_toy.name === 'Изысканный снежный шар', 'Cocolia\'s echo and the Delicate Snow Globe');
+  const old = H.newState();
+  Object.assign(old.flags, { express_intro: true, fled: true, underworld: true, rivet_done: true, finale_open: true, fissures_intro: true, everwinter_intro: true });
+  old.jv = 8;
+  const mg = new H.Game({ state: Object.assign(old, { map: 'j_fissures', x: 30, y: 7 }), seed: 3 });
+  ok(mg.state.flags.cor_done && mg.state.flags.cor_hubs && !mg.blocked(mg.player.x, mg.player.y), 'an old save past the Corridor keeps the new steps done and stands on a free tile');
+  log.push('corridor ok');
+}
+{
+  const base = { express_intro: true, fled: true, underworld: true, rivet_done: true, finale_open: true, fissures_intro: true, cor_done: true, everwinter_intro: true, dawn_done: true, ending: true, swamp_in: true, swamp_told: true };
+  const mk = (extra, map, mark) => {
+    const g = new H.Game({ state: Object.assign(H.newState(), { map, x: null, y: null }), seed: 5 });
+    Object.assign(g.state.flags, base, extra);
+    g.loadMap(map, mark);
+    drive(g);
+    return g;
+  };
+  const gm = mk({ swamp_moles: true }, 'u_rivet2', 'x');
+  ok(gm.state.flags.swamp_orph, 'Julian counts to fifty by the orphanage');
+  talk(gm, 'ӑ');
+  ok(gm.state.flags.swamp_hide, 'Julian sends the team to look for the Moles');
+  talk(gm, 'ӆ');
+  ok(gm.state.flags.swamp_alina, 'Alina behind the fence');
+  talk(gm, 'ӈ');
+  ok(gm.state.flags.swamp_branch, 'Hook is found and the Moles hear the news');
+  const gg = mk({ swamp_gertie: true }, 'u_boulder', 'н');
+  talk(gg, 'ӑ');
+  ok(gg.state.flags.swamp_branch, 'Peak wakes up and Gertie hears the news');
+  const H0 = H.MAPS.j_everwinter;
+  eq(H0.anchors.join(), 'Древнее поле битвы в Снежных полях,Платформа созидания', 'two Space Anchors on Everwinter Hill');
+  eq(H0.chests.length, 4, 'four treasures on Everwinter Hill');
+  const gh = mk({ swamp_branch: true }, 'j_everwinter', 'w');
+  for (const u of ['ff_hill', 'trotter_hill']) ok(gh.map.ents.some(e => e.kind === 'enemy' && e.def.unique === u && gh.visible(e)), 'Everwinter Hill has ' + u);
+  for (const [ch, id] of [['z', 'cx_providence'], ['e', 'cx_echo_coco']]) {
+    const e = gh.map.ents.find(x => x.ch === ch);
+    ok(e && gh.visible(e) && adj(gh, e) && gh.interact() && gh.pending && gh.pending.only[0] === id, 'Everwinter Hill domain ' + id);
+    gh.pending = null;
+  }
+  const doc = gh.map.ents.find(x => x.ch === 'Щ');
+  ok(doc && adj(gh, doc) && gh.interact() && gh.pending && H.DOCS[gh.pending.doc] && H.DOCS[gh.pending.doc].text.length > 1000, 'the Cyrille readable on the Deck of Creation');
+  gh.pending = null;
+  ok(H.ENEMIES.mask && H.ENEMIES.mask.name === 'Маска без мыслей', 'Mask of No Thought');
+  const gb = new H.Game({ state: H.newState(), seed: 7 });
+  gb.startBattle({ encId: 'dawn_waves' });
+  const seen = [];
+  const push = gb.battle.push.bind(gb.battle);
+  gb.battle.push = e => { if (e.t === 'text') seen.push(e.text); push(e); };
+  gb.battle.start();
+  gb.battle.runAuto(400);
+  ok(seen.some(t => /Двигатель созидания: Кулак созидания/.test(t)), 'the Engine of Creation strikes from the background');
+  ok(seen.some(t => /Раздроби их/.test(t)), 'Cocolia orders the Engine to strike');
+  const old = H.newState();
+  Object.assign(old.flags, base);
+  old.jv = 9;
+  const og = new H.Game({ state: Object.assign(old, { map: 'j_everwinter', x: 20, y: 6 }), seed: 3 });
+  ok(og.state.flags.jarilo_done && og.state.flags.crowned && og.state.flags.cable_open && og.state.flags.swamp_branch, 'an old save past the ending gets the whole finale done');
+  ok(!og.blocked(og.player.x, og.player.y), 'an old save on Everwinter Hill stands on a free tile');
+  const mid = H.newState();
+  Object.assign(mid.flags, { express_intro: true, fled: true, underworld: true, rivet_done: true, finale_open: true, fissures_intro: true, everwinter_intro: true });
+  mid.jv = 9;
+  const mg = new H.Game({ state: Object.assign(mid, { map: 'j_everwinter', x: 30, y: 7 }), seed: 3 });
+  ok(!mg.state.flags.ending && /Брони и Коколии/.test(mg.state.obj), 'an old save on the hill climbs to the summit again');
+  log.push('finale ok');
+}
+{
+  ok(afterJarilo && afterJarilo.flags.jarilo_done, 'the 1.4 continuation starts from the save of the full chapter playthrough');
+  const g = new H.Game({ state: JSON.parse(JSON.stringify(afterJarilo)), seed: 11 });
+  for (const k of g.state.party) g.autoEquip(k);
+  log.push('before future market ' + lv(g));
+  const goTo = (map, mark) => { g.loadMap(map, mark); drive(g); };
+  for (const t of H.CHAT.THREADS.filter(t => t.who === 'bronya')) {
+    g.chatSync();
+    for (let i = 0; i < 40; i++) {
+      const v = g.chatView(t.id);
+      if (!v) break;
+      if (v.wait) g.chatPick(t.id, 0);
+      else if (v.next) g.chatNext(t.id);
+      else break;
+    }
+  }
+  ok(g.state.flags.fm_letter && /Март 7/.test(g.state.obj), 'Bronya invites the crew to the Sun Festival');
+  goTo('express_cabin', 'v');
+  talk(g, 'm');
+  talk(g, 's');
+  goTo('express', 'v');
+  talk(g, 'h');
+  goTo('express_cabin', 'v');
+  talk(g, 'm');
+  ok(g.state.flags.fm_board && g.map.id === 'j_plains', 'March packs and the pair leaves for Belobog');
+  stepOn(g, 'ӑ');
+  ok(g.state.flags.fm_topaz, 'Topaz meets the pair in the Snow Plains');
+  goTo('j_belobog', 'x');
+  ok(g.state.flags.fm_city, 'the festive district');
+  for (const ch of ['l', 'ӳ', 'ӵ']) talk(g, ch);
+  ok(g.state.flags.fm0_done && g.state.inv.items.suncake >= 2, 'three festival talks and Gertie suncakes end the prologue');
+  goTo('j_fort', 'x');
+  ok(g.state.flags.fm_fort1, 'Topaz and the debt of Belobog');
+  goTo('j_museum', 'x');
+  talk(g, 'ӑ');
+  ok(g.state.flags.fm_museum, 'the talk with Topaz in the museum fails');
+  goTo('u_boulder', 'e');
+  ok(g.blocked(12, 41), 'IPC workers block the Great Mine');
+  talk(g, 'ӟ');
+  talk(g, 'ӥ');
+  ok(g.state.flags.fm_gate && !g.blocked(12, 41), 'the IPC guards fall');
+  goTo('u_mine', 'w');
+  ok(g.state.flags.fm_mine_in, 'Topaz visits Svarog, the team enters the mine');
+  talk(g, 'ӑ');
+  stepOn(g, 'ӓ');
+  talk(g, 'ӕ');
+  ok(g.state.flags.fm1_done, 'Numby, the IPC raid and the team leader');
+  goTo('j_fort', 'x');
+  ok(g.state.flags.fm_ask, 'the letter of Topaz');
+  goTo('j_workshop', 'x');
+  talk(g, 's');
+  goTo('j_belobog', 'x');
+  talk(g, 'l');
+  goTo('j_restricted', 'x');
+  talk(g, 'д');
+  ok(g.state.flags.fm_ow3, 'three Overworld opinions');
+  goTo('u_clinic', 'x');
+  talk(g, 'n');
+  goTo('u_settle', 'ʙ');
+  talk(g, 'k');
+  goTo('u_boulder', 'p');
+  talk(g, 'o');
+  ok(g.state.flags.fm_uw3, 'three Underworld opinions');
+  goTo('u_camp', 'w');
+  talk(g, 'С');
+  ok(g.state.flags.fm_seele_o, 'Seele abstains');
+  goTo('j_fort', 'x');
+  ok(g.state.flags.fm_decide, 'Himeko arrives and Bronya refuses the contract');
+  goTo('u_boulder', 'z');
+  talk(g, 'ӡ');
+  ok(g.map.id === 'u_rivet3' && g.state.flags.fm_rivet_in, 'Gepard leads the team into Rivet Town');
+  ok(g.blocked(19, 20), 'the first IPC post closes the street');
+  stepOn(g, 'ϑ');
+  ok(g.map.id === 'u_rivet3' && g.player.x === 2 && g.player.y === 23, 'a spotted team retreats to the start');
+  talk(g, 'Б');
+  ok(g.state.flags.fm_bomb1 && !g.blocked(19, 20), 'the first stealth bomb clears the street');
+  talk(g, 'Д');
+  stepOn(g, 'Ц');
+  talk(g, 'С');
+  talk(g, 'Т');
+  ok(g.state.flags.fm2_fight, 'the crew fights Topaz and Bronya stops the battle');
+  goTo('j_fissures', 'ʙ');
+  talk(g, 'ӑ');
+  ok(g.map.id === 'j_pillars' && g.state.flags.fm_pillars, 'Soldier Kyle leads to the Pillars of Creation');
+  stepOn(g, 'Ж');
+  talk(g, 'Ш');
+  ok(g.state.flags.fm_pl_talk, 'Bronya shows the Engine of Creation and Topaz relents');
+  goTo('j_hotel', 'x');
+  talk(g, 'b');
+  ok(g.state.flags.fm2_done, 'the night in the Goethe Hotel and the call with Aventurine');
+  ok(H.GUESTS.some(([need, who]) => need === 'fm2_done' && who === 'Топаз'), 'Topaz signs the guestbook');
+  ok(['tb_fm0', 'tb_fm1', 'tb_fm2'].every(id => g.missionsState().done[id]), 'the three Future Market missions are done');
+  goTo('j_pillars', 'w');
+  eq(H.MAPS.j_pillars.anchors.join(), 'Столп творения: Вход,Столп творения: Строительная площадка', 'two Space Anchors at the Pillars');
+  eq(H.MAPS.j_pillars.chests.length, 5, 'five treasures at the Pillars');
+  for (const ch of ['о', 'п', 'с', 'у']) talk(g, ch);
+  talk(g, 'Б');
+  ok(g.state.flags.pl_given, 'the scraps go to Benjamin');
+  talk(g, 'У');
+  ok(g.state.flags.pl_team && !g.state.flags.pl_odd, 'sensible advice to the Engine team');
+  for (const ch of ['т', 'з', 'ч']) {
+    const e = g.map.ents.find(x => x.ch === ch);
+    ok(e && adj(g, e) && g.interact() && g.pending && H.DOCS[g.pending.doc] && H.DOCS[g.pending.doc].text.length > 1000, 'the Pillars readable ' + ch);
+    g.pending = null;
+  }
+  goTo('j_fissures', 'ʙ');
+  talk(g, 'ӑ');
+  eq(g.map.id, 'j_pillars', 'Kyle takes the team back to the Pillars any time');
+  log.push('awake ok');
+}
+{
+  const order = H.TRAIL_MISSIONS.filter(m => ['winter', 'dawn'].includes(m.ch)), rebuilt = ['j_plains', 'j_belobog', 'u_boulder', 'u_mine', 'u_rivet', 'u_settle', 'j_restricted', 'j_fissures', 'j_everwinter'];
+  const reached = [];
+  for (let i = 0; i < order.length; i++) {
+    const m = order[i], st = H.newState();
+    st.flags.express_intro = true;
+    for (const f of reached) st.flags[f] = true;
+    st.jv = 1;
+    const old = rebuilt.includes(m.area);
+    Object.assign(st, { map: m.area, x: old ? 3 + (i * 7) % 20 : null, y: old ? 3 + (i * 5) % 18 : null });
+    st.opened = { [m.area + ':0']: true, [m.area + ':1']: true, [m.area + ':9']: true };
+    let g = null;
+    try { g = new H.Game({ state: st, seed: 13 }); } catch (e) { ok(false, 'an old save in «' + m.name + '» loads: ' + e.message); continue; }
+    ok(g.map.id === m.area && !g.blocked(g.player.x, g.player.y), 'an old save in the middle of «' + m.name + '» stands on a free tile of ' + m.area);
+    ok(g.state.jv > 1 && !rebuilt.includes(m.area) || Object.keys(g.state.opened).every(k => !k.startsWith(m.area + ':') || +k.split(':')[1] < H.MAPS[m.area].chests.length), 'an old save in «' + m.name + '» keeps only real chests opened');
+    reached.push(m.done.split('|').pop());
+  }
+  log.push('migration ok');
+}
+{
+  const st = H.newState();
+  Object.assign(st.flags, { express_intro: true, events_note: true, ks_note: true });
+  for (const id of ['march', 'danheng']) st.roster[id] = { lvl: 12, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+  st.roster.trail.lvl = 12;
+  st.party = ['trail', 'march', 'danheng'];
+  Object.assign(st, { map: 'express', x: null, y: null, name: 'Стелла', gender: 'f' });
+  const g = new H.Game({ state: st, seed: 77 });
+  ok(!g.ksOpen() && g.ksEarlyReady() && !g.eventReady('konosuba'), 'KonoSuba: before the Jarilo-VI chapter the event offers early access');
+  ok(H.EVENT_TABS.some(e => e.id === 'konosuba'), 'KonoSuba: the event has its own tab in Events');
+  ok(g.ksStartEarly() && g.state.flags.ks_early && g.ksOpen() && !g.ksEarlyReady(), 'KonoSuba: early access opens the story once');
+  for (let i = 0; i < 5; i++) { g.chatSync(); for (const id of Object.keys(g.chats().th)) g.chatAuto(id); }
+  eq(g.state.quests.ks_q1, 'talk', 'KonoSuba: Pom-Pom message starts «Этому сигналу ответ!»');
+  ok(g.missionList().some(m => m.id === 'ks_q1' && m.type === 'comp' && m.ch === 'ks'), 'KonoSuba: the story is a Companion mission');
+  talk(g, 'p');
+  ok(g.state.flags.ks_land && g.state.flags.ks_met && g.map.id === 'ax_meadow', 'KonoSuba: the Express lands on the meadow and the party meets Kazuma');
+  eq(g.state.party.join(), 'trail,march,danheng', 'KonoSuba: the party is back after the toad fight');
+  eq(g.expressWorld().id, 'belzerg', 'KonoSuba: the Express stays on the meadow');
+  eq(g.state.quests.ks_q2, 'town', 'KonoSuba: next step is the town');
+  exitVia(g, 'x');
+  ok(g.map.id === 'ax_town' && g.state.quests.ks_q2 === 'done' && g.state.quests.ks_q3 === 'guild', 'KonoSuba: Kazuma shows Axel and sends the team to the guild');
+  talk(g, 'Б');
+  ok(g.state.flags.ks_vanir, 'KonoSuba: Vanir makes his prophecy');
+  exitVia(g, 'r');
+  eq(g.state.quests.ks_q3, 'luna', 'KonoSuba: Luna registers newcomers');
+  talk(g, 'л');
+  ok(g.state.flags.ks_cards && g.state.quests.ks_q3 === 'dinner', 'KonoSuba: the cards are ready');
+  talk(g, 'к');
+  ok(g.state.flags.ks_swap && g.state.quests.ks_q3 === 'done', 'KonoSuba: the parties swap at dinner');
+  eq(g.state.party.join(), 'trail,aqua,megumin,darkness', 'KonoSuba: the Trailblazer leads Kazuma\'s party');
+  ok(g.partySpecs().every(p => p.lvl >= H.KONOSUBA.FLOOR), 'KonoSuba: heroes below level 40 fight as level 40 in Belzerg');
+  ok(g.state.roster.trail.lvl < H.KONOSUBA.FLOOR, 'KonoSuba: the real level stays below the floor');
+  const jade = g.state.jade, mana = g.state.inv.items.mana || 0;
+  ok(g.eventReady('konosuba') && g.alerts().events, 'KonoSuba: the swap reward waits in Events');
+  const got = g.claimEvent('konosuba');
+  ok(got.length && g.state.jade === jade + 100 && g.state.inv.items.mana === mana + 2 && !g.eventReady('konosuba'), 'KonoSuba: the swap reward is claimed once');
+  ok(!g.claimEvent('konosuba').length, 'KonoSuba: nothing is claimed twice');
+  g.loadMap('ax_guild', null, { x: 5, y: 10, silent: true });
+  eq(g.ksSP(), 1, 'KonoSuba: registration gives one skill point');
+  talk(g, 'х');
+  ok(g.ksCard().skills.join() === 'steal' && g.ksCard().equip.join() === 'steal' && g.ksSP() === 0, 'KonoSuba: Chris teaches Steal for one point');
+  const trSpec = g.partySpecs().find(p => p.key === 'trail');
+  ok(trSpec.skills && trSpec.skills.length === 1 && trSpec.skills[0].ab.fx.some(f => f.k === 'steal'), 'KonoSuba: the card skill goes into battle');
+  g.loadMap('ax_town', null, { x: 33, y: 3, silent: true });
+  exitVia(g, 'н');
+  ok(g.map.id === 'ax_estate' && g.state.quests.ks_q4 === 'house', 'KonoSuba: the north gate leads to the mansion');
+  exitVia(g, 'd');
+  ok(g.state.flags.ks_night && g.state.quests.ks_q4 === 'done' && g.state.quests.ks_q5 === 'board', 'KonoSuba: the first night in the mansion');
+  g.state.anchors.push('ax_meadow:0', 'j_plains:0');
+  const tpHome = g.teleportFor({ kind: 'anchor', key: 'j_plains:0', map: 'j_plains', on: true });
+  ok(!tpHome.ok && /отряды/.test(tpHome.why), 'KonoSuba: Teleport out of Belzerg is closed during the swap');
+  g.loadMap('ax_guild', null, { x: 5, y: 10, silent: true });
+  const board = g.map.ents.find(e => e.ch === 'б');
+  ok(adj(g, board) && g.interact(), 'KonoSuba: the quest board opens');
+  const boardRun = id => {
+    for (let i = 0; i < 80 && (g.script || g.pending); i++) {
+      if (g.pending && g.pending.type === 'ui' && g.pending.ui === 'ksboard') { ok(g.ksTake(id), 'KonoSuba: quest taken ' + id); g.resume(id); }
+      else if (g.pending && g.pending.type === 'choice') g.resume(0);
+      else if (g.pending) g.resume(); else g.advanceScript();
+    }
+  };
+  boardRun('ks_qa');
+  ok(g.state.flags.ks_board_seen && g.state.quests.ks_qa === 'go' && g.ksBoardBusy(), 'KonoSuba: Darkness picks the toads');
+  ok(!g.ksTake('ks_qb'), 'KonoSuba: one board quest at a time');
+  g.loadMap('ax_town', null, { x: 25, y: 41, silent: true });
+  exitVia(g, 'x');
+  eq(g.state.quests.ks_qa, 'hunt', 'KonoSuba: the hunt starts on the meadow');
+  const fightEnt = e => { g.encounter(e, 'player'); g.battle.start(); g.battle.runAuto(800); let out = g.endBattle(); let n = 0; while (out && out.lost && n++ < 6) { for (const k of g.state.party) g.addExp(k, 3000); g.retryBattle(); g.battle.start(); g.battle.runAuto(800); out = g.endBattle(); } g.afterBattle(); return out; };
+  for (let i = 1; i <= 5; i++) {
+    const e = g.map.ents.find(x => x.kind === 'enemy' && x.def.unique === 'ks_toad_a' + i && g.visible(x));
+    ok(e, 'KonoSuba: toad ' + i + ' is on the meadow');
+    const out = fightEnt(e);
+    ok(out && out.win, 'KonoSuba: toad ' + i + ' falls');
+  }
+  eq(g.state.quests.ks_qa, 'gold', 'KonoSuba: the golden toad comes out after five toads');
+  const gold = g.map.ents.find(x => x.kind === 'enemy' && x.def.unique === 'ks_goldtoad' && g.visible(x));
+  ok(gold && fightEnt(gold).win, 'KonoSuba: the golden toad falls');
+  eq(g.state.quests.ks_qa, 'tadpole', 'KonoSuba: something splashes in the reeds');
+  stepOn(g, 'т');
+  ok(g.state.flags.ks_tadpole && g.state.quests.ks_qa === 'report', 'KonoSuba: Aqua takes the tadpole home');
+  g.loadMap('ax_guild', null, { x: 5, y: 10, silent: true });
+  const c0 = g.state.credits;
+  talk(g, 'л');
+  ok(g.state.flags.ks_toads && g.state.quests.ks_qa === 'done' && g.state.credits === c0 + 8000 && !g.ksBoardBusy(), 'KonoSuba: Luna pays for the toads');
+  ok(g.state.flags.ks_i1 && g.map.id === 'ax_guild' && g.state.party[0] === 'trail', 'KonoSuba: Kazuma wipes the Express windows and the story comes back');
+  ok(g.ksStats('ax').fights >= 6 && g.ksStats('ax').turns > 0, 'KonoSuba: Herta counts the Axel party fights');
+  ok(adj(g, g.map.ents.find(e => e.ch === 'б')) && g.interact(), 'KonoSuba: the board again');
+  boardRun('ks_qb');
+  ok(g.state.quests.ks_qb === 'hill' && g.state.party.includes('megumin'), 'KonoSuba: Megumin goes to the hill');
+  g.loadMap('ax_meadow', null, { x: 56, y: 20, silent: true });
+  exitVia(g, 'f');
+  ok(g.map.id === 'ax_fort' && g.state.quests.ks_qb === 'top', 'KonoSuba: the path leads to the hill');
+  stepOn(g, 'в');
+  ok(g.state.flags.ks_carry && g.state.flags.ks_rate_mid && g.ks().score === 70 && g.state.quests.ks_qb === 'carry', 'KonoSuba: the Explosion is rated and Megumin has to be carried');
+  ok(g.speedMul() < 1, 'KonoSuba: carrying Megumin slows the walk');
+  const pack = g.map.ents.find(x => x.kind === 'enemy' && g.visible(x));
+  g.encounter(pack, 'player');
+  const mg = g.battle.allies.find(a => a.charId === 'megumin');
+  ok(mg && mg.flags.collapse > 0, 'KonoSuba: Megumin lies exhausted in fights on the way back');
+  g.battle.start(); g.battle.runAuto(800); g.endBattle(); g.afterBattle();
+  g.loadMap('ax_guild', null, { x: 5, y: 10, silent: true });
+  talk(g, 'л');
+  ok(g.state.flags.ks_blast && !g.state.flags.ks_carry && g.state.quests.ks_qb === 'done' && g.speedMul() === 1, 'KonoSuba: Luna takes the hill report and Megumin stands up');
+  ok(g.map.id === 'ax_forest' && g.state.party[0] === 'kazuma' && g.state.quests.ks_i2 === 'hunt', 'KonoSuba: Kazuma carries the Express bags into the goblin forest');
+  talk(g, 'л');
+  ok(g.state.flags.ks_i2 && g.state.quests.ks_i2 === 'done' && g.ksStats('kz').fights >= 1 && g.map.id === 'ax_guild' && g.state.party[0] === 'trail', 'KonoSuba: the goblin camp falls and the story comes back');
+  ok(adj(g, g.map.ents.find(e => e.ch === 'б')) && g.interact(), 'KonoSuba: the board for the lake');
+  boardRun('ks_qc');
+  eq(g.state.quests.ks_qc, 'go', 'KonoSuba: Aqua takes the lake job');
+  g.loadMap('ax_meadow', null, { x: 30, y: 36, silent: true });
+  exitVia(g, 'о');
+  ok(g.map.id === 'ax_lake' && g.state.quests.ks_qc === 'cage', 'KonoSuba: the path leads to the lake');
+  talk(g, 'к');
+  ok(g.state.quests.ks_qc === 'report' && !g.state.flags.ks_cage_early, 'KonoSuba: Aqua purifies the lake from the cage');
+  g.loadMap('ax_guild', null, { x: 5, y: 10, silent: true });
+  talk(g, 'л');
+  ok(g.state.flags.ks_lake && g.state.quests.ks_qc === 'done' && g.state.quests.ks_q5 === 'done', 'KonoSuba: three board jobs close the board mission');
+  ok(g.map.id === 'ax_keele1' && g.state.party[0] === 'kazuma' && g.state.quests.ks_i3 === 'down', 'KonoSuba: Kazuma leads the Express team into the Keele dungeon');
+  stepOn(g, 'а');
+  ok(g.state.flags.ks_trap1, 'KonoSuba: Kazuma spots the trap');
+  exitVia(g, 'd');
+  eq(g.state.quests.ks_i3, 'hall', 'KonoSuba: the lower hall');
+  talk(g, 'п');
+  ok(g.state.flags.ks_wake && g.state.flags.ks_i3 && g.map.id === 'ax_guild' && g.state.party[0] === 'trail' && /колокол/.test(g.state.obj), 'KonoSuba: the early Destroyer wakes and walks to Axel');
+  ok(g.ksReady(1), 'KonoSuba: the board milestone waits in Events');
+  eq(g.ksSP(), 3, 'KonoSuba: each board job gives a skill point');
+  g.loadMap('ax_wiz', null, { x: 7, y: 8, silent: true });
+  const cr = g.state.credits;
+  talk(g, 'в');
+  ok(g.state.flags.ks_wiz_bought && g.state.credits === cr - 1000, 'KonoSuba: something useless from Wiz');
+  talk(g, 'в');
+  ok(g.ksCard().skills.includes('drain') && g.ksCard().equip.join() === 'steal,drain', 'KonoSuba: Wiz teaches Drain Touch');
+  g.loadMap('ax_guild', null, { x: 5, y: 10, silent: true });
+  talk(g, 'х');
+  ok(g.ksCard().skills.includes('bind') && g.ksCard().equip.length === 2 && !g.ksEquip('bind'), 'KonoSuba: a third skill waits off the battle slots');
+  ok(g.ksEquip('steal') && g.ksEquip('bind') && g.ksCard().equip.join() === 'drain,bind', 'KonoSuba: the card swaps skills');
+  g.startBattle({ enemies: ['ks_toad:40'], noFlee: true });
+  const tru = g.battle.allies.find(a => a.key === 'trail');
+  ok(tru.kit.skills.length === 3 && tru.kit.skillsShort.join() === 'Свой навык,Касание,Связывание' && g.battle.abilityFor(tru, 'skill').ab, 'KonoSuba: the Trailblazer picks card skills with ↑/↓');
+  g.battle.start(); g.battle.runAuto(800); g.endBattle(); g.afterBattle();
+  g.loadMap('ax_guild', null, { x: 5, y: 10, silent: true });
+  talk(g, 'л');
+  ok(g.state.flags.ks_alarm && g.state.quests.ks_q6 === 'boss' && g.map.id === 'ax_gate', 'KonoSuba: the alarm and the turrets at the gate');
+  talk(g, 'п');
+  ok(g.state.flags.ks_proto && g.state.quests.ks_q6 === 'done', 'KonoSuba: the early Destroyer falls');
+  eq(g.state.party.join(), 'kazuma,aqua,megumin,darkness', 'KonoSuba: Kazuma leads his own party again');
+  {
+    const ps = H.newState();
+    Object.assign(ps, { map: 'ax_gate', x: null, y: null, party: ['kazuma', 'aqua', 'megumin', 'darkness'] });
+    for (const id of ps.party) ps.roster[id] = { lvl: 40, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    const gp = new H.Game({ state: ps, seed: 2 });
+    gp.startBattle({ encId: 'ks_proto', fromScript: true });
+    const bp = gp.battle, pr = bp.enemies[0], aq = bp.allies.find(a => a.charId === 'aqua'), kz = bp.allies.find(a => a.charId === 'kazuma'), mg = bp.allies.find(a => a.charId === 'megumin');
+    ok(bp.hit(kz, pr, 1, {}) === 0 && pr.flags.barrier, 'KonoSuba: the barrier stops everyone but Aqua');
+    bp.hit(aq, pr, 1, {});
+    ok(pr.flags.barrier === false && pr.flags.legs, 'KonoSuba: Aqua breaks the barrier');
+    ok(!bp.protoCore(kz, pr), 'KonoSuba: the core cannot be stolen while the legs stand');
+    bp.actKind = 'ult'; bp.hit(mg, pr, 1, {}); bp.actKind = null;
+    ok(pr.flags.legs === false, 'KonoSuba: the Explosion breaks the legs');
+    ok(bp.protoCore(kz, pr) && pr.flags.coreStolen && bp.over && bp.result.win, 'KonoSuba: Kazuma steals the core and the fight ends');
+  }
+  g.loadMap('ax_guild', null, { x: 5, y: 10, silent: true });
+  talk(g, 'л');
+  ok(g.state.flags.ks_epi && g.state.quests.ks_q7 === 'home' && g.state.party[0] === 'trail' && !g.state.roster.kazuma, 'KonoSuba: the guild celebrates and the parties go home');
+  ok(g.ksStats('ax').cover > 0 && g.ksKpd(g.ksStats('ax'), true) > g.ksKpd(g.ksStats('ax')), 'KonoSuba: the cover column raises the Axel party score');
+  g.loadMap('ax_estate', null, { x: 19, y: 18, silent: true });
+  exitVia(g, 'd');
+  ok(g.state.quests.ks_q7 === 'farewell' && !g.state.flags.ks_carry, 'KonoSuba: dinner at the mansion');
+  g.loadMap('ax_town', null, { x: 25, y: 41, silent: true });
+  exitVia(g, 'x');
+  ok(g.state.flags.ks_done && g.state.quests.ks_q7 === 'done' && g.map.id === 'express' && g.expressWorld().id === 'jarilo', 'KonoSuba: the Express leaves Belzerg');
+  ok(g.ksReady(3), 'KonoSuba: the final milestone waits in Events');
+  {
+    const ws = H.newState();
+    Object.assign(ws, { map: 'ax_lake', x: null, y: null });
+    ws.party = ['trail', 'aqua', 'darkness', 'megumin'];
+    for (const id of ['aqua', 'darkness', 'megumin']) ws.roster[id] = { lvl: 40, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    const gw = new H.Game({ state: ws, seed: 9 });
+    gw.startBattle({ encId: 'ks_lake', fromScript: true });
+    const bw = gw.battle, aqw = bw.allies.find(a => a.charId === 'aqua');
+    ok(bw.ward && bw.ward.turns === 6 && aqw.caged && bw.pickTarget(bw.enemies[0]) !== aqw, 'KonoSuba: Aqua sits in the cage and cannot be targeted');
+    bw.ward.hp = 1;
+    bw.wardTake(bw.enemies[0], { m: 1 }, true);
+    ok(bw.over && bw.ward.broken && !aqw.caged, 'KonoSuba: a broken cage ends the fight');
+    gw.endBattle(); gw.afterBattle();
+    ok(gw.state.flags.ks_cage_broken, 'KonoSuba: the broken cage is remembered');
+    const gw2 = new H.Game({ state: Object.assign(H.newState(), { map: 'ax_lake', x: null, y: null, party: ['trail', 'aqua'], roster: Object.assign(H.newState().roster, { aqua: { lvl: 40, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 } }) }), seed: 4 });
+    gw2.startBattle({ encId: 'ks_lake_short', fromScript: true });
+    const b2 = gw2.battle;
+    b2.start();
+    b2.runAuto(800);
+    ok(b2.over && b2.result.win, 'KonoSuba: the short purification ends with a win');
+  }
+  const bs = H.newState();
+  Object.assign(bs, { map: 'ax_meadow', x: null, y: null });
+  bs.party = ['trail', 'aqua', 'darkness', 'megumin'];
+  for (const id of ['aqua', 'darkness', 'megumin']) bs.roster[id] = { lvl: 40, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+  const gb = new H.Game({ state: bs, seed: 5 });
+  gb.startBattle({ enemies: ['ks_toad:40'], noFlee: true });
+  const bt = gb.battle, toadU = bt.enemies[0], dk = bt.allies.find(a => a.charId === 'darkness'), aq = bt.allies.find(a => a.charId === 'aqua');
+  bt.swallow(toadU, dk);
+  ok(!dk.swallowed && (dk.flags.ecstasy || 0) === 1, 'KonoSuba: toads spit Darkness out and she gains Ecstasy');
+  bt.swallow(toadU, aq);
+  ok(aq.swallowed && aq.flags.tears === 1 && bt.pickTarget(toadU) !== aq, 'KonoSuba: a swallowed ally cries and cannot be targeted');
+  bt.doBreak(bt.allies[0], toadU, 'fire');
+  ok(!aq.swallowed, 'KonoSuba: breaking the toad frees the ally');
+  g.setGuest(null);
+  g.loadMap('j_plains', null, { x: null, y: null, silent: true });
+  ok(!g.ksFloor() && g.partySpecs().find(p => p.key === 'trail').lvl === g.state.roster.trail.lvl, 'KonoSuba: outside Belzerg the level is real');
+  g.state.flags.ks_done = true;
+  const fin = g.ksClaim(3);
+  ok(fin && g.state.roster.kazuma && !g.state.roster.kazuma.guest, 'KonoSuba: the finale gives Kazuma');
+  g.state.flags.ks_i3 = true;
+  ok(g.ksClaim(2) && !g.ksClaim(2), 'KonoSuba: each milestone pays once');
+  const late = H.newState();
+  Object.assign(late.flags, { express_intro: true, jarilo_done: true });
+  const gl = new H.Game({ state: late, seed: 3 });
+  ok(gl.ksOpen() && !gl.ksEarlyReady(), 'KonoSuba: after Jarilo-VI the event is open without early access');
+  ok(gl.mailbox().some(x => x.m.id === 'v14_konosuba') && !new H.Game({ seed: 3 }).mailbox().some(x => x.m.id === 'v14_konosuba'), 'KonoSuba: the event letter arrives with the event');
+  const ge = new H.Game({ state: Object.assign(H.newState(), { flags: { express_intro: true, ks_early: true } }), seed: 3 });
+  ok(ge.mailbox().some(x => x.m.id === 'v14_konosuba'), 'KonoSuba: early access also brings the letter');
+  gl.chatSync(); g.chatSync();
+  ok(!gl.chatThread('ks_kazuma_after') && g.chatThread('ks_kazuma_after') && H.CHAT.CONTACTS.kazuma, 'KonoSuba: Kazuma writes after the finale');
+  const shot = g.bookPages('photos').find(p => p.bg === 'meadow'), guest = g.bookPages('guests').find(p => p.who === 'Казума');
+  ok(shot && shot.ok && guest, 'KonoSuba: the photo wall and guest book remember Belzerg');
+  log.push('konosuba ok');
+}
+{
+  eq(H.MAX_LVL, 80, 'Conductor: characters level up to 80');
+  eq(H.TL_MAX, 70, 'Conductor: Trailblaze Level goes up to 70');
+  eq(new H.Game({ seed: 1 }).trailLevel(), 1, 'Conductor: a new game starts at Trailblaze Level 1');
+  const old = H.newState();
+  old.roster.trail.lvl = 75;
+  eq(new H.Game({ state: old, seed: 1 }).trailLevel(), 70, 'Conductor: old saves take the Trailblaze Level from the Trailblazer, capped at 70');
+  const lv = Object.keys(H.TL_REWARDS).map(Number);
+  ok(lv.length === 69 && lv[0] === 2 && lv[lv.length - 1] === 70, 'Conductor: every level from 2 to 70 has a reward');
+  for (const l of lv) {
+    const r = H.TL_REWARDS[l];
+    ok(r.credits > 0 && Object.keys(r.items || {}).every(id => H.ITEMS[id]) && (!r.cone || H.CONES[r.cone]) && (r.relics || []).every(p => H.RELIC_SETS[p.set] && H.RELIC_SLOTS.some(s => s.key === p.slot)), 'Conductor: level ' + l + ' reward uses real items');
+  }
+  const pick = (g, labels) => {
+    for (let i = 0; i < 300; i++) {
+      if (g.battle) return;
+      const p = g.pending;
+      if (p) {
+        if (p.type === 'choice') { const k = p.options.findIndex(o => labels.some(s => o[0].includes(s))); g.resume(k >= 0 ? k : p.options.length - 1); }
+        else g.resume();
+        continue;
+      }
+      if (g.script) { g.advanceScript(); continue; }
+      return;
+    }
+  };
+  const st = H.newState();
+  Object.assign(st, { name: 'Стелла', gender: 'f', map: 'express', x: null, y: null });
+  for (const f of ['intro', 'doom', 'express_intro', 'jarilo_arrive', 'events_note', 'plains_met']) st.flags[f] = true;
+  for (const id of ['march', 'danheng', 'serval']) st.roster[id] = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+  st.roster.trail.lvl = 11;
+  st.party = ['trail', 'march', 'danheng', 'serval'];
+  const g = new H.Game({ state: st, seed: 5 });
+  const auto = () => { for (let i = 0; i < 4; i++) { g.chatSync(); for (const id of Object.keys(g.chats().th)) g.chatAuto(id); } };
+  auto();
+  ok(!g.state.quests.pc_rewards && !g.tlReadyCount() && !g.claimTl(5), 'Conductor: below level 12 Pom-Pom keeps the rewards to himself');
+  g.events.length = 0;
+  ok(g.addTrailExp(H.expToNext(11)) && g.trailLevel() === 12 && g.events.some(e => e.t === 'tl' && e.lvl === 12), 'Conductor: Trailblaze EXP raises the Trailblaze Level');
+  auto();
+  eq(g.state.quests.pc_rewards, 'talk', 'Conductor: at level 12 the message starts «Награды проводника»');
+  ok(g.missionList().some(m => m.id === 'pc_rewards' && m.type === 'adv' && m.ch === 'adv_express'), 'Conductor: «Награды проводника» is an Adventure mission on the Express');
+  g.missionTick();
+  const jade0 = g.state.jade;
+  const pom = g.map.ents.find(e => e.ch === 'p' && g.visible(e));
+  ok(pom && adj(g, pom) && g.interact(), 'Conductor: Pom-Pom answers');
+  let sawTl = false;
+  for (let i = 0; i < 200 && (g.script || g.pending); i++) {
+    if (g.pending) { if (g.pending.type === 'ui' && g.pending.ui === 'tlrewards') sawTl = true; g.resume(0); } else g.advanceScript();
+  }
+  ok(g.state.quests.pc_rewards === 'done' && g.state.flags.pc_rewards_done && g.state.jade === jade0 + 10 && sawTl, 'Conductor: the quest pays out and opens the level rewards');
+  const tl = g.trailLevel();
+  ok(tl >= 12 && g.tlReadyLevels().join(',') === Array.from({ length: tl - 1 }, (_, i) => i + 2).join(','), 'Conductor: every level reached so far waits for the player');
+  const p0 = g.state.inv.items.pass || 0, got = g.claimAllTl();
+  ok(got.length && g.state.inv.items.pass === p0 + 2 && !g.tlReadyCount() && g.tlRewardState(12) === 'got' && !g.claimTl(12), 'Conductor: claiming all gives each reward once');
+  ok(g.tlRewardState(tl + 1) === 'locked' && !g.claimTl(tl + 1), 'Conductor: a future level stays locked');
+  g.setTrailLevel(17);
+  const r0 = g.state.inv.relics.length;
+  g.claimTl(17);
+  ok(g.state.inv.relics.length === r0 + 4 && g.state.inv.relics.slice(-4).every(r => r.set === 'knight'), 'Conductor: level 17 gives the four Knight relics');
+  g.runScript('pompom_talk');
+  pick(g, ['Расскажи о пассажирах', 'Дань Хэн']);
+  ok(g.state.pomFacts && g.state.pomFacts.danheng >= 1, 'Conductor: Pom-Pom tells a fact about Dan Heng');
+  for (let i = 0; i < 5; i++) { g.runScript('pompom_talk'); pick(g, ['Расскажи о пассажирах', 'Дань Хэн']); }
+  ok(g.state.flags.pf_danheng && g.state.pomFacts.danheng === H.POM_FACTS.danheng.length, 'Conductor: every Dan Heng fact gets told, then the topic is marked as told');
+  const facts = Object.values(H.POM_FACTS).reduce((n, l) => n + l.length, 0);
+  eq(facts, 13, 'Conductor: all thirteen «About» topics from the original are there');
+  auto();
+  eq(g.state.quests.pc_home, 'talk', 'Conductor: at level 17 «Не забывай о доме» starts');
+  g.loadMap('express', null, { x: null, y: null, silent: true });
+  talk(g, 'p');
+  eq(g.state.quests.pc_home, 'done', 'Conductor: talking to Pom-Pom finishes «Не забывай о доме»');
+  g.state.flags.ending = true;
+  g.runScript('pompom_talk');
+  pick(g, ['Что ты здесь делаешь']);
+  eq(g.state.quests.pc_disc, 'serval', 'Conductor: Pom-Pom at the phonograph starts «В поисках записи»');
+  g.loadMap('j_workshop', null, { x: 1, y: 1, silent: true });
+  ok(g.map.ents.some(e => e.ch === 's' && g.visible(e)), 'Conductor: Serval waits in the workshop even when she is in the party');
+  talk(g, 's');
+  ok(g.state.quests.pc_disc === 'done' && g.state.flags.pc_disc_done, 'Conductor: Serval finishes «В поисках записи»');
+  auto();
+  ok(g.chatThread('pc_disc_msg'), 'Conductor: Pom-Pom asks about the record in Messages');
+  g.setTrailLevel(25);
+  auto();
+  eq(g.state.quests.pc_guests, 'talk', 'Conductor: Pom-Pom points to the guest book');
+  g.loadMap('express', null, { x: null, y: null, silent: true });
+  talk(g, 'g');
+  eq(g.state.quests.pc_guests, 'done', 'Conductor: reading the guest book finishes the quest');
+  const sv = H.newState();
+  sv.chats = { th: { pompom_miss: { at: 0, k: 1, n: 99, picks: [0], done: true } }, seq: 1, day: null };
+  eq(new H.Game({ state: sv, seed: 1 }).state.quests.pc_rewards, 'talk', 'Conductor: old saves that read the message get the quest');
+  log.push('conductor ok');
+}
+{
+  const P = H.PETS.chomusuke;
+  ok(P.price === 1200 && P.habits.length >= 4 && P.home === 'ax_mansion', 'Pets: Chomusuke costs 1200 Stellar Jade and lists her habits');
+  ok(Object.values(H.PETS).every(d => !/[—–]/.test(d.text + d.habits.join('') + Object.values(d.leader).flat().join(''))), 'Pets: pet texts use no dashes');
+  const st = H.newState();
+  ok(Array.isArray(st.pets) && !st.pets.length && st.pet === null, 'Pets: a new game has no pets');
+  Object.assign(st, { name: 'Стелла', gender: 'f', map: 'j_belobog', x: null, y: null, jade: 1000 });
+  for (const f of ['intro', 'doom', 'express_intro', 'jarilo_arrive', 'plains_met', 'belobog_intro']) st.flags[f] = true;
+  for (const id of ['march', 'aqua', 'kazuma', 'megumin']) st.roster[id] = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+  st.party = ['trail', 'march'];
+  const g = new H.Game({ state: st, seed: 9 });
+  ok(!g.buyPet('chomusuke') && g.state.jade === 1000, 'Pets: not enough jade, no pet');
+  g.state.jade = 1500;
+  ok(!g.setPet('chomusuke') && g.buyPet('chomusuke') && g.state.jade === 300 && g.ownsPet('chomusuke') && !g.buyPet('chomusuke'), 'Pets: the pet is bought once for 1200 jade');
+  const run = (dir, n) => { for (let k = 0; k < n; k++) { g.update(0.02, { dir }); for (let i = 0; i < 40 && g.player.moving; i++) g.update(0.02, {}); } for (let i = 0; i < 40; i++) g.update(0.02, {}); };
+  const dist = () => Math.abs(g.pet.x - g.player.x) + Math.abs(g.pet.y - g.player.y);
+  let spot = null;
+  for (let y = 2; y < g.map.h - 2 && !spot; y++) for (let x = 2; x < g.map.w - 9 && !spot; x++) {
+    let free = true;
+    for (let dy = -1; dy <= 1 && free; dy++) for (let dx = -1; dx <= 8 && free; dx++) if (g.petBlocked(x + dx, y + dy)) free = false;
+    if (free) spot = [x, y];
+  }
+  ok(spot, 'Pets: Belobog has an open street for the walk');
+  g.placePlayer(spot[0], spot[1]);
+  g.player.dir = 'right';
+  g.update(0.02, {});
+  ok(!g.pet, 'Pets: the pet stays home until it is taken along');
+  ok(g.setPet('chomusuke') && g.petOut() === 'chomusuke', 'Pets: the bought pet goes along');
+  g.update(0.02, {});
+  ok(g.pet && dist() === 1 && !g.petBlocked(g.pet.x, g.pet.y), 'Pets: the pet appears on a free tile next to the leader');
+  run('right', 6);
+  ok(dist() === 1 && g.pet.y === g.player.y && g.pet.x === g.player.x - 1, 'Pets: the pet follows one step behind');
+  ok(g.petStats('chomusuke').steps >= 5, 'Pets: shared steps are counted');
+  g.pet.next = 999;
+  for (let i = 0; i < 1300 && g.pet.act !== 'sleep'; i++) g.update(0.02, {});
+  ok(g.pet.act === 'sleep' && g.pet.still >= H.PET_TUNE.sleepAfter, 'Pets: the pet falls asleep when the team stands still');
+  g.player.dir = 'left';
+  g.events.length = 0;
+  ok(g.petFront() === g.pet && g.interact() && g.pet.act === 'wake' && g.events.some(e => e.id === 'meow'), 'Pets: Space wakes a sleeping pet');
+  for (let i = 0; i < 80; i++) g.update(0.02, {});
+  const n0 = g.petStats('chomusuke').pets;
+  g.events.length = 0;
+  ok(g.interact() && g.pet.act === 'pet' && g.pet.say && g.petStats('chomusuke').pets === n0 + 1 && g.events.some(e => e.id === 'purr'), 'Pets: Space pets the cat, it purrs');
+  g.state.party = ['kazuma', 'march'];
+  g.pet.still = 0; g.pet.act = null; g.pet.next = 999;
+  for (let i = 0; i < 520 && g.pet.act !== 'sleep'; i++) g.update(0.02, {});
+  ok(g.pet.act === 'sleep' && g.pet.still < H.PET_TUNE.sleepAfter, 'Pets: with Kazuma in the lead Chomusuke falls asleep sooner');
+  g.state.party = ['aqua', 'march'];
+  g.player.dir = 'right';
+  run('right', 1); run('left', 1); run('right', 5);
+  ok(dist() === 2, 'Pets: Chomusuke keeps two steps away from Aqua');
+  run('left', 1);
+  g.player.dir = 'left';
+  g.pet.act = null; g.pet.still = 1;
+  ok(dist() === 1 && g.interact() && g.pet.act === 'hiss' && g.events.some(e => e.id === 'hiss'), 'Pets: Chomusuke hisses at Aqua');
+  g.loadMap('j_plains', null, { silent: true });
+  g.update(0.02, {});
+  ok(g.pet && g.pet.map === 'j_plains' && dist() <= 2, 'Pets: the pet comes along to the next map');
+  g.loadMap('ax_mansion', null, { silent: true });
+  g.update(0.02, {});
+  ok(!g.pet, 'Pets: in the mansion Chomusuke stays on her own spot');
+  g.loadMap('j_belobog', null, { silent: true });
+  g.setPet(null);
+  g.update(0.02, {});
+  ok(!g.pet && g.petOut() === null && g.ownsPet('chomusuke'), 'Pets: a pet left on the Express stays in the collection');
+  const kept = new H.Game({ state: JSON.parse(JSON.stringify(Object.assign(g.state, { pet: 'chomusuke' }))), seed: 2 });
+  ok(kept.petOut() === 'chomusuke' && kept.petStats('chomusuke').pets === n0 + 1 + 1, 'Pets: the save keeps the pet and its counters');
+  log.push('pets ok');
 }
 console.log(log.join('\n'));
 console.log('hsr98: ' + checks + ' checks passed in ' + ((Date.now() - t0) / 1000).toFixed(1) + 's');

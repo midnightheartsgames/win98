@@ -470,6 +470,10 @@ class BiosEngine {
     } else if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       this.finishPostInstantly();
+    } else if (e.key === 'F8' && typeof window.openWin98StartupMenu === 'function' && this.resolveBootDevice().device) {
+      e.preventDefault();
+      this.stopPost();
+      window.openWin98StartupMenu();
     }
   }
 

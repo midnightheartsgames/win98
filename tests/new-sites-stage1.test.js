@@ -205,12 +205,46 @@ test('Molotok: auctions end on the site clock and the leader wins', () => {
   assert.ok(!site.lot('voodoo2').closed, 'a new round reopens other lots');
 });
 
+test('Molotok: all 12 categories and 54 lots render with valid sellers and naming rules', () => {
+  const site = window.molotokSite;
+  const cats = site.getCategories();
+  const lots = site.getLots();
+  const sellers = site.getSellers();
+  assert.strictEqual(cats.length, 12);
+  assert.strictEqual(lots.length, 54);
+  const home = site.renderSite('http://www.molotok98.ru');
+  cats.forEach(c => {
+    assert.ok(home.includes(c.name), `Home includes category ${c.id}`);
+    const catLots = lots.filter(l => l.cat === c.id);
+    assert.ok(catLots.length >= 3, `Category ${c.id} has at least 3 lots`);
+    const catHtml = site.renderSite(`http://www.molotok98.ru/cat?id=${c.id}`);
+    assert.ok(catHtml.includes(c.name), `Category page ${c.id} renders`);
+    assert.ok(!EMOJI.test(catHtml), `Category page ${c.id} has no emoji`);
+  });
+  const seenIds = new Set();
+  lots.forEach(l => {
+    assert.ok(!seenIds.has(l.id), `Unique lot id ${l.id}`);
+    seenIds.add(l.id);
+    assert.ok(cats.some(c => c.id === l.cat), `Lot ${l.id} has valid category`);
+    assert.ok(sellers[l.seller], `Lot ${l.id} has valid seller ${l.seller}`);
+    assert.ok(l.start <= l.bid && l.bid < l.blitz && l.botMax < l.blitz, `Lot ${l.id} has valid prices`);
+    const lotHtml = site.renderSite(`http://www.molotok98.ru/lot?id=${l.id}`);
+    assert.ok(lotHtml.includes(site.esc(l.title)), `Lot ${l.id} renders title`);
+    assert.ok(!EMOJI.test(lotHtml), `Lot ${l.id} has no emoji`);
+    const text = lotHtml.replace(/<[^>]+>/g, ' ');
+    assert.ok(!/Microsoft|MICROSOFT|Windows|WINDOWS(?!\\)/.test(text), `Lot ${l.id} follows naming rule`);
+  });
+});
+
 test('Xakep: articles, keygen, mail', () => {
   const site = window.xakepSite;
+  assert.strictEqual(site.getArticles().length, 18);
   site.getArticles().forEach(a => {
     const html = site.renderSite(`http://www.xakep98.ru/article?id=${a.id}`);
     assert.ok(html.includes(a.file), a.id);
     assert.ok(site.articleText(a).includes(a.title));
+    const text = html.replace(/<[^>]+>/g, ' ');
+    assert.ok(!/Microsoft|MICROSOFT|Windows|(?<!\\)WINDOWS(?!\\)/.test(text), a.id);
   });
   assert.ok(site.generateKey('arjcmd', 'TestUser').includes('XAK98'));
   assert.strictEqual(site.generateKey('arjcmd', 'A'), site.generateKey('arjcmd', 'A'));
@@ -276,9 +310,8 @@ test('XFiles: redactions stay closed until the code word is entered', () => {
   assert.ok(site.renderSite('http://www.xfiles98.ru/reports').includes('Видел шар &lt;b&gt;!&lt;/b&gt;'));
 });
 
-test('Favorites menu includes all 6 sites', () => {
-  const urls = ie.favorites.map(f => f[0]);
-  Object.keys(ROUTES).forEach(k => assert.ok(urls.includes(ROUTES[k][0]), k));
+test('Favorites menu keeps only the three portal sites', () => {
+  assert.deepEqual(ie.favorites.map(f => f[0]), ['http://www.interpedia.org', 'http://www.microslop.com', 'http://www.search98.com']);
 });
 
 test('Rambler Top100 and Yandex catalog include all 6 sites', () => {
@@ -299,7 +332,10 @@ test('All 6 sites render a Clippy button', () => {
 test('Clippy site actions call methods and markup that exist', () => {
   const clippy = read('js/apps/clippy.js');
   const start = clippy.indexOf("      'fargus': {");
-  const end = clippy.indexOf('    };', start);
+  const stage1 = ['fargus', 'molotok', 'xakep', 'mult', 'emuland', 'xfiles'];
+  const later = [...clippy.slice(start).matchAll(/^      '([a-z0-9_]+)': \{/gm)].find(m => !stage1.includes(m[1]));
+  const close = clippy.indexOf('    };', start);
+  const end = later && start + later.index < close ? start + later.index : close;
   const block = clippy.slice(start, end);
   const calls = [...block.matchAll(/window\.(\w+Site)\.(\w+)\(/g)];
   assert.ok(calls.length >= 10);

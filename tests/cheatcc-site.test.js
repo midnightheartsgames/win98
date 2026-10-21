@@ -117,7 +117,7 @@ test('the myths stay myths', () => {
   assert.ok(!read('js/apps/pinball.js').toLowerCase().includes('hidden test'));
   assert.ok(read('js/apps/wolf3d/wl-ui.js').includes("this.held.has('KeyM') && this.held.has('KeyL') && this.held.has('KeyI')"));
   assert.ok(read('js/apps/wolf3d/wl-core.js').includes('this.chosen = 3; this.score = 0;'));
-  assert.ok(read('js/apps/stalker98/st-ui.js').includes("if (c === 'F7' || c === 'F9') this.loadFrom('quick')"));
+  assert.ok(read('js/apps/stalker98/st-ui.js').includes("if (c === 'F9') this.loadFrom('quick')") && read('js/apps/stalker98/st-ui.js').includes("if (c === 'F7') { this.W.spawner(); return; }"));
   assert.ok(site.myths.length >= 8);
 });
 

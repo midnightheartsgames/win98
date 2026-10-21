@@ -1101,7 +1101,9 @@
       ui.text(V.ROMAN[ar], x0 + 12, y + 10, { size: 10, bold: true, serif: true, align: 'center', col: '#f2e4b0', shadow: false });
       const size = ui.measure(name, 20, true, true) > 260 ? 15 : 20;
       ui.text(name, x0 + 34, y - 2, { size, bold: true, serif: true, col: '#ffffff' });
-      ui.text('★'.repeat(r.rar) + ' · ' + V.ARCANA[ar] + (ch ? ' · ' + H.PATHS[d.path].name : ' · Световой конус'), x0 + 34, y + 24, { size: 11, col: RCOL[r.rar] });
+      const subLine = '★'.repeat(r.rar) + ' · ' + V.ARCANA[ar] + (ch ? ' · ' + H.PATHS[d.path].name : ' · Световой конус');
+      ui.text(subLine, x0 + 34, y + 24, { size: 11, col: RCOL[r.rar] });
+      if (ch) G.pathIcon(c, d.path, Math.round(x0 + 38 + ui.measure(subLine, 11)), y + 23, 14, RCOL[r.rar]);
       if (ch && r.res === 'new') { const nx = Math.round(x0 + 40 + ui.measure(name, size, true, true)); c.fillStyle = '#e8c860'; c.fillRect(nx, y + 2, 38, 12); ui.text('НОВЫЙ', nx + 19, y + 3, { size: 8, bold: true, align: 'center', col: '#1a1406', shadow: false }); }
       c.restore();
     }
@@ -1118,13 +1120,8 @@
     resultTag(c, r, a) {
       if (a <= 0) return;
       const ui = this.ui;
-      const lines = r.kind === 'char'
-        ? (r.res === 'new' ? [['Новый персонаж!', C.ok], ['присоединился к экипажу', C.cream]] : r.res === 'eid' ? [['Дубликат', C.sub], ['Эйдолон +1', C.gold]] : [['Дубликат', C.sub], ['+3 000 кредитов', C.gold]])
-        : r.sup > 1 ? [['Дубликат', C.sub], ['Наложение S' + r.sup, C.gold]] : [['Световой конус', C.sub], ['добавлен в инвентарь', C.cream]];
-      const x = W - 196, y = 50;
       c.save(); c.globalAlpha = cl(a);
-      ui.win(x, y, 182, 50, { alpha: 0.9 });
-      lines.forEach(([s, col], i) => ui.text(s, x + 14, y + 10 + i * 16, { size: i ? 11 : 12, bold: !i, col }));
+      ui.resultTag(W - 196, 50, r, [['Новый персонаж!', C.ok], ['присоединился к экипажу', C.cream]]);
       c.restore();
     }
 

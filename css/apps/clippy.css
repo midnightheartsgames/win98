@@ -300,7 +300,10 @@
   bottom: 106px;
 }
 
-#clippy-container.has-halo #clippy-slot-head {
+#clippy-container.has-halo #clippy-slot-head,
+#clippy-container.has-boss-sign #clippy-slot-accessory,
+#clippy-container.clippy-anim-search #clippy-slot-accessory,
+#clippy-container.clippy-anim-mail #clippy-slot-accessory {
   display: none;
 }
 
@@ -958,4 +961,17 @@ body:has(#shutdown-dim.active) #clippy-container {
 @keyframes rockyWag {
   0% { transform: rotate(-16deg); }
   100% { transform: rotate(16deg); }
+}
+
+body.taskbar-autohide #clippy-container:not(.is-custom-pos) {
+  bottom: 12px;
+  transition: filter 0.2s ease, bottom 0.15s ease-out;
+}
+
+body.taskbar-autohide:has(#taskbar.is-revealed) #clippy-container:not(.is-custom-pos) {
+  bottom: 38px;
+}
+
+body.win98-safe-mode #clippy-char {
+  filter: saturate(0.3) contrast(1.3);
 }

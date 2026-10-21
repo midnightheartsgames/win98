@@ -73,6 +73,24 @@ test('episode pages have their own URL, list and neighbours', () => {
   assert.ok(html.includes('DiGi%20Charat%20-%2005_144p.mkv'));
 });
 
+test('director commentary has its own Russian subtitle track for every episode', () => {
+  const html = site.renderSite(base + '/episodes?ep=3');
+  assert.ok(html.includes('<option value="commentRus">Комментарии Режиссёра</option>'));
+  const subs = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'content/digi/video/subs.json'), 'utf8'));
+  assert.strictEqual(Object.keys(subs).length, 16);
+  Object.entries(subs).forEach(([ep, tracks]) => {
+    assert.strictEqual(tracks.commentRus.length, tracks.comment.length, ep);
+    tracks.commentRus.forEach((cue, i) => {
+      assert.strictEqual(cue.start, tracks.comment[i].start, `${ep}:${i}`);
+      assert.strictEqual(cue.end, tracks.comment[i].end, `${ep}:${i}`);
+      assert.ok(/[а-яё]/i.test(cue.text), `${ep}:${i}`);
+    });
+  });
+  site.currentSubtitleTrack = 'commentRus';
+  assert.strictEqual(site.subtitleClass(), 'is-commentary');
+  site.currentSubtitleTrack = 'eng';
+});
+
 test('episode and music players share one volume slider value', () => {
   site.playerVolume = 0.35;
   assert.ok(site.renderSite(base + '/episodes?ep=2').includes('id="digi_vol" min="0" max="1" step="0.05" value="0.35"'));

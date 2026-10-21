@@ -1,8 +1,7 @@
 (function (H) {
   'use strict';
-  const G = H.Gfx, R3 = H.R3, M = R3.M;
-  const SS = 4, BLACK = '#1c1a22', RED_DK = '#6e1018', PAW = '#f6f2ea';
-  const TOON = [[0.82, 1.08], [0.6, 0.9], [-9, 0.7]];
+  const R3 = H.R3, M = R3.M;
+  const BLACK = '#1c1a22', RED_DK = '#6e1018', PAW = '#f6f2ea';
   const look = () => H.SPEAKERS.pompom.look;
 
   function faceTex(happy) {
@@ -104,19 +103,6 @@
     return { lamp: M.pt(hat, 0, 0.12, 0.2) };
   }
 
-  function bake(w, h, k, at, elev, pose) {
-    const R = new R3.Raster(w * SS, h * SS);
-    R.clear(null);
-    R.light({ amb: [0.6, 0.6, 0.62], dir: [-0.5, 0.8, 0.75], sun: [0.55, 0.54, 0.5], toon: TOON });
-    R.look([at[0], at[1] + Math.sin(elev) * 8, at[2] + Math.cos(elev) * 8], at, 30, 0, k * SS);
-    draw(R, pose);
-    return G.downsample(R.bake(), w, h, true);
-  }
-
-  function bust(size) { return bake(size, size, size / 0.94, [0, 0.83, 0], 0.08, { yaw: 0.28, tilt: 0.04 }); }
-
-  function figure(kf) { return bake(48 * kf, 96 * kf, 41 * kf, [0, 1.1, 0], 0.05, { yaw: 0.22 }); }
-
-  H.PomPom = { draw, bust, figure };
+  H.PomPom = { draw };
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

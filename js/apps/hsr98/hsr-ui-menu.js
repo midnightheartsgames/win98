@@ -7,17 +7,21 @@
   const STAT_ROWS =[['hp', 'HP'], ['atk', 'Атака'], ['def', 'Защита'], ['spd', 'Скорость'], ['critR', 'Крит. шанс'], ['critD', 'Крит. урон'], ['breakE', 'Эфф. пробития'], ['err', 'Энергия']];
   const SECTIONS = [
     { id: 'details', label: 'Детали', icon: 'chars' },
-    { id: 'cone', label: 'Световой конус', icon: 'cones' },
+    { id: 'traces', label: 'Следы', icon: 'traces' },
     { id: 'relics', label: 'Реликвии', icon: 'relic' },
     { id: 'skills', label: 'Способности', icon: 'archive' },
     { id: 'eidolons', label: 'Эйдолоны', icon: 'warp' },
-    { id: 'info', label: 'Информация', icon: 'info' }
+    { id: 'info', label: 'Информация', icon: 'info' },
+    { id: 'outfits', label: 'Наряды', icon: 'outfit' }
   ];
+  const SEC_STEP = 40, FAV_Y = 372, LIST_Y = 412;
+  const CHAR_GRID = { COLS: 4, VIS: 5, CW: 132, CH: 64, GAP: 4, X0: 42, Y0: 62 };
   const INFO_PAGES = ['Досье', 'История', 'Голос'];
   const INFO_ROW = 14;
   const INV_TABS = [
     { id: 'food', label: 'Расходники', icon: 'bag' },
     { id: 'exp', label: 'Опыт', icon: 'archive' },
+    { id: 'mat', label: 'Материалы', icon: 'traces' },
     { id: 'key', label: 'Ключевые', icon: 'mission' },
     { id: 'cones', label: 'Конусы', icon: 'cones' },
     { id: 'relics', label: 'Реликвии', icon: 'relic' }
@@ -25,40 +29,50 @@
   const TARGET_NAME = { single: 'одна цель', blast: 'цель и соседи', all: 'все враги', bounce: 'отскоки', ally: 'союзник', allies: 'все союзники', self: 'на себя' };
   const TAG_NAME = { joke: 'шутка', cute: 'милота', threat: 'угроза', science: 'наука', kind: 'доброта', sing: 'музыка', bribe: 'выгода', silent: 'молчание', weird: 'странное' };
   const EIDOLON_NUM = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-  const EIDOLON_STATS = [['hp', 'HP'], ['atk', 'Атака'], ['def', 'Защита']];
   const pct = v => (Math.round(v * 1000) / 10) + '%';
   const RAR_TXT = { 3: '#b8c4e8', 4: '#cfa2ff', 5: '#ffd45a' };
   const RAR_ROW = { 4: 'rgba(190,120,255,0.13)', 5: 'rgba(255,196,70,0.16)' };
   const WARP_FILTERS = [['Все', 3], ['4★ и выше', 4], ['Только 5★', 5]];
-  const BANNER_TABS = [['ev', 'Прыжок события'], ['sig', 'Поиск сигнала'], ['conv', 'Призыв'], ['guild', 'Гильдия'], ['mid', 'Полуночный канал'], ['std', 'Стандартный']];
+  const BANNER_TABS = [['ev', 'Прыжок события'], ['sig', 'Поиск сигнала'], ['conv', 'Призыв'], ['guild', 'Гильдия'], ['mid', 'Полуночный канал'], ['con', 'Кон-Тон'], ['std', 'Стандартный']];
   const EV_CHANNELS = [['ev', 'Герой'], ['cone', 'Конус']];
-  const CHANNELS = { ev: ['ev', 'cone'], sig: ['sig', 'amp'], conv: ['conv', 'forge'], guild: ['guild', 'wiz'], mid: ['mid', 'comp'] };
+  const CHANNELS = { ev: ['ev', 'cone'], sig: ['sig', 'amp'], conv: ['conv', 'forge'], guild: ['guild', 'wiz'], mid: ['mid', 'comp'], con: ['con', 'alley'] };
   const GUILD_CHANNELS = [['guild', 'Набор'], ['wiz', 'Лавка Виз']];
   const CONV_CHANNELS = [['conv', 'Резонатор'], ['forge', 'Оружие']];
   const SIG_CHANNELS = [['sig', 'Выделенный канал', 'Агенты'], ['amp', 'Канал амплификаторов', 'Световые конусы']];
   const RANK = { 5: 'S', 4: 'A', 3: 'B' };
   const RANK_COL = { 5: '#ffb030', 4: '#c060ff', 3: '#40a8ff' };
-  const tabOf = ban => (ban === 'amp' ? 'sig' : ban === 'cone' ? 'ev' : ban === 'forge' ? 'conv' : ban === 'comp' ? 'mid' : ban === 'wiz' ? 'guild' : ban);
+  const tabOf = ban => (ban === 'amp' ? 'sig' : ban === 'cone' ? 'ev' : ban === 'forge' ? 'conv' : ban === 'comp' ? 'mid' : ban === 'wiz' ? 'guild' : ban === 'alley' ? 'con' : ban);
   const signalBan = ban => ban === 'sig' || ban === 'amp';
   const conveneBan = ban => ban === 'conv' || ban === 'forge';
   const guildBan = ban => ban === 'guild' || ban === 'wiz';
   const midBan = ban => ban === 'mid' || ban === 'comp';
+  const conBan = ban => ban === 'con' || ban === 'alley';
   const POSTER_TINT = { aqua: '#2f6cc8', megumin: '#b82a2a', darkness: '#c89224' };
-  const TICKETS = { std: ['пропусков', 'Пропуски '], ev: ['особых пропусков', 'Особые пропуски '], cone: ['особых пропусков', 'Особые пропуски '], sig: ['шифрокопий', 'Шифрокопии '], amp: ['шифрокопий', 'Шифрокопии '], conv: ['сияющих приливов', 'Сияющие приливы '], forge: ['кующих приливов', 'Кующие приливы '], guild: ['манатитов', 'Манатиты '], wiz: ['манатитов', 'Манатиты '], mid: ['бархатных ключей', 'Бархатные ключи '], comp: ['бархатных ключей', 'Бархатные ключи '] };
+  const TICKETS = { std: ['пропусков', 'Пропуски '], ev: ['особых пропусков', 'Особые пропуски '], cone: ['особых пропусков', 'Особые пропуски '], sig: ['шифрокопий', 'Шифрокопии '], amp: ['шифрокопий', 'Шифрокопии '], conv: ['сияющих приливов', 'Сияющие приливы '], forge: ['кующих приливов', 'Кующие приливы '], guild: ['манатитов', 'Манатиты '], wiz: ['манатитов', 'Манатиты '], mid: ['бархатных ключей', 'Бархатные ключи '], comp: ['бархатных ключей', 'Бархатные ключи '], con: ['бейджей', 'Бейджи '], alley: ['бейджей', 'Бейджи '] };
   const EV_STYLE = {
     ruanmei: { tag: '#1c5a64', title: '#f4fff8', sub: '#bfe4e0', four: '#e8d4ff', glow: 'rgba(190,240,236,0.3)' },
     seele: { tag: '#4a2470', title: '#fbf2ff', sub: '#dcc8f6', four: '#ffd8ec', glow: 'rgba(200,150,255,0.3)' },
     kafka: { tag: '#5a1a3a', title: '#fff0f6', sub: '#f0c0d8', four: '#ffd8e8', glow: 'rgba(230,120,190,0.3)' },
     silverwolf: { tag: '#1a2a5a', title: '#f2f4ff', sub: '#b8c4f0', four: '#c8f0ff', glow: 'rgba(120,150,255,0.3)' },
-    blade: { tag: '#4a1418', title: '#fff2ec', sub: '#e8b8b0', four: '#ffd8c8', glow: 'rgba(230,80,70,0.3)' }
+    blade: { tag: '#4a1418', title: '#fff2ec', sub: '#e8b8b0', four: '#ffd8c8', glow: 'rgba(230,80,70,0.3)' },
+    jingyuan: { tag: '#3a2a5a', title: '#fff8ec', sub: '#e0d0f0', four: '#ffe8b8', glow: 'rgba(200,170,255,0.3)' },
+    luocha: { tag: '#2a4a30', title: '#fffaf0', sub: '#d8e8c8', four: '#ffeec0', glow: 'rgba(240,220,140,0.3)' },
+    imbibitor: { tag: '#123a40', title: '#f0fffc', sub: '#b8e8e0', four: '#c8fff4', glow: 'rgba(120,230,220,0.3)' },
+    fuxuan: { tag: '#3a2050', title: '#fff4fa', sub: '#e8c8e8', four: '#ffd8f0', glow: 'rgba(240,170,220,0.3)' },
+    jingliu: { tag: '#141e3a', title: '#f4f8ff', sub: '#c0d0f0', four: '#d8e8ff', glow: 'rgba(170,210,255,0.3)' },
+    topaz: { tag: '#4a1418', title: '#fff4ec', sub: '#f0c8b8', four: '#ffe0c0', glow: 'rgba(255,190,90,0.3)' },
+    huohuo: { tag: '#1e3a30', title: '#f4fff8', sub: '#c8ecd8', four: '#d8ffe8', glow: 'rgba(140,240,190,0.3)' },
+    argenti: { tag: '#4a1420', title: '#fff2f4', sub: '#f0c0c8', four: '#ffd8e0', glow: 'rgba(255,120,140,0.3)' },
+    ratio: { tag: '#2a2050', title: '#f8f4ff', sub: '#d0c8f0', four: '#ffe8b0', glow: 'rgba(200,180,255,0.3)' }
   };
+  const PICK_VIS = 5;
   const pad2 = n => String(n).padStart(2, '0');
   const warpName = e => (e.kind === 'char' ? (H.CHARS[e.id] || {}).name : (H.CONES[e.id] || {}).name) || e.id;
   const warpWhen = e => { if (!e.at) return '—'; const d = new Date(e.at); return pad2(d.getDate()) + '.' + pad2(d.getMonth() + 1) + '.' + String(d.getFullYear()).slice(2) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };
-  const warpNote = e => (e.cameo ? ['гость из гильдии', C.gold] : e.off ? [e.ban === 'guild' ? (e.rar === 4 ? 'не Казума' : H.BANNERS.guild.stars[e.id] ? 'другой член отряда' : 'гость из стандарта') + ' · дальше гарант' : e.ban === 'wiz' ? (e.rar === 4 ? 'не «Чунчунмару»' : Object.values(H.BANNERS.wiz.stars).some(x => x.cone === e.id) ? 'конус другой героини' : 'конус из стандарта') + ' · дальше гарант' : 'вне события · дальше гарант', C.sub] : e.kind === 'char'
-    ? ({ new: ['новый персонаж', C.ok], eid: ['эйдолон +1', C.gold], credits: ['+3000 кредитов', C.gold] }[e.res] || ['персонаж', C.sub])
+  const warpNote = e => (e.cameo ? ['гость из гильдии', C.gold] : e.off ? [e.ban === 'guild' ? (e.rar === 4 ? 'не Казума' : H.BANNERS.guild.stars[e.id] ? 'другой член отряда' : 'гость из стандарта') + ' · дальше гарант' : e.ban === 'wiz' ? (e.rar === 4 ? 'не «Чунчунмару»' : Object.values(H.BANNERS.wiz.stars).some(x => x.cone === e.id) ? 'конус другой героини' : 'конус из стандарта') + ' · дальше гарант' : e.ban === 'con' ? (e.rar === 4 ? 'вне тройки' : 'гость из стандарта') + ' · дальше гарант' : e.ban === 'alley' ? (e.rar === 4 ? 'конус не из Аллеи' : 'конус из стандарта') + ' · дальше гарант' : 'вне события · дальше гарант', C.sub] : e.kind === 'char'
+    ? ({ new: ['новый персонаж', C.ok], eid: ['эйдолон +1', C.gold], max: ['эйдолоны VI', C.gold], credits: ['+3000 кредитов', C.gold] }[e.res] || ['персонаж', C.sub])
     : e.sup > 1 ? ['наложение S' + e.sup, C.gold] : ['световой конус', C.sub]);
-  const warpPity = e => (e.pity ? e.pity + ' / ' + (e.rar === 5 ? (e.ban === 'cone' || e.ban === 'amp' || e.ban === 'forge' || e.ban === 'wiz' ? T.conePity5 : T.pity5) : T.pity4) : '—');
+  const warpPity = e => (e.pity ? e.pity + ' / ' + (e.rar === 5 ? (e.ban === 'cone' || e.ban === 'amp' || e.ban === 'forge' || e.ban === 'wiz' || e.ban === 'alley' ? T.conePity5 : T.pity5) : T.pity4) : '—');
   const warpIcon = (c, e, x, y, size, g) => {
     if (e.kind === 'char') { c.fillStyle = G.RARITY[e.rar]; c.fillRect(x - 1, y - 1, size + 2, size + 2); G.drawPortrait(c, G.lookOf(e.id, g), x, y, size); }
     else G.drawConeCard(c, e.id, x + Math.round(size * 0.15), y, Math.round(size * 0.72), size, { info: false });
@@ -124,10 +138,18 @@
     },
 
     rosterKeys() {
-      const s = this.game.state;
-      const order = Object.keys(H.CHARS).map(k => (k === 'trail_p' ? null : k)).filter(Boolean);
-      const rest = Object.keys(s.roster).filter(k => !s.party.includes(k)).sort((a, b) => order.indexOf(a) - order.indexOf(b));
-      return s.party.filter(k => s.roster[k]).concat(rest);
+      const s = this.game.state, order = Object.keys(H.CHARS);
+      const slot = k => { const i = s.party.indexOf(k); return i < 0 ? 4 : i; };
+      const fav = k => (s.roster[k].fav ? 0 : 1);
+      return Object.keys(s.roster).sort((a, b) => slot(a) - slot(b) || fav(a) - fav(b) || order.indexOf(a) - order.indexOf(b));
+    },
+
+    favStar(c, x, y, r, on) {
+      c.beginPath();
+      for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r; c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+      c.closePath();
+      c.fillStyle = on ? C.brassHi : 'rgba(10,12,40,0.7)'; c.fill();
+      c.strokeStyle = on ? '#1a1208' : C.sub; c.lineWidth = 1; c.stroke();
     },
 
     equilibrium() { return Object.keys(this.game.state.flags).filter(f => f.startsWith('first_')).length; },
@@ -146,12 +168,13 @@
         { label: 'Сохранить', icon: 'save', disabled: !!g.state.su || !near(), why: g.state.su ? 'вне Виртуальной вселенной: каждая зона сохраняется сама' : 'у якоря пространства или в городе', fn: () => ui.openSaves('save') },
         { label: 'Загрузить', icon: 'load', fn: () => ui.openSaves('load') },
         { label: 'События', icon: 'events', disabled: !g.eventsOpen(), why: 'после станции «Герта»', alert: 'events', fn: () => ui.openEvents() },
-        { label: 'Управление', icon: 'guide', fn: () => ui.openGuide() },
+        { label: 'Снабжение', icon: 'shop', disabled: !g.state.flags.express_intro, why: 'после знакомства с Экспрессом', fn: () => ui.openSupply() },
         { label: 'Сообщения', icon: 'chat', alert: 'chat', fn: () => ui.openChats(null) }
       ];
       const rail = () => [
         { label: 'Почта', icon: 'mail', alert: 'mail', fn: () => ui.openMail() },
         { label: 'Настройки', icon: 'settings', fn: () => ui.openSettings() },
+        { label: 'Управление', icon: 'guide', fn: () => ui.openGuide() },
         { label: 'В титры', icon: 'exit', fn: () => ui.confirmTitle() }
       ];
       this.push({
@@ -178,11 +201,11 @@
           ui.text(s.name, dx + 74, dy + 30, { size: 17, bold: true, serif: true, col: C.gold });
           ui.text('Уровень равновесия ' + ui.equilibrium(), dx + 74, dy + 52, { size: 11, col: C.cream });
           ui.text('В пути ' + g.summary().time, dx + 74, dy + 66, { size: 10, col: C.sub });
-          const tr = s.roster.trail;
+          const tr = s.tl;
           ui.text('Ур. освоения', dx + 12, dy + 90, { size: 11, col: C.sub });
           ui.text(String(tr.lvl), dx + 92, dy + 86, { size: 16, bold: true, serif: true, col: C.gold });
-          ui.text('Опыт ' + tr.exp + '/' + H.expToNext(tr.lvl), dx + dw - 12, dy + 90, { size: 10, align: 'right', col: C.sub });
-          ui.rail(dx + 14, dy + 110, dw - 28, tr.exp / H.expToNext(tr.lvl));
+          ui.text(tr.lvl >= H.TL_MAX ? 'Макс. уровень' : 'Опыт ' + tr.exp + '/' + H.expToNext(tr.lvl), dx + dw - 12, dy + 90, { size: 10, align: 'right', col: C.sub });
+          ui.rail(dx + 14, dy + 110, dw - 28, tr.lvl >= H.TL_MAX ? 1 : tr.exp / H.expToNext(tr.lvl));
           const list = tiles(), gx = dx + 12, gy = dy + 124, tw = 78, th = 62, gap = 5;
           list.forEach((t, i) => {
             const x = gx + (i % 3) * (tw + gap), y = gy + Math.floor(i / 3) * (th + gap), on = i === this.sel && this.rail < 0;
@@ -221,7 +244,7 @@
           ui.money(mx, fy + 4, 'power', s.power + '/' + T.powerMax);
           const cur = this.rail < 0 ? list[this.sel] : null, rcur = this.rail >= 0 ? R[this.rail] : null;
           const unread = g.mailbox().filter(x => g.mailNew(x)).length;
-          const railNote = { mail: 'Почта: ' + (unread ? 'новых писем ' + unread : 'новых писем нет'), settings: 'Настройки: звук, скорость, разрешение', exit: 'В титры: выйти в главное меню' };
+          const railNote = { mail: 'Почта: ' + (unread ? 'новых писем ' + unread : 'новых писем нет'), settings: 'Настройки: звук, скорость, разрешение', guide: 'Управление: клавиши поля, боя и карты', exit: 'В титры: выйти в главное меню' };
           const note = rcur ? railNote[rcur.icon]
             : cur && cur.disabled ? 'Доступно ' + cur.why : 'F7 — +' + T.debugJade + ' нефрита (отладка)';
           ui.text(note, dx + dw / 2, fy + 21, { align: 'center', size: 9, col: cur && cur.disabled ? C.bad : rcur ? C.cream : C.dim });
@@ -308,7 +331,7 @@
     openChars(startKey) {
       const ui = this, g = this.game;
       this.push({
-        full: true, k: startKey || ui.rosterKeys()[0], sec: 0, slot: 0, slotFocus: false, star: 0, starFocus: false, asm: null, asmK: null, infoPage: 0, infoFocus: false, infoSc: { top: 0 }, infoFor: null,
+        full: true, trSel: 'skill', trFocus: false, k: startKey || ui.rosterKeys()[0], sec: 0, slot: 0, slotFocus: false, star: 0, starFocus: false, asm: null, asmK: null, infoPage: 0, infoFocus: false, infoSc: { top: 0 }, infoFor: null, outfitPick: 0, outfitFocus: false, outfitFor: null,
         switchChar(d) { const list = ui.rosterKeys(), i = list.indexOf(this.k); this.k = list[(i + d + list.length) % list.length]; ui.sfx('select'); },
         tick(dt) {
           if (H.Eidolons) H.Eidolons.tickAsm(this, dt, ui, g);
@@ -345,6 +368,7 @@
           const ci = list.indexOf(k);
           if (ci >= 0) ui.circlePortrait(c, G.lookOf(g.kitOf(k), g), slotX(ci) + P / 2 - 17, 6, 34, C.brassHi);
           list.forEach((kk, i) => { if (g.eidNew(kk) > 0) ui.badge(slotX(i) + P - 5, 10); });
+          list.forEach((kk, i) => { if (g.isFav(kk)) ui.favStar(c, slotX(i) + 6, 12, 5, true); });
           c.restore();
           list.forEach((kk, i) => { const x = slotX(i); if (x > x0 - P / 2 && x < x0 + vw - P / 2) ui.hit(x, 4, P, 46, () => { this.k = kk; ui.sfx('select'); }); });
           let qx = x0 - 22, ex = x0 + vw + 6;
@@ -380,36 +404,64 @@
           else ui.fullBg(c, 392);
           ui.plate(12, 10, 'Персонажи');
           G.pathIcon(c, kit.path, 16, 34, 14);
-          ui.text(H.PATHS[kit.path].name + ' / ' + (k === 'trail' ? s.name : kit.name), 34, 35, { size: 12, bold: true, col: C.cream });
+          ui.text(H.PATHS[kit.path].name + ' / ' + (k === 'trail' ? s.name : kit.name.length > 18 && kit.short ? kit.short : kit.name), 34, 35, { size: 12, bold: true, col: C.cream });
           this.drawStrip(c, s, k);
           ui.closeBtn(W - 32, 10, () => ui.pop());
           SECTIONS.forEach((sec, i) => {
-            const y = 80 + i * 44, on = i === this.sec;
+            const y = 80 + i * SEC_STEP, on = i === this.sec;
             if (on) { const gr = c.createLinearGradient(12, 0, 180, 0); gr.addColorStop(0, 'rgba(242,220,154,0.3)'); gr.addColorStop(1, 'rgba(242,220,154,0)'); c.fillStyle = gr; c.fillRect(12, y - 4, 170, 34); c.fillStyle = C.brassHi; c.fillRect(12, y - 4, 2, 34); }
             c.fillStyle = on ? 'rgba(242,220,154,0.25)' : 'rgba(10,12,40,0.6)'; c.beginPath(); c.arc(34, y + 13, 15, 0, Math.PI * 2); c.fill();
             c.strokeStyle = on ? C.brassHi : 'rgba(154,166,208,0.5)'; c.stroke();
             G.menuIcon(c, sec.icon, 24, y + 3, 20, on ? '#fff0c0' : '#c8cce4');
             ui.text(sec.label, 56, y + 6, { size: 13, bold: on, serif: on, col: on ? C.gold : C.cream });
             if (sec.id === 'eidolons' && g.eidNew(k) > 0) ui.badge(56 + ui.measure(sec.label, 13, on, on) + 10, y + 6);
-            ui.hit(12, y - 4, 170, 34, () => { this.sec = i; this.slotFocus = false; this.starFocus = false; this.infoFocus = false; ui.sfx('select'); });
+            ui.hit(12, y - 4, 170, 34, () => { this.sec = i; this.slotFocus = false; this.starFocus = false; this.infoFocus = false; this.outfitFocus = false; this.trFocus = false; ui.sfx('select'); });
           });
+          this.drawFav(c, k);
+          this.drawListBtn(c);
           ui.platform(c, 306, 440, 108);
           if (secId === 'eidolons') this.drawEidolons(c, EV ? EV.shown : r.eid);
           if (EV) { E.figure(c, look, 306, 444, 3, ui.t, EV.lifeK, k); E.aura(c, E.SCENES[k].aura, 306, 444, ui.t, EV.lifeK); }
-          else G.drawFigure(c, look, 306, 444, 3);
+          else G.drawFigure(c, secId === 'outfits' ? ui.outfitPreview(this, k) : look, 306, 444, 3);
+          if (secId === 'traces') ui.drawTraces(this, c, k);
           if (secId === 'relics') this.drawRelicSlots(c, k);
           const px = secId === 'info' ? 388 : 440, py = 58, pw = secId === 'info' ? 244 : 192, ph = 414;
           ui.win(px, py, pw, ph, { alpha: 0.9 });
           if (secId === 'details') this.panelDetails(c, px, py, pw, k, r, kit, st, look);
-          if (secId === 'cone') this.panelCone(c, px, py, pw, k, r, kit);
+          if (secId === 'traces') ui.panelTraces(this, c, px, py, pw, ph, k);
           if (secId === 'relics') this.panelRelic(c, px, py, pw, k, r);
           if (secId === 'skills') this.panelSkills(c, px, py, pw, kitId, kit);
           if (secId === 'eidolons') this.panelEidolons(c, px, py, pw, r, kitId, kit, EV);
           if (secId === 'info') this.panelInfo(c, px, py, pw, ph, k, kit);
-          const hint = secId === 'relics' ? (this.slotFocus ? [['←↑↓→', 'Слот'], ['Enter', 'Сменить'], ['Del', 'Снять'], ['A', 'Авто'], ['Esc', 'Назад']] : [['Enter', 'К слотам'], ['A', 'Авто-реликвии']]) : secId === 'cone' ? [['Enter', 'Сменить конус']] : secId === 'details' ? [['Enter', 'Действия']] : secId === 'eidolons' ? (this.asm ? [['Enter', 'Пропустить сборку']] : this.starFocus ? [['←↑↓→', 'Эйдолон'], ['V', 'Картина'], ['Esc', 'Назад']] : [['Enter', 'К созвездию'], ['V', 'Картина']]) : secId === 'info' ? (this.infoFocus ? [['←→', 'Вкладка'], ['↑↓', 'Прокрутка'], ['Esc', 'Назад']] : [['Enter', 'Читать']]) : [];
-          const deep = (secId === 'eidolons' && this.starFocus) || (secId === 'info' && this.infoFocus);
+          if (secId === 'outfits') ui.panelOutfits(this, c, px, py, pw, ph, k);
+          const hint = secId === 'relics' ? (this.slotFocus ? [['←↑↓→', 'Слот'], ['Enter', 'Сменить'], ['Del', 'Снять'], ['A', 'Авто'], ['Esc', 'Назад']] : [['Enter', 'К слотам'], ['A', 'Авто-реликвии']]) : secId === 'traces' ? ui.traceHints(this) : secId === 'details' ? [['Enter', 'Действия']] : secId === 'eidolons' ? (this.asm ? [['Enter', 'Пропустить сборку']] : this.starFocus ? [['←↑↓→', 'Эйдолон'], ['V', 'Картина'], ['Esc', 'Назад']] : [['Enter', 'К созвездию'], ['V', 'Картина']]) : secId === 'info' ? (this.infoFocus ? [['←→', 'Вкладка'], ['↑↓', 'Прокрутка'], ['Esc', 'Назад']] : [['Enter', 'Читать']]) : secId === 'outfits' ? ui.outfitHints(this, k) : [];
+          const deep = (secId === 'eidolons' && this.starFocus) || (secId === 'info' && this.infoFocus) || (secId === 'outfits' && this.outfitFocus) || (secId === 'traces' && this.trFocus);
           ui.hints((deep ? [['Q/E', 'Персонаж']] : [['Q/E', 'Персонаж'], ['↑↓', 'Раздел']]).concat(hint), 12, HGT - 18);
           if (this.asm) ui.hit(0, 0, W, HGT, () => E.skipAsm(this, g));
+        },
+        drawFav(c, k) {
+          const on = g.isFav(k), y = FAV_Y, label = on ? 'В избранном' : 'В избранное';
+          c.fillStyle = 'rgba(154,166,208,0.3)'; c.fillRect(16, y - 10, 162, 1);
+          c.fillStyle = on ? 'rgba(242,220,154,0.25)' : 'rgba(10,12,40,0.6)'; c.beginPath(); c.arc(34, y + 13, 15, 0, Math.PI * 2); c.fill();
+          c.strokeStyle = on ? C.brassHi : 'rgba(154,166,208,0.5)'; c.lineWidth = 1; c.stroke();
+          ui.favStar(c, 34, y + 14, 9, on);
+          ui.text(label, 56, y + 6, { size: 13, col: on ? C.gold : C.cream });
+          ui.keycap(62 + ui.measure(label, 13), y + 7, 'F');
+          ui.hit(12, y - 4, 170, 34, () => this.toggleFav());
+        },
+        drawListBtn(c) {
+          const y = LIST_Y, label = 'Все персонажи';
+          c.fillStyle = 'rgba(10,12,40,0.6)'; c.beginPath(); c.arc(34, y + 13, 15, 0, Math.PI * 2); c.fill();
+          c.strokeStyle = 'rgba(154,166,208,0.5)'; c.lineWidth = 1; c.stroke();
+          G.menuIcon(c, 'team', 24, y + 3, 20, '#c8cce4');
+          ui.text(label, 56, y + 6, { size: 13, col: C.cream });
+          ui.keycap(62 + ui.measure(label, 13), y + 7, 'L');
+          ui.hit(12, y - 4, 170, 34, () => ui.openCharList(this));
+        },
+        toggleFav() {
+          const on = g.toggleFav(this.k);
+          ui.sfx(on ? 'confirm' : 'cancel');
+          ui.toast(on ? ui.shortName(this.k) + ': в избранном. Избранные идут в списках сразу после отряда.' : ui.shortName(this.k) + ': отметка «Избранное» снята.');
         },
         panelDetails(c, px, py, pw, k, r, kit, st, look) {
           const s = g.state;
@@ -433,10 +485,13 @@
           const cone = r.cone ? s.inv.cones.find(x => x.uid === r.cone) : null;
           const cy = py + 272;
           c.fillStyle = 'rgba(242,220,154,0.35)'; c.fillRect(px + 10, cy - 6, pw - 20, 1);
+          c.fillStyle = 'rgba(242,220,154,0.06)'; c.fillRect(px + 8, cy - 3, pw - 16, 62);
+          ui.text('›', px + pw - 14, cy + 16, { size: 20, bold: true, align: 'right', col: C.gold });
+          ui.hit(px + 8, cy - 3, pw - 16, 62, () => ui.openConePick(k));
           if (cone) {
             G.drawConeCard(c, cone.id, px + 12, cy, 40, 56, { info: false });
             const d = H.CONES[cone.id];
-            ui.wrap(d.name, pw - 70, 11).slice(0, 2).forEach((l, i) => ui.text(l, px + 60, cy + 2 + i * 13, { size: 11, bold: true, col: C.gold }));
+            ui.wrap(d.name, pw - 86, 11).slice(0, 2).forEach((l, i) => ui.text(l, px + 60, cy + 2 + i * 13, { size: 11, bold: true, col: C.gold }));
             ui.text('Суперпозиция ' + (cone.sup || 1), px + 60, cy + 30, { size: 10, col: C.sub });
             ui.text(d.path === kit.path ? 'Бонус Пути действует' : 'Другой Путь', px + 60, cy + 43, { size: 10, col: d.path === kit.path ? C.ok : C.bad });
           } else {
@@ -455,6 +510,7 @@
             return [
               { label: inParty ? 'Убрать из команды' : 'Добавить в команду', disabled: inParty ? s.party.length <= 1 : s.party.length >= 4, fn: () => { if (inParty) s.party = s.party.filter(x => x !== k); else s.party.push(k); ui.sfx('confirm'); } },
               { label: 'Сделать лидером', disabled: !inParty || s.party[0] === k, fn: () => { s.party = [k, ...s.party.filter(x => x !== k)]; ui.sfx('confirm'); } },
+              { label: 'Сменить конус', fn: () => ui.openConePick(k) },
               { label: 'Опыт (путеводители)', fn: () => ui.useItemFlow(null, k) },
               { label: 'Авто-реликвии', fn: () => { g.autoEquip(k); ui.sfx('confirm'); ui.toast('Реликвии подобраны автоматически.'); } }
             ];
@@ -472,31 +528,6 @@
               if (kk === 'back') ui.pop();
             }
           });
-        },
-        panelCone(c, px, py, pw, k, r, kit) {
-          const s = g.state, cone = r.cone ? s.inv.cones.find(x => x.uid === r.cone) : null;
-          ui.text('Световой конус', px + 12, py + 12, { size: 14, bold: true, serif: true, col: C.gold });
-          if (!cone) {
-            c.strokeStyle = 'rgba(154,166,208,0.6)'; c.setLineDash([4, 3]); c.strokeRect(px + 48.5, py + 40.5, 95, 133); c.setLineDash([]);
-            ui.text('+', px + 96, py + 92, { align: 'center', size: 28, col: C.sub });
-            ui.text('Конус не надет.', px + 12, py + 190, { size: 11, col: C.dim });
-            ui.wrap('Конусы выпадают в Звёздном прыжке и продаются в магазинах. Бонус работает, только если Путь конуса совпадает с Путём персонажа.', pw - 24, 10).forEach((l, i) => ui.text(l, px + 12, py + 210 + i * 13, { size: 10, col: C.sub }));
-          } else {
-            const d = H.CONES[cone.id], grow = H.grow(r.lvl), match = d.path === kit.path;
-            G.drawConeCard(c, cone.id, px + 48, py + 40, 96, 134, { scale: 2, sup: cone.sup || 1 });
-            ui.wrap(d.name, pw - 24, 13).slice(0, 2).forEach((l, i) => ui.text(l, px + pw / 2, py + 182 + i * 16, { align: 'center', size: 13, bold: true, serif: true, col: C.gold }));
-            G.pathIcon(c, d.path, px + 12, py + 218, 12);
-            ui.text(H.PATHS[d.path].name + ' · ' + '★'.repeat(d.rarity), px + 28, py + 218, { size: 11, col: G.RARITY[d.rarity] });
-            [['hp', 'HP', d.stats.hp], ['atk', 'Атака', d.stats.atk], ['def', 'Защита', d.stats.def]].forEach(([key, name, v], i) => {
-              const y = py + 240 + i * 18;
-              G.statIcon(c, key, px + 12, y + 1, 12);
-              ui.text(name, px + 30, y, { size: 11, col: C.sub });
-              ui.text('+' + Math.round(v * grow), px + pw - 12, y, { size: 12, bold: true, align: 'right' });
-            });
-            ui.text(match ? 'Бонус Пути:' : 'Бонус не действует — другой Путь:', px + 12, py + 300, { size: 10, bold: true, col: match ? C.ok : C.bad });
-            ui.wrap(d.text + (cone.sup > 1 ? ' Суперпозиция ' + cone.sup + ': бонус ×' + (1 + 0.25 * (cone.sup - 1)).toFixed(2) + '.' : ''), pw - 24, 10).slice(0, 4).forEach((l, i) => ui.text(l, px + 12, py + 314 + i * 13, { size: 10, col: match ? C.cream : C.dim }));
-          }
-          ui.button(px + 12, py + 414 - 38, pw - 24, 24, cone ? 'Сменить конус' : 'Надеть конус', () => ui.openConePick(this.k), { size: 11, icon: 'cones' });
         },
         relicSlotRects() { return [[190, 112], [190, 204], [382, 112], [382, 204], [190, 312], [382, 312]]; },
         relicGrid: [[0, 0], [0, 1], [1, 0], [1, 1], [0, 2], [1, 2]],
@@ -549,18 +580,21 @@
         panelSkills(c, px, py, pw, kitId, kit) {
           let y = py + 12;
           ui.text('Способности', px + 12, y, { size: 14, bold: true, serif: true, col: C.gold }); y += 22;
-          const block = (key, name, ab, extra) => {
+          const lvOf = id => (H.TRACES && H.TRACES[kitId] && g.state.roster[this.k] ? { lv: g.traceLevel(this.k, id), up: g.traceNode(this.k, id).up || 0 } : null);
+          const lvTag = (id, yy) => { const L = lvOf(id); if (L) ui.text('ур. ' + L.lv, px + pw - 12, yy, { size: 10, bold: true, align: 'right', col: L.up ? C.cyan : C.gold }); return L; };
+          const block = (key, name, ab, extra, id) => {
             ui.keycap(px + 12, y, key);
-            ui.wrap(ab.name, pw - 50, 11).slice(0, 2).forEach((l, i) => { if (i) y += 13; ui.text(l, px + 40, y + 1, { size: 11, bold: true, col: C.cream }); });
+            const L = lvTag(id, y + 2), shown = L && ab.fx ? H.traceScaleAb(ab, id, L.lv, kitId) : ab;
+            ui.wrap(ab.name, pw - 84, 11).slice(0, 2).forEach((l, i) => { if (i) y += 13; ui.text(l, px + 40, y + 1, { size: 11, bold: true, col: C.cream }); });
             y += 15;
-            ui.wrap(ab.text ? name + ' · ' + ab.text + (extra || '') : name + ' · ' + (TARGET_NAME[ab.target] || '') + ' · ' + ui.describeFx(ab) + (extra || ''), pw - 24, 10).slice(0, 3).forEach(l => { ui.text(l, px + 12, y, { size: 10, col: C.sub }); y += 12; });
+            ui.wrap(ab.text ? name + ' · ' + ab.text + (extra || '') : name + ' · ' + (TARGET_NAME[ab.target] || '') + ' · ' + ui.describeFx(shown) + (extra || ''), pw - 24, 10).slice(0, 3).forEach(l => { ui.text(l, px + 12, y, { size: 10, col: C.sub }); y += 12; });
             y += 5;
           };
-          block('Q', 'Атака', kit.basic, ' · +1 очко');
-          if (kit.skills) block('E', 'Навык ↑↓', { name: kit.skills.map(x => x.name).join(' / '), text: kit.skillText });
-          else block('E', 'Навык', kit.skill, kit.skill.noSp ? ' · тратит HP' : ' · −1 очко');
-          block('1–4', 'Абсолютная', kit.ult, ' · энергия ' + kit.energy);
-          ui.text('Талант', px + 12, y, { size: 11, bold: true, col: C.gold }); y += 14;
+          block('Q', 'Атака', kit.basic, ' · +1 очко', 'basic');
+          if (kit.skills) block('E', 'Навык ↑↓', { name: kit.skills.map(x => x.name).join(' / '), text: kit.skillText }, '', 'skill');
+          else block('E', 'Навык', kit.skill, kit.skill.noSp ? ' · тратит HP' : ' · −1 очко', 'skill');
+          block('1–4', 'Абсолютная', kit.ult, ' · энергия ' + kit.energy, 'ult');
+          ui.text('Талант', px + 12, y, { size: 11, bold: true, col: C.gold }); lvTag('talent', y); y += 14;
           ui.wrap(kit.talent, pw - 24, 10).slice(0, 3).forEach(l => { ui.text(l, px + 12, y, { size: 10 }); y += 12; }); y += 4;
           ui.wrap('Техника: ' + kit.tech.name, pw - 34, 11).slice(0, 2).forEach(l => { ui.text(l, px + 12, y, { size: 11, bold: true, col: C.cyan }); y += 13; }); y += 1;
           ui.wrap(kit.tech.text, pw - 24, 10).slice(0, 2).forEach(l => { ui.text(l, px + 12, y, { size: 10 }); y += 12; }); y += 4;
@@ -608,20 +642,22 @@
           ui.diamond(px + 19, py + 50, 6, open ? '#fff0b0' : '#2a2e58', open ? '#8a6a20' : '#6a70a0');
           ui.text('Эйдолон ' + EIDOLON_NUM[i], px + 32, py + 42, { size: 14, bold: true, serif: true, col: open ? C.gold : C.cream });
           ui.text(open ? 'открыт' : 'закрыт', px + pw - 12, py + 45, { size: 10, align: 'right', col: open ? C.ok : C.dim });
-          if (sc) {
-            const [name, text] = sc.frags[i];
-            ui.text('«' + name + '»', px + 12, py + 63, { size: 12, bold: true, col: open ? C.cream : C.sub });
-            ui.wrap(g.fill(text), pw - 24, 10).slice(0, 3).forEach((l, n) => ui.text(l, px + 12, py + 80 + n * 12, { size: 10, col: open ? '#c8d0f0' : C.dim }));
+          const tr = H.TRACES && H.TRACES[kitId], eidT = tr && tr.eid[i], fx = !!(tr && tr.eidFx), lim = py + 192;
+          let y = py + 60;
+          const line = (text, size, col, bold, end) => { for (const l of ui.wrap(text, pw - 24, size)) { if (y + size > (end || lim)) return; ui.text(l, px + 12, y, { size, col, bold }); y += size + 2; } };
+          if (eidT && eidT[0]) {
+            if (!fx) { line('Пока: +4% к HP, атаке и защите', 9, C.sub); y += 1; }
+            line('«' + eidT[0] + '»', 12, open ? C.cream : C.sub, true);
+            y += 2;
+            line(g.fill(eidT[1]), 9, open && fx ? C.ok : open ? '#c8d0f0' : C.dim, false, sc ? lim - 14 : lim);
+          } else {
+            line('Базовые HP, атака и защита +4%: HP +' + (now.hp - was.hp) + ', атака +' + (now.atk - was.atk) + ', защита +' + (now.def - was.def) + '.', 10, open ? C.ok : '#c8d0f0');
           }
-          sep(py + 120);
-          ui.text('Базовые HP, атака и защита +4%', px + 12, py + 126, { size: 10, col: C.sub });
-          EIDOLON_STATS.forEach(([key, name], n) => {
-            const y = py + 142 + n * 17;
-            if (n % 2 === 0) { c.fillStyle = 'rgba(255,255,255,0.04)'; c.fillRect(px + 8, y - 2, pw - 16, 17); }
-            G.statIcon(c, key, px + 12, y, 12, '#c8d0f0');
-            ui.text(name, px + 30, y, { size: 11, col: C.sub });
-            ui.text('+' + (now[key] - was[key]), px + pw - 12, y, { size: 12, bold: true, align: 'right', col: open ? C.ok : C.cream });
-          });
+          if (sc) {
+            const [name] = sc.frags[i];
+            y = lim - 10;
+            ui.text(ui.fitText('Фрагмент: «' + name + '»', 9, pw - 24), px + 12, y, { size: 9, bold: true, col: C.sub });
+          }
           sep(py + 196);
           if (sc) {
             ui.text('Картина', px + 12, py + 202, { size: 12, bold: true, serif: true, col: C.gold });
@@ -643,7 +679,9 @@
             ui.wrap('Эйдолон ' + EIDOLON_NUM[i] + ' ' + E.stageGift(i) + '.', pw - 24, 10).slice(0, 2).forEach((l, n) => ui.text(l, px + 12, py + 284 + n * 12, { size: 10, col: open ? C.ok : '#c8d0f0' }));
           }
           sep(py + 314);
-          ui.wrap(open ? 'Эйдолон открыт, прибавка уже действует.' : 'Дубликатов до открытия: ' + (i + 1 - shown) + '. Дубликаты персонажа выпадают в Звёздном прыжке.', pw - 24, 10).slice(0, 3).forEach((l, n) => ui.text(l, px + 12, py + 321 + n * 13, { size: 10, col: open ? C.ok : C.cream }));
+          const shadow = tr && tr.shadow, have = shadow ? g.state.inv.items[shadow] || 0 : 0;
+          const tail = open ? 'Эйдолон открыт и уже действует.' : shadow ? H.ITEMS[shadow].name + ' до открытия: ' + (i + 1 - shown) + ', в наличии ' + have + '. ' + (have && i === shown ? 'Enter на звезде открывает его.' : have ? '' : 'Где взять: ' + ui.traceSource(shadow)) : 'Дубликатов до открытия: ' + (i + 1 - shown) + '. Дубликаты персонажа выпадают в Звёздном прыжке.';
+          ui.wrap(tail, pw - 24, 10).slice(0, 4).forEach((l, n) => ui.text(l, px + 12, py + 321 + n * 13, { size: 10, col: open ? C.ok : C.cream }));
           if (sc) ui.button(px + 12, py + 414 - 38, pw - 24, 24, 'Смотреть картину · V', () => { if (!this.asm) ui.openEidolonView(this.k); }, { size: 11 });
         },
         infoRows(k, kit, w) {
@@ -717,7 +755,10 @@
         key(kk, code) {
           const secId = SECTIONS[this.sec].id;
           if (this.asm) { H.Eidolons.skipAsm(this, g); return; }
+          if (code === 'KeyF') { this.toggleFav(); return; }
+          if (code === 'KeyL') { ui.openCharList(this); return; }
           if (secId === 'eidolons' && code === 'KeyV' && H.Eidolons && H.Eidolons.has(this.k)) { ui.openEidolonView(this.k); return; }
+          if (secId === 'eidolons' && this.starFocus && kk === 'ok' && this.k === 'trail') { const sh = (H.TRACES[g.kitOf('trail')] || {}).shadow; if (sh && this.star === g.state.roster.trail.eid) ui.useShadowFlow(sh); return; }
           if (secId === 'eidolons' && this.starFocus && ['left', 'right', 'up', 'down', 'back'].includes(kk)) {
             const rise = this.star < 3 ? 1 : -1, step = { left: -1, right: 1, up: rise, down: -rise }[kk] || 0, to = this.star + step;
             const sideways = kk === 'left' || kk === 'right', sameSide = (to < 3) === (this.star < 3);
@@ -734,6 +775,8 @@
             if (kk === 'back') { this.infoFocus = false; ui.sfx('cancel'); }
             return;
           }
+          if (secId === 'outfits' && this.outfitFocus) { ui.outfitKey(this, kk, code); return; }
+          if (secId === 'traces' && this.trFocus) { ui.tracesKey(this, kk, code, this.k); return; }
           if (secId === 'relics' && this.slotFocus) {
             if (['left', 'right', 'up', 'down'].includes(kk)) { this.moveSlot(kk); ui.sfx('select'); return; }
             if (kk === 'ok') { ui.openRelicPick(this.k, this.slot); return; }
@@ -749,15 +792,17 @@
           if (code === 'KeyA' && secId === 'relics') { g.autoEquip(this.k); ui.sfx('confirm'); ui.toast('Реликвии подобраны автоматически.'); return; }
           if (kk === 'ok') {
             if (secId === 'details') this.openActions();
-            else if (secId === 'cone') ui.openConePick(this.k);
+            else if (secId === 'traces') { this.trFocus = true; ui.sfx('confirm'); }
             else if (secId === 'relics') { this.slotFocus = true; ui.sfx('confirm'); }
             else if (secId === 'eidolons' && !this.starFocus) { this.starFocus = true; ui.sfx('confirm'); }
             else if (secId === 'info') { this.infoFocus = true; ui.sfx('confirm'); }
+            else if (secId === 'outfits') { this.outfitFocus = true; ui.sfx('confirm'); }
             return;
           }
           if (kk === 'back') ui.pop();
         }
       });
+      if (ui.traceBackNotice) ui.traceBackNotice();
     },
 
     describeFx(ab) {
@@ -822,14 +867,20 @@
     },
 
     openConePick(k) {
-      const ui = this, g = this.game;
+      const ui = this, g = this.game, path = H.CHARS[g.kitOf(k)].path;
+      const sorted = () => g.state.inv.cones.map((cn, i) => ({ cn, i, d: H.CONES[cn.id] })).sort((a, b) => (b.d.path === path) - (a.d.path === path) || b.d.rarity - a.d.rarity || a.i - b.i).map(x => x.cn);
       this.push({
+        sc: { top: 0 },
         draw(c) {
-          const s = g.state, kit = H.CHARS[g.kitOf(k)], list = s.inv.cones;
+          const s = g.state, kit = H.CHARS[g.kitOf(k)], list = sorted();
           ui.win(24, 30, 592, 420, { title: 'Световые конусы — ' + H.PATHS[kit.path].name });
           if (!list.length) { ui.text('Нет конусов. Они выпадают в Звёздном прыжке и продаются в магазинах.', W / 2, 200, { align: 'center', col: C.dim }); ui.hints([['Esc', 'Назад']], W / 2, 420, { align: 'center' }); return; }
-          const cols = 8, cw = 64, chh = 104, start = Math.max(0, Math.floor(this.sel / cols) - 1) * cols;
-          list.slice(start, start + cols * 3).forEach((cn, j) => {
+          const cols = 8, cw = 64, chh = 104, vis = 3, rows = Math.ceil(list.length / cols);
+          if (this.sel >= list.length) this.sel = list.length - 1;
+          const start = ui.listTop(this.sc, Math.floor(this.sel / cols), rows, vis) * cols;
+          ui.wheelZone(36, 46, 576, vis * chh, d => { this.sc.top += d; });
+          if (rows > vis) ui.scrollBar(600, 47, vis * chh - 10, this.sc, rows, vis);
+          list.slice(start, start + cols * vis).forEach((cn, j) => {
             const i = start + j, x = 40 + (j % cols) * (cw + 6), y = 50 + Math.floor(j / cols) * chh, d = H.CONES[cn.id], on = i === this.sel;
             if (on) { c.fillStyle = 'rgba(242,220,154,0.25)'; c.fillRect(x - 3, y - 3, cw + 6, chh - 8); }
             G.drawConeCard(c, cn.id, x + 4, y, 56, 78, { sup: cn.sup || 1 });
@@ -844,8 +895,8 @@
             const d = H.CONES[cn.id], match = d.path === kit.path;
             c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(36, 364, 568, 60);
             ui.text(d.name + ' · S' + (cn.sup || 1) + ' · ' + '★'.repeat(d.rarity), 46, 370, { bold: true, serif: true, col: G.RARITY[d.rarity] });
-            ui.text('HP +' + d.stats.hp + '  Атака +' + d.stats.atk + '  Защита +' + d.stats.def + ' (растут с уровнем)', 46, 388, { size: 11 });
-            ui.text((match ? 'Бонус Пути: ' : 'Не действует (Путь ' + H.PATHS[d.path].name + '): ') + d.text, 46, 404, { size: 11, col: match ? C.ok : C.bad });
+            ui.text('HP +' + d.stats.hp + '  Атака +' + d.stats.atk + '  Защита +' + d.stats.def + ' (растут с уровнем)', 46, 386, { size: 11 });
+            ui.wrap((match ? 'Бонус Пути: ' : 'Не действует (Путь ' + H.PATHS[d.path].name + '): ') + d.text, 548, 10).slice(0, 2).forEach((l, i) => ui.text(l, 46, 400 + i * 12, { size: 10, col: match ? C.ok : C.bad }));
           }
           ui.hints([['←↑↓→', 'Выбор'], ['Enter', 'Надеть'], ['Esc', 'Назад']], W / 2, 430, { align: 'center' });
         },
@@ -856,7 +907,7 @@
           if (kk === 'right') { this.sel = (this.sel + 1) % n; ui.sfx('select'); }
           if (kk === 'up') { this.sel = Math.max(0, this.sel - 8); ui.sfx('select'); }
           if (kk === 'down') { this.sel = Math.min(n - 1, this.sel + 8); ui.sfx('select'); }
-          if (kk === 'ok') { g.equipCone(k, g.state.inv.cones[this.sel].uid); ui.sfx('confirm'); ui.screens.pop(); }
+          if (kk === 'ok') { g.equipCone(k, sorted()[this.sel].uid); ui.sfx('confirm'); ui.screens.pop(); }
           if (kk === 'back') ui.pop();
         }
       });
@@ -904,22 +955,36 @@
     },
 
     openTeam() {
-      const ui = this, g = this.game;
-      const SLOT_X = [112, 250, 390, 528];
+      const ui = this, g = this.game, N = H.SQUADS;
+      const SLOT_X = [112, 250, 390, 528], TAB = { x: 172, pitch: 32, y: 8 }, OV = { w: 240, top: 42, rh: 78, vis: 5 };
       this.push({
-        full: true,
+        full: true, view: g.state.squad || 0, over: false, osel: 0, osc: { top: 0 },
+        setView(i) {
+          if (i === this.view) return;
+          if (g.state.guest) { ui.sfx('deny'); ui.toast('Пока в команде гости, отряд сменить нельзя.'); return; }
+          this.view = i;
+          if (g.squadOf(i).length) g.setSquad(i);
+          ui.sfx('select');
+        },
+        toggleOver() {
+          this.over = !this.over;
+          if (this.over) { this.osel = this.view; this.osc.sel = null; }
+          ui.sfx(this.over ? 'confirm' : 'cancel');
+        },
         draw(c) {
-          const s = g.state;
+          const s = g.state, mem = g.squadOf(this.view);
           ui.fullBg(c, false);
           const fl = c.createLinearGradient(0, 300, 0, HGT);
           fl.addColorStop(0, '#9aa4c8'); fl.addColorStop(0.35, '#d8deee'); fl.addColorStop(1, '#8a92b4');
           c.fillStyle = fl; c.fillRect(0, 300, W, HGT - 300);
           c.fillStyle = 'rgba(255,255,255,0.6)'; c.fillRect(0, 300, W, 1);
           ui.plate(12, 10, 'Команда');
-          ui.text(s.party.length + ' / 4', 110, 13, { size: 12, bold: true, col: C.cream });
+          ui.text(mem.length + ' / 4', 110, 13, { size: 12, bold: true, col: C.cream });
+          this.drawTabs(c, s);
           ui.closeBtn(W - 32, 10, () => ui.pop());
+          if (!mem.length) ui.text('Отряд ' + (this.view + 1) + ' пуст. Добавьте персонажа, и отряд станет активным.', W / 2, 46, { align: 'center', size: 12, col: C.sub });
           SLOT_X.forEach((x, i) => {
-            const k = s.party[i], on = i === this.sel;
+            const k = mem[i], on = i === this.sel;
             c.fillStyle = on ? 'rgba(242,220,154,0.55)' : 'rgba(40,40,80,0.25)'; c.beginPath(); c.ellipse(x, 398, 52, 11, 0, 0, Math.PI * 2); c.fill();
             if (on) { c.strokeStyle = '#c89a3a'; c.lineWidth = 2; c.beginPath(); c.ellipse(x, 398, 58, 13, 0, 0, Math.PI * 2); c.stroke(); c.lineWidth = 1; }
             if (k) {
@@ -933,60 +998,176 @@
               ui.text(name, x - w / 2 + 34, py + 4, { size: 12, bold: true, col: on ? C.gold : C.cream });
               G.pathIcon(c, kit.path, x - w / 2 + 34, py + 20, 11);
               ui.text(H.PATHS[kit.path].name, x - w / 2 + 48, py + 20, { size: 10, col: C.sub });
+              if (g.isFav(k)) ui.favStar(c, x + w / 2 - 9, py + 9, 5, true);
               if (i === 0) { c.fillStyle = '#1a1208'; c.fillRect(x + 20, py - 20, 50, 16); c.fillStyle = C.brassHi; c.fillRect(x + 21, py - 19, 48, 14); ui.text('Лидер', x + 45, py - 18, { align: 'center', size: 10, bold: true, col: '#20140c', shadow: false }); }
             } else {
-              c.strokeStyle = 'rgba(40,44,90,0.6)'; c.setLineDash([4, 3]); c.strokeRect(x - 40.5, 150.5, 80, 240); c.setLineDash([]);
-              ui.text('+', x, 240, { align: 'center', size: 34, bold: true, col: '#3a4070', shadow: false });
-              ui.text('Добавить', x, 290, { align: 'center', size: 12, bold: true, col: '#3a4070', shadow: false });
+              c.strokeStyle = 'rgba(154,166,208,0.4)'; c.setLineDash([4, 3]); c.strokeRect(x - 40.5, 150.5, 80, 240); c.setLineDash([]);
+              ui.text('+', x, 196, { align: 'center', size: 34, bold: true, col: on ? C.gold : C.sub });
+              ui.text('Добавить', x, 244, { align: 'center', size: 12, bold: true, col: on ? C.gold : C.sub });
             }
             if (on) ui.diamond(x, 78 + Math.sin(ui.t * 4) * 3, 7, C.brassHi, '#1a1208');
             ui.hit(x - 66, 90, 132, 360, () => { if (this.sel === i) this.key('ok'); else { this.sel = i; ui.sfx('select'); } });
           });
-          ui.hints([['←→', 'Место'], ['Enter', 'Сменить'], ['L', 'Лидер'], ['Del', 'Убрать'], ['Esc', 'Назад']], 12, HGT - 18);
+          if (this.over) {
+            this.drawOver(c, s);
+            ui.hints([['↑↓', 'Отряд'], ['Enter', 'Выбрать'], ['Tab', 'Закрыть']], 44, HGT - 18);
+          } else ui.hints([['Q/E', 'Отряд'], ['←→', 'Место'], ['Enter', 'Сменить'], ['L', 'Лидер'], ['Del', 'Убрать'], ['Tab', 'Обзор'], ['Esc', 'Назад']], 44, HGT - 18);
+          this.drawOverBtn(c);
+        },
+        drawTabs(c, s) {
+          const qx = TAB.x - 20, ex = TAB.x + N * TAB.pitch + 4;
+          ui.keycap(qx, TAB.y + 7, 'Q'); ui.hit(qx - 2, TAB.y, 18, 26, () => this.key(null, 'KeyQ'));
+          for (let i = 0; i < N; i++) {
+            const x = TAB.x + i * TAB.pitch, w = TAB.pitch - 2, on = i === this.view, empty = !g.squadOf(i).length;
+            if (on) { c.fillStyle = 'rgba(242,220,154,0.16)'; c.fillRect(x, TAB.y, w, 26); c.fillStyle = C.brassHi; c.fillRect(x + 3, TAB.y + 25, w - 6, 2); }
+            ui.text(String(i + 1), x + w / 2, TAB.y + (on ? 5 : 6), { align: 'center', size: on ? 15 : 13, bold: true, col: on ? C.gold : empty ? C.dim : C.cream });
+            if (i === s.squad) ui.diamond(x + 4, TAB.y + 5, 3, C.ok, '#0a1a10');
+            ui.hit(x, TAB.y, w, 26, () => this.setView(i));
+          }
+          ui.keycap(ex, TAB.y + 7, 'E'); ui.hit(ex - 2, TAB.y, 18, 26, () => this.key(null, 'KeyE'));
+        },
+        drawOverBtn(c) {
+          const x = 12, y = HGT - 28, on = this.over;
+          c.fillStyle = '#000'; c.fillRect(x, y, 24, 24);
+          c.fillStyle = on ? '#b08a44' : '#1c2458'; c.fillRect(x + 1, y + 1, 22, 22);
+          c.fillStyle = on ? '#2a1a0c' : C.brassHi;
+          for (const [dx, dy] of [[5, 5], [13, 5], [5, 13], [13, 13]]) c.fillRect(x + dx, y + dy, 6, 6);
+          ui.hit(x, y, 24, 24, () => this.toggleOver());
+        },
+        drawOver(c, s) {
+          const PW = OV.w, rw = PW - 30;
+          c.fillStyle = 'rgba(2,3,14,0.35)'; c.fillRect(PW, 0, W - PW, HGT);
+          ui.hit(PW, 0, W - PW, HGT, () => { this.over = false; ui.sfx('cancel'); });
+          const gr = c.createLinearGradient(0, 0, PW, 0);
+          gr.addColorStop(0, 'rgba(8,10,34,0.97)'); gr.addColorStop(1, 'rgba(16,20,56,0.94)');
+          c.fillStyle = gr; c.fillRect(0, 0, PW, HGT);
+          c.fillStyle = C.brassDk; c.fillRect(PW - 1, 0, 1, HGT);
+          ui.hit(0, 0, PW, HGT, () => {});
+          ui.text('Обзор отрядов', PW / 2, 14, { align: 'center', size: 13, bold: true, serif: true, col: C.gold });
+          c.fillStyle = 'rgba(242,220,154,0.35)'; c.fillRect(12, 22, 50, 1); c.fillRect(PW - 62, 22, 50, 1);
+          const top = ui.listTop(this.osc, this.osel, N, OV.vis);
+          for (let i = top; i < Math.min(N, top + OV.vis); i++) {
+            const x = 8, y = OV.top + (i - top) * OV.rh, h = OV.rh - 6, on = i === this.osel, mem = g.squadOf(i);
+            c.fillStyle = on ? 'rgba(242,220,154,0.16)' : 'rgba(255,255,255,0.04)'; c.fillRect(x, y, rw, h);
+            if (on) { c.strokeStyle = C.brassHi; c.lineWidth = 1; c.strokeRect(x + 0.5, y + 0.5, rw - 1, h - 1); }
+            ui.text('Отряд ' + (i + 1), x + 8, y + 4, { size: 12, bold: true, col: on ? C.gold : i === this.view ? C.cream : C.sub });
+            if (i === s.squad) ui.text('активный', x + rw - 8, y + 5, { align: 'right', size: 10, col: C.ok });
+            else if (!mem.length) ui.text('пусто', x + rw - 8, y + 5, { align: 'right', size: 10, col: C.dim });
+            for (let j = 0; j < 4; j++) {
+              const px = x + 8 + j * 48, py = y + 22, sz = 42, k = mem[j];
+              if (!k) { c.strokeStyle = 'rgba(154,166,208,0.35)'; c.setLineDash([3, 2]); c.strokeRect(px + 0.5, py + 0.5, sz - 1, sz - 1); c.setLineDash([]); continue; }
+              const kid = g.kitOf(k), kit = H.CHARS[kid];
+              ui.portraitCard(c, G.lookOf(kid, g), px, py, sz, { elem: kit.elem, border: G.RARITY[kit.rarity] });
+              c.fillStyle = 'rgba(6,8,24,0.82)'; c.fillRect(px, py + sz - 11, sz, 11);
+              ui.text('Ур. ' + s.roster[k].lvl, px + sz / 2, py + sz - 11, { align: 'center', size: 9, col: C.cream });
+              if (g.isFav(k)) ui.favStar(c, px + 6, py + 6, 5, true);
+            }
+            ui.hit(x, y, rw, h, () => { this.osel = i; this.setView(i); this.over = false; });
+          }
+          if (N > OV.vis) ui.scrollBar(PW - 18, OV.top, OV.vis * OV.rh - 6, this.osc, N, OV.vis);
+          ui.wheelZone(0, OV.top, PW, OV.vis * OV.rh, d => { this.osc.top += d; });
         },
         key(k, code) {
           const s = g.state;
+          if (code === 'Tab') { this.toggleOver(); return; }
+          if (this.over) {
+            if (k === 'up' || k === 'down') { this.osel = (this.osel + (k === 'up' ? N - 1 : 1)) % N; ui.sfx('select'); }
+            if (k === 'ok') { this.setView(this.osel); this.over = false; }
+            if (k === 'back') { this.over = false; ui.sfx('cancel'); }
+            return;
+          }
+          if (code === 'KeyQ' || code === 'KeyE') { this.setView((this.view + (code === 'KeyQ' ? N - 1 : 1)) % N); return; }
           if (k === 'left') { this.sel = (this.sel + 3) % 4; ui.sfx('select'); }
           if (k === 'right') { this.sel = (this.sel + 1) % 4; ui.sfx('select'); }
-          if (k === 'ok') ui.openCharPick(this.sel);
-          if (code === 'KeyL' && s.party[this.sel]) { const kk = s.party[this.sel]; s.party = [kk, ...s.party.filter(x => x !== kk)]; this.sel = 0; ui.sfx('confirm'); }
-          if ((code === 'Delete' || code === 'KeyX') && s.party[this.sel]) { if (s.party.length <= 1) { ui.sfx('deny'); return; } s.party.splice(this.sel, 1); ui.sfx('cancel'); }
+          if (k === 'ok') ui.openCharPick(this.sel, this.view);
+          const mine = this.view === s.squad;
+          if (code === 'KeyL' && mine && s.party[this.sel]) { const kk = s.party[this.sel]; s.party = [kk, ...s.party.filter(x => x !== kk)]; this.sel = 0; ui.sfx('confirm'); }
+          if ((code === 'Delete' || code === 'KeyX') && mine && s.party[this.sel]) { if (s.party.length <= 1) { ui.sfx('deny'); return; } s.party.splice(this.sel, 1); ui.sfx('cancel'); }
           if (k === 'back') ui.pop();
         }
       });
     },
 
-    openCharPick(slot) {
+    charGrid(scr, c, list, mem, note) {
+      const g = this.game, s = g.state, { COLS, VIS, CW, CH, GAP, X0, Y0 } = CHAR_GRID, rows = Math.ceil(list.length / COLS);
+      const top = this.listTop(scr.sc, Math.floor(scr.sel / COLS), rows, VIS);
+      for (let i = top * COLS; i < Math.min(list.length, (top + VIS) * COLS); i++) {
+        const k = list[i], x = X0 + (i % COLS) * (CW + GAP), y = Y0 + (Math.floor(i / COLS) - top) * (CH + GAP), on = i === scr.sel, kid = g.kitOf(k), kit = H.CHARS[kid];
+        c.fillStyle = on ? 'rgba(242,220,154,0.22)' : 'rgba(0,0,0,0.3)'; c.fillRect(x, y, CW, CH);
+        if (on) { c.strokeStyle = C.brassHi; c.lineWidth = 1; c.strokeRect(x + 0.5, y + 0.5, CW - 1, CH - 1); }
+        this.portraitCard(c, G.lookOf(kid, g), x + 6, y + 8, 48, { elem: kit.elem, border: G.RARITY[kit.rarity] });
+        if (g.isFav(k)) this.favStar(c, x + 9, y + 11, 6, true);
+        this.text(this.fitText(this.shortName(k), 11, CW - 64, true), x + 60, y + 8, { size: 11, bold: true, col: on ? C.gold : C.cream });
+        this.text('Ур. ' + s.roster[k].lvl, x + 60, y + 24, { size: 10, col: C.sub });
+        G.pathIcon(c, kit.path, x + 60, y + 40, 12);
+        G.elemIcon(c, kit.elem, x + 84, y + 46, 6);
+        const pi = mem.indexOf(k);
+        if (pi >= 0) { this.diamond(x + CW - 12, y + CH - 14, 7, C.brassHi, '#1a1208'); this.text(String(pi + 1), x + CW - 12, y + CH - 19, { align: 'center', size: 9, bold: true, col: '#20140c', shadow: false }); }
+        this.hit(x, y, CW, CH, () => { if (scr.sel === i) scr.key('ok'); else scr.sel = i; });
+      }
+      if (rows > VIS) this.scrollBar(X0 + COLS * (CW + GAP) + 2, Y0, VIS * (CH + GAP) - GAP, scr.sc, rows, VIS);
+      this.wheelZone(X0, Y0, COLS * (CW + GAP) + 14, VIS * (CH + GAP), d => { scr.sc.top += d; });
+      this.favStar(c, X0 + 5, Y0 + VIS * (CH + GAP) + 10, 5, true);
+      this.text(note, X0 + 14, Y0 + VIS * (CH + GAP) + 4, { size: 10, col: C.dim });
+    },
+
+    charGridKey(scr, k, n) {
+      const COLS = CHAR_GRID.COLS;
+      if (k === 'left') { scr.sel = (scr.sel + n - 1) % n; this.sfx('select'); }
+      if (k === 'right') { scr.sel = (scr.sel + 1) % n; this.sfx('select'); }
+      if (k === 'up') { scr.sel = Math.max(0, scr.sel - COLS); this.sfx('select'); }
+      if (k === 'down') { scr.sel = Math.min(n - 1, scr.sel + COLS); this.sfx('select'); }
+    },
+
+    openCharList(chars) {
       const ui = this, g = this.game;
       this.push({
+        sel: Math.max(0, ui.rosterKeys().indexOf(chars.k)), sc: { top: 0 },
         draw(c) {
-          const s = g.state, list = ui.rosterKeys();
-          ui.win(40, 50, 560, 390, { title: 'Выбор персонажа — место ' + (slot + 1) });
-          const cols = 4;
-          list.forEach((k, i) => {
-            const x = 56 + (i % cols) * 132, y = 70 + Math.floor(i / cols) * 70, on = i === this.sel, kid = g.kitOf(k), kit = H.CHARS[kid];
-            c.fillStyle = on ? 'rgba(242,220,154,0.22)' : 'rgba(0,0,0,0.3)'; c.fillRect(x, y, 126, 62);
-            if (on) { c.strokeStyle = C.brassHi; c.strokeRect(x + 0.5, y + 0.5, 125, 61); }
-            ui.portraitCard(c, G.lookOf(kid, g), x + 6, y + 6, 50, { elem: kit.elem, border: G.RARITY[kit.rarity] });
-            ui.text(ui.shortName(k), x + 62, y + 8, { size: 11, bold: true, col: on ? C.gold : C.cream });
-            ui.text('Ур. ' + s.roster[k].lvl, x + 62, y + 24, { size: 10, col: C.sub });
-            G.pathIcon(c, kit.path, x + 62, y + 40, 12);
-            G.elemIcon(c, kit.elem, x + 86, y + 46, 6);
-            const pi = s.party.indexOf(k);
-            if (pi >= 0) { ui.diamond(x + 116, y + 10, 6, C.brassHi, '#1a1208'); ui.text(String(pi + 1), x + 116, y + 5, { align: 'center', size: 9, bold: true, col: '#20140c', shadow: false }); }
-            ui.hit(x, y, 126, 62, () => { if (this.sel === i) this.key('ok'); else this.sel = i; });
-          });
-          ui.hints([['←↑↓→', 'Выбор'], ['Enter', 'Поставить'], ['Esc', 'Назад']], W / 2, 414, { align: 'center' });
+          const list = ui.rosterKeys();
+          ui.win(30, 46, 580, 404, { title: 'Все персонажи · ' + list.length });
+          ui.closeBtn(584, 34, () => this.key('back'));
+          ui.charGrid(this, c, list, g.state.party, 'избранные идут сразу после отряда · отметить или снять: клавиша F');
+          ui.hints([['←↑↓→', 'Выбор'], ['Enter', 'Открыть'], ['F', 'Избранное'], ['Esc', 'Назад']], W / 2, 426, { align: 'center' });
+        },
+        key(k, code) {
+          const list = ui.rosterKeys();
+          ui.charGridKey(this, k, list.length);
+          if (code === 'KeyF') {
+            const pick = list[this.sel], on = g.toggleFav(pick);
+            this.sel = Math.max(0, ui.rosterKeys().indexOf(pick));
+            ui.sfx(on ? 'confirm' : 'cancel');
+            return;
+          }
+          if (k === 'back') { ui.pop(); return; }
+          if (k === 'ok') { chars.k = list[this.sel]; ui.sfx('confirm'); ui.screens.pop(); }
+        }
+      });
+    },
+
+    openCharPick(slot, squad) {
+      const ui = this, g = this.game;
+      const view = squad == null ? g.state.squad || 0 : squad, cur = g.squadOf(view)[slot];
+      this.push({
+        sel: Math.max(0, ui.rosterKeys().indexOf(cur)), sc: { top: 0 },
+        draw(c) {
+          ui.win(30, 46, 580, 404, { title: 'Выбор персонажа — отряд ' + (view + 1) + ', место ' + (slot + 1) });
+          ui.charGrid(this, c, ui.rosterKeys(), g.squadOf(view), 'избранные идут сразу после отряда · отметить: «Персонажи», клавиша F');
+          ui.hints([['←↑↓→', 'Выбор'], ['Enter', 'Поставить'], ['Esc', 'Назад']], W / 2, 426, { align: 'center' });
         },
         key(k) {
-          const list = ui.rosterKeys(), n = list.length, s = g.state;
-          if (k === 'left') { this.sel = (this.sel + n - 1) % n; ui.sfx('select'); }
-          if (k === 'right') { this.sel = (this.sel + 1) % n; ui.sfx('select'); }
-          if (k === 'up') { this.sel = Math.max(0, this.sel - 4); ui.sfx('select'); }
-          if (k === 'down') { this.sel = Math.min(n - 1, this.sel + 4); ui.sfx('select'); }
+          const list = ui.rosterKeys(), s = g.state;
+          ui.charGridKey(this, k, list.length);
           if (k === 'back') { ui.pop(); return; }
           if (k === 'ok') {
-            const pick = list[this.sel], party = s.party.slice(), from = party.indexOf(pick);
+            const pick = list[this.sel];
+            if (view !== s.squad) {
+              if (!g.startSquad(view, pick)) { ui.sfx('deny'); return; }
+              ui.sfx('confirm');
+              ui.screens.pop();
+              return;
+            }
+            const party = s.party.slice(), from = party.indexOf(pick);
             if (slot >= party.length) { if (from >= 0) party.splice(from, 1); party.push(pick); }
             else if (from >= 0) { const tmp = party[slot]; party[slot] = pick; party[from] = tmp; }
             else party[slot] = pick;
@@ -1002,7 +1183,10 @@
       const s = this.game.state, id = INV_TABS[tab].id;
       if (id === 'cones') return s.inv.cones.map(cn => ({ kind: 'cone', cn, d: H.CONES[cn.id] }));
       if (id === 'relics') return s.inv.relics.slice().sort((a, b) => b.lvl - a.lvl).map(rel => ({ kind: 'relic', rel }));
-      return Object.entries(s.inv.items).filter(([iid]) => H.ITEMS[iid].kind === id).map(([iid, n]) => ({ kind: 'item', id: iid, n, d: H.ITEMS[iid] }));
+      const MAT = ['path', 'foe', 'echo', 'tracks', 'shadow'], LINES = Object.keys(H.TRACE_PATH_LINES || {}).concat(Object.keys(H.TRACE_FOE_LINES || {}));
+      const rank = d => MAT.indexOf(d.mat) * 1000 + Math.max(0, LINES.indexOf(d.line)) * 10 + (d.tier || 0);
+      const list = Object.entries(s.inv.items).filter(([iid]) => H.ITEMS[iid].kind === id).map(([iid, n]) => ({ kind: 'item', id: iid, n, d: H.ITEMS[iid] }));
+      return id === 'mat' ? list.sort((a, b) => rank(a.d) - rank(b.d)) : list;
     },
 
     openInventory(tab) {
@@ -1016,8 +1200,8 @@
           ui.plate(12, 10, 'Инвентарь');
           ui.closeBtn(W - 32, 10, () => ui.pop());
           INV_TABS.forEach((t, i) => {
-            const x = 118 + i * 88, on = i === this.tab;
-            ui.button(x, 8, 84, 24, t.label, () => { this.tab = i; this.sel = 0; ui.sfx('select'); }, { active: on, size: 10, icon: t.icon });
+            const x = 118 + i * 80, on = i === this.tab;
+            ui.button(x, 8, 76, 24, t.label, () => { this.tab = i; this.sel = 0; ui.sfx('select'); }, { active: on, size: 10, icon: t.icon });
           });
           const list = ui.invEntries(this.tab), cols = 6, cw = 64, chh = 74, gx = 16, gy = 48;
           ui.win(gx - 6, gy - 8, cols * (cw + 4) + 10, 5 * chh + 12, { alpha: 0.85, corners: false });
@@ -1053,7 +1237,10 @@
             ui.text('★'.repeat(d.rar || 2), px + pw / 2, py + 132, { align: 'center', size: 12, col: G.RARITY[d.rar || 2] });
             ui.text('В наличии: ' + e.n, px + pw / 2, py + 150, { align: 'center', size: 11, col: C.sub });
             ui.wrap(d.text, pw - 24, 11).forEach((l, i) => ui.text(l, px + 12, py + 176 + i * 15, { size: 11 }));
-            if (d.use) ui.button(px + 12, py + 344, pw - 24, 26, 'Использовать', () => ui.useItemFlow(e.id), { size: 12, icon: 'bag' });
+            if (d.kind === 'mat') ui.wrap('Где взять: ' + ui.traceSource(e.id), pw - 24, 10).slice(0, 4).forEach((l, i) => ui.text(l, px + 12, py + 290 + i * 13, { size: 10, col: C.sub }));
+            if (d.mat === 'shadow') ui.button(px + 12, py + 344, pw - 24, 26, 'Активировать Эйдолон', () => ui.useShadowFlow(e.id), { size: 12, icon: 'warp' });
+            else if (d.kind === 'mat') ui.button(px + 12, py + 344, pw - 24, 26, 'Омни-синтезатор', () => ui.openSynth(), { size: 12, icon: 'synth' });
+            else if (d.use) ui.button(px + 12, py + 344, pw - 24, 26, 'Использовать', () => ui.useItemFlow(e.id), { size: 12, icon: 'bag' });
             else ui.text(d.kind === 'key' ? 'Ключевой предмет сюжета.' : '', px + 12, py + 350, { size: 10, col: C.dim });
           } else if (e.kind === 'cone') {
             const d = e.d;
@@ -1091,7 +1278,7 @@
           if (k === 'down') { this.sel = Math.min(n - 1, this.sel + 6); ui.sfx('select'); }
           const e = list[this.sel];
           if (k === 'ok' && e) {
-            if (e.kind === 'item') { if (e.d.use) ui.useItemFlow(e.id); else ui.sfx('deny'); }
+            if (e.kind === 'item') { if (e.d.mat === 'shadow') ui.useShadowFlow(e.id); else if (e.d.kind === 'mat') ui.openSynth(); else if (e.d.use) ui.useItemFlow(e.id); else ui.sfx('deny'); }
             else if (e.kind === 'cone') ui.openConeTarget(e.cn.uid);
             else ui.sfx('deny');
           }
@@ -1378,6 +1565,8 @@
     },
 
     eventBackdrop(id, c, bx, by, bw, bh, mx, my, t) {
+      const own = H.FivesScenes && H.FivesScenes.BACKDROPS[id];
+      if (own) { own(c, bx, by, bw, bh, mx, my, t, this); return; }
       const fn = { seele: 'seeleBackdrop', kafka: 'kafkaBackdrop', silverwolf: 'wolfBackdrop', blade: 'bladeBackdrop' }[id] || 'ruanBackdrop';
       this[fn](c, bx, by, bw, bh, mx, my, t);
     },
@@ -1396,7 +1585,8 @@
       G.elemIcon(c, star.elem, bx + 32, by + 118, 7);
       this.text(star.name, bx + 46, by + 111, { size: 14, bold: true, col: '#ffe6a8' });
       this.text('★★★★★', bx + 232, by + 113, { size: 10, align: 'right', col: G.RARITY[5] });
-      this.text(H.PATHS[star.path].name + ' · ' + H.ELEMENTS[star.elem].name, bx + 46, by + 129, { size: 10, col: P.sub });
+      G.pathIcon(c, star.path, bx + 45, by + 129, 12, P.sub);
+      this.text(H.PATHS[star.path].name + ' · ' + H.ELEMENTS[star.elem].name, bx + 60, by + 129, { size: 10, col: P.sub });
       this.wrap('Любой 5★ из этого прыжка: только ' + star.name + '.', 214, 11).forEach((l, i) => this.text(l, bx + 24, by + 150 + i * 14, { size: 11, col: C.cream }));
       S.four.forEach((fid, i) => {
         const y = by + 190 + i * 26;
@@ -1532,6 +1722,12 @@
         });
         this.rankBadge(x + 2, y + 2, 4, 12);
       });
+      if (!amp && S.four.every(id => H.CHARS[id] && H.CHARS[id].faction === 'hares')) {
+        const px = bx + 166, pw = 3 * 76 - 4, py = by + 257;
+        c.fillStyle = 'rgba(6,6,12,0.8)'; c.fillRect(px, py, pw, 14);
+        c.strokeStyle = 'rgba(232,224,64,0.5)'; c.strokeRect(px + 0.5, py + 0.5, pw - 1, 13);
+        this.text('Агентство «Хитрые зайцы»', px + pw / 2, py + 2, { size: 9, bold: true, align: 'center', col: '#e8e040', shadow: false });
+      }
       this.crt(c, bx + 100, by + 196, 34, 56, { led: '#ffb030' }, (fx, fy, fw, fh) => { c.fillStyle = RANK_COL[5]; c.fillRect(fx, fy, fw, fh); this.text('S', fx + fw / 2, fy + fh / 2 - 10, { size: 18, bold: true, serif: true, align: 'center', col: '#1a1004', shadow: false }); });
       const ix = bx + 404, rw = 128;
       const kw = this.measure(B.name, 9, true) + 12;
@@ -1542,10 +1738,13 @@
       this.text(S.title[1], ix, by + 36 + ts + 4, { size: ts, bold: true, serif: true, col: '#fff4d8' });
       this.rankBadge(ix, by + 90, 5, 14);
       this.text(this.fitText(amp ? H.CONES[S.cone].name : ch.fullName || ch.name, 11, rw - 20, true), ix + 20, by + 90, { size: 11, bold: true, col: '#ffd890' });
+      G.pathIcon(c, amp ? H.CONES[S.cone].path : ch.path, ix + 2, by + 104, 11, C.sub);
       this.text(this.fitText(amp ? 'Световой конус · ' + H.PATHS[H.CONES[S.cone].path].name : H.PATHS[ch.path].name + ' · ' + H.ELEMENTS[ch.elem].name, 9, rw - 30), ix + 20, by + 104, { size: 9, col: C.sub });
       const rate = Math.round((amp ? T.coneFeatured : T.sigFeatured) * 100);
+      const BO = g.bannerOf(ban), rate4 = Math.round((BO.featRate4 != null ? BO.featRate4 : BO.featRate) * 100);
       const rules = [
         'Сигнал S: ' + rate + '% шанс, что это ' + (amp ? '«' + H.CONES[S.cone].name + '»' : ch.name) + '. Промах даёт гарант.',
+        'Сигнал A: ' + rate4 + '% шанс, что это избранный ' + (amp ? 'конус' : 'агент') + '. Промах даёт гарант.',
         'Сигнал A или выше: за ' + T.pity4 + ' поисков.',
         'Сигнал S: за ' + (amp ? T.conePity5 : T.pity5) + ' поисков.'
       ];
@@ -1728,7 +1927,7 @@
       } else {
         G.elemIcon(c, ch.elem, ix + 6, y + 6, 6);
         this.text(ch.name, ix + 16, y, { size: 12, bold: true, col: '#ffd890' });
-        this.text('★★★★★ · ' + H.PATHS[ch.path].name, ix, y + 14, { size: 9, col: G.RARITY[5] });
+        this.text('★★★★★ · ' + H.PATHS[ch.path].name, ix, y + 14, { size: 9, col: G.RARITY[5] }); G.pathIcon(c, ch.path, ix + this.measure('★★★★★ · ' + H.PATHS[ch.path].name, 9) + 3, y + 13, 11, G.RARITY[5]);
       }
       y += 34;
       S.four.forEach((fid, i) => {
@@ -1885,7 +2084,9 @@
       c.fillStyle = G.dark(tint, 0.4); c.fillRect(px0 + pw / 2 - 30, py0 + 32, 60, 60);
       G.drawPortrait(c, G.lookOf(star, g), px0 + pw / 2 - 30, py0 + 32, 60);
       this.text(ch.name, px0 + pw / 2, py0 + 98, { align: 'center', size: 14, bold: true, serif: true, col: '#3a2410', shadow: false });
-      this.text(H.PATHS[ch.path].name + ' · ' + H.ELEMENTS[ch.elem].name, px0 + pw / 2, py0 + 116, { align: 'center', size: 9, col: '#6a4a28', shadow: false });
+      const pathLine = H.PATHS[ch.path].name + ' · ' + H.ELEMENTS[ch.elem].name, plw = this.measure(pathLine, 9);
+      G.pathIcon(c, ch.path, Math.round(px0 + pw / 2 - plw / 2 - 7), py0 + 115, 11, '#6a4a28');
+      this.text(pathLine, px0 + pw / 2 + 7, py0 + 116, { align: 'center', size: 9, col: '#6a4a28', shadow: false });
       this.wrap(S.poster, pw - 20, 10).slice(0, 5).forEach((l, i) => this.text(l, px0 + pw / 2, py0 + 134 + i * 13, { align: 'center', size: 10, col: '#3a2a18', shadow: false }));
       if (pity.guar5) {
         c.save(); c.translate(px0 + pw - 44, py0 + ph - 30); c.rotate(-0.22);
@@ -1911,7 +2112,7 @@
       let y = by + 84;
       G.elemIcon(c, ch.elem, ix + 6, y + 6, 6);
       this.text(ch.name, ix + 16, y, { size: 12, bold: true, col: '#ffd890' });
-      this.text('★★★★★ · ' + H.PATHS[ch.path].name, ix, y + 14, { size: 9, col: G.RARITY[5] });
+      this.text('★★★★★ · ' + H.PATHS[ch.path].name, ix, y + 14, { size: 9, col: G.RARITY[5] }); G.pathIcon(c, ch.path, ix + this.measure('★★★★★ · ' + H.PATHS[ch.path].name, 9) + 3, y + 13, 11, G.RARITY[5]);
       y += 36;
       const kz = S.four[0], mx = ix + 18, my = y + 16;
       c.fillStyle = '#05070e'; c.beginPath(); c.arc(mx, my, 17, 0, Math.PI * 2); c.fill();
@@ -1930,11 +2131,20 @@
     evPicker(c, x, y, cur, pick, kind) {
       const coneKind = kind === 'cone' || kind === 'amp' || kind === 'forge' || kind === 'wiz';
       const ids = Object.keys(H.BANNERS[kind && H.BANNERS[kind] && H.BANNERS[kind].stars ? kind : 'ev'].stars);
-      const big = ids.length <= 3, P = big ? 70 : 50, S = big ? 40 : 30, SH = big ? 64 : 47;
-      c.fillStyle = 'rgba(6,6,18,0.72)'; c.fillRect(x - 6, y - 4, 64, ids.length * P + 26);
-      c.strokeStyle = 'rgba(201,164,92,0.6)'; c.strokeRect(x - 5.5, y - 3.5, 63, ids.length * P + 25);
-      ids.forEach((id, i) => {
-        const cy = y + i * P, on = id === cur, ch = H.CHARS[id], name = ch.name.length > 10 && ch.short ? ch.short : ch.name;
+      const n = ids.length, roll = n > PICK_VIS, vis = roll ? PICK_VIS : n, big = n <= 3, P = big ? 70 : roll ? 46 : 50, S = big ? 40 : 30, SH = big ? 64 : roll ? 44 : 47;
+      const ci = Math.max(0, ids.indexOf(cur)), top = roll ? Math.max(0, Math.min(n - vis, ci - 2)) : 0, head = roll ? 12 : 0, boxH = vis * P + 28 + 2 * head;
+      c.fillStyle = 'rgba(6,6,18,0.72)'; c.fillRect(x - 6, y - 4, 64, boxH);
+      c.strokeStyle = 'rgba(201,164,92,0.6)'; c.strokeRect(x - 5.5, y - 3.5, 63, boxH - 1);
+      if (roll) {
+        const above = top, below = n - top - vis, step = d => pick(ids[Math.max(0, Math.min(n - 1, ci + d))]);
+        this.text((above ? '▲ ' + above : '▲'), x + 26, y - 2, { size: 9, align: 'center', col: above ? C.gold : C.dim });
+        this.text((below ? '▼ ' + below : '▼'), x + 26, y + head + vis * P + 3, { size: 9, align: 'center', col: below ? C.gold : C.dim });
+        this.hit(x - 6, y - 4, 64, head + 2, () => step(-1));
+        this.hit(x - 6, y + head + vis * P + 2, 64, head + 2, () => step(1));
+        this.wheelZone(x - 6, y - 4, 64, boxH, d => step(d));
+      }
+      ids.slice(top, top + vis).forEach((id, i) => {
+        const cy = y + head + i * P, on = id === cur, ch = H.CHARS[id], name = ch.name.length > 10 && ch.short ? ch.short : ch.name;
         if (on) { c.fillStyle = 'rgba(242,220,154,0.22)'; c.fillRect(x - 2, cy - 1, 56, SH); c.fillStyle = C.brassHi; c.beginPath(); c.moveTo(x - 6, cy + SH / 2 - 8); c.lineTo(x - 12, cy + SH / 2 - 13); c.lineTo(x - 12, cy + SH / 2 - 3); c.fill(); }
         if (coneKind) G.drawConeCard(c, H.BANNERS[kind].stars[id].cone, x + 26 - S * 0.375, cy + 1, Math.round(S * 0.75), Math.round(S * 1.05), { info: false });
         else this.portraitCard(c, G.lookOf(id, this.game), x + 26 - S / 2, cy + 3, S, { elem: ch.elem, border: on ? C.brassHi : '#4a4466' });
@@ -1942,7 +2152,7 @@
         this.text(name, x + 26, cy + S + 7, { size: big ? 10 : 9, bold: on, align: 'center', col: on ? C.gold : C.sub });
         this.hit(x - 2, cy - 1, 56, SH, () => pick(id));
       });
-      this.text(coneKind ? '↑↓ конус' : '↑↓ герой', x + 26, y + ids.length * P + 6, { size: 9, align: 'center', col: C.dim });
+      this.text(coneKind ? '↑↓ конус' : '↑↓ герой', x + 26, y + 2 * head + vis * P + 8, { size: 9, align: 'center', col: C.dim });
     },
 
     openWarp(close) {
@@ -1956,9 +2166,11 @@
         setStar(id) { if (id === this.curStar() || !(this.ban === 'cone' ? g.setConeStar(id) : this.ban === 'ev' ? g.setEvStar(id) : g.setStarOf(this.ban, id))) return; ui.sfx('select'); },
         stepStar(d) { const ids = Object.keys(H.BANNERS[this.ban].stars), i = ids.indexOf(this.curStar()); this.setStar(ids[(i + d + ids.length) % ids.length]); },
         draw(c) {
-          const s = g.state, B = g.bannerOf(this.ban), pity = g.pityOf(this.ban), cone = this.ban === 'cone', sig = signalBan(this.ban), conv = conveneBan(this.ban), guild = guildBan(this.ban), mid = midBan(this.ban);
+          const s = g.state, B = g.bannerOf(this.ban), pity = g.pityOf(this.ban), cone = this.ban === 'cone', sig = signalBan(this.ban), conv = conveneBan(this.ban), guild = guildBan(this.ban), mid = midBan(this.ban), con = conBan(this.ban);
           if (sig) ui.audio.preloadSong('signal');
           if (mid) ui.audio.preloadSong('aria');
+          if (!this.show && con && ui.audio.wantedSong !== 'cccLobby') ui.audio.song('cccLobby');
+          if (!this.show && !con && ui.audio.wantedSong === 'cccLobby') ui.audio.stopSong();
           if (this.show) { this.show.draw(c); return; }
           ui.fullBg(c, false);
           ui.plate(12, 10, BANNER_TABS.find(b => b[0] === tabOf(this.ban))[1]);
@@ -1974,6 +2186,7 @@
           else if (this.ban === 'wiz') ui.wizBanner(c, bx, by, bw, bh, g.starOf('wiz'), id => this.setStar(id), id => this.setChan(id));
           else if (guild) ui.guildBanner(c, bx, by, bw, bh, g.starOf('guild'), id => this.setStar(id), id => this.setChan(id));
           else if (mid) ui.midnightBanner(c, bx, by, bw, bh, this.ban, g.starOf(this.ban), id => this.setStar(id), id => this.setChan(id));
+          else if (con) ui.contonBanner(c, bx, by, bw, bh, this.ban, g.starOf(this.ban), id => this.setStar(id), id => this.setChan(id));
           else ui.standardBanner(c, bx, by, bw, bh);
           c.strokeStyle = C.brass; c.lineWidth = 2; c.strokeRect(bx + 1, by + 1, bw - 2, bh - 2); c.lineWidth = 1;
           const fy = 346, special = this.ban !== 'std';
@@ -1987,16 +2200,18 @@
           if (this.ban === 'conv') ui.text(pity.guar5 ? 'Следующий 5★ точно ' + H.CHARS[B.five].name : '5★: ' + Math.round(B.featRate * 100) + '% шанс, что это ' + H.CHARS[B.five].name, 604, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
           if (this.ban === 'forge') ui.text('5★: всегда «' + H.CONES[B.cone].name + '»', 604, fy + 32, { size: 10, align: 'right', col: C.dim });
           if (mid) ui.text(pity.guar5 ? 'Следующий 5★ точно ' + (this.ban === 'comp' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name) : '5★: ' + Math.round(B.featRate * 100) + '% на ' + (this.ban === 'comp' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name), 604, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
+          if (con) ui.text(pity.guar5 ? 'Следующая 5★ точно ' + (this.ban === 'alley' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name) : '5★: ' + Math.round(B.featRate * 100) + '% на ' + (this.ban === 'alley' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name), 604, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
           if (this.ban === 'wiz') ui.text(pity.guar5 ? 'Следующий 5★ точно «' + H.CONES[B.cone].name + '»' : '5★: ' + Math.round(B.featRate * 100) + '% на «' + H.CONES[B.cone].name + '»', 604, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
           else if (guild) ui.text(pity.guar5 ? 'Следующий 5★ точно ' + H.CHARS[B.five].name : '5★: ' + Math.round(B.featRate * 100) + '% ' + H.CHARS[B.five].name + ' · ' + Math.round((1 - B.featRate) * T.guildParty * 100) + '% отряд · ' + Math.round((1 - B.featRate) * (1 - T.guildParty) * 100) + '% стандарт', 604, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
-          ui.button(120, fy + 48, 180, 34, sig ? 'Поиск ×1' : conv ? 'Призыв ×1' : this.ban === 'wiz' ? 'Купить ×1' : guild ? 'Набор ×1' : 'Прыжок ×1', () => { this.sel = 0; this.pull(1); }, { active: this.sel === 0, bold: true, icon: 'warp' });
-          ui.button(340, fy + 48, 180, 34, sig ? 'Поиск ×10' : conv ? 'Призыв ×10' : this.ban === 'wiz' ? 'Купить ×10' : guild ? 'Набор ×10' : 'Прыжок ×10', () => { this.sel = 1; this.pull(10); }, { active: this.sel === 1, bold: true, icon: 'warp' });
-          ui.text(mid ? '1 прыжок = 1 бархатный ключ или ' + T.warpCost + ' нефрита · свой гарант у канала и Компендиума' : this.ban === 'wiz' ? '1 покупка = 1 манатит высшей пробы или ' + T.warpCost + ' нефрита · гарант общий для трёх конусов' : guild ? '1 набор = 1 манатит высшей пробы или ' + T.warpCost + ' нефрита · гарант общий для всего отряда' : sig ? '1 поиск = 1 шифрокопия или ' + T.warpCost + ' нефрита · свой гарант у каждого канала' : this.ban === 'conv' ? '1 призыв = 1 сияющий прилив или ' + T.warpCost + ' нефрита · гарант общий для обоих резонаторов' : this.ban === 'forge' ? '1 призыв = 1 кующий прилив или ' + T.warpCost + ' нефрита · свой гарант: 5★ за ' + T.conePity5 : cone ? '1 прыжок = 1 особый пропуск или ' + T.warpCost + ' нефрита · свой гарант: 5★ за ' + T.conePity5 + ', промах 75% даёт гарант' : special ? '1 прыжок = 1 особый пропуск или ' + T.warpCost + ' нефрита · гарант общий для всех героев события' : '1 прыжок = 1 пропуск или ' + T.warpCost + ' нефрита', W / 2, fy + 90, { align: 'center', size: 10, col: C.dim });
-          ui.hints(mid ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'comp' ? 'Конус' : 'Герой'], ['←→', 'Выбор'], ['Enter', g.contractSigned() ? 'Прыжок' : 'Подписать'], ['H', 'История'], ['Esc', 'Назад']] : guild ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'wiz' ? 'Конус' : 'Героиня'], ['←→', 'Выбор'], ['Enter', 'Набор'], ['H', 'История'], ['Esc', 'Назад']] : sig ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'amp' ? 'Конус' : 'Агент'], ['←→', 'Выбор'], ['Enter', 'Поиск'], ['H', 'История'], ['Esc', 'Назад']] : conv ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'forge' ? 'Конус' : 'Резонатор'], ['←→', 'Выбор'], ['Enter', 'Призыв'], ['H', 'История'], ['Esc', 'Назад']] : special ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', cone ? 'Конус' : 'Герой'], ['←→', 'Выбор'], ['Enter', 'Прыжок'], ['H', 'История'], ['Esc', 'Назад']] : [['Q/E', 'Баннер'], ['←→', 'Выбор'], ['Enter', 'Прыжок'], ['H', 'История'], ['Esc', 'Назад']], 12, HGT - 18);
+          ui.button(120, fy + 48, 180, 34, sig ? 'Поиск ×1' : conv ? 'Призыв ×1' : this.ban === 'wiz' || this.ban === 'alley' ? 'Купить ×1' : con ? 'На сцену ×1' : guild ? 'Набор ×1' : 'Прыжок ×1', () => { this.sel = 0; this.pull(1); }, { active: this.sel === 0, bold: true, icon: 'warp' });
+          ui.button(340, fy + 48, 180, 34, sig ? 'Поиск ×10' : conv ? 'Призыв ×10' : this.ban === 'wiz' || this.ban === 'alley' ? 'Купить ×10' : con ? 'На сцену ×10' : guild ? 'Набор ×10' : 'Прыжок ×10', () => { this.sel = 1; this.pull(10); }, { active: this.sel === 1, bold: true, icon: 'warp' });
+          ui.text(con ? '1 прыжок = 1 бейдж или ' + T.warpCost + ' нефрита · свой гарант у сцены и Аллеи' : mid ? '1 прыжок = 1 бархатный ключ или ' + T.warpCost + ' нефрита · свой гарант у канала и Компендиума' : this.ban === 'wiz' ? '1 покупка = 1 манатит высшей пробы или ' + T.warpCost + ' нефрита · гарант общий для трёх конусов' : guild ? '1 набор = 1 манатит высшей пробы или ' + T.warpCost + ' нефрита · гарант общий для всего отряда' : sig ? '1 поиск = 1 шифрокопия или ' + T.warpCost + ' нефрита · свой гарант у каждого канала' : this.ban === 'conv' ? '1 призыв = 1 сияющий прилив или ' + T.warpCost + ' нефрита · гарант общий для обоих резонаторов' : this.ban === 'forge' ? '1 призыв = 1 кующий прилив или ' + T.warpCost + ' нефрита · свой гарант: 5★ за ' + T.conePity5 : cone ? '1 прыжок = 1 особый пропуск или ' + T.warpCost + ' нефрита · свой гарант: 5★ за ' + T.conePity5 + ', промах 75% даёт гарант' : special ? '1 прыжок = 1 особый пропуск или ' + T.warpCost + ' нефрита · гарант общий для всех героев события' : '1 прыжок = 1 пропуск или ' + T.warpCost + ' нефрита', W / 2, fy + 90, { align: 'center', size: 10, col: C.dim });
+          ui.hints(con ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'alley' ? 'Принт' : 'Героиня'], ['←→', 'Выбор'], ['Enter', g.conRegistered() ? 'Прыжок' : 'Регистрация'], ['H', 'История'], ['Esc', 'Назад']] : mid ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'comp' ? 'Конус' : 'Герой'], ['←→', 'Выбор'], ['Enter', g.contractSigned() ? 'Прыжок' : 'Подписать'], ['H', 'История'], ['Esc', 'Назад']] : guild ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'wiz' ? 'Конус' : 'Героиня'], ['←→', 'Выбор'], ['Enter', 'Набор'], ['H', 'История'], ['Esc', 'Назад']] : sig ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'amp' ? 'Конус' : 'Агент'], ['←→', 'Выбор'], ['Enter', 'Поиск'], ['H', 'История'], ['Esc', 'Назад']] : conv ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'forge' ? 'Конус' : 'Резонатор'], ['←→', 'Выбор'], ['Enter', 'Призыв'], ['H', 'История'], ['Esc', 'Назад']] : special ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', cone ? 'Конус' : 'Герой'], ['←→', 'Выбор'], ['Enter', 'Прыжок'], ['H', 'История'], ['Esc', 'Назад']] : [['Q/E', 'Баннер'], ['←→', 'Выбор'], ['Enter', 'Прыжок'], ['H', 'История'], ['Esc', 'Назад']], 12, HGT - 18);
         },
-        start(res) { this.show = signalBan(this.ban) && H.SignalShow ? new H.SignalShow(ui, res, { ban: this.ban }) : conveneBan(this.ban) && H.ConveneShow ? new H.ConveneShow(ui, res, { ban: this.ban }) : guildBan(this.ban) && H.ExplosionShow ? new H.ExplosionShow(ui, res, { ban: this.ban }) : midBan(this.ban) && H.MidnightShow ? new H.MidnightShow(ui, res, { ban: this.ban }) : new H.WarpShow(ui, res, { ban: this.ban }); if (signalBan(this.ban) && H.SignalShow) ui.audio.song('signal'); if (midBan(this.ban) && H.MidnightShow) ui.audio.song('aria'); },
+        start(res) { if (conBan(this.ban)) ui.audio.stopSong(0); if (conBan(this.ban) && H.SpotlightShow) { this.show = new H.SpotlightShow(ui, res, { ban: this.ban }); ui.audio.song('ccc', H.SPOT_FILM_AT); return; } this.show = signalBan(this.ban) && H.SignalShow ? new H.SignalShow(ui, res, { ban: this.ban }) : conveneBan(this.ban) && H.ConveneShow ? new H.ConveneShow(ui, res, { ban: this.ban }) : guildBan(this.ban) && H.ExplosionShow ? new H.ExplosionShow(ui, res, { ban: this.ban }) : midBan(this.ban) && H.MidnightShow ? new H.MidnightShow(ui, res, { ban: this.ban }) : new H.WarpShow(ui, res, { ban: this.ban }); if (signalBan(this.ban) && H.SignalShow) ui.audio.song('signal'); if (midBan(this.ban) && H.MidnightShow) ui.audio.song('aria'); },
         pull(n) {
           if (midBan(this.ban) && !g.contractSigned()) { ui.signVelvet(); return; }
+          if (conBan(this.ban) && !g.conRegistered()) { ui.contonRegister(); return; }
           const r = g.warp(n, this.ban);
           if (!r) { ui.sfx('deny'); ui.toast('Не хватает ' + TICKETS[this.ban][0] + ' или нефрита.'); return; }
           this.start(r);
@@ -2004,14 +2219,14 @@
         endShow() { if (this.show && this.show.done) { this.show = null; ui.audio.stopSong(); ui.sfx('confirm'); } },
         tick(dt) { if (this.show) { this.show.tick(dt); this.endShow(); } },
         key(k, code) {
-          if (this.show) { if (code === 'Enter' || code === 'NumpadEnter') this.show.enter(); else if (code === 'Escape') this.show.skip(); this.endShow(); return; }
+          if (this.show) { if (code === 'Enter' || code === 'NumpadEnter') this.show.enter(); else if (code === 'Escape') this.show.skip(); else if (this.show.key) this.show.key(k); this.endShow(); return; }
           if (code === 'KeyH') { ui.openWarpHistory(this.ban); return; }
           if (code === 'Tab' && CHANNELS[tabOf(this.ban)]) { const ch = CHANNELS[tabOf(this.ban)]; this.setChan(ch[(ch.indexOf(this.ban) + 1) % ch.length]); return; }
           if (code === 'KeyQ' || code === 'KeyE') { const n = BANNER_TABS.length, i = BANNER_TABS.findIndex(b => b[0] === tabOf(this.ban)); this.setBan(BANNER_TABS[(i + (code === 'KeyQ' ? n - 1 : 1)) % n][0]); return; }
           if ((k === 'up' || k === 'down') && this.ban !== 'std') { this.stepStar(k === 'up' ? -1 : 1); return; }
           if (k === 'left' || k === 'right') { this.sel = 1 - this.sel; ui.sfx('select'); }
           if (k === 'ok') this.pull(this.sel === 0 ? 1 : 10);
-          if (k === 'back') { ui.screens.pop(); ui.sfx('cancel'); if (close) close(); }
+          if (k === 'back') { if (ui.audio.wantedSong === 'cccLobby') ui.audio.stopSong(); ui.screens.pop(); ui.sfx('cancel'); if (close) close(); }
         }
       });
     },
@@ -2114,7 +2329,7 @@
           if (ui.listNav(this, k, list.length)) { this.qty = 1; return; }
           const e = list[this.sel];
           if (k === 'left' && e && e.kind === 'item') { this.qty = Math.max(1, this.qty - 1); ui.sfx('select'); }
-          if (k === 'right' && e && e.kind === 'item') { this.qty = Math.min(99, this.qty + 1); ui.sfx('select'); }
+          if (k === 'right' && e && e.kind === 'item') { this.qty = Math.min(e.left != null ? e.left : 99, this.qty + 1); ui.sfx('select'); }
           if (k === 'ok' && e) { if (g.buy(id, this.sel, e.kind === 'item' ? this.qty : 1)) { ui.sfx('chest'); ui.toast('Куплено: ' + e.name + (this.qty > 1 && e.kind === 'item' ? ' ×' + this.qty : '')); } else { ui.sfx('deny'); ui.toast('Не хватает кредитов.'); } }
           if (k === 'back') { ui.screens.pop(); ui.sfx('cancel'); close(); }
         }
@@ -2152,39 +2367,48 @@
       });
     },
 
-    openCalyx(close) {
-      const ui = this, g = this.game;
+    openCalyx(close, only) {
+      const ui = this, g = this.game, calyxList = () => g.calyxList().filter(x => !only || only.includes(x.c.id));
       const REWARD = { exp: 'exp2', credits: 'credits', relic: 'relic:body', echo: 'relic:head' };
+      const drops = cx => {
+        const out = [REWARD[cx.reward]].filter(Boolean);
+        if (cx.reward === 'path') { const line = Object.keys(H.TRACE_PATH_LINES).find(k => H.TRACE_PATH_LINES[k][0] === cx.path); out.length = 0; out.push(line + '1', line + '2', line + '3'); }
+        if (cx.reward === 'echo' && cx.mat) out.unshift(cx.mat);
+        if ((cx.reward === 'exp' || cx.reward === 'credits') && cx.pool) { const fam = cx.pool.map(id => H.ENEMIES[id] && H.TRACE_FOE_OF_FAMILY[H.ENEMIES[id].fam]).filter(Boolean); if (fam.length) out.push(fam[0] + '1', fam[0] + '2'); }
+        return out;
+      };
       this.push({
-        tier: 0,
+        tier: 0, lsc: { top: 0 },
         draw(c) {
-          const list = g.calyxList(), tiers = g.tiersOpen();
-          ui.win(30, 36, 580, 410, { title: 'Симулятор Экспресса' });
+          const list = calyxList(), tiers = g.tiersOpen();
+          ui.win(30, 36, 580, 410, { title: only && list[0] ? list[0].c.name : 'Симулятор Экспресса' });
           ui.money(420, 50, 'power', g.state.power + ' / ' + T.powerMax);
-          ui.list(42, 72, 556, list.map(x => ({ label: x.c.name, right: x.open ? x.c.cost + ' энерг.' : 'закрыто', disabled: !x.open, icon: (cc, ix, iy) => G.menuIcon(cc, 'calyx', ix, iy - 9, 18, x.open ? C.cyan : '#4a4e68'), iconW: 22 })), this.sel, { rowH: 26, onClick: i => { if (this.sel === i) this.key('ok'); else this.sel = i; } });
+          ui.list(42, 72, 556, list.map(x => ({ label: x.c.name, right: x.open ? x.c.cost + ' энерг.' : 'закрыто', disabled: !x.open, icon: (cc, ix, iy) => G.menuIcon(cc, 'calyx', ix, iy - 9, 18, x.open ? C.cyan : '#4a4e68'), iconW: 22 })), this.sel, { rowH: 26, max: 6, scroll: this.lsc, onClick: i => { if (this.sel === i) this.key('ok'); else this.sel = i; } });
           const cur = list[this.sel];
           c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(42, 250, 556, 150);
           if (cur) {
             ui.text(cur.c.text, 54, 260, { col: '#c8d8ff' });
-            if (!cur.open) ui.text(cur.c.need === 'rumor_echo' ? 'Нужен слух «Эхо Зверя» (Подземье).' : 'Откроется после завершения сюжета.', 54, 280, { col: C.bad });
+            if (!cur.open) ui.text(cur.c.owns ? 'Нужен герой Пути ' + H.TRACE_PATH_LINES[Object.keys(H.TRACE_PATH_LINES).find(k => H.TRACE_PATH_LINES[k][0] === cur.c.owns)][1] + '.' : 'Откроется дальше по сюжету.', 54, 280, { col: C.bad });
             ui.text('Сложность:', 54, 306);
             H.CALYX_TIERS.forEach((t, i) => ui.button(140 + i * 112, 300, 106, 24, t.name + ' · ур.' + t.lvl, () => { if (tiers[i]) this.tier = i; }, { active: this.tier === i, disabled: !tiers[i], size: 11 }));
             ui.text('Награда:', 54, 344);
-            const rk = REWARD[cur.c.reward];
-            if (rk) { G.rarityCell(c, 120, 334, 36, 36, 4); G.itemIcon(c, rk, 122, 336, 32, 'thunder'); }
-            ui.text('Энергия: +1 / ' + T.powerRegenSec + ' с игры. Топливо продаётся в буфете Пом-Пом.', 170, 346, { size: 11, col: C.sub });
+            const dl = drops(cur.c);
+            dl.forEach((rk, i) => { const it = H.ITEMS[rk]; G.rarityCell(c, 120 + i * 40, 334, 36, 36, it ? it.rar : 4); G.itemIcon(c, rk, 122 + i * 40, 336, 32, 'thunder'); });
+            const tx = 130 + dl.length * 40;
+            if (cur.c.reward === 'echo') ui.wrap('Награды Эха войны в этот час: ' + g.echoLeft() + ' из ' + H.TRACE_ECHO_LIMIT + '. Сверх них бой без награды и без энергии.', 590 - tx, 11).slice(0, 2).forEach((l, i) => ui.text(l, tx, 336 + i * 14, { size: 11, col: g.echoLeft() ? C.sub : C.bad }));
+            else ui.text('Энергия: +1 / ' + T.powerRegenSec + ' с игры. Топливо продаётся в буфете Пом-Пом.', tx, 346, { size: 11, col: C.sub });
           }
           ui.hints([['↑↓', 'Вызов'], ['←→', 'Сложность'], ['Enter', 'Начать'], ['Esc', 'Назад']], W / 2, 420, { align: 'center' });
         },
         key(k) {
-          const list = g.calyxList(), tiers = g.tiersOpen();
+          const list = calyxList(), tiers = g.tiersOpen();
           if (ui.listNav(this, k, list.length)) return;
           if (k === 'left') { for (let i = this.tier - 1; i >= 0; i--) if (tiers[i]) { this.tier = i; ui.sfx('select'); break; } }
           if (k === 'right') { for (let i = this.tier + 1; i < tiers.length; i++) if (tiers[i]) { this.tier = i; ui.sfx('select'); break; } }
           if (k === 'ok') {
             const cur = list[this.sel];
             if (!cur.open) return ui.sfx('deny');
-            if (g.state.power < cur.c.cost) { ui.sfx('deny'); ui.toast('Не хватает Энергии освоения.'); return; }
+            if (g.state.power < cur.c.cost && !(cur.c.reward === 'echo' && !g.echoLeft())) { ui.sfx('deny'); ui.toast('Не хватает Энергии освоения.'); return; }
             ui.screens = [];
             close();
             g.startCalyx(cur.c.id, this.tier);
@@ -2199,7 +2423,8 @@
       const ui = this, g = this.game;
       const tabs = ['Враги', 'Слияния', 'Слухи', 'Прыжки', 'Сюжет'];
       this.push({
-        tab: 0,
+        tab: 0, sc: { top: 0 },
+        setTab(i) { this.tab = i; this.sel = 0; this.sc = { top: 0 }; },
         rows() {
           const s = g.state;
           if (this.tab === 0) return Object.entries(H.ENEMIES).filter(([id]) => s.bank.enemies[id]).map(([id, d]) => ({ id, d, label: d.name, right: '×' + s.bank.enemies[id].kills, icon: (cc, ix, iy) => G.foeIcon(cc, d, ix, iy - 9, 18), iconW: 22 }));
@@ -2211,9 +2436,9 @@
         draw(c) {
           ui.win(20, 30, 600, 420, { title: 'Архив Экспресса' });
           ui.closeBtn(20 + 600 - 30, 30 + 8, () => this.key('back'));
-          tabs.forEach((t, i) => ui.button(34 + i * 100, 48, 96, 22, t, () => { this.tab = i; this.sel = 0; }, { active: this.tab === i, size: 11 }));
+          tabs.forEach((t, i) => ui.button(34 + i * 100, 48, 96, 22, t, () => this.setTab(i), { active: this.tab === i, size: 11 }));
           const rows = this.rows();
-          ui.list(32, 80, 300, rows, this.sel, { rowH: 20, max: 17, size: 11, onClick: i => { this.sel = i; } });
+          ui.list(32, 80, 300, rows, this.sel, { rowH: 20, max: 17, size: 11, scroll: this.sc, onClick: i => { this.sel = i; } });
           const r = rows[this.sel];
           c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(342, 80, 264, 358);
           if (!r) { ui.text('Пусто.', 356, 94, { col: C.dim }); return; }
@@ -2264,8 +2489,8 @@
         key(k) {
           const rows = this.rows();
           if (ui.listNav(this, k, rows.length)) return;
-          if (k === 'left') { this.tab = (this.tab + tabs.length - 1) % tabs.length; this.sel = 0; ui.sfx('select'); }
-          if (k === 'right') { this.tab = (this.tab + 1) % tabs.length; this.sel = 0; ui.sfx('select'); }
+          if (k === 'left') { this.setTab((this.tab + tabs.length - 1) % tabs.length); ui.sfx('select'); }
+          if (k === 'right') { this.setTab((this.tab + 1) % tabs.length); ui.sfx('select'); }
           if (k === 'ok' && this.tab === 3 && rows.length) { ui.openWarpHistory(rows[this.sel].e.ban); return; }
           if (k === 'back' || (k === 'ok' && !rows.length)) { ui.screens.pop(); ui.sfx('cancel'); if (close) close(); }
         }

@@ -22,6 +22,168 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', unlockAudio);
   document.addEventListener('keydown', unlockAudio);
 
+  let bootTimer = null;
+  let startupMenuOpen = false;
+
+  const isRussian = () => Boolean(window.i18n && window.i18n.getLanguage() === 'ru');
+
+  window.enterWin98SafeMode = () => {
+    const ru = isRussian();
+    const cornerLabel = ru ? 'Безопасный режим' : 'Safe Mode';
+    document.body.classList.add('win98-safe-mode');
+    if (!document.getElementById('safe-mode-corners')) {
+      const wrap = document.createElement('div');
+      wrap.id = 'safe-mode-corners';
+      wrap.style.cssText = 'position:fixed; inset:0; pointer-events:none; z-index:9998; font-family:Tahoma,sans-serif; font-size:12px; font-weight:bold; color:#ffffff; text-shadow:1px 1px 0 #000, -1px -1px 0 #000;';
+      wrap.innerHTML = `
+        <div style="position:absolute; top:4px; left:6px;">${cornerLabel}</div>
+        <div style="position:absolute; top:4px; right:6px;">${cornerLabel}</div>
+        <div style="position:absolute; bottom:32px; left:6px;">${cornerLabel}</div>
+        <div style="position:absolute; bottom:32px; right:6px;">${cornerLabel}</div>
+      `;
+      document.body.appendChild(wrap);
+    }
+    setTimeout(() => {
+      if (window.winManager) {
+        window.winManager.openDialog({
+          title: ru ? 'Безопасный режим Win 98' : 'Win 98 Safe Mode',
+          icon: 'warning',
+          message: ru
+            ? 'Win работает в безопасном режиме.\n\nЭтот особый диагностический режим позволяет устранить неполадку, которая мешает обычной загрузке Win.'
+            : 'Win is running in safe mode.\n\nThis special diagnostic mode of Win enables you to fix the problem that kept you from starting Win normally.'
+        });
+      }
+      if (window.appClippy && typeof window.appClippy.onSafeMode === 'function') {
+        setTimeout(() => window.appClippy.onSafeMode(), 2500);
+      }
+    }, 300);
+  };
+
+  window.leaveWin98SafeMode = () => {
+    document.body.classList.remove('win98-safe-mode');
+    const corners = document.getElementById('safe-mode-corners');
+    if (corners) corners.remove();
+  };
+
+  window.openWin98StartupMenu = () => {
+    if (startupMenuOpen) return;
+    startupMenuOpen = true;
+    if (bootTimer) {
+      clearTimeout(bootTimer);
+      bootTimer = null;
+    }
+    const postScreen = document.getElementById('bios-post-screen');
+    if (postScreen) postScreen.classList.remove('active');
+    if (bootScreen) bootScreen.style.display = 'none';
+
+    let menuEl = document.getElementById('win98-startup-menu');
+    if (!menuEl) {
+      menuEl = document.createElement('div');
+      menuEl.id = 'win98-startup-menu';
+      menuEl.style.cssText = 'position:fixed; inset:0; background:#000; color:#c0c0c0; font-family:"Courier New",monospace; font-size:16px; padding:40px 60px; z-index:999999995; display:flex; flex-direction:column; user-select:none;';
+      document.body.appendChild(menuEl);
+    }
+
+    let selectedOption = 1;
+    let countdown = 30;
+    const ru = isRussian();
+    const options = ru ? [
+      '1. Обычная загрузка',
+      '2. Протоколирование (\\BOOTLOG.TXT)',
+      '3. Безопасный режим',
+      '4. Пошаговое подтверждение',
+      '5. Только командная строка'
+    ] : [
+      '1. Normal',
+      '2. Logged (\\BOOTLOG.TXT)',
+      '3. Safe mode',
+      '4. Step-by-step confirmation',
+      '5. Command prompt only'
+    ];
+
+    const renderMenu = () => {
+      menuEl.innerHTML = `
+        <div style="color:#ffffff; font-weight:bold; margin-bottom:4px;">${ru ? 'Меню загрузки Microslop Win 98' : 'Microslop Win 98 Startup Menu'}</div>
+        <div style="color:#c0c0c0; margin-bottom:20px;">=============================</div>
+        <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:28px;">
+          ${options.map((opt, idx) => {
+            const num = idx + 1;
+            const active = num === selectedOption;
+            return `<div data-opt="${num}" style="padding:2px 8px; width:360px; cursor:pointer; background:${active ? '#c0c0c0' : 'transparent'}; color:${active ? '#000000' : '#c0c0c0'}; font-weight:${active ? 'bold' : 'normal'};">${opt}</div>`;
+          }).join('')}
+        </div>
+        <div style="margin-top:auto; margin-bottom:20px;">
+          ${ru ? 'Выберите пункт' : 'Enter a choice'}: <span style="color:#fff; font-weight:bold;">${selectedOption}</span>
+          <span style="margin-left:40px;">${ru ? 'Осталось времени' : 'Time remaining'}: ${String(countdown).padStart(2, '0')}</span>
+        </div>
+        <div style="color:#808080; font-size:14px;">${ru ? 'F8=Меню загрузки  |  Выберите пункт стрелками или клавишами 1-5 и нажмите ENTER' : 'F8=Startup Menu  |  Use Up/Down Arrows or 1-5 and press ENTER'}</div>
+      `;
+
+      menuEl.querySelectorAll('[data-opt]').forEach(row => {
+        row.addEventListener('click', () => {
+          selectedOption = parseInt(row.dataset.opt, 10);
+          commitOption(selectedOption);
+        });
+      });
+    };
+
+    const countTimer = setInterval(() => {
+      countdown--;
+      if (countdown <= 0) {
+        commitOption(selectedOption);
+      } else {
+        renderMenu();
+      }
+    }, 1000);
+
+    const onMenuKey = (e) => {
+      if (!startupMenuOpen) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedOption = selectedOption < 5 ? selectedOption + 1 : 1;
+        renderMenu();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedOption = selectedOption > 1 ? selectedOption - 1 : 5;
+        renderMenu();
+      } else if (/^[1-5]$/.test(e.key)) {
+        e.preventDefault();
+        selectedOption = parseInt(e.key, 10);
+        renderMenu();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        commitOption(selectedOption);
+      }
+    };
+
+    const commitOption = (opt) => {
+      clearInterval(countTimer);
+      window.removeEventListener('keydown', onMenuKey, true);
+      startupMenuOpen = false;
+      menuEl.style.display = 'none';
+
+      if (opt === 2 && window.vfs) {
+        window.vfs.writeFile(['My Computer', 'C:'], 'BOOTLOG.TXT', '[000D1F40] Loading Device = C:\\WINDOWS\\HIMEM.SYS\r\n[000D1F41] LoadSuccess = C:\\WINDOWS\\HIMEM.SYS\r\n[000D1F45] Loading Vxd = VMM\r\n[000D1F46] LoadSuccess = VMM\r\n');
+      }
+      if (opt === 3) {
+        window.enterWin98SafeMode();
+        return;
+      }
+      if (opt === 5 && window.appShutdown) {
+        window.appShutdown.triggerDosMode();
+        return;
+      }
+      window.launchWindowsBootSequence();
+      if (opt === 2 && window.appClippy && typeof window.appClippy.onBootLogged === 'function') {
+        setTimeout(() => window.appClippy.onBootLogged(), 6000);
+      }
+    };
+
+    window.addEventListener('keydown', onMenuKey, true);
+    menuEl.style.display = 'flex';
+    renderMenu();
+  };
+
   window.launchWindowsBootSequence = () => {
     const postScreen = document.getElementById('bios-post-screen');
     if (postScreen) {
@@ -31,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bootScreen.style.display = 'flex';
     bootScreen.classList.remove('fade-out');
 
-    setTimeout(() => {
+    bootTimer = setTimeout(() => {
       bootScreen.classList.add('fade-out');
 
       if (window.soundSys) {
@@ -53,6 +215,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.addEventListener('keydown', (e) => {
+    if (e.key === 'F8') {
+      const postScreen = document.getElementById('bios-post-screen');
+      const isBooting = (postScreen && postScreen.classList.contains('active')) || (bootScreen && bootScreen.style.display !== 'none');
+      if (isBooting && window.openWin98StartupMenu) {
+        e.preventDefault();
+        window.openWin98StartupMenu();
+        return;
+      }
+    }
     if ((e.ctrlKey && e.key === 'Escape') || e.key === 'Meta') {
       e.preventDefault();
       if (window.taskbar) {

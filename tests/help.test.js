@@ -5,7 +5,6 @@ const vm = require('node:vm');
 
 console.log('--- Testing Win 98 Help Viewer (hh.exe / dialogs.js) ---');
 
-// Mock DOM
 function createMockElement(tag = 'div') {
   const children = [];
   const classes = new Set();
@@ -124,7 +123,6 @@ function createMockElement(tag = 'div') {
       text = html.replace(/<[^>]*>/g, '');
       children.length = 0;
 
-      // Extract elements with id, class, data-*
       const tagMatches = [...html.matchAll(/<([a-zA-Z0-9\-]+)([^>]*)>/g)];
       for (const tm of tagMatches) {
         const tag = tm[1];
@@ -183,7 +181,6 @@ const mockWin = {
   highestZIndex: 100
 };
 
-// Create mock winManager
 const createdWindows = new Map();
 mockWin.winManager = {
   windows: createdWindows,
@@ -234,7 +231,6 @@ vm.runInContext(dialogsCode + '; window.appDialogs = new AppDialogs();', ctx);
 const appDialogs = ctx.window.appDialogs;
 assert.ok(appDialogs, 'AppDialogs must be initialized');
 
-// Test 1: openHelp creates the Help window
 appDialogs.openHelp();
 const helpWin = createdWindows.get('app_help_dialog');
 assert.ok(helpWin, 'Help window must be created in winManager');
@@ -243,14 +239,12 @@ assert.strictEqual(helpWin.minWidth, 440, 'Help window minWidth must be 440');
 assert.strictEqual(helpWin.minHeight, 300, 'Help window minHeight must be 300');
 console.log('PASS 1. Help window initialized with authentic responsive configuration and min bounds');
 
-// Test 2: Responsive container layout - no fixed width/height bug
 const contentContainer = helpWin.options.content;
 assert.ok(contentContainer.classList.contains('win-help-container'), 'Root content must have win-help-container class');
 assert.strictEqual(contentContainer.style.width, undefined, 'content.style.width must NOT be fixed to 560px');
 assert.strictEqual(contentContainer.style.height, undefined, 'content.style.height must NOT be fixed to 380px');
 console.log('PASS 2. Layout bug fixed: No fixed pixel dimensions forcing overflow or blank gaps');
 
-// Test 3: Games section completely removed
 assert.ok(!contentContainer.querySelector('[data-id="games"]'), 'Topic id "games" must NOT exist in help');
 const topicItems = contentContainer.querySelectorAll('.win-help-topic-item');
 topicItems.forEach(item => {
@@ -258,9 +252,8 @@ topicItems.forEach(item => {
 });
 console.log('PASS 3. Games section completely removed as requested');
 
-// Test 4: Comprehensive topics present
 const expectedTopics = [
-  'welcome', 'desktop', 'startmenu', 'apps',
+  'welcome', 'whatsnew', 'clippy', 'desktop', 'startmenu', 'explorer', 'apps',
   'multimedia', 'internet', 'system', 'cpanel',
   'run', 'shortcuts', 'troubleshooting', 'about'
 ];
@@ -270,19 +263,33 @@ expectedTopics.forEach(topId => {
 });
 console.log(`PASS 4. All ${expectedTopics.length} comprehensive help topics validated`);
 
-// Test 5: Tabbed navigation structure
 assert.ok(contentContainer.querySelector('[data-tab="contents"]'), 'Contents tab must exist');
 assert.ok(contentContainer.querySelector('[data-tab="index"]'), 'Index tab must exist');
 assert.ok(contentContainer.querySelector('[data-tab="search"]'), 'Search tab must exist');
 console.log('PASS 5. Authentic Win98 HTML Help tabs (Contents, Index, Search) verified');
 
-// Test 6: Toolbar controls present
 assert.ok(contentContainer.querySelector('[data-action="toggle-nav"]'), 'Toggle sidebar button must exist');
 assert.ok(contentContainer.querySelector('[data-action="back"]'), 'Back button must exist');
 assert.ok(contentContainer.querySelector('[data-action="forward"]'), 'Forward button must exist');
 assert.ok(contentContainer.querySelector('[data-action="home"]'), 'Home button must exist');
 assert.ok(contentContainer.querySelector('[data-action="print"]'), 'Print button must exist');
 console.log('PASS 6. Authentic toolbar buttons verified');
+
+appDialogs.openHelp('cpanel');
+const cpanelWin = createdWindows.get('app_help_dialog');
+const cpanelPane = cpanelWin.options.content.querySelector('.help-content-pane');
+const expectedApplets = [
+  'desk.cpl', 'main.cpl', 'sysdm.cpl', 'powercfg.cpl', 'appwiz.cpl',
+  'mmsys.cpl', 'timedate.cpl', 'intl.cpl', 'inetcpl.cpl', 'taskbar-props'
+];
+expectedApplets.forEach(appletCmd => {
+  assert.ok(cpanelPane.querySelector(`[data-run="${appletCmd}"]`), `Control Panel help must include shortcut for ${appletCmd}`);
+});
+assert.ok(cpanelPane.innerHTML.includes('Мышь (main.cpl)'), 'Control Panel help must document Mouse applet');
+assert.ok(cpanelPane.innerHTML.includes('Система (sysdm.cpl)'), 'Control Panel help must document System applet');
+assert.ok(cpanelPane.innerHTML.includes('Электропитание (powercfg.cpl)'), 'Control Panel help must document Power Management applet');
+assert.ok(cpanelPane.innerHTML.includes('Установка и удаление программ (appwiz.cpl)'), 'Control Panel help must document Add/Remove Programs applet');
+console.log('PASS 7. All 10 Control Panel applets and detailed subsections verified in cpanel topic');
 
 console.log('\n========================================');
 console.log('ALL WIN 98 HELP TESTS PASSED!');

@@ -1,0 +1,98 @@
+body.fx-large-icons .desktop-icon {
+  width: 90px;
+  min-height: 86px;
+}
+
+body.fx-large-icons .desktop-icon-img,
+body.fx-large-icons .desktop-icon-img > svg {
+  width: 48px;
+  height: 48px;
+}
+
+body.fx-large-icons .desktop-icon-img .shortcut-overlay {
+  transform: scale(1.5);
+  transform-origin: left bottom;
+}
+
+body.fx-low-color .desktop-icon-img > svg,
+body.fx-low-color .start-menu-item-icon svg,
+body.fx-low-color .taskbar-item-icon svg,
+body.fx-low-color .win-titlebar-icon svg,
+body.fx-low-color .tray-icon svg,
+body.fx-low-color .explorer-item-icon svg,
+body.fx-low-color .explorer-sidebar-icon svg,
+body.fx-low-color .disp-fx-icon-img svg,
+body.fx-low-color .disp-iconpick-cell svg,
+body.fx-low-color #clippy-svg {
+  filter: url(#fx-low-color);
+}
+
+body.fx-aliased-text .desktop-icon-label,
+body.fx-aliased-text .win-titlebar-title,
+body.fx-aliased-text .start-menu-item-text,
+body.fx-aliased-text .start-menu-banner-text,
+body.fx-aliased-text .taskbar-item-title,
+body.fx-aliased-text .context-menu-item > span,
+body.fx-aliased-text .win-tab,
+body.fx-aliased-text .win-window-body label,
+body.fx-aliased-text .win-window-body legend {
+  filter: url(#fx-aliased-text);
+}
+
+@keyframes fx-unroll-up {
+  from { clip-path: inset(100% 0 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes fx-unroll-down {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes fx-unroll-right {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes fx-unroll-left {
+  from { clip-path: inset(0 0 0 100%); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+body.fx-animate #start-menu.open {
+  animation: fx-unroll-up 0.16s ease-out;
+}
+
+body.fx-animate .start-submenu {
+  animation: fx-unroll-right 0.14s ease-out;
+}
+
+body.fx-animate .start-submenu.opens-left {
+  animation-name: fx-unroll-left;
+}
+
+body.fx-animate #context-menu,
+body.fx-animate .win-menu-item.active > .win-menu-dropdown {
+  animation: fx-unroll-down 0.14s ease-out;
+}
+
+.win-zoom-caption {
+  position: fixed;
+  z-index: 19999990;
+  height: 18px;
+  background: var(--win-active-title, linear-gradient(90deg, var(--win-title-active-start), var(--win-title-active-end)));
+  pointer-events: none;
+}
+
+.win-drag-outline {
+  position: fixed;
+  z-index: 19999990;
+  box-sizing: border-box;
+  padding: 4px;
+  background: repeating-conic-gradient(#ffffff 0 25%, transparent 0 50%) 0 0 / 2px 2px;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  mix-blend-mode: difference;
+  pointer-events: none;
+}

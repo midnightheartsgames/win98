@@ -36,6 +36,7 @@ class AppOgRush {
     this.exitDoor = { x: 740, y: 160, w: 32, h: 58 };
 
     this.keys = { left: false, right: false, jump: false };
+    this.lastFrameTime = 0;
     this.highScore = this.loadHighScore();
 
     this.handleKeyDown = this.onKeyDown.bind(this);
@@ -57,6 +58,10 @@ class AppOgRush {
       try {
         localStorage.setItem('office_games_scores_rush', String(this.highScore));
       } catch (e) {}
+      if (window.appOfficeLauncher && window.appOfficeLauncher.win) window.appOfficeLauncher.populateList();
+      if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+        window.appClippy.onOfficeGameEvent('rush', 'high_score', { score: this.highScore });
+      }
     }
   }
 
@@ -233,6 +238,7 @@ class AppOgRush {
     this.level = 1;
     this.loadLevel(this.level);
     this.gameState = 'ready';
+    this.lastFrameTime = 0;
     this.updateHUD();
 
     this.loop = this.gameLoop.bind(this);
@@ -276,7 +282,7 @@ class AppOgRush {
 
       this.obstacles.push({ x: 220, y: 202, w: 24, h: 16, type: 'puddle' });
       this.obstacles.push({ x: 490, y: 198, w: 22, h: 20, type: 'papers' });
-      this.obstacles.push({ x: 330, y: 198, w: 22, h: 20, type: 'chair', vx: 1.2, minX: 290, maxX: 380 });
+      this.obstacles.push({ x: 330, y: 198, w: 22, h: 20, type: 'chair', vx: 0.65, minX: 290, maxX: 380 });
 
       this.items.push({ x: 150, y: 150, w: 14, h: 14, type: 'envelope', points: 100 });
       this.items.push({ x: 295, y: 115, w: 14, h: 14, type: 'coffee', points: 150 });
@@ -291,7 +297,7 @@ class AppOgRush {
 
       this.obstacles.push({ x: 180, y: 202, w: 24, h: 16, type: 'puddle' });
       this.obstacles.push({ x: 310, y: 198, w: 22, h: 20, type: 'papers' });
-      this.obstacles.push({ x: 440, y: 198, w: 22, h: 20, type: 'chair', vx: 1.5, minX: 410, maxX: 500 });
+      this.obstacles.push({ x: 440, y: 198, w: 22, h: 20, type: 'chair', vx: 0.8, minX: 410, maxX: 500 });
       this.obstacles.push({ x: 590, y: 202, w: 24, h: 16, type: 'puddle' });
 
       this.items.push({ x: 130, y: 145, w: 14, h: 14, type: 'envelope', points: 100 });
@@ -308,10 +314,10 @@ class AppOgRush {
       this.platforms.push({ x: 690, y: 130, w: 90, h: 14 });
 
       this.obstacles.push({ x: 160, y: 202, w: 24, h: 16, type: 'puddle' });
-      this.obstacles.push({ x: 280, y: 198, w: 22, h: 20, type: 'chair', vx: 1.8, minX: 250, maxX: 340 });
+      this.obstacles.push({ x: 280, y: 198, w: 22, h: 20, type: 'chair', vx: 0.9, minX: 250, maxX: 340 });
       this.obstacles.push({ x: 400, y: 198, w: 22, h: 20, type: 'papers' });
       this.obstacles.push({ x: 530, y: 202, w: 24, h: 16, type: 'puddle' });
-      this.obstacles.push({ x: 660, y: 198, w: 22, h: 20, type: 'chair', vx: 2.0, minX: 630, maxX: 720 });
+      this.obstacles.push({ x: 660, y: 198, w: 22, h: 20, type: 'chair', vx: 1.0, minX: 630, maxX: 720 });
 
       this.items.push({ x: 120, y: 145, w: 14, h: 14, type: 'coffee', points: 150 });
       this.items.push({ x: 225, y: 105, w: 14, h: 14, type: 'floppy', points: 250 });
@@ -338,6 +344,9 @@ class AppOgRush {
         if (iconEl && window.Icons) iconEl.innerHTML = window.Icons['game-manager'] || '';
       }
     }
+    if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+      window.appClippy.onOfficeGameEvent('rush', this.bossMode ? 'boss_on' : 'boss_off');
+    }
   }
 
   onKeyDown(e) {
@@ -361,7 +370,7 @@ class AppOgRush {
         this.gameState = 'playing';
       } else if (this.gameState === 'playing') {
         if (this.player.onGround) {
-          this.player.vy = -7.6;
+          this.player.vy = -5.8;
           this.player.onGround = false;
           this.sndJump();
         }
@@ -386,23 +395,23 @@ class AppOgRush {
 
   updatePlayer() {
     const p = this.player;
-    const baseSpeed = p.boostTimer > 0 ? 4.2 : 2.8;
+    const baseSpeed = p.boostTimer > 0 ? 2.6 : 1.8;
 
     if (p.boostTimer > 0) p.boostTimer--;
 
     if (this.keys.left) {
       p.vx = -baseSpeed;
       p.facing = -1;
-      p.frame += 0.2;
+      p.frame += 0.12;
     } else if (this.keys.right) {
       p.vx = baseSpeed;
       p.facing = 1;
-      p.frame += 0.2;
+      p.frame += 0.12;
     } else {
       p.vx = 0;
     }
 
-    p.vy += 0.38;
+    p.vy += 0.22;
     p.x += p.vx;
     p.y += p.vy;
 
@@ -493,7 +502,7 @@ class AppOgRush {
     this.createSparks(it.x + 7, it.y + 7, '#ffff00');
 
     if (it.type === 'coffee') {
-      this.player.boostTimer = 220;
+      this.player.boostTimer = 280;
       this.createFloatingText('ТУРБО-КОФЕ!', it.x, it.y - 10, '#00ffff');
     } else {
       this.createFloatingText(`+${it.points}`, it.x, it.y - 10, '#ffff00');
@@ -526,13 +535,13 @@ class AppOgRush {
   createSparks(x, y, color) {
     for (let i = 0; i < 6; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const spd = 1.2 + Math.random() * 2.2;
+      const spd = 0.8 + Math.random() * 1.4;
       this.particles.push({
         x,
         y,
         vx: Math.cos(angle) * spd,
         vy: Math.sin(angle) * spd,
-        life: 14,
+        life: 24,
         color
       });
     }
@@ -543,8 +552,8 @@ class AppOgRush {
       text,
       x,
       y,
-      vy: -1.0,
-      life: 22,
+      vy: -0.6,
+      life: 36,
       color
     });
   }
@@ -764,11 +773,17 @@ class AppOgRush {
     }
   }
 
-  gameLoop() {
+  gameLoop(now) {
     if (!this.win) return;
     this.animId = requestAnimationFrame(this.loop);
 
     if (this.bossMode) return;
+
+    const currentTime = now || ((window.performance && window.performance.now) ? window.performance.now() : Date.now());
+    if (currentTime - this.lastFrameTime < 16) {
+      return;
+    }
+    this.lastFrameTime = currentTime;
 
     if (this.gameState === 'playing') {
       this.updatePlayer();

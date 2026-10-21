@@ -7,3 +7,8 @@ __pycache__/
 *.pyc
 *.log
 transcript*.jsonl
+web98-site/sr98/play/
+web98-site/sr98/*.apk
+content/YouVid/scratch/
+content/YouVid/klee.mp4
+content/YouVid/Савельев берет отпуск тли тотальное неуважение.mp4

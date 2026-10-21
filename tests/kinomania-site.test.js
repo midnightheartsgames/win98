@@ -64,8 +64,8 @@ test('the current section is plain text, its pages keep the link', () => {
 test('news lists run newest first and mark fresh items', () => {
   const html = site.renderSite(base);
   const ids = [...html.matchAll(/class="km-headline" data-url="http:\/\/www\.kinomania98\.ru\/article\/(\d+)"/g)].map(m => +m[1]);
-  assert.deepStrictEqual(ids, [9, 13, 11, 10, 4, 5, 8, 12, 7, 3, 2, 6]);
-  assert.strictEqual((html.match(/km-new">NEW!/g) || []).length, 5);
+  assert.deepStrictEqual(ids, [25, 16, 15, 9, 13, 11, 21, 10, 24, 18, 4, 22, 5, 8, 12, 14, 7, 3, 2, 17, 19, 23, 6, 20]);
+  assert.strictEqual((html.match(/km-new">NEW!/g) || []).length, 11);
 });
 
 test('articles link neighbours, the forum topic and the comments', () => {
@@ -74,9 +74,10 @@ test('articles link neighbours, the forum topic and the comments', () => {
   assert.ok(html.includes(`data-url="${base}/thread/4"`));
   assert.ok(html.includes('id="km-comments"'));
   const threads = site.getThreads().map(t => t.id);
+  assert.strictEqual(site.articles.length, 25);
   site.articles.forEach(a => {
     const m = site.renderSite(`${base}/article/${a.id}`).match(/Обсудить на форуме: <a data-url="http:\/\/www\.kinomania98\.ru\/thread\/(\d+)"/);
-    if (m) assert.ok(threads.includes(+m[1]), `article ${a.id}`);
+    assert.ok(m && threads.includes(+m[1]), `article ${a.id}`);
   });
 });
 
@@ -88,10 +89,11 @@ test('missing pages say so instead of showing another page', () => {
 test('forum index is a reply tree with anchors to each message', () => {
   const html = site.renderSite(base + '/forum');
   assert.ok(html.includes(`data-url="${base}/thread/1#msg-2"`) && html.includes(`data-url="${base}/thread/1#msg-3"`));
+  assert.strictEqual(site.getThreads().length, 30);
   const thread = site.renderSite(base + '/thread/1');
   assert.ok(thread.includes('id="km-msg-1"') && thread.includes('id="km-msg-3"') && thread.includes('id="km-reply"'));
   const vhs = site.renderSite(base + '/forum?cat=vhs');
-  assert.strictEqual((vhs.match(/class="km-tree-topic"/g) || []).length, 3);
+  assert.strictEqual((vhs.match(/class="km-tree-topic"/g) || []).length, 7);
 });
 
 test('visitor text is escaped', () => {
@@ -152,7 +154,11 @@ test('KOI and LAT views recode Cyrillic like a mismatched 1998 browser', () => {
 });
 
 test('pages follow the Web 1.0 and naming rules', () => {
-  const pages = ['', '/premieres', '/series', '/vhs', '/future', '/article/1', '/article/13', '/boxoffice', '/forum', '/thread/2', '/forum/new', '/zal', '/about'];
+  const pages = [
+    '', '/premieres', '/series', '/vhs', '/future', '/boxoffice', '/forum', '/forum/new', '/zal', '/about',
+    ...site.articles.map(a => `/article/${a.id}`),
+    ...site.getThreads().map(t => `/thread/${t.id}`)
+  ];
   pages.forEach(p => {
     const html = site.renderSite(base + p);
     assert.ok(!/\p{Extended_Pictographic}/u.test(html.replace(/[©®™]/g, '')), `emoji on ${p}`);

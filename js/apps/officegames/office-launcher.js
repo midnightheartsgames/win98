@@ -277,6 +277,9 @@ class AppOfficeLauncher {
       itemEl.addEventListener('click', () => {
         if (window.soundSys && window.soundSys.playClick) window.soundSys.playClick();
         this.selectGame(game.id);
+        if (window.appClippy && window.appClippy.onOfficeLauncherSelect) {
+          window.appClippy.onOfficeLauncherSelect(game);
+        }
       });
 
       itemEl.addEventListener('dblclick', () => {
@@ -636,6 +639,9 @@ class AppOfficeLauncher {
         message: `Ярлык для игры «${game.title}» успешно размещен на Рабочем столе!`
       });
     }
+    if (window.appClippy && window.appClippy.onOfficeGameShortcut) {
+      window.appClippy.onOfficeGameShortcut(game);
+    }
   }
 
   showHelp() {
@@ -651,6 +657,9 @@ class AppOfficeLauncher {
           'Нажмите F12, чтобы моментально замаскировать игру при шагах руководства!<br><br>' +
           '&bull; Вы можете разместить ярлык на любую игру прямо на Рабочий стол.'
       });
+    }
+    if (window.appClippy && window.appClippy.onOfficeLauncherHelp) {
+      window.appClippy.onOfficeLauncherHelp();
     }
   }
 }

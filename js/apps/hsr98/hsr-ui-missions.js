@@ -243,11 +243,13 @@
       if (r.cone) cells.push(['cone', r.cone]);
       for (const [id, n] of Object.entries(r.items || {})) cells.push(['item', id, n]);
       if (r.credits) cells.push(['item', 'credits', r.credits]);
+      if (r.outfit && H.OUTFITS && H.OUTFITS[r.outfit]) cells.push(['outfit', r.outfit]);
       if (!cells.length) { this.text('Без награды', x, y + 12, { size: 11, col: C.dim }); return; }
       cells.slice(0, 7).forEach((cl, i) => {
         const cx = x + i * 46;
         if (cl[0] === 'item') this.rewardCell(c, cl[1], cl[2], cx, y, 40);
         else if (cl[0] === 'cone') { G.rarityCell(c, cx, y, 40, 40, (H.CONES[cl[1]] || {}).rar || 3); G.drawConeCard(c, cl[1], cx + 6, y + 2, 28, 36, { info: false }); }
+        else if (cl[0] === 'outfit') this.outfitCell(c, cl[1], cx, y, 40);
         else this.portraitCard(c, G.lookOf(cl[1], g), cx, y, 40, { elem: H.CHARS[cl[1]] && H.CHARS[cl[1]].elem });
       });
     }

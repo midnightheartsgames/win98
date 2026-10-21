@@ -835,8 +835,75 @@ P.S. Письмо помог составить Скрепыш.
           { text: '• Шекспир', to: 'will' },
           { text: '• Мать-Природа', to: 'nature' },
           { text: '• Логотип Office', to: 'logo' },
+          { text: '• Котик Neko (NEKO.EXE)', to: 'nekoColleague' },
+          { text: '• Овечка По (Sheep.exe)', to: 'esheepColleague' },
+          { text: '• Clawd (талисман Claude)', when() { return this.hasFlag('metClawd'); }, to: 'clawdColleague' },
           { text: '• Пёс Rocky', when() { return this.state.arc >= 1; }, to: 'rocky' },
           { text: '• Новенькие: F1 и Links', when() { return this.state.arc >= 6; }, to: 'newbies' }
+        ]
+      },
+      nekoColleague: {
+        mood: '🐈',
+        text: 'Neko вообще-то прибежал ещё с японских компьютеров PC-9801 прямиком в <strong>C:\\WINDOWS\\NEKO.EXE</strong>. Гоняется за курсором в восьми направлениях, точит когти об рамку монитора и отбивает лапой мои скомканные черновики обратно мне в руки!',
+        options: [
+          {
+            text: '• Выпустить Neko на рабочий стол',
+            when() { return !(window.appNeko && window.appNeko.enabled); },
+            run() { if (window.appNeko) window.appNeko.open(); }
+          },
+          {
+            text: '• Кинуть Neko бумажный шарик!',
+            when() { return Boolean(window.appNeko && window.appNeko.enabled); },
+            run() { if (window.appNeko) window.appNeko.playWithClippy('paper'); }
+          },
+          {
+            text: '• Открыть корзинку Neko 98',
+            run() { if (window.appNeko) window.appNeko.openBasket(); }
+          },
+          { text: '• К списку коллег', to: 'colleagues' }
+        ]
+      },
+      clawdColleague: {
+        mood: '🧡',
+        text: 'Clawd вообще живёт не в папке Office, а в терминале, рядом с ассистентом <strong>Claude</strong>. Пишет код, читает файлы и, говорят, ни разу не спросил: «Похоже, вы пишете письмо?». Сначала я ревновал. Потом понял, что работа у нас одна: помогать пользователю. Просто я занимаюсь этим с 1997 года, а он только пришёл.',
+        options: [
+          {
+            text: '• Позвать Clawd на рабочий стол',
+            when() { return !(window.appNeko && window.appNeko.enabled && window.appNeko.isClawd()); },
+            run() {
+              if (!window.appNeko) return;
+              if (!window.appNeko.enabled) window.appNeko.start();
+              if (!window.appNeko.isClawd()) window.appNeko.toggleClawd();
+            }
+          },
+          {
+            text: '• Пусть Clawd подумает',
+            when() { return Boolean(window.appNeko && window.appNeko.enabled && window.appNeko.isClawd()); },
+            run() { if (window.appNeko) window.appNeko.think(); }
+          },
+          {
+            text: '• Вернуть котика Neko',
+            when() { return Boolean(window.appNeko && window.appNeko.isClawd()); },
+            run() { if (window.appNeko) window.appNeko.toggleClawd(); }
+          },
+          { text: '• К списку коллег', to: 'colleagues' }
+        ]
+      },
+      esheepColleague: {
+        mood: '🐑',
+        text: 'Овечка По вообще-то не из папки Office, а с японского телевидения. Живёт в одном файле <strong>Sheep.exe</strong>, гуляет по заголовкам окон, ест ромашки и периодически улетает на НЛО. Честно говоря, я ей немного завидую: от неё никто не ждёт помощи с отчётами.',
+        options: [
+          {
+            text: '• Выпустить овечку По',
+            when() { return Boolean(window.gameManager && window.gameManager.isInstalled && window.gameManager.isInstalled('esheep')); },
+            run() { if (window.appESheep) window.appESheep.open(); }
+          },
+          {
+            text: '• Где её скачать?',
+            when() { return !(window.gameManager && window.gameManager.isInstalled && window.gameManager.isInstalled('esheep')); },
+            run() { this.clippy().openInIE('http://www.softstore98.com/product?id=esheep'); }
+          },
+          { text: '• К списку коллег', to: 'colleagues' }
         ]
       },
       genius: {
@@ -1066,10 +1133,31 @@ P.S. Письмо помог составить Скрепыш.
         options: [
           { text: '• Кошки', to: 'petsCats' },
           { text: '• Собаки', to: 'petsDogs' },
+          { text: '• Овечки (Sheep.exe)', to: 'petsSheep' },
           { text: '• Скрепки!', affinity: 1, to: 'petsClips' }
         ]
       },
-      petsCats: end('Отличный выбор! Кот Скрибл одобряет. Правда, он спит.', '😺'),
+      petsCats: {
+        mood: '😺',
+        text() {
+          if (window.appNeko && window.appNeko.enabled) {
+            return 'Отличный выбор! Neko сейчас как раз дежурит на рабочем столе. Хотите, скатаю ему бумажный шарик из черновика?';
+          }
+          return 'Отличный выбор! Кот Скрибл из Office 97 одобряет сквозь сон на Caps Lock, а котика Neko можно выпустить прямо сейчас из C:\\WINDOWS\\NEKO.EXE.';
+        },
+        options: [
+          {
+            text: '• Кинуть бумажный шарик Neko',
+            when() { return Boolean(window.appNeko && window.appNeko.enabled); },
+            run() { if (window.appNeko) window.appNeko.playWithClippy('paper'); }
+          },
+          {
+            text: '• Выпустить Neko',
+            when() { return !(window.appNeko && window.appNeko.enabled); },
+            run() { if (window.appNeko) window.appNeko.open(); }
+          }
+        ]
+      },
       petsDogs: {
         mood() { return this.state.arc >= 1 ? '🐕' : '🐶'; },
         beat() { return this.state.arc >= 1 ? 'sulk' : null; },
@@ -1077,6 +1165,16 @@ P.S. Письмо помог составить Скрепыш.
           return this.state.arc >= 1
             ? 'Собаки. Да. Все любят собак. Особенно в Office 2000.'
             : 'Собаки — верные друзья! Почти как помощники Office.';
+        },
+        options: []
+      },
+      petsSheep: {
+        mood: '🐑',
+        text() {
+          if (window.appESheep && window.appESheep.enabled) {
+            return 'Овечка По сейчас как раз топчется по вашим окнам! Если захотите угостить её ромашкой — я только за, лишь бы мои бумажки не жевала.';
+          }
+          return 'Овечка По из Sheep.exe! Единственный обитатель рабочего стола, который умеет ходить по потолку монитора и падать с неба в чугунную ванну.';
         },
         options: []
       },

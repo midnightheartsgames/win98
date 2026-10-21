@@ -39,7 +39,7 @@ window.interpediaReg('demoscene', 'culture', {
 <tr><td>Chaos Constructions</td><td>Россия, Санкт-Петербург</td><td>1999</td></tr>
 </table>` },
     { id: 'russia', title: 'Демосцена в России', content: `В бывшем СССР сцена сформировалась вокруг клонов ZX Spectrum, которые собирали дома из доступных деталей. Русские спектрумисты прославились демо, выжимающими невероятное из восьмибитного компьютера, и электронными журналами на дискетах. С распространением ПК появилась и российская PC-сцена; крупнейшие пати проходят в Санкт-Петербурге.` },
-    { id: 'industry', title: 'Сцена и индустрия', content: `Демосцена стала школой для разработчиков игр. Участники финской группы Future Crew основали студию Remedy Entertainment, выпустившую Death Rally (1996) и работающую над боевиком Max Payne, и компанию, создающую тесты производительности 3DMark. Шведская группа Triton выпустила трекер FastTracker 2, а композиторы со сцены пишут музыку для игр, например для [[ut99|Unreal Tournament]].` },
+    { id: 'industry', title: 'Сцена и индустрия', content: `Демосцена стала школой для разработчиков игр. Участники финской группы Future Crew основали студию Remedy Entertainment, выпустившую Death Rally (1996) и работающую над боевиком [[maxpayne|Max Payne]], и компанию, создающую тесты производительности 3DMark. Шведская группа Triton выпустила трекер FastTracker 2, а композиторы со сцены пишут музыку для игр, например для [[ut99|Unreal Tournament]].` },
     { id: 'archives', title: 'Архивы', content: `Демо распространяются через [[bbs|BBS]], дискеты и FTP-архивы. Крупнейший архив PC-сцены, hornet.org, закрылся в 1998 году, и его коллекцию сохранили добровольцы, передав её в scene.org. Сценеры понимают, что их работы живут, лишь пока кто-то их хранит: демо, рассчитанное на конкретную звуковую карту и процессор, через несколько лет может не запуститься на новом компьютере.` }
   ],
   seeAlso: ['secondreality', 'gravisgus', 'amigaos', 'bbs', 'lanparty'],
@@ -90,7 +90,7 @@ Popular effects, plasma, tunnels, spinning 3D objects, fire, starfields and mirr
 <tr><td>Chaos Constructions</td><td>Russia, St. Petersburg</td><td>1999</td></tr>
 </table>` },
     { id: 'russia', title: 'The demoscene in Russia', content: `In the former USSR the scene formed around ZX Spectrum clones that people assembled at home from available parts. Russian Spectrum coders became famous for demos that wring the impossible out of an 8-bit computer and for disk magazines. As the PC spread, a Russian PC scene appeared too; the largest parties are held in St. Petersburg.` },
-    { id: 'industry', title: 'The scene and the industry', content: `The demoscene became a school for game developers. Members of the Finnish group Future Crew founded Remedy Entertainment, which released Death Rally (1996) and is working on the action game Max Payne, and a company that makes the 3DMark benchmarks. The Swedish group Triton released the FastTracker 2 tracker, and scene composers write game music, for example for [[ut99|Unreal Tournament]].` },
+    { id: 'industry', title: 'The scene and the industry', content: `The demoscene became a school for game developers. Members of the Finnish group Future Crew founded Remedy Entertainment, which released Death Rally (1996) and is working on the action game [[maxpayne|Max Payne]], and a company that makes the 3DMark benchmarks. The Swedish group Triton released the FastTracker 2 tracker, and scene composers write game music, for example for [[ut99|Unreal Tournament]].` },
     { id: 'archives', title: 'Archives', content: `Demos spread through [[bbs|BBSes]], floppies and FTP archives. The largest PC scene archive, hornet.org, closed in 1998, and volunteers saved its collection by passing it to scene.org. Sceners know their work lives only as long as someone keeps it: a demo written for a particular sound card and processor may not run on a new computer a few years later.` }
   ],
   seeAlso: ['secondreality', 'gravisgus', 'amigaos', 'bbs', 'lanparty'],
@@ -1213,3 +1213,268 @@ The game is promised as a classic point-and-click adventure: hand-drawn graphics
   links: [['http://www.steampowered.com', 'Steam: Back to the Future: The Game']],
   categories: ['Film', 'Science Fiction', 'Time Travel']
 }, ['back to the future', 'назад в будущее', 'delorean', 'делориан']);
+
+window.interpediaReg('anime90s', 'culture', {
+  title: 'Аниме-культура в Сети и России 1990-х',
+  infobox: {
+    title: 'Аниме-культура 1990-х',
+    badgeText: 'VHS, фансабы и веб-кольца',
+    fields: [
+      { label: 'Ключевые полнометражные фильмы', value: 'Akira (1988), Ghost in the Shell (1995), Princess Mononoke (1997)' },
+      { label: 'Культовые сериалы', value: 'Sailor Moon (1992), Neon Genesis Evangelion (1995), Cowboy Bebop (1998), Serial Experiments Lain (1998)' },
+      { label: 'Носители 1990-х', value: 'видеокассеты VHS, LaserDisc, первые Video CD и MPEG-1' },
+      { label: 'Субтитры', value: 'любительские фансабы (Amiga Genlock, JACOsub, Station Alpha)' },
+      { label: 'Первые клубы в России', value: 'R.An.Ma (Москва, 1996)' },
+      { label: 'Конференции и сайты', value: 'эхоконференция RU.ANIME, [[webring|веб-кольца]], [[digicharat|Di Gi Charat]]' }
+    ]
+  },
+  lead: `<strong>Аниме-культура 1990-х</strong> — сообщество зрителей, переводчиков-энтузиастов и авторов домашних веб-страниц, сформировавшееся вокруг японской анимации на рубеже десятилетий. Если в 1980-х за пределами Японии отдельные сериалы попадали на телеэкраны в перемонтированном виде, то в 1990-х видеокассеты VHS, любительские субтитры и [[www|Всемирная паутина]] превратили аниме в заметную часть молодёжной и компьютерной культуры.
+
+Киберпанковские фильмы и сериалы десятилетия нашли особенно тёплый приём у программистов, студентов технических вузов и завсегдатаев [[irc|IRC]] и [[fidonet|ФидоНета]], которые первыми начали оцифровывать кадры, переводить диалоги и объединять фан-сайты в тематические [[webring|веб-кольца]].`,
+  sections: [
+    { id: 'breakthrough', title: 'Главные произведения 1990-х', content: `В 1990-е годы японская анимация перестала восприниматься на Западе и в России исключительно как детские утренние мультфильмы:
+<ul>
+<li><strong>«Призрак в доспехах» (Ghost in the Shell, реж. Мамору Осии, 1995)</strong> — экранизация манги Масамунэ Сиро о майоре Мотоко Кусанаги из Девятого отдела общественной безопасности и хакере по прозвищу Кукловод, зарождающемся в глобальной сети. Картина оказала прямое влияние на эстетику [[cyberpunk|киберпанка]] конца 1990-х и братьев Вачовски.</li>
+<li><strong>«Неоновый генезис Евангелион» (Neon Genesis Evangelion, реж. Хидэаки Анно, студия Gainax, 1995–1996)</strong> — 26-серийная драма о подростках-пилотах биомеханических гигантов и психологическом одиночестве, завершившаяся в 1997 году полнометражным фильмом <em>The End of Evangelion</em>. Споры о смысле последних серий продолжаются в группах [[usenet|Usenet]] и на форумах уже четвёртый год подряд.</li>
+<li><strong>«Ковбой Бибоп» (Cowboy Bebop, реж. Синъитиро Ватанабэ, 1998)</strong> — космический неонуар об охотниках за головами под джазовый саундтрек Йоко Канно.</li>
+<li><strong>«Эксперименты Лэйн» (Serial Experiments Lain, 1998)</strong> — мистический сериал о четырнадцатилетней школьнице Лэйн Ивакуре, которая получает компьютер Navi и обнаруживает, что граница между реальным миром и глобальной сетью <em>Wired</em> стирается.</li>
+</ul>` },
+    { id: 'vhs_fansubs', title: 'Кассеты VHS и культура фансабов', content: `Поскольку официальные лицензии выходили с опозданием на годы или не выходили вовсе, в студенческих кампусах США и Европы сложилась сеть <strong>фансабберов</strong> (fansubbers). Энтузиасты заказывали из Японии оригинальные диски LaserDisc или записи с телеэфира, переводили диалоги на слух и набирали тайминг в текстовых форматах <code>JACOsub</code> и <code>Station Alpha</code> (<code>.SSA</code>).
+
+Чтобы наложить субтитры на видео, компьютер [[amigaos|Amiga]] с платой видеомикширования Genlock подключали между двумя видеомагнитофонами и переписывали кассету в реальном времени. Готовые мастер-кассеты рассылали по почте: зритель отправлял дистрибьютору чистую кассету VHS (обычно <em>TDK</em> или <em>BASF</em> на 180 минут) и марки на обратную пересылку. Негласный кодекс фансабберов гласил: «Не продавать за деньги и прекращать рассылку, как только сериал лицензирован в стране».` },
+    { id: 'web_amv', title: 'Веб-кольца, клипы AMV и маскоты Акихабары', content: `В [[www|Паутине]] конца 1990-х страницы поклонников аниме стали одними из самых массовых жителей бесплатного хостинга [[geocities|GeoCities]] (особенно в «квартале» <em>Tokyo</em>). Авторы выкладывают отсканированные иллюстрации в JPEG, прозрачные GIF-фигурки персонажей для украшения гостевых книг, фоновые MIDI-мелодии вроде <em>Cruel Angel's Thesis</em> и темы рабочего стола для [[active_desktop|Microslop Plus! 98]].
+
+Параллельно с появлением недорогих плат видеозахвата и кодеков MPEG-1 и RealVideo развивается жанр <strong>AMV (Anime Music Video)</strong> — любительских музыкальных клипов, где сцены из аниме монтируются под рок- или электронные композиции. А в самой Японии в 1998–1999 годах рождается культура маскотов компьютерного квартала Акихабара, ярким примером которой стала девочка-кошка [[digicharat|Дэдзико (Di Gi Charat)]] сети магазинов Gamers.` },
+    { id: 'russia', title: 'Аниме в России 1990-х', content: `Советские и российские зрители помнили японские полнометражные ленты по кинопрокату 1970–1980-х («Корабль-призрак», «Кот в сапогах», «Босоногий Гэн»), но настоящий бум начался на телевидении 1990-х после показа сериалов «Макросс» (в составе «Роботека»), «Грендайзер», «Кэнди-Кэнди» и особенно <strong>«Сейлор Мун — Луна в матроске»</strong> на канале «2×2» в 1996–1997 годах.
+
+Весной 1996 года в Москве образовался первый российский аниме-клуб <strong>R.An.Ma</strong> (Russian Anime & Manga Club). Поскольку достать кассеты в магазинах было почти невозможно, участники собирались на сходки, переписывали друг у друга привезённые из-за границы VHS-кассеты с английскими субтитрами, печатали самиздатовские фэнзины («Великий Дракон» также начал публиковать статьи об аниме и японских ролевых играх) и общались в эхоконференции <code>RU.ANIME</code> сети [[fidonet|ФидоНет]].` }
+  ],
+  seeAlso: ['digicharat', 'cyberpunk', 'geocities', 'webring', 'fidonet'],
+  references: [
+    'Poitras G. The Anime Companion: What\'s Japanese in Japanese Animation? — Stone Bridge Press, 1999.',
+    'FAQ эхоконференции fido7.ru.anime. — ФидоНет, 1998–1999.',
+    'Иванов Б. Введение в японскую анимацию. — М., 1999.'
+  ],
+  links: [['http://www.digicharat98.com', 'Фан-клуб Di Gi Charat 98'], ['http://www.geocities.com', 'GeoCities: домашние страницы и веб-кольца']],
+  categories: ['Киберкультура', 'Аниме и манга', '1990-е годы']
+}, {
+  title: '1990s Anime Culture on the Net and in Russia',
+  infobox: {
+    title: '1990s Anime Culture',
+    badgeText: 'VHS, Fansubs and WebRings',
+    fields: [
+      { label: 'Landmark films', value: 'Akira (1988), Ghost in the Shell (1995), Princess Mononoke (1997)' },
+      { label: 'Defining series', value: 'Sailor Moon (1992), Neon Genesis Evangelion (1995), Cowboy Bebop (1998), Serial Experiments Lain (1998)' },
+      { label: '1990s media', value: 'VHS tapes, LaserDisc, early Video CD and MPEG-1' },
+      { label: 'Subtitling', value: 'amateur fansubs (Amiga Genlock, JACOsub, Station Alpha)' },
+      { label: 'First Russian club', value: 'R.An.Ma (Moscow, 1996)' },
+      { label: 'Forums and sites', value: 'RU.ANIME echo, [[webring|WebRings]], [[digicharat|Di Gi Charat]]' }
+    ]
+  },
+  lead: `<strong>1990s anime culture</strong> is the community of viewers, amateur translators and home-page authors that formed around Japanese animation over the course of the decade. Where only a handful of heavily edited shows reached foreign television in the 1980s, VHS tapes, fan-made subtitles and the [[www|World Wide Web]] turned anime in the 1990s into a fixture of youth and computer culture.
+
+Cyberpunk films and series of the decade found an especially eager audience among programmers, engineering students and regulars of [[irc|IRC]] and [[fidonet|FidoNet]], who were the first to capture frames, translate scripts and link fan pages into thematic [[webring|WebRings]].`,
+  sections: [
+    { id: 'breakthrough', title: 'Major works of the 1990s', content: `During the 1990s Japanese animation stopped being seen in the West and in Russia merely as children's morning cartoons:
+<ul>
+<li><strong>Ghost in the Shell (dir. Mamoru Oshii, 1995):</strong> an adaptation of Masamune Shirow's manga following Major Motoko Kusanagi of Public Security Section 9 and a hacker intelligence known as the Puppet Master born inside the global network. The film directly shaped late-1990s [[cyberpunk|cyberpunk]] visuals and inspired the Wachowski brothers.</li>
+<li><strong>Neon Genesis Evangelion (dir. Hideaki Anno, Gainax, 1995–1996):</strong> a 26-episode drama about teenage pilots of bio-mechanical giants and psychological isolation, concluded in 1997 with the theatrical feature <em>The End of Evangelion</em>. Arguments over the meaning of its final episodes have filled [[usenet|Usenet]] newsgroups and web forums for four years running.</li>
+<li><strong>Cowboy Bebop (dir. Shinichiro Watanabe, 1998):</strong> a space neo-noir about bounty hunters set to Yoko Kanno's jazz score.</li>
+<li><strong>Serial Experiments Lain (1998):</strong> a psychological mystery in which fourteen-year-old schoolgirl Lain Iwakura upgrades her Navi computer and discovers the boundary between the physical world and the global network, the <em>Wired</em>, dissolving.</li>
+</ul>` },
+    { id: 'vhs_fansubs', title: 'VHS tapes and fansub culture', content: `Because official overseas releases arrived years late or never came out at all, university clubs in North America and Europe built an informal network of <strong>fansubbers</strong>. Volunteers imported Japanese LaserDiscs or broadcast recordings, translated the dialogue and timed subtitle scripts in text-based formats such as <code>JACOsub</code> and <code>Station Alpha</code> (<code>.SSA</code>).
+
+To burn subtitles onto tape, an [[amigaos|Amiga]] computer equipped with a Genlock video overlay board was wired between two VCRs as the tape played in real time. Master tapes circulated by mail: a viewer sent a distributor a blank 180-minute <em>TDK</em> or <em>BASF</em> VHS cassette along with return postage. The unwritten fansubber code stated: "Keep It Free, never charge money, and stop distribution as soon as the title is licensed locally."` },
+    { id: 'web_amv', title: 'WebRings, AMVs and Akihabara mascots', content: `Across the late-1990s [[www|Web]], anime tribute pages became one of the largest neighborhoods on [[geocities|GeoCities]] (especially in the <em>Tokyo</em> homestead). Webmasters upload scanned JPEG art galleries, transparent GIF character sprites for guestbooks, background MIDI renditions of <em>Cruel Angel's Thesis</em> and desktop themes for [[active_desktop|Microslop Plus! 98]].
+
+With affordable video capture cards and MPEG-1 and RealVideo encoders, fans also edit <strong>AMVs (Anime Music Videos)</strong>, cutting scenes from their favorite series to rock or electronic tracks. Meanwhile in Tokyo's Akihabara electronics district, 1998 and 1999 saw the rise of store mascot characters led by the cat-eared [[digicharat|Dejiko (Di Gi Charat)]] from the Gamers retail chain.` },
+    { id: 'russia', title: 'Anime in 1990s Russia', content: `Soviet and Russian audiences remembered Japanese feature films from 1970s and 1980s cinema screenings (<em>Flying Phantom Ship</em>, <em>Puss in Boots</em>, <em>Barefoot Gen</em>), but the modern boom began on 1990s television with broadcasts of <em>Robotech</em> (<em>Macross</em>), <em>Grendizer</em>, <em>Candy Candy</em> and above all <strong>Sailor Moon</strong> on the 2×2 channel in 1996–1997.
+
+In spring 1996 Moscow fans founded Russia's first anime club, <strong>R.An.Ma</strong> (Russian Anime & Manga Club). Because tapes were almost impossible to buy in stores, members met in person to copy English-subtitled VHS cassettes brought from abroad, printed amateur fanzines (while the console magazine <em>Veliky Drakon</em> ran regular columns on anime and Japanese RPGs) and debated new shows in the <code>RU.ANIME</code> echo on [[fidonet|FidoNet]].` }
+  ],
+  seeAlso: ['digicharat', 'cyberpunk', 'geocities', 'webring', 'fidonet'],
+  references: [
+    'Poitras, G. The Anime Companion: What\'s Japanese in Japanese Animation? Stone Bridge Press, 1999.',
+    'fido7.ru.anime echo FAQ. FidoNet, 1998–1999.',
+    'Ivanov, B. Introduction to Japanese Animation. Moscow, 1999.'
+  ],
+  links: [['http://www.digicharat98.com', 'Di Gi Charat 98 Fan Club'], ['http://www.geocities.com', 'GeoCities: fan pages and WebRings']],
+  categories: ['Cyberculture', 'Anime and Manga', '1990s']
+}, ['anime', 'evangelion', 'sailormoon', 'fansub']);
+
+window.interpediaReg('fargus', 'culture', {
+  title: 'Игровой перевод 1990-х («Фаргус», «Седьмой волк», СПК)',
+  infobox: {
+    title: 'Неофициальные локализации 1990-х',
+    badgeText: '«Полные русские версии»',
+    fields: [
+      { label: 'Годы расцвета', value: '1996–1999' },
+      { label: 'Известные марки', value: '«Фаргус», «Седьмой волк» (7Wolf), «СПК», «Русский проект», «Наша марка»' },
+      { label: 'Эмблема «Фаргуса»', value: 'жёлтая рыба-клоун и плашка «Только полные и качественные русские версии!»' },
+      { label: 'Срок перевода новинки', value: 'от 3 до 14 дней после западного релиза' },
+      { label: 'Розничная цена диска', value: '50–80 рублей на [[gorbushka|«Горбушке»]] (1999)' },
+      { label: 'Инструменты', value: 'редакторы ресурсов, перерисовка растровых шрифтов CP1251, Stylus / PROMT (у подделок)' }
+    ]
+  },
+  lead: `<strong>Неофициальный игровой перевод 1990-х</strong> — явление компьютерного рынка России и стран СНГ второй половины 1990-х годов, когда подавляющее большинство западных компьютерных игр выходило на русском языке силами нелицензионных студий локализации. Поскольку официальные дистрибьюторы редко переводили игры, а коробочные импортные издания за 40–50 долларов после кризиса августа 1998 года стали недоступны массовому покупателю, нишу заняли издатели с рынков вроде московской [[gorbushka|«Горбушки»]].
+
+Самой известной маркой стал основанный в 1996 году <strong>«Фаргус»</strong> с узнаваемой жёлтой рыбкой на корешке обложки. Рядом с ним за внимание игроков спорили «Седьмой волк Мультимедиа» (7Wolf), новосибирская группа «СПК» («Слово Палитра Код») и десятки безымянных команд, чьи переводы колебались от профессиональной актёрской озвучки до курьёзного машинного подстрочника.`,
+  sections: [
+    { id: 'studios', title: 'Главные марки и студии', content: `К концу 1999 года покупатели на радиорынках научились различать переводчиков по оформлению обложек и накатке на компакт-дисках:
+<table class="interpedia-wikitable">
+<tr><th>Марка</th><th>Отличительные черты</th><th>Известные работы</th></tr>
+<tr><td>«Фаргус» (Москва, с 1996)</td><td>жёлтая рыба-клоун на синем или красном корешке, собственные переводы с участием профессиональных актёров</td><td>[[fallout|Fallout]], [[fallout2|Fallout 2]], [[diablo|Diablo]], [[starcraft|StarCraft]], [[baldursgate|Baldur's Gate]]</td></tr>
+<tr><td>«Седьмой волк» / 7Wolf</td><td>волчий профиль в круге, выпуск «Платиновых» изданий с исправленным переводом через пару недель после первой версии</td><td>[[homm3|Heroes III]], [[ageofempires|Age of Empires]], [[grimfandango|Grim Fandango]]</td></tr>
+<tr><td>«СПК» (Новосибирск)</td><td>бережный литературный перевод текста и аккуратные шрифты без спешки за первым днём продаж</td><td>квесты LucasArts на [[scumm|SCUMM]], ролевые игры и стратегии</td></tr>
+<tr><td>«Русский проект» / «Наша марка»</td><td>ранние озвучки середины 1990-х с характерными одноголосыми или двухголосыми интонациями в духе видеокассет</td><td>[[warcraft2|Warcraft II]], [[redalert|Command & Conquer: Red Alert]]</td></tr>
+</table>` },
+    { id: 'craft', title: 'Техника вскрытия ресурсов и кириллизация шрифтов', content: `В отличие от официальных локализаторов, получающих от разработчика текстовые таблицы и исходный код, неофициальные переводчики работают с готовым скомпилированным диском. Программист группы разбирает закрытые архивы игры (<code>.PAK</code>, <code>.MPQ</code>, <code>.DAT</code>), находит таблицы строк и растровые шрифты.
+
+Поскольку в западных играх шрифты содержат только латиницу (ASCII), художник вручную дорисовывает русские буквы в кодировке [[windows98|Win-1251]] или заменяет ими символы с диакритикой. Если игра проверяет контрольную сумму исполняемого файла или длину строки, код приходится править в дизассемблере. В студиях уровня «Фаргуса» после перевода текста приглашают актёров московских театров и радиоведущих, которые за две-три ночные смены озвучивают сотни реплик и видеороликов.` },
+    { id: 'fakes', title: 'Гонка за сроками и подделки «под Фаргус»', content: `Главный закон пиратского рынка конца 1990-х — кто первым выбросил русский диск на прилавки, тот и снял сливки продаж. Из-за этого недобросовестные штамповщики прогоняют английский текст через программу машинного перевода <em>Stylus</em> (или <em>PROMT 98</em>) без всякой редактуры и печатают на обложке чужой логотип жёлтой рыбки.
+
+Именно такие подделки породили знаменитые перлы, где меню <em>Save / Load</em> превращалось в «Спасти / Нагрузить», броня <em>Leather Armor</em> в «Кожаное вооружение», а реплики персонажей в поток бессвязных слов. Настоящий «Фаргус» даже начал печатать на обложках предупреждения о защите от подделок и открыл собственный сайт <code>www.goldfargus.ru</code> со списком подлинных релизов и патчами, исправляющими зависания.` },
+    { id: 'legacy', title: 'Культовые переводы и выход официальных издателей', content: `Несмотря на огрехи, многие неофициальные переводы второй половины 1990-х стали для российских игроков каноническими: голоса рассказчика и сержанта Дорнана в [[fallout2|Fallout 2]], реплики юнитов в [[warcraft2|Warcraft II]] и [[starcraft|StarCraft]] или стихотворные диалоги в квестах разошлись на цитаты в [[fidonet|ФидоНете]] и клубах.
+
+В 1998–1999 годах ситуация начинает меняться: российские компании «1С», «Бука», «СофтКлаб» и легализовавшаяся «Акелла» заключают официальные договоры с западными студиями и выпускают лицензионные русские версии в обычных пластиковых коробках (jewel-case) по цене 80–120 рублей, конкурируя с рынками уже на равных.` }
+  ],
+  seeAlso: ['gorbushka', 'cdrom', 'fallout2', 'starcraft', 'scumm'],
+  references: [
+    'Как делают пиратские переводы игр. — Журнал Game.EXE, 1998.',
+    'Каталог и архив патчей студии «Фаргус» (www.goldfargus.ru). — Москва, 1999.',
+    'Обзор рынка локализаций в России. — Компьютерра, 1999.'
+  ],
+  links: [['http://www.goldfargus.ru', 'Официальный каталог студии «Фаргус Мультимедиа»'], ['http://www.igromania.ru', 'Журнал «Игромания»: обзоры и патчи']],
+  categories: ['Киберкультура', 'Компьютерные игры', 'Россия']
+}, {
+  title: '1990s Unofficial Game Translations (Fargus, 7th Wolf, SPK)',
+  infobox: {
+    title: '1990s Russian Game Translations',
+    badgeText: '"Full Russian Versions"',
+    fields: [
+      { label: 'Peak years', value: '1996–1999' },
+      { label: 'Best-known labels', value: 'Fargus, 7th Wolf (7Wolf), SPK, Russian Project, Nasha Marka' },
+      { label: 'Fargus emblem', value: 'yellow clownfish and "Only full and quality Russian versions!" banner' },
+      { label: 'Turnaround time', value: '3 to 14 days after the Western release' },
+      { label: 'Retail disc price', value: '50–80 rubles at [[gorbushka|Gorbushka]] (1999)' },
+      { label: 'Tools', value: 'archive unpackers, CP1251 bitmap font editors, Stylus / PROMT (on counterfeits)' }
+    ]
+  },
+  lead: `<strong>1990s unofficial game translations</strong> were a defining feature of the PC market in Russia and the CIS during the second half of the decade, when the vast majority of Western computer games appeared in Russian through unlicensed localization studios. Because official distributors rarely translated games and $40–$50 imported boxed editions became unaffordable for ordinary buyers after the August 1998 financial crash, publishers operating through markets such as Moscow's [[gorbushka|Gorbushka]] filled the gap.
+
+The best-known label was <strong>Fargus</strong>, founded in 1996 and recognizable by the yellow fish on its spine. Competing alongside it were 7th Wolf Multimedia (7Wolf), the Novosibirsk group SPK ("Word Palette Code") and dozens of anonymous crews whose work ranged from professional theater voice-overs to comical machine-translated gibberish.`,
+  sections: [
+    { id: 'studios', title: 'Major labels and translation groups', content: `By late 1999 buyers at CD markets had learned to tell translation teams apart by their cover art and disc printing:
+<table class="interpedia-wikitable">
+<tr><th>Label</th><th>Distinguishing marks</th><th>Notable releases</th></tr>
+<tr><td>Fargus (Moscow, since 1996)</td><td>yellow clownfish on a blue or red spine, in-house scripts and professional voice actors</td><td>[[fallout|Fallout]], [[fallout2|Fallout 2]], [[diablo|Diablo]], [[starcraft|StarCraft]], [[baldursgate|Baldur's Gate]]</td></tr>
+<tr><td>7th Wolf / 7Wolf</td><td>wolf profile in a circle, "Platinum" re-releases with corrected text a couple of weeks after the first pressing</td><td>[[homm3|Heroes III]], [[ageofempires|Age of Empires]], [[grimfandango|Grim Fandango]]</td></tr>
+<tr><td>SPK (Novosibirsk)</td><td>careful literary translation and clean Cyrillic fonts rather than rushing for day-one sales</td><td>LucasArts [[scumm|SCUMM]] adventures, RPGs and strategy games</td></tr>
+<tr><td>Russian Project / Nasha Marka</td><td>mid-1990s voice-overs delivered with the deadpan single-voice cadence of VHS tape translators</td><td>[[warcraft2|Warcraft II]], [[redalert|Command & Conquer: Red Alert]]</td></tr>
+</table>` },
+    { id: 'craft', title: 'Unpacking archives and drawing Cyrillic fonts', content: `Unlike official localizers who receive string tables and source code from the developer, unofficial translators start from a retail disc. A group's programmer reverse-engineers the game's proprietary archives (<code>.PAK</code>, <code>.MPQ</code>, <code>.DAT</code>) to extract dialogue tables and bitmap fonts.
+
+Because Western game fonts contain only Latin characters, an artist redraws Russian letters by hand in the [[windows98|Win-1251]] encoding or maps them over accented Latin glyphs. When an executable checks file sizes or string lengths, the programmer patches the binary in a disassembler. At studios of Fargus's caliber, Moscow stage actors and radio hosts then record hundreds of lines and video cutscenes over two or three overnight studio sessions.` },
+    { id: 'fakes', title: 'The race to market and counterfeit "Fargus" discs', content: `The iron rule of the late-1990s disc market is that whoever puts a Russian version on the stalls first takes the lion's share of sales. Unscrupulous replicators therefore feed the English text straight through the <em>Stylus</em> (or <em>PROMT 98</em>) machine translator without a human editor and print a stolen yellow-fish Fargus logo on the cover.
+
+Those counterfeits produced the notorious blunders where the <em>Save / Load</em> menu became "Rescue / Burden", <em>Leather Armor</em> turned into "Skin Armament" and character dialogue dissolved into word salad. The real Fargus began printing anti-counterfeit warnings on its covers and launched <code>www.goldfargus.ru</code> to list genuine releases and publish bug-fix patches.` },
+    { id: 'legacy', title: 'Cult translations and the rise of licensed publishers', content: `Despite occasional rough edges, many late-1990s unofficial localizations became iconic for Russian players: the narrator and Sergeant Dornan in [[fallout2|Fallout 2]], unit responses in [[warcraft2|Warcraft II]] and [[starcraft|StarCraft]] and rhyming quest dialogues are quoted daily on [[fidonet|FidoNet]] and in [[lanparty|computer clubs]].
+
+In 1998 and 1999 the market has begun to shift as Russian publishers 1C, Buka, SoftClub and the newly legitimate Akella sign official contracts with Western studios and release licensed Russian jewel-case editions for 80 to 120 rubles, competing directly with the open-air stalls.` }
+  ],
+  seeAlso: ['gorbushka', 'cdrom', 'fallout2', 'starcraft', 'scumm'],
+  references: [
+    '"How pirate game translations are made". Game.EXE magazine, 1998.',
+    'Fargus Studio release catalog and patch archive (www.goldfargus.ru). Moscow, 1999.',
+    '"Survey of the Russian game localization market". Computerra, 1999.'
+  ],
+  links: [['http://www.goldfargus.ru', 'Official Fargus Multimedia catalog'], ['http://www.igromania.ru', 'Igromania magazine: reviews and patches']],
+  categories: ['Cyberculture', 'Computer Games', 'Russia']
+}, ['goldfargus', '7wolf', 'pirate_translation']);
+
+window.interpediaReg('xakep', 'culture', {
+  title: 'Журнал «Хакер» и компьютерный андеграунд 1999 года',
+  infobox: {
+    title: 'Журнал «Хакер» (Xakep)',
+    badgeText: 'ИД «Гейм Лэнд»',
+    fields: [
+      { label: 'Первый номер', value: 'февраль 1999' },
+      { label: 'Издатель', value: 'ИД «Гейм Лэнд» (Дмитрий Агарунов)' },
+      { label: 'Периодичность', value: 'ежемесячно, с приложением на [[cdrom|CD-ROM]]' },
+      { label: 'Основные рубрики', value: 'Взлом, Сети, Системы, Кодинг, Юниты' },
+      { label: 'Инструменты эпохи', value: 'NuMega SoftICE, W32Dasm, Hiew, Nmap' },
+      { label: 'Официальный сайт', value: 'http://www.xakep98.ru' }
+    ]
+  },
+  lead: `<strong>«Хакер»</strong> — российский ежемесячный журнал о компьютерной безопасности, программировании, сетевых технологиях и культуре компьютерного андеграунда, запущенный издательским домом «Гейм Лэнд» в феврале 1999 года. В отличие от строгих корпоративных изданий для системных администраторов, журнал заговорил с читателями на живом сленге [[fidonet|ФидоНета]] и [[irc|IRC]], поместив на обложку первого номера провокационный заголовок и приложив компакт-диск с утилитами и дистрибутивами [[linux|Linux]].
+
+За первый же год существования «Хакер» стал настольным чтением старшеклассников, студентов и начинающих программистов, для которых ночной выход в Сеть через [[modem56k|модем 56K]] сочетался с изучением ассемблера, защитой от троянов и романтикой [[cyberpunk|киберпанка]].`,
+  sections: [
+    { id: 'launch', title: 'Рождение журнала в феврале 1999 года', content: `Идею журнала предложил основатель издательства «Гейм Лэнд» Дмитрий Агарунов (уже выпускавший популярный игровой журнал «Страна Игр»). После кризиса августа 1998 года многие западные рекламные бюджеты сократились, но интерес молодёжи к Интернету, безопасности и устройству операционных систем стремительно рос.
+
+Первый номер вышел в феврале 1999 года тиражом 25 тысяч экземпляров, который раскупили за считанные дни. Смелая кислотная вёрстка, неформальный язык авторов, скрывающихся под сетевыми никами, и практические статьи без академической воды выделили издание в газетных киосках на фоне традиционной компьютерной прессы.` },
+    { id: 'topics', title: 'Отладчики, эксплойты и трояны конца 1990-х', content: `Материалы номеров 1999 года отражают главные технические темы и уязвимости рубежа десятилетий:
+<ul>
+<li><strong>Исследование программ (реверс-инжиниринг):</strong> работа с ядерным отладчиком <em>NuMega SoftICE</em>, дизассемблером <em>W32Dasm</em> и шестнадцатеричным редактором <em>Hiew</em> (Hacker's View) Евгения Сусликова для понимания того, как устроены проверка серийных номеров и условно-бесплатные ограничения.</li>
+<li><strong>Сетевая безопасность и трояны:</strong> защита домашних машин под [[windows98|Win 98]] от средств удалённого администрирования <em>Back Orifice</em> (выпущенного группой Cult of the Dead Cow летом 1998 года) и <em>NetBus</em>, которые открывали прослушивающий порт и позволяли хулиганам дистанционно выдвигать лоток [[cdrom|CD-ROM]] или читать чужие файлы.</li>
+<li><strong>Альтернативные ОС и кодинг:</strong> установка [[linux|Red Hat и Slackware Linux]], настройка [[freebsd|FreeBSD]] и веб-сервера [[apache|Apache]], программирование на C++, Delphi, Perl и ассемблере x86.</li>
+</ul>` },
+    { id: 'ezines_cd', title: 'Электронные зины и компакт-диск приложения', content: `До появления бумажного журнала знания компьютерного андеграунда передавались через электронные текстовые журналы (<em>e-zines</em>), которые скачивали с [[bbs|BBS]] и FTP-серверов. Всемирным образцом жанра с 1985 года оставался американский электронный журнал <strong>Phrack</strong>, где публиковались как классическое эссе [[hackermanifesto|«Манифест хакера»]] (1986), так и техническая статья Aleph One <em>Smashing The Stack For Fun And Profit</em> (1996) о переполнении стекового буфера.
+
+Компакт-диск, прикладываемый к каждому номеру «Хакера», стал спасением для читателей с дорогим повременным [[dialup|dial-up]]: на нём публиковались полные архивы RFC, книги по Unix и сетям, компиляторы, сканер портов Nmap, утилиты мониторинга реестра и свежие базы [[avp|антивируса AVP]].` },
+    { id: 'ethics', title: 'Исследователи против «скрипт-кидди»', content: `Внутри самой сцены конца 1990-х не утихает спор о том, кого считать настоящим хакером. Традиция, идущая от MIT и авторов [[linux|свободных систем]], называет хакером увлечённого исследователя и программиста, который изучает систему до последнего байта и сообщает разработчикам о найденных дырах (<em>white hat</em>).
+
+Им противостоят так называемые <em>script kiddies</em> — подростки, скачивающие готовые программы для DoS-атак (таких как <em>WinNuke</em>, посылающий пакет на порт 139 и вызывающий [[bsod|синий экран]] на непатченной Win 95) ради бахвальства в чатах. В редакционных колонках и письмах читателей журнал постоянно напоминает: настоящий интерес лежит в созидании и понимании технологий, а не в поломке чужих гостевых книг.` }
+  ],
+  seeAlso: ['hackermanifesto', 'cyberpunk', 'bbs', 'avp', 'linux'],
+  references: [
+    'Журнал «Хакер» (ИД «Гейм Лэнд»), № 1–11 за 1999 год.',
+    'Aleph One. Smashing The Stack For Fun And Profit. — Phrack Magazine, Issue 49, 1996.',
+    'Cult of the Dead Cow. Back Orifice 1.20 Technical Documentation. — 1998.'
+  ],
+  links: [['http://www.xakep98.ru', 'Официальный сайт журнала «Хакер» (www.xakep98.ru)'], ['http://www.retrocure98.com', 'RetroCure Antivirus Center']],
+  categories: ['Киберкультура', 'Компьютерные журналы', 'Информационная безопасность', '1999 год']
+}, {
+  title: 'Xakep Magazine and the 1999 Computer Underground',
+  infobox: {
+    title: 'Xakep ("Hacker") Magazine',
+    badgeText: 'Game Land Publishing',
+    fields: [
+      { label: 'First issue', value: 'February 1999' },
+      { label: 'Publisher', value: 'Game Land (Dmitry Agarunov)' },
+      { label: 'Frequency', value: 'monthly, with cover [[cdrom|CD-ROM]]' },
+      { label: 'Core sections', value: 'Breaking In, Networks, Systems, Coding, Hardware Units' },
+      { label: 'Era tools', value: 'NuMega SoftICE, W32Dasm, Hiew, Nmap' },
+      { label: 'Official website', value: 'http://www.xakep98.ru' }
+    ]
+  },
+  lead: `<strong>Xakep</strong> ("Hacker") is a Russian monthly magazine covering computer security, programming, networking and underground digital culture, launched by Game Land Publishing in February 1999. Unlike dry corporate journals aimed at enterprise administrators, the magazine spoke to readers in the lively slang of [[fidonet|FidoNet]] and [[irc|IRC]], putting a provocative headline on its debut cover and bundling a compact disc packed with utilities and [[linux|Linux]] distributions.
+
+Within its first year Xakep became essential reading for high-schoolers, university students and apprentice programmers whose late-night [[modem56k|56K modem]] sessions mixed x86 assembly, trojan defense and [[cyberpunk|cyberpunk]] aesthetics.`,
+  sections: [
+    { id: 'launch', title: 'Launch in February 1999', content: `The magazine was conceived by Game Land founder Dmitry Agarunov, already known for the gaming monthly <em>Strana Igr</em>. Following the August 1998 financial crisis many Western advertising budgets shrank, yet youth interest in the Internet, system internals and security was growing fast.
+
+The February 1999 premiere issue printed 25,000 copies and sold out within days. Its bold neon layout, handle-signed articles and hands-on technical walkthroughs made it stand out at newsstands beside traditional computer magazines.` },
+    { id: 'topics', title: 'Debuggers, exploits and late-1990s trojans', content: `Issues published throughout 1999 capture the main technical obsessions and security headaches of the turn of the millennium:
+<ul>
+<li><strong>Reverse engineering:</strong> using the kernel-mode debugger <em>NuMega SoftICE</em>, the <em>W32Dasm</em> disassembler and Eugene Suslikov's hex editor <em>Hiew</em> (Hacker's View) to study how shareware locks and serial-number checks work at the machine-code level.</li>
+<li><strong>Network security and trojans:</strong> defending home [[windows98|Win 98]] PCs against remote-administration trojans such as <em>Back Orifice</em> (released by Cult of the Dead Cow in summer 1998) and <em>NetBus</em>, which opened hidden listening ports allowing pranksters to eject a victim's [[cdrom|CD-ROM]] tray or browse their hard disk over the Net.</li>
+<li><strong>Alternative operating systems and coding:</strong> installing [[linux|Red Hat and Slackware Linux]], configuring [[freebsd|FreeBSD]] and the [[apache|Apache]] web server, and writing code in C++, Delphi, Perl and x86 assembly.</li>
+</ul>` },
+    { id: 'ezines_cd', title: 'Electronic zines and the cover CD-ROM', content: `Before print magazines tackled the subject, underground knowledge circulated in plain-text electronic magazines (<em>e-zines</em>) downloaded from [[bbs|BBSes]] and FTP sites. Since 1985 the global benchmark had been the American e-zine <strong>Phrack</strong>, which published both the classic 1986 essay [[hackermanifesto|"The Conscience of a Hacker"]] and Aleph One's landmark 1996 paper <em>Smashing The Stack For Fun And Profit</em> on stack buffer overflows.
+
+For readers paying by the minute for [[dialup|dial-up]], Xakep's monthly cover CD-ROM was a treasure chest: it carried complete RFC archives, Unix and networking handbooks, compilers, the Nmap port scanner, registry monitors and fresh signature databases for [[avp|AVP antivirus]].` },
+    { id: 'ethics', title: 'Researchers versus "script kiddies"', content: `Inside the late-1990s scene, debate raged over what defines a real hacker. The tradition rooted in MIT and [[linux|free software]] reserves the word for curious builders and security researchers who study systems down to the last byte and report vulnerabilities so they can be fixed (<em>white hats</em>).
+
+At the other extreme are <em>script kiddies</em>, teenagers who download point-and-click denial-of-service utilities (such as <em>WinNuke</em>, which sends an out-of-band packet to port 139 and triggers a [[bsod|blue screen]] on unpatched Win 95 machines) just to brag in chat rooms. In its editorials and letters pages, the magazine repeatedly reminds readers that real skill lies in understanding and building technology rather than vandalizing someone else's guestbook.` }
+  ],
+  seeAlso: ['hackermanifesto', 'cyberpunk', 'bbs', 'avp', 'linux'],
+  references: [
+    'Xakep magazine (Game Land Publishing), issues 1–11, 1999.',
+    'Aleph One. Smashing The Stack For Fun And Profit. Phrack Magazine, Issue 49, 1996.',
+    'Cult of the Dead Cow. Back Orifice 1.20 Technical Documentation, 1998.'
+  ],
+  links: [['http://www.xakep98.ru', 'Official Xakep magazine portal (www.xakep98.ru)'], ['http://www.retrocure98.com', 'RetroCure Antivirus Center']],
+  categories: ['Cyberculture', 'Computer Magazines', 'Computer Security', '1999']
+}, ['xakep98', 'phreaking']);
+

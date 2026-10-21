@@ -16,10 +16,11 @@ A Win98-era website in Internet Explorer that plays music videos rebuilt as real
 | 4 | Таракан и червячок — visual-kei version | 4:17 | 123 | `clip-tarakan.js` |
 | 5 | DJ Melon — Neck Hurts | 3:05 | 57 | `clip-neck-hurts.js` |
 | 6 | Sam & Max — War Song | 2:44 | 43 | `clip-war-song.js` |
+| 7 | Cosplay Convention Crisis — You Gotta Choose | 3:01 | 75 | `clip-ccc.js`, `ccc-cast.js` |
 
 Clips 3 and 4 are hidden for now: their objects carry `hidden: true`, so `PoligonSite.clips()` leaves them out of the page, the clip URLs and Clippy's menus. The modules still load (other clips use `P3DVladikKit`). Remove the flag to bring a clip back. The site numbers its list by position, so hidden clips leave no gaps.
 
-Clips 1–5 use original low-poly figures. The videos follow the rhythm and locations of their sources but do not copy their characters, logos or lyrics. Clip 2 uses an original six-piece band instead of the HEARTSTEEL members. Clip 5 uses an original melon DJ instead of the game character from the source video. Clip 6 is the exception: it restages the musical number of the project's own Sam & Max episode 104, so Sam, Max and Agent Superball appear as they look in that game.
+Clips 1–5 use original low-poly figures. The videos follow the rhythm and locations of their sources but do not copy their characters, logos or lyrics. Clip 2 uses an original six-piece band instead of the HEARTSTEEL members. Clip 5 uses an original melon DJ instead of the game character from the source video. Clip 6 is the exception: it restages the musical number of the project's own Sam & Max episode 104, so Sam, Max and Agent Superball appear as they look in that game. Clip 7 is the song of the author's own visual novel Cosplay Convention Crisis, so Amanda, Makoto, Talleah and the gynoids follow their character sheets in `content/CCC/`.
 
 ## Clip 3 scenario: «Владик в депрессии»
 
@@ -141,6 +142,34 @@ Clips 1–5 use original low-poly figures. The videos follow the rhythm and loca
 | 151.6–160.8 | Finale | Door | Three agents dance under the red ceiling, the door opens, they walk out one by one, the last one gives a thumbs-up and the door closes. |
 | 160.8–164.0 | Ending | Desk | Wide shot of the quiet office: Sam turns to Max and says "Well…" Close-up of Max: "Let's not do that again." Subtitles are drawn by the clip. |
 
+## Clip 7: «Cosplay Convention Crisis»
+
+**Source.** The game's title song, `content/clip/Cosplay Convention Crisis.mp3` (180.77 s, a copy of the file in `content/music/`). The character sheets and the script of the first day are in `content/CCC/`. The full plan, the shot table and the author's decisions are in `POLIGON-CCC.md`.
+
+**Kernel.** Thursday at Con-Ton seen through Jacob's eyes. A spotlight on an empty dark stage picks the three heroines one by one. The bus, room 302, the arrest, the corridor duel, Amanda's transformation, Makoto's theft and disco, Talleah in the healing tube, the evening quarrel and a concert where all three stand on stage in their true forms. At the end the three squeeze into one spotlight, Jacob takes their photo, and the gorilla portrait in room 302 looks at the snapshot and blinks.
+
+**Rules.**
+- The clip is for all ages: no nudity, no blood, closed necklines on the magical dress and the catsuit. Jacob's death from the game's prologue is not shown.
+- Jacob never shows his face: the camera is his eyes (POV arms from `Cast.drawPov`), or he appears in the Magnitude helmet or from behind.
+- Costumes of real heroes are replaced by own designs (Lantern, Magnitude, Captain Europe's shield, the crowd's knight, witch and space ranger).
+- The only words on screen are CON-TON × CAPE CITY, 302, Magia on Amanda's T-shirt and the closing title.
+
+**Timing.** 130 BPM, first beat at 0.026 s, one bar = 1.846 s; every section of the song is eight bars long. `SHOT_LIST` stores beat numbers, so every cut sits on a beat.
+
+| Time | Section | Place | What happens |
+|------|---------|-------|--------------|
+| 0–14.8 | Intro | Dark stage | Spotlight click, three shadows, the light picks each girl in her colour, a strip of eyes, the line-up with a gesture each |
+| 14.8–44.3 | Theme, chorus 1 | Bus, outside, room 302, corridors, lawn | Amanda and Makoto take the seats beside Jacob; the bus arrives; the costumes, the gorilla, the call; Talleah over Jacob lying in the grass |
+| 44.3–59.1 | Names | Character sheet studio | Each girl's second form on a turntable with colour chips; three panels flip back to everyday clothes |
+| 59.1–73.9 | Chorus 2 | Lawn, corridors | Arrest and cuffs, escort, Makoto's red flash, the gynoids fall, the duel, a shot into the ceiling |
+| 73.9–88.6 | Amanda's verse | Old convention, corridors, bench | Memory in sepia, the heart cocoon, the pink dress, the blush, Amanda asleep on Jacob's shoulder |
+| 88.6–103.4 | Makoto's verse | Corridors, Avia vault, disco | The shootout, the theft and the portal, the dance, Makoto alone |
+| 103.4–118.2 | Chorus 3 | Room 302, ship | Letter and phone, the gynoid in the TV, the hologram, the phase teleport, the hangar |
+| 118.2–133.0 | Talleah's verse | Ship, corridors | The tube, the hug, the door handle, the costume scan, the cardboard villain, the salute |
+| 133.0–147.7 | Theme | Room 302, corridors | Evening standoff, both lower their weapons, Jacob runs to the main hall |
+| 147.7–162.5 | Chorus 4 | Concert | Three beams become fireworks, the girls walk through the crowd, three hands, the crane |
+| 162.5–180.8 | Outro | Room 302, dark stage | Night, the spotlight race, the photo, the gorilla blinks, the title |
+
 ## Authoring notes
 
 - The renderer supports film grain and vignette through `camera.fx = { grain, vignette, time }`. Clip 4 sets them on every shot.
@@ -157,3 +186,8 @@ Clips 1–5 use original low-poly figures. The videos follow the rhythm and loca
 - Its characters are custom meshes posed with `Figure.prototype.solve` and three DIM tables (`agent`, `sam`, `max`). The arm table `ARM` holds `[forward, twist, abduction, elbow]`; the poses that touch the body (hand on chest, cupped hands, praying hands, folded arms) were solved offline with a small IK search and pasted as numbers.
 - Unless a world fixes the sun, the key light follows the camera (from the upper left behind it), so faces are lit in every shot. Spotlights are `env.cookie` gobos (`spot`, `star`, `spots3`); the cookie strength also blends the sun direction and colour, so a spotlight can fade in without a flash. The flag and stage sets cast planar shadows on their back walls (`planarWallZ`).
 - `clip.lines` holds the closing lines, `clip.lineAt(t)` returns the subtitle for a moment and `clip.mouthFor(role, t)` the mouth opening for `superball`, `agent`, `sam` or `max`.
+- Clip 7 is split in two modules. `ccc-cast.js` (`window.P3DCccCast`) builds the heroines, the gynoid, Jacob, the kids and thirteen crowd costumes on its own rig (`HER`, `HIM`, `GYN` dims, `solve`, `drawActor`), with canvas face textures per expression and person (`FACES`), hair shells with jagged edges, props and POV arms. `clip-ccc.js` has one world function per camera in `WORLDS`; a world returns the cast and optional effects (`bolts`, `smoke`, `moths`, `fire`, `portal`, `fireworks`, `panels`, `pov`, `fx`).
+- Arm poses that touch the body are solved by `node tools/ccc-arm-ik.cjs [job…]` and pasted into `ARM`.
+- `tools/poligon-shots.cjs` renders any clip in headless Edge: `duration`, `frames t…`, `shots`, `range t0 t1 fps`, and for clip 7 `turn <form> <face>`, `faces <form>`, `lineup <forms…>`, `pov`.
+- Crowds that only need silhouettes (disco, concert) use the base `Figure` from `figure.js`, about a quarter of the polygons of a `ccc-cast.js` costume. The heaviest shot of clip 7 is about 40 000 triangles.
+- `r.texture` repeats by default, and WebGL1 samples a non-power-of-two canvas with repeat as black: pass `clamp: true` for such sizes.

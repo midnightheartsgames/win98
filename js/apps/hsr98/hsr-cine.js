@@ -278,7 +278,15 @@
       const kind = o.kind || 'ruins';
       g.drawImage(layer('rivet|' + kind, LW, LH, c => rivetTown(c, kind)), 0, 0);
       if (kind === 'factory') lighter(g, () => { glow(g, 250, 150, 80, '#ff7a30', 0.45 + 0.08 * Math.sin(t * 5)); for (let i = 0; i < 5; i++) glow(g, 30 + i * 22, 90 + (i % 2) * 8, 4, '#ff3a2a', 0.6 * (0.5 + 0.5 * Math.sin(t * 3 + i))); });
-      else snowfall(g, t, 50, 21, { speed: 12, wind: 4, a: 0.6 });
+      else {
+        const lamps = kind === 'orphan' ? [[40, 66], [86, 70], [134, 72], [182, 72], [230, 70], [278, 66]] : [[118, 70], [138, 72], [158, 73], [178, 73], [198, 72], [218, 70]];
+        lighter(g, () => {
+          for (const [i, [x, y]] of lamps.entries()) glow(g, x, y, kind === 'orphan' ? 10 : 6, '#ffc070', 0.5 + 0.2 * Math.sin(t * 2 + i));
+          if (kind === 'orphan') glow(g, 160, 150, 60, '#ffd8a0', 0.14);
+          else { glow(g, 168, 52, 46, '#ffb45a', 0.22); glow(g, 172, 214, 30, '#ff8a3a', 0.3); }
+        });
+        snowfall(g, t, 50, 21, { speed: 12, wind: 4, a: 0.6 });
+      }
     },
 
     workshop(g, t) {
@@ -547,18 +555,41 @@
       for (let x = 0; x < LW; x += 24) rect(g, '#2a2226', x, 170, 1, 70);
       return;
     }
-    vgrad(g, 0, 170, [[0, '#6a7280'], [1, '#aab0b8']]);
-    for (let i = 0; i < 6; i++) {
-      const x = i * 58 - 10, h = 50 + hx(i, 1, 61) * 50, c = ['#6a6460', '#5a5450', '#7a726a'][i % 3];
-      rect(g, c, x, 170 - h, 50, h);
-      poly(g, '#aab0b8', [x + 10 + hx(i, 2, 61) * 20, 170 - h, x + 30 + hx(i, 3, 61) * 20, 170 - h, x + 24 + hx(i, 4, 61) * 10, 170 - h + 14]);
-      for (let k = 0; k < 3; k++) rect(g, '#2a2626', x + 6 + k * 14, 170 - h + 14, 8, 10);
-      rect(g, '#e8ecf0', x - 2, 170 - h - 2, 54, 3);
+    if (kind === 'orphan') {
+      vgrad(g, 0, LH, [[0, '#0c1020'], [0.5, '#1a2236'], [1, '#2a3042']]);
+      rect(g, '#3a3440', 0, 20, LW, 64); rect(g, '#2a2630', 0, 80, LW, 6);
+      for (let i = 0; i < 7; i++) {
+        const x = 18 + i * 44;
+        rect(g, '#1a1418', x, 30, 26, 36); rect(g, i % 3 === 1 ? '#3a4a6a' : '#ffb45a', x + 3, 33, 20, 30); rect(g, '#1a1418', x + 12, 33, 2, 30); rect(g, '#1a1418', x + 3, 47, 20, 2);
+        rect(g, '#c4cede', x - 2, 66, 30, 3);
+      }
+      g.strokeStyle = '#2a2420'; g.lineWidth = 1; g.beginPath(); g.moveTo(10, 62); for (let x = 10; x <= 310; x += 4) g.lineTo(x, 62 + Math.sin((x - 10) / 48 * Math.PI) * 8); g.stroke();
+      vgrad(g, 86, LH, [[0, '#4a4e5c'], [1, '#2a2c36']]);
+      for (let r = 0; r < 4; r++) { g.strokeStyle = r % 2 ? '#6a5a5a' : '#5a6a7a'; g.lineWidth = 2; g.beginPath(); g.ellipse(160, 220, 70 + r * 26, 30 + r * 12, 0, Math.PI, Math.PI * 2); g.stroke(); }
+      line(g, '#4a4e58', 3, 40, 200, 58, 120); line(g, '#4a4e58', 3, 76, 200, 58, 120); rect(g, '#5a5e68', 50, 118, 40, 4); line(g, '#2a2c34', 1, 62, 122, 62, 170); line(g, '#2a2c34', 1, 78, 122, 78, 170); rect(g, '#8a5a3a', 58, 170, 24, 4);
+      line(g, '#b83a32', 5, 236, 120, 290, 196); line(g, '#2a5aa8', 5, 246, 126, 300, 200); rect(g, '#4a4e58', 226, 114, 4, 80); rect(g, '#4a4e58', 240, 114, 4, 80);
+      for (const [x, y] of [[120, 176], [148, 182], [176, 176]]) { rect(g, '#5a4030', x, y, 26, 20); rect(g, '#7a5a40', x, y, 26, 2); line(g, '#3a2a20', 1, x, y, x + 26, y + 20); }
+      ell(g, '#e8eef6', 160, 160, 8, 9); ell(g, '#c8d0dc', 156, 158, 3, 3); ell(g, '#c8d0dc', 164, 158, 3, 3); rect(g, '#ffb030', 158, 162, 4, 2); poly(g, '#e8eef6', [146, 158, 152, 150, 156, 162]); poly(g, '#e8eef6', [174, 158, 168, 150, 164, 162]);
+      for (let i = 0; i < 40; i++) rect(g, '#c4cede', hx(i, 1, 91) * LW, 86 + hx(i, 2, 91) * 150, 2, 1);
+      return;
     }
-    rect(g, '#7a5a4a', 110, 70, 100, 100); poly(g, '#5a3a2e', [104, 70, 160, 42, 216, 70]); rect(g, '#d8d0c0', 136, 80, 48, 10);
-    for (let k = 0; k < 4; k++) rect(g, '#2a2020', 120 + k * 22, 100, 12, 16); rect(g, '#3a2a24', 150, 140, 20, 30);
-    vgrad(g, 170, LH, [[0, '#c8ccd2'], [1, '#8a8e96']]);
-    g.strokeStyle = '#6a4a3a'; g.lineWidth = 2; g.beginPath(); g.moveTo(250, 170); g.lineTo(262, 130); g.lineTo(290, 130); g.lineTo(302, 170); g.stroke(); line(g, '#4a3a30', 1, 272, 130, 272, 158); rect(g, '#6a4a3a', 266, 158, 12, 3);
+    vgrad(g, 0, LH, [[0, '#060a16'], [0.45, '#141c32'], [1, '#222838']]);
+    for (let i = 0; i < 60; i++) rect(g, '#8a98c0', hx(i, 1, 93) * LW, hx(i, 2, 93) * 60, 1, 1);
+    for (let i = 0; i < 9; i++) { const x = i * 40 - 10, h = 40 + hx(i, 3, 93) * 50; poly(g, '#1a1e2c', [x, 140, x + 20, 140 - h, x + 44, 140 - h + 10, x + 54, 140]); poly(g, '#8a96ac', [x + 20 - h * 0.12, 140 - h * 0.88, x + 20, 140 - h, x + 34, 140 - h + 6, x + 30, 140 - h + 9, x + 24, 140 - h + 5, x + 19, 140 - h * 0.86]); }
+    rect(g, '#2a2430', 110, 18, 116, 50); poly(g, '#1a1620', [104, 20, 168, 2, 232, 20]); rect(g, '#c4cede', 104, 18, 128, 3);
+    for (let r = 0; r < 3; r++) for (let k = 0; k < 7; k++) { const lit = hx(r, k, 94) > 0.3; rect(g, lit ? '#ffb45a' : '#3a4a6a', 116 + k * 15, 24 + r * 14, 7, 9); if (lit) rect(g, '#ffe0a0', 116 + k * 15, 24 + r * 14, 7, 2); }
+    poly(g, '#3a3440', [100, 68, 236, 68, 244, 80, 92, 80]); rect(g, '#c4cede', 92, 78, 152, 2);
+    g.strokeStyle = '#1a1418'; g.lineWidth = 1; g.beginPath(); g.moveTo(100, 66); for (let x = 100; x <= 236; x += 4) g.lineTo(x, 66 + Math.sin((x - 100) / 20 * Math.PI) * 3 + 4); g.stroke();
+    for (let i = 0; i < 6; i++) {
+      const x = i * 60 - 20, h = 70 + hx(i, 5, 95) * 40, w = 50;
+      rect(g, '#2a2a36', x, 230 - h, w, h); poly(g, '#1e1e2a', [x - 4, 230 - h, x + w / 2, 214 - h, x + w + 4, 230 - h]); rect(g, '#c4cede', x - 4, 228 - h, w + 8, 3);
+      for (let r = 0; r < 4; r++) for (let k = 0; k < 3; k++) { const lit = hx(i * 7 + r, k, 96) > 0.6; rect(g, lit ? '#ffb45a' : '#242c40', x + 6 + k * 15, 240 - h + r * 18, 8, 11); }
+    }
+    rect(g, '#3a3034', 0, 168, LW, 7); rect(g, '#6a5a4e', 0, 168, LW, 1); rect(g, '#2a2224', 0, 182, LW, 4);
+    for (const x of [40, 150, 260]) line(g, '#1a1a20', 1, x, 168, x + 30, 120);
+    rect(g, '#2a2c34', 170, 186, 2, 14); rect(g, '#2a2c34', 196, 186, 2, 14);
+    rect(g, '#3a2418', 140, 198, 64, 32); rect(g, '#c8642a', 143, 201, 58, 26); rect(g, '#ffb45a', 143, 201, 58, 2);
+    ring(g, '#3a2418', 2, 172, 214, 8); rect(g, '#3a2418', 156, 213, 32, 2);
   }
 
   function workshopRoom(g) {
@@ -873,12 +904,61 @@
     grandhotel: S => S.bg('under', S.T, { kind: 'hotel' }),
     mine: S => S.bg('mine', S.T),
     rivet: S => S.bg('rivet', S.T),
+    orphan: S => S.bg('rivet', S.T, { kind: 'orphan' }),
     settlement: S => S.bg('rivet', S.T, { kind: 'factory' }),
     restricted: S => S.bg('front', S.T),
     everwinter: S => S.bg('hill', S.T),
     summit: S => { S.bg('hill', S.T, { summit: true }); },
     pathspace: S => S.bg('void', S.T, { shards: ['city', 'snow', 'ice', 'fire'] }),
-    monument: S => S.bg('city', S.T, { sun: true, monument: true })
+    monument: S => S.bg('city', S.T, { sun: true, monument: true }),
+    cablecar: S => {
+      S.bg('city', S.T, { sun: true });
+      lighter(S.g, () => glow(S.g, 160, 20, 140, '#fff4d0', 0.25));
+      S.bust('natasha', 92, LH - BAR + 6, 112, { flip: true });
+      S.bust('hook', 168, LH - BAR + 10, 84);
+      S.bust('clara', 236, LH - BAR + 10, 84);
+    },
+    ceremony: S => {
+      S.bg('city', S.T, { sun: true, monument: true });
+      S.bust('bronya', 160, LH - BAR + 6, 128);
+    },
+    pillars: S => {
+      const g = S.g, T = S.T;
+      vgrad(g, 0, 150, [[0, '#6a7aa0'], [0.55, '#e8a878'], [1, '#ffd9a0']]);
+      lighter(g, () => glow(g, 250, 120, 120, '#ffc070', 0.55));
+      poly(g, '#8a8aa0', [0, 150, 30, 110, 70, 130, 110, 96, 150, 140, 0, 150]); poly(g, '#9a90a0', [180, 150, 230, 104, 270, 128, 320, 100, 320, 150]);
+      for (const [x, w, h, lean] of [[18, 26, 120, -0.18], [62, 22, 96, 0.1], [214, 28, 128, 0.16], [270, 24, 104, -0.08]]) {
+        const top = 150 - h, dx = Math.round(h * lean);
+        poly(g, '#4a4248', [x, 150, x + w, 150, x + w + dx, top, x + dx, top]);
+        for (let y = top + 8; y < 146; y += 10) for (let k = 4; k < w - 4; k += 7) rect(g, (k * 7 + y) % 3 ? '#2a2428' : '#ffc070', x + k + Math.round((150 - y) * lean), y, 3, 4);
+      }
+      vgrad(g, 150, 240, [[0, '#f4e2cc'], [1, '#c8b49c']]);
+      ell(g, '#3a2a24', 160, 168, 92, 20);
+      for (let i = 0; i < 7; i++) line(g, '#c87a2a', 2, 80 + i * 26, 186, 100 + i * 20, 60);
+      rect(g, '#d8dce6', 136, 70, 48, 70); rect(g, '#9aa6b8', 160, 70, 24, 70); rect(g, '#3a6ac8', 136, 112, 48, 6);
+      rect(g, '#d8dce6', 144, 40, 32, 32); rect(g, '#9aa6b8', 160, 40, 16, 32); rect(g, '#141820', 150, 52, 20, 6); rect(g, '#ffb050', 154, 53, 12, 3);
+      poly(g, '#d8dce6', [136, 76, 104, 92, 98, 120, 112, 120, 116, 98, 136, 90]);
+      line(g, '#5a4a40', 3, 184, 84, 214, 70);
+      rect(g, '#9aa6b8', 142, 140, 12, 30); rect(g, '#9aa6b8', 166, 140, 12, 30);
+      lighter(g, () => glow(g, 160, 125, 18, '#ff9a3a', 0.6));
+      for (let i = 0; i < 9; i++) { const x = 40 + i * 30 + (i % 2) * 6, y = 196 + (i % 3) * 8; S.sprite(['miner', 'townsman', 'guard'][i % 3], 'up', 0, x, y); }
+      snowfall(g, T, 30, 13, { a: 0.5 });
+    },
+    topazcall: S => {
+      S.bg('black', S.T);
+      rect(S.g, '#1a1820', 40, 30, 240, 120); rect(S.g, '#2a2430', 46, 36, 228, 108);
+      lighter(S.g, () => glow(S.g, 160, 90, 90, '#d0a840', 0.25));
+      S.bust('topaz', 160, LH - BAR + 6, 124);
+    },
+    sampotv: S => {
+      S.bg('rivet', S.T, { kind: 'orphan' });
+      vignette(S.g, 0.6);
+      rect(S.g, '#1a1a22', 196, 40, 92, 70); rect(S.g, '#7ad8ff', 202, 46, 80, 58);
+      ell(S.g, '#1a3a52', 242, 70, 10, 12); rect(S.g, '#1a3a52', 226, 82, 32, 22);
+      for (let y = 47; y < 104; y += 3) rect(S.g, 'rgba(255,255,255,0.12)', 202, y, 80, 1);
+      lighter(S.g, () => glow(S.g, 242, 75, 70, '#7ad8ff', 0.35));
+      S.bust('sampo', 110, LH - BAR + 6, 124, { flip: true });
+    }
   };
 
   const stillBuf = { cv: null };

@@ -88,11 +88,18 @@ if (!spaceJamHtml.includes('SPACE JAM') || !spaceJamHtml.includes('Planet B-Ball
 console.log('PASS 7: Space Jam renders with planets navigation');
 
 const icqHtml = engine.renderIcqPortal('http://www.icq.com');
-if (!icqHtml.includes('Mirabilis ICQ World') || !icqHtml.includes('btn-icqweb-send') || !icqHtml.includes('749210')) {
+const expectedIcqUins = [
+  '777666', '890123', '313370', '452109',
+  '554433', '666999', '404505', '512789',
+  '133742', '204899', '789456', '112233', '912384', '10000',
+  '199898',
+  '888333', '256512', '345678', '199911', '654321', '101010'
+];
+if (!icqHtml.includes('Mirabilis ICQ World') || !icqHtml.includes('btn-icqweb-send') || !icqHtml.includes('749210') || !expectedIcqUins.every(uin => icqHtml.includes(uin))) {
   console.error('FAIL: ICQ Web-Pager rendering failed');
   process.exit(1);
 }
-console.log('PASS 8: ICQ Web-Pager renders with UIN message sender and White Pages');
+console.log('PASS 8: ICQ Web-Pager renders with UIN message sender and full White Pages directory');
 
 const y2kHtml = engine.renderY2K('http://www.y2k-countdown.org');
 if (!y2kHtml.includes('ОШИБКА 2000 ГОДА') || !y2kHtml.includes('btn-y2k-run-test') || !y2kHtml.includes('Памятка по выживанию')) {

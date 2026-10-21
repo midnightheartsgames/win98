@@ -16,8 +16,9 @@ class AppOgTetris {
     this.score = 0;
     this.lines = 0;
     this.level = 1;
-    this.dropInterval = 600;
+    this.dropInterval = 950;
     this.lastDropTime = 0;
+    this.lastFrameTime = 0;
 
     this.gameState = 'playing';
     this.bossMode = false;
@@ -58,6 +59,10 @@ class AppOgTetris {
       try {
         localStorage.setItem('office_games_scores_tetris', String(this.highScore));
       } catch (e) {}
+      if (window.appOfficeLauncher && window.appOfficeLauncher.win) window.appOfficeLauncher.populateList();
+      if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+        window.appClippy.onOfficeGameEvent('tetris', 'high_score', { score: this.highScore });
+      }
     }
   }
 
@@ -227,10 +232,11 @@ class AppOgTetris {
     this.score = 0;
     this.lines = 0;
     this.level = 1;
-    this.dropInterval = 600;
+    this.dropInterval = 950;
     this.gameState = 'playing';
     this.floatingTexts = [];
     this.particles = [];
+    this.lastFrameTime = 0;
 
     this.grid = [];
     for (let r = 0; r < this.rows; r++) {
@@ -401,13 +407,16 @@ class AppOgTetris {
       if (cleared === 4) {
         this.sndTetris();
         this.createFloatingText('ТЕТРИС! +800', 60, 160, '#00ffff');
+        if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+          window.appClippy.onOfficeGameEvent('tetris', 'four_lines', { lines: this.lines, score: this.score });
+        }
       } else {
         this.sndClear();
         this.createFloatingText(`+${pts}`, 70, 160, '#ffff00');
       }
 
       this.level = Math.floor(this.lines / 10) + 1;
-      this.dropInterval = Math.max(90, 600 - (this.level - 1) * 55);
+      this.dropInterval = Math.max(180, 950 - (this.level - 1) * 65);
 
       this.saveHighScore();
       this.updateHUD();
@@ -429,6 +438,9 @@ class AppOgTetris {
         if (titleTextEl) titleTextEl.textContent = 'Офисный Тетрис 98 (Архив)';
         if (iconEl && window.Icons) iconEl.innerHTML = window.Icons['game-manager'] || '';
       }
+    }
+    if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+      window.appClippy.onOfficeGameEvent('tetris', this.bossMode ? 'boss_on' : 'boss_off');
     }
   }
 
@@ -463,6 +475,7 @@ class AppOgTetris {
       this.rotatePiece();
     } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
       this.dropPiece();
+      this.lastDropTime = (window.performance && window.performance.now) ? window.performance.now() : Date.now();
       this.score += 1;
       this.updateHUD();
     } else if (e.key === ' ' || e.code === 'Space') {
@@ -474,13 +487,13 @@ class AppOgTetris {
   createSparks(x, y, color) {
     for (let i = 0; i < 5; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const spd = 1.0 + Math.random() * 2.5;
+      const spd = 0.7 + Math.random() * 1.5;
       this.particles.push({
         x,
         y,
         vx: Math.cos(angle) * spd,
         vy: Math.sin(angle) * spd,
-        life: 14,
+        life: 24,
         color: color || '#ffffff'
       });
     }
@@ -491,8 +504,8 @@ class AppOgTetris {
       text,
       x,
       y,
-      vy: -1.0,
-      life: 24,
+      vy: -0.6,
+      life: 38,
       color
     });
   }
@@ -674,6 +687,10 @@ class AppOgTetris {
     if (this.bossMode) return;
 
     const currentTime = now || ((window.performance && window.performance.now) ? window.performance.now() : Date.now());
+    if (currentTime - this.lastFrameTime < 16) {
+      return;
+    }
+    this.lastFrameTime = currentTime;
 
     if (this.gameState === 'playing' && currentTime - this.lastDropTime >= this.dropInterval) {
       this.dropPiece();

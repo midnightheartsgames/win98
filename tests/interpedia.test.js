@@ -103,7 +103,7 @@ ids.forEach(id => {
 });
 console.log(`PASS 3: ${ids.length} full bilingual articles validated`);
 
-const intentionalRedLinks = ['encarta', 'warcraft2'];
+const intentionalRedLinks = [];
 const allText = id => {
   const art = articles[id];
   return ['ru', 'en'].map(lang => {

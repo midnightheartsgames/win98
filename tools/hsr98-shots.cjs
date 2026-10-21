@@ -8,6 +8,60 @@ const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
 const SCENES = {
   title: 'hsrShots.title()',
   express: "hsrShots.field('express')",
+  ksmeadow: "hsrShots.fieldAt('ax_meadow', 13, 15)",
+  ksmeadowgate: "hsrShots.fieldAt('ax_meadow', 23, 6)",
+  ksmeadowfield: "hsrShots.fieldAt('ax_meadow', 30, 19)",
+  ksmeadowpond: "hsrShots.fieldAt('ax_meadow', 18, 22)",
+  ksstar: "(() => { const g = hsrShots.fresh('ax_meadow'); Object.assign(g.state.flags, { ks_signal: true, ks_land: true }); hsrui.openStarMap(null); hsrShots.pump(2); return hsrShots.shot(); })()",
+  kswindow: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { ks_signal: true, ks_land: true }); hsrui.enterField(); hsrShots.pump(30); return hsrShots.shot(); })()",
+  ksbattle: "hsrShots.battlePlay(['ks_toad:40', 'ks_toad:40'], 'meadow', ['trail', 'aqua', 'megumin', 'darkness'], '')",
+  kstown: "hsrShots.fieldAt('ax_town', 25, 31)",
+  kstownsquare: "(() => { const g = hsrShots.fresh('ax_town'); Object.assign(g.state.flags, { ks_signal: true, ks_land: true, ks_met: true, ks_town: true }); g.loadMap('ax_town', null, { x: 24, y: 21, silent: true }); g.player.dir = 'up'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  kstowneast: "hsrShots.fieldAt('ax_town', 41, 31)",
+  kstownwest: "hsrShots.fieldAt('ax_town', 9, 30)",
+  ksguild: "(() => { const g = hsrShots.fresh('ax_guild'); Object.assign(g.state.flags, { ks_signal: true, ks_land: true, ks_met: true, ks_town: true, ks_cards: true }); g.loadMap('ax_guild', null, { x: 12, y: 9, silent: true }); g.player.dir = 'up'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  kswiz: "hsrShots.fieldAt('ax_wiz', 7, 8)",
+  ksstable: "hsrShots.fieldAt('ax_stable', 6, 6)",
+  ksevent: "(() => { const g = hsrShots.fresh('express'); delete g.state.flags.jarilo_done; hsrui.openEvents('konosuba'); hsrShots.pump(4); return hsrShots.shot(); })()",
+  kseventopen: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { ks_early: true, ks_signal: true, ks_land: true, ks_met: true, ks_town: true, ks_cards: true, ks_swap: true }); g.state.quests.ks_q3 = 'done'; hsrui.openEvents('konosuba'); hsrui.top().pick = 0; hsrShots.pump(4); return hsrShots.shot(); })()",
+  ksearly: "(() => { const g = hsrShots.fresh('express'); hsrui.openEvents('konosuba'); hsrui.openKsEarly(); hsrShots.pump(4); return hsrShots.shot(); })()",
+  ksnotice: "(() => { const g = hsrShots.fresh('express'); delete g.state.flags.ks_note; hsrui.newEventNotice(); hsrShots.pump(4); return hsrShots.shot(); })()",
+  kscredits: "(() => { hsrShots.fresh('express'); hsrui.openClipCredits('konosuba'); const s = hsrui.top(); s.start(); const at = " + (+(process.env.CT || 20)) + "; s.time = () => at; hsrShots.pump(2); return hsrShots.shot(); })()",
+  uimail: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { jarilo_done: true, ks_done: true }); g.state.mail = {}; g.mailSync(); hsrui.openMail(); const s = hsrui.top(); s.select(g.mailbox().length - 1); s.select(g.mailbox().findIndex(x => x.m.id === 'v13_signal')); hsrShots.pump(2); return hsrShots.shot(); })()",
+  uiconepick: "(() => { const g = hsrShots.fresh('express'); for (const id of Object.keys(Hsr98.CONES).slice(0, 60)) g.state.inv.cones.push({ uid: 'shot_' + id, id, sup: 1 }); hsrui.openConePick(g.state.party[0]); hsrui.top().sel = 30; hsrShots.pump(2); return hsrShots.shot(); })()",
+  uidetails: "(() => { const g = hsrShots.fresh('express'); hsrui.openChars(g.state.party[0]); hsrShots.pump(2); return hsrShots.shot(); })()",
+  uioutfits: "(() => { const g = hsrShots.fresh('express'); g.state.shop.intro = true; hsrui.openSupply('fashion'); hsrui.top().fsel = 2; hsrShots.pump(2); return hsrShots.shot(); })()",
+  uicharlist: "(() => { const g = hsrShots.fresh('express'); hsrui.openChars(g.state.party[0]); hsrShots.pump(1); hsrui.openCharList(hsrui.top()); hsrShots.pump(2); return hsrShots.shot(); })()",
+  uicharbtn: "(() => { const g = hsrShots.fresh('express'); hsrui.openChars(g.state.party[0]); hsrShots.pump(2); return hsrShots.shot(); })()",
+  uiarchive: "(() => { const g = hsrShots.fresh('express'); const ids = Object.keys(Hsr98.CONES); g.state.warpLog = Array.from({ length: 40 }, (_, i) => ({ kind: 'cone', id: ids[i % ids.length], rar: 3 + (i % 3 === 0), ban: 'std', n: i + 1, at: Date.now(), pity: i % 10 + 1 })); hsrui.openBank(null); hsrui.top().setTab(3); hsrui.top().sel = 25; hsrShots.pump(2); return hsrShots.shot(); })()",
+  ksmail: "(() => { const g = hsrShots.fresh('express'); g.state.flags.jarilo_done = true; g.state.mail = {}; g.mailSync(); hsrui.openMail(); const s = hsrui.top(); s.select(g.mailbox().findIndex(x => x.m.id === 'v14_konosuba')); hsrShots.pump(2); return hsrShots.shot(); })()",
+  kschat: "(() => { const g = hsrShots.fresh('express'); g.state.flags.ks_done = true; g.state.chats = null; for (let i = 0; i < 6; i++) for (const id of g.chatSync()) if (id !== 'ks_kazuma_after') g.chatAuto(id, true); g.chatThread('ks_kazuma_after').picks = [1]; g.chatAuto('ks_kazuma_after', true); g.events.length = 0; hsrui.openChats('kazuma'); hsrShots.pump(90); return hsrShots.shot(); })()",
+  ksphoto: "(() => { const g = hsrShots.fresh('express_cabin'); g.state.flags.ks_done = true; hsrui.openBook('photos'); hsrui.top().sel = Hsr98.PHOTOS.findIndex(p => p[0] === 'ks_done'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  ksfinal: "(() => { const g = hsrShots.fresh('ax_guild'); Object.assign(g.state.flags, { ks_swap: true, ks_toads: true, ks_blast: true, ks_lake: true, ks_i1: true, ks_i2: true, ks_i3: true }); g.state.ks = { got: [], stats: { ax: { fights: 15, turns: 102, miss: 11, fail: 7, collapse: 6, swallow: 4, cover: 38 }, kz: { fights: 5, turns: 40, miss: 0, fail: 0, collapse: 0, swallow: 0, cover: 2 } } }; hsrui.openUi_ksreport({ final: true }); hsrShots.pump(4); return hsrShots.shot(); })()",
+  ksafter: "(() => { const g = hsrShots.fresh('ax_mansion'); Object.assign(g.state.flags, { ks_swap: true, ks_night: true, ks_tadpole: true, ks_done: true }); g.loadMap('ax_mansion', null, { x: 11, y: 13, silent: true }); g.player.dir = 'up'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  ksdinner: "(() => { const g = hsrShots.fresh('ax_mansion'); Object.assign(g.state.flags, { ks_swap: true, ks_tadpole: true }); g.loadMap('ax_mansion', null, { x: 11, y: 13, silent: true }); g.runScript('ks_dinner'); for (let i = 0; i < 4; i++) { g.resume(); } hsrShots.pump(20); return hsrShots.shot(); })()",
+  kscarryself: "(() => { const g = hsrShots.fresh('ax_town'); Object.assign(g.state.flags, { ks_met: true, ks_carry: true }); g.loadMap('ax_town', null, { x: 33, y: 5, silent: true }); g.player.dir = 'up'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  ksgate: "(() => { const g = hsrShots.fresh('ax_gate', ['kazuma', 'aqua', 'megumin', 'darkness']); g.state.flags.ks_alarm = true; g.loadMap('ax_gate', null, { x: 19, y: 15, silent: true }); g.player.dir = 'down'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  ksboss: "(() => { const g = hsrShots.fresh('ax_gate', ['kazuma', 'aqua', 'megumin', 'darkness']); g.startBattle({ encId: 'ks_proto', fromScript: true }); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle; b.hit(b.allies[0], b.enemies[0], 1, {}); for (let i = 0; i < 300 && !(b.phase === 'input' && !hsrui.bt.queue.length && !hsrui.bt.cur); i++) hsrui.update(1 / 10); hsrShots.pump(4); return hsrShots.shot(); })()",
+  ksforest: "(() => { const g = hsrShots.fresh('ax_forest', ['kazuma', 'march', 'danheng', 'himeko']); g.loadMap('ax_forest', null, { x: 30, y: 9, silent: true }); g.player.dir = 'right'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  kscave: "hsrShots.fieldAt('ax_forest', 6, 13)",
+  kskeele: "(() => { const g = hsrShots.fresh('ax_keele1', ['kazuma', 'march', 'danheng', 'himeko']); g.state.flags.ks_i3_go = true; g.loadMap('ax_keele1', null, { x: 9, y: 15, silent: true }); g.player.dir = 'up'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  kskeele2: "(() => { const g = hsrShots.fresh('ax_keele2', ['kazuma', 'march', 'danheng', 'himeko']); g.loadMap('ax_keele2', null, { x: 15, y: 14, silent: true }); g.player.dir = 'up'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  ksreport: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { ks_swap: true, ks_toads: true, ks_blast: true, ks_i1: true, ks_i2: true }); g.state.ks = { got: [], stats: { ax: { fights: 9, turns: 61, miss: 9, fail: 6, collapse: 4, swallow: 3 }, kz: { fights: 3, turns: 24, miss: 0, fail: 0, collapse: 0, swallow: 0 } } }; hsrui.openUi_ksreport({}); hsrShots.pump(4); return hsrShots.shot(); })()",
+  kscard: "(() => { const g = hsrShots.fresh('ax_guild'); Object.assign(g.state.flags, { ks_swap: true, ks_cards: true, ks_toads: true, ks_blast: true }); g.state.ks = { got: [], skills: ['steal', 'drain'], equip: ['steal', 'drain'] }; hsrui.openUi_kscard({}); hsrui.top().sel = 1; hsrShots.pump(4); return hsrShots.shot(); })()",
+  kschris: "(() => { const g = hsrShots.fresh('ax_guild'); Object.assign(g.state.flags, { ks_swap: true, ks_cards: true, ks_chris_met: true }); g.runScript('ax_chris_menu'); hsrShots.pump(20); return hsrShots.shot(); })()",
+  ksskills: "(() => { const g = hsrShots.fresh('ax_meadow', ['trail', 'aqua', 'megumin', 'darkness']); g.state.flags.ks_swap = true; g.state.ks = { got: [], skills: ['steal', 'bind'], equip: ['steal', 'bind'] }; g.startBattle({ enemies: ['ks_toad:40', 'ks_toad_blue:41'], noFlee: true }); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle, idle = () => b.phase === 'input' && !hsrui.bt.queue.length && !hsrui.bt.cur; const wait = () => { for (let i = 0; i < 900 && !idle() && !b.over; i++) hsrui.update(1 / 10); }; for (let n = 0; n < 6; n++) { wait(); if (b.current && b.current.key === 'trail') break; hsrui.battleKey('ok', 'Space'); } wait(); hsrui.battleKey(null, 'KeyE'); hsrui.battleKey('down', 'ArrowDown'); hsrui.battleKey('down', 'ArrowDown'); hsrShots.pump(10); return hsrShots.shot(); })()",
+  kslake: "hsrShots.fieldAt('ax_lake', 17, 16)",
+  kslakeshore: "hsrShots.fieldAt('ax_lake', 22, 22)",
+  kslakebattle: "(() => { const g = hsrShots.fresh('ax_lake', ['trail', 'aqua', 'megumin', 'darkness']); g.startBattle({ encId: 'ks_lake', fromScript: true }); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle; b.ward.hp = Math.round(b.ward.max * 0.62); b.ward.turns = 3; hsrui.bt.ward = Object.assign({}, b.ward); for (let i = 0; i < 300 && !(b.phase === 'input' && !hsrui.bt.queue.length && !hsrui.bt.cur); i++) hsrui.update(1 / 10); hsrShots.pump(2); return hsrShots.shot(); })()",
+  ksestate: "(() => { const g = hsrShots.fresh('ax_estate'); Object.assign(g.state.flags, { ks_signal: true, ks_land: true, ks_met: true, ks_town: true, ks_cards: true, ks_swap: true }); g.setGuest(['trail', 'aqua', 'megumin', 'darkness'], { solo: true }); g.loadMap('ax_estate', null, { x: 19, y: 18, silent: true }); g.player.dir = 'up'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  ksmansion: "(() => { const g = hsrShots.fresh('ax_mansion'); Object.assign(g.state.flags, { ks_swap: true, ks_night: true, ks_tadpole: true }); g.loadMap('ax_mansion', null, { x: 11, y: 10, silent: true }); g.player.dir = 'left'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  ksfort: "hsrShots.fieldAt('ax_fort', 16, 13)",
+  ksforttop: "hsrShots.fieldAt('ax_fort', 18, 8)",
+  ksboard: "(() => { const g = hsrShots.fresh('ax_guild'); Object.assign(g.state.flags, { ks_swap: true, ks_night: true }); g.state.quests.ks_qa = 'done'; hsrui.openUi_ksboard({}); hsrui.top().sel = 1; hsrShots.pump(4); return hsrShots.shot(); })()",
+  ksrate: "(() => { hsrShots.fresh('ax_fort'); hsrui.openUi_ksrate({}); const s = hsrui.top(); s.got = [{ p: 0.48, s: 31 }, { p: 0.7, s: 20 }]; s.row = 2; hsrShots.pump(4); return hsrShots.shot(); })()",
+  kscarry: "(() => { const g = hsrShots.fresh('ax_meadow'); Object.assign(g.state.flags, { ks_met: true, ks_swap: true, ks_carry: true }); g.setGuest(['trail', 'aqua', 'megumin', 'darkness'], { solo: true }); g.loadMap('ax_meadow', null, { x: 44, y: 20, silent: true }); g.player.dir = 'left'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  ksswallow: "(() => { hsrShots.battlePlay(['ks_toad_gold:42', 'ks_toad_blue:41'], 'meadow', ['trail', 'aqua', 'megumin', 'darkness'], ''); const b = hsrui.game.battle; b.swallow(b.enemies[0], b.allies.find(a => a.charId === 'aqua')); hsrui.drainGameEvents && hsrui.drainGameEvents(); hsrShots.pump(20); return hsrShots.shot(); })()",
   expguests: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { asta_met: true, arlan_met: true, serval_met: true, underworld: true, moles: true }); hsrui.openBook('guests'); hsrShots.pump(2); return hsrShots.shot(); })()",
   expphotos: "(() => { const g = hsrShots.fresh('express_cabin'); g.state.flags.underworld = true; hsrui.openBook('photos'); hsrui.top().sel = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
   expnav: "(() => { hsrShots.fresh('express'); hsrui.openNav(); hsrShots.pump(4); return hsrShots.shot(); })()",
@@ -17,11 +71,54 @@ const SCENES = {
   dialog: "hsrShots.dialog('himeko_talk', 40)",
   menu: 'hsrShots.menu()',
   phonerail: 'hsrShots.phoneRail()',
+  supply: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state, { starlight: 734, embers: 1260 }); g.state.shop.intro = true; g.supplyBuy('s_milkyway', 1); hsrui.openMenu(); hsrui.openSupply(); hsrui.top().sel = 5; hsrShots.pump(2); return hsrShots.shot(); })()",
+  supplyembers: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state, { starlight: 734, embers: 1260 }); g.state.shop.intro = true; g.supplyBuy('e_spass', 5); hsrui.openMenu(); hsrui.openSupply(); hsrui.top().tab = 1; hsrui.top().sel = 2; hsrShots.pump(2); return hsrShots.shot(); })()",
+  supplyintro: "(() => { const g = hsrShots.fresh('express'); g.state.shop.back = { starlight: 248, embers: 1340 }; hsrui.openMenu(); hsrui.openSupply(); hsrShots.pump(2); return hsrShots.shot(); })()",
+  supplybuy: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state, { starlight: 734, embers: 1260 }); g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply(); const s = hsrui.top(); s.tab = 1; s.sel = 2; s.key('ok', 'Enter'); hsrui.top().setN(12); hsrShots.pump(2); return hsrShots.shot(); })()",
+  pets: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('pets'); hsrui.t = " + (+(process.env.PT || 6)) + "; hsrShots.pump(1); return hsrShots.shot(); })()",
+  petsowned: "(() => { const g = hsrShots.fresh('express'); g.state.shop.intro = true; g.state.pets = ['chomusuke']; g.setPet('chomusuke'); Object.assign(g.petStats('chomusuke'), { steps: 1342, pets: 27 }); hsrui.openMenu(); hsrui.openSupply('pets'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  petfield: "(() => { const g = hsrShots.fresh('j_belobog', '" + (process.env.PL || 'trail,march,danheng,himeko') + "'.split(',')); g.state.pets = ['chomusuke']; g.setPet('chomusuke'); hsrShots.pump(4); const a = g.pet, act = '" + (process.env.PA || '') + "'; if (act) { a.act = act; a.actT = 0.5; a.still = 2; } hsrShots.pump(2); return hsrShots.shot(); })()",
+  petsheet: "(() => { hsrShots.fresh('express'); const c = hsrui.ctx, H = Hsr98; c.fillStyle = '#7a8a6a'; c.fillRect(0, 0, 640, 480); const rows = [['front', 'sit'], ['front', 'walk'], ['front', 'groom'], ['front', 'yawn'], ['front', 'squint'], ['front', 'happy'], ['back', 'sit'], ['back', 'walk'], ['side', 'sit'], ['side', 'walk'], ['side', 'fly'], ['side', 'hiss'], ['front', 'sleep']]; c.imageSmoothingEnabled = false; rows.forEach(([v, p], i) => { for (let f = 0; f < 2; f++) { const cv = H.petCanvas('chomusuke', v, p, f), x = (i % 5) * 128 + f * 62, y = Math.floor(i / 5) * 150 + 10; c.drawImage(cv, x, y, 72, 72); c.drawImage(cv, x + 4, y + 88, 36, 36); } hsrui.text(v + ' ' + p, (i % 5) * 128 + 4, Math.floor(i / 5) * 150 + 132, { size: 10 }); }); return hsrui.canvas.toDataURL('image/png'); })()",
+  fashion: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  fashionmeg: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; g.state.outfits = ['march_spring']; hsrui.openMenu(); hsrui.openSupply('fashion', 'megumin_bakuen'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  charoutfitmeg: "(() => { const g = hsrShots.fresh('express'); g.state.outfits = ['megumin_bakuen']; g.wearOutfit('megumin', 'megumin_bakuen'); hsrui.openMenu(); hsrui.openChars('megumin'); const s = hsrui.top(); s.sec = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  fieldoutfitmeg: "(() => { const g = hsrShots.fresh('express', ['megumin', 'trail']); g.state.outfits = ['megumin_bakuen']; g.wearOutfit('megumin', 'megumin_bakuen'); hsrShots.pump(30); return hsrShots.shot(); })()",
+  fashionplum: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion', 'ruanmei_plum'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  charoutfitplum: "(() => { const g = hsrShots.fresh('express'); g.state.outfits = ['ruanmei_plum']; g.wearOutfit('ruanmei', 'ruanmei_plum'); hsrui.openMenu(); hsrui.openChars('ruanmei'); const s = hsrui.top(); s.sec = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  fashionwelt: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion', 'welt_idol'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  charoutfitwelt: "(() => { const g = hsrShots.fresh('express'); g.state.outfits = ['welt_idol']; g.wearOutfit('welt', 'welt_idol'); hsrui.openMenu(); hsrui.openChars('welt'); const s = hsrui.top(); s.sec = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  fashionbride: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion', 'darkness_bride'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  charoutfitbride: "(() => { const g = hsrShots.fresh('express'); g.state.outfits = ['darkness_bride']; g.wearOutfit('darkness', 'darkness_bride'); hsrui.openMenu(); hsrui.openChars('darkness'); const s = hsrui.top(); s.sec = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  fieldoutfitbride: "(() => { const g = hsrShots.fresh('express', ['darkness', 'trail']); g.state.outfits = ['darkness_bride']; g.wearOutfit('darkness', 'darkness_bride'); hsrShots.pump(30); return hsrShots.shot(); })()",
+  fashionaqua: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion', 'aqua_beach'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  charoutfitaqua: "(() => { const g = hsrShots.fresh('express'); g.state.outfits = ['aqua_beach']; g.wearOutfit('aqua', 'aqua_beach'); hsrui.openMenu(); hsrui.openChars('aqua'); const s = hsrui.top(); s.sec = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  fieldoutfitaqua: "(() => { const g = hsrShots.fresh('express', ['aqua', 'trail']); g.state.outfits = ['aqua_beach']; g.wearOutfit('aqua', 'aqua_beach'); hsrShots.pump(30); return hsrShots.shot(); })()",
+  fashionnicole: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion', 'nicole_bunny'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  charoutfitnicole: "(() => { const g = hsrShots.fresh('express'); g.state.outfits = ['nicole_bunny']; g.wearOutfit('nicole', 'nicole_bunny'); hsrui.openMenu(); hsrui.openChars('nicole'); const s = hsrui.top(); s.sec = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  fieldoutfitnicole: "(() => { const g = hsrShots.fresh('express', ['nicole', 'trail']); g.state.outfits = ['nicole_bunny']; g.wearOutfit('nicole', 'nicole_bunny'); hsrShots.pump(30); return hsrShots.shot(); })()",
+  fashionmiyabi: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion', 'miyabi_blossom'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  charoutfitmiyabi: "(() => { const g = hsrShots.fresh('express'); g.state.outfits = ['miyabi_blossom']; g.wearOutfit('miyabi', 'miyabi_blossom'); hsrui.openMenu(); hsrui.openChars('miyabi'); const s = hsrui.top(); s.sec = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  fieldoutfitmiyabi: "(() => { const g = hsrShots.fresh('express', ['miyabi', 'trail']); g.state.outfits = ['miyabi_blossom']; g.wearOutfit('miyabi', 'miyabi_blossom'); hsrShots.pump(30); return hsrShots.shot(); })()",
+  fashionmakoto: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion', 'makoto_chocola'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  charoutfitmakoto: "(() => { const g = hsrShots.fresh('express'); g.state.outfits = ['makoto_chocola']; g.wearOutfit('makoto', 'makoto_chocola'); hsrui.openMenu(); hsrui.openChars('makoto'); const s = hsrui.top(); s.sec = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  fieldoutfitmakoto: "(() => { const g = hsrShots.fresh('express', ['makoto', 'trail']); g.state.outfits = ['makoto_chocola']; g.wearOutfit('makoto', 'makoto_chocola'); hsrShots.pump(30); return hsrShots.shot(); })()",
+  fashionjersey: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion', 'kazuma_jersey'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  charoutfitjersey: "(() => { const g = hsrShots.fresh('express'); g.state.flags.ks_done = true; g.wearOutfit('kazuma', 'kazuma_jersey'); hsrui.openMenu(); hsrui.openChars('kazuma'); const s = hsrui.top(); s.sec = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  fashionbuy: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion'); hsrui.top().key('ok', 'Enter'); hsrui.top().key('ok', 'Enter'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  charoutfit: "(() => { const g = hsrShots.fresh('express'); g.state.outfits = ['march_spring']; hsrui.openMenu(); hsrui.openChars('march'); const s = hsrui.top(); s.sec = 6; s.outfitFocus = true; s.outfitFor = 'march'; s.outfitPick = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  charoutfitworn: "(() => { const g = hsrShots.fresh('express'); g.state.outfits = ['march_spring']; g.wearOutfit('march', 'march_spring'); hsrui.openMenu(); hsrui.openChars('march'); const s = hsrui.top(); s.sec = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  charoutfitnone: "(() => { const g = hsrShots.fresh('express'); hsrui.openMenu(); hsrui.openChars('trail'); const s = hsrui.top(); s.sec = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  fieldoutfit: "(() => { const g = hsrShots.fresh('express', ['march', 'trail']); g.state.outfits = ['march_spring']; g.wearOutfit('march', 'march_spring'); hsrShots.pump(30); return hsrShots.shot(); })()",
   evnotice: 'hsrShots.eventsNotice()',
   events: "hsrShots.events('comet', 3, [true], 1)",
   events7: "hsrShots.events('comet', 7, [true, true, true, false, true], 6)",
   eventsdone: "hsrShots.events('comet', 7, [true, true, true, true, true, true, true], 0)",
   will: "hsrShots.events('will', 0, [], 1, 18, [5])",
+  tlrewards: "(() => { const g = hsrShots.fresh('express'); g.state.flags.pc_rewards_done = true; g.setTrailLevel(27); for (let l = 2; l <= 14; l++) g.claimTl(l); hsrui.openTlRewards(); hsrShots.pump(2); return hsrShots.shot(); })()",
+  tlrewardsend: "(() => { const g = hsrShots.fresh('express'); g.state.flags.pc_rewards_done = true; g.setTrailLevel(70); g.claimAllTl(); hsrui.openTlRewards(); const s = hsrui.top(); s.sel = 68; hsrShots.pump(2); return hsrShots.shot(); })()",
+  tlrewardsfirst: "(() => { const g = hsrShots.fresh('express'); g.state.flags.pc_rewards_done = true; g.setTrailLevel(12); hsrui.openTlRewards(); hsrShots.pump(2); return hsrShots.shot(); })()",
+  pomtalk: "(() => { const g = hsrShots.fresh('express'); g.state.flags.pc_rewards_done = true; g.state.flags.ending = true; g.runScript('pompom_talk'); hsrShots.pump(40); g.resume(); hsrShots.pump(20); return hsrShots.shot(); })()",
+  pomfield: "(() => { const g = hsrShots.fresh('express'); g.state.flags.pc_rewards_done = true; g.setTrailLevel(20); const p = g.map.ents.find(e => e.ch === 'p'); g.placePlayer(p.x, p.y + 2); hsrShots.pump(30); return hsrShots.shot(); })()",
   willdone: "hsrShots.events('will', 0, [], 3, 40, [5, 15, 25])",
   mail: 'hsrShots.mail(0)',
   chats: 'hsrShots.chats(0)',
@@ -33,6 +130,9 @@ const SCENES = {
   chatnote: 'hsrShots.chatNote()',
   mailgot: 'hsrShots.mail(1)',
   mail12: 'hsrShots.mail(4)',
+  mailhares: 'hsrShots.mail(5)',
+  mail15: 'hsrShots.mail(6)',
+  mail15got: 'hsrShots.mail(7)',
   mail0: 'hsrShots.mail(2)',
   maildel: 'hsrShots.mail(3)',
   warpev: "hsrShots.warpBanner('ev')",
@@ -52,6 +152,18 @@ const SCENES = {
   p4onemore: "hsrShots.p4Battle('onemore')",
   p4aoaask: "hsrShots.p4Battle('aoaask')",
   p4aoa: "hsrShots.p4Battle('aoa')",
+  cccmk: "hsrShots.ccBattle('mk')",
+  haresfield: "hsrShots.haresBattle('field')",
+  hareschain: "hsrShots.haresBattle('chain')",
+  harespips: "hsrShots.haresBattle('pips')",
+  cccportal: "hsrShots.ccBattle('portal')",
+  cccheist: "hsrShots.ccBattle('heist')",
+  cccam: "hsrShots.ccBattle('am')",
+  cccam2: "hsrShots.ccBattle('am2')",
+  ccctl: "hsrShots.ccBattle('tl')",
+  cccsquad: "hsrShots.ccBattle('squad')",
+  ccccapsule: "hsrShots.ccBattle('capsule')",
+  cccclap: "hsrShots.ccBattle('clap')",
   warpmid: "hsrShots.warpBanner('mid')",
   warpmidkanji: "hsrShots.warpBanner('mid', 'kanji')",
   warpmidrise: "hsrShots.warpBanner('mid', 'rise')",
@@ -59,6 +171,13 @@ const SCENES = {
   warpcomprise: "hsrShots.warpBanner('comp', 'rise')",
   warpmidc: "hsrShots.warpBanner('mid', 'rise', { unsigned: true })",
   warpmidguar: "hsrShots.warpBanner('mid', 'rise', { pity: { five: 55, guar5: true } })",
+  warpcon: "hsrShots.warpBanner('con')",
+  warpconam: "hsrShots.warpBanner('con', 'amanda')",
+  warpcontl: "hsrShots.warpBanner('con', 'talleah', { pity: { five: 52, guar5: true } })",
+  warpconreg: "hsrShots.warpBanner('con', 'makoto', { unreg: true })",
+  warpalley: "hsrShots.warpBanner('alley')",
+  warpalleyam: "hsrShots.warpBanner('alley', 'amanda')",
+  evconton: "(() => { let now = new Date(2026, 9, 16, 12, 0).getTime(); const g = hsrShots.fresh('express'); g.clock = () => now; g.conDays(); g.claimConDay(0); now += 86400000; g.conDays(); hsrui.openEvents('conton'); hsrui.top().pick = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
   warpguildmeg: "hsrShots.warpBanner('guild', 'megumin')",
   warpguilddark: "hsrShots.warpBanner('guild', 'darkness')",
   warpwiz: "hsrShots.warpBanner('wiz')",
@@ -78,6 +197,7 @@ const SCENES = {
   warphistev: 'hsrShots.warpHistEv()',
   charsheet: "hsrShots.charSheet(" + JSON.stringify(process.env.CHAR || 'ruanmei') + ", " + (process.env.LOOK || 'null') + ")",
   guide: "(() => { hsrShots.fresh('express'); hsrui.openGuide(); hsrShots.pump(2); return hsrShots.shot(); })()",
+  debugoutfit: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); const st = hsrui.debugState; st.ch.i = Object.keys(Hsr98.CHARS).filter(k => k !== 'trail_p').indexOf('ruanmei'); st.row = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
   debugchars: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); hsrui.debugState.ch.i = 13; hsrui.debugState.ch.eid = 2; hsrShots.pump(2); return hsrShots.shot(); })()",
   debugcones: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 1, row: 1 }); hsrui.debugState.cn.i = 1; hsrui.debugState.cn.sup = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
   debugult: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 4, row: 1 }); hsrui.debugState.sc.id = 'seele'; hsrui.t = 1.6; hsrShots.pump(1); return hsrShots.shot(); })()",
@@ -96,15 +216,15 @@ const SCENES = {
   missionscomp: "hsrShots.missions(2, 'hook_foreman')",
   missionsadv: 'hsrShots.missions(3)',
   missionstrack: "hsrShots.missions(0, 'hook_treasure', 'hook_treasure')",
-  hudhook: "hsrShots.questAt('u_boulder', 'hook_treasure', 'talk', 30, 6)",
+  hudhook: "hsrShots.questAt('u_boulder', 'hook_treasure', 'talk', 6, 9)",
   campfight: "hsrShots.questAt('u_camp', 'hook_foreman', 'mine', 2, 8)",
   campask: "hsrShots.questAt('u_camp', 'hook_foreman', 'ask', 14, 8)",
   campcrates: "hsrShots.questAt('u_camp', 'hook_foreman', 'crates', 26, 11)",
   campauction: "hsrShots.questAt('u_camp', 'hook_gift', 'buyers', 18, 6, 'hg_camp,hg_lady1,hg_wallet_ask')",
-  rivetdig: "hsrShots.questAt('u_rivet', 'hook_treasure', 'findie', 22, 7)",
-  rivetjunk: "hsrShots.questAt('u_rivet', 'hook_treasure', 'drill', 33, 7)",
-  boulderhook: "hsrShots.questAt('u_boulder', 'hook_foreman', 'fersman', 14, 6)",
-  mission: "(() => { const g = hsrShots.fresh('j_belobog'); g.state.obj = 'Прогуляться по Белобогу: заглянуть в мастерскую «Нейвервинтер» (юго-восток)'; hsrui.openMission(); hsrShots.pump(2); return hsrShots.shot(); })()",
+  rivetdig: "hsrShots.questAt('u_rivet', 'hook_treasure', 'findie', 4, 14)",
+  rivetjunk: "hsrShots.questAt('u_rivet', 'hook_treasure', 'drill', 32, 25)",
+  boulderhook: "hsrShots.questAt('u_clinic', 'hook_foreman', 'fersman', 11, 9)",
+  mission: "(() => { const g = hsrShots.fresh('j_belobog'); g.state.obj = 'Прогуляться по Белобогу: заглянуть в мастерскую «Незимье» (юго-восток)'; hsrui.openMission(); hsrShots.pump(2); return hsrShots.shot(); })()",
   items: 'hsrShots.inventory(0)',
   hudenergy: 'hsrShots.hudEnergy(0)',
   hudcharge: 'hsrShots.hudEnergy(1)',
@@ -113,11 +233,17 @@ const SCENES = {
   invrelics: 'hsrShots.inventory(4)',
   archive: 'hsrShots.archive()',
   team: 'hsrShots.team()',
+  teamsquad: "(() => { const g = hsrShots.fresh('express'); for (const k of Object.keys(Hsr98.CHARS)) if (k !== 'trail_p' && !g.state.roster[k]) g.debugChar(k, 60, 0); g.state.squads = [null, ['seele', 'bronya', 'natasha', 'pela'], ['kafka', 'blade'], null, ['himeko', 'welt', 'herta', 'asta']]; g.toggleFav('seele'); g.toggleFav('kafka'); hsrui.openMenu(); hsrui.openTeam(); hsrui.top().key(null, 'KeyE'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  teamempty: "(() => { const g = hsrShots.fresh('express'); for (const k of Object.keys(Hsr98.CHARS)) if (k !== 'trail_p' && !g.state.roster[k]) g.debugChar(k, 60, 0); g.state.squads = [null, ['seele', 'bronya', 'natasha', 'pela'], ['kafka', 'blade'], null, ['himeko', 'welt', 'herta', 'asta']]; g.toggleFav('seele'); g.toggleFav('kafka'); hsrui.openMenu(); hsrui.openTeam(); hsrui.top().setView(3); hsrShots.pump(2); return hsrShots.shot(); })()",
+  teamover: "(() => { const g = hsrShots.fresh('express'); for (const k of Object.keys(Hsr98.CHARS)) if (k !== 'trail_p' && !g.state.roster[k]) g.debugChar(k, 60, 0); g.state.squads = [null, ['seele', 'bronya', 'natasha', 'pela'], ['kafka', 'blade'], null, ['himeko', 'welt', 'herta', 'asta']]; g.toggleFav('seele'); g.toggleFav('kafka'); hsrui.openMenu(); hsrui.openTeam(); hsrui.top().key(null, 'Tab'); hsrui.top().osel = 2; hsrShots.pump(2); return hsrShots.shot(); })()",
+  teampick: "(() => { const g = hsrShots.fresh('express'); for (const k of Object.keys(Hsr98.CHARS)) if (k !== 'trail_p' && !g.state.roster[k]) g.debugChar(k, 60, 0); g.state.squads = [null, ['seele', 'bronya', 'natasha', 'pela'], ['kafka', 'blade'], null, ['himeko', 'welt', 'herta', 'asta']]; g.toggleFav('seele'); g.toggleFav('kafka'); hsrui.openMenu(); hsrui.openTeam(); hsrui.top().key('ok'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  teampickend: "(() => { const g = hsrShots.fresh('express'); for (const k of Object.keys(Hsr98.CHARS)) if (k !== 'trail_p' && !g.state.roster[k]) g.debugChar(k, 60, 0); g.state.squads = [null, ['seele', 'bronya', 'natasha', 'pela'], ['kafka', 'blade'], null, ['himeko', 'welt', 'herta', 'asta']]; g.toggleFav('seele'); g.toggleFav('kafka'); hsrui.openMenu(); hsrui.openTeam(); hsrui.top().key('ok'); const p = hsrui.top(); p.sel = hsrui.rosterKeys().length - 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  charfav: "(() => { const g = hsrShots.fresh('express'); for (const k of Object.keys(Hsr98.CHARS)) if (k !== 'trail_p' && !g.state.roster[k]) g.debugChar(k, 60, 0); g.state.squads = [null, ['seele', 'bronya', 'natasha', 'pela'], ['kafka', 'blade'], null, ['himeko', 'welt', 'herta', 'asta']]; g.toggleFav('seele'); g.toggleFav('kafka'); hsrui.openMenu(); hsrui.openChars('seele'); hsrShots.pump(2); return hsrShots.shot(); })()",
   char: "hsrShots.chars('arlan', 0)",
   charseele: "hsrShots.chars('seele', 0)",
   charruan: "hsrShots.chars('ruanmei', 0)",
   skillsruan: "hsrShots.chars('ruanmei', 3)",
-  charcone: "hsrShots.chars('himeko', 1)",
+  charcone: "hsrShots.cones('himeko')",
   charrelic: "hsrShots.chars('march', 2)",
   charplanar: "hsrShots.planar('seele', 4)",
   charplanar2: "hsrShots.planar('march', 5)",
@@ -148,7 +274,7 @@ const SCENES = {
   warphist0: 'hsrShots.warpHistory(0, 0, true)',
   archwarp: 'hsrShots.archiveWarp()',
   archstory: 'hsrShots.archiveStory()',
-  skipping: "hsrShots.skipping('final_start')",
+  skipping: "hsrShots.skipping('dawn_summit')",
   shop: "hsrShots.shop('boulder')",
   battle: "hsrShots.battle(['reaver:20', 'flamespawn:20', 'eliminator:20'], 'station', ['trail', 'march', 'arlan', 'himeko'])",
   battle2: "hsrShots.battle(['soldier:20', 'gunner:20'], 'snow', ['seele', 'bronya', 'gepard', 'natasha'])",
@@ -182,6 +308,148 @@ const SCENES = {
   figures: 'hsrShots.figures(0)',
   figures2: 'hsrShots.figures(1)',
   icons: 'hsrShots.icons()',
+  maticons: 'hsrShots.matIcons()',
+  himekotraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.himeko) g.addChar('himeko', 40); g.state.roster.himeko.lvl = 40; g.fillTraces('himeko', 'cap'); hsrui.openMenu(); hsrui.openChars('himeko'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  himekoeid: "hsrShots.chars('himeko', 4, 5)",
+  welttraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.welt) g.addChar('welt', 40); g.state.roster.welt.lvl = 40; g.fillTraces('welt', 'cap'); hsrui.openMenu(); hsrui.openChars('welt'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  welteid: "hsrShots.chars('welt', 4, 5)",
+  hertatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.herta) g.addChar('herta', 40); g.state.roster.herta.lvl = 40; g.fillTraces('herta', 'cap'); hsrui.openMenu(); hsrui.openChars('herta'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  hertaeid: "hsrShots.chars('herta', 4, 5)",
+  astatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.asta) g.addChar('asta', 40); g.state.roster.asta.lvl = 40; g.fillTraces('asta', 'cap'); hsrui.openMenu(); hsrui.openChars('asta'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  astaeid: "hsrShots.chars('asta', 4, 5)",
+  arlantraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.arlan) g.addChar('arlan', 40); g.state.roster.arlan.lvl = 40; g.fillTraces('arlan', 'cap'); hsrui.openMenu(); hsrui.openChars('arlan'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  arlaneid: "hsrShots.chars('arlan', 4, 5)",
+  trailptraces: "(() => { const g = hsrShots.fresh('express'); g.setPath('trail_p'); g.state.roster.trail.lvl = 40; g.fillTraces('trail', 'cap'); hsrui.openMenu(); hsrui.openChars('trail'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a6'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  trailpeid: "(() => { const g = hsrShots.fresh('express'); g.setPath('trail_p'); hsrui.openMenu(); hsrui.openChars('trail'); const s = hsrui.top(); s.sec = 4; s.star = 1; s.starFocus = true; hsrShots.pump(2); return hsrShots.shot(); })()",
+  bronyatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.bronya) g.addChar('bronya', 40); g.state.roster.bronya.lvl = 40; g.fillTraces('bronya', 'cap'); hsrui.openMenu(); hsrui.openChars('bronya'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  bronyaeid: "hsrShots.chars('bronya', 4, 5)",
+  seeletraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.seele) g.addChar('seele', 40); g.state.roster.seele.lvl = 40; g.fillTraces('seele', 'cap'); hsrui.openMenu(); hsrui.openChars('seele'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  seeleeid: "hsrShots.chars('seele', 4, 5)",
+  gepardtraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.gepard) g.addChar('gepard', 40); g.state.roster.gepard.lvl = 40; g.fillTraces('gepard', 'cap'); hsrui.openMenu(); hsrui.openChars('gepard'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  gepardeid: "hsrShots.chars('gepard', 4, 5)",
+  claratraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.clara) g.addChar('clara', 40); g.state.roster.clara.lvl = 40; g.fillTraces('clara', 'cap'); hsrui.openMenu(); hsrui.openChars('clara'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  claraeid: "hsrShots.chars('clara', 4, 5)",
+  yanqingtraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.yanqing) g.addChar('yanqing', 40); g.state.roster.yanqing.lvl = 40; g.fillTraces('yanqing', 'cap'); hsrui.openMenu(); hsrui.openChars('yanqing'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  yanqingeid: "hsrShots.chars('yanqing', 4, 5)",
+  bailutraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.bailu) g.addChar('bailu', 40); g.state.roster.bailu.lvl = 40; g.fillTraces('bailu', 'cap'); hsrui.openMenu(); hsrui.openChars('bailu'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  bailueid: "hsrShots.chars('bailu', 4, 5)",
+  natashatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.natasha) g.addChar('natasha', 40); g.state.roster.natasha.lvl = 40; g.fillTraces('natasha', 'cap'); hsrui.openMenu(); hsrui.openChars('natasha'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  natashaeid: "hsrShots.chars('natasha', 4, 5)",
+  servaltraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.serval) g.addChar('serval', 40); g.state.roster.serval.lvl = 40; g.fillTraces('serval', 'cap'); hsrui.openMenu(); hsrui.openChars('serval'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  servaleid: "hsrShots.chars('serval', 4, 5)",
+  sampotraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.sampo) g.addChar('sampo', 40); g.state.roster.sampo.lvl = 40; g.fillTraces('sampo', 'cap'); hsrui.openMenu(); hsrui.openChars('sampo'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  sampoeid: "hsrShots.chars('sampo', 4, 5)",
+  hooktraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.hook) g.addChar('hook', 40); g.state.roster.hook.lvl = 40; g.fillTraces('hook', 'cap'); hsrui.openMenu(); hsrui.openChars('hook'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  hookeid: "hsrShots.chars('hook', 4, 5)",
+  pelatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.pela) g.addChar('pela', 40); g.state.roster.pela.lvl = 40; g.fillTraces('pela', 'cap'); hsrui.openMenu(); hsrui.openChars('pela'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  pelaeid: "hsrShots.chars('pela', 4, 5)",
+  ruanmeitraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.ruanmei) g.addChar('ruanmei', 40); g.state.roster.ruanmei.lvl = 40; g.fillTraces('ruanmei', 'cap'); hsrui.openMenu(); hsrui.openChars('ruanmei'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  ruanmeieid: "hsrShots.chars('ruanmei', 4, 5)",
+  kafkatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.kafka) g.addChar('kafka', 40); g.state.roster.kafka.lvl = 40; g.fillTraces('kafka', 'cap'); hsrui.openMenu(); hsrui.openChars('kafka'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  kafkaeid: "hsrShots.chars('kafka', 4, 5)",
+  silverwolftraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.silverwolf) g.addChar('silverwolf', 40); g.state.roster.silverwolf.lvl = 40; g.fillTraces('silverwolf', 'cap'); hsrui.openMenu(); hsrui.openChars('silverwolf'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  silverwolfeid: "hsrShots.chars('silverwolf', 4, 5)",
+  bladetraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.blade) g.addChar('blade', 40); g.state.roster.blade.lvl = 40; g.fillTraces('blade', 'cap'); hsrui.openMenu(); hsrui.openChars('blade'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  bladeeid: "hsrShots.chars('blade', 4, 5)",
+  lynxtraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.lynx) g.addChar('lynx', 40); g.state.roster.lynx.lvl = 40; g.fillTraces('lynx', 'cap'); hsrui.openMenu(); hsrui.openChars('lynx'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  lynxeid: "hsrShots.chars('lynx', 4, 5)",
+  lukatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.luka) g.addChar('luka', 40); g.state.roster.luka.lvl = 40; g.fillTraces('luka', 'cap'); hsrui.openMenu(); hsrui.openChars('luka'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  lukaeid: "hsrShots.chars('luka', 4, 5)",
+  sushangtraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.sushang) g.addChar('sushang', 40); g.state.roster.sushang.lvl = 40; g.fillTraces('sushang', 'cap'); hsrui.openMenu(); hsrui.openChars('sushang'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  sushangeid: "hsrShots.chars('sushang', 4, 5)",
+  xueyitraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.xueyi) g.addChar('xueyi', 40); g.state.roster.xueyi.lvl = 40; g.fillTraces('xueyi', 'cap'); hsrui.openMenu(); hsrui.openChars('xueyi'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  xueyieid: "hsrShots.chars('xueyi', 4, 5)",
+  tingyuntraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.tingyun) g.addChar('tingyun', 40); g.state.roster.tingyun.lvl = 40; g.fillTraces('tingyun', 'cap'); hsrui.openMenu(); hsrui.openChars('tingyun'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  tingyuneid: "hsrShots.chars('tingyun', 4, 5)",
+  hanyatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.hanya) g.addChar('hanya', 40); g.state.roster.hanya.lvl = 40; g.fillTraces('hanya', 'cap'); hsrui.openMenu(); hsrui.openChars('hanya'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  hanyaeid: "hsrShots.chars('hanya', 4, 5)",
+  qingquetraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.qingque) g.addChar('qingque', 40); g.state.roster.qingque.lvl = 40; g.fillTraces('qingque', 'cap'); hsrui.openMenu(); hsrui.openChars('qingque'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  qingqueeid: "hsrShots.chars('qingque', 4, 5)",
+  yukongtraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.yukong) g.addChar('yukong', 40); g.state.roster.yukong.lvl = 40; g.fillTraces('yukong', 'cap'); hsrui.openMenu(); hsrui.openChars('yukong'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  yukongeid: "hsrShots.chars('yukong', 4, 5)",
+  guinaifentraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.guinaifen) g.addChar('guinaifen', 40); g.state.roster.guinaifen.lvl = 40; g.fillTraces('guinaifen', 'cap'); hsrui.openMenu(); hsrui.openChars('guinaifen'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guinaifeneid: "hsrShots.chars('guinaifen', 4, 5)",
+  jingyuantraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.jingyuan) g.addChar('jingyuan', 40); g.state.roster.jingyuan.lvl = 40; g.fillTraces('jingyuan', 'cap'); hsrui.openMenu(); hsrui.openChars('jingyuan'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  jingyuaneid: "hsrShots.chars('jingyuan', 4, 5)",
+  luochatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.luocha) g.addChar('luocha', 40); g.state.roster.luocha.lvl = 40; g.fillTraces('luocha', 'cap'); hsrui.openMenu(); hsrui.openChars('luocha'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  luochaeid: "hsrShots.chars('luocha', 4, 5)",
+  imbibitortraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.imbibitor) g.addChar('imbibitor', 40); g.state.roster.imbibitor.lvl = 40; g.fillTraces('imbibitor', 'cap'); hsrui.openMenu(); hsrui.openChars('imbibitor'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  imbibitoreid: "hsrShots.chars('imbibitor', 4, 5)",
+  fuxuantraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.fuxuan) g.addChar('fuxuan', 40); g.state.roster.fuxuan.lvl = 40; g.fillTraces('fuxuan', 'cap'); hsrui.openMenu(); hsrui.openChars('fuxuan'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  fuxuaneid: "hsrShots.chars('fuxuan', 4, 5)",
+  jingliutraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.jingliu) g.addChar('jingliu', 40); g.state.roster.jingliu.lvl = 40; g.fillTraces('jingliu', 'cap'); hsrui.openMenu(); hsrui.openChars('jingliu'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  jingliueid: "hsrShots.chars('jingliu', 4, 5)",
+  topaztraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.topaz) g.addChar('topaz', 40); g.state.roster.topaz.lvl = 40; g.fillTraces('topaz', 'cap'); hsrui.openMenu(); hsrui.openChars('topaz'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  topazeid: "hsrShots.chars('topaz', 4, 5)",
+  huohuotraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.huohuo) g.addChar('huohuo', 40); g.state.roster.huohuo.lvl = 40; g.fillTraces('huohuo', 'cap'); hsrui.openMenu(); hsrui.openChars('huohuo'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  huohuoeid: "hsrShots.chars('huohuo', 4, 5)",
+  argentitraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.argenti) g.addChar('argenti', 40); g.state.roster.argenti.lvl = 40; g.fillTraces('argenti', 'cap'); hsrui.openMenu(); hsrui.openChars('argenti'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  argentieid: "hsrShots.chars('argenti', 4, 5)",
+  ratiotraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.ratio) g.addChar('ratio', 40); g.state.roster.ratio.lvl = 40; g.fillTraces('ratio', 'cap'); hsrui.openMenu(); hsrui.openChars('ratio'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  ratioeid: "hsrShots.chars('ratio', 4, 5)",
+  miyabitraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.miyabi) g.addChar('miyabi', 40); g.state.roster.miyabi.lvl = 40; g.fillTraces('miyabi', 'cap'); hsrui.openMenu(); hsrui.openChars('miyabi'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  miyabieid: "hsrShots.chars('miyabi', 4, 5)",
+  yanagitraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.yanagi) g.addChar('yanagi', 40); g.state.roster.yanagi.lvl = 40; g.fillTraces('yanagi', 'cap'); hsrui.openMenu(); hsrui.openChars('yanagi'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  yanagieid: "hsrShots.chars('yanagi', 4, 5)",
+  billytraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.billy) g.addChar('billy', 40); g.state.roster.billy.lvl = 40; g.fillTraces('billy', 'cap'); hsrui.openMenu(); hsrui.openChars('billy'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  billyeid: "hsrShots.chars('billy', 4, 5)",
+  nicoletraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.nicole) g.addChar('nicole', 40); g.state.roster.nicole.lvl = 40; g.fillTraces('nicole', 'cap'); hsrui.openMenu(); hsrui.openChars('nicole'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  nicoleeid: "hsrShots.chars('nicole', 4, 5)",
+  anbytraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.anby) g.addChar('anby', 40); g.state.roster.anby.lvl = 40; g.fillTraces('anby', 'cap'); hsrui.openMenu(); hsrui.openChars('anby'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  anbyeid: "hsrShots.chars('anby', 4, 5)",
+  phrolovatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.phrolova) g.addChar('phrolova', 40); g.state.roster.phrolova.lvl = 40; g.fillTraces('phrolova', 'cap'); hsrui.openMenu(); hsrui.openChars('phrolova'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a4'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  phrolovaeid: "hsrShots.chars('phrolova', 4, 5)",
+  scartraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.scar) g.addChar('scar', 40); g.state.roster.scar.lvl = 40; g.fillTraces('scar', 'cap'); hsrui.openMenu(); hsrui.openChars('scar'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  scareid: "hsrShots.chars('scar', 4, 5)",
+  kazumatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.kazuma) g.addChar('kazuma', 40); g.state.roster.kazuma.lvl = 40; g.fillTraces('kazuma', 'cap'); hsrui.openMenu(); hsrui.openChars('kazuma'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a4'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  kazumaeid: "hsrShots.chars('kazuma', 4, 5)",
+  aquatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.aqua) g.addChar('aqua', 40); g.state.roster.aqua.lvl = 40; g.fillTraces('aqua', 'cap'); hsrui.openMenu(); hsrui.openChars('aqua'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  aquaeid: "hsrShots.chars('aqua', 4, 5)",
+  megumintraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.megumin) g.addChar('megumin', 40); g.state.roster.megumin.lvl = 40; g.fillTraces('megumin', 'cap'); hsrui.openMenu(); hsrui.openChars('megumin'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  megumineid: "hsrShots.chars('megumin', 4, 5)",
+  darknesstraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.darkness) g.addChar('darkness', 40); g.state.roster.darkness.lvl = 40; g.fillTraces('darkness', 'cap'); hsrui.openMenu(); hsrui.openChars('darkness'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  darknesseid: "hsrShots.chars('darkness', 4, 5)",
+  yutraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.yu) g.addChar('yu', 40); g.state.roster.yu.lvl = 40; g.fillTraces('yu', 'cap'); hsrui.openMenu(); hsrui.openChars('yu'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  yueid: "hsrShots.chars('yu', 4, 5)",
+  yosuketraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.yosuke) g.addChar('yosuke', 40); g.state.roster.yosuke.lvl = 40; g.fillTraces('yosuke', 'cap'); hsrui.openMenu(); hsrui.openChars('yosuke'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  yosukeeid: "hsrShots.chars('yosuke', 4, 5)",
+  chietraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.chie) g.addChar('chie', 40); g.state.roster.chie.lvl = 40; g.fillTraces('chie', 'cap'); hsrui.openMenu(); hsrui.openChars('chie'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  chieeid: "hsrShots.chars('chie', 4, 5)",
+  yukikotraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.yukiko) g.addChar('yukiko', 40); g.state.roster.yukiko.lvl = 40; g.fillTraces('yukiko', 'cap'); hsrui.openMenu(); hsrui.openChars('yukiko'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  yukikoeid: "hsrShots.chars('yukiko', 4, 5)",
+  kanjitraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.kanji) g.addChar('kanji', 40); g.state.roster.kanji.lvl = 40; g.fillTraces('kanji', 'cap'); hsrui.openMenu(); hsrui.openChars('kanji'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  kanjieid: "hsrShots.chars('kanji', 4, 5)",
+  risetraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.rise) g.addChar('rise', 40); g.state.roster.rise.lvl = 40; g.fillTraces('rise', 'cap'); hsrui.openMenu(); hsrui.openChars('rise'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  riseeid: "hsrShots.chars('rise', 4, 5)",
+  makototraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.makoto) g.addChar('makoto', 40); g.state.roster.makoto.lvl = 40; g.fillTraces('makoto', 'cap'); hsrui.openMenu(); hsrui.openChars('makoto'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  makotoeid: "hsrShots.chars('makoto', 4, 5)",
+  amandatraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.amanda) g.addChar('amanda', 40); g.state.roster.amanda.lvl = 40; g.fillTraces('amanda', 'cap'); hsrui.openMenu(); hsrui.openChars('amanda'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  amandaeid: "hsrShots.chars('amanda', 4, 5)",
+  talleahtraces: "(() => { const g = hsrShots.fresh('express'); if (!g.state.roster.talleah) g.addChar('talleah', 40); g.state.roster.talleah.lvl = 40; g.fillTraces('talleah', 'cap'); hsrui.openMenu(); hsrui.openChars('talleah'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  talleaheid: "hsrShots.chars('talleah', 4, 5)",
+  danhengtraces: "(() => { const g = hsrShots.fresh('express'); g.fillTraces('danheng', 'cap'); hsrui.openMenu(); hsrui.openChars('danheng'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a6'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  danhengeid: "hsrShots.chars('danheng', 4, 3)",
+  marchtraces: "(() => { const g = hsrShots.fresh('express'); g.fillTraces('march', 'cap'); hsrui.openMenu(); hsrui.openChars('march'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a4'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  marcheid4: "hsrShots.chars('march', 4, 3)",
+  traileid1: "(() => { const g = hsrShots.fresh('express'); g.state.roster.trail.eid = 2; g.state.inv.items.shadow_dest = 1; hsrui.openMenu(); hsrui.openChars('trail'); const s = hsrui.top(); s.sec = 4; s.star = 0; s.starFocus = true; hsrShots.pump(2); return hsrShots.shot(); })()",
+  traileid6: "(() => { const g = hsrShots.fresh('express'); g.state.roster.trail.eid = 2; g.state.inv.items.shadow_dest = 1; hsrui.openMenu(); hsrui.openChars('trail'); const s = hsrui.top(); s.sec = 4; s.star = 5; s.starFocus = true; hsrShots.pump(2); return hsrShots.shot(); })()",
+  trailskills: "(() => { const g = hsrShots.fresh('express'); g.fillTraces('trail', 'cap'); g.state.roster.trail.eid = 3; hsrui.openMenu(); hsrui.openChars('trail'); const s = hsrui.top(); s.sec = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
+  trailtraces: "(() => { const g = hsrShots.fresh('express'); g.fillTraces('trail', 'cap'); hsrui.openMenu(); hsrui.openChars('trail'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a6'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  echophantylia: "hsrShots.battle(['phantylia:40', 'lotus_ab:38'], 'sim', null, true)",
+  echophantylia2: "hsrShots.battle(['phantylia2:40', 'lotus_de:38', 'lotus_de:38'], 'sim', null, true)",
+  echoswarm: "hsrShots.battle(['skaracabaz_e2:40', 'gnawsting:38', 'juvsting:38'], 'sim', null, true)",
+  chartraces: "(() => { const g = hsrShots.fresh('express'); const k = 'himeko'; if (!g.state.roster[k]) g.addChar(k, 52); g.state.roster[k].lvl = 52; g.fillTraces(k, 'cap'); const t = g.traceOf(k); t.lv.skill = Math.max(1, t.lv.skill - 1); t.on = t.on.slice(0, -2); g.state.credits = 99999; for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat' && Hsr98.ITEMS[m].tier < 3)) g.state.inv.items[m] = 9;  hsrui.openMenu(); hsrui.openChars(k); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'skill'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  chartracesstat: "(() => { const g = hsrShots.fresh('express'); const k = 'seele'; if (!g.state.roster[k]) g.addChar(k, 64); g.state.roster[k].lvl = 64; g.fillTraces(k, 'cap'); const t = g.traceOf(k); t.lv.skill = Math.max(1, t.lv.skill - 1); t.on = t.on.slice(0, -2); g.state.credits = 99999; for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat' && Hsr98.ITEMS[m].tier < 3)) g.state.inv.items[m] = 9;  hsrui.openMenu(); hsrui.openChars(k); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 's6'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  chartracesbonus: "(() => { const g = hsrShots.fresh('express'); const k = 'gepard'; if (!g.state.roster[k]) g.addChar(k, 44); g.state.roster[k].lvl = 44; g.fillTraces(k, 'cap'); const t = g.traceOf(k); t.lv.skill = Math.max(1, t.lv.skill - 1); t.on = t.on.slice(0, -2); g.state.credits = 99999; for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat' && Hsr98.ITEMS[m].tier < 3)) g.state.inv.items[m] = 9;  hsrui.openMenu(); hsrui.openChars(k); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a4'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  chartracestrail: "(() => { const g = hsrShots.fresh('express'); const k = 'trail'; if (!g.state.roster[k]) g.addChar(k, 34); g.state.roster[k].lvl = 34; g.fillTraces(k, 'cap'); const t = g.traceOf(k); t.lv.skill = Math.max(1, t.lv.skill - 1); t.on = t.on.slice(0, -2); g.state.credits = 99999; for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat' && Hsr98.ITEMS[m].tier < 3)) g.state.inv.items[m] = 9;  hsrui.openMenu(); hsrui.openChars(k); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'a2'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  chartracesnew: "(() => { const g = hsrShots.fresh('express'); hsrui.openMenu(); hsrui.openChars('trail'); const s = hsrui.top(); s.sec = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  charactions: "(() => { const g = hsrShots.fresh('express'); hsrui.openMenu(); hsrui.openChars('trail'); hsrui.top().openActions(); hsrShots.pump(2); return hsrShots.shot(); })()",
+  invmats: "(() => { const g = hsrShots.fresh('express'); for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat')) g.state.inv.items[m] = 3 + m.length; hsrui.openMenu(); hsrui.openInventory(2); hsrui.top().sel = 4; hsrShots.pump(2); return hsrShots.shot(); })()",
+  synth: "(() => { const g = hsrShots.fresh('express'); for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat' && Hsr98.ITEMS[m].tier)) g.state.inv.items[m] = 7; hsrui.openSynth(); hsrui.top().sel = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
+  synthx: "(() => { const g = hsrShots.fresh('express'); for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat' && Hsr98.ITEMS[m].tier)) g.state.inv.items[m] = 7; hsrui.openSynth(); const s = hsrui.top(); s.mode = 1; s.sel = 30; hsrShots.pump(2); return hsrShots.shot(); })()",
+  simdrops: "(() => { const g = hsrShots.fresh('express'); hsrui.openCalyx(() => {}); const s = hsrui.top(); s.sel = Math.max(0, g.calyxList().findIndex(x => x.c.id === 'cx_hunt')); s.tier = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  simecho: "(() => { const g = hsrShots.fresh('express'); g.state.flags.express_intro = true; g.echoClaim(); hsrui.openCalyx(() => {}); const s = hsrui.top(); s.sel = Math.max(0, g.calyxList().findIndex(x => x.c.id === 'cx_echo_doom')); hsrShots.pump(2); return hsrShots.shot(); })()",
+  traceback: "(() => { const g = hsrShots.fresh('express'); g.state.trBack = { shadow_dest: 1, hunt1: 5, tracks: 2, echo_doom: 4 }; hsrui.openMenu(); hsrui.openChars('trail'); hsrShots.pump(2); return hsrShots.shot(); })()",
   coneart: 'hsrShots.coneArt()',
   foes1: 'hsrShots.foeSheet(0)',
   foes2: 'hsrShots.foeSheet(1)',
@@ -229,6 +497,7 @@ const SCENES = {
   sures: 'hsrShots.suBattle(1)',
   sulose: 'hsrShots.suBattle(2)',
   suicons: 'hsrShots.suIcons()',
+  glyphs: 'hsrShots.glyphs()',
   questhud: 'hsrShots.quest(0)',
   questmission: 'hsrShots.quest(1)',
   questnav: 'hsrShots.quest(2)'
@@ -242,7 +511,7 @@ const PAGE = `(() => {
   Math.random = H.makeRandom(11);
   const pump = (n, dt = 1 / 30) => { for (let i = 0; i < n; i++) ui.update(dt); ui.render(); };
   const shot = () => { ui.render(); return ui.canvas.toDataURL('image/png'); };
-  const FLAGS = ['chaos', 'intro', 'lift', 'arlan_met', 'storm', 'asta_met', 'moment', 'hs_power', 'hs_bridge', 'doom', 'herta_met', 'express_intro', 'jarilo_arrive', 'plains_met', 'belobog_intro', 'sampo_met', 'events_note'];
+  const FLAGS = ['chaos', 'intro', 'lift', 'arlan_met', 'storm', 'asta_met', 'moment', 'hs_power', 'hs_bridge', 'doom', 'herta_met', 'express_intro', 'jarilo_arrive', 'plains_met', 'belobog_intro', 'sampo_met', 'events_note', 'ks_note'];
   const fresh = (map, party) => {
     const st = H.newState();
     Object.assign(st, { name: 'Стелла', gender: 'f', map, x: null, y: null, jade: 1600, credits: 25480, power: 142, tp: 4, obj: 'Найти Броню в Белобоге' });
@@ -297,7 +566,7 @@ const PAGE = `(() => {
     },
     nav(map, kind, zoom, obj) {
       const g = fresh(map);
-      g.state.obj = obj || 'Прогуляться по Белобогу: заглянуть в мастерскую «Нейвервинтер» (юго-восток)';
+      g.state.obj = obj || 'Прогуляться по Белобогу: заглянуть в мастерскую «Незимье» (юго-восток)';
       g.state.anchors = Object.keys(H.MAPS).filter(id => H.mapLayout(id).anchors.length && id !== 'u_rivet').map(id => id + ':0');
       ui.openNav(null);
       const s = ui.top();
@@ -305,8 +574,8 @@ const PAGE = `(() => {
       if (kind) { const i = s.points().findIndex(p => p.kind === kind || (kind === 'goalmark' && p.goal)); if (i >= 0) { s.sel = i; s.detail = kind !== 'goalmark'; } }
       s.snap = true; pump(2); return shot();
     },
-    navArea(map, area) { const g = fresh(map); g.state.obj = 'Найти Олега в Великой шахте (восточный выход)'; for (const f of ['fled', 'underworld']) g.state.flags[f] = true; ui.openNav(null, { area }); pump(2); return shot(); },
-    starMap(map) { const g = fresh(map || 'express'); g.state.obj = 'Прогуляться по Белобогу: заглянуть в мастерскую «Нейвервинтер» (юго-восток)'; ui.openStarMap(null); pump(2); return shot(); },
+    navArea(map, area) { const g = fresh(map); g.state.obj = 'Найти Олега в Большой шахте (южный выход)'; for (const f of ['fled', 'underworld']) g.state.flags[f] = true; ui.openNav(null, { area }); pump(2); return shot(); },
+    starMap(map) { const g = fresh(map || 'express'); g.state.obj = 'Прогуляться по Белобогу: заглянуть в мастерскую «Незимье» (юго-восток)'; ui.openStarMap(null); pump(2); return shot(); },
     hudEnergy(charge) {
       const g = fresh('j_plains'), r = g.state.roster;
       r.trail.energy = 120; r.march.energy = 30; r.danheng.energy = 75; r.himeko.energy = 0;
@@ -370,9 +639,9 @@ const PAGE = `(() => {
     menu() { fresh('j_belobog'); ui.openMenu(); ui.top().sel = 3; pump(2); return shot(); },
     missions(tab, sel, track) {
       const g = fresh('u_boulder');
-      for (const m of H.TRAIL_MISSIONS.slice(0, 16)) for (const f of m.done.split('|')) g.state.flags[f] = true;
-      g.state.missions.done = {}; for (const m of H.TRAIL_MISSIONS.slice(0, 16)) g.state.missions.done[m.id] = 1;
-      g.state.obj = 'Найти Сервал в мастерской «Нейвервинтер» (Белобог, юго-восток)';
+      for (const m of H.TRAIL_MISSIONS.slice(0, 17)) for (const f of m.done.split('|')) g.state.flags[f] = true;
+      g.state.missions.done = {}; for (const m of H.TRAIL_MISSIONS.slice(0, 17)) g.state.missions.done[m.id] = 1;
+      g.state.obj = 'Найдите Сервал в мастерской «Незимье»';
       g.setQuest('hook_treasure', 'talk'); g.setQuest('hook_foreman', 'ask'); g.state.flags.hf_q_cook = true;
       if (track) g.trackMission(track);
       g.events.length = 0; ui.toasts = [];
@@ -391,7 +660,7 @@ const PAGE = `(() => {
       const g = fresh('express');
       g.state.comet = { days, last: days ? '2026-9-29' : null, got: got.slice() };
       g.clock = () => new Date(2026, 8, 29, 22, 47, 13).getTime();
-      if (lvl) g.state.roster.trail.lvl = lvl;
+      if (lvl) g.setTrailLevel(lvl);
       g.state.will = (will || []).slice();
       ui.openEvents(id); ui.top().pick = pick || 0; pump(2); return shot();
     },
@@ -404,6 +673,9 @@ const PAGE = `(() => {
       if (mode === 2) { g.claimAllMail(); g.deleteReadMail(); for (const m of H.MAIL) g.readMail(m.id); g.deleteReadMail(); s.sel = 0; }
       if (mode === 3) { g.claimAllMail(); for (const m of H.MAIL) g.readMail(m.id); s.askDelete(); }
       if (mode === 4) s.select(g.mailbox().findIndex(x => x.m.id === 'v12_heroes'));
+      if (mode === 5) s.select(g.mailbox().findIndex(x => x.m.id === 'v14_hares'));
+      if (mode === 6 || mode === 7) s.select(g.mailbox().findIndex(x => x.m.id === 'v15_supply'));
+      if (mode === 7) s.claim();
       pump(2); return shot();
     },
     chats(mode) {
@@ -427,8 +699,9 @@ const PAGE = `(() => {
       g.state.flags.sampo_city = true;
       pump(20); pump(6); return shot();
     },
-    warpBanner(ban, star, opt) { const g = fresh('express'); g.state.inv.items.spass = 4; g.state.inv.items.tape = 10; g.state.inv.items.rtide = 10; g.state.inv.items.ftide = 5; g.state.inv.items.mana = 10; g.state.inv.items.vkey = 10; if (!(opt && opt.unsigned)) g.state.flags.velvet_contract = true; if (opt && opt.pity) Object.assign(g.pityOf(ban), opt.pity); if (star) { g.setEvStar(star); g.setConeStar(star); for (const b of ['sig', 'amp', 'conv', 'forge', 'guild', 'wiz', 'mid', 'comp']) g.setStarOf(b, star); } ui.openWarp(() => {}); ui.top().ban = ban; pump(2); return shot(); },
+    warpBanner(ban, star, opt) { const g = fresh('express'); g.state.inv.items.spass = 4; g.state.inv.items.tape = 10; g.state.inv.items.rtide = 10; g.state.inv.items.ftide = 5; g.state.inv.items.mana = 10; g.state.inv.items.vkey = 10; g.state.inv.items.badge = 11; if (!(opt && opt.unreg)) g.state.flags.con_reg = true; if (!(opt && opt.unsigned)) g.state.flags.velvet_contract = true; if (opt && opt.pity) Object.assign(g.pityOf(ban), opt.pity); if (star) { g.setEvStar(star); g.setConeStar(star); for (const b of ['sig', 'amp', 'conv', 'forge', 'guild', 'wiz', 'mid', 'comp', 'con', 'alley']) g.setStarOf(b, star); } ui.openWarp(() => {}); ui.top().ban = ban; pump(2); return shot(); },
     charSheet(id, extra) {
+      if (H.CONTON && H.CONTON.KITS[id]) H.CONTON.register();
       const c = ui.ctx, G = H.Gfx, look = Object.assign({}, G.lookOf(id, null), extra || {});
       const gr = c.createLinearGradient(0, 0, 0, 480); gr.addColorStop(0, '#1a1c3a'); gr.addColorStop(1, '#4a4a70');
       c.fillStyle = gr; c.fillRect(0, 0, 640, 480);
@@ -530,6 +803,10 @@ const PAGE = `(() => {
     midRes(best, n) { const out = hsrShots.fakeRes(best, n); if (best === 5) out[6] = { rar: 5, kind: 'char', id: 'yu', name: H.CHARS.yu.name, res: 'new' }; if (best >= 4) out[2] = { rar: 4, kind: 'char', id: 'chie', name: H.CHARS.chie.name, res: 'new' }; return out; },
     midCine(best, t) { const s = hsrShots.convShow(hsrShots.midRes(best, 10), 'mid'); s.t = t; s.cue = 1e9; pump(1, 0); return shot(); },
     midReveal(id, rar, t, hop) { const res = [H.CHARS[id] ? { rar, kind: 'char', id, name: H.CHARS[id].name, res: 'new' } : { rar, kind: 'cone', id, name: H.CONES[id].name }]; const s = hsrShots.convShow(res, 'mid'); s.begin([0]); s.hop = hop ? 0.35 : 0; s.rt = t; s.fade = 0; pump(1, 0); return shot(); },
+    spotRes(best, n) { const out = hsrShots.fakeRes(best, n); if (best === 5) out[6] = { rar: 5, kind: 'char', id: 'amanda', name: H.CHARS.amanda.name, res: 'new' }; if (best >= 4) out[2] = { rar: 4, kind: 'char', id: 'guinaifen', name: H.CHARS.guinaifen.name, res: 'new' }; return out; },
+    spotCine(best, t) { const s = hsrShots.convShow(hsrShots.spotRes(best, 10), 'con'); s.t = t; s.cue = 1e9; pump(1, 0); return shot(); },
+    spotReveal(id, rar, t) { const res = [H.CHARS[id] ? { rar, kind: 'char', id, name: H.CHARS[id].name, res: 'new' } : { rar, kind: 'cone', id, name: H.CONES[id].name }]; const s = hsrShots.convShow(res, 'con'); s.begin([0]); s.hop = 0; s.rt = t; s.fade = 0; pump(1, 0); return shot(); },
+    spotRack(best) { const s = hsrShots.convShow(hsrShots.spotRes(best || 5, 10), 'con'); s.toRack(); s.rt = 2; s.fade = 0; pump(1, 0); return shot(); },
     midRack(best) { const s = hsrShots.convShow(hsrShots.midRes(best || 5, 10), 'mid'); s.toRack(); s.rt = 2; s.fade = 0; pump(1, 0); return shot(); },
     convRes(best, n) { const out = hsrShots.fakeRes(best, n); if (best === 5) out[6] = { rar: 5, kind: 'char', id: 'phrolova', name: H.CHARS.phrolova.name, res: 'new' }; return out; },
     convCine(best, t) { const s = hsrShots.convShow(hsrShots.convRes(best, 10)); s.t = t; s.cue = 1e9; pump(1, 0); return shot(); },
@@ -582,6 +859,61 @@ const PAGE = `(() => {
       ui.subKey('ok', 'Enter');
       for (let i = 0; i < 80 && !ui.bt.aoa; i++) ui.update(1 / 20);
       for (let i = 0; i < 12; i++) ui.update(1 / 20);
+      return shot();
+    },
+    ccBattle(mode) {
+      H.CONTON.register();
+      const g = fresh('j_plains', ['makoto', 'amanda', 'talleah', 'natasha']);
+      g.startBattle({ enemies: ['reaver:20', 'eliminator:20', 'flamespawn:20'], lvl: 20, bg: 'snow', music: 'battle' });
+      ui.drainGameEvents();
+      ui.bt.auto = false;
+      const b = g.battle, idle = () => b.phase === 'input' && !ui.bt.queue.length && !ui.bt.cur, wait = () => { for (let i = 0; i < 900 && !idle() && !b.over; i++) ui.update(1 / 10); };
+      const turnOf = id => { for (let i = 0; i < 30; i++) { wait(); if (b.current && b.current.charId === id) return b.current; ui.doAct('basic'); } return null; };
+      const until = (fn, n) => { for (let i = 0; i < (n || 300) && !fn(); i++) ui.update(1 / 30); };
+      const of = id => b.allies.find(a => a.charId === id), cc = () => ui.bt.cc || {};
+      for (const e of b.enemies) e.hp = e.maxHp = e.dHp = e.hp * 8;
+      const mk = of('makoto'), am = of('amanda'), tl = of('talleah'), na = of('natasha');
+      wait();
+      if (mode === 'mk') { turnOf('makoto'); b.sp = 4; ui.bt.target = b.living[1]; ui.pickAct('skill'); ui.confirmAct(); until(() => cc().steals && cc().steals.length); pump(3); return shot(); }
+      if (mode === 'portal' || mode === 'heist') {
+        turnOf('makoto'); b.setShiny(mk, 3); mk.energy = mk.maxEnergy; ui.pullEvents(); ui.doUlt(mk); wait(); pump(20);
+        if (mode === 'portal') return shot();
+        for (let i = 0; i < 400 && !(cc().cut && cc().cut.kind === 'heist'); i++) { if (idle()) ui.doAct('basic'); ui.update(1 / 10); }
+        until(() => cc().cut && cc().cut.t > 0.36, 40);
+        ui.render(); return shot();
+      }
+      if (mode === 'am') { na.hp = na.dHp = Math.round(na.maxHp * 0.2); b.contonHurt(na); ui.pullEvents(); until(() => cc().cut && cc().cut.kind === 'call' && cc().cut.t > 0.42); return shot(); }
+      if (mode === 'am2') {
+        b.transform(am, true); for (const a of b.allies) b.cocoon(am, a, 0.45, 60, 3); ui.pullEvents(); wait();
+        b.hit(b.living[0], na, 0, { raw: na.shield + 1 }); b.cleanup(); ui.pullEvents();
+        until(() => cc().burst && cc().burst.t > 0.3); return shot();
+      }
+      if (mode === 'tl') { turnOf('talleah'); b.sp = 4; ui.bt.target = b.living[1]; ui.pickAct('skill'); ui.confirmAct(); until(() => cc().gyn && cc().gyn.shotT > 0 && cc().gyn.shotT < 0.32, 600); return shot(); }
+      if (mode === 'squad') { turnOf('talleah'); tl.energy = tl.maxEnergy; ui.doUlt(tl); until(() => cc().gyn && cc().gyn.shotT > 0 && cc().gyn.shotT < 0.32 && cc().gyn.u.flags.squad > 0, 900); return shot(); }
+      if (mode === 'capsule') { tl.hp = 1; b.hit(b.living[0], tl, 0, { raw: 99 }); ui.pullEvents(); until(() => tl.dAway === 'capsule' && cc().gyn); pump(14); return shot(); }
+      if (mode === 'clap') { b.applause(mk); ui.pullEvents(); until(() => cc().clap && cc().clap.t > 0.32); return shot(); }
+      return shot();
+    },
+    haresBattle(mode) {
+      const g = fresh('j_plains', ['billy', 'nicole', 'anby', 'natasha']);
+      g.startBattle({ enemies: ['gunner:20', 'gunner:20', 'gunner:20'], lvl: 20, bg: 'snow', music: 'battle' });
+      ui.drainGameEvents();
+      ui.bt.auto = false;
+      const b = g.battle, idle = () => b.phase === 'input' && !ui.bt.queue.length && !ui.bt.cur, wait = () => { for (let i = 0; i < 900 && !idle() && !ui.chainOpen() && !b.over; i++) ui.update(1 / 10); };
+      const turnOf = id => { for (let i = 0; i < 30; i++) { wait(); if (ui.chainOpen()) { ui.chainPick(null); continue; } if (b.current && b.current.charId === id) return b.current; ui.doAct('basic'); } return null; };
+      const of = id => b.allies.find(a => a.charId === id);
+      for (const e of b.enemies) { e.hp = e.maxHp = e.dHp = e.hp * 8; e.tough = e.maxTough = 200; }
+      wait();
+      if (mode === 'field') { turnOf('nicole'); b.sp = 4; ui.bt.target = b.living[1]; ui.pickAct('skill'); ui.confirmAct(); wait(); pump(20); return shot(); }
+      if (mode === 'chain') {
+        turnOf('anby');
+        for (const e of b.enemies) { e.tough = 1; e.broken = false; }
+        ui.bt.target = b.living[1]; ui.pickAct('basic'); ui.confirmAct(); wait(); pump(20); return shot();
+      }
+      if (mode === 'pips') {
+        b.setSteady(of('billy'), 2); b.setStar(of('billy'), 1); b.setSeries(of('anby'), 3); of('nicole').flags.caseShots = 1;
+        b.push({ t: 'case', u: of('nicole'), v: 1 }); ui.pullEvents(); wait(); pump(20); return shot();
+      }
       return shot();
     },
     battlePlay(enemies, bg, party, keys, boss) {
@@ -865,6 +1197,30 @@ const PAGE = `(() => {
       G.itemIcon(c, 'frag', 440, 340, 32);
       return ui.canvas.toDataURL('image/png');
     },
+    glyphs(bg) {
+      const c = ui.ctx, G = H.Gfx, paths = Object.keys(H.PATHS).concat(Object.keys(H.SU.PATHS).filter(p => !H.PATHS[p]));
+      c.fillStyle = bg || '#20243a'; c.fillRect(0, 0, 640, 480);
+      c.fillStyle = '#f2e6c8'; c.fillRect(0, 404, 640, 76);
+      H.ELEMENT_KEYS.forEach((e, i) => {
+        const x = 30 + i * 88;
+        [4, 5, 6, 7, 9, 12].forEach((r, j) => G.elemIcon(c, e, x + (j % 3) * 26, 24 + Math.floor(j / 3) * 34, r));
+        G.elemIcon(c, e, x + 26, 132, 24);
+        G.elemIcon(c, e, x + (i % 2 ? 0 : 26), 430, 7);
+        G.elemIcon(c, e, x + 26, 456, 9);
+        ui.text(H.ELEMENTS[e].short, x + 26, 160, { align: 'center', size: 9 });
+      });
+      paths.forEach((p, i) => {
+        const x = 8 + i * 70, col = (H.SU.PATHS[p] || {}).col;
+        [11, 12, 14, 16, 20].forEach((s, j) => G.pathIcon(c, p, x + (j % 3) * 22, 176 + Math.floor(j / 3) * 24, s));
+        G.pathIcon(c, p, x, 228, 32, col);
+        G.pathIcon(c, p, x + 34, 228, 28, '#ffffff');
+        G.pathIcon(c, p, x, 268, 64, col);
+        ui.text(p.slice(0, 9), x + 32, 334, { align: 'center', size: 9 });
+        G.pathIcon(c, p, x + 4, 412, 14, '#7a5a2a');
+        G.pathIcon(c, p, x + 24, 412, 24, '#3a2a14');
+      });
+      return ui.canvas.toDataURL('image/png');
+    },
     icons() {
       const c = ui.ctx, G = H.Gfx;
       c.fillStyle = '#20243a'; c.fillRect(0, 0, 640, 480);
@@ -879,6 +1235,17 @@ const PAGE = `(() => {
       Object.keys(G.STAT_ART).forEach((st, i) => { G.statIcon(c, st, 300 + i * 24, 150, 16); G.statIcon(c, st, 300 + i * 24, 172, 12, '#ffe8a0'); });
       Object.keys(G.MENU_ART).forEach((m, i) => { G.menuIcon(c, m, 10 + (i % 8) * 70, 210 + Math.floor(i / 8) * 60, 32); ui.text(m, 26 + (i % 8) * 70, 244 + Math.floor(i / 8) * 60, { align: 'center', size: 9 }); });
       Object.keys(H.ELEMENTS).forEach((e, i) => G.elemIcon(c, e, 20 + i * 30, 420, 10));
+      return ui.canvas.toDataURL('image/png');
+    },
+    matIcons() {
+      const c = ui.ctx, G = H.Gfx;
+      c.fillStyle = '#20243a'; c.fillRect(0, 0, 640, 480);
+      Object.keys(H.ITEMS).filter(id => H.ITEMS[id].kind === 'mat').forEach((id, i) => {
+        const x = 6 + (i % 9) * 70, y = 6 + Math.floor(i / 9) * 78;
+        G.rarityCell(c, x, y, 64, 64, H.ITEMS[id].rar);
+        G.itemIcon(c, id, x, y, 64);
+        ui.text(id, x + 32, y + 66, { align: 'center', size: 9 });
+      });
       return ui.canvas.toDataURL('image/png');
     },
     coneArt(big) {
@@ -979,6 +1346,9 @@ async function main() {
     if (n.startsWith('midc')) { const [b, tt] = n.slice(4).split('_'); return 'hsrShots.midCine(' + (+b) + ',' + (+tt) + ')'; }
     if (n.startsWith('conebig_')) return 'hsrShots.coneArt(' + JSON.stringify(n.slice(8).split('-')) + ')';
     if (n.startsWith('midv_')) { const [, id, rar, tt, h] = n.split('_'); return 'hsrShots.midReveal(' + JSON.stringify(id) + ',' + (+rar) + ',' + (+tt) + ',' + (h === 'h') + ')'; }
+    if (n.startsWith('spotc')) { const [b, tt] = n.slice(5).split('_'); return 'hsrShots.spotCine(' + (+b) + ',' + (+tt) + ')'; }
+    if (n.startsWith('spotv_')) { const m = n.match(/^spotv_(.+)_(\d)_([\d.]+)$/); return 'hsrShots.spotReveal(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ')'; }
+    if (n.startsWith('spotrack')) return 'hsrShots.spotRack(' + (+n.slice(8) || 5) + ')';
     if (n.startsWith('midrack')) return 'hsrShots.midRack(' + (+n.slice(7) || 5) + ')';
     if (n.startsWith('convc')) { const [b, t] = n.slice(5).split('_'); return 'hsrShots.convCine(' + (+b) + ',' + (+t) + ')'; }
     if (n.startsWith('convv_')) { const [, id, rar, t, h] = n.split('_'); return 'hsrShots.convReveal(' + JSON.stringify(id) + ',' + (+rar) + ',' + (+t) + ',' + (h === 'h') + ')'; }
@@ -993,8 +1363,8 @@ async function main() {
     if (n.startsWith('navarea_')) { const [, map, area] = n.match(/^navarea_(.+?)__(.+)$/); return 'hsrShots.navArea(' + JSON.stringify(map) + ',' + JSON.stringify(area) + ')'; }
     if (n.startsWith('navz_')) return 'hsrShots.nav(' + JSON.stringify(n.slice(5)) + ', null, 2)';
     if (n.startsWith('nav_')) { const [map, kind] = n.slice(4).split('__'); return 'hsrShots.nav(' + JSON.stringify(map) + ',' + JSON.stringify(kind || null) + ')'; }
-    if (n.startsWith('hud_')) return 'hsrShots.hudMap(' + JSON.stringify(n.slice(4)) + ", null, null, 'Прогуляться по Белобогу: заглянуть в мастерскую «Нейвервинтер» (юго-восток)')";
-    if (n.startsWith('cine_')) { const m = n.match(/^cine_(c_[a-z0-9]+)_(\d+)_([\d.]+)(?:_([mf]))?$/); return m ? 'hsrShots.cine(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + JSON.stringify(m[4] || '') + ')' : null; }
+    if (n.startsWith('hud_')) return 'hsrShots.hudMap(' + JSON.stringify(n.slice(4)) + ", null, null, 'Прогуляться по Белобогу: заглянуть в мастерскую «Незимье» (юго-восток)')";
+    if (n.startsWith('cine_')) { const m = n.match(/^cine_(c_[a-z0-9_]+?)_(\d+)_([\d.]+)(?:_([mf]))?$/); return m ? 'hsrShots.cine(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + JSON.stringify(m[4] || '') + ')' : null; }
     if (n.startsWith('ult_')) { const m = n.match(/^ult_([a-z]+(?:_p)?)_(\d)_([\d.]+)(?:_(all|one|none))?$/); return m ? 'hsrShots.ultShot(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + JSON.stringify(m[4] || '') + ')' : null; }
     if (n.startsWith('fus_')) { const m = n.match(/^fus_(f_[a-z0-9]+)_(\d)_([\d.]+)(?:_(all|one|none))?$/); return m ? 'hsrShots.fusShot(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + JSON.stringify(m[4] || '') + ')' : null; }
     if (n.startsWith('fuslive_')) { const m = n.match(/^fuslive_([\d.]+)$/); return m ? 'hsrShots.fusLive(' + m[1] + ')' : null; }

@@ -3,7 +3,7 @@
   const G = H.Gfx, T = H.TUNING;
   const { W, HGT, C, lsSet, OPT_KEY } = H.UI_CONST;
   const BATTLE_SPEEDS = [1, 2, 3];
-  const EV_TIME = { act: 0.55, dmg: 0.2, tough: 0, break: 0.75, heal: 0.2, shield: 0.12, status: 0.1, kill: 0.35, text: 1.1, mood: 1.2, summon: 0.45, implant: 0.3, shuhu: 0.05, wave: 0.9, lock: 1.1, recover: 0.3, revive: 0.7, leave: 0.45, flee: 0.8, fusion: 1.0, chaos: 0.55, stance: 0.15, turn: 0.05, win: 0.5, lose: 0.6, fled: 0.3, hecate: 0.7, notes: 0.08, elys: 0.15, seal: 0.25, elysBurst: 0.45, form: 0.7, miss: 0.35, fail: 0.45, chant: 0.55, collapse: 0.4, loot: 0.3, oneMore: 0.9, aoa: 1.4, aoaEnd: 0.4, warn: 0.5, persona: 0.1, stitch: 0.25 };
+  const EV_TIME = { act: 0.55, dmg: 0.2, tough: 0, break: 0.75, heal: 0.2, shield: 0.12, status: 0.1, kill: 0.35, text: 1.1, mood: 1.2, summon: 0.45, implant: 0.3, shuhu: 0.05, wave: 0.9, lock: 1.1, recover: 0.3, revive: 0.7, leave: 0.45, flee: 0.8, fusion: 1.0, chaos: 0.55, stance: 0.15, turn: 0.05, win: 0.5, lose: 0.6, fled: 0.3, hecate: 0.7, notes: 0.08, elys: 0.15, seal: 0.25, elysBurst: 0.45, form: 0.7, miss: 0.35, fail: 0.45, chant: 0.55, collapse: 0.4, loot: 0.3, oneMore: 0.9, aoa: 1.4, aoaEnd: 0.4, warn: 0.5, persona: 0.1, stitch: 0.25, gynoids: 0.6, mark: 0.15, shackle: 0.2, shiny: 0.05, steal: 0.35, away: 0.45, back: 0.8, capsule: 0.6, ccForm: 0.45, applause: 0.25 };
   const NOTE = { str: ['Струнные', '#ff5a6e'], wind: ['Духовые', '#b484ff'], cad: ['Каденция', '#ffd060'] };
   const HECATE_AT = { x: 112, y: 330, s: 150 };
   const MOOD_COL = { eager: '#ffd060', happy: '#80ff90', angry: '#ff5050', scared: '#a0a0ff', none: '#c0c0c0' };
@@ -17,7 +17,7 @@
       const g = this.game, b = g.battle;
       this.mode = 'battle';
       this.screens = this.screens.filter(s => s.keep);
-      this.bt = { queue: [], cur: null, curT: 0, floats: [], shake: 0, bannerT: 0, banner: null, target: null, allyMode: null, sub: null, auto: this.bt && this.bt.autoSticky ? true : false, autoSticky: this.bt ? this.bt.autoSticky : false, flash: new Map(), lunge: new Map(), fade: new Map(), foes: b.enemies.slice(), intro: 0.8, bg: e.bg, boss: e.boss, big: null, result: null, msg: null, msgT: 0, pick: 'basic', charge: 0, pv: null, dmgBy: new Map(), ult: null, ultSeen: new Set(), fusionSeen: new Set() };
+      this.bt = { queue: [], cur: null, curT: 0, floats: [], shake: 0, bannerT: 0, banner: null, target: null, allyMode: null, sub: null, auto: this.bt && this.bt.autoSticky ? true : false, autoSticky: this.bt ? this.bt.autoSticky : false, flash: new Map(), lunge: new Map(), fade: new Map(), foes: b.enemies.slice(), intro: 0.8, bg: e.bg, boss: e.boss, big: null, result: null, msg: null, msgT: 0, pick: 'basic', charge: 0, pv: null, dmgBy: new Map(), ult: null, ultSeen: new Set(), fusionSeen: new Set(), ward: b.ward ? Object.assign({}, b.ward) : null };
       for (const u of [...b.allies, ...b.enemies]) { u.dHp = u.hp; u.dTough = u.tough; u.dShield = u.shield; }
       this.audio.music(e.music);
       this.sfx('warp');
@@ -40,7 +40,7 @@
     allyPos(u) { return { x: 12 + u.idx * 112 + 54, y: 400 }; },
 
     unitPos(u) {
-      if (u.summon) return { x: HECATE_AT.x, y: HECATE_AT.y - HECATE_AT.s * 0.55 };
+      if (u.summon) return u.id === 'gynoids' ? this.gynoidPos() : this.fivesPos(u) || { x: HECATE_AT.x, y: HECATE_AT.y - HECATE_AT.s * 0.55 };
       if (u.side === 'ally') return this.allyPos(u);
       const p = this.enemyLayout().get(u);
       return p ? { x: p.x, y: p.y - p.s * 0.5 } : { x: W / 2, y: 200 };
@@ -61,6 +61,9 @@
       if (bt.msgT > 0) bt.msgT -= dt;
       if (bt.big) { bt.big.t -= dt; if (bt.big.t <= 0) bt.big = null; }
       this.inabaUpdate(dt);
+      this.contonUpdate(dt);
+      this.haresUpdate(dt);
+      this.fivesUpdate(dt);
       if (bt.hecate) {
         const h = bt.hecate;
         h.t += dt;
@@ -85,7 +88,7 @@
         if (e.t === 'act' && e.kind === 'ult' && this.ultCineOn(e.u)) { bt.ult = this.makeUltShow(e); return; }
         if (e.t === 'fusion' && this.fusionCineOn(e.id)) { bt.ult = this.makeFusionShow(e); return; }
         this.applyEvent(e);
-        const d = EV_TIME[e.t] || 0;
+        const d = e.hold || EV_TIME[e.t] || 0;
         if (d > 0) { bt.cur = e; bt.curT = d; return; }
       }
       const b = g.battle;
@@ -95,7 +98,7 @@
       if (b.phase === 'input') {
         if (!bt.target || !H.battleStat.alive(bt.target)) bt.target = b.living[0] || null;
         if (bt.auto && !bt.sub && !bt.allyMode) { b.autoStep(); this.pullEvents(); }
-      }
+      } else if (b.chainReady() && bt.auto) { b.chain(b.chainAuto()); this.pullEvents(); }
     },
 
     ultCineOn(u) {
@@ -150,7 +153,9 @@
           bt.banner = { name: e.name, who: e.u.name, side: e.u.side, kind: e.kind };
           bt.bannerT = 1.2;
           bt.lunge.set(e.u, 0.35);
-          if (e.kind === 'summon' && bt.hecate) { bt.hecate.note = e.note; bt.hecate.noteT = 0.7; }
+          if (e.kind === 'summon' && bt.hecate && bt.hecate.u === e.u) { bt.hecate.note = e.note; bt.hecate.noteT = 0.7; }
+          this.contonAct(e);
+          this.fivesAct(e);
           if (e.kind === 'res') { const P = H.SU.PATHS[this.game.battle.su.path]; bt.big = { text: 'РЕЗОНАНС ПУТИ', sub: P.name + ' · ' + P.aeon, col: P.col, t: 1.1 }; bt.shake = 8; }
           this.sfx(e.kind === 'ult' || e.kind === 'fusion' || e.kind === 'res' ? 'ult' : e.kind === 'contact' ? 'text' : 'swing');
           break;
@@ -191,7 +196,7 @@
         case 'chant': e.u.dChant = e.v; this.floatAt(e.u, 'Напев ' + e.v, '#ff7a6a', 11); bt.msg = e.u.name + ': «' + e.line + '»'; bt.msgT = 1.6; bt.msgWarn = false; this.sfx('buff'); break;
         case 'collapse': e.u.dCollapse = e.v; if (!e.on) e.u.dChant = 0; this.floatAt(e.u, e.on ? 'Без сил' : 'Снова в строю', e.on ? '#ff9090' : '#90ffb0', 12); break;
         case 'loot': this.floatAt(e.u, e.text, C.gold, 11); this.sfx('glint'); break;
-        case 'shuhu': e.u.dShuhu = e.v; if (e.v >= T.shuhuMax) this.floatAt(e.u, 'Дар Шуху!', '#7affc0', 12); break;
+        case 'shuhu': e.u.dShuhu = e.v; if (e.v >= (e.u.flags.shuhuMax || T.shuhuMax)) this.floatAt(e.u, 'Дар Шуху!', '#7affc0', 12); break;
         case 'implant': e.u.dImplant = e.e; this.floatAt(e.u, e.text, e.e ? H.ELEMENTS[e.e].col : '#c0c0c0', 11); if (e.e) this.sfx('debuff'); break;
         case 'luck': e.u.dLuck = e.v; if (e.add > 0) this.floatAt(e.u, 'Удача +' + e.add, '#9affb0', 10); break;
         case 'ecstasy': e.u.dEcst = e.v; if (e.v >= T.ecstasyMax && e.add > 0) this.floatAt(e.u, 'Восторг!', '#ff9ad0', 12); break;
@@ -203,7 +208,7 @@
         case 'icefire': e.u.dIce = e.v; if (e.v) this.floatAt(e.u, 'Ледяное пламя ' + e.v, '#8ad8ff', 10); break;
         case 'chaos': bt.big = { text: 'ХАОС', sub: 'Старые аномалии взорвались', col: '#ff78d8', t: 0.6 }; bt.shake = Math.max(bt.shake, 8); this.floatAt(e.u, 'Хаос!', '#ff78d8', 14); this.sfx('break'); break;
         case 'stance': e.u.dStance = e.stance; this.floatAt(e.u, e.text, '#c8b0ff', 11); this.sfx('buff'); break;
-        case 'turn': bt.turnU = e.u; bt.pick = 'basic'; bt.charge = 0; bt.allyMode = null; if (e.extra) this.floatAt(e.u, 'Доп. ход!', '#ffe040', 13); if (e.keep && !e.oneMore) this.floatAt(e.u, 'Ход продолжается', '#ff9a8a', 11); if (e.oneMore) this.askAllOut(); break;
+        case 'turn': bt.turnU = e.u; bt.pick = this.game.battle && this.game.battle.basicLocked(e.u) ? 'skill' : 'basic'; bt.charge = 0; bt.allyMode = null; if (e.extra) this.floatAt(e.u, 'Доп. ход!', '#ffe040', 13); if (e.keep && !e.oneMore) this.floatAt(e.u, 'Ход продолжается', '#ff9a8a', 11); if (e.oneMore) this.askAllOut(); break;
         case 'notes': e.u.dNotes = e.notes; if (e.add) this.floatAt(e.u, '♪ ' + NOTE[e.add][0], NOTE[e.add][1], 10); break;
         case 'after': e.u.dAfter = e.v; break;
         case 'hecate':
@@ -234,7 +239,7 @@
         case 'cycle': this.fhCycleEvent(e); break;
         case 'win': this.sfx('win'); break;
         case 'lose': this.sfx('lose'); break;
-        default: if (!this.foursEvent(e)) this.inabaEvent(e);
+        default: if (e.t === 'ward') this.bt.ward = e; else if (!this.foursEvent(e) && !this.contonEvent(e) && !this.haresEvent(e) && !this.fivesEvent(e)) this.inabaEvent(e);
       }
     },
 
@@ -274,6 +279,7 @@
       if (code === 'KeyV') { bt.auto = !bt.auto; this.sfx('select'); return; }
       if (code === 'KeyX') { this.cycleBattleSpeed(); return; }
       if (bt.ult) { if (k === 'ok' || k === 'back') bt.ult.skip(); return; }
+      if (this.chainOpen()) return this.chainKey(k, code);
       if (!b || b.phase !== 'input' || bt.queue.length || bt.cur) return;
       if (bt.sub) return this.subKey(k, code);
       if (code === 'KeyF' && b.su) return this.suResonate();
@@ -304,7 +310,7 @@
       if (code === 'KeyT') { bt.sub = { type: 'contact', sel: 0 }; this.sfx('confirm'); return; }
       if (code === 'KeyR') { const f = b.availableFusions(); if (!f.length) { this.sfx('deny'); bt.msg = 'Нет пар для слияния в команде.'; bt.msgT = 1.2; return; } bt.sub = { type: 'fusion', sel: 0 }; this.sfx('confirm'); return; }
       if (k === 'back') {
-        if (bt.pick === 'skill') { this.pickAct('basic'); return; }
+        if (bt.pick === 'skill' && !(b.current && b.basicLocked(b.current))) { this.pickAct('basic'); return; }
         bt.sub = { type: 'pause', sel: 0 }; this.sfx('confirm');
       }
     },
@@ -312,6 +318,7 @@
     pickAct(kind) {
       const b = this.game.battle, bt = this.bt, u = b.current;
       if (kind === 'skill' && b.skillLocked(u)) { this.sfx('deny'); bt.msg = 'В Адском пейзаже навык недоступен.'; bt.msgT = 1.2; return; }
+      if (kind === 'basic' && b.basicLocked(u)) { this.sfx('deny'); bt.msg = 'В Спектральной трансмиграции доступен только навык.'; bt.msgT = 1.2; return; }
       if (kind === 'skill' && b.sp < b.skillCost(u)) { this.sfx('deny'); bt.msg = 'Не хватает очков навыка!'; bt.msgT = 1; return; }
       if ((bt.pick || 'basic') === kind) return this.confirmAct();
       bt.pick = kind;
@@ -461,6 +468,9 @@
       bt.pv = inputOk && !bt.auto && b.current && b.current.side === 'ally' ? b.preview(bt.pick || 'basic', bt.allyMode ? bt.allyMode.target : bt.target) : null;
       const aimFoes = bt.pv ? [...bt.pv.rows.keys()].some(t => t.side === 'enemy') : b.phase === 'input' && !bt.allyMode;
       if (bt.hecate) this.drawHecate(c, bt.hecate);
+      this.contonBack(c, lay);
+      this.haresBack(c, lay);
+      this.fivesBack(c, lay);
       for (const [u, p] of lay) {
         const fade = bt.fade.has(u) ? bt.fade.get(u) : 1;
         if ((u.dead || u.gone) && fade <= 0) continue;
@@ -489,6 +499,9 @@
       this.drawStitch(c, lay);
       for (const pa of this.particles) if (!pa.field) { c.fillStyle = pa.col; c.fillRect(pa.x, pa.y, 3, 3); }
       this.drawAoa(c, lay);
+      this.contonField(c, lay);
+      this.haresField(c, lay);
+      this.fivesField(c, lay);
       c.restore();
       if (boss) this.bossHud(c, boss);
       this.drawTurnOrder(c, b);
@@ -496,6 +509,8 @@
       this.drawCommands(c, b);
       this.drawTopRight(c);
       this.drawDamageBoard(c, b);
+      if (this.bt.ward && this.drawWard) this.drawWard(c, this.bt.ward);
+      if (this.drawProto) this.drawProto(c, b);
       if (b.fh) this.drawFhHud(c, b);
       for (const f of bt.floats) { c.globalAlpha = Math.min(1, f.t * 2); this.text(f.text, f.x, f.y, { align: 'center', size: f.size, bold: true, col: f.col }); c.globalAlpha = 1; }
       if (bt.bannerT > 0 && bt.banner) {
@@ -527,6 +542,8 @@
         c.globalAlpha = 1;
       }
       this.drawOneMore(c);
+      this.contonOver(c);
+      this.haresOver(c);
       if (bt.intro > 0) {
         c.fillStyle = '#000';
         const p = bt.intro / 0.8;
@@ -626,6 +643,8 @@
       if (u.flags.bound > 0) tags.unshift('Связан');
       if (u.flags.provoke) tags.push('Вызов');
       if (u.frostbite) tags.unshift('Обморожение');
+      this.contonFoeTags(u, tags);
+      this.haresFoeTags(u, tags);
       if (tags.length) this.text(tags.slice(0, 3).join(' · '), p.x, y + 26, { align: 'center', size: 9, col: '#ffb0b0' });
       this.icefirePips(u, x + w - 4, y + 4);
       if (u === bt.target) this.text(u.name + ' · ур.' + u.lvl, p.x, r ? y - 28 : y - 13, { align: 'center', size: 10, bold: true, col: C.gold });
@@ -663,6 +682,8 @@
       if (u.charging != null) tags.push('ЗАРЯД!');
       for (const d of u.dots) tags.push(H.DOT_NAME[d.type]);
       if (u.frostbite) tags.push('Обморожение');
+      this.contonFoeTags(u, tags);
+      this.haresFoeTags(u, tags);
       if (tags.length) this.text(tags.join(' · '), x + w, y + 41, { align: 'right', size: 10, bold: true, col: '#ffb060' });
       this.icefirePips(u, x + w - 2, y + 49);
       this.text('ур. ' + u.lvl, x - 30, y + 42, { size: 9, align: 'center', col: C.sub });
@@ -756,13 +777,16 @@
         const gr = c.createLinearGradient(0, y, 0, y + size);
         gr.addColorStop(0, ally ? '#2a4a9a' : '#8a2a2a'); gr.addColorStop(1, ally ? '#101a44' : '#3a0c10');
         c.fillStyle = gr; c.fillRect(x, y, size, size);
-        if (u.summon) G.foeIcon(c, { id: 'hecate', boss: true }, x, y, size, { border: false });
+        if (u.summon && u.id === 'gynoids') this.gynoidIcon(c, x, y, size);
+        else if (u.summon) { if (!this.fivesIcon(c, u, x, y, size)) G.foeIcon(c, { id: 'hecate', boss: true }, x, y, size, { border: false }); }
         else if (ally) G.drawPortrait(c, G.lookOf(u.charId, this.game), x, y, size);
         else G.foeIcon(c, u.data, x, y, size, { border: false });
-        c.strokeStyle = cur ? C.brassHi : u.summon ? '#ff6a96' : ally ? '#6a8ad8' : '#d86a6a'; c.lineWidth = cur ? 2 : 1; c.strokeRect(x - 0.5, y - 0.5, size + 1, size + 1); c.lineWidth = 1;
+        c.strokeStyle = cur ? C.brassHi : u.summon ? (u.id === 'gynoids' ? '#7ab4ff' : u.id === 'lord' ? '#b48aff' : u.id === 'numby' ? '#ffd060' : '#ff6a96') : ally ? '#6a8ad8' : '#d86a6a'; c.lineWidth = cur ? 2 : 1; c.strokeRect(x - 0.5, y - 0.5, size + 1, size + 1); c.lineWidth = 1;
+        this.contonRail(c, u, x, y, size);
         if (!cur) { c.fillStyle = 'rgba(4,6,20,0.85)'; c.fillRect(x + size - 14, y + size - 10, 16, 10); this.text(String(o.av), x + size + 1, y + size - 10, { align: 'right', size: 9, bold: true, col: C.cream }); }
         else this.diamond(x + size + 6, y + size / 2, 4, C.brassHi, '#1a1208');
       });
+      this.contonRailFx(c);
     },
 
     cycleBattleSpeed() {
@@ -806,7 +830,7 @@
         c.fillStyle = G.dark(ec.col, 0.6); c.fillRect(x + 3, y + 3, 58, 58);
         const form = u.dForm != null ? u.dForm : u.flags.nightmare > 0;
         if (form) G.foeIcon(c, { id: 'scar_nightmare', boss: true }, x + 3, y + 3, 58, { border: false });
-        else G.drawPortrait(c, G.lookOf(u.charId, this.game), x + 3, y + 3, 58);
+        else if (!this.contonPortrait(c, u, x + 3, y + 3, 58)) G.drawPortrait(c, G.lookOf(u.charId, this.game), x + 3, y + 3, 58);
         if (bt.flash.has(u)) { c.fillStyle = 'rgba(255,80,80,0.5)'; c.fillRect(x + 3, y + 3, 58, 58); }
         const ready = b.ultReady(u), cx2 = x + 84, cy2 = y + 30;
         if (u.kit.notes) this.noteStaff(c, u, cx2, cy2, ready);
@@ -853,11 +877,14 @@
         }
         const pip = PIPS[u.charId];
         if (pip) {
-          const n = u[pip[1]] == null ? u.flags[pip[0]] || 0 : u[pip[1]], max = T[pip[2]];
+          const n = u[pip[1]] == null ? u.flags[pip[0]] || 0 : u[pip[1]], max = u.flags[pip[2]] || T[pip[2]];
           for (let k = 0; k < max; k++) this.diamond(x + 9 + k * 8, y + 93, 3, k < n ? pip[3] : '#20263e', '#0a1020');
           tx = x + 12 + max * 8;
         }
         tx = this.foursCard(c, u, x, y, tags, tx);
+        tx = this.contonCard(c, u, x, y, tags, tx);
+        tx = this.haresCard(c, u, x, y, tags, tx);
+        tx = this.fivesCard(c, u, x, y, tags, tx);
         if (u.flags.collapse > 0 && !dead) { c.fillStyle = 'rgba(40,0,12,0.5)'; c.fillRect(x + 3, y + 3, 58, 58); this.text('Без сил', x + 32, y + 25, { align: 'center', size: 10, bold: true, col: '#ffb8b8' }); }
         if (u.charId === 'yanagi') this.moonGlyph(c, x + 12, y + 12, 6, u.dStance || u.flags.stance);
         if (tags.length) this.text(this.fitText(tags.slice(0, 2).join(' '), 9, x + 74 - tx), tx, y + 88, { size: 9, col: C.gold });
@@ -927,11 +954,12 @@
         if (u.kit.personas) this.drawPersonaModes(c, u);
         else if (u.kit.skills && onSkill) this.drawSkillModes(c, u);
         if (u.charId === 'silverwolf' && onSkill) this.drawImplantModes(c, b, u);
-        this.roundButton(c, x + 40, y + 92, qr, 'Q', bab.lv ? 'Симоцуки' : 'Атака', TARGET_NAME[bab.target], () => this.battleKey(null, 'KeyQ'), { col: '#5a6ab8', active: !onSkill, icon: (ix, iy) => G.statIcon(c, 'atk', ix - 8, iy - 8, 16, '#ffffff') });
+        this.roundButton(c, x + 40, y + 92, qr, 'Q', bab.lv ? 'Симоцуки' : 'Атака', TARGET_NAME[bab.target], () => this.battleKey(null, 'KeyQ'), { col: '#5a6ab8', active: !onSkill, disabled: b.basicLocked(u), icon: (ix, iy) => G.statIcon(c, 'atk', ix - 8, iy - 8, 16, '#ffffff') });
         this.roundButton(c, x + 128, y + 92, er, 'E', 'Навык', TARGET_NAME[sab.target], () => this.battleKey(null, 'KeyE'), { col: ec, disabled: noSp, active: onSkill, icon: (ix, iy) => G.pathIcon(c, u.kit.path, ix - 10, iy - 10, 20, '#ffffff') });
+        this.fivesCommands(c, b, u, x + 4, y + 62);
         if (bt.allyMode) this.text('←→ союзник', W - 8, y + 17, { align: 'right', size: 9, bold: true, col: C.ok });
         this.drawCastPlate(c, b, u, onSkill ? sab : bab, onSkill);
-      } else this.text(bt.auto ? 'Авто-бой' : 'Ход противника…', x + 88, y + 84, { align: 'center', size: 12, col: C.sub });
+      } else this.text(bt.auto ? 'Авто-бой' : this.chainOpen() ? 'Цепочка атак' : 'Ход противника…', x + 88, y + 84, { align: 'center', size: 12, col: C.sub });
     },
 
     drawChargeGauge(c, b, u, x, y) {
@@ -950,9 +978,9 @@
       const sel = u.flags.skillSel | 0, w = 112, x = W - 8 - w, y = 248;
       c.fillStyle = 'rgba(4,6,20,0.82)'; c.fillRect(x, y, w, 56);
       c.fillStyle = 'rgba(242,220,154,0.5)'; c.fillRect(x, y, w, 1);
-      this.text('Навык Казумы', x + 6, y + 3, { size: 9, bold: true, col: C.gold });
+      this.text(u.kit.skillsTitle || 'Навык Казумы', x + 6, y + 3, { size: 9, bold: true, col: C.gold });
       this.text('↑↓', x + w - 6, y + 3, { size: 9, align: 'right', col: C.sub });
-      SKILL_MODE.forEach((name, i) => {
+      (u.kit.skillsShort || SKILL_MODE).forEach((name, i) => {
         const yy = y + 16 + i * 13, on = i === sel;
         if (on) { c.fillStyle = 'rgba(242,220,154,0.18)'; c.fillRect(x + 2, yy - 1, w - 4, 13); this.diamond(x + 9, yy + 5, 3, C.brassHi); }
         this.text(name, x + 18, yy, { size: 10, bold: on, col: on ? C.gold : C.cream });

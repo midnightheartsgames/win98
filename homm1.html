@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Heroes of Might and Magic 98</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #008080;
+      font-family: Tahoma, sans-serif;
+    }
+    body {
+      display: grid;
+      place-items: center;
+    }
+    .window {
+      border: 3px outset #dfdfdf;
+      display: flex;
+      flex-direction: column;
+      background: #c0c0c0;
+      box-shadow: 2px 2px 0 #000;
+    }
+    .title {
+      background: linear-gradient(90deg, #000080, #1084d0);
+      color: #fff;
+      font: bold 12px Tahoma, sans-serif;
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #game {
+      width: 640px;
+      height: 480px;
+      background: #000;
+      position: relative;
+    }
+    #homm1-canvas {
+      width: 640px;
+      height: 480px;
+      display: block;
+      image-rendering: pixelated;
+    }
+  </style>
+</head>
+<body>
+  <main class="window">
+    <div class="title">
+      <span>Heroes of Might and Magic 98</span>
+      <span>[F5] Сохр. [F9] Загр.</span>
+    </div>
+    <div id="game">
+      <canvas id="homm1-canvas" width="640" height="480"></canvas>
+    </div>
+  </main>
+  <script src="js/apps/homm1/hm-core.js"></script>
+  <script src="js/apps/homm1/hm-data-units.js"></script>
+  <script src="js/apps/homm1/hm-data-towns.js"></script>
+  <script src="js/apps/homm1/hm-data-spells.js"></script>
+  <script src="js/apps/homm1/hm-data-items.js"></script>
+  <script src="js/apps/homm1/hm-combat.js"></script>
+  <script src="js/apps/homm1/hm-path.js"></script>
+  <script src="js/apps/homm1/hm-campaigns.js"></script>
+  <script src="js/apps/homm1/hm-world.js"></script>
+  <script src="js/apps/homm1/hm-ai.js"></script>
+  <script src="js/apps/homm1/hm-art.js"></script>
+  <script src="js/apps/homm1/hm-audio.js"></script>
+  <script src="js/apps/homm1/hm-render.js"></script>
+  <script src="js/apps/homm1/hm-ui.js"></script>
+  <script>
+    const cv = document.getElementById('homm1-canvas');
+    const ui = new HoMM1.GameUI(cv);
+    window.hmui = ui;
+    ui.startLoop();
+    addEventListener('pagehide', () => ui.destroy(), { once: true });
+  </script>
+</body>
+</html>

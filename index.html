@@ -39,6 +39,7 @@
   <link rel="stylesheet" href="css/apps/outlook.css">
   <link rel="stylesheet" href="css/apps/screensaver.css">
   <link rel="stylesheet" href="css/apps/cpanel-applets.css">
+  <link rel="stylesheet" href="css/apps/taskbar-props.css">
   <link rel="stylesheet" href="css/apps/sys-tools.css">
   <link rel="stylesheet" href="css/apps/igroman.css">
   <link rel="stylesheet" href="css/apps/office-launcher.css">
@@ -53,6 +54,16 @@
   <link rel="stylesheet" href="css/apps/burnout.css">
   <link rel="stylesheet" href="css/apps/digicharat.css">
   <link rel="stylesheet" href="css/apps/kinomania.css">
+  <link rel="stylesheet" href="css/apps/webcinema.css">
+  <link rel="stylesheet" href="css/apps/muzzone.css">
+  <link rel="stylesheet" href="css/apps/carman-site.css">
+  <link rel="stylesheet" href="css/apps/kish-site.css">
+  <link rel="stylesheet" href="css/apps/pereplet-site.css">
+  <link rel="stylesheet" href="css/apps/animatrix-site.css">
+  <link rel="stylesheet" href="css/apps/svodka-site.css">
+  <link rel="stylesheet" href="css/apps/zooportal-site.css">
+  <link rel="stylesheet" href="css/apps/ferrum.css">
+  <link rel="stylesheet" href="css/apps/avp-site.css">
   <link rel="stylesheet" href="css/apps/gamerzone.css">
   <link rel="stylesheet" href="css/apps/cheatcc.css">
   <link rel="stylesheet" href="css/apps/blender.css">
@@ -65,6 +76,14 @@
   <link rel="stylesheet" href="css/apps/mult-site.css">
   <link rel="stylesheet" href="css/apps/emuland-site.css">
   <link rel="stylesheet" href="css/apps/xfiles-site.css">
+  <link rel="stylesheet" href="css/apps/lucasarts-site.css">
+  <link rel="stylesheet" href="css/apps/gsc-site.css">
+  <link rel="stylesheet" href="css/apps/valve-site.css">
+  <link rel="stylesheet" href="css/apps/blizzard-site.css">
+  <link rel="stylesheet" href="css/apps/sunsetvalley-site.css">
+  <link rel="stylesheet" href="css/apps/bioware-site.css">
+  <link rel="stylesheet" href="css/apps/ashroad-site.css">
+  <link rel="stylesheet" href="css/apps/geocities-site.css">
   <link rel="stylesheet" href="css/apps/netscape.css">
   <link rel="stylesheet" href="css/apps/dialup.css">
   <link rel="stylesheet" href="css/apps/winrar.css">
@@ -96,6 +115,8 @@
   <link rel="stylesheet" href="css/apps/maxpayne.css">
   <link rel="stylesheet" href="css/apps/legion.css">
   <link rel="stylesheet" href="css/apps/plov.css">
+  <link rel="stylesheet" href="css/apps/korovany.css">
+  <link rel="stylesheet" href="css/apps/catniss.css">
   <link rel="stylesheet" href="css/apps/anotherwar.css">
   <link rel="stylesheet" href="css/apps/falloutzp.css">
   <link rel="stylesheet" href="css/apps/fallout.css">
@@ -103,7 +124,23 @@
   <link rel="stylesheet" href="css/apps/ow98.css">
   <link rel="stylesheet" href="css/apps/lol.css">
   <link rel="stylesheet" href="css/apps/dota.css">
+  <link rel="stylesheet" href="css/apps/esheep.css">
+  <link rel="stylesheet" href="css/apps/neko.css">
+  <link rel="stylesheet" href="css/apps/qbasic.css">
+  <link rel="stylesheet" href="css/apps/mon-test.css">
+  <link rel="stylesheet" href="css/apps/cdex.css">
+  <link rel="stylesheet" href="css/apps/wintune.css">
+  <link rel="stylesheet" href="css/apps/cdplayer.css">
+  <link rel="stylesheet" href="css/apps/sysmon.css">
+  <link rel="stylesheet" href="css/apps/hypertrm.css">
+  <link rel="stylesheet" href="css/apps/clipbrd.css">
+  <link rel="stylesheet" href="css/apps/mirc.css">
+  <link rel="stylesheet" href="css/apps/fasttracker.css">
+  <link rel="stylesheet" href="css/apps/acrobat.css">
+  <link rel="stylesheet" href="css/apps/acdsee.css">
+  <link rel="stylesheet" href="css/apps/emulator.css">
   <link rel="stylesheet" href="css/bios.css">
+  <link rel="stylesheet" href="css/display-effects.css">
   <style>
     #bios-post-screen {
       position: fixed;
@@ -137,6 +174,19 @@
         <feMergeNode in="SourceGraphic"/>
         <feMergeNode in="tint"/>
       </feMerge>
+    </filter>
+    <filter id="fx-low-color" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feComponentTransfer>
+        <feFuncR type="discrete" tableValues="0 0.5 1"/>
+        <feFuncG type="discrete" tableValues="0 0.5 1"/>
+        <feFuncB type="discrete" tableValues="0 0.5 1"/>
+        <feFuncA type="discrete" tableValues="0 1"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="fx-aliased-text" color-interpolation-filters="sRGB">
+      <feComponentTransfer>
+        <feFuncA type="discrete" tableValues="0 1"/>
+      </feComponentTransfer>
     </filter>
   </svg>
 
@@ -213,6 +263,7 @@
   <script src="js/apps/sys-tools.js"></script>
   <script src="js/apps/wallpaper-art.js"></script>
   <script src="js/apps/dialogs.js"></script>
+  <script src="js/apps/taskbar-props.js"></script>
   <script src="js/apps/wolf3d/wl-data.js"></script>
   <script src="js/apps/wolf3d/wl-gfx.js"></script>
   <script src="js/apps/wolf3d/wl-level.js"></script>
@@ -285,8 +336,28 @@
   <script src="js/apps/burnout-app.js"></script>
   <script src="js/apps/digicharat-site.js"></script>
   <script src="js/apps/kinomania-site.js"></script>
+  <script src="js/apps/webcinema-data.js"></script>
+  <script src="js/apps/webcinema-site.js"></script>
+  <script src="js/apps/muzzone-site.js"></script>
+  <script src="js/apps/carman-data.js"></script>
+  <script src="js/apps/carman-site.js"></script>
+  <script src="js/apps/kish-data.js"></script>
+  <script src="js/apps/kish-site.js"></script>
+  <script src="js/apps/pereplet-data.js"></script>
+  <script src="js/apps/pereplet-site.js"></script>
+  <script src="js/apps/animatrix-data.js"></script>
+  <script src="js/apps/animatrix-site.js"></script>
+  <script src="js/apps/svodka-data.js"></script>
+  <script src="js/apps/svodka-site.js"></script>
+  <script src="js/apps/zooportal-site.js"></script>
+  <script src="js/apps/geocities-site.js"></script>
+  <script src="js/apps/ferrum-data.js"></script>
+  <script src="js/apps/ferrum-site.js"></script>
+  <script src="js/apps/avp-data.js"></script>
+  <script src="js/apps/avp-site.js"></script>
   <script src="js/apps/gamerzone-site.js"></script>
   <script src="js/apps/cheatcc-site.js"></script>
+  <script src="js/apps/themeworld-data.js"></script>
   <script src="js/apps/themeworld-site.js"></script>
   <script src="js/apps/advanced-site.js"></script>
   <script src="js/apps/clippy-site.js"></script>
@@ -296,6 +367,14 @@
   <script src="js/apps/mult-site.js"></script>
   <script src="js/apps/emuland-site.js"></script>
   <script src="js/apps/xfiles-site.js"></script>
+  <script src="js/apps/lucasarts-data.js"></script>
+  <script src="js/apps/lucasarts-site.js"></script>
+  <script src="js/apps/gsc-data.js"></script>
+  <script src="js/apps/gsc-site.js"></script>
+  <script src="js/apps/valve-data.js"></script>
+  <script src="js/apps/valve-site.js"></script>
+  <script src="js/apps/blizzard-data.js"></script>
+  <script src="js/apps/blizzard-site.js"></script>
   <link rel="stylesheet" href="css/apps/poligon-site.css">
   <script src="js/apps/poligon/p3d.js"></script>
   <script src="js/apps/poligon/figure.js"></script>
@@ -305,6 +384,8 @@
   <script src="js/apps/poligon/clip-tarakan.js"></script>
   <script src="js/apps/poligon/clip-neck-hurts.js"></script>
   <script src="js/apps/poligon/clip-war-song.js"></script>
+  <script src="js/apps/poligon/ccc-cast.js"></script>
+  <script src="js/apps/poligon/clip-ccc.js"></script>
   <script src="js/apps/poligon-site.js"></script>
   <link rel="stylesheet" href="css/apps/youvid-site.css">
   <script src="js/apps/youvid/kit.js"></script>
@@ -332,6 +413,56 @@
   <script src="js/apps/youvid/slay-motion.js"></script>
   <script src="js/apps/youvid/slay-script.js"></script>
   <script src="js/apps/youvid/slay.js"></script>
+  <script src="js/apps/youvid/linging-yard.js"></script>
+  <script src="js/apps/youvid/linging-cast.js"></script>
+  <script src="js/apps/youvid/linging-script.js"></script>
+  <script src="js/apps/youvid/linging.js"></script>
+  <script src="js/apps/youvid/konosuba-world.js"></script>
+  <script src="js/apps/youvid/konosuba-critters.js"></script>
+  <script src="js/apps/youvid/konosuba-cast.js"></script>
+  <script src="js/apps/youvid/konosuba-script.js"></script>
+  <script src="js/apps/youvid/konosuba.js"></script>
+  <script src="js/apps/youvid/otpusk-world.js"></script>
+  <script src="js/apps/youvid/otpusk-cast.js"></script>
+  <script src="js/apps/youvid/otpusk-beats.js"></script>
+  <script src="js/apps/youvid/otpusk-voice.js"></script>
+  <script src="js/apps/youvid/otpusk-motion.js"></script>
+  <script src="js/apps/youvid/otpusk-script.js"></script>
+  <script src="js/apps/youvid/otpusk.js"></script>
+  <script src="js/apps/youvid/pamparam-world.js"></script>
+  <script src="js/apps/youvid/pamparam-cast.js"></script>
+  <script src="js/apps/youvid/pamparam-script.js"></script>
+  <script src="js/apps/youvid/pamparam.js"></script>
+  <script src="js/apps/youvid/roman-world.js"></script>
+  <script src="js/apps/youvid/roman-cast.js"></script>
+  <script src="js/apps/youvid/roman-script.js"></script>
+  <script src="js/apps/youvid/roman.js"></script>
+  <script src="js/apps/youvid/sparkle-world.js"></script>
+  <script src="js/apps/youvid/sparkle-cast.js"></script>
+  <script src="js/apps/youvid/sparkle-script.js"></script>
+  <script src="js/apps/youvid/sparkle.js"></script>
+  <script src="js/apps/youvid/stray-set.js"></script>
+  <script src="js/apps/youvid/stray-script.js"></script>
+  <script src="js/apps/youvid/stray.js"></script>
+  <script src="js/apps/youvid/osudil-script.js"></script>
+  <script src="js/apps/youvid/osudil.js"></script>
+  <script src="js/apps/youvid/trek-script.js"></script>
+  <script src="js/apps/youvid/trek.js"></script>
+  <script src="js/apps/youvid/klee-faces.js"></script>
+  <script src="js/apps/youvid/klee-textures.js"></script>
+  <script src="js/apps/youvid/klee-cast.js"></script>
+  <script src="js/apps/youvid/klee-foes.js"></script>
+  <script src="js/apps/youvid/klee-world.js"></script>
+  <script src="js/apps/youvid/klee-cards.js"></script>
+  <script src="js/apps/youvid/klee-script.js"></script>
+  <script src="js/apps/youvid/klee.js"></script>
+  <script src="js/apps/youvid/nope-world.js"></script>
+  <script src="js/apps/youvid/nope-cast.js"></script>
+  <script src="js/apps/youvid/nope-script.js"></script>
+  <script src="js/apps/youvid/nope.js"></script>
+  <script src="js/apps/youvid/keanu-art.js"></script>
+  <script src="js/apps/youvid/keanu-script.js"></script>
+  <script src="js/apps/youvid/keanu.js"></script>
   <script src="js/apps/youvid-site.js"></script>
   <link rel="stylesheet" href="css/apps/steam.css">
   <link rel="stylesheet" href="css/apps/steam-site.css">
@@ -339,8 +470,25 @@
   <script src="js/apps/steam-site.js"></script>
   <link rel="stylesheet" href="css/apps/hsr-site.css">
   <script src="js/apps/hsr-site.js"></script>
+  <link rel="stylesheet" href="css/apps/kovcheg.css">
+  <script src="js/apps/kovcheg-data.js"></script>
+  <script src="js/apps/kovcheg-hsr.js"></script>
+  <script src="js/apps/kovcheg-hsr-bench.js"></script>
+  <script src="js/apps/kovcheg-hsr-guides.js"></script>
+  <script src="js/apps/kovcheg-hsr-articles.js"></script>
+  <script src="js/apps/kovcheg-site.js"></script>
+  <script src="js/apps/kovcheg-site-ref.js"></script>
+  <script src="js/apps/kovcheg-sim.js"></script>
+  <script src="js/apps/kovcheg-site-builder.js"></script>
+  <script src="js/apps/kovcheg-site-guest.js"></script>
+  <script src="js/apps/kovcheg-site-mine.js"></script>
+  <link rel="stylesheet" href="css/apps/hsr-wiki.css">
+  <script src="js/apps/hsr-wiki-data.js"></script>
+  <script src="js/apps/hsr-wiki-site.js"></script>
   <link rel="stylesheet" href="css/apps/retro-sites.css">
   <script src="js/apps/retro-sites.js"></script>
+  <link rel="stylesheet" href="css/apps/krovatka-site.css">
+  <script src="js/apps/krovatka-site.js"></script>
   <link rel="stylesheet" href="css/apps/interpedia.css">
   <script src="js/apps/interpedia-data.js"></script>
   <script src="js/apps/interpedia/os.js"></script>
@@ -413,6 +561,9 @@
   <link rel="stylesheet" href="css/apps/hockey.css">
   <script src="js/apps/hockey-core.js"></script>
   <script src="js/apps/hockey-app.js"></script>
+  <link rel="stylesheet" href="css/apps/worldcup98.css">
+  <script src="js/apps/worldcup98-core.js"></script>
+  <script src="js/apps/worldcup98-app.js"></script>
   <link rel="stylesheet" href="css/apps/half-life.css">
   <script src="js/apps/half-life/core.js"></script>
   <script src="js/apps/half-life/world.js"></script>
@@ -522,26 +673,52 @@
   <script src="js/apps/hsr98/hsr-battle.js"></script>
   <script src="js/apps/hsr98/hsr-inaba.js"></script>
   <script src="js/apps/hsr98/hsr-fours.js"></script>
+  <script src="js/apps/hsr98/hsr-conton.js"></script>
+  <script src="js/apps/hsr98/hsr-hares.js"></script>
+  <script src="js/apps/hsr98/hsr-fives.js"></script>
   <script src="js/apps/hsr98/hsr-world.js"></script>
   <script src="js/apps/hsr98/hsr-story.js"></script>
   <script src="js/apps/hsr98/hsr-game.js"></script>
+  <script src="js/apps/hsr98/hsr-traces-data.js"></script>
+  <script src="js/apps/hsr98/hsr-traces.js"></script>
+  <script src="js/apps/hsr98/hsr-echoes.js"></script>
+  <script src="js/apps/hsr98/hsr-trace-fx.js"></script>
   <script src="js/apps/hsr98/hsr-su-data.js"></script>
   <script src="js/apps/hsr98/hsr-su-battle.js"></script>
   <script src="js/apps/hsr98/hsr-su-story.js"></script>
   <script src="js/apps/hsr98/hsr-su.js"></script>
   <script src="js/apps/hsr98/hsr-chat.js"></script>
   <script src="js/apps/hsr98/hsr-missions.js"></script>
+  <script src="js/apps/hsr98/hsr-shop.js"></script>
+  <script src="js/apps/hsr98/hsr-pets.js"></script>
   <script src="js/apps/hsr98/hsr-hook.js"></script>
   <script src="js/apps/hsr98/hsr-section6.js"></script>
   <script src="js/apps/hsr98/hsr-info.js"></script>
   <script src="js/apps/hsr98/hsr-fours-info.js"></script>
+  <script src="js/apps/hsr98/hsr-conton-info.js"></script>
+  <script src="js/apps/hsr98/hsr-hares-info.js"></script>
+  <script src="js/apps/hsr98/hsr-fives-info.js"></script>
   <script src="js/apps/hsr98/hsr-express.js"></script>
   <script src="js/apps/hsr98/hsr-herta.js"></script>
   <script src="js/apps/hsr98/hsr-herta-life.js"></script>
   <script src="js/apps/hsr98/hsr-seclusion.js"></script>
+  <script src="js/apps/hsr98/hsr-jarilo-story.js"></script>
+  <script src="js/apps/hsr98/hsr-jarilo-life.js"></script>
+  <script src="js/apps/hsr98/hsr-museum.js"></script>
+  <script src="js/apps/hsr98/hsr-boulder.js"></script>
+  <script src="js/apps/hsr98/hsr-rivet.js"></script>
+  <script src="js/apps/hsr98/hsr-settle.js"></script>
+  <script src="js/apps/hsr98/hsr-restricted.js"></script>
+  <script src="js/apps/hsr98/hsr-corridor.js"></script>
+  <script src="js/apps/hsr98/hsr-hill.js"></script>
+  <script src="js/apps/hsr98/hsr-pillars.js"></script>
   <script src="js/apps/hsr98/hsr-memory.js"></script>
   <script src="js/apps/hsr98/hsr-messenger.js"></script>
   <script src="js/apps/hsr98/hsr-velvet.js"></script>
+  <script src="js/apps/hsr98/hsr-badge.js"></script>
+  <script src="js/apps/hsr98/hsr-axel-maps.js"></script>
+  <script src="js/apps/hsr98/hsr-axel-story.js"></script>
+  <script src="js/apps/hsr98/hsr-conductor.js"></script>
   <script src="js/apps/hsr98/hsr-gfx.js"></script>
   <script src="js/apps/hsr98/hsr-art.js"></script>
   <script src="js/apps/hsr98/hsr-icons.js"></script>
@@ -553,6 +730,10 @@
   <script src="js/apps/hsr98/hsr-ui.js"></script>
   <script src="js/apps/hsr98/hsr-train.js"></script>
   <script src="js/apps/hsr98/hsr-station.js"></script>
+  <script src="js/apps/hsr98/hsr-jarilo.js"></script>
+  <script src="js/apps/hsr98/hsr-axel.js"></script>
+  <script src="js/apps/hsr98/hsr-magflow.js"></script>
+  <script src="js/apps/hsr98/hsr-carts.js"></script>
   <script src="js/apps/hsr98/hsr-3d.js"></script>
   <script src="js/apps/hsr98/hsr-pompom.js"></script>
   <script src="js/apps/hsr98/hsr-warp.js"></script>
@@ -568,22 +749,36 @@
   <script src="js/apps/hsr98/hsr-explosion.js"></script>
   <script src="js/apps/hsr98/hsr-personas.js"></script>
   <script src="js/apps/hsr98/hsr-midnight.js"></script>
+  <script src="js/apps/hsr98/hsr-spotlight.js"></script>
   <script src="js/apps/hsr98/hsr-ui-menu.js"></script>
   <script src="js/apps/hsr98/hsr-ui-velvet.js"></script>
   <script src="js/apps/hsr98/hsr-eidolons.js"></script>
   <script src="js/apps/hsr98/hsr-eidolon-scenes.js"></script>
   <script src="js/apps/hsr98/hsr-inaba-scenes.js"></script>
   <script src="js/apps/hsr98/hsr-fours-scenes.js"></script>
+  <script src="js/apps/hsr98/hsr-conton-scenes.js"></script>
+  <script src="js/apps/hsr98/hsr-hares-scenes.js"></script>
+  <script src="js/apps/hsr98/hsr-fives-scenes.js"></script>
   <script src="js/apps/hsr98/hsr-ui-nav.js"></script>
   <script src="js/apps/hsr98/hsr-ui-events.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-axel.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-badge.js"></script>
+  <script src="js/apps/hsr98/hsr-credits.js"></script>
   <script src="js/apps/hsr98/hsr-ui-chat.js"></script>
   <script src="js/apps/hsr98/hsr-ui-missions.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-shop.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-pets.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-conductor.js"></script>
   <script src="js/apps/hsr98/hsr-ui-debug.js"></script>
   <script src="js/apps/hsr98/hsr-ui-battle.js"></script>
   <script src="js/apps/hsr98/hsr-ui-inaba.js"></script>
   <script src="js/apps/hsr98/hsr-ui-fours.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-conton.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-hares.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-fives.js"></script>
   <script src="js/apps/hsr98/hsr-ui-su.js"></script>
   <script src="js/apps/hsr98/hsr-ui-memory.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-traces.js"></script>
   <script src="js/apps/hsr98-app.js"></script>
   <script src="js/apps/kotor98/kt-core.js"></script>
   <script src="js/apps/kotor98/kt-data.js"></script>
@@ -678,6 +873,8 @@
   <script src="js/apps/dao98/da-ui-book.js"></script>
   <script src="js/apps/dao98/da-ui-front.js"></script>
   <script src="js/apps/dao98-app.js"></script>
+  <script src="js/apps/bioware-data.js"></script>
+  <script src="js/apps/bioware-site.js"></script>
   <script src="js/apps/dmc98/dm-math.js"></script>
   <script src="js/apps/dmc98/dm-data.js"></script>
   <script src="js/apps/dmc98/dm-world.js"></script>
@@ -984,6 +1181,11 @@
   <script src="js/apps/sims3/s3-ui-cas.js"></script>
   <script src="js/apps/sims3/s3-ui-menu.js"></script>
   <script src="js/apps/sims3-app.js"></script>
+  <script src="js/apps/sunsetvalley-data.js"></script>
+  <script src="js/apps/sunsetvalley-site.js"></script>
+  <script src="js/apps/ashroad-data.js"></script>
+  <script src="js/apps/ashroad-game.js"></script>
+  <script src="js/apps/ashroad-site.js"></script>
   <script src="js/apps/gtann/nn-core.js"></script>
   <script src="js/apps/gtann/nn-data.js"></script>
   <script src="js/apps/gtann/nn-avto.js"></script>
@@ -1130,6 +1332,29 @@
   <script src="js/apps/plov/pl-ui-game.js"></script>
   <script src="js/apps/plov/pl-ui-menu.js"></script>
   <script src="js/apps/plov-app.js"></script>
+  <script src="js/apps/korovany/kv-core.js"></script>
+  <script src="js/apps/korovany/kv-data.js"></script>
+  <script src="js/apps/korovany/kv-world.js"></script>
+  <script src="js/apps/korovany/kv-body.js"></script>
+  <script src="js/apps/korovany/kv-game.js"></script>
+  <script src="js/apps/korovany/kv-ai.js"></script>
+  <script src="js/apps/korovany/kv-quests.js"></script>
+  <script src="js/apps/korovany/kv-tex.js"></script>
+  <script src="js/apps/korovany/kv-models.js"></script>
+  <script src="js/apps/korovany/kv-render.js"></script>
+  <script src="js/apps/korovany/kv-audio.js"></script>
+  <script src="js/apps/korovany/kv-screens.js"></script>
+  <script src="js/apps/korovany/kv-ui.js"></script>
+  <script src="js/apps/korovany-app.js"></script>
+  <script src="js/apps/catniss/cn-core.js"></script>
+  <script src="js/apps/catniss/cn-sim.js"></script>
+  <script src="js/apps/catniss/cn-levels.js"></script>
+  <script src="js/apps/catniss/cn-assets.js"></script>
+  <script src="js/apps/catniss/cn-render.js"></script>
+  <script src="js/apps/catniss/cn-audio.js"></script>
+  <script src="js/apps/catniss/cn-ui.js"></script>
+  <script src="js/apps/catniss/cn-screens.js"></script>
+  <script src="js/apps/catniss-app.js"></script>
   <script src="js/apps/anotherwar/aw-core.js"></script>
   <script src="js/apps/anotherwar/aw-rules.js"></script>
   <script src="js/apps/anotherwar/aw-data.js"></script>
@@ -1361,6 +1586,39 @@
   <script src="js/apps/dota-app.js"></script>
   <script src="js/apps/avatar98/avatar98.js"></script>
   <script src="js/apps/avatar98-app.js"></script>
+  <script src="js/apps/homm1/hm-core.js"></script>
+  <script src="js/apps/homm1/hm-data-units.js"></script>
+  <script src="js/apps/homm1/hm-data-towns.js"></script>
+  <script src="js/apps/homm1/hm-data-spells.js"></script>
+  <script src="js/apps/homm1/hm-data-items.js"></script>
+  <script src="js/apps/homm1/hm-combat.js"></script>
+  <script src="js/apps/homm1/hm-path.js"></script>
+  <script src="js/apps/homm1/hm-campaigns.js"></script>
+  <script src="js/apps/homm1/hm-world.js"></script>
+  <script src="js/apps/homm1/hm-ai.js"></script>
+  <script src="js/apps/homm1/hm-art.js"></script>
+  <script src="js/apps/homm1/hm-audio.js"></script>
+  <script src="js/apps/homm1/hm-render.js"></script>
+  <script src="js/apps/homm1/hm-ui.js"></script>
+  <script src="js/apps/homm1-app.js"></script>
+  <script src="js/apps/esheep.js"></script>
+  <script src="js/apps/qbasic.js"></script>
+  <script src="js/apps/mon-test.js"></script>
+  <script src="js/apps/cdex.js"></script>
+  <script src="js/apps/wintune.js"></script>
+  <script src="js/apps/cdplayer.js"></script>
+  <script src="js/apps/sysmon.js"></script>
+  <script src="js/apps/hypertrm.js"></script>
+  <script src="js/apps/clipbrd.js"></script>
+  <script src="js/apps/mirc.js"></script>
+  <script src="js/apps/fasttracker.js"></script>
+  <script src="js/apps/acrobat.js"></script>
+  <script src="js/apps/acdsee.js"></script>
+  <script src="js/apps/emulator/emu-audio.js"></script>
+  <script src="js/apps/emulator/emu-games-nes.js"></script>
+  <script src="js/apps/emulator/emu-games-16bit.js"></script>
+  <script src="js/apps/emulator-app.js"></script>
+  <script src="js/apps/hearts.js"></script>
   <script src="js/main.js"></script>
 
 </body>

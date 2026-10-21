@@ -35,7 +35,7 @@ def pick(frame, scale):
 
 def fit_torso(cfg, cam, kp, prev, smooth, seg):
     lo, hi = cfg.BOUNDS
-    reg = np.array([0, 0, 0, 0, 0, 0, 2.0, 2.0, 2.0] + list(seg.get('neckReg', (2.5, 1.6, 2.5))))
+    reg = np.array([0, 0, 0, 0, 0, 0] + list(seg.get('spReg', (2.0, 2.0, 2.0))) + list(seg.get('neckReg', (2.5, 1.6, 2.5))))
 
     def res(th):
         T = torso(th, cfg.D)

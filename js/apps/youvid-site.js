@@ -17,6 +17,7 @@ class YouVidPlayer {
     this.knob = root.querySelector('.yv-knob');
     this.timeEl = root.querySelector('.yv-time');
     this.muteBtn = root.querySelector('.yv-mute');
+    this.loopBtn = root.querySelector('.yv-loop');
     this.curEl = root.querySelector('.yv-cur');
     this.bars = [...root.querySelectorAll('.yv-bar-step')];
     this.state = 'loading';
@@ -26,6 +27,7 @@ class YouVidPlayer {
     this.clockStart = 0;
     this.raf = 0;
     this.volume = site.state.volume === undefined ? 7 : Math.min(10, site.state.volume);
+    this.looping = Boolean(site.state && site.state.loop);
     this.counted = false;
   }
 
@@ -33,6 +35,7 @@ class YouVidPlayer {
     this.showMessage('Загрузка…');
     this.bind();
     this.paintVolume();
+    this.paintLoop();
     this.updateTime();
     setTimeout(() => {
       if (!this.root.isConnected) return;
@@ -83,6 +86,7 @@ class YouVidPlayer {
       window.addEventListener('pointerup', up);
     });
     this.muteBtn.addEventListener('click', () => this.setVolume(this.volume > 0 ? 0 : 7));
+    if (this.loopBtn) this.loopBtn.addEventListener('click', () => this.setLoop(!this.looping));
     this.bars.forEach((b, i) => b.addEventListener('click', () => this.setVolume(i + 1)));
     this.root.querySelector('.yv-stop').addEventListener('click', () => this.stop());
     this.root.querySelector('.yv-size-normal').addEventListener('click', () => {
@@ -94,6 +98,12 @@ class YouVidPlayer {
     this.root.querySelector('.yv-replay').addEventListener('click', () => {
       this.time = 0;
       this.play();
+    });
+    this.root.querySelectorAll('.yv-end-item').forEach(item => {
+      item.addEventListener('mouseenter', () => item.classList.add('yv-end-item-hover'));
+      item.addEventListener('mouseleave', () => item.classList.remove('yv-end-item-hover'));
+      item.addEventListener('focus', () => item.classList.add('yv-end-item-hover'));
+      item.addEventListener('blur', () => item.classList.remove('yv-end-item-hover'));
     });
     this.audio.addEventListener('ended', () => this.finish());
     this.audio.addEventListener('waiting', () => { if (this.state === 'playing') this.showMessage('Загрузка…'); });
@@ -196,6 +206,12 @@ class YouVidPlayer {
 
   finish() {
     if (this.state === 'ended') return;
+    if (this.looping) {
+      this.time = 0;
+      if (this.updateTime) this.updateTime();
+      this.play();
+      return;
+    }
     this.time = this.clip.duration;
     this.state = 'ended';
     this.root.classList.remove('yv-playing');
@@ -247,6 +263,21 @@ class YouVidPlayer {
     this.muteBtn.setAttribute('aria-label', this.volume === 0 ? 'Включить звук' : 'Выключить звук');
   }
 
+  setLoop(on) {
+    this.looping = Boolean(on);
+    this.site.saveState({ loop: this.looping });
+    this.paintLoop();
+  }
+
+  paintLoop() {
+    if (!this.loopBtn) return;
+    this.loopBtn.classList.toggle('yv-loop-on', this.looping);
+    this.loopBtn.setAttribute('aria-pressed', this.looping ? 'true' : 'false');
+    const label = this.looping ? 'Выключить повтор' : 'Повторять видео';
+    this.loopBtn.setAttribute('aria-label', label);
+    this.loopBtn.setAttribute('title', label);
+  }
+
   paintBuffered() {
     const b = this.audio.buffered;
     let end = 0;
@@ -289,6 +320,23 @@ class YouVidPlayer {
     this.knob.style.left = `${k}%`;
     this.seekEl.setAttribute('aria-valuenow', String(Math.round(t)));
     this.seekEl.setAttribute('aria-valuetext', YouVidPlayer.fmt(t));
+    this.paintChapter(t);
+  }
+
+  paintChapter(t) {
+    const list = this.meta && this.meta.chapters;
+    if (!list) return;
+    if (!this.chapButtons) {
+      const page = this.root.closest('.yv-cols') || this.root.parentElement;
+      this.chapButtons = page ? [...page.querySelectorAll('.yv-chap')] : [];
+    }
+    let now = 0;
+    list.forEach(([start], i) => { if (t >= start) now = i; });
+    this.chapButtons.forEach((b, i) => {
+      const on = i === now;
+      b.classList.toggle('yv-chap-now', on);
+      if (on) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+    });
   }
 
   showMessage(text) {
@@ -353,7 +401,7 @@ class YouVidSite {
         user: 'EbatoriyaPlanet',
         name: 'Планета Ебатории',
         joined: '1 декабря 1999',
-        lastSeen: 'вчера',
+        lastSeen: 'сегодня',
         country: 'Россия',
         subs: 3660,
         about: 'Ебатория всех впускает, но никого и никогда не выпускает.',
@@ -370,6 +418,63 @@ class YouVidSite {
         about: 'Канал для всей семьи. Family friendly content.',
         site: '',
         theme: 'bucks'
+      },
+      m1s3n: {
+        user: 'm1s3n',
+        name: 'm1s3n',
+        joined: '14 ноября 1999',
+        lastSeen: 'сегодня',
+        country: 'Япония',
+        subs: 14800,
+        about: 'Оператор линии Krampus Compliance. Если звонит косичка — возьми трубку.',
+        site: '',
+        theme: 'linging'
+      },
+      Crunchyroll: {
+        user: 'Crunchyroll',
+        name: 'Crunchyroll',
+        joined: '14 мая 1999',
+        lastSeen: 'сегодня',
+        country: 'США',
+        subs: 19400,
+        about: 'Официальный канал аниме: опенинги, эндинги и серии прямо в окне браузера.',
+        site: '',
+        theme: 'crunchy'
+      },
+      HSR98: {
+        user: 'HSR98',
+        name: 'HSR98',
+        joined: '26 апреля 1999',
+        lastSeen: 'сегодня',
+        country: 'Пенакония',
+        subs: 24100,
+        about: 'Официальный канал Honkai: Star Rail 98. Трейлеры персонажей, хроники Звёздного экспресса и представления Недотёп в масках.',
+        site: 'hsr.hoyoverse.com',
+        avatarFile: 'content/YouVid/avatars/hsr98.png',
+        bannerFile: 'content/YouVid/banners/HSR98.svg',
+        theme: 'hsr'
+      },
+      StreyOsuzhdaet: {
+        user: 'StreyOsuzhdaet',
+        name: 'СТРЕЙ ОСУЖДАЕТ',
+        joined: '18 октября 1999',
+        lastSeen: 'сегодня',
+        country: 'Россия',
+        subs: 18300,
+        about: 'Хроники максимального осуждения: перепутанные треки, донаты на тысячу, усатый вердикт и лучшая реакция чата.',
+        site: '',
+        theme: 'osuzhdaet'
+      },
+      memes_ytp: {
+        user: 'memes_ytp',
+        name: 'memes/ytp',
+        joined: '5 ноября 1999',
+        lastSeen: 'сегодня',
+        country: 'Россия',
+        subs: 7340,
+        about: 'Мемы и поуп. Нарезки, склейки и короткие ролики, которые не стоит объяснять.',
+        site: '',
+        theme: 'ytp'
       }
     };
     this.videos = [
@@ -484,6 +589,376 @@ class YouVidSite {
           { user: 'ledenec_98', when: '50 минут назад', text: 'Леденец за стрижку — вот это я понимаю сервис. Мне в парикмахерской только «не вертись» говорят.' },
           { user: 'modem_33600', when: '1 час назад', text: 'Восемь секунд видео грузилось минут десять. Оно того стоило.' }
         ]
+      },
+      {
+        id: 'y0Ph0neL1ng',
+        title: 'yo phone linging',
+        channel: 'm1s3n',
+        added: '20 минут назад',
+        order: 6,
+        category: 'comedy',
+        description: 'Диалинь медитирует на золотом кольце в солнечном дворике, но прямо посреди тишины у неё звонит косичка. Yo phone linging, big boy, come pick up your phone!',
+        tags: ['yo phone linging', 'm1s3n', 'диалинь', 'dialyn', 'телефон', 'звонит', 'рингтон'],
+        views: 94210,
+        rating: 5,
+        ratings: 1842,
+        favorited: 764,
+        honors: 5,
+        links: 38,
+        comments: [
+          { user: 'ringtone_3310', when: '5 минут назад', text: 'Сидел за компом, услышал звук и побежал в коридор искать трубку домашнего телефона.' },
+          { user: 'panda_operator', when: '8 минут назад', text: 'Вот это я понимаю гарнитура: вытянула телефонную трубку прямо из собственной косички.' },
+          { user: 'glazok_door98', when: '12 минут назад', text: 'Кадр на 0:08 прямо в дверной глазок — чуть со стула не упал, когда она приблизилась вплотную.' },
+          { user: 'big_boy_line', when: '15 минут назад', text: 'Когда перестал брать трубку с незнакомых номеров, и оператор пришёл лично к твоей двери.' },
+          { user: 'chakram_zen', when: '18 минут назад', text: 'В начале такая спокойная медитация под сосной, а через две секунды уже: АЛЛО, ВОЗЬМИ ТРУБКУ.' }
+        ]
+      },
+      {
+        id: 'k0n0SuBa3Ed',
+        title: 'KONOSUBA 3 - Ending',
+        channel: 'Crunchyroll',
+        added: '10 минут назад',
+        order: 7,
+        category: 'film',
+        description: 'Эндинг третьего сезона KONOSUBA («Ano Hi no Mama no Bokura»): Чомуске и фиолетовый головастик гигантской жабы проводят день в особняке с Казумой, Аквой, Мегумин и Даркнесс, принимают ванну и возвращаются на луг к родителям-жабам.',
+        tags: ['konosuba', 'коносуба', 'crunchyroll', 'аниме', 'эндинг', 'аква', 'мегумин', 'казума', 'даркнесс', 'чомуске'],
+        views: 118540,
+        rating: 5,
+        ratings: 2410,
+        favorited: 985,
+        honors: 5,
+        links: 47,
+        comments: [
+          { user: 'crimson_demon99', when: '2 минуты назад', text: 'Такая спокойная, тёплая песня про день с головастиком, а на последних секундах — классическая Аква и гигантские жабы.' },
+          { user: 'chomusuke_wing', when: '4 минуты назад', text: 'Чомуске всю серию присматривала за головастиком лучше всех остальных в особняке.' },
+          { user: 'useless_goddess', when: '6 минут назад', text: 'Кадр на 1:20 с лицом Аквы, когда из травы вышли две огромные жабы — в рамочку и на рабочий стол.' },
+          { user: 'axel_adventurer', when: '8 минут назад', text: 'Казума и Мегумин так мило переглянулись на прощание, пока за спиной начиналась катастрофа.' },
+          { user: 'toad_slime_enjoyer', when: '9 минут назад', text: 'Головастик вырос на казённых харчах и сдал тётю Акву родителям. Счастливый финал!' }
+        ]
+      },
+      {
+        id: 'Sav3lOtpusk',
+        title: 'Савельев берет отпуск тли тотальное неуважение',
+        channel: 'EbatoriyaPlanet',
+        added: '40 минут назад',
+        order: 8,
+        category: 'people',
+        description: 'Влад уезжает и ждёт такси. Друг с камерой не отпускает его ни на шаг: зовёт остаться в поместье, клянётся в вечной дружбе, вспоминает клетчатую сумку и предлагает лимузин, бигфут и вертолётное такси. Влад просит оставить его в покое.\nПятнадцать минут пешком по району, камера снимает всё в розовом цвете.',
+        tags: ['влад', 'савельев', 'отпуск', 'такси', 'поместье', 'кленовый лист', 'неуважение'],
+        views: 12937,
+        rating: 4.5,
+        ratings: 388,
+        favorited: 141,
+        honors: 2,
+        links: 23,
+        chapters: [
+          [0, 'Погоня по газону'],
+          [52, 'Деловой человек на проводе'],
+          [90, 'Вид сверху'],
+          [116, 'Системник на совести'],
+          [145, 'Прощальные объятия'],
+          [166, 'Полдороги и клетчатая сумка'],
+          [244, '«Я просто хочу потусить»'],
+          [331, 'Розовый негатив'],
+          [362, 'Приглашение в поместье'],
+          [450, 'Сумки на асфальте'],
+          [580, 'Три часа на такси'],
+          [622, 'Взгляд в небо'],
+          [660, '«Я как банный лист»'],
+          [712, 'Лимузин, бигфут или вертолёт'],
+          [760, 'Кленовый лист'],
+          [782, 'Сердце навеки'],
+          [846, 'Сто раз «нет»'],
+          [871, '«Дай мне одному побыть»']
+        ],
+        comments: [
+          { user: 'taxi_dispetcher', when: '5 минут назад', text: 'Такси так и не приехало, зато лимузин, бигфут и вертолёт предложили. Вот это сервис!' },
+          { user: 'pomestie_98', when: '12 минут назад', text: 'Приглашение остаться в поместье ещё в силе? Спрашиваю для друга.' },
+          { user: 'klenovyi_list', when: '20 минут назад', text: 'Кленовый лист на пузе на 12:50 — лучший орден, какой я видел в этом году.' },
+          { user: 'vezhlivost_ne_porok', when: '31 минуту назад', text: 'Человек раз десять попросил дать ему побыть одному. Название не врёт: неуважение тотальное.' },
+          { user: 'modem_14400', when: '38 минут назад', text: 'Пятнадцать минут видео качал всю ночь. Влад так и не уехал, а я так и не уснул.' }
+        ]
+      },
+      {
+        id: 'pAmPaRam98',
+        title: 'Пампарам-пампарам,приветствую смотрящих',
+        channel: 'EbatoriyaPlanet',
+        added: '5 минут назад',
+        order: 9,
+        category: 'people',
+        description: 'Широкий проход по оконному цеху под басы: руки в карманах кожанки, два «Пам-парам» и торжественное «Приветствую смотрящих!» у стойки со стеклопакетами.',
+        tags: ['пампарам', 'приветствую', 'смотрящих', 'широкий', 'цех', 'окна', 'кожанка'],
+        views: 42190,
+        rating: 5,
+        ratings: 918,
+        favorited: 412,
+        honors: 4,
+        links: 31,
+        comments: [
+          { user: 'okonnyi_ceh98', when: '1 минуту назад', text: 'Идёт по цеху шире, чем наши двухстворчатые рамы на паллете. Уважаю.' },
+          { user: 'subwoofer_20w', when: '2 минуты назад', text: 'На первых секундах колонки чуть со стола не уехали от басов, а потом так вежливо: «Приветствую смотрящих!»' },
+          { user: 'denim_jacket', when: '3 минуты назад', text: 'Руки в карманах, шаг вразвалочку, взгляд строго по курсу. Начальник смены явно не рискнул спросить пропуск.' },
+          { user: 'zritel_s_modema', when: '4 минуты назад', text: 'И вам здравствуйте! Приятно, когда с тобой здороваются прямо с экрана.' },
+          { user: 'pvh_profil', when: '5 минут назад', text: 'Два «пам-парам» по дороге от верстака до готовых стеклопакетов — лучший обход производства.' }
+        ]
+      },
+      {
+        id: 'wAk3UpR0mAn',
+        title: 'WAKE UP ROMAN',
+        channel: 'EbatoriyaPlanet',
+        added: 'только что',
+        order: 10,
+        category: 'comedy',
+        description: 'Утреннее пробуждение глазами сонного человека: тянется рука к телефону на тумбочке, горничная-дракон Тору заботливо надевает очки прямо на камеру, на экране уже 10:24 воскресенья — и тут же реальность таксопарка в Либерти-Сити, где Нико Беллик будит спящего за столом кузена Романа.',
+        tags: ['wake up roman', 'roman', 'роман', 'нико', 'тору', 'tohru', 'будильник', 'утро', 'очки', 'проснись'],
+        views: 58340,
+        rating: 5,
+        ratings: 1245,
+        favorited: 534,
+        honors: 4,
+        links: 29,
+        comments: [
+          { user: 'bowling_cousin', when: '1 минуту назад', text: 'Сначала тебе надевают очки в светлой спальне, а через секунду кузен уже кричит над ухом в таксопарке. Жизненно.' },
+          { user: 'liberty_cab98', when: '2 минуты назад', text: 'Когда поставил будильник на 7:00, моргнул один раз — а на экране уже 10:24 и смена в депо началась три часа назад.' },
+          { user: 'glasses_hd', when: '3 минуты назад', text: 'Момент с надеванием очков от первого лица сделан отлично: картинка сразу стала чёткой, жаль только реальность вместе с ней вернулась.' },
+          { user: 'tohru_maid99', when: '4 минуты назад', text: 'Переход от улыбки Тору к «Roman! Are you sleeping?!» — лучший контраст на всём сайте.' },
+          { user: 'sonnyi_roman', when: '5 минут назад', text: '«Huh! No! No way!» — мой стандартный ответ каждое утро понедельника.' }
+        ]
+      },
+      {
+        id: 'sPaRkL3Mono',
+        title: 'Sparkle Trailer - Monodrama',
+        channel: 'HSR98',
+        added: 'только что',
+        order: 11,
+        category: 'games',
+        description: 'Трейлер персонажа Искорка (Sparkle): «Монодрама» из Honkai: Star Rail. Театр снов Пенаконии, школьный класс, алый занавес, маски кицунэ, золотые рыбки и русская рулетка от Недотёпы в маске.\nОфициальный сайт: hsr.hoyoverse.com',
+        tags: ['sparkle', 'monodrama', 'искорка', 'монодрама', 'hsr98', 'хср', 'honkai', 'star rail', 'пенакония', 'penacony'],
+        views: 184620,
+        rating: 5,
+        ratings: 4120,
+        favorited: 1890,
+        honors: 7,
+        links: 84,
+        chapters: [
+          [0, 'Пролог: Часы Пенаконии'],
+          [11, 'Акт I: Тихая ученица'],
+          [24, 'Акт II: Выход на алую сцену'],
+          [34, 'Танец золотых рыбок и кендамы'],
+          [44, 'Шесть масок и один курок'],
+          [56, 'Искорка: «Монодрама»'],
+          [72, 'Акт III: Калейдоскоп тысячи лиц'],
+          [95, 'Финальный выстрел'],
+          [105, 'Поклон под золотым занавесом']
+        ],
+        comments: [
+          { user: 'masked_fool_98', when: '1 минуту назад', text: 'Переходы между школьной партой, красным театром и калейдоскопом масок на 1:12 — чистое искусство Радости! Аха одобряет.' },
+          { user: 'penacony_dreamer', when: '2 минуты назад', text: 'Когда на 0:56 выскочила карточка «SPARKLE — MONODRAMA» под дроп музыки, у меня мурашки побежали даже через ЭЛТ-монитор.' },
+          { user: 'mono_quantum', when: '3 минуты назад', text: 'Отдаю все свои Звёздные нефриты без остатка. Лучший трейлер на канале HSR98!' },
+          { user: 'kitsune_kendama', when: '4 минуты назад', text: 'Сцена с револьвером, веером и золотыми рыбками вокруг тории выглядит так, будто 3dfx Voodoo разогнали до предела.' },
+          { user: 'aha_laughs', when: '5 минут назад', text: '«Ты думал, что смотришь спектакль? Нет, ты уже на сцене!» — пересматриваю уже пятый раз подряд.' }
+        ]
+      },
+      {
+        id: 'Str3yHarmon1',
+        title: 'Стрей Не Оценил Губную Гармошку',
+        channel: 'StreyOsuzhdaet',
+        added: 'только что',
+        order: 12,
+        category: 'people',
+        description: 'Стример в игровом кресле перед веб-камерой: наушники, неоновые соты на стене, чат справа и очень красноречивое лицо. Сначала он поправляет гарнитуру, потом косится в монитор, подаётся вперёд и под конец показывает все зубы.',
+        tags: ['стрей', 'stray', 'гармошка', 'губная гармошка', 'стример', 'стрим', 'чат', 'реакция', 'усатый'],
+        views: 37460,
+        rating: 5,
+        ratings: 861,
+        favorited: 297,
+        honors: 3,
+        links: 22,
+        chapters: [
+          [0, 'Взгляд в камеру'],
+          [3, 'Поправляет гарнитуру'],
+          [8, 'Что там на мониторе?'],
+          [10, 'Крик'],
+          [12, 'Нос к самому экрану'],
+          [14, 'Стример объясняет'],
+          [18, 'Все зубы'],
+          [20, 'Итог']
+        ],
+        comments: [
+          { user: 'chat_pokazal_sabku', when: '1 минуту назад', text: 'На 12-й секунде он так приблизился к камере, что я увидел пору на носу. Гармошку, видимо, тоже.' },
+          { user: 'usatyi_malchik', when: '2 минуты назад', text: 'В чате ровно пять раз написали «усатый», и все пять — на моём мониторе.' },
+          { user: 'headset_red_led', when: '3 минуты назад', text: 'Красный огонёк на правом ухе горит с самого начала. Гарнитуру он всё равно поправил — на всякий случай.' },
+          { user: 'reklama_poshla', when: '4 минуты назад', text: '«Реклама пошла» — лучший комментарий на сайте, правда, в самом видео его не слышно.' },
+          { user: 'zubastyi_stream', when: '5 минут назад', text: 'На 0:19 улыбка такая, что экран ЭЛТ слегка нагрелся.' }
+        ]
+      },
+      {
+        id: 'Str3yOsud1l',
+        title: 'Стрей Осудил Наполовину',
+        channel: 'StreyOsuzhdaet',
+        added: 'только что',
+        order: 13,
+        category: 'people',
+        description: 'Стример пытается осудить провокационный донат, но сломанный алерт обрывает его ровно на слове «О-су...». После второй попытки и пищащей цензуры рождается легендарный вердикт: «Я осудил тебя наполовину! Не одобряю максимально! Клоун.»',
+        tags: ['стрей', 'stray', 'осудил', 'наполовину', 'осуждаю', 'алерт', 'стример', 'реакция', 'усатый', 'клоун'],
+        views: 42180,
+        rating: 5,
+        ratings: 948,
+        favorited: 342,
+        honors: 4,
+        links: 27,
+        chapters: [
+          [0, 'Сломали алерт'],
+          [6, 'Крик из доната'],
+          [9, 'Первое «О-су...»'],
+          [12, 'Вторая попытка'],
+          [14, 'Осудил наполовину!'],
+          [17, 'Пик-пик-пик'],
+          [26, 'Провокатор и клоун']
+        ],
+        comments: [
+          { user: 'polovina_osuzhdeniya', when: '1 минуту назад', text: 'Когда алерт обрубил звук ровно на «О-су...», я чуть чаем монитор не залил. Пятьдесят процентов осуждения засчитано!' },
+          { user: 'FantoM_Dota', when: '2 минуты назад', text: 'Вот наполовину его прошёл — и донат наполовину осудил, идеальный баланс.' },
+          { user: 'd3ad_ins1de', when: '3 минуты назад', text: 'ДАРЮ САБКУ ЗА АСУЖДЕНИЯ! Даже сломанный алерт не остановит усатого стража порядка.' },
+          { user: 'pik_pik_alert', when: '4 минуты назад', text: 'На 0:18 такой сосредоточенный взгляд в левый монитор под пищание алерта, будто он морзянку расшифровывает.' },
+          { user: 'maksimalno_ne_odobryayu', when: '5 минут назад', text: '«Не одобряю максимально! Клоун.» — записываю в золотой цитатник Планеты Ебатории.' }
+        ]
+      },
+      {
+        id: 'kL33T4T4T4a',
+        title: '«Та-та-та!» Кли (Пиро)',
+        channel: 'HSR98',
+        added: 'только что',
+        order: 14,
+        category: 'games',
+        description: 'Демо-ролик Кли, Искрящегося Рыцаря-Пиро: белые титры с вопросами про «самого сильного воина Мондштадта», площадь с Путешественником, карточка «Ускользающее Солнце», прыг-скок среди хиличурлов и слаймов, взрывы в траве, строгая Джинн, коридор штаба и закат с горящей поляной.\nВ Honkai: Star Rail 98 пиро-героев встречают так же громко.',
+        tags: ['кли', 'klee', 'пиро', 'та-та-та', 'ускользающее солнце', 'прыг-скок', 'взрыв', 'мондштадт', 'hsr98', 'хср', 'honkai', 'star rail'],
+        views: 213480,
+        rating: 5,
+        ratings: 5316,
+        favorited: 2204,
+        honors: 9,
+        links: 97,
+        chapters: [
+          [0, 'Тишина перед взрывом'],
+          [4.5, 'Титры: «Легендарная девочка в красном»'],
+          [14, 'Кли на каменной площади'],
+          [20.8, 'Решётчатая дверь и Путешественник'],
+          [24.4, 'Карточка «Ускользающее Солнце»'],
+          [27.8, 'Прыг-скок: взрывное веселье'],
+          [38.6, 'Вспышки и огненные слаймы'],
+          [46.3, 'Рыцарь Джинн'],
+          [52.4, 'Коридор штаба'],
+          [62.6, 'Крупный план'],
+          [66.3, 'Каменный страж'],
+          [70.7, 'Ночной бой и руины'],
+          [77.9, 'Закат над лугом'],
+          [90.7, 'Улыбка Кли']
+        ],
+        comments: [
+          { user: 'dodoco_fan_98', when: '1 минуту назад', text: 'Та-та-та-та-та! У меня на мониторе тоже что-то загорелось, но это, кажется, перегрелся ЭЛТ.' },
+          { user: 'strongest_knight', when: '2 минуты назад', text: 'На титрах написали «самый сильный воин Мондштадта», а Джинн в кадре даже бровью не повела. Железные нервы.' },
+          { user: 'pyro_enjoyer', when: '3 минуты назад', text: 'Карточка «Ускользающее Солнце» с печатью «Кли» и прыгающей девочкой — лучшее оформление на всём канале HSR98.' },
+          { user: 'trava_gorit', when: '4 минуты назад', text: 'Сначала подожгла траву, потом поляну, потом закат. Последовательность не нарушена.' },
+          { user: 'rybka_vkusnaya', when: '5 минут назад', text: '«Рыбка такааая вкусная!» — вот ради чего я включаю этот ролик на повтор.' }
+        ]
+       },
+      {
+        id: 'Str3yTr3k98',
+        title: 'Стрей Перепутал Трэк',
+        channel: 'StreyOsuzhdaet',
+        added: 'только что',
+        order: 15,
+        category: 'music',
+        description: 'Катос присылает донат на тысячу с ремиксом «Маленькой страны», но вместо обычного припева внезапно вступает детский хор с совершенно другим текстом. Стрей отпивает из белой кружки, открывает окно на мониторе, в ужасе слушает куплет, вырубает трек и зачитывает оправдание донатера: «Я не этот трек думал, это не то!» Вердикт — осуждаю максимально!',
+        tags: ['стрей', 'stray', 'перепутал', 'трэк', 'трек', 'катос', 'осуждает', 'осуждаю', 'маленькая страна', 'донат', 'стрим'],
+        views: 68420,
+        rating: 5,
+        ratings: 1640,
+        favorited: 612,
+        honors: 5,
+        links: 39,
+        chapters: [
+          [0, 'Глоток из кружки'],
+          [3, 'Вступает детский хор'],
+          [5, 'Свет монитора и шок'],
+          [14, '«Что за песня?»'],
+          [16, 'Второй куплет'],
+          [21, 'Вырубает трек: «Катос!»'],
+          [26, '«Я не этот трек думал, это не то!»'],
+          [30, '«Спасибо за 1000!»'],
+          [33.7, '«Осуждаю максимально!»']
+        ],
+        comments: [
+          { user: 'katos_1000', when: '1 минуту назад', text: 'Я правда другой ремикс хотел скинуть! Название было такое же, кто же знал, что там хор с таким куплетом.' },
+          { user: 'belya_kruzhka', when: '2 минуты назад', text: 'Спокойно попил чайку на 0:02, открыл окно на мониторе — и лицо озарилось светом чистого непонимания.' },
+          { user: 'malenkaya_strana98', when: '3 минуты назад', text: 'По первым нотам думал, сейчас будет классика эстрады, а на пятой секунде весь чат улетел в стратосферу.' },
+          { user: 'osuzhdayu_max', when: '4 минуты назад', text: '«Я не этот трек думал, это не то!» — лучшее оправдание в истории донатов за тысячу рублей.' },
+          { user: 'usatyi_verdikt', when: '5 минут назад', text: 'Ладонь ко лбу на 0:29 и финальное «Осуждаю максимально!» — золотой фонд канала СТРЕЙ ОСУЖДАЕТ.' }
+        ]
+      },
+      {
+        id: 'n0p3Av1Eng1',
+        title: 'nope.avi',
+        channel: 'memes_ytp',
+        added: 'только что',
+        order: 16,
+        category: 'comedy',
+        description: 'Девять секунд, которые лучше любого длинного ответа. Инженер BLU идёт по двору шахты, поворачивается к камере, и каска взлетает над головой. Шея послушно тянется следом, звучит спокойное «Nope.» — и Инженер уходит за кадр, не меняя выражения лица.\nПодходит как ответ на «ты придёшь?», «ты точно всё проверил?» и «может, ещё раз?». Сохраняйте в закладки и пользуйтесь.',
+        tags: ['nope.avi', 'nope', 'ноуп', 'инженер', 'engineer', 'tf2', 'team fortress', 'каска', 'шея', 'мем', 'ytp', 'memes'],
+        views: 194820,
+        rating: 5,
+        ratings: 4820,
+        favorited: 1930,
+        honors: 8,
+        links: 84,
+        chapters: [
+          [0, 'Двор шахты'],
+          [2, 'Выход Инженера'],
+          [4, 'Поворот к камере'],
+          [5, 'Каска взлетает'],
+          [6, '«Nope.»'],
+          [7, 'Уход за кадр']
+        ],
+        comments: [
+          { user: 'ytp_collector', when: '1 минуту назад', text: 'Отправил это боссу вместо ответа на письмо. Пока жду реакции.' },
+          { user: 'zakladka98', when: '2 минуты назад', text: 'На 0:05 каска улетает, на 0:06 шея догоняет. Идеальный монтаж без единой лишней секунды.' },
+          { user: 'blu_engineer_fan', when: '3 минуты назад', text: 'Он даже не торопится. Просто сказал «Nope.» и пошёл по делам.' },
+          { user: 'nopenopenope', when: '4 минуты назад', text: 'Теперь это мой статус на все приглашения до конца года.' },
+          { user: 'shahta_dvor', when: '5 минут назад', text: 'Nope.' }
+        ]
+      },
+      {
+        id: 'k3An4uH0rnY',
+        title: 'Keanu Reeves is Extremely Horny',
+        channel: 'memes_ytp',
+        added: 'только что',
+        order: 17,
+        category: 'comedy',
+        description: 'Двадцать три секунды рекламного ролика, у которого кто-то заменил субтитры. Мужчина на залитой солнцем улице делает странные движения, герой в кожаной куртке уверенно смотрит в камеру, а белые подписи под кадром превращают каждую фразу в совсем другое предложение.\nМонтаж собран из шести планов: улица, крупный план, офис с синим монитором, окна с граффити, неоновый город и финальный взгляд.\nСубтитры нарочно перевраны. Громкость — на ваше усмотрение.',
+        tags: ['keanu reeves', 'киану ривз', 'ytp', 'мем', 'субтитры', 'cyberpunk', 'киберпанк', 'джонни', 'нарезка', 'memes'],
+        views: 276410,
+        rating: 4.5,
+        ratings: 6120,
+        favorited: 2740,
+        honors: 11,
+        links: 126,
+        chapters: [
+          [0, 'Улица'],
+          [4, 'Крупный план'],
+          [7, 'Офис'],
+          [10, 'Окна с граффити'],
+          [12, 'Неоновый город'],
+          [15, 'Взгляд в камеру'],
+          [21, 'Финальная подпись']
+        ],
+        comments: [
+          { user: 'ytp_collector', when: '1 минуту назад', text: 'Субтитры на 0:05 — лучшее, что я видел за этот месяц.' },
+          { user: 'zakladka98', when: '2 минуты назад', text: 'Он так серьёзно смотрит в камеру, что хочется верить каждой подписи.' },
+          { user: 'nopenopenope', when: '3 минуты назад', text: 'Смотрел без звука, потом со звуком, потом снова без звука.' },
+          { user: 'neon_gorod', when: '4 минуты назад', text: 'Неоновый город на 0:12 вообще не при чём, но так даже смешнее.' },
+          { user: 'shahta_dvor', when: '5 минут назад', text: 'Белый шрифт на чёрном — классика жанра.' }
+        ]
       }
     ];
     this.categories = [
@@ -555,7 +1030,11 @@ class YouVidSite {
   }
 
   avatar(ch) {
-    return `content/YouVid/avatars/${ch.user}.png`;
+    return ch.avatarFile || `content/YouVid/avatars/${ch.user}.png`;
+  }
+
+  banner(ch) {
+    return ch.bannerFile || `content/YouVid/banners/${ch.user}.png`;
   }
 
   pageTitle(url) {
@@ -698,6 +1177,13 @@ class YouVidSite {
     return `<a class="yv-thumb${big ? ' yv-thumb-big' : ''}" data-url="${this.baseUrl}/watch?v=${v.id}" data-thumbs="${t.join('|')}" aria-label="${this.esc(v.title)}, ${d}"><img src="${encodeURI(t[1])}" alt=""></a>`;
   }
 
+  endThumb(v) {
+    const t = this.thumbs(v);
+    const d = YouVidPlayer.fmt(this.duration(v));
+    const title = this.esc(v.title);
+    return `<a class="yv-thumb yv-end-item" data-url="${this.baseUrl}/watch?v=${v.id}" data-thumbs="${t.join('|')}" data-title="${title}" title="${title}" aria-label="${title}, ${d}"><img src="${encodeURI(t[1])}" alt=""><span class="yv-end-item-len">${d}</span><span class="yv-end-item-title">${title}</span></a>`;
+  }
+
   videoRow(v, withDesc) {
     const ch = this.channels[v.channel];
     const r = this.rating(v);
@@ -746,7 +1232,7 @@ class YouVidSite {
   }
 
   renderHome() {
-    const list = this.videos.slice().sort((a, b) => b.order - a.order);
+    const list = this.videos.slice().sort((a, b) => b.order - a.order).slice(0, 6);
     const channels = Object.values(this.channels).map(ch => `
       <div class="yv-ch-mini">
         <a data-url="${this.baseUrl}/user/${ch.user}"><img class="yv-ava-s" src="${this.avatar(ch)}" alt=""></a>
@@ -773,7 +1259,7 @@ class YouVidSite {
   }
 
   videosOf(ch) {
-    return this.videos.filter(v => v.channel === ch.user);
+    return this.videos.filter(v => v.channel === ch.user).sort((a, b) => b.order - a.order);
   }
 
   subsCount(ch) {
@@ -801,11 +1287,13 @@ class YouVidSite {
     const r = this.rating(v);
     const mine = this.state.rated[v.id] || 0;
     const fav = this.state.favorites.includes(v.id);
+    const loopOn = Boolean(this.state.loop);
+    const loopLabel = loopOn ? 'Выключить повтор' : 'Повторять видео';
     const url = `${this.baseUrl}/watch?v=${v.id}`;
     const embed = `<object width="425" height="350"><param name="movie" value="${this.baseUrl}/v/${v.id}"></object>`;
     const related = this.videos.filter(x => x.id !== v.id);
     const comments = this.commentsOf(v);
-    const others = related.map(x => this.thumb(x)).join('');
+    const others = related.slice(0, 4).map(x => this.endThumb(x)).join('');
     return `
       <h1 class="yv-h1">${this.esc(v.title)}</h1>
       <div class="yv-cols">
@@ -815,23 +1303,23 @@ class YouVidSite {
               <canvas class="yv-canvas" width="480" height="${ch_}" style="top:${(((360 - ch_) / 2 / 360) * 100).toFixed(3)}%"></canvas>
               <button type="button" class="yv-big" aria-label="Смотреть"><span class="yv-big-tri"></span></button>
               <div class="yv-end" hidden>
-                <div class="yv-end-title">${this.esc(v.title)}</div>
-                <button type="button" class="yv-btn yv-replay">Посмотреть ещё раз</button>
-                ${others ? `<div class="yv-end-more"><div>Другие видео:</div>${others}</div>` : ''}
+                ${others ? `<div class="yv-end-more"><div class="yv-end-title">Другие видео</div><div class="yv-end-grid">${others}</div></div>` : ''}
+                <button type="button" class="yv-btn yv-replay"><span class="yv-replay-ico" aria-hidden="true">&#8635;</span> Повторить видео</button>
               </div>
               <div class="yv-msg" role="status" hidden></div>
               <audio class="yv-audio" preload="auto" src="${clip ? encodeURI(clip.audio) : ''}"></audio>
             </div>
             <div class="yv-bar">
               <div class="yv-seek" tabindex="0" role="slider" aria-label="Перемотка" aria-valuemin="0" aria-valuemax="${Math.round(this.duration(v))}" aria-valuenow="0">
-                <span class="yv-buffered"></span><span class="yv-played"></span><span class="yv-knob"></span>
+                <span class="yv-buffered"></span><span class="yv-played"></span>${this.chapterTicks(v)}<span class="yv-knob"></span>
               </div>
               <div class="yv-bar-row">
                 <button type="button" class="yv-pp" aria-label="Смотреть"></button>
                 <button type="button" class="yv-stop" aria-label="Стоп"></button>
                 <span class="yv-time"><span class="yv-cur">00:00</span> / <b>${YouVidPlayer.fmt(this.duration(v))}</b></span>
                 <span class="yv-bar-gap"></span>
-                  <button type="button" class="yv-mute" aria-label="Выключить звук">${this.gif('speaker')}</button>
+                <button type="button" class="yv-loop${loopOn ? ' yv-loop-on' : ''}" aria-label="${loopLabel}" aria-pressed="${loopOn ? 'true' : 'false'}" title="${loopLabel}"><svg class="yv-loop-ico" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M2 8V5c0-1.1.9-2 2-2h7V1l4 3-4 3V5H4v3H2zm12 0v3c0 1.1-.9 2-2 2H5v2l-4-3 4-3v2h7V8h2z"/></svg></button>
+                <button type="button" class="yv-mute" aria-label="Выключить звук">${this.gif('speaker')}</button>
                 <span class="yv-vol">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => `<button type="button" class="yv-bar-step" style="height:${2 + i}px" aria-label="Громкость ${i} из 10"></button>`).join('')}</span>
                 <span class="yv-size-label">Размер:</span>
                 <button type="button" class="yv-size-normal" aria-label="Обычный размер"></button>
@@ -872,6 +1360,7 @@ class YouVidSite {
               <div class="yv-sub-wrap">${this.subscribeButton(ch)}<div class="yv-sub-to">${this.state.subs.includes(ch.user) ? 'от' : 'на'} ${this.esc(ch.name)}</div></div>
             </div>
             <p class="yv-about-desc">${this.esc(v.description).replace(/\n/g, '<br>')}</p>
+            ${this.renderChapters(v)}
             <div>Категория: <a data-url="${this.baseUrl}/browse?c=${v.category}">${this.esc(this.categoryName(v.category))}</a></div>
             <div>Теги: ${v.tags.map(t => `<a data-url="${this.baseUrl}/results?search_query=${encodeURIComponent(t)}">${this.esc(t)}</a>`).join(' ')}</div>
             <label class="yv-field"><span>URL</span><input type="text" class="yv-url" readonly value="${this.esc(url)}"></label>
@@ -886,6 +1375,23 @@ class YouVidSite {
               </div>`).join('')}`)}
         </div>
       </div>`;
+  }
+
+  chapterTicks(v) {
+    const total = this.duration(v);
+    if (!v.chapters || !total) return '';
+    return v.chapters.slice(1).map(([t]) => `<span class="yv-tick" style="left:${((t / total) * 100).toFixed(2)}%"></span>`).join('');
+  }
+
+  renderChapters(v) {
+    if (!v.chapters || !v.chapters.length) return '';
+    return `
+            <div class="yv-chapters">
+              <div class="yv-chapters-head">Содержание <span class="yv-chapters-count">(${v.chapters.length})</span></div>
+              <ol class="yv-chap-list">
+                ${v.chapters.map(([t, title], i) => `<li><button type="button" class="yv-chap" data-t="${t}" data-i="${i}"><span class="yv-chap-time">${YouVidPlayer.fmt(t)}</span><span class="yv-chap-title">${this.esc(title)}</span></button></li>`).join('')}
+              </ol>
+            </div>`;
   }
 
   renderComments(v, comments) {
@@ -913,7 +1419,7 @@ class YouVidSite {
     const channelViews = vids.reduce((a, v) => a + this.views(v), 0);
     return `
       <div class="yv-channel yv-theme-${ch.theme}">
-        <div class="yv-banner"><img src="content/YouVid/banners/${ch.user}.png" alt=""></div>
+        <div class="yv-banner"><img src="${this.banner(ch)}" alt=""></div>
         <div class="yv-channel-title">Канал ${this.esc(ch.name)}</div>
         <div class="yv-cols">
           <div class="yv-side yv-side-left">
@@ -1182,6 +1688,13 @@ class YouVidSite {
       root.querySelector('.yv-action-note').textContent = 'Спасибо. Модераторы YouVid проверят это видео.';
     });
     root.querySelectorAll('.yv-url, .yv-embed').forEach(f => f.addEventListener('focus', () => f.select()));
+    root.querySelectorAll('.yv-chap').forEach(btn => btn.addEventListener('click', () => {
+      const p = this.player;
+      if (!p || p.state === 'broken') return;
+      p.seek(+btn.dataset.t);
+      if (p.state !== 'playing' && p.state !== 'loading') p.play();
+      p.updateTime();
+    }));
     this.attachWatchComments(root, v);
   }
 

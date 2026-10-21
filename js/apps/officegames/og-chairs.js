@@ -16,8 +16,8 @@ class AppOgChairs {
       w: 24,
       h: 28,
       vx: 0,
-      speed: 4.5,
-      maxSpeed: 10,
+      speed: 2.0,
+      maxSpeed: 4.0,
       boostTimer: 0,
       spinTimer: 0
     };
@@ -35,6 +35,7 @@ class AppOgChairs {
     this.keys = { left: false, right: false, up: false, down: false };
 
     this.spawnTimer = 0;
+    this.lastFrameTime = 0;
     this.highScore = this.loadHighScore();
 
     this.handleKeyDown = this.onKeyDown.bind(this);
@@ -56,6 +57,10 @@ class AppOgChairs {
       try {
         localStorage.setItem('office_games_scores_chairs', String(this.highScore));
       } catch (e) {}
+      if (window.appOfficeLauncher && window.appOfficeLauncher.win) window.appOfficeLauncher.populateList();
+      if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+        window.appClippy.onOfficeGameEvent('chairs', 'high_score', { score: this.highScore });
+      }
     }
   }
 
@@ -223,7 +228,7 @@ class AppOgChairs {
   initGame() {
     this.player.x = 180;
     this.player.vx = 0;
-    this.player.speed = 4.5;
+    this.player.speed = 2.0;
     this.player.boostTimer = 0;
     this.player.spinTimer = 0;
 
@@ -236,6 +241,7 @@ class AppOgChairs {
     this.particles = [];
     this.floatingTexts = [];
     this.spawnTimer = 0;
+    this.lastFrameTime = 0;
 
     this.updateHUD();
 
@@ -264,6 +270,9 @@ class AppOgChairs {
         if (titleTextEl) titleTextEl.textContent = 'Гонки на креслах 98 (Chair GP)';
         if (iconEl && window.Icons) iconEl.innerHTML = window.Icons['game-manager'] || '';
       }
+    }
+    if (window.appClippy && window.appClippy.onOfficeGameEvent) {
+      window.appClippy.onOfficeGameEvent('chairs', this.bossMode ? 'boss_on' : 'boss_off');
     }
   }
 
@@ -307,7 +316,7 @@ class AppOgChairs {
       e.preventDefault();
       this.keys.up = true;
       if (this.player.speed < this.player.maxSpeed) {
-        this.player.speed = Math.min(this.player.maxSpeed, this.player.speed + 1.2);
+        this.player.speed = Math.min(this.player.maxSpeed, this.player.speed + 0.45);
         this.sndPush();
       }
     } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
@@ -365,21 +374,21 @@ class AppOgChairs {
 
     if (p.boostTimer > 0) {
       p.boostTimer--;
-      p.speed = 14.0;
+      p.speed = 5.0;
     } else {
       if (this.keys.down) {
-        p.speed = Math.max(2.0, p.speed - 0.2);
-      } else if (!this.keys.up && p.speed > 4.5) {
-        p.speed = Math.max(4.5, p.speed - 0.05);
+        p.speed = Math.max(1.2, p.speed - 0.1);
+      } else if (!this.keys.up && p.speed > 2.0) {
+        p.speed = Math.max(2.0, p.speed - 0.02);
       }
     }
 
     if (p.spinTimer > 0) {
       p.spinTimer--;
-      p.vx = Math.sin(p.spinTimer * 0.4) * 4.5;
+      p.vx = Math.sin(p.spinTimer * 0.25) * 2.4;
     } else {
-      if (this.keys.left) p.vx = -4.2;
-      else if (this.keys.right) p.vx = 4.2;
+      if (this.keys.left) p.vx = -2.5;
+      else if (this.keys.right) p.vx = 2.5;
       else p.vx *= 0.6;
     }
 
@@ -431,7 +440,7 @@ class AppOgChairs {
     }
 
     this.spawnTimer++;
-    if (this.spawnTimer >= 45) {
+    if (this.spawnTimer >= 78) {
       this.spawnEntity();
       this.spawnTimer = 0;
     }
@@ -441,15 +450,15 @@ class AppOgChairs {
 
   hitObstacle(obs, index) {
     if (obs.type === 'puddle' || obs.type === 'papers') {
-      this.player.spinTimer = 35;
-      this.player.speed = Math.max(3.0, this.player.speed - 3.0);
+      this.player.spinTimer = 32;
+      this.player.speed = Math.max(1.5, this.player.speed - 1.2);
       this.createFloatingText('ЗАНОС!', this.player.x, this.player.y - 14, '#00ffff');
       this.createSparks(this.player.x, this.player.y, '#ffffff');
       this.obstacles.splice(index, 1);
     } else {
       this.sndCrash();
       this.lives--;
-      this.player.speed = 3.5;
+      this.player.speed = 1.8;
       this.player.boostTimer = 0;
       this.createSparks(this.player.x, this.player.y, '#ff3333');
       this.createFloatingText('-1 ЖИЗНЬ!', this.player.x, this.player.y - 14, '#ff3333');
@@ -469,7 +478,7 @@ class AppOgChairs {
     this.createSparks(it.x + 8, it.y + 8, '#ffff00');
 
     if (it.type === 'coffee') {
-      this.player.boostTimer = 180;
+      this.player.boostTimer = 210;
       this.createFloatingText('ТУРБО-КОФЕ!', this.player.x, this.player.y - 14, '#00ff88');
     } else {
       this.createFloatingText(`+${it.points}`, this.player.x, this.player.y - 14, '#ffff00');
@@ -482,13 +491,13 @@ class AppOgChairs {
   createSparks(x, y, color) {
     for (let i = 0; i < 6; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const spd = 1.2 + Math.random() * 2.5;
+      const spd = 0.8 + Math.random() * 1.5;
       this.particles.push({
         x,
         y,
         vx: Math.cos(angle) * spd,
         vy: Math.sin(angle) * spd,
-        life: 14,
+        life: 24,
         color
       });
     }
@@ -499,8 +508,8 @@ class AppOgChairs {
       text,
       x,
       y,
-      vy: -1.2,
-      life: 24,
+      vy: -0.65,
+      life: 38,
       color
     });
   }
@@ -516,7 +525,7 @@ class AppOgChairs {
     if (scoreEl) scoreEl.textContent = this.score;
     if (highEl) highEl.textContent = this.highScore;
 
-    const kmh = Math.floor(this.player.speed * 6);
+    const kmh = Math.floor(this.player.speed * 7);
     if (speedEl) speedEl.textContent = `${kmh} км/ч (${Math.floor(this.distance)}м)`;
   }
 
@@ -615,7 +624,7 @@ class AppOgChairs {
     ctx.translate(p.x, p.y);
 
     if (p.spinTimer > 0) {
-      ctx.rotate(p.spinTimer * 0.4);
+      ctx.rotate(p.spinTimer * 0.25);
     }
 
     ctx.fillStyle = '#111827';
@@ -709,11 +718,17 @@ class AppOgChairs {
     }
   }
 
-  gameLoop() {
+  gameLoop(now) {
     if (!this.win) return;
     this.animId = requestAnimationFrame(this.loop);
 
     if (this.bossMode) return;
+
+    const currentTime = now || ((window.performance && window.performance.now) ? window.performance.now() : Date.now());
+    if (currentTime - this.lastFrameTime < 16) {
+      return;
+    }
+    this.lastFrameTime = currentTime;
 
     if (this.gameState === 'playing') {
       this.updateSimulation();

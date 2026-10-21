@@ -199,16 +199,29 @@
 
   const LOOK = {
     name: 'DJ Мелон',
-    skin: 0xffe2cf,
-    hair: 0x9fd86a,
-    hoodie: 0xf4913e,
-    trim: 0x5c9a3c,
-    shorts: 0x2f5a3a,
-    sock: 0xf4f2ea,
-    shoe: 0x4f9a4a,
-    sole: 0xf2f2ea,
-    phones: 0xf4efe2,
-    cushion: 0xf6a040
+    skin: 0xffe6d8,
+    hair: 0x1b2029,
+    hairDark: 0x12151c,
+    hairHi: 0x2c3442,
+    earInner: 0xc8ced8,
+    shirt: 0xf0f3f8,
+    tie: 0x1c1f28,
+    coat: 0x28667a,
+    coatDark: 0x1b4858,
+    coatHi: 0x367d94,
+    lining: 0xe8edf2,
+    lanyard: 0xebb840,
+    tag: 0x4e4a82,
+    cord: 0xc82226,
+    armor: 0x1e222c,
+    metal: 0x9aa2b0,
+    gold: 0xdcb042,
+    obi: 0x1c2028,
+    skirt: 0x161922,
+    pleat: 0x585c68,
+    tights: 0x343038,
+    boot: 0x151820,
+    sole: 0x0e1015
   };
   const DRONE_LOOK = { name: 'Дынька' };
 
@@ -248,7 +261,7 @@
     const up = cue > 0.8 ? S(PI * (cue - 0.8) * 5) : 0;
     p.shL = [lerp(0.68, 1.44, up), lerp(-0.29, 0.41, up), lerp(0.9, 0.08, up)];
     p.elL = [lerp(0.45, 1.39, up), 0, 0];
-    p.face = 'calm';
+    p.face = blinkAt(t, 2) ? 'blink' : 'calm';
     return p;
   }
 
@@ -652,7 +665,7 @@
   }
 
   const FACES = ['open', 'blink', 'calm', 'happy', 'chew', 'oh', 'sleepy', 'sing', 'wink'];
-  const SKIN_CSS = '#ffe2cf';
+  const SKIN_CSS = '#ffe6d8';
 
   function drawFace(kind) {
     return (ctx, w, h) => {
@@ -661,116 +674,150 @@
       ctx.scale(w / 256, h / 256);
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      ctx.fillStyle = '#ffadb6';
-      [46, 210].forEach(x => { ctx.beginPath(); ctx.ellipse(x, 164, 19, 9, 0, 0, PI * 2); ctx.fill(); });
-      const eyeY = 122;
-      [80, 176].forEach((x, i) => {
-        const shut = ['blink', 'calm', 'happy', 'chew', 'sing'].includes(kind) || (kind === 'wink' && i === 0);
+      ctx.fillStyle = 'rgba(255, 145, 160, 0.35)';
+      [54, 202].forEach(x => { ctx.beginPath(); ctx.ellipse(x, 160, 15, 7, 0, 0, PI * 2); ctx.fill(); });
+      ctx.fillStyle = '#cca090';
+      ctx.beginPath();
+      ctx.ellipse(128, 154, 1.8, 2.8, 0, 0, PI * 2);
+      ctx.fill();
+      const eyeY = 120;
+      [82, 174].forEach((x, i) => {
+        const s = i ? 1 : -1;
+        const shut = ['blink', 'happy', 'chew'].includes(kind) || (kind === 'wink' && i === 0);
         if (shut) {
-          ctx.strokeStyle = '#3a2016';
-          ctx.lineWidth = 7;
+          ctx.strokeStyle = '#14161f';
+          ctx.lineWidth = 6.5;
           ctx.beginPath();
           if (kind === 'happy' || kind === 'chew' || kind === 'wink') {
-            ctx.moveTo(x - 24, eyeY + 8);
-            ctx.quadraticCurveTo(x, eyeY - 20, x + 24, eyeY + 8);
+            ctx.moveTo(x - 23, eyeY + 5);
+            ctx.quadraticCurveTo(x, eyeY - 15, x + 23, eyeY + 5);
           } else {
-            ctx.moveTo(x - 27, eyeY - 2);
-            ctx.quadraticCurveTo(x, eyeY + 16, x + 27, eyeY - 2);
+            ctx.moveTo(x - 25, eyeY - 1);
+            ctx.quadraticCurveTo(x, eyeY + 12, x + 25, eyeY - 1);
           }
           ctx.stroke();
-          if (kind !== 'happy' && kind !== 'chew' && kind !== 'wink') {
-            const o = i ? 1 : -1;
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(x + o * 26, eyeY - 1);
-            ctx.lineTo(x + o * 34, eyeY - 8);
-            ctx.stroke();
-          }
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(x + s * 23, eyeY);
+          ctx.lineTo(x + s * 31, eyeY - 6);
+          ctx.stroke();
           return;
         }
-        ctx.fillStyle = '#ffffff';
+        const topArch = (kind === 'calm' || kind === 'sing') ? -25 : -30;
+        ctx.save();
         ctx.beginPath();
-        ctx.ellipse(x, eyeY, 25, 31, 0, 0, PI * 2);
+        ctx.moveTo(x - 25, eyeY - 2);
+        ctx.quadraticCurveTo(x - s * 2, eyeY + topArch, x + 25, eyeY - 3);
+        ctx.quadraticCurveTo(x + 22, eyeY + 26, x, eyeY + 27);
+        ctx.quadraticCurveTo(x - 22, eyeY + 26, x - 25, eyeY - 2);
+        ctx.closePath();
+        ctx.fillStyle = '#fcfbfe';
         ctx.fill();
-        const g = ctx.createLinearGradient(0, eyeY - 28, 0, eyeY + 30);
-        g.addColorStop(0, '#8a3208');
-        g.addColorStop(0.5, '#e2741c');
-        g.addColorStop(1, '#ffd35a');
+        ctx.clip();
+        const gx = x + (i ? -2 : 2);
+        const g = ctx.createLinearGradient(0, eyeY - 22, 0, eyeY + 26);
+        g.addColorStop(0, '#38060e');
+        g.addColorStop(0.32, '#8e101e');
+        g.addColorStop(0.68, '#de2232');
+        g.addColorStop(1, '#ff5e68');
         ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.ellipse(x + (i ? -2 : 2), eyeY + 3, 20, 27, 0, 0, PI * 2);
+        ctx.ellipse(gx, eyeY + 3, 19, 24, 0, 0, PI * 2);
         ctx.fill();
-        ctx.fillStyle = '#34120a';
+        ctx.strokeStyle = '#28050b';
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+        ctx.fillStyle = '#ff7680';
         ctx.beginPath();
-        ctx.ellipse(x + (i ? -2 : 2), eyeY + 5, 9, 13, 0, 0, PI * 2);
+        ctx.ellipse(gx, eyeY + 11, 12.5, 9.5, 0, 0, PI * 2);
         ctx.fill();
+        ctx.fillStyle = '#1c0408';
+        ctx.beginPath();
+        ctx.ellipse(gx, eyeY + 3, 8.2, 11.5, 0, 0, PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(24, 6, 14, 0.34)';
+        ctx.fillRect(x - 30, eyeY - 28, 60, 14);
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.ellipse(x - 7, eyeY - 9, 7, 8, 0, 0, PI * 2);
+        ctx.ellipse(gx - 6.5, eyeY - 6, 6.2, 7.2, -0.15, 0, PI * 2);
         ctx.fill();
         ctx.beginPath();
-        ctx.arc(x + 8, eyeY + 15, 3.5, 0, PI * 2);
+        ctx.arc(gx + 7.5, eyeY + 11.5, 3.2, 0, PI * 2);
         ctx.fill();
-        ctx.strokeStyle = '#2c160c';
-        ctx.lineWidth = 7;
-        ctx.beginPath();
-        ctx.moveTo(x - 29, eyeY - 16);
-        ctx.quadraticCurveTo(x, eyeY - 38, x + 29, eyeY - 18);
-        ctx.stroke();
+        ctx.restore();
         if (kind === 'sleepy') {
           ctx.fillStyle = SKIN_CSS;
-          ctx.fillRect(x - 32, eyeY - 44, 64, 42);
+          ctx.fillRect(x - 30, eyeY - 34, 60, 31);
+          ctx.strokeStyle = '#14161f';
+          ctx.lineWidth = 6.5;
           ctx.beginPath();
-          ctx.moveTo(x - 28, eyeY - 2);
-          ctx.lineTo(x + 28, eyeY - 2);
+          ctx.moveTo(x - 25, eyeY - 2);
+          ctx.lineTo(x + 25, eyeY - 2);
+          ctx.stroke();
+        } else {
+          ctx.strokeStyle = '#12141c';
+          ctx.lineWidth = 7.2;
+          ctx.beginPath();
+          ctx.moveTo(x - 25, eyeY - 2);
+          ctx.quadraticCurveTo(x - s * 2, eyeY + topArch, x + 25, eyeY - 3);
+          ctx.stroke();
+          ctx.fillStyle = '#12141c';
+          ctx.beginPath();
+          ctx.moveTo(x + s * 20, eyeY - 7);
+          ctx.lineTo(x + s * 32, eyeY - 12);
+          ctx.lineTo(x + s * 24, eyeY - 1);
+          ctx.closePath();
+          ctx.fill();
+          ctx.strokeStyle = '#2e242a';
+          ctx.lineWidth = 2.2;
+          ctx.beginPath();
+          ctx.moveTo(x - 14, eyeY + 24);
+          ctx.quadraticCurveTo(x, eyeY + 28, x + 14, eyeY + 24);
           ctx.stroke();
         }
       });
-      ctx.strokeStyle = '#6a9a48';
-      ctx.lineWidth = 4;
-      [80, 176].forEach((x, i) => {
+      ctx.strokeStyle = '#181c26';
+      ctx.lineWidth = 3.6;
+      [82, 174].forEach((x, i) => {
+        const s = i ? 1 : -1;
+        const lift = (kind === 'open' || kind === 'oh') ? -2 : 0;
         ctx.beginPath();
-        ctx.moveTo(x - 16, 74 + (i ? 0 : 2));
-        ctx.lineTo(x + 16, 72 + (i ? 2 : 0));
+        ctx.moveTo(x - s * 17, 96 + lift);
+        ctx.quadraticCurveTo(x, 91 + lift, x + s * 19, 94 + lift);
         ctx.stroke();
       });
-      ctx.strokeStyle = '#7a2a22';
-      ctx.fillStyle = '#9a2a2a';
-      ctx.lineWidth = 4;
-      const mx = 128, my = 196;
+      ctx.strokeStyle = '#7a3834';
+      ctx.fillStyle = '#8e242c';
+      ctx.lineWidth = 3.4;
+      const mx = 128, my = 192;
       if (kind === 'oh' || kind === 'sing') {
         ctx.beginPath();
-        ctx.ellipse(mx, my + 2, kind === 'sing' ? 11 : 8, kind === 'sing' ? 14 : 10, 0, 0, PI * 2);
+        ctx.ellipse(mx, my + 2, kind === 'sing' ? 9.5 : 7, kind === 'sing' ? 12 : 9, 0, 0, PI * 2);
         ctx.fill();
-        ctx.fillStyle = '#ff8a90';
+        ctx.fillStyle = '#f27882';
         ctx.beginPath();
-        ctx.ellipse(mx, my + 8, 6, 4, 0, 0, PI * 2);
+        ctx.ellipse(mx, my + 6.5, 5, 3.5, 0, 0, PI * 2);
         ctx.fill();
       } else if (kind === 'happy' || kind === 'wink') {
         ctx.beginPath();
-        ctx.moveTo(mx - 16, my - 4);
-        ctx.quadraticCurveTo(mx, my + 22, mx + 16, my - 4);
-        ctx.closePath();
-        ctx.fill();
-        ctx.fillStyle = '#ff8a90';
-        ctx.beginPath();
-        ctx.ellipse(mx, my + 8, 7, 4, 0, 0, PI * 2);
-        ctx.fill();
+        ctx.moveTo(mx - 12, my - 1);
+        ctx.quadraticCurveTo(mx, my + 8, mx + 12, my - 1);
+        ctx.stroke();
       } else if (kind === 'chew') {
         ctx.beginPath();
-        ctx.moveTo(mx - 14, my);
-        ctx.quadraticCurveTo(mx - 7, my + 8, mx, my);
-        ctx.quadraticCurveTo(mx + 7, my + 8, mx + 14, my);
+        ctx.moveTo(mx - 12, my);
+        ctx.quadraticCurveTo(mx - 6, my + 6.5, mx, my);
+        ctx.quadraticCurveTo(mx + 6, my + 6.5, mx + 12, my);
         ctx.stroke();
-      } else if (kind === 'sleepy') {
+      } else if (kind === 'sleepy' || kind === 'calm') {
         ctx.beginPath();
-        ctx.moveTo(mx - 8, my + 2);
-        ctx.lineTo(mx + 8, my + 2);
+        ctx.moveTo(mx - 7.5, my + 1);
+        ctx.quadraticCurveTo(mx, my + 3, mx + 7.5, my + 1);
         ctx.stroke();
       } else {
         ctx.beginPath();
-        ctx.moveTo(mx - 10, my);
-        ctx.quadraticCurveTo(mx, my + 8, mx + 10, my);
+        ctx.moveTo(mx - 9, my);
+        ctx.quadraticCurveTo(mx, my + 5.5, mx + 9, my);
         ctx.stroke();
       }
       ctx.restore();
@@ -795,59 +842,129 @@
   }
 
   function drawChibiHead(ctx, hx, hy, s) {
-    ctx.fillStyle = '#9fd86a';
-    ctx.beginPath();
-    ctx.arc(hx, hy - 6 * s, 58 * s, 0, PI * 2);
-    ctx.fill();
-    [-1, 1].forEach(k => { ctx.beginPath(); ctx.arc(hx + k * 44 * s, hy - 56 * s, 20 * s, 0, PI * 2); ctx.fill(); });
-    ctx.fillStyle = '#ffe2cf';
-    ctx.beginPath();
-    ctx.ellipse(hx, hy + 10 * s, 46 * s, 42 * s, 0, 0, PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#9fd86a';
-    ctx.beginPath();
-    ctx.moveTo(hx - 52 * s, hy - 2 * s);
-    ctx.quadraticCurveTo(hx - 10 * s, hy - 72 * s, hx + 52 * s, hy - 8 * s);
-    [[30, -12], [18, 2], [4, -14], [-12, 2], [-26, -12], [-40, 6]].forEach(([x, y]) => ctx.lineTo(hx + x * s, hy + y * s));
-    ctx.closePath();
-    ctx.fill();
-    [-19, 19].forEach(dx => {
-      ctx.fillStyle = '#ffffff';
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    [-1, 1].forEach(k => {
+      ctx.fillStyle = '#181c28';
       ctx.beginPath();
-      ctx.ellipse(hx + dx * s, hy + 16 * s, 10 * s, 13 * s, 0, 0, PI * 2);
+      ctx.moveTo(hx + k * 10 * s, hy - 38 * s);
+      ctx.lineTo(hx + k * 34 * s, hy - 96 * s);
+      ctx.lineTo(hx + k * 46 * s, hy - 26 * s);
+      ctx.closePath();
       ctx.fill();
-      ctx.fillStyle = '#e2741c';
+      ctx.fillStyle = '#dce0ec';
       ctx.beginPath();
-      ctx.ellipse(hx + dx * s, hy + 18 * s, 8 * s, 11 * s, 0, 0, PI * 2);
+      ctx.moveTo(hx + k * 16 * s, hy - 38 * s);
+      ctx.lineTo(hx + k * 33 * s, hy - 84 * s);
+      ctx.lineTo(hx + k * 40 * s, hy - 30 * s);
+      ctx.closePath();
       ctx.fill();
-      ctx.fillStyle = '#34120a';
+      ctx.fillStyle = '#d8b4bc';
       ctx.beginPath();
-      ctx.arc(hx + dx * s, hy + 19 * s, 4 * s, 0, PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(hx + (dx - 3) * s, hy + 13 * s, 3 * s, 0, PI * 2);
+      ctx.moveTo(hx + k * 19 * s, hy - 38 * s);
+      ctx.lineTo(hx + k * 31 * s, hy - 64 * s);
+      ctx.lineTo(hx + k * 37 * s, hy - 32 * s);
+      ctx.closePath();
       ctx.fill();
     });
-    ctx.fillStyle = '#9a2a2a';
+    ctx.fillStyle = '#181c28';
     ctx.beginPath();
-    ctx.ellipse(hx, hy + 38 * s, 5 * s, 6 * s, 0, 0, PI * 2);
+    ctx.arc(hx, hy - 4 * s, 54 * s, 0, PI * 2);
     ctx.fill();
     [-1, 1].forEach(k => {
-      ctx.fillStyle = '#5c9a3c';
+      ctx.fillStyle = '#181c28';
       ctx.beginPath();
-      ctx.ellipse(hx + k * 55 * s, hy + 6 * s, 16 * s, 22 * s, 0, 0, PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#f6a040';
-      ctx.beginPath();
-      ctx.ellipse(hx + k * 45 * s, hy + 6 * s, 6 * s, 16 * s, 0, 0, PI * 2);
+      ctx.moveTo(hx + k * 36 * s, hy - 18 * s);
+      ctx.lineTo(hx + k * 54 * s, hy - 10 * s);
+      ctx.lineTo(hx + k * 50 * s, hy + 46 * s);
+      ctx.lineTo(hx + k * 32 * s, hy + 46 * s);
+      ctx.closePath();
       ctx.fill();
     });
-    ctx.strokeStyle = '#f4efe2';
-    ctx.lineWidth = 8 * s;
+    ctx.fillStyle = '#ffe6d8';
     ctx.beginPath();
-    ctx.arc(hx, hy + 4 * s, 57 * s, PI * 1.08, PI * 1.92);
+    ctx.ellipse(hx, hy + 10 * s, 43 * s, 39 * s, 0, 0, PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255, 145, 160, 0.42)';
+    [-25, 25].forEach(dx => {
+      ctx.beginPath();
+      ctx.ellipse(hx + dx * s, hy + 24 * s, 7 * s, 3.8 * s, 0, 0, PI * 2);
+      ctx.fill();
+    });
+    ctx.fillStyle = '#181c28';
+    ctx.beginPath();
+    ctx.arc(hx, hy - 4 * s, 54 * s, PI * 1.04, PI * 1.96);
+    ctx.lineTo(hx + 46 * s, hy + 2 * s);
+    ctx.lineTo(hx + 16 * s, hy + 3 * s);
+    ctx.lineTo(hx + 11 * s, hy - 14 * s);
+    ctx.lineTo(hx + 6 * s, hy + 3 * s);
+    ctx.lineTo(hx - 46 * s, hy + 2 * s);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#2e354a';
+    ctx.beginPath();
+    ctx.ellipse(hx, hy - 22 * s, 34 * s, 6 * s, 0, 0, PI * 2);
+    ctx.fill();
+    [-1, 1].forEach(k => {
+      ctx.fillStyle = '#181c28';
+      ctx.beginPath();
+      ctx.moveTo(hx + k * 35 * s, hy - 8 * s);
+      ctx.lineTo(hx + k * 49 * s, hy - 8 * s);
+      ctx.lineTo(hx + k * 46 * s, hy + 44 * s);
+      ctx.lineTo(hx + k * 33 * s, hy + 44 * s);
+      ctx.lineTo(hx + k * 33 * s, hy + 22 * s);
+      ctx.lineTo(hx + k * 37 * s, hy + 22 * s);
+      ctx.closePath();
+      ctx.fill();
+    });
+    [-18, 18].forEach((dx, i) => {
+      const k = i ? 1 : -1;
+      const ex = hx + dx * s, ey = hy + 15 * s;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.ellipse(ex, ey, 9.5 * s, 11.5 * s, 0, 0, PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#c81d2c';
+      ctx.beginPath();
+      ctx.ellipse(ex, ey + 1 * s, 7.8 * s, 9.8 * s, 0, 0, PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ff6470';
+      ctx.beginPath();
+      ctx.ellipse(ex, ey + 5 * s, 5.5 * s, 4 * s, 0, 0, PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#220408';
+      ctx.beginPath();
+      ctx.arc(ex, ey + 1 * s, 3.8 * s, 0, PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(ex - 2.8 * s, ey - 3.2 * s, 2.8 * s, 0, PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(ex + 2.8 * s, ey + 4.5 * s, 1.5 * s, 0, PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#12141c';
+      ctx.lineWidth = 3.2 * s;
+      ctx.beginPath();
+      ctx.moveTo(ex - 10 * s, ey - 5 * s);
+      ctx.quadraticCurveTo(ex, ey - 13 * s, ex + 10 * s, ey - 5 * s);
+      ctx.stroke();
+      ctx.fillStyle = '#12141c';
+      ctx.beginPath();
+      ctx.moveTo(ex + k * 8 * s, ey - 7 * s);
+      ctx.lineTo(ex + k * 13 * s, ey - 10 * s);
+      ctx.lineTo(ex + k * 10 * s, ey - 4 * s);
+      ctx.closePath();
+      ctx.fill();
+    });
+    ctx.strokeStyle = '#8e242c';
+    ctx.lineWidth = 2.2 * s;
+    ctx.beginPath();
+    ctx.moveTo(hx - 4.5 * s, hy + 34 * s);
+    ctx.quadraticCurveTo(hx, hy + 37 * s, hx + 4.5 * s, hy + 34 * s);
     ctx.stroke();
+    ctx.restore();
   }
 
   function drawMelonArt(ctx, x, y, R, seed) {
@@ -1207,15 +1324,77 @@
         ctx.arc(64, 80, 26, 0, PI * 2);
         ctx.fill();
       } else if (kind === 1) {
-        ctx.fillStyle = '#f4913e';
+        ctx.fillStyle = '#141822';
         ctx.beginPath();
-        ctx.moveTo(34, 206);
-        ctx.lineTo(94, 206);
-        ctx.lineTo(84, 140);
-        ctx.lineTo(44, 140);
+        ctx.moveTo(36, 110);
+        ctx.lineTo(92, 110);
+        ctx.lineTo(96, 202);
+        ctx.lineTo(32, 202);
         ctx.closePath();
         ctx.fill();
-        drawChibiHead(ctx, 64, 102, 0.5);
+        ctx.fillStyle = '#ffe6d8';
+        ctx.fillRect(80, 138, 11, 38);
+        ctx.fillStyle = '#cc1f2a';
+        ctx.fillRect(80, 145, 11, 5);
+        ctx.fillStyle = '#1a1d28';
+        ctx.fillRect(80, 158, 11, 18);
+        ctx.fillStyle = '#f5f7fc';
+        ctx.beginPath();
+        ctx.moveTo(42, 134);
+        ctx.lineTo(84, 134);
+        ctx.lineTo(82, 174);
+        ctx.lineTo(44, 174);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#1d6876';
+        ctx.beginPath();
+        ctx.moveTo(31, 134);
+        ctx.lineTo(62, 134);
+        ctx.lineTo(58, 178);
+        ctx.lineTo(27, 174);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#eef2fa';
+        ctx.beginPath();
+        ctx.moveTo(34, 156);
+        ctx.lineTo(39, 148);
+        ctx.lineTo(44, 156);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#1c202c';
+        ctx.fillRect(61, 135, 6, 36);
+        ctx.fillRect(46, 148, 36, 3);
+        ctx.strokeStyle = '#f2c830';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(57, 136);
+        ctx.lineTo(51, 154);
+        ctx.stroke();
+        ctx.fillStyle = '#6e4598';
+        ctx.fillRect(48, 153, 6, 8);
+        ctx.fillStyle = '#181b24';
+        ctx.beginPath();
+        ctx.moveTo(41, 174);
+        ctx.lineTo(87, 174);
+        ctx.lineTo(95, 214);
+        ctx.lineTo(33, 214);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#c4cad6';
+        ctx.beginPath();
+        ctx.moveTo(44, 178);
+        ctx.lineTo(51, 178);
+        ctx.lineTo(48, 214);
+        ctx.lineTo(39, 214);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#141720';
+        ctx.fillRect(42, 168, 44, 11);
+        ctx.fillStyle = '#d8dde8';
+        ctx.fillRect(59, 170, 10, 7);
+        ctx.fillStyle = '#e5b53a';
+        ctx.fillRect(62, 177, 4, 12);
+        drawChibiHead(ctx, 64, 106, 0.52);
       } else {
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 34px "MS Gothic", "Meiryo", sans-serif';
@@ -1412,87 +1591,275 @@
     return new Float32Array([rt[0] * sx, rt[1] * sx, rt[2] * sx, 0, up[0] * sy, up[1] * sy, up[2] * sy, 0, -f[0], -f[1], -f[2], 0, pos[0], pos[1], pos[2], 1]);
   }
 
+  function headPatch(b, rx, ry, rz, y0, y1, p0, p1, nu, nv, col, uvs) {
+    const pt = (u, v) => {
+      const yaw = y0 + (y1 - y0) * u, pit = p0 + (p1 - p0) * v;
+      const sp = S(pit), cp = C(pit), sy = S(yaw), cy = C(yaw);
+      const low = sp < 0 ? -sp : 0;
+      const tx = 1 - 0.18 * low * low;
+      const tz = 1 - 0.1 * low * low;
+      const chin = sp < -0.25 && cy > 0 ? 0.05 * (low - 0.25) * cy * cy : 0;
+      const n = [sy * cp * tx, sp - chin, cy * cp * tz];
+      return { p: [n[0] * rx, n[1] * ry, n[2] * rz], n: V3.norm([sy * cp / rx, sp / ry, cy * cp / rz]) };
+    };
+    const uv = (u, v) => [u * uvs[0], v * uvs[1]];
+    for (let j = 0; j < nv; j++) {
+      for (let i = 0; i < nu; i++) {
+        const u0 = i / nu, u1 = (i + 1) / nu, v0 = j / nv, v1 = (j + 1) / nv;
+        const a = pt(u0, v0), bb = pt(u1, v0), c = pt(u1, v1), d = pt(u0, v1);
+        b.quad(a.p, bb.p, c.p, d.p, col, uvs ? [uv(u0, v0), uv(u1, v0), uv(u1, v1), uv(u0, v1)] : null, [a.n, bb.n, c.n, d.n]);
+      }
+    }
+    return b;
+  }
+
   function makeGirl(r, T) {
     const L = LOOK;
     const R = HEAD_R;
     const mk = (fn) => { const b = new Builder(); fn(b); return r.mesh(b); };
-    const P = (yaw, pit, k) => [S(yaw) * C(pit) * R * k, S(pit) * R * 0.94 * k, C(yaw) * C(pit) * R * 0.92 * k];
+    const HP = (yaw, pit, k) => {
+      const sp = S(pit), cp = C(pit), sy = S(yaw), cy = C(yaw);
+      const low = sp < 0 ? -sp : 0;
+      const tx = 1 - 0.18 * low * low;
+      const tz = 1 - 0.1 * low * low;
+      const chin = sp < -0.25 && cy > 0 ? 0.05 * (low - 0.25) * cy * cy : 0;
+      return [sy * cp * tx * R * 0.88 * k, (sp - chin) * R * 0.94 * k, cy * cp * tz * R * 0.9 * k];
+    };
+    const HN = (yaw, pit) => V3.norm([S(yaw) * C(pit) / 0.88, S(pit) / 0.94, C(yaw) * C(pit) / 0.9]);
+    const buildBoot = (b, side) => {
+      b.prism(8, 0.036, 0.038, -GIRL.shin * 0.62, 0.045, 0.047, 0.01, L.tights, { capBottom: true });
+      if (side > 0) {
+        b.prism(8, 0.041, 0.043, -GIRL.shin * 0.5, 0.042, 0.044, -GIRL.shin * 0.41, L.obi, { capTop: false });
+        b.at(0.01, -GIRL.shin * 0.455, 0.042, h => h.box(0.018, 0.016, 0.008, L.metal));
+      }
+      b.prism(8, 0.041, 0.044, -GIRL.shin, 0.041, 0.043, -GIRL.shin * 0.56, L.boot, { capBottom: true });
+      b.prism(8, 0.044, 0.047, -GIRL.shin * 0.68, 0.046, 0.049, -GIRL.shin * 0.54, shade(L.boot, 1.25), { capTop: false });
+      if (side < 0) {
+        b.at(-0.043, -GIRL.shin * 0.64, 0, h => h.box(0.014, 0.036, 0.034, L.obi));
+        b.at(-0.05, -GIRL.shin * 0.64, 0.006, h => h.box(0.006, 0.016, 0.016, L.metal));
+      }
+      b.at(0, -GIRL.shin - GIRL.sole / 2, 0.022, h => {
+        h.box(0.072, GIRL.sole, 0.115, L.boot);
+        h.at(0, -0.004, 0.056, s => s.prism(6, 0.026, 0.024, -GIRL.sole / 2, 0.034, 0.032, GIRL.sole / 2 - 0.004, L.boot, { capBottom: true }));
+        h.at(0, -GIRL.sole / 2 + 0.006, 0.018, s => s.box(0.074, 0.012, 0.125, L.sole));
+        h.at(0, -GIRL.sole / 2 + 0.014, -0.042, s => s.box(0.052, 0.028, 0.036, L.sole));
+        h.at(0, -GIRL.sole / 2 + 0.008, 0.078, s => s.box(0.042, 0.008, 0.014, L.metal));
+      });
+    };
     return {
       T,
-      head: mk(b => spherePatch(b, R, R * 0.94, R * 0.92, -PI, PI, -PI / 2, PI / 2, 16, 12, L.skin)),
-      face: mk(b => spherePatch(b, R * 1.006, R * 0.94 * 1.006, R * 0.92 * 1.006, -0.95, 0.95, -0.74, 0.42, 10, 8, [1, 1, 1, 0], [1, 1])),
+      head: mk(b => headPatch(b, R * 0.88, R * 0.94, R * 0.9, -PI, PI, -PI / 2, PI / 2, 16, 12, L.skin)),
+      face: mk(b => headPatch(b, R * 0.88 * 1.006, R * 0.94 * 1.006, R * 0.9 * 1.006, -0.92, 0.92, -0.74, 0.42, 10, 8, [1, 1, 1, 0], [1, 1])),
       hair: mk(b => {
         const k = 1.08;
-        spherePatch(b, R * k, R * 0.96 * k, R * 0.92 * k, -PI, PI, 0.3, PI / 2, 16, 5, L.hair);
-        spherePatch(b, R * k, R * 0.94 * k, R * 0.92 * k, 0.95, 2 * PI - 0.95, -0.95, 0.3, 12, 6, L.hair);
-        spherePatch(b, R * k, R * 0.94 * k, R * 0.92 * k, 0.6, 0.95, -0.9, 0.3, 2, 6, L.hair);
-        spherePatch(b, R * k, R * 0.94 * k, R * 0.92 * k, -0.95, -0.6, -0.9, 0.3, 2, 6, L.hair);
-        const Nn = (yaw, pit) => V3.norm([S(yaw) * C(pit), S(pit) / 0.94, (C(yaw) * C(pit)) / 0.92]);
-        spherePatch(b, R * 1.075, R * 0.94 * 1.075, R * 0.92 * 1.075, -0.74, 0.74, 0.27, 0.52, 8, 2, L.hair);
-        for (let i = 0; i < 8; i++) {
-          const a0 = -0.74 + (1.48 * i) / 8, a1 = a0 + 1.48 / 8;
-          const tip = (a0 + a1) / 2 + 0.1;
-          const low = 0.02 + (0.08 * ((i * 5) % 3)) / 2;
-          b.tri(P(a0, 0.28, 1.075), P(a1, 0.28, 1.075), P(tip, low, 1.062), L.hair, null, [Nn(a0, 0.28), Nn(a1, 0.28), Nn(tip, low)]);
-        }
-        b.push(M4.translate(0, R * 0.98, -R * 0.2));
-        for (let i = 0; i < 4; i++) {
-          b.push(M4.rotX(0.55), M4.rotZ(0.12));
-          b.prism(5, 0.008, 0.008, 0, 0.007, 0.007, 0.032, L.trim);
-          b.push(M4.translate(0, 0.032, 0));
-        }
-        b.quad([0, 0, 0], [0.028, 0.012, 0.004], [0.052, 0.004, 0], [0.024, -0.008, -0.004], L.trim);
-        for (let i = 0; i < 8; i++) b.pop();
-        b.pop();
-      }),
-      buns: mk(b => [-1, 1].forEach(s => b.at(s * R * 0.64, R * 0.78, -R * 0.42, h => spherePatch(h, R * 0.42, R * 0.4, R * 0.42, -PI, PI, -PI / 2, PI / 2, 10, 7, [0.78, 1, 0.56, 0], [1, 1])))),
-      phones: mk(b => {
-        const n = 11;
-        for (let i = 0; i < n; i++) {
-          const a = -PI / 2 + (PI * (i + 0.5)) / n;
-          b.push(M4.translate(S(a) * R * 1.17, C(a) * R * 1.12 + 0.005, 0.012), M4.rotZ(-a));
-          b.box(0.072, 0.024, 0.04, L.phones);
-          b.pop();
+        headPatch(b, R * 0.88 * k, R * 0.96 * k, R * 0.92 * k, -PI, PI, 0.13, PI / 2, 16, 6, L.hair);
+        headPatch(b, R * 0.89 * k, R * 0.95 * k, R * 0.92 * k, 0.82, 2 * PI - 0.82, -0.92, 0.24, 12, 6, L.hair);
+        headPatch(b, R * 0.89 * k, R * 0.95 * k, R * 0.92 * k, 0.55, 0.86, -0.75, 0.24, 3, 6, L.hair);
+        headPatch(b, R * 0.89 * k, R * 0.95 * k, R * 0.92 * k, -0.86, -0.55, -0.75, 0.24, 3, 6, L.hair);
+        for (let i = 0; i < 9; i++) {
+          const a0 = -0.63 + (1.26 * i) / 9, a1 = a0 + 1.26 / 9;
+          const partL = i === 5 ? 0.015 : 0.002;
+          const partR = i === 4 ? 0.012 : 0.002;
+          const b0 = a0 + partL, b1 = a1 - partR;
+          const low = i === 0 || i === 8 ? 0.05 : 0.08 + (i === 4 || i === 5 ? 0.025 : 0);
+          const col = i >= 3 && i <= 5 ? L.hairHi : L.hair;
+          b.quad(HP(b0, 0.36, 1.088), HP(b1, 0.36, 1.088), HP(b1 * 0.97, low, 1.068), HP(b0 * 0.97, low, 1.068), col, null, [HN(b0, 0.3), HN(b1, 0.3), HN(b1, low), HN(b0, low)]);
         }
         [-1, 1].forEach(s => {
-          b.push(M4.translate(s * R * 1.16, -R * 0.1, 0.01), M4.rotZ(PI / 2));
-          b.prism(14, R * 0.36, R * 0.36, -R * 0.13, R * 0.36, R * 0.36, R * 0.13, L.trim, { capTop: false });
+          const x0 = s * R * 0.73, x1 = s * R * 0.85;
+          const z0 = R * 0.52, z1 = R * 0.18;
+          const nSide = V3.norm([s * 0.85, 0.05, 0.45]);
+          b.quad([x0, R * 0.16, z0], [x1, R * 0.16, z1], [x1 * 0.94, -R * 1.04, z1 * 0.9], [x0 * 0.9, -R * 1.04, z0 * 0.86], L.hair, null, [nSide, nSide, nSide, nSide]);
+          b.quad([x1, R * 0.16, z1], [x0, R * 0.16, z0], [x0 * 0.9, -R * 1.04, z0 * 0.86], [x1 * 0.94, -R * 1.04, z1 * 0.9], L.hairDark);
+          b.push(M4.translate(s * R * 0.74, -R * 0.55, R * 0.02), M4.rotZ(-s * 0.03));
+          b.prism(4, 0.018, 0.038, -0.18, 0.026, 0.048, 0.18, L.hair, { phase: PI / 4, capBottom: true });
           b.pop();
-          b.push(M4.translate(s * R * 1.1, -R * 0.1, 0.01), M4.rotZ(PI / 2));
-          b.prism(14, R * 0.38, R * 0.38, -R * 0.03, R * 0.38, R * 0.38, R * 0.03, L.cushion, { capBottom: true });
+          for (let j = 0; j < 4; j++) {
+            const a = s * (1.45 + j * 0.42);
+            b.push(M4.translate(S(a) * R * 0.88, R * (0.1 - j * 0.02), C(a) * R * 0.94), M4.rotY(a));
+            b.box(0.042, 0.034, 0.022, j % 2 ? L.hairHi : L.hair);
+            b.pop();
+          }
+        });
+        [-1, 1].forEach(s => b.at(s * 0.022, R * 0.03, -R * 0.97, h => h.box(0.012, 0.038, 0.014, L.gold)));
+        b.at(0, -R * 0.55, -R * 0.78, h => h.box(R * 1.42, R * 1.2, 0.07, L.hair));
+        [-1, 1].forEach(s => {
+          b.push(M4.translate(s * R * 0.37, R * 0.74, -R * 0.04), M4.rotZ(-s * 0.11), M4.rotX(0.05));
+          const H = 0.31, W = 0.048, D = 0.032;
+          const tip = [0, H, 0.004];
+          const fl = [-W, 0, D * 0.45], fr = [W, 0, D * 0.45], bk = [0, 0, -D];
+          const ml = [-W * 0.62, H * 0.48, D * 0.35], mr = [W * 0.62, H * 0.48, D * 0.35], mb = [0, H * 0.48, -D * 0.62];
+          b.quad(fl, bk, mb, ml, L.hair);
+          b.quad(bk, fr, mr, mb, L.hair);
+          b.tri(ml, mb, tip, L.hairDark);
+          b.tri(mb, mr, tip, L.hairDark);
+          const il = [-W * 0.68, 0.015, D * 0.48], ir = [W * 0.68, 0.015, D * 0.48], it = [0, H * 0.84, 0.008];
+          b.quad(fl, il, it, tip, L.hairDark);
+          b.quad(ir, fr, tip, it, L.hairDark);
+          b.tri(il, ir, it, L.earInner);
+          b.at(0, 0.035, D * 0.54, h => h.prism(3, 0.028, 0.012, -0.02, 0.004, 0.004, 0.085, 0xe4eaf2));
           b.pop();
         });
       }),
-      cups: mk(b => [-1, 1].forEach(s => discXY(b, 0, 0, 0, R * 0.36, 14, [0.62, 0.88, 0.45, 0.05], [0, 0, 1]))),
-      cupAt: (s) => M4.chain(M4.translate(s * R * 1.292, -R * 0.1, 0.01), M4.rotY(s * PI / 2)),
+      backHair: mk(b => {
+        const d = GIRL;
+        b.push(M4.translate(0, d.torso + 0.02, -0.105), M4.rotX(0.08));
+        b.box(0.26, 0.34, 0.044, L.hair, { base: false });
+        for (let i = -3; i <= 3; i++) {
+          const x = i * 0.038;
+          const len = 0.47 - Math.abs(i) * 0.02;
+          b.push(M4.translate(x, -0.02, -0.008 - (i % 2) * 0.005), M4.rotZ(i * 0.022));
+          b.prism(4, 0.03, 0.018, -len * 0.72, 0.034, 0.02, 0, i % 2 ? L.hair : L.hairDark, { phase: PI / 4, capBottom: false });
+          b.prism(4, 0.005, 0.004, -len, 0.03, 0.018, -len * 0.72, L.hairDark, { phase: PI / 4, capBottom: true });
+          b.pop();
+        }
+        b.pop();
+      }),
       torso: mk(b => {
         const d = GIRL;
-        b.prism(10, 0.172, 0.135, -0.13, 0.152, 0.118, 0.19, L.hoodie, { capTop: false, capBottom: true });
-        b.prism(10, 0.152, 0.118, 0.19, 0.085, 0.07, d.torso, L.hoodie);
-        b.prism(10, 0.177, 0.139, -0.13, 0.177, 0.139, -0.095, shade(L.hoodie, 0.82), { capTop: false });
-        b.quad([-0.085, -0.075, 0.136], [0.085, -0.075, 0.136], [0.07, 0.035, 0.131], [-0.07, 0.035, 0.131], shade(L.hoodie, 1.1));
-        [-1, 1].forEach(s => b.at(s * 0.03, 0.16, 0.124, h => h.box(0.011, 0.075, 0.011, L.phones)));
-        discXY(b, 0, 0.1, 0.128, 0.036, 10, [0.62, 0.88, 0.45, 0.1], [0, 0, 1]);
-        b.prism(10, 0.082, 0.072, d.torso - 0.012, 0.07, 0.062, d.torso + 0.045, L.trim, { capTop: false });
-        b.at(0, d.torso - 0.025, -0.09, h => h.ellipsoid(0.12, 0.075, 0.06, 10, 5, L.hoodie));
-        b.at(0, d.torso, 0, h => h.prism(8, 0.034, 0.034, 0, 0.032, 0.032, 0.07, L.skin));
+        b.prism(10, 0.126, 0.098, -0.09, 0.116, 0.09, 0.095, L.obi, { capTop: false, capBottom: true });
+        b.prism(10, 0.13, 0.102, -0.09, 0.128, 0.1, -0.062, shade(L.obi, 0.8), { capTop: false });
+        b.prism(10, 0.119, 0.093, 0.072, 0.119, 0.093, 0.096, shade(L.obi, 0.8), { capTop: false });
+        b.at(0, 0.036, 0.092, h => {
+          h.box(0.066, 0.042, 0.012, L.metal);
+          h.at(0, 0, 0.004, c => c.box(0.024, 0.024, 0.008, L.obi));
+          [-1, 1].forEach(s => h.at(s * 0.044, 0, -0.002, c => c.box(0.014, 0.046, 0.01, L.metal)));
+        });
+        b.push(M4.translate(0, -0.045, 0.096), M4.rotZ(-0.18));
+        b.box(0.155, 0.016, 0.01, L.tie);
+        b.pop();
+        b.at(0.046, -0.055, 0.103, h => {
+          h.box(0.014, 0.014, 0.01, L.gold);
+          h.at(0, -0.034, 0, t => t.prism(6, 0.009, 0.009, -0.028, 0.005, 0.005, 0.028, L.gold, { capBottom: true }));
+        });
+        b.prism(10, 0.115, 0.09, 0.09, 0.144, 0.116, 0.185, L.shirt, { capTop: false });
+        b.prism(10, 0.144, 0.116, 0.185, 0.136, 0.108, 0.22, L.shirt, { capTop: false });
+        b.prism(10, 0.136, 0.108, 0.22, 0.076, 0.068, d.torso, L.shirt);
+        b.prism(8, 0.056, 0.052, d.torso - 0.01, 0.048, 0.046, d.torso + 0.032, L.shirt, { capTop: false });
+        [-1, 1].forEach(s => {
+          b.push(M4.translate(s * 0.023, d.torso + 0.004, 0.055), M4.rotZ(s * 0.35));
+          b.box(0.026, 0.034, 0.012, L.shirt);
+          b.pop();
+        });
+        b.at(0, d.torso - 0.012, 0.066, h => h.box(0.024, 0.026, 0.016, L.tie));
+        b.quad([-0.015, 0.1, 0.108], [0.015, 0.1, 0.108], [0.011, d.torso - 0.016, 0.074], [-0.011, d.torso - 0.016, 0.074], L.tie, null, [[0, 0.15, 1], [0, 0.15, 1], [0, 0.15, 1], [0, 0.15, 1]]);
+        b.at(0, 0.202, 0.112, h => h.box(0.132, 0.013, 0.012, L.tie));
+        b.push(M4.translate(-0.046, 0.2, 0.108), M4.rotX(-0.18), M4.rotZ(0.06));
+        b.box(0.024, 0.125, 0.012, L.lanyard);
+        b.at(0, -0.072, 0.003, h => {
+          h.box(0.026, 0.042, 0.012, L.tag);
+          h.at(0, 0.012, 0.004, c => c.box(0.022, 0.008, 0.006, L.lining));
+        });
+        b.pop();
+        b.push(M4.translate(0.052, 0.235, 0.088), M4.rotZ(-0.5), M4.rotX(-0.22));
+        b.box(0.022, 0.095, 0.012, L.lanyard);
+        b.pop();
+        b.at(-0.092, 0.155, 0.012, h => {
+          h.box(0.09, 0.22, 0.192, L.coat);
+          h.at(0.034, 0.01, 0.088, c => c.box(0.022, 0.21, 0.022, L.coatHi));
+          h.at(-0.005, -0.055, 0.095, c => c.box(0.052, 0.03, 0.012, L.coatDark));
+          h.at(0.03, -0.095, 0.095, c => c.box(0.02, 0.022, 0.014, L.metal));
+        });
+        b.at(0, 0.158, -0.06, h => {
+          h.box(0.25, 0.225, 0.088, L.coat);
+          h.at(0, -0.1, -0.004, c => c.box(0.255, 0.026, 0.09, L.coatDark));
+          h.at(0, 0.02, -0.046, c => c.prism(8, 0.036, 0.036, -0.004, 0.036, 0.036, 0.004, L.lining, { capBottom: true }));
+          h.at(0, 0.02, -0.049, c => c.prism(6, 0.02, 0.02, -0.004, 0.02, 0.02, 0.004, L.coatDark, { capBottom: true }));
+        });
+        b.push(M4.translate(0.115, 0.085, -0.052), M4.rotZ(0.14), M4.rotY(-0.18));
+        b.box(0.082, 0.31, 0.078, L.coat);
+        b.at(0.004, -0.14, 0, h => h.box(0.085, 0.03, 0.082, L.lining));
+        [-0.02, 0.02].forEach(z => b.at(0.043, -0.088, z, h => h.prism(3, 0.017, 0.017, 0, 0.002, 0.002, 0.034, L.lining)));
+        b.pop();
+        b.at(0, d.torso, 0, h => h.prism(8, 0.033, 0.033, 0, 0.031, 0.031, 0.07, L.skin));
       }),
-      hips: mk(b => b.prism(10, 0.13, 0.1, -0.1, 0.122, 0.096, 0.09, L.shorts, { capBottom: true })),
-      upper: mk(b => b.prism(8, 0.046, 0.046, -GIRL.upper - 0.01, 0.052, 0.052, 0.03, L.hoodie, { capBottom: true })),
-      fore: mk(b => {
-        b.prism(8, 0.058, 0.058, -0.105, 0.046, 0.046, 0.01, L.hoodie, { capBottom: true });
-        b.prism(8, 0.06, 0.06, -0.118, 0.06, 0.06, -0.098, L.trim, { capBottom: true });
-        b.at(0, -0.148, 0.004, h => h.ellipsoid(0.034, 0.04, 0.03, 8, 5, L.skin));
+      hips: mk(b => b.prism(10, 0.124, 0.096, -0.08, 0.118, 0.092, 0.08, L.skirt, { capBottom: true })),
+      scabbard: mk(b => {
+        b.push(M4.translate(0.132, 0.06, 0.02), M4.rotZ(-0.14), M4.rotY(0.32), M4.rotX(-0.52));
+        b.at(0, 0, -0.18, h => h.box(0.022, 0.032, 0.44, L.skirt));
+        b.at(0, 0, 0.01, h => h.box(0.026, 0.038, 0.042, L.gold));
+        b.at(0, 0.016, -0.04, h => h.box(0.028, 0.022, 0.028, L.metal));
+        [-0.04, 0.01].forEach((z, i) => b.at(-0.012, -0.052 - i * 0.01, z, h => {
+          h.box(0.008, 0.065, 0.016, L.lining);
+          h.at(0, -0.032, 0.005, c => c.box(0.008, 0.032, 0.015, L.lining));
+        }));
+        b.push(M4.translate(0, 0, 0.04), M4.rotX(PI / 2));
+        b.prism(10, 0.04, 0.04, -0.008, 0.04, 0.04, 0.008, L.armor, { capBottom: true });
+        b.prism(10, 0.044, 0.044, -0.005, 0.044, 0.044, 0.005, L.metal, { capTop: false });
+        b.pop();
+        b.at(0, 0.026, 0.04, h => h.box(0.024, 0.026, 0.03, L.gold));
+        b.at(0, 0, 0.13, h => {
+          h.box(0.02, 0.026, 0.16, L.tie);
+          for (let i = -3; i <= 3; i++) h.at(0, 0, i * 0.02, c => c.box(0.022, 0.02, 0.009, L.metal));
+        });
+        b.at(0, -0.016, 0.22, h => {
+          h.box(0.018, 0.044, 0.03, L.armor);
+          h.at(0, -0.01, 0, c => c.box(0.02, 0.016, 0.014, L.metal));
+        });
+        b.pop();
       }),
-      thigh: mk(b => b.prism(8, 0.044, 0.046, -GIRL.thigh, 0.052, 0.054, 0.01, L.skin, { capBottom: true })),
-      shin: mk(b => {
-        b.prism(8, 0.04, 0.042, -GIRL.shin, 0.046, 0.048, 0.01, L.sock, { capBottom: true });
-        b.at(0, -GIRL.shin - GIRL.sole / 2, 0.022, h => {
-          h.box(0.078, GIRL.sole, 0.13, L.shoe);
-          h.at(0, -GIRL.sole / 2 + 0.008, 0, s => s.box(0.084, 0.016, 0.136, L.sole));
-          h.at(0, 0.006, 0.05, s => s.ellipsoid(0.04, 0.026, 0.036, 8, 4, L.sole));
+      skirt: mk(b => {
+        const n = 14;
+        const y0 = -0.235, y1 = 0.085;
+        const r0x = 0.172, r0z = 0.142, r1x = 0.12, r1z = 0.094;
+        for (let i = 0; i < n; i++) {
+          const a0 = (i / n) * PI * 2, a1 = ((i + 1) / n) * PI * 2;
+          const slit = i === 11 || i === 12;
+          const rx0 = slit ? r0x * 0.93 : r0x * (i % 2 ? 1.02 : 0.98);
+          const rz0 = slit ? r0z * 0.93 : r0z * (i % 2 ? 1.02 : 0.98);
+          const col = slit ? L.pleat : (i % 2 ? L.skirt : shade(L.skirt, 1.22));
+          const p00 = [S(a0) * rx0, y0, C(a0) * rz0], p10 = [S(a1) * rx0, y0, C(a1) * rz0];
+          const p11 = [S(a1) * r1x, y1, C(a1) * r1z], p01 = [S(a0) * r1x, y1, C(a0) * r1z];
+          const nm = V3.norm([S((a0 + a1) / 2), 0.18, C((a0 + a1) / 2)]);
+          b.quad(p00, p10, p11, p01, col, null, [nm, nm, nm, nm]);
+        }
+        b.at(-0.112, -0.08, 0.064, h => {
+          h.box(0.046, 0.018, 0.034, L.obi);
+          h.at(-0.016, 0, 0.014, c => c.box(0.014, 0.02, 0.01, L.metal));
         });
       }),
+      upperR: mk(b => {
+        b.prism(8, 0.05, 0.05, -GIRL.upper - 0.01, 0.054, 0.054, 0.035, L.coat, { capBottom: true });
+        b.at(-0.02, -GIRL.upper * 0.55, -0.01, h => {
+          h.box(0.064, GIRL.upper + 0.075, 0.105, L.coat);
+          h.at(0, -GIRL.upper * 0.5 - 0.032, 0, c => c.box(0.067, 0.02, 0.108, L.lining));
+          [-0.024, 0.022].forEach(z => h.at(-0.033, -0.02, z, c => c.prism(3, 0.016, 0.016, 0, 0.002, 0.002, 0.032, L.lining)));
+          [-0.026, 0.026].forEach(z => h.at(-0.01, -GIRL.upper * 0.5 - 0.06, z, c => c.box(0.013, 0.042, 0.015, L.obi)));
+        });
+      }),
+      foreR: mk(b => {
+        b.prism(8, 0.058, 0.058, -0.105, 0.048, 0.048, 0.01, L.coat, { capBottom: true });
+        b.prism(8, 0.06, 0.06, -0.118, 0.06, 0.06, -0.098, L.lining, { capBottom: true });
+        b.at(0, -0.088, 0, h => h.prism(8, 0.059, 0.059, -0.008, 0.059, 0.059, 0.008, L.obi, { capTop: false }));
+        b.at(-0.054, -0.088, 0.015, h => h.box(0.012, 0.02, 0.02, L.metal));
+        b.at(0, -0.138, 0.004, h => h.ellipsoid(0.033, 0.027, 0.029, 8, 5, L.armor));
+        b.at(-0.012, -0.136, 0.018, h => h.box(0.026, 0.028, 0.015, L.metal));
+        b.at(0, -0.158, 0.004, h => h.ellipsoid(0.029, 0.023, 0.025, 8, 4, L.skin));
+      }),
+      upperL: mk(b => {
+        b.prism(8, 0.041, 0.041, -GIRL.upper - 0.01, 0.045, 0.045, 0.02, L.skin, { capBottom: true });
+        b.prism(8, 0.048, 0.048, -0.025, 0.052, 0.052, 0.035, L.shirt, { capBottom: true });
+        b.prism(8, 0.05, 0.05, -0.032, 0.05, 0.05, -0.018, L.tie, { capTop: false });
+        [-0.086, -0.07, -0.054].forEach(y => b.prism(8, 0.048, 0.048, y - 0.008, 0.048, 0.048, y + 0.008, L.cord, { capTop: false }));
+        b.at(0.046, -0.072, 0.01, h => h.box(0.016, 0.032, 0.02, L.cord));
+      }),
+      foreL: mk(b => {
+        b.prism(8, 0.039, 0.041, -0.112, 0.047, 0.049, 0.012, L.armor, { capBottom: true });
+        b.prism(8, 0.049, 0.051, -0.015, 0.049, 0.051, 0.008, L.cord, { capTop: false });
+        b.at(0.036, -0.055, 0.008, h => {
+          h.box(0.015, 0.07, 0.034, L.metal);
+          h.at(0.005, 0, 0, c => c.box(0.008, 0.046, 0.02, L.lining));
+        });
+        b.at(0, -0.136, 0.004, h => h.ellipsoid(0.032, 0.025, 0.027, 8, 5, L.armor));
+        b.at(0, -0.158, 0.004, h => h.ellipsoid(0.028, 0.021, 0.024, 8, 4, L.skin));
+      }),
+      thighL: mk(b => b.prism(8, 0.043, 0.045, -GIRL.thigh, 0.052, 0.054, 0.01, L.tights, { capBottom: true })),
+      thighR: mk(b => {
+        b.prism(8, 0.043, 0.045, -GIRL.thigh, 0.052, 0.054, 0.01, L.tights, { capBottom: true });
+        b.prism(8, 0.048, 0.05, -0.12, 0.049, 0.051, -0.095, L.obi, { capTop: false });
+      }),
+      shinL: mk(b => buildBoot(b, 1)),
+      shinR: mk(b => buildBoot(b, -1)),
       props: {
         sticks: mk(b => {
           [-1, 1].forEach(s => b.at(s * 0.008, -0.08, 0.01, h => h.box(0.007, 0.2, 0.007, 0x8a5a2a)));
@@ -1521,19 +1888,19 @@
     const o = opts || {};
     const pass = o.flat ? { flat: o.flat } : o.tint ? { tint: o.tint } : {};
     r.draw(G.hips, m.hips, pass);
+    if (a.pose.ground !== false) r.draw(G.scabbard, m.hips, pass);
+    r.draw(G.skirt, m.skirt, pass);
     r.draw(G.torso, m.torso, pass);
+    r.draw(G.backHair, m.torso, pass);
     ['L', 'R'].forEach(s => {
-      r.draw(G.upper, m['upper' + s], pass);
-      r.draw(G.fore, m['fore' + s], pass);
-      r.draw(G.thigh, m['thigh' + s], pass);
-      r.draw(G.shin, m['shin' + s], pass);
+      r.draw(G['upper' + s], m['upper' + s], pass);
+      r.draw(G['fore' + s], m['fore' + s], pass);
+      r.draw(G['thigh' + s], m['thigh' + s], pass);
+      r.draw(G['shin' + s], m['shin' + s], pass);
     });
     r.draw(G.head, m.head, pass);
     r.draw(G.hair, m.head, pass);
-    r.draw(G.phones, m.head, pass);
     const tex = (t) => (o.flat ? pass : Object.assign({ texture: t }, pass));
-    r.draw(G.buns, m.head, tex(G.T.net));
-    [-1, 1].forEach(s => r.draw(G.cups, M4.mul(m.head, G.cupAt(s)), tex(G.T.net)));
     if (!o.flat) r.draw(G.face, m.head, tex(G.T.faces[a.pose.face || 'calm']));
     (a.props || []).forEach(pr => {
       const rot = pr.rot || [0, 0, 0];

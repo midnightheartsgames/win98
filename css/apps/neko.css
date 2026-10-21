@@ -1,0 +1,246 @@
+#neko-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9998;
+  overflow: hidden;
+}
+
+#neko-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.neko-actor {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  pointer-events: auto;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.neko-actor.is-dragging {
+  cursor: grabbing;
+}
+
+.neko-basket-root {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 10px 10px;
+  font-family: var(--win-font, 'Tahoma', 'MS Sans Serif', sans-serif);
+  font-size: 11px;
+  color: #000000;
+  background: var(--win-bg, #c0c0c0);
+  height: 100%;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.neko-basket-hearth {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  padding: 6px;
+  background: #d8cfc0;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+}
+
+.neko-basket-stage {
+  width: 112px;
+  height: 78px;
+  background: #2b4c5e;
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #dfdfdf;
+  border-bottom: 1px solid #dfdfdf;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.neko-basket-stage canvas {
+  width: 112px;
+  height: 78px;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.neko-collar-plaque {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #f5e6b8;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #8a6d2b;
+  border-bottom: 1px solid #8a6d2b;
+  padding: 5px 8px;
+  color: #2c1d06;
+}
+
+.neko-plaque-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 12px;
+  border-bottom: 1px dotted #a68b42;
+  padding-bottom: 2px;
+}
+
+.neko-plaque-bell {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff6a9, #eab308 65%, #854d0e);
+  border: 1px solid #422006;
+}
+
+.neko-plaque-state {
+  font-size: 11px;
+  color: #4a3208;
+  line-height: 1.25;
+}
+
+.neko-plaque-counters {
+  font-size: 10px;
+  color: #6b4c16;
+  display: flex;
+  gap: 8px;
+}
+
+.neko-plaque-btns {
+  display: flex;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.neko-plaque-btns .win-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 2px 6px;
+}
+
+.neko-section-label {
+  font-weight: bold;
+  font-size: 11px;
+  color: #000080;
+  margin-bottom: -3px;
+}
+
+.neko-coat-ribbon {
+  display: flex;
+  gap: 4px;
+}
+
+.neko-coat-swatch {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 2px;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  font-family: inherit;
+  font-size: 10px;
+  color: #000000;
+  cursor: pointer;
+}
+
+.neko-coat-swatch.is-active {
+  background: #dfdfdf;
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  font-weight: bold;
+}
+
+.neko-coat-dot {
+  width: 18px;
+  height: 12px;
+  border: 1px solid #202020;
+  box-sizing: border-box;
+}
+
+.neko-mode-bar {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.neko-mode-pill {
+  flex: 1;
+  padding: 3px 4px;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  font-family: inherit;
+  font-size: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.neko-mode-pill.is-active {
+  background: #000080;
+  color: #ffffff;
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+}
+
+.neko-toys-row {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-top: auto;
+}
+
+.neko-toys-row .win-btn {
+  flex: 1;
+  padding: 4px 5px;
+  font-size: 11px;
+}
+
+.neko-speed-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 4px;
+  border-top: 1px solid #808080;
+  border-bottom: 1px solid #ffffff;
+}
+
+.neko-speed-row input[type="range"] {
+  flex: 1;
+  height: 16px;
+  cursor: pointer;
+}

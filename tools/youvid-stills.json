@@ -21,5 +21,13 @@
   {"id": "eXtr3meSlay", "t": 3.7, "w": 640, "h": 360, "crop": [0.12, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/eXtr3meSlay-2.png"},
   {"id": "eXtr3meSlay", "t": 5.75, "w": 640, "h": 360, "crop": [0.12, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/eXtr3meSlay-3.png"},
   {"id": "eXtr3meSlay", "t": 7.4, "w": 960, "h": 540, "crop": [0.43, 0.2, 0.22, 0.391], "size": [88, 88], "out": "content/YouVid/avatars/MisterBucks.png"},
-  {"id": "eXtr3meSlay", "t": 7.6, "w": 1600, "h": 900, "crop": [0, 0, 1, 0.157], "size": [780, 110], "out": "content/YouVid/banners/MisterBucks.png"}
+  {"id": "eXtr3meSlay", "t": 7.6, "w": 1600, "h": 900, "crop": [0, 0, 1, 0.157], "size": [780, 110], "out": "content/YouVid/banners/MisterBucks.png"},
+  {"id": "n0p3Av1Eng1", "t": 5.38, "w": 640, "h": 360, "crop": [0.25, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/n0p3Av1Eng1-1.png"},
+  {"id": "n0p3Av1Eng1", "t": 6.9, "w": 640, "h": 360, "crop": [0.25, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/n0p3Av1Eng1-2.png"},
+  {"id": "n0p3Av1Eng1", "t": 7.2, "w": 640, "h": 360, "crop": [0.25, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/n0p3Av1Eng1-3.png"},
+  {"id": "n0p3Av1Eng1", "t": 6.9, "w": 960, "h": 540, "crop": [0.5625, 0.065, 0.2083, 0.3704], "size": [88, 88], "out": "content/YouVid/avatars/memes_ytp.png"},
+  {"id": "n0p3Av1Eng1", "t": 6.9, "w": 1600, "h": 900, "crop": [0, 0.06, 1, 0.25], "size": [780, 110], "out": "content/YouVid/banners/memes_ytp.png"},
+  {"id": "k3An4uH0rnY", "t": 4.9, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/k3An4uH0rnY-1.png"},
+  {"id": "k3An4uH0rnY", "t": 7.5, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/k3An4uH0rnY-2.png"},
+  {"id": "k3An4uH0rnY", "t": 17, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/k3An4uH0rnY-3.png"}
 ]

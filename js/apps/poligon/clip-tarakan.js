@@ -1003,7 +1003,7 @@
   const clip = {
     id: 'tarakan-i-chervyachok',
     number: 4,
-    hidden: true,
+    hidden: false,
     artist: 'Таракан и червячок',
     title: 'visual-kei версия',
     originalYear: 2025,

@@ -61,13 +61,18 @@ test('every section renders', () => {
 
 test('catalog: unique ids, valid slots, svg for each item', () => {
   const ids = w.items.map(i => i.id);
+  const acsFiles = w.items.map(i => i.file);
   assert.strictEqual(new Set(ids).size, ids.length);
+  assert.strictEqual(new Set(acsFiles).size, acsFiles.length);
   const slots = new Set(w.slots.map(s => s.id));
+  assert.ok(slots.has('accessory'));
   w.items.forEach(i => {
     assert.ok(slots.has(i.slot), i.id);
     assert.ok(i.svg.startsWith('<') && i.file.endsWith('.ACS') && i.sizeKb > 0, i.id);
   });
   w.slots.forEach(s => assert.ok(w.getItems(s.id).length > 0, s.id));
+  assert.ok(w.getItems('accessory').length >= 8);
+  assert.strictEqual(w.getItem('briefcase').slot, 'accessory');
 });
 
 test('items must be downloaded before they can be worn', () => {
@@ -80,12 +85,13 @@ test('items must be downloaded before they can be worn', () => {
 });
 
 test('one item per slot, slots combine', () => {
-  ['party', 'tie', 'mustache', 'monocle'].forEach(id => w.markOwned(id));
+  ['party', 'tie', 'mustache', 'monocle', 'briefcase'].forEach(id => w.markOwned(id));
   w.equip('party');
   w.equip('tie');
   w.equip('mustache');
   w.equip('monocle');
-  assert.deepStrictEqual(w.getOutfit(), { head: 'party', eyes: 'monocle', mouth: 'mustache', neck: 'tie' });
+  w.equip('briefcase');
+  assert.deepStrictEqual(w.getOutfit(), { head: 'party', eyes: 'monocle', mouth: 'mustache', neck: 'tie', accessory: 'briefcase' });
   w.unequip('mouth');
   assert.strictEqual(w.getEquippedId('mouth'), null);
 });
@@ -95,6 +101,7 @@ test('outfit persists in localStorage', () => {
   assert.ok(fresh.state.owned.includes('tophat'));
   assert.strictEqual(fresh.state.equipped.head, 'party');
   assert.strictEqual(fresh.state.equipped.neck, 'tie');
+  assert.strictEqual(fresh.state.equipped.accessory, 'briefcase');
 });
 
 test('sunglasses share the eyes slot with the built-in glasses accessory', () => {
@@ -128,13 +135,13 @@ test('finished download saves an .ACS file and Clippy offers to wear it', () => 
 
 test('unequipAll clears every slot including sunglasses', () => {
   w.unequipAll();
-  assert.deepStrictEqual(w.getOutfit(), { head: null, eyes: null, mouth: null, neck: null });
+  assert.deepStrictEqual(w.getOutfit(), { head: null, eyes: null, mouth: null, neck: null, accessory: null });
   assert.strictEqual(clippy.persistentGlasses, false);
 });
 
 test('preview svg draws the outfit layers', () => {
-  const svg = w.previewSvg({ head: 'tophat', neck: 'bowtie' }, 80);
-  assert.ok(svg.startsWith('<svg') && svg.includes(w.getItem('tophat').svg) && svg.includes(w.getItem('bowtie').svg));
+  const svg = w.previewSvg({ head: 'tophat', neck: 'bowtie', accessory: 'briefcase' }, 80);
+  assert.ok(svg.startsWith('<svg') && svg.includes(w.getItem('tophat').svg) && svg.includes(w.getItem('bowtie').svg) && svg.includes(w.getItem('briefcase').svg));
 });
 
 test('guestbook stores escaped entries', () => {

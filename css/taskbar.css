@@ -449,3 +449,71 @@
   grid-auto-columns: minmax(150px, auto);
   align-items: center;
 }
+
+#taskbar {
+  transition: transform 0.15s ease-out;
+}
+
+#taskbar.no-slide {
+  transition: none;
+}
+
+body.taskbar-autohide #taskbar {
+  transform: translateY(calc(100% - 2px));
+}
+
+body.taskbar-autohide #taskbar.is-revealed {
+  transform: none;
+}
+
+body.taskbar-autohide #desktop {
+  bottom: 2px;
+}
+
+body.taskbar-autohide .win-window.maximized {
+  height: calc(100vh - 2px) !important;
+}
+
+body.taskbar-below-windows #desktop {
+  overflow: visible;
+}
+
+body.taskbar-below-windows #taskbar {
+  z-index: 90;
+}
+
+body.taskbar-below-windows #taskbar.is-raised {
+  z-index: 999999;
+}
+
+body.taskbar-no-clock #tray-clock {
+  display: none;
+}
+
+#start-menu.small-icons .start-menu-banner {
+  display: none;
+}
+
+#start-menu.small-icons .start-menu-items > .start-menu-item {
+  min-height: 22px;
+  padding: 3px 22px 3px 3px;
+  gap: 6px;
+}
+
+#start-menu.small-icons .start-menu-items > .start-menu-item > .start-menu-item-icon,
+#start-menu.small-icons .start-menu-items > .start-menu-item > .start-menu-item-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+#start-menu.small-icons .start-menu-items > .start-menu-item > .start-menu-item-icon .px-dual .px-lg {
+  display: none;
+}
+
+#start-menu.small-icons .start-menu-items > .start-menu-item > .start-menu-item-icon .px-dual .px-sm {
+  display: inline;
+}
+
+.start-menu-item.is-empty .start-menu-item-text {
+  color: var(--win-border-dark);
+}

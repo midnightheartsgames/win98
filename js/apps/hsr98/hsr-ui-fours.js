@@ -22,7 +22,7 @@
     foursCard(c, u, x, y, tags, tx) {
       const pip = PIPS[u.charId];
       if (pip) {
-        const n = u['d' + pip[0]] == null ? u.flags[pip[1]] || 0 : u['d' + pip[0]], max = pip[2] ? T[pip[2]] : 2, step = max > 6 ? 6 : 8;
+        const n = u['d' + pip[0]] == null ? u.flags[pip[1]] || 0 : u['d' + pip[0]], max = pip[2] ? u.flags[pip[2]] || T[pip[2]] : 2, step = max > 6 ? 6 : 8;
         for (let k = 0; k < max; k++) this.diamond(x + 9 + k * step, y + 93, max > 6 ? 2.5 : 3, k < n ? pip[3] : '#20263e', '#0a1020');
         tx = x + 12 + max * step;
       }

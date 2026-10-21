@@ -13,10 +13,10 @@
     sampo: { kind: 'event', title: 'Сапоги в сугробе', art: 'snow', worlds: [2, 3, 4], script: 'su_ev_sampo' },
     tea: { kind: 'event', title: 'Чай на посту', art: 'tea', worlds: [2, 4], script: 'su_ev_tea' },
     merchant: { kind: 'trade', title: 'Галактический торговец', art: 'merchant', script: 'su_ev_merchant' },
-    flea: { kind: 'trade', title: 'Барахолка Фёклы', art: 'flea', worlds: [3, 4], script: 'su_ev_flea' },
+    flea: { kind: 'trade', title: 'Лавка Лаудера', art: 'flea', worlds: [3, 4], script: 'su_ev_flea' },
     tuner: { kind: 'trade', title: 'Мастерская Скрюллума', art: 'gear', script: 'su_ev_tuner' },
     club: { kind: 'encounter', title: 'Бойцовский клуб', art: 'fist', worlds: [3, 4], script: 'su_ev_club' },
-    trotter: { kind: 'encounter', title: 'Скакун-прыгун', art: 'trotter', script: 'su_ev_trotter' },
+    trotter: { kind: 'encounter', title: 'Свинка-копилка пространства', art: 'trotter', script: 'su_ev_trotter' },
     legion: { kind: 'encounter', title: 'Зов Легиона', art: 'legion', script: 'su_ev_legion' }
   };
 
@@ -309,21 +309,21 @@
     ],
     su_ev_flea: [
       VV + 'Призрачная старьёвщица раскладывает на коврике чужие благословения.',
-      'miner=Фёкла|Меняю старое на новое, новое на старое. Что упало, то у Фёклы и лежит.',
+      'miner=Лаудер|Меняю старое на новое, новое на старое. Что упало, то у Лаудера и лежит.',
       '#q',
       { menu: [['«Обменять слабое благословение на более редкое.»', 'a'], ['«Продать случайное благословение за 60 фрагментов.»', 'b']], exit: ['«В другой раз.»', 'z'] },
       '#a',
       { su: 'swap' },
       { suIf: 'last=none', jump: 'none' },
-      'miner=Фёкла|Держи. Это получше будет.',
+      'miner=Лаудер|Держи. Это получше будет.',
       { jump: 'q' },
       '#b',
       { su: 'sell' },
       { suIf: 'last=none', jump: 'none' },
-      'miner=Фёкла|По рукам. Будешь мимо, заходи.',
+      'miner=Лаудер|По рукам. Будешь мимо, заходи.',
       { jump: 'q' },
       '#none',
-      'miner=Фёкла|Тебе и менять-то нечего.',
+      'miner=Лаудер|Тебе и менять-то нечего.',
       { jump: 'q' },
       '#z',
       { su: 'done' }
@@ -355,13 +355,13 @@
       { su: 'done' }
     ],
     su_ev_trotter: [
-      VV + 'В углу зоны пасутся золотые Скакуны-прыгуны. Они набиты фрагментами и вот-вот прыгнут в варп.',
+      VV + 'В углу зоны пасутся золотые Свинки-копилки пространства. Они набиты фрагментами и вот-вот прыгнут в варп.',
       { choice: [['«Поймать.»', 'a'], ['«Пусть пасутся.»', 'z']] },
       '#a',
       { su: 'fight', pool: 'trotter' },
-      VV + 'Из Скакунов сыплются фрагменты.',
+      VV + 'Из Свинок сыплются фрагменты.',
       { su: 'frag', n: 120 },
-      { su: 'reward', rar: 2, why: 'Добыча со Скакунов' },
+      { su: 'reward', rar: 2, why: 'Добыча со Свинок' },
       '#z',
       { su: 'done' }
     ],

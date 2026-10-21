@@ -19,7 +19,7 @@
       look: { skin: '#f7dcc9', hair: '#8c898c', eye: '#f0b83a', bangs: 'sweep', sides: 'feather', back: 'wolf', crown: 'smooth', gloss: true, jaw: 'v', body: 'slim', coat: 'split', coatLen: 23, top: '#27252b', coatLow: '#27252b', lining: '#e8b838', backLining: true, trim: '#e2b64a', inner: '#f3f1ec', collar: 'hood', lower: '#2a2830', low: 'pants', shoes: '#2c2a2e', gloves: '#1e1c22', sashSide: 'r', sashTo: 'knee', acc: ['feather', 'rolled:#8a8890', 'piping:#e8c040', 'shbuckle:#d8b050', 'goldcuff:#d8b050', 'armribbon:#e8c040', 'knifebelt:#3a383e', 'watch:#d8b050', 'sashtail:#e8c040', 'pantstripe:#7a3a30', 'soles:#e8e8ec'] },
       basic: { name: 'Ледокол', target: 'single', fx: [{ k: 'dmg', m: 1.0 }, { k: 'magma', v: 1 }] },
       enhanced: { name: 'Ледокол: Магма', target: 'blast', fx: [{ k: 'dmg', m: 0.9, adj: 0.36, plusDef: 0.45, adjDef: 0.18 }] },
-      skill: { name: 'Вечногорящий янтарь', target: 'self', fx: [{ k: 'buff', s: 'dr', v: 0.4, turns: 1, who: 'self', name: 'Янтарь' }, { k: 'taunt', turns: 1, who: 'self' }, { k: 'magma', v: 1 }] },
+      skill: { name: 'Вечногорящий янтарь', target: 'self', fx: [{ k: 'buff', s: 'dr', v: 0.5, turns: 1, who: 'self', name: 'Янтарь' }, { k: 'taunt', turns: 1, who: 'self' }, { k: 'magma', v: 1 }] },
       ult: { name: 'Копьё пылающей войны', target: 'all', fx: [{ k: 'dmg', m: 1.0, plusDef: 1.5 }, { k: 'magma', v: 4 }] },
       talent: 'После любой способности даёт щит всем союзникам (6% защиты + 20). 4 заряда Магмы усиливают атаку.',
       tech: { name: 'Зов Хранителя', text: 'Щит всем союзникам в начале боя.', fx: 'shieldAll' },
@@ -28,7 +28,7 @@
     march: {
       name: 'Март 7', path: 'preservation', elem: 'ice', rarity: 4, energy: 120,
       base: { hp: 144, atk: 69, def: 78, spd: 101 },
-      look: { skin: '#f9e0d2', hair: '#f4e6ee', tips: '#eaa0c4', tipsFade: true, eye: '#ea6aa8', eye2: '#5cc0f2', eyeFade: true, bangs: 'wisp', sides: 'flick', back: 'flick', crown: 'smooth', body: 'f', coat: 'shrug', top: '#78b4ec', shoulder: '#b49ae6', trim: '#5a8ee0', inner: '#f6f6fa', sleeve: '#f4f4f8', collar: 'sailor', lower: '#3f5cb4', hem: '#f2f4fa', petti: '#eef0f8', low: 'skirt', shoes: '#26242c', belt: '#b6a6e6', sashTo: 'knee', acc: ['choker:#c8ccd8', 'halter', 'tassel:#6ab8ec', 'clover:#f4f6fa', 'glove1:#26222a', 'cufftails', 'camera', 'bowcase:#26242c', 'sashtail:#a4daf4', 'garter:#f4f2f6', 'garterbow:#6ab8ec', 'ankle:#26242c', 'anklecuff:#6aa8e8', 'backbow:#5a8ee0'] },
+      look: { mood: 'smile', skin: '#f9e0d2', hair: '#f4e6ee', tips: '#eaa0c4', tipsFade: true, eye: '#ea6aa8', eye2: '#5cc0f2', eyeFade: true, bangs: 'wisp', sides: 'flick', back: 'flick', crown: 'smooth', body: 'f', coat: 'shrug', top: '#78b4ec', shoulder: '#b49ae6', trim: '#5a8ee0', inner: '#f6f6fa', sleeve: '#f4f4f8', collar: 'sailor', lower: '#3f5cb4', hem: '#f2f4fa', petti: '#eef0f8', low: 'skirt', shoes: '#26242c', belt: '#b6a6e6', sashTo: 'knee', acc: ['choker:#c8ccd8', 'halter', 'tassel:#6ab8ec', 'clover:#f4f6fa', 'glove1:#26222a', 'cufftails', 'camera', 'bowcase:#26242c', 'sashtail:#a4daf4', 'garter:#f4f2f6', 'garterbow:#6ab8ec', 'ankle:#26242c', 'anklecuff:#6aa8e8', 'backbow:#5a8ee0'] },
       basic: { name: 'Ледяной выстрел', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Защитная дуга', target: 'ally', fx: [{ k: 'shield', m: 0.57, flat: 30, turns: 3, who: 'target' }, { k: 'taunt', turns: 2, who: 'target', ifHp: 0.3 }] },
       ult: { name: 'Ледяной дождь', target: 'all', fx: [{ k: 'dmg', m: 1.5 }, { k: 'freeze', chance: 0.5 }] },
@@ -39,7 +39,7 @@
     danheng: {
       name: 'Дань Хэн', path: 'hunt', elem: 'wind', rarity: 4, energy: 100,
       base: { hp: 120, atk: 74, def: 54, spd: 110 },
-      look: { skin: '#f4dcc8', hair: '#1c1e26', hairHi: '#262a34', eye: '#6a9ab4', bangs: 'wisp', sides: 'shag', back: 'nape', crown: 'shag', ahoge: 'curl', jaw: 'v', body: 'slim', coat: 'split', top: '#f0f2f2', coatLow: '#2a7a76', lining: '#3a9c94', trim: '#d8b050', inner: '#202228', collar: 'high', lower: '#7c7e8a', low: 'pants', shoes: '#22252e', tuck: true, bootsTo: 'calf', acc: ['eyeliner:#c83a40', 'dangle:#c8ccd8', 'earcuff:#3fb8a0', 'zip:#c8ccd4', 'stars:#d8b050', 'dragonpad:#3a9c94', 'armbandr:#1e2026', 'bracer:#26282e', 'flap:#2a7a76', 'hipbelt:#7a4a30', 'thighstrap:#1e2026', 'boots:#22252e', 'bootstrap:#c8a050'] },
+      look: { mood: 'cool', skin: '#f4dcc8', hair: '#1c1e26', hairHi: '#262a34', eye: '#6a9ab4', bangs: 'wisp', sides: 'shag', back: 'nape', crown: 'shag', ahoge: 'curl', jaw: 'v', body: 'slim', coat: 'split', top: '#f0f2f2', coatLow: '#2a7a76', lining: '#3a9c94', trim: '#d8b050', inner: '#202228', collar: 'high', lower: '#7c7e8a', low: 'pants', shoes: '#22252e', tuck: true, bootsTo: 'calf', acc: ['eyeliner:#c83a40', 'dangle:#c8ccd8', 'earcuff:#3fb8a0', 'zip:#c8ccd4', 'stars:#d8b050', 'dragonpad:#3a9c94', 'armbandr:#1e2026', 'bracer:#26282e', 'flap:#2a7a76', 'hipbelt:#7a4a30', 'thighstrap:#1e2026', 'boots:#22252e', 'bootstrap:#c8a050'] },
       basic: { name: 'Шорох облаков', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Пронзающая буря', target: 'single', fx: [{ k: 'dmg', m: 2.6 }, { k: 'debuff', s: 'spdP', v: -0.12, turns: 2, chance: 1, onCrit: true, name: 'Замедление' }] },
       ult: { name: 'Эфирный дракон', target: 'single', fx: [{ k: 'dmg', m: 4.0, vsSlow: 1.2 }] },
@@ -50,7 +50,7 @@
     himeko: {
       name: 'Химико', path: 'erudition', elem: 'fire', rarity: 5, energy: 120,
       base: { hp: 142, atk: 102, def: 59, spd: 96 },
-      look: { skin: '#f8dccb', hair: '#c8242c', eye: '#f2a62e', eye2: '#ffd25a', bangs: 'sweep', sides: 'wave', back: 'wave', crown: 'smooth', gloss: true, body: 'tallf', coat: 'cape', top: '#26221e', lining: '#a88a5a', trim: '#d9a73a', inner: '#f6f2ea', collar: 'halter', lower: '#f6f2ea', low: 'gown', shoes: '#1e1c20', acc: ['choker', 'hairflower:#d8a840', 'rose:#d8b050', 'leafband:#d8a840', 'peplum', 'lace:#1e1a1c', 'glove1:#2a1e1c', 'ruffle:#f6f2ea', 'bangle:#d8b050', 'capetassel:#3a9a8a'] },
+      look: { mood: 'gentle', skin: '#f8dccb', hair: '#c8242c', eye: '#f2a62e', eye2: '#ffd25a', bangs: 'sweep', sides: 'wave', back: 'wave', crown: 'smooth', gloss: true, body: 'tallf', coat: 'cape', top: '#26221e', lining: '#a88a5a', trim: '#d9a73a', inner: '#f6f2ea', collar: 'halter', lower: '#f6f2ea', low: 'gown', shoes: '#1e1c20', acc: ['choker', 'hairflower:#d8a840', 'rose:#d8b050', 'leafband:#d8a840', 'peplum', 'lace:#1e1a1c', 'glove1:#2a1e1c', 'ruffle:#f6f2ea', 'bangle:#d8b050', 'capetassel:#3a9a8a'] },
       basic: { name: 'Настройка пилы', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Расплавленный взрыв', target: 'blast', fx: [{ k: 'dmg', m: 2.0, adj: 0.8 }] },
       ult: { name: 'Небесная вспышка', target: 'all', fx: [{ k: 'dmg', m: 2.3 }, { k: 'killEnergy', v: 5 }] },
@@ -61,7 +61,7 @@
     welt: {
       name: 'Вельт', path: 'nihility', elem: 'imag', rarity: 5, energy: 120,
       base: { hp: 153, atk: 84, def: 69, spd: 102 },
-      look: { skin: '#f3d9c4', hair: '#6e4e38', streak: '#9c8878', streakSide: 'r', eye: '#d9a53a', bangs: 'sidepart', sides: 'temple', back: 'short', crown: 'swept', jaw: 'v', body: 'lean', coat: 'split', coatLen: 20, top: '#a6a8ac', coatLow: '#a6a8ac', lining: '#8a5a3c', backLining: true, trim: '#6a6c74', inner: '#eeece8', neck: '#202024', collar: 'high', lower: '#342a28', low: 'pants', shoes: '#1e1e22', acc: ['glasses:slim', 'neckpiece:#c8ccd4', 'vestv:#24242a', 'buttons:#2a2a30', 'scarf:#3a383c', 'brooch2:#d8dce4', 'straps:#7a4a32', 'cuffbtn:#2a2a30', 'glove1:#1e1e22', 'harness:#7a4a32', 'cane'] },
+      look: { mood: 'serious', skin: '#f3d9c4', hair: '#6e4e38', streak: '#9c8878', streakSide: 'r', eye: '#d9a53a', bangs: 'sidepart', sides: 'temple', back: 'short', crown: 'swept', jaw: 'v', body: 'lean', coat: 'split', coatLen: 20, top: '#a6a8ac', coatLow: '#a6a8ac', lining: '#8a5a3c', backLining: true, trim: '#6a6c74', inner: '#eeece8', neck: '#202024', collar: 'high', lower: '#342a28', low: 'pants', shoes: '#1e1e22', acc: ['glasses:slim', 'neckpiece:#c8ccd4', 'vestv:#24242a', 'buttons:#2a2a30', 'scarf:#3a383c', 'brooch2:#d8dce4', 'straps:#7a4a32', 'cuffbtn:#2a2a30', 'glove1:#1e1e22', 'harness:#7a4a32', 'cane'] },
       basic: { name: 'Гравитационный удар', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Гравитационное ядро', target: 'bounce', fx: [{ k: 'dmg', m: 0.72, hits: 3 }, { k: 'debuff', s: 'spdP', v: -0.1, turns: 2, chance: 0.75, name: 'Замедление' }] },
       ult: { name: 'Синтетическая чёрная дыра', target: 'all', fx: [{ k: 'dmg', m: 1.5 }, { k: 'imprison', chance: 1 }] },
@@ -72,9 +72,9 @@
     natasha: {
       name: 'Наташа', path: 'abundance', elem: 'phys', rarity: 4, energy: 90,
       base: { hp: 158, atk: 64, def: 69, spd: 98 },
-      look: { skin: '#f7dccb', hair: '#2e4a5e', eye: '#d84a7a', eye2: '#f290b4', bangs: 'sweep', sides: 'flick', back: 'tail', crown: 'smooth', gloss: true, body: 'tallf', coat: 'bolero', top: '#f2f2f4', trim: '#c8d0dc', inner: '#28221f', neck: '#1e1c1e', collar: 'high', lower: '#2e4a72', apron: '#243a5c', low: 'slit', slitTo: 'knee', legs: '#2c2624', shoes: '#1e1e24', tailsTo: 'calf', tailsLining: '#b0243a', acc: ['mole', 'hairwrap:#f2f2f4', 'vial:#b8e848', 'corset:#d8b050', 'shoulderbow:#c8283c', 'longglove1:#3a2c26', 'armbandr:#d8b050', 'hourglass:#d8b050', 'sigil:#c8ccd8', 'hipbelt:#6a4430', 'bear:#8a5a3a', 'tails:#f2f2f4', 'boots:#1e1e24', 'bootgem:#3a6aa8'] },
+      look: { mood: 'gentle', skin: '#f7dccb', hair: '#2e4a5e', eye: '#d84a7a', eye2: '#f290b4', bangs: 'sweep', sides: 'flick', back: 'tail', crown: 'smooth', gloss: true, body: 'tallf', coat: 'bolero', top: '#f2f2f4', trim: '#c8d0dc', inner: '#28221f', neck: '#1e1c1e', collar: 'high', lower: '#2e4a72', apron: '#243a5c', low: 'slit', slitTo: 'knee', legs: '#2c2624', shoes: '#1e1e24', tailsTo: 'calf', tailsLining: '#b0243a', acc: ['mole', 'hairwrap:#f2f2f4', 'vial:#b8e848', 'corset:#d8b050', 'shoulderbow:#c8283c', 'longglove1:#3a2c26', 'armbandr:#d8b050', 'hourglass:#d8b050', 'sigil:#c8ccd8', 'hipbelt:#6a4430', 'bear:#8a5a3a', 'tails:#f2f2f4', 'boots:#1e1e24', 'bootgem:#3a6aa8'] },
       basic: { name: 'Хирургический удар', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
-      skill: { name: 'Любовь и исцеление', target: 'ally', fx: [{ k: 'heal', m: 0.105, flat: 20, who: 'target' }, { k: 'cleanse', who: 'target' }, { k: 'hot', m: 0.072, flat: 10, turns: 2, who: 'target' }] },
+      skill: { name: 'Любовь и исцеление', target: 'ally', fx: [{ k: 'heal', m: 0.105, flat: 20, who: 'target' }, { k: 'cleanse', who: 'target', trace: 'a2' }, { k: 'hot', m: 0.072, flat: 10, turns: 2, who: 'target' }] },
       ult: { name: 'Благодать', target: 'allies', fx: [{ k: 'heal', m: 0.138, flat: 30, who: 'allies' }] },
       talent: 'Лечение раненых (ниже 30% HP) сильнее на 50%.',
       tech: { name: 'Гипноз', text: 'Враги наносят на 30% меньше урона 1 ход.', fx: 'weaken' },
@@ -83,7 +83,7 @@
     serval: {
       name: 'Сервал', path: 'erudition', elem: 'elec', rarity: 4, energy: 100,
       base: { hp: 124, atk: 88, def: 51, spd: 104 },
-      look: { skin: '#f8dfd0', hair: '#d8c6a0', tips: '#8cc6ec', tipsFade: true, tipsAt: 58, streak: '#2a44c8', streakSide: 'l', streakShape: 'lock', eye: '#3d92e2', bangs: 'sweep', sides: 'wave', back: 'wave', crown: 'smooth', gloss: true, body: 'tallf', coat: 'half', top: '#f2f2f4', trim: '#3553c9', inner: '#25252d', collar: 'bare', lower: '#2f50c0', low: 'skirt', skirtLen: 8, legs: '#4a3832', shoes: '#1e1e26', tailsTo: 'ankle', tailsOne: 'l', acc: ['choker:#c8ccd4', 'hoop:#c8ccd4', 'feathers:#2a48d0', 'xstraps:#eceef2', 'tattoo:#e05a9a', 'blacksleeve:#22222a', 'pinkglove:#e0508a', 'shortsr:#24242c', 'beltstrap:#1e1e24', 'pegs:#d8b050', 'tails:#f2f2f4', 'stocking1:#26242e', 'gband:#8a2a2e', 'ankle:#1e1e26', 'anklecuff:#3a50c8'] },
+      look: { mood: 'smile', skin: '#f8dfd0', hair: '#d8c6a0', tips: '#8cc6ec', tipsFade: true, tipsAt: 58, streak: '#2a44c8', streakSide: 'l', streakShape: 'lock', eye: '#3d92e2', bangs: 'sweep', sides: 'wave', back: 'wave', crown: 'smooth', gloss: true, body: 'tallf', coat: 'half', top: '#f2f2f4', trim: '#3553c9', inner: '#25252d', collar: 'bare', lower: '#2f50c0', low: 'skirt', skirtLen: 8, legs: '#4a3832', shoes: '#1e1e26', tailsTo: 'ankle', tailsOne: 'l', acc: ['choker:#c8ccd4', 'hoop:#c8ccd4', 'feathers:#2a48d0', 'xstraps:#eceef2', 'tattoo:#e05a9a', 'blacksleeve:#22222a', 'pinkglove:#e0508a', 'shortsr:#24242c', 'beltstrap:#1e1e24', 'pegs:#d8b050', 'tails:#f2f2f4', 'stocking1:#26242e', 'gband:#8a2a2e', 'ankle:#1e1e26', 'anklecuff:#3a50c8'] },
       basic: { name: 'Громовой аккорд', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Молниевый вихрь', target: 'blast', fx: [{ k: 'dmg', m: 1.4, adj: 0.6 }, { k: 'dot', type: 'shock', m: 0.5, turns: 2, chance: 0.8 }] },
       ult: { name: 'Механическая лихорадка', target: 'all', fx: [{ k: 'dmg', m: 1.94 }, { k: 'extendDots', type: 'shock', turns: 2 }] },
@@ -94,7 +94,7 @@
     asta: {
       name: 'Аста', path: 'harmony', elem: 'fire', rarity: 4, energy: 120,
       base: { hp: 139, atk: 69, def: 63, spd: 106 },
-      look: { skin: '#f9e0d3', hair: '#c8727e', eye: '#5a9ae8', eye2: '#9cd2f6', bangs: 'sweep', sides: 'long', back: 'shoulder', crown: 'smooth', gloss: true, body: 'f', coat: 'offcoat', coatLen: 17, lining: '#c040b8', top: '#f2f0f6', trim: '#8a5ccc', inner: '#faf8fa', collar: 'high', lower: '#26222c', low: 'skirt', skirtLen: 12, shoes: '#1e1a2a', acc: ['clip:#e0a830', 'sidetail', 'sidebraid', 'bow:#262230', 'neckband:#8a5ccc', 'ruffles', 'lanyard:#8a5ccc', 'waistband:#5a86e0', 'pinkbelt:#e050b0', 'panell:#5a3aa0', 'goldarc:#c8a050', 'thighbow:#f4f4f8', 'garter:#1e1a22', 'sashtail:#e050b0', 'bracelets:#a070e0', 'anklestrap:#1e1a2a'] },
+      look: { mood: 'smile', skin: '#f9e0d3', hair: '#c8727e', eye: '#5a9ae8', eye2: '#9cd2f6', bangs: 'sweep', sides: 'long', back: 'shoulder', crown: 'smooth', gloss: true, body: 'f', coat: 'offcoat', coatLen: 17, lining: '#c040b8', top: '#f2f0f6', trim: '#8a5ccc', inner: '#faf8fa', collar: 'high', lower: '#26222c', low: 'skirt', skirtLen: 12, shoes: '#1e1a2a', acc: ['clip:#e0a830', 'sidetail', 'sidebraid', 'bow:#262230', 'neckband:#8a5ccc', 'ruffles', 'lanyard:#8a5ccc', 'waistband:#5a86e0', 'pinkbelt:#e050b0', 'panell:#5a3aa0', 'goldarc:#c8a050', 'thighbow:#f4f4f8', 'garter:#1e1a22', 'sashtail:#e050b0', 'bracelets:#a070e0', 'anklestrap:#1e1a2a'] },
       basic: { name: 'Звёздная искра', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Метеоритный шторм', target: 'bounce', fx: [{ k: 'dmg', m: 0.5, hits: 5 }] },
       ult: { name: 'Астральное благословение', target: 'allies', fx: [{ k: 'buff', s: 'spd', v: 50, turns: 2, who: 'allies', name: 'Благословение' }] },
@@ -105,7 +105,7 @@
     arlan: {
       name: 'Арлан', path: 'destruction', elem: 'elec', rarity: 4, energy: 110,
       base: { hp: 163, atk: 81, def: 45, spd: 102 },
-      look: { skin: '#8e5b3c', hair: '#e6e2da', hairHi: '#f8f6f0', streak: '#4a3e3a', streakSide: 'l', streakShape: 'templel', eye: '#d8388a', bangs: 'hide', sides: 'feather', back: 'nape', crown: 'smooth', gloss: true, jaw: 'v', body: 'slim', coat: 'cut', top: '#e6dfcc', trim: '#2e5bd2', inner: '#24242c', neck: '#24242c', collar: 'high', lower: '#2e4aa6', low: 'pants', shoes: '#222226', tuck: true, bootsTo: 'calf', acc: ['hoodline:#2e5bd2', 'gear:#c8ccd4', 'badge', 'pauldronr:#c8ccd8', 'armband:#2e4aa8', 'gloveR:#ecebe4', 'gauntlet', 'chevrons:#26262c', 'harnessb:#26365e', 'pouch:#26262c', 'cord:#3a5ad0', 'kneepad:#9aa0aa', 'boots:#222226', 'soles:#e8e8ec'] },
+      look: { mood: 'stern', skin: '#8e5b3c', hair: '#e6e2da', hairHi: '#f8f6f0', streak: '#4a3e3a', streakSide: 'l', streakShape: 'templel', eye: '#d8388a', bangs: 'hide', sides: 'feather', back: 'nape', crown: 'smooth', gloss: true, jaw: 'v', body: 'slim', coat: 'cut', top: '#e6dfcc', trim: '#2e5bd2', inner: '#24242c', neck: '#24242c', collar: 'high', lower: '#2e4aa6', low: 'pants', shoes: '#222226', tuck: true, bootsTo: 'calf', acc: ['hoodline:#2e5bd2', 'gear:#c8ccd4', 'badge', 'pauldronr:#c8ccd8', 'armband:#2e4aa8', 'gloveR:#ecebe4', 'gauntlet', 'chevrons:#26262c', 'harnessb:#26365e', 'pouch:#26262c', 'cord:#3a5ad0', 'kneepad:#9aa0aa', 'boots:#222226', 'soles:#e8e8ec'] },
       basic: { name: 'Молниеносный удар', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Ярость охранника', target: 'single', noSp: true, fx: [{ k: 'selfCost', hpP: 0.15 }, { k: 'dmg', m: 2.4 }] },
       ult: { name: 'Раскат грома', target: 'blast', fx: [{ k: 'dmg', m: 3.2, adj: 1.6 }] },
@@ -116,7 +116,7 @@
     herta: {
       name: 'Герта', path: 'erudition', elem: 'ice', rarity: 4, energy: 110,
       base: { hp: 129, atk: 79, def: 54, spd: 100 },
-      look: { skin: '#f8e0d4', hair: '#a8968e', eye: '#9c62da', eye2: '#c8a8f4', bangs: 'blunt', sides: 'long', back: 'long', crown: 'smooth', gloss: true, body: 'petite', coat: 'doll', top: '#26222c', trim: '#8c5ccc', inner: '#f3f0f6', collar: 'bare', lower: '#f3f0f6', petti: '#e2deec', low: 'skirt', skirtLen: 9, shoes: '#22202a', cuff: '#f3f0f6', tailsTo: 'calf', tailsLining: '#5a3ab8', beretBand: '#c8a050', acc: ['beret:#26222c', 'flower:#8c5ae8', 'strays', 'keychoker:#5a4ad0', 'padlock:#d8b050', 'chains:#b8bcc8', 'tie:#5a48c8', 'diamonds:#dcd8ee', 'shoulderfrill:#f3f0f6', 'bellsleeves:#26222c', 'stockings:#f2f0f6', 'dolljoint', 'ankle:#22202a', 'anklecuff:#f2f0f6', 'heelbow:#5a48c8', 'tails:#26222c'] },
+      look: { mood: 'blank', skin: '#f8e0d4', hair: '#a8968e', eye: '#9c62da', eye2: '#c8a8f4', bangs: 'blunt', sides: 'long', back: 'long', crown: 'smooth', gloss: true, body: 'petite', coat: 'doll', top: '#26222c', trim: '#8c5ccc', inner: '#f3f0f6', collar: 'bare', lower: '#f3f0f6', petti: '#e2deec', low: 'skirt', skirtLen: 9, shoes: '#22202a', cuff: '#f3f0f6', tailsTo: 'calf', tailsLining: '#5a3ab8', beretBand: '#c8a050', acc: ['beret:#26222c', 'flower:#8c5ae8', 'strays', 'keychoker:#5a4ad0', 'padlock:#d8b050', 'chains:#b8bcc8', 'tie:#5a48c8', 'diamonds:#dcd8ee', 'shoulderfrill:#f3f0f6', 'bellsleeves:#26222c', 'stockings:#f2f0f6', 'dolljoint', 'ankle:#22202a', 'anklecuff:#f2f0f6', 'heelbow:#5a48c8', 'tails:#26222c'] },
       basic: { name: 'Как ты это сделал?', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Ну держись!', target: 'all', fx: [{ k: 'dmg', m: 1.0, vsHalf: 0.2 }] },
       ult: { name: 'Немного волшебства', target: 'all', fx: [{ k: 'dmg', m: 2.0 }] },
@@ -127,7 +127,7 @@
     gepard: {
       name: 'Гепард', path: 'preservation', elem: 'ice', rarity: 5, energy: 100,
       base: { hp: 190, atk: 73, def: 89, spd: 92 },
-      look: { skin: '#f6dcc6', hair: '#c4ad86', hairHi: '#e2d2b0', eye: '#3a8ee2', eye2: '#8ad0f6', bangs: 'swoop', sides: 'jaw', back: 'short', crown: 'wind', gloss: true, jaw: 'v', body: 'lean', coat: 'closed', top: '#eef0f6', trim: '#2d5bd3', inner: '#e4e6ee', collar: 'high', lower: '#eceef4', low: 'pants', shoes: '#1e1e26', gloves: '#e8eaf0', tuck: true, tailsTo: 'ankle', tailsOne: 'r', tailsLining: '#5ac8f0', acc: ['tails:#2d5bd3', 'furcollar:#f4f4f8', 'chestplate:#c8ccd8', 'pauldron:#e8eaf0', 'aiguillette:#d8b050', 'goldclasp:#d8b050', 'hemband:#2d5bd3', 'bracerR:#26262e', 'icegauntlet:#c8ccd8', 'pelt:#e4e4e8', 'goldstripes:#c8a050', 'kneeband:#2d5bd3', 'boots:#1e1e26', 'bootplate:#d8dce4'] },
+      look: { mood: 'serious', skin: '#f6dcc6', hair: '#c4ad86', hairHi: '#e2d2b0', eye: '#3a8ee2', eye2: '#8ad0f6', bangs: 'swoop', sides: 'jaw', back: 'short', crown: 'wind', gloss: true, jaw: 'v', body: 'lean', coat: 'closed', top: '#eef0f6', trim: '#2d5bd3', inner: '#e4e6ee', collar: 'high', lower: '#eceef4', low: 'pants', shoes: '#1e1e26', gloves: '#e8eaf0', tuck: true, tailsTo: 'ankle', tailsOne: 'r', tailsLining: '#5ac8f0', acc: ['tails:#2d5bd3', 'furcollar:#f4f4f8', 'chestplate:#c8ccd8', 'pauldron:#e8eaf0', 'aiguillette:#d8b050', 'goldclasp:#d8b050', 'hemband:#2d5bd3', 'bracerR:#26262e', 'icegauntlet:#c8ccd8', 'pelt:#e4e4e8', 'goldstripes:#c8a050', 'kneeband:#2d5bd3', 'boots:#1e1e26', 'bootplate:#d8dce4'] },
       basic: { name: 'Кулак правосудия', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Кулак мерзлоты', target: 'single', fx: [{ k: 'dmg', m: 2.0 }, { k: 'freeze', chance: 0.65 }] },
       ult: { name: 'Несокрушимая стена', target: 'allies', fx: [{ k: 'shield', m: 0.45, flat: 60, turns: 3, who: 'allies' }] },
@@ -138,8 +138,8 @@
     bronya: {
       name: 'Броня', path: 'harmony', elem: 'wind', rarity: 5, energy: 120,
       base: { hp: 168, atk: 79, def: 72, spd: 99 },
-      look: { skin: '#f8dfd2', hair: '#bcb8c2', eye: '#8a7464', eye2: '#c0a890', bangs: 'sweep', sides: 'long', back: 'long', crown: 'smooth', gloss: true, body: 'tallf', coat: 'wrap', top: '#f2f2f6', trim: '#2a5ad8', inner: '#f2f2f6', neck: '#24242c', collar: 'high', lower: '#f2f2f6', low: 'skirt', skirtLen: 8, legs: '#3a2c28', shoes: '#22222c', gloves: '#4a3226', tailsTo: 'ankle', tailsLining: '#2a5ad8', acc: ['dropgem:#6a4ae0', 'icebow:#2a5ad8', 'medal', 'goldclasp:#d8b050', 'goldtassel:#d8b050', 'drills', 'tails:#f2f2f6', 'thighboots:#22222c', 'kneeplate:#d8b050', 'shinleaf:#d8b050'] },
-      basic: { name: 'Пуля урагана', target: 'single', fx: [{ k: 'dmg', m: 1.0, alwaysCrit: true }, { k: 'advance', v: 0.3, who: 'self' }] },
+      look: { mood: 'cool', skin: '#f8dfd2', hair: '#bcb8c2', eye: '#8a7464', eye2: '#c0a890', bangs: 'sweep', sides: 'long', back: 'long', crown: 'smooth', gloss: true, body: 'tallf', coat: 'wrap', top: '#f2f2f6', trim: '#2a5ad8', inner: '#f2f2f6', neck: '#24242c', collar: 'high', lower: '#f2f2f6', low: 'skirt', skirtLen: 8, legs: '#3a2c28', shoes: '#22222c', gloves: '#4a3226', tailsTo: 'ankle', tailsLining: '#2a5ad8', acc: ['dropgem:#6a4ae0', 'icebow:#2a5ad8', 'medal', 'goldclasp:#d8b050', 'goldtassel:#d8b050', 'drills', 'tails:#f2f2f6', 'thighboots:#22222c', 'kneeplate:#d8b050', 'shinleaf:#d8b050'] },
+      basic: { name: 'Пуля урагана', target: 'single', fx: [{ k: 'dmg', m: 1.0, alwaysCrit: 'a2' }] },
       skill: { name: 'Боевой приказ', target: 'ally', noSelf: true, fx: [{ k: 'cleanse', who: 'target' }, { k: 'buff', s: 'dmgP', v: 0.66, turns: 1, who: 'target', name: 'Приказ' }, { k: 'advance', v: 1, who: 'target' }] },
       ult: { name: 'Марш Белобога', target: 'allies', fx: [{ k: 'buff', s: 'atkP', v: 0.55, turns: 2, who: 'allies', name: 'Марш' }, { k: 'buff', s: 'critD', v: 0.3, turns: 2, who: 'allies', name: 'Марш: крит' }] },
       talent: 'После обычной атаки её ход наступает на 30% раньше.',
@@ -149,7 +149,7 @@
     seele: {
       name: 'Зеле', path: 'hunt', elem: 'quant', rarity: 5, energy: 120,
       base: { hp: 126, atk: 87, def: 49, spd: 115 },
-      look: { skin: '#f9e1d3', hair: '#28286a', tips: '#8a5ae8', tipsFade: true, tipsAt: 54, eye: '#8c70ea', eye2: '#c4b0f8', bangs: 'sweep', sides: 'layer', back: 'layer', crown: 'smooth', gloss: true, ahoge: true, body: 'f', coat: 'leo', top: '#1e1c28', trim: '#3d3dbc', inner: '#eceaf6', collar: 'bare', lower: '#22202c', low: 'shorts', shoes: '#22203a', gloves: '#1e1c28', sashSide: 'r', tailsTo: 'ankle', tailsOne: 'l', tailsLining: '#2a2840', acc: ['neckscarf:#5c4ce0', 'leotard:#eceaf6', 'furcuff:#f4f4f8', 'onesleeve:#3a3ab0', 'armribbon2:#d8305a', 'petals:#8a5ae8', 'sashtail:#d8305a', 'tails:#d8dae6', 'legstraps:#7ad0f0', 'shinx:#1e1c28', 'ankle:#3a3ab0', 'anklerim:#1e1c28'] },
+      look: { mood: 'pout', skin: '#f9e1d3', hair: '#28286a', tips: '#8a5ae8', tipsFade: true, tipsAt: 54, eye: '#8c70ea', eye2: '#c4b0f8', bangs: 'sweep', sides: 'layer', back: 'layer', crown: 'smooth', gloss: true, ahoge: true, body: 'f', coat: 'leo', top: '#1e1c28', trim: '#3d3dbc', inner: '#eceaf6', collar: 'bare', lower: '#22202c', low: 'shorts', shoes: '#22203a', gloves: '#1e1c28', sashSide: 'r', tailsTo: 'ankle', tailsOne: 'l', tailsLining: '#2a2840', acc: ['neckscarf:#5c4ce0', 'leotard:#eceaf6', 'furcuff:#f4f4f8', 'onesleeve:#3a3ab0', 'armribbon2:#d8305a', 'petals:#8a5ae8', 'sashtail:#d8305a', 'tails:#d8dae6', 'legstraps:#7ad0f0', 'shinx:#1e1c28', 'ankle:#3a3ab0', 'anklerim:#1e1c28'] },
       basic: { name: 'Трепет бабочки', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Ливень лезвий', target: 'single', fx: [{ k: 'dmg', m: 2.2 }, { k: 'buff', s: 'spdP', v: 0.25, turns: 2, who: 'self', name: 'Ускорение' }] },
       ult: { name: 'Бабочка и лезвие', target: 'single', fx: [{ k: 'resurge' }, { k: 'dmg', m: 4.25 }] },
@@ -160,7 +160,7 @@
     sampo: {
       name: 'Сампо', path: 'nihility', elem: 'wind', rarity: 4, energy: 120,
       base: { hp: 139, atk: 84, def: 54, spd: 102 },
-      look: { skin: '#f5dcc6', hair: '#2a3274', tips: '#c4c6d4', eye: '#3ab07a', bangs: 'swoop', sides: 'jaw', back: 'short', crown: 'swept', gloss: true, jaw: 'v', body: 'lean', coat: 'jacket', top: '#b0283e', trim: '#6a5ad8', inner: '#c8c8ce', collar: 'v', lower: '#383454', low: 'pants', shoes: '#2a2224', gloves: '#22201e', tuck: true, bootsTo: 'calf', acc: ['earring:#c8ccd4', 'turtle:#24222a', 'crossbelt:#2e2a2a', 'claw:#d0d4dc', 'rolled:#eef0f4', 'glovecuff:#c0283e', 'chainband:#c8ccd4', 'vesthem', 'holster:#24222a', 'boots:#2a2224', 'kneeband:#24222a'] },
+      look: { mood: 'sly', skin: '#f5dcc6', hair: '#2a3274', tips: '#c4c6d4', eye: '#3ab07a', bangs: 'swoop', sides: 'jaw', back: 'short', crown: 'swept', gloss: true, jaw: 'v', body: 'lean', coat: 'jacket', top: '#b0283e', trim: '#6a5ad8', inner: '#c8c8ce', collar: 'v', lower: '#383454', low: 'pants', shoes: '#2a2224', gloves: '#22201e', tuck: true, bootsTo: 'calf', acc: ['earring:#c8ccd4', 'turtle:#24222a', 'crossbelt:#2e2a2a', 'claw:#d0d4dc', 'rolled:#eef0f4', 'glovecuff:#c0283e', 'chainband:#c8ccd4', 'vesthem', 'holster:#24222a', 'boots:#2a2224', 'kneeband:#24222a'] },
       basic: { name: 'Фокус', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Взрыв-сюрприз', target: 'bounce', fx: [{ k: 'dmg', m: 0.56, hits: 5 }] },
       ult: { name: 'Сейчас рванёт!', target: 'all', fx: [{ k: 'dmg', m: 1.6 }, { k: 'debuff', s: 'dotVuln', v: 0.3, turns: 2, chance: 1, name: 'Уязвимость' }] },
@@ -171,33 +171,33 @@
     hook: {
       name: 'Хук', path: 'destruction', elem: 'fire', rarity: 4, energy: 120,
       base: { hp: 182, atk: 84, def: 48, spd: 94 },
-      look: { skin: '#f9e2d4', hair: '#d8cc58', eye: '#d89a20', eye2: '#f4d060', bangs: 'blunt', sides: 'short', back: 'twin', crown: 'smooth', gloss: true, body: 'small', coat: 'mid', coatLen: 9, coatFlare: 3, lining: '#3a2c26', top: '#4a3a32', trim: '#f1ede4', inner: '#e8b830', collar: 'fur', lower: '#2e2826', hem: '#e2b232', low: 'skirt', skirtLen: 7, shoes: '#22222a', gloves: '#22222a', acc: ['molehat', 'bow:#e8b020', 'molebadge:#d8b050', 'yoke:#e8b020', 'tiestripe:#e8b020', 'pouches:#e8b020', 'furcuffs:#f2ead8', 'kneepadr:#9aa0aa', 'socktop:#e8b020', 'boots:#22222a', 'bootband:#d85030'] },
+      look: { mood: 'smile', skin: '#f9e2d4', hair: '#d8cc58', eye: '#d89a20', eye2: '#f4d060', bangs: 'blunt', sides: 'short', back: 'twin', crown: 'smooth', gloss: true, body: 'small', coat: 'mid', coatLen: 9, coatFlare: 3, lining: '#3a2c26', top: '#4a3a32', trim: '#f1ede4', inner: '#e8b830', collar: 'fur', lower: '#2e2826', hem: '#e2b232', low: 'skirt', skirtLen: 7, shoes: '#22222a', gloves: '#22222a', acc: ['molehat', 'bow:#e8b020', 'molebadge:#d8b050', 'yoke:#e8b020', 'tiestripe:#e8b020', 'pouches:#e8b020', 'furcuffs:#f2ead8', 'kneepadr:#9aa0aa', 'socktop:#e8b020', 'boots:#22222a', 'bootband:#d85030'] },
       basic: { name: 'Ударь сильнее!', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Запомни Хук!', target: 'single', fx: [{ k: 'dmg', m: 2.4 }, { k: 'dot', type: 'burn', m: 0.35, turns: 2, chance: 1 }] },
       enhanced: { name: 'Хук в ярости!', target: 'blast', fx: [{ k: 'dmg', m: 2.8, adj: 0.8 }, { k: 'dot', type: 'burn', m: 0.35, turns: 2, chance: 1 }] },
       ult: { name: 'Смотри, туда!', target: 'single', fx: [{ k: 'dmg', m: 4.0 }, { k: 'hookEnhance' }] },
-      talent: 'Атакуя горящего врага, наносит доп. огненный урон и лечит себя на 5% HP.',
+      talent: 'Атакуя горящего врага, наносит доп. огненный урон и получает 5 энергии.',
       tech: { name: 'Хи-хи, ловушка!', text: 'Поджигает всех врагов в начале боя.', fx: 'burnAll' },
       contact: [{ name: 'Крикнуть «Ура Хук!»', tag: 'joke' }, { name: 'Скорчить рожицу', tag: 'cute' }]
     },
     pela: {
       name: 'Пела', path: 'nihility', elem: 'ice', rarity: 4, energy: 110,
       base: { hp: 134, atk: 74, def: 63, spd: 105 },
-      look: { skin: '#f8dfd2', hair: '#30307e', eye: '#2ab0c8', eye2: '#8ae0ec', bangs: 'blunt', sides: 'straight', back: 'long', crown: 'smooth', gloss: true, body: 'f', coat: 'closed', top: '#f0f0f2', trim: '#d2aa52', inner: '#f4f4f6', collar: 'high', lower: '#22222a', low: 'skirt', skirtLen: 7, legs: '#3a2e2c', shoes: '#24242c', gloves: '#1e1e24', tailsLining: '#2a6ad8', acc: ['roundglasses', 'beret:#1c1c24', 'beretgold:#d8b050', 'hairpins:#c8ccd4', 'blackyoke:#1e1e26', 'cravat:#2a8ad8', 'whitebow:#f4f4f8', 'sidepanel:#2a6ad8', 'puff:#f2f2f4', 'longgloves', 'tails:#eef0f4', 'ankle:#e6e8f0', 'heelbow:#3a8ae0'] },
+      look: { mood: 'smile', skin: '#f8dfd2', hair: '#30307e', eye: '#2ab0c8', eye2: '#8ae0ec', bangs: 'blunt', sides: 'straight', back: 'long', crown: 'smooth', gloss: true, body: 'f', coat: 'closed', top: '#f0f0f2', trim: '#d2aa52', inner: '#f4f4f6', collar: 'high', lower: '#22222a', low: 'skirt', skirtLen: 7, legs: '#3a2e2c', shoes: '#24242c', gloves: '#1e1e24', tailsLining: '#2a6ad8', acc: ['roundglasses', 'beret:#1c1c24', 'beretgold:#d8b050', 'hairpins:#c8ccd4', 'blackyoke:#1e1e26', 'cravat:#2a8ad8', 'whitebow:#f4f4f8', 'sidepanel:#2a6ad8', 'puff:#f2f2f4', 'longgloves', 'tails:#eef0f4', 'ankle:#e6e8f0', 'heelbow:#3a8ae0'] },
       basic: { name: 'Холодный расчёт', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Анализ цели', target: 'single', fx: [{ k: 'dispel' }, { k: 'dmg', m: 2.1 }] },
-      ult: { name: 'Зона подавления', target: 'all', fx: [{ k: 'dmg', m: 1.0 }, { k: 'debuff', s: 'defDown', v: 0.4, turns: 2, chance: 1, name: 'Защита −40%' }] },
-      talent: 'Атакуя ослабленного врага, получает 11 энергии.',
+      ult: { name: 'Зона подавления', target: 'all', fx: [{ k: 'dmg', m: 1.0 }, { k: 'debuff', s: 'defDown', v: 0.4, turns: 2, chance: 1, name: 'Универсальное решение' }] },
+      talent: 'Атакуя ослабленного врага, получает 10 энергии.',
       tech: { name: 'Первая помощь разведки', text: 'Защита всех врагов −20% на 2 хода.', fx: 'defDownAll' },
       contact: [{ name: 'Проанализировать', tag: 'science' }, { name: 'Проверить документы', tag: 'threat' }]
     },
     ruanmei: {
       name: 'Жуань Мэй', path: 'harmony', elem: 'ice', rarity: 5, energy: 130,
       base: { hp: 147, atk: 89, def: 66, spd: 104 },
-      look: { skin: '#f8e3d8', hair: '#2a2428', streak: '#2e848c', streakSide: 'r', streakShape: 'under', eye: '#2fb2aa', eye2: '#8fe6dc', bangs: 'sweep', sides: 'flick', back: 'shoulder', crown: 'smooth', gloss: true, body: 'tallf', coat: 'dress', top: '#2e7a8a', trim: '#dcb75c', inner: '#2e7a8a', collar: 'bare', lower: '#3a8a98', low: 'shorts', shoes: '#24305a', gloves: '#22384a', tailsTo: 'ankle', tailsLining: '#3aa0b0', acc: ['bun:#dcb75c', 'hairblossom:#f7f2ea', 'earring:#f4efe4', 'mandarin:#1e2c34', 'pearls', 'sheer:#1e1a24', 'puff:#f2ede3', 'shawl:#efe8da', 'longgloves', 'bangle:#e4e8ee', 'frontpanel:#1e3450', 'blossom:#f7f2ea', 'tails:#a8d4e0', 'garter:#3a9aa0'] },
+      look: { mood: 'cool', skin: '#f8e3d8', hair: '#2a2428', streak: '#2e848c', streakSide: 'r', streakShape: 'under', eye: '#2fb2aa', eye2: '#8fe6dc', bangs: 'sweep', sides: 'flick', back: 'shoulder', crown: 'smooth', gloss: true, body: 'tallf', coat: 'dress', top: '#2e7a8a', trim: '#dcb75c', inner: '#2e7a8a', collar: 'bare', lower: '#3a8a98', low: 'shorts', shoes: '#24305a', gloves: '#22384a', tailsTo: 'ankle', tailsLining: '#3aa0b0', acc: ['bun:#dcb75c', 'hairblossom:#f7f2ea', 'earring:#f4efe4', 'mandarin:#1e2c34', 'pearls', 'sheer:#1e1a24', 'puff:#f2ede3', 'shawl:#efe8da', 'longgloves', 'bangle:#e4e8ee', 'frontpanel:#1e3450', 'blossom:#f7f2ea', 'tails:#a8d4e0', 'garter:#3a9aa0'] },
       basic: { name: 'Игла с орхидеей', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
-      skill: { name: 'Повторяющаяся мелодия пения струн', target: 'allies', fx: [{ k: 'buff', s: 'dmgP', v: 0.32, turns: 3, who: 'allies', name: 'Обертон' }, { k: 'buff', s: 'breakEff', v: 0.5, turns: 3, who: 'allies', name: 'Обертон: пробитие', quiet: true }] },
-      ult: { name: 'Лепестки на воде, отдых во сне', target: 'allies', fx: [{ k: 'buff', s: 'resPen', v: 0.25, turns: 2, who: 'allies', name: 'Магический круг' }, { k: 'bloom' }] },
+      skill: { name: 'Повторяющаяся мелодия пения струн', target: 'allies', fx: [{ k: 'buff', s: 'dmgP', v: 0.32, turns: 3, who: 'allies', name: 'Обертон' }, { k: 'buff', s: 'breakEff', v: 0.5, turns: 3, who: 'allies', name: 'Обертон: пробитие', quiet: true, fixed: true }] },
+      ult: { name: 'Лепестки на воде, отдых во сне', target: 'allies', fx: [{ k: 'buff', s: 'resPen', v: 0.25, turns: 2, who: 'allies', name: 'Магический круг' }, { k: 'bloom', m: 0.6 }] },
       talent: 'Скорость союзников +10%. Пробитие уязвимости союзником добавляет её ледяной урон пробития.',
       tech: { name: 'Шёлковая серенада', text: 'В начале боя срабатывает Обертон без очков навыка.', fx: 'ruanSkill' },
       contact: [{ name: 'Угостить пирожным', tag: 'kind' }, { name: 'Взять образец', tag: 'science' }]
@@ -205,10 +205,10 @@
     kafka: {
       name: 'Кафка', path: 'nihility', elem: 'elec', rarity: 5, energy: 120, faction: 'hunters',
       base: { hp: 147, atk: 92, def: 58, spd: 100 },
-      look: { skin: '#f8dfd2', hair: '#76285e', eye: '#c84aa8', eye2: '#f0a0d8', bangs: 'sweep', sides: 'flick', back: 'tail', crown: 'smooth', gloss: true, body: 'tallf', coat: 'cape', capeLen: 18, top: '#24222a', lining: '#6a1e48', trim: '#d8b050', inner: '#f2f0f2', sleeve: '#f2f0f2', collar: 'shirt', lower: '#24222a', low: 'shorts', legs: '#6a2c4c', shoes: '#1e1e22', gloves: '#b02a62', acc: ['shades', 'choker:#c8ccd4', 'chestharness:#1e1e24', 'corsetHi:#24222a', 'jabot:#b02a62', 'ruffcuff:#f2f0f2', 'thighcross:#b02a62', 'boot1:#22222a', 'thighstrap:#1e1e24', 'ankle:#22222a'] },
+      look: { mood: 'gentle', skin: '#f8dfd2', hair: '#76285e', eye: '#c84aa8', eye2: '#f0a0d8', bangs: 'sweep', sides: 'flick', back: 'tail', crown: 'smooth', gloss: true, body: 'tallf', coat: 'cape', capeLen: 18, top: '#24222a', lining: '#6a1e48', trim: '#d8b050', inner: '#f2f0f2', sleeve: '#f2f0f2', collar: 'shirt', lower: '#24222a', low: 'shorts', legs: '#6a2c4c', shoes: '#1e1e22', gloves: '#b02a62', acc: ['shades', 'choker:#c8ccd4', 'chestharness:#1e1e24', 'corsetHi:#24222a', 'jabot:#b02a62', 'ruffcuff:#f2f0f2', 'thighcross:#b02a62', 'boot1:#22222a', 'thighstrap:#1e1e24', 'ankle:#22222a'] },
       basic: { name: 'Полуночный шум', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Ласковый лунный свет', target: 'blast', text: 'урон 160% (соседним 60%). Все DoT на цели сразу наносят 75% урона.', fx: [{ k: 'dmg', m: 1.6, adj: 0.6 }, { k: 'detonate', v: 'skill', main: true }] },
-      ult: { name: 'Сумеречная трель', target: 'all', text: 'урон 80% всем, Шок на 2 хода, все DoT на врагах сразу срабатывают.', fx: [{ k: 'dmg', m: 0.8 }, { k: 'dot', type: 'shock', m: 0.9, turns: 2, chance: 1 }, { k: 'detonate', v: 'ult' }] },
+      ult: { name: 'Сумеречная трель', target: 'all', text: 'урон 80% всем, Шок на 2 хода, Шок на врагах сразу срабатывает (со следом «Пытка» все DoT).', fx: [{ k: 'dmg', m: 0.8 }, { k: 'dot', type: 'shock', m: 0.9, turns: 2, chance: 1 }, { k: 'detonate', v: 'ult' }] },
       talent: 'После базовой атаки союзника бьёт ту же цель бонус-атакой и накладывает Шок. Раз за свой ход.',
       tech: { name: 'Прощение не связано с милосердием', text: 'Урон всем врагам и Шок на 2 хода в начале боя.', fx: 'kafkaTech' },
       contact: [{ name: 'Шепнуть «Послушай…»', tag: 'threat' }, { name: 'Напеть арию', tag: 'sing' }]
@@ -216,18 +216,18 @@
     silverwolf: {
       name: 'Серебряный Волк', short: 'Сер. Волк', path: 'nihility', elem: 'quant', rarity: 5, energy: 110, faction: 'hunters',
       base: { hp: 142, atk: 84, def: 62, spd: 107 },
-      look: { skin: '#f8e0d4', hair: '#aaaab6', eye: '#7a7a8a', eye2: '#b0b0c0', bangs: 'wisp', sides: 'jaw', back: 'nape', crown: 'smooth', gloss: true, body: 'f', coat: 'crop', top: '#24222e', lining: '#4a5ae0', trim: '#eeeef2', inner: '#f2f2f4', collar: 'fur', lower: '#22222a', low: 'shorts', shoes: '#2a2a40', gloves: '#22222a', bootsTo: 'calf', acc: ['tailbow:#2a2a44', 'visor:#7a6af0', 'choker:#c8ccd4', 'whitebelt:#e8e8ee', 'sash2:#8a7ae0', 'whitesleeve:#e8e8ee', 'thighgadget:#e8e8ee', 'kneebandage:#a8d8f0', 'fishnet1:#2a2a34', 'boots:#22222e', 'bootflap:#4a5ae0', 'gunholster:#1e1e26'] },
+      look: { mood: 'flat', skin: '#f8e0d4', hair: '#aaaab6', eye: '#7a7a8a', eye2: '#b0b0c0', bangs: 'wisp', sides: 'jaw', back: 'nape', crown: 'smooth', gloss: true, body: 'f', coat: 'crop', top: '#24222e', lining: '#4a5ae0', trim: '#eeeef2', inner: '#f2f2f4', collar: 'fur', lower: '#22222a', low: 'shorts', shoes: '#2a2a40', gloves: '#22222a', bootsTo: 'calf', acc: ['tailbow:#2a2a44', 'visor:#7a6af0', 'choker:#c8ccd4', 'whitebelt:#e8e8ee', 'sash2:#8a7ae0', 'whitesleeve:#e8e8ee', 'thighgadget:#e8e8ee', 'kneebandage:#a8d8f0', 'fishnet1:#2a2a34', 'boots:#22222e', 'bootflap:#4a5ae0', 'gunholster:#1e1e26'] },
       basic: { name: 'Системное предупреждение', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
-      skill: { name: 'Разрешить изменения?', target: 'single', text: 'урон 196%. Вносит цели уязвимость к стихии союзника (↑↓) на 3 хода, сопротивление −13%.', fx: [{ k: 'dmg', m: 1.96 }, { k: 'implant' }, { k: 'debuff', s: 'resDown', v: 0.13, turns: 2, chance: 1, name: 'Сопротивление −13%' }] },
-      ult: { name: 'Пользователь забанен', target: 'single', fx: [{ k: 'dmg', m: 3.8 }, { k: 'debuff', s: 'defDown', v: 0.45, turns: 3, chance: 1, name: 'Защита −45%' }] },
-      talent: 'Атака с шансом 65% вносит цели Баг на 3 хода: атака −10%, защита −8% или скорость −6%.',
+      skill: { name: 'Разрешить изменения?', target: 'single', text: 'урон 196%. Вносит цели уязвимость к стихии союзника (↑↓) на 2 хода, сопротивление −13%.', fx: [{ k: 'dmg', m: 1.96 }, { k: 'implant' }, { k: 'debuff', s: 'resDown', v: 0.13, turns: 2, chance: 1, name: 'Сопротивление снижено' }] },
+      ult: { name: 'Пользователь забанен', target: 'single', fx: [{ k: 'dmg', m: 3.8 }, { k: 'debuff', s: 'defDown', v: 0.45, turns: 3, chance: 1, name: 'Защита снижена' }] },
+      talent: 'Атака с шансом 72% вносит цели Баг на 3 хода: атака −10%, защита −8% или скорость −6%.',
       tech: { name: 'Программа принудительного выхода', text: 'Урон всем врагам и стойкость без учёта уязвимостей.', fx: 'wolfTech' },
       contact: [{ name: 'Взломать прошивку', tag: 'science' }, { name: 'Позвать в рейд', tag: 'joke' }]
     },
     blade: {
       name: 'Блэйд', path: 'destruction', elem: 'wind', rarity: 5, energy: 130, faction: 'hunters',
       base: { hp: 184, atk: 80, def: 62, spd: 97 },
-      look: { skin: '#f6ded2', hair: '#1c3450', hairHi: '#2a4a6c', tips: '#3e2638', tipsFade: true, tipsAt: 60, eye: '#e0502a', eye2: '#f4a850', bangs: 'hide', sides: 'feather', back: 'tail', crown: 'wind', gloss: true, ahoge: true, jaw: 'v', body: 'tall', sex: 'm', coat: 'split', coatLen: 24, top: '#24242c', coatLow: '#24242c', lining: '#b02a22', backLining: true, edge: '#3a3a86', trim: '#3a3a86', inner: '#b8a078', neck: '#24242c', collar: 'high', lower: '#a6aab8', low: 'pants', shoes: '#1c1c22', gloves: '#1c1c22', acc: ['dangleR:#d8402a', 'mandarin:#1e1e26', 'frogknot:#1a1418', 'leafclasp:#d8b050', 'swirl:#3a3a86', 'redbtn:#d0402a', 'armwrap:#f0eee8', 'handwrap:#ece8e0', 'tancuff:#b8a078', 'hipbelt:#2a2a30', 'jade:#3ad0a0', 'kneebandage:#f0eee8', 'thighorn:#a8b0c0', 'greaves:#7c86a2', 'boots:#1c1c22'] },
+      look: { mood: 'stern', skin: '#f6ded2', hair: '#1c3450', hairHi: '#2a4a6c', tips: '#3e2638', tipsFade: true, tipsAt: 60, eye: '#e0502a', eye2: '#f4a850', bangs: 'hide', sides: 'feather', back: 'tail', crown: 'wind', gloss: true, ahoge: true, jaw: 'v', body: 'tall', sex: 'm', coat: 'split', coatLen: 24, top: '#24242c', coatLow: '#24242c', lining: '#b02a22', backLining: true, edge: '#3a3a86', trim: '#3a3a86', inner: '#b8a078', neck: '#24242c', collar: 'high', lower: '#a6aab8', low: 'pants', shoes: '#1c1c22', gloves: '#1c1c22', acc: ['dangleR:#d8402a', 'mandarin:#1e1e26', 'frogknot:#1a1418', 'leafclasp:#d8b050', 'swirl:#3a3a86', 'redbtn:#d0402a', 'armwrap:#f0eee8', 'handwrap:#ece8e0', 'tancuff:#b8a078', 'hipbelt:#2a2a30', 'jade:#3ad0a0', 'kneebandage:#f0eee8', 'thighorn:#a8b0c0', 'greaves:#7c86a2', 'boots:#1c1c22'] },
       basic: { name: 'Осколочный меч', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       enhanced: { name: 'Частокол мечей', target: 'blast', energy: 30, text: 'тратит 10% HP. Урон 40% атаки + 100% макс. HP (соседним 16% + 40%).', fx: [{ k: 'hpCost', v: 0.1 }, { k: 'dmg', m: 0.4, hpM: 1.0, adj: 0.16, adjHp: 0.4, tough: 20 }] },
       skill: { name: 'Адский пейзаж', target: 'self', keepTurn: true, text: 'тратит 30% HP. 3 хода: урон +40%, атака Частоколом. Ход не кончается.', fx: [{ k: 'hpCost', v: 0.3 }, { k: 'hellscape' }] },
@@ -239,7 +239,7 @@
     bailu: {
       name: 'Байлу', path: 'abundance', elem: 'elec', rarity: 5, energy: 100,
       base: { hp: 178, atk: 68, def: 70, spd: 98 },
-      look: { skin: '#f9e3d8', hair: '#a6a2ea', eye: '#36b8cc', eye2: '#a4f0ee', bangs: 'messy', sides: 'long', back: 'twin', crown: 'messy', ahoge: true, body: 'small', coat: 'tabard', top: '#2f56a6', trim: '#9ad8ec', inner: '#25232d', collar: 'high', lower: '#2a2834', low: 'skirt', skirtLen: 7, shoes: '#24222a', acc: ['horns:#e6bcec', 'elfears', 'bellsleeves:#f2f2f8', 'clasps:#d8b048', 'furtuft:#f6f6fa', 'gourd', 'tails:#2c58b4', 'warmers:#2c4ea8', 'dragontail:#7aa2dc', 'braidrings:#d8b048'] },
+      look: { mood: 'smile', skin: '#f9e3d8', hair: '#a6a2ea', eye: '#36b8cc', eye2: '#a4f0ee', bangs: 'messy', sides: 'long', back: 'twin', crown: 'messy', ahoge: true, body: 'small', coat: 'tabard', top: '#2f56a6', trim: '#9ad8ec', inner: '#25232d', collar: 'high', lower: '#2a2834', low: 'skirt', skirtLen: 7, shoes: '#24222a', acc: ['horns:#e6bcec', 'elfears', 'bellsleeves:#f2f2f8', 'clasps:#d8b048', 'furtuft:#f6f6fa', 'gourd', 'tails:#2c58b4', 'warmers:#2c4ea8', 'dragontail:#7aa2dc', 'braidrings:#d8b048'] },
       basic: { name: 'Диагностический пинок', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Песнь среди облаков', target: 'ally', fx: [{ k: 'heal', m: 0.117, flat: 30, who: 'target', bounce: 2, decay: 0.15 }] },
       ult: { name: 'Благодатный громовой прыжок', target: 'allies', fx: [{ k: 'heal', m: 0.135, flat: 36, who: 'allies' }, { k: 'invig', turns: 2 }] },
@@ -250,21 +250,21 @@
     yanqing: {
       name: 'Яньцин', path: 'hunt', elem: 'ice', rarity: 5, energy: 140,
       base: { hp: 128, atk: 92, def: 56, spd: 109 },
-      look: { skin: '#f8e2d2', hair: '#d6c098', eye: '#e2a83c', bangs: 'center', sides: 'long', back: 'tail', crown: 'smooth', ahoge: true, body: 'f', sex: 'm', youth: true, coat: 'robe', top: '#36506e', trim: '#18181e', inner: '#f4f4f6', collar: 'high', lower: '#f0f1f4', low: 'pants', shoes: '#c8ccd8', gloves: '#1e1e26', tuck: true, acc: ['halfsleeves', 'sidecape:#3c8cb4', 'brooch', 'flute:#3ab0a4', 'boots:#cdd2de'] },
+      look: { mood: 'smile', skin: '#f8e2d2', hair: '#d6c098', eye: '#e2a83c', bangs: 'center', sides: 'long', back: 'tail', crown: 'smooth', ahoge: true, body: 'f', sex: 'm', youth: true, coat: 'robe', top: '#36506e', trim: '#18181e', inner: '#f4f4f6', collar: 'high', lower: '#f0f1f4', low: 'pants', shoes: '#c8ccd8', gloves: '#1e1e26', tuck: true, acc: ['halfsleeves', 'sidecape:#3c8cb4', 'brooch', 'flute:#3ab0a4', 'boots:#cdd2de'] },
       basic: { name: 'Морозный шип', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Стремительный железный шип', target: 'single', fx: [{ k: 'dmg', m: 2.2 }, { k: 'sync' }] },
-      ult: { name: 'Среди блаженного дождя', target: 'single', fx: [{ k: 'yanqingUlt' }, { k: 'dmg', m: 3.5 }] },
-      talent: 'Навык даёт Единение: крит +20%, крит. урон +30%, реже под ударом, 50% добить льдом. Урон снимает.',
+      ult: { name: 'Среди блаженного дождя', target: 'single', fx: [{ k: 'yanqingUlt', m: 0.5 }, { k: 'dmg', m: 3.5 }] },
+      talent: 'Навык даёт Единение: крит +20%, крит. урон +30%, реже под ударом, 60% добить льдом. Урон снимает.',
       tech: { name: 'Истинный меч', text: 'Урон +30% по врагам, у которых HP не ниже 50%, 2 хода.', fx: 'yanqingTech' },
       contact: [{ name: 'Вызвать на поединок', tag: 'threat' }, { name: 'Рассказать о мечах', tag: 'science' }]
     },
     clara: {
       name: 'Клара', path: 'destruction', elem: 'phys', rarity: 5, energy: 110,
       base: { hp: 168, atk: 90, def: 66, spd: 90 },
-      look: { skin: '#f9e3d8', hair: '#f0eef0', eye: '#e03452', bangs: 'messy', sides: 'long', back: 'long', crown: 'smooth', body: 'small', coat: 'parka', top: '#c42d31', trim: '#f0e8dc', inner: '#a89886', collar: 'v', lower: '#f4f2f6', low: 'skirt', shoes: '#5a3a30', acc: ['kerchief:#f4f2f6', 'barefoot', 'garter:#2a2226'] },
+      look: { mood: 'blank', skin: '#f9e3d8', hair: '#f0eef0', eye: '#e03452', bangs: 'messy', sides: 'long', back: 'long', crown: 'smooth', body: 'small', coat: 'parka', top: '#c42d31', trim: '#f0e8dc', inner: '#a89886', collar: 'v', lower: '#f4f2f6', low: 'skirt', shoes: '#5a3a30', acc: ['kerchief:#f4f2f6', 'barefoot', 'garter:#2a2226'] },
       basic: { name: 'Я тоже хочу помочь', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Осторожно, Сварог', target: 'all', fx: [{ k: 'dmg', m: 1.2 }, { k: 'svarogMarked', m: 1.2 }] },
-      ult: { name: 'Обещание, а не приказ', target: 'self', fx: [{ k: 'buff', s: 'dr', v: 0.25, turns: 2, who: 'self', name: 'Обещание' }, { k: 'buff', s: 'aggro', v: 4, turns: 2, who: 'self', name: 'Обещание: внимание', quiet: true }, { k: 'promise', v: 2 }] },
+      ult: { name: 'Обещание, а не приказ', target: 'self', fx: [{ k: 'buff', s: 'dr', v: 0.25, turns: 2, who: 'self', name: 'Обещание' }, { k: 'buff', s: 'aggro', v: 4, turns: 2, who: 'self', name: 'Обещание: внимание', quiet: true, fixed: true }, { k: 'promise', v: 2, m: 1 }] },
       talent: 'Получает на 10% меньше урона. Врага, ударившего Клару, Сварог ставит Метку и бьёт в ответ.',
       tech: { name: 'Небольшая цена победы', text: 'Удар по всем врагам. 2 хода враги чаще бьют Клару.', fx: 'claraBait' },
       contact: [{ name: 'Позвать Сварога', tag: 'threat' }, { name: 'Спрятаться за Сварога', tag: 'silent' }]
@@ -411,23 +411,25 @@
       lines: { eager: '«Ладно… я вас не видел». Страж суёт вам паёк и уходит.', happy: '«Эх, служба…» Страж смягчается и уходит в казарму.', angry: '«Оскорбление Среброгривых!» Страж звереет.', scared: '«Ч-что?! Я доложу капитану!» Страж убегает.', none: 'Страж молча держит строй.' } },
     shade: { name: 'Тени Подземья', react: { kind: 'eager', sing: 'happy', threat: 'angry', joke: 'angry', silent: 'scared', science: 'angry', weird: 'scared' },
       lines: { eager: 'Тень вспоминает тепло… и оставляет вам находку.', happy: 'Тень покачивается под песню и тает.', angry: 'Тень наливается льдом!', scared: 'Тень теряется в тишине и уходит.', none: 'Тень не отвечает.' } },
+    ipc: { name: 'Корпорация межзвёздного мира', react: { bribe: 'eager', science: 'happy', kind: 'scared', threat: 'angry', joke: 'angry', sing: 'scared', weird: 'none' },
+      lines: { eager: '«Это... интересное предложение». Сотрудник КММ прячет конверт и оставляет вам образец.', happy: '«Отличная аналитика!» Сотрудник КММ записывает ваш контакт и уходит.', angry: '«Вы нарушаете регламент!» Сотрудник КММ включает оружие.', scared: '«Это вне моих полномочий!» Сотрудник КММ убегает докладывать начальству.', none: 'Сотрудник КММ сверяется с планшетом и не отвечает.' } },
     ethereal: { name: 'Эфириалы', react: { silent: 'eager', sing: 'happy', threat: 'scared', kind: 'angry', joke: 'angry', science: 'angry', weird: 'angry' },
       lines: { eager: 'Эфириал замирает в тишине и оставляет осколок эфира.', happy: 'Эфириал покачивается под мелодию и тает в воздухе.', angry: 'Эфириал ревёт и бросается вперёд!', scared: 'Эфириал пятится обратно к разрыву.', none: 'Эфириал смотрит пустыми глазами.' } },
-    trotter: { name: 'Скакуны', react: { cute: 'happy', bribe: 'eager', threat: 'scared', joke: 'happy', kind: 'eager', weird: 'happy' },
-      lines: { eager: 'Скакун выплёвывает мешочек кредитов!', happy: 'Скакун довольно хрюкает и роняет монеты.', angry: 'Скакун фыркает!', scared: 'Скакун прыгает в варп и пропадает.', none: 'Скакун жуёт что-то невидимое.' } }
+    trotter: { name: 'Свинки-копилки', react: { cute: 'happy', bribe: 'eager', threat: 'scared', joke: 'happy', kind: 'eager', weird: 'happy' },
+      lines: { eager: 'Свинка выплёвывает мешочек кредитов!', happy: 'Свинка довольно хрюкает и роняет монеты.', angry: 'Свинка фыркает!', scared: 'Свинка прыгает в варп и пропадает.', none: 'Свинка жуёт что-то невидимое.' } }
   };
 
   const E = (o) => Object.assign({ hp: 1, atk: 1, spd: 95, tough: 20, weak: [], resist: [], exp: 1, credits: 1, drops: [] }, o);
   const ENEMIES = {
-    reaver: E({ name: 'Скиталец Пустоты: Жнец', fam: 'voidranger', shape: 'ranger', col: ['#3a2450', '#c060ff'], spd: 100, weak: ['phys', 'ice', 'imag'],
+    reaver: E({ name: 'Рейнджер пустоты: Захватчик', fam: 'voidranger', shape: 'ranger', col: ['#3a2450', '#c060ff'], spd: 100, weak: ['phys', 'ice', 'imag'],
       skills: [{ n: 'Рассекающий удар', w: 3, t: 'single', m: 1.1, e: 'phys' }, { n: 'Поглощение пустоты', w: 1, t: 'single', m: 1.5, e: 'quant' }], gift: 'medkit' }),
-    eliminator: E({ name: 'Скиталец Пустоты: Ликвидатор', fam: 'voidranger', shape: 'ranger2', col: ['#2a2a4a', '#ff4a8a'], hp: 0.85, spd: 105, weak: ['phys', 'wind', 'quant'],
+    eliminator: E({ name: 'Рейнджер пустоты: Уничтожитель', fam: 'voidranger', shape: 'ranger2', col: ['#2a2a4a', '#ff4a8a'], hp: 0.85, spd: 105, weak: ['phys', 'wind', 'quant'],
       skills: [{ n: 'Выстрел аннигиляции', w: 3, t: 'single', m: 1.2, e: 'quant' }, { n: 'Залп', w: 1, t: 'blast', m: 0.8, e: 'quant' }], gift: 'exp1' }),
-    trampler: E({ name: 'Скиталец Пустоты: Топтун', fam: 'voidranger', shape: 'beast', col: ['#2a1a3a', '#a040ff'], elite: true, hp: 4, atk: 1.3, spd: 90, tough: 60, weak: ['ice', 'fire', 'imag'], exp: 3, credits: 3,
+    trampler: E({ name: 'Рейнджер пустоты: Подавитель', fam: 'voidranger', shape: 'beast', col: ['#2a1a3a', '#a040ff'], elite: true, hp: 4, atk: 1.3, spd: 90, tough: 60, weak: ['ice', 'fire', 'imag'], exp: 3, credits: 3,
       skills: [{ n: 'Сокрушительный топот', w: 2, t: 'all', m: 0.7, e: 'phys' }, { n: 'Разящий рог', w: 3, t: 'single', m: 1.5, e: 'quant' }], gift: 'relic' }),
     flamespawn: E({ name: 'Отродье пламени', fam: 'spawn', shape: 'spawn', col: ['#8a2a10', '#ff8a30'], hp: 0.8, spd: 90, weak: ['ice', 'wind'],
       skills: [{ n: 'Язык пламени', w: 1, t: 'single', m: 1.1, e: 'fire', fx: [{ k: 'dot', type: 'burn', m: 0.3, turns: 2, chance: 0.4 }] }], gift: 'jadeSmall' }),
-    frostspawn: E({ name: 'Отродье мороза', fam: 'spawn', shape: 'spawn', col: ['#2a6a8a', '#aef0ff'], hp: 0.8, spd: 90, weak: ['phys', 'fire'],
+    frostspawn: E({ name: 'Отродье льда', fam: 'spawn', shape: 'spawn', col: ['#2a6a8a', '#aef0ff'], hp: 0.8, spd: 90, weak: ['phys', 'fire'],
       skills: [{ n: 'Ледяной шип', w: 1, t: 'single', m: 1.0, e: 'ice', fx: [{ k: 'freeze', chance: 0.15 }] }], gift: 'jadeSmall' }),
     thunderspawn: E({ name: 'Отродье грома', fam: 'spawn', shape: 'spawn', col: ['#4a2a8a', '#d090ff'], hp: 0.8, spd: 95, weak: ['phys', 'wind', 'imag'],
       skills: [{ n: 'Разряд', w: 1, t: 'single', m: 1.1, e: 'elec', fx: [{ k: 'dot', type: 'shock', m: 0.3, turns: 2, chance: 0.4 }] }], gift: 'jadeSmall' }),
@@ -435,37 +437,51 @@
       skills: [{ n: 'Режущий вихрь', w: 1, t: 'single', m: 1.1, e: 'wind' }], gift: 'jadeSmall' }),
     baryon: E({ name: 'Барион', fam: 'spawn', shape: 'orb', col: ['#5a5a6a', '#e0e0ff'], hp: 0.7, spd: 88, weak: ['phys', 'ice', 'quant', 'imag'], exp: 0.8,
       skills: [{ n: 'Толчок', w: 1, t: 'single', m: 0.9, e: 'quant' }], gift: 'medkit' }),
-    beetle: E({ name: 'Автоматон «Жук»', fam: 'automaton', shape: 'beetle', col: ['#5a5040', '#e0a040'], hp: 1.1, spd: 85, weak: ['fire', 'elec', 'wind'],
+    beetle: E({ name: 'Автоматон-жук', fam: 'automaton', shape: 'beetle', col: ['#5a5040', '#e0a040'], hp: 1.1, spd: 85, weak: ['fire', 'elec', 'wind'],
       skills: [{ n: 'Таран', w: 3, t: 'single', m: 1.0, e: 'phys' }, { n: 'Броня', w: 1, t: 'self', fx: [{ k: 'shieldSelf', m: 0.2 }] }], gift: 'exp1' }),
-    hound: E({ name: 'Автоматон «Гончая»', fam: 'automaton', shape: 'hound', col: ['#4a4a50', '#ff6040'], hp: 0.9, spd: 110, weak: ['phys', 'fire', 'imag'],
+    hound: E({ name: 'Автоматон-гончая', fam: 'automaton', shape: 'hound', col: ['#4a4a50', '#ff6040'], hp: 0.9, spd: 110, weak: ['phys', 'fire', 'imag'],
       skills: [{ n: 'Укус', w: 3, t: 'single', m: 1.1, e: 'phys' }, { n: 'Электрозубы', w: 1, t: 'single', m: 1.3, e: 'elec' }], gift: 'medkit' }),
-    spider: E({ name: 'Автоматон «Паук»', fam: 'automaton', shape: 'spider', col: ['#3a3a40', '#ff3030'], hp: 0.6, spd: 100, weak: ['phys', 'ice', 'quant'],
+    spider: E({ name: 'Автоматон-паук', fam: 'automaton', shape: 'spider', col: ['#3a3a40', '#ff3030'], hp: 0.6, spd: 100, weak: ['phys', 'ice', 'quant'],
       skills: [{ n: 'Самоуничтожение', w: 1, t: 'blast', m: 1.6, e: 'fire', self: 'die' }], gift: 'exp1' }),
-    direwolf: E({ name: 'Автоматон «Лютоволк»', fam: 'automaton', shape: 'wolf', col: ['#5a6070', '#40e0ff'], elite: true, hp: 4.2, atk: 1.3, spd: 105, tough: 70, weak: ['phys', 'fire', 'imag'], exp: 3, credits: 3,
+    direwolf: E({ name: 'Автоматон-лютоволк', fam: 'automaton', shape: 'wolf', col: ['#5a6070', '#40e0ff'], elite: true, hp: 4.2, atk: 1.3, spd: 105, tough: 70, weak: ['phys', 'fire', 'imag'], exp: 3, credits: 3,
       skills: [{ n: 'Рывок', w: 2, t: 'single', m: 1.6, e: 'phys' }, { n: 'Рёв помех', w: 1, t: 'all', m: 0.6, e: 'elec', fx: [{ k: 'debuff', s: 'spdP', v: -0.1, turns: 2, chance: 0.6, name: 'Помехи' }] }, { n: 'Прицел', w: 1, t: 'lock', next: 3, text: 'Лютоволк берёт цель на прицел!' }, { n: 'Разрывающий укус', w: 0, t: 'single', m: 2.4, e: 'phys' }], gift: 'relic' }),
-    soldier: E({ name: 'Среброгривый солдат', fam: 'silvermane', shape: 'guard', col: ['#3a5aa0', '#e8e8f0'], hp: 1.05, spd: 95, weak: ['fire', 'wind', 'imag'],
+    soldier: E({ name: 'Солдат Среброгривых Стражей', fam: 'silvermane', shape: 'guard', col: ['#3a5aa0', '#e8e8f0'], hp: 1.05, spd: 95, weak: ['fire', 'wind', 'imag'],
       skills: [{ n: 'Удар копьём', w: 3, t: 'single', m: 1.1, e: 'phys' }, { n: 'Строй', w: 1, t: 'self', fx: [{ k: 'shieldSelf', m: 0.15 }] }], gift: 'medkit' }),
-    gunner: E({ name: 'Среброгривый стрелок', fam: 'silvermane', shape: 'guard2', col: ['#3a5aa0', '#c0c8d8'], hp: 0.9, spd: 100, weak: ['phys', 'fire', 'elec'],
+    gunner: E({ name: 'Стрелок Среброгривых Стражей', fam: 'silvermane', shape: 'guard2', col: ['#3a5aa0', '#c0c8d8'], hp: 0.9, spd: 100, weak: ['phys', 'fire', 'elec'],
       skills: [{ n: 'Выстрел', w: 3, t: 'single', m: 1.2, e: 'ice' }, { n: 'Очередь', w: 1, t: 'blast', m: 0.8, e: 'ice' }], gift: 'exp1' }),
-    cannoneer: E({ name: 'Среброгривый канонир', fam: 'silvermane', shape: 'guard3', col: ['#2a4a8a', '#f0d890'], elite: true, hp: 3.8, atk: 1.25, spd: 92, tough: 60, weak: ['ice', 'elec', 'wind'], exp: 3, credits: 3,
+    cannoneer: E({ name: 'Канонир Среброгривых Стражей', fam: 'silvermane', shape: 'guard3', col: ['#2a4a8a', '#f0d890'], elite: true, hp: 3.8, atk: 1.25, spd: 92, tough: 60, weak: ['ice', 'elec', 'wind'], exp: 3, credits: 3,
       skills: [{ n: 'Наводка', w: 1, t: 'lock', next: 1 }, { n: 'Залп картечью', w: 0, t: 'all', m: 1.2, e: 'fire' }, { n: 'Прикладом', w: 2, t: 'single', m: 1.3, e: 'phys' }], gift: 'relic' }),
-    lieutenant: E({ name: 'Среброгривый лейтенант', fam: 'silvermane', shape: 'guard3', col: ['#1f3a7a', '#e8e8f0'], elite: true, hp: 4, atk: 1.3, spd: 100, tough: 70, weak: ['fire', 'wind', 'quant'], exp: 3, credits: 3,
+    dunn: E({ name: 'Данн, лейтенант Среброгривых Стражей', fam: 'silvermane', shape: 'guard3', col: ['#1f3a7a', '#e8c070'], elite: true, hp: 4.4, atk: 1.3, spd: 102, tough: 80, weak: ['fire', 'wind', 'quant'], exp: 3.5, credits: 3,
+      skills: [{ n: 'Приказ к атаке', w: 1, t: 'rally' }, { n: 'Рубящий удар', w: 3, t: 'single', m: 1.5, e: 'phys' }, { n: 'Вьюга клинков', w: 1, t: 'all', m: 0.7, e: 'ice' }], gift: 'relic' }),
+    lieutenant: E({ name: 'Лейтенант Среброгривых Стражей', fam: 'silvermane', shape: 'guard3', col: ['#1f3a7a', '#e8e8f0'], elite: true, hp: 4, atk: 1.3, spd: 100, tough: 70, weak: ['fire', 'wind', 'quant'], exp: 3, credits: 3,
       skills: [{ n: 'Приказ к атаке', w: 1, t: 'rally' }, { n: 'Рубящий удар', w: 3, t: 'single', m: 1.5, e: 'phys' }, { n: 'Вьюга клинков', w: 1, t: 'all', m: 0.7, e: 'ice' }], gift: 'relic' }),
     vagrant: E({ name: 'Бродяга', fam: 'shade', shape: 'vagrant', col: ['#4a4040', '#a0e0ff'], hp: 1.1, spd: 92, weak: ['phys', 'fire', 'wind'],
       skills: [{ n: 'Удар киркой', w: 3, t: 'single', m: 1.2, e: 'phys' }, { n: 'Стон мерзлоты', w: 1, t: 'single', m: 0.9, e: 'ice', fx: [{ k: 'freeze', chance: 0.2 }] }], gift: 'medkit' }),
-    shadewalker: E({ name: 'Теневой странник Вечной зимы', fam: 'shade', shape: 'shade', col: ['#1a2a3a', '#8ae0ff'], hp: 1.4, atk: 1.1, spd: 100, tough: 30, weak: ['phys', 'fire', 'imag'], exp: 1.3,
+    shadewalker: E({ name: 'Тень вечнозимья', fam: 'shade', shape: 'shade', col: ['#1a2a3a', '#8ae0ff'], hp: 1.4, atk: 1.1, spd: 100, tough: 30, weak: ['phys', 'fire', 'imag'], exp: 1.3,
       skills: [{ n: 'Ледяной клинок', w: 3, t: 'single', m: 1.3, e: 'ice' }, { n: 'Метель', w: 1, t: 'all', m: 0.6, e: 'ice', fx: [{ k: 'freeze', chance: 0.15 }] }], gift: 'exp1' }),
-    incinerator: E({ name: 'Испепеляющий теневой странник', fam: 'shade', shape: 'shade', col: ['#3a1a1a', '#ff8a40'], hp: 1.4, atk: 1.1, spd: 100, tough: 30, weak: ['phys', 'ice', 'quant'], exp: 1.3,
+    incinerator: E({ name: 'Тень испепеления', fam: 'shade', shape: 'shade', col: ['#3a1a1a', '#ff8a40'], hp: 1.4, atk: 1.1, spd: 100, tough: 30, weak: ['phys', 'ice', 'quant'], exp: 1.3,
       skills: [{ n: 'Клинок пепла', w: 3, t: 'single', m: 1.3, e: 'fire', fx: [{ k: 'dot', type: 'burn', m: 0.3, turns: 2, chance: 0.5 }] }, { n: 'Огненный вал', w: 1, t: 'all', m: 0.6, e: 'fire' }], gift: 'exp1' }),
-    prowler: E({ name: 'Ледяной рыскарь', fam: 'shade', shape: 'prowler', col: ['#2a4a6a', '#c0f4ff'], elite: true, hp: 5, atk: 1.35, spd: 102, tough: 80, weak: ['phys', 'fire', 'elec'], exp: 3.5, credits: 3,
+    prowler: E({ name: 'Морозный странник', fam: 'shade', shape: 'prowler', col: ['#2a4a6a', '#c0f4ff'], elite: true, hp: 5, atk: 1.35, spd: 102, tough: 80, weak: ['phys', 'fire', 'elec'], exp: 3.5, credits: 3,
       skills: [{ n: 'Ледяной укус', w: 3, t: 'single', m: 1.6, e: 'ice', fx: [{ k: 'freeze', chance: 0.3 }] }, { n: 'Белая мгла', w: 1, t: 'all', m: 0.8, e: 'ice' }], gift: 'relic' }),
-    iceout: E({ name: 'Лёд из космоса', fam: 'spawn', shape: 'crystal', col: ['#6ab8e0', '#ffffff'], hp: 1.2, spd: 90, tough: 30, weak: ['fire', 'elec', 'quant'],
-      skills: [{ n: 'Осколочный дождь', w: 1, t: 'blast', m: 0.9, e: 'ice' }], gift: 'jadeSmall' }),
-    blazeout: E({ name: 'Огонь из космоса', fam: 'spawn', shape: 'crystal', col: ['#e0602a', '#fff0c0'], hp: 1.2, spd: 92, tough: 30, weak: ['ice', 'wind', 'quant'],
-      skills: [{ n: 'Огненный дождь', w: 1, t: 'blast', m: 0.9, e: 'fire', fx: [{ k: 'dot', type: 'burn', m: 0.3, turns: 2, chance: 0.35 }] }], gift: 'jadeSmall' }),
-    trotter: E({ name: 'Скакун-прыгун', fam: 'trotter', shape: 'trotter', col: ['#e8c040', '#fff0a0'], hp: 1.6, atk: 0.2, spd: 110, tough: 30, weak: ['phys', 'fire', 'ice', 'elec', 'wind', 'quant', 'imag'], exp: 2, credits: 12,
+    iceout: E({ name: 'Лёд из космоса', fam: 'spawn', shape: 'crystal', col: ['#6ab8e0', '#ffffff'], elite: true, hp: 4.4, atk: 1.25, spd: 100, tough: 100, weak: ['fire', 'wind', 'quant'], exp: 3, credits: 3,
+      skills: [{ n: 'Леденящий плач', w: 3, t: 'single', m: 1.5, e: 'ice' }, { n: 'Вечнозимний дождь', w: 1, t: 'all', m: 0.9, e: 'ice', fx: [{ k: 'freeze', chance: 0.4 }] }], gift: 'relic' }),
+    stormbringer: E({ name: 'Буревестник', fam: 'shade', shape: 'stormbringer', col: ['#1a2a2a', '#5af0c0'], elite: true, hp: 4.6, atk: 1.3, spd: 100, tough: 100, weak: ['fire', 'ice', 'imag'], exp: 3.5, credits: 3,
+      skills: [{ n: 'Бдительный метеор', w: 3, t: 'single', m: 1.5, e: 'wind', fx: [{ k: 'dot', type: 'shear', m: 0.35, turns: 2, chance: 1 }] }, { n: 'Ветроход', w: 2, t: 'blast', m: 1.1, e: 'wind', fx: [{ k: 'dot', type: 'shear', m: 0.3, turns: 2, chance: 0.8 }] }, { n: 'Нежданный шторм', w: 1, t: 'all', m: 1.3, e: 'wind' }], gift: 'relic' }),
+    blazeout: E({ name: 'Огонь из космоса', fam: 'spawn', shape: 'crystal', col: ['#e0602a', '#fff0c0'], elite: true, hp: 4.4, atk: 1.25, spd: 100, tough: 100, weak: ['ice', 'wind', 'quant'], exp: 3, credits: 3,
+      skills: [{ n: 'Ревущий ад', w: 3, t: 'single', m: 1.5, e: 'fire', fx: [{ k: 'dot', type: 'burn', m: 0.3, turns: 2, chance: 0.5 }] }, { n: 'Дождь очищающего пламени', w: 1, t: 'all', m: 0.9, e: 'fire', fx: [{ k: 'dot', type: 'burn', m: 0.3, turns: 2, chance: 0.35 }] }], gift: 'relic' }),
+    decaying: E({ name: 'Тень пожирательницы', fam: 'shade', shape: 'decaying', col: ['#16141c', '#e8c860'], elite: true, hp: 5.2, atk: 1.35, spd: 120, tough: 100, weak: ['fire', 'elec', 'wind'], exp: 4, credits: 4,
+      skills: [{ n: 'Мимолётные позолоченные шипы', w: 3, t: 'single', m: 1.5, e: 'imag' }, { n: 'Мимолётное наказание', w: 1, t: 'single', m: 2.3, e: 'imag' }, { n: 'Освобождение золотого века', w: 1, t: 'blast', m: 1.1, e: 'imag' }], gift: 'relic' }),
+    ipc_field: E({ name: 'Базовый персонал: Полевой сотрудник', fam: 'ipc', shape: 'ipc_field', col: ['#18181e', '#d0a840'], hp: 1.2, spd: 118, tough: 20, weak: ['fire', 'ice'], exp: 1.2, credits: 2,
+      skills: [{ n: 'Начало смены', w: 1, t: 'single', m: 1.4, e: 'phys' }], gift: 'jadeSmall' }),
+    ipc_security: E({ name: 'Базовый персонал: Сотрудник охраны', fam: 'ipc', shape: 'ipc_security', col: ['#18181e', '#c8283a'], hp: 1.6, spd: 100, tough: 30, weak: ['phys', 'fire', 'ice'], exp: 1.4, credits: 2,
+      skills: [{ n: 'Призыв к порядку', w: 1, t: 'blast', m: 1.1, e: 'phys' }], gift: 'jadeSmall' }),
+    ipc_leader: E({ name: 'Старший персонал: Лидер команды', fam: 'ipc', shape: 'ipc_leader', col: ['#24242e', '#d0a840'], elite: true, hp: 5.4, atk: 1.35, spd: 120, tough: 120, weak: ['fire', 'ice', 'imag'], exp: 4, credits: 5,
+      skills: [{ n: 'Дисциплина', w: 3, t: 'single', m: 1.4, e: 'phys' }, { n: 'Сокращение расходов', w: 2, t: 'single', m: 1.8, e: 'phys' }, { n: 'Обучение...', w: 1, t: 'charge', next: 3, text: 'Лидер команды заряжает тяжёлую лазерную пушку!' }, { n: 'Шок корпоративной культуры', w: 0, t: 'all', m: 1.2, e: 'phys' }], gift: 'relic' }),
+    mask: E({ name: 'Маска без мыслей', fam: 'spawn', shape: 'mask', col: ['#3a2a6a', '#c8b8ff'], hp: 0.9, spd: 100, weak: ['fire', 'quant'], exp: 1, credits: 1,
+      skills: [{ n: 'Радужный луч', w: 3, t: 'single', m: 1.2, e: 'imag' }, { n: 'Сфокусированный луч', w: 1, t: 'rally' }], gift: 'jadeSmall' }),
+    trotter: E({ name: 'Свинка-копилка пространства', fam: 'trotter', shape: 'trotter', col: ['#e8c040', '#fff0a0'], hp: 1.6, atk: 0.2, spd: 110, tough: 30, weak: ['phys', 'fire', 'ice', 'elec', 'wind', 'quant', 'imag'], exp: 2, credits: 12,
       skills: [{ n: 'Хрюк', w: 1, t: 'self' }], flee: 3, gift: 'credits' }),
-    iceedge: E({ name: 'Ледяная грань', fam: 'spawn', shape: 'crystal', col: ['#4a90c0', '#e0f8ff'], hp: 1.2, spd: 90, tough: 20, weak: ['fire', 'phys', 'elec'], exp: 0.3, credits: 0,
+    iceedge: E({ name: 'Ледяное лезвие', fam: 'spawn', shape: 'crystal', col: ['#4a90c0', '#e0f8ff'], hp: 1.2, spd: 90, tough: 20, weak: ['fire', 'phys', 'elec'], exp: 0.3, credits: 0,
       skills: [{ n: 'Осколок', w: 1, t: 'single', m: 1.0, e: 'ice' }], noContact: true }),
     doomsday: E({ name: 'Зверь Судного дня', fam: 'boss', shape: 'doomsday', col: ['#2a1a3a', '#b050ff'], boss: true, hp: 11, atk: 1.4, spd: 90, tough: 160, weak: ['phys', 'ice', 'fire'], resist: ['quant'], exp: 10, credits: 10, noContact: true,
       skills: [{ n: 'Удар хвостом', t: 'single', m: 1.5, e: 'phys' }, { n: 'Зов Легиона', t: 'summon', summon: ['reaver', 'eliminator'], max: 3 }, { n: 'Сбор антиматерии', t: 'charge', next: 3, text: 'Зверь копит антиматерию! Пробейте его уязвимость!' }, { n: 'Неизбежная гибель', t: 'all', m: 1.8, e: 'quant' }, { n: 'Пожирание', t: 'blast', m: 1.1, e: 'quant' }],
@@ -473,7 +489,7 @@
     gepard_b: E({ name: 'Гепард, капитан Среброгривых', fam: 'boss', shape: 'gepard', col: ['#3a5aa0', '#f0d890'], boss: true, hp: 12, atk: 1.35, spd: 95, tough: 150, weak: ['fire', 'phys', 'wind'], resist: ['ice'], exp: 12, credits: 10, noContact: true,
       skills: [{ n: 'Кулак убеждения', t: 'single', m: 1.5, e: 'ice', fx: [{ k: 'freeze', chance: 0.25 }] }, { n: 'Ледяной вал', t: 'all', m: 0.8, e: 'ice' }, { n: 'Несокрушимый гарнизон', t: 'self', fx: [{ k: 'shieldSelf', m: 0.18 }], text: 'Гепард поднимает щит! Пробейте уязвимость, чтобы снять его.' }, { n: 'Клятва Среброгривых', t: 'charge', next: 4, text: 'Гепард готовит сокрушительный удар!' }, { n: 'Кара Среброгривых', t: 'single', m: 2.6, e: 'ice' }],
       pat: [0, 1, 2, 0, 3, 1, 0, 2] }),
-    grizzly: E({ name: 'Автоматон «Гризли»', fam: 'boss', shape: 'grizzly', col: ['#5a5a4a', '#ff7030'], boss: true, hp: 13, atk: 2.0, spd: 92, tough: 170, weak: ['phys', 'ice', 'imag'], resist: ['elec'], exp: 13, credits: 12, noContact: true,
+    grizzly: E({ name: 'Автоматон-гризли', fam: 'boss', shape: 'grizzly', col: ['#5a5a4a', '#ff7030'], boss: true, hp: 13, atk: 2.0, spd: 92, tough: 170, weak: ['phys', 'ice', 'imag'], resist: ['elec'], exp: 13, credits: 12, noContact: true,
       skills: [{ n: 'Удар лапой', t: 'single', m: 1.5, e: 'phys' }, { n: 'Сборка роя', t: 'summon', summon: ['beetle', 'spider'], max: 3 }, { n: 'Захват цели', t: 'lock', next: 3, text: 'Гризли навёл прицел! Укройтесь щитом!' }, { n: 'Сокрушение', t: 'single', m: 3.0, e: 'phys', splash: 0.6 }, { n: 'Землетрясение', t: 'all', m: 0.9, e: 'phys' }],
       pat: [0, 1, 2, 4, 0, 2, 1, 4] }),
     svarog_b: E({ name: 'Сварог', fam: 'boss', shape: 'svarog', col: ['#4a4c8a', '#ff2e8e'], boss: true, hp: 14, atk: 2.0, spd: 94, tough: 180, weak: ['fire', 'ice', 'imag'], resist: ['elec'], exp: 14, credits: 12, noContact: true,
@@ -486,11 +502,13 @@
     mimic: E({ name: 'Подражатель', fam: 'boss', shape: 'mimic', col: ['#1a1028', '#ff7a3a'], boss: true, hp: 15, atk: 2.1, spd: 102, tough: 170, weak: ['ice', 'elec', 'imag'], resist: ['quant'], exp: 15, credits: 14, noContact: true,
       skills: [{ n: 'Чужой голос', t: 'single', m: 1.4, e: 'quant', fx: [{ k: 'debuff', s: 'dmgDealtDown', v: 0.2, turns: 2, chance: 0.7, name: 'Сомнение' }] }, { n: 'Эфирная буря', t: 'all', m: 0.85, e: 'quant' }, { n: 'Зов каверны', t: 'summon', summon: ['ethereal', 'ethereal'], max: 3 }, { n: 'Вдох', t: 'charge', next: 4, text: 'Подражатель набирает в грудь чужой голос!' }, { n: 'Крик потерянных', t: 'all', m: 1.6, e: 'quant' }],
       pat: [0, 1, 2, 0, 3, 1, 0, 2] }),
-    cocolia1: E({ name: 'Коколия, Верховный хранитель', fam: 'boss', shape: 'cocolia', col: ['#3a4a8a', '#c0d8ff'], boss: true, hp: 14, atk: 2.0, spd: 104, tough: 160, weak: ['fire', 'elec', 'quant'], resist: ['ice', 'phys', 'wind'], exp: 12, credits: 12, noContact: true,
-      skills: [{ n: 'Лезвие стужи', t: 'single', m: 1.5, e: 'ice', fx: [{ k: 'freeze', chance: 0.3 }] }, { n: 'Надвигающаяся вьюга', t: 'all', m: 0.8, e: 'ice' }, { n: 'Призыв Ледяной грани', t: 'summon', summon: ['iceedge', 'iceedge'], max: 3 }, { n: 'Холодный приговор', t: 'blast', m: 1.2, e: 'ice' }],
+    cocolia_echo: E({ name: 'Эхо Коколии', fam: 'boss', shape: 'cocolia', col: ['#3a4a8a', '#c0d8ff'], boss: true, hp: 9, atk: 1.7, spd: 100, tough: 140, weak: ['fire', 'elec', 'quant'], resist: ['ice'], exp: 8, credits: 8, noContact: true,
+      skills: [{ n: 'Лезвие стужи', w: 3, t: 'single', m: 1.4, e: 'ice', fx: [{ k: 'freeze', chance: 0.25 }] }, { n: 'Надвигающаяся вьюга', w: 1, t: 'all', m: 0.75, e: 'ice' }, { n: 'Холодный приговор', w: 2, t: 'blast', m: 1.1, e: 'ice' }], gift: 'relic' }),
+    cocolia1: E({ name: 'Коколия, Верховная хранительница', fam: 'boss', shape: 'cocolia', col: ['#3a4a8a', '#c0d8ff'], boss: true, hp: 14, atk: 2.0, spd: 104, tough: 160, weak: ['fire', 'elec', 'quant'], resist: ['ice', 'phys', 'wind'], exp: 12, credits: 12, noContact: true,
+      skills: [{ n: 'Лезвие стужи', t: 'single', m: 1.5, e: 'ice', fx: [{ k: 'freeze', chance: 0.3 }] }, { n: 'Надвигающаяся вьюга', t: 'all', m: 0.8, e: 'ice' }, { n: 'Призыв Ледяного лезвия', t: 'summon', summon: ['iceedge', 'iceedge'], max: 3 }, { n: 'Холодный приговор', t: 'blast', m: 1.2, e: 'ice' }],
       pat: [0, 2, 1, 3, 0, 1, 2, 3] }),
     cocolia2: E({ name: 'Коколия, Мать обмана', fam: 'boss', shape: 'cocolia2', col: ['#1a2a5a', '#e0f0ff'], boss: true, hp: 20, atk: 2.2, spd: 108, tough: 200, weak: ['fire', 'elec', 'quant'], resist: ['ice', 'phys', 'wind'], exp: 20, credits: 20, noContact: true,
-      skills: [{ n: 'Лезвие стужи', t: 'single', m: 1.6, e: 'ice', fx: [{ k: 'freeze', chance: 0.35 }] }, { n: 'Копьё Вечной мерзлоты', t: 'lock', next: 2, text: 'Копьё нацелено! Нужны щиты и лечение!' }, { n: 'Гнев Зимы', t: 'all', m: 1.6, e: 'ice', lockBonus: 1.2 }, { n: 'Призыв Ледяной грани', t: 'summon', summon: ['iceedge', 'iceedge'], max: 3 }, { n: 'Шёпот Стелларона', t: 'all', m: 0.7, e: 'quant', fx: [{ k: 'debuff', s: 'atkP', v: -0.2, turns: 2, chance: 0.6, name: 'Шёпот' }] }],
+      skills: [{ n: 'Лезвие стужи', t: 'single', m: 1.6, e: 'ice', fx: [{ k: 'freeze', chance: 0.35 }] }, { n: 'Копьё Вечной мерзлоты', t: 'lock', next: 2, text: 'Копьё нацелено! Нужны щиты и лечение!' }, { n: 'Гнев Зимы', t: 'all', m: 1.6, e: 'ice', lockBonus: 1.2 }, { n: 'Призыв Ледяного лезвия', t: 'summon', summon: ['iceedge', 'iceedge'], max: 3 }, { n: 'Шёпот Стелларона', t: 'all', m: 0.7, e: 'quant', fx: [{ k: 'debuff', s: 'atkP', v: -0.2, turns: 2, chance: 0.6, name: 'Шёпот' }] }],
       pat: [0, 3, 1, 4, 0, 1, 3, 4] })
   };
 
@@ -503,6 +521,7 @@
     soup: { name: 'Суп из снежного краба', kind: 'food', rar: 3, price: 320, text: 'Восстанавливает 25% HP всей команде.', use: { healAll: 0.25 } },
     pie: { name: 'Пирог тётушки Олега', kind: 'food', rar: 3, price: 520, text: 'Восстанавливает 45% HP всей команде.', use: { healAll: 0.45 } },
     revive: { name: 'Капсула реанимации', kind: 'food', rar: 4, price: 600, text: 'Поднимает павшего союзника с 30% HP.', use: { revive: 0.3 } },
+    suncake: { name: 'Солнцеблин', kind: 'food', rar: 2, price: 260, text: 'Хрустящий блин Солнечного фестиваля от Герти. Восстанавливает 25% HP всей команде.', use: { healAll: 0.25 } },
     coffee: { name: 'Кофе «Белобог»', kind: 'food', rar: 2, price: 220, text: 'Восстанавливает 2 очка техники.', use: { tp: 2 } },
     hotpot: { name: 'Жаркое Подземья', kind: 'food', rar: 3, price: 280, text: 'В следующем бою атака команды +15%.', use: { nextAtk: 0.15 } },
     lunch: { name: 'Бизнес-ланч космической станции', kind: 'food', rar: 2, price: 280, text: 'Обед из раздатчика станции: рис, котлета и компот. Восстанавливает 30% HP всей команде.', use: { healAll: 0.3 } },
@@ -522,15 +541,27 @@
     spass: { name: 'Особый звёздный пропуск', kind: 'key', rar: 5, price: 0, text: 'Билет для прыжков события: выбранного героя и его светового конуса.' },
     fuse: { name: 'Предохранитель станции', kind: 'key', rar: 3, price: 0, text: 'Запасной предохранитель из Зоны хранения.' },
     hook_badge: { name: 'Значок «Кротов»', kind: 'key', rar: 3, price: 0, text: 'Потерянный значок банды Хук.' },
-    geo_core: { name: 'Геоядро', kind: 'key', rar: 4, price: 0, text: 'Тёплое ядро из Великой шахты. Нужно Сварогу.' },
+    geo_core: { name: 'Геоядро', kind: 'key', rar: 4, price: 0, text: 'Тёплое ядро из Большой шахты. Нужно Сварогу.' },
     serval_pick: { name: 'Медиатор Сервал', kind: 'key', rar: 4, price: 0, text: 'Медиатор для гитары. На нём выцарапано «Г.».' },
+    gold_watch: { name: 'Ослепительные золотые часы', kind: 'key', rar: 4, price: 0, text: 'Дорогие золотые часы с гравировкой: «Если этот предмет попадёт в ваше распоряжение, пожалуйста, свяжитесь с Уоллесом Кембриджем Лаймштейном. Ваш акт доброты будет щедро вознаграждён».' },
+    praise: { name: 'Похвала высокой морали', kind: 'key', rar: 3, price: 0, text: 'Позолоченная фигурка культуриста размером с большой палец. Без неё нельзя сделать ничего плохого: её тратят на поступки, которые высокая мораль не одобряет.' },
     findie: { name: 'Находюша', kind: 'key', rar: 4, price: 0, text: 'Домашний искатель предметов. Пищит над тайниками и любит поговорить. Подарок Сампо.' },
     detector: { name: 'Детектор жил', kind: 'key', rar: 4, price: 0, text: 'Древняя реликвия Ферсмана. Чует жилы геоядра, но зонд у неё сломан.' },
     marbles: { name: 'Банка стеклянных шариков', kind: 'key', rar: 3, price: 0, text: 'Сокровище Джулиана. Этими шариками он выиграл турнир у городских детей.' },
     rusty_key: { name: 'Ржавый ключ', kind: 'key', rar: 2, price: 0, text: 'Лежал рядом с шариками. От чего он, знает только Джулиан.' },
+    rz_key: { name: 'Ключ шифрования устройства', kind: 'key', rar: 3, price: 0, text: 'Ключ шифрования офицера службы безопасности Данна. Открывает ворота центра энергоснабжения механизмов в Запретной зоне.' },
+    cert1: { name: 'Сертификация I Поселения роботов', kind: 'key', rar: 3, price: 0, text: 'Сертификационная метка на правой руке Март 7. Первый из трёх шагов к воротам базы Сварога.' },
+    cert2: { name: 'Сертификация II Поселения роботов', kind: 'key', rar: 3, price: 0, text: 'Вторая метка на той же руке. Раздражительный робот ставил её без всякого удовольствия.' },
+    cert3: { name: 'Сертификация III Поселения роботов', kind: 'key', rar: 3, price: 0, text: 'Последняя метка. Неисправный робот выдал её только после перезагрузки системы.' },
+    box_plates: { name: 'Коробка металлических пластин и бинтов', kind: 'key', rar: 3, price: 0, text: 'Медикаменты, которые срочно нужны Наташе. «Полная коробка металлических пластин и бинтов, именно то, что нужно Наташе».' },
+    box_alcohol: { name: 'Коробка медицинского спирта', kind: 'key', rar: 3, price: 0, text: 'Коробка с медикаментами, которые срочно нужны Наташе. «Коробка медицинского спирта. Надеюсь, он не слишком сильно выветрился...»' },
+    box_pain: { name: 'Коробка особых обезболивающих', kind: 'key', rar: 3, price: 0, text: 'Половина обезболивающих из старой кладовой приюта. Вторую половину Зеле отдала Кларе для раненых бродяг.' },
+    owl_toy: { name: 'Изысканный снежный шар', kind: 'key', rar: 4, price: 0, text: 'Детская игрушка Брони. Снежная сова кружит над снежными полями, выискивая зайцев. «Даже если мы потеряли связь с прошлым, некоторые вещи всё ещё могут дополнить нас».' },
+    ribbon: { name: 'Грязная лента с колокольчиком', kind: 'key', rar: 3, price: 0, text: 'Белая лента, испачканная до неузнаваемости. На конце пришит колокольчик: его звон вёл слепую девочку сквозь темноту. «Этот родной чистый звон... Сестрёнка, ты вернулась?»' },
+    musicbox: { name: 'Сломанная музыкальная шкатулка', kind: 'key', rar: 3, price: 0, text: 'Маленькая шкатулка ручной работы. Её много лет берегли, но она всё равно сломалась. Мелодия звучит жутковато, и всё же две девочки, жившие как сёстры, её любили.' },
     capsule: { name: 'Капсула времени Джулиана', kind: 'key', rar: 3, price: 0, text: 'На крышке написано: «Джулиану через пятьдесят лет». Открывать рано.' },
     junjun: { name: 'Цзюнь-Цзюнь', kind: 'key', rar: 4, price: 0, text: 'Большой плюшевый медведь Хук. Наташа сшила его в награду за месяц примерного поведения.' },
-    pamphlet: { name: 'Листовка аукциона', kind: 'key', rar: 2, price: 0, text: 'Реклама аукциона подержанных вещей «Дикого огня» в лагере бродяг.' },
+    pamphlet: { name: 'Листовка аукциона', kind: 'key', rar: 2, price: 0, text: 'Реклама аукциона подержанных вещей «Дикого Огня» в Убежище бродяг.' },
     probe: { name: 'Зонд геоядра', kind: 'key', rar: 4, price: 0, text: 'Деталь древнего детектора жил. Редкая вещь: на торгах за неё дают сотни щитов.' }
   };
 
@@ -615,9 +646,9 @@
 
   const SHOPS = {
     express: { name: 'Буфет Пом-Пом', items: ['medkit', 'soup', 'coffee', 'revive', 'exp1', 'fuel:1500'] },
-    belobog: { name: 'Лавка «Надземье»', items: ['medkit', 'soup', 'coffee', 'hotpot', 'thermos', 'exp1', 'exp2', 'cone:arrows:2400', 'cone:amber:2400', 'cone:chorus:2400'] },
-    boulder: { name: 'Барахолка Подземья', items: ['medkit', 'pie', 'revive', 'hotpot', 'sbiten', 'spark', 'exp2', 'cone:collapsing:2400', 'cone:void:2400', 'cone:cornucopia:2400', 'cone:databank:2400'] },
-    procure: { name: 'Внутренние закупки станции', items: ['exp1', 'exp2', 'exp3', 'revive', 'relic:musketeer:head:1600', 'relic:musketeer:hands:1600', 'relic:musketeer:body:2600', 'relic:musketeer:feet:2600'] },
+    belobog: { name: 'Магазин в Административном районе', items: ['medkit', 'soup', 'coffee', 'hotpot', 'thermos', 'exp1', 'exp2', 'cone:arrows:2400', 'cone:amber:2400', 'cone:chorus:2400', 'shadow_pres:8000:4'] },
+    boulder: { name: 'Магазин Подземья', items: ['medkit', 'pie', 'revive', 'hotpot', 'sbiten', 'spark', 'exp2', 'cone:collapsing:2400', 'cone:void:2400', 'cone:cornucopia:2400', 'cone:databank:2400', 'shadow_dest:8000:2'] },
+    procure: { name: 'Внутренние закупки станции', items: ['exp1', 'exp2', 'exp3', 'revive', 'relic:musketeer:head:1600', 'relic:musketeer:hands:1600', 'relic:musketeer:body:2600', 'relic:musketeer:feet:2600', 'shadow_dest:8000:2'] },
     robot: { name: 'Кулинарный гений № 123', items: ['lunch', 'friedrice', 'coffee', 'medkit'] }
   };
 
@@ -643,12 +674,12 @@
       blade: { cone: 'unreachable', title: ['Недоступная', 'сторона'], four: ['cone:underthesky', 'cone:sword_rumor', 'cone:postop'] }
     } },
     sig: { name: 'Выделенный канал', kind: 'Поиск сигнала', pass: 'tape', search: true, extra4: ['march'], stars: {
-      miyabi: { name: 'Охотница каверн', title: ['Охотница', 'каверн'], four: ['danheng', 'arlan', 'sampo'] },
-      yanagi: { name: 'Лунное спокойствие', title: ['Лунное', 'спокойствие'], four: ['danheng', 'arlan', 'sampo'] }
+      miyabi: { name: 'Охотница каверн', title: ['Охотница', 'каверн'], four: ['billy', 'nicole', 'anby'] },
+      yanagi: { name: 'Лунное спокойствие', title: ['Лунное', 'спокойствие'], four: ['billy', 'nicole', 'anby'] }
     } },
     amp: { name: 'Канал амплификаторов', kind: 'Поиск сигнала', pass: 'tape', search: true, stars: {
-      miyabi: { cone: 'shrine', title: ['Храм', 'вьюги'], four: ['cone:swordplay', 'cone:underthesky', 'cone:geniuses'] },
-      yanagi: { cone: 'weaver', title: ['Ткач', 'времени'], four: ['cone:goodnight', 'cone:trend', 'cone:memories'] }
+      miyabi: { cone: 'shrine', title: ['Храм', 'вьюги'], four: ['cone:starlight', 'cone:vault', 'cone:battery'] },
+      yanagi: { cone: 'weaver', title: ['Ткач', 'времени'], four: ['cone:starlight', 'cone:vault', 'cone:battery'] }
     } },
     conv: { name: 'Призыв резонатора', kind: 'Призыв', pass: 'rtide', convene: true, stars: {
       phrolova: { name: 'Нескончаемый реквием', title: ['Нескончаемый', 'реквием'], four: ['serval', 'natasha', 'herta'] },
@@ -679,7 +710,7 @@
     { lvl: 35, give: { items: { pass: 10 }, jade: 800 } }
   ];
 
-  const MAIL_FROM = 'Команда Honkai: Star Rail 98';
+  const MAIL_FROM = H.BRAND.team;
   const MAIL = [
     { id: 'v11_upkeep', from: MAIL_FROM, title: 'Компенсация за обновление до версии 1.1', give: { jade: 300 }, text: [
       'Уважаемый Первопроходец!',
@@ -712,6 +743,20 @@
       'В Звёздный прыжок пришли девять героев 4★: Рысь и Лука из Белобога, а с Лофу Сушан, Сюэи, Тинъюнь, Ханья, Цинцюэ, Юйкун и Гуйнайфэнь. Их можно встретить в стандартном прыжке, в Поиске сигнала и в 4★ тройках прыжков события.',
       'Станцию «Герта» перестроили как в оригинале: пять зон, Офис Герты, 15 Якорей и Космический лифт. Пролог идёт в том же порядке, что в оригинале, Кафка сражается вместе с вами, а на складе диковин ждёт Оценивающий пистолет.',
       'Во вложении 10 звёздных пропусков и 300 звёздного нефрита.'
+    ] },
+    { id: 'v15_supply', from: MAIL_FROM, title: 'Версия 1.5: Снабжение и проводник Пом-Пом', give: { jade: 300, outfit: 'march_spring' }, text: [
+      'Уважаемый Первопроходец!',
+      'В телефоне открылось «Снабжение». Повторные герои и конусы из Звёздного прыжка теперь дают неугасаемый звёздный свет и пепел, а в Магазине на них берут пропуски, конусы 5★ и героев 4★. Лимиты и пара героев обновляются каждый час. В Магазине обликов наряды продают за звёздный нефрит, а надеть их можно в разделе «Наряды» у персонажа.',
+      'Исправили интерфейс. «Управление» переехало на правую панель под настройки. В «Команде» теперь 12 отрядов и их обзор, окно выбора героя прокручивается, а имена помещаются в карточки. Любимых героев можно отметить звёздочкой, и они идут первыми во всех списках.',
+      'Пом-Пома нарисовали заново, и с ним теперь можно поговорить: он рассказывает о пассажирах и выдаёт Награды проводника. Уровень Освоения стал отдельным и растёт до 70, герои растут до 80 уровня. На Экспрессе ждут новые миссии приключений.',
+      'Во вложении наряд «Зарождение весны» для Март 7 и 300 звёздного нефрита.'
+    ] },
+    { id: 'v14_konosuba', from: MAIL_FROM, title: `Событие «${H.BRAND.event}: Обмен отрядами»`, need: 'jarilo_done|ks_early', give: { jade: 300, items: { mana: 3 } }, text: [
+      'Уважаемый Первопроходец!',
+      `Навигация Экспресса поймала сигнал из мира, которого нет на картах. Так начинается событие «${H.BRAND.event}: Обмен отрядами»: королевство Белзерг, город Аксель и сутки с отрядом Сато Казумы вместо своего.`,
+      'Событие открывается после главы Ярило-VI. Если не хотите ждать, откройте ранний доступ во вкладке «События» телефона.',
+      'За финал истории Казума присоединится к экипажу бесплатно.',
+      'Во вложении 3 манатита высшей пробы и 300 звёздного нефрита.'
     ] }
   ];
 
@@ -729,7 +774,7 @@
     arlan: { name: 'Арлан', char: 'arlan' },
     herta: { name: 'Герта', char: 'herta' },
     bronya: { name: 'Броня', char: 'bronya' },
-    cocolia: { name: 'Коколия', look: { skin: '#f8e0d4', hair: '#d8bc78', eye: '#9a6ae0', eye2: '#c8a8f4', bangs: 'parted', sides: 'jaw', back: 'tail', crown: 'smooth', gloss: true, braidSide: 'r', body: 'tallf', coat: 'dress', top: '#dcdce8', trim: '#3a6ad8', inner: '#dcdce8', sleeve: '#3a2a26', neck: '#2a201e', collar: 'high', lower: '#3a2a26', low: 'shorts', legs: '#4a3430', shoes: '#18181e', tailsTo: 'calf', acc: ['braid', 'hairbowback:#1e1a20', 'dropgem:#7a5ae0', 'xcollar:#f2f2f6', 'iceemblem:#5ab0f0', 'icebrooch:#d8b050', 'mantle:#2e6a4e', 'medals', 'glove1:#f2f2f6', 'apronw:#e4e4ee', 'tails:#eeeef4', 'thighboots:#18181e', 'kneeplate:#d8b050', 'shinleaf:#d8b050'] } },
+    cocolia: { name: 'Коколия', look: { mood: 'gentle', skin: '#f8e0d4', hair: '#d8bc78', eye: '#9a6ae0', eye2: '#c8a8f4', bangs: 'parted', sides: 'jaw', back: 'tail', crown: 'smooth', gloss: true, braidSide: 'r', body: 'tallf', coat: 'dress', top: '#dcdce8', trim: '#3a6ad8', inner: '#dcdce8', sleeve: '#3a2a26', neck: '#2a201e', collar: 'high', lower: '#3a2a26', low: 'shorts', legs: '#4a3430', shoes: '#18181e', tailsTo: 'calf', acc: ['braid', 'hairbowback:#1e1a20', 'dropgem:#7a5ae0', 'xcollar:#f2f2f6', 'iceemblem:#5ab0f0', 'icebrooch:#d8b050', 'mantle:#2e6a4e', 'medals', 'glove1:#f2f2f6', 'apronw:#e4e4ee', 'tails:#eeeef4', 'thighboots:#18181e', 'kneeplate:#d8b050', 'shinleaf:#d8b050'] } },
     gepard: { name: 'Гепард', char: 'gepard' },
     serval: { name: 'Сервал', char: 'serval' },
     sampo: { name: 'Сампо', char: 'sampo' },
@@ -744,6 +789,11 @@
     phrolova: { name: 'Фролова', char: 'phrolova' },
     scar: { name: 'Скар', char: 'scar' },
     svarog: { name: 'Сварог', look: { style: 'svarog', hair: '#5a5ca0', top: '#3a3532', trim: '#e6e2e8', eye: '#ff2e8e' } },
+    topaz: { name: 'Топаз', look: { mood: 'smile', skin: '#f6dcd0', hair: '#e4dce0', hairHi: '#f2b4bc', eye: '#4a2a6a', eye2: '#c86ae0', bangs: 'swept', sides: 'jaw', back: 'short', crown: 'smooth', body: 'f', coat: 'dress', top: '#1a181e', trim: '#d0a840', inner: '#c8283a', sleeve: '#1a181e', collar: 'v', lower: '#1a181e', low: 'shorts', legs: '#f6dcd0', shoes: '#1a181e', acc: ['hairclip:#f4f4f8', 'eyeliner:#c8283a', 'headset:#1a181e', 'redpanels:#c8283a', 'garter:#c8283a', 'goldtassel:#d0a840', 'thighboots:#1a181e'] } },
+    numby: { name: 'Счетовод', look: { style: 'trotter', hair: '#f2c040', top: '#e8a830', trim: '#fff0a0', eye: '#141418' } },
+    ipc: { name: 'Сотрудник КММ', look: { skin: '#eccab4', hair: '#1a1a20', eye: '#303040', bangs: 'neat', sides: 'none', back: 'short', crown: 'neat', body: 'm', coat: 'closed', top: '#18181e', trim: '#d0a840', inner: '#f2f2f4', collar: 'high', lower: '#18181e', low: 'pants', shoes: '#101014', acc: ['shades', 'tie:#d0a840', 'headset:#18181e'] } },
+    ipcboss: { name: 'Лидер команды', look: { style: 'beetlebot', hair: '#c8ccd4', top: '#24242e', trim: '#d0a840', eye: '#ff5a3a' } },
+    thea: { name: 'Теа', look: { skin: '#f4d6c6', hair: '#3a2a4a', eye: '#4a3a5a', bangs: 'parted', sides: 'long', back: 'shoulder', crown: 'smooth', body: 'f', coat: 'jacket', top: '#1a1a22', trim: '#d0a840', inner: '#f2f2f4', collar: 'v', lower: '#1a1a22', low: 'skirt', shoes: '#101014', acc: ['glasses', 'lanyard:#d0a840'] } },
     guard: { name: 'Страж', look: { skin: '#f4d8c4', hair: '#3a3020', eye: '#303040', bangs: 'blunt', sides: 'none', back: 'short', crown: 'smooth', body: 'm', coat: 'closed', top: '#3a5aa0', trim: '#e8e8f0', inner: '#e8e8f0', collar: 'high', lower: '#2a3a6a', low: 'pants', shoes: '#1e1e24', acc: ['helmet:#3a5aa0'] } },
     townsman: { name: 'Житель', look: { skin: '#f0d0b8', hair: '#6a4a3a', eye: '#402a1a', bangs: 'neat', sides: 'none', back: 'short', crown: 'neat', body: 'm', coat: 'long', top: '#6a5a4a', trim: '#b0a080', inner: '#d8d0c0', collar: 'v', lower: '#4a4238', low: 'pants', shoes: '#2a2420', acc: ['hat:#4a3a2e'] } },
     townswoman: { name: 'Жительница', look: { skin: '#f6dccb', hair: '#c09060', eye: '#402a1a', bangs: 'parted', sides: 'long', back: 'shoulder', crown: 'smooth', body: 'f', coat: 'long', top: '#7a4a5a', trim: '#e0d0c0', inner: '#e0d0c0', collar: 'fur', lower: '#5a3a44', low: 'long', shoes: '#2a2024', acc: [] } },
@@ -760,7 +810,7 @@
     swetta: { name: 'Света', look: { skin: '#f2d2bc', hair: '#7a4a30', eye: '#3a2a20', bangs: 'parted', sides: 'long', back: 'tail', crown: 'smooth', body: 'f', coat: 'jacket', top: '#5a6a4a', trim: '#c0a070', inner: '#d8ccb0', collar: 'v', lower: '#3a3a30', low: 'pants', shoes: '#2a2420', acc: ['kerchief:#a04030'] } },
     balaway: { name: 'Балавэй Шахтёрская Лампа', look: { skin: '#e8c8a8', hair: '#8a8a88', eye: '#3a3030', bangs: 'neat', sides: 'none', back: 'short', crown: 'neat', body: 'm', coat: 'vest', top: '#4a3a5a', trim: '#d0b060', inner: '#e0d8c8', collar: 'v', lower: '#2e2a30', low: 'pants', shoes: '#1e1a1e', acc: ['minerhat:#e0c040', 'glasses', 'stubble'] } },
     findie: { name: 'Находюша', look: { style: 'terminal', hair: '#ffd040', top: '#5a5a6a', trim: '#ffd040', eye: '#ffd040' } },
-    wildfire: { name: '«Дикий огонь»', look: { skin: '#e8c8a8', hair: '#2a2420', eye: '#302010', bangs: 'neat', sides: 'none', back: 'short', crown: 'neat', body: 'm', coat: 'jacket', top: '#4a3a30', trim: '#e05030', inner: '#8a7a60', collar: 'v', lower: '#3a3428', low: 'pants', shoes: '#2a2420', acc: ['armband:#e05030', 'minerhat:#e05030'] } },
+    wildfire: { name: '«Дикий Огонь»', look: { skin: '#e8c8a8', hair: '#2a2420', eye: '#302010', bangs: 'neat', sides: 'none', back: 'short', crown: 'neat', body: 'm', coat: 'jacket', top: '#4a3a30', trim: '#e05030', inner: '#8a7a60', collar: 'v', lower: '#3a3428', low: 'pants', shoes: '#2a2420', acc: ['armband:#e05030', 'minerhat:#e05030'] } },
     narrator: { name: '' }
   };
 

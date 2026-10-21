@@ -18,6 +18,8 @@ load('js/apps/poligon/clip-vladik.js');
 load('js/apps/poligon/clip-tarakan.js');
 load('js/apps/poligon/clip-neck-hurts.js');
 load('js/apps/poligon/clip-war-song.js');
+load('js/apps/poligon/ccc-cast.js');
+load('js/apps/poligon/clip-ccc.js');
 load('js/apps/poligon-site.js');
 load('js/apps/ie.js');
 
@@ -44,7 +46,8 @@ test('clips are registered once, numbered, with their mp3 soundtracks', () => {
   load('js/apps/poligon/clip-tarakan.js');
   load('js/apps/poligon/clip-neck-hurts.js');
   load('js/apps/poligon/clip-war-song.js');
-  assert.deepStrictEqual(clips.map(c => c.number), [1, 2, 3, 4, 5, 6]);
+  load('js/apps/poligon/clip-ccc.js');
+  assert.deepStrictEqual(clips.map(c => c.number), [1, 2, 3, 4, 5, 6, 7]);
   clips.forEach(c => {
     const mp3 = path.join(__dirname, '..', c.audio);
     assert.ok(fs.existsSync(mp3), mp3);
@@ -55,6 +58,74 @@ test('clips are registered once, numbered, with their mp3 soundtracks', () => {
   assert.ok(Math.abs(clips[3].duration - 257.6) < 0.5);
   assert.ok(Math.abs(clips[4].duration - 185.78) < 0.5);
   assert.ok(Math.abs(clips[5].duration - 164.0) < 0.05);
+  assert.ok(Math.abs(clips[6].duration - 180.77) < 0.05);
+});
+
+test('Cosplay Convention Crisis cuts on the 130 BPM grid and follows the song sections', () => {
+  const c = clips.find(x => x.id === 'cosplay-convention-crisis');
+  assert.strictEqual(c.bpm, 130);
+  assert.strictEqual(c.shots.length, 75);
+  const camLoc = {};
+  c.shots.forEach(s => { assert.ok(!camLoc[s.cam] || camLoc[s.cam] === s.loc, `camera ${s.cam} used in two places`); camLoc[s.cam] = s.loc; });
+  c.shots.slice(1).forEach(s => {
+    const n = Math.round(((s.start - 0.026) * 130) / 60);
+    assert.ok(Math.abs(s.start - (0.026 + (n * 60) / 130)) < 0.002, `shot ${s.index} on a beat`);
+  });
+  const at = (t) => c.shotAt(t);
+  assert.strictEqual(at(16).loc, 'bus');
+  assert.strictEqual(at(46).cam, 'amandaSheet');
+  assert.strictEqual(at(69).cam, 'redflash');
+  assert.strictEqual(at(80).cam, 'moths');
+  assert.strictEqual(at(97).scene, 'disco');
+  assert.strictEqual(at(120).cam, 'tube');
+  assert.strictEqual(at(134).cam, 'corners');
+  assert.strictEqual(at(150).loc, 'stage');
+  assert.strictEqual(at(170).cam, 'one');
+  assert.strictEqual(at(176).cam, 'coda');
+  const ids = (t) => c.stage(t).cast.filter(a => !a.hidden).map(a => a.id);
+  ['amanda', 'makoto', 'talleah'].forEach(id => assert.ok(ids(57).includes(id), id));
+  assert.ok(ids(70).includes('makoto') && ids(70).includes('talleah'));
+  assert.strictEqual(c.stage(82).cast.find(a => a.id === 'amanda').form, 'amandaPink');
+  assert.strictEqual(c.stage(119.5).cast.find(a => a.id === 'talleah').pose.ground, false);
+  const lit = (t) => c.stage(t).cast.filter(a => !a.sil).map(a => a.id);
+  assert.strictEqual(lit(6.0).length, 1);
+  assert.strictEqual(lit(166).length, 0);
+  assert.ok(c.stage(166).cast.every(a => a.glow));
+  assert.strictEqual(lit(172.8).length, 3);
+  assert.ok(c.stage(172.8).fx.polaroid > 0.9);
+  const hallAt = (t) => c.stage(t);
+  assert.strictEqual(hallAt(69.7).cast.find(a => a.id === 'g1').pose.ground, false);
+  assert.ok(hallAt(69.25).bolts.some(b => b.from === 'makoto' && b.to === 'g1'));
+  assert.strictEqual(hallAt(68.5).cast.find(a => a.id === 'makoto').form, 'makotoSchool');
+  assert.strictEqual(hallAt(69.0).cast.find(a => a.id === 'makoto').form, 'makotoCat');
+  assert.strictEqual(hallAt(126.5).cast.find(a => a.id === 'talleah').form, 'talleahKnight');
+  assert.strictEqual(hallAt(127.4).cast.find(a => a.id === 'talleah').form, 'talleahWitch');
+  assert.strictEqual(hallAt(129.0).cast.find(a => a.id === 'talleah').form, 'talleahRanger');
+  assert.ok(hallAt(125.3).sideDoor > 1);
+  assert.ok(hallAt(80.9).moths.cocoon > 0.8);
+  assert.strictEqual(hallAt(103.2).hall.mood, 'dark');
+  assert.ok(c.stage(75).camera.grade && c.stage(75).camera.fx.grain > 0);
+  assert.strictEqual(c.stage(93.2).treasure.at, 'pedestal');
+  assert.strictEqual(c.stage(93.9).treasure.at, 'makoto');
+  assert.ok(c.stage(95.2).portal.k > 0.5);
+  assert.ok(c.stage(95.9).cast.find(a => a.id === 'makoto').hidden);
+  assert.ok(c.stage(97).cast.filter(a => a.base).length >= 12);
+  assert.ok(c.stage(118.1).iris > 0.5);
+  assert.strictEqual(c.stage(119).tubeState.liquid, 1);
+  assert.strictEqual(c.stage(119).cast.find(a => a.id === 'talleah').pose.face, 'sleep');
+  assert.ok(c.stage(123.4).fx.squeeze > 0.5);
+  assert.ok(c.stage(116).cast.filter(a => a.form === 'gynoid').length >= 15);
+  assert.strictEqual(c.stage(152.2).bolts.length, 3);
+  assert.ok(c.stage(154).fireworks.length >= 3);
+  assert.ok(c.stage(157).cast.filter(a => ['amanda', 'makoto', 'talleah'].includes(a.id)).every(a => a.pose.z > -5));
+  assert.ok(c.mouthFor('trio', 157) > 0);
+  assert.strictEqual(c.mouthFor('trio', 30), 0);
+  assert.strictEqual(c.mouthFor('trio', 170), 0);
+  assert.ok(c.voiceAt(1) === 0 && c.voiceAt(30) > 0.3);
+  const src = ['clip-ccc.js', 'ccc-cast.js'].map(f => fs.readFileSync(path.join(__dirname, '../js/apps/poligon', f), 'utf8')).join(' ');
+  assert.ok(!/steal your heart|tear you apart|space girl|sweet surprises|convention center|childhood friend|temptress|laid eyes/i.test(src));
+  assert.ok(!/green lantern|starfire|lum|samus|magneto|captain america|phoenix|teen titans|deadpool|harley|thanos|daft punk|bowser/i.test(src));
+  assert.ok(!/microsoft|windows|fuck|shit/i.test(src));
 });
 
 test('War Song follows the cut list of the episode and ends with the Sam and Max lines', () => {
@@ -397,7 +468,7 @@ test('player volume slider sets the clip volume, mutes and remembers the level',
 });
 
 test('no comments in the new sources', () => {
-  ['js/apps/poligon/p3d.js', 'js/apps/poligon/figure.js', 'js/apps/poligon/clip-never-gonna.js', 'js/apps/poligon/clip-paranoia.js', 'js/apps/poligon/clip-vladik.js', 'js/apps/poligon/clip-tarakan.js', 'js/apps/poligon/clip-neck-hurts.js', 'js/apps/poligon/clip-war-song.js', 'js/apps/poligon-site.js', 'css/apps/poligon-site.css'].forEach(rel => {
+  ['js/apps/poligon/p3d.js', 'js/apps/poligon/figure.js', 'js/apps/poligon/clip-never-gonna.js', 'js/apps/poligon/clip-paranoia.js', 'js/apps/poligon/clip-vladik.js', 'js/apps/poligon/clip-tarakan.js', 'js/apps/poligon/clip-neck-hurts.js', 'js/apps/poligon/clip-war-song.js', 'js/apps/poligon/ccc-cast.js', 'js/apps/poligon/clip-ccc.js', 'js/apps/poligon-site.js', 'css/apps/poligon-site.css'].forEach(rel => {
     const src = fs.readFileSync(path.join(__dirname, '..', rel), 'utf8');
     assert.ok(!/\/\*[\s\S]*?\*\//.test(src), `${rel} has a block comment`);
     assert.ok(!/(^|[^:'"])\/\/\s/m.test(src), `${rel} has a line comment`);

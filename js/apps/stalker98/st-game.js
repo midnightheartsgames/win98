@@ -263,7 +263,7 @@
       const strip = a => { const o = Object.assign({}, a); delete o.ai; delete o.anim; delete o.pathPts; return o; };
       return {
         actors: this.actors.map(strip), items: this.items.map(i => Object.assign({}, i)), stashes: this.stashes.map(s => Object.assign({}, s, { items: s.items.slice() })),
-        anomalies: this.anomalies.map(a => ({ type: a.type, x: a.x, z: a.z, y: a.y, r: a.r })), leftAt: this.time
+        anomalies: this.anomalies.map(a => ({ type: a.type, x: a.x, z: a.z, y: a.y, r: a.r, spawned: a.spawned })), leftAt: this.time
       };
     }
     restoreLevel(snap) {
@@ -288,6 +288,58 @@
     groupAlive(name) { return this.group(name).filter(a => !a.dead && !a.hidden); }
     groupDead(name) { const g = this.group(name); return g.length > 0 && g.every(a => a.dead); }
     spawnGroup(name) { for (const a of this.group(name)) if (a.hidden) { a.hidden = false; a.ai.alertT = 0; } }
+
+    spawnSpot(dist, i = 0, gap = 1.6) {
+      const p = this.player, W = this.W, fx = Math.sin(p.yaw), fz = Math.cos(p.yaw);
+      const side = i ? ((i % 2) * 2 - 1) * Math.ceil(i / 2) * gap : 0;
+      for (let d = dist; d >= 1.5; d -= 1) {
+        const k = W.nearestOK(p.x + fx * d - fz * side, p.z + fz * d + fx * side, 2); if (k < 0) continue;
+        const x = W.bx0 + (k % W.nw) + 0.5, z = W.bz0 + Math.floor(k / W.nw) + 0.5, y = W.navH[k];
+        if (W.los(p.x, this.eye, p.z, x, y + 0.9, z)) return { x, y, z };
+      }
+      return { x: p.x + fx * 1.5, y: p.y, z: p.z + fz * 1.5 };
+    }
+    spawnItems(id, n = 1) {
+      const d = IT[id], out = [];
+      if (!d || d.kind === 'quest' || id === 'bolt') return out;
+      for (let i = 0; i < n; i++) {
+        const it = this.addItem(d.kind === 'weapon' ? { id, cond: 1, mag: d.mag || 0 } : d.kind === 'suit' ? { id, cond: 1 } : { id });
+        if (it) out.push(it);
+      }
+      if (out.length) this.emit({ t: 'pickup', id, name: this.L(d.name) + (out.length > 1 ? ` ×${out.length}` : '') });
+      return out;
+    }
+    spawnHuman(tpl, o = {}) {
+      if (!D.HUMANS[tpl]) return null;
+      const s = this.spawnSpot(o.dist || 7, o.i || 0), p = this.player;
+      const a = S.makeHuman(this, { tpl, x: s.x, y: s.y, z: s.z, yaw: Math.atan2(p.x - s.x, p.z - s.z), beh: 'wander', leash: 8, weapon: o.weapon || null }, -1);
+      if (o.attitude) a.attitude = o.attitude;
+      a.spawned = true; this.actors.push(a);
+      return a;
+    }
+    spawnMutant(type, o = {}) {
+      if (!D.MUTANTS[type]) return null;
+      const s = this.spawnSpot(o.dist || 10, o.i || 0), p = this.player;
+      const a = S.makeMutant(this, { type, x: s.x, z: s.z, yaw: Math.atan2(p.x - s.x, p.z - s.z), home: 20 }, -1);
+      a.y = s.y; a.spawned = true; this.actors.push(a);
+      return a;
+    }
+    spawnAnomaly(type, o = {}) {
+      const A = D.ANOMALIES[type]; if (!A) return null;
+      const s = this.spawnSpot(o.dist || Math.ceil(A.r + 4), o.i || 0, A.r * 2 + 1);
+      const an = { type, x: s.x, z: s.z, y: s.y, r: A.r, t: 0, state: 'idle', cd: 0, seed: Math.random() * 100, spawned: true };
+      this.anomalies.push(an); this.W.markCost(an.x, an.z, an.r + 1.2, 12);
+      return an;
+    }
+    clearSpawned() {
+      const gone = this.actors.filter(a => a.spawned), n = gone.length + this.anomalies.filter(a => a.spawned).length;
+      for (const a of gone) a.hidden = true;
+      this.actors = this.actors.filter(a => !a.spawned); this.anomalies = this.anomalies.filter(a => !a.spawned);
+      this.W.navCost.fill(0); for (const a of this.anomalies) this.W.markCost(a.x, a.z, a.r + 1.2, 12);
+      return n;
+    }
+    healPlayer() { Object.assign(this.player, { hp: 100, stamina: 100, bleed: 0, rad: 0, food: 1, drunk: 0, exhausted: false }); }
+    repairGear() { for (const it of this.inv) if (it.cond != null) it.cond = 1; }
 
     // ================================================================ main tick
     tick(inp = {}) {
@@ -367,6 +419,7 @@
       p.hp = Math.min(100, p.hp + DT * ((p.food > 0.5 ? 0.02 : 0) + this.artEff('hp')));
       p.drunk = Math.max(0, p.drunk - DT);
       p.hurtT = Math.max(0, p.hurtT - DT);
+      if (this.god) { p.hp = 100; p.rad = 0; p.bleed = 0; }
       if (p.hp <= 0) { this.killPlayer(); return; }
       // weapons & interaction
       this.updateWeapon(inp);

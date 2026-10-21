@@ -1465,7 +1465,7 @@
   const clip = {
     id: 'vladik-v-depressii',
     number: 3,
-    hidden: true,
+    hidden: false,
     artist: 'Владик в депрессии',
     title: 'Paranoia FunCover',
     originalYear: 2025,

@@ -505,6 +505,7 @@
           else {
             ui.rewardCell(c, 'jade', res.jade, 338, 126, 50);
             ui.rewardCell(c, 'credits', res.credits, 394, 126, 50);
+            if (res.tracks) ui.rewardCell(c, 'tracks', res.tracks, 450, 126, 50);
             res.sets.forEach((st, i) => H.PLANAR_SLOTS.forEach((sl, j) => {
               const x = 338 + (i * 2 + j) * 56, y = 192;
               G.rarityCell(c, x, y, 50, 50, 4); G.itemIcon(c, 'relic:' + sl.key, x + 4, y + 4, 42, st.set);

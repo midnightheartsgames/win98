@@ -1271,13 +1271,8 @@
     resultTag(c, r, a) {
       if (a <= 0) return;
       const ui = this.ui;
-      const lines = r.kind === 'char'
-        ? (r.res === 'new' ? [['Новый персонаж!', C.ok], ['присоединился к экипажу', C.cream]] : r.res === 'eid' ? [['Дубликат', C.sub], ['Эйдолон +1', C.gold]] : [['Дубликат', C.sub], ['+3 000 кредитов', C.gold]])
-        : r.sup > 1 ? [['Дубликат', C.sub], ['Наложение S' + r.sup, C.gold]] : [['Световой конус', C.sub], ['добавлен в инвентарь', C.cream]];
-      const x = W - 196, y = HGT - 108;
       c.save(); c.globalAlpha = cl(a);
-      ui.win(x, y, 182, 50, { alpha: 0.9 });
-      lines.forEach(([s, col], i) => ui.text(s, x + 14, y + 10 + i * 16, { size: i ? 11 : 12, bold: !i, col }));
+      ui.resultTag(W - 196, HGT - 108, r, [['Новый персонаж!', C.ok], ['присоединился к экипажу', C.cream]]);
       c.restore();
     }
 

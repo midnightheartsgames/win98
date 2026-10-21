@@ -1,0 +1,1347 @@
+.vlv-page {
+    min-height: 100%;
+    padding: 12px 0 24px;
+    box-sizing: border-box;
+    background: #2e2e2e url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect width='48' height='48' fill='%232e2e2e'/%3E%3Crect x='0' y='0' width='48' height='1' fill='%23262626'/%3E%3Crect x='0' y='0' width='1' height='48' fill='%23262626'/%3E%3Crect x='1' y='1' width='47' height='1' fill='%23393939'/%3E%3Crect x='4' y='4' width='3' height='3' fill='%23474747'/%3E%3Crect x='5' y='5' width='2' height='2' fill='%231e1e1e'/%3E%3Crect x='41' y='41' width='3' height='3' fill='%23474747'/%3E%3Crect x='42' y='42' width='2' height='2' fill='%231e1e1e'/%3E%3C/svg%3E");
+    font-family: Verdana, Tahoma, Arial, sans-serif;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #000000;
+}
+
+.vlv-page * {
+    box-sizing: border-box;
+}
+
+.vlv-page a {
+    color: #993300;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.vlv-page a:hover {
+    color: #cc3300;
+}
+
+.vlv-page a:focus,
+.vlv-page button:focus,
+.vlv-page input:focus,
+.vlv-page select:focus,
+.vlv-page textarea:focus {
+    outline: 1px dotted #000000;
+    outline-offset: 1px;
+}
+
+.vlv-page p {
+    margin: 0 0 8px;
+}
+
+.vlv-page code {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 11px;
+}
+
+.vlv-frame {
+    width: 760px;
+    max-width: 100%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background: #ffffff;
+    border: 2px solid #111111;
+}
+
+.vlv-mast {
+    padding: 0;
+    background: #3a3a3a;
+    border-bottom: 2px solid #111111;
+}
+
+.vlv-mast-row {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.vlv-mast-art {
+    width: 600px;
+    padding: 0;
+    vertical-align: top;
+}
+
+.vlv-mast-art a,
+.vlv-mast-gauge a {
+    display: block;
+    line-height: 0;
+    text-decoration: none;
+}
+
+.vlv-mast-svg {
+    display: block;
+}
+
+.vlv-mast-gauge {
+    padding: 6px 8px 4px;
+    text-align: center;
+    vertical-align: top;
+    background: #3a3a3a;
+    border-left: 1px solid #2a2a2a;
+}
+
+.vlv-mast-gauge svg {
+    display: block;
+    margin: 0 auto;
+}
+
+.vlv-gauge-cap {
+    margin-top: 2px;
+    color: #bbbbaa;
+    font-size: 9px;
+    line-height: 1.25;
+}
+
+.vlv-gauge-cap b {
+    color: #ffcc66;
+    font-size: 11px;
+}
+
+.vlv-navrow {
+    padding: 0;
+    background: #55554a;
+    border-bottom: 2px solid #111111;
+}
+
+.vlv-nav-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.vlv-plates {
+    padding: 6px 6px 7px;
+    white-space: nowrap;
+}
+
+.vlv-page a.vlv-plate {
+    position: relative;
+    display: inline-block;
+    margin-right: 4px;
+    padding: 3px 12px 3px;
+    background: #cc9933;
+    border-top: 2px solid #ffcc66;
+    border-left: 2px solid #ffcc66;
+    border-right: 2px solid #664411;
+    border-bottom: 2px solid #664411;
+    color: #331100;
+    font-weight: bold;
+    font-size: 11px;
+    text-decoration: none;
+}
+
+.vlv-page a.vlv-plate::before,
+.vlv-page a.vlv-plate::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 3px;
+    height: 3px;
+    margin-top: -1px;
+    background: #664411;
+}
+
+.vlv-page a.vlv-plate::before {
+    left: 3px;
+}
+
+.vlv-page a.vlv-plate::after {
+    right: 3px;
+}
+
+.vlv-page a.vlv-plate:hover {
+    background: #ddaa44;
+    color: #000000;
+}
+
+.vlv-page a.vlv-plate.is-on {
+    background: #996622;
+    border-top-color: #664411;
+    border-left-color: #664411;
+    border-right-color: #ffcc66;
+    border-bottom-color: #ffcc66;
+    color: #ffffcc;
+}
+
+.vlv-searchcell {
+    padding: 4px 8px 4px 0;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.vlv-search {
+    margin: 0;
+}
+
+.vlv-search input[type="text"] {
+    width: 110px;
+    padding: 1px 3px;
+    border: 2px inset #cccccc;
+    font-family: Verdana, Tahoma, Arial, sans-serif;
+    font-size: 11px;
+}
+
+.vlv-btn {
+    padding: 1px 8px;
+    background: #d4d0c8;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #404040;
+    border-bottom: 2px solid #404040;
+    color: #000000;
+    font-family: Verdana, Tahoma, Arial, sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.vlv-btn:active,
+.vlv-btn.is-on {
+    border-top-color: #404040;
+    border-left-color: #404040;
+    border-right-color: #ffffff;
+    border-bottom-color: #ffffff;
+}
+
+.vlv-btn[disabled] {
+    color: #808080;
+    cursor: default;
+}
+
+.vlv-btn-go {
+    background: #cc3300;
+    border-top-color: #ff6633;
+    border-left-color: #ff6633;
+    border-right-color: #661900;
+    border-bottom-color: #661900;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.vlv-btn-go[disabled] {
+    background: #997766;
+    color: #eeddcc;
+}
+
+.vlv-body {
+    padding: 0;
+    vertical-align: top;
+    background: #ffffff;
+}
+
+.vlv-pad {
+    padding: 12px 16px 16px;
+}
+
+.vlv-notice {
+    margin: 8px 16px 0;
+    padding: 4px 8px;
+    background: #ffffcc;
+    border: 1px solid #996600;
+}
+
+.vlv-h1 {
+    margin: 0 0 8px;
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1.15;
+    color: #000000;
+}
+
+.vlv-h2 {
+    margin: 16px 0 6px;
+    padding: 2px 0 2px 8px;
+    border-left: 6px solid #cc3300;
+    border-bottom: 1px solid #999999;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: #000000;
+}
+
+.vlv-pad > p,
+.vlv-pad > .vlv-list {
+    max-width: 600px;
+}
+
+.vlv-intro {
+    max-width: 640px;
+    font-size: 12px;
+}
+
+.vlv-small {
+    color: #555555;
+    font-size: 10px;
+}
+
+.vlv-list {
+    margin: 4px 0 8px;
+    padding-left: 18px;
+    list-style: square;
+}
+
+.vlv-list li {
+    margin-bottom: 4px;
+}
+
+.vlv-home {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.vlv-rail {
+    width: 170px;
+    padding: 10px 8px;
+    vertical-align: top;
+    background: #4c5844;
+    color: #e6ecde;
+    border-right: 2px solid #1f2419;
+}
+
+.vlv-page .vlv-rail a {
+    color: #ffffcc;
+}
+
+.vlv-rail-box {
+    margin-bottom: 14px;
+}
+
+.vlv-rail-h {
+    margin-bottom: 5px;
+    padding: 1px 4px;
+    background: #2b3326;
+    border-bottom: 1px solid #8c9880;
+    color: #ffcc66;
+    font-weight: bold;
+}
+
+.vlv-rail-prod {
+    margin-bottom: 6px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.vlv-ico16 {
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 16px;
+    height: 16px;
+    line-height: 0;
+}
+
+.vlv-ico16 svg {
+    width: 16px;
+    height: 16px;
+}
+
+.vlv-rail-st {
+    color: #a0aa90;
+    font-size: 10px;
+}
+
+.vlv-rail-st.vlv-st-installed {
+    color: #99ff99;
+}
+
+.vlv-rail-text {
+    margin-bottom: 4px;
+    font-size: 10px;
+}
+
+.vlv-poll-q {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.vlv-poll-opt {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.vlv-poll-opt input {
+    margin: 0 3px 0 0;
+    vertical-align: -2px;
+}
+
+.vlv-rail .vlv-btn {
+    margin-top: 4px;
+}
+
+.vlv-poll-res {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+}
+
+.vlv-poll-res td {
+    padding: 0;
+}
+
+.vlv-poll-label {
+    padding-top: 3px;
+}
+
+.vlv-poll-bar {
+    display: inline-block;
+    height: 8px;
+    max-width: 100px;
+    background: #ffcc66;
+    border-right: 1px solid #664411;
+    vertical-align: 0;
+}
+
+.vlv-poll-foot {
+    margin-top: 5px;
+    font-size: 10px;
+}
+
+.vlv-main {
+    padding: 12px 16px 16px;
+    vertical-align: top;
+}
+
+.vlv-feature {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #000000;
+    background: #1a1a1a;
+    color: #dddddd;
+}
+
+.vlv-feature-shot {
+    width: 264px;
+    padding: 4px;
+    vertical-align: top;
+}
+
+.vlv-feature-shot img {
+    display: block;
+    border: 1px solid #555555;
+}
+
+.vlv-feature-text {
+    padding: 8px 10px 10px 6px;
+    vertical-align: top;
+}
+
+.vlv-page .vlv-feature-text a {
+    color: #ff9933;
+}
+
+.vlv-feature-kicker {
+    color: #ff9933;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.vlv-feature-title {
+    margin: 2px 0 6px;
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 19px;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #ffffff;
+}
+
+.vlv-feature-st {
+    margin-bottom: 6px;
+    color: #bbbbbb;
+    font-size: 10px;
+}
+
+.vlv-log {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.vlv-log td {
+    padding: 6px 0;
+    vertical-align: top;
+    border-bottom: 1px dotted #999999;
+}
+
+.vlv-log-date {
+    width: 76px;
+    padding-right: 8px;
+    color: #cc3300;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.vlv-log-title {
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.vlv-log-text {
+    margin-top: 2px;
+}
+
+.vlv-log-more {
+    margin-top: 2px;
+}
+
+.vlv-log-cat {
+    margin-top: 2px;
+    color: #777777;
+    font-size: 10px;
+}
+
+.vlv-more {
+    margin-top: 8px;
+    text-align: right;
+}
+
+.vlv-ledger {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 2px solid #000000;
+}
+
+.vlv-ledger > tbody > tr > td {
+    padding: 8px 6px;
+    vertical-align: top;
+    border-bottom: 2px solid #000000;
+}
+
+.vlv-ledger-thumb {
+    width: 172px;
+}
+
+.vlv-ledger-thumb img {
+    display: block;
+    border: 1px solid #000000;
+}
+
+.vlv-thumb-steam,
+.vlv-steam-shot {
+    display: block;
+    background: #4c5844;
+    border: 1px solid #1f2419;
+    color: #e6ecde;
+    text-align: center;
+    font-family: "Arial Black", Arial, sans-serif;
+}
+
+.vlv-thumb-steam {
+    width: 160px;
+    height: 120px;
+    padding-top: 28px;
+}
+
+.vlv-thumb-steam svg {
+    display: block;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 4px;
+}
+
+.vlv-ledger-title {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.vlv-ledger-kind {
+    margin-bottom: 4px;
+    color: #555555;
+    font-size: 10px;
+}
+
+.vlv-facts-mini {
+    border-collapse: collapse;
+    font-size: 10px;
+}
+
+.vlv-facts-mini td {
+    padding: 0 8px 0 0;
+}
+
+.vlv-facts-mini td:first-child {
+    color: #555555;
+}
+
+.vlv-ledger-buy {
+    width: 150px;
+    text-align: center;
+    background: #eeeeee;
+    border-left: 1px solid #999999;
+}
+
+.vlv-ledger-price {
+    margin-bottom: 2px;
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 16px;
+}
+
+.vlv-ledger-st,
+.vlv-buy-st {
+    margin-bottom: 6px;
+    font-size: 10px;
+    color: #555555;
+    word-wrap: break-word;
+}
+
+.vlv-st-installed {
+    color: #006600;
+    font-weight: bold;
+}
+
+.vlv-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+}
+
+.vlv-matrix th,
+.vlv-matrix td {
+    padding: 3px 5px;
+    border: 1px solid #999999;
+    vertical-align: top;
+    text-align: left;
+}
+
+.vlv-matrix tr:first-child th {
+    background: #333333;
+    color: #ffffff;
+}
+
+.vlv-page .vlv-matrix tr:first-child th a {
+    color: #ffcc66;
+}
+
+.vlv-matrix th {
+    background: #dddddd;
+    width: 96px;
+}
+
+.vlv-switch {
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #cccccc;
+    font-size: 10px;
+}
+
+.vlv-prod-head {
+    border-collapse: collapse;
+    margin-bottom: 8px;
+}
+
+.vlv-prod-head td {
+    padding: 0;
+    vertical-align: middle;
+}
+
+.vlv-prod-head .vlv-h1 {
+    margin: 0;
+}
+
+.vlv-ico32 {
+    width: 40px;
+    line-height: 0;
+}
+
+.vlv-ico32 svg {
+    width: 32px;
+    height: 32px;
+}
+
+.vlv-prod-kind {
+    color: #555555;
+}
+
+.vlv-prod {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.vlv-prod-visual {
+    width: 336px;
+    padding: 0 12px 0 0;
+    vertical-align: top;
+}
+
+.vlv-shot {
+    padding: 4px;
+    background: #1a1a1a;
+    border: 1px solid #000000;
+}
+
+.vlv-shot img {
+    display: block;
+    border: 1px solid #555555;
+}
+
+.vlv-shot-cap {
+    padding: 4px 2px;
+    color: #dddddd;
+    font-size: 10px;
+}
+
+.vlv-shot-btns {
+    padding: 0 2px 2px;
+}
+
+.vlv-steam-shot {
+    width: 324px;
+    height: 200px;
+    padding: 40px 30px 0;
+    font-size: 22px;
+}
+
+.vlv-steam-shot svg {
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 6px;
+}
+
+.vlv-steam-shot span {
+    display: block;
+    margin-top: 6px;
+    font-family: Verdana, Tahoma, Arial, sans-serif;
+    font-size: 10px;
+    font-weight: normal;
+    color: #c8d0bc;
+}
+
+.vlv-prod-side {
+    vertical-align: top;
+}
+
+.vlv-buybox {
+    margin-bottom: 8px;
+    padding: 8px;
+    text-align: center;
+    background: #ffffcc;
+    border: 2px solid #cc9933;
+}
+
+.vlv-buy-price {
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 18px;
+}
+
+.vlv-buy-alt,
+.vlv-buy-note {
+    margin-top: 5px;
+    font-size: 10px;
+}
+
+.vlv-buy-note {
+    color: #555555;
+}
+
+.vlv-facts {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+}
+
+.vlv-facts th,
+.vlv-facts td {
+    padding: 3px 5px;
+    border-bottom: 1px solid #cccccc;
+    text-align: left;
+    vertical-align: top;
+}
+
+.vlv-facts th {
+    width: 80px;
+    color: #555555;
+    font-weight: normal;
+}
+
+.vlv-facts-wide th {
+    width: 130px;
+}
+
+.vlv-facts-wide {
+    font-size: 11px;
+}
+
+.vlv-data {
+    width: 100%;
+    margin-bottom: 8px;
+    border-collapse: collapse;
+    border: 1px solid #666666;
+}
+
+.vlv-data th,
+.vlv-data td {
+    padding: 3px 6px;
+    border: 1px solid #aaaaaa;
+    text-align: left;
+    vertical-align: top;
+}
+
+.vlv-data:not(.vlv-data-side) tr:first-child th {
+    background: #555544;
+    color: #ffffff;
+}
+
+.vlv-data th {
+    background: #e4e4dc;
+    width: auto;
+}
+
+.vlv-data-side th {
+    width: 110px;
+    background: #55554a;
+    color: #ffffff;
+}
+
+.vlv-data tr:nth-child(odd) td {
+    background: #f4f4f0;
+}
+
+.vlv-data-name {
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.vlv-keys {
+    border-collapse: collapse;
+    margin-bottom: 8px;
+}
+
+.vlv-keys td {
+    padding: 3px 8px 3px 0;
+    vertical-align: middle;
+}
+
+.vlv-keys-k {
+    white-space: nowrap;
+}
+
+.vlv-page kbd {
+    display: inline-block;
+    min-width: 18px;
+    margin: 1px 0;
+    padding: 1px 4px;
+    background: #eeeeee;
+    border-top: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-right: 2px solid #777777;
+    border-bottom: 3px solid #777777;
+    outline: 1px solid #333333;
+    font-family: Verdana, Tahoma, Arial, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.vlv-steps {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 4px;
+}
+
+.vlv-steps td {
+    padding: 5px 8px;
+    border: 1px solid #aaaaaa;
+    vertical-align: top;
+}
+
+.vlv-step-n {
+    width: 34px;
+    text-align: center;
+    background: #4c5844;
+    color: #ffffff;
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 16px;
+}
+
+.vlv-steps tr.is-now td {
+    background: #ffffcc;
+}
+
+.vlv-steps tr.is-now .vlv-step-n {
+    background: #cc3300;
+}
+
+.vlv-steps tr.is-done td {
+    color: #666666;
+}
+
+.vlv-done {
+    color: #006600;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.vlv-filters {
+    margin: 0 0 10px;
+    padding: 4px 6px;
+    background: #eeeeee;
+    border: 1px solid #cccccc;
+}
+
+.vlv-month {
+    margin: 14px 0 4px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    color: #cc3300;
+}
+
+.vlv-archive {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.vlv-archive td {
+    padding: 5px 6px 5px 0;
+    border-bottom: 1px dotted #999999;
+    vertical-align: top;
+}
+
+.vlv-arch-date {
+    width: 76px;
+    font-family: "Courier New", Courier, monospace;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.vlv-arch-cat {
+    width: 96px;
+    color: #555555;
+    font-size: 10px;
+}
+
+.vlv-arch-text {
+    margin-top: 2px;
+}
+
+.vlv-tag {
+    color: #cc3300;
+    font-size: 10px;
+}
+
+.vlv-crumbs {
+    margin-bottom: 8px;
+    font-size: 10px;
+}
+
+.vlv-print {
+    width: 100%;
+    max-width: 640px;
+    border-collapse: collapse;
+    border-top: 1px solid #999999;
+    border-bottom: 1px solid #999999;
+}
+
+.vlv-sprocket {
+    width: 26px;
+    padding: 0;
+    background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='24'%3E%3Crect width='26' height='24' fill='%23ffffff'/%3E%3Ccircle cx='13' cy='12' r='5' fill='%233a3a3a'/%3E%3Crect x='25' y='0' width='1' height='2' fill='%23999999'/%3E%3Crect x='25' y='6' width='1' height='2' fill='%23999999'/%3E%3Crect x='25' y='12' width='1' height='2' fill='%23999999'/%3E%3Crect x='25' y='18' width='1' height='2' fill='%23999999'/%3E%3C/svg%3E") repeat-y;
+}
+
+.vlv-sprocket + .vlv-paper + .vlv-sprocket {
+    background-position: right top;
+}
+
+.vlv-paper {
+    padding: 16px 18px 18px;
+    vertical-align: top;
+    background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='64'%3E%3Crect width='8' height='32' fill='%23ffffff'/%3E%3Crect y='32' width='8' height='32' fill='%23e3f0dc'/%3E%3C/svg%3E") repeat;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    line-height: 16px;
+    color: #111111;
+}
+
+.vlv-paper p {
+    margin: 0 0 16px;
+}
+
+.vlv-paper-head {
+    margin-bottom: 16px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed #333333;
+    font-weight: bold;
+}
+
+.vlv-paper-row {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+}
+
+.vlv-paper-row td {
+    padding: 0;
+}
+
+.vlv-r {
+    text-align: right;
+}
+
+.vlv-paper-title {
+    margin: 0 0 8px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 20px;
+    text-transform: uppercase;
+}
+
+.vlv-paper-by {
+    margin-bottom: 16px;
+    color: #444444;
+}
+
+.vlv-paper-end {
+    text-align: center;
+    font-weight: bold;
+}
+
+.vlv-paper-contact {
+    margin-top: 8px;
+    font-size: 11px;
+}
+
+.vlv-print-tools {
+    margin: 8px 0 4px;
+}
+
+.vlv-print-tools a {
+    margin-left: 10px;
+}
+
+.vlv-guest {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+}
+
+.vlv-guest td {
+    padding: 5px 6px;
+    border: 1px solid #cccccc;
+    vertical-align: top;
+}
+
+.vlv-guest-who {
+    width: 130px;
+    background: #eeeeee;
+    font-size: 10px;
+}
+
+.vlv-form {
+    margin: 6px 0 10px;
+    padding: 6px;
+    background: #eeeeee;
+    border: 1px solid #999999;
+}
+
+.vlv-form-t {
+    border-collapse: collapse;
+}
+
+.vlv-form-t td {
+    padding: 2px 6px 2px 0;
+    vertical-align: top;
+}
+
+.vlv-form input[type="text"],
+.vlv-form textarea,
+.vlv-form select,
+.vlv-console select {
+    border: 2px inset #cccccc;
+    font-family: Verdana, Tahoma, Arial, sans-serif;
+    font-size: 11px;
+}
+
+.vlv-form textarea {
+    width: 100%;
+    max-width: 440px;
+}
+
+.vlv-console {
+    width: 100%;
+    margin-bottom: 8px;
+    border-collapse: collapse;
+    background: #55554a;
+    border-top: 2px solid #8a8a7a;
+    border-left: 2px solid #8a8a7a;
+    border-right: 2px solid #222222;
+    border-bottom: 2px solid #222222;
+}
+
+.vlv-console-ctl {
+    width: 200px;
+    padding: 10px;
+    vertical-align: top;
+    color: #ffcc66;
+    font-weight: bold;
+}
+
+.vlv-console-ctl label {
+    display: block;
+    margin: 4px 0 2px;
+}
+
+.vlv-console-ctl select {
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.vlv-console-ctl .vlv-btn {
+    margin-top: 10px;
+}
+
+.vlv-console-crt {
+    padding: 10px 10px 10px 0;
+    vertical-align: top;
+}
+
+.vlv-crt {
+    margin: 0;
+    padding: 10px 12px;
+    min-height: 210px;
+    background: #1a0f00;
+    border-top: 3px solid #222222;
+    border-left: 3px solid #222222;
+    border-right: 3px solid #8a8a7a;
+    border-bottom: 3px solid #8a8a7a;
+    color: #ffaa00;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 11px;
+    line-height: 14px;
+    white-space: pre-wrap;
+}
+
+.vlv-atlas {
+    padding: 8px;
+    border: 1px solid #999999;
+    background: #f4f4f0;
+}
+
+.vlv-atlas-title {
+    margin-bottom: 8px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.vlv-route {
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.vlv-route td {
+    padding: 0;
+    vertical-align: middle;
+}
+
+.vlv-room {
+    width: 140px;
+    height: 46px;
+    padding: 4px 6px !important;
+    background: #ffffff;
+    border: 2px solid #333333;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 12px;
+}
+
+.vlv-room-n {
+    display: block;
+    color: #cc3300;
+    font-family: Verdana, Tahoma, Arial, sans-serif;
+    font-size: 9px;
+}
+
+.vlv-pipe-h {
+    width: 20px;
+    height: 46px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='46'%3E%3Crect y='19' width='20' height='8' fill='%237a7a66'/%3E%3Crect y='19' width='20' height='2' fill='%23a6a690'/%3E%3Crect y='25' width='20' height='2' fill='%2355554a'/%3E%3C/svg%3E") no-repeat;
+}
+
+.vlv-pipe-end {
+    width: 20px;
+    height: 46px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='46'%3E%3Crect y='19' width='12' height='8' fill='%237a7a66'/%3E%3Crect x='12' y='19' width='8' height='27' fill='%237a7a66'/%3E%3Crect x='12' y='19' width='2' height='27' fill='%23a6a690'/%3E%3C/svg%3E") no-repeat;
+}
+
+.vlv-history {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.vlv-history td {
+    padding: 4px 8px 4px 0;
+    border-bottom: 1px dotted #999999;
+    vertical-align: top;
+}
+
+.vlv-hist-when {
+    width: 90px;
+    color: #cc3300;
+    font-family: "Courier New", Courier, monospace;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.vlv-ads {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 6px 0;
+    margin: 0 -6px;
+}
+
+.vlv-ad {
+    width: 33%;
+    padding: 8px;
+    vertical-align: top;
+    border: 2px solid #000000;
+    background: #ffffff;
+}
+
+.vlv-ad-role {
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.15;
+}
+
+.vlv-ad-dept {
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #000000;
+    color: #555555;
+    font-size: 10px;
+}
+
+.vlv-letter {
+    margin-bottom: 10px;
+    border-top: 1px solid #999999;
+    padding-top: 6px;
+}
+
+.vlv-letter-head {
+    margin-bottom: 4px;
+    font-size: 10px;
+    color: #555555;
+}
+
+.vlv-letter-head b {
+    color: #000000;
+}
+
+.vlv-letter-a {
+    margin-left: 18px;
+    padding-left: 8px;
+    border-left: 3px solid #4c5844;
+}
+
+.vlv-results li {
+    margin-bottom: 8px;
+}
+
+.vlv-foot {
+    padding: 8px 12px 10px;
+    background: #333333;
+    color: #bbbbaa;
+    font-size: 10px;
+    border-top: 2px solid #111111;
+}
+
+.vlv-page .vlv-foot a {
+    color: #ffcc66;
+}
+
+.vlv-foot-links {
+    margin-bottom: 6px;
+    text-align: center;
+}
+
+.vlv-foot-row {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.vlv-foot-row td {
+    padding: 0;
+    vertical-align: top;
+}
+
+.vlv-foot-buttons {
+    width: 190px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.vlv-page a.vlv-88 {
+    display: inline-block;
+    width: 88px;
+    height: 31px;
+    margin-left: 4px;
+    padding-top: 2px;
+    overflow: hidden;
+    background: #4c5844;
+    border: 1px solid #000000;
+    outline: 1px solid #8c9880;
+    outline-offset: -3px;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: top;
+    line-height: 1;
+}
+
+.vlv-88-steam {
+    display: block;
+    color: #ffffff;
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.vlv-88-sub {
+    display: block;
+    margin-top: 1px;
+    color: #c8d0bc;
+    font-family: Verdana, Arial, sans-serif;
+    font-size: 8px;
+}
+
+.vlv-page a.vlv-88-hl {
+    background: #1a1a1a;
+    outline-color: #cc6600;
+}
+
+.vlv-88-l {
+    display: block;
+    color: #ff9900;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.vlv-foot-date {
+    margin-top: 6px;
+    color: #888877;
+}
+
+@media (max-width: 640px) {
+    .vlv-plates {
+        white-space: normal;
+    }
+
+    .vlv-page a.vlv-plate {
+        margin-bottom: 4px;
+    }
+
+    .vlv-mast-gauge {
+        display: none;
+    }
+}

@@ -629,6 +629,7 @@
     if (c) return c;
     c = G.mkCanvas(w, h);
     const g = c.getContext('2d'), P = pen(g, 0, 0);
+    if (world === 'belzerg') { meadowView(g, P, w, h); panos.set(key, c); return c; }
     const sky = g.createLinearGradient(0, 0, 0, h);
     sky.addColorStop(0, world === 'jarilo' ? '#060914' : '#050716'); sky.addColorStop(1, world === 'jarilo' ? '#0e1a30' : '#120e2e');
     g.fillStyle = sky; g.fillRect(0, 0, w, h);
@@ -680,6 +681,31 @@
     }
     panos.set(key, c);
     return c;
+  }
+
+  function meadowView(g, P, w, h) {
+    const hz = Math.round(h * 0.62), sky = g.createLinearGradient(0, 0, 0, hz);
+    sky.addColorStop(0, '#3a7ad0'); sky.addColorStop(1, '#bfe2f6');
+    g.fillStyle = sky; g.fillRect(0, 0, w, hz);
+    for (let i = 0; i < Math.ceil(w / 60); i++) {
+      const x = i * 60 + hash(i, 1, 87) * 40, y = 10 + hash(i, 2, 87) * hz * 0.4, cw = 14 + Math.floor(hash(i, 3, 87) * 22);
+      P.oval(x, y, cw, Math.max(3, Math.floor(cw * 0.3)), '#ffffff'); P.oval(x - cw * 0.4, y - 3, Math.floor(cw * 0.5), Math.max(2, Math.floor(cw * 0.25)), '#ffffff'); P(x - cw, y + 2, cw * 2, 1, '#d8e8f4');
+    }
+    for (let x = 0; x < w; x++) { const y = hz - 18 - Math.round(Math.sin(x / 60) * 10 + Math.sin(x / 17) * 3); P(x, y, 1, hz - y, '#8ab4b0'); }
+    for (let i = 0; i < Math.ceil(w / 220); i++) {
+      const kx = i * 220 + 140, ky = hz - 30 - Math.round(Math.sin(kx / 60) * 10);
+      P(kx - 10, ky - 6, 20, 8, '#6e8a96'); P(kx - 13, ky - 12, 5, 14, '#6e8a96'); P(kx + 8, ky - 10, 5, 12, '#6e8a96'); P(kx - 2, ky - 18, 6, 12, '#6e8a96'); P(kx - 1, ky - 20, 4, 2, '#5a7480');
+    }
+    const wy = hz - 6;
+    for (let x = 0; x < w; x++) { const y = hz - 6 - Math.round(Math.sin(x / 40 + 2) * 5); P(x, y, 1, h - y, '#5e9a48'); }
+    for (let i = 0; i < Math.ceil(w / 160); i++) {
+      const ax = i * 160 + 40;
+      P(ax, wy - 16, 70, 14, '#c8beaa'); for (let x = 0; x < 70; x += 6) P(ax + x, wy - 19, 4, 3, '#c8beaa'); P(ax, wy - 16, 70, 1, '#e4dccc');
+      for (let j = 0; j < 4; j++) { P(ax + 6 + j * 16, wy - 26, 10, 10, '#b8503a'); P.tri([ax + 5 + j * 16, wy - 26, ax + 11 + j * 16, wy - 33, ax + 17 + j * 16, wy - 26], '#c8643a'); }
+      P(ax + 30, wy - 40, 8, 26, '#c8beaa'); P.tri([ax + 28, wy - 40, ax + 34, wy - 50, ax + 40, wy - 40], '#3a5a8a');
+    }
+    for (let x = 0; x < w; x += 3) P(x, h - 30 + Math.round(hash(x, 4, 87) * 4), 1, 30, x % 2 ? '#4c8c2c' : '#6cae3e');
+    for (let i = 0; i < w / 20; i++) P.dot(Math.floor(hash(i, 5, 87) * w), h - 22 + Math.floor(hash(i, 6, 87) * 18), ['#ffffff', '#ffe060', '#ff9ab8'][i % 3]);
   }
 
   function drawWindows(ctx, L, map, cx, cy, t) {
@@ -761,7 +787,7 @@
     if (tint) { ctx.fillStyle = tint; ctx.fillRect(0, 0, W, HGT); }
   }
 
-  const INK = '#2a2018', INK_NAME = '#6a2a1a';
+  const INK = '#2a2018', INK_NAME = '#6a2a1a', WALL_PAGE = 8;
 
   function openBook(kind, close) {
     const ui = this, g = this.game, { W, HGT } = H.UI_CONST, entries = g.bookPages(kind), photos = kind === 'photos';
@@ -770,13 +796,20 @@
       page: 0, sel: Math.max(0, entries.findIndex(e => e.ok)),
       draw(c) {
         c.fillStyle = 'rgba(2,2,8,0.6)'; c.fillRect(0, 0, W, HGT);
-        if (photos) ui.drawPhotoWall(c, entries, this.sel); else ui.drawGuestBook(c, entries, this.page, spreads);
-        ui.hints(photos ? [['←→↑↓', 'Снимок'], ['Esc', 'Закрыть']] : [['←→', 'Листать'], ['Esc', 'Закрыть']], W / 2, HGT - 30, { align: 'center' });
+        if (photos) ui.drawPhotoWall(c, entries, this.sel, d => this.flip(d)); else ui.drawGuestBook(c, entries, this.page, spreads);
+        ui.hints(photos ? [['←→↑↓', 'Снимок'], ['Q E', 'Страница'], ['Esc', 'Закрыть']] : [['←→', 'Листать'], ['Esc', 'Закрыть']], W / 2, HGT - 30, { align: 'center' });
         ui.closeBtn(W - 50, 30, () => this.key('back'));
       },
-      key(k) {
+      flip(d) {
+        const pages = Math.max(1, Math.ceil(entries.length / WALL_PAGE)), page = Math.floor(this.sel / WALL_PAGE) + d;
+        if (page < 0 || page >= pages) return;
+        this.sel = Math.min(entries.length - 1, page * WALL_PAGE + this.sel % WALL_PAGE);
+        ui.sfx('select');
+      },
+      key(k, code) {
         if (k === 'back' || k === 'ok') { ui.screens.pop(); ui.sfx('cancel'); if (close) close(); return; }
         if (photos) {
+          if (code === 'KeyQ' || code === 'KeyE') { this.flip(code === 'KeyQ' ? -1 : 1); return; }
           const n = entries.length, mv = { left: -1, right: 1, up: -4, down: 4 }[k];
           if (mv && this.sel + mv >= 0 && this.sel + mv < n) { this.sel += mv; ui.sfx('select'); }
           return;
@@ -821,7 +854,7 @@
     c.fillStyle = C.gold; c.fillRect(bx + bw / 2, by + 10, 1, bh - 20);
   }
 
-  function drawPhotoWall(c, entries, sel) {
+  function drawPhotoWall(c, entries, sel, flip) {
     const ui = this, x0 = 56, y0 = 40, w = 528, h = 392;
     c.fillStyle = '#3a2414'; c.fillRect(x0 - 6, y0 - 6, w + 12, h + 12);
     c.fillStyle = '#b88a58'; c.fillRect(x0, y0, w, h);
@@ -829,8 +862,10 @@
     c.fillStyle = '#ffd0e0'; c.fillRect(x0 + w / 2 - 90, y0 + 8, 180, 22);
     ui.text('Фотостена Март 7', x0 + w / 2, y0 + 12, { align: 'center', size: 13, bold: true, serif: true, col: '#8a3a5a', shadow: false });
     c.strokeStyle = 'rgba(255,240,180,0.7)'; c.lineWidth = 1; c.beginPath(); c.moveTo(x0 + 10, y0 + 46); c.quadraticCurveTo(x0 + w / 2, y0 + 62, x0 + w - 10, y0 + 46); c.stroke();
+    const page = Math.floor(sel / WALL_PAGE), pages = Math.max(1, Math.ceil(entries.length / WALL_PAGE));
     entries.forEach((e, i) => {
-      const col = i % 4, row = Math.floor(i / 4), px = x0 + 22 + col * 126, py = y0 + 54 + row * 136 - (i === sel ? 4 : 0);
+      if (Math.floor(i / WALL_PAGE) !== page) return;
+      const slot = i % WALL_PAGE, col = slot % 4, row = Math.floor(slot / 4), px = x0 + 22 + col * 126, py = y0 + 54 + row * 136 - (i === sel ? 4 : 0);
       if (!e.ok) {
         c.strokeStyle = 'rgba(80,50,30,0.6)'; c.setLineDash([4, 3]); c.strokeRect(px + 0.5, py + 0.5, 110, 118); c.setLineDash([]);
         ui.text('?', px + 55, py + 52, { align: 'center', size: 20, bold: true, col: 'rgba(80,50,30,0.6)', shadow: false });
@@ -849,6 +884,16 @@
       if (i === sel) { c.strokeStyle = C.goldHi; c.lineWidth = 2; c.strokeRect(px - 2, py - 2, 114, 122); c.lineWidth = 1; }
       c.fillStyle = ['#e04050', '#40a0e0', '#f0c040', '#60c070'][i % 4]; c.beginPath(); c.arc(px + 55, py + 2, 4, 0, Math.PI * 2); c.fill();
     });
+    if (pages > 1) {
+      ui.text('Страница ' + (page + 1) + ' из ' + pages, x0 + w - 20, y0 + 12, { align: 'right', size: 11, bold: true, col: '#fbf0d8' });
+      for (const [d, ax] of [[-1, x0 - 30], [1, x0 + w + 8]]) {
+        const on = page + d >= 0 && page + d < pages;
+        c.fillStyle = on ? '#3a2414' : 'rgba(58,36,20,0.4)'; c.fillRect(ax, y0 + 150, 22, 60);
+        c.fillStyle = on ? C.goldHi : 'rgba(255,220,150,0.3)';
+        c.beginPath(); c.moveTo(ax + (d < 0 ? 6 : 16), y0 + 180); c.lineTo(ax + (d < 0 ? 16 : 6), y0 + 166); c.lineTo(ax + (d < 0 ? 16 : 6), y0 + 194); c.closePath(); c.fill();
+        if (on && flip) ui.hit(ax, y0 + 150, 22, 60, () => flip(d));
+      }
+    }
     const e = entries[sel];
     c.fillStyle = '#fbf8f0'; c.fillRect(x0 + 20, y0 + h - 64, w - 40, 52);
     const lines = e && e.ok ? ui.wrap(e.text, w - 70, 11) : ['Здесь пока пусто. Март оставила место для следующего снимка.'];

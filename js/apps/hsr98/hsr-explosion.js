@@ -18,9 +18,9 @@
   const HOP = 0.35;
   const CUTS = {
     kazuma: [['card', 1.1], ['toad', 1.0], ['steal', 0.8], ['catch', 1.2], ['pose', 1.4]],
-    aqua: [['rise', 1.3], ['cage', 1.0], ['gators', 1.0], ['drag', 1.1], ['pose', 1.4]],
-    megumin: [['name', 1.0], ['circles', 1.0], ['blast', 0.9], ['fall', 0.8], ['carry', 1.2], ['pose', 1.3]],
-    darkness: [['charge', 1.0], ['miss', 1.1], ['pelt', 1.0], ['wall', 1.1], ['pose', 1.4]],
+    aqua: [['card', 1.1], ['rise', 1.3], ['cage', 1.0], ['gators', 1.0], ['drag', 1.1], ['pose', 1.4]],
+    megumin: [['card', 1.1], ['name', 1.0], ['circles', 1.0], ['blast', 0.9], ['fall', 0.8], ['carry', 1.2], ['pose', 1.3]],
+    darkness: [['card', 1.1], ['charge', 1.0], ['miss', 1.1], ['pelt', 1.0], ['wall', 1.1], ['pose', 1.4]],
     asta: [['card', 1.1], ['treat', 1.1], ['cover', 1.0], ['pose', 1.4]],
     arlan: [['card', 1.1], ['scratch', 1.1], ['jealous', 1.0], ['pose', 1.4]],
     herta: [['card', 1.1], ['bored', 1.1], ['spin', 1.1], ['pose', 1.4]],
@@ -46,14 +46,16 @@
     yukong: [['card', 1.1], ['cart', 1.2], ['kite', 1.2], ['pose', 1.4]],
     hanya: [['card', 1.1], ['trial', 1.2], ['burden', 1.2], ['pose', 1.4]],
     xueyi: [['card', 1.1], ['hunt', 1.2], ['gears', 1.2], ['pose', 1.4]],
-    guinaifen: [['card', 1.1], ['stream', 1.2], ['knives', 1.2], ['pose', 1.4]]
+    guinaifen: [['card', 1.1], ['stream', 1.2], ['knives', 1.2], ['pose', 1.4]],
+    march: [['card', 1.1], ['photo', 1.2], ['shogun', 1.3], ['pose', 1.4]],
+    danheng: [['card', 1.1], ['archive', 1.2], ['tide', 1.3], ['pose', 1.4]]
   };
-  const BRIEF = { kazuma: 'steal', aqua: 'gators', megumin: 'blast', darkness: 'pelt', asta: 'cover', arlan: 'jealous', herta: 'spin', serval: 'finale', natasha: 'shot', sampo: 'swap', hook: 'recruit', pela: 'weak', himeko: 'coffee', welt: 'back', bronya: 'lalatina', gepard: 'garden', clara: 'steal', yanqing: 'name', bailu: 'candy', stelle: 'bat', caelus: 'splash' , lynx: 'bar', luka: 'cabbage', sushang: 'toad', qingque: 'luck', tingyun: 'debt', yukong: 'cart', hanya: 'trial', xueyi: 'hunt', guinaifen: 'stream' };
+  const BRIEF = { kazuma: 'steal', aqua: 'gators', megumin: 'blast', darkness: 'pelt', asta: 'cover', arlan: 'jealous', herta: 'spin', serval: 'finale', natasha: 'shot', sampo: 'swap', hook: 'recruit', pela: 'weak', himeko: 'coffee', welt: 'back', bronya: 'lalatina', gepard: 'garden', clara: 'steal', yanqing: 'name', bailu: 'candy', stelle: 'bat', caelus: 'splash' , lynx: 'bar', luka: 'cabbage', sushang: 'toad', qingque: 'luck', tingyun: 'debt', yukong: 'cart', hanya: 'trial', xueyi: 'hunt', guinaifen: 'stream' , march: 'photo', danheng: 'archive' };
   const BEAT_SFX = {
     kazuma: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.7, 'glint']], toad: [[0.1, 'step'], [0.3, 'step'], [0.55, 'splash']], steal: [[0.05, 'whoosh'], [0.5, 'glint']], catch: [[0.1, 'chest'], [0.5, 'splash'], [0.8, 'deny']], pose: [[0.15, 'star4']] },
-    aqua: { rise: [[0.1, 'splash'], [0.55, 'buff']], cage: [[0.1, 'splash'], [0.45, 'heal']], gators: [[0.2, 'hit'], [0.45, 'hit'], [0.7, 'break']], drag: [[0.15, 'step'], [0.6, 'step']], pose: [[0.1, 'glint'], [0.2, 'star5']] },
-    megumin: { name: [[0.05, 'swing'], [0.5, 'glint']], circles: [[0.05, 'tech'], [0.5, 'buff']], blast: [[0, 'rumble'], [0.05, 'break']], fall: [[0.3, 'step']], carry: [[0.2, 'step'], [0.7, 'step']], pose: [[0.15, 'star5']] },
-    darkness: { charge: [[0.1, 'step'], [0.35, 'step'], [0.65, 'swing']], miss: [[0.1, 'swing'], [0.45, 'swing'], [0.8, 'swing']], pelt: [[0.15, 'hit'], [0.35, 'hit'], [0.55, 'hit'], [0.75, 'crit']], wall: [[0.1, 'shield'], [0.6, 'break']], pose: [[0.15, 'star5']] },
+    aqua: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'glint']], rise: [[0.1, 'splash'], [0.55, 'buff']], cage: [[0.1, 'splash'], [0.45, 'heal']], gators: [[0.2, 'hit'], [0.45, 'hit'], [0.7, 'break']], drag: [[0.15, 'step'], [0.6, 'step']], pose: [[0.1, 'glint'], [0.2, 'star5']] },
+    megumin: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'tech']], name: [[0.05, 'swing'], [0.5, 'glint']], circles: [[0.05, 'tech'], [0.5, 'buff']], blast: [[0, 'rumble'], [0.05, 'break']], fall: [[0.3, 'step']], carry: [[0.2, 'step'], [0.7, 'step']], pose: [[0.15, 'star5']] },
+    darkness: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'shield']], charge: [[0.1, 'step'], [0.35, 'step'], [0.65, 'swing']], miss: [[0.1, 'swing'], [0.45, 'swing'], [0.8, 'swing']], pelt: [[0.15, 'hit'], [0.35, 'hit'], [0.55, 'hit'], [0.75, 'crit']], wall: [[0.1, 'shield'], [0.6, 'break']], pose: [[0.15, 'star5']] },
     asta: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'chest']], treat: [[0.22, 'chest'], [0.3, 'break_obj'], [0.5, 'step'], [0.7, 'ticket']], cover: [[0.1, 'whoosh'], [0.32, 'glint'], [0.45, 'break_obj']], pose: [[0.15, 'star4']] },
     arlan: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'hit']], scratch: [[0.12, 'whoosh'], [0.3, 'hit'], [0.5, 'buff'], [0.76, 'crit'], [0.86, 'break']], jealous: [[0.1, 'heal'], [0.55, 'deny']], pose: [[0.15, 'star4']] },
     herta: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'tech']], bored: [[0.02, 'rumble'], [0.08, 'break'], [0.55, 'text'], [0.78, 'deny']], spin: [[0.1, 'swing'], [0.3, 'swing'], [0.5, 'buff'], [0.58, 'break_obj']], pose: [[0.15, 'star4']] },
@@ -79,13 +81,15 @@
     yukong: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'whoosh']], cart: [[0.08, 'whoosh'], [0.3, 'step'], [0.5, 'step'], [0.66, 'hit'], [0.7, 'crit'], [0.84, 'heal']], kite: [[0.12, 'whoosh'], [0.36, 'glint'], [0.55, 'swing'], [0.58, 'crit'], [0.72, 'hit'], [0.86, 'confirm']], pose: [[0.15, 'star4']] },
     hanya: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'confirm']], trial: [[0.12, 'text'], [0.26, 'text'], [0.38, 'text'], [0.5, 'text'], [0.66, 'crit'], [0.82, 'deny']], burden: [[0.1, 'whoosh'], [0.3, 'glint'], [0.44, 'debuff'], [0.56, 'shield'], [0.76, 'heal']], pose: [[0.15, 'star4']] },
     xueyi: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'debuff']], hunt: [[0.12, 'step'], [0.38, 'whoosh'], [0.46, 'debuff'], [0.6, 'hit'], [0.8, 'deny']], gears: [[0.18, 'swing'], [0.3, 'crit'], [0.34, 'break_obj'], [0.56, 'heal'], [0.7, 'heal'], [0.84, 'cancel']], pose: [[0.15, 'star4']] },
-    guinaifen: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'confirm']], stream: [[0.1, 'text'], [0.36, 'whoosh'], [0.44, 'splash'], [0.52, 'glint'], [0.6, 'chest'], [0.78, 'deny']], knives: [[0.16, 'swing'], [0.26, 'hit'], [0.36, 'hit'], [0.46, 'hit'], [0.58, 'whoosh'], [0.82, 'deny']], pose: [[0.15, 'star4']] }
+    guinaifen: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'confirm']], stream: [[0.1, 'text'], [0.36, 'whoosh'], [0.44, 'splash'], [0.52, 'glint'], [0.6, 'chest'], [0.78, 'deny']], knives: [[0.16, 'swing'], [0.26, 'hit'], [0.36, 'hit'], [0.46, 'hit'], [0.58, 'whoosh'], [0.82, 'deny']], pose: [[0.15, 'star4']] },
+    march: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'glint']], photo: [[0.12, 'select'], [0.26, 'select'], [0.4, 'select'], [0.5, 'whoosh'], [0.56, 'glint'], [0.66, 'text'], [0.8, 'deny']], shogun: [[0.14, 'step'], [0.3, 'swing'], [0.38, 'shield'], [0.46, 'buff'], [0.58, 'step'], [0.66, 'hit'], [0.86, 'cancel']], pose: [[0.15, 'star4']] },
+    danheng: { card: [[0.1, 'select'], [0.45, 'ticket'], [0.75, 'whoosh']], archive: [[0.12, 'door'], [0.26, 'door'], [0.4, 'door'], [0.54, 'door'], [0.62, 'break_obj'], [0.84, 'deny']], tide: [[0.1, 'tech'], [0.26, 'splash'], [0.44, 'splash'], [0.56, 'rumble'], [0.62, 'splash'], [0.84, 'cancel']], pose: [[0.15, 'star4']] }
   };
   const LINES = {
     kazuma: { card: ['Луна', 'Удача просто невероятная! А всё остальное… среднее.'], toad: ['Аква', 'Мм-мф! Казума-а-а, вытащи меня!'], steal: ['Казума', 'Кража!'], catch: ['Мегумин', 'Верни мои трусы!'] },
-    aqua: { rise: ['Община Аксис', 'Слава Акве, богине воды!'], cage: ['Аква', 'Очищение! Очищение! Ещё немного!'], gators: ['Аква', 'Они грызут прутья! Казума-а-а!'], drag: ['Аква', 'Не хочу наружу. Мир за клеткой такой страшный.'] },
-    megumin: { name: ['Мегумин', 'Моё имя Мегумин! Я дочь Алого народа!'], circles: ['Мегумин', 'Чернее черноты, темнее тьмы…'], blast: ['Мегумин', 'Взрыв!'], fall: ['Мегумин', 'Ноги не держат… совсем.'], carry: ['Казума', 'Девяносто очков. Ладно, сто.'] },
-    darkness: { charge: ['Даркнесс', 'Капуста! Крестоносец не отступает!'], miss: ['Казума', 'Ты хоть раз попади!'], pelt: ['Даркнесс', 'Ещё! Сильнее! Не жалейте меня!'], wall: ['Даркнесс', 'Прячьтесь за мной! Я выдержу!'] },
+    aqua: { card: ['Луна', 'Магия и сила под потолок! А вот интеллект...'], rise: ['Община Аксис', 'Слава Акве, богине воды!'], cage: ['Аква', 'Очищение! Очищение! Ещё немного!'], gators: ['Аква', 'Они грызут прутья! Казума-а-а!'], drag: ['Аква', 'Не хочу наружу. Мир за клеткой такой страшный.'] },
+    megumin: { card: ['Луна', 'Магия и интеллект зашкаливают! Архимаг, не меньше!'], name: ['Мегумин', 'Моё имя Мегумин! Я дочь Алого народа!'], circles: ['Мегумин', 'Чернее черноты, темнее тьмы…'], blast: ['Мегумин', 'Взрыв!'], fall: ['Мегумин', 'Ноги не держат… совсем.'], carry: ['Казума', 'Девяносто очков. Ладно, сто.'] },
+    darkness: { card: ['Луна', 'Сила и защита огромные. А ловкость... почти ноль.'], charge: ['Даркнесс', 'Капуста! Крестоносец не отступает!'], miss: ['Казума', 'Ты хоть раз попади!'], pelt: ['Даркнесс', 'Ещё! Сильнее! Не жалейте меня!'], wall: ['Даркнесс', 'Прячьтесь за мной! Я выдержу!'] },
     asta: { card: ['Луна', 'Взнос на сто лет вперёд? Добро пожаловать!'], treat: ['Аста', 'Всем по кружке! Счёт пишите на меня!'], cover: ['Казума', 'Аква! Свои долги плати сама!'] },
     arlan: { card: ['Луна', 'Это всё старые раны? Вам срочно к лекарю!'], scratch: ['Арлан', 'Царапина. Чем меньше здоровья, тем сильней удар.'], jealous: ['Даркнесс', 'Почему все удары ему? Я тоже хочу!'] },
     herta: { card: ['Луна', 'Подождите, это же кукла! А где вы сами?'], bored: ['Мегумин', 'Ну как? Это же сто очков из ста!'], spin: ['Герта', 'Куру-куру. Забирай свою взрывную малявку.'] },
@@ -96,7 +100,7 @@
     pela: { card: ['Луна', 'Досье на нашу гильдию? Это же секретно!'], report: ['Пела', 'Начнём рапорт. Недостатков в отряде: четыре.'], weak: ['Пела', 'Цель заморожена, защита снижена. Даркнесс, сейчас!'] },
     himeko: { card: ['Луна', 'Сотни миров за плечами? Вы точно не новичок.'], blast: ['Химико', 'Бой, по сути, серия точных расчётов.'], coffee: ['Химико', 'Устали? Чашечку кофе? Только без молока.'], purify: ['Аква', 'Очищение! Пейте, теперь это просто вода.'] },
     welt: { card: ['Луна', 'Аниматор, властитель, путешественник… Что писать?'], gravity: ['Вельт', 'Спокойствие. Сейчас всё стянет в одну точку.'], back: ['Мегумин', 'Вы тоже без сил после одного заклинания?'], heal: ['Аква', 'Держитесь, дедушка! Сейчас вылечу!'] },
-    bronya: { card: ['Луна', 'Наследница хранителя? Простите, мне надо присесть.'], speech: ['Броня', 'Граждане Акселя! Впереди светлое будущее!'], lalatina: ['Даркнесс', 'Не называйте меня Лалатиной!'], order: ['Броня', 'Отряд, действуйте немедленно!'] },
+    bronya: { card: ['Луна', 'Наследница хранительницы? Мне надо присесть.'], speech: ['Броня', 'Граждане Акселя! Впереди светлое будущее!'], lalatina: ['Даркнесс', 'Не называйте меня Лалатиной!'], order: ['Броня', 'Отряд, действуйте немедленно!'] },
     gepard: { card: ['Луна', 'Ещё один крестоносец? Надеюсь, этот попадает.'], shield: ['Гепард', 'Усилить оборону! Ни один кочан не пройдёт!'], garden: ['Гепард', 'Я выращиваю цветы, но… получается не очень.'], bloom: ['Аква', 'Красота природы! Вот как надо, командир!'] },
     clara: { card: ['Луна', 'А этот… господин за вами тоже записывается?'], brave: ['Клара', 'Я с-с-совсем тебя не боюсь!'], steal: ['Сварог', 'Цель: вор. Применяю протокол защиты.'], family: ['Клара', 'Он тоже семья! Правда же, господин Сварог?'] },
     yanqing: { card: ['Луна', 'Двенадцать мечей при себе? Не многовато?'], swords: ['Яньцин', 'Клинок в полёте! Сколько приёмов отразите?'], name: ['Мегумин', 'Этот меч зовут Чунчунмару! Твой тоже назову?'], spar: ['Даркнесс', 'Ещё! Не жалей меня, юный мечник!'] },
@@ -111,7 +115,9 @@
     yukong: { card: ['Луна', 'Глава флота? У нас в Акселе и лодок-то нет.'], cart: ['Даркнесс', 'Быстрее! Меня волочёт по камням, это прекрасно!'], kite: ['Аква', 'Помогите! Богиню уносит ветром!'] },
     hanya: { card: ['Луна', 'Судья? Тогда узнайте, кто сломал доску заданий.'], trial: ['Казума', 'Это была Кража! Навык такой! Я не виноват!'], burden: ['Даркнесс', 'Бремя? Тяжкое? Повесьте на меня ещё одно!'] },
     xueyi: { card: ['Луна', 'Кукла? А куклам тоже выдают карту?'], hunt: ['Казума', 'Я же был в Скрытности! Как ты меня нашла?!'], gears: ['Аква', 'Хил! Хил! Почему кукла не лечится?!'] },
-    guinaifen: { card: ['Луна', 'Артистка? Выступайте, только в гильдии не жечь!'], stream: ['Гуйнайфэнь', 'Эй, это мой стрим! И суперчаты тоже мои!'], knives: ['Даркнесс', 'Ни одного попадания? Бросайте ближе! Ещё ближе!'] }
+    guinaifen: { card: ['Луна', 'Артистка? Выступайте, только в гильдии не жечь!'], stream: ['Гуйнайфэнь', 'Эй, это мой стрим! И суперчаты тоже мои!'], knives: ['Даркнесс', 'Ни одного попадания? Бросайте ближе! Ещё ближе!'] },
+    march: { card: ['Луна', 'Графа «Прошлое» пустая? Впишу «загадочная».'], photo: ['Март 7', 'Аква, ты весь кадр закрыла! Переснимаем!'], shogun: ['Казума', 'Он сам изо льда! Кланяйся, Март, ниже!'] },
+    danheng: { card: ['Луна', 'Только имя и «копьё»? Анкету надо заполнять!'], archive: ['Дань Хэн', 'Архив отряда. Почему ящик долгов самый толстый?'], tide: ['Аква', 'Это я тут богиня воды! Смотри, как надо!'] }
   };
   const QUOTES = {
     kazuma: 'Сато Казума, авантюрист. У тебя отряд нормальный?',
@@ -136,16 +142,18 @@
     stelle: 'Стелла, Первопроходец. Урны проверены, можно в путь!',
     caelus: 'Келус, Первопроходец. Нормальный отряд? Звучит скучно.',
     lynx: 'Рысь, экспедиция. Отряд? Только в рабочие часы.',
-    luka: 'Лука, «Дикий огонь». Монстры, в очередь по одному!',
+    luka: 'Лука, «Дикий Огонь». Монстры, в очередь по одному!',
     sushang: 'Сушан, Облачные Рыцари! Кому сегодня помочь?',
     qingque: 'Цинцюэ, прорицательница. Задания? Давай лучше партию.',
     tingyun: 'Тинъюнь, Комиссия по полётам. Обсудим условия сделки?',
     yukong: 'Юйкун, Комиссия по полётам. Пристегнитесь, взлетаем!',
     hanya: 'Ханья, Комиссия десяти владык. Ваши дела я записала.',
     xueyi: 'Сюэи, Комиссия десяти владык. Мара от меня не уйдёт.',
-    guinaifen: 'Гуйнайфэнь, уличный цирк. Смотрите и изумляйтесь!'
+    guinaifen: 'Гуйнайфэнь, уличный цирк. Смотрите и изумляйтесь!',
+    march: 'Март 7, Звёздный экспресс! Сначала фото, потом задания!',
+    danheng: 'Дань Хэн, Звёздный экспресс. Копьё при мне. Идём.'
   };
-  const RIM = { kazuma: '#9affb0', aqua: '#8ad0ff', megumin: '#ff5a4a', darkness: '#ffd870', asta: '#ffb070', arlan: '#b48cff', herta: '#a8d8ff', serval: '#8ac8ff', natasha: '#8affb8', sampo: '#6ae0c8', hook: '#ffb040', pela: '#8ad0ff', himeko: '#ff8a5a', welt: '#e8c040', bronya: '#6ae0a8', gepard: '#a8e0ff', clara: '#ff8ac0', yanqing: '#a8e0ff', bailu: '#b48cff', stelle: '#ffb070', caelus: '#b48cff' , lynx: '#b4a8ff', luka: '#ff6a5a', sushang: '#ffd070', qingque: '#7ac858', tingyun: '#8ae0d0', yukong: '#ffe070', hanya: '#f0e4c8', xueyi: '#b8a8ff', guinaifen: '#ff9a5a' };
+  const RIM = { kazuma: '#9affb0', aqua: '#8ad0ff', megumin: '#ff5a4a', darkness: '#ffd870', asta: '#ffb070', arlan: '#b48cff', herta: '#a8d8ff', serval: '#8ac8ff', natasha: '#8affb8', sampo: '#6ae0c8', hook: '#ffb040', pela: '#8ad0ff', himeko: '#ff8a5a', welt: '#e8c040', bronya: '#6ae0a8', gepard: '#a8e0ff', clara: '#ff8ac0', yanqing: '#a8e0ff', bailu: '#b48cff', stelle: '#ffb070', caelus: '#b48cff' , lynx: '#b4a8ff', luka: '#ff6a5a', sushang: '#ffd070', qingque: '#7ac858', tingyun: '#8ae0d0', yukong: '#ffe070', hanya: '#f0e4c8', xueyi: '#b8a8ff', guinaifen: '#ff9a5a' , march: '#ffb0d8', danheng: '#8ae8c8' };
   const CASTLE = [6, 0, -26];
   const shotStart = name => { let s = 0; for (const [n, d] of SHOTS) { if (n === name) return s; s += d; } return s; };
   const lerp3 = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
@@ -1143,6 +1151,20 @@
         trashCan(g, 254, 236, 1.5, false);
         g.save(); g.translate(270, 196); g.rotate(0.4); bat(g, 0, 0, 0, 1.6); g.restore();
         for (let i = 0; i < 5; i++) star4(g, 40 + i * 60, 30 + (i % 2) * 20, 3 + 2 * Math.sin(T * 4 + i), '#fff0c0', 0.8);
+      } else if (id === 'danheng') {
+        vgrad(g, 0, 150, [[0, '#0a1420'], [0.7, '#1a3448'], [1, '#2a5060']]);
+        ell(g, '#e8f4f0', 250, 46, 16, 16); lighter(g, () => glow(g, 250, 46, 50, '#bfe8e0', 0.35));
+        for (let i = 0; i < 14; i++) rect(g, rgba('#e8f8ff', 0.5 + 0.5 * Math.sin(T * 2 + i)), Math.round(hx(i, 2, 116) * LW), Math.round(hx(i, 3, 116) * 110), 1, 1);
+        vgrad(g, 150, LH, [[0, '#1a4a58'], [1, '#0a2028']]);
+        for (let i = 0; i < 12; i++) rect(g, rgba('#bfe8e0', 0.2 + 0.2 * Math.sin(T * 2 + i)), Math.round((hx(i, 4, 116) * LW + T * 10) % LW), 156 + Math.floor(hx(i, 5, 116) * 80), 12, 1);
+        lighter(g, () => { g.strokeStyle = rgba('#7ae8c8', 0.35); g.lineWidth = 6; g.beginPath(); for (let i = 0; i <= 60; i++) { const q = i / 60 * Math.PI * 3 + T * 0.8, x = CX + Math.cos(q) * (60 + i), y = 120 + Math.sin(q) * 30 - i * 0.6; if (i) g.lineTo(x, y); else g.moveTo(x, y); } g.stroke(); g.lineWidth = 1; });
+        for (let i = 0; i < 8; i++) { const ph = (T * 0.8 + i / 8) % 1; rect(g, rgba('#e8fff8', 0.6 * (1 - ph)), Math.round(ph * LW * 1.2 - 30), Math.round(40 + hx(i, 6, 116) * 140), 24, 1); }
+      } else if (id === 'march') {
+        vgrad(g, 0, LH, [[0, '#6a5aa8'], [0.55, '#e8a8d0'], [1, '#f8e0ec']]);
+        for (let i = 0; i < 7; i++) { const x = 16 + i * 50, h = 40 + (i % 3) * 26; poly(g, rgba('#d8f0ff', 0.55), [x - 12, 186, x, 186 - h, x + 12, 186]); poly(g, rgba('#ffffff', 0.6), [x - 3, 186, x, 186 - h, x + 4, 186 - h * 0.4]); }
+        poly(g, '#f2e8f4', [0, 186, LW, 186, LW, LH, 0, LH]); rect(g, '#d8c8e8', 0, 186, LW, 2);
+        for (let i = 0; i < 6; i++) { const x = 30 + i * 52, y = 50 + (i % 2) * 34 + Math.sin(T * 1.4 + i) * 6; g.save(); g.translate(x, y); g.rotate(Math.sin(T + i) * 0.2); rect(g, '#ffffff', -10, -12, 20, 24); rect(g, ['#8ad8ff', '#ffb0d8', '#c8a8ff'][i % 3], -8, -10, 16, 15); g.restore(); }
+        K.snowfall(g, T, 24, 61, { speed: 18, wind: 10, a: 0.7 });
       } else if (id === 'guinaifen' && H.FoursScenes) {
         const F = H.FoursScenes;
         vgrad(g, 0, LH, [[0, '#1a0a14'], [0.6, '#3a1418'], [1, '#2a1410']]);
@@ -1247,7 +1269,7 @@
       guildBack(g, T);
       rect(g, '#5a3a20', 0, 168, LW, 72); rect(g, '#8a5a34', 0, 168, LW, 4); for (let i = 0; i < 5; i++) rect(g, '#4a2e18', 0, 184 + i * 12, LW, 1);
       const wow = seg(t, 0.75, 0.85);
-      bust(g, look, lerp(0, 44, eOut(seg(t, 0, 0.3))) - wow * 6, LH + 6, 124, 1, { v: wow > 0 ? { mouth: 'open' } : null });
+      bust(g, look, lerp(0, 44, eOut(seg(t, 0, 0.3))) - wow * 6, LH + 6 - (spec.lift || 0), 124, 1, { v: wow > 0 ? { mouth: 'open' } : null });
       const k = eOut(seg(t, 0.05, 0.4)), cx = lerp(LW + 110, 214, k), cy = 98, sh = wow > 0 ? Math.sin(T * 50) * 2 * (1 - seg(t, 0.85, 1.1)) : 0, grow = eOut(seg(t, 0.55, 0.85));
       const [bigName, bigCol, bigHot] = spec.big;
       g.save(); g.translate(Math.round(cx + sh), cy); g.rotate(-0.04);
@@ -1264,7 +1286,7 @@
       });
       g.font = 'bold 9px Georgia, serif'; g.fillStyle = G.dark(bigCol, 0.35); g.fillText(bigName, -82, 50);
       rect(g, '#b8a888', -26, 43, 100, 8);
-      const lw = Math.round(grow * 360);
+      const lw = Math.round(grow * 100 * (spec.bigMax || 3.6));
       if (lw > 0) { lighter(g, () => glow(g, -26 + lw, 47, 20, bigHot, 0.9)); rect(g, bigCol, -26, 43, lw, 8); rect(g, bigHot, -26, 43, lw, 2); }
       if (spec.stamp && wow > 0) { g.save(); g.globalAlpha = wow; g.font = 'bold 8px Georgia, serif'; const sw = Math.ceil(g.measureText(spec.stamp).width) + 10; g.globalAlpha = 0.9 * wow; g.translate(80 - sw / 2, 22); g.rotate(-0.12); g.strokeStyle = '#c83030'; g.lineWidth = 2; g.strokeRect(-sw / 2, -9, sw, 16); g.lineWidth = 1; g.fillStyle = '#c83030'; g.textAlign = 'center'; g.fillText(spec.stamp, 0, 2); g.textAlign = 'left'; g.restore(); }
       g.restore();
@@ -1280,6 +1302,27 @@
 
     cut_kazuma_card(g, t, T, look) {
       this.advCard(g, t, T, look, { name: 'Сато Казума', cls: 'авантюрист', stats: [['Сила', 0.32], ['Ловкость', 0.4], ['Магия', 0.28], ['Интеллект', 0.44]], big: ['Удача', '#d8b040', '#fff4b0'] });
+    }
+
+    cut_aqua_card(g, t, T, look) {
+      this.advCard(g, t, T, look, {
+        name: 'Аква', cls: 'архижрица', stamp: 'УДАЧА: НИЖЕ НЕКУДА', stats: [['Сила', 0.9], ['Ловкость', 0.86], ['Магия', 0.96], ['Интеллект', 0.12]], big: ['Удача', '#5aa0e0', '#d8f0ff'], bigMax: 0.05,
+        fx: (g, a) => { for (let i = 0; i < 14; i++) { const ph = (T * 0.6 + hx(i, 1, 119)) % 1; ell(g, rgba('#bfe8ff', a * (1 - ph * 0.5)), 130 + hx(i, 2, 119) * 190, ph * 250 - 20, 2, 3); } }
+      });
+    }
+
+    cut_megumin_card(g, t, T, look) {
+      this.advCard(g, t, T, look, {
+        name: 'Мегумин', cls: 'архимаг', stamp: 'НАВЫКИ: ТОЛЬКО ВЗРЫВ', stats: [['Сила', 0.16], ['Ловкость', 0.22], ['Магия', 0.98], ['Интеллект', 0.94]], big: ['Взрыв', '#d83a3a', '#ffd0a0'], lift: 22,
+        fx: (g, a) => { for (let i = 0; i < 16; i++) { const ph = (T * 0.8 + hx(i, 1, 120)) % 1; rect(g, rgba(i % 2 ? '#ff6a4a' : '#ffd070', a * (1 - ph)), Math.round(130 + hx(i, 2, 120) * 190), Math.round(230 - ph * 230), 2, 2); } }
+      });
+    }
+
+    cut_darkness_card(g, t, T, look) {
+      this.advCard(g, t, T, look, {
+        name: 'Даркнесс', cls: 'крестоносец', stamp: 'ПОПАДАНИЙ: 0', stats: [['Сила', 0.9], ['Ловкость', 0.05], ['Магия', 0.2], ['Интеллект', 0.5]], big: ['Защита', '#c89a30', '#fff0b0'],
+        fx: (g, a) => { for (let i = 0; i < 6; i++) { const ph = (T * 0.6 + i / 6) % 1; heart(g, 140 + hx(i, 2, 121) * 170, 200 - ph * 160, 4, a * (1 - ph) * 0.9); } }
+      });
     }
 
     cut_asta_card(g, t, T, look) {
@@ -2631,6 +2674,152 @@
       if (t > 0.74) { const [fx, fy] = figAt(70, 232, 1.56, 30, 12); ell(g, rgba('#bfe8ff', seg(t, 0.74, 0.8)), fx + 12, fy, 2.2, 3.4); }
     }
 
+    cut_march_card(g, t, T, look) {
+      this.advCard(g, t, T, look, {
+        name: 'Март 7', cls: 'лучница', stamp: 'ПРОШЛОЕ: НЕ ПОМНЮ', stats: [['Сила', 0.36], ['Ловкость', 0.58], ['Магия', 0.52], ['Интеллект', 0.4]], big: ['Оптимизм', '#ea6aa8', '#ffe0f0'],
+        fx: (g, a) => { for (let i = 0; i < 12; i++) { const ph = (T * 0.35 + hx(i, 1, 115)) % 1, x = 130 + hx(i, 2, 115) * 190 + Math.sin(T * 2 + i) * 6; star4(g, Math.round(x), Math.round(ph * 250 - 20), 2 + (i % 3), i % 2 ? '#ffd8ec' : '#e8f8ff', a * (1 - ph * 0.5)); } }
+      });
+    }
+
+    polaroid(g, x, y, rot, look, size) {
+      g.save(); g.translate(x, y); g.rotate(rot);
+      rect(g, 'rgba(0,0,0,0.3)', -46, -50, 96, 112); rect(g, '#fbfaf6', -48, -54, 96, 112); rect(g, '#2a2a3a', -42, -48, 84, 84);
+      g.save(); g.beginPath(); g.rect(-42, -48, 84, 84); g.clip();
+      vgrad(g, -48, 36, [[0, '#4a3020'], [1, '#2a1a10']]);
+      bust(g, look, 0, 60, size, 1, { v: { mouth: 'open' } });
+      g.restore();
+      g.restore();
+    }
+
+    cut_march_photo(g, t, T, look) {
+      const pop = seg(t, 0.46, 0.54), flash = seg(t, 0.56, 0.64), print = seg(t, 0.62, 0.74), come = seg(t, 0.7, 0.8);
+      guildBack(g, T);
+      const aq = this.lookOf('aqua');
+      if (print <= 0) {
+        bust(g, this.lookOf('kazuma'), 66, LH - 10, 112, 1);
+        bust(g, this.lookOf('megumin'), 160, LH - 4, 112, 1, { v: t > 0.2 ? { mouth: 'open' } : null });
+        bust(g, this.lookOf('darkness'), 254, LH - 10, 112, 1, { flip: true, v: { blush: true } });
+        if (pop > 0) bust(g, aq, 160, LH + 80 - 110 * eOut(pop), 190, 1, { v: { mouth: 'open' } });
+        g.strokeStyle = 'rgba(255,255,255,0.85)'; g.lineWidth = 2;
+        for (const [x, y, dx, dy] of [[24, 24, 1, 1], [296, 24, -1, 1], [24, 200, 1, -1], [296, 200, -1, -1]]) { g.beginPath(); g.moveTo(x, y + 16 * dy); g.lineTo(x, y); g.lineTo(x + 16 * dx, y); g.stroke(); }
+        g.lineWidth = 1; line(g, 'rgba(255,255,255,0.6)', 1, CX - 6, 112, CX + 6, 112); line(g, 'rgba(255,255,255,0.6)', 1, CX, 106, CX, 118);
+        if (Math.sin(T * 6) > 0) ell(g, '#ff3a3a', 36, 36, 3, 3);
+        const n = t < 0.12 ? 0 : t < 0.26 ? 3 : t < 0.4 ? 2 : t < 0.54 ? 1 : 0;
+        if (n) { g.save(); g.font = 'bold 28px Georgia, serif'; g.textAlign = 'center'; g.fillStyle = 'rgba(0,0,0,0.4)'; g.fillText(String(n), CX + 2, 62); g.fillStyle = '#ffffff'; g.fillText(String(n), CX, 60); g.restore(); }
+      } else {
+        bust(g, this.lookOf('kazuma'), 66, LH - 10, 112, 1, { v: { mouth: 'open' } });
+        bust(g, aq, 254, LH - 10, 112, 1, { flip: true });
+        this.polaroid(g, CX, lerp(-80, 104, eOut(print)), lerp(-0.6, -0.08, print), aq, 150);
+        if (come > 0) { bust(g, look, lerp(LW + 60, 262, eOut(come)), LH - 4, 118, 1, { flip: true, v: { mouth: 'open' } }); anger(g, lerp(LW + 60, 262, eOut(come)) - 20, 130, 1.2, come); }
+      }
+      if (flash > 0) K.flash(g, '#ffffff', 1 - flash);
+    }
+
+    winterShogun(g, x, y, s, T, glowK) {
+      if (glowK > 0) lighter(g, () => glow(g, x, y - 90 * s, 90 * s, '#9ad8ff', 0.5 * glowK));
+      g.save(); g.translate(x, y); g.scale(s, s);
+      for (let i = 0; i < 5; i++) ell(g, rgba('#ffffff', 0.35), -40 + i * 20 + Math.sin(T * 2 + i) * 4, -4, 22, 7);
+      rect(g, '#5a6a8a', -20, -52, 14, 50); rect(g, '#5a6a8a', 6, -52, 14, 50);
+      poly(g, '#7a8aaa', [-34, -46, 34, -46, 26, -84, -26, -84]); for (let i = 0; i < 4; i++) rect(g, '#a8c8e8', -30 + i * 2, -56 - i * 8, 60 - i * 4, 2);
+      rect(g, '#8a9abc', -22, -124, 44, 42); rect(g, '#c8e0f8', -22, -110, 44, 3); rect(g, '#c8e0f8', -22, -98, 44, 3);
+      poly(g, '#a8b8d8', [-22, -124, -46, -116, -42, -96, -22, -104]); poly(g, '#a8b8d8', [22, -124, 46, -116, 42, -96, 22, -104]);
+      rect(g, '#6a7a9a', -40, -98, 12, 30); rect(g, '#6a7a9a', 28, -98, 12, 30);
+      ell(g, '#a8b8d8', 0, -138, 17, 15); poly(g, '#8a9abc', [-26, -134, 26, -134, 20, -126, -20, -126]);
+      poly(g, '#e8d070', [-4, -150, -26, -176, -14, -150]); poly(g, '#e8d070', [4, -150, 26, -176, 14, -150]);
+      rect(g, '#141420', -10, -140, 20, 10); rect(g, '#ff3a4a', -7, -137, 4, 2); rect(g, '#ff3a4a', 3, -137, 4, 2);
+      g.save(); g.translate(34, -72); g.rotate(-0.9); rect(g, '#2a2a3a', -2, 0, 4, 16); rect(g, '#e8d070', -6, -2, 12, 3); poly(g, '#e8f0ff', [-3.5, -2, 3.5, -2, 3, -86, 0, -94, -3, -86]); line(g, '#ffffff', 1, -1, -6, -1, -84); g.restore();
+      g.restore();
+    }
+
+    cut_march_shogun(g, t, T, look) {
+      const draw = seg(t, 0.12, 0.3), fly = seg(t, 0.3, 0.38), grow = seg(t, 0.38, 0.55), run = seg(t, 0.55, 0.66), bow = seg(t, 0.66, 0.72), leave = seg(t, 0.84, 1);
+      shake(g, T, grow > 0 && grow < 0.3 ? 4 : 0);
+      vgrad(g, 0, LH, [[0, '#2a3450'], [0.6, '#6a7a98'], [1, '#a8b4c8']]);
+      poly(g, '#dfe6f0', [0, 160, 90, 150, 200, 158, LW, 148, LW, LH, 0, LH]);
+      K.snowfall(g, T, 30, 62, { speed: 30, wind: 26, a: 0.8 });
+      g.save(); g.globalAlpha = 1 - leave;
+      this.winterShogun(g, 252 + leave * 40, 228, 0.9 + 0.14 * eOut(grow), T, grow);
+      g.restore();
+      const kz = this.lookOf('kazuma');
+      if (bow <= 0) {
+        ell(g, rgba('#000000', 0.25), 72, 232, 18, 4);
+        figure(g, look, 72, 232, 2, { s: 0.78 });
+        const [bx, by] = figAt(72, 232, 1.56, 36, 54);
+        g.strokeStyle = '#d880b0'; g.lineWidth = 2; g.beginPath(); g.arc(bx + 2, by - 6, 22, -1.2, 1.2); g.stroke(); g.lineWidth = 1;
+        const tx = bx + 2 + Math.cos(1.2) * 22, sx2 = bx + 2 - draw * 10 * (fly > 0 ? 0 : 1);
+        line(g, '#ffffff', 1, tx, by - 6 - Math.sin(1.2) * 22, sx2, by - 6); line(g, '#ffffff', 1, sx2, by - 6, tx, by - 6 + Math.sin(1.2) * 22);
+        if (fly > 0 && fly < 1) { const ax = lerp(bx, 250, eIn(fly)); lighter(g, () => { line(g, rgba('#bfe8ff', 0.9), 3, ax - 22, by - 8, ax, by - 10); glow(g, ax, by - 10, 10, '#9ad8ff', 0.9); }); }
+        if (grow > 0 && grow < 1) { K.shards(g, grow, 250, by - 10, 12, 5, '#bfe8ff', 40, '#ffffff'); star4(g, 250, by - 10, 12 * (1 - grow), '#e8f8ff', 1 - grow); }
+        if (run > 0) { const kx = lerp(-30, 40, eOut(run)); ell(g, rgba('#000000', 0.25), kx, 232, 16, 4); figure(g, kz, kx, 232, 2, { s: 0.74, v: { mouth: 'open' } }); }
+      } else {
+        figure(g, kz, 20, 190, 2, { s: 0.6, rot: Math.PI / 2 });
+        figure(g, look, 40, 208, 2, { s: 0.6, rot: Math.PI / 2 });
+        for (let i = 0; i < 3; i++) ell(g, rgba('#bfe8ff', 0.9), 150 + i * 10, 166 - i * 6, 2, 3);
+      }
+      if (grow >= 1 && bow <= 0) { g.save(); g.font = 'bold 12px Georgia, serif'; g.fillStyle = '#1a2a4a'; g.fillText('Поглощено!', 211, 77); g.fillStyle = '#e8f8ff'; g.fillText('Поглощено!', 210, 76); g.restore(); }
+      if (t > 0.76 && leave < 1) bubble(g, 206, 52, '…', seg(t, 0.76, 0.82) * (1 - leave));
+    }
+
+    cut_danheng_card(g, t, T, look) {
+      this.advCard(g, t, T, look, {
+        name: 'Дань Хэн', cls: 'копейщик', stamp: 'О ПРОШЛОМ МОЛЧИТ', stats: [['Сила', 0.54], ['Ловкость', 0.68], ['Магия', 0.46], ['Интеллект', 0.66]], big: ['Хладнокровие', '#2a9a8a', '#d8fff4'],
+        fx: (g, a) => { for (let i = 0; i < 10; i++) { const ph = (T * 0.7 + i / 10) % 1; rect(g, rgba('#d8fff4', a * 0.7 * (1 - ph)), Math.round(130 + ph * 200), Math.round(20 + hx(i, 2, 117) * 200), 18, 1); } }
+      });
+    }
+
+    cut_danheng_archive(g, t, T, look) {
+      const burst = seg(t, 0.62, 0.8);
+      shake(g, T, burst > 0 && burst < 0.25 ? 4 : 0);
+      guildBack(g, T);
+      const cx = 60, cy = 74, w = 120, dh = 28;
+      rect(g, '#5a3a20', cx - 4, cy - 6, w + 8, dh * 4 + 12); rect(g, '#7a5030', cx - 4, cy - 6, w + 8, 4);
+      const labels = ['Казума: кражи', 'Мегумин: взрывы', 'Даркнесс: ...', 'Аква: долги'];
+      labels.forEach((lab, i) => {
+        const k = seg(t, 0.1 + i * 0.14, 0.18 + i * 0.14), y = cy + i * dh, out = (i === 3 ? 26 : 16) * eOut(k) * (i < 3 ? 1 - seg(t, 0.2 + i * 0.14, 0.26 + i * 0.14) : 1);
+        rect(g, '#2a1a10', cx, y, w, dh - 2);
+        rect(g, i === 3 ? '#9a6a3a' : '#8a5a34', cx - out * 0.3, y + out * 0.2, w + out * 0.6, dh - 4 + out * 0.1);
+        if (k > 0 && i === 3) for (let p = 0; p < 6; p++) rect(g, '#f4ead0', cx + 8 + p * 18, y - 4 - (p % 2) * 3, 12, 8);
+        rect(g, '#efe0c0', cx + w / 2 - 30, y + 8 + out * 0.2, 60, 10);
+        g.save(); g.font = '7px Georgia, serif'; g.textAlign = 'center'; g.fillStyle = '#2a1a10'; g.fillText(lab, cx + w / 2, y + 16 + out * 0.2); g.restore();
+        rect(g, '#d8b050', cx + w / 2 - 4, y + 20 + out * 0.2, 8, 2);
+      });
+      ell(g, rgba('#000000', 0.3), 240, 232, 18, 4);
+      figure(g, look, 240, 232, 2, { s: 0.8, flip: true });
+      if (burst > 0) {
+        for (let i = 0; i < 26; i++) { const a = -Math.PI * (0.05 + hx(i, 2, 118) * 0.5), d = eOut(burst) * (60 + hx(i, 3, 118) * 140), px = cx + w / 2 + Math.cos(a) * d * 1.2, py = cy + 3 * dh + Math.sin(a) * d * 0.6 + burst * burst * 120; g.save(); g.translate(px, Math.min(py, 226 - (i % 5) * 6)); g.rotate(T * 3 + i); rect(g, '#f4ead0', -6, -4, 12, 8); rect(g, '#c8b890', -4, -1, 8, 1); g.restore(); }
+        const pile = seg(t, 0.7, 0.86);
+        if (pile > 0) { ell(g, '#efe4c8', 230, 236, 70 * pile, 30 * pile); ell(g, '#f8f0dc', 226, 230, 56 * pile, 22 * pile); for (let i = 0; i < 8; i++) rect(g, '#c8b890', 186 + i * 11, 222 - (i % 3) * 5, 8, 1); }
+      }
+      if (t > 0.84) bubble(g, 240, 100, '…', seg(t, 0.84, 0.9));
+    }
+
+    cut_danheng_tide(g, t, T, look) {
+      const horn = seg(t, 0.06, 0.2), drag = seg(t, 0.16, 0.42), aqk = seg(t, 0.38, 0.56), flood = seg(t, 0.56, 0.8);
+      shake(g, T, flood > 0 && flood < 0.3 ? 5 : 0);
+      guildBack(g, T);
+      const aq = this.lookOf('aqua'), kz = this.lookOf('kazuma');
+      if (flood <= 0) bust(g, kz, CX, LH + 20, 96, 1);
+      ell(g, rgba('#000000', 0.3), 250, 232, 18, 4);
+      figure(g, look, 250, 232, 2, { s: 0.8, flip: true });
+      if (horn > 0) {
+        const u = 1.6, [fx, fy] = G.figEye(look, 1), hx0 = 250 - (fx - 24) * u, hy0 = 232 + (fy - G.FIG_FOOT) * u - 9 * u;
+        for (const d of [-1, 1]) { const bx = hx0 + d * 5 * u; g.save(); g.globalAlpha = horn; poly(g, '#3aa894', [bx - 1.5, hy0 + 2, bx + d * 4, hy0 - 14, bx + d * 8, hy0 - 20, bx + d * 3, hy0 - 10, bx + 1.5, hy0 + 2]); poly(g, '#bff8e8', [bx, hy0, bx + d * 4, hy0 - 14, bx + d * 2, hy0 - 6]); g.restore(); }
+        lighter(g, () => glow(g, hx0, hy0 - 6, 18, '#7ae8c8', 0.6 * horn));
+      }
+      if (drag > 0) lighter(g, () => { g.strokeStyle = rgba('#7ae8d8', 0.8 * (1 - flood)); g.lineWidth = 7; g.beginPath(); for (let i = 0; i <= 40; i++) { const k = i / 40 * drag, q = k * Math.PI * 4 + T * 2, x = 230 - k * 50 + Math.cos(q) * 20, y = 170 - k * 120 + Math.sin(q) * 10; if (i) g.lineTo(x, y); else g.moveTo(x, y); } g.stroke(); g.lineWidth = 1; if (drag > 0.9) { ell(g, rgba('#bff8e8', 0.9 * (1 - flood)), 180, 52, 8, 6); ell(g, '#141420', 182, 50, 1.4, 1.4); } });
+      ell(g, rgba('#000000', 0.3), 70, 232, 18, 4);
+      figure(g, aq, 70, 232, 2, { s: 0.8, v: aqk > 0 ? { mouth: 'open' } : null });
+      if (aqk > 0) lighter(g, () => { for (let i = 0; i < 3; i++) { const w = 10 + i * 6; poly(g, rgba('#7ac8ff', (0.3 - i * 0.08) * (1 - flood * 0.6)), [70 - w, 232, 70 + w, 232, 70 + w * 0.4, 232 - 170 * eOut(aqk), 70 - w * 0.4, 232 - 170 * eOut(aqk)]); } glow(g, 70, 100, 40, '#9ad8ff', 0.3 * aqk); });
+      if (flood > 0) {
+        const lvl = 232 - 90 * eOut(flood);
+        g.save(); g.globalAlpha = 0.75; g.fillStyle = '#3a8ac8'; g.beginPath(); g.moveTo(0, LH); for (let x = 0; x <= LW; x += 8) g.lineTo(x, lvl + Math.sin(x * 0.08 + T * 6) * 4); g.lineTo(LW, LH); g.closePath(); g.fill(); g.restore();
+        bust(g, kz, CX, lvl + 40, 96, 1, { v: { mouth: 'open' } });
+        g.save(); g.globalAlpha = 0.5; g.fillStyle = '#3a8ac8'; g.fillRect(0, lvl + 16, LW, LH); g.restore();
+        for (let x = 0; x <= LW; x += 16) ell(g, rgba('#e8f8ff', 0.8), x + Math.sin(T * 3 + x) * 3, lvl + Math.sin(x * 0.08 + T * 6) * 4 - 1, 5, 1.5);
+        if (flood >= 1) for (let i = 0; i < 4; i++) { const ph = (T + i / 4) % 1; ell(g, rgba('#e8f8ff', 1 - ph), CX - 20 + i * 12, lvl - 4 - ph * 20, 2.5, 2.5); }
+      }
+    }
+
     cut_caelus_card(g, t, T, look, r) {
       this.advCard(g, t, T, look, {
         name: this.trailName('Келус', r), cls: 'главный герой?', stamp: 'ЯДРО ВНУТРИ', stats: [['Сила', 0.6], ['Ловкость', 0.54], ['Магия', 0.42], ['Интеллект', 0.52]], big: ['Стелларон', '#8a5ad8', '#f0e0ff'],
@@ -3047,13 +3236,8 @@
     resultTag(c, r, a) {
       if (a <= 0) return;
       const ui = this.ui;
-      const lines = r.kind === 'char'
-        ? (r.res === 'new' ? [['Новый персонаж!', C.ok], ['вступает в отряд', C.cream]] : r.res === 'eid' ? [['Дубликат', C.sub], ['Эйдолон +1', C.gold]] : [['Дубликат', C.sub], ['+3 000 кредитов', C.gold]])
-        : r.sup > 1 ? [['Дубликат', C.sub], ['Наложение S' + r.sup, C.gold]] : [['Световой конус', C.sub], ['добавлен в инвентарь', C.cream]];
-      const x = W - 196, y = HGT - 108;
       c.save(); c.globalAlpha = cl(a);
-      ui.win(x, y, 182, 50, { alpha: 0.9 });
-      lines.forEach(([s, col], i) => ui.text(s, x + 14, y + 10 + i * 16, { size: i ? 11 : 12, bold: !i, col }));
+      ui.resultTag(W - 196, HGT - 108, r, [['Новый персонаж!', C.ok], ['вступает в отряд', C.cream]]);
       c.restore();
     }
 

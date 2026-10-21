@@ -12,7 +12,7 @@
   const GOLD = 6 * BEAT;
   const TURNS = [[0.02, 0.52], [0.85, 1.35], [1.69, 2.19]];
   const HOP = 0.5;
-  const MALE = new Set(['welt', 'gepard', 'yanqing', 'danheng', 'arlan', 'sampo', 'scar', 'kazuma']);
+  const MALE = new Set(['welt', 'gepard', 'yanqing', 'danheng', 'arlan', 'sampo', 'scar', 'kazuma', 'billy']);
   const QUOTES = { miyabi: 'Приветствую. Я Хосими Мияби, командир Секции 6.', yanagi: 'Здравствуйте. Цукисиро Янаги, заместитель командира Секции 6.', kazuma: 'Сато Казума, авантюрист. Меня засосало в телевизор?' };
   const hx = G.hash;
   const cl = v => (v < 0 ? 0 : v > 1 ? 1 : v);
@@ -481,13 +481,8 @@
     resultTag(c, r, a) {
       if (a <= 0) return;
       const ui = this.ui;
-      const lines = r.kind === 'char'
-        ? (r.res === 'new' ? [['Контракт заключён!', C.ok], ['новый агент в экипаже', C.cream]] : r.res === 'eid' ? [['Дубликат', C.sub], ['Эйдолон +1', C.gold]] : [['Дубликат', C.sub], ['+3 000 кредитов', C.gold]])
-        : r.sup > 1 ? [['Дубликат', C.sub], ['Наложение S' + r.sup, C.gold]] : [['Световой конус', C.sub], ['добавлен в инвентарь', C.cream]];
-      const x = W - 196, y = HGT - 104;
       c.save(); c.globalAlpha = a;
-      ui.win(x, y, 182, 50, { alpha: 0.9 });
-      lines.forEach(([s, col], i) => ui.text(s, x + 14, y + 10 + i * 16, { size: i ? 11 : 12, bold: !i, col }));
+      ui.resultTag(W - 196, HGT - 104, r, [['Контракт заключён!', C.ok], ['новый агент в экипаже', C.cream]]);
       c.restore();
     }
 

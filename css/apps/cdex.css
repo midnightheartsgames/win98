@@ -1,0 +1,270 @@
+#win-cdex .win-window-body {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--win-bg);
+  overflow: hidden;
+  user-select: none;
+}
+
+.cdex-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 6px;
+  gap: 6px;
+}
+
+.cdex-top-meta {
+  display: grid;
+  grid-template-columns: 1fr 210px;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 2px groove #ffffff;
+}
+
+.cdex-meta-fields {
+  display: grid;
+  grid-template-columns: 74px 1fr 48px 90px;
+  gap: 4px 6px;
+  align-items: center;
+}
+
+.cdex-meta-label {
+  font-size: 11px;
+  color: #000000;
+  white-space: nowrap;
+}
+
+.cdex-input {
+  height: 20px;
+  padding: 1px 4px;
+  font-family: var(--win-font);
+  font-size: 11px;
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  box-shadow:
+    inset 1px 1px 0 #808080,
+    inset -1px -1px 0 #ffffff,
+    inset 2px 2px 0 #000000;
+}
+
+.cdex-drive-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4px;
+  padding-left: 6px;
+  border-left: 1px solid #808080;
+}
+
+.cdex-lcd {
+  background: #0b1911;
+  color: #38ff7a;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  padding: 4px 6px;
+  border: 2px inset #808080;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cdex-lcd-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cdex-lcd-sub {
+  font-size: 10px;
+  color: #82d9a0;
+}
+
+.cdex-workspace {
+  flex: 1;
+  display: flex;
+  gap: 6px;
+  min-height: 0;
+}
+
+.cdex-tracklist-wrap {
+  flex: 1;
+  background: #ffffff;
+  overflow-y: auto;
+  box-shadow:
+    inset 1px 1px 0 #808080,
+    inset -1px -1px 0 #ffffff,
+    inset 2px 2px 0 #000000;
+}
+
+.cdex-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.cdex-table th {
+  position: sticky;
+  top: 0;
+  background: #c0c0c0;
+  color: #000000;
+  font-weight: normal;
+  text-align: left;
+  padding: 3px 6px;
+  box-shadow:
+    inset 1px 1px 0 #ffffff,
+    inset -1px -1px 0 #808080;
+  white-space: nowrap;
+}
+
+.cdex-table td {
+  padding: 3px 6px;
+  border-bottom: 1px solid #ececec;
+  white-space: nowrap;
+}
+
+.cdex-table tr.selected {
+  background: #000080;
+  color: #ffffff;
+}
+
+.cdex-table tr.data-track {
+  color: #808080;
+  background: #f6f6f6;
+}
+
+.cdex-table tr.selected.data-track {
+  color: #cccccc;
+  background: #303060;
+}
+
+.cdex-status-pill {
+  display: inline-block;
+  padding: 0 4px;
+  font-size: 10px;
+  font-family: 'Courier New', monospace;
+}
+
+.cdex-status-pill.done {
+  background: #d4f7dc;
+  color: #006622;
+  border: 1px solid #008833;
+}
+
+.cdex-table tr.selected .cdex-status-pill.done {
+  background: #005522;
+  color: #88ffaa;
+}
+
+.cdex-vtoolbar {
+  width: 132px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cdex-vbtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  font-family: var(--win-font);
+  font-size: 11px;
+  text-align: left;
+  background: #c0c0c0;
+  color: #000000;
+  border: none;
+  cursor: pointer;
+  box-shadow:
+    inset 1px 1px 0 #ffffff,
+    inset -1px -1px 0 #000000,
+    inset 2px 2px 0 #dfdfdf,
+    inset -2px -2px 0 #808080;
+}
+
+.cdex-vbtn:active:not(:disabled) {
+  box-shadow:
+    inset 1px 1px 0 #000000,
+    inset -1px -1px 0 #ffffff,
+    inset 2px 2px 0 #808080;
+  padding: 5px 5px 3px 7px;
+}
+
+.cdex-vbtn:disabled {
+  color: #808080;
+  cursor: default;
+}
+
+.cdex-vbtn-badge {
+  width: 26px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Arial Black', Tahoma, sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  color: #ffffff;
+  background: #004080;
+  border: 1px solid #000000;
+  flex-shrink: 0;
+}
+
+.cdex-vbtn-badge.mp3 {
+  background: #802000;
+}
+
+.cdex-vbtn-badge.play {
+  background: #006633;
+}
+
+.cdex-vbtn-badge.cddb {
+  background: #552277;
+}
+
+.cdex-rip-deck {
+  padding: 6px 8px;
+  border: 2px groove #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.cdex-rip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+}
+
+.cdex-progress-outer {
+  height: 16px;
+  background: #ffffff;
+  padding: 2px;
+  box-shadow:
+    inset 1px 1px 0 #808080,
+    inset -1px -1px 0 #ffffff,
+    inset 2px 2px 0 #000000;
+  display: flex;
+  gap: 2px;
+}
+
+.cdex-progress-block {
+  width: 10px;
+  height: 100%;
+  background: #000080;
+  flex-shrink: 0;
+}
+
+.cdex-empty-notice {
+  padding: 26px 16px;
+  text-align: center;
+  color: #404040;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}

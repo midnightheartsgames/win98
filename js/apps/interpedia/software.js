@@ -764,7 +764,7 @@ window.interpediaReg('avp', 'software', {
     'CERT Advisory CA-1999-04: Melissa Macro Virus. — 1999.',
     'Virus Test Center, University of Hamburg. Результаты тестов антивирусов, 1994–1999.'
   ],
-  links: [['http://www.antivirus98.com', 'AntiVirus Lab: база вирусов и проверка диска']],
+  links: [['http://www.avp.ru', 'Лаборатория Касперского (AVP 3.0): официальный сайт, покупка и загрузка Setup_AVP.exe'], ['http://www.antivirus98.com', 'AntiVirus Lab: база вирусов и проверка диска']],
   categories: ['Программы', 'Антивирусы', 'Российские программы']
 }, {
   title: 'Kaspersky Anti-Virus (AVP)',
@@ -822,7 +822,7 @@ After CIH many users thought seriously about backups and regular antivirus updat
     'CERT Advisory CA-1999-04: Melissa Macro Virus, 1999.',
     'Virus Test Center, University of Hamburg. Antivirus test results, 1994–1999.'
   ],
-  links: [['http://www.antivirus98.com', 'AntiVirus Lab: virus database and disk check']],
+  links: [['http://www.avp.ru', 'Kaspersky Lab (AVP 3.0): official site, license store & Setup_AVP.exe download'], ['http://www.antivirus98.com', 'AntiVirus Lab: virus database and disk check']],
   categories: ['Software', 'Antivirus', 'Russian Software']
 });
 
@@ -1677,3 +1677,398 @@ Typing <code>hidden test</code> at the start of a game turns on a debug mode in 
   ],
   categories: ['Software', 'Computer Games', 'Pinball']
 });
+
+window.interpediaReg('trackers', 'software', {
+  title: 'Трекерная музыка (Scream Tracker, FastTracker 2, Impulse Tracker)',
+  infobox: {
+    title: 'Трекеры и модульные форматы',
+    badgeText: 'MOD / S3M / XM / IT',
+    fields: [
+      { label: 'Родоначальник', value: 'Ultimate Soundtracker (Карстен Обарски, [[amigaos|Amiga]], 1987)' },
+      { label: 'Главные программы на ПК', value: 'Scream Tracker 3, FastTracker 2, Impulse Tracker' },
+      { label: 'Форматы файлов', value: '.MOD, .S3M, .XM, .IT' },
+      { label: 'Звуковые платы', value: '[[gravisgus|Gravis UltraSound]], [[soundblaster|Sound Blaster]]' },
+      { label: 'Типичный размер песни', value: 'от 100 до 500 КБ за 3–5 минут музыки' },
+      { label: 'Воспроизведение в Win', value: '[[winamp|Winamp]] (модуль in_mod), ModPlug Player, DeliPlayer' }
+    ]
+  },
+  lead: `<strong>Трекер</strong> — программа для сочинения музыки, в которой композитор вводит ноты, номера инструментов и коды звуковых эффектов в вертикальные колонки («дорожки»), бегущие по экрану сверху вниз. В отличие от файлов MIDI, хранящих только нотную запись и зависящих от встроенного синтезатора звуковой платы, трекерный файл («модуль») содержит внутри себя оцифрованные образцы живых инструментов (сэмплы) и потому звучит одинаково на любом компьютере.
+
+В 1990-х годах модульные форматы <code>MOD</code>, <code>S3M</code>, <code>XM</code> и <code>IT</code> стали главным музыкальным языком [[demoscene|демосцены]], компьютерных журналов на дискетах и десятков игр вплоть до [[unreal|Unreal]] и [[ut99|Unreal Tournament]]: четырёхминутная композиция с ударными, басом и гитарой занимает всего несколько сотен килобайт и легко помещается на одну [[floppy144|дискету]].`,
+  sections: [
+    { id: 'amiga_origins', title: 'От четырех каналов Amiga к персональным компьютерам', content: `Первый трекер, Ultimate Soundtracker, написал в 1987 году немецкий программист Карстен Обарски для компьютера [[amigaos|Commodore Amiga]]. Звуковой чип Paula умел аппаратно воспроизводить четыре независимых канала восьмибитного оцифрованного звука. Обарски представил эти четыре канала как четыре вертикальных столбца текста по 64 строки в каждом блоке («паттерне»). Бесплатные переработки его программы, NoiseTracker и ProTracker, сделали формат <code>.MOD</code> стандартом для тысяч европейских музыкантов.
+
+Когда в начале 1990-х годов участники [[demoscene|демосцены]] начали переходить на IBM PC-совместимые компьютеры, им перестало хватать четырёх дорожек Amiga. Звуковая карта [[soundblaster|Sound Blaster]] позволяла смешивать сколько угодно каналов силами центрального процессора, а выпущенная в 1992 году плата [[gravisgus|Gravis UltraSound]] получила собственную память до 1 МБ для хранения сэмплов и аппаратное сведение до 32 голосов без нагрузки на процессор.` },
+    { id: 'how_it_works', title: 'Как устроен трекерный модуль', content: `Любой трекерный файл состоит из двух частей: набора коротких звуковых записей (сэмплов) и таблицы паттернов. Музыкант записывает через микрофон или вырезает с диска короткий удар барабана, щипок струны или аккорд синтезатора, задаёт точки зацикливания (loop), а трекер меняет высоту звука, ускоряя или замедляя воспроизведение этого образца.
+
+Каждая строчка в колонке канала выглядит как запись вида <code>C-4 01 40 308</code>:
+<ul>
+<li><strong>C-4</strong> — нота и октава (до четвёртой октавы), а символ <code>===</code> или <code>OFF</code> снимает палец с клавиши.</li>
+<li><strong>01</strong> — шестнадцатеричный номер инструмента из банка сэмплов.</li>
+<li><strong>40</strong> — громкость ноты или положение в стереопанораме.</li>
+<li><strong>308</strong> — команда эффекта и её двузначный параметр в шестнадцатеричной системе: <code>0xy</code> даёт быстрое арпеджио (перебор аккорда на одном канале, знакомый по старым приставкам), <code>3xx</code> плавно тянет ноту к следующей (портаменто), <code>4xy</code> включает вибрато, <code>9xx</code> запускает сэмпл с середины, а <code>Fxx</code> меняет темп композиции.</li>
+</ul>` },
+    { id: 'big_three', title: 'Три главных трекера эпохи DOS', content: `<table class="interpedia-wikitable">
+<tr><th>Программа</th><th>Авторы и год</th><th>Формат и число каналов</th><th>Особенности</th></tr>
+<tr><td>Scream Tracker 3</td><td>Сами Таммилехто (Psi из Future Crew), 1994</td><td><code>.S3M</code>, до 32 каналов</td><td>создан для демо [[secondreality|Second Reality]], текстовый интерфейс в стиле DOS, поддержка сэмплов и синтезатора AdLib</td></tr>
+<tr><td>FastTracker 2</td><td>Фредрик Хусс и Магнус Хёгдаль (Triton), 1994–1996</td><td><code>.XM</code>, до 32 каналов</td><td>графический мышиный интерфейс, 16-битные сэмплы, рисование кривых громкости и панорамы, встроенная игра Nibbles</td></tr>
+<tr><td>Impulse Tracker</td><td>Джеффри Лим (Австралия), 1995–1999</td><td><code>.IT</code>, до 64 виртуальных каналов</td><td>продолжение традиций Scream Tracker, резонансные фильтры, наложение затухающих нот (New Note Actions) без обрыва хвоста звука</td></tr>
+</table>
+
+Композиторы сцены разделились на приверженцев мышиного FastTracker 2 и сторонников полностью клавиатурного управления в Scream Tracker 3 и Impulse Tracker, где опытный автор набирает мелодию со скоростью машинистки.` },
+    { id: 'games_and_win', title: 'Трекерная музыка в играх и переход в Win 98', content: `Малый размер модулей и возможность мгновенно переключать паттерны в зависимости от происходящего на экране привлекли разработчиков игр. Композиторы Future Crew Йонне Валтонен (Purple Motion) и Петер Хайба (Skaven), а также Александр Брэндон и Эндрю Сега (Necros) написали трекерные саундтреки для Death Rally, Jazz Jackrabbit, Crusader: No Remorse, [[unreal|Unreal]] и [[ut99|Unreal Tournament]]: когда игрок вступал в перестрелку, движок игры без паузы перепрыгивал со спокойного паттерна на боевой.
+
+К концу 1999 года наряду с программами для [[msdos|MS-DOS]] развиваются трекеры для [[windows95|Win 95]] и [[windows98|Win 98]], такие как ModPlug Tracker Оливье Лапика и связка генераторов с трекером Jeskola Buzz. Слушатели держат коллекции файлов <code>.XM</code> и <code>.IT</code> в плейлистах [[winamp|Winamp]], а архивы вроде Hornet и отечественных музыкальных эхоконференций [[fidonet|ФидоНета]] хранят десятки тысяч авторских композиций.` }
+  ],
+  seeAlso: ['demoscene', 'secondreality', 'gravisgus', 'soundblaster', 'winamp', 'ut99'],
+  references: [
+    'Tammilehto S. Scream Tracker 3.2: документация и описание формата S3M. — Future Crew, 1994.',
+    'Huss F., Högdahl M. FastTracker II manual. — Triton, 1996.',
+    'Lim J. Impulse Tracker 2.14 user documentation. — 1998.'
+  ],
+  links: [['http://www.muzzone98.ru', 'MuzZone \'98: музыкальный портал'], ['http://skins.winamp.com', 'Winamp: проигрывание трекерных модулей и скины']],
+  categories: ['Программы', 'Мультимедиа', 'Демосцена', 'Форматы файлов']
+}, {
+  title: 'Music Trackers (Scream Tracker, FastTracker 2, Impulse Tracker)',
+  infobox: {
+    title: 'Music Trackers & Module Formats',
+    badgeText: 'MOD / S3M / XM / IT',
+    fields: [
+      { label: 'Originator', value: 'Ultimate Soundtracker (Karsten Obarski, [[amigaos|Amiga]], 1987)' },
+      { label: 'Major PC trackers', value: 'Scream Tracker 3, FastTracker 2, Impulse Tracker' },
+      { label: 'File formats', value: '.MOD, .S3M, .XM, .IT' },
+      { label: 'Sound cards', value: '[[gravisgus|Gravis UltraSound]], [[soundblaster|Sound Blaster]]' },
+      { label: 'Typical song size', value: '100 to 500 KB for 3–5 minutes of music' },
+      { label: 'Win playback', value: '[[winamp|Winamp]] (in_mod plug-in), ModPlug Player, DeliPlayer' }
+    ]
+  },
+  lead: `A <strong>music tracker</strong> is a sequencer program in which a composer enters musical notes, instrument numbers and hexadecimal effect commands into vertical columns ("tracks") that scroll down the screen row by row. Unlike MIDI files, which store only sheet-music instructions and sound different on every sound card's synthesizer, a tracker "module" bundles its own recorded digital audio samples inside the file so the song sounds identical on any machine.
+
+Throughout the 1990s the module formats <code>MOD</code>, <code>S3M</code>, <code>XM</code> and <code>IT</code> served as the musical backbone of the [[demoscene|demoscene]], disk magazines and major PC games including [[unreal|Unreal]] and [[ut99|Unreal Tournament]]: a four-minute track with drums, bass and synth leads fits into a few hundred kilobytes on a single [[floppy144|floppy disk]].`,
+  sections: [
+    { id: 'amiga_origins', title: 'From four Amiga channels to the PC', content: `The first tracker, Ultimate Soundtracker, was written in 1987 by German programmer Karsten Obarski for the [[amigaos|Commodore Amiga]]. The Amiga's Paula audio chip played four independent channels of 8-bit digital PCM sound in hardware. Obarski represented those four voices as four vertical text columns of 64 rows per pattern. Free successors such as NoiseTracker and ProTracker turned the <code>.MOD</code> format into a standard across Europe.
+
+As [[demoscene|demoscene]] groups migrated to IBM PC compatibles in the early 1990s, composers outgrew the Amiga's four-channel limit. On a [[soundblaster|Sound Blaster]] card the main CPU could mix eight, sixteen or thirty-two digital channels in software, while the [[gravisgus|Gravis UltraSound]] introduced in 1992 provided up to 1 MB of onboard sample RAM and mixed 32 voices in hardware with almost zero processor overhead.` },
+    { id: 'how_it_works', title: 'How a tracker module works', content: `Every module file packs two things together: a bank of short digital audio recordings (samples) and an order list of patterns. A musician samples a snare hit, a bass pluck or a vocal chord, sets loop points so sustained notes ring out, and lets the tracker pitch the sound up or down by resampling its playback rate.
+
+Each cell in a track column looks like a compact code such as <code>C-4 01 40 308</code>:
+<ul>
+<li><strong>C-4</strong> is the note pitch and octave (middle C in octave 4), while <code>===</code> or <code>OFF</code> releases the key.</li>
+<li><strong>01</strong> is the hexadecimal index of the sample or instrument.</li>
+<li><strong>40</strong> sets channel volume or stereo panning.</li>
+<li><strong>308</strong> is an effect command and its two-digit hex parameter: <code>0xy</code> cycles rapidly through three notes to fake a chord on a single channel (arpeggio), <code>3xx</code> slides pitch smoothly toward the target note (portamento), <code>4xy</code> adds vibrato, <code>9xx</code> starts a sample at an offset, and <code>Fxx</code> changes playback speed or tempo.</li>
+</ul>` },
+    { id: 'big_three', title: 'The three classic DOS trackers', content: `<table class="interpedia-wikitable">
+<tr><th>Program</th><th>Authors and year</th><th>Format and channels</th><th>Highlights</th></tr>
+<tr><td>Scream Tracker 3</td><td>Sami Tammilehto (Psi of Future Crew), 1994</td><td><code>.S3M</code>, up to 32 channels</td><td>written for [[secondreality|Second Reality]], fast keyboard-driven text UI, mixes PCM samples with AdLib FM voices</td></tr>
+<tr><td>FastTracker 2</td><td>Fredrik Huss & Magnus Högdahl (Triton), 1994–1996</td><td><code>.XM</code>, up to 32 channels</td><td>graphical mouse UI, 16-bit samples, drawable volume and panning envelopes, built-in Nibbles game</td></tr>
+<tr><td>Impulse Tracker</td><td>Jeffrey Lim (Australia), 1995–1999</td><td><code>.IT</code>, up to 64 virtual channels</td><td>keyboard workflow inspired by Scream Tracker, resonant filters, New Note Actions that let decaying notes ring out</td></tr>
+</table>
+
+Scene musicians split between the graphical envelope editor of FastTracker 2 and the pure keyboard speed of Scream Tracker 3 and Impulse Tracker, where veteran composers enter patterns without ever touching the mouse.` },
+    { id: 'games_and_win', title: 'Tracker music in games and on Win 98', content: `Because modules take up a fraction of the space of CD audio and can jump seamlessly between pattern orders when combat starts, game studios adopted them widely. Scene composers Jonne Valtonen (Purple Motion), Peter Hajba (Skaven), Alexander Brandon and Andrew Sega (Necros) scored Death Rally, Jazz Jackrabbit, Crusader: No Remorse, [[unreal|Unreal]] and [[ut99|Unreal Tournament]] in tracker formats.
+
+By the end of 1999 native [[windows95|Win 95]] and [[windows98|Win 98]] programs such as Olivier Lapicque's ModPlug Tracker and the modular studio Jeskola Buzz have joined the classic [[msdos|MS-DOS]] trackers, while [[winamp|Winamp]] plays <code>.MOD</code>, <code>.S3M</code>, <code>.XM</code> and <code>.IT</code> files out of the box alongside [[mp3format|MP3]] tracks.` }
+  ],
+  seeAlso: ['demoscene', 'secondreality', 'gravisgus', 'soundblaster', 'winamp', 'ut99'],
+  references: [
+    'Tammilehto, S. Scream Tracker 3.2 documentation and S3M format specification. Future Crew, 1994.',
+    'Huss, F., Högdahl, M. FastTracker II manual. Triton, 1996.',
+    'Lim, J. Impulse Tracker 2.14 user documentation, 1998.'
+  ],
+  links: [['http://www.muzzone98.ru', 'MuzZone \'98: music portal'], ['http://skins.winamp.com', 'Winamp: module playback and skins']],
+  categories: ['Software', 'Multimedia', 'Demoscene', 'File Formats']
+}, ['mod', 's3m', 'xm', 'fasttracker', 'screamtracker', 'impulsetracker']);
+
+window.interpediaReg('outlook', 'software', {
+  title: 'Электронная почта 1990-х (Outlook Express, The Bat!, Eudora)',
+  infobox: {
+    title: 'Электронная почта и почтовые клиенты',
+    badgeText: 'SMTP / POP3 / MIME',
+    fields: [
+      { label: 'Протоколы отправки и приёма', value: 'SMTP (RFC 821), POP3 (RFC 1939), IMAP4' },
+      { label: 'Вложения и кодировки', value: 'MIME (Base64, Quoted-Printable), UUEncode' },
+      { label: 'Стандартный клиент Win 98', value: 'Microslop Outlook Express (msimn.exe)' },
+      { label: 'Популярные программы', value: 'The Bat!, Eudora, Netscape Messenger, Pegasus Mail' },
+      { label: 'Бесплатная веб-почта', value: 'Hotmail (1996), Yahoo! Mail (1997), Mail.ru (октябрь 1998)' },
+      { label: 'Главный почтовый вирус 1999', value: 'Melissa (26 марта 1999)' }
+    ]
+  },
+  lead: `<strong>Электронная почта</strong> (<em>e-mail</em>, в русском компьютерном жаргоне — «мыло») — главная прикладная служба Интернета, позволяющая обмениваться письмами и прикреплёнными файлами за считанные минуты. Для домашнего пользователя [[windows98|Win 98]] рабочий день в Сети начинается с кнопки «Доставить почту»: программа дозванивается до провайдера по [[dialup|модему]], забирает новые сообщения из почтового ящика на жёсткий диск и разрывает связь, чтобы читать и писать ответы бесплатно без тикающего телефонного счётчика.
+
+В конце 1990-х годов рынок почтовых программ определяют встроенный в систему <strong>Microslop Outlook Express</strong>, классическая американская <strong>Eudora</strong> и завоевавший популярность в России и СНГ клиент <strong>The Bat!</strong>, а быстрое распространение автоматических адресных книг привело весной 1999 года к первой всемирной эпидемии почтового червя Melissa.`,
+  sections: [
+    { id: 'protocols', title: 'Как ходит почта: SMTP, POP3 и вложения', content: `В отличие от разговоров в [[icq|ICQ]] или [[irc|IRC]], электронная почта не требует, чтобы отправитель и получатель находились в Сети одновременно. Пересылка опирается на пару текстовых протоколов:
+<ul>
+<li><strong>SMTP (Simple Mail Transfer Protocol, порт 25)</strong> отвечает за отправку исходящих писем с компьютера пользователя на сервер провайдера и далее между почтовыми узлами Интернета.</li>
+<li><strong>POP3 (Post Office Protocol 3, порт 110)</strong> используется для забора пришедших писем из личного ящика на локальный диск, после чего копии на сервере обычно удаляются, чтобы не превысить выделенную провайдером квоту в 2–5 мегабайт. Протокол <strong>IMAP4</strong> позволяет хранить письма на самом сервере, но требует постоянного подключения.</li>
+</ul>
+
+Поскольку почтовые серверы изначально создавались только для передачи семибитного латинского текста ASCII, любые русские буквы, картинки и архивы [[winrar|RAR]] или [[winzip|ZIP]] перед отправкой перекодируются по стандарту <strong>MIME</strong> (обычно в таблицу Base64) или старым способом <strong>UUEncode</strong> (узнаваемым по строчке <code>begin 644 filename</code>), отчего размер прикреплённого файла в пути вырастает примерно на треть.` },
+    { id: 'outlook_express', title: 'Microslop Outlook Express в составе Win 98 и IE 5', content: `Вместе с браузером [[ie5|Internet Explorer]] 4.0 и 5.0 в состав [[windows98|Win 98]] вошла программа <strong>Outlook Express</strong> (исполняемый файл <code>msimn.exe</code>), заменившая прежний модуль Internet Mail and News. В отличие от «большого» пакета Outlook из состава [[office97|Office 97]], рассчитанного на корпоративные серверы Exchange и планирование совещаний, Outlook Express создан специально для домашней интернет-почты и чтения телеконференций [[usenet|Usenet]].
+
+Программа предлагает три панели (папки, список писем и окно предпросмотра), единую адресную книгу с расширением <code>.WAB</code>, правила сортировки писем по папкам и оформление сообщений в формате [[html|HTML]] с цветными бланками, фоновыми рисунками и звуками. Именно включение автоматического предпросмотра HTML-писем и выполнение сценариев вызвало нарекания специалистов по безопасности.` },
+    { id: 'thebat_webmail', title: 'The Bat!, Eudora и появление бесплатной веб-почты', content: `Опытные пользователи и системные администраторы часто заменяют стандартный клиент альтернативными программами:
+<dl>
+<dt>The Bat! («Летучая мышь», RITlabs, Кишинёв)</dt><dd>программа молдавской компании RITlabs, вышедшая в 1998 году и ставшая любимым почтовым клиентом в [[runet|Рунете]]. Она мгновенно переключает русские кодировки (KOI8-R, CP1251, CP866, ISO), не использует движок браузера для показа писем, поддерживает умные шаблоны ответов с макросами и умеет диспетчером просматривать заголовки писем прямо на сервере POP3, позволяя удалить тяжёлый рекламный спам до начала загрузки по медленному модему.</dd>
+<dt>Qualcomm Eudora и Netscape Messenger</dt><dd>старейший почтовый клиент для Win и Macintosh, популярный в университетах, и почтовый модуль пакета [[netscape|Netscape Communicator]].</dd>
+<dt>Веб-почта (Hotmail и Mail.ru)</dt><dd>запущенная в июле 1996 года и купленная Microslop в конце 1997 года служба Hotmail позволила читать почту из любого браузера в интернет-кафе или гостях. В октябре 1998 года петербургская компания DataArt открыла бесплатную русскоязычную службу <code>Mail.ru</code>, которая за год набрала сотни тысяч ящиков.</dd>
+</dl>` },
+    { id: 'melissa', title: 'Эпидемия вируса Melissa в марте 1999 года', content: `26 марта 1999 года электронная почта впервые показала, как быстро вредоносная программа способна обогнуть земной шар без участия дискет. Написанный американцем Дэвидом Смитом вирус <strong>Melissa</strong> распространялся в документе Word <code>LIST.DOC</code> с паролями к сайтам. Стоило получателю открыть файл в Word 97 или Word 2000, макрос внутри документа обращался к адресной книге Outlook и без ведома хозяина рассылал копии письма первым пятидесяти знакомым со строчкой темы «Important Message From...» и именем самого отправителя.
+
+Друзья доверяли письму от знакомого человека и открывали вложение снова. За двое суток лавина писем остановила почтовые серверы сотен корпораций и государственных ведомств США и Европы. После мартовской эпидемии Melissa и последовавшего в июне червя <code>ExploreZip</code> проверка вложений антивирусами вроде [[avp|AVP]] и отказ от запуска незнакомых файлов <code>.DOC</code> и <code>.EXE</code> из писем стали главным правилом компьютерной гигиены.` }
+  ],
+  seeAlso: ['ie5', 'netscape', 'usenet', 'dialup', 'avp', 'runet'],
+  references: [
+    'Postel J. RFC 821: Simple Mail Transfer Protocol. — 1982; Myers J., Rose M. RFC 1939: Post Office Protocol — Version 3. — 1996.',
+    'Справочная система Microslop Outlook Express 5. — Microslop, 1999.',
+    'CERT Advisory CA-99-04: Melissa Macro Virus. — Март 1999.'
+  ],
+  links: [['http://www.microslop.com', 'Портал Microslop Win 98: обновления Outlook Express'], ['http://www.retrocure98.com', 'RetroCure Antivirus Center: защита от почтовых червей']],
+  categories: ['Программы', 'Интернет', 'Электронная почта', 'Продукты Microslop']
+}, {
+  title: '1990s Email Clients (Outlook Express, The Bat!, Eudora)',
+  infobox: {
+    title: 'Email & Mail Clients',
+    badgeText: 'SMTP / POP3 / MIME',
+    fields: [
+      { label: 'Transport protocols', value: 'SMTP (RFC 821), POP3 (RFC 1939), IMAP4' },
+      { label: 'Attachments & encoding', value: 'MIME (Base64, Quoted-Printable), UUEncode' },
+      { label: 'Default Win 98 client', value: 'Microslop Outlook Express (msimn.exe)' },
+      { label: 'Popular alternatives', value: 'The Bat!, Eudora, Netscape Messenger, Pegasus Mail' },
+      { label: 'Free webmail services', value: 'Hotmail (1996), Yahoo! Mail (1997), Mail.ru (October 1998)' },
+      { label: 'Major 1999 email worm', value: 'Melissa (March 26, 1999)' }
+    ]
+  },
+  lead: `<strong>Electronic mail</strong> (<em>e-mail</em>, nicknamed "mylo" or "soap" in Russian computer slang) is the foundational communication service of the Internet, delivering messages and attached files across the world in minutes. For a home [[windows98|Win 98]] user on a metered phone line, an online session begins with the "Send and Receive" button: the mail client dials the provider over a [[dialup|modem]], pulls waiting messages down to the hard disk and hangs up so the user can read and compose replies offline without running up the phone bill.
+
+At the close of the 1990s desktop mail is defined by the bundled <strong>Microslop Outlook Express</strong>, the veteran <strong>Eudora</strong> client and RITlabs' <strong>The Bat!</strong>, while the convenience of automated address books set the stage in spring 1999 for the first global email worm epidemic, Melissa.`,
+  sections: [
+    { id: 'protocols', title: 'How mail travels: SMTP, POP3 and MIME attachments', content: `Unlike live chat on [[icq|ICQ]] or [[irc|IRC]], email operates on a store-and-forward model that relies on two plain-text protocols:
+<ul>
+<li><strong>SMTP (Simple Mail Transfer Protocol, port 25)</strong> pushes outgoing messages from the user's PC to the ISP's mail relay and across Internet mail hosts.</li>
+<li><strong>POP3 (Post Office Protocol 3, port 110)</strong> downloads incoming messages from the user's mailbox to local folders on disk, normally deleting the server copies afterward so the account does not hit the ISP's 2–5 MB storage quota. <strong>IMAP4</strong> keeps mail organized on the server itself but requires staying connected.</li>
+</ul>
+
+Because Internet mail relays were originally designed around 7-bit ASCII text, non-Latin alphabets, pictures and [[winrar|RAR]] or [[winzip|ZIP]] archives must be encoded into printable text using <strong>MIME</strong> (typically Base64) or classic <strong>UUEncode</strong> blocks (recognizable by the <code>begin 644 filename</code> header), which adds roughly 33 percent to the size of every attachment in transit.` },
+    { id: 'outlook_express', title: 'Microslop Outlook Express in Win 98 and IE 5', content: `Bundled with [[ie5|Internet Explorer]] 4.0 and 5.0 as well as [[windows98|Win 98]], <strong>Outlook Express</strong> (<code>msimn.exe</code>) replaced the earlier Internet Mail and News applet. Unlike the full corporate Outlook included in [[office97|Office 97]] for Exchange servers and group scheduling, Outlook Express is built as a fast consumer mail and [[usenet|Usenet]] newsgroup reader.
+
+Its three-pane window combines local mail folders, a message list and a live preview pane with a shared <code>.WAB</code> Win Address Book, message-filtering rules and rich [[html|HTML]] stationery with background textures and sound effects. Because the preview pane renders HTML mail through the browser engine, security researchers have repeatedly warned users about scripts and active content hidden inside incoming messages.` },
+    { id: 'thebat_webmail', title: 'The Bat!, Eudora and the rise of free webmail', content: `Power users and system administrators frequently install third-party mail clients or turn to browser-based webmail:
+<dl>
+<dt>The Bat! (RITlabs, Chișinău)</dt><dd>released in 1998 by the Moldovan company RITlabs, The Bat! has become the favorite mail client on the [[runet|Russian Internet]]. It switches Cyrillic encodings (KOI8-R, CP1251, CP866, ISO) with a single keystroke, avoids using a browser engine to render HTML, automates replies with macro templates and includes a Remote Mail Dispatcher that inspects message headers directly on the POP3 server so a user can delete a multi-megabyte spam attachment before downloading it over a slow modem.</dd>
+<dt>Qualcomm Eudora and Netscape Messenger</dt><dd>the classic cross-platform mail program favored on university campuses and the mail component bundled with [[netscape|Netscape Communicator]].</dd>
+<dt>Webmail (Hotmail and Mail.ru)</dt><dd>launched in July 1996 and acquired by Microslop at the end of 1997, Hotmail let travelers check mail from any browser at an Internet cafe. In October 1998 St. Petersburg firm DataArt launched the free Russian webmail service <code>Mail.ru</code>, which grew to hundreds of thousands of accounts within its first year.</dd>
+</dl>` },
+    { id: 'melissa', title: 'The March 1999 Melissa worm epidemic', content: `On March 26, 1999, electronic mail demonstrated how fast malicious code could circle the globe without a single floppy disk changing hands. Written by New Jersey programmer David L. Smith, the <strong>Melissa</strong> macro virus arrived attached as a Word document named <code>LIST.DOC</code>. When opened in Word 97 or Word 2000, its Visual Basic macro silently accessed the victim's Outlook address book and mailed copies of itself to the first fifty contacts under the subject line "Important Message From..." followed by the victim's own name.
+
+Because recipients recognized the sender's name, they opened the attachment in turn. Within forty-eight hours the exponential flood of messages forced hundreds of corporate and government mail servers across North America and Europe to shut down. Following Melissa and the June 1999 <code>ExploreZip</code> worm, scanning incoming attachments with [[avp|AVP]] and never opening unexpected <code>.DOC</code> or <code>.EXE</code> files became the first rule of email safety.` }
+  ],
+  seeAlso: ['ie5', 'netscape', 'usenet', 'dialup', 'avp', 'runet'],
+  references: [
+    'Postel, J. RFC 821: Simple Mail Transfer Protocol, 1982; Myers, J., Rose, M. RFC 1939: Post Office Protocol — Version 3, 1996.',
+    'Microslop Outlook Express 5 Help System. Microslop, 1999.',
+    'CERT Advisory CA-99-04: Melissa Macro Virus, March 1999.'
+  ],
+  links: [['http://www.microslop.com', 'Microslop Win 98 Portal: Outlook Express updates'], ['http://www.retrocure98.com', 'RetroCure Antivirus Center: email worm alerts']],
+  categories: ['Software', 'Internet', 'Email', 'Microslop Products']
+}, ['email', 'thebat', 'eudora', 'melissa', 'outlookexpress']);
+
+window.interpediaReg('steam', 'software', {
+  title: 'Клиент Steam (цифровой магазин и библиотека игр для Win 98)',
+  hatnote: 'Статья о клиентской программе Steam и сайте www.steampowered.com в нашей системе Microslop Win 98.',
+  infobox: {
+    title: 'Steam',
+    badgeText: 'Valve Corporation',
+    fields: [
+      { label: 'Разработчик', value: 'Valve Corporation' },
+      { label: 'Официальный сайт', value: 'http://www.steampowered.com' },
+      { label: 'Установщик', value: 'SteamInstall.exe (в папке «Загрузки»)' },
+      { label: 'Папка установки игр', value: 'C:\\Games' },
+      { label: 'Разделы клиента', value: 'Магазин (Store), Библиотека (Library), Загрузки (Downloads)' },
+      { label: 'Платформа', value: '[[win98clone|Microslop Win 98]]' }
+    ]
+  },
+  lead: `<strong>Steam</strong> — клиентская программа и сетевая служба компании Valve Corporation (создателей [[halflife|Half-Life]]), предназначенная для покупки, загрузки, установки и запуска компьютерных игр напрямую через Интернет. В нашей системе [[win98clone|Microslop Win 98]] программа заменяет походы за коробочными дисками и сборниками: ни одна полная игра не предустановлена заранее, а весь игровой каталог загружается через клиент Steam.
+
+Сам клиент скачивается бесплатно с официального сайта <code>http://www.steampowered.com</code> в браузере [[ie5|Internet Explorer]] в виде установщика <code>SteamInstall.exe</code>, после чего на рабочем столе и в меню «Пуск» появляется ярлык в фирменных тёмно-оливковых тонах интерфейса Valve.`,
+  sections: [
+    { id: 'installation', title: 'Загрузка с сайта steampowered.com и устройство окна', content: `Чтобы установить службу на чистую систему, пользователь открывает в [[ie5|Internet Explorer]] адрес <code>http://www.steampowered.com</code> и нажимает кнопку загрузки клиента. Файл <code>SteamInstall.exe</code> сохраняется в папку «Мои документы\\Загрузки», а мастер установки размещает файлы программы на диске <code>C:</code>.
+
+Интерфейс Steam выполнен в тёмно-оливковой и графитовой гамме VGUI, знакомой игрокам по меню [[halflife|Half-Life]] и Team Fortress Classic. Верхняя панель переключает три основных раздела:
+<ul>
+<li><strong>Магазин (Store)</strong> — витрина с поиском по названию, фильтрацией по жанрам и меткам (шутеры, стратегии, ролевые игры, гонки, 3D-ускорение), ценами и кнопкой пополнения встроенного кошелька.</li>
+<li><strong>Библиотека (Library)</strong> — список приобретённых игр со статусом установки, карточкой описания, системными требованиями и парой полноразмерных снимков экрана в разрешении 640×480.</li>
+<li><strong>Загрузки (Downloads)</strong> — очередь передачи данных по сети с индикатором скорости, прогресс-баром и автоматической распаковкой файлов.</li>
+</ul>` },
+    { id: 'workflow', title: 'Покупка, скачивание и размещение в C:\\Games', content: `В отличие от обычных веб-страниц, где архив игры нужно вручную распаковывать через [[winrar|WinRAR]] или [[winzip|WinZip]], Steam берёт на себя весь путь от оплаты до ярлыка на рабочем столе:
+<ol>
+<li>Пользователь выбирает игру в каталоге магазина (часть игр, таких как <em>Honkai: Star Rail 98</em>, распространяется бесплатно, а для остальных используется баланс кошелька).</li>
+<li>После нажатия кнопки «Скачать» клиент ставит пакет в очередь загрузки и по завершении предлагает запустить установку.</li>
+<li>Установленная игра прописывается в системный каталог <code>C:\\Games</code>, добавляет свою строку в меню «Пуск → Программы → Игры» и выводит значок на рабочий стол.</li>
+<li>При попытке открыть ярлык ещё не установленной игры система автоматически открывает её карточку прямо в окне Steam.</li>
+</ol>
+
+Единственные исключения из этого правила в системе — демонстрационные версии с компакт-диска журнала «Игромания» на приводе <code>D:</code> и бесплатный установщик <code>StarRail98_Setup.exe</code> с официального сайта <code>http://hsr.hoyoverse.com</code>, который после установки также привязывает игру к библиотеке Steam.` },
+    { id: 'catalog_classics', title: 'Классика 1990-х в каталоге Steam', content: `Каталог службы охватывает главные вехи компьютерных игр десятилетия:
+<ul>
+<li><strong>Шутеры от первого лица:</strong> [[wolf3d|Wolfenstein 3D]], [[doom|DOOM]], [[quake|Quake]], [[quake2|Quake II]], [[quake3|Quake III Arena]], [[halflife|Half-Life]], [[unreal|Unreal]], [[ut99|Unreal Tournament]], [[dukenukem3d|Duke Nukem 3D]] и [[systemshock2|System Shock 2]].</li>
+<li><strong>Стратегии и симуляторы:</strong> [[warcraft2|Warcraft II]], [[starcraft|StarCraft]], [[redalert|Command & Conquer: Red Alert]], [[ageofempires|Age of Empires]], [[homm3|Heroes of Might and Magic III]] и [[simcity2000|SimCity 2000]].</li>
+<li><strong>Ролевые игры и квесты:</strong> [[fallout|Fallout]], [[fallout2|Fallout 2]], [[baldursgate|Baldur's Gate]], [[diablo|Diablo]], [[diablo2|Diablo II]], [[grimfandango|Grim Fandango]] и движок [[scumm|SCUMM]].</li>
+</ul>` },
+    { id: 'catalog_98', title: 'Специальные издания для Win 98', content: `Помимо классических выпусков, в магазине представлены специальные издания и главы, адаптированные под [[win98clone|Microslop Win 98]]:
+<ul>
+<li><strong>Боевики и открытый город:</strong> неонуарный боевик [[maxpayne|Max Payne]] (первая часть «The American Dream» и тренировка DEA), трёхмерный файтинг [[tekken3|Tekken 3 98]], а также криминальные игры [[gta|Grand Theft Auto: Нижний Сити]] и [[gta|Grand Theft Auto: Екатеринбург '90]].</li>
+<li><strong>Командные арены и ролевые главы:</strong> тактические арены 5 на 5 [[dota|Dota 98 и League of Legends 98]], а также трёхмерные ролевые игры [[bioware98|Star Wars: Knights of the Old Republic 98 и Dragon Age: Origins 98]].</li>
+<li><strong>Оригинальные проекты системы:</strong> неоновая аркадная гонка [[neonracer|Neon Racer 98]], визуальная новелла [[digicharat|Di Gi Charat]], пошаговая ролевая игра <em>Honkai: Star Rail 98</em> и приключения в Зоне отчуждения.</li>
+</ul>` }
+  ],
+  seeAlso: ['win98clone', 'halflife', 'ie5', 'quake3', 'dota', 'bioware98', 'gta'],
+  references: [
+    'Steam Client for Win 98: руководство пользователя. — Valve Corporation / www.steampowered.com.',
+    'Каталог игр и системные требования Steam. — www.steampowered.com, декабрь 1999.'
+  ],
+  links: [['http://www.steampowered.com', 'Официальный сайт и веб-каталог Steam'], ['http://www.valvesoftware.com', 'Официальный сайт Valve Software'], ['http://www.winsoft98.com', 'Каталог программ WinSoft 98']],
+  categories: ['Программы', 'Компьютерные игры', 'Интернет', 'Наш проект']
+}, {
+  title: 'Steam Client (Digital Store and Game Library for Win 98)',
+  hatnote: 'This article covers the Steam desktop client and www.steampowered.com in our Microslop Win 98 system.',
+  infobox: {
+    title: 'Steam',
+    badgeText: 'Valve Corporation',
+    fields: [
+      { label: 'Developer', value: 'Valve Corporation' },
+      { label: 'Official website', value: 'http://www.steampowered.com' },
+      { label: 'Installer', value: 'SteamInstall.exe (saved to Downloads)' },
+      { label: 'Game directory', value: 'C:\\Games' },
+      { label: 'Client tabs', value: 'Store, Library, Downloads' },
+      { label: 'Platform', value: '[[win98clone|Microslop Win 98]]' }
+    ]
+  },
+  lead: `<strong>Steam</strong> is a desktop client and online distribution service created by Valve Corporation (developers of [[halflife|Half-Life]]) for buying, downloading, installing and launching PC games over the Internet. In our [[win98clone|Microslop Win 98]] environment, no full commercial games come preinstalled: every title in the catalog is acquired and managed through the Steam client.
+
+Users download the client for free from <code>http://www.steampowered.com</code> in [[ie5|Internet Explorer]] as <code>SteamInstall.exe</code>, which places the olive-and-charcoal Valve launcher on the desktop and in the Start menu.`,
+  sections: [
+    { id: 'installation', title: 'Downloading from steampowered.com and the VGUI interface', content: `On a fresh system, visiting <code>http://www.steampowered.com</code> in [[ie5|Internet Explorer]] and clicking the download button saves <code>SteamInstall.exe</code> to the Downloads folder. Running the setup wizard installs the Steam client onto drive <code>C:</code>.
+
+Styled in the dark olive-green and slate VGUI palette introduced by [[halflife|Half-Life]], the client window is organized around three top navigation tabs:
+<ul>
+<li><strong>Store:</strong> a browsable catalog with search, genre and tag filters (shooters, strategy, RPGs, racing, 3D-accelerated titles), prices and a built-in wallet balance.</li>
+<li><strong>Library:</strong> the player's owned games, complete with installation status, full descriptions, hardware requirements and pairs of 640×480 in-game screenshots.</li>
+<li><strong>Downloads:</strong> an active transfer queue with progress bars, transfer rates and one-click installation once a package finishes downloading.</li>
+</ul>` },
+    { id: 'workflow', title: 'Buying, downloading and installing into C:\\Games', content: `Instead of manually unpacking multi-volume [[winrar|WinRAR]] or [[winzip|WinZip]] archives, Steam handles the entire lifecycle of a game:
+<ol>
+<li>The player purchases a title in the Store using the built-in wallet (or claims free-to-play titles such as <em>Honkai: Star Rail 98</em> at no cost).</li>
+<li>Clicking Download queues the package in the Downloads tab and unpacks the game upon completion.</li>
+<li>Installing the downloaded package writes its files into <code>C:\\Games</code>, registers a Start menu shortcut and places a launch icon on the desktop.</li>
+<li>Attempting to launch a game that is not yet installed directs the player straight to its page inside the Steam client.</li>
+</ol>
+
+The only exceptions in the system are playable magazine demos installed from the Igromania cover [[cdrom|CD-ROM]] in drive <code>D:</code> and the standalone <code>StarRail98_Setup.exe</code> installer from <code>http://hsr.hoyoverse.com</code>, which automatically registers the game in the player's Steam library upon installation.` },
+    { id: 'catalog_classics', title: '1990s PC classics in the catalog', content: `The Steam store brings together the defining PC games of the decade:
+<ul>
+<li><strong>First-person shooters:</strong> [[wolf3d|Wolfenstein 3D]], [[doom|DOOM]], [[quake|Quake]], [[quake2|Quake II]], [[quake3|Quake III Arena]], [[halflife|Half-Life]], [[unreal|Unreal]], [[ut99|Unreal Tournament]], [[dukenukem3d|Duke Nukem 3D]] and [[systemshock2|System Shock 2]].</li>
+<li><strong>Strategy and simulation:</strong> [[warcraft2|Warcraft II]], [[starcraft|StarCraft]], [[redalert|Command & Conquer: Red Alert]], [[ageofempires|Age of Empires]], [[homm3|Heroes of Might and Magic III]] and [[simcity2000|SimCity 2000]].</li>
+<li><strong>Role-playing and adventure games:</strong> [[fallout|Fallout]], [[fallout2|Fallout 2]], [[baldursgate|Baldur's Gate]], [[diablo|Diablo]], [[diablo2|Diablo II]], [[grimfandango|Grim Fandango]] and [[scumm|SCUMM]] adventures.</li>
+</ul>` },
+    { id: 'catalog_98', title: 'Special Win 98 editions', content: `Alongside classic releases, the store features special editions and playable chapters built for [[win98clone|Microslop Win 98]]:
+<ul>
+<li><strong>Action and open-city crime:</strong> the neo-noir thriller [[maxpayne|Max Payne]] (Part I "The American Dream" and the DEA training course), 3D fighter [[tekken3|Tekken 3 98]], and the open-city crime games [[gta|Grand Theft Auto: Nizhny City]] and [[gta|Grand Theft Auto: Yekaterinburg '90]].</li>
+<li><strong>Team battle arenas and 3D RPGs:</strong> 5v5 lane arenas [[dota|Dota 98 and League of Legends 98]], plus BioWare's [[bioware98|Star Wars: Knights of the Old Republic 98 and Dragon Age: Origins 98]].</li>
+<li><strong>Original system titles:</strong> the synthwave arcade racer [[neonracer|Neon Racer 98]], visual novel [[digicharat|Di Gi Charat]], turn-based sci-fi RPG <em>Honkai: Star Rail 98</em> and Zone survival adventures.</li>
+</ul>` }
+  ],
+  seeAlso: ['win98clone', 'halflife', 'ie5', 'quake3', 'dota', 'bioware98', 'gta'],
+  references: [
+    'Steam Client for Win 98 user guide. Valve Corporation / www.steampowered.com.',
+    'Steam Game Catalog and System Requirements. www.steampowered.com, December 1999.'
+  ],
+  links: [['http://www.steampowered.com', 'Official Steam website and web store'], ['http://www.valvesoftware.com', 'Valve Software official site'], ['http://www.winsoft98.com', 'WinSoft 98 Software Catalog']],
+  categories: ['Software', 'Computer Games', 'Internet', 'Our Project']
+}, ['steampowered', 'steam98']);
+
+window.interpediaReg('encarta', 'software', {
+  title: 'Microslop Encarta',
+  infobox: {
+    title: 'Microslop Encarta',
+    badgeText: 'ENCARTA.EXE',
+    fields: [
+      { label: 'Издатель', value: 'Microslop Corporation (подразделение Microslop Home)' },
+      { label: 'Первый выпуск', value: 'март 1993 года (проект Gandalf)' },
+      { label: 'Актуальная версия', value: 'Encarta Encyclopedia 99 / 2000 (2–3 [[cdrom|CD-ROM]] или 1 DVD-ROM)' },
+      { label: 'Текстовая основа', value: 'Funk & Wagnalls New Encyclopedia и материалы Collier\'s' },
+      { label: 'Встроенная игра', value: 'викторина в средневековом замке MindMaze' },
+      { label: 'Платформа', value: '[[windows98|Microslop Win]] и Apple [[macos8|Macintosh]]' }
+    ]
+  },
+  lead: `<b>Microslop Encarta</b> — коммерческая мультимедийная энциклопедия для компьютеров под управлением [[windows98|Microslop Win]], выпускаемая корпорацией Microslop с марта 1993 года на компакт-дисках [[cdrom|CD-ROM]], а с конца 1990-х годов также на DVD-ROM и по платной подписке в Интернете. Соединив десятки тысяч энциклопедических статей с фотографиями, звуковыми записями речи и музыки, видеохроникой, интерактивным атласом мира и встроенной средневековой игрой-викториной <i>MindMaze</i>, Encarta стала главным символом домашнего «мультимедийного ПК» 1990-х годов и нанесла сокрушительный удар по многовековому рынку многотомных бумажных энциклопедий. В конце 1999 года закрытая коммерческая модель Encarta сама испытывает давление со стороны бесплатных интернет-справочников и открытой [[interpedia|Интерпедии]].`,
+  sections: [
+    { id: 'history', title: 'Проект Gandalf и победа над бумажной «Британникой»', content: `В 1989 году корпорация Microslop задумала выпустить эталонную мультимедийную энциклопедию под кодовым именем <i>Gandalf</i>, которая показала бы покупателям, зачем домашнему компьютеру нужен привод [[cdrom|CD-ROM]] и звуковая карта [[soundblaster|Sound Blaster]]. Первоначально компания обратилась к издательству <i>Encyclopædia Britannica</i> — старейшей англоязычной энциклопедии, чьё 32-томное печатное издание в кожаном переплёте продавалось коммивояжёрами по цене от 1500 до 2000 долларов. Руководство «Британники», опасаясь подорвать доходы от бумажных томов, ответило отказом (после того как ещё в 1989 году выпустило более скромную энциклопедию <i>Compton's MultiMedia Encyclopedia</i>).
+
+Тогда Microslop приобрела лицензию на текст 29-томной американской энциклопедии <b>Funk & Wagnalls New Encyclopedia</b>, продававшейся в супермаркетах, наняла штат редакторов, дизайнеров и программистов и в марте 1993 года выпустила первое издание <b>Microslop Encarta</b>. Первоначальная розничная цена в 395 долларов уже к концу 1993 года была снижена до 99 долларов, а миллионам покупателей новых компьютеров диск с Encarta доставался бесплатно в комплекте с приводом CD-ROM и справочником <i>Microslop Bookshelf</i>. К 1996 году продажи бумажной «Британники» рухнули более чем вдвое, вынудив старейшее издательство сменить владельцев и срочно переносить свои тома на компакт-диски и в Интернет.` },
+    { id: 'multimedia', title: 'Мультимедийные возможности Encarta 99 и 2000', content: `В отличие от сухих текстовых справочников, Encarta строилась вокруг интерактивного интерфейса <i>Pinpointer</i> и принципа «живой книги». К выпуску <b>Encarta 99</b> и осеннего пакета <b>Encarta Reference Suite 2000</b> (занимающего три диска CD-ROM или один новый диск DVD-ROM, что избавляет от постоянной просьбы <i>«Вставьте диск 2»</i>) энциклопедия включает:
+<ul>
+<li>более <b>32 000–42 000 статей</b> (включая приобретённые в 1997 году материалы классической энциклопедии <i>Collier's Encyclopedia</i>);</li>
+<li>тысячи аудиофрагментов — от записей голосов исторических деятелей и гимнов всех государств мира до образцов народных инструментов и пения птиц;</li>
+<li>короткие видеоролики в форматах AVI и MPEG (высадка «Аполлона-11» на Луну, падение Берлинской стены, извержения вулканов);</li>
+<li>круговые <b>360-градусные панорамы</b> (<i>Virtual Tours</i>) Колизея, Великих пирамид, Венеции и тропических лесов, которые можно вращать мышью.</li>
+</ul>` },
+    { id: 'mindmaze', title: 'Замок MindMaze и трёхмерный глобус', content: `Самой любимой частью диска для школьников 1990-х стала встроенная игра-викторина <b>MindMaze</b> («Лабиринт разума»): игрок бродит по комнатам рисованного средневекового замка под старинную музыку на лютне, и чтобы открыть очередную дверь или пройти мимо придворного шута, стражника, звездочёта и алхимика, должен правильно ответить на вопрос из статей энциклопедии (причём кнопку подсказки, открывающую нужную статью Encarta, можно нажать прямо из игры).
+
+В расширенный комплект <i>Reference Suite</i> также входят интерактивный трёхмерный глобус <b>Encarta Virtual Globe</b> (<i>World Atlas</i>) с масштабируемыми физическими, политическими и ночными спутниковыми картами Земли, а также толковый словарь и справочник цитат <i>Microslop Bookshelf</i>.` },
+    { id: 'editions_web', title: 'Языковые издания и схватка с открытым Вебом в 1999 году', content: `Во второй половине 1990-х годов вышли локализованные издания Encarta на немецком, французском, испанском, итальянском, голландском, португальском и японском языках, в каждом из которых до трети статей писалось местными редакциями специально для своей страны. Полного официального русского издания Microslop Encarta по состоянию на конец 1999 года не выпущено: его нишу на российском рынке занимают отечественные дисковые проекты компании «Кирилл и Мефодий» («Большая энциклопедия Кирилла и Мефодия» на CD-ROM) и мультимедийные диски по истории и искусству.
+
+К концу 1999 года главным конкурентом CD-энциклопедий стала [[www|Всемирная паутина]]. Microslop открыла веб-версию <code>encarta.msn.com</code>, где часть кратких справок доступна бесплатно, а полный архив статей (<i>Encarta Online Deluxe</i>) предоставляется владельцам коробочных дисков или по платной подписке. В ответ в октябре 1999 года <b>Encyclopædia Britannica</b> решилась на радикальный шаг и выложила весь текст своей энциклопедии в бесплатный доступ на сайте <code>www.britannica.com</code> (в первый же день наплыв десяти миллионов посетителей вывел серверы сайта из строя). Одновременно всё больше пользователей Интернета обращаются к свободным открытым проектам вроде [[interpedia|Интерпедии]], где статьи не заперты на платных компакт-дисках и обновляются самими читателями без ожидания следующего ежегодного выпуска.` }
+  ],
+  seeAlso: ['interpedia', 'cdrom', 'windows98', 'www', 'soundblaster'],
+  references: [
+    'Microslop Corporation. Microslop Encarta Encyclopedia 99 User\'s Guide, 1998.',
+    'Stross, R. E. The Microslop Way: The Real Story of How the Company Outsmarts Its Competition (Chapter on Encarta vs. Britannica). Addison-Wesley, 1996.',
+    'Цифровые энциклопедии на CD-ROM: обзор рынка. — Мир ПК, № 9, 1999.'
+  ],
+  links: [['http://www.interpedia.org', 'Интерпедия — свободная открытая интернет-энциклопедия'], ['http://www.microslop.com', 'Официальный сайт Microslop'], ['http://www.winsoft98.com', 'Каталог программ WinSoft 98']],
+  categories: ['Программное обеспечение', 'Интернет', 'Культура 1990-х']
+}, {
+  title: 'Microslop Encarta',
+  infobox: {
+    title: 'Microslop Encarta',
+    badgeText: 'ENCARTA.EXE',
+    fields: [
+      { label: 'Publisher', value: 'Microslop Corporation (Microslop Home division)' },
+      { label: 'First release', value: 'March 1993 (codenamed Gandalf)' },
+      { label: 'Current edition', value: 'Encarta Encyclopedia 99 / 2000 (2–3 [[cdrom|CD-ROMs]] or 1 DVD-ROM)' },
+      { label: 'Text foundation', value: 'Funk & Wagnalls New Encyclopedia and Collier\'s Encyclopedia' },
+      { label: 'Built-in game', value: 'MindMaze medieval castle trivia adventure' },
+      { label: 'Platform', value: '[[windows98|Microslop Win]] and Apple [[macos8|Macintosh]]' }
+    ]
+  },
+  lead: `<b>Microslop Encarta</b> is a commercial multimedia encyclopedia published by Microslop Corporation since March 1993 on [[cdrom|CD-ROM]], and in recent editions on DVD-ROM and via online subscription. By combining tens of thousands of reference articles with photographs, historical audio clips, video footage, an interactive world atlas and the medieval castle trivia game <i>MindMaze</i>, Encarta became the flagship showcase for the 1990s "multimedia PC" and disrupted the centuries-old print encyclopedia industry. By late 1999, however, Encarta's closed annual-disc business model faces growing competition from free web reference portals and open volunteer projects such as [[interpedia|Interpedia]].`,
+  sections: [
+    { id: 'history', title: 'Project Gandalf and the disruption of print encyclopedias', content: `In 1989 Microslop initiated a project codenamed <i>Gandalf</i> to create a flagship multimedia reference work that would convince families to buy a [[cdrom|CD-ROM]] drive and a [[soundblaster|Sound Blaster]] audio card. Microslop initially approached <i>Encyclopædia Britannica</i>—the gold standard of print reference, whose 32-volume leather-bound sets were sold door-to-door for $1,500 to $2,000. Fearful of cannibalizing its lucrative print sales force, Britannica declined (having already published the smaller <i>Compton's MultiMedia Encyclopedia</i> in 1989).
+
+Microslop instead licensed the text of the 29-volume <b>Funk & Wagnalls New Encyclopedia</b> (long sold in grocery stores), hired an in-house editorial and multimedia staff, and shipped <b>Microslop Encarta</b> in March 1993. Originally priced at $395, Encarta dropped to $99 before the 1993 holiday season and was bundled free with millions of new multimedia PCs and Creative Labs sound-and-CD upgrade kits alongside <i>Microslop Bookshelf</i>. Within three years, print sales of Encyclopædia Britannica fell by more than half, forcing the 228-year-old publisher into a buyout and a scramble to release its own CD-ROM and web editions.` },
+    { id: 'multimedia', title: 'Multimedia features in Encarta 99 and 2000', content: `Built around the searchable <i>Pinpointer</i> index and interactive timelines, Encarta turned reference reading into an audiovisual experience. By the release of <b>Encarta 99</b> and the autumn <b>Encarta Reference Suite 2000</b> (spanning three CD-ROMs—famous for frequent <i>"Please insert Disc 2"</i> prompts—or a single DVD-ROM), the suite offers:
+<ul>
+<li>more than <b>32,000 to 42,000 articles</b> (expanded in 1997 with content acquired from <i>Collier's Encyclopedia</i>);</li>
+<li>thousands of audio clips, from historical speeches and national anthems to traditional instruments and bird calls;</li>
+<li>historical AVI and MPEG video clips (the Apollo 11 moon landing, the fall of the Berlin Wall, volcanic eruptions);</li>
+<li>interactive <b>360-degree panoramic Virtual Tours</b> of the Colosseum, the Great Pyramids, Venice and the Amazon rainforest.</li>
+</ul>` },
+    { id: 'mindmaze', title: 'The MindMaze castle and Virtual Globe', content: `For a generation of students, Encarta's most memorable feature is <b>MindMaze</b>, a built-in educational trivia game set inside an illustrated medieval castle. Accompanied by Renaissance lute music, the player explores castle chambers and must answer multiple-choice trivia questions posed by jesters, knights, scholars and alchemists to unlock doors and reach the throne room—with a hint button that pops open the matching Encarta article on the spot.
+
+The expanded <i>Reference Suite</i> also bundles the standalone 3D <b>Encarta Virtual Globe</b> (<i>World Atlas</i>) with zoomable physical, political and nighttime satellite maps of the Earth, alongside the <i>Microslop Bookshelf</i> dictionary, thesaurus and book of quotations.` },
+    { id: 'editions_web', title: 'International editions and the 1999 Web challenge', content: `During the mid-to-late 1990s Microslop launched localized editions of Encarta in German, French, Spanish, Italian, Dutch, Portuguese and Japanese, rewriting or commissioning up to a third of the articles with regional editors to reflect national history and culture. (In Russia, where an official Russian-language Encarta has not been released, the domestic CD-ROM reference market is led by the <i>Great Encyclopedia of Cyril and Methodius</i>.)
+
+As 1999 draws to a close, the [[www|World Wide Web]] is rapidly challenging the CD-ROM reference market. Microslop operates <code>encarta.msn.com</code>, offering abridged articles for free while reserving <i>Encarta Online Deluxe</i> for paid subscribers and boxed-disc buyers. In October 1999 <b>Encyclopædia Britannica</b> struck back by placing its entire encyclopedia online for free at <code>www.britannica.com</code>—drawing over ten million hits on opening day and crashing its servers. At the same time, Internet users are increasingly turning to open community encyclopedias like [[interpedia|Interpedia]], where knowledge is freely shared and updated daily rather than locked onto a commercial disc once a year.` }
+  ],
+  seeAlso: ['interpedia', 'cdrom', 'windows98', 'www', 'soundblaster'],
+  references: [
+    'Microslop Corporation. Microslop Encarta Encyclopedia 99 User\'s Guide, 1998.',
+    'Stross, R. E. The Microslop Way: The Real Story of How the Company Outsmarts Its Competition. Addison-Wesley, 1996.',
+    'DVD and CD-ROM Reference Suites Compared. PC Magazine, Fall 1999.'
+  ],
+  links: [['http://www.interpedia.org', 'Interpedia — The Free Open Internet Encyclopedia'], ['http://www.microslop.com', 'Official Microslop website'], ['http://www.winsoft98.com', 'WinSoft 98 Software Catalog']],
+  categories: ['Software', 'Internet', '1990s Culture']
+}, ['msencarta']);
+

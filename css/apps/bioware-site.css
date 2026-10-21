@@ -1,0 +1,440 @@
+.bw-page {
+  background-color: #10151c;
+  color: #1a1814;
+  font-family: "Times New Roman", Georgia, serif;
+  font-size: 13px;
+  line-height: 1.42;
+  padding: 10px 8px 24px 8px;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.bw-wrap {
+  width: 760px;
+  max-width: 100%;
+  margin: 0 auto;
+  background-color: #ede6d6;
+  border-top: 2px solid #d8b46a;
+  border-left: 2px solid #d8b46a;
+  border-right: 2px solid #4a3414;
+  border-bottom: 2px solid #4a3414;
+}
+
+.bw-topstrip {
+  width: 100%;
+  background-color: #0c1218;
+  color: #d8c8a0;
+  border-bottom: 1px solid #8a6830;
+  font-family: Tahoma, Verdana, "MS Sans Serif", sans-serif;
+  font-size: 11px;
+}
+
+.bw-topstrip td {
+  padding: 3px 8px;
+}
+
+.bw-masthead {
+  width: 100%;
+  background-color: #18222e;
+  color: #f6ecd4;
+  border-bottom: 3px double #c8963e;
+}
+
+.bw-masthead td {
+  padding: 10px 12px;
+}
+
+.bw-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  color: #f8e4b0;
+  margin: 0;
+}
+
+.bw-subtitle {
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  color: #a8c8dc;
+  margin-top: 3px;
+}
+
+.bw-crest-box {
+  background-color: #101822;
+  border-top: 1px solid #3c5268;
+  border-left: 1px solid #3c5268;
+  border-right: 1px solid #c8963e;
+  border-bottom: 1px solid #c8963e;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.bw-Counter {
+  background-color: #050a0e;
+  color: #58e090;
+  border-top: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-right: 1px solid #4a6070;
+  border-bottom: 1px solid #4a6070;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 6px;
+  letter-spacing: 1px;
+  display: inline-block;
+}
+
+.bw-navbar {
+  width: 100%;
+  background-color: #24303e;
+  border-bottom: 2px solid #0c1218;
+}
+
+.bw-navbar td {
+  padding: 0;
+  border-right: 1px solid #121a22;
+}
+
+.bw-nav-btn {
+  display: block;
+  width: 100%;
+  background-color: #24303e;
+  color: #f0e4c8;
+  border-top: 1px solid #4e647c;
+  border-left: 1px solid #4e647c;
+  border-right: 1px solid #0c1218;
+  border-bottom: 1px solid #0c1218;
+  font-family: Tahoma, Verdana, "MS Sans Serif", sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 6px 4px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.bw-nav-btn:hover {
+  background-color: #324458;
+  color: #ffffff;
+}
+
+.bw-nav-btn.is-active {
+  background-color: #ede6d6;
+  color: #5c1a14;
+  border-top: 2px solid #c8963e;
+  border-left: 1px solid #c8963e;
+  border-right: 1px solid #4a3414;
+  border-bottom: 1px solid #ede6d6;
+}
+
+.bw-subbar {
+  width: 100%;
+  background-color: #dfd4bc;
+  border-bottom: 1px solid #9a8864;
+  font-family: Tahoma, Verdana, "MS Sans Serif", sans-serif;
+  font-size: 11px;
+}
+
+.bw-subbar td {
+  padding: 4px 8px;
+}
+
+.bw-body {
+  padding: 10px;
+}
+
+.bw-shelf {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.bw-game-card {
+  background-color: #f6f1e4;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #68583c;
+  border-bottom: 2px solid #68583c;
+  padding: 8px;
+}
+
+.bw-game-card.is-dao {
+  border-top: 2px solid #b84a3c;
+  background-color: #f7efe8;
+}
+
+.bw-game-card.is-kotor {
+  border-top: 2px solid #2e8ab8;
+  background-color: #eaf2f7;
+}
+
+.bw-panel {
+  background-color: #f8f4ea;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #6e6048;
+  border-bottom: 2px solid #6e6048;
+  margin-bottom: 10px;
+}
+
+.bw-panel-head {
+  background-color: #22303e;
+  color: #f8ecd0;
+  font-family: Tahoma, Verdana, "MS Sans Serif", sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-bottom: 1px solid #0c1218;
+}
+
+.bw-panel-head.is-crimson {
+  background-color: #5c1c18;
+  color: #ffeed2;
+}
+
+.bw-panel-head.is-holocron {
+  background-color: #143c54;
+  color: #dcf4ff;
+}
+
+.bw-panel-head.is-bronze {
+  background-color: #5a4218;
+  color: #fff4d4;
+}
+
+.bw-panel-body {
+  padding: 8px 10px;
+}
+
+.bw-layout {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bw-col-main {
+  width: 65%;
+  vertical-align: top;
+  padding-right: 8px;
+}
+
+.bw-col-side {
+  width: 35%;
+  vertical-align: top;
+}
+
+.bw-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fcfaf2;
+  border: 1px solid #786a50;
+  font-family: Tahoma, Verdana, "MS Sans Serif", sans-serif;
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.bw-table th {
+  background-color: #d6c8aa;
+  color: #1c160e;
+  font-weight: bold;
+  text-align: left;
+  padding: 4px 6px;
+  border: 1px solid #786a50;
+}
+
+.bw-table td {
+  padding: 4px 6px;
+  border: 1px solid #b8aa8c;
+  vertical-align: top;
+}
+
+.bw-table tr.is-alt td {
+  background-color: #f1ead8;
+}
+
+.bw-table tr.is-selected td {
+  background-color: #d8ecfa;
+}
+
+.bw-btn {
+  background-color: #d8ceb8;
+  color: #14120e;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #4a4030;
+  border-bottom: 2px solid #4a4030;
+  font-family: Tahoma, Verdana, "MS Sans Serif", sans-serif;
+  font-size: 11px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.bw-btn:active,
+.bw-btn.is-active {
+  background-color: #203448;
+  color: #fff8dc;
+  border-top: 2px solid #0c141c;
+  border-left: 2px solid #0c141c;
+  border-right: 2px solid #8aa4bc;
+  border-bottom: 2px solid #8aa4bc;
+  font-weight: bold;
+}
+
+.bw-btn-dao {
+  background-color: #6a1e18;
+  color: #fff2d6;
+  border-top: 2px solid #b8584c;
+  border-left: 2px solid #b8584c;
+  border-right: 2px solid #2c0806;
+  border-bottom: 2px solid #2c0806;
+  font-weight: bold;
+}
+
+.bw-btn-kotor {
+  background-color: #14425c;
+  color: #e4f8ff;
+  border-top: 2px solid #52a4cc;
+  border-left: 2px solid #52a4cc;
+  border-right: 2px solid #081c28;
+  border-bottom: 2px solid #081c28;
+  font-weight: bold;
+}
+
+.bw-input,
+.bw-select,
+.bw-textarea {
+  background-color: #ffffff;
+  color: #101010;
+  border-top: 2px solid #4a4030;
+  border-left: 2px solid #4a4030;
+  border-right: 2px solid #e8dec8;
+  border-bottom: 2px solid #e8dec8;
+  font-family: Tahoma, Verdana, "MS Sans Serif", sans-serif;
+  font-size: 11px;
+  padding: 2px 4px;
+}
+
+.bw-badge {
+  display: inline-block;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 1px 5px;
+  border: 1px solid #584c38;
+  background-color: #e4dac2;
+  color: #221c12;
+}
+
+.bw-badge.is-dao {
+  background-color: #f6dcd8;
+  border-color: #8c261e;
+  color: #5c120c;
+}
+
+.bw-badge.is-kotor {
+  background-color: #d6eef8;
+  border-color: #1e6488;
+  color: #0e3850;
+}
+
+.bw-badge.is-green {
+  background-color: #d4f0dc;
+  border-color: #186832;
+  color: #0c421c;
+}
+
+.bw-badge.is-gold {
+  background-color: #faecc4;
+  border-color: #8a6414;
+  color: #4c3406;
+}
+
+.bw-link {
+  color: #123e72;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.bw-link:hover {
+  color: #8c1e14;
+}
+
+.bw-news-card {
+  background-color: #fcf8ee;
+  border: 1px solid #968668;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+
+.bw-news-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #4c1812;
+  margin: 2px 0 4px 0;
+}
+
+.bw-meter-wrap {
+  width: 100%;
+  height: 10px;
+  background-color: #d4cab4;
+  border-top: 1px solid #4a4030;
+  border-left: 1px solid #4a4030;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+}
+
+.bw-meter-bar {
+  height: 10px;
+  background-color: #205c88;
+}
+
+.bw-pazaak-board {
+  background-color: #0e2432;
+  color: #dff4ff;
+  border-top: 2px solid #061018;
+  border-left: 2px solid #061018;
+  border-right: 2px solid #4a88ac;
+  border-bottom: 2px solid #4a88ac;
+  padding: 8px;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+}
+
+.bw-pazaak-card {
+  display: inline-block;
+  min-width: 28px;
+  padding: 3px 5px;
+  margin: 2px;
+  text-align: center;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #183a50;
+  color: #ffffff;
+  border-top: 1px solid #78c8f0;
+  border-left: 1px solid #78c8f0;
+  border-right: 1px solid #081822;
+  border-bottom: 1px solid #081822;
+}
+
+.bw-pazaak-card.is-side {
+  background-color: #4a2c12;
+  border-top-color: #f0b860;
+  border-left-color: #f0b860;
+  color: #ffe8b0;
+}
+
+.bw-footer {
+  background-color: #18222e;
+  color: #cfc4a8;
+  border-top: 2px solid #8a6830;
+  padding: 8px 10px;
+  font-family: Tahoma, Verdana, "MS Sans Serif", sans-serif;
+  font-size: 11px;
+  text-align: center;
+}
+
+.bw-footer a {
+  color: #88d0f8;
+  text-decoration: underline;
+  cursor: pointer;
+}

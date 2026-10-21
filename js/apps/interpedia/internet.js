@@ -675,7 +675,7 @@ window.interpediaReg('mp3format', 'internet', {
   },
   lead: `<strong>MP3</strong> (<em>MPEG-1 Audio Layer III</em>) — формат сжатия звука с потерями, разработанный немецким Институтом Фраунгофера. Он уменьшает запись в 10–12 раз по сравнению с компакт-диском, почти не ухудшая звучание на слух: трёхминутная песня занимает около трёх мегабайт.
 
-В конце 1990-х MP3 вызвал революцию в распространении музыки: песни стало возможно скачивать через Интернет, хранить сотнями на жёстком диске и слушать в [[winamp|Winamp]]. В 1998 году появился первый массовый карманный MP3-плеер, а в 1999 году — сервис Napster для обмена песнями между пользователями, вызвавший гнев звукозаписывающей индустрии.`,
+В конце 1990-х MP3 вызвал революцию в распространении музыки: песни стало возможно скачивать через Интернет, хранить сотнями на жёстком диске и слушать в [[winamp|Winamp]]. В 1998 году появился первый массовый карманный MP3-плеер, а в 1999 году — сервис [[napster|Napster]] для обмена песнями между пользователями, вызвавший гнев звукозаписывающей индустрии.`,
   sections: [
     { id: 'origins', title: 'Происхождение', content: `Работа над сжатием звука велась в Институте интегральных схем Общества Фраунгофера в Эрлангене с конца 1980-х годов под руководством Карлхайнца Бранденбурга. Формат вошёл в стандарт MPEG-1, принятый в 1993 году, как третий, самый сложный «слой» сжатия звука. 14 июля 1995 года разработчики решили использовать для таких файлов расширение .mp3. Институт выпустил кодировщик l3enc и проигрыватель WinPlay3, но настоящий успех принесли бесплатные программы энтузиастов.` },
     { id: 'how', title: 'Как работает сжатие', content: `MP3 использует психоакустическую модель — знания о том, что человеческое ухо слышит плохо. Тихие звуки рядом с громкими по частоте и времени «маскируются» и могут быть отброшены, а очень высокие частоты передаются грубее. Чем ниже поток данных, тем сильнее потери.
@@ -691,13 +691,13 @@ window.interpediaReg('mp3format', 'internet', {
     { id: 'industry', title: 'Музыкальная индустрия и MP3', content: `<dl>
 <dt>Diamond Rio (сентябрь 1998)</dt><dd>первый массовый карманный MP3-плеер с 32 МБ памяти — около получаса музыки. Ассоциация звукозаписывающих компаний Америки (RIAA) подала в суд, но в июне 1999 года апелляционный суд признал плеер законным.</dd>
 <dt>MP3.com</dt><dd>сайт, где независимые музыканты бесплатно выкладывают свои песни; в июле 1999 года компания разместила акции на бирже.</dd>
-<dt>Napster (июнь 1999)</dt><dd>программа студента Шона Фаннинга, позволяющая искать и скачивать MP3 прямо с компьютеров других пользователей. В декабре 1999 года RIAA подала на Napster в суд.</dd>
+<dt>[[napster|Napster]] (июнь 1999)</dt><dd>программа студента Шона Фэннинга, позволяющая искать и скачивать MP3 прямо с компьютеров других пользователей. В декабре 1999 года RIAA подала на Napster в суд.</dd>
 </dl>
 
 Звукозаписывающие компании видят в MP3 угрозу продажам дисков и разрабатывают форматы с защитой от копирования, а музыканты и слушатели спорят о будущем музыки в Интернете.` },
     { id: 'russia', title: 'MP3 в России', content: `В России MP3 распространился прежде всего на [[cdrom|компакт-дисках]]: на рынках вроде [[gorbushka|Горбушки]] открыто продаются сборники с десятками альбомов на одном диске по цене обычного CD. Скачивать музыку через медленный и дорогой [[dialup|модемный]] доступ могут немногие, поэтому популярны сайты с отдельными песнями и коллекции, которыми обмениваются в локальных сетях общежитий и офисов.` }
   ],
-  seeAlso: ['winamp', 'soundblaster', 'cdrom', 'gorbushka', 'dialup'],
+  seeAlso: ['napster', 'winamp', 'soundblaster', 'cdrom', 'gorbushka', 'dialup'],
   references: [
     'ISO/IEC 11172-3: Coding of moving pictures and associated audio — Part 3: Audio. — 1993.',
     'Brandenburg K. MP3 and AAC Explained // AES 17th International Conference. — 1999.',
@@ -722,7 +722,7 @@ window.interpediaReg('mp3format', 'internet', {
   },
   lead: `<strong>MP3</strong> (<em>MPEG-1 Audio Layer III</em>) is a lossy audio compression format developed by Germany's Fraunhofer Institute. It shrinks a recording 10–12 times compared with a CD with little audible loss: a three-minute song takes about three megabytes.
 
-In the late 1990s MP3 revolutionized music distribution: songs could be downloaded over the Internet, stored by the hundreds on a hard disk and played in [[winamp|Winamp]]. The first mass-market portable MP3 player appeared in 1998, and in 1999 came Napster, a service for swapping songs between users that enraged the recording industry.`,
+In the late 1990s MP3 revolutionized music distribution: songs could be downloaded over the Internet, stored by the hundreds on a hard disk and played in [[winamp|Winamp]]. The first mass-market portable MP3 player appeared in 1998, and in 1999 came [[napster|Napster]], a service for swapping songs between users that enraged the recording industry.`,
   sections: [
     { id: 'origins', title: 'Origins', content: `Work on audio compression went on at the Fraunhofer Institute for Integrated Circuits in Erlangen from the late 1980s under Karlheinz Brandenburg. The format became part of the MPEG-1 standard adopted in 1993 as the third and most complex audio "layer". On July 14, 1995, the developers settled on the .mp3 extension. The institute released the l3enc encoder and the WinPlay3 player, but real success came from free programs written by enthusiasts.` },
     { id: 'how', title: 'How compression works', content: `MP3 uses a psychoacoustic model, knowledge of what the human ear hears poorly. Quiet sounds near loud ones in frequency and time are "masked" and can be discarded, and very high frequencies are coded more coarsely. The lower the bitrate, the greater the loss.
@@ -738,13 +738,13 @@ In the late 1990s MP3 revolutionized music distribution: songs could be download
     { id: 'industry', title: 'The music industry and MP3', content: `<dl>
 <dt>Diamond Rio (September 1998)</dt><dd>the first mass-market portable MP3 player, with 32 MB of memory, about half an hour of music. The Recording Industry Association of America (RIAA) sued, but in June 1999 an appeals court ruled the player legal.</dd>
 <dt>MP3.com</dt><dd>a site where independent musicians post their songs for free; the company went public in July 1999.</dd>
-<dt>Napster (June 1999)</dt><dd>a program by student Shawn Fanning for finding and downloading MP3s straight from other users' computers. In December 1999 the RIAA sued Napster.</dd>
+<dt>[[napster|Napster]] (June 1999)</dt><dd>a program by student Shawn Fanning for finding and downloading MP3s straight from other users' computers. In December 1999 the RIAA sued Napster.</dd>
 </dl>
 
 Record companies see MP3 as a threat to CD sales and are developing copy-protected formats, while musicians and listeners argue about the future of music on the Internet.` },
     { id: 'russia', title: 'MP3 in Russia', content: `In Russia MP3 spread mainly on [[cdrom|CDs]]: markets such as [[gorbushka|Gorbushka]] openly sell compilations with dozens of albums on one disc for the price of an ordinary CD. Few people can download music over slow and expensive [[dialup|dial-up]], so sites with single songs are popular, and collections are traded over the local networks of dorms and offices.` }
   ],
-  seeAlso: ['winamp', 'soundblaster', 'cdrom', 'gorbushka', 'dialup'],
+  seeAlso: ['napster', 'winamp', 'soundblaster', 'cdrom', 'gorbushka', 'dialup'],
   references: [
     'ISO/IEC 11172-3: Coding of moving pictures and associated audio — Part 3: Audio, 1993.',
     'Brandenburg, K. "MP3 and AAC Explained". AES 17th International Conference, 1999.',
@@ -1755,3 +1755,284 @@ Vandalism does happen: people insert obscenities, ads and fabrications. Particip
   links: [['http://www.interpedia.org', 'Interpedia main page'], ['http://fido.relcom.ru', 'FidoNet echoes on the Web']],
   categories: ['Internet', 'Encyclopedias', 'Wiki', 'Interpedia']
 }, ['interpedia_concept']);
+
+window.interpediaReg('napster', 'internet', {
+  title: 'Napster и пиринговый обмен музыкой (1999)',
+  infobox: {
+    title: 'Napster',
+    badgeText: 'P2P-сеть обмена MP3',
+    fields: [
+      { label: 'Создатели', value: 'Шон Фэннинг, Шон Паркер' },
+      { label: 'Запуск бета-версии', value: 'июнь 1999' },
+      { label: 'Штаб-квартира', value: 'Сан-Матео, Калифорния' },
+      { label: 'Архитектура', value: 'центральный поисковый индекс + передача напрямую между ПК' },
+      { label: 'Формат файлов', value: '[[mp3format|MP3]]' },
+      { label: 'Платформа', value: '[[windows95|Win 95]], [[windows98|Win 98]], [[winnt4|Win NT]]' },
+      { label: 'Судебный иск', value: 'RIAA против Napster (7 декабря 1999)' }
+    ]
+  },
+  lead: `<strong>Napster</strong> — бесплатная программа и служба для прямого обмена музыкальными файлами [[mp3format|MP3]] через Интернет, запущенная в июне 1999 года девятнадцатилетним студентом Шоном Фэннингом и его партнёром Шоном Паркером. В отличие от веб-сайтов и архивов FTP, файлы в Napster не лежат на сервере компании: сервер хранит только общий список доступных песен, а сами записи скачиваются напрямую с жёсткого диска одного пользователя на компьютер другого.
+
+За полгода программа превратилась в главное сетевое явление 1999 года, перегрузила каналы связи десятков американских университетов и вызвала крупнейший конфликт со времён появления аудиокассет: 7 декабря 1999 года Ассоциация звукозаписывающих компаний Америки (RIAA) подала на Napster в федеральный суд.`,
+  sections: [
+    { id: 'creation', title: 'Идея Шона Фэннинга', content: `Осенью 1998 года первокурсник Северо-Восточного университета в Бостоне Шон Фэннинг (носивший школьное прозвище Napster из-за кудрявой причёски) наблюдал, как его сосед по общежитию часами ищет песни в формате [[mp3format|MP3]] через поисковики [[altavista|AltaVista]] и [[yahoo|Yahoo!]]. Большинство ссылок вело на удалённые страницы или закрытые FTP-серверы, тогда как в чатах [[irc|IRC]] и мессенджере [[icq|ICQ]] тысячи людей держали на своих дисках гигабайты музыки без общего каталога.
+
+Фэннинг бросил учёбу и за несколько месяцев написал клиентскую программу для [[windows95|Win 95]] и [[windows98|Win 98]], объединившую поисковую систему, список друзей и тематические комнаты чата. Вместе с восемнадцатилетним знакомым по IRC Шоном Паркером и дядей Джоном Фэннингом он зарегистрировал компанию Napster, Inc. и в начале июня 1999 года раздал бета-версию тридцати друзьям с просьбой никому её не пересылать. Через несколько дней программу скачали пятнадцать тысяч человек.` },
+    { id: 'architecture', title: 'Как устроен обмен напрямую между компьютерами', content: `При запуске программа подключается к центральному серверу Napster и сообщает ему список файлов MP3 из открытой папки пользователя. Когда другой участник вводит в строку поиска название группы или песни, сервер за секунду возвращает таблицу совпадений со всех подключённых компьютеров:
+<ul>
+<li>имя файла, размер в мегабайтах, длительность и битрейт (например, 128 или 192 кбит/с);</li>
+<li>ник владельца файла и скорость его канала связи (от модемов 14.4k, 28.8k и [[modem56k|56k]] до выделенных линий ISDN, Cable, T1 и T3);</li>
+<li>время отклика (ping) до компьютера владельца и цветовой индикатор надёжности соединения.</li>
+</ul>
+
+Щелчок по строчке открывает прямое соединение между двумя компьютерами в обход центрального сервера. Скачанная песня тут же попадает в общую папку и становится доступна остальным участникам сети: чем популярнее запись, тем больше источников появляется для её загрузки. Программа позволяет слушать музыку во встроенном проигрывателе или передавать список прямо в [[winamp|Winamp]].` },
+    { id: 'campuses', title: 'Бум в студенческих кампусах и блокировки', content: `К началу учебного года в сентябре 1999 года Napster захватил американские студенческие общежития. В отличие от домашних пользователей на поминутном [[dialup|дозвоне]], которым на одну четырёхмегабайтную песню требовалось пятнадцать минут, студенты пользовались круглосуточными университетскими сетями Ethernet с выходом на скоростные магистрали T1 и T3.
+
+Системные администраторы обнаружили, что от 50 до 70 процентов всего внешнего трафика университетов уходит на пересылку MP3. Осенью 1999 года десятки учебных заведений (включая университеты Индианы, Орегона и Северной Каролины) начали закрывать порты Napster на своих межсетевых экранах, объясняя это тем, что из-за круглосуточного скачивания музыки преподаватели не могут открыть научные сайты и отправить почту.` },
+    { id: 'lawsuit', title: 'Декабрьский иск RIAA и споры об авторском праве', content: `Музыкальные концерны сочли программу прямым посягательством на продажи компакт-дисков. 7 декабря 1999 года Ассоциация звукозаписывающих компаний Америки (RIAA) от имени крупнейших лейблов подала в окружной суд Сан-Франциско иск против Napster, обвинив компанию в содействии массовому нарушению авторских прав и потребовав по 100 тысяч долларов компенсации за каждое незаконно скопированное произведение.
+
+Юристы Napster возражают, что сама компания не хранит на своих серверах ни одного музыкального файла и действует как справочный каталог и интернет-провайдер под защитой принятого в 1998 году закона DMCA, а пользователи обмениваются песнями без коммерческой выгоды. На форумах, в [[usenet|Usenet]] и в прессе конца декабря 1999 года этот процесс называют главным судом наступающего десятилетия: от его исхода зависит, сохранят ли звукозаписывающие гиганты монополию на распространение музыки или пиринговые сети изменят устройство самого Интернета.` }
+  ],
+  seeAlso: ['mp3format', 'winamp', 'dialup', 'irc', 'gorbushka'],
+  references: [
+    'Recording Industry Association of America v. Napster, Inc. — Исковое заявление в Окружной суд Северного округа Калифорнии, 7 декабря 1999.',
+    'Napster Beta v2.0: руководство пользователя и описание протокола. — Napster, Inc., 1999.',
+    'Университеты против MP3: как Napster забил студенческие сети // Компьютерра. — ноябрь 1999.'
+  ],
+  links: [['http://www.mp3vault98.com', 'MP3 Vault \'98: архив цифровой музыки'], ['http://www.muzzone98.ru', 'MuzZone \'98']],
+  categories: ['Интернет', 'Мультимедиа', 'MP3', 'Сетевые сообщества', '1999 год']
+}, {
+  title: 'Napster and Peer-to-Peer Music Sharing (1999)',
+  infobox: {
+    title: 'Napster',
+    badgeText: 'Peer-to-peer MP3 network',
+    fields: [
+      { label: 'Creators', value: 'Shawn Fanning, Sean Parker' },
+      { label: 'Beta launch', value: 'June 1999' },
+      { label: 'Headquarters', value: 'San Mateo, California' },
+      { label: 'Architecture', value: 'central search index + direct host-to-host file transfer' },
+      { label: 'File format', value: '[[mp3format|MP3]]' },
+      { label: 'Platform', value: '[[windows95|Win 95]], [[windows98|Win 98]], [[winnt4|Win NT]]' },
+      { label: 'Lawsuit', value: 'RIAA v. Napster (December 7, 1999)' }
+    ]
+  },
+  lead: `<strong>Napster</strong> is a free software client and peer-to-peer service for sharing [[mp3format|MP3]] music files over the Internet, launched in June 1999 by nineteen-year-old student Shawn Fanning and co-founder Sean Parker. Unlike web archives or FTP servers, Napster does not store audio files on company hardware: its central servers maintain a live index of filenames, while the songs themselves transfer directly from one user's hard disk to another's.
+
+Within six months the program grew into the defining online phenomenon of 1999, saturated the network backbones of dozens of American universities and sparked a landmark legal confrontation: on December 7, 1999, the Recording Industry Association of America (RIAA) sued Napster in federal court.`,
+  sections: [
+    { id: 'creation', title: 'Shawn Fanning\'s idea', content: `In autumn 1998 Northeastern University freshman Shawn Fanning (nicknamed "Napster" since high school for his cropped curly hair) watched his dorm roommate spend hours hunting for [[mp3format|MP3]] tracks through [[altavista|AltaVista]] and [[yahoo|Yahoo!]]. Most search results led to dead links or full FTP servers, while users on [[irc|IRC]] and [[icq|ICQ]] sat on gigabytes of music with no unified way to search one another's collections.
+
+Fanning dropped out of college and spent the winter writing a [[windows95|Win 95]] and [[windows98|Win 98]] client that combined a live file index, a buddy hotlist and genre chat rooms. Together with eighteen-year-old IRC acquaintance Sean Parker and his uncle John Fanning, he incorporated Napster, Inc. and handed the first beta build to thirty friends in early June 1999, asking them not to pass it around. Within days fifteen thousand people had downloaded it.` },
+    { id: 'architecture', title: 'How peer-to-peer indexing works', content: `When launched, the Napster client connects to a central directory server and reports the list of MP3 files in the user's shared folder. Typing an artist or song title into the search tab queries every online user at once and returns a table of matches within seconds:
+<ul>
+<li>filename, file size in megabytes, track length and encoding bitrate (such as 128 or 192 kbit/s);</li>
+<li>the host user's nickname and declared connection speed (from 14.4k, 28.8k and [[modem56k|56k]] modems to ISDN, cable, T1 and T3 lines);</li>
+<li>round-trip ping time and a colored dot indicating connection quality.</li>
+</ul>
+
+Double-clicking a row opens a direct socket between the two PCs without routing audio data through Napster's servers. Once downloaded, the track lands in the recipient's shared folder and immediately becomes available to other peers, so popular songs multiply across the network. Tracks can be played in Napster's built-in deck or sent straight to [[winamp|Winamp]].` },
+    { id: 'campuses', title: 'Campus network congestion and university bans', content: `When the fall semester opened in September 1999, Napster swept through American college dormitories. Unlike home users on metered [[dialup|dial-up]] lines who needed fifteen minutes to pull down a four-megabyte song, dorm residents had always-on Ethernet wired directly into university T1 and T3 trunks.
+
+Network administrators soon discovered that MP3 transfers were consuming 50 to 70 percent of their campuses' external bandwidth. Throughout autumn 1999 dozens of universities, including Indiana University, Oregon State and the University of North Carolina, blocked Napster ports at their firewalls, citing clogged academic links and stalled faculty email.` },
+    { id: 'lawsuit', title: 'The December 1999 RIAA lawsuit', content: `Major record labels viewed the service as an existential threat to retail CD sales. On December 7, 1999, the Recording Industry Association of America (RIAA) filed suit against Napster in the US District Court in San Francisco, accusing the company of contributory and vicarious copyright infringement and seeking up to $100,000 in statutory damages per shared song.
+
+Napster's defense argues that no copyrighted audio ever passes through its own servers, that the service qualifies for safe-harbor protection under the 1998 Digital Millennium Copyright Act (DMCA), and that non-commercial home copying by consumers is lawful. Across [[usenet|Usenet]] and the computer press at the close of December 1999, the case is being watched as a test of whether record labels can police peer-to-peer networks in the coming decade.` }
+  ],
+  seeAlso: ['mp3format', 'winamp', 'dialup', 'irc', 'gorbushka'],
+  references: [
+    'Recording Industry Association of America v. Napster, Inc., Complaint filed in the US District Court for the Northern District of California, December 7, 1999.',
+    'Napster Beta v2.0 user guide and protocol overview. Napster, Inc., 1999.',
+    '"Universities vs. MP3: How Napster Clogged Campus Networks". Computerra, November 1999.'
+  ],
+  links: [['http://www.mp3vault98.com', 'MP3 Vault \'98: digital music archive'], ['http://www.muzzone98.ru', 'MuzZone \'98']],
+  categories: ['Internet', 'Multimedia', 'MP3', 'Online Communities', '1999']
+}, ['p2p']);
+
+window.interpediaReg('runet', 'internet', {
+  title: 'Рунет 1990-х',
+  infobox: {
+    title: 'Рунет',
+    badgeText: '.SU / .RU',
+    fields: [
+      { label: 'Первые сеансы связи', value: 'август 1990 (сеть «Релком», кооператив «Демос»)' },
+      { label: 'Домены верхнего уровня', value: '.su (сентябрь 1990), .ru (7 апреля 1994)' },
+      { label: 'Поисковые системы', value: 'Рамблер (1996), Апорт (1996), Яндекс (1997)' },
+      { label: 'Знаковые сайты', value: 'Библиотека Мошкова (lib.ru), Анекдоты из России, Вечерний Интернет, Кроватка' },
+      { label: 'Кодировки кириллицы', value: 'KOI8-R, CP1251, CP866 (альтернативная), ISO 8859-5, MacCyrillic' },
+      { label: 'Основной канал дома', value: '[[dialup|модемный дозвон]] по телефонным линиям' }
+    ]
+  },
+  lead: `<strong>Рунет</strong> — русскоязычная часть [[www|Всемирной паутины]] и Интернета, сложившаяся в 1990-х годах вокруг национальных доменов <code>.su</code> и <code>.ru</code>, а также русскоязычных сайтов, чатов и конференций по всему миру. За одно десятилетие сеть выросла из нескольких университетских и кооперативных компьютеров, дозванивавшихся по ночам в Хельсинки, в самостоятельную культурную среду с сотнями тысяч читателей, собственными поисковиками и литературными архивами.
+
+В отличие от западной Сети, Рунет конца 1990-х развивается в условиях медленных телефонных линий, поминутной оплаты [[dialup|дозвона]] и одновременного сосуществования пяти несовместимых кодировок русского алфавита. Это сформировало особый облик русских сайтов: ставку на ёмкий текст без тяжёлых картинок, открытые электронные библиотеки и тесную связь с культурой [[fidonet|ФидоНета]].`,
+  sections: [
+    { id: 'origins', title: 'От сети «Релком» и домена .su к регистрации .ru', content: `История отечественного сегмента Сети началась в августе 1990 года, когда программисты кооператива «Демос» и Института атомной энергии имени И. В. Курчатова в Москве (Дмитрий Бурков, Вадим Антонов, Валерий Бардин и их коллеги) соединили компьютеры на базе ОС ДЕМОС с университетом в Хельсинки по обычной телефонной линии через протокол UUCP. Так возникла сеть «Релком» и её иерархия телеконференций <code>relcom.*</code> в [[usenet|Usenet]]. В сентябре 1990 года в международной базе был зарегистрирован домен верхнего уровня Советского Союза <code>.su</code>.
+
+В декабре 1993 года крупнейшие провайдеры страны подписали соглашение «О порядке администрирования зоны .RU», а 7 апреля 1994 года организация IANA официально закрепила за Россией национальный домен <code>.ru</code>. Первым веб-сайтом в новой зоне стал <code>www.ru</code>. К концу 1990-х оба домена работают параллельно, а слово «Рунет», предложенное весной 1997 года блогером и колумнистом Раффи Асланбековым, вошло в повседневный язык журналистов и пользователей.` },
+    { id: 'landmarks', title: 'Библиотека Мошкова, «Анекдоты из России» и первые гостиные', content: `Поскольку большинство российских пользователей платит провайдерам за время на линии, самыми посещаемыми страницами стали текстовые собрания и живые клубы общения:
+<ul>
+<li><strong>Библиотека Максима Мошкова (lib.ru, ноябрь 1994)</strong> — крупнейшее бесплатное собрание русской и переводной литературы, фантастики, поэзии, туристических отчётов и технической документации. Страницы намеренно оформлены простым текстом без графических украшений, чтобы целую книгу можно было сохранить на диск за полминуты модемной связи.</li>
+<li><strong>«Анекдоты из России» (anekdot.ru, ноябрь 1995)</strong> — ежедневный сайт астрофизика Дмитрия Вернера, ставший первым в мире русским сайтом с посещаемостью свыше тысячи человек в сутки.</li>
+<li><strong>«Вечерний Интернет» Антона Носика (1996)</strong> — ежедневное обозрение Сети, компьютерных программ и культурных событий, доказавшее, что в Интернете возможна авторская журналистика.</li>
+<li><strong>Веб-чат «Кроватка» (krovatka.ru), «Молоток.Ру» и «Мульт.Ру»</strong> — тематические комнаты для знакомств в браузере без настройки [[mirc|mIRC]], первый крупный интернет-аукцион страны и студия [[flash|Flash]]-анимации Олега Куваева.</li>
+</ul>` },
+    { id: 'search', title: 'Поисковые системы: Рамблер, Апорт и морфология Яндекса', content: `Зарубежные поисковики середины 1990-х плохо справлялись с русским языком: они не учитывали падежные окончания и путались в кодировках, поэтому поиск слова «компьютер» не находил страницы со словами «компьютера» или «компьютерами».
+
+В октябре 1996 года программист из подмосковного Пущина Дмитрий Крюков запустил поисковую систему <strong>«Рамблер»</strong> (Rambler), а вскоре добавил к ней рейтинг-счётчик Rambler's Top 100, за места в котором соревнуются почти все сайты Рунета. Почти одновременно заработал каталог-поисковик <strong>«Апорт»</strong> с переводом запросов между русским и английским языками. В сентябре 1997 года компания CompTek (Аркадий Волож и Илья Сегалович) представила на выставке Softool поисковую машину <strong>«Яндекс»</strong> (<code>yandex.ru</code>): её лингвистический модуль строит грамматическую модель русских слов с учётом всех склонений и спряжений и оценивает расстояние между словами в документе.` },
+    { id: 'encodings', title: 'Пять кодировок кириллицы и кнопки KOI / WIN / DOS', content: `Главная техническая беда русскоязычного пользователя конца 1990-х — отсутствие единого стандарта кодирования русских букв. В разных системах прижились пять таблиц:
+<dl>
+<dt>KOI8-R (Код обмена информацией, 8 бит)</dt><dd>разработана Андреем Черновым в 1993 году (RFC 1489) на основе советских ГОСТов; стандарт для систем Unix, [[linux|Linux]], [[freebsd|FreeBSD]], почты «Релкома» и большинства веб-серверов [[apache|Русского Apache]]. Её особенность: если сбросить восьмой бит каждого байта, русский текст превращается в читаемую латинскую транслитерацию.</dd>
+<dt>CP1251</dt><dd>кодовая страница кириллицы в [[windows95|Win 95]], [[windows98|Win 98]] и [[winnt4|Win NT]]; в ней создают домашние страницы пользователи [[notepad|Блокнота]] и FrontPage.</dd>
+<dt>CP866 (альтернативная ГОСТ)</dt><dd>родная кодировка [[msdos|MS-DOS]], архиваторов и писем [[fidonet|ФидоНета]], сохраняющая рамки псевдографики для панелей [[norton|Norton Commander]] и FAR.</dd>
+<dt>ISO 8859-5 и MacCyrillic</dt><dd>международный стандарт ISO и кодировка компьютеров [[macos8|Macintosh]].</dd>
+</dl>
+
+Если браузер открывает страницу KOI8-R в режиме CP1251, вместо русского текста на экране появляется нечитаемая россыпь прописных и строчных букв («абракадабра» или «кракозябры»). Поэтому в шапке большинства российских сайтов 1999 года висят переключатели <code>KOI | WIN | DOS | MAC | Translit</code>, которые отдают одну и ту же страницу с разных портов сервера.` }
+  ],
+  seeAlso: ['www', 'fidonet', 'usenet', 'dialup', 'apache', 'interpedia'],
+  references: [
+    'Чернов А. В. RFC 1489: Registration of a Cyrillic Character Set (KOI8-R). — Июль 1993.',
+    'Соглашение «О порядке администрирования зоны .RU». — Декабрь 1993.',
+    'Сегалович И., Волож А. Поиск в русском Интернете с учётом морфологии // Доклад на выставке Softool, сентябрь 1997.'
+  ],
+  links: [['http://www.lib.ru', 'Библиотека Максима Мошкова (lib.ru)'], ['http://www.yandex.ru', 'Поисковая система Яндекс'], ['http://www.rambler.ru', 'Поисковая система и рейтинг Рамблер'], ['http://www.anekdot98.ru', 'Анекдоты из России'], ['http://chat.krovatka98.ru', 'Веб-чат «Кроватка»']],
+  categories: ['Интернет', 'Рунет', 'Сетевые сообщества', 'Кодировки символов']
+}, {
+  title: 'The 1990s Runet (Russian Internet)',
+  infobox: {
+    title: 'Runet',
+    badgeText: '.SU / .RU',
+    fields: [
+      { label: 'First international link', value: 'August 1990 (Relcom network, Demos cooperative)' },
+      { label: 'Top-level domains', value: '.su (September 1990), .ru (April 7, 1994)' },
+      { label: 'Search engines', value: 'Rambler (1996), Aport (1996), Yandex (1997)' },
+      { label: 'Landmark sites', value: 'Moshkov\'s Library (lib.ru), Anecdotes from Russia, Evening Internet, Krovatka' },
+      { label: 'Cyrillic encodings', value: 'KOI8-R, CP1251, CP866 (alternative), ISO 8859-5, MacCyrillic' },
+      { label: 'Typical home access', value: '[[dialup|dial-up]] over telephone lines' }
+    ]
+  },
+  lead: `<strong>Runet</strong> is the Russian-language segment of the [[www|World Wide Web]] and the Internet, formed in the 1990s around the <code>.su</code> and <code>.ru</code> country-code domains as well as Russian-language sites, chats and newsgroups worldwide. Within a single decade the network grew from a handful of university and cooperative Unix machines dialing Helsinki overnight into a self-contained cultural world with hundreds of thousands of readers, native morphological search engines and public literary libraries.
+
+Unlike the Western Web, late-1990s Runet evolved over noisy copper phone lines, per-minute [[dialup|dial-up]] tariffs and five mutually incompatible Cyrillic character encodings. Those constraints shaped a distinct aesthetic: compact text pages stripped of heavy graphics, free online book archives and deep roots in [[fidonet|FidoNet]] culture.`,
+  sections: [
+    { id: 'origins', title: 'From the Relcom network and .su to the delegation of .ru', content: `The story of the domestic network began in August 1990, when programmers at the Demos cooperative and the Kurchatov Institute of Atomic Energy in Moscow (Dmitry Burkov, Vadim Antonov, Valery Bardin and their colleagues) linked DEMOS Unix machines to the University of Helsinki over a regular voice phone line using the UUCP protocol. That link gave birth to the Relcom network and its <code>relcom.*</code> hierarchy in [[usenet|Usenet]]. In September 1990 the Soviet Union's top-level domain <code>.su</code> was registered in the international root database.
+
+In December 1993 Russia's major service providers signed the Agreement on Administering the .RU Zone, and on April 7, 1994, IANA officially delegated the <code>.ru</code> country domain to Russia, with <code>www.ru</code> launching as its first website. By the end of the 1990s both domains operate side by side, and the word "Runet", coined in spring 1997 by columnist Raffi Aslanbekov, has become the standard term used by journalists and everyday users alike.` },
+    { id: 'landmarks', title: 'Moshkov\'s Library, Anecdotes from Russia and early web hangouts', content: `Because most Russian home users pay their provider by the hour or minute, the best-loved destinations are text-rich libraries and lively community hubs:
+<ul>
+<li><strong>Maksim Moshkov's Library (lib.ru, November 1994):</strong> the largest free online collection of Russian and translated fiction, science fiction, poetry, travelogues and technical manuals. Pages are deliberately formatted in plain HTML without decorative images so a reader on a modem can save an entire novel to disk in thirty seconds.</li>
+<li><strong>Anecdotes from Russia (anekdot.ru, November 1995):</strong> astrophysicist Dmitry Verner's daily humor archive, the first Russian website to pass one thousand daily visitors.</li>
+<li><strong>Anton Nossik's "Evening Internet" (1996):</strong> a daily column reviewing websites, software and digital culture that established independent Russian web journalism.</li>
+<li><strong>Krovatka web chat (krovatka.ru), Molotok.ru and Mult.ru:</strong> browser-based chat rooms requiring no [[mirc|mIRC]] setup, Russia's first major online auction house and Oleg Kuvaev's [[flash|Flash]] animation studio.</li>
+</ul>` },
+    { id: 'search', title: 'Search engines: Rambler, Aport and Yandex morphology', content: `Mid-1990s Western search engines handled Russian poorly: they ignored case endings and stumbled over character encodings, so a query for the nominative singular of "computer" missed pages containing genitive, dative or plural forms.
+
+In October 1996 programmer Dmitry Kryukov in the science town of Pushchino launched the <strong>Rambler</strong> search engine and soon added the Rambler's Top 100 counter badge displayed at the bottom of almost every Russian site. Around the same time the <strong>Aport</strong> directory introduced bilingual query translation between Russian and English. In September 1997 the Moscow company CompTek (led by Arkady Volozh and Ilya Segalovich) unveiled <strong>Yandex</strong> (<code>yandex.ru</code>) at the Softool exhibition: its linguistic engine builds a full morphological model of Russian declensions and conjugations and ranks results by word proximity.` },
+    { id: 'encodings', title: 'Five Cyrillic encodings and the KOI / WIN / DOS buttons', content: `The most persistent headache for Russian Internet users at the end of the 1990s is the lack of a single Cyrillic character encoding. Five different code tables compete across platforms:
+<dl>
+<dt>KOI8-R (8-bit Code for Information Exchange)</dt><dd>designed by Andrey Chernov in 1993 (RFC 1489) from Soviet GOST standards; the native encoding of Unix, [[linux|Linux]], [[freebsd|FreeBSD]], Relcom mail and [[apache|Russian Apache]] servers. Its clever layout ensures that stripping the eighth bit turns Russian text into readable Latin transliteration.</dd>
+<dt>CP1251</dt><dd>the Cyrillic code page of [[windows95|Win 95]], [[windows98|Win 98]] and [[winnt4|Win NT]], used by authors writing home pages in [[notepad|Notepad]] or FrontPage.</dd>
+<dt>CP866 (Alternative GOST)</dt><dd>the native encoding of [[msdos|MS-DOS]], command-line archivers and [[fidonet|FidoNet]] mail, preserving box-drawing characters for [[norton|Norton Commander]] and FAR panels.</dd>
+<dt>ISO 8859-5 and MacCyrillic</dt><dd>the official ISO standard and the Cyrillic encoding of [[macos8|Macintosh]] computers.</dd>
+</dl>
+
+When a browser opens a KOI8-R page while set to CP1251, Russian words turn into unreadable strings of mixed-case letters ("krakozyabry"). To spare readers, almost every Russian website in 1999 places a row of <code>KOI | WIN | DOS | MAC | Translit</code> links at the top of the page, serving the same document from different server ports.` }
+  ],
+  seeAlso: ['www', 'fidonet', 'usenet', 'dialup', 'apache', 'interpedia'],
+  references: [
+    'Chernov, A. RFC 1489: Registration of a Cyrillic Character Set (KOI8-R), July 1993.',
+    'Agreement on the Administration of the .RU Domain Zone, December 1993.',
+    'Segalovich, I., Volozh, A. "Morphology-Aware Search on the Russian Internet". Softool Conference Paper, September 1997.'
+  ],
+  links: [['http://www.lib.ru', 'Maksim Moshkov\'s Library (lib.ru)'], ['http://www.yandex.ru', 'Yandex Search Engine'], ['http://www.rambler.ru', 'Rambler Search and Top 100'], ['http://www.anekdot98.ru', 'Anecdotes from Russia'], ['http://chat.krovatka98.ru', 'Krovatka Web Chat']],
+  categories: ['Internet', 'Runet', 'Online Communities', 'Character Encodings']
+}, ['ru_net', 'libru', 'anekdot', 'rambler', 'yandex']);
+
+window.interpediaReg('apache', 'internet', {
+  title: 'Веб-сервер Apache, CGI-скрипты и PHP',
+  infobox: {
+    title: 'Apache HTTP Server',
+    badgeText: 'Apache Group / PHP / CGI',
+    fields: [
+      { label: 'Разработчик', value: 'Apache Group (с июня 1999 — Apache Software Foundation)' },
+      { label: 'Первая версия', value: 'апрель 1995 (на основе NCSA HTTPd 1.3)' },
+      { label: 'Актуальная ветка', value: 'Apache 1.3.x (1998–1999)' },
+      { label: 'Доля в Сети', value: 'около 55 % всех веб-серверов мира (Netcraft, декабрь 1999)' },
+      { label: 'Платформы', value: '[[linux|Linux]], [[freebsd|FreeBSD]], Solaris, [[winnt4|Win NT]], [[windows98|Win 98]]' },
+      { label: 'Динамические страницы', value: 'CGI (Perl, C), SSI (.shtml), mod_perl, PHP 3.0' },
+      { label: 'Русская сборка', value: 'Russian Apache (mod_charset Алексея Тутубалина)' }
+    ]
+  },
+  lead: `<strong>Apache HTTP Server</strong> — свободный веб-сервер с открытым исходным кодом, созданный весной 1995 года группой веб-мастеров как продолжение серверной программы NCSA HTTPd. По данным обзора Netcraft за декабрь 1999 года, под управлением Apache работает более половины всех сайтов [[www|Всемирной паутины]], что делает его самым распространённым серверным пакетом в мире со значительным отрывом от коммерческих продуктов Microslop и [[netscape|Netscape]].
+
+В связке со скриптами CGI на языке Perl, языком сценариев PHP 3.0 и базой данных MySQL на системах [[linux|Linux]] и [[freebsd|FreeBSD]] сервер Apache превратил Всемирную паутину конца 1990-х из набора неподвижных файлов [[html|HTML]] в живую среду с гостевыми книгами, форумами, счётчиками посещений и вики-энциклопедиями вроде [[interpedia|Интерпедии]].`,
+  sections: [
+    { id: 'history', title: 'От NCSA HTTPd к «заплаточному серверу»', content: `В 1993–1994 годах самым популярным веб-сервером в Интернете был общедоступный демон NCSA HTTPd, написанный программистом Робом Маккулом в Национальном центре суперкомпьютерных приложений США. Когда летом 1994 года Маккул и его коллеги ушли из центра в молодую компанию [[netscape|Netscape Communications]], развитие NCSA HTTPd остановилось, а администраторы сайтов остались один на один с ошибками и нехваткой функций.
+
+В феврале 1995 года восемь независимых разработчиков (среди них Брайан Белендорф и Рой Филдинг, соавтор спецификации протокола [[http|HTTP/1.0 и HTTP/1.1]]) объединились через список рассылки, чтобы собрать воедино свои исправления («патчи») к NCSA HTTPd 1.3. Первая публичная сборка вышла в апреле 1995 года. Название выбрали в честь индейского племени апачей, но в сообществе сразу прижилась шутливая расшифровка «A PAtCHy server» («сервер из заплаток»). В 1998 году вышла переработанная ветка Apache 1.3, добавившая поддержку [[winnt4|Win NT]] и [[windows95|Win 95/98]].` },
+    { id: 'modules', title: 'Модульная архитектура и виртуальные хосты', content: `Сила Apache кроется в его разбивке на небольшое ядро и подключаемые модули. Администратор включает в конфигурационном файле <code>httpd.conf</code> только то, что требуется сайту:
+<ul>
+<li><strong>Виртуальные хосты (Name-based Virtual Hosts)</strong> на базе заголовка <code>Host</code> протокола [[http|HTTP/1.1]] позволяют размещать на одном IP-адресе десятки разных доменов, что резко снизило цены на веб-хостинг.</li>
+<li><strong>Файлы .htaccess</strong> дают автору домашней страницы возможность настраивать пароли, перенаправления и страницы ошибок 404 прямо в своей папке без перезапуска всего сервера.</li>
+<li><strong>Server Side Includes (SSI, файлы .shtml)</strong> собирают веб-страницу на лету из общей шапки, подвала и основного текста с помощью директив вида <code>&lt;!--#include virtual="..."--&gt;</code>.</li>
+</ul>` },
+    { id: 'cgi_php', title: 'Папка /cgi-bin/, скрипты на Perl и появление PHP 3', content: `Чтобы страница умела принимать сообщения читателей или искать товары в каталоге, веб-сервер запускает внешние программы через стандартный шлюз <strong>CGI</strong> (Common Gateway Interface). В адресах сайтов конца 1990-х такие программы легко узнать по пути <code>/cgi-bin/script.pl</code> или <code>guestbook.cgi</code>. Главным языком для CGI стал Perl Ларри Уолла: на нём написаны тысячи бесплатных гостевых книг, почтовых форм (например, знаменитый <code>FormMail.pl</code> из архива Matt's Script Archive), баннерообменных сетей и первых веб-форумов вроде Ultimate Bulletin Board (UBB).
+
+Запуск отдельного процесса Perl на каждый запрос создаёт высокую нагрузку на процессор. Чтобы обойти это ограничение, встраиваемый модуль <code>mod_perl</code> удерживает интерпретатор в памяти сервера, а датско-канадский программист Расмус Лердорф предложил иной подход: вставлять команды сценария прямо внутрь разметки [[html|HTML]] между тегами <code>&lt;?php ... ?&gt;</code>. Летом 1998 года Энди Гутманс и Зеев Сураски переписали движок Лердорфа и выпустили <strong>PHP 3.0</strong>, который к концу 1999 года вместе с базой данных MySQL стремительно завоёвывает популярность у веб-мастеров.` },
+    { id: 'russian_apache', title: '«Русский Apache» Алексея Тутубалина', content: `Для отечественных провайдеров и веб-мастеров [[runet|Рунета]] важнейшей модификацией стала сборка <strong>Russian Apache</strong> (<code>apache.lexa.ru</code>), которую с 1996 года ведёт московский программист Алексей Тутубалин. Её модуль <code>mod_charset</code> решает проблему несовместимых русских кодировок без дублирования файлов на диске.
+
+Автор сайта хранит все свои страницы в одной кодировке (обычно в серверной KOI8-R), а модуль Тутубалина по заголовку браузера <code>User-Agent</code>, номеру порта (например, порт 8000 для KOI8-R, 8001 для CP1251, 8002 для CP866) или префиксу в адресе мгновенно перекодирует как выдаваемую страницу, так и отправленные посетителем формы поиска или гостевой книги.` }
+  ],
+  seeAlso: ['http', 'html', 'linux', 'freebsd', 'runet', 'interpedia'],
+  references: [
+    'Laurie B., Laurie P. Apache: The Definitive Guide, 2nd Edition. — O\'Reilly & Associates, 1999.',
+    'Netcraft Web Server Survey. — Декабрь 1999.',
+    'Тутубалин А. Документация к модулю перекодировки mod_charset (Russian Apache). — apache.lexa.ru, 1999.'
+  ],
+  links: [['http://www.interpedia.org', 'Интерпедия (работает на вики-скриптах поверх HTTP)'], ['http://www.dima-webmaster98.ru', 'Мастерская веб-дизайна Димы: HTML, CGI и счётчики']],
+  categories: ['Интернет', 'Веб-разработка', 'Свободное ПО', 'Серверное ПО']
+}, {
+  title: 'Apache HTTP Server, CGI Scripts and PHP',
+  infobox: {
+    title: 'Apache HTTP Server',
+    badgeText: 'Apache Group / PHP / CGI',
+    fields: [
+      { label: 'Developer', value: 'Apache Group (Apache Software Foundation since June 1999)' },
+      { label: 'First release', value: 'April 1995 (based on NCSA HTTPd 1.3)' },
+      { label: 'Current branch', value: 'Apache 1.3.x (1998–1999)' },
+      { label: 'Market share', value: 'about 55% of all websites worldwide (Netcraft, December 1999)' },
+      { label: 'Platforms', value: '[[linux|Linux]], [[freebsd|FreeBSD]], Solaris, [[winnt4|Win NT]], [[windows98|Win 98]]' },
+      { label: 'Dynamic pages', value: 'CGI (Perl, C), SSI (.shtml), mod_perl, PHP 3.0' },
+      { label: 'Russian build', value: 'Russian Apache (Alex Tutubalin\'s mod_charset)' }
+    ]
+  },
+  lead: `The <strong>Apache HTTP Server</strong> is a free, open-source web server created in spring 1995 by a coalition of webmasters as a continuation of the NCSA HTTPd daemon. According to the December 1999 Netcraft survey, Apache powers more than half of all websites on the [[www|World Wide Web]], leading commercial servers from Microslop and [[netscape|Netscape]] by a wide margin.
+
+Paired with Perl CGI scripts, the PHP 3.0 scripting language and the MySQL database on [[linux|Linux]] and [[freebsd|FreeBSD]] machines, Apache turned the late-1990s Web from a collection of static [[html|HTML]] files into an interactive medium of guestbooks, discussion forums, hit counters and wiki encyclopedias such as [[interpedia|Interpedia]].`,
+  sections: [
+    { id: 'history', title: 'From NCSA HTTPd to "a patchy server"', content: `In 1993 and 1994 the most widely used web server on the Internet was the public-domain NCSA HTTPd daemon written by Rob McCool at the National Center for Supercomputing Applications. When McCool and several colleagues left NCSA in summer 1994 to join the newly founded [[netscape|Netscape Communications]], work on NCSA HTTPd stalled and site administrators began maintaining their own bug fixes.
+
+In February 1995 eight developers, including Brian Behlendorf and Roy Fielding (co-author of the [[http|HTTP/1.0 and HTTP/1.1]] specifications), formed a mailing list to coordinate their patches to NCSA HTTPd 1.3. Their first public release came out in April 1995. Chosen in honor of the Native American Apache nation, the name also became known across the community as a pun on "a patchy server". In 1998 the group released the overhauled Apache 1.3 series, adding support for [[winnt4|Win NT]] and [[windows95|Win 95/98]].` },
+    { id: 'modules', title: 'Modular architecture and virtual hosting', content: `Apache's strength lies in its small core and loadable modules configured through <code>httpd.conf</code>:
+<ul>
+<li><strong>Name-based Virtual Hosts</strong> use the <code>Host</code> header introduced in [[http|HTTP/1.1]] to serve dozens of independent domain names from a single IP address, dramatically lowering the cost of shared hosting.</li>
+<li><strong>.htaccess files</strong> let individual site owners configure password protection, redirects and custom 404 error pages inside their own directories without restarting the main server.</li>
+<li><strong>Server Side Includes (SSI, .shtml files)</strong> assemble pages on the fly from shared navigation headers, footers and body fragments using directives such as <code>&lt;!--#include virtual="..."--&gt;</code>.</li>
+</ul>` },
+    { id: 'cgi_php', title: 'The /cgi-bin/ directory, Perl scripts and PHP 3', content: `To process reader comments or search a product catalog, a web server invokes external programs through the <strong>CGI</strong> (Common Gateway Interface) standard. On late-1990s websites these scripts are immediately recognizable by URLs containing <code>/cgi-bin/script.pl</code> or <code>guestbook.cgi</code>. Larry Wall's Perl became the lingua franca of CGI programming, powering thousands of free guestbooks, mail forms (most famously <code>FormMail.pl</code> from Matt's Script Archive), banner exchanges and early bulletin boards such as Ultimate Bulletin Board (UBB).
+
+Spawning a separate Perl interpreter process for every incoming request puts heavy strain on the CPU. To avoid that overhead, the <code>mod_perl</code> module embeds the interpreter directly inside Apache, while Danish-Canadian programmer Rasmus Lerdorf took another route by embedding script tags (<code>&lt;?php ... ?&gt;</code>) directly inside [[html|HTML]] files. In June 1998 Andi Gutmans and Zeev Suraski rewrote Lerdorf's parser and released <strong>PHP 3.0</strong>, which alongside the MySQL database has become a favorite toolkit of webmasters in 1999.` },
+    { id: 'russian_apache', title: 'Alex Tutubalin\'s Russian Apache', content: `Across the [[runet|Russian Internet]], the essential server build is <strong>Russian Apache</strong> (<code>apache.lexa.ru</code>), maintained since 1996 by Moscow programmer Alex Tutubalin. Its <code>mod_charset</code> module solves the problem of incompatible Cyrillic encodings without duplicating files on disk.
+
+A webmaster stores every page in a single base encoding on the server (typically KOI8-R), and Tutubalin's module inspects the visitor's <code>User-Agent</code> header, port number (such as port 8000 for KOI8-R, 8001 for CP1251 or 8002 for CP866) or URL prefix, recoding both outgoing pages and incoming form submissions on the fly.` }
+  ],
+  seeAlso: ['http', 'html', 'linux', 'freebsd', 'runet', 'interpedia'],
+  references: [
+    'Laurie, B., Laurie, P. Apache: The Definitive Guide, 2nd Edition. O\'Reilly & Associates, 1999.',
+    'Netcraft Web Server Survey, December 1999.',
+    'Tutubalin, A. Russian Apache (mod_charset) documentation. apache.lexa.ru, 1999.'
+  ],
+  links: [['http://www.interpedia.org', 'Interpedia (powered by wiki scripts over HTTP)'], ['http://www.dima-webmaster98.ru', 'Dima\'s Webmaster Workshop: HTML, CGI and counters']],
+  categories: ['Internet', 'Web Development', 'Free Software', 'Server Software']
+}, ['lamp', 'webserver', 'cgi']);
+

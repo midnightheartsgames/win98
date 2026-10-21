@@ -152,6 +152,7 @@ class AppShutdown {
       screen.querySelector('.shutdown-wait-text').textContent = t('shutdown.waitText');
       screen.classList.add('active');
       this.hideDimOverlay();
+      this.resetSession();
     }, 1600);
 
     setTimeout(() => {
@@ -229,7 +230,18 @@ class AppShutdown {
     }, 600);
   }
 
+  resetSession() {
+    if (window.winManager && typeof window.winManager.closeAllWindows === 'function') window.winManager.closeAllWindows();
+    if (window.taskbar && typeof window.taskbar.closeStartMenu === 'function') window.taskbar.closeStartMenu();
+    if (window.contextMenu) window.contextMenu.hide();
+    if (window.appScreensaver && window.appScreensaver.isActive) window.appScreensaver.stop();
+    if (window.appClippy && typeof window.appClippy.hideBalloon === 'function') window.appClippy.hideBalloon();
+    if (this.dosScreen) this.dosScreen.classList.remove('active');
+    if (typeof window.leaveWin98SafeMode === 'function') window.leaveWin98SafeMode();
+  }
+
   triggerRestart(toBios = false) {
+    this.resetSession();
     if (toBios && window.biosEngine) {
       window.biosEngine.openSetup();
       return;
@@ -258,13 +270,18 @@ class AppShutdown {
     }
   }
 
+  dosText(ruText, enText) {
+    return window.i18n && window.i18n.getLanguage() === 'ru' ? ruText : enText;
+  }
+
   triggerDosMode() {
+    const tr = (r, e) => this.dosText(r, e);
     this.dosScreen.innerHTML = `
       <div class="dos-output">Microslop(R) Win 98
-(C)Copyright Microslop Corp 1981-1998.
+${tr('(C)Корпорация Microslop 1981-1998.', '(C)Copyright Microslop Corp 1981-1998.')}
 
-Type 'help' for a list of available commands.
-Type 'win' or 'exit' to return to Win 98 desktop.
+${tr("Введите 'help' для получения списка команд.", "Type 'help' for a list of available commands.")}
+${tr("Введите 'win' или 'exit' для возврата на рабочий стол Win 98.", "Type 'win' or 'exit' to return to Win 98 desktop.")}
 </div>
       <div class="dos-history"></div>
       <div class="dos-input-line">
@@ -305,6 +322,7 @@ Type 'win' or 'exit' to return to Win 98 desktop.
   }
 
   handleDosCommand(rawCmd) {
+    const tr = (r, e) => this.dosText(r, e);
     const cmd = rawCmd.trim().toLowerCase();
     const parts = rawCmd.trim().split(/\s+/);
     const main = parts[0].toLowerCase();
@@ -321,7 +339,7 @@ Type 'win' or 'exit' to return to Win 98 desktop.
     }
 
     if (main === 'ver') {
-      return 'Win 98 [Version 4.10.1998]';
+      return tr('Win 98 [Версия 4.10.1998]', 'Win 98 [Version 4.10.1998]');
     }
 
     if (main === 'echo') {
@@ -329,9 +347,9 @@ Type 'win' or 'exit' to return to Win 98 desktop.
     }
 
     if (main === 'dir') {
-      return ` Volume in drive C has no label.
- Volume Serial Number is 1998-0412
- Directory of C:\\WINDOWS
+      return `${tr(' Том в устройстве C не имеет метки', ' Volume in drive C has no label.')}
+${tr(' Серийный номер тома: 1998-0412', ' Volume Serial Number is 1998-0412')}
+${tr(' Содержимое папки C:\\WINDOWS', ' Directory of C:\\WINDOWS')}
 
 .              &lt;DIR&gt;        04-12-98  11:11a
 ..             &lt;DIR&gt;        04-12-98  11:11a
@@ -339,8 +357,8 @@ SYSTEM         &lt;DIR&gt;        04-12-98  11:11a
 NOTEPAD  EXE         54,272  04-12-98  11:11a
 WIN      INI          1,024  04-12-98  11:11a
 README   TXT          2,048  04-12-98  11:11a
-         3 file(s)         57,344 bytes
-         3 dir(s)   1,524,891,648 bytes free`;
+${tr('         3 файл(ов)         57,344 байт', '         3 file(s)         57,344 bytes')}
+${tr('         3 папок   1,524,891,648 байт свободно', '         3 dir(s)   1,524,891,648 bytes free')}`;
     }
 
     if (main === 'format' || main === 'reset') {
@@ -350,7 +368,7 @@ README   TXT          2,048  04-12-98  11:11a
           window.appDialogs.confirmFactoryReset();
         }
       }, 700);
-      return 'WARNING: ALL DATA ON FIXED DISK DRIVE C: WILL BE LOST!<br>Formatting drive C:... Initializing Win 98 system restore...';
+      return tr('ВНИМАНИЕ! ВСЕ ДАННЫЕ НА ЖЕСТКОМ ДИСКЕ C: БУДУТ УНИЧТОЖЕНЫ!<br>Форматирование диска C:... Запуск восстановления Win 98...', 'WARNING: ALL DATA ON FIXED DISK DRIVE C: WILL BE LOST!<br>Formatting drive C:... Initializing Win 98 system restore...');
     }
 
     if (main === 'bios' || main === 'setup') {
@@ -362,7 +380,16 @@ README   TXT          2,048  04-12-98  11:11a
     }
 
     if (main === 'help') {
-      return `Supported MS-DOS Commands:
+      return tr(`Доступные команды MS-DOS:
+  DIR     - Вывод списка файлов и подпапок
+  VER     - Вывод версии Win
+  ECHO    - Вывод сообщений
+  CLS     - Очистка экрана
+  BIOS    - Запуск программы настройки Award Modular BIOS
+  FORMAT  - Возврат Win 98 к состоянию первого запуска
+  RESET   - Возврат Win 98 к состоянию первого запуска
+  WIN     - Запуск графической оболочки Win 98 (возврат на рабочий стол)
+  EXIT    - Выход из режима MS-DOS и возврат в Win`, `Supported MS-DOS Commands:
   DIR     - Displays a list of files and subdirectories
   VER     - Displays the Win version
   ECHO    - Displays messages
@@ -371,12 +398,12 @@ README   TXT          2,048  04-12-98  11:11a
   FORMAT  - Restores Win 98 to first launch defaults
   RESET   - Restores Win 98 to first launch defaults
   WIN     - Starts Win 98 GUI (returns to desktop)
-  EXIT    - Exits MS-DOS mode and returns to Win`;
+  EXIT    - Exits MS-DOS mode and returns to Win`);
     }
 
     if (main === '') return null;
 
-    return `Bad command or file name: "${main}"`;
+    return tr(`Недопустимая команда или имя файла: "${main}"`, `Bad command or file name: "${main}"`);
   }
 }
 

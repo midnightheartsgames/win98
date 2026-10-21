@@ -26,6 +26,9 @@ class RetroSitesEngine {
       { name: "Яndex 1998", url: "http://www.yandex.ru" },
       { name: "Интерпедия (Interpedia)", url: "http://www.interpedia.org" },
       { name: "Библиотека Мошкова (Lib.ru)", url: "http://www.lib.ru" },
+      { name: "Сводка.ру '99 (Интернет-газета)", url: "http://www.svodka99.ru" },
+      { name: "Переплёт '99 (Литературный альманах)", url: "http://www.pereplet99.ru" },
+      { name: "ЗооПортал '98 (Живая Планета)", url: "http://www.zooportal98.ru" },
       { name: "Журнал «Игромания»", url: "http://www.igromania.ru" },
       { name: "Cheat Code Central", url: "http://www.cheatcc.com" },
       { name: "Winamp Skins Archive", url: "http://skins.winamp.com" },
@@ -37,12 +40,18 @@ class RetroSitesEngine {
       { name: "SoftStore '98", url: "http://www.softstore98.com" },
       { name: "Steam", url: "http://www.steampowered.com" },
       { name: "ThemeWorld '98", url: "http://www.themeworld98.com" },
+      { name: "МузЗона '98", url: "http://www.muzzone98.ru" },
+      { name: "Кар-Мэн '99 (Car-Man)", url: "http://www.carman99.ru" },
+      { name: "Король и Шут '99", url: "http://www.kish99.ru" },
       { name: "MP3 Vault '98", url: "http://www.mp3vault98.com" },
       { name: "Киномания '98", url: "http://www.kinomania98.ru" },
       { name: "WebCinema '98", url: "http://www.webcinema98.com" },
+      { name: "АниМатрица '99 (Аниме-узел)", url: "http://www.animatrix99.ru" },
       { name: "GamerZone Forum", url: "http://forum.games98.com" },
       { name: "Чат «Кроватка '98»", url: "http://chat.krovatka98.ru" },
       { name: "Анекдот.ru 1998", url: "http://www.anekdot98.ru" },
+      { name: "Лаборатория Касперского (AVP 3.0)", url: "http://www.avp.ru" },
+      { name: "Железный Цех '98", url: "http://www.ferrum98.ru" },
       { name: "3dfx Voodoo Zone", url: "http://www.3dfx-zone.com" },
       { name: "AntiVirus Lab", url: "http://www.antivirus98.com" },
       { name: "Blender 3D", url: "http://www.blender3d.com" },
@@ -55,7 +64,14 @@ class RetroSitesEngine {
       { name: "Журнал «Хакер '98»", url: "http://www.xakep98.ru" },
       { name: "Студия «Мульт.ру»", url: "http://www.mult98.ru" },
       { name: "Emu-Land", url: "http://www.emuland98.ru" },
-      { name: "Архив «Истина рядом»", url: "http://www.xfiles98.ru" }
+      { name: "Архив «Истина рядом»", url: "http://www.xfiles98.ru" },
+      { name: "LucasArts Entertainment", url: "http://www.lucasarts.com" },
+      { name: "GSC Game World (S.T.A.L.K.E.R.)", url: "http://www.gsc-game.com" },
+      { name: "Valve Software (Half-Life & Steam)", url: "http://www.valvesoftware.com" },
+      { name: "Blizzard Entertainment (Diablo & Warcraft)", url: "http://www.blizzard.com" },
+      { name: "Сансет Вэлли & Maxis (The Sims 3)", url: "http://www.sunsetvalley98.com" },
+      { name: "BioWare Edmonton (Dragon Age & KOTOR)", url: "http://www.bioware98.com" },
+      { name: "Пепельный Тракт '98 (MMO)", url: "http://www.ashroad98.ru" }
     ];
   }
 
@@ -786,36 +802,207 @@ ${active.text}
     }
   }
 
+  getIcqPortalDirectory() {
+    const base = [
+      { id: 'boris', uin: '777666', nick: 'Сисадмин Борис', name: 'Борис Сергеевич', city: 'Москва', email: 'boris@noc.cnt.ru', group: 'Коллеги и Сеть', status: 'online', statusNote: 'Настраиваю Samba на RedHat 5.2', interests: 'Linux, FreeBSD, Cisco, BNC, Quake IPX, пиво', inContacts: true },
+      { id: 'glavbuh', uin: '890123', nick: 'Главбух МарьИванна', name: 'Мария Ивановна', city: 'Москва', email: 'buh@glavbuh.msk.ru', group: 'Коллеги и Сеть', status: 'dnd', statusNote: 'Квартальный отчет в 1С 6.0! НЕ ТРОГАТЬ!', interests: '1С 6.0, Налоговый кодекс, бухгалтерский учет, чай', inContacts: true },
+      { id: 'dima_web', uin: '313370', nick: 'Вебмастер Дима', name: 'Дмитрий Соколов', city: 'Санкт-Петербург', email: 'dima@geocities.com', group: 'Коллеги и Сеть', status: 'online', statusNote: 'Верстаю сайт на фреймах и таблицах', interests: 'HTML 3.2, JavaScript, Netscape, Geocities, GIF-анимация', inContacts: true },
+      { id: 'pasha_any', uin: '452109', nick: 'Эникейщик Паша', name: 'Павел Кузнецов', city: 'Москва', email: 'pavel_support@mail.ru', group: 'Коллеги и Сеть', status: 'away', statusNote: 'Ставлю драйвера Sound Blaster 16', interests: 'Драйвера, чистка мышек от грязи, разборка БП, DOOM', inContacts: true },
+      { id: 'elena', uin: '554433', nick: 'Лена_Студентка', name: 'Елена Смирнова', city: 'Москва', email: 'elena_msu@chat.ru', group: 'Друзья', status: 'away', statusNote: 'На паре по матану в МГУ', interests: 'Матан, МГУ, книги, кино, котики, стихи', inContacts: true },
+      { id: 'serega_quake', uin: '666999', nick: 'Серёга (Quake-Мастер)', name: 'Сергей Волков', city: 'Нижний Новгород', email: 'quake_god@mail.ru', group: 'Друзья', status: 'online', statusNote: 'Купил 3dfx Voodoo 2 12MB!', interests: 'Quake II, 3dfx Glide, Rocket Jump, Half-Life, разгон', inContacts: true },
+      { id: 'max_cd', uin: '404505', nick: 'Макс_CD-ROM', name: 'Максим Белов', city: 'Москва', email: 'max_cd@inbox.ru', group: 'Друзья', status: 'offline', statusNote: 'Оффлайн (пишу болванки Verbatim)', interests: 'Запись CD-R, MP3 128kbps, Игромания, Горбушка, железо', inContacts: true },
+      { id: 'vovan_car', uin: '512789', nick: 'Вован_Авто', name: 'Владимир Морозов', city: 'Самара', email: 'vovan99@rambler.ru', group: 'Друзья', status: 'offline', statusNote: 'В гараже тюнингую девятку', interests: 'ВАЗ 21099, автомагнитолы Pioneer, гараж, сабвуфер', inContacts: true },
+      { id: 'hacker', uin: '133742', nick: 'Neo_Hacker98', name: 'Thomas A. Anderson', city: 'Capital City', email: 'trinity@matrix.net', group: 'Интернет & Фидонет', status: 'online', statusNote: 'Wake up, Neo... (56000 bps)', interests: 'The Matrix, USRobotics Courier 56k, Linux, QBasic, Phreaking', inContacts: true },
+      { id: 'anya_fido', uin: '204899', nick: 'Аня_Фидошница', name: 'Анна Мельникова', city: 'Москва', email: 'anya@fido.org', group: 'Интернет & Фидонет', status: 'online', statusNote: '2:5020/400.12 Netmail Only', interests: 'FidoNet, эхопочта, GoldED, Zyxel Omni 56K, пойнтовки', inContacts: true },
+      { id: 'cool_girl', uin: '789456', nick: 'Cool_Girl98', name: 'Алиса', city: 'Москва', email: 'alisa_stars@chat.ru', group: 'Интернет & Фидонет', status: 'online', statusNote: 'Слушаю Руки Вверх и сижу в mIRC', interests: 'mIRC, Руки Вверх, Стрелки, дискотеки, чаты', inContacts: true },
+      { id: 'dj_groove', uin: '112233', nick: 'DJ_Groove_Fan', name: 'Роман Ткачев', city: 'Москва', email: 'groove_fan@nightparty.ru', group: 'Интернет & Фидонет', status: 'online', statusNote: 'Станция 106.8 FM non-stop', interests: 'Станция 106.8, DJ Грув, The Prodigy, рейвы, Гагарин-парк', inContacts: true },
+      { id: 'denchik_roller', uin: '912384', nick: 'Денчик_Roller', name: 'Денис Пономарев', city: 'Москва', email: 'denis_skate@mail.ru', group: 'Интернет & Фидонет', status: 'away', statusNote: 'Катаюсь на роликах на Поклонке', interests: 'Ролики Rollerblade, Поклонная гора, скейтборд, Dr Pepper', inContacts: true },
+      { id: 'icq_support', uin: '10000', nick: 'ICQ System Support', name: 'Mirabilis Bot', city: 'Tel Aviv', email: 'support@icq.com', group: 'Интернет & Фидонет', status: 'online', statusNote: 'Mirabilis ICQ Network Message', interests: 'Instant Messaging, Peer-to-Peer, Mirabilis, Internet Protocol', inContacts: true },
+      { id: 'clippy', uin: '199898', nick: 'Скрепыш', name: 'Clippit', city: 'Редмонд', email: 'clippy@clippy98.com', group: 'Microslop', status: 'online', statusNote: 'Справа внизу, у часов', interests: 'Письма, Ctrl+S, «Косынка», шляпы, Ретро-Викторина', inContacts: true },
+      { id: 'dir_888333', uin: '888333', nick: 'Клава_Рейлган', name: 'Клавдия Смирнова', city: 'Москва', email: '888333@mirabilis.icq', group: 'Каталог White Pages', status: 'online', statusNote: 'Чемпионка МГУ по Quake II', interests: 'Quake II, Railgun, 3dfx', inContacts: false },
+      { id: 'dir_256512', uin: '256512', nick: 'Толян_Assembler', name: 'Анатолий Решетников', city: 'Новосибирск', email: '256512@mirabilis.icq', group: 'Каталог White Pages', status: 'online', statusNote: 'Пишу демосцены на ассемблере x86', interests: 'Assembler x86, DOS, Demoscene', inContacts: false },
+      { id: 'dir_345678', uin: '345678', nick: 'Катя_ChatGirl', name: 'Екатерина Власова', city: 'Москва', email: '345678@mirabilis.icq', group: 'Каталог White Pages', status: 'online', statusNote: 'Люблю гулять по Арбату', interests: 'Кино, театр, ролики, музыка', inContacts: false },
+      { id: 'dir_199911', uin: '199911', nick: 'Валера_Горбушка', name: 'Валерий Романов', city: 'Москва', email: '199911@mirabilis.icq', group: 'Каталог White Pages', status: 'online', statusNote: 'Продаю CD-диски на Горбушке', interests: 'CD-ROM, аудиодиски, пиратка', inContacts: false },
+      { id: 'dir_654321', uin: '654321', nick: 'Дядя_Петрович', name: 'Петр Николаевич', city: 'Екатеринбург', email: '654321@mirabilis.icq', group: 'Каталог White Pages', status: 'away', statusNote: 'Перепаиваю телефонную лапшу', interests: 'Паяльник, АТС, модемы', inContacts: false },
+      { id: 'dir_101010', uin: '101010', nick: 'Agent_Smith', name: 'Agent Smith', city: 'Matrix', email: '101010@mirabilis.icq', group: 'Каталог White Pages', status: 'dnd', statusNote: 'Mr. Anderson...', interests: 'Control, Ordnung, Sentinels', inContacts: false }
+    ];
+
+    const byUin = new Map(base.map(item => [item.uin, { ...item }]));
+    const icq = typeof window !== 'undefined' ? window.appICQ : null;
+
+    if (icq && Array.isArray(icq.contacts)) {
+      const liveUins = new Set(icq.contacts.map(c => String(c.uin)));
+      byUin.forEach(entry => {
+        if (entry.uin !== '199898') {
+          entry.inContacts = liveUins.has(entry.uin);
+        }
+      });
+      icq.contacts.forEach(c => {
+        const uin = String(c.uin || '');
+        if (!uin) return;
+        const existing = byUin.get(uin);
+        if (existing) {
+          existing.id = c.id || existing.id;
+          existing.nick = c.nick || existing.nick;
+          existing.name = c.name || existing.name;
+          existing.city = c.city || existing.city;
+          existing.email = c.email || existing.email;
+          existing.group = c.group || existing.group;
+          existing.status = c.status || existing.status;
+          existing.statusNote = c.statusNote || existing.statusNote;
+          existing.interests = c.interests || existing.interests;
+          existing.inContacts = true;
+        } else {
+          byUin.set(uin, {
+            id: c.id || `user_${uin}`,
+            uin,
+            nick: c.nick || `User_${uin}`,
+            name: c.name || c.nick || `User ${uin}`,
+            city: c.city || 'Интернет',
+            email: c.email || `${uin}@mirabilis.icq`,
+            group: c.group || 'Друзья',
+            status: c.status || 'online',
+            statusNote: c.statusNote || 'В сети',
+            interests: c.interests || 'ICQ 98a, Интернет',
+            inContacts: true
+          });
+        }
+      });
+    }
+
+    if (icq && typeof icq.getDirectoryUsers === 'function') {
+      icq.getDirectoryUsers().forEach(u => {
+        const uin = String(u.uin || '');
+        if (!uin || byUin.has(uin)) return;
+        byUin.set(uin, {
+          id: `dir_${uin}`,
+          uin,
+          nick: u.nick,
+          name: u.name || u.nick,
+          city: u.city || 'Интернет',
+          email: `${uin}@mirabilis.icq`,
+          group: 'Каталог White Pages',
+          status: u.status || 'online',
+          statusNote: u.note || '',
+          interests: u.interests || '',
+          inContacts: false
+        });
+      });
+    }
+
+    return Array.from(byUin.values());
+  }
+
+  ensureIcqPortalContact(entry, customNick) {
+    const icq = typeof window !== 'undefined' ? window.appICQ : null;
+    if (!icq || !Array.isArray(icq.contacts)) return null;
+    if (entry.uin === '199898' && window.clippySystem && typeof window.clippySystem.syncIcq === 'function') {
+      window.clippySystem.syncIcq();
+    }
+    let contact = icq.contacts.find(c => String(c.uin) === String(entry.uin));
+    if (!contact) {
+      contact = {
+        id: entry.id || `user_${entry.uin}`,
+        nick: entry.nick || customNick || `User_${entry.uin}`,
+        uin: String(entry.uin),
+        name: entry.name || entry.nick || `User ${entry.uin}`,
+        email: entry.email || `${entry.uin}@mirabilis.icq`,
+        city: entry.city || 'Интернет',
+        country: 'Россия',
+        age: '20',
+        gender: 'Пользователь',
+        interests: entry.interests || 'ICQ 98a, Интернет, Общение',
+        status: entry.status || 'online',
+        statusNote: entry.statusNote || 'Добавлен с портала Mirabilis ICQ',
+        group: entry.group && entry.group !== 'Каталог White Pages' ? entry.group : 'Интернет & Фидонет',
+        unread: false,
+        messages: [
+          { sender: 'them', time: 'Сейчас', text: `Привет! Я ${entry.nick || customNick || entry.uin}. Нашёл меня на сайте www.icq.com!` }
+        ],
+        replies: [
+          'Привет! Приятно познакомиться через White Pages!',
+          'Слышу фирменное «О-оу!» — связь отличная!',
+          'Как коннект на модеме? Пиши, я на связи!'
+        ]
+      };
+      icq.contacts.push(contact);
+      if (typeof icq.saveContacts === 'function') icq.saveContacts();
+      if (icq.mainContentEl && typeof icq.renderContacts === 'function') {
+        icq.renderContacts(icq.mainContentEl);
+      }
+    }
+    return contact;
+  }
+
   renderIcqPortal(url) {
     const gif = (name, scale) => window.webGif ? window.webGif(name, scale) : '';
-    const people = [
-      ['313370', 'Вебмастер Дима', 'Санкт-Петербург, SiliconValley / GeoCities'],
-      ['777666', 'Сисадмин Борис', 'серверная, FreeBSD, Voodoo 2'],
-      ['554433', 'Лена_Студентка', 'Москва, МГУ, музыка и чаты'],
-      ['133742', 'Neo_Hacker98', 'Zion, фанат «Матрицы»']
+    const people = this.getIcqPortalDirectory();
+    const activeGroup = this.icqPortalGroup || 'all';
+    const searchQuery = (this.icqPortalSearch || '').trim();
+    const qLower = searchQuery.toLowerCase();
+    const myUin = (typeof window !== 'undefined' && window.appICQ && window.appICQ.profile && window.appICQ.profile.uin) ? window.appICQ.profile.uin : '749210';
+    const myNick = (typeof window !== 'undefined' && window.appICQ && window.appICQ.profile && window.appICQ.profile.nick) ? window.appICQ.profile.nick : 'WebGuest_98';
+    const targetUin = this.icqPortalTargetUin || myUin;
+
+    const groups = [
+      ['all', `Все (${people.length})`],
+      ['Коллеги и Сеть', 'Коллеги и Сеть'],
+      ['Друзья', 'Друзья'],
+      ['Интернет & Фидонет', 'Интернет & Фидонет'],
+      ['Microslop', 'Microslop'],
+      ['Каталог White Pages', 'Новые в White Pages']
     ];
+
+    const statusBadge = (status) => {
+      const labels = {
+        online: ['Online', '#008800'],
+        away: ['Away', '#b36b00'],
+        dnd: ['DND', '#cc0000'],
+        na: ['N/A', '#666666'],
+        offline: ['Offline', '#777777']
+      };
+      const [txt, color] = labels[status] || labels.online;
+      return `<span class="icqsite-status-pill" style="color:${color};"><span class="icqsite-dot" style="background:${color};"></span>${txt}</span>`;
+    };
+
+    const filtered = people.filter(p => {
+      if (activeGroup !== 'all' && p.group !== activeGroup) return false;
+      if (!qLower) return true;
+      return (
+        p.uin.toLowerCase().includes(qLower) ||
+        p.nick.toLowerCase().includes(qLower) ||
+        (p.name && p.name.toLowerCase().includes(qLower)) ||
+        (p.city && p.city.toLowerCase().includes(qLower)) ||
+        (p.statusNote && p.statusNote.toLowerCase().includes(qLower)) ||
+        (p.interests && p.interests.toLowerCase().includes(qLower)) ||
+        (p.group && p.group.toLowerCase().includes(qLower))
+      );
+    });
+
+    const onlineCount = people.filter(p => p.status !== 'offline').length;
+
     return `
       <div class="icqsite-container">
         <table class="icqsite-header" cellspacing="0">
           <tr>
             <td class="icqsite-logo">${gif('flower', 2)} <span>Mirabilis ICQ World</span><br><small>The World's Largest Online Communication Community</small></td>
-            <td class="icqsite-online">Users Online Worldwide:<br><b>4,850,219</b></td>
+            <td class="icqsite-online">Users Online Worldwide:<br><b>4,850,219</b><br><small>В каталоге Рунета: <b>${people.length}</b> (${onlineCount} в сети)</small></td>
           </tr>
         </table>
         <div class="icqsite-nav">
-          <a class="icqsite-jump" data-target="icq-pager">Web-Pager</a> | <a class="icqsite-jump" data-target="icq-white">White Pages</a> | <a class="btn-icqweb-open-app">ICQ 98a</a> | <a data-url="http://chat.krovatka98.ru">Chat</a>
+          <a class="icqsite-jump" data-target="icq-pager">Web-Pager</a> | <a class="icqsite-jump" data-target="icq-white">White Pages (${people.length})</a> | <a class="btn-icqweb-open-app">ICQ 98a</a> | <a data-url="http://chat.krovatka98.ru">Chat</a>
         </div>
         <div class="icqsite-page">
           <h2 class="icqsite-h" id="icq-pager">${gif('pager')} ICQ Web-Pager</h2>
-          <p>Отправьте сообщение пользователю ICQ прямо со страницы, даже без клиента. Адресат услышит знаменитое &laquo;О-оу!&raquo;.</p>
+          <p>Отправьте сообщение пользователю ICQ прямо со страницы, даже без клиента, или выберите любого адресата из полного каталога White Pages ниже. Адресат услышит знаменитое &laquo;О-оу!&raquo;.</p>
           <table class="icqsite-box" cellspacing="0">
             <tr>
               <td class="icqsite-label">Номер UIN:</td>
-              <td><input type="text" id="icqweb-uin" value="749210" size="12"> <small>(ваш UIN: 749210)</small></td>
+              <td><input type="text" id="icqweb-uin" value="${targetUin}" size="12"> <small>(ваш UIN: ${myUin})</small></td>
             </tr>
             <tr>
               <td class="icqsite-label">Ваше имя:</td>
-              <td><input type="text" id="icqweb-nick" value="WebGuest_98" size="24"></td>
+              <td><input type="text" id="icqweb-nick" value="${myNick}" size="24"></td>
             </tr>
             <tr>
               <td class="icqsite-label">Сообщение:</td>
@@ -827,10 +1014,33 @@ ${active.text}
             </tr>
           </table>
 
-          <h2 class="icqsite-h" id="icq-white">${gif('search')} ICQ White Pages</h2>
+          <h2 class="icqsite-h" id="icq-white">${gif('search')} ICQ White Pages — Полный справочник контактов (${filtered.length} из ${people.length})</h2>
+          <div class="icqsite-filter-bar">
+            <div class="icqsite-search-row">
+              <span>Поиск по UIN, нику, городу или интересам:</span>
+              <input type="text" id="icqweb-search" value="${searchQuery.replace(/"/g, '&quot;')}" size="26" placeholder="Например: 199898, Борис, Quake, МГУ...">
+              <button class="win-btn btn-icqweb-search">Найти</button>
+              <button class="win-btn btn-icqweb-reset">Сброс</button>
+            </div>
+            <div class="icqsite-groups-row">
+              ${groups.map(([gKey, gLabel]) => `<button class="win-btn btn-icqweb-group ${activeGroup === gKey ? 'active' : ''}" data-group="${gKey}">${gLabel}</button>`).join(' ')}
+            </div>
+          </div>
           <table class="icqsite-people" cellspacing="1">
-            <tr><th></th><th>UIN</th><th>Ник</th><th>О себе</th></tr>
-            ${people.map(([uin, nick, info]) => `<tr><td>${gif('flower')}</td><td>${uin}</td><td><b>${nick}</b></td><td>${info}</td></tr>`).join('')}
+            <tr><th></th><th>UIN</th><th>Ник / Имя</th><th>Город / Группа</th><th>Статус и интересы</th><th>Действия</th></tr>
+            ${filtered.length > 0 ? filtered.map(p => `
+              <tr>
+                <td>${gif('flower')}</td>
+                <td class="icqsite-uin-cell"><a class="btn-icqweb-pick" data-uin="${p.uin}" title="Выбрать UIN #${p.uin} для Web-Pager">#${p.uin}</a></td>
+                <td><b>${p.nick}</b><br><small>${p.name || ''}</small></td>
+                <td>${p.city || 'Интернет'}<br><small class="icqsite-group-tag">${p.group}</small></td>
+                <td>${statusBadge(p.status)} ${p.statusNote ? `<i>«${p.statusNote}»</i><br>` : '<br>'}<small>${p.interests || ''}</small></td>
+                <td class="icqsite-actions-cell">
+                  <button class="win-btn btn-icqweb-pick" data-uin="${p.uin}" title="Подставить UIN в Web-Pager">Пейджер</button>
+                  <button class="win-btn btn-icqweb-chat" data-uin="${p.uin}" title="Открыть диалог в ICQ 98a">${p.inContacts ? 'Чат' : '+ В список'}</button>
+                </td>
+              </tr>
+            `).join('') : `<tr><td colspan="6" style="text-align:center; padding:8px;">По вашему запросу контакты не найдены. Нажмите «Сброс», чтобы показать все ${people.length} анкет.</td></tr>`}
           </table>
 
           <p class="icqsite-download">${gif('disk')} Ещё нет ICQ? <button class="win-btn btn-icqweb-open-app">Открыть ICQ 98a</button></p>
@@ -842,10 +1052,16 @@ ${active.text}
   }
 
   attachIcqPortalEvents(win, container) {
+    const rerender = () => {
+      if (window.appIE) {
+        window.appIE.renderPage(win, 'http://www.icq.com');
+      }
+    };
+
     const btnSend = container.querySelector('.btn-icqweb-send');
     if (btnSend) {
       btnSend.addEventListener('click', () => {
-        const uin = container.querySelector('#icqweb-uin').value.trim();
+        const uin = container.querySelector('#icqweb-uin').value.trim().replace(/^#/, '');
         const nick = container.querySelector('#icqweb-nick').value.trim() || 'WebGuest';
         const msg = container.querySelector('#icqweb-msg').value.trim();
 
@@ -863,13 +1079,27 @@ ${active.text}
         }
 
         if (window.appICQ) {
-          const contact = window.appICQ.contacts.find(c => c.uin === uin) || {
+          const directory = this.getIcqPortalDirectory();
+          const entry = directory.find(p => p.uin === uin) || {
+            id: `user_${uin}`,
             uin,
-            nick,
+            nick: `User_${uin}`,
+            name: `User ${uin}`,
+            city: 'Интернет',
+            group: 'Интернет & Фидонет',
             status: 'online',
-            avatar: 'flower'
+            statusNote: 'Отвечает на Web-Pager',
+            interests: 'ICQ Web-Pager'
           };
-          window.appICQ.openChat(contact);
+          const contact = this.ensureIcqPortalContact(entry, nick);
+          if (contact) {
+            if (!Array.isArray(contact.messages)) contact.messages = [];
+            const d = new Date();
+            const time = [d.getHours(), d.getMinutes(), d.getSeconds()].map(n => String(n).padStart(2, '0')).join(':');
+            contact.messages.push({ sender: 'me', time, text: `[Web-Pager от ${nick}]: ${msg}` });
+            if (typeof window.appICQ.saveContacts === 'function') window.appICQ.saveContacts();
+            window.appICQ.openChat(contact);
+          }
         }
 
         window.winManager.openDialog({
@@ -880,6 +1110,75 @@ ${active.text}
         container.querySelector('#icqweb-msg').value = '';
       });
     }
+
+    container.querySelectorAll('.btn-icqweb-pick').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const uin = btn.dataset.uin;
+        this.icqPortalTargetUin = uin;
+        const uinInput = container.querySelector('#icqweb-uin');
+        if (uinInput) uinInput.value = uin;
+        const pagerHeader = container.querySelector('#icq-pager');
+        if (pagerHeader && typeof pagerHeader.scrollIntoView === 'function') {
+          pagerHeader.scrollIntoView({ block: 'start' });
+        }
+        const msgInput = container.querySelector('#icqweb-msg');
+        if (msgInput && typeof msgInput.focus === 'function') {
+          msgInput.focus();
+        }
+      });
+    });
+
+    container.querySelectorAll('.btn-icqweb-chat').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const uin = btn.dataset.uin;
+        const directory = this.getIcqPortalDirectory();
+        const entry = directory.find(p => p.uin === uin);
+        if (!entry) return;
+        const wasInContacts = entry.inContacts;
+        const contact = this.ensureIcqPortalContact(entry);
+        if (window.soundSys && typeof window.soundSys.playIcqKnock === 'function' && !wasInContacts) {
+          window.soundSys.playIcqKnock();
+        }
+        if (window.appICQ) {
+          window.appICQ.open();
+          if (contact) window.appICQ.openChat(contact);
+        }
+        if (!wasInContacts) {
+          rerender();
+        }
+      });
+    });
+
+    const searchInput = container.querySelector('#icqweb-search');
+    const btnSearch = container.querySelector('.btn-icqweb-search');
+    const btnReset = container.querySelector('.btn-icqweb-reset');
+
+    const applySearch = () => {
+      this.icqPortalSearch = searchInput ? searchInput.value : '';
+      rerender();
+    };
+
+    if (btnSearch) btnSearch.addEventListener('click', applySearch);
+    if (searchInput) {
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') applySearch();
+      });
+    }
+    if (btnReset) {
+      btnReset.addEventListener('click', () => {
+        this.icqPortalSearch = '';
+        this.icqPortalGroup = 'all';
+        rerender();
+      });
+    }
+
+    container.querySelectorAll('.btn-icqweb-group').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.icqPortalGroup = btn.dataset.group || 'all';
+        rerender();
+      });
+    });
 
     container.querySelectorAll('.btn-icqweb-open-app').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1177,28 +1476,65 @@ ${esc(activeMsg.text)}
     ];
     const randQuote = quotes[Math.floor(Math.random() * quotes.length)];
     const catalog = [
-      ['Литература', [['http://www.lib.ru', 'Библиотека Мошкова'], ['http://www.interpedia.org', 'Интерпедия']]],
-      ['Компьютерные игры', [['http://www.igromania.ru', 'Игромания'], ['http://www.cheatcc.com', 'Коды'], ['http://www.goldfargus.ru', 'Фаргус'], ['http://www.emuland98.ru', 'Emu-Land']]],
-      ['Программы и MP3', [['http://skins.winamp.com', 'Скины Winamp'], ['http://www.mp3vault98.com', 'MP3'], ['http://www.xakep98.ru', 'Хакер']]],
-      ['Кино и видео', [['http://www.kinomania98.ru', 'Киномания'], ['http://www.webcinema98.com', 'Видео'], ['http://www.mult98.ru', 'Мульт.ру']]],
+      ['Поиск и СМИ', [['http://www.retro-news98.com', 'Cyberspace Times'], ['http://www.svodka99.ru', "Сводка.ру '99"], ['http://www.zooportal98.ru', "ЗооПортал '98"], ['http://www.rambler98.ru', "Рамблер '98"], ['http://www.search98.com', 'WebSeeker 98']]],
+      ['Литература', [['http://www.pereplet99.ru', "Переплёт '99"], ['http://www.lib.ru', 'Библиотека Мошкова'], ['http://www.interpedia.org', 'Интерпедия']]],
+      ['Компьютерные игры', [['http://www.ashroad98.ru', "Пепельный Тракт '98 (MMO)"], ['http://www.bioware98.com', 'BioWare Edmonton'], ['http://www.sunsetvalley98.com', 'Сансет Вэлли & Maxis'], ['http://www.blizzard.com', 'Blizzard'], ['http://www.valvesoftware.com', 'Valve Software'], ['http://www.gsc-game.com', 'GSC Game World'], ['http://www.lucasarts.com', 'LucasArts'], ['http://www.igromania.ru', 'Игромания'], ['http://www.cheatcc.com', 'Коды'], ['http://www.goldfargus.ru', 'Фаргус'], ['http://www.emuland98.ru', 'Emu-Land']]],
+      ['Программы и MP3', [['http://www.carman99.ru', "Кар-Мэн '99"], ['http://www.kish99.ru', "Король и Шут '99"], ['http://www.muzzone98.ru', 'МузЗона'], ['http://skins.winamp.com', 'Скины Winamp'], ['http://www.mp3vault98.com', 'MP3'], ['http://www.xakep98.ru', 'Хакер'], ['http://www.avp.ru', 'Антивирус Касперского (AVP 3.0)'], ['http://www.ferrum98.ru', 'Железный Цех']]],
+      ['Кино и видео', [['http://www.animatrix99.ru', "АниМатрица '99"], ['http://www.kinomania98.ru', 'Киномания'], ['http://www.webcinema98.com', 'Видео'], ['http://www.mult98.ru', 'Мульт.ру']]],
       ['Общение и аукционы', [['http://chat.krovatka98.ru', 'Чаты'], ['http://fido.relcom.ru', 'Фидонет'], ['http://www.molotok98.ru', 'Молоток.ру']]],
       ['Юмор и тайны', [['http://www.anekdot98.ru', 'Анекдоты'], ['http://www.geocities.com', 'Домашние страницы'], ['http://www.xfiles98.ru', 'Истина где-то рядом']]]
     ];
 
     let directMatchHTML = '';
     const qLower = (query || '').toLowerCase();
-    if (qLower.includes('фаргус') || qLower.includes('fargus')) {
+    if (qLower.includes('avp') || qLower.includes('касперск') || qLower.includes('kaspersky') || qLower.includes('антивирус') || qLower.includes('вирус') || qLower.includes('cih') || qLower.includes('чернобыль') || qLower.includes('onehalf') || qLower.includes('happy99')) {
+      directMatchHTML = `<li><a data-url="http://www.avp.ru">Лаборатория Касперского (AVP 3.0) — Официальный сервер защиты информации (1998)</a><br><span class="yandex-snippet">Покупка лицензии и скачивание Антивируса Касперского AVP 3.0 (Setup_AVP.exe), ежедневные антивирусные базы DAILY.AVC, энциклопедия вирусов VirusList (Win95.CIH, TotallyNotAVirus, Happy99, OneHalf), эвристический стенд CodeAnalyzer и эхоконференция RU.ANTIVIRUS.</span><br><span class="yandex-url">http://www.avp.ru</span></li>`;
+    } else if (qLower.includes('пепельн') || qLower.includes('тракт') || qLower.includes('ashroad') || qLower.includes('ммо') || qLower.includes('mmo')) {
+      directMatchHTML = `<li><a data-url="http://www.ashroad98.ru">Пепельный Тракт '98 - Многопользовательская игра в браузере (MMO)</a><br><span class="yandex-snippet">Табличная браузерная MMO без апплетов: застава Старый Брод, поединки в трёх зонах, 12 секторов тракта, кузница Громова и живой чат.</span><br><span class="yandex-url">http://www.ashroad98.ru</span></li>`;
+    } else if (qLower.includes('фаргус') || qLower.includes('fargus')) {
       directMatchHTML = `<li><a data-url="http://www.goldfargus.ru">«ФАРГУС Мультимедиа» — Только полный и качественный перевод</a><br><span class="yandex-snippet">Каталог изданий, голоса озвучки, патчи и техподдержка.</span><br><span class="yandex-url">http://www.goldfargus.ru</span></li>`;
     } else if (qLower.includes('молоток') || qLower.includes('molotok')) {
       directMatchHTML = `<li><a data-url="http://www.molotok98.ru">Интернет-аукцион «Молоток.ру» (1998)</a><br><span class="yandex-snippet">Торги видеокартами, модемами и приставками в у.е. Автоставки и блиц-цена.</span><br><span class="yandex-url">http://www.molotok98.ru</span></li>`;
     } else if (qLower.includes('хакер') || qLower.includes('xakep')) {
       directMatchHTML = `<li><a data-url="http://www.xakep98.ru">Электронный журнал «Хакер '98»</a><br><span class="yandex-snippet">Пилотный сетевой номер: модемы, реестр Win 98, CIH, Х-Почта и KeyGen 98.</span><br><span class="yandex-url">http://www.xakep98.ru</span></li>`;
+    } else if (qLower.includes('желез') || qLower.includes('ferrum') || qLower.includes('celeron') || qLower.includes('разгон') || qLower.includes('voodoo3') || qLower.includes('савёл') || qLower.includes('митино')) {
+      directMatchHTML = `<li><a data-url="http://www.ferrum98.ru">«Железный Цех '98» (FerrumLab.ru) — Испытания железа, разгон и защита (25.11.1998)</a><br><span class="yandex-snippet">COMDEX Fall '98 (Voodoo3 и STB), разгон Celeron 300A до 450 МГц (пин B21), защита BIOS от CIH, стенд FPS и прайс Савёловского/Митино.</span><br><span class="yandex-url">http://www.ferrum98.ru</span></li>`;
     } else if (qLower.includes('мульт') || qLower.includes('масяня') || qLower.includes('mult')) {
       directMatchHTML = `<li><a data-url="http://www.mult98.ru">Студия «Мульт.ру» — веб-анимация</a><br><span class="yandex-snippet">Серии про Масяню и Хрюнделя, сценарии, обои и гостевая книга.</span><br><span class="yandex-url">http://www.mult98.ru</span></li>`;
     } else if (qLower.includes('эмул') || qLower.includes('rom') || qLower.includes('dendy') || qLower.includes('денди')) {
       directMatchHTML = `<li><a data-url="http://www.emuland98.ru">Emu-Land — Мир 8-бит и 16-бит</a><br><span class="yandex-snippet">Дампы картриджей Dendy, Sega, SNES и Game Boy со скриншотами, коды и эмуляторы.</span><br><span class="yandex-url">http://www.emuland98.ru</span></li>`;
     } else if (qLower.includes('нло') || qLower.includes('истина') || qLower.includes('ufo') || qLower.includes('xfiles')) {
       directMatchHTML = `<li><a data-url="http://www.xfiles98.ru">Архив «Истина где-то рядом»</a><br><span class="yandex-snippet">Дела об НЛО с чёрными полосами, дешифратор, очевидцы и скептик.</span><br><span class="yandex-url">http://www.xfiles98.ru</span></li>`;
+    } else if (qLower.includes('cyberspace') || qLower.includes('retro-news') || qLower.includes('лаптев') || qLower.includes('diamond rio') || qLower.includes('riaa')) {
+      directMatchHTML = `<li><a data-url="http://www.retro-news98.com">Cyberspace Times 1998 — Ежедневная газета Сети и высоких технологий (Выпуск № 48)</a><br><span class="yandex-snippet">Двадцать статей и репортажей на первой полосе: Win 98 SE, разгон Celeron 300A, 3dfx на COMDEX, выход Half-Life, Steam по модему, суд RIAA против Diamond Rio MP3, вирус CIH, старт модуля МКС «Заря» и Рунет после дефолта.</span><br><span class="yandex-url">http://www.retro-news98.com</span></li>`;
+    } else if (qLower.includes('сводка') || qLower.includes('svodka') || qLower.includes('лента') || qLower.includes('газета') || qLower.includes('новости 1999') || qLower.includes('станция мир') || qLower.includes('ммвб') || qLower.includes('цб рф') || qLower.includes('курс доллар') || qLower.includes('дефолт') || qLower.includes('ммтс-9')) {
+      directMatchHTML = `<li><a data-url="http://www.svodka99.ru">Сводка.ру '99 — Ежедневная русская интернет-газета и служба новостей (28 декабря 1999)</a><br><span class="yandex-snippet">Лента за 28.12.1999: новогоднее дежурство «Проблема-2000», курс ЦБ 26,95 руб., станция «Мир», итоги выборов в Госдуму 19 декабря, справочная из 18 карточек и калькулятор рубля.</span><br><span class="yandex-url">http://www.svodka99.ru</span></li>`;
+    } else if (qLower.includes('переплет') || qLower.includes('переплёт') || qLower.includes('pereplet') || qLower.includes('литератур') || qLower.includes('пелевин') || qLower.includes('акунин') || qLower.includes('фандорин') || qLower.includes('дозор') || qLower.includes('букер') || qLower.includes('шишкин') || qLower.includes('мураками')) {
+      directMatchHTML = `<li><a data-url="http://www.pereplet99.ru">Переплёт '99 — Литературный альманах и книжное обозрение (Декабрь 1999)</a><br><span class="yandex-snippet">Литературный альманах в Сети, выпуск 12: книжная полка с каталожными карточками (Пелевин, Акунин, Лукьяненко, Сорокин, Бутов, Шишкин, Мураками, Маканин), Букер-99, летопись осени, подшивка толстых журналов и «Букинист».</span><br><span class="yandex-url">http://www.pereplet99.ru</span></li>`;
+    } else if (qLower.includes('аниматриц') || qLower.includes('animatrix') || qLower.includes('аниме') || qLower.includes('anime') || qLower.includes('отаку') || qLower.includes('евангелион') || qLower.includes('лэйн') || qLower.includes('lain') || qLower.includes('бибоп') || qLower.includes('bebop') || qLower.includes('кэнсин') || qLower.includes('кеншин') || qLower.includes('kenshin') || qLower.includes('мононоке') || qLower.includes('фансаб')) {
+      directMatchHTML = `<li><a data-url="http://www.animatrix99.ru">АниМатрица '99: аниме-узел, клубный фонд и фансаб</a><br><span class="yandex-snippet">Клубный фонд кассет с очередью (Lain, Cowboy Bebop, Kenshin OVA, Evangelion, Принцесса Мононоке, Trigun), скрипты .SSA, явки, доска обмена и сходка у Большого театра по субботам.</span><br><span class="yandex-url">http://www.animatrix99.ru</span></li>`;
+    } else if (qLower.includes('зоо') || qLower.includes('zooportal') || qLower.includes('животн') || qLower.includes('звер') || qLower.includes('природ') || qLower.includes('фаун') || qLower.includes('тигр') || qLower.includes('нерп') || qLower.includes('кошк') || qLower.includes('собак') || qLower.includes('аквариум') || qLower.includes('неон') || qLower.includes('скаляр') || qLower.includes('выхухол') || qLower.includes('бобр') || qLower.includes('филин') || qLower.includes('калан') || qLower.includes('черепах') || qLower.includes('хомяк') || qLower.includes('даррелл') || qLower.includes('калитник')) {
+      directMatchHTML = `<li><a data-url="http://www.zooportal98.ru">ЗооПортал '98 — Живая Планета, Атлас Фауны и Клуб Зверолюбов (Ноябрь 1998)</a><br><span class="yandex-snippet">Всероссийский портал о живой природе и домашних питомцах: радиопеленг 6 заповедников, систематический атлас 12 видов животных, конструктор совместимости аквариума, Дежурный Айболит и Птичий рынок на Калитниковской.</span><br><span class="yandex-url">http://www.zooportal98.ru</span></li>`;
+    } else if (qLower.includes('geocities') || qLower.includes('геоситис') || qLower.includes('страничк') || qLower.includes('усадьб') || qLower.includes('борис') || qLower.includes('марьиванн') || qLower.includes('фиалк') || qLower.includes('солекс') || qLower.includes('букинист')) {
+      directMatchHTML = `<li><a data-url="http://www.geocities.com">GeoCities '98 Homesteads — 10 кварталов и 18 домашних страниц жителей</a><br><span class="yandex-snippet">Бесплатные усадьбы по 2 МБ: бункер Neo98, серверная Сисадмина Бориса, точка Макса_CD-ROM, тетрадь Мишки из 9 «Б», архив Agent_Mulder, поинт Ани_Фидошницы, кассеты 106.8 FM, храм Сейлор Мун, стихи Лены из МГУ, лавка букиниста Вяземского, фиалки Главбуха МарьИванны, гараж Вована_Авто и конфиг Серёги Quake-Мастера.</span><br><span class="yandex-url">http://www.geocities.com</span></li>`;
+    } else if (qLower.includes('король и шут') || qLower.includes('киш') || qLower.includes('горшок') || qLower.includes('князь') || qLower.includes('трактир') || qLower.includes('kish')) {
+      directMatchHTML = `<li><a data-url="http://www.kish99.ru">Король и Шут '99 - Трактир «Старая Сказка»</a><br><span class="yandex-snippet">Питерский фан-узел: карта сказочного леса, дворовый песенник с аккордами, альбомы и магнитоальбомы, панк-шарманка MIDI и книга жалоб Трактирщика.</span><br><span class="yandex-url">http://www.kish99.ru</span></li>`;
+    } else if (qLower.includes('кар-мэн') || qLower.includes('кармэн') || qLower.includes('carman') || qLower.includes('car-man') || qLower.includes('лемох') || qLower.includes('титомир') || qLower.includes('лондон')) {
+      directMatchHTML = `<li><a data-url="http://www.carman99.ru">Кар-Мэн '99 (Car-Man) - фан-клуб группы</a><br><span class="yandex-snippet">Альбом ремиксов «Назад в будущее» (декабрь 1999), треклисты всех альбомов с 1990 года, атлас песен, состав по годам, история 1989–1999 и гостевая книга.</span><br><span class="yandex-url">http://www.carman99.ru</span></li>`;
+    } else if (qLower.includes('муззон') || qLower.includes('muzzone') || qLower.includes('mtv') || qLower.includes('мтв') || qLower.includes('metallica') || qLower.includes('сплин')) {
+      directMatchHTML = `<li><a data-url="http://www.muzzone98.ru">МузЗона '98 — Музыкальный обозреватель, клипы MTV и MP3</a><br><span class="yandex-snippet">Новости групп на 25.11.1998: Metallica Garage Inc., The Offspring Americana, эфир MTV Россия, хит-парад и аккорды.</span><br><span class="yandex-url">http://www.muzzone98.ru</span></li>`;
+    } else if (qLower.includes('lucas') || qLower.includes('лукас') || qLower.includes('sam') || qLower.includes('max') || qLower.includes('сэм') || qLower.includes('макс') || qLower.includes('scumm') || qLower.includes('квест')) {
+      directMatchHTML = `<li><a data-url="http://www.lucasarts.com">LucasArts Entertainment Company — The Adventurer &amp; SCUMM (1998)</a><br><span class="yandex-snippet">Журнал The Adventurer, все 8 серий Sam &amp; Max, LucasQuest 98, линия подсказок 1-900-740-JEDI и SCUMM-лаборатория.</span><br><span class="yandex-url">http://www.lucasarts.com</span></li>`;
+    } else if (qLower.includes('gsc') || qLower.includes('сталкер') || qLower.includes('stalker') || qLower.includes('припят') || qLower.includes('затон') || qLower.includes('сидорович')) {
+      directMatchHTML = `<li><a data-url="http://www.gsc-game.com">GSC Game World (Киев) — Официальный узел S.T.A.L.K.E.R. и движка X-Ray 98</a><br><span class="yandex-snippet">Новости и досье трёх игр в Steam: STALKER.EXE (0.98 Alpha), XR98.EXE (3D) и ZATON.EXE (Зов Припяти 98). Дневники X-Ray и справочник КПК.</span><br><span class="yandex-url">http://www.gsc-game.com</span></li>`;
+    } else if (qLower.includes('valve') || qLower.includes('half-life') || qLower.includes('halflife') || qLower.includes('hl2') || qLower.includes('гравипушк') || qLower.includes('чёрная меза') || qLower.includes('черная меза') || qLower.includes('рейвенхолм') || qLower.includes('dota') || qLower.includes('дота') || qLower.includes('techies')) {
+      directMatchHTML = `<li><a data-url="http://www.valvesoftware.com">Valve Software (Kirkland, WA) — Half-Life 98, Half-Life 2, Steam и Dota 98</a><br><span class="yandex-snippet">Инженерные сводки Кабалов, досье Half-Life 98 (16 залов), Half-Life 2 (14 глав и гравипушка), клиента Steam и Dota 98 (The Techies Update). Испытательный стенд λ.</span><br><span class="yandex-url">http://www.valvesoftware.com</span></li>`;
+    } else if (qLower.includes('blizzard') || qLower.includes('близзард') || qLower.includes('diablo') || qLower.includes('диабло') || qLower.includes('дьябло') || qLower.includes('warcraft') || qLower.includes('варкрафт') || qLower.includes('тристрам') || qLower.includes('азерот') || qLower.includes('каин')) {
+      directMatchHTML = `<li><a data-url="http://www.blizzard.com">Blizzard Entertainment &amp; Blizzard North (1998) — Diablo, Diablo II и анонс Warcraft</a><br><span class="yandex-snippet">Официальный сайт Ирвайна и Сан-Матео: Diablo, Diablo II и Overwatch 98 в Steam, превью стратегии Warcraft: Хроники Азерота, кузница рун и веб-чат Battle.net.</span><br><span class="yandex-url">http://www.blizzard.com</span></li>`;
+    } else if (qLower.includes('sims') || qLower.includes('симс') || qLower.includes('maxis') || qLower.includes('максис') || qLower.includes('сансет') || qLower.includes('sunset') || qLower.includes('гот') || qLower.includes('ландграаб') || qLower.includes('альто') || qLower.includes('амбрози')) {
+      directMatchHTML = `<li><a data-url="http://www.sunsetvalley98.com">Муниципальный узел Сансет Вэлли и бюро Maxis (1998) — The Sims 3 (SIMS3.EXE)</a><br><span class="yandex-snippet">Газета «Вестник Сансет Вэлли», кадастр 39 участков (160×160), перепись 10 семей (Гот, Ландграаб, Альто), паспортный стол CAS (56 черт и печать в Блокнот), каталог 83 предметов и энциклопедия 11 карьер, 22 рецептов и 16 рыб.</span><br><span class="yandex-url">http://www.sunsetvalley98.com</span></li>`;
+    } else if (qLower.includes('bioware') || qLower.includes('биовар') || qLower.includes('dragon age') || qLower.includes('драгон') || qLower.includes('ферелден') || qLower.includes('остагар') || qLower.includes('морриган') || qLower.includes('алистер') || qLower.includes('kotor') || qLower.includes('котор') || qLower.includes('тарис') || qLower.includes('бастил') || qLower.includes('пазаак')) {
+      directMatchHTML = `<li><a data-url="http://www.bioware98.com">BioWare Corp. Edmonton (1998) — Dragon Age: Origins 98 &amp; Star Wars: KOTOR 98</a><br><span class="yandex-snippet">Официальный узел студии BioWare Edmonton: витрина Steam для DAORIGINS.EXE и KOTOR.EXE, архив 6 предысторий и 18 веток Ферелдена, конструктор тактики ИИ и травничества, голокрон 13 секторов Тариса, калькулятор d20 и Пазаак.</span><br><span class="yandex-url">http://www.bioware98.com</span></li>`;
     }
 
     const resultsHTML = query ? `

@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Корованы</title>
+<link rel="stylesheet" href="css/apps/korovany.css">
+<style>html,body{height:100%;margin:0;background:#008080}body{display:grid;place-items:center}.window{width:min(98vw,1100px);height:min(96vh,780px);border:3px outset #ddd;display:flex;flex-direction:column;background:silver}.title{background:linear-gradient(90deg,navy,#1084d0);color:#fff;font:bold 12px Tahoma;padding:5px}#game{flex:1;min-height:0;position:relative}</style></head>
+<body><main class="window"><div class="title">Корованы</div><div id="game"></div></main>
+<script src="js/apps/korovany/kv-core.js"></script><script src="js/apps/korovany/kv-data.js"></script><script src="js/apps/korovany/kv-world.js"></script><script src="js/apps/korovany/kv-body.js"></script><script src="js/apps/korovany/kv-game.js"></script><script src="js/apps/korovany/kv-ai.js"></script><script src="js/apps/korovany/kv-quests.js"></script><script src="js/apps/korovany/kv-tex.js"></script><script src="js/apps/korovany/kv-models.js"></script><script src="js/apps/korovany/kv-render.js"></script><script src="js/apps/korovany/kv-audio.js"></script><script src="js/apps/korovany/kv-screens.js"></script><script src="js/apps/korovany/kv-ui.js"></script>
+<script>const el=document.getElementById('game');const ui=new Korovany.UI(el,{standalone:true});window.kvui=ui;el.focus();addEventListener('pagehide',()=>ui.destroy(),{once:true});</script>
+</body></html>

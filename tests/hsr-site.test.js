@@ -7,7 +7,7 @@ const root = path.join(__dirname, '..');
 const read = f => fs.readFileSync(path.join(root, f), 'utf8');
 const HOST = 'http://hsr.hoyoverse.com';
 
-const HSR_MODULES = ['hsr-core', 'hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-velvet', 'hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes'];
+const HSR_MODULES = ['hsr-core', 'hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes'];
 
 const noop = () => {};
 function makeCanvas(w = 300, h = 150) {
@@ -102,7 +102,6 @@ test('IE routes every page of the site here, whatever words the address contains
     assert.equal(fn.identifyPageKey(HOST + p), 'hsr', p);
   });
   assert.equal(fn.identifyPageKey('http://www.steampowered.com'), 'steam');
-  assert.ok(src.includes("['http://hsr.hoyoverse.com', 'Honkai: Star Rail 98 (Официальный сайт)']"), 'site is in Favorites');
   assert.ok(src.includes("case 'hsr': return"), 'site has a window title');
   assert.ok(/pageKey === 'hsr'\) \{/.test(src), 'IE re-renders the site when the game state changes');
 });
@@ -193,6 +192,28 @@ test('game facts on the site match the game', () => {
   H.FOURS.IDS.forEach(id => assert.ok(v14.includes(H.CHARS[id].name) && site.source(id).includes('Стандартный прыжок'), 'version 1.4 notes name ' + id));
   Object.keys(H.FOURS.FUSIONS).forEach(id => assert.ok(v14.includes(H.FUSIONS[id].name), 'version 1.4 notes name the Fusion ' + id));
   assert.ok(v14.includes(H.MAIL.find(m => m.id === 'v14_fours').give.items.pass + ' звёздных пропусков') && v14.includes('станцию «Герта»'.replace('станцию', 'Станцию')), 'version 1.4 notes match the letter and the station rework');
+  const con = H.BANNERS.con, conMail = H.MAIL.find(m => m.id === 'v14_conton');
+  Object.keys(con.stars).forEach(id => assert.ok(v14.includes(H.CHARS[id].fullName) && site.source(id).includes('Кон-Тон') && site.source(id).includes(con.stars[id].name), 'version 1.4 notes and the source name ' + id));
+  Object.values(H.BANNERS.alley.stars).forEach(s => assert.ok(v14.includes('«' + H.CONES[s.cone].name + '»'), 'version 1.4 notes name the cone ' + s.cone));
+  ['f_ccc3', 'f_duel', 'f_started', 'f_shut'].forEach(id => assert.ok(v14.includes('«' + H.FUSIONS[id].name + '»'), 'version 1.4 notes name the Fusion ' + id));
+  const conDays = H.CONTON_BANNER.DAYS.reduce((a, d) => a + d[1], 0);
+  assert.ok(v14.includes(Math.round(H.TUNING.conFeatured * 100) + '% случаев') && v14.includes(H.TUNING.pity5 + '-го прыжка') && v14.includes(H.TUNING.warpCost + ' звёздного нефрита') && v14.includes(Math.round(H.TUNING.coneFeatured * 100) + '% случаев') && v14.includes(H.TUNING.conePity5 + ' покупок'), 'version 1.4 notes match the Con-Ton tuning');
+  assert.ok(H.TUNING.conRegBadges === 1 && v14.includes('Первый бейдж') && v14.includes('даёт ещё ' + conDays) && v14.includes('«' + conMail.title + '» с ' + conMail.give.items.badge + ' бейджами') && v14.includes('Казума'), 'version 1.4 notes match the Con-Ton badges and the letter');
+  assert.ok(v14.includes('«KonoSuba x HSR 98: Обмен отрядами»') && v14.includes('Белзерг') && v14.includes('Прототип Разрушителя') && H.MAIL.find(m => m.id === 'v14_konosuba').need === 'jarilo_done|ks_early', 'version 1.4 notes describe the KonoSuba event and its letter waits for the event');
+  const hm = H.MAIL.find(m => m.id === 'v14_hares');
+  H.HARES.IDS.forEach(id => assert.ok(v14.includes(H.CHARS[id].fullName) && site.source(id).includes('Поиск сигнала') && Object.values(H.BANNERS.sig.stars).every(s => s.four.includes(id)), 'version 1.4 notes and the source name the hare ' + id));
+  Object.values(H.BANNERS.amp.stars).flatMap(s => s.four).forEach(c => assert.ok(v14.includes('«' + H.CONES[c.slice(5)].name + '»'), 'version 1.4 notes name the amplifier ' + c));
+  Object.keys(H.HARES.FUSIONS).forEach(id => assert.ok(v14.includes('«' + H.FUSIONS[id].name.replace(/«(.*)»/, '„$1“') + '»'), 'version 1.4 notes name the Fusion ' + id));
+  assert.ok(v14.includes('Избранный агент A выпадает в ' + Math.round(H.TUNING.sigFeatured * 100) + '% случаев') && v14.includes('«' + hm.title + '» с ' + hm.give.items.tape + ' шифрокопиями') && v14.includes('Дань Хэн в Поиске сигнала больше не выпадает'), 'version 1.4 notes match the Signal Search rules and the letter');
+  const v15 = site.news.find(n => n.id === 'v15').body.join(' '), v15mail = H.MAIL.find(m => m.id === 'v15_supply');
+  assert.ok(v15.includes('наряд «' + H.OUTFITS[v15mail.give.outfit].name + '» для Март 7 и ' + v15mail.give.jade + ' звёздного нефрита'), 'version 1.5 is the newest article and matches its letter');
+  Object.values(H.OUTFITS).forEach(o => assert.ok(v15.includes('«' + o.name + '» для ' + H.CHARS[o.char].name.slice(0, 3)) && v15.includes(' по ' + o.price), 'version 1.5 notes name the outfit ' + o.name));
+  H.SUPPLY.starlight.filter(e => e.cone).forEach(e => assert.ok(v15.includes('«' + H.CONES[e.cone].name + '»') && v15.includes('по ' + e.price), 'version 1.5 notes name the Supply cone ' + e.cone));
+  assert.ok(v15.includes(H.GLOW.dup[4] + ' или ' + H.GLOW.dup[5]) && v15.includes('до ' + H.TL_MAX) && ['pc_rewards', 'pc_home', 'pc_disc', 'pc_guests'].every(id => v15.includes('«' + H.QUESTS[id].name + '»')), 'version 1.5 notes match Starlight, the Trailblaze Level cap and the Express missions');
+  const v16 = site.news.find(n => n.id === 'v16').body.join(' '), v16mail = H.MAIL.find(m => m.id === 'v16_fives');
+  assert.ok(site.news[0].id === 'v16' && v16.includes(v16mail.give.items.spass + ' особых звёздных пропусков и ' + v16mail.give.jade + ' звёздного нефрита'), 'version 1.6 is the newest article and matches its letter');
+  H.FIVES.IDS.forEach(id => assert.ok(v16.includes(H.CHARS[id].name) && v16.includes('«' + H.BANNERS.ev.stars[id].name + '»') && v16.includes('«' + H.CONES[H.BANNERS.cone.stars[id].cone].name + '»') && site.source(id).includes('Прыжок события'), 'version 1.6 notes name ' + id + ', the banner and the cone'));
+  Object.keys(H.FIVES.FUSIONS).forEach(id => assert.ok(v16.includes('«' + H.FUSIONS[id].name + '»'), 'version 1.6 notes name the Fusion ' + id));
   const v13 = site.news.find(n => n.id === 'v13').body.join(' ');
   ['miyabi', 'yanagi'].forEach(id => assert.ok(v13.includes(H.CHARS[id].name) && v13.includes(H.CONES[H.BANNERS.amp.stars[id].cone].name), 'version 1.3 notes name ' + id + ' and the signature cone'));
   assert.ok(v13.includes(Math.round(H.TUNING.sigFeatured * 100) + '%') && v13.includes(H.TUNING.pity5 + ' поисков') && v13.includes(H.TUNING.conePity5 + ' на канале') && v13.includes(H.TUNING.warpCost + ' звёздного'), 'version 1.3 notes match the Signal Search tuning');
@@ -433,7 +454,8 @@ test('Clippy character lines point at real characters and real numbers', () => {
   });
   const pity = (sys.H.TUNING.pity5 * sys.H.TUNING.warpCost).toLocaleString('ru-RU');
   assert.ok(clippyFor(sys).react('/characters?id=ruanmei').text.includes(pity));
-  ['yu', 'kanji', 'rise', 'yosuke', 'chie', 'yukiko'].forEach(id => assert.ok(ids.includes(id), 'Clippy has a line for ' + id));
+  ['yu', 'kanji', 'rise', 'yosuke', 'chie', 'yukiko', 'makoto', 'amanda', 'talleah'].forEach(id => assert.ok(ids.includes(id), 'Clippy has a line for ' + id));
+  assert.ok(clippyFor(sys).react('/characters?id=makoto').text.includes((sys.H.TUNING.pity5 * sys.H.TUNING.warpCost / sys.H.TUNING.conFeatured).toLocaleString('ru-RU')));
   assert.ok(clippyFor(sys).react('/characters?id=yu').text.includes((sys.H.TUNING.pity5 * sys.H.TUNING.warpCost * 2).toLocaleString('ru-RU')));
   const list = clippyFor(sys).react('/characters').text;
   assert.ok(list.includes(sys.site.characterIds().length + ' геро') && ['natasha', 'yukiko'].every(id => list.includes(sys.H.CHARS[id].name)), 'the roster line counts every hero and names the healers');

@@ -47,8 +47,8 @@ const READINESS = {
   red: ['half-life', 'neon-racer', 'sammax202'],
   orange: ['fallout2', 'stalker98', 'moh98', 'mc98', 'dao98', 'dmc98', 'tekken3', 'diablo2', 'xiii', 'maxpayne', 'falloutzp', 'sims3', 'kotor98', 'hl2', 'gta90'],
   yellow: ['wolf3d', 'quest', 'diablo', 'doom', 'lol', 'avatar98', 'cop98', 'ow98', 'gtann', 'dota'],
-  lime: ['serioussam', 'forza', 'plov', 'quake3'],
-  green: ['hsr98', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201'],
+  lime: ['serioussam', 'forza', 'plov', 'quake3', 'bttf', 'catniss'],
+  green: ['hsr98', 'stalker', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201'],
   blue: ['legion', 'anotherwar', 'fallout']
 };
 

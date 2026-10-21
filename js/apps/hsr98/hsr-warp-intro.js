@@ -1471,7 +1471,7 @@
     },
 
     luka: {
-      d: 3.2, line: 'Лука из «Дикого огня»! Турнир начинается? Прекрасно!',
+      d: 3.2, line: 'Лука из «Дикого Огня»! Турнир начинается? Прекрасно!',
       sfx: [[0.55, 'swing'], [0.62, 'hit'], [1.4, 'tech'], [1.7, 'crit'], [2.2, 'confirm']],
       act(S, P) {
         const g = S.g, t = S.t, T = S.T, F = H.FoursScenes;
@@ -1775,29 +1775,21 @@
 
   const SHAPES = {};
   function shapes(path) {
-    if (SHAPES[path]) return SHAPES[path];
-    const out = [];
-    const add = (pts, every) => {
+    if (!SHAPES[path]) SHAPES[path] = G.pathShapes(path).map(sh => {
       let len = 0;
-      for (let i = 0; i < pts.length; i++) { const a = pts[i], b = pts[(i + 1) % pts.length]; len += Math.hypot(b[0] - a[0], b[1] - a[1]); }
-      out.push({ pts, len, every });
-    };
-    const rec = {
-      poly(c, p) { const pts = []; for (let i = 0; i < p.length; i += 2) pts.push([p[i], p[i + 1]]); add(pts, 1); },
-      ell(c, x, y, rx, ry) { const pts = []; for (let i = 0; i < 24; i++) { const q = -Math.PI / 2 + i / 24 * Math.PI * 2; pts.push([x + Math.cos(q) * rx, y + Math.sin(q) * ry]); } add(pts, 6); },
-      rect(c, x, y, w, h) { add([[x, y], [x + w, y], [x + w, y + h], [x, y + h]], 1); }
-    };
-    if (G.PATH_ART[path]) G.PATH_ART[path](rec, '#ffffff');
-    return (SHAPES[path] = out);
+      for (let i = 0; i < sh.pts.length - (sh.open ? 1 : 0); i++) { const a = sh.pts[i], b = sh.pts[(i + 1) % sh.pts.length]; len += Math.hypot(b[0] - a[0], b[1] - a[1]); }
+      return Object.assign(sh, { len });
+    });
+    return SHAPES[path];
   }
 
   function trace(g, path, cx, cy, size, k, col, a) {
-    const s = size / 16, ox = cx - size / 2, oy = cy - size / 2;
+    const s = size / 32, ox = cx - size / 2, oy = cy - size / 2;
     lighter(g, () => {
       for (const sh of shapes(path)) {
         let left = sh.len * k;
         const n = sh.pts.length, line = [], nodes = [];
-        for (let i = 0; i < n && left > 0; i++) {
+        for (let i = 0; i < n - (sh.open ? 1 : 0) && left > 0; i++) {
           const p = sh.pts[i], q = sh.pts[(i + 1) % n], L = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1, f = Math.min(1, left / L);
           if (i === 0) line.push([ox + p[0] * s, oy + p[1] * s]);
           line.push([ox + lerp(p[0], q[0], f) * s, oy + lerp(p[1], q[1], f) * s]);
@@ -2053,6 +2045,6 @@
     return list;
   }
 
-  H.WarpIntro = { SIGN, SHOWS, PATH_FX, CARD: { x: CX, y: CY }, length: id => SIGN + (SHOWS[id] || GENERIC).d, has: id => !!SHOWS[id], render, overlay, line: lineOf, cues, ticket, shapes };
+  H.WarpIntro = { SIGN, SHOWS, PATH_FX, KIT: { zoom, clip, cuts, stand, hand, pose, fly, star4, twinkle }, CARD: { x: CX, y: CY }, length: id => SIGN + (SHOWS[id] || GENERIC).d, has: id => !!SHOWS[id], render, overlay, line: lineOf, cues, ticket, shapes };
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

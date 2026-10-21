@@ -164,7 +164,8 @@ class AppRecycleBin {
     const items = window.vfs.getRecycleBinItems();
     const deskIcon = document.querySelector('.desktop-icon[data-id="recycle-bin"] .desktop-icon-img');
     if (deskIcon) {
-      deskIcon.innerHTML = items.length === 0 ? Icons['recycle-bin-empty'] : Icons['recycle-bin'];
+      const key = items.length === 0 ? 'recycle-bin-empty' : 'recycle-bin';
+      deskIcon.innerHTML = Icons[window.desktop && window.desktop.systemIcon ? window.desktop.systemIcon(key) : key];
     }
   }
 

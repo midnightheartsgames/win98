@@ -10,11 +10,15 @@ class Taskbar {
     this.windowButtons = new Map();
     this.quickLaunchEl = document.getElementById('quick-launch');
     this.desktopShownFrom = null;
+    this.settings = this.loadSettings();
     this.initClock();
     this.initQuickLaunch();
     this.initStartMenu();
     this.initTray();
     this.initTaskbarContextMenu();
+    this.initAutoHide();
+    this.initLayering();
+    this.applySettings();
     this.updateStartButton();
 
     if (window.i18n) {
@@ -138,12 +142,18 @@ class Taskbar {
 
   renderStartMenuContent() {
     const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
+    const ru = window.i18n && window.i18n.getLanguage() === 'ru';
 
     this.startMenu.innerHTML = `
       <div class="start-menu-banner">
         <div class="start-menu-banner-text"><b>Win</b>98</div>
       </div>
       <div class="start-menu-items">
+        <div class="start-menu-item" data-action="win-update">
+          <div class="start-menu-item-icon">${Icons['win-update'] || Icons['internet-explorer']}</div>
+          <div class="start-menu-item-text">${ru ? 'Обновление Win' : 'Win Update'}</div>
+        </div>
+        <div class="start-menu-separator"></div>
         <div class="start-menu-item" data-menu="programs">
           <div class="start-menu-item-icon">${Icons['programs']}</div>
           <div class="start-menu-item-text">${t('start.programs')}</div>
@@ -163,6 +173,14 @@ class Taskbar {
                       <div class="start-menu-item-icon">${Icons['dialup']}</div>
                       <div class="start-menu-item-text">${t('app.dialup')}</div>
                     </div>
+                    <div class="start-menu-item" data-action="hypertrm">
+                      <div class="start-menu-item-icon">${Icons['hypertrm']}</div>
+                      <div class="start-menu-item-text">HyperTerminal (BBS)</div>
+                    </div>
+                    <div class="start-menu-item" data-action="mirc">
+                      <div class="start-menu-item-icon">${Icons['mirc']}</div>
+                      <div class="start-menu-item-text">mIRC 98 (RusNet IRC)</div>
+                    </div>
                   </div>
                 </div>
                 <div class="start-menu-item" data-menu="entertainment">
@@ -170,6 +188,10 @@ class Taskbar {
                   <div class="start-menu-item-text">${t('start.entertainment')}</div>
                   <div class="start-menu-item-arrow"></div>
                   <div class="start-submenu">
+                    <div class="start-menu-item" data-action="cdplayer">
+                      <div class="start-menu-item-icon">${Icons['cdplayer']}</div>
+                      <div class="start-menu-item-text">${ru ? 'Лазерный проигрыватель' : 'CD Player'}</div>
+                    </div>
                     <div class="start-menu-item" data-action="sound-recorder">
                       <div class="start-menu-item-icon">${Icons['sound-recorder']}</div>
                       <div class="start-menu-item-text">${t('app.soundRecorder')}</div>
@@ -177,6 +199,18 @@ class Taskbar {
                     <div class="start-menu-item" data-action="sndvol">
                       <div class="start-menu-item-icon">${Icons['volume-mixer']}</div>
                       <div class="start-menu-item-text">${t('start.volumeControl')}</div>
+                    </div>
+                    <div class="start-menu-item" data-action="cdex">
+                      <div class="start-menu-item-icon">${Icons['cdex']}</div>
+                      <div class="start-menu-item-text">CDex Audio CD Ripper</div>
+                    </div>
+                    <div class="start-menu-item" data-action="fasttracker">
+                      <div class="start-menu-item-icon">${Icons['fasttracker']}</div>
+                      <div class="start-menu-item-text">FastTracker 98 (.XM)</div>
+                    </div>
+                    <div class="start-menu-item" data-action="emulator">
+                      <div class="start-menu-item-icon">${Icons['emulator']}</div>
+                      <div class="start-menu-item-text">Emu-Land 98 (Dendy/Sega/SNES/GB)</div>
                     </div>
                   </div>
                 </div>
@@ -197,6 +231,14 @@ class Taskbar {
                       <div class="start-menu-item-icon">${Icons['scandisk']}</div>
                       <div class="start-menu-item-text">${t('start.scandisk')}</div>
                     </div>
+                    <div class="start-menu-item" data-action="sysmon">
+                      <div class="start-menu-item-icon">${Icons['sysmon']}</div>
+                      <div class="start-menu-item-text">${ru ? 'Системный монитор' : 'System Monitor'}</div>
+                    </div>
+                    <div class="start-menu-item" data-action="clipbrd">
+                      <div class="start-menu-item-icon">${Icons['clipbrd']}</div>
+                      <div class="start-menu-item-text">${ru ? 'Просмотр буфера обмена' : 'Clipboard Viewer'}</div>
+                    </div>
                     <div class="start-menu-item" data-action="charmap">
                       <div class="start-menu-item-icon">${Icons['charmap']}</div>
                       <div class="start-menu-item-text">${t('charmap.title')}</div>
@@ -209,11 +251,51 @@ class Taskbar {
                       <div class="start-menu-item-icon">${Icons['taskmgr']}</div>
                       <div class="start-menu-item-text">${t('taskmgr.title')}</div>
                     </div>
+                    <div class="start-menu-item" data-action="msinfo32">
+                      <div class="start-menu-item-icon">${Icons['msinfo32'] || Icons['msconfig']}</div>
+                      <div class="start-menu-item-text">${ru ? 'Сведения о системе' : 'System Information'}</div>
+                    </div>
+                    <div class="start-menu-item" data-action="sfc">
+                      <div class="start-menu-item-icon">${Icons['sfc'] || Icons['scandisk']}</div>
+                      <div class="start-menu-item-text">${ru ? 'Проверка системных файлов' : 'System File Checker'}</div>
+                    </div>
+                    <div class="start-menu-item" data-action="scanreg">
+                      <div class="start-menu-item-icon">${Icons['regedit']}</div>
+                      <div class="start-menu-item-text">${ru ? 'Проверка реестра' : 'Registry Checker'}</div>
+                    </div>
+                    <div class="start-menu-item" data-action="scheduled-tasks">
+                      <div class="start-menu-item-icon">${Icons['mstask'] || Icons['time']}</div>
+                      <div class="start-menu-item-text">${ru ? 'Назначенные задания' : 'Scheduled Tasks'}</div>
+                    </div>
+                    <div class="start-menu-item" data-action="drvspace">
+                      <div class="start-menu-item-icon">${Icons['drvspace'] || Icons['drive-c']}</div>
+                      <div class="start-menu-item-text">DriveSpace</div>
+                    </div>
+                    <div class="start-menu-item" data-action="welcome">
+                      <div class="start-menu-item-icon">${Icons['welcome'] || Icons['start-logo']}</div>
+                      <div class="start-menu-item-text">${ru ? 'Добро пожаловать в Win 98' : 'Welcome to Win 98'}</div>
+                    </div>
+                    <div class="start-menu-item" data-action="wintune">
+                      <div class="start-menu-item-icon">${Icons['wintune']}</div>
+                      <div class="start-menu-item-text">Wintune 97 Benchmark</div>
+                    </div>
+                    <div class="start-menu-item" data-action="mon-test">
+                      <div class="start-menu-item-icon">${Icons['mon-test']}</div>
+                      <div class="start-menu-item-text">Nokia Monitor Tester</div>
+                    </div>
                     <div class="start-menu-item" data-action="bios-setup">
                       <div class="start-menu-item-icon">${Icons['hardware']}</div>
                       <div class="start-menu-item-text">${t('start.biosSetup') || 'Настройка BIOS (CMOS Setup)'}</div>
                     </div>
                   </div>
+                </div>
+                <div class="start-menu-item" data-action="acdsee">
+                  <div class="start-menu-item-icon">${Icons['acdsee']}</div>
+                  <div class="start-menu-item-text">ACDSee 32 v2.23</div>
+                </div>
+                <div class="start-menu-item" data-action="acrobat">
+                  <div class="start-menu-item-icon">${Icons['acrobat']}</div>
+                  <div class="start-menu-item-text">Adobe Acrobat Reader 3.01</div>
                 </div>
                 <div class="start-menu-item" data-action="imaging">
                   <div class="start-menu-item-icon">${Icons['imaging']}</div>
@@ -230,6 +312,10 @@ class Taskbar {
                 <div class="start-menu-item" data-action="notepad">
                   <div class="start-menu-item-icon">${Icons['notepad']}</div>
                   <div class="start-menu-item-text">${t('app.notepad')}</div>
+                </div>
+                <div class="start-menu-item" data-action="qbasic">
+                  <div class="start-menu-item-icon">${Icons['qbasic']}</div>
+                  <div class="start-menu-item-text">Microslop QBasic 1.1</div>
                 </div>
                 <div class="start-menu-item" data-action="calc">
                   <div class="start-menu-item-icon">${Icons['calculator']}</div>
@@ -261,6 +347,10 @@ class Taskbar {
                 <div class="start-menu-item" data-action="pinball">
                   <div class="start-menu-item-icon">${Icons['pinball']}</div>
                   <div class="start-menu-item-text">${t('app.pinball')}</div>
+                </div>
+                <div class="start-menu-item" data-action="hearts">
+                  <div class="start-menu-item-icon">${Icons['hearts'] || Icons['solitaire']}</div>
+                  <div class="start-menu-item-text">The Microslop Hearts Network</div>
                 </div>
                 ${(window.gameManager && window.gameManager.isInstalled('wolf3d')) ? `
                 <div class="start-menu-item" data-action="wolf3d">
@@ -412,6 +502,11 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['legion']}</div>
                   <div class="start-menu-item-text">Legion Arena</div>
                 </div>` : ''}
+                ${(window.gameManager && window.gameManager.isInstalled('homm1')) ? `
+                <div class="start-menu-item" data-action="homm1">
+                  <div class="start-menu-item-icon">${Icons['homm1']}</div>
+                  <div class="start-menu-item-text">Heroes of Might and Magic 98</div>
+                </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('anotherwar')) ? `
                 <div class="start-menu-item" data-action="anotherwar">
                   <div class="start-menu-item-icon">${Icons['anotherwar']}</div>
@@ -426,6 +521,21 @@ class Taskbar {
                 <div class="start-menu-item" data-action="falloutzp">
                   <div class="start-menu-item-icon">${Icons['falloutzp']}</div>
                   <div class="start-menu-item-text">Fallout: Запорожье</div>
+                </div>` : ''}
+                ${(window.gameManager && window.gameManager.isInstalled('korovany')) ? `
+                <div class="start-menu-item" data-action="korovany">
+                  <div class="start-menu-item-icon">${Icons['korovany']}</div>
+                  <div class="start-menu-item-text">Корованы</div>
+                </div>` : ''}
+                ${(window.gameManager && window.gameManager.isInstalled('korovany')) ? `
+                <div class="start-menu-item" data-action="korovany">
+                  <div class="start-menu-item-icon">${Icons['korovany']}</div>
+                  <div class="start-menu-item-text">Корованы</div>
+                </div>` : ''}
+                ${(window.gameManager && window.gameManager.isInstalled('catniss')) ? `
+                <div class="start-menu-item" data-action="catniss">
+                  <div class="start-menu-item-icon">${Icons['catniss']}</div>
+                  <div class="start-menu-item-text">Catniss</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('plov')) ? `
                 <div class="start-menu-item" data-action="plov">
@@ -487,6 +597,11 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['hockey']}</div>
                   <div class="start-menu-item-text">NHL 98</div>
                 </div>` : ''}
+                ${(window.gameManager && window.gameManager.isInstalled('worldcup98')) ? `
+                <div class="start-menu-item" data-action="worldcup98">
+                  <div class="start-menu-item-icon">${Icons['worldcup98']}</div>
+                  <div class="start-menu-item-text">World Cup 98</div>
+                </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('half-life')) ? `
                 <div class="start-menu-item" data-action="half-life">
                   <div class="start-menu-item-icon">${Icons['half-life']}</div>
@@ -543,6 +658,11 @@ class Taskbar {
               <div class="start-menu-item-icon">${Icons['steam']}</div>
               <div class="start-menu-item-text">Steam</div>
             </div>` : ''}
+            ${(window.gameManager && window.gameManager.isInstalled('esheep')) ? `
+            <div class="start-menu-item" data-action="esheep">
+              <div class="start-menu-item-icon">${Icons['esheep']}</div>
+              <div class="start-menu-item-text">${t('app.esheep')}</div>
+            </div>` : ''}
             <div class="start-menu-separator"></div>
             <div class="start-menu-item" data-action="icq">
               <div class="start-menu-item-icon">${Icons['icq-online']}</div>
@@ -551,6 +671,14 @@ class Taskbar {
             <div class="start-menu-item" data-action="outlook">
               <div class="start-menu-item-icon">${Icons['outlook']}</div>
               <div class="start-menu-item-text">Outlook Express</div>
+            </div>
+            <div class="start-menu-item" data-action="explorer-tree">
+              <div class="start-menu-item-icon">${Icons['tb-folders'] || Icons['folder']}</div>
+              <div class="start-menu-item-text">${ru ? 'Проводник' : 'Win Explorer'}</div>
+            </div>
+            <div class="start-menu-item" data-action="dos-prompt">
+              <div class="start-menu-item-icon">${Icons['dos']}</div>
+              <div class="start-menu-item-text">${ru ? 'Сеанс MS-DOS' : 'MS-DOS Prompt'}</div>
             </div>
             <div class="start-menu-item" data-action="regedit">
               <div class="start-menu-item-icon">${Icons['regedit']}</div>
@@ -609,6 +737,26 @@ class Taskbar {
               <div class="start-menu-item-icon">${Icons['control-panel']}</div>
               <div class="start-menu-item-text">${t('start.controlPanel')}</div>
             </div>
+            <div class="start-menu-item" data-action="printers">
+              <div class="start-menu-item-icon">${Icons['printers'] || Icons['control-panel']}</div>
+              <div class="start-menu-item-text">${ru ? 'Принтеры' : 'Printers'}</div>
+            </div>
+            <div class="start-menu-item" data-action="taskbar-props">
+              <div class="start-menu-item-icon">${Icons['taskbar-props']}</div>
+              <div class="start-menu-item-text">${t('start.taskbarProps')}</div>
+            </div>
+            <div class="start-menu-item" data-action="folder-options">
+              <div class="start-menu-item-icon">${Icons['folder']}</div>
+              <div class="start-menu-item-text">${ru ? 'Свойства папки...' : 'Folder Options...'}</div>
+            </div>
+            <div class="start-menu-item" data-action="active-desktop">
+              <div class="start-menu-item-icon">${Icons['internet-explorer']}</div>
+              <div class="start-menu-item-text">Active Desktop</div>
+            </div>
+            <div class="start-menu-item" data-action="win-update">
+              <div class="start-menu-item-icon">${Icons['win-update'] || Icons['internet-explorer']}</div>
+              <div class="start-menu-item-text">${ru ? 'Обновление Win' : 'Win Update'}</div>
+            </div>
             <div class="start-menu-item" data-action="regional-settings">
               <div class="start-menu-item-icon">${Icons['regional']}</div>
               <div class="start-menu-item-text">${t('start.regionalSettings')}</div>
@@ -648,6 +796,11 @@ class Taskbar {
 
         <div class="start-menu-separator"></div>
 
+        <div class="start-menu-item" data-action="logoff">
+          <div class="start-menu-item-icon">${Icons['users'] || Icons['shut-down']}</div>
+          <div class="start-menu-item-text">${ru ? 'Завершение сеанса Administrator...' : 'Log Off Administrator...'}</div>
+        </div>
+
         <div class="start-menu-item" data-action="shutdown">
           <div class="start-menu-item-icon">${Icons['shut-down']}</div>
           <div class="start-menu-item-text">${t('start.shutdown')}</div>
@@ -655,12 +808,27 @@ class Taskbar {
       </div>
     `;
 
+    this.applyStartMenuFolder();
+    this.appendRecentDocuments();
+
     this.startMenu.querySelectorAll('.start-menu-item[data-action]').forEach(el => {
       el.addEventListener('click', (e) => {
         e.stopPropagation();
         this.closeStartMenu();
         this.handleStartAction(el.dataset.action);
       });
+    });
+
+    this.startMenu.querySelectorAll('.start-menu-item[data-link]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closeStartMenu();
+        this.openStartMenuLink(this.startMenuLinks[Number(el.dataset.link)]);
+      });
+    });
+
+    this.startMenu.querySelectorAll('.start-menu-item.is-empty').forEach(el => {
+      el.addEventListener('click', (e) => e.stopPropagation());
     });
 
     this.startMenu.querySelectorAll('.start-menu-item[data-menu]').forEach(el => {
@@ -775,6 +943,9 @@ class Taskbar {
     if (this.startMenu.classList.contains('open')) {
       this.closeStartMenu();
     } else {
+      this.renderStartMenuContent();
+      this.revealTaskbar();
+      this.raiseTaskbar(true);
       this.startMenu.classList.add('open');
       this.startBtn.classList.add('active');
     }
@@ -782,9 +953,11 @@ class Taskbar {
   }
 
   closeStartMenu() {
+    const wasOpen = this.startMenu.classList.contains('open');
     this.startMenu.classList.remove('open', 'kb-mode');
     this.startBtn.classList.remove('active');
     this.startMenu.querySelectorAll('.kb-focus, .kb-open').forEach(el => el.classList.remove('kb-focus', 'kb-open'));
+    if (wasOpen) this.scheduleAutoHide();
   }
 
   handleStartAction(action) {
@@ -809,6 +982,18 @@ class Taskbar {
           window.appAVP.open();
         }
         break;
+      case 'esheep':
+        if (window.gameManager && !window.gameManager.isInstalled('esheep')) {
+          const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
+          window.winManager.openDialog({
+            title: t('app.esheep'),
+            icon: 'error',
+            message: t('store.appNotInstalled', t('app.esheep'))
+          });
+        } else if (window.appESheep) {
+          window.appESheep.open();
+        }
+        break;
       case 'freecell':
         if (window.appFreeCell) window.appFreeCell.open();
         break;
@@ -830,6 +1015,20 @@ class Taskbar {
           });
         } else if (window.appHockey) {
           window.appHockey.open();
+        }
+        break;
+      case 'worldcup98':
+        if (window.gameManager && !window.gameManager.isInstalled('worldcup98')) {
+          const isRu = (window.i18n ? window.i18n.currentLang : 'ru') === 'ru';
+          window.winManager.openDialog({
+            title: 'World Cup 98',
+            icon: 'error',
+            message: isRu
+              ? 'Игра World Cup 98 не установлена.<br>Вы можете установить её с компакт-диска «Игромания» (D:\\demo\\worldcup98.exe).'
+              : 'Game World Cup 98 is not installed.<br>You can install it from the Igromania disc (D:\\demo\\worldcup98.exe).'
+          });
+        } else if (window.appWorldCup98) {
+          window.appWorldCup98.open();
         }
         break;
       case 'doom':
@@ -1006,6 +1205,13 @@ class Taskbar {
           window.appLegion.open();
         }
         break;
+      case 'homm1':
+        if (window.gameManager && !window.gameManager.isInstalled('homm1')) {
+          window.gameManager.showInSteam('homm1');
+        } else if (window.appHomm1) {
+          window.appHomm1.open();
+        }
+        break;
       case 'fallout':
         if (window.gameManager && !window.gameManager.isInstalled('fallout')) {
           window.gameManager.showInSteam('fallout');
@@ -1025,6 +1231,27 @@ class Taskbar {
           window.gameManager.showInSteam('anotherwar');
         } else if (window.appAnotherWar) {
           window.appAnotherWar.open();
+        }
+        break;
+      case 'korovany':
+        if (window.gameManager && !window.gameManager.isInstalled('korovany')) {
+          window.gameManager.showInSteam('korovany');
+        } else if (window.appKorovany) {
+          window.appKorovany.open();
+        }
+        break;
+      case 'korovany':
+        if (window.gameManager && !window.gameManager.isInstalled('korovany')) {
+          window.gameManager.showInSteam('korovany');
+        } else if (window.appKorovany) {
+          window.appKorovany.open();
+        }
+        break;
+      case 'catniss':
+        if (window.gameManager && !window.gameManager.isInstalled('catniss')) {
+          window.gameManager.showInSteam('catniss');
+        } else if (window.appCatniss) {
+          window.appCatniss.open();
         }
         break;
       case 'plov':
@@ -1326,6 +1553,9 @@ class Taskbar {
       case 'properties':
         if (window.appDialogs) window.appDialogs.openDisplayProperties();
         break;
+      case 'taskbar-props':
+        if (window.appTaskbarProps) window.appTaskbarProps.open();
+        break;
       case 'find':
         if (window.appFind) window.appFind.open();
         break;
@@ -1364,6 +1594,111 @@ class Taskbar {
         break;
       case 'bios-setup':
         if (window.biosEngine) window.biosEngine.openSetup();
+        break;
+      case 'qbasic':
+        if (window.appQBasic) window.appQBasic.open();
+        break;
+      case 'mon-test':
+        if (window.appMonTest) window.appMonTest.open();
+        break;
+      case 'cdex':
+        if (window.appCDex) window.appCDex.open();
+        break;
+      case 'wintune':
+        if (window.appWintune) window.appWintune.open('wintune');
+        break;
+      case 'clibench':
+        if (window.appWintune) window.appWintune.open('clibench');
+        break;
+      case 'cdplayer':
+        if (window.appCDPlayer) window.appCDPlayer.open();
+        break;
+      case 'sysmon':
+        if (window.appSysMon) window.appSysMon.open();
+        break;
+      case 'hypertrm':
+        if (window.appHyperTerminal) window.appHyperTerminal.open();
+        break;
+      case 'clipbrd':
+        if (window.appClipboardViewer) window.appClipboardViewer.open();
+        break;
+      case 'mirc':
+        if (window.appMIRC) window.appMIRC.open();
+        break;
+      case 'fasttracker':
+        if (window.appFastTracker) window.appFastTracker.open();
+        break;
+      case 'acrobat':
+        if (window.appAcrobat) window.appAcrobat.open();
+        break;
+      case 'acdsee':
+        if (window.appACDSee) window.appACDSee.open();
+        break;
+      case 'emulator':
+        if (window.appEmulator) window.appEmulator.open();
+        break;
+      case 'win-update':
+        if (window.appIE) window.appIE.open('http://windowsupdate.microslop.com');
+        break;
+      case 'msinfo32':
+        if (window.appSysTools && window.appSysTools.openMsInfo32) window.appSysTools.openMsInfo32();
+        break;
+      case 'sfc':
+        if (window.appSysTools && window.appSysTools.openSfc) window.appSysTools.openSfc();
+        break;
+      case 'scanreg':
+        if (window.appSysTools && window.appSysTools.openScanReg) window.appSysTools.openScanReg();
+        break;
+      case 'scheduled-tasks':
+        if (window.appSysTools && window.appSysTools.openScheduledTasks) window.appSysTools.openScheduledTasks();
+        break;
+      case 'drvspace':
+        if (window.appSysTools && window.appSysTools.openDriveSpace) window.appSysTools.openDriveSpace();
+        break;
+      case 'welcome':
+        if (window.appDialogs && window.appDialogs.openWelcomeApp) window.appDialogs.openWelcomeApp();
+        break;
+      case 'hearts':
+        if (window.appHearts && window.appHearts.open) window.appHearts.open();
+        break;
+      case 'explorer-tree':
+        if (window.appExplorer) window.appExplorer.open(['My Computer', 'C:'], { showTree: true });
+        break;
+      case 'dos-prompt':
+        if (window.appSysTools && window.appSysTools.openDosPromptWindow) window.appSysTools.openDosPromptWindow();
+        break;
+      case 'printers':
+        if (window.appExplorer) window.appExplorer.open(['My Computer', 'Printers']);
+        break;
+      case 'folder-options':
+        if (window.appExplorer && window.appExplorer.openFolderOptions) window.appExplorer.openFolderOptions();
+        break;
+      case 'active-desktop':
+        if (window.desktop && window.desktop.toggleChannelBar) window.desktop.toggleChannelBar();
+        break;
+      case 'logoff':
+        if (window.winManager) {
+          const isRu = window.i18n && window.i18n.getLanguage() === 'ru';
+          window.winManager.openDialog({
+            title: isRu ? 'Завершение сеанса Win' : 'Log Off Win',
+            icon: 'users',
+            message: isRu ? 'Вы действительно хотите завершить текущий сеанс?' : 'Are you sure you want to log off?',
+            buttons: [
+              {
+                text: isRu ? 'Да' : 'Yes',
+                primary: true,
+                isDefault: true,
+                onClick: () => {
+                  window.winManager.windows.forEach(w => {
+                    if (!w.element.classList.contains('is-dialog')) window.winManager.closeWindow(w.id);
+                  });
+                  if (window.soundSys && window.soundSys.playStartup) window.soundSys.playStartup();
+                }
+              },
+              { text: isRu ? 'Нет' : 'No', onClick: () => {} }
+            ]
+          });
+        }
         break;
     }
   }
@@ -1482,6 +1817,10 @@ class Taskbar {
             action: () => window.i18n && window.i18n.setLanguage('en')
           },
           { separator: true },
+          {
+            label: current === 'ru' ? 'Свойства...' : 'Properties...',
+            action: () => window.appCPanel && window.appCPanel.openKeyboardProperties ? window.appCPanel.openKeyboardProperties() : (window.appDialogs && window.appDialogs.openRegionalSettings())
+          },
           {
             label: t('regional.title') + '...',
             action: () => window.appDialogs && window.appDialogs.openRegionalSettings()
@@ -1628,6 +1967,13 @@ class Taskbar {
     });
 
     this.trayEl.insertBefore(this.clippyTrayEl, this.clockEl);
+    this.updatePowerTray();
+  }
+
+  updatePowerTray() {
+    if (window.appCPanel && typeof window.appCPanel.syncPowerTrayIcon === 'function') {
+      window.appCPanel.syncPowerTrayIcon();
+    }
   }
 
   updateCdRomTray() {
@@ -1731,6 +2077,7 @@ class Taskbar {
     }
     this.updateSpeakerState();
     this.updateCdRomTray();
+    this.updatePowerTray();
     if (this.crtEl) this.crtEl.title = t('taskbar.crt');
     if (this.clippyTrayEl) this.clippyTrayEl.title = t('tray.clippy');
   }
@@ -1775,11 +2122,540 @@ class Taskbar {
           {
             label: t('taskbar.properties'),
             bold: true,
-            action: () => window.appDialogs && window.appDialogs.openDisplayProperties()
+            action: () => window.appTaskbarProps && window.appTaskbarProps.open()
           }
         ]);
       }
     });
+  }
+
+  defaultSettings() {
+    return { alwaysOnTop: true, autoHide: false, smallIcons: false, showClock: true };
+  }
+
+  loadSettings() {
+    const settings = this.defaultSettings();
+    let saved = null;
+    try {
+      saved = JSON.parse(localStorage.getItem('win98_taskbar_settings') || 'null');
+    } catch (e) {
+      saved = null;
+    }
+    if (!saved || typeof saved !== 'object') return settings;
+    Object.keys(settings).forEach(key => {
+      if (typeof saved[key] === 'boolean') settings[key] = saved[key];
+    });
+    return settings;
+  }
+
+  saveSettings(next) {
+    const previous = { ...this.settings };
+    this.settings = { ...this.defaultSettings(), ...next };
+    try {
+      localStorage.setItem('win98_taskbar_settings', JSON.stringify(this.settings));
+    } catch (e) {}
+    this.applySettings();
+    return previous;
+  }
+
+  applySettings() {
+    const settings = this.settings;
+    document.body.classList.toggle('taskbar-autohide', settings.autoHide);
+    document.body.classList.toggle('taskbar-below-windows', !settings.alwaysOnTop);
+    document.body.classList.toggle('taskbar-no-clock', !settings.showClock);
+    this.startMenu.classList.toggle('small-icons', settings.smallIcons);
+    if (settings.autoHide) {
+      this.scheduleAutoHide(300);
+    } else {
+      clearTimeout(this.autoHideTimer);
+      this.taskbarEl.classList.remove('is-revealed');
+    }
+    if (settings.alwaysOnTop) this.raiseTaskbar(false);
+    if (window.desktop && typeof window.desktop.applyPositions === 'function') window.desktop.applyPositions();
+  }
+
+  initAutoHide() {
+    this.taskbarEl.addEventListener('mouseenter', () => {
+      this.pointerOnTaskbar = true;
+      this.revealTaskbar();
+    });
+    this.taskbarEl.addEventListener('mouseleave', () => {
+      this.pointerOnTaskbar = false;
+      this.scheduleAutoHide();
+    });
+  }
+
+  revealTaskbar() {
+    clearTimeout(this.autoHideTimer);
+    if (this.settings.autoHide) this.taskbarEl.classList.add('is-revealed');
+  }
+
+  scheduleAutoHide(delay = 500) {
+    clearTimeout(this.autoHideTimer);
+    if (!this.settings.autoHide) return;
+    this.autoHideTimer = setTimeout(() => {
+      if (this.taskbarBusy()) {
+        this.scheduleAutoHide(delay);
+        return;
+      }
+      this.taskbarEl.classList.remove('is-revealed');
+    }, delay);
+  }
+
+  taskbarBusy() {
+    const menu = window.contextMenu && window.contextMenu.el;
+    return Boolean(this.pointerOnTaskbar)
+      || this.startMenu.classList.contains('open')
+      || Boolean(this.volumePopupEl)
+      || Boolean(menu && menu.style.display === 'block')
+      || Date.now() < (this.peekUntil || 0);
+  }
+
+  isTaskbarHidden() {
+    return this.settings.autoHide && !this.taskbarEl.classList.contains('is-revealed');
+  }
+
+  peekTaskbar(ms = 1200) {
+    if (!this.settings.autoHide) return false;
+    this.taskbarEl.classList.add('no-slide');
+    this.revealTaskbar();
+    this.taskbarEl.getBoundingClientRect();
+    this.taskbarEl.classList.remove('no-slide');
+    this.peekUntil = Date.now() + ms;
+    this.scheduleAutoHide(ms);
+    return true;
+  }
+
+  initLayering() {
+    document.addEventListener('mousedown', (e) => {
+      if (this.settings.alwaysOnTop) return;
+      const menu = window.contextMenu && window.contextMenu.el;
+      const onTaskbar = this.taskbarEl.contains(e.target)
+        || this.startMenu.contains(e.target)
+        || Boolean(menu && menu.contains(e.target))
+        || Boolean(this.volumePopupEl && this.volumePopupEl.contains(e.target));
+      this.raiseTaskbar(onTaskbar);
+    }, true);
+  }
+
+  raiseTaskbar(raised) {
+    this.taskbarEl.classList.toggle('is-raised', Boolean(raised));
+  }
+
+  escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  startMenuFolderPath() {
+    return ['My Computer', 'C:', 'WINDOWS', 'Start Menu'];
+  }
+
+  ensureStartMenuFolder() {
+    const windowsDir = window.vfs && window.vfs.resolvePath(['My Computer', 'C:', 'WINDOWS']);
+    if (!windowsDir || !windowsDir.children) return null;
+    if (!windowsDir.children['Start Menu']) {
+      windowsDir.children['Start Menu'] = { type: 'folder', name: 'Start Menu', icon: 'folder', children: {} };
+      this.startMenuFolderDirty = true;
+    }
+    return windowsDir.children['Start Menu'];
+  }
+
+  loadStartMenuState() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('win98_start_menu') || 'null');
+      if (saved && Array.isArray(saved.hidden) && Array.isArray(saved.mirrored)) return saved;
+    } catch (e) {}
+    return { hidden: [], mirrored: [] };
+  }
+
+  saveStartMenuState(state) {
+    try {
+      localStorage.setItem('win98_start_menu', JSON.stringify(state));
+    } catch (e) {}
+  }
+
+  iconKeyOf(iconEl) {
+    if (!iconEl) return 'programs';
+    if (!this.iconKeysByMarkup) {
+      const probe = document.createElement('div');
+      this.iconKeysByMarkup = new Map();
+      Object.keys(Icons).forEach(key => {
+        if (typeof Icons[key] !== 'string') return;
+        probe.innerHTML = Icons[key];
+        if (!this.iconKeysByMarkup.has(probe.innerHTML)) this.iconKeysByMarkup.set(probe.innerHTML, key);
+      });
+    }
+    return this.iconKeysByMarkup.get(iconEl.innerHTML) || 'programs';
+  }
+
+  builtinStartMenuEntries() {
+    const entries = [];
+    const walk = (item, parent) => {
+      const folder = Boolean(item.dataset.menu);
+      const key = folder ? `menu:${item.dataset.menu}` : `action:${item.dataset.action}`;
+      const textEl = item.querySelector(':scope > .start-menu-item-text');
+      entries.push({ key, parent, folder, el: item, label: textEl ? textEl.textContent.trim() : key });
+      const sub = item.querySelector(':scope > .start-submenu');
+      if (!sub) return;
+      [...sub.children]
+        .filter(child => child.matches('.start-menu-item[data-menu], .start-menu-item[data-action]'))
+        .forEach(child => walk(child, key));
+    };
+    const programs = this.startMenu.querySelector('.start-menu-items > .start-menu-item[data-menu="programs"]');
+    if (programs) walk(programs, 'root');
+    return entries;
+  }
+
+  readStartMenuFolder(root) {
+    const present = new Map();
+    const custom = [];
+    const walk = (folder, parentRef, path) => {
+      Object.keys(folder.children || {}).forEach(key => {
+        const node = folder.children[key];
+        if (!node || typeof node !== 'object') return;
+        const ref = typeof node.content === 'string' ? node.content : '';
+        const nodePath = path.concat(key);
+        if (node.type === 'folder' || node.children) {
+          if (!node.children) {
+            node.children = {};
+            this.startMenuFolderDirty = true;
+          }
+          const builtin = ref.startsWith('menu:') && !present.has(ref);
+          const folderRef = builtin ? ref : `folder:${nodePath.join('\\')}`;
+          if (builtin) present.set(ref, { node, folder, key });
+          else custom.push({ kind: 'folder', ref: folderRef, parentRef, node, key, path: nodePath });
+          walk(node, folderRef, nodePath);
+        } else if (node.app === 'shortcut') {
+          if (ref.startsWith('action:') && !present.has(ref)) present.set(ref, { node, folder, key });
+          else custom.push({ kind: 'link', parentRef, node, key, path: nodePath });
+        }
+      });
+    };
+    walk(root, 'root', []);
+    return { present, custom };
+  }
+
+  uniqueChildKey(folder, label) {
+    const base = String(label || '').replace(/[\\/:*?"<>|]/g, '').trim() || 'Shortcut';
+    let key = base;
+    for (let i = 2; folder.children[key]; i++) key = `${base} (${i})`;
+    return key;
+  }
+
+  applyStartMenuFolder() {
+    this.startMenuLinks = [];
+    const root = this.ensureStartMenuFolder();
+    if (!root) return;
+    const state = this.loadStartMenuState();
+    const entries = this.builtinStartMenuEntries();
+    const byKey = new Map(entries.map(entry => [entry.key, entry]));
+    const { present, custom } = this.readStartMenuFolder(root);
+
+    const hidden = new Set(state.hidden.filter(key => !present.has(key)));
+    state.mirrored.forEach(key => {
+      const entry = byKey.get(key);
+      const parentGone = entry && entry.parent !== 'root' && !present.has(entry.parent);
+      if (!present.has(key) && !parentGone) hidden.add(key);
+    });
+
+    const isShown = (entry) => {
+      for (let e = entry; e; e = byKey.get(e.parent)) {
+        if (hidden.has(e.key)) return false;
+      }
+      return true;
+    };
+    const visible = entries.filter(isShown);
+
+    visible.forEach(entry => {
+      if (present.has(entry.key)) return;
+      const parentInfo = present.get(entry.parent);
+      const parentFolder = entry.parent === 'root' ? root : (parentInfo && parentInfo.node);
+      if (!parentFolder || !parentFolder.children) return;
+      const key = this.uniqueChildKey(parentFolder, entry.label);
+      parentFolder.children[key] = entry.folder
+        ? { type: 'folder', name: key, icon: 'programs', content: entry.key, children: {} }
+        : { type: 'file', name: key, icon: this.iconKeyOf(entry.el.querySelector(':scope > .start-menu-item-icon')), app: 'shortcut', content: entry.key };
+      present.set(entry.key, { node: parentFolder.children[key], folder: parentFolder, key });
+      this.startMenuFolderDirty = true;
+    });
+
+    [...present.keys()].forEach(key => {
+      if (byKey.has(key)) return;
+      const info = present.get(key);
+      delete info.folder.children[info.key];
+      present.delete(key);
+      this.startMenuFolderDirty = true;
+    });
+
+    state.hidden = [...hidden];
+    state.mirrored = visible.map(entry => entry.key);
+    this.saveStartMenuState(state);
+    if (this.startMenuFolderDirty && window.vfs) {
+      this.startMenuFolderDirty = false;
+      window.vfs.saveToStorage();
+    }
+
+    entries.forEach(entry => {
+      if (!isShown(entry)) entry.el.remove();
+    });
+    this.insertCustomStartMenuItems(custom, visible);
+  }
+
+  insertCustomStartMenuItems(custom, visible) {
+    const lists = new Map();
+    visible.forEach(entry => {
+      if (entry.folder) lists.set(entry.key, entry.el.querySelector(':scope > .start-submenu'));
+    });
+    const top = this.startMenu.querySelector('.start-menu-items');
+    const programs = top.querySelector(':scope > .start-menu-item[data-menu="programs"]') || top.firstElementChild;
+    let topCount = 0;
+    custom.slice().sort((a, b) => a.path.length - b.path.length).forEach(item => {
+      const el = this.buildCustomMenuItem(item);
+      if (item.parentRef === 'root') {
+        top.insertBefore(el, programs);
+        topCount++;
+      } else {
+        const list = lists.get(item.parentRef);
+        if (!list) return;
+        const firstLink = item.kind === 'folder'
+          ? [...list.children].find(child => child.classList.contains('start-menu-item') && !child.dataset.menu)
+          : null;
+        list.insertBefore(el, firstLink || null);
+      }
+      if (item.kind === 'folder') lists.set(item.ref, el.querySelector(':scope > .start-submenu'));
+    });
+    if (topCount) {
+      const separator = document.createElement('div');
+      separator.className = 'start-menu-separator';
+      top.insertBefore(separator, programs);
+    }
+    this.startMenu.querySelectorAll('.start-submenu').forEach(list => this.tidyMenuList(list));
+  }
+
+  buildCustomMenuItem(item) {
+    const el = document.createElement('div');
+    el.className = 'start-menu-item';
+    const name = this.escapeHtml(item.node.name || item.key);
+    if (item.kind === 'folder') {
+      this.customFolderCount = (this.customFolderCount || 0) + 1;
+      el.dataset.menu = `custom-${this.customFolderCount}`;
+      el.innerHTML = `
+        <div class="start-menu-item-icon">${Icons['programs']}</div>
+        <div class="start-menu-item-text">${name}</div>
+        <div class="start-menu-item-arrow"></div>
+        <div class="start-submenu"></div>`;
+      return el;
+    }
+    el.dataset.link = String(this.startMenuLinks.push({ ref: item.node.content, name: item.node.name || item.key }) - 1);
+    el.innerHTML = `
+      <div class="start-menu-item-icon">${Icons[item.node.icon] || Icons['programs']}</div>
+      <div class="start-menu-item-text">${name}</div>`;
+    return el;
+  }
+
+  tidyMenuList(list) {
+    const isSeparator = (el) => el && el.classList.contains('start-menu-separator');
+    [...list.children].forEach((child, i, all) => {
+      if (isSeparator(child) && (i === 0 || isSeparator(all[i - 1]))) child.remove();
+    });
+    while (isSeparator(list.lastElementChild)) list.lastElementChild.remove();
+    if (!list.querySelector(':scope > .start-menu-item')) {
+      const empty = document.createElement('div');
+      empty.className = 'start-menu-item is-empty';
+      empty.innerHTML = `<div class="start-menu-item-icon"></div><div class="start-menu-item-text">${this.escapeHtml(window.i18n ? window.i18n.t('startmenu.empty') : '(Empty)')}</div>`;
+      list.appendChild(empty);
+    }
+  }
+
+  shortcutIconFor(command) {
+    const target = this.resolveVfsCommand(command);
+    if (target) {
+      const folder = window.vfs.resolvePath(target.path);
+      const node = folder && folder.children ? folder.children[target.key] : null;
+      if (node && node.icon && Icons[node.icon]) return node.icon;
+      return node && node.children ? 'folder' : 'file-exe';
+    }
+    const text = String(command || '').trim().toLowerCase();
+    if (/^(https?:\/\/|www\.)/.test(text)) return 'internet-explorer';
+    const name = text.split(/\s+/)[0].replace(/\.exe$/, '');
+    const aliases = {
+      calc: 'calculator', mspaint: 'paint', pbrush: 'paint', winmine: 'minesweeper', sol: 'solitaire',
+      iexplore: 'internet-explorer', control: 'control-panel', sndrec32: 'sound-recorder', sndvol32: 'volume-mixer',
+      explorer: 'my-computer', clippy: 'clippy'
+    };
+    const key = aliases[name] || name;
+    return Icons[key] ? key : 'file-exe';
+  }
+
+  addStartMenuShortcut(folderPath, name, command) {
+    const folder = window.vfs && window.vfs.resolvePath(folderPath);
+    if (!folder || !folder.children) return null;
+    const key = this.uniqueChildKey(folder, name);
+    folder.children[key] = { type: 'file', name: key, icon: this.shortcutIconFor(command), app: 'shortcut', content: `run:${command}` };
+    window.vfs.saveToStorage();
+    this.renderStartMenuContent();
+    return key;
+  }
+
+  createStartMenuFolder(parentPath, name) {
+    const folder = window.vfs && window.vfs.resolvePath(parentPath);
+    if (!folder || !folder.children) return null;
+    const key = this.uniqueChildKey(folder, name);
+    folder.children[key] = { type: 'folder', name: key, icon: 'programs', content: '', children: {} };
+    window.vfs.saveToStorage();
+    this.renderStartMenuContent();
+    return key;
+  }
+
+  removeStartMenuItem(folderPath, key) {
+    const removed = window.vfs && window.vfs.deleteItem(folderPath, key, true);
+    this.renderStartMenuContent();
+    return Boolean(removed);
+  }
+
+  openStartMenuLink(link) {
+    if (!link) return;
+    if (link.doc) {
+      this.openVfsItem(link.doc.path, link.doc.key, link.doc.name);
+      return;
+    }
+    const ref = typeof link.ref === 'string' ? link.ref : '';
+    if (ref.startsWith('action:')) {
+      this.handleStartAction(ref.slice('action:'.length));
+      return;
+    }
+    if (window.soundSys) window.soundSys.playClick();
+    if (ref.startsWith('run:')) this.runCommandLine(ref.slice('run:'.length), link.name);
+  }
+
+  runCommandLine(command, name) {
+    const target = this.resolveVfsCommand(command);
+    if (target) {
+      this.openVfsItem(target.path, target.key, name);
+      return;
+    }
+    if (/^[a-z]:\\/i.test(String(command).trim())) {
+      this.showMissingShortcut(name || command);
+      return;
+    }
+    if (window.appDialogs) window.appDialogs.executeRunCommand(command);
+  }
+
+  resolveVfsCommand(command) {
+    const parts = String(command || '').trim().replace(/^"|"$/g, '').split('\\').filter(Boolean);
+    if (parts.length < 2 || !/^[a-z]:$/i.test(parts[0]) || !window.vfs) return null;
+    let folder = window.vfs.resolvePath(['My Computer']);
+    const path = ['My Computer'];
+    for (let i = 0; i < parts.length; i++) {
+      const children = folder && folder.children;
+      if (!children) return null;
+      const want = parts[i].toLowerCase();
+      const key = Object.keys(children).find(k => k.toLowerCase() === want || String(children[k].name || '').toLowerCase() === want);
+      if (!key) return null;
+      if (i === parts.length - 1) return { path, key };
+      path.push(key);
+      folder = children[key];
+    }
+    return null;
+  }
+
+  vfsCommandFor(path, key) {
+    return path.filter(part => part !== 'My Computer').concat(key).join('\\');
+  }
+
+  openVfsItem(path, key, name) {
+    const folder = window.vfs && window.vfs.resolvePath(path);
+    const node = folder && folder.children ? folder.children[key] : null;
+    if (!node) {
+      this.showMissingShortcut(name || key);
+      return;
+    }
+    const explorer = window.appExplorer;
+    if (!explorer) return;
+    if (node.children || node.type === 'folder' || node.type === 'drive') {
+      explorer.open(path.concat(key));
+      return;
+    }
+    const previous = explorer.currentPath;
+    explorer.currentPath = path.slice();
+    try {
+      explorer.openItem(null, { ...node, key });
+    } finally {
+      explorer.currentPath = previous;
+    }
+  }
+
+  showMissingShortcut(name) {
+    const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
+    if (window.soundSys) window.soundSys.playError();
+    window.winManager.openDialog({
+      title: t('startmenu.missingTitle'),
+      icon: 'warning',
+      message: t('startmenu.missingText', this.escapeHtml(name))
+    });
+  }
+
+  loadRecentDocuments() {
+    try {
+      const list = JSON.parse(localStorage.getItem('win98_recent_docs') || '[]');
+      return Array.isArray(list) ? list.filter(doc => doc && Array.isArray(doc.path) && doc.key) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  addRecentDocument(path, item) {
+    const key = item && (item.key || item.name);
+    if (!key || !Array.isArray(path)) return;
+    const where = path.join('\\');
+    const list = this.loadRecentDocuments().filter(doc => !(doc.key === key && doc.path.join('\\') === where));
+    list.unshift({ path: path.slice(), key, name: item.name || key, icon: item.icon || 'file-txt' });
+    try {
+      localStorage.setItem('win98_recent_docs', JSON.stringify(list.slice(0, 15)));
+    } catch (e) {}
+  }
+
+  appendRecentDocuments() {
+    const docs = this.loadRecentDocuments();
+    const list = this.startMenu.querySelector('.start-menu-item[data-menu="documents"] > .start-submenu');
+    if (!list || !docs.length) return;
+    const separator = document.createElement('div');
+    separator.className = 'start-menu-separator';
+    list.appendChild(separator);
+    docs.forEach(doc => {
+      const el = document.createElement('div');
+      el.className = 'start-menu-item';
+      el.dataset.link = String(this.startMenuLinks.push({ doc }) - 1);
+      el.innerHTML = `
+        <div class="start-menu-item-icon">${Icons[doc.icon] || Icons['file-txt']}</div>
+        <div class="start-menu-item-text">${this.escapeHtml(doc.name)}</div>`;
+      list.appendChild(el);
+    });
+  }
+
+  hasPersonalHistory() {
+    const count = (key) => {
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw === null) return key === 'win98_run_mru' ? 1 : 0;
+        const list = JSON.parse(raw);
+        return Array.isArray(list) ? list.length : 0;
+      } catch (e) {
+        return 0;
+      }
+    };
+    return this.loadRecentDocuments().length + count('win98_run_mru') + count('win98_netscape_history') > 0;
+  }
+
+  clearPersonalHistory() {
+    const had = this.hasPersonalHistory();
+    try {
+      localStorage.setItem('win98_recent_docs', '[]');
+      localStorage.setItem('win98_run_mru', '[]');
+      localStorage.setItem('win98_netscape_history', '[]');
+    } catch (e) {}
+    this.renderStartMenuContent();
+    return had;
   }
 
   addWindow(win) {

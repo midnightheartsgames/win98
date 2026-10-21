@@ -16,7 +16,7 @@
   const PROPS = new Set(['tree', 'crate', 'pipe', 'console', 'lamp', 'fence', 'statue', 'table', 'crystal', 'shelf', 'block']);
   const BLOCKS = new Set(['house', 'window', 'housedoor', 'gate']);
   const KIND_LABEL = { anchor: 'Якорь пространства', landing: 'Точка высадки', exit: 'Проход', shop: 'Лавка', rumor: 'Торговец слухами', warp: 'Терминал', calyx: 'Терминал', nav: 'Терминал', goal: 'Миссия Освоения', quest: 'Миссия' };
-  const WORLD_POS = { herta: [150, 292], jarilo: [322, 166], luofu: [500, 312] };
+  const WORLD_POS = { herta: [150, 292], jarilo: [322, 166], belzerg: [492, 120], luofu: [500, 312] };
   const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
   const DIR_ANGLE = { up: 0, right: Math.PI / 2, down: Math.PI, left: -Math.PI / 2 };
 
@@ -165,6 +165,26 @@
     return cv;
   }
 
+  function belzergCanvas() {
+    const S = 76, R = 35, cv = G.mkCanvas(S, S), g = cv.getContext('2d');
+    const land = ['#1e3a1a', '#2e6a2a', '#4e9a3a', '#7ec24e', '#b8e07a'], sea = ['#0c2046', '#1a4686', '#3674bc', '#62a2e2', '#a4d0ff'], cloud = ['#4a5a7a', '#8a9ab8', '#c8d4e6', '#eef4fb', '#ffffff'];
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      const nx = (x + 0.5 - S / 2) / R, ny = (y + 0.5 - S / 2) / R, d = nx * nx + ny * ny;
+      if (d > 1) continue;
+      const nz = Math.sqrt(1 - d), lit = Math.max(0, -0.55 * nx - 0.5 * ny + 0.67 * nz);
+      const n = fbm(Math.atan2(nx, nz) * 2.6 + 7, Math.asin(ny) * 3.2 + 1, 23), c = fbm(Math.atan2(nx, nz) * 5 + 3, Math.asin(ny) * 7, 29);
+      const pal = c > 0.64 ? cloud : n > 0.52 ? land : sea;
+      const lev = clamp(Math.floor(lit * 4.4 + 0.45 + (BAYER[(y & 3) * 4 + (x & 3)] / 16 - 0.5) * 0.9), 0, 4);
+      g.fillStyle = pal[lev]; g.fillRect(x, y, 1, 1);
+    }
+    for (let a = 0; a < 64; a++) {
+      const an = a / 64 * Math.PI * 2, lx = Math.cos(an), ly = Math.sin(an);
+      if (-0.55 * lx - 0.5 * ly < 0.1) continue;
+      g.fillStyle = 'rgba(168,236,200,0.8)'; g.fillRect(Math.round(S / 2 + lx * (R + 0.6)), Math.round(S / 2 + ly * (R + 0.6)), 1, 1);
+    }
+    return cv;
+  }
+
   function vectorArt(key, S, draw) {
     return G.pixelArt(key, S, S, (p, g) => { const k = g.canvas.width / S; g.save(); g.scale(k, k); draw(g); g.restore(); });
   }
@@ -212,7 +232,7 @@
   function planet(id) {
     let cv = art.get('planet|' + id);
     if (cv) return cv;
-    cv = id === 'jarilo' ? jariloCanvas() : id === 'herta' ? hertaCanvas() : luofuCanvas();
+    cv = id === 'jarilo' ? jariloCanvas() : id === 'belzerg' ? belzergCanvas() : id === 'herta' ? hertaCanvas() : luofuCanvas();
     art.set('planet|' + id, cv);
     return cv;
   }
@@ -532,7 +552,7 @@
         para('Продаёт слухи. Купленный слух расходится по городу и сбывается.');
         status(got === all.length || null, 'Куплено слухов: ' + got + ' из ' + all.length);
       } else if (pt.kind === 'warp') para('Терминал прыжков. Здесь тратят звёздные пропуски и нефрит.');
-      else if (pt.kind === 'calyx') para('Симулятор Экспресса: Калиуксы, Пещера эрозии и Эхо войны.');
+      else if (pt.kind === 'calyx') para('Симулятор Экспресса: Чашелисты, Пещера коррозии и Эхо войны.');
       else if (pt.kind === 'nav') {
         para('Навигационный пульт Экспресса. Отсюда видно весь Звёздный путь.');
         action = { label: 'Звёздный путь', glyph: 'warp', ok: true, why: '', fn: () => s.key(null, 'Tab') };

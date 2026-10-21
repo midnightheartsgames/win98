@@ -23,27 +23,6 @@
     return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
   }
 
-  function elemIcon(ctx, e, x, y, r) {
-    const E = H.ELEMENTS[e];
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.fillStyle = '#10121a'; ctx.beginPath(); ctx.arc(0, 0, r + 1.5, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = E.dark; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = E.col; ctx.strokeStyle = E.col; ctx.lineWidth = Math.max(1, r / 4);
-    const q = r * 0.6;
-    ctx.beginPath();
-    switch (e) {
-      case 'phys': ctx.arc(0, 0, q * 0.7, 0, Math.PI * 2); ctx.fill(); break;
-      case 'fire': ctx.moveTo(0, -q); ctx.quadraticCurveTo(q, 0, 0, q); ctx.quadraticCurveTo(-q, 0, 0, -q); ctx.fill(); break;
-      case 'ice': for (let i = 0; i < 3; i++) { const a = i * Math.PI / 3; ctx.moveTo(Math.cos(a) * q, Math.sin(a) * q); ctx.lineTo(-Math.cos(a) * q, -Math.sin(a) * q); } ctx.stroke(); break;
-      case 'elec': ctx.moveTo(q * 0.3, -q); ctx.lineTo(-q * 0.4, 0.1 * q); ctx.lineTo(q * 0.2, 0.1 * q); ctx.lineTo(-q * 0.3, q); ctx.stroke(); break;
-      case 'wind': ctx.arc(0, 0, q * 0.7, 0, Math.PI * 1.4); ctx.stroke(); break;
-      case 'quant': ctx.rect(-q * 0.6, -q * 0.6, q * 1.2, q * 1.2); ctx.stroke(); break;
-      case 'imag': ctx.moveTo(0, -q); ctx.lineTo(q, 0); ctx.lineTo(0, q); ctx.lineTo(-q, 0); ctx.closePath(); ctx.fill(); break;
-    }
-    ctx.restore();
-  }
-
   function perspectiveFloor(g, tex, w, h, hz, fog) {
     const tw = tex.width, th = tex.height, src = tex.getContext('2d').getImageData(0, 0, tw, th).data;
     const y0 = Math.ceil(hz), img = g.getImageData(0, y0, w, h - y0), d = img.data;
@@ -73,7 +52,7 @@
       rivet: ['#40464e', '#8a929c', '#a0a8b0', '#ff7040'], ice: ['#0a1828', '#2a4a68', '#6a90b0', '#c0f4ff'],
       hill: ['#1a2440', '#5a6a90', '#b8c8dc', '#a0e0ff'], sim: ['#000814', '#082038', '#0a3050', '#40ffc0'],
       stellaron: ['#02040c', '#0a1a3a', '#1a3a5a', '#80ffff'], express: ['#140a08', '#3a2418', '#6a2a2a', '#ffd070'],
-      memory: ['#02030e', '#121a44', '#1c2a5a', '#9ad8ff']
+      memory: ['#02030e', '#121a44', '#1c2a5a', '#9ad8ff'], meadow: ['#4a90d8', '#c4e6f6', '#7ab84a', '#ffe890']
     }[id] || ['#000', '#223', '#445', '#8cf'];
     const hz = h * 0.55;
     const sky = g.createLinearGradient(0, 0, 0, hz);
@@ -89,6 +68,17 @@
       for (let x = 0; x <= w; x += 20) g.lineTo(x, hz - 30 - hash(x, 1, 7) * 70 * (id === 'city' ? 0.2 : 1));
       g.lineTo(w, hz); g.fill();
       if (id === 'city' || id === 'rivet') for (let i = 0; i < 16; i++) { const bx = i * w / 16, bh = 30 + hash(i, 4, 2) * 90; g.fillStyle = shade(P[1], -0.4 - hash(i, 5, 5) * 0.2); g.fillRect(bx, hz - bh, w / 16 - 4, bh); for (let j = 0; j < 4; j++) { g.fillStyle = id === 'rivet' ? '#303038' : '#ffe8a0'; g.fillRect(bx + 6 + (j % 2) * 14, hz - bh + 10 + Math.floor(j / 2) * 18, 6, 8); } }
+    }
+    if (id === 'meadow') {
+      for (let i = 0; i < 7; i++) { const cx = hash(i, 31, 3) * w, cy = 12 + hash(i, 32, 4) * hz * 0.4, cw = 26 + hash(i, 33, 5) * 40; g.fillStyle = 'rgba(255,255,255,0.85)'; g.beginPath(); g.ellipse(cx, cy, cw, cw * 0.28, 0, 0, Math.PI * 2); g.fill(); g.beginPath(); g.ellipse(cx - cw * 0.3, cy - cw * 0.16, cw * 0.4, cw * 0.24, 0, 0, Math.PI * 2); g.fill(); }
+      g.fillStyle = '#8ab4b0'; g.beginPath(); g.moveTo(0, hz);
+      for (let x = 0; x <= w; x += 8) g.lineTo(x, hz - 26 - Math.sin(x / 70) * 14 - Math.sin(x / 23 + 1) * 4);
+      g.lineTo(w, hz); g.fill();
+      const kx = w * 0.72, ky = hz - 24 - Math.sin(kx / 70) * 14 - Math.sin(kx / 23 + 1) * 4;
+      g.fillStyle = '#6e8a96'; g.fillRect(kx - 14, ky - 10, 28, 12); g.fillRect(kx - 18, ky - 18, 7, 20); g.fillRect(kx + 11, ky - 16, 7, 18); g.fillRect(kx - 3, ky - 26, 8, 16);
+      g.fillStyle = '#5e9a48'; g.beginPath(); g.moveTo(0, hz);
+      for (let x = 0; x <= w; x += 8) g.lineTo(x, hz - 10 - Math.sin(x / 45 + 2) * 7);
+      g.lineTo(w, hz); g.fill();
     }
     if (id === 'under' || id === 'mine') for (let i = 0; i < 10; i++) { const px2 = hash(i, 7, 7) * w; g.fillStyle = shade(P[1], -0.3); g.fillRect(px2, 0, 14 + hash(i, 8, 8) * 20, hz); g.fillStyle = P[3] + '55'; g.fillRect(px2 + 4, hz * 0.3 + hash(i, 9, 9) * hz * 0.4, 6, 6); }
     if (id === 'stellaron' || id === 'sim' || id === 'memory') { const gr = g.createRadialGradient(w / 2, hz * 0.55, 4, w / 2, hz * 0.55, 180); gr.addColorStop(0, P[3] + 'aa'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); }
@@ -115,7 +105,7 @@
     ctx.fillRect(0, 0, w, h);
   }
 
-  const G = { TS, shade, hash, elemIcon, bgCanvas, drawCG, mkCanvas };
+  const G = { TS, shade, hash, bgCanvas, drawCG, mkCanvas };
   Object.assign(H, { Gfx: G });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

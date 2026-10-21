@@ -119,7 +119,7 @@ test('fresh system ships without any of the former preinstalled games and withou
 test('every game of the catalog except Igromania CD demos is distributed through Steam', () => {
   const { gm } = createSystem();
   const games = Object.values(gm.catalog).filter(g => !g.isApp);
-  const cdDemos = ['burnout', 'hockey'];
+  const cdDemos = ['burnout', 'hockey', 'worldcup98'];
   for (const g of games) {
     assert.equal(!!g.steam, !cdDemos.includes(g.id), `${g.id} steam flag`);
   }

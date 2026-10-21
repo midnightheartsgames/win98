@@ -1,0 +1,1060 @@
+.amx-site {
+  min-height: 100%;
+  padding: 10px 0 24px 0;
+  box-sizing: border-box;
+  background-color: #330066;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='16' height='16' fill='%23330066'/%3E%3Crect x='3' y='3' width='2' height='2' fill='%23663399'/%3E%3Crect x='11' y='11' width='2' height='2' fill='%23663399'/%3E%3Crect x='12' y='4' width='1' height='1' fill='%239966cc'/%3E%3C/svg%3E");
+  color: #000000;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.amx-site a {
+  color: #0000cc;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.amx-site a:visited {
+  color: #660099;
+}
+
+.amx-site a:hover {
+  color: #cc0000;
+}
+
+.amx-site tt,
+.amx-site pre {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.amx-site .web-gif {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.amx-site .web-gif svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.amx-shell {
+  width: 760px;
+  table-layout: fixed;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border: 2px solid #000000;
+}
+
+.amx-frame-link,
+.amx-frame-link:visited {
+  display: block;
+  line-height: 0;
+  text-decoration: none;
+}
+
+.amx-frame {
+  display: block;
+}
+
+.amx-keys {
+  background-color: #999999;
+  border-top: 2px solid #000000;
+}
+
+.amx-key {
+  padding: 4px 2px;
+  text-align: center;
+}
+
+.amx-site .amx-key a {
+  display: block;
+  padding: 3px 2px;
+  background-color: #cccccc;
+  border: 2px outset #ffffff;
+  color: #000000;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.amx-site .amx-key a:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.amx-site .amx-key-on a,
+.amx-site .amx-key-on a:visited {
+  background-color: #ffff99;
+  border-style: inset;
+  color: #cc0000;
+}
+
+.amx-key-num {
+  display: inline-block;
+  width: 14px;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: "Courier New", Courier, monospace;
+  text-align: center;
+}
+
+.amx-switches {
+  background-color: #000000;
+  color: #cccccc;
+  font-size: 11px;
+}
+
+.amx-switches td {
+  padding: 3px 8px;
+}
+
+.amx-site .amx-switches a,
+.amx-site .amx-switches a:visited {
+  color: #ffff00;
+}
+
+.amx-switches b {
+  color: #ffffff;
+}
+
+.amx-hint {
+  color: #999999;
+}
+
+.amx-body {
+  padding: 14px 16px 18px 16px;
+  vertical-align: top;
+}
+
+.amx-notice {
+  margin: 0 0 12px 0;
+  padding: 4px 8px;
+  background-color: #ffffcc;
+  border: 1px solid #cc9900;
+}
+
+.amx-h1 {
+  margin: 0 0 8px 0;
+  padding-bottom: 2px;
+  border-bottom: 2px solid #330066;
+  color: #330066;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+}
+
+.amx-h2 {
+  margin: 14px 0 8px 0;
+  padding: 2px 6px;
+  background-color: #330066;
+  color: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+}
+
+.amx-small {
+  color: #666666;
+  font-size: 11px;
+}
+
+.amx-crumbs {
+  margin: 0 0 8px 0;
+  font-size: 11px;
+}
+
+.amx-btn {
+  padding: 2px 8px;
+  background-color: #cccccc;
+  border: 2px outset #ffffff;
+  color: #000000;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.amx-btn:active {
+  border-style: inset;
+}
+
+.amx-input,
+.amx-select {
+  border: 2px inset #999999;
+  background-color: #ffffff;
+  color: #000000;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 12px;
+}
+
+.amx-hello {
+  margin: 0 0 4px 0;
+}
+
+.amx-home-main {
+  width: 470px;
+}
+
+.amx-home-side {
+  width: 250px;
+  padding-left: 16px;
+}
+
+.amx-log td {
+  padding: 3px 0;
+  border-bottom: 1px dotted #9966cc;
+  vertical-align: top;
+}
+
+.amx-log-date {
+  width: 84px;
+  color: #663399;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.amx-week {
+  border: 2px solid #000000;
+  background-color: #ffffff;
+}
+
+.amx-week-head {
+  padding: 2px 6px;
+  background-color: #000000;
+  color: #ffff00;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+}
+
+.amx-week .amx-sticker {
+  display: block;
+  margin: 8px auto 0 auto;
+}
+
+.amx-week p {
+  margin: 6px 8px 8px 8px;
+}
+
+.amx-poll {
+  margin-top: 12px;
+  padding: 6px;
+  background-color: #cccccc;
+  border: 2px outset #ffffff;
+}
+
+.amx-poll-q {
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.amx-poll label {
+  cursor: pointer;
+}
+
+.amx-poll-num {
+  width: 34px;
+  text-align: right;
+  font-weight: bold;
+}
+
+.amx-poll-bar {
+  height: 8px;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+}
+
+.amx-poll-bar div {
+  height: 8px;
+  background-color: #cc0000;
+}
+
+.amx-tvguide {
+  margin-top: 16px;
+  border-top: 4px solid #000000;
+  border-bottom: 2px solid #000000;
+}
+
+.amx-tvguide-head {
+  padding: 3px 6px;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: "Arial Black", Arial, sans-serif;
+  font-size: 14px;
+}
+
+.amx-tvguide td {
+  padding: 5px 6px;
+  border-bottom: 1px dotted #000000;
+  vertical-align: top;
+}
+
+.amx-tv-day {
+  width: 70px;
+  font-family: "Arial Black", Arial, sans-serif;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.amx-tv-time {
+  width: 50px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.amx-tv-place {
+  color: #666666;
+  font-size: 11px;
+}
+
+.amx-tvguide p {
+  margin: 6px;
+}
+
+.amx-notebook {
+  margin-left: 18px;
+  padding: 12px 14px 14px 22px;
+  border-left: 3px double #ff3333;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='16' height='16' fill='%23ffffff'/%3E%3Crect x='15' width='1' height='16' fill='%2399ccff'/%3E%3Crect y='15' width='16' height='1' fill='%2399ccff'/%3E%3C/svg%3E");
+  color: #000066;
+  font-family: "Comic Sans MS", cursive;
+}
+
+.amx-hand-h {
+  margin: 0 0 4px 0;
+  color: #000099;
+  font-family: "Comic Sans MS", cursive;
+  font-size: 24px;
+}
+
+.amx-hand-p {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+}
+
+.amx-ledger {
+  font-size: 12px;
+}
+
+.amx-ledger th {
+  padding: 2px 4px;
+  border-bottom: 2px solid #000099;
+  text-align: left;
+}
+
+.amx-ledger td {
+  padding: 4px;
+  border-bottom: 1px solid #6699cc;
+  vertical-align: top;
+}
+
+.amx-ledger-no {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.amx-ledger-orig {
+  color: #333399;
+  font-size: 11px;
+}
+
+.amx-free {
+  color: #009900;
+}
+
+.amx-howto {
+  margin-top: 8px;
+}
+
+.amx-howto-steps {
+  width: 60%;
+  padding-right: 16px;
+}
+
+.amx-howto-steps ol {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.amx-howto-steps li {
+  margin-bottom: 4px;
+}
+
+.amx-prices td {
+  padding: 3px 0;
+  border-bottom: 1px dotted #999999;
+  vertical-align: top;
+}
+
+.amx-price {
+  width: 90px;
+  text-align: right;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.amx-tape-left {
+  width: 310px;
+  padding-right: 16px;
+}
+
+.amx-sticker {
+  display: block;
+}
+
+.amx-counter-table {
+  margin-top: 8px;
+  background-color: #000000;
+  color: #cccccc;
+  font-size: 11px;
+}
+
+.amx-counter-table th {
+  padding: 3px 6px;
+  background-color: #333333;
+  color: #ffffff;
+  text-align: left;
+}
+
+.amx-counter-table td {
+  padding: 1px 6px;
+}
+
+.amx-ct {
+  width: 64px;
+  color: #66ffff;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  text-align: right;
+}
+
+.amx-orig {
+  margin: 0 0 8px 0;
+  color: #666666;
+  font-style: italic;
+}
+
+.amx-pass {
+  margin-bottom: 8px;
+  border-top: 1px solid #999999;
+}
+
+.amx-pass th {
+  width: 104px;
+  padding: 3px 6px;
+  background-color: #cccccc;
+  border-bottom: 1px solid #999999;
+  font-size: 11px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.amx-pass td {
+  padding: 3px 6px;
+  border-bottom: 1px solid #999999;
+}
+
+.amx-procon td {
+  width: 50%;
+  padding: 6px;
+  border: 1px solid #cccccc;
+}
+
+.amx-mini-tv {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background-color: #000000;
+  border: 4px inset #666666;
+  color: #ffff00;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 1px 1px 0 #000000, -1px -1px 0 #000000;
+}
+
+.amx-mini-tc {
+  color: #999999;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 10px;
+  font-weight: normal;
+}
+
+.amx-queue {
+  margin: 10px 0;
+  padding: 8px;
+  background-color: #ffffcc;
+  border: 2px dashed #330066;
+}
+
+.amx-queue p {
+  margin: 6px 0;
+}
+
+.amx-missing {
+  padding: 30px 0;
+  text-align: center;
+}
+
+.amx-listing {
+  max-width: 728px;
+  margin: 10px 0;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.amx-preview {
+  margin-top: 8px;
+}
+
+.amx-preview-tv {
+  width: 360px;
+  padding-right: 16px;
+}
+
+.amx-tv {
+  position: relative;
+  width: 320px;
+  height: 240px;
+  background-color: #000033;
+  border: 14px solid #333333;
+  border-bottom-width: 22px;
+  color: #ffffff;
+  overflow: hidden;
+}
+
+.amx-tv-osd {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  right: 8px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.amx-tv-osd span + span {
+  float: right;
+}
+
+.amx-tv-osd span:first-child {
+  float: left;
+}
+
+.amx-tv-note {
+  position: absolute;
+  top: 26px;
+  left: 10px;
+  right: 10px;
+  color: #ffffff;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 10px;
+  font-style: italic;
+}
+
+.amx-tv-jp {
+  position: absolute;
+  top: 92px;
+  left: 0;
+  right: 0;
+  color: #9999cc;
+  font-size: 14px;
+  text-align: center;
+}
+
+.amx-tv-romaji {
+  font-size: 10px;
+}
+
+.amx-tv-sub {
+  position: absolute;
+  bottom: 12px;
+  left: 6px;
+  right: 6px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 2px 2px 0 #000000, -2px -2px 0 #000000, 2px -2px 0 #000000, -2px 2px 0 #000000;
+}
+
+.amx-preview-form p {
+  margin: 0 0 8px 0;
+}
+
+.amx-preview-form .amx-select {
+  width: 330px;
+}
+
+.amx-ssa {
+  max-width: 714px;
+  height: 170px;
+  margin: 10px 0;
+  padding: 6px;
+  overflow: auto;
+  background-color: #ffffff;
+  border: 2px inset #999999;
+  font-size: 11px;
+  white-space: pre;
+}
+
+.amx-steps {
+  margin: 0 0 8px 0;
+  padding-left: 24px;
+}
+
+.amx-steps li {
+  margin-bottom: 4px;
+}
+
+.amx-archive td {
+  padding: 8px 6px;
+  border-bottom: 1px solid #cccccc;
+  vertical-align: top;
+}
+
+.amx-archive-date {
+  width: 96px;
+  color: #663399;
+  font-weight: bold;
+}
+
+.amx-archive-title {
+  margin-bottom: 2px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.amx-paper {
+  width: 640px;
+  margin: 0 auto;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.amx-paper .amx-crumbs,
+.amx-paper .amx-small,
+.amx-paper .amx-btn,
+.amx-paper .amx-form {
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+}
+
+.amx-paper-h {
+  margin: 0 0 4px 0;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+.amx-byline {
+  margin: 0 0 10px 0;
+  color: #666666;
+  font-style: italic;
+}
+
+.amx-lead {
+  font-weight: bold;
+}
+
+.amx-facts {
+  width: 230px;
+  margin: 4px 0 10px 16px;
+  background-color: #ffffcc;
+  border: 1px solid #000000;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.amx-facts th {
+  padding: 3px 6px;
+  background-color: #000000;
+  color: #ffffff;
+  text-align: left;
+}
+
+.amx-facts td {
+  padding: 3px 6px;
+  border-top: 1px solid #cccc99;
+  vertical-align: top;
+}
+
+.amx-facts-k {
+  width: 70px;
+  font-weight: bold;
+}
+
+.amx-paper-tapes {
+  padding: 4px 8px;
+  background-color: #ccccff;
+  border: 1px solid #9999cc;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 12px;
+}
+
+.amx-comment {
+  margin: 0 0 8px 0;
+  padding: 4px 8px;
+  border-left: 3px solid #9966cc;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 12px;
+}
+
+.amx-form td {
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.amx-city {
+  margin: 16px 0 6px 0;
+  border-bottom: 3px solid #000000;
+  font-family: "Arial Black", Arial, sans-serif;
+  font-size: 18px;
+}
+
+.amx-scheme {
+  margin: 0 0 4px 0;
+  padding: 8px;
+  background-color: #ffffff;
+  border: 1px dashed #000000;
+  font-size: 12px;
+  line-height: 1.25;
+  white-space: pre;
+}
+
+.amx-spots th {
+  padding: 3px 6px;
+  background-color: #cccccc;
+  border: 1px solid #999999;
+  font-size: 11px;
+  text-align: left;
+}
+
+.amx-spots td {
+  padding: 4px 6px;
+  border: 1px solid #999999;
+  vertical-align: top;
+}
+
+.amx-wall {
+  margin: -14px -16px 0 -16px;
+  padding: 14px 12px;
+  background-color: #999999;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Crect width='24' height='24' fill='%23999999'/%3E%3Crect x='3' y='5' width='1' height='1' fill='%23666666'/%3E%3Crect x='15' y='2' width='2' height='1' fill='%23cccccc'/%3E%3Crect x='9' y='14' width='1' height='1' fill='%23666666'/%3E%3Crect x='20' y='18' width='1' height='2' fill='%23666666'/%3E%3Crect x='5' y='20' width='2' height='1' fill='%23cccccc'/%3E%3C/svg%3E");
+}
+
+.amx-wall-h {
+  margin: 0 0 4px 0;
+  color: #ffffff;
+  font-family: "Arial Black", Arial, sans-serif;
+  font-size: 22px;
+  text-shadow: 2px 2px 0 #000000;
+}
+
+.amx-wall-p {
+  margin: 0 0 10px 0;
+  color: #000000;
+}
+
+.amx-board {
+  table-layout: fixed;
+}
+
+.amx-board td {
+  width: 33%;
+  padding: 6px;
+}
+
+.amx-ad {
+  padding: 8px 0 0 0;
+  background-color: #ffffff;
+  border: 1px solid #666666;
+  box-shadow: 3px 3px 0 #333333;
+  font-family: "Comic Sans MS", cursive;
+  font-size: 12px;
+  color: #000066;
+}
+
+.amx-board td:nth-child(2) .amx-ad {
+  background-color: #ffffcc;
+}
+
+.amx-ad p {
+  margin: 0 8px 6px 8px;
+}
+
+.amx-ad-title {
+  margin: 0 8px 2px 8px;
+  color: #cc0000;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.amx-ad-who {
+  font-size: 11px;
+  font-style: italic;
+}
+
+.amx-tabs {
+  width: 100%;
+  margin-top: 4px;
+  border-top: 1px dashed #666666;
+}
+
+.amx-tab {
+  height: 96px;
+  padding: 2px 0;
+  border-left: 1px dashed #666666;
+  text-align: center;
+  vertical-align: top;
+}
+
+.amx-tab:first-child {
+  border-left: none;
+}
+
+.amx-site .amx-tab a,
+.amx-site .amx-tab a:visited {
+  display: inline-block;
+  max-height: 92px;
+  overflow: hidden;
+  color: #000066;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9px;
+  text-decoration: none;
+  writing-mode: vertical-rl;
+}
+
+.amx-site .amx-tab a:hover {
+  color: #cc0000;
+}
+
+.amx-tab-gone {
+  background-color: #999999;
+  border-top: 1px solid #999999;
+}
+
+.amx-gb-form {
+  margin-bottom: 8px;
+  background-color: #ccccff;
+  border: 1px solid #9999cc;
+}
+
+.amx-gb {
+  margin-bottom: 10px;
+  border: 1px solid #330066;
+}
+
+.amx-gb-head {
+  padding: 3px 6px;
+  background-color: #ccccff;
+}
+
+.amx-gb-date {
+  float: right;
+  color: #333366;
+  font-size: 11px;
+}
+
+.amx-gb-body {
+  padding: 6px;
+}
+
+.amx-gb-reply {
+  margin-top: 6px;
+  padding-left: 8px;
+  border-left: 2px solid #9966cc;
+  color: #660099;
+  font-style: italic;
+}
+
+.amx-conv {
+  padding: 8px 10px;
+  background-color: #cccccc;
+  border: 2px outset #ffffff;
+}
+
+.amx-conv-out {
+  margin-top: 8px;
+  background-color: #ffffff;
+  border: 2px inset #999999;
+}
+
+.amx-conv-out th {
+  padding: 3px 10px;
+  background-color: #cccccc;
+  font-size: 11px;
+  text-align: left;
+}
+
+.amx-conv-out td {
+  padding: 4px 10px;
+  font-size: 16px;
+}
+
+.amx-conv-p {
+  font-weight: bold;
+}
+
+.amx-conv-s {
+  color: #cc0000;
+}
+
+.amx-kana-table {
+  margin-bottom: 10px;
+  border-collapse: collapse;
+}
+
+.amx-kana,
+.amx-kana-empty {
+  width: 66px;
+  padding: 3px 2px;
+  border: 1px solid #999999;
+  font-size: 12px;
+  text-align: center;
+  vertical-align: top;
+}
+
+.amx-kana-empty {
+  background-color: #cccccc;
+}
+
+.amx-kana-diff {
+  background-color: #ffcccc;
+}
+
+.amx-kana-jp {
+  font-size: 18px;
+}
+
+.amx-kana-ro {
+  color: #666666;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+}
+
+.amx-kana-s {
+  color: #cc0000;
+}
+
+.amx-rules li {
+  margin-bottom: 4px;
+}
+
+.amx-footer {
+  padding: 8px 12px 10px 12px;
+  background-color: #000000;
+  color: #cccccc;
+  font-size: 11px;
+}
+
+.amx-footer p {
+  margin: 6px 0;
+}
+
+.amx-site .amx-footer a,
+.amx-site .amx-footer a:visited {
+  color: #ffff00;
+}
+
+.amx-footer .amx-small {
+  color: #999999;
+}
+
+.amx-footer-links {
+  text-align: center;
+}
+
+.amx-footer-count {
+  width: 140px;
+  color: #cccccc;
+  vertical-align: middle;
+}
+
+.amx-counter {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 2px;
+  background-color: #000000;
+  border: 2px inset #666666;
+}
+
+.amx-counter span {
+  display: inline-block;
+  width: 11px;
+  margin-right: 1px;
+  background-color: #333333;
+  color: #66ffff;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.amx-footer-88 {
+  text-align: right;
+  vertical-align: middle;
+}
+
+.amx-site a.amx-88,
+.amx-site a.amx-88:visited {
+  display: inline-block;
+  width: 84px;
+  height: 27px;
+  margin-left: 4px;
+  border: 2px outset #ffffff;
+  background-color: #000066;
+  color: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 13px;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+.amx-site a.amx-88-rambler,
+.amx-site a.amx-88-rambler:visited {
+  background-color: #cc0000;
+}
+
+.amx-site a.amx-88-kino,
+.amx-site a.amx-88-kino:visited {
+  background-color: #333333;
+  color: #ffcc00;
+}
+
+.amx-site a.amx-88-wc,
+.amx-site a.amx-88-wc:visited {
+  background-color: #660000;
+}
+
+.amx-site a.amx-88-digi,
+.amx-site a.amx-88-digi:visited {
+  background-color: #99ff99;
+  color: #003300;
+}
+
+.amx-site a.amx-88-fido,
+.amx-site a.amx-88-fido:visited {
+  background-color: #000099;
+}
+
+.amx-site.amx-raw {
+  padding: 12px;
+  background-color: #ffffff;
+  background-image: none;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 16px;
+}
+
+.amx-site.amx-raw h1 {
+  font-size: 32px;
+}

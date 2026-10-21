@@ -172,10 +172,12 @@
     }, lights: v => [[16, -2, 22, v === 'r' ? '#ff6070' : '#4ab0ff', 0.25, true]] },
     terminal: { w: 1, h: 1, up: 18, draw(P, v) {
       P.shadow(8, 14, 6, 2);
-      P(4, 4, 8, 10, C.white); P(4, 4, 8, 1, '#ffffff'); P(11, 4, 1, 10, C.whiteDk); P(4, 13, 8, 1, C.steelDk); P(5, 11, 6, 1, C.gold);
-      P(2, -12, 12, 15, C.navy); P.screen(3, -11, 10, 12, v === 'a' ? '#4a2a10' : '#103a6a', 11);
-      P(2, -12, 12, 1, C.steelHi);
-    }, lights: v => [[8, -4, 16, v === 'a' ? '#ffb050' : '#4ab0ff', 0.22, true]] },
+      P(3, 11, 10, 3, C.steelDk); P(4, 11, 8, 1, C.steel); P(5, 12, 6, 1, C.gold);
+      P(5, 3, 6, 8, C.steel); P(6, 3, 2, 8, C.white); P(10, 3, 1, 8, C.steelDk);
+      P(3, 1, 10, 3, C.white); P(3, 1, 10, 1, '#ffffff'); P(4, 2, 8, 1, C.cyan);
+      P(2, -11, 12, 12, C.navy); P.screen(3, -10, 10, 10, v === 'a' ? '#4a2a10' : '#103a6a', 11);
+      P(2, -11, 12, 1, C.steelHi);
+    }, lights: v => [[8, -5, 16, v === 'a' ? '#ffb050' : '#4ab0ff', 0.22, true]] },
     column: { w: 1, h: 1, up: 34, draw(P) {
       P.shadow(8, 14, 7, 2);
       P(3, -34, 10, 48, C.white); P(3, -34, 2, 48, '#ffffff'); P(11, -34, 2, 48, C.whiteDk);
@@ -450,29 +452,29 @@
       P.oval(8, 4, 6, 4, '#e8ecf2'); P.oval(8, 3, 5, 3, '#ffffff'); P.oval(8, 3, 3, 2, '#9ad8ff');
       P(6, 7, 4, 6, '#d8dee8'); P.dot(11, -7, C.gold); P(2, -2, 3, 3, '#ffe890');
     }, lights: () => [[8, 3, 10, '#9ad8ff', 0.18, true]] },
-    emblemholo: { w: 2, h: 1, up: 40, draw(P) {
-      P.shadow(16, 14, 12, 2);
-      P.oval(16, 12, 11, 3, C.steelDk); P(8, 6, 16, 6, C.white); P(8, 6, 16, 1, '#ffffff'); P(8, 10, 16, 1, C.gold);
-      for (const [x, y] of [[4, -34], [28, -34], [0, -18], [32, -18], [4, -2], [28, -2]]) P(x, y, 2, 2, C.gold);
-      P.line(4, -34, 28, -34, 'rgba(255,208,96,0.6)'); P.line(28, -34, 32, -18, 'rgba(255,208,96,0.6)'); P.line(32, -18, 28, -2, 'rgba(255,208,96,0.6)');
-      P.line(28, -2, 4, -2, 'rgba(255,208,96,0.6)'); P.line(4, -2, 0, -18, 'rgba(255,208,96,0.6)'); P.line(0, -18, 4, -34, 'rgba(255,208,96,0.6)');
-      P.ring(16, -18, 9, 9, '#ffd060'); P.arc(15, -18, 6, 6, 0.9, 5.4, '#ffe8a0'); P.line(6, -8, 26, -28, '#ffd060', 2); P.tri([26, -28, 21, -27, 25, -23], '#ffffff');
-      P.line(16, -2, 16, 5, 'rgba(255,220,140,0.6)');
-    }, lights: () => [[16, -18, 34, '#ffd060', 0.32, true]] },
-    frontdesk: { w: 8, h: 1, up: 10, draw(P) {
-      P.shadow(64, 14, 60, 2);
-      P(2, 0, 124, 6, C.white); P(2, 0, 124, 1, '#ffffff'); P(2, 6, 124, 7, C.whiteDk); P(2, 9, 124, 1, C.gold); P(2, 12, 124, 1, C.out);
-      P(0, 2, 2, 10, C.white); P(126, 2, 2, 10, C.white);
-      for (const x of [14, 50, 86, 110]) { P(x, -8, 10, 8, C.navy); P.screen(x + 1, -7, 8, 6, '#103a6a', x); }
-      P(30, 1, 6, 3, '#f4ecd8'); P(76, 1, 5, 3, '#f4ecd8'); P(60, 7, 8, 2, C.cyan);
+    emblemholo: { w: 2, h: 1, up: 28, draw(P) {
+      P.shadow(16, 13, 11, 2);
+      P.oval(16, 11, 10, 3, C.steelDk); P(9, 6, 14, 5, C.white); P(9, 6, 14, 1, '#ffffff'); P(9, 10, 14, 1, C.gold); P(12, 5, 8, 1, C.cyan);
+      for (const [x, y] of [[6, -24], [25, -24], [2, -12], [29, -12], [6, 0], [25, 0]]) P(x, y, 2, 2, C.gold);
+      P.line(7, -24, 25, -24, 'rgba(255,208,96,0.55)'); P.line(26, -24, 30, -12, 'rgba(255,208,96,0.55)'); P.line(30, -12, 26, 0, 'rgba(255,208,96,0.55)');
+      P.line(25, 0, 7, 0, 'rgba(255,208,96,0.55)'); P.line(6, 0, 2, -12, 'rgba(255,208,96,0.55)'); P.line(2, -12, 6, -24, 'rgba(255,208,96,0.55)');
+      P.ring(16, -12, 7, 7, '#ffd060'); P.arc(15, -12, 5, 5, 0.9, 5.4, '#ffe8a0'); P.line(8, -4, 24, -20, '#ffd060', 2); P.tri([24, -20, 20, -19, 23, -16], '#ffffff');
+      P.line(16, 1, 16, 5, 'rgba(255,220,140,0.6)');
+    }, lights: () => [[16, -12, 30, '#ffd060', 0.3, true]] },
+    frontdesk: { w: 6, h: 1, up: 10, draw(P) {
+      P.shadow(48, 14, 45, 2);
+      P(2, 0, 92, 6, C.white); P(2, 0, 92, 1, '#ffffff'); P(2, 6, 92, 7, C.whiteDk); P(2, 9, 92, 1, C.gold); P(2, 12, 92, 1, C.out);
+      P(0, 2, 2, 10, C.white); P(94, 2, 2, 10, C.white);
+      for (const x of [6, 43, 80]) { P(x, -8, 10, 8, C.navy); P.screen(x + 1, -7, 8, 6, '#103a6a', x); }
+      P(21, 1, 6, 3, '#f4ecd8'); P(69, 1, 5, 3, '#f4ecd8'); P(44, 7, 8, 2, C.cyan);
     } },
-    glassbench: { w: 1, h: 7, up: 8, draw(P) {
-      P.shadow(8, 110, 7, 2);
-      P(1, 0, 14, 110, '#2a6a8a'); P(2, 1, 12, 108, 'rgba(120,220,255,0.55)'); P(2, 1, 2, 108, 'rgba(230,250,255,0.8)');
-      P(1, -6, 14, 6, C.white); P(1, -6, 14, 1, '#ffffff'); P(1, 108, 14, 3, C.whiteDk);
-      for (let y = 8; y < 104; y += 14) { P(4, y, 8, 4, C.leaf); P.dot(6, y - 1, C.leafHi); P.dot(10, y + 1, C.pink); }
-      P(0, 0, 1, 110, C.gold); P(15, 0, 1, 110, C.gold);
-    }, lights: () => [[8, 20, 14, '#56d4ff', 0.18], [8, 80, 14, '#56d4ff', 0.18]] },
+    glassbench: { w: 1, h: 4, up: 8, draw(P) {
+      P.shadow(8, 62, 7, 2);
+      P(1, 0, 14, 62, '#2a6a8a'); P(2, 1, 12, 60, 'rgba(120,220,255,0.55)'); P(2, 1, 2, 60, 'rgba(230,250,255,0.8)');
+      P(1, -6, 14, 6, C.white); P(1, -6, 14, 1, '#ffffff'); P(1, 60, 14, 3, C.whiteDk);
+      for (let y = 8; y < 56; y += 14) { P(4, y, 8, 4, C.leaf); P.dot(6, y - 1, C.leafHi); P.dot(10, y + 1, C.pink); }
+      P(0, 0, 1, 62, C.gold); P(15, 0, 1, 62, C.gold);
+    }, lights: () => [[8, 16, 14, '#56d4ff', 0.18], [8, 46, 14, '#56d4ff', 0.18]] },
     nurse: { w: 3, h: 3, up: 12, draw(P) {
       P.shadow(24, 44, 22, 3);
       const hx = [[12, 4], [36, 4], [46, 24], [36, 44], [12, 44], [2, 24]];
@@ -527,8 +529,11 @@
     },
     hex(P, v, Z) {
       const c0 = Z.trim, c1 = Z.trimDk;
-      const hx = (x, y, c) => { P(x + 2, y, 6, 1, c); P(x + 1, y + 1, 8, 1, c); P(x, y + 2, 10, 4, c); P(x + 1, y + 6, 8, 1, c); P(x + 2, y + 7, 6, 1, c); };
-      for (const [x, y, k] of [[3, 2, 0], [12, 6, 1], [3, 10, 1], [21, 2, 1], [21, 10, 0], [30, 6, 0], [12, 14, 0]]) { hx(x, y, k ? c1 : c0); P(x + 3, y + 3, 4, 2, Z.floor[2]); }
+      P(4, 4, 56, 1, c1); P(4, 59, 56, 1, c1); P(4, 4, 1, 56, c1); P(59, 4, 1, 56, c1);
+      for (const [x, y] of [[4, 4], [57, 4], [4, 57], [57, 57]]) P(x, y, 3, 3, c0);
+      P.ring(32, 32, 16, 16, c1); P.ring(32, 32, 12, 12, c0);
+      P.line(16, 32, 48, 32, c1); P.line(32, 16, 32, 48, c1);
+      P.oval(32, 32, 3, 3, Z.floor[2]); P.ring(32, 32, 4, 4, c0);
     },
     screens(P, v, Z) {
       const w = (v | 0) || 4;
@@ -581,7 +586,7 @@
       for (let x = 8; x < w * 16 - 6; x += 8) P.dot(x, h * 8, Z.accent[1]);
     }
   };
-  const LAYER_SIZE = { fragment: [2, 2], emblem: [4, 3], hex: [3, 2], screens: [4, 2], sign: [3, 2], liftpad: [2, 2], hazard: [2, 1], vent: [1, 1], strip: [2, 1], arrow: [1, 1], rug: [4, 2] };
+  const LAYER_SIZE = { fragment: [2, 2], emblem: [4, 3], hex: [4, 4], screens: [4, 2], sign: [3, 2], liftpad: [2, 2], hazard: [2, 1], vent: [1, 1], strip: [2, 1], arrow: [1, 1], rug: [4, 2] };
   const LAYER_LIGHT = {
     emblem: () => [[32, 24, 40, '#ffd060', 0.12]],
     screens: v => [[((v | 0) || 4) * 8, 16, ((v | 0) || 4) * 10, '#4ab0ff', 0.2, true]],
@@ -840,6 +845,6 @@
 
   if (H.UI) Object.assign(H.UI.prototype, { openDoc });
 
-  H.Station = { buildLayer, DECOR, LAYER, LAYER_SIZE, ZONES };
+  H.Station = { buildLayer, DECOR, LAYER, LAYER_SIZE, ZONES, pen, sprite, light };
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

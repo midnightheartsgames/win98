@@ -2378,6 +2378,259 @@
     }
   ];
 
+  function cassette(g, x, y, w, h, lines, k) {
+    rect(g, '#1a1a20', x, y, w, h); rect(g, '#2a2a32', x + 4, y + 4, w - 8, h - 8);
+    rect(g, '#f2eee0', x + 10, y + 8, w - 20, h * 0.5);
+    rect(g, '#d84a3a', x + 10, y + 8, w - 20, 4);
+    lines.forEach((s, i) => caption(g, typed(s, k * lines.length - i), x + 16, y + 15 + i * 18, { size: 16, col: '#2a2a3a', shadow: false }));
+    for (const d of [0.32, 0.68]) { ell(g, '#0e0e12', x + w * d, y + h * 0.78, 9, 9); ell(g, '#c8ccd4', x + w * d, y + h * 0.78, 4, 4); }
+  }
+
+  SHOWS.anby = [
+    {
+      key: 'promo', ch: '27', len: 2.8, light: '#ffc080',
+      fx: { noise: 0.07, ghost: 0.18, chroma: 1, wobble: 0.4 },
+      paint(g, t, X) {
+        vgrad(g, 0, LH, [[0, '#2a1a3a'], [1, '#140c1c']]);
+        rect(g, '#3a2a4a', 0, 18, LW, 160); rect(g, '#2a1e38', 0, 168, LW, 10);
+        rect(g, '#f0c040', 16, 26, 288, 34);
+        for (let i = 0; i < 24; i++) ell(g, (i + Math.floor(t * 6)) % 3 ? '#fff4c0' : '#c88a20', 22 + i * 12, 29, 2, 2);
+        caption(g, 'КИНОТЕАТР', LW / 2, 36, { size: 20, align: 'center', col: '#3a1a10', shadow: false });
+        rect(g, '#e8e4dc', 224, 70, 76, 100); rect(g, '#1a2a5a', 228, 74, 68, 92);
+        caption(g, 'ПУЛЬС', 262, 80, { size: 16, align: 'center', col: '#ff5a5a' });
+        g.strokeStyle = '#ff5a5a'; g.lineWidth = 2; g.beginPath(); g.moveTo(232, 130); g.lineTo(248, 130); g.lineTo(254, 116); g.lineTo(262, 146); g.lineTo(268, 124); g.lineTo(274, 130); g.lineTo(292, 130); g.stroke(); g.lineWidth = 1;
+        G.drawFigure(g, X.look, 128, 212, 1.25);
+        for (let i = 0; i < 3; i++) rect(g, '#f6f4ee', 146 + i * 3, 150 - i * 2, 14, 18);
+        bubble(g, 156, 70, 'А В ФИНАЛЕ ОН…', seg(t, 0.5, 0.7), -14);
+        const plug = seg(t, 1.3, 1.6);
+        for (const [x, hair] of [[40, '#3a2a20'], [74, '#c8a060']]) {
+          fan(g, x, 176, 1.3, hair, '#4a5a7a', false);
+          if (plug > 0) for (const d of [-1, 1]) ell(g, '#e8c8b0', x + d * 11, 172 - 6 * plug, 4, 5);
+        }
+        rect(g, '#5a0e1a', 0, 214, LW, 26); rect(g, '#f0c040', 0, 214, 8, 26);
+        caption(g, 'ПРЕМЬЕРА: «ПУЛЬС»', 14, 217, { size: 18 });
+      }
+    },
+    {
+      key: 'pulse', ch: 'AV', len: 3.0, light: '#ff9a60',
+      fx: { noise: 0.08, chroma: 1, wobble: 0.7, track: 1 },
+      paint(g, t, X) {
+        vgrad(g, 0, LH, [[0, '#3a1e4a'], [0.55, '#e8783a'], [1, '#f2b05a']]);
+        lighter(g, () => glow(g, 160, 150, 80, '#ffd890', 0.6));
+        ell(g, '#ffe4a0', 160, 150, 30, 30);
+        g.save(); g.translate(0, 26); skyline(g, 196, 7, '#7a3a48', '#ffc070'); g.restore();
+        rect(g, '#0c0608', 0, 190, LW, 50); rect(g, '#2a1418', 0, 190, LW, 3);
+        const k = sm(seg(t, 0.2, 1.6));
+        for (const d of [-1, 1]) {
+          const x = 160 + d * lerp(70, 22, k), s = 1.5;
+          lighter(g, () => glow(g, x, 140, 34, '#ffb060', 0.35));
+          ell(g, '#0c0608', x, 112, 9 * s, 10 * s); poly(g, '#0c0608', [x - 14 * s, 190, x + 14 * s, 190, x + 11 * s, 126, x - 11 * s, 126]);
+          poly(g, '#0c0608', [x - d * 8, 136, x - d * 8, 144, x - d * lerp(40, 20, k), 148, x - d * lerp(40, 20, k), 140]);
+        }
+        const end = seg(t, 1.8, 2.3);
+        if (end > 0) caption(g, 'КОНЕЦ', LW / 2, 60, { size: 26, align: 'center', col: rgba('#fff4e0', end) });
+        rect(g, '#f4f4f6', 206, 10, 104, 84); rect(g, '#1e1014', 209, 13, 98, 78);
+        rect(g, '#7a1a24', 209, 70, 98, 21);
+        g.save(); g.beginPath(); g.rect(209, 13, 98, 78); g.clip();
+        G.drawBust(g, X.look, 226, 18, 1.0);
+        for (let i = 0; i < 3; i++) { const y = 50 + ((t * 40 + i * 13) % 34); ell(g, '#8ac8ff', 248 - (i % 2) * 2, y, 1.6, 2.4); ell(g, '#8ac8ff', 268 + (i % 2) * 2, y + 6, 1.6, 2.4); }
+        g.restore();
+        caption(g, 'ПУЛЬС · ФИНАЛ', 12, LH - 46, { size: 16, col: '#ffe0c0' });
+        caption(g, '► PLAY', 12, LH - 24, { size: 16 });
+      }
+    },
+    {
+      key: 'tape', ch: '', len: 3.6, light: '#8ab0ff',
+      fx: { noise: 0.02, wobble: 0.15 },
+      paint(g, t, X) {
+        vgrad(g, 0, LH, [[0, '#0c1024'], [1, '#161a30']]);
+        rect(g, '#1a2040', 12, 14, 110, 80); rect(g, '#2a3058', 12, 14, 110, 4);
+        g.save(); g.beginPath(); g.rect(16, 18, 102, 72); g.clip();
+        vgrad(g, 18, 90, [[0, '#101838'], [1, '#2a2a58']], 16, 102);
+        skyline(g, 92, 13, '#0a0e20', '#f0d070');
+        ell(g, '#f4f0d8', 96, 34, 8, 8);
+        g.restore();
+        rect(g, '#2a3058', 66, 14, 3, 80); rect(g, '#2a3058', 12, 52, 110, 3);
+        rect(g, '#5a3a44', 120, 112, 150, 34); rect(g, '#6a4a54', 120, 104, 150, 12); rect(g, '#4a2e38', 116, 104, 8, 46); rect(g, '#4a2e38', 266, 104, 8, 46);
+        g.save(); g.translate(144, 122); g.rotate(-Math.PI / 2); G.drawFigure(g, X.lookOf('nicole'), 0, 0, 0.85); g.restore();
+        poly(g, '#6a5a9a', [170, 108, 262, 104, 266, 134, 168, 140]);
+        poly(g, '#7a6aaa', [170, 108, 262, 104, 262, 110, 170, 114]);
+        lighter(g, () => poly(g, 'rgba(160,190,255,0.10)', [20, 94, 120, 94, 240, 240, 0, 240]));
+        G.drawBust(g, X.look, 206, 78, 1.7);
+        rect(g, '#3a2a24', 196, 182, 124, 58); rect(g, '#4a362e', 196, 182, 124, 6);
+        const pen = 0.2 + 0.8 * seg(t, 0.4, 2.8);
+        cassette(g, 26, 150, 150, 84, ['МУЗЫКА ДЛЯ', 'ПРОГУЛОК'], pen);
+        const px = 46 + Math.min(118, pen * 118), py = 174 + (pen > 0.55 ? 18 : 0);
+        line(g, '#1a1a20', 3, px, py, px + 16, py - 22);
+        ell(g, '#e8c8b0', px + 18, py - 24, 6, 5);
+      }
+    }
+  ];
+
+  function bunnyLogo(g, x, y, s, col) {
+    for (const d of [-1, 1]) { poly(g, col, [x + d * 4 * s, y - 8 * s, x + d * 10 * s, y - 30 * s, x + d * 15 * s, y - 28 * s, x + d * 11 * s, y - 6 * s]); poly(g, '#ffffff', [x + d * 6.5 * s, y - 10 * s, x + d * 10.5 * s, y - 25 * s, x + d * 12 * s, y - 24 * s, x + d * 9.5 * s, y - 9 * s]); }
+    ell(g, col, x, y, 14 * s, 12 * s);
+    ell(g, '#1a1a22', x - 5 * s, y - 2 * s, 2 * s, 2.4 * s); ell(g, '#1a1a22', x + 5 * s, y - 2 * s, 2 * s, 2.4 * s);
+    poly(g, '#1a1a22', [x - 2 * s, y + 3 * s, x + 2 * s, y + 3 * s, x, y + 5 * s]);
+  }
+
+  SHOWS.nicole = [
+    {
+      key: 'ad', ch: '09', len: 2.8, light: '#ff9ac8',
+      fx: { noise: 0.07, ghost: 0.2, chroma: 1, wobble: 0.4, hum: 0.6 },
+      paint(g, t, X) {
+        vgrad(g, 0, LH, [[0, '#ff7ab8'], [1, '#c84a8a']]);
+        for (let i = 0; i < 9; i++) rect(g, 'rgba(255,255,255,0.08)', i * 40 - ((t * 30) % 40), 0, 18, LH);
+        bunnyLogo(g, 268, 70, 1.6, '#f4f4f6');
+        caption(g, 'ХИТРЫЕ ЗАЙЦЫ', 14, 14, { size: 24, col: '#fff4c0', shadow: '#5a1030' });
+        const a1 = seg(t, 0.3, 0.5), a2 = seg(t, 0.9, 1.1), blink = Math.floor(t * 4) % 2 === 0 || t < 1.6;
+        if (a1 > 0) caption(g, 'НАЙДЁМ КОТА', 116, 64, { size: 20, col: rgba('#ffffff', a1), shadow: '#5a1030' });
+        if (a2 > 0) caption(g, 'ИЛИ ОТОМСТИМ', 116, 92, { size: 20, col: rgba('#ffffff', a2), shadow: '#5a1030' });
+        if (t > 1.6 && blink) { rect(g, '#ffe040', 112, 128, 196, 30); caption(g, 'БЫЛА БЫ ЦЕНА!', 210, 133, { size: 20, align: 'center', col: '#5a1030', shadow: false }); }
+        ell(g, '#5a1a3a', 62, 150, 50, 66); ell(g, '#7a2a52', 62, 150, 44, 60);
+        G.drawFigure(g, X.look, 62, 214, 1.25);
+        rect(g, '#2e2e34', 92, 176, 30, 22); ell(g, '#c8a050', 107, 187, 6, 6); ell(g, '#2e2e34', 107, 187, 4, 4);
+        rect(g, '#1a1a22', 0, 214, LW, 26);
+        caption(g, 'ТЕЛ. 2-15-33', 14, 217, { size: 18, col: '#ff9ac8' });
+      }
+    },
+    {
+      key: 'news', ch: '14', len: 3.0, light: '#a8c0ff',
+      fx: { noise: 0.06, ghost: 0.15, chroma: 1, wobble: 0.3 },
+      paint(g, t, X) {
+        vgrad(g, 0, LH, [[0, '#1a2440'], [1, '#0e1428']]);
+        rect(g, '#0a0e18', 164, 22, 148, 108); rect(g, '#d83a3a', 164, 22, 148, 3);
+        g.save(); g.beginPath(); g.rect(166, 26, 144, 102); g.clip();
+        rect(g, '#141824', 166, 26, 144, 102); rect(g, '#2a2c34', 166, 92, 144, 36);
+        for (let i = 0; i < 6; i++) rect(g, '#e8d070', 170 + i * 26 - ((t * 60) % 26), 108, 12, 2);
+        const vx = 236 + Math.sin(t * 9) * 1.5;
+        rect(g, '#3a3c48', vx - 44, 66, 88, 30); rect(g, '#4a4c58', vx - 30, 54, 54, 16);
+        rect(g, '#9ab8d8', vx - 26, 57, 22, 11); rect(g, '#9ab8d8', vx, 57, 20, 11);
+        ell(g, '#f2a0b2', vx - 16, 62, 6, 5); ell(g, '#f2a0b2', vx - 21, 66, 3, 6); ell(g, '#f2a0b2', vx - 11, 66, 3, 6);
+        for (const x of [vx - 30, vx + 28]) ell(g, '#101016', x, 96, 9, 9);
+        const fl = 1 - seg(t, 0.3, 0.6);
+        if (fl > 0) rect(g, rgba('#ffffff', 0.8 * fl), 166, 26, 144, 102);
+        g.strokeStyle = '#ff3a3a'; g.lineWidth = 2; g.strokeRect(vx - 30, 52, 28, 20); g.lineWidth = 1;
+        g.restore();
+        caption(g, '140 КМ/Ч', 170, 30, { size: 16, col: '#ff5a5a' });
+        anchorDesk(g, X.lookOf('townswoman'), 'НОВОСТИ НЬЮ-ЭРИДУ');
+        ticker(g, 'ВОДИТЕЛЬ БЕЗ ПРАВ СНОВА ОТОРВАЛСЯ ОТ ПОГОНИ   ', 214, 26, t, 70, '#5a0e1a', '#ffffff');
+      }
+    },
+    {
+      key: 'sun', ch: '', len: 3.6, light: '#ffe0a0',
+      fx: { noise: 0.02, wobble: 0.15 },
+      paint(g, t, X) {
+        vgrad(g, 0, LH, [[0, '#2a2632'], [1, '#1a1820']]);
+        rect(g, '#3a3440', 0, 0, LW, 150); rect(g, '#24202a', 0, 150, LW, 90);
+        for (let x = 0; x < LW; x += 32) rect(g, '#342e3a', x, 0, 1, 150);
+        rect(g, '#5a5060', 196, 24, 96, 86); rect(g, '#8a8098', 200, 28, 88, 78);
+        vgrad(g, 28, 106, [[0, '#ffd890'], [1, '#f0a860']], 200, 88);
+        rect(g, '#5a5060', 242, 28, 4, 78); rect(g, '#5a5060', 200, 64, 88, 4);
+        const k = sm(seg(t, 0.4, 1.4)), mx = 200, my = 122;
+        lighter(g, () => { poly(g, 'rgba(255,224,150,0.18)', [246, 66, 262, 66, mx + 6, my + 2, mx - 6, my - 2]); if (k > 0) poly(g, rgba('#fff0b0', 0.22 * k), [mx - 4, my - 2, mx + 4, my + 2, lerp(mx, 74, k) + 18, lerp(my, 60, k) + 10, lerp(mx, 74, k) - 18, lerp(my, 60, k) - 10]); });
+        g.save(); g.translate(14, 128); g.scale(1.35, 1.35); bed(g, 0, 0, 110, '#8a6a4a'); g.restore();
+        const sx = lerp(mx, 74, k), sy = lerp(my, 60, k);
+        if (k > 0) lighter(g, () => { glow(g, sx, sy, 26 * k, '#fff2b0', 0.8); ell(g, rgba('#fff8d8', k), sx, sy, 10, 10); });
+        const kid = Object.assign({}, X.lookOf('kid'), { hair: '#f2a0b2', hairHi: '#ffc8d4' });
+        G.drawFigure(g, kid, 188, 222, 1.35);
+        rect(g, '#c8d4e0', mx - 7, my - 6, 9, 12); rect(g, '#f4f8ff', mx - 5, my - 4, 5, 8);
+        if (t > 1.6) { const a = seg(t, 1.6, 2.0); ell(g, rgba('#2a1a14', a), 29, 114, 1.6, 1.6); ell(g, rgba('#2a1a14', a), 37, 114, 1.6, 1.6); g.strokeStyle = rgba('#3a2a20', a); g.lineWidth = 1.5; g.beginPath(); g.arc(33, 117, 3.4, 0.3, Math.PI - 0.3); g.stroke(); g.lineWidth = 1; }
+        for (let i = 0; i < 10; i++) lighter(g, () => ell(g, 'rgba(255,240,200,0.5)', 210 + hx(i, 2, 9) * 70, 40 + ((t * 8 + hx(i, 3, 9) * 60) % 60), 1, 1));
+      }
+    }
+  ];
+
+  function starShape(g, x, y, r, col) {
+    const pts = [];
+    for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r; pts.push(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+    poly(g, col, pts);
+  }
+
+  function starKnight(g, x, y, s, t) {
+    const sway = Math.sin(t * 3) * 2 * s;
+    poly(g, '#c8283a', [x - 10 * s, y - 60 * s, x + 10 * s, y - 60 * s, x + 22 * s + sway, y, x - 22 * s + sway, y]);
+    poly(g, '#e8ecf4', [x - 12 * s, y - 62 * s, x + 12 * s, y - 62 * s, x + 10 * s, y - 24 * s, x - 10 * s, y - 24 * s]);
+    rect(g, '#d8b050', x - 12 * s, y - 30 * s, 24 * s, 4 * s);
+    rect(g, '#2a2c3a', x - 9 * s, y - 24 * s, 7 * s, 24 * s); rect(g, '#2a2c3a', x + 2 * s, y - 24 * s, 7 * s, 24 * s);
+    ell(g, '#e8ecf4', x, y - 72 * s, 10 * s, 11 * s);
+    rect(g, '#1a1c2a', x - 7 * s, y - 75 * s, 14 * s, 5 * s);
+    starShape(g, x, y - 48 * s, 6 * s, '#ffd040');
+    poly(g, '#ffd040', [x - 3 * s, y - 82 * s, x, y - 92 * s, x + 3 * s, y - 82 * s]);
+  }
+
+  function motorbike(g, x, y, s, col) {
+    for (const d of [-1, 1]) { ell(g, '#101014', x + d * 22 * s, y, 11 * s, 11 * s); ell(g, '#5a5c66', x + d * 22 * s, y, 5 * s, 5 * s); }
+    poly(g, col, [x - 22 * s, y - 4 * s, x - 6 * s, y - 16 * s, x + 14 * s, y - 16 * s, x + 24 * s, y - 2 * s, x + 6 * s, y - 2 * s]);
+    rect(g, '#c8ccd4', x + 12 * s, y - 24 * s, 3 * s, 10 * s); rect(g, '#c8ccd4', x + 8 * s, y - 25 * s, 10 * s, 2 * s);
+    rect(g, '#2a2a30', x - 14 * s, y - 20 * s, 16 * s, 5 * s);
+  }
+
+  SHOWS.billy = [
+    {
+      key: 'knight', ch: '11', len: 2.8, light: '#ffd070',
+      fx: { noise: 0.07, ghost: 0.2, chroma: 1, wobble: 0.4 },
+      paint(g, t, X) {
+        vgrad(g, 0, LH, [[0, '#0a0a24'], [1, '#2a1a3a']]);
+        for (let i = 0; i < 4; i++) { const k = ((t * 0.7 + i * 0.27) % 1); lighter(g, () => line(g, rgba('#ffe8a0', 1 - k), 2, 40 + i * 70 + k * 60, k * 90, 10 + i * 70 + k * 60, k * 90 - 30)); }
+        skyline(g, 200, 21, '#141228', '#5a4a8a');
+        const hit = seg(t, 1.2, 1.5);
+        ell(g, '#6a2a8a', 236, 160, 44, 38); ell(g, '#8a3aaa', 230, 150, 30, 24);
+        for (let i = 0; i < 5; i++) poly(g, '#f4f0e8', [212 + i * 9, 172, 216 + i * 9, 182, 220 + i * 9, 172]);
+        ell(g, '#ffe040', 222, 146, 5, 5); ell(g, '#ffe040', 244, 146, 5, 5);
+        starKnight(g, 96, 206, 1.45, t);
+        if (hit > 0) lighter(g, () => { line(g, rgba('#fff4b0', 1), 6 * (1 - hit) + 2, 122, 132, 214, 152); glow(g, 214, 152, 40 * hit, '#ffe080', 0.8 * (1 - hit)); for (let i = 0; i < 5; i++) starShape(g, 214 + Math.cos(i * 1.3) * 40 * hit, 152 + Math.sin(i * 1.3) * 30 * hit, 5, rgba('#ffe060', 1 - hit)); });
+        rect(g, '#0e0e2a', 0, 0, LW, 30); rect(g, '#ffd040', 0, 28, LW, 2);
+        caption(g, 'ЗВЁЗДНЫЙ РЫЦАРЬ', 12, 6, { size: 20, col: '#ffd040' });
+        rect(g, '#c8283a', 0, 214, 150, 26);
+        caption(g, 'РЕЙТИНГ 11,8%', 10, 217, { size: 18 });
+      }
+    },
+    {
+      key: 'outer', ch: 'AV', len: 3.0, light: '#e8b070',
+      fx: { noise: 0.1, chroma: 1, wobble: 0.8, track: 1 },
+      paint(g, t, X) {
+        vgrad(g, 0, LH, [[0, '#c89a6a'], [0.6, '#e8c08a'], [1, '#8a6a4a']]);
+        ell(g, '#f8e0b0', 250, 70, 26, 26);
+        for (let i = 0; i < 3; i++) poly(g, '#a07a5a', [i * 140 - 40, 150, i * 140 + 40, 96 + i * 8, i * 140 + 130, 150]);
+        rect(g, '#5a4a3a', 0, 150, LW, 90);
+        for (let i = 0; i < 7; i++) rect(g, '#e8d8a0', ((i * 60 - t * 160) % 420 + 420) % 420 - 50, 192, 30, 4);
+        const bx = 140 + Math.sin(t * 2) * 3;
+        motorbike(g, bx, 186, 1.6, '#c8283a');
+        G.drawBust(g, X.look, bx - 52, 74, 1.2);
+        const fl = t * 9;
+        poly(g, '#d8283a', [bx - 18, 122, bx - 10, 128, bx - 70 - Math.sin(fl) * 6, 118 + Math.sin(fl * 1.3) * 5, bx - 92, 128 + Math.sin(fl) * 7, bx - 64, 132]);
+        rect(g, '#2a1a10', 196, 118, 110, 30); rect(g, '#e8c040', 198, 120, 106, 26);
+        caption(g, 'ЧЕМПИОН', 251, 124, { size: 18, align: 'center', col: '#2a1a10', shadow: false });
+        caption(g, 'ОБЪЕЗДНАЯ', 12, LH - 46, { size: 16, col: '#fff0d0' });
+        caption(g, '► PLAY', 12, LH - 24, { size: 16 });
+      }
+    },
+    {
+      key: 'repair', ch: '', len: 3.6, light: '#9ab8ff',
+      fx: { noise: 0.02, wobble: 0.15 },
+      paint(g, t, X) {
+        vgrad(g, 0, LH, [[0, '#10141e'], [1, '#1a1e2a']]);
+        for (let y = 20; y < 150; y += 26) rect(g, '#1e2432', 0, y, LW, 2);
+        rect(g, '#2a2e3a', 8, 30, 110, 120); for (let i = 0; i < 4; i++) rect(g, '#3a3e4a', 8, 50 + i * 26, 110, 3);
+        for (let i = 0; i < 3; i++) { rect(g, '#5a5c66', 18 + i * 32, 36, 6, 14); rect(g, '#8a8c96', 14 + i * 32, 34, 14, 4); }
+        rect(g, '#2a2c34', 26, 92, 70, 52); rect(g, '#141824', 30, 96, 62, 40);
+        vgrad(g, 96, 136, [[0, '#2a2a5a'], [1, '#141432']], 30, 62);
+        starShape(g, 61, 116, 12 + Math.sin(t * 4) * 2, '#ffd040');
+        lighter(g, () => glow(g, 61, 116, 40, '#ffe080', 0.25));
+        G.drawBust(g, X.look, 160, 66, 1.9);
+        rect(g, '#3a2a24', 120, 186, 200, 54); rect(g, '#4a362e', 120, 186, 200, 5);
+        rect(g, '#f2eee0', 124, 150, 150, 70); rect(g, '#d8d4c8', 124, 150, 150, 3);
+        caption(g, 'РЕМОНТ: 500', 132, 158, { size: 18, col: '#3a3a44', shadow: false });
+        const k = seg(t, 1.0, 1.6);
+        if (k > 0) line(g, '#d83a3a', 4, 130, 172, 130 + 136 * k, 166);
+        if (t > 1.8) caption(g, 'ОПЛАЧЕНО. Н.', 132, 188, { size: 18, col: rgba('#c8287a', seg(t, 1.8, 2.2)), shadow: false });
+        rect(g, '#c8b49a', 284, 168, 26, 32); rect(g, '#e8d8c0', 284, 168, 26, 5); rect(g, '#7a4a2a', 288, 176, 18, 14);
+        for (let i = 0; i < 3; i++) { const y = 160 - ((t * 20 + i * 9) % 26); lighter(g, () => ell(g, 'rgba(220,230,255,0.35)', 293 + i * 4 + Math.sin(t * 3 + i) * 3, y, 3, 4)); }
+      }
+    }
+  ];
+
   const VIG = (() => {
     const v = new Float32Array(TW * TH);
     for (let y = 0; y < TH; y++) for (let x = 0; x < TW; x++) {

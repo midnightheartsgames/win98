@@ -112,7 +112,7 @@
   Object.assign(H.Battle.prototype, {
     inabaStart() {
       for (const a of this.allies) {
-        if (a.charId === 'chie') a.buffs.push({ s: 'critR', v: T.chieCrit, turns: 999, name: 'Колесница' });
+        if (a.charId === 'chie') a.buffs.push({ s: 'critR', v: Math.round(T.chieCrit * (this.traceTalent ? this.traceTalent(a) : 1) * 1000) / 1000, turns: 999, name: 'Колесница' });
         if (a.charId === 'yu') { a.flags.bond = true; a.flags.wild = {}; this.setPersona(a, a.flags.skillSel | 0, true); }
         if (a.charId === 'yosuke') a.flags.strike = true;
       }
@@ -166,7 +166,8 @@
         }
         case 'analyze': {
           const list = f.all ? this.living : R.main ? [R.main] : [];
-          for (const t of list) this.analyze(src, t, f.turns || T.analyzeTurns);
+          const longer = actor.charId === 'rise' ? (this.kitFx && this.kitFx(actor, 'analyzeLong')) || 0 : 0;
+          for (const t of list) this.analyze(src, t, (f.turns || T.analyzeTurns) + longer);
           break;
         }
         case 'wave':
@@ -174,7 +175,7 @@
           break;
         case 'execute': {
           const t = R.main;
-          if (!t || !alive(t) || t.side !== 'enemy' || t.data.boss || t.data.elite || t.hp > t.maxHp * f.v) break;
+          if (!t || !alive(t) || t.side !== 'enemy' || t.data.boss || t.data.elite || t.hp > t.maxHp * (f.v + ((this.kitFx && this.kitFx(actor, 'executeUp')) || 0))) break;
           this.push({ t: 'status', u: t, text: 'Нокаут!', col: '#bfe8ff', debuff: true });
           this.hit(src, t, 0, { raw: t.hp + t.shield, e: src.elem, label: 'Галактический пинок' });
           hitSet.add(t);
@@ -196,7 +197,7 @@
     inabaDmg(src, tgt, o) {
       let v = 0;
       const stitched = tgt.side === 'enemy' && !!this.stitchPartner(tgt);
-      if (stitched && src.charId === 'kanji') v += T.kanjiVsStitch;
+      if (stitched && src.charId === 'kanji') v += T.kanjiVsStitch * (this.traceTalent ? this.traceTalent(src) : 1);
       if (stitched) v += 0.2 * cf(src, 'thread');
       const tr = cf(src, 'truth');
       if (tr) v += o.kind === 'aoa' ? 0.3 * tr : src.flags.oneMore ? 0.24 * tr : 0;
@@ -222,6 +223,7 @@
           const before = this.sp;
           this.sp = Math.min(T.spMax, this.sp + T.wildSp);
           if (this.sp > before) this.push({ t: 'status', u: src, text: 'Дикая карта: очко навыка', col: '#ffe080' });
+          if (this.kitFx) this.kitFx(src, 'wildBreak');
         }
       }
       const y = this.allies.find(a => a.charId === 'yosuke' && alive(a) && a !== src && a.flags.strike);
@@ -243,8 +245,9 @@
       const prev = this.acting;
       this.acting = y;
       this.push({ t: 'act', u: y, name: 'Атака Ёсуке', kind: 'follow' });
-      this.hit(y, t, T.yosukeStrike, { e: 'wind', tough: 10, kind: 'follow', alwaysCrit: true, label: 'Атака Ёсуке' });
+      this.hit(y, t, T.yosukeStrike * (this.traceTalent ? this.traceTalent(y) : 1), { e: 'wind', tough: 10, kind: 'follow', alwaysCrit: true, label: 'Атака Ёсуке' });
       this.gainEnergy(y, 10);
+      if (this.kitFx && alive(y)) this.kitFx(y, 'strikeHit', t);
       if (this.su) this.bless('follow', { u: y, hits: [t] });
       this.acting = prev;
       this.cleanup();
@@ -260,8 +263,9 @@
       }
       if (!p || !alive(p)) { this.push({ t: 'status', u: t, text: 'Не с кем сшить', debuff: true }); return false; }
       if (kj.flags.stitch) this.unstitch(kj, true);
-      kj.flags.stitch = { a: t, b: p, turns: T.stitchTurns + (this.current === kj ? 1 : 0) };
+      kj.flags.stitch = { a: t, b: p, turns: T.stitchTurns + ((this.kitFx && this.kitFx(kj, 'stitchLong')) || 0) + (this.current === kj ? 1 : 0) };
       this.push({ t: 'stitch', u: kj, a: t, b: p, text: 'Стежок' });
+      if (this.kitFx) this.kitFx(kj, 'stitched', t, p);
       return true;
     },
 
@@ -284,7 +288,8 @@
       const p = this.stitchPartner(tgt);
       if (!p || dealt <= 0) return;
       const full = o.kind === 'ult' && src.charId === 'kanji';
-      this.hit(src, p, 0, { raw: dealt * (full ? T.stitchUlt : T.stitchDmg), e: o.e || src.elem, echo: true, tough: o.tough ? o.tough * T.stitchTough : 0, anyTough: true, label: 'Стежок' });
+      const kj = this.allies.find(a => a.charId === 'kanji' && a.flags.stitch);
+      this.hit(src, p, 0, { raw: dealt * (full ? T.stitchUlt : T.stitchDmg + ((kj && (this.kitFx && this.kitFx(kj, 'stitchUp'))) || 0)), e: o.e || src.elem, echo: true, tough: o.tough ? o.tough * T.stitchTough : 0, anyTough: true, label: 'Стежок' });
     },
 
     analyzed(t) { return !!t && t.buffs.some(b => b.name === ANALYZED); },
@@ -297,6 +302,7 @@
       this.planNext(t);
       const af = cf(src, 'affection');
       if (af) for (const a of this.livingAllies) this.addBuff(a, { s: 'dmgP', v: 0.16 * af, turns: 2, name: 'Твоя привязанность' }, a !== src);
+      if (this.kitFx && src.charId === 'rise') this.kitFx(src, 'analyzedFoe', t, turns);
     },
 
     planNext(u) {
@@ -318,15 +324,19 @@
       else if (charged || u.lockTarget) list = u.lockTarget && alive(u.lockTarget) ? [u.lockTarget] : this.livingAllies;
       if (!list.length) return;
       this.push({ t: 'warn', u: rise, foe: u, text: 'Рисе: Осторожно!' });
-      for (const a of list) this.giveShield(a, a.maxHp * T.riseWarn, 1);
+      for (const a of list) this.giveShield(a, a.maxHp * T.riseWarn * (this.traceTalent ? this.traceTalent(rise) : 1), 1);
+      if (this.kitFx) this.kitFx(rise, 'warned', list);
     },
 
     burnHeal() {
       const yk = this.allies.find(a => a.charId === 'yukiko' && alive(a));
       const list = this.livingAllies;
       if (!yk || !list.length) return;
+      const amt = yk.maxHp * T.yukikoBurnHeal * (this.traceTalent ? this.traceTalent(yk) : 1);
+      const all = this.kitFx && this.kitFx(yk, 'burnHealAll');
       const low = list.reduce((a, b) => (b.hp / b.maxHp < a.hp / a.maxHp ? b : a));
-      if (low.hp < low.maxHp) this.heal(yk, low, yk.maxHp * T.yukikoBurnHeal);
+      for (const a of all ? list : [low]) if (a.hp < a.maxHp) this.heal(yk, a, amt);
+      if (this.kitFx) this.kitFx(yk, 'burnTick');
     },
 
     aoaReady() {
@@ -343,7 +353,8 @@
       this.actKind = 'aoa';
       this.hitThisAction = new Set();
       const team = this.livingAllies;
-      const bonus = team.some(a => a.charId === 'yu') ? T.aoaYu : 0;
+      const yu = team.find(a => a.charId === 'yu');
+      const bonus = yu ? T.aoaYu * (this.traceTalent ? this.traceTalent(yu) : 1) + ((this.kitFx && this.kitFx(yu, 'aoaUp')) || 0) : 0;
       this.push({ t: 'aoa', u, team: team.slice(), foes: this.living.slice() });
       for (const e of this.living.slice()) for (const a of team) if (alive(e) && alive(a)) this.hit(a, e, T.aoaAtk, { e: a.elem, kind: 'aoa', label: 'Атака всем отрядом', extraBonus: bonus });
       this.aoaN = (this.aoaN || 0) + 1;

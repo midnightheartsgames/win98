@@ -20,8 +20,16 @@ class AppDialogs {
       themeId: 'classic',
       themeGrad: 'linear-gradient(90deg, #000080, #1084d0)',
       crtEnabled: true,
+      largeIcons: false,
+      iconColors: true,
+      animateUi: true,
+      fontSmoothing: true,
+      fullDrag: true,
+      desktopIcons: {},
       screensaverMode: 'pipes',
-      screensaverTimeout: 3
+      screensaverTimeout: 3,
+      colorDepth: '32bit',
+      resolution: '1024x768'
     };
   }
 
@@ -240,6 +248,18 @@ class AppDialogs {
       }
     }
 
+    this.setBodyFlag('fx-low-color', !s.iconColors);
+    this.setBodyFlag('fx-animate', s.animateUi);
+    this.setBodyFlag('fx-aliased-text', !s.fontSmoothing);
+    this.setBodyFlag('fx-outline-drag', !s.fullDrag);
+    this.setBodyFlag('display-16color', s.colorDepth === '16color');
+    this.setBodyFlag('display-256color', s.colorDepth === '256color');
+    if (window.desktop && typeof window.desktop.applyIconSettings === 'function') {
+      window.desktop.applyIconSettings(s.largeIcons, s.desktopIcons);
+    } else {
+      this.setBodyFlag('fx-large-icons', s.largeIcons);
+    }
+
     if (window.appScreensaver) {
       if (typeof window.appScreensaver.applyConfig === 'function') {
         window.appScreensaver.applyConfig(s.screensaverMode, s.screensaverTimeout);
@@ -250,6 +270,12 @@ class AppDialogs {
     }
   }
 
+  setBodyFlag(className, on) {
+    if (!document.body || !document.body.classList) return;
+    if (on) document.body.classList.add(className);
+    else document.body.classList.remove(className);
+  }
+
   applySavedDisplaySettings() {
     const settings = this.getDisplaySettings();
     this.applyDisplaySettings(settings);
@@ -257,11 +283,43 @@ class AppDialogs {
   }
 
   toggleCrt() {
-    const current = this.getDisplaySettings();
-    const nextVal = !current.crtEnabled;
-    const updated = this.saveDisplaySettings({ crtEnabled: nextVal });
-    this.applyDisplaySettings(updated);
+    const nextVal = !this.getDisplaySettings().crtEnabled;
+    this.setDisplayEffects({ crtEnabled: nextVal }, 'tray');
     return nextVal;
+  }
+
+  setDisplayEffects(patch, source) {
+    const before = this.getDisplaySettings();
+    const updated = this.saveDisplaySettings(patch);
+    this.applyDisplaySettings(updated);
+    if (typeof this.syncDisplayProps === 'function') this.syncDisplayProps(patch);
+    if (source !== 'clippy') this.notifyDisplayEffects(before, updated, source);
+    return updated;
+  }
+
+  changedDisplayEffects(before, after) {
+    const flags = {};
+    ['largeIcons', 'iconColors', 'animateUi', 'fontSmoothing', 'fullDrag', 'crtEnabled'].forEach(key => {
+      if (Boolean(before[key]) !== Boolean(after[key])) flags[key] = Boolean(after[key]);
+    });
+    const oldIcons = before.desktopIcons || {};
+    const newIcons = after.desktopIcons || {};
+    const icons = Array.from(new Set(Object.keys(oldIcons).concat(Object.keys(newIcons))))
+      .filter(slot => oldIcons[slot] !== newIcons[slot])
+      .map(slot => ({ slot, icon: newIcons[slot] || null, previous: oldIcons[slot] || null }));
+    const values = {};
+    if ((before.colorDepth || '32bit') !== (after.colorDepth || '32bit')) {
+      values.colorDepth = { from: before.colorDepth || '32bit', to: after.colorDepth || '32bit' };
+    }
+    return { flags, icons, values };
+  }
+
+  notifyDisplayEffects(before, after, source) {
+    const changes = this.changedDisplayEffects(before, after);
+    if (!Object.keys(changes.flags).length && !changes.icons.length && !Object.keys(changes.values).length) return;
+    if (window.appClippy && typeof window.appClippy.onDisplayEffectsChanged === 'function') {
+      window.appClippy.onDisplayEffectsChanged(changes, source);
+    }
   }
 
   openAboutWindows() {
@@ -314,7 +372,7 @@ class AppDialogs {
     const icon = (name) => Icons[name] || '';
 
     const books = [
-      { id: 'intro', title: L('Знакомство с Win 98', 'Introducing Win 98'), topics: ['welcome', 'whatsnew', 'about'] },
+      { id: 'intro', title: L('Знакомство с Win 98', 'Introducing Win 98'), topics: ['welcome', 'whatsnew', 'clippy', 'about'] },
       { id: 'basics', title: L('Основы работы', 'Exploring Your Computer'), topics: ['desktop', 'startmenu', 'explorer', 'shortcuts'] },
       { id: 'programs', title: L('Программы', 'Using Programs'), topics: ['apps', 'multimedia', 'internet'] },
       { id: 'settings', title: L('Настройка компьютера', 'Customizing Your Computer'), topics: ['cpanel'] },
@@ -323,19 +381,20 @@ class AppDialogs {
 
     const titles = {
       welcome: L('Добро пожаловать', 'Welcome'),
-      whatsnew: L('Что нового в интерфейсе', 'What’s New in the Interface'),
+      whatsnew: L('Что нового в системе', 'What’s New in the System'),
+      clippy: L('Помощник Скрепыш', 'Clippy the Office Assistant'),
       about: L('О системе Win 98 SE', 'About Win 98 SE'),
       desktop: L('Рабочий стол и окна', 'The Desktop and Windows'),
       startmenu: L('Меню «Пуск» и панель задач', 'The Start Menu and Taskbar'),
-      explorer: L('Мой компьютер и Проводник', 'My Computer and Explorer'),
+      explorer: L('Мой компьютер, Проводник и поиск', 'My Computer, Explorer, and Find'),
       shortcuts: L('Сочетания клавиш', 'Keyboard Shortcuts'),
-      apps: L('Стандартные программы', 'Accessories'),
-      multimedia: L('Мультимедиа и звук', 'Multimedia and Sound'),
-      internet: L('Интернет и связь', 'Internet and Communications'),
+      apps: L('Стандартные и прикладные программы', 'Accessories and Applications'),
+      multimedia: L('Мультимедиа, звук и видео', 'Multimedia, Sound, and Video'),
+      internet: L('Интернет, почта и связь', 'Internet, Mail, and Communications'),
       cpanel: L('Панель управления', 'Control Panel'),
-      system: L('Служебные программы', 'System Tools'),
-      run: L('Команда «Выполнить» и MS-DOS', 'The Run Command and MS-DOS'),
-      troubleshooting: L('Устранение неполадок', 'Troubleshooting')
+      system: L('Служебные программы и диагностика', 'System Tools and Diagnostics'),
+      run: L('Команда «Выполнить» и сеанс MS-DOS', 'The Run Command and MS-DOS Prompt'),
+      troubleshooting: L('Устранение неполадок и BIOS', 'Troubleshooting and BIOS')
     };
 
     const shortcut = (target, text) => `<p class="win-help-shortcut-row"><button class="win-help-shortcut" data-run="${target}" title="${L('Открыть', 'Open')}">${icon('shortcut-overlay')}</button><span>${text}</span></p>`;
@@ -347,354 +406,510 @@ class AppDialogs {
     const helpTopics = [
       {
         id: 'welcome',
-        keywords: L('добро пожаловать, обзор, начало, справка, книга', 'welcome, overview, start, help, book'),
+        keywords: L('добро пожаловать, обзор, начало, справка, книга, путеводитель, содержание, указатель, поиск', 'welcome, overview, start, help, book, guide, contents, index, search'),
         content: `
-          <h2>${L('Добро пожаловать в Win 98 Second Edition', 'Welcome to Win 98 Second Edition')}</h2>
-          <p>${L('Эта справка описывает работу с рабочим столом, окнами, меню «Пуск», Проводником, стандартными программами и настройками системы.', 'This Help describes how to use the desktop, windows, the Start menu, Explorer, the accessories, and system settings.')}</p>
+          <h2>${L('Добро пожаловать в Microslop Win 98 Second Edition', 'Welcome to Microslop Win 98 Second Edition')}</h2>
+          <p>${L('Эта справка описывает устройство системы в её текущем состоянии: рабочий стол и окна, меню «Пуск» и панель задач, Проводник и поиск файлов, все десять значков Панели управления, стандартные и прикладные программы, мультимедиа, Интернет, служебные утилиты, сеанс MS-DOS, помощника Скрепыша и настройку BIOS.', 'This Help describes the system in its current state: the desktop and windows, the Start menu and taskbar, Explorer and file search, all ten Control Panel applets, accessories and applications, multimedia, Internet tools, system utilities, the MS-DOS Prompt, Clippy the Office Assistant, and BIOS Setup.')}</p>
           <h3>${L('Как пользоваться справкой', 'How to use Help')}</h3>
           <ol>
-            <li>${L('На вкладке <b>Содержание</b> щелкните книгу, чтобы открыть список разделов.', 'On the <b>Contents</b> tab, click a book to see its topics.')}</li>
-            <li>${L('Щелкните раздел со значком', 'Click a topic marked with')} ${glyph('help-page')}${L(', чтобы прочитать его.', ' to read it.')}</li>
-            <li>${L('На вкладке <b>Указатель</b> введите первые буквы слова, на вкладке <b>Поиск</b> — любое слово из текста.', 'On the <b>Index</b> tab, type the first letters of a word. On the <b>Search</b> tab, type any word from the text.')}</li>
+            <li>${L('На вкладке <b>Содержание</b> щелкните книгу, чтобы раскрыть список её разделов.', 'On the <b>Contents</b> tab, click a book to expand its list of topics.')}</li>
+            <li>${L('Щелкните раздел со значком', 'Click a topic marked with')} ${glyph('help-page')}${L(', чтобы открыть статью справа.', ' to read the article in the right pane.')}</li>
+            <li>${L('На вкладке <b>Указатель</b> введите первые буквы термина или названия программы и нажмите <b>Показать</b> (или дважды щелкните строку в списке).', 'On the <b>Index</b> tab, type the first letters of a term or program name and click <b>Display</b> (or double-click an entry).')}</li>
+            <li>${L('На вкладке <b>Поиск</b> введите любое слово и нажмите <b>Разделы</b> — справка найдет все статьи, где встречается этот запрос.', 'On the <b>Search</b> tab, type any word and click <b>List Topics</b> to find every article containing that term.')}</li>
+            <li>${L('Кнопки со стрелкой', 'Buttons marked with')} ${glyph('shortcut-overlay')} ${L('внутри статей сразу запускают нужную программу или окно настроек.', 'inside articles open the corresponding program or settings dialog right away.')}</li>
           </ol>
-          ${shortcut('winver', L('Щелкните здесь, чтобы узнать версию системы.', 'Click here to see the system version.'))}
+          ${shortcut('winver', L('Щелкните здесь, чтобы открыть сведения о версии системы.', 'Click here to open the system version dialog.'))}
+          ${shortcut('control', L('Щелкните здесь, чтобы открыть Панель управления.', 'Click here to open Control Panel.'))}
           ${note([
-            L('Кнопки <b>Назад</b> и <b>Вперед</b> на панели инструментов возвращают к просмотренным разделам.', 'The <b>Back</b> and <b>Forward</b> buttons return to topics you have already viewed.'),
-            L('Кнопка <b>Скрыть</b> убирает левую панель, чтобы освободить место для текста.', 'The <b>Hide</b> button removes the left pane to make room for the text.'),
-            L('Нажмите ' + key('F1') + ' на рабочем столе: помощник Скрепыш спросит, что вы хотите сделать. Если помощник выключен, ' + key('F1') + ' открывает эту справку.', 'Press ' + key('F1') + ' on the desktop and the Office Assistant asks what you would like to do. When the assistant is turned off, ' + key('F1') + ' opens this Help.')
+            L('Кнопки <b>Назад</b> и <b>Вперед</b> на панели инструментов возвращают к просмотренным разделам, а кнопка <b>Домой</b> открывает эту страницу.', 'The <b>Back</b> and <b>Forward</b> buttons move through topics you have already viewed, and <b>Home</b> returns to this page.'),
+            L('Кнопка <b>Скрыть</b> убирает левую панель навигации, чтобы освободить место для текста; кнопка <b>Показать</b> возвращает её.', 'The <b>Hide</b> button removes the left navigation pane to make room for text; <b>Show</b> brings it back.'),
+            L('Нажмите ' + key('F1') + ' на рабочем столе: помощник Скрепыш откроет поиск по вопросам на естественном языке. Если помощник скрыт или отключен, ' + key('F1') + ' открывает эту справку.', 'Press ' + key('F1') + ' on the desktop and Clippy the Office Assistant opens a natural-language question search. When the assistant is hidden or turned off, ' + key('F1') + ' opens this Help.')
           ])}
-          ${related('whatsnew', 'desktop', 'startmenu')}
+          ${related('whatsnew', 'clippy', 'cpanel', 'desktop')}
         `
       },
       {
         id: 'whatsnew',
-        keywords: L('новое, обновление, значки, быстрый запуск, подсказки, клавиатура, выделение, ярлык, часы', 'new, update, icons, quick launch, tooltips, keyboard, selection, shortcut, clock'),
+        keywords: L('новое, обновление, значки, быстрый запуск, подсказки, клавиатура, выделение, ярлык, часы, мышь, электропитание, темы, эффекты, панель задач, bios, игры, steam', 'new, update, icons, quick launch, tooltips, keyboard, selection, shortcut, clock, mouse, power, themes, effects, taskbar, bios, games, steam'),
         content: `
           <h2>${titles.whatsnew}</h2>
-          <p>${L('Оформление оболочки приведено к виду оригинальной Win 98.', 'The shell now follows the look of the original Win 98.')}</p>
-          <h3>${L('Значки и оформление', 'Icons and appearance')}</h3>
+          <p>${L('Оболочка, Панель управления и системные службы приведены к виду и поведению Microslop Win 98 Second Edition.', 'The shell, Control Panel, and system services match the look and behavior of Microslop Win 98 Second Edition.')}</p>
+          <h3>${L('Панель управления и настройка системы', 'Control Panel and system customization')}</h3>
           <ul>
-            <li>${L('Системные значки нарисованы попиксельно в палитре Win 98 и имеют отдельные варианты 32×32 и 16×16.', 'System icons are drawn pixel by pixel in the Win 98 palette, with separate 32×32 and 16×16 versions.')}</li>
-            <li>${L('Ярлыки программ на рабочем столе отмечены стрелкой', 'Program shortcuts on the desktop carry the arrow')} ${glyph('shortcut-overlay')}.</li>
-            <li>${L('Выделенный значок закрашивается синей сеткой, как в оригинале.', 'A selected icon is covered with a blue dither pattern, as in the original.')}</li>
-            <li>${L('Кнопки заголовка, флажки, переключатели, списки и полосы прокрутки получили оригинальную форму.', 'Title bar buttons, check boxes, option buttons, lists, and scroll bars have their original shapes.')}</li>
-            <li>${L('Всплывающие подсказки показываются на светло-желтом фоне.', 'Tooltips appear on a pale yellow background.')}</li>
+            <li>${L('<b>Мышь (main.cpl)</b> — переключение кнопок для правши и левши, настройка скорости двойного щелчка с проверкой на шкатулке с клоуном, отключение щелчков мыши (со спасением от Скрепыша), выбор схем указателей (включая «3D-бронза», «Динозаврик» и «Инверсная»), скорость движения и шлейф за курсором.', '<b>Mouse (main.cpl)</b> — right-handed and left-handed button swap, double-click speed slider with a jack-in-the-box test area, click-disabling checkbox (with automatic rescue by Clippy), pointer schemes (including 3D Bronze, Dinosaur, and Inverted), pointer speed, and pointer trails.')}</li>
+            <li>${L('<b>Экран (desk.cpl)</b> — пять вкладок: «Фон» (обои и загрузка своей картинки), «Заставка» (3D-трубы, звездное небо, причуды, геометрический вальс и скачанные хранители), «Оформление» (8 цветовых схем и палитра рабочего стола), «Эффекты» (смена значков рабочего стола, крупные и 16-цветные значки, анимация окон, сглаживание шрифтов, перетаскивание рамкой, ЭЛТ-полосы) и «Темы» (Microslop Plus! 98).', '<b>Display (desk.cpl)</b> — five tabs: Background (wallpapers and custom images), Screen Saver (3D Pipes, Starfield, Mystify, Beziers, and downloaded savers), Appearance (8 color schemes and desktop color picker), Effects (custom desktop icons, large and 16-color icons, window animation, font smoothing, outline dragging, CRT scanlines), and Themes (Microslop Plus! 98).')}</li>
+            <li>${L('<b>Система (sysdm.cpl)</b> — сведения о процессоре и ОЗУ из BIOS, Диспетчер устройств с деревом оборудования (3dfx Voodoo2, S3 Trio64V2/DX, Sound Blaster AWE64 Gold, CD-ROM Toshiba) и вкладка «Быстродействие» с настройками файловой системы, аппаратного ускорения графики и виртуальной памяти (WIN386.SWP).', '<b>System (sysdm.cpl)</b> — CPU and RAM data from BIOS, Device Manager hardware tree (3dfx Voodoo2, S3 Trio64V2/DX, Sound Blaster AWE64 Gold, Toshiba CD-ROM), and Performance tab with File System, Graphics hardware acceleration, and Virtual Memory (WIN386.SWP) settings.')}</li>
+            <li>${L('<b>Электропитание (powercfg.cpl)</b> — схемы энергосбережения Energy Star, таймеры отключения монитора и остановки жестких дисков, сохранение своих схем и значок питания в области уведомлений.', '<b>Power Management (powercfg.cpl)</b> — Energy Star power schemes, monitor standby and hard disk spin-down timers, custom scheme saving, and a notification area power icon.')}</li>
+            <li>${L('<b>Установка и удаление программ (appwiz.cpl)</b> — удаление программ и игр, мастер установки с компакт-диска D: и папки Downloads, выбор компонентов Win 98 и запись загрузочной дискеты A:.', '<b>Add/Remove Programs (appwiz.cpl)</b> — program and game uninstallation, installation wizard scanning CD drive D: and Downloads, Win 98 component selection, and Startup Disk creation on drive A:.')}</li>
+            <li>${L('<b>Панель задач и меню «Пуск»</b> — автоскрытие панели задач, мелкие значки в меню «Пуск», показ часов, мастер добавления и удаления ярлыков программ и очистка журнала документов.', '<b>Taskbar & Start Menu</b> — taskbar auto-hide, small Start menu icons, clock toggle, wizard for adding or removing program shortcuts, and recent documents cleanup.')}</li>
           </ul>
-          <h3>${L('Панель задач и меню «Пуск»', 'Taskbar and Start menu')}</h3>
+          <h3>${L('Рабочий стол, Проводник и аппаратная часть', 'Desktop, Explorer, and hardware simulation')}</h3>
           <ul>
-            <li>${L('Панель <b>Быстрый запуск</b>: «Показать рабочий стол», Internet Explorer и Outlook Express.', 'The <b>Quick Launch</b> toolbar: Show Desktop, Internet Explorer, and Outlook Express.')}</li>
-            <li>${L('Меню «Пуск» показывает крупные значки и управляется с клавиатуры: стрелки, ' + key('Enter') + ', ' + key('Esc') + ' и подчеркнутые буквы.', 'The Start menu shows large icons and works from the keyboard: arrows, ' + key('Enter') + ', ' + key('Esc') + ', and underlined letters.')}</li>
-            <li>${L('Длинные подменю не уходят за край экрана и делятся на столбцы.', 'Long submenus stay on screen and split into columns.')}</li>
-            <li>${L('Часы показывают время в формате страны, а при наведении — полную дату.', 'The clock uses your language’s time format and shows the full date when you point to it.')}</li>
+            <li>${L('Системные значки отрисованы попиксельно в палитре Win 98 отдельно для размеров 32×32 и 16×16; выделенный значок покрывается синей сеткой, а ярлыки отмечены стрелкой', 'System icons are drawn pixel by pixel in the Win 98 palette with separate 32×32 and 16×16 versions; selected icons use a blue dither pattern and shortcuts carry the arrow')} ${glyph('shortcut-overlay')}.</li>
+            <li>${L('Проводник снабжен крупными кнопками с подписями, адресной строкой и левой панелью с круговой диаграммой занятого и свободного места на диске C:.', 'Explorer has large labeled toolbar buttons, an address bar, and a left description pane with a pie chart of used and free space on drive C:.')}</li>
+            <li>${L('При загрузке и перезагрузке доступен <b>CMOS Setup Utility (BIOS)</b>: настройка частоты шины и множителя CPU, объема памяти, порядка загрузки (A:, C:, CD-ROM) и проверка POST.', 'During startup or restart you can enter the <b>CMOS Setup Utility (BIOS)</b> to configure CPU bus clock and multiplier, RAM size, boot sequence (A:, C:, CD-ROM), and POST checks.')}</li>
+            <li>${L('Игры распространяются через каталог <b>Steam</b> (скачивается с <code>www.steampowered.com</code> в Internet Explorer), демоверсии доступны на компакт-диске «Игромании» (D:), а бесплатную <b>Honkai: Star Rail 98</b> можно скачать также с официального сайта <code>hsr.hoyoverse.com</code>.', 'Games are distributed through the <b>Steam</b> client (downloaded from <code>www.steampowered.com</code> in Internet Explorer), playable demos reside on the Igromania CD (D:), and free-to-play <b>Honkai: Star Rail 98</b> can also be downloaded from its official site <code>hsr.hoyoverse.com</code>.')}</li>
           </ul>
-          <h3>${L('Окна и Проводник', 'Windows and Explorer')}</h3>
+          ${related('cpanel', 'desktop', 'startmenu', 'explorer')}
+        `
+      },
+      {
+        id: 'clippy',
+        keywords: L('скрепыш, помощник, скрепка, clippy, совет, вопрос, мастер писем, шеф идет, викторина, гардероб, параметры помощника, f1', 'clippy, assistant, paperclip, tip, question, letter wizard, boss key, quiz, wardrobe, assistant options, f1'),
+        content: `
+          <h2>${titles.clippy}</h2>
+          <p>${L('Интерактивный помощник <b>Скрепыш</b> (Microslop Agent, <code>clippy.exe</code>) живет в правом нижнем углу экрана и в области уведомлений. Он отвечает на вопросы по системе, дает контекстные советы по активному окну и помогает составлять документы.', '<b>Clippy</b> the Office Assistant (Microslop Agent, <code>clippy.exe</code>) lives in the bottom-right corner of the screen and in the notification area. He answers questions about the system, gives context-sensitive tips for the active window, and helps draft documents.')}</p>
+          <h3>${L('Возможности Скрепыша', 'What Clippy can do')}</h3>
           <ul>
-            <li>${L('Двойной щелчок по заголовку разворачивает окно, щелчок по значку окна открывает системное меню.', 'Double-click a title bar to maximize the window. Click the window icon to open the system menu.')}</li>
-            <li>${L('В окнах сообщений работают ' + key('Enter') + ' (кнопка по умолчанию) и ' + key('Esc') + ' (отмена).', 'Message boxes respond to ' + key('Enter') + ' (default button) and ' + key('Esc') + ' (cancel).')}</li>
-            <li>${L('У Проводника появились крупные кнопки с подписями, адресная строка со значком папки и панель описания с диаграммой диска.', 'Explorer has large labeled buttons, an address bar with a folder icon, and a description pane with a disk chart.')}</li>
+            <li>${L('<b>Поиск ответов (' + key('F1') + ')</b> — введите вопрос своими словами (например, «как сменить обои», «где скачанные файлы» или название игры), и Скрепыш покажет ответ с кнопкой быстрого запуска нужного окна.', '<b>Question search (' + key('F1') + ')</b> — type a question in plain words (such as how to change wallpaper, where downloads go, or a game title) and Clippy displays an answer with a one-click button to open the right tool.')}</li>
+            <li>${L('<b>Мастер писем</b> — задает три вопроса (кому, по какому поводу и в каком тоне) и автоматически печатает готовое заявление, объяснительную или письмо в Блокноте, WordPad или Outlook Express.', '<b>Letter Wizard</b> — asks three questions (recipient, subject, and tone) and drafts a ready-made letter or memo directly into Notepad, WordPad, or Outlook Express.')}</li>
+            <li>${L('<b>Кнопка «Шеф идёт!» (Boss Key)</b> — мгновенно сворачивает все запущенные игры и открывает строгий квартальный отчёт в Microslop Excel 97.', '<b>Boss Key</b> — immediately minimizes all running games and opens a quarterly financial spreadsheet in Microslop Excel 97.')}</li>
+            <li>${L('<b>Беседы, загадки и игры</b> — в меню «Поговорить» доступны компьютерные загадки, офисные байки, игра «Камень, ножницы, бумага» и «Ретро-Викторина 1998» из пяти вопросов с наградой в гардероб.', '<b>Chat, riddles, and mini-games</b> — the Talk menu offers computer riddles, office stories, Rock-Paper-Scissors, and the five-question 1998 Retro Quiz that unlocks a crown in his wardrobe.')}</li>
+            <li>${L('<b>Гардероб и Параметры</b> — на сайте <code>www.clippy98.com</code> скачиваются шляпы, очки, усы и галстуки; в «Параметрах помощника» настраиваются категории подсказок, режим тихой лампочки и коллекция персонажей.', '<b>Wardrobe and Options</b> — download hats, glasses, mustaches, and ties from <code>www.clippy98.com</code>; open Assistant Options to filter tip categories, switch to quiet lightbulb notifications, or browse the character gallery.')}</li>
           </ul>
-          ${related('desktop', 'startmenu', 'explorer')}
+          ${shortcut('clippy', L('Щелкните здесь, чтобы позвать Скрепыша.', 'Click here to summon Clippy.'))}
+          ${note([
+            L('Щелкните по Скрепышу правой кнопкой мыши или по значку скрепки в трее, чтобы открыть меню команд, параметров или спрятать помощника.', 'Right-click Clippy or click the paperclip icon in the notification area to open his command menu, change options, or hide him.'),
+            L('Полностью удалить или переустановить Скрепыша можно через «Установку и удаление программ» (пакет <b>Microslop Office 97 (Скрепыш)</b>).', 'You can remove or repair Clippy through Add/Remove Programs under <b>Microslop Office 97 (Clippy)</b>.')
+          ])}
+          ${related('welcome', 'apps', 'cpanel')}
         `
       },
       {
         id: 'about',
-        keywords: L('о системе, версия, winver, сведения, лицензия', 'about, version, winver, information, license'),
+        keywords: L('о системе, версия, winver, сведения, лицензия, сборка, 4.10.1998, процессор, память', 'about, version, winver, information, license, build, 4.10.1998, processor, memory'),
         content: `
           <h2>Microslop Win 98 Second Edition</h2>
-          <p><b>${L('Версия 4.10.1998 A', 'Version 4.10.1998 A')}</b></p>
-          <p>${L('Интерактивная реконструкция Win 98 SE: оконный менеджер, оболочка, звуки, стандартные и служебные программы.', 'An interactive reconstruction of Win 98 SE: the window manager, the shell, the sounds, the accessories, and the system tools.')}</p>
-          <p>${L('Интерфейс переводится на русский и английский язык. Переключите язык индикатором в области уведомлений.', 'The interface is available in Russian and English. Switch the language with the indicator in the notification area.')}</p>
-          ${shortcut('winver', L('Щелкните здесь, чтобы открыть окно «О программе».', 'Click here to open the About dialog.'))}
-          ${related('welcome', 'whatsnew')}
+          <p><b>${L('Версия 4.10.1998 A (Сборка 2222 A)', 'Version 4.10.1998 A (Build 2222 A)')}</b></p>
+          <p>${L('Интерактивная среда Microslop Win 98 SE воспроизводит оконный менеджер, файловую систему с дисками A:, C: и D:, Панель управления, стандартные и офисные программы, мультимедийный стек, модемное подключение, локальную сеть сайтов 1998 года, реестр, сеанс MS-DOS и настройку BIOS.', 'This interactive Microslop Win 98 SE environment reproduces the window manager, the virtual file system with drives A:, C:, and D:, Control Panel, accessories and office software, multimedia tools, dial-up networking, 1998 web sites, the Registry, the MS-DOS Prompt, and BIOS Setup.')}</p>
+          <p>${L('Интерфейс работает на русском и английском языках. Переключить язык можно индикатором в области уведомлений (<span class="win-help-lang">Ru</span> / <span class="win-help-lang">En</span>) или в апплете «Язык и стандарты» Панели управления.', 'The interface operates in Russian and English. Switch the language at any time with the indicator in the notification area (<span class="win-help-lang">Ru</span> / <span class="win-help-lang">En</span>) or in the Regional Settings applet of Control Panel.')}</p>
+          ${shortcut('winver', L('Щелкните здесь, чтобы открыть окно «О программе Win».', 'Click here to open the About Win dialog.'))}
+          ${shortcut('sysdm.cpl', L('Щелкните здесь, чтобы посмотреть сведения о системе и оборудовании.', 'Click here to view system and hardware properties.'))}
+          ${related('welcome', 'whatsnew', 'cpanel')}
         `
       },
       {
         id: 'desktop',
-        keywords: L('рабочий стол, окна, значки, ярлык, свернуть, развернуть, закрыть, системное меню, размер, перемещение, корзина, crt, обои', 'desktop, windows, icons, shortcut, minimize, maximize, close, system menu, resize, move, recycle bin, crt, wallpaper'),
+        keywords: L('рабочий стол, окна, значки, ярлык, свернуть, развернуть, закрыть, системное меню, размер, перемещение, корзина, crt, обои, восстановить, каскад', 'desktop, windows, icons, shortcut, minimize, maximize, close, system menu, resize, move, recycle bin, crt, wallpaper, restore, cascade'),
         content: `
           <h2>${titles.desktop}</h2>
-          <p>${L('Каждая программа открывается в отдельном окне. В строке заголовка находятся значок окна, его название и кнопки управления.', 'Every program opens in its own window. The title bar holds the window icon, its name, and the control buttons.')}</p>
+          <p>${L('Каждая программа открывается в собственном окне. В строке заголовка расположены значок программы, название окна и три кнопки управления.', 'Every program runs in its own window. The title bar holds the program icon, the window title, and three control buttons.')}</p>
           <table class="win-help-table">
-            <tr><td class="win-help-table-glyph"><span class="win-help-caption">${icon('cap-min')}</span></td><td>${L('<b>Свернуть</b> — скрывает окно. Кнопка программы остается на панели задач.', '<b>Minimize</b> hides the window. Its button stays on the taskbar.')}</td></tr>
-            <tr><td class="win-help-table-glyph"><span class="win-help-caption">${icon('cap-max')}</span></td><td>${L('<b>Развернуть</b> — растягивает окно на весь экран.', '<b>Maximize</b> fills the screen with the window.')}</td></tr>
-            <tr><td class="win-help-table-glyph"><span class="win-help-caption">${icon('cap-restore')}</span></td><td>${L('<b>Восстановить</b> — возвращает прежний размер развернутого окна.', '<b>Restore</b> returns a maximized window to its previous size.')}</td></tr>
-            <tr><td class="win-help-table-glyph"><span class="win-help-caption">${icon('cap-close')}</span></td><td>${L('<b>Закрыть</b> — завершает программу.', '<b>Close</b> quits the program.')}</td></tr>
+            <tr><td class="win-help-table-glyph"><span class="win-help-caption">${icon('cap-min')}</span></td><td>${L('<b>Свернуть</b> — убирает окно с экрана. Кнопка программы остается на панели задач.', '<b>Minimize</b> hides the window from the screen while keeping its button on the taskbar.')}</td></tr>
+            <tr><td class="win-help-table-glyph"><span class="win-help-caption">${icon('cap-max')}</span></td><td>${L('<b>Развернуть</b> — распахивает окно во весь экран до панели задач.', '<b>Maximize</b> expands the window to fill the screen above the taskbar.')}</td></tr>
+            <tr><td class="win-help-table-glyph"><span class="win-help-caption">${icon('cap-restore')}</span></td><td>${L('<b>Восстановить</b> — возвращает развернутому окну прежний размер и положение.', '<b>Restore</b> returns a maximized window to its previous size and position.')}</td></tr>
+            <tr><td class="win-help-table-glyph"><span class="win-help-caption">${icon('cap-close')}</span></td><td>${L('<b>Закрыть</b> — завершает работу с окном или программой.', '<b>Close</b> closes the window or quits the program.')}</td></tr>
           </table>
           <h3>${L('Как переместить окно или изменить его размер', 'To move or resize a window')}</h3>
           <ol>
             <li>${L('Чтобы переместить окно, перетащите его за строку заголовка.', 'To move a window, drag its title bar.')}</li>
-            <li>${L('Чтобы изменить размер, перетащите рамку или угол окна.', 'To resize it, drag a border or a corner.')}</li>
-            <li>${L('Дважды щелкните заголовок, чтобы развернуть окно или восстановить его размер.', 'Double-click the title bar to maximize the window or restore its size.')}</li>
+            <li>${L('Чтобы изменить размер, потяните за любую границу или угол окна.', 'To resize a window, drag any border or corner.')}</li>
+            <li>${L('Дважды щелкните заголовок, чтобы развернуть окно или вернуть ему прежний размер.', 'Double-click the title bar to maximize the window or restore its previous size.')}</li>
           </ol>
           <h3>${L('Системное меню окна', 'The window system menu')}</h3>
-          <p>${L('Щелкните значок в левом углу заголовка или щелкните заголовок правой кнопкой мыши. Меню содержит команды «Восстановить», «Свернуть», «Развернуть» и «Закрыть». Двойной щелчок по значку закрывает окно.', 'Click the icon at the left of the title bar, or right-click the title bar. The menu holds Restore, Minimize, Maximize, and Close. Double-clicking the icon closes the window.')}</p>
-          <h3>${L('Значки рабочего стола', 'Desktop icons')}</h3>
+          <p>${L('Щелкните значок в левом углу заголовка или щелкните заголовок правой кнопкой мыши. В меню доступны команды «Восстановить», «Переместить», «Размер», «Свернуть», «Развернуть» и «Закрыть». Двойной щелчок по значку в углу заголовка сразу закрывает окно.', 'Click the icon at the far left of the title bar, or right-click the title bar. The menu contains Restore, Move, Size, Minimize, Maximize, and Close. Double-clicking the title bar icon closes the window immediately.')}</p>
+          <h3>${L('Значки рабочего стола и Корзина', 'Desktop icons and the Recycle Bin')}</h3>
           <ul>
-            <li>${L('Щелкните значок, чтобы выделить его, и дважды щелкните, чтобы открыть.', 'Click an icon to select it. Double-click it to open it.')}</li>
-            <li>${L('Чтобы выделить несколько значков, обведите их рамкой или щелкайте, удерживая ' + key('Ctrl') + '.', 'To select several icons, drag a box around them or click them while holding ' + key('Ctrl') + '.')}</li>
-            <li>${L('Стрелка', 'The arrow')} ${glyph('shortcut-overlay')} ${L('означает ярлык: он запускает программу, но не является ею.', 'marks a shortcut. It starts a program but is not the program itself.')}</li>
-            <li>${L('Щелкните рабочий стол правой кнопкой, чтобы упорядочить значки, создать папку или открыть свойства экрана.', 'Right-click the desktop to arrange icons, create a folder, or open the display properties.')}</li>
-            <li>${L('Удаленные файлы попадают в', 'Deleted files go to the')} ${glyph('recycle-bin')} <b>${L('Корзину', 'Recycle Bin')}</b>. ${L('Чтобы очистить ее, щелкните значок корзины правой кнопкой.', 'To empty it, right-click the Recycle Bin icon.')}</li>
+            <li>${L('Щелкните значок один раз, чтобы выделить его; дважды щелкните, чтобы открыть программу или папку.', 'Click an icon once to select it; double-click it to open the program or folder.')}</li>
+            <li>${L('Чтобы выделить несколько значков, растяните вокруг них пунктирную рамку мышью или щелкайте по ним, удерживая ' + key('Ctrl') + '.', 'To select multiple icons, drag a selection rectangle around them or click them while holding ' + key('Ctrl') + '.')}</li>
+            <li>${L('Стрелка в углу значка', 'An arrow in the corner of an icon')} ${glyph('shortcut-overlay')} ${L('означает ярлык: его удаление не затрагивает саму программу.', 'indicates a shortcut; deleting the shortcut does not remove the program itself.')}</li>
+            <li>${L('Щелкните свободное место рабочего стола правой кнопкой мыши, чтобы упорядочить значки по имени или типу, обновить экран, создать папку или текстовый документ, вставить объект из буфера обмена или открыть «Свойства: Экран».', 'Right-click an empty area of the desktop to arrange icons by name or type, refresh the desktop, create a new folder or text document, paste from the clipboard, or open Display Properties.')}</li>
+            <li>${L('Удаленные файлы помещаются в', 'Deleted files are moved to the')} ${glyph('recycle-bin')} <b>${L('Корзину', 'Recycle Bin')}</b>. ${L('Откройте Корзину, чтобы восстановить нужный файл на прежнее место, или щелкните её значок правой кнопкой и выберите «Очистить корзину», чтобы освободить место на диске C:.', 'Open the Recycle Bin to restore individual files to their original folders, or right-click the Recycle Bin icon and choose Empty Recycle Bin to free space on drive C:.')}</li>
           </ul>
+          ${shortcut('desk.cpl', L('Щелкните здесь, чтобы открыть «Свойства: Экран».', 'Click here to open Display Properties.'))}
           ${note([
-            L('В окнах сообщений клавиша ' + key('Enter') + ' нажимает кнопку по умолчанию (с толстой черной рамкой), а ' + key('Esc') + ' отменяет действие.', 'In message boxes ' + key('Enter') + ' presses the default button (the one with a thick black border), and ' + key('Esc') + ' cancels.'),
-            L('Значок монитора в области уведомлений включает эффект ЭЛТ-монитора.', 'The monitor icon in the notification area turns the CRT monitor effect on or off.')
+            L('В диалоговых окнах клавиша ' + key('Enter') + ' нажимает выделенную кнопку по умолчанию, а ' + key('Esc') + ' закрывает окно без сохранения.', 'In dialog boxes, ' + key('Enter') + ' activates the default outlined button, and ' + key('Esc') + ' cancels and closes the dialog.'),
+            L('Если в «Свойствах экрана» на вкладке «Эффекты» снят флажок «Отображать содержимое окна при перетаскивании», при перемещении и изменении размера рисуется классическая пунктирная рамка.', 'When "Show window contents while dragging" is cleared on the Effects tab of Display Properties, moving or resizing a window draws a dotted outline frame.')
           ])}
-          ${related('startmenu', 'shortcuts', 'cpanel')}
+          ${related('startmenu', 'explorer', 'cpanel')}
         `
       },
       {
         id: 'startmenu',
-        keywords: L('пуск, меню, панель задач, быстрый запуск, показать рабочий стол, трей, часы, дата, громкость, язык, компакт-диск, завершение работы', 'start, menu, taskbar, quick launch, show desktop, tray, clock, date, volume, language, cd-rom, shut down'),
+        keywords: L('пуск, меню, панель задач, быстрый запуск, показать рабочий стол, трей, часы, дата, громкость, язык, компакт-диск, питание, скрепыш, овечка, завершение работы, свойства панели задач', 'start, menu, taskbar, quick launch, show desktop, tray, clock, date, volume, language, cd-rom, power, clippy, esheep, shut down, taskbar properties'),
         content: `
           <h2>${titles.startmenu}</h2>
-          <p>${L('Панель задач находится внизу экрана. Слева расположена кнопка', 'The taskbar runs along the bottom of the screen. At its left is the')} ${glyph('start-logo')} <b>${L('Пуск', 'Start')}</b>${L(', рядом — панель «Быстрый запуск», в середине — кнопки открытых окон, справа — область уведомлений и часы.', ' button, then the Quick Launch toolbar, the buttons of open windows, and at the right the notification area and the clock.')}</p>
-          <h3>${L('Меню «Пуск»', 'The Start menu')}</h3>
+          <p>${L('Панель задач расположена вдоль нижнего края экрана. Слева находится кнопка', 'The taskbar runs along the bottom of the screen. On the left is the')} ${glyph('start-logo')} <b>${L('Пуск', 'Start')}</b>${L(', за ней — панель «Быстрый запуск», кнопки всех открытых окон, а справа — область уведомлений (системный трей) и часы.', ' button, followed by the Quick Launch toolbar, buttons for open windows, and on the right the notification area (system tray) and clock.')}</p>
+          <h3>${L('Разделы меню «Пуск»', 'Start menu sections')}</h3>
           <ul>
-            <li>${glyph('programs')} <b>${L('Программы', 'Programs')}</b> — ${L('стандартные программы, игры и установленные приложения.', 'accessories, games, and installed programs.')}</li>
-            <li>${glyph('my-documents')} <b>${L('Документы', 'Documents')}</b> — ${L('папки «Мои документы», «Мои рисунки», «Моя музыка», «Мои видео» и «Загрузки».', 'the My Documents, My Pictures, My Music, My Videos, and Downloads folders.')}</li>
-            <li>${glyph('settings')} <b>${L('Настройка', 'Settings')}</b> — ${L('Панель управления, язык и свойства экрана.', 'Control Panel, language, and display properties.')}</li>
-            <li>${glyph('find')} <b>${L('Найти', 'Find')}</b>, ${glyph('help')} <b>${L('Справка', 'Help')}</b>, ${glyph('run')} <b>${L('Выполнить', 'Run')}</b> ${L('и', 'and')} ${glyph('shut-down')} <b>${L('Завершение работы', 'Shut Down')}</b>.</li>
+            <li>${glyph('programs')} <b>${L('Программы', 'Programs')}</b> — ${L('подменю «Стандартные» (включая «Развлечения», «Связь» и «Служебные»), «Игры», «Офис», «Интернет» и ярлыки установленных приложений.', 'submenus for Accessories (including Entertainment, Communications, and System Tools), Games, Office, Internet, and installed applications.')}</li>
+            <li>${glyph('my-documents')} <b>${L('Документы', 'Documents')}</b> — ${L('быстрый переход к папкам «Мои документы», «Мои рисунки», «Моя музыка», «Мои видео», «Загрузки» и списку недавно открывавшихся файлов.', 'quick access to My Documents, My Pictures, My Music, My Videos, Downloads, and recently opened files.')}</li>
+            <li>${glyph('settings')} <b>${L('Настройка', 'Settings')}</b> — ${L('«Панель управления» и «Панель задач и меню "Пуск"».', 'Control Panel and Taskbar & Start Menu properties.')}</li>
+            <li>${glyph('find')} <b>${L('Найти', 'Find')}</b> — ${L('поиск файлов и папок на диске C: по имени или части имени.', 'searches drive C: for files and folders by name.')}</li>
+            <li>${glyph('help')} <b>${L('Справка', 'Help')}</b>, ${glyph('run')} <b>${L('Выполнить...', 'Run...')}</b> ${L('и', 'and')} ${glyph('shut-down')} <b>${L('Завершение работы...', 'Shut Down...')}</b>.</li>
           </ul>
-          <h3>${L('Как открыть программу с клавиатуры', 'To open a program from the keyboard')}</h3>
-          <ol>
-            <li>${L('Нажмите ' + key('Ctrl+Esc') + ' или щелкните кнопку «Пуск».', 'Press ' + key('Ctrl+Esc') + ' or click Start.')}</li>
-            <li>${L('Выберите пункт клавишами ' + key('↑') + ' и ' + key('↓') + ' или нажмите его подчеркнутую букву.', 'Choose an item with ' + key('↑') + ' and ' + key('↓') + ', or press its underlined letter.')}</li>
-            <li>${L('Клавиша ' + key('→') + ' открывает подменю, ' + key('←') + ' возвращает назад, ' + key('Enter') + ' запускает программу, ' + key('Esc') + ' закрывает меню.', key('→') + ' opens a submenu, ' + key('←') + ' goes back, ' + key('Enter') + ' starts the program, and ' + key('Esc') + ' closes the menu.')}</li>
-          </ol>
-          <h3>${L('Быстрый запуск', 'Quick Launch')}</h3>
-          <p>${glyph('show-desktop')} <b>${L('Показать рабочий стол', 'Show Desktop')}</b> ${L('сворачивает все окна, повторный щелчок возвращает их. Кнопки', 'minimizes every window; click it again to bring them back. The')} ${glyph('internet-explorer')} ${L('и', 'and')} ${glyph('outlook')} ${L('запускают Internet Explorer и Outlook Express.', 'buttons start Internet Explorer and Outlook Express.')}</p>
-          <h3>${L('Кнопки окон', 'Window buttons')}</h3>
-          <p>${L('Щелчок по кнопке переключает окно, щелчок по кнопке активного окна сворачивает его. Щелкните кнопку правой кнопкой мыши, чтобы открыть системное меню окна. Щелкните свободное место панели правой кнопкой, чтобы расположить окна каскадом или свернуть все окна.', 'Click a button to switch to its window; click the active window’s button to minimize it. Right-click a button for the window’s system menu. Right-click an empty part of the taskbar to cascade, tile, or minimize all windows.')}</p>
-          <h3>${L('Область уведомлений', 'The notification area')}</h3>
+          <h3>${L('Панель «Быстрый запуск» и кнопки окон', 'Quick Launch and window buttons')}</h3>
+          <p>${glyph('show-desktop')} <b>${L('Показать рабочий стол', 'Show Desktop')}</b> ${L('одним щелчком сворачивает все открытые окна, а повторным возвращает их на место. Рядом расположены кнопки быстрого вызова', 'minimizes all open windows at once; click it again to restore them. Next to it are one-click buttons for')} ${glyph('internet-explorer')} <b>Internet Explorer</b> ${L('и', 'and')} ${glyph('outlook')} <b>Outlook Express</b>.</p>
+          <p>${L('Щелчок по кнопке окна на панели задач делает его активным, а щелчок по кнопке уже активного окна сворачивает его. Щелкните свободное место панели задач правой кнопкой мыши, чтобы расположить окна каскадом, сверху вниз, слева направо, свернуть все окна или открыть «Свойства: Панель задач и меню "Пуск"».', 'Click a window button on the taskbar to bring that window to the front; click the active window’s button to minimize it. Right-click an empty space on the taskbar to cascade windows, tile them horizontally or vertically, minimize all windows, or open Taskbar & Start Menu Properties.')}</p>
+          <h3>${L('Значки в области уведомлений', 'Notification area icons')}</h3>
           <ul>
-            <li><span class="win-help-lang">Ru</span> — ${L('язык системы: щелчок переключает русский и английский.', 'system language: click to switch between Russian and English.')}</li>
-            <li>${glyph('speaker')} — ${L('громкость: щелчок открывает регулятор, двойной щелчок — микшер.', 'volume: click for the slider, double-click for the mixer.')}</li>
-            <li>${glyph('monitor')} — ${L('эффект ЭЛТ-монитора.', 'the CRT monitor effect.')}</li>
-            <li>${glyph('drive-cd')} — ${L('дисковод компакт-дисков: вставить или извлечь диск «Игромании».', 'the CD-ROM drive: insert or eject the Igromania disc.')}</li>
-            <li>${L('Часы: наведите указатель, чтобы увидеть дату; дважды щелкните, чтобы настроить дату и время.', 'The clock: point to it to see the date; double-click it to set the date and time.')}</li>
+            <li><span class="win-help-lang">Ru</span> / <span class="win-help-lang">En</span> — ${L('переключение языка интерфейса между русским и английским.', 'switches the system language between Russian and English.')}</li>
+            <li>${glyph('speaker')} — ${L('одиночный щелчок открывает ползунок громкости и флажок «Выкл», двойной щелчок — полный микшер «Регулятор громкости».', 'single-click opens the volume popup slider and Mute box; double-click opens the full Volume Control mixer.')}</li>
+            <li>${glyph('monitor')} — ${L('включает и выключает эффект ЭЛТ-монитора (строчная развертка и свечение люминофора).', 'toggles the CRT monitor scanline and phosphor effect.')}</li>
+            <li>${glyph('drive-cd')} — ${L('управление приводом CD-ROM: вставить или извлечь компакт-диск журнала «Игромания» (диск D:).', 'inserts or ejects the Igromania magazine CD-ROM in drive D:.')}</li>
+            <li>${glyph('powercfg')} — ${L('индикатор электропитания (появляется, если включен в апплете «Электропитание»): позволяет быстро сменить схему питания, погасить монитор или остановить диски.', 'power meter icon (enabled in Power Management): switches power schemes, puts the monitor on standby, or spins down hard disks.')}</li>
+            <li>${L('<b>Скрепка</b> и <b>овечка</b> — значки помощника Скрепыша и установленного питомца eSheep 98 для вызова их меню.', '<b>Paperclip</b> and <b>sheep</b> — tray icons for Clippy and the eSheep 98 desktop pet.')}</li>
+            <li>${L('<b>Часы</b> — показывают текущее время, при наведении выводят полную дату, а по двойному щелчку открывают настройки «Дата и время».', '<b>Clock</b> — displays the current time, shows the full date on hover, and opens Date/Time Properties when double-clicked.')}</li>
           </ul>
-          ${shortcut('timedate.cpl', L('Щелкните здесь, чтобы настроить дату и время.', 'Click here to set the date and time.'))}
-          ${related('desktop', 'shortcuts', 'run')}
+          ${shortcut('taskbar-props', L('Щелкните здесь, чтобы открыть «Свойства: Панель задач и меню "Пуск"».', 'Click here to open Taskbar & Start Menu Properties.'))}
+          ${shortcut('shutdown', L('Щелкните здесь, чтобы открыть окно «Завершение работы Win».', 'Click here to open the Shut Down Win dialog.'))}
+          ${related('desktop', 'cpanel', 'shortcuts')}
         `
       },
       {
         id: 'explorer',
-        keywords: L('мой компьютер, проводник, папка, файл, диск, адрес, вырезать, копировать, вставить, удалить, свойства, емкость, корзина', 'my computer, explorer, folder, file, drive, address, cut, copy, paste, delete, properties, capacity, recycle bin'),
+        keywords: L('мой компьютер, проводник, папка, файл, диск, дискета, сидюк, адрес, вырезать, копировать, вставить, удалить, свойства, емкость, корзина, найти, поиск файлов, f3', 'my computer, explorer, folder, file, drive, floppy, cd-rom, address, cut, copy, paste, delete, properties, capacity, recycle bin, find, search files, f3'),
         content: `
           <h2>${titles.explorer}</h2>
-          <p>${L('Дважды щелкните значок', 'Double-click the')} ${glyph('my-computer')} <b>${L('Мой компьютер', 'My Computer')}</b>${L(', чтобы увидеть диски', ' icon to see the')} ${glyph('drive-c')} C:, ${glyph('drive-cd')} D: ${L('и', 'drives and the')} ${glyph('control-panel')} ${L('Панель управления.', 'Control Panel.')}</p>
-          <h3>${L('Панель инструментов', 'The toolbar')}</h3>
+          <p>${L('Дважды щелкните значок', 'Double-click the')} ${glyph('my-computer')} <b>${L('Мой компьютер', 'My Computer')}</b>${L(', чтобы получить доступ к дисководу гибких дисков <b>Диск 3,5 (A:)</b>, жесткому диску', ' icon to access the <b>3½ Floppy (A:)</b> drive, hard disk')} ${glyph('drive-c')} <b>C:</b>, ${L('приводу компакт-дисков', 'CD-ROM drive')} ${glyph('drive-cd')} <b>D:</b> ${L('и папке', 'and the')} ${glyph('control-panel')} <b>${L('Панель управления', 'Control Panel')}</b>.</p>
+          <h3>${L('Панель инструментов Проводника', 'The Explorer toolbar')}</h3>
           <table class="win-help-table">
-            <tr><td class="win-help-table-glyph">${glyph('tb-back')}${glyph('tb-forward')}</td><td>${L('<b>Назад</b> и <b>Вперед</b> — переход между просмотренными папками.', '<b>Back</b> and <b>Forward</b> move between folders you have viewed.')}</td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('tb-up')}</td><td>${L('<b>Вверх</b> — открывает папку уровнем выше.', '<b>Up</b> opens the folder one level higher.')}</td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('tb-cut')}${glyph('tb-copy')}${glyph('tb-paste')}</td><td>${L('<b>Вырезать</b>, <b>Копировать</b> и <b>Вставить</b> — перенос выделенного файла в другую папку.', '<b>Cut</b>, <b>Copy</b>, and <b>Paste</b> move the selected file to another folder.')}</td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('tb-delete')}${glyph('tb-properties')}</td><td>${L('<b>Удалить</b> отправляет файл в Корзину, <b>Свойства</b> показывают сведения о папке.', '<b>Delete</b> sends the file to the Recycle Bin, and <b>Properties</b> shows folder details.')}</td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('tb-back')}${glyph('tb-forward')}</td><td>${L('<b>Назад</b> и <b>Вперед</b> — возврат к ранее открытым папкам.', '<b>Back</b> and <b>Forward</b> move through previously visited folders.')}</td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('tb-up')}</td><td>${L('<b>Вверх</b> — переход в родительскую папку.', '<b>Up</b> opens the parent folder.')}</td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('tb-cut')}${glyph('tb-copy')}${glyph('tb-paste')}</td><td>${L('<b>Вырезать</b>, <b>Копировать</b> и <b>Вставить</b> — перемещение или дублирование выбранного файла или папки через буфер обмена.', '<b>Cut</b>, <b>Copy</b>, and <b>Paste</b> move or duplicate the selected file or folder via the clipboard.')}</td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('tb-delete')}${glyph('tb-properties')}</td><td>${L('<b>Удалить</b> отправляет выделенный объект в Корзину, <b>Свойства</b> открывают сведения о текущей папке или диске.', '<b>Delete</b> sends the selected item to the Recycle Bin; <b>Properties</b> shows details about the current folder or drive.')}</td></tr>
           </table>
-          <p>${L('Значки кнопок становятся цветными при наведении указателя. Недоступные кнопки отображаются серыми.', 'Button icons turn to color when you point to them. Unavailable buttons are gray.')}</p>
-          <h3>${L('Как скопировать файл', 'To copy a file')}</h3>
-          <ol>
-            <li>${L('Щелкните файл, чтобы выделить его.', 'Click the file to select it.')}</li>
-            <li>${L('Нажмите кнопку <b>Копировать</b>.', 'Click <b>Copy</b>.')}</li>
-            <li>${L('Откройте папку назначения и нажмите <b>Вставить</b>.', 'Open the destination folder and click <b>Paste</b>.')}</li>
-          </ol>
-          <h3>${L('Панель описания', 'The description pane')}</h3>
-          <p>${L('Слева показаны название папки и сведения о выделенном объекте. Для диска C: выводится емкость и диаграмма: синим — занятое место, лиловым — свободное. В узком окне панель скрывается.', 'The left pane shows the folder name and details about the selected item. For drive C: it shows the capacity and a chart: blue for used space, magenta for free space. The pane hides when the window is narrow.')}</p>
+          <h3>${L('Левая панель описания и диаграмма диска', 'Description pane and disk chart')}</h3>
+          <p>${L('В левой части окна Проводника отображаются название текущей папки и свойства выделенного файла (размер, тип, дата изменения). Когда открыт корневой раздел <b>C:</b> или выделен диск в «Моем компьютере», панель рисует круговую диаграмму: синим цветом показано занятое пространство, пурпурным — свободное.', 'The left pane of Explorer displays the current folder name and details about the selected item (size, type, modified date). When viewing drive <b>C:</b> or selecting it in My Computer, the pane renders a pie chart showing used space in blue and free space in magenta.')}</p>
+          <h3>${L('Поиск файлов и папок (' + key('F3') + ')', 'Finding files and folders (' + key('F3') + ')')}</h3>
+          <p>${L('Если вы не помните, в какой папке лежит документ или установщик, откройте «Пуск» → «Найти» → «Файлы и папки...» (или нажмите ' + key('F3') + ' на рабочем столе). Введите часть имени в поле «Имя» и нажмите <b>Найти</b> — система просканирует виртуальную файловую систему и выведет список совпадений с полными путями. Двойной щелчок по найденной строке сразу открывает файл или папку.', 'If you do not remember where a document or installer is stored, open Start → Find → Files or Folders... (or press ' + key('F3') + ' on the desktop). Type part of the filename in the Named box and click <b>Find Now</b> to scan the virtual file system. Double-click any result in the list to open the file or folder directly.')}</p>
           ${shortcut('explorer', L('Щелкните здесь, чтобы открыть «Мой компьютер».', 'Click here to open My Computer.'))}
-          ${related('desktop', 'system')}
+          ${shortcut('find', L('Щелкните здесь, чтобы открыть поиск «Найти: Файлы и папки».', 'Click here to open Find: All Files.'))}
+          ${related('desktop', 'apps', 'system')}
         `
       },
       {
         id: 'shortcuts',
-        keywords: L('клавиши, сочетания, клавиатура, горячие клавиши, f1, f5, ctrl, esc, enter, стрелки', 'keys, shortcuts, keyboard, hotkeys, f1, f5, ctrl, esc, enter, arrows'),
+        keywords: L('клавиши, сочетания, клавиатура, горячие клавиши, f1, f3, f5, del, delete, ctrl, esc, enter, стрелки, буфер обмена', 'keys, shortcuts, keyboard, hotkeys, f1, f3, f5, del, delete, ctrl, esc, enter, arrows, clipboard'),
         content: `
           <h2>${titles.shortcuts}</h2>
           <table class="win-help-table">
             <tr><th>${L('Клавиши', 'Keys')}</th><th>${L('Действие', 'Action')}</th></tr>
             <tr><td>${key('Ctrl+Esc')}</td><td>${L('Открыть или закрыть меню «Пуск».', 'Open or close the Start menu.')}</td></tr>
-            <tr><td>${key('↑')} ${key('↓')} ${key('←')} ${key('→')}</td><td>${L('Перемещение по меню «Пуск» и его подменю.', 'Move through the Start menu and its submenus.')}</td></tr>
-            <tr><td>${L('Подчеркнутая буква', 'Underlined letter')}</td><td>${L('Выбрать пункт открытого меню «Пуск».', 'Choose an item in the open Start menu.')}</td></tr>
-            <tr><td>${key('Enter')}</td><td>${L('Нажать кнопку по умолчанию в окне сообщения или запустить выбранный пункт меню.', 'Press the default button in a message box, or start the selected menu item.')}</td></tr>
-            <tr><td>${key('Esc')}</td><td>${L('Закрыть меню или отменить окно сообщения.', 'Close a menu or cancel a message box.')}</td></tr>
-            <tr><td>${key('F1')}</td><td>${L('Спросить помощника Скрепыша, когда активен рабочий стол. Если помощник выключен — открыть справку.', 'Ask the Office Assistant while the desktop is active. When the assistant is off, open Help.')}</td></tr>
-            <tr><td>${key('F5')}</td><td>${L('Обновить значки рабочего стола.', 'Refresh the desktop icons.')}</td></tr>
-            <tr><td>${key('Ctrl+Alt+Del')}</td><td>${L('Открыть Диспетчер задач.', 'Open Task Manager.')}</td></tr>
+            <tr><td>${key('↑')} ${key('↓')} ${key('←')} ${key('→')}</td><td>${L('Перемещение по пунктам меню «Пуск», его подменю и значкам.', 'Navigate through Start menu items, submenus, and icons.')}</td></tr>
+            <tr><td>${L('Подчеркнутая буква', 'Underlined letter')}</td><td>${L('Быстрый выбор команды в открытом меню «Пуск».', 'Select the matching item in the open Start menu.')}</td></tr>
+            <tr><td>${key('Enter')}</td><td>${L('Открыть выделенный значок, запустить пункт меню или нажать кнопку по умолчанию в диалоговом окне.', 'Open the selected icon, launch the highlighted menu item, or press the default button in a dialog box.')}</td></tr>
+            <tr><td>${key('Esc')}</td><td>${L('Закрыть открытое меню или отменить диалоговое окно.', 'Close an open menu or cancel a dialog box.')}</td></tr>
+            <tr><td>${key('F1')}</td><td>${L('Открыть поиск вопросов помощника Скрепыша (если помощник скрыт или отключен — открыть Справку Win).', 'Ask Clippy the Office Assistant (or open Win Help if the assistant is hidden or disabled).')}</td></tr>
+            <tr><td>${key('F3')}</td><td>${L('Открыть окно «Найти: Файлы и папки» (в Блокноте — найти следующее совпадение текста).', 'Open Find: All Files (in Notepad, find the next text match).')}</td></tr>
+            <tr><td>${key('F5')}</td><td>${L('Обновить значки рабочего стола или содержимое папки Проводника (в QBasic — запустить программу).', 'Refresh desktop icons or the active Explorer folder (in QBasic, run the current program).')}</td></tr>
+            <tr><td>${key('Delete')}</td><td>${L('Отправить выделенный на рабочем столе или в Проводнике файл в Корзину.', 'Move the selected desktop or Explorer file to the Recycle Bin.')}</td></tr>
+            <tr><td>${key('Ctrl+S')}</td><td>${L('Сохранить текущий документ в Блокноте, WordPad или Excel.', 'Save the active document in Notepad, WordPad, or Excel.')}</td></tr>
+            <tr><td>${key('Ctrl+C')} / ${key('Ctrl+V')}</td><td>${L('Скопировать и вставить текст или файлы через буфер обмена.', 'Copy and paste text or files through the clipboard.')}</td></tr>
+            <tr><td>${key('Ctrl+Alt+Del')}</td><td>${L('Открыть Диспетчер задач Win.', 'Open the Win Task Manager.')}</td></tr>
+            <tr><td>${key('Del')} / ${key('F2')} (${L('при загрузке', 'at boot')})</td><td>${L('Войти в CMOS Setup Utility (BIOS) во время проверки памяти POST.', 'Enter CMOS Setup Utility (BIOS) during the POST memory check.')}</td></tr>
           </table>
           ${note([
-            L('Некоторые сочетания, например ' + key('Ctrl+Esc') + ' и ' + key('Ctrl+Alt+Del') + ', может перехватить основная операционная система компьютера. В этом случае используйте мышь: кнопку «Пуск» и пункт «Диспетчер задач» в меню «Программы» → «Стандартные» → «Служебные».', 'The host computer’s own operating system may intercept some keys, such as ' + key('Ctrl+Esc') + ' and ' + key('Ctrl+Alt+Del') + '. In that case use the mouse: the Start button, and Task Manager under Programs → Accessories → System Tools.')
+            L('Системные сочетания вроде ' + key('Ctrl+Esc') + ' и ' + key('Ctrl+Alt+Del') + ' могут перехватываться основным браузером или операционной системой вашего компьютера. В этом случае используйте кнопку «Пуск» и пункт «Диспетчер задач» в меню «Программы» → «Стандартные» → «Служебные».', 'Host browsers or operating systems may intercept combinations such as ' + key('Ctrl+Esc') + ' and ' + key('Ctrl+Alt+Del') + '. When that happens, use the Start button and open Task Manager from Programs → Accessories → System Tools.')
           ])}
-          ${related('startmenu', 'desktop')}
+          ${related('startmenu', 'desktop', 'explorer')}
         `
       },
       {
         id: 'apps',
-        keywords: L('стандартные, блокнот, notepad, wordpad, paint, калькулятор, таблица символов, просмотр картинок, звукозапись', 'accessories, notepad, wordpad, paint, calculator, character map, imaging, sound recorder'),
+        keywords: L('стандартные, программы, блокнот, notepad, wordpad, paint, калькулятор, таблица символов, буфер обмена, clipbrd, просмотр картинок, acdsee, acrobat reader, pdf, excel, photoshop, winrar, архиватор, win commander, qbasic, basic, neko, esheep, овечка', 'accessories, programs, notepad, wordpad, paint, calculator, character map, clipbook viewer, clipbrd, imaging, acdsee, acrobat reader, pdf, excel, photoshop, winrar, archiver, win commander, qbasic, basic, neko, esheep, sheep'),
         content: `
           <h2>${titles.apps}</h2>
-          <p>${L('Стандартные программы находятся в меню «Пуск» → «Программы» → «Стандартные». Удаленный доступ к сети — в подменю «Связь», звукозапись и регулятор громкости — в «Развлечения», дефрагментация и проверка диска — в «Служебные».', 'The accessories are in Start → Programs → Accessories. Dial-Up Networking is under Communications, Sound Recorder and Volume Control are under Entertainment, and Disk Defragmenter and ScanDisk are under System Tools.')}</p>
+          <p>${L('В системе установлены стандартные принадлежности Win 98, офисные и графические пакеты, файловые менеджеры, среда программирования и экранные питомцы.', 'The system includes standard Win 98 accessories along with office suites, graphics editors, file managers, a programming IDE, and desktop pets.')}</p>
+          <h3>${L('Стандартные программы («Пуск» → «Программы» → «Стандартные»)', 'Accessories (Start → Programs → Accessories)')}</h3>
           <table class="win-help-table">
-            <tr><td class="win-help-table-glyph">${glyph('notepad')}</td><td><b>${L('Блокнот', 'Notepad')}</b> — ${L('простой текстовый редактор для файлов TXT, INI и BAT.', 'a plain text editor for TXT, INI, and BAT files.')}</td><td><button class="win-help-shortcut" data-run="notepad">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('wordpad')}</td><td><b>WordPad</b> — ${L('редактор документов с форматированием и поддержкой RTF.', 'a document editor with formatting and RTF support.')}</td><td><button class="win-help-shortcut" data-run="wordpad">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('paint')}</td><td><b>Paint</b> — ${L('графический редактор: карандаш, кисть, заливка, распылитель и палитра.', 'a graphics editor with pencil, brush, fill, airbrush, and palette.')}</td><td><button class="win-help-shortcut" data-run="paint">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('calculator')}</td><td><b>${L('Калькулятор', 'Calculator')}</b> — ${L('обычный и инженерный режимы.', 'standard and scientific modes.')}</td><td><button class="win-help-shortcut" data-run="calc">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('charmap')}</td><td><b>${L('Таблица символов', 'Character Map')}</b> — ${L('копирование специальных символов.', 'copies special characters.')}</td><td><button class="win-help-shortcut" data-run="charmap">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('imaging')}</td><td><b>${L('Просмотр картинок', 'Imaging')}</b> — ${L('просмотр рисунков BMP, JPG и PNG.', 'views BMP, JPG, and PNG pictures.')}</td><td><button class="win-help-shortcut" data-run="imaging">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('notepad')}</td><td><b>${L('Блокнот (Notepad)', 'Notepad')}</b> — ${L('текстовый редактор для файлов TXT, INI, BAT и LOG с поиском по тексту и вставкой времени и даты (F5).', 'plain-text editor for TXT, INI, BAT, and LOG files with text search and time/date stamp insertion (F5).')}</td><td><button class="win-help-shortcut" data-run="notepad">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('wordpad')}</td><td><b>WordPad</b> — ${L('редактор документов RTF и DOC с панелью шрифтов, начертанием (полужирный, курсив, подчеркнутый), цветом текста и выравниванием абзацев.', 'rich-text document editor supporting RTF and DOC files with font selection, bold/italic/underline formatting, text color, and paragraph alignment.')}</td><td><button class="win-help-shortcut" data-run="wordpad">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('paint')}</td><td><b>Paint</b> — ${L('растровый редактор с 16 инструментами (карандаш, кисть, ластик, заливка, пипетка, распылитель, текст, линии и фигуры), палитрой и сохранением в BMP.', 'bitmap graphics editor with 16 tools (pencil, brush, eraser, fill bucket, eyedropper, airbrush, text, lines, and shapes), color palette, and BMP saving.')}</td><td><button class="win-help-shortcut" data-run="paint">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('calculator')}</td><td><b>${L('Калькулятор (Calculator)', 'Calculator')}</b> — ${L('арифметический и инженерный режимы с ячейками памяти и тригонометрическими функциями.', 'standard and scientific calculation modes with memory registers and trigonometric functions.')}</td><td><button class="win-help-shortcut" data-run="calc">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('charmap')}</td><td><b>${L('Таблица символов (Character Map)', 'Character Map')}</b> — ${L('просмотр наборов шрифтов и копирование специальных знаков в буфер обмена.', 'inspects font character sets and copies special symbols to the clipboard.')}</td><td><button class="win-help-shortcut" data-run="charmap">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('clipbrd')}</td><td><b>${L('Просмотр буфера обмена (ClipBook Viewer)', 'ClipBook Viewer')}</b> — ${L('показывает текущее текстовое, графическое или файловое содержимое системного буфера обмена и сохраняет файлы .CLP.', 'displays current text, image, or file data stored in the system clipboard and saves .CLP files.')}</td><td><button class="win-help-shortcut" data-run="clipbrd">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('imaging')}</td><td><b>${L('Просмотр картинок (Imaging)', 'Imaging')}</b> — ${L('просмотр рисунков BMP, JPG, GIF и PNG с масштабированием и поворотом.', 'views BMP, JPG, GIF, and PNG images with zoom and rotation controls.')}</td><td><button class="win-help-shortcut" data-run="imaging">${icon('shortcut-overlay')}</button></td></tr>
           </table>
-          ${related('multimedia', 'system')}
+          <h3>${L('Офис, графика, архивы и разработка', 'Office, graphics, archives, and development')}</h3>
+          <table class="win-help-table">
+            <tr><td class="win-help-table-glyph">${glyph('excel')}</td><td><b>Microslop Excel 97</b> — ${L('электронные таблицы с формулами (SUM, AVERAGE, IF), автосуммой Σ и построением диаграмм.', 'spreadsheet application with formulas (SUM, AVERAGE, IF), AutoSum Σ, and chart generation.')}</td><td><button class="win-help-shortcut" data-run="excel">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('photoshop')}</td><td><b>Adobe Photoshop 5.0</b> — ${L('работа со слоями, фильтрами (размытие, резкость, шум, тиснение), уровнями яркости и историей действий.', 'layered image editor with filters (blur, sharpen, noise, emboss), brightness levels, and action history.')}</td><td><button class="win-help-shortcut" data-run="photoshop">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('acdsee')}</td><td><b>ACDSee 32 v2.3</b> — ${L('быстрый браузер графических папок с миниатюрами, слайд-шоу и установкой рисунка фоном рабочего стола.', 'fast image browser with folder thumbnails, slideshow mode, and one-click desktop wallpaper setting.')}</td><td><button class="win-help-shortcut" data-run="acdsee">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('acrobat')}</td><td><b>Adobe Acrobat Reader 3.0</b> — ${L('чтение документов и руководств в формате PDF с оглавлением и масштабированием страниц.', 'reads PDF documents and manuals with bookmarks and page zoom.')}</td><td><button class="win-help-shortcut" data-run="acrobat">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('winrar')}</td><td><b>WinRAR 98</b> — ${L('создание и распаковка архивов .RAR и .ZIP, проверка целостности и мастер самораспаковывающихся архивов SFX.', 'creates and extracts .RAR and .ZIP archives, tests archive integrity, and builds self-extracting SFX packages.')}</td><td><button class="win-help-shortcut" data-run="winrar">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('wincmd')}</td><td><b>Win Commander 3.5</b> — ${L('двухпанельный файловый менеджер с функциональными клавишами F3–F8 для просмотра, правки, копирования, переноса и удаления файлов.', 'dual-pane file manager with F3–F8 function keys for viewing, editing, copying, moving, and deleting files.')}</td><td><button class="win-help-shortcut" data-run="wincmd">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('qbasic')}</td><td><b>Microslop QBasic 1.1</b> — ${L('классическая синяя среда разработки BASIC с интерпретатором, графикой SCREEN 12/13, звуком PLAY/SOUND и готовыми примерами (GORILLAS.BAS, NIBBLES.BAS).', 'classic blue-screen BASIC IDE and interpreter supporting SCREEN 12/13 graphics, PLAY/SOUND audio, and built-in sample programs (GORILLAS.BAS, NIBBLES.BAS).')}</td><td><button class="win-help-shortcut" data-run="qbasic">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('neko')}</td><td><b>Neko 98</b> — ${L('экранный котенок, который бегает за курсором мыши по рабочему столу и сворачивается калачиком, когда мышь неподвижна.', 'desktop kitten that chases the mouse pointer across the screen and curls up to sleep when the cursor stops.')}</td><td><button class="win-help-shortcut" data-run="neko">${icon('shortcut-overlay')}</button></td></tr>
+          </table>
+          ${note([
+            L('Стандартные настольные игры (<b>Сапёр</b> — <code>winmine</code>, <b>Косынка</b> — <code>sol</code>, <b>Свободная ячейка</b> — <code>freecell</code>, <b>3D Pinball: Space Cadet</b> — <code>pinball</code>) доступны в меню «Пуск» → «Программы» → «Игры».', 'Built-in desktop games (<b>Minesweeper</b> — <code>winmine</code>, <b>Solitaire</b> — <code>sol</code>, <b>FreeCell</b> — <code>freecell</code>, and <b>3D Pinball: Space Cadet</b> — <code>pinball</code>) are located in Start → Programs → Games.'),
+            L('Крупные игры покупаются и скачиваются через клиент <b>Steam</b> (загружается с <code>www.steampowered.com</code>), демоверсии находятся на компакт-диске «Игромании» (D:), а бесплатную <b>Honkai: Star Rail 98</b> можно скачать также с <code>hsr.hoyoverse.com</code>.', 'Full games are purchased and downloaded through the <b>Steam</b> client (available at <code>www.steampowered.com</code>), game demos are on the Igromania CD (D:), and free-to-play <b>Honkai: Star Rail 98</b> can also be downloaded from <code>hsr.hoyoverse.com</code>.')
+          ])}
+          ${related('multimedia', 'internet', 'system')}
         `
       },
       {
         id: 'multimedia',
-        keywords: L('мультимедиа, звук, музыка, winamp, mp3, звукозапись, громкость, микшер, sndvol32, sndrec32', 'multimedia, sound, music, winamp, mp3, sound recorder, volume, mixer, sndvol32, sndrec32'),
+        keywords: L('мультимедиа, звук, музыка, видео, winamp, mp3, cdplayer, лазерный проигрыватель, cdex, fasttracker, трекер, xm, mod, звукозапись, громкость, микшер, sndvol32, sndrec32, mplayer, медиаплеер, avi', 'multimedia, sound, music, video, winamp, mp3, cdplayer, cd player, cdex, fasttracker, tracker, xm, mod, sound recorder, volume, mixer, sndvol32, sndrec32, mplayer, media player, avi'),
         content: `
           <h2>${titles.multimedia}</h2>
+          <p>${L('Звуковая подсистема обслуживает воспроизведение MP3, WAV, MIDI и трекерных модулей, чтение аудиодисков CD-DA, запись звука и просмотр видеофайлов.', 'The multimedia subsystem handles MP3, WAV, MIDI, and tracker module playback, CD-DA audio discs, voice recording, and video playback.')}</p>
           <table class="win-help-table">
-            <tr><td class="win-help-table-glyph">${glyph('winamp')}</td><td><b>WinAmp 98</b> — ${L('проигрыватель MP3, WAV и MIDI с эквалайзером, списком воспроизведения и сменными обложками.', 'an MP3, WAV, and MIDI player with an equalizer, a playlist, and skins.')}</td><td><button class="win-help-shortcut" data-run="winamp">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('sound-recorder')}</td><td><b>${L('Звукозапись', 'Sound Recorder')}</b> — ${L('запись с микрофона, эффекты (эхо, обратный порядок, скорость) и сохранение в WAV.', 'records from the microphone, applies effects (echo, reverse, speed), and saves WAV files.')}</td><td><button class="win-help-shortcut" data-run="sndrec32">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('volume-mixer')}</td><td><b>${L('Регулятор громкости', 'Volume Control')}</b> — ${L('общая громкость, MIDI и Wave.', 'master, MIDI, and Wave volume.')}</td><td><button class="win-help-shortcut" data-run="sndvol32">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('winamp')}</td><td><b>WinAmp 98</b> — ${L('проигрыватель MP3, WAV и MIDI с графическим анализатором спектра, 10-полосным эквалайзером, редактором списков воспроизведения (.M3U) и сменными обложками.', 'MP3, WAV, and MIDI player featuring a spectrum analyzer, 10-band equalizer, playlist editor (.M3U), and interchangeable skins.')}</td><td><button class="win-help-shortcut" data-run="winamp">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('cdplayer')}</td><td><b>${L('Лазерный проигрыватель (CD Player)', 'CD Player')}</b> — ${L('воспроизведение звуковых дорожек компакт-диска в приводе D: с переключением треков и отсчетом времени.', 'plays audio tracks from the disc in CD-ROM drive D: with track skip and elapsed time display.')}</td><td><button class="win-help-shortcut" data-run="cdplayer">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('cdex')}</td><td><b>CDex 0.14</b> — ${L('граббер аудиодисков, преобразующий дорожки CD-DA в файлы WAV или MP3 с выбором битрейта (128–320 кбит/с) в папку «Моя музыка».', 'CD-DA ripper that extracts audio tracks to WAV or MP3 files at selectable bitrates (128–320 kbps) into My Music.')}</td><td><button class="win-help-shortcut" data-run="cdex">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('fasttracker')}</td><td><b>FastTracker II</b> — ${L('4-канальный трекерный синтезатор с редактором паттернов, огибающих инструментов, осциллографом и экспортом композиций в .WAV.', '4-channel tracker music workstation with a pattern editor, instrument envelopes, real-time oscilloscopes, and .WAV export.')}</td><td><button class="win-help-shortcut" data-run="fasttracker">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('sound-recorder')}</td><td><b>${L('Звукозапись (Sound Recorder)', 'Sound Recorder')}</b> — ${L('запись звука, наложение эффектов (эхо, ускорение, замедление, обратное воспроизведение) и сохранение в формат WAV.', 'records audio, applies effects (echo, speed up, slow down, reverse), and saves WAV files.')}</td><td><button class="win-help-shortcut" data-run="sndrec32">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('volume-mixer')}</td><td><b>${L('Регулятор громкости (Volume Control)', 'Volume Control')}</b> — ${L('раздельные ползунки уровня и баланса для каналов Master, Wave, MIDI и CD Audio.', 'independent volume and balance sliders for Master, Wave, MIDI, and CD Audio channels.')}</td><td><button class="win-help-shortcut" data-run="sndvol32">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('mplayer')}</td><td><b>${L('Универсальный проигрыватель (Media Player)', 'Media Player')}</b> — ${L('воспроизведение видеороликов AVI и MPG из папки «Мои видео» и с компакт-диска «Игромании».', 'plays AVI and MPG video clips from My Videos and from the Igromania CD-ROM.')}</td><td><button class="win-help-shortcut" data-run="mplayer">${icon('shortcut-overlay')}</button></td></tr>
           </table>
-          <h3>${L('Как быстро изменить громкость', 'To change the volume quickly')}</h3>
+          <h3>${L('Как быстро изменить громкость или звуковую схему', 'To adjust volume or sound schemes quickly')}</h3>
           <ol>
-            <li>${L('Щелкните значок', 'Click the')} ${glyph('speaker')} ${L('в области уведомлений.', 'icon in the notification area.')}</li>
-            <li>${L('Перетащите ползунок вверх или вниз.', 'Drag the slider up or down.')}</li>
-            <li>${L('Установите флажок «Выкл», чтобы отключить звук.', 'Select the Mute check box to turn the sound off.')}</li>
+            <li>${L('Щелкните значок динамика', 'Click the speaker icon')} ${glyph('speaker')} ${L('в области уведомлений, чтобы подвинуть общий ползунок или выключить звук флажком «Выкл».', 'in the notification area to move the master slider or select Mute.')}</li>
+            <li>${L('Дважды щелкните тот же значок для вызова полного микшера <b>Регулятор громкости</b>.', 'Double-click the speaker icon to open the full <b>Volume Control</b> mixer.')}</li>
+            <li>${L('Чтобы сменить мелодии запуска системы, ошибок и уведомлений, откройте апплет <b>Мультимедиа</b> в Панели управления.', 'To change the sounds played for system startup, errors, and alerts, open the <b>Multimedia</b> applet in Control Panel.')}</li>
           </ol>
           ${related('cpanel', 'apps')}
         `
       },
       {
         id: 'internet',
-        keywords: L('интернет, internet explorer, netscape, модем, удаленный доступ, icq, почта, outlook express', 'internet, internet explorer, netscape, modem, dial-up, icq, mail, outlook express'),
+        keywords: L('интернет, internet explorer, netscape, модем, удаленный доступ, icq, аська, почта, outlook express, mirc, irc, чат, hyperterminal, bbs, терминал, сайты, steam', 'internet, internet explorer, netscape, modem, dial-up, icq, mail, outlook express, mirc, irc, chat, hyperterminal, bbs, terminal, sites, steam'),
         content: `
           <h2>${titles.internet}</h2>
+          <p>${L('Для выхода в сеть и общения используются модемное соединение, два веб-обозревателя, почтовый клиент, мессенджер ICQ, IRC-клиент и терминал BBS.', 'Network access and online communication are handled by Dial-Up Networking, two web browsers, an e-mail client, ICQ instant messaging, an IRC client, and a BBS terminal.')}</p>
           <table class="win-help-table">
-            <tr><td class="win-help-table-glyph">${glyph('internet-explorer')}</td><td><b>Internet Explorer 5</b> — ${L('обозреватель с адресной строкой, журналом и избранным.', 'a browser with an address bar, history, and favorites.')}</td><td><button class="win-help-shortcut" data-run="ie">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('netscape')}</td><td><b>Netscape 6</b> — ${L('второй обозреватель.', 'a second browser.')}</td><td><button class="win-help-shortcut" data-run="netscape">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('dialup')}</td><td><b>${L('Удаленный доступ к сети', 'Dial-Up Networking')}</b> — ${L('подключение через модем.', 'connects through the modem.')}</td><td><button class="win-help-shortcut" data-run="dialup">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('outlook')}</td><td><b>Outlook Express</b> — ${L('электронная почта.', 'e-mail.')}</td><td><button class="win-help-shortcut" data-run="outlook">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('icq-online')}</td><td><b>ICQ 98a</b> — ${L('обмен сообщениями.', 'instant messaging.')}</td><td><button class="win-help-shortcut" data-run="icq">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('dialup')}</td><td><b>${L('Удаленный доступ к сети (Dial-Up Networking)', 'Dial-Up Networking')}</b> — ${L('дозвон через модем USRobotics 56K Faxmodem со звуком рукопожатия и счетчиком переданных байт в трее.', 'connects via the USRobotics 56K Faxmodem with audible handshake tones and a live byte counter in the tray.')}</td><td><button class="win-help-shortcut" data-run="dialup">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('internet-explorer')}</td><td><b>Internet Explorer 5</b> — ${L('веб-обозреватель с адресной строкой, журналом посещений, избранным и загрузкой файлов в папку Downloads.', 'web browser with an address bar, browsing history, Favorites menu, and file downloads into the Downloads folder.')}</td><td><button class="win-help-shortcut" data-run="ie">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('netscape')}</td><td><b>Netscape Communicator 6</b> — ${L('альтернативный обозреватель с закладками и собственной строкой навигации.', 'alternative web browser with bookmarks and its own navigation bar.')}</td><td><button class="win-help-shortcut" data-run="netscape">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('outlook')}</td><td><b>Outlook Express</b> — ${L('почтовый клиент с папками «Входящие», «Отправленные», «Черновики» и «Удаленные», адресной книгой и отправкой писем.', 'e-mail client with Inbox, Sent Items, Drafts, and Deleted Items folders, an address book, and message composition.')}</td><td><button class="win-help-shortcut" data-run="outlook">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('icq-online')}</td><td><b>ICQ 98a</b> — ${L('мгновенный обмен сообщениями по номеру UIN, статусы «В сети» / «Не беспокоить» и фирменный звук «Uh-oh!».', 'instant messaging by UIN with Online / Away statuses and the classic "Uh-oh!" incoming message sound.')}</td><td><button class="win-help-shortcut" data-run="icq">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('mirc')}</td><td><b>mIRC 32</b> — ${L('клиент сетей IRC (каналы #win98, #rusnet, #gamedev, #warez) с командами /nick, /join, /me, /slap и передачей файлов DCC.', 'IRC chat client (#win98, #rusnet, #gamedev, #warez channels) supporting /nick, /join, /me, /slap commands and DCC file transfers.')}</td><td><button class="win-help-shortcut" data-run="mirc">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('hypertrm')}</td><td><b>HyperTerminal</b> — ${L('терминал с поддержкой графики ANSI для дозвона на текстовые станции BBS (NightOwl BBS, Demoscene HQ, FidoNet Node 2:5020) с досками объявлений, файловыми архивами и дверьми-играми.', 'ANSI terminal emulator for dialing text BBS stations (NightOwl BBS, Demoscene HQ, FidoNet Node 2:5020) with message boards, file areas, and door games.')}</td><td><button class="win-help-shortcut" data-run="hypertrm">${icon('shortcut-overlay')}</button></td></tr>
           </table>
           ${note([
-            L('Internet Explorer и Outlook Express также запускаются с панели «Быстрый запуск».', 'Internet Explorer and Outlook Express also start from the Quick Launch toolbar.')
+            L('Поисковая система <b>WebSeeker 98</b> (<code>http://www.search98.com</code>), порталы <b>Яndex</b> и <b>Рамблер</b>, каталог программ <b>SoftStore \'98</b> (<code>http://www.softstore98.com</code>), магазин игр <b>Steam</b> (<code>http://www.steampowered.com</code>), сайт тем <b>ThemeWorld \'98</b> (<code>http://www.themeworld98.com</code>), видеопортал <b>YouVid</b> (<code>http://www.youvid.com</code>), аукцион <b>Молоток \'98</b> (<code>http://www.molotok98.ru</code>), лаборатория <b>Железный Цех \'98</b> (<code>http://www.ferrum98.ru</code>) и другие узлы 1998 года доступны из меню «Избранное» в Internet Explorer.', 'Search engine <b>WebSeeker 98</b> (<code>http://www.search98.com</code>), portals <b>Yandex</b> and <b>Rambler</b>, software catalog <b>SoftStore \'98</b> (<code>http://www.softstore98.com</code>), game store <b>Steam</b> (<code>http://www.steampowered.com</code>), theme repository <b>ThemeWorld \'98</b> (<code>http://www.themeworld98.com</code>), video site <b>YouVid</b> (<code>http://www.youvid.com</code>), auction site <b>Molotok \'98</b> (<code>http://www.molotok98.ru</code>), hardware lab <b>Ferrum \'98</b> (<code>http://www.ferrum98.ru</code>), and other 1998 web sites are listed in the Favorites menu of Internet Explorer.'),
+            L('Домашнюю страницу Internet Explorer, кэш временных файлов и журнал посещений настраивают в апплете <b>Свойства обозревателя (inetcpl.cpl)</b> Панели управления.', 'The Internet Explorer home page, temporary file cache, and browsing history are configured in the <b>Internet Options (inetcpl.cpl)</b> applet in Control Panel.')
           ])}
-          ${related('startmenu', 'welcome')}
+          ${related('cpanel', 'startmenu', 'apps')}
         `
       },
       {
         id: 'cpanel',
-        keywords: L('панель управления, экран, обои, заставка, тема, дата, время, язык, звуки, мышь, установка программ, desk.cpl', 'control panel, display, wallpaper, screen saver, theme, date, time, language, sounds, mouse, add remove programs, desk.cpl'),
+        keywords: L('панель управления, экран, обои, заставка, тема, оформление, эффекты, мышь, кнопки мыши, левша, правша, указатели, курсор, шлейф, система, диспетчер устройств, быстродействие, виртуальная память, электропитание, спящий режим, energy star, установка и удаление программ, компоненты, загрузочный диск, мультимедиа, звуки, аудио, дата и время, часовой пояс, язык и стандарты, свойства обозревателя, панель задач, desk.cpl, main.cpl, sysdm.cpl, powercfg.cpl, appwiz.cpl, mmsys.cpl, timedate.cpl, intl.cpl, inetcpl.cpl', 'control panel, display, wallpaper, screen saver, theme, appearance, effects, mouse, mouse buttons, left-handed, right-handed, pointers, cursor, trails, system, device manager, performance, virtual memory, power management, standby, energy star, add remove programs, components, startup disk, multimedia, sounds, audio, date time, time zone, regional settings, internet options, taskbar, desk.cpl, main.cpl, sysdm.cpl, powercfg.cpl, appwiz.cpl, mmsys.cpl, timedate.cpl, intl.cpl, inetcpl.cpl'),
         content: `
           <h2>${titles.cpanel}</h2>
-          <p>${L('Откройте «Пуск» → «Настройка» → «Панель управления». Дважды щелкните значок, чтобы изменить параметр.', 'Open Start → Settings → Control Panel. Double-click an icon to change a setting.')}</p>
+          <p>${L('Откройте «Пуск» → «Настройка» → «Панель управления» (или папку «Панель управления» внутри «Моего компьютера»). В Панели управления собраны десять апплетов настройки оборудования, экрана, мыши, звука, питания, программ и интерфейса.', 'Open Start → Settings → Control Panel (or the Control Panel folder inside My Computer). Control Panel contains ten applets for configuring hardware, display, mouse, audio, power management, software, and the shell interface.')}</p>
           <table class="win-help-table">
-            <tr><td class="win-help-table-glyph">${glyph('monitor')}</td><td><b>${L('Экран', 'Display')}</b> — ${L('обои, заставка, цветовая схема и темы.', 'wallpaper, screen saver, color scheme, and themes.')}</td><td><button class="win-help-shortcut" data-run="desk.cpl">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('timedate')}</td><td><b>${L('Дата и время', 'Date/Time')}</b> — ${L('часы, календарь и часовой пояс.', 'clock, calendar, and time zone.')}</td><td><button class="win-help-shortcut" data-run="timedate.cpl">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('multimedia')}</td><td><b>${L('Мультимедиа', 'Multimedia')}</b> — ${L('звуковые схемы и события.', 'sound schemes and events.')}</td><td><button class="win-help-shortcut" data-run="mmsys.cpl">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('regional')}</td><td><b>${L('Язык и стандарты', 'Regional Settings')}</b> — ${L('язык интерфейса и форматы.', 'interface language and formats.')}</td><td><button class="win-help-shortcut" data-run="intl.cpl">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('appwiz')}</td><td><b>${L('Установка и удаление программ', 'Add/Remove Programs')}</b> — ${L('список установленных программ.', 'the list of installed programs.')}</td><td><button class="win-help-shortcut" data-run="appwiz.cpl">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('monitor')}</td><td><b>${L('Экран (desk.cpl)', 'Display (desk.cpl)')}</b> — ${L('фоновый рисунок, заставка, цветовая схема, визуальные эффекты, значки рабочего стола и темы Microslop Plus! 98.', 'desktop background, screen saver, color scheme, visual effects, desktop icons, and Microslop Plus! 98 themes.')}</td><td><button class="win-help-shortcut" data-run="desk.cpl">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('mouse')}</td><td><b>${L('Мышь (main.cpl)', 'Mouse (main.cpl)')}</b> — ${L('кнопки для правши и левши, скорость двойного щелчка, схемы указателей, скорость движения и след курсора.', 'right/left-handed buttons, double-click speed, pointer schemes, motion speed, and pointer trails.')}</td><td><button class="win-help-shortcut" data-run="main.cpl">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('system')}</td><td><b>${L('Система (sysdm.cpl)', 'System (sysdm.cpl)')}</b> — ${L('сведения о компьютере, Диспетчер устройств, быстродействие, ускорение графики и виртуальная память.', 'system summary, Device Manager hardware tree, performance tuning, graphics acceleration, and virtual memory.')}</td><td><button class="win-help-shortcut" data-run="sysdm.cpl">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('powercfg')}</td><td><b>${L('Электропитание (powercfg.cpl)', 'Power Management (powercfg.cpl)')}</b> — ${L('схемы управления питанием Energy Star, таймеры отключения монитора и дисков, значок в трее.', 'Energy Star power schemes, monitor standby and disk spin-down timers, and tray power meter.')}</td><td><button class="win-help-shortcut" data-run="powercfg.cpl">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('appwiz')}</td><td><b>${L('Установка и удаление программ (appwiz.cpl)', 'Add/Remove Programs (appwiz.cpl)')}</b> — ${L('установка и удаление программ, выбор компонентов Win 98 и создание загрузочной дискеты A:.', 'install or remove applications, toggle Win 98 components, and create a Startup Disk on drive A:.')}</td><td><button class="win-help-shortcut" data-run="appwiz.cpl">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('multimedia')}</td><td><b>${L('Мультимедиа (mmsys.cpl)', 'Multimedia (mmsys.cpl)')}</b> — ${L('звуковые схемы событий Win 98, выбор аудиоустройства и вызов микшера громкости.', 'Win 98 event sound schemes, playback device selection, and volume mixer access.')}</td><td><button class="win-help-shortcut" data-run="mmsys.cpl">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('timedate')}</td><td><b>${L('Дата и время (timedate.cpl)', 'Date/Time (timedate.cpl)')}</b> — ${L('календарь, часы со стрелками, точное время и часовой пояс.', 'calendar, analog clock, current time, and time zone settings.')}</td><td><button class="win-help-shortcut" data-run="timedate.cpl">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('regional')}</td><td><b>${L('Язык и стандарты (intl.cpl)', 'Regional Settings (intl.cpl)')}</b> — ${L('переключение языка системы (Русский / English) и образцы форматов времени, даты и валюты.', 'switches the system language (Russian / English) and previews time, date, and currency formats.')}</td><td><button class="win-help-shortcut" data-run="intl.cpl">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('inetcpl')}</td><td><b>${L('Свойства обозревателя (inetcpl.cpl)', 'Internet Options (inetcpl.cpl)')}</b> — ${L('домашняя страница Internet Explorer, удаление временных файлов и очистка журнала.', 'Internet Explorer home page, temporary files cleanup, and browsing history reset.')}</td><td><button class="win-help-shortcut" data-run="inetcpl.cpl">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('taskbar-props')}</td><td><b>${L('Панель задач и меню «Пуск»', 'Taskbar & Start Menu')}</b> — ${L('автоскрытие панели задач, часы, добавление и удаление ярлыков в меню «Пуск», очистка документов.', 'taskbar auto-hide, clock visibility, adding/removing Start menu shortcuts, and clearing recent documents.')}</td><td><button class="win-help-shortcut" data-run="taskbar-props">${icon('shortcut-overlay')}</button></td></tr>
           </table>
-          <h3>${L('Как сменить обои', 'To change the wallpaper')}</h3>
-          <ol>
-            <li>${L('Щелкните рабочий стол правой кнопкой и выберите «Свойства».', 'Right-click the desktop and click Properties.')}</li>
-            <li>${L('На вкладке «Фон» выберите рисунок и способ размещения.', 'On the Background tab, choose a picture and how to display it.')}</li>
-            <li>${L('Нажмите «OK».', 'Click OK.')}</li>
-          </ol>
-          ${note([L('Если выбран фоновый рисунок, подписи значков выводятся на фоне цвета рабочего стола, как в Win 98.', 'With a wallpaper, icon labels are drawn on the desktop color, as in Win 98.')])}
-          ${related('desktop', 'multimedia')}
+
+          <h3>${L('1. Экран (desk.cpl)', '1. Display (desk.cpl)')}</h3>
+          <ul>
+            <li>${L('<b>Фон</b> — выбор встроенного узора или обоев, загрузка собственного файла с компьютера кнопкой «Обзор...» и режим размещения («По центру», «Замостить», «Растянуть»).', '<b>Background</b> — choose a built-in wallpaper, load a custom image from your computer with Browse..., and set the display mode (Center, Tile, or Stretch).')}</li>
+            <li>${L('<b>Заставка</b> — хранители экрана «Трубы 3D», «Сквозь вселенную», «Причуды», «Геометрический вальс», «Черный экран» и заставки, скачанные с <code>www.themeworld98.com</code>; настройка интервала ожидания, кнопка «Просмотр» и переход к энергосбережению монитора («Питание...»).', '<b>Screen Saver</b> — 3D Pipes, Starfield Simulation, Mystify Your Mind, Béziers, Blank Screen, plus savers downloaded from <code>www.themeworld98.com</code>; wait timer, Preview button, and Energy Star monitor power button (Settings...).')}</li>
+            <li>${L('<b>Оформление</b> — 8 цветовых схем окон («Стандартная Win», «Классическая темная», «Морская волна», «Пустыня», «Баклажан», «Сирень», «Роза», «Контрастная черная») и выбор цвета фона рабочего стола.', '<b>Appearance</b> — 8 window color schemes (Win Standard, Classic Dark, Marine, Desert, Eggplant, Lilac, Rose, High Contrast Black) and a desktop background color picker.')}</li>
+            <li>${L('<b>Эффекты</b> — замена значков «Мой компьютер», «Мои документы», «Сетевое окружение» и «Корзина» (полная и пустая) через кнопку «Сменить значок...», а также флажки: «Крупные значки» (48×48), «Отображать значки с использованием всех возможных цветов» (снятие включает 16-цветный режим), «Отображать окна с использованием эффектов анимации», «Сглаживать неровности экранных шрифтов», «Отображать содержимое окна при перетаскивании» и «Эффект ЭЛТ-монитора (полосы развертки)».', '<b>Effects</b> — change the icons for My Computer, My Documents, Network Neighborhood, and Recycle Bin (full and empty) via Change Icon..., and toggle Large icons (48×48), Show icons using all possible colors (clearing switches to 16-color mode), Animate windows, menus and lists, Smooth edges of screen fonts, Show window contents while dragging, and CRT monitor scanlines.')}</li>
+            <li>${L('<b>Темы</b> — готовые комплекты оформления Microslop Plus! 98 («Win 98 по умолчанию», «Загадка», «Космос», «Природа», «Золотая эра», «Высокая контрастность» и темы, скачанные с ThemeWorld \'98).', '<b>Themes</b> — complete Microslop Plus! 98 desktop themes (Win 98 Default, Mystery, Space, Nature, The Golden Era, High Contrast, and themes downloaded from ThemeWorld \'98).')}</li>
+          </ul>
+
+          <h3>${L('2. Мышь (main.cpl)', '2. Mouse (main.cpl)')}</h3>
+          <ul>
+            <li>${L('<b>Кнопки</b> — переключатель «Для правши» / «Для левши» (меняет местами основную и контекстную кнопки мыши), ползунок скорости двойного щелчка с проверочной шкатулкой (дважды щелкните по ней, чтобы клоун выпрыгнул или спрятался) и экспериментальный флажок «Отключить щелчки кнопок мыши» (если его применить, через 5 секунд Скрепыш придет на помощь и вернет управление).', '<b>Buttons</b> — Right-handed / Left-handed button configuration, Double-click speed slider with an interactive jack-in-the-box test area (double-click to make the clown pop out or hide), and a "Disable mouse button clicks" check box (if applied, Clippy automatically rescues your mouse after 5 seconds).')}</li>
+            <li>${L('<b>Указатели</b> — выбор схемы курсоров («Стандартная Win», «Крупная (системная)», «3D-бронза», «Динозаврик (Plus! 98)», «Инверсная»), сохранение и удаление собственных схем и просмотр всех 10 ролей указателя.', '<b>Pointers</b> — cursor schemes (Win Standard, Magnified System, 3D Bronze, Dinosaur Plus! 98, Inverted), saving and deleting custom schemes, and previewing all 10 cursor roles.')}</li>
+            <li>${L('<b>Перемещение</b> — ползунок скорости движения указателя и флажок «Отображать след указателя мыши» с настройкой длины шлейфа от короткого до длинного.', '<b>Motion</b> — pointer speed slider and the "Show pointer trails" check box with a trail length slider from short to long.')}</li>
+          </ul>
+
+          <h3>${L('3. Система (sysdm.cpl)', '3. System (sysdm.cpl)')}</h3>
+          <ul>
+            <li>${L('<b>Общие</b> — версия Microslop Win 98 SE (4.10.1998 A), имя владельца, модель и тактовая частота процессора, а также объем оперативной памяти согласно текущим настройкам BIOS.', '<b>General</b> — Microslop Win 98 SE version (4.10.1998 A), registered owner, and CPU model, clock speed, and RAM capacity read from current BIOS settings.')}</li>
+            <li>${L('<b>Устройства</b> — Диспетчер устройств с переключением вида («По типу» / «По подключению»), списком видеоадаптеров (3dfx Voodoo2 3D Accelerator, S3 Trio64V2/DX), звуковых плат (Creative Sound Blaster AWE64 Gold), привода CD-ROM (TOSHIBA XM-6202B), контроллеров жестких дисков, портов COM/LPT и кнопкой «Свойства» для просмотра прерываний IRQ и состояния драйвера.', '<b>Device Manager</b> — hardware tree viewable by type or by connection, listing display adapters (3dfx Voodoo2, S3 Trio64V2/DX), sound cards (Creative Sound Blaster AWE64 Gold), CD-ROM drive (TOSHIBA XM-6202B), disk controllers, COM/LPT ports, and a Properties dialog showing driver status and IRQ resources.')}</li>
+            <li>${L('<b>Быстродействие</b> — сводка свободных ресурсов системы, режима файловой системы и памяти, а также три кнопки тонкой настройки: <b>«Файловая система...»</b> (роль компьютера, упреждающее чтение, размер кэша CD-ROM, отладка FAT32), <b>«Графика...»</b> (4 ступени аппаратного ускорения видеокарты) и <b>«Вирт. память...»</b> (автоматический или ручной размер файла подкачки <code>WIN386.SWP</code> на диске C:).', '<b>Performance</b> — system resource and memory summary plus three tuning dialogs: <b>File System...</b> (computer role, read-ahead optimization, CD-ROM cache size, FAT32 troubleshooting), <b>Graphics...</b> (4-step hardware acceleration slider), and <b>Virtual Memory...</b> (automatic or manual swap file <code>WIN386.SWP</code> size on drive C:).')}</li>
+          </ul>
+
+          <h3>${L('4. Электропитание (powercfg.cpl)', '4. Power Management (powercfg.cpl)')}</h3>
+          <ul>
+            <li>${L('<b>Схемы управления питанием</b> — выбор готовой схемы («Домашний или офисный настольный», «Портативный (ноутбук)», «Всегда включен»), сохранение своей схемы кнопкой «Сохранить как...» и раздельная настройка времени бездействия до <b>отключения монитора</b> и <b>остановки жестких дисков</b>.', '<b>Power Schemes</b> — built-in profiles (Home/Office Desk, Portable/Laptop, Always On), Save As... for custom schemes, and separate idle timers for <b>Turn off monitor</b> and <b>Turn off hard disks</b>.')}</li>
+            <li>${L('<b>Дополнительно</b> — флажок «Всегда отображать значок на панели задач» (выводит в трей значок питания с меню быстрого переключения схем и немедленного гашения монитора).', '<b>Advanced</b> — "Always show icon on the taskbar" check box, placing a power icon in the tray for switching schemes or triggering monitor standby on demand.')}</li>
+          </ul>
+
+          <h3>${L('5. Установка и удаление программ (appwiz.cpl)', '5. Add/Remove Programs (appwiz.cpl)')}</h3>
+          <ul>
+            <li>${L('<b>Установка и удаление</b> — кнопка <b>«Установить...»</b> запускает мастер, который ищет установочные пакеты <code>.EXE</code> на компакт-диске D: и в папке <code>C:\\My Documents\\Downloads</code>. В нижнем списке можно удалить установленную программу или игру либо вызвать окно обслуживания Microslop Office 97 (восстановление или удаление Скрепыша).', '<b>Install/Uninstall</b> — <b>Install...</b> launches a wizard that scans CD drive D: and <code>C:\\My Documents\\Downloads</code> for <code>.EXE</code> setup packages. The list below uninstalls installed apps/games or opens Microslop Office 97 maintenance to repair or remove Clippy.')}</li>
+            <li>${L('<b>Установка Win</b> — включение и отключение 9 категорий системных компонентов (Стандартные, Связь, Средства мультимедиа, Игры, Служебные программы, Темы рабочего стола и др.) с просмотром отдельных модулей по кнопке «Состав...».', '<b>Win Setup</b> — enables or disables 9 categories of system components (Accessories, Communications, Multimedia, Games, System Tools, Desktop Themes, etc.) with a Details... dialog for individual subcomponents.')}</li>
+            <li>${L('<b>Загрузочный диск</b> — кнопка <b>«Создать диск...»</b> форматирует виртуальную дискету <b>A:</b> и записывает на неё системные файлы аварийной загрузки MS-DOS (<code>COMMAND.COM</code>, <code>FDISK.EXE</code>, <code>FORMAT.COM</code>, <code>SCANDISK.EXE</code>, <code>HIMEM.SYS</code>, <code>OAKCDROM.SYS</code>, <code>EBD.CAB</code>).', '<b>Startup Disk</b> — <b>Create Disk...</b> formats virtual floppy drive <b>A:</b> and writes the MS-DOS emergency boot utilities (<code>COMMAND.COM</code>, <code>FDISK.EXE</code>, <code>FORMAT.COM</code>, <code>SCANDISK.EXE</code>, <code>HIMEM.SYS</code>, <code>OAKCDROM.SYS</code>, <code>EBD.CAB</code>).')}</li>
+          </ul>
+
+          <h3>${L('6. Мультимедиа, Дата и время, Язык, Обозреватель и Панель задач', '6. Multimedia, Date/Time, Regional, Internet, and Taskbar')}</h3>
+          <ul>
+            <li>${L('<b>Мультимедиа (mmsys.cpl)</b> — на вкладке «Звуки» назначаются звуковые сигналы для событий системы и выбираются схемы («Win Default», «Robotz», «Jungle», «Без звука») с кнопкой прослушивания «▶»; на вкладке «Аудио» выбирается устройство воспроизведения и включается значок громкости на панели задач.', '<b>Multimedia (mmsys.cpl)</b> — the Sounds tab assigns audio clips to system events and switches sound schemes (Win Default, Robotz, Jungle, No Sounds) with a "▶" preview button; the Audio tab selects the playback device and toggles the taskbar volume icon.')}</li>
+            <li>${L('<b>Дата и время (timedate.cpl)</b> — установка месяца, года, числа и точного времени на вкладке «Дата и время» и выбор часового пояса с переходом на летнее время на вкладке «Часовой пояс».', '<b>Date/Time (timedate.cpl)</b> — sets the month, year, day, and clock time on the Date & Time tab, and configures the GMT offset and daylight saving time on the Time Zone tab.')}</li>
+            <li>${L('<b>Язык и стандарты (intl.cpl)</b> — мгновенно переключает язык всей оболочки между русским и английским и показывает примеры форматирования чисел, валюты, времени и даты.', '<b>Regional Settings (intl.cpl)</b> — switches the entire shell between Russian and English and previews number, currency, time, and date formatting.')}</li>
+            <li>${L('<b>Свойства обозревателя (inetcpl.cpl)</b> — задает домашнюю страницу Internet Explorer (кнопки «С текущей», «По умолчанию» <code>http://www.search98.com</code>, «Пустая» <code>about:blank</code>), удаляет временные файлы Интернета и очищает журнал посещенных адресов.', '<b>Internet Options (inetcpl.cpl)</b> — sets the Internet Explorer home page (Use Current, Use Default <code>http://www.search98.com</code>, or Use Blank <code>about:blank</code>), deletes temporary Internet files, and clears the history list.')}</li>
+            <li>${L('<b>Панель задач и меню «Пуск»</b> — на вкладке «Параметры панели задач» переключаются флажки «Располагать поверх других окон», «Автоматически убирать с экрана», «Мелкие значки в главном меню» и «Отображать часы»; на вкладке «Настройка меню "Пуск"» кнопки «Добавить...», «Удалить...» и «Дополнительно...» управляют ярлыками программ, а кнопка «Очистить» стирает список недавних документов, историю окна «Выполнить» и журнал Netscape.', '<b>Taskbar & Start Menu</b> — the Taskbar Options tab toggles Always on top, Auto hide, Show small icons in Start menu, and Show clock; the Start Menu Programs tab provides Add..., Remove..., and Advanced... to manage program shortcuts, and Clear to wipe recent documents, Run history, and Netscape history.')}</li>
+          </ul>
+          ${related('desktop', 'startmenu', 'multimedia', 'system')}
         `
       },
       {
         id: 'system',
-        keywords: L('служебные, диспетчер задач, msconfig, dxdiag, реестр, regedit, scandisk, дефрагментация, очистка диска, антивирус, avp', 'system tools, task manager, msconfig, dxdiag, registry, regedit, scandisk, defrag, disk cleanup, antivirus, avp'),
+        keywords: L('служебные, диспетчер задач, системный монитор, sysmon, msconfig, sysedit, редактор файлов конфигурации, dxdiag, реестр, regedit, scandisk, дефрагментация, очистка диска, wintune, clibench, тест монитора, nokia, mon_test, антивирус, avp, касперский', 'system tools, task manager, system monitor, sysmon, msconfig, sysedit, system configuration editor, dxdiag, registry, regedit, scandisk, defrag, disk cleanup, wintune, clibench, monitor test, nokia, mon_test, antivirus, avp, kaspersky'),
         content: `
           <h2>${titles.system}</h2>
+          <p>${L('Служебные программы расположены в меню «Пуск» → «Программы» → «Стандартные» → «Служебные». Они позволяют следить за ресурсами компьютера, редактировать конфигурационные файлы и реестр, обслуживать диск и тестировать оборудование.', 'System tools are located in Start → Programs → Accessories → System Tools. They monitor system resources, edit configuration files and the Registry, maintain disk drives, and benchmark hardware.')}</p>
           <table class="win-help-table">
-            <tr><td class="win-help-table-glyph">${glyph('taskmgr')}</td><td><b>${L('Диспетчер задач', 'Task Manager')}</b> — ${L('открытые программы и загрузка процессора.', 'running programs and processor load.')}</td><td><button class="win-help-shortcut" data-run="taskmgr">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('msconfig')}</td><td><b>${L('Настройка системы', 'System Configuration')}</b> — ${L('автозагрузка, WIN.INI и SYSTEM.INI.', 'startup, WIN.INI, and SYSTEM.INI.')}</td><td><button class="win-help-shortcut" data-run="msconfig">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('dxdiag')}</td><td><b>${L('Диагностика DirectX', 'DirectX Diagnostic Tool')}</b> — ${L('видео- и звуковые устройства.', 'display and sound devices.')}</td><td><button class="win-help-shortcut" data-run="dxdiag">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('regedit')}</td><td><b>${L('Редактор реестра', 'Registry Editor')}</b> — ${L('разделы HKEY_LOCAL_MACHINE и HKEY_CURRENT_USER.', 'the HKEY_LOCAL_MACHINE and HKEY_CURRENT_USER keys.')}</td><td><button class="win-help-shortcut" data-run="regedit">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('scandisk')}</td><td><b>ScanDisk</b> — ${L('проверка диска на ошибки.', 'checks the disk for errors.')}</td><td><button class="win-help-shortcut" data-run="scandisk">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('defrag')}</td><td><b>${L('Дефрагментация диска', 'Disk Defragmenter')}</b> — ${L('ускоряет чтение файлов.', 'speeds up reading files.')}</td><td><button class="win-help-shortcut" data-run="defrag">${icon('shortcut-overlay')}</button></td></tr>
-            <tr><td class="win-help-table-glyph">${glyph('cleanmgr')}</td><td><b>${L('Очистка диска', 'Disk Cleanup')}</b> — ${L('удаляет временные файлы.', 'removes temporary files.')}</td><td><button class="win-help-shortcut" data-run="cleanmgr">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('taskmgr')}</td><td><b>${L('Диспетчер задач (Task Manager)', 'Task Manager')}</b> — ${L('список открытых приложений и фоновых процессов с графиками загрузки ЦП и памяти и кнопкой «Снять задачу».', 'lists running applications and background processes with live CPU and memory graphs and an End Task button.')}</td><td><button class="win-help-shortcut" data-run="taskmgr">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('sysmon')}</td><td><b>${L('Системный монитор (System Monitor)', 'System Monitor')}</b> — ${L('графики в реальном времени (линейные, гистограммы, числовые) для загрузки ядра ЦП, свободной памяти, файла подкачки, чтения диска и сетевого трафика.', 'real-time line, bar, and numeric charts tracking CPU kernel usage, free memory, swap file size, disk throughput, and network traffic.')}</td><td><button class="win-help-shortcut" data-run="sysmon">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('msconfig')}</td><td><b>${L('Настройка системы (MSConfig)', 'System Configuration Utility (MSConfig)')}</b> — ${L('управление вариантами загрузки, файлами CONFIG.SYS, AUTOEXEC.BAT, SYSTEM.INI, WIN.INI и списком программ автозагрузки.', 'manages startup modes, CONFIG.SYS, AUTOEXEC.BAT, SYSTEM.INI, WIN.INI, and the Startup programs list.')}</td><td><button class="win-help-shortcut" data-run="msconfig">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('sysedit')}</td><td><b>${L('Редактор файлов конфигурации (SysEdit)', 'System Configuration Editor (SysEdit)')}</b> — ${L('каскадное окно одновременного редактирования системных файлов AUTOEXEC.BAT, CONFIG.SYS, WIN.INI и SYSTEM.INI.', 'MDI editor that opens AUTOEXEC.BAT, CONFIG.SYS, WIN.INI, and SYSTEM.INI in cascaded child windows.')}</td><td><button class="win-help-shortcut" data-run="sysedit">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('dxdiag')}</td><td><b>${L('Диагностика DirectX (DxDiag)', 'DirectX Diagnostic Tool (DxDiag)')}</b> — ${L('проверка DirectX 6.1, тестирование 2D-оверлея DirectDraw, вращающегося 3D-куба Direct3D и звуковых каналов DirectSound.', 'inspects DirectX 6.1 drivers and runs interactive DirectDraw 2D, spinning Direct3D cube, and DirectSound tests.')}</td><td><button class="win-help-shortcut" data-run="dxdiag">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('regedit')}</td><td><b>${L('Редактор реестра (Registry Editor)', 'Registry Editor')}</b> — ${L('просмотр и изменение разделов HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, поиск по ключам и экспорт/импорт файлов .REG.', 'browses and edits HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, and HKEY_LOCAL_MACHINE keys with search and .REG export/import.')}</td><td><button class="win-help-shortcut" data-run="regedit">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('scandisk')}</td><td><b>ScanDisk</b> — ${L('стандартная и полная проверка поверхности диска C: на сбойные сектора и потерянные кластеры.', 'runs standard or thorough surface scans on drive C: to repair bad sectors and lost clusters.')}</td><td><button class="win-help-shortcut" data-run="scandisk">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('defrag')}</td><td><b>${L('Дефрагментация диска (Disk Defragmenter)', 'Disk Defragmenter')}</b> — ${L('визуальная укладка кластеров диска C: с подробной картой занятых, фрагментированных и системных блоков.', 'defragments clusters on drive C: with a live block map legend.')}</td><td><button class="win-help-shortcut" data-run="defrag">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('cleanmgr')}</td><td><b>${L('Очистка диска (Disk Cleanup)', 'Disk Cleanup')}</b> — ${L('удаление временных файлов Интернета, старых файлов установки и очистка Корзины.', 'frees disk space by removing temporary Internet files, setup logs, and Recycle Bin contents.')}</td><td><button class="win-help-shortcut" data-run="cleanmgr">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('wintune')}</td><td><b>Wintune 98 / CLIbench</b> — ${L('испытательный пакет для замера производительности процессора (MIPS/MFLOPS), видеокарты 2D/3D, памяти и диска и сравнения с эталонными ПК 1998 года.', 'hardware benchmark suite measuring CPU (MIPS/MFLOPS), 2D/3D video, RAM, and disk speed against 1998 reference systems.')}</td><td><button class="win-help-shortcut" data-run="wintune">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('mon-test')}</td><td><b>NOKIA Monitor Test</b> — ${L('набор полноэкранных настроечных таблиц для проверки геометрии, сведения лучей, муара, контрастности и фокусировки монитора.', 'fullscreen calibration patterns for testing monitor geometry, convergence, moiré, contrast, and focus.')}</td><td><button class="win-help-shortcut" data-run="mon_test">${icon('shortcut-overlay')}</button></td></tr>
           </table>
-          ${related('troubleshooting', 'run')}
+          ${note([
+            L('<b>Антивирус Касперского (AVP 3.0)</b> покупается и скачивается на официальном сайте <b>Лаборатории Касперского</b> (<code>http://www.avp.ru</code>) и проверяет папки диска C: на вирусы со звуковым оповещением.', '<b>Kaspersky Anti-Virus (AVP 3.0)</b> can be purchased and downloaded from <b>Kaspersky Lab</b> (<code>http://www.avp.ru</code>) to scan drive C: folders for viruses.')
+          ])}
+          ${related('cpanel', 'run', 'troubleshooting')}
         `
       },
       {
         id: 'run',
-        keywords: L('выполнить, команда, run, cmd, command, ms-dos, консоль, winver', 'run, command, cmd, ms-dos, console, winver'),
+        keywords: L('выполнить, команда, run, cmd, command, ms-dos, консоль, winver, dir, cd, cls, mem, ver, ping, ipconfig, fdisk, format, matrix, cow, starwars', 'run, command, cmd, ms-dos, console, winver, dir, cd, cls, mem, ver, ping, ipconfig, fdisk, format, matrix, cow, starwars'),
         content: `
           <h2>${titles.run}</h2>
-          <p>${L('Команда «Выполнить» запускает программу по ее имени.', 'The Run command starts a program by its name.')}</p>
-          <h3>${L('Как запустить программу по имени', 'To start a program by name')}</h3>
-          <ol>
-            <li>${L('Нажмите «Пуск» и выберите «Выполнить».', 'Click Start, and then click Run.')}</li>
-            <li>${L('Введите имя программы, например <code>notepad</code>.', 'Type the program name, for example <code>notepad</code>.')}</li>
-            <li>${L('Нажмите «OK».', 'Click OK.')}</li>
-          </ol>
+          <p>${L('Окно «Пуск» → «Выполнить...» открывает любую программу, апплет Панели управления, папку или веб-страницу по её короткому имени.', 'The Start → Run... dialog opens any program, Control Panel applet, folder, or web address by its command name.')}</p>
+          <h3>${L('Основные команды окна «Выполнить»', 'Common Run dialog commands')}</h3>
           <table class="win-help-table">
-            <tr><th>${L('Команда', 'Command')}</th><th>${L('Программа', 'Program')}</th></tr>
-            <tr><td><code>notepad</code></td><td>${L('Блокнот', 'Notepad')}</td></tr>
-            <tr><td><code>calc</code></td><td>${L('Калькулятор', 'Calculator')}</td></tr>
-            <tr><td><code>pbrush</code></td><td>Paint</td></tr>
+            <tr><th>${L('Команда', 'Command')}</th><th>${L('Что открывает', 'What it opens')}</th></tr>
             <tr><td><code>control</code></td><td>${L('Панель управления', 'Control Panel')}</td></tr>
-            <tr><td><code>desk.cpl</code></td><td>${L('Свойства экрана', 'Display Properties')}</td></tr>
-            <tr><td><code>msconfig</code></td><td>${L('Настройка системы', 'System Configuration')}</td></tr>
-            <tr><td><code>regedit</code></td><td>${L('Редактор реестра', 'Registry Editor')}</td></tr>
-            <tr><td><code>command</code></td><td>${L('Сеанс MS-DOS', 'MS-DOS Prompt')}</td></tr>
-            <tr><td><code>winver</code></td><td>${L('Версия системы', 'System version')}</td></tr>
+            <tr><td><code>desk.cpl</code> / <code>main.cpl</code> / <code>sysdm.cpl</code></td><td>${L('Свойства: Экран / Мышь / Система', 'Display / Mouse / System Properties')}</td></tr>
+            <tr><td><code>powercfg.cpl</code> / <code>appwiz.cpl</code> / <code>mmsys.cpl</code></td><td>${L('Электропитание / Установка программ / Мультимедиа', 'Power Management / Add-Remove Programs / Multimedia')}</td></tr>
+            <tr><td><code>timedate.cpl</code> / <code>intl.cpl</code> / <code>inetcpl.cpl</code></td><td>${L('Дата и время / Язык и стандарты / Свойства обозревателя', 'Date-Time / Regional Settings / Internet Options')}</td></tr>
+            <tr><td><code>notepad</code> / <code>wordpad</code> / <code>mspaint</code> / <code>calc</code></td><td>${L('Блокнот / WordPad / Paint / Калькулятор', 'Notepad / WordPad / Paint / Calculator')}</td></tr>
+            <tr><td><code>charmap</code> / <code>clipbrd</code> / <code>kodakimg</code></td><td>${L('Таблица символов / Буфер обмена / Просмотр картинок', 'Character Map / ClipBook Viewer / Imaging')}</td></tr>
+            <tr><td><code>excel</code> / <code>photoshop</code> / <code>acdsee</code> / <code>acrobat</code> / <code>winrar</code> / <code>wincmd</code></td><td>${L('Excel 97 / Photoshop 5.0 / ACDSee / Acrobat Reader / WinRAR / Win Commander', 'Excel 97 / Photoshop 5.0 / ACDSee / Acrobat Reader / WinRAR / Win Commander')}</td></tr>
+            <tr><td><code>winamp</code> / <code>cdplayer</code> / <code>cdex</code> / <code>ft2</code> / <code>sndrec32</code> / <code>sndvol32</code> / <code>mplayer</code></td><td>${L('WinAmp / Лазерный проигрыватель / CDex / FastTracker II / Звукозапись / Громкость / Медиаплеер', 'WinAmp / CD Player / CDex / FastTracker II / Sound Recorder / Volume Control / Media Player')}</td></tr>
+            <tr><td><code>iexplore</code> / <code>netscape</code> / <code>outlook</code> / <code>icq</code> / <code>mirc</code> / <code>hypertrm</code></td><td>${L('Internet Explorer / Netscape / Outlook Express / ICQ / mIRC / HyperTerminal', 'Internet Explorer / Netscape / Outlook Express / ICQ / mIRC / HyperTerminal')}</td></tr>
+            <tr><td><code>taskmgr</code> / <code>sysmon</code> / <code>msconfig</code> / <code>sysedit</code> / <code>dxdiag</code> / <code>regedit</code></td><td>${L('Диспетчер задач / Системный монитор / Настройка системы / SysEdit / DirectX / Реестр', 'Task Manager / System Monitor / MSConfig / SysEdit / DirectX Diagnostic / Registry Editor')}</td></tr>
+            <tr><td><code>scandisk</code> / <code>defrag</code> / <code>cleanmgr</code> / <code>wintune</code> / <code>clibench</code> / <code>mon_test</code></td><td>${L('ScanDisk / Дефрагментация / Очистка диска / Wintune 98 / CLIbench / Тест монитора', 'ScanDisk / Disk Defragmenter / Disk Cleanup / Wintune 98 / CLIbench / Monitor Test')}</td></tr>
+            <tr><td><code>qbasic</code> / <code>command</code> / <code>clippy</code> / <code>winver</code></td><td>${L('QBasic 1.1 / Сеанс MS-DOS / Помощник Скрепыш / О программе Win', 'QBasic 1.1 / MS-DOS Prompt / Clippy / About Win')}</td></tr>
           </table>
+          <h3>${L('Сеанс MS-DOS (command.com)', 'MS-DOS Prompt (command.com)')}</h3>
+          <p>${L('В окне сеанса MS-DOS работают команды навигации по виртуальному диску и сетевые утилиты: <code>HELP</code>, <code>DIR</code>, <code>CD</code>, <code>TYPE</code>, <code>CLS</code>, <code>VER</code>, <code>MEM</code>, <code>DATE</code>, <code>TIME</code>, <code>TREE</code>, <code>ECHO</code>, <code>COLOR</code>, <code>PING</code>, <code>IPCONFIG</code>, <code>NETSTAT</code>, <code>TRACERT</code>, <code>FDISK</code>, <code>FORMAT</code>, <code>CLIPPY /?</code>, а также пасхальные команды <code>MATRIX</code>, <code>COW</code> и <code>STARWARS</code>. Полноэкранный режим MS-DOS вызывается через «Пуск» → «Завершение работы...» → «Перезагрузить в режиме эмуляции MS-DOS».', 'The MS-DOS Prompt window supports virtual disk navigation and network commands: <code>HELP</code>, <code>DIR</code>, <code>CD</code>, <code>TYPE</code>, <code>CLS</code>, <code>VER</code>, <code>MEM</code>, <code>DATE</code>, <code>TIME</code>, <code>TREE</code>, <code>ECHO</code>, <code>COLOR</code>, <code>PING</code>, <code>IPCONFIG</code>, <code>NETSTAT</code>, <code>TRACERT</code>, <code>FDISK</code>, <code>FORMAT</code>, <code>CLIPPY /?</code>, plus easter eggs <code>MATRIX</code>, <code>COW</code>, and <code>STARWARS</code>. Full-screen MS-DOS mode is available via Start → Shut Down... → Restart in MS-DOS mode.')}</p>
           ${shortcut('open_run', L('Щелкните здесь, чтобы открыть окно «Выполнить».', 'Click here to open the Run dialog.'))}
-          ${related('system', 'shortcuts')}
+          ${shortcut('command', L('Щелкните здесь, чтобы открыть сеанс MS-DOS.', 'Click here to open the MS-DOS Prompt.'))}
+          ${related('system', 'cpanel', 'shortcuts')}
         `
       },
       {
         id: 'troubleshooting',
-        keywords: L('неполадки, ошибка, зависание, снять задачу, синий экран, диск, восстановление', 'troubleshooting, error, hang, end task, blue screen, disk, recovery'),
+        keywords: L('неполадки, ошибка, зависание, снять задачу, синий экран, bsod, диск, восстановление, мышь не щелкает, экран погас, спящий режим, bios, cmos, разгон, частота, память', 'troubleshooting, error, hang, end task, blue screen, bsod, disk, recovery, mouse clicks disabled, screen blank, standby, bios, cmos, overclock, frequency, memory'),
         content: `
           <h2>${titles.troubleshooting}</h2>
-          <h3>${L('Программа не отвечает', 'A program stops responding')}</h3>
+          <h3>${L('Программа перестала отвечать', 'A program stops responding')}</h3>
           <ol>
-            <li>${L('Откройте Диспетчер задач: «Пуск» → «Программы» → «Стандартные» → «Служебные» → «Диспетчер задач».', 'Open Task Manager: Start → Programs → Accessories → System Tools → Task Manager.')}</li>
-            <li>${L('Выберите программу в списке.', 'Select the program in the list.')}</li>
-            <li>${L('Нажмите «Снять задачу».', 'Click End Task.')}</li>
+            <li>${L('Откройте <b>Диспетчер задач</b>: нажмите ' + key('Ctrl+Alt+Del') + ' или выберите «Пуск» → «Программы» → «Стандартные» → «Служебные» → «Диспетчер задач».', 'Open <b>Task Manager</b>: press ' + key('Ctrl+Alt+Del') + ' or click Start → Programs → Accessories → System Tools → Task Manager.')}</li>
+            <li>${L('Выделите зависшую программу на вкладке «Приложения» и нажмите <b>Снять задачу</b>.', 'Select the unresponsive application on the Applications tab and click <b>End Task</b>.')}</li>
           </ol>
           ${shortcut('taskmgr', L('Щелкните здесь, чтобы открыть Диспетчер задач.', 'Click here to open Task Manager.'))}
-          <h3>${L('Ошибки файлов и диска', 'File and disk errors')}</h3>
-          <p>${L('Запустите ScanDisk, чтобы проверить диск, и программу дефрагментации, чтобы упорядочить файлы.', 'Run ScanDisk to check the disk, and Disk Defragmenter to reorganize the files.')}</p>
+
+          <h3>${L('Перестали работать щелчки мыши', 'Mouse clicks stopped working')}</h3>
+          <p>${L('Если в апплете «Мышь» на вкладке «Кнопки» был включен флажок «Отключить щелчки кнопок мыши», подождите 5 секунд: помощник Скрепыш автоматически заметит проблему, снимет блокировку и вернет управление кнопками мыши.', 'If "Disable mouse button clicks" was enabled on the Buttons tab of Mouse Properties, wait 5 seconds: Clippy automatically detects the lockout and restores normal mouse clicking.')}</p>
+
+          <h3>${L('Погас экран (режим энергосбережения Energy Star)', 'The screen went dark (Energy Star standby)')}</h3>
+          <p>${L('Когда срабатывает таймер отключения монитора, заданный в апплете «Электропитание», экран переходит в ждущий режим. Пошевелите мышью или нажмите любую клавишу на клавиатуре, чтобы мгновенно разбудить монитор.', 'When the monitor standby timer configured in Power Management expires, the display enters sleep mode. Move the mouse or press any key to wake the monitor immediately.')}</p>
+
+          <h3>${L('Окно ушло за пределы экрана', 'A window moved off the screen')}</h3>
+          <p>${L('Щелкните кнопку этого окна на панели задач правой кнопкой мыши и выберите «Развернуть», либо щелкните свободное место панели задач правой кнопкой и выберите «Окна каскадом».', 'Right-click the window’s taskbar button and choose Maximize, or right-click an empty area of the taskbar and choose Cascade Windows.')}</p>
+
+          <h3>${L('Ошибки файловой системы и нехватка места на диске C:', 'Disk errors and low free space on drive C:')}</h3>
+          <p>${L('Запустите <b>ScanDisk</b> для проверки кластеров, <b>Дефрагментацию диска</b> для ускорения чтения и <b>Очистку диска</b> (или очистите Корзину) для освобождения мегабайт.', 'Run <b>ScanDisk</b> to check cluster integrity, <b>Disk Defragmenter</b> to optimize file layout, and <b>Disk Cleanup</b> (or Empty Recycle Bin) to reclaim disk space.')}</p>
           ${shortcut('scandisk', L('Щелкните здесь, чтобы запустить ScanDisk.', 'Click here to run ScanDisk.'))}
-          <h3>${L('Окно ушло за край экрана', 'A window is off the screen')}</h3>
-          <p>${L('Щелкните кнопку окна на панели задач правой кнопкой мыши и выберите «Развернуть», или щелкните панель задач правой кнопкой и выберите «Окна каскадом».', 'Right-click the window’s taskbar button and click Maximize, or right-click the taskbar and click Cascade Windows.')}</p>
-          ${related('system', 'shortcuts')}
+
+          <h3>${L('Настройка CMOS BIOS и безопасный сброс оборудования', 'CMOS BIOS Setup and hardware reset')}</h3>
+          <p>${L('Чтобы изменить частоту шины и множитель процессора, объем ОЗУ или порядок загрузочных дисков (A:, C:, CD-ROM), откройте «Пуск» → «Завершение работы...» и выберите <b>«Перезагрузить в режиме настройки BIOS»</b> (либо нажмите ' + key('Del') + ' / ' + key('F2') + ' во время экрана загрузки POST). Если после разгона система работает нестабильно, выберите в BIOS пункт <b>Load Fail-Safe Defaults</b> и сохраните настройки клавишей ' + key('F10') + '.', 'To change the CPU bus clock and multiplier, RAM amount, or boot device order (A:, C:, CD-ROM), open Start → Shut Down... and choose <b>Restart in BIOS Setup mode</b> (or press ' + key('Del') + ' / ' + key('F2') + ' during the POST boot screen). If overclocking causes instability, select <b>Load Fail-Safe Defaults</b> in BIOS and press ' + key('F10') + ' to save.')}</p>
+          ${shortcut('bios-setup', L('Щелкните здесь, чтобы перезагрузить компьютер в CMOS Setup Utility (BIOS).', 'Click here to restart into CMOS Setup Utility (BIOS).'))}
+          ${related('system', 'cpanel', 'run')}
         `
       }
     ];
     helpTopics.forEach(topic => { topic.title = titles[topic.id]; });
 
     const indexItems = (isRu ? [
-      ['Блокнот', 'apps'], ['Быстрый запуск', 'startmenu'], ['Вырезать и вставить', 'explorer'], ['Выполнить', 'run'],
-      ['Выделение значков', 'desktop'], ['Громкость', 'multimedia'], ['Дата и время', 'cpanel'], ['Дефрагментация диска', 'system'],
-      ['Диаграмма диска', 'explorer'], ['Диспетчер задач', 'system'], ['Емкость диска', 'explorer'], ['Завершение работы', 'startmenu'],
-      ['Заставка', 'cpanel'], ['Значки рабочего стола', 'desktop'], ['Интернет', 'internet'], ['Калькулятор', 'apps'],
-      ['Клавиатура', 'shortcuts'], ['Корзина', 'desktop'], ['Мой компьютер', 'explorer'], ['Меню «Пуск»', 'startmenu'],
-      ['Мультимедиа', 'multimedia'], ['Обои', 'cpanel'], ['Окна сообщений', 'desktop'], ['Панель задач', 'startmenu'],
-      ['Панель управления', 'cpanel'], ['Подсказки', 'whatsnew'], ['Показать рабочий стол', 'startmenu'], ['Проводник', 'explorer'],
-      ['Реестр', 'system'], ['Сеанс MS-DOS', 'run'], ['Системное меню', 'desktop'], ['Снять задачу', 'troubleshooting'],
-      ['Стандартные программы', 'apps'], ['Таблица символов', 'apps'], ['Часы', 'startmenu'], ['Что нового', 'whatsnew'],
-      ['Ярлыки', 'desktop'], ['Язык системы', 'startmenu'], ['ICQ', 'internet'], ['Internet Explorer', 'internet'],
-      ['Outlook Express', 'internet'], ['Paint', 'apps'], ['ScanDisk', 'system'], ['WinAmp', 'multimedia'], ['WordPad', 'apps']
+      ['Автозагрузка (MSConfig)', 'system'], ['Антивирус Касперского (AVP)', 'system'], ['Архиватор WinRAR 98', 'apps'],
+      ['Блокнот (Notepad)', 'apps'], ['Буфер обмена (Clipbrd)', 'apps'], ['Быстродействие системы', 'cpanel'],
+      ['Быстрый запуск', 'startmenu'], ['Виртуальная память (WIN386.SWP)', 'cpanel'], ['Восстановление файлов из Корзины', 'desktop'],
+      ['Выделение значков', 'desktop'], ['Выполнить (команда Run)', 'run'], ['Вырезать, копировать и вставить', 'explorer'],
+      ['Гардероб Скрепыша', 'clippy'], ['Громкость и микшер', 'multimedia'], ['Дата и время (timedate.cpl)', 'cpanel'],
+      ['Двойной щелчок мыши', 'cpanel'], ['Дефрагментация диска', 'system'], ['Диагностика DirectX (DxDiag)', 'system'],
+      ['Диаграмма емкости диска C:', 'explorer'], ['Диск 3,5 (A:) и загрузочная дискета', 'cpanel'], ['Диспетчер задач', 'system'],
+      ['Диспетчер устройств', 'cpanel'], ['Домашняя страница обозревателя', 'cpanel'], ['Завершение работы и перезагрузка', 'startmenu'],
+      ['Заставка (хранитель экрана)', 'cpanel'], ['Звукозапись (Sound Recorder)', 'multimedia'], ['Звуковые схемы событий', 'cpanel'],
+      ['Значки рабочего стола и их смена', 'cpanel'], ['Игры и клиент Steam', 'apps'], ['Интернет и модем (Dial-Up)', 'internet'],
+      ['Калькулятор', 'apps'], ['Клавиатурные сочетания', 'shortcuts'], ['Кнопка «Шеф идёт!» (Boss Key)', 'clippy'],
+      ['Компоненты Win 98 (установка)', 'cpanel'], ['Корзина (очистка и восстановление)', 'desktop'], ['Курсоры и указатели мыши', 'cpanel'],
+      ['Лазерный проигрыватель (CD Player)', 'multimedia'], ['Левша и правша (кнопки мыши)', 'cpanel'], ['Мастер писем Скрепыша', 'clippy'],
+      ['Медиаплеер (Media Player)', 'multimedia'], ['Меню «Пуск» и его настройка', 'startmenu'], ['Мой компьютер и диски', 'explorer'],
+      ['Мультимедиа (mmsys.cpl)', 'cpanel'], ['Мышь (main.cpl)', 'cpanel'], ['Найти файлы и папки (F3)', 'explorer'],
+      ['Настройка системы (MSConfig)', 'system'], ['Обои рабочего стола', 'cpanel'], ['Область уведомлений (трей)', 'startmenu'],
+      ['Овечка eSheep 98 и котенок Neko', 'apps'], ['Окна (перемещение, размер, каскад)', 'desktop'], ['Оформление и цветовые схемы', 'cpanel'],
+      ['Очистка диска (cleanmgr)', 'system'], ['Панель задач и меню «Пуск»', 'cpanel'], ['Панель управления', 'cpanel'],
+      ['Поиск файлов', 'explorer'], ['Показать рабочий стол', 'startmenu'], ['Помощник Скрепыш (Clippy)', 'clippy'],
+      ['Проводник (Explorer)', 'explorer'], ['Просмотр картинок (Imaging и ACDSee)', 'apps'], ['Разгон процессора и BIOS Setup', 'troubleshooting'],
+      ['Редактор реестра (RegEdit)', 'system'], ['Редактор файлов конфигурации (SysEdit)', 'system'], ['Режим энергосбережения монитора', 'cpanel'],
+      ['Свойства обозревателя (inetcpl.cpl)', 'cpanel'], ['Сеанс MS-DOS (command.com)', 'run'], ['Синий экран (BSOD)', 'troubleshooting'],
+      ['Система (sysdm.cpl)', 'cpanel'], ['Системное меню окна', 'desktop'], ['Системный монитор (SysMon)', 'system'],
+      ['Снять задачу', 'troubleshooting'], ['Стандартные программы', 'apps'], ['Таблица символов (CharMap)', 'apps'],
+      ['Темы рабочего стола (Plus! 98)', 'cpanel'], ['Тест монитора NOKIA', 'system'], ['Удаление и установка программ (appwiz.cpl)', 'cpanel'],
+      ['Устранение неполадок', 'troubleshooting'], ['Часовой пояс и часы', 'cpanel'], ['Что нового в системе', 'whatsnew'],
+      ['Шлейф (след) указателя мыши', 'cpanel'], ['Экран (desk.cpl)', 'cpanel'], ['Электропитание (powercfg.cpl)', 'cpanel'],
+      ['Эффекты (крупные значки, сглаживание, ЭЛТ)', 'cpanel'], ['Язык и стандарты (intl.cpl)', 'cpanel'], ['Ярлыки программ', 'desktop'],
+      ['ACDSee 32', 'apps'], ['Acrobat Reader 3.0 (PDF)', 'apps'], ['Adobe Photoshop 5.0', 'apps'],
+      ['BIOS (CMOS Setup Utility)', 'troubleshooting'], ['CDex (граббер MP3)', 'multimedia'], ['FastTracker II (трекер)', 'multimedia'],
+      ['HyperTerminal (BBS)', 'internet'], ['ICQ 98a', 'internet'], ['Internet Explorer 5', 'internet'],
+      ['Microslop Excel 97', 'apps'], ['mIRC 32 (IRC-чат)', 'internet'], ['Netscape Communicator 6', 'internet'],
+      ['Outlook Express', 'internet'], ['Paint', 'apps'], ['QBasic 1.1', 'apps'],
+      ['ScanDisk', 'system'], ['Win Commander 3.5', 'apps'], ['WinAmp 98', 'multimedia'],
+      ['Wintune 98 и CLIbench', 'system'], ['WordPad', 'apps']
     ] : [
-      ['Accessories', 'apps'], ['Calculator', 'apps'], ['Character Map', 'apps'], ['Clock', 'startmenu'],
-      ['Control Panel', 'cpanel'], ['Cut and paste', 'explorer'], ['Date and time', 'cpanel'], ['Desktop icons', 'desktop'],
-      ['Disk capacity', 'explorer'], ['Disk chart', 'explorer'], ['Disk Defragmenter', 'system'], ['End Task', 'troubleshooting'],
-      ['Explorer', 'explorer'], ['ICQ', 'internet'], ['Internet', 'internet'], ['Internet Explorer', 'internet'],
-      ['Keyboard', 'shortcuts'], ['Language', 'startmenu'], ['Message boxes', 'desktop'], ['MS-DOS Prompt', 'run'],
-      ['Multimedia', 'multimedia'], ['My Computer', 'explorer'], ['Notepad', 'apps'], ['Outlook Express', 'internet'],
-      ['Paint', 'apps'], ['Quick Launch', 'startmenu'], ['Recycle Bin', 'desktop'], ['Registry', 'system'],
-      ['Run', 'run'], ['ScanDisk', 'system'], ['Screen saver', 'cpanel'], ['Selecting icons', 'desktop'],
-      ['Shortcuts', 'desktop'], ['Show Desktop', 'startmenu'], ['Shut Down', 'startmenu'], ['Start menu', 'startmenu'],
-      ['System menu', 'desktop'], ['Task Manager', 'system'], ['Taskbar', 'startmenu'], ['Tooltips', 'whatsnew'],
-      ['Volume', 'multimedia'], ['Wallpaper', 'cpanel'], ['What’s new', 'whatsnew'], ['WinAmp', 'multimedia'], ['WordPad', 'apps']
+      ['Accessories', 'apps'], ['ACDSee 32', 'apps'], ['Acrobat Reader 3.0 (PDF)', 'apps'],
+      ['Add/Remove Programs (appwiz.cpl)', 'cpanel'], ['Adobe Photoshop 5.0', 'apps'], ['Appearance and color schemes', 'cpanel'],
+      ['BIOS (CMOS Setup Utility)', 'troubleshooting'], ['Blue Screen (BSOD)', 'troubleshooting'], ['Boss Key (Clippy)', 'clippy'],
+      ['Calculator', 'apps'], ['CD Player', 'multimedia'], ['CDex MP3 ripper', 'multimedia'],
+      ['Character Map', 'apps'], ['ClipBook Viewer (clipbrd)', 'apps'], ['Clippy the Office Assistant', 'clippy'],
+      ['Clock and time zone', 'cpanel'], ['Control Panel', 'cpanel'], ['Cut, copy, and paste', 'explorer'],
+      ['Date/Time (timedate.cpl)', 'cpanel'], ['Desktop icons and custom icons', 'cpanel'], ['Desktop pets (Neko and eSheep 98)', 'apps'],
+      ['Device Manager', 'cpanel'], ['Dial-Up Networking (modem)', 'internet'], ['DirectX Diagnostic Tool (DxDiag)', 'system'],
+      ['Disk capacity pie chart', 'explorer'], ['Disk Cleanup (cleanmgr)', 'system'], ['Disk Defragmenter', 'system'],
+      ['Display Properties (desk.cpl)', 'cpanel'], ['Double-click speed', 'cpanel'], ['Effects (large icons, font smoothing, CRT)', 'cpanel'],
+      ['End Task', 'troubleshooting'], ['Explorer', 'explorer'], ['FastTracker II', 'multimedia'],
+      ['Find Files or Folders (F3)', 'explorer'], ['Floppy drive A: and Startup Disk', 'cpanel'], ['Games and Steam client', 'apps'],
+      ['Home page (Internet Options)', 'cpanel'], ['HyperTerminal (BBS)', 'internet'], ['ICQ 98a', 'internet'],
+      ['Imaging', 'apps'], ['Internet Explorer 5', 'internet'], ['Internet Options (inetcpl.cpl)', 'cpanel'],
+      ['Kaspersky Anti-Virus (AVP)', 'system'], ['Keyboard shortcuts', 'shortcuts'], ['Language and Regional Settings (intl.cpl)', 'cpanel'],
+      ['Left-handed and right-handed mouse', 'cpanel'], ['Letter Wizard (Clippy)', 'clippy'], ['Media Player', 'multimedia'],
+      ['Microslop Excel 97', 'apps'], ['mIRC 32 (IRC client)', 'internet'], ['Monitor standby (Energy Star)', 'cpanel'],
+      ['Mouse Properties (main.cpl)', 'cpanel'], ['MS-DOS Prompt (command.com)', 'run'], ['MSConfig (System Configuration)', 'system'],
+      ['Multimedia Properties (mmsys.cpl)', 'cpanel'], ['My Computer and drives', 'explorer'], ['Netscape Communicator 6', 'internet'],
+      ['NOKIA Monitor Test', 'system'], ['Notepad', 'apps'], ['Notification area (system tray)', 'startmenu'],
+      ['Outlook Express', 'internet'], ['Overclocking and BIOS Setup', 'troubleshooting'], ['Paint', 'apps'],
+      ['Performance and Graphics acceleration', 'cpanel'], ['Pointer schemes and trails', 'cpanel'], ['Power Management (powercfg.cpl)', 'cpanel'],
+      ['QBasic 1.1', 'apps'], ['Quick Launch toolbar', 'startmenu'], ['Recycle Bin (restore and empty)', 'desktop'],
+      ['Registry Editor (RegEdit)', 'system'], ['Run command', 'run'], ['ScanDisk', 'system'],
+      ['Screen saver', 'cpanel'], ['Selecting icons', 'desktop'], ['Shortcuts', 'desktop'],
+      ['Show Desktop', 'startmenu'], ['Shut Down and Restart', 'startmenu'], ['Sound Recorder', 'multimedia'],
+      ['Sound schemes', 'cpanel'], ['Start menu customization', 'startmenu'], ['Startup programs', 'system'],
+      ['SysEdit (System Configuration Editor)', 'system'], ['System Monitor (SysMon)', 'system'], ['System Properties (sysdm.cpl)', 'cpanel'],
+      ['System Tools', 'system'], ['Task Manager', 'system'], ['Taskbar & Start Menu Properties', 'cpanel'],
+      ['Themes (Microslop Plus! 98)', 'cpanel'], ['Troubleshooting', 'troubleshooting'], ['Virtual memory (WIN386.SWP)', 'cpanel'],
+      ['Volume Control mixer', 'multimedia'], ['Wallpaper', 'cpanel'], ['What’s new in the system', 'whatsnew'],
+      ['Win Commander 3.5', 'apps'], ['Win components setup', 'cpanel'], ['WinAmp 98', 'multimedia'],
+      ['Window system menu', 'desktop'], ['WinRAR 98 archiver', 'apps'], ['Wintune 98 and CLIbench', 'system'],
+      ['WordPad', 'apps']
     ]).map(([term, topicId]) => ({ term, topicId }));
 
     const content = document.createElement('div');
@@ -782,7 +997,14 @@ class AppDialogs {
       netscape: () => window.appNetscape && window.appNetscape.open(),
       dialup: () => window.appDialUp && window.appDialUp.open(),
       ie: () => window.appIE && window.appIE.open(),
-      imaging: () => window.appImageViewer && window.appImageViewer.open()
+      imaging: () => window.appImageViewer && window.appImageViewer.open(),
+      'taskbar-props': () => window.appTaskbarProps && window.appTaskbarProps.open(),
+      find: () => window.appFind && window.appFind.open(),
+      shutdown: () => window.appShutdown && window.appShutdown.openDialog(),
+      'bios-setup': () => window.appBIOS && window.appBIOS.rebootToSetup(),
+      winrar: () => window.appWinRAR && window.appWinRAR.open(),
+      neko: () => window.appNeko && window.appNeko.toggle(),
+      fasttracker: () => window.appFastTracker && window.appFastTracker.open()
     };
 
     let history = [];
@@ -943,15 +1165,15 @@ class AppDialogs {
     const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
     const content = document.createElement('div');
     content.className = 'win-dialog-content';
-    content.style.width = '380px';
+    content.style.width = '100%';
 
-    let mru = [];
+    let mru = null;
     try {
-      mru = JSON.parse(localStorage.getItem('win98_run_mru') || '[]');
+      mru = JSON.parse(localStorage.getItem('win98_run_mru') || 'null');
     } catch (e) {
-      mru = [];
+      mru = null;
     }
-    if (!Array.isArray(mru) || mru.length === 0) {
+    if (!Array.isArray(mru)) {
       mru = ['notepad', 'calc', 'msconfig', 'dxdiag', 'control', 'command', 'sndvol32', 'sysedit', 'charmap', 'scandisk'];
     }
 
@@ -969,7 +1191,7 @@ class AppDialogs {
           <input type="text" class="win-combobox-input run-input" value="${mru[0] || ''}">
           <button class="win-combobox-btn" id="run-combo-arrow"></button>
           <div class="win-combobox-dropdown" id="run-combo-list">
-            ${mru.map(item => `<div class="win-combobox-item" data-val="${item}"><span style="width:14px; height:14px; display:inline-block;">${Icons['programs']}</span><span>${item}</span></div>`).join('')}
+            ${mru.map(item => `<div class="win-combobox-item" data-val="${item}"><span class="icon-small" style="width:16px; height:16px; display:inline-flex; flex-shrink:0;">${Icons['programs']}</span><span>${item}</span></div>`).join('')}
           </div>
         </div>
       </div>
@@ -1009,7 +1231,20 @@ class AppDialogs {
 
     comboArrow.addEventListener('click', (e) => {
       e.stopPropagation();
-      comboList.classList.toggle('open');
+      const willOpen = !comboList.classList.contains('open');
+      comboList.classList.remove('drop-up');
+      comboList.classList.toggle('open', willOpen);
+      if (willOpen) {
+        const comboBox = comboArrow.closest('.win-combobox');
+        const desktop = document.getElementById('desktop');
+        if (comboBox && comboBox.getBoundingClientRect) {
+          const rect = comboBox.getBoundingClientRect();
+          const limit = desktop && desktop.getBoundingClientRect ? desktop.getBoundingClientRect().bottom : (window.innerHeight || 768) - 28;
+          if (rect.bottom + 142 > limit && rect.top > 142) {
+            comboList.classList.add('drop-up');
+          }
+        }
+      }
     });
 
     comboList.querySelectorAll('.win-combobox-item').forEach(item => {
@@ -1092,6 +1327,10 @@ class AppDialogs {
         if (window.appCPanel) window.appCPanel.openAppWizProperties();
       } else if (target === 'inetcpl.cpl' || target === 'internet') {
         if (window.appCPanel) window.appCPanel.openInternetProperties();
+      } else if (target === 'powercfg.cpl' || target === 'powercfg' || target === 'power') {
+        if (window.appCPanel) window.appCPanel.openPowerProperties();
+      } else if (target === 'taskbar' || target === 'startmenu') {
+        if (window.appTaskbarProps) window.appTaskbarProps.open();
       } else {
         if (window.appExplorer) window.appExplorer.open(['My Computer', 'Control Panel']);
       }
@@ -1128,6 +1367,86 @@ class AppDialogs {
     }
     if (cmd === 'inetcpl.cpl' || cmd === 'inetcpl') {
       if (window.appCPanel) window.appCPanel.openInternetProperties();
+      return;
+    }
+    if (cmd === 'powercfg.cpl' || cmd === 'powercfg') {
+      if (window.appCPanel) window.appCPanel.openPowerProperties();
+      return;
+    }
+    if (cmd === 'sounds' || cmd === 'sounds.cpl') {
+      if (window.appCPanel && window.appCPanel.openSoundsProperties) window.appCPanel.openSoundsProperties();
+      return;
+    }
+    if (cmd === 'keyboard' || cmd === 'keyboard.cpl') {
+      if (window.appCPanel && window.appCPanel.openKeyboardProperties) window.appCPanel.openKeyboardProperties();
+      return;
+    }
+    if (cmd === 'netcpl.cpl' || cmd === 'network') {
+      if (window.appCPanel && window.appCPanel.openNetworkProperties) window.appCPanel.openNetworkProperties();
+      return;
+    }
+    if (cmd === 'access.cpl' || cmd === 'accessibility') {
+      if (window.appCPanel && window.appCPanel.openAccessibilityProperties) window.appCPanel.openAccessibilityProperties();
+      return;
+    }
+    if (cmd === 'joy.cpl' || cmd === 'joystick') {
+      if (window.appCPanel && window.appCPanel.openJoystickProperties) window.appCPanel.openJoystickProperties();
+      return;
+    }
+    if (cmd === 'modem.cpl' || cmd === 'modems' || cmd === 'modem') {
+      if (window.appCPanel && window.appCPanel.openModemProperties) window.appCPanel.openModemProperties();
+      return;
+    }
+    if (cmd === 'password.cpl' || cmd === 'passwords') {
+      if (window.appCPanel && window.appCPanel.openPasswordsProperties) window.appCPanel.openPasswordsProperties();
+      return;
+    }
+    if (cmd === 'users' || cmd === 'users.cpl') {
+      if (window.appCPanel && window.appCPanel.openUsersProperties) window.appCPanel.openUsersProperties();
+      return;
+    }
+    if (cmd === 'printers') {
+      if (window.appExplorer) window.appExplorer.open(['My Computer', 'Printers']);
+      return;
+    }
+    if (cmd === 'fonts' || cmd === 'fontview' || cmd === 'fontview.exe') {
+      if (window.appExplorer) window.appExplorer.open(['My Computer', 'C:', 'WINDOWS', 'Fonts']);
+      return;
+    }
+    if (cmd === 'welcome' || cmd === 'welcome.exe') {
+      this.openWelcomeApp();
+      return;
+    }
+    if (cmd === 'wupdmgr' || cmd === 'wupdmgr.exe' || cmd === 'windowsupdate' || cmd === 'winupdate') {
+      if (window.appIE) window.appIE.open('http://windowsupdate.microslop.com');
+      return;
+    }
+    if (cmd === 'winipcfg' || cmd === 'winipcfg.exe' || cmd === 'ipconfig') {
+      if (window.appSysTools && window.appSysTools.openWinIpCfg) window.appSysTools.openWinIpCfg();
+      return;
+    }
+    if (cmd === 'msinfo32' || cmd === 'msinfo32.exe' || cmd === 'msinfo') {
+      if (window.appSysTools && window.appSysTools.openMsInfo32) window.appSysTools.openMsInfo32();
+      return;
+    }
+    if (cmd === 'sfc' || cmd === 'sfc.exe') {
+      if (window.appSysTools && window.appSysTools.openSfc) window.appSysTools.openSfc();
+      return;
+    }
+    if (cmd === 'scanreg' || cmd === 'scanregw' || cmd === 'scanregw.exe' || cmd === 'scanreg.exe') {
+      if (window.appSysTools && window.appSysTools.openScanReg) window.appSysTools.openScanReg();
+      return;
+    }
+    if (cmd === 'drvspace' || cmd === 'drvspace.exe') {
+      if (window.appSysTools && window.appSysTools.openDriveSpace) window.appSysTools.openDriveSpace();
+      return;
+    }
+    if (cmd === 'mstask' || cmd === 'mstask.exe' || cmd === 'tasks') {
+      if (window.appSysTools && window.appSysTools.openScheduledTasks) window.appSysTools.openScheduledTasks();
+      return;
+    }
+    if (cmd === 'mshearts' || cmd === 'mshearts.exe' || cmd === 'hearts') {
+      if (window.appHearts && window.appHearts.open) window.appHearts.open();
       return;
     }
 
@@ -1255,6 +1574,93 @@ class AppDialogs {
     }
     if (cmd === 'taskmgr' || cmd === 'taskman' || cmd === 'taskman.exe') {
       if (window.appTaskManager) window.appTaskManager.open();
+      return;
+    }
+    if (cmd === 'qbasic' || cmd === 'qbasic.exe') {
+      if (window.appQBasic) window.appQBasic.open(args[0] || null);
+      return;
+    }
+    if (cmd === 'mon_test' || cmd === 'mon_test.exe' || cmd === 'montest' || cmd === 'nokia') {
+      if (window.appMonTest) window.appMonTest.open();
+      return;
+    }
+    if (cmd === 'cdex' || cmd === 'cdex014' || cmd === 'cdex014.exe' || cmd === 'cdex.exe') {
+      if (window.appCDex) window.appCDex.open();
+      return;
+    }
+    if (cmd === 'wintune' || cmd === 'wintune.exe' || cmd === 'wintn975_616' || cmd === 'wintn975_616.exe') {
+      if (window.appWintune) window.appWintune.open('wintune');
+      return;
+    }
+    if (cmd === 'clibench' || cmd === 'clibench.exe') {
+      if (window.appWintune) window.appWintune.open('clibench');
+      return;
+    }
+    if (cmd === 'cdplayer' || cmd === 'cdplayer.exe') {
+      if (window.appCDPlayer) window.appCDPlayer.open();
+      return;
+    }
+    if (cmd === 'sysmon' || cmd === 'sysmon.exe') {
+      if (window.appSysMon) window.appSysMon.open();
+      return;
+    }
+    if (cmd === 'hypertrm' || cmd === 'hypertrm.exe' || cmd === 'hyperterminal' || cmd === 'bbs') {
+      if (window.appHyperTerminal) window.appHyperTerminal.open(args[0] || null);
+      return;
+    }
+    if (cmd === 'clipbrd' || cmd === 'clipbrd.exe' || cmd === 'clipbook' || cmd === 'clipboard') {
+      if (window.appClipboardViewer) window.appClipboardViewer.open(args[0] || null);
+      return;
+    }
+    if (cmd === 'mirc' || cmd === 'mirc32' || cmd === 'mirc32.exe' || cmd === 'irc') {
+      if (window.appMIRC) window.appMIRC.open();
+      return;
+    }
+    if (cmd === 'ft2' || cmd === 'ft2.exe' || cmd === 'fasttracker' || cmd === 'tracker') {
+      if (window.appFastTracker) window.appFastTracker.open(args[0] || null);
+      return;
+    }
+    if (cmd === 'acrobat' || cmd === 'acrobat.exe' || cmd === 'acrord32' || cmd === 'ar32e301' || cmd === 'ar32e301.exe') {
+      if (window.appAcrobat) window.appAcrobat.open(args[0] || null);
+      return;
+    }
+    if (cmd === 'acdsee' || cmd === 'acdsee.exe' || cmd === 'acdc3223' || cmd === 'acdc3223.exe') {
+      if (window.appACDSee) window.appACDSee.open(args[0] || null);
+      return;
+    }
+    if (cmd === 'emuland' || cmd === 'emuland98' || cmd === 'emuland98.exe' || cmd === 'emulator' || cmd === 'nesticle' || cmd === 'nesticle.exe' || cmd === 'genecyst' || cmd === 'genecyst.exe' || cmd === 'zsnes' || cmd === 'zsnesw' || cmd === 'zsnesw.exe' || cmd === 'vgb' || cmd === 'vgb98' || cmd === 'vgb98.exe') {
+      if (window.appEmulator) {
+        const coreMap = { 'nesticle': 'nes', 'nesticle.exe': 'nes', 'genecyst': 'sega', 'genecyst.exe': 'sega', 'zsnes': 'snes', 'zsnesw': 'snes', 'zsnesw.exe': 'snes', 'vgb': 'gb', 'vgb98': 'gb', 'vgb98.exe': 'gb' };
+        window.appEmulator.open(args[0] || coreMap[cmd] || null);
+      }
+      return;
+    }
+    if (cmd === 'wordpad' || cmd === 'wordpad.exe' || cmd === 'write' || cmd === 'write.exe') {
+      if (window.appWordPad) window.appWordPad.open(args[0] || null);
+      return;
+    }
+    if (cmd === 'winrar' || cmd === 'winrar.exe' || cmd === 'rar') {
+      if (window.appWinRAR) window.appWinRAR.open(args[0] || null);
+      return;
+    }
+    if (cmd === 'neko' || cmd === 'neko.exe' || cmd === 'neko98') {
+      if (window.appNeko) window.appNeko.toggle();
+      return;
+    }
+    if (cmd === 'freecell' || cmd === 'freecell.exe') {
+      if (window.appFreeCell) window.appFreeCell.open();
+      return;
+    }
+    if (cmd === 'netscape' || cmd === 'netscape.exe') {
+      if (window.appNetscape) window.appNetscape.open(args[0] || null);
+      return;
+    }
+    if (cmd === 'dialup' || cmd === 'rnaapp' || cmd === 'rnaapp.exe') {
+      if (window.appDialUp) window.appDialUp.open();
+      return;
+    }
+    if (cmd === 'find') {
+      if (window.appFind) window.appFind.open();
       return;
     }
     if (cmd === 'clippy' || cmd === 'clippy.exe' || cmd === 'clippit' || cmd === 'скрепыш') {
@@ -1613,6 +2019,42 @@ class AppDialogs {
       } else if (window.appAnotherWar) window.appAnotherWar.open();
       return;
     }
+    if (cmd === 'korovany' || cmd === 'korovany.exe' || cmd === 'корованы' || cmd === 'kirill') {
+      if (window.gameManager && !window.gameManager.isInstalled('korovany')) {
+        window.winManager.openDialog({
+          title: 'Корованы',
+          icon: 'error',
+          message: isRu
+            ? 'Игра «Корованы» не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'korovany\');">Steam</a>'
+            : 'Game Korovany is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'korovany\');">Steam</a>'
+        });
+      } else if (window.appKorovany) window.appKorovany.open();
+      return;
+    }
+    if (cmd === 'korovany' || cmd === 'korovany.exe' || cmd === 'корованы' || cmd === 'kirill') {
+      if (window.gameManager && !window.gameManager.isInstalled('korovany')) {
+        window.winManager.openDialog({
+          title: 'Корованы',
+          icon: 'error',
+          message: isRu
+            ? 'Игра «Корованы» не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'korovany\');">Steam</a>'
+            : 'Game Korovany is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'korovany\');">Steam</a>'
+        });
+      } else if (window.appKorovany) window.appKorovany.open();
+      return;
+    }
+    if (cmd === 'catniss' || cmd === 'catniss.exe' || cmd === 'кэтнисс' || cmd === 'кетнисс') {
+      if (window.gameManager && !window.gameManager.isInstalled('catniss')) {
+        window.winManager.openDialog({
+          title: 'Catniss',
+          icon: 'error',
+          message: isRu
+            ? 'Игра «Catniss» не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'catniss\');">Steam</a>'
+            : 'Game Catniss is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'catniss\');">Steam</a>'
+        });
+      } else if (window.appCatniss) window.appCatniss.open();
+      return;
+    }
     if (cmd === 'plov' || cmd === 'plov.exe' || cmd === 'плов' || cmd === 'hayato' || cmd === 'хаято' || cmd === 'хаято,' || val === 'где плов' || val === 'где плов?' || val === 'хаято, где плов?' || val === 'хаято где плов') {
       if (window.gameManager && !window.gameManager.isInstalled('plov')) {
         window.winManager.openDialog({
@@ -1829,16 +2271,41 @@ class AppDialogs {
       } else if (window.appHockey) window.appHockey.open();
       return;
     }
+    if (cmd === 'worldcup' || cmd === 'worldcup98' || cmd === 'worldcup98.exe' || cmd === 'fifa98' || cmd === 'fifa' || val === 'world cup 98' || val === 'world cup' || val === 'france 98') {
+      if (window.gameManager && !window.gameManager.isInstalled('worldcup98')) {
+        window.winManager.openDialog({
+          title: 'World Cup 98',
+          icon: 'error',
+          message: isRu
+            ? 'Игра World Cup 98 не установлена.<br>Вы можете установить её с компакт-диска «Игромания» (D:\\demo\\worldcup98.exe).'
+            : 'Game World Cup 98 is not installed.<br>You can install it from the Igromania disc (D:\\demo\\worldcup98.exe).'
+        });
+      } else if (window.appWorldCup98) window.appWorldCup98.open();
+      return;
+    }
     if (cmd === 'avp' || cmd === 'kaspersky' || cmd === 'avp.exe' || cmd === 'antivirus') {
       if (window.gameManager && !window.gameManager.isInstalled('avp')) {
         window.winManager.openDialog({
           title: 'Антивирус Касперского AVP',
           icon: 'error',
           message: isRu
-            ? 'Программа «Антивирус Касперского AVP» не установлена.<br>Вы можете приобрести её в магазине <a href="#" onclick="window.appIE&&window.appIE.open(\'http://www.softstore98.com\');">http://www.softstore98.com</a>'
+            ? 'Программа «Антивирус Касперского AVP» не установлена.<br>Вы можете приобрести и скачать её на официальном сайте Лаборатории Касперского <a href="#" onclick="window.appIE&&window.appIE.open(\'http://www.avp.ru/store\');">http://www.avp.ru</a>'
+            : 'Kaspersky Anti-Virus AVP is not installed.<br>You can purchase and download it at <a href="#" onclick="window.appIE&&window.appIE.open(\'http://www.avp.ru/store\');">http://www.avp.ru</a>'
             : 'Kaspersky Anti-Virus AVP is not installed.<br>You can purchase it at <a href="#" onclick="window.appIE&&window.appIE.open(\'http://www.softstore98.com\');">http://www.softstore98.com</a>'
         });
       } else if (window.appAVP) window.appAVP.open();
+      return;
+    }
+    if (cmd === 'esheep' || cmd === 'sheep' || cmd === 'sheep.exe' || cmd === 'esheep.exe' || cmd === 'straysheep' || cmd === 'овечка') {
+      if (window.gameManager && !window.gameManager.isInstalled('esheep')) {
+        window.winManager.openDialog({
+          title: 'eSheep 98 (Sheep.exe)',
+          icon: 'error',
+          message: isRu
+            ? 'Программа «eSheep 98 (Sheep.exe)» не установлена.<br>Вы можете бесплатно скачать её в каталоге <a href="#" onclick="window.appIE&&window.appIE.open(\'http://www.softstore98.com\');">http://www.softstore98.com</a>'
+            : 'Program "eSheep 98 (Sheep.exe)" is not installed.<br>You can download it for free at <a href="#" onclick="window.appIE&&window.appIE.open(\'http://www.softstore98.com\');">http://www.softstore98.com</a>'
+        });
+      } else if (window.appESheep) window.appESheep.open();
       return;
     }
     if (cmd === 'virus' || cmd === 'totally_not_a_virus.exe') {
@@ -1945,6 +2412,10 @@ class AppDialogs {
       if (window.appVideoPlayer) window.appVideoPlayer.open(fullVal, null, true);
       return;
     }
+    if (/\.(nes|bin|smd|gen|smc|sfc|gb|gbc|sta)$/.test(val)) {
+      if (window.appEmulator) window.appEmulator.open(fullVal);
+      return;
+    }
 
     if (window.soundSys) window.soundSys.playError();
     window.winManager.openDialog({
@@ -2010,18 +2481,23 @@ class AppDialogs {
     }, 1200);
   }
 
-  openDisplayProperties() {
+  openDisplayProperties(initialTab) {
+    const tabNames = ['bg', 'screensaver', 'appearance', 'effects', 'themes', 'settings'];
+    const startTab = 'tab-' + (tabNames.includes(initialTab) ? initialTab : 'bg');
     if (window.winManager && window.winManager.windows.has('app_display_props')) {
       window.winManager.bringToTop('app_display_props');
+      if (tabNames.includes(initialTab)) {
+        const openTab = window.winManager.windows.get('app_display_props').element.querySelector(`.win-tab[data-tab="${startTab}"]`);
+        if (openTab) openTab.click();
+      }
       return;
     }
 
     const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-    const desktopEl = document.getElementById('desktop');
-    const crtOverlay = document.getElementById('crt-overlay');
+    const isRu = !window.i18n || window.i18n.getLanguage() === 'ru';
 
     let savedSettings = this.getDisplaySettings();
-    let working = { ...savedSettings };
+    let working = { ...savedSettings, desktopIcons: { ...savedSettings.desktopIcons } };
 
     const downloadedWalls = this.getDownloadedWallpapers();
     const downloadedSavers = this.getDownloadedScreensavers();
@@ -2079,12 +2555,14 @@ class AppDialogs {
       savedSettings.wallpaper === w.id
     );
 
-    const builtInSaverIds = ['pipes', 'starfield', 'mystify', 'flowerbox', 'none'];
+    const builtInSaverIds = ['pipes', 'starfield', 'mystify', 'flowerbox', 'maze', 'text3d', 'none'];
     const allSavers = [
       { id: 'pipes', name: t('disp.ssPipes') },
       { id: 'starfield', name: t('disp.ssStarfield') },
       { id: 'mystify', name: t('disp.ssMystify') },
       { id: 'flowerbox', name: t('disp.ssFlowerbox') },
+      { id: 'maze', name: isRu ? 'Объемный лабиринт (OpenGL)' : '3D Maze (OpenGL)' },
+      { id: 'text3d', name: isRu ? 'Объемный текст (OpenGL)' : '3D Text (OpenGL)' },
       { id: 'matrix', name: t('disp.ssMatrix') || 'The Matrix Code (Матрица 1999)' },
       { id: 'flying_win', name: t('disp.ssFlyingWin') || '3D Flying Win (Летающие окна)' },
       { id: 'none', name: t('disp.ssNone') }
@@ -2096,6 +2574,29 @@ class AppDialogs {
       savedSettings.screensaverMode === s.id
     );
 
+    const fxIconSlots = [
+      { id: 'my-computer', name: t('app.myComputer') },
+      { id: 'my-documents', name: t('app.myDocs') },
+      { id: 'network', name: t('app.network') },
+      { id: 'recycle-bin', name: t('disp.fxBinFull') },
+      { id: 'recycle-bin-empty', name: t('disp.fxBinEmpty') }
+    ];
+    const fxIconFor = slot => (Icons[working.desktopIcons[slot]] ? working.desktopIcons[slot] : slot);
+    const fxChecks = [
+      { key: 'largeIcons', label: t('disp.fxLargeIcons') },
+      { key: 'iconColors', label: t('disp.fxIconColors') },
+      { key: 'animateUi', label: t('disp.fxAnimate') },
+      { key: 'fontSmoothing', label: t('disp.fxSmoothFonts') },
+      { key: 'fullDrag', label: t('disp.fxFullDrag') },
+      { key: 'crtEnabled', label: t('disp.crtLabel') }
+    ];
+
+    const screenAreaSizes = [[640, 480], [800, 600], [1024, 768]];
+    const screenAreaLabel = (idx) => {
+      const [w, h] = screenAreaSizes[idx] || screenAreaSizes[2];
+      return isRu ? `${w} на ${h} точек` : `${w} by ${h} pixels`;
+    };
+
     const content = document.createElement('div');
     content.className = 'disp-props';
     const tab = (id, label, active) => `<div class="win-tab${active ? ' active' : ''}" data-tab="${id}">${label}</div>`;
@@ -2106,7 +2607,7 @@ class AppDialogs {
       </div>`;
     content.innerHTML = `
       <div class="win-tabs">
-        ${tab('tab-bg', t('disp.tabBg'), true)}${tab('tab-screensaver', t('disp.tabScreensaver'))}${tab('tab-appearance', t('disp.tabAppearance'))}${tab('tab-effects', t('disp.tabEffects'))}${tab('tab-themes', t('disp.tabThemes'))}
+        ${tab('tab-bg', t('disp.tabBg'), true)}${tab('tab-screensaver', t('disp.tabScreensaver'))}${tab('tab-appearance', t('disp.tabAppearance'))}${tab('tab-effects', t('disp.tabEffects'))}${tab('tab-themes', t('disp.tabThemes'))}${tab('tab-settings', isRu ? 'Настройка' : 'Settings')}
       </div>
       <div class="win-tab-panel">
         <div class="disp-tab-content" id="tab-bg">
@@ -2145,6 +2646,14 @@ class AppDialogs {
               <span>${t('disp.saverMin')}</span>
             </div>
           </fieldset>
+          <fieldset class="disp-group disp-energy-group">
+            <legend>${t('disp.energyTitle')}</legend>
+            <div class="disp-energy-row">
+              <div class="disp-energy-logo">ENERGY<br>STAR</div>
+              <div class="disp-energy-desc">${t('disp.energyDesc')}</div>
+              <button class="win-btn" id="btn-saver-power">${t('disp.energySettingsBtn')}</button>
+            </div>
+          </fieldset>
         </div>
         <div class="disp-tab-content hidden" id="tab-appearance">
           ${monitor}
@@ -2167,8 +2676,18 @@ class AppDialogs {
         </div>
         <div class="disp-tab-content hidden" id="tab-effects">
           <fieldset class="disp-group">
+            <legend>${t('disp.fxDesktopIcons')}</legend>
+            <div class="disp-fx-icons" tabindex="0">
+              ${fxIconSlots.map((slot, i) => `<div class="disp-fx-icon${i === 0 ? ' selected' : ''}" data-slot="${slot.id}"><span class="disp-fx-icon-img">${Icons[fxIconFor(slot.id)]}</span><span class="disp-fx-icon-name">${slot.name}</span></div>`).join('')}
+            </div>
+            <div class="disp-fx-icon-buttons">
+              <button class="win-btn" id="btn-fx-change-icon">${t('disp.fxChangeIcon')}</button>
+              <button class="win-btn" id="btn-fx-default-icon">${t('disp.fxDefaultIcon')}</button>
+            </div>
+          </fieldset>
+          <fieldset class="disp-group is-checks">
             <legend>${t('disp.effectsTitle')}</legend>
-            <label class="disp-check"><input type="checkbox" id="chk-crt" ${working.crtEnabled ? 'checked' : ''}> ${t('disp.crtLabel')}</label>
+            ${fxChecks.map(fx => `<label class="disp-check"><input type="checkbox" data-fx="${fx.key}" ${working[fx.key] ? 'checked' : ''}> ${fx.label}</label>`).join('')}
           </fieldset>
         </div>
         <div class="disp-tab-content hidden" id="tab-themes">
@@ -2179,6 +2698,37 @@ class AppDialogs {
             </div>
             <p class="disp-themes-note">${t('disp.themesNote')}</p>
           </fieldset>
+        </div>
+        <div class="disp-tab-content hidden" id="tab-settings">
+          ${monitor}
+          <div style="font-size:11px;margin-bottom:6px;">
+            <div>${isRu ? 'Экран:' : 'Display:'}</div>
+            <div style="font-weight:bold;">${isRu ? 'Монитор Plug and Play на 3dfx Voodoo2 / S3 Trio64V2/DX' : 'Plug and Play Monitor on 3dfx Voodoo2 / S3 Trio64V2/DX'}</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <fieldset class="disp-group" style="flex:1;padding:6px;">
+              <legend>${isRu ? 'Цветовая палитра' : 'Colors'}</legend>
+              <select class="win-select" id="disp-color-depth" style="width:100%;margin-bottom:6px;">
+                <option value="16color" ${working.colorDepth === '16color' ? 'selected' : ''}>${isRu ? '16 цветов' : '16 Colors'}</option>
+                <option value="256color" ${working.colorDepth === '256color' ? 'selected' : ''}>${isRu ? '256 цветов' : '256 Colors'}</option>
+                <option value="16bit" ${working.colorDepth === '16bit' ? 'selected' : ''}>${isRu ? 'High Color (16 бит)' : 'High Color (16 bit)'}</option>
+                <option value="32bit" ${(!working.colorDepth || working.colorDepth === '32bit') ? 'selected' : ''}>${isRu ? 'True Color (32 бита)' : 'True Color (32 bit)'}</option>
+              </select>
+              <div style="height:14px;border:1px inset #fff;background:linear-gradient(90deg,#000,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#fff);"></div>
+            </fieldset>
+            <fieldset class="disp-group" style="flex:1;padding:6px;">
+              <legend>${isRu ? 'Область экрана' : 'Screen area'}</legend>
+              <div style="display:flex;align-items:center;gap:4px;font-size:10px;">
+                <span>${isRu ? 'Меньше' : 'Less'}</span>
+                <input type="range" id="disp-res-slider" min="0" max="2" step="1" value="${working.resolution === '640x480' ? 0 : (working.resolution === '800x600' ? 1 : 2)}" style="flex:1;">
+                <span>${isRu ? 'Больше' : 'More'}</span>
+              </div>
+              <div id="disp-res-label" style="text-align:center;font-size:11px;margin-top:4px;">${screenAreaLabel(working.resolution === '640x480' ? 0 : (working.resolution === '800x600' ? 1 : 2))}</div>
+            </fieldset>
+          </div>
+          <div style="display:flex;justify-content:flex-end;">
+            <button class="win-btn" id="btn-disp-advanced">${isRu ? 'Дополнительно...' : 'Advanced...'}</button>
+          </div>
         </div>
       </div>
       <div class="disp-buttons">
@@ -2193,16 +2743,21 @@ class AppDialogs {
       title: t('disp.title'),
       icon: 'monitor',
       width: 404,
-      height: 485,
+      height: 430,
       resizable: false,
       minimizable: false,
       maximizable: false,
+      helpButton: true,
+      onHelp: () => this.openHelp('desktop'),
       isDialog: true,
-      content
+      content,
+      onClose: () => {
+        this.syncDisplayProps = null;
+        if (window.winManager.windows.has('app_change_icon')) window.winManager.closeWindow('app_change_icon');
+      }
     });
 
     const el = dialog.element;
-    const chkCrt = el.querySelector('#chk-crt');
     const modeSelect = el.querySelector('#disp-mode-select');
     const saverSelect = el.querySelector('#disp-saver-select');
     const saverTimeout = el.querySelector('#disp-saver-timeout');
@@ -2216,6 +2771,8 @@ class AppDialogs {
       });
     });
 
+    const fxKeys = fxChecks.map(fx => fx.key);
+    const sameIcons = (a, b) => Array.from(new Set(Object.keys(a || {}).concat(Object.keys(b || {})))).every(slot => (a || {})[slot] === (b || {})[slot]);
     const checkDirty = () => {
       btnApply.disabled = !(
         working.bgColor !== savedSettings.bgColor ||
@@ -2223,9 +2780,12 @@ class AppDialogs {
         working.wallpaperMode !== savedSettings.wallpaperMode ||
         working.themeId !== savedSettings.themeId ||
         working.themeGrad !== savedSettings.themeGrad ||
-        working.crtEnabled !== savedSettings.crtEnabled ||
+        fxKeys.some(key => Boolean(working[key]) !== Boolean(savedSettings[key])) ||
+        !sameIcons(working.desktopIcons, savedSettings.desktopIcons) ||
         working.screensaverMode !== savedSettings.screensaverMode ||
-        working.screensaverTimeout !== savedSettings.screensaverTimeout
+        working.screensaverTimeout !== savedSettings.screensaverTimeout ||
+        working.colorDepth !== savedSettings.colorDepth ||
+        working.resolution !== savedSettings.resolution
       );
     };
 
@@ -2281,6 +2841,25 @@ class AppDialogs {
       updateMonitorPreview();
     });
 
+    let appearanceItem = 'desktop';
+    const itemNameEl = el.querySelector('.disp-item-name');
+    const appMonitor = el.querySelector('#tab-appearance .disp-mini-desktop');
+    if (appMonitor && itemNameEl) {
+      appMonitor.style.cursor = 'pointer';
+      appMonitor.addEventListener('click', (e) => {
+        if (e.target.closest('.disp-mini-titlebar')) {
+          appearanceItem = 'titlebar';
+          itemNameEl.textContent = isRu ? 'Заголовок активного окна' : 'Active Title Bar';
+        } else if (e.target.closest('.disp-mini-body')) {
+          appearanceItem = 'window';
+          itemNameEl.textContent = isRu ? 'Окно' : 'Window';
+        } else {
+          appearanceItem = 'desktop';
+          itemNameEl.textContent = t('disp.itemDesktop');
+        }
+      });
+    }
+
     const picker = el.querySelector('.disp-color-picker');
     el.querySelector('.disp-color-btn').addEventListener('click', (e) => {
       e.stopPropagation();
@@ -2288,7 +2867,11 @@ class AppDialogs {
     });
     el.querySelectorAll('.disp-color-cell').forEach(cell => {
       cell.addEventListener('click', () => {
-        working.bgColor = cell.dataset.color;
+        if (appearanceItem === 'titlebar') {
+          working.themeGrad = `linear-gradient(90deg, ${cell.dataset.color}, #1084d0)`;
+        } else {
+          working.bgColor = cell.dataset.color;
+        }
         picker.classList.remove('open');
         updateMonitorPreview();
       });
@@ -2296,6 +2879,29 @@ class AppDialogs {
     el.addEventListener('mousedown', (e) => {
       if (!e.target.closest('.disp-color-picker')) picker.classList.remove('open');
     });
+
+    const colorDepthSelect = el.querySelector('#disp-color-depth');
+    const resSlider = el.querySelector('#disp-res-slider');
+    const resLabel = el.querySelector('#disp-res-label');
+    const btnDispAdv = el.querySelector('#btn-disp-advanced');
+    if (colorDepthSelect) {
+      colorDepthSelect.addEventListener('change', () => {
+        working.colorDepth = colorDepthSelect.value;
+        checkDirty();
+      });
+    }
+    if (resSlider && resLabel) {
+      resSlider.addEventListener('input', () => {
+        const idx = parseInt(resSlider.value, 10) || 0;
+        const map = ['640x480', '800x600', '1024x768'];
+        working.resolution = map[idx] || '1024x768';
+        resLabel.textContent = screenAreaLabel(idx);
+        checkDirty();
+      });
+    }
+    if (btnDispAdv) {
+      btnDispAdv.addEventListener('click', () => this.openDisplayAdvancedDialog());
+    }
 
     el.querySelectorAll('.disp-theme-item').forEach(item => {
       item.addEventListener('click', () => {
@@ -2307,12 +2913,72 @@ class AppDialogs {
       });
     });
 
-    chkCrt.addEventListener('change', () => {
-      working.crtEnabled = chkCrt.checked;
-      if (crtOverlay) crtOverlay.classList.toggle('active', working.crtEnabled);
-      document.body.classList.toggle('crt-enabled', working.crtEnabled);
-      checkDirty();
+    const fxBoxes = Array.from(el.querySelectorAll('input[data-fx]'));
+    fxBoxes.forEach(box => {
+      box.addEventListener('change', () => {
+        working[box.dataset.fx] = box.checked;
+        checkDirty();
+      });
     });
+
+    const fxStrip = el.querySelector('.disp-fx-icons');
+    const btnChangeIcon = el.querySelector('#btn-fx-change-icon');
+    const btnDefaultIcon = el.querySelector('#btn-fx-default-icon');
+    let fxSlot = fxIconSlots[0].id;
+    const renderFxIcons = () => {
+      el.querySelectorAll('.disp-fx-icon').forEach(item => {
+        item.classList.toggle('selected', item.dataset.slot === fxSlot);
+        item.querySelector('.disp-fx-icon-img').innerHTML = Icons[fxIconFor(item.dataset.slot)];
+      });
+      btnDefaultIcon.disabled = !working.desktopIcons[fxSlot];
+    };
+    const setSlotIcon = (slot, iconKey) => {
+      const next = { ...working.desktopIcons };
+      if (!iconKey || iconKey === slot) delete next[slot];
+      else next[slot] = iconKey;
+      working.desktopIcons = next;
+      renderFxIcons();
+      checkDirty();
+    };
+    const changeSlotIcon = () => {
+      const slot = fxSlot;
+      this.openIconPicker(fxIconFor(slot), iconKey => setSlotIcon(slot, iconKey));
+    };
+    el.querySelectorAll('.disp-fx-icon').forEach(item => {
+      item.addEventListener('mousedown', () => {
+        fxSlot = item.dataset.slot;
+        renderFxIcons();
+      });
+      item.addEventListener('dblclick', changeSlotIcon);
+    });
+    fxStrip.addEventListener('keydown', (e) => {
+      const index = fxIconSlots.findIndex(slot => slot.id === fxSlot);
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const next = fxIconSlots[Math.max(0, Math.min(fxIconSlots.length - 1, index + (e.key === 'ArrowRight' ? 1 : -1)))];
+        fxSlot = next.id;
+        renderFxIcons();
+        const item = el.querySelector(`.disp-fx-icon[data-slot="${fxSlot}"]`);
+        if (item && item.scrollIntoView) item.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        changeSlotIcon();
+      }
+    });
+    btnChangeIcon.addEventListener('click', changeSlotIcon);
+    btnDefaultIcon.addEventListener('click', () => setSlotIcon(fxSlot, null));
+    renderFxIcons();
+
+    this.syncDisplayProps = (patch) => {
+      const fresh = this.getDisplaySettings();
+      Object.keys(patch).forEach(key => {
+        savedSettings[key] = fresh[key];
+        working[key] = key === 'desktopIcons' ? { ...fresh.desktopIcons } : fresh[key];
+      });
+      fxBoxes.forEach(box => { box.checked = Boolean(working[box.dataset.fx]); });
+      renderFxIcons();
+      checkDirty();
+    };
 
     saverSelect.addEventListener('change', () => {
       working.screensaverMode = saverSelect.value;
@@ -2328,11 +2994,20 @@ class AppDialogs {
       if (window.appScreensaver) window.appScreensaver.start(working.screensaverMode);
     });
 
+    const btnSaverPower = el.querySelector('#btn-saver-power');
+    if (btnSaverPower) {
+      btnSaverPower.addEventListener('click', () => {
+        if (window.appCPanel) window.appCPanel.openPowerProperties();
+      });
+    }
+
     const commitChanges = () => {
+      const before = savedSettings;
       savedSettings = this.saveDisplaySettings(working);
       this.applyDisplaySettings(savedSettings);
       checkDirty();
       if (window.soundSys) window.soundSys.playClick();
+      this.notifyDisplayEffects(before, savedSettings, 'dialog');
     };
 
     btnApply.addEventListener('click', commitChanges);
@@ -2343,11 +3018,91 @@ class AppDialogs {
     });
 
     el.querySelector('.btn-disp-cancel').addEventListener('click', () => {
-      if (working.crtEnabled !== savedSettings.crtEnabled) {
-        this.applyDisplaySettings(savedSettings);
-      }
       window.winManager.closeWindow('app_display_props');
     });
+
+    if (startTab !== 'tab-bg') {
+      const firstTab = el.querySelector(`.win-tab[data-tab="${startTab}"]`);
+      if (firstTab) firstTab.click();
+    }
+  }
+
+  openIconPicker(currentIcon, onPick) {
+    const wm = window.winManager;
+    if (wm.windows.has('app_change_icon')) wm.closeWindow('app_change_icon');
+    const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
+    const iconKeys = [
+      'my-computer', 'my-documents', 'network', 'recycle-bin', 'recycle-bin-empty', 'folder',
+      'folder-pictures', 'folder-music', 'folder-videos', 'folder-downloads', 'drive-c', 'drive-d',
+      'drive-cd', 'control-panel', 'monitor', 'hardware', 'system', 'internet-explorer',
+      'outlook', 'favorites', 'help-book', 'find', 'run', 'programs',
+      'settings', 'shut-down', 'dos-prompt', 'timedate', 'speaker', 'mouse',
+      'multimedia', 'regional', 'screensaver', 'info', 'question', 'warning',
+      'error', 'start-logo', 'file-txt', 'file-exe', 'setup-installer', 'clippy'
+    ].filter(key => Icons[key]);
+    let picked = iconKeys.includes(currentIcon) ? currentIcon : iconKeys[0];
+
+    const content = document.createElement('div');
+    content.className = 'disp-iconpick';
+    content.innerHTML = `
+      <label>${t('disp.pickFile')}</label>
+      <div class="disp-iconpick-file">C:\\WINDOWS\\SYSTEM\\shell32.dll</div>
+      <label>${t('disp.pickCurrent')}</label>
+      <div class="disp-iconpick-grid" tabindex="0">
+        ${iconKeys.map(key => `<div class="disp-iconpick-cell${key === picked ? ' selected' : ''}" data-icon="${key}">${Icons[key]}</div>`).join('')}
+      </div>
+      <div class="disp-buttons">
+        <button class="win-btn is-default btn-pick-ok">${t('btn.ok')}</button>
+        <button class="win-btn btn-pick-cancel">${t('btn.cancel')}</button>
+      </div>
+    `;
+
+    const pickerWin = wm.createWindow({
+      id: 'app_change_icon',
+      title: t('disp.pickTitle'),
+      icon: 'monitor',
+      width: 340,
+      height: 290,
+      resizable: false,
+      minimizable: false,
+      maximizable: false,
+      isDialog: true,
+      content
+    });
+    const root = pickerWin.element;
+    const grid = root.querySelector('.disp-iconpick-grid');
+    const select = (key) => {
+      picked = key;
+      root.querySelectorAll('.disp-iconpick-cell').forEach(cell => cell.classList.toggle('selected', cell.dataset.icon === key));
+    };
+    const confirm = () => {
+      wm.closeWindow('app_change_icon');
+      if (typeof onPick === 'function') onPick(picked);
+    };
+    root.querySelectorAll('.disp-iconpick-cell').forEach(cell => {
+      cell.addEventListener('mousedown', () => select(cell.dataset.icon));
+      cell.addEventListener('dblclick', confirm);
+    });
+    grid.addEventListener('keydown', (e) => {
+      const steps = { ArrowDown: 1, ArrowUp: -1, ArrowRight: 3, ArrowLeft: -3 };
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        confirm();
+      } else if (e.key === 'Escape') {
+        wm.closeWindow('app_change_icon');
+      } else if (steps[e.key]) {
+        e.preventDefault();
+        const index = Math.max(0, Math.min(iconKeys.length - 1, iconKeys.indexOf(picked) + steps[e.key]));
+        select(iconKeys[index]);
+        const cell = root.querySelector(`.disp-iconpick-cell[data-icon="${iconKeys[index]}"]`);
+        if (cell && cell.scrollIntoView) cell.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      }
+    });
+    root.querySelector('.btn-pick-ok').addEventListener('click', confirm);
+    root.querySelector('.btn-pick-cancel').addEventListener('click', () => wm.closeWindow('app_change_icon'));
+    const current = root.querySelector('.disp-iconpick-cell.selected');
+    if (current && current.scrollIntoView) current.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    grid.focus();
   }
 
   openRegionalSettings() {
@@ -2513,6 +3268,239 @@ class AppDialogs {
 
     btnCancel.addEventListener('click', () => {
       window.winManager.closeWindow('app_regional_settings');
+    });
+  }
+
+  openDisplayAdvancedDialog() {
+    if (window.winManager && window.winManager.windows.has('app_disp_advanced')) {
+      window.winManager.bringToTop('app_disp_advanced');
+      return;
+    }
+    const isRu = !window.i18n || window.i18n.getLanguage() === 'ru';
+    const html = `
+      <div class="win-dialog-body" style="padding:10px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;">
+        <div class="win-tabs">
+          <div class="win-tab active" data-atab="gen">${isRu ? 'Общие' : 'General'}</div>
+          <div class="win-tab" data-atab="adapter">${isRu ? 'Адаптер' : 'Adapter'}</div>
+          <div class="win-tab" data-atab="monitor">${isRu ? 'Монитор' : 'Monitor'}</div>
+          <div class="win-tab" data-atab="voodoo">3dfx Voodoo2</div>
+        </div>
+        <div class="win-tab-panel" style="flex:1;padding:12px;font-size:11px;">
+          <div data-apane="gen">
+            <fieldset style="border:1px groove #fff;padding:8px;margin-bottom:10px;">
+              <legend>${isRu ? 'Экран' : 'Display'}</legend>
+              <div>${isRu ? 'Размер шрифта:' : 'Font size:'}</div>
+              <select class="win-select" style="width:100%;margin-top:4px;">
+                <option selected>${isRu ? 'Мелкий шрифт (96 точек/дюйм)' : 'Small Fonts (96 dpi)'}</option>
+                <option>${isRu ? 'Крупный шрифт (120 точек/дюйм)' : 'Large Fonts (120 dpi)'}</option>
+              </select>
+            </fieldset>
+            <fieldset style="border:1px groove #fff;padding:8px;">
+              <legend>${isRu ? 'Совместимость' : 'Compatibility'}</legend>
+              <label style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><input type="radio" name="adv_compat" checked> ${isRu ? 'Применять новые параметры без перезагрузки' : 'Apply the new display settings without restarting'}</label>
+              <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="adv_compat"> ${isRu ? 'Запрашивать перед применением новых параметров' : 'Ask me before applying the new display settings'}</label>
+            </fieldset>
+          </div>
+          <div data-apane="adapter" style="display:none;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <div style="width:32px;height:32px;">${Icons['monitor']}</div>
+              <div><b>S3 Trio64V2/DX + 3dfx Voodoo2 PCI</b></div>
+            </div>
+            <fieldset style="border:1px groove #fff;padding:8px;margin-bottom:10px;">
+              <legend>${isRu ? 'Сведения об адаптере' : 'Adapter Information'}</legend>
+              <div>${isRu ? 'Тип микросхемы' : 'Chip Type'}: S3 Trio64V2/DX (86C775) + 3dfx Voodoo2 (TMU×2)</div>
+              <div>${isRu ? 'Тип ЦАП: S3 SDAC 24 бита' : 'DAC Type: S3 SDAC 24-bit'}</div>
+              <div>${isRu ? 'Объем памяти: 4 МБ SGRAM + 12 МБ EDO (Voodoo2)' : 'Memory Size: 4 MB SGRAM + 12 MB EDO (Voodoo2)'}</div>
+              <div>${isRu ? 'Частота обновления: 85 Гц (оптимальная)' : 'Refresh Rate: 85 Hz (Optimal)'}</div>
+            </fieldset>
+          </div>
+          <div data-apane="monitor" style="display:none;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <div style="width:32px;height:32px;">${Icons['monitor']}</div>
+              <div><b>SONY Trinitron Multiscan 17sfII (PnP)</b></div>
+            </div>
+            <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><input type="checkbox" checked> ${isRu ? 'Монитор соответствует стандарту Energy Star' : 'Monitor is Energy Star compliant'}</label>
+            <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" checked> ${isRu ? 'Автоматически определять мониторы Plug and Play' : 'Automatically detect Plug & Play monitors'}</label>
+          </div>
+          <div data-apane="voodoo" style="display:none;">
+            <div style="font-weight:bold;color:#000080;margin-bottom:8px;">${isRu ? 'Управление Glide и Direct3D для 3dfx Voodoo2' : '3dfx Voodoo2 Glide &amp; Direct3D Control'}</div>
+            <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><input type="checkbox" checked> ${isRu ? 'Ждать вертикальной синхронизации (VSync)' : 'Wait for Vertical Sync (VSync)'}</label>
+            <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><input type="checkbox" checked> ${isRu ? 'Билинейная фильтрация текстур' : 'Enable Bilinear Texture Filtering'}</label>
+            <label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><input type="checkbox" checked> ${isRu ? 'Мультитекстурирование за один проход (два TMU)' : 'Dual TMU Single-Pass Multitexturing'}</label>
+            <div style="margin-top:8px;">${isRu ? 'Коррекция гаммы' : 'Gamma Correction'}: <b>1.30</b> (${isRu ? '85 Гц' : '85 Hz'})</div>
+          </div>
+        </div>
+        <div class="win-dialog-footer" style="margin-top:8px;">
+          <button class="win-btn default" id="adv-disp-ok">OK</button>
+          <button class="win-btn" id="adv-disp-cancel">${isRu ? 'Отмена' : 'Cancel'}</button>
+        </div>
+      </div>
+    `;
+    const win = window.winManager.createWindow({
+      id: 'app_disp_advanced',
+      title: isRu ? 'Свойства: Монитор Plug and Play и 3dfx Voodoo2' : 'Plug and Play Monitor and 3dfx Voodoo2 Properties',
+      icon: 'monitor',
+      width: 380,
+      height: 330,
+      resizable: false,
+      minimizable: false,
+      maximizable: false,
+      isDialog: true,
+      content: html
+    });
+    const el = win.element;
+    el.querySelectorAll('.win-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        el.querySelectorAll('.win-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        el.querySelectorAll('[data-apane]').forEach(p => {
+          p.style.display = p.dataset.apane === tab.dataset.atab ? 'block' : 'none';
+        });
+      });
+    });
+    el.querySelector('#adv-disp-ok').addEventListener('click', () => window.winManager.closeWindow('app_disp_advanced'));
+    el.querySelector('#adv-disp-cancel').addEventListener('click', () => window.winManager.closeWindow('app_disp_advanced'));
+  }
+
+  openWelcomeApp() {
+    if (window.winManager && window.winManager.windows.has('app_welcome_win98')) {
+      window.winManager.bringToTop('app_welcome_win98');
+      return;
+    }
+    const isRu = !window.i18n || window.i18n.getLanguage() === 'ru';
+    const items = [
+      {
+        id: 'register',
+        label: isRu ? 'Регистрация' : 'Register Now',
+        title: isRu ? 'Электронная регистрация Microslop Win 98' : 'Register Your Copy of Microslop Win 98',
+        desc: isRu
+          ? 'Зарегистрируйте вашу копию Microslop Win 98 Second Edition через модем и получайте уведомления об обновлениях драйверов и безопасности.'
+          : 'Register your copy of Microslop Win 98 Second Edition online to receive product update notifications and technical support.',
+        action: () => window.appIE && window.appIE.open('http://windowsupdate.microslop.com')
+      },
+      {
+        id: 'internet',
+        label: isRu ? 'Подключение к Интернету' : 'Connect to the Internet',
+        title: isRu ? 'Выход во Всемирную паутину' : 'Get Connected to the Internet',
+        desc: isRu
+          ? 'Настройте модем USRobotics 56K Faxmodem в Удалённом доступе к сети или откройте обозреватель Internet Explorer.'
+          : 'Set up your USRobotics 56K Faxmodem in Dial-Up Networking or launch Internet Explorer to browse the World Wide Web.',
+        action: () => window.appDialUp && window.appDialUp.open()
+      },
+      {
+        id: 'discover',
+        label: isRu ? 'Знакомство с Win 98' : 'Discover Win 98',
+        title: isRu ? 'Интерактивный обзор возможностей Win 98 SE' : 'Explore What Is New in Win 98 SE',
+        desc: isRu
+          ? 'Узнайте о новых возможностях рабочего стола Active Desktop, быстром запуске, поддержке USB, ускорении 3dfx Glide и мультимедиа.'
+          : 'Take an interactive tour of Active Desktop, Quick Launch, USB support, 3dfx Glide acceleration, and built-in multimedia tools.',
+        action: () => this.openHelp('whatsnew')
+      },
+      {
+        id: 'maintain',
+        label: isRu ? 'Обслуживание компьютера' : 'Maintain Your Computer',
+        title: isRu ? 'Ускорение работы и проверка диска' : 'Keep Your Computer Running Smoothly',
+        desc: isRu
+          ? 'Настройте регулярную проверку диска ScanDisk, дефрагментацию и очистку диска с помощью Планировщика заданий.'
+          : 'Use Disk Cleanup, ScanDisk, Disk Defragmenter, and Scheduled Tasks to keep your hard disk in top condition.',
+        action: () => window.appSysTools && window.appSysTools.openCleanMgr()
+      }
+    ];
+
+    let showOnStartup = false;
+    try {
+      showOnStartup = localStorage.getItem('win98_show_welcome') === '1';
+    } catch (e) {}
+
+    const html = `
+      <div style="display:flex;flex-direction:column;height:100%;background:#ffffff;font-family:Tahoma,sans-serif;user-select:none;">
+        <div style="height:68px;background:linear-gradient(90deg,#000080 0%,#1084d0 65%,#7ec0ee 100%);color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:3px solid #ffb23a;">
+          <div>
+            <div style="font-size:11px;letter-spacing:1px;opacity:0.9;">Microslop</div>
+            <div style="font-size:24px;font-weight:900;letter-spacing:-0.5px;">Win <span style="color:#ffb23a;font-size:18px;">98</span> <span style="font-size:11px;font-weight:normal;">Second Edition</span></div>
+          </div>
+          <div style="width:42px;height:42px;">${Icons['start-logo']}</div>
+        </div>
+        <div style="flex:1;display:flex;background:linear-gradient(180deg,#eef6ff 0%,#ffffff 100%);">
+          <div style="width:185px;background:#d6e6f8;border-right:1px solid #9ab6d8;padding:12px 0;display:flex;flex-direction:column;gap:4px;">
+            <div style="padding:0 14px 8px;font-size:11px;font-weight:bold;color:#000080;border-bottom:1px solid #b5cce8;">${isRu ? 'СОДЕРЖАНИЕ' : 'CONTENTS'}</div>
+            ${items.map((it, i) => `
+              <div class="welcome-nav-item" data-idx="${i}" style="padding:8px 14px;font-size:12px;font-weight:bold;color:${i === 0 ? '#ffffff' : '#000080'};background:${i === 0 ? '#000080' : 'transparent'};cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+                <span>${it.label}</span>
+                <span>▸</span>
+              </div>
+            `).join('')}
+          </div>
+          <div style="flex:1;padding:20px 24px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+              <div id="welcome-topic-title" style="font-size:16px;font-weight:bold;color:#000080;margin-bottom:10px;">${items[0].title}</div>
+              <div id="welcome-topic-desc" style="font-size:12px;line-height:1.5;color:#222222;margin-bottom:18px;">${items[0].desc}</div>
+              <button class="win-btn default" id="welcome-topic-run" style="padding:4px 16px;font-weight:bold;">${isRu ? 'Запустить ▸' : 'Launch ▸'}</button>
+            </div>
+            <div style="padding:10px;background:#f4f8fd;border:1px solid #c5d8ee;font-size:11px;color:#335;">
+              <b>${isRu ? 'Совет дня:' : 'Tip of the Day:'}</b> ${isRu ? 'Нажмите Alt+Tab для быстрого переключения между открытыми программами или Win+E для запуска Проводника со списком папок.' : 'Press Alt+Tab to quickly switch between open programs, or Win+E to open Win Explorer with the Folders pane.'}
+            </div>
+          </div>
+        </div>
+        <div style="height:36px;background:#c0c0c0;border-top:1px solid #808080;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:11px;">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <input type="checkbox" id="welcome-startup-chk" ${showOnStartup ? 'checked' : ''}>
+            <span>${isRu ? 'Показывать это окно при каждой загрузке Win 98' : 'Show this screen each time Win 98 starts'}</span>
+          </label>
+          <button class="win-btn" id="welcome-close-btn" style="min-width:75px;">${isRu ? 'Закрыть' : 'Close'}</button>
+        </div>
+      </div>
+    `;
+
+    const win = window.winManager.createWindow({
+      id: 'app_welcome_win98',
+      title: isRu ? 'Добро пожаловать в Win 98' : 'Welcome to Win 98',
+      icon: 'welcome',
+      width: 520,
+      height: 360,
+      resizable: false,
+      maximizable: false,
+      content: html
+    });
+    const el = win.element;
+    let activeIdx = 0;
+    const titleEl = el.querySelector('#welcome-topic-title');
+    const descEl = el.querySelector('#welcome-topic-desc');
+    const navEls = el.querySelectorAll('.welcome-nav-item');
+
+    const selectTopic = (idx) => {
+      activeIdx = idx;
+      navEls.forEach((n, i) => {
+        n.style.background = i === idx ? '#000080' : 'transparent';
+        n.style.color = i === idx ? '#ffffff' : '#000080';
+      });
+      titleEl.textContent = items[idx].title;
+      descEl.textContent = items[idx].desc;
+    };
+
+    navEls.forEach((n, idx) => {
+      n.addEventListener('mouseenter', () => selectTopic(idx));
+      n.addEventListener('click', () => {
+        selectTopic(idx);
+        items[idx].action();
+      });
+    });
+
+    el.querySelector('#welcome-topic-run').addEventListener('click', () => {
+      if (items[activeIdx]) items[activeIdx].action();
+    });
+
+    const chk = el.querySelector('#welcome-startup-chk');
+    if (chk) {
+      chk.addEventListener('change', () => {
+        try {
+          localStorage.setItem('win98_show_welcome', chk.checked ? '1' : '0');
+        } catch (e) {}
+      });
+    }
+
+    el.querySelector('#welcome-close-btn').addEventListener('click', () => {
+      window.winManager.closeWindow('app_welcome_win98');
     });
   }
 }

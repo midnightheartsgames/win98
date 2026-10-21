@@ -83,7 +83,7 @@ console.log('PASS 1. Blender icons present');
 
 assert.strictEqual(gm.isInstalled('blender'), false, 'Blender 1.60 must not be installed initially');
 assert.strictEqual(gm.isInstalled('blender204'), false, 'Blender 2.04 must not be installed initially');
-const baseIcons = Desktop.prototype.getBaseIcons.call({ t: (k) => k });
+const baseIcons = Desktop.prototype.getBaseIcons.call({ t: (k) => k, systemIcon: Desktop.prototype.systemIcon });
 assert.ok(!baseIcons.some(i => i.id === 'blender' || i.id === 'blender204'), 'Blender must not be in Desktop.getBaseIcons');
 const computedInitial = Desktop.prototype.computeCurrentIcons.call({ getBaseIcons: () => baseIcons });
 assert.ok(!computedInitial.some(i => i.id === 'blender' || i.id === 'blender204'), 'Blender must not be on the desktop before installation');

@@ -40,13 +40,14 @@ class SteamSite {
                 ${nav.map(([key, path, label]) => `<a data-url="${this.baseUrl}${path}" class="${key === section ? 'is-current' : ''}">${label}</a>`).join('')}
               </div>
               <div class="sps-side-box">
-                <b>Steam</b><br>версия 1.0 beta<br>для Win 98
+                <b>Steam</b><br>версия 1.0 beta<br>для Win 98<br><br>
+                <a data-url="http://www.valvesoftware.com">Официальный узел Valve Software &raquo;</a>
               </div>
             </td>
             <td class="sps-main">${body}</td>
           </tr>
           <tr>
-            <td colspan="2" class="sps-bottom">&copy; 2000 Valve Software. Все права защищены. Steam и логотип Steam &mdash; товарные знаки Valve.<br>Служба поддержки: <a href="mailto:support@steampowered.com">support@steampowered.com</a></td>
+            <td colspan="2" class="sps-bottom">&copy; 2000 <a data-url="http://www.valvesoftware.com">Valve Software</a>. Все права защищены. Steam и логотип Steam &mdash; товарные знаки Valve.<br>Служба поддержки: <a href="mailto:support@steampowered.com">support@steampowered.com</a></td>
           </tr>
         </table>
       </div>`;

@@ -153,6 +153,10 @@
   overflow: hidden;
 }
 
+#app_run_dialog .win-window-body {
+  overflow: visible;
+}
+
 .notepad-container,
 .calc-container,
 .ie-container,

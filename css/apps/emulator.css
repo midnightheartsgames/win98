@@ -1,0 +1,743 @@
+.emul-win-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: #c0c0c0;
+  color: #000000;
+  font-family: "MS Sans Serif", Tahoma, Verdana, sans-serif;
+  font-size: 11px;
+  user-select: none;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.emul-menubar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px;
+  background: #c0c0c0;
+  border-bottom: 1px solid #808080;
+  position: relative;
+  z-index: 30;
+}
+
+.emul-menu-item {
+  position: relative;
+  padding: 2px 7px;
+  cursor: pointer;
+  color: #000000;
+}
+
+.emul-menu-item:hover,
+.emul-menu-item.is-open {
+  background: #000080;
+  color: #ffffff;
+}
+
+.emul-menu-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 210px;
+  background: #c0c0c0;
+  color: #000000;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 2px solid #404040;
+  border-bottom: 2px solid #404040;
+  box-shadow: inset -1px -1px 0 #808080, 2px 2px 4px rgba(0, 0, 0, 0.35);
+  padding: 2px;
+  z-index: 100;
+}
+
+.emul-menu-item.is-open .emul-menu-dropdown {
+  display: block;
+}
+
+.emul-menu-opt {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 10px 3px 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+}
+
+.emul-menu-opt:hover {
+  background: #000080;
+  color: #ffffff;
+}
+
+.emul-menu-opt.is-checked::before {
+  content: "✓";
+  position: absolute;
+  left: 6px;
+  font-weight: bold;
+}
+
+.emul-menu-sep {
+  height: 1px;
+  background: #808080;
+  border-bottom: 1px solid #ffffff;
+  margin: 3px 2px;
+}
+
+.emul-menu-key {
+  margin-left: 16px;
+  opacity: 0.75;
+  font-size: 10px;
+}
+
+.emul-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 3px 6px;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-bottom: 1px solid #808080;
+}
+
+.emul-tool-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.emul-tool-sep {
+  width: 1px;
+  height: 20px;
+  background: #808080;
+  border-right: 1px solid #ffffff;
+  margin: 0 3px;
+}
+
+.emul-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 7px;
+  font-family: "MS Sans Serif", Tahoma, sans-serif;
+  font-size: 11px;
+  color: #000000;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  box-shadow: inset -1px -1px 0 #808080;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.emul-btn:active,
+.emul-btn.is-active {
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  box-shadow: inset 1px 1px 0 #808080;
+  background: #b5b5b5;
+}
+
+.emul-btn.is-active {
+  background: #dfdfdf;
+  font-weight: bold;
+}
+
+.emul-btn-core {
+  font-weight: bold;
+}
+
+.emul-btn-core[data-core="nes"].is-active {
+  background: #ffe0c8;
+  color: #7a1000;
+}
+
+.emul-btn-core[data-core="sega"].is-active {
+  background: #d0e2ff;
+  color: #001c66;
+}
+
+.emul-btn-core[data-core="snes"].is-active {
+  background: #e4d8ff;
+  color: #2f1668;
+}
+
+.emul-btn-core[data-core="gb"].is-active {
+  background: #dfecc0;
+  color: #1c3d08;
+}
+
+.emul-workspace {
+  display: grid;
+  grid-template-columns: 205px 1fr 228px;
+  flex: 1;
+  min-height: 0;
+  gap: 4px;
+  padding: 4px;
+  background: #c0c0c0;
+}
+
+.emul-shelf {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #c0c0c0;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  padding: 3px;
+}
+
+.emul-pane-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #000080;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 3px 6px;
+  margin-bottom: 3px;
+  font-size: 11px;
+}
+
+.emul-filter-row {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 3px;
+}
+
+.emul-filter-btn {
+  flex: 1;
+  padding: 2px 0;
+  font-size: 10px;
+  font-family: inherit;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  cursor: pointer;
+}
+
+.emul-filter-btn.is-active {
+  background: #ffffff;
+  font-weight: bold;
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+}
+
+.emul-rom-list {
+  flex: 1;
+  overflow-y: auto;
+  background: #ffffff;
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  padding: 2px;
+}
+
+.emul-rom-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 5px;
+  border-bottom: 1px dotted #b8b8b8;
+  cursor: pointer;
+  background: #ffffff;
+}
+
+.emul-rom-card:hover {
+  background: #eef3ff;
+}
+
+.emul-rom-card.is-active {
+  background: #000080;
+  color: #ffffff;
+}
+
+.emul-rom-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.emul-rom-title {
+  font-weight: bold;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emul-sys-pill {
+  font-size: 9px;
+  font-weight: bold;
+  padding: 0 4px;
+  border-radius: 1px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.emul-sys-nes { background: #f0c020; color: #000000; }
+.emul-sys-sega { background: #c81010; color: #ffffff; }
+.emul-sys-snes { background: #5040a0; color: #ffffff; }
+.emul-sys-gb { background: #8bac0f; color: #0f380f; }
+
+.emul-rom-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #505050;
+}
+
+.emul-rom-card.is-active .emul-rom-meta {
+  color: #d8e0ff;
+}
+
+.emul-dump-badge {
+  font-size: 9px;
+  padding: 0 3px;
+  background: #d8f5d0;
+  color: #0f5200;
+  border: 1px solid #6ab058;
+}
+
+.emul-rom-card.is-active .emul-dump-badge {
+  background: #1a660a;
+  color: #ffffff;
+  border-color: #88e070;
+}
+
+.emul-dump-badge.is-web {
+  background: #fff3cd;
+  color: #664d03;
+  border-color: #d6b656;
+}
+
+.emul-rom-card.is-active .emul-dump-badge.is-web {
+  background: #664d03;
+  color: #fff3cd;
+}
+
+.emul-shelf-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 3px;
+}
+
+.emul-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 0;
+  padding: 6px;
+  border-top: 2px solid #404040;
+  border-left: 2px solid #404040;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  background: #1a1a1e;
+  color: #e8e8e8;
+  position: relative;
+  overflow: hidden;
+}
+
+.emul-win-root[data-core="nes"] .emul-stage {
+  background: radial-gradient(circle at center, #2d1414 0%, #140909 100%);
+}
+
+.emul-win-root[data-core="sega"] .emul-stage {
+  background: radial-gradient(circle at center, #10182c 0%, #070b14 100%);
+}
+
+.emul-win-root[data-core="snes"] .emul-stage {
+  background: radial-gradient(circle at center, #23193e 0%, #110b22 100%);
+}
+
+.emul-win-root[data-core="gb"] .emul-stage {
+  background: radial-gradient(circle at center, #52564a 0%, #2f3229 100%);
+}
+
+.emul-core-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 3px 8px;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+}
+
+.emul-core-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: bold;
+  color: #ffcc00;
+}
+
+.emul-power-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #404040;
+  border: 1px solid #000000;
+}
+
+.emul-power-led.is-on {
+  background: #ff2222;
+  box-shadow: 0 0 6px #ff4444;
+}
+
+.emul-crt-frame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0;
+  padding: 8px;
+  background: #101010;
+  border: 3px solid #3c3c3c;
+  box-shadow: inset 0 0 12px #000000, 0 4px 12px rgba(0, 0, 0, 0.65);
+}
+
+.emul-win-root[data-core="gb"] .emul-crt-frame {
+  background: #6c6c78;
+  border-color: #4a4a56;
+  border-radius: 6px 6px 22px 6px;
+  padding: 10px 18px;
+}
+
+.emul-canvas {
+  width: 448px;
+  height: 392px;
+  max-width: 100%;
+  image-rendering: pixelated;
+  background: #000000;
+  border: 1px solid #000000;
+  display: block;
+}
+
+.emul-scanlines {
+  display: none;
+  position: absolute;
+  inset: 8px;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.28) 3px,
+    rgba(0, 0, 0, 0.28) 4px
+  );
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.55);
+}
+
+.emul-crt-frame.is-crt .emul-scanlines {
+  display: block;
+}
+
+.emul-toast {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.88);
+  color: #00ff66;
+  border: 1px solid #00ff66;
+  padding: 4px 10px;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: bold;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 15;
+  white-space: nowrap;
+}
+
+.emul-toast.is-visible {
+  opacity: 1;
+}
+
+.emul-deck {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 470px;
+  padding: 5px 10px;
+  box-sizing: border-box;
+  background: rgba(20, 20, 24, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+}
+
+.emul-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 22px);
+  grid-template-rows: repeat(3, 18px);
+  gap: 2px;
+}
+
+.emul-pad-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #303036;
+  color: #ffffff;
+  border: 1px solid #606068;
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+}
+
+.emul-pad-btn:active,
+.emul-pad-btn.is-pressed {
+  background: #ff3030;
+  color: #ffffff;
+  border-color: #ffaaaa;
+  transform: translateY(1px);
+}
+
+.emul-mid-btns {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.emul-mid-row {
+  display: flex;
+  gap: 6px;
+}
+
+.emul-pill-btn {
+  padding: 2px 8px;
+  font-size: 9px;
+  border-radius: 8px;
+  background: #404048;
+}
+
+.emul-face-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.emul-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #b81818;
+  border: 2px solid #f08080;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.emul-win-root[data-core="sega"] .emul-action-btn {
+  background: #203890;
+  border-color: #80a0ff;
+}
+
+.emul-win-root[data-core="snes"] .emul-action-btn {
+  background: #5838a8;
+  border-color: #b8a0ff;
+}
+
+.emul-win-root[data-core="gb"] .emul-action-btn {
+  background: #881448;
+  border-color: #d870a0;
+}
+
+.emul-action-btn:active,
+.emul-action-btn.is-pressed {
+  background: #ffcc00;
+  color: #000000;
+  border-color: #ffffff;
+}
+
+.emul-inspector {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #c0c0c0;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  padding: 3px;
+}
+
+.emul-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 3px;
+}
+
+.emul-tab {
+  flex: 1;
+  padding: 3px 2px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: bold;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 1px solid #404040;
+  border-bottom: 1px solid #404040;
+  cursor: pointer;
+}
+
+.emul-tab.is-active {
+  background: #000080;
+  color: #ffffff;
+}
+
+.emul-tab-body {
+  flex: 1;
+  overflow-y: auto;
+  background: #fcfcf4;
+  border-top: 1px solid #404040;
+  border-left: 1px solid #404040;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  padding: 6px;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.emul-cheat-box {
+  background: #fffbe6;
+  border: 1px solid #b8860b;
+  border-left: 4px solid #c81010;
+  padding: 6px;
+  margin-bottom: 8px;
+}
+
+.emul-cheat-status {
+  margin-top: 4px;
+  padding: 3px 5px;
+  font-weight: bold;
+  background: #e8e8e0;
+  border: 1px solid #999999;
+}
+
+.emul-cheat-status.is-unlocked {
+  background: #d4edda;
+  color: #155724;
+  border-color: #28a745;
+}
+
+.emul-slot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 4px;
+  border-bottom: 1px solid #d0d0c8;
+  background: #ffffff;
+}
+
+.emul-slot-row.is-selected {
+  background: #e6f0ff;
+  border-left: 3px solid #000080;
+}
+
+.emul-slot-info {
+  flex: 1;
+  min-width: 0;
+  font-size: 10px;
+}
+
+.emul-slot-title {
+  font-weight: bold;
+  color: #000000;
+}
+
+.emul-slot-sub {
+  color: #555555;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emul-reg-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3px;
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  background: #101010;
+  color: #00ff66;
+  padding: 5px;
+  border: 1px inset #808080;
+  margin-bottom: 6px;
+}
+
+.emul-pal-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.emul-pal-cell {
+  height: 12px;
+  border: 1px solid #000000;
+}
+
+.emul-dump-pre {
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  background: #efefef;
+  border: 1px solid #999999;
+  padding: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+.emul-statusbar {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 90px;
+  gap: 2px;
+  padding: 2px 4px;
+  background: #c0c0c0;
+  border-top: 1px solid #ffffff;
+  font-size: 11px;
+}
+
+.emul-status-cell {
+  padding: 1px 5px;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

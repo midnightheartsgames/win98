@@ -1,11 +1,3 @@
-/**
- * Netscape 6 для Win 98 Clone
- * -----------------------------------------------------------
- * Настоящий браузер: ходит в реальный интернет через шлюз
- * /netscape/page, который переписывает любой сайт под Web 1.0.
- *
- * Требует запущенный server.js (node server.js).
- */
 class AppNetscape {
   constructor() {
     this.winId = 'app_netscape';
@@ -21,7 +13,6 @@ class AppNetscape {
     this.currentTitle = 'Netscape 6';
     this.lastBounds = null;
     this.openMenu = null;
-    // auto — JavaScript выполняется, только если без него страница пустая
     this.renderMode = 'auto';
     this.loadTimer = null;
 
@@ -41,10 +32,6 @@ class AppNetscape {
       });
     }
   }
-
-  /* ---------------------------------------------------------- */
-  /* Открытие окна                                               */
-  /* ---------------------------------------------------------- */
 
   loadBounds() {
     try {
@@ -135,10 +122,6 @@ class AppNetscape {
     this.navigate(startUrl);
   }
 
-  /* ---------------------------------------------------------- */
-  /* Разметка окна                                               */
-  /* ---------------------------------------------------------- */
-
   buildHTML() {
     const menus = [
       ['file', 'Файл'],
@@ -225,10 +208,6 @@ class AppNetscape {
     `;
   }
 
-  /* ---------------------------------------------------------- */
-  /* События                                                     */
-  /* ---------------------------------------------------------- */
-
   bindEvents() {
     const root = this.root;
 
@@ -299,10 +278,6 @@ class AppNetscape {
         return null;
     }
   }
-
-  /* ---------------------------------------------------------- */
-  /* Меню                                                        */
-  /* ---------------------------------------------------------- */
 
   menuItems(id) {
     switch (id) {
@@ -396,16 +371,11 @@ class AppNetscape {
     this.openMenu = null;
   }
 
-  /* ---------------------------------------------------------- */
-  /* Навигация                                                   */
-  /* ---------------------------------------------------------- */
-
   normalize(input) {
     let value = String(input || '').trim();
     if (!value) return this.homeUrl;
     if (/^about:/i.test(value)) return value.toLowerCase();
     if (/^(https?|mailto):/i.test(value)) return value;
-    // Похоже на домен?
     if (/^[\w-]+(\.[\w-]+)+(\/|$|\?|:)/.test(value) || /^localhost(:\d+)?/.test(value)) {
       return 'http://' + value;
     }
@@ -434,6 +404,14 @@ class AppNetscape {
     this.pushHistory(url, options.replace);
     this.updateNavButtons();
     this.rememberVisit(url);
+    this.notifyClippy(url, this.currentTitle);
+  }
+
+  notifyClippy(url, title) {
+    if (!url || url.startsWith('about:') || window.isOnline === false) return;
+    if (window.appClippy && typeof window.appClippy.onNavigateNetscape === 'function') {
+      window.appClippy.onNavigateNetscape(url, title || this.currentTitle);
+    }
   }
 
   pushHistory(url, replace) {
@@ -471,6 +449,7 @@ class AppNetscape {
       this.frame.src = this.gatewayUrl(url);
     }
     this.updateNavButtons();
+    this.notifyClippy(url, this.currentTitle);
   }
 
   updateNavButtons() {
@@ -491,10 +470,6 @@ class AppNetscape {
     this.statusText.textContent = 'Передача данных остановлена';
   }
 
-  /**
-   * Срабатывает и при нашей навигации, и при кликах по ссылкам
-   * внутри страницы — там обычные <a href="/netscape/page?url=...">.
-   */
   onFrameLoad() {
     this.setLoading(false);
     let doc;
@@ -509,7 +484,6 @@ class AppNetscape {
     const metaTitle = doc.querySelector('meta[name="ns-title"]');
     const url = metaUrl ? metaUrl.content : null;
 
-    // Шлюз не ответил — скорее всего, страница открыта без server.js
     if (!url && !this.currentUrl.startsWith('about:')) {
       this.frame.srcdoc = this.internalShell(
         'Шлюз недоступен',
@@ -524,7 +498,6 @@ class AppNetscape {
     }
 
     if (url && url !== this.currentUrl) {
-      // Переход инициирован самой страницей (клик по ссылке)
       this.currentUrl = url;
       this.addressInput.value = url;
       this.pushHistory(url);
@@ -536,12 +509,12 @@ class AppNetscape {
     this.setWindowTitle(this.currentTitle);
     this.statusText.textContent = 'Документ загружен';
     this.bindInternalLinks(doc);
+    this.notifyClippy(this.currentUrl, this.currentTitle);
 
     const secure = /^https:/i.test(this.currentUrl);
     const lock = this.root.querySelector('.ns6-status-lock');
     if (lock) lock.textContent = secure ? '🔒' : '🔓';
 
-    // Подсказка в статусной строке при наведении на ссылку
     doc.addEventListener('mouseover', (e) => {
       const a = e.target.closest && e.target.closest('a[title]');
       if (a) this.statusText.textContent = a.getAttribute('title');
@@ -550,8 +523,6 @@ class AppNetscape {
       if (!this.isLoading) this.statusText.textContent = 'Готово';
     });
 
-    // Переход, начатый самой страницей (ссылка или форма): сразу включаем
-    // индикатор — рендеринг JS-сайта на шлюзе может занять несколько секунд
     const win = this.frame.contentWindow;
     if (win) {
       win.addEventListener('pagehide', () => {
@@ -560,12 +531,18 @@ class AppNetscape {
     }
     doc.addEventListener('click', (e) => {
       const a = e.target.closest && e.target.closest('a[href^="/netscape/"]');
-      if (a && !e.defaultPrevented) this.setLoading(true, a.getAttribute('title') || this.currentUrl);
+      if (!a || e.defaultPrevented) return;
+      const targetUrl = a.getAttribute('title') || '';
+      if (/pennygachi\.men\/web98\/?(?:index\.html)?(?:#download|win98\.zip)/i.test(targetUrl)) {
+        e.preventDefault();
+        this.notifyClippy(targetUrl, this.currentTitle);
+        return;
+      }
+      this.setLoading(true, targetUrl || this.currentUrl);
     });
     doc.addEventListener('submit', () => this.setLoading(true, this.currentUrl));
   }
 
-  /** Ссылки внутренних страниц (about:) обслуживаем сами. */
   bindInternalLinks(doc) {
     doc.querySelectorAll('a[data-ns-go]').forEach((a) => {
       a.addEventListener('click', (e) => {
@@ -598,7 +575,6 @@ class AppNetscape {
       return;
     }
 
-    // Прогресс «как у модема»: быстро до середины, дальше всё медленнее
     const host = this.hostOf(url || this.currentUrl);
     const started = Date.now();
     const tick = () => {
@@ -636,10 +612,6 @@ class AppNetscape {
     if (taskBtn) taskBtn.textContent = text;
   }
 
-  /* ---------------------------------------------------------- */
-  /* Диалоги                                                     */
-  /* ---------------------------------------------------------- */
-
   promptUrl() {
     const value = prompt('Открыть адрес:', this.currentUrl);
     if (value) this.navigate(value);
@@ -669,10 +641,6 @@ class AppNetscape {
     }
     this.statusText.textContent = 'Адрес скопирован в буфер обмена';
   }
-
-  /* ---------------------------------------------------------- */
-  /* Закладки и журнал                                           */
-  /* ---------------------------------------------------------- */
 
   getBookmarks() {
     try {
@@ -771,10 +739,6 @@ class AppNetscape {
 </html>`;
   }
 
-  /* ---------------------------------------------------------- */
-  /* Внутренние страницы about:                                  */
-  /* ---------------------------------------------------------- */
-
   buildInternalPage(url) {
     if (url === 'about:bookmarks') {
       return this.internalShell(
@@ -816,7 +780,6 @@ class AppNetscape {
       );
     }
 
-    // about:netscape — стартовая страница
     const links = [
       ['Википедия', 'https://ru.wikipedia.org/wiki/Windows_98'],
       ['Hacker News', 'https://news.ycombinator.com/'],

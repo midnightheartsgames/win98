@@ -3,16 +3,19 @@
   const T = H.TUNING;
   const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
   const ATTACK_TECHS = new Set(['freezeAll', 'fireAoe', 'elecAoe', 'slowAll', 'stunOne', 'burnAll', 'delayAll', 'defDownAll', 'fireVuln', 'weaken', 'claraBait']);
-  const MAX_LVL = 60;
+  const MAX_LVL = 80;
+  const TL_MAX = 70;
+  const TL_QUEST_EXP = { trail: 200, comp: 300, adv: 150 };
+  const SQUADS = 12;
 
   function questToken(t, quests) {
     const [id, step] = t.slice(1).split('='), st = quests && quests[id];
     return step ? st === step : !!st && st !== 'done';
   }
 
-  function cond(expr, flags, quests) {
+  function cond(expr, flags, quests, items) {
     if (!expr) return true;
-    const test = t => (t[0] === '?' ? questToken(t, quests) : !!flags[t]);
+    const test = t => (t[0] === '?' ? questToken(t, quests) : t[0] === '$' ? !!(items && items[t.slice(1)]) : !!flags[t]);
     return String(expr).split('|').some(part => part.split('&').every(t => {
       t = t.trim();
       if (!t) return true;
@@ -31,22 +34,24 @@
     guild: { pity: 'pityGuild', n: 'warpNGuild', star: 'guildStar', off: true },
     wiz: { pity: 'pityWiz', n: 'warpNWiz', star: 'wizStar', off: true },
     mid: { pity: 'pityMid', n: 'warpNMid', star: 'midStar', off: true },
-    comp: { pity: 'pityComp', n: 'warpNComp', star: 'compStar', off: true }
+    comp: { pity: 'pityComp', n: 'warpNComp', star: 'compStar', off: true },
+    con: { pity: 'pityCon', n: 'warpNCon', star: 'conStar', off: true },
+    alley: { pity: 'pityAlley', n: 'warpNAlley', star: 'alleyStar', off: true }
   };
 
   function newState() {
     return {
-      v: 1, name: 'Келус', gender: 'm', mcPath: 'trail',
+      v: 1, trv: 1, name: 'Келус', gender: 'm', mcPath: 'trail',
       roster: { trail: { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 } },
       party: ['trail'],
       inv: { items: {}, cones: [], relics: [] }, uid: 1,
-      credits: 500, jade: 0, power: T.powerMax, powerAcc: 0, tp: T.tpStart,
+      credits: 500, jade: 0, starlight: 0, embers: 0, shop: { hour: null, bought: {}, back: null, intro: false }, outfits: [], pets: [], pet: null, petLog: {}, power: T.powerMax, powerAcc: 0, tp: T.tpStart,
       flags: {}, map: 'hs_base', x: null, y: null, dir: 'down',
       anchors: [], lastAnchor: null, opened: {}, broken: {},
-      rumors: [], bank: { enemies: {}, fusions: [] }, pity: { five: 0, four: 0 }, pityEv: { five: 0, four: 0 }, pityCone: { five: 0, four: 0, guar5: false, guar4: false }, pitySig: { five: 0, four: 0, guar5: false, guar4: false }, pityAmp: { five: 0, four: 0, guar5: false, guar4: false }, pityConv: { five: 0, four: 0, guar5: false, guar4: false }, pityForge: { five: 0, four: 0, guar5: false, guar4: false }, pityGuild: { five: 0, four: 0, guar5: false, guar4: false }, pityWiz: { five: 0, four: 0, guar5: false, guar4: false }, pityMid: { five: 0, four: 0, guar5: false, guar4: false }, pityComp: { five: 0, four: 0, guar5: false, guar4: false },
-      time: 0, obj: 'Прийти в себя', recaps: [], nextAtk: 0, nextCrit: 0, pendingTechs: [], warpLog: [], warpN: 0, warpNEv: 0, warpNCone: 0, warpNSig: 0, warpNAmp: 0, warpNConv: 0, warpNForge: 0, warpNGuild: 0, warpNWiz: 0, warpNMid: 0, warpNComp: 0, warpBatch: 0, warpBan: null, evStar: 'ruanmei', coneStar: 'ruanmei', sigStar: 'miyabi', ampStar: 'miyabi', convStar: 'phrolova', forgeStar: 'phrolova', guildStar: 'aqua', wizStar: 'aqua', echoClaims: 0,
+      rumors: [], bank: { enemies: {}, fusions: [] }, pity: { five: 0, four: 0 }, pityEv: { five: 0, four: 0 }, pityCone: { five: 0, four: 0, guar5: false, guar4: false }, pitySig: { five: 0, four: 0, guar5: false, guar4: false }, pityAmp: { five: 0, four: 0, guar5: false, guar4: false }, pityConv: { five: 0, four: 0, guar5: false, guar4: false }, pityForge: { five: 0, four: 0, guar5: false, guar4: false }, pityGuild: { five: 0, four: 0, guar5: false, guar4: false }, pityWiz: { five: 0, four: 0, guar5: false, guar4: false }, pityMid: { five: 0, four: 0, guar5: false, guar4: false }, pityCon: { five: 0, four: 0, guar5: false, guar4: false }, pityAlley: { five: 0, four: 0, guar5: false, guar4: false }, pityComp: { five: 0, four: 0, guar5: false, guar4: false },
+      time: 0, obj: 'Прийти в себя', recaps: [], nextAtk: 0, nextCrit: 0, pendingTechs: [], warpLog: [], warpN: 0, warpNEv: 0, warpNCone: 0, warpNSig: 0, warpNAmp: 0, warpNConv: 0, warpNForge: 0, warpNGuild: 0, warpNWiz: 0, warpNMid: 0, warpNComp: 0, warpNCon: 0, warpNAlley: 0, conStar: 'makoto', alleyStar: 'makoto', warpBatch: 0, warpBan: null, evStar: 'ruanmei', coneStar: 'ruanmei', sigStar: 'miyabi', ampStar: 'miyabi', convStar: 'phrolova', forgeStar: 'phrolova', guildStar: 'aqua', wizStar: 'aqua', echoClaims: 0,
       comet: { days: 0, last: null, got: [] }, will: [], mail: {}, record: null,
-      quests: {}, missions: { done: {}, track: null, seen: {} }, su: null, suPaths: [], suClaims: []
+      quests: {}, missions: { done: {}, track: null, seen: {} }, su: null, suPaths: [], suClaims: [], squads: [], squad: 0
     };
   }
 
@@ -59,8 +64,84 @@
     return d.getTime();
   }
 
+  const JARILO_STEPS = [
+    {
+      maps: ['j_plains'],
+      fix(s, f) {
+        if (f.plains_met) Object.assign(f, { calyx_seen: true, drift_seen: true });
+        else if (f.jarilo_arrive) { delete f.sampo_met; s.obj = 'Поищите следы цивилизации в Снежных полях'; }
+      }
+    },
+    {
+      maps: ['j_belobog'],
+      fix(s, f) {
+        if (f.belobog_intro) Object.assign(f, { fort_in: true, fort_audience: true });
+        if (f.serval_met) Object.assign(f, { serval_in: true, serval_fix: true, mf_workshop: true });
+        if (f.fled) Object.assign(f, { alley_seen: true, monument_seen: true, evn_free: true, hotel_in: true, hotel_rest: true, knock: true, pela_tour: true });
+        else if (f.belobog_intro) s.obj = f.serval_met ? 'Посетите Монумент вечнозимья' : 'Загляните в мастерскую «Незимье»';
+      }
+    },
+    {
+      maps: ['u_boulder'],
+      fix(s, f) {
+        if (f.underworld) f.lost_world = true;
+        if (f.club || f.moles) Object.assign(f, { hide_meet: true, hide_go: true, hide_p: true, hide_k: true, hide_j: true, hide_h: true, hide_done: true, club: true });
+        if (f.moles) Object.assign(f, { ring_done: true, rule8_out: true });
+        if (f.seele_trial) Object.assign(f, { blade_1: true, blade_2: true });
+        if (f.mine_done) f.night_greet = true;
+        if (f.night_talk) Object.assign(f, { night_key: true, night_dream: true, night_walk: true });
+        if (f.rivet_done) Object.assign(f, { rust_back: true, rust_natasha: true, rust_done: true });
+        if (f.returned) Object.assign(f, { fw_greet: true, fw_key: true, fw_sleep: true, fw_wake: true });
+      }
+    },
+    {
+      maps: ['u_mine'],
+      fix(s, f) {
+        if (f.mine_done) Object.assign(f, { mine_in: true, mine_ramp: true, mine_peak: true, mine_elaine: true, mine_lift: true, mine_stand: true, mine_search: true, mine_pin: true, mine_wheel: true, mine_cart: true, mine_wolf: true, mine_ledge: true });
+      }
+    },
+    {
+      maps: ['u_rivet'],
+      fix(s, f) {
+        if (f.rivet_intro) Object.assign(f, { riv_in: true, riv_view: true, riv_foe: true, riv_rest: true, riv_shop: true, riv_market: true, riv_crates: true, riv_eric: true, riv_side: true, riv_stairs: true, riv_hill: true, riv_front: true, riv_ice: true, riv_play: true, riv_sound: true, riv_found: true, riv_clara: true });
+        else if (f.night_talk) s.obj = 'Отправляйтесь в Заклёпкоград за припасами (северный выход)';
+      }
+    },
+    {
+      maps: ['u_settle'],
+      fix(s, f) {
+        if (f.rivet_done) Object.assign(f, { rot_guide: true, rot_in: true, rot_camp: true, rot_gate: true, rot_c1: true, rot_c2: true, rot_c3: true, rot_gate1: true, rot_g2walk: true, rot_timmy: true, rot_store: true, rot_blaze: true, rot_chase: true, rot_lost: true, rot_found: true, rot_fix: true, rot_gate2: true, rot_end: true });
+        else if (f.rust_done) s.obj = 'Найдите проводника, которого выделил Дикий Огонь';
+        if (s.map === 'u_rivet') { s.x = null; s.y = null; }
+      }
+    },
+    {
+      maps: ['j_restricted'],
+      fix(s, f) {
+        if (f.finale_open) Object.assign(f, { ret_city: true, ret_hid: true, ret_told: true, ret_plan: true, ret_gepard: true });
+        else if (f.returned) { f.ret_city = true; s.obj = 'Проберитесь в мастерскую «Незимье», не попадаясь патрулям'; }
+        if (f.fissures_intro) Object.assign(f, { rz_in: true, rz_pass: true, rz_view: true, rz_t1: true, rz_t2: true, rz_guard: true, rz_dunn: true, rz_hubopen: true, rz_hub: true, rz_grizzly: true, rz_ew: true, rz_bridge: true, rz_gepard: true });
+        else if (f.finale_open) s.obj = 'Идите вместе с Сервал в Запретную зону Среброгривых Стражей (юг района)';
+      }
+    },
+    {
+      maps: ['j_fissures'],
+      fix(s, f) {
+        if (f.everwinter_intro) Object.assign(f, { cor_deeper: true, cor_globe: true, cor_gate: true, cor_h0: true, cor_h1: true, cor_bridge: true, cor_ew: true, cor_h2: true, cor_h3: true, cor_hubs: true, cor_after_gate: true, cor_hall: true, cor_guard: true, cor_inner: true, cor_done: true });
+        else if (f.fissures_intro) s.obj = 'Углубитесь в Коридор исчезающего эха';
+      }
+    },
+    {
+      maps: ['j_everwinter'],
+      fix(s, f) {
+        if (f.ending) Object.assign(f, { everwinter_intro: true, dawn_r1: true, dawn_stairs: true, dawn_top: true, dawn_summit: true, dawn_done: true, ret_wake: true, ret_mem1: true, ret_mem2: true, ret_mem3: true, ret_mem4: true, swamp_in: true, swamp_told: true, swamp_mine: true, swamp_camp: true, swamp_branch: true, swamp_back: true, swamp_done: true, time_meet: true, cable_open: true, time_gepard: true, time_crowd: true, crowned: true, time_done: true, gal_in: true, gal_monument: true, gal_ws: true, gal_sleep: true, gal_meet: true, jarilo_done: true });
+        else if (f.everwinter_intro) s.obj = 'Найдите следы Брони и Коколии (тропа вверх по холму)';
+      }
+    }
+  ];
+
   function markFloor(def, x, y) {
-    if (!def.car && !def.zone) return def.floor || '.';
+    if (!def.car && !def.zone && !def.land) return def.floor || '.';
     const seen = {};
     for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
       const ch = (def.rows[y + dy] || '')[x + dx], t = ch && H.TILES[ch];
@@ -141,6 +222,8 @@
   }
 
   const WARP_LOG = 1000;
+  const GLOW = { dup: { 4: 8, 5: 40 }, max: { 4: 20, 5: 100 }, cone: { 3: ['embers', 20], 4: ['starlight', 8], 5: ['starlight', 40] } };
+  const charGlow = (res, rar) => (res === 'eid' ? GLOW.dup[rar] : res === 'max' ? GLOW.max[rar] : 0) || 0;
   const RENAMED_FLAGS = { bronya_met: 'plains_met', jailed: 'fled' };
 
   class Game {
@@ -149,11 +232,16 @@
       this.state = opts.state ? Object.assign(newState(), JSON.parse(JSON.stringify(opts.state))) : newState();
       this.clock = opts.clock || null;
       this.fixWarpLog();
+      this.fixGlow(!!opts.state && !opts.state.shop);
       this.fixFlags();
       this.fixStation(!!opts.state);
+      this.fixJarilo(!!opts.state);
       this.fixStoryJoins();
+      this.fixTrailLevel();
       this.fixRecaps(!!opts.state && !Array.isArray(opts.state.recaps));
       if (this.fixMissions) this.fixMissions(!!opts.state && !opts.state.missions);
+      if (this.fixConductor) this.fixConductor();
+      if (this.fixTraces) this.fixTraces(!!opts.state && !opts.state.trv);
       this.mailSync();
       this.events = [];
       this.pending = null;
@@ -170,7 +258,7 @@
     }
 
     static get newState() { return newState; }
-    cond(expr) { return cond(expr, this.state.flags, this.state.quests); }
+    cond(expr) { return cond(expr, this.state.flags, this.state.quests, this.state.inv.items); }
     emit(e) { this.events.push(e); }
     toast(text) { this.emit({ t: 'toast', text }); }
     kitOf(key) { return key === 'trail' ? this.state.mcPath : key; }
@@ -199,6 +287,30 @@
         s.obj = 'Расспросить Асту о положении на станции (главный пульт)';
       }
       if (/^hs_/.test(s.map)) { s.x = null; s.y = null; }
+    }
+
+    fixJarilo(loaded) {
+      const s = this.state;
+      if (!loaded) { s.jv = JARILO_STEPS.length + 1; return; }
+      for (let v = s.jv || 1; v <= JARILO_STEPS.length; v++) {
+        const step = JARILO_STEPS[v - 1];
+        for (const id of step.maps) this.rebuiltMap(id);
+        step.fix(s, s.flags);
+      }
+      s.jv = JARILO_STEPS.length + 1;
+    }
+
+    rebuiltMap(id) {
+      const s = this.state, pre = id + ':', def = H.MAPS[id];
+      const opened = Object.keys(s.opened).filter(k => k.startsWith(pre) && s.opened[k]);
+      for (const k of opened) delete s.opened[k];
+      for (let i = 0; i < Math.min(opened.length, def.chests.length); i++) s.opened[pre + i] = true;
+      for (const k of Object.keys(s.broken)) if (k.startsWith(pre)) delete s.broken[k];
+      const had = s.anchors.some(k => k.startsWith(pre));
+      s.anchors = s.anchors.filter(k => !k.startsWith(pre));
+      if (had) def.anchors.forEach((n, i) => s.anchors.push(pre + i));
+      if (s.lastAnchor && s.lastAnchor.map === id) s.lastAnchor = { map: id, x: null, y: null };
+      if (s.map === id) { s.x = null; s.y = null; }
     }
 
     setGuest(keys, o) {
@@ -310,7 +422,11 @@
       else if (opts.x != null) pos = [opts.x, opts.y];
       else if (marks.v) pos = marks.v[0];
       else if (marks.s && def.marks.s && def.marks.s.type === 'spawn') pos = marks.s[0];
-      else pos = [1, 1];
+      else if (marks.a) pos = marks.a[0];
+      else {
+        const ex = Object.keys(def.marks).find(k => def.marks[k].type === 'exit' && marks[k]);
+        pos = ex ? marks[ex][0] : [1, 1];
+      }
       pos = this.freeNear(pos[0], pos[1]);
       this.placePlayer(pos[0], pos[1]);
       this.lastExitTile = atMark ? pos[0] + ',' + pos[1] : null;
@@ -345,9 +461,9 @@
       switch (e.kind) {
         case 'npc': return this.npcShown(e.def);
         case 'enemy': return !e.dead && this.cond(e.def.if) && !(e.def.unique && s.flags['k_' + e.def.unique]);
-        case 'chest': case 'prop': case 'trigger': return this.cond(e.def.if);
+        case 'chest': case 'prop': case 'trigger': case 'lever': return this.cond(e.def.if);
         case 'destr': return !s.broken[e.key];
-        case 'gate': return !s.flags[e.def.flag];
+        case 'gate': return !s.flags[e.def.flag] && !(e.def.open && this.cond(e.def.open));
         case 'portal': return !!this.suPortal(e.def.slot);
         case 'su_heal': case 'su_tp': return !(s.su && s.su.dom && s.su.dom.used[e.x + ',' + e.y]);
         case 'exit': return true;
@@ -366,8 +482,11 @@
     solidEnt(e) {
       if (e.kind === 'span') return !this.marvelDone(e.def.group);
       if (e.kind === 'rbridge') return !this.rbridgeOn(e.def.color);
+      if (e.kind === 'gbridge') return !this.gbridgeOn(e.def.arm);
       return ['npc', 'chest', 'anchor', 'destr', 'gate', 'lever', 'prop', 'su_frame', 'su_heal', 'su_tp'].includes(e.kind);
     }
+
+    gbridgeOn(arm) { return (arm === 'ew') === !!this.state.flags[this.map.def.gearFlag || 'gear_ew']; }
 
     rbridgeOn(color) { const f = this.state.flags; return color === 'blue' ? !!f.rb_blue : !!f.hs_bridge && !f.rb_blue; }
 
@@ -407,12 +526,67 @@
       s.powerAcc += dt;
       while (s.powerAcc >= T.powerRegenSec) { s.powerAcc -= T.powerRegenSec; if (s.power < T.powerMax) s.power++; }
       if (this.attackAnim > 0) this.attackAnim = Math.max(0, this.attackAnim - dt);
+      if (this.updatePet && !this.battle) this.updatePet(dt);
       if (this.battle || this.pending) return;
       if (this.script) { this.advanceScript(); return; }
       this.movePlayer(dt, input);
+      this.updateTram(dt);
+      this.updateBarks(dt);
       this.updateEnemies(dt);
       this.updateWanderers(dt);
     }
+
+    updateTram(dt) {
+      const d = this.map.def.tram;
+      if (!d) { this.tram = null; return; }
+      const t = this.tram && this.tram.map === this.map.id ? this.tram : (this.tram = { map: this.map.id, y: d.y0, dir: 1, wait: d.pause });
+      if (t.wait > 0) t.wait -= dt;
+      else {
+        t.y += t.dir * d.speed * dt;
+        const end = t.dir > 0 ? d.y1 - d.len + 1 : d.y0;
+        if ((t.dir > 0 && t.y >= end) || (t.dir < 0 && t.y <= end)) { t.y = end; t.dir = -t.dir; t.wait = d.pause; }
+      }
+      const p = this.player;
+      if (p.moving || p.x < d.x || p.x > d.x + 1 || p.y < Math.floor(t.y) || p.y > Math.ceil(t.y) + d.len - 1) return;
+      for (const side of [d.x - 1, d.x + 2, d.x - 2, d.x + 3]) {
+        if (!this.blocked(side, p.y)) { this.placePlayer(side, p.y); break; }
+      }
+      this.emit({ t: 'sfx', id: 'hit' });
+      this.toast(this.fill('Трамвай Динь-Динь звенит: «Ты вообще умеешь переходить улицу? Совсем {слепой|слепая}?»'));
+    }
+
+    updateBarks(dt) {
+      const p = this.player, b = this.bark;
+      if (b && b.map === this.map.id) {
+        b.t += dt;
+        if (b.t >= 2.6) { b.t = 0; b.i++; }
+        if (b.i < b.lines.length && Math.hypot(b.src.x - p.x, b.src.y - p.y) < 6) return;
+        this.bark = null;
+      } else if (b) this.bark = null;
+      const seen = this.barkSeen || (this.barkSeen = {});
+      for (const e of this.map.ents) {
+        if (e.kind !== 'npc' || !e.def.bark || !this.visible(e) || Math.hypot(e.x - p.x, e.y - p.y) > 2.5) continue;
+        const key = this.map.id + ':' + e.x + ',' + e.y;
+        if (seen[key] && this.state.time - seen[key] < 25) continue;
+        seen[key] = this.state.time;
+        const lines = e.def.bark.map(l => { const i = l.indexOf('|'), m = l.slice(0, i), at = m && this.map.marks[m] ? this.map.marks[m][0] : [e.x, e.y]; return { x: at[0], y: at[1], text: this.fill(l.slice(i + 1)) }; });
+        this.bark = { map: this.map.id, src: e, lines, i: 0, t: 0 };
+        return;
+      }
+    }
+
+    findieTarget() {
+      const p = this.player;
+      let best = null, bd = Infinity;
+      for (const e of this.map.ents) {
+        if (!e.def || !e.def.findie || !this.visible(e)) continue;
+        const d = Math.hypot(e.x - p.x, e.y - p.y);
+        if (d < bd) { bd = d; best = { x: e.x, y: e.y, dist: d }; }
+      }
+      return best;
+    }
+
+    barkLine() { const b = this.bark; return b && b.map === this.map.id && b.i < b.lines.length ? b.lines[b.i] : null; }
 
     updateWanderers(dt) {
       const p = this.player;
@@ -440,7 +614,7 @@
 
     movePlayer(dt, input) {
       const p = this.player;
-      const speed = input.walk ? 3.2 : 5.5;
+      const speed = (input.walk ? 3.2 : 5.5) * (this.speedMul ? this.speedMul() : 1);
       if (p.moving) {
         p.prog += dt * speed;
         if (p.prog >= 1) {
@@ -554,14 +728,14 @@
     interact() {
       if (this.busy() || this.player.moving) return false;
       const [fx, fy] = this.front();
-      const e = this.entAt(fx, fy, x => x.kind !== 'enemy' && x.kind !== 'trigger' && x.kind !== 'exit' && x.kind !== 'marvel' && x.kind !== 'span' && x.kind !== 'rbridge');
-      if (!e) return false;
+      const e = this.entAt(fx, fy, x => x.kind !== 'enemy' && x.kind !== 'trigger' && x.kind !== 'exit' && x.kind !== 'marvel' && x.kind !== 'span' && x.kind !== 'rbridge' && x.kind !== 'gbridge');
+      if (!e) return this.petTouch ? this.petTouch(fx, fy) : false;
       switch (e.kind) {
         case 'npc':
           if (e.def.dir !== 'fixed') e.dir = { up: 'down', down: 'up', left: 'right', right: 'left' }[this.player.dir];
           if (e.def.visit && this.visitorTalk) this.visitorTalk(e.def.who);
           else if (e.def.script) this.runScript(e.def.script);
-          else this.say(e.def.who, e.def.text || '...');
+          else this.say(e.def.name ? e.def.who + '=' + e.def.name : e.def.who, e.def.text || '...');
           return true;
         case 'chest': return this.openChest(e);
         case 'anchor':
@@ -580,6 +754,7 @@
           this.toast(e.def.text || 'Переборка обесточена.');
           return true;
         case 'prop':
+          if (e.def.calyx) { this.pending = { type: 'ui', ui: 'calyx', only: [].concat(e.def.calyx) }; return true; }
           if (e.def.doc) { this.state.flags['doc_' + e.def.doc] = true; this.pending = { type: 'ui', ui: 'doc', doc: e.def.doc }; return true; }
           if (!e.def.script) return false;
           this.runScript(e.def.script);
@@ -678,14 +853,14 @@
       const specs = keys.map(k => {
         const r = s.roster[k];
         const st = this.charStats(k);
-        return { key: k, charId: this.kitOf(k), name: k === 'trail' ? s.name : undefined, lvl: r.lvl, stats: st, hp: r.hp == null ? st.hp : Math.min(r.hp, st.hp), energy: r.energy || 0, cone: this.coneEffect(k), sets: this.planarSets(k) };
+        return { key: k, charId: this.kitOf(k), name: k === 'trail' ? s.name : undefined, lvl: r.lvl, stats: st, hp: r.hp == null ? st.hp : Math.min(r.hp, st.hp), energy: r.energy || 0, cone: this.coneEffect(k), sets: this.planarSets(k), tr: this.traceSpec ? this.traceSpec(k) : null, eid: r.eid || 0 };
       });
       if (trials) {
         const avg = Math.max(1, Math.round(specs.reduce((a, b) => a + b.lvl, 0) / Math.max(1, specs.length)));
         for (const t of trials) {
           const lvl = Math.max(avg, 1);
           const st = this.baseStats(t, lvl, 0);
-          specs.push({ key: 'trial:' + t, charId: t, lvl, stats: st, hp: st.hp, energy: Math.round(H.CHARS[t].energy * 0.5), trial: true });
+          specs.push({ key: 'trial:' + t, charId: t, lvl, stats: st, hp: st.hp, energy: Math.round(H.CHARS[t].energy * 0.5), trial: true, tr: this.traceTrialSpec ? this.traceTrialSpec(t, lvl) : null, eid: 0 });
         }
       }
       if (specs.length && specs.every(p => p.hp <= 0)) for (const p of specs) p.hp = Math.max(1, Math.round(p.stats.hp * 0.3));
@@ -705,7 +880,7 @@
         lvl: o.lvl || 1, boss: enc ? !!enc.boss : !!o.boss, noFlee: enc ? !!enc.noFlee : !!o.noFlee,
         ambush: o.ambush, leader: 0, techs, nextAtk: s.nextAtk, nextCrit: s.nextCrit,
         rumorKind: !!s.flags.rumor_kind, noContact: !!o.noContact || !!o.su,
-        su: o.su ? this.suBattleOpts() : null, foeHp: o.foeHp || 1, foeAtk: o.foeAtk || 1, fh: o.fh || null
+        su: o.su ? this.suBattleOpts() : null, foeHp: o.foeHp || 1, foeAtk: o.foeAtk || 1, fh: o.fh || null, endAt: enc ? enc.endAt || 0 : 0, hpStart: enc ? enc.hpStart || 0 : 0, allyBuff: enc ? enc.allyBuff || null : null, field: enc ? enc.field || null : null
       };
       s.nextAtk = 0;
       s.nextCrit = 0;
@@ -765,9 +940,12 @@
         if (ups) out.levelUps.push({ key: k, lvl: s.roster[k].lvl });
       }
       for (const k of Object.keys(s.roster)) if (!s.party.slice(0, 4).includes(k)) this.addExp(k, Math.round(rw.exp * 0.3));
+      this.addTrailExp(rw.exp);
       const got = [];
       for (const d of [...rw.drops, ...rw.gifts]) got.push(...this.give(this.dropToGive(d, b.opts.lvl)));
       if (ctx.calyx) got.push(...this.calyxReward(ctx.calyx));
+      if (this.traceBattleLoot) got.push(...this.traceBattleLoot(b, ctx));
+      if (ctx.ent && ctx.ent.def.loot) got.push(...this.give(ctx.ent.def.loot));
       out.items = got;
       if (ctx.ent) {
         ctx.ent.dead = true;
@@ -826,6 +1004,7 @@
       if (g.credits) { s.credits += g.credits; out.push(H.fmt(g.credits) + ' кредитов'); }
       for (const [id, n] of Object.entries(g.items || {})) { s.inv.items[id] = (s.inv.items[id] || 0) + n; out.push(H.ITEMS[id].name + (n > 1 ? ' ×' + n : '')); }
       if (g.cone) { this.addCone(g.cone); out.push('конус «' + H.CONES[g.cone].name + '»'); }
+      for (const id of [].concat(g.outfit || [])) if (H.OUTFITS && H.OUTFITS[id]) { if (!s.outfits.includes(id)) s.outfits.push(id); out.push('наряд «' + H.OUTFITS[id].name + '»'); }
       for (let i = 0; i < (g.relic || 0); i++) { const r = this.rollRelic(g.lvl || this.avgLevel()); out.push('реликвия «' + H.RELIC_SETS[r.set].name + '» (' + H.RELIC_SLOTS.find(x => x.key === r.slot).name + ')'); }
       for (const o of [].concat(g.ornament || [])) {
         for (let i = 0; i < (o.n || 1); i++) for (const sl of H.PLANAR_SLOTS) this.rollPlanar(o.set, o.rl, sl.key);
@@ -858,9 +1037,34 @@
       return up;
     }
 
+    fixTrailLevel() {
+      const s = this.state, tr = s.roster.trail;
+      if (s.tl && s.tl.lvl) return;
+      const lvl = H.clamp((tr && tr.lvl) || 1, 1, TL_MAX);
+      s.tl = { lvl, exp: lvl >= TL_MAX ? 0 : (tr && tr.exp) || 0 };
+    }
+
+    trailLevel() { return this.state.tl.lvl; }
+
+    addTrailExp(n) {
+      const tl = this.state.tl, from = tl.lvl;
+      if (n <= 0 || tl.lvl >= TL_MAX) return false;
+      tl.exp += Math.round(n);
+      while (tl.lvl < TL_MAX && tl.exp >= H.expToNext(tl.lvl)) { tl.exp -= H.expToNext(tl.lvl); tl.lvl++; }
+      if (tl.lvl >= TL_MAX) tl.exp = 0;
+      if (tl.lvl === from) return false;
+      this.emit({ t: 'tl', from, lvl: tl.lvl });
+      return true;
+    }
+
+    setTrailLevel(lvl) {
+      this.state.tl = { lvl: H.clamp(Math.round(lvl) || 1, 1, TL_MAX), exp: 0 };
+      return this.state.tl.lvl;
+    }
+
     baseStats(kitId, lvl, eid) {
       const c = H.CHARS[kitId];
-      const e = 1 + 0.04 * Math.min(6, eid || 0);
+      const e = 1 + 0.04 * (H.TRACES && H.TRACES[kitId] && H.TRACES[kitId].eidFx ? 0 : Math.min(6, eid || 0));
       return {
         hp: Math.round(H.statAt(c.base.hp, lvl) * e), atk: Math.round(H.statAt(c.base.atk, lvl) * e), def: Math.round(H.statAt(c.base.def, lvl) * e), spd: c.base.spd,
         critR: 0.05, critD: 0.5, breakE: 0, ehr: 0, res: 0, healP: 0, err: 0, dmgP: 0, ultP: 0
@@ -891,6 +1095,7 @@
         sets[rel.set] = (sets[rel.set] || 0) + 1;
       }
       for (const [set, n] of Object.entries(sets)) if (n >= 2) for (const [k, v] of Object.entries(H.RELIC_SETS[set].bonus)) addStat(k, v * (n >= 4 ? 2 : 1));
+      if (this.traceStats) for (const [k, v] of this.traceStats(key)) addStat(k, v);
       st.hp = Math.round(st.hp * (1 + pct.hpP) + flat.hpF);
       st.atk = Math.round(st.atk * (1 + pct.atkP) + flat.atkF);
       st.def = Math.round(st.def * (1 + pct.defP) + flat.defF);
@@ -907,10 +1112,11 @@
       const s = this.state;
       if (id === 'trail_p') id = 'trail';
       if (s.roster[id]) {
-        const r = s.roster[id];
-        if (r.eid < 6) { if (r.eidSeen == null) r.eidSeen = r.eid; r.eid++; return 'eid'; }
-        s.credits += 3000;
-        return 'credits';
+        const r = s.roster[id], rar = (H.CHARS[id] || {}).rarity;
+        const res = r.eid < 6 ? 'eid' : 'max';
+        if (res === 'eid') { if (r.eidSeen == null) r.eidSeen = r.eid; r.eid++; }
+        s.starlight += charGlow(res, rar);
+        return res;
       }
       s.roster[id] = { lvl: Math.max(1, lvl || 1), exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
       return 'new';
@@ -1055,6 +1261,44 @@
       return true;
     }
 
+    squadOf(i) {
+      const s = this.state;
+      if (i === s.squad) return s.party;
+      return ((s.squads || [])[i] || []).filter(k => s.roster[k]);
+    }
+
+    setSquad(i) {
+      const s = this.state;
+      if (i === s.squad) return true;
+      if (s.guest || s.su || !(i >= 0 && i < SQUADS)) return false;
+      const next = this.squadOf(i);
+      if (!next.length) return false;
+      if (!Array.isArray(s.squads)) s.squads = [];
+      s.squads[s.squad] = s.party.slice();
+      s.squads[i] = [];
+      s.party = next.slice(0, 4);
+      s.squad = i;
+      return true;
+    }
+
+    startSquad(i, key) {
+      const s = this.state;
+      if (!s.roster[key] || this.squadOf(i).length) return false;
+      if (s.guest || s.su || !(i >= 0 && i < SQUADS)) return false;
+      if (!Array.isArray(s.squads)) s.squads = [];
+      s.squads[i] = [key];
+      return this.setSquad(i);
+    }
+
+    isFav(key) { const r = this.state.roster[key]; return !!(r && r.fav); }
+
+    toggleFav(key) {
+      const r = this.state.roster[key];
+      if (!r) return false;
+      if (r.fav) delete r.fav; else r.fav = true;
+      return !!r.fav;
+    }
+
     rest() {
       for (const r of Object.values(this.state.roster)) r.hp = null;
       this.state.tp = Math.max(this.state.tp, T.tpStart);
@@ -1104,27 +1348,29 @@
       if (id === 'belobog' && s.flags.rumor_sword) list.push('cone:sword_rumor:3500');
       if (id === 'boulder' && s.flags.rumor_milkyway) list.push('cone:milkyway:15000');
       const disc = id === 'express' && s.flags.rumor_discount ? 0.8 : 1;
-      return list.map(e => {
+      const stockLeft = e => { const p = e.split(':'); return p[2] && H.ITEMS[p[0]] ? +p[2] - ((s.shopStock || {})[id + ':' + p[0]] || 0) : null; };
+      return list.filter(e => stockLeft(e) !== 0 && !(stockLeft(e) < 0)).map(e => {
         const p = e.split(':');
         if (p[0] === 'cone') return { kind: 'cone', id: p[1], name: 'Конус «' + H.CONES[p[1]].name + '»', price: Math.round(+p[2] * disc), text: H.CONES[p[1]].text + ' Путь: ' + H.PATHS[H.CONES[p[1]].path].name + '.' };
         if (p[0] === 'relic') {
           const set = H.RELIC_SETS[p[1]], slot = H.RELIC_SLOTS.find(x => x.key === p[2]);
           return { kind: 'relic', id: 'relic:' + p[2], set: p[1], slot: p[2], name: set.name + ': ' + slot.name.toLowerCase(), price: Math.round(+p[3] * disc), text: 'Реликвия уровня команды со случайными характеристиками. Комплект: 2 шт. ' + Object.entries(set.bonus).map(([k, v]) => H.STAT_NAMES[k] + ' +' + Math.round(v * 100) + '%').join(', ') + ', 4 шт. бонус ×2.' };
         }
-        const it = H.ITEMS[p[0]];
-        return { kind: 'item', id: p[0], name: it.name, price: Math.round((p[1] ? +p[1] : it.price) * disc), text: it.text };
+        const it = H.ITEMS[p[0]], left = stockLeft(e);
+        return { kind: 'item', id: p[0], name: it.name, price: Math.round((p[1] ? +p[1] : it.price) * disc), text: it.text + (left != null ? ' В наличии: ' + left + '.' : ''), left };
       });
     }
 
     buy(shopId, idx, n = 1) {
       const e = this.shopList(shopId)[idx];
-      if (!e) return false;
+      if (!e || (e.left != null && n > e.left)) return false;
       const cost = e.price * n;
       if (this.state.credits < cost) return false;
       this.state.credits -= cost;
       if (e.kind === 'cone') this.addCone(e.id);
       else if (e.kind === 'relic') this.makeRelic(e.set, H.RELIC_SLOTS.find(x => x.key === e.slot), Math.min(15, Math.floor(this.avgLevel() / 3)), this.avgLevel());
       else this.state.inv.items[e.id] = (this.state.inv.items[e.id] || 0) + n;
+      if (e.left != null) { const st = this.state.shopStock || (this.state.shopStock = {}); st[shopId + ':' + e.id] = (st[shopId + ':' + e.id] || 0) + n; }
       return true;
     }
 
@@ -1179,6 +1425,7 @@
       s.credits -= r.cost;
       s.flags[id] = true;
       s.rumors.push(id);
+      if (r.give) this.give(r.give);
       return true;
     }
 
@@ -1189,6 +1436,7 @@
       if (last && H.BANNERS[last] && it[H.BANNERS[last].pass]) return last;
       if (it.tape) return last === 'amp' ? 'amp' : 'sig';
       if (it.rtide || it.ftide) return it.rtide && !(last === 'forge' && it.ftide) ? 'conv' : 'forge';
+      if (it.badge) return last === 'alley' ? 'alley' : 'con';
       if (it.vkey) return last === 'comp' ? 'comp' : 'mid';
       if (it.mana) return last === 'wiz' ? 'wiz' : 'guild';
       if (it.spass) return last === 'cone' ? 'cone' : 'ev';
@@ -1226,13 +1474,13 @@
 
     bannerOf(ban) {
       const B = H.BANNERS[ban];
-      if (ban === 'cone' || ban === 'amp' || ban === 'forge' || ban === 'comp' || ban === 'wiz') {
+      if (ban === 'cone' || ban === 'amp' || ban === 'forge' || ban === 'comp' || ban === 'wiz' || ban === 'alley') {
         const id = this.starOf(ban), S = B.stars[id], forge = ban === 'forge';
         return Object.assign({}, B, S, { star: id, five: 'cone:' + S.cone, pity5: T.conePity5, rate5: T.coneRate5, featRate: forge ? T.forgeFeatured : T.coneFeatured, featRate4: forge ? T.forgeFeatured4 : ban === 'wiz' ? T.wizFeatured4 : null });
       }
-      if (ban === 'sig' || ban === 'conv' || ban === 'guild' || ban === 'mid') {
+      if (ban === 'sig' || ban === 'conv' || ban === 'guild' || ban === 'mid' || ban === 'con') {
         const id = this.starOf(ban);
-        return Object.assign({}, B, B.stars[id], { star: id, five: id, featRate: ban === 'conv' ? T.convFeatured : ban === 'guild' ? T.guildFeatured : ban === 'mid' ? T.midFeatured : T.sigFeatured });
+        return Object.assign({}, B, B.stars[id], { star: id, five: id, featRate: ban === 'conv' ? T.convFeatured : ban === 'guild' ? T.guildFeatured : ban === 'mid' ? T.midFeatured : ban === 'con' ? T.conFeatured : T.sigFeatured });
       }
       if (ban !== 'ev') return B;
       const id = this.evStar();
@@ -1281,11 +1529,19 @@
         const r = { rar, pick };
         if (off) r.off = true;
         if (cameo) r.cameo = true;
-        if (pick.startsWith('cone:')) { const id = pick.slice(5); r.sup = this.addCone(id).sup || 1; r.kind = 'cone'; r.id = id; r.name = H.CONES[id].name; }
-        else { r.kind = 'char'; r.id = pick; r.name = H.CHARS[pick].name; r.res = this.addChar(pick, Math.max(1, this.avgLevel() - 3)); }
+        if (pick.startsWith('cone:')) {
+          const id = pick.slice(5), [cur, n] = GLOW.cone[rar];
+          r.sup = this.addCone(id).sup || 1; r.kind = 'cone'; r.id = id; r.name = H.CONES[id].name;
+          s[cur] += n; r.glow = { cur, n };
+        } else {
+          r.kind = 'char'; r.id = pick; r.name = H.CHARS[pick].name; r.res = this.addChar(pick, Math.max(1, this.avgLevel() - 3));
+          const n = charGlow(r.res, H.CHARS[pick].rarity);
+          if (n) r.glow = { cur: 'starlight', n };
+        }
         res.push(r);
         const e = { n: ++s.warpN, kind: r.kind, id: r.id, rar, at, batch, pity: rar === 5 ? p5 : rar === 4 ? p4 : 0 };
         if (r.kind === 'char') e.res = r.res; else e.sup = r.sup;
+        if (r.glow) e.glow = r.glow.n;
         if (cameo) e.cameo = true;
         const bs = BANNER_STATE[ban];
         if (bs && bs.n) { e.ban = ban; e.star = B.star; s[bs.n]++; if (bs.off && off) e.off = true; }
@@ -1300,6 +1556,20 @@
       const bs = BANNER_STATE[ban], counted = Object.values(BANNER_STATE).filter(x => x.n).reduce((a, x) => a + (s[x.n] || 0), 0);
       const total = ban === 'std' ? s.warpN - counted : bs && bs.n ? s[bs.n] || 0 : s.warpN;
       return { total, five: five.length, four: log.filter(e => e.rar === 4).length, last5: five[0] || null };
+    }
+
+    fixGlow(old) {
+      const s = this.state;
+      if (!old) return;
+      const back = { starlight: 0, embers: 0 };
+      for (const e of s.warpLog) {
+        if (typeof e !== 'object' || e.glow) continue;
+        if (e.kind === 'cone' && GLOW.cone[e.rar]) back[GLOW.cone[e.rar][0]] += GLOW.cone[e.rar][1];
+        else if (e.kind === 'char') back.starlight += charGlow(e.res, e.rar);
+      }
+      s.starlight += back.starlight;
+      s.embers += back.embers;
+      s.shop.back = back.starlight || back.embers ? back : null;
     }
 
     fixWarpLog() {
@@ -1339,7 +1609,7 @@
 
     willReady(i) {
       const w = H.TRAIL_WILL[i];
-      return !!w && this.eventsOpen() && this.state.roster.trail.lvl >= w.lvl && !this.state.will.includes(w.lvl);
+      return !!w && this.eventsOpen() && this.trailLevel() >= w.lvl && !this.state.will.includes(w.lvl);
     }
 
     claimWill(i) {
@@ -1357,7 +1627,10 @@
 
     eventReady(id) { return id === 'comet' ? H.COMET_GIFT.some((n, i) => this.cometReady(i)) : H.TRAIL_WILL.some((w, i) => this.willReady(i)); }
 
-    mailSync() { for (const m of H.MAIL) if (!this.state.mail[m.id] && (!m.need || this.cond(m.need))) this.state.mail[m.id] = { at: this.now() }; }
+    mailSync() {
+      const at = this.now();
+      for (const m of H.MAIL) if (!this.state.mail[m.id] && (!m.need || this.cond(m.need))) this.state.mail[m.id] = { at };
+    }
 
     mailbox() { this.mailSync(); return H.MAIL.map(m => ({ m, st: this.state.mail[m.id] })).filter(x => x.st && !x.st.del).sort((a, b) => b.st.at - a.st.at); }
 
@@ -1373,6 +1646,7 @@
       if (!q || this.state.quests[id] === step) return;
       this.state.quests[id] = step;
       if (this.missionNew) this.missionNew(id);
+      if (step === 'done') this.addTrailExp(TL_QUEST_EXP[q.type || 'comp'] || 0);
       this.emit({ t: 'quest', id, step, type: q.type || 'comp', name: q.name, text: step === 'done' ? 'Миссия выполнена' : this.questStep(id).text });
     }
 
@@ -1434,18 +1708,28 @@
       if (r) delete r.eidSeen;
     }
 
+    calyxOpen(c) {
+      const s = this.state;
+      return (!c.need || this.cond(c.need)) && (!c.owns || Object.keys(s.roster).some(k => !s.roster[k].guest && H.CHARS[this.kitOf(k)].path === c.owns));
+    }
+
     calyxList() {
-      return H.CALYX.map(c => ({ c, open: !c.need || this.cond(c.need) }));
+      return H.CALYX.map(c => ({ c, open: this.calyxOpen(c) }));
     }
 
     tiersOpen() { return H.CALYX_TIERS.map(t => !t.need || this.cond(t.need)); }
 
     startCalyx(id, tier) {
       const s = this.state, c = H.CALYX.find(x => x.id === id), t = H.CALYX_TIERS[tier];
-      if (!c || !t || (c.need && !this.cond(c.need)) || (t.need && !this.cond(t.need))) return false;
+      if (!c || !t || !this.calyxOpen(c) || (t.need && !this.cond(t.need))) return false;
       if (s.power < c.cost) return false;
+      if (c.waves) {
+        const lv = id => id + ':' + (t.lvl + (H.ENEMIES[id].boss ? 2 : 0));
+        this.startBattle({ waves: c.waves.map(w => w.map(lv)), lvl: t.lvl, boss: true, noFlee: false, bg: 'sim', music: c.music || 'boss', calyx: { id, tier, cost: c.cost }, noContact: true });
+        return true;
+      }
       let enemies;
-      if (c.boss) enemies = [c.boss + ':' + (t.lvl + 2)];
+      if (c.boss) enemies = [c.boss + ':' + (t.lvl + 2)].concat((c.adds || []).map(a => a + ':' + t.lvl));
       else {
         enemies = [];
         const n = 3;
@@ -1458,13 +1742,16 @@
 
     calyxReward(cx) {
       const s = this.state, c = H.CALYX.find(x => x.id === cx.id), tier = cx.tier;
+      if (c.reward === 'echo' && this.echoClaim && !this.echoClaim()) return [];
       s.power = Math.max(0, s.power - cx.cost);
+      const mats = this.traceCalyx ? this.traceCalyx(c, tier) : [];
       const lvl = H.CALYX_TIERS[tier].lvl;
       switch (c.reward) {
-        case 'exp': return this.give({ items: tier >= 2 ? { exp2: 2 + tier, exp1: 2 } : { exp1: 3 + tier * 2 } });
-        case 'credits': return this.give({ credits: 1500 + 1500 * tier });
+        case 'exp': return this.give({ items: tier >= 2 ? { exp2: 2 + tier, exp1: 2 } : { exp1: 3 + tier * 2 } }).concat(mats);
+        case 'credits': return this.give({ credits: T.treasure ? T.treasure[tier] : 1500 + 1500 * tier }).concat(mats);
+        case 'path': return mats;
         case 'relic': return this.give({ relic: 2 + (this.rng() < 0.5 ? 1 : 0), lvl: lvl + 6 });
-        case 'echo': { const g = this.give({ relic: 3, lvl: lvl + 9, jade: 40 }); return this.fhEchoLucent ? g.concat(this.fhEchoLucent()) : g; }
+        case 'echo': { const g = this.give({ relic: 3, lvl: lvl + 9, jade: 40 }).concat(mats); return this.fhEchoLucent ? g.concat(this.fhEchoLucent()) : g; }
       }
       return [];
     }
@@ -1492,7 +1779,7 @@
 
     mapMusic(def) { return (def.car && this.state.record) || def.music; }
 
-    expressWorld() { return H.WORLDS.find(w => w.express && this.cond(w.express)) || H.WORLDS[0]; }
+    expressWorld() { return H.WORLDS.slice().reverse().find(w => w.express && this.cond(w.express)) || H.WORLDS[0]; }
 
     currentWorld() { const a = this.areaOf(this.map.id); return a ? a.world : H.WORLDS[0]; }
 
@@ -1600,6 +1887,8 @@
     }
 
     setPath(p) {
+      const r = this.state.roster.trail, was = this.state.mcPath;
+      if (r && was !== p) { r.eidBy = r.eidBy || {}; r.eidBy[was] = r.eid || 0; r.eid = r.eidBy[p] || 0; delete r.eidSeen; }
       this.state.mcPath = p;
       this.clampHp('trail');
     }
@@ -1648,6 +1937,7 @@
         if (st.su === 'start') { this.suStart(st.world || 1, st.path || 'preservation', s.party, { tut: !!st.tut }); continue; }
         if (st.su) { if (this.suOp(st)) return; continue; }
         if (st.quest) { if (st.tick) this.questTick(st.quest); else this.setQuest(st.quest, st.step); continue; }
+        if (st.lines) { if (this[st.lines]) this.spliceSteps(this[st.lines](st.arg)); continue; }
         if (st.jump) { sc.pc = sc.labels[st.jump]; continue; }
         if (st.end) { sc.pc = sc.steps.length; continue; }
         if (st.flag) { s.flags[st.flag] = true; if (this.missionTick) this.missionTick(); continue; }
@@ -1689,14 +1979,16 @@
         if (st.rate) { this.pending = { type: 'choice', title: 'Навести пистолет', options: s.party.map(id => [/^trail/.test(id) ? s.name : H.CHARS[id].name, '@rate:' + id]) }; return; }
         if (st.menu) {
           const asked = sc.asked || (sc.asked = new Set());
-          const opts = st.menu.filter(o => !asked.has(o[1])).concat(st.exit ? [st.exit] : []);
+          const opts = st.menu.filter(o => !asked.has(o[1]) && (!o[2] || this.cond(o[2]))).concat(st.exit ? [st.exit] : []);
           this.pending = { type: 'choice', menu: true, options: opts.map(o => [this.fill(o[0]), o[1]]) };
           return;
         }
         if (st.cine) { if (this.skipping) continue; this.pending = { type: 'cine', id: st.cine }; return; }
+        if (st.magflow) { this.pending = { type: 'ui', ui: 'magflow', id: st.magflow, fail: st.fail }; return; }
+        if (st.carts) { this.pending = { type: 'ui', ui: 'carts', id: st.carts, fail: st.fail }; return; }
         if (st.ui) { this.pending = Object.assign({ type: 'ui' }, st); return; }
         if (st.tut) { this.pending = { type: 'tut', text: st.tut }; return; }
-        if (st.credits) { this.skipping = false; this.pending = { type: 'credits' }; return; }
+        if (st.credits) { this.skipping = false; this.pending = { type: 'credits', id: st.credits === true ? null : st.credits }; return; }
       }
     }
 
@@ -1714,6 +2006,10 @@
         this.state.gender = val.gender;
       }
       if (p && p.type === 'ui' && /^su_(bless|curio|end|enhance)$/.test(p.ui)) this.suResolve(p, val);
+      if (p && p.type === 'ui' && (p.ui === 'magflow' || p.ui === 'carts')) {
+        if (val) this.state.flags[p.id] = true;
+        else if (this.script) this.script.pc = p.fail && this.script.labels[p.fail] !== undefined ? this.script.labels[p.fail] : this.script.steps.length;
+      }
       if (this.script) this.advanceScript();
     }
 
@@ -1761,6 +2057,6 @@
     }
   }
 
-  Object.assign(H, { Game, cond, newState, mapLayout, scriptEntries, dayKey, MAX_LVL, ATTACK_TECHS });
+  Object.assign(H, { Game, GLOW, charGlow, cond, newState, mapLayout, scriptEntries, dayKey, MAX_LVL, TL_MAX, TL_QUEST_EXP, SQUADS, ATTACK_TECHS });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

@@ -1527,7 +1527,7 @@ Zip became the standard for moving large files, layouts, photos and archives, in
 </dl>` },
     { id: 'russia', title: 'Zip in Russia', content: `In Russia Zip is used mostly in printing and design: layouts made on the [[macos8|Macintosh]] in QuarkXPress and [[photoshop|Photoshop]] are taken to print shops and film output bureaus on Zip disks. For home users the drive is expensive, and disks are hard to find outside big cities.` }
   ],
-  seeAlso: ['floppy144', 'cdrom', 'macos8', 'photoshop'],
+  seeAlso: ['floppy144', 'cdrom', 'cdrw', 'macos8', 'photoshop'],
   references: [
     'Iomega Corporation. Zip Drive User\'s Guide, 1995.',
     'Gibson, S. Trouble In Paradise: The Click of Death. Gibson Research, 1998.',
@@ -1535,3 +1535,411 @@ Zip became the standard for moving large files, layouts, photos and archives, in
   ],
   categories: ['Hardware', 'Storage Media', 'Iomega']
 });
+
+window.interpediaReg('cdrw', 'hardware', {
+  title: 'Приводы CD-R и CD-RW',
+  infobox: {
+    title: 'CD-R / CD-RW',
+    badgeText: 'Orange Book',
+    fields: [
+      { label: 'Стандарт', value: 'Orange Book (Philips и Sony, 1990 и 1997)' },
+      { label: 'Ёмкость', value: '650 МБ (74 мин) или 700 МБ (80 мин)' },
+      { label: 'Скорости (1999)', value: 'запись 4x–8x, перезапись 2x–4x, чтение 24x–32x' },
+      { label: 'Интерфейс', value: 'ATAPI (IDE) и SCSI-2' },
+      { label: 'Типы красителя CD-R', value: 'цианин (зелёный), фталоцианин (золотой), азо (синий)' },
+      { label: 'Программы записи', value: 'Nero Burning ROM 4, Adaptec Easy CD Creator 4, CDRWin' }
+    ]
+  },
+  lead: `<b>CD-R</b> (<i>Compact Disc Recordable</i>, записываемый компакт-диск) и <b>CD-RW</b> (<i>Compact Disc ReWritable</i>, перезаписываемый компакт-диск) — оптические носители объёмом 650–700 МБ и приводы («пишущие CD-ROM», «резаки»), позволяющие записывать собственные компакт-диски на домашнем компьютере. Ещё в 1995 году записывающий привод стоил дороже тысячи долларов и встречался только в студиях звукозаписи, но к концу 1999 года модели <i>4x/4x/24x</i> и <i>8x/4x/32x</i> подешевели до 200–300 долларов, а чистая болванка CD-R на [[gorbushka|«Горбушке»]] или Митинском радиорынке стоит около одного доллара. Доступная запись компакт-дисков сделала ненужными магнитооптику и [[zipdrive|дисководы Zip]], превратив домашний ПК в мини-типографию для архивов, музыки в формате [[mp3format|MP3]] и копий игр.`,
+  sections: [
+    { id: 'orangebook', title: 'Стандарт «Оранжевая книга» и типы болванок', content: `Спецификацию записываемых дисков разработали компании Philips и Sony в документе «Оранжевая книга» (<i>Orange Book</i>): часть II (1990) описывает однократно записываемые диски CD-R, а часть III (1997) — перезаписываемые CD-RW.
+
+В отличие от заводского штампованного [[cdrom|CD-ROM]], где углубления (питы) выдавливаются пресс-формой в поликарбонате, внутри диска CD-R вдоль спиральной направляющей дорожки (<i>pre-groove</i>) нанесён тонкий слой органического красителя и отражающее покрытие из золота или серебряного сплава. Лазер привода во время записи нагревает краситель в нужных точках до 250–300 °C: краситель темнеет и меняет коэффициент отражения, имитируя питы обычного компакт-диска. После записи изменить эти участки нельзя.
+
+По составу красителя болванки CD-R делятся на три семейства:
+<table class="interpedia-wikitable">
+<tr><th>Краситель</th><th>Отражающий слой</th><th>Цвет рабочей стороны</th><th>Особенности и производители</th></tr>
+<tr><td>Цианин (Cyanine)</td><td>Золото или серебро</td><td>Зелёный или сине-зелёный</td><td>Старейший тип (Taiyo Yuden, TDK); широкая совместимость со старыми приводами</td></tr>
+<tr><td>Фталоцианин (Phthalocyanine)</td><td>Золото или серебро</td><td>Светло-золотистый, почти прозрачный</td><td>Разработка Mitsui и Kodak; высокая стойкость к солнечному свету и долговечность архивов</td></tr>
+<tr><td>Азо (Metallized Azo)</td><td>Серебряный сплав</td><td>Тёмно-синий</td><td>Фирменный состав Mitsubishi Chemical (Verbatim DataLifePlus)</td></tr>
+</table>
+
+В перезаписываемых дисках <b>CD-RW</b> вместо красителя используется фазоизменяемый сплав серебра, индия, сурьмы и теллура (AgInSbTe). Лазер может переводить вещество из кристаллического (отражающего) состояния в аморфное (рассеивающее) и обратно, что позволяет стирать и перезаписывать диск до тысячи раз. Однако из-за низкой отражательной способности (около 15–20% против 70% у CD-R) диски CD-RW читаются только в приводах с маркировкой <i>MultiRead</i> (выпущенных после 1997 года) и почти не распознаются старыми бытовыми музыкальными центрами.` },
+    { id: 'speeds', title: 'Формула скоростей и проблема опустошения буфера', content: `На передней панели привода CD-RW с 1998 года указывают три числа через косую черту — например, <code>4x/4x/24x</code> или <code>8x/4x/32x</code>:
+<ul>
+<li>первое число — максимальная скорость однократной записи CD-R (при <code>4x</code> полный 74-минутный диск пишется за 18–19 минут, при <code>8x</code> — примерно за 9 минут);</li>
+<li>второе число — скорость перезаписи CD-RW;</li>
+<li>третье число — максимальная скорость чтения обычных компакт-дисков.</li>
+</ul>
+
+Самая острая техническая проблема домашних «резаков» конца 1990-х — <b>опустошение буфера</b> (<i>Buffer Underrun</i>). Запись дорожки в режимах <i>Disc-At-Once</i> (DAO) и <i>Track-At-Once</i> (TAO) должна идти непрерывно. Внутри привода установлен небольшой буфер оперативной памяти объёмом от 1 до 4 МБ. Если жёсткий диск на пару секунд задержит подачу данных (из-за фрагментации файлов, запуска хранителя экрана, фоновой проверки почты или нехватки ресурсов в [[windows98|Win 98]]), буфер пустеет при скорости <code>4x</code> (600 КБ/с) всего за две-три секунды. Лазер обрывает дорожку, программа выдаёт окно с ошибкой <code>Buffer Underrun</code>, а недописанная болванка CD-R навсегда превращается в блестящую «подставку под чашку кофе» (<i>coaster</i>).
+
+По этой причине опытные пользователи предпочитают более дорогие приводы с интерфейсом SCSI (Plextor PlexWriter, Teac, Yamaha) или перед нажатием кнопки <i>Burn</i> закрывают все программы, отключают антивирус и хранитель экрана и не прикасаются к мыши до окончания прожига.` },
+    { id: 'software', title: 'Программы для прожига и пакетная запись', content: `В стандартной поставке [[windows98|Microslop Win 98]] нет встроенных средств записи компакт-дисков; для работы с приводом требуется специальное программное обеспечение:
+<dl>
+<dt>Nero Burning ROM (Ahead Software, Германия)</dt><dd>фаворит продвинутых пользователей (осенью 1999 года актуальна версия 4.0): компактная программа с наглядным индикатором заполнения буфера, поддержкой форматов ISO 9660 и Joliet (длинные русские и английские имена файлов), созданием загрузочных дисков и записью Audio CD напрямую из файлов MP3 без предварительной распаковки в WAV.</dd>
+<dt>Adaptec Easy CD Creator</dt><dd>пакет компании Adaptec (версия 4 Deluxe, 1999), который чаще всего прикладывается в коробку к розничным приводам HP SureStore, Sony, Philips и Mitsumi. В его состав входит утилита пакетной записи <b>DirectCD</b>, форматирующая диск CD-RW по стандарту UDF (за счёт чего свободный объём уменьшается с 650 до 530 МБ) и позволяющая перетаскивать файлы на букву дисковода прямо в Проводнике, как на большую дискету.</dd>
+<dt>CDRWin (Golden Hawk Technology)</dt><dd>программа для побитового снятия и записи точных образов дисков в формате <code>.BIN/.CUE</code>, популярная при копировании игровых дисков со смешанными дорожками (данные + музыка CD-DA) и дисков для приставки PlayStation.</dd>
+</dl>` },
+    { id: 'culture', title: 'Культура болванок в 1999 году', content: `Появление доступных резаков изменило обмен файлами. Если в 1996 году для переноса сотен мегабайт требовалось вынимать жёсткий диск из корпуса и идти с ним в гости со шлейфом IDE в кармане, то в 1999 году достаточно записать болванку Verbatim, TDK или Mirex за десять рублей. На одну 74-минутную болванку (650 МБ) помещается около десяти музыкальных альбомов в формате [[mp3format|MP3]] (с битрейтом 128 кбит/с для [[winamp|Winamp]]), дистрибутив операционной системы, коллекция видеороликов или полная копия игры. В 1999 году в продаже также появились 80-минутные болванки на 700 МБ с уплотнённым шагом спирали, для заполнения которых в Nero включают режим «перепрожига» (<i>overburn</i>).` }
+  ],
+  seeAlso: ['cdrom', 'zipdrive', 'floppy144', 'winamp', 'napster', 'gorbushka'],
+  references: [
+    'Philips, Sony. Recordable Compact Disc Systems (Orange Book), Part II: CD-WO (1990), Part III: CD-RW (1997).',
+    'Ahead Software. Nero Burning ROM 4.0 User Manual, 1999.',
+    'Тестирование двенадцати приводов CD-RW. — КомпьютерПресс, № 10, 1999.'
+  ],
+  links: [['http://www.ferrum98.ru', 'Железный цех — обзоры приводов и железа'], ['http://www.winsoft98.com', 'Каталог программ WinSoft 98']],
+  categories: ['Компьютерное железо', 'Носители информации']
+}, {
+  title: 'CD-R and CD-RW Drives',
+  infobox: {
+    title: 'CD-R / CD-RW',
+    badgeText: 'Orange Book',
+    fields: [
+      { label: 'Standard', value: 'Orange Book (Philips and Sony, 1990 and 1997)' },
+      { label: 'Capacity', value: '650 MB (74 min) or 700 MB (80 min)' },
+      { label: 'Speeds (1999)', value: '4x–8x write, 2x–4x rewrite, 24x–32x read' },
+      { label: 'Interface', value: 'ATAPI (IDE) and SCSI-2' },
+      { label: 'CD-R dye types', value: 'cyanine (green), phthalocyanine (gold), azo (dark blue)' },
+      { label: 'Burning software', value: 'Nero Burning ROM 4, Adaptec Easy CD Creator 4, CDRWin' }
+    ]
+  },
+  lead: `<b>CD-R</b> (<i>Compact Disc Recordable</i>) and <b>CD-RW</b> (<i>Compact Disc ReWritable</i>) are 650–700 MB optical media and recorder drives ("CD burners") that allow home PC users to press their own compact discs. In 1995 a CD recorder cost well over $1,000 and belonged in mastering studios, but by late 1999 <i>4x/4x/24x</i> and <i>8x/4x/32x</i> drives sell for $200–$300, and blank CD-R spindles cost around a dollar per disc. Affordable CD burning has largely displaced magneto-optical drives and the [[zipdrive|Iomega Zip drive]], turning the home PC into a personal mastering station for backups, [[mp3format|MP3]] collections and game copies.`,
+  sections: [
+    { id: 'orangebook', title: 'The Orange Book standard and dye types', content: `Philips and Sony defined recordable CDs in the <i>Orange Book</i> specification: Part II (1990) covers write-once CD-R media, and Part III (1997) covers rewritable CD-RW discs.
+
+Unlike a factory-pressed [[cdrom|CD-ROM]] whose physical pits are stamped into polycarbonate, a CD-R contains a molded spiral guide track (<i>pre-groove</i>) coated with an organic photosensitive dye and a reflective gold or silver-alloy layer. During recording, the burner's laser heats spots in the dye layer to 250–300 °C, permanently altering its reflectivity so a standard CD-ROM laser reads those marks as pits and lands.
+
+Blank CD-R discs use one of three organic dye families:
+<table class="interpedia-wikitable">
+<tr><th>Dye formulation</th><th>Reflective layer</th><th>Recording side color</th><th>Notes and manufacturers</th></tr>
+<tr><td>Cyanine</td><td>Gold or silver</td><td>Green or blue-green</td><td>Original formulation (Taiyo Yuden, TDK); wide compatibility with older drives</td></tr>
+<tr><td>Phthalocyanine</td><td>Gold or silver</td><td>Pale gold, nearly clear</td><td>Developed by Mitsui and Kodak; high resistance to sunlight and long archival life</td></tr>
+<tr><td>Metallized Azo</td><td>Silver alloy</td><td>Deep dark blue</td><td>Proprietary Mitsubishi Chemical dye used in Verbatim DataLifePlus blanks</td></tr>
+</table>
+
+Rewritable <b>CD-RW</b> discs replace organic dye with a phase-change metallic alloy of silver, indium, antimony and tellurium (AgInSbTe). Heating the alloy to different temperatures switches it between crystalline (reflective) and amorphous (less reflective) states, allowing up to 1,000 erase-and-write cycles. Because CD-RW discs reflect only 15–20% of the laser light compared to 70% on CD-R, they require <i>MultiRead</i>-compliant CD-ROM drives (introduced in 1997) and often fail to play in older home and car CD players.` },
+    { id: 'speeds', title: 'Speed ratings and the Buffer Underrun hazard', content: `Since 1998, CD-RW drives have been advertised with three speed numbers separated by slashes, such as <code>4x/4x/24x</code> or <code>8x/4x/32x</code>:
+<ul>
+<li>the first number is the maximum CD-R write speed (<code>4x</code> burns a full 74-minute disc in about 18 minutes; <code>8x</code> finishes in roughly 9 minutes);</li>
+<li>the second number is the CD-RW rewrite speed;</li>
+<li>the third number is the maximum standard CD-ROM read speed.</li>
+</ul>
+
+The greatest frustration of home CD burning in 1999 is the <b>buffer underrun</b> error. In <i>Disc-At-Once</i> (DAO) and <i>Track-At-Once</i> (TAO) modes, the laser must write a continuous spiral without pausing. Each burner contains a small onboard RAM buffer (typically 1 MB to 4 MB). If the computer's hard drive stutters for even two seconds due to file fragmentation, a screen saver kicking in, background email polling or [[windows98|Win 98]] multitasking, a 1 MB buffer drains completely at <code>4x</code> (600 KB/s). The laser beam aborts mid-track, the software throws a <code>Buffer Underrun</code> error dialog, and the ruined CD-R becomes an expensive "coaster" for a coffee mug.
+
+To avoid making coasters, enthusiasts either buy SCSI burners (such as Plextor PlexWriter, Teac or Yamaha models) with 4 MB buffers, or close every running application, disable screen savers and antivirus scanners, and leave the mouse untouched until the burn finishes.` },
+    { id: 'software', title: 'Burning software and packet writing', content: `[[windows98|Microslop Win 98]] cannot burn discs out of the box and relies on third-party mastering suites:
+<dl>
+<dt>Nero Burning ROM (Ahead Software, Germany)</dt><dd>the favorite of power users (at version 4.0 in late 1999), prized for its live buffer-level meters, full ISO 9660 and Joliet long-filename support, bootable CD creation, overburning, and on-the-fly decoding of MP3 files directly into standard Audio CD tracks.</dd>
+<dt>Adaptec Easy CD Creator</dt><dd>Adaptec's consumer suite (Version 4 Deluxe in 1999), bundled with most retail HP SureStore, Sony, Philips and Mitsumi drives. It includes <b>DirectCD</b>, a UDF packet-writing utility that formats a CD-RW disc (reducing usable space from 650 MB to about 530 MB) so files can be dragged and dropped onto the drive letter in Explorer like a giant floppy disk.</dd>
+<dt>CDRWin (Golden Hawk Technology)</dt><dd>a low-level mastering tool that reads and writes raw <code>.BIN/.CUE</code> disc images, widely used for backing up mixed-mode PC games (data plus CD-DA audio tracks) and PlayStation discs.</dd>
+</dl>` },
+    { id: 'culture', title: 'Blank-disc culture in 1999', content: `Cheap CD-R blanks have reshaped how PC users share data. Where transferring hundreds of megabytes in 1996 meant unscrewing a hard drive and carrying it to a friend's house with an IDE ribbon cable, in 1999 a single $1 disc holds ten full albums of 128 kbps [[mp3format|MP3s]] for [[winamp|Winamp]] or [[napster|Napster]] trading, an operating system install tree, or a complete game backup. Late 1999 has also brought 80-minute (700 MB) blanks with tighter track pitch, burned by enabling <i>overburn</i> mode in Nero.` }
+  ],
+  seeAlso: ['cdrom', 'zipdrive', 'floppy144', 'winamp', 'napster', 'gorbushka'],
+  references: [
+    'Philips, Sony. Recordable Compact Disc Systems (Orange Book), Part II: CD-WO (1990), Part III: CD-RW (1997).',
+    'Ahead Software. Nero Burning ROM 4.0 User Manual, 1999.',
+    '12 CD-RW Drives Tested. PC Magazine, October 1999.'
+  ],
+  links: [['http://www.ferrum98.ru', 'Ferrum 98 hardware reviews'], ['http://www.winsoft98.com', 'WinSoft 98 Software Catalog']],
+  categories: ['Hardware', 'Storage Media']
+}, ['cdr', 'cd_rw', 'nero', 'blankcd']);
+
+window.interpediaReg('pentium3', 'hardware', {
+  title: 'Intel Pentium III и AMD Athlon: гонка за 1 ГГц',
+  infobox: {
+    title: 'Pentium III / AMD Athlon',
+    badgeText: 'x86, 1999',
+    fields: [
+      { label: 'Выход на рынок', value: 'Pentium III — февраль 1999; AMD Athlon — август 1999' },
+      { label: 'Разъёмы', value: 'Slot 1 и Socket 370 (Intel); Slot A (AMD)' },
+      { label: 'Техпроцесс', value: '0,25 мкм и 0,18 мкм' },
+      { label: 'Наборы SIMD-команд', value: 'SSE (70 инструкций, Intel); Enhanced 3DNow! (AMD)' },
+      { label: 'Системная шина', value: '100 / 133 МГц (Intel); 200 МГц Alpha EV6 (AMD)' },
+      { label: 'Частоты (декабрь 1999)', value: '450–733 МГц (Pentium III) и 500–750 МГц (Athlon)' }
+    ]
+  },
+  lead: `<b>Intel Pentium III</b> и <b>AMD Athlon (K7)</b> — флагманские 32-разрядные микропроцессоры архитектуры x86, чьё прямое столкновение в 1999 году развернуло самую острую гонку тактовых частот в истории персональных компьютеров. Многолетняя монополия корпорации Intel, удерживавшей лидерство со времён [[pentium|Pentium]] и Pentium II, впервые пошатнулась в августе 1999 года с выходом процессора AMD Athlon, спроектированного при участии инженеров суперкомпьютеров DEC Alpha. К декабрю 1999 года обе компании преодолели рубеж 700 МГц на техпроцессе 0,18 мкм и ведут борьбу за то, кто в первые месяцы 2000 года первым выпустит серийный процессор с частотой <b>1 гигагерц (1000 МГц)</b>.`,
+  sections: [
+    { id: 'katmai', title: 'Pentium III Katmai и инструкции SSE', content: `В конце февраля 1999 года корпорация Intel представила процессор <b>Pentium III</b> на ядре <i>Katmai</i> (0,25 мкм, 9,5 млн транзисторов) с частотами 450 и 500 МГц для щелевого разъёма <b>Slot 1</b> на надёжном чипсете Intel 440BX (системная шина 100 МГц). Внешний кэш второго уровня (L2) объёмом 512 КБ размещался на общей процессорной плате-картридже SECC2 и работал на половине частоты ядра.
+
+Главным архитектурным отличием Katmai от Pentium II стало расширение <b>SSE</b> (<i>Streaming SIMD Extensions</i>, на этапе разработки называвшееся <i>Katmai New Instructions</i>, KNI) — 70 новых инструкций и восемь 128-битных регистров (<code>XMM0–XMM7</code>), позволяющих за один такт выполнять операции с плавающей запятой одинарной точности сразу над четырьмя числами. SSE дал заметный прирост скорости в играх с поддержкой нового набора команд ([[quake3|Quake III Arena]]), пакетах трёхмерного моделирования (3D Studio MAX R3), фильтрах [[photoshop|Adobe Photoshop 5.5]] и кодировании звука и видео.` },
+    { id: 'psn', title: 'Скандал вокруг серийного номера процессора (PSN)', content: `Одновременно с анонсом Pentium III разгорелся громкий общественный скандал. Выяснилось, что в каждый кристалл зашит уникальный 96-битный <b>серийный номер процессора</b> (<i>Processor Serial Number</i>, PSN), который может считываться программами и веб-сайтами через инструкцию <code>CPUID</code>. По замыслу Intel, номер должен был защитить электронную торговлю и корпоративные сети, однако правозащитные организации (Electronic Frontier Foundation) и пресса обвинили компанию в создании механизма слежки за пользователями в Интернете и объявили бойкот <i>Big Brother Inside</i>.
+
+Под давлением критики Intel добавила программную утилиту отключения чтения PSN, а производители материнских плат (ASUS, ABIT, Gigabyte, Micro-Star) ввели в настройки [[bios|BIOS]] пункт <code>Processor Serial Number: Disabled</code>, включённый по умолчанию.` },
+    { id: 'athlon', title: 'Прорыв AMD Athlon (K7) в августе 1999 года', content: `До лета 1999 года процессоры компании AMD (K6-2 и K6-III для разъёма Socket 7) успешно конкурировали с Intel в доступном секторе, но уступали Pentium II и Pentium III по скорости сопроцессора с плавающей запятой (FPU), критичной для трёхмерных игр.
+
+В августе 1999 года AMD выпустила принципиально новый процессор седьмого поколения <b>AMD Athlon</b> (кодовое имя <b>K7</b>, 22 млн транзисторов), разработанный под руководством Дирка Мейера — одного из создателей серверных процессоров DEC Alpha:
+<ul>
+<li><b>Мощный блок FPU и конвейер:</b> три независимых конвейера вещественной арифметики без очередей перевернули расстановку сил — в тестах [[quake2|Quake II]], [[quake3|Quake III]] и 3D Studio MAX новый Athlon впервые обошёл одночастотный Pentium III Katmai на 10–20%.</li>
+<li><b>Системная шина EV6 (200 МГц):</b> лицензированная у Digital Equipment шина Alpha EV6 передаёт данные по обоим фронтам сигнала 100 МГц, обеспечивая эффективную частоту 200 МГц и пропускную способность 1,6 ГБ/с.</li>
+<li><b>Кэш-память:</b> рекордный для x86 кэш первого уровня (L1) объёмом 128 КБ (64 КБ инструкций + 64 КБ данных) и 512 КБ кэша L2 на картридже <b>Slot A</b> (механически похожем на Slot 1, но повёрнутом на 180 градусов и электрически несовместимом).</li>
+<li><b>Enhanced 3DNow!:</b> расширенный набор векторных инструкций AMD с добавлением 19 команд управления кэшем и цифровой обработки сигналов.</li>
+</ul>` },
+    { id: 'coppermine', title: 'Ответ Coppermine, разгон Celeron и гонка за 1 ГГц', content: `<table class="interpedia-wikitable">
+<tr><th>Характеристика</th><th>Pentium III Katmai</th><th>Pentium III Coppermine</th><th>AMD Athlon (K7)</th></tr>
+<tr><td>Дата выхода</td><td>Февраль 1999</td><td>Октябрь 1999</td><td>Август / Ноябрь 1999</td></tr>
+<tr><td>Техпроцесс</td><td>0,25 мкм</td><td>0,18 мкм</td><td>0,25 мкм / 0,18 мкм</td></tr>
+<tr><td>Частоты (конец 1999)</td><td>450–600 МГц</td><td>500–733 МГц</td><td>500–750 МГц</td></tr>
+<tr><td>Кэш L1 / L2</td><td>32 КБ / 512 КБ (1/2 частоты)</td><td>32 КБ / 256 КБ (полная частота)</td><td>128 КБ / 512 КБ (1/2 или 2/5 частоты)</td></tr>
+<tr><td>Системная шина</td><td>100 / 133 МГц</td><td>100 / 133 МГц</td><td>200 МГц (EV6)</td></tr>
+<tr><td>Разъём</td><td>Slot 1</td><td>Slot 1 и Socket 370 (FC-PGA)</td><td>Slot A</td></tr>
+</table>
+
+25 октября 1999 года Intel ответила переводом Pentium III на техпроцесс <b>0,18 мкм</b> (ядро <b>Coppermine</b>, 28 млн транзисторов). Главным выигрышем Coppermine стал перенос 256 КБ кэша второго уровня (<i>Advanced Transfer Cache</i>) прямо на кристалл процессора с работой на полной частоте ядра по 256-битной шине, а также выпуск компактного исполнения <b>FC-PGA</b> с открытым кристаллом под разъём <b>Socket 370</b>. Вместе с новым поколением Intel попыталась продвинуть чипсет <b>i820</b> под дорогую последовательную память <b>RDRAM (Rambus)</b>, но из-за заоблачных цен на модули RIMM и сентябрьской ошибки с третьим разъёмом памяти покупатели продолжают собирать компьютеры на проверенных платах <b>Intel 440BX</b> и чипсетах <b>VIA Apollo Pro133A</b> с обычной памятью PC100 и PC133 SDRAM.
+
+В ноябре 1999 года AMD перевела Athlon на 0,18-микронный техпроцесс и выпустила модель <b>Athlon 750 МГц</b>, вновь вернув себе формальное первенство по тактовой частоте над Pentium III 733 МГц. Одновременно среди бережливых энтузиастов и российских оверклокеров настоящим народным хитом остаётся младший процессор [[celeron300a|Intel Celeron 300A]] и модели <b>Celeron 366/400 МГц (ядро Mendocino)</b> со 128 КБ полноскоростного кэша на кристалле: при установке шины 100 МГц на платах вроде ABIT BH6 и ASUS P2B процессор за 70 долларов легко разгоняется до 450–550 МГц и в играх не уступает старшим моделям.` }
+  ],
+  seeAlso: ['pentium', 'celeron300a', 'geforce256', 'quake3', 'photoshop', 'windows98'],
+  references: [
+    'Intel Corporation. Intel Architecture Software Developer\'s Manual, Volume 1: Basic Architecture (Pentium III SSE), 1999.',
+    'AMD Inc. AMD Athlon Processor Technical Brief. August 1999.',
+    'Пахомов С. Битва титанов: AMD Athlon против Intel Pentium III Coppermine. — КомпьютерПресс, № 12, 1999.'
+  ],
+  links: [['http://www.ferrum98.ru', 'Железный цех — тесты процессоров и разгон'], ['http://www.3dfx-zone.com', '3dfx Zone Hardware']],
+  categories: ['Компьютерное железо', 'Процессоры']
+}, {
+  title: 'Intel Pentium III and AMD Athlon: The Race to 1 GHz',
+  infobox: {
+    title: 'Pentium III / AMD Athlon',
+    badgeText: 'x86, 1999',
+    fields: [
+      { label: 'Release date', value: 'Pentium III — February 1999; AMD Athlon — August 1999' },
+      { label: 'Sockets / slots', value: 'Slot 1 and Socket 370 (Intel); Slot A (AMD)' },
+      { label: 'Process node', value: '0.25 µm and 0.18 µm' },
+      { label: 'SIMD extensions', value: 'SSE (70 instructions, Intel); Enhanced 3DNow! (AMD)' },
+      { label: 'Front-side bus', value: '100 / 133 MHz (Intel); 200 MHz Alpha EV6 (AMD)' },
+      { label: 'Clock speeds (Dec 1999)', value: '450–733 MHz (Pentium III) and 500–750 MHz (Athlon)' }
+    ]
+  },
+  lead: `The <b>Intel Pentium III</b> and <b>AMD Athlon (K7)</b> are flagship 32-bit x86 microprocessors whose head-to-head clash in 1999 touched off the fiercest clock-speed race in PC history. Intel's undisputed performance crown, held since the original [[pentium|Pentium]] and Pentium II, was broken in August 1999 when AMD launched the Athlon, an all-new seventh-generation architecture designed with veterans of the DEC Alpha supercomputer team. By December 1999 both companies have crossed the 700 MHz mark on 0.18-micron silicon and are racing to ship the world's first commercial <b>1 gigahertz (1000 MHz)</b> PC processor in early 2000.`,
+  sections: [
+    { id: 'katmai', title: 'Pentium III Katmai and SSE instructions', content: `In late February 1999 Intel introduced the <b>Pentium III</b> on the 0.25-micron <i>Katmai</i> core (9.5 million transistors) at 450 and 500 MHz for <b>Slot 1</b> motherboards using the proven Intel 440BX chipset and a 100 MHz front-side bus. Like the Pentium II, Katmai mounted 512 KB of external L2 cache chips on a SECC2 cartridge board running at half the core clock speed.
+
+Katmai's chief architectural addition was <b>SSE</b> (<i>Streaming SIMD Extensions</i>, known during development as <i>Katmai New Instructions</i> or KNI): 70 new instructions and eight 128-bit registers (<code>XMM0–XMM7</code>) capable of executing four simultaneous single-precision floating-point operations per clock cycle. Software compiled for SSE—including [[quake3|Quake III Arena]], 3D Studio MAX R3, [[photoshop|Adobe Photoshop 5.5]] and real-time audio/video encoders—gains a substantial boost in geometry and media processing.` },
+    { id: 'psn', title: 'The Processor Serial Number (PSN) controversy', content: `The Pentium III launch was immediately overshadowed by a privacy firestorm. Intel had embedded a unique, factory-programmed 96-bit <b>Processor Serial Number</b> (PSN) into every chip, readable by software and websites via the <code>CPUID</code> instruction. While Intel promoted PSN as a security feature for e-commerce and corporate asset tracking, privacy advocates led by the Electronic Frontier Foundation warned that websites could track users across the Internet and launched a "Big Brother Inside" boycott campaign.
+
+Under intense pressure, Intel released a software control utility to mask the serial number, and motherboard makers (ASUS, ABIT, Gigabyte, Micro-Star) added a <code>Processor Serial Number: Disabled</code> toggle to their [[bios|BIOS]] setup screens, switched off by default.` },
+    { id: 'athlon', title: 'AMD Athlon (K7) breaks Intel\'s lead in August 1999', content: `Through mid-1999, AMD's Socket 7 processors (the K6-2 and K6-III) competed well in budget desktop systems but trailed Intel's Pentium II and Pentium III in floating-point (FPU) throughput, the bottleneck for 3D games.
+
+In August 1999 AMD released the clean-sheet seventh-generation <b>AMD Athlon</b> (codenamed <b>K7</b>, 22 million transistors), engineered by a team led by former DEC Alpha architect Dirk Meyer:
+<ul>
+<li><b>Fully pipelined superscalar FPU:</b> three parallel floating-point execution units erased AMD's historic deficit overnight, allowing the Athlon to beat clock-for-clock Pentium III Katmai chips by 10–20% in [[quake2|Quake II]], [[quake3|Quake III]] and 3D Studio MAX benchmarks.</li>
+<li><b>200 MHz EV6 system bus:</b> licensed from Digital Equipment's Alpha EV6 architecture, the front-side bus transfers data on both rising and falling edges of a 100 MHz clock for an effective 200 MHz rate (1.6 GB/s bandwidth).</li>
+<li><b>Massive cache hierarchy:</b> an x86-record 128 KB of L1 cache on die (64 KB instruction + 64 KB data) paired with 512 KB of external L2 cache on the <b>Slot A</b> cartridge (mechanically identical to Intel's Slot 1 connector rotated 180 degrees, though electrically incompatible).</li>
+<li><b>Enhanced 3DNow!:</b> AMD's SIMD instruction set expanded with 19 new DSP and cache-prefetch instructions.</li>
+</ul>` },
+    { id: 'coppermine', title: 'Coppermine strikes back, Celeron overclocking and the 1 GHz race', content: `<table class="interpedia-wikitable">
+<tr><th>Specification</th><th>Pentium III Katmai</th><th>Pentium III Coppermine</th><th>AMD Athlon (K7)</th></tr>
+<tr><td>Release date</td><td>February 1999</td><td>October 1999</td><td>August / November 1999</td></tr>
+<tr><td>Process node</td><td>0.25 µm</td><td>0.18 µm</td><td>0.25 µm / 0.18 µm</td></tr>
+<tr><td>Clocks (late 1999)</td><td>450–600 MHz</td><td>500–733 MHz</td><td>500–750 MHz</td></tr>
+<tr><td>L1 / L2 cache</td><td>32 KB / 512 KB (half speed)</td><td>32 KB / 256 KB (full speed on-die)</td><td>128 KB / 512 KB (1/2 or 2/5 speed)</td></tr>
+<tr><td>Front-side bus</td><td>100 / 133 MHz</td><td>100 / 133 MHz</td><td>200 MHz (EV6)</td></tr>
+<tr><td>Package</td><td>Slot 1</td><td>Slot 1 and Socket 370 (FC-PGA)</td><td>Slot A</td></tr>
+</table>
+
+On October 25, 1999, Intel counterattacked by shrinking the Pentium III to a <b>0.18-micron</b> process (codenamed <b>Coppermine</b>, 28 million transistors). Coppermine integrates 256 KB of full-speed on-die L2 cache (<i>Advanced Transfer Cache</i>) connected via a 256-bit bus and introduces the compact flip-chip <b>FC-PGA</b> package for <b>Socket 370</b>. Intel paired the launch with its <b>i820</b> chipset designed for high-speed <b>RDRAM (Rambus)</b> memory, but sky-high RIMM prices and a September motherboard recall over three-socket stability issues have kept most buyers on venerable <b>Intel 440BX</b> or <b>VIA Apollo Pro133A</b> boards running standard PC100 and PC133 SDRAM.
+
+In November 1999 AMD transitioned the Athlon to 0.18-micron silicon and shipped the <b>750 MHz Athlon</b>, edging ahead of Intel's 733 MHz Coppermine in raw clock speed as both rivals close out 1999 in a sprint toward 1 GHz. Meanwhile, budget builders and hardware overclockers continue to flock to Intel's [[celeron300a|Celeron 300A]] and <b>Mendocino-core Celeron 366/400 MHz</b> chips: equipped with 128 KB of full-speed on-die L2 cache, a $70 Celeron pushed from a 66 MHz to a 100 MHz bus on an ABIT BH6 or ASUS P2B motherboard runs effortlessly at 450–550 MHz and rivals flagship processors in gaming.` }
+  ],
+  seeAlso: ['pentium', 'celeron300a', 'geforce256', 'quake3', 'photoshop', 'windows98'],
+  references: [
+    'Intel Corporation. Intel Architecture Software Developer\'s Manual, Volume 1: Basic Architecture (Pentium III SSE), 1999.',
+    'AMD Inc. AMD Athlon Processor Technical Brief. August 1999.',
+    'Lal Shimpi, A. AMD Athlon vs. Intel Pentium III Coppermine. AnandTech, October 1999.'
+  ],
+  links: [['http://www.ferrum98.ru', 'Ferrum 98 processor benchmarks and overclocking'], ['http://www.3dfx-zone.com', '3dfx Zone Hardware']],
+  categories: ['Hardware', 'Processors']
+}, ['athlon', 'katmai', 'k7', '1ghz']);
+
+window.interpediaReg('geforce256', 'hardware', {
+  title: 'NVIDIA GeForce 256 и битва 3D-ускорителей 1999 года',
+  infobox: {
+    title: 'NVIDIA GeForce 256',
+    badgeText: 'NV10 GPU, 1999',
+    fields: [
+      { label: 'Разработчик', value: 'NVIDIA Corporation (Санта-Клара, США)' },
+      { label: 'Дата выхода', value: '11 октября 1999 (SDR); декабрь 1999 (DDR)' },
+      { label: 'Транзисторов', value: '23 миллиона (техпроцесс 0,22 мкм TSMC)' },
+      { label: 'Шина и память', value: '[[agpbus|AGP 4x]]; 32 МБ SDR или DDR SGRAM (128 бит)' },
+      { label: 'Главное новшество', value: 'Аппаратный блок Transform & Lighting (Hardware T&L)' },
+      { label: 'Главные конкуренты', value: '3dfx Voodoo3, RIVA TNT2 Ultra, Matrox G400 MAX, ATI Rage 128' }
+    ]
+  },
+  lead: `<b>NVIDIA GeForce 256</b> (кодовое имя чипа <b>NV10</b>) — видеокарта калифорнийской компании NVIDIA, выпущенная в октябре 1999 года и продвигаемая производителем как первый в мире <b>GPU</b> (<i>Graphics Processing Unit</i>, «графический процессор»). Если все предыдущие 3D-ускорители — от [[voodoo2|3dfx Voodoo2]] до RIVA TNT2 — выполняли только финальную растеризацию треугольников и наложение текстур, перекладывая геометрические расчёты на центральный процессор, то в GeForce 256 впервые на потребительской карте появился встроенный блок <b>аппаратного расчёта трансформации координат и освещения</b> (<i>Hardware Transform & Lighting</i>, T&L). Декабрьский выход модификации GeForce 256 с быстрой памятью <b>DDR</b> закрепил лидерство NVIDIA в ожесточённой войне 3D-ускорителей 1999 года против 3dfx Voodoo3, Matrox G400 MAX и ATI Rage 128.`,
+  sections: [
+    { id: 'gpu_tnl', title: 'Что такое GPU и зачем нужен аппаратный T&L', content: `До осени 1999 года трёхмерный конвейер в компьютерных играх делился пополам: центральный процессор ([[pentium|Pentium II]], [[pentium3|Pentium III или AMD Athlon]]) просчитывал перемещение вершин трёхмерных моделей в пространстве (<i>Transform</i>) и падение света от каждого источника на каждую грань (<i>Lighting</i>), после чего передавал готовые экранные координаты видеокарте. Поэтому даже самая быстрая видеокарта упиралась в мощность процессора, а модели персонажей в играх состояли всего из 300–800 полигонов.
+
+В кристалле <b>NV10</b> (23 миллиона транзисторов — больше, чем в самом процессоре Pentium III Katmai!) инженеры NVIDIA разместили отдельный геометрический сопроцессор, способный обсчитывать до 15 миллионов полигонов в секунду и до восьми аппаратных источников света без участия ЦП, а также четыре параллельных конвейера рендеринга (4 пикселя за такт при частоте ядра 120 МГц). Именно это позволило компании назвать новинку не просто «3D-ускорителем», а полноценным <b>графическим процессором (GPU)</b>. Поддержка аппаратного T&L уже включена в октябрьский выпуск [[directx|Microslop DirectX 7.0]] и в интерфейс OpenGL (в [[quake3|Quake III Arena]] и грядущих играх 2000 года).` },
+    { id: 'sdr_ddr', title: 'Переход от памяти SDR к DDR в декабре 1999 года', content: `Первые октябрьские партии GeForce 256 (платы ASUS AGP-V6600, Creative 3D Blaster Annihilator, ELSA Erazor X) комплектовались 32 мегабайтами обычной синхронной памяти <b>SDR SDRAM</b> на частоте 166 МГц (пропускная способность 2,65 ГБ/с). В высоких разрешениях (<code>1024×768</code> и <code>1280×1024</code>) при 32-битном цвете четыре быстрых конвейера чипа NV10 простаивали, упираясь в пропускную способность видеопамяти.
+
+В декабре 1999 года в продажу поступили карты <b>GeForce 256 DDR</b> (ASUS AGP-V6800, Creative Annihilator Pro), оснащённые памятью с удвоенной скоростью передачи данных (<i>Double Data Rate</i>), передающей данные по обоим фронтам тактового сигнала (эффективная частота 300 МГц, пропускная способность 4,8 ГБ/с). Переход на память DDR поднял кадровую частоту в 32-битном цвете на 30–50% и снял главное узкое место архитектуры.` },
+    { id: 'rivals99', title: 'Конкуренты: большая четвёрка 1999 года', content: `Весь 1999 год на рынке графических карт шла смена эпох: на смену связкам из обычной 2D-карты и отдельного 3D-ускорителя [[voodoo2|Voodoo2]] пришли единые платы 2D/3D для шины [[agpbus|AGP]]:
+
+<table class="interpedia-wikitable">
+<tr><th>Видеокарта</th><th>Выход</th><th>Конвейеры (пикс. × текст.)</th><th>Цвет в 3D</th><th>Память</th><th>Ключевая особенность</th></tr>
+<tr><td><b>3dfx Voodoo3 3000 / 3500</b></td><td>Весна–лето 1999</td><td>1 × 2 (чип Avenger)</td><td>Только 16 бит</td><td>16 МБ SDR (до 183 МГц)</td><td>Родная поддержка API [[directx|Glide]] и фирменный 22-битный фильтр сглаживания 16-битного цвета</td></tr>
+<tr><td><b>NVIDIA RIVA TNT2 Ultra</b></td><td>Весна 1999</td><td>2 × 2 (150 МГц)</td><td>16 и 32 бита</td><td>32 МБ SDR (183 МГц)</td><td>Лидер лета 1999 года по чистой скорости в Direct3D и OpenGL</td></tr>
+<tr><td><b>Matrox Millennium G400 MAX</b></td><td>Лето 1999</td><td>2 × 1 (150 МГц)</td><td>16 и 32 бита</td><td>32 МБ SGRAM (200 МГц)</td><td>Два выхода на монитор (DualHead), рельефное текстурирование <i>Environment Mapped Bump Mapping</i> и эталонная чёткость 2D-картинки</td></tr>
+<tr><td><b>ATI Rage 128 Pro / MAXX</b></td><td>Осень–декабрь 1999</td><td>2 × 1 (или два чипа в MAXX)</td><td>16 и 32 бита</td><td>32–64 МБ SDR</td><td>Встроенное аппаратное декодирование видео MPEG-2 для приводов DVD-ROM</td></tr>
+<tr><td><b>NVIDIA GeForce 256 SDR / DDR</b></td><td>Октябрь–декабрь 1999</td><td>4 × 1 (120 МГц)</td><td>16 и 32 бита</td><td>32 МБ SDR или DDR</td><td>Аппаратный T&L, кубические карты отражений и 4 пиксельных конвейера</td></tr>
+</table>` },
+    { id: 'voodoo3_debate', title: 'Спор 16 бит против 32 бит и судьба 3dfx', content: `В конце 1998 года компания <b>3dfx Interactive</b> купила производителя видеокарт STB Systems и решила выпускать платы Voodoo3 только собственными силами, перестав продавать чипы сторонним заводам (Diamond, Creative, ASUS). Вышедшая весной 1999 года линейка <b>Voodoo3 2000/3000/3500</b> оказалась очень быстрой в существующих играх ([[unreal|Unreal]], [[ut99|Unreal Tournament]], [[halflife|Half-Life]]) благодаря отточенному API [[directx|Glide]], но сохранила серьёзные архитектурные ограничения: работу в 3D только в 16-битном цвете (65 536 оттенков) и максимальный размер текстур <code>256×256</code> точек.
+
+В то время как 3dfx доказывала, что её внутренний 22-битный фильтр пост-обработки даёт картинку не хуже при большей скорости, NVIDIA, Matrox и ATI сделали ставку на честный <b>32-битный цвет</b> (16,7 млн оттенков без полос на градиентах дыма, неба и цветного освещения в [[quake3|Quake III Arena]]) и текстуры вплоть до <code>1024×1024</code>. К декабрю 1999 года 3dfx уже готовит к анонсу на начало 2000 года новый чип <b>VSA-100 (Voodoo4 и Voodoo5)</b> с поддержкой 32-битного цвета и полноэкранного сглаживания (FSAA), но без аппаратного блока T&L.` }
+  ],
+  seeAlso: ['voodoo', 'voodoo2', 'pentium3', 'directx', 'quake3', 'ut99'],
+  references: [
+    'NVIDIA Corporation. GeForce 256: The World\'s First GPU. Technical Brief, October 1999.',
+    'Lal Shimpi, A. NVIDIA GeForce 256 DDR Review. AnandTech, December 1999.',
+    'Обзор 3D-ускорителей осени 1999 года: RIVA TNT2, Voodoo3, Matrox G400 и GeForce 256. — Игромания / Железный цех, 1999.'
+  ],
+  links: [['http://www.3dfx-zone.com', '3dfx Zone — обзоры 3D-ускорителей'], ['http://www.ferrum98.ru', 'Железный цех — тестирование видеокарт']],
+  categories: ['Компьютерное железо', 'Видеокарты', 'Компьютерные игры']
+}, {
+  title: 'NVIDIA GeForce 256 and the 1999 3D Accelerator War',
+  infobox: {
+    title: 'NVIDIA GeForce 256',
+    badgeText: 'NV10 GPU, 1999',
+    fields: [
+      { label: 'Developer', value: 'NVIDIA Corporation (Santa Clara, California)' },
+      { label: 'Release date', value: 'October 11, 1999 (SDR); December 1999 (DDR)' },
+      { label: 'Transistors', value: '23 million (0.22 µm TSMC process)' },
+      { label: 'Bus and memory', value: '[[agpbus|AGP 4x]]; 32 MB SDR or DDR SGRAM (128-bit)' },
+      { label: 'Key innovation', value: 'On-chip Hardware Transform & Lighting (T&L)' },
+      { label: '1999 rivals', value: '3dfx Voodoo3, RIVA TNT2 Ultra, Matrox G400 MAX, ATI Rage 128' }
+    ]
+  },
+  lead: `The <b>NVIDIA GeForce 256</b> (chip codename <b>NV10</b>) is a 3D graphics card released by NVIDIA in October 1999 and marketed as the world's first <b>GPU</b> (<i>Graphics Processing Unit</i>). Where every previous consumer 3D accelerator—from the [[voodoo2|3dfx Voodoo2]] to the RIVA TNT2—handled only final triangle setup, texturing and pixel rasterization while relying on the host CPU for geometry math, the GeForce 256 integrates an on-chip <b>Hardware Transform & Lighting (T&L)</b> engine. Combined with the December 1999 release of the <b>GeForce 256 DDR</b> variant, the card has vaulted NVIDIA to the front of the 1999 3D accelerator war against the 3dfx Voodoo3, Matrox G400 MAX and ATI Rage 128.`,
+  sections: [
+    { id: 'gpu_tnl', title: 'What makes a GPU: Hardware Transform & Lighting', content: `Prior to autumn 1999, the 3D rendering pipeline on a PC was split in half: the central processor ([[pentium|Pentium II]], [[pentium3|Pentium III or AMD Athlon]]) calculated every 3D vertex movement in world space (<i>Transform</i>) and computed how light sources illuminated every polygon face (<i>Lighting</i>) before feeding screen-space triangles to the graphics card. Even the fastest video card quickly became CPU-bound in complex scenes, keeping typical character models to 300–800 polygons.
+
+Inside the <b>NV10</b> die (packing 23 million transistors—more than a Pentium III Katmai CPU), NVIDIA placed a dedicated floating-point geometry engine capable of transforming and lighting up to 15 million polygons per second with eight hardware light sources, alongside four parallel pixel pipelines clocked at 120 MHz. Offloading geometry and lighting from the CPU prompted NVIDIA to coin the term <b>Graphics Processing Unit (GPU)</b>. Hardware T&L is directly supported by [[directx|Microslop DirectX 7.0]] (released in autumn 1999) and OpenGL in titles such as [[quake3|Quake III Arena]].` },
+    { id: 'sdr_ddr', title: 'From SDR to DDR memory in December 1999', content: `First-wave GeForce 256 cards shipped in October 1999 (including the ASUS AGP-V6600, Creative 3D Blaster Annihilator and ELSA Erazor X) paired the NV10 chip with 32 MB of conventional 166 MHz <b>SDR SDRAM</b> (2.65 GB/s bandwidth). At high resolutions (<code>1024×768</code> and <code>1280×1024</code>) in 32-bit true color, the chip's four pixel pipelines frequently stalled waiting for memory bandwidth.
+
+In December 1999 board partners began shipping the <b>GeForce 256 DDR</b> (such as the ASUS AGP-V6800 and Creative Annihilator Pro), equipped with <b>Double Data Rate</b> SGRAM transferring data on both edges of a 150 MHz clock (300 MHz effective, 4.8 GB/s bandwidth). The DDR upgrade boosts 32-bit frame rates by 30–50% and unlocks the NV10's full fillrate.` },
+    { id: 'rivals99', title: 'The 1999 contender lineup', content: `Throughout 1999, standalone 3D add-in cards like the [[voodoo2|Voodoo2]] gave way to single-slot [[agpbus|AGP]] 2D/3D combo cards:
+
+<table class="interpedia-wikitable">
+<tr><th>Graphics card</th><th>Release</th><th>Pipelines (pixel × tex)</th><th>3D color depth</th><th>Memory</th><th>Signature feature</th></tr>
+<tr><td><b>3dfx Voodoo3 3000 / 3500</b></td><td>Spring–Summer 1999</td><td>1 × 2 (Avenger chip)</td><td>16-bit only</td><td>16 MB SDR (up to 183 MHz)</td><td>Native [[directx|Glide]] API support and 22-bit post-filter smoothing on 16-bit color</td></tr>
+<tr><td><b>NVIDIA RIVA TNT2 Ultra</b></td><td>Spring 1999</td><td>2 × 2 (150 MHz)</td><td>16-bit and 32-bit</td><td>32 MB SDR (183 MHz)</td><td>Summer 1999 raw speed leader in Direct3D and OpenGL</td></tr>
+<tr><td><b>Matrox Millennium G400 MAX</b></td><td>Summer 1999</td><td>2 × 1 (150 MHz)</td><td>16-bit and 32-bit</td><td>32 MB SGRAM (200 MHz)</td><td>DualHead two-monitor output, Environment Mapped Bump Mapping (EMBM) and razor-sharp 2D RAMDAC</td></tr>
+<tr><td><b>ATI Rage 128 Pro / MAXX</b></td><td>Autumn–Dec 1999</td><td>2 × 1 (dual-chip on MAXX)</td><td>16-bit and 32-bit</td><td>32–64 MB SDR</td><td>Hardware MPEG-2 motion compensation and IDCT for DVD-ROM playback</td></tr>
+<tr><td><b>NVIDIA GeForce 256 SDR / DDR</b></td><td>Oct–Dec 1999</td><td>4 × 1 (120 MHz)</td><td>16-bit and 32-bit</td><td>32 MB SDR or DDR</td><td>Hardware T&L, cube environment mapping and four-pipeline fillrate</td></tr>
+</table>` },
+    { id: 'voodoo3_debate', title: '16-bit vs. 32-bit color and the fate of 3dfx', content: `In late 1998 <b>3dfx Interactive</b> acquired board manufacturer STB Systems and stopped selling graphics chips to third-party card makers (such as Diamond, Creative and ASUS) in order to build Voodoo3 boards in-house. Released in spring 1999, the <b>Voodoo3 2000/3000/3500</b> series delivered blistering frame rates in existing [[directx|Glide]] games ([[unreal|Unreal]], [[ut99|Unreal Tournament]], [[halflife|Half-Life]]) but retained two aging architectural limits: 16-bit-only 3D rendering (65,536 colors) and a maximum texture size of <code>256×256</code> pixels.
+
+While 3dfx argued that its internal 22-bit DAC post-filter looked nearly as good as true color at higher speed, NVIDIA, Matrox and ATI pushed full <b>32-bit color</b> (16.7 million colors, eliminating color banding in volumetric fog, skies and colored lighting in [[quake3|Quake III Arena]]) along with <code>1024×1024</code> textures. As 1999 ends, 3dfx is preparing its multi-chip <b>VSA-100 (Voodoo4 and Voodoo5)</b> architecture for early 2000 with 32-bit color and full-scene anti-aliasing (FSAA), though still without hardware T&L.` }
+  ],
+  seeAlso: ['voodoo', 'voodoo2', 'pentium3', 'directx', 'quake3', 'ut99'],
+  references: [
+    'NVIDIA Corporation. GeForce 256: The World\'s First GPU. Technical Brief, October 1999.',
+    'Lal Shimpi, A. NVIDIA GeForce 256 DDR Review. AnandTech, December 1999.',
+    '3D Graphics Accelerator Shootout. PC Magazine, Fall 1999.'
+  ],
+  links: [['http://www.3dfx-zone.com', '3dfx Zone — 3D accelerator benchmarks'], ['http://www.ferrum98.ru', 'Ferrum 98 GPU reviews']],
+  categories: ['Hardware', 'Graphics Cards', 'Computer Games']
+}, ['gpu', 'geforce', 'voodoo3', 'tnt2']);
+
+window.interpediaReg('directx', 'hardware', {
+  title: 'DirectX, OpenGL и 3dfx Glide: война 3D API',
+  infobox: {
+    title: 'DirectX / OpenGL / Glide',
+    badgeText: '3D APIs',
+    fields: [
+      { label: 'DirectX (Direct3D)', value: 'Microslop (с 1995; версия DirectX 7.0 — осень 1999)' },
+      { label: 'OpenGL', value: 'Silicon Graphics и совет ARB (с 1992; версия 1.2 — 1998)' },
+      { label: 'Glide', value: '3dfx Interactive (с 1996, только для карт [[voodoo|Voodoo]])' },
+      { label: 'Звуковые API', value: 'DirectSound, EAX (Creative), A3D (Aureal)' },
+      { label: 'Диагностика в Win 98', value: 'утилита dxdiag.exe (начиная с DirectX 6.0)' }
+    ]
+  },
+  lead: `<b>DirectX</b>, <b>OpenGL</b> и <b>3dfx Glide</b> — три конкурирующих программных интерфейса приложений (API), через которые игры обращаются к трёхмерным видеоускорителям и звуковым платам в [[windows98|Microslop Win 98]]. Ещё в 1995 году большинство игр писалось под [[msdos|MS-DOS]], где программисты напрямую управляли прерываниями видеокарты и звуковой платы [[soundblaster|Sound Blaster]]. Переход игр в защищённый режим [[windows95|Win 95]] и Win 98 потребовал единой прослойки между игрой и десятками разных чипов. На протяжении 1996–1999 годов выбор между закрытым <b>Glide</b> для карт [[voodoo2|Voodoo]], кроссплатформенным <b>OpenGL</b> и комплексом <b>Microslop DirectX</b> определял, как выглядит игра, сколько кадров в секунду она выдаёт и какую видеокарту покупает игрок.`,
+  sections: [
+    { id: 'from_dos', title: 'Уход из MS-DOS и проект Manhattan', content: `В первых версиях графической среды Win 3.1 и ранней [[windows95|Win 95]] стандартный интерфейс отрисовки окон GDI был слишком медленным для динамичных игр: разработчикам [[doom|DOOM]] и [[quake|Quake]] было проще работать в [[msdos|MS-DOS]] с прямым доступом к видеопамяти VGA/VESA. Первая попытка Microslop предложить библиотеку быстрой двумерной отрисовки <i>WinG</i> (1994) не решила проблему работы со звуком, джойстиками и 3D-ускорителями.
+
+В 1995 году инженеры Microslop Крейг Айслер, Алекс Сент-Джон и Эрик Энгстром создали пакет низкоуровневых библиотек под кодовым именем <i>Manhattan Project</i>, выпущенный осенью 1995 года под названием <b>Win Games SDK (DirectX 1.0)</b>. В его состав вошли компоненты с приставкой <i>Direct</i>:
+<ul>
+<li><b>DirectDraw</b> — прямой доступ к видеопамяти для двумерной графики и спрайтов (используется в [[starcraft|StarCraft]], [[diablo|Diablo]], [[fallout|Fallout]] и [[homm3|Heroes of Might and Magic III]]);</li>
+<li><b>Direct3D</b> — интерфейс трёхмерной графики (созданный на основе купленной в феврале 1995 года британской компании RenderMorphics);</li>
+<li><b>DirectSound</b> и <b>DirectMusic</b> — сведение многоканального звука и аппаратное 3D-позиционирование (EAX и A3D);</li>
+<li><b>DirectInput</b> — работа с мышами, клавиатурами и игровыми манипуляторами с обратной связью;</li>
+<li><b>DirectPlay</b> — сетевая многопользовательская связь по модему, IPX и TCP/IP.</li>
+</ul>` },
+    { id: 'glide', title: 'Золотой век 3dfx Glide (1996–1998)', content: `Ранние версии Direct3D (в DirectX 2.0 и 3.0, 1996 год) использовали неудобный механизм «исполняемых буферов» (<i>Execute Buffers</i>), вызывавший резкую критику разработчиков игр. На этом фоне компания <b>3dfx Interactive</b> предложила собственный легковесный интерфейс <b>Glide</b>, созданный специально под архитектуру ускорителей [[voodoo|Voodoo Graphics]] и [[voodoo2|Voodoo2]].
+
+Glide был предельно близок к «железу» карт Voodoo: программисту не нужно было бороться с лишними абстракциями, а игры (<i>Tomb Raider</i>, [[quake|GLQuake через MiniGL]], <i>Need for Speed II SE</i>, [[unreal|Unreal]], <i>Carmageddon II</i>) работали в Glide заметно быстрее и красивее, чем в тогдашнем Direct3D. До конца 1998 года логотип 3dfx при запуске игры оставался главным знаком качества трёхмерной графики, а владельцы карт других производителей пытались запускать Glide-игры через сторонние программы-эмуляторы (<i>Glide wrappers</i>).` },
+    { id: 'opengl', title: 'Выбор Джона Кармака: OpenGL и драйверы MiniGL', content: `Профессиональный стандарт <b>OpenGL</b> (<i>Open Graphics Library</i>), созданный в 1992 году компанией Silicon Graphics (SGI) на базе библиотеки IRIS GL для графических рабочих станций, пришёл в мир домашних ПК во многом благодаря главному программисту id Software <b>Джону Кармаку</b>. В конце 1996 года, портируя [[quake|Quake]] под аппаратные 3D-ускорители, Кармак отказался писать под неуклюжий Direct3D 3.0 и выбрал чистый и переносимый код OpenGL.
+
+Поскольку в 1997 году у производителей игровых карт ещё не было полных клиентских драйверов OpenGL (<i>Installable Client Driver</i>, ICD), для ускорителей 3dfx Voodoo, PowerVR и RIVA 128 выпускались урезанные библиотеки <b>MiniGL</b> (файл <code>opengl32.dll</code>, копировавшийся прямо в папку с игрой), содержавшие только те функции OpenGL, которые использовал движок [[quake|GLQuake]], [[quake2|Quake II]] или [[halflife|Half-Life]]. К концу 1999 года NVIDIA, Matrox и ATI поставляют полноценные быстрые драйверы OpenGL 1.2 ICD, а декабрьский боевик [[quake3|Quake III Arena]] вообще работает исключительно через OpenGL.` },
+    { id: 'dx6_dx7', title: 'Реванш DirectX 6.0 и DirectX 7.0 (1998–1999)', content: `<table class="interpedia-wikitable">
+<tr><th>API</th><th>Преимущества в 1999 году</th><th>Ограничения</th><th>Знаковые игры</th></tr>
+<tr><td><b>3dfx Glide 2.x / 3.x</b></td><td>Минимальные накладные расходы на картах Voodoo2 и Voodoo3</td><td>Работает только на чипах 3dfx; 16-битный цвет</td><td>[[unreal|Unreal]], [[ut99|Unreal Tournament]], <i>Need for Speed III</i>, [[diablo2|Diablo II]] (в разработке)</td></tr>
+<tr><td><b>OpenGL 1.1 / 1.2</b></td><td>Чистая архитектура, переносимость на [[linux|Linux]] и [[macos8|Mac OS]], расширения производителей</td><td>Высокие требования к качеству ICD-драйвера видеокарты</td><td>[[quake2|Quake II]], [[halflife|Half-Life]], [[quake3|Quake III Arena]], <i>Homeworld</i></td></tr>
+<tr><td><b>Microslop DirectX 6.1 / 7.0</b></td><td>Единый стандарт для всех видеокарт и звуковых плат под Win 98; аппаратный T&L в DX7</td><td>Привязка только к операционным системам Win</td><td>[[systemshock2|System Shock 2]], <i>Drakan</i>, [[ut99|Unreal Tournament]], [[maxpayne|Max Payne]]</td></tr>
+</table>
+
+Перелом в войне API наступил после того, как Microslop полностью переписала Direct3D (начиная с <i>DrawPrimitive</i> в DirectX 5.0). Вышедший в августе 1998 года <b>DirectX 6.0</b> добавил поддержку мультитекстурирования за один проход, рельефных текстур (<i>bump mapping</i>), сжатия текстур S3TC и встроенную утилиту диагностики <code>dxdiag.exe</code>. А осенью 1999 года вышел <b>DirectX 7.0</b> с поддержкой аппаратного расчёта геометрии и освещения (<b>Hardware T&L</b>) для нового ускорителя [[geforce256|NVIDIA GeForce 256]]. С потерей монополии 3dfx и появлением 32-битных ускорителей NVIDIA, ATI и Matrox разработчики игр всё чаще делают основными рендерерами связку <b>Direct3D + OpenGL</b>, оставляя закрытый Glide уходящей эпохе первых карт Voodoo.` }
+  ],
+  seeAlso: ['windows98', 'msdos', 'voodoo2', 'geforce256', 'quake3', 'ut99', 'soundblaster'],
+  references: [
+    'Microslop Corporation. Microslop DirectX 7.0 SDK Documentation, 1999.',
+    'Woo, M., Neider, J., Davis, T., Shreiner, D. OpenGL Programming Guide (The Red Book), 3rd Edition. Addison-Wesley, 1999.',
+    '3dfx Interactive. Glide 3.0 Programming Guide, 1998.'
+  ],
+  links: [['http://www.microslop.com', 'Официальный сайт Microslop — загрузка DirectX 7.0'], ['http://www.3dfx-zone.com', '3dfx Zone — драйверы Glide, MiniGL и Direct3D']],
+  categories: ['Компьютерное железо', 'Программное обеспечение', 'Компьютерные игры']
+}, {
+  title: 'DirectX, OpenGL and 3dfx Glide: The 3D API War',
+  infobox: {
+    title: 'DirectX / OpenGL / Glide',
+    badgeText: '3D APIs',
+    fields: [
+      { label: 'DirectX (Direct3D)', value: 'Microslop (since 1995; DirectX 7.0 released autumn 1999)' },
+      { label: 'OpenGL', value: 'Silicon Graphics and ARB (since 1992; OpenGL 1.2 in 1998)' },
+      { label: 'Glide', value: '3dfx Interactive (since 1996, exclusive to [[voodoo|Voodoo]] hardware)' },
+      { label: '3D audio APIs', value: 'DirectSound, EAX (Creative), A3D (Aureal)' },
+      { label: 'Win 98 diagnostics', value: 'dxdiag.exe utility (introduced in DirectX 6.0)' }
+    ]
+  },
+  lead: `<b>DirectX</b>, <b>OpenGL</b> and <b>3dfx Glide</b> are the three competing application programming interfaces (APIs) through which PC games talk to 3D graphics accelerators and sound cards under [[windows98|Microslop Win 98]]. As late as 1995, most action games ran in [[msdos|MS-DOS]], banging directly on VGA memory and [[soundblaster|Sound Blaster]] hardware interrupts. Moving games into protected-mode [[windows95|Win 95]] and Win 98 required a hardware abstraction layer capable of driving dozens of incompatible 3D chips. From 1996 through 1999, the battle between proprietary <b>Glide</b> on [[voodoo2|Voodoo]] boards, cross-platform <b>OpenGL</b> and <b>Microslop DirectX</b> has dictated how PC games look, how fast they run, and which video card gamers buy.`,
+  sections: [
+    { id: 'from_dos', title: 'Leaving MS-DOS and the Manhattan Project', content: `Under Win 3.1 and early [[windows95|Win 95]], the standard GDI window-drawing subsystem was far too slow for action games, leaving developers of [[doom|DOOM]] and [[quake|Quake]] in [[msdos|MS-DOS]] with direct VESA framebuffer access. Microslop's first stopgap, the 2D <i>WinG</i> library (1994), did not address low-latency audio, joysticks or 3D acceleration.
+
+In 1995 Microslop engineers Craig Eisler, Alex St. John and Eric Engstrom spearheaded the <i>Manhattan Project</i>, released in autumn 1995 as the <b>Win Games SDK (DirectX 1.0)</b>. Its subsystem libraries shared the <i>Direct</i> prefix:
+<ul>
+<li><b>DirectDraw</b> — low-level 2D framebuffer and sprite access (used by [[starcraft|StarCraft]], [[diablo|Diablo]], [[fallout|Fallout]] and [[homm3|Heroes of Might and Magic III]]);</li>
+<li><b>Direct3D</b> — 3D hardware acceleration (built upon British startup RenderMorphics, acquired by Microslop in February 1995);</li>
+<li><b>DirectSound</b> and <b>DirectMusic</b> — low-latency digital audio mixing and 3D positional audio (EAX and Aureal A3D);</li>
+<li><b>DirectInput</b> — joysticks, gamepads, mice and force-feedback wheels;</li>
+<li><b>DirectPlay</b> — multiplayer networking over modems, IPX and TCP/IP.</li>
+</ul>` },
+    { id: 'glide', title: 'The golden age of 3dfx Glide (1996–1998)', content: `Early revisions of Direct3D (in DirectX 2.0 and 3.0 during 1996) forced programmers to pack 3D commands into awkward <i>Execute Buffers</i>, drawing fierce criticism from game developers. Simultaneously, <b>3dfx Interactive</b> released <b>Glide</b>, a lightweight proprietary API tailored directly to the registers of its [[voodoo|Voodoo Graphics]] and [[voodoo2|Voodoo2]] chipsets.
+
+Because Glide mapped straight to Voodoo hardware with almost zero driver overhead, games written for Glide (<i>Tomb Raider</i>, [[quake|GLQuake via MiniGL]], <i>Need for Speed II SE</i>, [[unreal|Unreal]], <i>Carmageddon II</i>) ran noticeably faster and cleaner than their early Direct3D counterparts. Through 1998, the spinning 3dfx splash logo was the gold standard of PC 3D gaming, and owners of rival cards routinely hunted for third-party "Glide wrappers" to translate Glide calls into Direct3D or OpenGL.` },
+    { id: 'opengl', title: 'John Carmack\'s bet: OpenGL and MiniGL drivers', content: `<b>OpenGL</b> (<i>Open Graphics Library</i>), created by Silicon Graphics (SGI) in 1992 from its workstation IRIS GL library, entered consumer PC gaming largely through id Software lead programmer <b>John Carmack</b>. While porting [[quake|Quake]] to 3D accelerators in late 1996, Carmack publicly rejected Direct3D 3.0's execute buffers in favor of OpenGL's clean, cross-platform procedural API.
+
+Because consumer 3D card makers in 1997 lacked full OpenGL <i>Installable Client Drivers</i> (ICDs), 3dfx, PowerVR and NVIDIA shipped stripped-down <b>MiniGL</b> libraries (a custom <code>opengl32.dll</code> dropped into the game folder) that implemented just the subset of OpenGL calls needed to run [[quake|GLQuake]], [[quake2|Quake II]] and [[halflife|Half-Life]]. By late 1999 NVIDIA, Matrox and ATI ship mature, high-speed OpenGL 1.2 ICDs, and id Software's [[quake3|Quake III Arena]] runs exclusively on OpenGL.` },
+    { id: 'dx6_dx7', title: 'DirectX 6.0 and DirectX 7.0 turn the tide (1998–1999)', content: `<table class="interpedia-wikitable">
+<tr><th>API</th><th>1999 strengths</th><th>Limitations</th><th>Signature games</th></tr>
+<tr><td><b>3dfx Glide 2.x / 3.x</b></td><td>Minimal CPU overhead on Voodoo2 and Voodoo3 boards</td><td>Locked to 3dfx chips; 16-bit color limit</td><td>[[unreal|Unreal]], [[ut99|Unreal Tournament]], <i>Need for Speed III</i>, upcoming [[diablo2|Diablo II]]</td></tr>
+<tr><td><b>OpenGL 1.1 / 1.2</b></td><td>Clean architecture, portable to [[linux|Linux]] and [[macos8|Mac OS]], fast vendor extensions</td><td>Depends heavily on each card vendor's ICD driver quality</td><td>[[quake2|Quake II]], [[halflife|Half-Life]], [[quake3|Quake III Arena]], <i>Homeworld</i></td></tr>
+<tr><td><b>Microslop DirectX 6.1 / 7.0</b></td><td>Universal hardware support under Win 98; Hardware T&L in DX7</td><td>Tied exclusively to Win operating systems</td><td>[[systemshock2|System Shock 2]], <i>Drakan</i>, [[ut99|Unreal Tournament]], [[maxpayne|Max Payne]]</td></tr>
+</table>
+
+Microslop steadily rebuilt Direct3D from the ground up, replacing Execute Buffers with the straightforward <i>DrawPrimitive</i> interface in DirectX 5.0. Released in August 1998, <b>DirectX 6.0</b> added single-pass multitexturing, bump mapping, S3TC texture compression and the built-in <code>dxdiag.exe</code> diagnostic tool. In autumn 1999 <b>DirectX 7.0</b> introduced native support for <b>Hardware Transform & Lighting (T&L)</b> to drive the [[geforce256|NVIDIA GeForce 256]]. As 32-bit accelerators from NVIDIA, Matrox and ATI erode 3dfx's market share, studios increasingly ship games with dual <b>Direct3D and OpenGL</b> renderers, leaving proprietary Glide to the fading first generation of Voodoo cards.` }
+  ],
+  seeAlso: ['windows98', 'msdos', 'voodoo2', 'geforce256', 'quake3', 'ut99', 'soundblaster'],
+  references: [
+    'Microslop Corporation. Microslop DirectX 7.0 SDK Documentation, 1999.',
+    'Woo, M., Neider, J., Davis, T., Shreiner, D. OpenGL Programming Guide (The Red Book), 3rd Edition. Addison-Wesley, 1999.',
+    '3dfx Interactive. Glide 3.0 Programming Guide, 1998.'
+  ],
+  links: [['http://www.microslop.com', 'Official Microslop site — DirectX 7.0 download'], ['http://www.3dfx-zone.com', '3dfx Zone — Glide, MiniGL and Direct3D drivers']],
+  categories: ['Hardware', 'Software', 'Computer Games']
+}, ['opengl', 'glide', 'direct3d', '3dapi']);

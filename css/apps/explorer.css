@@ -318,3 +318,290 @@
     display: none;
   }
 }
+
+.explorer-tool-btn.active-toggle {
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-dark),
+    inset -1px -1px 0 var(--win-border-light);
+  background-image: linear-gradient(45deg, #ffffff 25%, transparent 25%, transparent 75%, #ffffff 75%),
+                    linear-gradient(45deg, #ffffff 25%, transparent 25%, transparent 75%, #ffffff 75%);
+  background-size: 2px 2px;
+  background-position: 0 0, 1px 1px;
+}
+
+.explorer-tool-btn.active-toggle svg {
+  filter: none;
+}
+
+.explorer-tree-pane {
+  width: 185px;
+  flex-shrink: 0;
+  border-right: 3px solid var(--win-bg);
+  box-shadow: 1px 0 0 var(--win-border-dark);
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  user-select: none;
+}
+
+.explorer-tree-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px 2px 6px;
+  background-color: var(--win-bg);
+  border-bottom: 1px solid var(--win-border-dark);
+  font-size: 11px;
+  color: var(--win-text);
+}
+
+.explorer-tree-close {
+  width: 14px;
+  height: 13px;
+  font-size: 9px;
+  line-height: 9px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--win-bg);
+  border: none;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-light),
+    inset -1px -1px 0 var(--win-border-darkest),
+    inset 2px 2px 0 var(--win-border-midlight),
+    inset -2px -2px 0 var(--win-border-dark);
+  cursor: pointer;
+}
+
+.explorer-tree-list {
+  flex: 1;
+  overflow: auto;
+  padding: 4px;
+  font-size: 11px;
+}
+
+.explorer-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 2px;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.explorer-tree-toggle {
+  width: 9px;
+  height: 9px;
+  border: 1px solid #808080;
+  background: #ffffff;
+  color: #000000;
+  font-family: monospace;
+  font-size: 9px;
+  line-height: 7px;
+  text-align: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.explorer-tree-spacer {
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+}
+
+.explorer-tree-icon,
+.explorer-tree-icon svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.explorer-tree-label {
+  padding: 0 2px;
+}
+
+.explorer-tree-row.active .explorer-tree-label {
+  background-color: var(--win-highlight);
+  color: var(--win-highlight-text);
+  outline: 1px dotted #ffff00;
+}
+
+.explorer-file-view.view-small {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  grid-auto-rows: 22px;
+  gap: 2px 8px;
+  padding: 6px;
+}
+
+.explorer-file-view.view-list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(auto-fill, 20px);
+  grid-auto-columns: 155px;
+  gap: 1px 10px;
+  padding: 6px;
+  overflow-x: auto;
+}
+
+.explorer-file-view.view-small .explorer-item,
+.explorer-file-view.view-list .explorer-item {
+  flex-direction: row;
+  align-items: center;
+  text-align: left;
+  padding: 1px 3px;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.explorer-file-view.view-small .explorer-item-icon,
+.explorer-file-view.view-small .explorer-item-icon svg,
+.explorer-file-view.view-list .explorer-item-icon,
+.explorer-file-view.view-list .explorer-item-icon svg,
+.explorer-file-view.view-details .explorer-item-icon,
+.explorer-file-view.view-details .explorer-item-icon svg {
+  width: 16px;
+  height: 16px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.explorer-file-view.view-small .explorer-item-label,
+.explorer-file-view.view-list .explorer-item-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.explorer-file-view.view-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+}
+
+.explorer-details-header {
+  display: grid;
+  grid-template-columns: minmax(140px, 2.2fr) 75px 120px 110px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: var(--win-bg);
+  flex-shrink: 0;
+}
+
+.explorer-details-col {
+  padding: 2px 6px;
+  font-size: 11px;
+  color: var(--win-text);
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-light),
+    inset -1px -1px 0 var(--win-border-darkest),
+    inset 2px 2px 0 var(--win-border-midlight),
+    inset -2px -2px 0 var(--win-border-dark);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.explorer-details-col:active {
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-darkest),
+    inset -1px -1px 0 var(--win-border-light);
+}
+
+.explorer-details-col.align-right,
+.explorer-details-cell.align-right {
+  text-align: right;
+}
+
+.explorer-item.details-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 2.2fr) 75px 120px 110px;
+  align-items: center;
+  padding: 1px 4px;
+  text-align: left;
+  font-size: 11px;
+  min-height: 19px;
+}
+
+.explorer-details-name {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.explorer-details-cell {
+  padding: 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #000000;
+}
+
+.explorer-item.details-row.selected .explorer-details-cell {
+  color: #000000;
+}
+
+.explorer-file-view.single-click-mode .explorer-item-label {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.win98-props-tabs {
+  display: flex;
+  gap: 0;
+  padding: 6px 6px 0;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 2;
+}
+
+.win98-props-tab {
+  padding: 3px 10px 4px;
+  background: var(--win-bg);
+  border: none;
+  font-family: var(--win-font);
+  font-size: 11px;
+  cursor: pointer;
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-light),
+    inset -1px 0 0 var(--win-border-darkest),
+    inset 2px 2px 0 var(--win-border-midlight),
+    inset -2px 0 0 var(--win-border-dark);
+}
+
+.win98-props-tab.active {
+  padding-bottom: 5px;
+  margin-top: -2px;
+  font-weight: bold;
+}
+
+.win98-props-sheet {
+  margin: 0 6px 6px;
+  padding: 12px;
+  background: var(--win-bg);
+  box-shadow:
+    inset 1px 1px 0 var(--win-border-light),
+    inset -1px -1px 0 var(--win-border-darkest),
+    inset 2px 2px 0 var(--win-border-midlight),
+    inset -2px -2px 0 var(--win-border-dark);
+  font-size: 11px;
+}
+
+.win98-props-pie3d {
+  width: 110px;
+  height: 54px;
+  margin: 8px auto 12px;
+  border-radius: 50%;
+  border: 1px solid #000000;
+  background: conic-gradient(#0000ff 0 var(--used), #ff00ff var(--used) 100%);
+  box-shadow: 0 9px 0 0 #400080, 0 10px 0 0 #000000;
+}

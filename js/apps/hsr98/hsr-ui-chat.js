@@ -159,6 +159,7 @@
         items.push({ kind: 'date', h: 22, text: dateText(v.st.at) });
         last = null;
         v.lines.slice(0, v.n).forEach(line => {
+          if (line.flag) return;
           if (line.quest || line.give) { items.push({ kind: 'sys', h: 24, line }); last = null; return; }
           const me = line.who === '@', first = last !== line.who;
           let w, h, rows = null;

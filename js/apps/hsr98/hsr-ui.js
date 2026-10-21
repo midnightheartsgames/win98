@@ -12,6 +12,18 @@
   const SAVE_KEY = 'hsr98.save.', OPT_KEY = 'hsr98.options';
   const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+  const SAVE_SLOTS = [1, 2, 3, 'auto'];
+  const SAVE_DIR = ['My Computer', 'C:', 'Games', 'StarRail98'];
+  const saveFileName = slot => (slot === 'auto' ? 'AUTOSAVE.SAV' : 'SAVE' + slot + '.SAV');
+  const mirrorSave = (slot, data, onlyMissing) => {
+    const vfs = typeof window !== 'undefined' ? window.vfs : null;
+    if (!vfs || !vfs.resolvePath || !data) return false;
+    const dir = vfs.resolvePath(SAVE_DIR);
+    if (!dir || !dir.children) return false;
+    if (onlyMissing && dir.children[saveFileName(slot)]) return false;
+    return vfs.writeFile(SAVE_DIR, saveFileName(slot), { type: 'file', icon: 'file-txt', content: JSON.stringify(data) });
+  };
+  const mirrorAllSaves = () => SAVE_SLOTS.forEach(slot => mirrorSave(slot, lsGet(SAVE_KEY + slot, null), true));
   const RES = [
     { id: '640', tag: '640', w: 640 },
     { id: '800', tag: '800', w: 800 },
@@ -20,6 +32,7 @@
     { id: 'window', tag: 'Окно', w: 0 }
   ];
   const KEYMAP = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', Enter: 'ok', Space: 'ok', NumpadEnter: 'ok', Escape: 'back', Backspace: 'back' };
+  const GLOW_NAME = { starlight: ['Неугасаемый звёздный свет', 'звёздного света'], embers: ['Неугасаемый пепел', 'пепла'] };
   const HUD_CARD = { h: 46, step: 50, barW: 35, fill: 0.9, energy: '#f2b632', energyText: '#ffe0a0' };
 
   class UI {
@@ -33,6 +46,7 @@
       this.ctx = this.canvas.getContext('2d');
       this.ctx.imageSmoothingEnabled = false;
       this.options = Object.assign({ sfx: 0.6, music: 0.35, battleSpeed: 1, textSpeed: 2, res: '640', ultCine: 'on', fusionCine: 'on' }, lsGet(OPT_KEY, {}));
+      mirrorAllSaves();
       this.applyRes();
       this.audio = new H.Audio();
       this.audio.setVolumes(this.options.sfx, this.options.music);
@@ -186,7 +200,10 @@
 
     writeSave(slot) {
       if (!this.game || this.game.battle) return false;
-      return lsSet(SAVE_KEY + slot, { date: new Date().toLocaleString('ru-RU'), summary: this.game.summary(), state: this.game.serialize() });
+      const data = { date: new Date().toLocaleString('ru-RU'), summary: this.game.summary(), state: this.game.serialize() };
+      if (!lsSet(SAVE_KEY + slot, data)) return false;
+      mirrorSave(slot, data, false);
+      return true;
     }
 
     enterField() {
@@ -227,6 +244,7 @@
       if (this.mode === 'field' && g.map) this.updateMinimap(dt);
       if (this.mode === 'field') this.updateChat(dt);
       if (this.mode === 'field' && !this.screens.length && !this.dlg && !this.toasts.length && !g.busy() && !g.cg && g.eventsOpen() && !g.state.flags.events_note) this.openEventsNotice();
+      else if (this.mode === 'field' && !this.screens.length && !this.dlg && !this.toasts.length && !g.busy() && !g.cg && g.eventsOpen() && this.newEventNotice) this.newEventNotice();
     }
 
     heldDir() {
@@ -247,6 +265,7 @@
           case 'quest': { const ty = H.MISSION_TYPES[e.type || 'comp']; this.toast(e.step === 'done' ? ty.one + ' выполнена: «' + e.name + '»' : ty.one + ' «' + e.name + '»: ' + e.text); this.sfx(e.step === 'done' ? 'star4' : 'confirm'); break; }
           case 'mission': this.toast('Миссия Освоения выполнена: «' + e.name + '»' + (e.got.length ? '. Получено: ' + e.got.join(', ') : '')); this.sfx('star4'); break;
           case 'join': this.sfx('levelup'); break;
+          case 'tl': this.toast('Уровень Освоения ' + e.lvl + (this.game.tlRewardsOpen && this.game.tlRewardsOpen() ? '. Пом-Пом приготовил награду' : '')); break;
           case 'autosave': this.writeSave('auto'); break;
           case 'burst': for (let i = 0; i < 14; i++) this.particles.push({ field: true, x: e.x * TS + 16, y: e.y * TS + 16, vx: (Math.random() - 0.5) * 120, vy: -Math.random() * 120, g: 300, t: 0.6, col: '#c8a060' }); break;
           case 'battle': this.startBattleUI(e); break;
@@ -274,7 +293,8 @@
       if (p.type === 'choice' && !this.top()) this.openChoice(p);
       if (p.type === 'tut' && !this.top()) this.openTut(p);
       if (p.type === 'ui' && !this.top()) this.openUi(p);
-      if (p.type === 'credits' && this.mode !== 'credits') this.openCredits();
+      if (p.type === 'credits' && p.id && this.openClipCredits) { if (!this.top()) this.openClipCredits(p.id, true); }
+      else if (p.type === 'credits' && this.mode !== 'credits') this.openCredits();
       if (p.type === 'cine' && !this.top()) this.openCine(p);
     }
 
@@ -602,6 +622,22 @@
       return (o.size || 16) + 6 + this.measure(typeof value === 'number' ? H.fmt(value) : value, 11, true);
     }
 
+    glowOf(r) {
+      if (r.glow) return r.glow;
+      const n = r.kind === 'char' ? H.charGlow(r.res, r.rar) : 0;
+      return n ? { cur: 'starlight', n } : null;
+    }
+
+    resultTag(x, y, r, fresh) {
+      const lines = r.kind === 'char'
+        ? (r.res === 'new' ? fresh : r.res === 'eid' ? [['Дубликат', C.sub], ['Эйдолон +1', C.gold]] : r.res === 'max' ? [['Дубликат', C.sub], ['Все эйдолоны открыты', C.gold]] : [['Дубликат', C.sub], ['+3 000 кредитов', C.gold]])
+        : r.sup > 1 ? [['Дубликат', C.sub], ['Наложение S' + r.sup, C.gold]] : [['Световой конус', C.sub], ['добавлен в инвентарь', C.cream]];
+      const gl = this.glowOf(r);
+      this.win(x, y, 182, gl ? 68 : 50, { alpha: 0.9 });
+      lines.forEach(([s, col], i) => this.text(s, x + 14, y + 10 + i * 16, { size: i ? 11 : 12, bold: !i, col }));
+      if (gl) this.money(x + 14, y + 44, gl.cur, '+' + gl.n + ' ' + GLOW_NAME[gl.cur][1], { col: C.cyan });
+    }
+
     portraitCard(c, look, x, y, size, o = {}) {
       const gr = c.createLinearGradient(x, y, x, y + size);
       gr.addColorStop(0, o.bgTop || '#2a3068'); gr.addColorStop(1, o.bgBottom || '#0c0f2a');
@@ -623,10 +659,16 @@
       const bg = c.createRadialGradient(0, 0, 10, 0, 0, 210);
       bg.addColorStop(0, 'rgba(2,3,14,0.62)'); bg.addColorStop(1, 'rgba(2,3,14,0)');
       c.save(); c.translate(W / 2 - 40, HGT - 84); c.scale(1, 0.42); c.fillStyle = bg; c.fillRect(-210, -210, 420, 420); c.restore();
-      this.text('HONKAI', 36, 34, { size: 40, bold: true, serif: true, col: '#e8d098' });
-      this.text('STAR RAIL', 38, 78, { size: 29, bold: true, serif: true, col: '#ffffff' });
-      this.text('98', 210, 72, { size: 34, bold: true, serif: true, col: '#ffb040' });
-      this.text('Издание «Ярило-VI» · PC CD-ROM', 40, 114, { size: 11, col: '#b8c4ea' });
+      if (H.BRAND.standalone) {
+        this.text('STAR RAIL', 36, 44, { size: 40, bold: true, serif: true, col: '#e8d098' });
+        this.text('98', 36 + this.measure('STAR RAIL', 40, true, true) + 10, 38, { size: 46, bold: true, serif: true, col: '#ffb040' });
+        this.text(H.BRAND.edition, 40, 100, { size: 11, col: '#b8c4ea' });
+      } else {
+        this.text('HONKAI', 36, 34, { size: 40, bold: true, serif: true, col: '#e8d098' });
+        this.text('STAR RAIL', 38, 78, { size: 29, bold: true, serif: true, col: '#ffffff' });
+        this.text('98', 210, 72, { size: 34, bold: true, serif: true, col: '#ffb040' });
+        this.text('Издание «Ярило-VI» · PC CD-ROM', 40, 114, { size: 11, col: '#b8c4ea' });
+      }
       const items = this.titleItems();
       const x0 = W - 132, y0 = 40;
       items.forEach((it, i) => {
@@ -648,7 +690,7 @@
       this.diamond(px + 16, py + 12, 5, cur.disabled ? '#5a5a70' : C.brassHi, '#1a1208');
       this.text(note, px + pw / 2 + 8, py + 5, { align: 'center', size: 12, col: cur.disabled ? C.dim : C.cream });
       this.hit(px, HGT - 112, pw, 72, () => cur.fn());
-      this.text('CD-ROM v1.4 · Win 98 · © 1999 miHoYo Shanghai', 10, HGT - 16, { size: 9, col: '#7080a8' });
+      this.text(H.BRAND.disc, 10, HGT - 16, { size: 9, col: '#7080a8' });
       this.hints([['↑↓', 'Выбор'], ['Enter', 'Подтвердить']], W - 10, HGT - 18, { align: 'right' });
     }
 
@@ -673,6 +715,10 @@
         if (sx > W + 32 || sy > HGT + 32 || sx + s.w * TS < -32 || sy + s.h * TS < -32) continue;
         draws.push({ y: s.sort, fn: () => H.Train.drawSprite(c, s, sx, sy, this.t) });
       }
+      if (g.tram && m.def.tram && H.Jarilo) {
+        const tr = H.Jarilo.tramSprite(), d = m.def.tram, tx = d.x * TS - cx, ty = g.tram.y * TS - cy;
+        if (ty > -200 && ty < HGT + 100) draws.push({ y: g.tram.y + d.len - 1, fn: () => H.Train.drawSprite(c, tr, tx, ty) });
+      }
       for (const e of m.ents) {
         if (!g.visible(e)) continue;
         const fl = e.kind === 'enemy' || (e.kind === 'npc' && e.fx != null);
@@ -686,17 +732,43 @@
       draws.push({ y: p.fy + 0.01, fn: () => {
         const px = p.fx * TS - cx, py = p.fy * TS - cy;
         if (g.state.pendingTechs.length) { c.fillStyle = 'rgba(120,200,255,' + (0.25 + 0.15 * Math.sin(this.t * 6)) + ')'; c.beginPath(); c.ellipse(px + 16, py + 26, 18, 7, 0, 0, Math.PI * 2); c.fill(); }
+        if (this.drawCarry) this.drawCarry(c, px, py, p.dir, true);
         G.drawSprite(c, G.lookOf(g.kitOf(lead), g), p.dir, frame, px, py);
+        if (this.drawCarry) this.drawCarry(c, px, py, p.dir, false);
         if (g.attackAnim > 0) {
           const [dx, dy] = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[p.dir];
           c.strokeStyle = 'rgba(255,255,255,' + g.attackAnim * 4 + ')'; c.lineWidth = 3; c.beginPath();
           c.arc(px + 16 + dx * 20, py + 16 + dy * 20, 16, 0, Math.PI * 2 * (1 - g.attackAnim * 3)); c.stroke();
         }
       } });
+      const pet = this.drawPetField && g.pet;
+      if (pet) draws.push({ y: pet.fy + 0.005, fn: () => this.drawPetField(c, pet, pet.fx * TS - cx, pet.fy * TS - cy) });
       draws.sort((a, b) => a.y - b.y);
       for (const d of draws) d.fn();
+      if (pet) this.drawPetSay(c, pet, pet.fx * TS - cx, pet.fy * TS - cy);
       for (const pa of this.particles) if (pa.field) { c.fillStyle = pa.col; c.fillRect(pa.x - cx, pa.y - cy, 3, 3); }
       if (L.deco) H.Train.drawFx(c, L, m, cx, cy, this.t, W, HGT, x => g.cond(x));
+      const fd = g.findieTarget && g.findieTarget();
+      if (fd) {
+        const px = g.player.fx * TS - cx + 16, py = g.player.fy * TS - cy - 30, a = Math.atan2(fd.y - g.player.fy, fd.x - g.player.fx), hot = Math.max(0, 1 - fd.dist / 18);
+        const beat = 0.5 + 0.5 * Math.sin(this.t * (4 + hot * 18));
+        c.save(); c.translate(px, py); c.rotate(a);
+        c.fillStyle = 'rgba(255,208,64,' + (0.55 + 0.45 * beat).toFixed(3) + ')';
+        c.beginPath(); c.moveTo(14, 0); c.lineTo(2, -6); c.lineTo(2, 6); c.closePath(); c.fill();
+        c.restore();
+        c.fillStyle = 'rgba(20,16,8,0.82)'; c.fillRect(W / 2 - 80, 8, 160, 16);
+        this.text('Находюша: ' + (fd.dist < 2 ? 'цель рядом!' : fd.dist < 7 ? 'горячо' : fd.dist < 14 ? 'тепло' : 'холодно'), W / 2, 10, { align: 'center', size: 10, bold: true, col: '#ffd040' });
+        this.findieT = (this.findieT || 0) + 1 / 60;
+        if (this.findieT > 1.4 - hot * 1.2) { this.findieT = 0; this.sfx('select'); }
+      }
+      const bl = g.barkLine && g.barkLine();
+      if (bl) {
+        const w = Math.min(380, this.measure(bl.text, 10, false) + 12), bx = Math.max(4, Math.min(W - w - 4, bl.x * TS - cx + 16 - w / 2)), by = bl.y * TS - cy - 34;
+        c.fillStyle = 'rgba(250,246,236,0.94)'; c.fillRect(bx, by, w, 15);
+        c.strokeStyle = 'rgba(60,44,30,0.85)'; c.lineWidth = 1; c.strokeRect(bx + 0.5, by + 0.5, w - 1, 14);
+        c.fillStyle = 'rgba(250,246,236,0.94)'; c.beginPath(); c.moveTo(bl.x * TS - cx + 12, by + 15); c.lineTo(bl.x * TS - cx + 20, by + 15); c.lineTo(bl.x * TS - cx + 16, by + 20); c.fill();
+        this.text(bl.text, bx + w / 2, by + 2, { align: 'center', size: 10, col: '#3a2a1e' });
+      }
       if (th === 'snow' || th === 'hill' || th === 'ice' || th === 'rivet') {
         c.fillStyle = 'rgba(255,255,255,0.85)';
         for (let i = 0; i < 70; i++) { const sx = (G.hash(i, 1, 1) * W + this.t * (20 + G.hash(i, 2, 2) * 30)) % W, sy = (G.hash(1, i, 3) * HGT + this.t * (40 + G.hash(i, 3, 3) * 50)) % HGT; c.fillRect(sx, sy, 2, 2); }
@@ -727,13 +799,15 @@
             c.restore();
             break;
           }
-          if (!e.def.ghost) G.drawSprite(c, G.lookOf(e.def.who, g), e.dir || 'down', e.prog < 1 ? (Math.floor(e.prog * 2) + 1) % 4 : 0, x, y);
+          if (e.def.echo) { c.save(); c.globalAlpha = 0.5 + 0.12 * Math.sin(this.t * 3 + e.x); G.drawSprite(c, G.lookOf(e.def.who, g), e.dir || 'down', 0, x, y); c.restore(); }
+          else if (!e.def.ghost) G.drawSprite(c, G.lookOf(e.def.who, g), e.dir || 'down', e.prog < 1 ? (Math.floor(e.prog * 2) + 1) % 4 : 0, x, y);
           if (e.def.label) {
             const w = this.measure(e.def.label, 10, true) + 10, ly = y - 30 - (e.def.lift || 0);
             c.fillStyle = 'rgba(6,10,30,0.8)'; c.fillRect(x + 16 - w / 2, ly, w, 13);
             c.strokeStyle = 'rgba(128,224,255,0.7)'; c.strokeRect(x + 16.5 - w / 2, ly + 0.5, w - 1, 12);
             this.text(e.def.label, x + 16, ly + 1, { align: 'center', size: 10, bold: true, col: C.cyan });
-          } else if (e.def.script && Math.hypot(e.x - g.player.x, e.y - g.player.y) < 3) this.diamond(x + 16, y - 22 + Math.sin(this.t * 4) * 2, 4, C.brassHi, '#1a1208');
+          } else if (e.def.who === 'pompom' && g.tlReadyCount && g.tlReadyCount()) this.badge(x + 16, y - 24 + Math.sin(this.t * 4) * 2);
+          else if (e.def.script && Math.hypot(e.x - g.player.x, e.y - g.player.y) < 3) this.diamond(x + 16, y - 22 + Math.sin(this.t * 4) * 2, 4, C.brassHi, '#1a1208');
           break;
         }
         case 'enemy': {
@@ -748,7 +822,7 @@
         case 'lever': G.drawObject(c, 'lever', x, y, { on: !!g.state.flags[e.def.flag] }, this.t); break;
         case 'gate': G.drawObject(c, 'gate', x, y, {}, this.t); break;
         case 'prop': {
-          G.drawObject(c, e.def.obj, x, y, { art: e.def.art, phase: this.objPhase(e) }, this.t);
+          G.drawObject(c, e.def.obj, x, y, { art: e.def.art, on: !!(e.def.magflow && g.state.flags[e.def.magflow]), phase: this.objPhase(e) }, this.t);
           if (e.def.label) {
             const w = this.measure(e.def.label, 10, true) + 10, ly = e.def.obj === 'su_machine' ? y - 86 : y - 30;
             c.fillStyle = 'rgba(14,6,30,0.82)'; c.fillRect(x + 16 - w / 2, ly, w, 13);
@@ -772,6 +846,24 @@
           c.fillStyle = 'rgba(' + col + ',0.6)'; c.fillRect(x, y + 2, 32, 28);
           c.fillStyle = 'rgba(255,255,255,0.75)'; c.fillRect(x, y + 2, 32, 2); c.fillRect(x, y + 28, 32, 2);
           c.fillStyle = 'rgba(' + col + ',0.95)'; c.fillRect(x + ((Math.floor(this.t * 24) + e.y * 9) % 32), y + 6, 3, 20);
+          break;
+        }
+        case 'gbridge': {
+          if (!g.gbridgeOn(e.def.arm)) {
+            c.fillStyle = g.map.def.gearPit || '#05060c'; c.fillRect(x, y, 32, 32);
+            c.fillStyle = 'rgba(120,140,180,0.10)'; c.fillRect(x + ((e.x * 7 + e.y * 3) % 20), y + ((e.y * 11) % 24), 6, 2);
+            break;
+          }
+          c.fillStyle = '#3a3e4c'; c.fillRect(x, y, 32, 32);
+          c.fillStyle = '#5a6074'; if (e.def.arm === 'ew') { c.fillRect(x, y + 1, 32, 3); c.fillRect(x, y + 28, 32, 3); for (let i = 2; i < 32; i += 8) c.fillRect(x + i, y + 5, 2, 22); } else { c.fillRect(x + 1, y, 3, 32); c.fillRect(x + 28, y, 3, 32); for (let i = 2; i < 32; i += 8) c.fillRect(x + 5, y + i, 22, 2); }
+          c.fillStyle = '#8a92a8'; if (e.def.arm === 'ew') c.fillRect(x, y + 1, 32, 1); else c.fillRect(x + 1, y, 1, 32);
+          break;
+        }
+        case 'trigger': {
+          if (!e.def.sight) break;
+          const k = 0.5 + 0.5 * Math.sin(this.t * 4 + e.x + e.y);
+          c.fillStyle = 'rgba(255,90,60,' + (0.14 + 0.1 * k).toFixed(3) + ')'; c.fillRect(x + 1, y + 1, 30, 30);
+          c.strokeStyle = 'rgba(255,140,100,0.35)'; c.lineWidth = 1; c.strokeRect(x + 2.5, y + 2.5, 27, 27);
           break;
         }
         case 'span': {
@@ -863,9 +955,10 @@
       if (al.events || al.mail || al.chat) this.badge(hx - 4, by + 33);
       if (!g.busy() && !this.screens.length) {
         const [fx, fy] = g.front();
-        const e = g.entAt(fx, fy, x => x.kind !== 'enemy' && x.kind !== 'trigger' && x.kind !== 'exit' && x.kind !== 'marvel' && x.kind !== 'span' && x.kind !== 'rbridge');
-        if (e) {
-          const label = (e.def && e.def.hint) || { npc: 'Говорить', prop: 'Осмотреть', chest: g.state.opened[e.key] ? 'Пусто' : 'Открыть', anchor: 'Якорь пространства', lever: 'Рубильник', destr: 'Разбить (F)', gate: 'Переборка', su_frame: 'Событие', su_heal: 'Капсула восстановления', su_tp: 'Очко техники' }[e.kind] || '';
+        const e = g.entAt(fx, fy, x => x.kind !== 'enemy' && x.kind !== 'trigger' && x.kind !== 'exit' && x.kind !== 'marvel' && x.kind !== 'span' && x.kind !== 'rbridge' && x.kind !== 'gbridge');
+        const pt = !e && g.petFront && g.petFront();
+        if (e || pt) {
+          const label = pt ? 'Погладить: ' + H.PETS[pt.id].name : (e.def && e.def.hint) || { npc: 'Говорить', prop: 'Осмотреть', chest: g.state.opened[e.key] ? 'Пусто' : 'Открыть', anchor: 'Якорь пространства', lever: 'Рубильник', destr: 'Разбить (F)', gate: 'Переборка', su_frame: 'Событие', su_heal: 'Капсула восстановления', su_tp: 'Очко техники' }[e.kind] || '';
           const w = this.measure(label, 12, true) + 70;
           c.fillStyle = 'rgba(4,6,20,0.82)'; c.fillRect(W / 2 - w / 2, HGT - 86, w, 22);
           c.strokeStyle = C.brass; c.strokeRect(W / 2 - w / 2 + 0.5, HGT - 85.5, w - 1, 21);
@@ -1025,12 +1118,16 @@
 
     openUi(p) {
       const close = () => { this.finishPending(); };
+      if (this['openUi_' + p.ui]) return this['openUi_' + p.ui](p);
       switch (p.ui) {
         case 'name': return this.openName();
         case 'shop': return this.openShop(p.id, close);
+        case 'tlrewards': return this.openTlRewards(close);
         case 'rumor': return this.openRumors(p.who, close);
         case 'warp': return this.openWarp(close);
-        case 'calyx': return this.openCalyx(close);
+        case 'calyx': return this.openCalyx(close, p.only);
+        case 'magflow': return this.openMagflow(p.id, ok => this.finishPending(!!ok));
+        case 'carts': return this.openCarts(p.id, ok => this.finishPending(!!ok));
         case 'nav': return this.openStarMap(close);
         case 'databank': return this.openBank(close);
         case 'book': return this.openBook(p.book, close);
@@ -1222,7 +1319,7 @@
     drawCredits(c) {
       G.drawCG(c, 'express', W, HGT, this.t);
       c.fillStyle = 'rgba(0,0,0,0.55)'; c.fillRect(0, 0, W, HGT);
-      const lines = ['HONKAI: STAR RAIL 98', '', 'Издание «Ярило-VI»', '', 'Сценарий по мотивам Honkai: Star Rail', '(c) miHoYo / HoYoverse', '', 'Механики боя — Honkai: Star Rail', 'Контакт, Слияния и Слухи — Persona 2', 'Тема главного меню — HOYO-MiX (MIDI-переложение)', 'Боевые темы — HOYO-MiX (MIDI-переложения)', '', 'Программирование, графика, музыка:', 'Win 98 Edition Team', '', 'Звёздный экспресс: Химико, Вельт, Март 7, Дань Хэн, Пом-Пом', 'Белобог: Броня, Зеле, Гепард, Сервал, Наташа, Хук, Сампо', '', 'Спасибо за игру!', '', 'Следующая остановка — Сяньчжоу «Лофу»...'];
+      const lines = [...H.BRAND.credits, 'Контакт, Слияния и Слухи — Persona 2', 'Тема главного меню — HOYO-MiX (MIDI-переложение)', 'Боевые темы — HOYO-MiX (MIDI-переложения)', '', 'Программирование, графика, музыка:', H.BRAND.makers, '', 'Звёздный экспресс: Химико, Вельт, Март 7, Дань Хэн, Пом-Пом', 'Белобог: Броня, Зеле, Гепард, Сервал, Наташа, Хук, Сампо', '', 'Спасибо за игру!', '', 'Следующая остановка — Сяньчжоу «Лофу»...'];
       const y0 = HGT - this.creditsT * 30;
       lines.forEach((l, i) => this.text(l, W / 2, y0 + i * 26, { align: 'center', size: i === 0 ? 22 : 13, bold: i === 0, serif: i === 0, col: i === 0 ? C.gold : C.cream }));
       if (y0 + lines.length * 26 < 0) this.endCredits();
@@ -1237,6 +1334,6 @@
     }
   }
 
-  Object.assign(H, { UI, UI_CONST: { W, HGT, TS, C, FONT, SERIF, lsGet, lsSet, SAVE_KEY, OPT_KEY } });
+  Object.assign(H, { UI, UI_CONST: { W, HGT, TS, C, GLOW_NAME, FONT, SERIF, lsGet, lsSet, SAVE_KEY, OPT_KEY, SAVE_SLOTS, SAVE_DIR, saveFileName, mirrorSave } });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

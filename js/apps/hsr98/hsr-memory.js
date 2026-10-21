@@ -7,7 +7,7 @@
   const FOES = {
     antibaryon: E({ name: 'Антибарион', fam: 'voidranger', shape: 'orb2', col: ['#3a3450', '#ffb040'], hp: 0.7, spd: 83, tough: 10, weak: ['phys', 'quant'], exp: 0.8,
       skills: [{ n: 'Истребление', w: 1, t: 'single', m: 1.0, e: 'imag' }], gift: 'medkit' }),
-    distorter: E({ name: 'Скиталец Пустоты: Исказитель', fam: 'voidranger', shape: 'ranger3', col: ['#24223a', '#ff4ad8'], hp: 0.9, spd: 120, weak: ['wind', 'imag'],
+    distorter: E({ name: 'Рейнджер пустоты: Исказитель', fam: 'voidranger', shape: 'ranger3', col: ['#24223a', '#ff4ad8'], hp: 0.9, spd: 120, weak: ['wind', 'imag'],
       skills: [{ n: 'Приказ Небытия', w: 1, t: 'lock', next: 1, text: 'Исказитель отмечает цель.' }, { n: 'Удар бесследной пустоты', w: 2, t: 'single', m: 1.7, e: 'quant' }], gift: 'exp1' }),
     weaver: E({ name: 'Мнимый ткач', fam: 'spawn', shape: 'weaver', col: ['#2a2418', '#ffd23a'], hp: 0.95, spd: 120, weak: ['phys', 'elec', 'quant'],
       skills: [{ n: 'Луч гимна', w: 3, t: 'single', m: 1.0, e: 'imag' }, { n: 'Эхо гимна', w: 1, t: 'blast', m: 0.8, e: 'imag' }], gift: 'jadeSmall' }),
@@ -93,7 +93,7 @@
   ];
   for (const st of STAGES) Object.assign(st, { budget: KINDS[st.kind].budget, goals: KINDS[st.kind].goals, rec: REC[st.n - 1] });
 
-  const SERIES = [{ id: 'vestiges', name: 'Наследие Возвышающейся цитадели', world: 'Ярило-VI', text: 'Воспоминания о Ярило-VI: Белобог, Подземье и Холм Вечной Зимы. Пятнадцать этапов, враги от уровня ' + STAGES[0].lvl + ' до ' + STAGES[14].lvl + '.', stages: STAGES }];
+  const SERIES = [{ id: 'vestiges', name: 'Наследие Возвышающейся цитадели', world: 'Ярило-VI', text: 'Воспоминания о Ярило-VI: Белобог, Подземье и Холм вечнозимья. Пятнадцать этапов, враги от уровня ' + STAGES[0].lvl + ' до ' + STAGES[14].lvl + '.', stages: STAGES }];
 
   const memoryReward = n => (n <= 5 ? { credits: 2500, items: { lucent: 20, exp2: 5 } } : { credits: 5000, items: { lucent: 40, exp3: 2, exp2: 3 } });
   const INSIGNIA = { jade: 200, credits: 5000, items: { feather: 80 } };
@@ -295,7 +295,7 @@
     fhSpecs(keys) {
       return keys.map(k => {
         const r = this.state.roster[k], st = this.charStats(k), kit = H.CHARS[this.kitOf(k)];
-        return { key: k, charId: this.kitOf(k), name: k === 'trail' ? this.state.name : undefined, lvl: r.lvl, stats: st, hp: st.hp, energy: Math.round(kit.energy * TUN.energyStart), cone: this.coneEffect(k), sets: this.planarSets(k) };
+        return { key: k, charId: this.kitOf(k), name: k === 'trail' ? this.state.name : undefined, lvl: r.lvl, stats: st, hp: st.hp, energy: Math.round(kit.energy * TUN.energyStart), cone: this.coneEffect(k), sets: this.planarSets(k), tr: this.traceSpec(k), eid: r.eid || 0 };
       });
     },
 

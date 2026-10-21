@@ -255,4 +255,34 @@ for (const L of S.LEVEL_ORDER) {
   ok(run() === run(), 'simulation is deterministic');
 }
 
+{
+  const g = new S.Game({ skill: 1, seed: 9 }); g.events.length = 0; place(g, 40, -103, Math.PI / 2);
+  for (const id in ITEMS) {
+    const d = ITEMS[id], made = g.spawnItems(id, 2);
+    if (d.kind === 'quest' || id === 'bolt') { ok(made.length === 0, `spawner skips ${id}`); continue; }
+    ok(made.length === 2 && made.every(it => it.id === id && g.item(it.uid)), `spawner gives ${id}`);
+    if (d.kind === 'weapon' && d.mag) ok(made.every(it => it.mag === d.mag && it.cond === 1), `${id} comes loaded and new`);
+  }
+  ok(g.events.some(e => e.t === 'pickup'), 'spawned items are announced');
+  const n0 = g.actors.length;
+  for (const tpl in HUMANS) {
+    const a = g.spawnHuman(tpl, { weapon: 'ak74', attitude: 'enemy' });
+    ok(a && a.spawned && a.kind === 'human' && g.actors.includes(a), `spawner makes ${tpl}`);
+    ok(Math.hypot(a.x - g.player.x, a.z - g.player.z) < 9 && g.W.navOK[g.W.cellOf(a.x, a.z)], `${tpl} stands on walkable ground near the player`);
+    ok(g.attitudeOf(a, 'player') < 0, `${tpl} attitude override`);
+    if (tpl !== 'hostage' && tpl !== 'trader') ok(a.inv.some(i => i.uid === a.weaponUid && i.id === 'ak74'), `${tpl} gets the chosen weapon`);
+  }
+  for (let i = 0; i < 3; i++) ok(g.spawnHuman('loner', { i }).attitude === null, 'faction attitude by default');
+  for (const t in MUTANTS) { const m = g.spawnMutant(t); ok(m && m.spawned && m.type === t && Number.isFinite(m.y), `spawner makes ${t}`); }
+  const a0 = g.anomalies.length;
+  for (const t in ANOMALIES) { const an = g.spawnAnomaly(t); ok(an && an.spawned && g.anomalies.includes(an) && g.W.navCost[g.W.cellOf(an.x, an.z)] > 0, `spawner makes ${t}`); }
+  tick(g, 60 * 3); ok(g.actors.every(a => [a.x, a.y, a.z].every(Number.isFinite)), 'spawned actors simulate');
+  const snap = g.serialize(); ok(snap.levels[g.levelId].actors.filter(a => a.spawned).length === g.actors.filter(a => a.spawned).length, 'spawned actors are saved');
+  const removed = g.clearSpawned();
+  ok(removed > 0 && g.actors.length === n0 && g.anomalies.length === a0 && g.actors.every(a => !a.spawned), 'clearSpawned removes only spawned things');
+  g.player.hp = 20; g.player.rad = 0.8; g.player.bleed = 2; g.healPlayer(); ok(g.player.hp === 100 && g.player.rad === 0 && g.player.bleed === 0, 'heal');
+  g.inv.forEach(it => { if (it.cond != null) it.cond = 0.3; }); g.repairGear(); ok(g.inv.every(it => it.cond == null || it.cond === 1), 'repair');
+  g.god = true; g.player.rad = 1; g.player.bleed = 3; g.hurtPlayer(500, 'bullet'); tick(g, 120); ok(!g.player.dead && g.player.hp === 100, 'god mode keeps the player alive');
+}
+
 console.log(`stalker98: ${checks} checks passed`);

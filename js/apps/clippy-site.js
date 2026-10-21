@@ -18,6 +18,7 @@ class ClippySite {
     ];
 
     this.news = [
+      { date: '01.12.1998', text: 'Большое пополнение шкафа! Открыт раздел <b>«Аксессуары»</b>: деловой дипломат, сотовый с антенной, тамагочи, попугай и стопка дискет, а также новые шляпы, очки и бороды.' },
       { date: '30.11.1998', text: 'Скрепыша теперь можно спросить своими словами! Нажмите <b>F1</b> на рабочем столе или выберите «Что вы хотите сделать?» в его меню.' },
       { date: '28.11.1998', text: 'У Скрепыша появилась <b>лампочка</b>. Если у него есть совет, она мигает рядом с ним и ждёт, пока вы щёлкнете.' },
       { date: '26.11.1998', text: 'Скрепыш теперь в ICQ! Его номер — <b>199898</b>. Отвечает быстрее, чем модем соединяется.' },
@@ -44,7 +45,7 @@ class ClippySite {
       { q: 'Как отключить Скрепыша?', a: 'Никак! Шучу: щёлкните по нему правой кнопкой мыши и выберите «Спрятать Скрепыша». Но он всё равно будет скучать в системном лотке.' },
       { q: 'Что за файлы .ACS я скачиваю?', a: 'ACS — формат персонажей Microslop Agent. В каждом файле лежат анимации и новый наряд. Он весит 7–32 КБ, при модеме 33.6K скачивается за несколько секунд.' },
       { q: 'Куда сохраняются образы?', a: 'В папку <b>C:\\My Documents\\Downloads</b>. Скрепыш надевает их сразу, переустанавливать Office не нужно.' },
-      { q: 'Можно носить несколько вещей сразу?', a: 'Да! Одновременно можно носить одну вещь из каждой категории: головной убор, очки, усы и что-нибудь на шею. Цилиндр + монокль + усы = настоящий джентльмен.' },
+      { q: 'Можно носить несколько вещей сразу?', a: 'Да! Одновременно можно носить по одной вещи из каждой категории: головной убор, очки, усы или бороду, что-нибудь на шею и аксессуар справа от Скрепыша. Цилиндр + монокль + усы + деловой дипломат = настоящий джентльмен.' },
       { q: 'Как получить Золотую корону?', a: 'Щёлкните по Скрепышу правой кнопкой, выберите «Ретро-Викторина 1998» и ответьте правильно на все вопросы. После этого корона станет доступна в гардеробе.' },
       { q: 'Почему Скрепыш спрашивает, не пишу ли я письмо?', a: 'Потому что вы, скорее всего, пишете письмо. Статистика Office 97 неумолима. Если надоело, нажмите в его выноске «Больше не показывать этот совет».' },
       { q: 'Как вернуть Скрепыша, если я его выключил?', a: 'Щёлкните по скрепке в трее или наберите <b>clippy</b> в окне «Пуск → Выполнить». Чтобы он снова появлялся при запуске, поставьте галочку «Показывать помощника» в «Параметрах помощника». В «Настройке системы» он записан как ClippyOffice.' },
@@ -137,7 +138,7 @@ class ClippySite {
           </div>
           <div class="cc-header-note">Похоже, вы<br>зашли на сайт<br>о Скрепыше!</div>
         </div>
-        <marquee class="cc-marquee" scrollamount="4">*** Добро пожаловать в гардероб Скрепыша! Новинки: ушанка «Зима 98», кепка с пропеллером и стереоочки 3D! Все образы бесплатны! ***</marquee>
+        <marquee class="cc-marquee" scrollamount="4">*** Добро пожаловать в гардероб Скрепыша! Новая категория «Аксессуары»: деловой дипломат, сотовый с антенной, тамагочи, попугай и стопка дискет! Все образы бесплатны! ***</marquee>
         <div class="cc-nav">
           ${this.sections.map(s => `<a class="cc-nav-link${this.section === s.id ? ' active' : ''}" data-url="${this.baseUrl}${s.id === 'home' ? '' : '/' + s.id}">${this.gif(s.icon)} ${s.label}</a>`).join('')}
         </div>
@@ -195,7 +196,7 @@ class ClippySite {
               <li>Загорелась лампочка? Значит, у Скрепыша есть совет. Щёлкните, когда будет время.</li>
               <li>В «Параметрах помощника» можно выбрать, о чём ему молчать, и полистать «Коллекцию» коллег.</li>
               <li>В сеансе MS-DOS наберите <b>clippy /?</b>.</li>
-              <li>Скачайте новые образы в <a data-url="${this.baseUrl}/wardrobe">Гардеробе</a> и соберите свой стиль!</li>
+              <li>Скачайте новые образы и аксессуары в <a data-url="${this.baseUrl}/wardrobe">Гардеробе</a> и соберите свой стиль!</li>
             </ul>
           </div>
         </div>
@@ -203,8 +204,8 @@ class ClippySite {
         <div class="cc-col-side">
           <div class="cc-sticky">
             <div class="cc-sticky-title"><span class="web-new">NEW!</span> Новое в гардеробе!</div>
-            <div class="cc-sticky-preview">${w ? w.previewSvg({ head: 'propeller', neck: 'bowtie' }, 84) : ''}</div>
-            <p>Шляпы, галстуки, очки и усы для вашего помощника. Бесплатно!</p>
+            <div class="cc-sticky-preview">${w ? w.previewSvg({ head: 'propeller', neck: 'bowtie', accessory: 'briefcase' }, 84) : ''}</div>
+            <p>Шляпы, галстуки, очки, усы и аксессуары для вашего помощника. Бесплатно!</p>
             <a class="cc-btn cc-btn-primary" data-url="${this.baseUrl}/wardrobe">Открыть гардероб »</a>
           </div>
           <div class="cc-panel">
@@ -225,8 +226,11 @@ class ClippySite {
     const worn = w.slots.map(s => {
       const id = w.getEquippedId(s.id);
       const item = id ? w.getItem(id) : null;
-      return `<div class="cc-worn-row"><span class="cc-worn-slot">${s.name}:</span>
-        ${item ? `<b>${this.esc(item.name)}</b> <a class="cc-link cc-unequip" data-slot="${s.id}">[снять]</a>` : '<span class="cc-muted">—</span>'}</div>`;
+      const tryId = this.tryOn && this.tryOn[s.id];
+      const tryItem = tryId && tryId !== id ? w.getItem(tryId) : null;
+      const tryNote = tryItem ? ` <span class="cc-tryon-note">(примерка: ${this.esc(tryItem.name)})</span>` : '';
+      return `<div class="cc-worn-row"><span class="cc-worn-slot">${s.icon} ${s.name}:</span>
+        ${item ? `<b>${this.esc(item.name)}</b> <a class="cc-link cc-unequip" data-slot="${s.id}">[снять]</a>` : '<span class="cc-muted">—</span>'}${tryNote}</div>`;
     }).join('');
     return `
       <div class="cc-fitting">
@@ -244,7 +248,7 @@ class ClippySite {
             <a class="cc-btn cc-btn-small cc-undress">Снять всё</a>
             <a class="cc-btn cc-btn-small cc-download-all">${this.gif('disk')} Скачать всё</a>
           </div>
-          <div class="cc-muted cc-hint">Нажмите «Примерить» на любой вещи, чтобы посмотреть, как она сидит, — даже до скачивания.</div>
+          <div class="cc-muted cc-hint">Нажмите «Примерить» на любой вещи, чтобы посмотреть в зеркале, как она сочетается с остальным нарядом, ещё до скачивания.</div>
         </div>
       </div>`;
   }
@@ -254,6 +258,7 @@ class ClippySite {
     const owned = w.isOwned(item.id);
     const locked = w.isLocked(item.id);
     const equipped = w.isEquipped(item.id);
+    const trying = Boolean(this.tryOn && this.tryOn[item.slot] === item.id && !equipped);
     const dl = this.downloads.get(item.id);
     let actions;
     if (locked) {
@@ -271,7 +276,7 @@ class ClippySite {
       actions = `<a class="cc-btn cc-btn-primary cc-equip" data-id="${item.id}">Надеть</a>`;
     }
     return `
-      <div class="cc-card${equipped ? ' equipped' : ''}${locked ? ' locked' : ''}" data-item="${item.id}">
+      <div class="cc-card${equipped ? ' equipped' : ''}${trying ? ' trying' : ''}${locked ? ' locked' : ''}" data-item="${item.id}">
         ${item.badge ? `<div class="cc-badge cc-badge-${item.badge.toLowerCase()}">${item.badge}</div>` : ''}
         <div class="cc-card-preview">${w.previewSvg({ [item.slot]: item.id }, 64)}</div>
         <div class="cc-card-name">${this.esc(item.name)}</div>
@@ -279,7 +284,7 @@ class ClippySite {
         <div class="cc-card-file">${item.file} · ${item.sizeKb} КБ · ~${this.modemSeconds(item.sizeKb)} сек на 33.6K</div>
         <div class="cc-card-actions">
           ${actions}
-          <a class="cc-link cc-tryon" data-id="${item.id}">Примерить</a>
+          <a class="cc-link cc-tryon" data-id="${item.id}">${trying ? 'В зеркале' : 'Примерить'}</a>
         </div>
       </div>`;
   }
@@ -287,11 +292,11 @@ class ClippySite {
   renderWardrobe() {
     const w = this.wardrobe();
     if (!w) return '<div class="cc-panel">Гардероб временно недоступен. Попробуйте переподключиться к Интернету.</div>';
-    const filters = [{ id: 'all', name: 'Все' }].concat(w.slots);
+    const filters = [{ id: 'all', name: 'Все', icon: '' }].concat(w.slots);
     return `
       ${this.renderFittingRoom()}
       <div class="cc-filters">
-        ${filters.map(f => `<a class="cc-filter${this.filter === f.id ? ' active' : ''}" data-filter="${f.id}">${f.name} (${w.getItems(f.id).length})</a>`).join('')}
+        ${filters.map(f => `<a class="cc-filter${this.filter === f.id ? ' active' : ''}" data-filter="${f.id}">${f.icon ? f.icon + ' ' : ''}${f.name} (${w.getItems(f.id).length})</a>`).join('')}
       </div>
       <div class="cc-grid">${w.getItems(this.filter).map(i => this.renderItemCard(i)).join('')}</div>`;
   }

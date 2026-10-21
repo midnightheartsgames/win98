@@ -104,6 +104,95 @@ class ClippyTips {
         mood: '👽', cooldown: 360,
         text: 'Видели странные огоньки в ночном небе? В архиве <strong>«Истина где-то рядом»</strong> собирают рассекреченные досье НЛО!',
         action: { text: '▶ Открыть досье', run: () => window.appClippy && window.appClippy.openInIE('http://www.xfiles98.ru') }
+      },
+      'muzzone-mtv': {
+        mood: '🎸', cooldown: 360,
+        text: 'Ищете аккорды «Выхода нет» или разбор клипов MTV? На <strong>«МузЗоне \'98»</strong> можно сохранить табулатуру в Блокнот и собрать плейлист .M3U для Winamp!',
+        action: { text: '▶ Открыть «МузЗону \'98»', run: () => window.appClippy && window.appClippy.openInIE('http://www.muzzone98.ru') }
+      },
+      'svodka-99': {
+        mood: '📰', cooldown: 360,
+        text: 'Хотите узнать, чем живёт страна за три дня до 2000 года? В интернет-газете <strong>«Сводка.ру \'99»</strong> (<code>www.svodka99.ru</code>) есть суточная лента, справочная из 18 карточек, курсы ЦБ с калькулятором (26,95 за доллар) и памятка к ночи двух нулей. А телеграмму в редакцию телеграф сам перепишет с ТЧК и ЗПТ!',
+        action: { text: '▶ Открыть «Сводку.ру \'99»', run: () => window.appClippy && window.appClippy.openInIE('http://www.svodka99.ru') }
+      },
+      'carman-99': {
+        mood: '🎹', cooldown: 360,
+        text: 'Любите «Лондон, гуд-бай!», «Сан-Франциско» и «Чио-Чио-сан»? На фан-сайте <strong>«Кар-Мэн \'99»</strong> (<code>www.carman99.ru</code>) есть треклисты всех альбомов, карта городов из песен и вкладыши для кассет, которые открываются в Блокноте.',
+        action: { text: '▶ Открыть «Кар-Мэн \'99»', run: () => window.appClippy && window.appClippy.openInIE('http://www.carman99.ru') }
+      },
+      'kish-99': {
+        mood: '🎸', cooldown: 360,
+        text: 'Ищете аккорды «Прыгну со скалы» или «Куклы колдуна»? В трактире <strong>«Король и Шут \'99»</strong> (<code>www.kish99.ru</code>) есть дворовый песенник с переключателем тональности, карта сказочного леса и вкладыши для кассет.',
+        action: { text: '▶ Открыть «Король и Шут \'99»', run: () => window.appClippy && window.appClippy.openInIE('http://www.kish99.ru') }
+      },
+      'lucasarts-scumm': {
+        mood: '🐰', cooldown: 360,
+        text: 'Застряли в <strong>Sam &amp; Max</strong> или <strong>LucasQuest 98</strong>? На сайте <strong>LucasArts</strong> есть линия подсказок 1-900-740-JEDI: три подсказки на каждую загадку, от намёка до решения.',
+        action: { text: '▶ Открыть LucasArts', run: () => window.appClippy && window.appClippy.openInIE('http://www.lucasarts.com') }
+      },
+      'gsc-zone': {
+        mood: '☢️', cooldown: 360,
+        text: 'Собираетесь за Периметр? На узле <strong>GSC Game World</strong> (<code>www.gsc-game.com</code>) есть досье всех трёх игр <strong>S.T.A.L.K.E.R.</strong>, стенд проверки аномалий болтом М12 и пошаговые сводки по Кордону, Свалке, Затону и комнате №26 в Припяти!',
+        action: { text: '▶ Открыть GSC Game World', run: () => window.appClippy && window.appClippy.openInIE('http://www.gsc-game.com') }
+      },
+      'valve-cabal': {
+        mood: '🔧', cooldown: 360,
+        text: 'Загляните на сайт <strong>Valve Software</strong> (<code>www.valvesoftware.com</code>): там страницы <strong>Half-Life 98</strong>, <strong>Half-Life 2</strong>, <strong>Steam</strong> и <strong>Dota 98</strong>, пресс-релизы, почта с ответами разработчиков и испытательная камера λ. Сколько ракет нужно на страйдера? Там посчитают!',
+        action: { text: '▶ Открыть Valve Software', run: () => window.appClippy && window.appClippy.openInIE('http://www.valvesoftware.com') }
+      },
+      'ferrum-lab': {
+        mood: '🔧', cooldown: 360,
+        text: 'Разгоняете <strong>Celeron 300A</strong> до 450 МГц или защищаете Flash BIOS от вируса <strong>CIH</strong>? В <strong>«Железном Цехе \'98»</strong> есть схема изоляции контакта B21, стенд FPS и прайс Савёловского и Митино!',
+        action: { text: '▶ Открыть «Железный Цех \'98»', run: () => window.appClippy && window.appClippy.openInIE('http://www.ferrum98.ru') }
+      },
+      'blizzard-bnet': {
+        mood: '⚔️', cooldown: 360,
+        text: 'Ищете рунные слова для <strong>Diablo II</strong> или новости о грядущем <strong>Warcraft</strong>? На сайте <strong>Blizzard Entertainment</strong> (<code>www.blizzard.com</code>) есть кузница рун, свитки Декарда Каина и казарма отрядов Азерота!',
+        action: { text: '▶ Открыть Blizzard.com', run: () => window.appClippy && window.appClippy.openInIE('http://www.blizzard.com') }
+      },
+      'sunsetvalley-sims': {
+        mood: '🏡', cooldown: 360,
+        text: 'Выбираете участок в <strong>The Sims 3</strong> или рецепт Амброзии? На узле <strong>Сансет Вэлли и бюро Maxis</strong> (<code>www.sunsetvalley98.com</code>) есть интерактивный кадастр 39 участков, перепись 10 семей и паспортный стол CAS с печатью анкеты в Блокнот!',
+        action: { text: '▶ Открыть Сансет Вэлли', run: () => window.appClippy && window.appClippy.openInIE('http://www.sunsetvalley98.com') }
+      },
+      'bioware-rpg': {
+        mood: '🐉', cooldown: 360,
+        text: 'Готовитесь к Посвящению Серых Стражей в <strong>Dragon Age: Origins 98</strong> или штурму базы ситхов на Тарисе в <strong>Star Wars: KOTOR 98</strong>? На портале <strong>BioWare Edmonton</strong> (<code>www.bioware98.com</code>) можно собрать матрицу тактики отряда, рассчитать билд d20 и сыграть партию в Пазаак!',
+        action: { text: '▶ Открыть BioWare Edmonton', run: () => window.appClippy && window.appClippy.openInIE('http://www.bioware98.com') }
+      },
+      'softstore-esheep': {
+        mood: '🐑', cooldown: 360,
+        text: 'В каталоге <strong>SoftStore \'98</strong> бесплатно раздают <strong>eSheep 98 (Sheep.exe)</strong>. Скачайте овечку По — её можно перетаскивать мышью на заголовки окон или прямо на меня!',
+        action: { text: '▶ Страница eSheep 98', run: () => window.appClippy && window.appClippy.openInIE('http://www.softstore98.com/product?id=esheep') }
+      },
+      'office-games-cd': {
+        mood: '💿', cooldown: 360,
+        text: 'Через значок CD-ROM в трее можно вставить в привод D: сборник <strong>«Офисные игры ’98»</strong>: восемь игр от «Цветных Линий 98» до «Гонок на креслах» с маскировкой под Excel по клавише <strong>F12</strong>!',
+        action: {
+          text: '▶ Открыть «Офисные игры ’98»',
+          run: () => {
+            if (window.vfs && (!window.vfs.cdRomState || window.vfs.cdRomState.discId !== 'office_games_98') && typeof window.vfs.insertCdRom === 'function') {
+              window.vfs.insertCdRom('D:', 'office_games_98');
+            }
+            if (window.appOfficeLauncher) window.appOfficeLauncher.open();
+          }
+        }
+      },
+      'neko-pet': {
+        mood: '🐈', cooldown: 360,
+        text: 'В папке <code>C:\\WINDOWS\\NEKO.EXE</code> живёт экранный кот <strong>Neko 98</strong>! Его можно таскать за шкирку, перекрашивать в корзинке и перекидываться с ним моими бумажными шариками.',
+        action: {
+          text: '▶ Выпустить Neko 98',
+          run: () => window.appNeko && window.appNeko.open()
+        }
+      },
+      'ashroad-mmo': {
+        mood: '⚔️', cooldown: 360,
+        text: 'В браузерной MMO <strong>«Пепельный Тракт \'98»</strong> (<code>www.ashroad98.ru</code>) берегите факел: в темноте не видно замаха врага! Выпад сбивает тяжёлый Размах, а если враг закрылся, бейте Финтом в закрытую зону. И не жадничайте с мешком: у костра есть гонец.',
+        action: {
+          text: '▶ Открыть «Пепельный Тракт \'98»',
+          run: () => window.appClippy && window.appClippy.openInIE('http://www.ashroad98.ru')
+        }
       }
     };
   }
@@ -213,6 +302,18 @@ class ClippyTips {
     else if (pageKey === 'mult') this.trigger('mult-episodes');
     else if (pageKey === 'emuland') this.trigger('emuland-games');
     else if (pageKey === 'xfiles') this.trigger('xfiles-ufo');
+    else if (pageKey === 'muzzone') this.trigger('muzzone-mtv');
+    else if (pageKey === 'svodka') this.trigger('svodka-99');
+    else if (pageKey === 'carman') this.trigger('carman-99');
+    else if (pageKey === 'kish') this.trigger('kish-99');
+    else if (pageKey === 'lucasarts') this.trigger('lucasarts-scumm');
+    else if (pageKey === 'gsc') this.trigger('gsc-zone');
+    else if (pageKey === 'valve') this.trigger('valve-cabal');
+    else if (pageKey === 'ferrum') this.trigger('ferrum-lab');
+    else if (pageKey === 'blizzard') this.trigger('blizzard-bnet');
+    else if (pageKey === 'sunsetvalley') this.trigger('sunsetvalley-sims');
+    else if (pageKey === 'ashroad') this.trigger('ashroad-mmo');
+    else if (pageKey === 'softstore') this.trigger('softstore-esheep');
   }
 
   onTyping(docId, length) {

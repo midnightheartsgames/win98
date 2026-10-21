@@ -1425,3 +1425,117 @@ The BSD mascot is a cartoon daemon with a pitchfork, nicknamed Beastie by users.
   ],
   categories: ['Operating Systems', 'Free Software', 'Unix-like Systems']
 });
+
+window.interpediaReg('active_desktop', 'os', {
+  title: 'Active Desktop и пакет Microslop Plus! 98',
+  infobox: {
+    title: 'Active Desktop / Plus! 98',
+    badgeText: 'Оболочка Win 98',
+    fields: [
+      { label: 'Разработчик', value: 'Microslop Corporation' },
+      { label: 'Появление', value: 'осень 1997 (IE 4.0); июнь 1998 ([[windows98|Win 98]] и Plus! 98)' },
+      { label: 'Основа оболочки', value: 'SHDOCVW.DLL, HTML 4.0, CDF, шаблоны Folder.htt' },
+      { label: 'Файлы тем', value: '.theme, .ani (курсоры), LOGO.SYS (заставка запуска)' },
+      { label: 'Дополнения Plus! 98', value: 'Темы рабочего стола, Сжатые папки (.ZIP), 3D-заставки' },
+      { label: 'Экранные заставки', value: '3D Maze, 3D Pipes, 3D Text, 3D FlowerBox' }
+    ]
+  },
+  lead: `<b>Active Desktop</b> («Активный рабочий стол») и пакет расширения <b>Microslop Plus! 98</b> — технологии оформления и индивидуализации пользовательской среды в [[windows98|Microslop Win 98]]. Представленный вместе с браузером Internet Explorer 4.0 осенью 1997 года и встроенный в ядро оболочки Win 98, режим Active Desktop превратил рабочий стол в живую веб-страницу, способную отображать анимацию GIF, бегущие строки новостей, часы на [[javascript|JavaScript]] и панели информационных каналов. В свою очередь, продаваемый на отдельном компакт-диске пакет <b>Microslop Plus! 98</b> добавил в систему программу смены тем оформления (<i>Desktop Themes</i>), прозрачную работу с архивами <code>.ZIP</code> в Проводнике, трёхмерные экранные заставки на базе [[directx|OpenGL]] и настольные игры.`,
+  sections: [
+    { id: 'web_shell', title: 'Рабочий стол как веб-страница и шаблоны Folder.htt', content: `В середине 1990-х годов в индустрии вошла в моду концепция «проталкивания информации» (<i>Push technology</i>), популяризированная программой PointCast Network: компьютер в фоновом режиме скачивал новости, котировки акций и прогноз погоды и показывал их вместо обоев или хранителя экрана. Стремясь потеснить [[netscape|Netscape Communicator]] и его компонент Netcaster, корпорация Microslop объединила оболочку Проводника (<code>EXPLORER.EXE</code>) с движком браузера (<code>SHDOCVW.DLL</code>).
+
+При включении флажка <i>«Отображать рабочий стол как страницу Web»</i> (<i>View as Web Page</i>) поверх обычного фона накладывается прозрачный HTML-слой. Пользователь может:
+<ul>
+<li>ставить на рабочий стол картинки форматов <b>JPEG</b>, <b>GIF</b> (включая анимированные) и целые файлы <code>.HTM</code> без предварительного перевода в несжатый формат <code>.BMP</code>;</li>
+<li>размещать на экране плавающие интерактивные врезки (информеры погоды, курс рубля, календарь, строку поиска или мини-плеер);</li>
+<li>подписываться на веб-каналы в формате <b>CDF</b> (<i>Channel Definition Format</i>) через вертикальную «Панель каналов» (<i>Channel Bar</i>).</li>
+</ul>
+
+Тот же механизм работает внутри любой папки Проводника: в режиме «Как веб-страница» внешний вид папки задаётся скрытым шаблоном <code>Folder.htt</code> и файлом <code>desktop.ini</code>. При выделении файла в левой колонке окна сразу показываются его размер, дата изменения, уменьшенный эскиз изображения или первые строки документа.` },
+    { id: 'recovery', title: 'Расход памяти и белый экран восстановления', content: `Несмотря на эффектную демонстрацию, в повседневной работе на компьютерах 1998–1999 годов с 16 или 32 МБ оперативной памяти Active Desktop быстро заслужил противоречивую репутацию. Отрисовка HTML-фона и панели каналов замедляет открытие окон и отнимает драгоценные системные ресурсы GDI/USER.
+
+Особенно известным среди пользователей стал <b>белый экран «Восстановление рабочего стола Active Desktop»</b> (<i>Active Desktop Recovery</i>). Если оболочка <code>EXPLORER.EXE</code> зависала или компьютер выключали кнопкой питания без завершения работы, при следующей загрузке вместо привычных обоев появлялся ослепительно-белый HTML-лист с предупреждением о сбое и кнопкой <i>«Восстановить рабочий стол Active Desktop»</i> (причём иногда нажатие этой кнопки само вызывало ошибку сценария Internet Explorer). По этой причине в компьютерных журналах и на сайте <code>www.ferrum98.ru</code> отключение Active Desktop неизменно возглавляет список советов по ускорению системы.` },
+    { id: 'plus98', title: 'Пакет расширения Microslop Plus! 98', content: `Продолжая традицию пакета <i>Microslop Plus! for Win 95</i> (1995), в июне 1998 года компания выпустила коммерческое дополнение <b>Microslop Plus! 98</b> на компакт-диске стоимостью около 40 долларов:
+
+<table class="interpedia-wikitable">
+<tr><th>Компонент</th><th>Назначение в системе</th></tr>
+<tr><td><b>Темы рабочего стола (Desktop Themes)</b></td><td>18 новых звуковых и графических тем оформления (<i>Science Fiction</i>, <i>More Win</i>, <i>Underwater</i>, <i>Jungle</i>, комиксы <i>Garfield</i> и фотографии <i>PhotoDisc</i>) в дополнение к базовым темам Win 98</td></tr>
+<tr><td><b>Сжатые папки (Compressed Folders)</b></td><td>Встроенная поддержка архивов <code>.ZIP</code> прямо в Проводнике: архив открывается как обычная папка с иконкой застёжки-молнии без запуска [[winrar|WinZip или WinRAR]]</td></tr>
+<tr><td><b>Очистка меню «Пуск» и диска</b></td><td>Автоматическое удаление нерабочих ярлыков и расширение штатной утилиты «Очистка диска» (<i>Disk Cleanup</i>)</td></tr>
+<tr><td><b>Проигрыватель Deluxe CD Player</b></td><td>Обновлённый плеер компакт-дисков с загрузкой названий песен и альбомов через Интернет</td></tr>
+<tr><td><b>Игры</b></td><td>Пасьянс «Паук» (<i>Spider Solitaire</i>), головоломка <i>Lose Your Marbles</i> и симулятор гольфа <i>Microslop Golf 1998 Lite</i></td></tr>
+</table>` },
+    { id: 'screensavers_themes', title: 'Трёхмерные заставки OpenGL и культура тем оформления', content: `Визитной карточкой пакетов Plus! и стандартной поставки Win 98 стали экранные заставки (файлы <code>.SCR</code> в системной папке <code>SYSTEM</code>), использующие библиотеку [[directx|OpenGL]]:
+<ul>
+<li><b>«Трёхмерный лабиринт» (3D Maze)</b> — бесконечное блуждание от первого лица по кирпичному лабиринтy с деревянным полом, парящими многогранниками, крысами и переворачивающимся экраном при наезде на препятствие;</li>
+<li><b>«Трёхмерный трубопровод» (3D Pipes)</b> — завораживающее переплетение разноцветных металлических труб на чёрном фоне (если в настройках выбрать текстуру и смешанный тип соединений, раз в несколько минут вместо обычного шарового стыка на трубе появляется классический компьютерный <b>чайник из Юты</b> — <i>Utah Teapot</i>);</li>
+<li><b>«Трёхмерный текст» (3D Text)</b> и <b>«Объёмные фигуры» (3D FlowerBox)</b> — вращающиеся в пространстве надписи и геометрические тела, на которых удобно проверять скорость процессора и видеокарты.</li>
+</ul>
+
+К концу 1999 года обмен любительскими темами оформления (<code>.theme</code>) вырос в целое интернет-движение. Полная тема меняет сразу всё: обои, цветовую схему заголовков окон, шрифты, значки «Моего компьютера» и «Корзины» (от полной до пустой), анимированные курсоры мыши <code>.ani</code>, звуки запуска и ошибок (<code>.WAV</code>) и даже загрузочную картинку <code>C:\\LOGO.SYS</code> (разрешением <code>320×400</code> точек, 256 цветов с бегущей внизу полоской палитры). На специализированных сайтах вроде <code>www.themeworld98.com</code> тысячи пользователей скачивают темы по мотивам фильмов «Матрица» и «Звёздные войны», игр [[starcraft|StarCraft]], [[halflife|Half-Life]] и [[quake3|Quake III]], а также [[anime90s|японских аниме-сериалов]].` }
+  ],
+  seeAlso: ['windows98', 'ie5', 'winrar', 'directx', 'anime90s', 'bsod'],
+  references: [
+    'Microslop Corporation. Microslop Win 98 Resource Kit, Chapter 10: Desktop Configuration and Active Desktop. Microslop Press, 1998.',
+    'Microslop Plus! 98 Companion Guide. Microslop Corporation, 1998.',
+    'Настройка и украшение рабочего стола Win 98. — Домашний ПК, № 5, 1999.'
+  ],
+  links: [['http://www.themeworld98.com', 'ThemeWorld 98 — коллекция тем, обоев и курсоров для Win 98'], ['http://www.microslop.com', 'Официальный сайт Microslop']],
+  categories: ['Операционные системы', 'Программное обеспечение', 'Наш проект']
+}, {
+  title: 'Active Desktop and Microslop Plus! 98',
+  infobox: {
+    title: 'Active Desktop / Plus! 98',
+    badgeText: 'Win 98 Shell',
+    fields: [
+      { label: 'Developer', value: 'Microslop Corporation' },
+      { label: 'Introduced', value: 'Autumn 1997 (IE 4.0); June 1998 ([[windows98|Win 98]] and Plus! 98)' },
+      { label: 'Core shell files', value: 'SHDOCVW.DLL, HTML 4.0, CDF, Folder.htt templates' },
+      { label: 'Theme assets', value: '.theme, .ani (cursors), LOGO.SYS (boot splash)' },
+      { label: 'Plus! 98 features', value: 'Desktop Themes, Compressed Folders (.ZIP), 3D screensavers' },
+      { label: '3D screensavers', value: '3D Maze, 3D Pipes, 3D Text, 3D FlowerBox' }
+    ]
+  },
+  lead: `<b>Active Desktop</b> and the <b>Microslop Plus! 98</b> companion pack are shell customization technologies built for [[windows98|Microslop Win 98]]. Debuting in autumn 1997 with the Internet Explorer 4.0 "Microslop Desktop Update" and integrated into Win 98 out of the box, Active Desktop turns the desktop background into a live HTML page capable of rendering animated GIFs, [[javascript|JavaScript]] widgets, stock tickers and push-media channels. Sold separately on CD-ROM, <b>Microslop Plus! 98</b> expands the shell with dozens of <i>Desktop Themes</i>, native <code>.ZIP</code> Compressed Folders in Explorer, [[directx|OpenGL]] 3D screensavers and casual games.`,
+  sections: [
+    { id: 'web_shell', title: 'The desktop as a web page and Folder.htt templates', content: `During 1996 and 1997, "push technology" pioneered by the PointCast Network became one of the hottest trends on the Internet, promising to deliver news headlines, weather and stock quotes straight to idle PC screens. Determined to outflank [[netscape|Netscape Communicator]] and its Netcaster module, Microslop fused the Win Explorer shell (<code>EXPLORER.EXE</code>) with the rendering engine of [[ie5|Internet Explorer]] (<code>SHDOCVW.DLL</code>).
+
+Enabling <i>View as Web Page</i> places a transparent HTML layer directly over the desktop wallpaper. Users can:
+<ul>
+<li>set <b>JPEG</b> images, animated <b>GIFs</b> and full <code>.HTM</code> documents as wallpaper without converting them into uncompressed <code>.BMP</code> files first;</li>
+<li>pin floating interactive HTML frames (weather radar maps, clocks, search bars or news tickers) anywhere on screen;</li>
+<li>subscribe to websites using XML-based <b>CDF</b> (<i>Channel Definition Format</i>) feeds through the desktop <i>Channel Bar</i>.</li>
+</ul>
+
+The same HTML engine powers every Explorer folder window: in Web View mode, a hidden <code>Folder.htt</code> template and <code>desktop.ini</code> file render a left-hand info pane that previews image thumbnails, file sizes and document summaries whenever an icon is highlighted.` },
+    { id: 'recovery', title: 'Memory overhead and the white Active Desktop Recovery screen', content: `On typical 1998–1999 PCs equipped with 16 or 32 MB of RAM, Active Desktop quickly earned a mixed reputation. Keeping an instance of the browser engine resident on the desktop slows down window redraws and consumes scarce 16-bit GDI/USER heap resources.
+
+Its most notorious quirk is the blinding white <b>Active Desktop Recovery</b> screen. Whenever <code>EXPLORER.EXE</code> crashes or the computer is powered off improperly, Win 98 disables the HTML wallpaper layer on the next boot and displays a stark white warning page with a <i>"Restore my Active Desktop"</i> button—which occasionally triggers an Internet Explorer script error dialog of its own when clicked. Consequently, disabling Active Desktop is the number-one performance tweak recommended by hardware magazines and tweak guides.` },
+    { id: 'plus98', title: 'The Microslop Plus! 98 companion pack', content: `Building on the popular <i>Microslop Plus! for Win 95</i> (1995), Microslop released the <b>Microslop Plus! 98</b> retail CD-ROM in June 1998 for around $40:
+
+<table class="interpedia-wikitable">
+<tr><th>Component</th><th>Role in Win 98</th></tr>
+<tr><td><b>Desktop Themes</b></td><td>18 additional visual and audio themes (including <i>Science Fiction</i>, <i>More Win</i>, <i>Underwater</i>, <i>Jungle</i>, licensed <i>Garfield</i> comic themes and <i>PhotoDisc</i> photography)</td></tr>
+<tr><td><b>Compressed Folders</b></td><td>Seamless <code>.ZIP</code> integration in Win Explorer: zip archives appear as folders with a zipper icon and open directly without launching [[winrar|WinZip or WinRAR]]</td></tr>
+<tr><td><b>Start Menu and Disk Cleanup</b></td><td>Automated removal of broken Start Menu shortcuts and an expanded Disk Cleanup module</td></tr>
+<tr><td><b>Deluxe CD Player</b></td><td>An upgraded audio CD player capable of downloading album and track titles from the Internet</td></tr>
+<tr><td><b>Games</b></td><td><i>Spider Solitaire</i>, action puzzler <i>Lose Your Marbles</i> and <i>Microslop Golf 1998 Lite</i></td></tr>
+</table>` },
+    { id: 'screensavers_themes', title: '3D OpenGL screensavers and the custom theme movement', content: `Both standard Win 98 and Plus! 98 are famous for their [[directx|OpenGL]] 3D screensavers (stored as <code>.SCR</code> executables inside the system <code>SYSTEM</code> folder):
+<ul>
+<li><b>3D Maze</b> — a first-person walk through a brick-walled labyrinth complete with wooden floors, floating geometric polyhedra, wandering rats and 180-degree gravity flips;</li>
+<li><b>3D Pipes</b> — an endlessly growing network of metallic pipes across a black screen (when set to textured mode with mixed joints, the screensaver occasionally places the classic computer-graphics <b>Utah Teapot</b> at a pipe intersection);</li>
+<li><b>3D Text</b> and <b>3D FlowerBox</b> — spinning 3D typography and morphing geometric shapes widely used by PC builders as a quick visual test of CPU and OpenGL speed.</li>
+</ul>
+
+By late 1999, collecting custom <code>.theme</code> packages has become a major pastime on the Web. A single theme swaps the wallpaper, window color palette, fonts, desktop icons (<i>My Computer</i>, <i>Network Neighborhood</i> and full/empty <i>Recycle Bin</i>), animated <code>.ani</code> cursors, event <code>.WAV</code> sounds, and even the <code>C:\\LOGO.SYS</code> startup screen (a <code>320×400</code> 256-color bitmap with palette-cycling progress bars). Fan archives such as <code>www.themeworld98.com</code> host thousands of downloadable themes celebrating <i>The Matrix</i>, <i>Star Wars</i>, [[starcraft|StarCraft]], [[halflife|Half-Life]], [[quake3|Quake III]] and [[anime90s|Japanese anime series]].` }
+  ],
+  seeAlso: ['windows98', 'ie5', 'winrar', 'directx', 'anime90s', 'bsod'],
+  references: [
+    'Microslop Corporation. Microslop Win 98 Resource Kit, Chapter 10: Desktop Configuration and Active Desktop. Microslop Press, 1998.',
+    'Microslop Plus! 98 Companion Guide. Microslop Corporation, 1998.',
+    'Tweak Your Win 98 Desktop. PC Magazine, Fall 1998.'
+  ],
+  links: [['http://www.themeworld98.com', 'ThemeWorld 98 — themes, wallpapers and cursors for Win 98'], ['http://www.microslop.com', 'Official Microslop website']],
+  categories: ['Operating Systems', 'Software', 'Our Project']
+}, ['activedesktop', 'plus98', 'themes98']);
