@@ -1250,14 +1250,12 @@
   };
 
   FX.kazuma = {
-    start(b, u) { if (b.hasBonus(u, 'a2')) b.setLuck(u, Math.min(H.TUNING.luckMax, (u.flags.luck || 0) + 1)); },
-    dmg(b, u, tgt, o) {
-      let v = 0;
-      if (o.kind === 'basic' && b.hasBonus(u, 'a4') && (tgt.flags.bound > 0 || tgt.buffs.some(x => x.name === 'Без оружия'))) v += 0.3;
-      if (o.kind === 'ult' && b.eidOn(u, 6) && (u.flags.luck || 0) >= H.TUNING.luckMax) v += 0.5;
-      return v;
-    },
-    heistKeep(b, u) { return b.hasBonus(u, 'a6') ? 2 : 0; },
+    start(b, u) { if (b.hasBonus(u, 'a2')) b.gainPunch(3, u, true); },
+    dmg(b, u, tgt, o) { return o.kind === 'basic' && b.hasBonus(u, 'a4') && (tgt.flags.bound > 0 || tgt.buffs.some(x => x.name === 'Без оружия')) ? 0.3 : 0; },
+    rpsRolls(b, u) { return b.hasBonus(u, 'a6') ? 2 : 1; },
+    rpsRounds(b, u) { return b.eidOn(u, 6) ? 9 : 6; },
+    rpsWin(b, u) { return b.eidOn(u, 6) ? 2 : 1; },
+    ahaAdv(b, u) { return b.eidOn(u, 4) ? 0.4 : 0; },
     stealMore(b, u) { return b.eidOn(u, 1) ? 1 : 0; },
     bindUp(b, u) { return b.eidOn(u, 2) ? 0.2 : 0; },
     drainUp(b, u) { return b.eidOn(u, 4) ? 10 : 0; }

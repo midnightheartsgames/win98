@@ -74,6 +74,10 @@ const FILES = [
   'js/apps/youvid/osudil.js',
   'js/apps/youvid/trek-script.js',
   'js/apps/youvid/trek.js',
+  'js/apps/youvid/podskochil-script.js',
+  'js/apps/youvid/podskochil.js',
+  'js/apps/youvid/ultra-script.js',
+  'js/apps/youvid/ultra.js',
   'js/apps/youvid/klee-faces.js',
   'js/apps/youvid/klee-textures.js',
   'js/apps/youvid/klee-cast.js',
@@ -650,7 +654,7 @@ test('Стрей Перепутал Трэк keeps the StreyOsuzhdaet channel, d
   assert.strictEqual(v.title, 'Стрей Перепутал Трэк');
   assert.strictEqual(v.category, 'music');
   assert.strictEqual(v.chapters.length, 9);
-  assert.deepStrictEqual(site.videosOf(ch).map(x => x.id).sort(), ['Str3yHarmon1', 'Str3yOsud1l', 'Str3yTr3k98']);
+  assert.deepStrictEqual(site.videosOf(ch).map(x => x.id).sort(), ['Str3yHarmon1', 'Str3yOsud1l', 'Str3yP0dsk0', 'Str3yTr3k98', 'Str3yUltr498']);
   assert.ok(fs.existsSync(path.join(root, clip.audio)));
   for (let t = 0; t <= clip.duration; t += 0.05) {
     const st = clip.stage(t);
@@ -1088,6 +1092,84 @@ test('Keanu Reeves is Extremely Horny lives on memes/ytp with 15 shots, boxed ca
   assert.ok(site.renderSite('http://www.youvid.com/browse?c=comedy').includes('Keanu Reeves is Extremely Horny'));
   assert.ok(window.appIE.performSearch('keanu').some(r => r.url === 'http://www.youvid.com'));
   assert.ok(window.appIE.performSearch('киану').some(r => r.url === 'http://www.youvid.com'));
+});
+
+test('Стрей Подскочил keeps the StreyOsuzhdaet channel, chair jump, condemnation shout, headset hand and cover stills', () => {
+  const clip = clips.find(c => c.id === 'Str3yP0dsk0');
+  const v = site.video('Str3yP0dsk0');
+  const S = window.PodskochilScript;
+  const ch = site.channels.StreyOsuzhdaet;
+  assert.ok(clip && v && S && ch && window.StraySet);
+  assert.ok(Math.abs(clip.duration - 24.22) < 0.05 && clip.aspect === 16 / 9);
+  assert.strictEqual(clip.audio, 'content/YouVid/Стрей Подскочил.mp3');
+  assert.ok(fs.existsSync(path.join(root, clip.audio)));
+  assert.strictEqual(v.channel, 'StreyOsuzhdaet');
+  assert.strictEqual(v.title, 'Стрей Подскочил');
+  assert.strictEqual(v.category, 'people');
+  assert.strictEqual(v.chapters.length, 8);
+  assert.ok(site.videosOf(ch).some(x => x.id === 'Str3yP0dsk0'));
+  for (let t = 0; t <= clip.duration; t += 0.05) {
+    const st = clip.stage(t);
+    assert.ok(finite(st.pose.p) && Number.isFinite(st.pose.yaw) && Number.isFinite(st.pose.pitch) && Number.isFinite(st.pose.roll), `pose ${t}`);
+    assert.ok(st.chat >= 0 && st.chat <= 1, `chat ${t}`);
+    assert.strictEqual(st.pose.face.split('|').length, 5);
+  }
+  assert.ok(clip.stage(7.0).pose.p[1] > clip.stage(1.0).pose.p[1] + 0.1, 'bolts up out of the chair around 7s');
+  assert.ok(clip.stage(4.35).pose.p[2] > clip.stage(1.0).pose.p[2] + 0.1, 'leans toward the monitor at 4.35s');
+  assert.strictEqual(clip.stage(6.8).face.mouth, 'gasp');
+  assert.strictEqual(clip.stage(9.6).face.mouth, 'round');
+  assert.strictEqual(clip.stage(11.0).face.mouth, 'teeth');
+  assert.strictEqual(clip.stage(9.6).face.eyes, 'pop');
+  assert.strictEqual(clip.stage(9.6).face.gaze, -1);
+  assert.ok(clip.stage(6.9).pose.hand && clip.stage(19.3).pose.hand && !clip.stage(2.0).pose.hand && !clip.stage(12.0).pose.hand);
+  assert.ok(clip.stage(7.0).grade[0] > clip.stage(1.5).grade[0], 'monitor flashes brighter during the jump');
+  assert.ok(clip.voiceAt(5.8) > 0.5 && clip.voiceAt(9.6) > 0.5 && clip.voiceAt(22.6) > 0.2);
+  assert.ok(clip.stage(23.0).chat > clip.stage(1.0).chat);
+  assert.ok(S.CHAT.some(l => l[2].includes('ПОДСКОЧИЛ KEKW')));
+  [1, 2, 3].forEach(i => assert.ok(fs.existsSync(path.join(root, `content/YouVid/thumbs/Str3yP0dsk0-${i}.png`))));
+  assert.ok(site.renderSite('http://www.youvid.com/watch?v=Str3yP0dsk0').includes('Стрей Подскочил'));
+  assert.ok(site.renderSite('http://www.youvid.com/user/StreyOsuzhdaet').includes('Стрей Подскочил'));
+  assert.ok(site.renderSite('http://www.youvid.com/browse?c=people').includes('Стрей Подскочил'));
+  assert.ok(window.appIE.performSearch('стрей подскочил').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('подпрыгнул').some(r => r.url === 'http://www.youvid.com'));
+});
+
+test('Стрей Ультра Гипер Осуждает keeps the StreyOsuzhdaet channel, double condemnation salvo, monitor glow, live chat and cover stills', () => {
+  const clip = clips.find(c => c.id === 'Str3yUltr498');
+  const v = site.video('Str3yUltr498');
+  const S = window.UltraScript;
+  const ch = site.channels.StreyOsuzhdaet;
+  assert.ok(clip && v && S && ch && window.StraySet);
+  assert.ok(Math.abs(clip.duration - 15.95) < 0.05 && clip.aspect === 16 / 9);
+  assert.strictEqual(clip.audio, 'content/YouVid/Стрей Ультра Гипер Осуждает.mp3');
+  assert.ok(fs.existsSync(path.join(root, clip.audio)));
+  assert.strictEqual(v.channel, 'StreyOsuzhdaet');
+  assert.strictEqual(v.title, 'Стрей Ультра Гипер Осуждает');
+  assert.strictEqual(v.category, 'people');
+  assert.strictEqual(v.chapters.length, 7);
+  assert.ok(site.videosOf(ch).some(x => x.id === 'Str3yUltr498'));
+  for (let t = 0; t <= clip.duration; t += 0.05) {
+    const st = clip.stage(t);
+    assert.ok(finite(st.pose.p) && Number.isFinite(st.pose.yaw) && Number.isFinite(st.pose.pitch) && Number.isFinite(st.pose.roll), `pose ${t}`);
+    assert.ok(st.chat >= 0 && st.chat <= 1, `chat ${t}`);
+    assert.strictEqual(st.pose.face.split('|').length, 5);
+  }
+  assert.strictEqual(clip.stage(3.9).face.mouth, 'teeth');
+  assert.strictEqual(clip.stage(4.8).face.mouth, 'round');
+  assert.strictEqual(clip.stage(9.9).face.mouth, 'teeth');
+  assert.strictEqual(clip.stage(12.2).face.mouth, 'round');
+  assert.strictEqual(clip.stage(9.8).face.eyes, 'pop');
+  assert.strictEqual(clip.stage(15.5).face.gaze, -1);
+  assert.ok(clip.stage(10.0).grade[0] > clip.stage(7.5).grade[0], 'monitor brightens during the second condemnation salvo');
+  assert.ok(clip.voiceAt(4.30) > 0.5 && clip.voiceAt(5.30) > 0.5 && clip.voiceAt(9.40) > 0.5);
+  assert.ok(clip.stage(15.0).chat > clip.stage(1.0).chat);
+  assert.ok(S.CHAT.some(l => l[2].includes('УЛЬТРА ГИПЕР ОСУЖДЕНИЕ KEKW')));
+  [1, 2, 3].forEach(i => assert.ok(fs.existsSync(path.join(root, `content/YouVid/thumbs/Str3yUltr498-${i}.png`))));
+  assert.ok(site.renderSite('http://www.youvid.com/watch?v=Str3yUltr498').includes('Стрей Ультра Гипер Осуждает'));
+  assert.ok(site.renderSite('http://www.youvid.com/user/StreyOsuzhdaet').includes('Стрей Ультра Гипер Осуждает'));
+  assert.ok(site.renderSite('http://www.youvid.com/browse?c=people').includes('Стрей Ультра Гипер Осуждает'));
+  assert.ok(window.appIE.performSearch('ультра гипер').some(r => r.url === 'http://www.youvid.com'));
+  assert.ok(window.appIE.performSearch('сверхосуждение').some(r => r.url === 'http://www.youvid.com'));
 });
 
 console.log(`\n${passed} youvid tests passed`);

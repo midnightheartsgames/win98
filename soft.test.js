@@ -128,7 +128,7 @@ section('data', () => {
   ok(N.WEAPON_IDS.every(id => N.SLOTS[N.WEAPONS[id].slot].includes(id)) && N.SLOTS.flat().length === N.WEAPON_IDS.length, 'every weapon sits in its slot');
   ok(N.WEAPON_IDS.every(id => { const W = N.WEAPONS[id]; return W.melee || W.throw || W.mz && W.kick && W.rk && W.rk.every(([u]) => u > 0 && u < 1) && W.reload > 0 && W.clip > 0; }), 'every gun has a muzzle, a kick and a reload timeline');
   ok(N.WEAPON_IDS.every(id => !N.WEAPONS[id].unlockWith || N.WEAPONS[N.WEAPONS[id].unlockWith]), 'unlock chains point at real weapons');
-  ok(N.RADIO.length === 4 && N.RADIO.every(r => r.dj.length >= 3), 'radio stations');
+  ok(N.RADIO.length === 8 && N.RADIO.every(r => r.file && r.len > 0), 'radio stations');
   for (const [k, mix] of Object.entries(N.TRAFFIC_MIX)) for (const [m] of mix) ok(N.VEHICLES[m], 'traffic model ' + k + ' ' + m);
   for (const [k, mix] of Object.entries(N.CIVIL_MIX)) for (const [m] of mix) ok(N.PED_KINDS[m], 'ped kind ' + k + ' ' + m);
 });

@@ -450,5 +450,5 @@
     }
   });
 
-  Object.assign(H, { petCanvas, petFrame, PET_DEMO: DEMO });
+  Object.assign(H, { petCanvas, petFrame, petStage: stageArt, PET_DEMO: DEMO });
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

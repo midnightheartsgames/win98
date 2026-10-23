@@ -358,6 +358,30 @@ test('Games window sorts the library and the store by name and by price', () => 
   assert.ok(win.bodyElement.innerHTML.includes('data-sort') && win.bodyElement.innerHTML.includes('value="priceDesc" selected'), 'sort list shows the saved choice');
 });
 
+test('in-game purchases: payment window, order ledger and delivery to the game', () => {
+  const { gm, steam, opened, ctx } = createSystem();
+  const offer = { sku: 'hsr98_express_pass', title: 'Пропуск снабжения экспресса', text: 'Провизия Экспресса.', price: 4.99 };
+  assert.equal(steam.openInGameBuy('hsr98', offer), 'nosteam', 'without the client the purchase cannot start');
+  assert.ok(opened.ie.includes('http://www.steampowered.com'), 'the player is sent to download Steam');
+  assert.equal(steam.openInGameBuy('nope', offer), 'none', 'only Steam games sell in-game items');
+  gm.finishInstallation('steam');
+  assert.equal(steam.openInGameBuy('hsr98', offer), 'open');
+  const win = ctx.winManager.windows.get('steam_txn_hsr98_express_pass');
+  const html = win.bodyElement.innerHTML;
+  assert.ok(html.includes('$4.99') && html.includes('data-f="num"') && html.includes('data-pay') && html.includes('Покупка в игре'), 'the window takes a card payment');
+  assert.ok(!html.includes('data-f="promo"'), 'promo codes do not apply to in-game items');
+  assert.equal(steam.openInGameBuy('hsr98', offer), 'open', 'a second request keeps the open window');
+  assert.equal(JSON.stringify(steam.takeOrders('hsr98')), JSON.stringify([]), 'nothing to deliver before payment');
+  const o = steam.recordOrder('hsr98', offer);
+  steam.recordOrder('doom', { sku: 'doom_x', title: 'x', price: 1 });
+  assert.equal(JSON.stringify(steam.takeOrders('hsr98', ['other'])), JSON.stringify([]), 'unknown items stay in Steam');
+  assert.equal(JSON.stringify(steam.takeOrders('hsr98', ['hsr98_express_pass'])), JSON.stringify([{ id: o.id, sku: 'hsr98_express_pass' }]), 'the game takes its paid order');
+  assert.equal(JSON.stringify(steam.takeOrders('hsr98')), JSON.stringify([]), 'an order is delivered once');
+  const saved = JSON.parse(ctx.localStorage.getItem('win98_steam'));
+  assert.ok(saved.orders.length === 2 && saved.orders.find(x => x.id === o.id).taken, 'the ledger survives a restart');
+  assert.ok(read('js/apps/hsr98-app.js').includes("openInGameBuy('hsr98'") && read('js/apps/hsr98-app.js').includes("takeOrders('hsr98'"), 'Honkai: Star Rail 98 is wired to the Steam ledger');
+});
+
 test('buygames98.com store is gone, IE routes steampowered.com', () => {
   const ie = read('js/apps/ie.js');
   assert.ok(!ie.includes('buygames98') && !ie.includes('renderGameStore'), 'old store removed');

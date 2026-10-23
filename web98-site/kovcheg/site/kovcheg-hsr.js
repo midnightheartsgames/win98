@@ -11,7 +11,8 @@ window.kovchegHsr = (() => {
     ampbrk: { body: 'hpP', feet: 'spd', sphere: 'hpP', rope: 'breakE', set: 'thief', planar: 'vonwacq', subs: ['breakE', 'spd', 'hpP', 'res'] },
     debuff: { body: 'ehr', feet: 'spd', sphere: 'hpP', rope: 'err', set: 'musketeer', planar: 'vonwacq', subs: ['spd', 'ehr', 'hpP', 'atkP'] },
     heal: { body: 'healP', feet: 'spd', sphere: 'hpP', rope: 'err', set: 'passerby', planar: 'vonwacq', subs: ['spd', 'hpP', 'defP', 'res'] },
-    shield: { body: 'defP', feet: 'spd', sphere: 'defP', rope: 'defP', set: 'knight', planar: 'vonwacq', subs: ['spd', 'defP', 'hpP', 'res'] }
+    shield: { body: 'defP', feet: 'spd', sphere: 'defP', rope: 'defP', set: 'knight', planar: 'vonwacq', subs: ['spd', 'defP', 'hpP', 'res'] },
+    elation: { body: 'critR', feet: 'spd', sphere: 'elem', rope: 'atkP', set: 'elem', planar: 'vonwacq', subs: ['spd', 'critR', 'critD', 'atkP'] }
   };
 
   const CHARS = {
@@ -43,7 +44,7 @@ window.kovchegHsr = (() => {
     yanagi: { cols: ['sub'], build: 'dot', su: 'nihility', tags: ['dot', 'debuff'] },
     phrolova: { cols: ['dps'], build: 'crit', su: 'elation', tags: ['summon'] },
     scar: { cols: ['dps'], build: 'crit', su: 'destruction', tags: ['aoe'] },
-    kazuma: { cols: ['amp'], build: 'debuff', tags: ['debuff', 'energy'] },
+    kazuma: { cols: ['amp'], build: 'elation', tags: ['debuff', 'energy'] },
     aqua: { cols: ['sus'], build: 'heal', tags: ['heal', 'revive'] },
     megumin: { cols: ['dps'], build: 'burst', su: 'hunt', tags: ['aoe', 'brk'] },
     darkness: { cols: ['sus'], build: 'shield', tags: ['shield', 'taunt'] },
@@ -67,11 +68,20 @@ window.kovchegHsr = (() => {
     talleah: { cols: ['dps'], build: 'crit', su: 'remembrance', tags: ['summon', 'cc'] },
     billy: { cols: ['dps'], build: 'crit', su: 'elation', tags: ['aoe'] },
     nicole: { cols: ['amp'], build: 'debuff', tags: ['debuff', 'energy'] },
-    anby: { cols: ['dps'], build: 'crit', su: 'hunt', tags: ['brk', 'fua'] }
+    anby: { cols: ['dps'], build: 'crit', su: 'hunt', tags: ['brk', 'fua'] },
+    jingyuan: { cols: ['dps'], build: 'crit', su: 'elation', tags: ['summon', 'fua'] },
+    luocha: { cols: ['sus'], build: 'heal', tags: ['heal'] },
+    imbibitor: { cols: ['dps'], build: 'crit', su: 'destruction', tags: ['aoe'] },
+    fuxuan: { cols: ['sus'], build: 'amp', tags: ['heal', 'taunt'] },
+    jingliu: { cols: ['dps'], build: 'crit', su: 'destruction', tags: ['aoe', 'hp'] },
+    topaz: { cols: ['dps', 'sub'], build: 'crit', su: 'hunt', tags: ['fua', 'summon'] },
+    huohuo: { cols: ['sus'], build: 'heal', tags: ['heal', 'energy'] },
+    argenti: { cols: ['dps'], build: 'crit', su: 'elation', tags: ['aoe'] },
+    ratio: { cols: ['dps'], build: 'crit', su: 'hunt', tags: ['fua', 'debuff'] }
   };
 
-  const STD_CONE = { hunt: 'swordplay', erudition: 'geniuses', destruction: 'underthesky', harmony: 'memories', nihility: 'goodnight', preservation: 'trend', abundance: 'postop', remembrance: 'masquerade' };
-  const EARLY_CONE = { hunt: 'arrows', erudition: 'databank', destruction: 'collapsing', harmony: 'chorus', nihility: 'void', preservation: 'amber', abundance: 'cornucopia', remembrance: 'masquerade' };
+  const STD_CONE = { hunt: 'swordplay', erudition: 'geniuses', destruction: 'underthesky', harmony: 'memories', nihility: 'goodnight', preservation: 'trend', abundance: 'postop', remembrance: 'masquerade', elation: 'goodluck' };
+  const EARLY_CONE = { hunt: 'arrows', erudition: 'databank', destruction: 'collapsing', harmony: 'chorus', nihility: 'void', preservation: 'amber', abundance: 'cornucopia', remembrance: 'masquerade', elation: 'sneering' };
 
   const FREE = ['trail', 'trail_p', 'march', 'danheng', 'arlan', 'herta', 'hook', 'natasha', 'serval', 'kazuma'];
 
@@ -142,6 +152,7 @@ window.kovchegHsr = (() => {
   ];
 
   const TIER_LOG = [
+    { date: '06.01.2001', text: 'Версия 1.6: девять новых героев в тир-листе, и все стенды прогнаны заново после переделки световых конусов. Цзинлю одна в Т0 «Урона» в Зале и делит его на боссах с Рацио, Лоча возглавил «Выживание», а Топаз на боссах обогнала Кафку во «Втором уроне». Зеле в Зале опустилась в Т2.' },
     { date: '20.11.2000', text: 'Все стенды прогнаны заново после обновления игры. Тиры почти не сдвинулись, Зеле по-прежнему одна в Т0 «Урона» в Зале.' },
     { date: '12.10.2000', text: 'Ярило-VI переделали. Боссов для стендов «Боссы» и «Начало игры» прогнали по новым данным.' },
     { date: '06.11.1999', text: 'Добавлен переключатель «без сигнатурного конуса». Без «В ночи» Зеле почти догоняют Химико и Сюэи.' },
@@ -210,6 +221,8 @@ window.kovchegHsr = (() => {
     cocolia1: 'Коколия сопротивляется льду, физике и ветру. Ледяные и физические бойцы здесь слабее.',
     cocolia2: 'Первопроходец в этом бою всегда на Пути Сохранения. Копьё Вечной мерзлоты нацеливается на персонажа, и Гнев Зимы бьёт его сильнее остальных. Пробитие сбивает Копьё.',
     sec_boss: 'Клон живёт восемь своих ходов, потом рассыпается вместе со свитой, и бой засчитан. Щиты и лечение здесь важнее урона.',
+    cx_echo_ochema: 'Две фазы. Лотосы Изобилия отнимают очки навыка, но, сбитые, возвращают по два. Во второй фазе Фантилия захватывает персонажа, и Лотосы Разрушения бьют Опустошением: пробейте или сбейте их до удара. Когда Фантилия падает, лотосы падают вместе с ней.',
+    cx_echo_borehole: 'Две фазы. Скаракабаз размножается под панцирем, а во второй фазе копит рой три хода: пробейте его, пока он не закончил. Без срока жизни клона, как в Изолированной зоне, бой надо выиграть уроном.',
     ks_proto: 'Барьер голема пропускает урон только от Аквы, и только после её удара он лопается. Потом ноги режут урон до 35%, пока Мегумин не сломает их абсолютной техникой или Слиянием. Тогда Казума Кражей или Великой кражей вырывает ядро, и бой выигран. Без Аквы бой не пройти.'
   };
 

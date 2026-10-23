@@ -108,7 +108,7 @@
       const leave = () => { ui.screens.pop(); ui.sfx('cancel'); close(); };
       const claim = () => {
         const got = g.suClaim(0);
-        if (!got) { ui.sfx('deny'); ui.toast('Нужно ' + SU.TUN.power + ' энергии освоения.'); return; }
+        if (!got) { ui.sfx('deny'); ui.toast('Нужно ' + SU.TUN.power + ' энергии освоения.'); if (g.powerInfo().cur < SU.TUN.power) ui.openPower(); return; }
         ui.sfx('chest'); ui.toast('Награда Виртуальной вселенной: ' + got.join(', '));
       };
       const start = scr => {
@@ -124,7 +124,7 @@
           ui.suBackdrop(c);
           ui.plate(12, 10, 'Виртуальная вселенная');
           ui.suSteps(this.step);
-          ui.money(W - 128, 14, 'power', s.power + ' / ' + T.powerMax);
+          ui.powerChip(W - 140, 14, { sep: ' / ' });
           if (this.step === 0) this.drawWorlds(c);
           else if (this.step === 1) this.drawPaths(c);
           else this.drawTeam(c);
@@ -174,7 +174,7 @@
           if (claims.length) {
             ui.suFrameBox(16, 388, 608, 40, '#e8c060');
             ui.text('Ожидают награды: ' + claims.length + ' (' + claims.map(cl => worldDef(cl.world).name).join(', ') + ')', 28, 400, { size: 11, bold: true, col: C.gold });
-            ui.button(456, 395, 158, 26, 'Забрать · ' + SU.TUN.power + ' энергии', claim, { disabled: s.power < SU.TUN.power, size: 11 });
+            ui.button(456, 395, 158, 26, 'Забрать · ' + SU.TUN.power + ' энергии', claim, { size: 11 });
           }
           ui.hints([['↑↓', 'Мир'], ['Enter', 'Выбрать Путь'], ...(claims.length ? [['C', 'Забрать награду']] : []), ['Esc', 'Выйти']], W / 2, HGT - 22, { align: 'center' });
         },

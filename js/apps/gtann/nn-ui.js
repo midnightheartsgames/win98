@@ -25,6 +25,22 @@
     KeyX: 'trip', Digit1: 's0', Digit2: 's1', Digit3: 's2', Digit4: 's3', Digit5: 's4', Digit6: 's5', Digit7: 's6', Digit8: 's7', Digit9: 's8', AltLeft: 'walk'
   };
   const VP = {};
+  const CAM_FOOT = ['ближе', 'обычная', 'дальше', 'сверху', 'от первого лица'];
+  const CAM_CAR = ['ближе', 'обычная', 'дальше', 'сверху', 'из салона', 'с бампера'];
+  const FP = 4, BUMPER = 5;
+  N.CAM_FOOT = CAM_FOOT;
+  N.CAM_CAR = CAM_CAR;
+  N.CAM_FP = FP;
+  N.CAM_BUMPER = BUMPER;
+  const camIndex = (v, list, d) => (Number.isInteger(v) && v >= 0 && v < list.length ? v : d);
+  const carFrame = v => N.M3.euler((v.pitch || 0) + (v.bodyPitch || 0), -v.yaw, v.roll || 0, v.x, v.y, v.z);
+  const rot = (M, p) => [M[0] * p[0] + M[1] * p[1] + M[2] * p[2], M[3] * p[0] + M[4] * p[1] + M[5] * p[2], M[6] * p[0] + M[7] * p[1] + M[8] * p[2]];
+  const lookLocal = (rel, pitch) => [Math.sin(rel) * Math.cos(pitch), -Math.sin(pitch), -Math.cos(rel) * Math.cos(pitch)];
+  const carUp = (M, k) => {
+    const u = rot(M, [0, 1, 0]), x = u[0] * k, y = 1 - k + u[1] * k, z = u[2] * k, l = Math.hypot(x, y, z) || 1;
+    return [x / l, y / l, z / l];
+  };
+  const camAt = (p, d, o) => Object.assign({ x: p[0], y: p[1], z: p[2], tx: p[0] + d[0] * 10, ty: p[1] + d[1] * 10, tz: p[2] + d[2] * 10 }, o);
 
   class UI {
     constructor(root, opts = {}) {
@@ -46,7 +62,11 @@
       this.mouse = { dx: 0, dy: 0, l: false, r: false, lp: false, wheel: 0 };
       this.camYaw = 0;
       this.camPitch = 0.22;
-      this.camMode = 1;
+      this.camFoot = camIndex(this.settings.camFoot, CAM_FOOT, 1);
+      this.camCar = camIndex(this.settings.camCar, CAM_CAR, 1);
+      this.fpFov = 1.15;
+      this.sway = [0, 0];
+      this.swayV = null;
       this.lastMouseT = -99;
       this.scopeZoom = 0.35;
       this.state = 'loading';
@@ -57,7 +77,6 @@
       this.voice = new N.Voice();
       this.voice.vol = this.settings.voice === undefined ? 0.9 : this.settings.voice;
       this.voice.on = this.settings.tts !== false;
-      this.djT = 20;
       this.fpsT = 0;
       this.frames = 0;
       this.fpsText = '';
@@ -81,6 +100,22 @@
       this.photo = new N.Photo(this);
       this.loadArt();
       setTimeout(() => this.load(), 30);
+    }
+
+    carView() { return !!(this.game && this.game.world.player.veh); }
+    get camMode() { return this.carView() ? this.camCar : this.camFoot; }
+    set camMode(m) { if (this.carView()) this.camCar = m; else this.camFoot = m; }
+    fpFoot() { return !this.carView() && this.camFoot === FP; }
+
+    cycleCamera() {
+      const car = this.carView(), list = car ? CAM_CAR : CAM_FOOT, m = (this.camMode + 1) % list.length;
+      this.camMode = m;
+      this.settings[car ? 'camCar' : 'camFoot'] = m;
+      N.saveSettings(this.settings);
+      this.camPos = null;
+      this.swayV = null;
+      const v = this.game.world.player.veh;
+      this.game.msg.view = { text: 'Камера: ' + (m === FP && v && v.spec.turret ? 'из люка' : list[m]), t: 1.8 };
     }
 
     listen(t, ev, fn, o) { t.addEventListener(ev, fn, o); this.handlers.push([t, ev, fn, o]); }
@@ -268,7 +303,7 @@
       if (this.photo.on) this.photo.close();
       this.state = 'paused';
       if (document.exitPointerLock && this.locked) document.exitPointerLock();
-      this.audio.setRadio(this.game.settings.station || 0, false);
+      this.audio.setRadio(this.audio.station, false);
       this.game.hushVoice();
       this.menus.open('pause', tab);
     }
@@ -281,7 +316,7 @@
       if (this.photo.on) this.photo.close();
       this.state = 'paused';
       if (document.exitPointerLock && this.locked) document.exitPointerLock();
-      if (this.audio.on) this.audio.setRadio(this.settings.station || 0, false);
+      if (this.audio.on) this.audio.setRadio(this.audio.station, false);
       g.hushVoice();
       g.msg.big = null;
       g.msg.title = null;
@@ -317,7 +352,7 @@
     exitToMenu() {
       if (this.debug.open) this.debug.close();
       if (this.photo.on) this.photo.close();
-      if (this.audio.on) this.audio.setRadio(this.settings.station || 0, false);
+      if (this.audio.on) this.audio.setRadio(this.audio.station, false);
       if (this.audio.on) this.audio.updateEngine(null, 0, 0, 0, null, true);
       if (this.locked && document.exitPointerLock) document.exitPointerLock();
       this.voice.stop();
@@ -354,6 +389,7 @@
       inp.skipAll = !!g.cut && P.has('trip');
       inp.trip = P.has('trip');
       inp.camYaw = this.camYaw;
+      inp.face = this.fpFoot();
       inp.reload = !pl.veh && P.has('r');
       if (!pl.veh) {
         if (P.has('q')) inp.prevWeapon = true;
@@ -375,22 +411,21 @@
         if (!pl.veh) pl.aimPitch = Math.asin(N.clamp(dy / L, -1, 1));
       }
       if (pl.veh && P.has('r')) this.cycleRadio();
-      if (P.has('cam')) { this.camMode = (this.camMode + 1) % 4; }
+      if (P.has('cam')) this.cycleCamera();
       return inp;
     }
 
     cycleRadio() {
-      const s = this.settings;
-      s.station = ((s.station || 0) + 1) % (N.RADIO.length + 1);
+      const v = this.game.world.player.veh;
+      if (!v || v.spec.turret) return;
+      v.radio = (N.carStation(v) + 1) % (N.RADIO.length + 1);
       this.showRadio(true);
-      N.saveSettings(s);
     }
 
     showRadio(force) {
-      const s = this.settings.station || 0;
-      const st = N.RADIO[s];
-      this.game.msg.radio = { text: st ? st.name + ' ' + st.freq : 'Радио выключено', t: force ? 3 : 2.5 };
-      this.djT = 14 + Math.random() * 10;
+      const v = this.game.world.player.veh;
+      const st = v && N.RADIO[N.carStation(v)];
+      this.game.msg.radio = { text: st ? st.name : 'Радио выключено', sub: st ? st.freq : '', t: force ? 3 : 2.5 };
     }
 
     frame(ts) {
@@ -440,10 +475,11 @@
     updateCameraYaw(dt) {
       const g = this.game, pl = g.world.player;
       const s = this.settings.sens || 1;
-      const sc = pl.scope ? 0.25 + this.scopeZoom * 0.5 : 1;
+      const fp = this.camMode >= FP;
+      const sc = pl.scope ? 0.25 + this.scopeZoom * 0.5 : fp && !pl.veh && this.mouse.r ? 0.7 : 1;
       if (this.mouse.dx || this.mouse.dy) {
         this.camYaw = N.wrap(this.camYaw + this.mouse.dx * 0.0032 * s * sc);
-        this.camPitch = N.clamp(this.camPitch + this.mouse.dy * 0.0028 * s * sc * (this.settings.invert ? -1 : 1), -0.75, 1.2);
+        this.camPitch = N.clamp(this.camPitch + this.mouse.dy * 0.0028 * s * sc * (this.settings.invert ? -1 : 1), fp ? -1.3 : -0.75, fp ? 1.35 : 1.2);
         this.lastMouseT = this.t;
         this.mouse.dx = 0;
         this.mouse.dy = 0;
@@ -455,9 +491,9 @@
         if (this.t - this.lastMouseT > 1.6 || look) {
           const k = Math.min(1, dt * (look ? 12 : 2.8 + Math.min(3, Math.abs(v.spd) * 0.15)));
           this.camYaw = N.wrap(this.camYaw + N.wrap(target - this.camYaw) * k);
-          this.camPitch = N.lerp(this.camPitch, 0.2, Math.min(1, dt * 1.5));
+          this.camPitch = N.lerp(this.camPitch, this.camMode === FP ? (v.spec.type === 'bike' ? 0.34 : 0.1) : this.camMode === BUMPER ? 0.03 : 0.2, Math.min(1, dt * 1.5));
         }
-      } else if (this.t - this.lastMouseT > 3 && !this.mouse.r && Math.hypot(pl.vx, pl.vz) > 2) {
+      } else if (!fp && this.t - this.lastMouseT > 3 && !this.mouse.r && Math.hypot(pl.vx, pl.vz) > 2) {
         this.camYaw = N.wrap(this.camYaw + N.wrap(pl.yaw - this.camYaw) * Math.min(1, dt * 1.2));
       }
       if (pl.scope && this.mouse.wheel) this.scopeZoom = N.clamp(this.scopeZoom - this.mouse.wheel * 0.12, 0, 1);
@@ -482,6 +518,7 @@
             if (!mute) A.play(W.sound || 'pistol', e.x, e.z, lis);
             this.fx.muzzle(e.x, e.y, e.z, e.dx === undefined ? null : [e.dx, e.dy, e.dz], e.w);
             if (e.p && e.dx !== undefined) this.shotFx(e, W, e.p === pl);
+            if (e.p === pl && !pl.veh && this.fpFoot() && W.kick) this.camPitch = Math.max(-1.3, this.camPitch - W.kick[1] * 0.12);
             break;
           }
           case 'molotov': this.fx.molotov(e.x, e.y, e.z); if (!mute) { A.play('glass', e.x, e.z, lis); A.play('molotov', e.x, e.z, lis); } break;
@@ -587,15 +624,8 @@
         A.updateEngine(v, v ? Math.abs(v.spd) / v.spec.vmax : 0, v ? v.ctl.thr : 0, v ? v.slip || 0 : 0, sirenD, !v);
         A.updateMachines(...this.machines(w, pl, v));
         A.updateMetro(w.metro ? w.metro.sound() : null);
-        A.setRadio(this.settings.station || 0, !!(v && v.driver === pl && !v.spec.turret && (this.settings.station || 0) < N.RADIO.length && !g.cut && this.state === 'play'), g.speaking());
-      }
-      if (v && v.driver === pl && !v.spec.turret && (this.settings.station || 0) < N.RADIO.length) {
-        this.djT -= N.TICK;
-        if (this.djT <= 0) {
-          const st = N.RADIO[this.settings.station || 0];
-          g.msg.radio = { text: st.name, sub: st.dj[Math.floor(Math.random() * st.dj.length)], t: 7 };
-          this.djT = 40 + Math.random() * 30;
-        }
+        const sta = v && v.driver === pl ? N.carStation(v) : N.RADIO.length;
+        A.setRadio(sta, sta < N.RADIO.length && !g.cut && this.state === 'play', g.speaking());
       }
     }
 
@@ -790,7 +820,7 @@
         this.camPos = null;
         return { x: cx, y: cy, z: cz, tx: cx + fx * 10, ty: cy + fy * 10, tz: cz + fz * 10, fov: 0.6, tir: true };
       }
-      const eye = !v && this.camMode !== 3 ? (w.metro && w.metro.eye()) || (w.park && this.camMode === 0 && w.park.eye()) : null;
+      const eye = !v && this.camMode !== 3 ? (w.metro && w.metro.eye()) || (w.park && (this.camMode === 0 || this.camMode === FP) && w.park.eye()) : null;
       if (eye) {
         const lean = pl.ride ? N.clamp((pitch - 0.1) * 1.3, 0, 0.55) : 0;
         const ex = eye.x + Math.sin(yaw) * (0.1 + lean), ez = eye.z - Math.cos(yaw) * (0.1 + lean), ey = eye.y - lean * 0.3;
@@ -799,6 +829,13 @@
         return { x: ex, y: ey, z: ez, tx: ex + fx * 10, ty: ey + fy * 10, tz: ez + fz * 10, fov: 1.15, fp: true };
       }
       if (this.wasFp) { this.wasFp = false; this.camPos = null; }
+      if (this.camMode >= FP) {
+        this.camPos = null;
+        if (!v) return this.headCamera(pl, [fx, fy, fz], aiming, dt);
+        if (this.camMode === FP) return v.spec.turret ? this.hatchCamera(v, [fx, fy, fz]) : this.cabinCamera(v, yaw, pitch, dt);
+        return this.bumperCamera(v, yaw, pitch);
+      }
+      if (this.camPitch < -0.75) this.camPitch = -0.75;
       let tx, ty, tz, dist, fov = 1.05;
       const dm = [0.72, 1, 1.45, 1][this.camMode];
       if (v) {
@@ -835,6 +872,68 @@
       const sh = this.fx.shake;
       const sx = sh ? (Math.random() - 0.5) * sh * 0.5 : 0, sy = sh ? (Math.random() - 0.5) * sh * 0.5 : 0;
       return { x: cx + sx, y: cy + sy, z: cz, tx: tx + fx * 20, ty: ty + fy * 20, tz: tz + fz * 20, fov };
+    }
+
+    eyeOf(pl) {
+      const e = this.scene && this.scene.selfEye, ref = pl.veh || pl;
+      if (!e || e.ref !== ref || this.t - e.t > 0.2 || this.t < e.t) return null;
+      return [e.x + ref.x - e.rx, e.y + ref.y - e.ry, e.z + ref.z - e.rz];
+    }
+
+    shake() {
+      const sh = this.fx.shake;
+      return sh ? [(Math.random() - 0.5) * sh * 0.25, (Math.random() - 0.5) * sh * 0.25] : [0, 0];
+    }
+
+    headCamera(pl, d, aiming, dt) {
+      const tall = (pl.look && pl.look.tall) || 1;
+      const e = this.eyeOf(pl) || [pl.x + Math.sin(pl.yaw) * 0.13, pl.y + (1.5 + N.PED_EYE[1]) * tall, pl.z - Math.cos(pl.yaw) * 0.13];
+      if (pl.wl !== null && pl.wl !== undefined && !(pl.swim && pl.swim.under)) e[1] = Math.max(e[1], pl.wl + 0.1);
+      this.ads = N.approach(this.ads || 0, aiming && pl.anim.aim > 0.8 ? 1 : 0, dt * 7);
+      const k = N.smooth(0, 1, this.ads);
+      this.fpFov = N.lerp(1.15, 0.8, k);
+      const sh = this.shake();
+      return camAt([e[0] + sh[0], e[1] + sh[1], e[2]], d, { fov: this.fpFov, fp: true, headless: true, ads: k, near: 0.05 });
+    }
+
+    headSway(v, dt) {
+      const S = this.sway, k = Math.min(1, dt * 5);
+      let ar = 0, af = 0;
+      if (this.swayV && this.swayV.v === v && dt > 0) {
+        const ax = (v.vx - this.swayV.x) / dt, az = (v.vz - this.swayV.z) / dt, s = Math.sin(v.yaw), c = Math.cos(v.yaw);
+        af = ax * s - az * c;
+        ar = ax * c + az * s;
+      }
+      this.swayV = { v, x: v.vx || 0, z: v.vz || 0 };
+      S[0] = N.lerp(S[0], N.clamp(-ar * 0.004, -0.06, 0.06), k);
+      S[1] = N.lerp(S[1], N.clamp(af * 0.005, -0.07, 0.07), k);
+      return S;
+    }
+
+    cabinCamera(v, yaw, pitch, dt) {
+      const pl = this.game.world.player, M = carFrame(v), cab = N.cabin(v.spec), tall = (pl.look && pl.look.tall) || 1;
+      let e = this.eyeOf(pl);
+      if (!e) {
+        e = rot(M, [cab.seat.x, N.seatRoot(cab, tall) + (1.5 + N.PED_EYE[1]) * tall - 0.03, cab.seat.z - 0.04]);
+        e[0] += M[9]; e[1] += M[10]; e[2] += M[11];
+      }
+      const S = this.headSway(v, dt), o = rot(M, [S[0], 0, S[1]]), d = rot(M, lookLocal(N.wrap(yaw - v.yaw), pitch)), sh = this.shake();
+      const fov = (cab.bike ? 1.25 : 1.12) + N.clamp(Math.abs(v.spd) / 80, 0, 0.12);
+      return camAt([e[0] + o[0] + sh[0], e[1] + o[1] + sh[1], e[2] + o[2]], d, { fov, fp: true, headless: true, cabin: !cab.bike, near: 0.05, up: carUp(M, 0.6) });
+    }
+
+    bumperCamera(v, yaw, pitch) {
+      const M = carFrame(v), rel = N.wrap(yaw - v.yaw), s = v.spec, back = Math.abs(rel) > Math.PI / 2;
+      const p = rot(M, [0, N.clamp((s.shape.clr || 0.2) + 0.42, 0.5, 1.1), (back ? 1 : -1) * (s.hl + 0.24)]), d = rot(M, lookLocal(rel, pitch)), sh = this.shake();
+      const fov = 1.12 + N.clamp(Math.abs(v.spd) / 45, 0, 0.24);
+      return camAt([p[0] + M[9] + sh[0], p[1] + M[10] + sh[1], p[2] + M[11]], d, { fov, near: 0.1, bumper: true, up: carUp(M, 0.8) });
+    }
+
+    hatchCamera(v, d) {
+      const M = carFrame(v), T = v.spec.turret, h = v.spec.shape.hatch || [0, T.pivot[1] + T.gun[1], T.pivot[2]];
+      const lx = h[0] - T.pivot[0], lz = h[2] - T.pivot[2], ty = Math.hypot(lx, lz) < 1.2 ? v.turretYaw || 0 : 0, c = Math.cos(ty), sn = Math.sin(ty);
+      const p = rot(M, [T.pivot[0] + lx * c - lz * sn, h[1] + 0.75, T.pivot[2] + lx * sn + lz * c]), sh = this.shake();
+      return camAt([p[0] + M[9] + sh[0], p[1] + M[10] + sh[1], p[2] + M[11]], d, { fov: 1.05, near: 0.1 });
     }
 
     floraRadii() {
@@ -875,8 +974,9 @@
         cut: !!g.cut,
         hideHud: this.demo || this.state === 'menu',
         scope: !!cam.scope,
-        crosshair: !pl.veh && !g.cut && (this.mouse.r && !N.WEAPONS[pl.weapon].melee || !!pl.tir),
+        crosshair: !pl.veh && !g.cut && (this.mouse.r && !N.WEAPONS[pl.weapon].melee || !!pl.tir || !!cam.headless),
         dot: !!pl.tir,
+        fpDot: !pl.veh && !!cam.headless && !(this.mouse.r && !N.WEAPONS[pl.weapon].melee),
         camYaw: this.camYaw,
         prompt: this.prompt(),
         fps: this.opts.debug ? this.fpsText : null
@@ -903,11 +1003,10 @@
 
     forecast(kind) {
       const g = this.game, v = g.world.player.veh;
-      const st = N.RADIO[this.settings.station || 0];
+      const st = v && N.RADIO[N.carStation(v)];
       const lines = N.FORECAST[kind];
       if (!v || v.driver !== g.world.player || !st || !lines || g.cut || this.demo) return;
       g.msg.radio = { text: st.name, sub: lines[Math.floor(Math.random() * lines.length)], t: 7 };
-      this.djT = 40 + Math.random() * 30;
     }
 
     metroEnv(cam) {

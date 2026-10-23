@@ -438,6 +438,16 @@
 
     snap() { return [this.s, this.d, this.vd, this.v, this.lap, this.done ? 1 : 0, this.time, this.dmg ? this.dmg.mark() : null]; }
     restore(a) { [this.s, this.d, this.vd, this.v, this.lap] = a; this.done = !!a[5]; this.time = a[6]; if (this.dmg && a[7]) this.dmg.rewind(a[7]); this.pose(); }
+
+    blend(b, k) {
+      const r = this.race.route;
+      let ds = b[0] - this.s;
+      if (r.closed && Math.abs(ds) > r.total / 2) ds -= Math.sign(ds) * r.total;
+      this.s += ds * k;
+      if (r.closed && this.s < 0) { this.s += r.total; this.lap--; }
+      this.d = F.lerp(this.d, b[1], k); this.vd = F.lerp(this.vd, b[2], k); this.v = F.lerp(this.v, b[3], k);
+      this.pose();
+    }
   }
 
   class TrainRival {
@@ -469,6 +479,7 @@
     }
     snap() { return [this.s, this.v, this.done ? 1 : 0, this.time]; }
     restore(a) { [this.s, this.v] = a; this.done = !!a[2]; this.time = a[3]; this.pose(); }
+    blend(b, k) { this.s = F.lerp(this.s, b[0], k); this.v = F.lerp(this.v, b[1], k); this.pose(); }
   }
 
   class PlaneRival {
@@ -514,6 +525,7 @@
     }
     snap() { return [this.s, this.v, this.done ? 1 : 0, this.time]; }
     restore(a) { [this.s, this.v] = a; this.done = !!a[2]; this.time = a[3]; this.pose(); }
+    blend(b, k) { this.s = F.lerp(this.s, b[0], k); this.v = F.lerp(this.v, b[1], k); this.pose(); }
   }
 
   const NAMES = ['Jānis_B', 'Kolya_ER2', 'Mārtiņš', 'Liene', 'Andris_BMW', 'Oksana_R', 'Dmitrijs', 'Raimonds', 'Ilze', 'Edgars_Turbo', 'Sergejs', 'Laura', 'Artūrs', 'Kristaps', 'Vika_Riga', 'Gatis', 'Valdis', 'Inese', 'Aleksandrs', 'Toms', 'Zane', 'Roberts'];
@@ -720,6 +732,15 @@
       this.rivals.forEach((a, i) => a.restore(sn.r[i]));
       if (this.special && sn.sp) this.special.restore(sn.sp);
       this.time = sn.t; this.pProg = sn.p; this.lastIdx = sn.li; this.nextCheck = sn.nc; this.curLap = sn.cl; this.lapStart = sn.ls; this.lapTimes = sn.lt.slice();
+    }
+
+    restoreBlend(a, b, k, veh) {
+      this.restore(a, veh);
+      if (!(k > 0) || a === b) return;
+      veh.blend(b.v, k);
+      this.rivals.forEach((r, i) => r.blend(b.r[i], k));
+      if (this.special && b.sp) this.special.blend(b.sp, k);
+      this.time = F.lerp(a.t, b.t, k);
     }
 
     standings() {

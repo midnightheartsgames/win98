@@ -369,7 +369,7 @@
       if (ui.pressed) ui.pressed.clear();
       if (ui.mouse) { ui.mouse.l = ui.mouse.r = false; ui.mouse.dx = ui.mouse.dy = 0; ui.mouse.wheel = 0; }
       if (ui.locked && typeof document !== 'undefined' && document.exitPointerLock) document.exitPointerLock();
-      if (ui.audio && ui.audio.on) { ui.audio.setRadio(ui.settings.station || 0, false); ui.audio.hush(true); ui.audio.play('cameraon'); }
+      if (ui.audio && ui.audio.on) { ui.audio.setRadio(ui.audio.station, false); ui.audio.hush(true); ui.audio.play('cameraon'); }
       const g = ui.game;
       if (!g.flags.photoHelp) { g.flags.photoHelp = true; this.say('Фотоаппарат. Время стоит, камера летает в ' + PHOTO.reach + ' м от Тёмы. Газета «Автозаводец» платит ' + N.money(PHOTO.fee) + ' за каждый вид района — список видов в меню паузы, вкладка «Фотоальбом».', 10); }
       this.build();

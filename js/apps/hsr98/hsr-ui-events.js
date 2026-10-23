@@ -9,10 +9,12 @@
   H.EVENT_TABS = EVENTS;
   const PX = 188, PY = 40, PW = 440, PH = 412;
   const STAMP = '#d0343e';
-  const MAIL_VIS = 6, MAIL_ROW = 56, LETTER_STEP = 8;
+  const MAIL_VIS = 6, MAIL_ROW = 56, LETTER_STEP = 8, MAIL_GIFTS = 4;
+  const WILL_PAGE = 4;
   const COMET_NAV = { right: [1, 2, 6, 4, 5, 6, 6], left: [0, 0, 1, 3, 3, 4, 2], up: [0, 1, 2, 0, 1, 2, 6], down: [3, 4, 5, 3, 4, 5, 6] };
   const pad2 = n => String(n).padStart(2, '0');
   const clockLeft = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return pad2(Math.floor(s / 3600)) + ':' + pad2(Math.floor(s / 60) % 60) + ':' + pad2(s % 60); };
+  const shortLeft = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return s >= 3600 ? 'Через ' + Math.ceil(s / 3600) + ' ч' : 'Через ' + pad2(Math.floor(s / 60)) + ':' + pad2(s % 60); };
   const dateOf = ms => { const d = new Date(ms); return pad2(d.getDate()) + '.' + pad2(d.getMonth() + 1) + '.' + d.getFullYear(); };
   const rarOf = id => (H.ITEMS[id] ? H.ITEMS[id].rar : 5);
   const rewardList = g => [...(g.jade ? [['jade', g.jade]] : []), ...Object.entries(g.items || {})].sort((a, b) => (a[0] === 'jade') - (b[0] === 'jade'));
@@ -54,7 +56,7 @@
           G.menuIcon(c, 'events', x + 22, y + 24, 48, C.brassHi);
           ui.text('Открыты события', x + 86, y + 24, { size: 20, bold: true, serif: true, col: C.gold });
           ui.text('В телефоне (Esc) появился раздел «События».', x + 86, y + 52, { size: 11 });
-          [['spass', 'Подарок кометы', 'Заходите в игру 7 разных дней и получите 10 Особых звёздных пропусков.'], ['pass', 'Воля Первопроходца', 'Награды за 5, 15, 25 и 35 уровень освоения: пропуски и нефрит.']].forEach(([icon, title, text], i) => {
+          [['spass', 'Подарок кометы', 'Каждый час новый подарок: 10 Особых звёздных пропусков за 7 часов. Через 5 часов круг повторится.'], ['pass', 'Воля Первопроходца', 'Награды за уровни освоения с 5 по 70: пропуски, нефрит и особый наряд.']].forEach(([icon, title, text], i) => {
             const ry = y + 84 + i * 56;
             G.rarityCell(c, x + 26, ry, 40, 40, 5); G.itemIcon(c, icon, x + 30, ry + 3, 32);
             ui.text(title, x + 80, ry + 1, { bold: true, col: C.cream });
@@ -74,10 +76,12 @@
 
     openEvents(id) {
       const ui = this, g = this.game, tabs = () => EVENTS.filter(e => !e.show || e.show(g));
+      const startPick = e => (e && e.id === 'will' ? Math.max(0, H.TRAIL_WILL.findIndex(w => !g.state.will.includes(w.lvl))) : 0);
+      const tab = Math.max(0, tabs().findIndex(e => e.id === id));
       this.push({
-        full: true, tab: Math.max(0, tabs().findIndex(e => e.id === id)), pick: 0,
+        full: true, tab, pick: startPick(tabs()[tab]),
         ev() { return tabs()[this.tab] || tabs()[0]; },
-        setTab(i) { if (i === this.tab) return; this.tab = i; this.pick = 0; ui.sfx('select'); },
+        setTab(i) { if (i === this.tab) return; this.tab = i; this.pick = startPick(tabs()[i]); ui.sfx('select'); },
         report(got) {
           if (!got || !got.length) { ui.sfx('deny'); return false; }
           ui.sfx('chest'); ui.toast('Получено: ' + got.join(', '));
@@ -88,7 +92,7 @@
           const comet = this.ev().id === 'comet', got = comet ? g.claimComet(i) : g.claimWill(i);
           if (this.report(got)) return;
           const taken = comet ? g.state.comet.got[i] : g.state.will.includes(H.TRAIL_WILL[i].lvl);
-          ui.toast(taken ? 'Эта награда уже получена.' : comet ? 'Подарок откроется в следующий день входа.' : 'Нужен уровень освоения ' + H.TRAIL_WILL[i].lvl + '.');
+          ui.toast(taken ? 'Эта награда уже получена.' : comet ? 'Подарок откроется через ' + clockLeft(g.cometOpensAt(i) - g.now()) + '.' : 'Нужен уровень освоения ' + H.TRAIL_WILL[i].lvl + '.');
         },
         claimAll() { if (!this.report(g.claimEvent(this.ev().id))) ui.toast('Сейчас нечего получать.'); },
         draw(c) {
@@ -99,12 +103,17 @@
           tabs().forEach((e, i) => ui.eventTab(c, e, i, i === this.tab, () => this.setTab(i)));
           const ev = this.ev();
           if (ev.id === 'comet') ui.cometPage(c, this); else if (ev.id === 'will') ui.willPage(c, this); else ui[ev.page](c, this);
-          ui.hints([['Q/E', 'Событие'], ['←↑↓→', 'Награда'], ['Enter', 'Получить'], ['F', 'Получить всё'], ['Esc', 'Назад']], 12, HGT - 18);
+          ui.hints(ev.id === 'will' ? [['Q/E', 'Событие'], ['←→', 'Награда'], ['PgUp/PgDn', 'Страница'], ['Enter', 'Получить'], ['F', 'Получить всё'], ['Esc', 'Назад']] : [['Q/E', 'Событие'], ['←↑↓→', 'Награда'], ['Enter', 'Получить'], ['F', 'Получить всё'], ['Esc', 'Назад']], 12, HGT - 18);
         },
         key(k, code) {
           if (k === 'back') { ui.pop(); return; }
           if (code === 'KeyQ' || code === 'KeyE') { const n = tabs().length; this.setTab((this.tab + (code === 'KeyQ' ? n - 1 : 1)) % n); return; }
           if (code === 'KeyF') { this.claimAll(); return; }
+          if ((code === 'PageUp' || code === 'PageDown') && this.ev().id === 'will') {
+            const page = Math.max(0, Math.min(Math.ceil(H.TRAIL_WILL.length / WILL_PAGE) - 1, Math.floor(this.pick / WILL_PAGE) + (code === 'PageUp' ? -1 : 1)));
+            if (page * WILL_PAGE !== this.pick - this.pick % WILL_PAGE) { this.pick = page * WILL_PAGE; ui.sfx('select'); }
+            return;
+          }
           if (this.ev().key) { this.ev().key(ui, this, k); return; }
           if (k === 'ok') { this.claim(this.pick); return; }
           if (!k || !COMET_NAV[k]) return;
@@ -116,7 +125,7 @@
 
     eventTab(c, e, i, on, pick) {
       const g = this.game, x = 12, y = PY + 4 + i * 66, w = on ? PX - 10 : PX - 18, h = 58;
-      const done = e.done ? e.done(g) : e.id === 'comet' ? H.COMET_GIFT.every((n, j) => g.state.comet.got[j]) : H.TRAIL_WILL.every(t => g.state.will.includes(t.lvl));
+      const done = e.done ? e.done(g) : e.id === 'comet' ? g.cometAllGot() : H.TRAIL_WILL.every(t => g.state.will.includes(t.lvl));
       const bg = c.createLinearGradient(x, 0, x + w, 0);
       bg.addColorStop(0, on ? '#343a82' : '#141a44'); bg.addColorStop(1, on ? '#1c2256' : '#0c1030');
       c.fillStyle = '#000'; c.fillRect(x, y, w, h);
@@ -126,14 +135,14 @@
       G.rarityCell(c, x + 10, y + 9, 40, 40, 5);
       G.itemIcon(c, e.icon, x + 14, y + 12, 32);
       this.wrap(e.title, 90, 12).slice(0, 2).forEach((l, j) => this.text(l, x + 58, y + 7 + j * 14, { size: 12, bold: true, col: on ? C.gold : C.cream }));
-      const sub = done ? 'Всё получено' : e.sub ? e.sub(g) : e.id === 'comet' ? 'Вход: ' + g.cometTick().days + ' из ' + H.COMET_GIFT.length : 'Ур. освоения ' + g.trailLevel();
+      const sub = done ? (e.id === 'comet' ? 'Снова через ' + clockLeft(g.cometRenewAt() - g.now()) : 'Всё получено') : e.sub ? e.sub(g) : e.id === 'comet' ? 'Открыто: ' + g.cometOpen() + ' из ' + H.COMET_GIFT.length : 'Ур. освоения ' + g.trailLevel();
       this.text(sub, x + 58, y + 39, { size: 10, col: done ? C.ok : C.sub });
       if (!done && g.eventReady(e.id)) this.badge(x + w - 12, y + 12);
       this.hit(x, y, w, h, pick);
     },
 
     cometPage(c, scr) {
-      const g = this.game, cm = g.cometTick(), t = this.t;
+      const g = this.game, cm = g.cometTick(), open = g.cometOpen(), t = this.t;
       const hx = PX + 4, hy = PY + 4, hw = PW - 8, hh = 94;
       const sky = c.createLinearGradient(hx, hy, hx + hw, hy + hh);
       sky.addColorStop(0, '#070a24'); sky.addColorStop(0.6, '#1a1848'); sky.addColorStop(1, '#3a2458');
@@ -152,29 +161,30 @@
       c.closePath(); c.fill();
       c.fillStyle = C.brass; c.fillRect(hx, hy + hh, hw, 1);
       this.text('Подарок кометы', hx + 12, hy + 10, { size: 24, bold: true, serif: true, col: '#fff4d8' });
-      const period = 'Период события: до конца версии 1.1', pw = Math.round(this.measure(period, 10, true) + 20);
+      const period = 'Круг: 7 часов подарков и 5 часов перерыва', pw = Math.round(this.measure(period, 10, true) + 20);
       const pill = c.createLinearGradient(0, hy + 46, 0, hy + 62);
       pill.addColorStop(0, '#f6e0a0'); pill.addColorStop(1, '#d8aa50');
       c.fillStyle = '#1a1208'; c.fillRect(hx + 11, hy + 45, pw + 2, 18);
       c.fillStyle = pill; c.fillRect(hx + 12, hy + 46, pw, 16);
       this.text(period, hx + 22, hy + 48, { size: 10, bold: true, col: '#2a1a08', shadow: false });
-      this.text('Каждый новый день входа открывает следующий подарок.', hx + 12, hy + 72, { size: 11, col: '#d8d4f4' });
+      this.text('Каждый час открывается следующий подарок.', hx + 12, hy + 72, { size: 11, col: '#d8d4f4' });
       const y0 = PY + 108, cw = 88, ch = 114;
       H.COMET_GIFT.forEach((n, i) => {
         const big = i === 6;
         const x = big ? PX + 300 : PX + 12 + (i % 3) * (cw + 8), y = big ? y0 : y0 + Math.floor(i / 3) * (ch + 8);
-        this.cometCard(c, scr, cm, i, n, x, y, big ? PW - 12 - 300 : cw, big ? ch * 2 + 8 : ch, big);
+        this.cometCard(c, scr, cm, open, i, n, x, y, big ? PW - 12 - 300 : cw, big ? ch * 2 + 8 : ch, big);
       });
       const fy = y0 + ch * 2 + 18;
-      this.text('Дней входа: ' + cm.days + ' из ' + H.COMET_GIFT.length, PX + 14, fy, { size: 12, bold: true, col: C.gold });
-      const all = cm.got.filter(Boolean).length === H.COMET_GIFT.length;
-      const note = all ? 'Все подарки получены.' : cm.days >= H.COMET_GIFT.length ? 'Все дни открыты: заберите оставшиеся подарки.' : 'Новый день начнётся в 04:00, через ' + clockLeft(g.nextDay() - g.now()) + '.';
-      this.text(note, PX + 154, fy + 1, { size: 11, col: all ? C.ok : C.sub });
-      this.text('Особые пропуски принимают прыжки события: герои и их световые конусы.', PX + 14, fy + 19, { size: 10, col: C.dim });
+      this.text('Открыто: ' + open + ' из ' + H.COMET_GIFT.length, PX + 14, fy, { size: 12, bold: true, col: C.gold });
+      const all = g.cometAllGot();
+      const note = all ? 'Всё получено. Новый круг через ' + clockLeft(g.cometRenewAt() - g.now()) + '.' : open >= H.COMET_GIFT.length ? 'Все подарки открыты: заберите оставшиеся.' : 'Следующий подарок через ' + clockLeft(g.cometOpensAt(open) - g.now()) + '.';
+      this.text(note, PX + 124, fy + 1, { size: 11, col: all ? C.ok : C.sub });
+      this.text('Подарки не сгорают: новый круг начнётся через 5 ч после последнего.', PX + 14, fy + 19, { size: 10, col: C.dim });
+      this.text('Особые пропуски принимают прыжки события: герои и их световые конусы.', PX + 14, fy + 33, { size: 10, col: C.dim });
     },
 
-    cometCard(c, scr, cm, i, n, x, y, w, h, big) {
-      const got = !!cm.got[i], ready = i < cm.days && !got, on = scr.pick === i;
+    cometCard(c, scr, cm, open, i, n, x, y, w, h, big) {
+      const got = !!cm.got[i], ready = i < open && !got, on = scr.pick === i;
       const bg = c.createLinearGradient(0, y, 0, y + h);
       bg.addColorStop(0, ready ? '#3e3264' : '#1c2048'); bg.addColorStop(1, ready ? '#1e1838' : '#0c0f28');
       c.fillStyle = '#000'; c.fillRect(x, y, w, h);
@@ -183,7 +193,7 @@
       c.strokeStyle = on ? C.brassHi : ready ? C.brass : '#3a4070'; c.lineWidth = on ? 2 : 1;
       c.strokeRect(x + (on ? 1 : 0.5), y + (on ? 1 : 0.5), w - (on ? 2 : 1), h - (on ? 2 : 1)); c.lineWidth = 1;
       c.fillStyle = ready ? 'rgba(242,220,154,0.14)' : 'rgba(255,255,255,0.05)'; c.fillRect(x + 2, y + 2, w - 4, 20);
-      this.text('День ' + (i + 1), x + w / 2, y + 5, { align: 'center', size: 12, bold: true, serif: true, col: ready ? C.gold : C.cream });
+      this.text('Час ' + (i + 1), x + w / 2, y + 5, { align: 'center', size: 12, bold: true, serif: true, col: ready ? C.gold : C.cream });
       const s = big ? 76 : 44, ix = Math.round(x + (w - s) / 2), iy = big ? y + 70 : y + 28;
       if (big || ready) {
         const gl = c.createRadialGradient(ix + s / 2, iy + s / 2, 2, ix + s / 2, iy + s / 2, s);
@@ -199,10 +209,7 @@
         c.fillStyle = 'rgba(4,6,20,0.45)'; c.fillRect(x + 1, y + 23, w - 2, h - 24);
         this.stamp(x + w / 2, by + 10, 'Получено');
       } else if (ready) this.button(x + 6, by, w - 12, 22, 'Получить', () => scr.claim(i), { active: on, size: 11 });
-      else {
-        const k = i - cm.days + 1;
-        this.text(k <= 1 ? 'Завтра' : 'Через ' + k + ' дн.', x + w / 2, by + 5, { align: 'center', size: 11, col: C.dim });
-      }
+      else this.text(shortLeft(this.game.cometOpensAt(i) - this.game.now()), x + w / 2, by + 5, { align: 'center', size: 11, col: C.dim });
       this.hit(x, y, w, h - 30, () => { if (scr.pick !== i) { scr.pick = i; this.sfx('select'); } });
     },
 
@@ -223,42 +230,58 @@
       c.strokeStyle = C.brass; c.strokeRect(hx + 12.5, hy + 58.5, tw - 1, 15);
       c.strokeStyle = C.gold; c.beginPath(); c.arc(hx + 21, hy + 66, 4.5, 0, Math.PI * 2); c.moveTo(hx + 21, hy + 63); c.lineTo(hx + 21, hy + 66); c.lineTo(hx + 23, hy + 67); c.stroke();
       this.text(tag, hx + 30, hy + 60, { size: 10, bold: true, col: C.gold });
-      this.text('Повышайте уровень освоения: на каждой станции пути ждёт награда.', hx + 12, hy + 82, { size: 10, col: '#c8d4f4' });
+      const pages = Math.ceil(H.TRAIL_WILL.length / WILL_PAGE), page = Math.floor(scr.pick / WILL_PAGE), first = page * WILL_PAGE;
+      const stations = H.TRAIL_WILL.slice(first, first + WILL_PAGE), prev = H.TRAIL_WILL[first - 1], next = H.TRAIL_WILL[first + WILL_PAGE];
+      const owned = stations.some((w, i) => !g.state.will.includes(w.lvl) && g.willOwned(first + i));
+      const top = H.OUTFITS[H.TRAIL_WILL[H.TRAIL_WILL.length - 1].give.outfit];
+      const note = owned ? '«' + top.name + '» уже куплен: на 70 уровне придёт ' + H.fmt(top.price) + ' нефрита.' : page ? 'Дальний путь до 70 уровня: на последней станции ждёт особый наряд.' : 'Повышайте уровень освоения: на каждой станции пути ждёт награда.';
+      this.text(note, hx + 12, hy + 82, { size: 10, col: owned ? C.gold : '#c8d4f4' });
+      this.willPager(c, scr, page, pages, hx + hw - 104, hy + 10);
       const railY = PY + PH - 58, rx0 = PX + 18, rx1 = PX + PW - 18;
-      const xs = H.TRAIL_WILL.map((w, i) => PX + 64 + i * 104);
-      const pts = [[1, rx0], ...H.TRAIL_WILL.map((w, i) => [w.lvl, xs[i]]), [H.TL_MAX, rx1]];
-      let mx = rx1;
-      for (let i = 1; i < pts.length; i++) if (lvl <= pts[i][0]) { const [l0, x0] = pts[i - 1], [l1, x1] = pts[i]; mx = x0 + (x1 - x0) * (lvl - l0) / Math.max(1, l1 - l0); break; }
-      H.TRAIL_WILL.forEach((w, i) => {
-        const x = xs[i], my = PY + 190 - i * 12, got = g.state.will.includes(w.lvl), ready = !got && lvl >= w.lvl, on = scr.pick === i;
+      const xs = stations.map((w, i) => PX + 64 + i * 104);
+      const pts = [[prev ? prev.lvl : 1, rx0], ...stations.map((w, i) => [w.lvl, xs[i]]), [next ? next.lvl : H.TL_MAX, rx1]];
+      let mx = lvl <= pts[0][0] ? rx0 : rx1;
+      for (let i = 1; i < pts.length && lvl > pts[0][0]; i++) if (lvl <= pts[i][0]) { const [l0, x0] = pts[i - 1], [l1, x1] = pts[i]; mx = x0 + (x1 - x0) * (lvl - l0) / Math.max(1, l1 - l0); break; }
+      stations.forEach((w, k) => {
+        const i = first + k, x = xs[k], my = PY + 190 - k * 12, got = g.state.will.includes(w.lvl), ready = !got && lvl >= w.lvl, on = scr.pick === i, last = w.lvl >= H.TL_MAX;
         c.setLineDash([2, 3]); c.strokeStyle = got || ready ? 'rgba(242,220,154,0.6)' : 'rgba(150,170,230,0.35)';
         c.beginPath(); c.moveTo(x + 0.5, my + 108); c.lineTo(x + 0.5, railY - 6); c.stroke(); c.setLineDash([]);
-        if (ready || on) {
+        if (ready || on || last) {
           const gl = c.createRadialGradient(x, my, 10, x, my, 60);
-          gl.addColorStop(0, ready ? 'rgba(255,214,120,0.35)' : 'rgba(160,190,255,0.25)'); gl.addColorStop(1, 'rgba(0,0,0,0)');
+          gl.addColorStop(0, ready ? 'rgba(255,214,120,0.35)' : on ? 'rgba(160,190,255,0.25)' : 'rgba(255,214,120,0.16)'); gl.addColorStop(1, 'rgba(0,0,0,0)');
           c.fillStyle = gl; c.fillRect(x - 60, my - 60, 120, 120);
         }
         const face = c.createRadialGradient(x - 10, my - 14, 4, x, my, 40);
-        face.addColorStop(0, got ? '#2a3050' : '#34469a'); face.addColorStop(1, got ? '#12162c' : '#101a4c');
+        face.addColorStop(0, got ? '#2a3050' : last ? '#5a4690' : '#34469a'); face.addColorStop(1, got ? '#12162c' : last ? '#22164a' : '#101a4c');
         c.fillStyle = '#020410'; c.beginPath(); c.arc(x, my, 41, 0, Math.PI * 2); c.fill();
         c.fillStyle = face; c.beginPath(); c.arc(x, my, 39, 0, Math.PI * 2); c.fill();
-        c.strokeStyle = on ? C.brassHi : ready ? C.brass : '#5a6aa8'; c.lineWidth = on ? 3 : 2;
+        c.strokeStyle = on ? C.brassHi : ready || last ? C.brass : '#5a6aa8'; c.lineWidth = on ? 3 : 2;
         c.beginPath(); c.arc(x, my, 38, 0, Math.PI * 2); c.stroke(); c.lineWidth = 1;
         c.strokeStyle = 'rgba(242,220,154,0.25)'; c.beginPath(); c.arc(x, my, 33, 0, Math.PI * 2); c.stroke();
-        this.diamond(x, my - 38, 4, on || ready ? C.brassHi : '#8a94c8', '#1a1208');
-        this.text('Уровень', x, my - 26, { align: 'center', size: 9, col: C.sub });
-        this.text('освоения', x, my - 16, { align: 'center', size: 9, col: C.sub });
+        if (last) {
+          c.strokeStyle = got ? 'rgba(201,164,92,0.4)' : C.brass; c.setLineDash([3, 3]);
+          c.beginPath(); c.arc(x, my, 45, 0, Math.PI * 2); c.stroke(); c.setLineDash([]);
+          for (const a of [-0.5, 0.5]) this.diamond(x + Math.sin(a) * 45, my - Math.cos(a) * 45, 3, got ? '#8a7a50' : C.brassHi, '#1a1208');
+        }
+        this.diamond(x, my - 38, 4, on || ready || last ? C.brassHi : '#8a94c8', '#1a1208');
+        this.text('Уровень', x, my - 26, { align: 'center', size: 9, col: last && !got ? C.gold : C.sub });
+        this.text('освоения', x, my - 16, { align: 'center', size: 9, col: last && !got ? C.gold : C.sub });
         this.text(String(w.lvl), x, my - 4, { align: 'center', size: 26, bold: true, serif: true, col: got ? C.dim : '#ffffff' });
-        const list = rewardList(w.give), cs = 30, gap = 6, total = list.length * cs + (list.length - 1) * gap;
-        list.forEach(([id, n], j) => this.rewardCell(c, id, n, Math.round(x - total / 2 + j * (cs + gap)), my + 46, cs));
+        const fits = w.give.outfit && !g.willOwned(i) ? [['outfit', w.give.outfit]] : [];
+        const list = fits.concat(rewardList(g.willGive(i))), cs = 30, gap = 6, total = list.length * cs + (list.length - 1) * gap;
+        list.forEach(([id, n], j) => {
+          const rx = Math.round(x - total / 2 + j * (cs + gap));
+          if (id === 'outfit') this.outfitCell(c, n, rx, my + 46, cs); else this.rewardCell(c, id, n, rx, my + 46, cs);
+        });
         const by = my + 82;
         if (got) this.stamp(x, by + 10, 'Получено');
         else if (ready) this.button(x - 44, by, 88, 22, 'Получить', () => scr.claim(i), { active: on, size: 11 });
         else this.text('С ' + w.lvl + ' уровня', x, by + 5, { align: 'center', size: 11, col: C.dim });
+        if (fits.length && !got) this.text('Особый наряд', x, my + 112, { align: 'center', size: 9, col: '#ffb860' });
         this.hit(x - 44, my - 40, 88, 120, () => { if (scr.pick !== i) { scr.pick = i; this.sfx('select'); } });
       });
-      this.rail(rx0, railY, rx1 - rx0, (mx - rx0) / (rx1 - rx0));
-      xs.forEach((x, i) => this.diamond(x, railY + 0.5, 5, lvl >= H.TRAIL_WILL[i].lvl ? C.gold : '#3a4478', '#0a0c1c'));
+      this.rail(rx0, railY, rx1 - rx0, lvl >= H.TL_MAX ? 1 : (mx - rx0) / (rx1 - rx0));
+      xs.forEach((x, i) => this.diamond(x, railY + 0.5, 5, lvl >= stations[i].lvl ? C.gold : '#3a4478', '#0a0c1c'));
       const label = 'Текущий уровень освоения: ' + lvl, lw = Math.round(this.measure(label, 11, true) + 18);
       const lx = Math.round(Math.max(PX + 8, Math.min(PX + PW - 8 - lw, mx - lw / 2)));
       c.fillStyle = 'rgba(4,6,20,0.8)'; c.fillRect(lx, railY + 14, lw, 20);
@@ -267,10 +290,22 @@
       this.text(label, lx + lw / 2, railY + 18, { align: 'center', size: 11, bold: true, col: C.gold });
     },
 
+    willPager(c, scr, page, pages, x, y) {
+      const go = p => { if (p === page || p < 0 || p >= pages) return; scr.pick = p * WILL_PAGE; this.sfx('select'); };
+      this.button(x, y, 24, 22, '◄', () => go(page - 1), { size: 10, disabled: page <= 0 });
+      this.text('Стр. ' + (page + 1) + ' / ' + pages, x + 52, y + 5, { align: 'center', size: 11, bold: true, col: C.gold });
+      this.button(x + 80, y, 24, 22, '►', () => go(page + 1), { size: 10, disabled: page >= pages - 1 });
+      for (let p = 0; p < pages; p++) {
+        const dx = x + 52 + (p - (pages - 1) / 2) * 12;
+        this.diamond(dx, y + 30.5, 3, p === page ? C.brassHi : '#3a4478', '#0a0c1c');
+        this.hit(dx - 5, y + 25, 10, 12, () => go(p));
+      }
+    },
+
     openMail() {
       const ui = this, g = this.game;
       const scr = this.push({
-        full: true, sc: { top: 0 }, bsc: { top: 0 },
+        full: true, sc: { top: 0 }, bsc: { top: 0 }, asc: { top: 0 },
         list() { return g.mailbox(); },
         cur() { const l = this.list(); return l[Math.min(this.sel, l.length - 1)] || null; },
         read() { const x = this.cur(); if (x) g.readMail(x.m.id); },
@@ -308,12 +343,18 @@
           const any = list.some(x => x.m.give && !x.st.got), old = list.some(x => x.st.read && (x.st.got || !x.m.give));
           ui.button(12, 414, 126, 26, 'Удалить прочитанные', () => this.askDelete(), { disabled: !old, size: 10 });
           ui.button(142, 414, 96, 26, 'Получить все', () => this.claimAll(), { disabled: !any, size: 10 });
-          ui.mailLetter(c, cur, () => this.claim(), this.bsc);
-          ui.hints([['↑↓', 'Письмо'], ['PgUp/PgDn', 'Текст'], ['Enter', 'Получить'], ['F', 'Получить все'], ['Del', 'Удалить прочитанные'], ['Esc', 'Назад']], 12, HGT - 18);
+          ui.mailLetter(c, cur, () => this.claim(), this.bsc, this.asc);
+          const gifts = cur && cur.m.give && this.asc.more ? [['←→', 'Вложения']] : [];
+          ui.hints([['↑↓', 'Письмо'], ['PgUp/PgDn', 'Текст']].concat(gifts, [['Enter', 'Получить'], ['F', 'Получить все'], ['Del', gifts.length ? 'Удалить' : 'Удалить прочитанные'], ['Esc', 'Назад']]), 12, HGT - 18);
         },
         key(k, code) {
           if (k === 'back') { ui.pop(); return; }
           if (k === 'up' || k === 'down') { this.select(this.sel + (k === 'up' ? -1 : 1)); return; }
+          if (k === 'left' || k === 'right') {
+            const top = Math.max(0, Math.min(this.asc.max || 0, this.asc.top + (k === 'left' ? -1 : 1)));
+            if (this.asc.more && top !== this.asc.top) { this.asc.top = top; ui.sfx('select'); }
+            return;
+          }
           if (code === 'PageUp' || code === 'PageDown') { this.bsc.top += (code === 'PageUp' ? -1 : 1) * Math.max(1, (this.bsc.vis || 2) - 2); return; }
           if (k === 'ok') { this.claim(); return; }
           if (code === 'KeyF') { this.claimAll(); return; }
@@ -323,9 +364,10 @@
       scr.read();
     },
 
-    mailLetter(c, x, claim, sc) {
+    mailLetter(c, x, claim, sc, asc) {
       const lx = 246, ly = 40, lw = 382, lh = 412;
       this.win(lx, ly, lw, lh, { top: '#141a4c', bottom: '#070a26' });
+      if (asc) asc.more = false;
       if (!x) {
         G.menuIcon(c, 'mail', lx + lw / 2 - 24, 170, 48, C.dim);
         this.text('Писем нет', lx + lw / 2, 230, { align: 'center', size: 14, bold: true, serif: true, col: C.cream });
@@ -359,14 +401,34 @@
       c.fillStyle = 'rgba(201,164,92,0.45)'; c.fillRect(lx + 14, ay - 10, lw - 28, 1);
       this.text('Вложения', lx + 20, ay, { size: 11, bold: true, col: C.sub });
       const fits = [].concat(m.give.outfit || []).filter(id => H.OUTFITS && H.OUTFITS[id]).map(id => ['outfit', id]);
-      const gifts = fits.concat(rewardList(m.give)), cs = gifts.length > 3 ? 42 : 48, step = gifts.length > 3 ? 48 : 58;
-      gifts.forEach(([id, n], i) => {
-        if (id === 'outfit') this.outfitCell(c, n, lx + 20 + i * step, ay + 18, cs);
-        else this.rewardCell(c, id, n, lx + 20 + i * step, ay + 18, cs);
-        if (st.got) { c.fillStyle = 'rgba(4,6,20,0.5)'; c.fillRect(lx + 20 + i * step, ay + 18, cs, cs); }
+      const gifts = fits.concat(rewardList(m.give));
+      const strip = this.giftStrip(gifts, m.id, asc || { top: 0 });
+      if (strip.more) {
+        this.text((strip.first + 1) + '–' + (strip.first + strip.shown.length) + ' из ' + gifts.length, lx + 86, ay + 1, { size: 10, col: C.dim });
+        const back = strip.first > 0, next = strip.first < strip.max;
+        this.button(lx + 14, ay + 26, 14, 26, '◄', back && (() => { asc.top--; this.sfx('select'); }), { size: 9, disabled: !back });
+        this.button(lx + 216, ay + 26, 14, 26, '►', next && (() => { asc.top++; this.sfx('select'); }), { size: 9, disabled: !next });
+        this.wheelZone(lx + 14, ay + 14, 216, 52, d => { asc.top += d; });
+      }
+      const gx = strip.more ? lx + 34 : lx + 20;
+      strip.shown.forEach(([id, n], i) => {
+        const cx = gx + i * strip.step;
+        if (id === 'outfit') this.outfitCell(c, n, cx, ay + 18, strip.cs);
+        else this.rewardCell(c, id, n, cx, ay + 18, strip.cs);
+        if (st.got) { c.fillStyle = 'rgba(4,6,20,0.5)'; c.fillRect(cx, ay + 18, strip.cs, strip.cs); }
       });
-      if (st.got) this.stamp(lx + lw - 84, ay + 42, 'Получено');
-      else this.button(lx + lw - 150, ay + 30, 130, 28, 'Получить', claim, { active: true, bold: true });
+      if (st.got) this.stamp(lx + lw - 76, ay + 42, 'Получено');
+      else this.button(lx + lw - 140, ay + 30, 120, 28, 'Получить', claim, { active: true, bold: true });
+    },
+
+    giftStrip(gifts, id, asc) {
+      if (asc.id !== id) { asc.id = id; asc.top = 0; }
+      const more = gifts.length > MAIL_GIFTS, max = Math.max(0, gifts.length - MAIL_GIFTS);
+      asc.top = Math.max(0, Math.min(max, Math.round(asc.top)));
+      asc.more = more; asc.max = max;
+      const first = asc.top, shown = gifts.slice(first, first + MAIL_GIFTS);
+      const cs = more ? 40 : gifts.length > 3 ? 42 : 48, step = more ? 46 : gifts.length > 3 ? 48 : 58;
+      return { more, max, first, shown, cs, step };
     },
 
     letterBody(m, lx, top, lw, h, sc) {

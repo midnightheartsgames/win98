@@ -2005,14 +2005,16 @@
       for (let i = 0; i < seg; i++) mb.tri(base, base + 1 + i, base + 2 + i);
     };
     const rect = (x, y, hw, hh, u0, v0, u1, v1) => mb.quad([x - hw, y - hh, gz, x + hw, y - hh, gz, x + hw, y + hh, gz, x - hw, y + hh, gz], Z, [u0, v1, u1, v1, u1, v0, u0, v0], glow.c, glow.layer, glow.kind);
-    const D1 = [0, 0, 0.5, 0.5], D2 = [0.5, 0, 1, 0.5];
-    if (I.gauges === 'round2') { disc(w.x - 0.068, gy, 0.058, ...D1); disc(w.x + 0.068, gy, 0.058, ...D2); }
-    else if (I.gauges === 'round3') { disc(w.x, gy, 0.062, ...D1); disc(w.x - 0.12, gy - 0.01, 0.04, ...D2); disc(w.x + 0.12, gy - 0.01, 0.04, ...D2); }
-    else if (I.gauges === 'round4') { disc(w.x - 0.05, gy, 0.046, ...D1); disc(w.x + 0.05, gy, 0.046, ...D2); disc(w.x - 0.135, gy - 0.012, 0.03, ...D2); disc(w.x + 0.135, gy - 0.012, 0.03, ...D2); }
+    const D1 = [0, 0, 0.5, 0.5], D2 = [0.5, 0, 1, 0.5], nz = gz + 0.003;
+    const dial = (k, x, y, r, u) => ({ k, x, y, z: nz, r, u: u || 0 });
+    if (I.gauges === 'round2') { disc(w.x - 0.068, gy, 0.058, ...D1); disc(w.x + 0.068, gy, 0.058, ...D2); mb.dials = [dial('spd', w.x - 0.068, gy, 0.058), dial('rpm', w.x + 0.068, gy, 0.058)]; }
+    else if (I.gauges === 'round3') { disc(w.x, gy, 0.062, ...D1); disc(w.x - 0.12, gy - 0.01, 0.04, ...D2); disc(w.x + 0.12, gy - 0.01, 0.04, ...D2); mb.dials = [dial('spd', w.x, gy, 0.062), dial('fix', w.x - 0.12, gy - 0.01, 0.04, 0.62), dial('rpm', w.x + 0.12, gy - 0.01, 0.04)]; }
+    else if (I.gauges === 'round4') { disc(w.x - 0.05, gy, 0.046, ...D1); disc(w.x + 0.05, gy, 0.046, ...D2); disc(w.x - 0.135, gy - 0.012, 0.03, ...D2); disc(w.x + 0.135, gy - 0.012, 0.03, ...D2); mb.dials = [dial('spd', w.x - 0.05, gy, 0.046), dial('rpm', w.x + 0.05, gy, 0.046), dial('fix', w.x - 0.135, gy - 0.012, 0.03, 0.55), dial('fix', w.x + 0.135, gy - 0.012, 0.03, 0.4)]; }
     else if (I.gauges === 'ribbon') {
       rect(w.x, gy, 0.17, 0.04, 0, 0.56, 1, 0.78);
       for (const [x0, y0, x1, y1] of [[-0.18, 0.04, 0.18, 0.052], [-0.18, -0.052, 0.18, -0.04], [-0.18, -0.04, -0.17, 0.04], [0.17, -0.04, 0.18, 0.04]]) mb.box(w.x + x0, gy + y0, gz - 0.004, w.x + x1, gy + y1, gz + 0.006, chrome);
-    } else rect(w.x, gy, 0.15, 0.06, 0, 0, 1, 0.5);
+      mb.dials = [{ k: 'spd', bar: true, x: w.x - 0.17 + 0.34 * 14 / 256, y: gy + 0.0136, z: nz, w: 0.34 * 232 / 256, h: 0.017 }];
+    } else { rect(w.x, gy, 0.15, 0.06, 0, 0, 1, 0.5); mb.dials = [dial('spd', w.x - 0.075, gy, 0.06), dial('rpm', w.x + 0.075, gy, 0.06)]; }
     if (I.strip) { const ys = yt - 0.11, zs = faceAt(ys); mb.box(-W2 + 0.04, ys - 0.012, zs - 0.01, W2 - 0.04, ys + 0.012, zs + 0.008, I.strip === 'wood' ? wood : chrome); }
     for (const x of [-0.11, 0.11]) {
       const vy = yt - 0.05, vz = faceAt(vy) + 0.004;
@@ -2069,6 +2071,21 @@
     airbag: { t: 0.12, spokes: [-0.5, 0.5, Math.PI - 0.5, Math.PI + 0.5], sw: 0.06, hub: [0.64, 0.54], ring: 0 },
     bus: { t: 0.06, spokes: [-0.15, Math.PI + 0.15], sw: 0.04, hub: [0.26, 0.2], ring: 0 }
   };
+  let NEEDLE = null, BAR = null;
+  const NEEDLE_MAT = () => ({ layer: T('white'), kind: N.LAMPKIND.DASH, c: [255, 138, 60, 255] });
+  function needleMesh() {
+    if (NEEDLE) return NEEDLE;
+    NEEDLE = new N.MB(16);
+    NEEDLE.box(-0.045, -0.16, 0, 0.045, 0.74, 0.05, NEEDLE_MAT());
+    return NEEDLE;
+  }
+  function barMesh() {
+    if (BAR) return BAR;
+    BAR = new N.MB(16);
+    BAR.box(0, -0.5, 0, 1, 0.5, 0.002, NEEDLE_MAT());
+    return BAR;
+  }
+
   const STEERS = new Map();
   function steerMesh(style) {
     if (STEERS.has(style)) return STEERS.get(style);
@@ -2680,8 +2697,10 @@
       return d.ins.get(key);
     },
     steer: steerMesh,
+    needle: needleMesh,
+    bar: barMesh,
     STEER_STYLES: Object.keys(STEER),
-    clear() { WHEELS.clear(); BIKE_WHEELS.clear(); STEERS.clear(); HELI_MESH.clear(); if (N.Army) N.Army.clear(); for (const k of Object.keys(MODELS)) { delete MODELS[k].res; delete MODELS[k].ins; } }
+    clear() { NEEDLE = BAR = null; WHEELS.clear(); BIKE_WHEELS.clear(); STEERS.clear(); HELI_MESH.clear(); if (N.Army) N.Army.clear(); for (const k of Object.keys(MODELS)) { delete MODELS[k].res; delete MODELS[k].ins; } }
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = N;

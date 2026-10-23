@@ -45,7 +45,7 @@
       root.appendChild(this.canvas);
       this.ctx = this.canvas.getContext('2d');
       this.ctx.imageSmoothingEnabled = false;
-      this.options = Object.assign({ sfx: 0.6, music: 0.35, battleSpeed: 1, textSpeed: 2, res: '640', ultCine: 'on', fusionCine: 'on' }, lsGet(OPT_KEY, {}));
+      this.options = Object.assign({ sfx: 0.6, music: 0.35, battleSpeed: 1, textSpeed: 2, res: '640', ultCine: 'on', fusionCine: 'on', skinCine: 'first' }, lsGet(OPT_KEY, {}));
       mirrorAllSaves();
       this.applyRes();
       this.audio = new H.Audio();
@@ -243,6 +243,7 @@
       this.syncPending(dt);
       if (this.mode === 'field' && g.map) this.updateMinimap(dt);
       if (this.mode === 'field') this.updateChat(dt);
+      if (this.mode === 'field' && this.passTick) this.passTick(dt);
       if (this.mode === 'field' && !this.screens.length && !this.dlg && !this.toasts.length && !g.busy() && !g.cg && g.eventsOpen() && !g.state.flags.events_note) this.openEventsNotice();
       else if (this.mode === 'field' && !this.screens.length && !this.dlg && !this.toasts.length && !g.busy() && !g.cg && g.eventsOpen() && this.newEventNotice) this.newEventNotice();
     }
@@ -412,8 +413,15 @@
 
     measure(str, size, bold, serif) { this.font(size || 12, bold, serif); return this.ctx.measureText(str).width; }
 
-    wrap(str, maxW, size) {
-      this.font(size || 12);
+    clip(str, maxW, size, bold, serif) {
+      let s = String(str);
+      if (this.measure(s, size, bold, serif) <= maxW) return s;
+      while (s.length > 1 && this.measure(s + '…', size, bold, serif) > maxW) s = s.slice(0, -1);
+      return s.trimEnd() + '…';
+    }
+
+    wrap(str, maxW, size, bold, serif) {
+      this.font(size || 12, bold, serif);
       const words = String(str).split(' '), lines = [];
       let cur = '';
       for (const w of words) {
@@ -422,6 +430,28 @@
       }
       if (cur) lines.push(cur);
       return lines;
+    }
+
+    richWrap(segs, maxW, size) {
+      this.font(size || 12);
+      const words = [[]];
+      for (const s of segs) String(s.t).split(' ').forEach((part, i) => { if (i) words.push([]); if (part) words[words.length - 1].push({ t: part, hot: !!s.hot }); });
+      const lines = [];
+      let cur = [], curW = '';
+      for (const w of words.filter(x => x.length)) {
+        const t = w.map(p => p.t).join(''), next = curW ? curW + ' ' + t : t;
+        if (this.ctx.measureText(next).width > maxW && cur.length) { lines.push(cur); cur = [w]; curW = t; } else { cur.push(w); curW = next; }
+      }
+      if (cur.length) lines.push(cur);
+      return lines;
+    }
+
+    richText(line, x, y, o = {}) {
+      let cx = x;
+      line.forEach((w, i) => {
+        if (i) cx += this.measure(' ', o.size, o.bold);
+        for (const p of w) { this.text(p.t, cx, y, Object.assign({}, o, { col: p.hot ? o.hot || C.gold : o.col })); cx += this.measure(p.t, o.size, o.bold); }
+      });
     }
 
     dither() {
@@ -568,7 +598,8 @@
         } else if (i === sel) { c.fillStyle = 'rgba(242,220,154,0.1)'; c.fillRect(x, yy, w, rh - 2); }
         let tx = x + 16;
         if (it.icon) { it.icon(c, tx, yy + (rh - 2) / 2); tx += it.iconW || 20; }
-        this.text(it.label, tx, yy + (rh - 14) / 2, { col: it.disabled ? C.dim : it.col || C.cream, bold: on, size: o.size || 12 });
+        const room = (it.right ? x + w - 14 - this.measure(it.right, 11) : x + w - 4) - tx;
+        this.text(this.clip(it.label, room, o.size || 12, on), tx, yy + (rh - 14) / 2, { col: it.disabled ? C.dim : it.col || C.cream, bold: on, size: o.size || 12 });
         if (it.right) this.text(it.right, x + w - 6, yy + (rh - 14) / 2 + 1, { align: 'right', size: 11, col: it.rcol || C.sub });
         if (o.onClick) this.hit(x, yy, w, rh, () => o.onClick(i));
       }
@@ -1241,6 +1272,7 @@
         { label: 'Скорость боя', k: 'battleSpeed', step: 0.5, max: 3, min: 1, fmt: v => '×' + v },
         { label: 'Сцены абсолютных техник', k: 'ultCine', presets: H.Ults ? H.Ults.MODES : [{ id: 'off', tag: 'Выкл.' }], cur: () => ui.options.ultCine || 'on', set: setCine('ultCine'), fmt: () => '' },
         { label: 'Сцены слияний', k: 'fusionCine', presets: H.Fusions ? H.Fusions.MODES : [{ id: 'off', tag: 'Выкл.' }], cur: () => ui.options.fusionCine || 'on', set: setCine('fusionCine'), fmt: () => '' },
+        { label: 'Сцены навыков облика', k: 'skinCine', presets: H.Ults ? H.Ults.MODES : [{ id: 'off', tag: 'Выкл.' }], cur: () => ui.options.skinCine || 'first', set: setCine('skinCine'), fmt: () => '' },
         { label: 'Скорость текста', k: 'textSpeed', step: 1, max: 5, min: 1, fmt: v => '×' + v },
         { label: 'Разрешение', k: 'res', presets: RES, cur: () => ui.resPreset().id, set: id => setRes(id), fmt: () => ui.canvas.width + '×' + ui.canvas.height }
       ];

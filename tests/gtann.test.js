@@ -136,7 +136,6 @@ section('data', () => {
   ok(N.WEAPON_IDS.every(id => N.SLOTS[N.WEAPONS[id].slot].includes(id)) && N.SLOTS.flat().length === N.WEAPON_IDS.length, 'every weapon sits in its slot');
   ok(N.WEAPON_IDS.every(id => { const W = N.WEAPONS[id]; return W.melee || W.throw || W.mz && W.kick && W.rk && W.rk.every(([u]) => u > 0 && u < 1) && W.reload > 0 && W.clip > 0; }), 'every gun has a muzzle, a kick and a reload timeline');
   ok(N.WEAPON_IDS.every(id => !N.WEAPONS[id].unlockWith || N.WEAPONS[N.WEAPONS[id].unlockWith]), 'unlock chains point at real weapons');
-  ok(N.RADIO.length === 4 && N.RADIO.every(r => r.dj.length >= 3), 'radio stations');
   for (const [k, mix] of Object.entries(N.TRAFFIC_MIX)) for (const [m] of mix) ok(N.VEHICLES[m], 'traffic model ' + k + ' ' + m);
   for (const [k, mix] of Object.entries(N.CIVIL_MIX)) for (const [m] of mix) ok(N.PED_KINDS[m], 'ped kind ' + k + ' ' + m);
 });
@@ -3614,6 +3613,188 @@ section('photo mode', () => {
   ok(g.state.day === day0 + 1 && w.clock < 1, 'midnight turns the date on the photos');
   ok(N.GLSL.dof && /u_dof/.test(N.GLSL.dof[1]) && /u_pf/.test(N.GLSL.comp[1]), 'depth of field and film shaders');
   ok(read('index.html').includes('nn-photo.js') && /F8/.test(read('js/apps/gtann/nn-menus.js')), 'photo mode is loaded and listed in the controls');
+});
+
+section('radio', () => {
+  const R = N.RADIO, OFF = R.length;
+  ok(R.length === 8 && ['id', 'freq', 'file'].every(k => new Set(R.map(r => r[k])).size === 8), 'eight stations with their own id, frequency and file');
+  ok(R.map(r => r.name).join('|') === 'Максимум|Love Radio|Хит FM|Юмор FM|Динамит FM|Наше Радио|Пиратская Станция|Клуб FM', 'station names in dial order');
+  for (const r of R) {
+    const f = path.join(ROOT, N.RADIO_DIR, r.file + '.mp3');
+    ok(fs.existsSync(f) && fs.statSync(f).size > r.len * 15500 && fs.statSync(f).size < r.len * 16500, 'broadcast file ' + r.file + ' matches its length at 128 kbit/s');
+  }
+  const t = 1.7e9;
+  ok(R.every((r, i) => { const a = N.radioPos(i, t), b = N.radioPos(i, t + 5); return a >= 0 && a < r.len && (Math.abs(b - a - 5) < 1e-6 || b < 5); }), 'every station keeps broadcasting in real time');
+  ok(new Set(R.map((r, i) => Math.round(N.radioPos(i, t)))).size === 8, 'stations are at different moments of their broadcast');
+  ok(N.radioPos(0, t, 100) < 100, 'the decoded duration overrides the table length');
+  const g = new N.Game(city, { seed: 41, headless: true, state: N.Game.newState() });
+  const w = g.world, pl = w.player;
+  const civil = w.spawnVehicle('vaz2106', pl.x + 4, pl.z, 0, {});
+  const cop = w.spawnVehicle('vaz2107', pl.x + 8, pl.z, 0, { livery: 'militia' });
+  const tank = w.spawnVehicle('t72', pl.x + 14, pl.z, 0, { livery: 'army' });
+  ok(N.carStation(civil) === civil.id % (OFF + 1) && N.carStation(civil) === civil.radio, 'a civil car keeps the station its owner left on');
+  ok(N.carStation(cop) === OFF && N.carStation(tank) === OFF, 'militia cars and armour have the radio off');
+  const els = [];
+  const param = () => ({ value: 0, setTargetAtTime(v) { this.value = v; }, cancelScheduledValues() { }, setValueAtTime(v) { this.value = v; }, linearRampToValueAtTime(v) { this.value = v; }, exponentialRampToValueAtTime(v) { this.value = v; } });
+  const node = () => ({ gain: param(), frequency: param(), Q: param(), playbackRate: param(), connect() { }, disconnect() { }, start() { }, stop() { } });
+  globalThis.window = { AudioContext: class { constructor() { this.currentTime = 0; this.sampleRate = 8000; this.destination = {}; } createGain() { return node(); } createBiquadFilter() { return node(); } createBufferSource() { return node(); } createBuffer(c, n) { return { getChannelData: () => new Float32Array(n) }; } createMediaElementSource() { return node(); } close() { } } };
+  globalThis.document = { createElement: () => { const el = { L: {}, paused: true, readyState: 0, duration: NaN, currentTime: 0, addEventListener(k, f) { (this.L[k] = this.L[k] || []).push(f); }, fire(k) { for (const f of this.L[k] || []) f(); }, play() { this.paused = false; return Promise.resolve(); }, pause() { this.paused = true; }, removeAttribute() { }, load() { } }; els.push(el); return el; } };
+  try {
+    const A = new N.Audio();
+    A.init();
+    A.setRadio(2, true, false);
+    const e2 = A.feeds[2] && A.feeds[2].el;
+    ok(e2 && e2.src === 'content/radio/VROCK.mp3' && els.length === 1, 'tuning in loads only the chosen station');
+    ok(A.hissN && A.hissN.g.gain.value > 0, 'static while the station is still loading');
+    e2.readyState = 1;
+    e2.duration = R[2].len;
+    e2.fire('loadedmetadata');
+    ok(!e2.paused && Math.abs(e2.currentTime - N.radioPos(2, Date.now() / 1000, R[2].len)) < 1, 'joins the broadcast where it is now');
+    e2.readyState = 4;
+    e2.fire('playing');
+    ok(A.feeds[2].g.gain.value === 1 && A.hissN.g.gain.value === 0 && A.radio.gain.value > 0, 'the music replaces the static');
+    const full = A.radio.gain.value;
+    A.setRadio(2, true, true);
+    ok(A.radio.gain.value > 0 && A.radio.gain.value < full / 2, 'the radio ducks under speech');
+    e2.fire('waiting');
+    ok(A.hissN.g.gain.value > 0, 'buffering sounds like a weak signal');
+    A.setRadio(5, true, false);
+    ok(A.feeds[2].g.gain.value === 0 && A.feeds[5] && els.length === 2 && A.hissN.g.gain.value > 0, 'switching fades the old station and tunes the new one');
+    A.setRadio(OFF, false, false);
+    ok(A.radio.gain.value === 0 && A.feeds[5].g.gain.value === 0, 'leaving the car turns the radio off');
+    A.setRadio(2, true, false);
+    ok(els.length === 2 && A.feeds[2].g.gain.value === 1 && !e2.paused && A.hissN.g.gain.value === 0, 'coming back to a station that is still buffered plays it at once');
+    A.destroy();
+    ok(els.every(e => e.paused) && !A.on, 'closing the game stops every station');
+  } finally {
+    delete globalThis.window;
+    delete globalThis.document;
+  }
+});
+
+section('camera views', () => {
+  const FP = N.CAM_FP, BUMPER = N.CAM_BUMPER;
+  ok(N.CAM_FOOT.length === 5 && N.CAM_CAR.length === 6 && N.CAM_FOOT[FP] === 'от первого лица' && N.CAM_CAR[FP] === 'из салона' && N.CAM_CAR[BUMPER] === 'с бампера', 'camera lists: first person on foot, cabin and bumper in a car');
+  store.clear();
+  const { g, w, pl } = carGame();
+  const ui = Object.create(N.UI.prototype);
+  Object.assign(ui, { game: g, city, settings: {}, fx: { shake: 0 }, scene: null, t: 1, camFoot: 3, camCar: 1, fpFov: 1.15, sway: [0, 0], swayV: null, mouse: { r: false, l: false, dx: 0, dy: 0 }, photo: { on: false }, keys: new Set(), camYaw: pl.yaw, camPitch: 0.1, lastMouseT: -99 });
+  ui.cycleCamera();
+  ok(ui.camFoot === FP && ui.camMode === FP && ui.fpFoot() && g.msg.view.text === 'Камера: от первого лица' && N.loadSettings().camFoot === FP && N.loadSettings().camCar === undefined, 'C on foot switches to first person, says so and remembers it apart from the car view');
+  ui.cycleCamera();
+  ok(ui.camFoot === 0 && !ui.fpFoot(), 'the foot views wrap around after first person');
+  ui.camFoot = FP;
+  const tall = (pl.look && pl.look.tall) || 1, fwdOf = y => [Math.sin(y), -Math.cos(y)];
+  const dirOf = c => { const d = [c.tx - c.x, c.ty - c.y, c.tz - c.z], l = Math.hypot(...d); return d.map(q => q / l); };
+  let cam = ui.computeCamera(1 / 60);
+  const f0 = fwdOf(ui.camYaw), d0 = dirOf(cam);
+  ok(cam.fp && cam.headless && cam.near <= 0.06 && Math.abs(cam.y - pl.y - 1.716 * tall) < 0.06 && Math.hypot(cam.x - pl.x, cam.z - pl.z) < 0.2 && d0[0] * f0[0] + d0[2] * f0[1] > 0.95, 'first person camera sits at the eyes and looks where the mouse points');
+  const yaw0 = pl.yaw;
+  for (let i = 0; i < 40; i++) { g.step(1 / 60, { right: 1, camYaw: yaw0 + 1, face: true }); w.ev.length = 0; }
+  const r1 = [Math.cos(yaw0 + 1), Math.sin(yaw0 + 1)], sp = Math.hypot(pl.vx, pl.vz);
+  ok(Math.abs(N.wrap(pl.yaw - yaw0 - 1)) < 0.05 && sp > 2 && (pl.vx * r1[0] + pl.vz * r1[1]) / sp > 0.9, 'in first person the body faces the camera and D strafes');
+  w.giveWeapon(pl, 'ak', 60);
+  pl.weapon = 'ak';
+  for (let i = 0; i < 30; i++) { g.step(1 / 60, { camYaw: pl.yaw, face: true }); w.ev.length = 0; }
+  ok(pl.anim.aim > 0.95, 'a first person rifle is shouldered without the right button');
+  pl.weapon = 'fists';
+  for (let i = 0; i < 30; i++) { g.step(1 / 60, { camYaw: pl.yaw, face: true }); w.ev.length = 0; }
+  ok(pl.anim.aim < 0.05, 'fists stay down in first person');
+
+  const local = (v, c) => {
+    const M = N.M3.euler((v.pitch || 0) + (v.bodyPitch || 0), -v.yaw, v.roll || 0, v.x, v.y, v.z), p = [c.x - M[9], c.y - M[10], c.z - M[11]];
+    return [M[0] * p[0] + M[3] * p[1] + M[6] * p[2], M[1] * p[0] + M[4] * p[1] + M[7] * p[2], M[2] * p[0] + M[5] * p[1] + M[8] * p[2]];
+  };
+  const v = w.spawnVehicle('vaz2107', pl.x, pl.z, pl.yaw);
+  w.seat(pl, v, true);
+  ok(ui.camMode === 1 && ui.camFoot === FP, 'the car keeps its own view');
+  ui.camCar = 3;
+  ui.cycleCamera();
+  ok(ui.camCar === FP && g.msg.view.text === 'Камера: из салона' && N.loadSettings().camCar === FP && N.loadSettings().camFoot === 0, 'C in a car goes to the cabin view');
+  ui.camYaw = v.yaw;
+  ui.camPitch = 0.1;
+  cam = ui.computeCamera(1 / 60);
+  const cab = N.cabin(v.spec), L = local(v, cam), fv = fwdOf(v.yaw), d1 = dirOf(cam);
+  ok(cam.cabin && cam.headless && cam.up[1] > 0.9 && Math.abs(L[0] - cab.seat.x) < 0.15 && L[1] > cab.seat.y + 0.5 && L[1] < v.spec.shape.H - 0.05 && Math.abs(L[2] - cab.seat.z) < 0.35 && d1[0] * fv[0] + d1[2] * fv[1] > 0.95, 'cabin view: driver eyes under the roof, looking down the road');
+  ui.camYaw = v.yaw + Math.PI / 2;
+  const d2 = dirOf(ui.computeCamera(1 / 60)), rv = [Math.cos(v.yaw), Math.sin(v.yaw)];
+  ok(d2[0] * rv[0] + d2[2] * rv[1] > 0.95, 'the driver can look out of the side window');
+  ui.cycleCamera();
+  ui.camYaw = v.yaw;
+  cam = ui.computeCamera(1 / 60);
+  const B = local(v, cam), d3 = dirOf(cam);
+  ok(ui.camCar === BUMPER && cam.bumper && !cam.headless && B[2] < -v.spec.hl && B[1] > 0.4 && B[1] < 1.2 && Math.abs(B[0]) < 0.01 && d3[0] * fv[0] + d3[2] * fv[1] > 0.95, 'bumper view: low, ahead of the front bumper, looking forward');
+  ui.camYaw = v.yaw + Math.PI;
+  ok(local(v, ui.computeCamera(1 / 60))[2] > v.spec.hl, 'looking back moves the bumper camera to the rear');
+  ui.cycleCamera();
+  ok(ui.camCar === 0 && ui.computeCamera(1 / 60).fov > 0, 'the car views wrap around after the bumper');
+  ui.camCar = FP;
+  ui.swayV = { v, x: v.vx || 0, z: v.vz || 0 };
+  for (let i = 0; i < 20; i++) { v.vx += fv[0] * 0.08; v.vz += fv[1] * 0.08; ui.headSway(v, 1 / 60); }
+  ok(ui.sway[1] > 0.012, 'the head sinks back while the car accelerates');
+  const tg = carGame(), t72 = tg.w.spawnVehicle('t72', tg.pl.x, tg.pl.z, tg.pl.yaw);
+  tg.w.seat(tg.pl, t72, true);
+  ui.game = tg.g;
+  ui.camCar = 3;
+  ui.cycleCamera();
+  cam = ui.computeCamera(1 / 60);
+  ok(tg.g.msg.view.text === 'Камера: из люка' && local(t72, cam)[1] > t72.spec.shape.H && !cam.headless, 'tank: the first person view is the commander head out of the hatch');
+  ui.game = g;
+
+  for (const id of N.VEHICLE_IDS) {
+    if (N.VEHICLES[id].type === 'bike' || N.VEHICLES[id].shape.hatch) continue;
+    const D = N.Cars.inside(id, null, 0).dials || [];
+    ok(D.some(d => d.k === 'spd') && D.every(d => [d.x, d.y, d.z].every(isFinite) && (d.bar ? d.w > 0.1 : d.r > 0.02)), id + ': the dashboard has a live speedometer');
+  }
+  const car = w.spawnVehicle('volga24', pl.x - 30, pl.z, 0);
+  car.spd = 0;
+  ok(N.dialValue(car, 'spd') === 0 && N.dialValue(car, 'rpm') === 0 && N.dialValue(car, 'fix', 0.6) === 0, 'parked car: needles rest at zero');
+  car.driver = pl;
+  car.spd = car.spec.vmax;
+  car.rpm = 0.9;
+  const sv = N.dialValue(car, 'spd'), rv2 = N.dialValue(car, 'rpm');
+  ok(sv > 0.6 && sv <= 1 && rv2 > 0.7 && rv2 <= 1 && N.dialValue(car, 'fix', 0.6) === 0.6, 'running car: speed and revs on the dials');
+  car.driver = null;
+
+  const look = N.playerLook('zek'), pm = N.Models.ped(look);
+  const ped = (weapon, yaw) => ({ id: 88, x: straight.x, y: city.groundY(straight.x, straight.z), z: straight.z, yaw, vx: 0, vz: 0, onGround: true, look, weapon, weapons: { [weapon]: { ammo: 30, clip: 30 } }, aimPitch: 0, anim: { phase: 0, speed: 0, aim: 1 }, state: 'idle' });
+  const inEye = (p, r) => {
+    const e = N.pedEye(r.G, look), f = [Math.sin(p.yaw), -Math.cos(p.yaw)], s = [Math.cos(p.yaw), Math.sin(p.yaw)], d = [r.wpn[9] - e[0], r.wpn[10] - e[1], r.wpn[11] - e[2]];
+    return { fwd: d[0] * f[0] + d[2] * f[1], right: d[0] * s[0] + d[2] * s[1], up: d[1] };
+  };
+  let t = 10;
+  for (const [wid, fwd] of [['ak', [0.1, 0.3]], ['pm', [0.3, 0.5]], ['shotgun', [0.1, 0.3]]]) {
+    const p = ped(wid, 0.7);
+    for (let i = 0; i < 3; i++) N.pedRig(p, t += 0.016, N.pedRoot(p), pm.piv, { fp: 1 });
+    const a = inEye(p, N.pedRig(p, t += 0.016, N.pedRoot(p), pm.piv, { fp: 1 }));
+    ok(a.fwd > fwd[0] && a.fwd < fwd[1] && a.up < -0.04 && a.up > -0.2 && Math.abs(a.right) < 0.07, wid + ': aiming in first person brings the sights under the eye');
+    const h = inEye(p, N.pedRig(p, t += 0.016, N.pedRoot(p), pm.piv, { fp: 0 }));
+    ok(h.right > 0.06 && h.up < a.up && h.fwd > 0, wid + ': first person hip carry sits low on the right');
+    const r = N.pedRig(p, t += 0.016, N.pedRoot(p), pm.piv, {});
+    const e = N.pedEye(r.G, look), hd = r.G[N.PB.HEAD];
+    ok(Math.abs(e[1] - p.y - 1.716) < 0.08 && Math.hypot(e[0] - hd[9], e[2] - hd[11]) > 0.05, wid + ': the eye point is in front of the head');
+    const G = N.headless(r.G);
+    ok(G[N.PB.HEAD].slice(0, 9).every(q => q === 0) && G[N.PB.HEAD][10] === hd[10] && G[N.PB.CHEST].every((q, i) => q === r.G[N.PB.CHEST][i]) && r.G[N.PB.HEAD][4] !== 0, wid + ': first person hides only the head');
+  }
+
+  const ap = (m, q) => [m[0] * q[0] + m[1] * q[1] + m[2] * q[2] + m[9], m[3] * q[0] + m[4] * q[1] + m[5] * q[2] + m[10], m[6] * q[0] + m[7] * q[1] + m[8] * q[2] + m[11]];
+  for (const id of ['vaz2107', 'merc600', 'gazel', 'paz', 'oka']) {
+    const gw = carGame(), cv = gw.w.spawnVehicle(id, gw.pl.x, gw.pl.z, gw.pl.yaw);
+    gw.w.seat(gw.pl, cv, true);
+    cv.steer = 0.2;
+    const cb = N.cabin(cv.spec), ws = cb.wheel, tl = (gw.pl.look && gw.pl.look.tall) || 1, pp = N.Models.ped(gw.pl.look, 0);
+    const CM = N.M3.euler((cv.pitch || 0) + (cv.bodyPitch || 0), -cv.yaw, cv.roll || 0, cv.x, cv.y, cv.z);
+    const root = N.M3.mul(CM, N.M3.euler(0, 0, 0, cb.seat.x, N.seatRoot(cb, tl), cb.seat.z));
+    let r;
+    for (let i = 0; i < 12; i++) r = N.pedRig(gw.pl, 50 + i / 60, root, pp.piv, { sit: 1 });
+    const WH = N.M3.mul(CM, N.M3.euler(-ws.tilt, 0, -cv.steer * 2.4, ws.x, ws.y, ws.z));
+    const toDriver = (q => { const o = ap(WH, [0, 0, 0]); return [q[0] - o[0], q[1] - o[1], q[2] - o[2]]; })(ap(WH, [0, 0, 1]));
+    for (const s of [-1, 1]) {
+      const a = s < 0 ? Math.PI - 0.5 : 0.5, rim = ap(WH, [Math.cos(a) * ws.r, Math.sin(a) * ws.r, 0]), H = r.G[s < 0 ? N.PB.HANDL : N.PB.HANDR];
+      const grip = ap(H, [-s * 0.034, -0.085, 0]), palm = [-s * H[0], -s * H[3], -s * H[6]];
+      ok(Math.hypot(grip[0] - rim[0], grip[1] - rim[1], grip[2] - rim[2]) < 0.012 && palm[0] * toDriver[0] + palm[1] * toDriver[1] + palm[2] * toDriver[2] < -0.5, id + ': the ' + (s < 0 ? 'left' : 'right') + ' hand closes its fingers round the rim, palm to the wheel');
+    }
+  }
 });
 
 section('integration', () => {

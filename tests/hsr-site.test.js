@@ -183,7 +183,9 @@ test('game facts on the site match the game', () => {
   const rumors = site.news.find(n => n.id === 'rumors').body.join(' ');
   assert.ok(H.RUMORS.some(r => rumors.includes(r.title)), 'the rumor article names a real rumor');
   const v11 = site.news.find(n => n.id === 'v11').body.join(' ');
-  assert.ok(v11.includes(`${H.COMET_GIFT.slice(0, -1).join(', ')} и ${H.COMET_GIFT[H.COMET_GIFT.length - 1]}`) && H.TRAIL_WILL.every(s => v11.includes(String(s.lvl))), 'version 1.1 notes match the events');
+  assert.ok(v11.includes(`${H.COMET_GIFT.slice(0, -1).join(', ')} и ${H.COMET_GIFT[H.COMET_GIFT.length - 1]}`) && H.TRAIL_WILL.slice(0, 4).every(s => v11.includes(String(s.lvl))), 'version 1.1 notes match the events');
+  const v16w = site.news.find(n => n.id === 'v16w').body.join(' '), willTop = H.TRAIL_WILL[H.TRAIL_WILL.length - 1];
+  assert.ok(H.TRAIL_WILL.slice(4).every(s => v16w.includes(s.lvl + ' уров')) && v16w.includes('«' + H.OUTFITS[willTop.give.outfit].name + '»') && v16w.includes(H.OUTFITS[willTop.give.outfit].price + ' звёздного нефрита') && willTop.lvl === H.TL_MAX, 'the Will patch notes match the new stations and the outfit');
   const v12 = site.news.find(n => n.id === 'v12').body.join(' ');
   H.BANNERS.std.fresh.forEach(id => assert.ok(v12.includes(H.CHARS[id].name), id));
   assert.ok(v12.includes(H.CHAT.DAILY_GIVE.jade + ' звёздного нефрита') && v12.includes('Виртуальной вселенной'), 'version 1.2 notes cover the Simulated Universe and the daily message reward');
@@ -207,11 +209,15 @@ test('game facts on the site match the game', () => {
   assert.ok(v14.includes('Избранный агент A выпадает в ' + Math.round(H.TUNING.sigFeatured * 100) + '% случаев') && v14.includes('«' + hm.title + '» с ' + hm.give.items.tape + ' шифрокопиями') && v14.includes('Дань Хэн в Поиске сигнала больше не выпадает'), 'version 1.4 notes match the Signal Search rules and the letter');
   const v15 = site.news.find(n => n.id === 'v15').body.join(' '), v15mail = H.MAIL.find(m => m.id === 'v15_supply');
   assert.ok(v15.includes('наряд «' + H.OUTFITS[v15mail.give.outfit].name + '» для Март 7 и ' + v15mail.give.jade + ' звёздного нефрита'), 'version 1.5 is the newest article and matches its letter');
-  Object.values(H.OUTFITS).forEach(o => assert.ok(v15.includes('«' + o.name + '» для ' + H.CHARS[o.char].name.slice(0, 3)) && v15.includes(' по ' + o.price), 'version 1.5 notes name the outfit ' + o.name));
+  ['march_spring', 'megumin_bakuen', 'ruanmei_plum', 'welt_idol', 'darkness_bride', 'aqua_beach', 'miyabi_blossom', 'nicole_bunny', 'kazuma_jersey'].forEach(id => assert.ok(v15.includes('«' + H.OUTFITS[id].name + '» для ' + H.CHARS[H.OUTFITS[id].char].name.slice(0, 3)), 'version 1.5 notes name the outfit ' + id));
   H.SUPPLY.starlight.filter(e => e.cone).forEach(e => assert.ok(v15.includes('«' + H.CONES[e.cone].name + '»') && v15.includes('по ' + e.price), 'version 1.5 notes name the Supply cone ' + e.cone));
   assert.ok(v15.includes(H.GLOW.dup[4] + ' или ' + H.GLOW.dup[5]) && v15.includes('до ' + H.TL_MAX) && ['pc_rewards', 'pc_home', 'pc_disc', 'pc_guests'].every(id => v15.includes('«' + H.QUESTS[id].name + '»')), 'version 1.5 notes match Starlight, the Trailblaze Level cap and the Express missions');
+  const v16o = site.news.find(n => n.id === 'v16o').body.join(' ');
+  const v16h = site.news.find(n => n.id === 'v16h'), v16hb = v16h.body.join(' '), HV = H.OUTFITS.himeko_vermilion;
+  assert.ok(HV.rarity === 5 && v16h.title.includes('«' + HV.name + '»') && v16h.lead.includes(HV.price + ' звёздного нефрита') && v16hb.includes('«' + H.CHARS.himeko.skill.name + '»') && v16hb.includes('«' + H.FUSIONS.f_singularity.name + '»'), 'the first 5★ outfit patch matches the game');
+  assert.ok(v16o.includes(H.OUTFIT_TIER[4].price + ' звёздного нефрита') && v16o.includes(H.OUTFIT_TIER[5].price + ' звёздного нефрита') && H.OUTFIT_REFUND.every(id => v16o.includes('«' + H.OUTFITS[id].name + '»')) && v16o.includes('«' + H.OUTFITS.himeko_vermilion.name + '» Химико'), 'the outfit class patch matches the tiers and the refund list');
   const v16 = site.news.find(n => n.id === 'v16').body.join(' '), v16mail = H.MAIL.find(m => m.id === 'v16_fives');
-  assert.ok(site.news[0].id === 'v16' && v16.includes(v16mail.give.items.spass + ' особых звёздных пропусков и ' + v16mail.give.jade + ' звёздного нефрита'), 'version 1.6 is the newest article and matches its letter');
+  assert.ok(site.news.find(n => n.tag === 'Обновление').id === 'v16' && v16.includes(v16mail.give.items.spass + ' особых звёздных пропусков и ' + v16mail.give.jade + ' звёздного нефрита'), 'version 1.6 is the newest article and matches its letter');
   H.FIVES.IDS.forEach(id => assert.ok(v16.includes(H.CHARS[id].name) && v16.includes('«' + H.BANNERS.ev.stars[id].name + '»') && v16.includes('«' + H.CONES[H.BANNERS.cone.stars[id].cone].name + '»') && site.source(id).includes('Прыжок события'), 'version 1.6 notes name ' + id + ', the banner and the cone'));
   Object.keys(H.FIVES.FUSIONS).forEach(id => assert.ok(v16.includes('«' + H.FUSIONS[id].name + '»'), 'version 1.6 notes name the Fusion ' + id));
   const v13 = site.news.find(n => n.id === 'v13').body.join(' ');
@@ -239,7 +245,7 @@ test('news go from new to old and are never from the future', () => {
   const { site } = createSystem();
   const key = d => d.split('.').reverse().join('');
   site.news.forEach((n, i) => {
-    assert.ok(/^\d\d\.\d\d\.(1999|2000)$/.test(n.date), n.id);
+    assert.ok(/^\d\d\.\d\d\.(1999|2000|2001)$/.test(n.date), n.id);
     if (i) assert.ok(key(n.date) <= key(site.news[i - 1].date), `${n.id} is older than the one above`);
     assert.ok(!n.body.join(' ').includes('—'), `${n.id} has no em dash`);
   });

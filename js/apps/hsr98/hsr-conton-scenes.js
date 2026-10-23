@@ -67,7 +67,7 @@
         const g = S.g, t = S.t, T = S.T, open = eOut(seg(t, 0.6, 1.0)), step = seg(t, 1.0, 1.4);
         hall(g, T, RED);
         portal(g, 210, FLOOR - 70, 70 * open, open * (1 - seg(t, 1.35, 1.5)), T);
-        hero(S, H.CHARS.makoto.look, lerp(120, 205, eIn(step)), FLOOR + 22, { a: 1 - seg(t, 1.15, 1.4) });
+        hero(S, P.look, lerp(120, 205, eIn(step)), FLOOR + 22, { a: 1 - seg(t, 1.15, 1.4) });
         device(g, 150 - 30 * step, 120, 1.6, T);
         if (t < 0.4) lighter(g, () => glow(g, 136, 110, 50 * (1 - t / 0.4), RED, 0.9));
         if (t > 0.04 && t < 0.25) flash(g, '#ff3a5a', 0.6 * (1 - seg(t, 0.04, 0.25)));
@@ -96,7 +96,7 @@
         vgrad(g, 0, LH, [[0, '#06081e'], [0.6, '#0e1a3a'], [1, '#081024']]);
         K.stars(g, T, 40, 51, 0.8, FLOOR);
         for (let i = 0; i < 5; i++) { const k = eOut(seg(t, 0.05 + i * 0.06, 0.35 + i * 0.06)); if (k > 0) { lighter(g, () => glow(g, 40 + i * 60, FLOOR - 40, 30 * (1 - k), BLUE, 0.8)); gynoid(S, 40 + i * 60, FLOOR + 10, 90, { a: k }); } }
-        hero(S, H.CHARS.talleah.look, 70, FLOOR + 22);
+        hero(S, P.look, 70, FLOOR + 22);
         const bx = 104, by = 120;
         lighter(g, () => glow(g, bx, by, 6 + 16 * charge, '#5ab8ff', 0.4 + 0.6 * charge));
         if (fire > 0) lighter(g, () => { for (let i = 0; i < 6; i++) { const ty = 60 + i * 22; line(g, rgba('#7ad0ff', 1 - fire), 3, i === 0 ? bx : 40 + (i - 1) * 60, i === 0 ? by : FLOOR - 70, LW + 10, ty); } });

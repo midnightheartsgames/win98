@@ -590,7 +590,7 @@
 
     item() { return this.res[this.cur]; }
 
-    intro() { const r = this.item(); return (r.rar === 5 ? PRE : 0) + (r.kind === 'char' ? H.WarpIntro.length(r.id) : 0.9); }
+    intro() { const r = this.item(); return (r.rar === 5 ? PRE : 0) + (r.kind === 'char' ? H.WarpIntro.length(r.id, this.game, r.outfit) : 0.9); }
 
     tick(dt) {
       this.fade = Math.max(0, this.fade - dt * 2.2);
@@ -606,7 +606,7 @@
       const r = this.item(), pre = r.rar === 5 ? PRE : 0;
       const cross = x => before < x && this.rt >= x;
       if (pre) { for (const x of [0.5, 0.58, 0.66]) if (cross(x)) this.ui.sfx('glint'); if (cross(1.05)) this.ui.sfx('whoosh'); }
-      if (r.kind === 'char') { for (const [x, id] of H.WarpIntro.cues(r)) if (cross(pre + x)) this.ui.sfx(id); }
+      if (r.kind === 'char') { for (const [x, id] of H.WarpIntro.cues(r, this.game)) if (cross(pre + x)) this.ui.sfx(id); }
       else if (cross(pre + 0.3)) this.ui.sfx(r.rar === 5 ? 'star5' : r.rar === 4 ? 'star4' : 'glint');
     }
 
@@ -696,7 +696,7 @@
       if (pre && t >= 0) this.flash(c, [255, 240, 200], 1 - seg(t, 0, 0.45));
       if (t >= 0 && r.kind === 'char') {
         const ct = this.rt - this.intro();
-        H.WarpIntro.overlay(ui, c, r, t);
+        H.WarpIntro.overlay(ui, c, r, t, this.game);
         this.namePlate(c, r, seg(ct, 0.05, 0.4));
         this.resultTag(c, r, seg(ct, 0.4, 0.7));
       } else if (t >= 0) {
@@ -723,7 +723,7 @@
       ui.text(r.name, x0 + 76, y + (size === 22 ? 8 : 12), { size, bold: true, serif: true, col: '#fff4d8' });
       ui.text('★'.repeat(r.rar), x0 + 78, y + 36, { size: 14, col: LIGHT[r.rar] });
       if (r.kind === 'char') {
-        const d = H.CHARS[r.id], said = H.WarpIntro.line(r.id, this.game);
+        const d = H.CHARS[r.id], said = H.WarpIntro.line(r.id, this.game, r.outfit);
         G.elemIcon(c, d.elem, x0 + 85, y + 64, 7);
         ui.text('Путь: ' + H.PATHS[d.path].name + ' · ' + H.ELEMENTS[d.elem].name, x0 + 96, y + 58, { size: 11, col: C.sub });
         if (said) {

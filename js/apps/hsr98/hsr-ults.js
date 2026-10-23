@@ -997,9 +997,11 @@
   class UltShow {
     constructor(ui, u, o = {}) {
       this.ui = ui; this.game = ui.game; this.u = u;
-      this.def = SHOWS[u.charId] || SHOWS.trail;
+      const forced = o.outfit !== undefined;
+      this.outfit = forced ? o.outfit : H.wornOutfit ? H.wornOutfit(u.charId, this.game) : null;
+      this.def = (H.outfitCutOf && H.outfitCutOf(this.outfit, 'ult')) || SHOWS[u.charId] || SHOWS.trail;
       const ch = H.CHARS[u.charId] || {}, el = H.ELEMENTS[u.elem] || H.ELEMENTS.phys;
-      const lookOf = a => G.lookOf(a.charId, this.game);
+      const lookOf = a => (a !== u || !forced ? G.lookOf(a.charId, this.game) : this.outfit ? H.outfitLook(this.outfit, this.game.state.gender) : G.lookOf(a.charId, null));
       this.P = {
         u, id: u.charId, elem: u.elem, col: el.col, rar: ch.rarity || 4, name: o.name || (ch.ult && ch.ult.name) || '', look: lookOf(u),
         foes: o.foes || [], allies: (o.allies || [u]).map(a => ({ u: a, look: lookOf(a) })), bg: o.bg || 'station'

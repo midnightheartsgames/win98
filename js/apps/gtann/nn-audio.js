@@ -3,28 +3,19 @@
 
   const NOTE = m => 440 * Math.pow(2, (m - 69) / 12);
 
-  const PROG = {
-    disco: [[0, 3, 7], [-4, 0, 3], [3, 7, 10], [-2, 2, 5]],
-    chanson: [[0, 3, 7], [5, 8, 12], [-5, -1, 2], [0, 3, 7]],
-    rock: [[0, 7, 12], [-4, 3, 8], [3, 10, 15], [-2, 5, 10]],
-    lounge: [[0, 4, 7, 11], [-3, 0, 4, 7], [2, 5, 9, 12], [-5, -1, 2, 5]]
-  };
-
   class Audio {
     constructor() {
       this.ac = null;
       this.on = false;
       this.station = 0;
       this.radioOn = false;
-      this.songSeed = 1;
-      this.nextNote = 0;
-      this.step16 = 0;
+      this.feeds = {};
+      this.hissN = null;
       this.engine = null;
       this.skid = null;
       this.sirenNode = null;
       this.vol = { sfx: 0.8, radio: 0.6 };
       this.noiseBuf = null;
-      this.lastDj = 0;
     }
 
     init() {
@@ -43,7 +34,7 @@
       this.radio.gain.value = 0;
       const lp = ac.createBiquadFilter();
       lp.type = 'lowpass';
-      lp.frequency.value = 5200;
+      lp.frequency.value = 11000;
       this.radioLp = lp;
       this.radio.connect(lp);
       lp.connect(this.master);
@@ -51,16 +42,7 @@
       this.noiseBuf = ac.createBuffer(1, len, ac.sampleRate);
       const d = this.noiseBuf.getChannelData(0);
       for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
-      this.dist = ac.createWaveShaper();
-      const curve = new Float32Array(1024);
-      for (let i = 0; i < 1024; i++) { const x = i / 512 - 1; curve[i] = Math.tanh(x * 5); }
-      this.dist.curve = curve;
-      this.distGain = ac.createGain();
-      this.distGain.gain.value = 0.35;
-      this.dist.connect(this.distGain);
-      this.distGain.connect(this.radio);
       this.on = true;
-      this.timer = setInterval(() => this.schedule(), 60);
     }
 
     resume() { if (this.ac && this.ac.state === 'suspended') this.ac.resume(); }
@@ -383,84 +365,88 @@
 
     setRadio(station, on, duck) {
       if (!this.on) return;
+      on = !!on && !!N.RADIO[station];
       const changed = station !== this.station || on !== this.radioOn;
-      this.station = station;
-      this.radioOn = on;
       const t = this.ac.currentTime;
-      if (changed || !!duck !== this.ducked || this.radioVol !== this.vol.radio) this.radio.gain.setTargetAtTime(on ? this.vol.radio * (duck ? 0.18 : 0.5) : 0, t, 0.2);
+      if (changed) {
+        if (this.radioOn) this.dropFeed(this.station);
+        this.station = station;
+        this.radioOn = on;
+        if (on) {
+          this.noise(t, 0.35, 0.25 * this.vol.radio, 3000, 0.4, 'bandpass', this.master);
+          this.tune(station);
+        } else this.hiss(false);
+      }
+      if (changed || !!duck !== this.ducked || this.radioVol !== this.vol.radio) this.radio.gain.setTargetAtTime(on ? this.vol.radio * (duck ? 0.22 : 0.8) : 0, t, 0.2);
       this.ducked = !!duck;
       this.radioVol = this.vol.radio;
-      if (changed && on) {
-        this.noise(t, 0.35, 0.25 * this.vol.radio, 3000, 0.4, 'bandpass', this.master);
-        this.nextNote = t + 0.3;
-        this.step16 = 0;
-        this.songSeed = (Math.random() * 1e6) | 0;
-      }
     }
 
-    schedule() {
-      if (!this.on || !this.radioOn) return;
-      const ac = this.ac;
-      const st = N.RADIO[this.station];
-      if (!st) return;
-      const spb = 60 / st.bpm / 4;
-      if (this.nextNote < ac.currentTime - 0.2) this.nextNote = ac.currentTime + 0.05;
-      while (this.nextNote < ac.currentTime + 0.25) {
-        this.note(st, this.step16, this.nextNote, spb);
-        this.nextNote += spb;
-        this.step16++;
-      }
+    feed(i) {
+      if (this.feeds[i]) return this.feeds[i];
+      const el = document.createElement('audio');
+      el.preload = 'auto';
+      el.loop = true;
+      el.src = N.RADIO_DIR + N.RADIO[i].file + '.mp3';
+      const g = this.ac.createGain();
+      g.gain.value = 0;
+      this.ac.createMediaElementSource(el).connect(g);
+      g.connect(this.radio);
+      const f = { el, g, stop: 0 };
+      el.addEventListener('playing', () => this.tuned(i));
+      el.addEventListener('waiting', () => { if (this.radioOn && this.station === i) this.hiss(true); });
+      return (this.feeds[i] = f);
     }
 
-    note(st, s, t, spb) {
-      const R = this.radio;
-      const beat = s % 16;
-      const bar = Math.floor(s / 16);
-      const prog = PROG[st.style];
-      const chord = prog[bar % prog.length];
-      const key = st.key;
-      const rng = N.rng(this.songSeed + bar * 7 + beat);
-      const scale = st.minor ? [0, 2, 3, 5, 7, 8, 10] : [0, 2, 4, 5, 7, 9, 11];
-      const drum = (kick, snare, hat) => {
-        if (kick) this.tone(t, 140, 40, 0.18, 0.55, 'sine', R);
-        if (snare) this.noise(t, 0.16, 0.35, 1800, 0.8, 'bandpass', R);
-        if (hat) this.noise(t, 0.04, 0.12, 8000, 0.7, 'highpass', R);
+    tune(i) {
+      const f = this.feed(i), el = f.el;
+      clearTimeout(f.stop);
+      this.hiss(true);
+      const go = () => {
+        if (!this.radioOn || this.station !== i) return;
+        const at = N.radioPos(i, Date.now() / 1000, isFinite(el.duration) && el.duration > 0 ? el.duration : 0);
+        if (Math.abs(el.currentTime - at) > 1.5) el.currentTime = at;
+        const p = el.play();
+        if (p && p.catch) p.catch(() => {});
+        if (!el.paused && el.readyState >= 3) this.tuned(i);
       };
-      if (st.style === 'disco') {
-        drum(beat % 4 === 0, beat % 8 === 4, beat % 2 === 1);
-        if (beat % 4 === 2) this.tone(t, NOTE(key - 24 + chord[0]), NOTE(key - 24 + chord[0]), spb * 1.8, 0.35, 'sawtooth', R);
-        if (beat % 2 === 0) {
-          const n = chord[(beat / 2) % chord.length] + 12;
-          this.tone(t, NOTE(key + n), NOTE(key + n), spb * 1.5, 0.1, 'square', R);
-        }
-        if (bar % 4 >= 2 && (beat % 3 === 0 || rng() < 0.2)) {
-          const deg = scale[Math.floor(rng() * scale.length)];
-          this.tone(t, NOTE(key + 12 + deg), NOTE(key + 12 + deg), spb * 2, 0.12, 'sawtooth', R);
-        }
-      } else if (st.style === 'chanson') {
-        drum(beat === 0 || beat === 8, false, false);
-        if (beat === 0 || beat === 8) this.tone(t, NOTE(key - 24 + chord[beat === 0 ? 0 : 2]), NOTE(key - 24 + chord[beat === 0 ? 0 : 2]), spb * 3, 0.35, 'triangle', R);
-        if (beat % 4 === 2) for (const c of chord) this.tone(t + Math.random() * 0.015, NOTE(key + c), NOTE(key + c), spb * 2, 0.08, 'triangle', R);
-        if (beat % 2 === 0 && rng() < 0.7) {
-          const deg = [0, 2, 3, 5, 7, 8, 11][Math.floor(rng() * 7)];
-          this.tone(t, NOTE(key + 12 + deg), NOTE(key + 12 + deg) * 1.004, spb * 2.2, 0.08, 'square', R);
-        }
-      } else if (st.style === 'rock') {
-        drum(beat === 0 || beat === 8 || beat === 10, beat === 4 || beat === 12, beat % 2 === 0);
-        if (beat % 2 === 0) {
-          for (const c of chord.slice(0, 2)) { const o = this.ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = NOTE(key - 12 + c); const g = this.ac.createGain(); g.gain.setValueAtTime(0.25, t); g.gain.exponentialRampToValueAtTime(0.001, t + spb * 1.9); o.connect(g); g.connect(this.dist); o.start(t); o.stop(t + spb * 2); }
-          this.tone(t, NOTE(key - 24 + chord[0]), NOTE(key - 24 + chord[0]), spb * 1.8, 0.3, 'triangle', R);
-        }
-      } else {
-        drum(beat === 0 || beat === 10, beat === 8, beat % 4 === 2);
-        if (beat === 0 || beat === 8) for (const c of chord) this.tone(t, NOTE(key + c), NOTE(key + c), spb * 7, 0.06, 'sine', R);
-        if (beat % 4 === 0) this.tone(t, NOTE(key - 24 + chord[0]), NOTE(key - 24 + chord[0]), spb * 3, 0.25, 'sine', R);
-        if (rng() < 0.18) { const deg = scale[Math.floor(rng() * scale.length)]; this.tone(t, NOTE(key + 12 + deg), NOTE(key + 12 + deg), spb * 3, 0.07, 'triangle', R); }
+      if (el.readyState >= 1) go();
+      else el.addEventListener('loadedmetadata', go, { once: true });
+    }
+
+    tuned(i) {
+      if (!this.radioOn || this.station !== i) return;
+      const t = this.ac.currentTime, g = this.feeds[i].g.gain;
+      g.cancelScheduledValues(t);
+      g.setValueAtTime(g.value, t);
+      g.linearRampToValueAtTime(1, t + 0.35);
+      this.hiss(false);
+    }
+
+    dropFeed(i) {
+      const f = this.feeds[i];
+      if (!f) return;
+      const t = this.ac.currentTime, g = f.g.gain;
+      g.cancelScheduledValues(t);
+      g.setValueAtTime(g.value, t);
+      g.linearRampToValueAtTime(0, t + 0.15);
+      clearTimeout(f.stop);
+      f.stop = setTimeout(() => { if (!(this.radioOn && this.station === i)) f.el.pause(); }, 400);
+    }
+
+    hiss(on) {
+      if (!this.hissN) {
+        if (!on) return;
+        this.hissN = this.loop('bandpass', 2400, 0.5, 0);
+        this.hissN.g.disconnect();
+        this.hissN.g.connect(this.radio);
       }
+      this.hissN.g.gain.setTargetAtTime(on ? 0.12 : 0, this.ac.currentTime, on ? 0.05 : 0.15);
     }
 
     destroy() {
-      if (this.timer) clearInterval(this.timer);
+      for (const f of Object.values(this.feeds)) { clearTimeout(f.stop); f.el.pause(); f.el.removeAttribute('src'); f.el.load(); }
+      this.feeds = {};
       if (this.ac) this.ac.close();
       this.on = false;
       this.ac = null;

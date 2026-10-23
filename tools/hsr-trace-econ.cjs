@@ -140,7 +140,7 @@ function economy() {
     const n = needs(kit, lvl), tier = tiers[Math.min(3, Math.max(0, Math.floor(lvl / 10) - 1))];
     const crim = Math.ceil(eq2(n.path) / tier.path), echo = Math.ceil(n.echo / tier.echo), cred = Math.ceil(n.credits / tiers[3].credits);
     const power = crim * 10 + echo * 30 + cred * 10;
-    console.log(kit.padEnd(9), String(lvl).padEnd(4), String(n.credits).padEnd(9), n.path.join('/').padEnd(14), n.foe.join('/').padEnd(13), String(n.echo).padEnd(5), String(n.tracks).padEnd(7), String(crim).padEnd(13), String(echo).padEnd(10), String(cred).padEnd(14), String(power).padEnd(6), (power / 120).toFixed(1));
+    console.log(kit.padEnd(9), String(lvl).padEnd(4), String(n.credits).padEnd(9), n.path.join('/').padEnd(14), n.foe.join('/').padEnd(13), String(n.echo).padEnd(5), String(n.tracks).padEnd(7), String(crim).padEnd(13), String(echo).padEnd(10), String(cred).padEnd(14), String(power).padEnd(6), (power * T.powerRegenSec / 3600).toFixed(1));
   }
 }
 

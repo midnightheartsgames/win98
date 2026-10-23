@@ -72,6 +72,7 @@ const STEAM_SERVER_MAPS = {
 const STEAM_SERVER_NAMES = ['[RU] Нижний Новгород #1', 'Klan MoD — только свои', 'Fido 2:5020 Game Zone', 'ZONA-NET Public', 'Chelyabinsk Hardcore', 'Школа №12 после уроков', 'LAN Party 2000', 'Moscow Online 24/7'];
 
 const STEAM_NEWS = [
+  { date: '20.11.00', title: 'Покупки в играх', text: 'Игры теперь могут продавать дополнения через Steam. Окно оплаты открывается поверх игры, а товар приходит в игру сразу после списания. Первым это сделал Honkai: Star Rail 98 с «Пропуском снабжения экспресса».' },
   { date: '14.11.00', title: 'Steam открыт для всех', text: 'Сегодня клиент Steam стал доступен каждому. Покупайте игры, загружайте их напрямую с серверов контента и получайте обновления автоматически — без дисков и установщиков.' },
   { date: '02.11.00', title: 'Серверы контента в России', text: 'Подключены новые узлы в Москве и Нижнем Новгороде. Владельцы модемов 56K заметят прирост скорости загрузки в вечерние часы.' },
   { date: '27.10.00', title: 'Покупка по банковской карте', text: 'Теперь игры можно купить прямо в клиенте: выберите игру в окне «Игры» и оплатите картой Visa или MasterCard. Промокоды WIN98SE и CYBER1998 дают скидку 20%.' },
@@ -476,6 +477,94 @@ class AppSteam {
       }, 600);
     });
     return win;
+  }
+
+  orders() {
+    if (!Array.isArray(this.settings.orders)) this.settings.orders = [];
+    return this.settings.orders;
+  }
+
+  recordOrder(gameId, offer) {
+    const order = { id: 'T' + Date.now().toString(36).toUpperCase() + (this.hash(offer.sku + Math.random()) % 46656).toString(36).toUpperCase(), game: gameId, sku: offer.sku, title: offer.title, price: offer.price, at: Date.now(), taken: 0 };
+    this.orders().push(order);
+    this.saveSettings();
+    return order;
+  }
+
+  takeOrders(gameId, skus) {
+    const list = this.orders().filter(o => o.game === gameId && !o.taken && (!skus || skus.includes(o.sku)));
+    if (!list.length) return [];
+    list.forEach(o => { o.taken = Date.now(); });
+    this.saveSettings();
+    return list.map(o => ({ id: o.id, sku: o.sku }));
+  }
+
+  openInGameBuy(gameId, offer, onPaid) {
+    const game = this.getGame(gameId);
+    if (!game || !offer) return 'none';
+    if (!this.gm.isInstalled('steam')) {
+      this.gm.showInSteam(gameId);
+      return 'nosteam';
+    }
+    const { win, isNew } = this.openWindow({ id: `steam_txn_${offer.sku}`, title: `Покупка в игре: ${game.title}`, width: 440, height: 470, resizable: false, x: 200, y: 60 });
+    if (!isNew) return 'open';
+    const body = win.bodyElement;
+    body.innerHTML = `
+      <div class="stm-body stm-buy">
+        <div class="stm-head">
+          <div class="stm-head-icon">${Icons[game.icon] || Icons['steam']}</div>
+          <div>
+            <div class="stm-info-title">${this.escape(offer.title)}</div>
+            <div class="stm-dim">Покупка в игре «${this.escape(game.title)}»</div>
+            <div class="stm-dim">Учётная запись Steam: ${this.escape(this.settings.account)}</div>
+          </div>
+        </div>
+        <div class="stm-panel stm-buy-desc">${this.escape(offer.text || '')}</div>
+        <div class="stm-buy-price">К оплате: <b>$${offer.price.toFixed(2)}</b></div>
+        <div class="stm-form">
+          <label>Номер карты</label><input class="stm-input" data-f="num" maxlength="19" placeholder="0000 0000 0000 0000">
+          <label>Срок (ММ/ГГ)</label><input class="stm-input stm-short" data-f="exp" maxlength="5">
+          <label>CVV</label><input class="stm-input stm-short" data-f="cvv" type="password" maxlength="3">
+          <label>Владелец</label><input class="stm-input" data-f="name">
+        </div>
+        <button class="stm-btn stm-fill" data-fill>Взять данные из «Банковская карта и сайты.txt»</button>
+        <div class="stm-dim">Промокоды не действуют на покупки в играх. Товар придёт в игру сразу после оплаты.</div>
+        <div class="stm-status" data-status></div>
+        <div class="stm-foot">
+          <button class="stm-btn stm-wide" data-pay>Оплатить</button>
+          <button class="stm-btn stm-wide" data-close>Отмена</button>
+        </div>
+      </div>`;
+    this.bindClose(win, body);
+    const field = name => body.querySelector(`[data-f="${name}"]`);
+    const status = body.querySelector('[data-status]');
+    const setStatus = (text, bad) => {
+      status.textContent = text;
+      status.classList.toggle('is-bad', !!bad);
+    };
+    body.querySelector('[data-fill]').addEventListener('click', () => {
+      this.playClick();
+      Object.entries(STEAM_CARD).forEach(([k, v]) => { field(k).value = v; });
+      setStatus('Данные карты вставлены из «Моих документов».');
+    });
+    const payBtn = body.querySelector('[data-pay]');
+    payBtn.addEventListener('click', () => {
+      if (field('num').value.replace(/\s+/g, '').length !== 16) return setStatus('Введите 16-значный номер карты.', true);
+      if (!/^\d\d\/\d\d$/.test(field('exp').value.trim())) return setStatus('Введите срок действия в формате ММ/ГГ.', true);
+      if (field('cvv').value.trim().length !== 3) return setStatus('Введите 3-значный код CVV.', true);
+      payBtn.disabled = true;
+      setStatus('Соединение с сервером Steam...');
+      setTimeout(() => {
+        setStatus(`Авторизация карты... списание $${offer.price.toFixed(2)}`);
+        setTimeout(() => {
+          this.recordOrder(gameId, offer);
+          if (window.soundSys) window.soundSys.playDing();
+          window.winManager.closeWindow(win.id);
+          if (onPaid) onPaid();
+        }, 900);
+      }, 600);
+    });
+    return 'open';
   }
 
   screenshots(id) {

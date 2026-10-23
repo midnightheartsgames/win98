@@ -3,7 +3,10 @@
   const G = H.Gfx;
   const { W, HGT, C, GLOW_NAME } = H.UI_CONST;
 
-  const SECTIONS = [{ id: 'shop', label: 'Магазин', icon: 'shop' }, { id: 'fashion', label: 'Магазин обликов', icon: 'outfit' }, { id: 'pets', label: 'Питомцы', icon: 'pet' }];
+  const SECTIONS = [
+    { id: 'pass', label: 'Снабжение экспресса', icon: 'pass' }, { id: 'shop', label: 'Магазин', icon: 'shop' }, { id: 'fashion', label: 'Магазин обликов', icon: 'outfit' },
+    { id: 'contracts', label: 'Контракты', icon: 'contract' }, { id: 'pets', label: 'Питомцы', icon: 'pet' }
+  ];
   const TABS = [['starlight', 'Неугасаемый звёздный свет'], ['embers', 'Неугасаемый пепел']];
   const GRID = { x: 170, y: 70, cols: 5, w: 86, h: 134, gap: 5, row: 6 };
   const CUR_NAME = { starlight: 'неугасаемого звёздного света', embers: 'неугасаемого пепла', jade: 'звёздного нефрита' };
@@ -11,6 +14,8 @@
   const SHOW = { x: 166, y: 40, w: 304, h: 412 };
   const WARDROBE = { x: 40, y: 42, w: 560, h: 414, cols: 4, rows: 2, cw: 120, ch: 162, gap: 10 };
   const fmt = H.fmt;
+  const CUT_FOES = ['reaver', 'eliminator', 'flamespawn'];
+  const cl = v => Math.max(0, Math.min(1, v));
   const leftText = ms => { const m = Math.ceil(ms / 60000); return m >= 60 ? '1 ч.' : m + ' мин.'; };
   const clock = ms => { const t = Math.max(0, Math.ceil(ms / 1000)), m = Math.floor(t / 60), s = t % 60; return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0'); };
   const showCache = {};
@@ -533,7 +538,7 @@
     openSupply(sec, pick) {
       const ui = this, g = this.game;
       const scr = this.push({
-        full: true, sec: Math.max(0, SECTIONS.findIndex(x => x.id === sec)), tab: 0, sel: 0, fsel: 0, fsc: { top: 0 }, psel: 0,
+        full: true, sec: Math.max(0, SECTIONS.findIndex(x => x.id === (sec || 'shop'))), tab: 0, sel: 0, fsel: 0, fsc: { top: 0 }, psel: 0, csel: 0,
         list() { return g.supplyList(TABS[this.tab][0]); },
         outfits() { return Object.keys(H.OUTFITS); },
         setSec(i) { if (i === this.sec) return; this.sec = i; ui.sfx('select'); },
@@ -552,12 +557,15 @@
             c.fillStyle = on ? 'rgba(242,220,154,0.25)' : 'rgba(10,12,40,0.6)'; c.beginPath(); c.arc(32, y + 14, 16, 0, Math.PI * 2); c.fill();
             c.strokeStyle = on ? C.brassHi : 'rgba(154,166,208,0.5)'; c.lineWidth = 1; c.stroke();
             G.menuIcon(c, sc.icon, 21, y + 3, 22, on ? '#fff0c0' : '#c8cce4');
-            ui.text(sc.label, 54, y + 8, { size: 11, bold: on, col: on ? C.gold : C.cream });
+            const ls = [11, 10, 9].find(sz => ui.measure(sc.label, sz, on) <= 102) || 9;
+            ui.text(sc.label, 54, y + 8 + (11 - ls) / 2, { size: ls, bold: on, col: on ? C.gold : C.cream });
             ui.hit(8, y - 6, 150, 40, () => this.setSec(i));
           });
           for (let y = 70 + SECTIONS.length * 52 - 10; y < HGT - 40; y += 7) { c.fillStyle = 'rgba(106,83,40,0.3)'; c.fillRect(30, y, 4, 2); }
           if (secId === 'shop') this.drawShop(c, s);
           else if (secId === 'fashion') this.drawFashion(c, s);
+          else if (secId === 'pass') ui.drawPassSupply(c, this);
+          else if (secId === 'contracts') ui.drawContracts(c, this);
           else ui.drawPetSupply(c, this);
         },
         drawShop(c, s) {
@@ -623,6 +631,11 @@
           ui.button(allX, 40, allW, 22, 'Все наряды', () => ui.openOutfitGrid(this), { size: 11, icon: 'outfit' });
           ui.keycap(allX + allW + 4, 45, 'F');
           const id = ids[this.fsel], o = H.OUTFITS[id], look = H.outfitLook(id, g.state.gender), ch = H.CHARS[o.char];
+          if (o.cuts) {
+            const cutX = allX + allW + 26, cutW = Math.round(ui.measure('Катсцены', 11) + 34);
+            ui.button(cutX, 40, cutW, 22, 'Катсцены', () => ui.openOutfitCuts(id), { size: 11, icon: 'warp' });
+            ui.keycap(cutX + cutW + 4, 45, 'V');
+          }
           const { x, y, w, h } = { x: SHOW.x, y: 70, w: SHOW.w, h: 384 };
           c.fillStyle = '#000'; c.fillRect(x - 2, y - 2, w + 4, h + 4);
           c.save(); c.beginPath(); c.rect(x, y, w, h); c.clip();
@@ -640,6 +653,9 @@
           ui.text(o.name, x + 16, y + 31 + (18 - ts) / 2, { size: ts, bold: true, serif: true, col: '#fff8f0' });
           c.fillStyle = 'rgba(30,20,40,0.72)'; c.fillRect(x + 8, y + 55, ui.measure(o.kind + ' · ' + '★'.repeat(o.rarity), 10) + 12, 15);
           ui.text(o.kind + ' · ' + '★'.repeat(o.rarity), x + 14, y + 57, { size: 10, col: G.RARITY[o.rarity] });
+          const perk = H.OUTFIT_TIER[o.rarity].perk;
+          c.fillStyle = 'rgba(30,20,40,0.72)'; c.fillRect(x + 8, y + 72, ui.measure(perk, 9) + 12, 14);
+          ui.text(perk, x + 14, y + 74, { size: 9, col: '#e8dcc0' });
           const rx = 480, rw = 144, cardH = 102, vis = 2, bar = ids.length > vis, first = ui.listTop(this.fsc, this.fsel, ids.length, vis);
           const cw = bar ? rw - 14 : rw;
           ui.wheelZone(rx, 70, rw, vis * (cardH + 6), d => { this.fsc.top += d; });
@@ -647,8 +663,8 @@
             const i = first + j, cy = 70 + j * (cardH + 6), on = i === this.fsel, O = H.OUTFITS[oid], own = g.ownsOutfit(oid);
             if (on) { c.fillStyle = C.brassHi; archPath(c, rx - 2, cy - 2, cw + 4, cardH + 4); c.fill(); }
             c.save(); archPath(c, rx, cy, cw, cardH); c.clip();
-            const gr = c.createLinearGradient(0, cy, 0, cy + cardH);
-            gr.addColorStop(0, '#6a4a2a'); gr.addColorStop(1, '#c8902e');
+            const gr = c.createLinearGradient(0, cy, 0, cy + cardH), [g0, g1] = G.RARITY_BG[O.rarity];
+            gr.addColorStop(0, g0); gr.addColorStop(1, g1);
             c.fillStyle = gr; c.fillRect(rx, cy, cw, cardH);
             G.drawPortrait(c, H.outfitLook(oid, g.state.gender), rx + (cw - 76) / 2, cy + 4, 76);
             c.fillStyle = 'rgba(20,12,4,0.6)'; c.fillRect(rx, cy + cardH - 46, cw, 20);
@@ -669,7 +685,7 @@
           ui.wrap(g.fill(o.text), rw - 12, 10).slice(0, 9).forEach((l, i) => ui.text(l, rx + 4, 302 + i * 12, { size: 10, col: '#c8d0f0' }));
           const label = !own ? 'Купить' : worn ? 'Надето' : !s.roster[o.char] ? 'В коллекции' : 'Надеть';
           ui.button(rx - 4, 420, rw + 8, 28, label, () => this.fashionAct(), { size: 12, bold: true, active: !own || (!worn && !!s.roster[o.char]), disabled: own && (worn || !s.roster[o.char]) });
-          ui.hints([['↑↓', 'Наряд'], ['F', 'Все'], ['Tab', 'Раздел'], ['Enter', !own ? 'Купить' : 'Надеть'], ['Esc', 'Назад']], 170, HGT - 18);
+          ui.hints([['↑↓', 'Наряд'], ['F', 'Все']].concat(o.cuts ? [['V', 'Катсцены']] : [], [['Tab', 'Раздел'], ['Enter', !own ? 'Купить' : 'Надеть'], ['Esc', 'Назад']]), 170, HGT - 18);
         },
         fashionAct() {
           const id = this.outfits()[this.fsel], o = H.OUTFITS[id];
@@ -682,10 +698,13 @@
           if (code === 'Tab') { this.setSec((this.sec + 1) % SECTIONS.length); return; }
           if (k === 'back') { ui.pop(); return; }
           if (SECTIONS[this.sec].id === 'pets') { ui.petSupplyKey(this, k, code); return; }
+          if (SECTIONS[this.sec].id === 'pass') { ui.passSupplyKey(this, k, code); return; }
+          if (SECTIONS[this.sec].id === 'contracts') { ui.contractsKey(this, k, code); return; }
           if (SECTIONS[this.sec].id === 'fashion') {
             const n = this.outfits().length;
             if (k === 'up' || k === 'down') { this.fsel = (this.fsel + (k === 'up' ? n - 1 : 1)) % n; ui.sfx('select'); }
             if (code === 'KeyF') ui.openOutfitGrid(this);
+            if (code === 'KeyV') { const oid = this.outfits()[this.fsel]; if (H.OUTFITS[oid].cuts) ui.openOutfitCuts(oid); else ui.sfx('deny'); }
             if (k === 'ok') this.fashionAct();
             return;
           }
@@ -701,7 +720,93 @@
       });
       if (pick && H.OUTFITS[pick]) scr.fsel = Math.max(0, Object.keys(H.OUTFITS).indexOf(pick));
       if (!g.state.shop.intro) this.openSupplyIntro();
+      else this.outfitBackNotice();
       return scr;
+    },
+
+    outfitCutSteps(id) {
+      const set = H.OUTFIT_CUTS[id] || {}, steps = [];
+      if (set.ult) steps.push(['ult', null, 'Абсолютная техника']);
+      if (set.skill) steps.push(['skill', null, 'Навык']);
+      for (const f of Object.keys(set.fusions || {})) steps.push(['fus', f, 'Слияние']);
+      if (set.warp) steps.push(['warp', null, 'Прыжок']);
+      return steps;
+    },
+
+    outfitCutShow(id, step) {
+      const ui = this, g = this.game, o = H.OUTFITS[id], kit = H.CHARS[o.char], [kind, sub] = step;
+      const unit = k => ({ side: 'ally', id: k, charId: k, kit: H.CHARS[k], name: k.startsWith('trail') ? g.state.name : H.CHARS[k].name, elem: H.CHARS[k].elem, path: H.CHARS[k].path });
+      const foes = target => {
+        if (target === 'allies' || target === 'self') return [];
+        const list = CUT_FOES.map((e, i) => ({ u: { data: H.ENEMIES[e] }, x: 135 + i * 42, y: 145, s: 52 }));
+        return target === 'single' ? list.slice(1, 2) : list;
+      };
+      const me = unit(o.char);
+      if (kind === 'ult') return new H.Ults.Show(ui, me, { foes: foes(kit.ult.target), allies: [me], bg: 'station', outfit: id });
+      if (kind === 'skill') return new H.SkillShow(ui, me, { foes: foes(kit.skill.target), bg: 'station', outfit: id });
+      if (kind === 'fus') { const mem = H.FUSIONS[sub].members.map(unit); return new H.Fusions.Show(ui, mem, { id: sub, foes: foes(H.FUSIONS[sub].target), allies: mem, bg: 'station', outfit: id }); }
+      const r = { id: o.char, rar: kit.rarity, kind: 'char', outfit: id }, WI = H.WarpIntro, cues = WI.cues(r, g), len = WI.length(o.char, g, id);
+      return {
+        t: 0, cue: 0, done: false, fading: false,
+        tick(dt) { this.t += dt; while (this.cue < cues.length && cues[this.cue][0] <= this.t) ui.sfx(cues[this.cue++][1]); if (this.t >= len + 0.4) this.done = true; },
+        skip() { this.done = true; },
+        draw(c) {
+          c.save(); c.imageSmoothingEnabled = false;
+          c.drawImage(WI.render(g, r, Math.min(this.t, len), false), 0, 0, W, HGT);
+          c.restore();
+          WI.overlay(ui, c, r, this.t, g);
+          const said = WI.line(o.char, g, id), a = cl((this.t - WI.SIGN - 0.6) / 0.3);
+          if (said && a > 0) { c.save(); c.globalAlpha = a; ui.text('«' + said + '»', W / 2, HGT - 40, { align: 'center', size: 13, col: C.cream }); c.restore(); }
+          ui.hints([['Esc', 'Пропустить']], W - 12, 20, { align: 'right' });
+          ui.hit(0, 0, W, HGT, () => this.skip());
+        }
+      };
+    },
+
+    openOutfitCuts(id) {
+      const ui = this, o = H.OUTFITS[id], steps = this.outfitCutSteps(id);
+      if (!steps.length) { this.sfx('deny'); return null; }
+      const scr = {
+        full: true, i: 0, show: null,
+        begin(i) { this.i = i; this.show = ui.outfitCutShow(id, steps[i]); },
+        next() { if (this.i < steps.length - 1) this.begin(this.i + 1); else { ui.pop(); ui.sfx('confirm'); } },
+        tick(dt) { if (!this.show) return; this.show.tick(dt); if (this.show.done) this.next(); },
+        draw(c) {
+          if (!this.show) return;
+          this.show.draw(c);
+          const label = 'Катсцены «' + o.name + '» · ' + steps[this.i][2] + ' · ' + (this.i + 1) + ' / ' + steps.length;
+          c.fillStyle = 'rgba(8,6,12,0.7)'; c.fillRect(W / 2 - ui.measure(label, 10) / 2 - 8, HGT - 16, ui.measure(label, 10) + 16, 14);
+          ui.text(label, W / 2, HGT - 15, { align: 'center', size: 10, col: C.sub });
+        },
+        key(k, code) {
+          if (!this.show) return;
+          if (code === 'Backspace') { ui.pop(); ui.sfx('cancel'); return; }
+          if (k === 'ok' || k === 'back') this.next();
+        }
+      };
+      scr.begin(0);
+      this.push(scr);
+      return scr;
+    },
+
+    outfitBackNotice() {
+      const ui = this, sh = this.game.state.shop, back = sh.outfitBack;
+      if (!back) return false;
+      sh.outfitBack = null;
+      this.push({
+        draw(c) {
+          const lines = ui.wrap('Класс облика теперь зависит от того, что облик меняет. Облик 4★ меняет только героя: в бою, в мире и в меню, и стоит ' + fmt(H.OUTFIT_TIER[4].price) + ' нефрита. Облик 5★ ещё и показывает свои катсцены абсолютной техники, Навыка, Слияний и прыжка. Ваши облики подешевели, поэтому разница возвращена: ' + fmt(back) + ' звёздного нефрита.', 400, 11);
+          const h = 80 + lines.length * 15, x = W / 2 - 220, y = HGT / 2 - h / 2;
+          c.fillStyle = 'rgba(0,0,0,0.45)'; c.fillRect(0, 0, W, HGT);
+          ui.win(x, y, 440, h, { title: 'Патч 1.6: Облики 4★ и 5★' });
+          G.itemIcon(c, 'jade', x + 16, y + 24, 24);
+          lines.forEach((l, i) => ui.text(l, x + 50, y + 24 + i * 15, { size: 11 }));
+          ui.hints([['Enter', 'Понятно']], W / 2, y + h - 22, { align: 'center' });
+          ui.hit(0, 0, W, HGT, () => this.key('ok'));
+        },
+        key(kk) { if (kk === 'ok' || kk === 'back') { ui.screens.pop(); ui.sfx('confirm'); } }
+      });
+      return true;
     },
 
     openSupplyIntro() {
@@ -858,6 +963,7 @@
             ui.text('Цена:', x + 92, y + 50, { size: 11, col: C.sub });
             ui.money(x + 130, y + 49, 'jade', o.price, { col: C.gold });
             ui.text('Останется ' + fmt(g.state.jade - o.price) + ' нефрита', x + 92, y + 70, { size: 10, col: C.dim });
+            ui.wrap('★'.repeat(o.rarity) + ' ' + H.OUTFIT_TIER[o.rarity].perk + '.', w - 108, 10).slice(0, 2).forEach((l, i) => ui.text(l, x + 92, y + 86 + i * 12, { size: 10, col: G.RARITY[o.rarity] }));
           }
           const two = !this.done || !!g.state.roster[o.char];
           const a = this.done ? 'Надеть' : 'Купить', b = this.done ? (two ? 'Позже' : 'Хорошо') : 'Отмена';
@@ -911,7 +1017,7 @@
       if (s.outfitFocus) { c.fillStyle = C.brassHi; archPath(c, cx - 2, cy - 2, cw + 4, ch + 4); c.fill(); }
       c.save(); archPath(c, cx, cy, cw, ch); c.clip();
       const gr = c.createLinearGradient(0, cy, 0, cy + ch);
-      if (o) { gr.addColorStop(0, '#6a4a2a'); gr.addColorStop(1, '#c8902e'); } else { gr.addColorStop(0, '#2a3468'); gr.addColorStop(1, '#5a6aa8'); }
+      if (o) { gr.addColorStop(0, G.RARITY_BG[o.rarity][0]); gr.addColorStop(1, G.RARITY_BG[o.rarity][1]); } else { gr.addColorStop(0, '#2a3468'); gr.addColorStop(1, '#5a6aa8'); }
       c.fillStyle = gr; c.fillRect(cx, cy, cw, ch);
       G.drawPortrait(c, this.outfitPreview(s, k), cx + 4, cy + 22, 104);
       c.restore();
@@ -933,9 +1039,9 @@
       c.fillStyle = 'rgba(242,220,154,0.5)'; c.fillRect(px + 16, y + 2, pw - 32, 1); this.diamond(px + pw / 2, y + 2.5, 3, C.brassHi, '#1a1208');
       this.text(name, px + pw / 2, y + 9, { size: 11, align: 'center', col: C.sub });
       y += 26;
-      this.wrap(o ? o.kind + ' ' + name + ' (' + H.PATHS[kit.path].name + ')' : 'Наряд по умолчанию', pw - 20, 10).slice(0, 2).forEach(l => { this.text(l, px + pw / 2, y, { size: 10, align: 'center', col: o ? '#ffb860' : C.dim }); y += 12; });
+      this.wrap(o ? '★'.repeat(o.rarity) + ' ' + o.kind + ' · ' + name + ' (' + H.PATHS[kit.path].name + ')' : 'Наряд по умолчанию', pw - 20, 10).slice(0, 2).forEach(l => { this.text(l, px + pw / 2, y, { size: 10, align: 'center', col: o ? G.RARITY[o.rarity] : C.dim }); y += 12; });
       y += 4;
-      const note = o ? (st === 'locked' ? 'Продаётся в Снабжении, раздел «Магазин обликов», за ' + fmt(o.price) + ' звёздного нефрита.' + (o.giftNote ? ' Бесплатно ' + o.giftNote + '.' : '') : 'Наряд меняет внешний вид везде: в меню, на карте и в бою. На характеристики не влияет.') : list.length > 1 ? 'Обычная одежда персонажа.' : 'Других нарядов у персонажа пока нет.';
+      const note = o ? (st === 'locked' ? 'Продаётся в Снабжении, раздел «Магазин обликов», за ' + fmt(o.price) + ' звёздного нефрита.' + (o.giftNote ? ' Бесплатно ' + o.giftNote + '.' : '') : H.OUTFIT_TIER[o.rarity].perk + '. На характеристики не влияет.') : list.length > 1 ? 'Обычная одежда персонажа.' : 'Других нарядов у персонажа пока нет.';
       this.wrap(note, pw - 24, 10).slice(0, 4).forEach(l => { this.text(l, px + 12, y, { size: 10, col: '#c8d0f0' }); y += 12; });
       const label = st === 'worn' ? 'Надето' : st === 'owned' ? 'Надеть' : 'В Снабжение';
       this.button(px + 12, py + ph - 38, pw - 24, 24, label, () => this.outfitAct(s, k), { size: 11, icon: st === 'locked' ? 'shop' : 'outfit', active: st === 'worn' && list.length > 1, disabled: list.length < 2 });
@@ -972,4 +1078,6 @@
       if (kk === 'back') { s.outfitFocus = false; this.sfx('cancel'); }
     }
   });
+
+  Object.assign(H, { outfitShowcase: showcase, SUPPLY_SECTIONS: SECTIONS.map(x => x.id) });
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

@@ -15,7 +15,7 @@ window.kovchegData = {
   ],
 
   games: [
-    { id: 'hsr98', open: true, path: '/hsr98/', note: 'тир-лист, личные дела 53 персонажей, отряды, Зал забвения по этапам' },
+    { id: 'hsr98', open: true, path: '/hsr98/', note: 'тир-лист, личные дела 62 персонажей, отряды, Зал забвения по этапам' },
     { id: 'kotor98', note: 'Таврис уже на стапеле: классы, черты и первый отряд' },
     { id: 'dao98', note: 'шесть предысторий, ждём, пока Штурман дойдёт до Лотеринга' },
     { id: 'diablo2', note: 'Акт I: классы и навыки' },
@@ -46,7 +46,7 @@ window.kovchegData = {
 
   hatches: [
     { id: 'tier', path: '/hsr98/tier', title: 'Тир-лист', gif: 'chart', text: 'Кто сильнее в Зале, на боссах и во Вселенной' },
-    { id: 'crew', path: '/hsr98/crew', title: 'Экипаж', gif: 'user', text: 'Все 53 персонажа с фильтрами по Пути и стихии' },
+    { id: 'crew', path: '/hsr98/crew', title: 'Экипаж', gif: 'user', text: 'Все 62 персонажа с фильтрами по Пути и стихии' },
     { id: 'teams', path: '/hsr98/teams', title: 'Судовая роль', gif: 'star', text: 'Готовые отряды и замены' },
     { id: 'hall', path: '/hsr98/hall', title: 'Зал забвения', gif: 'shield', text: 'Пятнадцать этапов, враги и два отряда на каждый' },
     { id: 'guide', path: '/hsr98/guide', title: 'Статьи', gif: 'book', text: 'Новичку, боевая математика, кого крутить' },

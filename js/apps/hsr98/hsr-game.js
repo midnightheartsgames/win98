@@ -41,21 +41,24 @@
 
   function newState() {
     return {
-      v: 1, trv: 1, name: 'Келус', gender: 'm', mcPath: 'trail',
+      v: 1, trv: 1, xpv: 1, name: 'Келус', gender: 'm', mcPath: 'trail',
       roster: { trail: { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 } },
       party: ['trail'],
       inv: { items: {}, cones: [], relics: [] }, uid: 1,
-      credits: 500, jade: 0, starlight: 0, embers: 0, shop: { hour: null, bought: {}, back: null, intro: false }, outfits: [], pets: [], pet: null, petLog: {}, power: T.powerMax, powerAcc: 0, tp: T.tpStart,
+      credits: 500, jade: 0, starlight: 0, embers: 0, shop: { hour: null, bought: {}, back: null, intro: false }, outfits: [], pets: [], pet: null, petLog: {}, power: T.powerMax, powerAt: null, powerRes: 0, powerBuy: { hour: null, n: 0 }, tp: T.tpStart,
       flags: {}, map: 'hs_base', x: null, y: null, dir: 'down',
       anchors: [], lastAnchor: null, opened: {}, broken: {},
       rumors: [], bank: { enemies: {}, fusions: [] }, pity: { five: 0, four: 0 }, pityEv: { five: 0, four: 0 }, pityCone: { five: 0, four: 0, guar5: false, guar4: false }, pitySig: { five: 0, four: 0, guar5: false, guar4: false }, pityAmp: { five: 0, four: 0, guar5: false, guar4: false }, pityConv: { five: 0, four: 0, guar5: false, guar4: false }, pityForge: { five: 0, four: 0, guar5: false, guar4: false }, pityGuild: { five: 0, four: 0, guar5: false, guar4: false }, pityWiz: { five: 0, four: 0, guar5: false, guar4: false }, pityMid: { five: 0, four: 0, guar5: false, guar4: false }, pityCon: { five: 0, four: 0, guar5: false, guar4: false }, pityAlley: { five: 0, four: 0, guar5: false, guar4: false }, pityComp: { five: 0, four: 0, guar5: false, guar4: false },
       time: 0, obj: 'Прийти в себя', recaps: [], nextAtk: 0, nextCrit: 0, pendingTechs: [], warpLog: [], warpN: 0, warpNEv: 0, warpNCone: 0, warpNSig: 0, warpNAmp: 0, warpNConv: 0, warpNForge: 0, warpNGuild: 0, warpNWiz: 0, warpNMid: 0, warpNComp: 0, warpNCon: 0, warpNAlley: 0, conStar: 'makoto', alleyStar: 'makoto', warpBatch: 0, warpBan: null, evStar: 'ruanmei', coneStar: 'ruanmei', sigStar: 'miyabi', ampStar: 'miyabi', convStar: 'phrolova', forgeStar: 'phrolova', guildStar: 'aqua', wizStar: 'aqua', echoClaims: 0,
-      comet: { days: 0, last: null, got: [] }, will: [], mail: {}, record: null,
+      comet: { start: null, done: null, got: [] }, will: [], mail: {}, record: null,
       quests: {}, missions: { done: {}, track: null, seen: {} }, su: null, suPaths: [], suClaims: [], squads: [], squad: 0
     };
   }
 
   const DAY_RESET_H = 4;
+  const POWER_HOUR = 3600000;
+  const COMET_STEP = 3600000;
+  const COMET_REST = 5 * 3600000;
   const dayKey = ms => { const d = new Date(ms - DAY_RESET_H * 3600000); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
   function nextReset(ms) {
     const d = new Date(ms);
@@ -231,6 +234,7 @@
       this.rng = H.makeRandom(opts.seed || ((Date.now() & 0xffffff) + 7));
       this.state = opts.state ? Object.assign(newState(), JSON.parse(JSON.stringify(opts.state))) : newState();
       this.clock = opts.clock || null;
+      this.fixPower();
       this.fixWarpLog();
       this.fixGlow(!!opts.state && !opts.state.shop);
       this.fixFlags();
@@ -238,10 +242,12 @@
       this.fixJarilo(!!opts.state);
       this.fixStoryJoins();
       this.fixTrailLevel();
+      this.fixExpScale(!!opts.state && !opts.state.xpv);
       this.fixRecaps(!!opts.state && !Array.isArray(opts.state.recaps));
       if (this.fixMissions) this.fixMissions(!!opts.state && !opts.state.missions);
       if (this.fixConductor) this.fixConductor();
       if (this.fixTraces) this.fixTraces(!!opts.state && !opts.state.trv);
+      if (this.fixOutfitTiers) this.fixOutfitTiers(!!opts.state && !opts.state.otv);
       this.mailSync();
       this.events = [];
       this.pending = null;
@@ -523,8 +529,7 @@
     update(dt, input = {}) {
       const s = this.state;
       s.time += dt;
-      s.powerAcc += dt;
-      while (s.powerAcc >= T.powerRegenSec) { s.powerAcc -= T.powerRegenSec; if (s.power < T.powerMax) s.power++; }
+      this.powerSync();
       if (this.attackAnim > 0) this.attackAnim = Math.max(0, this.attackAnim - dt);
       if (this.updatePet && !this.battle) this.updatePet(dt);
       if (this.battle || this.pending) return;
@@ -794,7 +799,8 @@
       }
       this.state.tp = Math.min(T.tpMax, this.state.tp + 1);
       this.state.credits += 20;
-      this.toast('+1 очко техники, +20 кредитов');
+      const extra = this.synDestr ? this.synDestr() : '';
+      this.toast('+1 очко техники, +20 кредитов' + (extra ? ', ' + extra : ''));
     }
 
     attack() {
@@ -932,14 +938,15 @@
       if (ctx.calyx) jade = 0;
       s.credits += rw.credits;
       s.jade += jade;
-      out.exp = rw.exp;
+      out.exp = H.charExp(rw.exp, this.avgLevel());
+      out.tlExp = rw.exp;
       out.credits = rw.credits;
       out.jade = jade;
       for (const k of s.party.slice(0, 4)) {
-        const ups = this.addExp(k, rw.exp);
+        const ups = this.addExp(k, H.charExp(rw.exp, s.roster[k].lvl));
         if (ups) out.levelUps.push({ key: k, lvl: s.roster[k].lvl });
       }
-      for (const k of Object.keys(s.roster)) if (!s.party.slice(0, 4).includes(k)) this.addExp(k, Math.round(rw.exp * 0.3));
+      for (const k of Object.keys(s.roster)) if (!s.party.slice(0, 4).includes(k)) this.addExp(k, H.charExp(rw.exp * 0.3, s.roster[k].lvl));
       this.addTrailExp(rw.exp);
       const got = [];
       for (const d of [...rw.drops, ...rw.gifts]) got.push(...this.give(this.dropToGive(d, b.opts.lvl)));
@@ -1005,7 +1012,7 @@
       for (const [id, n] of Object.entries(g.items || {})) { s.inv.items[id] = (s.inv.items[id] || 0) + n; out.push(H.ITEMS[id].name + (n > 1 ? ' ×' + n : '')); }
       if (g.cone) { this.addCone(g.cone); out.push('конус «' + H.CONES[g.cone].name + '»'); }
       for (const id of [].concat(g.outfit || [])) if (H.OUTFITS && H.OUTFITS[id]) { if (!s.outfits.includes(id)) s.outfits.push(id); out.push('наряд «' + H.OUTFITS[id].name + '»'); }
-      for (let i = 0; i < (g.relic || 0); i++) { const r = this.rollRelic(g.lvl || this.avgLevel()); out.push('реликвия «' + H.RELIC_SETS[r.set].name + '» (' + H.RELIC_SLOTS.find(x => x.key === r.slot).name + ')'); }
+      for (let i = 0; i < (g.relic || 0); i++) { const r = this.rollRelic(g.lvl || this.avgLevel(), g.sets); out.push('реликвия «' + H.RELIC_SETS[r.set].name + '» (' + H.RELIC_SLOTS.find(x => x.key === r.slot).name + ')'); }
       for (const o of [].concat(g.ornament || [])) {
         for (let i = 0; i < (o.n || 1); i++) for (const sl of H.PLANAR_SLOTS) this.rollPlanar(o.set, o.rl, sl.key);
         out.push('украшения «' + H.RELIC_SETS[o.set].name + '»' + ((o.n || 1) > 1 ? ' ×' + o.n : ''));
@@ -1044,13 +1051,18 @@
       s.tl = { lvl, exp: lvl >= TL_MAX ? 0 : (tr && tr.exp) || 0 };
     }
 
+    fixExpScale(old) {
+      if (!old) return;
+      for (const r of Object.values(this.state.roster)) if (r && r.exp > 0) r.exp = Math.min(H.charExp(r.exp, r.lvl), H.expToNext(r.lvl) - 1);
+    }
+
     trailLevel() { return this.state.tl.lvl; }
 
     addTrailExp(n) {
       const tl = this.state.tl, from = tl.lvl;
       if (n <= 0 || tl.lvl >= TL_MAX) return false;
       tl.exp += Math.round(n);
-      while (tl.lvl < TL_MAX && tl.exp >= H.expToNext(tl.lvl)) { tl.exp -= H.expToNext(tl.lvl); tl.lvl++; }
+      while (tl.lvl < TL_MAX && tl.exp >= H.tlExpToNext(tl.lvl)) { tl.exp -= H.tlExpToNext(tl.lvl); tl.lvl++; }
       if (tl.lvl >= TL_MAX) tl.exp = 0;
       if (tl.lvl === from) return false;
       this.emit({ t: 'tl', from, lvl: tl.lvl });
@@ -1084,7 +1096,7 @@
       if (cone) {
         const cd = H.CONES[cone.id], g = H.grow(r.lvl);
         flat.hpF += Math.round(cd.stats.hp * g); flat.atkF += Math.round(cd.stats.atk * g); flat.defF += Math.round(cd.stats.def * g);
-        if (cd.path === c.path) for (const [k, v] of Object.entries(cd.bonus)) addStat(k, v * (1 + 0.25 * ((cone.sup || 1) - 1)));
+        if (cd.path === c.path) for (const [k, v] of Object.entries(cd.bonus)) addStat(k, cd.p ? H.coneParam(cone.id, v, cone.sup) : v * H.coneLegacyMul(cone.sup));
       }
       const sets = {};
       for (const uid of Object.values(r.relics || {})) {
@@ -1131,9 +1143,9 @@
       return c;
     }
 
-    rollRelic(lvl) {
+    rollRelic(lvl, sets) {
       const rng = this.rng;
-      const set = rng.pick(H.CAVERN_SETS);
+      const set = rng.pick(sets && sets.length ? sets : H.CAVERN_SETS);
       const slot = rng.pick(H.CAVERN_SLOTS);
       return this.makeRelic(set, slot, Math.min(15, Math.floor((lvl || 1) / 3)), lvl);
     }
@@ -1233,6 +1245,7 @@
         if (path === 'preservation') { w.defP = 3.5; w.defF = 0.08; w.atkP = 1; w[kit.elem + 'P'] = 0.6; }
         if (path === 'abundance') { w.hpP = 3.5; w.healP = 3; w.atkP = 0.8; w[kit.elem + 'P'] = 0.6; w.err = 3; }
         if (path === 'harmony') w.err = 3.5;
+        if (path === 'elation') { w.spd = 2; w.ehr = 1.5; }
         let v = (w[rel.main] || 0.5) * rel.mv * (rel.main.endsWith('F') ? 1 : 30);
         for (const [k, x] of rel.subs) v += (w[k] || 0.3) * x * (k.endsWith('F') ? 1 : 30) * 0.4;
         return v;
@@ -1333,7 +1346,7 @@
       else if (u.tp) { if (s.tp >= T.tpMax) return false; s.tp = Math.min(T.tpMax, s.tp + u.tp); }
       else if (u.nextAtk) s.nextAtk = u.nextAtk;
       else if (u.nextCrit) s.nextCrit = u.nextCrit;
-      else if (u.power) s.power = Math.min(T.powerMax + 60, s.power + u.power);
+      else if (u.power) { this.powerSync(); if (s.power + u.power > T.powerTop) return false; s.power += u.power; }
       else if (u.energy) { if (!this.canCharge(key)) return false; this.charge(key, u.energy); }
       else if (u.energyAll) { const ks = s.party.slice(0, 4).filter(k => this.canCharge(k)); if (!ks.length) return false; for (const k of ks) this.charge(k, u.energyAll); }
       else if (u.exp) { const r = s.roster[key]; if (!r || r.lvl >= MAX_LVL) return false; this.addExp(key, u.exp); }
@@ -1409,6 +1422,12 @@
       const rel = { uid: s.uid++, set: o.set, slot: slot.key, main: o.main, mv: this.relicMain(o.main, rl), subs, lvl: rl };
       s.inv.relics.push(rel);
       return rel;
+    }
+
+    debugPower(big) {
+      const s = this.powerSync(), was = s.power;
+      s.power = big ? T.powerTop : Math.min(T.powerTop, was < T.powerMax ? T.powerMax : was + T.powerMax);
+      return s.power - was;
     }
 
     grantDebugJade() {
@@ -1588,23 +1607,112 @@
     }
 
     now() { return this.clock ? this.clock() : Date.now(); }
+
+    fixPower() {
+      const s = this.state;
+      delete s.powerAcc;
+      if (typeof s.powerAt !== 'number') s.powerAt = this.now();
+      s.powerRes = Math.max(0, Math.min(T.powerReserveMax, +s.powerRes || 0));
+      if (!s.powerBuy || typeof s.powerBuy !== 'object') s.powerBuy = { hour: null, n: 0 };
+    }
+
+    powerSync() {
+      const s = this.state, step = T.powerRegenSec * 1000, now = this.now();
+      if (typeof s.powerAt !== 'number' || !(s.powerAt <= now)) { s.powerAt = now; return s; }
+      const n = Math.floor((now - s.powerAt) / step);
+      if (n <= 0) return s;
+      s.powerAt += n * step;
+      const fill = Math.max(0, Math.min(n, T.powerMax - s.power));
+      s.power += fill;
+      s.powerRes = Math.min(T.powerReserveMax, s.powerRes + n - fill);
+      return s;
+    }
+
+    powerBought() {
+      const b = this.state.powerBuy, hour = Math.floor(this.now() / POWER_HOUR);
+      if (b.hour !== hour) { b.hour = hour; b.n = 0; }
+      return b.n;
+    }
+
+    powerJadeCost(k) {
+      const from = this.powerBought(), list = T.powerJade;
+      if (!(k > 0) || from + k > list.length) return null;
+      return list.slice(from, from + k).reduce((a, v) => a + v, 0);
+    }
+
+    powerInfo() {
+      const s = this.powerSync(), step = T.powerRegenSec * 1000, now = this.now();
+      const next = step - (now - s.powerAt), gain = n => (n <= 0 ? 0 : next + (n - 1) * step);
+      const toFull = Math.max(0, T.powerMax - s.power), toRes = T.powerReserveMax - s.powerRes;
+      return {
+        cur: s.power, max: T.powerMax, res: s.powerRes, resMax: T.powerReserveMax, top: T.powerTop, room: Math.max(0, T.powerTop - s.power),
+        next, full: gain(toFull), resFull: toRes <= 0 ? 0 : gain(toFull + toRes), filling: toFull > 0 ? 'cur' : toRes > 0 ? 'res' : null,
+        fuel: s.inv.items.fuel || 0, bought: this.powerBought(), buyMax: T.powerJade.length, jadeNext: this.powerJadeCost(1)
+      };
+    }
+
+    powerFromReserve(n) {
+      const s = this.powerSync();
+      n = Math.min(Math.floor(n), s.powerRes, T.powerTop - s.power);
+      if (!(n > 0)) return 0;
+      s.powerRes -= n;
+      s.power += n;
+      return n;
+    }
+
+    powerFromFuel(k) {
+      const s = this.powerSync(), have = s.inv.items.fuel || 0;
+      k = Math.floor(k);
+      if (!(k > 0) || k > have || s.power + k * T.powerPack > T.powerTop) return 0;
+      s.inv.items.fuel = have - k;
+      if (!s.inv.items.fuel) delete s.inv.items.fuel;
+      s.power += k * T.powerPack;
+      return k * T.powerPack;
+    }
+
+    powerFromJade(k) {
+      const s = this.powerSync();
+      k = Math.floor(k);
+      const cost = this.powerJadeCost(k);
+      if (cost == null || s.jade < cost || s.power + k * T.powerPack > T.powerTop) return 0;
+      s.jade -= cost;
+      s.powerBuy.n += k;
+      s.power += k * T.powerPack;
+      return k * T.powerPack;
+    }
     nextDay() { return nextReset(this.now()); }
     eventsOpen() { return !!this.state.flags.express_intro; }
 
     cometTick() {
-      const c = this.state.comet;
-      if (!this.eventsOpen() || c.days >= H.COMET_GIFT.length) return c;
-      const day = dayKey(this.now());
-      if (c.last !== day) { c.days++; c.last = day; }
+      const c = this.state.comet, now = this.now();
+      if (!this.eventsOpen()) return c;
+      if (!Array.isArray(c.got)) c.got = [];
+      if (typeof c.start !== 'number' || c.start > now) { c.start = now; delete c.days; delete c.last; }
+      if (!H.COMET_GIFT.every((n, i) => c.got[i])) { c.done = null; return c; }
+      if (typeof c.done !== 'number' || c.done > now) c.done = now;
+      if (now >= c.done + COMET_REST) { c.start = c.done + COMET_REST; c.done = null; c.got = []; }
       return c;
     }
 
-    cometReady(i) { const c = this.cometTick(); return i < c.days && !c.got[i]; }
+    cometAllGot() { const c = this.cometTick(); return H.COMET_GIFT.every((n, i) => c.got[i]); }
+
+    cometOpen() {
+      const c = this.cometTick();
+      return typeof c.start === 'number' ? Math.min(H.COMET_GIFT.length, Math.floor((this.now() - c.start) / COMET_STEP) + 1) : 0;
+    }
+
+    cometOpensAt(i) { const c = this.cometTick(); return typeof c.start === 'number' ? c.start + i * COMET_STEP : null; }
+
+    cometRenewAt() { const c = this.cometTick(); return typeof c.done === 'number' ? c.done + COMET_REST : null; }
+
+    cometReady(i) { return i < this.cometOpen() && !this.state.comet.got[i]; }
 
     claimComet(i) {
       if (!this.cometReady(i)) return null;
       this.state.comet.got[i] = true;
-      return this.give({ items: { spass: H.COMET_GIFT[i] } });
+      const got = this.give({ items: { spass: H.COMET_GIFT[i] } });
+      this.cometTick();
+      return got;
     }
 
     willReady(i) {
@@ -1615,7 +1723,16 @@
     claimWill(i) {
       if (!this.willReady(i)) return null;
       this.state.will.push(H.TRAIL_WILL[i].lvl);
-      return this.give(H.TRAIL_WILL[i].give);
+      return this.give(this.willGive(i));
+    }
+
+    willOwned(i) { const id = H.TRAIL_WILL[i].give.outfit; return !!id && !!H.OUTFITS && this.ownsOutfit(id); }
+
+    willGive(i) {
+      const g = H.TRAIL_WILL[i].give;
+      if (!this.willOwned(i)) return g;
+      const { outfit, ...rest } = g;
+      return Object.assign(rest, { jade: (g.jade || 0) + H.OUTFITS[outfit].price });
     }
 
     claimEvent(id) {
@@ -1750,7 +1867,7 @@
         case 'exp': return this.give({ items: tier >= 2 ? { exp2: 2 + tier, exp1: 2 } : { exp1: 3 + tier * 2 } }).concat(mats);
         case 'credits': return this.give({ credits: T.treasure ? T.treasure[tier] : 1500 + 1500 * tier }).concat(mats);
         case 'path': return mats;
-        case 'relic': return this.give({ relic: 2 + (this.rng() < 0.5 ? 1 : 0), lvl: lvl + 6 });
+        case 'relic': return this.give({ relic: 2 + (this.rng() < 0.5 ? 1 : 0), lvl: lvl + 6, sets: c.sets });
         case 'echo': { const g = this.give({ relic: 3, lvl: lvl + 9, jade: 40 }).concat(mats); return this.fhEchoLucent ? g.concat(this.fhEchoLucent()) : g; }
       }
       return [];

@@ -9,7 +9,8 @@
     nihil: ['nihility', 'Небытия', ['Обсидиан ужаса', 'Обсидиан запустения', 'Обсидиан одержимости']],
     pres: ['preservation', 'Сохранения', ['Выносливость бронзы', 'Клятва мёрзлой стали', 'Страж янтаря']],
     abund: ['abundance', 'Изобилия', ['Семя изобилия', 'Росток жизни', 'Цветок вечности']],
-    memo: ['remembrance', 'Памяти', ['Семя раздумий', 'Росток осознания', 'Бутон сознания']]
+    memo: ['remembrance', 'Памяти', ['Семя раздумий', 'Росток осознания', 'Бутон сознания']],
+    elat: ['elation', 'Радости', ['Нарисованные от руки раскадровки «Пушистого скитальца»', 'Юбилейный выпуск «Пушистого скитальца»', 'Коллекционное собрание «Пушистого скитальца»']]
   };
 
   const FOE_LINES = {
@@ -37,6 +38,7 @@
   });
   for (const [id, [name, boss]] of Object.entries(ECHOES)) ITEMS[id] = { name, kind: 'mat', mat: 'echo', boss, rar: 4, price: 0, text: 'Продвинутый материал для Следов. Память о бое: ' + boss + '.' };
   ITEMS.tracks = { name: 'Отпечатки судьбы', kind: 'mat', mat: 'tracks', rar: 5, price: 0, text: 'Продвинутый материал для Следов. Победа держится на бесчисленных неудачах, и каждый маленький шаг вёл к повороту судьбы.' };
+  ITEMS.tears = { name: 'Слёзы мечтаний', kind: 'mat', mat: 'tears', rar: 4, price: 0, src: 'Снабжение: контракты Герты.', text: 'Запечатанные мысли и чувства. Заменяют материалы Пути для Следов, когда их не хватает: 1 слеза за материал 2★, 3 за 3★, 9 за 4★.' };
   ITEMS.shadow_dest = { name: 'Тень Разрушения', kind: 'mat', mat: 'shadow', path: 'destruction', rar: 5, price: 0, text: 'Повышает Эйдолон Первопроходца на Пути Разрушения.' };
   ITEMS.shadow_pres = { name: 'Тень Сохранения', kind: 'mat', mat: 'shadow', path: 'preservation', rar: 5, price: 0, text: 'Повышает Эйдолон Первопроходца на Пути Сохранения.' };
   Object.assign(H.ITEMS, ITEMS);
@@ -61,12 +63,12 @@
   const BONUS_GATE = { a2: 30, a4: 50, a6: 70 };
   const STAT_ROW = { 1: 's1', 30: 'g3', 40: 'g4', 50: 'g5', 60: 'g7', 70: 's70', 75: 's70', 80: 's70' };
   const BASIC_ROW = { 2: 'g3', 3: 'g4', 4: 'g5', 5: 'g7', 6: 'b6' };
-  const TIERS = { atkP: [0.04, 0.06, 0.08], hpP: [0.04, 0.06, 0.08], ehr: [0.04, 0.06, 0.08], res: [0.04, 0.06, 0.08], defP: [0.05, 0.075, 0.1], critR: [0.027, 0.04, 0.053], critD: [0.053, 0.08, 0.107], breakE: [0.053, 0.08, 0.107], spd: [2, 3, 4] };
+  const TIERS = { atkP: [0.04, 0.06, 0.08], hpP: [0.04, 0.06, 0.08], ehr: [0.04, 0.06, 0.08], elation: [0.04, 0.06, 0.08], res: [0.04, 0.06, 0.08], defP: [0.05, 0.075, 0.1], critR: [0.027, 0.04, 0.053], critD: [0.053, 0.08, 0.107], breakE: [0.053, 0.08, 0.107], spd: [2, 3, 4] };
   for (const k of ['physP', 'fireP', 'iceP', 'elecP', 'windP', 'quantP', 'imagP']) TIERS[k] = [0.032, 0.048, 0.064];
   const STAT_TITLE = {
     atkP: 'Усиление атаки', hpP: 'Усиление HP', defP: 'Усиление защиты', critR: 'Усиление крит. шанса', critD: 'Усиление крит. урона', ehr: 'Усиление шанса попадания эффектов',
     res: 'Усиление сопротивления эффектам', breakE: 'Усиление пробития', spd: 'Усиление скорости', physP: 'Усиление физического урона', fireP: 'Усиление огненного урона',
-    iceP: 'Усиление ледяного урона', elecP: 'Усиление электрического урона', windP: 'Усиление ветряного урона', quantP: 'Усиление квантового урона', imagP: 'Усиление мнимого урона'
+    iceP: 'Усиление ледяного урона', elecP: 'Усиление электрического урона', windP: 'Усиление ветряного урона', quantP: 'Усиление квантового урона', imagP: 'Усиление мнимого урона', elation: 'Усиление Радости'
   };
 
   const phaseOf = lvl => { let p = 0; for (let i = 1; i < PHASE_LVL.length; i++) if (lvl >= PHASE_LVL[i]) p = i; return p; };
@@ -103,6 +105,16 @@
     add(d.mats[2], r.echo);
     add('tracks', r.tracks);
     return { credits: raw ? r.cr : Math.round(r.cr * H.TUNING.trCredit), items };
+  }
+
+  const TEAR_RATE = { 2: 1, 3: 3, 4: 9 };
+  function tearsFor(items, inv) {
+    let n = 0;
+    for (const [m, need] of Object.entries(items)) {
+      const it = H.ITEMS[m], miss = need - (inv[m] || 0);
+      if (miss > 0 && it.mat === 'path') n += miss * TEAR_RATE[it.rar];
+    }
+    return n;
   }
 
   if (H.TUNING.trCredit == null) H.TUNING.trCredit = 0.2;
@@ -250,10 +262,12 @@
       out.to = out.cur + 1;
       if (n.kind === 'ability') out.gate = abilityGate(id, out.to);
       out.cost = traceCost(kit, id, out.to);
+      const inv = this.state.inv.items;
+      out.tears = tearsFor(out.cost.items, inv);
       if (r.lvl < out.gate) out.why = 'lvl';
       else if (n.pre && !t.on.includes(n.pre)) out.why = 'pre';
       else if (this.state.credits < out.cost.credits) out.why = 'credits';
-      else if (Object.entries(out.cost.items).some(([m, c]) => (this.state.inv.items[m] || 0) < c)) out.why = 'mats';
+      else if (Object.entries(out.cost.items).some(([m, c]) => (inv[m] || 0) < c && H.ITEMS[m].mat !== 'path') || out.tears > (inv.tears || 0)) out.why = 'mats';
       out.ok = !out.why;
       return out;
     },
@@ -265,7 +279,9 @@
       if (!st || !st.ok) return false;
       const s = this.state, t = this.traceOf(key);
       s.credits -= st.cost.credits;
-      for (const [m, c] of Object.entries(st.cost.items)) { s.inv.items[m] -= c; if (!s.inv.items[m]) delete s.inv.items[m]; }
+      const pay = Object.assign({}, st.cost.items);
+      if (st.tears) { for (const m of Object.keys(pay)) if (H.ITEMS[m].mat === 'path') pay[m] = Math.min(pay[m], s.inv.items[m] || 0); pay.tears = st.tears; }
+      for (const [m, c] of Object.entries(pay)) { if (!c) continue; s.inv.items[m] -= c; if (!s.inv.items[m]) delete s.inv.items[m]; }
       if (st.node.kind === 'ability') t.lv[id] = st.to;
       else t.on.push(id);
       this.clampHp(key);
@@ -477,7 +493,7 @@
   Object.assign(H, {
     TRACE_PATH_LINES: PATH_LINES, TRACE_FOE_LINES: FOE_LINES, TRACE_ECHOES: ECHOES, TRACE_COST: COST, TRACE_TIERS: TIERS, TRACE_PHASE_LVL: PHASE_LVL,
     TRACE_CAP: CAP, TRACE_ABILITIES: ABILITIES, TRACE_BONUS_GATE: BONUS_GATE, TRACE_STAT_TITLE: STAT_TITLE,
-    tracePhase: phaseOf, traceAbilityCap: abilityCap, traceAbilityGate: abilityGate, traceNodes, traceCost
+    tracePhase: phaseOf, TEAR_RATE, traceTears: tearsFor, traceAbilityCap: abilityCap, traceAbilityGate: abilityGate, traceNodes, traceCost
   });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

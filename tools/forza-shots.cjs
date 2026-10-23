@@ -5,7 +5,7 @@ const path = require('node:path');
 
 const ROOT = path.join(__dirname, '..');
 const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
-const SCENES = ['perf', 'breakdown', 'presets', 'sheet', 'showroom', 'details', 'liveries', 'finish', 'cabin', 'wheels', 'faces', 'cockpit', 'motion', 'night', 'rain', 'time', 'stats', 'city', 'weather', 'ads', 'festival', 'streets', 'airport', 'zakusala', 'lucavsala', 'market', 'bisumuiza', 'debug', 'photo', 'damage', 'flora'];
+const SCENES = ['perf', 'breakdown', 'presets', 'sheet', 'showroom', 'details', 'liveries', 'finish', 'cabin', 'wheels', 'faces', 'cockpit', 'motion', 'night', 'rain', 'time', 'stats', 'city', 'weather', 'ads', 'festival', 'streets', 'airport', 'zakusala', 'lucavsala', 'market', 'bisumuiza', 'debug', 'photo', 'damage', 'flora', 'driver', 'heads', 'anim', 'outfits', 'drvmenu', 'register', 'rivals'];
 const WRECK_SPOT = [1500, -830];
 const SMASH = ['lamp', 'bench', 'fence', 'bin', 'citylight', 'stall'];
 const LANDMARK_VIEWS = [
@@ -146,7 +146,54 @@ const VIEWS = { front: 3.93, rear: 0.785, side: 0 };
 const SHOWROOM = ['vaz2105', 'uaz469', 'e30', 'r34', 'f355', 'charger'];
 const COCKPITS = ['vaz2105', 'e30', 'r34', 'charger', 'f355', 'mclarenf1', 'gaz21'];
 const WHEELS = ['vaz2105', 'gaz21', 'golf2', 'audi80', 'r34', 'f355', 'g500', 'impreza22b'];
-const FLEET = COCKPITS.concat(['diablo', 'uaz469']);
+const DRIVER_CARS = ['vaz2105', 'e30', 'r34', 'uaz469', 'raf2203', 'f355', 'diablo', 'mclarenf1', 'viper', 'p356', 'charger', 'gaz21'];
+const DRIVER_VIEWS = [
+  ['side', { orbit: [-1.57, 3.4, 1.25] }, DRIVER_CARS],
+  ['front', { orbit: [-0.4, 4.2, 1.5] }, DRIVER_CARS],
+  ['rear', { orbit: [-2.6, 4.6, 1.7] }, ['vaz2105', 'e30', 'uaz469', 'p356']],
+  ['steer', { orbit: [-0.25, 3.2, 1.4], steer: 0.12 }, ['e30', 'uaz469']],
+  ['female', { orbit: [-1.57, 3.4, 1.25], body: 'f' }, ['vaz2105', 'r34', 'diablo']],
+  ['cockpit', { cam: 'cockpit' }, ['vaz2105', 'e30', 'r34', 'f355', 'mclarenf1', 'uaz469', 'charger', 'gaz21']],
+  ['cockpit-left', { cam: 'cockpit', steer: -0.2 }, ['e30', 'uaz469']],
+  ['cockpit-right', { cam: 'cockpit', steer: 0.2 }, ['e30', 'p356']],
+  ['cockpit-back', { cam: 'cockpit', back: true }, ['e30']],
+  ['hood-back', { cam: 'hood', back: true }, ['e30', 'uaz469']],
+  ['retro', { orbit: [-1.57, 3.4, 1.25], gfx: 'retro' }, ['vaz2105', 'r34']]
+];
+const HEADS_VIEWS = [0, 0.7, 1.57, 3.14];
+const HAIR_IDS = ['crew', 'short', 'boxfringe', 'slick', 'side', 'mullet', 'kare', 'bob', 'pony', 'highpony', 'braid', 'bun', 'long', 'curly', 'dreads', 'bald'];
+const HEADS = [
+  ['faces-m', [0, 1, 2, 3, 4, 5].map(face => ({ body: 'm', face, skin: face + 1 > 7 ? 7 : [1, 0, 3, 5, 2, 7][face], hair: 'crew', hairCol: [0, 3, 1, 0, 6, 0][face], eyeCol: face, brows: face % 4 }))],
+  ['faces-f', [0, 1, 2, 3, 4, 5].map(face => ({ body: 'f', face, skin: [0, 2, 1, 6, 4, 3][face], hair: 'pony', hairCol: [4, 1, 6, 0, 2, 5][face], eyeCol: (face + 3) % 7, makeup: ['none', 'light', 'bold', 'y2k', 'light', 'none'][face], freckles: face === 0 }))],
+  ['hair-a', HAIR_IDS.slice(0, 8).map((hair, k) => ({ body: k % 2 ? 'f' : 'm', face: k % 6, hair, hairCol: k + 1 }))],
+  ['hair-b', HAIR_IDS.slice(8).map((hair, k) => ({ body: k % 2 ? 'm' : 'f', face: (k + 2) % 6, hair, hairCol: (k + 4) % 10, skin: (k * 3) % 8 }))],
+  ['beards', ['none', 'stubble', 'moustache', 'goatee', 'full'].map((beard, k) => ({ body: 'm', face: k, hair: 'short', hairCol: [0, 2, 3, 6, 7][k], beard, skin: [1, 3, 0, 5, 2][k] }))],
+  ['cover', ['long', 'pony', 'bun', 'kare'].flatMap(hair => [null, 'cap', 'helmet'].map(cover => ({ body: 'f', hair, cover, hairCol: 2 })))]
+];
+const OUTFIT_VIEWS = [-0.5, -1.57, 0.5, 3.14];
+const fitOf = o => Object.assign({ top: ['tee', 0], legs: ['jeans', 0], feet: ['kedy', 0], band: true }, o);
+const OUTFITS = [
+  ['tops', ['tee', 'tank', 'polo', 'plaid', 'jurmala', 'turtle', 'deer', 'hoodie'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', face: k % 6, hair: k % 2 ? 'pony' : 'short', fit: fitOf({ top: [id, k % 3] }) }))],
+  ['prints', ['tee_cola', 'tee_rigafm', 'tee_ambernet', 'tee_band', 'suit_vetra', 'suit_horizon', 'suit_raf'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', hair: 'short', fit: fitOf({ top: [id, k === 3 ? 3 : 0] }) }))],
+  ['outer', ['olymp', 'denim', 'windbreaker', 'leather', 'bomber', 'dzintars', 'blazer', 'race_jacket', 'photo_vest', 'champ', 'gaz_leather'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', hair: k % 2 ? 'bob' : 'slick', fit: fitOf({ outer: [id, 0], top: ['tee', k % 2 ? 2 : 0] }) }))],
+  ['neck', ['chain', 'tag', 'scarf', 'amber', 'phones'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', hair: 'short', fit: fitOf({ neck: [id, 0], top: ['tee', 1] }) }))],
+  ['legs', ['jeans', 'track', 'cargo', 'shorts', 'trousers', 'skirt', 'leather_pants'].map((id, k) => ({ body: id === 'skirt' || k % 2 ? 'f' : 'm', hair: 'short', fit: fitOf({ legs: [id, 0], feet: [['kedy', 'sneakers', 'boots', 'moccasins', 'race_boots', 'boots', 'sneakers'][k], 0], hands: [['gloves_cut', 'mitts', 'race_gloves', null, 'drift_gloves', null, null][k], 0], wrist: [['digital', 'steel', 'amber_bracelet', 'digital', null, 'amber_bracelet', 'steel'][k], 0] }) }))]
+];
+const OUTFIT_HEADS = [
+  ['hats', ['cap_horizon', 'cap_vetra', 'cap_riga800', 'beanie', 'bandana', 'panama', 'helmet_open', 'helmet_full', 'helmet_50s'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', hair: k % 2 ? 'long' : 'short', fit: fitOf({ head: [id, 0] }) }))],
+  ['glasses', ['drops', 'sport_zibens', 'round', 'horn', 'yellow', 'mirror', 'goggles50'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', hair: 'short', fit: fitOf({ eyes: [id, 0], head: id === 'goggles50' ? ['helmet_50s', 0] : null }) }))]
+];
+const ANIM_SHOTS = [
+  ['regrip-a', 'e30', { cam: 'cockpit', at: 0.9, steer: 't => Math.min(1, t / 0.9) * 0.33' }],
+  ['regrip-b', 'e30', { cam: 'cockpit', at: 1.2, steer: 't => Math.min(1, t / 1.2) * 0.5' }],
+  ['gear', 'e30', { cam: 'cockpit', at: 0.4, cue: ['shift', 0.2] }],
+  ['horn', 'vaz2105', { cam: 'cockpit', at: 0.45, cue: ['horn', 0.3] }],
+  ['look-back', 'e30', { at: 1.5, back: true, orbit: [-2.4, 4.2, 1.7] }],
+  ['turn', 'r34', { at: 1.5, speed: 20, latG: 7, yawRate: 0.45, steer: 't => 0.08', orbit: [-0.35, 4, 1.5] }],
+  ['hit', 'vaz2105', { at: 0.4, cue: ['hit', 0.25, { power: 20, dx: 0, dz: 1 }], orbit: [-1.57, 3.4, 1.25] }],
+  ['win', 'r34', { at: 0.7, cue: ['win', 0.2], orbit: [-0.4, 4.2, 1.5] }]
+];
+const FLEET = [...new Set(COCKPITS.concat(['diablo', 'uaz469'], DRIVER_CARS))];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const randomPort = (lo, span) => lo + Math.floor(Math.random() * span);
 
@@ -163,6 +210,7 @@ const PAGE = `(() => {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
   performance.now = () => t0 + clock;
+  const tickClock = () => { clock += 1000 / 60; };
   const showroomOf = (id, angle, dist) => {
     const c = F.Cars.get(id);
     fzui.showroom = { id, c1: c.col, c2: c.col2 || c.col, livery: c.livery || 'none', wing: F.Cars.spec(id, {}).wing, cx: 0.5, dist };
@@ -312,6 +360,97 @@ const PAGE = `(() => {
       fzui.camPos = null;
       fzui.particles = [];
       return g.veh.spec.id;
+    },
+    async driver(id, o) {
+      const g = fzui.game;
+      g.profile.driver = { body: o.body || 'm' };
+      this.car(id, { gfx: o.gfx, cam: o.cam || 'chase', back: o.back, clock: 13 });
+      const cs = fzui.carState;
+      if (o.steer !== undefined) fzui.carState = function (gg) { return Object.assign(cs.call(this, gg), { steer: o.steer }); };
+      try {
+        await this.pump(24);
+        if (o.orbit) {
+          const p = fzui.renderPose(), [a, d, h] = o.orbit, fx = Math.sin(p.yaw), fz = -Math.cos(p.yaw), rx = Math.cos(p.yaw), rz = Math.sin(p.yaw);
+          const dx = fx * Math.cos(a) + rx * Math.sin(a), dz = fz * Math.cos(a) + rz * Math.sin(a);
+          const cam = { x: p.x + dx * d, y: p.y + h, z: p.z + dz * d, tx: p.x - rx * 0.3, ty: p.y + 0.95, tz: p.z - rz * 0.3, fov: o.fov || 42, near: 0.1, far: 3000 };
+          fzui.camera = () => cam;
+        }
+        return this.frame();
+      } finally {
+        delete fzui.camera;
+        if (o.steer !== undefined) delete fzui.carState;
+        g.profile.driver = { body: 'm' };
+      }
+    },
+    async anim(id, o) {
+      const g = fzui.game, D = F.Driver;
+      g.profile.driver = { body: 'm', hair: 'short' };
+      this.car(id, { cam: o.cam || 'chase', clock: 13 });
+      const inst = fzui.driverOf(g), cs = fzui.carState, up = fzui.updateDrivers;
+      inst.anim = null;
+      let steer = 0;
+      fzui.carState = function (gg) { return Object.assign(cs.call(this, gg), { steer }); };
+      fzui.updateDrivers = function () {};
+      try {
+        const frames = Math.round((o.at || 0.2) * 60);
+        for (let i = 0; i < frames; i++) {
+          const t = i / 60;
+          steer = o.steer ? o.steer(t) : 0;
+          D.animate(inst, 1 / 60, { steer, speed: o.speed || 0, back: !!o.back, latG: o.latG || 0, yawRate: o.yawRate || 0 });
+          if (o.cue && i === Math.round(o.cue[1] * 60)) D.cue(inst, o.cue[0], o.cue[2] || {});
+          tickClock();
+        }
+        await this.pump(1);
+        if (o.orbit) {
+          const p = fzui.renderPose(), [a, d, h] = o.orbit, fx = Math.sin(p.yaw), fz = -Math.cos(p.yaw), rx = Math.cos(p.yaw), rz = Math.sin(p.yaw);
+          const dx = fx * Math.cos(a) + rx * Math.sin(a), dz = fz * Math.cos(a) + rz * Math.sin(a);
+          const cam = { x: p.x + dx * d, y: p.y + h, z: p.z + dz * d, tx: p.x - rx * 0.3, ty: p.y + 0.95, tz: p.z - rz * 0.3, fov: o.fov || 40, near: 0.1, far: 3000 };
+          fzui.camera = () => cam;
+        }
+        return this.frame();
+      } finally {
+        delete fzui.camera;
+        delete fzui.carState;
+        fzui.updateDrivers = up;
+        inst.anim = null;
+      }
+    },
+    async heads(list, views, body) {
+      const g = fzui.game, r = fzui.renderer, draw = r.drawCar, M4 = F.M4, cell = 220;
+      const cv = document.createElement('canvas');
+      cv.width = views.length * cell; cv.height = list.length * cell;
+      const x = cv.getContext('2d');
+      this.car('e30', { clock: 13 });
+      r.drawCar = function (car, env, minLod) {
+        if (!car.driver || car.driver !== fzui.pDriver) return draw.call(this, car, env, minLod);
+        const geo = this.carMesh(car.id, car.wing).geo;
+        this.drawDriver(car, geo, M4.pose(car.x, car.y, car.z, car.yaw, car.pitch || 0, car.roll || 0, 1, this.model), false, false);
+        return null;
+      };
+      try {
+        for (let i = 0; i < list.length; i++) {
+          g.profile.driver = list[i];
+          await this.pump(4);
+          const p = fzui.renderPose(), geo = F.Models.carGeo('e30'), look = F.Driver.playerLook(g.profile), st = F.Driver.seatOf(geo, F.Driver.FIG[look.body], look.body);
+          const M = M4.pose(p.x, p.y, p.z, p.yaw, 0, 0, 1, new Float32Array(16)), aim = body ? [st.head[0], st.head[1] - 0.24, st.head[2] - 0.1] : [st.head[0], st.head[1] + 0.01, st.head[2]], hc = M4.apply(M, aim[0], aim[1], aim[2]), dist = body ? 2.1 : 0.62;
+          for (let k = 0; k < views.length; k++) {
+            const a = views[k], o = M4.apply(M, aim[0] + Math.sin(a) * dist, aim[1] + (body ? 0.25 : 0.01), aim[2] - Math.cos(a) * dist);
+            const cam = { x: o[0], y: o[1], z: o[2], tx: hc[0], ty: hc[1], tz: hc[2], fov: 30, near: 0.05, far: 3000 };
+            fzui.camera = () => cam;
+            fzui.render(0);
+            const v = fzui.view, s = Math.min(v.width, v.height) * 0.62;
+            x.drawImage(v, (v.width - s) / 2, (v.height - s) / 2, s, s, k * cell, i * cell, cell, cell);
+          }
+          x.fillStyle = '#ffffff'; x.font = 'bold 11px Arial';
+          const L = F.Driver.playerLook(g.profile);
+          x.fillText([L.body, 'f' + L.face, 's' + L.skin, L.hair, 'c' + L.hairCol, L.beard, L.makeup].join(' '), 4, i * cell + 13);
+        }
+        return cv.toDataURL('image/png');
+      } finally {
+        delete fzui.camera;
+        r.drawCar = draw;
+        g.profile.driver = { body: 'm' };
+      }
     },
     async look(o) {
       const g = fzui.game, w = fzui.world;
@@ -682,6 +821,20 @@ async function main() {
       await b.ev(`fzShots.pump(${frames})`);
       save(name, await b.ev('fzShots.frame()'));
     };
+    if (scenes.includes('register')) {
+      const shot = async (name, js, frames = 160) => { await b.ev(`(async () => { ${js}; await fzShots.pump(${frames}); return true; })()`); save('register-' + name, await b.capture()); };
+      await shot('screen', "fzui.menus.push(fzui.menus.register())");
+      await shot('name', "{ const i = document.querySelector('.fz-name'); fzui.menus.setFocus(i.closest('[data-nav]')); i.value = 'Jānis Bērziņš<>!'; i.dispatchEvent(new Event('input')); }", 20);
+      await shot('hair', "{ const e = [...document.querySelectorAll('.fz-drow')].find(x => x.textContent.includes('Причёска')); fzui.menus.setFocus(e); e._adj(1); }");
+      await shot('top', "{ const e = [...document.querySelectorAll('.fz-drow')].find(x => x.textContent.includes('Верх')); fzui.menus.setFocus(e); e._adj(3); }");
+      const reg = await b.ev("(async () => { [...document.querySelectorAll('.fz-btn')].find(x => x.textContent === 'Начать фестиваль').click(); await fzShots.pump(30); const p = fzui.game.profile; return [p.name, p.driver && p.driver.hair, p.driver && p.driver.fit.top.join(':'), fzui.game.race ? fzui.game.race.ev.id : '-']; })()");
+      console.log('register: ' + JSON.stringify(reg));
+      save('register-prologue', await b.ev('fzShots.frame()'));
+      const old = await b.ev("(() => { const p = Forza.Profile.newProfile('Старый Гонщик'); p.prologue = true; delete p.driver; fzui.startGame(p, false); const d = fzui.game.profile.driver; return [!!d, d && d.hair, fzui.hud.banners.map(x => x.title).join(' | ')]; })()");
+      console.log('old save: ' + JSON.stringify(old));
+      await b.ev('fzShots.pump(20)');
+      save('register-oldsave', await b.capture());
+    }
     if (scenes.includes('sheet')) for (const [view, angle] of Object.entries(VIEWS)) save('sheet-' + view, await b.ev(`fzShots.sheet(${angle})`));
     if (scenes.includes('showroom')) for (const id of SHOWROOM) for (const view of ['front', 'rear']) save(`showroom-${id}-${view}`, await b.ev(`fzShots.showroom('${id}', ${VIEWS[view]})`));
     if (scenes.includes('details')) for (const [id, angle] of DETAILS) save('detail-' + id, await b.ev(`fzShots.showroom('${id}', ${angle}, 1.05)`));
@@ -693,7 +846,7 @@ async function main() {
       for (const id of WHEELS) save('wheel-' + id, await b.ev(`fzShots.showroom('${id}', 3.45, 0.85)`));
       for (const id of ['r34', 'vaz2105']) save('wheel-' + id + '-spinning', await b.ev(`fzShots.spinning('${id}', 3.45, 0.85)`));
     }
-    if (scenes.some(s => ['perf', 'breakdown', 'presets', 'liveries', 'cabin', 'cockpit', 'motion', 'night', 'rain', 'time', 'stats', 'city', 'weather', 'ads', 'festival', 'streets', 'airport', 'zakusala', 'lucavsala', 'market', 'bisumuiza', 'debug', 'photo', 'damage', 'flora'].includes(s))) {
+    if (scenes.some(s => ['perf', 'breakdown', 'presets', 'liveries', 'cabin', 'cockpit', 'motion', 'night', 'rain', 'time', 'stats', 'city', 'weather', 'ads', 'festival', 'streets', 'airport', 'zakusala', 'lucavsala', 'market', 'bisumuiza', 'debug', 'photo', 'damage', 'flora', 'driver', 'heads', 'anim', 'outfits', 'drvmenu', 'rivals'].includes(s))) {
       await b.ev(`fzShots.start(${JSON.stringify(FLEET)})`);
       await b.ev('fzShots.pump(120)');
     }
@@ -746,6 +899,59 @@ async function main() {
       }
       save('flora-bush-hit', await b.ev('fzShots.bushRun()'));
       await b.ev("fzui.game.setWeather('clear', true), true");
+    }
+    if (scenes.includes('driver')) for (const [name, o, ids] of DRIVER_VIEWS) for (const id of ids) save(`driver-${name}-${id}`, await b.ev(`fzShots.driver('${id}', ${JSON.stringify(o)})`));
+    if (scenes.includes('driver')) {
+      await b.ev("fzui.game.profile.driver = { body: 'f', hair: 'kare', hairCol: 8, makeup: 'y2k', fit: { top: ['tee', 1], legs: ['jeans', 0], feet: ['kedy', 0], band: true } }, fzShots.car('e30', { clock: 15 }), fzui.menus.closeAll(), fzShots.pump(40).then(() => { fzui.openPhoto(); return fzShots.pump(8); })");
+      for (const [name, o] of [['road', { gaze: 'road' }], ['camera', { gaze: 'camera' }], ['hidden', { driver: 'hide' }]]) {
+        await b.ev(`(() => { const ph = fzui.photo, p = fzui.renderPose(); Object.assign(ph.o, { driver: 'show', gaze: 'road', hud: 'off' }, ${JSON.stringify(o)}); ph.yaw = p.yaw + Math.PI + 0.75; ph.pitch = -0.12; ph.dist = 3.6; ph.fl = 40; ph.refreshRows(); return fzShots.pump(10); })()`);
+        save('driver-photo-' + name, await b.capture());
+      }
+      await b.ev("fzui.photo && fzui.photo.close ? fzui.photo.close() : fzui.menus.closeAll(), fzui.menus.closeAll(), fzui.game.profile.driver = { body: 'm' }, true");
+    }
+    if (scenes.includes('anim')) for (const [name, id, o] of ANIM_SHOTS) {
+      const src = JSON.stringify(Object.assign({}, o, { steer: undefined })).replace(/}$/, (o.steer ? ', steer: ' + o.steer : '') + '}');
+      save('anim-' + name, await b.ev(`fzShots.anim('${id}', ${src})`));
+    }
+    if (scenes.includes('drvmenu')) {
+      const step = async (name, js, frames = 160) => { await b.ev(`(async () => { ${js}; await fzShots.pump(${frames}); return true; })()`); save('drvmenu-' + name, await b.capture()); };
+      const focusRow = (sel, text) => `{ const e = [...document.querySelectorAll('${sel}')].find(x => x.textContent.includes('${text}')); fzui.menus.setFocus(e); }`;
+      await b.ev("fzui.game.profile.driver = { body: 'm', face: 2, skin: 1, hair: 'side', hairCol: 3, eyeCol: 4, fit: { top: ['tee', 0], legs: ['jeans', 0], feet: ['kedy', 0], band: true } }, fzui.game.profile.name = 'Gonshik', true");
+      await step('tab', "fzui.menus.closeAll(); fzui.menus.push(fzui.menus.hub(3))", 160);
+      await step('look-body', "fzui.menus.push(fzui.menus.appearance())", 160);
+      await step('look-hair', focusRow('.fz-drow', 'Причёска') + "; fzui.menus.top.focus._adj(1); fzui.menus.top.focus._adj(1)", 160);
+      await step('look-col', focusRow('.fz-drow', 'Цвет волос') + "; fzui.menus.top.focus._adj(4)", 160);
+      await b.ev("fzui.menus.closeAll(), fzui.game.grantWear(Forza.Driver.ITEMS.map(x => x.id)), true");
+      await step('wear-top', "fzui.menus.push(fzui.menus.hub(3)); fzui.menus.push(fzui.menus.wardrobe())", 160);
+      await step('wear-outer', focusRow('.fz-wslot', 'Куртка') + "; await fzShots.pump(2); " + focusRow('.fz-witem', 'Кожанка'), 160);
+      await step('wear-legs', focusRow('.fz-wslot', 'Низ') + "; await fzShots.pump(2); " + focusRow('.fz-witem', 'Карго'), 160);
+      await step('wear-head', focusRow('.fz-wslot', 'Головной') + "; await fzShots.pump(2); " + focusRow('.fz-witem', 'Кепка Horizon'), 160);
+      await step('wear-suit', focusRow('.fz-wslot', 'Верх') + "; await fzShots.pump(2); " + focusRow('.fz-witem', 'Комбинезон VĒTRA'), 160);
+      await b.ev("fzui.menus.closeAll(), fzui.game.profile.wardrobe = Forza.Wear.STARTER.slice(), fzui.game.profile.credits = 12000, fzui.game.profile.band = 1, true");
+      await step('tab-shop', "fzui.menus.push(fzui.menus.hub(3))");
+      await step('shop-top', "fzui.menus.push(fzui.menus.boutique('top')); " + focusRow('.fz-witem', 'Пальмами'));
+      await step('shop-locked', "fzui.menus.top.tab(1); await fzShots.pump(2); " + focusRow('.fz-witem', 'Кожанка'));
+      await step('shop-confirm', focusRow('.fz-witem', 'Бомбер') + "; fzui.menus.top.focus.click()", 40);
+      await step('shop-bought', "[...document.querySelectorAll('.fz-btn')].find(x => x.textContent === 'Да').click()", 60);
+      await step('shop-head', "fzui.menus.top.tab(-2); await fzShots.pump(2); " + focusRow('.fz-witem', 'Открытый шлем'));
+      await step('sets', "fzui.menus.closeAll(); fzui.menus.push(fzui.menus.hub(3)); fzui.menus.push(fzui.menus.outfits()); { const e = [...document.querySelectorAll('.fz-liv')][0]; e.click(); }", 80);
+      console.log('shop: ' + JSON.stringify(await b.ev("[fzui.game.profile.credits, fzui.game.profile.wardrobe.join(','), JSON.stringify(fzui.game.profile.driver.fit.outer), fzui.game.profile.outfits.filter(Boolean).length]")));
+      await b.ev("fzui.menus.closeAll(), true");
+    }
+    if (scenes.includes('rivals')) {
+      const names = await b.ev('Forza.RIVAL_NAMES.slice()');
+      const groups = [names.slice(0, 8), names.slice(8, 16), names.slice(16).concat(['Вилкс'])];
+      for (let i = 0; i < groups.length; i++) save('rivals-' + (i + 1), await b.ev(`fzShots.heads(${JSON.stringify(groups[i])}.map(n => Forza.Driver.rivalLook(n)), [-0.45, 0.35], true)`));
+      save('rivals-taxi', await b.ev('fzShots.heads(Forza.Driver.TAXI, [-0.45, 0.35], true)'));
+      save('rivals-pool', await b.ev('fzShots.heads(Forza.Driver.POOL.slice(0, 8), [-0.45, 0.35], true)'));
+    }
+    if (scenes.includes('heads')) {
+      const D = HEADS_VIEWS;
+      for (const [name, list] of HEADS) save('heads-' + name, await b.ev(`fzShots.heads(${JSON.stringify(list)}, ${JSON.stringify(D)})`));
+    }
+    if (scenes.includes('outfits')) {
+      for (const [name, list] of OUTFITS) save('outfit-' + name, await b.ev(`fzShots.heads(${JSON.stringify(list)}, ${JSON.stringify(OUTFIT_VIEWS)}, true)`));
+      for (const [name, list] of OUTFIT_HEADS) save('outfit-' + name, await b.ev(`fzShots.heads(${JSON.stringify(list)}, ${JSON.stringify(HEADS_VIEWS)})`));
     }
     if (scenes.includes('debug')) {
       await b.ev("fzShots.car('e30', {}), fzui.menus.closeAll(), fzui.toggleDebug(), fzShots.pump(8)");

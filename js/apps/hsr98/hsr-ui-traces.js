@@ -38,6 +38,7 @@
   function sourceOf(id) {
     const it = H.ITEMS[id];
     if (!it) return '';
+    if (it.src) return it.src;
     if (it.mat === 'path') { const c = H.CALYX.find(x => x.reward === 'path' && lineOf(x.path) === it.line); return (c ? c.name : 'Багровый чашелист') + ', синтез и обмен.'; }
     if (it.mat === 'foe') return it.line === 'scion' || it.line === 'artifex' ? 'Обмен в Омни-синтезаторе, лавка Немеркнущих углей.' : 'Остаётся после ' + H.TRACE_FOE_LINES[it.line][0] + '. Золотые чашелисты, синтез и обмен.';
     if (it.mat === 'echo') { const c = H.CALYX.find(x => x.mat === id); return c ? c.name + '.' : 'Эхо войны.'; }
@@ -154,27 +155,67 @@
       if (st.why === 'max') this.text(n.kind === 'tech' ? '' : 'Открыто полностью.', px + 12, y, { size: 11, col: C.ok });
       else if (st.cost) {
         this.text('Стоимость', px + 12, y, { size: 11, bold: true, col: C.gold }); y += 16;
-        const inv = g.state.inv.items, rows = Object.entries(st.cost.items);
+        const inv = g.state.inv.items, tearsOk = (st.tears || 0) <= (inv.tears || 0), rows = Object.entries(st.cost.items).concat(st.tears ? [['tears', st.tears]] : []);
+        const covered = m => tearsOk && m !== 'tears' && H.ITEMS[m].mat === 'path';
         rows.forEach(([m, need]) => {
-          const have = inv[m] || 0, short = have < need;
+          const have = inv[m] || 0, short = have < need && !covered(m), quick = short && this.traceQuickRow(m);
           G.rarityCell(c, px + 12, y - 2, 20, 20, H.ITEMS[m].rar); G.itemIcon(c, m, px + 13, y - 1, 18);
-          const nm = this.wrap(H.ITEMS[m].name, pw - 96, 9).slice(0, 2);
+          if (quick) this.guideCoupon(c, px + pw - 66, y + 7, 8, false, (inv.fuelv || 0) >= g.domainCoupons(quick.id), () => this.traceQuick(k, m));
+          const nm = this.wrap(H.ITEMS[m].name, pw - (quick ? 112 : 96), 9).slice(0, 2);
           nm.forEach((l, i) => this.text(l, px + 38, y + (nm.length > 1 ? -2 : 3) + i * 10, { size: 9, col: C.cream }));
-          this.text(have + '/' + need, px + pw - 12, y + 2, { size: 10, bold: true, align: 'right', col: short ? C.bad : C.ok });
+          this.text(have + '/' + need, px + pw - 12, y + 2, { size: 10, bold: true, align: 'right', col: short ? C.bad : have < need ? C.gold : C.ok });
           y += 23;
         });
         this.text('Кредиты', px + 38, y + 2, { size: 10, col: C.cream });
         this.text(H.fmt(st.cost.credits), px + pw - 12, y + 2, { size: 10, bold: true, align: 'right', col: g.state.credits < st.cost.credits ? C.bad : C.ok });
         y += 18;
-        const missing = rows.find(([m, need]) => (inv[m] || 0) < need);
-        const why = st.why === 'lvl' ? WHY.lvl + st.gate + '.' : st.why === 'pre' ? WHY.pre + this.traceTitle(k, H.traceNodes(kit).find(x => x.id === n.pre)) + '».' : st.why === 'mats' && missing ? 'Где взять: ' + sourceOf(missing[0]) : st.why ? WHY[st.why] : '';
+        const missing = rows.find(([m, need]) => (inv[m] || 0) < need && !covered(m));
+        const why = st.why === 'lvl' ? WHY.lvl + st.gate + '.' : st.why === 'pre' ? WHY.pre + this.traceTitle(k, H.traceNodes(kit).find(x => x.id === n.pre)) + '».' : st.why === 'mats' && missing ? 'Где взять: ' + sourceOf(missing[0]) : st.why ? WHY[st.why] : st.tears ? 'Недостающие материалы Пути заменят Слёзы мечтаний ×' + st.tears + '.' : '';
         this.wrap(why, pw - 24, 10).slice(0, 3).forEach(l => { this.text(l, px + 12, y, { size: 10, col: st.why === 'lvl' || st.why === 'pre' ? C.bad : C.sub }); y += 12; });
       }
       this.button(px + 12, py + ph - 38, pw - 24, 24, st.why === 'max' ? 'Открыто' : 'Улучшить', () => this.traceUpgrade(s, k, id), { size: 11, icon: 'traces', disabled: !st.ok });
     },
 
     traceHints(s) {
-      return s.trFocus ? [['←↑↓→', 'Узел'], ['Enter', 'Улучшить'], ['Esc', 'Назад']] : [['Enter', 'К Следам']];
+      return s.trFocus ? [['←↑↓→', 'Узел'], ['Enter', 'Улучшить'], ['R', 'Купон'], ['Esc', 'Назад']] : [['Enter', 'К Следам']];
+    },
+
+    traceQuickRow(m) {
+      const g = this.game, src = g.needSource ? g.needSource(m) : null, row = src && src.row;
+      return row && row.kind === 'calyx' && row.open && g.domainCoupons(row.id) > 0 ? row : null;
+    },
+
+    traceShortQuick(k, id) {
+      const g = this.game, st = g.traceNode(k, id), inv = g.state.inv.items;
+      if (!st || !st.cost) return null;
+      return Object.entries(st.cost.items).map(([m]) => m).find(m => (inv[m] || 0) < st.cost.items[m] && this.traceQuickRow(m)) || null;
+    },
+
+    traceQuick(k, m) {
+      const ui = this, g = this.game, row = this.traceQuickRow(m);
+      if (!row) { ui.sfx('deny'); ui.toast('Этот материал нельзя получить за Топливные купоны.'); return; }
+      const tier = Math.max(0, g.tiersOpen().lastIndexOf(true)), open = o => ui.openQuickFarm(row.id, tier, o);
+      if (g.guideTarget() === k) { open(); return; }
+      const name = ui.shortName(k);
+      this.push({
+        sel: 0,
+        draw(c) {
+          const x = W / 2 - 190, y = HGT / 2 - 74;
+          c.fillStyle = 'rgba(2,3,12,0.6)'; c.fillRect(0, 0, W, HGT);
+          ui.win(x, y, 380, 148, { title: 'Цель развития' });
+          ui.wrap('Назначить персонажа «' + name + '» целью развития? Тогда быстрое получение остановится, когда материалов для Следов хватит, а Индекс выживаемости покажет, где брать остальное.', 340, 11).slice(0, 4).forEach((l, i) => ui.text(l, x + 20, y + 22 + i * 15, { size: 11 }));
+          ui.button(x + 20, y + 104, 164, 24, 'Сделать целью', () => { this.sel = 0; this.key('ok'); }, { size: 11, active: this.sel === 0 });
+          ui.button(x + 196, y + 104, 164, 24, 'Только получить', () => { this.sel = 1; this.key('ok'); }, { size: 11, active: this.sel === 1 });
+        },
+        key(kk) {
+          if (kk === 'left' || kk === 'right') { this.sel = 1 - this.sel; ui.sfx('select'); return; }
+          if (kk === 'back') { ui.screens.pop(); ui.sfx('cancel'); return; }
+          if (kk !== 'ok') return;
+          ui.screens.pop();
+          if (this.sel === 0) { g.setGuideTarget(k); ui.toast('Цель развития: ' + name + '.'); open(); }
+          else open({ target: false });
+        }
+      });
     },
 
     traceUpgrade(s, k, id) {
@@ -214,6 +255,7 @@
       const L = layout(this.game.kitOf(k)), cur = L.pos[s.trSel || 'skill'];
       if (code === 'KeyQ') { s.switchChar(-1); return; }
       if (code === 'KeyE') { s.switchChar(1); return; }
+      if (code === 'KeyR') { const m = this.traceShortQuick(k, s.trSel || 'skill'); if (m) this.traceQuick(k, m); else { this.sfx('deny'); this.toast('Для этого узла нечего получать за Топливные купоны.'); } return; }
       const dir = { left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] }[kk];
       if (dir) {
         let best = null, bd = Infinity;
@@ -262,92 +304,6 @@
         key(kk) { if (kk === 'ok' || kk === 'back') { ui.screens.pop(); ui.sfx('confirm'); } }
       });
       return true;
-    },
-
-    synthRows(mode) {
-      const g = this.game, inv = g.state.inv.items;
-      if (mode === 0) return g.synthList().map(r => ({ from: r.from, to: r.to, have: inv[r.from] || 0, n: 3 }));
-      return Object.keys(H.ITEMS).filter(id => { const it = H.ITEMS[id]; return it.kind === 'mat' && (it.mat === 'path' || it.mat === 'foe'); }).map(to => ({ to, have: inv[to] || 0, n: 2 }));
-    },
-
-    openUi_synth() { this.openSynth(() => this.finishPending()); },
-
-    openSynth(close) {
-      const ui = this, g = this.game;
-      this.push({
-        full: true, mode: 0, sel: 0, qty: 1, src: 0,
-        sources(row) {
-          const inv = g.state.inv.items;
-          return Object.keys(inv).filter(id => g.exchangeOk(id, row.to) && inv[id] >= 2).sort((a, b) => inv[b] - inv[a]);
-        },
-        draw(c) {
-          const rows = ui.synthRows(this.mode), inv = g.state.inv.items;
-          ui.fullBg(c, false);
-          c.fillStyle = 'rgba(4,6,20,0.5)'; c.fillRect(0, 0, W, HGT);
-          ui.plate(12, 10, 'Омни-синтезатор');
-          ui.closeBtn(W - 32, 10, () => this.key('back'));
-          [['Синтез', 0], ['Обмен', 1]].forEach(([label, m], i) => ui.button(190 + i * 96, 10, 90, 24, label, () => { this.mode = m; this.sel = 0; this.qty = 1; this.src = 0; ui.sfx('select'); }, { size: 11, active: this.mode === m, icon: 'synth' }));
-          this.sel = Math.max(0, Math.min(this.sel, rows.length - 1));
-          ui.win(12, 44, 410, 404, { alpha: 0.88, corners: false });
-          const per = 2 * 8, top = Math.max(0, Math.min(rows.length - per, Math.floor(this.sel / 2) * 2 - 6));
-          rows.slice(top, top + per).forEach((r, j) => {
-            const i = top + j, x = 22 + (j % 2) * 200, y = 54 + Math.floor(j / 2) * 48, on = i === this.sel, it = H.ITEMS[r.to];
-            c.fillStyle = on ? 'rgba(242,220,154,0.18)' : 'rgba(255,255,255,0.03)'; c.fillRect(x, y, 194, 44);
-            if (on) { c.strokeStyle = C.brassHi; c.strokeRect(x + 0.5, y + 0.5, 193, 43); }
-            if (r.from) { G.rarityCell(c, x + 4, y + 6, 32, 32, H.ITEMS[r.from].rar); G.itemIcon(c, r.from, x + 4, y + 6, 32); ui.text('→', x + 46, y + 14, { size: 13, bold: true, col: C.gold }); }
-            const ix = r.from ? x + 60 : x + 4;
-            G.rarityCell(c, ix, y + 6, 32, 32, it.rar); G.itemIcon(c, r.to, ix, y + 6, 32);
-            ui.text(ui.fitText(it.name, 10, 194 - (ix - x) - 40), ix + 38, y + 8, { size: 10, col: C.cream });
-            ui.text('есть ' + (inv[r.to] || 0) + (r.from ? ' · из ' + r.have : ''), ix + 38, y + 24, { size: 9, col: C.sub });
-            ui.hit(x, y, 194, 44, () => { if (this.sel === i) this.key('ok'); else { this.sel = i; this.qty = 1; this.src = 0; } });
-          });
-          if (rows.length > per) ui.scrollBar(412, 54, 8 * 48 - 4, { top }, Math.ceil(rows.length / 2) * 2, per);
-          const px = 432, py = 44, pw = 196, r = rows[this.sel];
-          ui.win(px, py, pw, 404, { alpha: 0.9 });
-          if (r) {
-            const to = H.ITEMS[r.to];
-            const src = this.mode === 0 ? r.from : this.sources(r)[this.src % Math.max(1, this.sources(r).length)];
-            const max = src ? Math.floor((inv[src] || 0) / r.n) : 0;
-            this.qty = Math.max(1, Math.min(this.qty, Math.max(1, max)));
-            ui.text(this.mode === 0 ? 'Синтез' : 'Обмен', px + 12, py + 12, { size: 14, bold: true, serif: true, col: C.gold });
-            ui.wrap(this.mode === 0 ? 'Три материала дают один материал следующей ступени. Бесплатно.' : 'Два материала того же вида и той же ступени дают один нужный.', pw - 24, 10).forEach((l, i) => ui.text(l, px + 12, py + 34 + i * 12, { size: 10, col: C.sub }));
-            G.rarityCell(c, px + pw / 2 - 30, py + 70, 60, 60, to.rar); G.itemIcon(c, r.to, px + pw / 2 - 28, py + 72, 56);
-            ui.wrap(to.name, pw - 24, 12).slice(0, 2).forEach((l, i) => ui.text(l, px + pw / 2, py + 136 + i * 15, { align: 'center', size: 12, bold: true, col: C.gold }));
-            ui.text('В наличии: ' + (inv[r.to] || 0), px + pw / 2, py + 168, { align: 'center', size: 10, col: C.sub });
-            if (src) {
-              G.rarityCell(c, px + 12, py + 190, 32, 32, H.ITEMS[src].rar); G.itemIcon(c, src, px + 12, py + 190, 32);
-              ui.wrap(H.ITEMS[src].name, pw - 70, 10).slice(0, 2).forEach((l, i) => ui.text(l, px + 52, py + 192 + i * 12, { size: 10, col: C.cream }));
-              ui.text((inv[src] || 0) + ' / ' + r.n * this.qty, px + pw - 12, py + 216, { size: 10, bold: true, align: 'right', col: (inv[src] || 0) >= r.n * this.qty ? C.ok : C.bad });
-              if (this.mode === 1 && this.sources(r).length > 1) ui.text('Tab: другой материал', px + 12, py + 232, { size: 9, col: C.dim });
-              ui.text('Количество', px + 12, py + 256, { size: 11, col: C.sub });
-              ui.text('◀ ' + this.qty + ' ▶', px + pw - 12, py + 256, { size: 12, bold: true, align: 'right' });
-            } else ui.wrap(this.mode === 0 ? 'Нужно три материала.' : 'Нет двух одинаковых материалов той же ступени.', pw - 24, 10).forEach((l, i) => ui.text(l, px + 12, py + 196 + i * 12, { size: 10, col: C.dim }));
-            ui.wrap(ui.traceSource(r.to), pw - 24, 9).slice(0, 3).forEach((l, i) => ui.text(l, px + 12, py + 290 + i * 12, { size: 9, col: C.dim }));
-            ui.button(px + 12, py + 404 - 36, pw - 24, 24, this.mode === 0 ? 'Синтезировать' : 'Обменять', () => this.key('ok'), { size: 11, icon: 'synth', disabled: !src || max < 1 });
-          }
-          ui.hints([['Q/E', 'Режим'], ['←↑↓→', 'Выбор'], ['A/D', 'Количество'], ['Enter', this.mode === 0 ? 'Синтез' : 'Обмен'], ['Esc', 'Назад']], 12, HGT - 18);
-        },
-        key(kk, code) {
-          const rows = ui.synthRows(this.mode), n = rows.length;
-          if (code === 'KeyQ' || code === 'KeyE') { this.mode = 1 - this.mode; this.sel = 0; this.qty = 1; this.src = 0; ui.sfx('select'); return; }
-          if (code === 'KeyA') { this.qty = Math.max(1, this.qty - 1); ui.sfx('select'); return; }
-          if (code === 'KeyD') { this.qty++; ui.sfx('select'); return; }
-          if (code === 'Tab') { this.src++; ui.sfx('select'); return; }
-          if (kk === 'back') { ui.screens.pop(); ui.sfx('cancel'); if (close) close(); return; }
-          if (!n) return;
-          const mv = { left: -1, right: 1, up: -2, down: 2 }[kk];
-          if (mv) { this.sel = Math.max(0, Math.min(n - 1, this.sel + mv)); this.qty = 1; this.src = 0; ui.sfx('select'); return; }
-          if (kk === 'ok') {
-            const r = rows[this.sel];
-            const src = this.mode === 0 ? r.from : this.sources(r)[this.src % Math.max(1, this.sources(r).length)];
-            const done = src && (this.mode === 0 ? g.synth(src, this.qty) : g.exchange(src, r.to, this.qty));
-            if (!done) { ui.sfx('deny'); ui.toast('Не хватает материалов.'); return; }
-            ui.sfx('chest');
-            ui.toast('Получено: ' + H.ITEMS[r.to].name + ' ×' + this.qty + '.');
-            this.qty = 1;
-          }
-        }
-      });
     }
   });
 

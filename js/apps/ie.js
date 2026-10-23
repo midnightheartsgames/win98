@@ -792,6 +792,9 @@ class AppIE {
     if (clean.replace(/^[a-z]+:\/{2}/, '').split(/[/?#]/)[0].endsWith('kish99.ru')) {
       return 'kish';
     }
+    if (clean.replace(/^[a-z]+:\/{2}/, '').split(/[/?#]/)[0].endsWith('prodigy99.ru')) {
+      return 'prodigy';
+    }
     if (clean.replace(/^[a-z]+:\/{2}/, '').split(/[/?#]/)[0].endsWith('svodka99.ru')) {
       return 'svodka';
     }
@@ -1040,6 +1043,9 @@ class AppIE {
     if (pageKey !== 'kish' && window.kishSite && typeof window.kishSite.stopSynth === 'function') {
       window.kishSite.stopSynth();
     }
+    if (pageKey !== 'prodigy' && window.prodigySite && typeof window.prodigySite.stopSynth === 'function') {
+      window.prodigySite.stopSynth();
+    }
 
     if (window.isOnline === false) {
       win.titleElement.textContent = 'Автономный режим - Microslop Internet Explorer';
@@ -1079,6 +1085,12 @@ class AppIE {
         contentFrame.innerHTML = window.kishSite.renderSite(url);
         win.titleElement.textContent = `${window.kishSite.getPageTitle(url)} - Microslop Internet Explorer`;
         window.kishSite.attachEvents(win, contentFrame, this);
+      }
+    } else if (pageKey === 'prodigy') {
+      if (window.prodigySite) {
+        contentFrame.innerHTML = window.prodigySite.renderSite(url);
+        win.titleElement.textContent = `${window.prodigySite.getPageTitle(url)} - Microslop Internet Explorer`;
+        window.prodigySite.attachEvents(win, contentFrame, this);
       }
     } else if (pageKey === 'svodka') {
       if (window.svodkaSite) {
@@ -1400,6 +1412,7 @@ class AppIE {
       case 'muzzone': return "МузЗона '98 — Музыкальный обозреватель, клипы MTV и MP3 (25 ноября 1998)";
       case 'carman': return "Кар-Мэн '99 - фан-клуб группы «Кар-Мэн»";
       case 'kish': return "Король и Шут '99 - Трактир «Старая Сказка»";
+      case 'prodigy': return "The Prodigy '99 - Russian Rave Bunker & Antifaq";
       case 'svodka': return "Сводка.ру '99 — Ежедневная русская интернет-газета и лента новостей (28 декабря 1999)";
       case 'pereplet': return "Переплёт '99 - литературный альманах в Сети, выпуск 12";
       case 'animatrix': return "АниМатрица '99 :: аниме-узел, клубный фонд и фансаб";
@@ -1516,6 +1529,7 @@ class AppIE {
         ['http://www.muzzone98.ru', "МузЗона '98", 'новости групп, видеоклипы MTV, хит-парад и аккорды'],
         ['http://www.carman99.ru', "Кар-Мэн '99 (Car-Man)", 'фан-клуб экзотик-поп-группы: альбомы с треклистами, атлас песен, состав по годам, история 1989–1999, гостевая'],
         ['http://www.kish99.ru', "Король и Шут '99", 'трактир «Старая Сказка»: карта сказок и бестиарий, дворовый песенник, альбомы и бутлеги, панк-шарманка MIDI, книга жалоб'],
+        ['http://www.prodigy99.ru', "The Prodigy '99", 'Russian Rave Bunker: детектор пиратских фейков Горбушки, лаборатория сэмплов Лиама Хоулетта, архив Манежки 27.09.1997, MIDI, гостевая'],
         ['http://www.mp3vault98.com', 'MP3 Vault', 'архив музыки в формате MP3'],
         ['http://skins.winamp.com', 'Скины Winamp', 'архив скинов для Winamp и примерочная']
       ] },
@@ -1988,11 +2002,11 @@ class AppIE {
       });
     }
 
-    if (q.includes('youvid') || q.includes('ютуб') || q.includes('youtube') || q.includes('видео') || q.includes('video') || q.includes('zoo') || q.includes('зоопарк') || q.includes('jawed') || q.includes('hayato') || q.includes('хаято') || q.includes('хср') || q.includes('star rail') || q.includes('гармони') || q.includes('влад') || q.includes('савельев') || q.includes('одеял') || q.includes('ебатори') || q.includes('найс') || q.includes('nice') || q.includes('караоке') || q.includes('slay') || q.includes('бакс') || q.includes('барбершоп') || q.includes('стрижк') || q.includes('m1s3n') || q.includes('phone') || q.includes('linging') || q.includes('телефон') || q.includes('звонит') || q.includes('рингтон') || q.includes('диалин') || q.includes('dialyn') || q.includes('konosuba') || q.includes('коносуб') || q.includes('crunchyroll') || q.includes('чомуске') || q.includes('аква') || q.includes('мегумин') || q.includes('казум') || q.includes('даркнесс') || q.includes('эндинг') || q.includes('головастик') || q.includes('пампарам') || q.includes('приветствую') || q.includes('смотрящих') || q.includes('wake up roman') || q.includes('roman') || q.includes('роман') || q.includes('тору') || q.includes('tohru') || q.includes('sparkle') || q.includes('искорк') || q.includes('monodrama') || q.includes('монодрам') || q.includes('hsr98') || q.includes('стрей') || q.includes('stray') || q.includes('губн') || q.includes('гармошк') || q.includes('стример') || q.includes('усатый') || q.includes('осудил') || q.includes('наполовину') || q.includes('алерт') || q.includes('klee') || /(^|\s)кли(\s|$)/.test(q) || q.includes('та-та-та') || q.includes('ускользающее солнце') || q.includes('прыг-скок') || q.includes('перепутал') || q.includes('трэк') || q.includes('катос') || q.includes('осуждает') || q.includes('маленькая страна') || q.includes('keanu') || q.includes('reeves') || q.includes('киану') || q.includes('ривз') || q.includes('cyberpunk') || q.includes('киберпанк') || q.includes('nope') || q.includes('ноуп') || q.includes('инженер') || q.includes('engineer') || q.includes('tf2')) {
+    if (q.includes('youvid') || q.includes('ютуб') || q.includes('youtube') || q.includes('видео') || q.includes('video') || q.includes('zoo') || q.includes('зоопарк') || q.includes('jawed') || q.includes('hayato') || q.includes('хаято') || q.includes('хср') || q.includes('star rail') || q.includes('гармони') || q.includes('влад') || q.includes('савельев') || q.includes('одеял') || q.includes('ебатори') || q.includes('найс') || q.includes('nice') || q.includes('караоке') || q.includes('slay') || q.includes('бакс') || q.includes('барбершоп') || q.includes('стрижк') || q.includes('m1s3n') || q.includes('phone') || q.includes('linging') || q.includes('телефон') || q.includes('звонит') || q.includes('рингтон') || q.includes('диалин') || q.includes('dialyn') || q.includes('konosuba') || q.includes('коносуб') || q.includes('crunchyroll') || q.includes('чомуске') || q.includes('аква') || q.includes('мегумин') || q.includes('казум') || q.includes('даркнесс') || q.includes('эндинг') || q.includes('головастик') || q.includes('пампарам') || q.includes('приветствую') || q.includes('смотрящих') || q.includes('wake up roman') || q.includes('roman') || q.includes('роман') || q.includes('тору') || q.includes('tohru') || q.includes('sparkle') || q.includes('искорк') || q.includes('monodrama') || q.includes('монодрам') || q.includes('hsr98') || q.includes('стрей') || q.includes('stray') || q.includes('губн') || q.includes('гармошк') || q.includes('стример') || q.includes('усатый') || q.includes('осудил') || q.includes('наполовину') || q.includes('алерт') || q.includes('klee') || /(^|\s)кли(\s|$)/.test(q) || q.includes('та-та-та') || q.includes('ускользающее солнце') || q.includes('прыг-скок') || q.includes('перепутал') || q.includes('трэк') || q.includes('катос') || q.includes('осуждает') || q.includes('маленькая страна') || q.includes('подскочил') || q.includes('подпрыгнул') || q.includes('ультра') || q.includes('гипер') || q.includes('сверхосужден') || q.includes('keanu') || q.includes('reeves') || q.includes('киану') || q.includes('ривз') || q.includes('cyberpunk') || q.includes('киберпанк') || q.includes('nope') || q.includes('ноуп') || q.includes('инженер') || q.includes('engineer') || q.includes('tf2')) {
       results.push({
         title: 'YouVid - Покажи себя: видео от каждого',
         url: 'http://www.youvid.com',
-        snippet: 'Смотрите видео прямо в браузере: «Me at the zoo» от jawed, «Смогу ли Я пройти ХСР только ГАРМОНИСТАМИ» от Hayato, «Влад Савельев ложится спать», «verynicegoodnice», «Пампарам-пампарам,приветствую смотрящих» и «WAKE UP ROMAN» с канала Планета Ебатории, «Теперь я extremely slay, меньше волос» от Мистера Бакса, «yo phone linging» от m1s3n, «KONOSUBA 3 - Ending» от Crunchyroll, «Sparkle Trailer - Monodrama» на канале HSR98, «Стрей Не Оценил Губную Гармошку» и «Стрей Осудил Наполовину» с канала Планета Ебатории, «Стрей Перепутал Трэк» на канале СТРЕЙ ОСУЖДАЕТ, «Та-та-та!» Кли (Пиро) на канале HSR98, «Keanu Reeves is Extremely Horny» на канале memes/ytp. Картинку рисует 3D-ускоритель, звук идёт из оригинальной записи. Каналы, подписки, оценки и комментарии.'
+        snippet: 'Смотрите видео прямо в браузере: «Me at the zoo» от jawed, «Смогу ли Я пройти ХСР только ГАРМОНИСТАМИ» от Hayato, «Влад Савельев ложится спать», «verynicegoodnice», «Пампарам-пампарам,приветствую смотрящих» и «WAKE UP ROMAN» с канала Планета Ебатории, «Теперь я extremely slay, меньше волос» от Мистера Бакса, «yo phone linging» от m1s3n, «KONOSUBA 3 - Ending» от Crunchyroll, «Sparkle Trailer - Monodrama» на канале HSR98, «Стрей Не Оценил Губную Гармошку» и «Стрей Осудил Наполовину» с канала Планета Ебатории, «Стрей Перепутал Трэк», «Стрей Подскочил» и «Стрей Ультра Гипер Осуждает» на канале СТРЕЙ ОСУЖДАЕТ, «Та-та-та!» Кли (Пиро) на канале HSR98, «Keanu Reeves is Extremely Horny» на канале memes/ytp. Картинку рисует 3D-ускоритель, звук идёт из оригинальной записи. Каналы, подписки, оценки и комментарии.'
       });
     }
 
@@ -2073,6 +2087,14 @@ class AppIE {
         title: "Король и Шут '99 - Трактир «Старая Сказка»",
         url: 'http://www.kish99.ru',
         snippet: 'Питерский фан-узел группы «Король и Шут»: карта сказочного леса и бестиарий, дворовый песенник с аккордами и переключателем тональности, альбомы и магнитоальбомы с кассетными вкладышами, панк-шарманка MIDI и книга жалоб Трактирщика.'
+      });
+    }
+
+    if (q.includes('prodigy') || q.includes('продиджи') || q.includes('лиам') || q.includes('хоулетт') || q.includes('кит флинт') || q.includes('манежка') || q.includes('манежная') || q.includes('castbreeder') || q.includes('горбушка') || q.includes('пиратск') || q.includes('рейв') || q.includes('муравей') || q.includes('fat of the land') || q.includes('dirtchamber') || q.includes('smack my bitch up') || q.includes('firestarter') || q.includes('voodoo people') || q.includes('музык') || q.includes('mp3')) {
+      results.push({
+        title: "The Prodigy '99 - Russian Rave Bunker & Antifaq",
+        url: 'http://www.prodigy99.ru',
+        snippet: 'Рейв-бункер фанатов The Prodigy: детектор пиратских фейков Горбушки (Castbreeder и Electronic Punks II), лаборатория сэмплов Лиама Хоулетта с пэдами, архив Манежной площади 27.09.1997, MIDI-рифы и гостевая книга.'
       });
     }
 
@@ -5246,6 +5268,7 @@ class AppIE {
         ['http://www.muzzone98.ru', "МузЗона '98", 'новости групп, клипы MTV и чарты', 8120, 31900],
         ['http://www.carman99.ru', "Кар-Мэн '99 (Car-Man)", 'фан-клуб группы: альбомы, атлас песен, состав, MIDI', 7890, 31240],
         ['http://www.kish99.ru', "Король и Шут '99", 'питерский фан-узел: сказки, песенник, альбомы, MIDI', 6420, 27180],
+        ['http://www.prodigy99.ru', "The Prodigy '99", 'рейв-бункер: антифейк Горбушки, сэмплы, Манежка, MIDI', 7210, 28640],
         ['http://www.svodka99.ru', "Сводка.ру '99", 'ежедневная интернет-газета конца 1999 г., лента депеш и курсы ЦБ', 10840, 44620],
         ['http://www.pereplet99.ru', "Переплёт '99", 'литературный альманах конца 1999 г., книги и журналы', 7740, 29860],
         ['http://www.zooportal98.ru', "ЗооПортал '98", 'портал о животных, заповедниках, аквариуме и питомцах', 7690, 29410],

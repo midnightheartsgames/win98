@@ -37,7 +37,8 @@
     nihility: { name: 'Небытие', aggro: 100 },
     preservation: { name: 'Сохранение', aggro: 150 },
     abundance: { name: 'Изобилие', aggro: 100 },
-    remembrance: { name: 'Память', aggro: 100 }
+    remembrance: { name: 'Память', aggro: 100 },
+    elation: { name: 'Радость', aggro: 100 }
   };
 
   const BREAK_EFFECT = {
@@ -68,8 +69,12 @@
     contactThreshold: 3,
     tpMax: 5,
     tpStart: 3,
-    powerMax: 180,
-    powerRegenSec: 30,
+    powerMax: 600,
+    powerRegenSec: 6,
+    powerReserveMax: 2400,
+    powerTop: 3000,
+    powerPack: 60,
+    powerJade: [50, 50, 75, 75, 100, 100, 150, 150],
     warpCost: 160,
     debugJade: 1600,
     pity5: 60,
@@ -117,10 +122,8 @@
     guildParty: 0.5,
     wizFeatured4: 0.5,
     kazumaCameo: 0.01,
-    luckMax: 5,
-    luckCrit: 0.04,
-    luckEhr: 0.06,
     kazumaCrit: 0.1,
+    kazumaTechPunch: 3,
     stealLoot: 0.35,
     stealRare: 0.1,
     bindChance: 0.6,
@@ -386,7 +389,10 @@
 
   const grow = lvl => 1 + TUNING.growth * (Math.max(1, lvl) - 1);
   const statAt = (base, lvl) => Math.round(base * grow(lvl));
-  const expToNext = lvl => 40 * lvl + 2 * lvl * lvl;
+  const CHAR_EXP = [200, 300, 500, 600, 1050, 1670, 2320, 3060, 3860, 4740, 5710, 6730, 7830, 9000, 10240, 11550, 12920, 14360, 15870, 16580, 16840, 17100, 17370, 17640, 17910, 18190, 18480, 18760, 19040, 19340, 19630, 19930, 20220, 20530, 20840, 21140, 21450, 21760, 22080, 22390, 25550, 29140, 32830, 36600, 40470, 44430, 48480, 52630, 56870, 61190, 65620, 70130, 74740, 79450, 84240, 89120, 94110, 99190, 104350, 106240, 111830, 117530, 123320, 129210, 135200, 141290, 147480, 153780, 160170, 179260, 199920, 220920, 242260, 263930, 285950, 308300, 331000, 354040, 377420];
+  const tlExpToNext = lvl => 40 * lvl + 2 * lvl * lvl;
+  const expToNext = lvl => CHAR_EXP[clamp(Math.round(lvl), 1, CHAR_EXP.length) - 1];
+  const charExp = (n, lvl) => Math.round(n * expToNext(lvl) / tlExpToNext(lvl));
   const enemyExp = (lvl, mult) => Math.round((20 + 8 * lvl) * (mult || 1));
   const breakBase = lvl => 10 + 4 * lvl;
   const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
@@ -409,6 +415,6 @@
     makers: 'Win 98 Edition Team'
   };
 
-  Object.assign(H, { clamp, lerp, makeRandom, ELEMENTS, ELEMENT_KEYS, PATHS, BREAK_EFFECT, TUNING, grow, statAt, expToNext, enemyExp, breakBase, fmt, BRAND });
+  Object.assign(H, { clamp, lerp, makeRandom, ELEMENTS, ELEMENT_KEYS, PATHS, BREAK_EFFECT, TUNING, grow, statAt, CHAR_EXP, expToNext, tlExpToNext, charExp, enemyExp, breakBase, fmt, BRAND });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

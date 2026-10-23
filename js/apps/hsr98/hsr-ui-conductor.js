@@ -89,8 +89,8 @@
       this.text(String(tl.lvl), x + w - 16, ty - 6, { align: 'right', size: 24, bold: true, serif: true, col: C.gold });
       ty += 28;
       const max = tl.lvl >= H.TL_MAX;
-      this.rail(x + 18, ty, w - 36, max ? 1 : tl.exp / H.expToNext(tl.lvl));
-      this.text(max ? 'Максимальный уровень' : 'Опыт ' + H.fmt(tl.exp) + ' / ' + H.fmt(H.expToNext(tl.lvl)), x + w / 2, ty + 8, { align: 'center', size: 10, col: C.sub });
+      this.rail(x + 18, ty, w - 36, max ? 1 : tl.exp / H.tlExpToNext(tl.lvl));
+      this.text(max ? 'Максимальный уровень' : 'Опыт ' + H.fmt(tl.exp) + ' / ' + H.fmt(H.tlExpToNext(tl.lvl)), x + w / 2, ty + 8, { align: 'center', size: 10, col: C.sub });
       ty += 30;
       const next = levels().find(l => l > tl.lvl);
       const say = ready ? 'Пом-Пом всё приготовил! Билетов к погашению: ' + ready + '.'

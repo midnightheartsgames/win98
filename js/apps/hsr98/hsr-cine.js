@@ -773,7 +773,8 @@
   const softBuf = { cv: null };
   function lookFor(who, v, game) {
     const fem = game && game.state && game.state.gender === 'f';
-    const key = (typeof who === 'string' ? who : JSON.stringify(who)) + '|' + (who === 'trail' || who === '@' ? (fem ? 'f' : 'm') : '') + '|' + (v ? JSON.stringify(v) : '');
+    const worn = typeof who === 'string' && game && game.outfitOf ? game.outfitOf(who === '@' || who === 'trail_p' ? 'trail' : who) || '' : '';
+    const key = (typeof who === 'string' ? who : JSON.stringify(who)) + '|' + (who === 'trail' || who === '@' ? (fem ? 'f' : 'm') : '') + '|' + worn + '|' + (v ? JSON.stringify(v) : '');
     let L = lookCache.get(key);
     if (!L) {
       const base = typeof who === 'string' ? (H.SPEAKERS[who] && H.SPEAKERS[who].look && !H.SPEAKERS[who].char ? H.SPEAKERS[who].look : G.lookOf(who, game)) : who;

@@ -189,6 +189,8 @@
     else basis(M[hd], xF, yF, zF, W);
   }
 
+  const GRIP_PALM = 0.034, GRIP_WRIST = 0.085, GRIP_SLACK = 0.03;
+
   function carMat(v, o) {
     return M3.euler((v.pitch || 0) + (v.bodyPitch || 0), -v.yaw, v.roll || 0, v.x, v.y, v.z, o);
   }
@@ -435,7 +437,10 @@
       }
       rootY *= 1 - s;
       if (p.enter && p.enter.ph === 'in' || p.exit && p.exit.ph === 'out' || cx.duck) inc(PB.SPINE, -0.45 * Math.sin(Math.PI * s), 0, 0);
-      if (veh && veh.driver === p && !sitBike) inc(PB.HEAD, 0, (veh.steer || 0) * 0.5, 0);
+      if (veh && veh.driver === p && !sitBike) {
+        const L = (st.reach || 0) * s;
+        inc(PB.SPINE, -L * 0.6, 0, 0); inc(PB.CHEST, -L * 0.4, 0, 0); inc(PB.HEAD, L * 0.9, (veh.steer || 0) * 0.5, 0);
+      }
       if (veh && veh.dead && !p.isPlayer) { inc(PB.SPINE, -0.5, 0, 0.2); inc(PB.HEAD, -0.5, 0, 0.4); }
     }
     let lie = 0;
@@ -545,7 +550,7 @@
       const style = G.aim || (two ? 'shoulder' : 'pistol');
       const ao = AIMS[style] || [G.stock || 0.36, -0.1, -0.05];
       const hold0 = w => madd(S, 1, w.f, ao[0], w.u, ao[1], w.r, ao[2]);
-      let P, w;
+      let P, w, fpLift = null;
       if (two) {
         let pl, wl;
         if (G.carry === 'hip') { wl = wframe(madd(Fb, 0.95, Rb, -0.2, Ub, -0.1), Ub); pl = madd(C, 1, Rb, 0.15, Ub, -0.2, Fb, 0.16); }
@@ -558,11 +563,19 @@
         P = hold0(wa);
         w = wa;
       }
+      if (cx.fp !== undefined && aim > 0.001) {
+        const pistol = style === 'pistol', eye = ap(M[PB.HEAD], [N.PED_EYE[0], N.PED_EYE[1] * (look.tall || 1), N.PED_EYE[2]]);
+        const sight = madd(eye, 1, w.f, pistol ? 0.4 : 0.17, w.u, -((G.tip ? G.tip[1] : 0.05) + (pistol ? 0.03 : 0.06)));
+        const hip = madd(sight, 1, w.r, pistol ? 0.1 : 0.13, w.u, pistol ? -0.1 : -0.09, w.f, 0.06);
+        const P0 = P;
+        P = mix(P, mix(hip, sight, cx.fp), aim);
+        fpLift = sub(P, P0);
+      }
       if (ru >= 0 && RL) {
         const rw = N.smooth(0, 0.1, ru) * (1 - N.smooth(0.9, 1, ru));
         const rp = RPOSE[RL.pose](C, Rb, Ub, Fb), wr = wframe(rp[1], rp[2]);
         rk = rw;
-        P = mix(P, rp[0], rw);
+        P = mix(P, fpLift ? add(rp[0], scl(fpLift, 0.85)) : rp[0], rw);
         w = wframe(mix(w.f, wr.f, rw), mix(w.u, wr.u, rw));
         for (const k in RL.part || {}) amt[k] = keys(RL.part[k], ru)[0];
       }
@@ -653,11 +666,17 @@
       } else if (!cab.bike && veh.driver === p) {
         const ws = cab.wheel;
         M3.mul(CARM, M3.euler(-ws.tilt, 0, -(veh.steer || 0) * 2.4, ws.x, ws.y, ws.z, st.tmp), WHM);
+        let short = -1;
         for (const s of [-1, 1]) {
-          const a = s < 0 ? Math.PI - 0.5 : 0.5;
-          const rim = toModel(ap(WHM, [Math.cos(a) * ws.r, Math.sin(a) * ws.r, 0]));
-          handIK[s < 0 ? 'L' : 'R'] = { T: add(rim, scl(Fb, 0.03)), hb: frame(madd(Fb, -0.6, Ub, 0.3, Rb, -s * 0.5), madd(Ub, 0.7, Fb, 0.3)), pole: madd(Rb, s * 0.75, Ub, -0.6), k: 1 };
+          const a = s < 0 ? Math.PI - 0.5 : 0.5, c = Math.cos(a), sn = Math.sin(a);
+          const rim = toModel(ap(WHM, [c * ws.r, sn * ws.r, 0]));
+          const dir = l => sub(toModel(ap(WHM, [c * ws.r + l[0], sn * ws.r + l[1], l[2]])), rim);
+          const Y = nrm(madd(dir([c, sn, 0]), -1, dir([0, 0, 1]), 0.45)), Z = scl(dir([-sn, c, 0]), -s), X = cross(Y, Z);
+          const T = madd(rim, 1, X, s * GRIP_PALM, Y, GRIP_WRIST), ua = s < 0 ? PB.UAL : PB.UAR;
+          short = Math.max(short, len(sub(T, pos(M[ua]))) - Math.abs(piv[ua][1] - piv[ua + 2][1]) + GRIP_SLACK);
+          handIK[s < 0 ? 'L' : 'R'] = { T, hb: { x: X, y: Y, z: Z }, pole: madd(Rb, s * 0.75, Ub, -0.6), k: 1 };
         }
+        st.reach = N.clamp((st.reach || 0) + short * 1.2, 0, 0.7);
       }
       const da = p.anim && p.anim.doorArm;
       if (da && da.t < 0.42 && veh.door && !cab.bike) {
@@ -721,6 +740,16 @@
   };
 
   N.pedRoot = (p, o) => M3.euler(0, -(p.yaw || 0), 0, p.x, p.y, p.z, o);
+
+  N.PED_EYE = [0, 0.216, -0.13];
+  N.pedEye = (G, look) => ap(G[PB.HEAD], [N.PED_EYE[0], N.PED_EYE[1] * ((look && look.tall) || 1), N.PED_EYE[2]]);
+
+  const HEADLESS = Array.from({ length: NB }, () => M3.mat());
+  N.headless = G => {
+    for (let b = 0; b < NB; b++) HEADLESS[b].set(G[b]);
+    HEADLESS[PB.HEAD].fill(0, 0, 9);
+    return HEADLESS;
+  };
 
   N.Anim = { hold, keys, solveArm, frame, reloadOf, RELOADS };
 

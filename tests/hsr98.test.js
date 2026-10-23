@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const path = require('path');
 const DIR = path.join(__dirname, '../js/apps/hsr98');
 const H = require(path.join(DIR, 'hsr-core.js'));
-for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor']) require(path.join(DIR, f + '.js'));
+for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-guide-data', 'hsr-guide', 'hsr-domain']) require(path.join(DIR, f + '.js'));
 
 let checks = 0;
 const CCC_LATER = new Set();
@@ -12,7 +12,7 @@ const eq = (a, b, m) => { assert.equal(a, b, m); checks++; };
 const t0 = Date.now();
 const log = [];
 
-const FX = new Set(['dmg', 'heal', 'hot', 'shield', 'taunt', 'buff', 'debuff', 'dot', 'freeze', 'imprison', 'delay', 'advance', 'energy', 'cleanse', 'dispel', 'selfCost', 'extendDots', 'killEnergy', 'magma', 'hookEnhance', 'resurge', 'bloom', 'invig', 'sync', 'yanqingUlt', 'svarogMarked', 'svMark', 'promise', 'frost', 'polarity', 'stance', 'shinra', 'eclipse', 'chaosAll', 'note', 'reinc', 'cue', 'maestro', 'notesAll', 'ember', 'elysium', 'elysiumAll', 'nightmare', 'steal', 'bind', 'drain', 'heist', 'purge', 'wet', 'freezeWet', 'chant', 'collapse', 'swing', 'cover', 'ecstasy', 'ecstasySpend', 'luck', 'onMe', 'tauntTo', 'cleanseAll', 'detonate', 'implant', 'implantAll', 'hpCost', 'hellscape', 'sentence', 'tallyReset', 'shuhuFull', 'freeSkill', 'stitch', 'stitchAll', 'analyze', 'wave', 'execute', 'allOut', ...H.FOURS.FX, ...H.CONTON.FX, ...H.HARES.FX, ...H.FIVES.FX]);
+const FX = new Set(['dmg', 'punch', 'heal', 'hot', 'shield', 'taunt', 'buff', 'debuff', 'dot', 'freeze', 'imprison', 'delay', 'advance', 'energy', 'cleanse', 'dispel', 'selfCost', 'extendDots', 'killEnergy', 'magma', 'hookEnhance', 'resurge', 'bloom', 'invig', 'sync', 'yanqingUlt', 'svarogMarked', 'svMark', 'promise', 'frost', 'polarity', 'stance', 'shinra', 'eclipse', 'chaosAll', 'note', 'reinc', 'cue', 'maestro', 'notesAll', 'ember', 'elysium', 'elysiumAll', 'nightmare', 'steal', 'bind', 'drain', 'heist', 'purge', 'wet', 'freezeWet', 'chant', 'collapse', 'swing', 'cover', 'ecstasy', 'ecstasySpend', 'luck', 'onMe', 'tauntTo', 'cleanseAll', 'detonate', 'implant', 'implantAll', 'hpCost', 'hellscape', 'sentence', 'tallyReset', 'shuhuFull', 'freeSkill', 'stitch', 'stitchAll', 'analyze', 'wave', 'execute', 'allOut', ...H.FOURS.FX, ...H.CONTON.FX, ...H.HARES.FX, ...H.FIVES.FX]);
 let afterJarilo = null;
 const G0bg = id => ['station', 'express', 'snow', 'city', 'under', 'rivet', 'hill', 'meadow'].includes(id);
 const TARGETS = new Set(['single', 'blast', 'all', 'bounce', 'ally', 'allies', 'self']);
@@ -228,8 +228,10 @@ for (const [id, f] of Object.entries(H.FUSIONS)) {
   ok(!g.calyxOpen(c('cx_echo_doom')), 'the Doomsday Echo waits for the Express');
   g.state.flags.express_intro = true;
   ok(g.calyxOpen(c('cx_echo_doom')), 'the Doomsday Echo opens with the Express, as in the original');
-  ok(H.CALYX.filter(x => x.reward === 'path').length === 8 && H.CALYX.filter(x => x.reward === 'path').every(x => H.PATHS[x.path] && !/опыт/.test(x.text)), 'eight crimson buds give Path materials');
-  for (const [id, tier, line] of [['cx_hunt', 0, 'hunt'], ['cx_destruction', 3, 'dest'], ['cx_memory', 2, 'memo']]) {
+  ok(H.CALYX.filter(x => x.reward === 'path').length === 9 && H.CALYX.filter(x => x.reward === 'path').every(x => H.PATHS[x.path] && !/опыт/.test(x.text)), 'nine crimson buds give Path materials');
+  ok(Object.keys(H.PATHS).every(p => H.CALYX.some(x => x.reward === 'path' && x.path === p)), 'every Path has its crimson bud');
+  ok(!g.calyxOpen(c('cx_elation')), 'the Bud of Elation waits for an Elation character');
+  for (const [id, tier, line] of [['cx_hunt', 0, 'hunt'], ['cx_destruction', 3, 'dest'], ['cx_memory', 2, 'memo'], ['cx_elation', 1, 'elat']]) {
     for (const k of Object.keys(inv)) delete inv[k];
     g.state.power = 100;
     g.calyxReward({ id, tier, cost: 10 });
@@ -1542,7 +1544,7 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
     b = fresh([spec('makoto', cone('cccletter')), spec('march')], ['reaver:20', 'reaver:20']);
     tank(b);
     mk = turnOf(b, 'makoto');
-    if (mk) { b.act('skill', b.living[0]); b.drain(); ok(mk.buffs.some(x => x.name === 'Письмо с кошкой'), 'С любовью, Макото powers up after a theft'); }
+    if (mk) { b.act('skill', b.living[0]); b.drain(); ok(mk.buffs.some(x => x.name === 'Я найду тебя'), 'С любовью, Макото powers up after a theft'); }
 
     const runs = [[['makoto', 'amanda', 'talleah', 'natasha'], 'svarog'], [['makoto', 'amanda', 'talleah', 'natasha'], 'cocolia1'], [['makoto', 'pela', 'amanda', 'natasha'], 'gepard2'], [['seele', 'talleah', 'march', 'natasha'], 'svarog']];
     for (const [party, enc] of runs) {
@@ -1806,12 +1808,12 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
     b = fresh([spec('nicole', cone('vault')), spec('march')], ['gunner:20', 'gunner:20']);
     tank(b);
     ni = turnOf(b, 'nicole');
-    if (ni) { b.act('skill', b.living[0]); b.drain(); ok(b.living[0].buffs.some(x => x.name === 'Сундук сокровищ'), 'Сундук сокровищ marks the foes hit by the Skill'); }
+    if (ni) { b.act('skill', b.living[0]); b.drain(); ok(b.living[0].buffs.some(x => x.name === 'Сегодня за счёт заведения'), 'Как купить солнце marks the foes hit by the Skill'); }
     b = fresh([spec('billy', cone('starlight')), spec('march')], ['gunner:20']);
-    ok(near(b.haresDmg(unit(b, 'billy'), b.living[0], { kind: 'basic' }), 0.2), 'Реплика Звёздного двигателя powers up the Basic');
+    ok(near(b.haresDmg(unit(b, 'billy'), b.living[0], { kind: 'basic' }), 0.2), 'Звёздные рыцари не проигрывают powers up the Basic');
     b = fresh([spec('anby', cone('battery')), spec('march')], ['gunner:20']);
     b.push({ t: 'act', u: unit(b, 'anby'), name: CHAIN_NAME, kind: 'chain' });
-    ok(unit(b, 'anby').buffs.some(x => x.s === 'err' && x.name === 'Аккумулятор Демары II'), 'Аккумулятор Демары II speeds up energy after a chain');
+    ok(unit(b, 'anby').buffs.some(x => x.s === 'err' && x.name === 'Своя тема'), 'Трек без названия speeds up energy after a chain');
 
     b = fresh(['anby', 'march'], ['gunner:20', 'gunner:20'], 5, [{ charId: 'anby', fx: 'anbyTech' }, { charId: 'nicole', fx: 'nicoleTech' }]);
     ok(b.allies.length === 2, 'techniques of absent hares do nothing harmful');
@@ -2123,7 +2125,7 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
     const yt = b.allies[0], foe = b.living[0];
     const plain = b.inabaDmg(yt, foe, { kind: 'basic' });
     yt.flags.oneMore = true;
-    ok(plain === 0 && b.inabaDmg(yt, foe, { kind: 'basic' }) > 0 && b.inabaDmg(yt, foe, { kind: 'aoa' }) > b.inabaDmg(yt, foe, { kind: 'basic' }), 'Reach Out to the Truth powers «Ещё раз!» and the All-Out Attack');
+    ok(plain === 0 && b.inabaDmg(yt, foe, { kind: 'basic' }) > 0 && b.inabaDmg(yt, foe, { kind: 'aoa' }) > b.inabaDmg(yt, foe, { kind: 'basic' }), 'The Tastiest Omelette powers «Ещё раз!» and the All-Out Attack');
     b = new H.Battle({ party: [coned('kanji', 'thread')], enemies: ['reaver:20', 'reaver:20'], lvl: 20, seed: 5 }); b.start(); b.drain();
     const kt = b.allies[0];
     b.stitch(kt, b.living[0], b.living[1]);
@@ -2133,7 +2135,7 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
     ok(b.inabaDmg(kt, b.living[1], { kind: 'basic' }) > T.kanjiVsStitch && kt.hp > kh, 'Stitch by Stitch hits stitched foes harder and heals on their break');
     b = new H.Battle({ party: [coned('rise', 'affection'), spec('march')], enemies: ['reaver:20'], lvl: 20, seed: 5 }); b.start(); b.drain();
     b.analyze(b.allies[0], b.living[0], 2);
-    ok(b.allies.every(a => a.buffs.some(x => x.name === 'Твоя привязанность')), 'Your Affection lifts the team on every analysis');
+    ok(b.allies.every(a => a.buffs.some(x => x.name === 'Своё лицо')), 'Just Rise lifts the team on every analysis');
     {
       const FOUR4 = { yosuke: 'junesday', chie: 'dragontrial', yukiko: 'amagiinn' };
       ok(Object.values(H.BANNERS.comp.stars).every(st => st.four.join() === Object.values(FOUR4).map(c => 'cone:' + c).join()), 'the Compendium features the three Investigation Team 4★ cones');
@@ -2412,10 +2414,11 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
   ok(kz.buffs.some(x => x.name === 'Невероятная удача' && x.s === 'critR'), 'Kazuma starts with extra CRIT Rate');
   const foe = b.living[1];
   ok(b.preview('basic', foe, dk).rows.get(foe).miss, 'the preview warns that Darkness misses a moving enemy');
+  const pz0 = b.el.punch;
   b.useAbility(dk, K.darkness.basic, foe, 'basic');
   let ev = b.drain();
   ok(ev.some(x => x.t === 'miss' && x.u === foe) && !ev.some(x => x.t === 'dmg' && x.u === foe), 'Darkness misses a moving enemy');
-  ok(foe.flags.provoke === dk && dk.flags.ecstasy === 1 && kz.flags.luck === 1, 'a miss provokes the enemy, gives Ecstasy and gives Kazuma Luck');
+  ok(foe.flags.provoke === dk && dk.flags.ecstasy === 1 && b.el.punch === pz0 + T.elFail, 'a miss provokes the enemy, gives Ecstasy and gives the team Punchline');
   for (let i = 0; i < 10; i++) eq(b.pickTarget(foe), dk, 'the provoked enemy aims at Darkness');
   b.endTurn(foe);
   ok(!foe.flags.provoke, 'the provocation lasts one enemy turn');
@@ -2498,27 +2501,31 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
   boss.charging = 1; boss.lockTarget = mg;
   b.addBuff(boss, { s: 'atkP', v: 0.2, turns: 3, name: 'Приказ' });
   boss.shield = 100;
-  b.setLuck(k2, 3);
-  const pvU = b.preview('ult', boss, k2).rows.get(boss).lo;
-  b.setLuck(k2, 0);
-  const pvU0 = b.preview('ult', boss, k2).rows.get(boss).lo;
-  ok(pvU > pvU0, 'Luck raises the Great Heist damage');
-  b.setLuck(k2, 3);
-  const d1 = b.reward.drops.length;
+  const d1 = b.reward.drops.length, pu0 = b.el.punch, ah = b.ahaUnit(), av1 = ah.av;
+  b.drain();
   b.useAbility(k2, K.kazuma.ult, boss, 'ult');
+  ev = b.drain();
   ok(boss.charging == null && !boss.lockTarget && !boss.shield && boss.buffs.every(x => x.debuff || x.perm), 'the Great Heist strips the enemy and stops its charge');
-  ok(boss.buffs.some(x => x.name === 'Без оружия') && !k2.flags.luck && b.reward.drops.length === d1 + 1, 'the Great Heist disarms, spends Luck and always loots');
-  b.setLuck(k2, 4); b.resisted(k2); b.resisted(k2);
-  eq(k2.flags.luck, T.luckMax, 'Luck stops at ' + T.luckMax);
-  ok(k2.buffs.some(x => x.name === 'Удача' && Math.abs(x.v - T.luckCrit * T.luckMax) < 1e-9), 'Luck raises CRIT Rate');
+  ok(boss.buffs.some(x => x.name === 'Без оружия') && b.reward.drops.length === d1 + 1, 'the Great Heist disarms and always loots');
+  ok(b.el.punch >= pu0 + 5 && (ah.av < av1 || av1 === 0), 'the Great Heist gives 5 Punchline and brings Aha closer');
+  ok(Math.abs((av1 - ah.av) - Math.min(av1, 0.15 * T.avBase / H.battleStat.spdOf(ah))) < 1e-6, 'Aha moves 15% closer');
+  ok(ev.some(x => x.t === 'dmg' && x.label === 'Хит' && x.el && x.u === boss), 'with Certified Banger the Great Heist adds Elation DMG');
+  b.el.fails = 0; b.actN = 9000;
+  const pr0 = b.el.punch;
+  b.resisted(k2);
+  eq(b.el.punch, pr0 + T.elFail, 'a resisted effect gives the team 2 Punchline');
+  ok(!('luck' in k2.flags) && !k2.buffs.some(x => x.name === 'Удача'), 'Kazuma has no Luck counter any more');
   b = fresh(['kazuma', 'march'], ['doomsday:20']);
   const bk = b.allies[0], bb = b.living[0];
   b.addBuff(bk, { s: 'ehr', v: 10, turns: 99, name: 'Тест' });
   const av0 = bb.av;
   b.useAbility(bk, K.kazuma.skills[1], bb, 'skill');
   ok(!bb.flags.bound && bb.av > av0 && bb.flags.bindImm === 1, 'Bind only pushes a boss back');
-  b = fresh(['kazuma', 'march'], ['reaver:20'], 5, [{ charId: 'kazuma', fx: 'kazumaTech' }]);
-  eq(b.allies[0].flags.luck, 2, 'the technique starts Kazuma with 2 Luck');
+  {
+    const tb = new H.Battle({ party: ['kazuma', 'march'].map(spec), enemies: ['reaver:20'], lvl: 20, seed: 5, techs: [{ charId: 'kazuma', fx: 'kazumaTech' }] });
+    const tev = tb.start();
+    ok(tev.some(x => x.t === 'punch' && x.add === T.kazumaTechPunch), 'the technique starts the fight with 3 more Punchline');
+  }
 
   b = fresh(['aqua', 'kazuma'], ['reaver:20', 'soldier:20']);
   let aq = b.allies[0];
@@ -2553,7 +2560,7 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
     const fe = fb.drain();
     if (!fe.some(x => x.t === 'fail')) continue;
     failSeen = true;
-    ok(a.flags.tears === 1 && fb.allies[1].flags.luck === 1, 'a failed action makes Aqua cry and gives Kazuma Luck');
+    ok(a.flags.tears === 1 && fe.some(x => x.t === 'punch' && x.add === T.elFail), 'a failed action makes Aqua cry and gives the team Punchline');
     let n = 0;
     while (a.flags.tears && n++ < 20) { fb.useAbility(a, K.aqua.basic, fb.living[0], 'basic'); fb.drain(); }
     ok(n < 20 && !a.flags.tears, 'a good action spends the tears');
@@ -2611,7 +2618,7 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
     const mc = cb.allies[0];
     wear(mc, 'manastaff');
     mc.flags.chant = T.chantMax;
-    ok(Math.abs(cb.axelMult(mc, K.megumin.ult.fx[0], cb.living[0], 1, true) - (1 + T.chantMax * (T.chantDmg + 0.1))) < 1e-9, 'Manatite Staff adds 10% to the Explosion per chant');
+    ok(Math.abs(cb.axelMult(mc, K.megumin.ult.fx[0], cb.living[0], 1, true) - (1 + T.chantMax * (T.chantDmg + 0.09))) < 1e-9, 'Explosion for Today adds 9% to the Explosion per chant');
     mc.energy = mc.maxEnergy;
     cb.useAbility(mc, K.megumin.ult, null, 'ult');
     eq(mc.flags.collapse, T.collapseTurns - 1, 'Manatite Staff shortens the collapse by a turn');
@@ -2619,7 +2626,7 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
     const dk = cb.allies[0], mg = cb.allies[1];
     wear(dk, 'adamantite');
     dk.flags.ecstasy = T.ecstasyMax;
-    ok(Math.abs(cb.axelConeDmg(mg) - 0.12) < 1e-9 && Math.abs(cb.axelConeDmg(dk) - 0.12) < 1e-9, 'Adamantite Armour lifts the team damage by 2% per Ecstasy, up to 12%');
+    ok(Math.abs(cb.axelConeDmg(mg) - 0.018 * T.ecstasyMax) < 1e-9 && Math.abs(cb.axelConeDmg(dk) - 0.018 * T.ecstasyMax) < 1e-9, 'A Prayer for a Friend lifts the team damage by 1.8% per Ecstasy');
     for (const a of cb.allies) { a.shield = 0; a.shieldT = 0; }
     dk.flags.cover = 1;
     cb.endTurn(dk);
@@ -2629,16 +2636,19 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
     wear(aq, 'hagoromo');
     hurt.hp = 1;
     cb.heal(aq, hurt, 10);
-    ok(hurt.buffs.some(x => x.name === 'Перьевая мантия' && x.s === 'res' && x.v === 0.2), 'Feather Mantle gives the healed ally effect RES');
+    ok(hurt.buffs.some(x => x.name === 'Искусство не продаётся' && x.s === 'res' && Math.abs(x.v - 0.18) < 1e-9), 'Feather Mantle gives the healed ally effect RES');
     cb = fresh(['kazuma', 'megumin'], ['reaver:20']);
     const kz = cb.allies[0], foe = cb.living[0];
     foe.hp = foe.maxHp = 1e7;
     wear(kz, 'chunchunmaru');
-    kz.flags.luck = 5;
-    ok(Math.abs(cb.axelConeDmg(kz) - 0.15) < 1e-9, 'Chunchunmaru adds 3% damage per Luck');
+    const elBare = cb.elationDmg(kz, foe, 1, { count: 0 }, false);
+    ok(cb.axelConeDmg(kz) === 0 && H.CONES.chunchunmaru.path === 'elation' && H.CONES.chunchunmaru.bonus.elation === 2 && Math.abs(H.coneParam('chunchunmaru', 2, 1) - 0.12) < 1e-9, 'Chunchunmaru is an Elation cone that raises Elation');
+    kz.cone = null;
+    ok(elBare > cb.elationDmg(kz, foe, 1, { count: 0 }, false), 'Chunchunmaru makes Elation DMG ignore DEF');
+    wear(kz, 'chunchunmaru');
     cb.addBuff(foe, { s: 'atkP', v: 0.2, turns: 3, name: 'Приказ' });
     cb.useAbility(kz, K.kazuma.skills[0], foe, 'skill');
-    ok(kz.flags.chun && Math.abs(cb.axelConeDmg(kz) - 0.35) < 1e-9, 'a successful Steal makes the next attack 20% stronger');
+    ok(kz.flags.chun && Math.abs(cb.axelConeDmg(kz) - 0.2) < 1e-9, 'a successful Steal makes the next attack 20% stronger');
     cb.useAbility(kz, K.kazuma.basic, foe, 'basic');
     ok(!kz.flags.chun, 'the next attack spends the bonus');
   }
@@ -2647,8 +2657,9 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
   tough(b);
   for (const a of b.allies) a.energy = a.maxEnergy;
   ok(b.availableFusions().some(f => f.id === 'f_trap' && f.ready), 'Kazuma and Aqua can fuse');
+  const pt0 = b.el.punch;
   ok(b.fusion('f_trap', b.living[0]), 'Ice Trap executes');
-  ok(b.living.every(e => e.frozen) && b.allies[0].flags.luck === 2, 'Ice Trap freezes every normal enemy and gives Luck');
+  ok(b.living.every(e => e.frozen) && b.el.punch >= pt0 + 4, 'Ice Trap freezes every normal enemy and gives 4 Punchline');
   b = fresh(['megumin', 'darkness'], ['reaver:20', 'reaver:20']);
   tough(b);
   for (const a of b.allies) a.energy = a.maxEnergy;
@@ -2662,12 +2673,13 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
   const fus = b.availableFusions().find(f => f.id === 'f_blessing');
   ok(fus && fus.ready && fus.members.length === 4, 'the whole party can fuse');
   b.drain();
+  const pbl = b.el.punch;
   ok(b.fusion('f_blessing', b.living[0]), 'the party Fusion executes');
   ev = b.drain();
   ok(ev.find(x => x.t === 'fusion').members.length === 4, 'the Fusion event names all four');
   const [ka, , me, da] = b.allies;
   ok(b.allies.every(a => a.hp > Math.round(a.maxHp * 0.5)) && !me.buffs.some(x => x.name === 'Порча'), 'the party Fusion heals and cleanses');
-  ok(da.taunt > 0 && ka.flags.luck === T.luckMax && !me.flags.collapse && b.living.every(e => e.tough < e.maxTough), 'Darkness holds them, Kazuma is lucky, Megumin stays up, every toughness drops');
+  ok(da.taunt > 0 && b.el.punch >= pbl + 10 && ka && !me.flags.collapse && b.living.every(e => e.tough < e.maxTough), 'Darkness holds them, the team gets 10 Punchline, Megumin stays up, every toughness drops');
 }
 
 function tracedSpecs(party) {
@@ -4460,31 +4472,26 @@ for (const [enc, party] of Object.entries(bossParties)) {
 {
   const near = (a, b) => Math.abs(a - b) < 1e-6;
   const mk = (on, eid, lv) => new H.Battle({ party: [Object.assign(mkSpec('kazuma', 50), { tr: Object.assign({ basic: 4, skill: 6, ult: 6, talent: 6 }, lv || {}, { on }), eid: eid || 0 }), mkSpec('march', 50)], enemies: ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 4 });
-  const luckCrit = u => u.buffs.filter(x => x.name === 'Удача').reduce((s, x) => s + x.v, 0);
   ok(H.TRACES.kazuma.eidFx && H.TRACES.kazuma.bonus.every(x => x[0]) && H.TRACES.kazuma.eid.every(x => x[0]), 'Kazuma has named Traces and Eidolons');
   ok(new Set(H.TRACES.kazuma.eid.map(x => x[0])).size === 6, 'his Eidolon names are unique');
-  const l1 = mk([], 0, { talent: 1 }); l1.start();
+  const l1 = mk([], 0, { talent: 1 }), l1ev = l1.start();
   const l10 = mk([], 0, { talent: 10 }); l10.start();
   const k1 = l1.allies[0], k10 = l10.allies[0];
-  eq(k1.flags.luck || 0, 0, 'starting Luck needs A2');
-  l1.setLuck(k1, 3); l10.setLuck(k10, 3);
-  ok(luckCrit(k1) < luckCrit(k10), 'Luck follows the Talent level');
   const t1 = k1.buffs.find(x => x.name === 'Невероятная удача').v, t10 = k10.buffs.find(x => x.name === 'Невероятная удача').v;
   ok(t1 < t10, 'the Talent CRIT bonus follows the Talent level');
   const f1 = l1.enemies[0];
   f1.flags.bound = 1;
   eq(l1.traceDmg(k1, f1, { kind: 'basic' }), 0, 'the bound-target bonus needs A4');
-  const a2 = mk(['a2', 'a4', 'a6']); a2.start();
+  const a2 = mk(['a2', 'a4', 'a6']), a2ev = a2.start();
   const k2 = a2.allies[0], f2 = a2.enemies[0];
-  eq(k2.flags.luck, 1, 'A2 starts the fight with 1 Luck');
+  ok(a2ev.some(x => x.t === 'punch' && x.add === 3) && !l1ev.some(x => x.t === 'punch' && x.add === 3), 'A2 starts the fight with 3 more Punchline');
   f2.flags.bound = 1;
   ok(near(a2.traceDmg(k2, f2, { kind: 'basic' }), 0.3), 'A4 boosts shots at bound foes');
   f2.flags.bound = 0;
   a2.addBuff(f2, { s: 'atkP', v: -0.2, turns: 2, name: 'Без оружия', debuff: true }, true);
   ok(near(a2.traceDmg(k2, f2, { kind: 'basic' }), 0.3), 'A4 boosts shots at disarmed foes');
-  a2.setLuck(k2, 5);
-  a2.useAbility(k2, k2.kit.ult, f2, 'ult');
-  eq(k2.flags.luck, 2, 'A6 keeps 2 Luck after the Grand Heist');
+  eq(a2.kitFx(k2, 'rpsRolls'), 2, 'A6 rolls every round of Rock, Paper, Scissors twice');
+  eq(l1.kitFx(k1, 'rpsRolls'), 1, 'without A6 a round is rolled once');
   const e1 = mk([], 4); e1.start();
   const k3 = e1.allies[0], f3 = e1.enemies[0];
   f3.buffs.push({ s: 'atkP', v: 0.1, turns: 3, name: 'Бафф А' }, { s: 'defP', v: 0.1, turns: 3, name: 'Бафф Б' });
@@ -4495,12 +4502,10 @@ for (const [enc, party] of Object.entries(bossParties)) {
   m3.energy = 0;
   e1.useAbility(k3, k3.kit.skills[2], m3, 'skill');
   ok(m3.energy >= H.TUNING.drainEnergy + 10, 'E4 Drain Touch gives 10 more Energy');
+  ok(near(e1.kitFx(k3, 'ahaAdv'), 0.4) && !l1.kitFx(k1, 'ahaAdv'), 'E4 brings Aha 40% closer after the Great Heist');
   const e6 = mk([], 6); e6.start();
   const k6 = e6.allies[0];
-  e6.setLuck(k6, 5);
-  ok(near(e6.traceDmg(k6, e6.enemies[0], { kind: 'ult' }), 0.5), 'E6 boosts the Grand Heist at full Luck');
-  e6.setLuck(k6, 4);
-  eq(e6.traceDmg(k6, e6.enemies[0], { kind: 'ult' }), 0, 'E6 needs 5 Luck');
+  ok(e6.kitFx(k6, 'rpsRounds') === 9 && e6.kitFx(k6, 'rpsWin') === 2 && l1.kitFx(k1, 'rpsRounds') === 6, 'E6 plays 9 rounds and a won round gives 2 Punchline');
 }
 {
   const near = (a, b) => Math.abs(a - b) < 1e-6;
@@ -5114,6 +5119,64 @@ for (const [enc, party] of Object.entries(bossParties)) {
   ok(dl.allies[0].av > av0 || dl.allies[0].dead, 'Weaving Roots delays the target');
 }
 {
+  const T = H.TUNING;
+  let now = Date.UTC(2026, 9, 22, 10, 0, 0);
+  const g = new H.Game({ seed: 21, clock: () => now }), s = g.state;
+  eq(T.powerMax, 600, 'Trailblaze Power holds 600');
+  eq(T.powerMax * T.powerRegenSec, 3600, 'the whole 600 comes back in one real hour');
+  eq(T.powerReserveMax * T.powerRegenSec, 4 * 3600, 'the 2400 reserve fills in four real hours');
+  eq(s.power, T.powerMax, 'a new game starts with full power');
+  g.powerSync(); s.power = 0;
+  now += 1800 * 1000; g.update(0.016);
+  eq(s.power, 300, 'half a real hour gives 300 power, also while the game is closed');
+  eq(s.powerRes, 0, 'the reserve waits while the power is not full');
+  now += 3 * 3600 * 1000; g.powerSync();
+  ok(s.power === 600 && s.powerRes === 1500, 'power past the maximum flows into the reserve');
+  now += 4 * 3600 * 1000; g.powerSync();
+  ok(s.power === 600 && s.powerRes === 2400, 'the reserve stops at 2400');
+  const info = g.powerInfo();
+  ok(info.filling === null && info.full === 0 && info.resFull === 0, 'nothing fills when both are full');
+  s.power = 100;
+  eq(g.powerFromReserve(500), 500, 'reserve moves into power one to one');
+  ok(s.power === 600 && s.powerRes === 1900, 'the reserve shrinks by the amount moved');
+  eq(g.powerFromReserve(5000), 1900, 'the rest of the reserve goes over the maximum');
+  ok(s.power === 2500 && s.powerRes === 0, 'power above the maximum is kept');
+  now += 60 * 1000; g.powerSync();
+  ok(s.power === 2500 && s.powerRes === 10, 'over the maximum new power goes to the reserve');
+  s.powerRes = 2400;
+  eq(g.powerFromReserve(2400), T.powerTop - 2500, 'power cannot pass ' + T.powerTop);
+  s.inv.items.fuel = 2;
+  eq(g.powerFromFuel(1), 0, 'fuel is refused when it does not fit');
+  ok(!g.useItem('fuel') && s.inv.items.fuel === 2, 'fuel from the bag is refused too');
+  s.power = 100;
+  eq(g.powerFromFuel(2), 2 * T.powerPack, 'two fuels give 120');
+  ok(s.power === 220 && !s.inv.items.fuel, 'fuel is used up');
+  eq(g.powerFromFuel(1), 0, 'no fuel, no exchange');
+  s.jade = 1000; s.power = 0;
+  eq(g.powerJadeCost(3), 175, 'jade refills cost 50, 50, 75');
+  eq(g.powerFromJade(3), 3 * T.powerPack, 'three jade refills give 180');
+  ok(s.jade === 825 && s.power === 180, 'jade is paid');
+  eq(g.powerJadeCost(5), 575, 'the next refills cost more');
+  eq(g.powerFromJade(6), 0, 'only eight jade refills an hour');
+  s.jade = 10;
+  eq(g.powerFromJade(1), 0, 'a refill needs enough jade');
+  now += 3600 * 1000;
+  ok(g.powerBought() === 0 && g.powerJadeCost(1) === 50, 'the jade refill count resets every hour');
+  g.powerSync(); s.power = 590;
+  const p = g.powerInfo();
+  ok(p.filling === 'cur' && p.full === p.next + 9 * T.powerRegenSec * 1000 && p.next > 0 && p.next <= T.powerRegenSec * 1000, 'time to full counts real seconds');
+  const keep = g.serialize();
+  const g2 = new H.Game({ state: keep, seed: 1, clock: () => now });
+  ok(g2.state.powerRes === s.powerRes && g2.state.powerAt === s.powerAt, 'reserve and regen clock survive a save');
+  const old = H.Game.newState();
+  Object.assign(old, { power: 120, powerAcc: 12 });
+  delete old.powerRes; delete old.powerAt; delete old.powerBuy;
+  const og = new H.Game({ state: old, seed: 1, clock: () => now });
+  ok(!('powerAcc' in og.state) && og.state.powerRes === 0 && og.state.powerBuy && og.state.power === 120, 'an old save moves to the real-time power');
+  now += 60 * 1000; og.powerSync();
+  eq(og.state.power, 130, 'an old save regenerates in real time');
+}
+{
   const econ = require(path.join(__dirname, '../tools/hsr-trace-econ.cjs'));
   const near2 = (a, b) => Math.abs(a - b) < 1e-6;
   ok(H.TUNING.trLevels === true, 'ability levels act in battle');
@@ -5134,7 +5197,7 @@ for (const [enc, party] of Object.entries(bossParties)) {
   const echo = Math.ceil(full.echo / ((H.TRACE_ECHO_N[3][0] + H.TRACE_ECHO_N[3][1]) / 2));
   const tlCredits = Object.entries(H.TL_REWARDS).filter(([l]) => +l >= 41).reduce((a, [, r]) => a + (r.credits || 0), 0);
   const treasure = Math.ceil(Math.max(0, full.credits - tlCredits) / H.TUNING.treasure[3]);
-  const hours = (crimson * 10 + echo * 30 + treasure * 10) / 120;
+  const hours = (crimson * 10 + echo * 30 + treasure * 10) * H.TUNING.powerRegenSec / 3600;
   log.push('full 5-star: ' + crimson + ' crimson, ' + echo + ' echo, ' + treasure + ' treasure runs, ' + hours.toFixed(1) + ' h of power');
   ok(hours <= 5, 'the first full 5-star takes at most five hours of Trailblaze Power (' + hours.toFixed(1) + ')');
   const p2 = econ.needs('seele', 30);
@@ -5151,7 +5214,7 @@ function drive(g, maxSteps = 4000) {
       let out = g.endBattle();
       let tries = 0;
       while (out && out.lost && tries++ < 6) {
-        for (const k of g.state.party) g.addExp(k, 3000);
+        for (const k of g.state.party) g.addExp(k, H.charExp(3000, g.state.roster[k].lvl));
         g.retryBattle();
         g.battle.start();
         g.battle.runAuto(800);
@@ -5767,6 +5830,16 @@ function trInfo(g) {
   const lv0 = g.state.roster.hook.lvl, e0 = g.state.roster.hook.exp;
   ok(g.useItem('exp2', 'hook'), 'exp book');
   ok(g.state.roster.hook.lvl > lv0 || g.state.roster.hook.exp > e0, 'exp book grants exp');
+  eq([1, 2, 3].map(t => H.ITEMS['exp' + t].use.exp).join(), '1000,5000,20000', 'exp books give the original amounts');
+  eq(['exp1', 'exp2', 'exp3'].map(id => H.ITEMS[id].name).join('|'), 'Встречи в путешествиях|Журнал приключений|Путеводитель путешественника', 'exp books use the official names');
+  eq(H.expToNext(1), 200, 'level 1 needs 200 exp as in the original');
+  { let t = 0; for (let l = 1; l < 80; l++) t += H.expToNext(l); eq(t, 5797920, 'levels 1 to 80 need 5 797 920 exp as in the original'); }
+  ok(Math.abs(H.charExp(H.tlExpToNext(30), 30) - H.expToNext(30)) <= 1, 'battle exp keeps the old pace: one old level of exp is one level');
+  {
+    const os = H.newState(); delete os.xpv; os.roster.march = { lvl: 20, exp: Math.round(H.tlExpToNext(20) / 2), eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    const mg = new H.Game({ state: os, seed: 3 });
+    ok(mg.state.xpv === 1 && Math.abs(mg.state.roster.march.exp / H.expToNext(20) - 0.5) < 0.01, 'an old save keeps the progress inside the level');
+  }
 }
 
 {
@@ -5883,7 +5956,7 @@ function trInfo(g) {
   eq(run('shop_procure'), 'procure', 'Wen Shiqi opens the internal procurement shop');
   ok(g.state.flags.wen_met, 'Wen Shiqi remembers the first talk');
   const list = g.shopList('procure'), ri = list.findIndex(e => e.kind === 'relic');
-  ok(ri >= 0 && list[ri].set === 'musketeer' && list[ri].name.includes('Мушкетёр'), 'the procurement shop sells Musketeer relics');
+  ok(ri >= 0 && list[ri].set === 'musketeer' && list[ri].name.includes('Стрелок'), 'the procurement shop sells Musketeer relics');
   g.state.credits = 99999;
   const n0 = g.state.inv.relics.length;
   ok(g.buy('procure', ri), 'a relic can be bought');
@@ -6091,7 +6164,8 @@ function trInfo(g) {
   const g = new H.Game({ seed: 4, clock: () => now });
   const ver = H.MAIL.filter(m => !m.need);
   eq(g.mailbox().length, ver.length, 'a new game gets the version letters');
-  ok(ver.length === 10 && ver.filter(m => !['v14_conton', 'v14_hares', 'v16_traces'].includes(m.id)).every(m => m.give.jade === 300), 'seven version letters with 300 jade each, the Кон-Тон letter, the Cunning Hares letter and the Traces patch letter');
+  ok(ver.length === 12 && ver.filter(m => !['v14_conton', 'v14_hares', 'v16_traces', 'v16_guide', 'v16_elation'].includes(m.id)).every(m => m.give.jade === 300), 'seven version letters with 300 jade each, the Кон-Тон letter, the Cunning Hares letter and the three patch letters');
+  ok(H.MAIL.find(m => m.id === 'v16_guide').give.items.remains === 300 && H.SYN_MATS.every(id => H.MAIL.find(m => m.id === 'v16_guide').give.items[id] > 0), 'the guide patch letter brings Relic Remains and every synthesis material');
   ok(H.MAIL.find(m => m.id === 'v16_traces').give.items.dest1 === 3 && H.MAIL.find(m => m.id === 'v16_traces').give.items.artifex1 === 3, 'the Traces patch letter brings three of every 2-star material');
   ok(H.MAIL.find(m => m.id === 'v16_fives').give.items.spass === 10, 'the 1.6 letter brings ten Special Passes');
   ok(H.MAIL.find(m => m.id === 'v15_supply').give.outfit === 'march_spring', 'the 1.5 letter brings Nascent Spring for March 7th');
@@ -6103,28 +6177,44 @@ function trInfo(g) {
   ok(!H.MAIL.some(m => ['herta_test', 'v13_su', 'v14_chat'].includes(m.id)), 'Herta\'s invitation and the 1.3 and 1.4 letters are gone from the mail');
   ok(!g.chatThread('herta_test') && !g.alerts().chat, 'Herta\'s message waits for the Express');
   ok(g.alerts().mail && !g.alerts().events, 'unread letters light the mail alert, events stay dark');
-  ok(!g.eventsOpen() && g.cometTick().days === 0 && !g.willReady(0), 'events are closed before the Express');
+  ok(!g.eventsOpen() && g.cometOpen() === 0 && !g.willReady(0), 'events are closed before the Express');
   g.state.flags.express_intro = true;
   ok(g.alerts().chat && g.chatThread('herta_test') && g.chatThread('march_hello'), 'Herta and March write after the Express introduction');
-  eq(g.cometTick().days, 1, 'the first login day counts when the events open');
-  ok(g.cometReady(0) && !g.cometReady(1) && g.alerts().events, 'only day 1 is ready on the first day');
+  const HOUR = 3600000, c0 = now;
+  eq(g.cometOpen(), 1, 'the first gift opens with the events');
+  ok(g.cometReady(0) && !g.cometReady(1) && g.alerts().events, 'only hour 1 is ready at the start');
   const sp0 = g.state.inv.items.spass || 0;
-  ok(g.claimComet(0) && g.state.inv.items.spass === sp0 + 1, 'day 1 gives one Special Pass');
-  ok(!g.claimComet(0) && !g.claimComet(1), 'a claimed or closed day gives nothing');
-  now += 3 * 3600000;
-  eq(g.cometTick().days, 1, 'a later login on the same day does not count');
-  now = new Date(2026, 8, 30, 3, 30).getTime();
-  eq(g.cometTick().days, 1, 'before 04:00 it is still the old day');
-  ok(g.nextDay() === new Date(2026, 8, 30, 4, 0).getTime(), 'the next day starts at 04:00');
-  now = new Date(2026, 8, 30, 4, 10).getTime();
-  eq(g.cometTick().days, 2, 'after 04:00 a new login day opens the next gift');
-  now += 5 * DAY;
-  eq(g.cometTick().days, 3, 'missed days do not burn: one login counts one day');
-  for (let d = 0; d < 6; d++) { now += DAY; g.cometTick(); }
-  eq(g.state.comet.days, 7, 'the gift stops at seven days');
+  ok(g.claimComet(0) && g.state.inv.items.spass === sp0 + 1, 'hour 1 gives one Special Pass');
+  ok(!g.claimComet(0) && !g.claimComet(1), 'a claimed or closed gift gives nothing');
+  eq(g.cometOpensAt(1), c0 + HOUR, 'the next gift opens an hour after the start');
+  now = c0 + HOUR - 1000;
+  eq(g.cometOpen(), 1, 'a second short of the hour keeps the gift closed');
+  now = c0 + HOUR;
+  ok(g.cometOpen() === 2 && g.cometReady(1), 'after an hour the second gift opens');
+  now = c0 + 4 * HOUR + 1000;
+  eq(g.cometOpen(), 5, 'gifts open by real time and wait unclaimed');
+  now = c0 + 30 * HOUR;
+  ok(g.cometOpen() === 7 && g.cometRenewAt() === null, 'all seven open after six hours, the round waits for claims');
   const got = g.claimEvent('comet');
   eq(H.COMET_GIFT.reduce((a, b) => a + b, 0), 10, 'Comet Gift totals ten Special Passes');
   ok(got.length === 6 && g.state.inv.items.spass === sp0 + 10 && !g.eventReady('comet'), 'claiming the rest gives ten passes in total');
+  eq(g.cometRenewAt(), now + 5 * HOUR, 'the round renews five hours after the last claim');
+  now += 5 * HOUR - 1000;
+  ok(g.cometAllGot() && !g.eventReady('comet'), 'the rest keeps the cards claimed');
+  now += 1000;
+  ok(!g.cometAllGot() && g.cometOpen() === 1 && g.cometReady(0) && g.alerts().events, 'after the rest a new round opens hour 1');
+  now += 2 * HOUR;
+  eq(g.cometOpen(), 3, 'the new round opens a gift every hour again');
+  g.claimEvent('comet');
+  eq(g.state.inv.items.spass, sp0 + 14, 'the new round pays out again');
+  const cRound = new H.Game({ state: g.serialize(), clock: () => now });
+  ok(cRound.state.comet.got.filter(Boolean).length === 3 && cRound.cometOpen() === 3, 'the round survives a save');
+  const oldComet = new H.Game({ seed: 4, clock: () => now });
+  oldComet.state.flags.express_intro = true;
+  oldComet.state.comet = { days: 7, last: '2026-9-30', got: [true, true, true, true, true, true, true] };
+  ok(oldComet.cometAllGot() && oldComet.cometOpen() === 1 && oldComet.cometRenewAt() === now + 5 * HOUR && !('days' in oldComet.state.comet), 'an old day-based save rests five hours, then starts hourly rounds');
+  for (let i = 3; i < 7; i++) { now += HOUR; g.claimEvent('comet'); }
+  ok(g.cometAllGot(), 'the second round is claimed in full');
   g.setTrailLevel(4);
   ok(!g.eventReady('will') && !g.claimWill(0), "Trailblazer's Will gives nothing below level 5");
   g.setTrailLevel(16);
@@ -6135,6 +6225,17 @@ function trInfo(g) {
   const j0 = g.state.jade;
   g.claimWill(2); g.claimWill(3);
   ok(g.state.inv.items.pass === p0 + 40 && g.state.jade === j0 + 1600, 'levels 25 and 35 add ten passes and 800 jade each');
+  eq(H.TRAIL_WILL.map(w => w.lvl).join(','), '5,15,25,35,45,55,65,70', "Trailblazer's Will has eight stations up to the level cap");
+  ok(!g.willReady(4) && !g.eventReady('will'), 'level 45 waits on the second page');
+  g.setTrailLevel(H.TL_MAX);
+  ok(!g.ownsOutfit('trail_trashlord') && g.willGive(7).outfit === 'trail_trashlord', 'level 70 promises the Trashcan Lord outfit');
+  const j1 = g.state.jade;
+  eq(g.claimEvent('will').length, 8, 'levels 45 to 70 are claimed together');
+  ok(g.state.inv.items.pass === p0 + 80 && g.state.jade === j1 + 2600 && g.ownsOutfit('trail_trashlord') && !g.eventReady('will'), 'the second page gives forty passes, 2600 jade and the outfit');
+  const gw = new H.Game({ seed: 3 }); gw.state.flags.express_intro = true; gw.state.outfits.push('trail_trashlord'); gw.setTrailLevel(H.TL_MAX);
+  const jw = gw.state.jade, wg = gw.willGive(7);
+  ok(gw.willOwned(7) && !wg.outfit && wg.jade === H.OUTFITS.trail_trashlord.price && H.TRAIL_WILL[7].give.outfit === 'trail_trashlord', 'a bought outfit turns into its price');
+  ok(gw.claimWill(7) && gw.state.jade === jw + H.OUTFITS.trail_trashlord.price, 'claiming level 70 with the outfit bought refunds 840 jade');
   g.claimEvent('conton');
   ok(!g.alerts().events, 'nothing left to claim clears the events alert');
   const jm = g.state.jade, first = g.mailbox().find(x => x.m.give).m.id;
@@ -6145,17 +6246,18 @@ function trInfo(g) {
   g.chatAuto('herta_test');
   eq(g.state.quests.su_beta, 'talk', 'Herta\'s message starts «Виртуальная вселенная: Первичный тест»');
   ok(!g.ownsOutfit('march_spring'), 'Nascent Spring waits in the 1.5 letter');
+  g.readMail('v16_outfits');
   const claimed = g.claimAllMail();
-  ok(claimed.length === 31 && g.state.jade === jm + 2100 && !g.alerts().mail, 'claim all takes the other letters and clears the alert (' + claimed.length + ')');
+  ok(claimed.length === 46 && g.state.jade === jm + 2100 && !g.alerts().mail, 'claim all takes the other letters and clears the alert (' + claimed.length + ')');
   ok(g.ownsOutfit('march_spring') && !g.outfitOf('march'), 'the 1.5 letter adds Nascent Spring to the collection without putting it on');
-  eq(g.deleteReadMail(), 10, 'read and claimed letters can be deleted');
+  eq(g.deleteReadMail(), 14, 'read and claimed letters can be deleted');
   eq(g.mailbox().length, 0, 'the mailbox is empty after deleting');
   const back = new H.Game({ state: g.serialize(), clock: () => now });
-  ok(!back.mailbox().length && back.state.comet.days === 7 && back.state.will.length === 4, 'events and mail survive a save');
+  ok(!back.mailbox().length && back.cometAllGot() && back.state.will.length === H.TRAIL_WILL.length, 'events and mail survive a save');
   const legacy = H.newState();
   for (const k of ['mail', 'comet', 'will', 'pityEv', 'warpNEv']) delete legacy[k];
   const lg = new H.Game({ state: legacy });
-  ok(lg.mailbox().length === H.MAIL.filter(m => !m.need).length && lg.state.comet.days === 0 && lg.state.pityEv.five === 0, 'old saves get the letters and empty event state');
+  ok(lg.mailbox().length === H.MAIL.filter(m => !m.need).length && !lg.state.comet.got.length && lg.state.comet.start === null && lg.state.pityEv.five === 0, 'old saves get the letters and empty event state');
 }
 
 {
@@ -6400,6 +6502,35 @@ function trInfo(g) {
 }
 
 {
+  for (const [id, d] of Object.entries(H.CONES)) {
+    if (!d.ref) continue;
+    ok(Array.isArray(d.p) && d.p.length === 5 && d.p.every(r => r.length === d.p[0].length), id + ': five superimposition rows of one length');
+    const used = [...d.tpl.matchAll(/#(\d)/g)].map(m => +m[1]);
+    ok(used.length && used.every(n => n >= 1 && n <= d.p[0].length), id + ': the template uses existing parameters');
+    ok(Object.values(d.bonus).every(n => Number.isInteger(n) && n >= 1 && n <= d.p[0].length), id + ': bonus points at parameters');
+    eq(d.text, H.coneText(id, 1), id + ': text is the S1 template');
+    ok(d.skill && d.desc && d.fx, id + ': passive name, story and effect key');
+    ok(!/—|Microsoft|Windows/.test(d.tpl + d.desc), id + ': no forbidden names or dashes in the template and story');
+  }
+  H.CONES.__probe = { name: 'Проба', path: 'hunt', rarity: 3, ref: 1, stats: { hp: 38.4, atk: 14.4, def: 12 }, skill: 'Проба', tpl: 'Шанс крита +#1% на #2 хода, скорость +#3%.', p: [[0.12, 3, 0.048], [0.15, 3, 0.054], [0.18, 3, 0.06], [0.21, 3, 0.066], [0.24, 3, 0.08]], bonus: { critR: 1 }, fx: '__probe', desc: 'Проба.' };
+  H.coneInit({ __probe: H.CONES.__probe });
+  eq(H.CONES.__probe.text, 'Шанс крита +12% на 3 хода, скорость +4,8%.', 'the S1 text is built from the template');
+  eq(H.coneText('__probe', 5), 'Шанс крита +24% на 3 хода, скорость +8%.', 'the S5 text uses the fifth row');
+  const segs = H.coneSegs('__probe', 2);
+  ok(segs.find(x => x.t === '15%').hot && !segs.find(x => x.t === '3').hot, 'only numbers that change with S are highlighted');
+  const cs = H.coneStats('__probe', 1);
+  ok(cs.hp === 38 && cs.atk === 14 && cs.def === 12, 'cone stats round the original fractions');
+  const gp = new H.Game({ seed: 3 });
+  gp.state.roster.seele = { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+  const bare = gp.charStats('seele').critR;
+  const pc = gp.addCone('__probe'); pc.sup = 5; gp.equipCone('seele', pc.uid);
+  ok(Math.abs(gp.charStats('seele').critR - bare - 0.24) < 1e-9, 'bonus reads the parameter of the owned superimposition');
+  eq(H.coneP({ cone: { id: '__probe', fx: '__probe', sup: 3 } }, '__probe', 1), 0.18, 'coneP gives the parameter at the wearer S');
+  eq(H.coneP({ cone: { id: '__probe', fx: '__probe', sup: 3 } }, 'night', 1), 0, 'coneP is zero for another effect');
+  eq(H.coneP({ cone: { id: 'cccletter', fx: 'cccletter', sup: 3 } }, 'cccmagic', 1), 0, 'coneP is zero for another cone effect');
+  delete H.CONES.__probe;
+}
+{
   const gg = new H.Game({ seed: 3 });
   const { sv } = H.battleStat;
   const mk = (id, lvl, cone) => ({ key: id, charId: id, lvl, stats: gg.baseStats(id, lvl, 0), energy: 0, cone });
@@ -6419,6 +6550,253 @@ function trInfo(g) {
     if (spd) u.buffs.push({ s: 'spd', v: spd, turns: 9, name: 'test' });
     return b.dmgCalc(u, b.enemies[0], 1, { kind }, kind === 'ult');
   };
+  const arrowsAt = (sup, turns) => {
+    const b = new H.Battle({ party: [mk('seele', 30, sup ? { id: 'arrows', fx: 'arrows', sup } : null)], enemies: ['reaver:30'], lvl: 30, seed: 5 });
+    b.start();
+    const u = b.allies[0], v0 = sv(u, 'critR'), named = u.buffs.some(x => x.name === 'Бедствие');
+    for (let i = 0; i < turns; i++) b.endTurn(u);
+    return { v0, v: sv(u, 'critR'), base: u.base.critR, named };
+  };
+  {
+    const voidAt = (sup, turns) => {
+      const b = new H.Battle({ party: [mk('pela', 30, sup ? { id: 'void', fx: 'void', sup } : null)], enemies: ['reaver:30'], lvl: 30, seed: 5 });
+      b.start();
+      const u = b.allies[0], cone = () => u.buffs.filter(x => x.name === 'Падший').reduce((m, x) => m + x.v, 0), v0 = cone(), named = v0 > 0;
+      for (let i = 0; i < turns; i++) b.endTurn(u);
+      return { v0, v: cone(), named };
+    };
+    const v1 = voidAt(1, 0), v5 = voidAt(5, 0);
+    ok(Math.abs(v1.v0 - 0.2) < 1e-9 && v1.named && Math.abs(v5.v0 - 0.4) < 1e-9, 'Void: Effect Hit Rate +20% (S5 +40%) at the start of battle as «Падший»');
+    ok(Math.abs(voidAt(1, 2).v - 0.2) < 1e-9 && Math.abs(voidAt(1, 3).v) < 1e-9, 'Void: the bonus lasts the wearer\'s first 3 turns');
+    ok(Math.abs(voidAt(0, 0).v0) < 1e-9, 'no Void, no bonus');
+  }
+  {
+    const chorusTeam = cones => {
+      const b = new H.Battle({ party: [mk('asta', 30, cones[0]), mk('march', 30, cones[1] || null), mk('himeko', 30, null)], enemies: ['reaver:30'], lvl: 30, seed: 5 });
+      b.start();
+      return b.allies.map(u => u.buffs.filter(x => x.name === 'Согласованность').reduce((m, x) => m + x.v, 0));
+    };
+    const one = chorusTeam([{ id: 'chorus', fx: 'chorus', sup: 1 }]);
+    ok(one.every(v => Math.abs(v - 0.08) < 1e-9), 'Chorus: ATK +8% for every ally');
+    const two = chorusTeam([{ id: 'chorus', fx: 'chorus', sup: 1 }, { id: 'chorus', fx: 'chorus', sup: 5 }]);
+    ok(two.every(v => Math.abs(v - 0.12) < 1e-9), 'two Chorus cones do not stack, the higher superimposition wins');
+    ok(chorusTeam([null]).every(v => v === 0), 'no Chorus, no team ATK');
+  }
+  {
+    const bank = (sup, kind) => dmgOf(sup ? { id: 'databank', fx: 'databank', sup } : null, kind, 0);
+    const gd = new H.Game({ seed: 3 });
+    gd.state.roster.himeko = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    const bare = gd.charStats('himeko').ultP || 0;
+    const dc = gd.addCone('databank'); dc.sup = 5; gd.equipCone('himeko', dc.uid);
+    ok(Math.abs((gd.charStats('himeko').ultP || 0) - bare - 0.56) < 1e-9, 'Data Bank S5: Ultimate DMG +56% on the hero sheet');
+    ok(bank(1, 'skill') === bank(0, 'skill'), 'Data Bank adds nothing in battle by itself');
+    eq(H.CONES.databank.name, 'База данных', 'Data Bank has its official Russian name');
+  }
+  {
+    const healPost = (sup, kind) => {
+      const b = new H.Battle({ party: [mk('natasha', 30, sup ? { id: 'postop', fx: 'postop', sup } : null)], enemies: ['reaver:30'], lvl: 30, seed: 5 });
+      b.start();
+      const u = b.allies[0];
+      u.hp = Math.round(u.maxHp * 0.5);
+      b.acting = u; b.actKind = kind;
+      return b.heal(u, u, 100);
+    };
+    ok(Math.abs(healPost(1, 'ult') - healPost(0, 'ult') - 12) <= 1 && Math.abs(healPost(5, 'ult') - healPost(0, 'ult') - 24) <= 1, 'Post-Op Conversation: Ultimate healing +12% (S5 +24%)');
+    eq(healPost(5, 'skill'), healPost(0, 'skill'), 'Post-Op Conversation does not boost Skill healing');
+    const gp2 = new H.Game({ seed: 3 });
+    gp2.state.roster.natasha = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    const bare = gp2.charStats('natasha');
+    const pc2 = gp2.addCone('postop'); gp2.equipCone('natasha', pc2.uid);
+    ok(Math.abs((gp2.charStats('natasha').err || 0) - (bare.err || 0) - 0.08) < 1e-9 && gp2.charStats('natasha').healP === bare.healP, 'Post-Op Conversation: Energy Regeneration +8% and no permanent healing bonus');
+    eq(H.CONES.postop.name, 'Беседа после операции', 'Post-Op Conversation has its official Russian name');
+  }
+  {
+    const sleep = (sup, n) => {
+      const b = new H.Battle({ party: [mk('march', 30, sup ? { id: 'goodnight', fx: 'goodnight', sup } : null)], enemies: ['reaver:30'], lvl: 30, seed: 5 });
+      b.start();
+      const u = b.allies[0], t = b.enemies[0];
+      t.buffs = t.buffs.filter(x => !x.debuff); t.dots = []; t.implant = null;
+      for (let i = 0; i < n; i++) t.buffs.push({ s: 'probe' + i, v: 0, turns: 9, debuff: true, name: 'Проба ' + i });
+      return b.dmgCalc(u, t, 1, { kind: 'skill' }, false);
+    };
+    const g0 = sleep(1, 0), g2 = sleep(1, 2), g5 = sleep(1, 5), base0 = sleep(0, 2);
+    ok(Math.abs(g0 / base0 - 1) < 0.01, 'Good Night: no debuffs, no bonus');
+    ok(g2 > g0 && sleep(1, 1) > g0 && sleep(1, 1) < g2, 'Good Night: each debuff raises DMG');
+    ok(Math.abs(sleep(1, 3) - g5) <= 1, 'Good Night stacks up to 3 debuffs');
+    ok(sleep(5, 3) > sleep(1, 3), 'Good Night S5 is stronger');
+    eq(H.CONES.goodnight.name, 'Спокойной ночи и мирного сна', 'Good Night and Sleep Well has its official Russian name');
+  }
+  {
+    const fight = (id, cone, sup, foes) => {
+      const b = new H.Battle({ party: [mk(id, 30, { id: cone, fx: cone, sup })], enemies: foes || ['reaver:30', 'reaver:30'], lvl: 30, seed: 5 });
+      b.start();
+      return b;
+    };
+    {
+      const b = fight('asta', 'memories', 1), u = b.allies[0], t = b.enemies[0];
+      u.energy = 0; b.afterAction(u, 'basic', new Set([t])); const e1 = u.energy;
+      b.afterAction(u, 'basic', new Set([t])); const e2 = u.energy;
+      ok(e1 >= 4 && e2 === e1, 'Memories of the Past: +4 energy on attack, once per turn');
+      const b5 = fight('asta', 'memories', 5), u5 = b5.allies[0]; u5.energy = 0; b5.afterAction(u5, 'basic', new Set([b5.enemies[0]]));
+      ok(Math.abs(u5.energy / e1 - 2) < 0.01, 'Memories of the Past S5: 8 energy');
+      b.afterAction(u, 'skill', new Set()); ok(u.energy === e1, 'Memories of the Past: no energy without an attack');
+    }
+    {
+      const b = fight('seele', 'swordplay', 1), u = b.allies[0], [t1, t2] = b.enemies;
+      t1.maxHp = t1.hp = t2.maxHp = t2.hp = 1e9;
+      const swing = t => { b.actSerial++; b.hit(u, t, 1, { kind: 'basic' }); };
+      swing(t1); swing(t1); swing(t1);
+      eq(u.flags.swordN, 2, 'Swordplay: two stacks after three attacks on one target');
+      for (let i = 0; i < 6; i++) swing(t1);
+      eq(u.flags.swordN, 5, 'Swordplay stacks up to 5');
+      const hot = b.dmgCalc(u, t1, 1, { kind: 'basic' }, false); u.flags.swordN = 0; const cold = b.dmgCalc(u, t1, 1, { kind: 'basic' }, false); u.flags.swordN = 5;
+      ok(hot > cold * 1.2, 'Swordplay: five stacks add DMG');
+      swing(t2);
+      eq(u.flags.swordN, 0, 'Swordplay: a new target clears the stacks');
+    }
+    {
+      const b = fight('gepard', 'trend', 1, ['reaver:30']), u = b.allies[0], foe = b.enemies[0];
+      foe.buffs = foe.buffs.filter(x => x.s !== 'res'); foe.base.res = 0;
+      b.enemyTurn(foe);
+      const burn = foe.dots.find(d => d.type === 'burn');
+      ok(!!burn && burn.src === u && burn.turns === 2, 'Trend of the Universal Market: the attacker gets Burn for 2 turns');
+      ok(burn && Math.abs(burn.dmg - H.battleStat.defOf(u) * 0.4) < 1, 'Trend of the Universal Market: Burn deals 40% of the wearer DEF');
+    }
+    for (const [cone, stat, v, name] of [['underthesky', 'critR', 0.12, 'Рожь под солнцем'], ['geniuses', 'critD', 0.24, 'У каждого своя роль']]) {
+      const b = fight('march', cone, 1), u = b.allies[0], t = b.enemies[0];
+      ok(!u.buffs.some(x => x.name === name), cone + ': no buff before a kill');
+      t.hp = 0; b.onZero(t, u);
+      const bf = u.buffs.find(x => x.name === name);
+      ok(bf && bf.s === stat && Math.abs(bf.v - v) < 1e-9 && bf.turns >= 3, cone + ': a kill gives ' + stat + ' +' + v + ' for 3 turns');
+    }
+    ok(H.CONES.memories.name === 'Воспоминания о прошлом' && H.CONES.trend.name === 'Тренд галактического рынка' && H.CONES.underthesky.name === 'Под голубым небом', 'official Russian names of the 4★ cones');
+  }
+  {
+    const party = (cone, sup, n) => { const b = new H.Battle({ party: [mk(cone === 'moment' ? 'gepard' : cone === 'butthebattle' ? 'bronya' : 'himeko', 30, { id: cone, fx: cone, sup }), mk('march', 30, null)], enemies: Array(n || 3).fill('reaver:30'), lvl: 30, seed: 5 }); b.start(); return b; };
+    {
+      const b = party('milkyway', 1, 3), u = b.allies[0], mw = () => u.buffs.filter(x => x.name === 'Рой метеоритов').reduce((m, x) => m + x.v, 0);
+      ok(Math.abs(mw() - 0.27) < 1e-9, 'Night on the Milky Way: ATK +9% per enemy (3 enemies)');
+      b.enemies[0].hp = 0; b.onZero(b.enemies[0], u); b.cleanup();
+      ok(Math.abs(mw() - 0.18) < 1e-9, 'Night on the Milky Way: fewer enemies, less ATK');
+      b.doBreak(u, b.enemies[1], 'fire');
+      ok(u.buffs.some(x => x.name === 'Рой метеоритов: пробитие' && Math.abs(x.v - 0.3) < 1e-9), 'Night on the Milky Way: a break gives DMG +30%');
+      const b5 = party('milkyway', 5, 6), u5 = b5.allies[0];
+      ok(Math.abs(u5.buffs.find(x => x.name === 'Рой метеоритов').v - 0.75) < 1e-9, 'Night on the Milky Way S5: +15% per enemy, up to 5');
+    }
+    {
+      const b = party('butthebattle', 1), u = b.allies[0], m = b.allies[1];
+      b.afterAction(u, 'skill', new Set()); b.memo('turn', { u: m });
+      ok(m.buffs.some(x => x.name === 'Преемница' && Math.abs(x.v - 0.3) < 1e-9), 'But the Battle Isn\'t Over: Skill gives the next ally +30% DMG');
+      const sp0 = b.sp = 2; u.energy = u.maxEnergy; b.current = u;
+      const ab = b.abilityFor(u, 'ult').ab;
+      ok(['ally', 'allies'].includes(ab.target), 'Bronya Ultimate targets allies');
+      b.ult(u, b.allies[1]); ok(b.sp === sp0 + 1, 'But the Battle Is Not Over: an Ultimate on allies gives 1 Skill Point');
+    }
+    {
+      const b = party('moment', 1), u = b.allies[0];
+      ok(u.buffs.some(x => x.s === 'aggro' && x.name === 'Вердикт'), 'Moment of Victory: enemies target the wearer more');
+      const solo = new H.Battle({ party: [mk('gepard', 30, { id: 'moment', fx: 'moment', sup: 1 })], enemies: ['reaver:30'], lvl: 30, seed: 5 }); solo.start(); solo.enemyTurn(solo.enemies[0]);
+      ok(solo.allies[0].buffs.some(x => x.name === 'Вердикт: защита' && Math.abs(x.v - 0.24) < 1e-9), 'Moment of Victory: being attacked raises DEF by 24%');
+      const gm = new H.Game({ seed: 3 }); gm.state.roster.gepard = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+      const e0 = gm.charStats('gepard').ehr || 0, mc = gm.addCone('moment'); mc.sup = 5; gm.equipCone('gepard', mc.uid);
+      ok(Math.abs((gm.charStats('gepard').ehr || 0) - e0 - 0.4) < 1e-9, 'Moment of Victory S5: Effect Hit Rate +40%');
+    }
+    ok(H.CONES.butthebattle.name === 'Битва не окончена' && H.CONES.milkyway.name === 'Ночь на Млечном Пути', 'official names of the standard 5★ cones');
+  }
+  {
+    const one = (id, cone, sup, foes) => { const b = new H.Battle({ party: [mk(id, 30, { id: cone, fx: H.CONES[cone].fx, sup }), mk('march', 30, null)], enemies: foes || ['reaver:30', 'reaver:30'], lvl: 30, seed: 5 }); b.start(); return b; };
+    {
+      const b = one('imbibitor', 'brighter', 5), u = b.allies[0];
+
+      b.afterAction(u, 'basic', new Set([b.enemies[0]])); b.afterAction(u, 'basic', new Set([b.enemies[0]])); b.afterAction(u, 'basic', new Set([b.enemies[0]]));
+      const dg = u.buffs.find(x => x.name === 'Зов дракона');
+      ok(dg && Math.abs(dg.v - 0.6) < 1e-9, 'Brighter Than the Sun S5: Dragon\'s Call +30% ATK per stack, up to 2');
+    }
+    {
+      const b = one('luocha', 'coffin', 5), u = b.allies[0];
+      u.energy = 0; b.afterAction(u, 'basic', new Set(b.enemies));
+      ok(u.energy >= 10, 'Echoes of the Coffin S5: 5 energy per enemy hit');
+    }
+    {
+      const b = one('argenti', 'gaze', 5), u = b.allies[0];
+      const v = b.fivesDmg(u, b.enemies[0], { kind: 'ult' });
+      ok(v >= 0.006 * Math.min(180, u.maxEnergy) - 1e-9, 'An Instant Before A Gaze S5: +0.6% Ultimate DMG per max energy');
+    }
+    {
+      const b = one('ratio', 'baptism', 1), u = b.allies[0], t = b.enemies[0];
+      t.buffs = t.buffs.filter(x => !x.debuff); t.dots = []; t.implant = null;
+      for (let i = 0; i < 4; i++) t.buffs.push({ s: 'p' + i, v: 0, turns: 9, debuff: true, name: 'Проба' + i });
+      const c0 = b.fivesCritD(u, t, { kind: 'basic' });
+      t.buffs = t.buffs.filter(x => !x.debuff);
+      ok(Math.abs(c0 - b.fivesCritD(u, t, { kind: 'basic' }) - 0.24) < 1e-6, 'Baptism of Pure Thought: +8% CRIT DMG per debuff, up to 3');
+    }
+    ok(['beforedawn', 'coffin', 'brighter', 'shuteyes', 'ownsword', 'blissful', 'fright', 'gaze', 'baptism'].every(id => H.CONES[id].ref && H.CONES[id].p && H.CONES[id].desc), 'all 1.6 signature cones follow the original tables');
+    for (const id of ['shrine', 'weaver', 'starlight', 'vault', 'battery', 'lethe', 'lullaby', 'chunchunmaru', 'hagoromo', 'manastaff', 'adamantite', 'truth', 'thread', 'affection', 'junesday', 'dragontrial', 'amagiinn', 'cccletter', 'cccmagic', 'cccpratia', 'cccgorilla', 'cccbadge', 'cccstandee']) {
+      const d = H.CONES[id];
+      ok(d.own && d.p.length === 5 && d.skill && d.desc && d.text === H.coneText(id, 1) && !/—|Microsoft|Windows/.test(d.tpl + d.desc), id + ': own ZZZ cone has a table, a passive name and a story');
+    }
+    {
+      const bm = one('miyabi', 'shrine', 5), um = bm.allies[0];
+      bm.afterAction(um, 'skill', new Set([bm.enemies[0]])); bm.afterAction(um, 'skill', new Set([bm.enemies[0]]));
+      ok(um.buffs.some(x => x.name === 'Семена в каждой победе' && Math.abs(x.v - 0.6) < 1e-9), 'One Hundred Percent Melon S5: Ice DMG +30% per stack, up to 2');
+    }
+  }
+  const ar1 = arrowsAt(1, 0), ar5 = arrowsAt(5, 0), ar3 = arrowsAt(1, 2), arEnd = arrowsAt(1, 3), arNone = arrowsAt(0, 0);
+  ok(Math.abs(ar1.v0 - ar1.base - 0.12) < 1e-9 && ar1.named, 'Arrows S1: CRIT Rate +12% at the start of battle as «Бедствие»');
+  ok(Math.abs(ar5.v0 - ar5.base - 0.24) < 1e-9, 'Arrows S5: CRIT Rate +24%');
+  ok(Math.abs(ar3.v - ar3.base - 0.12) < 1e-9 && Math.abs(arEnd.v - arEnd.base) < 1e-9, 'Arrows: the bonus lasts the wearer\'s first 3 turns');
+  ok(Math.abs(arNone.v0 - arNone.base) < 1e-9, 'no Arrows, no bonus');
+  {
+    const ga = new H.Game({ seed: 3 });
+    ga.state.roster.seele = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    const bare = ga.charStats('seele');
+    const ac = ga.addCone('arrows'); ga.equipCone('seele', ac.uid);
+    const worn = ga.charStats('seele'), cs = H.coneStats('arrows', 30);
+    ok(worn.critR === bare.critR && worn.atk - bare.atk === cs.atk && cs.atk === Math.round(14.4 * H.grow(30)), 'Arrows give original base stats and no permanent CRIT Rate');
+    ok(ga.coneEffect('seele') && ga.coneEffect('seele').fx === 'arrows', 'Arrows reach the battle as an effect');
+    eq(H.CONES.arrows.text, 'В начале боя шанс крита владельца повышается на 12% на 3 хода.', 'Arrows text follows the original');
+  }
+  {
+    const healBy = (sup, kind) => {
+      const b = new H.Battle({ party: [mk('natasha', 30, sup ? { id: 'cornucopia', fx: 'cornucopia', sup } : null)], enemies: ['reaver:30'], lvl: 30, seed: 5 });
+      b.start();
+      const u = b.allies[0];
+      u.hp = Math.round(u.maxHp * 0.5);
+      b.acting = kind ? u : null; b.actKind = kind;
+      return b.heal(u, u, 100);
+    };
+    const plain = healBy(0, 'skill');
+    ok(Math.abs(healBy(1, 'skill') - plain - 12) <= 1, 'Cornucopia S1: Skill healing +12% of the heal');
+    ok(Math.abs(healBy(5, 'ult') - healBy(0, 'ult') - 24) <= 1, 'Cornucopia S5: Ultimate healing +24% of the heal');
+    eq(healBy(1, 'basic'), healBy(0, 'basic'), 'Cornucopia does nothing on a Basic ATK');
+    eq(healBy(1, null), plain, 'Cornucopia does nothing outside the wearer\'s action');
+    eq(H.CONES.cornucopia.text, 'Когда владелец использует навык или абсолютную технику, его исходящее лечение повышается на 12%.', 'Cornucopia text follows the original');
+  }
+  {
+    const sky = (sup, kind) => dmgOf(sup ? { id: 'collapsing', fx: 'collapsing', sup } : null, kind, 0) / dmgOf(null, kind, 0);
+    ok(Math.abs(sky(1, 'basic') - sky(1, 'skill')) < 1e-9 && sky(1, 'basic') > 1.05, 'Collapsing Sky raises Basic ATK and Skill DMG alike');
+    ok(Math.abs(sky(5, 'skill') / sky(1, 'skill') - 1.4 / 1.2) < 0.03, 'Collapsing Sky S5 doubles the S1 bonus (20% to 40%)');
+    ok(Math.abs(sky(1, 'ult') - 1) < 1e-9 && Math.abs(sky(1, 'follow') - 1) < 1e-9, 'Collapsing Sky does not touch the Ultimate or follow-ups');
+    eq(H.CONES.collapsing.name, 'Падение небес', 'Collapsing Sky has its official Russian name');
+  }
+  {
+    const { defOf } = H.battleStat;
+    const amberDef = (sup, part) => {
+      const b = new H.Battle({ party: [mk('gepard', 30, sup ? { id: 'amber', fx: 'amber', sup } : null)], enemies: ['reaver:30'], lvl: 30, seed: 5 });
+      b.start();
+      const u = b.allies[0];
+      u.hp = Math.floor(u.maxHp * part);
+      return defOf(u) / u.base.def;
+    };
+    ok(Math.abs(amberDef(1, 1) - 1) < 1e-9 && Math.abs(amberDef(1, 0.4) - 1.16) < 1e-9, 'Amber: +16% DEF in battle only while HP is below half');
+    ok(Math.abs(amberDef(5, 0.4) - 1.32) < 1e-9 && Math.abs(amberDef(0, 0.4) - 1) < 1e-9, 'Amber S5: +32% more DEF below half HP, nothing without the cone');
+    const ga = new H.Game({ seed: 3 });
+    ga.state.roster.gepard = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    const bare = ga.charStats('gepard');
+    const am = ga.addCone('amber'); am.sup = 5; ga.equipCone('gepard', am.uid);
+    const worn = ga.charStats('gepard'), cs = H.coneStats('amber', 30), plain = ga.baseStats('gepard', 30, 0).def;
+    ok(Math.abs(worn.def - bare.def - cs.def - Math.round(plain * 0.32)) <= 1, 'Amber S5: always +32% DEF on the hero sheet');
+  }
   const base = dmgOf(null, 'skill', 45), boosted = dmgOf({ id: 'night', fx: 'night', sup: 1 }, 'skill', 45);
   ok(boosted > base * 1.3 && boosted < base * 1.42, 'In the Night: +6% skill DMG per 10 SPD above 100 (' + (boosted / base).toFixed(2) + ')');
   ok(dmgOf({ id: 'night', fx: 'night', sup: 1 }, 'skill', 400) / dmgOf(null, 'skill', 400) < 1.37 + 1e-9, 'In the Night stops at 6 stacks');
@@ -6429,11 +6807,29 @@ function trInfo(g) {
   const rm = b.allies[0];
   rm.energy = rm.maxEnergy; b.current = rm; b.phase = 'input';
   ok(b.ult(rm, rm), 'Ruan Mei Ultimate with her cone');
-  ok(b.livingAllies.every(a => a.buffs.some(x => x.name === 'Прошлое в зеркале' && x.s === 'dmgP' && Math.abs(x.v - 0.24) < 1e-9)), 'Past Self in Mirror gives the team +24% DMG after the Ultimate');
+  ok(b.livingAllies.every(a => a.buffs.some(x => x.name === 'Аромат сливы в моих костях' && x.s === 'dmgP' && Math.abs(x.v - 0.24) < 1e-9)), 'Past Self in Mirror gives the team +24% DMG after the Ultimate');
   const b5 = new H.Battle({ party: [mk('ruanmei', 30, { id: 'mirror', fx: 'mirror', sup: 5 })], enemies: ['reaver:30'], lvl: 30, seed: 6 });
   b5.start();
   const r5 = b5.allies[0]; r5.energy = r5.maxEnergy; b5.current = r5; b5.phase = 'input'; b5.ult(r5, r5);
-  ok(r5.buffs.some(x => x.name === 'Прошлое в зеркале' && Math.abs(x.v - 0.48) < 1e-9), 'Superimposition 5 doubles the cone effect');
+  ok(r5.buffs.some(x => x.name === 'Аромат сливы в моих костях' && Math.abs(x.v - 0.4) < 1e-9), 'Past Self in Mirror S5: team DMG +40%');
+  const bw = new H.Battle({ party: [mk('ruanmei', 30, { id: 'mirror', fx: 'mirror', sup: 5 }), mk('march', 30)], waves: [['reaver:30'], ['reaver:30']], lvl: 30, seed: 6 });
+  bw.start(); const m0 = bw.allies[1].energy; bw.allies[1].energy = 0; bw.wave = 1; bw.spawnWave(false);
+  ok(m0 >= 20 && bw.allies[1].energy >= 20, 'Past Self in Mirror S5: +20 energy at the start of every wave');
+  const bs = new H.Battle({ party: [mk('ruanmei', 30, { id: 'mirror', fx: 'mirror', sup: 1 })], enemies: ['reaver:30'], lvl: 30, seed: 6 });
+  bs.start(); const rs = bs.allies[0]; rs.base.breakE = 1.6; rs.energy = rs.maxEnergy; bs.current = rs; bs.phase = 'input'; bs.sp = 1; bs.ult(rs, rs);
+  eq(bs.sp, 2, 'Past Self in Mirror: Break Effect 150%+ gives 1 Skill Point after the Ultimate');
+  ok(Math.abs(dmgOf({ id: 'night', fx: 'night', sup: 5 }, 'skill', 400) / dmgOf(null, 'skill', 400) - (1.6 / 1) ) < 0.2, 'In the Night S5: +10% per 10 SPD');
+  {
+    const fp = new H.Battle({ party: [mk('kafka', 30, { id: 'patience', fx: 'patience', sup: 5 })], enemies: ['reaver:30'], lvl: 30, seed: 6 }); fp.start();
+    const ku = fp.allies[0], kt = fp.enemies[0]; fp.afterAction(ku, 'basic', new Set([kt]));
+    const er = kt.dots.find(d => d.type === 'erode');
+    ok(er && Math.abs(er.dmg - H.battleStat.atkOf(ku) * 1) < 2 && ku.buffs.some(x => x.name === 'Просто надо подождать' && Math.abs(x.v - 0.08) < 1e-9), 'Patience Is All You Need S5: Erode 100% ATK and SPD +8% per attack');
+    const fr = new H.Battle({ party: [mk('silverwolf', 30, { id: 'rain', fx: 'rain', sup: 1 })], enemies: ['reaver:30'], lvl: 30, seed: 6 }); fr.start();
+    const su = fr.allies[0], st = fr.enemies[0]; st.base.res = 0; st.buffs = st.buffs.filter(x => x.s !== 'res'); fr.afterAction(su, 'skill', new Set([st]));
+    ok(st.buffs.some(x => x.name === 'Эфирный код' && Math.abs(x.v - 0.12) < 1e-9), 'Incessant Rain: Aether Code with a 100% base chance');
+    const fb = new H.Battle({ party: [mk('blade', 30, { id: 'unreachable', fx: 'unreachable', sup: 5 })], enemies: ['reaver:30'], lvl: 30, seed: 6 }); fb.start(); fb.hurtMark(fb.allies[0]);
+    ok(fb.allies[0].buffs.some(x => x.name === 'Недоступная сторона' && Math.abs(x.v - 0.4) < 1e-9), 'The Unreachable Side S5: DMG +40% after being hit');
+  }
 }
 
 {
@@ -6644,7 +7040,7 @@ function trInfo(g) {
     localStorage: { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) },
     requestAnimationFrame: () => 1
   });
-  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-conductor', 'hsr-ui-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-traces']) require(path.join(DIR, f + '.js'));
+  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-relic-art', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain']) require(path.join(DIR, f + '.js'));
   const G = H.Gfx;
   const lum = hex => { const n = parseInt(hex.slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255); };
   for (const id of Object.keys(H.CHARS)) {
@@ -6709,6 +7105,21 @@ function trInfo(g) {
   ok(G.isMale({ body: 'small', sex: 'm' }) && !G.isMale({ body: 'tall', sex: 'f' }), 'sex overrides the body type');
   for (const id of Object.keys(H.ITEMS)) { ok(G.ITEM_ART[id], 'item icon ' + id); G.itemCanvas(id); ok(H.ITEMS[id].rar >= 1 && H.ITEMS[id].rar <= 5, 'item rarity ' + id); }
   for (const id of ['jade', 'credits', 'power', 'tp']) ok(G.ITEM_ART[id], 'currency icon ' + id);
+  for (const s of [12, 18, 32, 40, 64, 72]) {
+    for (const id of Object.keys(H.ITEMS)) { const cv = G.itemCanvas(id, null, s); ok(cv.width === s && cv.height === s, 'item icon ' + id + ' renders at ' + s + ' px'); }
+    for (const sl of H.RELIC_SLOTS) for (const set of Object.keys(H.RELIC_SETS).concat(['none'])) eq(G.itemCanvas('relic:' + sl.key, set, s).width, s, 'relic icon ' + set + ':' + sl.key + ' renders at ' + s + ' px');
+  }
+  ok(Object.keys(H.ITEMS).filter(k => H.ITEMS[k].kind === 'recipe').every(k => G.itemCanvas(k, null, 32) !== G.itemCanvas('rcp_medkit', null, 32) || k === 'rcp_medkit'), 'every recipe ticket shows its own dish');
+  ok(G.itemCanvas('exp3', null, 40) === G.itemCanvas('exp3', null, 40) && G.itemCanvas('exp3', null, 40) !== G.itemCanvas('exp3', null, 64), 'icons are cached per size');
+  for (const set of H.CAVERN_SETS) ok(H.CAVERN_SLOTS.every(sl => typeof H.RELIC_SETS[set].pieces[sl.key] === 'string' && H.RELIC_SETS[set].pieces[sl.key].length > 3), 'cavern set ' + set + ' names its four pieces');
+  eq(H.RELIC_SETS.thunder.name, 'Бэнд испепеляющего грома', 'relic sets use the official Russian names');
+  for (const set of H.CAVERN_SETS) ok(H.CAVERN_SLOTS.every(sl => typeof (G.RELIC_PIECE[set] || {})[sl.key] === 'function'), 'cavern set ' + set + ' has its own art for all four pieces');
+  ok(G.itemCanvas('relic:head', 'passerby', 32) !== G.itemCanvas('relic:head', 'knight', 32), 'sets do not share one recoloured helmet');
+  for (const set of H.PLANAR_SETS) ok(H.PLANAR_SLOTS.every(sl => typeof (G.RELIC_PIECE[set] || {})[sl.key] === 'function'), 'planar set ' + set + ' has its own sphere and rope');
+  const lowAlpha = /rgba\([^)]*,\s*0?\.[0-4]\d*\s*\)/;
+  for (const [set, slots] of Object.entries(G.RELIC_PIECE)) for (const [slot, fn] of Object.entries(slots)) ok(!lowAlpha.test(String(fn)), 'relic art ' + set + ':' + slot + ' draws halos with dots, not low alpha');
+  for (const line of ['dest', 'hunt', 'erud', 'harm', 'nihil', 'pres', 'abund', 'memo', 'core', 'legion', 'silver', 'ancient', 'scion', 'artifex']) ok(!lowAlpha.test(String(G.MAT_ART[line])), 'trace material ' + line + ' draws halos with dots, not low alpha');
+  for (const id of ['echo_doom', 'echo_lament', 'echo_ochema', 'echo_borehole', 'tracks', 'shadow_dest', 'shadow_pres', 'remains', 'resin', 'fuelv'].concat(H.SYN_MATS, Object.keys(H.ITEMS).filter(k => ['food', 'exp'].includes(H.ITEMS[k].kind)))) ok(G.ITEM_ART[id] && !lowAlpha.test(String(G.ITEM_ART[id])), 'icon ' + id + ' draws halos with dots, not low alpha');
   for (const s of H.RELIC_SLOTS) G.itemCanvas('relic:' + s.key, 'thief');
   for (const id of Object.keys(H.CONES).filter(notLater)) { ok(G.CONE_SCENES[id], 'cone art ' + id); G.coneArt(id, 54, 76); }
   for (const p of Object.keys(H.PATHS)) ok(G.PATH_ART[p], 'path icon ' + p);
@@ -6890,12 +7301,18 @@ function trInfo(g) {
     ss.starlight = 10;
     ok(sg.supplyBuy('s_moment', 1) === null && ss.starlight === 10, 'a purchase without enough currency changes nothing');
     const O = H.OUTFITS.march_spring, OL = H.outfitLook('march_spring');
-    ok(O && O.char === 'march' && O.price === 1680 && O.rarity === 5, 'Nascent Spring is a 5★ outfit for March 7th');
+    ok(O && O.char === 'march' && O.price === 840 && O.rarity === 4 && O.kind === 'Наряд', 'Nascent Spring is a 4★ outfit for March 7th');
+    ok(Object.values(H.OUTFITS).every(o => o.rarity === (o.cuts ? 5 : 4) && o.price === H.OUTFIT_TIER[o.rarity].price && o.kind === H.OUTFIT_TIER[o.rarity].kind), 'the class of an outfit follows what it changes, not the class of the hero');
+    const fullCuts = id => { const o = H.OUTFITS[id], set = H.OUTFIT_CUTS[id] || {}; return !!(set.ult && set.skill && set.warp) && Object.keys(H.FUSIONS).filter(f => H.FUSIONS[f].members.includes(o.char)).every(f => set.fusions && set.fusions[f]); };
+    ok(Object.keys(H.OUTFITS).every(id => !H.OUTFITS[id].cuts || fullCuts(id)) && H.OUTFIT_TIER[4].price === 840 && H.OUTFIT_TIER[5].price === 1680, 'an outfit is 5★ only with its own Ultimate, Skill, every Fusion of its hero and Warp');
+    ok(H.OUTFITS.himeko_vermilion.cuts && H.OUTFITS.himeko_vermilion.rarity === 5 && H.OUTFITS.himeko_vermilion.price === 1680 && H.OUTFITS.himeko_vermilion.kind === 'Особый наряд' && Object.values(H.OUTFITS).filter(o => o.rarity === 5).length === 1, '«Алый урок» is the first and only 5★ outfit');
+    const om = H.MAIL.find(m => m.id === 'v16_outfits');
+    ok(om && om.need === 'express_intro' && !om.give && om.text.every(l => !/[—–]/.test(l)) && om.text.join(' ').includes('«' + H.OUTFITS.himeko_vermilion.name + '»'), 'a letter explains the outfit classes and the first 5★ outfit');
     ok(OL.coat === 'frost' && OL.skin === H.CHARS.march.look.skin && OL.eye === H.CHARS.march.look.eye && !('belt' in OL) && OL.acc.some(a => a.startsWith('tiara')), 'the outfit look keeps her face and drops the old clothes');
     ok(H.outfitLook('march_spring') === OL, 'the outfit look is built once');
-    ss.jade = 1000;
-    ok(!sg.buyOutfit('march_spring') && !sg.ownsOutfit('march_spring'), 'the outfit needs 1680 Stellar Jade');
-    ss.jade = 1700;
+    ss.jade = 800;
+    ok(!sg.buyOutfit('march_spring') && !sg.ownsOutfit('march_spring'), 'the outfit needs 840 Stellar Jade');
+    ss.jade = 860;
     ok(sg.buyOutfit('march_spring') && ss.jade === 20 && sg.ownsOutfit('march_spring') && !sg.buyOutfit('march_spring'), 'the outfit is bought once');
     ok(!sg.wearOutfit('march', 'nope') && !sg.wearOutfit('danheng', 'march_spring'), 'only her own outfits fit March 7th');
     ss.roster.march = ss.roster.march || { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
@@ -6921,6 +7338,15 @@ function trInfo(g) {
     ok(sg.ownsOutfit('kazuma_jersey') && !sg.buyOutfit('kazuma_jersey'), 'old saves with the KonoSuba story finished own the tracksuit');
     delete ss.flags.ks_done;
     ok(JSON.stringify(H.SCRIPTS.ks_finale || Object.values(H.SCRIPTS).find(sc => JSON.stringify(sc).includes('"flag":"ks_done"'))).includes('"outfit":"kazuma_jersey"'), 'the KonoSuba finale gives the tracksuit');
+    {
+      eq(sg.state.otv, 1, 'a new game is on the outfit class version');
+      const os = JSON.parse(JSON.stringify(sg.state));
+      delete os.otv; os.jade = 100; os.outfits = ['megumin_bakuen', 'welt_idol', 'march_spring', 'himeko_vermilion', 'hook_foreman'];
+      const og = new H.Game({ state: os, seed: 4 });
+      ok(og.state.jade === 100 + 2 * 840 && og.state.shop.outfitBack === 1680 && og.state.otv === 1, 'an old save gets 840 jade back for each outfit that was sold for 1680');
+      ok(H.OUTFIT_REFUND.length === 7 && !H.OUTFIT_REFUND.includes('march_spring') && !H.OUTFIT_REFUND.includes('himeko_vermilion'), 'the free letter outfit and the future 5★ outfit give nothing back');
+      ok(new H.Game({ state: JSON.parse(JSON.stringify(og.state)), seed: 4 }).state.jade === 100 + 1680, 'the outfit refund is given once');
+    }
   }
 
   const root = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
@@ -6993,6 +7419,14 @@ function trInfo(g) {
     key('ArrowDown'); for (let i = 0; i < 6; i++) key('ArrowRight');
     key('Enter'); frame(); release();
     ok(gs.inv.cones.length === n0 + 1 && gs.inv.cones[n0].sup === 5 && H.CONES[gs.inv.cones[n0].id] === cone0, 'the cones tab grants the chosen cone at S5');
+    {
+      const menu = ui.top();
+      ui.click({ clientX: 360, clientY: 100, button: 0 }); frame();
+      const art = ui.top();
+      ok(art !== menu && art.art && art.debug, 'a click on the cone card in the debug menu opens its full art');
+      key('Escape'); frame();
+      ok(ui.top() === menu, 'Esc on the full art returns to the debug menu');
+    }
     key('Digit3'); frame();
     const r0 = gs.inv.relics.length;
     key('ArrowDown'); key('ArrowRight'); key('ArrowRight'); key('ArrowDown'); key('ArrowRight');
@@ -7000,10 +7434,45 @@ function trInfo(g) {
     const rel = gs.inv.relics[r0];
     ok(rel && rel.slot === 'body' && rel.main === 'atkP' && rel.lvl === 15, 'the relics tab grants the configured relic');
     eq(rel.subs.map(x => x[0]).join(), 'critR,critD,spd', 'choosing the main stat clears the same substat');
+    {
+      const st = ui.debugState, menu = ui.top(), sets = Object.keys(H.RELIC_SETS), R = st.rl;
+      R.set = 0; R.slot = 0; st.row = 0; frame();
+      key('Enter'); frame();
+      const pk = ui.top();
+      ok(pk !== menu && pk.debug && pk.sel === 0, 'Enter on the set row opens the set list at the current set');
+      key('ArrowUp');
+      key('Enter'); frame();
+      ok(ui.top() === menu && H.RELIC_SETS[sets[R.set]].planar && H.RELIC_SLOTS[R.slot].kind === 'planar', 'picking a planar set in the list switches to a planar slot');
+      key('Enter'); frame();
+      const rowHit = ui.hits.filter(h => h.w > 300 && h.h === 22)[1];
+      ok(rowHit, 'the set list draws a clickable row for every set');
+      ui.click({ clientX: rowHit.x + 40, clientY: rowHit.y + 8, button: 0 }); frame();
+      ok(ui.top() === menu && R.set === 1 && H.RELIC_SLOTS[R.slot].kind !== 'planar', 'a click on a set picks it and closes the list');
+      R.set = 0; R.slot = 0; R.main = 'hpF'; st.row = 0;
+    }
     key('Digit4'); frame();
     const j1 = gs.jade;
     key('ArrowDown'); key('ArrowRight'); key('Enter'); frame(); release();
     eq(gs.jade, j1 + 1600, 'the items tab grants currencies');
+    {
+      const by = 480 - 40 - 4, chips = ui.hits.filter(h => h.y === by && h.h === 20).sort((a, b) => a.x - b.x);
+      eq(chips.length, 3, 'the footer shows jade, credits and Trailblaze Power as buttons');
+      const j2 = gs.jade, c2 = gs.credits;
+      ui.click({ clientX: chips[0].x + 4, clientY: chips[0].y + 8, button: 0 }); frame();
+      eq(gs.jade, j2 + H.TUNING.debugJade, 'a click on the jade grants jade');
+      ui.click({ clientX: chips[1].x + 4, clientY: chips[1].y + 8, button: 0 }); frame();
+      eq(gs.credits, c2 + 100000, 'a click on the credits grants credits');
+      gs.power = 10;
+      ui.click({ clientX: chips[2].x + 4, clientY: chips[2].y + 8, button: 0 }); frame();
+      eq(gs.power, H.TUNING.powerMax, 'a click on the power fills it to the maximum');
+      ok(/Энергия освоения \+590/.test(ui.debugState.log.text), 'the footer grant is logged');
+      ui.held = ['ShiftLeft'];
+      ui.click({ clientX: chips[2].x + 4, clientY: chips[2].y + 8, button: 0 }); frame(); ui.held = [];
+      eq(gs.power, H.TUNING.powerTop, 'Shift + click fills the power to its top');
+      gs.power = H.TUNING.powerMax;
+      const long = 'Нарисованные от руки раскадровки «Пушистого скитальца»', cut = ui.clip(long, 120, 11);
+      ok(cut.endsWith('…') && ui.measure(cut, 11) <= 120 && ui.clip('Кредиты', 120, 11) === 'Кредиты', 'long names are cut to the field with an ellipsis');
+    }
     key('ArrowUp'); key('ArrowRight'); key('ArrowRight'); key('ArrowRight'); key('Enter'); frame(); release();
     const it = Object.keys(H.ITEMS).sort((a, b) => ['food', 'exp', 'mat', 'key'].indexOf(H.ITEMS[a].kind) - ['food', 'exp', 'mat', 'key'].indexOf(H.ITEMS[b].kind))[1];
     ok(gs.inv.items[it] >= 1, 'the items tab grants items');
@@ -7042,21 +7511,21 @@ function trInfo(g) {
       const before = JSON.stringify({ roster: gs.roster, jade: gs.jade, warpN: gs.warpN, log: gs.warpLog.length, inv: gs.inv });
       const st = ui.debugState, sc = st.sc, menu = ui.top();
       const idsOf = has => Object.keys(H.CHARS).filter(k => has[k]);
-      const sceneKindOf = x => ['ult', 'fus', 'warp', 'eid', 'sig', 'conv'][x.sc.kind], EID_STAGE_LIST = [0, 1, 3, 6];
+      const sceneKindOf = x => ['ult', 'fus', 'aha', 'warp', 'eid', 'sig', 'conv'][x.sc.kind], EID_STAGE_LIST = [0, 1, 3, 6];
       const ultIds = idsOf(H.Ults.SHOWS), warpIds = idsOf(H.WarpIntro.SHOWS), eidIds = idsOf(H.Eidolons.SCENES), fusIds = Object.keys(H.FUSIONS), bank0 = gs.bank.fusions.join();
       ok(ultIds.length === Object.keys(H.CHARS).length && warpIds.length >= 18 && eidIds.length === Object.keys(H.CHARS).filter(notLater).length - 1, 'the scenes tab lists every ultimate, Warp intro and Eidolon picture');
       key('Digit5'); frame();
       eq(st.tab, 4, 'Digit5 opens the scenes tab');
       let thrown = null;
       try {
-        for (let kind = 0; kind < 6; kind++) {
+        for (let kind = 0; kind < 7; kind++) {
           sc.kind = kind;
-          const ids = [ultIds, fusIds, warpIds, eidIds, Object.keys(H.CHARS).filter(k => k !== 'trail_p'), Object.keys(H.CHARS).filter(k => k !== 'trail_p')][kind];
-          for (const id of ids) for (const stage of kind === 3 ? [0, 1, 2, 3] : [0]) for (const aim of kind === 1 ? [0, 1, 2, 3] : [0]) { sc.id = id; sc.stage = stage; sc.aim = aim; ui.t += 0.37; frame(); }
+          const ids = [ultIds, fusIds, [null], warpIds, eidIds, Object.keys(H.CHARS).filter(k => k !== 'trail_p'), Object.keys(H.CHARS).filter(k => k !== 'trail_p')][kind];
+          for (const id of ids) for (const stage of kind === 4 ? [0, 1, 2, 3] : [0]) for (const aim of kind === 1 ? [0, 1, 2, 3] : [0]) { sc.id = id; sc.stage = stage; sc.aim = aim; ui.t += 0.37; frame(); }
         }
       } catch (e) { thrown = e; }
       ok(!thrown, 'the scenes tab previews every character in every mode' + (thrown ? ': ' + thrown.message : ''));
-      Object.assign(sc, { kind: 4, id: 'miyabi', cut: 0, res: 0 });
+      Object.assign(sc, { kind: 5, id: 'miyabi', cut: 0, res: 0 });
       st.row = 0;
       key('Enter'); frame();
       const sv = ui.top();
@@ -7068,9 +7537,9 @@ function trInfo(g) {
       ok(!sv.show, 'Enter finishes the agent reveal');
       eq(ui.audio.wantedSong, null, 'the debug song stops when the scene ends');
       key('Escape'); frame();
-      Object.assign(sc, { kind: 5, id: 'phrolova', cut: 0, res: 0 });
+      Object.assign(sc, { kind: 6, id: 'phrolova', cut: 0, res: 0 });
       st.row = 0;
-      eq(sceneKindOf(st), 'conv', 'the sixth mode shows the Convene reveals');
+      eq(sceneKindOf(st), 'conv', 'the seventh mode shows the Convene reveals');
       const cnotes = ui.debugSceneNotes(st);
       ok(cnotes.length === 3 && /приливом/.test(cnotes[0]) && /Своя сцена: 7 планов/.test(cnotes[1]), 'the Convene notes name the own scene of Phrolova');
       key('Enter'); frame();
@@ -7121,6 +7590,10 @@ function trInfo(g) {
       key('Escape'); frame();
       eq(gs.bank.fusions.join(), bank0, 'watching Fusions does not add them to the Archive');
       st.row = 0; key('ArrowRight'); frame();
+      eq(sceneKindOf(st), 'aha', 'the Aha Instant cut-ins follow the Fusions in the scenes tab');
+      ok(ui.debugForm(st).rows.length === 3 && ui.debugForm(st).rows[1].label === 'Сценка', 'the Aha mode shows the cut-in and Punchline rows');
+      ok(ui.debugSceneNotes(st).length === 3, 'the Aha mode writes its notes under the buttons');
+      key('ArrowRight'); frame();
       eq(sceneKindOf(st), 'warp', '→ again switches to Warp intros');
       ok(warpIds.includes(sc.id), 'switching the mode keeps a valid character');
       const w0 = sc.id;
@@ -7288,12 +7761,27 @@ function trInfo(g) {
     key('ArrowLeft'); frame(); ok(ph.rail === -1 && ph.sel === 2, 'left returns to the tile grid');
     ph.sel = 0; key('ArrowLeft'); frame(); ok(ph.rail === 1 && ph.from === 2, 'left from the first column wraps to the side panel');
     key('ArrowRight'); frame(); ok(ph.rail === -1 && ph.sel === 0, 'right from the panel wraps to the first column');
+    ph.sel = 7; key('Enter'); frame(); ok(ui.top() !== ph && ui.top().full && ui.top().act === 0, 'the Guide tile opens the Interastral Guide');
+    ui.screens = [ph]; frame();
+    ph.sel = 8; key('Enter'); frame(); ok(ui.top() !== ph && ui.top().full && ui.top().tab === 1, 'the Synthesis tile opens Synthesis on the material tab');
+    ui.screens = [ph]; frame();
     ph.sel = 9; key('Enter'); frame();
     ok(ui.top() !== ph && ui.top().ev, 'the Events tile opens the events');
     ui.screens = [ph]; ph.sel = 11; key('Enter'); frame();
     ok(ui.top() !== ph && ui.top().full && ui.top().focus, 'the last tile opens Messages');
     ui.screens = [ph]; ph.sel = 2; key('ArrowRight'); ph.rail = ph.railSel = 1; key('ArrowDown'); frame();
-    eq(ph.rail, 2, 'the exit to the title sits under the settings gear');
+    eq(ph.rail, 2, 'Save sits right under the settings gear');
+    const near = ui.canSaveHere, realSaves = ui.openSaves, savesAsked = [];
+    ui.openSaves = function (mode, done) { savesAsked.push(mode); return realSaves.call(this, mode, done); };
+    ui.canSaveHere = () => false; ui.toasts = []; key('Enter'); frame();
+    ok(ui.top() === ph && ui.toasts.some(t => String(t.text || t).includes('у якоря пространства')), 'Save in the rail is off away from an anchor and says why');
+    ui.canSaveHere = () => true; key('Enter'); frame();
+    ok(ui.top() !== ph && savesAsked.pop() === 'save', 'Save in the rail opens the memory card');
+    ui.screens = [ph]; ui.canSaveHere = near; key('ArrowDown'); frame(); eq(ph.rail, 3, 'Load sits under Save');
+    key('Enter'); frame(); ok(ui.top() !== ph && savesAsked.pop() === 'load', 'Load in the rail opens the memory card');
+    ui.openSaves = realSaves;
+    ui.screens = [ph]; key('ArrowDown'); key('ArrowDown'); frame();
+    eq(ph.rail, 5, 'the exit to the title closes the rail');
     key('Enter'); frame();
     ok(ui.top() !== ph && !ui.top().full, 'the exit asks before leaving to the title');
     key('Escape'); frame();
@@ -7368,16 +7856,20 @@ function trInfo(g) {
     const mats = ui.invEntries(2);
     ok(mats.length && mats.every(e => e.d.kind === 'mat') && mats[0].d.mat === 'path', 'the materials tab lists the materials, Path lines first');
     ui.top().sel = 0; key('Enter'); frame();
-    ok(ui.top().mode === 0, 'Enter on a material opens the Omni-Synthesizer');
+    ok(ui.top().tab === 1, 'Enter on a material opens Synthesis on the material tab');
     for (const k of Object.keys(s.inv.items)) if (H.ITEMS[k].kind === 'mat') delete s.inv.items[k];
     s.inv.items.dest1 = 7;
     const sy = ui.top();
-    sy.sel = ui.synthRows(0).findIndex(r => r.from === 'dest1'); frame();
+    sy.sel = ui.synthRows(1).findIndex(r => r.from === 'dest1'); frame();
     key('Enter'); frame();
     ok(s.inv.items.dest2 === 1 && s.inv.items.dest1 === 4, 'the synthesizer turns three materials into one of the next tier');
     key('KeyE'); frame();
-    eq(sy.mode, 1, 'E switches to the exchange');
-    sy.sel = ui.synthRows(1).findIndex(r => r.to === 'hunt1'); frame();
+    eq(sy.tab, 2, 'E switches to the exchange');
+    sy.sel = ui.synthRows(2).findIndex(r => r.to === 'hunt1'); frame();
+    key('Enter'); frame();
+    ok(ui.top() !== sy && !ui.top().full, 'Enter on an empty slot opens the material picker');
+    key('Enter'); frame();
+    ok(ui.top() === sy && sy.src === 'dest1', 'the picker puts the chosen material into the slot');
     key('Enter'); frame();
     ok(s.inv.items.hunt1 === 1 && s.inv.items.dest1 === 2, 'the exchange turns two materials into one of the same tier');
     key('Escape'); frame();
@@ -7423,12 +7915,522 @@ function trInfo(g) {
     ui.screens = keepScr; frame();
   }
   {
+    const keepScr = ui.screens.slice(), s = game.state, keepItems = JSON.parse(JSON.stringify(s.inv.items));
+    for (const k of Object.keys(s.inv.items)) if (H.ITEMS[k].kind === 'mat') delete s.inv.items[k];
+    Object.assign(s.inv.items, { hunt1: 20, erud1: 4 });
+    ui.screens = []; ui.openSynth(); frame();
+    const sy = ui.top();
+    eq(ui.synthTabs.map(t => t.label).join('|'), 'Расходные предметы|Синтез материалов|Обмен материалами|Реликвии', 'Synthesis has the four tabs of the original');
+    key('KeyQ'); frame(); ok(sy.tab === 0 && !ui.synthLock(0), 'Q moves left to the consumables tab');
+    key('KeyQ'); frame(); eq(sy.tab, 3, 'Q wraps around to the relics tab');
+    key('Enter'); frame(); ok(ui.top() === sy && s.inv.items.hunt1 === 20, 'Enter on the relics tab spends nothing');
+    key('KeyE'); key('KeyE'); frame(); eq(sy.tab, 1, 'E comes back to the material tab');
+    sy.sel = ui.synthRows(1).findIndex(r => r.from === 'hunt1'); frame();
+    eq(sy.maxNow(), 6, 'the slider stops at what the stock allows');
+    key('KeyD'); key('KeyD'); frame(); eq(sy.qty, 3, 'D raises the quantity');
+    key('End'); frame(); eq(sy.qty, 6, 'End jumps to the maximum');
+    key('KeyD'); frame(); eq(sy.qty, 6, 'the quantity never passes the maximum');
+    key('Home'); key('KeyA'); frame(); eq(sy.qty, 1, 'the quantity never drops below one');
+    key('End'); key('Enter'); frame();
+    ok(s.inv.items.hunt2 === 6 && s.inv.items.hunt1 === 2, 'six syntheses run in one go');
+    key('KeyF'); frame();
+    ok(sy.filter && sy.rows().length && sy.rows().every(r => ui.synthCan(1, r)) && !sy.rows().some(r => r.from === 'hunt1'), 'the filter hides what cannot be made now');
+    key('KeyF'); key('KeyE'); frame();
+    sy.sel = ui.synthRows(2).findIndex(r => r.to === 'core1'); frame();
+    key('KeyR'); frame(); ok(sy.src === null, 'auto-add finds nothing for a line with no stock of its tier');
+    sy.sel = ui.synthRows(2).findIndex(r => r.to === 'dest2'); frame();
+    key('KeyR'); frame(); eq(sy.src, 'hunt2', 'auto-add takes the material with the biggest stock');
+    key('End'); key('Enter'); frame();
+    ok(s.inv.items.dest2 === 3 && !s.inv.items.hunt2, 'the exchange runs the chosen quantity');
+    ok(sy.srcFor(sy.current()) === null, 'a used-up material leaves the slot');
+    key('Escape'); frame(); ok(!ui.screens.length, 'Esc closes Synthesis');
+    s.inv.items = keepItems; ui.screens = keepScr; frame();
+  }
+  {
+    const s = game.state, keepScr = ui.screens.slice(), keep = JSON.parse(JSON.stringify({ items: s.inv.items, recipes: s.recipes || null, credits: s.credits }));
+    eq(H.SYN_MATS.map(id => H.ITEMS[id].name).join('|'), 'Металл|Основной ингредиент|Флогистон|Семена|Твёрдая вода|Газообразная жидкость|Механические детали|Белковый рис|Мнимые частицы|Экстракт из лечебных трав', 'the ten synthesis materials keep the official names');
+    ok(H.SYN_MATS.every(id => G.ITEM_ART[id] && H.ITEMS[id].src), 'every synthesis material has an icon and a source');
+    for (const [dish, mats] of Object.entries(H.RECIPES)) {
+      const cost = Object.entries(mats).reduce((a, [m, n]) => a + H.ITEMS[m].price * n, 0);
+      ok(H.ITEMS[dish].kind === 'food' && cost < H.ITEMS[dish].price, 'cooking ' + dish + ' is cheaper than buying it');
+      const shops = Object.keys(H.SHOPS).filter(k => H.SHOPS[k].items.includes('rcp_' + dish)).length;
+      const chests = Object.values(H.MAPS).filter(m => (m.chests || []).some(ch => ch.items && ch.items['rcp_' + dish])).length;
+      ok(H.RECIPE_BASE.includes(dish) ? !shops && !chests : shops + chests === 1, 'recipe ' + dish + ' has exactly one source');
+    }
+    delete s.recipes; s.inv.items = { pie: 1 };
+    game.recipeSync();
+    ok(game.recipeKnown('medkit') && game.recipeKnown('soup') && game.recipeKnown('pie') && !game.recipeKnown('spark'), 'an old save knows the base recipes and the dishes it holds');
+    game.give({ items: { hotpot: 1 } });
+    ok(game.recipeKnown('hotpot'), 'the first dish of a kind teaches its recipe');
+    s.credits = 100000;
+    const at = game.shopList('belobog').findIndex(e => e.id === 'rcp_suncake');
+    ok(at >= 0, 'the shop sells a recipe the player does not know');
+    ok(game.buy('belobog', at) && game.recipeKnown('suncake') && !s.inv.items.rcp_suncake, 'a bought recipe is learned at once');
+    ok(!game.shopList('belobog').some(e => e.id === 'rcp_suncake'), 'a known recipe leaves the shop');
+    const c0 = s.credits; game.give({ items: { rcp_suncake: 1 } });
+    eq(s.credits, c0 + H.RECIPE_BACK, 'a recipe found twice turns into credits');
+    s.inv.items = { rice: 5, water: 9, seed: 3 };
+    ok(!game.cook('spark', 1), 'an unknown recipe cannot be cooked');
+    eq(game.cookMax('soup'), 3, 'soup can be cooked as many times as the scarcest material allows');
+    ok(game.cook('soup', 2) && s.inv.items.soup === 2 && s.inv.items.rice === 3 && s.inv.items.water === 5 && s.inv.items.seed === 1, 'cooking spends the exact materials');
+    ui.screens = []; ui.openSynth(null, 0); frame();
+    const sy = ui.top();
+    sy.sel = sy.rows().findIndex(r => r.to === 'spark'); frame(); key('Enter'); frame();
+    ok(!s.inv.items.spark && ui.screens.length === 1, 'Enter on an unknown recipe does nothing');
+    sy.sel = sy.rows().findIndex(r => r.to === 'soup'); frame(); key('Enter'); frame();
+    eq(s.inv.items.soup, 3, 'Enter cooks the dish');
+    ui.screens = []; ui.openInventory(2); frame();
+    ok(ui.invEntries(2).some(e => e.id === 'water'), 'synthesis materials show on the materials tab of the inventory');
+    ui.top().sel = ui.invEntries(2).findIndex(e => e.id === 'water'); key('Enter'); frame();
+    eq(ui.top().tab, 0, 'a synthesis material opens the consumables tab');
+    const rng = game.rng; game.rng = Object.assign(() => 0, { int: () => 0 });
+    s.inv.items = {}; game.breakDestr({ key: 'test:synth', x: 0, y: 0 });
+    ok(Object.entries(s.inv.items).some(([id, n]) => H.ITEMS[id].kind === 'synmat' && n === 2), 'a broken crate can drop synthesis materials');
+    game.rng = rng; delete s.broken['test:synth'];
+    s.inv.items = keep.items; s.credits = keep.credits; if (keep.recipes) s.recipes = keep.recipes; else delete s.recipes;
+    ui.screens = keepScr; frame();
+  }
+  {
+    const s = game.state, keepScr = ui.screens.slice(), keep = JSON.parse(JSON.stringify({ items: s.inv.items, relics: s.inv.relics, credits: s.credits, tl: s.tl.lvl, fh: !!s.flags.fh_met, rb: s.resinBuy || null }));
+    s.tl.lvl = 30; delete s.flags.fh_met;
+    ok(!game.relicCraftOpen() && ui.synthLock(3), 'relic crafting waits for Trailblaze Level 40 or the Forgotten Hall');
+    s.flags.fh_met = true; ok(game.relicCraftOpen(), 'meeting the Forgotten Hall opens relic crafting');
+    delete s.flags.fh_met; s.tl.lvl = 40; ok(game.relicCraftOpen() && !ui.synthLock(3), 'Trailblaze Level 40 opens relic crafting');
+    s.inv.items = {}; s.inv.relics = []; s.credits = 0;
+    const a = game.makeRelic('knight', H.CAVERN_SLOTS[0], 0, 1), b = game.makeRelic('knight', H.CAVERN_SLOTS[1], 15, 45);
+    eq(game.salvageValue(a) + game.salvageValue(b), 10 + 70, 'salvage pays 10 Remains plus 4 per relic level');
+    ok(game.sellRelic(a.uid) && s.credits === 150 && s.inv.items.remains === 10, 'salvaging keeps the 150 credits and adds Relic Remains');
+    ok(H.RELIC_CRAFT.base + H.RELIC_CRAFT.perLvl * 15 < H.RELIC_CRAFT.cost, 'no relic salvages for as many Remains as a new one costs');
+    const worn = game.makeRelic('knight', H.CAVERN_SLOTS[2], 3, 9), wk = s.party[0], keepWorn = Object.assign({}, s.roster[wk].relics);
+    s.roster[wk].relics.body = worn.uid;
+    eq(game.salvagePreview(15).list.length, 1, 'mass salvage skips worn relics');
+    const p = game.salvageMany(15);
+    ok(p.remains === 70 && s.inv.items.remains === 80 && s.inv.relics.length === 1, 'mass salvage pays for every relic it takes');
+    s.roster[wk].relics = keepWorn;
+    ok(game.craftRelic('knight', 'head', null) === null, 'a relic needs 100 Relic Remains');
+    s.inv.items.remains = 250;
+    const r1 = game.craftRelic('station', 'rope', null);
+    ok(r1 && r1.set === 'station' && r1.slot === 'rope' && s.inv.items.remains === 150, 'planar ornaments can be crafted too');
+    ok(game.craftRelic('station', 'head', null) === null, 'a planar set has no head slot');
+    s.inv.items.remains = 2000; delete s.resinBuy;
+    ok(game.resinFromRemains() && game.resinFromRemains() && !game.resinFromRemains() && s.inv.items.resin === 2 && s.inv.items.remains === 400, 'Remains buy resin twice an hour');
+    s.resinBuy.hour--; ok(game.resinLeft() === 2, 'the resin limit refreshes the next hour');
+    ui.screens = []; ui.openSynth(null, 3); frame();
+    const sy = ui.top();
+    key('ArrowDown'); frame(); eq(sy.rsel, 3, 'down moves to the next row of sets');
+    sy.rsel = 9; key('ArrowDown'); frame(); ok(sy.rsel >= H.CAVERN_SETS.length, 'down from the last cavern row reaches the planar ornaments');
+    sy.rsel = 1; key('Enter'); frame(); eq(sy.rfocus, 'slot', 'Enter moves to the slots');
+    key('ArrowRight'); key('ArrowRight'); frame(); eq(sy.rslot, 2, 'left and right pick the slot');
+    key('Enter'); frame();
+    const cr = ui.top(); ok(cr !== sy && !cr.full, 'Enter on a slot opens the crafting window');
+    cr.sel = 1; const n0 = s.inv.relics.length, res0 = s.inv.items.resin; key('Enter'); frame();
+    const made = s.inv.relics[s.inv.relics.length - 1];
+    ok(s.inv.relics.length === n0 + 1 && made.set === H.CAVERN_SETS[1] && made.slot === 'body' && made.main === H.CAVERN_SLOTS[2].mains[0] && s.inv.items.resin === res0 - 1, 'the window crafts the chosen set, slot and main stat');
+    key('Enter'); frame(); ok(ui.top() === sy, 'the result closes back to Synthesis');
+    key('Escape'); frame(); ok(ui.top() === sy && sy.rfocus === 'grid', 'Esc on the slots returns to the sets');
+    ui.screens = []; ui.openInventory(5); frame(); key('KeyR'); frame();
+    ok(ui.top().lvl === 6, 'R on the relics tab opens mass salvage');
+    s.inv.items = keep.items; s.inv.relics = keep.relics; s.credits = keep.credits; s.tl.lvl = keep.tl;
+    if (keep.fh) s.flags.fh_met = true; else delete s.flags.fh_met;
+    if (keep.rb) s.resinBuy = keep.rb; else delete s.resinBuy;
+    ui.screens = keepScr; frame();
+  }
+  {
+    const s = game.state, keepScr = ui.screens.slice(), keepIntro = s.flags.express_intro;
+    s.flags.express_intro = true;
+    eq(H.GUIDE_SECTIONS.map(x => x.label).join('|'), 'Ежедневная тренировка|Индекс выживаемости|Космический раздор|Озарённые светом сокровища|Первопроходческий опыт', 'the guide has the five sections of the original');
+    ok(!Object.values(H.MISSION_CHAPTERS).some(ch => /Глава/.test(ch.label)), 'chapters say «Акт», as in the original');
+    const acts = game.guideActs();
+    ok(acts.map(a => a.title).join('|') === 'Пролог: Космическая станция «Герта»|Акт I: Ярило-VI|Акт II: Сяньчжоу «Лофу»' && !acts[2].open && !acts[2].parts.length, 'the acts follow the worlds and the Luofu stays closed');
+    for (const a of acts) for (const p of a.parts) {
+      const ids = H.TRAIL_MISSIONS.filter(m => m.ch === p.ch).length + Object.keys(H.QUESTS).filter(id => H.QUESTS[id].type === 'trail' && H.QUESTS[id].ch === p.ch).length;
+      ok(p.total === ids && p.total > 0 && game.chapterPhoto(p.ch).bg, 'chapter ' + p.ch + ' lists all its missions and has a photo');
+    }
+    const ms = game.missionsState(), keepDone = Object.assign({}, ms.done);
+    for (const m of H.TRAIL_MISSIONS.filter(m => m.ch === 'winter')) delete ms.done[m.id];
+    ok(!game.chapterState('winter').started, 'a chapter with no finished missions is not started');
+    ms.done.tb_icy = 1;
+    const w = game.chapterState('winter');
+    ok(w.started && !w.finished && w.done === 1, 'one finished mission starts the chapter');
+    ui.screens = []; ui.openIpg(); frame();
+    eq(ui.top().tab, H.GUIDE_SECTIONS.findIndex((x, i) => !ui.guideLock(i)), 'the guide opens on the first open section');
+    ui.screens = []; ui.openIpg('trail'); frame();
+    const gd = ui.top();
+    eq(H.GUIDE_SECTIONS[gd.tab].id, 'trail', 'the guide can open on a named section');
+    key('KeyE'); frame(); ok(gd.tab === 0 && !ui.guideLock(0), 'E wraps to Daily Training');
+    key('KeyQ'); frame(); eq(gd.tab, 4, 'Q comes back to Trailblaze Experience');
+    key('KeyI'); frame(); ok(ui.top() !== gd && !ui.top().full, 'I opens the rules');
+    key('Enter'); frame(); ok(ui.top() === gd, 'the rules close');
+    key('ArrowDown'); frame(); eq(gd.act, 1, 'down picks the next act');
+    key('ArrowRight'); frame(); ok(gd.focus === 'cards' && gd.card === 0, 'right moves to the chapter cards');
+    key('Enter'); frame();
+    const pg = ui.top(); ok(pg !== gd && !pg.full, 'Enter opens the chapter page');
+    key('ArrowDown'); frame(); eq(pg.sel, 1, 'the page walks through the missions');
+    key('Escape'); frame(); ok(ui.top() === gd, 'Esc returns to the guide');
+    key('Escape'); frame(); ok(ui.top() === gd && gd.focus === 'list', 'Esc on the cards returns to the acts');
+    gd.act = 2; key('ArrowRight'); frame(); ok(gd.focus === 'list', 'a closed act has no cards');
+    key('Escape'); frame(); ok(!ui.screens.length, 'Esc closes the guide');
+    ms.done = keepDone; ui.screens = keepScr; if (!keepIntro) delete s.flags.express_intro; frame();
+  }
+  {
+    const s = game.state, keepScr = ui.screens.slice(), here = { map: game.map.id, x: game.player.x, y: game.player.y }, keepFlags = Object.assign({}, s.flags), keepPower = s.power, near = ui.canSaveHere;
+    eq(H.GUIDE_INDEX.map(x => x.label).join('|'), 'Цель развития|Извлечение украшений|Чашелист (золотой)|Чашелист (багровый)|Застойная тень|Пещера коррозии|Эхо войны', 'the Survival Index has the categories of the original');
+    const listed = ['golden', 'crimson', 'shadow', 'cavern', 'echo'].flatMap(cat => game.guideIndexRows(cat).map(r => r.id));
+    ok(listed.length === H.CALYX.length && new Set(listed).size === H.CALYX.length, 'every domain of the Simulator sits in exactly one category');
+    for (const cx of H.CALYX) {
+      const site = game.guideSite('calyx', cx.id), L = H.mapLayout(site.map);
+      ok(L.marks[site.ch] && (site.sim || H.MAPS[site.map].marks[site.ch].calyx === cx.id), 'domain ' + cx.id + ' has a place to enter');
+    }
+    ok(game.guideIndexRows('orn').length === 3 && game.guideIndexRows('orn').every(r => H.RELIC_SETS[r.set].planar), 'ornament extraction lists the Simulated Universe worlds with planar sets');
+    Object.assign(s.flags, { express_intro: true });
+    game.loadMap('express', 'v');
+    const hunt = game.guideIndexRows('crimson').find(r => r.id === 'cx_hunt');
+    ok(hunt.open && hunt.place === 'Пригородные снежные поля', 'a row names its place');
+    ui.toasts = [];
+    ui.guideEnter({ open: false, why: 'Откроется дальше по сюжету.' });
+    ok(ui.toasts.some(t => t.text === 'Откроется дальше по сюжету.'), 'a closed domain says why');
+    ui.canSaveHere = () => false; ui.toasts = [];
+    ui.screens = []; ui.openIpg('index'); frame();
+    const gd = ui.top();
+    gd.cat = H.GUIDE_INDEX.findIndex(x => x.id === 'crimson');
+    key('ArrowRight'); frame(); eq(gd.focus, 'rows', 'right moves into the domain rows');
+    gd.row = game.guideIndexRows('crimson').findIndex(r => r.id === 'cx_hunt');
+    key('Enter'); frame();
+    ok(game.map.id === 'express' && ui.toasts.some(t => /якоря пространства/.test(t.text)), 'away from an anchor the guide does not teleport');
+    ui.canSaveHere = () => true;
+    key('Enter'); frame();
+    const cal = ui.top();
+    ok(game.map.id === 'j_plains' && cal && cal.tier === 0 && !cal.full, '«Войти» teleports to the domain and opens it');
+    const hs = game.guideSite('calyx', 'cx_hunt'), [hx, hy] = H.mapLayout(hs.map).marks[hs.ch][0];
+    game.player.x = hx; game.player.y = hy + 1;
+    ok(game.guideHop(hs).here, 'next to the domain no teleport is needed');
+    key('Escape'); frame(); ok(!ui.screens.length, 'the domain window closes into the field');
+    ui.canSaveHere = near; s.flags = keepFlags; s.power = keepPower;
+    game.loadMap(here.map, null, { x: here.x, y: here.y });
+    ui.screens = keepScr; frame();
+  }
+  {
+    const s = game.state, keepScr = ui.screens.slice(), keepGuide = JSON.parse(JSON.stringify(s.guide || null)), keepItems = JSON.parse(JSON.stringify(s.inv.items)), keepCredits = s.credits;
+    const kvBox = { window: {} };
+    require('vm').runInNewContext(require('fs').readFileSync(path.join(__dirname, '../js/apps/kovcheg-hsr.js'), 'utf8'), kvBox);
+    const KV = kvBox.window.kovchegHsr;
+    for (const [id, ch] of Object.entries(KV.CHARS)) {
+      if (!H.CHARS[id]) continue;
+      const p = KV.PRESETS[ch.build], b = H.guideBuild(id);
+      ok(b.set === (p.set === 'elem' ? KV.ELEM_SET[H.CHARS[id].elem] : p.set) && b.planar === p.planar && b.subs.join() === p.subs.join(), 'recommended relics of ' + id + ' match the Ковчег site');
+    }
+    ok(Object.keys(H.TRACES).every(k => H.RELIC_SETS[H.guideBuild(k).set] && H.RELIC_SETS[H.guideBuild(k).planar]), 'every hero has recommended sets');
+    for (const set of H.CAVERN_SETS) ok(H.CALYX.some(c => (c.sets || []).includes(set)), 'cavern set ' + set + ' drops in a Cavern or a Shadow');
+    ok(H.CALYX.filter(c => c.reward === 'relic' && c.id !== 'cx_relic').every(c => c.sets && c.sets.length === 2), 'every Cavern and Shadow drops a pair of sets');
+    const n0 = s.inv.relics.length, cav = H.CALYX.find(c => c.id === 'cx_fist');
+    game.calyxReward({ id: 'cx_fist', tier: 0, cost: 0 });
+    ok(s.inv.relics.slice(n0).length >= 2 && s.inv.relics.slice(n0).every(r => cav.sets.includes(r.set)), 'a Cavern drops only its pair of sets');
+    s.inv.relics.splice(n0);
+    const tk = s.party[0], cost = game.targetCost(tk), kit = game.kitOf(tk);
+    let credits = 0;
+    for (const n of H.traceNodes(kit)) {
+      if (n.kind === 'tech') continue;
+      const t = game.traceOf(tk), cur = n.kind === 'ability' ? t.lv[n.id] : t.on.includes(n.id) ? 1 : 0;
+      for (let to = cur + 1; to <= n.max; to++) { const c = H.traceCost(kit, n.id, to); if (c) credits += c.credits; }
+    }
+    eq(cost.credits, credits, 'the target counts every Trace step that is left');
+    s.inv.items = {}; s.credits = 0;
+    const needs = game.targetNeeds(tk);
+    ok(needs.length && needs.some(x => H.ITEMS[x.id].mat === 'path' && x.row && x.row.c.reward === 'path'), 'a missing Path material points to its crimson Calyx');
+    ok(needs.some(x => x.id === 'credits' && x.row && x.row.id === 'cx_credits'), 'missing credits point to the Bud of Treasures');
+    for (const [id, n] of Object.entries(cost.items)) s.inv.items[id] = n;
+    s.inv.items.exp3 = 999; s.credits = cost.credits;
+    eq(game.targetNeeds(tk).length, 0, 'nothing is missing once everything is in the bag');
+    const sc0 = game.relicScore(tk);
+    ok(sc0.grade && sc0.useful >= 0, 'the relic score has a grade');
+    s.inv.items = {};
+    ui.screens = []; s.guide = { target: null }; ui.openIpg('index'); frame();
+    const gd = ui.top();
+    gd.cat = 0; key('Enter'); frame();
+    const pick = ui.top(); ok(pick !== gd && !pick.full, 'without a target Enter opens the hero picker');
+    pick.sel = game.guideTargets().indexOf(tk); key('Enter'); frame();
+    ok(ui.top() === gd && game.guideTarget() === tk, 'the picker sets the development target');
+    key('ArrowRight'); frame(); eq(gd.focus, 'rows', 'right moves into the target rows');
+    const realEnter = ui.guideEnter, entered = [];
+    ui.guideEnter = row => entered.push(row.id);
+    key('Enter'); frame();
+    ok(entered.length === 1, '«Войти» on a missing material goes to its domain');
+    ui.guideEnter = realEnter;
+    key('KeyC'); frame(); ok(ui.top() !== gd, 'C changes the target'); key('Escape'); frame();
+    key('KeyG'); frame(); ok(ui.top() !== gd && ui.top().sec === 1, 'G opens the Traces of the target');
+    ui.screens = keepScr; s.guide = keepGuide; if (!keepGuide) delete s.guide; s.inv.items = keepItems; s.credits = keepCredits; frame();
+  }
+  {
+    const s = game.state, keepScr = ui.screens.slice(), keepGuide = JSON.parse(JSON.stringify(s.guide || null)), keepItems = JSON.parse(JSON.stringify(s.inv.items)), keepFlags = Object.assign({}, s.flags), keepCredits = s.credits;
+    Object.assign(s.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true });
+    s.inv.items = { fuelv: 30 };
+    const tk = s.party[0], path = H.CHARS[game.kitOf(tk)].path;
+    s.guide = { target: tk };
+    const ids = game.guideTargetIds(), crimson = H.GUIDE_INDEX.findIndex(c => c.id === 'crimson');
+    const list = game.guideIndexList('crimson'), pathRow = list.find(r => r.c.path === path);
+    ok(pathRow && pathRow.forTarget && ids.has(pathRow.id), 'the Calyx of the target Path is marked for the target');
+    ok(list.findIndex(r => r.forTarget) === 0 || !pathRow.open, 'rows for the target come first among the open ones');
+    s.guide = { target: null };
+    ok(!game.guideIndexList('crimson').some(r => r.forTarget) && game.guideIndexList('crimson').map(r => r.id).join() === game.guideIndexRows('crimson').map(r => r.id).join(), 'without a target the order stays as before');
+    s.guide = { target: tk };
+    ui.screens = []; ui.openIpg('index'); frame();
+    const gi = ui.top();
+    gi.cat = crimson; gi.focus = 'rows'; gi.row = 0; frame();
+    const spyG = () => { const out = [], real = ui.text; ui.text = function (str, ...rest) { out.push(String(str)); return real.call(this, str, ...rest); }; frame(); delete ui.text; return out; };
+    let tx = spyG();
+    ok(tx.includes('Сменить цель развития') && tx.includes('Купон') && tx.includes('Испытание'), 'the index shows the target button and the voucher and view keys');
+    key('KeyF'); frame();
+    ok(ui.top().quickFarm === game.guideIndexList('crimson')[0].id, 'F on a Calyx row opens Quick Farm without travel');
+    key('Escape'); frame();
+    key('KeyL'); frame();
+    const view = ui.top();
+    tx = spyG();
+    ok(view.domain === game.guideIndexList('crimson')[0].id && tx.includes('Войти') && !tx.includes('Начать испытание'), 'L opens the domain window with «Войти» instead of a start');
+    const realEnter = ui.guideEnter, entered = [];
+    ui.guideEnter = row => entered.push(row.id);
+    key('Enter'); frame();
+    ok(entered.length === 1 && ui.top() === gi, '«Войти» in the view travels through the guide');
+    ui.guideEnter = realEnter;
+    gi.cat = H.GUIDE_INDEX.findIndex(c => c.id === 'cavern'); gi.row = 0; frame();
+    key('KeyF'); frame();
+    ok(ui.top() === gi && ui.toasts.some(t => String(t.text).includes('не принимают')), 'F on a Cavern explains that it takes no vouchers');
+    gi.focus = 'list'; gi.cat = H.GUIDE_INDEX.length - 1;
+    key('ArrowDown'); frame();
+    ok(gi.focus === 'pick', 'down from the last category reaches «Сменить цель развития»');
+    key('Enter'); frame();
+    ok(ui.top() !== gi && !ui.top().full, 'Enter on it opens the hero picker');
+    key('Escape'); frame();
+    key('ArrowUp'); frame();
+    ok(gi.focus === 'list' && gi.cat === H.GUIDE_INDEX.length - 1, 'up returns to the categories');
+    gi.cat = 0; gi.focus = 'rows'; gi.trow = 0; frame();
+    const first = ui.guideTargetItems(tk).all[0];
+    key('KeyF'); frame();
+    ok(first.row && first.row.kind === 'calyx' ? ui.top().quickFarm === first.row.id : ui.top() === gi, 'F on a missing material opens Quick Farm of its source');
+    ui.screens = [gi];
+    const cost = game.targetCost(tk);
+    for (const [id, n] of Object.entries(cost.items)) s.inv.items[id] = n;
+    s.inv.items.exp3 = 999; s.credits = cost.credits + 1;
+    delete (s.guide.done || {})[tk];
+    ui.toasts = [];
+    tx = spyG();
+    ok(tx.includes('Цель достигнута') && tx.includes('Сменить цель') && ui.toasts.some(t => String(t.text).startsWith('Цель развития достигнута')), 'a finished target says so once');
+    ui.toasts = []; spyG();
+    ok(!ui.toasts.length, 'the toast does not repeat');
+    ui.screens = keepScr; s.guide = keepGuide; if (!keepGuide) delete s.guide; s.inv.items = keepItems; s.credits = keepCredits;
+    Object.keys(s.flags).forEach(f => { if (!(f in keepFlags)) delete s.flags[f]; });
+    frame();
+  }
+  {
+    const s = game.state, keepScr = ui.screens.slice(), keepGuide = JSON.parse(JSON.stringify(s.guide || null));
+    const warp = game.guideWarpHeroes(), outW = warp.find(id => !s.party.includes(id)), keepW = s.roster[outW];
+    delete s.roster[outW];
+    const list = game.guideTargets();
+    const banned = new Set();
+    for (const B of Object.values(H.BANNERS)) { for (const [id, S] of Object.entries(B.stars || {})) if (!S.cone) { banned.add(id); (S.four || []).forEach(x => banned.add(x)); } (B.featured || []).forEach(x => banned.add(x)); (B.extra4 || []).forEach(x => banned.add(x)); }
+    H.WARP_POOL.five.concat(H.WARP_POOL.four).forEach(x => banned.add(x));
+    const warpable = [...banned].filter(id => H.CHARS[id] && H.TRACES[id]);
+    ok(warpable.every(id => warp.includes(id)) && warp.every(id => warpable.includes(id)), 'every hero of the event and standard Warps can be a target');
+    ok(Object.keys(H.BANNERS.ev.stars).every(id => game.guideWarpInfo(id).tag === 'Прыжок' && game.guideWarpInfo(id).five), 'event 5-star heroes are tagged «Прыжок»');
+    ok(['miyabi', 'phrolova', 'aqua', 'yu', 'makoto'].every(id => game.guideWarpInfo(id) && game.guideWarpInfo(id).five), 'collab event banners count as Warps too');
+    ok(game.guideWarpInfo('gepard').tag === 'Стандарт' && game.guideWarpInfo('gepard').src === 'Стандартный прыжок', 'standard Warp heroes are tagged «Стандарт»');
+    ok(!game.guideWarpInfo('trail_p'), 'a hero who is never warped is not listed');
+    const ownWarp = list.filter(k => game.guideOwned(k) && game.guideIsWarp(k)), ownRest = list.filter(k => game.guideOwned(k) && !game.guideIsWarp(k)), away = list.filter(k => !game.guideOwned(k));
+    ok(list.join() === ownWarp.concat(ownRest, away).join(), 'owned Warp heroes come first, then the crew, then Warp heroes not in the crew');
+    ok(away.length > 0 && away.every(k => warp.includes(k) && !s.roster[k]), 'Warp heroes not in the crew can be picked');
+    const stranger = away[0];
+    game.setGuideTarget(stranger);
+    eq(game.guideTarget(), stranger, 'a Warp hero outside the crew can be the build target');
+    const cost = game.targetCost(stranger);
+    let lvExp = 0;
+    for (let l = 1; l < H.MAX_LVL; l++) lvExp += H.expToNext(l);
+    ok(cost.exp === lvExp && Object.keys(cost.items).length > 0, 'the cost of a stranger starts from level 1 and empty Traces');
+    ok(game.relicScore(stranger).grade === '—', 'a stranger has no relic score');
+    ok(game.targetNeeds(stranger).length > 0, 'a stranger needs materials');
+    ui.screens = []; ui.openIpg('index'); frame();
+    const gi = ui.top();
+    gi.cat = 0; frame();
+    const spyW = () => { const out = [], real = ui.text; ui.text = function (str, ...rest) { out.push(String(str)); return real.call(this, str, ...rest); }; frame(); delete ui.text; return out; };
+    let tx = spyW();
+    ok(tx.some(t => t.startsWith('Развитие: ') && t.endsWith('· Прыжок')), 'the target block marks a stranger as a Warp hero');
+    key('KeyG'); frame();
+    ok(ui.top() === gi && ui.toasts.some(t => String(t.text).includes('нет в экипаже')), 'G does not open Traces of a stranger');
+    key('KeyC'); frame();
+    const pk = ui.top();
+    tx = spyW();
+    ok(tx.includes('Прыжок') && pk.sel === game.guideTargets().indexOf(stranger) && tx.some(t => t.startsWith('Героя нет в экипаже')), 'the picker tags Warp heroes and explains a stranger');
+    key('Escape'); frame();
+    const own = s.party[0];
+    game.setGuideTarget(own);
+    ui.screens = []; ui.openChars(); frame();
+    ok(ui.rosterKeys()[0] === own && ui.top().k === own, 'the build target stands first among the characters');
+    const other = Object.keys(s.roster).find(k => k !== own && !s.roster[k].guest);
+    if (other) {
+      game.setGuideTarget(other);
+      ok(ui.rosterKeys()[0] === other, 'another target moves to the front');
+    }
+    if (keepW) s.roster[outW] = keepW;
+    ui.screens = keepScr; s.guide = keepGuide; if (!keepGuide) delete s.guide; frame();
+  }
+  {
+    const s = game.state, keepScr = ui.screens.slice(), keepGuide = JSON.parse(JSON.stringify(s.guide || null)), keepItems = JSON.parse(JSON.stringify(s.inv.items));
+    const tk = s.party[0], kit = game.kitOf(tk);
+    s.guide = { target: tk };
+    ok(!game.guideRecOnly(), 'every Trace counts by default');
+    const all = game.targetCost(tk, false), rec = game.targetCost(tk, true);
+    const t = game.traceOf(tk);
+    let credits = 0;
+    const items = {};
+    for (const n of H.traceNodes(kit)) {
+      if (!(n.kind === 'bonus' || (n.kind === 'ability' && ['skill', 'ult', 'talent'].includes(n.id)))) continue;
+      const cur = n.kind === 'ability' ? t.lv[n.id] : t.on.includes(n.id) ? 1 : 0;
+      for (let to = cur + 1; to <= n.max; to++) { const c = H.traceCost(kit, n.id, to); if (!c) continue; credits += c.credits; for (const [m, x] of Object.entries(c.items)) items[m] = (items[m] || 0) + x; }
+    }
+    ok(rec.credits === credits && JSON.stringify(Object.entries(rec.items).sort()) === JSON.stringify(Object.entries(items).sort()), 'recommended Traces are Skill, Ultimate, Talent and the bonus abilities');
+    ok(rec.credits <= all.credits && Object.entries(rec.items).every(([m, n]) => n <= (all.items[m] || 0)) && rec.exp === all.exp, 'the recommended cost is a part of the full cost, levels stay the same');
+    ok(H.GUIDE_REC_ABILITY.join() === 'skill,ult,talent', 'Basic ATK and stat nodes are left out');
+    ui.screens = []; ui.openIpg('index'); frame();
+    const gi = ui.top(); gi.cat = 0; frame();
+    const spyR = () => { const out = [], real = ui.text; ui.text = function (str, ...rest) { out.push(String(str)); return real.call(this, str, ...rest); }; frame(); delete ui.text; return out; };
+    ok(spyR().includes('Только рекомендуемые Следы'), 'the target block shows the recommended Traces switch');
+    key('KeyR'); frame();
+    ok(game.guideRecOnly() && JSON.stringify(game.targetCost(tk)) === JSON.stringify(rec), 'R switches to recommended Traces and the needs follow');
+    ok(ui.toasts.some(x => String(x.text).startsWith('Считаются только')), 'the switch explains the rule');
+    key('KeyR'); frame();
+    ok(!game.guideRecOnly(), 'R switches back');
+    ui.screens = keepScr; s.guide = keepGuide; if (!keepGuide) delete s.guide; s.inv.items = keepItems; frame();
+  }
+  {
+    const s = game.state, keepScr = ui.screens.slice(), keepGuide = JSON.parse(JSON.stringify(s.guide || null)), keepItems = JSON.parse(JSON.stringify(s.inv.items)), keepFlags = Object.assign({}, s.flags);
+    Object.assign(s.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true });
+    const hero = s.party.find(k => H.CALYX.some(c => c.reward === 'path' && c.path === H.CHARS[game.kitOf(k)].path && game.calyxOpen(c)));
+    ok(hero, 'a party hero has an open Path Calyx');
+    s.inv.items = { fuelv: 40 };
+    const kit = game.kitOf(hero), node = H.traceNodes(kit).map(n => game.traceNode(hero, n.id)).find(st => st && st.cost && Object.keys(st.cost.items).some(m => H.ITEMS[m].mat === 'path'));
+    ok(node, 'one of its Traces needs Path materials');
+    const other = Object.keys(s.roster).find(k => k !== hero && !s.roster[k].guest && H.TRACES[game.kitOf(k)]);
+    s.guide = { target: other };
+    ui.screens = []; ui.openChars(hero); frame();
+    const cs = ui.top();
+    cs.sec = 1; cs.trFocus = true; cs.trSel = node.node.id; frame();
+    ok(ui.traceShortQuick(hero, node.node.id), 'the node has a missing material that vouchers can bring');
+    key('KeyR'); frame();
+    const ask = ui.top();
+    ok(ask !== cs && !ask.quickFarm, 'R on Traces of a hero who is not the target asks first');
+    key('Enter'); frame();
+    ok(game.guideTarget() === hero && ui.top().quickFarm, '«Сделать целью» sets the target and opens Quick Farm');
+    key('Escape'); frame();
+    ok(ui.top() === cs, 'Esc returns to the Traces');
+    key('KeyR'); frame();
+    ok(ui.top().quickFarm, 'for the target R opens Quick Farm at once');
+    key('Escape'); frame();
+    s.guide.target = other;
+    key('KeyR'); frame(); key('ArrowRight'); frame(); key('Enter'); frame();
+    const qf = ui.top();
+    ok(qf.quickFarm && game.guideTarget() === other, '«Только получить» keeps the old target');
+    key('Enter'); frame();
+    ok(ui.top().quickResult && !ui.top().quickResult.stopped, 'and farms without stopping for a target');
+    ui.screens = [cs];
+    const noMat = H.traceNodes(kit).find(n => n.kind === 'tech');
+    cs.trSel = noMat.id; ui.toasts = [];
+    key('KeyR'); frame();
+    ok(ui.top() === cs && ui.toasts.some(t => String(t.text).includes('нечего получать')), 'a node without such materials explains why');
+    ui.screens = keepScr; s.guide = keepGuide; if (!keepGuide) delete s.guide; s.inv.items = keepItems;
+    Object.keys(s.flags).forEach(f => { if (!(f in keepFlags)) delete s.flags[f]; });
+    frame();
+  }
+  {
+    const s = game.state, keepScr = ui.screens.slice(), here = { map: game.map.id, x: game.player.x, y: game.player.y }, keepFlags = Object.assign({}, s.flags), keepFh = JSON.parse(JSON.stringify(s.fh || null)), near = ui.canSaveHere;
+    const cosmic = H.GUIDE_SECTIONS.findIndex(x => x.id === 'cosmic'), treasure = H.GUIDE_SECTIONS.findIndex(x => x.id === 'treasure');
+    delete s.flags.su_open; delete s.flags.fh_met;
+    ok(ui.guideLock(cosmic) && ui.guideLock(treasure), 'Cosmic Strife and Treasures Lightward wait for the Simulated Universe and the Forgotten Hall');
+    Object.assign(s.flags, { su_open: true, fh_met: true, express_intro: true });
+    ok(!ui.guideLock(cosmic) && !ui.guideLock(treasure), 'both open with their modes');
+    const worlds = game.guideCosmic();
+    ok(worlds.length === H.SU.WORLDS.length && worlds.every(r => r.rw && r.rw.jade > 0), 'Cosmic Strife lists every world with its reward');
+    const t = game.guideTreasure();
+    ok(t.total === 45 && t.tiers.length === 15 && t.shopLeft >= 1 && t.shopLeft <= 42 && t.echo <= t.echoMax, 'Treasures Lightward shows stars, tiers, the weekly Echo and the shop refresh');
+    const fs0 = game.guideSite('fh');
+    ok(fs0 && H.MAPS[fs0.map].marks[fs0.ch].obj === 'fhmirror', 'the Forgotten Hall entry is the mirror');
+    s.fh = null; game.fh().st[1] = { clear: true, stars: [true, true, true], best: 1 };
+    ok(game.alerts().guide_treasure && game.alerts().guide, 'unclaimed star rewards light the guide badge');
+    game.loadMap('express', 'v'); ui.canSaveHere = () => true;
+    ui.screens = []; ui.openIpg('treasure'); frame();
+    const gd = ui.top();
+    key('KeyF'); frame(); ok(!game.alerts().guide_treasure, 'F claims the star rewards');
+    key('KeyB'); frame(); ok(ui.top() !== gd && ui.top().fh, 'B opens the Forgotten Hall shop');
+    ui.screens = [gd]; key('Enter'); frame();
+    ok(game.map.id === fs0.map && ui.top() && ui.top().fh && ui.top().full, '«Перейти к испытанию» brings the team to the mirror and opens the hall');
+    ui.screens = []; ui.openIpg('cosmic'); frame();
+    const gc = ui.top();
+    key('ArrowDown'); frame(); eq(gc.wsel, 1, 'down picks the next world');
+    gc.wsel = 0; key('Enter'); frame();
+    const office = game.guideSite('su');
+    ok(game.map.id === office.map && (game.script || ui.screens.length), '«Перейти к испытанию» brings the team to the Simulated Universe machine');
+    game.script = null; game.pending = null;
+    ui.canSaveHere = near; s.flags = keepFlags; s.fh = keepFh; if (!keepFh) delete s.fh;
+    game.loadMap(here.map, null, { x: here.x, y: here.y });
+    ui.screens = keepScr; frame();
+  }
+  {
+    const s = game.state, keepScr = ui.screens.slice(), keepNow = game.now, keepDaily = JSON.parse(JSON.stringify(s.daily || null)), keepItems = JSON.parse(JSON.stringify(s.inv.items)), keep = { jade: s.jade, credits: s.credits, power: s.power, tl: JSON.parse(JSON.stringify(s.tl)) };
+    let clock = 1000 * 3600000 + 5;
+    game.now = () => clock;
+    delete s.daily;
+    const d1 = game.dailySync();
+    ok(d1.pick.slice(0, 3).join() === 'login,power,contact' && d1.pick.length >= 6 && new Set(d1.pick).size === d1.pick.length, 'each hour has the fixed tasks and three from the pool');
+    clock += 1800000;
+    ok(game.dailySync() === d1, 'the tasks stay the same within the hour');
+    ok(game.dailyTasks()[0].done, 'logging in is done at once');
+    clock += 1800000;
+    ok(game.dailySync() !== d1 && game.dailySync().pts === 0, 'a new real hour resets the training');
+    const d = game.dailySync();
+    d.pick = H.DAILY_TASKS.map(t => t.id);
+    s.inv.items = { dest1: 6, hotpot: 2 }; s.nextAtk = 0;
+    game.synth('dest1', 1); game.useItem('hotpot', s.party[0]);
+    ok(d.prog.synth === 1 && d.prog.item === 1, 'Synthesis and a consumable count');
+    s.inv.items.fuel = 1; game.useItem('fuel'); ok(d.prog.item === 1, 'fuel does not count as a consumable');
+    s.power = 180; game.calyxReward({ id: 'cx_exp', tier: 0, cost: 10 });
+    eq(d.prog.power, 10, 'spent Trailblaze Power counts');
+    game.startBattle({ enemies: ['reaver:10'], lvl: 10 });
+    const b = game.battle;
+    b.push({ t: 'kill', u: { side: 'enemy' } }); b.push({ t: 'kill', u: { side: 'ally' } }); b.push({ t: 'break', u: {} }); b.push({ t: 'leave', u: {} }); b.push({ t: 'fusion', id: 'x' });
+    ok(d.prog.kills === 1 && d.prog.breaks === 1 && d.prog.contact === 1 && d.prog.fusion === 1, 'battle events count kills, breaks, Contact and Fusions');
+    game.battle = null; game.battleCtx = null; game.events = game.events.filter(e => e.t !== 'battle' && e.t !== 'music');
+    ok(game.dailyClaimTask('synth') && d.pts === 100 && !game.dailyClaimTask('synth'), 'a done task gives its points once');
+    ok(!game.dailyClaimTask('kills'), 'an unfinished task gives nothing');
+    d.prog.su = 1; game.dailyClaimTask('su');
+    ok(d.pts === 500 && !game.dailyClaimTask('item'), 'activity stops at 500');
+    ok(game.dailyTasks().find(t => t.def.id === 'item').full, 'the other tasks say the activity is full');
+    for (const k of Object.keys(s.flags)) if (k.startsWith('first_')) delete s.flags[k];
+    const r0 = game.dailyReward(0);
+    ok(r0.exp === 200 && r0.jade === 10 && r0.credits === Math.round(12800 * H.TUNING.dtCredit), 'rewards follow the Equilibrium 0 table');
+    s.flags.first_a = s.flags.first_b = true;
+    eq(game.dailyReward(2).items.exp2, 8, 'a higher Equilibrium Level raises the rewards');
+    delete s.flags.first_a; delete s.flags.first_b;
+    ok(game.alerts().guide_daily && game.alerts().guide, 'ready rewards light the guide badge');
+    const j0 = s.jade;
+    ok(game.dailyClaimStep(0) && s.jade === j0 + 10 && !game.dailyClaimStep(0), 'a step pays once');
+    ui.screens = []; ui.openIpg('daily'); frame();
+    const gd = ui.top();
+    key('ArrowUp'); frame(); ok(gd.dfocus === 'steps' && gd.dstep === 1, 'up moves to the first unclaimed step');
+    key('Enter'); frame(); ok(game.dailySteps()[1].got, 'Enter claims the step');
+    key('KeyF'); frame(); ok(game.dailySteps().every(st => st.got), 'F claims everything that is ready');
+    key('ArrowDown'); frame(); eq(gd.dfocus, 'cards', 'down returns to the tasks');
+    delete s.daily; game.dailySync(); ui.screens = []; ui.openIpg('daily'); frame();
+    const gd2 = ui.top(); gd2.dcard = 0; key('Enter'); frame();
+    eq(game.dailySync().pts, 100, 'Enter on the login card takes its points');
+    game.now = keepNow; s.daily = keepDaily; if (!keepDaily) delete s.daily;
+    s.inv.items = keepItems; Object.assign(s, { jade: keep.jade, credits: keep.credits, power: keep.power, tl: keep.tl });
+    ui.screens = keepScr; frame();
+  }
+  {
     const keepScr = ui.screens, s0 = game.state, keep = { starlight: s0.starlight, embers: s0.embers, jade: s0.jade, shop: JSON.parse(JSON.stringify(s0.shop)), outfits: s0.outfits.slice(), pass: s0.inv.items.pass, credits: s0.credits };
     const texts = [], realText = ui.text;
     ui.text = function (str, ...rest) { texts.push(String(str)); return realText.call(this, str, ...rest); };
     ui.screens = []; ui.openMenu(); frame();
     ok(texts.includes('Снабжение') && !texts.includes('Управление'), 'the phone shows Supply where Controls was');
-    const ph = ui.top(); ph.rail = ph.railSel = 2; texts.length = 0; frame();
+    ok(texts.includes('Путеводитель') && texts.includes('Синтез') && !texts.includes('Сохранить') && !texts.includes('Загрузить'), 'the phone shows the Guide and Synthesis where Save and Load were');
+    const ph = ui.top(); ph.rail = ph.railSel = 4; texts.length = 0; frame();
     ok(texts.includes('Управление: клавиши поля, боя и карты'), 'Controls moved to the right rail under Settings');
     ph.key('ok'); frame();
     ok(ui.screens.length === 2, 'the rail opens Controls');
@@ -7444,7 +8446,7 @@ function trInfo(g) {
     ok(!intro.full && s0.shop.intro && s0.shop.back === null && texts.includes('За прошлые прыжки начислено:'), 'the first visit explains the currencies and the back pay');
     key('Enter'); frame();
     const sup = ui.top();
-    ok(sup.full && sup.sec === 0 && sup.tab === 0, 'Supply opens on the Starlight shop');
+    ok(sup.full && H.SUPPLY_SECTIONS[sup.sec] === 'shop' && sup.tab === 0, 'Supply opens on the Starlight shop');
     texts.length = 0; frame();
     ok(texts.includes('Неугасаемый звёздный свет') && texts.includes('Неугасаемый пепел') && texts.includes('Магазин обликов'), 'Supply shows both tabs and both sections');
     key('KeyE'); frame();
@@ -7465,17 +8467,25 @@ function trInfo(g) {
     s0.embers = 5; sup.sel = 2; key('Enter'); frame();
     ok(ui.top() === sup && ui.toasts.some(t => t.text === 'Не хватает неугасаемого пепла.'), 'a lot without enough currency is refused with a reason');
     key('Tab'); frame();
-    ok(sup.sec === 1, 'Tab opens the outfit shop');
+    ok(H.SUPPLY_SECTIONS[sup.sec] === 'fashion', 'Tab opens the outfit shop');
     texts.length = 0; frame();
     ok(texts.includes('Зарождение весны') && texts.includes('Витрина моды'), 'the showcase shows Nascent Spring');
     s0.outfits = []; delete s0.roster.march.outfit;
     key('Enter'); frame();
     const ob = ui.top();
     key('Enter'); frame();
-    ok(game.ownsOutfit('march_spring') && s0.jade === 3000 - 1680 && ob.done, 'the outfit is bought for Stellar Jade');
+    ok(game.ownsOutfit('march_spring') && s0.jade === 3000 - H.OUTFITS.march_spring.price && ob.done, 'the outfit is bought for Stellar Jade');
     key('Enter'); frame();
     ok(game.outfitOf('march') === 'march_spring' && ui.top() === sup, 'the outfit can be worn right after the purchase');
     ok(G.lookOf('march', game) === H.outfitLook('march_spring') && G.lookOf('march', null) === H.CHARS.march.look, 'the worn outfit replaces her look in the game');
+    {
+      const CS = H.Cine.stage(null, game, 0), keep = game.outfitOf('march');
+      game.wearOutfit('march', null);
+      const plain = CS.look('march');
+      game.wearOutfit('march', 'march_spring');
+      ok(plain === H.CHARS.march.look && CS.look('march') === H.outfitLook('march_spring') && H.Cine.stage(null, game, 0).look('march', { mouth: 'open' }).coat === 'frost', 'scenes see an outfit put on in the same session');
+      game.wearOutfit('march', keep);
+    }
     for (const oid of Object.keys(H.OUTFITS)) {
       const OL = H.outfitLook(oid);
       G.bustCanvas(OL, 64); G.bustCanvas(OL, 34); G.figureCanvas(OL); G.figureCanvas(OL, 2);
@@ -7509,7 +8519,7 @@ function trInfo(g) {
     key('ArrowRight'); key('Enter'); frame();
     ok(game.outfitOf('march') === 'march_spring', 'and Nascent Spring again');
     s0.outfits = []; key('Enter'); frame();
-    ok(ui.top().full && ui.top().sec === 1 && ui.top() !== cs, 'an outfit that is not owned leads to the Supply showcase');
+    ok(ui.top().full && H.SUPPLY_SECTIONS[ui.top().sec] === 'fashion' && ui.top() !== cs, 'an outfit that is not owned leads to the Supply showcase');
     key('Escape'); frame();
     ok(ui.top() === cs, 'leaving Supply returns to the character');
     key('Escape'); frame();
@@ -7522,9 +8532,9 @@ function trInfo(g) {
       s0.pets = []; s0.pet = null; s0.jade = 1300;
       ui.screens = []; ui.openSupply(); frame();
       const ps = ui.top();
-      key('Tab'); key('Tab'); frame();
+      key('Tab'); key('Tab'); key('Tab'); frame();
       texts.length = 0; frame();
-      ok(ps.sec === 2 && texts.includes('Питомцы') && texts.includes('Привычки') && texts.includes('Чомусуке') && texts.includes('Купить'), 'Supply has a Pets section with Chomusuke and her habits');
+      ok(H.SUPPLY_SECTIONS[ps.sec] === 'pets' && texts.includes('Питомцы') && texts.includes('Привычки') && texts.includes('Чомусуке') && texts.includes('Купить'), 'Supply has a Pets section with Chomusuke and her habits');
       for (const t of [0, 2, 4, 6, 8, 10, 12, 15]) { ui.t = t; frame(); }
       key('Enter'); frame();
       const pb = ui.top();
@@ -7540,7 +8550,7 @@ function trInfo(g) {
       key('Enter'); frame();
       ok(game.petOut() === 'chomusuke', 'and taken along again');
       key('Tab'); frame();
-      ok(ps.sec === 0, 'Tab from Pets returns to the shop');
+      ok(H.SUPPLY_SECTIONS[ps.sec] === 'pass', 'Tab from Pets wraps to Express Supply');
       for (const v of ['front', 'back', 'side']) for (const pose of ['sit', 'walk', 'groom', 'yawn', 'squint', 'happy', 'fly', 'hiss', 'sleep']) for (const f of [0, 1]) ok(H.petCanvas('chomusuke', v, pose, f), 'pet art ' + v + ' ' + pose + ' ' + f);
       const fake = { id: 'chomusuke', x: 3, y: 3, fx: 3, fy: 3, ox: 2, oy: 3, prog: 1, dir: 'down', still: 3, act: null, actT: 0.5, fly: false, say: 'Мрр.' };
       for (const act of [null, 'sleep', 'groom', 'yawn', 'sneeze', 'pet', 'love', 'hiss', 'wake', 'look']) { fake.act = act; ui.drawPetField(ui.ctx, fake, 100, 100); ui.drawPetSay(ui.ctx, fake, 100, 100); }
@@ -7548,6 +8558,66 @@ function trInfo(g) {
       fake.fly = false; for (const d of ['up', 'down', 'left', 'right']) { fake.dir = d; ui.drawPetField(ui.ctx, fake, 100, 100); }
       ok(H.petFrame(Object.assign({}, fake, { prog: 0.3, fly: true, ox: 2, x: 3 }), 0).pose === 'fly', 'a pet that falls behind flies');
       Object.assign(s0, keepPets);
+    }
+    {
+      const keepPass = { jade: s0.jade, credits: s0.credits, pass: s0.pass, contracts: s0.contracts, items: JSON.parse(JSON.stringify(s0.inv.items)) };
+      const orders = [], asked = [];
+      ui.opts.store = { buy: o => { asked.push(o); return 'open'; }, take: () => orders.splice(0) };
+      delete s0.pass; delete s0.contracts; s0.jade = 0;
+      ui.screens = []; ui.openSupply('pass'); frame();
+      const sp = ui.top(); texts.length = 0; frame();
+      ok(H.SUPPLY_SECTIONS[sp.sec] === 'pass' && texts.includes('Пропуск снабжения') && texts.includes('Купить: 4,99 US$') && texts.includes('Пропуск не активен'), 'Express Supply shows the pass offer');
+      ok(texts.includes('Снабжение экспресса') && texts.includes('Контракты'), 'Supply lists the two new sections');
+      key('Enter'); frame();
+      ok(asked.length === 1 && asked[0].sku === H.PASS.sku && asked[0].price === 4.99 && !game.passActive(), 'Enter asks Steam for the payment window and gives nothing yet');
+      orders.push({ id: 'TEST1', sku: H.PASS.sku });
+      ui.storeSync(); frame();
+      ok(game.passActive() && s0.jade === 390 && ui.top() !== sp, 'the paid order arrives with 300 jade and today\'s 90');
+      ui.storeSync();
+      ok(s0.jade === 390, 'an order is taken from Steam once');
+      key('Enter'); frame();
+      texts.length = 0; frame();
+      ok(ui.top() === sp && texts.includes('Обновить: 4,99 US$') && texts.includes('Сегодня награда уже получена') && texts.includes('Осталось 29 дн.'), 'the active pass counts the days left');
+      key('KeyR'); frame();
+      ok(ui.top() !== sp && H.PASS_RULES.every(r => !/[—–]|Microsoft|Windows/.test(r)), 'R opens the rules');
+      key('Escape'); frame();
+      const store = ui.opts.store; delete ui.opts.store;
+      key('Enter'); frame();
+      ok(ui.toasts.some(t => t.text.startsWith('В этом издании нет Steam')), 'without Steam the pass is not sold');
+      ui.opts.store = { buy: () => 'nosteam', take: () => [] };
+      key('Enter'); frame();
+      ok(ui.toasts.some(t => t.text.startsWith('Для оплаты нужен клиент Steam')), 'a system without the Steam client is sent to download it');
+      ui.opts.store = store;
+      s0.pass.last -= 1; ui.screens = []; ui.passT = 1; frame();
+      const daily = ui.top();
+      texts.length = 0; frame();
+      ok(daily && s0.jade === 480 && texts.includes('+90') && texts.includes('Осталось 29 дн.'), 'a new day pays 90 jade with a ticket popup');
+      key('Enter'); frame();
+      ok(!ui.screens.length && !game.passReady(), 'the day is paid once');
+      ui.screens = []; ui.openSupply('contracts'); frame();
+      const sc = ui.top(); texts.length = 0; frame();
+      ok(texts.includes('Контракты Герты') && texts.filter(t => t.startsWith('Доступно: ')).length === 7 && texts.some(t => t.startsWith('Великая Герта')), 'Contracts shows the seven Herta contracts');
+      s0.jade = 3000; sc.csel = 0; key('Enter'); frame();
+      const cb = ui.top();
+      ok(cb !== sc && cb.picks.length === 0, 'Enter opens the contract window');
+      key('ArrowDown'); key('Enter'); frame();
+      ok(ui.top() === cb && ui.toasts.some(t => t.text === 'Выберите ещё 3.'), 'the purchase waits for three picks');
+      key('ArrowUp'); key('Enter'); key('ArrowRight'); key('ArrowRight'); key('Enter'); key('ArrowRight'); key('Enter'); frame();
+      ok(cb.picks.join() === '0,2,3' && cb.sel === H.CONTRACTS[0].from.length, 'three picks move the cursor to the buy button');
+      const sp0 = s0.inv.items.spass || 0, r0 = s0.inv.items.resin || 0;
+      key('Enter'); frame();
+      ok(ui.top() === sc && s0.jade === 320 && s0.inv.items.spass === sp0 + 10 && s0.inv.items.resin === r0 + 2 && s0.inv.items.tears >= 480, 'Strategic Cooperation pays out the passes and the three picks');
+      sc.csel = 2; s0.jade = 900; key('Enter'); frame(); key('Enter'); frame();
+      ok(ui.top() === sc && game.contractView('c_aid').block === 'limit', 'Trailblaze Aid is bought without picks');
+      key('Enter'); frame();
+      ok(ui.top() === sc && ui.toasts.some(t => t.text === 'Этот контракт продаётся только один раз.'), 'a sold-out contract says why');
+      for (const look of Object.keys(H.CONTRACT_LOOKS)) ok(H.contractChestCanvas(look), 'contract chest ' + look);
+      ok(H.CONTRACTS.every(c => H.CONTRACT_LOOKS[c.look]), 'every contract has a chest');
+      delete ui.opts.store;
+      Object.assign(s0, { jade: keepPass.jade, credits: keepPass.credits });
+      s0.inv.items = keepPass.items;
+      if (keepPass.pass) s0.pass = keepPass.pass; else delete s0.pass;
+      if (keepPass.contracts) s0.contracts = keepPass.contracts; else delete s0.contracts;
     }
     texts.length = 0;
     ui.resultTag(10, 10, { kind: 'cone', rar: 3, sup: 1, glow: { cur: 'embers', n: 20 } }, []);
@@ -7871,12 +8941,45 @@ function trInfo(g) {
       for (const std of [false, true]) for (let t = 0; t < WI.length(id) + 1.5; t += 0.1) WI.render(game, { id, rar, kind: 'char' }, t, std);
     }
     game.state.gender = gender0;
+    for (const [oid, set] of Object.entries(H.OUTFIT_CUTS)) {
+      if (!set.warp) continue;
+      const o = H.OUTFITS[oid], sh = set.warp, id = o.char, rar = H.CHARS[id].rarity;
+      ok(pulled.has(id) && (rar === 5 ? sh.d >= 3.8 && sh.d <= 4.6 : sh.d >= 2.8 && sh.d <= 3.6) && typeof sh.act === 'function' && typeof sh.finale === 'function', 'the outfit Warp intro of ' + oid + ' fits the rarity of ' + id);
+      ok(sh.line && !/[—–{}]/.test(sh.line) && sh.line.length <= 58 && sh.sfx.every(([x, n], i) => x >= 0 && x <= sh.d && SFX.has(n) && (!i || sh.sfx[i - 1][0] <= x)), 'the outfit Warp line and sounds of ' + oid + ' fit');
+      eq(WI.length(id, game, oid), WI.SIGN + sh.d, 'the outfit Warp intro of ' + oid + ' keeps the Path sign');
+      eq(WI.line(id, game, oid), sh.line, 'the outfit Warp line of ' + oid + ' is used');
+      for (const std of [false, true]) for (let t = 0; t < WI.length(id, game, oid) + 0.5; t += 0.1) WI.render(game, { id, rar, kind: 'char', outfit: oid }, t, std);
+      const s0 = game.state, had = s0.roster[id], owned = s0.outfits.slice();
+      s0.roster[id] = had || { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+      const keepOut = s0.roster[id].outfit;
+      if (!s0.outfits.includes(oid)) s0.outfits.push(oid);
+      game.wearOutfit(id, oid);
+      ok(WI.showOf({ id }, game) === sh && WI.line(id, game) === sh.line && WI.cues({ id, rar }, game).some(([x, n]) => n === sh.sfx[0][1] && Math.abs(x - WI.SIGN - sh.sfx[0][0]) < 1e-9), 'a pulled hero in ' + oid + ' gets the outfit Warp intro');
+      const fin = sh.finale, ctx = G.mkCanvas(320, 240).getContext('2d');
+      let calls = 0;
+      sh.finale = (...a) => { calls++; return fin(...a); };
+      const r = { rar, kind: 'char', id, name: H.CHARS[id].name, res: 'eid' };
+      new H.SpotlightShow(ui, [r], { ban: 'con' }).cutShot(ctx, r, 1, 1);
+      ok(calls === 1, 'a repeat on the Con-Ton banner shows the outfit pose of ' + oid + ' in its only shot');
+      const rn = Object.assign({}, r, { res: 'new' }), sn = new H.SpotlightShow(ui, [rn], { ban: 'con' });
+      sn.cutShot(ctx, rn, 1, 1);
+      ok(calls === 1, 'the Con-Ton show keeps its own first shots for ' + oid);
+      sn.cutShot(ctx, rn, 6.2, 6.2);
+      ok(calls === 2, 'the Con-Ton show ends on the outfit pose of ' + oid);
+      new H.ExplosionShow(ui, [r], { ban: 'guild' }).cutShot(ctx, r, 9, 9);
+      ok(calls === 3, 'the guild show ends on the outfit pose of ' + oid);
+      sh.finale = fin;
+      game.wearOutfit(id, null);
+      ok(WI.showOf({ id }, game) === WI.SHOWS[id], 'the usual outfit keeps the usual Warp intro of ' + id);
+      if (had) { if (keepOut) s0.roster[id].outfit = keepOut; } else delete s0.roster[id];
+      s0.outfits = owned;
+    }
     for (const p of Object.keys(H.PATHS)) {
       const fx = WI.PATH_FX[p];
       ok(fx && fx.hue && fx.flash && SFX.has(fx.sfx) && typeof fx.bg === 'function' && typeof fx.out === 'function', 'every Path has its sign: ' + p);
       ok(WI.shapes(p).length > 0 && WI.shapes(p).every(s => s.len > 0), 'the Path emblem of ' + p + ' can be traced');
       const id = Object.keys(H.CHARS).find(k => H.CHARS[k].path === p);
-      for (const rar of [4, 5]) for (let t = 0; t < WI.SIGN; t += 0.05) WI.render(game, { id, rar, kind: 'char' }, t, false);
+      if (id) for (const rar of [4, 5]) for (let t = 0; t < WI.SIGN; t += 0.05) WI.render(game, { id, rar, kind: 'char' }, t, false);
     }
     const fake = (rar, kind, id, res) => ({ rar, kind, id, name: kind === 'char' ? H.CHARS[id].name : H.CONES[id].name, res });
     const sounds = [], said = [], sfx0 = ui.sfx, text0 = ui.text;
@@ -8194,6 +9297,89 @@ function trInfo(g) {
       ok(pb.aoaN === 1, 'the prompt runs the All-Out Attack');
       game.battle = null; ui.mode = 'field'; ui.bt = null; game.state.party = party0;
     }
+  {
+    const party0 = game.state.party.slice(), seen0 = game.state.flags.seen_elation;
+    game.state.roster.kazuma = game.state.roster.kazuma || { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    game.state.party = ['kazuma', 'march', 'danheng', 'himeko'].filter(k => game.state.roster[k]);
+    delete game.state.flags.seen_elation;
+    game.startBattle({ enemies: ['reaver:20', 'eliminator:20', 'flamespawn:20'], lvl: 20, bg: 'snow', music: 'battle' });
+    ui.drainGameEvents(); ui.bt.auto = false;
+    const eb = game.battle;
+    for (const e of eb.enemies) e.hp = e.maxHp = e.dHp = 1e8;
+    for (let i = 0; i < 40 && !ui.bt.elHelp; i++) frame(1, 0.1);
+    ok(ui.bt.elHelp && ui.bt.elHelp.page === 0, 'the first Aha opens the Path of Elation card');
+    const q0 = ui.bt.queue.length;
+    frame(10, 0.1);
+    ok(ui.bt.queue.length === q0 && ui.bt.elHelp, 'the battle waits while the card is open');
+    ui.battleKey('ok', 'Enter'); frame();
+    ui.battleKey('ok', 'Enter'); frame();
+    eq(ui.bt.elHelp.page, 2, 'the card has three pages');
+    ui.battleKey('ok', 'Enter'); frame();
+    ok(!ui.bt.elHelp && game.state.flags.seen_elation, 'the last page closes the card and remembers it');
+    const idle = () => eb.phase === 'input' && !ui.bt.queue.length && !ui.bt.cur, pump = () => { for (let i = 0; i < 900 && !idle() && !eb.over; i++) { ui.update(0.1); if (i % 4 === 0) ui.render(); } };
+    pump(); frame();
+    ok(ui.turnOrder(7).some(o => o.u.aha), 'Aha is on the turn order rail');
+    eb.drain();
+    eb.gainPunch(18);
+    eb.ahaTurn(eb.ahaUnit());
+    ui.pullEvents();
+    let sawFx = false, sawCard = false, sawRainbow = false;
+    for (let i = 0; i < 200 && (ui.bt.queue.length || ui.bt.cur); i++) {
+      ui.update(0.05); ui.render();
+      const E = ui.bt.el;
+      if (E && E.fx) sawFx = true;
+      if (E && E.card) sawCard = E.card.total > 0;
+      if (ui.bt.floats.some(f => f.rainbow)) sawRainbow = true;
+    }
+    ok(sawFx && sawCard && sawRainbow, 'the Aha Instant plays its scene, rainbow numbers and the damage card');
+    ok(ui.bt.el.banger.get(eb.allies[0]) === eb.bangerOf(eb.allies[0]), 'the portrait shows the current Certified Banger');
+    ui.bt.elHelp = { page: 0 }; frame();
+    ui.battleKey('back', 'Escape'); frame();
+    ok(!ui.bt.elHelp, 'Esc closes the card');
+    game.battle = null; ui.mode = 'field'; ui.bt = null; game.state.party = party0;
+    if (seen0) game.state.flags.seen_elation = seen0;
+  }
+  {
+    const EC = H.ELATION_CUTS;
+    ok(EC.kazuma && EC.laugh && EC.kazuma.d >= 1 && EC.kazuma.d <= 2 && /Камень, ножницы, бумага/.test(EC.kazuma.line) && !/[—–]/.test(EC.kazuma.line + EC.laugh.line), 'the Aha Instant has cut-ins for Kazuma and for Let There Be Laughter');
+    for (const id of Object.keys(EC)) {
+      const sh = new H.ElationShow(ui, id, { punch: 20, total: 999 });
+      let n = 0;
+      while (!sh.done && n++ < 200) { sh.tick(0.05); sh.draw(ui.ctx); }
+      ok(sh.done && n < 200, 'the ' + id + ' cut-in plays to the end');
+    }
+    const party0 = game.state.party.slice();
+    game.state.roster.kazuma = game.state.roster.kazuma || { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    game.state.party = ['kazuma', 'march'].filter(k => game.state.roster[k]);
+    game.state.flags.seen_elation = true;
+    const cine0 = ui.options.ultCine;
+    ui.options.ultCine = 'on';
+    game.startBattle({ enemies: ['reaver:20', 'reaver:20'], lvl: 20, bg: 'snow', music: 'battle' });
+    ui.drainGameEvents(); ui.bt.auto = false;
+    const cb = game.battle;
+    for (const e of cb.enemies) e.hp = e.maxHp = e.dHp = 1e8;
+    for (let i = 0; i < 200 && (ui.bt.queue.length || ui.bt.cur || ui.bt.ult); i++) ui.update(0.1);
+    cb.drain(); cb.gainPunch(10); cb.ahaTurn(cb.ahaUnit()); ui.pullEvents();
+    let cut = null;
+    for (let i = 0; i < 300 && (ui.bt.queue.length || ui.bt.cur || ui.bt.ult); i++) { ui.update(0.05); ui.render(); if (ui.bt.ult instanceof H.ElationShow) cut = ui.bt.ult.id; }
+    eq(cut, 'kazuma', 'Kazuma\'s cut-in plays during the Aha Instant');
+    game.battle = null; ui.mode = 'field'; ui.bt = null; game.state.party = party0; ui.options.ultCine = cine0;
+    ui.screens = [];
+    ui.debugState = null;
+    ui.openDebug();
+    const dst = ui.debugState;
+    ui.top().setTab(4); dst.sc.kind = 2; frame();
+    const form = ui.debugForm(dst);
+    ok(form.rows.length === 3 && form.acts.length === 2 && form.rows[0].value === 'Миг Ахи', 'the F8 scenes tab has the «Миг Ахи» mode with a cut-in and a Punchline row');
+    form.rows[1].step(1); frame();
+    eq(dst.aha.i, 1, 'the tab picks the next cut-in');
+    const scr = ui.openDebugAha(dst, true);
+    let m = 0;
+    while (scr.show && m++ < 400) { scr.tick(0.05); scr.draw(ui.ctx); }
+    ok(!scr.show && m < 400 && dst.aha.i === 2, '«Все подряд» plays the remaining cut-ins up to the whole Aha Instant');
+    scr.key('back', 'Escape');
+    ui.screens = [];
+  }
   {
     const HA = H.HARES, party0 = game.state.party.slice(), seen = [], apply = ui.applyEvent, T = H.TUNING;
     try {
@@ -8601,6 +9787,214 @@ function trInfo(g) {
   }
   ui.openRumors('sampo_belobog', noop); frame(); ui.screens = [];
   ui.openCalyx(noop); frame(); ui.screens = [];
+  {
+    const g = ui.game, s = g.state, T = H.TUNING, keep = { power: s.power, res: s.powerRes, jade: s.jade, at: s.powerAt, buy: JSON.parse(JSON.stringify(s.powerBuy)) };
+    g.powerSync(); s.power = 100; s.powerRes = 400; s.jade = 500; s.powerBuy = { hour: null, n: 0 };
+    ui.openCalyx(noop); frame();
+    key('KeyP'); frame();
+    const pw = ui.top();
+    ok(pw && pw.amt && pw.sel === 0 && pw.amt[0] === 400, 'P on the Simulator opens the exchange with the reserve picked');
+    key('ArrowLeft'); frame();
+    eq(pw.amt[0], 340, 'arrows change the amount by 60');
+    key('Enter'); frame();
+    ok(s.power === 440 && s.powerRes === 60, 'Enter moves the reserve into power');
+    key('ArrowDown'); key('ArrowDown'); frame();
+    key('Tab'); frame();
+    ok(pw.sel === 2 && pw.amt[2] === 6, 'Tab picks as many jade refills as the jade pays for');
+    key('Enter'); frame();
+    ok(s.power === 800 && s.jade === 50, 'the jade refills are bought');
+    key('Escape'); frame();
+    ok(ui.top() !== pw, 'Esc closes the exchange');
+    ui.screens = [];
+    s.power = 0; s.powerRes = 0;
+    ui.openCalyx(noop); frame(); key('Enter'); frame();
+    ok(ui.top() && ui.top().domain === g.calyxList().find(x => x.open).c.id, 'Enter on the Simulator list opens the domain window');
+    key('Enter'); frame();
+    ok(ui.top() && ui.top().amt, 'starting a Calyx without power offers the exchange');
+    ui.screens = [];
+    s.power = 5; s.powerRes = 400; g.setPowerAuto(false);
+    ui.openDomain('cx_exp', noop); frame(); key('Enter'); frame();
+    ok(ui.top().amt && ui.top().amt[0] === 5, 'the exchange offers exactly the missing power from the reserve');
+    ui.screens = [];
+    g.setPowerAuto(true);
+    s.power = 600; s.powerRes = 0;
+    const keepPref = JSON.parse(JSON.stringify((s.guide || {}).runs || {}));
+    ui.openCalyx(noop); frame(); key('Enter'); frame();
+    const dw = ui.top();
+    key('Escape'); frame();
+    ok(ui.top() && !ui.top().domain && ui.top().lsc, 'Esc in the domain window returns to the Simulator list');
+    ui.screens = [];
+    ui.openDomain('cx_exp', noop); frame();
+    const dm = ui.top();
+    ok(dm.domain === 'cx_exp' && dm.n === 1 && dm.tier === 0, 'the domain window starts at one try on the first difficulty');
+    const spyD = () => { const out = [], real = ui.text; ui.text = function (str, ...rest) { out.push(String(str)); return real.call(this, str, ...rest); }; frame(); delete ui.text; return out; };
+    let texts = spyD();
+    ok(['Возможные противники', 'Можно получить', 'Быстрое восстановление энергии Освоения', 'Количество испытаний: 1', 'Начать испытание', 'Описание'].every(t => texts.includes(t)), 'the domain window shows enemies, drops, the toggle, the count and the start button');
+    key('ArrowRight'); key('ArrowRight'); frame();
+    eq(dm.n, 3, 'arrows change the count');
+    key('End'); frame();
+    eq(dm.n, 24, 'End jumps to 24 waves');
+    key('Home'); frame();
+    eq(dm.n, 1, 'Home goes back to one');
+    key('KeyT'); frame();
+    ok(!g.powerAuto(), 'T switches quick power recovery off');
+    key('KeyT'); frame();
+    ok(g.powerAuto(), 'and on again');
+    key('ArrowRight'); key('ArrowRight'); key('ArrowRight'); frame();
+    key('Enter'); frame();
+    ok(g.battle && g.battle.waves.length === 4 && !ui.screens.length && g.domainPref('cx_exp').n === 4, 'Enter starts four waves in one battle and remembers the count');
+    g.battle = null; g.battleCtx = null; ui.mode = 'field'; g.events.length = 0;
+    ui.openDomain('cx_exp', noop); frame();
+    eq(ui.top().n, 4, 'the next visit starts at the remembered count');
+    ui.screens = [];
+    ui.openDomain('cx_echo_doom', noop); frame();
+    texts = spyD();
+    ok(texts.some(t => t.startsWith('Награды Эха войны в этот час')) && !texts.includes('Быстрое восстановление энергии Освоения') && ui.top().max() === 1, 'an Echo window shows its reward count and no slider');
+    ui.screens = [];
+    ui.openDomain('cx_fist', noop); frame();
+    texts = spyD();
+    ok(texts.includes('Без быстрого получения'), 'a Cavern has no quick farm');
+    key('KeyQ'); frame();
+    ok(ui.toasts.some(t => String(t.text || t).includes('не принимают')), 'Q on a Cavern explains why');
+    ui.screens = [];
+    {
+      const keepFl = Object.assign({}, s.flags), keepRel = s.inv.relics.length;
+      Object.assign(s.flags, { fled: true, mine_done: true });
+      const settle = () => { ui.bt.queue.length = 0; ui.bt.cur = null; ui.bt.intro = 0; ui.bt.ult = null; };
+      const finish = (win, wave) => { const b = g.battle; if (wave != null) b.wave = wave; b.finish(win); settle(); ui.updateBattle(0.016); frame(); return ui.bt.result; };
+      s.power = 600; s.powerRes = 0;
+      ui.openDomain('cx_exp', noop); frame();
+      ui.top().n = 3; key('Enter'); frame(); settle();
+      ok(ui.mode === 'battle' && g.battle.waves.length === 3, 'a three-wave Calyx opens the battle screen');
+      let tx = spyD();
+      ok(tx.includes('Волна 1 / 3'), 'the battle shows the wave counter');
+      const lostOut = finish(false, 1);
+      tx = spyD();
+      ok(lostOut.lost && tx.includes('Пройдено волн: 1 из 3, награда за них получена.'), 'the defeat window tells how many waves paid out');
+      g.giveUpBattle(); ui.bt.result = null; ui.mode = 'field';
+      s.power = 600;
+      ui.openDomain('cx_exp', noop); frame();
+      ui.top().n = 2; key('Enter'); frame(); settle();
+      const w2 = finish(true);
+      tx = spyD();
+      ok(w2.waves.done === 2 && tx.includes('Пройдено волн: 2 из 2 · Чашелист (золотой)') && tx.includes('Добыча') && tx.includes('Ещё раз'), 'a won run shows waves, loot and the repeat button');
+      key('KeyR'); frame(); settle();
+      ok(g.battle && g.battle.waves.length === 2 && !ui.bt.result && s.power === 580, 'R repeats the same run right away');
+      finish(true);
+      key('Enter'); frame();
+      ok(ui.mode === 'field' && !g.battle, 'Enter after the win returns to the field');
+      s.power = 600;
+      ui.openDomain('cx_spike', noop); frame();
+      ui.top().n = 3; key('Enter'); frame(); settle();
+      tx = spyD();
+      ok(g.calyxRun && g.calyxRun.n === 3 && tx.includes('Испытание 1 / 3'), 'a Shadow series shows which battle runs');
+      const r1 = finish(true);
+      tx = spyD();
+      ok(r1.series.more && tx.includes('Испытание 1 из 3 · Застойная тень') && tx.some(t => t.startsWith('Следующее испытание через')) && tx.includes('Завершить'), 'a series win counts down to the next battle');
+      key('Enter'); frame(); settle();
+      ok(g.battle && g.calyxRun.k === 2 && !ui.bt.result, 'Enter starts the next battle at once');
+      finish(true);
+      ui.updateBattle(3.5); frame(); settle();
+      ok(g.battle && g.calyxRun.k === 3, 'the countdown starts the next battle by itself');
+      const r3 = finish(true);
+      tx = spyD();
+      ok(!r3.series.more && r3.series.wins === 3 && tx.includes('Итоги серии') && tx.includes('Побед в серии: 3 из 3 · Застойная тень') && tx.includes('Добыча за серию') && s.power === 510, 'the last win shows the series total');
+      ok(r3.series.total.relics.length >= 6, 'the total lists every relic of the series');
+      key('Enter'); frame();
+      ok(ui.mode === 'field', 'and closes into the field');
+      ui.openDomain('cx_spike', noop); frame();
+      ui.top().n = 3; key('Enter'); frame(); settle();
+      finish(true);
+      key('Escape'); frame();
+      tx = spyD();
+      ok(ui.bt.result && !ui.bt.result.series.more && tx.includes('Итоги серии') && !g.calyxRun, 'Esc between battles ends the series with its total');
+      key('Enter'); frame();
+      s.power = 30; s.powerRes = 0;
+      ui.openDomain('cx_spike', noop); frame();
+      ui.top().n = 1; key('Enter'); frame(); settle();
+      finish(true);
+      key('KeyR'); frame();
+      ok(!g.battle && ui.bt.result && ui.toasts.some(t => String(t.text).includes('для повтора')), 'a repeat without power stays on the result and says why');
+      key('Enter'); frame();
+      Object.keys(s.flags).forEach(f => { if (!(f in keepFl)) delete s.flags[f]; });
+      Object.assign(s.flags, keepFl);
+      s.inv.relics.length = keepRel;
+    }
+    {
+      const keepFl = Object.assign({}, s.flags), keepItems = JSON.parse(JSON.stringify(s.inv.items)), keepGuide = JSON.parse(JSON.stringify(s.guide || {}));
+      Object.assign(s.flags, { fled: true, mine_done: true });
+      s.power = 600; s.powerRes = 0; s.inv.items.fuelv = 25;
+      ui.screens = [];
+      ui.openDomain('cx_exp', noop); frame();
+      key('KeyQ'); frame();
+      const qf = ui.top();
+      ok(qf.quickFarm === 'cx_exp' && qf.n === 1, 'Q in the domain window opens Quick Farm at one try');
+      let tq = spyD();
+      ok(tq.includes('Быстрое получение') && tq.includes('Попыток получения: 1') && tq.includes('Расход:') && tq.some(t => t.includes('Бутон воспоминаний • Сложность I')), 'Quick Farm asks about the domain and difficulty and shows the cost');
+      key('KeyM'); frame();
+      eq(qf.n, 10, 'M sets the maximum of ten tries');
+      key('ArrowLeft'); frame();
+      eq(qf.n, 9, 'arrows step the tries');
+      s.inv.items.fuelv = 4; frame();
+      ok(qf.state().n === 4, 'the slider never goes past the vouchers');
+      s.inv.items.fuelv = 25; qf.n = 3;
+      const pw = s.power;
+      key('Enter'); frame();
+      const qr = ui.top();
+      tq = spyD();
+      ok(qr.quickResult && qr.quickResult.runs === 3 && s.power === pw - 30 && s.inv.items.fuelv === 22 && tq.includes('Получено') && tq.includes('Готово'), 'Enter spends 30 power and three vouchers and shows what came');
+      key('Enter'); frame();
+      ok(ui.top() && ui.top().domain === 'cx_exp', 'Готово returns to the domain window');
+      s.power = 15;
+      key('KeyQ'); frame();
+      ui.top().n = 3; frame();
+      tq = spyD();
+      ok(tq.includes('+  Пополнить'), 'without power the button offers a refill');
+      key('Enter'); frame();
+      ok(ui.top().amt && ui.top().amt[0] === Math.min(s.powerRes, 15), 'the refill window opens with the missing power');
+      key('Escape'); frame(); key('Escape'); frame();
+      s.power = 600; s.inv.items.fuelv = 0;
+      key('KeyQ'); frame();
+      tq = spyD();
+      ok(tq.includes('Нет купонов'), 'without vouchers the button says so');
+      key('Enter'); frame();
+      ok(ui.top().quickFarm && ui.toasts.some(t => String(t.text).includes('Не хватает Топливных купонов')), 'and refuses to start');
+      ui.screens = [];
+      ui.openDomain('cx_spike', noop); frame();
+      s.inv.items.fuelv = 9;
+      key('KeyQ'); frame();
+      eq(ui.top().state().fuel, 3, 'a Shadow try takes three vouchers');
+      key('KeyM'); frame();
+      eq(ui.top().n, 3, 'nine vouchers make three Shadow tries');
+      ui.screens = [];
+      s.inv.items.fuelv = 50;
+      const tgt = game.state.party[0], kit = game.kitOf(tgt), path = H.CHARS[kit].path, pc = H.CALYX.find(x => x.reward === 'path' && x.path === path && game.calyxOpen(x));
+      if (pc) {
+        game.setGuideTarget(tgt);
+        const needs = game.targetRowNeeds(pc.id);
+        if (needs.length) {
+          for (const n of needs) s.inv.items[n.id] = H.ITEMS[n.id].tier === 1 ? n.need - 1 : n.need;
+          ui.openQuickFarm(pc.id, 0); frame();
+          tq = spyD();
+          ok(tq.includes('Остановится, когда материалов для цели развития хватит.'), 'Quick Farm warns that it stops for the build target');
+          ui.top().n = 10; key('Enter'); frame();
+          const st = ui.top();
+          tq = spyD();
+          ok(st.quickResult.stopped === 'target' && tq.includes('Материалы для цели собраны') && tq.includes('Продолжить'), 'a target stop asks whether to go on');
+          const runs = st.quickResult.runs;
+          key('Enter'); frame();
+          ok(st.quickResult.runs === 10 && !st.quickResult.stopped && runs < 10, 'Продолжить runs the tries that were left');
+          ui.screens = [];
+        }
+      }
+      ui.screens = [];
+      Object.keys(s.flags).forEach(f => { if (!(f in keepFl)) delete s.flags[f]; });
+      s.inv.items = keepItems; s.guide = keepGuide;
+    }
+    s.guide.runs = keepPref;
+    ui.screens = [];
+    Object.assign(s, { power: keep.power, powerRes: keep.res, jade: keep.jade, powerAt: keep.at, powerBuy: keep.buy });
+  }
   ui.openBank(null); for (let t = 0; t < 4; t++) { key('ArrowRight'); frame(); } ui.screens = [];
   ui.openSaves('save'); frame(); key('Enter'); frame();
   ok(store.has('hsr98.save.1'), 'save written to a memory card block');
@@ -8610,7 +10004,7 @@ function trInfo(g) {
     const st = ui.top();
     eq(ui.options.res, '640', 'the render starts at the original 640×480');
     ok(ui.canvas.width === 640 && ui.canvas.height === 480, 'the default render buffer is 640×480');
-    for (let i = 0; i < 6; i++) key('ArrowDown');
+    for (let i = 0; i < 7; i++) key('ArrowDown');
     key('ArrowRight'); frame();
     ok(ui.options.res === '800' && ui.canvas.width === 800 && ui.canvas.height === 600, 'the 800 preset renders into an 800×600 buffer');
     key('ArrowRight'); key('ArrowRight'); frame();
@@ -8643,7 +10037,7 @@ function trInfo(g) {
     const st2 = ui.top();
     clickAll(phoneHits); frame();
     ok(ui.screens.length === 2 && ui.top() === st2, 'clicks on the phone under Settings do not stack more windows');
-    ui.options.res = '640'; ui.applyRes(); ui.screens = [];
+    Object.assign(ui.options, { res: '640', ultCine: 'on', fusionCine: 'on', skinCine: 'first' }); ui.applyRes(); ui.screens = [];
   }
   ui.openGuide(); frame(); ui.screens = [];
   {
@@ -8679,7 +10073,7 @@ function trInfo(g) {
     ok(!ui.screens.includes(cr) && cr.done, 'KonoSuba: two presses skip the credits');
   }
   {
-    game.state.comet = { days: 0, last: null, got: [] }; game.state.will = [];
+    game.state.comet = { start: null, done: null, got: [] }; game.state.will = [];
     ui.openEvents('comet'); frame();
     const evs = ui.top(), sp = game.state.inv.items.spass || 0;
     key('Enter'); frame();
@@ -8691,7 +10085,14 @@ function trInfo(g) {
     key('KeyF'); frame();
     ok(game.state.inv.items.pass === p0 + 30 && game.state.will.length === 3, 'F claims every reached level (30)');
     for (let i = 0; i < 5; i++) { key('ArrowRight'); frame(); }
-    eq(evs.pick, 3, 'the cursor stops at the last station');
+    eq(evs.pick, 5, "the cursor crosses to the second page of Trailblazer's Will");
+    for (let i = 0; i < 5; i++) { key('ArrowRight'); frame(); }
+    eq(evs.pick, 7, 'the cursor stops at the last station, level 70');
+    key('Enter'); frame(); ok(!game.state.will.includes(70) && !game.ownsOutfit('trail_trashlord'), 'level 70 stays closed at level 30');
+    key('PageUp'); frame(); eq(evs.pick, 0, 'PgUp turns back to the first page');
+    key('PageDown'); frame(); eq(evs.pick, 4, 'PgDn opens the second page');
+    key('PageUp'); frame();
+    for (let i = 0; i < 3; i++) { key('ArrowRight'); frame(); }
     key('Enter'); frame(); ok(!game.state.will.includes(35), 'level 35 stays closed at level 30');
     key('KeyQ'); frame(); eq(evs.ev().id, 'comet', 'Q switches back');
     game.state.comet.got = [true, true, true, true, true, true, true]; frame();
@@ -8759,6 +10160,52 @@ function trInfo(g) {
     ui.screens = [];
   }
   {
+    const s = game.state, keep = s.inv.cones, k = ui.rosterKeys()[0], keepCone = s.roster[k].cone, path = H.CHARS[game.kitOf(k)].path;
+    const ids = Object.keys(H.CONES), id = ids.find(x => H.CONES[x].path === path), absent = ids.find(x => x !== id);
+    const texts = [], realText = ui.text;
+    ui.text = function (str, ...rest) { texts.push(String(str)); return realText.call(this, str, ...rest); };
+    s.inv.cones = [{ uid: 'probe_v', id, sup: 2 }];
+    ui.screens = []; ui.openInventory(4); frame();
+    key('KeyV'); frame();
+    const view = ui.top();
+    ok(view.view === 2 && texts.includes('Световой конус') && texts.includes('у вас S2'), 'V in the inventory opens the cone view on the owned superimposition');
+    for (let i = 0; i < 4; i++) key('ArrowRight');
+    frame();
+    eq(view.view, 5, 'the cone view stops at S5');
+    key('ArrowLeft'); frame();
+    eq(view.view, 4, 'left steps the previewed superimposition back');
+    key('Tab'); frame();
+    ok(view.art, 'Tab shows the whole art');
+    key('Escape'); frame();
+    ok(!view.art && ui.top() === view, 'Esc leaves the whole art first');
+    key('Escape'); frame();
+    ok(ui.top() !== view, 'Esc closes the cone view');
+    s.roster[k].cone = 'probe_v';
+    texts.length = 0; ui.openConeView(id, 'probe_v'); frame();
+    ok(texts.some(t => t.startsWith('Надет: ')) && texts.includes('на ур. ' + s.roster[k].lvl + ' владельца'), 'the cone view shows the holder and the stats at the holder level');
+    texts.length = 0; ui.screens = []; ui.openConeView(absent); frame();
+    ok(texts.includes('нет в наличии'), 'the cone view says when the player has no copy');
+    H.CONES.__probe = { name: 'Проба', path, rarity: 4, ref: 1, stats: { hp: 40, atk: 20, def: 15 }, skill: 'Пробный приём', tpl: 'Урон +#1%.', p: [[0.1], [0.12], [0.14], [0.16], [0.2]], bonus: {}, fx: '__probe', desc: Array.from({ length: 30 }, (_, i) => 'Строка истории номер ' + i + ', длинная, чтобы перенестись.').join('\n') };
+    H.coneInit({ __probe: H.CONES.__probe });
+    texts.length = 0; ui.screens = []; ui.openConeView('__probe'); frame();
+    const pv = ui.top();
+    ok(texts.includes('Пробный приём') && texts.includes('История') && texts.includes('10%'), 'the cone view shows the passive name, the S value and the story');
+    ok(ui.wheels.length > 0 && ui.hits.some(h => h.w === 10), 'a long story gets a scroll bar');
+    key('ArrowDown'); key('ArrowDown'); frame();
+    eq(pv.sc.top, 2, 'down scrolls the story');
+    key('ArrowRight'); texts.length = 0; frame();
+    ok(texts.includes('12%'), 'the previewed superimposition changes the numbers');
+    delete H.CONES.__probe;
+    s.inv.cones = [{ uid: 'probe_v', id, sup: 1 }];
+    ui.screens = []; ui.openConePick(k); frame();
+    key('KeyV'); frame();
+    ok(ui.top().view === 1 && ui.top().art === false, 'V in the cone picker opens the cone view');
+    ui.screens = [];
+    ui.text = realText;
+    s.roster[k].cone = keepCone;
+    s.inv.cones = keep;
+  }
+  {
     const ids = Object.keys(H.OUTFITS);
     const sup = ui.openSupply('fashion'); ui.screens = [sup]; frame();
     ok(ids.length <= 2 || ui.hits.some(h => h.x === 614 && h.w === 10), 'the outfit shop has a scroll bar');
@@ -8780,6 +10227,23 @@ function trInfo(g) {
     ok(ui.top() === sup && sup.fsel === want, 'Enter puts the picked outfit on the showcase');
     key('KeyF'); frame(); key('Escape'); frame();
     ok(ui.top() === sup && sup.fsel === want, 'Esc closes the wardrobe without changing the showcase');
+    sup.fsel = ids.indexOf('march_spring'); texts.length = 0; frame();
+    ok(!texts.includes('Катсцены'), 'a 4★ outfit has no cutscene button');
+    key('KeyV'); frame();
+    ok(ui.top() === sup, 'V does nothing on a 4★ outfit');
+    sup.fsel = ids.indexOf('himeko_vermilion'); texts.length = 0; frame();
+    ok(texts.includes('Катсцены') && texts.includes('Свои катсцены: абсолютная техника, Навык, Слияния, прыжок'), 'a 5★ outfit shows its cutscene button and what it changes');
+    key('KeyV'); frame();
+    const cv = ui.top();
+    eq(ui.outfitCutSteps('himeko_vermilion').map(x => x[0] + (x[1] ? ':' + x[1] : '')).join(), 'ult,skill,fus:f_singularity,warp', 'the cutscene viewer plays the Ultimate, the Skill, the Fusion and the Warp');
+    ok(cv !== sup && cv.i === 0 && cv.show instanceof H.Ults.Show && cv.show.def === H.OUTFIT_CUTS.himeko_vermilion.ult, 'V opens the cutscene viewer on the outfit Ultimate');
+    const seen = [];
+    for (let n = 0; n < 900 && ui.top() === cv; n++) { if (seen[seen.length - 1] !== cv.i) seen.push(cv.i); ui.update(0.05); ui.render(); }
+    ok(ui.top() === sup && seen.join() === '0,1,2,3', 'the viewer plays every cutscene of the outfit and returns to the showcase');
+    key('KeyV'); frame(); key('Enter'); frame();
+    ok(ui.top().i === 1 && ui.top().show instanceof H.SkillShow, 'Enter skips to the next cutscene');
+    key('Backspace'); frame();
+    ok(ui.top() === sup, 'Backspace closes the viewer');
     ui.text = realText; ui.screens = [];
   }
   {
@@ -8954,6 +10418,58 @@ function trInfo(g) {
         ok(sh.done && sh.length > 2 && sh.length < 3.6, 'the Ultimate cutscene of ' + id + ' plays to the end in ' + sh.length.toFixed(2) + ' s');
       }
     }
+    for (const [oid, set] of Object.entries(H.OUTFIT_CUTS)) {
+      const o = H.OUTFITS[oid];
+      ok(o && Object.keys(set).every(k => ['ult', 'skill', 'fusions', 'warp'].includes(k)), 'outfit cutscenes belong to a real outfit: ' + oid);
+      if (!o || !set.ult) continue;
+      const d = set.ult, kit = H.CHARS[o.char], fake = { charId: o.char, elem: kit.elem, name: kit.name, side: 'ally', kit };
+      ok(d.line && d.line.length <= 40 && !/[—–]/.test(d.line) && typeof d.act === 'function' && d.sfx.every((x, i, a) => !i || a[i - 1][0] <= x[0]), 'the outfit Ultimate of ' + oid + ' has a short line and ordered sounds');
+      for (const foes of [lay, lay.slice(0, 1), []]) {
+        const sh = new H.Ults.Show(ui, fake, { foes, allies: [fake, fake], bg: 'station', outfit: oid });
+        let n = 0;
+        while (!sh.done && n++ < 200) { sh.tick(0.07); sh.draw(ui.ctx); }
+        ok(sh.def === d && sh.P.look === H.outfitLook(oid, game.state.gender) && sh.done && sh.length > 2 && sh.length < 3.6, 'the outfit Ultimate of ' + oid + ' plays to the end in ' + sh.length.toFixed(2) + ' s with ' + foes.length + ' targets');
+      }
+      const s0 = game.state, had = s0.roster[o.char], owned = s0.outfits.slice();
+      s0.roster[o.char] = had || { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+      const keepOut = s0.roster[o.char].outfit;
+      if (!s0.outfits.includes(oid)) s0.outfits.push(oid);
+      game.wearOutfit(o.char, oid);
+      ok(new H.Ults.Show(ui, fake, { foes: lay, allies: [fake] }).def === d, 'wearing ' + oid + ' plays its own Ultimate in battle');
+      game.wearOutfit(o.char, null);
+      ok(new H.Ults.Show(ui, fake, { foes: lay, allies: [fake] }).def === H.Ults.SHOWS[o.char], 'the usual outfit plays the usual Ultimate of ' + o.char);
+      if (had) { if (keepOut) s0.roster[o.char].outfit = keepOut; } else delete s0.roster[o.char];
+      s0.outfits = owned;
+    }
+    eq(ui.options.skinCine, 'first', 'outfit Skill cutscenes play once per battle by default');
+    for (const [oid, set] of Object.entries(H.OUTFIT_CUTS)) {
+      if (!set.skill) continue;
+      const o = H.OUTFITS[oid], d = set.skill, kit = H.CHARS[o.char], fake = { charId: o.char, elem: kit.elem, name: kit.name, side: 'ally', kit };
+      ok(typeof d.act === 'function' && d.d >= 1 && d.d <= 1.4 && d.sfx.every((x, i, a) => !i || a[i - 1][0] <= x[0]), 'the outfit Skill of ' + oid + ' is short and its sounds are in order');
+      for (const foes of [lay, lay.slice(0, 1), []]) {
+        const sh = new H.SkillShow(ui, fake, { foes, bg: 'station', outfit: oid });
+        let n = 0;
+        while (!sh.done && n++ < 100) { sh.tick(0.07); sh.draw(ui.ctx); }
+        ok(sh.def === d && sh.P.name === kit.skill.name && sh.done && sh.length <= 1.6, 'the outfit Skill of ' + oid + ' plays to the end with ' + foes.length + ' targets');
+      }
+      const s0 = game.state, had = s0.roster[o.char], owned = s0.outfits.slice();
+      s0.roster[o.char] = had || { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+      const keepOut = s0.roster[o.char].outfit;
+      ui.bt.skinSeen.clear();
+      ok(!ui.skinCineOn(fake), 'no outfit Skill cutscene without the outfit');
+      if (!s0.outfits.includes(oid)) s0.outfits.push(oid);
+      game.wearOutfit(o.char, oid);
+      ok(ui.skinCineOn(fake) && !ui.skinCineOn(fake), 'the outfit Skill cutscene plays on the first Skill of the battle only');
+      ui.options.skinCine = 'on';
+      ok(ui.skinCineOn(fake) && ui.skinCineOn(fake), 'the outfit Skill cutscene can play on every Skill');
+      ui.options.skinCine = 'off';
+      ok(!ui.skinCineOn(fake), 'the outfit Skill cutscene can be turned off');
+      ui.options.skinCine = 'first';
+      ui.bt.skinSeen.clear();
+      game.wearOutfit(o.char, null);
+      if (had) { if (keepOut) s0.roster[o.char].outfit = keepOut; } else delete s0.roster[o.char];
+      s0.outfits = owned;
+    }
     const FS = H.Fusions.SHOWS, allyFx = f => f.fx.some(x => ['heal', 'shield', 'invig'].includes(x.k) || (['advance', 'buff'].includes(x.k) && x.who === 'allies'));
     for (const id of Object.keys(H.FUSIONS)) {
       const f = H.FUSIONS[id], def = FS[id];
@@ -8978,6 +10494,37 @@ function trInfo(g) {
       }
     }
     for (const id of Object.keys(FS)) ok(H.FUSIONS[id], 'Fusion cutscene belongs to a Fusion: ' + id);
+    for (const [oid, set] of Object.entries(H.OUTFIT_CUTS)) {
+      const o = H.OUTFITS[oid];
+      for (const [id, def] of Object.entries(set.fusions || {})) {
+        const f = H.FUSIONS[id], nm = f ? f.members.length : 0;
+        ok(f && f.members.includes(o.char), 'the outfit Fusion ' + id + ' of ' + oid + ' is a Fusion of its hero');
+        if (!f) continue;
+        ok(typeof def.act === 'function' && def.d >= 1.4 && def.d <= (nm > 2 ? 3.2 : 2) && !def.team === !FS[id].team, 'the outfit Fusion ' + id + ' of ' + oid + ' keeps the shape of the usual one');
+        ok(def.lines.length === nm && new Set(def.lines.map(l => l[0])).size === nm && def.lines.every(([who, text]) => who >= 0 && who < nm && text.length <= 44 && !/[—–]/.test(text)), 'every partner speaks one short line in the outfit Fusion ' + id);
+        const sw = def.swaps || [def.swap];
+        ok(sw.length === nm - 1 && sw.every((x, i) => x > 0.3 + (i ? sw[i - 1] : 0) && x < def.d - 0.5) && def.sfx.every((x, i, a) => !i || a[i - 1][0] <= x[0]), 'the lines and sounds of the outfit Fusion ' + id + ' fit the act');
+        const mem = f.members.map(k => ({ charId: k, elem: H.CHARS[k].elem, name: H.CHARS[k].name, side: 'ally', kit: H.CHARS[k] }));
+        for (const foes of [lay, []]) {
+          const sh = new H.Fusions.Show(ui, mem, { id, foes, allies: mem, bg: 'station', outfit: oid });
+          let n = 0;
+          const said = new Set();
+          while (!sh.done && n++ < 300) { sh.tick(0.05); sh.draw(ui.ctx); const sp = sh.speech(); if (sp) said.add(sp.text); }
+          const me = sh.P.m[f.members.indexOf(o.char)];
+          ok(sh.def === def && me.look === H.outfitLook(oid, game.state.gender) && sh.done && sh.length > 2.5 && sh.length < 5 && said.size === nm, 'the outfit Fusion ' + id + ' of ' + oid + ' plays to the end with ' + foes.length + ' targets');
+        }
+        ok(new H.Fusions.Show(ui, mem, { id, foes: lay, allies: mem, outfit: null }).def === FS[id], 'the usual outfit keeps the usual Fusion ' + id);
+        const s0 = game.state, had = s0.roster[o.char], owned = s0.outfits.slice();
+        s0.roster[o.char] = had || { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+        const keepOut = s0.roster[o.char].outfit;
+        if (!s0.outfits.includes(oid)) s0.outfits.push(oid);
+        game.wearOutfit(o.char, oid);
+        ok(new H.Fusions.Show(ui, mem, { id, foes: lay, allies: mem }).def === def, 'wearing ' + oid + ' plays its own Fusion ' + id + ' in battle');
+        game.wearOutfit(o.char, null);
+        if (had) { if (keepOut) s0.roster[o.char].outfit = keepOut; } else delete s0.roster[o.char];
+        s0.outfits = owned;
+      }
+    }
     ui.screens = [];
     const b = game.battle, idle = () => b.phase === 'input' && !ui.bt.queue.length && !ui.bt.cur && !ui.bt.ult;
     const waitInput = () => { for (let i = 0; i < 900 && !idle() && !b.over; i++) frame(1, 0.05); frame(); };
@@ -9042,6 +10589,12 @@ function trInfo(g) {
     key('ArrowLeft'); key('ArrowLeft'); frame();
     eq(ui.options.fusionCine, 'on', 'Settings turn the Fusion cutscenes back on');
     eq(ui.options.ultCine, 'on', 'the Fusion row leaves the Ultimate mode alone');
+    key('ArrowDown'); key('ArrowRight'); frame();
+    eq(ui.options.skinCine, 'off', 'Settings turn the outfit Skill cutscenes off');
+    key('ArrowLeft'); key('ArrowLeft'); frame();
+    eq(ui.options.skinCine, 'on', 'Settings play the outfit Skill cutscenes on every Skill');
+    key('ArrowRight'); frame();
+    ok(ui.options.skinCine === 'first' && ui.options.fusionCine === 'on', 'the outfit Skill row goes back to the first Skill in a battle and leaves Fusions alone');
     ui.screens = [];
     for (const x of b.living) x.hp = 1;
     ui.bt.auto = true;
@@ -9516,11 +11069,14 @@ function trInfo(g) {
     key('KeyE'); frame();
     ok(shop.tab === 1, 'E switches to «Шутки сбываются»');
     key('Enter'); frame();
-    ok(ui.top() !== shop && ui.top().make && fg.state.inv.items.resin === 1, 'buying the resin opens the relic maker');
-    key('ArrowRight'); key('ArrowRight'); key('ArrowDown'); frame();
+    ok(ui.top() !== shop && ui.top().useResin && ui.top().tab === 3 && fg.state.inv.items.resin === 1, 'buying the resin opens relic Synthesis');
+    fg.state.inv.items.remains = 100;
+    key('Enter'); key('Enter'); frame();
     const r0 = fg.state.inv.relics.length;
-    key('Enter'); frame();
-    ok(fg.state.inv.relics.length === r0 + 1 && ui.top() === shop, 'the resin becomes a relic and the maker closes');
+    key('Enter'); frame(); key('Enter'); frame();
+    ok(fg.state.inv.relics.length === r0 + 1 && !fg.state.inv.items.resin && !fg.state.inv.items.remains, 'the resin and Relic Remains become a relic');
+    key('Escape'); key('Escape'); frame();
+    ok(ui.top() === shop, 'Esc returns from Synthesis to the shop');
     key('ArrowDown'); key('ArrowRight'); key('ArrowRight'); frame();
     const c0 = fg.state.credits;
     key('Enter'); frame();
@@ -9866,7 +11422,7 @@ function trInfo(g) {
     eq(g.state.credits - c0, 3 * 2000 + 3000, 'the first clear pays 3 × 2000 credits and the report 3000 more');
     eq(planar(g).length, 4, 'the first clear gives two ornament sets: two spheres and two ropes');
     eq(planar(g).filter(r => r.slot === 'sphere').length, 2, 'two Planar Spheres');
-    ok(g.state.inv.cones.some(c => c.id === 'databank'), 'the report gives the light cone «Банк данных»');
+    ok(g.state.inv.cones.some(c => c.id === 'databank'), 'the report gives the light cone «База данных»');
     log.push('su tutorial ' + planar(g).map(r => r.set + '/' + r.slot).join(' '));
 
     const p0 = g.state.power, j1 = g.state.jade, c1 = g.state.credits, r1 = planar(g).length;
@@ -10369,9 +11925,10 @@ function trInfo(g) {
     const sh = gf.fh().shop;
     sh.per = -1;
     ok(gf.fhShop('jokes')[0].left === 1, 'the shop refreshes its stock');
-    const rel = gf.fhCraft('musketeer', 'body', 'critD');
-    ok(rel && rel.set === 'musketeer' && rel.slot === 'body' && rel.main === 'critD' && !rel.subs.some(([k]) => k === 'critD') && !s.inv.items.resin, 'the resin makes a relic with the chosen main stat');
-    ok(gf.fhCraft('musketeer', 'body', 'critD') === null, 'no relic without resin');
+    s.inv.items.remains = 200;
+    const rel = gf.craftRelic('musketeer', 'body', 'critD');
+    ok(rel && rel.set === 'musketeer' && rel.slot === 'body' && rel.main === 'critD' && !rel.subs.some(([k]) => k === 'critD') && !s.inv.items.resin && s.inv.items.remains === 100, 'the resin and 100 Relic Remains make a relic with the chosen main stat');
+    ok(gf.craftRelic('musketeer', 'body', 'critD') === null, 'no chosen main stat without resin');
     const l0 = s.inv.items.lucent;
     for (let i = 0; i < 4; i++) gf.fhEchoLucent();
     eq(s.inv.items.lucent - l0, 30, 'Echo of War pays Lucent Afterglow three times a week');
@@ -10382,23 +11939,41 @@ function trInfo(g) {
     wf.hp = half;
     const bw = new H.Battle({ party: [wf, gf.fhSpecs(['trail'])[0]], waves: [['reaver:20']], lvl: 20, seed: 5 });
     bw.start();
-    ok(bw.allies[0].hp > half && bw.allies.every(a => a.buffs.some(x => x.s === 'dr' && x.name === 'Мы — Дикий Огонь')), 'We Are Wildfire heals and shields the team at the start');
+    ok(bw.allies[0].hp > half && bw.allies.every(a => a.buffs.some(x => x.s === 'dr' && x.name === 'Слёзы на глазах' && Math.abs(x.v - 0.08) < 1e-9 && x.turns >= 5)), 'We Are Wildfire: DMG taken -8% for 5 turns and a heal at the start');
     const bk = new H.Battle({ party: [spec('himeko', 'breakfast')], waves: [['baryon:5', 'baryon:5', 'baryon:5', 'baryon:5']], lvl: 5, seed: 6 });
     bk.start(); bk.runAuto(2000);
     const st = bk.allies[0].buffs.find(x => x.name === 'Важность завтрака');
     ok(st && Math.abs(st.v - 0.04 * Math.min(3, bk.allies[0].flags.breakfast)) < 1e-9 && bk.allies[0].flags.breakfast <= 3, 'The Seriousness of Breakfast stacks ATK per kill up to three times');
     const rv = new H.Battle({ party: [spec('danheng', 'river')], waves: [['reaver:30', 'reaver:30']], lvl: 30, seed: 7 });
     rv.start();
-    ok(rv.allies[0].buffs.some(x => x.name === 'Весенние потоки рек'), 'River Flows in Spring starts active');
+    ok(rv.allies[0].buffs.some(x => x.name === 'Избавление от холодов'), 'River Flows in Spring starts active');
     rv.memo('hurt', { u: rv.allies[0], dmg: 10 });
-    ok(!rv.allies[0].buffs.some(x => x.name === 'Весенние потоки рек') && rv.allies[0].flags.river === 'off', 'a hit switches it off');
+    ok(!rv.allies[0].buffs.some(x => x.name === 'Избавление от холодов') && rv.allies[0].flags.river === 'off', 'a hit switches it off');
     rv.memo('endTurn', { u: rv.allies[0] });
-    ok(rv.allies[0].buffs.some(x => x.name === 'Весенние потоки рек'), 'it returns after the wearer\'s turn');
+    ok(rv.allies[0].buffs.some(x => x.name === 'Избавление от холодов'), 'it returns after the wearer\'s turn');
     const fe = new H.Battle({ party: [spec('serval', 'fermata')], waves: [['reaver:30']], lvl: 30, seed: 8 });
     fe.start();
     const foe = fe.enemies[0], base = fe.memoDmg(fe.allies[0], foe, {});
     foe.dots.push({ type: 'shock', dmg: 10, turns: 2, src: fe.allies[0], stacks: 1 });
     ok(base === 0 && Math.abs(fe.memoDmg(fe.allies[0], foe, {}) - 0.16) < 1e-9, 'Fermata adds DMG against Shocked enemies');
+    const fe5 = new H.Battle({ party: [Object.assign(gf.fhSpecs(['serval'])[0], { cone: { id: 'fermata', fx: 'fermata', sup: 5 } })], waves: [['reaver:30']], lvl: 30, seed: 8 });
+    fe5.start(); fe5.enemies[0].dots.push({ type: 'shear', dmg: 10, turns: 2, src: fe5.allies[0], stacks: 1 });
+    ok(Math.abs(fe5.memoDmg(fe5.allies[0], fe5.enemies[0], {}) - 0.32) < 1e-9, 'Fermata S5: +32% against Wind Shear');
+    const wo = new H.Battle({ party: [Object.assign(gf.fhSpecs(['march'])[0], { cone: { id: 'woof', fx: 'woof', sup: 5 } })], waves: [['reaver:30']], lvl: 30, seed: 8 });
+    wo.start(); const wb = wo.memoDmg(wo.allies[0], wo.enemies[0], {}); wo.enemies[0].dots.push({ type: 'bleed', dmg: 10, turns: 2, src: wo.allies[0], stacks: 1 });
+    ok(wb === 0 && Math.abs(wo.memoDmg(wo.allies[0], wo.enemies[0], {}) - 0.32) < 1e-9, 'Woof! Walk Time! S5: +32% against Bleed');
+    const gw = new H.Game({ seed: 3 }); gw.state.roster.arlan = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    const wa0 = gw.charStats('arlan').atk, wc = gw.addCone('woof'); gw.equipCone('arlan', wc.uid);
+    ok(gw.charStats('arlan').atk > wa0, 'Woof! Walk Time!: ATK on the hero sheet');
+    const r5 = new H.Battle({ party: [Object.assign(gf.fhSpecs(['danheng'])[0], { cone: { id: 'river', fx: 'river', sup: 5 } })], waves: [['reaver:30']], lvl: 30, seed: 7 });
+    r5.start();
+    ok(r5.allies[0].buffs.some(x => x.s === 'spdP' && Math.abs(x.v - 0.12) < 1e-9) && r5.allies[0].buffs.some(x => x.s === 'dmgP' && Math.abs(x.v - 0.24) < 1e-9), 'River Flows in Spring S5: SPD +12% and DMG +24%');
+    const qd = new H.Battle({ party: [Object.assign(gf.fhSpecs(['natasha'])[0], { cone: { id: 'quid', fx: 'quid', sup: 5 } }), gf.fhSpecs(['march'])[0]], waves: [['reaver:30']], lvl: 30, seed: 9 });
+    qd.start(); qd.allies[1].energy = 0; const qe = qd.allies[0].energy; qd.memo('turn', { u: qd.allies[0] });
+    ok(qd.allies[1].energy >= 16 && qd.allies[0].energy === qe, 'Quid Pro Quo S5: 16 energy to an ally below half, not to the wearer');
+    const pf = new H.Battle({ party: [Object.assign(gf.fhSpecs(['asta'])[0], { cone: { id: 'pastfuture', fx: 'pastfuture', sup: 1 } }), gf.fhSpecs(['march'])[0]], waves: [['reaver:30']], lvl: 30, seed: 9 });
+    pf.start(); pf.memo('after', { u: pf.allies[0], kind: 'skill' }); pf.memo('turn', { u: pf.allies[1] });
+    ok(pf.allies[1].buffs.some(x => x.name === 'Бумажные змеи из прошлого' && Math.abs(x.v - 0.16) < 1e-9), 'Past and Future: the next ally deals +16% DMG');
   }
   log.push('forgotten hall ok, stars ' + gf.fhTotal() + ', jade ' + gf.state.jade);
 }
@@ -11371,7 +12946,7 @@ function trInfo(g) {
   g.loadMap('ax_town', null, { x: 25, y: 41, silent: true });
   exitVia(g, 'x');
   eq(g.state.quests.ks_qa, 'hunt', 'KonoSuba: the hunt starts on the meadow');
-  const fightEnt = e => { g.encounter(e, 'player'); g.battle.start(); g.battle.runAuto(800); let out = g.endBattle(); let n = 0; while (out && out.lost && n++ < 6) { for (const k of g.state.party) g.addExp(k, 3000); g.retryBattle(); g.battle.start(); g.battle.runAuto(800); out = g.endBattle(); } g.afterBattle(); return out; };
+  const fightEnt = e => { g.encounter(e, 'player'); g.battle.start(); g.battle.runAuto(800); let out = g.endBattle(); let n = 0; while (out && out.lost && n++ < 6) { for (const k of g.state.party) g.addExp(k, H.charExp(3000, g.state.roster[k].lvl)); g.retryBattle(); g.battle.start(); g.battle.runAuto(800); out = g.endBattle(); } g.afterBattle(); return out; };
   for (let i = 1; i <= 5; i++) {
     const e = g.map.ents.find(x => x.kind === 'enemy' && x.def.unique === 'ks_toad_a' + i && g.visible(x));
     ok(e, 'KonoSuba: toad ' + i + ' is on the meadow');
@@ -11568,7 +13143,7 @@ function trInfo(g) {
   auto();
   ok(!g.state.quests.pc_rewards && !g.tlReadyCount() && !g.claimTl(5), 'Conductor: below level 12 Pom-Pom keeps the rewards to himself');
   g.events.length = 0;
-  ok(g.addTrailExp(H.expToNext(11)) && g.trailLevel() === 12 && g.events.some(e => e.t === 'tl' && e.lvl === 12), 'Conductor: Trailblaze EXP raises the Trailblaze Level');
+  ok(g.addTrailExp(H.tlExpToNext(11)) && g.trailLevel() === 12 && g.events.some(e => e.t === 'tl' && e.lvl === 12), 'Conductor: Trailblaze EXP raises the Trailblaze Level');
   auto();
   eq(g.state.quests.pc_rewards, 'talk', 'Conductor: at level 12 the message starts «Награды проводника»');
   ok(g.missionList().some(m => m.id === 'pc_rewards' && m.type === 'adv' && m.ch === 'adv_express'), 'Conductor: «Награды проводника» is an Adventure mission on the Express');
@@ -11691,6 +13266,493 @@ function trInfo(g) {
   const kept = new H.Game({ state: JSON.parse(JSON.stringify(Object.assign(g.state, { pet: 'chomusuke' }))), seed: 2 });
   ok(kept.petOut() === 'chomusuke' && kept.petStats('chomusuke').pets === n0 + 1 + 1, 'Pets: the save keeps the pet and its counters');
   log.push('pets ok');
+}
+{
+  const K = H.CHARS;
+  K.__joy = Object.assign({}, K.march, { name: 'Тест Радости', path: 'elation', elSkill: { name: 'Тестовый номер', order: 5, fx: [{ k: 'elAll', m: 0.5, tough: 10 }, { k: 'elBounce', n: 3, m: 0.2 }] } });
+  K.__joy2 = Object.assign({}, K.danheng, { name: 'Второй номер', path: 'elation', elSkill: { name: 'Первый номер', order: 3, fx: [{ k: 'elOne', m: 0.4 }] } });
+  K.__joy3 = Object.assign({}, K.himeko, { name: 'Третий', path: 'elation' });
+  K.__joy4 = Object.assign({}, K.welt, { name: 'Четвёртый', path: 'elation' });
+  const spec = (id, spd) => { const s = Object.assign(mkSpec(id, 40), { key: id }); if (spd) s.stats.spd = spd; return s; };
+  const mk = (party, foes, o) => { const b = new H.Battle(Object.assign({ party, enemies: foes || ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 7 }, o || {})); b.start(); return b; };
+  const fat = b => { for (const e of b.living) e.hp = e.maxHp = 1e9; };
+  const aha = b => b.summons.find(s => s.aha && !s.gone);
+
+  let b = mk([spec('march'), spec('danheng')]);
+  ok(!b.el && !aha(b), 'Elation: without an Elation character there is no Punchline and no Aha');
+
+  b = mk([spec('__joy', 106), spec('march')]);
+  ok(b.el.punch === 1 && aha(b), 'Elation: the team starts with 1 Punchline per Elation character and Aha joins the action bar');
+  ok(Math.abs(aha(b).base.spd - (80 + 106 / 5)) < 1e-9, 'Elation: Aha speed is 80 + SPD/5 with one Elation character');
+  ok(b.bangerOf(b.allies[0]) === H.TUNING.bangerStart && !b.bangerOf(b.allies[1]), 'Elation: an Elation character starts with 20 Certified Banger');
+  let tgtAha = false;
+  for (let i = 0; i < 300; i++) if (b.pickTarget(b.living[0]) === aha(b)) tgtAha = true;
+  ok(!tgtAha && !b.livingAllies.includes(aha(b)), 'Elation: enemies never target Aha');
+  ok(b.orderSnap(null).av.has(aha(b)), 'Elation: Aha is on the turn order');
+
+  b = mk([spec('__joy', 140), spec('__joy2', 120), spec('__joy3', 100), spec('__joy4', 90)]);
+  ok(Math.abs(b.ahaSpd() - (80 + 140 / 5 + 120 / 10 + 100 / 20 + 90 / 40)) < 1e-9 && b.el.punch === 4, 'Elation: Aha speed counts the four fastest Elation characters from fastest to slowest');
+  b = mk([spec('__joy', 110), spec('__joy2', 130)]);
+  ok(Math.abs(b.ahaSpd() - (80 + 130 / 5 + 110 / 10)) < 1e-9, 'Elation: Aha speed with two Elation characters');
+
+  b = mk([spec('__joy', 106), spec('__joy2', 100), spec('march')]);
+  fat(b); b.drain();
+  const [j1, j2] = b.allies;
+  j1.frozen = 1; j1.stun = 1; j2.stun = 1;
+  b.gainPunch(18);
+  const p0 = b.el.punch, bj1 = b.bangerOf(j1), bj2 = b.bangerOf(j2);
+  b.ahaTurn(aha(b));
+  let ev = b.drain();
+  const cuts = ev.filter(e => e.t === 'elCut').map(e => e.u);
+  ok(cuts.length === 2 && cuts[0] === j2 && cuts[1] === j1, 'Elation: Elation Skills go in ascending participant order');
+  ok(!j1.frozen && !j1.stun && !j2.stun, 'Elation: Aha dispels crowd control from Elation characters');
+  const end = ev.find(e => e.t === 'ahaEnd'), elDmg = ev.filter(e => e.t === 'dmg' && e.el).reduce((a, e) => a + e.v, 0);
+  ok(end && end.punch === p0 && end.total === elDmg && elDmg > 0, 'Elation: the Aha Instant card sums the Elation DMG of the Instant');
+  ok(b.bangerOf(j1) === bj1 + p0 && b.bangerOf(j2) === bj2 + p0, 'Elation: Punchline turns into Certified Banger for each participant');
+  ok(b.el.punch === 2 && aha(b), 'Elation: after the Instant Punchline restarts at 1 per Elation character');
+  j1.flags.banger = [{ v: 20, t: 2 }, { v: 7, t: 1 }];
+  const kept2 = b.bangerOf(j2);
+  b.endTurn(j1);
+  ok(b.bangerOf(j1) === 20, 'Elation: each Certified Banger portion expires on its own');
+  b.endTurn(j1);
+  ok(b.bangerOf(j1) === 0 && b.bangerOf(j2) === kept2, 'Elation: Certified Banger lasts two turns of its owner and other characters keep theirs');
+
+  ok(H.punchMul(0) === 1 && Math.abs(H.punchMul(10) - 1.2) < 1e-9 && Math.abs(H.punchMul(240) - 3.5) < 1e-9 && H.punchMul(1e9) < 6, 'Elation: the Punchline multiplier is 1 + 5P/(P+240)');
+  b = mk([spec('__joy', 106)], ['reaver:40']);
+  const src = b.allies[0], foe = b.living[0];
+  const calc = (o, crit) => b.elationDmg(src, foe, 1, Object.assign({ count: 0 }, o || {}), !!crit);
+  const d0 = calc();
+  ok(d0 > 0, 'Elation: Elation DMG has a base');
+  src.buffs.push({ s: 'dmgP', v: 1, turns: 9 }, { s: src.elem + 'P', v: 1, turns: 9 }, { s: 'followP', v: 1, turns: 9 }, { s: 'atkP', v: 2, turns: 9 }, { s: 'dmgDealtDown', v: 0.5, turns: 9 });
+  ok(calc() === d0, 'Elation: ATK, DMG Boost, follow-up DMG and Weaken do not change Elation DMG');
+  src.buffs.push({ s: 'elation', v: 0.5, turns: 9 });
+  ok(Math.abs(calc() / d0 - 1.5) < 0.01, 'Elation: the Elation stat multiplies Elation DMG');
+  src.buffs.push({ s: 'merry', v: 0.2, turns: 9 });
+  ok(Math.abs(calc() / d0 - 1.8) < 0.01, 'Elation: Merrymake is a separate multiplier');
+  src.buffs.length = 0;
+  ok(Math.abs(calc({ count: 10 }) / d0 - 1.2) < 0.01 && Math.abs(calc({ count: 240 }) / d0 - 3.5) < 0.01, 'Elation: Punchline multiplies Elation DMG');
+  ok(calc({}, true) > d0, 'Elation: Elation DMG can crit');
+  foe.buffs.push({ s: 'defDown', v: 0.5, turns: 9, debuff: true });
+  const dDef = calc();
+  foe.buffs.push({ s: 'vuln', v: 0.3, turns: 9, debuff: true });
+  ok(dDef > d0 && Math.abs(calc() / dDef - 1.3) < 0.01, 'Elation: DEF reduction and vulnerability raise Elation DMG');
+  const dUp = calc();
+  foe.broken = true;
+  ok(calc() > dUp, 'Elation: a broken enemy takes more Elation DMG');
+  foe.buffs.length = 0; foe.broken = false;
+  ok(Math.abs(b.elationBase(60) - H.TUNING.elationK * H.breakBase(60)) < 1e-9, 'Elation: the base follows the character level like Break DMG');
+
+  b = mk([spec('march'), spec('danheng')]);
+  fat(b); b.drain();
+  b.allies[0].hp = 1;
+  b.gainPunch(5);
+  ok(aha(b) && b.el.punch === 5, 'Elation: Punchline without Elation characters still brings Aha');
+  const en0 = b.allies.map(a => a.energy);
+  b.ahaTurn(aha(b));
+  ev = b.drain();
+  const lh = ev.filter(e => e.t === 'dmg' && e.label === 'Смех');
+  const allyHits = ev.filter(e => e.t === 'dmg' && e.label === 'Смех' && e.u.side === 'ally');
+  ok(ev.some(e => e.t === 'laugh') && ev.filter(e => e.t === 'laughHit').length === H.TUNING.laughHits && lh.length <= H.TUNING.laughHits, 'Elation: with no Elation Skill Aha uses Let There Be Laughter, 10 hits');
+  ok(ev.filter(e => e.t === 'laughHit' && e.u.side === 'ally').every(e => b.allies.indexOf(e.u) < 0 || e.u.energy > en0[b.allies.indexOf(e.u)]), 'Elation: Laughter gives energy to allies it hits');
+  ok(b.allies.every(a => !a.dead) && b.allies[0].hp === 1 && allyHits.every(e => e.v === 1), 'Elation: Laughter deals 1 DMG to allies and never downs them');
+  ok(b.el.punch === 0 && !aha(b), 'Elation: Laughter spends the Punchline and Aha leaves');
+
+  b = mk([spec('__joy', 106), spec('march')], null, { waves: [['reaver:40'], ['reaver:40', 'reaver:40']] });
+  b.drain();
+  b.gainPunch(6);
+  const av0 = aha(b).av, pw = b.el.punch;
+  b.hit(b.allies[1], b.living[0], 0, { raw: 1e9 });
+  b.cleanup();
+  ok(b.wave === 1 && b.el.punch === pw && aha(b) && aha(b).av === av0, 'Elation: Punchline and Aha keep through a new wave');
+
+  b = mk([spec('__joy', 106), spec('march')]);
+  fat(b); b.drain();
+  b.gainPunch(2);
+  const pf = b.el.punch;
+  b.ahaNow(20);
+  ok(aha(b).av === 0, 'Elation: a forced Instant puts Aha first');
+  b.ahaTurn(aha(b));
+  ev = b.drain();
+  ok(ev.find(e => e.t === 'ahaEnd').punch === 20 && b.el.punch === pf && b.bangerOf(b.allies[0]) === H.TUNING.bangerStart + 20, 'Elation: a fixed Punchline Instant counts 20 and keeps the tally');
+
+  b = mk([spec('__joy', 106), spec('march')]);
+  b.drain();
+  const pb = b.el.punch;
+  b.actN = 1; b.elFailed(b.allies[1]); b.elFailed(b.allies[1]);
+  ok(b.el.punch === pb + H.TUNING.elFail, 'Elation: one failure per action gives Punchline once');
+  for (let i = 2; i < 9; i++) { b.actN = i; b.elFailed(b.allies[1]); }
+  ok(b.el.punch === pb + H.TUNING.elFailCap, 'Elation: failures give at most 6 Punchline between two Instants');
+
+  for (const seed of [1, 2, 3]) {
+    b = mk([spec('__joy', 120), spec('__joy2', 110), spec('march'), spec('natasha')], ['reaver:30', 'reaver:30'], { seed, waves: [['reaver:30', 'reaver:30'], ['reaver:30', 'reaver:30', 'reaver:30']] });
+    const r = b.runAuto(600);
+    ok(r && r.win && b.el.instants > 0, 'Elation: an auto battle with Elation characters ends with Aha Instants (seed ' + seed + ')');
+  }
+  for (const k of ['__joy', '__joy2', '__joy3', '__joy4']) delete K[k];
+  log.push('elation engine ok');
+}
+{
+  const K = H.CHARS, T = H.TUNING;
+  ok(K.kazuma.path === 'elation' && H.PATHS.elation.name === 'Радость' && K.kazuma.elSkill && K.kazuma.elSkill.name === 'Камень, ножницы, бумага!', 'Kazuma walks the Path of Elation with Rock, Paper, Scissors as his Elation Skill');
+  ok(K.kazuma.skills.every(s => s.punch === 3) && K.kazuma.ult.punch === 5 && K.kazuma.ult.ahaAdv === 0.15, 'every Skill mode gives 3 Punchline, the Great Heist 5 and brings Aha 15% closer');
+  ok(H.CONES.chunchunmaru.path === K.kazuma.path && H.CONES.chunchunmaru.sig === 'kazuma', 'Chunchunmaru moves to Elation with Kazuma');
+  ok(H.TRACES.kazuma.mats[0] === 'elat', 'Kazuma levels his Traces with Elation materials');
+  const gb = new H.Game({ seed: 3 });
+  const bud = H.CALYX.find(x => x.id === 'cx_elation');
+  ok(!gb.calyxOpen(bud), 'the Bud of Elation is closed without Kazuma');
+  gb.addChar('kazuma', 1);
+  ok(gb.calyxOpen(bud), 'Kazuma opens the Bud of Elation');
+  eq(H.guideBuild('kazuma').preset, 'elation', 'the guide builds Kazuma for Elation');
+
+  const spec = id => Object.assign(mkSpec(id, 40), { key: id });
+  const mk = (party, foes, o) => { const b = new H.Battle(Object.assign({ party: party.map(x => typeof x === 'string' ? spec(x) : x), enemies: foes || ['reaver:40', 'reaver:40', 'reaver:40'], lvl: 40, seed: 11 }, o || {})); b.start(); b.drain(); for (const e of b.living) e.hp = e.maxHp = 1e9; return b; };
+  let b = mk(['kazuma', 'march', 'megumin']);
+  const kz = b.allies[0], foe = b.living[0];
+  for (let i = 0; i < 3; i++) {
+    const p0 = b.el.punch;
+    b.useAbility(kz, K.kazuma.skills[i], i === 2 ? b.allies[1] : foe, 'skill');
+    ok(b.el.punch >= p0 + 3, 'Skill mode ' + K.kazuma.skills[i].name + ' gives 3 Punchline');
+  }
+  b.drain();
+  kz.flags.banger = [{ v: 30, t: 2 }];
+  b.useAbility(kz, K.kazuma.skills[0], foe, 'skill');
+  let ev = b.drain();
+  const rider = ev.find(x => x.t === 'dmg' && x.label === 'Хит' && x.el && x.u === foe);
+  ok(rider, 'with Certified Banger Steal adds Elation DMG');
+  kz.flags.banger = [];
+  b.useAbility(kz, K.kazuma.skills[0], foe, 'skill');
+  ok(!b.drain().some(x => x.t === 'dmg' && x.label === 'Хит'), 'without Certified Banger there is no Elation DMG rider');
+  b.useAbility(kz, K.kazuma.skills[2], b.allies[1], 'skill');
+  ok(!b.drain().some(x => x.t === 'dmg' && x.label === 'Хит'), 'Drain Touch has no rider');
+
+  const pc = b.el.punch;
+  b.el.fails = 0; b.actN = 5000;
+  b.collapse(b.allies[2], 1);
+  ok(b.el.punch === pc + T.elFail, 'Megumin falling down gives the team Punchline');
+
+  b = mk(['kazuma', 'march']);
+  const k2 = b.allies[0];
+  b.drain();
+  b.el.tally = 0;
+  H.ELATION_RUN.kazumaRps(b, k2);
+  ev = b.drain();
+  const rounds = ev.filter(x => x.t === 'rps');
+  ok(rounds.length === 6 && rounds.every(x => ['камень', 'ножницы', 'бумага'].includes(x.hand) && x.tgt && x.tgt.side === 'enemy'), 'Rock, Paper, Scissors plays 6 rounds against random enemies');
+  const allHits = ev.filter(x => x.t === 'dmg' && x.el && x.label === 'Радость');
+  ok(allHits.length === b.living.length, 'Rock, Paper, Scissors first hits every enemy with Elation DMG');
+  const wins = rounds.filter(x => x.win).length;
+  ok(ev.filter(x => x.t === 'punch' && x.add === 1).length === wins, 'every won round gives 1 Punchline');
+  const winRate = on => {
+    const t = new H.Battle({ party: [Object.assign(spec('kazuma'), { tr: { basic: 6, skill: 10, ult: 10, talent: 10, on } }), spec('march')], enemies: ['reaver:40'], lvl: 40, seed: 3 });
+    t.start(); t.living[0].hp = t.living[0].maxHp = 1e12;
+    let w = 0, n = 0;
+    for (let i = 0; i < 80; i++) { t.el.tally = 0; H.ELATION_RUN.kazumaRps(t, t.allies[0]); for (const x of t.drain()) if (x.t === 'rps') { n++; if (x.win) w++; } }
+    return w / n;
+  };
+  const r0 = winRate([]), r6 = winRate(['a6']);
+  ok(Math.abs(r0 - 0.5) < 0.08 && Math.abs(r6 - 0.75) < 0.08, 'a round is won half of the time, with A6 three times in four (' + r0.toFixed(2) + ', ' + r6.toFixed(2) + ')');
+
+  b = mk(['kazuma', 'march'], ['ks_toad:40']);
+  const k3 = b.allies[0], toad = b.living[0];
+  b.el.fails = 0; b.actN = 6000;
+  const ps = b.el.punch;
+  b.swallow(toad, k3);
+  ok(k3.swallowed && b.el.punch === ps + T.elFail, 'being swallowed is a failure too');
+  b.ahaTurn(b.ahaUnit());
+  ok(!k3.swallowed, 'Aha gets Kazuma out of the toad before his Elation Skill');
+
+  b = mk(['kazuma', 'march']);
+  const k4 = b.allies[0], h4 = b.ahaUnit();
+  k4.energy = k4.maxEnergy;
+  b.el.punch = 2; h4.av = 1e6; k4.flags.ultHeld = 0;
+  ok(b.elHoldUlt(k4), 'auto battle keeps the Great Heist while Punchline is low and Aha is far');
+  b.el.punch = T.ultHoldPunch;
+  ok(!b.elHoldUlt(k4), 'auto battle uses it at 10 Punchline');
+  b.el.punch = 2; k4.flags.ultHeld = T.ultHoldTurns;
+  ok(!b.elHoldUlt(k4), 'auto battle waits at most two of his turns');
+  b.el.punch = 2; k4.flags.ultHeld = 0; h4.av = 0;
+  ok(!b.elHoldUlt(k4), 'auto battle uses it when Aha acts next');
+
+  const trSpec = Object.assign(spec('trail'), { skills: [{ ab: K.kazuma.skills[0], short: 'Кража' }], skillsTitle: 'Навыки' });
+  b = mk([trSpec, 'march']);
+  ok(!b.el, 'without Kazuma the borrowed Adventurer skills bring no Aha');
+  const tr = b.allies[0];
+  b.useAbility(tr, tr.kit.skills[1], b.living[0], 'skill');
+  ok(!b.el || !b.el.punch, 'the Trailblazer\'s borrowed Steal gives no Punchline');
+
+  for (const seed of [2, 5, 9]) {
+    const ab = new H.Battle({ party: ['kazuma', 'aqua', 'megumin', 'darkness'].map(spec), enemies: ['ks_toad:40', 'ks_toad:40'], lvl: 40, seed });
+    ab.start();
+    const r = ab.runAuto(800);
+    ok(r && r.win && ab.el.instants > 0, 'the guild with the new Kazuma wins an auto battle with Aha Instants (seed ' + seed + ')');
+  }
+  log.push('kazuma elation ok');
+}
+{
+  const Tk = H.TRACES.kazuma;
+  ok(Tk.stats.filter(x => x[0] === 'elation').map(x => x[1]).join() === '0.04,0.06,0.08' && !Tk.stats.some(x => x[0] === 'ehr'), 'Kazuma\'s effect hit nodes became Elation Boost nodes of 4%, 6% and 8%');
+  ok(!/Удач/.test(Tk.bonus[0][1]) && /Юмор/.test(Tk.bonus[0][1]) && /75%/.test(Tk.bonus[2][1]) && /Аху/.test(Tk.eid[3][1]) && /9 раундов/.test(Tk.eid[5][1]) && /Навыка Радости/.test(Tk.eid[4][1]), 'Kazuma\'s Traces and Eidolons describe the Path of Elation');
+  const gk = new H.Game({ seed: 4 });
+  gk.debugChar('kazuma', 80, 0);
+  gk.fillTraces('kazuma', 'cap');
+  gk.state.party = ['kazuma'];
+  ok(Math.abs(gk.traceStats('kazuma').filter(x => x[0] === 'elation').reduce((a, x) => a + x[1], 0) - 0.18) < 1e-9, 'all Elation Boost nodes give Kazuma 18% Elation');
+  const ksp = gk.partySpecs().find(p => p.key === 'kazuma');
+  ok(ksp && Math.abs((ksp.stats.elation || 0) - 0.18) < 1e-6, 'the battle spec carries Elation from the Traces');
+  const kb = new H.Battle({ party: [ksp], enemies: ['reaver:60'], lvl: 60, seed: 2 });
+  kb.start();
+  ok(Math.abs(H.battleStat.sv(kb.allies[0], 'elation') - 0.18) < 1e-6, 'Elation from the Traces reaches the battle');
+  const ms = [];
+  const fake = tl => ({ kitFx: () => undefined, traceTalent: () => tl, living: [{ side: 'enemy' }], over: false, rng: Object.assign(() => 0.9, { pick: a => a[0] }), push() {}, gainPunch() {}, elHit(u, t, m) { ms.push(m); } });
+  H.ELATION_RUN.kazumaRps(fake(1), {});
+  const full = ms.splice(0);
+  H.ELATION_RUN.kazumaRps(fake(0.5), {});
+  ok(full.length === 7 && ms.every((m, i) => Math.abs(m - full[i] * 0.5) < 1e-9), 'Rock, Paper, Scissors follows the Talent level');
+  ok(H.STAT_NAMES.elation === 'Радость' && H.STAT_NAMES.merry === 'Веселье', 'the Elation stats have names');
+}
+{
+  const C2 = H.CONES;
+  ok(C2.goodluck.path === 'elation' && C2.goodluck.rarity === 4 && C2.sneering.path === 'elation' && C2.sneering.rarity === 3, 'two Elation Light Cones: Today\'s Good Luck 4★ and Sneering 3★');
+  ok(H.WARP_POOL.four.includes('cone:goodluck') && H.WARP_POOL.three.includes('cone:sneering'), 'both Elation cones drop from the standard Warp pool');
+  eq(H.coneText('goodluck', 5), 'Крит. шанс владельца повышается на 20%. Когда владелец использует Навык Радости, Радость повышается на 20%. Может складываться до 2 раз.', 'Today\'s Good Luck at S5');
+  eq(H.coneText('sneering', 1), 'При активации Мига Ахи Радость владельца повышается на 16%, пока действует Миг Ахи.', 'Sneering at S1');
+  const gc = new H.Game({ seed: 5 });
+  gc.debugChar('kazuma', 50, 0);
+  const bare = gc.charStats('kazuma').critR;
+  const gl = gc.addCone('goodluck'); gl.sup = 3; gc.equipCone('kazuma', gl.uid);
+  ok(Math.abs(gc.charStats('kazuma').critR - bare - 0.16) < 1e-9, 'Today\'s Good Luck S3 gives 16% CRIT Rate');
+  gc.state.party = ['kazuma'];
+  const spec = gc.partySpecs().find(p => p.key === 'kazuma');
+  let b = new H.Battle({ party: [spec, mkSpec('march', 50)], enemies: ['reaver:50'], lvl: 50, seed: 3 });
+  b.start(); b.living[0].hp = b.living[0].maxHp = 1e9;
+  const kz = b.allies[0];
+  for (let i = 0; i < 3; i++) { b.el.punch = 5; b.ahaTurn(b.ahaUnit()); }
+  ok(Math.abs(H.battleStat.sv(kz, 'elation') - (spec.stats.elation || 0) - 0.32) < 1e-9 && kz.buffs.filter(x => x.name === 'Выбор').length === 1, 'Today\'s Good Luck stacks Elation twice after Elation Skills');
+  const gs = new H.Game({ seed: 6 });
+  gs.debugChar('kazuma', 50, 0);
+  const sn = gs.addCone('sneering'); gs.equipCone('kazuma', sn.uid);
+  gs.state.party = ['kazuma'];
+  b = new H.Battle({ party: [gs.partySpecs().find(p => p.key === 'kazuma'), mkSpec('march', 50)], enemies: ['reaver:50'], lvl: 50, seed: 3 });
+  b.start();
+  const k2 = b.allies[0], foe = b.living[0];
+  const out = b.elationDmg(k2, foe, 1, { count: 0 }, false);
+  b.el.tally = 0;
+  const inside = b.elationDmg(k2, foe, 1, { count: 0 }, false);
+  b.el.tally = null;
+  ok(Math.abs(inside / out - (1 + (k2.base.elation || 0) + 0.16) / (1 + (k2.base.elation || 0))) < 0.01, 'Sneering adds 16% Elation only during the Aha Instant');
+}
+{
+  const m = H.MAIL.find(x => x.id === 'v16_elation');
+  ok(m && !m.need && m.give.items.elat2 === 6 && m.give.items.elat3 === 3 && m.text.every(l => !/[—–]|Microsoft|Windows/.test(l)), 'the 1.6 Path of Elation letter brings Elation materials');
+  ok(m.text.some(l => /«Это был трактор»/.test(l)) && m.text.some(l => /Удачи у Казумы больше нет/.test(l)), 'the letter explains the Luck change and the cone');
+  ok(H.CHARS.aqua.tech.text.includes('Довольство') && !H.CHARS.aqua.tech.text.includes('Радость'), 'the Contact mood is called Довольство, not Радость');
+}
+{
+  const DAY = 86400000;
+  let now = new Date(2000, 10, 20, 12, 0).getTime();
+  const pg = new H.Game({ clock: () => now, seed: 5 }), ps = pg.state;
+  ps.jade = 0;
+  ok(!pg.passActive() && pg.passOwed() === 0 && !pg.passReady() && pg.passCanBuy(), 'a fresh save has no Express Supply Pass');
+  ok(H.passDayNo(new Date(2000, 10, 21, 3, 59).getTime()) === H.passDayNo(now) && H.passDayNo(new Date(2000, 10, 21, 4, 1).getTime()) === H.passDayNo(now) + 1, 'a pass day starts at 04:00');
+  const r1 = pg.passGrant('T1');
+  ok(r1 && r1.now === 300 && r1.day.jade === 90 && ps.jade === 390, 'paying gives 300 jade at once and 90 for today');
+  ok(pg.passLeft() === 30 && pg.passOwed() === 29 && pg.passClaimedToday() && pg.passClaim() === null, 'the pass lasts 30 days and pays once a day');
+  ok(pg.passGrant('T1') === null && ps.jade === 390, 'one Steam order is delivered once');
+  now += DAY;
+  ok(pg.passReady() && pg.passClaim().jade === 90 && ps.jade === 480 && pg.passOwed() === 28, 'the next day pays again');
+  now += 3 * DAY;
+  pg.passClaim();
+  ok(pg.passOwed() === 25 && ps.jade === 570, 'days without a visit are lost');
+  for (let i = 2; i <= 5; i++) pg.passGrant('T' + i);
+  ok(pg.passLeft() === 146 && pg.passCanBuy() && ps.jade === 570 + 1200, 'each purchase adds 30 days and 300 jade');
+  pg.passGrant('T6');
+  ok(pg.passLeft() === 176 && !pg.passCanBuy(), 'no new purchase past 180 days');
+  pg.passGrant('T7');
+  ok(pg.passLeft() === 180, 'a late order is cut at 180 days');
+  now += 180 * DAY;
+  ok(!pg.passActive() && !pg.passReady() && pg.passCanBuy(), 'the pass ends and can be bought again');
+  const back = new H.Game({ state: JSON.parse(JSON.stringify(ps)), clock: () => now });
+  ok(back.passState().orders.length === 7 && back.passGrant('T3') === null, 'delivered orders stay in the save');
+  const old = H.newState(); delete old.pass;
+  ok(new H.Game({ state: old, clock: () => now }).passLeft() === 0, 'old saves start without a pass');
+}
+{
+  let now = Date.UTC(2000, 10, 20, 12, 5);
+  const cg = new H.Game({ clock: () => now, seed: 6 }), cs = cg.state, byId = id => H.CONTRACTS.find(c => c.id === id);
+  ok(H.CONTRACTS.length === 7 && H.CONTRACTS.every(c => [c.give].concat(c.from || []).every(g => Object.keys(g.items || {}).every(id => H.ITEMS[id]))), 'all seven contracts sell real items');
+  ok(H.CONTRACTS.every(c => !c.pick || (c.pick < c.from.length && c.from.every(o => H.contractLots(o).length === 1))), 'a choice leaves something out and every option is one lot');
+  ok(H.CONTRACTS.every(c => !/[—–]|Microsoft|Windows/.test(c.name + c.text)), 'contract texts follow the style rules');
+  cs.jade = 100;
+  ok(cg.contractView('c_quest').block === 'jade' && cg.contractBuy('c_quest') === null && cs.jade === 100, 'a contract needs Stellar Jade');
+  cs.jade = 5000;
+  const e2 = cs.inv.items.exp2 || 0, cr = cs.credits;
+  ok(cg.contractBuy('c_quest') && cs.jade === 4820 && cs.inv.items.exp2 === e2 + 25 && cs.credits === cr + 5000, 'Quest Sharing gives logs and credits for 180 jade');
+  cg.contractBuy('c_quest');
+  ok(cg.contractView('c_quest').block === 'limit' && cg.contractBuy('c_quest') === null, 'two Quest Sharing contracts per week');
+  now += 3600000;
+  ok(cg.contractLeft(byId('c_quest')) === 2, 'a contract week lasts one real hour');
+  ok(cg.contractBuy('c_aid') && cg.contractView('c_aid').block === 'limit', 'Trailblaze Aid is sold once');
+  now += 30 * 3600000;
+  ok(cg.contractView('c_aid').block === 'limit', 'and never comes back');
+  cs.jade = 3000;
+  ok(cg.contractBuy('c_coop', [0, 1]) === null && cg.contractBuy('c_coop', [0, 0, 1]) === null && cg.contractBuy('c_coop', [0, 1, 9]) === null && cs.jade === 3000, 'Strategic Cooperation needs three different picks');
+  const sp = cs.inv.items.spass || 0, ex3 = cs.inv.items.exp3 || 0;
+  const co = cg.contractBuy('c_coop', [1, 2, 3]);
+  ok(co && cs.jade === 320 && cs.inv.items.spass === sp + 10 && cs.inv.items.remains === 1600 && cs.inv.items.tears === 480 && cs.inv.items.exp3 === ex3 + 200 && !cs.inv.items.resin, 'the picks decide what comes with the ten passes');
+  ok(cg.contractView('c_coop').left === 4 && cg.contractView('c_coop').ends - now <= 6 * 3600000, 'version contracts restock every six hours');
+  now = cg.contractView('c_coop').ends;
+  ok(cg.contractView('c_coop').left === 5, 'and the new version restocks them');
+  ok(cg.contractView('c_fuel').left === 1 && byId('c_fuel').give.items.fuel === 2, 'Fuel Refill brings two Fuel');
+}
+{
+  const tg = new H.Game({ seed: 7 }), ts = tg.state;
+  tg.addChar('march', 80);
+  ts.credits = 1e7;
+  const kit = tg.kitOf('march'), states = () => H.traceNodes(kit).map(n => tg.traceNode('march', n.id)).filter(st => st && st.cost);
+  const node = states().find(st => st.why !== 'lvl' && st.why !== 'pre' && Object.keys(st.cost.items).some(m => H.ITEMS[m].mat === 'path'));
+  ok(node, 'a March 7th trace needs Path materials');
+  for (const [m, n] of Object.entries(node.cost.items)) ts.inv.items[m] = H.ITEMS[m].mat === 'path' ? 0 : n;
+  const id = node.node.id, need = Object.entries(node.cost.items).filter(([m]) => H.ITEMS[m].mat === 'path').reduce((a, [m, n]) => a + n * H.TEAR_RATE[H.ITEMS[m].rar], 0);
+  const st0 = tg.traceNode('march', id);
+  ok(st0.why === 'mats' && st0.tears === need, 'missing Path materials are priced in Tears of Dreams');
+  ts.inv.items.tears = need - 1;
+  ok(tg.traceNode('march', id).why === 'mats', 'too few tears do not cover them');
+  ts.inv.items.tears = need + 5;
+  ok(tg.traceNode('march', id).ok && tg.trace('march', id) && ts.inv.items.tears === 5, 'Tears of Dreams stand in for the missing Path materials');
+  ok(H.TEAR_RATE[2] === 1 && H.TEAR_RATE[3] === 3 && H.TEAR_RATE[4] === 9, 'the tear rates follow the original 1/3/9');
+}
+{
+  const fg = new H.Game({ seed: 7 }), fs = fg.state, letter = H.MAIL.find(m => m.id === 'fuelv_gift');
+  ok(H.ITEMS.fuelv && H.ITEMS.fuelv.name === 'Топливный купон' && H.ITEMS.fuelv.kind === 'key' && !H.ITEMS.fuelv.use, 'the Fuel Voucher is a key item that is never used from the inventory');
+  ok(H.ITEMS.fuel.name === 'Топливо Экспресса' && H.FUELV_MAX === 1000, 'Express Fuel keeps its id, vouchers cap at 1000');
+  ok(letter && letter.need === 'express_intro' && letter.give.items.fuelv === 100 && letter.from === 'Пом-Пом', 'Pom-Pom sends one letter with 100 vouchers after the Express introduction');
+  ok(letter.text.every(t => !t.includes('\u2014') && !/Microsoft|Windows/.test(t)), 'the voucher letter has no em dashes and no real brand names');
+  ok(!fg.mailbox().some(x => x.m.id === 'fuelv_gift'), 'no voucher letter before the Express');
+  fs.flags.express_intro = true;
+  ok(fg.mailbox().some(x => x.m.id === 'fuelv_gift'), 'the voucher letter arrives with the Express');
+  ok(fg.claimMail('fuelv_gift') && fs.inv.items.fuelv === 100 && !fg.claimMail('fuelv_gift'), 'the letter gives 100 vouchers once');
+  fs.inv.items.fuelv = 950;
+  const over = fg.give({ items: { fuelv: 100, metal: 2 } });
+  ok(fs.inv.items.fuelv === 1000 && fs.inv.items.metal === 2 && over.some(t => t.includes('предел 1000')), 'vouchers stop at 1000 and say so, other items still arrive');
+  ok(fg.give({ items: { fuelv: 5 } }).length === 1 && fs.inv.items.fuelv === 1000, 'a full stack takes nothing more');
+  fg.take({ items: { fuelv: 1000 } });
+  ok(!fs.inv.items.fuelv && fg.give({ items: { fuelv: 3 } }) && fs.inv.items.fuelv === 3, 'an empty stack fills again');
+}
+{
+  let now = Date.UTC(2026, 9, 23, 12);
+  const dg = new H.Game({ seed: 11, clock: () => now }), ds = dg.state;
+  Object.assign(ds.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true, cor_h3: true, ending: true });
+  dg.addChar('march', 40);
+  const setPower = (p, r) => { dg.powerSync(); ds.power = p; ds.powerRes = r; };
+  const fight = (win, wave) => { const b = dg.battle; if (wave != null) b.wave = wave; b.finish(win); return dg.endBattle(); };
+  ok(dg.domainRunCap('cx_exp') === 24 && dg.domainRunCap('cx_hunt') === 24 && dg.domainRunCap('cx_spike') === 8 && dg.domainRunCap('cx_fist') === 6 && dg.domainRunCap('cx_echo_doom') === 1, 'run caps follow the original: 24 Calyx waves, 8 Shadows, 6 Caverns, 1 Echo');
+  ok(dg.domainCoupons('cx_exp') === 1 && dg.domainCoupons('cx_spike') === 3 && dg.domainCoupons('cx_fist') === 0 && dg.domainCoupons('cx_echo_doom') === 0, 'a voucher per 10 power: one for a Calyx wave, three for a Shadow, none for Caverns and Echoes');
+  ok(dg.powerAuto(), 'quick power recovery is on by default');
+  setPower(600, 0);
+  eq(dg.domainRunMax('cx_hunt', 0), 24, 'enough power allows all 24 waves');
+  setPower(55, 0); dg.setPowerAuto(false);
+  eq(dg.domainRunMax('cx_hunt', 0), 5, 'without recovery the slider stops at the power on hand');
+  setPower(55, 100); dg.setPowerAuto(true);
+  ok(dg.domainRunMax('cx_hunt', 0) === 15 && dg.domainRunMax('cx_spike', 0) === 5 && dg.domainRunMax('cx_echo_doom', 0) === 1, 'with recovery the reserve counts too');
+  delete ds.flags.ending;
+  eq(dg.domainRunMax('cx_hunt', 3), 0, 'a closed difficulty allows nothing');
+  ds.flags.ending = true;
+  dg.setDomainPref('cx_hunt', 12, 1);
+  ok(dg.domainPref('cx_hunt').n === 12 && dg.domainPref('cx_hunt').tier === 1 && dg.domainPref('cx_exp').n === 1, 'the chosen count and difficulty are kept per domain');
+
+  setPower(100, 0);
+  ok(dg.startCalyx('cx_hunt', 0, 6) && dg.battle.waves.length === 6 && dg.battle.waves.every(w => w.length === 3), 'six Calyx waves start as one battle');
+  const won = fight(true);
+  ok(won.win && ds.power === 40 && won.waves.done === 6 && Object.keys(won.calyx.delta.items).some(k => H.ITEMS[k].mat === 'path'), 'a won run pays 10 power per wave and rewards every wave');
+  setPower(100, 0);
+  dg.startCalyx('cx_hunt', 0, 8);
+  const lost = fight(false, 3);
+  ok(lost.lost && lost.waves.done === 3 && ds.power === 70 && Object.keys(lost.calyx.delta.items).length > 0, 'a lost run still pays and rewards the three cleared waves');
+  ok(dg.battleCtx.calyx.n === 5 && dg.battleCtx.o.waves.length === 5, 'a retry continues with the five waves left');
+  ok(dg.retryBattle() && dg.battle.waves.length === 5, 'the retry runs the remaining waves');
+  fight(true);
+  eq(ds.power, 20, 'and pays only for them');
+  setPower(30, 0); dg.setPowerAuto(false);
+  ok(!dg.startCalyx('cx_hunt', 0, 4) && ds.power === 30 && !dg.battle, 'without recovery a run the power cannot pay for does not start');
+  dg.setPowerAuto(true);
+  setPower(30, 100);
+  ok(dg.startCalyx('cx_hunt', 0, 3) && ds.power === 30 && ds.powerRes === 100, 'nothing is taken from the reserve when the power is enough');
+  fight(true);
+  setPower(10, 100);
+  ok(dg.startCalyx('cx_hunt', 0, 4) && ds.power === 40 && ds.powerRes === 70, 'recovery takes exactly the shortfall from the reserve');
+  fight(true);
+  setPower(10, 10);
+  ds.inv.items.fuel = 3;
+  ok(!dg.startCalyx('cx_hunt', 0, 4) && ds.inv.items.fuel === 3 && ds.powerRes === 10 && ds.power === 10, 'recovery never spends Express Fuel and leaves a short reserve alone');
+
+  setPower(200, 0);
+  const rel0 = ds.inv.relics.length;
+  ok(dg.startCalyx('cx_spike', 0, 3) && dg.calyxRun && dg.calyxRun.n === 3 && dg.battle.waves.length === 1, 'a Shadow series starts with one battle');
+  const s1 = fight(true);
+  ok(s1.series.k === 1 && s1.series.more && ds.power === 170 && ds.inv.relics.length > rel0, 'every Shadow win pays and rewards at once');
+  ok(dg.calyxNext().ok && dg.calyxRun.k === 2, 'the next battle of the series starts');
+  const s2 = fight(false);
+  ok(s2.series.lost && !s2.series.more && ds.power === 170 && !dg.calyxRun.done, 'a lost Shadow keeps the earlier win and waits for a retry');
+  ok(dg.retryBattle(), 'the lost Shadow can be retried');
+  fight(true);
+  const s3 = dg.calyxNext().ok && fight(true);
+  ok(s3 && s3.series.k === 3 && !s3.series.more && s3.series.wins === 3 && s3.series.total.relics.length === ds.inv.relics.length - rel0 && ds.power === 110, 'the third win ends the series with a total');
+  ok(!dg.calyxNext().ok, 'a finished series has no next battle');
+  ok(dg.calyxRepeat() && dg.calyxRun.n === 3 && dg.calyxRun.k === 1, 'repeat starts the same series again');
+  fight(true);
+  const stop = dg.calyxStop();
+  ok(stop && stop.wins === 1 && !dg.calyxRun, 'a series can be stopped between battles');
+  setPower(25, 0); dg.setPowerAuto(false);
+  ok(!dg.startCalyx('cx_fist', 0, 2), 'a Cavern series needs power for every battle at the start');
+  setPower(40, 0);
+  ok(dg.startCalyx('cx_fist', 0, 2) && fight(true).series.more && ds.power === 20, 'the first Cavern win pays 20');
+  ds.power = 5;
+  ok(dg.calyxNext().why === 'power' && dg.calyxRun.k === 1, 'a series without power for the next battle stops and says why');
+  dg.calyxStop();
+  dg.setPowerAuto(true);
+
+  setPower(5, 0);
+  dg.echoSync().n = 3;
+  ok(dg.startCalyx('cx_echo_doom', 0), 'an Echo without rewards starts even with little power');
+  fight(true);
+  ok(ds.power === 5, 'and costs nothing');
+
+  setPower(600, 0);
+  ds.inv.items.fuelv = 0;
+  ok(dg.quickFarm('cx_hunt', 0, 3).why === 'fuelv' && dg.quickMax('cx_hunt', 0) === 0, 'no vouchers, no quick farm');
+  ds.inv.items.fuelv = 20;
+  ok(dg.quickWhy('cx_fist', 0) === 'kind' && dg.quickWhy('cx_echo_doom', 0) === 'kind', 'Caverns and Echoes cannot be quick farmed');
+  ok(dg.quickMax('cx_hunt', 0) === 10 && dg.quickMax('cx_spike', 0) === 6, 'quick farm stops at ten tries or the vouchers');
+  ok(dg.quickFarm('cx_hunt', 0, 11).why === 'count', 'more than ten tries are refused');
+  const daily = dg.dailySync();
+  daily.pick = daily.pick.filter(id => id !== 'kills').concat('kills');
+  const pw0 = daily.prog.power || 0, tl0 = ds.tl.exp + ds.tl.lvl * 1e6;
+  const q = dg.quickFarm('cx_hunt', 0, 4);
+  ok(q.ok && q.runs === 4 && ds.inv.items.fuelv === 16 && ds.power === 560 && q.spent.power === 40 && q.spent.fuelv === 4, 'four quick tries take 40 power and four vouchers');
+  ok(Object.keys(q.delta.items).length > 0 && !q.delta.items.fuelv, 'quick farm reports what came, without the vouchers');
+  ok(ds.tl.exp + ds.tl.lvl * 1e6 > tl0 && q.exp === dg.domainExp('cx_hunt', 0) * 4 && q.exp > 0, 'quick farm gives the Trailblaze EXP of a normal fight');
+  ok(daily.prog.power === Math.min(120, pw0 + 40), 'quick farm counts toward the daily power task');
+  ok(!daily.prog.kills, 'quick farm defeats nobody');
+  const r1 = ds.inv.relics.length;
+  ok(dg.quickFarm('cx_spike', 0, 2).ok && ds.inv.items.fuelv === 10 && ds.power === 500 && ds.inv.relics.length > r1, 'a quick Shadow takes three vouchers and 30 power and gives relics');
+  setPower(15, 500);
+  ok(dg.quickFarm('cx_spike', 0, 1).why === 'power' && ds.powerRes === 500, 'quick farm never takes the reserve');
+  setPower(600, 0);
+  ds.su = { world: 1 };
+  ok(dg.quickFarm('cx_hunt', 0, 1).why === 'place', 'no quick farm inside the Simulated Universe');
+  delete ds.su;
+
+  dg.setGuideTarget('march');
+  const path = H.CHARS[dg.kitOf('march')].path, pathCalyx = H.CALYX.find(c => c.reward === 'path' && c.path === path && dg.calyxOpen(c));
+  ok(pathCalyx, 'the target has an open Path Calyx');
+  const needs = dg.targetRowNeeds(pathCalyx.id);
+  ok(needs.length > 0, 'the build target needs materials of its Path Calyx');
+  for (const n of needs) ds.inv.items[n.id] = H.ITEMS[n.id].tier === 1 ? n.need - 1 : n.need;
+  ds.inv.items.fuelv = 50;
+  const tq = dg.quickFarm(pathCalyx.id, 0, 10);
+  ok(tq.ok && tq.stopped === 'target' && tq.runs < 10 && tq.left === 10 - tq.runs && !dg.targetRowNeeds(pathCalyx.id).length, 'quick farm stops once the target has enough');
+  const free = dg.quickFarm(pathCalyx.id, 0, 2, { target: false });
+  ok(free.ok && free.runs === 2 && !free.stopped, 'continuing after the stop runs every try');
 }
 console.log(log.join('\n'));
 console.log('hsr98: ' + checks + ' checks passed in ' + ((Date.now() - t0) / 1000).toFixed(1) + 's');

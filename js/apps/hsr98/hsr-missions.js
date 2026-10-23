@@ -10,8 +10,8 @@
 
   const CHAPTERS = {
     prologue: { type: 'trail', label: 'Пролог: Космическая станция «Герта»', name: 'Ещё вчера сегодня было завтра' },
-    winter: { type: 'trail', label: 'Глава I: Ярило-VI', name: 'В иссушающую зимнюю ночь' },
-    dawn: { type: 'trail', label: 'Глава I: Ярило-VI', name: 'Под палящим рассветным солнцем' },
+    winter: { type: 'trail', label: 'Акт I: Ярило-VI', name: 'В иссушающую зимнюю ночь' },
+    dawn: { type: 'trail', label: 'Акт I: Ярило-VI', name: 'Под палящим рассветным солнцем' },
     awake: { type: 'trail', label: 'Продолжение Освоения: Ярило-VI', name: 'Пробуждение от зимнего сна' },
     furnace: { type: 'comp', label: 'Компаньон: Хук', name: 'Обрывки жизней пред горнилом' }
   };

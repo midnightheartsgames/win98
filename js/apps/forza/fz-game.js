@@ -42,8 +42,17 @@
   F.weatherParams = weatherParams;
 
   function defaultSettings() {
-    return { diff: 1, abs: true, tcs: true, stm: true, auto: true, steer: 'std', line: 'full', dmg: 'full', units: 'kmh', cam: 'chase', vol: 0.8, music: 0.6, engine: 0.9, sfx: 0.8, ambient: 0.8, radio: 0, res: 0, dither: false, gfx: 'ultra', draw: 900, flora: 2, mirror: true, traffic: 1, fov: 0 };
+    return { diff: 1, abs: true, tcs: true, stm: true, auto: true, steer: 'std', line: 'full', dmg: 'full', units: 'kmh', cam: 'chase', vol: 0.8, music: 0.6, engine: 0.9, sfx: 0.8, ambient: 0.8, radio: 0, res: 0, dither: false, gfx: 'ultra', draw: 900, flora: 2, mirror: true, traffic: 1, fov: 0, mlook: 'hold', msens: 1, minv: false, mret: 'fast' };
   }
+
+  const WARDROBE_START = F.Wear.STARTER;
+  const LOOK_KEYS = ['body', 'face', 'skin', 'eyes', 'eyeCol', 'brows', 'freckles', 'makeup', 'hair', 'hairCol', 'beard'];
+
+  const NAME_MAX = 16;
+  function cleanName(s) {
+    return String(s || '').replace(/[^\p{L}0-9 _]/gu, '').replace(/\s+/g, ' ').replace(/^ /, '').slice(0, NAME_MAX);
+  }
+  function nameOk(s) { const t = cleanName(s).trim(); return t.length >= 2 && t === String(s).trim(); }
 
   function newProfile(name) {
     const c = F.Cars.get('vaz2105');
@@ -52,7 +61,8 @@
       cars: [{ uid: 1, id: 'vaz2105', up: {}, c1: c.col, c2: c.col2 || c.col, livery: c.livery || 'none', metal: false, dirt: 0, odo: 0 }], current: 1, nextUid: 2,
       band: 0, pts: 0, results: {}, stunts: {}, boards: [], barns: [], outposts: ['hub'], roads: [],
       settings: defaultSettings(), stats: { dist: 0, drift: 0, top: 0, wins: 0, races: 0, smashed: 0, near: 0, air: 0, bestChain: 0, time: 0 },
-      prologue: false, finale: false, clock: 11.5, weather: 'clear', pos: null, ftCount: 0
+      prologue: false, finale: false, clock: 11.5, weather: 'clear', pos: null, ftCount: 0,
+      driver: null, wardrobe: WARDROBE_START.slice(), outfits: [null, null, null], wardrobeSeen: []
     };
   }
 
@@ -68,6 +78,11 @@
       p.stats = Object.assign(newProfile().stats, p.stats || {});
       if (p.map !== MAP_VERSION) { p.map = MAP_VERSION; p.roads = []; p.pos = null; }
       p.weather = weatherId(p.weather);
+      if (!Array.isArray(p.wardrobe)) p.wardrobe = WARDROBE_START.slice();
+      for (const id of WARDROBE_START) if (!p.wardrobe.includes(id)) p.wardrobe.push(id);
+      if (!Array.isArray(p.outfits)) p.outfits = [null, null, null];
+      if (!Array.isArray(p.wardrobeSeen)) p.wardrobeSeen = [];
+      if (p.driver === undefined) p.driver = null;
       return p;
     } catch (e) { return null; }
   }
@@ -372,7 +387,7 @@
       const veh = this.veh;
       this.time += dt;
       if (inp.rewind && this.canRewind()) { this.doRewind(dt); return; }
-      if (this.rewinding) { this.rewinding = false; this.emit({ t: 'rewindEnd' }); }
+      if (this.rewinding) this.endRewind();
       const sub = F.SUB;
       const events = [];
       const pre = { x: veh.x, z: veh.z };
@@ -427,19 +442,23 @@
       return this.snaps.length > 1;
     }
 
+    rewindSnaps() { return this.race ? this.race.snaps : this.snaps; }
+
+    takeSnap() { return this.race ? this.race.snap(this.veh) : this.veh.snap(); }
+
     doRewind(dt) {
-      if (!this.rewinding) { this.rewinding = true; this.rewAcc = 0; this.emit({ t: 'rewind' }); this.chainLost(true); }
-      this.rewAcc += dt;
-      while (this.rewAcc >= 0.05) {
-        this.rewAcc -= 0.05;
-        if (this.race) {
-          const s = this.race.snaps;
-          if (s.length > 1) { s.pop(); this.race.restore(s[s.length - 1], this.veh); }
-        } else if (this.snaps.length > 1) {
-          this.snaps.pop();
-          this.veh.restore(this.snaps[this.snaps.length - 1]);
-        }
+      const s = this.rewindSnaps();
+      if (!this.rewinding) {
+        this.rewinding = true; this.rewK = 0;
+        s.push(this.takeSnap());
+        this.emit({ t: 'rewind' }); this.chainLost(true);
       }
+      this.rewK += dt / 0.05;
+      while (this.rewK >= 1 && s.length > 1) { s.pop(); this.rewK -= 1; }
+      if (s.length < 2) this.rewK = 0;
+      const a = s[s.length - 1], b = s[s.length - 2] || a, k = this.rewK;
+      if (this.race) this.race.restoreBlend(a, b, k, this.veh);
+      else { this.veh.restore(a); this.veh.blend(b, k); }
       this.veh.events.length = 0;
       const d = this.veh.dmg;
       if (d) {
@@ -447,6 +466,14 @@
         if (!d.burnt) this.wreckT = 0;
         else if (this.wreckT <= 0) this.wreckT = 3.2;
       }
+    }
+
+    endRewind() {
+      this.rewinding = false;
+      const s = this.rewindSnaps();
+      if (this.rewK > 0 && s.length) s[s.length - 1] = this.takeSnap();
+      this.rewK = 0;
+      this.emit({ t: 'rewindEnd' });
     }
 
     recordSnap(dt) {
@@ -953,6 +980,10 @@
         p.credits += r.cr;
         let car = null;
         if (r.car && !p.cars.some(c => c.id === r.car)) { this.giveCar(r.car, false); car = r.car; }
+        if (p.level % F.Wear.GIFT_EVERY === 0) {
+          const it = F.Wear.giftFor(p, (p.level * 7919) ^ p.wardrobe.length);
+          if (it) { p.wardrobe.push(it.id); this.emit({ t: 'item', id: it.id, why: 'level', level: p.level }); }
+        }
         this.emit({ t: 'levelup', level: p.level, cr: r.cr, car });
         need = EV().xpForLevel(p.level);
       }
@@ -1024,6 +1055,60 @@
       if (!entry) return;
       entry.c1 = c1; entry.c2 = c2 || c1; entry.livery = livery || 'none'; entry.metal = !!metal; entry.dirt = 0;
       if (uid === this.profile.current) { this.paint1 = F.hexRgb(entry.c1); this.paint2 = F.hexRgb(entry.c2); }
+      this.save();
+    }
+
+    setLook(look) {
+      const p = this.profile, d = Object.assign({}, p.driver || {});
+      for (const k of LOOK_KEYS) if (look[k] !== undefined) d[k] = look[k];
+      p.driver = d;
+      this.save();
+    }
+
+    wearFit(fit) {
+      const p = this.profile;
+      for (const v of Object.values(fit)) {
+        if (!Array.isArray(v)) continue;
+        const it = F.Wear.ITEM[v[0]];
+        if (!it || !p.wardrobe.includes(v[0]) || !(v[1] >= 0 && v[1] < F.Wear.colours(it, p))) return false;
+      }
+      p.driver = Object.assign({}, p.driver || {}, { fit: JSON.parse(JSON.stringify(fit)) });
+      this.save();
+      return true;
+    }
+
+    buyItem(id) {
+      const p = this.profile, it = F.Wear.ITEM[id];
+      if (!it) return 'missing';
+      const st = F.Wear.shopState(it, p);
+      if (st !== 'ok') return st;
+      p.credits -= it.price;
+      p.wardrobe.push(id);
+      this.save();
+      return 'ok';
+    }
+
+    checkWear() {
+      const p = this.profile;
+      if (!Array.isArray(p.wardrobe)) return;
+      for (const it of F.Wear.ITEMS) {
+        if (it.price !== null || p.wardrobe.includes(it.id) || !F.Wear.earned(it.reward, p)) continue;
+        p.wardrobe.push(it.id);
+        this.emit({ t: 'item', id: it.id, why: 'reward' });
+      }
+    }
+
+    saveOutfit(k, fit) {
+      const p = this.profile;
+      if (!(k >= 0 && k < 3)) return false;
+      p.outfits[k] = JSON.parse(JSON.stringify(fit));
+      this.save();
+      return true;
+    }
+
+    grantWear(ids) {
+      const p = this.profile;
+      for (const id of ids) if (!p.wardrobe.includes(id)) p.wardrobe.push(id);
       this.save();
     }
 
@@ -1333,6 +1418,7 @@
 
     save() {
       const p = this.profile;
+      this.checkWear();
       if (this.mode === 'free' && this.veh) p.pos = { x: +this.veh.x.toFixed(1), z: +this.veh.z.toFixed(1), yaw: +this.veh.yaw.toFixed(3) };
       p.clock = this.clock;
       p.weather = this.weather;
@@ -1342,6 +1428,6 @@
   }
 
   F.Game = Game;
-  F.Profile = { newProfile, loadProfile, saveProfile, wipeProfile, defaultSettings, SAVE_KEY };
+  F.Profile = { newProfile, loadProfile, saveProfile, wipeProfile, defaultSettings, SAVE_KEY, WARDROBE_START, LOOK_KEYS, cleanName, nameOk, NAME_MAX };
   F.pickRivals = pickRivals;
 })(globalThis.Forza = globalThis.Forza || {});

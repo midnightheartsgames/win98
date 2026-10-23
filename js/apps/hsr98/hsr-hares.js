@@ -56,15 +56,27 @@
   };
 
   const CONES = {
-    starlight: { name: 'Реплика Звёздного двигателя', path: 'erudition', rarity: 4, stats: { hp: 43, atk: 24, def: 15 }, bonus: { atkP: 0.16 }, sig: 'billy', fx: 'starlight', text: 'Атака +16%. Урон базовой атаки +20%. После абсолютной техники физический урон +16% на 2 хода.' },
-    vault: { name: 'Сундук сокровищ', path: 'nihility', rarity: 4, stats: { hp: 43, atk: 21, def: 18 }, bonus: { ehr: 0.16 }, sig: 'nicole', fx: 'vault', text: 'Шанс эффекта +16%. После навыка или абс. техники задетые враги получают урон +12% 2 хода, владелец +3 энергии.' },
-    battery: { name: 'Аккумулятор Демары II', path: 'hunt', rarity: 4, stats: { hp: 43, atk: 24, def: 15 }, bonus: { elecP: 0.15 }, sig: 'anby', fx: 'battery', text: 'Урон молнией +15%. После Цепочки атак или доп. атаки восстановление энергии +18% на 2 хода.' }
+    starlight: {
+      name: 'Звёздные рыцари не проигрывают', path: 'erudition', rarity: 4, own: true, stats: { hp: 43.2, atk: 21.6, def: 15 }, skill: 'Финальная серия', sig: 'billy',
+      tpl: 'Атака владельца повышается на #1%, урон базовой атаки на #2%. После абсолютной техники физический урон владельца повышается на #3% на 2 хода.', p: [[0.16, 0.2, 0.16], [0.2, 0.25, 0.2], [0.24, 0.3, 0.24], [0.28, 0.35, 0.28], [0.32, 0.4, 0.32]], bonus: { atkP: 1 }, fx: 'starlight',
+      desc: 'На экране Звёздный рыцарь поднимается в последний раз. Музыка, титры, реклама лапши.\nБилли не двигается. На коленях у него два револьвера, рядом тряпка и банка масла.\n«Видели? Он встал. Звёздные рыцари не проигрывают».\nСчёт за обслуживание лежит на полу. Его можно оплатить и завтра.'
+    },
+    vault: {
+      name: 'Как купить солнце', path: 'nihility', rarity: 4, own: true, stats: { hp: 43.2, atk: 19.2, def: 18 }, skill: 'Сегодня за счёт заведения', sig: 'nicole',
+      tpl: 'Шанс эффекта владельца повышается на #1%. После навыка или абсолютной техники задетые враги получают на #2% больше урона 2 хода, а владелец восстанавливает #3 энергии.', p: [[0.16, 0.12, 3], [0.2, 0.15, 3.75], [0.24, 0.18, 4.5], [0.28, 0.21, 5.25], [0.32, 0.24, 6]], bonus: { ehr: 1 }, fx: 'vault',
+      desc: 'Денни, которые они собирали всем приютом, не хватило бы даже на половину костюма.\nТогда Николь сказала, что они купят солнце.\nОна встала у окна с маленьким зеркальцем, и солнечный зайчик лёг на подушку её подруги.\n«Сколько с тебя? Нисколько. Сегодня за счёт заведения».'
+    },
+    battery: {
+      name: 'Трек без названия', path: 'hunt', rarity: 4, own: true, stats: { hp: 43.2, atk: 21.6, def: 15 }, skill: 'Своя тема', sig: 'anby',
+      tpl: 'Урон молнией владельца повышается на #1%. После Цепочки атак или бонус-атаки восстановление энергии владельца повышается на #2% на 2 хода.', p: [[0.15, 0.12], [0.1875, 0.15], [0.225, 0.18], [0.2625, 0.21], [0.3, 0.24]], bonus: { elecP: 1 }, fx: 'battery',
+      desc: 'Фильм закончился, титры отыграли, а мелодия в наушниках осталась.\nЭнби сама придумала её по дороге: шаги, ветер, сирена где-то далеко.\nНа крыше агентства она достаёт маркер и пишет на кассете своё имя.\n«В кино у героя всегда есть своя тема. Значит, у меня тоже будет».'
+    }
   };
 
   const FX = ['field', 'caseLoad', 'caseShot', 'nicoleEnergy', 'series', 'seriesReset', 'seriesFull', 'starFull'];
   const IDS = Object.keys(KITS);
 
-  const coneK = (u, fx) => (u && u.cone && u.cone.fx === fx ? 1 + 0.25 * ((u.cone.sup || 1) - 1) : 0);
+  const coneK = (u, fx, n) => (u && u.cone ? H.coneP(u, fx, n) : 0);
   const ally = (b, id) => b.allies.find(a => a.charId === id && alive(a)) || null;
   const free = a => alive(a) && !a.flags.away && !a.frozen && !(a.flags.collapse > 0) && !a.swallowed && !a.caged;
 
@@ -147,8 +159,7 @@
         v += T.steadyStep * (this.traceTalent ? this.traceTalent(src) : 1) * (src.flags.steady || 0);
         if (o.kind === 'ult') v += T.starTeam * (src.flags.star || 0);
       }
-      const sl = coneK(src, 'starlight');
-      if (sl && o.kind === 'basic') v += 0.2 * sl;
+      if (o.kind === 'basic') v += coneK(src, 'starlight', 2);
       if (e === 'quant' && tgt.side === 'enemy' && this.fieldOn() && this.hareLink(this.field.src)) v += this.fieldK(this.field.src).quant;
       return v;
     },
@@ -157,8 +168,8 @@
       if (!u || u.side !== 'ally') return;
       const bl = ally(this, 'billy');
       if (bl && (bl !== u || kind === 'chain') && this.hareLink(bl) && (!this.hasBonus || this.hasBonus(bl, 'a2'))) { this.setStar(bl, (bl.flags.star || 0) + 1); if (this.kitFx) this.kitFx(bl, 'starGain'); }
-      const bt = coneK(u, 'battery');
-      if (bt) this.addBuff(u, { s: 'err', v: 0.18 * bt, turns: 2, name: 'Аккумулятор Демары II' }, true);
+      const bt = coneK(u, 'battery', 2);
+      if (bt) this.addBuff(u, { s: 'err', v: bt, turns: 2, name: 'Своя тема' }, true);
     },
 
     haresHurt(tgt, dmg) {
@@ -228,12 +239,12 @@
         else if (kind === 'skill') this.setSteady(u, 0);
         else if (kind === 'ult') this.setStar(u, 0);
       }
-      const sl = coneK(u, 'starlight');
-      if (sl && kind === 'ult') this.addBuff(u, { s: 'physP', v: 0.16 * sl, turns: 2, name: 'Реплика Звёздного двигателя' });
-      const vt = coneK(u, 'vault');
+      const sl = coneK(u, 'starlight', 3);
+      if (sl && kind === 'ult') this.addBuff(u, { s: 'physP', v: sl, turns: 2, name: 'Финальная серия' });
+      const vt = coneK(u, 'vault', 2);
       if (vt && (kind === 'skill' || kind === 'ult') && hits.length) {
-        for (const t of hits) if (alive(t)) this.addBuff(t, { s: 'vuln', v: 0.12 * vt, turns: 2, name: 'Сундук сокровищ', debuff: true });
-        this.gainEnergy(u, 3 * vt);
+        for (const t of hits) if (alive(t)) this.addBuff(t, { s: 'vuln', v: vt, turns: 2, name: 'Сегодня за счёт заведения', debuff: true });
+        this.gainEnergy(u, coneK(u, 'vault', 3));
       }
     },
 
@@ -352,6 +363,7 @@
     Object.assign(H.CHARS, KITS);
     Object.assign(H.FUSIONS, FUSIONS);
     Object.assign(H.CONES, CONES);
+    H.coneInit(CONES);
   }
 
   const MAIL = {

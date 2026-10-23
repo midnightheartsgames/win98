@@ -133,15 +133,51 @@
   };
 
   const CONES = {
-    beforedawn: { name: 'До рассвета', path: 'erudition', rarity: 5, stats: { hp: 48, atk: 26, def: 21 }, bonus: { critD: 0.36, skillP: 0.18, ultP: 0.18 }, sig: 'jingyuan', fx: 'dawn', text: 'Крит. урон +36%, урон навыка и абсолютной техники +18%. После них Спящее тело: следующая бонус-атака +48%.' },
-    coffin: { name: 'Эхо из гроба', path: 'abundance', rarity: 5, stats: { hp: 52, atk: 26, def: 18 }, bonus: { atkP: 0.24 }, sig: 'luocha', fx: 'coffin', text: 'Атака +24%. Каждый задетый враг даёт 3 энергии, до 3 раз. После абсолютной техники скорость отряда +12 на 1 ход.' },
-    brighter: { name: 'Ярче солнца', path: 'destruction', rarity: 5, stats: { hp: 48, atk: 29, def: 20 }, bonus: { critR: 0.18 }, sig: 'imbibitor', fx: 'brighter', text: 'Шанс крита +18%. Базовая атака даёт Зов дракона на 2 хода: атака +18% и восстановление энергии +6%, до 2 раз.' },
-    shuteyes: { name: 'Она закрыла глаза', path: 'preservation', rarity: 5, stats: { hp: 57, atk: 19, def: 24 }, bonus: { hpP: 0.24, err: 0.12 }, sig: 'fuxuan', fx: 'shuteyes', text: 'Макс. HP +24%, восстановление энергии +12%. Когда HP владельца падает, урон отряда +9% на 2 хода. В начале волны лечит 80% потерянного HP.' },
-    ownsword: { name: 'Отныне я сама буду мечом', path: 'destruction', rarity: 5, stats: { hp: 58, atk: 29, def: 20 }, bonus: { critD: 0.2 }, sig: 'jingliu', fx: 'ownsword', text: 'Крит. урон +20%. Удар по союзнику или потеря им HP даёт Лунное затмение: следующая атака +14%, до 3. На 3 уровнях игнор 12% защиты.' },
-    blissful: { name: 'Тревога и блаженство', path: 'hunt', rarity: 5, stats: { hp: 53, atk: 29, def: 23 }, bonus: { critR: 0.18, followP: 0.3 }, sig: 'topaz', fx: 'blissful', text: 'Шанс крита +18%, урон бонус-атак +30%. Бонус-атака даёт цели Приручение: крит. урон союзников по ней +12%, до 2.' },
-    fright: { name: 'Ночь страха', path: 'abundance', rarity: 5, stats: { hp: 58, atk: 24, def: 26 }, bonus: { err: 0.12 }, sig: 'huohuo', fx: 'fright', text: 'Восстановление энергии +12%. Ульта союзника лечит самого раненого на 10% его HP. Лечение даёт атаку +2,4%, до 5 раз на 2 хода.' },
-    gaze: { name: 'Остановись, мгновенье', path: 'erudition', rarity: 5, stats: { hp: 53, atk: 29, def: 23 }, bonus: { critD: 0.36 }, sig: 'argenti', fx: 'gaze', text: 'Крит. урон +36%. Урон абсолютной техники +0,36% за каждую единицу макс. энергии, до 180.' },
-    baptism: { name: 'Крещение чистой мысли', path: 'hunt', rarity: 5, stats: { hp: 48, atk: 29, def: 26 }, bonus: { critD: 0.2 }, sig: 'ratio', fx: 'baptism', text: 'Крит. урон +20% и +8% за каждое ослабление цели, до 3. Ульта даёт Дискуссию: урон +36%, бонус-атаки игнорируют 24% защиты.' }
+    beforedawn: {
+      name: 'До рассвета', path: 'erudition', rarity: 5, ref: 23010, stats: { hp: 48, atk: 26.4, def: 21 }, skill: 'Долгая ночь', sig: 'jingyuan',
+      tpl: 'Крит. урон владельца повышается на #1%, урон навыка и абсолютной техники на #2%. После навыка или абсолютной техники владелец получает Спящее тело: следующая бонус-атака тратит его и наносит на #3% больше урона.', p: [[0.36, 0.18, 0.48], [0.42, 0.21, 0.56], [0.48, 0.24, 0.64], [0.54, 0.27, 0.72], [0.6, 0.3, 0.8]], bonus: { critD: 1, skillP: 2, ultP: 2 }, fx: 'dawn',
+      desc: '«Не принимайте легкомысленных решений, генерал... Подумайте о том, каким вы попадёте в историю...»\nГенерал Облачных Рыцарей, прикрыв глаза, слушал эти слова.\n«У истории своё собственное суждение о моём наследии, и оно меня не волнует. Если я добьюсь успеха, все скажут, что всё прошло по моему плану. Но если я потерплю неудачу, они будут осуждать меня».\nС его плеча спрыгнула птица и приземлилась на ладонь.\n«Я отказываюсь действовать вопреки здравому смыслу».'
+    },
+    coffin: {
+      name: 'Эхо из гроба', path: 'abundance', rarity: 5, ref: 23008, stats: { hp: 52.8, atk: 26.4, def: 18 }, skill: 'Шипы', sig: 'luocha',
+      tpl: 'Атака владельца повышается на #1%. Каждый задетый атакой владельца враг восстанавливает ему #3 энергии, до #4 раз за атаку. После абсолютной техники владельца скорость всех союзников повышается на #2 на 1 ход.', p: [[0.24, 12, 3, 3], [0.28, 14, 3.5, 3], [0.32, 16, 4, 3], [0.36, 18, 4.5, 3], [0.4, 20, 5, 3]], bonus: { atkP: 1 }, fx: 'coffin',
+      desc: 'Окружённый белыми ирисами, он постучал по крышке гроба.\n«Иногда мне кажется, что я недооценил тебя, предложив эту сделку».\nОн не получил ответа: лишь острый шип тотчас пронзил его ладонь.\nУлыбнувшись, он сильнее сжал колючие ветви.\n«Так вот как получается: мы недооценивали друг друга, но при этом хотели использовать».'
+    },
+    brighter: {
+      name: 'Ярче солнца', path: 'destruction', rarity: 5, ref: 23015, stats: { hp: 48, atk: 28.8, def: 18 }, skill: 'До смерти', sig: 'imbibitor',
+      tpl: 'Шанс крита владельца повышается на #1%. Базовая атака даёт владельцу уровень Зова дракона на #2 хода, до #3 уровней: каждый повышает атаку на #4% и восстановление энергии на #5%.', p: [[0.18, 2, 2, 0.18, 0.06], [0.21, 2, 2, 0.21, 0.07], [0.24, 2, 2, 0.24, 0.08], [0.27, 2, 2, 0.27, 0.09], [0.3, 2, 2, 0.3, 0.1]], bonus: { critR: 1 }, fx: 'brighter',
+      desc: 'С самого рождения всё, что он видел, было тёмным подземельем.\nЧужие грехи привязали его к этому месту, чужие воспоминания захлёстывали его.\nОн напрягал все силы, пытаясь вздохнуть...\nУхватить лучик света в безбрежном океане...\nИ однажды, когда генерал вошёл в темницу...\nТо увидел, как взгляд юноши озаряет кромешную тьму ярче солнца.'
+    },
+    shuteyes: {
+      name: 'Она закрыла глаза', path: 'preservation', rarity: 5, ref: 23011, stats: { hp: 57.6, atk: 19.2, def: 24 }, skill: 'Видение', sig: 'fuxuan',
+      tpl: 'Макс. HP владельца повышается на #1%, восстановление энергии на #4%. Когда HP владельца уменьшается, урон всех союзников повышается на #2% на #5 хода. В начале каждой волны союзники восстанавливают #3% потерянного HP.', p: [[0.24, 0.09, 0.8, 0.12, 2], [0.28, 0.105, 0.85, 0.14, 2], [0.32, 0.12, 0.9, 0.16, 2], [0.36, 0.135, 0.95, 0.18, 2], [0.4, 0.15, 1, 0.2, 2]], bonus: { hpP: 1, err: 4 }, fx: 'shuteyes',
+      desc: 'Боль в районе лба будет сопровождать её всю оставшуюся жизнь, но это лишь малая часть боли, принесённой её прошлым.\nОна считала себя частью гениального замысла, пока её не покинули все те, кто был ей дорог.\nТеперь она «видит» постоянно меняющийся мир, беспрестанно меняющиеся времена...\nНо её глаза закрыты, потому что будущее уже предопределено...\nТретьим глазом.'
+    },
+    ownsword: {
+      name: 'Отныне я сама буду мечом', path: 'destruction', rarity: 5, ref: 23014, stats: { hp: 52.8, atk: 26.4, def: 18 }, skill: 'С закатной яшмой в руках', sig: 'jingliu',
+      tpl: 'Крит. урон владельца повышается на #1%. Когда союзника атакуют или он теряет HP, владелец получает уровень Лунного затмения, до #2: каждый повышает урон его следующей атаки на #3%, а на #2 уровнях эта атака игнорирует #4% защиты. После атаки эффект снимается.', p: [[0.2, 3, 0.14, 0.12], [0.23, 3, 0.165, 0.14], [0.26, 3, 0.19, 0.16], [0.29, 3, 0.215, 0.18], [0.32, 3, 0.24, 0.2]], bonus: { critD: 1 }, fx: 'ownsword',
+      desc: 'Разбитое лезвие погружается в пробирающий до костей холод.\nОт металлического оружия нет никакой пользы, ведь с первого взгляда видно, на что оно способно.\n«Какая мне польза от меча?»\nВ её сердце нет места любви, а взгляд её пуст.\n«Отныне я сама буду мечом».\nЕдинственный путь выйти за так называемые пределы и свершить неслыханные прорывы: стать топливом для своего же пламени.'
+    },
+    blissful: {
+      name: 'Тревога и блаженство', path: 'hunt', rarity: 5, ref: 23016, stats: { hp: 48, atk: 26.4, def: 21 }, skill: 'Подходите по одному', sig: 'topaz',
+      tpl: 'Шанс крита владельца повышается на #1%, урон бонус-атак на #2%. Бонус-атака накладывает на цель Приручение, до #4 уровней: каждый повышает крит. урон союзников по этой цели на #3%.', p: [[0.18, 0.3, 0.12, 2], [0.21, 0.35, 0.14, 2], [0.24, 0.4, 0.16, 2], [0.27, 0.45, 0.18, 2], [0.3, 0.5, 0.2, 2]], bonus: { critR: 1, followP: 2 }, fx: 'blissful',
+      desc: 'Для специалиста Корпорации испытывать стресс недопустимо.\nДаже усталый и подавленный, он должен идти навстречу трудностям с высоко поднятой головой.\nНу только если... его не придавило «ими».\n«Спокойно, спокойно! У меня всего две руки!»\nДевушка только что вернулась домой после долгого рабочего дня и оказалась буквально завалена мохнатыми пушистиками.\nВозможно, они не совсем понимают её слова, прижимаясь своими круглыми головками к её ладоням.\nОна гладит мягкую шерсть, и на смену усталости приходит чувство тепла и уюта.'
+    },
+    fright: {
+      name: 'Ночь страха', path: 'abundance', rarity: 5, ref: 23017, stats: { hp: 52.8, atk: 21.6, def: 24 }, skill: 'Глубокий вдох', sig: 'huohuo',
+      tpl: 'Восстановление энергии владельца повышается на #1%. Когда союзник использует абсолютную технику, владелец лечит самого раненого союзника на #2% его макс. HP. Лечение владельца повышает атаку цели на #3%, до #4 раз, на #5 хода.', p: [[0.12, 0.1, 0.024, 5, 2], [0.14, 0.11, 0.028, 5, 2], [0.16, 0.12, 0.032, 5, 2], [0.18, 0.13, 0.036, 5, 2], [0.2, 0.14, 0.04, 5, 2]], bonus: { err: 1 }, fx: 'fright',
+      desc: 'Девчушка прячется за дверью и не решается даже высунуть носа.\nСегодняшняя цель так близка: возможно, поэтому её сердце стало биться чаще.\n«Я не боюсь... не боюсь, не боюсь...»\nВ полночной гробовой тишине раздаётся пронзительный крик.\nДрожа всем телом, девочка крепко сжимает в ручонках своё «оружие», но всё ещё не решается приблизиться к цели.\n«Т-тут нечего б-бояться!»\nХвосту за её спиной больше невыносимо наблюдать всё это безобразие, и он внезапно вспыхивает:\n«Ну же! Просто забери эту чёртову доставку!»'
+    },
+    gaze: {
+      name: 'Остановись, мгновенье', path: 'erudition', rarity: 5, ref: 23018, stats: { hp: 48, atk: 26.4, def: 21 }, skill: 'Паломничество рыцаря', sig: 'argenti',
+      tpl: 'Крит. урон владельца повышается на #1%. Урон абсолютной техники владельца повышается на #2% за каждую единицу его макс. энергии, учитывается до #3 энергии.', p: [[0.36, 0.0036, 180], [0.42, 0.0042, 180], [0.48, 0.0048, 180], [0.54, 0.0054, 180], [0.6, 0.006, 180]], bonus: { critD: 1 }, fx: 'gaze',
+      desc: 'Он уже слышал народные песни, восхваляющие этот свет:\n«Бутоны пышных роз сгибаются в поклоне, лишь для того, чтоб вызвать тень улыбки на Её устах.\nИ солнце восходящее на небосводе сияет для того, чтоб озарить Её прекрасный лик в лучах.\nЧудесные мелодии чарующе играют, лишь для того, чтоб дрогнули ресницы на Её очах».\nНо этот свет угас без обещания вернуться... а он продолжает всматриваться куда-то вдаль.\nВсё, что ему остаётся: ждать, верить и сеять вечное о Красоте на космических просторах.\nИ пусть это останется кратким мгновением, которое навсегда запечатлелось в его сознании, он уже получил все ответы, которые так искал.'
+    },
+    baptism: {
+      name: 'Крещение чистой мысли', path: 'hunt', rarity: 5, ref: 23020, stats: { hp: 43.2, atk: 26.4, def: 24 }, skill: 'Тренировка мысли', sig: 'ratio',
+      tpl: 'Крит. урон владельца повышается на #1%, и ещё на #2% по цели за каждое её ослабление, до #3 раз. Абсолютная техника по цели даёт владельцу Дискуссию на #6 хода: урон +#4%, бонус-атаки игнорируют #5% защиты.', p: [[0.2, 0.08, 3, 0.36, 0.24, 2], [0.23, 0.09, 3, 0.42, 0.28, 2], [0.26, 0.1, 3, 0.48, 0.32, 2], [0.29, 0.11, 3, 0.54, 0.36, 2], [0.32, 0.12, 3, 0.6, 0.4, 2]], bonus: { critD: 1 }, fx: 'baptism',
+      desc: 'Светит послеполуденное солнце, аромат цветов наполняет воздух.\nХотя он всегда старается держать мысли в чистоте, они неизменно запыляются частичками смятения.\n«Исцеление ума так же важно, как и сохранение здорового тела».\nКрики дураков постепенно стихают вместе с усталостью, он погружается в воду, позволяя мыслям плыть по течению, и разум его постепенно проясняется.\n«Истина ускользает от грязи, только тот, кто чист, может приблизиться к ней».'
+    }
   };
 
   const FUSIONS = {
@@ -185,7 +221,7 @@
 
   const FX = ['lordHits', 'abyssPrayer', 'dispelAll', 'flower', 'ilStrike', 'dracore', 'scales', 'matrix', 'fxCharge', 'syzygy', 'jlDrain', 'transNow', 'tzStrike', 'debt', 'numbyStrike', 'windfall', 'talisman', 'tailRule', 'provision', 'gardenBounce', 'summation', 'inference', 'cogito', 'folly', 'syncTo'];
 
-  const cf = (u, fx) => (u && u.cone && u.cone.fx === fx ? 1 + 0.25 * ((u.cone.sup || 1) - 1) : 0);
+  const cf = (u, fx, n) => (u && u.cone ? H.coneP(u, fx, n) : 0);
   const mate = (b, id) => b.allies.find(a => a.charId === id && alive(a)) || null;
   const lowest = list => list.reduce((a, b) => (b.hp / b.maxHp < a.hp / a.maxHp ? b : a));
   const hasBuff = (u, name) => u.buffs.some(b => b.name === name);
@@ -219,9 +255,9 @@
 
     shutEyesHeal() {
       for (const w of this.livingAllies) {
-        const k = cf(w, 'shuteyes');
+        const k = cf(w, 'shuteyes', 3);
         if (!k) continue;
-        for (const a of this.livingAllies) if (a.hp < a.maxHp) this.heal(w, a, (a.maxHp - a.hp) * 0.8 * k);
+        for (const a of this.livingAllies) if (a.hp < a.maxHp) this.heal(w, a, (a.maxHp - a.hp) * k);
       }
     },
 
@@ -342,10 +378,9 @@
           for (const e of this.enemies) dropBuff(e, FOLLY);
           src.flags.folly = { t, n: T.raFolly + ((this.kitFx && this.kitFx(src, 'follyN')) || 0) };
           this.addBuff(t, { s: 'folly', v: 0, turns: 999, name: FOLLY, debuff: true });
-          const bp = cf(src, 'baptism');
-          if (bp) {
-            this.addBuff(src, { s: 'dmgP', v: 0.36 * bp, turns: 2, name: 'Дискуссия' }, true);
-            this.addBuff(src, { s: 'followDefIgnore', v: 0.24 * bp, turns: 2, name: 'Дискуссия: защита' }, true);
+          if (cf(src, 'baptism', 4)) {
+            this.addBuff(src, { s: 'dmgP', v: cf(src, 'baptism', 4), turns: cf(src, 'baptism', 6), name: 'Дискуссия' }, true);
+            this.addBuff(src, { s: 'followDefIgnore', v: cf(src, 'baptism', 5), turns: cf(src, 'baptism', 6), name: 'Дискуссия: защита' }, true);
           }
           return true;
         }
@@ -420,11 +455,11 @@
       const hh = mate(this, 'huohuo');
       if (hh && hh.flags.prov > 0 && alive(u)) this.provHeal(hh, u);
       for (const w of this.livingAllies) {
-        const k = cf(w, 'fright');
-        if (k) { const a = lowest(this.livingAllies); this.heal(w, a, a.maxHp * 0.1 * k); this.frightAtk(w, a); }
+        const k = cf(w, 'fright', 2);
+        if (k) { const a = lowest(this.livingAllies); this.heal(w, a, a.maxHp * k); this.frightAtk(w, a); }
       }
-      const cof = cf(u, 'coffin');
-      if (cof) for (const a of this.livingAllies) this.addBuff(a, { s: 'spd', v: 12 * cof, turns: 1, name: 'Эхо из гроба' }, a !== u);
+      const cof = cf(u, 'coffin', 2);
+      if (cof) for (const a of this.livingAllies) this.addBuff(a, { s: 'spd', v: cof, turns: 1, name: 'Эхо из гроба' }, a !== u);
     },
 
     fivesTurn(u) {
@@ -490,11 +525,11 @@
 
     hpDown(a, byFoe) {
       for (const w of this.livingAllies) {
-        if (w === a || !cf(w, 'ownsword')) continue;
-        w.flags.eclipse = Math.min(3, (w.flags.eclipse || 0) + 1);
-        if (w.flags.eclipse >= 3) this.addBuff(w, { s: 'defIgnore', v: 0.12 * cf(w, 'ownsword'), turns: 999, name: 'Лунное затмение: защита' }, true);
+        if (w === a || !cf(w, 'ownsword', 2)) continue;
+        w.flags.eclipse = Math.min(cf(w, 'ownsword', 2), (w.flags.eclipse || 0) + 1);
+        if (w.flags.eclipse >= cf(w, 'ownsword', 2)) this.addBuff(w, { s: 'defIgnore', v: cf(w, 'ownsword', 4), turns: 999, name: 'Лунное затмение: защита' }, true);
       }
-      if (cf(a, 'shuteyes')) for (const b of this.livingAllies) this.addBuff(b, { s: 'dmgP', v: 0.09 * cf(a, 'shuteyes'), turns: 2, name: 'Она закрыла глаза' }, true);
+      if (cf(a, 'shuteyes', 2)) for (const b of this.livingAllies) this.addBuff(b, { s: 'dmgP', v: cf(a, 'shuteyes', 2), turns: cf(a, 'shuteyes', 5), name: 'Видение' }, true);
       if (a.charId === 'fuxuan' && a.hp <= a.maxHp * 0.5 && (a.flags.fxCharges || 0) > 0) {
         a.flags.fxCharges--;
         this.push({ t: 'status', u: a, text: 'Невзгоды порождают благодать', col: '#c8a8ff' });
@@ -517,9 +552,9 @@
       if (src.charId === 'topaz' && tgt.side === 'enemy' && tgt.weak.includes('fire') && (!this.hasBonus || this.hasBonus(src, 'a4'))) v += T.tzFireWeak;
       if (src.charId === 'argenti' && tgt.hp <= tgt.maxHp * 0.5 && (!this.hasBonus || this.hasBonus(src, 'a6'))) v += T.agLow;
       if (src.charId === 'ratio' && (!this.hasBonus || this.hasBonus(src, 'a6'))) { const n = this.debuffCount(tgt); if (n >= 3) v += Math.min(T.raDeduceMax, T.raDeduce * n); }
-      if (src.flags && src.flags.eclipse && cf(src, 'ownsword') && OWN.includes(o.kind)) v += 0.14 * src.flags.eclipse * cf(src, 'ownsword');
-      const gz = cf(src, 'gaze');
-      if (gz && o.kind === 'ult') v += 0.0036 * Math.min(180, src.maxEnergy || 0) * gz;
+      if (src.flags && src.flags.eclipse && cf(src, 'ownsword', 3) && OWN.includes(o.kind)) v += cf(src, 'ownsword', 3) * src.flags.eclipse;
+      const gz = cf(src, 'gaze', 2);
+      if (gz && o.kind === 'ult') v += gz * Math.min(cf(src, 'gaze', 3), src.maxEnergy || 0);
       if (o.lordSleep) v += o.lordSleep;
       return v;
     },
@@ -532,8 +567,8 @@
       }
       if (o.lordCrit) v += o.lordCrit;
       if (o.windCrit) v += o.windCrit;
-      const bp = cf(src, 'baptism');
-      if (bp && tgt.side === 'enemy') v += 0.08 * Math.min(3, this.debuffCount(tgt)) * bp;
+      const bp = cf(src, 'baptism', 2);
+      if (bp && tgt.side === 'enemy') v += bp * Math.min(cf(src, 'baptism', 3), this.debuffCount(tgt));
       if (tgt.side === 'enemy') for (const b of tgt.buffs) if (b.s === 'tame') v += b.v;
       if (tgt.side === 'enemy' && o.kind === 'follow') for (const b of tgt.buffs) if (b.s === 'execCrit') v += b.v;
       return v;
@@ -552,16 +587,16 @@
         this.gainEnergy(u, T.agEnergy * hits.length);
         this.addApo(u, hits.length);
       }
-      if (u.charId === 'jingyuan' && (kind === 'skill' || kind === 'ult') && cf(u, 'dawn')) u.flags.somnus = true;
-      const cof = cf(u, 'coffin');
-      if (cof && own && hits.length) this.gainEnergy(u, 3 * cof * Math.min(3, hits.length));
-      const br = cf(u, 'brighter');
+      if (u.charId === 'jingyuan' && (kind === 'skill' || kind === 'ult') && cf(u, 'dawn', 3)) u.flags.somnus = true;
+      const cof = cf(u, 'coffin', 3);
+      if (cof && own && hits.length) this.gainEnergy(u, cof * Math.min(cf(u, 'coffin', 4), hits.length));
+      const br = cf(u, 'brighter', 4);
       if (br && (kind === 'basic' || kind === 'enhanced')) {
-        u.flags.dragon = hasBuff(u, 'Зов дракона') ? Math.min(2, (u.flags.dragon || 0) + 1) : 1;
-        this.addBuff(u, { s: 'atkP', v: 0.18 * br * u.flags.dragon, turns: 2, name: 'Зов дракона' }, true);
-        this.addBuff(u, { s: 'err', v: 0.06 * br * u.flags.dragon, turns: 2, name: 'Зов дракона: энергия' }, true);
+        u.flags.dragon = hasBuff(u, 'Зов дракона') ? Math.min(cf(u, 'brighter', 3), (u.flags.dragon || 0) + 1) : 1;
+        this.addBuff(u, { s: 'atkP', v: br * u.flags.dragon, turns: cf(u, 'brighter', 2), name: 'Зов дракона' }, true);
+        this.addBuff(u, { s: 'err', v: cf(u, 'brighter', 5) * u.flags.dragon, turns: cf(u, 'brighter', 2), name: 'Зов дракона: энергия' }, true);
       }
-      if (own && u.flags.eclipse && cf(u, 'ownsword')) { u.flags.eclipse = 0; dropBuff(u, 'Лунное затмение: защита'); }
+      if (own && u.flags.eclipse && cf(u, 'ownsword', 2)) { u.flags.eclipse = 0; dropBuff(u, 'Лунное затмение: защита'); }
       if (u.charId === 'jingliu') dropBuff(u, 'Трансмиграция: атака');
       const ra = mate(this, 'ratio'), fol = ra && ra.flags.folly;
       if (fol && u !== ra && own && hits.includes(fol.t) && fol.n > 0) {
@@ -703,7 +738,7 @@
       this.push({ t: 'act', u: h, name: LORD + ' × ' + n, kind: 'summon', hits: n });
       const o = { e: 'elec', kind: 'follow', tough: 5, label: LORD, lordCrit: n >= 6 && (!this.hasBonus || this.hasBonus(u, 'a2')) ? T.jyCritD : 0, lordSleep: 0 };
       const m = T.jyHit * (this.traceTalent ? this.traceTalent(u) : 1), adjK = T.jyAdj + ((this.kitFx && this.kitFx(u, 'lordAdj')) || 0);
-      if (u.flags.somnus) { o.lordSleep = 0.48 * cf(u, 'dawn'); u.flags.somnus = false; }
+      if (u.flags.somnus) { o.lordSleep = cf(u, 'dawn', 3); u.flags.somnus = false; }
       const hits = [];
       for (let i = 0; i < n; i++) {
         const t = this.rng.pick(this.living);
@@ -786,11 +821,11 @@
     },
 
     blissTame(src, t) {
-      const k = cf(src, 'blissful');
+      const k = cf(src, 'blissful', 3);
       if (!k || !alive(t)) return;
       const cur = t.buffs.find(b => b.s === 'tame');
-      const n = Math.min(2, (cur ? Math.round(cur.v / (0.12 * k)) : 0) + 1);
-      this.addBuff(t, { s: 'tame', v: 0.12 * k * n, turns: 999, name: 'Приручение', debuff: true }, !!cur);
+      const n = Math.min(cf(src, 'blissful', 4), (cur ? Math.round(cur.v / k) : 0) + 1);
+      this.addBuff(t, { s: 'tame', v: k * n, turns: 999, name: 'Приручение', debuff: true }, !!cur);
     },
 
     zoneOn(lc) { return alive(lc) && hasBuff(lc, ZONE); },
@@ -969,10 +1004,10 @@
     },
 
     frightAtk(w, a) {
-      const k = cf(w, 'fright');
+      const k = cf(w, 'fright', 3);
       if (!k || !alive(a)) return;
-      a.flags.fright = hasBuff(a, 'Ночь страха') ? Math.min(5, (a.flags.fright || 0) + 1) : 1;
-      this.addBuff(a, { s: 'atkP', v: 0.024 * k * a.flags.fright, turns: 2, name: 'Ночь страха' }, true);
+      a.flags.fright = hasBuff(a, 'Ночь страха') ? Math.min(cf(w, 'fright', 4), (a.flags.fright || 0) + 1) : 1;
+      this.addBuff(a, { s: 'atkP', v: k * a.flags.fright, turns: cf(w, 'fright', 5), name: 'Ночь страха' }, true);
     },
 
     provHeal(hh, u) {
@@ -1003,6 +1038,7 @@
 
   Object.assign(H.CHARS, KITS);
   Object.assign(H.CONES, CONES);
+  H.coneInit(CONES);
   Object.assign(H.FUSIONS, FUSIONS);
   if (H.BANNERS) { Object.assign(H.BANNERS.ev.stars, EV); Object.assign(H.BANNERS.cone.stars, CONE_EV); }
   if (H.SPEAKERS) H.SPEAKERS.topaz = { name: 'Топаз', char: 'topaz' };

@@ -703,6 +703,18 @@
       this.waterT = 0;
       if (this.dmg && s[21]) this.dmg.rewind(s[21]);
     }
+
+    blend(b, k) {
+      if (!(k > 0)) return;
+      const L = F.lerp;
+      this.x = L(this.x, b[0], k); this.y = L(this.y, b[1], k); this.z = L(this.z, b[2], k);
+      this.yaw += F.wrap(b[3] - this.yaw) * k;
+      this.vx = L(this.vx, b[4], k); this.vz = L(this.vz, b[5], k); this.vy = L(this.vy, b[6], k); this.r = L(this.r, b[7], k);
+      this.rpm = L(this.rpm, b[10], k); this.steer = L(this.steer, b[12], k);
+      this.pitch = L(this.pitch, b[13] || 0, k); this.roll = L(this.roll, b[14] || 0, k);
+      for (let i = 0; i < 4; i++) this.wheels[i].w = L(this.wheels[i].w, b[17 + i] || 0, k);
+      this.speed = Math.hypot(this.vx, this.vz);
+    }
   }
 
   function insideCol(c, x, z, m) {

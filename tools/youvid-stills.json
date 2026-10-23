@@ -29,5 +29,11 @@
   {"id": "n0p3Av1Eng1", "t": 6.9, "w": 1600, "h": 900, "crop": [0, 0.06, 1, 0.25], "size": [780, 110], "out": "content/YouVid/banners/memes_ytp.png"},
   {"id": "k3An4uH0rnY", "t": 4.9, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/k3An4uH0rnY-1.png"},
   {"id": "k3An4uH0rnY", "t": 7.5, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/k3An4uH0rnY-2.png"},
-  {"id": "k3An4uH0rnY", "t": 17, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/k3An4uH0rnY-3.png"}
+  {"id": "k3An4uH0rnY", "t": 17, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/k3An4uH0rnY-3.png"},
+  {"id": "Str3yP0dsk0", "t": 3.8, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/Str3yP0dsk0-1.png"},
+  {"id": "Str3yP0dsk0", "t": 7.0, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/Str3yP0dsk0-2.png"},
+  {"id": "Str3yP0dsk0", "t": 9.6, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/Str3yP0dsk0-3.png"},
+  {"id": "Str3yUltr498", "t": 4.0, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/Str3yUltr498-1.png"},
+  {"id": "Str3yUltr498", "t": 10.2, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/Str3yUltr498-2.png"},
+  {"id": "Str3yUltr498", "t": 12.8, "w": 640, "h": 360, "crop": [0.125, 0, 0.75, 1], "size": [130, 97], "out": "content/YouVid/thumbs/Str3yUltr498-3.png"}
 ]

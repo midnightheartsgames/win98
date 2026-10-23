@@ -30,14 +30,43 @@
   });
 
   Object.assign(H.CONES, {
-    fermata: { name: 'Фермата', path: 'nihility', rarity: 4, stats: { hp: 43, atk: 21, def: 18 }, bonus: { breakE: 0.16 }, fx: 'fermata', shop: true, text: 'Эффект пробития +16%. Урон по врагам с Шоком или Порывом ветра +16%.' },
-    quid: { name: 'Равноценный обмен', path: 'abundance', rarity: 4, stats: { hp: 48, atk: 21, def: 15 }, bonus: {}, fx: 'quid', shop: true, text: 'В начале хода владельца случайный союзник с энергией ниже 50% получает 8 энергии.' },
-    wildfire: { name: 'Мы — Дикий Огонь', path: 'preservation', rarity: 4, stats: { hp: 43, atk: 21, def: 21 }, bonus: {}, fx: 'wildfire', shop: true, text: 'В начале боя урон по союзникам −8% на 5 ходов, каждый восстанавливает 30% потерянного HP.' },
-    river: { name: 'Весенние потоки рек', path: 'hunt', rarity: 4, stats: { hp: 38, atk: 24, def: 15 }, bonus: {}, fx: 'river', shop: true, text: 'Скорость +8% и урон +12%. Пропадает после удара по владельцу и возвращается в конце его следующего хода.' },
-    pastfuture: { name: 'Прошлое и будущее', path: 'harmony', rarity: 4, stats: { hp: 43, atk: 21, def: 18 }, bonus: {}, fx: 'pastfuture', shop: true, text: 'После навыка владельца следующий ходящий союзник наносит на 16% больше урона в течение 1 хода.' },
-    woof: { name: 'Гав! Время прогулок!', path: 'destruction', rarity: 4, stats: { hp: 43, atk: 24, def: 15 }, bonus: { atkP: 0.1 }, fx: 'woof', shop: true, text: 'Атака +10%. Урон по врагам с Горением или Кровотечением +16%.' },
-    breakfast: { name: 'Важность завтрака', path: 'erudition', rarity: 4, stats: { hp: 43, atk: 24, def: 15 }, bonus: { dmgP: 0.12 }, fx: 'breakfast', shop: true, text: 'Урон +12%. За каждого побеждённого владельцем врага атака +4% (до 3 раз).' }
+    fermata: {
+      name: 'Фермата', path: 'nihility', rarity: 4, ref: 21022, stats: { hp: 43.2, atk: 21.6, def: 15 }, skill: 'Целая пауза', shop: true,
+      tpl: 'Эффект пробития владельца повышается на #1%. Урон владельца по врагам с Шоком или Порывом ветра повышается на #2%, в том числе периодический.', p: [[0.16, 0.16], [0.2, 0.2], [0.24, 0.24], [0.28, 0.28], [0.32, 0.32]], bonus: { breakE: 1 }, fx: 'fermata',
+      desc: 'Пластинка фонографа проигрывается без остановки. Даже звуки хриплых криков не могут вырваться из волны жара и приглушаются её прохладой.\nОна казалась неподготовленной и совершенно очарованной завораживающими мелодиями:\nВсё началось с мольбы и предвкушения,\nЗа которыми последовал страстный катарсис,\nС одной кульминацией за другой...\nПока пластинка не остановилась окончательно и хриплые крики не затихли.\n«Миссия выполнена».'
+    },
+    quid: {
+      name: 'Равноценный обмен', path: 'abundance', rarity: 4, ref: 21021, stats: { hp: 43.2, atk: 19.2, def: 18 }, skill: 'Безудержное веселье', shop: true,
+      tpl: 'В начале своего хода владелец восстанавливает #2 энергии случайному союзнику (кроме себя), у которого энергии меньше #1%.', p: [[0.5, 8], [0.5, 10], [0.5, 12], [0.5, 14], [0.5, 16]], bonus: {}, fx: 'quid',
+      desc: 'После бодрящего массажа в исполнении девушки-дракона\nдевушка-лисица протянула руку и весело потрепала девушку-дракона за пухлые щёчки.\nДевочка надула губы, явно от обиды, на что девушка-лисица лишь ласково улыбнулась.\n«Вот что такое равноценный обмен».'
+    },
+    wildfire: {
+      name: 'Мы — Дикий Огонь', path: 'preservation', rarity: 4, ref: 21023, stats: { hp: 33.6, atk: 21.6, def: 21 }, skill: 'Слёзы на глазах', shop: true,
+      tpl: 'В начале боя урон, получаемый всеми союзниками, понижается на #2% на #3 ходов, и каждый союзник восстанавливает #1% недостающего HP.', p: [[0.3, 0.08, 5], [0.35, 0.1, 5], [0.4, 0.12, 5], [0.45, 0.14, 5], [0.5, 0.16, 5]], bonus: {}, fx: 'wildfire',
+      desc: 'Она привыкла к тому, что люди теряют свои дома.\nА также к тому, что люди гибнут.\nНо нет смысла плакать в одиночестве.\n«Надень этот красный шарф, и тогда мы разделим боль друг друга. Мы семья. Мы Дикий Огонь».\nКогда широкая ладонь погладила её по голове, стало невозможно сдерживать слёзы.'
+    },
+    river: {
+      name: 'Весенние потоки рек', path: 'hunt', rarity: 4, ref: 21024, stats: { hp: 38.4, atk: 21.6, def: 18 }, skill: 'Избавление от холодов', shop: true,
+      tpl: 'В начале боя скорость владельца повышается на #1%, а урон на #2%. Эффект пропадает, когда владелец получает урон, и возвращается в конце его следующего хода.', p: [[0.08, 0.12], [0.09, 0.15], [0.1, 0.18], [0.11, 0.21], [0.12, 0.24]], bonus: {}, fx: 'river',
+      desc: 'Юноша сделал небольшой перерыв в тренировках с мечом.\nСолнечный свет обжигал его и без того разгорячённую шею.\nОн медленно заходил в воду, ощущая её прохладу на босых ногах.\nКогда звенят колокольчики и щебечут птицы, люди даже в далёких краях узнают, что пришла весна.'
+    },
+    pastfuture: {
+      name: 'Прошлое и будущее', path: 'harmony', rarity: 4, ref: 21025, stats: { hp: 43.2, atk: 19.2, def: 18 }, skill: 'Бумажные змеи из прошлого', shop: true,
+      tpl: 'После навыка владельца урон следующего ходящего союзника повышается на #1% на #2 ход.', p: [[0.16, 1], [0.2, 1], [0.24, 1], [0.28, 1], [0.32, 1]], bonus: {}, fx: 'pastfuture',
+      desc: 'Крылья бумажного змея в её руках были сломаны, жестоко напоминая о трагической кончине близкого человека.\nОна опустилась на колени у пожара войны, её глаза были полны горя.\n«Если ты сам мог всех спасти, то наша жертва...»\nОгненные залпы окрашивали небо в красный цвет, не умаляя его величия.\nОна взглянула на небо, и глаза её переполняла ярость.'
+    },
+    woof: {
+      name: 'Гав! Время прогулок!', path: 'destruction', rarity: 4, ref: 21026, stats: { hp: 43.2, atk: 21.6, def: 15 }, skill: 'Беги!', shop: true,
+      tpl: 'Атака владельца повышается на #1%. Урон владельца по врагам с Горением или Кровотечением повышается на #2%, в том числе периодический.', p: [[0.1, 0.16], [0.125, 0.2], [0.15, 0.24], [0.175, 0.28], [0.2, 0.32]], bonus: { atkP: 1 }, fx: 'woof',
+      desc: 'Жаль, что никто этого не видел...\nНе видел, как он сморщил нос, принюхался и нырнул на безлюдную тропинку.\nЖаль, что никто этого не заметил...\nНе заметил, как он втягивает когти, вводит пароль и ныряет в объятия свободы.\nНеужели до сих пор никто не обратил внимания?..\nВзрослая собака научилась гулять в космосе!'
+    },
+    breakfast: {
+      name: 'Важность завтрака', path: 'erudition', rarity: 4, ref: 21027, stats: { hp: 38.4, atk: 21.6, def: 18 }, skill: 'Всем приготовиться', shop: true,
+      tpl: 'Урон владельца повышается на #1%. За каждого побеждённого владельцем врага его атака повышается на #2%, до #3 раз.', p: [[0.12, 0.04, 3], [0.15, 0.05, 3], [0.18, 0.06, 3], [0.21, 0.07, 3], [0.24, 0.08, 3]], bonus: { dmgP: 1 }, fx: 'breakfast',
+      desc: 'Стол уже накрыт...\nКто-то хочет сначала выпить чашку чая.\nКто-то хочет сначала сфотографироваться.\nКто-то хочет сначала почитать газету.\nКто-то хочет сначала сделать заметки в блокноте.\nКто-то хочет сначала поиграть на смартфоне.\n«Эй, ешьте, пока не остыло! Пом!»'
+    }
   });
+  H.coneInit(H.CONES);
 
   const TUN = { lvlFrom: [32, 65], lvlTo: [18, 49], hp: [1, 1.15, 1.3, 1.3, 1.4, 3.6, 4.4, 2.2, 2.8, 3.8, 3.6, 3.8, 3.4, 2.4, 2.2], atkRamp: 0.02, energyStart: 0.5, firstCycle: 150, cycle: 100, insignia: 3, shopDays: 42, echoWeek: 3, echoLucent: 10 };
   const lvlOf = L => Math.round(TUN.lvlTo[0] + (L - TUN.lvlFrom[0]) * (TUN.lvlTo[1] - TUN.lvlTo[0]) / (TUN.lvlFrom[1] - TUN.lvlFrom[0]));
@@ -110,7 +139,7 @@
 
   H.FH = { TUN, TURB, KINDS, STAGES, SERIES, SHOP, INSIGNIA, memoryReward, lvlOf };
 
-  const cf = (u, fx) => (u && u.cone && u.cone.fx === fx ? 1 + 0.25 * ((u.cone.sup || 1) - 1) : 0);
+  const cp = (u, fx, n) => (u && u.cone ? H.coneP(u, fx, n) : 0);
   const hasDot = (u, types) => u.dots.some(d => types.includes(d.type));
   const boundary = c => TUN.firstCycle + TUN.cycle * (c - 1);
 
@@ -129,9 +158,8 @@
     memoDmg(src, tgt, o) {
       if (src.side !== 'ally' || tgt.side !== 'enemy') return 0;
       let v = 0;
-      const fe = cf(src, 'fermata'), wf = cf(src, 'woof');
-      if (fe && hasDot(tgt, ['shock', 'shear'])) v += 0.16 * fe;
-      if (wf && hasDot(tgt, ['burn', 'bleed'])) v += 0.16 * wf;
+      if (hasDot(tgt, ['shock', 'shear', 'erode'])) v += cp(src, 'fermata', 2);
+      if (hasDot(tgt, ['burn', 'bleed'])) v += cp(src, 'woof', 2);
       return v;
     },
 
@@ -143,16 +171,14 @@
         this.fhCycle();
       }
       for (const a of this.livingAllies) {
-        const w = cf(a, 'wildfire');
-        if (w) for (const b of this.livingAllies) { this.addBuff(b, { s: 'dr', v: 0.08 * w, turns: 5, name: 'Мы — Дикий Огонь' }, true); this.heal(a, b, (b.maxHp - b.hp) * 0.3 * w); }
-        const r = cf(a, 'river');
-        if (r) this.riverOn(a, r);
+        if (cp(a, 'wildfire', 2)) for (const b of this.livingAllies) { this.addBuff(b, { s: 'dr', v: cp(a, 'wildfire', 2), turns: cp(a, 'wildfire', 3), name: 'Слёзы на глазах' }, true); this.heal(a, b, (b.maxHp - b.hp) * cp(a, 'wildfire', 1)); }
+        if (cp(a, 'river', 1)) this.riverOn(a);
       }
     },
 
-    riverOn(a, k) {
+    riverOn(a) {
       a.flags.river = 'on';
-      a.buffs.push({ s: 'spdP', v: 0.08 * k, turns: 999, name: 'Весенние потоки рек', perm: true }, { s: 'dmgP', v: 0.12 * k, turns: 999, name: 'Весенние потоки рек', perm: true });
+      a.buffs.push({ s: 'spdP', v: cp(a, 'river', 1), turns: 999, name: 'Избавление от холодов', perm: true }, { s: 'dmgP', v: cp(a, 'river', 2), turns: 999, name: 'Избавление от холодов', perm: true });
     },
 
     memoTick(d) {
@@ -198,40 +224,37 @@
     },
 
     memoTurn(u) {
-      const q = cf(u, 'quid');
-      if (q) {
-        const pool = this.livingAllies.filter(a => a !== u && a.energy < a.maxEnergy * 0.5);
-        if (pool.length) this.gainEnergy(this.rng.pick(pool), 8 * q);
+      if (cp(u, 'quid', 2)) {
+        const pool = this.livingAllies.filter(a => a !== u && a.energy < a.maxEnergy * cp(u, 'quid', 1));
+        if (pool.length) this.gainEnergy(this.rng.pick(pool), cp(u, 'quid', 2));
       }
       const pf = this.pastFuture;
       if (pf && pf.from !== u) {
         this.pastFuture = null;
-        this.addBuff(u, { s: 'dmgP', v: pf.v, turns: 1, name: 'Прошлое и будущее' });
+        this.addBuff(u, { s: 'dmgP', v: pf.v, turns: pf.turns, name: pf.name || 'Бумажные змеи из прошлого' });
       }
     },
 
     memoEndTurn(u) {
-      if (u.flags && u.flags.river === 'off') { const r = cf(u, 'river'); if (r && alive(u)) this.riverOn(u, r); }
+      if (u.flags && u.flags.river === 'off' && cp(u, 'river', 1) && alive(u)) this.riverOn(u);
     },
 
     memoHurt(u) {
       if (u.side === 'ally' && u.flags.river === 'on') {
         u.flags.river = 'off';
-        u.buffs = u.buffs.filter(b => b.name !== 'Весенние потоки рек');
+        u.buffs = u.buffs.filter(b => b.name !== 'Избавление от холодов');
       }
     },
 
     memoKill(src) {
-      const k = cf(src, 'breakfast');
-      if (!k) return;
-      src.flags.breakfast = Math.min(3, (src.flags.breakfast || 0) + 1);
+      if (!cp(src, 'breakfast', 2)) return;
+      src.flags.breakfast = Math.min(cp(src, 'breakfast', 3), (src.flags.breakfast || 0) + 1);
       src.buffs = src.buffs.filter(b => b.name !== 'Важность завтрака');
-      src.buffs.push({ s: 'atkP', v: 0.04 * k * src.flags.breakfast, turns: 999, name: 'Важность завтрака', perm: true });
+      src.buffs.push({ s: 'atkP', v: cp(src, 'breakfast', 2) * src.flags.breakfast, turns: 999, name: 'Важность завтрака', perm: true });
     },
 
     memoAfter(u, kind) {
-      const k = cf(u, 'pastfuture');
-      if (k && kind === 'skill') this.pastFuture = { from: u, v: 0.16 * k };
+      if (cp(u, 'pastfuture', 1) && kind === 'skill') this.pastFuture = { from: u, v: cp(u, 'pastfuture', 1), turns: cp(u, 'pastfuture', 2) };
     }
   });
 
@@ -391,6 +414,10 @@
 
     fhAlert() { return this.fhOpen() && this.fhTiers().some(t => t.ready && !t.got); },
 
+    fhShopLeft() { const d = dayNum(this.now()); return (Math.floor(d / TUN.shopDays) + 1) * TUN.shopDays - d; },
+
+    fhEchoUsed() { const ec = this.fh().echo, wk = Math.floor((dayNum(this.now()) + 3) / 7); return ec.wk === wk ? ec.n : 0; },
+
     fhShopSync() {
       const S = this.fh().shop, per = Math.floor(dayNum(this.now()) / TUN.shopDays);
       if (S.per !== per) { S.per = per; S.n = {}; }
@@ -426,20 +453,6 @@
         else out.push(...this.give({ credits: row.credits }));
       }
       return out;
-    },
-
-    fhCraft(set, slotKey, main) {
-      const s = this.state, slot = H.CAVERN_SLOTS.find(x => x.key === slotKey);
-      if (!(s.inv.items.resin > 0) || !slot || !H.CAVERN_SETS.includes(set) || !slot.mains.includes(main)) return null;
-      this.take({ items: { resin: 1 } });
-      const rl = Math.min(15, Math.floor(this.avgLevel() / 3));
-      const rel = this.makeRelic(set, slot, rl, this.avgLevel());
-      if (rel.main !== main) {
-        rel.subs = rel.subs.filter(([k]) => k !== main);
-        rel.main = main;
-        rel.mv = this.relicMain(main, rl);
-      }
-      return rel;
     },
 
     fhEchoLucent() {

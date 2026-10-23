@@ -13,6 +13,15 @@
   const WHITE = [255, 255, 255, 255];
   const DARK = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   const WL = N.M3.mat(), WM = N.M3.mat(), WT = N.M3.mat(), WS = new Float32Array(12), DM = new Float32Array(12);
+  const DL = N.M3.mat(), DM2 = N.M3.mat(), DT = N.M3.mat(), DS = new Float32Array(12), NEEDLE_LAMP = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const NEEDLE_ZERO = Math.PI * 0.75, NEEDLE_SWEEP = Math.PI * 1.5;
+  N.dialTop = spec => Math.max(140, Math.ceil(spec.vmax * 3.6 * 1.1 / 20) * 20);
+  N.dialValue = (v, k, fix) => {
+    const run = !!v.driver && !v.dead;
+    if (k === 'spd') return N.clamp(Math.abs(v.spd || 0) * 3.6 / N.dialTop(v.spec), 0, 1);
+    if (k === 'rpm') return run ? N.clamp((v.rpm || 0.2) / 1.1, 0, 1) : 0;
+    return run ? fix || 0 : 0;
+  };
   const HELI_PAINT = { mi2: N.hex('#2a4a8a'), mi8: N.hex('#3d5068'), mi24: N.hex('#56603e') }, HELI_LOOK = [0.7, 0.15, 0], HELI_ARMY = [0.25, 0.5, 0], HELI_BURNT = [0, 1, 0];
   let ROPE_MB = null;
   const ROPE = () => {
@@ -97,6 +106,8 @@
     fill(f) {
       const R = this.r, world = f.world, game = f.game, cam = f.cam, env = f.env, fx = f.fx, t = f.time;
       const org = [Math.round(cam.x), Math.round(cam.y), Math.round(cam.z)];
+      this.headless = !!cam.headless;
+      this.ads = cam.ads || 0;
       R.dyn.reset(org);
       R.glass.reset(org);
       R.sprites.reset(org);
@@ -156,7 +167,11 @@
         const ind = v.dead ? 0 : v.ind || 0;
         const lamp = v.dead ? DARK : [v.lights ? 2.6 : 0, v.brake ? 2.4 : v.lights ? 1.3 : 0, v.siren ? (blink ? 3 : 0.4) : 0, v.siren ? (blink ? 0.4 : 3) : 0, v.livery === 'taxi' && night > 0.3 ? 2.2 : 0, v.rev ? 2.2 : 0, tick && (ind === -1 || ind === 2) ? 2 : 0, tick && (ind === 1 || ind === 2) ? 2 : 0, v.lights ? 1.6 : 0, v.lights ? 0.9 : 0];
         R.dyn.add(m.mb, M, paint, null, null, lamp, dim, look);
-        if (m.lod === 0 && !m.bike && !m.armor && (CD.inside || own)) R.dyn.add(N.Cars.inside(v.model, v.livery, (v.id * 7 + 3) % (m.trims || 1)), M, paint, null, null, lamp, dim);
+        if (m.lod === 0 && !m.bike && !m.armor && (CD.inside || own)) {
+          const ins = N.Cars.inside(v.model, v.livery, (v.id * 7 + 3) % (m.trims || 1));
+          R.dyn.add(ins, M, paint, null, null, lamp, dim);
+          if (ins.dials) this.dials(v, ins.dials, M, dim);
+        }
         if (!v.dead) R.glass.add(m.gl, M, null, null, null, null, 1, look);
         if (m.plates.length && v.plateCls) {
           const pm = N.Models.plate('plate|' + v.plateCls + '|' + v.plateIdx);
@@ -289,7 +304,7 @@
         if (v.fire && lights.length < N.MAX_LIGHTS - 1 && dcam < 80) lights.push({ x: v.x, y: v.y + 1.5, z: v.z, r: 12 * Math.sqrt(v.fire), c: [1.6, 0.8, 0.3] });
       }
       for (const p of W.peds) {
-        if (p.veh || p.hidden || (cam.fp || cam.hidePlayer) && p.isPlayer) continue;
+        if (p.veh || p.hidden || (cam.fp && !cam.headless || cam.hidePlayer) && p.isPlayer) continue;
         if (inside(p.x) !== camInside) continue;
         if (!vis(p.x, p.z, 1)) continue;
         if (Math.hypot(p.x - cam.x, p.z - cam.z) > pedD) continue;
@@ -491,13 +506,35 @@
       for (const r of fx.rings) Q.flat(r.x, this.city.groundY(r.x, r.z) + 0.12, r.z, r.r, FT.RING, r.t / r.life, 0, WHITE);
     }
 
+    dials(v, list, M, dim) {
+      const R = this.r, run = !!v.driver && !v.dead;
+      NEEDLE_LAMP[9] = run ? (v.lights ? 1.25 : 0.75) : 0;
+      for (const d of list) {
+        const u = N.dialValue(v, d.k, d.u);
+        if (d.bar) {
+          if (u < 0.01) continue;
+          M3.euler(0, 0, 0, d.x, d.y, d.z, DL);
+          DS.fill(0); DS[0] = d.w * u; DS[4] = d.h; DS[8] = 1;
+          R.dyn.add(N.Cars.bar(), M3.mul(M3.mul(M, DL, DM2), DS, DT), null, null, null, NEEDLE_LAMP, dim);
+        } else {
+          M3.euler(0, 0, NEEDLE_ZERO - u * NEEDLE_SWEEP, d.x, d.y, d.z, DL);
+          DS.fill(0); DS[0] = d.r; DS[4] = d.r; DS[8] = d.r;
+          R.dyn.add(N.Cars.needle(), M3.mul(M3.mul(M, DL, DM2), DS, DT), null, null, null, NEEDLE_LAMP, dim);
+        }
+      }
+    }
+
     addPed(p, root, t, o) {
       const R = this.r;
       const lod = o && o.dist > 42 ? 1 : 0;
       const m = N.Models.ped(p.look, lod);
-      const rig = N.pedRig(p, t, root, m.piv, o);
+      const rig = N.pedRig(p, t, root, m.piv, p.isPlayer && this.headless ? Object.assign({}, o, { fp: this.ads }) : o);
       m.mb.piv = m.piv;
-      R.dyn.add(m.mb, null, null, m.bones, rig.G, null, (p.dead ? (p.anim.deathKind === 'fire' ? 0.32 : 0.85) : p.burn > 0 ? 0.7 : 1) * (o && o.dim || 1));
+      if (p.isPlayer) {
+        const e = N.pedEye(rig.G, p.look), ref = p.veh || p;
+        this.selfEye = { x: e[0], y: e[1], z: e[2], ref, rx: ref.x, ry: ref.y, rz: ref.z, t };
+      }
+      R.dyn.add(m.mb, null, null, m.bones, p.isPlayer && this.headless ? N.headless(rig.G) : rig.G, null, (p.dead ? (p.anim.deathKind === 'fire' ? 0.32 : 0.85) : p.burn > 0 ? 0.7 : 1) * (o && o.dim || 1));
       if (rig.item && p.eat && N.Models.food) R.dyn.add(N.Models.food(p.eat.id), rig.item, null);
       if (rig.wpn) {
         R.dyn.add(N.Models.weapon(p.weapon), rig.wpn, null);

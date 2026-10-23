@@ -13,9 +13,9 @@
       rise: { name: 'Настоящая я', title: ['Настоящая', 'я'], arcana: 6, four: FOUR }
     } },
     comp: { name: 'Компендиум', kind: 'Полуночный канал', pass: 'vkey', midnight: true, stars: {
-      yu: { cone: 'truth', title: ['Навстречу', 'истине'], arcana: 0, four: ['cone:junesday', 'cone:dragontrial', 'cone:amagiinn'] },
+      yu: { cone: 'truth', title: ['Самый вкусный', 'омлет'], arcana: 0, four: ['cone:junesday', 'cone:dragontrial', 'cone:amagiinn'] },
       kanji: { cone: 'thread', title: ['Стежок', 'за стежком'], arcana: 4, four: ['cone:junesday', 'cone:dragontrial', 'cone:amagiinn'] },
-      rise: { cone: 'affection', title: ['Твоя', 'привязанность'], arcana: 6, four: ['cone:junesday', 'cone:dragontrial', 'cone:amagiinn'] }
+      rise: { cone: 'affection', title: ['Просто', 'Рисе'], arcana: 6, four: ['cone:junesday', 'cone:dragontrial', 'cone:amagiinn'] }
     } }
   };
 
@@ -99,7 +99,7 @@
   });
 
   const ARCANA_OF = { trail: 0, trail_p: 0, march: 17, danheng: 9, himeko: 3, welt: 5, natasha: 14, serval: 19, asta: 10, arlan: 8, herta: 1, gepard: 11, bronya: 20, seele: 13, sampo: 15, hook: 16, pela: 2, ruanmei: 21, kafka: 18, silverwolf: 12, blade: 13, bailu: 14, yanqing: 7, clara: 8, miyabi: 7, yanagi: 2, phrolova: 18, scar: 15, kazuma: 10, aqua: 2, megumin: 16, darkness: 8, lynx: 9, luka: 8, sushang: 7, xueyi: 20, tingyun: 1, hanya: 11, qingque: 10, yukong: 4, guinaifen: 19 , billy: 7, nicole: 10, anby: 18 };
-  const PATH_ARCANA = { destruction: 16, hunt: 7, erudition: 1, harmony: 6, nihility: 13, preservation: 4, abundance: 14, remembrance: 18 };
+  const PATH_ARCANA = { destruction: 16, hunt: 7, erudition: 1, harmony: 6, nihility: 13, preservation: 4, abundance: 14, remembrance: 18, elation: 0 };
   function arcanaOf(charId, coneId) {
     if (charId && H.CHARS[charId]) {
       const name = H.CHARS[charId].arcana;

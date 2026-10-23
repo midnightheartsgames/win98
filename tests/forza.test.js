@@ -4,8 +4,8 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const DIR = path.join(ROOT, 'js/apps/forza');
-const SIM = ['fz-core', 'fz-cars', 'fz-phys', 'fz-damage', 'fz-map', 'fz-events', 'fz-world', 'fz-city', 'fz-flora', 'fz-race', 'fz-traffic', 'fz-game'];
-const ORDER = SIM.concat(['fz-tex', 'fz-models', 'fz-carmesh', 'fz-dents', 'fz-landmarks', 'fz-ads', 'fz-festival', 'fz-street', 'fz-airport', 'fz-market', 'fz-bisumuiza', 'fz-trees', 'fz-scene', 'fz-debris', 'fz-render', 'fz-hud', 'fz-audio', 'fz-menus', 'fz-photo', 'fz-ui']);
+const SIM = ['fz-core', 'fz-cars', 'fz-phys', 'fz-damage', 'fz-map', 'fz-events', 'fz-wear', 'fz-world', 'fz-city', 'fz-flora', 'fz-race', 'fz-traffic', 'fz-game'];
+const ORDER = SIM.concat(['fz-tex', 'fz-models', 'fz-carmesh', 'fz-driver', 'fz-dents', 'fz-landmarks', 'fz-ads', 'fz-festival', 'fz-street', 'fz-airport', 'fz-market', 'fz-bisumuiza', 'fz-trees', 'fz-scene', 'fz-debris', 'fz-render', 'fz-hud', 'fz-audio', 'fz-menus', 'fz-photo', 'fz-ui']);
 
 const store = new Map();
 globalThis.localStorage = { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) };
@@ -268,6 +268,276 @@ section('meshes', () => {
   }
 });
 
+section('driver', () => {
+  require(path.join(DIR, 'fz-driver.js'));
+  const D = F.Driver, S = F.STRIDE, MS = D.MS;
+  const fOf = (g, z) => F.clamp((z + g.len / 2) / g.len, 0, 1);
+  const posed = inst => {
+    const r = inst.rig, f = new Float32Array(inst.data), i8 = new Int8Array(inst.data), P = [], N = [];
+    for (let i = 0; i < r.nv; i++) { P.push([f[i * 7], f[i * 7 + 1], f[i * 7 + 2]]); N.push([i8[i * 28 + 20] / 127, i8[i * 28 + 21] / 127, i8[i * 28 + 22] / 127]); }
+    return { P, N };
+  };
+  for (const body of ['m', 'f']) {
+    const r = D.rig({ body }), headBones = new Set([D.B.neck, D.B.head]);
+    ok(r.ni / 3 <= 3400 && r.head > 0 && r.head < r.ni && r.ni % 3 === 0 && r.head % 3 === 0, 'driver mesh budget and head range ' + body + ': ' + r.ni / 3 + ' tris');
+    let mixed = 0;
+    for (let k = 0; k < r.ni; k++) if (headBones.has(r.bones[r.idx[k]]) !== k >= r.head) mixed++;
+    ok(!mixed && r.bones.length === r.nv && [...r.bones].every(b => b < D.BONES.length), 'only the neck and head are in the head range ' + body);
+    ok(D.rig({ body }) === r, 'driver rigs are cached ' + body);
+  }
+  const tooBig = [];
+  for (const [hair] of D.HAIRS) for (const body of ['m', 'f']) for (const cover of [null, 'cap', 'helmet']) for (const beard of ['none', 'full']) {
+    const r = D.rig({ body, hair, cover, beard }), f = new Float32Array(r.rest);
+    let bad = r.ni / 3 > 3400;
+    for (let i = 0; i < r.nv && !bad; i++) for (let k = 0; k < 5; k++) if (!Number.isFinite(f[i * 7 + k])) bad = true;
+    for (let i = 0; i < r.nv && !bad; i++) { const u = f[i * 7 + 3], v = f[i * 7 + 4]; if (!(u >= 0 && u <= 1 && v >= 0 && v <= 1)) bad = true; }
+    if (bad) tooBig.push(body + ' ' + hair + ' ' + cover + ' ' + beard + ' ' + r.ni / 3);
+  }
+  ok(!tooBig.length, 'every hairstyle, cover and beard builds within 3400 triangles with valid data: ' + tooBig.slice(0, 4).join('; '));
+  const L0 = D.normLook({ body: 'f', hair: 'nope', skin: 99, makeup: 'bold' });
+  ok(L0.hair === 'bob' && L0.skin === 1 && L0.makeup === 'bold' && D.normLook(null).body === 'm', 'looks fall back to valid values');
+  ok(D.SKINS.length === 8 && D.HAIR_COLS.length === 10 && D.HAIRS.length === 16 && D.FACES.m.length === 6 && D.FACES.f.length === 6, 'eight skin tones, ten hair colours, sixteen hairstyles, six faces per figure');
+  ok(D.POOL.length === 32 && new Set(D.POOL.map(l => D.rigKey(l) + D.texKey(l))).size >= 28 && D.trafficLook(17) === D.trafficLook(17), 'traffic draws from a pool of 32 looks');
+  ok(D.rivalLook('Вилкс').hair === 'slick' && D.rivalLook('Liene').body === 'f' && D.rigKey(D.rivalLook('Andris_BMW')) === D.rigKey(D.rivalLook('Andris_BMW')), 'rival looks come from their names');
+  const tall = D.rig({ hair: 'curly' }), flat = D.rig({ hair: 'bald' });
+  ok(tall.crown > flat.crown + 0.01 && D.seatOf(F.Models.carGeo('viper'), tall.fig, 'm', tall.crown).head[1] <= D.seatOf(F.Models.carGeo('viper'), flat.fig, 'm', flat.crown).head[1], 'tall hair lowers the head in low cars');
+  ok(/bool skinM = m > 20\.5 && m < 21\.5;/.test(read('js/apps/forza/fz-render.js')) && F.MAT.SKIN === 21, 'skin has its own material');
+  const REWARDS = /^(band(:[1-5])?|finale|stunts|drift|photo|barn:(p356|m300sl|gaz21|raf2203))$/;
+  ok(D.ITEMS.length === 67 && new Set(D.ITEMS.map(x => x.id)).size === 67 && D.SLOTS.length === 9, '67 wardrobe items in nine slots and the festival band');
+  const itemBad = D.ITEMS.filter(x => !(D.SLOTS.some(([sl]) => sl === x.slot) || x.slot === 'band') || !x.cols.length || !x.cols.every(c => /^#[0-9a-f]{6}$/i.test(c)) || !(x.band >= 0 && x.band <= 5) || (x.price === null ? !REWARDS.test(x.reward || '') : !(x.price >= 0 && !x.reward)));
+  ok(!itemBad.length, 'every item has a slot, colours and a price or a reward: ' + itemBad.map(x => x.id).join(','));
+  ok(D.STARTER.every(id => D.ITEM[id].price === 0) && D.ITEM.blazer.price === 45000 && D.ITEM.suit_vetra.band === 5 && D.ITEM.helmet_full.reward === 'finale', 'starter set is free, prices and conditions follow the plan');
+  const nf = D.normFit({ top: ['suit_vetra', 0], outer: ['leather', 0], legs: ['jeans', 0], head: ['helmet_full', 0], eyes: ['drops', 0] });
+  ok(nf.outer === null && nf.legs === null && nf.eyes === null && nf.feet.item.id === 'kedy' && D.normFit({ top: ['nope', 0] }).top.item.id === 'tee' && D.normFit({ top: ['tee', 99] }).top.ci === 0, 'overalls replace the top, jacket and trousers, a full helmet hides glasses, gaps fall back to the starter set');
+  ok(D.normLook({ fit: { head: ['cap_horizon', 0] } }).cover === 'cap' && D.normLook({ fit: { head: ['helmet_open', 0] } }).cover === 'helmet' && D.normLook({}).cover === null, 'hats and helmets decide how the hair is built');
+  let heavy = 0, heavyId = '';
+  for (const x of D.ITEMS) for (const body of ['m', 'f']) {
+    const fit = Object.assign({}, D.DEFAULT_FIT);
+    if (x.slot !== 'band') fit[x.slot] = [x.id, x.cols.length - 1];
+    const r = D.rig({ body, fit, hair: 'dreads', beard: body === 'm' ? 'full' : 'none' });
+    if (r.ni / 3 > heavy) { heavy = r.ni / 3; heavyId = x.id; }
+  }
+  ok(heavy <= 3400, 'every item fits the triangle budget: ' + heavy + ' (' + heavyId + ')');
+  const dressed = [
+    { body: 'm', hair: 'curly', beard: 'full', fit: { head: ['helmet_full', 0], top: ['turtle', 0], outer: ['bomber', 0], neck: ['scarf', 0], wrist: ['steel', 0], hands: ['race_gloves', 0] } },
+    { body: 'f', hair: 'bun', fit: { head: ['panama', 0], eyes: ['sport_zibens', 0], top: ['hoodie', 0], neck: ['phones', 0], legs: ['skirt', 0] } },
+    { body: 'm', hair: 'long', fit: { head: ['helmet_open', 0], top: ['suit_horizon', 0], neck: ['amber', 0] } }
+  ];
+  const dressProblems = [];
+  for (const car of F.Cars.CARS) {
+    const g = F.Models.carGeo(car.id);
+    for (const look of dressed) {
+      const inst = D.make(look), r = inst.rig;
+      D.pose(inst, g, 0.1, true);
+      const { P } = posed(inst), headV = new Set();
+      for (let k = r.head; k < r.ni; k++) headV.add(r.idx[k]);
+      let near = 9, crown = -9;
+      P.forEach((p, i) => {
+        if (headV.has(i)) crown = Math.max(crown, p[1] - (g.shape.topAt(fOf(g, p[2])) - 0.03));
+        else near = Math.min(near, Math.hypot(p[0] - g.eye[0], p[1] - g.eye[1], p[2] - g.eye[2]));
+      });
+      if (near < 0.12) dressProblems.push(car.id + ' ' + look.fit.top[0] + ' collar ' + near.toFixed(3));
+      if (crown > 0) dressProblems.push(car.id + ' ' + (look.fit.head || ['-'])[0] + ' through the roof ' + crown.toFixed(3));
+    }
+  }
+  ok(!dressProblems.length, 'hats, helmets and collars fit every car and stay out of the cockpit view: ' + dressProblems.slice(0, 5).join('; '));
+  for (const body of ['m', 'f']) {
+    const inst = D.make({ body, fit: { top: ['hoodie', 0], legs: ['cargo', 0], feet: ['boots', 0] } }), at = D.stand(inst, 3.7);
+    const f = new Float32Array(inst.data);
+    let lo = Infinity, hi = -Infinity, bad = 0;
+    for (let i = 0; i < inst.rig.nv; i++) { const y = f[i * 7 + 1]; if (!Number.isFinite(y)) bad++; lo = Math.min(lo, y); hi = Math.max(hi, y); }
+    ok(!bad && lo > -0.02 && lo < 0.04 && hi > (body === 'm' ? 1.72 : 1.6) && hi < 1.95 && at.head[1] > at.chest[1], 'the standing driver stands on the studio floor ' + body + ': ' + lo.toFixed(3) + '..' + hi.toFixed(3) + ' m');
+  }
+  {
+    const prof = F.Profile.newProfile('wear');
+    ok(prof.driver === null && prof.wardrobe.join() === 'tee,tank,jeans,kedy,band' && prof.outfits.length === 3, 'a new profile starts with the starter set and no saved look');
+    const old = F.Profile.newProfile('old');
+    delete old.wardrobe; delete old.outfits; delete old.driver; delete old.wardrobeSeen;
+    F.Profile.saveProfile(old);
+    const back = F.Profile.loadProfile();
+    ok(back.wardrobe.includes('tee') && back.outfits.length === 3 && back.driver === null && Array.isArray(back.wardrobeSeen), 'old saves get a wardrobe on load');
+    F.Profile.wipeProfile();
+    const game = new F.Game(world, { profile: prof });
+    game.setLook({ body: 'f', hair: 'long', skin: 3, fit: { top: ['blazer', 0] }, junk: 1 });
+    ok(prof.driver.body === 'f' && prof.driver.hair === 'long' && prof.driver.skin === 3 && prof.driver.fit === undefined && prof.driver.junk === undefined, 'saving the appearance keeps only appearance fields');
+    ok(!game.wearFit({ top: ['plaid', 0], legs: ['jeans', 0] }) && prof.driver.fit === undefined, 'items that are not in the wardrobe cannot be worn');
+    game.grantWear(['plaid']);
+    ok(game.wearFit({ top: ['plaid', 2], legs: ['jeans', 0], feet: ['kedy', 0], band: false }) && prof.driver.fit.top[1] === 2 && prof.driver.fit.band === false && prof.driver.hair === 'long', 'owned items are worn and saved with their colour');
+    ok(D.playerLook(prof).fit.top[0] === 'plaid' && D.playerLook(prof).bandCol === prof.band && D.playerLook(prof).hair === 'long', 'the player look comes from the profile');
+  }
+  {
+    const mn = read('js/apps/forza/fz-menus.js');
+    ok(/const tabs = \['ГЛАВНАЯ', 'ФЕСТИВАЛЬ', 'МАШИНЫ', 'ВОДИТЕЛЬ', 'НАВЫКИ', 'НАСТРОЙКИ'\]/.test(mn) && /\[this\.homeTab, this\.festTab, this\.carsTab, this\.driverTab, this\.skillsTab, this\.settingsTab\]/.test(mn) && /sb\('Настройки', 'gear', \(\) => \{ this\.top\.tabIdx = 5;/.test(mn), 'the Horizon menu has the ВОДИТЕЛЬ tab between МАШИНЫ and НАВЫКИ');
+    ok(/appearance\(\) \{/.test(mn) && /wardrobe\(\) \{/.test(mn) && /g\.setLook\(st\)/.test(mn) && /g\.wearFit\(fit\)/.test(mn) && /Отменить изменения\?/.test(mn), 'appearance and wardrobe screens save through the game and ask before dropping changes');
+  }
+  {
+    const P = F.Profile;
+    ok(P.cleanName('Jānis Bērziņš<>!') === 'Jānis Bērziņš' && P.cleanName('  Гонщик_01 ') === 'Гонщик_01 ' && P.cleanName('x'.repeat(30)).length === 16, 'names keep letters of any alphabet, digits, spaces and «_», up to 16 characters');
+    ok(P.nameOk('Гонщик') && P.nameOk('Jānis_B') && !P.nameOk('a') && !P.nameOk('x<y') && !P.nameOk('ab  cd'), 'a name needs 2 to 16 allowed characters');
+    const old = P.newProfile('Старый Гонщик'), fresh = P.newProfile('Новый');
+    fresh.driver = { body: 'f', hair: 'bob' };
+    ok(D.adopt(old) && old.driverNews === true && old.driver.fit.top[0] === 'tee' && D.rigKey(D.playerLook(old)) === D.rigKey(D.playerLook((() => { const o = P.newProfile('Старый Гонщик'); D.adopt(o); return o; })())), 'an old save gets a look from the player name, the starter set and a news banner');
+    ok(!D.adopt(fresh) && fresh.driver.hair === 'bob' && !fresh.driverNews, 'a saved look is kept');
+    const ui = read('js/apps/forza/fz-ui.js'), mn = read('js/apps/forza/fz-menus.js');
+    ok(/newGame\(reg\) \{[\s\S]{0,200}F\.Profile\.newProfile\(reg && reg\.name\)/.test(ui) && /this\.push\(this\.register\(\)\)/.test(mn) && /ui\.newGame\(\{ name, look: lookOf\(\) \}\)/.test(mn) && /scr\.back = \(\) => this\.pop\(\);/.test(mn), 'a new game starts with the participant registration and Esc returns to the title without a profile');
+    ok(/НОВОЕ НА ФЕСТИВАЛЕ: ВАШ ВОДИТЕЛЬ/.test(ui) && /p\.driverNews = false;/.test(ui), 'the news banner is shown once');
+  }
+  {
+    const W = F.Wear, prof = F.Profile.newProfile('shop'), game = new F.Game(world, { profile: prof });
+    prof.credits = 5000;
+    ok(game.buyItem('cap_horizon') === 'ok' && prof.credits === 3500 && prof.wardrobe.includes('cap_horizon') && game.buyItem('cap_horizon') === 'owned' && prof.credits === 3500, 'an item is bought once for its price');
+    ok(game.buyItem('cap_vetra') === 'locked' && game.buyItem('helmet_full') === 'reward' && game.buyItem('blazer') === 'locked', 'locked shelves and rewards cannot be bought');
+    prof.band = 4;
+    ok(game.buyItem('blazer') === 'poor' && prof.credits === 3500, 'an item needs enough credits');
+    game.drain();
+    prof.band = 3;
+    game.save();
+    let got = game.drain().filter(e => e.t === 'item').map(e => e.id);
+    ok(got.includes('tee_band') && got.includes('helmet_open') && !got.includes('helmet_full'), 'wristbands give their rewards: ' + got.join(','));
+    game.save();
+    ok(!game.drain().some(e => e.t === 'item'), 'a reward is given once');
+    prof.finale = true; prof.photoAll = true; prof.barns.push(F.EV.BARNS.find(b => b.car === 'p356').id);
+    for (const st of F.EV.STUNTS) prof.stunts[st.id] = st.stars[2];
+    game.save();
+    got = game.drain().filter(e => e.t === 'item').map(e => e.id).sort();
+    ok(got.join() === ['champ', 'drift_gloves', 'helmet_50s', 'helmet_full', 'photo_vest', 'suit_horizon'].sort().join(), 'the finale, barns, stunts, drift zones and the photo hunt give their items: ' + got.join(','));
+    ok(game.wearFit({ top: ['tee_band', 3], legs: ['jeans', 0] }) && !game.wearFit({ top: ['tee_band', 4], legs: ['jeans', 0] }), 'wristband T-shirt colours open with the wristbands');
+    const lv = F.Profile.newProfile('gift'), lg = new F.Game(world, { profile: lv });
+    let gifts = 0;
+    for (let i = 0; i < 12; i++) { lg.addXp(F.EV.xpForLevel(lv.level)); gifts += lg.drain().filter(e => e.t === 'item' && e.why === 'level').length; }
+    ok(lv.level === 13 && gifts === 2 && lv.wardrobe.length === W.STARTER.length + 2 && lv.wardrobe.slice(W.STARTER.length).every(id => W.ITEM[id].price > 0 && W.ITEM[id].band <= lv.band), 'every fifth level gives a boutique item from the open shelves');
+    let career = 0;
+    for (const e of F.EV.EVENTS) if (e.id !== 'prologue') career += (e.id === 'finale' ? 100000 : F.EV.CLASS_PAY[e.cls] * (e.type === 'showcase' ? 1.5 : 1)) * 1.05;
+    for (let l = 2; l <= 27; l++) career += F.EV.levelReward(l).cr;
+    const shop = W.ITEMS.filter(x => x.price > 0).reduce((a, x) => a + x.price, 0), share = shop / career;
+    ok(share >= 0.25 && share <= 0.38, 'the boutique costs about a third of the career income: CR ' + shop + ' of ' + Math.round(career) + ' (' + Math.round(share * 100) + '%)');
+    const cheap = W.ITEMS.filter(x => x.price > 0 && x.band === 0 && x.price <= F.EV.CLASS_PAY.D / 2).length;
+    ok(cheap >= 15, 'the first shelves offer ' + cheap + ' items for less than half a class D win');
+    const mn = read('js/apps/forza/fz-menus.js');
+    ok(/this\.confirm\('Бутик Horizon', `Купить «\$\{esc\(x\.name\)\}» за CR/.test(mn) && /Не хватает CR/.test(mn) && /saveOutfit\(k,/.test(mn) && !/boutique[\s\S]{0,4000}ui\.toast\(/.test(mn.slice(mn.indexOf('boutique(slot0)'), mn.indexOf('outfits() {'))), 'the boutique asks before buying and reports in the screen, not with HUD toasts');
+  }
+  {
+    const names = F.RIVAL_NAMES, female = new Set(['Liene', 'Oksana_R', 'Ilze', 'Laura', 'Vika_Riga', 'Zane', 'Inese']);
+    const missing = names.filter(n => !D.RIVAL_LOOKS[n]);
+    ok(!missing.length && names.every(n => D.rivalLook(n).body === (female.has(n) ? 'f' : 'm')), 'every rival name has its own look: ' + missing.join(','));
+    const plain = names.filter(n => Object.entries(D.rivalLook(n).fit).filter(([k, v]) => Array.isArray(v) && !(k === 'feet' && v[0] === 'sneakers') && !(k === 'legs' && v[0] === 'jeans')).length < 2);
+    ok(!plain.length, 'every rival wears at least two items of their own: ' + plain.join(','));
+    ok(new Set(names.map(n => D.rigKey(D.rivalLook(n)) + D.texKey(D.rivalLook(n)))).size === names.length, 'no two rivals look the same');
+    const V = D.rivalLook('Вилкс');
+    ok(V.hair === 'slick' && V.hairCol === 0 && V.fit.outer[0] === 'leather' && V.fit.eyes[0] === 'mirror' && V.fit.hands[0] === 'race_gloves', 'Вилкс wears a black leather jacket, mirrored glasses and racing gloves with dark slicked-back hair');
+    ok(D.TAXI.every(l => l.fit.head && l.fit.head[0].startsWith('cap')) && [1, 2, 3, 40, 77].every(u => D.TAXI.includes(D.trafficLook(u, 'gaz24'))) && D.trafficLook(5, 'e30') === D.trafficLook(5, 'e30') && D.POOL.includes(D.trafficLook(5, 'e30')), 'Volga drivers in traffic are cab drivers in caps, other traffic comes from the pool of 32');
+    ok(D.crowdLooks().length === 36 && D.crowdLooks().every(l => D.rig(l).ni / 3 <= 3400), 'the traffic and taxi looks are built on the loading screen within the budget');
+    ok(/this\.driverQueue = F\.Driver\.crowdLooks\(\)/.test(read('js/apps/forza/fz-ui.js')) && /if \(t\.keep \|\| this\.frameNo - t\.seen < 1800\) continue;/.test(read('js/apps/forza/fz-render.js')), 'prebuilt crowd textures are kept');
+  }
+  {
+    const geo = F.Models.carGeo('e30'), inst = D.make({ body: 'm' }), st = D.seatOf(geo, inst.rig.fig, 'm', inst.rig.crown);
+    const headFwd = () => { const b = D.B.head * MS, m = inst.mats; return [m[b + 6], m[b + 7], m[b + 8]].map(v => -v); };
+    D.pose(inst, geo, 0, false);
+    const ahead = headFwd();
+    inst.gaze = [st.head[0] - 3, st.head[1], st.head[2] - 1.2];
+    D.pose(inst, geo, 0, false);
+    const left = headFwd();
+    inst.gaze = [st.head[0] + 0.5, st.head[1] - 2, st.head[2] + 3];
+    D.pose(inst, geo, 0, false);
+    const back = headFwd();
+    inst.gaze = null;
+    ok(ahead[2] < -0.9 && left[0] < -0.5 && back[0] > 0.3 && back[1] < 0, 'the photo mode gaze turns the head toward the camera within the neck range');
+    const ph = read('js/apps/forza/fz-photo.js');
+    ok(/list\(3, 'driver', 'Водитель', \[\['show', 'В машине'\], \['hide', 'Скрыт'\]\]\)/.test(ph) && /list\(3, 'gaze', 'Взгляд водителя', \[\['road', 'На дорогу'\], \['camera', 'В камеру'\]\]\)/.test(ph) && /if \(o\.driver === 'hide'\) st\.driver = null;/.test(ph), 'photo mode can hide the driver and make them look into the camera');
+  }
+  const sx = F.Models.cabinAt;
+  let problems = [];
+  for (const car of F.Cars.CARS) {
+    const g = F.Models.carGeo(car.id), cab = sx(car);
+    for (const body of ['m', 'f']) {
+      const inst = D.make({ body, hair: body === 'f' ? 'long' : 'curly', beard: body === 'm' ? 'full' : 'none' }), r = inst.rig, st = D.seatOf(g, r.fig, r.body, r.crown);
+      for (const steer of [-0.14, 0, 0.14]) {
+        D.pose(inst, g, steer, true);
+        const { P, N } = posed(inst), m = inst.mats;
+        let grip = 0, near = 9, out = 0, crown = -9, flipped = 0;
+        for (const hb of [D.B.handL, D.B.handR]) {
+          const b = hb * MS, fist = [0, 1, 2].map(i => m[b + 9 + i] + m[b + 3 + i] * 0.07);
+          const d = fist.map((v, i) => v - st.wc[i]), along = d[0] * st.Z[0] + d[1] * st.Z[1] + d[2] * st.Z[2];
+          grip = Math.max(grip, Math.hypot(Math.hypot(d[0] - st.Z[0] * along, d[1] - st.Z[1] * along, d[2] - st.Z[2] * along) - st.R, along));
+        }
+        const headV = new Set(); for (let k = r.head; k < r.ni; k++) headV.add(r.idx[k]);
+        const rimTop = st.wc[1] + st.R * st.Y[1] + 0.04;
+        P.forEach((p, i) => {
+          const top = headV.has(i) ? g.shape.topAt(fOf(g, p[2])) - 0.04 : Math.max(g.shape.topAt(fOf(g, p[2])), rimTop);
+          if (headV.has(i)) crown = Math.max(crown, p[1] - top);
+          else near = Math.min(near, Math.hypot(p[0] - g.eye[0], p[1] - g.eye[1], p[2] - g.eye[2]));
+          if (Math.abs(p[0]) > g.W * 0.92 || p[1] < g.yb + 0.04 || p[1] > top) out++;
+        });
+        for (let k = 0; k < r.ni; k += 3) {
+          const a = P[r.idx[k]], b = P[r.idx[k + 1]], c = P[r.idx[k + 2]];
+          const e1 = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], e2 = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+          const gn = [e1[1] * e2[2] - e1[2] * e2[1], e1[2] * e2[0] - e1[0] * e2[2], e1[0] * e2[1] - e1[1] * e2[0]];
+          if (Math.hypot(...gn) < 1e-7) continue;
+          const vn = [0, 1, 2].map(j => N[r.idx[k]][j] + N[r.idx[k + 1]][j] + N[r.idx[k + 2]][j]);
+          if (gn[0] * vn[0] + gn[1] * vn[1] + gn[2] * vn[2] < 0) flipped++;
+        }
+        if (grip > 0.02) problems.push(car.id + ' ' + body + ' ' + steer + ' hands ' + grip.toFixed(3) + ' m off the rim');
+        if (near < 0.12) problems.push(car.id + ' ' + body + ' body ' + near.toFixed(3) + ' m from the cockpit eye');
+        if (out) problems.push(car.id + ' ' + body + ' ' + out + ' vertices outside the cabin');
+        if (crown > 0) problems.push(car.id + ' ' + body + ' head through the roof');
+        if (flipped > r.ni / 3 * 0.01) problems.push(car.id + ' ' + body + ' ' + flipped + ' flipped faces');
+      }
+      if (cab.bz !== null && st.head[2] + 0.1 > cab.bz - 0.045) problems.push(car.id + ' ' + body + ' head behind the B-pillar');
+    }
+    ok(cab.eye[2] === g.eye[2] && cab.eye[1] === g.eye[1], 'cockpit eye comes from the cabin layout ' + car.id);
+  }
+  ok(!problems.length, 'drivers sit in all cars: ' + problems.slice(0, 6).join('; '));
+  {
+    const geo = F.Models.carGeo('e30'), inst = D.make({ body: 'm' }), st = D.seatOf(geo, inst.rig.fig, 'm', inst.rig.crown), m = inst.mats;
+    const fist = hb => { const b = hb * MS; return [0, 1, 2].map(i => m[b + 9 + i] + m[b + 3 + i] * 0.07); };
+    const off = p => { const d = p.map((v, i) => v - st.wc[i]), al = d[0] * st.Z[0] + d[1] * st.Z[1] + d[2] * st.Z[2]; return Math.hypot(Math.hypot(d[0] - st.Z[0] * al, d[1] - st.Z[1] * al, d[2] - st.Z[2] * al) - st.R, al); };
+    let worst = 0, regrips = 0, lastHeld = [true, true];
+    for (let i = 0; i <= 240; i++) {
+      const steer = 0.5 * Math.sin(i / 240 * Math.PI * 2);
+      D.animate(inst, 1 / 60, { steer, speed: 8 });
+      D.pose(inst, geo, steer, true);
+      inst.anim.hands.forEach((h, k) => { if (!h.held && lastHeld[k]) regrips++; lastHeld[k] = h.held; if (h.held) worst = Math.max(worst, off(fist(k ? D.B.handR : D.B.handL))); });
+    }
+    ok(regrips >= 4 && worst < 0.02 && inst.anim.hands.every(h => Math.abs(h.ang) <= 1.65), 'hands re-grip hand over hand on a full turn and stay on the rim: ' + regrips + ' re-grips, ' + worst.toFixed(3) + ' m');
+    for (let i = 0; i < 60; i++) D.animate(inst, 1 / 60, { steer: 0, speed: 8 });
+    D.cue(inst, 'shift');
+    for (let i = 0; i < 11; i++) D.animate(inst, 1 / 60, { steer: 0, speed: 8 });
+    D.pose(inst, geo, 0, true);
+    const lever = off(fist(D.B.handR)), stay = off(fist(D.B.handL));
+    for (let i = 0; i < 30; i++) D.animate(inst, 1 / 60, { steer: 0, speed: 8 });
+    D.pose(inst, geo, 0, true);
+    ok(lever > 0.15 && stay < 0.02 && off(fist(D.B.handR)) < 0.02, 'a manual gear change sends the right hand to the lever and back');
+    D.cue(inst, 'horn');
+    for (let i = 0; i < 13; i++) D.animate(inst, 1 / 60, { steer: 0, speed: 8 });
+    D.pose(inst, geo, 0, true);
+    const hub = fist(D.B.handR);
+    ok(Math.hypot(...hub.map((v, i) => v - st.wc[i])) < 0.12, 'the horn puts the right hand on the hub');
+    for (let i = 0; i < 90; i++) D.animate(inst, 1 / 60, { steer: 0, speed: 8, back: true });
+    ok(inst.anim.yaw.x > 1.2 && inst.anim.twist.x > 0.25, 'looking back turns the head and shoulders');
+    for (let i = 0; i < 120; i++) D.animate(inst, 1 / 60, { steer: 0.1, speed: 20, latG: 6, yawRate: 0.4 });
+    ok(inst.anim.yaw.x > 0.2 && inst.anim.side.x < -0.03, 'in a right turn the head looks into the turn and the body leans out');
+    D.cue(inst, 'hit', { power: 15, dx: 0, dz: 1 });
+    let peak = 0;
+    for (let i = 0; i < 30; i++) { D.animate(inst, 1 / 60, { steer: 0, speed: 0 }); peak = Math.max(peak, inst.anim.fwd.x); }
+    ok(peak > 0.05, 'a frontal hit throws the body forward: ' + peak.toFixed(3));
+    const ui = read('js/apps/forza/fz-ui.js');
+    ok(/case 'shift': if \(!this\.settings\(\)\.auto\) D\.cue\(inst, 'shift'\)/.test(ui) && /this\.driverEvent\(e\);/.test(ui) && /this\.updateDrivers\(dt\);/.test(ui) && /case 'finish': if \(e\.pos === 1\) D\.cue\(inst, 'win'\)/.test(ui), 'game events reach the player driver');
+  }
+  const rnd = Math.random;
+  Math.random = () => { throw new Error('random'); };
+  try {
+    const a = D.make(D.rivalLook('Liene')), b = D.make(D.rivalLook('Liene'));
+    D.pose(a, F.Models.carGeo('e30'), 0.05, false); D.pose(b, F.Models.carGeo('e30'), 0.05, false);
+    ok(Buffer.from(a.data).equals(Buffer.from(b.data)) && D.rivalLook('Liene').body === 'f' && D.rivalLook('Vilks').body === 'm', 'driver looks and poses are deterministic and use no random numbers');
+  } finally { Math.random = rnd; }
+  const ren = read('js/apps/forza/fz-render.js'), ui = read('js/apps/forza/fz-ui.js');
+  ok(/if \(lod === 0 && car\.driver && !car\.inside && !\(car\.dmg && car\.dmg\.burnt\)\) this\.drawDriver\(car, geo, model, false, false\)/.test(ren), 'outside drivers only at LOD0, never in the own cockpit or a burnt car');
+  ok(/this\.drawDriver\(car, m\.geo, model, car\.driverPart === 'body', true\)/.test(ren) && /car\.driverPart = this\.cabinDriverPart\(\)/.test(ui) && /return this\.keys\.back \|\| this\.pad\.back \|\| Math\.abs\(this\.look\.yaw\) > LOOK_HIDE_DRIVER \? null : 'body'/.test(ui), 'the cockpit hides the head and neck, look back hides the whole driver, the hood camera shows all');
+  ok(/drawRange\(mesh, model, 0, headless \? inst\.rig\.head : inst\.rig\.ni\)/.test(ren), 'the head is cut by the index range');
+  ok(/if \(main && cut && lod === 0 && !car\.inside && cut\.g > cut\.c\)/.test(ren) && /if \(uSpecK < 0\.5\) \{ c \*= 0\.55; a = max\(a, 0\.66\); \}/.test(ren), 'Retro 2000 draws LOD0 glass dark and see-through');
+  ok(/driver: burnt \? null : this\.driverOf\(g\)/.test(ui) && /a\.drv \|\| \(a\.drv = F\.Driver\.make\(F\.Driver\.rivalLook\(a\.name\)\)\)/.test(ui) && /t\.drv = F\.Driver\.make\(F\.Driver\.trafficLook\(t\.uid, t\.id\)\)/.test(ui), 'player, rivals and traffic have drivers');
+});
+
 section('cluster', () => {
   require(path.join(DIR, 'fz-hud.js'));
   const K = F.Cluster, KINDS = new Set(['speed', 'rpm', 'boost', 'fuel', 'temp', 'oil', 'volt']);
@@ -463,6 +733,49 @@ section('damage', () => {
     bent.toeRaw[0] = 0.2; bent.toeRaw[1] = 0.2; bent.refreshMech();
     const pull = run(bent);
     ok(Math.abs(pull.x) > 1 && Math.abs(clean.x) < 0.05, 'a bent front wheel pulls the car aside: ' + pull.x.toFixed(2) + ' m');
+  }
+  {
+    store.clear();
+    const game = new F.Game(world, { profile: F.Profile.newProfile('rewind') });
+    game.settings.traffic = 0;
+    const v = game.veh, h = F.MAP.HUB, road = world.nearestRoad(h.x + 600, h.z + 400, 400);
+    v.place(road.x, road.z, Math.atan2(road.tx, -road.tz), world);
+    const gas = { thr: 1, brk: 0, steer: 0 }, idle = { thr: 0, brk: 0, steer: 0 }, back = Object.assign({ rewind: true }, idle);
+    for (let i = 0; i < 60 * 4; i++) game.step(1 / 60, gas);
+    const moves = [];
+    let px = v.x, pz = v.z;
+    for (let i = 0; i < 60; i++) {
+      game.step(1 / 60, back);
+      moves.push(Math.hypot(v.x - px, v.z - pz)); px = v.x; pz = v.z;
+    }
+    const sorted = moves.slice().sort((a, b) => a - b), mid = sorted[30], top = sorted[59];
+    ok(game.rewinding && mid > 0.05 && top < mid * 2.5 && Math.min(...moves) > mid * 0.2, 'rewinding moves the car every tick without jumps: ' + mid.toFixed(2) + '..' + top.toFixed(2) + ' m');
+    game.step(1 / 60, idle);
+    const rx = v.x, rz = v.z;
+    game.step(1 / 60, back);
+    ok(Math.hypot(v.x - rx, v.z - rz) < top * 1.5, 'a second rewind starts from where the car stands');
+  }
+  for (const id of ['vecriga', 'train']) {
+    store.clear();
+    const profile = F.Profile.newProfile('rewind');
+    profile.settings.traffic = 0;
+    const game = new F.Game(world, { profile });
+    const race = game.startEvent(id, { difficulty: 1, seed: 3 }), st = { idx: race.lastIdx };
+    let t = 0;
+    while (t < 30 && (race.state !== 'race' || race.time < 6)) {
+      game.step(1 / 60, race.state === 'grid' ? { thr: 0.6, brk: 0, steer: 0 } : driveInput(game, race, st));
+      t += 1 / 60;
+    }
+    const cars = [game.veh, ...race.rivals, ...(race.special ? [race.special] : [])];
+    const last = cars.map(c => [c.x, c.z]), moves = cars.map(() => []), times = [race.time];
+    for (let i = 0; i < 60; i++) {
+      game.step(1 / 60, { thr: 0, brk: 0, steer: 0, rewind: true });
+      cars.forEach((c, j) => { moves[j].push(Math.hypot(c.x - last[j][0], c.z - last[j][1])); last[j] = [c.x, c.z]; });
+      times.push(race.time);
+    }
+    const jumpy = moves.filter(m => { const s = m.slice().sort((a, b) => a - b); return s[30] > 0.05 && (s[59] > s[30] * 2.5 || s[0] < s[30] * 0.2); }).length;
+    const back = times.every((x, i) => !i || (x <= times[i - 1] + 1e-9 && times[i - 1] - x < 0.05));
+    ok(game.rewinding && jumpy === 0 && back, id + ': race rewind moves every car and the clock smoothly (' + cars.length + ' cars)');
   }
   {
     store.clear();
@@ -2062,6 +2375,135 @@ section('shadows', () => {
   ok(casters.length === 1 && casters[0].x === 50 && !casters[0].far, 'parked cars near the camera cast sun shadows');
 });
 
+section('camera', () => {
+  const UI = F.UI.prototype, h = F.MAP.HUB;
+  const profile = F.Profile.newProfile('cam');
+  profile.settings.traffic = 0;
+  const game = new F.Game(world, { profile });
+  game.veh.place(h.x - 12, h.z + 14, 2.2, world);
+  const v = game.veh, set = Object.assign(F.Profile.defaultSettings(), {});
+  const viewEl = { setPointerCapture() { }, releasePointerCapture() { }, hasPointerCapture: () => false };
+  const host = Object.assign(Object.create(UI), { game, world, mode: 'play', menuOpen: false, photo: null, keys: {}, pad: {}, camMode: 'chase', shake: 0, acc: 0, prevPose: null, camYaw: 0, camPos: null, camHit: 1, camZoom: 1, look: { yaw: 0, pitch: 0, vy: 0, vp: 0, idle: 0, drag: null }, view: viewEl, el: { classList: { add() { }, remove() { } } }, settings: () => set });
+  const run = (n, dt = 1 / 60) => { let c; for (let i = 0; i < n; i++) c = host.camera(dt); return c; };
+  const fwd = [Math.sin(v.yaw), -Math.cos(v.yaw)], right = [Math.cos(v.yaw), Math.sin(v.yaw)];
+  const rel = c => [c.x - v.x, c.z - v.z];
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
+  const base = run(60), b0 = rel(base);
+  ok(dot(b0, fwd) < -4 && Math.abs(dot(b0, right)) < 0.3, 'the chase camera sits behind the car with no mouse look');
+  ok(set.mlook === 'hold' && set.msens === 1 && set.minv === false && set.mret === 'fast', 'mouse look is on by default, held button, normal speed, quick return');
+  host.look.drag = 1;
+  host.lookTurn(Math.PI / 2, 0);
+  const side = rel(run(10));
+  ok(dot(side, right) < -4 && Math.abs(dot(side, fwd)) < 1.2, 'turning the mouse to the right swings the chase camera to the left side of the car, looking across it');
+  ok(Math.abs(Math.hypot(...side) - Math.hypot(...b0)) < 0.4, 'the orbit keeps the camera distance: ' + Math.hypot(...side).toFixed(2) + ' vs ' + Math.hypot(...b0).toFixed(2));
+  host.lookTurn(Math.PI / 2, 0);
+  const front = rel(run(10));
+  ok(dot(front, fwd) > 4, 'half a turn shows the car from the front');
+  host.lookTurn(2, 0);
+  ok(host.look.yaw >= -Math.PI && host.look.yaw <= Math.PI, 'the third-person look yaw wraps around without limits');
+  host.lookReset();
+  host.lookTurn(0, -0.8);
+  const high = run(10);
+  ok(high.y > base.y + 2 && high.y - v.y < 9, 'dragging the mouse down lifts the camera over the car: ' + (high.y - v.y).toFixed(2) + ' m');
+  host.lookTurn(0, 5);
+  const low = run(10);
+  ok(host.look.pitch === 0.42 && low.y >= world.groundY(low.x, low.z) + 0.6 - 1e-6, 'looking up lowers the camera but never under the ground');
+  const o = UI.orbitOffset(0, 2, -6, 0.7, 0.3), r0 = Math.hypot(2, 6);
+  ok(Math.abs(Math.hypot(...o) - r0) < 1e-9 && Math.abs(Math.atan2(o[1], Math.hypot(o[0], o[2])) - (Math.atan2(2, 6) - 0.3)) < 1e-9, 'the orbit turns the offset around the car and keeps its length');
+  const top = UI.orbitOffset(0, 2, -6, 0, -3);
+  ok(Math.abs(Math.atan2(top[1], Math.hypot(top[0], top[2])) - 1.35) < 1e-9, 'the orbit stops short of looking straight down');
+  host.look.drag = null;
+  host.lookReset();
+  host.lookTurn(1.2, 0.3);
+  host.look.drag = null;
+  run(20);
+  ok(host.look.yaw === 1.2 && host.look.pitch === 0.3, 'after the button is released the view stays put for half a second');
+  run(180);
+  ok(host.look.yaw === 0 && host.look.pitch === 0, 'then the camera returns behind the car');
+  set.mret = 'slow';
+  host.lookTurn(-1, 0);
+  run(150);
+  ok(host.look.yaw === -1, 'the slow return waits three seconds');
+  set.mret = 'off';
+  run(400);
+  ok(host.look.yaw === -1, 'with the return switched off the view stays where it was left');
+  host.look.drag = 3;
+  set.mret = 'fast';
+  run(200);
+  ok(host.look.yaw === -1, 'a held button keeps the view');
+  host.look.drag = null;
+  host.camZoom = 1;
+  host.lookReset();
+  host.camPos = null;
+  const near = Math.hypot(...rel(run(90)));
+  host.lookZoom({ deltaY: 100, preventDefault() { } });
+  for (let i = 0; i < 20; i++) host.lookZoom({ deltaY: 100, preventDefault() { } });
+  const farD = Math.hypot(...rel(run(90)));
+  ok(host.camZoom === 1.8 && farD > near * 1.5, 'the wheel moves the chase camera away, up to 1.8 times: ' + near.toFixed(1) + ' → ' + farD.toFixed(1) + ' m');
+  host.camZoom = 1;
+  host.camMode = 'cockpit';
+  host.lookReset();
+  const geo = F.Models.carGeo(v.spec.id, v.spec.wing);
+  const ahead = host.camera(1 / 60);
+  ok(dot([ahead.tx - ahead.x, ahead.tz - ahead.z], fwd) > 9, 'the cockpit view looks ahead with no mouse look');
+  host.lookTurn(10, 10);
+  ok(host.look.yaw === 2.35 && host.look.pitch === 0.6, 'the head turns up to 135° and looks up to 34° in the cockpit');
+  host.lookTurn(-20, -20);
+  ok(host.look.yaw === -2.35 && host.look.pitch === -0.7, 'and down to 40°');
+  host.lookReset();
+  host.lookTurn(-1.2, 0);
+  host.look.drag = 1;
+  const left = host.camera(1 / 60), dl = [left.tx - left.x, left.tz - left.z];
+  ok(dot(dl, right) < -8 && dot(dl, fwd) > 2, 'moving the mouse left turns the head to the left window');
+  ok(dot([left.x - ahead.x, left.z - ahead.z], right) < -0.05, 'the eye moves with the head, toward the side it turns to');
+  ok(UI.headOffset(0, 0).every(c => Math.abs(c) < 1e-12), 'the eye is at the seat point when looking straight ahead');
+  ok([[2.35, 0.6], [-2.35, -0.7], [1.6, 0], [0, -0.7]].every(([a, b]) => Math.hypot(...UI.headOffset(a, b)) < 0.2), 'the head moves the eye less than 20 cm at any angle');
+  ok(UI.headOffset(2.3, 0)[0] > 0.12 && UI.headOffset(-2.3, 0)[0] < -0.12 && UI.headOffset(0, -0.7)[2] < -0.05, 'looking over a shoulder leans toward it, looking down moves the head forward');
+  const y0 = 0.86 * 600 + 30 - 300;
+  ok(UI.mirrorShift(0, 0, 60, 600, y0).every(c => Math.abs(c) < 1e-9), 'the rear-view mirror stays in place when looking ahead');
+  const ms = UI.mirrorShift(0.4, 0, 60, 600, y0), mu = UI.mirrorShift(0, 0.3, 60, 600, y0);
+  ok(ms[0] < -150 && Math.abs(ms[1]) < 40 && mu[1] < -100 && UI.mirrorShift(1.6, 0, 60, 600, y0) === null, 'the mirror slides against the head turn and is not drawn when looking away');
+  ok(host.cabinDriverPart() === 'body', 'a glance to the side keeps the driver body in view');
+  host.lookTurn(-0.8, 0);
+  ok(host.cabinDriverPart() === null, 'looking back over the shoulder hides the driver body');
+  host.keys.back = true;
+  host.lookReset();
+  host.lookTurn(1, 0.3);
+  const back = host.camera(1 / 60), dbk = [back.tx - back.x, back.tz - back.z];
+  ok(dot(dbk, fwd) < -9 && Math.abs(back.ty - back.y) < 0.2, 'the look-back key overrides the mouse look');
+  host.keys.back = false;
+  host.camMode = 'hood';
+  host.lookTurn(10, 10);
+  ok(host.look.yaw === 1.5 && host.look.pitch === 0.45 && host.cabinDriverPart() === 'all', 'the hood camera turns up to 86° and keeps the driver');
+  host.look.drag = null;
+  host.lookReset();
+  host.camMode = 'chase';
+  host.menuOpen = true;
+  host.lookDown({ pointerId: 7, button: 0 });
+  ok(host.look.drag === null, 'mouse look is off while a menu is open');
+  host.menuOpen = false;
+  set.mlook = 'off';
+  host.lookDown({ pointerId: 7, button: 0 });
+  ok(host.look.drag === null, 'mouse look can be switched off in the settings');
+  set.mlook = 'hold';
+  host.lookDown({ pointerId: 7, button: 1 });
+  ok(host.look.drag === null, 'the middle button does not grab the view');
+  host.lookDown({ pointerId: 7, button: 0 });
+  host.lookMove({ pointerId: 7, movementX: 100, movementY: -50 });
+  ok(host.look.drag === 7 && Math.abs(host.look.yaw - 0.45) < 1e-9 && Math.abs(host.look.pitch - 0.225) < 1e-9, 'a drag of 100 px turns the view by 26°');
+  set.minv = true;
+  set.msens = 2;
+  host.lookMove({ pointerId: 7, movementX: 0, movementY: -10 });
+  ok(Math.abs(host.look.pitch - (0.225 - 0.09)) < 1e-9, 'sensitivity and vertical inversion apply to the drag');
+  host.lookMove({ pointerId: 8, movementX: 500, movementY: 0 });
+  ok(Math.abs(host.look.yaw - 0.45) < 1e-9, 'another pointer does not turn the view');
+  host.lookUp({ pointerId: 7 });
+  ok(host.look.drag === null && host.look.idle === 0, 'releasing the button starts the return timer');
+  const ui = read('js/apps/forza/fz-ui.js'), menus = read('js/apps/forza/fz-menus.js'), css = read('css/apps/forza.css');
+  ok(['pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'lostpointercapture', 'dblclick', 'contextmenu', 'wheel'].every(n => ui.includes(`view.addEventListener('${n}'`)) && /this\.lookReset\(\);\n\s+this\.hud\.toast\(\{ chase:/.test(ui), 'the view listens to the mouse, switching the camera resets the look');
+  ok(/\['Обзор мышью', 'mlook'/.test(menus) && /'msens'/.test(menus) && /'minv'/.test(menus) && /'mret'/.test(menus) && /<kbd>Мышь<\/kbd> обзор/.test(menus) && /\.fz-looking \.fz-view \{ cursor: none; \}/.test(css), 'mouse look settings, key help and a hidden cursor while looking');
+});
+
 section('integration', () => {
   const LINE = String.fromCharCode(47, 47), BLOCK = String.fromCharCode(47, 42);
   const files = fs.readdirSync(DIR).filter(f => f.endsWith('.js')).map(f => 'js/apps/forza/' + f).concat(['js/apps/forza-app.js', 'tests/forza.test.js']);
@@ -2085,7 +2527,7 @@ section('integration', () => {
   ok(html.indexOf('js/apps/forza-app.js') > lastA && html.includes('css/apps/forza.css'), 'desktop loads wrapper and styles');
   const gm = read('js/game-manager.js');
   const at = gm.indexOf('      forza: {');
-  const entry = gm.slice(at, at + 2600);
+  const entry = gm.slice(at, at + 3400);
   ok(at > 0 && /steam: true/.test(entry) && /price: 46\.99/.test(entry) && /targetExe: 'FORZA\.EXE'/.test(entry) && /appForza/.test(entry), 'Steam catalog entry');
   ok(!/forzaGranted/.test(gm), 'no grant flag');
   const loadState = gm.slice(gm.indexOf('loadState'), gm.indexOf('moveGamesToSteam(state)'));

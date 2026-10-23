@@ -1012,22 +1012,18 @@
       g.fillStyle = '#0b0c0d';
       g.fillRect(0, 0, S, S);
       const tick = (x0, y0, x1, y1, w) => { g.lineWidth = w; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); };
-      for (const [cx, n, needle] of [[64, 14, 2.5], [192, 8, 3.4]]) {
+      for (const [cx, n] of [[64, 14], [192, 8]]) {
         g.strokeStyle = '#e6e6dc';
         g.beginPath(); g.arc(cx, 64, 56, Math.PI * 0.75, Math.PI * 2.25); g.lineWidth = 2; g.stroke();
         for (let k = 0; k <= n; k++) {
           const a = Math.PI * (0.75 + 1.5 * k / n), c = Math.cos(a), s = Math.sin(a), big = k % 2 === 0;
           tick(cx + c * (big ? 38 : 45), 64 + s * (big ? 38 : 45), cx + c * 55, 64 + s * 55, big ? 4 : 2);
         }
-        g.strokeStyle = '#ff8a3c';
-        tick(cx, 64, cx + Math.cos(needle) * 46, 64 + Math.sin(needle) * 46, 4);
         g.fillStyle = '#3a3a3a'; g.beginPath(); g.arc(cx, 64, 7, 0, 7); g.fill();
       }
       g.strokeStyle = '#e6e6dc';
       g.strokeRect(10, 150, 236, 44);
       for (let k = 0; k <= 22; k++) tick(16 + k * 10.6, 194, 16 + k * 10.6, k % 2 ? 184 : 176, k % 2 ? 2 : 3);
-      g.fillStyle = '#ff8a3c';
-      g.fillRect(14, 156, 92, 12);
       for (let k = 0; k < 6; k++) { g.fillStyle = ['#3ad45a', '#e6c23a', '#3a8ae6', '#e64a3a', '#3ad45a', '#e6c23a'][k]; g.fillRect(20 + k * 38, 214, 18, 12); }
     },
     mirror(g) {

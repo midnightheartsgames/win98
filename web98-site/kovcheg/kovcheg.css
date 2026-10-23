@@ -15,6 +15,7 @@
   background-color: #ffffcc;
   border: 2px solid #000000;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .kv-page > tbody > tr > td {
@@ -454,6 +455,7 @@
 }
 
 .kv-tier-cell {
+  overflow: hidden;
   padding: 3px 2px;
   border: 1px solid #996633;
   vertical-align: top;

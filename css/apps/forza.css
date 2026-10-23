@@ -2,6 +2,7 @@
 .fz-view, .fz-hudc { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .fz-view { image-rendering: auto; }
 .fz-hudc { pointer-events: none; }
+.fz-looking .fz-view { cursor: none; }
 .fz-menu { position: absolute; inset: 0; display: none; z-index: 3; }
 .fz-menu.on { display: block; }
 .fz-scr { position: absolute; inset: 0; display: flex; flex-direction: column; overflow: hidden; }
@@ -427,3 +428,82 @@
 .fz-al-lm.fz-focus { border-color: #ffcf20; }
 .fz-al-say { position: absolute; right: 18px; bottom: 44px; font: italic 700 13px 'Segoe UI', Arial; color: #d7ff1e; opacity: 0; pointer-events: none; }
 .fz-al-say.on { animation: fzdbg 2.4s ease-out forwards; }
+.fz-drvtab { display: grid; grid-template-columns: minmax(240px, 0.9fr) 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px; }
+.fz-pass { grid-row: 1 / span 2; position: relative; background: #f2efe6; color: #111; display: flex; flex-direction: column; box-shadow: 0 2px 10px rgba(0,0,0,0.45); border: 1px solid #b8b2a4; min-height: 0; overflow: hidden; }
+.fz-pass-top { background: #111; color: #fff; padding: 8px 12px; font: 700 12px 'Segoe UI', Arial; letter-spacing: 1px; }
+.fz-pass-top b { font: italic 900 18px 'Arial Black', Arial; color: #e6146e; margin-right: 6px; }
+.fz-pass-top span { display: block; font: 700 10px Arial; color: #ffcf20; letter-spacing: 3px; margin-top: 2px; }
+.fz-pass-body { display: flex; gap: 12px; padding: 12px; flex: 1; min-height: 0; }
+.fz-pass-photo { flex: 0 0 auto; width: 120px; height: 150px; background: linear-gradient(180deg, #8fc7c0, #3aa697); border: 4px solid #fff; box-shadow: 0 0 0 1px #888; overflow: hidden; }
+.fz-pass-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fz-pass-info { flex: 1; display: flex; flex-direction: column; gap: 4px; font: 12px 'Segoe UI', Arial; min-width: 0; }
+.fz-pass-info > div { display: flex; justify-content: space-between; border-bottom: 1px dotted #aaa; padding: 3px 0; }
+.fz-pass-info span { color: #666; text-transform: uppercase; font-size: 10px; letter-spacing: 1px; }
+.fz-pass-info b[style] { border-left: 10px solid var(--c); padding-left: 5px; }
+.fz-pass-info .fz-pass-name { display: block; font: italic 800 18px 'Segoe UI', Arial; border: 0; padding: 0 0 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fz-pass-info .fz-pass-champ { display: block; background: #ffcf20; color: #111; font: 800 11px Arial; text-align: center; letter-spacing: 1px; border: 0; margin-top: 6px; }
+.fz-pass-band { height: 14px; flex: 0 0 auto; }
+.fz-pass-bars { display: flex; gap: 2px; height: 30px; padding: 6px 12px; flex: 0 0 auto; }
+.fz-pass-bars i { background: #111; display: block; }
+.fz-dicon { width: 34px; height: 46px; background: linear-gradient(135deg, #e6146e, #ff7a1a); clip-path: polygon(30% 0, 70% 0, 75% 30%, 100% 40%, 100% 100%, 0 100%, 0 40%, 25% 30%); margin-bottom: 10px; }
+.d-wear .fz-dicon { background: linear-gradient(135deg, #2f86e6, #3fc46a); clip-path: polygon(25% 0, 40% 10%, 60% 10%, 75% 0, 100% 20%, 85% 40%, 80% 35%, 80% 100%, 20% 100%, 20% 35%, 15% 40%, 0 20%); }
+.d-shop .fz-dicon { background: linear-gradient(135deg, #ffc81e, #e6146e); clip-path: polygon(10% 30%, 90% 30%, 100% 100%, 0 100%); }
+.d-sets .fz-dicon { background: linear-gradient(135deg, #a24fd8, #2f86e6); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 70%, 30% 70%, 30% 30%, 0 30%); }
+.fz-dtile.locked { opacity: 0.55; cursor: default; }
+.fz-drvscr { background: linear-gradient(90deg, rgba(40,150,138,0.97) 0%, rgba(40,150,138,0.9) 34%, rgba(40,150,138,0) 56%); }
+.fz-stage { position: absolute; left: 45%; right: 0; top: 60px; bottom: 40px; cursor: grab; touch-action: none; }
+.fz-dpanel { position: relative; z-index: 1; margin: 0 18px; width: min(400px, 46%); background: rgba(11,11,12,0.82); padding: 8px 12px 12px; overflow: auto; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 2px; }
+.fz-drow b { gap: 6px; }
+.fz-drow b i { font-style: normal; color: #e6146e; font-size: 10px; }
+.fz-drow em { min-width: 150px; }
+.fz-dstrip { padding: 4px 0; }
+.fz-dopts { display: flex; flex-wrap: wrap; gap: 4px; }
+.fz-dopt { padding: 4px 8px; background: rgba(255,255,255,0.12); font: 600 11px 'Segoe UI', Arial; cursor: pointer; border: 2px solid transparent; }
+.fz-dopt.sw { width: 22px; height: 18px; padding: 0; border-color: rgba(255,255,255,0.25); }
+.fz-dopt.on { border-color: #ffcf20; background-color: rgba(255,255,255,0.3); }
+.fz-dopt.sw.on { border-color: #fff; }
+.fz-dbtns { justify-content: flex-start; margin-top: 6px; }
+.fz-dbtns .fz-btn { margin: 4px 8px 0 0; }
+.fz-wpanel { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr auto auto; gap: 4px 10px; width: min(640px, 54%); }
+.fz-wslots { display: flex; flex-direction: column; gap: 2px; }
+.fz-wslot { font-size: 12px; padding: 5px 8px; }
+.fz-wslot em { font-style: normal; color: #ffcf20; font-size: 11px; text-align: right; max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fz-wlist { display: flex; flex-direction: column; gap: 2px; overflow: auto; min-height: 0; }
+.fz-witem { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 8px; padding: 5px 8px; background: rgba(255,255,255,0.08); border: 2px solid transparent; cursor: pointer; font-size: 12px; }
+.fz-witem b { font: 800 10px Arial; color: #d7ff1e; text-transform: uppercase; }
+.fz-witem.on { background: rgba(230,20,110,0.35); }
+.fz-witem.fz-focus { border-color: #e6146e; background: rgba(255,255,255,0.2); }
+.fz-wsw { grid-column: 1 / span 2; display: flex; gap: 3px; }
+.fz-wsw:empty { display: none; }
+.fz-wsw i { width: 16px; height: 12px; border: 2px solid rgba(255,255,255,0.25); }
+.fz-wsw i.on { border-color: #fff; }
+.fz-wempty { font: italic 12px 'Segoe UI', Arial; color: #bbb; padding: 8px 4px; }
+.fz-wnote { grid-column: 1 / span 2; font: 12px 'Segoe UI', Arial; color: #ffcf20; min-height: 16px; }
+.fz-wpanel .fz-dbtns { grid-column: 1 / span 2; }
+.fz-regscr { padding-top: 14px; }
+.fz-regscr .fz-gtitle { margin-top: 8px; }
+.fz-regnote { font: 12px 'Segoe UI', Arial; color: #ddd; padding: 2px 2px 8px; line-height: 1.4; }
+.fz-namerow input { width: 190px; background: #fff; color: #111; border: 2px solid #888; font: 700 14px 'Segoe UI', Arial; padding: 3px 8px; outline: none; }
+.fz-namerow.fz-focus input { border-color: #e6146e; }
+.fz-shoptabs { width: min(640px, 54%); margin: 0 18px 8px; position: relative; z-index: 1; }
+.fz-shoptabs .fz-mtab { padding: 6px 4px; font-size: 10px; }
+.fz-shoplist { width: min(420px, 46%); }
+.fz-shopitem small { display: block; font: 11px 'Segoe UI', Arial; color: #bbb; margin-top: 2px; }
+.fz-shopitem b { font: italic 800 12px 'Segoe UI', Arial; color: #fff; text-transform: none; }
+.fz-shopitem b.poor { color: #ff8080; }
+.fz-shopitem b.own { color: #d7ff1e; text-transform: uppercase; font-size: 10px; }
+.fz-shopitem b.rew { color: #ffcf20; text-transform: uppercase; font-size: 10px; }
+.fz-shopitem b.lock { font-size: 10px; border-left: 10px solid var(--c); padding-left: 5px; color: #ddd; }
+.fz-shopitem.s-locked > span:first-child, .fz-shopitem.s-reward > span:first-child { color: #aaa; }
+.fz-shopsay { margin-top: 6px; }
+.fz-sets { gap: 8px; }
+.fz-setcard { display: grid; grid-template-columns: 74px 1fr; grid-template-rows: auto auto; gap: 4px 10px; background: rgba(255,255,255,0.08); padding: 8px; }
+.fz-setimg { grid-row: 1 / span 2; width: 74px; height: 92px; background: linear-gradient(180deg, #8fc7c0, #3aa697); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.fz-setimg img { width: 100%; height: 100%; object-fit: cover; }
+.fz-setimg i { font: italic 11px 'Segoe UI', Arial; color: #e0f0ee; }
+.fz-setname b { display: block; font: italic 800 15px 'Segoe UI', Arial; }
+.fz-setname span { font-size: 12px; color: #ffcf20; }
+.fz-setbtns { display: flex; gap: 6px; align-self: end; }
+.fz-wempty[data-nav] { cursor: pointer; border: 2px solid transparent; }
+.fz-wempty.fz-focus { border-color: #e6146e; color: #fff; }
+.fz-dtile .fz-tsub b { color: #e6146e; }

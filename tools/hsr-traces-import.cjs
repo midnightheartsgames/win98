@@ -25,7 +25,7 @@ const OWN = {
   anby: { rar: 4, path: 'hunt', tpl: 'seele', stats: ['breakE', 'atkP', 'elecP'], foe: 'ancient', echo: 'echo_doom' },
   phrolova: { path: 'remembrance', tpl: 'seele', stats: ['atkP', 'critD', 'quantP'], foe: 'core', echo: 'echo_lament' },
   scar: { path: 'destruction', tpl: 'blade', stats: ['atkP', 'critR', 'hpP'], foe: 'core', echo: 'echo_lament' },
-  kazuma: { rar: 4, path: 'nihility', tpl: 'kafka', stats: ['atkP', 'ehr', 'spd'], foe: 'legion', echo: 'echo_doom' },
+  kazuma: { rar: 4, path: 'elation', tpl: 'kafka', stats: ['atkP', 'elation', 'spd'], foe: 'legion', echo: 'echo_doom' },
   aqua: { path: 'abundance', tpl: 'luocha', stats: ['hpP', 'res', 'defP'], foe: 'legion', echo: 'echo_doom' },
   megumin: { path: 'erudition', tpl: 'himeko', stats: ['fireP', 'atkP', 'critD'], foe: 'legion', echo: 'echo_doom' },
   darkness: { path: 'preservation', tpl: 'gepard', stats: ['defP', 'hpP', 'res'], foe: 'legion', echo: 'echo_doom' },
@@ -201,7 +201,7 @@ function ownKit(key, o, tpl) {
   for (const n of tpl.nodes) if (n.stat) count[n.stat[0]] = (count[n.stat[0]] || 0) + 1;
   const order = Object.keys(count).sort((a, b) => count[b] - count[a]);
   const map = Object.fromEntries(order.map((k, i) => [k, o.stats[i]]));
-  const pathLine = { destruction: 'dest', hunt: 'hunt', erudition: 'erud', harmony: 'harm', nihility: 'nihil', preservation: 'pres', abundance: 'abund', remembrance: 'memo' }[o.path];
+  const pathLine = { destruction: 'dest', hunt: 'hunt', erudition: 'erud', harmony: 'harm', nihility: 'nihil', preservation: 'pres', abundance: 'abund', remembrance: 'memo', elation: 'elat' }[o.path];
   const swap = m => m.startsWith('echo_') ? o.echo : /^(dest|hunt|erud|harm|nihil|pres|abund|memo)\d$/.test(m) ? pathLine + m.slice(-1) : /^(core|legion|silver|ancient|scion|artifex)\d$/.test(m) ? o.foe + m.slice(-1) : m;
   const nodes = tpl.nodes.map(n => {
     const out = Object.assign({}, n, { cost: n.cost.map(step => step.map(([m, c]) => [swap(m), c])) });

@@ -95,15 +95,39 @@
   };
 
   const CONES = {
-    truth: { name: 'Навстречу истине', path: 'hunt', rarity: 5, stats: { hp: 48, atk: 31, def: 18 }, bonus: { critD: 0.32 }, sig: 'yu', fx: 'truth', text: 'Крит. урон +32%. Во время «Ещё раз!» урон носителя +24%, его Атака всем отрядом +30%.' },
-    thread: { name: 'Стежок за стежком', path: 'destruction', rarity: 5, stats: { hp: 57, atk: 26, def: 15 }, bonus: { atkP: 0.24 }, sig: 'kanji', fx: 'thread', text: 'Атака +24%. Урон по сшитым врагам +20%. Пробитие сшитого врага лечит носителя на 8% HP.' },
-    junesday: { name: 'Каждый день в «Джунс»', path: 'nihility', rarity: 4, stats: { hp: 43, atk: 24, def: 15 }, bonus: { ehr: 0.16 }, sig: 'yosuke', fx: 'junesday', text: 'Шанс эффекта +16%. Урон доп. атак носителя +24%.' },
-    dragontrial: { name: 'Испытание дракона', path: 'destruction', rarity: 4, stats: { hp: 43, atk: 26, def: 14 }, bonus: { atkP: 0.16 }, sig: 'chie', fx: 'dragontrial', text: 'Атака +16%. Урон носителя по пробитым врагам +24%.' },
-    amagiinn: { name: 'Гостиница «Амаги»', path: 'abundance', rarity: 4, stats: { hp: 50, atk: 21, def: 15 }, bonus: { healP: 0.12 }, sig: 'yukiko', fx: 'amagiinn', text: 'Лечение +12%. Периодический урон от эффектов носителя +24%.' },
-    affection: { name: 'Твоя привязанность', path: 'harmony', rarity: 5, stats: { hp: 53, atk: 24, def: 26 }, bonus: { err: 0.1 }, sig: 'rise', fx: 'affection', text: 'Восстановление энергии +10%. Когда носитель анализирует врага, урон отряда +16% на 2 хода.' }
+    truth: {
+      name: 'Самый вкусный омлет', path: 'hunt', rarity: 5, own: true, stats: { hp: 48, atk: 26.4, def: 21 }, skill: 'Узы', sig: 'yu',
+      tpl: 'Крит. урон владельца повышается на #1%. Во время «Ещё раз!» урон владельца повышается на #2%. Урон владельца в Атаке всем отрядом повышается на #3%.', p: [[0.36, 0.24, 0.3], [0.42, 0.28, 0.35], [0.48, 0.32, 0.4], [0.54, 0.36, 0.45], [0.6, 0.4, 0.5]], bonus: { critD: 1 }, fx: 'truth',
+      desc: 'Девочки готовили весь вечер. На краю стола стоят три тарелки с чем-то чёрным и дымящимся, и Нанако вежливо говорит, что всё очень вкусно.\nПотом Ю молча ставит перед ней свой омлет.\nНанако съедает его до последней крошки.\n«Братик, а завтра ты тоже будешь готовить?»'
+    },
+    thread: {
+      name: 'Стежок за стежком', path: 'destruction', rarity: 5, own: true, stats: { hp: 52.8, atk: 26.4, def: 18 }, skill: 'Ткань живая', sig: 'kanji',
+      tpl: 'Атака владельца повышается на #1%. Урон владельца по сшитым врагам повышается на #2%. Когда владелец пробивает сшитого врага, он восстанавливает #3% макс. HP.', p: [[0.24, 0.18, 0.09], [0.28, 0.21, 0.105], [0.32, 0.24, 0.12], [0.36, 0.27, 0.135], [0.4, 0.3, 0.15]], bonus: { atkP: 1 }, fx: 'thread',
+      desc: 'В семье Тацуми говорят, что ткань живая.\nНочью в лавке горит одна лампа. Канджи, которого боится вся школа, сидит над крошечным вязаным зайцем и продевает последнюю петлю.\nУтром заяц встанет на полку рядом с остальными.\nКто их вяжет, в городе не знает никто.'
+    },
+    junesday: {
+      name: 'Каждый день в «Джунс»', path: 'nihility', rarity: 4, own: true, stats: { hp: 43.2, atk: 21.6, def: 15 }, skill: 'Без обмана', sig: 'yosuke',
+      tpl: 'Шанс эффекта владельца повышается на #1%. Урон бонус-атак владельца повышается на #2%.', p: [[0.16, 0.24], [0.2, 0.3], [0.24, 0.36], [0.28, 0.42], [0.32, 0.48]], bonus: { ehr: 1 }, fx: 'junesday',
+      desc: 'Песенка «Джунс» играет на крыше в сотый раз за день.\nЁсуке снимает фартук и садится за дальний столик фуд-корта. Здесь штаб их следственной группы.\nОн смотрит на город и повторяет про себя одно: жить, не обманывая себя.\n«Ладно. Кто сегодня угощает?»'
+    },
+    dragontrial: {
+      name: 'Испытание дракона', path: 'destruction', rarity: 4, own: true, stats: { hp: 43.2, atk: 21.6, def: 15 }, skill: 'Удар мастера', sig: 'chie',
+      tpl: 'Атака владельца повышается на #1%. Урон владельца по пробитым врагам повышается на #2%.', p: [[0.16, 0.24], [0.2, 0.3], [0.24, 0.36], [0.28, 0.42], [0.32, 0.48]], bonus: { atkP: 1 }, fx: 'dragontrial',
+      desc: 'Кассета «Испытания дракона» затёрта почти до дыр.\nЧие ставит фильм на паузу на любимом месте и повторяет удар перед телевизором. С плаката за ней следит мастер кунг-фу.\nВ детстве у неё было тайное убежище, где мастер будто бы учил её особым приёмам.\nМастер так и не пришёл. Удар остался.'
+    },
+    amagiinn: {
+      name: 'Гостиница «Амаги»', path: 'abundance', rarity: 4, own: true, stats: { hp: 48, atk: 19.2, def: 15 }, skill: 'Добрые люди', sig: 'yukiko',
+      tpl: 'Исходящее лечение владельца повышается на #1%. Периодический урон от эффектов владельца повышается на #2%.', p: [[0.12, 0.24], [0.15, 0.3], [0.18, 0.36], [0.21, 0.42], [0.24, 0.48]], bonus: { healP: 1 }, fx: 'amagiinn',
+      desc: 'Юкико хотела уйти из дома и стать совсем самостоятельной.\nПотом поняла: у неё есть гостиница, семья, официантки и повара, и такой её вырастили эти добрые люди.\nОна поправляет розовое кимоно и выходит встречать гостей.\nЗа её спиной кланяются те, кто её вырастил.'
+    },
+    affection: {
+      name: 'Просто Рисе', path: 'harmony', rarity: 5, own: true, stats: { hp: 52.8, atk: 24, def: 21 }, skill: 'Своё лицо', sig: 'rise',
+      tpl: 'Восстановление энергии владельца повышается на #1%. Когда владелец анализирует врага, урон отряда повышается на #2% на 2 хода.', p: [[0.12, 0.18], [0.14, 0.21], [0.16, 0.24], [0.18, 0.27], [0.2, 0.3]], bonus: { err: 1 }, fx: 'affection',
+      desc: 'Рисетт ушла со сцены. Рисе надела белую косынку и встала за прилавок бабушкиной лавки тофу.\nПод окнами полгорода: фотоаппараты, блокноты для автографов, шёпот «это правда она?»\nРисе заворачивает брусок тофу в бумагу и впервые за год не знает, улыбается она по работе или просто так.\n«С вас сто иен».'
+    }
   };
 
-  const cf = (u, fx) => (u && u.cone && u.cone.fx === fx ? 1 + 0.25 * ((u.cone.sup || 1) - 1) : 0);
+  const cf = (u, fx, n) => (u && u.cone ? H.coneP(u, fx, n) : 0);
 
   KITS.yu.skill = KITS.yu.skills[0];
 
@@ -198,12 +222,11 @@
       let v = 0;
       const stitched = tgt.side === 'enemy' && !!this.stitchPartner(tgt);
       if (stitched && src.charId === 'kanji') v += T.kanjiVsStitch * (this.traceTalent ? this.traceTalent(src) : 1);
-      if (stitched) v += 0.2 * cf(src, 'thread');
-      const tr = cf(src, 'truth');
-      if (tr) v += o.kind === 'aoa' ? 0.3 * tr : src.flags.oneMore ? 0.24 * tr : 0;
-      if (o.kind === 'follow') v += 0.24 * cf(src, 'junesday');
-      if (tgt.broken) v += 0.24 * cf(src, 'dragontrial');
-      if (o.dot) v += 0.24 * cf(src, 'amagiinn');
+      if (stitched) v += cf(src, 'thread', 2);
+      v += o.kind === 'aoa' ? cf(src, 'truth', 3) : src.flags.oneMore ? cf(src, 'truth', 2) : 0;
+      if (o.kind === 'follow') v += cf(src, 'junesday', 2);
+      if (tgt.broken) v += cf(src, 'dragontrial', 2);
+      if (o.dot) v += cf(src, 'amagiinn', 2);
       return v;
     },
 
@@ -230,8 +253,8 @@
       if (y && !this.strike) { y.flags.strike = false; this.strike = { u: y, near: tgt }; }
       const kj = this.allies.find(a => a.charId === 'kanji' && alive(a));
       if (kj && this.stitchPartner(tgt)) this.gainEnergy(kj, T.kanjiStitchEnergy);
-      const th = cf(src, 'thread');
-      if (th && alive(src) && this.stitchPartner(tgt)) this.heal(src, src, src.maxHp * 0.08 * th);
+      const th = cf(src, 'thread', 3);
+      if (th && alive(src) && this.stitchPartner(tgt)) this.heal(src, src, src.maxHp * th);
     },
 
     yosukeStrike() {
@@ -300,8 +323,8 @@
       this.addBuff(t, { s: 'critTaken', v: T.analyzeCrit, turns, name: 'Анализ: уязвимые места', debuff: true }, true);
       this.addBuff(t, { s: 'vuln', v: T.analyzeVuln, turns, name: 'Анализ: слабая защита', debuff: true }, true);
       this.planNext(t);
-      const af = cf(src, 'affection');
-      if (af) for (const a of this.livingAllies) this.addBuff(a, { s: 'dmgP', v: 0.16 * af, turns: 2, name: 'Твоя привязанность' }, a !== src);
+      const af = cf(src, 'affection', 2);
+      if (af) for (const a of this.livingAllies) this.addBuff(a, { s: 'dmgP', v: af, turns: 2, name: 'Своё лицо' }, a !== src);
       if (this.kitFx && src.charId === 'rise') this.kitFx(src, 'analyzedFoe', t, turns);
     },
 
@@ -386,6 +409,7 @@
   Object.assign(H.CHARS, KITS);
   Object.assign(H.FUSIONS, FUSIONS);
   Object.assign(H.CONES, CONES);
+  H.coneInit(CONES);
   H.INABA = { KITS, PERSONAS, FUSIONS, CONES, TAG_NAMES, isInaba };
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

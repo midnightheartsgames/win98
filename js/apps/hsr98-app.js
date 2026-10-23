@@ -13,6 +13,10 @@
       });
       this.ui = new H.UI(root, {
         isActive: () => window.winManager.isTopWindow(id),
+        store: {
+          buy: (offer) => (window.appSteam ? window.appSteam.openInGameBuy('hsr98', offer, () => { if (this.ui) this.ui.storeSync(); }) : 'none'),
+          take: (skus) => (window.appSteam ? window.appSteam.takeOrders('hsr98', skus) : [])
+        },
         onExit: () => window.winManager.closeWindow ? window.winManager.closeWindow(id) : null
       });
       root.focus({ preventScroll: true });

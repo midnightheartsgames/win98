@@ -276,7 +276,7 @@
       if (st.hideHud) { this.fade(game, W, H); return; }
       if (this.hurtFlash > 0) { g.fillStyle = `rgba(200,0,0,${Math.min(0.35, this.hurtFlash)})`; g.fillRect(0, 0, W, H); }
       if (st.turret) this.turretSight(W, H, S, st.turret);
-      else if (st.crosshair && !st.scope) this.crosshair(W, H, S, st.crossTarget, st.dot);
+      else if (st.crosshair && !st.scope) this.crosshair(W, H, S, st.crossTarget, st.dot, st.fpDot);
       this.topRight(game, W, S, st);
       this.radar(game, st, 22 * S, H - 22 * S, 92 * S);
       this.messages(game, W, H, S, st);
@@ -522,9 +522,18 @@
       g.restore();
     }
 
-    crosshair(W, H, S, tgt, dot) {
+    crosshair(W, H, S, tgt, dot, fpDot) {
       const g = this.g;
       const x = W / 2, y = H / 2;
+      if (fpDot) {
+        g.save();
+        g.fillStyle = tgt ? 'rgba(255,48,48,0.95)' : 'rgba(255,255,255,0.85)';
+        g.strokeStyle = 'rgba(0,0,0,0.6)';
+        g.lineWidth = 1;
+        g.beginPath(); g.arc(x, y, 2 * S, 0, 7); g.fill(); g.stroke();
+        g.restore();
+        return;
+      }
       if (dot) {
         g.save();
         g.fillStyle = 'rgba(255,60,40,0.95)';
@@ -722,6 +731,12 @@
       if (m.veh) {
         g.globalAlpha = Math.min(1, m.veh.t);
         this.text(m.veh.text, W - 26 * S, by, { font: `italic 900 ${26 * S | 0}px "Arial Black", Impact, Arial`, align: 'right', stroke: 5 * S, fill: '#7ae07a' });
+        g.globalAlpha = 1;
+        by -= 34 * S;
+      }
+      if (m.view) {
+        g.globalAlpha = Math.min(1, m.view.t * 2);
+        this.text(m.view.text, W - 26 * S, by, { font: `bold ${17 * S | 0}px Arial`, align: 'right', stroke: 4 * S, fill: '#f0f0f0' });
         g.globalAlpha = 1;
       }
       if (m.radio) {

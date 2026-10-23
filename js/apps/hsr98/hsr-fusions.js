@@ -644,11 +644,14 @@
   class FusionShow extends U.Show {
     constructor(ui, members, o = {}) {
       super(ui, members[0], o);
-      const f = H.FUSIONS[o.id], lookOf = a => G.lookOf(a.charId, this.game);
+      const f = H.FUSIONS[o.id], forced = o.outfit !== undefined;
+      const worn = members.map(u => (forced ? (o.outfit && H.OUTFITS[o.outfit].char === u.charId ? o.outfit : null) : H.wornOutfit ? H.wornOutfit(u.charId, this.game) : null));
+      const lookOf = a => { const i = members.indexOf(a); return !forced || i < 0 ? G.lookOf(a.charId, this.game) : worn[i] ? H.outfitLook(worn[i], this.game.state.gender) : G.lookOf(a.charId, null); };
       const m = members.map(u => { const el = H.ELEMENTS[u.elem] || H.ELEMENTS.phys; return { u, look: lookOf(u), col: el.col, elem: u.elem, name: u.name }; });
       const elems = [...new Set(f.fx.filter(x => x.k === 'dmg').map(x => x.e))];
       this.id = o.id;
-      this.def = SHOWS[o.id];
+      this.outfit = worn.find(w => H.outfitCutOf && H.outfitCutOf(w, 'fusions', o.id)) || null;
+      this.def = (this.outfit && H.outfitCutOf(this.outfit, 'fusions', o.id)) || SHOWS[o.id];
       this.P = {
         u: members[0], id: o.id, m, col: m[0].col, name: f.name, rar: Math.max(...members.map(u => (H.CHARS[u.charId] || {}).rarity || 4)),
         elems: elems.length ? elems : [m[0].elem], foes: o.foes || [], allies: (o.allies || members).map(a => ({ u: a, look: lookOf(a) })), bg: o.bg || 'station'

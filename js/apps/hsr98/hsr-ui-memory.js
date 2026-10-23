@@ -29,14 +29,22 @@
       star4(p, '#ffffff', 26, 22, 3, 0.8);
     },
     resin(p) {
-      p.poly('#3a2a14', [9, 6, 23, 6, 25, 28, 7, 28]);
-      p.poly('#c8d8e8', [10, 7, 22, 7, 23.6, 27, 8.4, 27]);
-      p.poly('#d8902a', [9, 15, 23, 13, 24, 27, 8, 27]);
-      p.poly('#ffc860', [10, 16, 18, 14.6, 17, 26, 9, 26]);
-      p.ell('#fff0b8', 13, 19, 2.6, 1.8);
-      p.rect('#6a4a24', 11, 3, 10, 4); p.rect('#a87a40', 12, 3, 8, 1);
-      p.rect('#ffffff', 11, 9, 1.4, 6);
-      star4(p, '#ffffff', 26, 8, 3, 0.8);
+      const { halo: hl, thick: th } = G.iconHelp;
+      hl(p, '#f2d47a', 16, 18, 14);
+      p.poly('#7a5a28', [6, 2, 26, 2, 18, 12, 14, 12].map((v, k) => v + 0.6));
+      p.poly('#ddc78f', [6, 2, 26, 2, 18, 12, 14, 12]);
+      p.poly('#f9f0c6', [6, 2, 12, 2, 15, 10, 14, 12]);
+      th(p, '#e8c060', [16, 12, 16, 15.6], 1);
+      p.rect('#c3ac80', 14.6, 13.6, 2.8, 2.4);
+      p.ell('#6a4a1a', 16.6, 23, 9, 8.4);
+      p.ell('#e2c070', 16, 22.4, 8.6, 8);
+      p.ell('#9a7a3a', 16, 22.4, 6.8, 6.2);
+      p.ell('#fbf4dc', 16, 22.4, 6.2, 5.6);
+      for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; p.rect('#8a6a3a', 16 + Math.cos(a) * 4.8 - 0.4, 22.4 + Math.sin(a) * 4.4 - 0.4, 0.8, 0.8); }
+      th(p, '#4a3a20', [16, 22.4, 16, 18.6], 0.8); th(p, '#4a3a20', [16, 22.4, 19.4, 23.6], 0.8);
+      p.ell('#fff8d8', 12.6, 18.6, 1.6, 1, -0.6);
+      for (const [x, y] of [[5, 16], [27, 14], [26, 26], [4, 27]]) p.rect('#f4dc8a', x, y, 1, 1);
+      star4(p, '#ffffff', 27, 7, 3, 0.8);
     }
   });
 
@@ -570,7 +578,7 @@
         ui.sfx('chest');
         ui.toast('Получено: ' + (got.length > 1 && got.every(x => x === got[0]) ? got[0] + ' ×' + got.length : got.join(', ')));
         scr.qty = 1;
-        if (row.row.item === 'resin') ui.openFhCraft();
+        if (row.row.item === 'resin' && g.relicCraftOpen()) ui.openSynth(null, 3, { resin: true });
       };
       this.push({
         full: true, fh: true, tab: 0, sel: 0, qty: 1,
@@ -649,14 +657,14 @@
           }
           const resin = g.state.inv.items.resin || 0;
           ui.text('Смола: ' + resin, 436, 262, { size: 11, bold: true, col: resin ? C.gold : C.sub });
-          ui.button(436, 280, 176, 26, 'Создать реликвию', () => ui.openFhCraft(), { disabled: !resin, size: 11 });
+          ui.button(436, 280, 176, 26, 'Синтез реликвий', () => ui.openSynth(null, 3, { resin: true }), { disabled: !g.relicCraftOpen(), size: 11 });
           ui.text('Лавка обновляется раз в ' + FH.TUN.shopDays + ' дня.', 436, 318, { size: 9, col: C.sub });
           ui.text('Нефритовые перья дают награды за звёзды.', 436, 330, { size: 9, col: C.sub });
         },
         key(k, code) {
           const tab = TABS[this.tab], n = g.fhShop(tab).length;
           if (code === 'KeyQ' || code === 'KeyE') { this.tab = (this.tab + 1) % 2; this.sel = 0; this.qty = 1; ui.sfx('select'); return; }
-          if (code === 'KeyR' && this.tab === 1) { if (g.state.inv.items.resin > 0) ui.openFhCraft(); else ui.sfx('deny'); return; }
+          if (code === 'KeyR' && this.tab === 1) { if (g.relicCraftOpen()) ui.openSynth(null, 3, { resin: true }); else ui.sfx('deny'); return; }
           if (k === 'back') { ui.screens.pop(); ui.sfx('cancel'); close(); return; }
           if (k === 'ok') { buy(this); return; }
           if (this.tab === 0) {
@@ -671,49 +679,6 @@
             if (k === 'right') this.qty = this.qty + 1;
           }
           if (['left', 'right', 'up', 'down'].includes(k)) ui.sfx('select');
-        }
-      });
-    },
-
-    openFhCraft() {
-      const ui = this, g = this.game, sets = H.CAVERN_SETS, slots = H.CAVERN_SLOTS;
-      this.push({
-        fh: true, col: 0, set: 0, slot: 2, main: 0,
-        draw(c) {
-          c.fillStyle = 'rgba(2,3,12,0.6)'; c.fillRect(0, 0, W, HGT);
-          ui.win(60, 70, 520, 320, { title: 'Самомоделирующаяся смола', border: M.blue });
-          ui.text('Смолы: ' + (g.state.inv.items.resin || 0) + '. Выберите набор, слот и основную характеристику.', 80, 92, { size: 11, col: C.sub });
-          const slot = slots[this.slot], mains = slot.mains;
-          if (this.main >= mains.length) this.main = 0;
-          const cols = [
-            { title: 'Набор', items: sets.map(s => H.RELIC_SETS[s].name), sel: this.set, x: 80, w: 220 },
-            { title: 'Слот', items: slots.map(s => s.name), sel: this.slot, x: 310, w: 100 },
-            { title: 'Основная', items: mains.map(m => H.STAT_NAMES[m] || m), sel: this.main, x: 420, w: 140 }
-          ];
-          cols.forEach((col, ci) => {
-            ui.text(col.title, col.x, 114, { size: 11, bold: true, col: ci === this.col ? C.gold : C.cream });
-            ui.list(col.x, 132, col.w, col.items.map(l => ({ label: l })), col.sel, { rowH: 20, max: 10, size: 11, focus: ci === this.col, onClick: i => { this.col = ci; if (ci === 0) this.set = i; else if (ci === 1) this.slot = i; else this.main = i; } });
-          });
-          G.rarityCell(c, 80, 344, 32, 32, 5); G.itemIcon(c, 'relic:' + slot.key, 82, 346, 28, sets[this.set]);
-          ui.text(H.RELIC_SETS[sets[this.set]].name + ' · ' + slot.name + ' · ' + (H.STAT_NAMES[mains[this.main]] || mains[this.main]), 120, 354, { size: 11, col: C.cream });
-          ui.button(440, 346, 120, 26, 'Создать', () => this.make(), { active: true, bold: true });
-          ui.hints([['←→', 'Столбец'], ['↑↓', 'Выбор'], ['Enter', 'Создать'], ['Esc', 'Назад']], W / 2, 398, { align: 'center' });
-        },
-        make() {
-          const slot = slots[this.slot], rel = g.fhCraft(sets[this.set], slot.key, slot.mains[this.main]);
-          if (!rel) { ui.sfx('deny'); ui.toast('Нет смолы.'); return; }
-          ui.sfx('chest');
-          ui.toast('Создана реликвия: ' + g.relicName(rel) + ' (' + (H.STAT_NAMES[rel.main] || rel.main) + ').');
-          if (!(g.state.inv.items.resin > 0)) ui.pop();
-        },
-        key(k) {
-          const lens = [sets.length, slots.length, slots[this.slot].mains.length], keys = ['set', 'slot', 'main'];
-          if (k === 'left') this.col = Math.max(0, this.col - 1);
-          if (k === 'right') this.col = Math.min(2, this.col + 1);
-          if (k === 'up' || k === 'down') { const f = keys[this.col]; this[f] = (this[f] + (k === 'up' ? lens[this.col] - 1 : 1)) % lens[this.col]; }
-          if (['left', 'right', 'up', 'down'].includes(k)) ui.sfx('select');
-          if (k === 'ok') this.make();
-          if (k === 'back') ui.pop();
         }
       });
     }

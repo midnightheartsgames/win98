@@ -468,8 +468,9 @@
     cutShot(g, r, t, T) {
       const own = this.own(r), end = total(own);
       const [n, bt, d] = this.beatOf(r, Math.min(t, end - 0.001));
-      const fn = this[r.id + n[0].toUpperCase() + n.slice(1)];
-      if (fn) fn.call(this, g, bt, T, d);
+      const fn = this[r.id + n[0].toUpperCase() + n.slice(1)], cut = n === own[own.length - 1][0] && H.outfitCutOf ? H.outfitCutOf(H.wornOutfit(r.id, this.game), 'warp') : null;
+      if (cut && cut.finale) cut.finale(g, bt, T, G.lookOf(r.id, this.game), this.game);
+      else if (fn) fn.call(this, g, bt, T, d);
       if (t >= end) { K.vignette(g, 0.5); rect(g, rgba('#05030a', 0.35 * seg(t, end, end + 0.4)), 0, 0, LW, LH); }
     }
 

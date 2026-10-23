@@ -199,6 +199,16 @@
     return [...new Set([...trail, ...side])];
   }
 
+  function coneIds() {
+    const h = H();
+    return h && h.CONES ? Object.keys(h.CONES) : [];
+  }
+
+  function coneArticle(id) {
+    const d = D();
+    return d && d.cones && d.cones[id] ? d.cones[id] : null;
+  }
+
   function charName(id) {
     const h = H();
     return h && h.CHARS && h.CHARS[id] ? h.CHARS[id].name : String(id);
@@ -234,6 +244,9 @@
     if (prefix === 'quest') return `${HOST}/quest?id=${rest}`;
     if (prefix === 'puz' && d && d.puzzles.some(p => p.id === rest)) return `${HOST}/puzzle?id=${rest}`;
     if (prefix === 'doc' && h && h.DOCS && h.DOCS[rest]) return `${HOST}/doc?id=${rest}`;
+    if (prefix === 'cone' && h && h.CONES && h.CONES[rest]) return `${HOST}/cone?id=${rest}`;
+    if (prefix === 'outfit' && h && h.OUTFITS && h.OUTFITS[rest]) return `${HOST}/outfit?id=${rest}`;
+    if (prefix === 'pet' && h && h.PETS && h.PETS[rest]) return `${HOST}/pet?id=${rest}`;
     const low = t.toLowerCase();
     for (const id of characterIds()) {
       const c = h.CHARS[id];
@@ -244,6 +257,9 @@
     for (const id of mapIds()) {
       if (id === low || h.MAPS[id].name.toLowerCase() === low) return `${HOST}/atlas?map=${id}`;
     }
+    for (const id of coneIds()) {
+      if (normText(h.CONES[id].name).toLowerCase() === normText(low)) return `${HOST}/cone?id=${id}`;
+    }
     return `${HOST}/search?q=${encodeURIComponent(t)}`;
   }
 
@@ -253,6 +269,9 @@
     if (prefix === 'char' && h.CHARS[rest]) return charName(rest);
     if (prefix === 'atlas' && h.MAPS[rest]) return h.MAPS[rest].name;
     if (prefix === 'doc' && h.DOCS[rest]) return h.DOCS[rest].title;
+    if (prefix === 'cone' && h.CONES[rest]) return `«${h.CONES[rest].name}»`;
+    if (prefix === 'outfit' && h.OUTFITS && h.OUTFITS[rest]) return `Наряд «${h.OUTFITS[rest].name}»`;
+    if (prefix === 'pet' && h.PETS && h.PETS[rest]) return `Питомец ${h.PETS[rest].name}`;
     if (prefix === 'sys') { const s = d.systems.find(x => x.id === rest); if (s) return s.title; }
     if (prefix === 'fac') { const f = d.factions.find(x => x.id === rest); if (f) return f.name; }
     if (prefix === 'world') { const w = d.worlds.find(x => x.id === rest); if (w) return w.name; }
@@ -400,6 +419,21 @@
       return puz ? { view: 'puzzle', id: puz.id, pageId: 'puz:' + puz.id, mode, params } : { view: 'missing', raw, params };
     }
     if (pathPart === '/artifacts') return { view: 'artifacts', pageId: 'artifacts', mode, params };
+    if (pathPart === '/cone') {
+      return h && h.CONES && h.CONES[params.id]
+        ? { view: 'cone', id: params.id, pageId: 'cone:' + params.id, mode, params }
+        : { view: 'missing', raw, params };
+    }
+    if (pathPart === '/outfit') {
+      return h && h.OUTFITS && h.OUTFITS[params.id]
+        ? { view: 'outfit', id: params.id, pageId: 'outfit:' + params.id, mode, params }
+        : { view: 'missing', raw, params };
+    }
+    if (pathPart === '/pet') {
+      return h && h.PETS && h.PETS[params.id]
+        ? { view: 'pet', id: params.id, pageId: 'pet:' + params.id, mode, params }
+        : { view: 'missing', raw, params };
+    }
     if (pathPart === '/recent') return { view: 'recent', pageId: 'recent', mode, params };
     if (pathPart === '/search') return { view: 'search', pageId: 'search', mode: 'read', params };
     return { view: 'missing', raw, params };
@@ -424,6 +458,9 @@
       case 'quest': return `${HOST}/quest?id=${route.id}`;
       case 'puzzle': return `${HOST}/puzzle?id=${route.id}`;
       case 'artifacts': return `${HOST}/artifacts`;
+      case 'cone': return `${HOST}/cone?id=${route.id}`;
+      case 'outfit': return `${HOST}/outfit?id=${route.id}`;
+      case 'pet': return `${HOST}/pet?id=${route.id}`;
       case 'recent': return `${HOST}/recent`;
       case 'search': return `${HOST}/search?q=${encodeURIComponent(route.params.q || '')}`;
       default: return HOST;
@@ -474,6 +511,9 @@
       case 'quest': return `Миссия: ${questTitle(r.id)} - АстралВики 98`;
       case 'puzzle': return `${d.puzzles.find(x => x.id === r.id).title} - АстралВики 98`;
       case 'artifacts': return 'Реликвии, Конусы, Слияния, Наряды и Диковины - АстралВики 98';
+      case 'cone': return `Световой конус «${h.CONES[r.id].name}» - АстралВики 98`;
+      case 'outfit': return `Наряд «${h.OUTFITS[r.id].name}» (${h.CHARS[h.OUTFITS[r.id].char].name}) - АстралВики 98`;
+      case 'pet': return `Питомец ${h.PETS[r.id].name}: паспорт и привычки - АстралВики 98`;
       case 'recent': return 'Свежие правки и Алфавитный указатель - АстралВики 98';
       case 'search': return `Поиск: ${r.params.q || ''} - АстралВики 98`;
       default: return 'Страница не найдена - АстралВики 98';
@@ -534,13 +574,15 @@
   function lastEdit(pageId) {
     const custom = getCustomNote(pageId);
     if (custom) return { date: custom.date, user: custom.author };
+    const art = String(pageId).startsWith('cone:') ? coneArticle(String(pageId).slice(5)) : null;
+    if (art && art.by) return { date: art.date, user: art.by };
     const rev = (D().revisions || []).find(r => r.page === pageId);
     return rev || BASE_REV;
   }
 
   function totalArticleCount() {
     const d = D();
-    return characterIds().length + mapIds().length + docIds().length + questIds().length +
+    return characterIds().length + mapIds().length + docIds().length + questIds().length + coneIds().length + outfitIds().length + petIds().length +
       (d ? d.systems.length + d.factions.length + d.worlds.length + d.puzzles.length + d.themes.controllingIdeas.length + d.themes.antagonists.length + d.themes.motifs.length : 0);
   }
 
@@ -552,7 +594,7 @@
     if (view === 'chars' || view === 'char') return 'chars';
     if (view === 'themes' || view === 'theme') return 'themes';
     if (view === 'quests' || view === 'quest' || view === 'puzzle') return 'quests';
-    if (view === 'artifacts') return 'artifacts';
+    if (view === 'artifacts' || view === 'cone' || view === 'outfit' || view === 'pet') return 'artifacts';
     if (view === 'recent') return 'recent';
     return '';
   }
@@ -1415,6 +1457,7 @@
     const arcana = h.VELVET && typeof h.VELVET.arcanaName === 'function' && typeof h.VELVET.arcanaOf === 'function' ? h.VELVET.arcanaName(h.VELVET.arcanaOf(id)) : 'Шут';
     const eidScene = h.Eidolons && h.Eidolons.SCENES ? h.Eidolons.SCENES[id] : null;
     const outfits = Object.values(h.OUTFITS || {}).filter(o => o.char === id);
+    const sigCones = coneIds().filter(cid => h.CONES[cid].sig === id);
     const fusions = Object.values(h.FUSIONS || {}).filter(f => (f.members || []).includes(id));
     const story = inf.story || [];
     const sections = [['s-arc', 'Дуга персонажа']];
@@ -1454,6 +1497,7 @@
             <tr><td class="hwk-k">Аркан</td><td>${esc(arcana)}</td></tr>
             <tr><td class="hwk-k">Оценивающий пистолет</td><td>${esc(rate)}</td></tr>
             <tr><td class="hwk-k">Ур. 1</td><td class="hwk-mono">HP ${base.hp}<br>АТК ${base.atk}<br>ЗАЩ ${base.def}<br>СКР ${base.spd}</td></tr>
+            ${sigCones.length ? `<tr><td class="hwk-k">Свой конус</td><td>${sigCones.map(cid => A(`${HOST}/cone?id=${cid}`, `«${esc(h.CONES[cid].name)}»`)).join('<br>')}</td></tr>` : ''}
           </table>
         </td>
       </tr></table>
@@ -1495,7 +1539,7 @@
         ${id === 'trail' && h.CHARS.trail_p ? `<tr class="hwk-alt"><td>Второй Путь: Сохранение</td><td><b>${esc(h.CHARS.trail_p.ult.name)}</b></td><td>Навык: ${esc(describeAbility(h.CHARS.trail_p.skill))}. Техника: ${esc(describeAbility(h.CHARS.trail_p.ult))}</td></tr>` : ''}
       </table>
       ${fusions.length ? `<p class="hwk-small"><b>Слияния:</b> ${fusions.map(f => `«${esc(f.name)}» с ${(f.members || []).filter(m => m !== id).map(m => A(`${HOST}/char?id=${m}`, esc(charName(m)))).join(' и ')} (${esc(f.text || '')})`).join('; ')}</p>` : ''}
-      ${outfits.length ? `<p class="hwk-small"><b>Наряды:</b> ${outfits.map(o => `«${esc(o.name)}», ${o.price ? `${o.price} сущности древних снов` : 'подарок'}`).join('; ')}. ${A(`${HOST}/artifacts`, 'Подробнее в каталоге')}.</p>` : ''}
+      ${outfits.length ? `<p class="hwk-small"><b>Наряды:</b> ${Object.keys(h.OUTFITS || {}).filter(oid => h.OUTFITS[oid].char === id).map(oid => `${outfitLink(oid)}, ${h.OUTFITS[oid].price} звёздного нефрита${h.OUTFITS[oid].giftNote ? ` или даром ${esc(h.OUTFITS[oid].giftNote)}` : ''}`).join('; ')}.</p>` : ''}
 
       ${(inf.voice || []).length ? `${section('s-voice', `Мнения о спутниках (${inf.voice.length})`)}
         <table class="hwk-table">
@@ -1764,13 +1808,15 @@
       ${jumpbar([['a-cones', `Конусы (${cones.length})`], ['a-relics', `Реликвии (${relics.length})`], ['a-fus', `Слияния (${fusions.length})`], ['a-out', `Наряды (${outfits.length + pets.length})`], ['a-items', `Предметы (${items.length})`]])}
 
       ${section('a-cones', `Световые конусы (${cones.length})`)}
+      <p class="hwk-p">У каждого конуса есть своя статья в Зале конусов: картина, история с таблички, умение на всех наложениях и места, где конус можно получить. Нажмите на название.</p>
       <div class="hwk-small" style="margin-bottom:6px;">По Путям: ${conePaths.map(k => `[${jump(`a-c-${k}`, esc(h.PATHS[k].name))}]`).join(' ')}</div>
       ${conePaths.map(k => `${anchorTag(`a-c-${k}`)}<table class="hwk-table">
         <tr><th colspan="3">Путь ${esc(h.PATHS[k].name)}</th></tr>
         <tr><th width="32%">Конус</th><th width="18%">HP / АТК / ЗАЩ</th><th>Эффект</th></tr>
-        ${cones.filter(([, c]) => c.path === k).sort((a, b) => b[1].rarity - a[1].rarity).map(([, c], i) => {
+        ${coneHall(k).map((cid, i) => {
+          const c = h.CONES[cid];
           const st = c.stats || { hp: 0, atk: 0, def: 0 };
-          return `<tr${alt(i)}><td><b>${esc(c.name)}</b> ${stars(c.rarity)}</td><td class="hwk-num">${st.hp} / ${st.atk} / ${st.def}</td><td>${esc(c.text || '')}</td></tr>`;
+          return `<tr${alt(i)}><td>${A(`${HOST}/cone?id=${cid}`, art(`cone:${cid}`, 20, 28))} <b>${A(`${HOST}/cone?id=${cid}`, esc(c.name))}</b> ${stars(c.rarity)}</td><td class="hwk-num">${Math.round(st.hp)} / ${Math.round(st.atk)} / ${Math.round(st.def)}</td><td>${esc(c.text || '')}</td></tr>`;
         }).join('')}
       </table>`).join('')}
       ${topLink()}
@@ -1799,16 +1845,16 @@
       ${section('a-out', `Наряды и питомцы (${outfits.length + pets.length})`)}
       <table class="hwk-table">
         <tr><th width="14%"></th><th width="26%">Наряд</th><th>Описание</th><th width="16%">Цена</th></tr>
-        ${outfits.map(([, o], i) => `<tr${alt(i)}>
-          <td align="center">${h.CHARS[o.char] ? art(`fig:${o.char}`, 40, 40) : ''}</td>
-          <td><b>«${esc(o.name)}»</b> ${stars(o.rarity)}<br>${h.CHARS[o.char] ? A(`${HOST}/char?id=${o.char}`, esc(h.CHARS[o.char].name)) : esc(o.char)}</td>
+        ${outfits.map(([oid, o], i) => `<tr${alt(i)}>
+          <td align="center">${outfitLink(oid, art(`dressbust:${oid}`, 40, 40))}</td>
+          <td><b>${outfitLink(oid)}</b> ${stars(o.rarity)}<br>${h.CHARS[o.char] ? A(`${HOST}/char?id=${o.char}`, esc(h.CHARS[o.char].name)) : esc(o.char)}</td>
           <td>${esc(o.text)}</td>
-          <td class="hwk-small">${o.giftNote ? `подарок: ${esc(o.giftNote)}` : `${o.price} снов`}</td>
+          <td class="hwk-small">${o.price} нефрита${o.giftNote ? `<br>или даром ${esc(o.giftNote)}` : ''}</td>
         </tr>`).join('')}
-        ${pets.map(([, pt]) => `<tr>
-          <td></td>
-          <td><b>Питомец: ${esc(pt.name)}</b></td>
-          <td>${esc(pt.text || '')}${(pt.habits || []).length ? ` Привычки: ${pt.habits.map(hb => esc(hb)).join(' ')}` : ''}</td>
+        ${pets.map(([pid, pt]) => `<tr>
+          <td align="center">${petLink(pid, art(`pet:${pid}:front-sit`, 40, 40))}</td>
+          <td><b>Питомец: ${petLink(pid)}</b></td>
+          <td>${esc(pt.text || '')}</td>
           <td class="hwk-small">${pt.price ? `${pt.price} нефрита` : ''}</td>
         </tr>`).join('')}
       </table>
@@ -1822,12 +1868,373 @@
       ${renderUserAmendmentBox('artifacts', route)}`;
   }
 
+  const CONE_LEVELS = [1, 20, 40, 60, 80];
+
+  function coneHall(path) {
+    const h = H();
+    return coneIds().filter(id => h.CONES[id].path === path).sort((a, b) => h.CONES[b].rarity - h.CONES[a].rarity);
+  }
+
+  function coneNum(v, pct) {
+    return String(Math.round((pct ? v * 100 : v) * 1000) / 1000).replace('.', ',');
+  }
+
+  function coneEffectHtml(id) {
+    const c = H().CONES[id];
+    if (!c.tpl || !c.p) return esc(c.text || '');
+    return esc(c.tpl).replace(/#(\d)(%?)/g, (m, n, pct) => {
+      const vals = c.p.map(row => row[n - 1]);
+      if (vals.every(v => v === vals[0])) return coneNum(vals[0], pct) + pct;
+      return `<b class="hwk-cone-hot">${vals.map(v => coneNum(v, pct)).join('/')}${pct}</b>`;
+    });
+  }
+
+  function coneLink(id) {
+    const h = H();
+    return h.CONES[id] ? A(`${HOST}/cone?id=${id}`, `«${esc(h.CONES[id].name)}»`) : esc(id);
+  }
+
+  function charLink(id) {
+    const h = H();
+    return h.CHARS[id] ? A(`${HOST}/char?id=${id}`, esc(h.CHARS[id].name)) : esc(id);
+  }
+
+  function coneSources(id) {
+    const h = H();
+    const tag = `cone:${id}`;
+    const out = [];
+    const passName = k => (h.ITEMS && h.ITEMS[k] ? h.ITEMS[k].name : k);
+    const pool = h.WARP_POOL || {};
+    const std = h.BANNERS && h.BANNERS.std;
+    for (const [tier, rar] of [['five', 5], ['four', 4], ['three', 3]]) {
+      if ((pool[tier] || []).includes(tag)) out.push(`<b>${esc(std ? std.kind : 'Стандартный прыжок')} «${esc(std ? std.name : 'Путь Первопроходцев')}»</b>: всегда в списке наград ${rar}*. Билет: ${esc(passName(std ? std.pass : 'pass'))}.`);
+    }
+    for (const b of Object.values(h.BANNERS || {})) {
+      const stars = Object.entries(b.stars || {});
+      const title = b.kind === b.name ? esc(b.name) : `${esc(b.kind)} «${esc(b.name)}»`;
+      for (const [star, v] of stars) {
+        if (v.cone === id) out.push(`<b>${title}</b>: главная награда, пока баннер посвящён герою ${charLink(star)}. Билет: ${esc(passName(b.pass))}.`);
+      }
+      const with4 = stars.filter(([, v]) => (v.four || []).includes(tag));
+      if (with4.length) {
+        const heads = with4.map(([star, v]) => (v.cone ? coneLink(v.cone) : charLink(star)));
+        out.push(`<b>${title}</b>: 4* с повышенным шансом рядом с ${heads.join(', ')}. Билет: ${esc(passName(b.pass))}.`);
+      }
+    }
+    for (const sh of Object.values(h.SHOPS || {})) {
+      for (const it of sh.items || []) {
+        const p = String(it).split(':');
+        if (p[0] === 'cone' && p[1] === id) out.push(`<b>${esc(sh.name)}</b>: ${esc(p[2])} кредитов.`);
+      }
+    }
+    for (const row of (h.SUPPLY && h.SUPPLY.starlight) || []) {
+      if (row.cone === id) out.push(`<b>Снабжение, лавка Звёздного света</b>: ${row.price} звёздного света${row.limit ? `, ${row.limit} шт. до обновления лавки` : ''}.`);
+    }
+    const fh = h.FH && h.FH.SHOP;
+    for (const sh of Object.values(fh || {})) {
+      for (const row of sh.rows || []) {
+        if (row.cone === id) out.push(`<b>Зал забвения, «${esc(sh.name)}»</b>: ${row.price} ед. «${esc(passName(sh.cur))}».`);
+      }
+    }
+    for (const [lvl, row] of Object.entries(h.TL_REWARDS || {})) {
+      if (row && row.cone === id) out.push(`<b>Пом-Пом, награды Уровня Освоения</b>: выдаётся на ${lvl} уровне.`);
+    }
+    for (const qid of questIds()) {
+      const tm = (h.TRAIL_MISSIONS || []).find(m => m.id === qid);
+      const q = tm || (h.QUESTS && h.QUESTS[qid]);
+      if (q && q.reward && q.reward.cone === id) out.push(`<b>Миссия ${A(`${HOST}/quest?id=${qid}`, `«${esc(q.name)}»`)}</b>: награда за прохождение.`);
+    }
+    const note = coneArticle(id);
+    for (const x of (note && note.extra) || []) out.push(formatWikiText(x));
+    return out;
+  }
+
+  function renderConeArticle(route) {
+    const h = H();
+    const id = route.id;
+    const c = h.CONES[id];
+    const a = coneArticle(id) || {};
+    const pathName = h.PATHS[c.path].name;
+    const hall = coneHall(c.path);
+    const at = hall.indexOf(id);
+    const prev = hall[at - 1], next = hall[at + 1];
+    const holders = characterIds().filter(cid => h.CHARS[cid].path === c.path)
+      .sort((x, y) => Number(y === c.sig) - Number(x === c.sig) || h.CHARS[y].rarity - h.CHARS[x].rarity);
+    const sources = coneSources(id);
+    const story = String(c.desc || '').split('\n').filter(Boolean);
+    const label = [
+      ['Путь', `${art(`path:${c.path}`, 16, 16)} ${esc(pathName)}`],
+      ['Редкость', stars(c.rarity)],
+      ['Умение', `«${esc(c.skill || '-')}»`],
+      c.sig ? ['Чей конус', charLink(c.sig)] : null,
+      a.collab ? ['Коллекция', `коллаборация «${esc(a.collab)}»`] : null,
+      c.ref ? ['Инв. №', `<span class="hwk-mono">${esc(c.ref)}</span>`] : null
+    ].filter(Boolean);
+    const thumb = cid => A(`${HOST}/cone?id=${cid}`, art(`cone:${cid}`, 40, 56));
+    return `
+      ${head(`«${c.name}»`, `Световой конус. Зал Пути ${esc(pathName)}, витрина ${at + 1} из ${hall.length}. Материал из АстралВики '98`)}
+      <table class="hwk-cols"><tr>
+        <td class="hwk-cone-wall">
+          <div class="hwk-cone-frame hwk-cone-f${c.rarity}">${art(`cone:${id}`, 320, 448)}</div>
+          <table class="hwk-cone-label">
+            <tr><th colspan="2">«${esc(c.name)}»</th></tr>
+            ${label.map(([k, v]) => `<tr><td class="hwk-k">${k}</td><td>${v}</td></tr>`).join('')}
+          </table>
+        </td>
+        <td class="hwk-gap"></td>
+        <td>
+          <p class="hwk-lead"><b>«${esc(c.name)}»</b>: Световой конус ${c.rarity}* Пути ${esc(pathName)}${c.sig ? `, сигнатурный конус героя ${charLink(c.sig)}` : ''}.${a.who ? ` На картине: ${formatWikiText(a.who)}.` : ''}</p>
+          <div class="hwk-cone-plaque">
+            <div class="hwk-cone-plaque-h">Табличка под картиной</div>
+            ${story.map(line => `<p>${esc(line)}</p>`).join('')}
+          </div>
+          ${a.scene ? `${section('c-scene', 'Что нарисовано')}<p class="hwk-p">${formatWikiText(a.scene)}</p>` : ''}
+          ${a.memory ? `${section('c-memory', 'Чья это память')}<p class="hwk-p">${formatWikiText(a.memory)}</p>` : ''}
+        </td>
+      </tr></table>
+
+      ${section('c-skill', `Умение «${c.skill || c.name}»`)}
+      <p class="hwk-cone-skill">${coneEffectHtml(id)}</p>
+      <p class="hwk-small">Числа через косую черту: значения на наложениях S1/S2/S3/S4/S5. Копия того же конуса сливается с первым экземпляром, у которого наложение ниже S5. Умение работает, только если конус надет на героя Пути ${esc(pathName)}. Герою другого Пути конус даёт лишь HP, атаку и защиту.</p>
+
+      ${section('c-stats', 'Характеристики по уровню владельца')}
+      <table class="hwk-table hwk-cone-stats">
+        <tr><th>Уровень героя</th>${CONE_LEVELS.map(l => `<th>${l}</th>`).join('')}</tr>
+        ${[['hp', 'HP'], ['atk', 'Атака'], ['def', 'Защита']].map(([k, n], i) => `<tr${alt(i)}><td><b>${n}</b></td>${CONE_LEVELS.map(l => `<td class="hwk-num">${h.coneStats(id, l)[k]}</td>`).join('')}</tr>`).join('')}
+      </table>
+
+      ${section('c-who', 'Кому подходит')}
+      <p class="hwk-small">Герои Пути ${esc(pathName)}: ${holders.map(cid => `${charLink(cid)}${cid === c.sig ? ' <b>(сигнатурный)</b>' : ''}`).join(', ') || 'пока нет'}.</p>
+      ${(a.tips || []).length ? `<ul class="hwk-cone-list">${a.tips.map(t => `<li>${formatWikiText(t)}</li>`).join('')}</ul>` : ''}
+
+      ${section('c-get', 'Где получить')}
+      ${sources.length ? `<ul class="hwk-cone-list">${sources.map(x => `<li>${x}</li>`).join('')}</ul>` : '<p class="hwk-p">В нынешней сборке конус получить нельзя.</p>'}
+
+      ${a.theme ? `${section('c-theme', 'Тема')}<p class="hwk-p">${formatWikiText(a.theme)}</p>` : ''}
+      ${(a.trivia || []).length ? `${section('c-dyk', 'Знаете ли вы')}<ul class="hwk-cone-list">${a.trivia.map(t => `<li>${formatWikiText(t)}</li>`).join('')}</ul>` : ''}
+
+      <table class="hwk-cone-nav"><tr>
+        <td width="33%">${prev ? `${thumb(prev)}<br>&lt;&lt; ${coneLink(prev)}` : '<span class="hwk-dim">Первая витрина зала</span>'}</td>
+        <td width="34%" align="center">${A(`${HOST}/artifacts`, `Все конусы Пути ${esc(pathName)}`)}<br><span class="hwk-small">${hall.length} ${plural(hall.length, 'витрина', 'витрины', 'витрин')}</span></td>
+        <td width="33%" align="right">${next ? `${thumb(next)}<br>${coneLink(next)} &gt;&gt;` : '<span class="hwk-dim">Последняя витрина зала</span>'}</td>
+      </tr></table>
+      ${renderUserAmendmentBox(route.pageId, route)}`;
+  }
+
+  function outfitIds() {
+    const h = H();
+    return h && h.OUTFITS ? Object.keys(h.OUTFITS) : [];
+  }
+
+  function petIds() {
+    const h = H();
+    return h && h.PETS ? Object.keys(h.PETS) : [];
+  }
+
+  function webSafe(hex) {
+    const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || ''));
+    if (!m) return '#999999';
+    const n = parseInt(m[1], 16);
+    return '#' + [16, 8, 0].map(s => (Math.round(((n >> s) & 255) / 51) * 3).toString(16).repeat(2)).join('');
+  }
+
+  function outfitLink(id, html) {
+    return A(`${HOST}/outfit?id=${id}`, html || `«${esc(H().OUTFITS[id].name)}»`);
+  }
+
+  function petLink(id, html) {
+    return A(`${HOST}/pet?id=${id}`, html || esc(H().PETS[id].name));
+  }
+
+  function outfitTag(id) {
+    const h = H(), o = h.OUTFITS[id];
+    return `<div class="hwk-tag">
+      <div class="hwk-tag-hole"></div>
+      <div class="hwk-tag-h">Ателье «Снабжение»</div>
+      <table class="hwk-tag-t">
+        <tr><td class="hwk-tag-k">Арт.</td><td class="hwk-mono">${esc(id)}</td></tr>
+        <tr><td class="hwk-tag-k">Модель</td><td><b>«${esc(o.name)}»</b></td></tr>
+        <tr><td class="hwk-tag-k">Для</td><td>${A(`${HOST}/char?id=${o.char}`, esc(h.CHARS[o.char].name))}</td></tr>
+        <tr><td class="hwk-tag-k">Класс</td><td>${stars(o.rarity)}</td></tr>
+        <tr><td class="hwk-tag-k">Вид</td><td>${esc(o.kind || 'Особый наряд')}</td></tr>
+        <tr><td class="hwk-tag-k">Цена</td><td><b>${o.price}</b> звёздного нефрита</td></tr>
+        ${o.giftNote ? `<tr><td class="hwk-tag-k">Даром</td><td>${esc(o.giftNote)}</td></tr>` : ''}
+        <tr><td class="hwk-tag-k">Катсцены</td><td>${o.cuts ? 'свои: абсолютная техника, Навык, Слияния, прыжок' : 'обычные, меняется только облик'}</td></tr>
+        <tr><td class="hwk-tag-k">В бою</td><td>характеристик не меняет</td></tr>
+      </table>
+    </div>`;
+  }
+
+  function renderOutfitArticle(route) {
+    const h = H(), id = route.id, o = h.OUTFITS[id];
+    const w = (D().outfits || {})[id] || {};
+    const c = h.CHARS[o.char];
+    const owner = A(`${HOST}/char?id=${o.char}`, esc(c.name));
+    const trail = o.char === 'trail';
+    const ids = outfitIds(), at = ids.indexOf(id);
+    const prev = ids[(at + ids.length - 1) % ids.length], next = ids[(at + 1) % ids.length];
+    const before = trail ? `${art('fig:trail', 64, 128)} ${art('figf:trail', 64, 128)}` : art(`fig:${o.char}`, 96, 192);
+    const cut = w.cut || [];
+    const howGet = w.howGet || [];
+    const trivia = w.trivia || [];
+    const sections = [];
+    const cines = w.cines || [];
+    if (cut.length) sections.push(['o-cut', 'Выкройка']);
+    if (cines.length) sections.push(['o-cines', 'Катсцены облика']);
+    if (w.origin) sections.push(['o-origin', 'Откуда наряд']);
+    if (w.theme) sections.push(['o-theme', 'Что наряд говорит о герое']);
+    sections.push(['o-get', 'Как получить']);
+    if (trivia.length) sections.push(['o-more', 'Мелочи']);
+    const rackCell = (oid, side) => `${outfitLink(oid, art(`dressbust:${oid}`, 40, 40))}<br>${side === 'l' ? '&lt;&lt; ' : ''}${outfitLink(oid)}${side === 'r' ? ' &gt;&gt;' : ''}`;
+    return `
+      ${head(`«${o.name}»`, `${esc(o.kind || 'Особый наряд')} ${stars(o.rarity)} для героя ${owner}. Статья раздела «Гардероб» АстралВики '98.`)}
+      <table class="hwk-fit"><tr>
+        <td class="hwk-fit-cell">${before}<div class="hwk-fit-cap">Обычный наряд</div></td>
+        <td class="hwk-fit-arrow">&gt;&gt;</td>
+        <td class="hwk-fit-cell">${art(`dress:${id}:${trail ? 'mf' : 'm'}`, 228, 288)}<div class="hwk-fit-cap">«${esc(o.name)}»${trail ? ', Келус и Стелла' : ''}</div></td>
+        <td class="hwk-fit-tagcell">${outfitTag(id)}</td>
+      </tr></table>
+      <p class="hwk-lead"><span class="hwk-small">Витрина Снабжения:</span> ${esc(o.text)}</p>
+      ${toc(sections)}
+      ${cut.length ? `${section('o-cut', `Выкройка (${cut.length} ${plural(cut.length, 'деталь', 'детали', 'деталей')})`)}
+        <table class="hwk-pattern">
+          ${cut.map(([part, desc], i) => `<tr><td class="hwk-pat-n">${String(i + 1).padStart(2, '0')}</td><td class="hwk-pat-k">${esc(part)}</td><td>${esc(desc)}</td></tr>`).join('')}
+        </table>` : ''}
+      ${cines.length ? `${section('o-cines', 'Катсцены облика')}
+        <table class="hwk-pattern">
+          ${cines.map(([part, desc], i) => `<tr><td class="hwk-pat-n">${String(i + 1).padStart(2, '0')}</td><td class="hwk-pat-k">${esc(part)}</td><td>${esc(desc)}</td></tr>`).join('')}
+        </table>` : ''}
+      ${w.origin ? `${section('o-origin', 'Откуда наряд')}<p class="hwk-p">${formatWikiText(w.origin)}</p>` : ''}
+      ${w.theme ? `${section('o-theme', 'Что наряд говорит о герое')}
+        <div class="hwk-essay">${formatWikiText(w.theme)}</div>
+        <p class="hwk-small">Дуга героя подробно разобрана в статье ${owner}: <b>${esc(deriveCharArc(o.char).arcType)}</b>.</p>` : ''}
+      ${section('o-get', 'Как получить')}
+      <ol class="hwk-steps">
+        ${howGet.map(s => `<li>${formatWikiText(s)}</li>`).join('')}
+        <li>Надеть наряд можно в меню героя: Персонажи, раздел «Наряды». Наряд виден в меню, на карте и в бою.</li>
+      </ol>
+      ${trivia.length ? `${section('o-more', 'Мелочи')}<ul class="hwk-notes">${trivia.map(t => `<li>${formatWikiText(t)}</li>`).join('')}</ul>` : ''}
+      <table class="hwk-rack"><tr>
+        <td width="33%">${rackCell(prev, 'l')}</td>
+        <td width="34%" align="center">Гардероб: ${at + 1} из ${ids.length}<br>${A(`${HOST}/artifacts`, 'Все наряды и питомцы в каталоге')}</td>
+        <td width="33%" align="right">${rackCell(next, 'r')}</td>
+      </tr></table>
+      ${renderUserAmendmentBox(route.pageId, route)}`;
+  }
+
+  const PET_POSES = [
+    ['front-sit', 'Сидит', null],
+    ['front-groom', 'Умывается', null],
+    ['front-yawn', 'Зевает', null],
+    ['front-squint', 'Чихает огнём', 'fire'],
+    ['side-fly', 'Догоняет отряд', 'fly'],
+    ['side-hiss', 'Шипит', null],
+    ['front-sleep', 'Спит', null]
+  ];
+
+  function petMood(pt, cid, tune) {
+    const out = [];
+    if ((pt.likes || []).includes(cid)) out.push('Когда герой ведёт отряд, иногда мурлычет и ластится к нему.');
+    if ((pt.fears || []).includes(cid)) out.push('Держится на два шага позади, шипит и не даётся гладить.');
+    if ((pt.lazy || []).includes(cid)) out.push(`Засыпает уже через ${tune.lazySleep} с без движения, а не через ${tune.sleepAfter} с.`);
+    return out.length ? out.join(' ') : 'Ведёт себя как с любым лидером.';
+  }
+
+  function renderPetArticle(route) {
+    const h = H(), id = route.id, pt = h.PETS[id];
+    const w = (D().pets || {})[id] || {};
+    const tune = h.PET_TUNE || { sleepAfter: 24, lazySleep: 9, flyFrom: 3, lost: 9, actMin: 3.5, actRand: 4.5 };
+    const L = pt.look || {};
+    const ids = petIds(), no = String(ids.indexOf(id) + 1).padStart(3, '0');
+    const swatch = (col, label) => `<span class="hwk-swatch" style="background-color:${webSafe(col)};">&nbsp;&nbsp;&nbsp;</span>${label ? ` ${esc(label)}` : ''}`;
+    const home = pt.home && h.MAPS && h.MAPS[pt.home] ? A(`${HOST}/atlas?map=${pt.home}`, esc(h.MAPS[pt.home].name)) : 'нет';
+    const owner = w.owner && h.CHARS[w.owner] ? A(`${HOST}/char?id=${w.owner}`, esc(h.CHARS[w.owner].name)) : 'экипаж Экспресса';
+    const crew = [...new Set([...(pt.likes || []), ...(pt.fears || []), ...(pt.lazy || []), ...Object.keys(pt.leader || {})])].filter(cid => h.CHARS[cid]);
+    const poses = PET_POSES.filter(p => !p[2] || pt[p[2]]);
+    const field = (k, v) => `<tr><td class="hwk-pp-k">${k}</td><td class="hwk-pp-v">${v}</td></tr>`;
+    const sections = [['p-album', 'Фотоальбом'], ['p-habits', 'Привычки'], ['p-crew', 'Кого любит и кого боится'], ['p-day', 'Распорядок'], ['p-voice', 'Голос']];
+    if (w.origin) sections.push(['p-origin', 'Откуда она']);
+    if (w.theme) sections.push(['p-theme', 'Зачем отряду кошка']);
+    sections.push(['p-care', 'Как завести']);
+    if ((w.trivia || []).length) sections.push(['p-more', 'Мелочи']);
+    const day = [
+      ['Идёт за лидером', 'Ступает по его следам на шаг позади.'],
+      ['Отстала', pt.fly ? `Если отстала на ${tune.flyFrom} шага и больше, взлетает и догоняет на крыльях.` : 'Ускоряет шаг и догоняет.'],
+      ['Потерялась', `Дальше ${tune.lost} шагов от лидера (телепорт, другая карта) просто появляется рядом снова.`],
+      ['Стоянка', `Каждые ${tune.actMin}-${tune.actMin + tune.actRand} с чем-нибудь занята: умывается, зевает, оглядывается, отходит на шаг-другой${pt.fire ? ', чихает огнём' : ''}.`],
+      ['Сон', `После ${tune.sleepAfter} с без движения сворачивается клубком. Просыпается, когда отряд пойдёт или её погладят.`]
+    ];
+    return `
+      ${head(`Питомец: ${pt.name}`, "Паспорт питомца Звёздного экспресса. Статья раздела «Гардероб» АстралВики '98.")}
+      <table class="hwk-passport">
+        <tr><th colspan="2">ПАСПОРТ ПИТОМЦА № ${no}</th></tr>
+        <tr>
+          <td class="hwk-pp-photo">${art(`pet:${id}:front-sit`, 108, 108)}<div class="hwk-small">фото 3x4</div></td>
+          <td>
+            <table class="hwk-pp-fields">
+              ${field('Кличка', `<b>${esc(pt.name)}</b>`)}
+              ${field('Вид', esc(w.species || pt.kind))}
+              ${field('Окрас', `${swatch(L.fur, 'шерсть')} &nbsp; ${swatch(L.wing, 'крылья')}`)}
+              ${field('Глаза', swatch(L.eye, w.eyes || ''))}
+              ${field('Приметы', `${swatch(L.mark, '')} ${esc(w.marks || '')}`)}
+              ${field('Хозяйка', owner)}
+              ${field('Живёт', home)}
+              ${field('Летает', pt.fly ? 'да' : 'нет')}
+              ${field('Огонь', pt.fire ? 'чихает огнём' : 'нет')}
+              ${field('Цена', `${pt.price} звёздного нефрита`)}
+            </table>
+          </td>
+        </tr>
+        <tr><td colspan="2" class="hwk-pp-foot"><span class="hwk-stamp">ДОПУСК НА ЭКСПРЕСС ВЫДАН</span> В бою и в характеристиках отряда ничего не меняет.</td></tr>
+      </table>
+      <p class="hwk-lead">${esc(pt.text)}</p>
+      ${toc(sections)}
+      ${section('p-album', 'Фотоальбом')}
+      <div class="hwk-album-main">${art(`petstage:${id}`, 458, 180)}<div class="hwk-small">Гостиная особняка Казумы, витрина Снабжения.</div></div>
+      <table class="hwk-album"><tr>
+        ${poses.map(([spec, cap]) => `<td>${art(`pet:${id}:${spec}`, 72, 72)}<br>${esc(cap)}</td>`).join('')}
+      </tr></table>
+      ${section('p-habits', 'Привычки')}
+      <ul class="hwk-notes">${(pt.habits || []).map(hb => `<li>${esc(hb)}</li>`).join('')}</ul>
+      ${section('p-crew', 'Кого любит и кого боится')}
+      <p class="hwk-small">Кошка смотрит только на лидера, то есть на первого героя в команде.</p>
+      <table class="hwk-table">
+        <tr><th width="20%">Лидер</th><th width="36%">Как ведёт себя ${esc(pt.name)}</th><th>Что говорит лидер</th></tr>
+        ${crew.map((cid, i) => `<tr${alt(i)}>
+          <td>${A(`${HOST}/char?id=${cid}`, art(`fig:${cid}`, 32, 32))} <b>${A(`${HOST}/char?id=${cid}`, esc(h.CHARS[cid].name))}</b></td>
+          <td>${esc(petMood(pt, cid, tune))}</td>
+          <td class="hwk-small">${((pt.leader || {})[cid] || []).map(l => esc(l)).join('<br>') || 'Молчит.'}</td>
+        </tr>`).join('')}
+      </table>
+      <p class="hwk-small">Каждое третье поглаживание вызывает реплику лидера, если она у него есть.</p>
+      ${section('p-day', 'Распорядок')}
+      <table class="hwk-ladder">${day.map(([k, v]) => `<tr><td class="hwk-step">${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}</table>
+      ${section('p-voice', 'Голос')}
+      <table class="hwk-table">
+        <tr><td width="22%"><b>Мурлычет</b></td><td>${(pt.purr || []).map(s => `«${esc(s)}»`).join(' ')}</td></tr>
+        <tr class="hwk-alt"><td><b>Шипит</b></td><td>${(pt.hiss || []).map(s => `«${esc(s)}»`).join(' ')}</td></tr>
+        <tr><td><b>Спросонья</b></td><td>${(pt.sleepy || []).map(s => `«${esc(s)}»`).join(' ')}</td></tr>
+      </table>
+      ${w.origin ? `${section('p-origin', 'Откуда она')}<p class="hwk-p">${formatWikiText(w.origin)}</p>` : ''}
+      ${w.theme ? `${section('p-theme', 'Зачем отряду кошка')}<div class="hwk-essay">${formatWikiText(w.theme)}</div>` : ''}
+      ${w.spoiler ? spoilerBlock(`pet_${id}`, w.spoiler.title, `<p class="hwk-p">${formatWikiText(w.spoiler.text)}</p>`) : ''}
+      ${section('p-care', 'Как завести')}
+      <ol class="hwk-steps">${(w.care || []).map(s => `<li>${formatWikiText(s)}</li>`).join('')}</ol>
+      ${(w.notes || []).length ? `<ul class="hwk-notes">${w.notes.map(s => `<li>${formatWikiText(s)}</li>`).join('')}</ul>` : ''}
+      ${(w.trivia || []).length ? `${section('p-more', 'Мелочи')}<ul class="hwk-notes">${w.trivia.map(t => `<li>${formatWikiText(t)}</li>`).join('')}</ul>` : ''}
+      <p class="hwk-small">${A(`${HOST}/artifacts`, '&lt;&lt; Все наряды и питомцы в каталоге')}</p>
+      ${renderUserAmendmentBox(route.pageId, route)}`;
+  }
+
   function indexEntries() {
     const h = H(), d = D();
     const out = [];
     for (const id of characterIds()) out.push([h.CHARS[id].name, `${HOST}/char?id=${id}`, 'персонаж']);
     for (const id of mapIds()) out.push([h.MAPS[id].name, `${HOST}/atlas?map=${id}`, 'карта']);
     for (const id of docIds()) out.push([h.DOCS[id].title, `${HOST}/doc?id=${id}`, 'документ']);
+    for (const id of coneIds()) out.push([h.CONES[id].name, `${HOST}/cone?id=${id}`, 'световой конус']);
+    for (const id of outfitIds()) out.push([h.OUTFITS[id].name, `${HOST}/outfit?id=${id}`, 'наряд']);
+    for (const id of petIds()) out.push([h.PETS[id].name, `${HOST}/pet?id=${id}`, 'питомец']);
     for (const s of d.systems) out.push([s.title, `${HOST}/system?id=${s.id}`, 'трактат']);
     for (const f of d.factions) out.push([f.name, `${HOST}/faction?id=${f.id}`, 'фракция']);
     for (const w of d.worlds) out.push([w.name, `${HOST}/world?id=${w.id}`, 'мир']);
@@ -1919,12 +2326,28 @@
         results.push({ title: `Карта локации: ${m.name}`, url: `${HOST}/atlas?map=${id}`, snippet: `Сектор: ${sectorOf(id)}` });
       }
     }
+    for (const id of coneIds()) {
+      const c = h.CONES[id];
+      const a = coneArticle(id) || {};
+      const hay = `${id} ${c.name} ${c.skill || ''} ${c.text || ''} ${c.desc || ''} ${a.who || ''} ${a.scene || ''} ${a.memory || ''}`.toLowerCase();
+      if (normText(hay).includes(q)) results.push({ title: `Световой конус: ${c.name}`, url: `${HOST}/cone?id=${id}`, snippet: a.who || c.text || '' });
+    }
     for (const id of docIds()) {
       const doc = h.DOCS[id];
       const txt = doc.text || '';
       if (`${id} ${doc.title} ${doc.sub || ''} ${txt}`.toLowerCase().includes(q)) {
         results.push({ title: `Документ: ${doc.title}`, url: `${HOST}/doc?id=${id}`, snippet: doc.sub || txt.slice(0, 120) });
       }
+    }
+    for (const id of outfitIds()) {
+      const o = h.OUTFITS[id], w = (d && d.outfits && d.outfits[id]) || {};
+      const hay = `${id} ${o.name} ${h.CHARS[o.char] ? h.CHARS[o.char].name : ''} ${o.text} ${(w.cut || []).map(x => x.join(' ')).join(' ')} ${w.origin || ''}`.toLowerCase();
+      if (normText(hay).includes(q)) results.push({ title: `Наряд: «${o.name}»`, url: `${HOST}/outfit?id=${id}`, snippet: o.text });
+    }
+    for (const id of petIds()) {
+      const pt = h.PETS[id], w = (d && d.pets && d.pets[id]) || {};
+      const hay = `${id} ${pt.name} ${pt.kind} ${pt.text} ${(pt.habits || []).join(' ')} ${w.species || ''} ${w.origin || ''}`.toLowerCase();
+      if (normText(hay).includes(q)) results.push({ title: `Питомец: ${pt.name}`, url: `${HOST}/pet?id=${id}`, snippet: pt.text });
     }
     return results.slice(0, 40);
   }
@@ -1969,7 +2392,10 @@
     const pool = [
       ...cIds.map(id => `${HOST}/char?id=${id}`),
       ...sysIds.map(id => `${HOST}/system?id=${id}`),
-      ...puzIds.map(id => `${HOST}/puzzle?id=${id}`)
+      ...puzIds.map(id => `${HOST}/puzzle?id=${id}`),
+      ...coneIds().map(id => `${HOST}/cone?id=${id}`),
+      ...outfitIds().map(id => `${HOST}/outfit?id=${id}`),
+      ...petIds().map(id => `${HOST}/pet?id=${id}`)
     ];
     return pool[Math.floor(Math.random() * pool.length)] || HOST;
   }
@@ -2079,6 +2505,9 @@
         case 'quest': bodyHtml = renderQuestArticle(route); break;
         case 'puzzle': bodyHtml = renderPuzzleArticle(route); break;
         case 'artifacts': bodyHtml = renderArtifactsHub(route); break;
+        case 'cone': bodyHtml = renderConeArticle(route); break;
+        case 'outfit': bodyHtml = renderOutfitArticle(route); break;
+        case 'pet': bodyHtml = renderPetArticle(route); break;
         case 'recent': bodyHtml = renderRecentAndIndex(route); break;
         case 'search': bodyHtml = renderSearchView(route); break;
         default: bodyHtml = renderMissing(route);
@@ -2114,12 +2543,85 @@
     </div>`;
   }
 
+  function paintWardrobe(cv, spec) {
+    const h = H();
+    const g = cv.getContext('2d');
+    if (!h || !h.Gfx || !g) return;
+    const G = h.Gfx;
+    const [kind, id, arg] = spec.split(':');
+    const fit = src => { g.imageSmoothingEnabled = false; g.drawImage(src, 0, 0, cv.width, cv.height); };
+    if (kind === 'dressbust' && h.OUTFITS[id]) fit(G.bustCanvas(h.outfitLook(id, 'm'), cv.width));
+    else if (kind === 'dress' && h.OUTFITS[id]) paintDress(g, cv, id, arg);
+    else if (kind === 'pet' && h.PETS && h.PETS[id] && h.petCanvas) {
+      const [view, pose] = String(arg || 'front-sit').split('-');
+      fit(h.petCanvas(id, view, pose, 0));
+    } else if (kind === 'petstage' && h.PETS && h.PETS[id]) paintPetStage(g, cv, id);
+  }
+
+  function paintDress(g, cv, id, sex) {
+    const h = H(), G = h.Gfx;
+    const sc = typeof h.outfitShowcase === 'function' ? h.outfitShowcase(id) : null;
+    if (sc && sc.width) {
+      const k = Math.max(cv.width / sc.width, cv.height / sc.height);
+      g.imageSmoothingEnabled = true;
+      g.drawImage(sc, (cv.width - sc.width * k) / 2, cv.height - sc.height * k, sc.width * k, sc.height * k);
+    }
+    const scale = Math.max(1, Math.floor(cv.height * 0.72 / (G.FIG_H || 96)));
+    const foot = cv.height - 10;
+    const looks = sex === 'mf' ? [h.outfitLook(id, 'm'), h.outfitLook(id, 'f')] : [h.outfitLook(id, 'm')];
+    looks.forEach((look, i) => {
+      const x = looks.length > 1 ? cv.width * (i ? 0.7 : 0.3) : cv.width / 2;
+      g.globalAlpha = 0.3;
+      g.fillStyle = '#000000';
+      g.beginPath();
+      g.ellipse(x, foot, 12 * scale, 3 * scale, 0, 0, Math.PI * 2);
+      g.fill();
+      g.globalAlpha = 1;
+      G.drawFigure(g, look, x, foot, scale);
+    });
+  }
+
+  function paintPetStage(g, cv, id) {
+    const h = H();
+    const stage = typeof h.petStage === 'function' ? h.petStage(id) : null;
+    if (stage && stage.width) {
+      g.imageSmoothingEnabled = false;
+      g.drawImage(stage, 0, 0, cv.width, cv.height);
+    }
+    if (!h.petCanvas) return;
+    const pc = h.petCanvas(id, 'front', 'sit', 0);
+    const scale = Math.max(2, Math.floor(cv.height / 45));
+    const size = (pc.width || 18) * scale;
+    const ground = Math.round(cv.height * 0.87);
+    const x = Math.round(cv.width * 0.42);
+    g.globalAlpha = 0.3;
+    g.fillStyle = '#000000';
+    g.beginPath();
+    g.ellipse(x, ground + 2, size * 0.36, 6, 0, 0, Math.PI * 2);
+    g.fill();
+    g.globalAlpha = 1;
+    g.imageSmoothingEnabled = false;
+    g.drawImage(pc, x - size / 2, ground + Math.round(scale * 1.5) - size, size, size);
+  }
+
   function paintArt(cv) {
     if (!cv || !cv.getContext) return;
     const g = cv.getContext('2d');
     if (g) {
       g.fillStyle = '#000033';
       g.fillRect(0, 0, cv.width, cv.height);
+    }
+    if (/^(dress|dressbust|pet|petstage):/.test(cv.dataset.awArt || '')) {
+      cv.dataset.art = cv.dataset.awArt;
+      try {
+        paintWardrobe(cv, cv.dataset.awArt);
+      } catch (e) {}
+      return;
+    }
+    if (cv.dataset.awArt && cv.dataset.awArt.startsWith('cone:')) {
+      cv.dataset.art = cv.dataset.awArt;
+      paintCone(cv, cv.dataset.awArt.slice(5));
+      return;
     }
     if (window.hsrSite && typeof window.hsrSite.paintArt === 'function' && cv.dataset.awArt) {
       let spec = cv.dataset.awArt;
@@ -2139,6 +2641,25 @@
         window.hsrSite.paintArt(cv);
       } catch (e) {}
     }
+  }
+
+  function paintCone(cv, id) {
+    const h = H();
+    if (!h || !h.Gfx || !h.CONES || !h.CONES[id]) return;
+    const g = cv.getContext('2d');
+    if (!g) return;
+    const draw = src => { g.imageSmoothingEnabled = false; g.drawImage(src, 0, 0, cv.width, cv.height); };
+    const pix = h.CONE_PIX && h.CONE_PIX[id];
+    if (pix && typeof Image !== 'undefined') {
+      const im = new Image();
+      im.onload = () => draw(im);
+      im.src = pix;
+      if (im.complete && im.naturalWidth) draw(im);
+      return;
+    }
+    try {
+      draw(h.Gfx.coneArt(id, cv.width, cv.height));
+    } catch (e) {}
   }
 
   const TILE_COLORS = {
@@ -2352,6 +2873,12 @@
     mapIds,
     docIds,
     questIds,
+    coneIds,
+    outfitIds,
+    petIds,
+    coneHall,
+    coneSources,
+    coneEffectHtml,
     charGroups,
     formatWikiText,
     deriveCharArc,

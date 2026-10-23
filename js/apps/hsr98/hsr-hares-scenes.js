@@ -5,7 +5,6 @@
   const FLOOR = LH - BAR;
   const hero = (S, look, x, y, o) => S.fig(look, x, y, Object.assign({ k: 2 }, o));
   const RED = '#c8282e', VIOLET = '#c88aff', VOLT = '#d8f040', GOLD = '#ffd040';
-  const lookOf = id => H.CHARS[id].look;
 
   function star(g, x, y, r, col) {
     const pts = [];
@@ -59,7 +58,7 @@
         const g = S.g, t = S.t, T = S.T, spin = seg(t, 0.4, 1.3), burst = seg(t, 1.2, 1.6);
         stage(g, T, GOLD);
         lighter(g, () => { for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2 + T * 0.5; poly(g, rgba('#ffe090', 0.08), [160, 110, 160 + Math.cos(a) * 320, 110 + Math.sin(a) * 320, 160 + Math.cos(a + 0.12) * 320, 110 + Math.sin(a + 0.12) * 320]); } });
-        hero(S, lookOf('billy'), 160, FLOOR + 22, { flip: Math.floor(spin * 6) % 2 === 1 });
+        hero(S, P.look, 160, FLOOR + 22, { flip: Math.floor(spin * 6) % 2 === 1 });
         if (spin > 0 && spin < 1) for (let i = 0; i < 8; i++) {
           const a = i / 8 * Math.PI * 2 + spin * 6, r = 30 + ((spin * 4 + i * 0.13) % 1) * 160;
           star(g, 160 + Math.cos(a) * r, 110 + Math.sin(a) * r * 0.6, 4, rgba(GOLD, 1 - r / 200));
@@ -74,7 +73,7 @@
       act(S, P) {
         const g = S.g, t = S.t, T = S.T, open = eOut(seg(t, 0.1, 0.35)), fly = seg(t, 0.4, 0.75), pull = seg(t, 0.75, 1.2), boom = seg(t, 1.2, 1.6);
         stage(g, T, VIOLET);
-        hero(S, lookOf('nicole'), 80, FLOOR + 22);
+        hero(S, P.look, 80, FLOOR + 22);
         caseGun(g, 112, 130, 1.4, open);
         const gx = lerp(150, 240, fly), gy = 124 - Math.sin(fly * Math.PI) * 50;
         if (fly > 0 && fly < 1) { ell(g, '#3a3a44', gx, gy, 6, 6); ell(g, VIOLET, gx, gy, 3, 3); }
@@ -91,7 +90,7 @@
         stage(g, T, VOLT);
         const x = lerp(70, 260, eIn(dash));
         if (dash > 0 && dash < 1) lighter(g, () => { for (let i = 0; i < 6; i++) line(g, rgba(VOLT, 0.6 * (1 - dash)), 2, x - 30 - i * 26, 96 + i * 6, x - 4, 100 + i * 4); });
-        hero(S, lookOf('anby'), x, FLOOR + 22, { a: dash > 0 && dash < 1 ? 0.6 : 1 });
+        hero(S, P.look, x, FLOOR + 22, { a: dash > 0 && dash < 1 ? 0.6 : 1 });
         if (charge > 0 && dash <= 0) { lighter(g, () => glow(g, 96, 120, 10 + 26 * charge, VOLT, 0.5 + 0.4 * charge)); for (let i = 0; i < 3; i++) bolt(g, 96, 120, 96 + Math.cos(T * 9 + i * 2) * 30, 120 + Math.sin(T * 9 + i * 2) * 30, Math.floor(T * 20) + i, charge); }
         if (strike > 0) { bolt(g, 270, -10, 250, FLOOR - 20, Math.floor(T * 20), 1 - strike); lighter(g, () => glow(g, 250, FLOOR - 30, 80 * strike, VOLT, 0.7 * (1 - strike))); }
         if (strike > 0 && strike < 0.15) flash(g, '#f4ffd0', 0.55 * (1 - strike / 0.15));

@@ -171,6 +171,13 @@
     key(e) {
       const scr = this.top;
       if (!scr) return false;
+      const ae = document.activeElement;
+      if (ae && ae.tagName === 'INPUT' && this.root.contains(ae)) {
+        if (!['Enter', 'NumpadEnter', 'ArrowUp', 'ArrowDown', 'Escape', 'Tab'].includes(e.code)) return false;
+        ae.blur();
+        this.ui.el.focus({ preventScroll: true });
+        if (e.code === 'Enter' || e.code === 'NumpadEnter' || e.code === 'Tab') { this.move(0, 1); return true; }
+      }
       if (scr.onKey && scr.onKey(e)) return true;
       const k = e.code;
       const f = scr.focus;
@@ -218,8 +225,8 @@
       const add = (t, fn, first) => { const b = this.nav(h('div', 'fz-titem', esc(t)), fn); if (first) b.setAttribute('data-first', '1'); m.appendChild(b); return b; };
       if (has) add('Продолжить', () => ui.continueGame(), true);
       add('Новая игра', () => {
-        if (has) this.confirm('Новая игра', 'Текущий прогресс будет удалён. Начать фестиваль заново?', () => ui.newGame());
-        else ui.newGame();
+        if (has) this.confirm('Новая игра', 'Текущий прогресс будет удалён. Начать фестиваль заново?', () => this.push(this.register()));
+        else this.push(this.register());
       }, !has);
       add('Настройки', () => this.push(this.settingsScreen(true)));
       add('Об игре', () => this.push(this.about()));
@@ -249,7 +256,8 @@
       row.appendChild(y); row.appendChild(n);
       box.appendChild(row);
       el.appendChild(box);
-      this.push({ el });
+      const prev = this.top;
+      this.push({ el, showroom: prev && prev.showroom });
     }
 
     popup(title, body, col = '#e6146e', btn = 'Продолжить', fn = null, img = null) {
@@ -264,7 +272,7 @@
     hub(tab = 0) {
       const ui = this.ui, g = this.g;
       const el = h('div', 'fz-scr fz-hub');
-      const tabs = ['ГЛАВНАЯ', 'ФЕСТИВАЛЬ', 'МАШИНЫ', 'НАВЫКИ', 'НАСТРОЙКИ'];
+      const tabs = ['ГЛАВНАЯ', 'ФЕСТИВАЛЬ', 'МАШИНЫ', 'ВОДИТЕЛЬ', 'НАВЫКИ', 'НАСТРОЙКИ'];
       const scr = { el, tabIdx: tab };
       const render = () => {
         el.innerHTML = '';
@@ -279,7 +287,7 @@
         el.appendChild(tb);
         const body = h('div', 'fz-hub-body');
         el.appendChild(body);
-        [this.homeTab, this.festTab, this.carsTab, this.skillsTab, this.settingsTab][scr.tabIdx].call(this, body, scr);
+        [this.homeTab, this.festTab, this.carsTab, this.driverTab, this.skillsTab, this.settingsTab][scr.tabIdx].call(this, body, scr);
         el.appendChild(this.hints([['Enter', 'Выбрать'], ['Esc', 'Назад'], ['Q / E', 'Вкладки'], ['M', 'Карта мира'], ['Tab', 'Радио']]));
         this.autoFocus(scr);
         const cur = el.querySelectorAll('.fz-tab')[scr.tabIdx];
@@ -317,7 +325,7 @@
       const btns = h('div', 't-btns');
       body.appendChild(btns);
       const sb = (t, icon, fn) => btns.appendChild(this.nav(h('div', 'fz-sbtn', `<span class="fz-ico fz-ico-${icon}"></span>${t}`), fn));
-      sb('Настройки', 'gear', () => { this.top.tabIdx = 4; this.top.refresh(); });
+      sb('Настройки', 'gear', () => { this.top.tabIdx = 5; this.top.refresh(); });
       sb('Сброс на дорогу', 'reset', () => { this.closeAll(); ui.resumeFromMenu(); g.resetCar(); });
       const cost = g.repairCost();
       sb(cost ? `Ремонт · CR ${F.fmtCR(cost)}` : 'Ремонт: машина цела', 'repair', () => {
@@ -330,7 +338,7 @@
       const car = F.Cars.get(g.entry.id);
       tile('t-car', `<img src="${this.entryThumb(g.entry)}"><div class="fz-tbig">${carTitle(car)}</div><div class="fz-tlabel">СМЕНИТЬ МАШИНУ<small>Доставка к текущему месту</small></div>`, () => this.push(this.garage()));
       const need = F.EV.xpForLevel(p.level);
-      tile('t-level', `<div class="fz-lvnum">${p.level}</div><div class="fz-bar"><i style="width:${Math.round(p.xp / need * 100)}%"></i></div><div class="fz-tsub">${F.fmtCR(p.xp)} / ${F.fmtCR(need)} XP</div><div class="fz-tlabel">УРОВЕНЬ</div>`, () => { this.top.tabIdx = 3; this.top.refresh(); });
+      tile('t-level', `<div class="fz-lvnum">${p.level}</div><div class="fz-bar"><i style="width:${Math.round(p.xp / need * 100)}%"></i></div><div class="fz-tsub">${F.fmtCR(p.xp)} / ${F.fmtCR(need)} XP</div><div class="fz-tlabel">УРОВЕНЬ</div>`, () => { this.top.tabIdx = 4; this.top.refresh(); });
       const st = p.stats;
       tile('t-stats', `<div class="fz-slist"><div><span>Победы</span><b>${st.wins} / ${st.races}</b></div><div><span>Пробег</span><b>${F.fmtDist(st.dist)}</b></div><div><span>Лучший дрифт</span><b>${F.fmtCR(Math.round(st.drift))}</b></div><div><span>Макс. скорость</span><b>${Math.round(st.top)} км/ч</b></div><div><span>Дороги</span><b>${Math.floor(comp.roads / comp.roadsTotal * 100)}%</b></div></div><div class="fz-tlabel">СТАТИСТИКА</div>`, () => { this.top.tabIdx = 1; this.top.refresh(); });
     }
@@ -549,6 +557,411 @@
       body.appendChild(this.statPanel(g.entry));
     }
 
+    portrait(look) {
+      const key = F.Driver.rigKey(look) + '#' + F.Driver.texKey(look);
+      if (this.portraits && this.portraits.has(key)) return this.portraits.get(key);
+      let url = '';
+      try { url = this.ui.renderer.figureShot(look, 160, 200, 'head').toDataURL('image/png'); } catch (e) { url = ''; }
+      (this.portraits || (this.portraits = new Map())).set(key, url);
+      return url;
+    }
+
+    driverLook(extra) {
+      return F.Driver.normLook(Object.assign({}, F.Driver.playerLook(this.g.profile), extra || {}));
+    }
+
+    passCard(look) {
+      const p = this.g.profile, band = F.EV.BANDS[p.band] || F.EV.BANDS[0], no = 100 + F.Driver.hashOf(p.name) % 900;
+      const bars = Array.from({ length: 34 }, (_, i) => `<i style="width:${1 + (F.Driver.hashOf(p.name + i) % 3)}px"></i>`).join('');
+      return h('div', 'fz-pass', `<div class="fz-pass-top"><b>HORIZON</b> RĪGA 2001<span>ПРОПУСК УЧАСТНИКА</span></div>
+        <div class="fz-pass-body"><div class="fz-pass-photo"><img src="${this.portrait(look)}" alt=""></div>
+        <div class="fz-pass-info"><div class="fz-pass-name">${esc(p.name)}</div>
+        <div><span>Уровень</span><b>${p.level}</b></div><div><span>Браслет</span><b style="--c:${band.col}">${esc(band.name.replace(' браслет', ''))}</b></div><div><span>Номер</span><b>№ ${String(no).padStart(4, '0')}</b></div>
+        ${p.finale ? '<div class="fz-pass-champ">ЧЕМПИОН HORIZON RĪGA</div>' : ''}</div></div>
+        <div class="fz-pass-band" style="background:${band.col}"></div><div class="fz-pass-bars">${bars}</div>`);
+    }
+
+    driverTab(body) {
+      const g = this.g, p = g.profile;
+      body.className = 'fz-hub-body fz-drvtab';
+      body.appendChild(this.passCard(this.driverLook()));
+      const big = (cls, title, sub, fn, first, locked) => {
+        const t = this.nav(h('div', 'fz-ctile fz-dtile ' + cls + (locked ? ' locked' : ''), `<div class="fz-dicon"></div><div class="fz-tbig">${title}</div><div class="fz-tsub">${sub}</div>`), fn);
+        if (first) t.setAttribute('data-first', '1');
+        body.appendChild(t);
+      };
+      big('d-look', 'ВНЕШНОСТЬ', 'Лицо, причёска, фигура', () => this.push(this.appearance()), true);
+      big('d-wear', 'ГАРДЕРОБ', `${p.wardrobe.length} ${F.plural(p.wardrobe.length, 'вещь', 'вещи', 'вещей')}`, () => this.push(this.wardrobe()));
+      const fresh = F.Wear.ITEMS.filter(x => x.price !== null && x.band <= p.band && !p.wardrobe.includes(x.id) && !p.wardrobeSeen.includes(x.id)).length;
+      const saved = p.outfits.filter(Boolean).length;
+      big('d-shop', 'БУТИК HORIZON', fresh ? `<b>${fresh} ${F.plural(fresh, 'новая вещь', 'новые вещи', 'новых вещей')}</b>` : 'Купить одежду', () => this.push(this.boutique('top')));
+      big('d-sets', 'ОБРАЗЫ', `${saved} из 3 сохранено`, () => this.push(this.outfits()));
+    }
+
+    studio(scr, el, frame) {
+      scr.frame = frame;
+      const stage = h('div', 'fz-stage');
+      el.appendChild(stage);
+      let drag = null;
+      stage.addEventListener('pointerdown', e => { drag = e.clientX; stage.setPointerCapture(e.pointerId); });
+      stage.addEventListener('pointermove', e => { if (drag === null) return; this.ui.studioYaw = (this.ui.studioYaw || 0) + (e.clientX - drag) * 0.01; drag = e.clientX; });
+      stage.addEventListener('pointerup', () => { drag = null; });
+      scr.tab = d => { this.ui.studioYaw = (this.ui.studioYaw || 0) + d * 0.5; };
+      const upd = () => { this.ui.showroom = scr.showroom(); };
+      return upd;
+    }
+
+    lookParams(short) {
+      const D = F.Driver, idx = n => Array.from({ length: n }, (_, i) => i);
+      const all = [
+        ['body', 'Фигура', [['m', 'Мужская'], ['f', 'Женская']], 'full'],
+        ['face', 'Лицо', idx(6).map(i => [i, 'Лицо ' + (i + 1)]), 'head'],
+        ['skin', 'Кожа', D.SKINS.map((c, i) => [i, c[0], c[1]]), 'head'],
+        ['eyes', 'Форма глаз', D.EYES.map((n, i) => [i, n]), 'head'],
+        ['eyeCol', 'Цвет глаз', D.EYE_COLS.map((c, i) => [i, c[0], c[1]]), 'head'],
+        ['brows', 'Брови', D.BROWS.map((n, i) => [i, n]), 'head'],
+        ['hair', 'Причёска', D.HAIRS.map(x => [x[0], x[1]]), 'head'],
+        ['hairCol', 'Цвет волос', D.HAIR_COLS.map((c, i) => [i, c[0], c[1]]), 'head'],
+        ['beard', 'Растительность', D.BEARDS.map(x => [x[0], x[1]]), 'head'],
+        ['makeup', 'Макияж', D.MAKEUP.map(x => [x[0], x[1]]), 'head'],
+        ['freckles', 'Веснушки', [[false, 'Нет'], [true, 'Есть']], 'head']
+      ];
+      if (!short) return all;
+      const keep = new Set(['body', 'face', 'skin', 'eyeCol', 'hair', 'hairCol']);
+      const wear = slot => D.ITEMS.filter(x => x.slot === slot && D.STARTER.includes(x.id)).flatMap(x => x.cols.map((c, i) => [[x.id, i], x.name, c]));
+      return all.filter(p => keep.has(p[0])).concat([['top', 'Верх', wear('top'), 'top'], ['legs', 'Низ', wear('legs'), 'full']]);
+    }
+
+    paramRows(scr, panel, st, params, upd) {
+      const same = (a, b) => (Array.isArray(a) ? JSON.stringify(a) === JSON.stringify(b) : a === b);
+      const strip = h('div', 'fz-dstrip'), rows = new Map();
+      let active = null;
+      const label = prm => (prm[2].find(x => same(x[0], st[prm[0]])) || prm[2][0])[1];
+      const showStrip = prm => {
+        active = prm;
+        strip.innerHTML = '';
+        strip.appendChild(h('div', 'fz-sethead', esc(prm[1])));
+        const row = h('div', 'fz-dopts');
+        for (const [v, name, col] of prm[2]) {
+          const o = h('div', 'fz-dopt' + (col ? ' sw' : '') + (same(st[prm[0]], v) ? ' on' : ''), col ? '' : esc(name));
+          if (col) { o.style.background = col; o.title = name; }
+          o.addEventListener('click', () => { set(prm, v); });
+          row.appendChild(o);
+        }
+        strip.appendChild(row);
+      };
+      const set = (prm, v) => {
+        st[prm[0]] = v;
+        rows.get(prm[0]).querySelector('em').textContent = label(prm);
+        if (active === prm) showStrip(prm);
+        upd();
+      };
+      for (const prm of params) {
+        const r = this.nav(h('div', 'fz-setrow fz-drow', `<span>${esc(prm[1])}</span><b><i>◀</i><em>${esc(label(prm))}</em><i>▶</i></b>`), null, d => {
+          const list = prm[2], i = list.findIndex(x => same(x[0], st[prm[0]]));
+          set(prm, list[(i + d + list.length) % list.length][0]);
+        });
+        r._onFocus = () => { showStrip(prm); scr.frame = prm[3]; upd(); };
+        rows.set(prm[0], r);
+        panel.appendChild(r);
+      }
+      panel.appendChild(strip);
+      return {
+        rows,
+        refresh: () => { for (const prm of params) rows.get(prm[0]).querySelector('em').textContent = label(prm); if (active) showStrip(active); upd(); }
+      };
+    }
+
+    appearance() {
+      const g = this.g, ui = this.ui, D = F.Driver;
+      const start = this.driverLook(), st = {};
+      for (const k of F.Profile.LOOK_KEYS) st[k] = start[k];
+      const el = h('div', 'fz-scr fz-drvscr');
+      const scr = { el };
+      scr.showroom = () => ({ driver: this.driverLook(st), frame: scr.frame || 'head', car: g.entry, cx: 0.66 });
+      el.appendChild(this.topBar());
+      el.appendChild(h('div', 'fz-gtitle', 'Внешность'));
+      const upd = this.studio(scr, el, 'head');
+      const panel = h('div', 'fz-dpanel');
+      el.appendChild(panel);
+      const pr = this.paramRows(scr, panel, st, this.lookParams(false), upd);
+      pr.rows.get('body').setAttribute('data-first', '1');
+      const btns = h('div', 'fz-row fz-dbtns');
+      btns.appendChild(this.nav(h('div', 'fz-btn', 'Случайно'), () => {
+        const r = D.randomLook((Math.random() * 4294967296) >>> 0, st.body);
+        for (const k of F.Profile.LOOK_KEYS) st[k] = r[k];
+        pr.refresh();
+      }));
+      btns.appendChild(this.nav(h('div', 'fz-btn fz-btn-hot', 'Сохранить'), () => { g.setLook(st); ui.audio.play('select'); this.pop(); }));
+      panel.appendChild(btns);
+      el.appendChild(this.hints([['↑ ↓', 'Параметр'], ['← →', 'Вариант'], ['Q / E', 'Повернуть'], ['Enter', 'Выбрать'], ['Esc', 'Назад']]));
+      const changed = () => F.Profile.LOOK_KEYS.some(k => st[k] !== start[k]);
+      scr.back = () => { if (changed()) this.confirm('Отменить изменения?', 'Новая внешность не сохранится.', () => this.pop()); else this.pop(); };
+      return scr;
+    }
+
+    register() {
+      const ui = this.ui, D = F.Driver, P = F.Profile;
+      const st = {};
+      const reroll = () => {
+        const r = D.randomLook((Math.random() * 4294967296) >>> 0, st.body);
+        for (const k of P.LOOK_KEYS) st[k] = r[k];
+        st.top = ['tee', Math.floor(Math.random() * D.ITEM.tee.cols.length)];
+        st.legs = ['jeans', Math.floor(Math.random() * D.ITEM.jeans.cols.length)];
+      };
+      reroll();
+      st.name = 'Гонщик';
+      const car = F.Cars.get('vaz2105'), entry = { id: car.id, up: {}, c1: car.col, c2: car.col2 || car.col, livery: car.livery || 'none' };
+      const lookOf = () => {
+        const l = {};
+        for (const k of P.LOOK_KEYS) l[k] = st[k];
+        l.fit = { top: st.top, legs: st.legs, feet: ['kedy', 0], band: true };
+        return l;
+      };
+      const el = h('div', 'fz-scr fz-drvscr fz-regscr');
+      const scr = { el };
+      scr.showroom = () => ({ driver: D.normLook(lookOf()), frame: scr.frame || 'full', car: entry, cx: 0.66 });
+      el.appendChild(h('div', 'fz-gtitle', 'Регистрация участника'));
+      const upd = this.studio(scr, el, 'full');
+      const panel = h('div', 'fz-dpanel');
+      el.appendChild(panel);
+      panel.appendChild(h('div', 'fz-regnote', 'Фестиваль Horizon Rīga, лето 2001. Впишите имя в пропуск участника и выберите, как вы будете выглядеть за рулём.'));
+      const nameRow = this.nav(h('div', 'fz-setrow fz-drow fz-namerow', `<span>Имя</span><input class="fz-name" maxlength="${P.NAME_MAX}" spellcheck="false" autocomplete="off">`));
+      const input = nameRow.querySelector('input'), warn = h('div', 'fz-wnote');
+      input.value = st.name;
+      input.addEventListener('input', () => {
+        const c = P.cleanName(input.value);
+        if (c !== input.value) input.value = c;
+        st.name = input.value;
+        warn.textContent = '';
+      });
+      nameRow._onFocus = () => { scr.frame = 'head'; upd(); input.focus({ preventScroll: true }); };
+      nameRow.setAttribute('data-first', '1');
+      panel.appendChild(nameRow);
+      panel.appendChild(warn);
+      const pr = this.paramRows(scr, panel, st, this.lookParams(true), upd);
+      const btns = h('div', 'fz-row fz-dbtns');
+      btns.appendChild(this.nav(h('div', 'fz-btn', 'Случайно'), () => { reroll(); pr.refresh(); }));
+      btns.appendChild(this.nav(h('div', 'fz-btn fz-btn-hot', 'Начать фестиваль'), () => {
+        const name = st.name.trim();
+        if (!P.nameOk(name)) { warn.textContent = `Имя: от 2 до ${P.NAME_MAX} символов — буквы, цифры, пробел и «_».`; this.setFocus(nameRow); return; }
+        ui.newGame({ name, look: lookOf() });
+      }));
+      panel.appendChild(btns);
+      el.appendChild(this.hints([['↑ ↓', 'Параметр'], ['← →', 'Вариант'], ['Q / E', 'Повернуть'], ['Enter', 'Выбрать'], ['Esc', 'К титулу']]));
+      scr.back = () => this.pop();
+      return scr;
+    }
+
+    wardrobe() {
+      const g = this.g, ui = this.ui, D = F.Driver, p = g.profile;
+      const start = D.fitList(this.driverLook().fit), fit = JSON.parse(JSON.stringify(start));
+      const el = h('div', 'fz-scr fz-drvscr');
+      const scr = { el };
+      const FRAME = { head: 'head', eyes: 'head', top: 'top', outer: 'top', neck: 'top', wrist: 'top', hands: 'top', legs: 'full', feet: 'full' };
+      scr.showroom = () => ({ driver: this.driverLook({ fit }), frame: scr.frame || 'top', car: g.entry, cx: 0.66 });
+      el.appendChild(this.topBar());
+      el.appendChild(h('div', 'fz-gtitle', 'Гардероб'));
+      const upd = this.studio(scr, el, 'top');
+      const panel = h('div', 'fz-dpanel fz-wpanel');
+      el.appendChild(panel);
+      const slots = h('div', 'fz-wslots'), list = h('div', 'fz-wlist'), note = h('div', 'fz-wnote');
+      panel.appendChild(slots); panel.appendChild(list);
+      const REQUIRED = new Set(['top', 'legs', 'feet']);
+      const nameOf = slot => {
+        const nf = D.normFit(fit);
+        if (slot === 'band') return nf.band ? 'Надет' : 'Снят';
+        if ((slot === 'outer' || slot === 'legs') && nf.top.item.kind === 'suit') return 'Комбинезон';
+        return nf[slot] ? nf[slot].item.name : '—';
+      };
+      const conflicts = () => {
+        const nf = D.normFit(fit), out = [];
+        if (nf.top.item.kind === 'suit') out.push('Комбинезон заменяет верх, куртку и низ.');
+        if (fit.head && D.ITEM[fit.head[0]].kind === 'helmetFull' && fit.eyes) out.push('Под шлемом-интегралом очки не видны.');
+        if (fit.head && /^helmet/.test(D.ITEM[fit.head[0]].kind) && !['pony', 'braid', 'highpony'].includes(this.driverLook().hair)) out.push('Под шлемом волосы не видны.');
+        return out.join(' ');
+      };
+      const rowsBySlot = new Map();
+      const refreshSlots = () => { for (const [slot, r] of rowsBySlot) r.querySelector('em').textContent = nameOf(slot); note.textContent = conflicts(); };
+      const showList = slot => {
+        list.innerHTML = '';
+        scr.frame = FRAME[slot] || 'top';
+        upd();
+        if (slot === 'band') {
+          list.appendChild(h('div', 'fz-sethead', 'Браслет фестиваля'));
+          for (const [v, t] of [[true, 'Надеть'], [false, 'Снять']]) {
+            const r = this.nav(h('div', 'fz-witem' + (fit.band === v ? ' on' : ''), `<span>${t}</span>`), () => { fit.band = v; showList('band'); refreshSlots(); upd(); });
+            list.appendChild(r);
+          }
+          return;
+        }
+        const own = D.ITEMS.filter(x => x.slot === slot && p.wardrobe.includes(x.id)), more = D.ITEMS.filter(x => x.slot === slot && !p.wardrobe.includes(x.id)).length;
+        list.appendChild(h('div', 'fz-sethead', esc(D.SLOTS.find(s => s[0] === slot)[1])));
+        const options = REQUIRED.has(slot) ? own : [null].concat(own);
+        const swatches = x => (x && x.cols.length > 1 ? x.cols.slice(0, F.Wear.colours(x, p)).map((c, i) => `<i style="background:${c}" class="${fit[slot] && fit[slot][0] === x.id && fit[slot][1] === i ? 'on' : ''}"></i>`).join('') : '');
+        const mark = () => {
+          for (const e of list.querySelectorAll('.fz-witem')) {
+            const me = (fit[slot] ? fit[slot][0] : null) === e._id;
+            e.classList.toggle('on', me);
+            e.querySelector('b').textContent = me ? 'Надето' : '';
+            e.querySelector('.fz-wsw').innerHTML = swatches(e._item);
+          }
+          refreshSlots();
+          upd();
+        };
+        for (const x of options) {
+          const r = this.nav(h('div', 'fz-witem', `<span>${x ? esc(x.name) : 'Ничего'}</span><b></b><span class="fz-wsw"></span>`), null, x && x.cols.length > 1 ? d => {
+            const c = fit[slot] && fit[slot][0] === x.id ? fit[slot][1] : 0, n = F.Wear.colours(x, p);
+            if (d < 0 && c === 0) { this.setFocus(rowsBySlot.get(slot)); return; }
+            fit[slot] = [x.id, (c + d + n) % n];
+            mark();
+          } : null);
+          r._id = x ? x.id : null;
+          r._item = x;
+          r._onFocus = () => {
+            if ((fit[slot] ? fit[slot][0] : null) === r._id) return;
+            fit[slot] = x ? [x.id, 0] : null;
+            mark();
+          };
+          list.appendChild(r);
+        }
+        mark();
+        if (more) list.appendChild(this.nav(h('div', 'fz-wempty', `В бутике есть ${more} ${F.plural(more, 'вещь', 'вещи', 'вещей')} для этого слота — Enter`), () => this.push(this.boutique(slot))));
+      };
+      for (const [slot, name] of D.SLOTS.concat([['band', 'Браслет фестиваля']])) {
+        const r = this.nav(h('div', 'fz-setrow fz-wslot', `<span>${esc(name)}</span><em>${esc(nameOf(slot))}</em>`), () => { const first = list.querySelector('.fz-witem.on') || list.querySelector('.fz-witem'); if (first) this.setFocus(first); });
+        r._onFocus = () => { if (scr.slot !== slot) { scr.slot = slot; showList(slot); } };
+        if (slot === 'top') r.setAttribute('data-first', '1');
+        rowsBySlot.set(slot, r);
+        slots.appendChild(r);
+      }
+      panel.appendChild(note);
+      const btns = h('div', 'fz-row fz-dbtns');
+      btns.appendChild(this.nav(h('div', 'fz-btn fz-btn-hot', 'Надеть'), () => { if (g.wearFit(fit)) { ui.audio.play('select'); this.pop(); } }));
+      panel.appendChild(btns);
+      note.textContent = conflicts();
+      el.appendChild(this.hints([['↑ ↓', 'Вещь'], ['← →', 'Цвет / слоты'], ['Q / E', 'Повернуть'], ['Enter', 'Выбрать'], ['Esc', 'Отмена']]));
+      scr.back = () => { if (JSON.stringify(fit) !== JSON.stringify(start)) this.confirm('Отменить изменения?', 'Снятые и надетые вещи вернутся как были.', () => this.pop()); else this.pop(); };
+      return scr;
+    }
+
+    boutique(slot0) {
+      const g = this.g, ui = this.ui, D = F.Driver, W = F.Wear, p = g.profile;
+      const slots = W.SLOTS.map(s => s[0]);
+      const FRAME = { head: 'head', eyes: 'head', top: 'top', outer: 'top', neck: 'top', wrist: 'top', hands: 'top', legs: 'full', feet: 'full' };
+      const base = W.fitList(this.driverLook().fit), fit = JSON.parse(JSON.stringify(base));
+      const el = h('div', 'fz-scr fz-drvscr fz-shopscr');
+      const scr = { el, tabIdx: Math.max(0, slots.indexOf(slot0)) };
+      scr.showroom = () => ({ driver: this.driverLook({ fit }), frame: scr.frame || 'top', car: g.entry, cx: 0.66 });
+      const upd = this.studio(scr, el, 'top');
+      const say = h('div', 'fz-wnote fz-shopsay');
+      const render = () => {
+        for (const e of [...el.children]) if (!e.classList.contains('fz-stage')) e.remove();
+        el.appendChild(this.topBar());
+        el.appendChild(h('div', 'fz-gtitle', 'Бутик Horizon'));
+        const tabs = h('div', 'fz-mtabs fz-shoptabs');
+        tabs.appendChild(h('span', 'fz-lb', 'Q'));
+        W.SLOTS.forEach(([s, name], i) => tabs.appendChild(this.nav(h('span', 'fz-mtab' + (i === scr.tabIdx ? ' on' : ''), esc(name)), () => { scr.tabIdx = i; render(); })));
+        tabs.appendChild(h('span', 'fz-rb', 'E'));
+        el.appendChild(tabs);
+        const slot = slots[scr.tabIdx];
+        scr.frame = FRAME[slot];
+        for (const k of Object.keys(fit)) fit[k] = base[k];
+        upd();
+        const panel = h('div', 'fz-dpanel fz-shoplist');
+        el.appendChild(panel);
+        const items = W.ITEMS.filter(x => x.slot === slot);
+        for (const x of items) if (x.price !== null && x.band <= p.band && !p.wardrobeSeen.includes(x.id)) p.wardrobeSeen.push(x.id);
+        for (const x of items) {
+          const state = W.shopState(x, p), band = F.EV.BANDS[x.band];
+          const right = state === 'owned' ? '<b class="own">Есть</b>' : state === 'reward' ? '<b class="rew">Награда</b>' : state === 'locked' ? `<b class="lock" style="--c:${band.col}">${esc(band.name)}</b>` : `<b class="${state === 'poor' ? 'poor' : ''}">CR ${F.fmtCR(x.price)}</b>`;
+          const sub = state === 'reward' ? `<small>${esc(W.rewardText(x.reward))}</small>` : '';
+          const r = this.nav(h('div', 'fz-witem fz-shopitem s-' + state, `<span>${esc(x.name)}${sub}</span>${right}<span class="fz-wsw"></span>`), () => buy(x), x.cols.length > 1 ? d => {
+            const n = W.colours(x, p), c = fit[slot] && fit[slot][0] === x.id ? fit[slot][1] : 0;
+            fit[slot] = [x.id, (c + d + n) % n];
+            paint(r, x); upd();
+          } : null);
+          r._onFocus = () => { if (!fit[slot] || fit[slot][0] !== x.id) fit[slot] = [x.id, 0]; for (const e of panel.querySelectorAll('.fz-witem')) paint(e, e._item); say.textContent = state === 'poor' ? `Не хватает CR ${F.fmtCR(x.price - p.credits)}` : state === 'locked' ? `Откроется с браслетом «${band.name}»` : ''; upd(); };
+          r._item = x;
+          panel.appendChild(r);
+        }
+        panel.appendChild(say);
+        const first = panel.querySelector('.fz-witem');
+        if (first) first.setAttribute('data-first', '1');
+        el.appendChild(this.hints([['Q / E', 'Полки'], ['↑ ↓', 'Вещь'], ['← →', 'Цвет'], ['Enter', 'Купить'], ['Esc', 'Назад']]));
+        this.autoFocus(scr);
+      };
+      const paint = (e, x) => {
+        const slot = slots[scr.tabIdx], n = W.colours(x, p), cur = fit[slot] && fit[slot][0] === x.id ? fit[slot][1] : -1;
+        e.querySelector('.fz-wsw').innerHTML = x.cols.length > 1 ? x.cols.slice(0, n).map((c, i) => `<i style="background:${c}" class="${cur === i ? 'on' : ''}"></i>`).join('') : '';
+      };
+      const buy = x => {
+        const slot = slots[scr.tabIdx], state = W.shopState(x, p);
+        if (state === 'owned' || state === 'reward' || state === 'locked' || state === 'poor') { ui.audio.play('back'); return; }
+        const ci = fit[slot] && fit[slot][0] === x.id ? fit[slot][1] : 0;
+        this.confirm('Бутик Horizon', `Купить «${esc(x.name)}» за CR ${F.fmtCR(x.price)}?`, () => {
+          if (g.buyItem(x.id) !== 'ok') return;
+          const worn = Object.assign(W.fitList(this.driverLook().fit), { [slot]: [x.id, ci] });
+          g.wearFit(worn);
+          ui.audio.play('bank');
+          base[slot] = [x.id, ci];
+          render();
+          say.textContent = `«${x.name}» в гардеробе и надето`;
+        });
+      };
+      scr.tab = d => { scr.tabIdx = (scr.tabIdx + d + slots.length) % slots.length; render(); ui.audio.play('blip'); };
+      scr.refresh = render;
+      render();
+      g.save();
+      return scr;
+    }
+
+    outfits() {
+      const g = this.g, ui = this.ui, W = F.Wear, p = g.profile;
+      const el = h('div', 'fz-scr fz-drvscr fz-setsscr');
+      const scr = { el };
+      scr.showroom = () => ({ driver: this.driverLook(scr.preview ? { fit: scr.preview } : null), frame: 'full', car: g.entry, cx: 0.66 });
+      el.appendChild(this.topBar());
+      el.appendChild(h('div', 'fz-gtitle', 'Образы'));
+      const upd = this.studio(scr, el, 'full');
+      const panel = h('div', 'fz-dpanel fz-sets');
+      el.appendChild(panel);
+      const say = h('div', 'fz-wnote');
+      const render = () => {
+        panel.innerHTML = '';
+        for (let k = 0; k < 3; k++) {
+          const o = p.outfits[k], card = h('div', 'fz-setcard');
+          const look = o ? this.driverLook({ fit: o }) : null, top = o ? W.normFit(o) : null;
+          card.innerHTML = `<div class="fz-setimg">${look ? `<img src="${this.portraitTop(look)}" alt="">` : '<i>Пусто</i>'}</div><div class="fz-setname"><b>Образ ${k + 1}</b><span>${top ? esc((top.outer || top.top).item.name) : 'Не сохранён'}</span></div>`;
+          const row = h('div', 'fz-setbtns');
+          const save = this.nav(h('div', 'fz-liv', 'Сохранить текущий'), () => { g.saveOutfit(k, W.fitList(this.driverLook().fit)); say.textContent = `Образ ${k + 1} сохранён`; render(); });
+          save._onFocus = () => { scr.preview = null; upd(); };
+          row.appendChild(save);
+          if (o) {
+            const wear = this.nav(h('div', 'fz-liv', 'Надеть'), () => { if (g.wearFit(o)) { say.textContent = `Образ ${k + 1} надет`; ui.audio.play('select'); scr.preview = null; render(); } else say.textContent = 'Часть вещей образа больше нельзя надеть'; });
+            wear._onFocus = () => { scr.preview = o; upd(); };
+            row.appendChild(wear);
+          }
+          card.appendChild(row);
+          panel.appendChild(card);
+        }
+        panel.appendChild(say);
+        upd();
+      };
+      render();
+      el.appendChild(this.hints([['↑ ↓ ← →', 'Выбор'], ['Q / E', 'Повернуть'], ['Enter', 'Выбрать'], ['Esc', 'Назад']]));
+      return scr;
+    }
+
+    portraitTop(look) {
+      const key = 'top#' + F.Driver.rigKey(look) + '#' + F.Driver.texKey(look);
+      if (this.portraits && this.portraits.has(key)) return this.portraits.get(key);
+      let url = '';
+      try { url = this.ui.renderer.figureShot(look, 120, 150, 'top').toDataURL('image/png'); } catch (e) { url = ''; }
+      (this.portraits || (this.portraits = new Map())).set(key, url);
+      return url;
+    }
+
     statPanel(entry) {
       const car = F.Cars.get(entry.id);
       const pf = F.perfOf(entry.id, entry.up);
@@ -611,6 +1024,10 @@
         ['Трафик', 'traffic', [0, 0.5, 1, 1.5], v => ({ 0: 'Нет', 0.5: 'Мало', 1: 'Обычно', 1.5: 'Много' })[v]],
         ['Камера и HUD', null],
         ['Камера по умолчанию', 'cam', ['chase', 'far', 'hood', 'cockpit'], v => ({ chase: 'За машиной', far: 'Дальняя', hood: 'Капот', cockpit: 'Из кабины' })[v]],
+        ['Обзор мышью', 'mlook', ['hold', 'off'], v => v === 'hold' ? 'Зажать кнопку и вести' : 'Выключен'],
+        ['Чувствительность мыши', 'msens', [0.5, 0.75, 1, 1.5, 2], v => ({ 0.5: 'Очень низкая', 0.75: 'Низкая', 1: 'Средняя', 1.5: 'Высокая', 2: 'Очень высокая' })[v]],
+        ['Мышь по вертикали', 'minv', [false, true], v => v ? 'Инвертирована' : 'Обычная'],
+        ['Возврат камеры после обзора', 'mret', ['fast', 'slow', 'off'], v => ({ fast: 'Через полсекунды', slow: 'Через 3 секунды', off: 'Не возвращать' })[v]],
         ['Единицы', 'units', ['kmh', 'mph'], v => v === 'kmh' ? 'км/ч' : 'миль/ч'],
         ['Зеркало заднего вида', 'mirror', [true, false], v => v ? 'Вкл' : 'Выкл'],
         ['Графика', null],
@@ -659,7 +1076,7 @@
       }
       body.appendChild(h('div', 'fz-sethead', 'Управление'));
       body.appendChild(h('div', 'fz-keys', `<div><kbd>W</kbd><kbd>↑</kbd> газ</div><div><kbd>S</kbd><kbd>↓</kbd> тормоз / задний ход</div><div><kbd>A</kbd><kbd>D</kbd> руль</div><div><kbd>Пробел</kbd> ручник</div>
-        <div><kbd>C</kbd> камера</div><div><kbd>B</kbd> смотреть назад</div><div><kbd>R</kbd> перемотка (держать)</div><div><kbd>Backspace</kbd> сброс на дорогу</div>
+        <div><kbd>C</kbd> камера</div><div><kbd>Мышь</kbd> обзор (зажать кнопку)</div><div><kbd>Колесо</kbd> дальше / ближе</div><div>Двойной щелчок — камера на место</div><div><kbd>B</kbd> смотреть назад</div><div><kbd>R</kbd> перемотка (держать)</div><div><kbd>Backspace</kbd> сброс на дорогу</div>
         <div><kbd>Q</kbd><kbd>E</kbd> передачи (ручная КПП)</div><div><kbd>M</kbd> карта</div><div><kbd>Tab</kbd> радио</div><div><kbd>H</kbd> гудок · <kbd>L</kbd> фары</div><div><kbd>Enter</kbd> начать событие</div><div><kbd>F</kbd> подлатать двигатель (держать)</div><div><kbd>Esc</kbd> меню</div>`));
     }
 
@@ -1261,6 +1678,8 @@
       panel.appendChild(h('div', 'fz-dbg-top', '<b>ОТЛАДКА</b><span><kbd>F7</kbd> закрыть</span>'));
       const cr = section('Кредиты', () => 'CR ' + F.fmtCR(p.credits));
       for (const n of [10000, 100000, 1000000]) cr.row.appendChild(btn('+' + F.fmtCR(n), () => { g.grantCredits(n); cr.upd(); say('Начислено CR ' + F.fmtCR(n)); }));
+      const wear = section('Гардероб', () => `${p.wardrobe.length} из ${F.Driver.ITEMS.length} вещей`);
+      wear.row.appendChild(btn('Вся одежда', () => { g.grantWear(F.Driver.ITEMS.map(x => x.id)); wear.upd(); say('Все вещи в гардеробе'); }));
       const xp = section('Опыт', () => `Уровень ${p.level} · ${F.fmtCR(p.xp)} / ${F.fmtCR(F.EV.xpForLevel(p.level))} XP`);
       for (const n of [1000, 10000]) xp.row.appendChild(btn('+' + F.fmtCR(n) + ' XP', () => { g.grantXp(n); xp.upd(); say('Начислено ' + F.fmtCR(n) + ' XP'); }));
       xp.row.appendChild(btn('+1 уровень', () => { const l = p.level; g.grantLevel(); xp.upd(); say(p.level > l ? 'Уровень ' + p.level : 'Максимальный уровень'); }));

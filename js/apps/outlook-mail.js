@@ -1681,6 +1681,29 @@ Thank you for your e-mail! Are you a Di Gi Charat fan too? Do you want to join t
       ]
     },
     {
+      addr: 'webmaster@prodigy99.ru',
+      name: 'Денис «Jilted» Морозов (Russian Rave Bunker)',
+      sig: 'Денис «Jilted» Морозов, вебмастер Russian Rave Bunker\nhttp://www.prodigy99.ru',
+      topics: [
+        {
+          id: 'fakes', k: ['castbreeder', 'пират', 'горбушк', 'кассет', 'фейк', 'junkie', 'подделк'],
+          r: `Проверь свою кассету в детекторе: выбираешь «загадочный трек» и видишь, кто его записал на самом деле. Почти весь «Castbreeder» — это Junkie XL и Lunatic Calm: http://www.prodigy99.ru/pirates`
+        },
+        {
+          id: 'samples', k: ['сэмпл', 'sample', 'w-30', 'akai', 'smack', 'voodoo', 'пэд', 'бит'],
+          r: `Источники сэмплов Лиама и пэды для своего бита лежат в лаборатории: http://www.prodigy99.ru/sampler. Паттерн уходит в Блокнот одной кнопкой.`
+        },
+        {
+          id: 'manezhka', k: ['манеж', 'концерт', 'площад', '1997'],
+          r: `Схема Красной и Манежной площади, рассказы очевидцев и сет-лист по минутам собраны здесь: http://www.prodigy99.ru/manezhka`
+        }
+      ],
+      stages: [
+        { r: `Fire! Письмо дошло до бункера. Я как раз гоняю очередную кассету с Горбушки через детектор, отвечу подробнее на днях. Пока загляни на http://www.prodigy99.ru и черкни в гостевой.` },
+        { r: `Снова из бункера! Если ищешь, откуда Лиам взял рифф, открой лабораторию: http://www.prodigy99.ru/sampler. Выбери трек и смотри источники.` }
+      ]
+    },
+    {
       addr: 'adventurer@lucasarts.com',
       name: 'The Adventurer Desk (LucasArts)',
       sig: 'The Adventurer & Hint Line 1-900-740-JEDI\nLucasArts Entertainment Company LLC · San Rafael, CA\nhttp://www.lucasarts.com',

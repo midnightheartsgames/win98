@@ -464,7 +464,7 @@
       this.live = null;
       const look = g.profile.photoOpt || {};
       this.o = Object.assign(lookDefaults(), ...LOOK.filter(k => look[k] !== undefined).map(k => ({ [k]: look[k] })));
-      Object.assign(this.o, { mode: 'orbit', roll: 0, clock: g.clock, wx: '', lights: 'auto', brake: 'auto', steer: null, car: 'show', others: 'show' });
+      Object.assign(this.o, { mode: 'orbit', roll: 0, clock: g.clock, wx: '', lights: 'auto', brake: 'auto', steer: null, car: 'show', others: 'show', driver: 'show', gaze: 'road' });
       if (!ui.renderer.depthExt) this.o.ap = 0;
       const C = ui.lastCam;
       this.fl = F.clamp(C ? focalOf(2 * Math.atan(1 / C.proj[5]) * 180 / Math.PI) : 20, 12, 300);
@@ -520,6 +520,11 @@
       if (o.lights !== 'auto') st.lights = st.popup = o.lights === 'on' ? 1 : 0;
       if (o.brake !== 'auto') st.brake = o.brake === 'on' ? 1 : 0;
       if (o.steer !== null) st.steer = o.steer * Math.PI / 180;
+      if (o.driver === 'hide') st.driver = null;
+      if (st.driver) {
+        const e = this.eye, dx = e[0] - st.x, dy = e[1] - st.y, dz = e[2] - st.z, c = Math.cos(st.yaw), s = Math.sin(st.yaw);
+        st.driver.gaze = o.gaze === 'camera' ? [dx * c + dz * s, dy, -(dx * s - dz * c)] : null;
+      }
       return st;
     }
 
@@ -743,6 +748,8 @@
         }, () => (o.steer === null ? 'Как есть' : (o.steer > 0 ? 'вправо ' : o.steer < 0 ? 'влево ' : '') + Math.abs(o.steer) + '°')),
         list(3, 'car', 'Ваша машина', [['show', 'В кадре'], ['hide', 'Скрыта']]),
         list(3, 'others', 'Другие машины', [['show', 'В кадре'], ['hide', 'Скрыты']]),
+        list(3, 'driver', 'Водитель', [['show', 'В машине'], ['hide', 'Скрыт']]),
+        list(3, 'gaze', 'Взгляд водителя', [['road', 'На дорогу'], ['camera', 'В камеру']]),
         list(4, 'date', 'Дата на снимке', [['off', 'Нет'], ['on', 'Как у мыльницы']]),
         list(4, 'caption', 'Подпись', [['off', 'Нет'], ['place', 'Место'], ['full', 'Место и машина']]),
         list(4, 'logo', 'Логотип фестиваля', [['off', 'Нет'], ['on', 'Есть']]),
@@ -843,7 +850,7 @@
 
     reset() {
       const keep = { mode: this.o.mode };
-      Object.assign(this.o, lookDefaults(), { roll: 0, clock: this.ui.game.clock, wx: '', lights: 'auto', brake: 'auto', steer: null, car: 'show', others: 'show' }, keep);
+      Object.assign(this.o, lookDefaults(), { roll: 0, clock: this.ui.game.clock, wx: '', lights: 'auto', brake: 'auto', steer: null, car: 'show', others: 'show', driver: 'show', gaze: 'road' }, keep);
       if (!this.ui.renderer.depthExt) this.o.ap = 0;
       this.refreshRows();
       this.note('Настройки сброшены', '', null);

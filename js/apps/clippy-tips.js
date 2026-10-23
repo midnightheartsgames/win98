@@ -125,6 +125,11 @@ class ClippyTips {
         text: 'Ищете аккорды «Прыгну со скалы» или «Куклы колдуна»? В трактире <strong>«Король и Шут \'99»</strong> (<code>www.kish99.ru</code>) есть дворовый песенник с переключателем тональности, карта сказочного леса и вкладыши для кассет.',
         action: { text: '▶ Открыть «Король и Шут \'99»', run: () => window.appClippy && window.appClippy.openInIE('http://www.kish99.ru') }
       },
+      'prodigy-99': {
+        mood: '🎧', cooldown: 360,
+        text: 'Купили на Горбушке «новый альбом Prodigy 1999»? В рейв-бункере <strong>«The Prodigy \'99»</strong> (<code>www.prodigy99.ru</code>) детектор фейков раскроет, чей это трек на самом деле, а в лаборатории сэмплов можно набить бит на пэдах.',
+        action: { text: '▶ Открыть «The Prodigy \'99»', run: () => window.appClippy && window.appClippy.openInIE('http://www.prodigy99.ru') }
+      },
       'lucasarts-scumm': {
         mood: '🐰', cooldown: 360,
         text: 'Застряли в <strong>Sam &amp; Max</strong> или <strong>LucasQuest 98</strong>? На сайте <strong>LucasArts</strong> есть линия подсказок 1-900-740-JEDI: три подсказки на каждую загадку, от намёка до решения.',
@@ -306,6 +311,7 @@ class ClippyTips {
     else if (pageKey === 'svodka') this.trigger('svodka-99');
     else if (pageKey === 'carman') this.trigger('carman-99');
     else if (pageKey === 'kish') this.trigger('kish-99');
+    else if (pageKey === 'prodigy') this.trigger('prodigy-99');
     else if (pageKey === 'lucasarts') this.trigger('lucasarts-scumm');
     else if (pageKey === 'gsc') this.trigger('gsc-zone');
     else if (pageKey === 'valve') this.trigger('valve-cabal');

@@ -137,8 +137,22 @@
     return { style, R, w, rr, rb: rr * 0.93, xf: w / 2 - RIMS[style].dish };
   }
 
+  const EYE_GAP = 0.24, EYE_SHIFT = 0.15;
+
+  function cabinAt(car) {
+    const sh = car.sh, L = sh.len, Z = f => -L / 2 + f * L;
+    let ez = Math.min(Z(sh.wt) + 0.62, Z(sh.rt) - 0.2) + (sh.van ? 0.25 : 0), bz = null, cz = null;
+    if (!sh.van && sh.seats !== 2) {
+      const b0 = Z(sh.ws) + ((sh.doors || 4) <= 3 ? 1.15 : 0.95);
+      ez -= F.clamp(ez - (b0 - EYE_GAP), 0, EYE_SHIFT);
+      bz = Math.max(b0, ez + EYE_GAP);
+      cz = Math.max(b0 + 0.9, bz + 0.45);
+    }
+    return { eye: [sh.seat === 'center' ? 0 : null, Math.max(sh.hood + 0.2, sh.hgt - 0.33), ez], bz, cz };
+  }
+
   function greenhouse(car) {
-    const sh = car.sh, L = sh.len, doors = sh.doors || 4, boxy = !!(sh.suv || sh.van);
+    const sh = car.sh, L = sh.len, doors = sh.doors || 4, boxy = !!(sh.suv || sh.van), cab = cabinAt(car);
     const end = sh.glassTo || (boxy ? sh.rb - 0.025 : sh.seats !== 2 && doors % 2 ? sh.rt + (sh.rb - sh.rt) * 0.45 : sh.rt + 0.02);
     const cuts = [];
     if (sh.van) {
@@ -146,9 +160,9 @@
       for (let k = 1; k < n; k++) cuts.push(sh.ws + (end - sh.ws) * k / n);
     } else if (sh.seats !== 2) {
       const room = end - 0.3 / L;
-      let f = sh.ws + (doors <= 3 ? 1.15 : 0.95) / L;
+      let f = (cab.bz + L / 2) / L;
       if (f < room) cuts.push(f);
-      f += 0.9 / L;
+      f = (cab.cz + L / 2) / L;
       if ((doors === 5 || (doors === 4 && boxy)) && f < room) cuts.push(f);
     }
     return { end, pillars: cuts.map(f => ({ f, hw: 0.045 / L })), black: car.year >= 1978 && car.country !== 'su' && car.country !== 'lv' };
@@ -929,8 +943,7 @@
         face([[-bw * 0.9, yTop, z0 + 0.04], [bw * 0.9, yTop, z0 + 0.04], [bw * 0.9, yTop + 0.06, z0 + 0.04], [-bw * 0.9, yTop + 0.06, z0 + 0.04]], [0, 0, 1], C('#3a3a3c'), MAT.TRIM);
       }
     }
-    const eyeY = Math.max(sh.hood + 0.2, sh.hgt - 0.33);
-    const eye = [sh.seat === 'center' ? 0 : -W * 0.4, eyeY, Math.min(Z(sh.wt) + 0.62, Z(sh.rt) - 0.2) + (sh.van ? 0.25 : 0)];
+    const cab = cabinAt(car), eye = [cab.eye[0] === null ? -W * 0.4 : cab.eye[0], cab.eye[1], cab.eye[2]];
     const cabin = lod.deco > 1 ? new Batch(1024) : null;
     if (cabin) cabin.uvw = WHITE_UV;
     if (cabin) interior(car, { Z, W, yb, eye, topAt, beltAt, edgeAt }, cabin);
@@ -1385,5 +1398,5 @@
     return g;
   }
 
-  Object.assign(F.Models, { buildCar, buildWheel, buildBrake, buildCockpit, carGeo, treadOf });
+  Object.assign(F.Models, { buildCar, buildWheel, buildBrake, buildCockpit, carGeo, treadOf, cabinAt });
 })(globalThis.Forza = globalThis.Forza || {});

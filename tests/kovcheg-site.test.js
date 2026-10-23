@@ -125,7 +125,7 @@ test('visit counter counts the home page once per session', () => {
 
 test('hub shows live game data, leaders from the bench and every banner', () => {
   const html = site.renderSite(base + '/hsr98/');
-  assert.ok(html.includes('версия ' + site.gameVersion(H)) && site.gameVersion(H) === '1.5');
+  assert.ok(html.includes('версия ' + site.gameVersion(H)) && site.gameVersion(H) === '1.6');
   assert.ok(html.includes('персонажей ' + Object.keys(H.CHARS).length));
   assert.ok(html.includes('Слияний ' + Object.keys(H.FUSIONS).length));
   const rows = site.banners(H);
@@ -479,7 +479,7 @@ test('universe pages cover every world and blessing path', () => {
 
 test('boss pages cover every story boss with notes', () => {
   const list = site.bossList();
-  const encs = Object.keys(H.ENCOUNTERS).filter(k => H.ENCOUNTERS[k].boss);
+  const encs = [...Object.keys(H.ENCOUNTERS).filter(k => H.ENCOUNTERS[k].boss), ...H.CALYX.filter(c => c.reward === 'echo' && c.waves).map(c => c.id)];
   assert.deepStrictEqual(Object.values(list).flat().map(m => m.enc).sort(), encs.slice().sort(), 'every boss fight is on a page');
   assert.deepStrictEqual(Object.keys(K.BOSS_NOTES).sort(), encs.slice().sort(), 'every boss fight has a note');
   for (const t of Object.values(K.BOSS_NOTES)) assert.ok(!t.includes('\u2014') && t.length > 20, t);

@@ -71,15 +71,31 @@ const SCENES = {
   dialog: "hsrShots.dialog('himeko_talk', 40)",
   menu: 'hsrShots.menu()',
   phonerail: 'hsrShots.phoneRail()',
+  phonesave: "(() => { hsrShots.fresh('j_belobog'); hsrui.openMenu(); const s = hsrui.top(); s.railSel = 2; s.toRail(2); hsrShots.pump(2); return hsrShots.shot(); })()",
+  phoneguide: "(() => { hsrShots.fresh('express'); hsrui.openMenu(); hsrui.top().sel = 7; hsrShots.pump(2); return hsrShots.shot(); })()",
   supply: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state, { starlight: 734, embers: 1260 }); g.state.shop.intro = true; g.supplyBuy('s_milkyway', 1); hsrui.openMenu(); hsrui.openSupply(); hsrui.top().sel = 5; hsrShots.pump(2); return hsrShots.shot(); })()",
   supplyembers: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state, { starlight: 734, embers: 1260 }); g.state.shop.intro = true; g.supplyBuy('e_spass', 5); hsrui.openMenu(); hsrui.openSupply(); hsrui.top().tab = 1; hsrui.top().sel = 2; hsrShots.pump(2); return hsrShots.shot(); })()",
   supplyintro: "(() => { const g = hsrShots.fresh('express'); g.state.shop.back = { starlight: 248, embers: 1340 }; hsrui.openMenu(); hsrui.openSupply(); hsrShots.pump(2); return hsrShots.shot(); })()",
   supplybuy: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state, { starlight: 734, embers: 1260 }); g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply(); const s = hsrui.top(); s.tab = 1; s.sel = 2; s.key('ok', 'Enter'); hsrui.top().setN(12); hsrShots.pump(2); return hsrShots.shot(); })()",
+  supplypass: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 1240; g.state.shop.intro = true; delete g.state.pass; hsrui.opts.store = { buy: () => 'open', take: () => (window.__orders || []).splice(0) }; hsrui.openMenu(); hsrui.openSupply('pass'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  supplypassactive: "(() => { const g = hsrShots.fresh('express'); g.state.shop.intro = true; delete g.state.pass; for (let i = 0; i < 2; i++) g.passGrant('S' + i); hsrui.openMenu(); hsrui.openSupply('pass'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  supplypassmax: "(() => { const g = hsrShots.fresh('express'); g.state.shop.intro = true; delete g.state.pass; for (let i = 0; i < 6; i++) g.passGrant('S' + i); hsrui.openMenu(); hsrui.openSupply('pass'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  passrules: "(() => { const g = hsrShots.fresh('express'); g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('pass'); hsrui.openPassRules(); hsrShots.pump(2); return hsrShots.shot(); })()",
+  passgot: "(() => { const g = hsrShots.fresh('express'); g.state.shop.intro = true; delete g.state.pass; hsrui.opts.store = { buy: () => 'open', take: () => (window.__orders || []).splice(0) }; window.__orders = [{ id: 'SHOT1', sku: Hsr98.PASS.sku }]; hsrui.openMenu(); hsrui.openSupply('pass'); hsrui.storeSync(); hsrShots.pump(2); return hsrShots.shot(); })()",
+  passdaily: "(() => { const g = hsrShots.fresh('express'); delete g.state.pass; g.passGrant('S1'); g.state.pass.last -= 1; hsrui.screens = []; hsrui.passT = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  contracts: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 3200; g.state.shop.intro = true; delete g.state.contracts; g.contractBuy('c_quest'); g.state.jade = 3200; g.contractBuy('c_quest'); g.state.jade = 3200; hsrui.openMenu(); hsrui.openSupply('contracts'); hsrui.top().csel = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  contractbuy: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 3200; g.state.shop.intro = true; delete g.state.contracts; hsrui.openMenu(); hsrui.openSupply('contracts'); hsrui.top().csel = 0; hsrui.contractAct(hsrui.top()); const b = hsrui.top(); b.toggle(1); b.toggle(2); b.sel = 2; hsrShots.pump(2); return hsrShots.shot(); })()",
+  contractbuy2: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 3200; g.state.shop.intro = true; delete g.state.contracts; hsrui.openMenu(); hsrui.openSupply('contracts'); hsrui.top().csel = 5; hsrui.contractAct(hsrui.top()); hsrShots.pump(2); return hsrShots.shot(); })()",
+  tracetears: "(() => { const g = hsrShots.fresh('express'); const k = 'himeko'; if (!g.state.roster[k]) g.addChar(k, 52); g.state.roster[k].lvl = 52; g.fillTraces(k, 'cap'); const t = g.traceOf(k); t.lv.skill = Math.max(1, t.lv.skill - 1); g.state.credits = 99999; for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat')) g.state.inv.items[m] = Hsr98.ITEMS[m].mat === 'path' ? 1 : 9; g.state.inv.items.tears = 60; hsrui.openMenu(); hsrui.openChars(k); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = 'skill'; hsrShots.pump(2); return hsrShots.shot(); })()",
   pets: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('pets'); hsrui.t = " + (+(process.env.PT || 6)) + "; hsrShots.pump(1); return hsrShots.shot(); })()",
   petsowned: "(() => { const g = hsrShots.fresh('express'); g.state.shop.intro = true; g.state.pets = ['chomusuke']; g.setPet('chomusuke'); Object.assign(g.petStats('chomusuke'), { steps: 1342, pets: 27 }); hsrui.openMenu(); hsrui.openSupply('pets'); hsrShots.pump(2); return hsrShots.shot(); })()",
   petfield: "(() => { const g = hsrShots.fresh('j_belobog', '" + (process.env.PL || 'trail,march,danheng,himeko') + "'.split(',')); g.state.pets = ['chomusuke']; g.setPet('chomusuke'); hsrShots.pump(4); const a = g.pet, act = '" + (process.env.PA || '') + "'; if (act) { a.act = act; a.actT = 0.5; a.still = 2; } hsrShots.pump(2); return hsrShots.shot(); })()",
   petsheet: "(() => { hsrShots.fresh('express'); const c = hsrui.ctx, H = Hsr98; c.fillStyle = '#7a8a6a'; c.fillRect(0, 0, 640, 480); const rows = [['front', 'sit'], ['front', 'walk'], ['front', 'groom'], ['front', 'yawn'], ['front', 'squint'], ['front', 'happy'], ['back', 'sit'], ['back', 'walk'], ['side', 'sit'], ['side', 'walk'], ['side', 'fly'], ['side', 'hiss'], ['front', 'sleep']]; c.imageSmoothingEnabled = false; rows.forEach(([v, p], i) => { for (let f = 0; f < 2; f++) { const cv = H.petCanvas('chomusuke', v, p, f), x = (i % 5) * 128 + f * 62, y = Math.floor(i / 5) * 150 + 10; c.drawImage(cv, x, y, 72, 72); c.drawImage(cv, x + 4, y + 88, 36, 36); } hsrui.text(v + ' ' + p, (i % 5) * 128 + 4, Math.floor(i / 5) * 150 + 132, { size: 10 }); }); return hsrui.canvas.toDataURL('image/png'); })()",
   fashion: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  fashioncuts: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion', 'himeko_vermilion'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  fashioncutsplay: "(() => { const g = hsrShots.fresh('express'); g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion', 'himeko_vermilion'); const v = hsrui.openOutfitCuts('himeko_vermilion'); v.begin(2); v.show.i = 1; v.show.t = 1.1; v.show.T = 2.1; hsrui.hits = []; v.draw(hsrui.ctx); return hsrui.canvas.toDataURL('image/png'); })()",
+  fashionback: "(() => { const g = hsrShots.fresh('express'); g.state.shop.intro = true; g.state.shop.outfitBack = 1680; hsrui.openMenu(); hsrui.openSupply('fashion'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  fashionbuyask: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; hsrui.openMenu(); hsrui.openSupply('fashion', 'megumin_bakuen'); hsrShots.pump(2); hsrui.openOutfitBuy('megumin_bakuen'); hsrShots.pump(2); return hsrShots.shot(); })()",
   fashionmeg: "(() => { const g = hsrShots.fresh('express'); g.state.jade = 2400; g.state.shop.intro = true; g.state.outfits = ['march_spring']; hsrui.openMenu(); hsrui.openSupply('fashion', 'megumin_bakuen'); hsrShots.pump(2); return hsrShots.shot(); })()",
   charoutfitmeg: "(() => { const g = hsrShots.fresh('express'); g.state.outfits = ['megumin_bakuen']; g.wearOutfit('megumin', 'megumin_bakuen'); hsrui.openMenu(); hsrui.openChars('megumin'); const s = hsrui.top(); s.sec = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
   fieldoutfitmeg: "(() => { const g = hsrShots.fresh('express', ['megumin', 'trail']); g.state.outfits = ['megumin_bakuen']; g.wearOutfit('megumin', 'megumin_bakuen'); hsrShots.pump(30); return hsrShots.shot(); })()",
@@ -120,6 +136,9 @@ const SCENES = {
   pomtalk: "(() => { const g = hsrShots.fresh('express'); g.state.flags.pc_rewards_done = true; g.state.flags.ending = true; g.runScript('pompom_talk'); hsrShots.pump(40); g.resume(); hsrShots.pump(20); return hsrShots.shot(); })()",
   pomfield: "(() => { const g = hsrShots.fresh('express'); g.state.flags.pc_rewards_done = true; g.setTrailLevel(20); const p = g.map.ents.find(e => e.ch === 'p'); g.placePlayer(p.x, p.y + 2); hsrShots.pump(30); return hsrShots.shot(); })()",
   willdone: "hsrShots.events('will', 0, [], 3, 40, [5, 15, 25])",
+  willfar: "hsrShots.events('will', 0, [], 5, 58, [5, 15, 25, 35, 45])",
+  willtop: "hsrShots.events('will', 0, [], 7, 70, [5, 15, 25, 35, 45, 55, 65])",
+  willowned: "hsrShots.events('will', 0, [], 6, 66, [5, 15, 25, 35, 45, 55], ['trail_trashlord'])",
   mail: 'hsrShots.mail(0)',
   chats: 'hsrShots.chats(0)',
   chatpick: 'hsrShots.chats(1)',
@@ -133,6 +152,8 @@ const SCENES = {
   mailhares: 'hsrShots.mail(5)',
   mail15: 'hsrShots.mail(6)',
   mail15got: 'hsrShots.mail(7)',
+  mailgifts: 'hsrShots.mail(8)',
+  mailgifts2: 'hsrShots.mail(9)',
   mail0: 'hsrShots.mail(2)',
   maildel: 'hsrShots.mail(3)',
   warpev: "hsrShots.warpBanner('ev')",
@@ -203,14 +224,18 @@ const SCENES = {
   debugult: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 4, row: 1 }); hsrui.debugState.sc.id = 'seele'; hsrui.t = 1.6; hsrShots.pump(1); return hsrShots.shot(); })()",
   debugfus: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 4, row: 1 }); Object.assign(hsrui.debugState.sc, { kind: 1, id: 'f_landau' }); hsrui.t = 3.1; hsrShots.pump(1); return hsrShots.shot(); })()",
   debugfusview: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState.sc, { kind: 1, id: 'f_wings' }); hsrui.openDebugShow(hsrui.debugState, false); for (let i = 0; i < 30; i++) hsrui.update(0.05); hsrShots.pump(1); return hsrShots.shot(); })()",
-  debugwarp: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 4, row: 3 }); Object.assign(hsrui.debugState.sc, { kind: 2, id: 'ruanmei', cut: 1 }); hsrui.t = 2.4; hsrShots.pump(1); return hsrShots.shot(); })()",
-  debugeid: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 4, row: 2 }); Object.assign(hsrui.debugState.sc, { kind: 3, id: 'pela', stage: 2 }); hsrShots.pump(1); return hsrShots.shot(); })()",
-  debugeidview: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState.sc, { kind: 3, id: 'himeko', stage: 3 }); hsrui.openDebugEidolon(hsrui.debugState, false); hsrShots.pump(2); return hsrShots.shot(); })()",
-  debugeidasm: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState.sc, { kind: 3, id: 'himeko', stage: 1 }); hsrui.openDebugEidolon(hsrui.debugState, true); for (let i = 0; i < 26; i++) hsrui.update(0.05); hsrShots.pump(1); return hsrShots.shot(); })()",
+  debugwarp: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 4, row: 3 }); Object.assign(hsrui.debugState.sc, { kind: 3, id: 'ruanmei', cut: 1 }); hsrui.t = 2.4; hsrShots.pump(1); return hsrShots.shot(); })()",
+  debugeid: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 4, row: 2 }); Object.assign(hsrui.debugState.sc, { kind: 4, id: 'pela', stage: 2 }); hsrShots.pump(1); return hsrShots.shot(); })()",
+  debugeidview: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState.sc, { kind: 4, id: 'himeko', stage: 3 }); hsrui.openDebugEidolon(hsrui.debugState, false); hsrShots.pump(2); return hsrShots.shot(); })()",
+  debugeidasm: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState.sc, { kind: 4, id: 'himeko', stage: 1 }); hsrui.openDebugEidolon(hsrui.debugState, true); for (let i = 0; i < 26; i++) hsrui.update(0.05); hsrShots.pump(1); return hsrShots.shot(); })()",
   debugultview: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState.sc, { kind: 0, id: 'himeko' }); hsrui.openDebugShow(hsrui.debugState, false); for (let i = 0; i < 30; i++) hsrui.update(0.05); hsrShots.pump(1); return hsrShots.shot(); })()",
-  debugcard: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState.sc, { kind: 2, id: 'seele', cut: 1 }); const v = hsrui.openDebugShow(hsrui.debugState, false); v.stop(); hsrShots.pump(1); return hsrShots.shot(); })()",
+  debugcard: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState.sc, { kind: 3, id: 'seele', cut: 1 }); const v = hsrui.openDebugShow(hsrui.debugState, false); v.stop(); hsrShots.pump(1); return hsrShots.shot(); })()",
   debugrelics: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 2, row: 3 }); Object.assign(hsrui.debugState.rl, { set: 8, slot: 2, main: 'critD' }); hsrui.debugState.rl.subs = ['critR', '', 'atkP', 'spd']; hsrShots.pump(2); return hsrShots.shot(); })()",
   debugitems: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 3, row: 4 }); hsrui.debugState.it.i = 12; hsrShots.pump(2); hsrui.debugForm(hsrui.debugState).acts[0].fn(); hsrShots.pump(2); return hsrShots.shot(); })()",
+  debugsets: "(() => { const g = hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 2, row: 0 }); hsrui.debugState.rl.set = 4; g.state.inv.relics.push({ uid: 'shot_r', set: 'firesmith', slot: 'head', main: 'hpF', mv: 1, subs: [], lvl: 0 }); hsrShots.pump(1); hsrui.openDebugSets(hsrui.debugState); hsrui.top().sel = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  debugaha: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 4, row: 1 }); hsrui.debugState.sc.kind = 2; hsrShots.pump(2); return hsrShots.shot(); })()",
+  debuglong: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 3, row: 0 }); const K = ['food', 'exp', 'mat', 'key'], ids = Object.keys(Hsr98.ITEMS).sort((a, b) => K.indexOf(Hsr98.ITEMS[a].kind) - K.indexOf(Hsr98.ITEMS[b].kind)); hsrui.debugState.it.i = 2 + ids.reduce((m, k, i) => Hsr98.ITEMS[k].name.length > Hsr98.ITEMS[ids[m]].name.length ? i : m, 0); hsrShots.pump(2); return hsrShots.shot(); })()",
+  debugsceneslong: "(() => { hsrShots.fresh('express'); hsrui.debugState = null; hsrui.openDebug(); Object.assign(hsrui.debugState, { tab: 4, row: 1 }); Object.assign(hsrui.debugState.sc, { kind: 1, id: Object.keys(Hsr98.FUSIONS).reduce((m, k) => Hsr98.FUSIONS[k].name.length > Hsr98.FUSIONS[m].name.length ? k : m) }); hsrui.t = 3.1; hsrShots.pump(1); return hsrShots.shot(); })()",
   missions: 'hsrShots.missions(0)',
   missionstrail: 'hsrShots.missions(1)',
   missionscomp: "hsrShots.missions(2, 'hook_foreman')",
@@ -228,9 +253,11 @@ const SCENES = {
   items: 'hsrShots.inventory(0)',
   hudenergy: 'hsrShots.hudEnergy(0)',
   hudcharge: 'hsrShots.hudEnergy(1)',
+  powerx: "(() => { const g = hsrShots.fresh('express'); g.powerSync(); Object.assign(g.state, { power: 412, powerRes: 1730, jade: 900 }); g.state.inv.items.fuel = 3; hsrui.openCalyx(() => {}); hsrui.openPower(); hsrShots.pump(2); return hsrShots.shot(); })()",
+  powerjade: "(() => { const g = hsrShots.fresh('express'); g.powerSync(); Object.assign(g.state, { power: 2680, powerRes: 2400, jade: 640 }); hsrui.openCalyx(() => {}); hsrui.openPower(); hsrui.top().sel = 2; hsrShots.pump(2); return hsrShots.shot(); })()",
   useenergy: "hsrShots.useEnergy('thermos')",
-  invcones: 'hsrShots.inventory(3)',
-  invrelics: 'hsrShots.inventory(4)',
+  invcones: 'hsrShots.inventory(4)',
+  invrelics: 'hsrShots.inventory(5)',
   archive: 'hsrShots.archive()',
   team: 'hsrShots.team()',
   teamsquad: "(() => { const g = hsrShots.fresh('express'); for (const k of Object.keys(Hsr98.CHARS)) if (k !== 'trail_p' && !g.state.roster[k]) g.debugChar(k, 60, 0); g.state.squads = [null, ['seele', 'bronya', 'natasha', 'pela'], ['kafka', 'blade'], null, ['himeko', 'welt', 'herta', 'asta']]; g.toggleFav('seele'); g.toggleFav('kafka'); hsrui.openMenu(); hsrui.openTeam(); hsrui.top().key(null, 'KeyE'); hsrShots.pump(2); return hsrShots.shot(); })()",
@@ -249,7 +276,40 @@ const SCENES = {
   charplanar2: "hsrShots.planar('march', 5)",
   relicsplanar: "hsrShots.planarPick('seele', 4)",
   planaricons: 'hsrShots.planarIcons()',
-  invplanar: "(() => { hsrShots.fresh('express'); hsrui.game.give({ ornament: [{ set: 'station', rl: 12 }, { set: 'vonwacq', rl: 6 }, { set: 'salsotto', rl: 9 }] }); hsrui.openMenu(); hsrui.openInventory(4); const rel = hsrui.invEntries(4).findIndex(e => e.rel && e.rel.slot === 'sphere'); hsrui.top().sel = Math.max(0, rel); hsrShots.pump(2); return hsrShots.shot(); })()",
+  relicsheet: "hsrShots.relicSheet('cavern')",
+  relicsheetg: "hsrShots.relicSheet('cavern', true)",
+  planarsheet: "hsrShots.relicSheet('planar')",
+  planarsheetg: "hsrShots.relicSheet('planar', true)",
+  matsheet: "hsrShots.itemSheet('path')",
+  elaha: "(() => { const g = hsrShots.fresh('j_plains', ['kazuma', 'march', 'danheng', 'himeko']); g.state.flags.seen_elation = true; g.startBattle({ enemies: ['reaver:20', 'flamespawn:20', 'eliminator:20'], lvl: 20, bg: 'snow', music: 'battle' }); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle; for (let i = 0; i < 80; i++) hsrui.update(0.1); b.gainPunch(18); b.ahaTurn(b.summons.find(s => s.aha)); hsrui.pullEvents(); for (let i = 0; i < 5; i++) hsrui.update(0.1); return hsrShots.shot(); })()",
+  elahaend: "(() => { const g = hsrShots.fresh('j_plains', ['kazuma', 'march', 'danheng', 'himeko']); g.state.flags.seen_elation = true; g.startBattle({ enemies: ['reaver:20', 'flamespawn:20', 'eliminator:20'], lvl: 20, bg: 'snow', music: 'battle' }); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle; for (let i = 0; i < 80; i++) hsrui.update(0.1); b.gainPunch(18); b.ahaTurn(b.summons.find(s => s.aha)); hsrui.pullEvents(); for (let i = 0; i < 400 && (hsrui.bt.queue.length || hsrui.bt.cur); i++) { hsrui.update(0.05); if (hsrui.bt.msg && /Миг Ахи:/.test(hsrui.bt.msg)) break; } hsrui.update(0.2); return hsrShots.shot(); })()",
+  ellaugh: "(() => { const g = hsrShots.fresh('j_plains', ['march', 'danheng', 'himeko', 'natasha']); g.state.flags.seen_elation = true; g.startBattle({ enemies: ['reaver:20', 'flamespawn:20', 'eliminator:20'], lvl: 20, bg: 'snow', music: 'battle' }); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle; for (let i = 0; i < 80; i++) hsrui.update(0.1); b.gainPunch(6); b.ahaTurn(b.summons.find(s => s.aha)); hsrui.pullEvents(); for (let i = 0; i < 5; i++) hsrui.update(0.1); return hsrShots.shot(); })()",
+  elkazuma: "(() => { const g = hsrShots.fresh('express', ['kazuma', 'march', 'danheng', 'himeko']); hsrui.openChars('kazuma'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  elhud: "(() => { const g = hsrShots.fresh('j_plains', ['kazuma', 'march', 'danheng', 'himeko']); g.state.flags.seen_elation = true; g.startBattle({ enemies: ['reaver:20', 'flamespawn:20', 'eliminator:20'], lvl: 20, bg: 'snow', music: 'battle' }); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle; for (const e of b.enemies) e.hp = e.maxHp = e.dHp = 1e7; const idle = () => b.phase === 'input' && !hsrui.bt.queue.length && !hsrui.bt.cur; for (let i = 0; i < 300 && !idle(); i++) hsrui.update(0.1); b.gainPunch(9); hsrui.pullEvents(); for (let i = 0; i < 30; i++) hsrui.update(0.1); hsrui.bt.pick = 'skill'; return hsrShots.shot(); })()",
+  elinstant: "(() => { const g = hsrShots.fresh('j_plains', ['kazuma', 'march', 'danheng', 'himeko']); g.state.flags.seen_elation = true; g.startBattle({ enemies: ['reaver:20', 'flamespawn:20', 'eliminator:20'], lvl: 20, bg: 'snow', music: 'battle' }); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle; for (const e of b.enemies) e.hp = e.maxHp = e.dHp = 1e7; const idle = () => b.phase === 'input' && !hsrui.bt.queue.length && !hsrui.bt.cur; for (let i = 0; i < 300 && !idle(); i++) hsrui.update(0.1); b.drain(); b.gainPunch(18); b.ahaTurn(b.ahaUnit()); hsrui.pullEvents(); for (let i = 0; i < 400 && !(hsrui.bt.el && hsrui.bt.el.fx && hsrui.bt.el.fx.t > 0.5); i++) hsrui.update(0.05); return hsrShots.shot(); })()",
+  elcard: "(() => { const g = hsrShots.fresh('j_plains', ['kazuma', 'march', 'danheng', 'himeko']); g.state.flags.seen_elation = true; g.startBattle({ enemies: ['reaver:20', 'flamespawn:20', 'eliminator:20'], lvl: 20, bg: 'snow', music: 'battle' }); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle; for (const e of b.enemies) e.hp = e.maxHp = e.dHp = 1e7; const idle = () => b.phase === 'input' && !hsrui.bt.queue.length && !hsrui.bt.cur; for (let i = 0; i < 300 && !idle(); i++) hsrui.update(0.1); b.drain(); b.gainPunch(18); b.ahaTurn(b.ahaUnit()); hsrui.pullEvents(); for (let i = 0; i < 600 && !(hsrui.bt.el && hsrui.bt.el.card && hsrui.bt.el.card.t < 1.2); i++) hsrui.update(0.05); return hsrShots.shot(); })()",
+  elrps: "(() => { const g = hsrShots.fresh('j_plains', ['kazuma', 'march', 'danheng', 'himeko']); g.state.flags.seen_elation = true; g.startBattle({ enemies: ['reaver:20', 'flamespawn:20', 'eliminator:20'], lvl: 20, bg: 'snow', music: 'battle' }); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle; for (const e of b.enemies) e.hp = e.maxHp = e.dHp = 1e7; const idle = () => b.phase === 'input' && !hsrui.bt.queue.length && !hsrui.bt.cur; for (let i = 0; i < 300 && !idle(); i++) hsrui.update(0.1); b.drain(); b.gainPunch(18); b.ahaTurn(b.ahaUnit()); hsrui.pullEvents(); for (let i = 0; i < 600 && !(hsrui.bt.cur && hsrui.bt.cur.t === 'rps'); i++) hsrui.update(0.05); hsrui.update(0.1); return hsrShots.shot(); })()",
+  elhelp: "(() => { const g = hsrShots.fresh('j_plains', ['kazuma', 'march', 'danheng', 'himeko']); delete g.state.flags.seen_elation; g.startBattle({ enemies: ['reaver:20', 'flamespawn:20', 'eliminator:20'], lvl: 20, bg: 'snow', music: 'battle' }); hsrui.drainGameEvents(); hsrui.bt.auto = false; for (let i = 0; i < 300 && !hsrui.bt.elHelp; i++) hsrui.update(0.1); hsrui.bt.elHelp.page = " + (+(process.env.HP || 0)) + "; return hsrShots.shot(); })()",
+  eltraces: "(() => { const g = hsrShots.fresh('express', ['kazuma', 'march', 'danheng', 'himeko']); g.debugChar('kazuma', 80, 6); g.fillTraces('kazuma', 'cap'); hsrui.openChars('kazuma'); const s = hsrui.top(); s.sec = 1; s.trFocus = true; hsrShots.pump(2); return hsrShots.shot(); })()",
+  elskills: "(() => { const g = hsrShots.fresh('express', ['kazuma', 'march', 'danheng', 'himeko']); g.debugChar('kazuma', 80, 6); g.fillTraces('kazuma', 'cap'); hsrui.openChars('kazuma'); const s = hsrui.top(); s.sec = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
+  eleid: "(() => { const g = hsrShots.fresh('express', ['kazuma', 'march', 'danheng', 'himeko']); g.debugChar('kazuma', 80, 6); g.fillTraces('kazuma', 'cap'); hsrui.openChars('kazuma'); const s = hsrui.top(); s.sec = 4; s.star = 5; s.starFocus = true; hsrShots.pump(2); return hsrShots.shot(); })()",
+  eldetails: "(() => { const g = hsrShots.fresh('express', ['kazuma', 'march', 'danheng', 'himeko']); g.debugChar('kazuma', 80, 6); g.fillTraces('kazuma', 'cap'); hsrui.openChars('kazuma'); const s = hsrui.top(); s.sec = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  elcutkazuma: "(() => { const g = hsrShots.fresh('express', ['kazuma', 'march']); hsrui.debugState = null; hsrui.openDebug(); const st = hsrui.debugState; st.aha = { i: 0, p: 2 }; const scr = hsrui.openDebugAha(st, false); scr.show.t = scr.show.T = " + (+(process.env.CT || 1.1)) + "; return hsrShots.shot(); })()",
+  elcutlaugh: "(() => { const g = hsrShots.fresh('express', ['kazuma', 'march']); hsrui.debugState = null; hsrui.openDebug(); const st = hsrui.debugState; st.aha = { i: 1, p: 2 }; const scr = hsrui.openDebugAha(st, false); scr.show.t = scr.show.T = " + (+(process.env.CT || 0.7)) + "; return hsrShots.shot(); })()",
+  eldebug: "(() => { const g = hsrShots.fresh('express', ['kazuma', 'march']); hsrui.debugState = null; hsrui.openDebug(); hsrui.top().setTab(5); hsrShots.pump(2); return hsrShots.shot(); })()",
+  elcone: "hsrShots.coneArt(['goodluck', 'sneering', 'chunchunmaru'])",
+  elmail: "(() => { const g = hsrShots.fresh('express'); g.state.mail = {}; g.mailSync(); hsrui.openMail(); const s = hsrui.top(); s.select(g.mailbox().findIndex(x => x.m.id === 'v16_elation')); hsrShots.pump(2); return hsrShots.shot(); })()",
+  elsign: "(() => { const g = hsrShots.fresh('express'); Hsr98.CHARS.__elation = Object.assign({}, Hsr98.CHARS.kazuma, { path: 'elation' }); const WI = Hsr98.WarpIntro, ts = [0.25, 0.6, 0.95, 1.12, 1.26], [cv, c] = hsrShots.sheetCanvas(ts.length * 330 + 10, 210); ts.forEach((t, i) => { const f = WI.render(g, { id: '__elation', rar: 4, kind: 'char' }, t, false); c.imageSmoothingEnabled = false; c.drawImage(f, 10 + i * 330, 5); }); delete Hsr98.CHARS.__elation; return hsrShots.sheetOut(cv); })()",
+  elcalyx: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.state.power = 126; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 3; s.focus = 'rows'; s.row = 8; hsrShots.pump(2); return hsrShots.shot(); })()",
+  foesheet: "hsrShots.itemSheet('foe')",
+  echosheet: "hsrShots.itemSheet('echo')",
+  synmatsheet: "hsrShots.itemSheet('syn')",
+  foodsheet: "hsrShots.itemSheet('food')",
+  foodsheetg: "hsrShots.itemSheet('food', true)",
+  expsheet: "hsrShots.itemSheet('exp')",
+  iconcheck: 'hsrShots.iconCheck()',
+  shoprecipe: "(() => { hsrShots.fresh('u_boulder'); hsrui.openShop('boulder', () => {}); const s = hsrui.top(); s.sel = Math.max(0, hsrui.game.shopList('boulder').findIndex(e => /^rcp_/.test(e.id))); hsrShots.pump(2); return hsrShots.shot(); })()",
+  invplanar: "(() => { hsrShots.fresh('express'); hsrui.game.give({ ornament: [{ set: 'station', rl: 12 }, { set: 'vonwacq', rl: 6 }, { set: 'salsotto', rl: 9 }] }); hsrui.openMenu(); hsrui.openInventory(5); const rel = hsrui.invEntries(5).findIndex(e => e.rel && e.rel.slot === 'sphere'); hsrui.top().sel = Math.max(0, rel); hsrShots.pump(2); return hsrShots.shot(); })()",
   skills: "hsrShots.chars('himeko', 3)",
   eidolon: "hsrShots.chars('march', 4)",
   eidolon2: "hsrShots.chars('march', 4, 1)",
@@ -445,12 +505,18 @@ const SCENES = {
   chartracesnew: "(() => { const g = hsrShots.fresh('express'); hsrui.openMenu(); hsrui.openChars('trail'); const s = hsrui.top(); s.sec = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
   charactions: "(() => { const g = hsrShots.fresh('express'); hsrui.openMenu(); hsrui.openChars('trail'); hsrui.top().openActions(); hsrShots.pump(2); return hsrShots.shot(); })()",
   invmats: "(() => { const g = hsrShots.fresh('express'); for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat')) g.state.inv.items[m] = 3 + m.length; hsrui.openMenu(); hsrui.openInventory(2); hsrui.top().sel = 4; hsrShots.pump(2); return hsrShots.shot(); })()",
-  synth: "(() => { const g = hsrShots.fresh('express'); for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat' && Hsr98.ITEMS[m].tier)) g.state.inv.items[m] = 7; hsrui.openSynth(); hsrui.top().sel = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
-  synthx: "(() => { const g = hsrShots.fresh('express'); for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat' && Hsr98.ITEMS[m].tier)) g.state.inv.items[m] = 7; hsrui.openSynth(); const s = hsrui.top(); s.mode = 1; s.sel = 30; hsrShots.pump(2); return hsrShots.shot(); })()",
+  synth_mat: "(() => { const g = hsrShots.fresh('express'); let n = 3; for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat' && Hsr98.ITEMS[m].tier)) g.state.inv.items[m] = (n = (n * 7 + 5) % 41); hsrui.openSynth(); const s = hsrui.top(); s.sel = 3; s.qty = 4; hsrShots.pump(2); return hsrShots.shot(); })()",
+  synth_swap: "(() => { const g = hsrShots.fresh('express'); let n = 3; for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat' && Hsr98.ITEMS[m].tier)) g.state.inv.items[m] = (n = (n * 7 + 5) % 41); hsrui.openSynth(null, 2); const s = hsrui.top(); s.sel = 7; hsrShots.pump(2); return hsrShots.shot(); })()",
+  synth_swapsrc: "(() => { const g = hsrShots.fresh('express'); let n = 3; for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat' && Hsr98.ITEMS[m].tier)) g.state.inv.items[m] = (n = (n * 7 + 5) % 41); hsrui.openSynth(null, 2); const s = hsrui.top(); s.sel = 7; s.autoAdd(); hsrShots.pump(2); return hsrShots.shot(); })()",
+  synth_pick: "(() => { const g = hsrShots.fresh('express'); let n = 3; for (const m of Object.keys(Hsr98.ITEMS).filter(m => Hsr98.ITEMS[m].kind === 'mat' && Hsr98.ITEMS[m].tier)) g.state.inv.items[m] = (n = (n * 7 + 5) % 41); hsrui.openSynth(null, 2); const s = hsrui.top(); s.sel = 7; s.openPicker(); hsrShots.pump(2); return hsrShots.shot(); })()",
+  synth_lock: "(() => { hsrShots.fresh('express'); hsrui.openSynth(null, 3); hsrShots.pump(2); return hsrShots.shot(); })()",
+  synth_food: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.inv.items, { metal: 14, basic: 22, phlog: 9, seed: 31, water: 18, gas: 6, mech: 3, rice: 12, particle: 2, herbs: 5, soup: 4, coffee: 7, pie: 1 }); g.recipeSync(); hsrui.openSynth(null, 0); g.events.length = 0; hsrui.toasts = []; const s = hsrui.top(); s.sel = 1; s.qty = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
+  synth_foodlock: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.inv.items, { metal: 14, basic: 22, phlog: 9, seed: 31, water: 18, gas: 6, mech: 3, rice: 12, particle: 2, herbs: 5, soup: 4, coffee: 7, pie: 1 }); g.recipeSync(); g.state.recipes = {}; delete g.state.inv.items.spark; hsrui.openSynth(null, 0); g.events.length = 0; hsrui.toasts = []; const s = hsrui.top(); s.sel = s.rows().findIndex(r => r.to === 'spark'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  inv_synmat: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.inv.items, { metal: 14, basic: 22, phlog: 9, seed: 31, water: 18, gas: 6, mech: 3, rice: 12, particle: 2, herbs: 5, soup: 4, coffee: 7, pie: 1 }); g.recipeSync(); hsrui.openInventory(2); g.events.length = 0; hsrui.toasts = []; const s = hsrui.top(); s.sel = hsrui.invEntries(2).findIndex(e => e.id === 'herbs'); hsrShots.pump(2); return hsrShots.shot(); })()",
   simdrops: "(() => { const g = hsrShots.fresh('express'); hsrui.openCalyx(() => {}); const s = hsrui.top(); s.sel = Math.max(0, g.calyxList().findIndex(x => x.c.id === 'cx_hunt')); s.tier = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
   simecho: "(() => { const g = hsrShots.fresh('express'); g.state.flags.express_intro = true; g.echoClaim(); hsrui.openCalyx(() => {}); const s = hsrui.top(); s.sel = Math.max(0, g.calyxList().findIndex(x => x.c.id === 'cx_echo_doom')); hsrShots.pump(2); return hsrShots.shot(); })()",
   traceback: "(() => { const g = hsrShots.fresh('express'); g.state.trBack = { shadow_dest: 1, hunt1: 5, tracks: 2, echo_doom: 4 }; hsrui.openMenu(); hsrui.openChars('trail'); hsrShots.pump(2); return hsrShots.shot(); })()",
-  coneart: 'hsrShots.coneArt()',
+  coneart: '(() => { hsrShots.coneArt(); return new Promise(r => setTimeout(r, 400)).then(() => hsrShots.coneArt()); })()',
   foes1: 'hsrShots.foeSheet(0)',
   foes2: 'hsrShots.foeSheet(1)',
   foes3: 'hsrShots.foeSheet(2)',
@@ -473,7 +539,63 @@ const SCENES = {
   fhclear: "(() => { const g = hsrShots.fresh('express'); g.state.flags.fh_met = true; for (let n = 1; n <= 7; n++) g.fh().st[n] = { clear: true, stars: [true, true, n !== 4], best: 13 }; hsrui.openFhClear({ n: 7, left: 13, used: 7, down: 0, stars: [true, true, true], fresh: [true, false, true], first: true, got: ['x'] }); hsrShots.pump(60); return hsrShots.shot(); })()",
   fhshop: "(() => { const g = hsrShots.fresh('express'); g.state.flags.fh_met = true; g.state.inv.items.lucent = 460; hsrui.openFhShop(); hsrui.top().sel = +(process.env.FH_SEL || 2); hsrShots.pump(4); return hsrShots.shot(); })()".replace('process.env.FH_SEL || 2', String(+(process.env.FH_SEL || 2))),
   fhjokes: "(() => { const g = hsrShots.fresh('express'); g.state.flags.fh_met = true; g.state.inv.items.feather = 1440; g.state.inv.items.resin = 1; hsrui.openFhShop(); hsrui.top().tab = 1; hsrui.top().sel = 1; hsrui.top().qty = 3; hsrShots.pump(4); return hsrShots.shot(); })()",
-  fhcraft: "(() => { const g = hsrShots.fresh('express'); g.state.flags.fh_met = true; g.state.inv.items.resin = 1; hsrui.openFhShop(); hsrui.top().tab = 1; hsrui.openFhCraft(); Object.assign(hsrui.top(), { col: 2, set: 1, slot: 2, main: 4 }); hsrShots.pump(4); return hsrShots.shot(); })()",
+  guide_story: "(() => { const g = hsrShots.fresh('express'); const ms = g.missionsState(); Hsr98.TRAIL_MISSIONS.forEach((m, i) => { if (m.ch === 'prologue' || m.ch === 'winter' || (m.ch === 'dawn' && i % 3)) ms.done[m.id] = 1; }); g.state.quests.su_beta = 'done'; hsrui.openIpg('trail'); const s = hsrui.top(); s.act = 1; s.focus = 'cards'; s.card = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_prologue: "(() => { const g = hsrShots.fresh('express'); const ms = g.missionsState(); Hsr98.TRAIL_MISSIONS.forEach((m, i) => { if (m.ch === 'prologue' || m.ch === 'winter' || (m.ch === 'dawn' && i % 3)) ms.done[m.id] = 1; }); g.state.quests.su_beta = 'done'; hsrui.openIpg('trail'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_chapter: "(() => { const g = hsrShots.fresh('express'); const ms = g.missionsState(); Hsr98.TRAIL_MISSIONS.forEach((m, i) => { if (m.ch === 'prologue' || m.ch === 'winter' || (m.ch === 'dawn' && i % 3)) ms.done[m.id] = 1; }); g.state.quests.su_beta = 'done'; hsrui.openIpg('trail'); hsrui.openGuideChapter('winter', 'Раздел I'); hsrui.top().sel = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_rules: "(() => { const g = hsrShots.fresh('express'); hsrui.openIpg('trail'); hsrui.openGuideRules(4); hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_locked: "(() => { const g = hsrShots.fresh('express'); hsrui.openIpg(0); hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_index: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.state.power = 126; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 3; s.focus = 'rows'; s.row = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_index_echo: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.state.power = 126; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 6; s.focus = 'rows'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_index_orn: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.state.power = 126; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_index_target: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.state.power = 126; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_target: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.state.power = 126; g.state.guide = { target: g.state.party[0] }; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 0; s.focus = 'rows'; s.trow = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_target_sets: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.state.power = 126; g.state.guide = { target: 'march' in g.state.roster ? 'march' : g.state.party[1] }; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 0; s.focus = 'rows'; s.trow = hsrui.guideTargetItems(g.guideTarget()).all.length - 2; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_target_none: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.state.power = 126; g.state.guide = { target: null }; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_target_pick: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.state.power = 126; g.state.guide = { target: null }; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 0; hsrui.openGuideTargetPick(s); hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_index_cavern: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.state.power = 126; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 5; s.focus = 'rows'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_su: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { su_open: true, fh_met: true, su_clear_1: true }); g.state.suPaths = ['preservation', 'destruction', 'hunt']; hsrui.openIpg('cosmic'); hsrui.top().wsel = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_su_locked: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { su_open: true, fh_met: true, su_clear_1: true }); g.state.suPaths = ['preservation', 'destruction', 'hunt']; hsrui.openIpg('cosmic'); hsrui.top().wsel = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_fh: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { su_open: true, fh_met: true, su_clear_1: true }); g.state.suPaths = ['preservation', 'destruction', 'hunt']; const F = g.fh(); for (let n = 1; n <= 7; n++) F.st[n] = { clear: true, stars: [true, true, n < 6], best: 1 }; F.got = [1, 2, 3, 4]; hsrui.openIpg('treasure'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_daily: "(() => { const g = hsrShots.fresh('express'); g.state.flags.su_open = true; delete g.state.daily; const d = g.dailySync(); d.prog.power = 70; d.prog.contact = 1; d.got.login = true; d.pts = 100; d.claimed = [0]; d.prog[d.pick[4]] = 1; hsrui.openIpg('daily'); const s = hsrui.top(); s.dcard = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_daily_full: "(() => { const g = hsrShots.fresh('express'); g.state.flags.su_open = true; delete g.state.daily; const d = g.dailySync(); for (const id of d.pick) { d.prog[id] = 999; d.got[id] = true; } d.pts = 500; d.claimed = [0, 1, 2, 3, 4]; hsrui.openIpg('daily'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_daily_steps: "(() => { const g = hsrShots.fresh('express'); g.state.flags.su_open = true; delete g.state.daily; const d = g.dailySync(); d.got.login = true; d.prog.contact = 1; d.got.contact = true; d.pts = 300; d.claimed = [0]; hsrui.openIpg('daily'); const s = hsrui.top(); s.dfocus = 'steps'; s.dstep = 2; hsrShots.pump(2); return hsrShots.shot(); })()",
+  synth_relic: "(() => { const g = hsrShots.fresh('express'); g.state.tl.lvl = 42; Object.assign(g.state.inv.items, { remains: 960, resin: 1 }); g.recipeSync(); g.events.length = 0; hsrui.openSynth(null, 3); Object.assign(hsrui.top(), { rsel: 3, rslot: 2, rfocus: 'slot' }); hsrShots.pump(2); return hsrShots.shot(); })()",
+  synth_relicplanar: "(() => { const g = hsrShots.fresh('express'); g.state.tl.lvl = 42; Object.assign(g.state.inv.items, { remains: 960, resin: 1 }); g.recipeSync(); g.events.length = 0; hsrui.openSynth(null, 3); Object.assign(hsrui.top(), { rsel: 12, rslot: 1, rfocus: 'grid' }); hsrShots.pump(2); return hsrShots.shot(); })()",
+  synth_craft: "(() => { const g = hsrShots.fresh('express'); g.state.tl.lvl = 42; Object.assign(g.state.inv.items, { remains: 960, resin: 1 }); g.recipeSync(); g.events.length = 0; hsrui.openSynth(null, 3, { resin: true }); const s = hsrui.top(); Object.assign(s, { rsel: 1, rslot: 2, rfocus: 'slot' }); hsrui.openRelicCraft(s); hsrui.top().sel = 4; hsrShots.pump(2); return hsrShots.shot(); })()",
+  synth_crafted: "(() => { const g = hsrShots.fresh('express'); g.state.tl.lvl = 42; Object.assign(g.state.inv.items, { remains: 960, resin: 1 }); g.recipeSync(); g.events.length = 0; hsrui.openSynth(null, 3); const rel = g.craftRelic('musketeer', 'body', 'critD'); hsrui.openRelicResult(rel); hsrShots.pump(2); return hsrShots.shot(); })()",
+  mail_fuelv: "(() => { const g = hsrShots.fresh('express'); g.state.mail = {}; g.mailSync(); hsrui.openMail(); const s = hsrui.top(); s.select(g.mailbox().findIndex(x => x.m.id === 'fuelv_gift')); hsrShots.pump(2); return hsrShots.shot(); })()",
+  inv_fuelv: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.inv.items, { fuelv: 100, remains: 300 }); g.events.length = 0; hsrui.openInventory(3); const s = hsrui.top(); s.sel = hsrui.invEntries(3).findIndex(e => e.id === 'fuelv'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  domain_calyx: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true, cor_h3: true, ending: true }); g.powerSync(); g.state.power = 510; g.state.powerRes = 120; g.state.inv.items.fuelv = 100; hsrui.openDomain('cx_exp', () => {}); const s = hsrui.top(); s.tier = 2; s.n = 6; hsrShots.pump(2); return hsrShots.shot(); })()",
+  domain_crimson: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true, cor_h3: true, ending: true }); g.powerSync(); g.state.power = 35; g.state.powerRes = 400; g.state.inv.items.fuelv = 100; hsrui.openDomain('cx_hunt', () => {}); const s = hsrui.top(); s.tier = 3; s.n = 8; hsrShots.pump(2); return hsrShots.shot(); })()",
+  domain_shadow: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true, cor_h3: true, ending: true }); g.powerSync(); g.state.power = 420; g.state.inv.items.fuelv = 100; hsrui.openDomain('cx_spike', () => {}); const s = hsrui.top(); s.tier = 3; s.n = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
+  domain_cavern: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true, cor_h3: true, ending: true }); g.powerSync(); g.state.power = 20; g.state.powerRes = 0; g.setPowerAuto(false); hsrui.openDomain('cx_fist', () => {}); const s = hsrui.top(); s.tier = 1; s.n = 4; hsrShots.pump(2); return hsrShots.shot(); })()",
+  domain_echo: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true, cor_h3: true, ending: true }); g.powerSync(); g.state.power = 300; g.state.flags.swamp_branch = true; g.echoClaim(); hsrui.openDomain('cx_echo_coco', () => {}); hsrui.top().tier = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
+  domain_locked: "(() => { const g = hsrShots.fresh('express'); g.powerSync(); g.state.power = 300; hsrui.openDomain('cx_providence', () => {}); hsrShots.pump(2); return hsrShots.shot(); })()",
+  sim_list: "(() => { const g = hsrShots.fresh('express'); g.state.flags.fled = true; hsrui.openCalyx(() => {}); hsrui.top().sel = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
+  battle_waves: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.powerSync(); g.state.power = 600; const settle = () => { hsrui.bt.queue.length = 0; hsrui.bt.cur = null; hsrui.bt.intro = 0; }; const fin = (w, wave) => { if (wave != null) g.battle.wave = wave; g.battle.finish(w); settle(); hsrui.updateBattle(0.016); }; hsrui.openDomain('cx_exp', () => {}); hsrui.top().n = 6; hsrui.top().key('ok'); hsrShots.pump(40); return hsrShots.shot(); })()",
+  series_next: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.powerSync(); g.state.power = 600; const settle = () => { hsrui.bt.queue.length = 0; hsrui.bt.cur = null; hsrui.bt.intro = 0; }; const fin = (w, wave) => { if (wave != null) g.battle.wave = wave; g.battle.finish(w); settle(); hsrui.updateBattle(0.016); }; hsrui.openDomain('cx_spike', () => {}); hsrui.top().tier = 1; hsrui.top().n = 3; hsrui.top().key('ok'); settle(); fin(true); hsrui.bt.nextT = 2.4; hsrShots.pump(1, 0); return hsrShots.shot(); })()",
+  series_total: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.powerSync(); g.state.power = 600; const settle = () => { hsrui.bt.queue.length = 0; hsrui.bt.cur = null; hsrui.bt.intro = 0; }; const fin = (w, wave) => { if (wave != null) g.battle.wave = wave; g.battle.finish(w); settle(); hsrui.updateBattle(0.016); }; hsrui.openDomain('cx_spike', () => {}); hsrui.top().tier = 1; hsrui.top().n = 3; hsrui.top().key('ok'); settle(); fin(true); hsrui.battleKey('ok'); settle(); fin(true); hsrui.battleKey('ok'); settle(); fin(true); hsrShots.pump(1, 0); return hsrShots.shot(); })()",
+  win_again: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.powerSync(); g.state.power = 600; const settle = () => { hsrui.bt.queue.length = 0; hsrui.bt.cur = null; hsrui.bt.intro = 0; }; const fin = (w, wave) => { if (wave != null) g.battle.wave = wave; g.battle.finish(w); settle(); hsrui.updateBattle(0.016); }; hsrui.openDomain('cx_hunt', () => {}); hsrui.top().tier = 1; hsrui.top().n = 4; hsrui.top().key('ok'); settle(); fin(true); hsrShots.pump(1, 0); return hsrShots.shot(); })()",
+  lose_waves: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.powerSync(); g.state.power = 600; const settle = () => { hsrui.bt.queue.length = 0; hsrui.bt.cur = null; hsrui.bt.intro = 0; }; const fin = (w, wave) => { if (wave != null) g.battle.wave = wave; g.battle.finish(w); settle(); hsrui.updateBattle(0.016); }; hsrui.openDomain('cx_hunt', () => {}); hsrui.top().n = 8; hsrui.top().key('ok'); settle(); fin(false, 3); hsrShots.pump(1, 0); return hsrShots.shot(); })()",
+  quick_farm: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, ending: true }); g.powerSync(); g.state.power = 510; g.state.inv.items.fuelv = 100; hsrui.openDomain('cx_spike', () => {}); hsrui.top().tier = 3; hsrui.openQuickFarm('cx_spike', 3); hsrShots.pump(2); return hsrShots.shot(); })()",
+  quick_got: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, ending: true }); g.powerSync(); g.state.power = 510; g.state.inv.items.fuelv = 100; hsrui.openDomain('cx_hunt', () => {}); hsrui.top().tier = 2; hsrui.openQuickFarm('cx_hunt', 2); hsrui.top().n = 6; hsrui.top().key('ok'); g.events.length = 0; hsrui.toasts = []; hsrShots.pump(2); return hsrShots.shot(); })()",
+  quick_power: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, ending: true }); g.powerSync(); g.state.power = 510; g.state.inv.items.fuelv = 100; g.state.power = 40; hsrui.openDomain('cx_exp', () => {}); hsrui.openQuickFarm('cx_exp', 0); hsrui.top().n = 8; hsrShots.pump(2); return hsrShots.shot(); })()",
+  quick_target: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, ending: true }); g.powerSync(); g.state.power = 510; g.state.inv.items.fuelv = 100; const k = g.state.party[0], path = Hsr98.CHARS[g.kitOf(k)].path, pc = Hsr98.CALYX.find(x => x.reward === 'path' && x.path === path && g.calyxOpen(x)); g.setGuideTarget(k); for (const n of g.targetRowNeeds(pc.id)) g.state.inv.items[n.id] = Hsr98.ITEMS[n.id].tier === 1 ? n.need - 1 : n.need; hsrui.openQuickFarm(pc.id, 0); hsrui.top().n = 10; hsrui.top().key('ok'); g.events.length = 0; hsrui.toasts = []; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_index_quick: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.powerSync(); g.state.power = 126; g.state.inv.items.fuelv = 100; g.state.guide = { target: g.state.party[0] }; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 3; s.focus = 'rows'; s.row = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_shadow_quick: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.powerSync(); g.state.power = 126; g.state.inv.items.fuelv = 100; g.state.guide = { target: g.state.party[0] }; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 4; s.focus = 'rows'; s.row = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_target_btn: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.powerSync(); g.state.power = 126; g.state.inv.items.fuelv = 100; g.state.guide = { target: g.state.party[0] }; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 0; s.focus = 'pick'; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_target_quick: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.powerSync(); g.state.power = 126; g.state.inv.items.fuelv = 100; g.state.guide = { target: g.state.party[0] }; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 0; s.focus = 'rows'; s.trow = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_target_done: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.powerSync(); g.state.power = 126; g.state.inv.items.fuelv = 100; const k = g.state.party[0]; g.state.guide = { target: k }; g.state.credits = 1e8; for (const n of g.targetNeeds(k)) if (n.id !== 'credits') g.state.inv.items[n.id] = (g.state.inv.items[n.id] || 0) + n.miss; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 0; hsrui.toasts = []; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_view: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.powerSync(); g.state.power = 126; g.state.inv.items.fuelv = 100; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 3; s.focus = 'rows'; s.row = 0; s.key(null, 'KeyL'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_target_pick_warp: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.powerSync(); g.state.power = 126; g.state.inv.items.fuelv = 100; g.addChar('seele', 30); delete g.state.roster.kafka; delete g.state.roster.blade; hsrui.openIpg('index'); hsrui.top().cat = 0; hsrui.openGuideTargetPick(hsrui.top()); const pk = hsrui.top(); pk.sel = g.guideTargets().indexOf('kafka'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_target_warp: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.powerSync(); g.state.power = 126; g.state.inv.items.fuelv = 100; g.addChar('seele', 30); delete g.state.roster.kafka; delete g.state.roster.blade; g.setGuideTarget('kafka'); hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 0; s.focus = 'rows'; s.trow = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  chars_target: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.powerSync(); g.state.power = 126; g.state.inv.items.fuelv = 100; g.addChar('seele', 30); g.setGuideTarget('seele'); hsrui.openChars(); hsrui.top().sec = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_target_rec: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.state.inv.items.fuelv = 100; g.state.guide = { target: g.state.party[0], recOnly: true }; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 0; s.focus = 'rows'; s.trow = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  traces_quick: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.state.inv.items.fuelv = 100; const k = g.state.party[0]; for (const m of Object.keys(g.state.inv.items)) if (Hsr98.ITEMS[m] && Hsr98.ITEMS[m].mat === 'path') g.state.inv.items[m] = 0; hsrui.openChars(k); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = Hsr98.traceNodes(g.kitOf(k)).map(n => g.traceNode(k, n.id)).find(st => st && st.cost && Object.keys(st.cost.items).some(m => Hsr98.ITEMS[m].mat === 'path')).node.id; hsrShots.pump(2); return hsrShots.shot(); })()",
+  traces_ask: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true, rivet_intro: true, rivet_done: true }); g.state.inv.items.fuelv = 100; const k = g.state.party[0]; for (const m of Object.keys(g.state.inv.items)) if (Hsr98.ITEMS[m] && Hsr98.ITEMS[m].mat === 'path') g.state.inv.items[m] = 0; hsrui.openChars(k); const s = hsrui.top(); s.sec = 1; s.trFocus = true; s.trSel = Hsr98.traceNodes(g.kitOf(k)).map(n => g.traceNode(k, n.id)).find(st => st && st.cost && Object.keys(st.cost.items).some(m => Hsr98.ITEMS[m].mat === 'path')).node.id; s.key(null, 'KeyR'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  flow_series: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { express_intro: true, fled: true, mine_done: true }); g.powerSync(); g.state.power = 600; for (const k of g.state.party) g.state.roster[k].lvl = 70; hsrui.openDomain('cx_spike', () => {}); hsrui.top().n = 2; hsrui.top().key('ok'); hsrui.bt.auto = true; hsrui.bt.autoSticky = true; for (let i = 0; i < 80 && !(hsrui.bt.result && hsrui.bt.result.series && !hsrui.bt.result.series.more); i++) hsrShots.pump(100); return hsrShots.shot(); })()",
+  guide_target_pick_all: "(() => { const g = hsrShots.fresh('express'); g.state.flags.express_intro = true; for (const k of Object.keys(g.state.roster)) if (!g.state.party.includes(k)) delete g.state.roster[k]; hsrui.openIpg('index'); hsrui.top().cat = 0; hsrui.openGuideTargetPick(hsrui.top()); const pk = hsrui.top(); pk.sel = g.guideTargets().indexOf('gepard'); hsrShots.pump(2); return hsrShots.shot(); })()",
+  inv_salvage: "(() => { const g = hsrShots.fresh('express'); g.state.tl.lvl = 42; Object.assign(g.state.inv.items, { remains: 960, resin: 1 }); g.recipeSync(); g.events.length = 0; for (let i = 0; i < 9; i++) g.rollRelic(6 + i * 4); hsrui.openInventory(5); hsrui.openSalvage(); hsrShots.pump(2); return hsrShots.shot(); })()",
   fhmeet: "hsrShots.dialog('fh_meet', +(process.env.FRAMES || 40))".replace('process.env.FRAMES || 40', String(+(process.env.FRAMES || 40))),
   fhchat: "(() => { const g = hsrShots.fresh('express'); g.state.chats = null; for (let i = 0; i < 6; i++) for (const id of g.chatSync()) if (id !== 'fh_call') g.chatAuto(id, true); g.events.length = 0; hsrui.openChats('messenger'); hsrShots.pump(90); return hsrShots.shot(); })()",
   supathlock: 'hsrShots.suTerm(1, 2)',
@@ -656,10 +778,12 @@ const PAGE = `(() => {
     },
     phoneRail() { fresh('j_belobog'); ui.openMenu(); const s = ui.top(); s.toRail(2); pump(2); return shot(); },
     eventsNotice() { const g = fresh('express'); delete g.state.flags.events_note; pump(3); return shot(); },
-    events(id, days, got, pick, lvl, will) {
-      const g = fresh('express');
-      g.state.comet = { days, last: days ? '2026-9-29' : null, got: got.slice() };
-      g.clock = () => new Date(2026, 8, 29, 22, 47, 13).getTime();
+    events(id, open, got, pick, lvl, will, outfits) {
+      const g = fresh('express'), now = new Date(2026, 8, 29, 22, 47, 13).getTime(), hour = 3600000;
+      if (outfits) g.state.outfits.push(...outfits);
+      const all = got.filter(Boolean).length === H.COMET_GIFT.length;
+      g.state.comet = { start: now - Math.max(0, open - 1) * hour - 1213000, done: all ? now - 5393000 : null, got: got.slice() };
+      g.clock = () => now;
       if (lvl) g.setTrailLevel(lvl);
       g.state.will = (will || []).slice();
       ui.openEvents(id); ui.top().pick = pick || 0; pump(2); return shot();
@@ -676,6 +800,8 @@ const PAGE = `(() => {
       if (mode === 5) s.select(g.mailbox().findIndex(x => x.m.id === 'v14_hares'));
       if (mode === 6 || mode === 7) s.select(g.mailbox().findIndex(x => x.m.id === 'v15_supply'));
       if (mode === 7) s.claim();
+      if (mode === 8 || mode === 9) s.select(g.mailbox().findIndex(x => x.m.id === 'v16_guide'));
+      if (mode === 9) { pump(1); for (let i = 0; i < 10; i++) s.key('right'); }
       pump(2); return shot();
     },
     chats(mode) {
@@ -794,7 +920,7 @@ const PAGE = `(() => {
     archiveWarp() { const g = fresh('express'); g.state.jade = 99999; for (let i = 0; i < 6; i++) g.warp(10); ui.openBank(null); const s = ui.top(); s.tab = 3; s.sel = g.state.warpLog.findIndex(e => e.rar >= 4); pump(2); return shot(); },
     warpShow(res) { fresh('express'); ui.openWarp(() => {}); ui.top().start(res); return ui.top().show; },
     warpCine(best, t) { const s = hsrShots.warpShow(hsrShots.fakeRes(best, 10)); s.t = t; s.cue = 1e9; pump(1, 0); return shot(); },
-    warpReveal(id, rar, t) { const res = [H.CHARS[id] ? { rar, kind: 'char', id, name: H.CHARS[id].name, res: 'new' } : { rar, kind: 'cone', id, name: H.CONES[id].name }]; const s = hsrShots.warpShow(res); s.begin([0]); s.rt = t; s.fade = 0; pump(1, 0); return shot(); },
+    warpReveal(id, rar, t, outfit) { const res = [H.CHARS[id] ? { rar, kind: 'char', id, name: H.CHARS[id].name, res: 'new' } : { rar, kind: 'cone', id, name: H.CONES[id].name }]; if (outfit) res[0].outfit = outfit; const s = hsrShots.warpShow(res); s.begin([0]); s.rt = t; s.fade = 0; pump(1, 0); return shot(); },
     sigShow(res) { fresh('express'); ui.openWarp(() => {}); ui.top().ban = 'sig'; ui.top().start(res); return ui.top().show; },
     sigRes(best, n) { const out = hsrShots.fakeRes(best, n); if (best === 5) out[6] = { rar: 5, kind: 'char', id: 'miyabi', name: H.CHARS.miyabi.name, res: 'new' }; return out; },
     sigCine(best, t) { const s = hsrShots.sigShow(hsrShots.sigRes(best, 10)); s.t = t; s.cue = 1e9; pump(1, 0); return shot(); },
@@ -935,9 +1061,10 @@ const PAGE = `(() => {
       pump(30);
       return shot();
     },
-    ultShot(id, beat, t, aim) {
+    ultShot(id, beat, t, aim, outfit) {
       const key = id === 'trail_p' ? 'trail' : id, party = [key, ...['march', 'himeko', 'danheng', 'natasha'].filter(k => k !== key)].slice(0, 4);
       const g = fresh('j_plains', party);
+      if (outfit) g.debugOutfit(outfit, true);
       if (id === 'trail_p') g.state.mcPath = 'trail_p';
       g.startBattle({ enemies: ['reaver:20', 'eliminator:20', 'flamespawn:20'], lvl: 20, bg: 'station', music: 'battle' });
       ui.drainGameEvents();
@@ -952,9 +1079,26 @@ const PAGE = `(() => {
       sh.draw(ui.ctx);
       return ui.canvas.toDataURL('image/png');
     },
-    fusShot(id, beat, t, aim) {
+    skinShot(id, t, aim, outfit) {
+      const party = [id, ...['march', 'himeko', 'danheng', 'natasha'].filter(k => k !== id)].slice(0, 4);
+      const g = fresh('j_plains', party);
+      g.debugOutfit(outfit, true);
+      g.startBattle({ enemies: ['reaver:20', 'eliminator:20', 'flamespawn:20'], lvl: 20, bg: 'station', music: 'battle' });
+      ui.drainGameEvents();
+      pump(40);
+      const b = g.battle, u = b.allies[0];
+      const lay = [...ui.enemyLayout()].map(([e, p]) => ({ u: e, x: p.x / 2, y: p.y / 2, s: p.s / 2 }));
+      const foes = aim === 'none' ? [] : aim === 'one' ? lay.slice(1, 2) : lay;
+      const sh = new H.SkillShow(ui, u, { foes, bg: 'station' });
+      sh.t = t; sh.T = t;
+      ui.hits = [];
+      sh.draw(ui.ctx);
+      return ui.canvas.toDataURL('image/png');
+    },
+    fusShot(id, beat, t, aim, outfit) {
       const f = H.FUSIONS[id], keys = f.members.map(k => k === 'trail_p' ? 'trail' : k), party = [...keys, ...['march', 'himeko', 'danheng', 'natasha'].filter(k => !keys.includes(k))].slice(0, 4);
       const g = fresh('j_plains', party);
+      if (outfit) g.debugOutfit(outfit, true);
       if (f.members.includes('trail_p')) g.state.mcPath = 'trail_p';
       g.startBattle({ enemies: ['reaver:20', 'eliminator:20', 'flamespawn:20'], lvl: 20, bg: 'station', music: 'battle' });
       ui.drainGameEvents();
@@ -1221,6 +1365,77 @@ const PAGE = `(() => {
       });
       return ui.canvas.toDataURL('image/png');
     },
+    iconGroups() {
+      const I = H.ITEMS, lines = (mat, keys) => keys.map(l => [l, [1, 2, 3].map(t => l + t)]), byKind = k => Object.keys(I).filter(id => I[id].kind === k);
+      return {
+        path: lines('path', ['dest', 'hunt', 'erud', 'harm', 'nihil', 'pres', 'abund', 'memo', 'elat']),
+        foe: lines('foe', ['core', 'legion', 'silver', 'ancient', 'scion', 'artifex']),
+        echo: [['echo', ['echo_doom', 'echo_lament', 'echo_ochema', 'echo_borehole']], ['5star', ['tracks', 'shadow_dest', 'shadow_pres']], ['synth', ['remains', 'resin']]],
+        syn: [['syn2', H.SYN_MATS.slice(0, 5)], ['syn2b', H.SYN_MATS.slice(5, 6)], ['syn3', H.SYN_MATS.slice(6)]],
+        food: [['food1', byKind('food').slice(0, 5)], ['food2', byKind('food').slice(5, 10)], ['food3', byKind('food').slice(10)]],
+        exp: [['exp', ['exp1', 'exp2', 'exp3']], ['rcp1', byKind('recipe').slice(0, 6)], ['rcp2', byKind('recipe').slice(6)]]
+      };
+    },
+    sheetCanvas(w, h) { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const c = cv.getContext('2d'); c.fillStyle = '#20243a'; c.fillRect(0, 0, w, h); return [cv, c]; },
+    sheetOut(cv, gray) {
+      if (!gray) return cv.toDataURL('image/png');
+      const [g2, c2] = this.sheetCanvas(cv.width, cv.height); c2.filter = 'grayscale(1)'; c2.drawImage(cv, 0, 0); return g2.toDataURL('image/png');
+    },
+    sheetLabel(c, s, x, y, col) { c.fillStyle = col || '#e8e0c8'; c.font = '10px Tahoma, sans-serif'; c.textBaseline = 'top'; c.fillText(s, x, y); },
+    relicSheet(kind, gray) {
+      const G = H.Gfx, sizes = [18, 32, 40, 64];
+      const slots = H.RELIC_SLOTS.filter(s => s.kind === kind), sets = (kind === 'cavern' ? H.CAVERN_SETS : H.PLANAR_SETS).concat(['none']);
+      const bw = sizes.reduce((a, s) => a + s + 8, 0) + 6, rh = 76;
+      const [cv, c] = this.sheetCanvas(130 + slots.length * bw, 24 + sets.length * rh);
+      slots.forEach((sl, i) => this.sheetLabel(c, sl.name, 130 + i * bw, 6));
+      sets.forEach((set, j) => {
+        const y = 24 + j * rh, d = H.RELIC_SETS[set];
+        this.sheetLabel(c, set, 6, y + 4);
+        if (d) this.sheetLabel(c, d.name.slice(0, 20), 6, y + 18, '#9aa0c0');
+        slots.forEach((sl, i) => {
+          let x = 130 + i * bw;
+          for (const s of sizes) { G.rarityCell(c, x - 2, y - 2 + 66 - s, s + 4, s + 4, 4); G.itemIcon(c, 'relic:' + sl.key, x, y + 66 - s, s, set); x += s + 8; }
+          if (d && d.pieces && d.pieces[sl.key]) this.sheetLabel(c, d.pieces[sl.key].slice(0, 28), 130 + i * bw, y + 66, '#9aa0c0');
+        });
+      });
+      return this.sheetOut(cv, gray);
+    },
+    itemSheet(group, gray) {
+      const G = H.Gfx, sizes = [18, 32, 40, 64], rows = this.iconGroups()[group];
+      const per = Math.max(...rows.map(r => r[1].length)), bw = sizes.reduce((a, s) => a + s + 8, 0) + 10, rh = 92;
+      const [cv, c] = this.sheetCanvas(70 + per * bw, 10 + rows.length * rh);
+      rows.forEach(([label, ids], j) => {
+        const y = 10 + j * rh;
+        this.sheetLabel(c, label, 6, y + 4);
+        ids.forEach((id, i) => {
+          let x = 70 + i * bw;
+          const rar = (H.ITEMS[id] && H.ITEMS[id].rar) || 3;
+          for (const s of sizes) { G.rarityCell(c, x - 2, y - 2 + 66 - s, s + 4, s + 4, rar); G.itemIcon(c, id, x, y + 66 - s, s); x += s + 8; }
+          G.itemSilhouette(c, id, x - 26, y + 70, 18);
+          this.sheetLabel(c, (H.ITEMS[id] ? H.ITEMS[id].name : id).slice(0, 30), 70 + i * bw, y + 70, '#9aa0c0');
+        });
+      });
+      return this.sheetOut(cv, gray);
+    },
+    iconCheck() {
+      const G = H.Gfx, mask = c => { const d = c.getContext('2d').getImageData(0, 0, 32, 32).data, m = new Uint8Array(1024); for (let i = 0; i < 1024; i++) m[i] = d[i * 4 + 3] > 0 ? 1 : 0; return m; };
+      const iou = (a, b) => { let i = 0, u = 0; for (let k = 0; k < 1024; k++) { i += a[k] & b[k]; u += a[k] | b[k]; } return u ? i / u : 1; };
+      const area = m => m.reduce((a, v) => a + v, 0);
+      const box = m => { let x0 = 32, y0 = 32, x1 = -1, y1 = -1; for (let k = 0; k < 1024; k++) if (m[k]) { const x = k % 32, y = k >> 5; x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); } return [x1 - x0 + 1, y1 - y0 + 1]; };
+      const rep = { relicPairs: [], relicMissing: [], tiers: [], small: [], foodPairs: [] };
+      for (const sl of H.RELIC_SLOTS) {
+        const sets = sl.kind === 'cavern' ? H.CAVERN_SETS : H.PLANAR_SETS, lim = sl.key === 'feet' ? 0.9 : sl.key === 'sphere' ? 0.92 : 0.85;
+        for (const s of sets) if (!(G.RELIC_PIECE[s] && G.RELIC_PIECE[s][sl.key])) rep.relicMissing.push(s + ':' + sl.key);
+        const ms = sets.map(s => mask(G.itemCanvas('relic:' + sl.key, s, 32)));
+        for (let i = 0; i < sets.length; i++) for (let j = i + 1; j < sets.length; j++) { const v = iou(ms[i], ms[j]); if (v > lim) rep.relicPairs.push([sl.key, sets[i], sets[j], +v.toFixed(2)]); }
+      }
+      const groups = this.iconGroups();
+      for (const [line, ids] of groups.path.concat(groups.foe)) { const a = ids.map(id => area(mask(G.itemCanvas(id, null, 32)))); rep.tiers.push([line, a, +(a[2] / Math.max(1, a[0])).toFixed(2)]); }
+      for (const id of Object.keys(H.ITEMS)) { const b = box(mask(G.itemCanvas(id, null, 32))); if (b[0] < 22 && b[1] < 22) rep.small.push([id, b]); }
+      const food = Object.keys(H.ITEMS).filter(id => H.ITEMS[id].kind === 'food'), fm = food.map(id => mask(G.itemCanvas(id, null, 32)));
+      for (let i = 0; i < food.length; i++) for (let j = i + 1; j < food.length; j++) { const v = iou(fm[i], fm[j]); if (v > 0.85) rep.foodPairs.push([food[i], food[j], +v.toFixed(2)]); }
+      return 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(rep, null, 1))));
+    },
     icons() {
       const c = ui.ctx, G = H.Gfx;
       c.fillStyle = '#20243a'; c.fillRect(0, 0, 640, 480);
@@ -1251,13 +1466,25 @@ const PAGE = `(() => {
     coneArt(big) {
       const c = ui.ctx, G = H.Gfx;
       c.fillStyle = '#20243a'; c.fillRect(0, 0, 640, 480);
+      if (big) { big.forEach((id, i) => { G.drawConeCard(c, id, 8 + i * 158, 40, 150, 212, { sup: 3 }); ui.text(id, 83 + i * 158, 256, { align: 'center', size: 10 }); }); return ui.canvas.toDataURL('image/png'); }
       Object.keys(H.CONES).forEach((id, i) => {
-        const x = 4 + (i % 12) * 53, y = 4 + Math.floor(i / 12) * 84;
-        G.drawConeCard(c, id, x, y, 48, 68, { sup: 1 });
-        ui.text(id.slice(0, 9), x + 24, y + 70, { align: 'center', size: 9 });
+        const x = 4 + (i % 13) * 49, y = 4 + Math.floor(i / 13) * 74;
+        G.drawConeCard(c, id, x, y, 44, 62, { sup: 1 });
+        ui.text(id.slice(0, 8), x + 22, y + 63, { align: 'center', size: 8 });
       });
-      (big || ['mirror', 'night', 'milkyway', 'goodnight']).forEach((id, i) => G.drawConeCard(c, id, 8 + i * 158, 256, 116, 164, { scale: 2, sup: 3 }));
       return ui.canvas.toDataURL('image/png');
+    },
+    coneCards(id) {
+      const c = ui.ctx, G = H.Gfx;
+      c.fillStyle = '#20243a'; c.fillRect(0, 0, 640, 480);
+      [[14, 20], [20, 28], [40, 56], [44, 62], [56, 78], [90, 126], [166, 230]].reduce((x, [w, h]) => { G.drawConeCard(c, id, x, 470 - h, w, h, { sup: 2 }); ui.text(w + '×' + h, x + w / 2, 466 - h - 12, { align: 'center', size: 9 }); return x + w + 12; }, 8);
+      G.drawConeCard(c, id, 8, 8, 166, 230, { info: false });
+      return ui.canvas.toDataURL('image/png');
+    },
+    coneView(id, sup, art) {
+      const g = fresh('express'); g.state.inv.cones.push({ uid: 'shot_' + id, id, sup: sup || 1 });
+      ui.openMenu(); ui.openInventory(4); ui.openConeView(id, 'shot_' + id); if (art) ui.top().art = true; pump(2);
+      return new Promise(r => setTimeout(r, 300)).then(() => { pump(2); return shot(); });
     }
   };
   return true;
@@ -1340,11 +1567,14 @@ async function main() {
   const names = (process.argv[3] || Object.keys(SCENES).join(',')).split(',');
   const warpScene = n => {
     if (n.startsWith('warpc')) { const [b, t] = n.slice(5).split('_'); return 'hsrShots.warpCine(' + (+b) + ',' + (+t) + ')'; }
-    if (n.startsWith('warpv_')) { const [, id, rar, t] = n.split('_'); return 'hsrShots.warpReveal(' + JSON.stringify(id) + ',' + (+rar) + ',' + (+t) + ')'; }
+    if (n.startsWith('warpv_')) { const [, id, rar, t] = n.split('_'); return 'hsrShots.warpReveal(' + JSON.stringify(id) + ',' + (+rar) + ',' + (+t) + ',' + JSON.stringify(process.env.OUTFIT || '') + ')'; }
     if (n.startsWith('sigc')) { const [b, t] = n.slice(4).split('_'); return 'hsrShots.sigCine(' + (+b) + ',' + (+t) + ')'; }
     if (n.startsWith('sigv_')) { const [, id, rar, t, h] = n.split('_'); return 'hsrShots.sigReveal(' + JSON.stringify(id) + ',' + (+rar) + ',' + (+t) + ',' + (h === 'h') + ')'; }
     if (n.startsWith('midc')) { const [b, tt] = n.slice(4).split('_'); return 'hsrShots.midCine(' + (+b) + ',' + (+tt) + ')'; }
     if (n.startsWith('conebig_')) return 'hsrShots.coneArt(' + JSON.stringify(n.slice(8).split('-')) + ')';
+    if (n.startsWith('conecard_')) return 'hsrShots.coneCards(' + JSON.stringify(n.slice(9)) + ')';
+    if (n.startsWith('coneviewart_')) return 'hsrShots.coneView(' + JSON.stringify(n.slice(12)) + ', 1, true)';
+    if (n.startsWith('coneview_')) { const m = n.slice(9).match(/^(.+?)(?:_(\d))?$/); return 'hsrShots.coneView(' + JSON.stringify(m[1]) + ',' + (+m[2] || 1) + ')'; }
     if (n.startsWith('midv_')) { const [, id, rar, tt, h] = n.split('_'); return 'hsrShots.midReveal(' + JSON.stringify(id) + ',' + (+rar) + ',' + (+tt) + ',' + (h === 'h') + ')'; }
     if (n.startsWith('spotc')) { const [b, tt] = n.slice(5).split('_'); return 'hsrShots.spotCine(' + (+b) + ',' + (+tt) + ')'; }
     if (n.startsWith('spotv_')) { const m = n.match(/^spotv_(.+)_(\d)_([\d.]+)$/); return 'hsrShots.spotReveal(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ')'; }
@@ -1365,8 +1595,9 @@ async function main() {
     if (n.startsWith('nav_')) { const [map, kind] = n.slice(4).split('__'); return 'hsrShots.nav(' + JSON.stringify(map) + ',' + JSON.stringify(kind || null) + ')'; }
     if (n.startsWith('hud_')) return 'hsrShots.hudMap(' + JSON.stringify(n.slice(4)) + ", null, null, 'Прогуляться по Белобогу: заглянуть в мастерскую «Незимье» (юго-восток)')";
     if (n.startsWith('cine_')) { const m = n.match(/^cine_(c_[a-z0-9_]+?)_(\d+)_([\d.]+)(?:_([mf]))?$/); return m ? 'hsrShots.cine(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + JSON.stringify(m[4] || '') + ')' : null; }
-    if (n.startsWith('ult_')) { const m = n.match(/^ult_([a-z]+(?:_p)?)_(\d)_([\d.]+)(?:_(all|one|none))?$/); return m ? 'hsrShots.ultShot(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + JSON.stringify(m[4] || '') + ')' : null; }
-    if (n.startsWith('fus_')) { const m = n.match(/^fus_(f_[a-z0-9]+)_(\d)_([\d.]+)(?:_(all|one|none))?$/); return m ? 'hsrShots.fusShot(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + JSON.stringify(m[4] || '') + ')' : null; }
+    if (n.startsWith('skin_')) { const m = n.match(/^skin_([a-z]+)_([\d.]+)(?:_(all|one|none))?$/); return m ? 'hsrShots.skinShot(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + JSON.stringify(m[3] || '') + ',' + JSON.stringify(process.env.OUTFIT || '') + ')' : null; }
+    if (n.startsWith('ult_')) { const m = n.match(/^ult_([a-z]+(?:_p)?)_(\d)_([\d.]+)(?:_(all|one|none))?$/); return m ? 'hsrShots.ultShot(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + JSON.stringify(m[4] || '') + ',' + JSON.stringify(process.env.OUTFIT || '') + ')' : null; }
+    if (n.startsWith('fus_')) { const m = n.match(/^fus_(f_[a-z0-9]+)_(\d)_([\d.]+)(?:_(all|one|none))?$/); return m ? 'hsrShots.fusShot(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + JSON.stringify(m[4] || '') + ',' + JSON.stringify(process.env.OUTFIT || '') + ')' : null; }
     if (n.startsWith('fuslive_')) { const m = n.match(/^fuslive_([\d.]+)$/); return m ? 'hsrShots.fusLive(' + m[1] + ')' : null; }
     if (n.startsWith('ultlive_')) { const m = n.match(/^ultlive_([a-z]+(?:_p)?)_([\d.]+)$/); return m ? 'hsrShots.ultLive(' + JSON.stringify(m[1]) + ',' + m[2] + ')' : null; }
     if (n.startsWith('info_')) { const m = n.match(/^info_([a-z_]+?)_(\d)_(\d+)_(\d+)(_end)?$/); return m ? 'hsrShots.info(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + m[4] + ',' + !!m[5] + ')' : null; }
@@ -1389,8 +1620,9 @@ async function main() {
     await b.load();
     for (const n of names) {
       const url = await b.ev(sceneOf(n));
-      fs.writeFileSync(path.join(out, n + '.png'), Buffer.from(url.slice(url.indexOf(',') + 1), 'base64'));
-      console.log(n + '.png');
+      const ext = url.startsWith('data:application/json') ? '.json' : '.png';
+      fs.writeFileSync(path.join(out, n + ext), Buffer.from(url.slice(url.indexOf(',') + 1), 'base64'));
+      console.log(n + ext);
     }
     if (b.errors.length) console.log('page errors:\n' + b.errors.join('\n'));
   } finally {

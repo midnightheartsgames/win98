@@ -67,9 +67,11 @@
   };
   const PICK_VIS = 5;
   const pad2 = n => String(n).padStart(2, '0');
+  const powerClock = ms => { const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60; return (h ? h + ':' + pad2(m) : String(m)) + ':' + pad2(s % 60); };
+  const POWER_ROWS = ['res', 'fuel', 'jade'];
   const warpName = e => (e.kind === 'char' ? (H.CHARS[e.id] || {}).name : (H.CONES[e.id] || {}).name) || e.id;
   const warpWhen = e => { if (!e.at) return '—'; const d = new Date(e.at); return pad2(d.getDate()) + '.' + pad2(d.getMonth() + 1) + '.' + String(d.getFullYear()).slice(2) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); };
-  const warpNote = e => (e.cameo ? ['гость из гильдии', C.gold] : e.off ? [e.ban === 'guild' ? (e.rar === 4 ? 'не Казума' : H.BANNERS.guild.stars[e.id] ? 'другой член отряда' : 'гость из стандарта') + ' · дальше гарант' : e.ban === 'wiz' ? (e.rar === 4 ? 'не «Чунчунмару»' : Object.values(H.BANNERS.wiz.stars).some(x => x.cone === e.id) ? 'конус другой героини' : 'конус из стандарта') + ' · дальше гарант' : e.ban === 'con' ? (e.rar === 4 ? 'вне тройки' : 'гость из стандарта') + ' · дальше гарант' : e.ban === 'alley' ? (e.rar === 4 ? 'конус не из Аллеи' : 'конус из стандарта') + ' · дальше гарант' : 'вне события · дальше гарант', C.sub] : e.kind === 'char'
+  const warpNote = e => (e.cameo ? ['гость из гильдии', C.gold] : e.off ? [e.ban === 'guild' ? (e.rar === 4 ? 'не Казума' : H.BANNERS.guild.stars[e.id] ? 'другой член отряда' : 'гость из стандарта') + ' · дальше гарант' : e.ban === 'wiz' ? (e.rar === 4 ? 'не «Это был трактор»' : Object.values(H.BANNERS.wiz.stars).some(x => x.cone === e.id) ? 'конус другой героини' : 'конус из стандарта') + ' · дальше гарант' : e.ban === 'con' ? (e.rar === 4 ? 'вне тройки' : 'гость из стандарта') + ' · дальше гарант' : e.ban === 'alley' ? (e.rar === 4 ? 'конус не из Аллеи' : 'конус из стандарта') + ' · дальше гарант' : 'вне события · дальше гарант', C.sub] : e.kind === 'char'
     ? ({ new: ['новый персонаж', C.ok], eid: ['эйдолон +1', C.gold], max: ['эйдолоны VI', C.gold], credits: ['+3000 кредитов', C.gold] }[e.res] || ['персонаж', C.sub])
     : e.sup > 1 ? ['наложение S' + e.sup, C.gold] : ['световой конус', C.sub]);
   const warpPity = e => (e.pity ? e.pity + ' / ' + (e.rar === 5 ? (e.ban === 'cone' || e.ban === 'amp' || e.ban === 'forge' || e.ban === 'wiz' || e.ban === 'alley' ? T.conePity5 : T.pity5) : T.pity4) : '—');
@@ -140,8 +142,8 @@
     rosterKeys() {
       const s = this.game.state, order = Object.keys(H.CHARS);
       const slot = k => { const i = s.party.indexOf(k); return i < 0 ? 4 : i; };
-      const fav = k => (s.roster[k].fav ? 0 : 1);
-      return Object.keys(s.roster).sort((a, b) => slot(a) - slot(b) || fav(a) - fav(b) || order.indexOf(a) - order.indexOf(b));
+      const fav = k => (s.roster[k].fav ? 0 : 1), tgt = this.game.guideTarget ? this.game.guideTarget() : null, aim = k => (k === tgt ? 0 : 1);
+      return Object.keys(s.roster).sort((a, b) => aim(a) - aim(b) || slot(a) - slot(b) || fav(a) - fav(b) || order.indexOf(a) - order.indexOf(b));
     },
 
     favStar(c, x, y, r, on) {
@@ -165,8 +167,8 @@
         { label: 'Архив', icon: 'archive', fn: () => ui.openBank(null) },
         { label: 'Миссии', icon: 'mission', alert: 'missions', fn: () => ui.openMission() },
         g.state.su ? { label: 'Погружение', icon: 'nav', fn: () => ui.openSuRun() } : { label: 'Навигация', icon: 'nav', fn: () => ui.openNav(null) },
-        { label: 'Сохранить', icon: 'save', disabled: !!g.state.su || !near(), why: g.state.su ? 'вне Виртуальной вселенной: каждая зона сохраняется сама' : 'у якоря пространства или в городе', fn: () => ui.openSaves('save') },
-        { label: 'Загрузить', icon: 'load', fn: () => ui.openSaves('load') },
+        { label: 'Путеводитель', icon: 'ipg', alert: 'guide', disabled: !g.state.flags.express_intro, why: 'после знакомства с Экспрессом', fn: () => ui.openIpg() },
+        { label: 'Синтез', icon: 'synth', fn: () => ui.openSynth() },
         { label: 'События', icon: 'events', disabled: !g.eventsOpen(), why: 'после станции «Герта»', alert: 'events', fn: () => ui.openEvents() },
         { label: 'Снабжение', icon: 'shop', disabled: !g.state.flags.express_intro, why: 'после знакомства с Экспрессом', fn: () => ui.openSupply() },
         { label: 'Сообщения', icon: 'chat', alert: 'chat', fn: () => ui.openChats(null) }
@@ -174,6 +176,8 @@
       const rail = () => [
         { label: 'Почта', icon: 'mail', alert: 'mail', fn: () => ui.openMail() },
         { label: 'Настройки', icon: 'settings', fn: () => ui.openSettings() },
+        { label: 'Сохранить', icon: 'save', disabled: !!g.state.su || !near(), why: g.state.su ? 'вне Виртуальной вселенной: каждая зона сохраняется сама' : 'у якоря пространства или в городе', fn: () => ui.openSaves('save') },
+        { label: 'Загрузить', icon: 'load', fn: () => ui.openSaves('load') },
         { label: 'Управление', icon: 'guide', fn: () => ui.openGuide() },
         { label: 'В титры', icon: 'exit', fn: () => ui.confirmTitle() }
       ];
@@ -204,8 +208,8 @@
           const tr = s.tl;
           ui.text('Ур. освоения', dx + 12, dy + 90, { size: 11, col: C.sub });
           ui.text(String(tr.lvl), dx + 92, dy + 86, { size: 16, bold: true, serif: true, col: C.gold });
-          ui.text(tr.lvl >= H.TL_MAX ? 'Макс. уровень' : 'Опыт ' + tr.exp + '/' + H.expToNext(tr.lvl), dx + dw - 12, dy + 90, { size: 10, align: 'right', col: C.sub });
-          ui.rail(dx + 14, dy + 110, dw - 28, tr.lvl >= H.TL_MAX ? 1 : tr.exp / H.expToNext(tr.lvl));
+          ui.text(tr.lvl >= H.TL_MAX ? 'Макс. уровень' : 'Опыт ' + tr.exp + '/' + H.tlExpToNext(tr.lvl), dx + dw - 12, dy + 90, { size: 10, align: 'right', col: C.sub });
+          ui.rail(dx + 14, dy + 110, dw - 28, tr.lvl >= H.TL_MAX ? 1 : tr.exp / H.tlExpToNext(tr.lvl));
           const list = tiles(), gx = dx + 12, gy = dy + 124, tw = 78, th = 62, gap = 5;
           list.forEach((t, i) => {
             const x = gx + (i % 3) * (tw + gap), y = gy + Math.floor(i / 3) * (th + gap), on = i === this.sel && this.rail < 0;
@@ -216,7 +220,7 @@
             c.fillStyle = 'rgba(255,255,255,0.08)'; c.fillRect(x + 1, y + 1, tw - 2, 1);
             if (on) { c.strokeStyle = C.brassHi; c.lineWidth = 2; c.strokeRect(x + 1, y + 1, tw - 2, th - 2); c.lineWidth = 1; }
             G.menuIcon(c, t.icon, x + tw / 2 - 14, y + 6, 28, t.disabled ? '#4c5070' : on ? '#fff0c0' : '#d8dcf0');
-            ui.text(t.label, x + tw / 2, y + 40, { align: 'center', size: 11, bold: on, col: t.disabled ? C.dim : on ? C.gold : C.cream });
+            ui.text(t.label, x + tw / 2, y + 40, { align: 'center', size: t.label.length > 10 ? 10 : 11, bold: on, col: t.disabled ? C.dim : on ? C.gold : C.cream });
             if (t.alert && al[t.alert]) ui.badge(x + tw - 9, y + 9);
             ui.hit(x, y, tw, th, () => { this.rail = -1; this.sel = i; this.key('ok'); });
           });
@@ -229,7 +233,7 @@
             const x = rx + 4, y = dy + 56 + i * 44, cw = rw - 8, ch = 38, on = this.rail === i;
             c.fillStyle = on ? 'rgba(242,220,154,0.2)' : 'rgba(255,255,255,0.04)'; c.fillRect(x, y, cw, ch);
             if (on) { c.strokeStyle = C.brassHi; c.lineWidth = 2; c.strokeRect(x + 1, y + 1, cw - 2, ch - 2); c.lineWidth = 1; }
-            G.menuIcon(c, t.icon, x + (cw - 24) / 2, y + 7, 24, on ? '#fff0c0' : '#d8dcf0');
+            G.menuIcon(c, t.icon, x + (cw - 24) / 2, y + 7, 24, t.disabled ? '#4c5070' : on ? '#fff0c0' : '#d8dcf0');
             if (t.alert && al[t.alert]) ui.badge(x + cw - 4, y + 5);
             ui.hit(x, y, cw, ch, () => { if (this.rail < 0) this.toRail(this.sel); this.rail = this.railSel = i; this.key('ok'); });
           });
@@ -241,13 +245,13 @@
           let mx = dx + 14;
           mx += ui.money(mx, fy + 4, 'jade', s.jade) + 8;
           mx += ui.money(mx, fy + 4, 'credits', s.credits) + 8;
-          ui.money(mx, fy + 4, 'power', s.power + '/' + T.powerMax);
+          ui.powerChip(mx, fy + 4);
           const cur = this.rail < 0 ? list[this.sel] : null, rcur = this.rail >= 0 ? R[this.rail] : null;
           const unread = g.mailbox().filter(x => g.mailNew(x)).length;
-          const railNote = { mail: 'Почта: ' + (unread ? 'новых писем ' + unread : 'новых писем нет'), settings: 'Настройки: звук, скорость, разрешение', guide: 'Управление: клавиши поля, боя и карты', exit: 'В титры: выйти в главное меню' };
-          const note = rcur ? railNote[rcur.icon]
-            : cur && cur.disabled ? 'Доступно ' + cur.why : 'F7 — +' + T.debugJade + ' нефрита (отладка)';
-          ui.text(note, dx + dw / 2, fy + 21, { align: 'center', size: 9, col: cur && cur.disabled ? C.bad : rcur ? C.cream : C.dim });
+          const railNote = { mail: 'Почта: ' + (unread ? 'новых писем ' + unread : 'новых писем нет'), settings: 'Настройки: звук, скорость, разрешение', save: 'Сохранить: карта памяти, слоты 1-3', load: 'Загрузить: слоты и автосохранение', guide: 'Управление: клавиши поля, боя и карты', exit: 'В титры: выйти в главное меню' };
+          const off = (rcur || cur || {}).disabled;
+          const note = off ? 'Доступно ' + (rcur || cur).why : rcur ? railNote[rcur.icon] : 'F7: +' + T.debugJade + ' нефрита (отладка)';
+          ui.text(note, dx + dw / 2, fy + 21, { align: 'center', size: 9, col: off ? C.bad : rcur ? C.cream : C.dim });
           ui.hints([['←↑↓→', 'Выбор'], ['Enter', 'Открыть'], ['Esc', 'Закрыть']], 14, HGT - 18);
         },
         key(k) {
@@ -257,7 +261,7 @@
             if (k === 'up' || k === 'down') { this.rail = this.railSel = (this.rail + (k === 'up' ? R.length - 1 : 1)) % R.length; ui.sfx('select'); }
             if (k === 'left') { this.rail = -1; this.sel = this.from; ui.sfx('select'); }
             if (k === 'right') { this.rail = -1; this.sel = this.from - 2; ui.sfx('select'); }
-            if (k === 'ok') R[this.rail].fn();
+            if (k === 'ok') { const t = R[this.rail]; if (t.disabled) { ui.sfx('deny'); ui.toast('«' + t.label + '» доступно ' + t.why + '.'); return; } t.fn(); }
             return;
           }
           const col = this.sel % 3;
@@ -299,23 +303,26 @@
         ['Бой', [['Q', 'выбрать атаку (+1 очко)'], ['E', 'выбрать навык (−1 очко)'], ['Пробел', 'применить'], ['1–4', 'абсолютная техника'], ['T', 'Контакт'], ['R', 'Слияние'], ['V', 'авто-бой'], ['←→', 'цель'], ['Shift', 'ускорение']], 1],
         ['Диалог', [['Enter', 'дальше'], ['Tab', 'пропустить сцену']], 0],
         ['Карта', [['↑↓', 'зона'], ['←→', 'метка'], ['Enter', 'карточка и телепорт'], ['Q E', 'масштаб'], ['Tab', 'Звёздный путь']], 1],
+        ['Путеводитель', [['Q E', 'раздел'], ['I', 'правила'], ['Enter', 'получить, войти'], ['F', 'забрать всё, купон'], ['L', 'испытание'], ['C', 'цель развития'], ['R', 'рекомендуемые Следы']], 1],
+        ['Испытание', [['↑↓ ←→', 'сложность, количество'], ['Q', 'быстрое получение'], ['T R', 'резерв энергии, ещё раз']], 0],
+        ['Синтез', [['Q E', 'вкладка'], ['A D', 'количество'], ['F R', 'фильтр, автодобавление, смола']], 0],
         ['Отладка', [['F7', '+' + T.debugJade + ' звёздного нефрита'], ['F8', 'меню выдачи']], 0]
       ];
       this.push({
         draw(c) {
-          ui.win(60, 40, 520, 400, { title: 'Управление' });
-          ui.closeBtn(60 + 520 - 30, 40 + 8, () => ui.pop());
-          G.menuIcon(c, 'guide', 76, 58, 32);
-          const col = { 0: [120, 64], 1: [350, 64] };
+          ui.win(60, 18, 520, 434, { title: 'Управление' });
+          ui.closeBtn(60 + 520 - 30, 18 + 8, () => ui.pop());
+          G.menuIcon(c, 'guide', 76, 36, 32);
+          const col = { 0: [120, 40], 1: [350, 40] };
           rows.forEach(([head, list, side]) => {
             const at = col[side];
             let [x, y] = at;
             ui.text(head, x, y, { bold: true, serif: true, col: C.gold });
             y += 20;
-            for (const [k, l] of list) { const w = ui.keycap(x + 10, y, k); ui.text(l, x + 16 + w, y + 1, { size: 11 }); y += 17; }
-            at[1] = y + 12;
+            for (const [k, l] of list) { const w = ui.keycap(x + 10, y, k); ui.text(l, x + 16 + w, y + 1, { size: 11 }); y += 15; }
+            at[1] = y + 8;
           });
-          ui.hints([['Esc', 'Назад']], W / 2, 414, { align: 'center' });
+          ui.hints([['Esc', 'Назад']], W / 2, 458, { align: 'center' });
         },
         key(k) { if (k === 'back' || k === 'ok') ui.pop(); }
       });
@@ -324,7 +331,7 @@
     statValue(st, key, r, kit) {
       if (key === 'hp') return (r.hp == null ? st.hp : r.hp) + '/' + st.hp;
       if (key === 'err') return Math.round(r.energy || 0) + '/' + kit.energy;
-      if (key === 'critR' || key === 'critD' || key === 'breakE') return pct(st[key] || 0);
+      if (key === 'critR' || key === 'critD' || key === 'breakE' || key === 'elation') return pct(st[key] || 0);
       return String(st[key]);
     },
 
@@ -369,6 +376,7 @@
           if (ci >= 0) ui.circlePortrait(c, G.lookOf(g.kitOf(k), g), slotX(ci) + P / 2 - 17, 6, 34, C.brassHi);
           list.forEach((kk, i) => { if (g.eidNew(kk) > 0) ui.badge(slotX(i) + P - 5, 10); });
           list.forEach((kk, i) => { if (g.isFav(kk)) ui.favStar(c, slotX(i) + 6, 12, 5, true); });
+          list.forEach((kk, i) => { if (ui.guideTargetMark && kk === (g.guideTarget && g.guideTarget())) ui.guideTargetMark(c, slotX(i) + P - 7, 40); });
           c.restore();
           list.forEach((kk, i) => { const x = slotX(i); if (x > x0 - P / 2 && x < x0 + vw - P / 2) ui.hit(x, 4, P, 46, () => { this.k = kk; ui.sfx('select'); }); });
           let qx = x0 - 22, ex = x0 + vw + 6;
@@ -475,7 +483,7 @@
           ui.text('/' + H.MAX_LVL, px + 12 + ui.measure('Ур. ' + r.lvl, 15, true, true) + 2, py + 80, { size: 11, col: C.dim });
           ui.text(r.exp + '/' + H.expToNext(r.lvl), px + pw - 12, py + 80, { size: 10, align: 'right', col: C.sub });
           ui.rail(px + 12, py + 100, pw - 24, r.exp / H.expToNext(r.lvl));
-          STAT_ROWS.forEach(([key, name], i) => {
+          (kit.path === 'elation' ? STAT_ROWS.map(x => x[0] === 'breakE' ? ['elation', 'Радость'] : x) : STAT_ROWS).forEach(([key, name], i) => {
             const y = py + 112 + i * 19;
             if (i % 2 === 0) { c.fillStyle = 'rgba(255,255,255,0.04)'; c.fillRect(px + 8, y - 2, pw - 16, 19); }
             G.statIcon(c, key, px + 12, y + 1, 12, '#c8d0f0');
@@ -492,8 +500,8 @@
             G.drawConeCard(c, cone.id, px + 12, cy, 40, 56, { info: false });
             const d = H.CONES[cone.id];
             ui.wrap(d.name, pw - 86, 11).slice(0, 2).forEach((l, i) => ui.text(l, px + 60, cy + 2 + i * 13, { size: 11, bold: true, col: C.gold }));
-            ui.text('Суперпозиция ' + (cone.sup || 1), px + 60, cy + 30, { size: 10, col: C.sub });
-            ui.text(d.path === kit.path ? 'Бонус Пути действует' : 'Другой Путь', px + 60, cy + 43, { size: 10, col: d.path === kit.path ? C.ok : C.bad });
+            ui.text(ui.fitText('S' + (cone.sup || 1) + (d.skill ? ' · ' + d.skill : ''), 10, pw - 86), px + 60, cy + 30, { size: 10, col: C.sub });
+            ui.text(ui.fitText(d.path === kit.path ? 'Пассивка действует' : 'Другой Путь: только характеристики', 10, pw - 86), px + 60, cy + 43, { size: 10, col: d.path === kit.path ? C.ok : C.bad });
           } else {
             c.strokeStyle = 'rgba(154,166,208,0.6)'; c.setLineDash([3, 2]); c.strokeRect(px + 12.5, cy + 0.5, 39, 55); c.setLineDash([]);
             ui.text('+', px + 32, cy + 18, { align: 'center', size: 18, col: C.sub });
@@ -596,6 +604,10 @@
           block('1–4', 'Абсолютная', kit.ult, ' · энергия ' + kit.energy, 'ult');
           ui.text('Талант', px + 12, y, { size: 11, bold: true, col: C.gold }); lvTag('talent', y); y += 14;
           ui.wrap(kit.talent, pw - 24, 10).slice(0, 3).forEach(l => { ui.text(l, px + 12, y, { size: 10 }); y += 12; }); y += 4;
+          if (kit.elSkill) {
+            ui.wrap('Навык Радости: ' + kit.elSkill.name, pw - 34, 11).slice(0, 2).forEach(l => { ui.text(l, px + 12, y, { size: 11, bold: true, col: '#ff9ae0' }); y += 13; }); y += 1;
+            ui.wrap(kit.elSkill.text, pw - 24, 10).slice(0, 3).forEach(l => { ui.text(l, px + 12, y, { size: 10 }); y += 12; }); y += 4;
+          }
           ui.wrap('Техника: ' + kit.tech.name, pw - 34, 11).slice(0, 2).forEach(l => { ui.text(l, px + 12, y, { size: 11, bold: true, col: C.cyan }); y += 13; }); y += 1;
           ui.wrap(kit.tech.text, pw - 24, 10).slice(0, 2).forEach(l => { ui.text(l, px + 12, y, { size: 10 }); y += 12; }); y += 4;
           ui.text('Контакт', px + 12, y, { size: 11, bold: true, col: C.gold }); y += 14;
@@ -892,17 +904,19 @@
           });
           const cn = list[this.sel];
           if (cn) {
-            const d = H.CONES[cn.id], match = d.path === kit.path;
+            const d = H.CONES[cn.id], match = d.path === kit.path, st = H.coneStats(cn.id, s.roster[k].lvl);
             c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(36, 364, 568, 60);
             ui.text(d.name + ' · S' + (cn.sup || 1) + ' · ' + '★'.repeat(d.rarity), 46, 370, { bold: true, serif: true, col: G.RARITY[d.rarity] });
-            ui.text('HP +' + d.stats.hp + '  Атака +' + d.stats.atk + '  Защита +' + d.stats.def + ' (растут с уровнем)', 46, 386, { size: 11 });
-            ui.wrap((match ? 'Бонус Пути: ' : 'Не действует (Путь ' + H.PATHS[d.path].name + '): ') + d.text, 548, 10).slice(0, 2).forEach((l, i) => ui.text(l, 46, 400 + i * 12, { size: 10, col: match ? C.ok : C.bad }));
+            ui.text('HP +' + st.hp + '  Атака +' + st.atk + '  Защита +' + st.def + ' на ур. ' + s.roster[k].lvl, 46, 386, { size: 11 });
+            if (!match) ui.text('Путь ' + H.PATHS[d.path].name + ': пассивка не действует', 594, 386, { size: 10, align: 'right', col: C.bad });
+            ui.coneLines(cn.id, cn.sup, 548, 10, 2).forEach((l, i) => ui.richText(l, 46, 400 + i * 12, { size: 10, col: match ? C.ok : C.dim, hot: match ? C.gold : C.sub }));
           }
-          ui.hints([['←↑↓→', 'Выбор'], ['Enter', 'Надеть'], ['Esc', 'Назад']], W / 2, 430, { align: 'center' });
+          ui.hints([['←↑↓→', 'Выбор'], ['Enter', 'Надеть'], ['V', 'Подробнее'], ['Esc', 'Назад']], W / 2, 430, { align: 'center' });
         },
-        key(kk) {
+        key(kk, code) {
           const n = g.state.inv.cones.length;
           if (!n) { if (kk === 'back' || kk === 'ok') ui.pop(); return; }
+          if (code === 'KeyV') { const cn = sorted()[this.sel]; ui.openConeView(cn.id, cn.uid); return; }
           if (kk === 'left') { this.sel = (this.sel + n - 1) % n; ui.sfx('select'); }
           if (kk === 'right') { this.sel = (this.sel + 1) % n; ui.sfx('select'); }
           if (kk === 'up') { this.sel = Math.max(0, this.sel - 8); ui.sfx('select'); }
@@ -935,14 +949,14 @@
             if (set.planar) {
               ui.wrap(set.name, 190, 10).slice(0, 2).forEach((l, i) => ui.text(l, 380, 222 + i * 12, { size: 10, bold: true, col: '#d8c0ff' }));
               ui.wrap('Сфера + вязь: ' + set.text, 190, 10).slice(0, 5).forEach((l, i) => ui.text(l, 380, 248 + i * 12, { size: 10, col: C.ok }));
-              ui.text('Продать: 150 кредитов', 380, 316, { size: 10, col: C.dim });
+              ui.text('Расщепить: 150 кредитов, ' + g.salvageValue(cur) + ' Обломков', 380, 316, { size: 10, col: C.dim });
             } else {
               ui.text('2 шт.: ' + ui.setBonusText(cur.set, 2), 380, 230, { size: 10, col: C.ok });
               ui.text('4 шт.: бонус ×2', 380, 244, { size: 10, col: C.ok });
-              ui.text('Продать: 150 кредитов', 380, 270, { size: 10, col: C.dim });
+              ui.text('Расщепить: 150 кредитов, ' + g.salvageValue(cur) + ' Обломков', 380, 270, { size: 10, col: C.dim });
             }
           }
-          ui.hints([['Enter', 'Надеть'], ['X', 'Продать'], ['Esc', 'Назад']], W / 2, 414, { align: 'center' });
+          ui.hints([['Enter', 'Надеть'], ['X', 'Расщепить'], ['Esc', 'Назад']], W / 2, 414, { align: 'center' });
         },
         key(kk, code) {
           const list = cands();
@@ -1097,6 +1111,7 @@
         if (on) { c.strokeStyle = C.brassHi; c.lineWidth = 1; c.strokeRect(x + 0.5, y + 0.5, CW - 1, CH - 1); }
         this.portraitCard(c, G.lookOf(kid, g), x + 6, y + 8, 48, { elem: kit.elem, border: G.RARITY[kit.rarity] });
         if (g.isFav(k)) this.favStar(c, x + 9, y + 11, 6, true);
+        if (this.guideTargetMark && g.guideTarget && k === g.guideTarget()) this.guideTargetMark(c, x + 50, y + 12);
         this.text(this.fitText(this.shortName(k), 11, CW - 64, true), x + 60, y + 8, { size: 11, bold: true, col: on ? C.gold : C.cream });
         this.text('Ур. ' + s.roster[k].lvl, x + 60, y + 24, { size: 10, col: C.sub });
         G.pathIcon(c, kit.path, x + 60, y + 40, 12);
@@ -1183,9 +1198,9 @@
       const s = this.game.state, id = INV_TABS[tab].id;
       if (id === 'cones') return s.inv.cones.map(cn => ({ kind: 'cone', cn, d: H.CONES[cn.id] }));
       if (id === 'relics') return s.inv.relics.slice().sort((a, b) => b.lvl - a.lvl).map(rel => ({ kind: 'relic', rel }));
-      const MAT = ['path', 'foe', 'echo', 'tracks', 'shadow'], LINES = Object.keys(H.TRACE_PATH_LINES || {}).concat(Object.keys(H.TRACE_FOE_LINES || {}));
+      const MAT = ['path', 'foe', 'echo', 'tracks', 'shadow', 'syn'], LINES = Object.keys(H.TRACE_PATH_LINES || {}).concat(Object.keys(H.TRACE_FOE_LINES || {}));
       const rank = d => MAT.indexOf(d.mat) * 1000 + Math.max(0, LINES.indexOf(d.line)) * 10 + (d.tier || 0);
-      const list = Object.entries(s.inv.items).filter(([iid]) => H.ITEMS[iid].kind === id).map(([iid, n]) => ({ kind: 'item', id: iid, n, d: H.ITEMS[iid] }));
+      const list = Object.entries(s.inv.items).filter(([iid]) => H.ITEMS[iid].kind === id || (id === 'mat' && H.ITEMS[iid].kind === 'synmat')).map(([iid, n]) => ({ kind: 'item', id: iid, n, d: H.ITEMS[iid] }));
       return id === 'mat' ? list.sort((a, b) => rank(a.d) - rank(b.d)) : list;
     },
 
@@ -1209,7 +1224,7 @@
           list.slice(start, start + cols * 5).forEach((e, j) => {
             const i = start + j, x = gx + (j % cols) * (cw + 4), y = gy + Math.floor(j / cols) * chh, on = i === this.sel;
             if (e.kind === 'cone') { G.drawConeCard(c, e.cn.id, x + 10, y + 2, 44, 62, { info: false }); ui.text('S' + (e.cn.sup || 1), x + 52, y + 50, { size: 9, bold: true, align: 'right', col: C.gold }); }
-            else if (e.kind === 'relic') { G.rarityCell(c, x + 4, y + 4, 56, 56, 4); G.itemIcon(c, 'relic:' + e.rel.slot, x + 12, y + 10, 40, e.rel.set); ui.text('+' + e.rel.lvl, x + 56, y + 46, { size: 10, bold: true, align: 'right', col: C.gold }); }
+            else if (e.kind === 'relic') { G.rarityCell(c, x + 4, y + 4, 56, 56, 4); G.itemIcon(c, 'relic:' + e.rel.slot, x + 12, y + 10, 40, e.rel.set); G.slotBadge(c, e.rel.slot, x + 6, y + 44); ui.text('+' + e.rel.lvl, x + 56, y + 46, { size: 10, bold: true, align: 'right', col: C.gold }); }
             else { G.rarityCell(c, x + 4, y + 4, 56, 56, e.d.rar || 2); G.itemIcon(c, e.id, x + 12, y + 8, 40); ui.text('×' + e.n, x + 57, y + 45, { size: 10, bold: true, align: 'right' }); }
             if (on) { c.strokeStyle = C.brassHi; c.lineWidth = 2; c.strokeRect(x + 2, y + 1, cw - 4, chh - 8); c.lineWidth = 1; }
             ui.hit(x, y, cw, chh - 6, () => { if (this.sel === i) this.key('ok'); else this.sel = i; });
@@ -1223,9 +1238,9 @@
           let mx = 16;
           mx += ui.money(mx, fy, 'jade', s.jade) + 14;
           mx += ui.money(mx, fy, 'credits', s.credits) + 14;
-          mx += ui.money(mx, fy, 'power', s.power + '/' + T.powerMax) + 14;
+          mx += ui.powerChip(mx, fy) + 14;
           ui.money(mx, fy, 'tp', s.tp + '/' + T.tpMax);
-          ui.hints([['Q/E', 'Раздел'], ['←↑↓→', 'Выбор'], ['Enter', 'Использовать']].concat(INV_TABS[this.tab].id === 'relics' ? [['X', 'Продать']] : []), 16, HGT - 18);
+          ui.hints([['Q/E', 'Раздел'], ['←↑↓→', 'Выбор'], ['Enter', 'Использовать']].concat(INV_TABS[this.tab].id === 'relics' ? [['X', 'Расщепить'], ['R', 'Лишнее']] : INV_TABS[this.tab].id === 'cones' ? [['V', 'Подробнее']] : []), 16, HGT - 18);
         },
         detail(c, e, px, py, pw) {
           const s = g.state;
@@ -1233,25 +1248,31 @@
             const d = e.d;
             G.rarityCell(c, px + pw / 2 - 36, py + 16, 72, 72, d.rar || 2);
             G.itemIcon(c, e.id, px + pw / 2 - 32, py + 18, 64);
-            ui.wrap(d.name, pw - 24, 13).forEach((l, i) => ui.text(l, px + pw / 2, py + 96 + i * 16, { align: 'center', size: 13, bold: true, serif: true, col: C.gold }));
+            ui.wrap(d.name, pw - 44, 13).slice(0, 2).forEach((l, i) => ui.text(l, px + pw / 2, py + 96 + i * 16, { align: 'center', size: 13, bold: true, serif: true, col: C.gold }));
             ui.text('★'.repeat(d.rar || 2), px + pw / 2, py + 132, { align: 'center', size: 12, col: G.RARITY[d.rar || 2] });
             ui.text('В наличии: ' + e.n, px + pw / 2, py + 150, { align: 'center', size: 11, col: C.sub });
             ui.wrap(d.text, pw - 24, 11).forEach((l, i) => ui.text(l, px + 12, py + 176 + i * 15, { size: 11 }));
-            if (d.kind === 'mat') ui.wrap('Где взять: ' + ui.traceSource(e.id), pw - 24, 10).slice(0, 4).forEach((l, i) => ui.text(l, px + 12, py + 290 + i * 13, { size: 10, col: C.sub }));
+            if (d.kind === 'mat' || d.kind === 'synmat') ui.wrap('Где взять: ' + ui.traceSource(e.id), pw - 24, 10).slice(0, 4).forEach((l, i) => ui.text(l, px + 12, py + 290 + i * 13, { size: 10, col: C.sub }));
             if (d.mat === 'shadow') ui.button(px + 12, py + 344, pw - 24, 26, 'Активировать Эйдолон', () => ui.useShadowFlow(e.id), { size: 12, icon: 'warp' });
-            else if (d.kind === 'mat') ui.button(px + 12, py + 344, pw - 24, 26, 'Омни-синтезатор', () => ui.openSynth(), { size: 12, icon: 'synth' });
+            else if (d.kind === 'mat' || d.kind === 'synmat') ui.button(px + 12, py + 344, pw - 24, 26, 'Синтез', () => ui.openSynth(null, d.kind === 'synmat' ? 0 : 1), { size: 12, icon: 'synth' });
             else if (d.use) ui.button(px + 12, py + 344, pw - 24, 26, 'Использовать', () => ui.useItemFlow(e.id), { size: 12, icon: 'bag' });
-            else ui.text(d.kind === 'key' ? 'Ключевой предмет сюжета.' : '', px + 12, py + 350, { size: 10, col: C.dim });
+            else ui.text(d.note || (d.kind === 'key' ? 'Ключевой предмет сюжета.' : ''), px + 12, py + 350, { size: 10, col: C.dim });
           } else if (e.kind === 'cone') {
-            const d = e.d;
-            G.drawConeCard(c, e.cn.id, px + pw / 2 - 45, py + 14, 90, 126, { scale: 2, sup: e.cn.sup || 1 });
-            ui.wrap(d.name, pw - 24, 12).forEach((l, i) => ui.text(l, px + pw / 2, py + 146 + i * 15, { align: 'center', size: 12, bold: true, serif: true, col: C.gold }));
-            G.pathIcon(c, d.path, px + 12, py + 180, 12);
-            ui.text(H.PATHS[d.path].name + ' · ' + '★'.repeat(d.rarity), px + 28, py + 180, { size: 11, col: G.RARITY[d.rarity] });
-            ui.text('HP +' + d.stats.hp + ' · Ат. +' + d.stats.atk + ' · Защ. +' + d.stats.def, px + 12, py + 198, { size: 10, col: C.cream });
-            ui.wrap(d.text, pw - 24, 10).forEach((l, i) => ui.text(l, px + 12, py + 216 + i * 13, { size: 10, col: C.sub }));
-            const holder = Object.entries(s.roster).find(([, r]) => r.cone === e.cn.uid);
-            ui.text(holder ? 'Надет: ' + ui.shortName(holder[0]) : 'Не надет', px + 12, py + 300, { size: 11, col: holder ? C.ok : C.dim });
+            const d = e.d, holder = Object.entries(s.roster).find(([, r]) => r.cone === e.cn.uid), st = H.coneStats(e.cn.id, holder ? holder[1].lvl : 1);
+            G.drawConeCard(c, e.cn.id, px + pw / 2 - 45, py + 14, 90, 126, { sup: e.cn.sup || 1 });
+            ui.hit(px + pw / 2 - 45, py + 14, 90, 126, () => ui.openConeView(e.cn.id, e.cn.uid));
+            const nm = ui.wrap(d.name, pw - 24, 12).slice(0, 2);
+            nm.forEach((l, i) => ui.text(l, px + pw / 2, py + 146 + i * 15, { align: 'center', size: 12, bold: true, serif: true, col: C.gold }));
+            let y = py + 150 + nm.length * 15;
+            G.pathIcon(c, d.path, px + 12, y, 12);
+            ui.text(H.PATHS[d.path].name + ' · ' + '★'.repeat(d.rarity) + ' · S' + (e.cn.sup || 1), px + 28, y, { size: 11, col: G.RARITY[d.rarity] });
+            ui.text('HP +' + st.hp + ' · Ат. +' + st.atk + ' · Защ. +' + st.def, px + 12, y + 17, { size: 10, col: C.cream });
+            ui.text(holder ? 'на ур. ' + holder[1].lvl + ' владельца' : 'на ур. 1, растут с уровнем героя', px + 12, y + 30, { size: 9, col: C.dim });
+            y += 46;
+            if (d.skill) { ui.text(ui.fitText(d.skill, 10, pw - 24, true), px + 12, y, { size: 10, bold: true, col: C.gold }); y += 13; }
+            ui.coneLines(e.cn.id, e.cn.sup, pw - 24, 10, Math.max(1, Math.floor((py + 286 - y) / 13))).forEach((l, i) => ui.richText(l, px + 12, y + i * 13, { size: 10, col: C.sub }));
+            ui.text(holder ? 'Надет: ' + ui.shortName(holder[0]) : 'Не надет', px + 12, py + 292, { size: 11, col: holder ? C.ok : C.dim });
+            ui.button(px + 12, py + 312, pw - 24, 24, 'Подробнее · V', () => ui.openConeView(e.cn.id, e.cn.uid), { size: 11, icon: 'cones' });
             ui.button(px + 12, py + 344, pw - 24, 26, 'Надеть на…', () => ui.openConeTarget(e.cn.uid), { size: 12, icon: 'chars' });
           } else {
             const rel = e.rel, used = Object.entries(s.roster).find(([, rr]) => Object.values(rr.relics).includes(rel.uid)), set = H.RELIC_SETS[rel.set], slot = H.RELIC_SLOTS.find(x => x.key === rel.slot);
@@ -1263,7 +1284,7 @@
             ui.text(ui.relicLabel(rel).main, px + 12, py + 152, { size: 12, bold: true });
             rel.subs.forEach(([key, v], i) => ui.text('· ' + H.STAT_NAMES[key] + ' ' + ui.fmtStat(key, v), px + 14, py + 172 + i * 15, { size: 11, col: C.sub }));
             if (set.planar) ui.wrap(set.name + ': ' + set.short, pw - 24, 10).slice(0, 3).forEach((l, i) => ui.text(l, px + 12, py + 240 + i * 13, { size: 10, col: '#d8c0ff' }));
-            ui.text(used ? 'Надета: ' + ui.shortName(used[0]) : 'Не надета · продажа 150 кр.', px + 12, py + 300, { size: 10, col: used ? C.ok : C.dim });
+            ui.text(used ? 'Надета: ' + ui.shortName(used[0]) : 'Не надета · X: 150 кр., ' + g.salvageValue(rel) + ' Обломков', px + 12, py + 300, { size: 10, col: used ? C.ok : C.dim });
           }
         },
         key(k, code) {
@@ -1278,11 +1299,104 @@
           if (k === 'down') { this.sel = Math.min(n - 1, this.sel + 6); ui.sfx('select'); }
           const e = list[this.sel];
           if (k === 'ok' && e) {
-            if (e.kind === 'item') { if (e.d.mat === 'shadow') ui.useShadowFlow(e.id); else if (e.d.kind === 'mat') ui.openSynth(); else if (e.d.use) ui.useItemFlow(e.id); else ui.sfx('deny'); }
+            if (e.kind === 'item') { if (e.d.mat === 'shadow') ui.useShadowFlow(e.id); else if (e.d.kind === 'mat' || e.d.kind === 'synmat') ui.openSynth(null, e.d.kind === 'synmat' ? 0 : 1); else if (e.d.use) ui.useItemFlow(e.id); else ui.sfx('deny'); }
             else if (e.kind === 'cone') ui.openConeTarget(e.cn.uid);
             else ui.sfx('deny');
           }
-          if (code === 'KeyX' && e && e.kind === 'relic') { if (g.sellRelic(e.rel.uid)) { ui.sfx('chest'); ui.toast('Реликвия продана: +150 кредитов.'); this.sel = Math.max(0, this.sel - 1); } else { ui.sfx('deny'); ui.toast('Сначала снимите реликвию с персонажа.'); } }
+          if (code === 'KeyV' && e && e.kind === 'cone') { ui.openConeView(e.cn.id, e.cn.uid); return; }
+          if (code === 'KeyR' && INV_TABS[this.tab].id === 'relics') { ui.openSalvage(); return; }
+          if (code === 'KeyX' && e && e.kind === 'relic') { const v = g.salvageValue(e.rel); if (g.sellRelic(e.rel.uid)) { ui.sfx('chest'); ui.toast('Реликвия расщеплена: +150 кредитов, +' + v + ' Обломков Реликвии.'); this.sel = Math.max(0, this.sel - 1); } else { ui.sfx('deny'); ui.toast('Сначала снимите реликвию с персонажа.'); } }
+        }
+      });
+    },
+
+    coneSegsFor(id, sup) {
+      const d = H.CONES[id];
+      if (d.tpl) return H.coneSegs(id, sup);
+      return (sup || 1) > 1 ? [{ t: d.text }, { t: ' Сила на S' + sup + ': ×' + String(H.coneLegacyMul(sup)).replace('.', ','), hot: true }] : [{ t: d.text }];
+    },
+
+    coneLines(id, sup, w, size, max) {
+      const lines = this.richWrap(this.coneSegsFor(id, sup), w, size);
+      return max ? lines.slice(0, max) : lines;
+    },
+
+    openConeView(id, uid, o = {}) {
+      const ui = this, g = this.game, LORE_ROW = 13, TX = 222, TW = 384;
+      const own = () => (uid ? g.state.inv.cones.find(x => x.uid === uid) : null);
+      const best = () => g.state.inv.cones.filter(x => x.id === id).reduce((m, x) => Math.max(m, x.sup || 1), 0);
+      const lore = () => { const d = H.CONES[id]; return d.desc ? d.desc.split('\n').flatMap(p => ui.wrap(p, TW - 14, 10)) : []; };
+      this.push({
+        full: true, debug: !!o.debug, view: (own() && own().sup) || best() || 1, art: !!o.art, sc: { top: 0 },
+        draw(c) {
+          const d = H.CONES[id], s = g.state, cn = own(), holder = cn ? Object.keys(s.roster).find(k => s.roster[k].cone === cn.uid) : null;
+          ui.fullBg(c, false);
+          c.fillStyle = 'rgba(4,6,20,0.55)'; c.fillRect(0, 0, W, HGT);
+          if (this.art) {
+            G.drawConeCard(c, id, W / 2 - 163, 4, 326, 454, { info: false });
+            ui.text(d.name, W / 2, 461, { align: 'center', size: 12, bold: true, serif: true, col: C.gold, shadow: true });
+            ui.hints([['Tab', 'Сведения'], ['Esc', 'Назад']], W - 12, HGT - 16, { align: 'right' });
+            ui.hit(0, 0, W, HGT, () => this.key(null, 'Tab'));
+            return;
+          }
+          ui.plate(12, 10, 'Световой конус');
+          ui.closeBtn(W - 32, 10, () => this.key('back'));
+          G.drawConeCard(c, id, 24, 48, 166, 230, { sup: this.view });
+          ui.hit(24, 48, 166, 230, () => this.key(null, 'Tab'));
+          ui.text('Tab: весь арт', 107, 284, { align: 'center', size: 10, col: C.dim });
+          ui.win(206, 44, 414, 392, { alpha: 0.9 });
+          let y = 56;
+          ui.wrap(d.name, TW, 16).slice(0, 2).forEach(l => { ui.text(l, TX, y, { size: 16, bold: true, serif: true, col: C.gold }); y += 20; });
+          G.pathIcon(c, d.path, TX, y + 2, 12);
+          ui.text(H.PATHS[d.path].name + ' · ' + '★'.repeat(d.rarity), TX + 16, y + 2, { size: 11, col: G.RARITY[d.rarity] });
+          y += 22;
+          ui.text('Наложение', TX, y + 3, { size: 10, col: C.sub });
+          const have = cn ? cn.sup || 1 : best();
+          for (let i = 1; i <= 5; i++) {
+            const bx = TX + 70 + (i - 1) * 36, on = i === this.view;
+            c.fillStyle = on ? C.brass : 'rgba(0,0,0,0.45)'; c.fillRect(bx, y, 32, 18);
+            c.fillStyle = i === have ? C.gold : 'rgba(242,220,154,0.25)'; c.fillRect(bx, y + 17, 32, 1);
+            ui.text('S' + i, bx + 16, y + 3, { size: 10, bold: true, align: 'center', col: on ? '#1a1408' : i <= have ? C.cream : C.dim });
+            ui.hit(bx, y, 32, 18, () => { this.view = i; ui.sfx('select'); });
+          }
+          ui.text(cn ? 'у вас S' + have : have ? 'в наличии S' + have : 'нет в наличии', TX + TW, y + 3, { size: 10, align: 'right', col: have ? C.ok : C.dim });
+          y += 28;
+          const lvl = holder ? s.roster[holder].lvl : 1, st = H.coneStats(id, lvl);
+          [['hp', 'HP', st.hp], ['atk', 'Атака', st.atk], ['def', 'Защита', st.def]].forEach(([k, name, v], i) => {
+            const sx = TX + i * 100;
+            G.statIcon(c, k, sx, y + 1, 12, '#c8d0f0');
+            ui.text(name, sx + 16, y, { size: 11, col: C.sub });
+            ui.text('+' + v, sx + 92, y, { size: 11, bold: true, align: 'right' });
+          });
+          ui.text(holder ? 'на ур. ' + lvl + ' владельца' : 'на ур. 1, растут с уровнем героя', TX, y + 16, { size: 9, col: C.dim });
+          y += 34;
+          c.fillStyle = 'rgba(242,220,154,0.3)'; c.fillRect(TX, y, TW, 1);
+          y += 8;
+          ui.text(d.skill || 'Эффект', TX, y, { size: 12, bold: true, serif: true, col: C.gold });
+          y += 18;
+          ui.coneLines(id, this.view, TW, 11, 7).forEach(l => { ui.richText(l, TX, y, { size: 11, col: C.cream }); y += 14; });
+          y += 4;
+          const kit = holder && H.CHARS[g.kitOf(holder)];
+          const where = holder ? 'Надет: ' + ui.shortName(holder) + (kit.path === d.path ? ' · пассивка действует' : ' · другой Путь, пассивка не действует') : cn ? 'Не надет' : '';
+          if (where) { ui.text(where, TX, y, { size: 10, col: holder && kit.path === d.path ? C.ok : holder ? C.bad : C.dim }); y += 16; }
+          const lines = lore();
+          if (lines.length) {
+            c.fillStyle = 'rgba(242,220,154,0.3)'; c.fillRect(TX, y, TW, 1);
+            ui.text('История', TX, y + 6, { size: 11, bold: true, serif: true, col: C.sub });
+            const top = y + 24, vis = Math.max(1, Math.floor((426 - top) / LORE_ROW));
+            this.sc.top = Math.max(0, Math.min(Math.round(this.sc.top), lines.length - vis));
+            lines.slice(this.sc.top, this.sc.top + vis).forEach((l, i) => ui.text(l, TX, top + i * LORE_ROW, { size: 10, col: '#c8d0f0' }));
+            if (lines.length > vis) ui.scrollBar(TX + TW - 10, top - 2, vis * LORE_ROW, this.sc, lines.length, vis);
+            ui.wheelZone(TX, top, TW, vis * LORE_ROW, dd => { this.sc.top += dd; });
+          }
+          ui.hints([['←→', 'Наложение'], ['↑↓', 'История'], ['Tab', 'Арт'], ['Esc', 'Назад']], 16, HGT - 18);
+        },
+        key(k, code) {
+          if (code === 'Tab') { this.art = !this.art; ui.sfx('select'); return; }
+          if (k === 'back') { if (this.art && !o.art) this.art = false; else ui.pop(); return; }
+          if (this.art) return;
+          if (k === 'left' || k === 'right') { this.view = Math.max(1, Math.min(5, this.view + (k === 'left' ? -1 : 1))); ui.sfx('select'); }
+          if (k === 'up' || k === 'down') this.sc.top += k === 'up' ? -1 : 1;
         }
       });
     },
@@ -1613,6 +1727,7 @@
       }
       const cw = 150, chh = 212;
       G.drawConeCard(c, S.cone, mx - cw / 2, by + 30 + Math.round(Math.sin(t * 1.3) * 3), cw, chh, { tilt: -0.06 });
+      this.hit(mx - cw / 2, by + 30, cw, chh, () => this.openConeView(S.cone));
       if (chan) this.chanToggle(bx + 22, by + 12, 'cone', chan);
       this.text(S.title[0], bx + 22, by + 42, { size: 24, bold: true, serif: true, col: P.title });
       if (S.title[1]) this.text(S.title[1], bx + 22, by + 68, { size: 22, bold: true, serif: true, col: P.title });
@@ -2011,7 +2126,7 @@
       const halo = c.createRadialGradient(cx0 + cw / 2, cy0 + chh2 / 2, 10, cx0 + cw / 2, cy0 + chh2 / 2, 90);
       halo.addColorStop(0, 'rgba(255,214,110,0.35)'); halo.addColorStop(1, 'rgba(0,0,0,0)');
       c.fillStyle = halo; c.fillRect(cx0 - 50, cy0 - 40, cw + 100, chh2 + 80);
-      G.drawConeCard(c, S.cone, cx0, cy0 + bob, cw, chh2, { scale: 1.6 });
+      G.drawConeCard(c, S.cone, cx0, cy0 + bob, cw, chh2);
       const tx = sx + 8, ty = ky - 64;
       c.save(); c.translate(tx + 52, ty); c.rotate(-0.05);
       c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(-49, 3, 104, 66);
@@ -2206,7 +2321,7 @@
           ui.button(120, fy + 48, 180, 34, sig ? 'Поиск ×1' : conv ? 'Призыв ×1' : this.ban === 'wiz' || this.ban === 'alley' ? 'Купить ×1' : con ? 'На сцену ×1' : guild ? 'Набор ×1' : 'Прыжок ×1', () => { this.sel = 0; this.pull(1); }, { active: this.sel === 0, bold: true, icon: 'warp' });
           ui.button(340, fy + 48, 180, 34, sig ? 'Поиск ×10' : conv ? 'Призыв ×10' : this.ban === 'wiz' || this.ban === 'alley' ? 'Купить ×10' : con ? 'На сцену ×10' : guild ? 'Набор ×10' : 'Прыжок ×10', () => { this.sel = 1; this.pull(10); }, { active: this.sel === 1, bold: true, icon: 'warp' });
           ui.text(con ? '1 прыжок = 1 бейдж или ' + T.warpCost + ' нефрита · свой гарант у сцены и Аллеи' : mid ? '1 прыжок = 1 бархатный ключ или ' + T.warpCost + ' нефрита · свой гарант у канала и Компендиума' : this.ban === 'wiz' ? '1 покупка = 1 манатит высшей пробы или ' + T.warpCost + ' нефрита · гарант общий для трёх конусов' : guild ? '1 набор = 1 манатит высшей пробы или ' + T.warpCost + ' нефрита · гарант общий для всего отряда' : sig ? '1 поиск = 1 шифрокопия или ' + T.warpCost + ' нефрита · свой гарант у каждого канала' : this.ban === 'conv' ? '1 призыв = 1 сияющий прилив или ' + T.warpCost + ' нефрита · гарант общий для обоих резонаторов' : this.ban === 'forge' ? '1 призыв = 1 кующий прилив или ' + T.warpCost + ' нефрита · свой гарант: 5★ за ' + T.conePity5 : cone ? '1 прыжок = 1 особый пропуск или ' + T.warpCost + ' нефрита · свой гарант: 5★ за ' + T.conePity5 + ', промах 75% даёт гарант' : special ? '1 прыжок = 1 особый пропуск или ' + T.warpCost + ' нефрита · гарант общий для всех героев события' : '1 прыжок = 1 пропуск или ' + T.warpCost + ' нефрита', W / 2, fy + 90, { align: 'center', size: 10, col: C.dim });
-          ui.hints(con ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'alley' ? 'Принт' : 'Героиня'], ['←→', 'Выбор'], ['Enter', g.conRegistered() ? 'Прыжок' : 'Регистрация'], ['H', 'История'], ['Esc', 'Назад']] : mid ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'comp' ? 'Конус' : 'Герой'], ['←→', 'Выбор'], ['Enter', g.contractSigned() ? 'Прыжок' : 'Подписать'], ['H', 'История'], ['Esc', 'Назад']] : guild ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'wiz' ? 'Конус' : 'Героиня'], ['←→', 'Выбор'], ['Enter', 'Набор'], ['H', 'История'], ['Esc', 'Назад']] : sig ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'amp' ? 'Конус' : 'Агент'], ['←→', 'Выбор'], ['Enter', 'Поиск'], ['H', 'История'], ['Esc', 'Назад']] : conv ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'forge' ? 'Конус' : 'Резонатор'], ['←→', 'Выбор'], ['Enter', 'Призыв'], ['H', 'История'], ['Esc', 'Назад']] : special ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', cone ? 'Конус' : 'Герой'], ['←→', 'Выбор'], ['Enter', 'Прыжок'], ['H', 'История'], ['Esc', 'Назад']] : [['Q/E', 'Баннер'], ['←→', 'Выбор'], ['Enter', 'Прыжок'], ['H', 'История'], ['Esc', 'Назад']], 12, HGT - 18);
+          ui.hints(con ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'alley' ? 'Принт' : 'Героиня'], ['←→', 'Выбор'], ['Enter', g.conRegistered() ? 'Прыжок' : 'Регистрация'], ['H', 'История'], ['Esc', 'Назад']] : mid ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'comp' ? 'Конус' : 'Герой'], ['←→', 'Выбор'], ['Enter', g.contractSigned() ? 'Прыжок' : 'Подписать'], ['H', 'История'], ['Esc', 'Назад']] : guild ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'wiz' ? 'Конус' : 'Героиня'], ['←→', 'Выбор'], ['Enter', 'Набор'], ['H', 'История'], ['Esc', 'Назад']] : sig ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'amp' ? 'Конус' : 'Агент'], ['←→', 'Выбор'], ['Enter', 'Поиск'], ['H', 'История'], ['Esc', 'Назад']] : conv ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'forge' ? 'Конус' : 'Резонатор'], ['←→', 'Выбор'], ['Enter', 'Призыв'], ['H', 'История'], ['Esc', 'Назад']] : special ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', cone ? 'Конус' : 'Герой'], ['←→', 'Выбор'], ['Enter', 'Прыжок'], ['H', 'История']].concat(cone ? [['V', 'Конус']] : [], [['Esc', 'Назад']]) : [['Q/E', 'Баннер'], ['←→', 'Выбор'], ['Enter', 'Прыжок'], ['H', 'История'], ['Esc', 'Назад']], 12, HGT - 18);
         },
         start(res) { if (conBan(this.ban)) ui.audio.stopSong(0); if (conBan(this.ban) && H.SpotlightShow) { this.show = new H.SpotlightShow(ui, res, { ban: this.ban }); ui.audio.song('ccc', H.SPOT_FILM_AT); return; } this.show = signalBan(this.ban) && H.SignalShow ? new H.SignalShow(ui, res, { ban: this.ban }) : conveneBan(this.ban) && H.ConveneShow ? new H.ConveneShow(ui, res, { ban: this.ban }) : guildBan(this.ban) && H.ExplosionShow ? new H.ExplosionShow(ui, res, { ban: this.ban }) : midBan(this.ban) && H.MidnightShow ? new H.MidnightShow(ui, res, { ban: this.ban }) : new H.WarpShow(ui, res, { ban: this.ban }); if (signalBan(this.ban) && H.SignalShow) ui.audio.song('signal'); if (midBan(this.ban) && H.MidnightShow) ui.audio.song('aria'); },
         pull(n) {
@@ -2221,6 +2336,7 @@
         key(k, code) {
           if (this.show) { if (code === 'Enter' || code === 'NumpadEnter') this.show.enter(); else if (code === 'Escape') this.show.skip(); else if (this.show.key) this.show.key(k); this.endShow(); return; }
           if (code === 'KeyH') { ui.openWarpHistory(this.ban); return; }
+          if (code === 'KeyV' && this.ban === 'cone') { ui.openConeView(H.BANNERS.cone.stars[g.coneStar()].cone); return; }
           if (code === 'Tab' && CHANNELS[tabOf(this.ban)]) { const ch = CHANNELS[tabOf(this.ban)]; this.setChan(ch[(ch.indexOf(this.ban) + 1) % ch.length]); return; }
           if (code === 'KeyQ' || code === 'KeyE') { const n = BANNER_TABS.length, i = BANNER_TABS.findIndex(b => b[0] === tabOf(this.ban)); this.setBan(BANNER_TABS[(i + (code === 'KeyQ' ? n - 1 : 1)) % n][0]); return; }
           if ((k === 'up' || k === 'down') && this.ban !== 'std') { this.stepStar(k === 'up' ? -1 : 1); return; }
@@ -2312,7 +2428,7 @@
           const px = 384, py = 72;
           c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(px, py, 214, 360);
           if (e) {
-            if (e.kind === 'cone') G.drawConeCard(c, e.id, px + 62, py + 10, 90, 126, { scale: 2 });
+            if (e.kind === 'cone') { G.drawConeCard(c, e.id, px + 62, py + 10, 90, 126); ui.hit(px + 62, py + 10, 90, 126, () => ui.openConeView(e.id)); }
             else { G.rarityCell(c, px + 71, py + 12, 72, 72, e.kind === 'relic' ? 4 : (H.ITEMS[e.id] && H.ITEMS[e.id].rar) || 2); G.itemIcon(c, e.id, px + 75, py + 14, 64, e.set); }
             const ty = e.kind === 'cone' ? py + 144 : py + 94;
             ui.wrap(e.name, 190, 13).forEach((l, i) => ui.text(l, px + 107, ty + i * 16, { align: 'center', size: 13, bold: true, serif: true, col: C.gold }));
@@ -2322,12 +2438,13 @@
             if (e.kind === 'item') { ui.text('Количество', px + 12, py + 308, { size: 11, col: C.sub }); ui.text('◀ ' + this.qty + ' ▶', px + 200, py + 308, { size: 12, bold: true, align: 'right' }); }
             ui.money(px + 12, py + 330, 'credits', 'Итого ' + H.fmt(e.price * (e.kind === 'item' ? this.qty : 1)), { col: s.credits < e.price * this.qty ? C.bad : C.gold });
           }
-          ui.hints([['↑↓', 'Товар'], ['←→', 'Кол-во'], ['Enter', 'Купить'], ['Esc', 'Уйти']], W / 2, 422, { align: 'center' });
+          ui.hints([['↑↓', 'Товар'], ['←→', 'Кол-во'], ['Enter', 'Купить']].concat(e && e.kind === 'cone' ? [['V', 'Подробнее']] : [], [['Esc', 'Уйти']]), W / 2, 422, { align: 'center' });
         },
-        key(k) {
+        key(k, code) {
           const list = g.shopList(id);
           if (ui.listNav(this, k, list.length)) { this.qty = 1; return; }
           const e = list[this.sel];
+          if (code === 'KeyV' && e && e.kind === 'cone') { ui.openConeView(e.id); return; }
           if (k === 'left' && e && e.kind === 'item') { this.qty = Math.max(1, this.qty - 1); ui.sfx('select'); }
           if (k === 'right' && e && e.kind === 'item') { this.qty = Math.min(e.left != null ? e.left : 99, this.qty + 1); ui.sfx('select'); }
           if (k === 'ok' && e) { if (g.buy(id, this.sel, e.kind === 'item' ? this.qty : 1)) { ui.sfx('chest'); ui.toast('Куплено: ' + e.name + (this.qty > 1 && e.kind === 'item' ? ' ×' + this.qty : '')); } else { ui.sfx('deny'); ui.toast('Не хватает кредитов.'); } }
@@ -2367,54 +2484,105 @@
       });
     },
 
-    openCalyx(close, only) {
-      const ui = this, g = this.game, calyxList = () => g.calyxList().filter(x => !only || only.includes(x.c.id));
+    calyxDrops(cx) {
       const REWARD = { exp: 'exp2', credits: 'credits', relic: 'relic:body', echo: 'relic:head' };
-      const drops = cx => {
-        const out = [REWARD[cx.reward]].filter(Boolean);
-        if (cx.reward === 'path') { const line = Object.keys(H.TRACE_PATH_LINES).find(k => H.TRACE_PATH_LINES[k][0] === cx.path); out.length = 0; out.push(line + '1', line + '2', line + '3'); }
-        if (cx.reward === 'echo' && cx.mat) out.unshift(cx.mat);
-        if ((cx.reward === 'exp' || cx.reward === 'credits') && cx.pool) { const fam = cx.pool.map(id => H.ENEMIES[id] && H.TRACE_FOE_OF_FAMILY[H.ENEMIES[id].fam]).filter(Boolean); if (fam.length) out.push(fam[0] + '1', fam[0] + '2'); }
-        return out;
-      };
+      const out = cx.reward === 'relic' && cx.sets ? cx.sets.map(() => 'relic:head') : [REWARD[cx.reward]].filter(Boolean);
+      if (cx.reward === 'path') { const line = Object.keys(H.TRACE_PATH_LINES).find(k => H.TRACE_PATH_LINES[k][0] === cx.path); out.length = 0; out.push(line + '1', line + '2', line + '3'); }
+      if (cx.reward === 'echo' && cx.mat) out.unshift(cx.mat);
+      if ((cx.reward === 'exp' || cx.reward === 'credits') && cx.pool) { const fam = cx.pool.map(id => H.ENEMIES[id] && H.TRACE_FOE_OF_FAMILY[H.ENEMIES[id].fam]).filter(Boolean); if (fam.length) out.push(fam[0] + '1', fam[0] + '2'); }
+      return out;
+    },
+
+    powerChip(x, y, o = {}) {
+      const c = this.ctx, p = this.game.powerInfo(), w = this.money(x, y, 'power', H.fmt(p.cur) + (o.sep || '/') + H.fmt(p.max), { col: p.cur > p.max ? C.gold : o.col });
+      const bx = Math.round(x + w), by = Math.round(y - 1);
+      c.fillStyle = '#000'; c.fillRect(bx, by, 14, 14);
+      c.fillStyle = '#2a3478'; c.fillRect(bx + 1, by + 1, 12, 12);
+      c.fillStyle = C.brassHi; c.fillRect(bx + 3, by + 6, 8, 2); c.fillRect(bx + 6, by + 3, 2, 8);
+      if (p.res > 0) { c.fillStyle = '#9a7cff'; c.fillRect(bx + 1, by + 12, Math.max(1, Math.round(12 * p.res / p.resMax)), 1); }
+      this.hit(x - 2, by - 3, w + 18, 20, () => this.openPower());
+      return w + 16;
+    },
+
+    powerLimit(row, p) {
+      const g = this.game, slots = Math.floor(p.room / T.powerPack);
+      if (row === 'res') return Math.min(p.res, p.room);
+      if (row === 'fuel') return Math.min(p.fuel, slots);
+      let k = 0;
+      while (k < Math.min(p.buyMax - p.bought, slots) && g.powerJadeCost(k + 1) <= g.state.jade) k++;
+      return k;
+    },
+
+    openPower(need) {
+      const ui = this, g = this.game, X = 100, Y = 70, WW = 440, HH = 330, L = X + 16, R = X + WW - 16;
+      const limit = (row, p) => ui.powerLimit(row, p);
+      const gain = (row, n) => (row === 'res' ? n : n * T.powerPack);
+      const fresh = p => POWER_ROWS.map(row => { const m = limit(row, p); return row === 'res' ? Math.min(m, p.cur < p.max ? p.max - p.cur : T.powerPack) : Math.min(m, 1); });
+      const why = (row, p) => !p.room ? 'Больше ' + H.fmt(p.top) + ' энергии не накопить.'
+        : row === 'res' ? 'Резерв пуст.'
+        : row === 'fuel' ? (p.fuel ? 'Топливо уже не поместится.' : 'Нет Топлива Экспресса. Оно продаётся в буфете Пом-Пом.')
+        : p.bought >= p.buyMax ? 'Покупки за нефрит в этот час закончились.' : p.room < T.powerPack ? 'Ещё ' + T.powerPack + ' энергии не поместится.' : 'Не хватает Звёздного нефрита.';
+      const NAME = { res: 'Резерв энергии', fuel: 'Топливо Экспресса', jade: 'Звёздный нефрит' };
+      const p0 = g.powerInfo();
       this.push({
-        tier: 0, lsc: { top: 0 },
-        draw(c) {
-          const list = calyxList(), tiers = g.tiersOpen();
-          ui.win(30, 36, 580, 410, { title: only && list[0] ? list[0].c.name : 'Симулятор Экспресса' });
-          ui.money(420, 50, 'power', g.state.power + ' / ' + T.powerMax);
-          ui.list(42, 72, 556, list.map(x => ({ label: x.c.name, right: x.open ? x.c.cost + ' энерг.' : 'закрыто', disabled: !x.open, icon: (cc, ix, iy) => G.menuIcon(cc, 'calyx', ix, iy - 9, 18, x.open ? C.cyan : '#4a4e68'), iconW: 22 })), this.sel, { rowH: 26, max: 6, scroll: this.lsc, onClick: i => { if (this.sel === i) this.key('ok'); else this.sel = i; } });
-          const cur = list[this.sel];
-          c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(42, 250, 556, 150);
-          if (cur) {
-            ui.text(cur.c.text, 54, 260, { col: '#c8d8ff' });
-            if (!cur.open) ui.text(cur.c.owns ? 'Нужен герой Пути ' + H.TRACE_PATH_LINES[Object.keys(H.TRACE_PATH_LINES).find(k => H.TRACE_PATH_LINES[k][0] === cur.c.owns)][1] + '.' : 'Откроется дальше по сюжету.', 54, 280, { col: C.bad });
-            ui.text('Сложность:', 54, 306);
-            H.CALYX_TIERS.forEach((t, i) => ui.button(140 + i * 112, 300, 106, 24, t.name + ' · ур.' + t.lvl, () => { if (tiers[i]) this.tier = i; }, { active: this.tier === i, disabled: !tiers[i], size: 11 }));
-            ui.text('Награда:', 54, 344);
-            const dl = drops(cur.c);
-            dl.forEach((rk, i) => { const it = H.ITEMS[rk]; G.rarityCell(c, 120 + i * 40, 334, 36, 36, it ? it.rar : 4); G.itemIcon(c, rk, 122 + i * 40, 336, 32, 'thunder'); });
-            const tx = 130 + dl.length * 40;
-            if (cur.c.reward === 'echo') ui.wrap('Награды Эха войны в этот час: ' + g.echoLeft() + ' из ' + H.TRACE_ECHO_LIMIT + '. Сверх них бой без награды и без энергии.', 590 - tx, 11).slice(0, 2).forEach((l, i) => ui.text(l, tx, 336 + i * 14, { size: 11, col: g.echoLeft() ? C.sub : C.bad }));
-            else ui.text('Энергия: +1 / ' + T.powerRegenSec + ' с игры. Топливо продаётся в буфете Пом-Пом.', tx, 346, { size: 11, col: C.sub });
-          }
-          ui.hints([['↑↓', 'Вызов'], ['←→', 'Сложность'], ['Enter', 'Начать'], ['Esc', 'Назад']], W / 2, 420, { align: 'center' });
+        amt: need > 0 ? fresh(p0).map((a, i) => POWER_ROWS[i] === 'res' ? Math.min(limit('res', p0), Math.ceil(need)) : a) : fresh(p0), sel: Math.max(0, POWER_ROWS.findIndex(r => limit(r, p0) > 0)),
+        step(d) {
+          const row = POWER_ROWS[this.sel], m = limit(row, g.powerInfo()), v = Math.max(0, Math.min(m, this.amt[this.sel] + d * (row === 'res' ? T.powerPack : 1)));
+          if (v !== this.amt[this.sel]) { this.amt[this.sel] = v; ui.sfx('select'); } else ui.sfx('deny');
         },
-        key(k) {
-          const list = calyxList(), tiers = g.tiersOpen();
-          if (ui.listNav(this, k, list.length)) return;
-          if (k === 'left') { for (let i = this.tier - 1; i >= 0; i--) if (tiers[i]) { this.tier = i; ui.sfx('select'); break; } }
-          if (k === 'right') { for (let i = this.tier + 1; i < tiers.length; i++) if (tiers[i]) { this.tier = i; ui.sfx('select'); break; } }
-          if (k === 'ok') {
-            const cur = list[this.sel];
-            if (!cur.open) return ui.sfx('deny');
-            if (g.state.power < cur.c.cost && !(cur.c.reward === 'echo' && !g.echoLeft())) { ui.sfx('deny'); ui.toast('Не хватает Энергии освоения.'); return; }
-            ui.screens = [];
-            close();
-            g.startCalyx(cur.c.id, this.tier);
-            ui.drainGameEvents();
-          }
-          if (k === 'back') { ui.screens.pop(); ui.sfx('cancel'); close(); }
+        maxOut() { this.amt[this.sel] = limit(POWER_ROWS[this.sel], g.powerInfo()); ui.sfx('select'); },
+        apply() {
+          const row = POWER_ROWS[this.sel], p = g.powerInfo(), m = limit(row, p), n = Math.min(this.amt[this.sel], m);
+          if (m > 0 && !n) { ui.sfx('deny'); ui.toast('Выберите количество: ←→.'); return; }
+          const got = n > 0 ? (row === 'res' ? g.powerFromReserve(n) : row === 'fuel' ? g.powerFromFuel(n) : g.powerFromJade(n)) : 0;
+          if (!got) { ui.sfx('deny'); ui.toast(why(row, p)); return; }
+          ui.sfx('heal'); ui.toast('Энергия освоения +' + got + '.');
+          this.amt = fresh(g.powerInfo());
+        },
+        draw(c) {
+          const p = g.powerInfo();
+          this.amt = this.amt.map((a, i) => Math.min(a, limit(POWER_ROWS[i], p)));
+          ui.win(X, Y, WW, HH, { title: 'Энергия освоения' });
+          ui.closeBtn(R - 14, Y + 8, () => this.key('back'));
+          G.itemIcon(c, 'power', L, Y + 18, 24);
+          ui.text(H.fmt(p.cur) + ' / ' + H.fmt(p.max), L + 30, Y + 22, { size: 16, bold: true, col: p.cur > p.max ? C.gold : C.cream });
+          if (p.cur > p.max) ui.text('сверх максимума +' + H.fmt(p.cur - p.max), R - 26, Y + 26, { align: 'right', size: 10, col: C.gold });
+          ui.bar(L, Y + 50, R - L, 10, p.cur / p.max, p.cur >= p.max ? C.gold : C.cyan);
+          ui.text(p.filling === 'cur' ? '+1 через ' + powerClock(p.next) + ' · весь запас через ' + powerClock(p.full) : 'Запас полон: новая энергия идёт в резерв.', L, Y + 66, { size: 10, col: C.sub });
+          ui.text('Резерв', L, Y + 86, { size: 11, bold: true, col: '#c8b0ff' });
+          ui.text(H.fmt(p.res) + ' / ' + H.fmt(p.resMax), R, Y + 86, { align: 'right', size: 11, bold: true, col: '#c8b0ff' });
+          ui.bar(L, Y + 102, R - L, 6, p.res / p.resMax, '#9a7cff');
+          const resNote = p.filling === 'res' ? 'Резерв заполнится через ' + powerClock(p.resFull) + '.'
+            : p.filling === 'cur' ? 'Копится, пока запас полон: +1 каждые ' + T.powerRegenSec + ' с.' : 'Резерв полон. Перенесите его в запас.';
+          ui.text(resNote, L, Y + 114, { size: 10, col: C.sub });
+          POWER_ROWS.forEach((row, i) => {
+            const y = Y + 134 + i * 44, on = i === this.sel, m = limit(row, p), n = this.amt[i], sx = R - 160;
+            c.fillStyle = on ? 'rgba(242,220,154,0.14)' : 'rgba(0,0,0,0.3)'; c.fillRect(L, y, R - L, 40);
+            if (on) { c.strokeStyle = C.brass; c.lineWidth = 1; c.strokeRect(L + 0.5, y + 0.5, R - L - 1, 39); }
+            ui.hit(L, y, sx - L - 4, 40, () => { if (this.sel !== i) { this.sel = i; ui.sfx('select'); } });
+            G.itemIcon(c, row === 'res' ? 'power' : row, L + 6, y + 8, 24);
+            const sub = row === 'res' ? 'Есть ' + H.fmt(p.res) + ' · 1 к 1' : row === 'fuel' ? 'Есть ' + p.fuel + ' · +' + T.powerPack + ' за штуку' : 'В этот час ' + p.bought + '/' + p.buyMax + (p.jadeNext ? ' · цена ' + p.jadeNext : '');
+            ui.text(NAME[row], L + 38, y + 6, { size: 12, bold: true, col: m ? C.cream : C.dim });
+            ui.text(sub, L + 38, y + 22, { size: 10, col: C.sub });
+            ui.button(sx, y + 9, 22, 22, '−', () => { this.sel = i; this.step(-1); }, { disabled: !n, size: 12 });
+            ui.text(row === 'res' ? H.fmt(n) : '×' + n, sx + 48, y + 5, { align: 'center', size: 12, bold: true, col: n ? C.cream : C.dim });
+            ui.text('+' + gain(row, n), sx + 48, y + 22, { align: 'center', size: 9, col: n ? C.cyan : C.dim });
+            ui.button(sx + 74, y + 9, 22, 22, '+', () => { this.sel = i; this.step(1); }, { disabled: n >= m, size: 12 });
+            ui.button(sx + 102, y + 9, 56, 22, 'Макс', () => { this.sel = i; this.maxOut(); }, { disabled: !m || n >= m, size: 11 });
+          });
+          const row = POWER_ROWS[this.sel], n = this.amt[this.sel], cost = row === 'jade' && n ? g.powerJadeCost(n) : 0;
+          ui.text('После обмена: ' + H.fmt(p.cur + gain(row, n)) + ' / ' + H.fmt(p.max), L, Y + 272, { size: 11, bold: true, col: C.cream });
+          if (row === 'jade') ui.money(L, Y + 288, 'jade', (cost ? '−' + H.fmt(cost) + ' из ' : '') + H.fmt(g.state.jade), { size: 12, col: cost ? C.gold : C.sub });
+          ui.button(R - 118, Y + 268, 118, 26, 'Обменять', () => this.apply(), { disabled: !n, size: 12, bold: true });
+          ui.hints([['↑↓', 'Источник'], ['←→', 'Сколько'], ['Tab', 'Всё'], ['Enter', 'Обмен'], ['Esc', 'Закрыть']], X + WW / 2, Y + HH - 22, { align: 'center' });
+        },
+        key(k, code) {
+          if (ui.listNav(this, k, POWER_ROWS.length)) return;
+          if (k === 'left') this.step(-1);
+          else if (k === 'right') this.step(1);
+          else if (code === 'Tab') this.maxOut();
+          else if (k === 'ok') this.apply();
+          else if (k === 'back') ui.pop();
         }
       });
     },
@@ -2461,9 +2629,12 @@
             } else ui.text('На контакт не идёт.', 356, 300, { size: 11, col: C.bad });
           } else if (this.tab === 1) {
             const f = r.f, known = g.state.bank.fusions.includes(r.id);
-            f.members.forEach((m, i) => ui.portraitCard(c, G.lookOf(m, g), 382 + i * 104, 96, 72, { elem: H.CHARS[m].elem }));
-            ui.text(known ? f.name : '??? — не открыто', 474, 184, { align: 'center', bold: true, serif: true, col: C.gold });
-            ui.wrap(known ? f.text : 'Возьмите обоих в команду, накопите им энергию и нажмите R в бою.', 236, 11).forEach((l, i) => ui.text(l, 356, 210 + i * 14, { size: 11 }));
+            const n = f.members.length, gap = n > 2 ? 10 : 32, cs = Math.min(72, Math.floor((236 - gap * (n - 1)) / n));
+            const cx0 = 474 - (n * cs + (n - 1) * gap) / 2, cy = 96 + (72 - cs);
+            f.members.forEach((m, i) => ui.portraitCard(c, G.lookOf(m, g), cx0 + i * (cs + gap), cy, cs, { elem: H.CHARS[m].elem }));
+            const who = { 2: 'обоих', 3: 'всех троих', 4: 'всех четверых' }[n] || 'всех';
+            ui.wrap(known ? f.name : '??? — не открыто', 236, 13).slice(0, 2).forEach((l, i) => ui.text(l, 474, 184 + i * 16, { align: 'center', bold: true, serif: true, col: C.gold }));
+            ui.wrap(known ? f.text : 'Возьмите ' + who + ' в команду, накопите им энергию и нажмите R в бою.', 236, 11).forEach((l, i) => ui.text(l, 356, 216 + i * 14, { size: 11 }));
           } else if (this.tab === 2) {
             if (g.state.flags[r.r.id]) { ui.wrap('«' + r.r.text + '»', 236, 11).forEach((l, i) => ui.text(l, 356, 96 + i * 14, { size: 11, col: '#fff0c0' })); ui.wrap(r.r.effect, 236, 11).forEach((l, i) => ui.text(l, 356, 200 + i * 14, { size: 11, col: C.ok })); }
             else ui.text('Этот слух ещё не распущен.', 356, 96, { size: 11, col: C.dim });

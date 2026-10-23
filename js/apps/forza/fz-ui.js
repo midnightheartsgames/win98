@@ -58,6 +58,11 @@
     Space: 'hand', KeyR: 'rewind', KeyB: 'back', ShiftLeft: 'hand', KeyF: 'fix'
   };
   const CHAR = [0.07, 0.065, 0.06];
+  const LOOK_RAD = 0.0045;
+  const LOOK_RETURN = { fast: { delay: 0.5, w: 6 }, slow: { delay: 3, w: 4 }, off: null };
+  const LOOK_LIMITS = { cockpit: { yaw: 2.35, up: 0.6, down: -0.7 }, hood: { yaw: 1.5, up: 0.45, down: -0.5 }, chase: { yaw: 0, up: 0.42, down: -1 }, far: { yaw: 0, up: 0.42, down: -1 } };
+  const LOOK_HIDE_DRIVER = 1.75;
+  const ZOOM = [0.7, 1.8];
   const PART_KG = { bumperF: 12, bumperR: 12, hood: 16, trunk: 13, mirrorL: 1.5, mirrorR: 1.5, wing: 6 };
 
   class UI {
@@ -79,6 +84,9 @@
       this.locT = 0;
       this.camYaw = 0;
       this.camPos = null;
+      this.camHit = 1;
+      this.camZoom = 1;
+      this.look = { yaw: 0, pitch: 0, vy: 0, vp: 0, idle: 0, drag: null };
       this.pending = [];
       this.gamepadPrev = [];
       this.pad = { steer: 0, thr: 0, brk: 0, hand: 0, rewind: 0, back: 0 };
@@ -106,7 +114,7 @@
       this.hudCv = el.querySelector('.fz-hudc');
       this.menuEl = el.querySelector('.fz-menu');
       this.loadEl = el.querySelector('.fz-load');
-      const tips = ['Совет: ручник (Пробел) помогает войти в поворот боком.', 'Совет: R — перемотка времени, если ошиблись.', 'Совет: выключенные ассистенты увеличивают награду за гонки.', 'Совет: заборы и фонари дают очки «Разрушения».', 'Совет: щиты Horizon спрятаны по всей Риге — ищите их у достопримечательностей.', 'Совет: в Юрмале по пляжу быстрее всего едут полноприводные машины.'];
+      const tips = ['Совет: ручник (Пробел) помогает войти в поворот боком.', 'Совет: R — перемотка времени, если ошиблись.', 'Совет: выключенные ассистенты увеличивают награду за гонки.', 'Совет: заборы и фонари дают очки «Разрушения».', 'Совет: щиты Horizon спрятаны по всей Риге — ищите их у достопримечательностей.', 'Совет: в Юрмале по пляжу быстрее всего едут полноприводные машины.', 'Совет: зажмите кнопку мыши и ведите ею, чтобы осмотреться из кабины или облететь машину камерой.'];
       el.querySelector('.fz-ltip').textContent = tips[Math.floor(Math.random() * tips.length)];
     }
 
@@ -145,7 +153,16 @@
       el.addEventListener('keydown', this.onKeyDown);
       el.addEventListener('keyup', this.onKeyUp);
       el.addEventListener('mousedown', () => { this.audio.unlock(); if (document.activeElement !== el) el.focus({ preventScroll: true }); });
-      el.addEventListener('blur', () => { this.keys = {}; if (this.photo) this.photo.held.clear(); });
+      el.addEventListener('blur', () => { this.keys = {}; this.lookUp(); if (this.photo) this.photo.held.clear(); });
+      const view = this.view;
+      view.addEventListener('pointerdown', e => this.lookDown(e));
+      view.addEventListener('pointermove', e => this.lookMove(e));
+      view.addEventListener('pointerup', e => this.lookUp(e));
+      view.addEventListener('pointercancel', e => this.lookUp(e));
+      view.addEventListener('lostpointercapture', e => this.lookUp(e));
+      view.addEventListener('dblclick', () => { if (this.canLook()) this.lookReset(); });
+      view.addEventListener('contextmenu', e => { if (this.mode === 'play') { e.preventDefault(); e.stopPropagation(); } });
+      view.addEventListener('wheel', e => this.lookZoom(e), { passive: false });
       this.onVis = () => { if (document.hidden) this.audio.suspend(); else this.audio.resume(); };
       document.addEventListener('visibilitychange', this.onVis);
       this.ro = new ResizeObserver(() => this.resized = true);
@@ -163,6 +180,7 @@
         case 'KeyC': {
           const order = ['chase', 'far', 'hood', 'cockpit'];
           this.camMode = order[(order.indexOf(this.camMode) + 1) % order.length];
+          this.lookReset();
           this.hud.toast({ chase: 'Камера: за машиной', far: 'Камера: дальняя', hood: 'Камера: капот', cockpit: 'Камера: из кабины' }[this.camMode]);
           break;
         }
@@ -172,7 +190,7 @@
         case 'KeyE': this.shiftUp = true; break;
         case 'KeyM': this.menus.push(this.menus.mapScreen()); break;
         case 'Tab': e && e.preventDefault(); this.cycleRadio(); break;
-        case 'KeyH': this.audio.play('horn'); break;
+        case 'KeyH': this.audio.play('horn'); this.honk(); break;
         case 'KeyL': g.lightsOn = !g.lightsOn; this.hud.toast(g.lightsOn ? 'Фары включены' : 'Фары выключены'); break;
         case 'Enter': case 'NumpadEnter': {
           if (g.race) break;
@@ -293,6 +311,15 @@
           const id = this.skinQueue.shift(), m = this.renderer.carMesh(id);
           this.renderer.carSkin(id, 'none', m.geo.skin);
           bar.style.width = Math.round(95 + (1 - this.skinQueue.length / F.Traffic.MODELS.length) * 5) + '%';
+          if (!this.skinQueue.length) this.driverQueue = F.Driver.crowdLooks();
+          continue;
+        }
+        if (this.driverQueue && this.driverQueue.length) {
+          txt.textContent = 'Водители…';
+          for (const look of this.driverQueue.splice(0, 6)) {
+            F.Driver.rig(look);
+            this.renderer.lookTex(F.Driver.texKey(look), look, true);
+          }
           continue;
         }
         bar.style.width = '100%';
@@ -316,13 +343,20 @@
       this.menus.push(this.menus.title());
     }
 
-    newGame() {
+    newGame(reg) {
       F.Profile.wipeProfile();
-      const p = F.Profile.newProfile();
+      const p = F.Profile.newProfile(reg && reg.name);
       p.settings = Object.assign(p.settings, this.settings());
+      if (reg && reg.look) {
+        p.driver = {};
+        for (const k of F.Profile.LOOK_KEYS) if (reg.look[k] !== undefined) p.driver[k] = reg.look[k];
+        p.driver.fit = reg.look.fit;
+      }
       F.Profile.saveProfile(p);
       this.startGame(p, true);
     }
+
+
 
     continueGame() {
       const p = F.Profile.loadProfile();
@@ -341,14 +375,22 @@
       this.camMode = p.settings.cam || 'chase';
       this.mode = 'play';
       this.camPos = null;
+      this.lookReset();
       this.applySettings();
       if (p.settings.radio) this.audio.setStation(p.settings.radio);
       this.audio.onTrack = np => { if (np && this.mode === 'play') this.hud.toast(np.station, `${np.title} — ${np.artist}`, '#ffcf20', 4); };
+      const news = F.Driver.adopt(p);
+      if (news) F.Profile.saveProfile(p);
       if (prologue) {
         this.beginEvent('prologue');
         this.hud.banner('ДОБРО ПОЖАЛОВАТЬ В РИГУ', 'Фестиваль Horizon ждёт вас в Межапарксе. Следуйте за синими стрелками!', '#e6146e', 6);
       } else {
         this.hud.banner('ФЕСТИВАЛЬ HORIZON RĪGA', 'Esc — меню · M — карта · Enter у маяка — начать событие', '#e6146e', 5);
+        if (p.driverNews) {
+          this.hud.banner('НОВОЕ НА ФЕСТИВАЛЕ: ВАШ ВОДИТЕЛЬ', 'Esc → ВОДИТЕЛЬ: внешность, гардероб и пропуск участника', '#2f86e6', 6);
+          p.driverNews = false;
+          F.Profile.saveProfile(p);
+        }
       }
     }
 
@@ -489,7 +531,7 @@
         if (edge(4)) this.shiftDown = true;
         if (edge(5)) this.shiftUp = true;
         if (edge(14)) this.cycleRadio();
-        if (edge(10)) this.audio.play('horn');
+        if (edge(10)) { this.audio.play('horn'); this.honk(); }
         if (edge(12)) this.press('Enter');
         if (edge(13)) this.press('Backspace');
         if (edge(11)) this.press('KeyV');
@@ -541,6 +583,7 @@
       if (steps === 5) this.acc = 0;
       this.rewinding = g.rewinding;
       this.handleEvents(g.drain());
+      this.updateDrivers(dt);
       this.updateRubble(dt);
       this.raceTick(dt);
       this.market = this.marketState(g.veh);
@@ -582,6 +625,7 @@
     handleEvents(list) {
       const g = this.game, hud = this.hud, au = this.audio;
       for (const e of list) {
+        this.driverEvent(e);
         switch (e.t) {
           case 'bank':
             au.play('bank');
@@ -590,6 +634,7 @@
           case 'chainlost': au.play('lost'); hud.toast('ЦЕПОЧКА ПРЕРВАНА', null, '#ff5070', 1.6); break;
           case 'hit': au.play('hit', e.impact); this.shake = Math.min(1, this.shake + e.impact * 0.06); if (e.impact > 4) this.sparks(g.veh.x, g.veh.y + 0.5, g.veh.z, e.impact); if (e.obj && e.obj.src && F.TREE[e.obj.src.kind]) this.shakeTree(e.obj.src, e.impact); break;
           case 'brush': this.onBrush(e); break;
+          case 'item': { const it = F.Wear.ITEM[e.id]; au.play('bank'); hud.toast(e.why === 'level' ? `Подарок за ${e.level} уровень` : 'Новая вещь в гардеробе', `${it.name} · Esc → ВОДИТЕЛЬ → ГАРДЕРОБ`, '#2f86e6', 4); break; }
           case 'carhit': au.play('hit', e.impact); this.shake = Math.min(1, this.shake + e.impact * 0.05); break;
           case 'smash': this.smashProp(e); break;
           case 'dent': this.onDent(e); break;
@@ -1046,18 +1091,25 @@
       const sh = this.shake * 0.25 + (v.rough || 0) * 0.05 * F.clamp(v.speed / 30, 0, 1);
       const jit = () => (Math.random() - 0.5) * sh;
       const speedK = F.clamp((v.speed - 15) / 55, 0, 1);
+      const lk = this.look;
+      this.lookSettle(dt);
       let cam;
       if (mode === 'cockpit' || mode === 'hood') {
         const geo = F.Models.carGeo(v.spec.id, v.spec.wing);
         const M = M4.pose(x, y, z, yaw, v.pitch, v.roll);
+        const inCab = mode === 'cockpit' && !look;
         let ex, ey, ez;
         if (mode === 'cockpit') { [ex, ey, ez] = geo.eye; ex += F.clamp(-v.ayL * 0.004, -0.05, 0.05); }
         else { ex = 0; ey = v.spec.car.sh.hood + 0.42; ez = geo.Z(v.spec.car.sh.ws) - 0.25; }
+        if (inCab) {
+          const hd = this.headOffset(lk.yaw, lk.pitch);
+          ex += hd[0]; ey += hd[1]; ez += hd[2];
+        }
         const e = M4.apply(M, ex, ey + jit() * 0.3, ez);
-        const turn = F.clamp(v.r * 0.18, -0.25, 0.25) + (look ? Math.PI : 0);
-        const lx = Math.sin(turn) * 10, lz = -Math.cos(turn) * 10;
-        const inCab = mode === 'cockpit' && !look;
-        const t = M4.apply(M, ex + lx, ey - (inCab ? 0.35 : 0.08), ez + lz);
+        const lean = F.clamp(v.r * 0.18, -0.25, 0.25) * (1 - F.clamp(Math.abs(lk.yaw) / 0.5, 0, 1));
+        const turn = look ? Math.PI + lean : lk.yaw + lean;
+        const tilt = (look ? 0 : lk.pitch) + (inCab ? -0.035 : -0.008), flat = Math.cos(tilt) * 10;
+        const t = M4.apply(M, ex + Math.sin(turn) * flat, ey + Math.sin(tilt) * 10, ez - Math.cos(turn) * flat);
         cam = { x: e[0], y: e[1], z: e[2], tx: t[0], ty: t[1], tz: t[2], fov: (inCab ? 60 : 68) + speedK * 8, near: 0.05, far: 4000, inside: true };
         this.camPos = null;
       } else {
@@ -1068,9 +1120,9 @@
         if (this.camPos === null || look !== this.lastLook) this.camYaw = target;
         this.lastLook = look;
         this.camYaw += F.wrap(target - this.camYaw) * Math.min(1, dt * (3.2 + Math.abs(v.r) * 1.5));
-        const L = v.spec.len;
-        const dist = (far ? 7.6 : 4.6) + L * 0.45 + speedK * 1.2;
-        const hgt = (far ? 3.3 : 2.0) + v.spec.hgt * 0.5;
+        const L = v.spec.len, zoom = this.camZoom, aim = 0.6 + v.spec.hgt * 0.3;
+        const dist = ((far ? 7.6 : 4.6) + L * 0.45 + speedK * 1.2) * zoom;
+        const hgt = aim + ((far ? 3.3 : 2.0) + v.spec.hgt * 0.5 - aim) * zoom;
         const fx = Math.sin(this.camYaw), fz = -Math.cos(this.camYaw);
         let cx = x - fx * dist, cz = z - fz * dist, cy = y + hgt;
         const hit = this.camRay(x, y + 1.2, z, cx, cy, cz);
@@ -1080,10 +1132,104 @@
         const k = Math.min(1, dt * 12), ky = Math.min(1, dt * 6);
         if (this.camPos) {
           this.camPos[0] = F.lerp(this.camPos[0], cx, k); this.camPos[1] = F.lerp(this.camPos[1], cy, ky); this.camPos[2] = F.lerp(this.camPos[2], cz, k);
-        } else this.camPos = [cx - v.vx * (1 - k) / 12, cy - v.vy * (1 - ky) / 6, cz - v.vz * (1 - k) / 12];
-        cam = { x: this.camPos[0] + jit(), y: this.camPos[1] + jit(), z: this.camPos[2] + jit(), tx: x + fx * 3.2, ty: y + 0.6 + v.spec.hgt * 0.3, tz: z + fz * 3.2, fov: 62 + speedK * 12, near: 0.3, far: 4000 };
+        } else { this.camPos = [cx - v.vx * (1 - k) / 12, cy - v.vy * (1 - ky) / 6, cz - v.vz * (1 - k) / 12]; this.camHit = 1; }
+        const oy = look ? 0 : lk.yaw, op = look ? 0 : lk.pitch;
+        let pos = this.camPos, lx = fx, lz = fz, lead = 3.2;
+        if (oy || op) {
+          const o = this.orbitOffset(pos[0] - x, pos[1] - y - aim, pos[2] - z, oy, op);
+          let ox = x + o[0], oyw = y + aim + o[1], oz = z + o[2];
+          const hit = this.camRay(x, y + 1.2, z, ox, oyw, oz);
+          this.camHit = F.lerp(this.camHit, hit, Math.min(1, dt * (hit < this.camHit ? 20 : 5)));
+          const h = this.camHit;
+          if (h < 1) { ox = F.lerp(x, ox, h); oz = F.lerp(z, oz, h); oyw = F.lerp(y + 1.2, oyw, h) + (1 - h) * 1.5; }
+          oyw = Math.max(oyw, this.world.groundY(ox, oz) + 0.6);
+          pos = [ox, oyw, oz];
+          const c = Math.cos(oy), s = Math.sin(oy);
+          lx = fx * c - fz * s; lz = fz * c + fx * s;
+          lead *= 1 - F.clamp(-op, 0, 1) * 0.8;
+        } else this.camHit = 1;
+        cam = { x: pos[0] + jit(), y: pos[1] + jit(), z: pos[2] + jit(), tx: x + lx * lead, ty: y + aim, tz: z + lz * lead, fov: 62 + speedK * 12, near: 0.3, far: 4000 };
       }
       return cam;
+    }
+
+    headOffset(yaw, pitch) {
+      const up = 0.09, ahead = 0.085, cp = Math.cos(pitch), sp = Math.sin(pitch);
+      const y1 = up * cp + ahead * sp, z1 = up * sp - ahead * cp;
+      const turn = F.smooth(1, 2.3, Math.abs(yaw)), side = Math.sign(yaw) * turn;
+      return [-z1 * Math.sin(yaw) + side * 0.07, y1 - up + turn * 0.025, z1 * Math.cos(yaw) + ahead - turn * 0.04 - Math.max(0, -pitch) * 0.05];
+    }
+
+    orbitOffset(ox, oy, oz, yaw, pitch) {
+      const c = Math.cos(yaw), s = Math.sin(yaw);
+      const rx = ox * c - oz * s, rz = oz * c + ox * s, hor = Math.hypot(rx, rz);
+      if (!pitch || hor < 1e-6) return [rx, oy, rz];
+      const r = Math.hypot(hor, oy), el = F.clamp(Math.atan2(oy, hor) - pitch, -0.12, 1.35), k = r * Math.cos(el) / hor;
+      return [rx * k, r * Math.sin(el), rz * k];
+    }
+
+    canLook() { return this.mode === 'play' && !!this.game && !this.menuOpen && !this.photo && this.settings().mlook !== 'off'; }
+
+    lookDown(e) {
+      if (!this.canLook() || this.look.drag !== null || (e.button !== 0 && e.button !== 2)) return;
+      this.look.drag = e.pointerId;
+      try { this.view.setPointerCapture(e.pointerId); } catch (err) { }
+      this.el.classList.add('fz-looking');
+    }
+
+    lookMove(e) {
+      if (this.look.drag === null || e.pointerId !== this.look.drag) return;
+      if (!this.canLook()) { this.lookUp(); return; }
+      const s = this.settings(), k = LOOK_RAD * (s.msens || 1);
+      this.lookTurn(e.movementX * k, -e.movementY * k * (s.minv ? -1 : 1));
+    }
+
+    lookUp(e) {
+      const id = this.look.drag;
+      if (id === null || (e && e.pointerId !== id)) return;
+      this.look.drag = null;
+      this.look.idle = 0;
+      if (this.view.hasPointerCapture && this.view.hasPointerCapture(id)) this.view.releasePointerCapture(id);
+      this.el.classList.remove('fz-looking');
+    }
+
+    lookTurn(dYaw, dPitch) {
+      const lk = this.look, lim = LOOK_LIMITS[this.camMode] || LOOK_LIMITS.chase;
+      lk.yaw = lim.yaw ? F.clamp(lk.yaw + dYaw, -lim.yaw, lim.yaw) : F.wrap(lk.yaw + dYaw);
+      lk.pitch = F.clamp(lk.pitch + dPitch, lim.down, lim.up);
+      lk.vy = lk.vp = 0;
+      lk.idle = 0;
+    }
+
+    lookReset() {
+      const lk = this.look;
+      lk.yaw = lk.pitch = lk.vy = lk.vp = lk.idle = 0;
+    }
+
+    lookSettle(dt) {
+      const lk = this.look, back = LOOK_RETURN[this.settings().mret || 'fast'];
+      if (lk.drag !== null || !back || (!lk.yaw && !lk.pitch)) { lk.idle = 0; return; }
+      lk.idle += dt;
+      if (lk.idle < back.delay) return;
+      lk.yaw = F.wrap(lk.yaw);
+      const w = back.w;
+      for (let left = Math.min(dt, 0.25); left > 1e-6; left -= 1 / 60) {
+        const h = Math.min(left, 1 / 60);
+        lk.vy += (-w * w * lk.yaw - 2 * w * lk.vy) * h; lk.yaw += lk.vy * h;
+        lk.vp += (-w * w * lk.pitch - 2 * w * lk.vp) * h; lk.pitch += lk.vp * h;
+      }
+      if (Math.abs(lk.yaw) + Math.abs(lk.pitch) < 2e-4 && Math.abs(lk.vy) + Math.abs(lk.vp) < 2e-3) this.lookReset();
+    }
+
+    lookZoom(e) {
+      if (!this.canLook() || this.camMode === 'cockpit' || this.camMode === 'hood') return;
+      e.preventDefault();
+      this.camZoom = F.clamp(this.camZoom * (e.deltaY < 0 ? 1 / 1.1 : 1.1), ZOOM[0], ZOOM[1]);
+    }
+
+    cabinDriverPart() {
+      if (this.camMode !== 'cockpit') return 'all';
+      return this.keys.back || this.pad.back || Math.abs(this.look.yaw) > LOOK_HIDE_DRIVER ? null : 'body';
     }
 
     camRay(x0, y0, z0, x1, y1, z1) {
@@ -1167,11 +1313,12 @@
       this.drawDynamic(g, env, cam, C, false);
       if (cam.inside && this.game) {
         const car = this.carState(g);
+        car.driverPart = this.cabinDriverPart();
         this.updateCluster(dt);
         r.setWorldUniforms(env, cam, C);
         r.drawCockpit(car, cam, C, env, this.cluster, this.camMode === 'cockpit' ? { rain: Math.min(1, env.rain * 1.2), wipe: car.wipe } : null);
       }
-      if (this.game && cam.inside && this.settings().mirror && this.camMode === 'cockpit') this.renderMirror(g, env, w, hh);
+      if (this.game && cam.inside && this.settings().mirror && this.camMode === 'cockpit') this.renderMirror(g, env, w, hh, cam.fov);
       this.sunScreen = this.sunOnScreen(env, C, cam, dt);
       r.endFrame(this.postFx(env, this.game ? g.veh.speed : 0));
       if (this.photo) this.photo.clearHud(); else this.hud.draw(this);
@@ -1365,8 +1512,54 @@
       const v = g.veh, p = this.pose || v;
       const lights = (g.lightsOn || this.autoLights()) ? 1 : 0;
       const dmg = v.dmg, burnt = !!(dmg && dmg.burnt);
-      const st = { id: v.spec.id, livery: g.entry.livery, wing: v.spec.wing, x: p.x, y: p.y, z: p.z, yaw: p.yaw, pitch: v.pitch, roll: v.roll, paint1: burnt ? CHAR : g.paint1, paint2: burnt ? CHAR : g.paint2, steer: v.delta, spin: -v.wheelRot, spins: v.spins, rates: v.wheels.map(wl => wl.w), susp: v.susp, brake: burnt ? 0 : v.braking, reverse: !burnt && v.gear < 0, wipe: this.wipeT === undefined || burnt ? -1 : this.wipeT, lights: burnt ? 0 : lights, popup: this.popupK, metal: !burnt && !!g.entry.metal, dirt: burnt ? 0.9 : g.entry.dirt || 0, tires: v.spec.up.tires | 0, brakes: v.spec.up.brakes | 0, dmg };
+      const st = { driver: burnt ? null : this.driverOf(g), id: v.spec.id, livery: g.entry.livery, wing: v.spec.wing, x: p.x, y: p.y, z: p.z, yaw: p.yaw, pitch: v.pitch, roll: v.roll, paint1: burnt ? CHAR : g.paint1, paint2: burnt ? CHAR : g.paint2, steer: v.delta, spin: -v.wheelRot, spins: v.spins, rates: v.wheels.map(wl => wl.w), susp: v.susp, brake: burnt ? 0 : v.braking, reverse: !burnt && v.gear < 0, wipe: this.wipeT === undefined || burnt ? -1 : this.wipeT, lights: burnt ? 0 : lights, popup: this.popupK, metal: !burnt && !!g.entry.metal, dirt: burnt ? 0.9 : g.entry.dirt || 0, tires: v.spec.up.tires | 0, brakes: v.spec.up.brakes | 0, dmg };
       return this.photo ? this.photo.carState(st) : st;
+    }
+
+    honk() {
+      if (this.game && this.mode === 'play' && !this.menuOpen) F.Driver.cue(this.driverOf(this.game), 'horn');
+    }
+
+    driverEvent(e) {
+      const g = this.game;
+      if (!g || this.mode !== 'play') return;
+      const D = F.Driver, inst = this.driverOf(g), v = g.veh;
+      const fx = Math.sin(v.yaw), fz = -Math.cos(v.yaw), rx = Math.cos(v.yaw), rz = Math.sin(v.yaw);
+      switch (e.t) {
+        case 'shift': if (!this.settings().auto) D.cue(inst, 'shift'); break;
+        case 'land': D.cue(inst, 'land', { power: e.impact }); break;
+        case 'hit': case 'carhit': {
+          const sp = Math.hypot(v.vx, v.vz) || 1, f = (v.vx * fx + v.vz * fz) / sp, r = (v.vx * rx + v.vz * rz) / sp;
+          D.cue(inst, 'hit', { power: e.impact, dx: sp > 1 ? r : 0, dz: sp > 1 ? f : 1 });
+          break;
+        }
+        case 'skill': {
+          if (e.kind !== 'near') break;
+          let best = null, bd = 20;
+          for (const t of g.traffic.cars) { const d = Math.hypot(t.x - v.x, t.z - v.z); if (d < bd) { bd = d; best = t; } }
+          if (best) D.cue(inst, 'near', { side: (best.x - v.x) * rx + (best.z - v.z) * rz });
+          break;
+        }
+        case 'finish': if (e.pos === 1) D.cue(inst, 'win'); break;
+      }
+    }
+
+    updateDrivers(dt) {
+      const g = this.game, v = g.veh, D = F.Driver, cam = this.lastCamPos;
+      D.animate(this.driverOf(g), dt, { steer: v.delta, speed: v.speed, latG: v.ayL || 0, lonG: v.axL || 0, yawRate: v.r || 0, heave: v.vy || 0, back: !!(this.keys.back || this.pad.back) && this.camMode !== 'cockpit' });
+      const simple = (o, steer, speed) => {
+        if (!o.drv || (cam && Math.hypot(o.x - cam[0], o.z - cam[2]) > 45)) return;
+        const yr = speed * Math.tan(steer) / 2.6;
+        D.animate(o.drv, dt, { steer, speed, yawRate: yr, latG: speed * yr, simple: true });
+      };
+      if (g.race) for (const a of g.race.rivals) simple(a, a.steer || 0, a.v || 0);
+      for (const t of g.traffic.cars) simple(t, t.steer || 0, t.v || 0);
+    }
+
+    driverOf(g) {
+      const look = F.Driver.playerLook(g.profile), key = JSON.stringify(look);
+      if (!this.pDriver || this.pDriverKey !== key) { this.pDriver = F.Driver.make(look); this.pDriverKey = key; }
+      return this.pDriver;
     }
 
     autoLights() {
@@ -1398,7 +1591,7 @@
         for (const a of g.race.rivals) {
           const d = Math.hypot(a.x - cam.x, a.z - cam.z);
           if (d > 700) continue;
-          r.drawCar({ id: a.id, livery: a.livery, wing: a.spec.wing, x: a.x, y: a.y, z: a.z, yaw: a.yaw, pitch: a.pitch || 0, roll: a.roll || 0, paint1: a.paint1, paint2: a.paint2, metal: a.metal, dirt: a.dirt, wipe: env.rain > 0.05 ? env.time + a.name.length * 0.29 : -1, steer: a.steer || 0, spin: -a.wheel, speed: a.v, tires: a.spec.up.tires | 0, brakes: a.spec.up.brakes | 0, brake: a.brakeLight, lights: lightsOn, dmg: a.dmg }, env);
+          r.drawCar({ driver: a.drv || (a.drv = F.Driver.make(F.Driver.rivalLook(a.name))), id: a.id, livery: a.livery, wing: a.spec.wing, x: a.x, y: a.y, z: a.z, yaw: a.yaw, pitch: a.pitch || 0, roll: a.roll || 0, paint1: a.paint1, paint2: a.paint2, metal: a.metal, dirt: a.dirt, wipe: env.rain > 0.05 ? env.time + a.name.length * 0.29 : -1, steer: a.steer || 0, spin: -a.wheel, speed: a.v, tires: a.spec.up.tires | 0, brakes: a.spec.up.brakes | 0, brake: a.brakeLight, lights: lightsOn, dmg: a.dmg }, env);
         }
         const sp = g.race.special;
         if (sp && sp.kind === 'train') this.drawTrain(sp, env);
@@ -1407,7 +1600,8 @@
       for (const t of g.traffic.cars) {
         const d = Math.hypot(t.x - cam.x, t.z - cam.z);
         if (d > 600) continue;
-        r.drawCar({ id: t.id, x: t.x, y: t.y, z: t.z, yaw: t.yaw, pitch: t.pitch, roll: t.roll, paint1: t.paint1, metal: t.uid % 10 < 3, dirt: (t.uid * 7 % 10) * 0.035, wipe: env.rain > 0.05 ? env.time + t.uid * 0.37 : -1, steer: t.steer, spin: -t.wheel, speed: t.v, brake: t.brake, lights: lightsOn, dmg: t.dmg }, env);
+        if (t.drvUid !== t.uid) { t.drv = F.Driver.make(F.Driver.trafficLook(t.uid, t.id)); t.drvUid = t.uid; }
+        r.drawCar({ driver: t.drv, id: t.id, x: t.x, y: t.y, z: t.z, yaw: t.yaw, pitch: t.pitch, roll: t.roll, paint1: t.paint1, metal: t.uid % 10 < 3, dirt: (t.uid * 7 % 10) * 0.035, wipe: env.rain > 0.05 ? env.time + t.uid * 0.37 : -1, steer: t.steer, spin: -t.wheel, speed: t.v, brake: t.brake, lights: lightsOn, dmg: t.dmg }, env);
       }
       if (this.rubble && this.rubble.list.length && !mirror) r.drawDebris(this.rubble.list, C);
       this.drawFestival(g, env, cam);
@@ -1866,18 +2060,33 @@
       void race;
     }
 
-    renderMirror(g, env, w, hh) {
+    mirrorShift(yaw, pitch, fov, hh, y0) {
+      const f = hh / 2 / Math.tan(fov * Math.PI / 360), e = Math.atan(y0 / f) - 0.035, t = pitch - 0.035;
+      const dy = Math.sin(e), dz = -Math.cos(e), sy = Math.sin(yaw), cy = Math.cos(yaw), st = Math.sin(t), ct = Math.cos(t);
+      const ahead = dy * st - dz * cy * ct;
+      if (ahead < 0.3) return null;
+      return [f * dz * sy / ahead, f * (dy * ct + dz * cy * st) / ahead - y0];
+    }
+
+    renderMirror(g, env, w, hh, fov) {
       const r = this.renderer, gl = r.gl;
-      const v = g.veh, p = this.pose || v;
+      const v = g.veh, p = this.pose || v, lk = this.look;
       const mw = Math.round(w * 0.26), mh = Math.round(hh * 0.1);
-      const mx = Math.round(w * 0.5 - mw / 2), my = Math.round(hh * 0.86);
+      let mx = Math.round(w * 0.5 - mw / 2), my = Math.round(hh * 0.86);
+      if (lk.yaw || lk.pitch) {
+        const sh = this.mirrorShift(lk.yaw, lk.pitch, fov, hh, my + mh / 2 - hh / 2);
+        if (!sh) return;
+        mx += Math.round(sh[0]); my += Math.round(sh[1]);
+        if (mx + mw <= 0 || mx >= w || my + mh <= 0 || my >= hh) return;
+      }
       this.mirrorRect = [mx / w, 1 - (my + mh) / hh, mw / w, mh / hh];
+      const clip = (x0, y0, x1, y1) => gl.scissor(Math.max(0, x0), Math.max(0, y0), Math.min(w, x1) - Math.max(0, x0), Math.min(hh, y1) - Math.max(0, y0));
       gl.enable(gl.SCISSOR_TEST);
-      gl.scissor(mx - 2, my - 2, mw + 4, mh + 4);
+      clip(mx - 2, my - 2, mx + mw + 2, my + mh + 2);
       gl.clearColor(0.05, 0.05, 0.05, 1);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       gl.viewport(mx, my, mw, mh);
-      gl.scissor(mx, my, mw, mh);
+      clip(mx, my, mx + mw, my + mh);
       const fx = Math.sin(p.yaw), fz = -Math.cos(p.yaw);
       const cam = { x: p.x + fx * 0.2, y: p.y + v.spec.hgt + 0.2, z: p.z + fz * 0.2, tx: p.x - fx * 20, ty: p.y + 0.8, tz: p.z - fz * 20, fov: 42, near: 1.2, far: 900, mirror: true };
       const C = r.camera(cam, mw, mh, [0, 0, mw, mh]);
@@ -1932,9 +2141,37 @@
       return { x: v.x + Math.cos(t) * d, y: v.y + 1.25, z: v.z + Math.sin(t) * d, tx: v.x, ty: v.y + 0.75, tz: v.z, fov: 50, near: 0.3, far: 3000 };
     }
 
+    renderStudio(w, hh, dt) {
+      const r = this.renderer, gl = r.gl, sr = this.showroom, D = F.Driver;
+      this.showT = (this.showT || 0) + dt;
+      gl.clearColor(0.13, 0.42, 0.4, 1);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      const env = F.studioEnv(), key = JSON.stringify(sr.driver);
+      if (!this.studioInst || this.studioKey !== key) { this.studioInst = D.make(sr.driver); this.studioKey = key; }
+      const pose = this.studioPose || { head: [0, 1.62, -0.01], chest: [0, 1.3, 0] };
+      const want = sr.frame === 'head' ? [pose.head[1] - 0.02, 0.95, 26] : sr.frame === 'top' ? [pose.chest[1] + 0.05, 1.85, 32] : [0.92, 3.7, 34];
+      const sc = this.studioCam || (this.studioCam = want.slice()), k = 1 - Math.exp(-Math.min(dt, 0.1) * 7);
+      for (let i = 0; i < 3; i++) sc[i] += (want[i] - sc[i]) * k;
+      const yaw = (this.studioYaw || 0) - 0.42 + Math.sin(this.showT * 0.25) * 0.05;
+      const cam = { x: Math.sin(yaw) * sc[1], y: sc[0] + sc[1] * 0.08, z: -Math.cos(yaw) * sc[1], tx: 0, ty: sc[0], tz: 0, fov: sc[2], near: 0.05, shiftX: w > hh * 1.2 ? ((sr.cx || 0.5) - 0.5) * 2 : 0 };
+      const C = r.camera(cam, w, hh);
+      r.setWorldUniforms(env, cam, C);
+      gl.uniform1f(r.pw.u.uDither, 0);
+      const disc = this.studioFloor || (this.studioFloor = r.upload((() => { const b = new F.Batch(64); b.disc(0, 0, 0, 1.15, 32, F.col('#1d6b66'), 0); b.disc(0, -0.01, 0, 1.3, 32, F.col('#e6146e'), 0); return b; })()));
+      gl.bindTexture(gl.TEXTURE_2D, r.tex('white'));
+      r.drawMesh(disc);
+      if (sr.car) {
+        const e = sr.car, sp = F.Cars.spec(e.id, e.up);
+        r.drawCar({ id: e.id, livery: e.livery, wing: sp.wing, x: 2.4, y: 0.02, z: 2.2, yaw: 0.95, paint1: F.hexRgb(e.c1), paint2: F.hexRgb(e.c2 || e.c1), metal: !!e.metal, steer: 0.2, spin: 0 }, env);
+      }
+      this.studioPose = r.drawFigure(this.studioInst, F.M4.pose(0, 0.02, 0, 0, 0, 0, 1, new Float32Array(16)), this.showT);
+      r.flushGlass();
+    }
+
     renderShowroom(w, hh, dt) {
       const r = this.renderer, gl = r.gl;
       const sr = this.showroom;
+      if (sr.driver) { this.renderStudio(w, hh, dt); return; }
       this.showT = (this.showT || 0) + dt;
       gl.clearColor(0.13, 0.42, 0.4, 1);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

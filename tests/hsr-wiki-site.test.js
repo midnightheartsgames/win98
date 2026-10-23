@@ -8,7 +8,7 @@ const read = f => fs.readFileSync(path.join(root, f), 'utf8');
 const BASE = 'http://www.astralwiki98.ru';
 const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
 
-const HSR_MODULES = ['hsr-core', 'hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes'];
+const HSR_MODULES = ['hsr-core', 'hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes'];
 
 const noop = () => {};
 function makeCanvas(w = 300, h = 150) {
@@ -81,6 +81,7 @@ function createSystem() {
   vm.runInContext(read('js/apps/ie.js'), ctx);
   vm.runInContext(read('js/apps/hsr-site.js'), ctx);
   vm.runInContext(read('js/apps/hsr-wiki-data.js'), ctx);
+  vm.runInContext(read('js/apps/hsr-wiki-cones.js'), ctx);
   vm.runInContext(read('js/apps/hsr-wiki-site.js'), ctx);
   return { ctx, H: ctx.Hsr98, D: ctx.hsrWikiData, site: ctx.hsrWikiSite, ie: ctx.appIE, hsrSite: ctx.hsrSite, storage, opened };
 }
@@ -119,6 +120,10 @@ const sampleUrls = [
   ...site.mapIds().map(id => `${BASE}/atlas?map=${id}`),
   ...site.docIds().map(id => `${BASE}/doc?id=${id}`),
   BASE + '/artifacts',
+  ...site.coneIds().map(id => `${BASE}/cone?id=${id}`),
+  ...site.outfitIds().map(id => `${BASE}/outfit?id=${id}`),
+  ...site.petIds().map(id => `${BASE}/pet?id=${id}`),
+  BASE + '/outfit?id=hook_foreman&mode=talk',
   BASE + '/recent',
   BASE + '/search?q=' + encodeURIComponent('Стелларон'),
   BASE + '/system?id=paths_aeons&mode=talk',
@@ -171,7 +176,7 @@ test('IE routes astralwiki98.ru, lists it in directory and search, and hsr.hoyov
 });
 
 test('Worldbuilding: cosmic systems, factions, and worlds have complete structured registries', () => {
-  assert.equal(D.systems.length, 6);
+  assert.equal(D.systems.length, 7);
   for (const s of D.systems) {
     assert.ok(s.id && s.title && s.summary.length > 40, s.id);
     assert.ok(Array.isArray(s.body) && s.body.length >= 2, `${s.id} body`);
@@ -375,6 +380,42 @@ test('interactive features: WikiLinks, search, spoiler toggle, user edits, talk 
   storage.delete('win98_hsr98_save_v3');
 });
 
+test('Light Cones: every cone has its own article with picture, plaque, S1-S5 skill, stats, holders and sources', () => {
+  const ids = site.coneIds();
+  assert.equal(ids.length, Object.keys(H.CONES).length);
+  assert.ok(ids.length >= 65, 'all cones of the game are covered');
+  const hub = site.renderSite(`${BASE}/artifacts`);
+  for (const id of ids) {
+    const c = H.CONES[id];
+    const a = D.cones[id];
+    assert.ok(a, `article data for ${id}`);
+    for (const k of ['by', 'date', 'who', 'scene', 'memory', 'theme']) assert.ok(typeof a[k] === 'string' && a[k].length > 3, `${id}.${k}`);
+    assert.ok(Array.isArray(a.tips) && a.tips.length >= 2, `${id} tips`);
+    assert.ok(Array.isArray(a.trivia) && a.trivia.length >= 1, `${id} trivia`);
+    assert.ok(!/[–—]/.test(JSON.stringify(a)), `${id} has no dashes`);
+    if (c.own) assert.ok(a.collab, `${id} names its collaboration`);
+    const route = site.parseUrl(`${BASE}/cone?id=${id}`);
+    assert.equal(route.view, 'cone');
+    assert.equal(route.pageId, `cone:${id}`);
+    const html = site.renderSite(`${BASE}/cone?id=${id}`);
+    assert.ok(html.includes(site.esc(c.name)), `${id} title`);
+    assert.ok(html.includes(`data-aw-art="cone:${id}"`), `${id} picture`);
+    for (const line of String(c.desc).split('\n').filter(Boolean)) assert.ok(html.includes(site.esc(line)), `${id} plaque line`);
+    assert.ok(html.includes(site.esc(c.skill)), `${id} skill name`);
+    const s5 = c.p[4].find((v, i) => c.p.some(r => r[i] !== c.p[0][i]));
+    if (s5 != null) assert.ok(html.includes('hwk-cone-hot'), `${id} shows S1-S5 values`);
+    assert.ok(html.includes(String(H.coneStats(id, 80).atk)), `${id} level 80 stats`);
+    assert.ok(site.coneSources(id).length >= 1, `${id} has a source`);
+    if (c.sig) {
+      assert.ok(html.includes(`char?id=${c.sig}`), `${id} links its owner`);
+      assert.ok(site.renderSite(`${BASE}/char?id=${c.sig}`).includes(`cone?id=${id}`), `${c.sig} links back to ${id}`);
+    }
+    assert.ok(hub.includes(`cone?id=${id}`), `artifacts hub links ${id}`);
+  }
+  assert.ok(site.searchArticles('Наташа').some(r => r.url === `${BASE}/cone?id=postop`), 'search finds cone articles');
+  assert.equal(site.parseUrl(`${BASE}/cone?id=nope`).view, 'missing');
+});
+
 test('every link on every page resolves and every page obeys Web 1.0 and project rules', () => {
   const knownExternal = new Set(['hsr', 'kovcheg', 'steam', 'interpedia']);
   for (const url of sampleUrls) {
@@ -412,17 +453,77 @@ test('CSS uses .hwk-* namespace with zero .aw-* collisions, only 216 web-safe he
     assert.ok(!css.includes(prop), `forbidden CSS property ${prop}`);
   }
   const safe = h => /^#([0369cf])\1([0369cf])\2([0369cf])\3$/i.test(h);
-  const js = read('js/apps/hsr-wiki-data.js') + read('js/apps/hsr-wiki-site.js');
+  const js = read('js/apps/hsr-wiki-data.js') + read('js/apps/hsr-wiki-cones.js') + read('js/apps/hsr-wiki-site.js');
   const off = [...new Set([...(css.match(/#[0-9a-f]{6}\b/gi) || []), ...(js.match(/#[0-9a-f]{6}\b/gi) || [])])].filter(h => !safe(h));
   assert.deepEqual(off, [], 'only 216 web-safe hex colors used');
 
   const commentRe = new RegExp('\\/\\*|\\*\\/|^[ \\t]*\\/\\/|[^:\\\\]\\/\\/ |<' + '!--', 'm');
-  for (const f of ['css/apps/hsr-wiki.css', 'js/apps/hsr-wiki-data.js', 'js/apps/hsr-wiki-site.js', 'tests/hsr-wiki-site.test.js']) {
+  for (const f of ['css/apps/hsr-wiki.css', 'js/apps/hsr-wiki-data.js', 'js/apps/hsr-wiki-cones.js', 'js/apps/hsr-wiki-site.js', 'tests/hsr-wiki-site.test.js']) {
     const raw = read(f);
     const stripped = raw.replace(/https?:\/{2}/g, '');
     assert.ok(!commentRe.test(stripped), `zero comments in ${f}`);
     assert.ok(!/\bMicrosoft\b|\bWindows\b/.test(raw.replace(/WINDOWS|'Microsoft Sans Serif'/g, '')), `no forbidden names in ${f}`);
   }
+});
+
+test('Wardrobe: every outfit and pet has its own article with game data, wiki text, art and links', () => {
+  const outfits = Object.keys(H.OUTFITS);
+  const pets = Object.keys(H.PETS);
+  assert.ok(outfits.length >= 14 && pets.length >= 1, 'outfits and pets loaded');
+  assert.deepEqual([...site.outfitIds()], outfits);
+  assert.deepEqual([...site.petIds()], pets);
+  assert.equal(typeof H.outfitShowcase, 'function', 'showcase exported for the wiki');
+  assert.equal(typeof H.petStage, 'function', 'pet stage exported for the wiki');
+  const artHtml = site.renderSite(`${BASE}/artifacts`);
+  for (const id of outfits) {
+    const o = H.OUTFITS[id];
+    const w = D.outfits[id];
+    assert.ok(w && w.cut.length >= 4 && w.theme && w.howGet.length && w.trivia.length, `wiki text for ${id}`);
+    const r = site.parseUrl(`${BASE}/outfit?id=${id}`);
+    assert.equal(r.view, 'outfit');
+    assert.equal(r.pageId, `outfit:${id}`);
+    const html = site.renderSite(`${BASE}/outfit?id=${id}`);
+    assert.ok(html.includes(site.esc(o.name)) && html.includes(site.esc(o.text)), `game text on ${id}`);
+    assert.ok(html.includes(`${o.price}</b> звёздного нефрита`), `price on ${id}`);
+    assert.ok(html.includes(`data-url="${BASE}/char?id=${o.char}"`), `owner link on ${id}`);
+    assert.ok(html.includes(`data-aw-art="dress:${id}:`) && html.includes('hwk-tag') && html.includes('hwk-pattern'), `fitting room form on ${id}`);
+    for (const [part] of w.cut) assert.ok(html.includes(site.esc(part)), `cut ${part} on ${id}`);
+    if (o.giftNote) assert.ok(html.includes(site.esc(o.giftNote)), `gift note on ${id}`);
+    assert.ok(!html.includes('сущности древних снов'), `no Oneiric Shards on ${id}`);
+    assert.ok(artHtml.includes(`data-url="${BASE}/outfit?id=${id}"`), `catalog links ${id}`);
+    const charHtml = site.renderSite(`${BASE}/char?id=${o.char}`);
+    assert.ok(charHtml.includes(`data-url="${BASE}/outfit?id=${id}"`) && !charHtml.includes('сущности древних снов'), `dossier links ${id}`);
+    assert.equal(site.getPageTitle(`${BASE}/outfit?id=${id}`).includes(o.name), true);
+  }
+  const trailHtml = site.renderSite(`${BASE}/outfit?id=trail_trashlord`);
+  assert.ok(trailHtml.includes('data-aw-art="dress:trail_trashlord:mf"') && trailHtml.includes('data-aw-art="figf:trail"'), 'Trailblazer outfit shows both genders');
+  for (const id of pets) {
+    const pt = H.PETS[id];
+    const w = D.pets[id];
+    assert.ok(w && w.species && w.origin && w.theme && w.care.length, `wiki text for pet ${id}`);
+    const html = site.renderSite(`${BASE}/pet?id=${id}`);
+    assert.ok(html.includes('ПАСПОРТ ПИТОМЦА') && html.includes(`${pt.price} звёздного нефрита`), `passport form on ${id}`);
+    for (const hb of pt.habits) assert.ok(html.includes(site.esc(hb)), `habit on ${id}`);
+    for (const cid of [...pt.likes, ...pt.fears, ...pt.lazy]) assert.ok(html.includes(`data-url="${BASE}/char?id=${cid}"`), `crew ${cid} on ${id}`);
+    for (const lines of Object.values(pt.leader)) for (const l of lines) assert.ok(html.includes(site.esc(l)), `leader line on ${id}`);
+    assert.ok(html.includes(`Засыпает уже через ${H.PET_TUNE.lazySleep} с`), `lazy sleep from PET_TUNE on ${id}`);
+    assert.ok(html.includes(`data-aw-art="petstage:${id}"`) && html.includes(`data-aw-art="pet:${id}:side-fly"`), `album on ${id}`);
+    assert.ok(html.includes('display:none;'), `spoiler closed on ${id}`);
+    assert.ok(artHtml.includes(`data-url="${BASE}/pet?id=${id}"`), `catalog links pet ${id}`);
+    for (const m of html.matchAll(/style="background-color:(#[0-9a-f]{6});"/g)) {
+      assert.ok(/^#([0369cf])\1([0369cf])\2([0369cf])\3$/.test(m[1]), `swatch ${m[1]} is web-safe`);
+    }
+  }
+  const idx = site.renderSite(`${BASE}/recent`);
+  assert.ok(idx.includes(`data-url="${BASE}/outfit?id=march_spring"`) && idx.includes(`data-url="${BASE}/pet?id=chomusuke"`), 'index and recent changes list wardrobe pages');
+  assert.ok(site.searchArticles('Чомусуке').some(r => r.url === `${BASE}/pet?id=chomusuke`), 'search finds the pet');
+  assert.ok(site.searchArticles('гинкго').some(r => r.url === `${BASE}/outfit?id=miyabi_blossom`), 'search finds an outfit by its cut');
+  const linked = site.formatWikiText('[[outfit:kazuma_jersey|костюм]] и [[pet:chomusuke|кошка]]');
+  assert.ok(linked.includes(`data-url="${BASE}/outfit?id=kazuma_jersey"`) && linked.includes(`data-url="${BASE}/pet?id=chomusuke"`));
+  assert.equal(site.parseUrl(`${BASE}/outfit?id=nope`).view, 'missing');
+  assert.equal(site.parseUrl(`${BASE}/pet?id=nope`).view, 'missing');
+  const talk = site.renderSite(`${BASE}/pet?id=chomusuke&mode=talk`);
+  assert.ok(talk.includes('Megumin_Fan'), 'pet talk page has seed posts');
 });
 
 console.log(`\nALL ${passed} ASTRALWIKI 98 TESTS PASSED!`);

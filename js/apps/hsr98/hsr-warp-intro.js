@@ -1970,6 +1970,27 @@
         }
         flash(g, this.flash, sm(seg(o, 0.6, 1)));
       }
+    },
+    elation: {
+      hue: '#ff9ae0', flash: '#fff0fa', sfx: 'glint',
+      bg(g, S, t) {
+        const k = eOut(seg(t, 0.05, 0.9)), cols = ['#ff5a6a', '#ffa040', '#ffe060', '#7ae08a', '#6ac8ff', '#c08aff'];
+        lighter(g, () => { for (let i = 0; i < 3; i++) ring(g, rgba(i % 2 ? '#ffd0f0' : '#ff9ae0', (0.1 + 0.08 * Math.sin(S.T * 3 + i * 2)) * k), 1, MX, MY, 56 + i * 28 + 4 * Math.sin(S.T * 2 + i)); glow(g, MX, MY, 150, '#ff6ac8', 0.1 * k); });
+        for (let i = 0; i < 46; i++) {
+          const ph = (S.T * (0.16 + hx(i, 5, 53) * 0.12) + hx(i, 3, 53)) % 1, x = hx(i, 4, 53) * LW + Math.sin(S.T * 2 + i) * 8, y = ph * (LH + 20) - 10, w = Math.abs(Math.cos(S.T * 4 + i)) * 3 + 1;
+          rect(g, rgba(cols[i % 6], (0.45 + 0.4 * Math.sin(ph * Math.PI)) * k), Math.round(x), Math.round(y), Math.round(w), 2);
+        }
+      },
+      em: o => [1 + 0.12 * Math.sin(o * Math.PI * 3) * (1 - o), 1 - sm(seg(o, 0.3, 0.6))],
+      out(g, S, t, o) {
+        if (o <= 0) return;
+        const cols = ['#ff5a6a', '#ffa040', '#ffe060', '#7ae08a', '#6ac8ff', '#c08aff'];
+        for (let i = 0; i < 36; i++) {
+          const a = hx(i, 1, 59) * Math.PI * 2, r = eOut(o) * (40 + hx(i, 2, 59) * 170), x = MX + Math.cos(a) * r, y = MY + Math.sin(a) * r + o * o * 50, w = 2 + Math.round(hx(i, 3, 59) * 2);
+          rect(g, rgba(cols[i % 6], 1 - seg(o, 0.5, 1)), Math.round(x), Math.round(y), w, i % 3 ? 2 : w);
+        }
+        flash(g, this.flash, sm(seg(o, 0.6, 1)));
+      }
     }
   };
 
@@ -1989,9 +2010,14 @@
     fx.out(g, S, t, o);
   }
 
+  const outfitOf = (r, game) => (r.outfit !== undefined ? r.outfit : H.wornOutfit ? H.wornOutfit(r.id, game) : null);
+  const outfitShow = (r, game) => (H.outfitCutOf ? H.outfitCutOf(outfitOf(r, game), 'warp') : null);
+  const showOf = (r, game) => outfitShow(r, game) || SHOWS[r.id] || GENERIC;
+
   function params(game, r, std) {
-    const d = H.CHARS[r.id] || {}, el = H.ELEMENTS[d.elem] || H.ELEMENTS.phys;
-    return { id: r.id, rar: r.rar, std: !!std, path: d.path || 'destruction', elem: d.elem || 'phys', col: el.col, look: G.lookOf(r.id, game), seed: hx(r.id.length, r.id.charCodeAt(0), 3) * 4 };
+    const d = H.CHARS[r.id] || {}, el = H.ELEMENTS[d.elem] || H.ELEMENTS.phys, oid = outfitOf(r, game);
+    const look = r.outfit === undefined ? G.lookOf(r.id, game) : oid ? H.outfitLook(oid, game.state.gender) : G.lookOf(r.id, null);
+    return { id: r.id, rar: r.rar, std: !!std, path: d.path || 'destruction', elem: d.elem || 'phys', col: el.col, look, seed: hx(r.id.length, r.id.charCodeAt(0), 3) * 4 };
   }
 
   function render(game, r, t, std) {
@@ -2001,7 +2027,7 @@
     const S = H.Cine.stage(g, game, t);
     if (t < SIGN) { S.t = t; S.d = SIGN; sign(S, P, t); }
     else {
-      const show = SHOWS[r.id] || GENERIC, fx = PATH_FX[P.path] || PATH_FX.destruction;
+      const show = showOf(r, game), fx = PATH_FX[P.path] || PATH_FX.destruction;
       S.t = t - SIGN; S.d = show.d;
       show.act(S, P);
       if (S.t < 0.3) flash(g, fx.flash, 1 - S.t / 0.3);
@@ -2013,8 +2039,8 @@
 
   const spaced = s => s.split('').join(' ');
 
-  function overlay(ui, c, r, t) {
-    const show = SHOWS[r.id] || GENERIC, end = SIGN + show.d, col = RAR[r.rar] || RAR[4];
+  function overlay(ui, c, r, t, game) {
+    const show = showOf(r, game), end = SIGN + show.d, col = RAR[r.rar] || RAR[4];
     const h = Math.round(BAR * 2 * (t < end ? sm(seg(t, 0, 0.35)) : 1 - sm(seg(t, end, end + 0.4))));
     if (h > 0) {
       c.fillStyle = '#000000'; c.fillRect(0, 0, W, h); c.fillRect(0, HGT - h, W, h);
@@ -2031,20 +2057,20 @@
     }
   }
 
-  function lineOf(id, game) { const s = (SHOWS[id] || GENERIC).line; return s ? (game ? game.fill(s) : s) : ''; }
+  function lineOf(id, game, outfit) { const s = showOf({ id, outfit }, game).line; return s ? (game ? game.fill(s) : s) : ''; }
 
   const cueCache = new Map();
-  function cues(r) {
-    const key = r.id + '|' + r.rar;
+  function cues(r, game) {
+    const key = r.id + '|' + r.rar + '|' + (outfitShow(r, game) ? outfitOf(r, game) : '');
     let list = cueCache.get(key);
     if (!list) {
-      const show = SHOWS[r.id] || GENERIC, fx = PATH_FX[(H.CHARS[r.id] || {}).path] || PATH_FX.destruction;
+      const show = showOf(r, game), fx = PATH_FX[(H.CHARS[r.id] || {}).path] || PATH_FX.destruction;
       list = [[0.05, 'warp'], [0.62, 'glint'], [0.8, r.rar === 5 ? 'star5' : 'star4'], [1.02, fx.sfx]].concat(show.sfx.map(([x, id]) => [SIGN + x, id]));
       cueCache.set(key, list);
     }
     return list;
   }
 
-  H.WarpIntro = { SIGN, SHOWS, PATH_FX, KIT: { zoom, clip, cuts, stand, hand, pose, fly, star4, twinkle }, CARD: { x: CX, y: CY }, length: id => SIGN + (SHOWS[id] || GENERIC).d, has: id => !!SHOWS[id], render, overlay, line: lineOf, cues, ticket, shapes };
+  H.WarpIntro = { SIGN, SHOWS, PATH_FX, KIT: { zoom, clip, cuts, stand, hand, pose, fly, star4, twinkle }, CARD: { x: CX, y: CY }, length: (id, game, outfit) => SIGN + showOf({ id, outfit }, game).d, has: id => !!SHOWS[id], showOf, render, overlay, line: lineOf, cues, ticket, shapes };
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

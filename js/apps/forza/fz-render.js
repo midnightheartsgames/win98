@@ -185,6 +185,7 @@ void main() {
     base = mix(base, vec3(0.34, 0.29, 0.23), dirt);
   }
   bool leaf = m > 17.5 && m < 19.5;
+  bool skinM = m > 20.5 && m < 21.5;
   vec3 N = normalize(vN);
   if (!gl_FrontFacing && !leaf) N = -N;
   vec3 toCam = uCam - vWPos;
@@ -194,7 +195,7 @@ void main() {
     if (uLod.z < 1.5 ? lt > th : lt <= th) discard;
   }
   vec3 V = toCam / max(dist, 0.001);
-  float ndl = leaf ? clamp((dot(N, uSunDir) + 0.45) / 1.45, 0.0, 1.0) : max(dot(N, uSunDir), 0.0);
+  float ndl = leaf ? clamp((dot(N, uSunDir) + 0.45) / 1.45, 0.0, 1.0) : skinM ? clamp((dot(N, uSunDir) + 0.2) / 1.2, 0.0, 1.0) : max(dot(N, uSunDir), 0.0);
   float sh = ndl > 0.0 ? shadowAt(N, leaf) : 1.0;
   if (uCloudSh > 0.0) sh *= 1.0 - uCloudSh * smoothstep(uCloud.x, uCloud.x + uCloud.y, texture2D(uClouds, vWPos.xz * 0.00042 + uCloud.zw).r);
   vec3 hemi = mix(uGroundCol, uAmb, N.y * 0.5 + 0.5);
@@ -229,6 +230,7 @@ void main() {
   float specK = 0.035, shin = 18.0;
   if (painted) { specK = 0.6; shin = 280.0; }
   else if (m > 14.5 && m < 16.5) { specK = 0.12; shin = 40.0; }
+  else if (skinM) { specK = 0.1; shin = 14.0; }
   else if (glass) { specK = 0.9; shin = 160.0; }
   else if (m > 6.5 && m < 7.5) { specK = 0.9; shin = 70.0; }
   else if (trim) { specK = 0.14; shin = 32.0; }
@@ -271,6 +273,7 @@ void main() {
   } else if (glass) {
     c = mix(base * light * 0.35, envAt(R, 0.0) + local * 0.4, 0.18 + 0.72 * fres) + uSunCol * spec;
     a = min(a, 0.45 + 0.52 * fres + spec);
+    if (uSpecK < 0.5) { c *= 0.55; a = max(a, 0.66); }
     if (cracked) {
       float ck = crackAt(vUV, vCol.a * 1.6, dist * 0.0011);
       c = mix(c, vec3(0.8, 0.84, 0.88) * (light * 0.7 + 0.22) + local * 0.3, ck * 0.85);
@@ -314,7 +317,7 @@ void main() {
     }
     vec3 refl = mix(uSkyCol, envAt(reflect(-V, Nr), 1.5), 0.5) + local * 0.6;
     c = mix(c * (1.0 - 0.28 * wetRoad), refl, (0.06 + 0.55 * pud) * (0.25 + 0.75 * fres) * wetRoad);
-  } else if (uWet > 0.0 && (m < 0.5 || trim || m > 17.5)) c *= 1.0 - uWet * 0.25;
+  } else if (uWet > 0.0 && (m < 0.5 || trim || (m > 17.5 && m < 20.5))) c *= 1.0 - uWet * 0.25;
   if (m > 9.5 && m < 10.5) c += base * uDial * vEmis;
   else if (m > 14.5 && m < 16.5) c += base * vEmis * 0.95;
   else c += base * vEmis * 1.4 + vec3(vEmis) * 0.25;
@@ -698,6 +701,9 @@ void main() {
       this.wheelM = new Float32Array(16);
       this.glassQ = [];
       this.glassN = 0;
+      this.drivers = new Map();
+      this.rigIbo = new Map();
+      this.lookTexs = new Map();
       this.uc = {};
       this.carFast = {};
       this.stats = { draws: 0, tris: 0, chunks: 0 };
@@ -886,6 +892,118 @@ void main() {
         if (this.frameNo - w.seen < 300) continue;
         this.freeWreck(w);
         this.wrecks.delete(d);
+      }
+      for (const [inst, d] of this.drivers) {
+        if (this.frameNo - d.seen < 300) continue;
+        this.gl.deleteBuffer(d.mesh[0].vbo);
+        this.drivers.delete(inst);
+      }
+      for (const [key, t] of this.lookTexs) {
+        if (t.keep || this.frameNo - t.seen < 1800) continue;
+        this.gl.deleteTexture(t.tex);
+        this.lookTexs.delete(key);
+      }
+    }
+
+    driverSlot(inst) {
+      const gl = this.gl, rig = inst.rig;
+      let d = this.drivers.get(inst);
+      if (!d) {
+        let ibo = this.rigIbo.get(rig);
+        if (!ibo) {
+          ibo = gl.createBuffer();
+          gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+          gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, rig.idx, gl.STATIC_DRAW);
+          this.rigIbo.set(rig, ibo);
+        }
+        d = { mesh: [{ vbo: gl.createBuffer(), ibo, count: rig.ni }], seen: 0, geo: null, steer: NaN, cockpit: null, frame: -1 };
+        this.drivers.set(inst, d);
+      }
+      d.seen = this.frameNo;
+      return d;
+    }
+
+    driverMesh(inst, geo, steer, cockpit) {
+      const gl = this.gl, d = this.driverSlot(inst);
+      if (d.frame !== this.frameNo || d.geo !== geo || d.steer !== steer || d.cockpit !== cockpit) {
+        F.Driver.pose(inst, geo, steer, cockpit);
+        gl.bindBuffer(gl.ARRAY_BUFFER, d.mesh[0].vbo);
+        gl.bufferData(gl.ARRAY_BUFFER, inst.data, gl.DYNAMIC_DRAW);
+        d.frame = this.frameNo; d.geo = geo; d.steer = steer; d.cockpit = cockpit;
+      }
+      return d.mesh;
+    }
+
+    lookTex(key, look, keep) {
+      let t = this.lookTexs.get(key);
+      if (t) { t.seen = this.frameNo; if (keep) t.keep = true; return t.tex; }
+      const gl = this.gl, cv = F.Driver.paintLook(look, F.Tex.canvas(F.Driver.TEX, F.Driver.TEX));
+      const tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cv);
+      gl.generateMipmap(gl.TEXTURE_2D);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.opts.filter === 'point' ? gl.NEAREST : gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      t = { tex, seen: this.frameNo, keep: !!keep };
+      this.lookTexs.set(key, t);
+      return tex;
+    }
+
+    drawFigure(inst, model, t) {
+      const gl = this.gl, d = this.driverSlot(inst), at = F.Driver.stand(inst, t);
+      gl.bindBuffer(gl.ARRAY_BUFFER, d.mesh[0].vbo);
+      gl.bufferData(gl.ARRAY_BUFFER, inst.data, gl.DYNAMIC_DRAW);
+      d.frame = -1;
+      if (this.prog === this.pw) {
+        gl.bindTexture(gl.TEXTURE_2D, this.lookTex(inst.tex, inst.look));
+        gl.uniform1f(this.pw.u.uInside, 0);
+      }
+      gl.disable(gl.CULL_FACE);
+      this.drawRange(d.mesh, model, 0, inst.rig.ni);
+      gl.enable(gl.CULL_FACE);
+      return at;
+    }
+
+    figureShot(look, w, h, frame = 'head') {
+      const gl = this.gl;
+      this.ensureFbo();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
+      gl.viewport(0, 0, w, h);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      const inst = F.Driver.make(look), pose = F.Driver.stand(inst, 0), c = frame === 'head' ? pose.head : pose.chest, d = frame === 'head' ? 0.62 : 1.5;
+      const cam = { x: c[0] + 0.12 * d, y: c[1] + 0.02, z: c[2] - d, tx: c[0], ty: c[1] - (frame === 'head' ? 0.01 : 0), tz: c[2], fov: 30 };
+      const C = this.camera(cam, w, h);
+      const env = studioEnv();
+      this.setWorldUniforms(env, cam, C);
+      gl.uniform1f(this.pw.u.uDither, 0);
+      gl.uniform1f(this.pw.u.uShadowOn, 0);
+      this.drawFigure(inst, this.ident, 0);
+      const px = new Uint8Array(w * h * 4);
+      gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, px);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      const cv = F.Tex.canvas(w, h), ctx = cv.getContext('2d'), img = ctx.createImageData(w, h);
+      for (let y = 0; y < h; y++) img.data.set(px.subarray((h - 1 - y) * w * 4, (h - y) * w * 4), y * w * 4);
+      ctx.putImageData(img, 0, 0);
+      gl.clearColor(0, 0, 0, 1);
+      return cv;
+    }
+
+    drawDriver(car, geo, model, headless, cockpit) {
+      const gl = this.gl, inst = car.driver, mesh = this.driverMesh(inst, geo, car.steer || 0, cockpit);
+      const main = this.prog === this.pw;
+      if (main) {
+        gl.bindTexture(gl.TEXTURE_2D, this.lookTex(inst.tex, inst.look));
+        gl.uniform1f(this.pw.u.uInside, 1);
+      }
+      gl.disable(gl.CULL_FACE);
+      this.drawRange(mesh, model, 0, headless ? inst.rig.head : inst.rig.ni);
+      if (main && !cockpit) {
+        gl.uniform1f(this.pw.u.uInside, 0);
+        gl.enable(gl.CULL_FACE);
       }
     }
 
@@ -1470,10 +1588,10 @@ void main() {
         gl.bindTexture(gl.TEXTURE_2D, sk.tex);
         this.setU('uSkin', 1);
       } else gl.bindTexture(gl.TEXTURE_2D, this.tex('caratlas'));
-      const retro = this.opts.gfx === 'retro', cut = geo.cuts[lod], mesh = this.dentMesh(car, m, lod) || m.lods[lod];
+      const cut = geo.cuts[lod], mesh = this.dentMesh(car, m, lod) || m.lods[lod];
       if (lod === 0) gl.disable(gl.CULL_FACE);
       if (cut) {
-        const first = lod === 0 && car.wipe >= 0 ? cut.w : 0, end = !main ? cut.g : car.inside ? cut.b : retro || lod > 0 ? cut.g : cut.c;
+        const first = lod === 0 && car.wipe >= 0 ? cut.w : 0, end = !main ? cut.g : car.inside ? cut.b : lod > 0 ? cut.g : cut.c;
         this.drawRange(mesh, model, first, end - first);
       } else this.drawMesh(mesh, model);
       if (main) gl.enable(gl.CULL_FACE);
@@ -1487,7 +1605,7 @@ void main() {
         for (const p of wp.pivots) this.drawMesh(m.wblade, M4.mul(model, wiperPose(this.wheelT, wp, p, a), this.wheelM));
       }
       if (main && car.dirt) this.setU('uDirt', car.dirt * 0.55);
-      if (main && cut && lod === 0 && !retro && !car.inside && cut.g > cut.c) {
+      if (main && cut && lod === 0 && !car.inside && cut.g > cut.c) {
         const q = this.glassQ, k = this.glassN++;
         const slot = q[k] || (q[k] = { mesh: null, first: 0, count: 0, model: new Float32Array(16), d: 0 });
         slot.mesh = mesh; slot.first = cut.c; slot.count = cut.g - cut.c; slot.model.set(model); slot.d = d;
@@ -1518,6 +1636,7 @@ void main() {
         this.setU('uMetal', 0);
         this.setU('uDirt', 0);
         this.setU('uSkin', 0);
+        if (lod === 0 && car.driver && !car.inside && !(car.dmg && car.dmg.burnt)) this.drawDriver(car, geo, model, false, false);
       }
       return m;
     }
@@ -1573,8 +1692,10 @@ void main() {
       const M = M4.pose(car.x, car.y, car.z, car.yaw, car.pitch || 0, car.roll || 0, 1, this.cabinM);
       const lx = M[0] * sd[0] + M[1] * sd[1] + M[2] * sd[2], ly = M[4] * sd[0] + M[5] * sd[1] + M[6] * sd[2], lz = M[8] * sd[0] + M[9] * sd[1] + M[10] * sd[2];
       const k = this.cabinKey;
-      if (this.cabinFor !== m || !(Math.abs(k[0] - lx) < 0.004 && Math.abs(k[1] - ly) < 0.004 && Math.abs(k[2] - lz) < 0.004 && Math.abs(k[3] - steer) < 0.01)) {
+      const pk = car.driver && car.driver.anim ? car.driver.anim.key : 0;
+      if (this.cabinFor !== m || this.cabinPose !== pk || !(Math.abs(k[0] - lx) < 0.004 && Math.abs(k[1] - ly) < 0.004 && Math.abs(k[2] - lz) < 0.004 && Math.abs(k[3] - steer) < 0.01)) {
         k[0] = lx; k[1] = ly; k[2] = lz; k[3] = steer;
+        this.cabinPose = pk;
         this.cabinFor = m;
         const half = 3.2, up = Math.abs(ly) > 0.98 ? [0, 0, 1] : [0, 1, 0];
         this.cabinLocal = M4.mul(M4.ortho(-half, half, -half, half, 10, 30), M4.lookAt(lx * 20, 1 + ly * 20, lz * 20, 0, 1, 0, up[0], up[1], up[2]));
@@ -1595,6 +1716,7 @@ void main() {
         this.drawRange(this.dentMesh(car, m, 0) || m.lods[0], this.ident, cut.w, cut.b - cut.w);
         this.drawMesh(m.cock, this.ident);
         this.drawMesh(m.swheel, steerPose(this.wheelT, m.geo.cockpit, steer));
+        if (car.driver) this.drawDriver(car, m.geo, this.ident, false, true);
         gl.enable(gl.CULL_FACE);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         this.prog = this.pw;
@@ -1930,6 +2052,7 @@ void main() {
       }
       this.drawMesh(m.cock, model);
       this.drawMesh(m.swheel, M4.mul(model, steerPose(this.wheelT, m.geo.cockpit, car.steer || 0), this.wheelM));
+      if (car.driver && car.driverPart) this.drawDriver(car, m.geo, model, car.driverPart === 'body', true);
       gl.uniform1f(u.uInside, 0);
       if (cluster) this.drawCluster(car.id, m, model, cluster);
       if (fx && m.geo.cuts[0] && this.opts.gfx !== 'retro') this.drawInsideGlass(m, model, env, fx, this.dentMesh(car, m, 0));
@@ -2109,7 +2232,7 @@ void main() {
       this.spList = [];
     }
 
-    thumbnail(id, paint1, paint2, livery, wing, w = 256, h = 150, metal = false) {
+    ensureFbo() {
       const gl = this.gl;
       if (!this.fbo) {
         this.fbo = gl.createFramebuffer();
@@ -2124,6 +2247,11 @@ void main() {
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.fboTex, 0);
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this.fboDepth);
       }
+    }
+
+    thumbnail(id, paint1, paint2, livery, wing, w = 256, h = 150, metal = false) {
+      const gl = this.gl;
+      this.ensureFbo();
       gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
       gl.viewport(0, 0, w, h);
       gl.clearColor(0, 0, 0, 0);

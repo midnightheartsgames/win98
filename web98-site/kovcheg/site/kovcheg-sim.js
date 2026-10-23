@@ -33,6 +33,7 @@
       for (const id of team) {
         if (id === 'trail' || id === 'trail_p') s.mcPath = id;
         g.debugChar(keyOf(id), lvl, 0);
+        if (g.fillTraces) g.fillTraces(keyOf(id), 'cap');
         gear(g, id, cone, relicLvl);
       }
       s.party = team.map(keyOf);

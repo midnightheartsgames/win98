@@ -138,6 +138,11 @@
         if (!lead) continue;
         (byFoe[lead[0]] = byFoe[lead[0]] || []).push({ enc, lvl: +lead[1], e });
       }
+      const top = H.CALYX_TIERS[H.CALYX_TIERS.length - 1].lvl + 2;
+      for (const c of H.CALYX) {
+        if (c.reward !== 'echo' || !c.waves || !H.ENEMIES[c.boss]) continue;
+        (byFoe[c.boss] = byFoe[c.boss] || []).push({ enc: c.id, lvl: top, e: { boss: true, waves: c.waves } });
+      }
       return byFoe;
     },
 
@@ -308,17 +313,19 @@
       const H = this.game(), K = this.hsrData();
       const users = set => Object.keys(K.CHARS).filter(id => { const p = K.PRESETS[K.CHARS[id].build]; const s = p.set === 'elem' ? K.ELEM_SET[H.CHARS[id].elem] : p.set; return s === set || p.planar === set; });
       const bonus = (b, k) => Object.entries(b).map(([s, v]) => `${H.STAT_NAMES[s] || s} +${this.pct(v * k)}`).join(', ');
-      const cav = H.CAVERN_SETS.map(id => { const s = H.RELIC_SETS[id]; const u = users(id); return `<tr><td><b>${this.esc(s.name)}</b></td><td>${this.esc(bonus(s.bonus, 1))}</td><td>${this.esc(bonus(s.bonus, 2))}</td><td class="kv-small">${u.map(x => this.esc(this.cardName(x))).join(', ') || '&nbsp;'}</td></tr>`; }).join('');
+      const drops = id => H.CALYX.filter(c => (c.sets || []).includes(id)).map(c => c.name.split(': ').pop()).join(', ');
+      const cav = H.CAVERN_SETS.map(id => { const s = H.RELIC_SETS[id]; const u = users(id); return `<tr><td><b>${this.esc(s.name)}</b></td><td>${this.esc(bonus(s.bonus, 1))}</td><td>${this.esc(bonus(s.bonus, 2))}</td><td class="kv-small">${this.esc(drops(id)) || '&nbsp;'}</td><td class="kv-small">${u.map(x => this.esc(this.cardName(x))).join(', ') || '&nbsp;'}</td></tr>`; }).join('');
       const pl = H.PLANAR_SETS.map(id => { const s = H.RELIC_SETS[id]; const u = users(id); return `<tr><td><b>${this.esc(s.name)}</b><br><span class="kv-small">${this.esc(Object.values(s.pieces || {}).join(', '))}</span></td><td>${this.esc(s.text)}</td><td class="kv-small">${u.length} персонажей</td></tr>`; }).join('');
       const jokes = H.FH.SHOP.jokes, row = jokes.rows.find(r => r.item === 'resin');
-      const resin = row ? `Посланник в Зале забвения продаёт её в лавке «${jokes.name}» за ${row.price} нефритовых перьев, ${row.lim === 1 ? 'одну' : 'до ' + row.lim + ' штук'} раз в ${H.FH.TUN.shopDays} дня. Из смолы делают реликвию пещеры с выбранным набором и главной характеристикой. Тратьте её на тело или ноги главного бойца: там главная характеристика выпадает реже всего.` : '';
+      const resin = row ? `Посланник в Зале забвения продаёт её в лавке «${jokes.name}» за ${row.price} нефритовых перьев, ${row.lim === 1 ? 'одну' : 'до ' + row.lim + ' штук'} раз в ${H.FH.TUN.shopDays} дня. Ещё смолу дают в Синтезе за ${H.RELIC_CRAFT ? H.RELIC_CRAFT.resinCost : 800} Обломков Реликвии. Реликвию любого набора и слота создают в Синтезе за ${H.RELIC_CRAFT ? H.RELIC_CRAFT.cost : 100} Обломков, а смола выбирает ей главную характеристику. Обломки дают расщеплённые реликвии. Тратьте её на тело или ноги главного бойца: там главная характеристика выпадает реже всего.` : '';
       const slots = H.RELIC_SLOTS.map(sl => `<tr><td><b>${this.esc(sl.name)}</b></td><td>${sl.mains.map(m => this.esc(H.STAT_NAMES[m] || m)).join(', ')}</td></tr>`).join('');
       return `
         <p class="kv-crumbs">${this.link('/hsr98/', 'Палуба SR98')} &gt; Реликвии</p>
         <h1 class="kv-h1">Реликвии и планарные украшения</h1>
         <p>Четыре предмета пещеры (голова, руки, тело, ноги) и два планарных (сфера и вязь). Набор из двух предметов даёт бонус, из четырёх тот же бонус дважды. Планарные наборы работают от двух предметов и приходят из Виртуальной вселенной.</p>
         <h2 class="kv-h2">Наборы пещеры</h2>
-        <table class="kv-grid" width="100%" cellspacing="0" cellpadding="3"><tr><th>Набор</th><th>2 предмета</th><th>4 предмета</th><th>Кому мы советуем</th></tr>${cav}</table>
+        <table class="kv-grid" width="100%" cellspacing="0" cellpadding="3"><tr><th>Набор</th><th>2 предмета</th><th>4 предмета</th><th>Где падает</th><th>Кому мы советуем</th></tr>${cav}</table>
+        <p class="kv-small">С патча 1.6 каждая Пещера коррозии и каждая Застойная тень роняет свою пару наборов. Общая Пещера в Симуляторе Экспресса по-прежнему даёт любой набор.</p>
         <h2 class="kv-h2">Планарные наборы</h2>
         <table class="kv-grid" width="100%" cellspacing="0" cellpadding="3"><tr><th>Набор</th><th>Эффект</th><th>Советуем</th></tr>${pl}</table>
         <h2 class="kv-h2">Главные характеристики по слотам</h2>

@@ -30,7 +30,7 @@
 
   const OUTFITS = {
     march_spring: {
-      char: 'march', name: 'Зарождение весны', rarity: 5, price: 1680, kind: 'Особый наряд', scene: 'snow',
+      char: 'march', name: 'Зарождение весны', scene: 'snow',
       text: 'Новая остановка, новое Освоение! И, конечно, новый наряд! Ледяная тиара, снежинки на юбке и бантики на туфлях. {name}, скорее, давай запечатлеем этот прекрасный момент на фото~',
       look: {
         tips: '#f0a8cc', coat: 'frost', collar: 'bare', top: '#f8f6fc', fade: '#c8b4ee', neck: '#f8f6fc', trim: '#8ab4ec', bow: '#3a5ccc', flower: '#f6f2fc', flowerCore: '#f0a0c8',
@@ -41,7 +41,7 @@
       }
     },
     megumin_bakuen: {
-      char: 'megumin', name: 'Ученица Алого народа', rarity: 5, price: 1680, kind: 'Особый наряд', scene: 'blast',
+      char: 'megumin', name: 'Ученица Алого народа', scene: 'blast',
       text: 'Розовая форма ученицы школы Алого народа, чёрная мантия с алой подкладкой и та самая шляпа. В этом наряде Мегумин копила очки навыков на один-единственный Взрыв.',
       look: {
         sides: 'jaw', back: 'short', coat: 'shirt', collar: 'shirt', top: '#f4a8c0', trim: '#a82838', capeIn: '#a82838', capeTrim: '#2a2026', capeZig: '#f09a30',
@@ -51,7 +51,7 @@
       }
     },
     ruanmei_plum: {
-      char: 'ruanmei', name: 'Письмо с цветами сливы', rarity: 5, price: 1680, kind: 'Особый наряд', scene: 'plum',
+      char: 'ruanmei', name: 'Письмо с цветами сливы', scene: 'plum',
       text: 'Платье цвета зимней воды, белое кружево и ветка сливы, вышитая от бедра до подола. Жуань Мэй говорит, что слива цветёт в самый холод, потому что не любит ждать весну.',
       look: {
         top: '#1e6a74', inner: '#1e6a74', trim: '#3a8a98', lower: '#18566a', sleeve: '#f8e3d8', gloves: '#f4f0ea', shoes: '#1c2848', tailsLining: '#124654', plumCore: '#e8b0b8', operaSide: 'r',
@@ -59,7 +59,7 @@
       }
     },
     welt_idol: {
-      char: 'welt', name: 'Айдол-дебют не удался', rarity: 5, price: 1680, kind: 'Особый наряд', scene: 'stage',
+      char: 'welt', name: 'Айдол-дебют не удался', scene: 'stage',
       text: 'Серая курточка с пышными рукавами, белая рубашка, красный бант, пышная чёрная юбка с крестиками и гарнитура у щеки. Вельт до сих пор не понимает, как согласился на этот концерт, но допел его до последней ноты.',
       look: {
         coat: 'jacket', coatLen: null, coatLow: null, lining: null, backLining: null, top: '#8c8e9a', trim: '#2a2a30', inner: '#f4f2ee', neck: null, collar: 'shirt',
@@ -68,7 +68,7 @@
       }
     },
     darkness_bride: {
-      char: 'darkness', name: 'Невеста Дастинесс', rarity: 5, price: 1680, kind: 'Особый наряд', scene: 'chapel',
+      char: 'darkness', name: 'Невеста Дастинесс', scene: 'chapel',
       text: 'Белое платье с розами, длинная фата, жемчуг и серебряная тиара, волосы уложены в причёску. В этом наряде Даркнесс почти вышла замуж за лорда Алдерпа, пока Казума не унёс невесту прямо из-под венца.',
       look: {
         back: 'nape', tips: null, coat: 'bridal', collar: 'bare', top: '#f8f6fa', trim: '#e4e2ec', inner: '#f8f6fa', neck: null, sleeve: null, plate: null,
@@ -77,7 +77,7 @@
       }
     },
     aqua_beach: {
-      char: 'aqua', name: 'Пляжная богиня', rarity: 5, price: 1680, kind: 'Особый наряд', scene: 'beach',
+      char: 'aqua', name: 'Пляжная богиня', scene: 'beach',
       text: 'Тёмно-синий купальник с завязками, белые бантики на бёдрах и золотые бусины на лентах в волосах. Аква уверена, что богиню воды на пляже ждут толпы поклонников. Пока к ней приплыли только медузы.',
       look: {
         coat: 'bikini', collar: 'bare', top: '#2c3482', trim: '#f4f4f8', inner: '#fbe2d2', neck: null, bead: '#e8c050',
@@ -86,7 +86,7 @@
       }
     },
     nicole_bunny: {
-      char: 'nicole', name: 'Модная зайка', rarity: 4, price: 840, kind: 'Особый наряд', scene: 'boutique',
+      char: 'nicole', name: 'Модная зайка', scene: 'boutique',
       text: 'Розовый топ, бирюзовая жилетка с мехом, леопардовый хвост и гетры на платформе. Николь взяла всё на распродаже и уверена, что сэкономила. Чек почему-то пришёл Билли.',
       look: {
         coat: 'bunnyvest', collar: 'bare', top: '#6cc2d6', lining: '#f6f4f0', inner: '#ee8eb2', print: '#fbeef4', chain: '#d8a830', trim: '#f6f4f0',
@@ -96,7 +96,7 @@
       }
     },
     miyabi_blossom: {
-      char: 'miyabi', name: 'Благородное цветение', rarity: 5, price: 1680, kind: 'Особый наряд', scene: 'ginkgo',
+      char: 'miyabi', name: 'Благородное цветение', scene: 'ginkgo',
       text: 'Чёрное хаори с золотыми листьями гинкго, спущенное с плеч, белое платье, оби с золотой ракушкой и чёрный передник с гербом. Мияби надевает его в выходной. Меч всё равно остаётся при ней.',
       look: {
         coat: 'haori', coatLen: null, coatLow: null, top: '#1c1c24', lining: '#f2f2f4', trim: '#d8b050', inner: '#f4f2ee', collar: 'bare', sleeve: '#1c1c24', obiCol: '#1c1c24', leaf: '#c8a060',
@@ -105,7 +105,7 @@
       }
     },
     makoto_chocola: {
-      char: 'makoto', name: 'Косплей Чоколы', rarity: 5, price: 1680, kind: 'Особый наряд', scene: 'netcafe',
+      char: 'makoto', name: 'Косплей Чоколы', scene: 'netcafe',
       text: 'Тёмное платье горничной с розовой шнуровкой, белый фартук, наколка с лентами, кошачий хвост и чулки с ушками. Макото пришла в нём в компьютерный клуб и до утра собирала три в ряд.',
       look: {
         eye: '#6a3a24', eye2: '#b0703e', coat: 'maid', collar: 'bare', top: '#3a2240', trim: '#e0508a', inner: '#faf6fa', apron: '#fafafc', neck: null, neon: '#f0a0b8', neon2: null,
@@ -115,7 +115,7 @@
       }
     },
     kazuma_jersey: {
-      char: 'kazuma', name: 'Спортивный костюм', rarity: 4, price: 840, kind: 'Особый наряд', scene: 'street', gift: 'ks_done', giftNote: 'после истории «Обмен отрядами»',
+      char: 'kazuma', name: 'Спортивный костюм', scene: 'street', gift: 'ks_done', giftNote: 'после истории «Обмен отрядами»',
       text: 'Зелёный спортивный костюм с чёрными рукавами и белыми полосками. В нём Казума вышел из дома за игрой и очнулся в другом мире. Отряд Казумы дарит его после истории «Обмен отрядами».',
       look: {
         coat: 'jacket', top: '#3f8a6e', sleeve: '#2a2a2e', trim: '#2a2a2e', inner: '#26262a', lining: null, collar: 'v',
@@ -124,7 +124,7 @@
       }
     },
     hook_foreman: {
-      char: 'hook', name: 'Старший бригадир шахты', rarity: 4, price: 840, kind: 'Особый наряд', scene: 'mine',
+      char: 'hook', name: 'Старший бригадир шахты', scene: 'mine',
       text: 'Меховая шапка с фонарём, рубашка с белыми повязками и синий комбинезон на лямках, как у бригады Великой шахты. Папа Ферсман не пускает в глубокие штольни, но у босса «Кротов» сверхурочная смена.',
       look: {
         coat: 'overalls', coatLen: null, coatFlare: null, lining: null, collar: 'shirt', top: '#d6c9a8', inner: '#d6c9a8', trim: '#f2efe6',
@@ -133,7 +133,7 @@
       }
     },
     arlan_peppy: {
-      char: 'arlan', name: 'Выгул особого назначения', rarity: 4, price: 840, kind: 'Особый наряд', scene: 'walk',
+      char: 'arlan', name: 'Выгул особого назначения', scene: 'walk',
       text: 'Кремовое худи с ушками Пеппи на капюшоне, синие штаны, кроссовки и пропуск на синем шнурке. Официально это патрулирование отсека поддержки. Пеппи уверен, что это прогулка, и сам приносит поводок.',
       look: {
         coat: 'hoodie', collar: 'hood', top: '#ecd8ae', inner: '#b89c72', trim: '#dcc59a', neck: null, cord: '#f8f4ec', earIn: '#eaa2a0',
@@ -142,7 +142,7 @@
       }
     },
     trail_trashlord: {
-      char: 'trail', name: 'Властелин Мусорного Царства', rarity: 4, price: 840, kind: 'Особый наряд', scene: 'trashking',
+      char: 'trail', name: 'Властелин Мусорного Царства', scene: 'trashking', giftNote: 'за 70 уровень освоения в событии «Воля Первопроходца»',
       text: 'Серебристый ребристый бак, крышка набекрень вместо шлема и верная бита. Королевские баки Пенаконии приняли Первопроходца за своего. Пахнет вчерашним ужином, зато в любой подворотне теперь как дома.',
       look: {
         coat: 'trashcan', coatLen: null, coatLow: null, coatFlare: null, lining: null, backLining: null, collar: 'bare', collarCol: '#27252b',
@@ -151,7 +151,7 @@
       }
     },
     himeko_vermilion: {
-      char: 'himeko', name: 'Алый урок', rarity: 5, price: 1680, kind: 'Особый наряд', scene: 'eclipse',
+      char: 'himeko', name: 'Алый урок', scene: 'eclipse', cuts: true,
       text: 'Боевой костюм Валькирии из мира, откуда пришёл Вельт: алая броня со светящимся пламенем, чёрный мех на плече и двуручный меч. Увидев его, Вельт долго молчал, а потом попросил Химико беречь себя.',
       look: {
         coat: 'valk', collar: 'bare', top: '#c41e2a', inner: '#1c1a20', lining: null, trim: '#f0b030', lower: '#1c1a20', low: 'shorts',
@@ -160,7 +160,18 @@
       }
     }
   };
+  const OUTFIT_TIER = { 4: { price: 840, kind: 'Наряд', perk: 'Меняет облик героя в бою, в мире и в меню' }, 5: { price: 1680, kind: 'Особый наряд', perk: 'Свои катсцены: абсолютная техника, Навык, Слияния, прыжок' } };
+  for (const o of Object.values(OUTFITS)) { const r = o.cuts ? 5 : 4; Object.assign(o, { rarity: r, price: OUTFIT_TIER[r].price, kind: OUTFIT_TIER[r].kind }); }
+  const OUTFIT_REFUND = ['megumin_bakuen', 'ruanmei_plum', 'welt_idol', 'darkness_bride', 'aqua_beach', 'miyabi_blossom', 'makoto_chocola'];
   const OUTFIT_BASE = 'Обычный наряд';
+  const OUTFIT_MAIL = { id: 'v16_outfits', from: H.BRAND.team, title: 'Патч 1.6: Облики 4★ и 5★', need: 'express_intro', text: [
+    'Уважаемый Первопроходец!',
+    'Класс облика теперь зависит от того, что облик меняет. Облик 4★ меняет героя в бою, в мире и в меню. Облик 5★ ещё и приносит свои катсцены: абсолютной техники, Навыка, Слияний и прыжка.',
+    'Первый облик 5★: «Алый урок» Химико. Она выходит под затмение с двуручным мечом, а в «Сингулярности Экспресса» Вельт узнаёт её доспех.',
+    'Посмотреть все катсцены облика можно до покупки: Снабжение, Магазин обликов, кнопка «Катсцены».',
+    'Если облик подешевел, а он у вас уже был, разницу мы вернули нефритом. Счастливого пути!'
+  ] };
+  if (H.MAIL && !H.MAIL.some(m => m.id === OUTFIT_MAIL.id)) H.MAIL.push(OUTFIT_MAIL);
 
   const hourOf = ms => Math.floor(ms / HOUR);
   const lookCache = {};
@@ -175,6 +186,11 @@
       lookCache[key] = L;
     }
     return lookCache[key];
+  }
+  const wornOutfit = (key, game) => (game && game.outfitOf && game.state && game.state.roster && game.state.roster[key] ? game.outfitOf(key) : null);
+  function outfitCutOf(id, kind, sub) {
+    const set = id && H.OUTFIT_CUTS && H.OUTFIT_CUTS[id], cut = set && set[kind];
+    return (sub ? cut && cut[sub] : cut) || null;
   }
   const wornLook = (key, game) => (game && game.state && game.state.roster && game.state.roster[key] && game.outfitOf ? outfitLook(game.outfitOf(key), game.state.gender) : null);
 
@@ -232,6 +248,14 @@
       sh.back = null;
       return b;
     },
+    fixOutfitTiers(old) {
+      const s = this.state;
+      if (old) {
+        const back = OUTFIT_REFUND.filter(id => s.outfits.includes(id)).length * (OUTFIT_TIER[5].price - OUTFIT_TIER[4].price);
+        if (back) { s.jade += back; s.shop.outfitBack = back; }
+      }
+      s.otv = 1;
+    },
     outfitsOf(key) { return Object.keys(OUTFITS).filter(id => OUTFITS[id].char === key); },
     ownsOutfit(id) { const o = OUTFITS[id]; return this.state.outfits.includes(id) || !!(o && o.gift && this.state.flags[o.gift]); },
     buyOutfit(id) {
@@ -261,6 +285,6 @@
     }
   });
 
-  Object.assign(H, { SUPPLY, SUPPLY_FOURS: FOURS, SUPPLY_HOUR: HOUR, OUTFITS, OUTFIT_BASE, outfitLook, wornLook });
+  Object.assign(H, { SUPPLY, SUPPLY_FOURS: FOURS, SUPPLY_HOUR: HOUR, OUTFITS, OUTFIT_TIER, OUTFIT_REFUND, OUTFIT_BASE, outfitLook, wornLook, wornOutfit, outfitCutOf });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

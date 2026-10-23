@@ -1049,13 +1049,16 @@
     }
 
     cutShot(g, r, t, T) {
-      const look = this.lookFor(r), [n, lt] = pick(this.cutsOf(r), t);
+      const look = this.lookFor(r), [n, lt] = pick(this.cutsOf(r), t), own = n === 'pose' && this.outfitFinale(r);
       const fn = this['cut_' + this.key(r) + '_' + n] || this.cut_pose;
       g.save();
-      fn.call(this, g, lt, T, look, r);
+      if (own) own(g, lt, T, look, this.game);
+      else fn.call(this, g, lt, T, look, r);
       g.restore();
       if (lt < 0.1 && t > 0.2) K.flash(g, '#000000', 1 - lt / 0.1);
     }
+
+    outfitFinale(r) { const cut = r.id !== 'trail' && H.outfitCutOf ? H.outfitCutOf(H.wornOutfit(r.id, this.game), 'warp') : null; return cut && cut.finale; }
 
     lookOf(id) { return G.lookOf(id, this.game); }
 

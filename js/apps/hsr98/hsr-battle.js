@@ -45,7 +45,8 @@
     cad: { name: 'Геката: каденция', m: 1.1, tough: 15, delay: 0.1 }
   };
 
-  const coneFx = (u, fx) => (u.cone && u.cone.fx === fx ? 1 + 0.25 * ((u.cone.sup || 1) - 1) : 0);
+  const coneFx = (u, fx) => (u.cone && u.cone.fx === fx ? H.coneLegacyMul(u.cone.sup) : 0);
+  const coneP = (u, fx, n) => (u.cone && u.cone.fx === fx && H.CONES[u.cone.id].p ? H.coneParam(u.cone.id, n, u.cone.sup) : 0);
   const unholy = u => !!u && u.side === 'enemy' && (H.UNHOLY || []).includes(u.id);
   const bigFoe = u => !!(u.data && (u.data.boss || u.data.elite));
   const CHANT = ['Чернее черноты, темнее тьмы, сольюсь с моим алым светом!', 'Пробудись, сойди к этим пределам и явись искажением!', 'Танцуй, танцуй, танцуй! Пусть сила разрушения хлынет потоком!'];
@@ -108,7 +109,7 @@
       if (this.traceFoe) this.traceFoe(this.enemies);
       for (const u of this.enemies) { u.av = AV / spdOf(u); u.appear = first; if (this.su) this.suFoe(u); }
       this.fieldTurn = 0;
-      if (!first) { this.push(this.orderSnap(this.current)); this.push({ t: 'wave', n: this.wave + 1, list: this.enemies.slice() }); this.fivesWave(); }
+      if (!first) { this.push(this.orderSnap(this.current)); this.push({ t: 'wave', n: this.wave + 1, list: this.enemies.slice() }); this.fivesWave(); this.mirrorWave(); }
     }
 
     start() {
@@ -116,7 +117,10 @@
       const spiral = ruan ? (this.kitFx && this.kitFx(ruan, 'spiralSpd')) || 0.1 : 0;
       if (ruan) for (const a of this.allies) if (a !== ruan) a.buffs.push({ s: 'spdP', v: spiral, turns: 999, name: 'Соматотипическая спираль' });
       for (const a of this.allies) if (a.charId === 'clara') a.buffs.push({ s: 'dr', v: 0.1, turns: 999, name: 'Потому что мы семья' });
-      for (const a of this.allies) if (coneFx(a, 'mirror')) for (const b of this.livingAllies) this.gainEnergy(b, 10);
+      this.milkyRefresh();
+      for (const a of this.allies) if (coneP(a, 'moment', 1)) a.buffs.push({ s: 'aggro', v: coneP(a, 'moment', 1) - 1, turns: 999, name: 'Вердикт', perm: true });
+      for (const a of this.allies) if (coneP(a, 'amber', 3)) a.buffs.push({ s: 'defP', v: coneP(a, 'amber', 3), turns: 999, cond: 'hp50', name: 'Стазис' });
+      this.mirrorWave();
       for (const a of this.allies) a.av = AV / spdOf(a);
       if (this.opts.hpStart && this.enemies[0]) this.enemies[0].hp = Math.round(this.enemies[0].maxHp * this.opts.hpStart);
       for (const b of this.opts.allyBuff || []) for (const a of this.allies) a.buffs.push(Object.assign({}, b));
@@ -134,9 +138,14 @@
       this.fivesStart();
       if (this.traceStart) this.traceStart();
       if (this.memo) this.memo('start', {});
+      if (this.elStart) this.elStart();
       const o = this.opts;
       if (o.nextAtk) for (const a of this.livingAllies) this.addBuff(a, { s: 'atkP', v: o.nextAtk, turns: 3, name: 'Жаркое' });
       if (o.nextCrit) for (const a of this.livingAllies) this.addBuff(a, { s: 'critR', v: o.nextCrit, turns: 3, name: 'Жареный рис' });
+      for (const a of this.livingAllies) if (coneP(a, 'arrows', 1)) this.addBuff(a, { s: 'critR', v: coneP(a, 'arrows', 1), turns: coneP(a, 'arrows', 2), name: 'Бедствие' });
+      const chorus = Math.max(0, ...this.livingAllies.map(a => coneP(a, 'chorus', 1)));
+      if (chorus) for (const a of this.livingAllies) a.buffs.push({ s: 'atkP', v: chorus, turns: 999, name: 'Согласованность' });
+      for (const a of this.livingAllies) if (coneP(a, 'void', 1)) this.addBuff(a, { s: 'ehr', v: coneP(a, 'void', 1), turns: coneP(a, 'void', 2), name: 'Падший' });
       if (o.ambush === 'enemy') {
         this.push({ t: 'text', text: 'Засада! Враги атакуют первыми.' });
         for (const e of this.enemies) e.av = 0;
@@ -183,11 +192,11 @@
         case 'phrolovaTech': this.writeNote(src, 'cad'); this.writeNote(src, 'cad'); break;
         case 'kazumaTech':
           for (const a of this.livingAllies) this.advance(a, 0.25);
-          this.setLuck(src, Math.min(T.luckMax, (src.flags.luck || 0) + 2));
+          this.gainPunch(T.kazumaTechPunch, src);
           break;
         case 'aquaTech':
           for (const a of this.livingAllies) this.heal(src, a, a.maxHp * 0.1);
-          for (const e of this.living) if (!e.data.boss) { e.mood.happy += 1; this.push({ t: 'status', u: e, text: 'Радость +1', col: '#80ff90' }); }
+          for (const e of this.living) if (!e.data.boss) { e.mood.happy += 1; this.push({ t: 'status', u: e, text: 'Довольство +1', col: '#80ff90' }); }
           break;
         case 'meguminTech':
           this.actKind = 'tech';
@@ -335,7 +344,7 @@
       const { pend, e } = this.burstOf(old);
       this.chaosN = (this.chaosN || 0) + 1;
       this.push({ t: 'chaos', u: t, text: 'Хаос!' });
-      this.hit(src, t, 0, { fixed: pend * T.chaosMult * (1 + sv(src, 'chaosP') + 0.3 * coneFx(src, 'weaver')), e, isDot: true, label: 'Хаос' });
+      this.hit(src, t, 0, { fixed: pend * T.chaosMult * (1 + sv(src, 'chaosP') + coneP(src, 'weaver', 2)), e, isDot: true, label: 'Хаос' });
       const miyabi = this.allies.find(a => a.charId === 'miyabi' && alive(a));
       if (miyabi && (!this.hasBonus || this.hasBonus(miyabi, 'a2'))) this.gainFrost(miyabi, 2);
       if (miyabi && this.kitFx) this.kitFx(miyabi, 'chaos');
@@ -347,7 +356,7 @@
       if (!list.length) return;
       const { pend, e } = this.burstOf(list);
       this.polarityN = (this.polarityN || 0) + 1;
-      this.hit(src, t, 0, { fixed: pend * T.polarityMult * m * (1 + sv(src, 'chaosP') + 0.3 * coneFx(src, 'weaver')), e, isDot: true, label: 'Сбитая полярность' });
+      this.hit(src, t, 0, { fixed: pend * T.polarityMult * m * (1 + sv(src, 'chaosP') + coneP(src, 'weaver', 2)), e, isDot: true, label: 'Сбитая полярность' });
     }
 
     switchStance(u) {
@@ -488,8 +497,7 @@
     hurtMark(u) {
       this.foursHurt(u);
       if (u.charId === 'blade') this.gainShuhu(u, 1);
-      const k = coneFx(u, 'unreachable');
-      if (k && alive(u)) this.addBuff(u, { s: 'dmgP', v: 0.24 * k, turns: 99, name: 'Недоступная сторона' }, true);
+      if (coneP(u, 'unreachable', 3) && alive(u)) this.addBuff(u, { s: 'dmgP', v: coneP(u, 'unreachable', 3), turns: 99, name: 'Недоступная сторона' }, true);
     }
 
     sentence(u) {
@@ -537,18 +545,16 @@
       const basicLike = kind === 'basic' || kind === 'enhanced', own = basicLike || kind === 'skill' || kind === 'ult';
       if (basicLike && hits.length) this.kafkaTalent(u, hits);
       if (u.charId === 'silverwolf' && own) { const t = hits.find(alive); if (t) this.plantBug(u, t); }
-      const rain = coneFx(u, 'rain');
-      if (rain && own) {
+      if (coneP(u, 'rain', 2) && own) {
         const pool = hits.filter(t => alive(t) && !t.buffs.some(b => b.name === 'Эфирный код'));
         const t = pool.length ? this.rng.pick(pool) : null;
-        if (t && this.rng.chance(this.effectChance(u, t, 0.65))) this.addBuff(t, { s: 'vuln', v: 0.12 * rain, turns: 1, name: 'Эфирный код', debuff: true });
+        if (t && this.rng.chance(this.effectChance(u, t, coneP(u, 'rain', 2)))) this.addBuff(t, { s: 'vuln', v: coneP(u, 'rain', 3), turns: 1, name: 'Эфирный код', debuff: true });
       }
-      const pat = coneFx(u, 'patience');
-      if (pat && hits.length && kind !== 'fusion') {
-        u.flags.patience = Math.min(3, (u.flags.patience || 0) + 1);
+      if (coneP(u, 'patience', 3) && hits.length && kind !== 'fusion') {
+        u.flags.patience = Math.min(coneP(u, 'patience', 4), (u.flags.patience || 0) + 1);
         u.buffs = u.buffs.filter(b => b.name !== 'Просто надо подождать');
-        u.buffs.push({ s: 'spdP', v: 0.048 * pat * u.flags.patience, turns: 999, name: 'Просто надо подождать' });
-        for (const t of hits) if (alive(t) && !t.dots.some(d => d.type === 'erode')) this.addDot(u, t, 'erode', atkOf(u) * 0.6 * pat, 1);
+        u.buffs.push({ s: 'spdP', v: coneP(u, 'patience', 3) * u.flags.patience, turns: 999, name: 'Просто надо подождать' });
+        for (const t of hits) if (alive(t) && !t.dots.some(d => d.type === 'erode')) this.addDot(u, t, 'erode', atkOf(u) * coneP(u, 'patience', 1), coneP(u, 'patience', 5));
       }
       if (hits.length && kind !== 'fusion' && u.buffs.some(b => b.name === 'Недоступная сторона')) u.buffs = u.buffs.filter(b => b.name !== 'Недоступная сторона');
     }
@@ -615,14 +621,14 @@
       const nm = N.m * (this.traceTalent ? this.traceTalent(u) : 1);
       for (const t of list) { this.hit(u, t, nm, o); if (N.delay) this.delay(t, N.delay); if (this.kitFx && alive(t)) this.kitFx(u, 'noteHit', t, note); }
       this.gainAfter(u, 1);
-      const lethe = coneFx(u, 'lethe');
-      if (lethe) {
-        this.addBuff(u, { s: 'dmgP', v: 0.32 * lethe, turns: 2, name: 'Летейская элегия' }, true);
-        this.addBuff(u, { s: 'defIgnore', v: 0.08 * lethe, turns: 2, name: 'Летейская элегия: защита' }, true);
+      if (coneP(u, 'lethe', 2)) {
+        this.addBuff(u, { s: 'dmgP', v: coneP(u, 'lethe', 2), turns: 2, name: 'Симфония за гранью' }, true);
+        this.addBuff(u, { s: 'defIgnore', v: coneP(u, 'lethe', 3), turns: 2, name: 'Симфония за гранью: защита' }, true);
       }
     }
 
     summonTurn(h) {
+      if (h.aha) { this.ahaTurn(h); return; }
       if (h.id !== 'hecate') { if (!this.fivesSummon(h)) this.contonSummon(h); return; }
       const u = h.owner, m = u && u.flags.maestro;
       if (!alive(u) || !m) { this.hecateLeave(h); return; }
@@ -716,13 +722,13 @@
       const prev = this.acting;
       this.acting = scar;
       this.push({ t: 'act', u: scar, name: 'Разрыв Элизиума', kind: 'follow' });
-      const lull = coneFx(scar, 'lullaby'), m = this.elysMul(scar, e.embers);
-      const o = { label: 'Разрыв Элизиума', kind: 'follow', extraBonus: 0.3 * lull, defIgnore: (this.kitFx && this.kitFx(scar, 'burstDef')) || 0 };
+      const lull = coneP(scar, 'lullaby', 2), m = this.elysMul(scar, e.embers);
+      const o = { label: 'Разрыв Элизиума', kind: 'follow', extraBonus: lull, defIgnore: (this.kitFx && this.kitFx(scar, 'burstDef')) || 0 };
       const adj = this.adjacent(this.living, t);
       this.hit(scar, t, m, Object.assign({ tough: 20 }, o));
       const adjM = (this.kitFx && this.kitFx(scar, 'burstAdj')) || T.elysAdj;
       for (const a of adj) this.hit(scar, a, m * adjM, Object.assign({ tough: 10 }, o));
-      if (lull && alive(scar)) this.addBuff(scar, { s: 'atkP', v: 0.24 * lull, turns: 2, name: 'Колыбельная' });
+      if (lull && alive(scar)) this.addBuff(scar, { s: 'atkP', v: coneP(scar, 'lullaby', 3), turns: 2, name: 'Новая жизнь на пепле' });
       if (scar.flags.nightmare > 0) this.heal(scar, scar, scar.maxHp * (T.nightmareHeal + ((this.kitFx && this.kitFx(scar, 'nightmareHealUp')) || 0)));
       this.gainEnergy(scar, 10);
       this.advance(scar, T.elysAdvance);
@@ -757,23 +763,7 @@
       }
     }
 
-    gainLuck(n) {
-      const k = this.allies.find(a => a.charId === 'kazuma' && alive(a));
-      if (!k || n <= 0) return;
-      this.setLuck(k, Math.min(T.luckMax, (k.flags.luck || 0) + n));
-    }
-
-    setLuck(u, v) {
-      if (!u) return;
-      const before = u.flags.luck || 0;
-      u.flags.luck = v;
-      u.buffs = u.buffs.filter(b => b.name !== 'Удача' && b.name !== 'Удача: эффекты');
-      const tl = (this.traceTalent ? this.traceTalent(u) : 1);
-      if (v > 0) { u.buffs.push({ s: 'critR', v: T.luckCrit * v * tl, turns: 999, name: 'Удача' }); u.buffs.push({ s: 'ehr', v: T.luckEhr * v * tl, turns: 999, name: 'Удача: эффекты' }); }
-      if (v !== before) this.push({ t: 'luck', u, v, add: v - before });
-    }
-
-    resisted(src) { if (src && src.side === 'ally') this.gainLuck(1); }
+    resisted(src) { if (src && src.side === 'ally') this.elFailed(src); }
 
     immobile(t) { return !!t && t.side === 'enemy' && (t.broken || t.frozen > 0 || t.flags.bound > 0); }
 
@@ -853,6 +843,7 @@
       t.swallowed = { by: u, turns: T.swallowTurns };
       u.flags.gulp = t;
       this.push({ t: 'status', u: t, text: 'Проглот!', debuff: true });
+      this.elFailed(t);
       if (t.charId === 'aqua') {
         t.flags.tears = Math.min(T.tearsMax, (t.flags.tears || 0) + 1);
         this.push({ t: 'status', u: t, text: 'Слёзы ' + t.flags.tears, col: '#8ad0ff' });
@@ -882,7 +873,7 @@
       t.flags.provoke = actor;
       this.push({ t: 'status', u: t, text: 'Вызов', col: '#ffb0d8', debuff: true });
       this.gainEcstasy(actor, 1);
-      this.gainLuck(1);
+      this.elFailed(actor);
     }
 
     collapse(u, n) {
@@ -893,6 +884,7 @@
       u.buffs.push({ s: 'defP', v: -T.collapseDef, turns: 999, name: 'Без сил', debuff: true });
       u.buffs.push({ s: 'aggro', v: 1, turns: 999, name: 'Без сил: беззащитна', debuff: true });
       this.push({ t: 'collapse', u, on: true, v: n });
+      this.elFailed(u);
     }
 
     wake(u) {
@@ -928,10 +920,9 @@
     axelConeDmg(src) {
       if (src.side !== 'ally') return 0;
       let b = 0;
-      const ch = coneFx(src, 'chunchun');
-      if (ch) b += 0.03 * ch * (src.flags.luck || 0) + (src.flags.chun ? 0.2 * ch : 0);
-      const dk = this.allies.find(a => alive(a) && coneFx(a, 'adamant'));
-      if (dk) b += 0.02 * coneFx(dk, 'adamant') * Math.min(T.ecstasyMax, dk.flags.ecstasy || 0);
+      if (src.flags.chun) b += coneP(src, 'chunchun', 4);
+      const dk = this.allies.find(a => alive(a) && coneP(a, 'adamant', 2));
+      if (dk) b += coneP(dk, 'adamant', 2) * Math.min(T.ecstasyMax, dk.flags.ecstasy || 0);
       return b;
     }
 
@@ -952,8 +943,7 @@
 
     axelMult(actor, f, t, m, pv) {
       let v = m;
-      if (f.chant) v *= 1 + (T.chantDmg * (this.traceTalent ? this.traceTalent(actor) : 1) + 0.1 * coneFx(actor, 'manastaff')) * (actor.flags.chant || 0);
-      if (f.luck) v += f.luck * (actor.flags.luck || 0);
+      if (f.chant) v *= 1 + (T.chantDmg * (this.traceTalent ? this.traceTalent(actor) : 1) + coneP(actor, 'manastaff', 2)) * (actor.flags.chant || 0);
       if (f.holy && unholy(t)) v += f.holy * (1 + T.tearsHoly * this.tearsTalent(actor) * (pv ? actor.flags.tears || 0 : this.tearsNow || 0));
       return v * (!pv && this.failNow ? T.failMult : 1);
     }
@@ -1068,14 +1058,16 @@
       let m = 1 + (src ? sv(src, 'healP') : 0) + sv(u, 'healIn');
       if (src && src.charId === 'natasha' && u.hp / u.maxHp <= 0.3) m += 0.5 * (this.traceTalent ? this.traceTalent(src) : 1);
       if (src && this.kitFx) m += this.kitFx(src, 'healBonus', u) || 0;
+      if (src && this.acting === src && (this.actKind === 'skill' || this.actKind === 'ult')) m += coneP(src, 'cornucopia', 1);
+      if (src && this.acting === src && this.actKind === 'ult') m += coneP(src, 'postop', 2);
       const amt = Math.round(v * m);
       const before = u.hp;
       u.hp = Math.min(u.maxHp, u.hp + amt);
       this.push({ t: 'heal', u, v: u.hp - before, hp: u.hp });
       const got = u.hp - before;
       if (src && src.side === 'ally' && this.kitFx) this.kitFx(src, 'healed', u, amt, got);
-      const hg = src ? coneFx(src, 'hagoromo') : 0;
-      if (hg) this.addBuff(u, { s: 'res', v: 0.2 * hg, turns: 2, name: 'Перьевая мантия' }, true);
+      const hg = src ? coneP(src, 'hagoromo', 3) : 0;
+      if (hg) this.addBuff(u, { s: 'res', v: hg, turns: 2, name: 'Искусство не продаётся' }, true);
       if (this.su && got > 0 && u.side === 'ally') {
         this.bless('heal', { u, amt: got, src });
         if (src && src !== u && src.side === 'ally') this.bless('healGive', { src, u, amt: got });
@@ -1084,6 +1076,7 @@
     }
 
     dmgCalc(src, tgt, mult, o, crit) {
+      if (o.elation && this.elationDmg) return this.elationDmg(src, tgt, mult, o, crit);
       const e = o.e || src.elem;
       const base = o.fixed != null ? o.fixed : mult * (o.stat === 'def' ? defOf(src) : o.stat === 'hp' ? src.maxHp : atkOf(src)) + (o.plusDef || 0) * defOf(src) + (o.hpM || 0) * src.maxHp + (o.tallyM ? o.tallyM * tallyOf(src, o.tallyPlus) : 0);
       let bonus = 1 + sv(src, 'dmgP') + sv(src, e + 'P') + (o.kind === 'ult' ? sv(src, 'ultP') : 0) + (o.extraBonus || 0);
@@ -1102,10 +1095,13 @@
       bonus += this.fivesDmg(src, tgt, o);
       bonus += this.axelConeDmg(src);
       if (tgt.hp >= tgt.maxHp * 0.5) bonus += bsum(src, 'vsHigh');
-      const night = coneFx(src, 'night'), nightSt = night ? clamp(Math.floor((spdOf(src) - 100) / 10), 0, 6) * night : 0;
-      if (['basic', 'skill', 'enhanced'].includes(o.kind)) bonus += 0.06 * nightSt;
+      { const w = src.owner || src; if (w.cone && coneP(w, 'masquerade', 2) && this.summons.some(h => h.owner === w && alive(h))) bonus += coneP(w, 'masquerade', 2); }
+      if (src.cone && tgt.side !== src.side) bonus += coneP(src, 'goodnight', 1) * Math.min(coneP(src, 'goodnight', 2), this.debuffCount(tgt));
+      if (src.cone && src.flags.swordT === tgt && !o.isDot) bonus += coneP(src, 'swordplay', 1) * (src.flags.swordN || 0);
+      const nightSt = coneP(src, 'night', 2) ? clamp(Math.floor((spdOf(src) - 100) / coneP(src, 'night', 2)), 0, coneP(src, 'night', 5)) : 0;
+      if (['basic', 'skill', 'enhanced'].includes(o.kind)) bonus += coneP(src, 'night', 3) * nightSt + coneP(src, 'collapsing', 1);
       if ((o.kind === 'ult' || o.kind === 'follow') && setOn(src, 'salsotto') && sv(src, 'critR') >= 0.5 - 1e-9) bonus += 0.15;
-      const critM = crit ? 1 + sv(src, 'critD') + (o.kind === 'ult' ? 0.12 * nightSt : 0) + this.fivesCritD(src, tgt, o) : 1;
+      const critM = crit ? 1 + sv(src, 'critD') + (o.kind === 'ult' ? coneP(src, 'night', 4) * nightSt : 0) + this.fivesCritD(src, tgt, o) : 1;
       const K = 200 + 10 * src.lvl;
       const tdef = defOf(tgt) * (1 - clamp(sv(tgt, 'defDown') + this.haresDef(tgt), 0, 1)) * (o.kind === 'follow' ? 1 - clamp(sv(src, 'followDefIgnore'), 0, 1) : 1) * (1 - clamp(bsum(src, 'defIgnore') + (o.defIgnore || 0), 0, 1));
       const defM = K / (tdef + K);
@@ -1124,7 +1120,7 @@
       if (!alive(tgt)) return 0;
       const e = o.e || src.elem;
       let crit = false;
-      if (!o.isDot && o.fixed == null && o.raw == null) crit = !!o.alwaysCrit || this.rng() < clamp(sv(src, 'critR') + (o.kind === 'follow' ? bsum(src, 'followCritR') : 0) + (coneFx(src, 'rain') && this.debuffCount(tgt) >= 3 ? 0.12 * coneFx(src, 'rain') : 0) + bsum(tgt, 'critTaken') + (this.traceCrit ? this.traceCrit(src, tgt, o) : 0), 0, 1);
+      if (!o.isDot && o.fixed == null && o.raw == null) crit = !!o.alwaysCrit || this.rng() < clamp(sv(src, 'critR') + (o.kind === 'follow' ? bsum(src, 'followCritR') : 0) + (coneP(src, 'rain', 4) && this.debuffCount(tgt) >= coneP(src, 'rain', 4) ? coneP(src, 'rain', 5) : 0) + bsum(tgt, 'critTaken') + (this.traceCrit ? this.traceCrit(src, tgt, o) : 0), 0, 1);
       let dmg = o.raw != null ? Math.max(1, Math.round(o.raw)) : this.dmgCalc(src, tgt, mult, o, crit);
       if (tgt.side === 'enemy' && tgt.data && tgt.data.proto) dmg = this.protoGuard(src, tgt, dmg, o);
       if (tgt.side === 'ally' && src.side === 'enemy' && !o.isDot && dmg > 1) {
@@ -1146,7 +1142,7 @@
       const before = tgt.hp;
       tgt.hp = Math.max(0, tgt.hp - dmg);
       if (tgt.side === 'enemy' && before > tgt.maxHp * 0.5 && tgt.hp <= tgt.maxHp * 0.5 && tgt.hp > 0) this.crossed.add(tgt);
-      this.push({ t: 'dmg', u: tgt, src, v: dmg + absorbed, crit, e, hp: tgt.hp, shield: tgt.shield, label: o.label, dot: !!o.isDot });
+      this.push({ t: 'dmg', u: tgt, src, v: dmg + absorbed, crit, e, hp: tgt.hp, shield: tgt.shield, label: o.label, dot: !!o.isDot, el: !!o.elation });
       const critTough = crit && src.charId === 'chie' && !tgt.weak.includes(e) && !o.anyTough;
       if (tgt.side === 'enemy' && o.tough && !tgt.broken && (tgt.weak.includes(e) || o.anyTough || critTough) && tgt.tough > 0) {
         const toughBefore = tgt.tough;
@@ -1154,6 +1150,11 @@
         this.push({ t: 'tough', u: tgt, v: tgt.tough });
         this.foursTough(src, tgt, toughBefore - tgt.tough, o);
         if (tgt.tough <= 0) this.doBreak(src, tgt, e);
+      }
+      if (src.side === 'ally' && tgt.side === 'enemy' && !o.isDot && coneP(src, 'swordplay', 2) && src.flags.swordAct !== this.actSerial) {
+        src.flags.swordAct = this.actSerial;
+        src.flags.swordN = src.flags.swordT === tgt ? Math.min(coneP(src, 'swordplay', 2), (src.flags.swordN || 0) + 1) : 0;
+        src.flags.swordT = tgt;
       }
       let first = false;
       if (tgt.side === 'ally' && src.side === 'enemy' && !o.isDot) {
@@ -1213,6 +1214,10 @@
       tgt.dead = true;
       tgt.shield = 0;
       this.push({ t: 'kill', u: tgt });
+      if (tgt.side === 'enemy' && src && src.side === 'ally' && alive(src)) {
+        if (coneP(src, 'underthesky', 2)) this.addBuff(src, { s: 'critR', v: coneP(src, 'underthesky', 2), turns: coneP(src, 'underthesky', 3), name: 'Рожь под солнцем' });
+        if (coneP(src, 'geniuses', 2)) this.addBuff(src, { s: 'critD', v: coneP(src, 'geniuses', 2), turns: coneP(src, 'geniuses', 3), name: 'У каждого своя роль' });
+      }
       if (this.memo) this.memo(tgt.side === 'ally' ? 'down' : 'kill', { u: tgt, src });
       if (tgt.elys) { delete tgt.elys; this.scarAura(); }
       if (tgt.side === 'ally') for (const h of this.summons.slice()) if (h.owner === tgt) { if (h.id === 'hecate') this.hecateLeave(h); else if (!this.fivesLeave(h)) this.contonLeave(h); }
@@ -1248,6 +1253,7 @@
       if (this.echoBreak) this.echoBreak(tgt);
       tgt.broken = true;
       tgt.tough = 0;
+      if (tgt.side === 'enemy') for (const a of this.livingAllies) if (coneP(a, 'milkyway', 1)) this.addBuff(a, { s: 'dmgP', v: coneP(a, 'milkyway', 1), turns: 1, name: 'Рой метеоритов: пробитие' }, true);
       for (const a of this.allies) if (a.swallowed && a.swallowed.by === tgt) this.release(a);
       this.inabaBreak(src, tgt);
       this.foursBreak(src, tgt);
@@ -1402,6 +1408,7 @@
     endTurn(u) {
       if (!u) return;
       if (this.memo) this.memo('endTurn', { u });
+      if (this.elEnd) this.elEnd(u);
       if (this.su && u.side === 'ally' && alive(u)) this.bless('turnEnd', { u });
       for (const b of u.buffs) { if (b.skip) { b.skip = 0; continue; } b.turns--; }
       if (this.kitFx) for (const b of u.buffs) if (b.turns <= 0 && b.src && b.src.side === 'ally') this.kitFx(b.src, 'expire', u, b);
@@ -1412,8 +1419,8 @@
       if (u.taunt > 0) u.taunt--;
       if (u.flags.cover > 0 && --u.flags.cover <= 0) {
         this.push({ t: 'status', u, text: 'Прикрытие кончилось' });
-        const ad = coneFx(u, 'adamant');
-        if (ad && alive(u)) for (const a of this.livingAllies) this.giveShield(a, defOf(u) * 0.16 * ad + 20 * H.grow(u.lvl), 2);
+        const ad = coneP(u, 'adamant', 3);
+        if (ad && alive(u)) for (const a of this.livingAllies) this.giveShield(a, defOf(u) * ad + 20 * H.grow(u.lvl), 2);
       }
       if (u.side === 'enemy') u.flags.provoke = null;
       if (u.side === 'enemy' && u.implant && --u.implant.turns <= 0) this.removeImplant(u);
@@ -1613,6 +1620,8 @@
         }
       }
       if (this.kitFx) for (const a of new Set(hitAllies)) if (alive(a)) this.kitFx(a, 'attacked', u);
+      for (const a of new Set(hitAllies)) if (alive(a) && coneP(a, 'moment', 3)) this.addBuff(a, { s: 'defP', v: coneP(a, 'moment', 3), turns: 1, name: 'Вердикт: защита' }, true);
+      for (const a of new Set(hitAllies)) if (alive(a) && alive(u) && coneP(a, 'trend', 2) && this.rng() < this.effectChance(a, u, coneP(a, 'trend', 2))) this.addDot(a, u, 'burn', defOf(a) * coneP(a, 'trend', 3), coneP(a, 'trend', 4));
       if (this.kitFx && hitAllies.length) for (const w of this.allies) if (alive(w)) this.kitFx(w, 'teamAttacked', [...new Set(hitAllies)], u);
       const clara = this.allies.find(a => a.charId === 'clara' && alive(a));
       if (clara && alive(u) && !this.over && hitAllies.length) {
@@ -1719,7 +1728,7 @@
           }
           case 'heal': {
             const list = f.who === 'allies' ? this.livingAllies : f.who === 'self' ? [actor] : f.who && f.who.startsWith('member:') ? this.allies.filter(a => a.charId === f.who.slice(7) && alive(a)) : [R.ally || actor];
-            const amt = (src.maxHp * f.m + f.flat * H.grow(src.lvl)) * (this.failNow && !coneFx(src, 'hagoromo') ? T.failMult : 1) * (1 + T.tearsHeal * this.tearsTalent(src) * this.tearsNow);
+            const amt = (src.maxHp * f.m + f.flat * H.grow(src.lvl)) * (this.failNow && !coneP(src, 'hagoromo', 1) ? T.failMult : 1) * (1 + T.tearsHeal * this.tearsTalent(src) * this.tearsNow);
             for (const a of list) this.heal(src, a, amt);
             for (let i = 1; i <= (f.bounce || 0); i++) {
               const pool = this.livingAllies;
@@ -1905,9 +1914,9 @@
               const b = t.buffs.splice(i, 1)[0];
               this.push({ t: 'status', u: t, text: 'Украдено: ' + b.name, debuff: true });
               this.addBuff(actor, { s: b.s, v: b.v, turns: 2, name: 'Краденое: ' + b.name });
-              actor.flags.chunArm = !!coneFx(actor, 'chunchun');
+              actor.flags.chunArm = !!coneP(actor, 'chunchun', 4);
             }
-            if (t.shield > 0) { const v = t.shield; t.shield = 0; this.push({ t: 'status', u: t, text: 'Щит украден', debuff: true }); this.giveShield(actor, Math.min(v, actor.maxHp * 0.3), 2); actor.flags.chunArm = !!coneFx(actor, 'chunchun'); }
+            if (t.shield > 0) { const v = t.shield; t.shield = 0; this.push({ t: 'status', u: t, text: 'Щит украден', debuff: true }); this.giveShield(actor, Math.min(v, actor.maxHp * 0.3), 2); actor.flags.chunArm = !!coneP(actor, 'chunchun', 4); }
             this.loot(actor, t, false);
             break;
           }
@@ -1919,7 +1928,7 @@
             if (!this.rng.chance(this.effectChance(src, t, T.bindChance + ((this.kitFx && this.kitFx(actor, 'bindUp')) || 0)))) { this.push({ t: 'status', u: t, text: 'Вырвался!', debuff: true }); this.resisted(src); break; }
             if (bigFoe(t)) { this.delay(t, T.bindBigDelay); t.flags.bindImm = 1; this.push({ t: 'status', u: t, text: 'Связан: отброшен', col: '#d8c890', debuff: true }); }
             else { t.flags.bound = 1; this.push({ t: 'status', u: t, text: 'Связан', col: '#d8c890', debuff: true }); for (const a of this.allies) if (a.swallowed && a.swallowed.by === t) this.release(a); }
-            actor.flags.chunArm = !!coneFx(actor, 'chunchun');
+            actor.flags.chunArm = !!coneP(actor, 'chunchun', 4);
             break;
           }
           case 'drain': {
@@ -1950,7 +1959,6 @@
               this.addBuff(t, { s: 'atkP', v: -T.heistAtk, turns: 2, name: 'Без оружия', debuff: true });
               this.loot(actor, t, true);
             }
-            this.setLuck(actor, Math.min(T.luckMax, (this.kitFx && this.kitFx(actor, 'heistKeep')) || 0));
             break;
           }
           case 'purge': {
@@ -1973,7 +1981,7 @@
             this.push({ t: 'chant', u: actor, v: n, line: CHANT[n - 1] });
             break;
           }
-          case 'collapse': this.collapse(actor, Math.max(1, T.collapseTurns - (coneFx(actor, 'manastaff') ? 1 : 0) - ((this.kitFx && this.kitFx(actor, 'collapseDown')) || 0))); break;
+          case 'collapse': this.collapse(actor, Math.max(1, T.collapseTurns - (coneP(actor, 'manastaff', 1) ? 1 : 0) - ((this.kitFx && this.kitFx(actor, 'collapseDown')) || 0))); break;
           case 'swing': {
             const t = R.main;
             if (!t || !alive(t)) break;
@@ -1993,7 +2001,7 @@
             actor.buffs = actor.buffs.filter(b => b.name !== 'Восторг');
             this.push({ t: 'ecstasy', u: actor, v: 0, add: 0 });
             break;
-          case 'luck': this.gainLuck(f.v); break;
+          case 'punch': this.gainPunch(f.v, actor); break;
           case 'onMe': {
             const dk = this.allies.find(a => a.charId === 'darkness' && alive(a));
             if (!dk) break;
@@ -2041,7 +2049,7 @@
         if (this.failNow) {
           actor.flags.tears = Math.min(T.tearsMax, (actor.flags.tears || 0) + 1);
           this.push({ t: 'status', u: actor, text: 'Слёзы ' + actor.flags.tears, col: '#8ad0ff' });
-          this.gainLuck(1);
+          this.elFailed(actor);
           if (this.kitFx) this.kitFx(actor, 'aquaFail');
         } else if (actor.flags.tears) actor.flags.tears = 0;
       }
@@ -2050,6 +2058,7 @@
       this.actKind = null;
       for (const a of (R.ally ? [R.ally] : R.allies || [])) if (a.charId === 'danheng' && a !== actor && actor.side === 'ally') this.danhengTalent(a);
       if (this.kitFx) this.kitFx(actor, 'act', kind, R);
+      if (this.elAct) this.elAct(actor, ab, kind, R);
       this.cleanup();
       this.afterAction(actor, kind, hitSet);
       this.acting = null;
@@ -2159,7 +2168,7 @@
         if (t.side !== 'enemy' || !e || actor === e.by || e.broke.includes(actor.key) || e.broke.length >= e.need) continue;
         r.seal = true;
         if (e.broke.length + 1 >= e.need && alive(e.by)) {
-          const m = this.elysMul(e.by, e.embers), o = { kind: 'follow', label: 'Разрыв Элизиума', extraBonus: 0.3 * coneFx(e.by, 'lullaby'), defIgnore: (this.kitFx && this.kitFx(e.by, 'burstDef')) || 0 };
+          const m = this.elysMul(e.by, e.embers), o = { kind: 'follow', label: 'Разрыв Элизиума', extraBonus: coneP(e.by, 'lullaby', 2), defIgnore: (this.kitFx && this.kitFx(e.by, 'burstDef')) || 0 };
           r.burst = this.dmgCalc(e.by, t, m, o, false);
           r.lo += r.burst;
           r.hi += this.dmgCalc(e.by, t, m, o, true);
@@ -2192,6 +2201,8 @@
         u.buffs = u.buffs.filter(b => b.name !== 'Верхом на ветре');
       }
       if (this.kitFx) this.kitFx(u, 'after', kind, attacked);
+      if (kind === 'skill' && coneP(u, 'butthebattle', 2)) this.pastFuture = { from: u, v: coneP(u, 'butthebattle', 2), turns: coneP(u, 'butthebattle', 3), name: 'Преемница' };
+      if (attacked && coneP(u, 'memories', 2) && (u.flags.memoryAt !== this.current || u.flags.memoryRound !== this.round)) { u.flags.memoryAt = this.current; u.flags.memoryRound = this.round; this.gainEnergy(u, coneP(u, 'memories', 2)); }
       if (this.kitFx && u.side === 'ally') for (const a of this.allies) if (a !== u && alive(a)) this.kitFx(a, 'allyAfter', u, kind, hits);
       if (u.charId === 'trail_p' && ['basic', 'skill', 'ult', 'enhanced'].includes(kind)) {
         const amt = defOf(u) * 0.06 * (this.traceTalent ? this.traceTalent(u) : 1) + 20 * H.grow(u.lvl) + ((this.kitFx && this.kitFx(u, 'shieldBonus')) || 0);
@@ -2215,12 +2226,11 @@
         u.flags.charge = Math.min(5, (u.flags.charge || 0) + add);
         this.astaAura(u);
       }
-      const shrine = coneFx(u, 'shrine');
-      if (shrine && (kind === 'skill' || kind === 'ult')) {
-        u.flags.shrine = Math.min(2, (u.flags.shrine || 0) + 1);
-        const cur = u.buffs.find(b => b.name === 'Храм вьюги');
+      if (coneP(u, 'shrine', 2) && (kind === 'skill' || kind === 'ult')) {
+        u.flags.shrine = Math.min(coneP(u, 'shrine', 4), (u.flags.shrine || 0) + 1);
+        const cur = u.buffs.find(b => b.name === 'Семена в каждой победе');
         if (!cur) u.flags.shrine = 1;
-        this.addBuff(u, { s: 'iceP', v: 0.18 * shrine * u.flags.shrine, turns: 2, name: 'Храм вьюги' }, true);
+        this.addBuff(u, { s: 'iceP', v: coneP(u, 'shrine', 2) * u.flags.shrine, turns: coneP(u, 'shrine', 3), name: 'Семена в каждой победе' }, true);
       }
       if (u.charId === 'yanqing' && u.flags.sync && attacked && kind !== 'fusion') {
         const t = hits.find(alive);
@@ -2292,8 +2302,23 @@
       this.cleanup();
     }
 
+    mirrorWave() {
+      const v = Math.max(0, ...this.allies.filter(alive).map(a => coneP(a, 'mirror', 5)));
+      if (v) for (const b of this.livingAllies) this.gainEnergy(b, v);
+    }
+
+    milkyRefresh() {
+      for (const a of this.allies) {
+        const v = coneP(a, 'milkyway', 2);
+        if (!v) continue;
+        a.buffs = a.buffs.filter(b => b.name !== 'Рой метеоритов');
+        a.buffs.push({ s: 'atkP', v: v * Math.min(5, this.living.length), turns: 999, name: 'Рой метеоритов', perm: true });
+      }
+    }
+
     cleanup() {
       if (this.over) return;
+      this.milkyRefresh();
       for (const a of this.allies) if (a.swallowed && (!alive(a.swallowed.by) || !alive(a))) this.release(a);
       if (this.elysPending.length) this.resolveElysium();
       if (this.over) return;
@@ -2444,10 +2469,16 @@
       u.energy = this.fivesSpend(u, ab);
       this.useAbility(u, ab, target, 'ult');
       this.gainEnergy(u, T.energyUlt);
+      if (coneP(u, 'butthebattle', 1) && ['ally', 'allies'].includes(ab.target) && !this.over) {
+        u.flags.heirUlt = (u.flags.heirUlt || 0) + 1;
+        if (u.flags.heirUlt % 2 === 1 && this.sp < T.spMax) { this.sp++; this.push({ t: 'status', u, text: 'Преемница: +1 очко навыка' }); }
+      }
       this.fivesUlt(u);
       if (!this.over) this.cadenzaNext();
-      const mirror = coneFx(u, 'mirror');
-      if (mirror && !this.over) for (const a of this.livingAllies) this.addBuff(a, { s: 'dmgP', v: 0.24 * mirror, turns: 3, name: 'Прошлое в зеркале' });
+      if (coneP(u, 'mirror', 2) && !this.over) {
+        for (const a of this.livingAllies) this.addBuff(a, { s: 'dmgP', v: coneP(u, 'mirror', 2), turns: coneP(u, 'mirror', 3), name: 'Аромат сливы в моих костях' });
+        if (sv(u, 'breakE') >= coneP(u, 'mirror', 4) - 1e-9 && this.sp < T.spMax) { this.sp++; this.push({ t: 'status', u, text: 'Аромат сливы: +1 очко навыка' }); }
+      }
       if (u.flags.resurge && u.charId === 'seele' && alive(u) && !this.over) {
         u.flags.resurge = false;
         this.push({ t: 'text', text: 'Зеле: Возрождение! Дополнительный ход.' });
@@ -2513,7 +2544,7 @@
         if (mood === 'none') this.push({ t: 'mood', u: t, mood, text: prof.lines.none });
         else {
           t.mood[mood] += (this.opts.rumorKind && mood === 'happy') ? 2 : 1;
-          this.push({ t: 'mood', u: t, mood, level: t.mood[mood], text: t.name + ': ' + { eager: 'Интерес', happy: 'Радость', angry: 'Злость', scared: 'Страх' }[mood] + ' ' + t.mood[mood] + '/' + T.contactThreshold });
+          this.push({ t: 'mood', u: t, mood, level: t.mood[mood], text: t.name + ': ' + { eager: 'Интерес', happy: 'Довольство', angry: 'Злость', scared: 'Страх' }[mood] + ' ' + t.mood[mood] + '/' + T.contactThreshold });
           if (t.mood[mood] >= T.contactThreshold) this.resolveContact(t, mood, prof);
         }
       }
@@ -2571,7 +2602,7 @@
         if (!this.ultReady(a) || this.over) continue;
         const ab = a.kit.ult;
         if (ab.target === 'allies' && a.path === 'abundance' && !ab.support && !this.livingAllies.some(x => x.hp < x.maxHp * 0.6)) continue;
-        if (this.foursHoldUlt(a) || this.contonHoldUlt(a) || this.fivesHoldUlt(a)) continue;
+        if (this.foursHoldUlt(a) || this.contonHoldUlt(a) || this.fivesHoldUlt(a) || (this.elHoldUlt && this.elHoldUlt(a))) continue;
         this.ult(a, ab.target === 'ally' ? this.foursUltAlly(a) : this.fivesUltTarget(a) || this.autoTarget(a));
         if (!this.canAct()) return true;
       }
@@ -2666,6 +2697,6 @@
     }
   }
 
-  Object.assign(H, { Battle, battleStat: { sv, atkOf, defOf, spdOf, alive, tallyOf }, DOT_NAME, DOT_ELEM, DOT_TYPES });
+  Object.assign(H, { Battle, battleStat: { sv, atkOf, defOf, spdOf, alive, tallyOf }, DOT_NAME, DOT_ELEM, DOT_TYPES, coneP });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

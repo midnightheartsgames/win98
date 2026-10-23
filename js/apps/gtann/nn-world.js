@@ -466,9 +466,9 @@
       if (ml > 0.05 && !p.ride) speed = (scope ? 0 : aiming ? 2.0 : inp.walk || p.eat ? 1.6 : inp.sprint ? 6.6 : 4.3) * (w.heavy || 1) * (this.superRun ? SUPER_RUN : 1);
       p.wantVx = dirx * speed * ml;
       p.wantVz = dirz * speed * ml;
-      if (aiming || (inp.fire && !w.melee && !w.throw)) p.yaw = N.turnTo(p.yaw, cy, dt * 14);
+      if (aiming || (inp.fire && !w.melee && !w.throw) || inp.face && !p.ride) p.yaw = N.turnTo(p.yaw, cy, dt * 14);
       else if (ml > 0.05) p.yaw = N.turnTo(p.yaw, N.yawOf(dirx, dirz), dt * 12);
-      p.anim.aim = N.approach(p.anim.aim, aiming || (inp.fire && !w.melee && !w.throw) ? 1 : 0, dt * 8);
+      p.anim.aim = N.approach(p.anim.aim, aiming || ((inp.fire || inp.face) && !w.melee && !w.throw) ? 1 : 0, dt * 8);
       p.scope = scope;
       if (this.fly) this.flyMove(p, md, inp);
       else if (inp.jump && p.onGround && (p.wade || 0) < 0.4 && !p.ride && !p.eat) { p.vy = this.superJump ? SUPER_JUMP_VY : 4.8; p.onGround = false; p.anim.jumpT = 0.6; }

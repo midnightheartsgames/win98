@@ -1095,9 +1095,11 @@
       gl.uniform1f(u.u_mode, 0);
       gl.uniform1f(u.u_alpha, 0.34 + 0.2 * amt);
       gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, Math.round(this.rainN * Math.min(1, amt) * (high ? 1 : 0.45)));
-      gl.uniform1f(u.u_mode, 1);
-      gl.uniform1f(u.u_alpha, 0.9);
-      gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, Math.round((high ? 700 : 260) * Math.min(1, amt)));
+      if (!f.cam.cabin) {
+        gl.uniform1f(u.u_mode, 1);
+        gl.uniform1f(u.u_alpha, 0.9);
+        gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, Math.round((high ? 700 : 260) * Math.min(1, amt)));
+      }
       this.stats.draws += 2;
     }
 
@@ -1175,7 +1177,7 @@
       const env = f.env;
       const cam = f.cam;
       const eye = [cam.x, cam.y, cam.z];
-      const near = 0.25, far = Math.max(900, env.fogFar * 3.5);
+      const near = cam.near || 0.25, far = Math.max(900, env.fogFar * 3.5);
       const proj = M4.persp(cam.fov, W / H, near, far);
       if (cam.shift) { proj[8] = -cam.shift[0]; proj[9] = -cam.shift[1]; }
       const up = cam.up || UP;
@@ -1353,7 +1355,7 @@
       gl.uniform3f(u.u_rainCol, rl * 0.9, rl * 0.95, rl);
       gl.uniform2f(u.u_rainDir, N.clamp(env.wind[0] * 0.08, -0.6, 0.6), 0);
       const outside = !env.interior;
-      gl.uniform4f(u.u_feat, high && outside ? 1 : 0, high ? P.bloom : 0, high ? raysK : 0, high && outside ? env.rain * 0.55 : 0);
+      gl.uniform4f(u.u_feat, high && outside ? 1 : 0, high ? P.bloom : 0, high ? raysK : 0, high && outside && !cam.cabin ? env.rain * 0.55 : 0);
       const ph = f.photo || null, fm = ph && ph.film && ph.film.id !== 'life' ? ph.film : null;
       gl.uniform4f(u.u_grade, P.exposure * (ph ? ph.ev : 1), P.sat, P.contrast, P.vignette);
       gl.uniform4f(u.u_pf, fm ? 1 : 0, fm && fm.mono ? 1 : 0, fm && fm.vhs ? 1 : 0, 0);
@@ -1363,7 +1365,7 @@
       gl.uniform1f(u.u_pvig, fm ? fm.vig || 0 : 0);
       gl.uniform3fv(u.u_lift, P.lift);
       gl.uniform3fv(u.u_gain, P.gain);
-      gl.uniform4f(u.u_fx, high && outside && !cam.scope ? P.lens : 0, high ? P.heat : 0, env.flash[3] * 0.35, P.grain);
+      gl.uniform4f(u.u_fx, high && outside && !cam.scope && !cam.cabin ? P.lens : 0, high ? P.heat : 0, env.flash[3] * 0.35, P.grain);
       const wb = this.waveBuf;
       wb.fill(0);
       const tanH = Math.tan(cam.fov / 2);

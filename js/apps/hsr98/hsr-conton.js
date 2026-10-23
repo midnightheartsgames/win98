@@ -58,18 +58,42 @@
   };
 
   const CONES = {
-    cccletter: { name: 'С любовью, Макото', path: 'hunt', rarity: 5, stats: { hp: 48, atk: 31, def: 18 }, bonus: { critD: 0.32 }, sig: 'makoto', fx: 'cccletter', text: 'Крит. урон +32%. После «Ловкости рук» урон +24% на 2 хода. «Самая большая блестяшка» игнорирует 16% защиты.' },
-    cccmagic: { name: 'Настоящая магия', path: 'preservation', rarity: 5, stats: { hp: 53, atk: 21, def: 30 }, bonus: { defP: 0.24 }, sig: 'amanda', fx: 'cccmagic', text: 'Защита +24%. Кокон-сердце +20%. Когда кокон лопается, союзник под ним получает урон +16% на 2 хода.' },
-    cccpratia: { name: 'Фиолетовые небеса Пратии', path: 'remembrance', rarity: 5, stats: { hp: 48, atk: 31, def: 18 }, bonus: { atkP: 0.24 }, sig: 'talleah', fx: 'cccpratia', text: 'Атака +24%. Удары гиноидов +32%. Когда Сигнатура переходит, Таллея получает 10 энергии.' },
-    cccgorilla: { name: 'Портрет гориллы', path: 'nihility', rarity: 4, stats: { hp: 43, atk: 24, def: 15 }, bonus: { ehr: 0.16 }, fx: 'cccgorilla', text: 'Шанс эффекта +16%. В начале боя враг с наибольшим HP под присмотром: урон по нему +10% на 3 хода.' },
-    cccbadge: { name: 'Бейдж? Есть.', path: 'harmony', rarity: 4, stats: { hp: 43, atk: 21, def: 18 }, bonus: { err: 0.08 }, fx: 'cccbadge', text: 'Восстановление энергии +8%. В начале боя союзник с наименьшей энергией получает 10.' },
-    cccstandee: { name: 'Картонный злодей', path: 'destruction', rarity: 4, stats: { hp: 43, atk: 26, def: 14 }, bonus: { atkP: 0.16 }, fx: 'cccstandee', text: 'Атака +16%. Урон по врагам с HP выше 80% +24%.' }
+    cccletter: {
+      name: 'С любовью, Макото', path: 'hunt', rarity: 5, own: true, stats: { hp: 48, atk: 26.4, def: 21 }, skill: 'Я найду тебя', sig: 'makoto',
+      tpl: 'Крит. урон владельца повышается на #1%. После «Ловкости рук» урон владельца повышается на #2% на 2 хода. «Самая большая блестяшка» игнорирует #3% защиты.', p: [[0.36, 0.24, 0.15], [0.42, 0.28, 0.175], [0.48, 0.32, 0.2], [0.54, 0.36, 0.225], [0.6, 0.4, 0.25]], bonus: { critD: 1 }, fx: 'cccletter',
+      desc: '«Мой дорогой Джейкоб. Мне очень жаль, что тебе пришлось увидеть всё, что случилось внизу. Я хотела рассказать сама».\n«Мне меньше всего хочется, чтобы ты перестал со мной разговаривать».\n«Если захочешь меня найти, иди на фуд-корт. Я найду тебя, когда ты придёшь».\n«С любовью, Макото».'
+    },
+    cccmagic: {
+      name: 'Настоящая магия', path: 'preservation', rarity: 5, own: true, stats: { hp: 48, atk: 21.6, def: 27 }, skill: 'Маленький город', sig: 'amanda',
+      tpl: 'Защита владельца повышается на #1%. Кокон-сердце владельца крепче на #2%. Когда кокон лопается, союзник под ним получает урон +#3% на 2 хода.', p: [[0.24, 0.18, 0.18], [0.28, 0.21, 0.21], [0.32, 0.24, 0.24], [0.36, 0.27, 0.27], [0.4, 0.3, 0.3]], bonus: { defP: 1 }, fx: 'cccmagic',
+      desc: 'Это был её первый конвент. Отец взял их с собой на свою старую «Звёздную Дорогу».\nЕй было всё равно, кто там капитан и куда летит корабль. Она смотрела на людей в костюмах: они построили маленький городок только для себя.\nТам можно было быть собой. Или кем-то другим. Неважно кем.\nМного лет спустя ей сказали: «Да, это настоящая магия».'
+    },
+    cccpratia: {
+      name: 'Фиолетовые небеса Пратии', path: 'remembrance', rarity: 5, own: true, stats: { hp: 48, atk: 26.4, def: 21 }, skill: 'Заступница', sig: 'talleah',
+      tpl: 'Атака владельца повышается на #1%. Урон гиноидов повышается на #2%. Когда Сигнатура переходит, Таллея получает #3 энергии.', p: [[0.24, 0.3, 10], [0.28, 0.35, 11.25], [0.32, 0.4, 12.5], [0.36, 0.45, 13.75], [0.4, 0.5, 15]], bonus: { atkP: 1 }, fx: 'cccpratia',
+      desc: 'Прапрабабка Самара гонялась за преступниками по всей галактике. Её истории на Авии читают детям, и Таллея знала их наизусть.\nМалахия Лысая. Ария Тёмная Песнь. Фаррангис Завоевательница Любви.\nВойна на Авии почти ничего не значила, природа значила больше. Поэтому героев в книгах было мало, и каждого берегли.\n«Однажды я покажу тебе фиолетовые небеса над Пратией. Даю слово».'
+    },
+    cccgorilla: {
+      name: 'Портрет гориллы', path: 'nihility', rarity: 4, own: true, stats: { hp: 43.2, atk: 21.6, def: 15 }, skill: 'Гляделки',
+      tpl: 'Шанс эффекта владельца повышается на #1%. В начале боя враг с наибольшим HP оказывается «Под присмотром»: урон по нему повышается на #2% на 3 хода.', p: [[0.16, 0.12], [0.2, 0.15], [0.24, 0.18], [0.28, 0.21], [0.32, 0.24]], bonus: { ehr: 1 }, fx: 'cccgorilla',
+      desc: 'В номере 302 две кровати, шкаф и портрет гориллы.\nГлаза у гориллы следят за тобой, куда ни отойди.\nАманда в дверях только хмыкает: «Ну, я видела фигню и пострашнее. Меня теперь не так просто испугать».\nГорилла не моргает.'
+    },
+    cccbadge: {
+      name: 'Бейдж? Есть.', path: 'harmony', rarity: 4, own: true, stats: { hp: 43.2, atk: 21.6, def: 15 }, skill: 'Готов?',
+      tpl: 'Восстановление энергии владельца повышается на #1%. В начале боя союзник с наименьшей энергией получает #2 энергии.', p: [[0.08, 10], [0.1, 12.5], [0.12, 15], [0.14, 17.5], [0.16, 20]], bonus: { err: 1 }, fx: 'cccbadge',
+      desc: 'Бейдж? Есть. Костюмы? Есть. Еда, чтобы не переплачивать на фуд-корте? Есть и есть.\n«Скажи мне, что в этот раз ты не забыл бейдж».\nАвтобус останавливается у отеля.\n«Готов?» Она встаёт и протягивает руку.'
+    },
+    cccstandee: {
+      name: 'Картонный злодей', path: 'destruction', rarity: 4, own: true, stats: { hp: 43.2, atk: 21.6, def: 15 }, skill: 'Тогда живи',
+      tpl: 'Атака владельца повышается на #1%. Урон владельца по врагам, у которых больше 80% HP, повышается на #2%.', p: [[0.16, 0.24], [0.2, 0.3], [0.24, 0.36], [0.28, 0.42], [0.32, 0.48]], bonus: { atkP: 1 }, fx: 'cccstandee',
+      desc: '«Скоро увидимся, человек. Я была отличницей на уроках разведки и маскировки».\nЧерез три шага принцесса Авии врезается в картонного Паноса и роняет его на пол.\nБластер уже у неё в руке.\n«НЕ ДУМАЙ, ЧТО ТАК ПРОСТО ЗАСТАНЕШЬ ПРИНЦЕССУ АВИИ ВРАСПЛОХ…»\n«А, ты просто украшение. Тогда живи».'
+    }
   };
 
   const FX = ['mkSteal', 'portal', 'shiny', 'amTransform', 'arrest', 'shackle', 'shackleAll', 'squad', 'applause'];
   const IDS = Object.keys(KITS);
 
-  const coneK = (u, fx) => (u && u.cone && u.cone.fx === fx ? 1 + 0.25 * ((u.cone.sup || 1) - 1) : 0);
+  const coneK = (u, fx, n) => (u && u.cone ? H.coneP(u, fx, n) : 0);
   const ally = (b, id) => b.allies.find(a => a.charId === id && alive(a)) || null;
   const biggest = list => (list.length ? list.reduce((a, b) => (b.hp > a.hp ? b : a)) : null);
 
@@ -83,10 +107,10 @@
         if (a.charId === 'talleah' && alive(a)) this.gynoidsIn(a);
       }
       for (const a of this.livingAllies) {
-        const g = coneK(a, 'cccgorilla'), t = biggest(this.living);
-        if (g && t) this.addBuff(t, { s: 'vuln', v: 0.1 * g, turns: 3, name: 'Под присмотром', debuff: true });
-        const bd = coneK(a, 'cccbadge'), low = this.livingAllies.reduce((x, y) => (y.energy / y.maxEnergy < x.energy / x.maxEnergy ? y : x));
-        if (bd) this.gainEnergy(low, 10 * bd);
+        const g = coneK(a, 'cccgorilla', 2), t = biggest(this.living);
+        if (g && t) this.addBuff(t, { s: 'vuln', v: g, turns: 3, name: 'Под присмотром', debuff: true });
+        const bd = coneK(a, 'cccbadge', 2), low = this.livingAllies.reduce((x, y) => (y.energy / y.maxEnergy < x.energy / x.maxEnergy ? y : x));
+        if (bd) this.gainEnergy(low, bd);
       }
     },
 
@@ -120,7 +144,7 @@
       const squad = h.flags.squad > 0;
       this.push({ t: 'act', u: h, name: squad ? 'Отряд из пяти' : 'Тупая железяка: расчёт', kind: 'summon' });
       const list = squad ? this.living.slice() : t ? [t] : [];
-      const o = { e: 'quant', kind: 'gynoid', side: 'gynoid', tough: squad ? 5 : 10, label: 'Гиноиды', extraBonus: 0.32 * coneK(u, 'cccpratia') };
+      const o = { e: 'quant', kind: 'gynoid', side: 'gynoid', tough: squad ? 5 : 10, label: 'Гиноиды', extraBonus: coneK(u, 'cccpratia', 2) };
       for (const x of list) if (alive(x)) this.hit(u, x, T.tlGynoid * (this.traceTalent ? this.traceTalent(u) : 1) * (squad ? T.tlSquad : 1), o);
       if (this.kitFx && list.length) this.kitFx(u, 'gynoidHit');
       if (squad) h.flags.squad--;
@@ -203,7 +227,7 @@
 
     cocoon(src, a, m, flat, turns) {
       if (!alive(a)) return;
-      this.giveShield(a, (defOf(src) * m + flat * H.grow(src.lvl)) * (1 + 0.2 * coneK(src, 'cccmagic')) * (1 + ((this.kitFx && this.kitFx(src, 'cocoonUp')) || 0)), turns);
+      this.giveShield(a, (defOf(src) * m + flat * H.grow(src.lvl)) * (1 + coneK(src, 'cccmagic', 2)) * (1 + ((this.kitFx && this.kitFx(src, 'cocoonUp')) || 0)), turns);
       if (a.shield > 0) { a.flags.cocoon = src; if (this.kitFx) this.kitFx(src, 'cocooned', a); }
     },
 
@@ -224,8 +248,8 @@
         this.push({ t: 'act', u: by, name: 'Кокон лопнул!', kind: 'follow', burst: at });
         for (const e of foes) if (alive(e)) this.hit(by, e, T.amBurst * (this.traceTalent ? this.traceTalent(by) : 1), { stat: 'def', e: 'wind', tough: T.amBurstTough, kind: 'follow', label: 'Кокон-сердце' });
         if (this.kitFx) this.kitFx(by, 'popped', at);
-        const mg = coneK(by, 'cccmagic');
-        if (mg && alive(at)) this.addBuff(at, { s: 'dmgP', v: 0.16 * mg, turns: 2, name: 'Настоящая магия' });
+        const mg = coneK(by, 'cccmagic', 3);
+        if (mg && alive(at)) this.addBuff(at, { s: 'dmgP', v: mg, turns: 2, name: 'Маленький город' });
         this.acting = prev;
       }
       this.ccBusy = false;
@@ -265,8 +289,8 @@
       if (!next) return;
       this.setSig(next);
       for (const h of this.gynoids()) this.advance(h, T.tlJump);
-      const tl = ally(this, 'talleah'), k = coneK(tl, 'cccpratia');
-      if (tl && k) this.gainEnergy(tl, 10 * k);
+      const tl = ally(this, 'talleah'), k = coneK(tl, 'cccpratia', 3);
+      if (tl && k) this.gainEnergy(tl, k);
     },
 
     contonBreak(src, tgt) {
@@ -294,17 +318,17 @@
       this.push({ t: 'back', u });
       const t = biggest(this.living);
       if (!t) return;
-      const n = u.flags.shiny || 0, letter = coneK(u, 'cccletter');
+      const n = u.flags.shiny || 0, letter = coneK(u, 'cccletter', 3);
       this.acting = u;
       this.hitThisAction = new Set();
       this.actSerial = (this.actSerial || 0) + 1;
       this.push({ t: 'act', u, name: 'Самая большая блестяшка', kind: 'follow', heist: true });
-      if (letter) u.buffs.push({ s: 'defIgnore', v: 0.16 * letter, turns: 999, name: 'С любовью, Макото' });
+      if (letter) u.buffs.push({ s: 'defIgnore', v: letter, turns: 999, name: 'Я найду тебя: защита' });
       const hp0 = t.hp + t.shield;
       const dealt = this.hit(u, t, (T.mkHeist + T.mkHeistPer * n) * ((this.kitFx && this.kitFx(u, 'heistM')) || 1), { kind: 'ult', e: 'imag', tough: 30, alwaysCrit: true, defIgnore: (this.kitFx && this.kitFx(u, 'heistDef')) || 0, label: 'Самая большая блестяшка' });
       const next = !alive(t) && dealt > hp0 ? biggest(this.living) : null;
       if (next) this.hit(u, next, 0, { raw: (dealt - hp0) * T.mkSpill, e: 'imag', kind: 'ult', label: 'Сдача' });
-      if (letter) u.buffs = u.buffs.filter(b => b.name !== 'С любовью, Макото');
+      if (letter) u.buffs = u.buffs.filter(b => b.name !== 'Я найду тебя: защита');
       this.setShiny(u, (this.kitFx && this.kitFx(u, 'heistKeep')) || 0);
       this.acting = null;
       if (!this.over) this.applause(u);
@@ -356,14 +380,13 @@
       if (src.side !== 'ally' || tgt.side !== 'enemy') return 0;
       let v = 0;
       if (src.charId === 'makoto' && this.living.length && biggest(this.living) === tgt) v += T.mkBig * (this.traceTalent ? this.traceTalent(src) : 1);
-      const sd = coneK(src, 'cccstandee');
-      if (sd && tgt.hp > tgt.maxHp * 0.8) v += 0.24 * sd;
+      if (tgt.hp > tgt.maxHp * 0.8) v += coneK(src, 'cccstandee', 2);
       return v;
     },
 
     contonAfter(u, kind, hits) {
-      const lt = coneK(u, 'cccletter');
-      if (lt && u.charId === 'makoto' && kind === 'skill' && hits.length) this.addBuff(u, { s: 'dmgP', v: 0.24 * lt, turns: 2, name: 'Письмо с кошкой' }, true);
+      const lt = coneK(u, 'cccletter', 2);
+      if (lt && u.charId === 'makoto' && kind === 'skill' && hits.length) this.addBuff(u, { s: 'dmgP', v: lt, turns: 2, name: 'Я найду тебя' }, true);
     },
 
     contonAbility(u, kind) {
@@ -412,6 +435,7 @@
     Object.assign(H.CHARS, KITS);
     Object.assign(H.FUSIONS, FUSIONS);
     Object.assign(H.CONES, CONES);
+    H.coneInit(CONES);
   }
 
   register();
