@@ -37,7 +37,10 @@
         '...что из-за ошибки деления в процессоре [[pentium|Pentium]] Intel пришлось заменить процессоры на сумму около 475 миллионов долларов?',
         '...что идею свободной энциклопедии в Сети предложил ещё в 1993 году Рик Гейтс — в противовес закрытым дискам [[encarta|Microslop Encarta]] (см. [[interpedia|Интерпедия]])?',
         '...что [[celeron300a|Celeron 300A]] за 150 долларов после разгона догоняет Pentium II 450?',
-        '...что в ранних вариантах сценария «[[bttf|Назад в будущее]]» машиной времени был холодильник?'
+        '...что в ранних вариантах сценария «[[bttf|Назад в будущее]]» машиной времени был холодильник?',
+        '...что номер интернет-газеты «[[svodka|Сводка.ру ’99]]» за 28 декабря 1999 года — 303, а её первая страница весит меньше 40 КБ?',
+        '...что [[stalker98|S.T.A.L.K.E.R.]] — это три самостоятельные игры киевской студии GSC Game World с разными движками?',
+        '...что диск журнала «[[igromania|Игромания]]» с демоверсиями лежит в приводе D: этого компьютера?'
       ],
       pictureTitle: '3dfx Voodoo 2 SLI',
       pictureGif: 'pc',
@@ -65,7 +68,10 @@
         '...that a division bug in the [[pentium|Pentium]] processor cost Intel about $475 million in replacements?',
         '...that the idea of a free encyclopedia on the Net was proposed back in 1993 by Rick Gates as an open alternative to commercial discs like [[encarta|Microslop Encarta]] — see [[interpedia|Interpedia]]?',
         '...that a $150 [[celeron300a|Celeron 300A]], once overclocked, catches up with a Pentium II 450?',
-        '...that in early drafts of the "[[bttf|Back to the Future]]" script the time machine was a refrigerator?'
+        '...that in early drafts of the "[[bttf|Back to the Future]]" script the time machine was a refrigerator?',
+        '...that issue 303 of the online daily "[[svodka|Svodka.ru \'99]]", dated December 28, 1999, has a front page under 40 KB?',
+        '...that [[stalker98|S.T.A.L.K.E.R.]] is three separate games from the Kyiv studio GSC Game World, each on its own engine?',
+        '...that the demo disc of the magazine "[[igromania|Igromania]]" sits in the D: drive of this computer?'
       ],
       pictureTitle: '3dfx Voodoo 2 SLI',
       pictureGif: 'pc',

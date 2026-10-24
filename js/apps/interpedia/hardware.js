@@ -1183,7 +1183,7 @@ window.interpediaReg('floppy144', 'hardware', {
 В России качество дискет на рынках сильно различается, и пользователи предпочитают проверенные марки вроде 3M, Verbatim, Sony и TDK, а важные данные записывают на две дискеты сразу.` },
     { id: 'future', title: 'Будущее дискеты', content: `В 1998 году Apple выпустила iMac без дисковода, и это решение широко обсуждалось. Для переноса больших файлов появились [[zipdrive|Iomega Zip]] на 100 МБ и совместимый с обычными дискетами дисковод LS-120 SuperDisk на 120 МБ; распространяются записывающие приводы CD-R. Тем не менее дискета остаётся самым дешёвым и универсальным способом передать небольшой файл, и производители компьютеров не спешат от неё отказываться.` }
   ],
-  seeAlso: ['zipdrive', 'cdrom', 'msdos', 'winrar', 'avp'],
+  seeAlso: ['zipdrive', 'cdrom', 'msdos', 'winrar', 'avp', 'cdrw'],
   references: [
     'Гук М. Аппаратные средства IBM PC. Энциклопедия. — СПб.: Питер, 1998.',
     'IBM Personal System/2 Technical Reference. — IBM, 1987.',
@@ -1231,7 +1231,7 @@ Large files are split by archivers: a multi-volume ARJ or [[winrar|RAR]] archive
 In Russia the quality of floppies sold at markets varies widely, and users prefer trusted brands such as 3M, Verbatim, Sony and TDK and copy important data onto two disks at once.` },
     { id: 'future', title: 'The future of the floppy', content: `In 1998 Apple released the iMac without a floppy drive, a widely debated decision. For moving large files there are the 100 MB [[zipdrive|Iomega Zip]] and the 120 MB LS-120 SuperDisk, which also reads ordinary floppies, and CD-R writers are spreading. Still, the floppy remains the cheapest and most universal way to hand over a small file, and PC makers are in no hurry to drop it.` }
   ],
-  seeAlso: ['zipdrive', 'cdrom', 'msdos', 'winrar', 'avp'],
+  seeAlso: ['zipdrive', 'cdrom', 'msdos', 'winrar', 'avp', 'cdrw'],
   references: [
     'Guk, M. Apparatnye sredstva IBM PC. Entsiklopediya. St. Petersburg: Piter, 1998.',
     'IBM Personal System/2 Technical Reference. IBM, 1987.',
@@ -1481,7 +1481,7 @@ Zip стал стандартом для переноса больших фай�
 </dl>` },
     { id: 'russia', title: 'Zip в России', content: `В России Zip используют прежде всего в полиграфии и дизайне: макеты, свёрстанные на [[macos8|Macintosh]] в QuarkXPress и [[photoshop|Photoshop]], привозят в типографии и бюро вывода плёнок на дисках Zip. Для домашних пользователей привод дорог, а диски трудно найти за пределами крупных городов.` }
   ],
-  seeAlso: ['floppy144', 'cdrom', 'macos8', 'photoshop'],
+  seeAlso: ['floppy144', 'cdrom', 'macos8', 'photoshop', 'cdrw'],
   references: [
     'Iomega Corporation. Zip Drive User\'s Guide. — 1995.',
     'Gibson S. Trouble In Paradise: The Click of Death. — Gibson Research, 1998.',

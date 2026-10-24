@@ -67,7 +67,7 @@ class AppExcel {
     const win = window.winManager.createWindow({
       id: winId,
       title: `${this.currentFileName} - ${t('excel.title')}`,
-      icon: 'file-xls',
+      icon: 'excel',
       width: 640,
       height: 440,
       content: this.buildHTML()
@@ -199,7 +199,7 @@ class AppExcel {
       if (window.soundSys) window.soundSys.playClick();
       window.winManager.openDialog({
         title: t('excel.title'),
-        icon: 'file-xls',
+        icon: 'excel',
         message: t('excel.saveSuccess', this.currentFileName)
       });
     };
@@ -214,7 +214,7 @@ class AppExcel {
     el.querySelector('.opt-about').addEventListener('click', () => {
       window.winManager.openDialog({
         title: t('excel.aboutTitle'),
-        icon: 'file-xls',
+        icon: 'excel',
         message: t('excel.aboutMsg')
       });
     });

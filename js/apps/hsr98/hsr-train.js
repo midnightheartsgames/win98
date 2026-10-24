@@ -30,6 +30,11 @@
       roof: '#0a0810', roofHi: '#18141f', trim: '#d8a048', trimDk: '#7a5222',
       high: ['#1d1824', '#29222f', '#120e17'], low: ['#1a1520', '#251e2c', '#0f0c14'],
       dark: ['#1d1a22', '#27232d', '#131118'], tint: 'rgba(255,160,70,0.06)'
+    },
+    lab: {
+      roof: '#090c12', roofHi: '#151b26', trim: C.gold, trimDk: C.goldDk,
+      high: ['#23303e', '#2e3e50', '#17202b'], low: ['#1e2834', '#293646', '#121921'],
+      dark: ['#2a313b', '#3a434f', '#1a1f26'], tint: 'rgba(120,200,255,0.05)', glow: '#5ad8ff'
     }
   };
 
@@ -199,6 +204,17 @@
       P.shadow(8, 15, 4, 1); P.oval(8, 13, 4, 1, C.goldDk); P(7, -14, 2, 27, C.goldDk); P(7, -14, 1, 27, C.gold);
       P.tri([3, -16, 13, -16, 11, -22, 5, -22], '#f6e4b8'); P(3, -16, 10, 1, '#c8a060'); P(5, -22, 6, 1, '#fff4d8');
     }, lights: () => [[8, -18, 22, '#ffd890', 0.35]] },
+    hackterm: { w: 1, h: 1, up: 22, draw(P, v) {
+      const jade = v === 'jade', cw = v === 'cw', glow = jade ? '#4ef0a0' : cw ? '#ffd471' : '#5ad8ff';
+      P.shadow(8, 15, 7, 2); P.box(1, 6, 14, 2, 6, '#2a2238', '#1a1424', C.purpleHi); P(2, 13, 12, 1, C.purpleDk);
+      P(2, -16, 12, 22, '#120e1a'); P(2, -16, 12, 1, C.purpleHi); P(1, -14, 1, 20, C.purple); P(14, -14, 1, 20, C.purple);
+      P(3, -14, 10, 12, '#05080c'); P(3, -14, 10, 1, glow);
+      if (jade) { P.tri([8, -12, 11, -8, 8, -4, 5, -8], '#2aa070'); P.tri([8, -11, 10, -8, 8, -6, 6, -8], glow); P.dot(7, -9, '#e8fff4'); }
+      else if (cw) { P.tri([8, -13, 11, -9, 8, -5, 5, -9], '#a8782a'); P.tri([8, -12, 10, -9, 8, -6, 8, -12], glow); P.dot(7, -10, '#fff4c8'); P(4, -4, 8, 1, '#5cff8a'); }
+      else { P(4, -12, 2, 1, glow); P(7, -12, 4, 1, '#2f6f86'); P(4, -10, 6, 1, '#2f6f86'); P(4, -8, 3, 1, glow); P(8, -8, 1, 2, '#e8f8ff'); P(4, -6, 5, 1, '#2f6f86'); }
+      P(3, 0, 10, 4, '#1a1424'); for (let i = 0; i < 4; i++) P(4 + i * 2, 1, 1, 1, i % 2 ? C.pink : glow);
+      P(12, -19, 1, 4, C.purpleHi); P.dot(12, -20, C.pink);
+    }, lights: v => [[8, -8, 20, v === 'jade' ? '#4ef0a0' : v === 'cw' ? '#ffd471' : '#5ad8ff', 0.3, true]] },
     term: { w: 1, h: 1, up: 16, draw(P, v) {
       const sim = v === 'sim';
       P.shadow(8, 15, 7, 2); P.box(2, 6, 12, 2, 6, C.navyHi, C.navy, C.gold); P(3, 13, 10, 1, C.goldDk);
@@ -448,6 +464,7 @@
   function floorPaint(P, kind, car, e) {
     const r = i => hash(e.x * 13 + i, e.y * 7 + i * 3, 51);
     const pal = CARS[car] || CARS.parlor;
+    if (car === 'lab' && (kind === 'floor' || kind === 'floor5')) { labFloor(P, kind, pal, e, r); return; }
     switch (kind) {
       case 'floor2': {
         P(0, 0, U, U, '#d8d1c3');
@@ -493,6 +510,19 @@
         if (r(7) > 0.6) P.line(3, 12, 12, 3, 'rgba(255,255,255,0.05)');
       }
     }
+  }
+
+  function labFloor(P, kind, pal, e, r) {
+    const [b, hi, dk] = pal.dark;
+    if (kind === 'floor5') {
+      P(0, 0, U, U, '#1d2530'); P.dither(0, 0, U, U, '#212a36', (e.x + e.y) & 1);
+      if (e.edgeU) { P(0, 0, U, 1, '#0e141a'); P(0, 1, U, 1, pal.glow); P(0, 2, U, 1, 'rgba(90,216,255,0.25)'); P(e.x % 2 ? 2 : 10, 6, 4, 1, '#2f6f86'); }
+      if (e.edgeD) { P(0, U - 3, U, 1, 'rgba(90,216,255,0.25)'); P(0, U - 2, U, 1, pal.glow); P(0, U - 1, U, 1, '#0e141a'); P(e.x % 2 ? 10 : 2, 9, 4, 1, '#2f6f86'); }
+      return;
+    }
+    P(0, 0, U, U, b); P(0, 0, U, 1, hi); P(0, 0, 1, U, hi); P(U - 1, 0, 1, U, dk); P(0, U - 1, U, 1, dk);
+    for (const [x, y] of [[2, 2], [13, 2], [2, 13], [13, 13]]) P.dot(x, y, '#4a5462');
+    if (r(1) > 0.55) for (let y = 4; y < 12; y += 3) for (let x = 4; x < 12; x += 3) P.dot(x + (y % 2), y, '#333b46');
   }
 
   function buildLayer(map) {
@@ -558,6 +588,10 @@
         } else if (car === 'party') {
           P(0, 0, U, 2, '#3a2a18'); P(0, 2, U, 1, '#ffb050'); P(0, 3, U, 1, 'rgba(255,176,80,0.4)');
           P(2, 6, 12, 10, hi); P(3, 7, 10, 9, b);
+        } else if (car === 'lab') {
+          P(0, 0, U, 1, pal.trimDk); P(0, 1, U, 1, pal.trim);
+          P(1, 4, 6, 12, hi); P(2, 5, 4, 11, b); P(9, 4, 6, 12, hi); P(10, 5, 4, 11, b); P(7, 4, 2, 12, dk);
+          if (hash(x, y, 63) > 0.7) { P(4, 8, 1, 2, pal.glow); P(3, 8, 1, 2, 'rgba(90,216,255,0.35)'); }
         } else {
           P(0, 0, U, 1, pal.trimDk); P(0, 1, U, 1, pal.trim);
           P(2, 4, 12, 12, hi); P(3, 5, 10, 11, b);
@@ -567,6 +601,10 @@
           P(0, 0, U, 1, pal.trim); P(0, 1, U, 2, '#c8ccd4'); P(2, 4, 12, 7, hi); P(3, 5, 10, 5, b); P(0, 12, U, 2, '#c8ccd4'); P(0, 14, U, 2, '#2a2a34');
         } else if (car === 'party') {
           P(2, 0, 12, 9, hi); P(3, 0, 10, 8, b); P(0, 10, U, 1, pal.trim); P(0, 11, U, 3, dk); P(0, 14, U, 2, '#0a0810');
+        } else if (car === 'lab') {
+          P(1, 0, 6, 7, hi); P(2, 0, 4, 6, b); P(9, 0, 6, 7, hi); P(10, 0, 4, 6, b); P(7, 0, 2, 7, dk);
+          P(0, 8, U, 1, pal.trim); for (let i = 2; i < U - 1; i += 2) P(i, 9, 1, 2, dk);
+          P(0, 11, U, 1, pal.glow); P(0, 12, U, 1, 'rgba(90,216,255,0.3)'); P(0, 13, U, 2, dk); P(0, 15, U, 1, '#05040a');
         } else {
           P(2, 0, 12, 8, hi); P(3, 0, 10, 7, b); P(0, 9, U, 1, pal.trim); P(0, 10, U, 1, pal.trimDk); P(0, 11, U, 3, dk); P(0, 14, U, 1, pal.trim); P(0, 15, U, 1, '#05040a');
         }
@@ -900,7 +938,17 @@
     lines.slice(0, 3).forEach((l, i) => ui.text(l, x0 + 34, y0 + h - 58 + i * 15, { size: 11, col: INK, shadow: false }));
   }
 
-  if (H.UI) Object.assign(H.UI.prototype, { openBook, drawGuestBook, drawPhotoWall });
+  function openUi_hackjade() {
+    this.debugJade();
+    this.finishPending();
+  }
+
+  function openUi_hackdebug() {
+    const s = this.openDebug();
+    s.onClose = () => this.finishPending();
+  }
+
+  if (H.UI) Object.assign(H.UI.prototype, { openBook, drawGuestBook, drawPhotoWall, openUi_hackjade, openUi_hackdebug });
 
   H.Train = { buildLayer, drawWindows, drawSprite, drawFx, DECOR, LAYER, CARS };
   if (typeof module !== 'undefined') module.exports = H;

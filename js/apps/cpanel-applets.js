@@ -2344,7 +2344,7 @@ class AppCPanel {
         : 'Microslop Office 97 Professional (with Clippy)',
       size: this.formatAppWizMb(42.0),
       sizeMb: 42.0,
-      icon: 'file-xls',
+      icon: 'excel',
       isOffice: true
     });
 
@@ -2969,7 +2969,7 @@ class AppCPanel {
 
     content.innerHTML = `
       <div style="display:flex; gap:12px; align-items:flex-start;">
-        <div style="width:32px; height:32px; flex-shrink:0;">${Icons['file-xls'] || ''}</div>
+        <div style="width:32px; height:32px; flex-shrink:0;">${Icons['excel'] || ''}</div>
         <div style="line-height:1.35;">
           <strong>${app.name}</strong><br>
           ${isRu
@@ -3005,7 +3005,7 @@ class AppCPanel {
     const win = window.winManager.createWindow({
       id: 'app_appwiz_office',
       title: isRu ? 'Установка Microslop Office 97' : 'Microslop Office 97 Setup',
-      icon: 'file-xls',
+      icon: 'excel',
       width: 404,
       height: 'auto',
       resizable: false,

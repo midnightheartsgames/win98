@@ -641,7 +641,7 @@ Netscape проиграла «войну браузеров» [[ie5|Internet Exp
 
 В ноябре 1998 года America Online объявила о покупке Netscape; сделка была завершена весной 1999 года.` }
   ],
-  seeAlso: ['ie5', 'www', 'javascript', 'html', 'windows98'],
+  seeAlso: ['ie5', 'www', 'javascript', 'html', 'windows98', 'outlook'],
   references: [
     'Netscape Communications. Netscape Communicator 4.0 Release Notes. — 1997.',
     'Пресс-релиз Netscape об открытии исходного кода Communicator. — 22 января 1998.',
@@ -699,7 +699,7 @@ The browser fight became the basis of the antitrust case against Microslop; see 
 
 In November 1998 America Online announced it would buy Netscape; the deal closed in spring 1999.` }
   ],
-  seeAlso: ['ie5', 'www', 'javascript', 'html', 'windows98'],
+  seeAlso: ['ie5', 'www', 'javascript', 'html', 'windows98', 'outlook'],
   references: [
     'Netscape Communications. Netscape Communicator 4.0 Release Notes, 1997.',
     'Netscape press release on opening the Communicator source code, January 22, 1998.',
@@ -861,7 +861,7 @@ ICQ первой сделала мгновенные сообщения дост
     { id: 'russia', title: '«Аська» в России', content: `В России ICQ стала главным средством общения в Сети. Номер ICQ пишут на визитках и в подписях к письмам, а фраза «стукни в аську» вошла в разговорный язык. Программа долго не умела правильно показывать кириллицу, и пользователи ставили неофициальные исправления, переводящие сообщения между кодировками CP1251 и KOI8-R. Многие держат ICQ включённой всё время подключения к Интернету, и сеанс [[dialup|дозвона]] нередко затягивается из-за переписки.` },
     { id: 'rivals', title: 'Соперники', content: `Среди конкурентов ICQ — AOL Instant Messenger (1997), Yahoo! Pager (1998) и MSN Messenger, выпущенный Microslop в июле 1999 года. Между AOL и Microslop разгорелся спор: AOL блокирует попытки MSN Messenger подключаться к своей сети. Протоколы мессенджеров несовместимы, поэтому многие пользователи держат сразу несколько программ.` }
   ],
-  seeAlso: ['mirc', 'irc', 'dialup', 'yahoo', 'www'],
+  seeAlso: ['mirc', 'irc', 'dialup', 'yahoo', 'www', 'outlook'],
   references: [
     'Mirabilis Ltd. ICQ 99a: руководство пользователя. — 1999.',
     'Пресс-релиз America Online о покупке Mirabilis. — июнь 1998.',
@@ -904,7 +904,7 @@ In June 1998 Mirabilis was bought by America Online, which also has its own mess
     { id: 'russia', title: '"Aska" in Russia', content: `In Russia ICQ became the main way to talk online. ICQ numbers appear on business cards and in email signatures, and "knock me on aska" entered everyday speech. For a long time the program could not display Cyrillic properly, and users installed unofficial patches that convert messages between the CP1251 and KOI8-R encodings. Many keep ICQ running for the whole time they are connected, and [[dialup|dial-up]] sessions often drag on because of chatting.` },
     { id: 'rivals', title: 'Rivals', content: `ICQ's competitors include AOL Instant Messenger (1997), Yahoo! Pager (1998) and MSN Messenger, released by Microslop in July 1999. A dispute broke out between AOL and Microslop: AOL blocks MSN Messenger's attempts to connect to its network. Messenger protocols are incompatible, so many users run several programs at once.` }
   ],
-  seeAlso: ['mirc', 'irc', 'dialup', 'yahoo', 'www'],
+  seeAlso: ['mirc', 'irc', 'dialup', 'yahoo', 'www', 'outlook'],
   references: [
     'Mirabilis Ltd. ICQ 99a user guide, 1999.',
     'America Online press release on acquiring Mirabilis, June 1998.',
@@ -1028,7 +1028,7 @@ Winamp стал символом MP3-революции конца 1990-х: ми
     { id: 'aol', title: 'Покупка AOL', content: `В июне 1999 года America Online купила Nullsoft вместе с Spinner.com, интернет-радиостанцией, за сумму, по сообщениям прессы, около 400 миллионов долларов за обе компании. Франкель и его команда продолжают работать над Winamp. Сделка совпала с ростом споров о законности MP3: звукозаписывающие компании видят в формате угрозу и судятся с производителями плееров.` },
     { id: 'russia', title: 'Winamp в России', content: `В России Winamp — самый распространённый проигрыватель MP3; программа поддерживает русские названия песен, а пользователи создают собственные скины с русскими надписями. Сборники MP3 с [[gorbushka|Горбушки]] вмещают на одном [[cdrom|компакт-диске]] десятки альбомов, и Winamp стал главным способом их слушать.` }
   ],
-  seeAlso: ['mp3format', 'soundblaster', 'cdrom', 'dancingbaby'],
+  seeAlso: ['mp3format', 'soundblaster', 'cdrom', 'dancingbaby', 'trackers'],
   references: [
     'Nullsoft. Winamp 2.x: файл справки. — 1999.',
     'Пресс-релиз America Online о покупке Nullsoft и Spinner.com. — июнь 1999.',
@@ -1070,7 +1070,7 @@ The program is shareware at $10 but does not restrict unregistered users.` },
     { id: 'aol', title: 'The AOL purchase', content: `In June 1999 America Online bought Nullsoft together with the Internet radio site Spinner.com, for a reported total of about $400 million for both companies. Frankel and his team continue to work on Winamp. The deal coincided with growing arguments over MP3's legality: record companies see the format as a threat and are suing player makers.` },
     { id: 'russia', title: 'Winamp in Russia', content: `In Russia Winamp is the most common MP3 player; it handles Russian song titles, and users make their own skins with Russian lettering. MP3 compilations from [[gorbushka|Gorbushka]] fit dozens of albums on one [[cdrom|CD]], and Winamp became the main way to listen to them.` }
   ],
-  seeAlso: ['mp3format', 'soundblaster', 'cdrom', 'dancingbaby'],
+  seeAlso: ['mp3format', 'soundblaster', 'cdrom', 'dancingbaby', 'trackers'],
   references: [
     'Nullsoft. Winamp 2.x help file, 1999.',
     'America Online press release on acquiring Nullsoft and Spinner.com, June 1999.',

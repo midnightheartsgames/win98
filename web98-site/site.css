@@ -392,6 +392,10 @@ a {
   color: var(--text-soft);
 }
 
+.is-purple {
+  --level: #7a1fd6;
+}
+
 .is-red {
   --level: #d40000;
 }

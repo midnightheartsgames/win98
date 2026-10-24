@@ -232,6 +232,41 @@ AAAAAAAAAAAAAAAA`), skill: 1 }); g.ammo = 99; g.weapons = [true, true, true, tru
   assert.equal(g.weapon, 0, 'no gun without ammo');
 });
 
+test('debug menu: grants, fast run, invincibility and infinite ammo', () => {
+  const corridor = String.raw`
+AAAAAAAAAAAAAAAA
+A>.............A
+AAAAAAAAAAAAAAAA`;
+  const g = new W.Game({ maps: mini(corridor), skill: 1 });
+  g.health = 10; g.ammo = 0; g.weapon = 0;
+  g.debugHealth();
+  assert.equal(g.health, D.PLAYER.maxHealth);
+  g.debugWeapons();
+  assert.ok(g.weapons.every(Boolean) && g.weapon === 3 && g.ammo > 0, 'all weapons and a usable gun');
+  g.debugAmmo();
+  assert.equal(g.ammo, D.PLAYER.maxAmmo);
+
+  g.infiniteAmmo = true;
+  tics(g, 140, { fire: true });
+  assert.equal(g.ammo, D.PLAYER.maxAmmo, 'ammo does not drop');
+  g.infiniteAmmo = false;
+  tics(g, 140, { fire: true });
+  assert.ok(g.ammo < D.PLAYER.maxAmmo, 'ammo drops again');
+
+  g.god = true;
+  g.takeDamage(30, null);
+  assert.equal(g.health, D.PLAYER.maxHealth, 'invincible');
+
+  const dist = fast => {
+    const w = new W.Game({ maps: mini(corridor), skill: 1 });
+    w.fastRun = fast;
+    place(w, 1.5, 1.5, 0);
+    tics(w, 10, { fwd: 1, run: true });
+    return w.px - 1.5;
+  };
+  assert.ok(dist(true) > dist(false) * 1.8, 'fast run covers about twice the distance');
+});
+
 test('enemies: sight, noise through open doors, sneak damage and death', () => {
   const rows = String.raw`
 AAAAAAAAAAAAA

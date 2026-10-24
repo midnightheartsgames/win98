@@ -685,7 +685,7 @@ window.interpediaReg('msdos', 'os', {
 </dl>` },
     { id: 'win9x', title: 'DOS внутри Win 9x', content: `В [[windows95|Win 95]] и [[windows98|Win 98]] DOS больше не продаётся отдельно, но по-прежнему загружает компьютер: в меню, которое открывается клавишей F8, можно выбрать «Только командная строка». Загрузочная дискета Win 98 — фактически DOS 7.1 с утилитами FDISK, FORMAT и драйверами [[cdrom|CD-ROM]]. В [[winnt4|Win NT]] и [[win2000|Win 2000]] DOS нет совсем: там работает лишь её эмуляция для старых программ.` }
   ],
-  seeAlso: ['windows95', 'windows98', 'norton', 'floppy144', 'soundblaster'],
+  seeAlso: ['windows95', 'windows98', 'norton', 'floppy144', 'soundblaster', 'emuland'],
   references: [
     'Duncan R. (ред.) The MS-DOS Encyclopedia. — Microslop Press, 1988.',
     'Фигурнов В. Э. IBM PC для пользователя. — М.: Финансы и статистика, 1990-е годы, многочисленные издания.',
@@ -750,7 +750,7 @@ As DirectX spread in 1996–1997, games moved to Win 95. For older games, Win 9x
 </dl>` },
     { id: 'win9x', title: 'DOS inside Win 9x', content: `In [[windows95|Win 95]] and [[windows98|Win 98]] DOS is no longer sold separately, but it still boots the computer: the menu opened with F8 offers "Command prompt only". The Win 98 startup disk is essentially DOS 7.1 with FDISK, FORMAT and [[cdrom|CD-ROM]] drivers. [[winnt4|Win NT]] and [[win2000|Win 2000]] have no DOS at all, only an emulation for old programs.` }
   ],
-  seeAlso: ['windows95', 'windows98', 'norton', 'floppy144', 'soundblaster'],
+  seeAlso: ['windows95', 'windows98', 'norton', 'floppy144', 'soundblaster', 'emuland'],
   references: [
     'Duncan, R. (ed.) The MS-DOS Encyclopedia. Microslop Press, 1988.',
     'Figurnov, V. E. IBM PC dlya polzovatelya. Moscow: Finansy i statistika, many editions in the 1990s.',
@@ -1268,7 +1268,7 @@ window.interpediaReg('amigaos', 'os', {
 </ul>` },
     { id: 'ussr', title: 'Amiga на постсоветском пространстве', content: `В СССР и России Amiga оставалась редкостью: компьютеры стоили дорого, а рынок домашних машин занимали клоны ZX Spectrum и, позднее, IBM PC. Немногие владельцы Amiga, как правило, были связаны с демосценой или видеомонтажом. Тем не менее трекерная музыка и форматы MOD пришли в Россию вместе с [[demoscene|демосценой]] на ПК.` }
   ],
-  seeAlso: ['demoscene', 'beos', 'secondreality', 'macos8'],
+  seeAlso: ['demoscene', 'beos', 'secondreality', 'macos8', 'emuland'],
   references: [
     'Amiga ROM Kernel Reference Manual. — 3-е изд. — Addison-Wesley, 1991.',
     'Haage & Partner. AmigaOS 3.5: User Manual. — 1999.',
@@ -1325,7 +1325,7 @@ The Exec kernel, written by Carl Sassenrath, supported preemptive multitasking a
 </ul>` },
     { id: 'ussr', title: 'The Amiga in the former USSR', content: `In the USSR and Russia the Amiga stayed rare: the machines were expensive, and the home market belonged to ZX Spectrum clones and later the IBM PC. The few Amiga owners were usually tied to the demoscene or video editing. Even so, tracker music and MOD files reached Russia along with the PC [[demoscene|demoscene]].` }
   ],
-  seeAlso: ['demoscene', 'beos', 'secondreality', 'macos8'],
+  seeAlso: ['demoscene', 'beos', 'secondreality', 'macos8', 'emuland'],
   references: [
     'Amiga ROM Kernel Reference Manual, 3rd ed. Addison-Wesley, 1991.',
     'Haage & Partner. AmigaOS 3.5 User Manual, 1999.',

@@ -1386,12 +1386,113 @@
     return renderModel(icon, { w: 48, h: 24, yaw: Math.PI / 2, pitch: 0.12, scale: id === 'knife' ? 1.9 : id === 'pistol' ? 1.7 : 1.15, cx: id === 'knife' ? 14 : 22, cy: 13 });
   }
 
+  const GUN_STEEL = hex('#7a7e8c'), GUN_DARK = hex('#34363e'), GUN_BLACK = hex('#0c0c10'), GUN_OUTLINE = hex('#101018');
+  const GUN_SKIN = hex('#e0a47c'), GUN_SLEEVE = hex('#6c7c4c');
+
+  function gunTube(p, cx, y0, y1, w0, w1, c) {
+    for (let y = Math.round(y0); y < Math.round(y1); y++) {
+      const w = w0 + (w1 - w0) * (y - y0) / (y1 - y0);
+      for (let x = Math.round(cx - w / 2); x < Math.round(cx + w / 2); x++) {
+        const dx = (x + 0.5 - cx) / (w / 2);
+        p.set(x, y, shade(c, dx < -0.6 ? 1.2 : dx < -0.1 ? 1 : dx < 0.5 ? 0.82 : 0.62));
+      }
+    }
+  }
+
+  function gunHand(p, cx, cy, rx, ry) {
+    p.ellipse(cx, cy, rx, ry, (x, y, dx, dy) => shade(GUN_SKIN, Math.max(0.55, 1 - 0.2 * dx + (dy < -0.5 ? 0.08 : 0) - (dy > 0.5 ? 0.12 : 0))));
+    for (let i = 0; i < 3; i++) {
+      const y = cy - ry * 0.55 + i * 3;
+      p.line(cx - rx * 0.8, y + 1, cx - rx * 0.3, y, shade(GUN_SKIN, 0.62));
+    }
+  }
+
+  function gunOutline(p) {
+    const edge = [];
+    for (let y = 0; y < p.h; y++) for (let x = 0; x < p.w; x++) {
+      if (p.get(x, y)) continue;
+      if (p.get(x - 1, y) || p.get(x + 1, y) || p.get(x, y - 1) || p.get(x, y + 1)) edge.push([x, y]);
+    }
+    for (const [x, y] of edge) p.set(x, y, GUN_OUTLINE);
+  }
+
+  function gunFlash(p, cx, cy, radius, turn) {
+    const star = r => {
+      const pts = [];
+      for (let i = 0; i < 16; i++) {
+        const a = turn + i * Math.PI / 8, d = i % 2 ? r * 0.45 : r;
+        pts.push([cx + Math.cos(a) * d, cy + Math.sin(a) * d * 1.15]);
+      }
+      return pts;
+    };
+    p.poly(star(radius), hex('#ff8020'));
+    p.poly(star(radius * 0.72), hex('#ffc030'));
+    p.poly(star(radius * 0.4), hex('#fffbe0'));
+  }
+
+  function pistolSprite(f) {
+    const p = new Pic(64, 64), dy = [0, 1, 3, 2, 1][f];
+    gunTube(p, 32, 53 + dy, 72 + dy, 14, 16, GUN_DARK);
+    gunTube(p, 32, 41 + dy, 57 + dy, 7, 13, GUN_STEEL);
+    p.rect(31, 40 + dy, 3, 2, GUN_BLACK);
+    p.rect(28, 54 + dy, 8, 1, GUN_DARK);
+    p.rect(31, 53 + dy, 2, 1, hex('#c8ccd8'));
+    p.ellipse(41, 60 + dy, 2.6, 4.5, (x, y, dx) => shade(GUN_SKIN, 0.9 - 0.2 * dx));
+    gunHand(p, 32, 67 + dy, 11, 10);
+    gunOutline(p);
+    if (f === 2) gunFlash(p, 32, 38 + dy, 9, -Math.PI / 2);
+    return p;
+  }
+
+  function mgSprite(f) {
+    const p = new Pic(64, 64), dy = [0, 1, 3, 2, 1][f];
+    p.poly([[40, 62 + dy], [54, 57 + dy], [66, 62 + dy], [66, 76], [40, 76]], (x, y) => shade(GUN_SLEEVE, 1.1 - (x - 40) * 0.015));
+    gunTube(p, 32, 29 + dy, 46 + dy, 3, 4, GUN_STEEL);
+    gunTube(p, 32, 36 + dy, 50 + dy, 8, 10, GUN_STEEL);
+    for (let y = 39 + dy; y < 49 + dy; y += 3) { p.set(30, y, GUN_BLACK); p.set(33, y, GUN_BLACK); }
+    gunTube(p, 32, 48 + dy, 66 + dy, 13, 18, GUN_DARK);
+    p.rect(31, 50 + dy, 2, 12, hex('#5a5e6a'));
+    p.rect(31, 27 + dy, 2, 3, GUN_BLACK);
+    gunHand(p, 31, 68 + dy, 11, 10);
+    gunOutline(p);
+    if (f === 2 || f === 3) gunFlash(p, 32, 25 + dy, 8, -Math.PI / 2 + f * 0.2);
+    return p;
+  }
+
+  function chainSprite(f) {
+    const p = new Pic(64, 64), dy = [0, 1, 2, 1, 0][f], spin = f * 0.7;
+    p.ellipse(14, 70 + dy, 11, 9, (x, y, dx) => shade(GUN_SLEEVE, 1.05 - 0.2 * dx));
+    p.ellipse(50, 70 + dy, 11, 9, (x, y, dx) => shade(GUN_SLEEVE, 1.05 - 0.2 * dx));
+    gunTube(p, 32, 34 + dy, 70 + dy, 18, 26, hex('#5a5e6a'));
+    for (let y = 44 + dy; y < 64 + dy; y += 4) p.rect(26, y, 12, 1, GUN_BLACK);
+    p.rect(22, 33 + dy, 20, 2, GUN_DARK);
+    p.ellipse(32, 29 + dy, 11, 9, (x, y, dx, dy2) => shade(hex('#4a4e58'), 1.15 - 0.3 * dx - 0.15 * dy2));
+    const barrels = [];
+    for (let i = 0; i < 6; i++) {
+      const a = spin + i * Math.PI / 3;
+      barrels.push({ x: 32 + Math.cos(a) * 6.2, y: 29 + dy + Math.sin(a) * 4.8 });
+    }
+    barrels.sort((a, b) => a.y - b.y);
+    for (const b of barrels) {
+      p.ellipse(b.x, b.y, 3.1, 2.8, GUN_STEEL);
+      p.ellipse(b.x, b.y, 1.6, 1.4, GUN_BLACK);
+    }
+    p.ellipse(32, 29 + dy, 2.4, 2.1, GUN_DARK);
+    gunHand(p, 47, 63 + dy, 8, 9);
+    gunHand(p, 17, 63 + dy, 8, 9);
+    gunOutline(p);
+    if (f === 2 || f === 3) gunFlash(p, 32, 27 + dy, 8, -Math.PI / 2 + f * 0.25);
+    return p;
+  }
+
+  const GUN_SPRITES = { pistol: pistolSprite, mg: mgSprite, chain: chainSprite };
+
   let WEAPON_CACHE = null;
   function weaponSprites() {
     if (WEAPON_CACHE) return WEAPON_CACHE;
     const out = {};
     for (const id of ['knife', 'pistol', 'mg', 'chain']) {
-      out[id] = [0, 1, 2, 3, 4].map(f => weaponModel(id, f));
+      out[id] = [0, 1, 2, 3, 4].map(f => GUN_SPRITES[id] ? GUN_SPRITES[id](f) : weaponModel(id, f));
       out[id + '_icon'] = weaponModel(id, 0, 'icon');
     }
     WEAPON_CACHE = out;

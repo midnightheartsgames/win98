@@ -26,8 +26,8 @@
     g.restore();
   }
 
-  function eclipse(g, T, k, burst = 0) {
-    const { x, y, r } = SUN;
+  function eclipse(g, T, k, burst = 0, at = SUN) {
+    const { x, y, r } = at;
     lighter(g, () => {
       glow(g, x, y, r * (2.6 + burst * 4), '#ff6a20', 0.4 + 0.5 * burst);
       glow(g, x, y, r * 1.45, '#ffd8a0', 0.55 + 0.45 * burst);
@@ -362,6 +362,63 @@
     finale
   };
 
+  const WIN = { x: 70, y: 22, w: 180, h: 150 }, WIN_SUN = { x: 160, y: 72, r: 20 };
+  function windowClip(g, fn) {
+    const { x, y, w, h } = WIN;
+    g.save(); g.beginPath(); g.moveTo(x, y + h); g.lineTo(x, y + w / 2); g.arc(x + w / 2, y + w / 2, w / 2, Math.PI, 0); g.lineTo(x + w, y + h); g.closePath(); g.clip(); fn(); g.restore();
+  }
+
+  function rack(g, x, y, lit) {
+    rect(g, '#1a1418', x - 14, y - 4, 28, 4); rect(g, '#3a3036', x - 12, y - 6, 24, 2);
+    rect(g, '#2a2228', x - 1, y - 78, 3, 74);
+    rect(g, '#2a2228', x - 16, y - 70, 32, 3); rect(g, '#4a3e46', x - 16, y - 70, 32, 1);
+    poly(g, '#2a2228', [x - 6, y - 82, x + 7, y - 82, x + 4, y - 74, x - 3, y - 74]);
+    for (const dx of [-16, 15]) for (let i = 0; i < 4; i++) rect(g, i % 2 ? '#5a4e56' : '#3a3036', x + dx, y - 66 + i * 4, 2, 3);
+    lighter(g, () => glow(g, x, y - 58, 10, '#ff5a1a', 0.25 + 0.5 * lit));
+  }
+
+  const EIDOLON = {
+    title: 'Зал Хельхейма',
+    aura: 'fire',
+    paint(g) {
+      vgrad(g, 0, LH, [[0, '#07040a'], [0.6, '#120a10'], [1, '#080408']]);
+      windowClip(g, () => { sky(g, 0); eclipse(g, 0, 1, 0.2, WIN_SUN); });
+      const { x, y, w, h } = WIN;
+      g.strokeStyle = '#2a1a1e'; g.lineWidth = 6; g.beginPath(); g.moveTo(x, y + h); g.lineTo(x, y + w / 2); g.arc(x + w / 2, y + w / 2, w / 2, Math.PI, 0); g.lineTo(x + w, y + h); g.stroke();
+      g.strokeStyle = '#6a2a20'; g.lineWidth = 1; g.beginPath(); g.moveTo(x + 3, y + h); g.lineTo(x + 3, y + w / 2); g.arc(x + w / 2, y + w / 2, w / 2 - 3, Math.PI, 0); g.lineTo(x + w - 3, y + h); g.stroke();
+      rect(g, '#2a1a1e', x + w / 2 - 2, y + 10, 4, h - 10); rect(g, '#2a1a1e', x, y + 92, w, 4);
+      for (const cx of [26, 294]) { rect(g, '#140c10', cx - 10, 10, 20, 172); rect(g, '#2a1a1e', cx - 10, 10, 3, 172); }
+      vgrad(g, 172, LH, [[0, '#1c0c10'], [1, '#0a0406']]);
+      rect(g, '#3a1a18', 0, 172, LW, 2);
+      for (let i = 0; i < 7; i++) { const q = i / 7; line(g, '#160a0c', 1, 160, 172, lerp(-200, 520, q), LH); }
+      for (let i = 0; i < 4; i++) {
+        const q = i / 4, s2 = lerp(0.95, 0.5, q), yy = lerp(206, 178, q);
+        emptySuit(g, lerp(18, 58, q), yy, s2, lerp(0.9, 0.5, q));
+        emptySuit(g, LW - lerp(18, 58, q), yy, s2, lerp(0.9, 0.5, q));
+      }
+      rect(g, '#3a2214', 64, 190, 34, 16); rect(g, '#5a3420', 64, 190, 34, 2); rect(g, '#24140c', 66, 194, 30, 10);
+      cupMini(g, 0, 81, 182, 1.3);
+      rack(g, 236, 206, 0);
+      lighter(g, () => { glow(g, 160, 196, 70, '#ff4a1a', 0.14); for (let i = 0; i < 5; i++) { const x0 = 104 + i * 26, y0 = 196 + (i % 2) * 6; line(g, rgba('#ff5a1a', 0.5), 1, x0, y0, x0 + 14, y0 + 3); } });
+    },
+    decor(g, t) {
+      lighter(g, () => {
+        for (let i = 0; i < 8; i++) { const f = 0.25 + 0.25 * Math.sin(t * 3 + i * 1.3), q = (i % 4) / 4, xx = i < 4 ? lerp(18, 58, q) : LW - lerp(18, 58, q), yy = lerp(206, 178, q), s2 = lerp(0.95, 0.5, q); line(g, rgba('#ff3a1a', f), 1, xx + 10 * s2 * (i < 4 ? 1 : -1), yy - 60 * s2, xx + 8 * s2 * (i < 4 ? 1 : -1), yy - 32 * s2); }
+        glow(g, 236, 148, 8 + 3 * Math.sin(t * 5), '#ff6a20', 0.5);
+      });
+      for (let i = 0; i < 3; i++) { const ph = (t * 0.6 + i / 3) % 1; ell(g, rgba('#ffffff', 0.25 * (1 - ph)), 81 + Math.sin(t * 2 + i) * 3, 176 - ph * 24, 3, 2); }
+      K.embers(g, t, 26, 23, 0, LW, 210, '#ffb060');
+    },
+    life(g, t) {
+      const ph = t % 6.5, k = ph < 1.4 ? ph / 1.4 : 0, a = Math.sin(k * Math.PI);
+      windowClip(g, () => {
+        eclipse(g, t, 1, a, WIN_SUN);
+        if (k > 0) { slash(g, 160, 100, 1, seg(k, 0, 0.4), 1 - seg(k, 0.6, 1), 0.9); slash(g, 160, 100, -1, seg(k, 0.25, 0.65), 1 - seg(k, 0.7, 1), 0.9); }
+      });
+      if (k > 0) flameWave(g, t, 160, 196, seg(k, 0.5, 0.9), 0.6 * (1 - seg(k, 0.85, 1)));
+    }
+  };
+
   class SkillShow {
     constructor(ui, u, o = {}) {
       this.ui = ui; this.game = ui.game; this.u = u;
@@ -423,9 +480,9 @@
   }
 
   H.OUTFIT_CUTS = Object.assign(H.OUTFIT_CUTS || {}, {
-    himeko_vermilion: { ult: ULT, skill: SKILL, fusions: { f_singularity: FUSION_SINGULARITY }, warp: WARP }
+    himeko_vermilion: { ult: ULT, skill: SKILL, fusions: { f_singularity: FUSION_SINGULARITY }, warp: WARP, eidolon: EIDOLON }
   });
   H.SkillShow = SkillShow;
-  H.OutfitCutArt = { blade, eclipse, sky, rails, slash, flameWave, unsheathed };
+  H.OutfitCutArt = { blade, eclipse, sky, rails, slash, flameWave, unsheathed, emptySuit, cupMini, finale };
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

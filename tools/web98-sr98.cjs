@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { build } = require('./hsr98-standalone.cjs');
+const { stamp } = require('./web98-stamp.cjs');
 
 const ROOT = path.resolve(__dirname, '..');
 const SITE = path.join(ROOT, 'web98-site', 'sr98');
@@ -43,9 +44,10 @@ function copyShots() {
 function writeIndex(scripts, info) {
   const file = path.join(SITE, 'index.html');
   let html = fs.readFileSync(file, 'utf8');
-  const tags = scripts.map(s => `  <script src="play/${s}" defer></script>\n`).join('');
+  const eol = html.includes('\r\n') ? '\r\n' : '\n';
+  const tags = scripts.map(s => `  <script src="play/${s}" defer></script>${eol}`).join('');
   const json = JSON.stringify(info);
-  const re = /(  <script type="application\/json" id="sr98-build">)[^<]*(<\/script>\n)(?:  <script src="play\/game\/[^"]+" defer><\/script>\n)*(  <script src="site\.js" defer><\/script>)/;
+  const re = /(  <script type="application\/json" id="sr98-build">)[^<]*(<\/script>\r?\n)(?:  <script src="play\/game\/[^"]+" defer><\/script>\r?\n)*(  <script src="site\.js(?:\?v=[0-9a-f]*)?" defer><\/script>)/;
   if (!re.test(html)) throw new Error('sr98/index.html layout changed');
   html = html.replace(re, (all, open, close, site) => open + json + close + tags + site);
   fs.writeFileSync(file, html);
@@ -58,6 +60,7 @@ function main() {
   copyShots();
   const info = { version: apkVersion(), apk: APK_NAME, apkBytes, gameBytes: play.gameBytes };
   writeIndex(play.scripts, info);
+  stamp();
   console.log('sr98 site -> ' + path.relative(ROOT, SITE));
   console.log('  play: ' + play.r.scripts + ' scripts (' + mb(play.r.bytes) + '), music ' + play.r.music.length + ' packs (' + mb(play.r.musicBytes) + ')');
   console.log('  apk: ' + APK_NAME + ' ' + mb(apkBytes) + ', version ' + info.version);

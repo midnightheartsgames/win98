@@ -377,6 +377,9 @@ class AppTaskManager {
     if (idLower.includes('stalker')) {
       return { pid, imageName: 'xr_3da.exe', baseCpu: 38.0, mem: 46000, priority: 'High' };
     }
+    if (idLower.includes('backup')) {
+      return { pid, imageName: 'msbackup.exe', baseCpu: 9.0, mem: 6400, priority: 'Normal' };
+    }
     if (idLower.includes('defrag')) {
       return { pid, imageName: 'defrag.exe', baseCpu: 14.0, mem: 7200, priority: 'Normal' };
     }

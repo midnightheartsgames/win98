@@ -5,6 +5,7 @@ class AppNetscape {
     this.searchEngine = 'https://html.duckduckgo.com/html/?q=';
     this.bookmarksKey = 'win98_netscape_bookmarks';
     this.historyKey = 'win98_netscape_history';
+    this.settingsKey = 'win98_netscape_settings';
 
     this.history = [];
     this.historyIndex = -1;
@@ -13,7 +14,7 @@ class AppNetscape {
     this.currentTitle = 'Netscape 6';
     this.lastBounds = null;
     this.openMenu = null;
-    this.renderMode = 'auto';
+    this.settings = this.loadSettings();
     this.loadTimer = null;
 
     this.defaultBookmarks = [
@@ -31,6 +32,27 @@ class AppNetscape {
         }
       });
     }
+  }
+
+  loadSettings() {
+    const defaults = { javascript: true, decorate: true, websafe: true };
+    try {
+      const raw = typeof localStorage !== 'undefined' && localStorage.getItem(this.settingsKey);
+      if (raw) return Object.assign(defaults, JSON.parse(raw));
+    } catch (e) {}
+    return defaults;
+  }
+
+  saveSettings() {
+    try {
+      localStorage.setItem(this.settingsKey, JSON.stringify(this.settings));
+    } catch (e) {}
+  }
+
+  toggleSetting(key) {
+    this.settings[key] = !this.settings[key];
+    this.saveSettings();
+    if (this.currentUrl && !this.currentUrl.startsWith('about:')) this.navigate(this.currentUrl, { replace: true });
   }
 
   loadBounds() {
@@ -246,7 +268,7 @@ class AppNetscape {
     switch (cmd) {
       case 'back': return this.goBack();
       case 'forward': return this.goForward();
-      case 'reload': return this.navigate(this.currentUrl, { replace: true });
+      case 'reload': return this.navigate(this.currentUrl, { replace: true, reload: true });
       case 'stop': return this.stop();
       case 'home': return this.navigate(this.homeUrl);
       case 'go': return this.navigate(this.addressInput.value);
@@ -262,18 +284,14 @@ class AppNetscape {
         return window.winManager && window.winManager.closeWindow(this.winId);
       case 'copyurl':
         return this.copyToClipboard(this.currentUrl);
-      case 'mode-auto':
-      case 'mode-js':
-      case 'mode-static':
-        this.renderMode = cmd.slice(5);
-        return this.navigate(this.currentUrl, { replace: true });
+      case 'toggle-js':
+        return this.toggleSetting('javascript');
+      case 'toggle-deco':
+        return this.toggleSetting('decorate');
+      case 'toggle-colors':
+        return this.toggleSetting('websafe');
       case 'viewsource':
-        return this.currentUrl.startsWith('about:')
-          ? null
-          : window.open(
-              '/netscape/page?url=' + encodeURIComponent(this.currentUrl),
-              '_blank'
-            );
+        return this.viewSource();
       default:
         return null;
     }
@@ -298,9 +316,9 @@ class AppNetscape {
           { label: 'Обновить', cmd: 'reload' },
           { label: 'Остановить', cmd: 'stop' },
           { sep: true },
-          { label: (this.renderMode === 'auto' ? '● ' : '') + 'JavaScript: автоматически', cmd: 'mode-auto' },
-          { label: (this.renderMode === 'js' ? '● ' : '') + 'JavaScript: всегда выполнять', cmd: 'mode-js' },
-          { label: (this.renderMode === 'static' ? '● ' : '') + 'JavaScript: отключить', cmd: 'mode-static' },
+          { label: (this.settings.javascript ? '✓ ' : '') + 'Выполнять JavaScript', cmd: 'toggle-js' },
+          { label: (this.settings.decorate ? '✓ ' : '') + 'Украшения 1998 года', cmd: 'toggle-deco' },
+          { label: (this.settings.websafe ? '✓ ' : '') + 'Палитра 216 цветов', cmd: 'toggle-colors' },
           { sep: true },
           { label: 'Исходный код страницы', cmd: 'viewsource' }
         ];
@@ -395,7 +413,7 @@ class AppNetscape {
       } else {
         this.setLoading(true, url);
         this.frame.removeAttribute('srcdoc');
-        this.frame.src = this.gatewayUrl(url);
+        this.frame.src = this.gatewayUrl(url, options.reload);
       }
     }
 
@@ -516,8 +534,8 @@ class AppNetscape {
     if (lock) lock.textContent = secure ? '🔒' : '🔓';
 
     doc.addEventListener('mouseover', (e) => {
-      const a = e.target.closest && e.target.closest('a[title]');
-      if (a) this.statusText.textContent = a.getAttribute('title');
+      const a = e.target.closest && e.target.closest('a[href]');
+      if (a) this.statusText.textContent = this.targetOfLink(a);
     });
     doc.addEventListener('mouseout', () => {
       if (!this.isLoading) this.statusText.textContent = 'Готово';
@@ -532,7 +550,7 @@ class AppNetscape {
     doc.addEventListener('click', (e) => {
       const a = e.target.closest && e.target.closest('a[href^="/netscape/"]');
       if (!a || e.defaultPrevented) return;
-      const targetUrl = a.getAttribute('title') || '';
+      const targetUrl = this.targetOfLink(a);
       if (/pennygachi\.men\/web98\/?(?:index\.html)?(?:#download|win98\.zip)/i.test(targetUrl)) {
         e.preventDefault();
         this.notifyClippy(targetUrl, this.currentTitle);
@@ -560,9 +578,41 @@ class AppNetscape {
     }
   }
 
-  gatewayUrl(url) {
-    const mode = this.renderMode === 'auto' ? '' : '&mode=' + this.renderMode;
-    return '/netscape/page?url=' + encodeURIComponent(url) + mode;
+  gatewayUrl(url, reload) {
+    let query = '/netscape/page?url=' + encodeURIComponent(url);
+    if (!this.settings.javascript) query += '&mode=static';
+    if (!this.settings.decorate) query += '&deco=0';
+    if (!this.settings.websafe) query += '&colors=full';
+    if (reload) query += '&reload=1';
+    return query;
+  }
+
+  targetOfLink(a) {
+    const href = a.getAttribute('href') || '';
+    if (href.startsWith('/netscape/page?')) {
+      try {
+        return new URLSearchParams(href.slice(href.indexOf('?') + 1)).get('url') || '';
+      } catch (e) {
+        return '';
+      }
+    }
+    if (href.startsWith('#')) return this.currentUrl.split('#')[0] + href;
+    return href;
+  }
+
+  viewSource() {
+    if (this.currentUrl.startsWith('about:')) return;
+    const name = (this.hostOf(this.currentUrl) || 'page').replace(/[^\w.-]+/g, '_') + '.htm';
+    this.statusText.textContent = 'Получение исходного кода...';
+    fetch(this.gatewayUrl(this.currentUrl))
+      .then((r) => r.text())
+      .then((html) => {
+        if (this.statusText) this.statusText.textContent = 'Готово';
+        if (window.appNotepad && typeof window.appNotepad.open === 'function') window.appNotepad.open(name, html);
+      })
+      .catch(() => {
+        if (this.statusText) this.statusText.textContent = 'Не удалось получить исходный код';
+      });
   }
 
   setLoading(loading, url) {
@@ -586,7 +636,8 @@ class AppNetscape {
         this.statusText.textContent =
           sec < 1.5 ? 'Соединение с ' + host + '...'
           : sec < 4 ? 'Получение данных с ' + host + '...'
-          : 'Выполнение JavaScript и перевод в HTML 3.2... (' + Math.floor(sec) + ' с)';
+          : sec < 8 ? 'Отрисовка страницы движком Gecko... (' + Math.floor(sec) + ' с)'
+          : 'Перевод в HTML 3.2 и палитру 216 цветов... (' + Math.floor(sec) + ' с)';
       }
     };
     tick();
@@ -629,8 +680,9 @@ class AppNetscape {
       icon: 'netscape',
       message:
         '<b>Netscape 6.2.1</b><br>Gecko/20011128<br><br>' +
-        'Web 1.0 Rendering Gateway включён: любой современный сайт ' +
-        'отображается так, как выглядел бы веб в 1998 году.<br><br>' +
+        'Web 1.0 Rendering Gateway включён: движок Gecko отрисовывает ' +
+        'современный сайт, а шлюз пересобирает его на таблицах HTML 3.2, ' +
+        'тегах &lt;font&gt; и палитре из 216 цветов.<br><br>' +
         '&copy; 1994&ndash;2001 Netscape Communications Corp.'
     });
   }

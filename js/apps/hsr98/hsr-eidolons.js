@@ -112,11 +112,23 @@
     g.putImageData(img, 0, 0);
   }
 
+  const outfitScenes = {};
+  function sceneOf(key) {
+    if (SCENES[key]) return SCENES[key];
+    const o = H.OUTFITS && H.OUTFITS[key], cut = o && H.outfitCutOf ? H.outfitCutOf(key, 'eidolon') : null;
+    if (!cut || !SCENES[o.char]) return null;
+    return outfitScenes[key] || (outfitScenes[key] = Object.assign({}, SCENES[o.char], cut));
+  }
+  function keyOf(k, game, outfit) {
+    const oid = outfit !== undefined ? outfit : H.wornOutfit ? H.wornOutfit(k, game) : null;
+    return oid && H.OUTFITS[oid].char === k && sceneOf(oid) ? oid : k;
+  }
+
   const pics = new Map();
   function pic(key) {
     let p = pics.get(key);
     if (p) return p;
-    const sc = SCENES[key];
+    const sc = sceneOf(key);
     const paintOf = live => { const cv = G.mkCanvas(LW, LH), g = cv.getContext('2d'); g.imageSmoothingEnabled = false; sc.paint(g, stageX(g, 0), live); return cv; };
     const raw = paintOf(false);
     const colorD = copyOf(raw);
@@ -132,7 +144,7 @@
 
   const bufs = { a: null, b: null };
   function liveFrame(key, t, decorK, lifeK) {
-    const sc = SCENES[key], p = pic(key);
+    const sc = sceneOf(key), p = pic(key);
     const a = bufs.a || (bufs.a = G.mkCanvas(LW, LH)), ga = a.getContext('2d');
     const paint = (g, decor, life) => {
       g.save();
@@ -229,8 +241,8 @@
     c.lineWidth = 1; c.strokeStyle = 'rgba(201,164,92,0.75)'; trace(c, pts, 0.5, 0.5); c.stroke();
   }
 
-  function backdrop(ui, c, key, eid, o = {}) {
-    const t = ui.t, asm = o.asm || null, V = view(key, eid, asm), p = pic(key);
+  function backdrop(ui, c, k, eid, o = {}) {
+    const key = keyOf(k, ui.game, o.outfit), t = ui.t, asm = o.asm || null, V = view(key, eid, asm), p = pic(key);
     const was = c.imageSmoothingEnabled;
     c.imageSmoothingEnabled = false;
     if (V.colorK <= 0) c.drawImage(p.grayD, 0, 0, W, HGT);
@@ -252,7 +264,7 @@
     c.imageSmoothingEnabled = was;
     const seamA = 1 - V.lifeK;
     if (seamA > 0) { c.save(); c.globalAlpha = seamA * (V.colorK > 0 ? 0.8 : 0.65); c.drawImage(seams(), 0, 0); c.restore(); }
-    if (V.lifeK > 0 && SCENES[key] && SCENES[key].seams === 'gold') { c.save(); c.globalAlpha = V.lifeK; c.drawImage(goldSeams(), 0, 0); c.restore(); }
+    if (V.lifeK > 0 && sceneOf(key) && sceneOf(key).seams === 'gold') { c.save(); c.globalAlpha = V.lifeK; c.drawImage(goldSeams(), 0, 0); c.restore(); }
     if (V.lifeK > 0 && V.lifeK < 1) {
       c.save(); c.globalCompositeOperation = 'lighter';
       const x = lerp(-200, W + 200, V.lifeK), gr = c.createLinearGradient(x - 160, 0, x + 160, 0);
@@ -485,13 +497,13 @@
     if (fn && k > 0) { c.save(); fn(c, t, x, y, k); c.restore(); }
   }
 
-  function scene(ui, c, k, eid, asm) {
-    const g = ui.game, look = G.lookOf(g.kitOf(k), g);
-    const V = backdrop(ui, c, k, eid, { asm, view: true });
+  function scene(ui, c, k, eid, asm, outfit) {
+    const g = ui.game, forced = outfit !== undefined, look = forced && outfit ? H.outfitLook(outfit, g.state.gender) : G.lookOf(g.kitOf(k), forced ? null : g);
+    const V = backdrop(ui, c, k, eid, { asm, view: true, outfit });
     const gr = c.createRadialGradient(306, 444, 4, 306, 444, 70);
     gr.addColorStop(0, 'rgba(0,0,0,0.45)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
     c.save(); c.translate(306, 444); c.scale(1, 0.22); c.translate(-306, -444); c.fillStyle = gr; c.fillRect(226, 374, 160, 140); c.restore();
-    if (V.lifeK > 0) aura(c, SCENES[k].aura, 306, 444, ui.t, V.lifeK);
+    if (V.lifeK > 0) aura(c, sceneOf(keyOf(k, g, outfit)).aura, 306, 444, ui.t, V.lifeK);
     figure(c, look, 306, 444, 3, ui.t, V.lifeK, k);
     return V;
   }
@@ -522,7 +534,7 @@
         full: true, k: start, asm: null, asmK: null,
         tick(dt) { tickAsm(this, dt, ui, g); },
         draw(c) {
-          const k = this.k, r = g.state.roster[k], kit = H.CHARS[g.kitOf(k)], sc = SCENES[k];
+          const k = this.k, r = g.state.roster[k], kit = H.CHARS[g.kitOf(k)], sc = sceneOf(keyOf(k, g));
           syncAsm(this, g, k);
           const V = scene(ui, c, k, r.eid, this.asm);
           const name = k === 'trail' ? g.state.name : kit.name, cap = name + ' · ' + sc.title;
@@ -547,6 +559,6 @@
     }
   });
 
-  H.Eidolons = { SCENES, SLOTS, STAGE, NUM, CW, CH, COLS, ROWS, SC, has: k => !!SCENES[k], nodes, slotRect, outline, slotPts, backdrop, scene, shade, figure, aura, view, pic, Assembly, syncAsm, tickAsm, skipAsm, stageName, stageGift, AURA };
+  H.Eidolons = { SCENES, sceneOf, keyOf, SLOTS, STAGE, NUM, CW, CH, COLS, ROWS, SC, has: k => !!SCENES[k], nodes, slotRect, outline, slotPts, backdrop, scene, shade, figure, aura, view, pic, Assembly, syncAsm, tickAsm, skipAsm, stageName, stageGift, AURA };
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

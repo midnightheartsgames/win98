@@ -38,7 +38,7 @@ window.interpediaReg('www', 'internet', {
 
 Русским сайтам пришлось решать проблему кодировок: одна и та же страница должна читаться в KOI8-R, CP1251 и других кодировках, поэтому многие сайты предлагают выбор версий или перекодируют страницы на сервере. По разным оценкам, в 1999 году в России Интернетом пользуются от одного до двух миллионов человек, в основном через [[dialup|модем]].` }
   ],
-  seeAlso: ['http', 'html', 'netscape', 'ie5', 'interpedia'],
+  seeAlso: ['http', 'html', 'netscape', 'ie5', 'interpedia', 'svodka', 'pereplet', 'outlook', 'dancingbaby'],
   references: [
     'Berners-Lee T. Information Management: A Proposal. — CERN, 1989.',
     'Berners-Lee T., Fischetti M. Weaving the Web. — HarperSanFrancisco, 1999.',
@@ -86,7 +86,7 @@ On August 6, 1991, he described the project in the [[usenet|Usenet]] group alt.h
 
 Russian sites had to solve the encoding problem: the same page must be readable in KOI8-R, CP1251 and other encodings, so many sites offer a choice of versions or convert pages on the server. Estimates of Russian Internet users in 1999 range from one to two million, mostly over [[dialup|modems]].` }
   ],
-  seeAlso: ['http', 'html', 'netscape', 'ie5', 'interpedia'],
+  seeAlso: ['http', 'html', 'netscape', 'ie5', 'interpedia', 'svodka', 'pereplet', 'outlook', 'dancingbaby'],
   references: [
     'Berners-Lee, T. Information Management: A Proposal. CERN, 1989.',
     'Berners-Lee, T., Fischetti, M. Weaving the Web. HarperSanFrancisco, 1999.',
@@ -910,7 +910,7 @@ window.interpediaReg('geocities', 'internet', {
 Этот эпизод показал, насколько хрупко творчество миллионов людей, когда оно хранится на чужом сервере: страница существует, пока компания-владелец считает это выгодным.` },
     { id: 'rivals', title: 'Конкуренты', content: `Среди соперников GeoCities — Tripod, Angelfire и Xoom.com, предлагающие похожие бесплатные страницы с рекламой. В Рунете бесплатные домашние страницы размещают на серверах вроде chat.ru, а в адресах русских страниц часто встречается тильда — <code>/~имя</code> — признак страницы на сервере университета или провайдера.` }
   ],
-  seeAlso: ['webring', 'yahoo', 'html', 'www', 'digicharat'],
+  seeAlso: ['webring', 'yahoo', 'html', 'www', 'digicharat', 'pereplet'],
   references: [
     'GeoCities: Terms of Service and Neighborhood Directory. — 1998–1999.',
     'Пресс-релиз Yahoo! о покупке GeoCities. — 28 января 1999.',
@@ -974,7 +974,7 @@ Fan pages, for example about [[digicharat|Di Gi Charat]] or The X-Files, are the
 The episode showed how fragile the work of millions of people is when it lives on someone else's server: a page exists only as long as the owning company finds it worthwhile.` },
     { id: 'rivals', title: 'Competitors', content: `GeoCities' rivals include Tripod, Angelfire and Xoom.com, which offer similar free pages with ads. In the Runet free home pages live on servers such as chat.ru, and Russian addresses often contain a tilde, <code>/~name</code>, the sign of a page on a university or provider server.` }
   ],
-  seeAlso: ['webring', 'yahoo', 'html', 'www', 'digicharat'],
+  seeAlso: ['webring', 'yahoo', 'html', 'www', 'digicharat', 'pereplet'],
   references: [
     'GeoCities: Terms of Service and Neighborhood Directory, 1998–1999.',
     'Yahoo! press release on acquiring GeoCities, January 28, 1999.',
@@ -1248,7 +1248,7 @@ window.interpediaReg('webring', 'internet', {
 Для многих небольших сайтов кольцо — единственный способ быть найденными: поисковики не всегда индексируют их страницы, а каталоги вроде Yahoo! включают далеко не каждого.` },
     { id: 'problems', title: 'Проблемы', content: `Кольца зависят от добросовестности участников: панель навигации может «потеряться» при переделке страницы, а заброшенные сайты месяцами висят в списках. Центральный сервер колец иногда не справляется с нагрузкой, и навигация перестаёт работать. Хозяева больших колец тратят много времени на проверку заявок и удаление «мёртвых» участников.` }
   ],
-  seeAlso: ['geocities', 'yahoo', 'html', 'www', 'interpedia'],
+  seeAlso: ['geocities', 'yahoo', 'html', 'www', 'interpedia', 'pereplet'],
   references: [
     'WebRing: How It Works. — WebRing, 1998.',
     'Weil S. WebRing CGI Documentation. — 1995.',
@@ -1292,7 +1292,7 @@ A typical bar looks like this:
 For many small sites a ring is the only way to be found: search engines do not always index their pages, and directories like Yahoo! do not list everyone.` },
     { id: 'problems', title: 'Problems', content: `Rings depend on members' good faith: the navigation bar can get "lost" when a page is redesigned, and abandoned sites sit in the lists for months. The central ring server sometimes buckles under load, and navigation stops working. Masters of big rings spend a lot of time checking applications and removing "dead" members.` }
   ],
-  seeAlso: ['geocities', 'yahoo', 'html', 'www', 'interpedia'],
+  seeAlso: ['geocities', 'yahoo', 'html', 'www', 'interpedia', 'pereplet'],
   references: [
     'WebRing: How It Works. WebRing, 1998.',
     'Weil, S. WebRing CGI Documentation, 1995.',
@@ -1462,7 +1462,7 @@ IRC прославился репортажами с места событий: 
 
 Тёмная сторона IRC — «войны за каналы», флуд, атаки на компьютеры пользователей и распространение нелегальных копий программ.` }
   ],
-  seeAlso: ['mirc', 'icq', 'usenet', 'bbs', 'dialup'],
+  seeAlso: ['mirc', 'icq', 'usenet', 'bbs', 'dialup', 'ashroad'],
   references: [
     'Oikarinen J., Reed D. RFC 1459: Internet Relay Chat Protocol. — 1993.',
     'Журналы каналов IRC о событиях 1991 и 1993 годов. — Архив metalab.unc.edu.',
@@ -1516,7 +1516,7 @@ Channel operators are marked with @ before their nick. Order is often kept by bo
 
 IRC's dark side includes channel wars, flooding, attacks on users' computers and the spread of illegal software copies.` }
   ],
-  seeAlso: ['mirc', 'icq', 'usenet', 'bbs', 'dialup'],
+  seeAlso: ['mirc', 'icq', 'usenet', 'bbs', 'dialup', 'ashroad'],
   references: [
     'Oikarinen, J., Reed, D. RFC 1459: Internet Relay Chat Protocol, 1993.',
     'IRC channel logs of the 1991 and 1993 events. metalab.unc.edu archive.',
@@ -1573,7 +1573,7 @@ window.interpediaReg('fidonet', 'internet', {
 Русский Фидонет создал собственный язык и обычаи: «сисоп», «нода», «пойнт», «эха», «мыло» (электронная почта), приветствие «Hello, All!», строка «* Origin:» с девизом узла в конце каждого сообщения, модераторы эхоконференций и войны за правила. Эхоконференции SU.* и RU.* охватывают всё: от железа и программирования до анекдотов и знакомств. Многие известные российские программисты и журналисты начинали в Фидо.` },
     { id: 'internet', title: 'Фидонет и Интернет', content: `С распространением Интернета Фидонет связан с ним шлюзами: эхоконференции доступны в [[usenet|Usenet]] в иерархии fido7.*, а сообщения можно читать через веб-шлюзы. Старожилы спорят, переживёт ли Фидо приход Интернета; пока, в 1999 году, российский Фидонет остаётся одной из крупнейших его частей, а многие пользователи читают эхи и через Интернет.` }
   ],
-  seeAlso: ['bbs', 'usenet', 'modem56k', 'dialup', 'os2'],
+  seeAlso: ['bbs', 'usenet', 'modem56k', 'dialup', 'os2', 'xakep'],
   references: [
     'Jennings T. FidoNet History and Operation. — 1985.',
     'FidoNet Policy Document, version 4. — 1989.',
@@ -1628,7 +1628,7 @@ A node is a sysop's computer that answers calls around the clock or at night. A 
 Russian Fido created its own language and customs: "sysop", "noda", "point", "ekha" (echo), "mylo" (email), the greeting "Hello, All!", the "* Origin:" line with the node's motto at the end of every message, echo moderators and wars over the rules. The SU.* and RU.* echoes cover everything from hardware and programming to jokes and dating. Many well-known Russian programmers and journalists started out in Fido.` },
     { id: 'internet', title: 'FidoNet and the Internet', content: `As the Internet spreads, FidoNet links to it through gateways: echoes are available in [[usenet|Usenet]] under fido7.*, and messages can be read through web gateways. Old-timers argue over whether Fido will survive the Internet; for now, in 1999, Russian FidoNet remains one of its largest parts, and many users read the echoes over the Internet too.` }
   ],
-  seeAlso: ['bbs', 'usenet', 'modem56k', 'dialup', 'os2'],
+  seeAlso: ['bbs', 'usenet', 'modem56k', 'dialup', 'os2', 'xakep'],
   references: [
     'Jennings, T. FidoNet History and Operation, 1985.',
     'FidoNet Policy Document, version 4, 1989.',
@@ -1889,7 +1889,7 @@ window.interpediaReg('runet', 'internet', {
 
 Если браузер открывает страницу KOI8-R в режиме CP1251, вместо русского текста на экране появляется нечитаемая россыпь прописных и строчных букв («абракадабра» или «кракозябры»). Поэтому в шапке большинства российских сайтов 1999 года висят переключатели <code>KOI | WIN | DOS | MAC | Translit</code>, которые отдают одну и ту же страницу с разных портов сервера.` }
   ],
-  seeAlso: ['www', 'fidonet', 'usenet', 'dialup', 'apache', 'interpedia'],
+  seeAlso: ['www', 'fidonet', 'usenet', 'dialup', 'apache', 'interpedia', 'svodka', 'pereplet', 'emuland', 'worldcup98'],
   references: [
     'Чернов А. В. RFC 1489: Registration of a Cyrillic Character Set (KOI8-R). — Июль 1993.',
     'Соглашение «О порядке администрирования зоны .RU». — Декабрь 1993.',
@@ -1938,7 +1938,7 @@ In October 1996 programmer Dmitry Kryukov in the science town of Pushchino launc
 
 When a browser opens a KOI8-R page while set to CP1251, Russian words turn into unreadable strings of mixed-case letters ("krakozyabry"). To spare readers, almost every Russian website in 1999 places a row of <code>KOI | WIN | DOS | MAC | Translit</code> links at the top of the page, serving the same document from different server ports.` }
   ],
-  seeAlso: ['www', 'fidonet', 'usenet', 'dialup', 'apache', 'interpedia'],
+  seeAlso: ['www', 'fidonet', 'usenet', 'dialup', 'apache', 'interpedia', 'svodka', 'pereplet', 'emuland', 'worldcup98'],
   references: [
     'Chernov, A. RFC 1489: Registration of a Cyrillic Character Set (KOI8-R), July 1993.',
     'Agreement on the Administration of the .RU Domain Zone, December 1993.',

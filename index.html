@@ -32,6 +32,7 @@
   <link rel="stylesheet" href="css/apps/pinball.css">
   <link rel="stylesheet" href="css/apps/clippy.css">
   <link rel="stylesheet" href="css/apps/defrag.css">
+  <link rel="stylesheet" href="css/apps/backup.css">
   <link rel="stylesheet" href="css/apps/sound-recorder.css">
   <link rel="stylesheet" href="css/apps/task-manager.css">
   <link rel="stylesheet" href="css/apps/regedit.css">
@@ -40,6 +41,7 @@
   <link rel="stylesheet" href="css/apps/screensaver.css">
   <link rel="stylesheet" href="css/apps/cpanel-applets.css">
   <link rel="stylesheet" href="css/apps/taskbar-props.css">
+  <link rel="stylesheet" href="css/apps/file-properties.css">
   <link rel="stylesheet" href="css/apps/sys-tools.css">
   <link rel="stylesheet" href="css/apps/igroman.css">
   <link rel="stylesheet" href="css/apps/office-launcher.css">
@@ -252,6 +254,7 @@
   <script src="js/apps/file-dialog.js"></script>
   <script src="js/apps/find.js"></script>
   <script src="js/apps/explorer.js"></script>
+  <script src="js/apps/file-properties.js"></script>
   <script src="js/apps/notepad.js"></script>
   <script src="js/apps/paint.js"></script>
   <script src="js/apps/calculator.js"></script>
@@ -310,6 +313,9 @@
   <script src="js/apps/clippy-talk.js"></script>
   <script src="js/apps/clippy.js"></script>
   <script src="js/apps/defrag.js"></script>
+  <script src="js/apps/backup-catalog.js"></script>
+  <script src="js/apps/backup-store.js"></script>
+  <script src="js/apps/backup.js"></script>
   <script src="js/apps/sound-recorder.js"></script>
   <script src="js/apps/task-manager.js"></script>
   <script src="js/apps/regedit.js"></script>
@@ -506,6 +512,9 @@
   <script src="js/apps/interpedia/internet.js"></script>
   <script src="js/apps/interpedia/culture.js"></script>
   <script src="js/apps/interpedia/project.js"></script>
+  <script src="js/apps/interpedia/project-media.js"></script>
+  <script src="js/apps/interpedia/project-games.js"></script>
+  <script src="js/apps/interpedia/project-extra.js"></script>
   <script src="js/apps/interpedia-site.js"></script>
 
   <script src="js/apps/blender/math.js"></script>
@@ -734,9 +743,24 @@
   <script src="js/apps/hsr98/hsr-guide-data.js"></script>
   <script src="js/apps/hsr98/hsr-guide.js"></script>
   <script src="js/apps/hsr98/hsr-domain.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-data.js"></script>
+  <script src="js/apps/hsr98/hsr-cw.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-battle.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-bonds.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-items.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-kits.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-special.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-strats.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-affixes.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-envs.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-foes.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-meta.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-perks.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-goals.js"></script>
   <script src="js/apps/hsr98/hsr-gfx.js"></script>
   <script src="js/apps/hsr98/hsr-art.js"></script>
   <script src="js/apps/hsr98/hsr-icons.js"></script>
+  <script src="js/apps/hsr98/hsr-cw-art.js"></script>
   <script src="js/apps/hsr98/hsr-relic-art.js"></script>
   <script src="js/apps/hsr98/hsr-cone-pix.js"></script>
   <script src="js/apps/hsr98/hsr-cones.js"></script>
@@ -803,6 +827,17 @@
   <script src="js/apps/hsr98/hsr-ui-synth.js"></script>
   <script src="js/apps/hsr98/hsr-ui-guide.js"></script>
   <script src="js/apps/hsr98/hsr-ui-domain.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-cw.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-cw-board.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-cw-battle.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-cw-special.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-cw-strats.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-cw-envs.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-cw-foes.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-cw-meta.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-cw-perks.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-cw-goals.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-cw-debug.js"></script>
   <script src="js/apps/hsr98-app.js"></script>
   <script src="js/apps/kotor98/kt-core.js"></script>
   <script src="js/apps/kotor98/kt-data.js"></script>

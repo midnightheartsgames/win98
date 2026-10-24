@@ -285,10 +285,10 @@
       if (code === 'Escape') { this.openMainMenu(); return; }
       if (code === 'Pause' || code === 'KeyP') { this.paused = !this.paused; if (this.paused) this.unlock(); this.updateHint(); return; }
       if (this.paused) { this.paused = false; return; }
-      const fkeys = { F1: () => this.openMenu(this.readThisMenu()), F2: () => this.openMenu(this.slotMenu(true)), F3: () => this.openMenu(this.slotMenu(false)), F4: () => this.openMenu(this.soundMenu()), F5: () => this.openMenu(this.viewMenu()), F6: () => this.openMenu(this.controlMenu()), F7: () => this.openMenu(this.confirmMenu(this.t('confirmEnd'), () => this.endGame())), F10: () => this.openMenu(this.quitMenu()) };
+      const fkeys = { F1: () => this.openMenu(this.readThisMenu()), F2: () => this.openMenu(this.slotMenu(true)), F3: () => this.openMenu(this.slotMenu(false)), F4: () => this.openMenu(this.soundMenu()), F5: () => this.openMenu(this.viewMenu()), F6: () => this.openMenu(this.controlMenu()), F7: () => this.openMenu(this.confirmMenu(this.t('confirmEnd'), () => this.endGame())), F8: () => this.openMenu(this.debugMenu()), F10: () => this.openMenu(this.quitMenu()) };
+      if (code === 'F8' && g.mode !== 'play') return;
       if (fkeys[code]) { this.unlock(); this.menuStack = []; this.screen = 'menu'; fkeys[code](); return; }
-      if (code === 'F8') { this.quickSave(); return; }
-      if (code === 'F9') { this.quickLoad(); return; }
+      if (code === 'F9') { if (e.shiftKey) this.quickSave(); else this.quickLoad(); return; }
       const k = this.options.keys;
       ['w1', 'w2', 'w3', 'w4'].forEach((a, i) => { if (k[a].includes(code)) this.weaponQueue = i; });
       if (code === 'Backspace' && this.held.has('ShiftLeft') && this.held.has('AltLeft')) { this.debug = !this.debug; this.showMsg(this.t(this.debug ? 'debugOn' : 'debugOff')); return; }
@@ -539,6 +539,22 @@
       return { id: save ? 'save' : 'load', title: this.t(save ? 'saveGame' : 'loadGame'), items, custom: 'slots', save };
     }
 
+    debugMenu() {
+      const g = () => this.game;
+      const state = on => on ? this.t('on') : this.t('off');
+      const toggle = (key, label, onEnable) => ({ label, value: () => state(g()[key]), act: () => { g()[key] = !g()[key]; if (g()[key] && onEnable) onEnable(); } });
+      const items = [
+        { label: this.t('dbgHealth'), value: () => String(g().health), act: () => g().debugHealth() },
+        { label: this.t('dbgWeapons'), value: () => `${g().weapons.filter(Boolean).length}/${g().weapons.length}`, act: () => g().debugWeapons() },
+        { label: this.t('dbgAmmo'), value: () => String(g().ammo), act: () => g().debugAmmo() },
+        toggle('fastRun', this.t('dbgFastRun')),
+        toggle('god', this.t('dbgGod')),
+        toggle('infiniteAmmo', this.t('dbgInfAmmo'), () => g().debugAmmo()),
+        { label: this.t('dbgClose'), act: () => this.closeMenus() }
+      ];
+      return { id: 'debug', title: this.t('debugMenu'), items, x: 40, y: 40, w: 240 };
+    }
+
     viewMenu() { return { id: 'view', title: this.t('changeView'), custom: 'view', items: [] }; }
     readThisMenu() { return { id: 'read', title: this.t('readThis'), custom: 'read', page: 0, items: [] }; }
     quitMenu() {
@@ -561,6 +577,7 @@
         return;
       }
       if (this.typing) { this.typeKey(e); return; }
+      if (code === 'F8' && m.id === 'debug') { this.closeMenus(); return; }
       if (m.custom === 'confirm') {
         if (code === 'KeyY' || code === 'Enter') { this.audio.play('m_select'); const y = m.yes; this.menu = this.menuStack.pop() || null; y(); }
         else if (code === 'KeyN' || code === 'Escape') this.backMenu();

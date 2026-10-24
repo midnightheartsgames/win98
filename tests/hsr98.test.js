@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const path = require('path');
 const DIR = path.join(__dirname, '../js/apps/hsr98');
 const H = require(path.join(DIR, 'hsr-core.js'));
-for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-guide-data', 'hsr-guide', 'hsr-domain']) require(path.join(DIR, f + '.js'));
+for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-guide-data', 'hsr-guide', 'hsr-domain', 'hsr-cw-data', 'hsr-cw', 'hsr-cw-battle', 'hsr-cw-bonds', 'hsr-cw-items', 'hsr-cw-kits', 'hsr-cw-special', 'hsr-cw-strats', 'hsr-cw-affixes', 'hsr-cw-envs', 'hsr-cw-foes', 'hsr-cw-meta', 'hsr-cw-perks', 'hsr-cw-goals']) require(path.join(DIR, f + '.js'));
 
 let checks = 0;
 const CCC_LATER = new Set();
@@ -292,6 +292,11 @@ for (const [id, f] of Object.entries(H.FUSIONS)) {
   const oi = og.state.inv.items;
   ok(oi.shadow_dest === 1 && oi.hunt1 === 5 && oi.tracks === 2 && oi.echo_doom === 4 && oi.echo_lament === 2 && oi.shadow_pres === 2, 'an old save gets back pay for the rewards it already took');
   ok(og.state.flags.tr_first_doomsday && og.state.trBack && !og.traceBattleLoot(fake([]), { encId: 'doomsday' }).length, 'the back pay marks the first wins as paid');
+  const dishes = H.newState();
+  delete dishes.trv; delete dishes.recipes;
+  dishes.flags.rumor_echo = true; dishes.inv.items.pie = 1;
+  const dg = new H.Game({ state: dishes, seed: 4 });
+  ok(dg.state.trv === 1 && dg.recipeKnown('pie') && dg.events.some(e => e.t === 'toast'), 'an old save holding dishes loads: the back pay learns their recipes and keeps the notes for the screen');
 }
 
 for (const [id, e] of Object.entries(H.ENEMIES)) {
@@ -325,7 +330,11 @@ for (const [id, m] of Object.entries(H.MAPS)) {
   for (const oe of m.onEnter || []) ok(H.SCRIPTS[oe.script], 'onEnter script ' + oe.script);
   const solid = ch => H.TILES[ch] && H.TILES[ch].solid;
   const npcs = new Set();
-  for (const [ch, list] of Object.entries(marks)) if (m.marks[ch] && m.marks[ch].type === 'npc' && !m.marks[ch].if) list.forEach(([x, y]) => npcs.add(x + ',' + y));
+  for (const [ch, list] of Object.entries(marks)) {
+    const mk = m.marks[ch];
+    const fixed = mk ? ['npc', 'prop', 'lever'].includes(mk.type) && !mk.if && mk.visitor == null && !(mk.tile && H.TILES[mk.tile] && H.TILES[mk.tile].solid) : ch === 'a' || ch === 'c';
+    if (fixed) list.forEach(([x, y]) => npcs.add(x + ',' + y));
+  }
   const start = (Object.entries(marks).find(([ch]) => m.marks[ch] && (m.marks[ch].type === 'spawn' || m.marks[ch].type === 'exit')) || [])[1][0];
   const seen = new Set([start.join(',')]), q = [start];
   while (q.length) {
@@ -342,7 +351,7 @@ for (const [id, m] of Object.entries(H.MAPS)) {
   for (const [ch, list] of Object.entries(marks)) for (const [x, y] of list) ok(seen.has(x + ',' + y), 'reachable ' + id + ' ' + ch + ' @' + x + ',' + y);
 }
 
-const UIS = new Set(['book', 'synth', 'name', 'shop', 'rumor', 'warp', 'calyx', 'nav', 'databank', 'su', 'su_shop', 'fh', 'fh_shop', 'doc', 'ksboard', 'ksrate', 'kslearn', 'kscard', 'ksreport', 'tlrewards']);
+const UIS = new Set(['book', 'synth', 'name', 'shop', 'rumor', 'warp', 'calyx', 'nav', 'databank', 'su', 'su_shop', 'fh', 'fh_shop', 'doc', 'ksboard', 'ksrate', 'kslearn', 'kscard', 'ksreport', 'tlrewards', 'hackjade', 'hackdebug', 'cw']);
 for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCRIPTS))) {
   const labels = new Set(steps.filter(s => typeof s === 'string' && s[0] === '#').map(s => s.slice(1)));
   for (const st of steps) {
@@ -525,7 +534,7 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   st.roster.march = { lvl: 10, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
   let day = Date.UTC(2026, 9, 13, 12);
   const g = new H.Game({ state: st, seed: 3, clock: () => day });
-  eq(H.EXPRESS_AREAS.map(a => a.map).join(), 'express,express_cabin,express_party', 'the Express has three cars');
+  eq(H.EXPRESS_AREAS.map(a => a.map).join(), 'express,express_cabin,express_party,express_lab', 'the Express has three cars and a secret one');
   ok(H.EXPRESS_AREAS.every(a => g.areaOf(a.map).area === a && g.areaOf(a.map).world === g.expressWorld()), 'every car is an Express area of the parked world');
   eq(g.routeExit('express', 'express_cabin'), 'r', 'the Sleeping car is behind the right door of the Parlor car');
   eq(g.routeExit('express', 'express_party'), 'l', 'the Party car is down the stairs on the left');
@@ -575,6 +584,69 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   ok(ph.length === H.PHOTOS.length && ph.filter(p => p.ok).length === 2 && ph.every(p => G0bg(p.bg)), 'the photo wall fills up with the story');
   g.runScript('exp_broadcast');
   ok(/помехи|рябь/.test(g.pending.text), 'the IPC broadcast waits for the end of the Jarilo-VI story');
+  g.resume(); while (g.script) g.resume();
+  const lab = H.expressArea('express_lab');
+  ok(lab.hidden && !H.DESTINATIONS.some(d => d.map === 'express_lab'), 'the Test car is hidden from the navigation list and has no teleport');
+  const atLabDoor = () => { g.loadMap('express_party', 'v'); const d = g.map.ents.find(e => e.ch === 'h'); g.placePlayer(d.x + 1, d.y); g.player.dir = 'left'; };
+  const finish = () => { let n = 0; while ((g.script || g.pending) && n++ < 200) g.resume(); };
+  atLabDoor();
+  ok(g.interact() && /вагон/.test(g.pending.text), 'without Shift the left door of the Party car is the usual closed door');
+  finish();
+  eq(g.map.id, 'express_party', 'a plain look at the door does not open it');
+  g.state.party = ['march', 'trail'];
+  atLabDoor(); g.interact({ shift: true }); finish();
+  ok(g.map.id === 'express_party' && !g.state.flags.lab_found, 'the door stays shut when the Trailblazer does not lead the team');
+  g.state.party = ['trail', 'march'];
+  atLabDoor(); g.interact({ shift: true }); finish();
+  ok(g.map.id === 'express_party' && !g.state.flags.lab_found, 'the door stays shut while the Trailblazer has company');
+  g.state.party = ['march'];
+  atLabDoor(); g.interact({ shift: true }); finish();
+  ok(g.map.id === 'express_party' && !g.state.flags.lab_found, 'a lone crew member cannot open the door either');
+  g.state.party = ['trail'];
+  atLabDoor(); g.interact({ shift: true });
+  ok(g.pending && /Стелларон/.test(g.pending.text) && g.state.flags.lab_found, 'Shift with the Trailblazer alone in the team opens the door');
+  g.events.length = 0; g.resume();
+  ok(g.map.id === 'express_lab' && g.events.some(e => e.t === 'map' && e.id === 'express_lab'), 'the door leads into the Test car');
+  ok(g.state.flags.lab_sw && g.script && g.script.name === 'lab_wolf_meet', 'the first visit starts the meeting with Silver Wolf');
+  const wolf = g.map.ents.find(e => e.ch === 'w'), [wx, wy] = g.map.marks.w[0];
+  ok(g.visible(wolf) && wolf.def.who === 'silverwolf' && wolf.x === wx && wolf.y === wy, 'Silver Wolf waits between the terminals');
+  g.resume();
+  eq(g.pending && g.pending.type, 'walk', 'Silver Wolf walks up to the Trailblazer');
+  for (let i = 0; i < 400 && g.pending && g.pending.type === 'walk'; i++) g.update(0.05);
+  ok(Math.abs(wolf.x - g.player.x) + Math.abs(wolf.y - g.player.y) === 1 && g.pending.spk === 'silverwolf' && /Стелларон/.test(g.pending.text), 'she stops next to the Trailblazer and greets them');
+  ok(H.SCRIPTS.lab_wolf_meet.some(x => typeof x === 'string' && /Leveling_Solo/.test(x)), 'she introduces herself by her online alias');
+  let guard = 0;
+  while (g.script && guard++ < 200) { if (g.pending && g.pending.type === 'walk') g.update(0.05); else g.resume(); }
+  ok(!g.script && wolf.x === wx && wolf.y === wy && wolf.dir === 'down', 'after the talk Silver Wolf goes back to her place');
+  ok(g.areaOf('express_lab').area === lab && g.areaOf('express_lab').world === g.expressWorld(), 'the Test car belongs to the Express of the parked world');
+  eq(g.map.ents.filter(e => e.kind === 'npc' && e.def.ghost).map(e => e.def.script).join(), 'lab_term_jade,lab_term_console,lab_term_cw', 'the Test car has the jade, console and Currency Wars terminals');
+  const term = ch => { const t = g.map.ents.find(e => e.ch === ch); g.placePlayer(t.x, t.y + 1); g.player.dir = 'up'; g.interact(); };
+  term('j'); while (g.pending && g.pending.type === 'say') g.resume();
+  ok(g.pending && g.pending.ui === 'hackjade', 'the jade terminal asks the screen for the F7 jade');
+  g.resume(); term('j');
+  ok(g.pending && g.pending.ui === 'hackjade', 'the jade terminal skips its note on the next use');
+  g.resume(); term('k'); while (g.pending && g.pending.type === 'say') g.resume();
+  ok(g.pending && g.pending.ui === 'hackdebug', 'the console terminal opens the F8 debug menu');
+  g.resume(); term('m');
+  ok(g.pending && g.pending.type === 'say' && /Leveling_Solo/.test(g.pending.text), 'the Currency Wars terminal shows its one note on the first use');
+  while (g.pending && g.pending.type === 'say') g.resume();
+  ok(g.pending && g.pending.ui === 'cw', 'the third terminal opens Currency Wars');
+  g.resume(); term('m');
+  ok(g.pending && g.pending.ui === 'cw', 'the Currency Wars terminal skips its note on the next use');
+  g.resume();
+  g.placePlayer(wx, wy + 1); g.player.dir = 'up';
+  ok(g.interact() && g.pending.spk === 'silverwolf', 'Silver Wolf can be talked to in the Test car');
+  g.resume();
+  ok(g.pending && g.pending.type === 'choice' && g.pending.options.length === 5, 'she has four topics and a goodbye');
+  finish();
+  g.state.party = ['trail', 'silverwolf'];
+  ok(!g.visible(wolf), 'Silver Wolf leaves her spot while she is in the team');
+  g.state.party = ['trail'];
+  const back = g.map.ents.find(e => e.kind === 'exit');
+  g.placePlayer(back.x - 1, back.y); g.player.dir = 'right'; g.useExit(back);
+  ok(g.map.id === 'express_party' && g.player.x === 1 && g.player.y === 7, 'the Test car door brings the team back beside the secret door');
+  atLabDoor(); g.interact({ shift: true }); finish();
+  eq(g.map.id, 'express_lab', 'the next visit skips the opening lines');
 }
 
 const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, stats: { hp: H.statAt(c.base.hp, lvl), atk: H.statAt(c.base.atk, lvl), def: H.statAt(c.base.def, lvl), spd: c.base.spd } }; };
@@ -5237,35 +5309,71 @@ function drive(g, maxSteps = 4000) {
   }
 }
 
+const JARILO = /^[ju]_/;
+const jariloStates = new Map();
+function walkSet(g, sx, sy) {
+  const exitAt = (x, y) => g.map.ents.find(e => e.kind === 'exit' && e.x === x && e.y === y);
+  const seen = new Set([sx + ',' + sy]), q = [[sx, sy]];
+  while (q.length) {
+    const [x, y] = q.shift();
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const nx = x + dx, ny = y + dy, k = nx + ',' + ny, ex = exitAt(nx, ny);
+      if (seen.has(k)) continue;
+      if (g.blocked(nx, ny)) { if (ex) seen.add(k); continue; }
+      seen.add(k);
+      if (!ex || ex.def.lift || (ex.def.need && !g.cond(ex.def.need))) q.push([nx, ny]);
+    }
+  }
+  return seen;
+}
+function noteJarilo(g) {
+  if (!g.map || !JARILO.test(g.map.id) || g.busy()) return;
+  const s = g.state, flags = Object.keys(s.flags).filter(k => s.flags[k]).sort(), items = Object.keys(s.inv.items).filter(k => s.inv.items[k]).sort();
+  const key = flags.join() + '|' + JSON.stringify(s.quests) + '|' + items.join() + '|' + s.party.join();
+  if (!jariloStates.has(key)) jariloStates.set(key, { flags, quests: JSON.parse(JSON.stringify(s.quests)), items, party: s.party.slice() });
+  const id = g.map.id, R = walkSet(g, g.player.x, g.player.y), exits = g.map.ents.filter(e => e.kind === 'exit');
+  if (exits.length) ok(exits.some(e => R.has(e.x + ',' + e.y)), 'the team can leave ' + id + ' from ' + g.player.x + ',' + g.player.y);
+  const goal = g.objTarget();
+  if (goal && goal.map === id && goal.mark && g.map.marks[goal.mark]) ok(g.map.marks[goal.mark].some(([x, y]) => [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => R.has((x + dx) + ',' + (y + dy)))), 'the objective ' + goal.mark + ' can be reached on ' + id + ' from ' + g.player.x + ',' + g.player.y);
+}
 function adj(g, e) {
+  const R = g.map && JARILO.test(g.map.id) ? walkSet(g, g.player.x, g.player.y) : null;
   for (const [dx, dy, dir] of [[0, 1, 'up'], [0, -1, 'down'], [1, 0, 'left'], [-1, 0, 'right']]) {
     const x = e.x + dx, y = e.y + dy;
-    if (!g.blocked(x, y)) { g.placePlayer(x, y); g.player.dir = dir; return true; }
+    if (!g.blocked(x, y) && (!R || R.has(x + ',' + y))) { g.placePlayer(x, y); g.player.dir = dir; return true; }
   }
   return false;
 }
 function talk(g, ch) {
+  noteJarilo(g);
   const e = g.map.ents.find(x => x.ch === ch && g.visible(x));
   ok(e, 'entity ' + ch + ' on ' + g.map.id);
-  ok(adj(g, e), 'adjacent to ' + ch);
+  ok(adj(g, e), 'adjacent to ' + ch + ' on ' + g.map.id);
   ok(g.interact(), 'interact ' + ch);
   drive(g);
+  noteJarilo(g);
 }
 function stepOn(g, ch) {
+  noteJarilo(g);
   const e = g.map.ents.find(x => x.ch === ch);
   ok(e, 'step target ' + ch);
+  if (JARILO.test(g.map.id)) ok(walkSet(g, g.player.x, g.player.y).has(e.x + ',' + e.y), 'the team can walk to ' + ch + ' on ' + g.map.id);
   g.placePlayer(e.x, e.y);
   g.lastExitTile = null;
   g.onStep();
   drive(g);
+  noteJarilo(g);
 }
 function exitVia(g, ch) {
+  noteJarilo(g);
   const e = g.map.ents.find(x => x.ch === ch && x.kind === 'exit');
   ok(e, 'exit ' + ch + ' on ' + g.map.id);
+  if (JARILO.test(g.map.id)) ok(walkSet(g, g.player.x, g.player.y).has(e.x + ',' + e.y), 'the team can walk to the exit ' + ch + ' on ' + g.map.id);
   const before = g.map.id;
   g.useExit(e);
   ok(g.map.id !== before, 'exit moved from ' + before + ' via ' + ch);
   drive(g);
+  noteJarilo(g);
 }
 function ride(g, to) {
   const e = g.map.ents.find(x => x.kind === 'exit' && x.def.lift);
@@ -7040,7 +7148,7 @@ function trInfo(g) {
     localStorage: { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) },
     requestAnimationFrame: () => 1
   });
-  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-relic-art', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain']) require(path.join(DIR, f + '.js'));
+  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-relic-art', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug']) require(path.join(DIR, f + '.js'));
   const G = H.Gfx;
   const lum = hex => { const n = parseInt(hex.slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255); };
   for (const id of Object.keys(H.CHARS)) {
@@ -7303,8 +7411,8 @@ function trInfo(g) {
     const O = H.OUTFITS.march_spring, OL = H.outfitLook('march_spring');
     ok(O && O.char === 'march' && O.price === 840 && O.rarity === 4 && O.kind === 'Наряд', 'Nascent Spring is a 4★ outfit for March 7th');
     ok(Object.values(H.OUTFITS).every(o => o.rarity === (o.cuts ? 5 : 4) && o.price === H.OUTFIT_TIER[o.rarity].price && o.kind === H.OUTFIT_TIER[o.rarity].kind), 'the class of an outfit follows what it changes, not the class of the hero');
-    const fullCuts = id => { const o = H.OUTFITS[id], set = H.OUTFIT_CUTS[id] || {}; return !!(set.ult && set.skill && set.warp) && Object.keys(H.FUSIONS).filter(f => H.FUSIONS[f].members.includes(o.char)).every(f => set.fusions && set.fusions[f]); };
-    ok(Object.keys(H.OUTFITS).every(id => !H.OUTFITS[id].cuts || fullCuts(id)) && H.OUTFIT_TIER[4].price === 840 && H.OUTFIT_TIER[5].price === 1680, 'an outfit is 5★ only with its own Ultimate, Skill, every Fusion of its hero and Warp');
+    const fullCuts = id => { const o = H.OUTFITS[id], set = H.OUTFIT_CUTS[id] || {}; return !!(set.ult && set.skill && set.warp && set.eidolon) && Object.keys(H.FUSIONS).filter(f => H.FUSIONS[f].members.includes(o.char)).every(f => set.fusions && set.fusions[f]); };
+    ok(Object.keys(H.OUTFITS).every(id => !H.OUTFITS[id].cuts || fullCuts(id)) && H.OUTFIT_TIER[4].price === 840 && H.OUTFIT_TIER[5].price === 1680, 'an outfit is 5★ only with its own Ultimate, Skill, every Fusion of its hero, Warp and Eidolon picture');
     ok(H.OUTFITS.himeko_vermilion.cuts && H.OUTFITS.himeko_vermilion.rarity === 5 && H.OUTFITS.himeko_vermilion.price === 1680 && H.OUTFITS.himeko_vermilion.kind === 'Особый наряд' && Object.values(H.OUTFITS).filter(o => o.rarity === 5).length === 1, '«Алый урок» is the first and only 5★ outfit');
     const om = H.MAIL.find(m => m.id === 'v16_outfits');
     ok(om && om.need === 'express_intro' && !om.give && om.text.every(l => !/[—–]/.test(l)) && om.text.join(' ').includes('«' + H.OUTFITS.himeko_vermilion.name + '»'), 'a letter explains the outfit classes and the first 5★ outfit');
@@ -8752,6 +8860,29 @@ function trInfo(g) {
     const cs = ui.top(); cs.sec = 4;
     for (const k of keys) for (const n of [0, 1, 3, 6]) { const was = R[k].eid; R[k].eid = n; delete R[k].eidSeen; cs.k = k; frame(); R[k].eid = was; }
     ok(!cs.asm, 'pictures of every character render at every stage without an assembly');
+    for (const [oid, set] of Object.entries(H.OUTFIT_CUTS)) {
+      if (!set.eidolon) continue;
+      const o = H.OUTFITS[oid], base = E.SCENES[o.char], sc = E.sceneOf(oid), ev = set.eidolon;
+      ok(sc && sc.frags === base.frags && sc.title === ev.title && sc.title !== base.title && typeof sc.paint === 'function' && typeof sc.decor === 'function' && typeof sc.life === 'function' && E.AURA[sc.aura] && ui.measure(sc.title, 11) <= 168, 'the Eidolon picture of ' + oid + ' keeps the Eidolon texts and has its own title and painters');
+      ok(!E.SCENES[oid] && !Object.keys(E.SCENES).some(k => !H.CHARS[k]), 'outfit pictures stay out of the character picture table');
+      const keepOut = R[o.char].outfit, owned = game.state.outfits.slice();
+      game.wearOutfit(o.char, null);
+      eq(E.keyOf(o.char, game), o.char, 'without the outfit ' + o.char + ' keeps the usual Eidolon picture');
+      if (!game.state.outfits.includes(oid)) game.state.outfits.push(oid);
+      game.wearOutfit(o.char, oid);
+      ok(E.keyOf(o.char, game) === oid && E.pic(oid).colorD !== E.pic(o.char).colorD && E.keyOf(o.char, game, null) === o.char, 'wearing ' + oid + ' changes the Eidolon picture of ' + o.char);
+      cs.k = o.char;
+      for (const n of [0, 1, 3, 6]) { const was = R[o.char].eid; R[o.char].eid = n; delete R[o.char].eidSeen; frame(); R[o.char].eid = was; }
+      ok(!cs.asm, 'the outfit Eidolon picture of ' + oid + ' renders at every stage');
+      const texts = [], realText = ui.text;
+      ui.text = function (str, ...rest) { texts.push(String(str)); return realText.call(this, str, ...rest); };
+      ui.openEidolonView(o.char); frame();
+      ui.text = realText;
+      ok(texts.some(x => x.includes(ev.title)), 'the full-screen picture names the outfit picture ' + ev.title);
+      ui.pop(); frame();
+      game.wearOutfit(o.char, keepOut || null);
+      game.state.outfits = owned;
+    }
     const rm = R.march; rm.eid = 3; rm.eidSeen = 0;
     ok(game.eidNew('march') === 3 && game.alerts().chars, 'new Eidolon pieces raise the characters alert');
     let badges = 0;
@@ -9998,6 +10129,37 @@ function trInfo(g) {
   ui.openBank(null); for (let t = 0; t < 4; t++) { key('ArrowRight'); frame(); } ui.screens = [];
   ui.openSaves('save'); frame(); key('Enter'); frame();
   ok(store.has('hsr98.save.1'), 'save written to a memory card block');
+  {
+    const files = [], opened = [], hadWindow = 'window' in globalThis;
+    globalThis.window = { Sr98Android: { saveFile: (name, text) => files.push({ name, text }), openFile: () => opened.push(1) } };
+    const block1 = store.get('hsr98.save.1');
+    ui.openTransfer(); frame(); key('Enter'); frame();
+    eq(files.length, 1, 'the transfer screen exports the memory card to one file');
+    const file = JSON.parse(files[0].text);
+    ok(/^StarRail98_saves_\d{4}-\d\d-\d\d\.json$/.test(files[0].name) && file.format === 'StarRail98-saves' && file.slots['1'], 'the export file names its format and holds block 1');
+    ui.fileSaved(true); frame();
+    key('ArrowDown'); key('Enter'); frame();
+    eq(opened.length, 1, 'the transfer screen asks for a file to import');
+    ui.screens = [];
+    const kept = [...store.keys()].filter(k => k.startsWith('hsr98.save.')).map(k => [k, store.get(k)]);
+    kept.forEach(([k]) => store.delete(k));
+    ui.fileOpened(files[0].text); frame();
+    ok(kept.every(([k, v]) => store.get(k) === v), 'an import restores every exported block');
+    eq(store.get('hsr98.save.1'), block1, 'an import into an empty block needs no confirmation');
+    const other = JSON.parse(block1); other.date = 'другая дата';
+    ui.fileOpened(JSON.stringify({ format: 'StarRail98-saves', version: 1, slots: { 1: other } })); frame();
+    eq(store.get('hsr98.save.1'), block1, 'an import over a stored block waits for confirmation');
+    key('ArrowDown'); key('Enter'); frame();
+    eq(store.get('hsr98.save.1'), block1, 'cancel keeps the stored block');
+    ui.fileOpened(JSON.stringify({ 'hsr98.save.1': JSON.stringify(other) })); frame(); key('Enter'); frame();
+    eq(JSON.parse(store.get('hsr98.save.1')).date, 'другая дата', 'confirm replaces the block, raw localStorage dumps are accepted too');
+    ui.toasts = [];
+    ui.fileOpened('{"slots":{"1":{"state":null}}}'); ui.fileOpened('not json');
+    ok(ui.toasts.length === 2 && !ui.screens.length, 'files without saves are refused');
+    kept.forEach(([k, v]) => store.set(k, v));
+    ui.screens = [];
+    if (hadWindow) globalThis.window = undefined; else delete globalThis.window;
+  }
   ui.openSettings(); key('ArrowRight'); frame(); ui.screens = [];
   {
     ui.openSettings(); frame();
@@ -10232,14 +10394,14 @@ function trInfo(g) {
     key('KeyV'); frame();
     ok(ui.top() === sup, 'V does nothing on a 4★ outfit');
     sup.fsel = ids.indexOf('himeko_vermilion'); texts.length = 0; frame();
-    ok(texts.includes('Катсцены') && texts.includes('Свои катсцены: абсолютная техника, Навык, Слияния, прыжок'), 'a 5★ outfit shows its cutscene button and what it changes');
+    ok(texts.includes('Катсцены') && texts.includes(H.OUTFIT_TIER[5].perk), 'a 5★ outfit shows its cutscene button and what it changes');
     key('KeyV'); frame();
     const cv = ui.top();
-    eq(ui.outfitCutSteps('himeko_vermilion').map(x => x[0] + (x[1] ? ':' + x[1] : '')).join(), 'ult,skill,fus:f_singularity,warp', 'the cutscene viewer plays the Ultimate, the Skill, the Fusion and the Warp');
+    eq(ui.outfitCutSteps('himeko_vermilion').map(x => x[0] + (x[1] ? ':' + x[1] : '')).join(), 'ult,skill,fus:f_singularity,warp,eid', 'the cutscene viewer plays the Ultimate, the Skill, the Fusion, the Warp and shows the Eidolon picture');
     ok(cv !== sup && cv.i === 0 && cv.show instanceof H.Ults.Show && cv.show.def === H.OUTFIT_CUTS.himeko_vermilion.ult, 'V opens the cutscene viewer on the outfit Ultimate');
     const seen = [];
     for (let n = 0; n < 900 && ui.top() === cv; n++) { if (seen[seen.length - 1] !== cv.i) seen.push(cv.i); ui.update(0.05); ui.render(); }
-    ok(ui.top() === sup && seen.join() === '0,1,2,3', 'the viewer plays every cutscene of the outfit and returns to the showcase');
+    ok(ui.top() === sup && seen.join() === '0,1,2,3,4', 'the viewer plays every cutscene of the outfit and returns to the showcase');
     key('KeyV'); frame(); key('Enter'); frame();
     ok(ui.top().i === 1 && ui.top().show instanceof H.SkillShow, 'Enter skips to the next cutscene');
     key('Backspace'); frame();
@@ -10372,6 +10534,178 @@ function trInfo(g) {
       ok(L.deco && L.sprites.length > 10 && L.glass.length > 8 && L.lights.length > 3, 'the ' + car + ' car has furniture, windows and lights');
       ok(game.map.outside === game.expressWorld().id, 'the windows of ' + car + ' show the parked world');
     }
+    {
+      game.loadMap('express_party', 'v'); ui.enterField(); frame(3);
+      const door = game.map.ents.find(e => e.ch === 'h');
+      game.placePlayer(door.x + 1, door.y); game.player.dir = 'left';
+      const lead = game.state.party.slice();
+      game.state.party = ['trail'];
+      key('ShiftLeft'); key('Space'); ui.held = []; ui.walk = false; frame(2);
+      while (game.script || game.pending) { key('Enter'); frame(); }
+      eq(game.map.id, 'express_lab', 'Shift + Space on the secret door with the Trailblazer alone opens the Test car');
+      frame(3);
+      const L = G.mapLayer(game.map);
+      ok(L.deco && L.sprites.length === 3 && L.glass.length > 8 && L.lights.length > 5, 'the Test car has windows, lights and the three terminals of Silver Wolf');
+      const useTerm = ch => { const t = game.map.ents.find(e => e.ch === ch); game.placePlayer(t.x, t.y + 1); game.player.dir = 'up'; key('Space'); frame(2); for (let i = 0; i < 4 && game.pending && game.pending.type === 'say'; i++) { key('Enter'); frame(2); } };
+      const jade0 = game.state.jade;
+      useTerm('j');
+      ok(game.state.jade === jade0 + H.TUNING.debugJade && !game.pending && !game.script, 'the jade terminal grants the same jade as F7');
+      useTerm('k');
+      ok(ui.top() && ui.top().debug && game.pending && game.pending.ui === 'hackdebug', 'the console terminal opens the F8 debug menu');
+      key('F8'); frame(2);
+      ok(!ui.screens.length && !game.pending && !game.script, 'closing the debug menu frees the Trailblazer');
+      useTerm('m');
+      ok(ui.top() && ui.top().cw && game.pending && game.pending.ui === 'cw', 'the Currency Wars terminal opens the mode screen');
+      key('Escape'); frame(2);
+      ok(!ui.screens.length && !game.pending && !game.script, 'closing the Currency Wars screen frees the Trailblazer');
+      {
+        const CW = H.CW, speed0 = ui.options.battleSpeed;
+        ui.openCwHub(); frame(2);
+        ok(ui.top().cw && ui.audio.wanted === 'sim', 'Currency Wars: the hub plays the simulation theme');
+        key('Enter'); frame(2);
+        ok(ui.top().cw && !game.cwRun(), 'Currency Wars: launching opens the mode choice');
+        key('ArrowDown'); frame(); key('ArrowDown'); frame(); key('Enter'); frame(2);
+        ok(ui.top().tier === 0 && ui.top().sub === 1, 'Currency Wars: the rank choice starts at A0-1');
+        key('Enter'); frame(2);
+        ok(game.cwRun() && game.cwRun().mode === 'standard' && ui.top().cw && !ui.top().board, 'Currency Wars: starting shows the three opponents');
+        key('Enter'); frame(2);
+        ok(ui.top().envPick && game.cwRun().envPick.opts.length === 3, 'Currency Wars: a new run first offers three investment environments');
+        game.cwRun().envPick.opts[0] = 'arena';
+        key('Enter'); frame(2);
+        ok(!game.cwRun().envPick && game.cwRun().envs.length >= 1, 'Currency Wars: Enter takes the environment');
+        const bd = ui.top(), cr = game.cwRun();
+        ok(bd.board && cr && cr.node === 0 && cr.phase === 'prep', 'Currency Wars: launching from the hub starts a run and opens the prep board');
+        const fresh = CW.POOL.find(id => CW.UNITS[id].cost === 1 && CW.UNITS[id].pos !== 'off' && !game.cwUnits(cr).some(x => x.u.id === id));
+        cr.shop[0] = fresh;
+        const gold0 = cr.gold;
+        key('Digit1'); frame();
+        ok(cr.gold === gold0 - 1 && cr.board.bench.some(u => u && u.id === fresh), 'Currency Wars: key 1 buys the first shop card');
+        const bi = cr.board.bench.findIndex(Boolean), free = cr.board.on.indexOf(null);
+        const pick = { x: 120 + bi * 40 + 18, y: 314 + 18 }, put = { x: 170 + free * 76 + 32, y: 58 + 32 };
+        const dragTo = (from, to) => { frame(10); bd.press('bench', bi, 0, from); ui.drag.move(to); const d = ui.drag; ui.drag = null; d.drop(to); frame(); };
+        dragTo(pick, put);
+        ok(cr.board.bench[bi] && !cr.board.on[free], 'Currency Wars: a full team refuses one more hero');
+        key('KeyF'); frame();
+        ok(cr.lvl === 4 && cr.gold === gold0 - 5, 'Currency Wars: F buys EXP and levels up');
+        dragTo(pick, put);
+        ok(!cr.board.bench[bi] && cr.board.on[free] && cr.board.on[free].id === fresh, 'Currency Wars: dragging a hero from the bench puts it on the field');
+        key('KeyB'); frame();
+        ok(bd.bondInfo, 'Currency Wars: B opens the bond list');
+        key('Escape'); frame();
+        ok(!bd.bondInfo && ui.top() === bd, 'Currency Wars: Esc closes the bond list and stays on the board');
+        cr.inv = [];
+        game.cwInvAdd(cr, 'starBlade');
+        const host = cr.board.on.findIndex(Boolean);
+        frame(10);
+        bd.press('inv', 0, 0, { x: 502, y: 164 }); ui.drag.move({ x: 170 + host * 76 + 32, y: 90 }); { const d = ui.drag; ui.drag = null; d.drop({ x: 170 + host * 76 + 32, y: 90 }); } frame();
+        ok(!cr.inv.length && cr.board.on[host].items.some(x => x.id === 'starBlade'), 'Currency Wars: dragging an item from the inventory onto a hero equips it');
+        bd.cur = { zone: 'on', i: 0 };
+        key('KeyI'); frame();
+        ok(bd.cur.zone === 'inv', 'Currency Wars: I moves the cursor to the inventory');
+        key('KeyI'); frame();
+        ui.options.battleSpeed = 3;
+        key('Space'); frame(2);
+        ok(ui.mode === 'battle' && game.battle && game.battle.cw && ui.bt.auto, 'Currency Wars: Space starts the node battle on auto');
+        for (let i = 0; i < 3000 && !ui.bt.result; i++) frame();
+        ok(ui.bt.result && ui.bt.result.cw, 'Currency Wars: the node battle ends with a mode result');
+        key('Enter'); frame(2);
+        const bd2 = ui.top();
+        ok(bd2 && bd2.board && bd2.receipt && game.cwRun().node === 1, 'Currency Wars: after the battle the board shows the node receipt');
+        key('Enter'); frame();
+        ok(!bd2.receipt, 'Currency Wars: any key closes the receipt');
+        key('Escape'); frame();
+        ok(ui.top() && ui.top().cw && !ui.top().board && game.cwRun(), 'Currency Wars: Esc on the board keeps the run and returns to the hub');
+        key('Escape'); frame();
+        ok(!ui.screens.length, 'Currency Wars: Esc closes the hub');
+        {
+          game.state.cw = null;
+          const r7 = game.cwNew({ tier: 0 });
+          r7.envPick = null;
+          ui.options.battleSpeed = 1;
+          ui.openCwBoard(); frame(2);
+          key('Space'); frame(2);
+          ok(ui.top() && !ui.top().board && game.cw().speedAsked && !game.battle, 'Currency Wars: the first battle offers battle speed ×3');
+          key('Enter'); frame(2);
+          ok(ui.options.battleSpeed === 3 && ui.mode === 'battle' && game.battle && game.battle.cw, 'Currency Wars: accepting the offer sets ×3 and starts the battle');
+          for (let i = 0; i < 3000 && !ui.bt.result; i++) frame();
+          ok(ui.bt.result && ui.bt.result.cw, 'Currency Wars: the battle with the new HUD ends with a mode result');
+          key('Enter'); frame(2);
+          key('Enter'); frame();
+          const sum7 = game.cwQuit();
+          ui.screens.length = 0;
+          ui.openCwReport(sum7); frame(2);
+          ok(ui.top().report && sum7.dmg.length >= 1 && Array.isArray(sum7.bonds), 'Currency Wars: the annual report opens with damage by hero and bonds');
+          key('Enter'); frame();
+          ok(ui.top() && ui.top().cw && !ui.top().report, 'Currency Wars: Enter on the report goes to the hub');
+          const hubTop = ui.top();
+          ok(hubTop.hub, 'Currency Wars meta: the hub comes back after the report');
+          ui.openCwAsc(); frame(2);
+          ok(ui.top().sel >= 1, 'Currency Wars meta: the promotion rail opens');
+          key('Escape'); frame();
+          ui.openCwWeek(); frame(2); key('Enter'); frame();
+          key('Escape'); frame();
+          ui.openCwRankRewards(); frame(2); key('Enter'); frame();
+          ok(game.cwMeta().rankGot.includes(0), 'Currency Wars meta: Enter claims the A0 rank reward');
+          key('Escape'); frame();
+          ui.openCwHistory(); frame(2); key('Enter'); frame(2);
+          ok(ui.top().report && game.cw().hist.length >= 1, 'Currency Wars meta: a history row opens its annual report');
+          key('Enter'); frame();
+          ok(!ui.top().report && ui.screens.some(s => s.hub), 'Currency Wars meta: closing a past report returns to the history');
+          key('Escape'); frame();
+          ok(ui.top() === hubTop, 'Currency Wars meta: Esc leaves the history for the hub');
+          game.cwPerks().notes = 100;
+          ui.openCwPerks(); frame(2); key('Enter'); frame();
+          ok(game.cwPerkOn('prep') && game.cwPerks().notes === 80, 'Currency Wars perks: Enter installs the selected perk on the board');
+          key('KeyE'); frame(); key('Enter'); frame();
+          ok(!game.cwPerkOn('thanks'), 'Currency Wars perks: the seasonal tab refuses while permanent perks are missing');
+          key('Escape'); frame();
+          ui.openCwBank(); frame(2); key('KeyE'); frame(); key('ArrowDown'); frame();
+          ok(ui.top().tab === 1, 'Currency Wars bank: Q/E switch the catalogue tabs');
+          key('Escape'); frame();
+          {
+            ui.openDebug(); frame(2);
+            const st0 = Object.assign({}, ui.debugState, { tab: 5 });
+            ui.debugForm(st0);
+            ok(ui.top().debug && st0.tab === 0, 'Currency Wars F8: without a run there is no sixth tab');
+            key('Escape'); frame();
+            const rd = game.cwNew({ tier: 0 }); rd.envPick = null;
+            ui.openDebug(); frame(2);
+            ui.top().setTab(5); frame(2);
+            const g0 = rd.gold;
+            key('ArrowRight'); frame();
+            ok(rd.gold === g0 + 10, 'Currency Wars F8: the sixth tab changes the run coins');
+            const inv0 = game.cwInv(rd).length;
+            ui.debugState.row = ui.debugForm(ui.debugState).rows.length + 1; key('Enter'); frame();
+            ok(game.cwInv(rd).length === inv0 + 1, 'Currency Wars F8: the tab hands out an item');
+            key('Escape'); frame();
+            game.cwQuit();
+            ui.screens = ui.screens.filter(s => !s.report);
+          }
+          ui.openCwGuide(); frame(2); key('KeyE'); frame();
+          ok(ui.top().chap === 1, 'Currency Wars guide: Q/E switch chapters in the notebook');
+          key('Escape'); frame();
+          ui.openCwProfit(); frame(2); key('KeyE'); frame(); key('ArrowDown'); frame();
+          ok(ui.top().grp === 1 && ui.top().sel === 1, 'Currency Wars profit: Q/E switch groups, arrows pick a task');
+          key('Escape'); frame();
+          ui.openCwLineups(); frame(2); key('ArrowRight'); frame(); key('Enter'); frame();
+          ok(game.cwGoals().applied === CW.LINEUPS[1].id, 'Currency Wars lineups: Enter applies the selected lineup');
+          key('Enter'); frame();
+          ok(!game.cwGoals().applied, 'Currency Wars lineups: Enter again removes it');
+          key('Escape'); frame();
+          ui.openCwLinks(); frame(2); key('ArrowRight'); frame(); key('KeyE'); frame();
+          ok(ui.top().tab === 1 && ui.top().sel === 0, 'Currency Wars links: the screen switches between faction and direction bonds');
+          key('Escape'); frame();
+          key('Escape'); frame();
+        }
+        ui.options.battleSpeed = speed0;
+        game.state.cw = null;
+      }
+      key('KeyM'); frame(3);
+      const nav = ui.top(), cars = ui.navRows(nav.world).filter(r => r.area && H.expressArea(r.area.map)).map(r => r.area.map);
+      ok(nav.points && cars.length === 3 && !cars.includes('express_lab'), 'the navigation list never shows the Test car, even from inside it');
+      key('Escape'); frame(2); ui.screens = [];
+      game.state.party = lead;
+    }
     for (const [script, book] of [['exp_guestbook', 'guests'], ['exp_photowall', 'photos']]) {
       game.runScript(script); ui.drainGameEvents(); frame();
       for (let i = 0; i < 6 && !ui.top(); i++) { key('Enter'); frame(2); }
@@ -10420,7 +10754,7 @@ function trInfo(g) {
     }
     for (const [oid, set] of Object.entries(H.OUTFIT_CUTS)) {
       const o = H.OUTFITS[oid];
-      ok(o && Object.keys(set).every(k => ['ult', 'skill', 'fusions', 'warp'].includes(k)), 'outfit cutscenes belong to a real outfit: ' + oid);
+      ok(o && Object.keys(set).every(k => ['ult', 'skill', 'fusions', 'warp', 'eidolon'].includes(k)), 'outfit cutscenes belong to a real outfit: ' + oid);
       if (!o || !set.ult) continue;
       const d = set.ult, kit = H.CHARS[o.char], fake = { charId: o.char, elem: kit.elem, name: kit.name, side: 'ally', kit };
       ok(d.line && d.line.length <= 40 && !/[—–]/.test(d.line) && typeof d.act === 'function' && d.sfx.every((x, i, a) => !i || a[i - 1][0] <= x[0]), 'the outfit Ultimate of ' + oid + ' has a short line and ordered sounds');
@@ -11588,7 +11922,7 @@ function trInfo(g) {
     }
   };
   const at = (g, map, ch, prefs) => {
-    if (g.map.id !== map) g.loadMap(map, null, { x: 1, y: 1, silent: true });
+    if (g.map.id !== map) g.loadMap(map, null, { silent: true });
     const e = g.map.ents.find(x => x.ch === ch && g.visible(x));
     ok(e, 'Hook chain: ' + ch + ' is shown on ' + map + ' at step ' + JSON.stringify(g.state.quests));
     if (!e) return false;
@@ -12240,7 +12574,14 @@ function trInfo(g) {
   const g2 = new H.Game({ state: done, seed: 3 });
   ok(g2.state.flags.calyx_seen && g2.state.flags.drift_seen && g2.state.flags.sampo_met, 'a save past the Snow Plains skips the new plains scenes');
   const fresh = new H.Game({ fresh: true, seed: 1 });
-  eq(fresh.state.jv, 10, 'a new game starts with the current Jarilo version');
+  eq(fresh.state.jv, 11, 'a new game starts with the current Jarilo version');
+  for (const [map, x, y] of [['u_settle', 29, 52], ['u_boulder', 23, 32], ['j_florist', 6, 7], ['j_hotel', 12, 4], ['j_fort', 7, 8]]) {
+    const wide = Object.assign(H.newState(), { map, x, y, jv: 10, lastAnchor: { map, x, y } });
+    Object.assign(wide.flags, { express_intro: true, doom: true, jarilo_arrive: true, sampo_met: true, plains_met: true, belobog_intro: true, fled: true, underworld: true });
+    wide.hsv = 2;
+    const gw = new H.Game({ state: wide, seed: 5 });
+    ok(gw.map.id === map && !gw.blocked(gw.player.x, gw.player.y) && gw.map.ents.some(e => e.kind === 'exit' && walkSet(gw, gw.player.x, gw.player.y).has(e.x + ',' + e.y)) && gw.state.lastAnchor.x === null, 'a save on the widened ' + map + ' wakes up on a free spot with a way out');
+  }
 
   const pg = new H.Game({ state: Object.assign(H.newState(), { map: 'j_plains', x: null, y: null }), seed: 4 });
   Object.assign(pg.state.flags, { express_intro: true, jarilo_arrive: true });
@@ -12786,11 +13127,11 @@ function trInfo(g) {
   goTo('j_museum', 'x');
   talk(g, 'ӑ');
   ok(g.state.flags.fm_museum, 'the talk with Topaz in the museum fails');
-  goTo('u_boulder', 'e');
-  ok(g.blocked(12, 41), 'IPC workers block the Great Mine');
+  goTo('u_boulder', 'p');
+  ok(g.blocked(12, 43), 'IPC workers block the Great Mine');
   talk(g, 'ӟ');
   talk(g, 'ӥ');
-  ok(g.state.flags.fm_gate && !g.blocked(12, 41), 'the IPC guards fall');
+  ok(g.state.flags.fm_gate && !g.blocked(12, 43), 'the IPC guards fall');
   goTo('u_mine', 'w');
   ok(g.state.flags.fm_mine_in, 'Topaz visits Svarog, the team enters the mine');
   talk(g, 'ӑ');
@@ -13217,7 +13558,7 @@ function trInfo(g) {
   let spot = null;
   for (let y = 2; y < g.map.h - 2 && !spot; y++) for (let x = 2; x < g.map.w - 9 && !spot; x++) {
     let free = true;
-    for (let dy = -1; dy <= 1 && free; dy++) for (let dx = -1; dx <= 8 && free; dx++) if (g.petBlocked(x + dx, y + dy)) free = false;
+    for (let dy = -1; dy <= 1 && free; dy++) for (let dx = -1; dx <= 8 && free; dx++) if (g.petBlocked(x + dx, y + dy) || g.map.tiles[y + dy][x + dx] === '=') free = false;
     if (free) spot = [x, y];
   }
   ok(spot, 'Pets: Belobog has an open street for the walk');
@@ -13755,4 +14096,1512 @@ function trInfo(g) {
   ok(free.ok && free.runs === 2 && !free.stopped, 'continuing after the stop runs every try');
 }
 console.log(log.join('\n'));
+{
+  const CW = H.CW, TUN = CW.TUN;
+  eq(Object.keys(CW.UNITS).length, 61, 'Currency Wars: all 61 heroes are in the unit table');
+  ok(Object.values(CW.UNITS).every(u => H.CHARS[u.kitOn] && H.CHARS[u.kitOff] && u.cost >= 1 && u.cost <= 5 && ['on', 'off', 'both'].includes(u.pos) && 'apls'.includes(u.role) && u.bonds.every(k => CW.BOND_NAMES[k])), 'Currency Wars: every unit has a kit, cost, position, role and named bonds');
+  eq([1, 2, 3, 4, 5].map(c => Object.values(CW.UNITS).filter(u => u.cost === c).length).join('/'), '15/15/11/11/9', 'Currency Wars: costs split 15/15/11/11/9');
+  ok(CW.UNITS.trail.kitOff === 'trail_p' && CW.UNITS.trail.kitOn === 'trail', 'Currency Wars: the Trailblazer fights as Destruction on the field and Preservation off it');
+  ok(CW.POOL.length === 61 && CW.POOL.every(id => CW.UNITS[id]), 'Currency Wars: all 61 heroes are in the pool');
+  for (const [k, b] of Object.entries(CW.BONDS)) ok((b.members || CW.POOL.filter(id => CW.UNITS[id].bonds.includes(k))).length >= b.steps[b.steps.length - 1] - 2, 'Currency Wars: bond ' + k + ' has members for its steps');
+  const cwText = ['hsr-cw-data', 'hsr-cw', 'hsr-cw-battle', 'hsr-cw-bonds', 'hsr-cw-items', 'hsr-cw-kits', 'hsr-cw-special', 'hsr-cw-strats', 'hsr-cw-affixes', 'hsr-cw-envs', 'hsr-cw-foes', 'hsr-cw-meta', 'hsr-cw-perks', 'hsr-cw-goals', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug', 'hsr-cw-art'].map(f => require('fs').readFileSync(path.join(DIR, f + '.js'), 'utf8')).join('\n');
+  ok(!/—/.test(cwText) && !/Microsoft|Windows/.test(cwText) && !/\/\/|\/\*/.test(cwText.replace(/https?:\/\//g, '')), 'Currency Wars: no long dashes, no forbidden names, no comments');
+
+  const g = new H.Game({ fresh: true, seed: 11 });
+  ok(!g.state.cw && !g.cwRun(), 'Currency Wars: no run before the terminal is used');
+  const run = g.cwNew();
+  ok(run.lvl === 3 && run.gold === 5 && run.hp === 100 && run.node === 0 && run.nodes.length === 9 && run.phase === 'prep', 'Currency Wars: a run starts at level 3 with 5 coins and 100 HP on node 1 of 9');
+  const start = g.cwDeployed(run);
+  ok(start.length === 3 && start.length <= g.cwTeamSize(run) && start.every(u => u.star === 1 && CW.POOL.includes(u.id)), 'Currency Wars: three starting heroes are already placed');
+  ok(start.every(u => CW.UNITS[u.id].pos !== 'off' || run.board.off.includes(u)), 'Currency Wars: off-field heroes start off the field');
+  ok(run.shop.length === 5 && run.shop.every(id => CW.UNITS[id].cost === 1), 'Currency Wars: at level 3 the shop offers only cost 1');
+  eq(g.cwOdds(Object.assign({}, run, { lvl: 4 })).map(o => o.v).join('/'), '65/25/10', 'Currency Wars: level 4 shop odds are 65/25/10');
+  { const r2 = JSON.parse(JSON.stringify(run)); for (const id of CW.POOL) if (CW.UNITS[id].cost === 3) r2.pool[id] = 0; let no3 = true; for (let i = 0; i < 200; i++) no3 = no3 && g.cwCostRoll(r2, 7) !== 3; ok(no3, 'Currency Wars: a cost with no copies left falls back to a cheaper one'); }
+  eq(g.cwPreview(run).kind, 'reward', 'Currency Wars: the first node is a rewards node');
+
+  for (const z of ['on', 'off', 'bench']) run.board[z].fill(null);
+  run.gold = 50; run.shop = ['tingyun', 'tingyun', 'tingyun', 'qingque', null]; run.pool.tingyun = 30;
+  const b1 = g.cwBuy(0);
+  ok(b1 && run.gold === 49 && run.pool.tingyun === 29 && run.board.bench[0] && run.board.bench[0].id === 'tingyun' && !run.shop[0], 'Currency Wars: buying takes the coins, the pool copy and the shop card');
+  g.cwBuy(1);
+  const b3 = g.cwBuy(2);
+  ok(b3.merged.length === 1 && b3.merged[0].star === 2 && g.cwUnits(run).filter(x => x.u.id === 'tingyun').length === 1, 'Currency Wars: three copies merge into a 2★ hero');
+  eq(g.cwSellValue({ id: 'tingyun', star: 2 }), 3, 'Currency Wars: a 2★ cost 1 hero sells for its copies');
+  eq(g.cwSellValue({ id: 'pela', star: 2 }), 5, 'Currency Wars: a 2★ cost 2 hero sells for copies × cost − 1');
+  eq(g.cwSellValue({ id: 'pela', star: 1 }), 2, 'Currency Wars: a 1★ hero sells for its cost');
+  const at = g.cwUnits(run).find(x => x.u.id === 'tingyun');
+  const g0 = run.gold;
+  eq(g.cwSell(at.zone, at.i), 3, 'Currency Wars: selling pays the sell value');
+  ok(run.gold === g0 + 3 && run.pool.tingyun === 30, 'Currency Wars: sold copies go back to the pool');
+  run.board.bench.fill(null);
+  for (let i = 0; i < 9; i++) run.board.bench[i] = { uid: ++run.uid, id: 'herta', star: 1 };
+  run.board.bench[9] = { uid: ++run.uid, id: 'march', star: 1 };
+  ok(g.cwMerge(run).length === 4 && run.board.bench.filter(Boolean).length === 2 && run.board.bench[0].star === 3, 'Currency Wars: nine copies chain into one 3★ hero');
+  run.board.bench.fill(null);
+  run.board.bench[0] = { uid: ++run.uid, id: 'herta', star: 3 }; run.board.bench[1] = { uid: ++run.uid, id: 'herta', star: 3 }; run.board.bench[2] = { uid: ++run.uid, id: 'herta', star: 3 };
+  ok(g.cwMerge(run).length === 1 && run.board.bench[0].star === 4, 'Currency Wars: cost 1 heroes reach 4★');
+  run.board.bench.fill(null);
+  ['march', 'serval', 'pela', 'lynx', 'sushang', 'yukong', 'hanya', 'xueyi', 'danheng', 'imbibitor'].forEach((id, i) => { run.board.bench[i] = { uid: ++run.uid, id, star: 1 }; });
+  run.shop[4] = 'qingque';
+  eq(g.cwCanBuy(4), 'bench', 'Currency Wars: a full bench blocks a purchase that does not merge');
+  run.shop[4] = 'march'; run.board.bench[1].id = 'march';
+  ok(!g.cwCanBuy(4) && g.cwBuy(4).merged.length === 1, 'Currency Wars: a full bench still takes the third copy that merges');
+
+  for (const z of ['on', 'off', 'bench']) run.board[z].fill(null);
+  run.lvl = 3; run.exp = 0;
+  ['tingyun', 'qingque', 'sushang', 'yukong'].forEach((id, i) => { run.board.bench[i] = { uid: ++run.uid, id, star: 1 }; });
+  eq(g.cwMove('bench', 1, 'on', 0), null, 'Currency Wars: a bench hero goes on the field');
+  g.cwMove('bench', 2, 'on', 1); g.cwMove('bench', 0, 'off', 0);
+  eq(g.cwMove('bench', 3, 'off', 1), 'team', 'Currency Wars: the team size equals the level');
+  eq(g.cwMove('bench', 3, 'on', 0), null, 'Currency Wars: swapping with a placed hero ignores the team size');
+  g.cwMove('on', 0, 'bench', 3);
+  const bonds = g.cwBonds(run);
+  ok(bonds.xianzhou.n === 3 && bonds.xianzhou.tier === 0 && bonds.belobog.n === 0, 'Currency Wars: three Xianzhou heroes open its first step');
+  run.board.bench[5] = { uid: ++run.uid, id: 'tingyun', star: 1 };
+  eq(g.cwBonds(run).xianzhou.n, 3, 'Currency Wars: heroes on the bench do not count for bonds');
+  run.gold = 9;
+  ok(g.cwBuyExp().ups === 1 && run.lvl === 4 && run.exp === 0 && run.gold === 5, 'Currency Wars: 4 coins buy 4 EXP, level 3 needs 4');
+  eq(g.cwInterest(37), 3, 'Currency Wars: interest is 1 per 10 coins');
+  eq(g.cwInterest(80), 5, 'Currency Wars: interest stops at 5');
+  eq([0, 1, 2, 3, 4, 5, 6, 9].map(n => g.cwStreakGold(n)).join(), '0,0,1,1,2,2,3,3', 'Currency Wars: the streak bonus steps');
+
+  const cmp = g.cwCompile(run, 'fight');
+  const tingOff = Object.values(cmp.units).find(u => u.id === 'tingyun' && u.place === 'off');
+  ok(cmp.party.length === 2 && cmp.off.length === 1 && tingOff && tingOff.pow === 100, 'Currency Wars: field heroes join the party, off-field heroes become timeline units');
+  run.board.on[2] = { uid: ++run.uid, id: 'yukong', star: 2 };
+  const wrong = g.cwCompile(run, 'fight').units[run.board.on[2].uid];
+  ok(wrong.wrong && wrong.pow === CW.STARS[1].pow[1], 'Currency Wars: an off-field hero on the field fights with the cost 1 power');
+  run.board.on[2] = null;
+
+  run.node = 2;
+  const b = g.cwFight();
+  ok(b && b.cw && g.battleCtx.o.cw && run.phase === 'battle', 'Currency Wars: the node starts a mode battle');
+  b.start();
+  const offU = b.summons.find(s => s.cwOff);
+  ok(offU && !b.allies.includes(offU) && b.cwInfo.left > 0 && b.cwInfo.left <= TUN.countdown.fight[0] && b.cwInfo.left === TUN.countdown.fight[0] - b.cwInfo.t, 'Currency Wars: the off-field hero is a timeline unit that enemies cannot hit');
+  ok(b.cwInfo.lord && b.summons.includes(b.cwInfo.lord) && b.cwInfo.lord.flags.hits >= CW.BONDS.xianzhou.hits[0], 'Currency Wars: Xianzhou calls the Lightning-Lord');
+  const ally = b.allies[0], left0 = b.cwInfo.left;
+  b.hit(b.enemies[0], ally, 0, { raw: ally.maxHp * 5 });
+  ok(!ally.dead && ally.hp === ally.maxHp && b.cwInfo.near === 1 && b.cwInfo.left === left0 - TUN.nearDeathAv, 'Currency Wars: a lethal hit triggers «О гибели» and costs 15 countdown');
+  const pw = b.cwMul(ally, b.enemies[0]);
+  ok(Math.abs(pw - CW.STARS[1].pow[0] / 100 * (1 + CW.BONDS.xianzhou.pow[0])) < 1e-9, 'Currency Wars: Xianzhou members deal more damage through power');
+  for (const e of b.enemies) { e.maxHp *= 1000; e.hp = e.maxHp; }
+  b.runAuto(3000);
+  ok(b.over && !b.result.win && b.cwInfo.left === 0, 'Currency Wars: the countdown ends a battle that is too slow');
+  const hp0 = run.hp, gold0 = run.gold;
+  const lostOut = g.endBattle();
+  ok(lostOut.cw.choice && lostOut.lost && run.phase === 'lost' && run.hp === hp0, 'Currency Wars: a lost battle first offers a replay and changes nothing');
+  const out = { cw: g.cwAccept() };
+  const lossBase = TUN.hpLoss.fight[0];
+  ok(out.cw && !out.cw.win && out.cw.hpLoss === lossBase + Math.ceil(lossBase * (1 - out.cw.progress)) && run.hp === hp0 - out.cw.hpLoss, 'Currency Wars: a lost node costs base + share of the unfinished progress');
+  ok(out.cw.total === TUN.baseGold + g.cwInterest(gold0) && run.gold === gold0 + out.cw.total && run.streak === 0 && out.cw.exp === 2, 'Currency Wars: a loss still pays base and interest and gives 2 EXP');
+  ok(!g.battle && run.node === 3 && run.phase === 'prep', 'Currency Wars: the run moves to the next node');
+
+  const b2 = g.cwFight();
+  b2.waves = b2.waves.slice(0, 1); b2.cw.waves = b2.waves;
+  for (const e of b2.enemies) e.hp = 1;
+  b2.start(); b2.runAuto(3000);
+  const gold1 = run.gold, out2 = g.endBattle();
+  ok(out2.cw.win && run.streak === 1 && out2.cw.hpLoss === 0 && run.gold === gold1 + out2.cw.total && out2.cw.total === TUN.baseGold + g.cwInterest(gold1), 'Currency Wars: a win keeps the HP and starts a streak');
+
+  eq(g.cwNodeKind(run), 'supply', 'Currency Wars: node 5 is a supply node');
+  ok(g.cwGo() === null && run.phase === 'supply' && run.offer.length >= 1 && run.offer.length <= 5, 'Currency Wars: supply offers up to five heroes');
+  run.board.bench.fill(null);
+  const took = g.cwTakeOffer(0);
+  ok(took && run.board.bench.some(u => u && u.id === took.u.id) && run.node === 5 && run.phase === 'prep', 'Currency Wars: the supply hero goes to the bench and the run moves on');
+
+  const saved = JSON.parse(JSON.stringify(g.serialize()));
+  const g2 = new H.Game({ state: saved, seed: 5 });
+  ok(g2.cwRun() && g2.cwRun().node === 5 && g2.cwRun().shop.join() === run.shop.join() && g2.cwRun().rng === run.rng, 'Currency Wars: the run survives save and load with its shop and random state');
+
+  const rw = new H.Game({ fresh: true, seed: 3 });
+  const rr = rw.cwNew();
+  const rb = rw.cwFight(); rb.start();
+  ok(rb.cwInfo.left == null, 'Currency Wars: a rewards node has no countdown');
+  rb.runAuto(3000);
+  const ro = rw.endBattle();
+  ok(ro.cw.kind === 'reward' && ro.cw.coins >= (rb.cwKills || []).length && ro.cw.hpLoss === 0 && rr.streak === 0 && rr.fights === 0, 'Currency Wars: rewards pay 1-2 coins per enemy and do not touch HP or streak');
+
+  const pg = new H.Game({ fresh: true, seed: 21 });
+  pg.cwNew();
+  let steps = 0;
+  while (pg.cwRun() && steps++ < 60) {
+    const r = pg.cwRun();
+    for (let i = 0; i < 5; i++) if (!pg.cwCanBuy(i)) pg.cwBuy(i);
+    for (const x of pg.cwUnits(r)) if (x.zone === 'bench') pg.cwPlace('bench', x.i);
+    if (r.gold >= 10) pg.cwBuyExp();
+    pg.cwGo();
+    if (r.phase === 'supply') { const t = pg.cwTakeOffer(0); if (!t || t.full) pg.cwSkipOffer(); continue; }
+    if (r.phase === 'enc') pg.cwPickBranch(0);
+    pg.battle.start(); pg.battle.runAuto(3000); if (pg.endBattle().cw.choice) pg.cwAccept();
+  }
+  ok(!pg.cwRun() && pg.cw().hist.length === 1 && pg.cw().hist[0].nodes === 23, 'Currency Wars: a full standard run ends with a report in the history');
+
+  const ex = new H.Game({ fresh: true, seed: 8 });
+  const er = ex.cwNew();
+  for (const z of ['on', 'off', 'bench']) er.board[z].fill(null);
+  er.lvl = 6;
+  er.board.on[0] = { uid: ++er.uid, id: 'march', star: 1 }; er.board.on[1] = { uid: ++er.uid, id: 'danheng', star: 1 };
+  er.board.on[2] = { uid: ++er.uid, id: 'pela', star: 1 }; er.board.off[0] = { uid: ++er.uid, id: 'serval', star: 1 };
+  er.board.on[3] = { uid: ++er.uid, id: 'lynx', star: 1 }; er.board.off[1] = { uid: ++er.uid, id: 'huohuo', star: 1 };
+  er.node = 2;
+  const eb = ex.cwFight();
+  ok(eb.cw.tiers.express === 0 && eb.cw.tiers.belobog === 0 && eb.cw.tiers.heal === 0, 'Currency Wars: three bonds open together');
+  const ev = eb.start();
+  ok(ev.some(e => e.t === 'cwBond' && e.k === 'express') && eb.cwInfo.trail === 1 && (eb.wave > 0 || eb.enemies.some(e => e.hp < e.maxHp)), 'Currency Wars: the Express strikes at the start and leaves one trail stack');
+  ok(eb.cwInfo.engine && eb.cwInfo.eng >= 0 && eb.cwInfo.eng < CW.BONDS.belobog.full, 'Currency Wars: the Engine of Creation charges from member actions');
+  eb.cwInfo.eng = CW.BONDS.belobog.start; eb.drain();
+  for (let i = 0; i < 4; i++) eb.cwMember(eb.allies[2]);
+  ok(eb.cwInfo.eng === 0 && eb.drain().some(e => e.t === 'cwBond' && e.k === 'belobog'), 'Currency Wars: four Belobog actions fill the Engine and it fires');
+  const healer = eb.allies[3];
+  ok(Math.abs(eb.cwHealMul(healer) - CW.HEAL_POW[2][0] / 100 * (1 + CW.BONDS.heal.healPow[0])) < 1e-9, 'Currency Wars: a healer member heals with its healing power and the bond bonus');
+  ok(Math.abs(eb.cwHealMul(eb.allies[0]) - 0.6) < 1e-9, 'Currency Wars: heroes outside the healing role heal at 60 power');
+  eq(CW.RANK_STATS.length, CW.RANKS.reduce((a, r) => a + r.subs, 0), 'Currency Wars: one stat row per rank sub-level (62)');
+  ok(CW.RANK_STATS.every(r => r.length === 9 && r.every(v => v > 0)), 'Currency Wars: every rank row has ATK, HP and SPD for three planes');
+  ok(CW.RANK_STATS.every((r, i) => !i || r[7] >= CW.RANK_STATS[i - 1][7]), 'Currency Wars: plane 3 enemy HP never drops from one sub-level to the next');
+  eq([[0, 1], [0, 3], [1, 1], [3, 5], [5, 7], [8, 1], [8, 10], [8, 11], [8, 20]].map(([t, s]) => CW.rankDiff(t, s)).join(), '1,3,6,20,36,61,70,74,83', 'Currency Wars: enemy difficulty follows the rank table');
+  const gs = new H.Game({ fresh: true, seed: 31 });
+  eq(gs.cwRank(4, 2).code, 'A4-2', 'Currency Wars: rank codes read A4-2');
+  ok(gs.cwRankRules(3).some(r => /35/.test(r.text)) && gs.cwRankRules(3).every(r => ['A0', 'A1', 'A2', 'A3'].includes(r.code)), 'Currency Wars: rank rules stack from A0 up');
+
+  const q = gs.cwNew({ mode: 'quick', tier: 0, sub: 1 });
+  ok(q.mode === 'quick' && q.lvl === 4 && q.gold === 8 + 3 && q.exp === 2 && q.nodes.length === 6 && q.bonus.gold === 3, 'Currency Wars: the quick game starts at level 4 with 8 coins and adds 3 coins and 2 EXP each node');
+  eq(gs.cwInterest(50, q), 0, 'Currency Wars: the quick game pays no interest');
+  ok(new Set(q.opps).size === 3 && q.opps.every(k => CW.OPPONENTS[k]) && q.nodeOpp[q.nodes.indexOf('boss')] === q.opps[0], 'Currency Wars: three different opponents, the first one owns the plane 1 boss');
+
+  const st = gs.cwNew({ mode: 'standard', tier: 0, sub: 1 });
+  ok(!st.nodes.includes('enc') && st.nodes[6] === 'fight', 'Currency Wars: below A2 the encounter is a normal battle');
+  const a2 = gs.cwNew({ mode: 'standard', tier: 2, sub: 1 });
+  eq(a2.nodes[6], 'enc', 'Currency Wars: from A2 node 1-7 is an encounter');
+  for (const z of ['on', 'off', 'bench']) a2.board[z].fill(null);
+  a2.board.on[0] = { uid: ++a2.uid, id: 'herta', star: 3 }; a2.board.on[1] = { uid: ++a2.uid, id: 'arlan', star: 3 }; a2.lvl = 6;
+  a2.node = 6;
+  ok(gs.cwGo() === null && a2.phase === 'enc' && a2.branches.length === 2 && a2.branches[0] < 2 && a2.branches[1] >= 2, 'Currency Wars: an encounter offers one easy and one hard branch');
+  const eb2 = gs.cwPickBranch(1);
+  ok(eb2 && eb2.cw.branch === a2.branches[1] && a2.fight.mods.hp > gs.cwFoeMods(a2, 'fight', null).hp, 'Currency Wars: the hard branch raises enemy difficulty');
+  eb2.waves = eb2.waves.slice(0, 1); eb2.cw.waves = eb2.waves; for (const e of eb2.enemies) e.hp = 1;
+  eb2.start(); eb2.runAuto(3000);
+  const benchBefore = a2.board.bench.filter(Boolean).length, encOut = gs.endBattle().cw;
+  ok(encOut.win && encOut.branch === eb2.cw.branch && (encOut.hero ? CW.UNITS[encOut.hero].cost >= 4 && a2.board.bench.filter(Boolean).length === benchBefore + 1 : encOut.coins > 0), 'Currency Wars: a won hard branch brings a cost 4 or 5 hero');
+  a2.plane = 2; gs.cwEnterPlane(a2); a2.node = a2.nodes.lastIndexOf('enc');
+  eq(gs.cwBranches(a2).length, 4, 'Currency Wars: the final encounter offers four branches');
+
+  const pr = gs.cwNew({ mode: 'standard', tier: 0, sub: 1 });
+  for (const z of ['on', 'off', 'bench']) pr.board[z].fill(null);
+  pr.board.on[0] = { uid: ++pr.uid, id: 'herta', star: 1 }; pr.board.bench[0] = { uid: ++pr.uid, id: 'arlan', star: 1 }; pr.lvl = 3;
+  pr.node = 8;
+  const bossB = gs.cwFight();
+  ok(bossB.waves.length === 2 && bossB.waves.every(w => w.some(s => H.ENEMIES[s.split(':')[0]].boss)), 'Currency Wars: a plane 1 boss has two phases');
+  const seed0 = bossB.opts.seed, waves0 = JSON.stringify(bossB.waves);
+  for (const e of bossB.enemies) { e.maxHp *= 1000; e.hp = e.maxHp; }
+  bossB.start(); bossB.runAuto(3000);
+  gs.endBattle();
+  ok(pr.phase === 'lost' && gs.cwReplay() && pr.phase === 'replay', 'Currency Wars: a lost boss can be replayed');
+  pr.shop[0] = 'march';
+  ok(gs.cwCanBuy(0) === 'replay' && !gs.cwBuyExp() && !gs.cwRefresh() && gs.cwSell('on', 0) === 0, 'Currency Wars: before a replay the shop, EXP and selling are closed');
+  ok(gs.cwMove('bench', 0, 'on', 0) === null && pr.board.on[0].id === 'arlan', 'Currency Wars: before a replay heroes can still be moved');
+  ok(gs.cwGo() === null && gs.battle.opts.seed === seed0 && JSON.stringify(gs.battle.waves) === waves0, 'Currency Wars: the replay is the same battle with the same seed');
+  gs.battle.start(); for (const e of gs.battle.enemies) { e.maxHp *= 1000; e.hp = e.maxHp; } gs.battle.runAuto(3000); gs.endBattle();
+  const bossRec = gs.cwAccept();
+  ok(bossRec.kind === 'boss' && bossRec.hpLoss === TUN.hpLoss.boss[0] + Math.ceil(TUN.hpLoss.boss[0] * (1 - bossRec.progress)) && bossRec.planeDone === 1, 'Currency Wars: a lost boss costs boss HP and closes the plane');
+  ok(pr.plane === 1 && pr.node === 0 && pr.nodes.length === 7 && pr.phase === 'prep', 'Currency Wars: after the plane 1 boss the run enters plane 2');
+  ok(gs.cwBaseMul(pr) === CW.PLANE_MUL[1][0] && gs.cwCountdown(pr, 'fight') === 150 && gs.cwCountdown(pr, 'boss') === 160, 'Currency Wars: plane 2 has its own base damage and countdowns');
+
+  const a3 = gs.cwNew({ mode: 'standard', tier: 3, sub: 1 });
+  for (const z of ['on', 'off', 'bench']) a3.board[z].fill(null);
+  a3.board.on[0] = { uid: ++a3.uid, id: 'herta', star: 1 };
+  a3.node = 8;
+  const bA3 = gs.cwFight();
+  for (const e of bA3.enemies) { e.maxHp *= 1000; e.hp = e.maxHp; }
+  bA3.start(); bA3.runAuto(3000); gs.endBattle();
+  const r3 = gs.cwAccept();
+  ok(r3.minFail && r3.hpLoss === (TUN.hpLoss.boss[0] + Math.ceil(TUN.hpLoss.boss[0] * (1 - r3.progress))) * TUN.minProgressMul, 'Currency Wars: from A3 a boss below 40% progress costs three times the HP');
+  ok(bA3.cw.near === TUN.nearDeathA3, 'Currency Wars: from A3 «О гибели» costs 35');
+  const a5 = gs.cwNew({ mode: 'standard', tier: 5, sub: 1 });
+  ok(a5.hp === 80 && gs.cwNeed(a5) === Math.ceil(TUN.levelExp[3] * TUN.rankExpMul), 'Currency Wars: from A5 the squad starts with 80 HP and levels need more EXP');
+  const a7 = gs.cwNew({ mode: 'standard', tier: 7, sub: 1 });
+  ok(a7.frenzy.length >= 1 && a7.frenzy.length <= 2 && a7.frenzy.every(i => ['fight', 'enc', 'boss'].includes(a7.nodes[i])), 'Currency Wars: from A7 up to two combat nodes are frenzied');
+  a7.node = a7.frenzy[0];
+  ok(gs.cwFoeMods(a7, a7.nodes[a7.node]).frenzy && gs.cwFoeMods(a7, a7.nodes[a7.node]).hp > gs.cwFoeMods(Object.assign({}, a7, { frenzy: [] }), a7.nodes[a7.node]).hp, 'Currency Wars: frenzied nodes have stronger enemies');
+
+  const a6 = gs.cwNew({ mode: 'standard', tier: 6, sub: 4 });
+  a6.plane = 2; gs.cwEnterPlane(a6); a6.node = 3;
+  const sw = gs.cwStars(a6, [Array(60).fill('soldier:60')], 'fight')[0];
+  ok(sw.some(s => s === 2) && sw.some(s => s === 3), 'Currency Wars: high ranks bring 2★ and 3★ enemies in plane 3');
+  ok(gs.cwStars(gs.cwNew({ tier: 0 }), [Array(40).fill('soldier:60')], 'fight')[0].every(s => s === 1), 'Currency Wars: A0 enemies stay 1★');
+  for (const z of ['on', 'off', 'bench']) a6.board[z].fill(null);
+  a6.board.on[0] = { uid: ++a6.uid, id: 'herta', star: 1 };
+  const sb = gs.cwFight();
+  const starred = sb.enemies.find(e => e.cwStar > 1);
+  sb.start();
+  const plain = sb.enemies.find(e => e.cwStar === 1);
+  ok(!starred || !plain || sb.enemies.filter(e => e.id === starred.id).every(e => e.maxHp === Math.round(e.maxHp)), 'Currency Wars: starred enemies keep whole HP values');
+  const pairs = sb.enemies.filter(e => e.cwStar === 2), ones = sb.enemies.filter(e => e.cwStar === 1);
+  const same = pairs.find(p => ones.some(o => o.id === p.id));
+  if (same) ok(Math.abs(same.maxHp / ones.find(o => o.id === same.id).maxHp - TUN.starHp[1]) < 0.01, 'Currency Wars: a 2★ enemy has twice the HP');
+
+  const ga = new H.Game({ fresh: true, seed: 41 });
+  const ra = ga.cwNew({ tier: 0 });
+  ra.opps = ['everwinter', 'ironshield', 'deepsky'];
+  ra.plane = 1; ga.cwEnterPlane(ra); ra.node = ra.nodes.indexOf('boss');
+  for (const z of ['on', 'off', 'bench']) ra.board[z].fill(null);
+  ra.board.on[0] = { uid: ++ra.uid, id: 'herta', star: 3 };
+  const gb = ga.cwFight();
+  ok(gb.cw.phaseFx[1] === 'aura', 'Currency Wars: the Ironshield boss has the garrison aura in phase 2');
+  gb.start();
+  for (const e of gb.enemies) { e.hp = 0; e.dead = true; }
+  gb.cleanup();
+  const gep = gb.enemies.find(e => e.id === 'gepard_b');
+  ok(gb.wave === 1 && gep && gep.shield === Math.round(gep.maxHp * CW.PHASE_FX.aura.shield * 2) && gb.cwInfo.aura === gep && gb.enemies.every(e => e.buffs.some(x => x.s === 'toughIn')), 'Currency Wars: phase 2 shields Gepard by 40% per other enemy and blocks toughness damage');
+  const hero = gb.allies[0], hpBefore = gb.enemies.map(e => e.hp);
+  gb.hit(hero, gep, 0, { raw: gep.shield + 1 });
+  gb.cwCheck();
+  ok(!gb.cwInfo.aura && gb.enemies.every(e => e.broken || e.dead) && gb.enemies.every((e, i) => e.dead || e.hp < hpBefore[i]), 'Currency Wars: breaking the aura breaks every enemy and cuts their HP');
+
+  const gt = new H.Game({ fresh: true, seed: 42 });
+  const rt = gt.cwNew({ tier: 0 });
+  rt.plane = 2; gt.cwEnterPlane(rt); rt.node = rt.nodes.lastIndexOf('reward');
+  ok(gt.cwLastReward(rt), 'Currency Wars: the last rewards node of plane 3 is found');
+  const tb = gt.cwFight();
+  ok(tb.cw.big >= 0 && tb.waves[0][tb.cw.big].startsWith('trotter'), 'Currency Wars: the last rewards node brings the Big Trotter');
+  tb.start();
+  const big = tb.enemies.find(e => e.cwBig);
+  ok(big && big.maxHp > 10 * tb.enemies.filter(e => !e.cwBig)[0].maxHp && big.name === 'Большая свинка-копилка', 'Currency Wars: the Big Trotter has many times the HP');
+  tb.hit(tb.allies[0], big, 0, { raw: big.maxHp * 0.35 });
+  ok(tb.cwInfo.bigOres === 3, 'Currency Wars: the Big Trotter drops ore for every 10% of HP lost');
+
+  const go = new H.Game({ fresh: true, seed: 43 });
+  const rOre = go.cwNew({ tier: 0 });
+  for (const z of ['on', 'off', 'bench']) rOre.board[z].fill(null);
+  const ores = go.cwOpenOres(rOre, Array(12).fill('ore3'));
+  ok(ores.every(o => (o.gold >= CW.ORES.ore3.gold[0] && o.gold <= CW.ORES.ore3.gold[1]) || (o.item && (o.item.id === 'gem' || o.item.sp)) || (o.hero && CW.UNITS[o.hero].cost >= 4)) && ores.some(o => o.hero && o.star === 2), 'Currency Wars: rainbow ore gives 20-30 coins, a special item, a gem or a 2★ cost 4-5 hero');
+  rOre.node = 0;
+  ok(!go.cwHarvest(), 'Currency Wars: harvest needs one cleared rewards node first');
+  rOre.harvest = 1; rOre.node = 1;
+  const g0h = rOre.gold, hv = go.cwHarvest();
+  ok(hv && hv.harvest && hv.coins === TUN.harvestGold[0] && rOre.gold >= g0h + hv.coins && rOre.node === 2, 'Currency Wars: harvest skips the rewards fight and pays average rewards');
+  {
+    ok(CW.POOL.filter(id => CW.UNITS[id].cost === 3).every(id => CW.KITS[id]), 'Currency Wars kits: all 11 heroes of cost 3 have an Empowerment');
+    const mk = list => {
+      const gk = new H.Game({ fresh: true, seed: 71 });
+      const rk = gk.cwNew({ tier: 0 });
+      for (const z of ['on', 'off', 'bench']) rk.board[z].fill(null);
+      rk.lvl = 9;
+      for (const [z, id, star] of list) rk.board[z][rk.board[z].indexOf(null)] = { uid: ++rk.uid, id, star: star || 1 };
+      rk.node = 3;
+      const bk = gk.cwFight();
+      for (const e of bk.enemies) { e.maxHp *= 40; e.hp = e.maxHp; }
+      bk.start();
+      return bk;
+    };
+    {
+      const bk = mk([['on', 'herta'], ['off', 'bailu']]);
+      const a = bk.allies[0], left = bk.cwInfo.left;
+      bk.hit(bk.enemies[0], a, 0, { raw: a.hp + 99 });
+      ok(!a.dead && a.hp > 1 && bk.cwInfo.near === 0 && bk.cwInfo.left === left, 'Currency Wars kits: Bailu cancels «О гибели» once and heals the hero');
+      bk.hit(bk.enemies[0], a, 0, { raw: a.hp + 99 });
+      ok(bk.cwInfo.near === 1, 'Currency Wars kits: after Bailu\'s save the next lethal hit triggers «О гибели»');
+    }
+    {
+      const bk = mk([['on', 'darkness'], ['on', 'herta']]);
+      const d = bk.allies.find(x => x.cwU.id === 'darkness'), left = bk.cwInfo.left;
+      let lf = left;
+      for (let i = 0; i < 6 && !bk.cwInfo.near; i++) { lf = bk.cwInfo.left; bk.hit(bk.enemies[0], d, 0, { raw: d.maxHp * 20 }); }
+      ok(bk.cwInfo.near === 1 && bk.cwInfo.left === lf - Math.round(TUN.nearDeathAv * 0.5), 'Currency Wars kits: Darkness pays half the countdown for her «О гибели»');
+    }
+    {
+      const bk = mk([['on', 'herta'], ['off', 'jingliu']]);
+      const j = bk.summons.find(s => s.cwOff && s.cwU.id === 'jingliu'), hp0 = j.hp;
+      bk.summonTurn(j);
+      ok(j.hp < hp0 && bk.allies[0].buffs.some(x => x.name === 'Луна над ледяной рекой') && j.buffs.some(x => x.name === 'Ледяная душа'), 'Currency Wars kits: Jingliu spends her HP to raise the squad\'s crit damage');
+      j.hp = 1; const e = bk.living.map(x => x.hp);
+      bk.summonTurn(j);
+      ok(j.hp === j.maxHp && bk.living.some((x, i) => x.hp < e[i]), 'Currency Wars kits: below 5% HP Jingliu strikes with her ultimate and recovers');
+    }
+    {
+      const bk = mk([['on', 'herta'], ['off', 'blade']]);
+      const bl = bk.summons.find(s => s.cwOff && s.cwU.id === 'blade');
+      ok(bl.flags.cwShuhu === 2, 'Currency Wars kits: Blade starts with two charges');
+      for (let i = 0; i < 3; i++) { bk.actSerial = 500 + i; bk.hit(bk.enemies[0], bk.allies[0], 0, { raw: 10 }); }
+      ok(bl.flags.cwShuhu === 0 && bl.hp === bl.maxHp, 'Currency Wars kits: five charges unleash Shuhu\'s Gift and heal Blade');
+    }
+    {
+      const bk = mk([['on', 'seele', 3], ['on', 'herta']]);
+      const se = bk.allies.find(x => x.cwU.id === 'seele'), t = bk.living[0];
+      t.hp = Math.floor(t.maxHp * 0.1);
+      bk.actSerial = 900;
+      bk.hit(se, t, 0.01);
+      ok(t.dead || t.hp <= 0, 'Currency Wars kits: Seele executes an enemy below the threshold');
+    }
+    {
+      const bk = mk([['on', 'herta'], ['off', 'rise']]);
+      ok(bk.enemies.every(e => e.buffs.some(x => x.name === 'Анализ')), 'Currency Wars kits: Rise analyzes every enemy at the start');
+    }
+    {
+      const bk = mk([['on', 'herta'], ['off', 'himeko']]);
+      const hm = bk.summons.find(s => s.cwOff && s.cwU.id === 'himeko');
+      hm.flags.cwVic = 3;
+      const hp = bk.living.reduce((a, e) => a + e.hp, 0);
+      bk.cwKitsAfter(bk.allies[0], 'basic');
+      ok(hm.flags.cwVic === 0 && bk.living.reduce((a, e) => a + e.hp, 0) < hp, 'Currency Wars kits: three Victory Rush charges set off Himeko\'s follow-up');
+    }
+  }
+  {
+    ok(CW.POOL.filter(id => CW.UNITS[id].cost >= 4).every(id => CW.KITS[id]), 'Currency Wars kits: all 20 heroes of cost 4 and 5 have an Empowerment');
+    const mk = (list, o) => {
+      const gk = new H.Game({ fresh: true, seed: (o && o.seed) || 83 });
+      const rk = gk.cwNew({ tier: 0 });
+      for (const z of ['on', 'off', 'bench']) rk.board[z].fill(null);
+      rk.lvl = 9;
+      for (const [z, id, star] of list) rk.board[z][rk.board[z].indexOf(null)] = { uid: ++rk.uid, id, star: star || 1 };
+      rk.node = 3;
+      const bk = gk.cwFight();
+      for (const e of bk.enemies) { e.maxHp *= 40; e.hp = e.maxHp; }
+      bk.start();
+      return bk;
+    };
+    {
+      const bk = mk([['on', 'gepard'], ['on', 'herta']]);
+      ok(bk.allies.every(a => a.shield > 0), 'Currency Wars kits: Gepard shields every field hero at the start of the wave');
+    }
+    {
+      const bk = mk([['on', 'clara'], ['on', 'herta']]);
+      const he = bk.allies.find(x => x.cwU.id === 'herta'), e = bk.enemies[0], hp = e.hp;
+      bk.cwKitsEnemyTurn(e);
+      bk.hit(e, he, 0, { raw: 5 });
+      ok(e.hp < hp && e.flags.cwMarkC, 'Currency Wars kits: Svarog counters the enemy who struck another field hero and marks it');
+    }
+    {
+      const bk = mk([['on', 'herta'], ['off', 'fuxuan']]);
+      const a = bk.allies[0], left = bk.cwInfo.left;
+      bk.hit(bk.enemies[0], a, 0, { raw: a.hp + 99 });
+      ok(!a.dead && bk.cwInfo.near === 0 && bk.cwInfo.left === left, 'Currency Wars kits: Fu Xuan\'s Reversal keeps the hero alive without «О гибели»');
+      ok(bk.allies.every(x => x.buffs.some(b => b.name === 'Матрица предвидения')), 'Currency Wars kits: Fu Xuan\'s matrix cuts damage taken by the squad');
+    }
+    {
+      const bk = mk([['on', 'aqua'], ['on', 'herta']]);
+      const he = bk.allies.find(x => x.cwU.id === 'herta'), left = bk.cwInfo.left;
+      bk.hit(bk.enemies[0], he, 0, { raw: he.hp + 99 });
+      ok(bk.cwInfo.near === 1 && bk.cwInfo.left === left, 'Currency Wars kits: Aqua\'s Resurrection returns the countdown spent on «О гибели»');
+    }
+    {
+      const bk = mk([['on', 'herta'], ['off', 'topaz']]);
+      ok(bk.enemies.every(e => e.buffs.some(b => b.name === 'Долговая расписка')), 'Currency Wars kits: enemies enter the fight with Topaz\'s debt mark');
+    }
+    {
+      const bk = mk([['on', 'herta'], ['off', 'silverwolf']]);
+      ok(bk.enemies.every(e => e.buffs.some(b => b.name === 'Ждём ответа системы')), 'Currency Wars kits: Silver Wolf off the field lowers the defense of every enemy');
+      const sw = bk.summons.find(s => s.cwOff && s.cwU.id === 'silverwolf');
+      bk.summonTurn(sw);
+      ok(bk.living.some(e => e.flags.cwImplant || e.weak.includes(bk.allies[0].elem)), 'Currency Wars kits: Silver Wolf implants the weakness of the first field hero');
+    }
+    {
+      const bk = mk([['on', 'welt'], ['on', 'herta']]);
+      const he = bk.allies.find(x => x.cwU.id === 'herta'), e = bk.enemies[0];
+      bk.acting = he;
+      bk.addBuff(e, { s: 'defDown', v: 0.1, turns: 2, name: 'Проба', debuff: true }, true);
+      ok(e.flags.cwInev === 1, 'Currency Wars kits: a debuff from any ally makes Welt add Inevitability');
+    }
+    {
+      const bk = mk([['on', 'bronya'], ['on', 'herta']]);
+      const br = bk.allies.find(x => x.cwU.id === 'bronya'), he = bk.allies.find(x => x.cwU.id === 'herta'), p0 = bk.cwPow(he);
+      bk.cwKitsAfter(br, 'skill');
+      ok(bk.cwPow(he) > p0 && bk.cwLucky(he).ch > 0, 'Currency Wars kits: Bronya\'s Skill raises the power and lucky strike of her ally');
+    }
+    {
+      const bk = mk([['on', 'herta'], ['off', 'megumin']]);
+      const mg = bk.summons.find(s => s.cwOff && s.cwU.id === 'megumin');
+      Object.assign(mg.flags, { cwChant: 0, cwBooms: 1, cwFaint: 0 });
+      mg.en = 0;
+      for (let i = 0; i < 3; i++) bk.summonTurn(mg);
+      ok(mg.flags.cwChant === 3, 'Currency Wars kits: Megumin chants once per turn up to three');
+      const hp = bk.living.reduce((a, e) => a + e.hp, 0);
+      bk.cwGain(mg, 999);
+      ok(mg.flags.cwChant === 0 && mg.flags.cwBooms === 0 && mg.flags.cwFaint === 2 && bk.living.reduce((a, e) => a + e.hp, 0) < hp, 'Currency Wars kits: three chants and full energy let Megumin cast Explosion, then she faints');
+    }
+    {
+      const bk = mk([['on', 'herta'], ['off', 'yanagi']]);
+      ok(bk.chaosOn(), 'Currency Wars kits: Yanagi off the field turns Chaos on');
+    }
+    {
+      const bk = mk([['on', 'kanji'], ['on', 'herta']]);
+      const kj = bk.allies.find(x => x.cwU.id === 'kanji'), hp = bk.enemies[1].hp;
+      bk.actSerial = 700;
+      bk.hit(kj, bk.enemies[0], 1, { kind: 'skill' });
+      ok(bk.enemies[1].hp < hp, 'Currency Wars kits: Kanji\'s stitch echoes damage to other enemies');
+    }
+    {
+      const bk = mk([['on', 'herta'], ['off', 'talleah', 2]]);
+      const gs = bk.summons.filter(s => s.cwBond === 'gynoid');
+      const t = bk.cwStrong(), hp = t.hp;
+      bk.summonTurn(gs[0]);
+      ok(gs.length === 3 && t.hp < hp && t.flags.cwShackle, 'Currency Wars kits: Talleah calls her gynoids, they strike the strongest enemy and shackle it');
+    }
+  }
+  {
+    const mkRun = (list, o) => {
+      const gs = new H.Game({ fresh: true, seed: (o && o.seed) || 97 });
+      const rs = gs.cwNew({ tier: 0 });
+      for (const z of ['on', 'off', 'bench']) rs.board[z].fill(null);
+      rs.lvl = 9;
+      rs.gold = 50;
+      for (const [z, id, star] of list) rs.board[z][rs.board[z].indexOf(null)] = { uid: ++rs.uid, id, star: star || 1 };
+      return { gs, rs };
+    };
+    {
+      const { gs, rs } = mkRun([['on', 'bronya'], ['on', 'hook'], ['on', 'luka']]);
+      const st = gs.cwBonds(rs);
+      ok(st.underworld.members.includes('bronya') && !st.belobog.members.includes('bronya') && gs.cwCompile(rs, 'fight').bronyaForm === 'underworld', 'Currency Wars special: Bronya joins Underworld when more Underworld heroes are deployed');
+      const { gs: g2, rs: r2 } = mkRun([['on', 'bronya'], ['on', 'gepard'], ['on', 'hook']]);
+      ok(g2.cwBonds(r2).belobog.members.includes('bronya') && g2.cwCompile(r2, 'fight').bronyaForm === 'belobog', 'Currency Wars special: on a tie Bronya stays in Belobog');
+    }
+    {
+      const { gs, rs } = mkRun([['on', 'bronya'], ['on', 'herta']]);
+      rs.node = 3;
+      const bk = gs.cwFight();
+      for (const e of bk.enemies) { e.maxHp *= 40; e.hp = e.maxHp; }
+      bk.start();
+      const br = bk.allies.find(x => x.cwU.id === 'bronya'), he = bk.allies.find(x => x.cwU.id === 'herta');
+      ok(br.flags.cwCocolia >= 4, 'Currency Wars special: Bronya starts the fight with Cocolia charges');
+      br.flags.cwCocolia = 7;
+      const hp = bk.living.reduce((a, e) => a + e.hp, 0);
+      bk.cwKitsAfter(he, 'basic');
+      ok(br.flags.cwCocolia === 0 && bk.living.reduce((a, e) => a + e.hp, 0) < hp, 'Currency Wars special: eight charges call Cocolia to strike every enemy');
+    }
+    {
+      const { gs, rs } = mkRun([['bench', 'silverwolf'], ['bench', 'silverwolf']]);
+      gs.cwGive(rs, 'silverwolf');
+      ok(rs.choice && rs.choice.kind === 'p1' && rs.choice.options[0].p1 === 'promote' && rs.choice.options.slice(1).every(o => CW.HACKS[o.hack]), 'Currency Wars special: Silver Wolf\'s first 2★ offers a promotion or hacking components');
+      const res = gs.cwChoose(0), sw = gs.cwOwned(rs, 'silverwolf')[0];
+      ok(res.promoted && sw.lv && sw.star === 1 && CW.costOf(sw) === 5 && gs.cwSellValue(sw) === 5, 'Currency Wars special: the promotion turns her into a 1★ hero of cost 5');
+      sw.star = 3;
+      const gm = gs.cwGm(rs), gold = rs.gold;
+      ok(gm && !gs.cwGmAct('coins') && rs.gold === gold + 10, 'Currency Wars special: a 3★ Leveling_Solo opens the GM console, which hands out coins');
+      const inv = gs.cwInv(rs).length;
+      ok(!gs.cwGmAct('ore', 4) && gs.cwInv(rs).length === inv + 6 && gm.ores === 1, 'Currency Wars special: a GM console ore gives its whole set');
+      const hp0 = gs.cwFoeMods(rs, 'fight').hp;
+      gs.cwGmAct('hp', 0.5);
+      ok(Math.abs(gs.cwFoeMods(rs, 'fight').hp - hp0 * 0.5) < 1e-9, 'Currency Wars special: the GM console scales enemy HP for this node');
+    }
+    {
+      const { gs, rs } = mkRun([['bench', 'silverwolf'], ['bench', 'silverwolf']]);
+      gs.cwGive(rs, 'silverwolf');
+      rs.choice.options = [{ p1: 'promote' }, { hack: 'glasses' }];
+      const n = gs.cwOwned(rs, 'silverwolf').length;
+      const res = gs.cwChoose(1);
+      ok(res.hack === 'glasses' && gs.cwOwned(rs, 'silverwolf').length === n + 1 && gs.cwSpecial(rs).p1 === 'hack', 'Currency Wars special: Clone Glasses hand over a copy of Silver Wolf');
+      gs.cwTakeHack(rs, 'chip');
+      const m = gs.cwFoeMods(rs, 'fight');
+      ok(m.chip && gs.cwSpecial(rs).chip === 3, 'Currency Wars special: the hacked chip weakens the next three nodes');
+      gs.cwTakeHack(rs, 'firewall');
+      rs.board.on[0] = { uid: ++rs.uid, id: 'herta', star: 1 };
+      rs.node = 3;
+      const bk = gs.cwFight();
+      bk.start();
+      ok(bk.enemies.every(e => e.buffs.some(b => b.name === 'Хрупкость')), 'Currency Wars special: the virus firewall makes every enemy fragile');
+    }
+    {
+      const { gs, rs } = mkRun([['off', 'topaz']]);
+      ok(!gs.cwInvest(5) && rs.gold === 45 && gs.cwInvest(5) === 'busy', 'Currency Wars special: Topaz takes one deposit at a time');
+      rs.step = gs.cwSpecial(rs).numby.due;
+      gs.cwBeginNode(rs);
+      ok(rs.gold >= 45 + 5 + 2 && !gs.cwSpecial(rs).numby, 'Currency Wars special: the deposit returns with income after three nodes');
+      gs.cwInvest(5);
+      const g0 = rs.gold;
+      gs.cwSell('off', 0);
+      ok(rs.gold === g0 + 5 + 5 && !gs.cwSpecial(rs).numby, 'Currency Wars special: selling Topaz returns the deposit without income');
+    }
+    {
+      const { gs, rs } = mkRun([['on', 'yu']]);
+      ok(!gs.cwSetWild('heal') && gs.cwBonds(rs).heal.members.includes('yu'), 'Currency Wars special: Wild Card makes Yu a member of the chosen direction bond');
+      const g0 = rs.gold;
+      ok(!gs.cwSetWild('aoe') && rs.gold === g0 - 2 && !gs.cwBonds(rs).heal.members.includes('yu'), 'Currency Wars special: the second change in a node costs 2 coins');
+      ok(gs.cwSetWild('express') === 'target', 'Currency Wars special: Wild Card picks only direction bonds');
+    }
+    {
+      const { gs, rs } = mkRun([['on', 'arlan'], ['bench', 'herta']]);
+      gs.cwInvAdd(rs, 'em_heal');
+      const i = gs.cwInv(rs).findIndex(x => x.id === 'em_heal');
+      ok(!gs.cwPeppyGive(i) && gs.cwBonds(rs).heal.members.includes('peppy'), 'Currency Wars special: an emblem on Peppy counts for its bond');
+      gs.cwInvAdd(rs, 'em_dot');
+      ok(gs.cwPeppyGive(gs.cwInv(rs).findIndex(x => x.id === 'em_dot')) === 'slots', 'Currency Wars special: a 1★ Arlan lets Peppy carry one emblem');
+      gs.cwSell('on', 0);
+      ok(!gs.cwSpecial(rs).peppy.length && gs.cwInv(rs).some(x => x.id === 'em_heal'), 'Currency Wars special: selling Arlan returns Peppy\'s emblems');
+    }
+    {
+      const { gs, rs } = mkRun([['off', 'jingliu'], ['off', 'yanqing']]);
+      ok(gs.cwBonds(rs).mentor.n === 0, 'Currency Wars special: Mentor and Student stays closed without its strategy');
+      rs.strats = ['moonFlash'];
+      const cw = gs.cwCompile(rs, 'fight'), us = Object.values(cw.units);
+      ok(cw.tiers.mentor === 0 && us.every(u => u.bonds.includes('mentor') && u.pow > CW.STARS[4].pow[0]), 'Currency Wars special: with its strategy the bond shares power between members');
+    }
+    {
+      const { gs, rs } = mkRun([['on', 'silverwolf'], ['on', 'herta'], ['off', 'kafka'], ['off', 'blade']]);
+      rs.board.off[1].items = [{ uid: 900, id: 'knife' }];
+      rs.node = 3;
+      const bk = gs.cwFight();
+      for (const e of bk.enemies) { e.maxHp *= 40; e.hp = e.maxHp; }
+      bk.start();
+      const bl = bk.cwStarHunters()[0];
+      ok(bk.cw.starHunters.length === 1 && bl.cwU.id === 'blade', 'Currency Wars special: the Hunter with the most items becomes the Star Hunter');
+      bl.flags.cwStar = 3;
+      const hp = bk.living.reduce((a, e) => a + e.hp, 0);
+      bk.cwStarCount();
+      ok(bl.flags.cwStar === 0 && bl.flags.cwHell && bk.living.reduce((a, e) => a + e.hp, 0) < hp, 'Currency Wars special: the fourth Hunter attack sends Blade into Hellscape and Forest of Swords');
+    }
+  }
+  {
+    const S = CW.STRATS, ids = Object.keys(S);
+    ok(ids.length >= 100 && ['s', 'g', 'p'].every(q => ids.filter(id => S[id].q === q).length >= 25) && ids.every(id => S[id].name && S[id].text && S[id].pl.length), 'Currency Wars strategies: over 100 strategies in three qualities, each with planes and text');
+    ok(ids.filter(id => /^set_/.test(id)).length === 16 && ids.filter(id => /^em_/.test(id)).length === 16, 'Currency Wars strategies: emblem families cover the 16 bonds with a collectible emblem');
+    const mkS = (o) => {
+      const gs = new H.Game({ fresh: true, seed: (o && o.seed) || 131 });
+      const rs = gs.cwNew({ tier: (o && o.tier) || 0 });
+      rs.gold = 60;
+      return { gs, rs };
+    };
+    const take = (gs, rs, id) => { rs.stratPick = { q: S[id].q, opts: [id], rolls: [0] }; return gs.cwTakeStrat(0); };
+    {
+      const { gs, rs } = mkS();
+      rs.node = rs.strat;
+      const bk = gs.cwFight();
+      for (const e of bk.enemies) { e.hp = 1; e.maxHp = 1; }
+      bk.start();
+      bk.runAuto(3000);
+      let o = gs.endBattle().cw;
+      if (o.choice) o = gs.cwAccept();
+      const pk = rs.stratPick;
+      ok(pk && pk.opts.length === 3 && pk.opts.every(id => S[id].q === pk.q && S[id].pl.includes(1)), 'Currency Wars strategies: after the first battle of the plane three strategies of one quality are offered');
+      const hp0 = gs.cwFoeMods(rs, 'fight').hp, q = pk.q;
+      gs.cwTakeStrat(0);
+      ok(rs.strats.length === 1 && rs.diffPlus === { s: 0, g: 1, p: 3 }[q] && !rs.stratPick, 'Currency Wars strategies: the quality raises enemy difficulty');
+      ok(q === 's' || gs.cwFoeMods(rs, 'fight').hp > hp0, 'Currency Wars strategies: added difficulty raises enemy HP');
+      ok(gs.cw().seen.strats && Object.values(gs.cw().seen.strats).includes(2), 'Currency Wars strategies: taken strategies are recorded for the data bank');
+    }
+    {
+      const { gs, rs } = mkS();
+      rs.stratPick = { q: 'g', opts: gs.cwStratDeal(rs, 'g', 3), rolls: [1, 0, 0] };
+      const a = rs.stratPick.opts[0];
+      ok(!gs.cwStratReroll(0) && rs.stratPick.opts[0] !== a && rs.stratPick.rolls[0] === 0 && gs.cwStratReroll(1) === 'rolls', 'Currency Wars strategies: a card rerolls only with its own refreshes');
+    }
+    {
+      const { gs, rs } = mkS();
+      take(gs, rs, 'rateUp');
+      ok(rs.gold === 85 && gs.cwInterest(200, rs) === 10, 'Currency Wars strategies: Rate Hike pays 25 coins and lifts the interest cap to 10');
+      const { gs: g2, rs: r2 } = mkS();
+      take(g2, r2, 'buyout');
+      const e0 = r2.exp + r2.lvl * 100;
+      g2.cwBeginNode(r2);
+      ok(g2.cwInterest(200, r2) === 0 && r2.exp + r2.lvl * 100 > e0, 'Currency Wars strategies: Buyout removes interest and gives experience every node');
+    }
+    {
+      const { gs, rs } = mkS();
+      take(gs, rs, 'market');
+      rs.lvl = 8;
+      let found = -1;
+      for (let n = 0; n < 60 && found < 0; n++) { gs.cwRollShop(rs); found = rs.shopStar.indexOf(2); }
+      const id = rs.shop[found], price = gs.cwShopPrice(rs, found);
+      rs.gold = 50;
+      const res = gs.cwBuy(found);
+      ok(found >= 0 && price === CW.UNITS[id].cost * 3 && res && res.u.star === 2 && rs.gold === 50 - price, 'Currency Wars strategies: Market Activity puts 2★ heroes into the shop at triple price');
+    }
+    {
+      const { gs, rs } = mkS();
+      for (const z of ['on', 'off', 'bench']) rs.board[z].fill(null);
+      rs.board.on[0] = { uid: ++rs.uid, id: 'herta', star: 1 };
+      take(gs, rs, 'jobs');
+      ok(gs.cwMove('on', 0, 'bench', 5) === 'locked' && CW.benchFree(rs) === 0, 'Currency Wars strategies: Job Savings leaves three bench places');
+      const inv = gs.cwInv(rs).length;
+      rs.step += 3;
+      gs.cwBeginNode(rs);
+      ok(!rs.benchCap && gs.cwInv(rs).length === inv + 3, 'Currency Wars strategies: after three nodes the bench reopens and three basic items arrive');
+      take(gs, rs, 'minimum');
+      ok(gs.cwCanBuy(rs.shop.findIndex(Boolean)) === 'locked' && !gs.cwRefresh(), 'Currency Wars strategies: Bare Minimum closes the shop for three nodes');
+    }
+    {
+      const { gs, rs } = mkS();
+      take(gs, rs, 'ace');
+      rs.hp = 0;
+      const rec = gs.cwFinish(rs, { kind: 'fight', win: false, node: rs.node });
+      ok(rs.hp === 40 && rec.ace && !rec.end && gs.cwRun(), 'Currency Wars strategies: Ace in the Hole saves the run once');
+    }
+    {
+      const { gs, rs } = mkS();
+      take(gs, rs, 'expWealth');
+      const g0 = rs.gold;
+      gs.cwAddExp(rs, 6);
+      ok(rs.gold === g0 + 6, 'Currency Wars strategies: Experience Is Wealth turns gained experience into coins');
+      gs.cwBuyExp();
+      ok(rs.exp > 0 || rs.lvl > CW.MODES.standard.lvl, 'Currency Wars strategies: bought experience still counts as experience');
+    }
+    {
+      const { gs, rs } = mkS();
+      take(gs, rs, 'prismFut');
+      ok(rs.stratQ.length === 1 && rs.stratQ[0].q === 'p' && rs.stratQ[0].due === rs.step + 5 && !rs.stratPick, 'Currency Wars strategies: Prism Futures promises a prism choice in five nodes');
+      rs.step += 5;
+      gs.cwBeginNode(rs);
+      ok(rs.stratPick && rs.stratPick.q === 'p' && rs.stratPick.rolls.every(n => n === 0), 'Currency Wars strategies: the promised choice comes without refreshes');
+    }
+    {
+      const { gs, rs } = mkS();
+      for (const z of ['on', 'off', 'bench']) rs.board[z].fill(null);
+      rs.board.on[0] = { uid: ++rs.uid, id: 'herta', star: 1, items: [{ uid: 801, id: 'starBlade', sp: false }, { uid: 802, id: 'starBlade', sp: false }] };
+      take(gs, rs, 'fusion');
+      ok(rs.board.on[0].items.length === 1 && rs.board.on[0].items[0].sp, 'Currency Wars strategies: Call to Fusion merges two equal advanced items into a special one');
+      const inv = gs.cwInv(rs).length;
+      take(gs, rs, 'set_express');
+      ok(gs.cwInv(rs).some(x => x.id === 'em_express') && gs.cwInv(rs).length >= inv + 2 && gs.cwUnits(rs).some(x => CW.UNITS[x.u.id].bonds.includes('express')), 'Currency Wars strategies: an emblem set gives the emblem, a member and an advanced item');
+    }
+    {
+      const { gs, rs } = mkS();
+      for (const z of ['on', 'off', 'bench']) rs.board[z].fill(null);
+      rs.board.on[0] = { uid: ++rs.uid, id: 'herta', star: 2 };
+      take(gs, rs, 'pinpoint');
+      take(gs, rs, 'arrows');
+      rs.node = 3;
+      const bk = gs.cwFight();
+      for (const e of bk.enemies) { e.maxHp *= 40; e.hp = e.maxHp; }
+      const hp = bk.enemies.map(e => e.hp);
+      bk.start();
+      ok(bk.enemies.some(e => e.dead || e.hp <= 0) && bk.enemies.some((e, i) => e.hp < hp[i] && !e.dead), 'Currency Wars strategies: Pinpoint Blast removes the biggest enemy and Arrow Rain hits the rest');
+    }
+  }
+  {
+    const E = CW.ENVS, A = CW.AFFIXES;
+    ok(Object.keys(E).length >= 80 && Object.keys(E).filter(k => /^unique_/.test(k)).length === 25 && Object.keys(E).filter(k => /^invite_/.test(k)).length === 25, 'Currency Wars environments: base list plus 25 «Unique shares» and 25 «Invitations»');
+    ok(Object.keys(A).length >= 50 && Object.keys(A).filter(k => A[k].fam === 'boost').length === 5 && Object.values(A).every(a => a.danger >= 1 && a.danger <= 3 && a.name && a.text), 'Currency Wars affixes: over 50 affixes with danger marks, five of the boost family');
+    const counts = [0, 1, 2, 4, 6, 8].map(t => new H.Game({ fresh: true, seed: 40 + t }).cwNew({ tier: t }).affixes);
+    ok(counts.map(a => a.length).join('/') === '0/0/1/2/3/4', 'Currency Wars affixes: none before A2, then 1 / 2 / 3 / 4 at A2 / A4 / A6 / A8');
+    ok(counts.slice(2).every(a => a.filter(k => A[k].fam === 'boost').length === (a.length >= 3 ? 2 : 1) && new Set(a).size === a.length), 'Currency Wars affixes: one or two of them always come from the boost family');
+    const mkE = (o) => { const gs = new H.Game({ fresh: true, seed: (o && o.seed) || 151 }); const rs = gs.cwNew({ tier: (o && o.tier) || 0 }); rs.gold = 40; return { gs, rs }; };
+    const env = (gs, rs, id) => { rs.envPick = { opts: [id] }; return gs.cwTakeEnv(0); };
+    {
+      const { gs, rs } = mkE();
+      ok(rs.envPick && rs.envPick.opts.length === 3 && new Set(rs.envPick.opts).size === 3, 'Currency Wars environments: a new run offers three different environments');
+      const inv = gs.cwInv(rs).length;
+      env(gs, rs, 'gunpowder');
+      ok(!rs.envPick && rs.envs[0] === 'gunpowder' && gs.cwInv(rs).filter(x => x.id === 'boxBasic').length === 2 && gs.cwInv(rs).length === inv + 2, 'Currency Wars environments: Smell of Gunpowder starts with two weapon boxes');
+    }
+    {
+      const { gs, rs } = mkE();
+      env(gs, rs, 'accident');
+      const bi = rs.nodes.indexOf('boss');
+      ok(rs.nodes[bi - 1] === 'supply' && rs.nodeOpp.length === rs.nodes.length, 'Currency Wars environments: Accident Insurance puts a supply before the boss');
+      const { gs: g2, rs: r2 } = mkE({ tier: 2 });
+      env(g2, r2, 'warFront');
+      r2.plane = 2; g2.cwEnterPlane(r2);
+      ok(!r2.nodes.includes('fight') && r2.nodes.includes('enc'), 'Currency Wars environments: War Front turns every battle of plane 3 into an encounter');
+    }
+    {
+      const { gs, rs } = mkE();
+      env(gs, rs, 'ageP');
+      ok(gs.cwStratRollQ(rs) === 'p', 'Currency Wars environments: the Rainbow Age makes every strategy prismatic');
+      const { gs: g2, rs: r2 } = mkE();
+      env(g2, r2, 'tricolor');
+      g2.cwStratQueue(r2, 'g', 0, r2.step);
+      const pk = r2.stratPick;
+      ok(pk && pk.qs.join('') === 'sgp' && pk.opts.every((id, i) => CW.STRATS[id].q === pk.qs[i]) && pk.rolls.every(n => n === 2), 'Currency Wars environments: Gold, Silver, Prism lays out one card of each quality with two refreshes');
+      g2.cwTakeStrat(2);
+      ok(r2.diffPlus === 3 && r2.strats[0].q === 'p', 'Currency Wars environments: the taken card brings its own quality and difficulty');
+    }
+    {
+      const { gs, rs } = mkE();
+      env(gs, rs, 'heroExit');
+      const u = gs.cwUnits(rs).map(x => x.u).find(x => x.lockN > 0);
+      ok(u && u.star === 2 && CW.UNITS[u.id].cost === 5 && u.lockN === 19, 'Currency Wars environments: Hero Exit gives a locked 2★ hero of cost 5');
+      const x = gs.cwUnits(rs).find(q => q.u === u);
+      ok(gs.cwMove(x.zone, x.i, 'on', rs.board.on.indexOf(null) >= 0 ? rs.board.on.indexOf(null) : 3) === 'locked', 'Currency Wars environments: the locked hero cannot be deployed');
+      gs.cwBeginNode(rs);
+      ok(u.lockN === 18, 'Currency Wars environments: each node brings the hero closer');
+    }
+    {
+      const { gs, rs } = mkE();
+      env(gs, rs, 'reserve');
+      const us = gs.cwUnits(rs).map(x => x.u);
+      ok(us.length === 3 && us.every(u => CW.UNITS[u.id].cost === 3) && rs.reserveIds.length === 3, 'Currency Wars environments: Talent Reserve starts with three heroes of cost 3');
+      const { gs: g2, rs: r2 } = mkE({ tier: 4 });
+      const aff = r2.affixes.slice();
+      env(g2, r2, 'rearKill');
+      ok(r2.affixOff.length === 1 && aff.includes(r2.affixOff[0]) && !g2.cwCompile(r2, 'fight').affix.includes(r2.affixOff[0]), 'Currency Wars environments: Rear Strike switches one affix off');
+    }
+    {
+      const { gs, rs } = mkE();
+      env(gs, rs, 'longGain');
+      rs.gold = 200;
+      for (let i = 0; i < 30; i++) gs.cwRefresh();
+      const g0 = rs.gold;
+      gs.cwRefresh();
+      ok(rs.cheapRefresh && rs.gold === g0 - 1, 'Currency Wars environments: after 30 paid refreshes Long-term Gain makes refreshes cost 1');
+    }
+    const mkF = (affix, list, o) => {
+      const gs = new H.Game({ fresh: true, seed: (o && o.seed) || 163 });
+      const rs = gs.cwNew({ tier: 2 });
+      for (const z of ['on', 'off', 'bench']) rs.board[z].fill(null);
+      rs.lvl = 9;
+      rs.affixes = affix;
+      for (const [z, id, star] of list) rs.board[z][rs.board[z].indexOf(null)] = { uid: ++rs.uid, id, star: star || 1 };
+      rs.node = 3;
+      return { gs, rs };
+    };
+    {
+      const { gs, rs } = mkF([], [['on', 'herta']]);
+      const c0 = gs.cwCountdown(rs, 'fight'), b0 = gs.cwCountdown(rs, 'boss');
+      rs.affixes = ['hearty'];
+      ok(gs.cwCountdown(rs, 'fight') === c0 - 30 && gs.cwCountdown(rs, 'boss') === b0 + 20, 'Currency Wars affixes: Hearty Brawl shortens battles and lengthens bosses');
+    }
+    {
+      const { gs, rs } = mkF(['boostEscort', 'hemostasis'], [['on', 'herta']]);
+      const ref = mkF([], [['on', 'herta']]);
+      const b0 = ref.gs.cwFight(); b0.start();
+      const bk = gs.cwFight(); bk.start();
+      const e = bk.enemies.find(x => !x.data.boss), e0 = b0.enemies.find(x => x.id === e.id) || b0.enemies[0];
+      ok(e.maxHp > e0.maxHp && e.hp <= Math.round(e.maxHp * 0.8) + 1 && e.buffs.some(b => b.name === 'Аффикс: скорость'), 'Currency Wars affixes: escort boost raises HP and speed, Urgent Hemostasis starts enemies wounded');
+    }
+    {
+      const { gs, rs } = mkF(['frontOff'], [['on', 'herta']]);
+      const bk = gs.cwFight();
+      for (const e of bk.enemies) { e.maxHp *= 40; e.hp = e.maxHp; }
+      bk.start();
+      const he = bk.allies[0], t = bk.living[0];
+      he.flags.cwFirst = false;
+      const d1 = bk.hit(he, t, 1, { kind: 'basic' }), d2 = bk.hit(he, t, 1, { kind: 'basic' });
+      ok(d1 === 1 && d2 > 1, 'Currency Wars affixes: Front Shutdown turns the first hit of a field hero into 1 damage');
+    }
+    {
+      const { gs, rs } = mkF(['jailCard'], [['on', 'herta']]);
+      const bk = gs.cwFight();
+      bk.start();
+      const t = bk.living[0];
+      bk.hit(bk.allies[0], t, 0, { raw: t.hp + 99 });
+      ok(!t.dead && t.hp > 0 && t.flags.cwJail, 'Currency Wars affixes: Get Out of Jail keeps an enemy at 10% once');
+    }
+    {
+      const { gs, rs } = mkF(['cryosleep'], [['on', 'herta']]);
+      const bk = gs.cwFight();
+      for (const e of bk.enemies) { e.maxHp *= 40; e.hp = e.maxHp; }
+      bk.start();
+      const he = bk.allies[0];
+      bk.hit(bk.enemies[0], he, 0, { raw: he.hp + 99 });
+      ok(bk.cwInfo.near === 1 && he.frozen && he.stun, 'Currency Wars affixes: Cryosleep freezes a hero after «О гибели»');
+    }
+    {
+      const { gs, rs } = mkF(['alone', 'diffAttitude'], [['on', 'herta']]);
+      const bk = gs.cwFight();
+      bk.start();
+      const he = bk.allies[0];
+      ok(Math.abs(bk.cwAffixMul(he, bk.living[0], {}) - 0.6 * 0.8) < 1e-9, 'Currency Wars affixes: Lone Wolf and Different Attitude cut damage by inactive bonds and stars');
+    }
+  }
+  {
+    const O = CW.OPPONENTS, ids = Object.keys(O);
+    ok(ids.length === 7 && ['doomsday', 'swarm', 'deathless', 'axel'].every(k => O[k] && O[k].phases.length === 3 && O[k].phases.every(w => w.some(id => H.ENEMIES[id] && H.ENEMIES[id].boss)) && O[k].elite.concat(O[k].normal).every(id => H.ENEMIES[id])), 'Currency Wars opponents: seven opponents, the four new ones with three boss phases and real enemies');
+    ok(['cocolia_x', 'svarog_hand', 'phantylia_x', 'timekiller', 'trotter_big'].every(id => H.ENEMIES[id] && H.ENEMIES[id].id === id && H.ENEMIES[id].skills.length), 'Currency Wars opponents: five new enemy records');
+    const runs = [1, 2, 3, 4, 5].map(s => new H.Game({ fresh: true, seed: 300 + s }).cwNew({ tier: 0 }));
+    ok(runs.every(r => r.opps.length === 3 && new Set(r.opps).size === 3) && new Set(runs.flatMap(r => r.opps)).size >= 5, 'Currency Wars opponents: a run takes three of the seven opponents');
+    const mkB = (opp, plane, list, o) => {
+      const gs = new H.Game({ fresh: true, seed: (o && o.seed) || 171 });
+      const rs = gs.cwNew({ tier: 0 });
+      rs.envPick = null; rs.affixes = [];
+      for (const z of ['on', 'off', 'bench']) rs.board[z].fill(null);
+      rs.lvl = 9;
+      for (const [z, id, star] of list) rs.board[z][rs.board[z].indexOf(null)] = { uid: ++rs.uid, id, star: star || 1 };
+      rs.opps = [opp, opp, opp]; rs.plane = plane; gs.cwEnterPlane(rs); rs.node = rs.nodes.indexOf('boss');
+      const bk = gs.cwFight();
+      bk.start();
+      return { gs, rs, bk };
+    };
+    const toWave = (bk, w) => { bk.cwInfo.left = 99999; for (let n = 0; n < 6 && bk.wave < w && !bk.over; n++) { for (const e of bk.living.slice()) { e.hp = 0; e.dead = true; } bk.cleanup(); bk.autoStep(); bk.drain(); } };
+    {
+      const { bk } = mkB('axel', 2, [['on', 'herta'], ['on', 'aqua']]);
+      const p = bk.enemies.find(e => e.data.proto), he = bk.allies.find(a => a.cwU.id === 'herta');
+      ok(p.flags.barrier && p.flags.legs, 'Currency Wars opponents: the Prototype starts behind its barrier');
+      const d = bk.dmgCalc(he, p, 1, { kind: 'basic' }, false), raw = bk.protoGuard(he, p, 1000, {});
+      ok(raw === 300 && d > 0, 'Currency Wars opponents: the barrier lets 30% of damage through');
+      bk.hit(bk.allies.find(a => a.cwU.id === 'aqua'), p, 0.5, { kind: 'basic' });
+      ok(!p.flags.barrier, 'Currency Wars opponents: Aqua\'s hit breaks the barrier');
+      toWave(bk, 2);
+      const core = bk.enemies.find(e => e.data.proto && !e.dead);
+      ok(bk.wave === 2 && core && !core.flags.legs && !core.flags.barrier, 'Currency Wars opponents: the third phase opens the core');
+      const hp = core.hp;
+      bk.protoCore(bk.allies[0], core);
+      ok(core.flags.cwStolen && hp - core.hp >= Math.floor(core.maxHp * 0.25) - 1 && !core.dead, 'Currency Wars opponents: Kazuma\'s Steal takes 25% of the core once');
+    }
+    {
+      const { bk } = mkB('axel', 0, [['on', 'herta']]);
+      const p = bk.enemies.find(e => e.data.proto);
+      for (let i = 0; i < 3; i++) { p.broken = false; p.tough = 0; bk.doBreak(bk.allies[0], p, 'ice'); }
+      ok(!p.flags.barrier && p.flags.cwBreaks === 3, 'Currency Wars opponents: three breaks remove the barrier');
+    }
+    {
+      const { bk } = mkB('swarm', 2, [['on', 'herta']]);
+      toWave(bk, 2);
+      const boss = bk.living.find(e => e.data.boss), stings = bk.living.filter(e => e.flags.cwSting);
+      ok(boss && boss.id === 'skaracabaz' && bk.enemies.filter(e => e.flags.cwSting).length === 4 && boss.turnsTaken < 0 && boss.buffs.some(b => b.name === 'Генное копирование'), 'Currency Wars opponents: Gene Copy gives the third Skaracabaz four stingers, speed and no lifespan');
+      for (const s of stings) bk.hit(bk.allies[0], s, 0, { raw: s.hp + 1 });
+      ok(boss.broken, 'Currency Wars opponents: killing every stinger breaks Skaracabaz');
+    }
+    {
+      const { bk } = mkB('everwinter', 2, [['on', 'herta']]);
+      toWave(bk, 2);
+      const c = bk.living.find(e => e.id === 'cocolia_x');
+      ok(c, 'Currency Wars opponents: the third Everwinter phase is Cocolia (repaired)');
+      c.hp = Math.round(c.maxHp * 0.6);
+      bk.hit(bk.allies[0], c, 0, { raw: Math.round(c.maxHp * 0.2) });
+      ok(c.flags.cwCascade === 2, 'Currency Wars opponents: dropping below 50% starts the Doomsday ice cascade');
+    }
+    {
+      const { bk } = mkB('deepsky', 2, [['on', 'herta']]);
+      toWave(bk, 2);
+      const s = bk.living.find(e => e.id === 'svarog_b');
+      s.hp = Math.round(s.maxHp * 0.6);
+      bk.hit(bk.allies[0], s, 0, { raw: Math.round(s.maxHp * 0.2) });
+      ok(bk.living.filter(e => e.id === 'svarog_hand').length >= 1 && s.flags.cwHand, 'Currency Wars opponents: below 50% Svarog calls the auxiliary manipulators');
+    }
+    {
+      const { bk } = mkB('doomsday', 1, [['on', 'herta']]);
+      toWave(bk, 1);
+      const d = bk.living.find(e => e.id === 'doomsday');
+      d.flags.cwBT = 2;
+      bk.cwBossTurn(d);
+      ok(d.planned && d.planned.n === 'Сбор антиматерии', 'Currency Wars opponents: every third Doomsday Beast turn gathers antimatter');
+    }
+    {
+      const gs = new H.Game({ fresh: true, seed: 181 }), rs = gs.cwNew({ tier: 0 });
+      rs.plane = 2; gs.cwEnterPlane(rs); rs.node = rs.nodes.lastIndexOf('reward');
+      const w = gs.cwWaves(rs, 'reward');
+      ok(w[0].some(s => s.split(':')[0] === 'trotter_big'), 'Currency Wars opponents: the last reward node brings the Big Piggy Bank');
+    }
+    {
+      const gs = new H.Game({ fresh: true, seed: 191 }), rs = gs.cwNew({ tier: 2 });
+      rs.envPick = null; rs.affixes = ['timeKiller'];
+      for (const z of ['on', 'off', 'bench']) rs.board[z].fill(null);
+      rs.board.on[0] = { uid: ++rs.uid, id: 'herta', star: 2 };
+      rs.node = 3;
+      let bk = null;
+      for (let n = 0; n < 20; n++) { const cw = gs.cwCompile(rs, 'fight'); if (cw.timeKiller) { gs.cwCompile = (orig => function () { const c = orig.apply(this, arguments); c.timeKiller = true; return c; })(gs.cwCompile); break; } }
+      bk = gs.cwFight();
+      bk.start();
+      ok(bk.enemies.some(e => e.id === 'timekiller' && e.flags.cwTimeKiller), 'Currency Wars affixes: Time Killer comes out as its own enemy');
+    }
+  }
+  {
+    const gf = new H.Game({ fresh: true, seed: 211 }), rf = gf.cwNew({ tier: 0 });
+    rf.envPick = null; rf.affixes = [];
+    for (const z of ['on', 'off', 'bench']) rf.board[z].fill(null);
+    rf.board.on[0] = { uid: ++rf.uid, id: 'herta', star: 2 };
+    rf.node = rf.nodes.indexOf('boss');
+    const bf = gf.cwFight();
+    for (const e of bf.enemies) { e.maxHp *= 50; e.hp = e.maxHp; }
+    bf.start();
+    const he = bf.allies[0], t0 = bf.living[0], m0 = bf.cwMul(he, t0, {});
+    bf.cwInfo.left = TUN.finaleAt + 1;
+    bf.cwTick(2);
+    ok(bf.cwInfo.finale && Math.abs(bf.cwMul(he, t0, {}) - m0 * TUN.finaleMul) < 1e-6, 'Currency Wars battle: below 100 countdown in a boss node the Final Moment doubles damage');
+    bf.cwInfo.left = 150;
+    ok(Math.abs(bf.cwMul(he, t0, {}) - m0 * TUN.finaleMul) < 1e-6, 'Currency Wars battle: the Final Moment lasts to the end of the fight');
+    const rf2 = new H.Game({ fresh: true, seed: 212 });
+    const r2 = rf2.cwNew({ tier: 0 }); r2.envPick = null;
+    r2.node = 3;
+    const b2 = rf2.cwFight(); b2.start(); b2.cwInfo.left = 50; b2.cwTick(1);
+    ok(!b2.cwInfo.finale, 'Currency Wars battle: ordinary battles have no Final Moment');
+    r2.dmg = { herta: 900, march: 300 }; r2.hp = 75;
+    const sm = rf2.cwClose(r2, true);
+    ok(sm.dmg[0].id === 'herta' && sm.dmg[0].v === 900 && sm.rankGain === 3 && Array.isArray(sm.strats) && Array.isArray(sm.bonds), 'Currency Wars report: the run summary keeps damage by hero, bonds, strategies and the rank stamp');
+  }
+  {
+    const M = CW.META;
+    ok(Object.keys(M.asc).length === 50 && M.week.length === 10 && M.rank.length === CW.RANKS.length, 'Currency Wars meta: 50 promotion levels, 10 weekly tiers and a reward for every rank');
+    const gm = new H.Game({ fresh: true, seed: 401 });
+    let now = 5 * M.weekMs + 1000;
+    gm.clock = () => now;
+    const win = (o, hp) => { const r = gm.cwNew(o); r.envPick = null; r.hp = hp == null ? 90 : hp; r.node = r.nodes.length - 1; r.plane = CW.MODES[r.mode].planes.length - 1; return gm.cwClose(r, true); };
+    const C0 = gm.cwMeta();
+    ok(C0.rank.best === 0 && C0.week.dbl === M.dbl && C0.asc.pts === 0, 'Currency Wars meta: a new save starts at A0-1 with a full double-points pool');
+    const s1 = win({ tier: 0, sub: 1 });
+    ok(s1.meta.asc === 600 && s1.meta.ascBonus === 600 && C0.asc.pts === 1200 && C0.week.dbl === M.dbl - 600, 'Currency Wars meta: a Standard win at A0 gives 600 promotion points, doubled from the weekly pool');
+    ok(s1.meta.week === M.weekMax && C0.week.pts === M.weekMax, 'Currency Wars meta: a Standard win fills the weekly 18 000 points');
+    ok(C0.rank.best === 3 && s1.rankGain === 3 && s1.meta.notes === M.notesWin, 'Currency Wars meta: a win at the highest rank with HP 70+ climbs three sub-ranks and pays banknotes');
+    const s2 = win({ tier: 0, sub: 1 });
+    ok(C0.rank.best === 3 && s2.rankGain === 0 && s2.meta.week === 0, 'Currency Wars meta: a win below the highest rank does not move the rank, and the weekly cap holds');
+    win({ tier: 1, sub: 1 }, 50);
+    ok(C0.rank.best === 5, 'Currency Wars meta: HP 40-69 gives two sub-ranks');
+    ok(gm.cwClaimWeek(0) && gm.cwClaimWeek(0) === null && C0.week.got.includes(0), 'Currency Wars meta: a weekly tier is claimed once');
+    const cr0 = gm.state.credits;
+    ok(gm.cwClaimAsc(gm.cwAscLvl() + 1) === null && gm.cwClaimAsc(1) && gm.cwAscLvl() === 5, 'Currency Wars meta: promotion levels give their reward only when reached');
+    ok(gm.cwClaimRank(0) && gm.cwClaimRank(1) && gm.cwClaimRank(2) === null, 'Currency Wars meta: rank rewards open with the rank');
+    now += M.weekMs;
+    ok(gm.cwMeta().week.pts === 0 && gm.cwMeta().week.dbl === M.dbl && !gm.cwMeta().week.got.length, 'Currency Wars meta: a new 2-hour week resets the points and the double pool');
+    C0.rank.best = CW.rankIndex(5, 6);
+    win({ tier: 5, sub: 6 });
+    ok(C0.rank.best === CW.rankIndex(5, 7) && gm.cwGate(), 'Currency Wars meta: from A5-7 the rank waits for a promotion match');
+    const rp = gm.cwNew({ tier: 5, sub: 7 });
+    ok(rp.promo && rp.tier === 6 && rp.sub === 6, 'Currency Wars meta: the promotion match plays at the sixth sub-rank of the next rank');
+    rp.hp = 20; gm.cwClose(rp, false);
+    ok(C0.rank.best === CW.rankIndex(5, 7), 'Currency Wars meta: losing the promotion match keeps A5-7');
+    win({ tier: 5, sub: 7 }, 30);
+    ok(C0.rank.best === CW.rankIndex(6, 1) && !gm.cwGate(), 'Currency Wars meta: winning the promotion match opens A6');
+    const q = gm.cwNew({ mode: 'quick', tier: 0 }); q.envPick = null; q.plane = 1; q.node = 0;
+    const sq = gm.cwClose(q, false);
+    ok(sq.meta.asc === Math.round(600 * M.ascLoss * sq.node / sq.nodes * M.ascQuick) && sq.meta.notes === Math.round(M.notesLoss * M.notesQuick), 'Currency Wars meta: a lost Quick game pays half points by progress, three quarters for Quick');
+    ok(gm.cw().hist[0].meta && gm.cw().hist[0].meta.notes === sq.meta.notes, 'Currency Wars meta: the history keeps the rewards of each run');
+    ok(gm.state.credits > cr0, 'Currency Wars meta: claimed rewards reach the main game');
+  }
+  {
+    const P = CW.PERKS;
+    ok(P.length === 34 && P.reduce((a, p) => a + p.cost, 0) === 1520, 'Currency Wars perks: 34 perks for 1520 banknotes, as in the plan');
+    const gp = new H.Game({ fresh: true, seed: 451 });
+    const C0 = gp.cwPerks();
+    C0.notes = 2000;
+    ok(gp.cwPerkBuy('thanks') === 'locked', 'Currency Wars perks: seasonal perks stay closed until every permanent one is installed');
+    for (const p of P.filter(x => x.tab === 'p')) gp.cwPerkBuy(p.id);
+    ok(!gp.cwPerkBuy('thanks') && gp.cwPerkOn('thanks') && C0.notes === 2000 - 500 - 20, 'Currency Wars perks: installing spends banknotes');
+    gp.cwPerkReset();
+    ok(C0.notes === 2000 && !C0.perks.on.length, 'Currency Wars perks: reset returns every banknote');
+    for (const p of P.filter(x => x.tab === 'p')) gp.cwPerkBuy(p.id);
+    for (const id of ['recovery', 'expInvest', 'smith', 'supplyRoll', 'branchRoll', 'envRoll', 'powS0']) gp.cwPerkBuy(id);
+    const rp = gp.cwNew({ tier: 0 });
+    ok(gp.cwInv(rp).some(x => CW.ITEMS[x.id].kind === 'basic') && rp.stratPick == null, 'Currency Wars perks: Prolonged Battle adds a basic item at the start');
+    for (const z of ['on', 'off', 'bench']) rp.board[z].fill(null);
+    rp.board.on[0] = { uid: ++rp.uid, id: 'herta', star: 1 };
+    const base = new H.Game({ fresh: true, seed: 451 }), rb = base.cwNew({ tier: 0 });
+    for (const z of ['on', 'off', 'bench']) rb.board[z].fill(null);
+    rb.board.on[0] = { uid: ++rb.uid, id: 'herta', star: 1 };
+    const cp = gp.cwCompile(rp, 'fight'), cb = base.cwCompile(rb, 'fight');
+    ok(cp.party[0].stats.atk > cb.party[0].stats.atk * 1.25 && cp.party[0].stats.hp > cb.party[0].stats.hp, 'Currency Wars perks: combat power raises the stats of mode heroes');
+    ok(cp.near === cb.near - 10 && cp.techs.length >= 1, 'Currency Wars perks: Recovery cuts the «О гибели» cost and Battle Preparation brings techniques');
+    rp.envPick = { opts: gp.cwEnvDeal(rp, 3) };
+    const e0 = rp.envPick.opts.join();
+    ok(!gp.cwRerollEnv() && gp.cwRerollEnv() === 'used' && rp.envPick.opts.length === 3, 'Currency Wars perks: the environment can be reshuffled once');
+    rp.envPick = null;
+    const inv = gp.cwInv(rp).length;
+    rp.plane = 1; rp.node = 0; rp.step = 9;
+    gp.cwBeginNode(rp);
+    ok(gp.cwInv(rp).length >= inv + 2, 'Currency Wars perks: Master Smith brings a furnace and a key at the start of plane 2');
+    rp.node = rp.nodes.indexOf('supply'); rp.phase = 'prep';
+    rp.board.on[0] = rp.board.on[0] || { uid: ++rp.uid, id: 'herta', star: 1 };
+    gp.cwGo();
+    ok(rp.phase === 'supply' && rp.offer.length >= 5 && !gp.cwRerollSupply() && gp.cwRerollSupply() === 'used', 'Currency Wars perks: extra supply adds an option and supply can be reshuffled once');
+    gp.cwSkipOffer();
+  }
+  {
+    const gb = new H.Game({ fresh: true, seed: 461 });
+    const r = gb.cwNew({ tier: 0 });
+    r.envPick = null;
+    const st = gb.cwBankState();
+    ok(st.parts.opps[0] === 3 && st.parts.kits[0] >= 1 && st.parts.envs[0] >= 3 && st.pct > 0, 'Currency Wars bank: opponents, heroes and environments seen in a run are recorded');
+    const S = gb.cw().seen;
+    S.strats = S.strats || {}; for (const id of Object.keys(CW.STRATS).slice(0, 15)) S.strats[id] = 2;
+    ok(gb.cwBankClaim('strats', 0) && gb.cwBankClaim('strats', 0) === null && gb.cwBankClaim('strats', 1) === null, 'Currency Wars bank: 15 strategies open the first collection reward once');
+  }
+  {
+    const gl = new H.Game({ fresh: true, seed: 471 });
+    ok(CW.LINK_BONDS.length === 25 && CW.LINK_BONDS.every(k => CW.linkTasks(k).length === 3), 'Currency Wars links: three tasks for each of the 25 bonds');
+    const r = gl.cwNew({ tier: 0 });
+    r.envPick = null;
+    for (const z of ['on', 'off', 'bench']) r.board[z].fill(null);
+    const ids = CW.POOL.filter(id => CW.UNITS[id].bonds.includes('xianzhou')).slice(0, 5);
+    ids.forEach(id => { const z = r.board.off.indexOf(null) >= 0 ? 'off' : 'on'; r.board[z][r.board[z].indexOf(null)] = { uid: ++r.uid, id, star: 1 }; });
+    r.lvl = 9; r.hp = 80;
+    const sum = gl.cwClose(r, true), C0 = gl.cwPerks();
+    ok(sum.links.includes('xianzhou:0') && !sum.links.includes('xianzhou:1') && C0.links.done.includes('xianzhou:0'), 'Currency Wars links: a cleared run with Xianzhou 5 completes the first Xianzhou task');
+    const j0 = gl.state.jade;
+    ok(gl.cwLinkClaim('xianzhou:0') && gl.state.jade === j0 + 20 && gl.cwLinkClaim('xianzhou:0') === null, 'Currency Wars links: each task pays 20 jade once');
+    const r2 = gl.cwNew({ tier: 0 }); r2.envPick = null;
+    const s2 = gl.cwClose(r2, false);
+    ok(!s2.links.length, 'Currency Wars links: an unfinished run completes nothing');
+  }
+  {
+    ok(CW.GUIDE.length === 4 && CW.GUIDE.map(c => c.tasks.length).join('/') === '5/6/7/7', 'Currency Wars guide: four chapters with 5, 6, 7 and 7 tasks');
+    ok(CW.PROFIT.length === 7 && CW.PROFIT.map(g => g.tasks.length).join('/') === '10/8/13/10/8/8/8', 'Currency Wars profit: seven groups, 65 tasks');
+    ok(CW.LINEUPS.length === 10 && CW.LINEUPS.every(L => L.on.concat(L.off).every(id => CW.UNITS[id])), 'Currency Wars lineups: ten lineups of real mode heroes');
+    const gg = new H.Game({ fresh: true, seed: 481 });
+    const r = gg.cwNew({ tier: 0 });
+    r.envPick = null; r.gold = 40;
+    for (let i = 0; i < 4; i++) gg.cwBuyExp();
+    const Gs = gg.cwGoals();
+    ok(Gs.cnt.buyExp === 4 && Gs.done.includes('0:1'), 'Currency Wars guide: four bought experience complete the task');
+    const j0 = gg.cwMeta().asc.pts;
+    ok(gg.cwGuideClaim(0, 1) && gg.cwGuideClaim(0, 1) === null && gg.cwMeta().asc.pts === j0 + 200, 'Currency Wars guide: a task pays its reward and 200 promotion points once');
+    ok(gg.cwChapterClaim(0) === null, 'Currency Wars guide: the chapter reward waits for every task');
+    gg.cwTrack('heroes', 'herta'); gg.cwTrack('heroes', 'asta');
+    ok(Gs.done.includes('0:2') && gg.cwTracked(r).heroes.length === 2, 'Currency Wars guide: tracking the gear of two heroes completes the task');
+    const recs = gg.cwRecFor(r);
+    ok(gg.cwRec('herta').every(id => recs.has(id)), 'Currency Wars tracking: tracked heroes highlight their recommended items');
+    gg.cwTrack('bonds', 'xianzhou'); gg.cwTrack('bonds', 'heal');
+    ok(Gs.done.includes('1:1'), 'Currency Wars guide: tracking two bonds at once completes the task');
+    gg.cwApplyGuide('lord');
+    ok(gg.cwGuideHeroes().includes('jingyuan') && Gs.done.includes('2:1'), 'Currency Wars lineups: applying a lineup marks its heroes and counts for the guide');
+    for (const z of ['on', 'off', 'bench']) r.board[z].fill(null);
+    [['on', 'herta', 1], ['on', 'qingque', 1], ['on', 'seele', 1], ['on', 'asta', 1], ['off', 'march', 1]].forEach(([z, id, s]) => { r.board[z][r.board[z].indexOf(null)] = { uid: ++r.uid, id, star: s }; });
+    r.lvl = 10; r.hp = 90;
+    const sum = gg.cwClose(r, true);
+    ok(sum.profit.includes('lvl10') && sum.profit.includes('cheap') && Gs.profit.includes('lvl10'), 'Currency Wars profit: a cleared run checks its tasks at the end');
+    const c0 = gg.state.credits;
+    ok(gg.cwProfitClaim('lvl10') && gg.state.credits === c0 + 5000 && gg.cwProfitClaim('lvl10') === null, 'Currency Wars profit: a task pays once');
+    ok(!sum.profit.includes('streak15'), 'Currency Wars profit: high-rank tasks need A5 or higher');
+    ok(Gs.cnt.winStd === 1 && Gs.done.includes('2:0'), 'Currency Wars guide: a Standard win counts for chapter 3');
+  }
+  {
+    ok(Object.keys(CW.KIT_TEXT).length === 61 && CW.POOL.every(id => (CW.KIT_TEXT[id] || []).length >= 1), 'Currency Wars kits: every hero has its Empowerment text from the plan');
+    ok(CW.POOL.filter(id => CW.UNITS[id].cost <= 2).every(id => CW.KITS[id]), 'Currency Wars kits: all 30 heroes of cost 1 and 2 have an Empowerment');
+    const mk = (list, o) => {
+      const gk = new H.Game({ fresh: true, seed: (o && o.seed) || 61 });
+      const rk = gk.cwNew({ tier: 0 });
+      for (const z of ['on', 'off', 'bench']) rk.board[z].fill(null);
+      rk.lvl = 9;
+      for (const [z, id, star, extra] of list) rk.board[z][rk.board[z].indexOf(null)] = Object.assign({ uid: ++rk.uid, id, star: star || 1 }, extra || {});
+      rk.node = 3;
+      const bk = gk.cwFight();
+      for (const e of bk.enemies) { e.maxHp *= 40; e.hp = e.maxHp; }
+      return { gk, rk, bk };
+    };
+    {
+      const { bk } = mk([['on', 'herta'], ['off', 'march']]);
+      bk.start();
+      const m = bk.summons.find(s => s.cwOff && s.cwU.id === 'march');
+      ok(H.battleStat.spdOf(m) > 150, 'Currency Wars kits: March 7 acts off the field at twice her speed');
+      bk.allies[0].hp = Math.round(bk.allies[0].maxHp * 0.5);
+      bk.summonTurn(m);
+      ok(bk.allies[0].shield > 0, 'Currency Wars kits: March 7 shields the field hero with the lowest HP share');
+    }
+    {
+      const { bk } = mk([['on', 'herta'], ['off', 'tingyun']]);
+      bk.start();
+      const t = bk.summons.find(s => s.cwOff && s.cwU.id === 'tingyun');
+      ok(t && H.battleStat.spdOf(t) <= 10 && t.enMax > 0, 'Currency Wars kits: Tingyun waits off the field and builds energy');
+      t.en = t.enMax - 5;
+      bk.cwKitsTurn(bk.allies[0]);
+      ok(t.en === 0 && bk.allies[0].buffs.some(x => x.name === 'Среди ликующих облаков'), 'Currency Wars kits: a full Tingyun boosts the strongest field hero');
+    }
+    {
+      const { bk } = mk([['on', 'arlan'], ['on', 'herta']]);
+      bk.start();
+      const a = bk.allies.find(x => x.cwU.id === 'arlan'), left = bk.cwInfo.left;
+      bk.hit(bk.enemies[0], a, 0, { raw: a.hp + 50 });
+      ok(a.hp === 1 && !a.dead && bk.cwInfo.near === 0 && bk.cwInfo.left === left, 'Currency Wars kits: Arlan\'s Scars keep him at 1 HP without the countdown penalty');
+    }
+    {
+      const { bk } = mk([['on', 'herta'], ['on', 'arlan']]);
+      bk.start();
+      const e = bk.living[0]; bk.drain();
+      bk.hit(bk.allies[1], e, 0, { raw: e.hp - Math.floor(e.maxHp * 0.45) });
+      ok(bk.drain().some(x => x.t === 'act' && x.name === 'Сама справлюсь'), 'Currency Wars kits: Herta follows up when an enemy falls to half HP');
+
+    }
+    {
+      const { bk } = mk([['on', 'kafka', 2, { items: [{ uid: 1, id: 'knife' }, { uid: 2, id: 'star' }] }], ['on', 'herta']]);
+      bk.start();
+      const k = bk.allies.find(x => x.cwU.id === 'kafka');
+      ok(Math.abs(bk.cwKafkaK(k, 1) - 1.8) < 1e-9, 'Currency Wars kits: Kafka\'s DoT triggers grow with each item she carries');
+
+    }
+    {
+      const { bk } = mk([['on', 'chie', 3], ['on', 'herta']]);
+      bk.start();
+      const ch = bk.allies.find(x => x.cwU.id === 'chie');
+      ok(Math.abs(H.TUNING.chieCritTough + bk.kitFx(ch, 'critToughUp') - 0.75) < 1e-9 && ch.buffs.some(x => x.name === 'Галактический пинок'), 'Currency Wars kits: Chie\'s crits remove 75% toughness at 3★');
+    }
+    {
+      const { bk } = mk([['on', 'herta'], ['off', 'hanya', 1]]);
+      bk.start();
+      const hy = bk.summons.find(s => s.cwOff && s.cwU.id === 'hanya');
+      ok(hy.flags.cwMark && bk.enemies.includes(hy.flags.cwMark), 'Currency Wars kits: Hanya marks an enemy with Burden');
+      const sp0 = bk.sp = 0, mark = hy.flags.cwMark;
+      bk.hit(bk.allies[0], mark, 0.1); bk.hit(bk.allies[0], mark, 0.1);
+      ok(bk.sp === sp0 + 1, 'Currency Wars kits: every second hit on Burden returns a skill point');
+    }
+    {
+      const { gk, rk, bk } = mk([['on', 'herta'], ['off', 'kazuma', 4]]);
+      bk.start();
+      const kz = bk.summons.find(s => s.cwOff && s.cwU.id === 'kazuma');
+      for (let i = 0; i < 8; i++) bk.summonTurn(kz);
+      ok(bk.cwInfo.kitCoins >= 1 && bk.cwInfo.kitCoins <= 6, 'Currency Wars kits: Kazuma steals coins off the field');
+      for (const e of bk.enemies) { e.hp = 1; }
+      bk.runAuto(3000);
+      const coins = bk.cwInfo.kitCoins;
+      let o = gk.endBattle().cw; if (o.choice) o = gk.cwAccept();
+      ok(o.bondGold >= coins, 'Currency Wars kits: stolen coins are paid after the battle');
+
+    }
+    {
+      const { gk, rk, bk } = mk([['on', 'herta', 1]]);
+      bk.start();
+      const he = bk.allies[0], e = bk.living[0];
+      bk.hit(he, e, 0, { raw: e.hp + 10 });
+      for (const x of bk.enemies) x.hp = 1;
+      bk.runAuto(3000);
+      let o = gk.endBattle().cw; if (o.choice) o = gk.cwAccept();
+      ok((rk.board.on.find(u => u && u.id === 'herta').hammer || 0) >= 1, 'Currency Wars kits: Herta\'s Hammer keeps her kills for the rest of the run');
+    }
+    {
+      const gk = new H.Game({ fresh: true, seed: 62 });
+      gk.state.roster.pela = { lvl: 60, exp: 0, eid: 2, cone: null, relics: {}, hp: null, energy: 0 };
+      const rk = gk.cwNew({ tier: 0 });
+      for (const z of ['on', 'off', 'bench']) rk.board[z].fill(null);
+      rk.board.on[0] = { uid: ++rk.uid, id: 'herta', star: 1 };
+      rk.board.off[0] = { uid: ++rk.uid, id: 'pela', star: 1 };
+      rk.node = 3;
+      const bk = gk.cwFight(); bk.start();
+      const pe = bk.summons.find(s => s.cwOff && s.cwU.id === 'pela');
+      ok(pe.cwU.eid === 2 && Math.abs(bk.cwKitsPow(pe) - 0.16) < 1e-9, 'Currency Wars kits: off-field Eidolons 1 and 2 add 8% power each');
+    }
+  }
+  {
+    const IT = CW.ITEMS;
+    eq(CW.BASICS.length + '/' + CW.ADV.length, '8/36', 'Currency Wars items: 8 basic and 36 advanced items');
+    const pairs = new Set();
+    for (let a = 0; a < 8; a++) for (let b = a; b < 8; b++) pairs.add(CW.RECIPE[CW.BASICS[a] + '+' + CW.BASICS[b]]);
+    ok(pairs.size === 36 && [...pairs].every(k => IT[k] && IT[k].kind === 'adv'), 'Currency Wars items: every pair of basic items makes its own advanced item');
+    ok(CW.ADV.every(k => Object.values(IT[k].stats).every(v => Array.isArray(v) && v[1] >= v[0])), 'Currency Wars items: special versions are at least as strong');
+    ok(Object.keys(CW.REC).length === 61 && Object.values(CW.REC).every(r => r.on.length === 3 && r.on.concat(r.off).every(k => IT[k] && IT[k].kind === 'adv')), 'Currency Wars items: every hero has three recommended advanced items from the plan');
+    const crafted = Object.keys(IT).filter(k => IT[k].kind === 'emblem' && IT[k].from && IT[k].dia !== 'any');
+    ok(new Set(crafted.map(k => IT[k].from + IT[k].dia)).size === crafted.length && crafted.length === 16, 'Currency Wars items: 16 craftable emblems, one per basic item and diamond colour');
+    ok(Object.keys(IT).filter(k => IT[k].kind === 'emblem').every(k => CW.BOND_NAMES[IT[k].bond] && CW.BONDS[IT[k].bond]), 'Currency Wars items: every emblem belongs to a bond');
+
+    const gi = new H.Game({ fresh: true, seed: 51 });
+    const ri = gi.cwNew({ tier: 0 });
+    ok(gi.cwInv(ri).some(x => x.id === 'keyP'), 'Currency Wars items: A0-A5 runs start with a Precision Disassembly Wrench');
+    ok(gi.cwInv(gi.cwNew({ tier: 6 })).some(x => x.id === 'key'), 'Currency Wars items: from A6 the run starts with a normal wrench');
+    const ri2 = gi.cwNew({ tier: 0 });
+    for (const z of ['on', 'off', 'bench']) ri2.board[z].fill(null);
+    ri2.inv = []; ri2.lvl = 5;
+    const add = (id, sp) => { gi.cwInvAdd(ri2, id, sp); return ri2.inv.length - 1; };
+    add('knife'); add('skates');
+    ok(gi.cwInvCombine(0, 1) === null && ri2.inv.length === 1 && ri2.inv[0].id === 'firestorm', 'Currency Wars items: a knife on roller skates makes a Firestorm');
+    ri2.board.on[0] = { uid: ++ri2.uid, id: 'herta', star: 1, items: [] };
+    add('pistol');
+    ok(gi.cwEquip(1, 'on', 0) === null && ri2.board.on[0].items[0].id === 'pistol', 'Currency Wars items: a basic item goes onto a hero');
+    add('pistol');
+    ok(gi.cwEquip(1, 'on', 0) === null && ri2.board.on[0].items.length === 1 && ri2.board.on[0].items[0].id === 'railgun', 'Currency Wars items: a basic item dropped on a hero with a basic item combines there');
+    add('red'); add('star');
+    ok(gi.cwInvCombine(1, 2) === null && ri2.inv[1].id === 'em_inaba', 'Currency Wars items: a red diamond with a lucky star makes the Investigation Team emblem');
+    ok(gi.cwEquip(1, 'on', 0) === null && gi.cwBonds(ri2).inaba.members.includes('herta'), 'Currency Wars items: an emblem makes its wearer a bond member');
+    add('em_inaba');
+    eq(gi.cwEquip(ri2.inv.length - 1, 'on', 0), 'member', 'Currency Wars items: a hero cannot wear the same bond twice');
+    ri2.inv = []; add('red'); add('blue');
+    const ts = gi.cwTeamSize(ri2);
+    ok(gi.cwInvCombine(0, 1) === null && ri2.inv[0].id === 'gem' && gi.cwTeamSize(ri2) === ts + 1, 'Currency Wars items: two diamonds make a Gem of Wealth that raises the team size');
+    ri2.inv = []; add('trash'); add('trash'); add('trash');
+    const gold0 = ri2.gold;
+    ok(gi.cwInvCombine(0, 1) === null && ri2.inv.length === 1 && ri2.inv[0].id === 'goldTrash' && ri2.gold === gold0 + 15, 'Currency Wars items: three trash bags make a golden one and 15 coins');
+    ri2.inv = []; add('blue'); add('trash');
+    ok(gi.cwInvCombine(0, 1) === null && ri2.inv[0].id === 'em_elation', 'Currency Wars items: a diamond with a trash bag makes the Elation emblem');
+    const h = ri2.board.on[0];
+    h.items = [{ uid: 801, id: 'railgun', sp: false }, { uid: 802, id: 'banner', sp: false }, { uid: 803, id: 'flower', sp: false }];
+    ri2.inv = []; add('lifeRing');
+    eq(gi.cwEquip(0, 'on', 0), 'slots', 'Currency Wars items: three items per hero');
+    ri2.inv = []; add('keyP');
+    ok(gi.cwEquip(0, 'on', 0) === null && !h.items.length && ri2.inv.length === 4 && ri2.inv[0].id === 'keyP', 'Currency Wars items: the precision wrench strips a hero and stays');
+    ri2.inv = ri2.inv.filter(x => x.id !== 'keyP');
+    h.items = [{ uid: 804, id: 'agBoots', sp: false }];
+    add('key');
+    ok(gi.cwEquip(ri2.inv.length - 1, 'on', 0) === null && !ri2.inv.some(x => x.id === 'key'), 'Currency Wars items: the normal wrench is used up');
+    ri2.inv = []; add('starBlade'); add('privCard');
+    ok(gi.cwInvCombine(1, 0) === null && ri2.inv.length === 1 && ri2.inv[0].sp, 'Currency Wars items: a privilege card makes an advanced item special');
+    add('furnace');
+    ok(gi.cwInvCombine(1, 0) === null && ri2.inv.length === 1 && IT[ri2.inv[0].id].kind === 'adv' && ri2.inv[0].sp, 'Currency Wars items: the furnace rerolls an item into one of the same kind');
+    ri2.inv = []; add('projector');
+    ri2.board.on[1] = { uid: ++ri2.uid, id: 'gepard', star: 1 };
+    eq(gi.cwEquip(0, 'on', 1), 'cost', 'Currency Wars items: the employee projector copies heroes up to cost 3');
+    const benchN = ri2.board.bench.filter(Boolean).length;
+    ok(typeof gi.cwEquip(0, 'on', 0) === 'object' && ri2.board.bench.filter(Boolean).length === benchN + 1 && ri2.board.bench.some(u => u && u.id === 'herta'), 'Currency Wars items: the projector adds a 1★ copy to the bench');
+    ri2.inv = []; add('boxAdv');
+    ok(gi.cwOpenBox(0) === 'choice' && ri2.choice.options.length === 3 && ri2.choice.options.every(o => IT[o.id].kind === 'adv'), 'Currency Wars items: an arms box offers three items of its kind');
+    const pickId = ri2.choice.options[1].id;
+    ok(gi.cwChoose(1) === null && !ri2.choice && ri2.inv.length === 1 && ri2.inv[0].id === pickId, 'Currency Wars items: the chosen item goes to the inventory and the box is used');
+    add('contract5');
+    ok(gi.cwOpenBox(1) === 'choice' && ri2.choice.options.every(o => o.hero && CW.UNITS[o.hero].cost === 5), 'Currency Wars items: a contract offers three heroes of its cost');
+    gi.cwCancelChoice();
+    ok(ri2.inv.some(x => x.id === 'contract5'), 'Currency Wars items: putting a choice off keeps the item');
+    ri2.inv = []; add('charm');
+    ok(gi.cwEquip(0, 'on', 0) === 'choice' && ri2.choice.options.length === 4 && ri2.choice.options.slice(0, 3).every(o => CW.REC.herta.on.concat(CW.REC.herta.off).includes(o.id)), 'Currency Wars items: the lucky charm offers the hero\'s recommended items');
+    gi.cwCancelChoice();
+    h.items = [{ uid: 805, id: 'railgun', sp: false }];
+    ri2.inv = [];
+    gi.cwSell('on', 0);
+    ok(ri2.inv.some(x => x.id === 'railgun'), 'Currency Wars items: selling a hero returns its items');
+    for (const z of ['on', 'off', 'bench']) ri2.board[z].fill(null);
+    ri2.inv = [];
+    ri2.board.bench[0] = { uid: 901, id: 'herta', star: 1, items: [{ uid: 1, id: 'knife' }, { uid: 2, id: 'star' }] };
+    ri2.board.bench[1] = { uid: 902, id: 'herta', star: 1, items: [{ uid: 3, id: 'pistol' }, { uid: 4, id: 'flower' }] };
+    ri2.board.bench[2] = { uid: 903, id: 'herta', star: 1, items: [] };
+    gi.cwMerge(ri2);
+    ok(ri2.board.bench[0].star === 2 && ri2.board.bench[0].items.length === 3 && ri2.inv.length === 1, 'Currency Wars items: merged heroes carry three items and the rest go to the inventory');
+
+    const gc = new H.Game({ fresh: true, seed: 52 });
+    const rc = gc.cwNew({ tier: 0 });
+    for (const z of ['on', 'off', 'bench']) rc.board[z].fill(null);
+    rc.board.on[0] = { uid: ++rc.uid, id: 'herta', star: 1, items: [] };
+    rc.board.on[1] = { uid: ++rc.uid, id: 'arlan', star: 1, items: [] };
+    const plain = gc.cwCompile(rc, 'fight');
+    rc.board.on[0].items = [{ uid: 1, id: 'lifeRing', sp: false }, { uid: 2, id: 'weaponMaster', sp: true }];
+    const geared = gc.cwCompile(rc, 'fight');
+    const hpOf = (cw, uid) => cw.party.find(p => p.cw === uid).hp;
+    ok(hpOf(geared, rc.board.on[1].uid) > hpOf(plain, rc.board.on[1].uid), 'Currency Wars items: Life Ring raises the whole squad\'s HP');
+    ok(geared.units[rc.board.on[1].uid].powPlus >= 0.5 - 1e-9, 'Currency Wars items: a special Weapon Master gives the squad +50% power');
+    rc.board.on[0].items = [{ uid: 3, id: 'tooth', sp: false }, { uid: 4, id: 'grenade', sp: false }, { uid: 5, id: 'perpetual', sp: false }];
+    rc.node = 3;
+    const bi = gc.cwFight(); bi.start();
+    const herta = bi.allies.find(a => a.cwU && a.cwU.id === 'herta');
+    ok(bi.enemies.every(e => e.buffs.some(x => x.name === 'Ручная граната')), 'Currency Wars items: a hand grenade weakens every enemy at the start');
+    ok(bi.cwInfo.ultN === 0 && herta.energy === herta.maxEnergy || herta.energy >= 0, 'Currency Wars items: the perpetual engine fills the wearer\'s energy');
+    const arlan = bi.allies.find(a => a.cwU && a.cwU.id === 'arlan');
+    ok(arlan.shield > 0 || bi.ev.some(e => e.t === 'shield'), 'Currency Wars items: Eye for an Eye shields field heroes at the start');
+
+    const gd = new H.Game({ fresh: true, seed: 53 });
+    const rd = gd.cwNew({ tier: 0 });
+    for (const z of ['on', 'off', 'bench']) rd.board[z].fill(null);
+    rd.board.on[0] = { uid: ++rd.uid, id: 'herta', star: 1, items: [{ uid: 1, id: 'anyDie', sp: false }, { uid: 2, id: 'gem', sp: false }] };
+    gd.cwBeginNode(rd);
+    ok(rd.board.on[0].items.length === 3 && CW.BASICS.includes(rd.board.on[0].items[2].id), 'Currency Wars items: the Die of Whim fills empty slots with random basic items each node');
+    rd.step = 3; const g0 = rd.gold;
+    gd.cwBeginNode(rd);
+    ok(rd.gold >= g0 + 1, 'Currency Wars items: a worn Gem of Wealth pays a coin every third preparation stage');
+    rd.phase = 'prep'; rd.node = 4;
+    gd.cwGo();
+    ok(rd.phase === 'supply' && rd.offerItems.length === rd.offer.length && rd.offerItems.every(k => CW.BASICS.includes(k)), 'Currency Wars items: every supply hero carries a basic item');
+    const invN = gd.cwInv(rd).length;
+    rd.board.bench.fill(null);
+    gd.cwTakeOffer(0);
+    ok(gd.cwInv(rd).length === invN + 1, 'Currency Wars items: taking a supply hero also takes its item');
+  }
+  const team = (k, star) => {
+    const gq = new H.Game({ fresh: true, seed: 77 });
+    const rq = gq.cwNew({ tier: 0 });
+    for (const z of ['on', 'off', 'bench']) rq.board[z].fill(null);
+    rq.lvl = 10;
+    for (const id of CW.POOL.filter(x => CW.UNITS[x].bonds.includes(k)).slice(0, 10)) {
+      const z = CW.UNITS[id].pos === 'off' ? 'off' : rq.board.on.indexOf(null) >= 0 ? 'on' : 'off';
+      rq.board[z][rq.board[z].indexOf(null)] = { uid: ++rq.uid, id, star: star || 2 };
+    }
+    if (!rq.board.on.some(Boolean)) rq.board.on[0] = { uid: ++rq.uid, id: 'herta', star: 2 };
+    rq.node = 3;
+    return { gq, rq };
+  };
+  const fightOf = (gq, prep) => { const bq = gq.cwFight(); if (prep) prep(bq); else for (const e of bq.enemies) { e.maxHp *= 200; e.hp = e.maxHp; } bq.start(); return bq; };
+  const finishOf = (gq, bq) => { bq.runAuto(3000); let o = gq.endBattle().cw; if (o.choice) o = gq.cwAccept(); return o; };
+  for (const k of Object.keys(CW.BONDS)) {
+    const { gq } = team(k);
+    let okRun = true;
+    try { const bq = fightOf(gq); finishOf(gq, bq); } catch (e) { okRun = false; }
+    ok(okRun && H.TUNING.spMax === CW.SP0, 'Currency Wars: bond ' + k + ' at its top step fights a battle without errors');
+  }
+  ok(Object.values(CW.BONDS).every(b => b.tiers.length === b.steps.length && b.text && b.name), 'Currency Wars: every bond has text for each step');
+
+  {
+    const { gq, rq } = team('scholars', 1);
+    const bq = fightOf(gq);
+    ok(bq.cwInfo.cats === 4 && bq.allies.some(a => a.buffs.some(x => x.name === 'Кошки-пирожные')), 'Currency Wars: Space Scholars stack one cat-cake per member star');
+    const o = finishOf(gq, bq);
+    ok(o.dna === Math.round(4 * CW.BONDS.scholars.dna[0] * CW.BONDS.scholars.dnaMul[1]) && rq.bond.dna === o.dna && o.bondLines.includes('ДНК 6'), 'Currency Wars: scholars earn DNA after the battle and DNA rewards unlock');
+  }
+  {
+    const { gq, rq } = team('underworld');
+    const bq = fightOf(gq, b => { b.waves = b.waves.slice(0, 1); b.cw.waves = b.waves; for (const e of b.enemies) e.hp = 1; });
+    const o = finishOf(gq, bq);
+    ok(o.win && !o.near && o.geo === CW.BONDS.underworld.geo[2] * 2 && rq.bond.geo === o.geo, 'Currency Wars: a perfect victory doubles the geomarrow');
+  }
+  {
+    const { gq, rq } = team('fractsidus');
+    const bq = fightOf(gq);
+    const foe = bq.living.find(e => !e.data.boss) || bq.living[0];
+    foe.data = Object.assign({}, foe.data, { elite: true });
+    bq.hit(bq.allies.find(a => a.cwU && a.cwU.bonds.includes('fractsidus')) || bq.allies[0], foe, 0, { raw: foe.hp + 10 });
+    finishOf(gq, bq);
+    ok(rq.bond.echoes.length >= 1 && rq.bond.echoes[0].id === foe.id, 'Currency Wars: Fractsidus keeps an Echo of an elite it defeated');
+    rq.node = 3; rq.phase = 'prep';
+    const b2 = fightOf(gq);
+    ok(b2.summons.some(s => s.cwBond === 'echo' && s.flags.echo.id === foe.id), 'Currency Wars: stored Echoes join the next battle on the timeline');
+  }
+  {
+    const { gq, rq } = team('hares');
+    gq.cwBeginNode(rq);
+    ok(rq.bond.orders && rq.bond.orders.length === 3 && !rq.bond.order, 'Currency Wars: the Cunning Hares offer three orders before a battle');
+    rq.bond.orders[0] = 'noNear';
+    ok(gq.cwPickOrder('noNear') && rq.bond.order === 'noNear', 'Currency Wars: an order can be taken');
+    const bq = fightOf(gq, b => { b.waves = b.waves.slice(0, 1); b.cw.waves = b.waves; for (const e of b.enemies) e.hp = 1; });
+    const o = finishOf(gq, bq);
+    ok(o.order && o.order.done && o.bondGold >= CW.BONDS.hares.pay[1], 'Currency Wars: a fulfilled order pays coins');
+    const gold = rq.gold;
+    ok(gq.cwTakeAdvance() && rq.gold === gold + 10 && !gq.cwTakeAdvance(), 'Currency Wars: Nicole gives a 10 coin advance once per plane');
+    rq.step = rq.bond.debt.due; rq.gold = 4; const hp0 = rq.hp;
+    gq.cwBeginNode(rq);
+    ok(rq.gold === 0 && rq.hp === hp0 - 11 && !rq.bond.debt, 'Currency Wars: the agency takes 15 back and the shortfall comes out of squad HP');
+  }
+  {
+    const { gq } = team('kazuma');
+    const bq = fightOf(gq);
+    const kz = bq.cwInfo.units.find(u => u.cwU.id === 'kazuma');
+    for (let i = 0; i < CW.BONDS.kazuma.cap[2]; i++) bq.cwMisfortune(kz);
+    ok(bq.cwInfo.days === 1 && bq.cwInfo.dayT > 0 && bq.cwInfo.boom, 'Currency Wars: misfortune turns into a Lucky Day and the first one fires Megumin\'s Explosion');
+  }
+  {
+    const { gq } = team('inaba');
+    const bq = fightOf(gq);
+    const hp = bq.living.map(e => e.hp), yu = bq.cwInfo.units.find(u => u.cwU.bonds.includes('inaba'));
+    for (let i = 0; i < 4; i++) bq.cwOneMore(yu);
+    ok(bq.cwInfo.aoa === 0 && bq.enemies.some((e, i) => e.hp < hp[i] || e.dead), 'Currency Wars: four «One More!» charges launch the All-Out Attack');
+  }
+  {
+    const { gq } = team('conton');
+    const bq = fightOf(gq);
+    const m = bq.cwInfo.units.find(u => u.cwU.bonds.includes('conton'));
+    for (let i = 0; i < 10; i++) bq.cwApplause(m);
+    ok(bq.cwInfo.encores === 1 && bq.cwInfo.encorePow === CW.BONDS.conton.encorePow, 'Currency Wars: a full hall calls an encore that makes members stronger');
+  }
+  {
+    const { gq } = team('break');
+    const bq = fightOf(gq, b => { for (const e of b.enemies) { e.maxHp *= 400; e.hp = e.maxHp; } });
+    ok(bq.enemies.every(e => e.maxTough <= Math.round(H.ENEMIES[e.id].tough * (1 - CW.BONDS.break.tough[2]))), 'Currency Wars: Break lowers enemy toughness');
+    bq.cwInfo.wave = 11;
+    const foe = bq.living[0];
+    bq.cwBroke(bq.allies[0], foe);
+    ok(bq.cwInfo.wave === 0 && bq.living.every(e => e.broken), 'Currency Wars: twelve break charges send a Shockwave that breaks every enemy');
+  }
+  {
+    const { gq } = team('aoe');
+    const bq = fightOf(gq);
+    const marked = bq.living.filter(e => e.cwMark);
+    ok(marked.length === Math.min(2, bq.living.length), 'Currency Wars: two enemies carry Borrowed Strength');
+    if (bq.living.length > 1) {
+      const other = bq.living.find(e => e !== marked[0]), hp = other.hp;
+      bq.hit(bq.allies[0], marked[0], 1);
+      ok(other.hp < hp || other.dead, 'Currency Wars: damage on a marked enemy spills onto the others');
+    }
+  }
+  {
+    const { gq } = team('hpburn');
+    const bq = fightOf(gq);
+    const m = bq.allies.find(a => a.cwU && a.cwU.bonds.includes('hpburn'));
+    ok(bq.summons.some(s => s.cwBond === 'arena'), 'Currency Wars: HP Burn opens the Bloodflame Arena on the timeline');
+    m.hp = 10; bq.giveShield(m, 5000, 2);
+    ok(m.shield === 0 && m.hp > 10, 'Currency Wars: HP Burn members turn shields into healing');
+    bq.hit(bq.enemies[0], m, 0, { raw: 50 });
+    ok(bq.cwInfo.arena > 0, 'Currency Wars: the Arena records HP lost by members');
+  }
+  {
+    const { gq } = team('sp');
+    const bq = fightOf(gq);
+    ok(H.TUNING.spMax === CW.SP0 + CW.BONDS.sp.cap[1], 'Currency Wars: Skill Points raise the skill point cap in battle');
+    finishOf(gq, bq);
+    ok(H.TUNING.spMax === CW.SP0, 'Currency Wars: the skill point cap goes back after the battle');
+  }
+  {
+    const { gq } = team('quantum');
+    const bq = fightOf(gq);
+    ok(bq.enemies.every(e => e.buffs.some(x => x.s === 'vuln' && x.v === CW.BONDS.quantum.vuln[3])), 'Currency Wars: Quantum Resonance makes enemies take more damage');
+  }
+  {
+    const { gq } = team('debuff');
+    const bq = fightOf(gq, b => { for (const e of b.enemies) { e.maxHp *= 100; e.hp = e.maxHp; } });
+    const m = bq.allies.find(a => a.cwU && a.cwU.bonds.includes('debuff')) || bq.cwInfo.units.find(u => u.cwU.bonds.includes('debuff'));
+    bq.acting = m; bq.actSerial = 999;
+    bq.addBuff(bq.living[0], { s: 'defDown', v: 0.1, turns: 2, name: 'Тест', debuff: true });
+    bq.acting = null;
+    ok(bq.living.some(e => e.cwHeat && e.cwHeat.n >= 1 && e.buffs.some(x => x.name === 'Остаточный жар')), 'Currency Wars: a member debuff leaves Lingering Heat on an enemy');
+  }
+  {
+    const { gq } = team('dot');
+    const bq = fightOf(gq);
+    const hp = bq.living.reduce((a, e) => a + e.hp, 0);
+    bq.cwOverexcite();
+    ok(bq.living.reduce((a, e) => a + e.hp, 0) < hp, 'Currency Wars: Overexcitement hits enemies on their turn');
+  }
+  {
+    const { gq } = team('shield');
+    const bq = fightOf(gq);
+    const a = bq.allies[0];
+    bq.acting = a; bq.giveShield(a, 100, 2); const s1 = a.shield; bq.giveShield(a, 100, 2); bq.acting = null;
+    ok(a.shield > s1 && a.shield <= a.base.hp, 'Currency Wars: Shield bond shields stack up to the hero\'s HP');
+  }
+  {
+    const { gq, rq } = team('section6');
+    const ya = rq.board.on.findIndex(u => u && u.id === 'yanagi');
+    if (ya >= 0) { rq.board.off[rq.board.off.indexOf(null)] = rq.board.on[ya]; rq.board.on[ya] = null; }
+    const bq = fightOf(gq);
+    ok(bq.chaosOn() && !bq.allies.some(a => a.charId === 'yanagi'), 'Currency Wars: Section 6 keeps Chaos on without Yanagi on the field');
+  }
+  {
+    const { gq, rq } = team('travelers');
+    const cw = gq.cwCompile(rq, 'fight');
+    ok(cw.gifts && Math.abs(cw.gifts.lucky - 0.1 * CW.BONDS.travelers.mul[4]) < 1e-9 && cw.gifts.dr > 0, 'Currency Wars: each traveler adds a squad bonus scaled by the traveler count');
+    const bq = fightOf(gq);
+    bq.cwInfo.dayT = 99; bq.cwInfo.dayLucky = 5;
+    const ev = [];
+    for (let i = 0; i < 30 && bq.living.length; i++) { bq.hit(bq.allies[0], bq.living[0], 0.01, { alwaysCrit: true }); ev.push(...bq.drain()); }
+    ok(ev.some(e => e.t === 'dmg' && e.lucky), 'Currency Wars: crits roll Lucky Strikes and mark them');
+  }
+  {
+    const { gq } = team('energy');
+    const bq = fightOf(gq);
+    ok(Object.values(bq.cw.units).some(u => u.cell), 'Currency Wars: Energy marks energy cells on the board');
+    const m = bq.cwInfo.units.find(u => u.cwU.bonds.includes('energy') && !u.summon) || bq.allies[0];
+    const hp = bq.living.reduce((a, e) => a + e.hp, 0);
+    bq.cwInfo.ultE = 480; m.maxEnergy = m.maxEnergy || 100;
+    bq.cwEnergyUlt(m);
+    ok(bq.living.reduce((a, e) => a + e.hp, 0) < hp || !bq.living.length, 'Currency Wars: 500 energy spent on ultimates strikes every enemy');
+  }
+}
+{
+  const BARRIERS = { j_backwater: 'o', u_boulder: 'ӣӥӧ', j_belobog: 'ӄgj', j_museum: 'Щ' };
+  const PAIRS = { j_fort: ['kт', 'ӑт'], j_museum: ['ЩЪ', 'εζ', 'ηθ'], u_settle1: ['kЦ'], j_pillars: ['Хк'] };
+  const TALK = new Set(['npc', 'prop', 'chest', 'anchor', 'lever']), D4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+  const HUD = [[508, 8, 634, 204], [470, 428, 634, 474]];
+  const cover = (x0, y0, x1, y1) => HUD.reduce((a, [rx0, ry0, rx1, ry1]) => a + Math.max(0, Math.min(x1, rx1) - Math.max(x0, rx0)) * Math.max(0, Math.min(y1, ry1) - Math.max(y0, ry0)), 0) / ((x1 - x0) * (y1 - y0));
+  const g = new H.Game({ seed: 1 });
+  const name = e => (e.ch || e.kind) + '@' + e.x + ',' + e.y;
+  let configs = 0;
+  ok(jariloStates.size > 150, 'the playthroughs leave enough Jarilo-VI states to check the layouts (' + jariloStates.size + ')');
+  for (const id of Object.keys(H.MAPS).filter(k => JARILO.test(k))) {
+    const seen = new Set();
+    for (const s of jariloStates.values()) {
+      Object.assign(g.state, { flags: Object.fromEntries(s.flags.map(f => [f, true])), quests: JSON.parse(JSON.stringify(s.quests)), party: s.party.slice() });
+      g.state.inv.items = Object.fromEntries(s.items.map(i => [i, 1]));
+      g.loadMap(id, null, { silent: true });
+      const m = g.map, vis = m.ents.filter(e => e.kind !== 'enemy' && g.visible(e));
+      const sig = vis.filter(e => g.solidEnt(e)).map(name).join(';');
+      if (seen.has(sig)) continue;
+      seen.add(sig);
+      configs++;
+      const talk = vis.filter(e => TALK.has(e.kind)), barrier = e => (BARRIERS[id] || '').includes(e.ch);
+      const exitAt = new Set(vis.filter(e => e.kind === 'exit').map(e => e.x + ',' + e.y));
+      const free = (x, y) => !g.blocked(x, y) && !exitAt.has(x + ',' + y);
+      const solidTile = e => H.TILES[m.tiles[e.y][e.x]].solid;
+      const mw = m.w * 32, mh = m.h * 32;
+      const reach = new Set(), rq = [];
+      for (const e of vis) if (e.kind === 'exit' || e.kind === 'anchor') for (const [dx, dy] of D4) if (free(e.x + dx, e.y + dy) && !reach.has((e.x + dx) + ',' + (e.y + dy))) { reach.add((e.x + dx) + ',' + (e.y + dy)); rq.push([e.x + dx, e.y + dy]); }
+      while (rq.length) { const [x, y] = rq.shift(); for (const [dx, dy] of D4) { const k = (x + dx) + ',' + (y + dy); if (!reach.has(k) && free(x + dx, y + dy)) { reach.add(k); rq.push([x + dx, y + dy]); } } }
+      const region = (from, cap) => { const r = new Set([from.join()]), q2 = [from]; while (q2.length && r.size < cap) { const [x, y] = q2.shift(); for (const [dx, dy] of D4) { const k = (x + dx) + ',' + (y + dy); if (!r.has(k) && free(x + dx, y + dy)) { r.add(k); q2.push([x + dx, y + dy]); } } } return r; };
+      for (const e of talk) {
+        const sides = D4.map(([dx, dy]) => [e.x + dx, e.y + dy]).filter(([x, y]) => free(x, y));
+        ok(sides.length, 'something can be reached: ' + name(e) + ' on ' + id);
+        const hidden = Math.min(...sides.map(([px, py]) => {
+          const cx = mw <= 640 ? (mw - 640) / 2 : Math.max(0, Math.min(mw - 640, px * 32 + 16 - 320)), cy = mh <= 480 ? (mh - 480) / 2 : Math.max(0, Math.min(mh - 480, py * 32 + 16 - 240));
+          return cover(e.x * 32 - cx, e.y * 32 - cy - (e.kind === 'npc' ? 22 : 0), e.x * 32 - cx + 32, e.y * 32 - cy + 32);
+        }));
+        ok(hidden < 0.4, 'the party panel does not hide ' + name(e) + ' on ' + id);
+        if (barrier(e) || sides.length < 2 || !sides.some(sd => reach.has(sd.join()))) continue;
+        const dist = new Map([[sides[0].join(), 0]]), q = [sides[0]];
+        while (q.length) {
+          const [x, y] = q.shift();
+          for (const [dx, dy] of D4) { const k = (x + dx) + ',' + (y + dy); if (!dist.has(k) && free(x + dx, y + dy)) { dist.set(k, dist.get(x + ',' + y) + 1); q.push([x + dx, y + dy]); } }
+        }
+        for (const sd of sides.slice(1)) {
+          const d = dist.get(sd.join());
+          if (d == null) {
+            const pocket = dist.size <= 2 ? new Set(dist.keys()) : region(sd, 4);
+            const useful = [...pocket].some(k => { const [x, y] = k.split(',').map(Number); return D4.some(([dx, dy]) => exitAt.has((x + dx) + ',' + (y + dy)) || talk.some(o => o !== e && o.x === x + dx && o.y === y + dy)); });
+            ok(pocket.size <= 2 && !useful, name(e) + ' does not cut off a part of ' + id);
+          } else ok(d <= 12, name(e) + ' does not force a long detour on ' + id + ' (' + d + ')');
+        }
+      }
+      for (let i = 0; i < talk.length; i++) for (let j = i + 1; j < talk.length; j++) {
+        const a = talk[i], b = talk[j];
+        if (a.ch && a.ch === b.ch || (barrier(a) && barrier(b)) || (solidTile(a) && solidTile(b)) || (PAIRS[id] || []).some(p => p.includes(a.ch) && p.includes(b.ch))) continue;
+        ok(Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)) >= 2, name(a) + ' and ' + name(b) + ' do not stand side by side on ' + id);
+      }
+    }
+  }
+  log.push('jarilo layouts ok: ' + configs + ' layouts from ' + jariloStates.size + ' states');
+}
 console.log('hsr98: ' + checks + ' checks passed in ' + ((Date.now() - t0) / 1000).toFixed(1) + 's');

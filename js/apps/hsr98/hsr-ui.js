@@ -24,6 +24,23 @@
     return vfs.writeFile(SAVE_DIR, saveFileName(slot), { type: 'file', icon: 'file-txt', content: JSON.stringify(data) });
   };
   const mirrorAllSaves = () => SAVE_SLOTS.forEach(slot => mirrorSave(slot, lsGet(SAVE_KEY + slot, null), true));
+  const SAVE_FILE_FORMAT = 'StarRail98-saves';
+  const slotTitle = s => (s === 'auto' ? 'авто' : 'блок ' + s);
+  const slotTitles = list => list.map(slotTitle).join(', ');
+  const storedSlots = () => SAVE_SLOTS.filter(s => lsGet(SAVE_KEY + s, null));
+  const isSaveData = d => !!(d && typeof d === 'object' && d.state && typeof d.state === 'object' && d.summary && typeof d.summary === 'object' && typeof d.summary.where === 'string');
+  const readSaveFile = text => {
+    let raw;
+    try { raw = JSON.parse(text); } catch (e) { return null; }
+    if (!raw || typeof raw !== 'object') return null;
+    const found = {};
+    SAVE_SLOTS.forEach(s => {
+      let d = raw.slots ? raw.slots[s] : raw[SAVE_KEY + s];
+      if (typeof d === 'string') { try { d = JSON.parse(d); } catch (e) { d = null; } }
+      if (isSaveData(d)) found[s] = d;
+    });
+    return Object.keys(found).length ? found : null;
+  };
   const RES = [
     { id: '640', tag: '640', w: 640 },
     { id: '800', tag: '800', w: 800 },
@@ -107,7 +124,7 @@
       on(this.canvas, 'wheel', e => this.wheel(e), { passive: false });
       const doc = typeof document !== 'undefined' && document.addEventListener ? document : this.root;
       on(doc, 'mousemove', e => { if (this.drag) this.drag.move(this.pointer(e)); });
-      on(doc, 'mouseup', () => { this.drag = null; });
+      on(doc, 'mouseup', e => { const d = this.drag; this.drag = null; if (d && d.drop) d.drop(this.pointer(e)); });
       on(this.root, 'mousedown', () => { this.audio.init(); this.audio.resume(); this.root.focus({ preventScroll: true }); });
       on(this.canvas, 'contextmenu', e => e.preventDefault());
     }
@@ -204,6 +221,56 @@
       if (!lsSet(SAVE_KEY + slot, data)) return false;
       mirrorSave(slot, data, false);
       return true;
+    }
+
+    exportSaves() {
+      const list = storedSlots();
+      if (!list.length) { this.sfx('deny'); return; }
+      const slots = {};
+      list.forEach(s => { slots[s] = lsGet(SAVE_KEY + s, null); });
+      const now = new Date();
+      const text = JSON.stringify({ format: SAVE_FILE_FORMAT, version: 1, exported: now.toISOString(), slots });
+      this.exportName = 'StarRail98_saves_' + now.toISOString().slice(0, 10) + '.json';
+      const android = window.Sr98Android;
+      if (android && android.saveFile) { android.saveFile(this.exportName, text); return; }
+      const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+      const a = document.createElement('a');
+      a.href = url; a.download = this.exportName;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      this.fileSaved(true);
+    }
+
+    fileSaved(ok) {
+      this.sfx(ok ? 'anchor' : 'deny');
+      this.toast(ok ? 'Сохранения выгружены в файл ' + this.exportName : 'Файл не записан');
+    }
+
+    importSaves() {
+      const android = window.Sr98Android;
+      if (android && android.openFile) { android.openFile(); return; }
+      const input = document.createElement('input');
+      input.type = 'file'; input.accept = '.json,application/json';
+      input.onchange = () => {
+        const f = input.files && input.files[0];
+        if (f) f.text().then(t => this.fileOpened(t), () => this.fileOpened(''));
+      };
+      input.click();
+    }
+
+    fileOpened(text) {
+      const slots = readSaveFile(text);
+      if (!slots) { this.sfx('deny'); this.toast('В файле нет сохранений игры'); return; }
+      const list = SAVE_SLOTS.filter(s => slots[s]), busy = list.filter(s => lsGet(SAVE_KEY + s, null));
+      if (busy.length) this.confirmImport(slots, list, busy);
+      else this.applyImport(slots, list);
+    }
+
+    applyImport(slots, list) {
+      if (!list.every(s => lsSet(SAVE_KEY + s, slots[s]))) { this.sfx('deny'); this.toast('Не хватает места для сохранений'); return; }
+      list.forEach(s => mirrorSave(s, slots[s], false));
+      this.sfx('anchor');
+      this.toast('Загружено из файла: ' + slotTitles(list));
     }
 
     enterField() {
@@ -324,7 +391,7 @@
         return;
       }
       if (g.busy()) return;
-      if (k === 'ok') { g.interact(); return; }
+      if (k === 'ok') { g.interact({ shift: this.walk }); return; }
       if (k === 'back' || code === 'Tab') { this.openMenu(); return; }
       if (code === 'KeyM') { if (g.state.su) this.openSuRun(); else this.openNav(null); return; }
       if (code === 'KeyF') { g.attack(); return; }
@@ -349,6 +416,7 @@
         { label: 'Новая игра', icon: 'warp', note: 'Диск 1 · Станция «Герта»', fn: () => { this.sfx('confirm'); this.newGame(); } },
         { label: 'Продолжить', icon: 'nav', disabled: !has, note: has ? this.slotNote(this.latestSlot()) : 'Нет сохранений', fn: () => { if (!has) return this.sfx('deny'); this.loadGame(this.latestSlot()); } },
         { label: 'Загрузить', icon: 'load', disabled: !has, note: 'Карта памяти', fn: () => { if (!has) return this.sfx('deny'); this.openSaves('load'); } },
+        { label: 'Перенос', icon: 'transfer', note: 'Сохранения в файл и из файла', fn: () => this.openTransfer() },
         { label: 'Настройки', icon: 'settings', note: 'Звук, скорость, разрешение', fn: () => this.openSettings() }
       ];
       if (this.opts.onExit) items.push({ label: 'Выход', icon: 'exit', note: 'Вернуться в Win', fn: () => this.opts.onExit() });
@@ -1260,6 +1328,55 @@
             if (mode === 'save') { if (ui.writeSave(s)) { ui.sfx('anchor'); ui.toast('Игра записана в блок ' + s); } ui.screens.pop(); if (onDone) onDone(); }
             else { if (!lsGet(SAVE_KEY + s, null)) { ui.sfx('deny'); return; } ui.screens = []; ui.loadGame(s); }
           }
+        }
+      });
+    }
+
+    openTransfer() {
+      const ui = this;
+      const items = () => {
+        const n = storedSlots().length;
+        return [
+          { label: 'Выгрузить в файл', right: n ? 'блоков: ' + n : 'нет сохранений', disabled: !n, icon: (c, x, y) => G.menuIcon(c, 'save', x, y - 8, 16), fn: () => ui.exportSaves() },
+          { label: 'Загрузить из файла', right: '.json', icon: (c, x, y) => G.menuIcon(c, 'load', x, y - 8, 16), fn: () => ui.importSaves() },
+          { label: 'Закрыть', icon: (c, x, y) => G.menuIcon(c, 'exit', x, y - 8, 16), fn: () => ui.pop() }
+        ];
+      };
+      this.push({
+        draw(c) {
+          c.fillStyle = 'rgba(2,3,12,0.6)'; c.fillRect(0, 0, W, HGT);
+          ui.win(W / 2 - 190, 130, 380, 164, { title: 'Перенос сохранений' });
+          ui.closeBtn(W / 2 + 190 - 30, 130 + 8, () => this.key('back'));
+          ui.text('Все блоки карты памяти — одним файлом', W / 2, 150, { align: 'center', size: 11, col: C.sub });
+          ui.list(W / 2 - 170, 172, 340, items(), this.sel, { rowH: 26, onClick: i => { this.sel = i; this.key('ok'); } });
+          ui.hints([['Enter', 'Выбрать'], ['Esc', 'Назад']], W / 2, 130 + 164 - 20, { align: 'center' });
+        },
+        key(k) {
+          const it = items();
+          if (ui.listNav(this, k, it.length)) return;
+          if (k === 'back') { ui.pop(); return; }
+          if (k === 'ok') { if (it[this.sel].disabled) { ui.sfx('deny'); return; } it[this.sel].fn(); }
+        }
+      });
+    }
+
+    confirmImport(slots, list, busy) {
+      const ui = this;
+      const items = [
+        { label: 'Заменить', icon: (c, x, y) => G.menuIcon(c, 'load', x, y - 8, 16), fn: () => { ui.screens.pop(); ui.applyImport(slots, list); } },
+        { label: 'Отмена', icon: (c, x, y) => G.menuIcon(c, 'exit', x, y - 8, 16), fn: () => ui.pop() }
+      ];
+      this.push({
+        draw() {
+          ui.win(W / 2 - 200, 150, 400, 148, { title: 'Замена сохранений' });
+          ui.text('В файле: ' + slotTitles(list), W / 2, 170, { align: 'center', size: 12, col: C.cream });
+          ui.text('Будут перезаписаны: ' + slotTitles(busy), W / 2, 188, { align: 'center', size: 11, col: C.bad });
+          ui.list(W / 2 - 180, 212, 360, items, this.sel, { rowH: 26, onClick: i => { this.sel = i; this.key('ok'); } });
+        },
+        key(k) {
+          if (ui.listNav(this, k, items.length)) return;
+          if (k === 'back') { ui.pop(); return; }
+          if (k === 'ok') items[this.sel].fn();
         }
       });
     }

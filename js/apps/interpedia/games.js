@@ -373,7 +373,7 @@ Quake II стал эталоном для проверки компьютеро�
 На движке Quake II также разрабатываются долгожданная Daikatana студии Ion Storm и Soldier of Fortune от Raven Software.` },
     { id: 'q3', title: 'Quake III Arena', content: `2 декабря 1999 года вышла [[quake3|Quake III Arena]] — полностью сетевой шутер без сюжетной кампании, с противниками-ботами для одиночной игры. Её движок требует 3D-ускоритель и поддерживает изогнутые поверхности. Весной 1999 года id Software выпускала публичные тестовые версии Q3Test, которые скачали сотни тысяч игроков.` }
   ],
-  seeAlso: ['quake', 'quake3', 'doom', 'voodoo2', 'rivatnt', 'unreal'],
+  seeAlso: ['quake', 'quake3', 'doom', 'voodoo2', 'rivatnt', 'unreal', 'tombraider'],
   references: [
     'Quake II: руководство пользователя. — Activision, 1997.',
     'Журнал Game.EXE, обзор Quake II, 1998.',
@@ -428,7 +428,7 @@ With two [[voodoo2|Voodoo 2]] cards in SLI the game runs at 1024×768 above 60 f
 Ion Storm's long-awaited Daikatana and Raven Software's Soldier of Fortune are also being built on the Quake II engine.` },
     { id: 'q3', title: 'Quake III Arena', content: `[[quake3|Quake III Arena]] came out on December 2, 1999: a purely multiplayer shooter with no story campaign and bot opponents for single play. Its engine requires a 3D accelerator and supports curved surfaces. In spring 1999 id Software released public Q3Test builds that hundreds of thousands of players downloaded.` }
   ],
-  seeAlso: ['quake', 'quake3', 'doom', 'voodoo2', 'rivatnt', 'unreal'],
+  seeAlso: ['quake', 'quake3', 'doom', 'voodoo2', 'rivatnt', 'unreal', 'tombraider'],
   references: [
     'Quake II user manual. Activision, 1997.',
     'Game.EXE magazine, Quake II review, 1998.',
@@ -487,7 +487,7 @@ Counter-Strike — командная игра террористов проти
 
 Помимо коробок Sierra, Valve продаёт и доставляет свои игры через собственный сетевой сервис Steam: игра оплачивается кредитной картой и скачивается прямо на компьютер, а обновления устанавливаются автоматически.` }
   ],
-  seeAlso: ['quake', 'quake2', 'unreal', 'systemshock2', 'voodoo2'],
+  seeAlso: ['quake', 'quake2', 'unreal', 'systemshock2', 'voodoo2', 'stalker98', 'steam'],
   references: [
     'Birdwell K. The Cabal: Valve\'s Design Process for Creating Half-Life // Gamasutra. — декабрь 1999.',
     'PC Gamer. Обзор Half-Life. — 1998.',
@@ -544,7 +544,7 @@ Counter-Strike, a team game of terrorists against counter-terrorists, had become
 
 Besides Sierra's boxes, Valve sells and delivers its games through its own online service, Steam: the game is paid for by credit card and downloaded straight to the computer, and updates install automatically.` }
   ],
-  seeAlso: ['quake', 'quake2', 'unreal', 'systemshock2', 'voodoo2'],
+  seeAlso: ['quake', 'quake2', 'unreal', 'systemshock2', 'voodoo2', 'stalker98', 'steam'],
   references: [
     'Birdwell, K. "The Cabal: Valve\'s Design Process for Creating Half-Life". Gamasutra, December 1999.',
     'PC Gamer, Half-Life review, 1998.',
@@ -595,7 +595,7 @@ Unreal поразил игроков графикой: цветным освещ
 </table>` },
     { id: 'reception', title: 'Отзывы', content: `Критики высоко оценили графику, музыку и атмосферу Unreal, упрекая игру за требования к компьютеру и слабый сетевой режим. В России Unreal стал витриной для новых ускорителей: в журналах «Unreal на Voodoo 2» был одним из стандартных тестов, а [[lanparty|компьютерные клубы]] устанавливали игру для демонстрации возможностей своих машин.` }
   ],
-  seeAlso: ['ut99', 'quake2', 'halflife', 'voodoo', 'voodoo2'],
+  seeAlso: ['ut99', 'quake2', 'halflife', 'voodoo', 'voodoo2', 'stalker98'],
   references: [
     'Unreal: руководство пользователя. — GT Interactive, 1998.',
     'Sweeney T. UnrealScript Language Reference. — Epic Games, 1998.',
@@ -644,7 +644,7 @@ The steep requirements became a running joke: smooth play needed a [[pentium2|Pe
 </table>` },
     { id: 'reception', title: 'Reception', content: `Critics praised Unreal's graphics, music and atmosphere while faulting its hardware demands and weak multiplayer. In Russia Unreal became a showcase for new accelerators: "Unreal on a Voodoo 2" was a standard magazine test, and [[lanparty|computer clubs]] installed the game to show what their machines could do.` }
   ],
-  seeAlso: ['ut99', 'quake2', 'halflife', 'voodoo', 'voodoo2'],
+  seeAlso: ['ut99', 'quake2', 'halflife', 'voodoo', 'voodoo2', 'stalker98'],
   references: [
     'Unreal user manual. GT Interactive, 1998.',
     'Sweeney, T. UnrealScript Language Reference. Epic Games, 1998.',
@@ -847,7 +847,7 @@ Fallout соединяет мрачный постапокалипсис с эс
     { id: 'choices', title: 'Свобода выбора', content: `Fallout прославился тем, что многие задачи решаются по-разному. Создателя можно убить в бою, взорвать вместе с его собором или убедить в бессмысленности его плана. В конце игры серия слайдов рассказывает о судьбе посещённых городов, и она зависит от поступков героя. Финальная сцена, в которой Смотритель изгоняет спасителя убежища, стала одной из самых обсуждаемых концовок в играх.` },
     { id: 'reception', title: 'Отзывы и влияние', content: `Игра продавалась скромнее больших хитов, но получила восторженные отзывы и звание лучшей ролевой игры 1997 года во многих изданиях. В России Fallout приобрёл огромную популярность, в том числе благодаря пиратским переводам, а фразы и образы игры стали частью жаргона игроков. Уже через год вышло продолжение, [[fallout2|Fallout 2]].` }
   ],
-  seeAlso: ['fallout2', 'baldursgate', 'diablo', 'systemshock2'],
+  seeAlso: ['fallout2', 'baldursgate', 'diablo', 'systemshock2', 'stalker98'],
   references: [
     'Fallout: руководство пользователя (Vault Dweller\'s Survival Guide). — Interplay, 1997.',
     'Computer Gaming World. Обзор Fallout. — 1997.',
@@ -888,7 +888,7 @@ Combat is turn-based: every action costs action points, and aimed shots at the e
     { id: 'choices', title: 'Freedom of choice', content: `Fallout became famous because many problems can be solved in different ways. The Master can be killed in battle, blown up along with his cathedral or talked into seeing the futility of his plan. At the end, a series of slides tells the fate of the towns the hero visited, shaped by the hero's actions. The final scene, in which the Overseer exiles the vault's savior, became one of the most discussed endings in games.` },
     { id: 'reception', title: 'Reception and influence', content: `The game sold more modestly than the big hits but drew rave reviews and the title of best role-playing game of 1997 in many publications. In Russia Fallout became hugely popular, helped by pirate translations, and its phrases and images entered gamer slang. A sequel, [[fallout2|Fallout 2]], followed only a year later.` }
   ],
-  seeAlso: ['fallout2', 'baldursgate', 'diablo', 'systemshock2'],
+  seeAlso: ['fallout2', 'baldursgate', 'diablo', 'systemshock2', 'stalker98'],
   references: [
     'Fallout manual (Vault Dweller\'s Survival Guide). Interplay, 1997.',
     'Computer Gaming World, Fallout review, 1997.',
@@ -1114,7 +1114,7 @@ Diablo упростил ролевую игру до непрерывного д
     { id: 'music', title: 'Музыка', content: `Композитор Мэтт Ульмен написал для Тристрама спокойную тему на акустической гитаре, которая контрастирует с тревожными звуками подземелий и стала одной из самых узнаваемых мелодий в играх.` },
     { id: 'legacy', title: 'Значение', content: `Diablo продавался огромными тиражами и породил множество подражателей. Официальное дополнение Hellfire (1997) создала не Blizzard, а студия Synergistic по заказу Sierra. Продолжение, [[diablo2|Diablo II]], ожидается в 2000 году.` }
   ],
-  seeAlso: ['diablo2', 'starcraft', 'baldursgate', 'fallout'],
+  seeAlso: ['diablo2', 'starcraft', 'baldursgate', 'fallout', 'steam'],
   references: [
     'Diablo: руководство пользователя. — Blizzard Entertainment, 1996.',
     'Computer Gaming World. Обзор Diablo. — 1997.',
@@ -1154,7 +1154,7 @@ Dungeons, monster placement and quests change with every new game, so Diablo can
     { id: 'music', title: 'Music', content: `Composer Matt Uelmen wrote a calm acoustic guitar theme for Tristram that contrasts with the uneasy sounds of the dungeons and became one of the most recognizable tunes in games.` },
     { id: 'legacy', title: 'Significance', content: `Diablo sold in huge numbers and inspired many imitators. The official expansion Hellfire (1997) was made not by Blizzard but by Synergistic for Sierra. The sequel, [[diablo2|Diablo II]], is expected in 2000.` }
   ],
-  seeAlso: ['diablo2', 'starcraft', 'baldursgate', 'fallout'],
+  seeAlso: ['diablo2', 'starcraft', 'baldursgate', 'fallout', 'steam'],
   references: [
     'Diablo user manual. Blizzard Entertainment, 1996.',
     'Computer Gaming World, Diablo review, 1997.',
@@ -1216,7 +1216,7 @@ window.interpediaReg('diablo2', 'games', {
     { id: 'battlenet', title: 'Закрытые серверы Battle.net', content: `После проблем с читерством в первой части Blizzard вводит «закрытые» серверы Battle.net: персонажи будут храниться не на компьютерах игроков, а на серверах компании, что не позволит их редактировать. Для любителей игры по локальной сети и без контроля сохранится «открытый» режим.` },
     { id: 'expectations', title: 'Ожидания', content: `Diablo II — одна из самых ожидаемых игр 2000 года. Игровые журналы публикуют скриншоты и интервью с разработчиками, а форумы обсуждают, какой класс окажется сильнее. В России игра ждёт своего часа в [[lanparty|компьютерных клубах]], где первая часть до сих пор не сходит с экранов.` }
   ],
-  seeAlso: ['diablo', 'starcraft', 'baldursgate', 'fallout2'],
+  seeAlso: ['diablo', 'starcraft', 'baldursgate', 'fallout2', 'ashroad', 'steam'],
   references: [
     'Пресс-релизы Blizzard Entertainment о Diablo II, 1997–1999.',
     'Предварительный обзор Diablo II // PC Gamer. — 1999.',
@@ -1276,7 +1276,7 @@ Each class has three skill trees; skill points are spent as the character levels
     { id: 'battlenet', title: 'Closed Battle.net realms', content: `After the cheating problems of the first game, Blizzard is introducing "closed" Battle.net realms: characters will be stored on the company's servers rather than on players' computers, so they cannot be edited. An "open" mode will remain for LAN play and players who do not need oversight.` },
     { id: 'expectations', title: 'Expectations', content: `Diablo II is one of the most anticipated games of 2000. Magazines publish screenshots and developer interviews, and forums argue about which class will be strongest. In Russia the game is awaited in [[lanparty|computer clubs]], where the first game is still on the screens.` }
   ],
-  seeAlso: ['diablo', 'starcraft', 'baldursgate', 'fallout2'],
+  seeAlso: ['diablo', 'starcraft', 'baldursgate', 'fallout2', 'ashroad', 'steam'],
   references: [
     'Blizzard Entertainment press releases on Diablo II, 1997–1999.',
     'Diablo II preview. PC Gamer, 1999.',
@@ -1506,7 +1506,7 @@ window.interpediaReg('ageofempires', 'games', {
     { id: 'cheats', title: 'Коды', content: `Коды вводятся в окно чата. Самые известные — «BIGDADDY», дающий спортивный автомобиль с ракетной установкой, «PHOTON MAN», вызывающий футуристического солдата с лучевым ружьём, и «MEDUSA», превращающий крестьянина в Медузу, взгляд которой убивает врагов.` },
     { id: 'aoe2', title: 'Age of Empires II', content: `30 сентября 1999 года вышла Age of Empires II: The Age of Kings, перенёсшая серию в Средние века с тринадцатью цивилизациями — от франков и бриттов до монголов и японцев. Она сохраняет основы первой игры, добавив построение войск, приказы «следовать» и «охранять» и кампании о Жанне д'Арк, Чингисхане и других исторических героях.` }
   ],
-  seeAlso: ['redalert', 'starcraft', 'homm3', 'simcity2000'],
+  seeAlso: ['redalert', 'starcraft', 'homm3', 'simcity2000', 'sunsetvalley'],
   references: [
     'Age of Empires: руководство пользователя. — Microslop, 1997.',
     'Shelley B. Интервью журналу Computer Gaming World, 1997.',
@@ -1550,7 +1550,7 @@ Victory comes several ways: destroy the enemy, build a Wonder and hold it for 2,
     { id: 'cheats', title: 'Cheats', content: `Cheats are typed into the chat box. The best known are "BIGDADDY", which gives a sports car with a rocket launcher, "PHOTON MAN", which summons a futuristic soldier with a ray gun, and "MEDUSA", which turns a villager into a Medusa whose gaze kills enemies.` },
     { id: 'aoe2', title: 'Age of Empires II', content: `Age of Empires II: The Age of Kings came out on September 30, 1999, taking the series into the Middle Ages with thirteen civilizations, from the Franks and Britons to the Mongols and Japanese. It keeps the basics of the first game while adding unit formations, follow and guard orders, and campaigns about Joan of Arc, Genghis Khan and other historical figures.` }
   ],
-  seeAlso: ['redalert', 'starcraft', 'homm3', 'simcity2000'],
+  seeAlso: ['redalert', 'starcraft', 'homm3', 'simcity2000', 'sunsetvalley'],
   references: [
     'Age of Empires user manual. Microslop, 1997.',
     'Bruce Shelley interview, Computer Gaming World, 1997.',
@@ -1694,7 +1694,7 @@ window.interpediaReg('simcity2000', 'games', {
     { id: 'disasters', title: 'Стихийные бедствия', content: `Городу угрожают пожары, наводнения, землетрясения, ураганы, беспорядки, авиакатастрофы и нападение инопланетного чудовища. Бедствия можно включить вручную, чтобы проверить работу пожарных и полиции, или отключить совсем. Сценарии с готовыми городами предлагают справиться с конкретной бедой — от пожара в Окленде до урагана в Чарлстоне.` },
     { id: 'editions', title: 'Издания и продолжение', content: `После версии для DOS и Macintosh вышли Special Edition для Win 95 и Network Edition для игры по сети. В 1997 году Maxis купила Electronic Arts. SimCity 3000 вышла в январе 1999 года с более детальной графикой, свалками для мусора и сделками с соседними городами. Уилл Райт, по сообщениям прессы, готовит игру о жизни отдельной семьи, The Sims.` }
   ],
-  seeAlso: ['ageofempires', 'homm3', 'redalert', 'msdos'],
+  seeAlso: ['ageofempires', 'homm3', 'redalert', 'msdos', 'sunsetvalley'],
   references: [
     'SimCity 2000: руководство пользователя. — Maxis, 1993.',
     'Wright W. Интервью журналу Wired, 1994.',
@@ -1735,7 +1735,7 @@ Local ordinances let the mayor, for example, fund anti-smoking programs, legaliz
     { id: 'disasters', title: 'Disasters', content: `The city is threatened by fires, floods, earthquakes, hurricanes, riots, plane crashes and an alien monster attack. Disasters can be triggered by hand to test the fire and police departments, or switched off entirely. Scenarios with ready-made cities challenge the player to handle a specific crisis, from the Oakland fire to the Charleston hurricane.` },
     { id: 'editions', title: 'Editions and sequel', content: `After the DOS and Macintosh versions came a Special Edition for Win 95 and a Network Edition for multiplayer. In 1997 Maxis was bought by Electronic Arts. SimCity 3000 came out in January 1999 with more detailed graphics, garbage dumps and deals with neighboring cities. According to the press, Will Wright is preparing a game about the life of a single family, The Sims.` }
   ],
-  seeAlso: ['ageofempires', 'homm3', 'redalert', 'msdos'],
+  seeAlso: ['ageofempires', 'homm3', 'redalert', 'msdos', 'sunsetvalley'],
   references: [
     'SimCity 2000 user manual. Maxis, 1993.',
     'Will Wright interview, Wired, 1994.',
@@ -1776,7 +1776,7 @@ window.interpediaReg('systemshock2', 'games', {
     { id: 'atmosphere', title: 'Атмосфера', content: `System Shock 2 считают образцом жанра «иммерсивного симулятора» и одной из самых страшных игр десятилетия. Узкие коридоры, мигающий свет, гибриды экипажа, бормочущие обрывки фраз, и голос SHODAN создают постоянное напряжение. Звук и музыку в стиле электроники и индастриала написал Эрик Брософски, а голосом SHODAN вновь стала Терри Брозиус.` },
     { id: 'reception', title: 'Отзывы', content: `Критики назвали System Shock 2 одной из лучших игр 1999 года и отметили сюжетный поворот с SHODAN. Продажи оказались скромнее, чем у больших шутеров, вроде [[halflife|Half-Life]], с которым игру часто сравнивают. После выхода игроки получили обновление с кооперативным режимом.` }
   ],
-  seeAlso: ['halflife', 'cyberpunk', 'fallout', 'unreal'],
+  seeAlso: ['halflife', 'cyberpunk', 'fallout', 'unreal', 'stalker98'],
   references: [
     'System Shock 2: руководство пользователя. — Electronic Arts, 1999.',
     'PC Gamer. Обзор System Shock 2. — 1999.',
@@ -1815,7 +1815,7 @@ Weapons wear out and break, ammunition is scarce and enemies respawn. Researchin
     { id: 'atmosphere', title: 'Atmosphere', content: `System Shock 2 is regarded as a model of the "immersive sim" genre and one of the scariest games of the decade. Narrow corridors, flickering lights, crew hybrids muttering broken phrases and SHODAN's voice keep the tension constant. Eric Brosius wrote the electronic and industrial sound and music, and Terri Brosius again voiced SHODAN.` },
     { id: 'reception', title: 'Reception', content: `Critics named System Shock 2 one of the best games of 1999 and praised the SHODAN plot twist. Sales were more modest than those of big shooters such as [[halflife|Half-Life]], with which it is often compared. After release, players received a patch with a cooperative mode.` }
   ],
-  seeAlso: ['halflife', 'cyberpunk', 'fallout', 'unreal'],
+  seeAlso: ['halflife', 'cyberpunk', 'fallout', 'unreal', 'stalker98'],
   references: [
     'System Shock 2 user manual. Electronic Arts, 1999.',
     'PC Gamer, System Shock 2 review, 1999.',
@@ -1856,7 +1856,7 @@ window.interpediaReg('grimfandango', 'games', {
     { id: 'music', title: 'Музыка', content: `Композитор Питер Макконнелл записал саундтрек с живыми музыкантами: в нём смешаны джаз биг-бэндов, мексиканские марьячи, южноамериканские мотивы и музыка из нуарных фильмов. Музыка считается одной из лучших в истории игр LucasArts.` },
     { id: 'reception', title: 'Отзывы', content: `Grim Fandango получила множество наград «Игра года» и «Лучшее приключение года». Хвалили сценарий, персонажей и художественный стиль, критиковали управление и некоторые головоломки. Продажи не оправдали ожиданий издателя, и в прессе всё чаще говорят о закате жанра квестов, хотя LucasArts продолжает работу над новыми приключенческими играми.` }
   ],
-  seeAlso: ['scumm', 'tombraider', 'systemshock2', 'halflife'],
+  seeAlso: ['scumm', 'tombraider', 'systemshock2', 'halflife', 'samandmax'],
   references: [
     'Grim Fandango: руководство пользователя. — LucasArts, 1998.',
     'GameSpot. Обзор Grim Fandango. — 1998.',
@@ -1895,7 +1895,7 @@ The game is controlled with the keyboard or a joystick: Manny turns and walks in
     { id: 'music', title: 'Music', content: `Composer Peter McConnell recorded the soundtrack with live musicians, mixing big band jazz, Mexican mariachi, South American motifs and film noir music. It is considered one of the best scores in LucasArts history.` },
     { id: 'reception', title: 'Reception', content: `Grim Fandango won many Game of the Year and Adventure of the Year awards. Reviewers praised the writing, characters and art style and criticized the controls and some puzzles. Sales fell short of the publisher's hopes, and the press increasingly talks of the decline of adventure games, although LucasArts continues to work on new adventure games.` }
   ],
-  seeAlso: ['scumm', 'tombraider', 'systemshock2', 'halflife'],
+  seeAlso: ['scumm', 'tombraider', 'systemshock2', 'halflife', 'samandmax'],
   references: [
     'Grim Fandango user manual. LucasArts, 1998.',
     'GameSpot, Grim Fandango review, 1998.',
@@ -2022,7 +2022,7 @@ window.interpediaReg('carmageddon', 'games', {
     { id: 'controversy', title: 'Скандал и цензура', content: `Британский совет по классификации фильмов сначала отказался выдать игре рейтинг. Чтобы выйти в продажу, SCi выпустила версию, в которой пешеходы заменены зомби с зелёной кровью; в Германии — роботами с чёрным маслом. Игроки быстро нашли способ «вернуть» людей с помощью неофициальных патчей. В 1998 году после апелляции оригинальная версия всё-таки получила рейтинг в Великобритании.` },
     { id: 'music', title: 'Музыка и продолжение', content: `В саундтреке звучат композиции индустриал-метал-группы Fear Factory. В ноябре 1998 года вышла Carmageddon II: Carpocalypse Now с полностью трёхмерными пешеходами и ещё более подробными разрушениями. В России игра известна как «Кармагеддон» и популярна в [[lanparty|компьютерных клубах]] благодаря сетевым заездам.` }
   ],
-  seeAlso: ['dukenukem3d', 'tombraider', 'voodoo', 'lanparty'],
+  seeAlso: ['dukenukem3d', 'tombraider', 'voodoo', 'lanparty', 'hockey98'],
   references: [
     'Carmageddon: руководство пользователя. — SCi, 1997.',
     'British Board of Film Classification: решение по Carmageddon, 1997.',
@@ -2057,7 +2057,7 @@ Money earned pays for repairs during the race and for upgrades to armor, power a
     { id: 'controversy', title: 'Controversy and censorship', content: `The British Board of Film Classification at first refused to rate the game. To get it into stores, SCi released a version with pedestrians replaced by green-blooded zombies, and in Germany by robots leaking black oil. Players quickly found unofficial patches that "restored" the humans. In 1998, after an appeal, the original version was finally rated in the UK.` },
     { id: 'music', title: 'Music and sequel', content: `The soundtrack features the industrial metal band Fear Factory. Carmageddon II: Carpocalypse Now followed in November 1998 with fully 3D pedestrians and even more detailed destruction. In Russia the game is popular in [[lanparty|computer clubs]] thanks to its network races.` }
   ],
-  seeAlso: ['dukenukem3d', 'tombraider', 'voodoo', 'lanparty'],
+  seeAlso: ['dukenukem3d', 'tombraider', 'voodoo', 'lanparty', 'hockey98'],
   references: [
     'Carmageddon user manual. SCi, 1997.',
     'British Board of Film Classification ruling on Carmageddon, 1997.',
@@ -2381,7 +2381,7 @@ window.interpediaReg('tekken3', 'games', {
 </dl>` },
     { id: 'pc98', title: 'Tekken 3 98 на персональных компьютерах', content: `В конце 1990-х трёхмерные файтинги редко заглядывали на ПК в полном виде, поэтому появление Tekken 3 в клубах и на домашних машинах стало событием. В издании Tekken 3 98 из каталога Steam игра работает с частотой 60 кадров в секунду, поддерживает настройку управления для двух игроков на одной клавиатуре, просмотр всех приёмов прямо из меню паузы и смену костюмов бойцов. В перерывах между сетевыми партиями в [[quake3|Quake III Arena]] и [[starcraft|StarCraft]] вокруг одного монитора собираются зрители на быстрые турниры Team Battle восемь на восемь.` }
   ],
-  seeAlso: ['quake3', 'ut99', 'lanparty', 'carmageddon'],
+  seeAlso: ['quake3', 'ut99', 'lanparty', 'carmageddon', 'hockey98', 'worldcup98'],
   references: [
     'Tekken 3: справочник приёмов и руководство игрока. Namco, 1998.',
     'Журнал «Великий Dракон», полный разбор бойцов и связок Tekken 3, 1998.',
@@ -2434,7 +2434,7 @@ Unlockable fighters include Mokujin, a centuries-old wooden training dummy that 
 </dl>` },
     { id: 'pc98', title: 'Tekken 3 98 on the PC', content: `Full-featured 3D fighting games have been rare on the late-1990s PC, making the arrival of Tekken 3 98 in our system's Steam catalog a favorite for shared-keyboard matches. Running at a locked 60 frames per second, it supports two players on one keyboard, full move lists in the pause menu and alternate costumes. Between network rounds of [[quake3|Quake III Arena]] and [[starcraft|StarCraft]], players gather around a single monitor for eight-on-eight Team Battle brackets.` }
   ],
-  seeAlso: ['quake3', 'ut99', 'lanparty', 'carmageddon'],
+  seeAlso: ['quake3', 'ut99', 'lanparty', 'carmageddon', 'hockey98', 'worldcup98'],
   references: [
     'Tekken 3 move list and player manual. Namco, 1998.',
     'Official PlayStation Magazine, Tekken 3 review and fighter guide, 1998.',

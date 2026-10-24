@@ -155,7 +155,7 @@ class AppExplorer {
   }
 
   propertiesTitle(name) {
-    return this.isEn() ? `${name} — Properties` : `Свойства: ${name}`;
+    return this.isEn() ? `${name} Properties` : `Свойства: ${name}`;
   }
 
   getPathDisplay() {
@@ -1547,7 +1547,7 @@ class AppExplorer {
         if (window.appSysTools) window.appSysTools.openScanDisk();
       });
       el.querySelector('.props-backup').addEventListener('click', () => {
-        if (window.appSysTools) window.appSysTools.openBackup();
+        if (window.appBackup) window.appBackup.open('backup');
       });
       el.querySelector('.props-defrag').addEventListener('click', () => {
         if (window.appSysTools) window.appSysTools.openDefrag();
@@ -1565,145 +1565,7 @@ class AppExplorer {
       return;
     }
 
-    const isShortcut = !!(item.isShortcut || item.app === 'shortcut' || /\.lnk$/i.test(item.name || ''));
-    const countFolderStats = (node) => {
-      let files = 0, folders = 0, bytes = 0;
-      if (node && node.children) {
-        Object.values(node.children).forEach(ch => {
-          if (ch.type === 'folder' || ch.children) {
-            folders++;
-            const sub = countFolderStats(ch);
-            files += sub.files;
-            folders += sub.folders;
-            bytes += sub.bytes;
-          } else {
-            files++;
-            bytes += this.getItemSizeBytes(ch);
-          }
-        });
-      }
-      return { files, folders, bytes };
-    };
-
-    const isFolder = item.type === 'folder' || item.children;
-    const stats = isFolder ? countFolderStats(item) : { files: 1, folders: 0, bytes: this.getItemSizeBytes(item) };
-    const sizeKB = Math.max(1, Math.ceil(stats.bytes / 1024));
-    const dosBase = (item.name || key).toUpperCase().replace(/[^A-Z0-9.]/g, '');
-    const dosName = dosBase.length > 12 ? dosBase.slice(0, 6) + '~1' : dosBase;
-    const locStr = 'C:\\' + pathParts.filter(p => p !== 'My Computer' && p !== 'C:').join('\\');
-    const attrs = item.attributes || { readonly: false, hidden: false, archive: true, system: false };
-
-    const dlg = window.winManager.createWindow({
-      id,
-      title: this.propertiesTitle(item.displayName || item.name || key),
-      icon: this.getItemIconKey(item),
-      width: 350,
-      height: 390,
-      resizable: false,
-      maximizable: false,
-      minimizable: false,
-      content: `
-        <div style="display:flex;flex-direction:column;height:100%;background:var(--win-bg);padding:6px;font-size:11px;">
-          <div class="win98-props-tabs">
-            <button class="win98-props-tab active" data-ptab="general">${isEn ? 'General' : 'Общие'}</button>
-            ${isShortcut ? `<button class="win98-props-tab" data-ptab="shortcut">${isEn ? 'Shortcut' : 'Ярлык'}</button>` : ''}
-          </div>
-          <div class="win98-props-sheet" style="flex:1;">
-            <div class="props-pane" data-ppane="general">
-              <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #808080;">
-                <div style="width:32px;height:32px;">${Icons[this.getItemIconKey(item)] || Icons['folder']}</div>
-                <input type="text" class="win-input props-item-name" value="${item.name || key}" style="flex:1;padding:2px 4px;">
-              </div>
-              <div style="display:grid;grid-template-columns:100px 1fr;row-gap:6px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #808080;">
-                <span>${isEn ? 'Type:' : 'Тип:'}</span><b>${this.getItemTypeDesc(item)}</b>
-                <span>${isEn ? 'Location:' : 'Размещение:'}</span><span>${locStr}</span>
-                <span>${isEn ? 'Size:' : 'Размер:'}</span><span>${sizeKB} ${isEn ? 'KB' : 'КБ'} (${stats.bytes.toLocaleString(isEn ? 'en-US' : 'ru-RU')} ${isEn ? 'bytes' : 'байт'})</span>
-                ${isFolder ? `<span>${isEn ? 'Contains:' : 'Содержит:'}</span><span>${stats.files} ${isEn ? 'Files' : 'файлов'}, ${stats.folders} ${isEn ? 'Folders' : 'папок'}</span>` : ''}
-              </div>
-              <div style="display:grid;grid-template-columns:100px 1fr;row-gap:6px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #808080;">
-                <span>${isEn ? 'MS-DOS name:' : 'Имя MS-DOS:'}</span><span>${dosName}</span>
-                <span>${isEn ? 'Created:' : 'Создан:'}</span><span>25.06.1998 09:00</span>
-                <span>${isEn ? 'Modified:' : 'Изменен:'}</span><span>${this.getItemModifiedStr(item) || '20.10.1998 14:22'}</span>
-              </div>
-              <div>
-                <div style="margin-bottom:4px;">${isEn ? 'Attributes:' : 'Атрибуты:'}</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;row-gap:4px;">
-                  <label><input type="checkbox" class="attr-ro" ${attrs.readonly ? 'checked' : ''}> ${isEn ? 'Read-only' : 'Только чтение'}</label>
-                  <label><input type="checkbox" class="attr-ar" ${attrs.archive !== false ? 'checked' : ''}> ${isEn ? 'Archive' : 'Архивный'}</label>
-                  <label><input type="checkbox" class="attr-hi" ${attrs.hidden ? 'checked' : ''}> ${isEn ? 'Hidden' : 'Скрытый'}</label>
-                  <label><input type="checkbox" class="attr-sy" ${attrs.system ? 'checked' : ''}> ${isEn ? 'System' : 'Системный'}</label>
-                </div>
-              </div>
-            </div>
-            ${isShortcut ? `
-            <div class="props-pane" data-ppane="shortcut" style="display:none;">
-              <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #808080;">
-                <div style="width:32px;height:32px;">${Icons[this.getItemIconKey(item)] || Icons['file-exe']}</div>
-                <b>${item.name || key}</b>
-              </div>
-              <div style="display:grid;grid-template-columns:100px 1fr;row-gap:8px;align-items:center;margin-bottom:14px;">
-                <span>${isEn ? 'Target type:' : 'Тип объекта:'}</span><span>${isEn ? 'Application' : 'Приложение'}</span>
-                <span>${isEn ? 'Target:' : 'Объект:'}</span><input type="text" class="win-input props-sc-target" value="${item.shortcutTarget || item.content || 'C:\\WINDOWS\\EXPLORER.EXE'}" style="padding:2px 4px;">
-                <span>${isEn ? 'Start in:' : 'Рабочая папка:'}</span><input type="text" class="win-input" value="C:\\WINDOWS" style="padding:2px 4px;">
-                <span>${isEn ? 'Run:' : 'Окно:'}</span>
-                <select class="win-input" style="padding:1px;">
-                  <option>${isEn ? 'Normal window' : 'Обычный размер окна'}</option>
-                  <option>${isEn ? 'Minimized' : 'Свернутое в значок'}</option>
-                  <option>${isEn ? 'Maximized' : 'Развернутое на весь экран'}</option>
-                </select>
-              </div>
-              <div style="display:flex;gap:8px;justify-content:flex-end;">
-                <button class="win-btn props-find-target" style="padding:2px 10px;">${isEn ? 'Find Target...' : 'Найти объект...'}</button>
-              </div>
-            </div>
-            ` : ''}
-          </div>
-          <div style="display:flex;justify-content:flex-end;gap:6px;padding:4px 6px;">
-            <button class="win-btn props-ok" style="min-width:72px;">OK</button>
-            <button class="win-btn props-cancel" style="min-width:72px;">${isEn ? 'Cancel' : 'Отмена'}</button>
-          </div>
-        </div>
-      `
-    });
-    const el = dlg.element;
-    el.querySelectorAll('.win98-props-tab').forEach(btn => {
-      btn.addEventListener('click', () => {
-        el.querySelectorAll('.win98-props-tab').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const tab = btn.getAttribute('data-ptab');
-        el.querySelectorAll('.props-pane').forEach(p => {
-          p.style.display = p.getAttribute('data-ppane') === tab ? 'block' : 'none';
-        });
-      });
-    });
-    const findBtn = el.querySelector('.props-find-target');
-    if (findBtn) {
-      findBtn.addEventListener('click', () => {
-        window.winManager.closeWindow(id);
-        this.open(['My Computer', 'C:', 'WINDOWS']);
-      });
-    }
-    el.querySelector('.props-ok').addEventListener('click', () => {
-      const parent = window.vfs && window.vfs.resolvePath(pathParts);
-      const vfsItem = parent && parent.children && parent.children[key];
-      if (vfsItem) {
-        vfsItem.attributes = {
-          readonly: !!el.querySelector('.attr-ro').checked,
-          archive: !!el.querySelector('.attr-ar').checked,
-          hidden: !!el.querySelector('.attr-hi').checked,
-          system: !!el.querySelector('.attr-sy').checked
-        };
-        const newNm = el.querySelector('.props-item-name').value.trim();
-        if (newNm && newNm !== (item.name || key)) {
-          window.vfs.renameItem(pathParts, key, newNm);
-        } else {
-          window.vfs.saveToStorage();
-        }
-      }
-      window.winManager.closeWindow(id);
-      if (win) this.renderFolder(win);
-    });
-    el.querySelector('.props-cancel').addEventListener('click', () => window.winManager.closeWindow(id));
+    window.appFileProperties.openForItem(item, pathParts, win);
   }
 
   openFormatFloppyDialog(win = null) {
@@ -2295,6 +2157,8 @@ class AppExplorer {
         window.appSysTools.openScanDisk();
       } else if ((item.app === 'sndvol32' || item.name === 'SNDVOL32.EXE') && window.appSysTools) {
         window.appSysTools.openVolumeControl();
+      } else if ((item.app === 'msbackup' || item.name === 'MSBACKUP.EXE') && window.appBackup) {
+        window.appBackup.open();
       } else if ((item.app === 'cleanmgr' || item.name === 'CLEANMGR.EXE') && window.appSysTools) {
         window.appSysTools.openCleanMgr();
       } else if ((item.app === 'command' || item.name === 'COMMAND.COM') && window.appSysTools) {

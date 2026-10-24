@@ -303,7 +303,7 @@ class Desktop {
   }
 
   isShortcut(item) {
-    const systemIcons = ['my-computer', 'my-documents', 'network', 'recycle-bin', 'ie', 'outlook', 'cdrom_igromania'];
+    const systemIcons = ['my-computer', 'my-documents', 'network', 'recycle-bin', 'ie', 'cdrom_igromania'];
     return !item.isFile && !systemIcons.includes(item.id);
   }
 
@@ -329,7 +329,8 @@ class Desktop {
       { id: 'winrar', title: 'WinRAR 2.x', icon: 'winrar', action: () => window.appWinRAR && window.appWinRAR.open() },
       { id: 'freecell', title: t('app.freecell'), icon: 'freecell', action: () => window.appFreeCell && window.appFreeCell.open() },
       { id: 'wordpad', title: t('app.wordpad'), icon: 'wordpad', action: () => window.appWordPad && window.appWordPad.open() },
-      { id: 'neko', title: 'Neko 98', icon: window.appNeko && window.appNeko.isClawd() ? 'clawd' : 'neko', action: () => window.appNeko && window.appNeko.open() }
+      { id: 'neko', title: 'Neko 98', icon: window.appNeko && window.appNeko.isClawd() ? 'clawd' : 'neko', action: () => window.appNeko && window.appNeko.open() },
+      { id: 'msbackup', title: t('app.backup'), icon: 'backup', action: () => window.appBackup && window.appBackup.open() }
     ];
   }
 
@@ -658,7 +659,14 @@ class Desktop {
       });
     }
 
-    return list;
+    const props = window.appFileProperties;
+    if (!props) return list;
+    list.forEach(item => {
+      const custom = item.isFile ? null : props.iconFor(item.id);
+      if (custom && Icons[custom]) item.icon = custom;
+    });
+    const showAll = window.appExplorer && window.appExplorer.folderOptions && window.appExplorer.folderOptions.showAllFiles;
+    return showAll ? list : list.filter(item => !props.isHidden(item));
   }
 
   renderIcons() {
@@ -1438,11 +1446,15 @@ class Desktop {
             window.appExplorer.openPropertiesDialog(item.fileData, ['Desktop']);
             return;
           }
-          window.winManager.openDialog({
-            title: `${item.title} ${t('menu.properties')}`,
-            icon: item.icon,
-            message: `<b>${item.title}</b><br>${t('explorer.typeApp')}<br>${ru ? 'Размещение' : 'Location'}: C:\\WINDOWS\\Desktop`
-          });
+          if (item.id === 'my-documents' && window.appExplorer) {
+            window.appExplorer.openPropertiesDialog({ key: 'My Documents', ...window.vfs.resolvePath(['My Computer', 'C:', 'My Documents']) }, ['My Computer', 'C:']);
+            return;
+          }
+          if (item.id.startsWith('cdrom_') && window.appExplorer) {
+            window.appExplorer.openPropertiesDialog({ key: 'D:', type: 'drive', driveType: 'cdrom' }, ['My Computer']);
+            return;
+          }
+          if (window.appFileProperties) window.appFileProperties.openForDesktopIcon(item);
         }
       }
     ]);

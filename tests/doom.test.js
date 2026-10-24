@@ -223,6 +223,21 @@ function explore(mapId) {
   assert.equal(g3.cheat('idkfa'), 'kfaadded'); assert.ok(g3.player.weapons.bfg && g3.player.keys.red && g3.player.ammo.cells === 600);
   assert.equal(g3.cheat('idclip'), 'ncon'); assert.equal(g3.cheat('idbeholdv'), 'beholdx'); assert.ok(g3.player.powers.invuln > 0);
   g3.cheat('idclev13'); assert.ok(g3.events.some(e => e.t === 'warp' && e.id === 'E1M3'));
+  const g5 = new D.Game({ map: 'E1M1' }), p5 = g5.player;
+  assert.ok(g5.debugHealth(200) && p5.health === 200 && p5.mo.health === 200);
+  g5.debugArmor(200, 2); assert.ok(p5.armor === 200 && p5.armortype === 2);
+  g5.debugWeapon('rocket'); assert.ok(p5.weapons.rocket && p5.pending === 'rocket' && p5.ammo.rockets === 50);
+  g5.debugAllWeapons(); assert.ok(p5.weapons.bfg && p5.weapons.chainsaw && p5.ammo.cells === 300 && p5.ammo.shells === 50);
+  assert.equal(g5.debugToggle('god'), true); g5.damage(p5.mo, null, null, 500); assert.equal(p5.health, 200);
+  g5.debugToggle('god');
+  g5.debugToggle('infammo'); p5.ammo.bullets = 0; p5.ammo.cells = 1; tick(g5, 1);
+  assert.ok(p5.ammo.bullets === 200 && p5.ammo.cells === 300, 'infinite ammo refills every tick');
+  g5.debugToggle('infammo');
+  const slow = new D.Game({ map: 'E1M1' }), quick = new D.Game({ map: 'E1M1' });
+  quick.debugToggle('fast');
+  for (const gm of [slow, quick]) { gm.mobjs.filter(m => m.flags & MF.COUNTKILL).forEach(m => gm.remove(m)); tick(gm, 1); place(gm, 100, 60, 0); tick(gm, 20, { forward: 50 }); }
+  assert.ok(quick.player.mo.x - 100 > (slow.player.mo.x - 100) * 1.4, 'fast run covers more ground');
+  g5.damage(p5.mo, null, null, 1000); assert.ok(p5.dead && !g5.debugHealth(100), 'no heal after death');
   // player death and reborn with a pistol
   const g4 = new D.Game({ map: 'E1M1' }); g4.cheat('idkfa'); g4.damage(g4.player.mo, null, null, 1000);
   assert.ok(g4.player.dead); tick(g4, 30); g4.tick({ use: true }); assert.ok(g4.events.some(e => e.t === 'reborn')); g4.reborn();

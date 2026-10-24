@@ -4,7 +4,7 @@
   const DX8 = [1, 1, 0, -1, -1, -1, 0, 1], DY8 = [0, 1, 1, 1, 0, -1, -1, -1];
   const NODIR = 8;
   const OPP = d => d === NODIR ? NODIR : (d + 4) & 7;
-  const DOOR_SPEED = 1 / 64, DOOR_WAIT = 300, PUSH_SPEED = 1 / 128;
+  const DOOR_SPEED = 1 / 64, DOOR_WAIT = 300, PUSH_SPEED = 1 / 128, FAST_RUN_BOOST = 2;
 
   function castRay(G, ox, oy, rdx, rdy, maxT = 64) {
     const L = G.level, w = L.w, h = L.h;
@@ -70,7 +70,7 @@
       this.score = 0; this.lives = PL.lives; this.nextExtra = PL.extraLife;
       this.health = 100; this.ammo = PL.startAmmo; this.weapons = [true, true, false, false]; this.weapon = 1; this.chosen = 1;
       this.keys = [false, false];
-      this.god = false; this.noclip = false; this.events = []; this.messages = [];
+      this.god = false; this.noclip = false; this.fastRun = false; this.infiniteAmmo = false; this.events = []; this.messages = [];
       this.stats = []; this.totalTime = 0;
       this.mliUsed = false;
       this.floor = opts.floor || 0;
@@ -178,11 +178,12 @@
       if (inp.strafeHeld) { inp.strafe = (inp.strafe || 0) + (inp.turn || 0); inp.turn = 0; }
       this.angle += (inp.turn || 0) * turnRate + (inp.mouseTurn || 0);
       this.angle = Math.atan2(Math.sin(this.angle), Math.cos(this.angle));
-      const sp = (run ? PL.run : PL.walk) / TIC;
+      const boost = this.fastRun ? FAST_RUN_BOOST : 1;
+      const sp = (run ? PL.run : PL.walk) / TIC * boost;
       const f = Math.max(-1, Math.min(1, inp.fwd || 0)), s = Math.max(-1, Math.min(1, inp.strafe || 0));
       const ca = Math.cos(this.angle), sa = Math.sin(this.angle);
-      let dx = (ca * f - sa * s) * sp + ca * (inp.mouseFwd || 0), dy = (sa * f + ca * s) * sp + sa * (inp.mouseFwd || 0);
-      const len = Math.hypot(dx, dy), maxStep = PL.run / TIC * 1.2;
+      let dx = (ca * f - sa * s) * sp + ca * (inp.mouseFwd || 0) * boost, dy = (sa * f + ca * s) * sp + sa * (inp.mouseFwd || 0) * boost;
+      const len = Math.hypot(dx, dy), maxStep = PL.run / TIC * 1.2 * boost;
       if (len > maxStep) { dx *= maxStep / len; dy *= maxStep / len; }
       this.thrust = Math.hypot(dx, dy) * TIC;
       if (dx || dy) {
@@ -433,7 +434,7 @@
       const act = def.frames[next][2];
       if (act === 'fire') {
         if (this.ammo <= 0) { this.atk.i = Math.min(def.frames.length - 1, next + 1); return; }
-        this.ammo--;
+        if (!this.infiniteAmmo) this.ammo--;
         this.gunAttack(def);
       } else if (act === 'knife') this.knifeAttack();
     }
@@ -910,6 +911,14 @@
       this.chosen = 3; this.score = 0; this.oldScore = 0; this.nextExtra = PL.extraLife; this.mliUsed = true;
       this.grin = 140; this.bonusFlash = 1;
     }
+    debugHealth() { this.health = PL.maxHealth; this.bonusFlash = 1; }
+    debugWeapons() {
+      this.weapons = [true, true, true, true]; this.chosen = 3;
+      if (this.ammo <= 0) this.giveAmmo(PL.startAmmo);
+      if (!this.atk) this.weapon = 3;
+      this.bonusFlash = 1;
+    }
+    debugAmmo() { this.giveAmmo(PL.maxAmmo); this.bonusFlash = 1; }
     debugItems() { this.health = 100; this.ammo = 99; this.keys = [true, true]; this.weapons = [true, true, true, true]; this.chosen = 3; if (!this.atk) this.weapon = 3; this.bonusFlash = 1; }
 
     serialize() {

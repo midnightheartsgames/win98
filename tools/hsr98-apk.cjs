@@ -8,7 +8,7 @@ const { build } = require('./hsr98-standalone.cjs');
 const ROOT = path.resolve(__dirname, '..');
 const ANDROID = path.join(__dirname, 'hsr98-standalone', 'android');
 const PACKAGE_DIR = path.join('com', 'win98clone', 'hsr98');
-const VERSION_NAME = '1.5';
+const VERSION_NAME = '1.6';
 const KEY_ALIAS = 'hsr98';
 const KEY_PASS = 'hsr98-android';
 const exe = process.platform === 'win32' ? '.exe' : '';

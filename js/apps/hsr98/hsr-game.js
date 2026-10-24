@@ -140,6 +140,14 @@
         if (f.ending) Object.assign(f, { everwinter_intro: true, dawn_r1: true, dawn_stairs: true, dawn_top: true, dawn_summit: true, dawn_done: true, ret_wake: true, ret_mem1: true, ret_mem2: true, ret_mem3: true, ret_mem4: true, swamp_in: true, swamp_told: true, swamp_mine: true, swamp_camp: true, swamp_branch: true, swamp_back: true, swamp_done: true, time_meet: true, cable_open: true, time_gepard: true, time_crowd: true, crowned: true, time_done: true, gal_in: true, gal_monument: true, gal_ws: true, gal_sleep: true, gal_meet: true, jarilo_done: true });
         else if (f.everwinter_intro) s.obj = 'Найдите следы Брони и Коколии (тропа вверх по холму)';
       }
+    },
+    {
+      maps: [],
+      fix(s) {
+        const widened = ['j_florist', 'j_hotel', 'j_fort', 'u_boulder', 'u_settle'];
+        if (widened.includes(s.map)) { s.x = null; s.y = null; }
+        if (s.lastAnchor && widened.includes(s.lastAnchor.map)) s.lastAnchor = { map: s.lastAnchor.map, x: null, y: null };
+      }
     }
   ];
 
@@ -234,6 +242,7 @@
       this.rng = H.makeRandom(opts.seed || ((Date.now() & 0xffffff) + 7));
       this.state = opts.state ? Object.assign(newState(), JSON.parse(JSON.stringify(opts.state))) : newState();
       this.clock = opts.clock || null;
+      this.events = [];
       this.fixPower();
       this.fixWarpLog();
       this.fixGlow(!!opts.state && !opts.state.shop);
@@ -249,7 +258,6 @@
       if (this.fixTraces) this.fixTraces(!!opts.state && !opts.state.trv);
       if (this.fixOutfitTiers) this.fixOutfitTiers(!!opts.state && !opts.state.otv);
       this.mailSync();
-      this.events = [];
       this.pending = null;
       this.script = null;
       this.scriptQueue = [];
@@ -532,6 +540,7 @@
       this.powerSync();
       if (this.attackAnim > 0) this.attackAnim = Math.max(0, this.attackAnim - dt);
       if (this.updatePet && !this.battle) this.updatePet(dt);
+      if (this.pending && this.pending.type === 'walk') { this.walkStep(dt); return; }
       if (this.battle || this.pending) return;
       if (this.script) { this.advanceScript(); return; }
       this.movePlayer(dt, input);
@@ -589,6 +598,50 @@
         if (d < bd) { bd = d; best = { x: e.x, y: e.y, dist: d }; }
       }
       return best;
+    }
+
+    npcWalk(st) {
+      const e = this.map.ents.find(x => x.kind === 'npc' && x.ch === st.walk);
+      if (!e) return false;
+      const home = st.to === 'home', [tx, ty] = home ? this.map.marks[st.walk][0] : this.walkGoal(e);
+      const path = [];
+      let x = e.x, y = e.y;
+      while (y !== ty) { y += Math.sign(ty - y); path.push([x, y]); }
+      while (x !== tx) { x += Math.sign(tx - x); path.push([x, y]); }
+      const w = { type: 'walk', ent: e, path, home };
+      Object.assign(e, { fx: e.x, fy: e.y, ox: e.x, oy: e.y, prog: 1 });
+      if (!path.length || this.skipping) { this.walkEnd(w); return false; }
+      this.pending = w;
+      return true;
+    }
+
+    walkGoal(e) {
+      const p = this.player, near = [[-1, 0], [1, 0], [0, -1], [0, 1]].map(([dx, dy]) => [p.x + dx, p.y + dy]).filter(([x, y]) => !this.blocked(x, y));
+      near.sort((a, b) => Math.abs(a[0] - e.x) + Math.abs(a[1] - e.y) - Math.abs(b[0] - e.x) - Math.abs(b[1] - e.y));
+      return near[0] || [e.x, e.y];
+    }
+
+    walkStep(dt) {
+      const w = this.pending, e = w.ent;
+      if (e.prog >= 1) {
+        if (!w.path.length) { this.walkEnd(w); this.pending = null; this.advanceScript(); return; }
+        const [nx, ny] = w.path.shift();
+        e.dir = nx > e.x ? 'right' : nx < e.x ? 'left' : ny > e.y ? 'down' : 'up';
+        e.ox = e.x; e.oy = e.y; e.x = nx; e.y = ny; e.prog = 0;
+      }
+      e.prog = Math.min(1, e.prog + dt * 5);
+      e.fx = e.ox + (e.x - e.ox) * e.prog; e.fy = e.oy + (e.y - e.oy) * e.prog;
+    }
+
+    walkEnd(w) {
+      const e = w.ent, p = this.player, last = w.path[w.path.length - 1];
+      if (last) { e.x = last[0]; e.y = last[1]; }
+      w.path = [];
+      Object.assign(e, { fx: e.x, fy: e.y, ox: e.x, oy: e.y, prog: 1 });
+      if (w.home) { e.dir = e.def.dir || 'down'; return; }
+      const dx = p.x - e.x, dy = p.y - e.y;
+      e.dir = dx > 0 ? 'right' : dx < 0 ? 'left' : dy > 0 ? 'down' : 'up';
+      p.dir = { up: 'down', down: 'up', left: 'right', right: 'left' }[e.dir];
     }
 
     barkLine() { const b = this.bark; return b && b.map === this.map.id && b.i < b.lines.length ? b.lines[b.i] : null; }
@@ -730,7 +783,7 @@
       return [p.x + dx, p.y + dy];
     }
 
-    interact() {
+    interact(opts = {}) {
       if (this.busy() || this.player.moving) return false;
       const [fx, fy] = this.front();
       const e = this.entAt(fx, fy, x => x.kind !== 'enemy' && x.kind !== 'trigger' && x.kind !== 'exit' && x.kind !== 'marvel' && x.kind !== 'span' && x.kind !== 'rbridge' && x.kind !== 'gbridge');
@@ -762,7 +815,7 @@
           if (e.def.calyx) { this.pending = { type: 'ui', ui: 'calyx', only: [].concat(e.def.calyx) }; return true; }
           if (e.def.doc) { this.state.flags['doc_' + e.def.doc] = true; this.pending = { type: 'ui', ui: 'doc', doc: e.def.doc }; return true; }
           if (!e.def.script) return false;
-          this.runScript(e.def.script);
+          this.runScript(opts.shift && e.def.shift ? e.def.shift : e.def.script);
           return true;
         case 'su_frame': {
           const dom = this.state.su && this.state.su.dom, ev = dom && H.SU.EVENTS[dom.event];
@@ -881,7 +934,7 @@
       const techs = o.techs || s.pendingTechs.map(c => ({ charId: c, fx: H.CHARS[c].tech.fx })).filter(t => party.some(p => p.charId === t.charId));
       if (!o.techs) s.pendingTechs = [];
       const opts = {
-        party, seed: this.rng.int(1e9) + 1,
+        party, seed: o.seed || this.rng.int(1e9) + 1,
         enemies: enc ? enc.enemies : o.enemies, waves: enc ? enc.waves : o.waves,
         lvl: o.lvl || 1, boss: enc ? !!enc.boss : !!o.boss, noFlee: enc ? !!enc.noFlee : !!o.noFlee,
         ambush: o.ambush, leader: 0, techs, nextAtk: s.nextAtk, nextCrit: s.nextCrit,
@@ -2045,7 +2098,7 @@
         if (st.suIf !== undefined && st.jump) { if (this.suCond(st.suIf)) sc.pc = sc.labels[st.jump]; continue; }
         if (st.if !== undefined && st.jump) { if (this.cond(st.if)) sc.pc = sc.labels[st.jump]; continue; }
         if (st.rnd) { sc.pc = sc.labels[st.rnd[Math.floor(this.rng() * st.rnd.length)]]; continue; }
-        if (st.party && st.jump) { const ids = [].concat(st.party), pool = st.lead ? s.party.slice(0, 1) : s.party; if (pool.some(id => ids.includes(id))) sc.pc = sc.labels[st.jump]; continue; }
+        if (st.party && st.jump) { const ids = [].concat(st.party), pool = st.lead || st.solo ? s.party.slice(0, 1) : s.party; if ((!st.solo || s.party.length === 1) && pool.some(id => ids.includes(id))) sc.pc = sc.labels[st.jump]; continue; }
         if (st.day) {
           const k = dayKey(this.now()), days = s.days || (s.days = {});
           if (st.jump) { if (days[st.day] && days[st.day] !== k) sc.pc = sc.labels[st.jump]; } else days[st.day] = k;
@@ -2093,6 +2146,7 @@
         if (st.record !== undefined) { this.state.record = st.record; this.emit({ t: 'music', id: this.mapMusic(this.map.def) }); if (st.note) this.toast(this.fill(st.note)); continue; }
         if (st.choice) { this.pending = { type: 'choice', title: st.title, options: st.choice.filter(o => !o[2] || this.cond(o[2])).map(o => [this.fill(o[0]), o[1]]) }; return; }
         if (st.lift) { this.emit({ t: 'sfx', id: 'door' }); this.loadMap(st.lift[0], st.lift[1]); continue; }
+        if (st.walk) { if (this.npcWalk(st)) return; continue; }
         if (st.rate) { this.pending = { type: 'choice', title: 'Навести пистолет', options: s.party.map(id => [/^trail/.test(id) ? s.name : H.CHARS[id].name, '@rate:' + id]) }; return; }
         if (st.menu) {
           const asked = sc.asked || (sc.asked = new Set());
@@ -2112,6 +2166,7 @@
     resume(val) {
       const p = this.pending;
       this.pending = null;
+      if (p && p.type === 'walk') this.walkEnd(p);
       if (p && p.type === 'choice' && this.script) {
         const opt = p.options[val] || p.options[0];
         if (p.menu) (this.script.asked || (this.script.asked = new Set())).add(opt[1]);

@@ -1211,6 +1211,7 @@
       if (tgt.side === 'ally' && this.su && this.suSurvive(tgt)) return;
       if (tgt.side === 'ally' && this.kitFx && this.kitFx(tgt, 'survive')) return;
       if (tgt.side === 'ally' && this.kitFx && this.allies.some(w => w !== tgt && alive(w) && this.kitFx(w, 'allySurvive', tgt))) return;
+      if (tgt.side === 'ally' && this.cwInfo && this.cwNear(tgt)) return;
       tgt.dead = true;
       tgt.shield = 0;
       this.push({ t: 'kill', u: tgt });

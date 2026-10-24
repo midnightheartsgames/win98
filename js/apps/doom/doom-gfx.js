@@ -567,7 +567,15 @@
     reg('BAL1', ball(R.ORANGE, 6, 2), R.ORANGE);
     reg('BAL2', ball(R.PURPLE, 6, 2, R.PINK), R.PURPLE);
     reg('BAL7', ball(R.GREEN, 8, 2), R.GREEN);
-    { const p = new Pic(24, 16); limb(p, 5, 8, 17, 8, 3, 3, R.STEEL, 9); poly(p, [[17, 5], [23, 8], [17, 11]], C(R.RED, 9)); blob(p, 4, 8, 4, 3, R.YELLOW, 15, 2); p.ox = 12; p.oy = 12; put('MISLA', p); }
+    { const p = new Pic(24, 16); limb(p, 5, 8, 17, 8, 3, 3, R.STEEL, 9); poly(p, [[17, 5], [23, 8], [17, 11]], C(R.RED, 9)); blob(p, 4, 8, 4, 3, R.YELLOW, 15, 2); p.ox = 12; p.oy = 12; put('MISLAS', p); }
+    const rocketEnd = (tail) => {
+      const p = new Pic(16, 16);
+      limb(p, 8, 1.5, 8, 14.5, 1.2, 1.2, R.RED, 9); limb(p, 1.5, 8, 14.5, 8, 1.2, 1.2, R.RED, 9);
+      blob(p, 8, 8, 4.5, 4.5, R.STEEL, 9, 3);
+      if (tail) blob(p, 8, 8, 3, 3, R.YELLOW, 15, 2); else blob(p, 8, 8, 3, 3, R.RED, 10, 3);
+      p.ox = 8; p.oy = 12; return p;
+    };
+    put('MISLAF', rocketEnd(false)); put('MISLAB', rocketEnd(true));
     explosionFrames(R.ORANGE, 3, 1.2).forEach((p, i) => put('MISL' + 'BCD'[i], p));
     ball(R.BLUE, 6, 2, R.CYAN).forEach((p, i) => put('PLSS' + 'AB'[i], p));
     explosionFrames(R.CYAN, 5, 0.5).forEach((p, i) => put('PLSS' + 'CDEFG'[i], p));

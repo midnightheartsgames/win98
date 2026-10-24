@@ -730,6 +730,7 @@
       if (set.skill) steps.push(['skill', null, 'Навык']);
       for (const f of Object.keys(set.fusions || {})) steps.push(['fus', f, 'Слияние']);
       if (set.warp) steps.push(['warp', null, 'Прыжок']);
+      if (set.eidolon && H.Eidolons) steps.push(['eid', null, 'Картина эйдолонов']);
       return steps;
     },
 
@@ -742,6 +743,23 @@
         return target === 'single' ? list.slice(1, 2) : list;
       };
       const me = unit(o.char);
+      if (kind === 'eid') {
+        const E = H.Eidolons, sc = E.sceneOf(id);
+        return {
+          t: 0, done: false, fading: false,
+          tick(dt) { this.t += dt; if (this.t >= 4.5) this.done = true; },
+          skip() { this.done = true; },
+          draw(c) {
+            E.scene(ui, c, o.char, 6, null, id);
+            const cap = kit.name + ' · ' + sc.title, w = Math.max(250, Math.round(ui.measure(cap, 13, true, true) + 40)), x = Math.round(W / 2 - w / 2), y = HGT - 74;
+            ui.win(x, y, w, 40, { alpha: 0.82 });
+            ui.text(cap, W / 2, y + 7, { align: 'center', size: 13, bold: true, serif: true, col: C.gold });
+            ui.text('Эйдолоны 6 / 6 · ' + E.stageName(6), W / 2, y + 24, { align: 'center', size: 10, col: C.sub });
+            ui.hints([['Esc', 'Дальше']], W - 12, 12, { align: 'right' });
+            ui.hit(0, 0, W, HGT, () => this.skip());
+          }
+        };
+      }
       if (kind === 'ult') return new H.Ults.Show(ui, me, { foes: foes(kit.ult.target), allies: [me], bg: 'station', outfit: id });
       if (kind === 'skill') return new H.SkillShow(ui, me, { foes: foes(kit.skill.target), bg: 'station', outfit: id });
       if (kind === 'fus') { const mem = H.FUSIONS[sub].members.map(unit); return new H.Fusions.Show(ui, mem, { id: sub, foes: foes(H.FUSIONS[sub].target), allies: mem, bg: 'station', outfit: id }); }
@@ -795,7 +813,7 @@
       sh.outfitBack = null;
       this.push({
         draw(c) {
-          const lines = ui.wrap('Класс облика теперь зависит от того, что облик меняет. Облик 4★ меняет только героя: в бою, в мире и в меню, и стоит ' + fmt(H.OUTFIT_TIER[4].price) + ' нефрита. Облик 5★ ещё и показывает свои катсцены абсолютной техники, Навыка, Слияний и прыжка. Ваши облики подешевели, поэтому разница возвращена: ' + fmt(back) + ' звёздного нефрита.', 400, 11);
+          const lines = ui.wrap('Класс облика теперь зависит от того, что облик меняет. Облик 4★ меняет только героя: в бою, в мире и в меню, и стоит ' + fmt(H.OUTFIT_TIER[4].price) + ' нефрита. Облик 5★ ещё и показывает свои катсцены абсолютной техники, Навыка, Слияний и прыжка и свою картину эйдолонов. Ваши облики подешевели, поэтому разница возвращена: ' + fmt(back) + ' звёздного нефрита.', 400, 11);
           const h = 80 + lines.length * 15, x = W / 2 - 220, y = HGT / 2 - h / 2;
           c.fillStyle = 'rgba(0,0,0,0.45)'; c.fillRect(0, 0, W, HGT);
           ui.win(x, y, 440, h, { title: 'Патч 1.6: Облики 4★ и 5★' });

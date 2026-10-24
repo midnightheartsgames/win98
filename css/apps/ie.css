@@ -2891,6 +2891,48 @@
   margin-top: 8px;
 }
 
+.anekdot-rubric-line {
+  font: 12px Arial, Helvetica, sans-serif;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.anekdot-rubric-count {
+  font: 12px Arial, Helvetica, sans-serif;
+  color: #777777;
+  font-weight: normal;
+}
+
+.anekdot-heading {
+  font: bold 20px 'Times New Roman', Times, serif;
+  color: #800000;
+  margin: 14px 0 8px;
+}
+
+.anekdot-crumbs {
+  font: 12px Arial, Helvetica, sans-serif;
+  color: #555555;
+}
+
+.anekdot-rubric-grid {
+  list-style: square;
+  columns: 2;
+  margin: 0 0 6px 20px;
+  padding: 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.anekdot-card-rubric {
+  font: 12px Arial, Helvetica, sans-serif;
+}
+
+.anekdot-more {
+  font: bold 14px Arial, Helvetica, sans-serif;
+  text-align: right;
+  margin-top: 8px;
+}
+
 .anekdot-card {
   line-height: 1.3;
 }

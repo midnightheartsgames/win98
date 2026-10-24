@@ -1,0 +1,42 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000033;
+}
+
+.aw-frame {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.aw-frame > .hwk-root {
+  min-width: 780px;
+}
+
+.aw-host-loading {
+  margin: 40px auto;
+  color: #ffffcc;
+  font: 12px Verdana, Arial, sans-serif;
+  text-align: center;
+}
+
+.aw-host-note {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
+  padding: 6px 10px;
+  background: #ffffe1;
+  border: 1px solid #000000;
+  color: #000000;
+  font: 11px Tahoma, Verdana, Arial, sans-serif;
+  z-index: 20;
+}
+
+.aw-host-note a {
+  color: #0000ff;
+}

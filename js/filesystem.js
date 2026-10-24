@@ -1642,6 +1642,9 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
         if (!winDir.children['SNDVOL32.EXE']) {
           winDir.children['SNDVOL32.EXE'] = { type: 'executable', name: 'SNDVOL32.EXE', icon: 'volume-mixer', app: 'sndvol32' };
         }
+        if (!winDir.children['MSBACKUP.EXE']) {
+          winDir.children['MSBACKUP.EXE'] = { type: 'executable', name: 'MSBACKUP.EXE', icon: 'backup', app: 'msbackup' };
+        }
         if (!winDir.children['CLEANMGR.EXE']) {
           winDir.children['CLEANMGR.EXE'] = { type: 'executable', name: 'CLEANMGR.EXE', icon: 'cleanmgr', app: 'cleanmgr' };
         }
@@ -2480,6 +2483,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
                     'SCANDISK.EXE': { type: 'executable', name: 'SCANDISK.EXE', icon: 'scandisk', app: 'scandisk' },
                     'SNDVOL32.EXE': { type: 'executable', name: 'SNDVOL32.EXE', icon: 'volume-mixer', app: 'sndvol32' },
                     'CLEANMGR.EXE': { type: 'executable', name: 'CLEANMGR.EXE', icon: 'cleanmgr', app: 'cleanmgr' },
+                    'MSBACKUP.EXE': { type: 'executable', name: 'MSBACKUP.EXE', icon: 'backup', app: 'msbackup' },
                     'COMMAND.COM': { type: 'executable', name: 'COMMAND.COM', icon: 'dos-prompt', app: 'command' },
                     'QBASIC.EXE': { type: 'executable', name: 'QBASIC.EXE', icon: 'qbasic', app: 'qbasic' },
                     'CDPLAYER.EXE': { type: 'executable', name: 'CDPLAYER.EXE', icon: 'cdplayer', app: 'cdplayer' },

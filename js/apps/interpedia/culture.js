@@ -42,7 +42,7 @@ window.interpediaReg('demoscene', 'culture', {
     { id: 'industry', title: 'Сцена и индустрия', content: `Демосцена стала школой для разработчиков игр. Участники финской группы Future Crew основали студию Remedy Entertainment, выпустившую Death Rally (1996) и работающую над боевиком [[maxpayne|Max Payne]], и компанию, создающую тесты производительности 3DMark. Шведская группа Triton выпустила трекер FastTracker 2, а композиторы со сцены пишут музыку для игр, например для [[ut99|Unreal Tournament]].` },
     { id: 'archives', title: 'Архивы', content: `Демо распространяются через [[bbs|BBS]], дискеты и FTP-архивы. Крупнейший архив PC-сцены, hornet.org, закрылся в 1998 году, и его коллекцию сохранили добровольцы, передав её в scene.org. Сценеры понимают, что их работы живут, лишь пока кто-то их хранит: демо, рассчитанное на конкретную звуковую карту и процессор, через несколько лет может не запуститься на новом компьютере.` }
   ],
-  seeAlso: ['secondreality', 'gravisgus', 'amigaos', 'bbs', 'lanparty'],
+  seeAlso: ['secondreality', 'gravisgus', 'amigaos', 'bbs', 'lanparty', 'trackers'],
   references: [
     'Future Crew. Second Reality: info file. — 1993.',
     'Hornet Archive: Demo News, 1992–1998.',
@@ -93,7 +93,7 @@ Popular effects, plasma, tunnels, spinning 3D objects, fire, starfields and mirr
     { id: 'industry', title: 'The scene and the industry', content: `The demoscene became a school for game developers. Members of the Finnish group Future Crew founded Remedy Entertainment, which released Death Rally (1996) and is working on the action game [[maxpayne|Max Payne]], and a company that makes the 3DMark benchmarks. The Swedish group Triton released the FastTracker 2 tracker, and scene composers write game music, for example for [[ut99|Unreal Tournament]].` },
     { id: 'archives', title: 'Archives', content: `Demos spread through [[bbs|BBSes]], floppies and FTP archives. The largest PC scene archive, hornet.org, closed in 1998, and volunteers saved its collection by passing it to scene.org. Sceners know their work lives only as long as someone keeps it: a demo written for a particular sound card and processor may not run on a new computer a few years later.` }
   ],
-  seeAlso: ['secondreality', 'gravisgus', 'amigaos', 'bbs', 'lanparty'],
+  seeAlso: ['secondreality', 'gravisgus', 'amigaos', 'bbs', 'lanparty', 'trackers'],
   references: [
     'Hornet Archive: Demo News, 1992–1998.',
     'Assembly: official competition results, 1992–1999.',
@@ -136,7 +136,7 @@ Second Reality показала, что обычный компьютер с п�
     { id: 'music', title: 'Музыка', content: `Музыку написали Purple Motion (Йонне Валтонен) и Skaven (Петер Хайба). Она звучит лучше всего на [[gravisgus|Gravis UltraSound]], который аппаратно смешивает голоса трекерной музыки, но работает и на [[soundblaster|Sound Blaster]]. Позже Skaven писал музыку для игр, в том числе для [[ut99|Unreal Tournament]].` },
     { id: 'legacy', title: 'Наследие', content: `Second Reality остаётся эталоном жанра: на неё ссылаются как на доказательство того, что программирование может быть искусством. Многие участники Future Crew ушли в индустрию: основали игровую студию Remedy Entertainment и компанию, создающую тесты производительности видеокарт. На компьютерах конца 1990-х демо работает слишком быстро или с ошибками звука, и поклонники хранят старые машины специально для его запуска.` }
   ],
-  seeAlso: ['demoscene', 'gravisgus', 'soundblaster', 'msdos'],
+  seeAlso: ['demoscene', 'gravisgus', 'soundblaster', 'msdos', 'trackers'],
   references: [
     'Future Crew. Second Reality: info file (SECOND.NFO). — 1993.',
     'Assembly \'93: результаты конкурсов. — 1993.'
@@ -176,7 +176,7 @@ Every effect is computed in real time without a 3D accelerator, using only the p
     { id: 'music', title: 'Music', content: `The music was written by Purple Motion (Jonne Valtonen) and Skaven (Peter Hajba). It sounds best on the [[gravisgus|Gravis UltraSound]], which mixes tracker voices in hardware, but it also works on the [[soundblaster|Sound Blaster]]. Skaven later wrote game music, including for [[ut99|Unreal Tournament]].` },
     { id: 'legacy', title: 'Legacy', content: `Second Reality remains the benchmark of the genre and is cited as proof that programming can be art. Many Future Crew members moved into the industry, founding the game studio Remedy Entertainment and a company that makes video card benchmarks. On late-1990s computers the demo runs too fast or with sound glitches, and fans keep old machines just to run it.` }
   ],
-  seeAlso: ['demoscene', 'gravisgus', 'soundblaster', 'msdos'],
+  seeAlso: ['demoscene', 'gravisgus', 'soundblaster', 'msdos', 'trackers'],
   references: [
     'Future Crew. Second Reality info file (SECOND.NFO), 1993.',
     'Assembly \'93 competition results, 1993.'
@@ -281,7 +281,7 @@ window.interpediaReg('hackermanifesto', 'culture', {
 
 Критики напоминают, что за романтикой манифеста стоят реальные незаконные действия, а подростковое любопытство не оправдывает вторжения в чужие системы. Сторонники видят в нём прежде всего защиту права на знание.` }
   ],
-  seeAlso: ['cyberpunk', 'bbs', 'fidonet', 'usenet'],
+  seeAlso: ['cyberpunk', 'bbs', 'fidonet', 'usenet', 'xakep'],
   references: [
     'The Mentor. The Conscience of a Hacker // Phrack. — 1986. — Т. 1, вып. 7, файл 3.',
     'Levy S. Hackers: Heroes of the Computer Revolution. — Doubleday, 1984.',
@@ -317,7 +317,7 @@ Blankenship later worked at Steve Jackson Games, where he wrote the GURPS Cyberp
 
 Critics point out that behind the manifesto's romance lie real illegal acts, and teenage curiosity does not justify breaking into other people's systems. Supporters see it above all as a defense of the right to knowledge.` }
   ],
-  seeAlso: ['cyberpunk', 'bbs', 'fidonet', 'usenet'],
+  seeAlso: ['cyberpunk', 'bbs', 'fidonet', 'usenet', 'xakep'],
   references: [
     'The Mentor. "The Conscience of a Hacker". Phrack, vol. 1, issue 7, file 3, 1986.',
     'Levy, S. Hackers: Heroes of the Computer Revolution. Doubleday, 1984.',
@@ -368,7 +368,7 @@ window.interpediaReg('cyberpunk', 'culture', {
     { id: 'matrix', title: '«Матрица»', content: `Фильм «Матрица», вышедший в марте 1999 года, стал главным событием года для поклонников жанра: хакер Нео узнаёт, что привычный мир — компьютерная симуляция. Замедленные перестрелки, чёрные плащи и «падающий» зелёный код на экранах вдохновили тысячи заставок, обоев рабочего стола и домашних страниц. Заставка «Матрица» — одна из самых популярных загрузок 1999 года.` },
     { id: 'russia', title: 'Киберпанк в России', content: `Книги Гибсона и Стерлинга вышли в русских переводах в 1990-х. Отечественный ответ — роман Сергея Лукьяненко «Лабиринт отражений» (1997) о виртуальном городе Диптауне и «дайверах», умеющих выходить из виртуальности по своей воле, и его продолжение «Фальшивые зеркала» (1999). Книги стали популярны у читателей [[fidonet|ФидоНета]] и посетителей интернет-кафе, во многом угадав их повседневность.` }
   ],
-  seeAlso: ['hackermanifesto', 'systemshock2', 'bbs', 'www'],
+  seeAlso: ['hackermanifesto', 'systemshock2', 'bbs', 'www', 'bttf'],
   references: [
     'Gibson W. Neuromancer. — Ace Books, 1984.',
     'Sterling B. (ред.) Mirrorshades: The Cyberpunk Anthology. — Arbor House, 1986.',
@@ -418,7 +418,7 @@ The key visual images came from Ridley Scott's Blade Runner (1982), with its rai
     { id: 'matrix', title: 'The Matrix', content: `The Matrix, released in March 1999, was the year's big event for genre fans: the hacker Neo learns that the familiar world is a computer simulation. Slow-motion gunfights, black coats and the "falling" green code on screens inspired thousands of screensavers, wallpapers and home pages. A Matrix screensaver is one of the most popular downloads of 1999.` },
     { id: 'russia', title: 'Cyberpunk in Russia', content: `Gibson's and Sterling's books came out in Russian translation in the 1990s. The Russian answer is Sergei Lukyanenko's novel Labyrinth of Reflections (1997), about the virtual city of Deeptown and "divers" who can leave virtual reality at will, and its sequel False Mirrors (1999). The books became popular with [[fidonet|FidoNet]] readers and Internet cafe regulars, in many ways predicting their everyday life.` }
   ],
-  seeAlso: ['hackermanifesto', 'systemshock2', 'bbs', 'www'],
+  seeAlso: ['hackermanifesto', 'systemshock2', 'bbs', 'www', 'bttf'],
   references: [
     'Gibson, W. Neuromancer. Ace Books, 1984.',
     'Sterling, B. (ed.) Mirrorshades: The Cyberpunk Anthology. Arbor House, 1986.',
@@ -465,7 +465,7 @@ window.interpediaReg('bbs', 'culture', {
     { id: 'russia', title: 'BBS в России', content: `В России BBS расцвели в начале и середине 1990-х, когда Интернет был редкостью, а модем на 2400 бод — завидным приобретением. Станции работали по ночам на домашних телефонах сисопов и служили главными источниками программ, игр и новостей. Многие из них входят в [[fidonet|ФидоНет]], а их сисопы составляют ядро российского компьютерного сообщества.` },
     { id: 'decline', title: 'BBS и Интернет', content: `С распространением Интернета пользователи переходят на веб-сайты, [[usenet|Usenet]] и [[irc|IRC]], где не нужно ждать свободной линии. Многие BBS закрылись, и вместе с ними исчезли их файловые архивы и переписка. Оставшиеся станции подключаются к Интернету через telnet, а энтузиасты собирают архивы текстов и ANSI-графики, чтобы сохранить историю.` }
   ],
-  seeAlso: ['fidonet', 'modem56k', 'usenet', 'irc', 'demoscene'],
+  seeAlso: ['fidonet', 'modem56k', 'usenet', 'irc', 'demoscene', 'ashroad', 'xakep'],
   references: [
     'Christensen W., Suess R. Hobbyist Computerized Bulletin Board // Byte. — 1978. — Ноябрь.',
     'Jennings T. FidoNet History and Operation. — 1985.',
@@ -510,7 +510,7 @@ Most BBSes have one or a few phone lines, so only a few people can be on at once
     { id: 'russia', title: 'BBSes in Russia', content: `In Russia BBSes flourished in the early and mid-1990s, when the Internet was rare and a 2400-baud modem was an enviable purchase. Stations ran at night on sysops' home phones and were the main source of software, games and news. Many belong to [[fidonet|FidoNet]], and their sysops form the core of the Russian computer community.` },
     { id: 'decline', title: 'BBSes and the Internet', content: `As the Internet spreads, users move to websites, [[usenet|Usenet]] and [[irc|IRC]], where there is no waiting for a free line. Many BBSes have closed, and their file archives and correspondence vanished with them. The remaining stations connect to the Internet via telnet, and enthusiasts collect archives of texts and ANSI art to preserve the history.` }
   ],
-  seeAlso: ['fidonet', 'modem56k', 'usenet', 'irc', 'demoscene'],
+  seeAlso: ['fidonet', 'modem56k', 'usenet', 'irc', 'demoscene', 'ashroad', 'xakep'],
   references: [
     'Christensen, W., Suess, R. "Hobbyist Computerized Bulletin Board". Byte, November 1978.',
     'Jennings, T. FidoNet History and Operation, 1985.',
@@ -750,7 +750,7 @@ window.interpediaReg('lanparty', 'culture', {
     { id: 'esports', title: 'Профессиональные соревнования', content: `Турниры с денежными призами становятся всё серьёзнее. В 1997 году Ангел Муньос основал Профессиональную лигу киберспортсменов (CPL), проводящую чемпионаты по шутерам. Самый известный игрок эпохи — Деннис «Thresh» Фонг, выигравший в 1997 году Ferrari Джона Кармака. В Южной Корее профессиональные лиги по [[starcraft|StarCraft]] показывают по телевидению. В России проводятся турниры в клубах и на компьютерных выставках, а лучшие команды мечтают выступить за рубежом.` },
     { id: 'criticism', title: 'Споры', content: `Родители и пресса нередко относятся к клубам с подозрением: подростки проводят там ночи, тратят карманные деньги и прогуливают уроки, а в некоторых клубах курят и распивают спиртное. Владельцы клубов отвечают, что клуб — место общения и безопаснее улицы, и устраивают детские часы и турниры с призами.` }
   ],
-  seeAlso: ['quake2', 'starcraft', 'doom', 'overclocking', 'demoscene'],
+  seeAlso: ['quake2', 'starcraft', 'doom', 'overclocking', 'demoscene', 'igromania', 'sunsetvalley', 'hockey98', 'worldcup98'],
   references: [
     'QuakeCon: история фестиваля. — 1999.',
     'Cyberathlete Professional League: правила турниров. — 1998.',
@@ -792,7 +792,7 @@ Clubs advertise their machines: "Pentium II, [[voodoo2|Voodoo 2]], 17-inch monit
     { id: 'esports', title: 'Professional competition', content: `Tournaments with cash prizes are getting more serious. In 1997 Angel Munoz founded the Cyberathlete Professional League (CPL), which runs shooter championships. The best-known player of the era is Dennis "Thresh" Fong, who won John Carmack's Ferrari in 1997. In South Korea professional [[starcraft|StarCraft]] leagues are televised. In Russia tournaments are held in clubs and at computer shows, and the best teams dream of competing abroad.` },
     { id: 'criticism', title: 'Controversy', content: `Parents and the press often view clubs with suspicion: teenagers spend nights there, spend their pocket money and skip school, and some clubs allow smoking and drinking. Club owners reply that a club is a place to socialize and safer than the street, and they hold children's hours and tournaments with prizes.` }
   ],
-  seeAlso: ['quake2', 'starcraft', 'doom', 'overclocking', 'demoscene'],
+  seeAlso: ['quake2', 'starcraft', 'doom', 'overclocking', 'demoscene', 'igromania', 'sunsetvalley', 'hockey98', 'worldcup98'],
   references: [
     'QuakeCon: history of the event, 1999.',
     'Cyberathlete Professional League tournament rules, 1998.',
@@ -838,7 +838,7 @@ window.interpediaReg('gorbushka', 'culture', {
 Сторонники рынков указывают, что лицензионные игры и программы стоят столько же, сколько в США, при несравнимо меньших зарплатах. Постепенно появляются российские издатели лицензионных версий, например «1С» и «Бука», выпускающие игры по доступным ценам с качественными переводами, в том числе [[homm3|Heroes of Might and Magic III]].` },
     { id: 'markets', title: 'Другие рынки', content: `Помимо «Горбушки», в Москве известны Митинский радиорынок, где продают комплектующие и диски, и Савёловский компьютерный рынок. В других городах подобную роль играют радиорынки и ряды в универмагах. Для покупки железа важны гарантия и честность продавца: на рынках встречаются перемаркированные процессоры (см. [[overclocking|оверклокинг]]).` }
   ],
-  seeAlso: ['cdrom', 'mp3format', 'windows98', 'fallout', 'homm3'],
+  seeAlso: ['cdrom', 'mp3format', 'windows98', 'fallout', 'homm3', 'igromania', 'emuland', 'cdrw', 'fargus'],
   references: [
     'Закон РФ «Об авторском праве и смежных правах». — 9 июля 1993.',
     'Репортаж о московских рынках дисков // Компьютерра. — 1999.',
@@ -881,7 +881,7 @@ Discs cost several times less than licensed ones, which for many people became t
 Defenders of the markets point out that licensed games and software cost as much as in the US while salaries are incomparably lower. Russian publishers of licensed versions are gradually appearing, such as 1C and Buka, which release games at affordable prices with quality translations, including [[homm3|Heroes of Might and Magic III]].` },
     { id: 'markets', title: 'Other markets', content: `Besides Gorbushka, Moscow has the Mitino radio market, selling components and discs, and the Savyolovsky computer market. In other cities radio markets and department store stalls play the same role. When buying hardware, a warranty and an honest seller matter: remarked processors turn up at the markets (see [[overclocking|overclocking]]).` }
   ],
-  seeAlso: ['cdrom', 'mp3format', 'windows98', 'fallout', 'homm3'],
+  seeAlso: ['cdrom', 'mp3format', 'windows98', 'fallout', 'homm3', 'igromania', 'emuland', 'cdrw', 'fargus'],
   references: [
     'Russian Federation law "On Copyright and Related Rights", July 9, 1993.',
     '"Moscow disc markets" report. Computerra, 1999.',
@@ -930,7 +930,7 @@ Microslop выпустила обновления для [[windows95|Win 95]] и
 Скептики считают страхи преувеличенными и указывают, что «опасные» даты 1999 года прошли спокойно. Инженеры, занятые исправлениями, отвечают: если 1 января ничего не случится, это будет означать не то, что проблемы не было, а то, что их работа удалась. Спор разрешится в новогоднюю ночь.` },
     { id: 'russia', title: 'Россия и 2000 год', content: `Россия начала подготовку позже многих западных стран, и за рубежом высказывались опасения по поводу энергосистем и устаревшей техники. Правительство утвердило программу работ, банки и энергетики отчитываются о проверке систем. На российских персональных компьютерах значительная часть программ нелицензионная, и обновления для них устанавливают не все. Компьютерные журналы публикуют инструкции по проверке BIOS и программ.` }
   ],
-  seeAlso: ['bios', 'windows98', 'win98se', 'win2000', 'interpedia'],
+  seeAlso: ['bios', 'windows98', 'win98se', 'win2000', 'interpedia', 'svodka', 'bttf', 'dancingbaby'],
   references: [
     'Yourdon E., Yourdon J. Time Bomb 2000. — Prentice Hall, 1998.',
     'President\'s Council on Year 2000 Conversion: отчёт. — 1999.',
@@ -978,7 +978,7 @@ Many companies are keeping engineers on duty over New Year's night. The US and R
 Skeptics call the fears exaggerated and point out that the "risky" dates of 1999 passed quietly. Engineers doing the fixes answer that if nothing happens on January 1, it will not mean there was no problem, but that their work succeeded. The argument will be settled on New Year's night.` },
     { id: 'russia', title: 'Russia and the year 2000', content: `Russia started preparing later than many Western countries, and concerns were voiced abroad about its power grids and aging equipment. The government approved a work program, and banks and power companies report on checking their systems. Much of the software on Russian PCs is unlicensed, and not everyone installs updates for it. Computer magazines publish instructions for checking the BIOS and programs.` }
   ],
-  seeAlso: ['bios', 'windows98', 'win98se', 'win2000', 'interpedia'],
+  seeAlso: ['bios', 'windows98', 'win98se', 'win2000', 'interpedia', 'svodka', 'bttf', 'dancingbaby'],
   references: [
     'Yourdon, E., Yourdon, J. Time Bomb 2000. Prentice Hall, 1998.',
     'President\'s Council on Year 2000 Conversion report, 1999.',
@@ -1030,7 +1030,7 @@ window.interpediaReg('clippy', 'culture', {
 Сторонники отвечают, что Помощник помогает новичкам, которые впервые садятся за компьютер и боятся заглянуть в справку, а его можно просто выключить.` },
     { id: 'agent', title: 'Microslop Agent', content: `Технология Microslop Agent (1997) позволяет использовать анимированных персонажей вне Office: в программах, на рабочем столе и на веб-страницах [[ie5|Internet Explorer]]. Персонажи умеют говорить синтезированным голосом и понимать голосовые команды. Энтузиасты создают собственных персонажей и даже целые сайты, посвящённые Скрепышу, — с играми, викторинами и коллекциями нарядов.` }
   ],
-  seeAlso: ['office97', 'windows98', 'ie5', 'bsod'],
+  seeAlso: ['office97', 'windows98', 'ie5', 'bsod', 'bttf'],
   references: [
     'Horvitz E. и др. The Lumière Project: Bayesian User Modeling for Inferring the Goals and Needs of Software Users. — 1998.',
     'Microslop Office 97 Resource Kit: Office Assistant. — Microslop Press, 1997.',
@@ -1080,7 +1080,7 @@ In Office 2000 (1999) the Assistant became less intrusive: it no longer holds th
 Supporters reply that the Assistant helps beginners who are sitting at a computer for the first time and are afraid to open the help, and that he can simply be switched off.` },
     { id: 'agent', title: 'Microslop Agent', content: `Microslop Agent (1997) lets animated characters be used outside Office: in programs, on the desktop and on [[ie5|Internet Explorer]] web pages. Characters can speak with a synthesized voice and understand spoken commands. Enthusiasts create their own characters and even whole sites devoted to Clippy, with games, quizzes and wardrobes of outfits.` }
   ],
-  seeAlso: ['office97', 'windows98', 'ie5', 'bsod'],
+  seeAlso: ['office97', 'windows98', 'ie5', 'bsod', 'bttf'],
   references: [
     'Horvitz, E. et al. The Lumière Project: Bayesian User Modeling for Inferring the Goals and Needs of Software Users, 1998.',
     'Microslop Office 97 Resource Kit: Office Assistant. Microslop Press, 1997.',
@@ -1249,7 +1249,7 @@ window.interpediaReg('anime90s', 'culture', {
 
 Весной 1996 года в Москве образовался первый российский аниме-клуб <strong>R.An.Ma</strong> (Russian Anime & Manga Club). Поскольку достать кассеты в магазинах было почти невозможно, участники собирались на сходки, переписывали друг у друга привезённые из-за границы VHS-кассеты с английскими субтитрами, печатали самиздатовские фэнзины («Великий Дракон» также начал публиковать статьи об аниме и японских ролевых играх) и общались в эхоконференции <code>RU.ANIME</code> сети [[fidonet|ФидоНет]].` }
   ],
-  seeAlso: ['digicharat', 'cyberpunk', 'geocities', 'webring', 'fidonet'],
+  seeAlso: ['digicharat', 'cyberpunk', 'geocities', 'webring', 'fidonet', 'kovcheg'],
   references: [
     'Poitras G. The Anime Companion: What\'s Japanese in Japanese Animation? — Stone Bridge Press, 1999.',
     'FAQ эхоконференции fido7.ru.anime. — ФидоНет, 1998–1999.',
@@ -1292,7 +1292,7 @@ With affordable video capture cards and MPEG-1 and RealVideo encoders, fans also
 
 In spring 1996 Moscow fans founded Russia's first anime club, <strong>R.An.Ma</strong> (Russian Anime & Manga Club). Because tapes were almost impossible to buy in stores, members met in person to copy English-subtitled VHS cassettes brought from abroad, printed amateur fanzines (while the console magazine <em>Veliky Drakon</em> ran regular columns on anime and Japanese RPGs) and debated new shows in the <code>RU.ANIME</code> echo on [[fidonet|FidoNet]].` }
   ],
-  seeAlso: ['digicharat', 'cyberpunk', 'geocities', 'webring', 'fidonet'],
+  seeAlso: ['digicharat', 'cyberpunk', 'geocities', 'webring', 'fidonet', 'kovcheg'],
   references: [
     'Poitras, G. The Anime Companion: What\'s Japanese in Japanese Animation? Stone Bridge Press, 1999.',
     'fido7.ru.anime echo FAQ. FidoNet, 1998–1999.',
@@ -1338,7 +1338,7 @@ window.interpediaReg('fargus', 'culture', {
 
 В 1998–1999 годах ситуация начинает меняться: российские компании «1С», «Бука», «СофтКлаб» и легализовавшаяся «Акелла» заключают официальные договоры с западными студиями и выпускают лицензионные русские версии в обычных пластиковых коробках (jewel-case) по цене 80–120 рублей, конкурируя с рынками уже на равных.` }
   ],
-  seeAlso: ['gorbushka', 'cdrom', 'fallout2', 'starcraft', 'scumm'],
+  seeAlso: ['gorbushka', 'cdrom', 'fallout2', 'starcraft', 'scumm', 'igromania', 'fallout', 'baldursgate'],
   references: [
     'Как делают пиратские переводы игр. — Журнал Game.EXE, 1998.',
     'Каталог и архив патчей студии «Фаргус» (www.goldfargus.ru). — Москва, 1999.',
@@ -1382,7 +1382,7 @@ Those counterfeits produced the notorious blunders where the <em>Save / Load</em
 
 In 1998 and 1999 the market has begun to shift as Russian publishers 1C, Buka, SoftClub and the newly legitimate Akella sign official contracts with Western studios and release licensed Russian jewel-case editions for 80 to 120 rubles, competing directly with the open-air stalls.` }
   ],
-  seeAlso: ['gorbushka', 'cdrom', 'fallout2', 'starcraft', 'scumm'],
+  seeAlso: ['gorbushka', 'cdrom', 'fallout2', 'starcraft', 'scumm', 'igromania', 'fallout', 'baldursgate'],
   references: [
     '"How pirate game translations are made". Game.EXE magazine, 1998.',
     'Fargus Studio release catalog and patch archive (www.goldfargus.ru). Moscow, 1999.',
@@ -1426,7 +1426,7 @@ window.interpediaReg('xakep', 'culture', {
 
 Им противостоят так называемые <em>script kiddies</em> — подростки, скачивающие готовые программы для DoS-атак (таких как <em>WinNuke</em>, посылающий пакет на порт 139 и вызывающий [[bsod|синий экран]] на непатченной Win 95) ради бахвальства в чатах. В редакционных колонках и письмах читателей журнал постоянно напоминает: настоящий интерес лежит в созидании и понимании технологий, а не в поломке чужих гостевых книг.` }
   ],
-  seeAlso: ['hackermanifesto', 'cyberpunk', 'bbs', 'avp', 'linux'],
+  seeAlso: ['hackermanifesto', 'cyberpunk', 'bbs', 'avp', 'linux', 'igromania'],
   references: [
     'Журнал «Хакер» (ИД «Гейм Лэнд»), № 1–11 за 1999 год.',
     'Aleph One. Smashing The Stack For Fun And Profit. — Phrack Magazine, Issue 49, 1996.',
@@ -1468,7 +1468,7 @@ For readers paying by the minute for [[dialup|dial-up]], Xakep's monthly cover C
 
 At the other extreme are <em>script kiddies</em>, teenagers who download point-and-click denial-of-service utilities (such as <em>WinNuke</em>, which sends an out-of-band packet to port 139 and triggers a [[bsod|blue screen]] on unpatched Win 95 machines) just to brag in chat rooms. In its editorials and letters pages, the magazine repeatedly reminds readers that real skill lies in understanding and building technology rather than vandalizing someone else's guestbook.` }
   ],
-  seeAlso: ['hackermanifesto', 'cyberpunk', 'bbs', 'avp', 'linux'],
+  seeAlso: ['hackermanifesto', 'cyberpunk', 'bbs', 'avp', 'linux', 'igromania'],
   references: [
     'Xakep magazine (Game Land Publishing), issues 1–11, 1999.',
     'Aleph One. Smashing The Stack For Fun And Profit. Phrack Magazine, Issue 49, 1996.',

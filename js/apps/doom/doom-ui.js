@@ -5,7 +5,7 @@
  */
 (function (D) {
   'use strict';
-  const { STR, TICRATE, SKILLS } = D.DATA;
+  const { STR, TICRATE, SKILLS, WEAPON_ORDER, AMMO } = D.DATA;
   const OPT_KEY = 'doom98-options', SAVE_KEY = n => `doom98-save-${n}`, SLOTS = 6;
   const store = { get(k) { try { return localStorage.getItem(k); } catch (_) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); return true; } catch (_) { return false; } } };
   const TIC = 1000 / TICRATE;
@@ -85,7 +85,8 @@
     keyDown(e) {
       const c = e.code, k = e.key;
       this.audio.ensure();
-      if (['Tab', 'F1', 'F2', 'F3', 'F6', 'F9', 'F11', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(c) || e.ctrlKey && c !== 'ControlLeft' && c !== 'ControlRight') e.preventDefault();
+      if (['Tab', 'F1', 'F2', 'F3', 'F6', 'F8', 'F9', 'F11', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(c) || e.ctrlKey && c !== 'ControlLeft' && c !== 'ControlRight') e.preventDefault();
+      if (c === 'F8') { if (!e.repeat) this.toggleDebugMenu(); return; }
       if (this.menu) { this.menuKey(e); return; }
       if (this.state === 'inter' || this.state === 'finale') { if (!e.repeat) this.advance(); return; }
       if (this.state !== 'play') { this.openMenu('main'); return; }
@@ -242,8 +243,36 @@
           { label: t('back'), act: () => this.backMenu() }] },
         load: { title: t('load_title'), x: 60, y: 50, slots: true, items: Array.from({ length: SLOTS }, (_, i) => ({ label: this.slotInfo(i) || `— ${t('empty_slot')} —`, act: () => { if (this.slotInfo(i)) this.loadSlot(i); else this.showMsg(t('cant_load_empty')); } })) },
         save: { title: t('save_title'), x: 60, y: 50, slots: true, items: Array.from({ length: SLOTS }, (_, i) => ({ label: this.slotInfo(i) || `— ${t('empty_slot')} —`, act: () => { this.saveSlot(i); this.closeMenus(); } })) },
-        help: { help: true }
+        help: { help: true },
+        ...this.debugMenus()
       };
+    }
+    debugMenus() {
+      const t = k => this.t(k), g = () => this.game, p = () => this.game.player;
+      const flag = (name, label) => ({ label: t(label), value: () => p().cheats[name] ? t('on') : t('off'), act: () => g().debugToggle(name) });
+      const back = { label: t('back'), act: () => this.backMenu() };
+      return {
+        debug: { debug: true, title: t('dbg_title'), x: 50, y: 34, lh: 14, size: 9.5, items: [
+          { label: `${t('dbg_health')} 100`, value: () => p().health, act: () => g().debugHealth(100) },
+          { label: `${t('dbg_health')} 200`, act: () => g().debugHealth(200) },
+          { label: `${t('dbg_armor')} 100`, value: () => p().armor, act: () => g().debugArmor(100, 1) },
+          { label: `${t('dbg_armor')} 200`, act: () => g().debugArmor(200, 2) },
+          { label: t('dbg_weapons'), act: () => this.openMenu('debug_weapons') },
+          { label: t('dbg_ammo'), act: () => this.openMenu('debug_ammo') },
+          flag('god', 'dbg_god'), flag('infammo', 'dbg_infammo'), flag('fast', 'dbg_fast'),
+          { label: t('dbg_close'), act: () => this.closeMenus() }] },
+        debug_weapons: { debug: true, title: t('dbg_weapons'), x: 50, y: 32, lh: 13, size: 9, items: [
+          ...WEAPON_ORDER.map(w => ({ label: t('w_' + w), value: () => p().weapons[w] ? t('dbg_owned') : '', act: () => g().debugWeapon(w) })),
+          { label: t('dbg_all_weapons'), act: () => g().debugAllWeapons() }, back] },
+        debug_ammo: { debug: true, title: t('dbg_ammo'), x: 50, y: 40, lh: 15, size: 10, items: [
+          ...Object.keys(AMMO).map(a => ({ label: t('a_' + a), value: () => `${p().ammo[a]}/${p().maxammo[a]}`, act: () => g().debugAmmo(a) })),
+          { label: t('dbg_all_ammo'), act: () => g().debugAllAmmo() }, back] }
+      };
+    }
+    toggleDebugMenu() {
+      if (this.state !== 'play' || !this.game) return;
+      if (!this.menu) this.openMenu('debug');
+      else if (this.menu.debug) { this.closeMenus(); this.audio.play('swtchx', 0.5); }
     }
     openMenu(name) {
       if (this.menu) this.menuStack.push(this.menu);
@@ -266,7 +295,7 @@
       else if (c === 'Enter' || c === 'Space' || c === 'KeyE') { const it = m.items[m.sel]; if (it.act) { this.audio.play('pistol', 0.7); it.act(); } else if (it.adj) it.adj(1); }
     }
     stagePos(e) { const r = this.stage.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width * 320, y: (e.clientY - r.top) / r.height * 200 }; }
-    menuItemAt(p) { const m = this.menu; if (!m || !m.items) return -1; const lh = m.slots ? 17 : m.name === 'options' ? 13 : 16; for (let i = 0; i < m.items.length; i++) { const y = m.y + i * lh; if (p.y >= y - 2 && p.y < y + lh - 2 && p.x >= m.x - 20 && p.x < 316) return i; } return -1; }
+    menuItemAt(p) { const m = this.menu; if (!m || !m.items) return -1; const lh = m.lh || (m.slots ? 17 : m.name === 'options' ? 13 : 16); for (let i = 0; i < m.items.length; i++) { const y = m.y + i * lh; if (p.y >= y - 2 && p.y < y + lh - 2 && p.x >= m.x - 20 && p.x < 316) return i; } return -1; }
     menuHover(e) { const i = this.menuItemAt(this.stagePos(e)); if (i >= 0 && i !== this.menu.sel) this.menu.sel = i; }
     menuClick(e) {
       const m = this.menu;
@@ -363,7 +392,7 @@
         return;
       }
       if (m.title === 'logo') this.drawLogo(6); else { this.text(m.title, 160, 12, 18, 'red', 'center'); if (m.sub) this.text(m.sub, 160, 40, 9, '#e8d060', 'center'); }
-      const lh = m.slots ? 17 : m.name === 'options' ? 13 : 16, size = m.slots ? 8 : m.name === 'options' ? 8.5 : 12;
+      const lh = m.lh || (m.slots ? 17 : m.name === 'options' ? 13 : 16), size = m.size || (m.slots ? 8 : m.name === 'options' ? 8.5 : 12);
       m.items.forEach((it, i) => {
         const y = m.y + i * lh;
         if (m.slots) { c.fillStyle = '#301008'; c.fillRect(m.x - 2, y - 2, 220, 13); c.strokeStyle = '#806040'; c.lineWidth = 0.5; c.strokeRect(m.x - 2, y - 2, 220, 13); }

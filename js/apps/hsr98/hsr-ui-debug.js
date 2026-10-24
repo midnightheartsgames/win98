@@ -9,6 +9,8 @@
     { id: 'items', label: 'Предметы', icon: 'bag' },
     { id: 'scenes', label: 'Сцены', icon: 'archive' }
   ];
+  const CW_TAB = { id: 'cw', label: 'Вал. войны', icon: 'warp' };
+  const tabsOf = g => (g && g.cwRun && g.cwRun() ? TABS.concat(CW_TAB) : TABS);
   const SCENE_KINDS = [
     { id: 'ult', label: 'Абсолютная техника', icon: 'chars' },
     { id: 'fus', label: 'Слияние', icon: 'team' },
@@ -75,7 +77,7 @@
   const fusionKit = id => { const f = H.FUSIONS[id]; return { name: f.name, rarity: Math.max(...f.members.map(m => H.CHARS[m].rarity)), ult: { name: f.name, target: f.target } }; };
   const sceneKit = (g, kind, id) => kind === 'fus' ? fusionKit(id) : H.CHARS[kind === 'eid' ? g.kitOf(id) : id];
   const cineKind = kind => kind === 'ult' || kind === 'fus' || kind === 'skin';
-  const CUT_OF_KIND = { ult: 'ult', skin: 'skill', fus: 'fusions', warp: 'warp' };
+  const CUT_OF_KIND = { ult: 'ult', skin: 'skill', fus: 'fusions', warp: 'warp', eid: 'eidolon' };
   const cutFits = (o, kind, id) => (kind === 'fus' ? H.FUSIONS[id].members.includes(H.OUTFITS[o].char) && H.outfitCutOf(o, 'fusions', id) : H.OUTFITS[o].char === id && H.outfitCutOf(o, CUT_OF_KIND[kind]));
   const sceneOutfits = (kind, id) => (kind === 'skin' ? [] : [null]).concat(CUT_OF_KIND[kind] && H.OUTFIT_CUTS ? Object.keys(H.OUTFIT_CUTS).filter(o => H.OUTFITS[o] && cutFits(o, kind, id)) : []);
   const sceneOutfit = (S, kind, id) => { const list = sceneOutfits(kind, id); return list[wrapIdx(S.out || 0, list.length)]; };
@@ -214,7 +216,9 @@
       const ui = this, g = this.game;
       const shift = () => ui.held.includes('ShiftLeft') || ui.held.includes('ShiftRight');
       const note = (text, sfx) => { st.log = { text, t: ui.t }; ui.sfx(sfx || 'chest'); };
-      const tab = TABS[st.tab].id;
+      if (st.tab >= tabsOf(g).length) st.tab = 0;
+      const tab = tabsOf(g)[st.tab].id;
+      if (tab === 'cw') return ui.debugCwForm(st, note, shift);
       if (tab === 'chars') {
         const ids = charIds(), id = ids[st.ch.i], name = H.CHARS[id].name, owned = !!g.state.roster[id];
         const trMode = TRACE_MODES[st.ch.tr || 0], tag = () => 'ур. ' + st.ch.lvl + ' · E' + st.ch.eid + ' · Следы ' + trMode[1];
@@ -505,7 +509,7 @@
         return preview.show.render();
       }
       const cv = preview.eid || (preview.eid = G.mkCanvas(W, HGT)), pc = cv.getContext('2d');
-      H.Eidolons.scene(ui, pc, id, EID_STAGES[S.stage], null);
+      H.Eidolons.scene(ui, pc, id, EID_STAGES[S.stage], null, sceneOutfit(S, 'eid', id));
       return cv;
     },
 
@@ -562,7 +566,7 @@
     },
 
     debugCatalog(c, st, x, y, w) {
-      const ui = this, g = this.game, tab = TABS[st.tab].id;
+      const ui = this, g = this.game, tab = tabsOf(g)[st.tab].id;
       if (tab === 'scenes' && sceneKind(st) === 'aha') { this.debugAhaCatalog(c, st, x, y, w); return; }
       const row = tab === 'scenes' ? 1 : 0, focus = st.row === row;
       const views = st.views || (st.views = {}), view = tab === 'scenes' ? tab + ':' + sceneKind(st) : tab;
@@ -658,7 +662,7 @@
         replay() { const A = assemblyOf(S); S.stage = A.stage; this.asm = new E.Assembly(A.from, A.to); },
         tick(dt) { if (this.asm) { this.asm.tick(dt, ui); if (this.asm.done) this.asm = null; } },
         draw(c) {
-          const k = sceneAt(st).id, sc = E.SCENES[k], V = E.scene(ui, c, k, EID_STAGES[S.stage], this.asm);
+          const k = sceneAt(st).id, sc = E.sceneOf(sceneOutfit(S, 'eid', k) || k), V = E.scene(ui, c, k, EID_STAGES[S.stage], this.asm, sceneOutfit(S, 'eid', k));
           const cap = sceneName(g, 'eid', k) + ' · ' + sc.title, frag = V.shown ? ' · «' + sc.frags[V.shown - 1][0] + '»' : '';
           const sub = 'E' + V.shown + ' · ' + E.stageName(V.shown) + frag;
           const w = Math.max(280, Math.round(Math.max(ui.measure(cap, 13, true, true), ui.measure(sub, 10)) + 40)), x = Math.round(W / 2 - w / 2), y = HGT - 54;
@@ -689,25 +693,26 @@
         setTab(i) { if (i === st.tab) return; st.tab = i; st.row = 0; ui.sfx('select'); },
         act(f, a) { a.fn(); if (!a.view && ui.mode === 'battle' && ui.bt && st.log) { ui.bt.msg = 'Отладка: ' + st.log.text; ui.bt.msgT = 1.8; ui.bt.msgWarn = false; } },
         draw(c) {
-          const f = ui.debugForm(st), n = f.rows.length + f.acts.length, tab = TABS[st.tab].id;
+          const f = ui.debugForm(st), n = f.rows.length + f.acts.length, TB = tabsOf(ui.game), tab = TB[st.tab].id;
           st.row = Math.min(st.row, n - 1);
           ui.fullBg(c, false);
           c.fillStyle = 'rgba(4,6,20,0.6)'; c.fillRect(0, 0, W, HGT);
           ui.plate(12, 10, 'Отладка');
-          const tw = Math.floor((W - 148) / TABS.length);
-          TABS.forEach((t, i) => ui.button(108 + i * tw, 8, tw - 4, 24, t.label, () => this.setTab(i), { active: i === st.tab, size: 11, icon: t.icon }));
+          const tw = Math.floor((W - 148) / TB.length);
+          TB.forEach((t, i) => ui.button(108 + i * tw, 8, tw - 4, 24, t.label, () => this.setTab(i), { active: i === st.tab, size: 11, icon: t.icon }));
           ui.closeBtn(W - 32, 10, () => ui.pop());
           const lx = 10, ly = 42, lw = 296, lh = 392, rx = 314, rw = 316;
           ui.win(lx, ly, lw, lh, { alpha: 0.9 });
           ui.win(rx, ly, rw, lh, { alpha: 0.9 });
           if (tab === 'relics') ui.debugRelicPreview(c, st, lx, ly, lw);
+          else if (tab === 'cw') ui.debugCwPreview(c, lx, ly, lw);
           else ui.debugCatalog(c, st, lx + 8, ly + 14, lw - 16);
           if (tab === 'chars') ui.debugCharPreview(c, st, rx, ly);
           if (tab === 'cones') ui.debugConePreview(c, st, rx, ly);
           if (tab === 'items') ui.debugItemPreview(c, st, rx, ly);
           if (tab === 'scenes') ui.debugScenePreview(c, st, rx, ly);
-          const fy = tab === 'relics' ? ly + 16 : tab === 'scenes' ? ly + 190 : ly + 212;
-          if (tab !== 'relics') { c.fillStyle = 'rgba(242,220,154,0.25)'; c.fillRect(rx + 14, fy - 8, rw - 28, 1); }
+          const fy = tab === 'relics' || tab === 'cw' ? ly + 16 : tab === 'scenes' ? ly + 190 : ly + 212;
+          if (tab !== 'relics' && tab !== 'cw') { c.fillStyle = 'rgba(242,220,154,0.25)'; c.fillRect(rx + 14, fy - 8, rw - 28, 1); }
           f.rows.forEach((r, i) => ui.debugRow(c, st, r, i, rx + 8, fy + i * ROW_H, rw - 16));
           const ay = fy + f.rows.length * ROW_H + 8, aw = Math.floor((rw - 28 - (f.acts.length - 1) * 8) / f.acts.length);
           f.acts.forEach((a, i) => {
@@ -727,8 +732,9 @@
           ui.hints(tab === 'scenes' ? [['Q/E', 'Раздел'], ['↑↓', 'Поле'], ['←→', 'Значение'], ['Enter', enter], ['F8', 'Закрыть']] : [['Q/E', 'Раздел'], ['↑↓', 'Поле'], ['←→', 'Значение'], ['Shift', 'Шаг больше'], ['Enter', enter], ['F8', 'Закрыть']], 12, HGT - 18);        },
         key(k, code) {
           if (k === 'back') { ui.pop(); return; }
-          if (code === 'KeyQ' || code === 'KeyE') { this.setTab(wrapIdx(st.tab + (code === 'KeyQ' ? -1 : 1), TABS.length)); return; }
-          if (/^Digit[1-9]$/.test(code) && +code.slice(5) <= TABS.length) { this.setTab(+code.slice(5) - 1); return; }
+          const TBk = tabsOf(ui.game);
+          if (code === 'KeyQ' || code === 'KeyE') { this.setTab(wrapIdx(st.tab + (code === 'KeyQ' ? -1 : 1), TBk.length)); return; }
+          if (/^Digit[1-9]$/.test(code) && +code.slice(5) <= TBk.length) { this.setTab(+code.slice(5) - 1); return; }
           const f = ui.debugForm(st), nr = f.rows.length, n = nr + f.acts.length;
           if (k === 'up' || k === 'down') { st.row = wrapIdx(Math.min(st.row, n - 1) + (k === 'up' ? -1 : 1), n); ui.sfx('select'); return; }
           if (k === 'left' || k === 'right') {

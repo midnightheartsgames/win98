@@ -206,13 +206,14 @@
       mli: 'Теперь у вас 100% здоровья,\n99 патронов и оба ключа!\n\nСчёт обнулён: о рекордах\nможно забыть.',
       debugOn: 'Режим отладки включён', debugOff: 'Режим отладки выключен',
       godOn: 'Режим бога ВКЛ', godOff: 'Режим бога ВЫКЛ', freeItems: 'Бесплатные предметы!', noclipOn: 'Сквозь стены ВКЛ', noclipOff: 'Сквозь стены ВЫКЛ',
+      debugMenu: 'Отладка', dbgHealth: 'Дать здоровье', dbgWeapons: 'Дать всё оружие', dbgAmmo: 'Дать патроны', dbgFastRun: 'Быстрый бег', dbgGod: 'Бессмертие', dbgInfAmmo: 'Бесконечные патроны', dbgClose: 'Закрыть (F8)',
       warpTo: 'Перейти на этаж (1-10):',
       titleHint: 'Нажмите любую клавишу',
       credits: ['Фан-клон для Win 98', 'Движок, графика, звук и уровни', 'сделаны кодом с нуля.', '', 'По мотивам игры id Software (1992):', 'Джон Кармак, Джон Ромеро,', 'Том Холл, Эдриан Кармак,', 'Бобби Принс (музыка)'],
       demoBanner: 'ДЕМО',
       readThisPages: [
         { title: 'Об игре', lines: ['Вы — Уильям «Би Джей» Бласковиц, лучший', 'агент союзников. Вас поймали и заперли', 'в подвале замка Вольфенштайн.', '', 'У вас нож, пистолет и восемь патронов.', 'Выберитесь из замка, а потом сорвите', 'планы врага в пяти других заданиях.', '', 'Каждый этаж заканчивается лифтом.', 'Нажмите рычаг на стене кабины.'] },
-        { title: 'Управление', lines: ['Стрелки или W/S — идти, стрелки — поворот', 'A/D или Alt + стрелки — шаг в сторону', 'Shift — бег, Ctrl или ЛКМ — огонь', 'Пробел или E — открыть дверь, нажать', '1-4 — оружие: нож, пистолет, автомат,', 'пулемёт. Мышь поворачивает (щёлкните', 'по картинке, чтобы её захватить).', '', 'Esc — меню, Pause — пауза, F2/F3 — сохр./', 'загр., F5 — размер экрана, F9 — быстрая', 'загрузка, F8 — быстрое сохранение.'] },
+        { title: 'Управление', lines: ['Стрелки или W/S — идти, стрелки — поворот', 'A/D или Alt + стрелки — шаг в сторону', 'Shift — бег, Ctrl или ЛКМ — огонь', 'Пробел или E — открыть дверь, нажать', '1-4 — оружие: нож, пистолет, автомат,', 'пулемёт. Мышь поворачивает (щёлкните', 'по картинке, чтобы её захватить).', '', 'Esc — меню, Pause — пауза, F2/F3 — сохр./', 'загр., F5 — размер экрана, F8 — отладка,', 'F9/Shift+F9 — быстрая загрузка/сохр.'] },
         { title: 'Тайники', lines: ['Многие стены сдвигаются. Подойдите', 'вплотную и нажмите Пробел: стена', 'уедет на два квадрата, а за ней будет', 'тайник с сокровищами или оружием.', '', 'Ищите стены, которые выбиваются из', 'ряда: портреты, флаги, тупики.', '', 'Тайные лифты ведут на секретный', 'десятый этаж эпизода.'] },
         { title: 'Враги', lines: ['Охранник: медленный, пистолет.', 'Овчарка: быстрая, кусает вблизи.', 'Эсэсовец: крепкий, бьёт очередями.', 'Офицер: быстрый и меткий.', 'Мутант: стреляет без предупреждения.', '', 'Враги слышат выстрелы через открытые', 'двери. Нож бьёт бесшумно, а спящий', 'враг получает двойной урон.'] },
         { title: 'Предметы', lines: ['Еда +10, миска собачьей еды +4,', 'аптечка +25 здоровья.', 'Обойма: 8 патронов (у врагов — 4).', 'Крест 100, кубок 500, сундук 1000,', 'корона 5000 очков.', 'Сфера с лицом: полное здоровье,', '25 патронов и жизнь.', 'Каждые 40 000 очков дают жизнь.', 'Золотой и серебряный ключи', 'открывают двери своего цвета.'] }
@@ -263,13 +264,14 @@
       mli: 'You now have 100% Health,\n99 Ammo and both Keys!\n\nYour score is now zero:\nforget the high scores.',
       debugOn: 'Debug mode on', debugOff: 'Debug mode off',
       godOn: 'God mode ON', godOff: 'God mode OFF', freeItems: 'Free items!', noclipOn: 'No clipping ON', noclipOff: 'No clipping OFF',
+      debugMenu: 'Debug', dbgHealth: 'Give health', dbgWeapons: 'Give all weapons', dbgAmmo: 'Give ammo', dbgFastRun: 'Fast run', dbgGod: 'Invincibility', dbgInfAmmo: 'Infinite ammo', dbgClose: 'Close (F8)',
       warpTo: 'Warp to which floor (1-10):',
       titleHint: 'Press any key',
       credits: ['A Win 98 fan clone', 'Engine, art, sound and levels', 'made in code from scratch.', '', 'Based on the id Software game (1992):', 'John Carmack, John Romero,', 'Tom Hall, Adrian Carmack,', 'Bobby Prince (music)'],
       demoBanner: 'DEMO',
       readThisPages: [
         { title: 'The Story', lines: ['You are William "B.J." Blazkowicz, the', "Allies' best agent. You were caught and", 'locked in the dungeon of Castle', 'Wolfenstein.', '', 'You have a knife, a pistol and eight', 'bullets. Escape, then wreck the enemy', 'plans in five more missions.', '', 'Each floor ends in an elevator:', 'throw the lever on its back wall.'] },
-        { title: 'Controls', lines: ['Arrows or W/S move, arrows turn', 'A/D or Alt + arrows strafe', 'Shift runs, Ctrl or left click fires', 'Space or E opens doors and uses', '1-4 pick the knife, pistol, machine gun', 'or chain gun. The mouse turns (click', 'the picture to capture it).', '', 'Esc menu, Pause pauses, F2/F3 save/load,', 'F5 view size, F8 quick save,', 'F9 quick load.'] },
+        { title: 'Controls', lines: ['Arrows or W/S move, arrows turn', 'A/D or Alt + arrows strafe', 'Shift runs, Ctrl or left click fires', 'Space or E opens doors and uses', '1-4 pick the knife, pistol, machine gun', 'or chain gun. The mouse turns (click', 'the picture to capture it).', '', 'Esc menu, Pause pauses, F2/F3 save/load,', 'F5 view size, F8 debug menu,', 'F9 / Shift+F9 quick load / save.'] },
         { title: 'Secrets', lines: ['Many walls slide. Walk right up to', 'one and press Space: it moves back two', 'squares and opens a hidden room with', 'treasure or weapons.', '', 'Look for walls that stand out:', 'portraits, flags, dead ends.', '', 'Secret elevators lead to the hidden', 'tenth floor of the episode.'] },
         { title: 'Enemies', lines: ['Guard: slow, carries a pistol.', 'Dog: fast, bites up close.', 'SS: tough, fires bursts.', 'Officer: fast and accurate.', 'Mutant: shoots without warning.', '', 'Enemies hear gunfire through open doors.', 'The knife is silent, and an enemy that', 'has not noticed you takes double damage.'] },
         { title: 'Items', lines: ['Food +10, dog food +4,', 'first aid kit +25 health.', 'Clip: 8 bullets (4 from enemies).', 'Cross 100, chalice 500, chest 1000,', 'crown 5000 points.', 'The sphere with a face: full health,', '25 bullets and a life.', 'Every 40,000 points gives a life.', 'Gold and silver keys open the doors', 'of their color.'] }

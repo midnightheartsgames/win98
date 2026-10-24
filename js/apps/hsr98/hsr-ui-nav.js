@@ -314,7 +314,7 @@
 
     navRows(world) {
       const g = this.game, rows = [];
-      const cars = H.EXPRESS_AREAS.filter(a => g.areaOpen(a));
+      const cars = H.EXPRESS_AREAS.filter(a => !a.hidden && g.areaOpen(a));
       if (cars.length) rows.push({ head: 'Звёздный экспресс' }, ...cars.map(area => ({ area })));
       for (const gr of world.groups) {
         if (world.groups.length > 1 || cars.length) rows.push({ head: gr.name });

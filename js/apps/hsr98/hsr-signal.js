@@ -391,7 +391,7 @@
       R.clear('#14151a', '#20222a');
       R.draw(room(), M.id());
       const tv = H.SignalTV && H.SignalTV.has(r.id) ? H.SignalTV : null;
-      const pic = tv ? tv.screen(r.id, t, this.game) : H.Eidolons && H.Eidolons.has(r.id) ? R3.tex(H.Eidolons.pic(r.id).colorD) : logoTex();
+      const pic = tv ? tv.screen(r.id, t, this.game) : H.Eidolons && H.Eidolons.has(r.id) ? R3.tex(H.Eidolons.pic(H.Eidolons.keyOf(r.id, this.game)).colorD) : logoTex();
       const lit = tv ? tv.light(r.id, t) : { col: '#a0c8ff', a: 0.2 };
       R.draw(unitMesh(CLOSE_TV, pic), unitMat(CLOSE_TV));
       R.glow(screenCenter(CLOSE_TV), 0.9, lit.col, { a: lit.a, depth: false });

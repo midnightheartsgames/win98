@@ -429,7 +429,7 @@
           this.drawListBtn(c);
           ui.platform(c, 306, 440, 108);
           if (secId === 'eidolons') this.drawEidolons(c, EV ? EV.shown : r.eid);
-          if (EV) { E.figure(c, look, 306, 444, 3, ui.t, EV.lifeK, k); E.aura(c, E.SCENES[k].aura, 306, 444, ui.t, EV.lifeK); }
+          if (EV) { E.figure(c, look, 306, 444, 3, ui.t, EV.lifeK, k); E.aura(c, E.sceneOf(E.keyOf(k, g)).aura, 306, 444, ui.t, EV.lifeK); }
           else G.drawFigure(c, secId === 'outfits' ? ui.outfitPreview(this, k) : look, 306, 444, 3);
           if (secId === 'traces') ui.drawTraces(this, c, k);
           if (secId === 'relics') this.drawRelicSlots(c, k);
@@ -645,7 +645,7 @@
           });
         },
         panelEidolons(c, px, py, pw, r, kitId, kit, EV) {
-          const E = H.Eidolons, sc = E && E.SCENES[this.k], shown = EV ? EV.shown : r.eid;
+          const E = H.Eidolons, sc = E && E.sceneOf(E.keyOf(this.k, g)), shown = EV ? EV.shown : r.eid;
           const i = this.star, open = i < shown, was = g.baseStats(kitId, r.lvl, i), now = g.baseStats(kitId, r.lvl, i + 1);
           const sep = y => { c.fillStyle = 'rgba(242,220,154,0.35)'; c.fillRect(px + 10, y, pw - 20, 1); };
           ui.text('Эйдолоны', px + 12, py + 12, { size: 14, bold: true, serif: true, col: C.gold });

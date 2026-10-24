@@ -48,7 +48,7 @@
       return {
         mo: null, health: 100, armor: 0, armortype: 0, ammo: { bullets: 50, shells: 0, rockets: 0, cells: 0 }, maxammo: { bullets: 200, shells: 50, rockets: 50, cells: 300 },
         backpack: false, weapons: { fist: true, pistol: true }, ready: 'pistol', pending: null, keys: { red: false, blue: false, yellow: false },
-        powers: { invuln: 0, strength: 0, invis: 0, ironfeet: 0, allmap: 0, infrared: 0 }, cheats: { god: false, noclip: false },
+        powers: { invuln: 0, strength: 0, invis: 0, ironfeet: 0, allmap: 0, infrared: 0 }, cheats: { god: false, noclip: false, infammo: false, fast: false },
         kills: 0, items: 0, secrets: 0, damagecount: 0, bonuscount: 0, extralight: 0, attacker: null, refire: 0, attackdown: false, usedown: false,
         viewheight: VIEWHEIGHT, deltaviewheight: 0, viewz: 0, bob: 0, dead: false, psp: [{ state: null, tics: -1, sx: 1, sy: WEAPONTOP }, { state: null, tics: -1, sx: 0, sy: 0 }],
         message: null, didsecret: false
@@ -332,7 +332,8 @@
       const onground = mo.z <= mo.floorz;
       if (mo.reactiontime) mo.reactiontime--;
       else if (onground || p.cheats.noclip) {
-        const f = (cmd.forward || 0) / 32, s = (cmd.side || 0) / 32, c = Math.cos(mo.angle), sn = Math.sin(mo.angle);
+        const boost = p.cheats.fast ? 2 : 1;
+        const f = (cmd.forward || 0) * boost / 32, s = (cmd.side || 0) * boost / 32, c = Math.cos(mo.angle), sn = Math.sin(mo.angle);
         if (f) { mo.momx += f * c; mo.momy += f * sn; }
         if (s) { mo.momx += s * sn; mo.momy -= s * c; }
       }
@@ -348,6 +349,7 @@
       if (cmd.weaponStep) this.cycleWeapon(cmd.weaponStep);
       p.fire = !!cmd.fire;
       this.movePsprites();
+      if (p.cheats.infammo) this.debugAllAmmo();
       const pw = p.powers;
       if (pw.strength) pw.strength++;
       if (pw.invuln) pw.invuln--;
@@ -1107,6 +1109,26 @@
       const c = /^idclev(\d)(\d)$/.exec(code);
       if (c) { const id = `E${c[1]}M${c[2]}`; if (!this.mapInfo(id)) return null; this.emit({ t: 'warp', id }); return 'clev'; }
       return null;
+    }
+
+    debugHealth(amount) {
+      const p = this.player; if (p.dead) return false;
+      p.health = p.mo.health = amount; return true;
+    }
+    debugArmor(amount, type) { const p = this.player; p.armor = amount; p.armortype = type; }
+    debugAmmo(type) { const p = this.player; p.ammo[type] = p.maxammo[type]; }
+    debugAllAmmo() { for (const type in this.player.ammo) this.debugAmmo(type); }
+    debugWeapon(id) {
+      const p = this.player, ammo = WEAPONS[id].ammo;
+      p.weapons[id] = true;
+      if (ammo) this.debugAmmo(ammo);
+      if (!p.dead && id !== p.ready) p.pending = id;
+    }
+    debugAllWeapons() { for (const id of WEAPON_ORDER) this.player.weapons[id] = true; this.debugAllAmmo(); }
+    debugToggle(flag) {
+      const c = this.player.cheats; c[flag] = !c[flag];
+      if (flag === 'infammo' && c[flag]) this.debugAllAmmo();
+      return c[flag];
     }
 
     // ------------------------------------------------------------------ progression

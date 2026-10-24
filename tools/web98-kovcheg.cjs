@@ -1,6 +1,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const { stamp } = require('./web98-stamp.cjs');
 const vm = require('vm');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -43,7 +44,7 @@ function kovchegScripts() {
 function gameScripts() {
   if (!fs.existsSync(SR98_PLAY)) throw new Error('web98-site/sr98/play is missing: run node tools/web98-sr98.cjs first');
   const html = fs.readFileSync(SR98_PLAY, 'utf8');
-  return [...html.matchAll(/<script src="(game\/[^"]+)"><\/script>/g)].map(m => m[1]).filter(s => s !== 'game/touch.js' && s !== 'game/files.js');
+  return [...html.matchAll(/<script src="(game\/[^"?]+)(?:\?v=[0-9a-f]*)?"><\/script>/g)].map(m => m[1]).filter(s => s !== 'game/touch.js' && s !== 'game/files.js');
 }
 
 function transform(name, src) {
@@ -121,6 +122,7 @@ function build(out = OUT) {
 
 if (require.main === module) {
   const r = build(process.argv[2] ? path.resolve(process.argv[2]) : OUT);
+  stamp();
   console.log('kovcheg site -> ' + path.relative(ROOT, r.out));
   console.log('  ' + r.own + ' site scripts, ' + r.game + ' game scripts from ../sr98/play, ' + mb(r.bytes) + ' written');
 }

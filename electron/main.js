@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, shell } = require('electron');
+const { app, BrowserWindow, Menu, session, shell } = require('electron');
 const path = require('path');
 const server = require('../server');
 
@@ -46,6 +46,15 @@ function toggleFullScreenOnF11(win) {
       win.setFullScreen(!win.isFullScreen());
       event.preventDefault();
     }
+  });
+}
+
+function askWhereToSave(browserSession) {
+  browserSession.on('will-download', (event, item) => {
+    item.setSaveDialogOptions({
+      title: item.getFilename(),
+      defaultPath: path.join(app.getPath('documents'), item.getFilename())
+    });
   });
 }
 
@@ -102,6 +111,7 @@ if (!app.requestSingleInstanceLock()) {
 
   app.whenReady().then(async () => {
     Menu.setApplicationMenu(null);
+    askWhereToSave(session.defaultSession);
     const port = await startServer();
     createMainWindow(`http://127.0.0.1:${port}`);
   });

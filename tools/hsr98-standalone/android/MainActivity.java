@@ -1,19 +1,26 @@
 package com.win98clone.hsr98;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import org.json.JSONObject;
 
 public class MainActivity extends Activity {
     private static final String HOST = "appassets.androidplatform.net";
@@ -21,7 +28,36 @@ public class MainActivity extends Activity {
     private static final String KEY_JS = "(function(c){var g=document.getElementById('game');if(!g)return;['keydown','keyup'].forEach(function(t){g.dispatchEvent(new KeyboardEvent(t,{code:c,key:c,bubbles:true,cancelable:true}));});})";
     private static final String AUDIO_JS = "(function(on){var a=window.hsrui&&window.hsrui.audio;if(a&&a.ctx){if(on)a.ctx.resume();else a.ctx.suspend();}})";
 
+    private static final int REQ_SAVE = 41;
+    private static final int REQ_OPEN = 42;
+
     private WebView web;
+    private String pendingSave;
+
+    private class SavesBridge {
+        @JavascriptInterface
+        public void saveFile(final String name, final String text) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    pendingSave = text;
+                    Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("application/json").putExtra(Intent.EXTRA_TITLE, name);
+                    if (!startPicker(i, REQ_SAVE)) { pendingSave = null; callUi("fileSaved(false)"); }
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void openFile() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*");
+                    if (!startPicker(i, REQ_OPEN)) callUi("fileOpened('')");
+                }
+            });
+        }
+    }
 
     @Override
     protected void onCreate(Bundle state) {
@@ -57,6 +93,7 @@ public class MainActivity extends Activity {
                 return !HOST.equals(request.getUrl().getHost());
             }
         });
+        web.addJavascriptInterface(new SavesBridge(), "Sr98Android");
         setContentView(web);
         hideBars();
         web.loadUrl(START);
@@ -84,6 +121,53 @@ public class MainActivity extends Activity {
         if (path.endsWith(".mp3")) return "audio/mpeg";
         if (path.endsWith(".mid")) return "audio/midi";
         return "application/octet-stream";
+    }
+
+    private boolean startPicker(Intent intent, int request) {
+        try {
+            startActivityForResult(intent, request);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            return false;
+        }
+    }
+
+    private void callUi(String call) {
+        web.evaluateJavascript("window.hsrui&&window.hsrui." + call, null);
+    }
+
+    @Override
+    protected void onActivityResult(int request, int result, Intent data) {
+        super.onActivityResult(request, result, data);
+        Uri uri = result == RESULT_OK && data != null ? data.getData() : null;
+        if (request == REQ_SAVE && pendingSave != null) {
+            String text = pendingSave;
+            pendingSave = null;
+            if (uri != null) callUi("fileSaved(" + writeText(uri, text) + ")");
+        }
+        if (request == REQ_OPEN && uri != null) callUi("fileOpened(" + JSONObject.quote(readText(uri)) + ")");
+    }
+
+    private boolean writeText(Uri uri, String text) {
+        try (OutputStream out = getContentResolver().openOutputStream(uri, "wt")) {
+            if (out == null) return false;
+            out.write(text.getBytes(StandardCharsets.UTF_8));
+            return true;
+        } catch (IOException | SecurityException e) {
+            return false;
+        }
+    }
+
+    private String readText(Uri uri) {
+        try (InputStream in = getContentResolver().openInputStream(uri)) {
+            if (in == null) return "";
+            ByteArrayOutputStream buf = new ByteArrayOutputStream();
+            byte[] chunk = new byte[65536];
+            for (int n; (n = in.read(chunk)) > 0; ) buf.write(chunk, 0, n);
+            return new String(buf.toByteArray(), StandardCharsets.UTF_8);
+        } catch (IOException | SecurityException e) {
+            return "";
+        }
     }
 
     private void hideBars() {

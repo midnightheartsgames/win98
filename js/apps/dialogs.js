@@ -753,7 +753,7 @@ class AppDialogs {
       },
       {
         id: 'system',
-        keywords: L('служебные, диспетчер задач, системный монитор, sysmon, msconfig, sysedit, редактор файлов конфигурации, dxdiag, реестр, regedit, scandisk, дефрагментация, очистка диска, wintune, clibench, тест монитора, nokia, mon_test, антивирус, avp, касперский', 'system tools, task manager, system monitor, sysmon, msconfig, sysedit, system configuration editor, dxdiag, registry, regedit, scandisk, defrag, disk cleanup, wintune, clibench, monitor test, nokia, mon_test, antivirus, avp, kaspersky'),
+        keywords: L('служебные, диспетчер задач, системный монитор, sysmon, msconfig, sysedit, редактор файлов конфигурации, dxdiag, реестр, regedit, scandisk, дефрагментация, архивация, резервная копия, восстановление, сохранения, перенос, сброс, очистка диска, wintune, clibench, тест монитора, nokia, mon_test, антивирус, avp, касперский', 'system tools, task manager, system monitor, sysmon, msconfig, sysedit, system configuration editor, dxdiag, registry, regedit, scandisk, defrag, backup, restore, saves, transfer, reset, disk cleanup, wintune, clibench, monitor test, nokia, mon_test, antivirus, avp, kaspersky'),
         content: `
           <h2>${titles.system}</h2>
           <p>${L('Служебные программы расположены в меню «Пуск» → «Программы» → «Стандартные» → «Служебные». Они позволяют следить за ресурсами компьютера, редактировать конфигурационные файлы и реестр, обслуживать диск и тестировать оборудование.', 'System tools are located in Start → Programs → Accessories → System Tools. They monitor system resources, edit configuration files and the Registry, maintain disk drives, and benchmark hardware.')}</p>
@@ -766,6 +766,7 @@ class AppDialogs {
             <tr><td class="win-help-table-glyph">${glyph('regedit')}</td><td><b>${L('Редактор реестра (Registry Editor)', 'Registry Editor')}</b> — ${L('просмотр и изменение разделов HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, поиск по ключам и экспорт/импорт файлов .REG.', 'browses and edits HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, and HKEY_LOCAL_MACHINE keys with search and .REG export/import.')}</td><td><button class="win-help-shortcut" data-run="regedit">${icon('shortcut-overlay')}</button></td></tr>
             <tr><td class="win-help-table-glyph">${glyph('scandisk')}</td><td><b>ScanDisk</b> — ${L('стандартная и полная проверка поверхности диска C: на сбойные сектора и потерянные кластеры.', 'runs standard or thorough surface scans on drive C: to repair bad sectors and lost clusters.')}</td><td><button class="win-help-shortcut" data-run="scandisk">${icon('shortcut-overlay')}</button></td></tr>
             <tr><td class="win-help-table-glyph">${glyph('defrag')}</td><td><b>${L('Дефрагментация диска (Disk Defragmenter)', 'Disk Defragmenter')}</b> — ${L('визуальная укладка кластеров диска C: с подробной картой занятых, фрагментированных и системных блоков.', 'defragments clusters on drive C: with a live block map legend.')}</td><td><button class="win-help-shortcut" data-run="defrag">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('backup')}</td><td><b>${L('Архивация данных (Backup)', 'Backup')}</b> — ${L('архивы файлов, настроек и сохранений игр в хранилище на диске C: или в файл .bkf для переноса на другой компьютер; восстановление всей системы или отдельных программ; сброс Win 98 к первому запуску.', 'backs up files, settings and game saves to storage on drive C: or to a .bkf file for another computer; restores the whole system or single programs; resets Win 98 to its first start.')}</td><td><button class="win-help-shortcut" data-run="msbackup">${icon('shortcut-overlay')}</button></td></tr>
             <tr><td class="win-help-table-glyph">${glyph('cleanmgr')}</td><td><b>${L('Очистка диска (Disk Cleanup)', 'Disk Cleanup')}</b> — ${L('удаление временных файлов Интернета, старых файлов установки и очистка Корзины.', 'frees disk space by removing temporary Internet files, setup logs, and Recycle Bin contents.')}</td><td><button class="win-help-shortcut" data-run="cleanmgr">${icon('shortcut-overlay')}</button></td></tr>
             <tr><td class="win-help-table-glyph">${glyph('wintune')}</td><td><b>Wintune 98 / CLIbench</b> — ${L('испытательный пакет для замера производительности процессора (MIPS/MFLOPS), видеокарты 2D/3D, памяти и диска и сравнения с эталонными ПК 1998 года.', 'hardware benchmark suite measuring CPU (MIPS/MFLOPS), 2D/3D video, RAM, and disk speed against 1998 reference systems.')}</td><td><button class="win-help-shortcut" data-run="wintune">${icon('shortcut-overlay')}</button></td></tr>
             <tr><td class="win-help-table-glyph">${glyph('mon-test')}</td><td><b>NOKIA Monitor Test</b> — ${L('набор полноэкранных настроечных таблиц для проверки геометрии, сведения лучей, муара, контрастности и фокусировки монитора.', 'fullscreen calibration patterns for testing monitor geometry, convergence, moiré, contrast, and focus.')}</td><td><button class="win-help-shortcut" data-run="mon_test">${icon('shortcut-overlay')}</button></td></tr>
@@ -795,6 +796,7 @@ class AppDialogs {
             <tr><td><code>winamp</code> / <code>cdplayer</code> / <code>cdex</code> / <code>ft2</code> / <code>sndrec32</code> / <code>sndvol32</code> / <code>mplayer</code></td><td>${L('WinAmp / Лазерный проигрыватель / CDex / FastTracker II / Звукозапись / Громкость / Медиаплеер', 'WinAmp / CD Player / CDex / FastTracker II / Sound Recorder / Volume Control / Media Player')}</td></tr>
             <tr><td><code>iexplore</code> / <code>netscape</code> / <code>outlook</code> / <code>icq</code> / <code>mirc</code> / <code>hypertrm</code></td><td>${L('Internet Explorer / Netscape / Outlook Express / ICQ / mIRC / HyperTerminal', 'Internet Explorer / Netscape / Outlook Express / ICQ / mIRC / HyperTerminal')}</td></tr>
             <tr><td><code>taskmgr</code> / <code>sysmon</code> / <code>msconfig</code> / <code>sysedit</code> / <code>dxdiag</code> / <code>regedit</code></td><td>${L('Диспетчер задач / Системный монитор / Настройка системы / SysEdit / DirectX / Реестр', 'Task Manager / System Monitor / MSConfig / SysEdit / DirectX Diagnostic / Registry Editor')}</td></tr>
+            <tr><td><code>msbackup</code> / <code>restore</code></td><td>${L('Архивация данных / Восстановление из архива', 'Backup / Restore from a backup')}</td></tr>
             <tr><td><code>scandisk</code> / <code>defrag</code> / <code>cleanmgr</code> / <code>wintune</code> / <code>clibench</code> / <code>mon_test</code></td><td>${L('ScanDisk / Дефрагментация / Очистка диска / Wintune 98 / CLIbench / Тест монитора', 'ScanDisk / Disk Defragmenter / Disk Cleanup / Wintune 98 / CLIbench / Monitor Test')}</td></tr>
             <tr><td><code>qbasic</code> / <code>command</code> / <code>clippy</code> / <code>winver</code></td><td>${L('QBasic 1.1 / Сеанс MS-DOS / Помощник Скрепыш / О программе Win', 'QBasic 1.1 / MS-DOS Prompt / Clippy / About Win')}</td></tr>
           </table>
@@ -1560,6 +1562,14 @@ class AppDialogs {
       if (window.appDefrag) window.appDefrag.open();
       return;
     }
+    if (cmd === 'msbackup' || cmd === 'msbackup.exe' || cmd === 'backup' || cmd === 'архивация') {
+      if (window.appBackup) window.appBackup.open('backup');
+      return;
+    }
+    if (cmd === 'restore' || cmd === 'восстановление') {
+      if (window.appBackup) window.appBackup.open('restore');
+      return;
+    }
     if (cmd === 'icq' || cmd === 'icq.exe') {
       if (window.appICQ) window.appICQ.open();
       return;
@@ -2291,7 +2301,6 @@ class AppDialogs {
           message: isRu
             ? 'Программа «Антивирус Касперского AVP» не установлена.<br>Вы можете приобрести и скачать её на официальном сайте Лаборатории Касперского <a href="#" onclick="window.appIE&&window.appIE.open(\'http://www.avp.ru/store\');">http://www.avp.ru</a>'
             : 'Kaspersky Anti-Virus AVP is not installed.<br>You can purchase and download it at <a href="#" onclick="window.appIE&&window.appIE.open(\'http://www.avp.ru/store\');">http://www.avp.ru</a>'
-            : 'Kaspersky Anti-Virus AVP is not installed.<br>You can purchase it at <a href="#" onclick="window.appIE&&window.appIE.open(\'http://www.softstore98.com\');">http://www.softstore98.com</a>'
         });
       } else if (window.appAVP) window.appAVP.open();
       return;
@@ -2330,7 +2339,7 @@ class AppDialogs {
 
     if (
       val === 'reset' || val === 'sysreset' || val === 'factoryreset' ||
-      val === 'factory-reset' || val === 'reinstall' || val === 'restore' ||
+      val === 'factory-reset' || val === 'reinstall' ||
       val === 'firstrun' || val === 'first-run' || val === 'cleardata' ||
       val === 'format' || val.startsWith('format ') || val === 'format c:' ||
       val === 'сброс' || val === 'переустановка' || val === 'формат' || val.startsWith('формат ')
@@ -2470,15 +2479,15 @@ class AppDialogs {
       bootScreen.classList.remove('fade-out');
     }
 
-    try {
-      localStorage.clear();
-    } catch (e) {
-      console.warn('Failed to clear localStorage during factory reset:', e);
-    }
+    const clearAll = () => { try { localStorage.clear(); } catch (e) {} };
+    const wiped = window.BackupStore ? window.BackupStore.wipe(null, { dropArchives: false }).catch(clearAll) : Promise.resolve().then(clearAll);
 
-    setTimeout(() => {
-      window.location.reload();
-    }, 1200);
+    wiped.then(() => {
+      if (window.BackupStore) window.BackupStore.freezeStorage();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1200);
+    });
   }
 
   openDisplayProperties(initialTab) {

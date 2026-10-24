@@ -136,6 +136,8 @@
         case 'brake': this.noise(t, 1.2, 0.22, 3400, 1800); this.tone(t, 1.1, 2100, 'sawtooth', 0.025, null, -700); break;
         case 'splash': this.noise(t, 0.8, 0.45, 900, 180); this.noise(t, 0.3, 0.3, 3200, 1200); this.tone(t, 0.35, 320, 'sine', 0.1, null, -220); break;
         case 'steam': this.noise(t, 0.9, 0.3, 1600, 700, 0.1); break;
+        case 'coin': this.tone(t, 0.06, n(95), 'square', 0.06); this.tone(t + 0.05, 0.22, n(100), 'square', 0.06); this.noise(t, 0.03, 0.08, 6000); break;
+        case 'shuffle': for (let i = 0; i < 7; i++) this.noise(t + i * 0.035, 0.03, 0.12, 2400 + i * 260); break;
         case 'glint': [91, 96].forEach((m, i) => this.tone(t + i * 0.06, 0.35, n(m), 'triangle', 0.08)); break;
         case 'text': this.tone(t, 0.02, 1600 + Math.random() * 200, 'square', 0.025); break;
         case 'step': this.noise(t, 0.04, 0.06, 1500); break;

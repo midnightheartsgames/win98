@@ -1196,7 +1196,9 @@ class AppIE {
       contentFrame.innerHTML = this.renderAntiVirus();
       this.attachAntiVirusEvents(win, contentFrame);
     } else if (pageKey === 'anekdot') {
-      contentFrame.innerHTML = this.renderAnekdot();
+      const anekdotPage = this.parseAnekdotUrl(url);
+      contentFrame.innerHTML = this.renderAnekdot(anekdotPage);
+      win.titleElement.textContent = `${this.getAnekdotTitle(anekdotPage)} - Microslop Internet Explorer`;
       this.attachAnekdotEvents(win, contentFrame);
     } else if (pageKey === 'chat') {
       contentFrame.innerHTML = this.renderChat(url);
@@ -6274,12 +6276,111 @@ class AppIE {
     ];
   }
 
-  renderAnekdot() {
+  getAnekdotCategories() {
+    return [
+      { key: 'newrus', title: 'Новые русские', ids: [1, 12, 23, 37, 42, 47, 55, 64, 72, 80, 89, 93] },
+      { key: 'heroes', title: 'Штирлиц, Ржевский и компания', ids: [13, 21, 27, 32, 35, 39, 53, 60, 73, 76, 84, 90, 96] },
+      { key: 'school', title: 'Вовочка, школа и студенты', ids: [17, 33, 36, 43, 62, 66, 69, 91, 95] },
+      { key: 'admins', title: 'Программисты и сисадмины', ids: [8, 10, 15, 16, 22, 29, 40, 45, 46, 49, 54, 58, 65, 71, 74, 79, 86, 92, 94, 97] },
+      { key: 'support', title: 'Техподдержка и пользователи', ids: [2, 3, 5, 7, 19, 25, 28, 31, 34, 38, 52, 56, 61, 63, 70, 75, 77, 82, 85, 88] },
+      { key: 'games', title: 'Игры и железо', ids: [6, 9, 24, 26, 41, 50, 51, 67, 68, 81, 83] },
+      { key: 'net', title: 'Интернет, Фидо и чаты', ids: [14, 44, 48, 78, 98, 99, 100] },
+      { key: 'country', title: 'Страна и жизнь', ids: [4, 11, 18, 20, 30, 57, 59, 87] },
+      { key: 'readers', title: 'Присланные читателями', ids: [] }
+    ];
+  }
+
+  getAnekdotCategoryKey(joke) {
+    const found = this.getAnekdotCategories().find(c => c.ids.includes(joke.id));
+    return found ? found.key : 'readers';
+  }
+
+  parseAnekdotUrl(url) {
+    const path = url.replace(/^[a-z]+:\/\/[^/?#]*/i, '').split(/[?#]/)[0].toLowerCase();
+    if (path === '/all.html') return { view: 'all' };
+    const category = path.match(/^\/cat\/([a-z]+)\.html$/);
+    if (category && this.getAnekdotCategories().some(c => c.key === category[1])) {
+      return { view: 'category', key: category[1] };
+    }
+    const single = path.match(/^\/joke\/(\d+)\.html$/);
+    if (single && this.getAnekdotList().some(j => j.id === parseInt(single[1], 10))) {
+      return { view: 'joke', id: parseInt(single[1], 10) };
+    }
+    return { view: 'home' };
+  }
+
+  getAnekdotTitle(page) {
+    const base = 'Anekdot.ru 1998';
+    if (page.view === 'all') return `${base} - Все анекдоты`;
+    if (page.view === 'category') {
+      const category = this.getAnekdotCategories().find(c => c.key === page.key);
+      return `${base} - ${category.title}`;
+    }
+    if (page.view === 'joke') return `${base} - Анекдот №${page.id}`;
+    return 'Anekdot.ru 1998 - Ежедневные анекдоты из России';
+  }
+
+  renderAnekdotCard(joke, number, votesMap) {
+    const category = this.getAnekdotCategories().find(c => c.key === this.getAnekdotCategoryKey(joke));
+    const currentScore = joke.score + (votesMap[joke.id] || 0);
+    return `
+      <div class="anekdot-card" id="joke-${joke.id}">
+        <div class="anekdot-card-header"><b>${number}.</b> <i>${joke.date}</i> &nbsp;&middot;&nbsp; <a class="anekdot-card-rubric" data-url="http://www.anekdot98.ru/cat/${category.key}.html">${category.title}</a> &nbsp;&middot;&nbsp; <a class="anekdot-card-rubric" data-url="http://www.anekdot98.ru/joke/${joke.id}.html">№${joke.id}</a></div>
+        <div class="anekdot-card-body">${this.escapeHtml(joke.text).replace(/\n/g, '<br>')}</div>
+        <div class="anekdot-vote-box">
+          Рейтинг: <b id="score-${joke.id}">${currentScore}</b> &nbsp;
+          <button class="btn-joke-vote" data-id="${joke.id}" data-delta="1" title="Смешно">+1</button>
+          <button class="btn-joke-vote" data-id="${joke.id}" data-delta="-1" title="Баян">-1</button>
+        </div>
+      </div>
+      <hr class="anekdot-hr">`;
+  }
+
+  renderAnekdotRubrics(jokes, wide) {
+    const counts = {};
+    jokes.forEach(j => {
+      const key = this.getAnekdotCategoryKey(j);
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    const links = this.getAnekdotCategories()
+      .filter(c => counts[c.key])
+      .map(c => `<a data-url="http://www.anekdot98.ru/cat/${c.key}.html">${c.title}</a> <span class="anekdot-rubric-count">(${counts[c.key]})</span>`);
+    if (wide) {
+      return `<ul class="anekdot-rubric-grid">${links.map(l => `<li>${l}</li>`).join('')}</ul>`;
+    }
+    return `<div class="anekdot-rubric-line"><b>Рубрики:</b> ${links.join(' &nbsp;|&nbsp; ')}</div>`;
+  }
+
+  renderAnekdot(page) {
     const jokes = this.getAnekdotList();
     let votesMap = {};
     try {
       votesMap = JSON.parse(localStorage.getItem(this.anekdotVotesKey)) || {};
     } catch (e) {}
+
+    const home = 'http://www.anekdot98.ru';
+    let heading = '';
+    let shown = [];
+    let footerLink = '';
+
+    if (page.view === 'all') {
+      heading = `<h2 class="anekdot-heading">Все анекдоты <span class="anekdot-rubric-count">(${jokes.length})</span></h2>`;
+      shown = jokes;
+    } else if (page.view === 'category') {
+      const category = this.getAnekdotCategories().find(c => c.key === page.key);
+      shown = jokes.filter(j => this.getAnekdotCategoryKey(j) === page.key);
+      heading = `<h2 class="anekdot-heading">${category.title} <span class="anekdot-rubric-count">(${shown.length})</span></h2>`;
+    } else if (page.view === 'joke') {
+      shown = jokes.filter(j => j.id === page.id);
+      heading = `<h2 class="anekdot-heading">Анекдот №${page.id}</h2>`;
+      footerLink = `<div class="anekdot-more"><a data-url="${home}/cat/${this.getAnekdotCategoryKey(shown[0])}.html">Ещё из этой рубрики &raquo;</a></div>`;
+    } else {
+      heading = `<h2 class="anekdot-heading">Рубрики</h2>${this.renderAnekdotRubrics(jokes, true)}<h2 class="anekdot-heading">Последние ${Math.min(10, jokes.length)} анекдотов</h2>`;
+      shown = jokes.slice(0, 10);
+      footerLink = `<div class="anekdot-more"><a data-url="${home}/all.html">Все анекдоты (${jokes.length}) &raquo;</a></div>`;
+    }
+
+    const crumbs = page.view === 'home' ? '' : `<div class="anekdot-crumbs"><a data-url="${home}">Главная</a> &raquo; ${page.view === 'all' ? 'Все анекдоты' : page.view === 'category' ? 'Рубрика' : 'Анекдот'}</div>`;
 
     return `
       <div class="anekdot-container">
@@ -6287,24 +6388,15 @@ class AppIE {
           <div class="anekdot-header">
             <div class="anekdot-logo">${this.gif('laugh', 2)} Анекдоты из России</div>
             <div class="anekdot-sub">ежедневный выпуск &middot; составитель Дмитрий Вернер &middot; с 1995 года</div>
-            <div class="anekdot-nav">Выпуск от 15 ноября 1998 г. &nbsp;|&nbsp; В выпуске анекдотов: <b>${jokes.length}</b> &nbsp;|&nbsp; <a id="btn-random-joke">Случайный анекдот</a> &nbsp;|&nbsp; <a id="anekdot-to-form">Прислать свой</a></div>
+            <div class="anekdot-nav">Выпуск от 15 ноября 1998 г. &nbsp;|&nbsp; <a data-url="${home}">Главная</a> &nbsp;|&nbsp; <a data-url="${home}/all.html">Все анекдоты: <b>${jokes.length}</b></a> &nbsp;|&nbsp; <a id="btn-random-joke">Случайный анекдот</a> &nbsp;|&nbsp; <a id="anekdot-to-form">Прислать свой</a></div>
+            ${page.view === 'home' ? '' : this.renderAnekdotRubrics(jokes, false)}
           </div>
+          ${crumbs}
+          ${heading}
           <div id="anekdot-cards-list">
-            ${jokes.map((j, idx) => {
-              const currentScore = j.score + (votesMap[j.id] || 0);
-              return `
-              <div class="anekdot-card" id="joke-${j.id}">
-                <div class="anekdot-card-header"><b>${idx + 1}.</b> <i>${j.date}</i></div>
-                <div class="anekdot-card-body">${this.escapeHtml(j.text).replace(/\n/g, '<br>')}</div>
-                <div class="anekdot-vote-box">
-                  Рейтинг: <b id="score-${j.id}">${currentScore}</b> &nbsp;
-                  <button class="btn-joke-vote" data-id="${j.id}" data-delta="1" title="Смешно">+1</button>
-                  <button class="btn-joke-vote" data-id="${j.id}" data-delta="-1" title="Баян">-1</button>
-                </div>
-              </div>
-              <hr class="anekdot-hr">`;
-            }).join('')}
+            ${shown.map((j, idx) => this.renderAnekdotCard(j, idx + 1, votesMap)).join('')}
           </div>
+          ${footerLink}
           <div class="anekdot-submit-box" id="anekdot-form">
             <b>Прислать анекдот в следующий выпуск</b><br>
             <textarea id="anekdot-new-text" rows="4" cols="60"></textarea><br>
@@ -6334,8 +6426,11 @@ class AppIE {
         votesMap[jokeId] = (votesMap[jokeId] || 0) + delta;
         localStorage.setItem(this.anekdotVotesKey, JSON.stringify(votesMap));
 
+        const joke = this.getAnekdotList().find(j => j.id === jokeId);
+        const scoreEl = container.querySelector(`#score-${jokeId}`);
+        if (joke && scoreEl) scoreEl.textContent = joke.score + votesMap[jokeId];
+
         if (window.soundSys) window.soundSys.playDing();
-        this.renderPage(win, this.currentUrl);
       });
     });
 
@@ -6344,12 +6439,7 @@ class AppIE {
       btnRandom.addEventListener('click', () => {
         const jokes = this.getAnekdotList();
         const rand = jokes[Math.floor(Math.random() * jokes.length)];
-        const el = container.querySelector(`#joke-${rand.id}`);
-        if (el) {
-          el.scrollIntoView({ block: 'center' });
-          el.style.backgroundColor = '#ffffc0';
-          setTimeout(() => { el.style.backgroundColor = ''; }, 1200);
-        }
+        this.navigate(win, `http://www.anekdot98.ru/joke/${rand.id}.html`);
       });
     }
 
@@ -6373,7 +6463,11 @@ class AppIE {
         this.publishAnekdot(text, 'Только что');
 
         if (window.soundSys) window.soundSys.playDing();
-        this.renderPage(win, this.currentUrl);
+        if (this.parseAnekdotUrl(this.currentUrl).view === 'home') {
+          this.renderPage(win, this.currentUrl);
+        } else {
+          this.navigate(win, 'http://www.anekdot98.ru');
+        }
       });
     }
   }

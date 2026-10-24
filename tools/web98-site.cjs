@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const vm = require('node:vm');
+const { stamp } = require('./web98-stamp.cjs');
 
 const ROOT = path.join(__dirname, '..');
 const SITE = path.join(ROOT, 'web98-site');
@@ -35,27 +36,33 @@ function gamesNoun(n) {
 }
 
 const LEVELS = {
-  red: { short: 'Переделка с нуля', long: 'Неиграбельно, нужна переделка с нуля' },
-  orange: { short: 'Готово на 10–30%', long: 'Нужна крупная доработка, готово примерно на 10–30%' },
-  yellow: { short: 'Готово на 40–70%', long: 'Играбельно, но есть недоделки, готово примерно на 40–70%' },
-  lime: { short: 'Готово на 80–95%', long: 'Почти готово, примерно на 80–95%' },
+  purple: { short: 'Готово, обновляется', long: 'Готово полностью, будет обновляться' },
   green: { short: 'Готово полностью', long: 'Полностью играбельно' },
-  blue: { short: 'Порт оригинала', long: 'Полноценный порт настоящей игры' }
+  blue: { short: 'Порт оригинала', long: 'Полноценный порт настоящей игры' },
+  lime: { short: 'Готово на 80–95%', long: 'Почти готово, примерно на 80–95%' },
+  yellow: { short: 'Готово на 40–70%', long: 'Играбельно, но есть недоделки, готово примерно на 40–70%' },
+  orange: { short: 'Готово на 10–30%', long: 'Нужна крупная доработка, готово примерно на 10–30%' },
+  red: { short: 'Переделка с нуля', long: 'Неиграбельно, нужна переделка с нуля' }
 };
 
 const READINESS = {
-  red: ['half-life', 'neon-racer', 'sammax202'],
+  purple: ['hsr98'],
+  red: ['half-life', 'neon-racer', 'sammax202', 'homm1'],
   orange: ['fallout2', 'stalker98', 'moh98', 'mc98', 'dao98', 'dmc98', 'tekken3', 'diablo2', 'xiii', 'maxpayne', 'falloutzp', 'sims3', 'kotor98', 'hl2', 'gta90'],
-  yellow: ['wolf3d', 'quest', 'diablo', 'doom', 'lol', 'avatar98', 'cop98', 'ow98', 'gtann', 'dota'],
+  yellow: ['wolf3d', 'quest', 'diablo', 'doom', 'lol', 'avatar98', 'cop98', 'ow98', 'gtann', 'dota', 'korovany'],
   lime: ['serioussam', 'forza', 'plov', 'quake3', 'bttf', 'catniss'],
-  green: ['hsr98', 'stalker', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201'],
+  green: ['stalker', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201'],
   blue: ['legion', 'anotherwar', 'fallout']
 };
 
 const levelOf = id => Object.keys(READINESS).find(level => READINESS[level].includes(id)) || null;
+const levelRank = id => {
+  const rank = Object.keys(LEVELS).indexOf(levelOf(id));
+  return rank < 0 ? Object.keys(LEVELS).length : rank;
+};
 
 function syncGames() {
-  const games = listGames();
+  const games = listGames().sort((a, b) => levelRank(a.id) - levelRank(b.id));
   const unrated = games.filter(g => !levelOf(g.id)).map(g => g.id);
   if (unrated.length) console.log(`no readiness level: ${unrated.join(', ')}`);
   const dir = path.join(SITE, 'img/games');
@@ -190,6 +197,7 @@ async function main() {
   const args = process.argv.slice(2);
   if (args[0] === '--shots') await captureShots(args.slice(1));
   syncGames();
+  stamp();
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

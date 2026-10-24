@@ -43,7 +43,7 @@ window.interpediaReg('win98clone', 'project', {
 Среди игр каталога — [[wolf3d|Wolfenstein 3D]], [[diablo|Diablo]], [[halflife|Half-Life 98]], квест [[scumm|LucasQuest 98]] и гонки [[neonracer|Midnight Glide]].` },
     { id: 'clippy', title: 'Скрепыш', content: `На рабочем столе живёт [[clippy|Скрепыш]]. Он комментирует открытые программы и посещённые сайты, отвечает на вопросы, ведёт беседы с выбором реплик, переодевается в наряды с сайта «Скрепыш '98» и, как положено, иногда предлагает помощь в самый неподходящий момент.` }
   ],
-  seeAlso: ['windows98', 'bios', 'clippy', 'ie5', 'interpedia'],
+  seeAlso: ['windows98', 'bios', 'clippy', 'ie5', 'interpedia', 'samandmax', 'kovcheg', 'steam'],
   references: [
     'Документация проекта Microslop Win 98 Web Clone.',
     'Microslop Win 98 Resource Kit. — Microslop Press, 1998.'
@@ -95,7 +95,7 @@ The project recreates not just the system but its era: the accessories, [[ie5|In
 Catalog games include [[wolf3d|Wolfenstein 3D]], [[diablo|Diablo]], [[halflife|Half-Life 98]], the adventure [[scumm|LucasQuest 98]] and the racer [[neonracer|Midnight Glide]].` },
     { id: 'clippy', title: 'Clippy', content: `[[clippy|Clippy]] lives on the desktop. He comments on open programs and visited sites, answers questions, holds conversations with reply choices, dresses up in outfits from the Clippy '98 site and, as is only proper, sometimes offers help at the worst possible moment.` }
   ],
-  seeAlso: ['windows98', 'bios', 'clippy', 'ie5', 'interpedia'],
+  seeAlso: ['windows98', 'bios', 'clippy', 'ie5', 'interpedia', 'samandmax', 'kovcheg', 'steam'],
   references: [
     'Microslop Win 98 Web Clone project documentation.',
     'Microslop Win 98 Resource Kit. Microslop Press, 1998.'
@@ -147,7 +147,7 @@ SCUMM заменил ввод текстовых команд панелью г�
 
 Экран разделён по классическому образцу: сверху — сцена, снизу — строка действия, девять глаголов (Дать, Открыть, Закрыть, Взять, Осмотреть, Говорить, Использовать, Толкнуть, Потянуть) и инвентарь. В игре три локации, головоломки с резиновой курицей, кофе и проводом и диалоги с выбором реплик, в том числе пародия на знаменитые словесные дуэли Monkey Island.` }
   ],
-  seeAlso: ['grimfandango', 'win98clone', 'neonracer', 'y2k'],
+  seeAlso: ['grimfandango', 'win98clone', 'neonracer', 'y2k', 'samandmax'],
   references: [
     'Gilbert R. Why Adventure Games Suck and What We Can Do About It // The Journal of Computer Game Design. — 1989.',
     'LucasArts. The Secret of Monkey Island: руководство. — 1990.',
@@ -198,7 +198,7 @@ Monkey Island 2 was the first to use iMUSE by Michael Land and Peter McConnell: 
 
 The screen follows the classic layout: the scene on top, then the sentence line, nine verbs (Give, Open, Close, Pick up, Look at, Talk to, Use, Push, Pull) and the inventory. The game has three locations, puzzles with a rubber chicken, coffee and wire, and dialogues with reply choices, including a parody of Monkey Island's famous insult duels.` }
   ],
-  seeAlso: ['grimfandango', 'win98clone', 'neonracer', 'y2k'],
+  seeAlso: ['grimfandango', 'win98clone', 'neonracer', 'y2k', 'samandmax'],
   references: [
     'Gilbert, R. "Why Adventure Games Suck and What We Can Do About It". The Journal of Computer Game Design, 1989.',
     'LucasArts. The Secret of Monkey Island manual, 1990.',
@@ -465,7 +465,7 @@ window.interpediaReg('digicharat', 'project', {
 </table>` },
     { id: 'style', title: 'Стиль японских фанатских сайтов', content: `Японские фанатские страницы конца 1990-х узнаются по пастельным фонам, крошечным пиксельным фигуркам-«пети», звёздочкам из кодировки Shift-JIS, счётчикам посещений и разделам «link» с баннерами друзей. Фан-клуб Di Gi Charat сознательно повторяет этот стиль, отличаясь от западных [[geocities|домашних страниц]] с их мигающими картинками и MIDI-музыкой.` }
   ],
-  seeAlso: ['geocities', 'webring', 'win98clone', 'html'],
+  seeAlso: ['geocities', 'webring', 'win98clone', 'html', 'kovcheg'],
   references: [
     'Broccoli Co. Di Gi Charat: официальные материалы. — 1998–1999.',
     'Программа передач TBS: «Wonderful», ноябрь 1999.'
@@ -511,7 +511,7 @@ The <strong>Di Gi Charat Fan Club</strong> is the English-language fan site www.
 </table>` },
     { id: 'style', title: 'The style of Japanese fan sites', content: `Late-1990s Japanese fan pages are recognizable by pastel backgrounds, tiny pixel "petit" figures, stars from the Shift-JIS character set, hit counters and "link" sections with friends' banners. The Di Gi Charat Fan Club deliberately follows that style, unlike Western [[geocities|home pages]] with their blinking images and MIDI music.` }
   ],
-  seeAlso: ['geocities', 'webring', 'win98clone', 'html'],
+  seeAlso: ['geocities', 'webring', 'win98clone', 'html', 'kovcheg'],
   references: [
     'Broccoli Co. Di Gi Charat official materials, 1998–1999.',
     'TBS program listings: "Wonderful", November 1999.'

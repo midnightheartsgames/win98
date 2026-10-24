@@ -223,6 +223,10 @@ class Taskbar {
                       <div class="start-menu-item-icon">${Icons['defrag']}</div>
                       <div class="start-menu-item-text">${t('app.defrag')}</div>
                     </div>
+                    <div class="start-menu-item" data-action="msbackup">
+                      <div class="start-menu-item-icon">${Icons['backup']}</div>
+                      <div class="start-menu-item-text">${t('app.backup')}</div>
+                    </div>
                     <div class="start-menu-item" data-action="cleanmgr">
                       <div class="start-menu-item-icon">${Icons['cleanmgr']}</div>
                       <div class="start-menu-item-text">${t('app.cleanmgr')}</div>
@@ -1510,6 +1514,9 @@ class Taskbar {
         break;
       case 'defrag':
         if (window.appDefrag) window.appDefrag.open();
+        break;
+      case 'msbackup':
+        if (window.appBackup) window.appBackup.open();
         break;
       case 'icq':
         if (window.appICQ) window.appICQ.open();
