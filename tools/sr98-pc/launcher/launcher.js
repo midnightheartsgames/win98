@@ -88,7 +88,7 @@
     if (view.name === 'home') {
       const ahead = pending();
       if (ahead.length) html += notesHtml(ahead[ahead.length - 1]).replace('<h1 class="hsrs-h1">Версия', '<h1 class="hsrs-h1">Что нового в');
-      html += '<h2 class="hsrs-h2">Новости</h2>' + (news().length ? newsRows(news().slice(0, 6), false) + '<p class="hsrs-more"><a data-view="news">Все новости</a></p>' : '<p class="hsrs-small">' + (texts ? 'Новостей пока нет.' : 'Новости появятся после первой проверки обновлений.') + '</p>');
+      html += '<h2 class="hsrs-h2">Новости</h2>' + (news().length ? newsRows(news().slice(0, 10), false) + '<p class="hsrs-more"><a data-view="news">Все новости</a></p>' : '<p class="hsrs-small">' + (texts ? 'Новостей пока нет.' : 'Новости появятся после первой проверки обновлений.') + '</p>');
       if (!ahead.length) {
         const cur = versions().find(v => v.version === local());
         if (cur) html += '<h2 class="hsrs-h2">Что было в ' + esc(cur.version) + '</h2><p><b>' + esc(cur.title) + '</b>. ' + esc(cur.summary) + ' <a data-version="' + esc(cur.version) + '">Подробнее</a></p>';

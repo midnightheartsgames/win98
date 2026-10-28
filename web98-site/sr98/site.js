@@ -244,7 +244,7 @@
 
     renderHome() {
       const H = Hsr();
-      const latest = NEWS.slice(0, 5);
+      const latest = NEWS.slice(0, 10);
       return `
         <table class="hsrs-cols" cellspacing="0" cellpadding="0">
           <tr>
