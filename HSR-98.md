@@ -893,6 +893,10 @@ Silver Wolf's own arcade game on the terminal `h` of the Test car (`lab_term_hd`
 
 The whole system (receiver, Telegram, inbox) is described in [BUGREPORT.md](BUGREPORT.md). Test: `npm run test:hsr98-bug`.
 
+## Updates (APK button, PC launcher)
+
+Standalone builds carry a full build number `1.6.N` (`Hsr98.BUILD_VERSION`, shown in the title corner): the first two numbers are `Hsr98.VERSION`, the third grows with every release of `npm run release -- sr98`, which builds the APK, the web copy and `StarRail98.exe` together. The APK edition adds the last title item «Обновления» (`hsr-ui-update.js`, active only with the `Sr98Android` bridge): a quiet check once a day, the NEW badge, a screen with «Что нового», download, Android's install permission and installer, «Обновлено до ...» after the restart, five taps on the version for the test channel. The PC edition (`Hsr98Standalone = 'pc'`, «Издание «Ярило-VI» · ПК») is updated by its launcher. The whole system is in [LAUNCHER.md](LAUNCHER.md). Test: `npm run test:hsr98-update`.
+
 ## Verification
 
 - `node tests/hsr-site.test.js` (`npm run test:hsr-site`) checks the site: routing, every page with clean text, every canvas spec against the game art, facts against the game data, news order, the whole download and setup flow, cancelling both, the guestbook and the wiring in Explorer, the desktop, Outlook and AGENTS.md.

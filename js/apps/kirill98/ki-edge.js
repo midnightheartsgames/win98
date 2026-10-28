@@ -1,7 +1,7 @@
 (function (K) {
   'use strict';
 
-  const SIZE = K.MAP.size, BORDER = 10, FAR = 3200, FADE = 450, TREES_TO = 900;
+  const SIZE = K.MAP.size, BORDER = 10, FAR = 3200, FADE = 450, TREES_TO = 700;
   const NEAR_ROWS = Object.freeze([-1.5, 0, 3, 6, 12, 24, 48]);
   const FAR_ROWS = Object.freeze([48, 72, 100, 140, 190, 250, 330, 430, 560, 720, 920, 1160, 1450, 1800, 2200, 2700, FAR]);
   const CORNER = 8, RIVER_OUT = Object.freeze({ x: 788, dx: 0.094, wave: 30, len: 1600, level: -0.6, half: 7, bed: -3 });
@@ -109,7 +109,7 @@
       const x = tr.X[i], z = tr.Z[i], key = z < 330 ? 'n' : x < 300 ? 'w' : x > SIZE - 300 ? 'e' : z > SIZE - 300 ? 's' : null;
       if (key && pool[key].length < 400) pool[key].push(i);
     }
-    const CELL = 9;
+    const CELL = 10;
     for (let z = -TREES_TO; z < SIZE + TREES_TO; z += CELL) for (let x = -TREES_TO; x < SIZE + TREES_TO; x += CELL) {
       const px = x + hash(x, z, 1) * CELL, pz = z + hash(x, z, 2) * CELL;
       if (!outside(px, pz)) continue;

@@ -82,13 +82,27 @@ read bugreports/<id>/report.md and look at shot.png, shot-marked.png (the player
 check the HEAD line in report.md: if files changed after the build, first check whether the bug is already fixed;
 reproduce with node tools/bugs.cjs repro <id> --headless and read repro.png and repro.log; it loads the report's save (and the live HSR state) on port 8091 without touching the user's own saves;
 fix the bug by the usual project rules and add a test for it when one is possible;
-then run node tools/bugs.cjs status <id> fixed --in <version> --note "<what was fixed, one short sentence for the player>"; use duplicate --dup <id>, notabug or wontfix when they fit. Reports marked «F7/F8» come from saves that used the debug keys.
+then run node tools/bugs.cjs status <id> fixed --in next --note "<what was fixed, one short sentence for the player>"; the release that ships the fix replaces next with its version number. Use duplicate --dup <id>, notabug or wontfix when they fit. Reports marked «F7/F8» come from saves that used the debug keys.
 
 Keep the keys free: F10 and Ctrl+F10 belong to the report in the system, F9 to the report in HSR 98. A new game that really needs F10 goes into F10_OWNERS in js/apps/bugreport.js; nothing may use Ctrl+F10, and HSR may not use F9.
 
 When a new app or game stores data, its storage keys go into js/apps/backup-catalog.js; the report window then offers to attach that save by itself. Add a "Где" adapter in js/apps/bugreport-where.js only when a real report needed more detail than the window title.
 
 The receiver runs on the mini PC (tools/bugs/receiver.cjs, /opt/bug-receiver, service bug-receiver, secrets in /etc/bug-receiver.env). To update it, the user copies the file with scp to /tmp and runs sudo cp to /opt/bug-receiver/ and sudo systemctl restart bug-receiver; tests/bug-receiver.test.js covers it.
+
+Releases and Launchers
+
+LAUNCHER.md describes the whole system. Win98.exe opens a Win 98 launcher (electron/launcher/), StarRail98.exe (tools/sr98-pc/) opens a launcher in the style of the sr98 site, and the APK has the title item «Обновления» (js/apps/hsr98/hsr-ui-update.js). All three update from signed static files on the mini PC (https://pennygachi.men/web98/update/); electron/updater.js is the shared update core, electron/launcher-host.js the shared launcher process code.
+
+When the user asks for a release ("выпусти обновление", "сделай выпуск Win 98", "выпусти SR98"):
+
+write releases/win98/next.md or releases/sr98/next.md for players from the commits since the last release (the pointer keeps its commit): "# Title", "Кратко: ...", "## Новое" and "## Исправлено" with "- " items, grouped by game or program, Microslop and Win naming; show it to the user before releasing;
+npm run release -- win98 or npm run release -- sr98 builds, checks the launch, uploads over ssh (Host mini-pc) and verifies through Cloudflare; the default channel is test;
+the test channel is checked by the user (five clicks on the version number in the launcher settings, five taps on the version in the APK screen); only after that npm run release -- promote <win98|sr98> <version> moves it to stable. Stable releases need a committed tree and the user's go-ahead, never publish to stable on your own;
+--full also uploads the full archive for new players (Win98.zip or StarRail98-PC-<version>.zip);
+npm run release -- status shows what is published, verify checks a channel from outside, gc deletes unused files (only with --yes).
+
+The signing key is %USERPROFILE%\.win98-release.key and the APK key is %USERPROFILE%\.android\hsr98.keystore; neither goes into git, and losing them means existing installs stop getting updates. Never reuse a published file name: Cloudflare keeps old copies. SR98 news for the launcher come from web98-site/sr98/news.js (the site loads the same file); Win 98 news are releases/news/*.md.
 
 Naming: Microslop and Win
 

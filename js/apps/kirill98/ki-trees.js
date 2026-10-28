@@ -232,6 +232,7 @@ uniform vec3 uEye;
 uniform float uFadeStart;
 uniform float uFadeLen;
 uniform vec2 uSizes[18];
+uniform float uFogFar;
 out vec2 vUv;
 out float vFade;
 out float vTint;
@@ -240,7 +241,7 @@ void main() {
   vec2 to = uEye.xz - aInst.xz;
   float d = length(to);
   vFade = clamp((d - uFadeStart) / uFadeLen, 0.0, 1.0);
-  if (vFade <= 0.0) { gl_Position = vec4(0.0, 0.0, -2.0, 1.0); return; }
+  if (vFade <= 0.0 || d > uFogFar * 1.02) { gl_Position = vec4(0.0, 0.0, -2.0, 1.0); return; }
   int v = int(aInst2.z + 0.5);
   vec2 size = uSizes[v] * aInst2.x;
   vec2 dir = to / max(d, 0.001);
