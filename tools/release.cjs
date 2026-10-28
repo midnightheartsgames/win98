@@ -13,7 +13,7 @@ const REMOTE_SITE = '/srv/www/site/web98';
 const REMOTE_INCOMING = 'release-incoming';
 const PUBLIC_URL = 'https://pennygachi.men/web98/update';
 const RELEASE_FILE = 'resources/app/release.json';
-const VERSION_PATTERN = /^\d+\.\d+$/;
+const VERSION_PATTERN = /^\d+\.\d+(\.\d+)?$/;
 const WORK = path.join(ROOT, 'dist', 'release');
 const BLOBS = path.join(WORK, 'blobs');
 const PACKED_CACHE = path.join(WORK, 'packed.json');
@@ -499,7 +499,7 @@ async function releaseWin98(args) {
   const news = newsJson(product);
   const ptrs = await pointers(product);
   const version = args.version || nextVersion(ptrs);
-  if (!VERSION_PATTERN.test(version)) throw new Error('version must look like 1.15');
+  if (!VERSION_PATTERN.test(version)) throw new Error('version must look like 1.15 or 1.15.1');
   for (const ptr of [ptrs.stable, ptrs.test]) if (ptr && compareVersions(version, ptr.version) <= 0) throw new Error('version ' + version + ' is not newer than ' + ptr.channel + ' ' + ptr.version);
   console.log('Win 98 ' + version + ' → channel ' + channel + (git.dirty ? ' (dirty)' : ''));
 
@@ -552,7 +552,7 @@ async function releaseWin98(args) {
 }
 
 function nextSr98Version(ptrs, base) {
-  const known = [ptrs.stable, ptrs.test].filter(p => p && p.version.startsWith(base + '.')).map(p => Number(p.version.slice(base.length + 1)));
+  const known = [ptrs.stable, ptrs.test].filter(p => p && p.version.startsWith(base + '.')).map(p => Number(p.version.slice(base.length + 1).split('.')[0]));
   return base + '.' + (known.length ? Math.max(...known) + 1 : 0);
 }
 

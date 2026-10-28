@@ -69,6 +69,8 @@ check('SR98 builds are numbered from Hsr98.VERSION and the title corner shows th
   assert.doesNotThrow(() => checkVersion('dev'));
   assert.throws(() => checkVersion(base));
   assert.throws(() => checkVersion('9.9.1'));
+  assert.doesNotThrow(() => checkVersion(base + '.5.1'));
+  assert.throws(() => checkVersion(base + '.5.1.2'));
   const out = fs.mkdtempSync(path.join(os.tmpdir(), 'sr98-version-'));
   build(out, 'apk', base + '.3');
   const page = fs.readFileSync(path.join(out, 'index.html'), 'utf8');
@@ -111,6 +113,10 @@ check('the next version follows both channels', () => {
   assert.equal(nextVersion({}), '1.0');
   assert.equal(nextVersion({ stable: { version: '1.9' }, test: { version: '1.10' } }), '1.11');
   assert.equal(nextVersion({ stable: { version: '1.3' }, test: null }), '1.4');
+  assert.equal(nextVersion({ stable: { version: '1.3' }, test: { version: '1.3.1' } }), '1.4');
+  const { nextSr98Version, VERSION_PATTERN } = require('../tools/release.cjs');
+  assert.equal(nextSr98Version({ stable: { version: '1.6.5' }, test: { version: '1.6.5.1' } }, '1.6'), '1.6.6');
+  assert.ok(VERSION_PATTERN.test('1.3.1') && !VERSION_PATTERN.test('1.3.1.1'));
 });
 
 check('news files become items with dates, leads, lists and pictures for their products', () => {

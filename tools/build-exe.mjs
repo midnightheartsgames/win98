@@ -12,7 +12,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const versionArg = process.argv.indexOf('--version');
 const version = versionArg > 0 ? process.argv[versionArg + 1] : 'dev';
-if (version !== 'dev' && !VERSION_PATTERN.test(version || '')) throw new Error('--version must look like 1.15');
+if (version !== 'dev' && !VERSION_PATTERN.test(version || '')) throw new Error('--version must look like 1.15 or 1.15.1');
 
 const git = args => execFileSync('git', args, { cwd: root }).toString().trim();
 const now = new Date();

@@ -753,8 +753,11 @@
         return;
       }
       this.emit({ t: 'sfx', id: 'door' });
-      this.loadMap(e.def.to, e.def.at);
+      const dest = this.exitDest(e.def);
+      this.loadMap(dest.to, dest.at);
     }
+
+    exitDest(mk) { return mk.alt && this.cond(mk.alt.if) ? mk.alt : mk; }
 
     unlockAnchor(a) {
       if (this.state.anchors.includes(a.key)) return;
@@ -1995,7 +1998,7 @@
         const id = q.shift();
         for (const [ch, mk] of Object.entries(H.MAPS[id].marks)) {
           if (mk.type !== 'exit') continue;
-          for (const to of mk.lift ? mk.lift.map(l => l[0]) : [mk.to]) {
+          for (const to of mk.lift ? mk.lift.map(l => l[0]) : [this.exitDest(mk).to]) {
             if (!H.MAPS[to] || to in prev) continue;
             prev[to] = [id, ch];
             if (to === toMap) {
@@ -2030,7 +2033,7 @@
         const at = L.marks[ch];
         if (!at) continue;
         const [x, y] = centreOf(at);
-        if (mk.type === 'exit') pts.push({ kind: 'exit', map: mapId, x, y, ch, to: mk.to, locked: !!(mk.need && !this.cond(mk.need)), lockText: mk.lockText || '' });
+        if (mk.type === 'exit') pts.push({ kind: 'exit', map: mapId, x, y, ch, to: this.exitDest(mk).to, locked: !!(mk.need && !this.cond(mk.need)), lockText: mk.lockText || '' });
         else if ((mk.type === 'npc' || mk.type === 'prop') && mk.script && this.npcShown(mk)) {
           const role = npcRole(mk);
           if (role) pts.push(Object.assign({ map: mapId, x, y, ch, who: mk.name || (H.SPEAKERS[mk.who] || {}).name || '' }, role));

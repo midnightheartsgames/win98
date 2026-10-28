@@ -135,7 +135,7 @@
       ],
       marks: {
         v: { type: 'spawn' },
-        x: { type: 'exit', to: 'ax_meadow', at: 'x' },
+        x: { type: 'exit', to: 'ax_meadow', at: 'x', alt: { if: '?ks_q6=boss', to: 'ax_gate', at: 'x' } },
         r: { type: 'exit', to: 'ax_guild', at: 'x' },
         w: { type: 'exit', to: 'ax_wiz', at: 'x' },
         'с': { type: 'exit', to: 'ax_stable', at: 'x' },

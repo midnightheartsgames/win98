@@ -44,7 +44,7 @@ function gameVersion() {
 function checkVersion(version) {
   if (version === 'dev') return;
   const base = gameVersion();
-  if (!new RegExp('^' + base.replace(/\./g, '\\.') + '\\.\\d+$').test(version)) throw new Error('version ' + version + ' must be ' + base + '.N (Hsr98.VERSION ' + base + ')');
+  if (!new RegExp('^' + base.replace(/\./g, '\\.') + '\\.\\d+(\\.\\d+)?$').test(version)) throw new Error('version ' + version + ' must be ' + base + '.N or ' + base + '.N.M (Hsr98.VERSION ' + base + ')');
 }
 
 function buildStamp(version) {

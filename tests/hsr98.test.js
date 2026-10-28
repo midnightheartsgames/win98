@@ -13692,9 +13692,17 @@ function trInfo(g) {
   g.loadMap('ax_guild', null, { x: 5, y: 10, silent: true });
   talk(g, 'л');
   ok(g.state.flags.ks_alarm && g.state.quests.ks_q6 === 'boss' && g.map.id === 'ax_gate', 'KonoSuba: the alarm and the turrets at the gate');
+  exitVia(g, 'x');
+  eq(g.map.id, 'ax_town', 'KonoSuba: the team can step back into Axel before the golem');
+  exitVia(g, 'x');
+  eq(g.map.id, 'ax_gate', 'KonoSuba: during the alarm the south exit of Axel leads back to the gate field (BR-261028-WJAP)');
+  ok(g.routeExit('ax_town', 'ax_gate') === 'x', 'KonoSuba: the objective route from Axel finds the gate field');
   talk(g, 'п');
   ok(g.state.flags.ks_proto && g.state.quests.ks_q6 === 'done', 'KonoSuba: the early Destroyer falls');
   eq(g.state.party.join(), 'kazuma,aqua,megumin,darkness', 'KonoSuba: Kazuma leads his own party again');
+  g.loadMap('ax_town', null, { x: 25, y: 44, silent: true });
+  exitVia(g, 'x');
+  eq(g.map.id, 'ax_meadow', 'KonoSuba: after the golem the south exit of Axel leads to the meadows again');
   {
     const ps = H.newState();
     Object.assign(ps, { map: 'ax_gate', x: null, y: null, party: ['kazuma', 'aqua', 'megumin', 'darkness'] });
