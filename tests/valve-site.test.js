@@ -12,6 +12,7 @@ global.localStorage = {
 
 let lastNotepad = null;
 let lastSteam = null;
+let lastCd = null;
 let lastLaunch = null;
 let lastWizard = null;
 let steamClientOpened = 0;
@@ -41,12 +42,13 @@ global.window = {
 };
 
 eval(read('js/game-manager.js'));
-['isInstalled', 'ownsOnSteam', 'isDownloaded', 'showInSteam', 'openSetupWizard'].forEach(m => assert.strictEqual(typeof window.gameManager[m], 'function', `gameManager.${m}`));
-assert.strictEqual(typeof window.gameManager.catalog.hl2.launch, 'function');
+['isInstalled', 'ownsOnSteam', 'isDownloaded', 'showInSteam', 'showOnCd', 'openSetupWizard'].forEach(m => assert.strictEqual(typeof window.gameManager[m], 'function', `gameManager.${m}`));
+assert.strictEqual(typeof window.gameManager.catalog.hl2_demo.launch, 'function');
 window.gameManager.isInstalled = id => installed.has(id);
 window.gameManager.ownsOnSteam = id => owned.has(id);
 window.gameManager.isDownloaded = id => downloaded.has(id);
 window.gameManager.showInSteam = id => { lastSteam = id; };
+window.gameManager.showOnCd = id => { lastCd = id; };
 Object.keys(window.gameManager.catalog).forEach(id => { window.gameManager.catalog[id].launch = () => { lastLaunch = id; }; });
 window.gameManager.openSetupWizard = id => { lastWizard = id; };
 
@@ -73,6 +75,7 @@ const resetState = () => {
   downloaded.clear();
   window.appSteam.downloads.clear();
   lastSteam = null;
+  lastCd = null;
   lastLaunch = null;
   lastWizard = null;
   steamClientOpened = 0;
@@ -139,9 +142,16 @@ test('Every route renders its own page and titles follow the page', () => {
 
 test('Products match the game catalog: price, size and executable', () => {
   assert.deepStrictEqual(data.projects.map(p => p.id), ['half-life', 'hl2', 'steam', 'dota']);
+  assert.deepStrictEqual(data.projects.map(p => p.gameId || p.id), ['half-life_demo', 'hl2_demo', 'steam', 'dota']);
   data.projects.forEach(p => {
-    const g = gmCatalog[p.id];
+    const g = gmCatalog[p.gameId || p.id];
     assert.ok(g, p.id);
+    assert.strictEqual(!!p.cdPath, !!g.cdDemo, p.id);
+    if (g.cdDemo) {
+      assert.strictEqual(p.cdPath, `D:\\demo\\${g.setupExe}`, p.id);
+      assert.strictEqual(p.title, g.title, p.id);
+      assert.ok(!g.steam && !/Steam/.test(JSON.stringify(p.specs)), p.id);
+    }
     assert.strictEqual(p.exePath.split('\\').pop(), g.targetExe, p.id);
     if (g.price > 0) assert.strictEqual(p.priceText, g.priceDisplay, p.id);
     assert.ok(p.sizeText.startsWith(g.fileSize.split(' (')[0]), p.id);
@@ -183,25 +193,48 @@ test('Game facts follow the game code, not the old site', () => {
   assert.ok(!data.news.some(n => /Гейб Ньюэлл|Майк Харрингтон|Кен Бёрдвелл|IceFrog/.test(n.author)), 'real people are not bylines');
 });
 
-test('Status box follows Steam rules for every state', () => {
+test('Status box follows Steam rules for Dota 98 and CD-demo rules for Half-Life', () => {
   resetState();
-  let html = site.renderSite(base + '/game?id=hl2');
-  assert.ok(html.includes('Есть в магазине Steam') && html.includes('Открыть в Steam'));
-  site.productAction('hl2');
-  assert.strictEqual(lastSteam, 'hl2');
-  owned.add('hl2');
-  assert.ok(site.renderSite(base + '/game?id=hl2').includes('Загрузить в Steam'));
-  window.appSteam.downloads.set('hl2', { doneKB: 64, totalKB: 100, paused: false });
-  assert.ok(site.renderSite(base + '/game?id=hl2').includes('Загружается в Steam: 64%'));
-  window.appSteam.downloads.set('hl2', { doneKB: 64, totalKB: 100, paused: true });
-  assert.ok(site.renderSite(base + '/game?id=hl2').includes('64%, пауза'));
+  let html = site.renderSite(base + '/game?id=dota');
+  assert.ok(html.includes('Есть в магазине Steam') && html.includes('Открыть в Steam') && html.includes('Продаётся только в клиенте Steam.'));
+  site.productAction('dota');
+  assert.strictEqual(lastSteam, 'dota');
+  owned.add('dota');
+  assert.ok(site.renderSite(base + '/game?id=dota').includes('Загрузить в Steam'));
+  window.appSteam.downloads.set('dota', { doneKB: 64, totalKB: 100, paused: false });
+  assert.ok(site.renderSite(base + '/game?id=dota').includes('Загружается в Steam: 64%'));
+  window.appSteam.downloads.set('dota', { doneKB: 64, totalKB: 100, paused: true });
+  assert.ok(site.renderSite(base + '/game?id=dota').includes('64%, пауза'));
   window.appSteam.downloads.clear();
-  installed.add('hl2');
-  html = site.renderSite(base + '/game?id=hl2');
-  assert.ok(html.includes('Запустить HL2.EXE') && html.includes('Страница игры в Steam'));
-  site.productAction('hl2');
-  assert.strictEqual(lastLaunch, 'hl2');
+  installed.add('dota');
+  html = site.renderSite(base + '/game?id=dota');
+  assert.ok(html.includes('Запустить DOTA.EXE') && html.includes('Страница игры в Steam'));
+  site.productAction('dota');
+  assert.strictEqual(lastLaunch, 'dota');
   assert.ok(site.renderSite(base).includes('Установлено<br><b>1 из 4</b>'));
+
+  resetState();
+  [['hl2', 'hl2_demo', 'hl2demo.exe', 'HL2.EXE'], ['half-life', 'half-life_demo', 'hl98demo.exe', 'HL.EXE']].forEach(([pid, gid, setup, exe]) => {
+    html = site.renderSite(base + '/game?id=' + pid);
+    assert.ok(html.includes('Демоверсия на диске «Игромании»') && html.includes(`D:\\demo\\${setup}`), pid);
+    assert.ok(!html.includes('Есть в магазине Steam') && !html.includes('Продаётся только в клиенте Steam') && !html.includes('Страница игры в Steam'), pid);
+    assert.ok(!html.includes('$34.99') && !html.includes('$49.99'), pid);
+    site.productAction(pid);
+    assert.strictEqual(lastCd, gid);
+    assert.strictEqual(lastSteam, null);
+    owned.add(gid);
+    window.appSteam.downloads.set(gid, { doneKB: 64, totalKB: 100, paused: false });
+    assert.ok(!site.renderSite(base + '/game?id=' + pid).includes('Steam: 64%'), pid);
+    window.appSteam.downloads.clear();
+    installed.add(gid);
+    html = site.renderSite(base + '/game?id=' + pid);
+    assert.ok(html.includes(`Запустить ${exe}`) && !html.includes('Страница игры в Steam'), pid);
+    site.productAction(pid);
+    assert.strictEqual(lastLaunch, gid);
+  });
+  assert.ok(site.renderSite(base).includes('Установлено<br><b>2 из 4</b>'));
+  const games = site.renderSite(base + '/games');
+  assert.ok(games.includes('компакт-диск журнала «Игромания»') && !games.includes('Игры продаются и обновляются только через Steam'));
 
   resetState();
   html = site.renderSite(base + '/game?id=steam');
@@ -221,7 +254,7 @@ test('Home log, news filter, screenshots and poll', () => {
   global.localStorage.clear();
   site.newsFilter = 'all';
   const home = site.renderSite(base);
-  assert.ok(home.includes('Half-Life 2 в продаже'));
+  assert.ok(home.includes('Демоверсия Half-Life 2 на диске «Игромании»') && !home.includes('$49.99'));
   assert.ok(home.includes('20.11.2000'));
   site.setNewsFilter('Dota 98');
   let news = site.renderSite(base + '/news');
@@ -239,7 +272,7 @@ test('Home log, news filter, screenshots and poll', () => {
   assert.ok(!site.renderSite(base).includes('Ваш голос учтён'));
 
   site.setShot('hl2', 1);
-  assert.ok(site.renderSite(base + '/game?id=hl2').includes('<img src="content/steam/hl2-2.jpg" width="320"'));
+  assert.ok(site.renderSite(base + '/game?id=hl2').includes('<img src="content/igromania/demos/hl2_demo-2.jpg" width="320"'));
   site.setShot('hl2', 0);
 });
 

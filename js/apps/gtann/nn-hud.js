@@ -277,6 +277,7 @@
       if (this.hurtFlash > 0) { g.fillStyle = `rgba(200,0,0,${Math.min(0.35, this.hurtFlash)})`; g.fillRect(0, 0, W, H); }
       if (st.turret) this.turretSight(W, H, S, st.turret);
       else if (st.crosshair && !st.scope) this.crosshair(W, H, S, st.crossTarget, st.dot, st.fpDot);
+      if (st.throwAim) this.throwMeter(W, H, S, st.throwAim, world.t);
       this.topRight(game, W, S, st);
       this.radar(game, st, 22 * S, H - 22 * S, 92 * S);
       this.messages(game, W, H, S, st);
@@ -562,6 +563,57 @@
         g.fillStyle = hp > 0.5 ? '#40d040' : hp > 0.25 ? '#e0c030' : '#e03030';
         g.fillRect(x - 20 * S, y + 22 * S, 40 * S * hp, 5 * S);
       }
+      g.restore();
+    }
+
+    throwMeter(W, H, S, a, t) {
+      const g = this.g, segs = 12, bw = 12 * S, bh = 132 * S, gap = 2 * S;
+      const x = W / 2 + 170 * S, y0 = H / 2 + bh / 2, sh = (bh - gap * (segs - 1)) / segs;
+      const full = a.charge >= 0.999, flash = Math.floor(t * 6) % 2 === 0;
+      g.save();
+      g.fillStyle = 'rgba(10,14,30,0.42)';
+      g.strokeStyle = '#e8e0d0';
+      g.lineWidth = 2 * S;
+      g.fillRect(x - bw / 2 - 4 * S, y0 - bh - 4 * S, bw + 8 * S, bh + 8 * S);
+      g.strokeRect(x - bw / 2 - 4 * S, y0 - bh - 4 * S, bw + 8 * S, bh + 8 * S);
+      for (let i = 0; i < segs; i++) {
+        const u0 = i / segs, fill = N.clamp((a.charge - u0) * segs, 0, 1), yb = y0 - i * (sh + gap);
+        g.fillStyle = 'rgba(255,255,255,0.12)';
+        g.fillRect(x - bw / 2, yb - sh, bw, sh);
+        if (fill <= 0) continue;
+        g.fillStyle = u0 < 0.45 ? '#9ad070' : u0 < 0.8 ? '#f2c83a' : '#ff6a4a';
+        if (full && !flash) g.fillStyle = '#fff';
+        g.fillRect(x - bw / 2, yb - sh * fill, bw, sh * fill);
+      }
+      const qy = y0 - bh * a.quick;
+      g.strokeStyle = '#bfe4ff';
+      g.lineWidth = 2 * S;
+      g.beginPath(); g.moveTo(x - bw / 2 - 9 * S, qy); g.lineTo(x - bw / 2 - 2 * S, qy); g.stroke();
+      this.text('G', x - bw / 2 - 11 * S, qy, { font: `bold ${11 * S | 0}px Arial`, align: 'right', base: 'middle', stroke: 3 * S, fill: '#bfe4ff' });
+      this.text('СИЛА', x, y0 - bh - 10 * S, { font: `bold ${11 * S | 0}px Arial`, align: 'center', stroke: 3 * S, fill: '#e8e0d0' });
+      this.text(Math.round(a.charge * 100) + '%', x, y0 + 20 * S, { font: `bold ${12 * S | 0}px Arial`, align: 'center', stroke: 3 * S, fill: full ? '#ff6a4a' : '#fff' });
+      const tx = x + bw / 2 + 12 * S;
+      let ty = H / 2 - 12 * S;
+      if (a.aid) {
+        this.text(Math.round(a.dist) + ' м', tx, ty, { font: `italic 900 ${24 * S | 0}px "Arial Black", Impact, Arial`, stroke: 4 * S, fill: '#bfe4ff' });
+        ty += 22 * S;
+        const lines = [];
+        if (a.fizzle) lines.push(['ПОТУХНЕТ В ВОДЕ', '#9ac8ff']);
+        else if (a.wet) lines.push(['УЙДЁТ ПОД ВОДУ', '#9ac8ff']);
+        if (a.self) lines.push(['ТЫ В ЗОНЕ!', flash ? '#ff4a4a' : '#ffd060']);
+        if (a.people || a.cars) {
+          const parts = [];
+          if (a.people) parts.push(a.people + ' чел.');
+          if (a.cars) parts.push(a.cars + ' маш.');
+          lines.push(['В зоне: ' + parts.join(', '), '#f2c83a']);
+        }
+        if (a.kills) lines.push(['Насмерть: ' + a.kills, '#ff6a4a']);
+        for (const [s, c] of lines) {
+          this.text(s, tx, ty, { font: `italic 900 ${14 * S | 0}px "Arial Black", Impact, Arial`, stroke: 3 * S, fill: c });
+          ty += 18 * S;
+        }
+      }
+      this.text('Отпусти — бросок · R — отмена', x, y0 + 38 * S, { font: `bold ${11 * S | 0}px Arial`, align: 'center', stroke: 3 * S, fill: '#d8d8d8' });
       g.restore();
     }
 

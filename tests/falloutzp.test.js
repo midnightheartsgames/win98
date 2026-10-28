@@ -462,19 +462,21 @@ test('hands, weapon holds and first/third person weapon animation', () => {
   assert.equal(p.holstered, false, 'aiming draws the weapon');
 });
 
-test('Steam catalog entry follows the distribution rules', () => {
+test('Igromania CD demo entry follows the distribution rules', () => {
   const src = fs.readFileSync(path.join(ROOT, 'js', 'game-manager.js'), 'utf8');
-  const m = /\n      falloutzp: \{([\s\S]*?)\n      \},/.exec(src);
+  const m = /\n      falloutzp_demo: \{([\s\S]*?)\n      \},/.exec(src.replace(/\r\n/g, '\n'));
   assert.ok(m, 'catalog entry');
   const body = m[1];
-  assert.match(body, /steam: true/);
+  assert.match(body, /cdDemo: true/);
+  assert.doesNotMatch(body, /steam: true/);
+  assert.match(body, /title: 'Fallout: Запорожье Demo'/);
   assert.match(body, /genre: '[^']+'/);
   const tags = JSON.parse(body.match(/tags: (\[[^\]]*\])/)[1].replace(/'/g, '"'));
   assert.ok(tags.length >= 3 && tags.length <= 5 && tags.every(t => t.length <= 24));
   const shots = JSON.parse(body.match(/shots: (\[[^\]]*\])/)[1].replace(/'/g, '"'));
   assert.ok(shots.length >= 2 && shots.every(t => t.length <= 32));
   for (let i = 1; i <= 2; i++) {
-    const f = path.join(ROOT, 'content', 'steam', `falloutzp-${i}.jpg`);
+    const f = path.join(ROOT, 'content', 'igromania', 'demos', `falloutzp_demo-${i}.jpg`);
     assert.ok(fs.existsSync(f), 'screenshot ' + i);
     const b = fs.readFileSync(f);
     let k = 2, size = null;
@@ -485,7 +487,7 @@ test('Steam catalog entry follows the distribution rules', () => {
   assert.ok(!/falloutzp/.test(state), 'not preinstalled');
   assert.ok(!/falloutzpGranted/.test(src));
   const recipes = require(path.join(ROOT, 'tools', 'steam-shots-recipes.cjs'));
-  assert.ok(recipes.falloutzp && recipes.falloutzp.shots.length === 2);
+  assert.ok(recipes.falloutzp_demo && recipes.falloutzp_demo.shots.length === 2);
 });
 
 function findComment(src, css) {

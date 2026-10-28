@@ -213,15 +213,28 @@ class WebCinemaSite {
     const gm = typeof window !== 'undefined' ? window.gameManager : null;
     if (!clip.game || !gm || !gm.catalog || !gm.catalog[clip.game]) return null;
     const game = gm.catalog[clip.game];
-    return { id: clip.game, name: game.title || game.name || clip.game, installed: gm.isInstalled(clip.game), price: game.priceDisplay || '' };
+    return { id: clip.game, name: game.title || game.name || clip.game, installed: gm.isInstalled(clip.game), cdDemo: !!game.cdDemo, price: game.priceDisplay || '' };
   }
 
   openGame(id) {
     const gm = typeof window !== 'undefined' ? window.gameManager : null;
     if (!gm || !gm.catalog || !gm.catalog[id]) return false;
     if (gm.isInstalled(id) && typeof gm.catalog[id].launch === 'function') gm.catalog[id].launch();
+    else if (gm.catalog[id].cdDemo) gm.showOnCd(id);
     else gm.showInSteam(id);
     return true;
+  }
+
+  gameButtonText(game) {
+    if (game.installed) return `Запустить ${this.esc(game.name)}`;
+    if (game.cdDemo) return `${this.esc(game.name)} на диске «Игромании»`;
+    return `${this.esc(game.name)} в Steam`;
+  }
+
+  gameStatusText(game) {
+    if (game.installed) return ', уже установлена.';
+    if (game.cdDemo) return ', демоверсия на компакт-диске журнала «Игромания».';
+    return `, продаётся в Steam${game.price ? ` за ${this.esc(game.price)}` : ''}.`;
   }
 
   migrateLegacyBook() {
@@ -639,9 +652,9 @@ class WebCinemaSite {
         <div class="wc-ticket-btns">
           <button type="button" class="win-btn" data-wc-save="${clip.id}">Скачать в «Мои видео»</button>
           <button type="button" class="win-btn" data-wc-player="${clip.id}">Открыть в Win Media Player</button>
-          ${game ? `<button type="button" class="win-btn" data-wc-game="${game.id}">${game.installed ? `Запустить ${this.esc(game.name)}` : `${this.esc(game.name)} в Steam`}</button>` : ''}
+          ${game ? `<button type="button" class="win-btn" data-wc-game="${game.id}">${this.gameButtonText(game)}</button>` : ''}
         </div>
-        ${game ? `<div class="wc-ticket-game">${this.esc(clip.gameNote || '')}${game.installed ? ', уже установлена.' : `, продаётся в Steam${game.price ? ` за ${this.esc(game.price)}` : ''}.`}</div>` : ''}
+        ${game ? `<div class="wc-ticket-game">${this.esc(clip.gameNote || '')}${this.gameStatusText(game)}</div>` : ''}
       </div>
     `;
   }

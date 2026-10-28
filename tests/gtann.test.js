@@ -2779,6 +2779,75 @@ section('new weapons', () => {
   }
 });
 
+section('throw aim', () => {
+  const hold = (g, w, inp, n) => { const ev = []; for (let i = 0; i < n; i++) { g.step(1 / 60, inp); ev.push(...w.ev); w.ev.length = 0; } return ev; };
+  const until = (g, w, f, n) => { const ev = []; for (let i = 0; i < n; i++) { g.step(1 / 60, {}); ev.push(...w.ev); w.ev.length = 0; if (f(ev)) break; } return ev; };
+  {
+    const { g, w, pl } = carGame();
+    const fx = Math.sin(pl.yaw), fz = -Math.cos(pl.yaw), aimD = [fx, 0.1, fz];
+    w.giveWeapon(pl, 'grenade', 4);
+    pl.weapon = 'grenade';
+    hold(g, w, { fire: true, aimD, camYaw: pl.yaw }, 30);
+    const plan = pl.throwPlan, charge = pl.charging;
+    ok(plan && plan.kind === 'grenade' && charge > 0.5 && charge < 0.65 && Math.abs(plan.power - N.throwPower(charge)) < 1e-9, 'holding the button charges the throw and plans it (' + charge.toFixed(2) + ')');
+    ok(plan.pts.length / 3 > 60 && plan.radius === N.WEAPONS.grenade.radius && plan.lethal > 2 && plan.lethal < plan.radius, 'the plan holds the flight path, blast radius and lethal radius');
+    ok(Math.abs(plan.flight - N.WEAPONS.grenade.fuse) < 0.05, 'a grenade plan runs to the end of the fuse');
+    const ev = hold(g, w, { aimD, camYaw: pl.yaw }, 1).concat(until(g, w, e => e.some(q => q.t === 'explosion'), 400));
+    const boom = ev.find(e => e.t === 'explosion');
+    ok(pl.charging === 0 && !pl.throwPlan && pl.weapons.grenade.ammo === 3, 'releasing throws one grenade and clears the plan');
+    ok(boom && Math.hypot(boom.x - plan.x, boom.z - plan.z) < 0.3 && Math.abs(boom.y - plan.y) < 0.3, 'the grenade blows up where the plan said (' + (boom ? Math.hypot(boom.x - plan.x, boom.z - plan.z).toFixed(3) : '-') + ' m)');
+    const d = q => Math.hypot(q.x - pl.x, q.z - pl.z);
+    const weak = w.planThrow(pl, { aimD }, N.throwPower(0), 'grenade'), strong = w.planThrow(pl, { aimD }, N.throwPower(1), 'grenade');
+    const firstLand = q => Math.hypot(q.pts[q.landed * 3] - pl.x, q.pts[q.landed * 3 + 2] - pl.z);
+    ok(weak.landed > 0 && strong.landed > 0 && firstLand(strong) > firstLand(weak) + 8, 'more power throws farther (' + firstLand(weak).toFixed(1) + ' → ' + firstLand(strong).toFixed(1) + ' m)');
+    ok(N.throwCharge(N.QUICK_THROW) > 0 && N.throwCharge(N.QUICK_THROW) < 1 && Math.abs(N.throwPower(N.throwCharge(N.QUICK_THROW)) - N.QUICK_THROW) < 1e-9, 'the quick throw sits on the charge scale');
+    const near = w.spawnPed('worker', strong.x, strong.z, 0), mid = w.spawnPed('worker', strong.x + strong.radius * 0.8, strong.z, 0), far = w.spawnPed('worker', strong.x + strong.radius + 4, strong.z, 0);
+    const car = w.spawnVehicle('vaz2106', strong.x, strong.z + 4, 0);
+    w.buildGrid();
+    const hits = w.throwHits(strong, pl), hit = e => hits.find(h => h.e === e);
+    ok(hit(near) && hit(near).kill && hit(mid) && !hit(mid).kill && !hit(far) && hit(car), 'the zone marks who dies, who is hurt and the car; the man outside is safe');
+    ok(!strong.self && w.throwHits(Object.assign({}, strong, { x: pl.x + fx * 3, y: pl.y + 0.1, z: pl.z + fz * 3 }), pl).some(h => h.e === pl), 'a grenade landing next to you puts you in the zone');
+    w.removePed(near); w.removePed(mid); w.removePed(far); w.removeVehicle(car);
+  }
+  {
+    const { g, w, pl } = carGame();
+    const fx = Math.sin(pl.yaw), fz = -Math.cos(pl.yaw), aimD = [fx, 0.05, fz];
+    w.giveWeapon(pl, 'molotov', 3);
+    pl.weapon = 'molotov';
+    hold(g, w, { fire: true, aimD, camYaw: pl.yaw }, 20);
+    const plan = pl.throwPlan;
+    ok(plan && plan.kind === 'molotov' && plan.lethal === 0 && plan.radius === N.WEAPONS.molotov.radius && plan.hops.length === 0, 'a Molotov plan ends at the first impact');
+    hold(g, w, { aimD, camYaw: pl.yaw }, 1);
+    until(g, w, e => e.some(q => q.t === 'molotov'), 300);
+    const f = w.fires[0];
+    ok(f && Math.hypot(f.x - plan.x, f.z - plan.z) < 0.3 && Math.abs(f.y - plan.y) < 0.2, 'the fire starts where the plan said');
+  }
+  {
+    const { g, w, pl } = carGame();
+    const fx = Math.sin(pl.yaw), fz = -Math.cos(pl.yaw), aimD = [fx, 0.1, fz];
+    w.giveWeapon(pl, 'grenade', 2);
+    pl.weapon = 'grenade';
+    hold(g, w, { fire: true, aimD, camYaw: pl.yaw }, 20);
+    const ev = hold(g, w, { fire: true, reload: true, aimD, camYaw: pl.yaw }, 1);
+    hold(g, w, { fire: true, aimD, camYaw: pl.yaw }, 20);
+    ok(ev.some(e => e.t === 'throwCancel') && pl.charging === 0 && !pl.throwPlan, 'R cancels the throw and the held button does not start a new one');
+    hold(g, w, { aimD, camYaw: pl.yaw }, 5);
+    ok(pl.weapons.grenade.ammo === 2 && !w.projs.length, 'a cancelled throw keeps the grenade');
+    const turn = N.wrap(pl.yaw + 1.4);
+    hold(g, w, { fire: true, aimD: [Math.sin(turn), 0.1, -Math.cos(turn)], camYaw: turn }, 30);
+    ok(Math.abs(N.wrap(pl.yaw - turn)) < 0.05, 'the thrower turns to face the aim while winding up');
+  }
+  if (shore) {
+    const { w, pl } = waterGame();
+    pl.x = shore.x; pl.z = shore.z; pl.y = city.groundY(shore.x, shore.z); pl.yaw = shore.yaw;
+    w.buildGrid();
+    const aimD = [shore.nx, 0.2, shore.nz];
+    const gp = w.planThrow(pl, { aimD }, 1, 'grenade'), mp = w.planThrow(pl, { aimD }, 1, 'molotov');
+    ok(gp.wet && !gp.fizzle && mp.fizzle && mp.hits.length === 0, 'into the river: the grenade sinks, the Molotov goes out');
+  }
+  ok(N.defaultSettings().throwAid === true, 'the throw aid is on by default');
+});
+
 section('characters', () => {
   const finite = m => m.every(isFinite);
   const kinds = Object.keys(N.PED_KINDS);

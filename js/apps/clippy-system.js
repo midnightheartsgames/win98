@@ -254,7 +254,7 @@ class ClippySystem {
       ], '🐑', 14000);
       return;
     }
-    const installed = fresh.find(id => gm.catalog[id] && gm.catalog[id].steam);
+    const installed = fresh.find(id => gm.catalog[id] && (gm.catalog[id].steam || gm.catalog[id].cdDemo));
     if (installed) {
       const game = gm.catalog[installed];
       clippy.animate('congratulate');
@@ -1214,6 +1214,20 @@ class ClippySystem {
     return true;
   }
 
+  onAppCrashed(name) {
+    if (this._crashTipShown || !this.canReact()) return false;
+    this._crashTipShown = true;
+    const L = (ru, en) => this.lang(ru, en);
+    this.whenBalloonFree(clippy => clippy.speak(L(
+      'Похоже, программа «' + name + '» споткнулась. То есть... То есть... упала. Ничего, отчёт об ошибке собирается сам: снимок, место, журнал. Нажмите Ctrl+F10 в любой программе.',
+      'Looks like the program "' + name + '" tripped. I mean... I mean... crashed. No worries, the problem report builds itself: screenshot, place, log. Press Ctrl+F10 in any program.'
+    ), [
+      { text: L('• Отправить отчёт', '• Send a report'), action: () => window.appBugReport && window.appBugReport.open() },
+      { text: L('• Мои отчёты', '• My reports'), action: () => window.appBugReport && window.appBugReport.openList() }
+    ], '🩹', 14000));
+    return true;
+  }
+
   openBootLog() {
     const drive = window.vfs && window.vfs.resolvePath(['My Computer', 'C:']);
     const file = drive && drive.children && drive.children['BOOTLOG.TXT'];
@@ -1844,10 +1858,10 @@ class ClippySystem {
     if (discId === 'igromania_09_1998') {
       clippy.animate('lookAround');
       clippy.speak(L(
-        'В приводе D: раскрутился сентябрьский выпуск журнала <strong>«Игромания» (№9 ’98)</strong>! На диске лежат демоверсии, видеоролики и оболочка <code>igroman.exe</code>.',
-        'Drive D: spun up the September 1998 issue of <strong>Igromania</strong>! Demos, video clips, and <code>igroman.exe</code> are ready.'
+        'В приводе D: раскрутился сентябрьский выпуск журнала <strong>«Игромания» (№9 ’98)</strong>! На диске лежат двадцать демоверсий, видеоролики и оболочка <code>igroman.exe</code>. Half-Life 98, Max Payne, Minecraft 98 и другие демки отсюда в Steam не продаются, их ставят только с диска.',
+        'Drive D: spun up the September 1998 issue of <strong>Igromania</strong>! Twenty demos, video clips, and <code>igroman.exe</code> are ready. Half-Life 98, Max Payne, Minecraft 98 and the other demos here are not sold on Steam, they install only from the disc.'
       ), [
-        { text: L('▶ Открыть журнал (igroman.exe)', '▶ Open Igromania (igroman.exe)'), action: () => window.appIgromania && window.appIgromania.open() },
+        { text: L('▶ Открыть журнал (igroman.exe)', '▶ Open Igromania (igroman.exe)'), action: () => window.appIgroman && window.appIgroman.open() },
         { text: L('📂 Открыть диск D:', '📂 Open Drive D:'), action: () => window.appExplorer && window.appExplorer.open(['My Computer', drive]) }
       ], '💿', 10000);
       return true;

@@ -73,7 +73,7 @@ class AppScummQuest {
     const winId = 'app_scumm_quest';
     this.win = window.winManager.createWindow({
       id: winId,
-      title: 'The Curse of Win 98 - A SCUMM Adventure',
+      title: 'LucasQuest 98 Demo - The Curse of Win 98',
       icon: 'lucas-quest',
       width: 580,
       height: 440,

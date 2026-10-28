@@ -133,6 +133,10 @@
         case 'ticket': [84, 88, 91].forEach((m, i) => this.tone(t + i * 0.05, 0.25, n(m), 'triangle', 0.1)); this.noise(t, 0.12, 0.15, 3000); break;
         case 'whoosh': this.noise(t, 1.4, 0.35, 300, 2600, 0.35); this.tone(t, 1.2, 90, 'sine', 0.12, null, 260); break;
         case 'rumble': this.noise(t, 1.6, 0.4, 180, 420, 0.3); this.tone(t, 1.4, 55, 'sawtooth', 0.08, null, 30); this.tone(t + 0.35, 0.5, n(79), 'triangle', 0.06); this.tone(t + 0.35, 0.5, n(83), 'triangle', 0.05); break;
+        case 'horn': [57, 61, 64].forEach(m => this.tone(t, 0.9, n(m), 'sawtooth', 0.05, null, -12)); this.tone(t + 0.95, 0.5, n(57), 'sawtooth', 0.05, null, -20); this.noise(t, 0.3, 0.1, 500); break;
+        case 'rift': this.tone(t, 0.7, 120, 'sine', 0.14, null, 700); this.tone(t + 0.1, 0.6, 1800, 'triangle', 0.04, null, -1400); this.noise(t, 0.6, 0.12, 900, 2400, 0.4); break;
+        case 'turret': this.tone(t, 0.07, 1500, 'square', 0.04, null, -900); this.noise(t, 0.05, 0.08, 4200); break;
+        case 'alarm': for (let i = 0; i < 2; i++) { this.tone(t + i * 0.22, 0.18, 880, 'square', 0.07); this.tone(t + i * 0.22 + 0.09, 0.09, 660, 'square', 0.07); } break;
         case 'brake': this.noise(t, 1.2, 0.22, 3400, 1800); this.tone(t, 1.1, 2100, 'sawtooth', 0.025, null, -700); break;
         case 'splash': this.noise(t, 0.8, 0.45, 900, 180); this.noise(t, 0.3, 0.3, 3200, 1200); this.tone(t, 0.35, 320, 'sine', 0.1, null, -220); break;
         case 'steam': this.noise(t, 0.9, 0.3, 1600, 700, 0.1); break;

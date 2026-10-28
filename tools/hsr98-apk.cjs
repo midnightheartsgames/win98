@@ -3,12 +3,11 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
-const { build } = require('./hsr98-standalone.cjs');
+const { build, gameVersion } = require('./hsr98-standalone.cjs');
 
 const ROOT = path.resolve(__dirname, '..');
 const ANDROID = path.join(__dirname, 'hsr98-standalone', 'android');
 const PACKAGE_DIR = path.join('com', 'win98clone', 'hsr98');
-const VERSION_NAME = '1.6';
 const KEY_ALIAS = 'hsr98';
 const KEY_PASS = 'hsr98-android';
 const exe = process.platform === 'win32' ? '.exe' : '';
@@ -63,18 +62,19 @@ function keystore(t) {
   return ks;
 }
 
-function buildApk(out) {
+function buildApk(out, version = 'dev') {
   const t = findTools();
   const work = path.join(ROOT, 'dist', 'hsr98-apk-work');
   fs.rmSync(work, { recursive: true, force: true });
   const www = path.join(work, 'assets', 'www');
-  const site = build(www, 'apk');
+  const site = build(www, 'apk', version);
+  const versionName = version === 'dev' ? gameVersion() : version;
   const res = path.join(work, 'res', 'mipmap-xxxhdpi');
   fs.mkdirSync(res, { recursive: true });
   fs.copyFileSync(path.join(ANDROID, 'icon.png'), path.join(res, 'ic_launcher.png'));
   const versionCode = Math.floor((Date.now() - Date.UTC(2026, 0, 1)) / 60000);
   const manifest = path.join(work, 'AndroidManifest.xml');
-  fs.writeFileSync(manifest, fs.readFileSync(path.join(ANDROID, 'AndroidManifest.xml'), 'utf8').replace('{{versionCode}}', versionCode).replace('{{versionName}}', VERSION_NAME));
+  fs.writeFileSync(manifest, fs.readFileSync(path.join(ANDROID, 'AndroidManifest.xml'), 'utf8').replace('{{versionCode}}', versionCode).replace('{{versionName}}', versionName));
   const resZip = path.join(work, 'res.zip');
   run(t.aapt2, ['compile', '--dir', path.join(work, 'res'), '-o', resZip]);
   const unsigned = path.join(work, 'unsigned.apk');
@@ -95,14 +95,17 @@ function buildApk(out) {
   run(t.java, ['-jar', t.apksigner, 'verify', out]);
   fs.rmSync(work, { recursive: true, force: true });
   fs.rmSync(out + '.idsig', { force: true });
-  return { out, versionCode, size: fs.statSync(out).size, scripts: site.scripts, music: site.music.length, keystore: ks };
+  return { out, versionName, versionCode, size: fs.statSync(out).size, scripts: site.scripts, music: site.music.length, keystore: ks };
 }
 
 if (require.main === module) {
-  const out = path.resolve(process.argv[2] || path.join(ROOT, 'dist', 'StarRail98.apk'));
-  const r = buildApk(out);
+  const args = process.argv.slice(2);
+  const v = args.indexOf('--version');
+  const version = v >= 0 ? args.splice(v, 2)[1] : 'dev';
+  const out = path.resolve(args[0] || path.join(ROOT, 'dist', 'StarRail98.apk'));
+  const r = buildApk(out, version);
   console.log('Honkai: Star Rail 98 APK -> ' + r.out);
-  console.log('  ' + (r.size / 1048576).toFixed(1) + ' MB, versionName ' + VERSION_NAME + ', versionCode ' + r.versionCode + ', ' + r.scripts + ' scripts, ' + r.music + ' music packs');
+  console.log('  ' + (r.size / 1048576).toFixed(1) + ' MB, versionName ' + r.versionName + ', versionCode ' + r.versionCode + ', ' + r.scripts + ' scripts, ' + r.music + ' music packs');
   console.log('  signed with ' + r.keystore);
 }
 

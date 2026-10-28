@@ -3,7 +3,7 @@
   const REPEAT_DELAY = 320, REPEAT_EVERY = 90, TAP_SLOP = 10, WHEEL_STEP = 22;
   const DIRS = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight' };
   const KEYS = {
-    Enter: 'Enter', Escape: 'Escape', Tab: 'Tab', ShiftLeft: 'Shift', Delete: 'Delete', PageUp: 'PageUp', PageDown: 'PageDown', F7: 'F7', F8: 'F8',
+    Enter: 'Enter', Escape: 'Escape', Tab: 'Tab', ShiftLeft: 'Shift', Delete: 'Delete', PageUp: 'PageUp', PageDown: 'PageDown', F7: 'F7', F8: 'F8', F9: 'F9',
     ArrowUp: 'ArrowUp', ArrowDown: 'ArrowDown', ArrowLeft: 'ArrowLeft', ArrowRight: 'ArrowRight'
   };
   const QUICK = {
@@ -13,7 +13,7 @@
     title: []
   };
   const PANEL = [
-    ['F8', 'F8', 'Меню отладки'], ['F7', 'F7', '+нефрит'], ['Tab', 'Tab', ''], ['ShiftLeft', 'Shift', '', true],
+    ['F9', 'F9', 'Сообщить об ошибке'], ['F8', 'F8', 'Меню отладки'], ['F7', 'F7', '+нефрит'], ['Tab', 'Tab', ''], ['ShiftLeft', 'Shift', '', true],
     ['KeyQ', 'Q', ''], ['KeyE', 'E', ''], ['KeyF', 'F', ''], ['KeyM', 'M', ''],
     ['KeyT', 'T', ''], ['KeyR', 'R', ''], ['KeyV', 'V', ''], ['KeyX', 'X', ''],
     ['KeyA', 'A', ''], ['KeyC', 'C', ''], ['KeyL', 'L', ''], ['KeyH', 'H', ''],
@@ -157,7 +157,7 @@
     const top = el('div', 'tk-top');
     const kb = el('div', 'tk-key tk-small', 'Клавиши');
     kb.addEventListener('pointerdown', e => { e.preventDefault(); panel.hidden = !panel.hidden; });
-    top.append(kb, key('F7', 'F7', '+нефрит', false, 'tk-small'), key('F8', 'F8', 'Отладка', false, 'tk-small tk-debug'));
+    top.append(kb, key('F9', 'F9', 'Баг', false, 'tk-small'), key('F7', 'F7', '+нефрит', false, 'tk-small'), key('F8', 'F8', 'Отладка', false, 'tk-small tk-debug'));
     const hide = el('div', 'tk-key tk-small', 'Скрыть');
     hide.addEventListener('pointerdown', e => { e.preventDefault(); userHid = true; setShown(false); });
     top.appendChild(hide);

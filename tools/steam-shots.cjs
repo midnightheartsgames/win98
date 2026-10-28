@@ -5,6 +5,8 @@ const path = require('node:path');
 const RECIPES = require('./steam-shots-recipes.cjs');
 
 const ROOT = path.join(__dirname, '..');
+const STEAM_SHOTS = path.join(ROOT, 'content', 'steam');
+const DEMO_SHOTS = path.join(ROOT, 'content', 'igromania', 'demos');
 const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
 const SHOT_W = 640;
 const SHOT_H = 480;
@@ -33,7 +35,7 @@ const PAGE_HELPERS = `window.__shots = window.__shots || {
 };`;
 
 function parseArgs(argv) {
-  const opts = { ids: [], out: path.join(ROOT, 'content', 'steam'), debug: null };
+  const opts = { ids: [], out: null, debug: null };
   for (const a of argv) {
     if (a.startsWith('--out=')) opts.out = path.resolve(a.slice(6));
     else if (a.startsWith('--debug=')) opts.debug = path.resolve(a.slice(8));
@@ -193,7 +195,9 @@ async function shootGame(cdp, id, recipe, opts) {
     const image = Buffer.from(r.result.data, 'base64');
     const size = jpegSize(image);
     if (size[0] !== SHOT_W || size[1] !== SHOT_H) throw new Error(`${id}: screenshot ${i + 1} is ${size.join('x')}, expected ${SHOT_W}x${SHOT_H}`);
-    const file = path.join(opts.out, `${id}-${i + 1}.jpg`);
+    const outDir = opts.out || (id.endsWith('_demo') ? DEMO_SHOTS : STEAM_SHOTS);
+    fs.mkdirSync(outDir, { recursive: true });
+    const file = path.join(outDir, `${id}-${i + 1}.jpg`);
     fs.writeFileSync(file, image);
     saved.push(path.basename(file));
   }
@@ -204,7 +208,6 @@ async function main() {
   const opts = parseArgs(process.argv.slice(2));
   const unknown = opts.ids.filter(id => !RECIPES[id]);
   if (unknown.length) throw new Error(`no recipe for ${unknown.join(', ')}`);
-  fs.mkdirSync(opts.out, { recursive: true });
   const cdp = await launch();
   let failed = 0;
   try {

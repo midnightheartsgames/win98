@@ -473,7 +473,7 @@ for (const k of Object.keys(T.THROWS)) {
 }
 
 {
-  const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8').replace(/\r\n/g, '\n');
   const files = fs.readdirSync(DIR).filter(f => f.endsWith('.js')).map(f => 'js/apps/tekken3/' + f).concat(['js/apps/tekken3-app.js', 'tests/tekken3.test.js']);
   const SL = String.fromCharCode(47);
   const LINE = SL + SL, BLOCK = SL + '*';
@@ -497,14 +497,14 @@ for (const k of Object.keys(T.THROWS)) {
   ok(fs.readdirSync(DIR).filter(f => f.endsWith('.js')).length === order.length, 'every module is loaded by the pages');
   ok(html.indexOf('js/apps/tekken3-app.js') > lastA && html.includes('css/apps/tekken3.css'), 'desktop loads the app wrapper and styles');
   const gm = read('js/game-manager.js');
-  const at = gm.indexOf('      tekken3: {');
+  const at = gm.indexOf('      tekken98_demo: {');
   const entry = gm.slice(at, at + 500);
-  ok(at > 0 && /steam: true/.test(entry) && /launch: \(\) => window\.appTekken3/.test(gm), 'catalog entry is a Steam game');
+  ok(at > 0 && /cdDemo: true/.test(entry) && !/steam: true/.test(entry) && /title: 'Tekken 98 Demo'/.test(entry) && /launch: \(\) => window\.appTekken3/.test(gm), 'catalog entry is an Igromania CD demo');
   const defaults = gm.slice(gm.indexOf('    return {\n      purchased:'), gm.indexOf('steamMigrated: true\n    };'));
-  ok(defaults.length > 0 && !defaults.includes('tekken3'), 'game is not preinstalled');
+  ok(defaults.length > 0 && !defaults.includes('tekken98_demo'), 'game is not preinstalled');
   ok(!/tekken3Granted/.test(gm), 'no auto-grant flags');
-  ok(read('js/desktop.js').includes("isInstalled('tekken3')") && read('js/taskbar.js').includes("isInstalled('tekken3')") && read('js/filesystem.js').includes("gmInstalled.includes('tekken3')"), 'desktop, Start menu and C:\\Games are gated on installation');
-  ok(read('js/taskbar.js').includes("showInSteam('tekken3')") && read('js/apps/explorer.js').includes("showInSteam('tekken3')"), 'missing game points to Steam');
+  ok(read('js/desktop.js').includes("isInstalled('tekken98_demo')") && read('js/taskbar.js').includes("isInstalled('tekken98_demo')") && read('js/filesystem.js').includes("gmInstalled.includes('tekken98_demo')"), 'desktop, Start menu and C:\\Games are gated on installation');
+  ok(read('js/taskbar.js').includes("showOnCd('tekken98_demo')") && read('js/apps/explorer.js').includes("showOnCd('tekken98_demo')"), 'missing game points to the Igromania CD');
   ok(read('js/icons.js').includes("'tekken3': `<svg"), 'icon exists');
 }
 

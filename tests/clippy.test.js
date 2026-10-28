@@ -89,13 +89,16 @@ global.window = {
   gameManager: {
     catalog: {
       doom: { steam: true, title: 'DOOM 98', subtitle: 'Демоны Марса', genre: 'Шутер', tags: ['Демоны'], priceDisplay: '$9.99', launch() { runs.push(['launch', 'doom']); } },
-      winamp: { isApp: true, title: 'Winamp' }
+      winamp: { isApp: true, title: 'Winamp' },
+      kotor98_demo: { cdDemo: true, title: 'Star Wars: Knights of the Old Republic 98 Demo', subtitle: 'Тарис', genre: 'RPG', tags: ['Джедаи'], setupExe: 'kotor98demo.exe', launch() { runs.push(['launch', 'kotor98_demo']); } }
     },
+    demoRenames: { kotor98: 'kotor98_demo' },
     state: { installed: ['winamp'], purchased: ['winamp'] },
     listeners: [],
     isInstalled(id) { return this.state.installed.includes(id); },
     addListener(fn) { this.listeners.push(fn); },
-    showInSteam(id) { runs.push(['steam', id]); }
+    showInSteam(id) { runs.push(['steam', id]); },
+    showOnCd(id) { runs.push(['cd', id]); }
   },
   appIE: { favorites: [['http://www.clippy98.com', "Скрепыш '98 (Гардероб Помощника)"], ['http://www.youvid.com', 'YouVid (Видео от каждого)']] }
 };
@@ -205,6 +208,16 @@ test('help: finds answers by everyday words', () => {
   assert.strictEqual(top('doom').id, 'game:doom');
   assert.strictEqual(top('youvid').id, 'video');
   assert.deepStrictEqual(help.search('абвгд'), []);
+});
+
+test('help: Igromania CD demos point to the disc instead of Steam', () => {
+  const entry = help.search('knights of the old republic', 3)[0].entry;
+  assert.strictEqual(entry.id, 'game:kotor98_demo');
+  assert.ok(entry.q.includes('Демоверсия на диске «Игромании»'));
+  assert.ok(entry.a.includes('kotor98demo.exe') && !entry.a.includes('продаётся в Steam'));
+  runs.length = 0;
+  help.run(entry);
+  assert.deepStrictEqual(runs, [['cd', 'kotor98_demo']]);
 });
 
 test('help: answers run real system actions', () => {
@@ -496,6 +509,7 @@ test('core: boss key hides every game window, not just the old list', () => {
   assert.strictEqual(c.isGameWindow('app_doom'), true);
   assert.strictEqual(c.isGameWindow('app_winamp'), false);
   assert.strictEqual(c.isGameWindow('app_notepad_1'), false);
+  assert.strictEqual(c.isGameWindow('app_kotor98'), true);
   c.triggerBossKey();
   assert.deepStrictEqual(wm.minimized.sort(), ['app_doom', 'app_minesweeper']);
   assert.ok(c.spoken[0].text.includes('2 игровых окон'));

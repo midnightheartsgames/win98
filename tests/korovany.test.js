@@ -35,8 +35,8 @@ const D = K.DATA;
   const texts = [...ORDER.map(f => read(`js/apps/korovany/${f}.js`)), read('js/apps/korovany-app.js')].join('\n');
   ok(!/Microsoft|Windows(?! NT)/.test(texts.replace(/Microsoft Sans Serif/g, '')), 'no real brand names in game text');
   const gm = read('js/game-manager.js');
-  ok(/korovany: \{\s*id: 'korovany',\s*steam: true/.test(gm), 'sold in Steam');
-  for (const f of ['js/desktop.js', 'js/taskbar.js', 'js/filesystem.js', 'js/apps/dialogs.js', 'js/apps/explorer.js']) ok(read(f).includes("isInstalled('korovany')") || read(f).includes('gmInstalled.includes(\'korovany\')'), f + ' gates korovany on install');
+  ok(/korovany_demo: \{\s*id: 'korovany_demo',\s*cdDemo: true/.test(gm) && (gm.match(/id: 'korovany_demo'/g) || []).length === 1, 'one Igromania CD demo entry');
+  for (const f of ['js/desktop.js', 'js/taskbar.js', 'js/filesystem.js', 'js/apps/dialogs.js', 'js/apps/explorer.js']) ok(read(f).includes("isInstalled('korovany_demo')") || read(f).includes('gmInstalled.includes(\'korovany_demo\')'), f + ' gates korovany_demo on install');
   ok(!/korovanyGranted/.test(gm), 'no granted flag');
 }
 

@@ -976,7 +976,7 @@
         '################################',
         '##WWWWWW##WWWWWW##WWWWWW##WWWW##',
         '##WWWWWW##WWWWWW##WWWWWW##WWWW##',
-        '#.............j....k..m........#',
+        '#.............j....k..m...h....#',
         '#...............w..............#',
         '#..............................#',
         '#..............................#',
@@ -992,7 +992,7 @@
       enemies: {},
       decor: [
         ['sconce', 8, 1], ['sconce', 9, 1], ['emblem', 16, 1], ['sconce', 24, 1], ['sconce', 25, 1],
-        ['door', 31, 6, 'r'], ['inlay', 14, 7], ['hackterm', 14, 3, 'jade'], ['hackterm', 19, 3, 'console'], ['hackterm', 22, 3, 'cw']
+        ['door', 31, 6, 'r'], ['inlay', 14, 7], ['hackterm', 14, 3, 'jade'], ['hackterm', 19, 3, 'console'], ['hackterm', 22, 3, 'cw'], ['hackterm', 26, 3, 'hd']
       ],
       marks: {
         v: { type: 'spawn' },
@@ -1000,7 +1000,8 @@
         w: { type: 'npc', who: 'silverwolf', script: 'lab_wolf', dir: 'down', if: 'lab_sw', ifNotParty: 'silverwolf' },
         j: { type: 'npc', who: 'terminal', ghost: true, script: 'lab_term_jade', dir: 'down', label: 'Нефрит' },
         k: { type: 'npc', who: 'terminal', ghost: true, script: 'lab_term_console', dir: 'down', label: 'Консоль' },
-        m: { type: 'npc', who: 'terminal', ghost: true, script: 'lab_term_cw', dir: 'down', label: 'Валютные войны' }
+        m: { type: 'npc', who: 'terminal', ghost: true, script: 'lab_term_cw', dir: 'down', label: 'Валютные войны' },
+        h: { type: 'npc', who: 'terminal', ghost: true, script: 'lab_term_hd', dir: 'down', label: 'Рубеж' }
       }
     },
     j_plains: {
@@ -3040,7 +3041,7 @@
     { map: 'express', name: 'Общий вагон', open: 'doom', text: 'Главный вагон Экспресса, где принимают гостей. Здесь терминал прыжков, симулятор и навигационный пульт, а Пом-Пом держит буфет.' },
     { map: 'express_cabin', name: 'Спальный вагон', open: 'doom', text: 'Вагон, где отдыхает экипаж. Архив Дань Хэна с Банком данных, комната Март 7 и запертые двери Химико и Вельта.' },
     { map: 'express_party', name: 'Вагон для вечеринок', open: 'doom', text: 'Бывший вагон для совещаний. Барная стойка, диваны у окон, гардероб Пом-Пом и игровой автомат. Сюда заглядывают гости Экспресса.' },
-    { map: 'express_lab', name: 'Испытательный вагон', hidden: true, text: 'Вагон за запертой дверью Вагона для вечеринок. Она открывается только Первопроходцу, который пришёл один. Серебряный Волк поставила здесь три терминала: первый выдаёт звёздный нефрит, второй открывает консоль отладки, третий запускает «Валютные войны».' }
+    { map: 'express_lab', name: 'Испытательный вагон', hidden: true, text: 'Вагон за запертой дверью Вагона для вечеринок. Она открывается только Первопроходцу, который пришёл один. Серебряный Волк поставила здесь четыре терминала: первый выдаёт звёздный нефрит, второй открывает консоль отладки, третий запускает «Валютные войны», четвёртый её собственную игру «Рубеж Экспресса».' }
   ];
   const EXPRESS_AREA = EXPRESS_AREAS[0];
   const expressArea = map => EXPRESS_AREAS.find(a => a.map === map) || null;

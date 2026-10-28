@@ -1,6 +1,6 @@
 # Корованы — Win 98 Edition
 
-A 3D action RPG built from Kirill's letter ("Я джва года хочу такую игру"). In the project fiction it is a 2000 release by the small studio «Джва Года Софт», made after Kirill sent them his idea. Game id `korovany`, sold only through the in-system Steam client (`steam: true`, $22.22, `C:\Games\Korovany\KOROVANY.EXE`). Not preinstalled, no setup outside Steam.
+A 3D action RPG built from Kirill's letter ("Я джва года хочу такую игру"). In the project fiction it is a 2000 release by the small studio «Джва Года Софт», made after Kirill sent them his idea. Game id `korovany_demo` (Корованы Demo), an Igromania CD demo (`cdDemo: true`, `D:\demo\korovanydemo.exe`, `C:\Games\Korovany\KOROVANY.EXE`). Not sold in Steam, not preinstalled.
 
 Every feature below traces back to a line of the letter. The letter is the spec; where it is vague the choice is written down here.
 
@@ -127,7 +127,7 @@ Gold. Faucets: caravan chests (30–200 gold plus goods to sell), corpses (5–4
 - Bodies of all actors, corpses, limbs, wagons and cows are transformed on the CPU into one dynamic buffer per frame.
 - Test `node tests/korovany.test.js` (`npm run test:korovany`, about 10 s): load order and zero comments, world (zones, roads, dense forest, walkable spots, paths into buildings), body capsules and aim height, severing, bleeding to death, the medic who bandages you, prosthetics and mobility modes, eyes, NPC duels and ragdolls, caravan robbing, shops, haggling, house, recruiting, reprimands and arrest, save and load, fast travel, three full campaign walkthroughs and three days of the director.
 - Browser checks: `node tools/korovany-shots.cjs <out> <steps.cjs>` (headless Edge with SwiftShader; helpers `kvShots.start(fac)`, `tp(x, z, yaw, pitch)`, `hour(h)`, `run(sec)`, `info()`). `KV_PAGE=index.html KV_READY='!!(window.winManager && window.appSteam)'` runs it on the desktop.
-- Steam screenshots: `node tools/steam-shots.cjs korovany` (recipe in `tools/steam-shots-recipes.cjs`).
+- CD shell screenshots: `node tools/steam-shots.cjs korovany_demo` (recipe in `tools/steam-shots-recipes.cjs`, output in `content/igromania/demos`).
 
 ## Pitfalls
 

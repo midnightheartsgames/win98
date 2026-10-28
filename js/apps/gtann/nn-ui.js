@@ -28,6 +28,7 @@
   const CAM_FOOT = ['ближе', 'обычная', 'дальше', 'сверху', 'от первого лица'];
   const CAM_CAR = ['ближе', 'обычная', 'дальше', 'сверху', 'из салона', 'с бампера'];
   const FP = 4, BUMPER = 5;
+  const THROW_SHOULDER = 0.85;
   N.CAM_FOOT = CAM_FOOT;
   N.CAM_CAR = CAM_CAR;
   N.CAM_FP = FP;
@@ -846,6 +847,7 @@
         tx = pl.x; ty = pl.y + 1.55; tz = pl.z;
         dist = 4.4 * dm;
         if (aiming) { const rx = Math.cos(yaw), rz = Math.sin(yaw); tx += rx * 0.6; tz += rz * 0.6; ty += 0.1; dist = 2.3; fov = 0.9; }
+        else if (pl.charging > 0 && W.throw) { const rx = Math.cos(yaw), rz = Math.sin(yaw); tx += rx * THROW_SHOULDER; tz += rz * THROW_SHOULDER; ty += 0.45; }
       }
       if (this.camMode === 3) {
         const h = v ? 38 + Math.abs(v.spd) * 0.8 : 26;
@@ -963,7 +965,7 @@
       const metro = inside && this.city.inMetro(cam.x, cam.z);
       const interior = metro ? 'metro' : inside;
       const env = N.envFor(w.clock, w.wx, this.settings.draw || 1, interior, metro ? this.metroEnv(cam) : null);
-      const lights = this.scene.fill({ world: w, game: this.demo ? null : g, cam, env, fx: this.fx, time: this.t, hideMarkers: !!g.cut, quality: this.settings.gfx, cars: this.settings.cars });
+      const lights = this.scene.fill({ world: w, game: this.demo ? null : g, cam, env, fx: this.fx, time: this.t, hideMarkers: !!g.cut, throwAid: !this.demo && !g.cut && this.settings.throwAid !== false, quality: this.settings.gfx, cars: this.settings.cars });
       const death = g.death && !this.demo ? { k: N.clamp(g.death.t / 1.4, 0, 1), tint: g.death.kind === 'busted' ? [0.55, 0.65, 1.0] : [0.7, 0.62, 0.6] } : null;
       const photo = this.photo.on ? this.photo.params(this.renderer.canvas.width, this.renderer.canvas.height) : null;
       if (photo && photo.flash) { if (lights.length >= N.MAX_LIGHTS) lights.pop(); lights.push(photo.flash); }
@@ -983,6 +985,7 @@
       };
       const tv = pl.veh && pl.veh.driver === pl && pl.veh.spec.turret && !g.cut ? pl.veh : null;
       if (tv && this.state === 'play') st.turret = this.turretState(tv);
+      if (!g.cut && !this.demo) st.throwAim = this.throwState(pl);
       if (st.crosshair && this.state === 'play') {
         const inp = { o: [cam.x, cam.y, cam.z] };
         const dx = cam.tx - cam.x, dy = cam.ty - cam.y, dz = cam.tz - cam.z, L = Math.hypot(dx, dy, dz);
@@ -999,6 +1002,19 @@
       const q = this.renderer.project(m.x + m.dx * d, m.y + m.dy * d, m.z + m.dz * d);
       const kx = this.hudc.width / this.glc.width, ky = this.hudc.height / this.glc.height;
       return { gx: q ? q.x * kx : null, gy: q ? q.y * ky : null, name: G.name, reload: G.radius ? v.reloadT / (T.reload || 6) : 0, hp: N.clamp(v.hp / v.maxHp, 0, 1) };
+    }
+
+    throwState(pl) {
+      const plan = pl.throwPlan;
+      if (!(pl.charging > 0) || !plan || pl.veh || pl.dead || !N.WEAPONS[pl.weapon].throw) return null;
+      const aid = this.settings.throwAid !== false;
+      let people = 0, kills = 0, cars = 0;
+      for (const h of plan.hits) {
+        if (h.e === pl) continue;
+        if (h.e.kind === 'veh') cars++;
+        else { people++; if (h.kill) kills++; }
+      }
+      return { charge: pl.charging, quick: N.throwCharge(N.QUICK_THROW), dist: Math.hypot(plan.x - pl.x, plan.z - pl.z), kind: plan.kind, aid, self: aid && plan.self, fizzle: aid && plan.fizzle, wet: aid && plan.wet, people: aid ? people : 0, kills: aid ? kills : 0, cars: aid ? cars : 0 };
     }
 
     forecast(kind) {

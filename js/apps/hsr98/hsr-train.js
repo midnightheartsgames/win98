@@ -205,16 +205,17 @@
       P.tri([3, -16, 13, -16, 11, -22, 5, -22], '#f6e4b8'); P(3, -16, 10, 1, '#c8a060'); P(5, -22, 6, 1, '#fff4d8');
     }, lights: () => [[8, -18, 22, '#ffd890', 0.35]] },
     hackterm: { w: 1, h: 1, up: 22, draw(P, v) {
-      const jade = v === 'jade', cw = v === 'cw', glow = jade ? '#4ef0a0' : cw ? '#ffd471' : '#5ad8ff';
+      const jade = v === 'jade', cw = v === 'cw', hd = v === 'hd', glow = jade ? '#4ef0a0' : cw ? '#ffd471' : hd ? '#ff7a5a' : '#5ad8ff';
       P.shadow(8, 15, 7, 2); P.box(1, 6, 14, 2, 6, '#2a2238', '#1a1424', C.purpleHi); P(2, 13, 12, 1, C.purpleDk);
       P(2, -16, 12, 22, '#120e1a'); P(2, -16, 12, 1, C.purpleHi); P(1, -14, 1, 20, C.purple); P(14, -14, 1, 20, C.purple);
       P(3, -14, 10, 12, '#05080c'); P(3, -14, 10, 1, glow);
       if (jade) { P.tri([8, -12, 11, -8, 8, -4, 5, -8], '#2aa070'); P.tri([8, -11, 10, -8, 8, -6, 6, -8], glow); P.dot(7, -9, '#e8fff4'); }
       else if (cw) { P.tri([8, -13, 11, -9, 8, -5, 5, -9], '#a8782a'); P.tri([8, -12, 10, -9, 8, -6, 8, -12], glow); P.dot(7, -10, '#fff4c8'); P(4, -4, 8, 1, '#5cff8a'); }
+      else if (hd) { P(4, -7, 8, 2, '#c8d4f0'); P(4, -7, 8, 1, '#ffd890'); P(11, -8, 1, 1, '#ffd890'); P(4, -5, 8, 1, '#3a4258'); P.dot(4, -13, glow); P.dot(7, -12, glow); P.dot(11, -13, glow); P.dot(5, -10, '#ff3a2a'); P.dot(10, -11, '#ff3a2a'); P(4, -3, 8, 1, '#5cff8a'); }
       else { P(4, -12, 2, 1, glow); P(7, -12, 4, 1, '#2f6f86'); P(4, -10, 6, 1, '#2f6f86'); P(4, -8, 3, 1, glow); P(8, -8, 1, 2, '#e8f8ff'); P(4, -6, 5, 1, '#2f6f86'); }
       P(3, 0, 10, 4, '#1a1424'); for (let i = 0; i < 4; i++) P(4 + i * 2, 1, 1, 1, i % 2 ? C.pink : glow);
       P(12, -19, 1, 4, C.purpleHi); P.dot(12, -20, C.pink);
-    }, lights: v => [[8, -8, 20, v === 'jade' ? '#4ef0a0' : v === 'cw' ? '#ffd471' : '#5ad8ff', 0.3, true]] },
+    }, lights: v => [[8, -8, 20, v === 'jade' ? '#4ef0a0' : v === 'cw' ? '#ffd471' : v === 'hd' ? '#ff7a5a' : '#5ad8ff', 0.3, true]] },
     term: { w: 1, h: 1, up: 16, draw(P, v) {
       const sim = v === 'sim';
       P.shadow(8, 15, 7, 2); P.box(2, 6, 12, 2, 6, C.navyHi, C.navy, C.gold); P(3, 13, 10, 1, C.goldDk);

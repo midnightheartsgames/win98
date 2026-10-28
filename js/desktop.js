@@ -41,6 +41,11 @@ class Desktop {
           if (parsed && typeof parsed === 'object') {
             delete parsed['digicharat'];
             delete parsed['Киномания 98.url'];
+            const renames = (window.gameManager && window.gameManager.demoRenames) || {};
+            Object.keys(renames).filter(id => parsed[id]).forEach(id => {
+              parsed[renames[id]] = parsed[renames[id]] || parsed[id];
+              delete parsed[id];
+            });
             return parsed;
           }
         }
@@ -341,23 +346,23 @@ class Desktop {
       if (window.gameManager.isInstalled('wolf3d')) {
         list.push({ id: 'wolf3d', title: 'Wolfenstein 3D', icon: 'wolf3d', action: () => window.appWolf3D && window.appWolf3D.open() });
       }
-      if (window.gameManager.isInstalled('quest')) {
-        list.push({ id: 'quest', title: 'LucasQuest 98', icon: 'lucas-quest', action: () => window.appScummQuest && window.appScummQuest.open() });
+      if (window.gameManager.isInstalled('quest_demo')) {
+        list.push({ id: 'quest_demo', title: 'LucasQuest 98 Demo', icon: 'lucas-quest', action: () => window.appScummQuest && window.appScummQuest.open() });
       }
       if (window.gameManager.isInstalled('stalker')) {
         list.push({ id: 'stalker', title: 'S.T.A.L.K.E.R.', icon: 'stalker', action: () => window.appStalker && window.appStalker.open() });
       }
-      if (window.gameManager.isInstalled('fallout2')) {
-        list.push({ id: 'fallout2', title: 'Fallout 2 Demo', icon: 'fallout2', action: () => window.appFallout2 && window.appFallout2.open() });
+      if (window.gameManager.isInstalled('fallout98_demo')) {
+        list.push({ id: 'fallout98_demo', title: 'Fallout 98 Demo', icon: 'fallout2', action: () => window.appFallout2 && window.appFallout2.open() });
       }
       if (window.gameManager.isInstalled('burnout')) {
         list.push({ id: 'burnout', title: 'Burnout Demo', icon: 'burnout', action: () => window.appBurnout && window.appBurnout.open() });
       }
-      if (window.gameManager.isInstalled('half-life')) {
-        list.push({ id: 'half-life', title: 'Half-Life 98', icon: 'half-life', action: () => window.appHalfLife && window.appHalfLife.open() });
+      if (window.gameManager.isInstalled('half-life_demo')) {
+        list.push({ id: 'half-life_demo', title: 'Half-Life 98 Demo', icon: 'half-life', action: () => window.appHalfLife && window.appHalfLife.open() });
       }
-      if (window.gameManager.isInstalled('neon-racer')) {
-        list.push({ id: 'neon-racer', title: 'Midnight Glide', icon: 'burnout', action: () => window.appNeonRacer && window.appNeonRacer.open() });
+      if (window.gameManager.isInstalled('neon-racer_demo')) {
+        list.push({ id: 'neon-racer_demo', title: 'Midnight Glide Demo', icon: 'burnout', action: () => window.appNeonRacer && window.appNeonRacer.open() });
       }
       if (window.gameManager.isInstalled('doom')) {
         list.push({ id: 'doom', title: 'DOOM 98', icon: 'doom', action: () => window.appDoom && window.appDoom.open() });
@@ -365,8 +370,8 @@ class Desktop {
       if (window.gameManager.isInstalled('serioussam')) {
         list.push({ id: 'serioussam', title: 'Serious Sam 98', icon: 'serioussam', action: () => window.appSeriousSam && window.appSeriousSam.open() });
       }
-      if (window.gameManager.isInstalled('stalker98')) {
-        list.push({ id: 'stalker98', title: 'S.T.A.L.K.E.R. 98', icon: 'stalker98', action: () => window.appStalker98 && window.appStalker98.open() });
+      if (window.gameManager.isInstalled('stalker98_demo')) {
+        list.push({ id: 'stalker98_demo', title: 'S.T.A.L.K.E.R. 98 Demo', icon: 'stalker98', action: () => window.appStalker98 && window.appStalker98.open() });
       }
       if (window.gameManager.isInstalled('moh98')) {
         list.push({ id: 'moh98', title: 'Medal of Honor 98', icon: 'moh98', action: () => window.appMoh98 && window.appMoh98.open() });
@@ -374,20 +379,20 @@ class Desktop {
       if (window.gameManager.isInstalled('cop98')) {
         list.push({ id: 'cop98', title: 'Зов Припяти 98', icon: 'cop98', action: () => window.appCop98 && window.appCop98.open() });
       }
-      if (window.gameManager.isInstalled('mc98')) {
-        list.push({ id: 'mc98', title: 'Minecraft 98', icon: 'mc98', action: () => window.appMc98 && window.appMc98.open() });
+      if (window.gameManager.isInstalled('mc98_demo')) {
+        list.push({ id: 'mc98_demo', title: 'Minecraft 98 Demo', icon: 'mc98', action: () => window.appMc98 && window.appMc98.open() });
       }
       if (window.gameManager.isInstalled('hsr98')) {
         list.push({ id: 'hsr98', title: 'Star Rail 98', icon: 'hsr98', action: () => window.appHsr98 && window.appHsr98.open() });
       }
-      if (window.gameManager.isInstalled('dao98')) {
-        list.push({ id: 'dao98', title: 'Dragon Age 98', icon: 'dao98', action: () => window.appDao98 && window.appDao98.open() });
+      if (window.gameManager.isInstalled('dao98_demo')) {
+        list.push({ id: 'dao98_demo', title: 'Dragon Age 98 Demo', icon: 'dao98', action: () => window.appDao98 && window.appDao98.open() });
       }
-      if (window.gameManager.isInstalled('dmc98')) {
-        list.push({ id: 'dmc98', title: 'Devil May Cry 4', icon: 'dmc98', action: () => window.appDmc98 && window.appDmc98.open() });
+      if (window.gameManager.isInstalled('dmc98_demo')) {
+        list.push({ id: 'dmc98_demo', title: 'Devil May Cry 98 Demo', icon: 'dmc98', action: () => window.appDmc98 && window.appDmc98.open() });
       }
-      if (window.gameManager.isInstalled('tekken3')) {
-        list.push({ id: 'tekken3', title: 'Tekken 3 98', icon: 'tekken3', action: () => window.appTekken3 && window.appTekken3.open() });
+      if (window.gameManager.isInstalled('tekken98_demo')) {
+        list.push({ id: 'tekken98_demo', title: 'Tekken 98 Demo', icon: 'tekken3', action: () => window.appTekken3 && window.appTekken3.open() });
       }
       if (window.gameManager.isInstalled('ow98')) {
         list.push({ id: 'ow98', title: 'Overwatch 98', icon: 'ow98', action: () => window.appOw98 && window.appOw98.open() });
@@ -413,8 +418,8 @@ class Desktop {
       if (window.gameManager.isInstalled('sammax201')) {
         list.push({ id: 'sammax201', title: 'Sam & Max 201', icon: 'sammax201', action: () => window.appSamMax201 && window.appSamMax201.open() });
       }
-      if (window.gameManager.isInstalled('sammax202')) {
-        list.push({ id: 'sammax202', title: 'Sam & Max 202', icon: 'sammax202', action: () => window.appSamMax202 && window.appSamMax202.open() });
+      if (window.gameManager.isInstalled('sammax202_demo')) {
+        list.push({ id: 'sammax202_demo', title: 'Sam & Max 202 Demo', icon: 'sammax202', action: () => window.appSamMax202 && window.appSamMax202.open() });
       }
       if (window.gameManager.isInstalled('bttf')) {
         list.push({ id: 'bttf', title: 'Back to the Future', icon: 'bttf', action: () => window.appBTTF && window.appBTTF.open() });
@@ -425,11 +430,11 @@ class Desktop {
       if (window.gameManager.isInstalled('forza')) {
         list.push({ id: 'forza', title: 'Forza Horizon', icon: 'forza', action: () => window.appForza && window.appForza.open() });
       }
-      if (window.gameManager.isInstalled('xiii')) {
-        list.push({ id: 'xiii', title: 'XIII', icon: 'xiii', action: () => window.appXiii && window.appXiii.open() });
+      if (window.gameManager.isInstalled('xiii_demo')) {
+        list.push({ id: 'xiii_demo', title: 'XIII Demo', icon: 'xiii', action: () => window.appXiii && window.appXiii.open() });
       }
-      if (window.gameManager.isInstalled('maxpayne')) {
-        list.push({ id: 'maxpayne', title: 'Max Payne', icon: 'maxpayne', action: () => window.appMaxPayne && window.appMaxPayne.open() });
+      if (window.gameManager.isInstalled('maxpayne_demo')) {
+        list.push({ id: 'maxpayne_demo', title: 'Max Payne Demo', icon: 'maxpayne', action: () => window.appMaxPayne && window.appMaxPayne.open() });
       }
       if (window.gameManager.isInstalled('gtann')) {
         list.push({ id: 'gtann', title: 'GTA: Нижний Сити', icon: 'gtann', action: () => window.appGtaNN && window.appGtaNN.open() });
@@ -443,14 +448,11 @@ class Desktop {
       if (window.gameManager.isInstalled('fallout')) {
         list.push({ id: 'fallout', title: 'Fallout', icon: 'fallout', action: () => window.appFallout && window.appFallout.open() });
       }
-      if (window.gameManager.isInstalled('falloutzp')) {
-        list.push({ id: 'falloutzp', title: 'Fallout: Запорожье', icon: 'falloutzp', action: () => window.appFalloutZP && window.appFalloutZP.open() });
+      if (window.gameManager.isInstalled('falloutzp_demo')) {
+        list.push({ id: 'falloutzp_demo', title: 'Fallout: Запорожье Demo', icon: 'falloutzp', action: () => window.appFalloutZP && window.appFalloutZP.open() });
       }
-      if (window.gameManager.isInstalled('korovany')) {
-        list.push({ id: 'korovany', title: 'Корованы', icon: 'korovany', action: () => window.appKorovany && window.appKorovany.open() });
-      }
-      if (window.gameManager.isInstalled('korovany')) {
-        list.push({ id: 'korovany', title: 'Корованы', icon: 'korovany', action: () => window.appKorovany && window.appKorovany.open() });
+      if (window.gameManager.isInstalled('korovany_demo')) {
+        list.push({ id: 'korovany_demo', title: 'Корованы Demo', icon: 'korovany', action: () => window.appKorovany && window.appKorovany.open() });
       }
       if (window.gameManager.isInstalled('catniss')) {
         list.push({ id: 'catniss', title: 'Catniss', icon: 'catniss', action: () => window.appCatniss && window.appCatniss.open() });
@@ -458,17 +460,17 @@ class Desktop {
       if (window.gameManager.isInstalled('plov')) {
         list.push({ id: 'plov', title: 'Хаято, Где плов?', icon: 'plov', action: () => window.appPlov && window.appPlov.open() });
       }
-      if (window.gameManager.isInstalled('homm1')) {
-        list.push({ id: 'homm1', title: 'Heroes of Might and Magic 98', icon: 'homm1', action: () => window.appHomm1 && window.appHomm1.open() });
+      if (window.gameManager.isInstalled('homm1_demo')) {
+        list.push({ id: 'homm1_demo', title: 'Heroes 98 Demo', icon: 'homm1', action: () => window.appHomm1 && window.appHomm1.open() });
       }
       if (window.gameManager.isInstalled('sims3')) {
         list.push({ id: 'sims3', title: 'The Sims 3', icon: 'sims3', action: () => window.appSims3 && window.appSims3.open() });
       }
-      if (window.gameManager.isInstalled('kotor98')) {
-        list.push({ id: 'kotor98', title: 'KOTOR 98', icon: 'kotor98', action: () => window.appKotor98 && window.appKotor98.open() });
+      if (window.gameManager.isInstalled('kotor98_demo')) {
+        list.push({ id: 'kotor98_demo', title: 'KOTOR 98 Demo', icon: 'kotor98', action: () => window.appKotor98 && window.appKotor98.open() });
       }
-      if (window.gameManager.isInstalled('hl2')) {
-        list.push({ id: 'hl2', title: 'Half-Life 2', icon: 'hl2', action: () => window.appHl2 && window.appHl2.open() });
+      if (window.gameManager.isInstalled('hl2_demo')) {
+        list.push({ id: 'hl2_demo', title: 'Half-Life 2 Demo', icon: 'hl2', action: () => window.appHl2 && window.appHl2.open() });
       }
       if (window.gameManager.isInstalled('quake3')) {
         list.push({ id: 'quake3', title: 'Quake III Arena', icon: 'quake3', action: () => window.appQuake3 && window.appQuake3.open() });

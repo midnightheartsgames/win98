@@ -2,9 +2,11 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const netscapeProxy = require('./js/netscape-proxy');
+const { createBugHandler } = require('./js/bugreport-local');
 
 const PORT = process.env.PORT || 8080;
 const PUBLIC_DIR = __dirname;
+const handleBugRequest = createBugHandler(PUBLIC_DIR);
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -29,6 +31,7 @@ const MIME_TYPES = {
 
 const server = http.createServer((req, res) => {
   if (netscapeProxy.handle(req, res)) return;
+  if (handleBugRequest(req, res)) return;
 
   let reqUrl = req.url.split('?')[0];
   try {

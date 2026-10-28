@@ -148,8 +148,29 @@
         if (widened.includes(s.map)) { s.x = null; s.y = null; }
         if (s.lastAnchor && widened.includes(s.lastAnchor.map)) s.lastAnchor = { map: s.lastAnchor.map, x: null, y: null };
       }
+    },
+    {
+      maps: [],
+      fix(s, f) { restoreFestivalObjective(s, f); }
     }
   ];
+
+  const FESTIVAL_STAGES = [
+    ['fm2_done', 'fm_sleep'], ['fm_pl_talk', 'fm_pl_bronya'], ['fm_pl_view', 'fm_pl_view'], ['fm_pillars', 'fm_kyle'],
+    ['fm2_fight', 'fm_rv_topaz'], ['fm_svarog', 'fm_rv_svarog'], ['fm_rv_road', 'fm_rv_road'], ['fm_bomb2', 'fm_rv_bomb2'],
+    ['fm_bomb1', 'fm_rv_bomb1'], ['fm_rivet_in', 'fm_gepard'], ['fm_decide', 'fm_decide'], ['fm_seele_o', 'fm_o_seele'],
+    ['fm_ow3&fm_uw3', 'fm_tie'], ['fm_ow3', 'fm_ow'], ['fm_uw3', 'fm_uw'], ['fm_ask', 'fm_letter2'], ['fm1_done', 'fm_mine2'],
+    ['fm_mine1', 'fm_mine1'], ['fm_numby', 'fm_numby'], ['fm_mine_in', 'fm_mine_in'], ['fm_gate', 'fm_gate'], ['fm_seele', 'fm_seele'],
+    ['fm_museum', 'fm_museum'], ['fm_fort1', 'fm_fort1'], ['fm0_done', 'fm_stroll'], ['fm_city', 'fm_city'], ['fm_topaz', 'fm_topaz'],
+    ['fm_board', 'fm_m2'], ['fm_hm', 'fm_hm'], ['fm_dh', 'fm_dh'], ['fm_m1', 'fm_m1']
+  ];
+  const scriptObjective = name => (H.SCRIPTS[name].find(st => st && st.obj) || {}).obj;
+  function restoreFestivalObjective(s, f) {
+    const reached = FESTIVAL_STAGES.findIndex(([cond]) => cond.split('&').every(k => f[k]));
+    if (reached < 0) return;
+    const savedStage = FESTIVAL_STAGES.findIndex(([, name]) => scriptObjective(name) === s.obj);
+    if (savedStage > reached) s.obj = scriptObjective(FESTIVAL_STAGES[reached][1]);
+  }
 
   function markFloor(def, x, y) {
     if (!def.car && !def.zone && !def.land) return def.floor || '.';

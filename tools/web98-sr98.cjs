@@ -13,22 +13,22 @@ const DIST_APK = path.join(ROOT, 'dist', APK_NAME);
 const mb = n => (n / 1048576).toFixed(1) + ' MB';
 
 function apkVersion() {
-  const m = fs.readFileSync(path.join(__dirname, 'hsr98-apk.cjs'), 'utf8').match(/const VERSION_NAME = '([^']+)'/);
-  if (!m) throw new Error('VERSION_NAME not found in tools/hsr98-apk.cjs');
+  const m = fs.readFileSync(path.join(ROOT, 'js', 'apps', 'hsr98', 'hsr-core.js'), 'utf8').match(/const VERSION = '([^']+)'/);
+  if (!m) throw new Error('VERSION not found in js/apps/hsr98/hsr-core.js');
   return m[1];
 }
 
-function buildPlay() {
-  const r = build(PLAY);
+function buildPlay(version) {
+  const r = build(PLAY, 'web', version);
   const html = fs.readFileSync(path.join(PLAY, 'index.html'), 'utf8');
   const scripts = [...html.matchAll(/<script src="(game\/[^"]+)"><\/script>/g)].map(m => m[1]).filter(s => s !== 'game/touch.js');
   const gameBytes = scripts.reduce((sum, s) => sum + fs.statSync(path.join(PLAY, s)).size, 0);
   return { r, scripts, gameBytes };
 }
 
-function buildApk(skip) {
+function buildApk(skip, version) {
   if (!skip) {
-    const run = spawnSync(process.execPath, [path.join(__dirname, 'hsr98-apk.cjs')], { cwd: ROOT, stdio: 'inherit' });
+    const run = spawnSync(process.execPath, [path.join(__dirname, 'hsr98-apk.cjs'), '--version', version], { cwd: ROOT, stdio: 'inherit' });
     if (run.status !== 0) console.warn('APK build failed, using the existing ' + path.relative(ROOT, DIST_APK));
   }
   if (!fs.existsSync(DIST_APK)) throw new Error(DIST_APK + ' is missing: run npm run build:hsr98-apk');
@@ -55,10 +55,12 @@ function writeIndex(scripts, info) {
 
 function main() {
   const skipApk = process.argv.includes('--no-apk');
-  const play = buildPlay();
-  const apkBytes = buildApk(skipApk);
+  const v = process.argv.indexOf('--version');
+  const version = v >= 0 ? process.argv[v + 1] : 'dev';
+  const play = buildPlay(version);
+  const apkBytes = buildApk(skipApk, version);
   copyShots();
-  const info = { version: apkVersion(), apk: APK_NAME, apkBytes, gameBytes: play.gameBytes };
+  const info = { version: version === 'dev' ? apkVersion() : version, apk: APK_NAME, apkBytes, gameBytes: play.gameBytes };
   writeIndex(play.scripts, info);
   stamp();
   console.log('sr98 site -> ' + path.relative(ROOT, SITE));

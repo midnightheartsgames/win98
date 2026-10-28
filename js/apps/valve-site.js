@@ -205,7 +205,12 @@ class ValveSite {
 
     installedCount() {
         const gm = this.gm();
-        return gm ? VLV_PRODUCT_IDS.filter(id => gm.isInstalled(id)).length : 0;
+        return gm ? VLV_PRODUCT_IDS.filter(id => gm.isInstalled(this.gameId(id))).length : 0;
+    }
+
+    gameId(projectId) {
+        const proj = this.project(projectId);
+        return proj && proj.gameId ? proj.gameId : projectId;
     }
 
     exeName(proj) {
@@ -214,14 +219,15 @@ class ValveSite {
 
     steamDownload(projectId) {
         const steam = window.appSteam;
-        const dl = steam && steam.downloads && typeof steam.downloads.get === 'function' ? steam.downloads.get(projectId) : null;
+        const dl = steam && steam.downloads && typeof steam.downloads.get === 'function' ? steam.downloads.get(this.gameId(projectId)) : null;
         if (!dl || !dl.totalKB) return null;
         return { pct: Math.min(100, Math.floor(dl.doneKB / dl.totalKB * 100)), paused: !!dl.paused };
     }
 
     owns(gm, projectId) {
-        if (typeof gm.ownsOnSteam === 'function') return gm.ownsOnSteam(projectId);
-        return typeof gm.isPurchased === 'function' && gm.isPurchased(projectId);
+        const gameId = this.gameId(projectId);
+        if (typeof gm.ownsOnSteam === 'function') return gm.ownsOnSteam(gameId);
+        return typeof gm.isPurchased === 'function' && gm.isPurchased(gameId);
     }
 
     getProjectStatusInfo(projectId) {
@@ -232,8 +238,12 @@ class ValveSite {
             if (gm && gm.isDownloaded('steam')) return { state: 'downloaded', text: 'SteamInstall.exe лежит в папке Downloads', button: 'Запустить SteamInstall.exe' };
             return { state: 'none', text: 'Не установлен', button: 'Скачать на steampowered.com' };
         }
+        if (proj && proj.cdPath) {
+            if (gm && gm.isInstalled(this.gameId(projectId))) return { state: 'installed', text: `Установлено: ${proj.exePath}`, button: `Запустить ${this.exeName(proj)}` };
+            return { state: 'none', text: `Не установлено. Демоверсия на компакт-диске «Игромании»: ${proj.cdPath}`, button: 'Демоверсия на диске «Игромании»' };
+        }
         if (!gm) return { state: 'none', text: 'Есть в магазине Steam', button: 'Открыть в Steam' };
-        if (gm.isInstalled(projectId)) return { state: 'installed', text: `Установлено: ${proj.exePath}`, button: `Запустить ${this.exeName(proj)}`, steamLink: true };
+        if (gm.isInstalled(this.gameId(projectId))) return { state: 'installed', text: `Установлено: ${proj.exePath}`, button: `Запустить ${this.exeName(proj)}`, steamLink: true };
         const dl = this.steamDownload(projectId);
         if (dl) return { state: 'downloading', text: `Загружается в Steam: ${dl.pct}%${dl.paused ? ', пауза' : ''}`, button: 'Открыть Steam' };
         if (this.owns(gm, projectId)) return { state: 'owned', text: 'Куплено, ещё не загружено', button: 'Загрузить в Steam' };
@@ -279,7 +289,7 @@ class ValveSite {
             return;
         }
         const gm = this.gm();
-        if (gm && typeof gm.showInSteam === 'function') gm.showInSteam(projectId);
+        if (gm && typeof gm.showInSteam === 'function') gm.showInSteam(this.gameId(projectId));
     }
 
     launchGame(projectId) {
@@ -289,8 +299,11 @@ class ValveSite {
         }
         const gm = this.gm();
         if (!gm) return;
-        if (gm.isInstalled(projectId)) this.launchFromCatalog(projectId);
-        else gm.showInSteam(projectId);
+        const gameId = this.gameId(projectId);
+        const proj = this.project(projectId);
+        if (gm.isInstalled(gameId)) this.launchFromCatalog(gameId);
+        else if (proj && proj.cdPath) gm.showOnCd(gameId);
+        else gm.showInSteam(gameId);
     }
 
     setShot(projectId, index) {
@@ -848,7 +861,7 @@ class ValveSite {
         return `
             <div class="vlv-pad">
                 <h1 class="vlv-h1">Продукты Valve</h1>
-                <p class="vlv-intro">Четыре продукта для Win 98. Игры продаются и обновляются только через Steam: купите игру в клиенте, и он сам скачает и установит её в C:\\Games. Сам клиент Steam бесплатен, его установщик лежит на <a data-url="http://www.steampowered.com" href="#">www.steampowered.com</a>.</p>
+                <p class="vlv-intro">Четыре продукта для Win 98. Dota 98 продаётся и обновляется только через Steam: купите игру в клиенте, и он сам скачает и установит её в C:\\Games. Демоверсии Half-Life 98 и Half-Life 2 записаны на компакт-диск журнала «Игромания»: вставьте его в привод D: и запустите установщик из папки D:\\demo. Сам клиент Steam бесплатен, его установщик лежит на <a data-url="http://www.steampowered.com" href="#">www.steampowered.com</a>.</p>
                 <table class="vlv-ledger" cellspacing="0" cellpadding="0">${rows}</table>
                 <h2 class="vlv-h2">Что нужно компьютеру</h2>
                 <table class="vlv-matrix" cellspacing="0">
@@ -899,6 +912,12 @@ class ValveSite {
             </table>`;
     }
 
+    renderBuyNote(proj) {
+        if (proj.id === 'steam') return '';
+        if (proj.cdPath) return `<div class="vlv-buy-note">Демоверсия на компакт-диске журнала «Игромания»: <code>${this.escapeHtml(proj.cdPath)}</code>. Мастер установки на диске скопирует игру в C:\\Games.</div>`;
+        return '<div class="vlv-buy-note">Продаётся только в клиенте Steam.</div>';
+    }
+
     renderGameDetail(projectId) {
         const data = this.getData();
         const proj = this.project(projectId) || this.project('hl2') || (data.projects || [])[0];
@@ -931,7 +950,7 @@ class ValveSite {
                             <div class="vlv-buy-st vlv-st-${st.state}">${this.escapeHtml(st.text)}</div>
                             ${this.productButton(proj.id, st)}
                             ${st.steamLink ? `<div class="vlv-buy-alt"><a href="#" data-vlv="steamPage" data-id="${proj.id}">Страница игры в Steam</a></div>` : ''}
-                            ${proj.id === 'steam' ? '' : '<div class="vlv-buy-note">Продаётся только в клиенте Steam.</div>'}
+                            ${this.renderBuyNote(proj)}
                         </div>
                         <table class="vlv-facts" cellspacing="0">
                             <tr><th>Файл</th><td><code>${this.escapeHtml(proj.exePath)}</code></td></tr>

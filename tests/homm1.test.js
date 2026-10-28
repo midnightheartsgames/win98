@@ -54,8 +54,8 @@ function testCodeAndStyle() {
   const appSrc = fs.readFileSync(appFile, 'utf8');
   ok(!/\/\/|\/\*/.test(appSrc), 'zero comments in homm1-app.js');
   ok(!/\bMicrosoft\b|\bWindows\b/.test(appSrc), 'naming rule in homm1-app.js');
-  ok(fs.existsSync(path.join(ROOT, 'content/steam/homm1-1.jpg')), 'steam shot 1 exists');
-  ok(fs.existsSync(path.join(ROOT, 'content/steam/homm1-2.jpg')), 'steam shot 2 exists');
+  ok(fs.existsSync(path.join(ROOT, 'content/igromania/demos/homm1_demo-1.jpg')), 'CD demo shot 1 exists');
+  ok(fs.existsSync(path.join(ROOT, 'content/igromania/demos/homm1_demo-2.jpg')), 'CD demo shot 2 exists');
   ok(fs.existsSync(path.join(ROOT, 'homm1.html')), 'standalone homm1.html exists');
   ok(fs.existsSync(path.join(ROOT, 'HOMM1-98.md')), 'HOMM1-98.md docs exist');
 

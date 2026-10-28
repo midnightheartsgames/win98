@@ -12,6 +12,7 @@ global.localStorage = {
 
 let lastNotepad = null;
 let lastSteam = null;
+let lastCd = null;
 let lastLaunch = null;
 const dialogs = [];
 const vfsFiles = new Map();
@@ -47,6 +48,7 @@ window.gameManager.isInstalled = id => installed.has(id);
 window.gameManager.isPurchased = id => owned.has(id);
 window.gameManager.ownsOnSteam = id => owned.has(id);
 window.gameManager.showInSteam = id => { lastSteam = id; };
+window.gameManager.showOnCd = id => { lastCd = id; };
 
 eval(read('js/apps/retro-sites.js'));
 eval(read('js/apps/gsc-data.js'));
@@ -191,21 +193,27 @@ test('Every page parses to its own view and chrome pages share the header, navig
   });
 });
 
-test('All 3 S.T.A.L.K.E.R. games match the Steam catalog and verified gameplay facts', () => {
+test('S.T.A.L.K.E.R. games match the catalog: two in Steam, the 3D one as an Igromania CD demo', () => {
   const expectedIds = ['stalker', 'stalker98', 'cop98'];
   assert.deepStrictEqual(data.games.map(g => g.id), expectedIds);
+  assert.strictEqual(data.games.find(g => g.id === 'stalker98').demo, 'stalker98_demo');
 
   data.games.forEach(g => {
     const entry = site.getGameCatalogEntry(g.id);
-    const cat = window.gameManager.catalog[g.id];
+    const gmId = g.demo || g.id;
+    const cat = window.gameManager.catalog[gmId];
+    assert.strictEqual(entry.gmId, gmId, `gmId ${g.id}`);
+    assert.strictEqual(Boolean(cat.steam), !g.demo, `steam ${g.id}`);
+    assert.strictEqual(Boolean(cat.cdDemo), Boolean(g.demo), `cdDemo ${g.id}`);
     assert.strictEqual(entry.title, cat.title, `title ${g.id}`);
     assert.strictEqual(entry.priceDisplay, cat.priceDisplay, `price ${g.id}`);
     assert.strictEqual(entry.exe, cat.targetExe, `exe ${g.id}`);
     assert.strictEqual(entry.fileSize, cat.fileSize, `fileSize ${g.id}`);
     assert.strictEqual(g.sysreq.length, 5, `sysreq ${g.id}`);
     assert.ok(g.pick && g.finale && g.needs3d && g.sector, `matrix fields ${g.id}`);
-    assert.ok(fs.existsSync(path.join(root, `content/steam/${g.id}-1.jpg`)), `shot 1 ${g.id}`);
-    assert.ok(fs.existsSync(path.join(root, `content/steam/${g.id}-2.jpg`)), `shot 2 ${g.id}`);
+    const shot = n => g.demo ? `content/igromania/demos/${gmId}-${n}.jpg` : `content/steam/${g.id}-${n}.jpg`;
+    assert.ok(fs.existsSync(path.join(root, shot(1))), `shot 1 ${g.id}`);
+    assert.ok(fs.existsSync(path.join(root, shot(2))), `shot 2 ${g.id}`);
   });
 
   const stalkerText = JSON.stringify(data.games.find(g => g.id === 'stalker'));
@@ -214,7 +222,7 @@ test('All 3 S.T.A.L.K.E.R. games match the Steam catalog and verified gameplay f
   });
 
   const stalker98Text = JSON.stringify(data.games.find(g => g.id === 'stalker98'));
-  ['XR98.EXE', '22.6 MB', '$32.99', '3000 RU', 'Медузы', 'КПК Копателя', 'Петрухи'].forEach(fact => {
+  ['XR98.EXE', '22.6 MB', 'stalker98demo.exe', '3000 RU', 'Медузы', 'КПК Копателя', 'Петрухи'].forEach(fact => {
     assert.ok(stalker98Text.includes(fact), `stalker98 fact: ${fact}`);
   });
 
@@ -282,7 +290,8 @@ test('Games matrix and game pages reflect Steam store, owned and installed state
 
   const matrix = browse(base + '/games');
   assert.ok(matrix.html.includes('Да: 3dfx Voodoo, Riva TNT или Voodoo2'));
-  assert.ok(matrix.html.includes('1 ч 58 мин'));
+  assert.ok(matrix.html.includes(site.downloadTimes('9.8 MB')[2][1]));
+  assert.ok(matrix.html.includes('не нужно, есть на CD «Игромании»'));
   data.games.forEach(g => assert.ok(matrix.html.includes(site.esc(g.pick)), `pick ${g.id}`));
 
   window.gameManager.catalog.cop98.launch = () => { lastLaunch = 'cop98'; };
@@ -321,6 +330,47 @@ test('Games matrix and game pages reflect Steam store, owned and installed state
   assert.ok(vfsFiles.get('My Computer\\C:\\My Documents\\GSC_Dossier_cop98.txt').includes('СИСТЕМНЫЕ ТРЕБОВАНИЯ'));
   installed.clear();
   owned.clear();
+});
+
+test('S.T.A.L.K.E.R. 98 is a demo on the Igromania CD: no price, no Steam, CD dialog or launch', () => {
+  installed.clear();
+  owned.clear();
+  lastSteam = null;
+  lastCd = null;
+  lastLaunch = null;
+
+  const all = JSON.stringify(data);
+  assert.ok(!all.includes('$32.99'), 'no price for the demo');
+  assert.ok(!all.includes('Все три игры продаются'), 'no claim that all three are sold in Steam');
+  assert.ok(!site.buildArticlePlainText(data.news[0]).includes('Все три игры'), 'press release footer lists the demo apart');
+
+  const home = browse(base);
+  assert.ok(home.html.includes('content/igromania/demos/stalker98_demo-1.jpg'));
+  assert.ok(home.html.includes('btn-gsc-game-primary" data-game-id="stalker98_demo"'));
+  assert.ok(home.html.includes('Демоверсия на компакт-диске журнала «Игромания»: D:\\demo\\stalker98demo.exe'));
+
+  const matrix = browse(base + '/games');
+  assert.ok(matrix.html.includes('демоверсия, бесплатно на CD «Игромании»'));
+  assert.ok(matrix.html.includes('Купить в Steam ($36.99)') && matrix.html.includes('Купить в Steam ($29.99)'));
+
+  let env = browse(base + '/game?id=stalker98');
+  assert.ok(env.html.includes('Демоверсия на диске «Игромании»'));
+  assert.ok(!/Купить в Steam|Цена в Steam|клиент Steam|Сколько качать/.test(env.html), 'demo page has no Steam purchase');
+  assert.ok(env.html.includes('content/igromania/demos/stalker98_demo-2.jpg'));
+  env.click('.btn-gsc-game-primary[data-game-id]', 'gameId', 'stalker98_demo');
+  assert.strictEqual(lastCd, 'stalker98_demo');
+  assert.strictEqual(lastSteam, null);
+
+  window.gameManager.catalog.stalker98_demo.launch = () => { lastLaunch = 'stalker98_demo'; };
+  installed.add('stalker98_demo');
+  env = browse(base + '/game?id=stalker98');
+  assert.ok(env.html.includes('Запустить XR98.EXE'));
+  assert.ok(!env.html.includes('btn-gsc-steam'));
+  env.click('.btn-gsc-game-primary[data-game-id]', 'gameId', 'stalker98_demo');
+  assert.strictEqual(lastLaunch, 'stalker98_demo');
+  env.click('.btn-gsc-dossier-notepad[data-game-id]', 'gameId', 'stalker98');
+  assert.ok(lastNotepad.content.includes('D:\\demo\\stalker98demo.exe') && !lastNotepad.content.includes('Цена в Steam'));
+  installed.clear();
 });
 
 test('Engineering notes are a server directory index with plain 76-column text files', () => {

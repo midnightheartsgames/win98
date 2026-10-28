@@ -2,7 +2,7 @@
 
 What *Half-Life 2* could have been if Valve had shipped it in November 2000: the whole fourteen-chapter journey from the City 17 train station to Breen's reactor, built for a Pentium II with a 16 MB accelerator. It renders at 320x240 to 800x600 through a first-generation 3D card (WebGL) or a point-sampled "software" mode, uses baked vertex lighting, 16-bit ordered dithering, fog, blocky low-poly models and loading screens between maps. Physics and the gravity gun stay, because they are the reason the game exists. Written from scratch for the Win 98 desktop; it shares no code or assets with *Half-Life 98* or any other game in this project.
 
-- Buy and download it in the Steam client (`hl2`, $49.99). It is never preinstalled.
+- Igromania CD demo (`hl2_demo`, Half-Life 2 Demo, `D:\demo\hl2demo.exe`), installed by the CD's own setup wizard. Not sold in Steam, never preinstalled.
 - After installing: desktop icon, Start menu, Run (`hl2`, `hl2.exe`, `half-life 2`, `халф-лайф 2`, `гордон`), `C:\Games\HL2\HL2.EXE`.
 - Standalone page: `hl2.html` (exposes `window.hlui`).
 - Tests: `npm run test:hl2` (`node tests/hl2.test.js`, about 3 s, 20 tests including a scripted run of every chapter).

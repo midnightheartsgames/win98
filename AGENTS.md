@@ -67,9 +67,28 @@ show desktop icons, Start menu items and C:\Games files only when gameManager.is
 when the game is not installed, point the player to Steam (gameManager.showInSteam(id)), never to a setup wizard or another web store;
 do not create new web stores for games; the old RetroGame Store (www.buygames98.com) was removed on purpose.
 
-Exception: demos shipped on the Igromania CD (D:) keep their CD installers.
+Exception: demos shipped on the Igromania CD (D:) keep their CD installers. The CD shell (js/apps/igroman.js) lists only demos that really install: Burnout, NHL 98, World Cup 98 and the project games moved there from Steam. Their catalog entries have cdDemo: true and no steam flag, the moved ones have ids ending in `_demo` and titles ending in Demo, installers sit in D:\demo (getIgromaniaCdTree in js/filesystem.js), screenshots live in content/igromania/demos/<id>-<n>.jpg (node tools/steam-shots.cjs <id> writes `_demo` ids there), and not-installed paths call gameManager.showOnCd(id) instead of showInSteam.
 
 Exception: Honkai: Star Rail 98 is free and can also be downloaded from its official site http://hsr.hoyoverse.com (js/apps/hsr-site.js). The site saves StarRail98_Setup.exe to Downloads, and its own setup wizard installs the game and adds it to the Steam library. Steam sells it for free as well. No other game gets a download outside Steam.
+
+Bug Reports
+
+Players and the developer send bug reports with F10 (Ctrl+F10 in every program) in the system and F9 in Honkai: Star Rail 98. BUGREPORT.md describes the whole system. Every report ends up in bugreports/<id>/ (report.json, report.md, shot*.png or .jpg, save.json.gz, status.json); this folder is never committed.
+
+When the user asks to look at a report ("разбери BR-261027-7K3Q", "разбери последний баг", "разбери новые баги"):
+
+run node tools/bugs.cjs pull first (it needs the token in %USERPROFILE%\.win98-bugs.json);
+read bugreports/<id>/report.md and look at shot.png, shot-marked.png (the player's red frames) and shot-window.png when present;
+check the HEAD line in report.md: if files changed after the build, first check whether the bug is already fixed;
+reproduce with node tools/bugs.cjs repro <id> --headless and read repro.png and repro.log; it loads the report's save (and the live HSR state) on port 8091 without touching the user's own saves;
+fix the bug by the usual project rules and add a test for it when one is possible;
+then run node tools/bugs.cjs status <id> fixed --in <version> --note "<what was fixed, one short sentence for the player>"; use duplicate --dup <id>, notabug or wontfix when they fit. Reports marked «F7/F8» come from saves that used the debug keys.
+
+Keep the keys free: F10 and Ctrl+F10 belong to the report in the system, F9 to the report in HSR 98. A new game that really needs F10 goes into F10_OWNERS in js/apps/bugreport.js; nothing may use Ctrl+F10, and HSR may not use F9.
+
+When a new app or game stores data, its storage keys go into js/apps/backup-catalog.js; the report window then offers to attach that save by itself. Add a "Где" adapter in js/apps/bugreport-where.js only when a real report needed more detail than the window title.
+
+The receiver runs on the mini PC (tools/bugs/receiver.cjs, /opt/bug-receiver, service bug-receiver, secrets in /etc/bug-receiver.env). To update it, the user copies the file with scp to /tmp and runs sudo cp to /opt/bug-receiver/ and sudo systemctl restart bug-receiver; tests/bug-receiver.test.js covers it.
 
 Naming: Microslop and Win
 

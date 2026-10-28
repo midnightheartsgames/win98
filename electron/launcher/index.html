@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Microslop Win 98</title>
+  <link rel="stylesheet" href="../../css/win98-base.css">
+  <link rel="stylesheet" href="../../css/window.css">
+  <link rel="stylesheet" href="launcher.css">
+</head>
+<body>
+  <div class="win-window active lw" id="lw">
+    <div class="win-titlebar lw-drag">
+      <div class="win-titlebar-left">
+        <div class="win-titlebar-icon icon-small" id="t-icon"></div>
+        <div class="win-titlebar-title">Microslop Win 98</div>
+      </div>
+      <div class="win-titlebar-controls lw-nodrag">
+        <button class="win-control-btn" id="b-min" tabindex="-1"></button>
+        <button class="win-control-btn" id="b-close" tabindex="-1"></button>
+      </div>
+    </div>
+    <div class="win-window-body lw-body">
+      <fieldset class="lw-group lw-state">
+        <legend id="l-state"></legend>
+        <div class="lw-state-icon" id="s-icon"></div>
+        <div class="lw-state-text" aria-live="polite">
+          <div class="lw-head" id="s-head"></div>
+          <div id="s-line"></div>
+          <div class="lw-progress" id="s-progress" hidden>
+            <div class="lw-bar"><div class="lw-bar-fill" id="s-fill"></div></div>
+            <div id="s-count"></div>
+          </div>
+          <div class="lw-sub" id="s-sub"></div>
+          <label class="lw-check" id="s-run-row" hidden><input type="checkbox" id="s-run"> <span id="s-run-text"></span></label>
+          <div class="lw-warn" id="s-warn" hidden></div>
+        </div>
+        <div class="lw-state-buttons" id="s-buttons"></div>
+      </fieldset>
+      <fieldset class="lw-group lw-feed">
+        <legend id="l-feed"></legend>
+        <div class="lw-list bevel-inset" id="list" role="listbox" tabindex="0"></div>
+        <div class="lw-text bevel-inset" id="text" tabindex="0"></div>
+      </fieldset>
+      <div class="lw-actions">
+        <button class="win-btn" id="b-params"></button>
+        <button class="win-btn is-default" id="b-start"></button>
+      </div>
+    </div>
+    <div class="win-statusbar">
+      <div class="win-status-pane grow" id="st-left"></div>
+      <div class="win-status-pane" id="st-right"></div>
+    </div>
+  </div>
+  <div class="lw-modal" id="modal" hidden></div>
+  <script src="../../js/icons.js"></script>
+  <script src="launcher.js"></script>
+</body>
+</html>

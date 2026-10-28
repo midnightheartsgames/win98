@@ -48,7 +48,7 @@ class Game {
 N.Game=Game;
 })(globalThis.NeonRacer=globalThis.NeonRacer||{});
 class AppNeonRacer {
- open(){const id='app_neon_racer';if(window.winManager.windows.has(id)){window.winManager.restoreWindow(id);return;}const content=document.createElement('div');window.winManager.createWindow({id,title:'Midnight Glide — Underground Racing',icon:'burnout',width:680,height:580,content,onClose:()=>{this.game?.destroy();this.game=null;}});this.game=new NeonRacer.Game(content);this.game.onExit=()=>window.winManager.closeWindow(id);}
+ open(){const id='app_neon_racer';if(window.winManager.windows.has(id)){window.winManager.restoreWindow(id);return;}const content=document.createElement('div');window.winManager.createWindow({id,title:'Midnight Glide Demo — Underground Racing',icon:'burnout',width:680,height:580,content,onClose:()=>{this.game?.destroy();this.game=null;}});this.game=new NeonRacer.Game(content);this.game.onExit=()=>window.winManager.closeWindow(id);}
 }
 window.appNeonRacer=new AppNeonRacer();
 

@@ -753,6 +753,14 @@ body:has(.window[open]) {
   font-size: 0.95rem;
 }
 
+.window-cd {
+  margin-top: 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--ink);
+  background: var(--tip);
+  font-size: 0.95rem;
+}
+
 .window-shots {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
@@ -770,6 +778,10 @@ body:has(.window[open]) {
   border: 2px solid;
   border-color: var(--bevel-shadow) var(--bevel-light) var(--bevel-light) var(--bevel-shadow);
   background: var(--ink);
+}
+
+.window-shots img.is-loading {
+  visibility: hidden;
 }
 
 .window-shots figcaption {

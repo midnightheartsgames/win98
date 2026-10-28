@@ -227,6 +227,14 @@ class Taskbar {
                       <div class="start-menu-item-icon">${Icons['backup']}</div>
                       <div class="start-menu-item-text">${t('app.backup')}</div>
                     </div>
+                    <div class="start-menu-item" data-action="bugreport">
+                      <div class="start-menu-item-icon">${Icons['bugreport']}</div>
+                      <div class="start-menu-item-text">${t('app.bugreport')}</div>
+                    </div>
+                    <div class="start-menu-item" data-action="bugreport-list">
+                      <div class="start-menu-item-icon">${Icons['bugreport']}</div>
+                      <div class="start-menu-item-text">${t('app.bugreportList')}</div>
+                    </div>
                     <div class="start-menu-item" data-action="cleanmgr">
                       <div class="start-menu-item-icon">${Icons['cleanmgr']}</div>
                       <div class="start-menu-item-text">${t('app.cleanmgr')}</div>
@@ -361,20 +369,20 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['wolf3d']}</div>
                   <div class="start-menu-item-text">Wolfenstein 3D</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('quest')) ? `
-                <div class="start-menu-item" data-action="quest">
+                ${(window.gameManager && window.gameManager.isInstalled('quest_demo')) ? `
+                <div class="start-menu-item" data-action="quest_demo">
                   <div class="start-menu-item-icon">${Icons['lucas-quest']}</div>
-                  <div class="start-menu-item-text">LucasQuest 98</div>
+                  <div class="start-menu-item-text">LucasQuest 98 Demo</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('stalker')) ? `
                 <div class="start-menu-item" data-action="stalker">
                   <div class="start-menu-item-icon">${Icons['stalker']}</div>
                   <div class="start-menu-item-text">S.T.A.L.K.E.R.</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('fallout2')) ? `
-                <div class="start-menu-item" data-action="fallout2">
+                ${(window.gameManager && window.gameManager.isInstalled('fallout98_demo')) ? `
+                <div class="start-menu-item" data-action="fallout98_demo">
                   <div class="start-menu-item-icon">${Icons['fallout2']}</div>
-                  <div class="start-menu-item-text">Fallout 2 Demo</div>
+                  <div class="start-menu-item-text">Fallout 98 Demo</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('burnout')) ? `
                 <div class="start-menu-item" data-action="burnout">
@@ -391,40 +399,40 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['serioussam']}</div>
                   <div class="start-menu-item-text">Serious Sam 98</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('stalker98')) ? `
-                <div class="start-menu-item" data-action="stalker98">
+                ${(window.gameManager && window.gameManager.isInstalled('stalker98_demo')) ? `
+                <div class="start-menu-item" data-action="stalker98_demo">
                   <div class="start-menu-item-icon">${Icons['stalker98']}</div>
-                  <div class="start-menu-item-text">S.T.A.L.K.E.R. 98</div>
+                  <div class="start-menu-item-text">S.T.A.L.K.E.R. 98: Тень Чернобыля Demo</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('cop98')) ? `
                 <div class="start-menu-item" data-action="cop98">
                   <div class="start-menu-item-icon">${Icons['cop98']}</div>
                   <div class="start-menu-item-text">S.T.A.L.K.E.R.: Зов Припяти 98</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('mc98')) ? `
-                <div class="start-menu-item" data-action="mc98">
+                ${(window.gameManager && window.gameManager.isInstalled('mc98_demo')) ? `
+                <div class="start-menu-item" data-action="mc98_demo">
                   <div class="start-menu-item-icon">${Icons['mc98']}</div>
-                  <div class="start-menu-item-text">Minecraft 98</div>
+                  <div class="start-menu-item-text">Minecraft 98 Demo</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('hsr98')) ? `
                 <div class="start-menu-item" data-action="hsr98">
                   <div class="start-menu-item-icon">${Icons['hsr98']}</div>
                   <div class="start-menu-item-text">Honkai: Star Rail 98</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('dao98')) ? `
-                <div class="start-menu-item" data-action="dao98">
+                ${(window.gameManager && window.gameManager.isInstalled('dao98_demo')) ? `
+                <div class="start-menu-item" data-action="dao98_demo">
                   <div class="start-menu-item-icon">${Icons['dao98']}</div>
-                  <div class="start-menu-item-text">Dragon Age: Origins 98</div>
+                  <div class="start-menu-item-text">Dragon Age: Origins 98 Demo</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('dmc98')) ? `
-                <div class="start-menu-item" data-action="dmc98">
+                ${(window.gameManager && window.gameManager.isInstalled('dmc98_demo')) ? `
+                <div class="start-menu-item" data-action="dmc98_demo">
                   <div class="start-menu-item-icon">${Icons['dmc98']}</div>
-                  <div class="start-menu-item-text">Devil May Cry 4 98</div>
+                  <div class="start-menu-item-text">Devil May Cry 98 Demo</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('tekken3')) ? `
-                <div class="start-menu-item" data-action="tekken3">
+                ${(window.gameManager && window.gameManager.isInstalled('tekken98_demo')) ? `
+                <div class="start-menu-item" data-action="tekken98_demo">
                   <div class="start-menu-item-icon">${Icons['tekken3']}</div>
-                  <div class="start-menu-item-text">Tekken 3 98</div>
+                  <div class="start-menu-item-text">Tekken 98 Demo</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('ow98')) ? `
                 <div class="start-menu-item" data-action="ow98">
@@ -466,10 +474,10 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['sammax201']}</div>
                   <div class="start-menu-item-text">Sam &amp; Max: Ice Station Santa</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('sammax202')) ? `
-                <div class="start-menu-item" data-action="sammax202">
+                ${(window.gameManager && window.gameManager.isInstalled('sammax202_demo')) ? `
+                <div class="start-menu-item" data-action="sammax202_demo">
                   <div class="start-menu-item-icon">${Icons['sammax202']}</div>
-                  <div class="start-menu-item-text">Sam &amp; Max: Moai Better Blues</div>
+                  <div class="start-menu-item-text">Sam & Max: Moai Better Blues Demo</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('bttf')) ? `
                 <div class="start-menu-item" data-action="bttf">
@@ -486,15 +494,15 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['forza']}</div>
                   <div class="start-menu-item-text">Forza Horizon: Рига</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('xiii')) ? `
-                <div class="start-menu-item" data-action="xiii">
+                ${(window.gameManager && window.gameManager.isInstalled('xiii_demo')) ? `
+                <div class="start-menu-item" data-action="xiii_demo">
                   <div class="start-menu-item-icon">${Icons['xiii']}</div>
-                  <div class="start-menu-item-text">XIII</div>
+                  <div class="start-menu-item-text">XIII Demo</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('maxpayne')) ? `
-                <div class="start-menu-item" data-action="maxpayne">
+                ${(window.gameManager && window.gameManager.isInstalled('maxpayne_demo')) ? `
+                <div class="start-menu-item" data-action="maxpayne_demo">
                   <div class="start-menu-item-icon">${Icons['maxpayne']}</div>
-                  <div class="start-menu-item-text">Max Payne</div>
+                  <div class="start-menu-item-text">Max Payne Demo</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('gtann')) ? `
                 <div class="start-menu-item" data-action="gtann">
@@ -506,10 +514,10 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['legion']}</div>
                   <div class="start-menu-item-text">Legion Arena</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('homm1')) ? `
-                <div class="start-menu-item" data-action="homm1">
+                ${(window.gameManager && window.gameManager.isInstalled('homm1_demo')) ? `
+                <div class="start-menu-item" data-action="homm1_demo">
                   <div class="start-menu-item-icon">${Icons['homm1']}</div>
-                  <div class="start-menu-item-text">Heroes of Might and Magic 98</div>
+                  <div class="start-menu-item-text">Heroes of Might and Magic 98 Demo</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('anotherwar')) ? `
                 <div class="start-menu-item" data-action="anotherwar">
@@ -521,20 +529,15 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['fallout']}</div>
                   <div class="start-menu-item-text">Fallout</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('falloutzp')) ? `
-                <div class="start-menu-item" data-action="falloutzp">
+                ${(window.gameManager && window.gameManager.isInstalled('falloutzp_demo')) ? `
+                <div class="start-menu-item" data-action="falloutzp_demo">
                   <div class="start-menu-item-icon">${Icons['falloutzp']}</div>
-                  <div class="start-menu-item-text">Fallout: Запорожье</div>
+                  <div class="start-menu-item-text">Fallout: Запорожье Demo</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('korovany')) ? `
-                <div class="start-menu-item" data-action="korovany">
+                ${(window.gameManager && window.gameManager.isInstalled('korovany_demo')) ? `
+                <div class="start-menu-item" data-action="korovany_demo">
                   <div class="start-menu-item-icon">${Icons['korovany']}</div>
-                  <div class="start-menu-item-text">Корованы</div>
-                </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('korovany')) ? `
-                <div class="start-menu-item" data-action="korovany">
-                  <div class="start-menu-item-icon">${Icons['korovany']}</div>
-                  <div class="start-menu-item-text">Корованы</div>
+                  <div class="start-menu-item-text">Корованы Demo</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('catniss')) ? `
                 <div class="start-menu-item" data-action="catniss">
@@ -551,15 +554,15 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['sims3']}</div>
                   <div class="start-menu-item-text">The Sims 3</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('kotor98')) ? `
-                <div class="start-menu-item" data-action="kotor98">
+                ${(window.gameManager && window.gameManager.isInstalled('kotor98_demo')) ? `
+                <div class="start-menu-item" data-action="kotor98_demo">
                   <div class="start-menu-item-icon">${Icons['kotor98']}</div>
-                  <div class="start-menu-item-text">Star Wars: KOTOR 98</div>
+                  <div class="start-menu-item-text">Star Wars: Knights of the Old Republic 98 Demo</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('hl2')) ? `
-                <div class="start-menu-item" data-action="hl2">
+                ${(window.gameManager && window.gameManager.isInstalled('hl2_demo')) ? `
+                <div class="start-menu-item" data-action="hl2_demo">
                   <div class="start-menu-item-icon">${Icons['hl2']}</div>
-                  <div class="start-menu-item-text">Half-Life 2</div>
+                  <div class="start-menu-item-text">Half-Life 2 Demo</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('quake3')) ? `
                 <div class="start-menu-item" data-action="quake3">
@@ -606,15 +609,15 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['worldcup98']}</div>
                   <div class="start-menu-item-text">World Cup 98</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('half-life')) ? `
-                <div class="start-menu-item" data-action="half-life">
+                ${(window.gameManager && window.gameManager.isInstalled('half-life_demo')) ? `
+                <div class="start-menu-item" data-action="half-life_demo">
                   <div class="start-menu-item-icon">${Icons['half-life']}</div>
-                  <div class="start-menu-item-text">Half-Life 98</div>
+                  <div class="start-menu-item-text">Half-Life 98 Demo</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('neon-racer')) ? `
-                <div class="start-menu-item" data-action="neon-racer">
+                ${(window.gameManager && window.gameManager.isInstalled('neon-racer_demo')) ? `
+                <div class="start-menu-item" data-action="neon-racer_demo">
                   <div class="start-menu-item-icon">${Icons['burnout']}</div>
-                  <div class="start-menu-item-text">Midnight Glide</div>
+                  <div class="start-menu-item-text">Midnight Glide Demo</div>
                 </div>` : ''}
               </div>
             </div>
@@ -681,7 +684,7 @@ class Taskbar {
               <div class="start-menu-item-text">${ru ? 'Проводник' : 'Win Explorer'}</div>
             </div>
             <div class="start-menu-item" data-action="dos-prompt">
-              <div class="start-menu-item-icon">${Icons['dos']}</div>
+              <div class="start-menu-item-icon">${Icons['dos-prompt']}</div>
               <div class="start-menu-item-text">${ru ? 'Сеанс MS-DOS' : 'MS-DOS Prompt'}</div>
             </div>
             <div class="start-menu-item" data-action="regedit">
@@ -1075,24 +1078,23 @@ class Taskbar {
           window.appCop98.open();
         }
         break;
-      case 'dao98':
-        if (window.gameManager && !window.gameManager.isInstalled('dao98')) {
-          const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-          window.winManager.openDialog({ title: 'Dragon Age: Origins 98', icon: 'error', message: t('store.gameNotInstalled', 'Dragon Age: Origins 98') });
+      case 'dao98_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('dao98_demo')) {
+          window.gameManager.showOnCd('dao98_demo');
         } else if (window.appDao98) {
           window.appDao98.open();
         }
         break;
-      case 'dmc98':
-        if (window.gameManager && !window.gameManager.isInstalled('dmc98')) {
-          window.gameManager.showInSteam('dmc98');
+      case 'dmc98_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('dmc98_demo')) {
+          window.gameManager.showOnCd('dmc98_demo');
         } else if (window.appDmc98) {
           window.appDmc98.open();
         }
         break;
-      case 'tekken3':
-        if (window.gameManager && !window.gameManager.isInstalled('tekken3')) {
-          window.gameManager.showInSteam('tekken3');
+      case 'tekken98_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('tekken98_demo')) {
+          window.gameManager.showOnCd('tekken98_demo');
         } else if (window.appTekken3) {
           window.appTekken3.open();
         }
@@ -1153,9 +1155,9 @@ class Taskbar {
           window.appSamMax201.open();
         }
         break;
-      case 'sammax202':
-        if (window.gameManager && !window.gameManager.isInstalled('sammax202')) {
-          window.gameManager.showInSteam('sammax202');
+      case 'sammax202_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('sammax202_demo')) {
+          window.gameManager.showOnCd('sammax202_demo');
         } else if (window.appSamMax202) {
           window.appSamMax202.open();
         }
@@ -1181,16 +1183,16 @@ class Taskbar {
           window.appForza.open();
         }
         break;
-      case 'xiii':
-        if (window.gameManager && !window.gameManager.isInstalled('xiii')) {
-          window.gameManager.showInSteam('xiii');
+      case 'xiii_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('xiii_demo')) {
+          window.gameManager.showOnCd('xiii_demo');
         } else if (window.appXiii) {
           window.appXiii.open();
         }
         break;
-      case 'maxpayne':
-        if (window.gameManager && !window.gameManager.isInstalled('maxpayne')) {
-          window.gameManager.showInSteam('maxpayne');
+      case 'maxpayne_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('maxpayne_demo')) {
+          window.gameManager.showOnCd('maxpayne_demo');
         } else if (window.appMaxPayne) {
           window.appMaxPayne.open();
         }
@@ -1209,9 +1211,9 @@ class Taskbar {
           window.appLegion.open();
         }
         break;
-      case 'homm1':
-        if (window.gameManager && !window.gameManager.isInstalled('homm1')) {
-          window.gameManager.showInSteam('homm1');
+      case 'homm1_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('homm1_demo')) {
+          window.gameManager.showOnCd('homm1_demo');
         } else if (window.appHomm1) {
           window.appHomm1.open();
         }
@@ -1223,9 +1225,9 @@ class Taskbar {
           window.appFallout.open();
         }
         break;
-      case 'falloutzp':
-        if (window.gameManager && !window.gameManager.isInstalled('falloutzp')) {
-          window.gameManager.showInSteam('falloutzp');
+      case 'falloutzp_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('falloutzp_demo')) {
+          window.gameManager.showOnCd('falloutzp_demo');
         } else if (window.appFalloutZP) {
           window.appFalloutZP.open();
         }
@@ -1237,16 +1239,9 @@ class Taskbar {
           window.appAnotherWar.open();
         }
         break;
-      case 'korovany':
-        if (window.gameManager && !window.gameManager.isInstalled('korovany')) {
-          window.gameManager.showInSteam('korovany');
-        } else if (window.appKorovany) {
-          window.appKorovany.open();
-        }
-        break;
-      case 'korovany':
-        if (window.gameManager && !window.gameManager.isInstalled('korovany')) {
-          window.gameManager.showInSteam('korovany');
+      case 'korovany_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('korovany_demo')) {
+          window.gameManager.showOnCd('korovany_demo');
         } else if (window.appKorovany) {
           window.appKorovany.open();
         }
@@ -1272,10 +1267,9 @@ class Taskbar {
           window.appSims3.open();
         }
         break;
-      case 'kotor98':
-        if (window.gameManager && !window.gameManager.isInstalled('kotor98')) {
-          const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-          window.winManager.openDialog({ title: 'Star Wars: KOTOR 98', icon: 'error', message: t('store.gameNotInstalled', 'Star Wars: KOTOR 98') });
+      case 'kotor98_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('kotor98_demo')) {
+          window.gameManager.showOnCd('kotor98_demo');
         } else if (window.appKotor98) {
           window.appKotor98.open();
         }
@@ -1287,10 +1281,9 @@ class Taskbar {
           window.appQuake3.open();
         }
         break;
-      case 'hl2':
-        if (window.gameManager && !window.gameManager.isInstalled('hl2')) {
-          const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-          window.winManager.openDialog({ title: 'Half-Life 2', icon: 'error', message: t('store.gameNotInstalled', 'Half-Life 2') });
+      case 'hl2_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('hl2_demo')) {
+          window.gameManager.showOnCd('hl2_demo');
         } else if (window.appHl2) {
           window.appHl2.open();
         }
@@ -1311,10 +1304,9 @@ class Taskbar {
           window.appHsr98.open();
         }
         break;
-      case 'mc98':
-        if (window.gameManager && !window.gameManager.isInstalled('mc98')) {
-          const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-          window.winManager.openDialog({ title: 'Minecraft 98', icon: 'error', message: t('store.gameNotInstalled', 'Minecraft 98') });
+      case 'mc98_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('mc98_demo')) {
+          window.gameManager.showOnCd('mc98_demo');
         } else if (window.appMc98) {
           window.appMc98.open();
         }
@@ -1327,10 +1319,9 @@ class Taskbar {
           window.appMoh98.open();
         }
         break;
-      case 'stalker98':
-        if (window.gameManager && !window.gameManager.isInstalled('stalker98')) {
-          const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-          window.winManager.openDialog({ title: 'S.T.A.L.K.E.R. 98', icon: 'error', message: t('store.gameNotInstalled', 'S.T.A.L.K.E.R. 98') });
+      case 'stalker98_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('stalker98_demo')) {
+          window.gameManager.showOnCd('stalker98_demo');
         } else if (window.appStalker98) {
           window.appStalker98.open();
         }
@@ -1351,26 +1342,16 @@ class Taskbar {
           window.appDiablo.open();
         }
         break;
-      case 'half-life':
-        if (window.gameManager && !window.gameManager.isInstalled('half-life')) {
-          const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-          window.winManager.openDialog({
-            title: 'Half-Life 98',
-            icon: 'error',
-            message: t('store.gameNotInstalled', 'Half-Life 98')
-          });
+      case 'half-life_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('half-life_demo')) {
+          window.gameManager.showOnCd('half-life_demo');
         } else if (window.appHalfLife) {
           window.appHalfLife.open();
         }
         break;
-      case 'neon-racer':
-        if (window.gameManager && !window.gameManager.isInstalled('neon-racer')) {
-          const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-          window.winManager.openDialog({
-            title: 'Midnight Glide',
-            icon: 'error',
-            message: t('store.gameNotInstalled', 'Midnight Glide')
-          });
+      case 'neon-racer_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('neon-racer_demo')) {
+          window.gameManager.showOnCd('neon-racer_demo');
         } else if (window.appNeonRacer) {
           window.appNeonRacer.open();
         }
@@ -1411,14 +1392,9 @@ class Taskbar {
           window.appWolf3D.open();
         }
         break;
-      case 'quest':
-        if (window.gameManager && !window.gameManager.isInstalled('quest')) {
-          const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-          window.winManager.openDialog({
-            title: 'LucasQuest 98',
-            icon: 'error',
-            message: t('store.gameNotInstalled', 'LucasQuest 98')
-          });
+      case 'quest_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('quest_demo')) {
+          window.gameManager.showOnCd('quest_demo');
         } else if (window.appScummQuest) {
           window.appScummQuest.open();
         }
@@ -1435,14 +1411,9 @@ class Taskbar {
           window.appStalker.open();
         }
         break;
-      case 'fallout2':
-        if (window.gameManager && !window.gameManager.isInstalled('fallout2')) {
-          const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-          window.winManager.openDialog({
-            title: 'Fallout 2 Demo',
-            icon: 'error',
-            message: t('store.gameNotInstalled', 'Fallout 2 Demo')
-          });
+      case 'fallout98_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('fallout98_demo')) {
+          window.gameManager.showOnCd('fallout98_demo');
         } else if (window.appFallout2) {
           window.appFallout2.open();
         }
@@ -1517,6 +1488,12 @@ class Taskbar {
         break;
       case 'msbackup':
         if (window.appBackup) window.appBackup.open();
+        break;
+      case 'bugreport':
+        if (window.appBugReport) window.appBugReport.open();
+        break;
+      case 'bugreport-list':
+        if (window.appBugReport) window.appBugReport.openList();
         break;
       case 'icq':
         if (window.appICQ) window.appICQ.open();

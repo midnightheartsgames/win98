@@ -100,5 +100,5 @@
     destroy() { this.destroyed=true;cancelAnimationFrame(this.raf);this.release();this.events.abort();this.resize?.disconnect();this.audio.destroy();this.renderer?.destroy();this.root.replaceChildren(); }
   }
   H.Game=Game;
-  globalThis.appHalfLife={open(){const id='app_half_life';if(window.winManager.windows.has(id)){window.winManager.restoreWindow(id);return;}const root=document.createElement('div');window.winManager.createWindow({id,title:'Half-Life 98 Prototype',icon:'half-life',width:Math.min(1000,Math.max(360,window.innerWidth-60)),height:Math.min(700,Math.max(360,window.innerHeight-90)),content:root,onClose:()=>{this.game?.destroy();this.game=null;}});this.game=new Game(root);this.game.onExit=()=>window.winManager.closeWindow(id);}};
+  globalThis.appHalfLife={open(){const id='app_half_life';if(window.winManager.windows.has(id)){window.winManager.restoreWindow(id);return;}const root=document.createElement('div');window.winManager.createWindow({id,title:'Half-Life 98 Demo',icon:'half-life',width:Math.min(1000,Math.max(360,window.innerWidth-60)),height:Math.min(700,Math.max(360,window.innerHeight-90)),content:root,onClose:()=>{this.game?.destroy();this.game=null;}});this.game=new Game(root);this.game.onExit=()=>window.winManager.closeWindow(id);}};
 })(globalThis.HL98=globalThis.HL98||{});

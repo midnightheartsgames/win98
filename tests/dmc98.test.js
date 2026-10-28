@@ -321,14 +321,14 @@ console.log(JSON.stringify(report));
 console.log(`dmc98: ${checks} checks passed in ${((Date.now() - t0) / 1000).toFixed(1)}s (seed ${SEED})`);
 
 {
-  const root = path.join(__dirname, '..'), rd = f => fs.readFileSync(path.join(root, f), 'utf8');
+  const root = path.join(__dirname, '..'), rd = f => fs.readFileSync(path.join(root, f), 'utf8').replace(/\r\n/g, '\n');
   const gm = rd('js/game-manager.js');
-  ok(/dmc98: \{\s*id: 'dmc98',\s*steam: true,/.test(gm), 'dmc98 is sold through Steam');
+  ok(/dmc98_demo: \{\s*id: 'dmc98_demo',\s*cdDemo: true,/.test(gm) && /title: 'Devil May Cry 98 Demo'/.test(gm), 'Devil May Cry 98 Demo ships on the Igromania CD');
   ok(!/preGrantedLicenses = \[[^\]]*dmc98/.test(gm) && !/dmc98Granted/.test(gm), 'dmc98 is not pre-granted');
   const def = gm.slice(gm.indexOf('return {\n      purchased:'), gm.indexOf('steamMigrated: true'));
   ok(def.length > 0 && !def.includes('dmc98'), 'dmc98 is not in default purchased/installed lists');
-  ok(/isInstalled\('dmc98'\)/.test(rd('js/desktop.js')) && /isInstalled\('dmc98'\)/.test(rd('js/taskbar.js')) && /includes\('dmc98'\)/.test(rd('js/filesystem.js')), 'desktop, Start menu and C:\Games are gated on installation');
-  ok(/showInSteam\('dmc98'\)/.test(rd('js/apps/explorer.js')) && /showInSteam\('dmc98'\)/.test(rd('js/taskbar.js')), 'not-installed paths lead to Steam');
+  ok(/isInstalled\('dmc98_demo'\)/.test(rd('js/desktop.js')) && /isInstalled\('dmc98_demo'\)/.test(rd('js/taskbar.js')) && /includes\('dmc98_demo'\)/.test(rd('js/filesystem.js')), 'desktop, Start menu and C:\Games are gated on installation');
+  ok(/showOnCd\('dmc98_demo'\)/.test(rd('js/apps/explorer.js')) && /showOnCd\('dmc98_demo'\)/.test(rd('js/taskbar.js')), 'not-installed paths lead to the Igromania CD');
   const html = rd('index.html'); for (const f of fs.readdirSync(DIR)) ok(html.includes(`js/apps/dmc98/${f}`), `index.html loads ${f}`);
   ok(html.includes('css/apps/dmc98.css') && html.includes('js/apps/dmc98-app.js'), 'index.html loads css and app');
   console.log(`dmc98 integration: ${checks} checks total`);

@@ -1909,18 +1909,18 @@ window.interpediaReg('steam', 'software', {
 <li>При попытке открыть ярлык ещё не установленной игры система автоматически открывает её карточку прямо в окне Steam.</li>
 </ol>
 
-Единственные исключения из этого правила в системе — демонстрационные версии с компакт-диска журнала «Игромания» на приводе <code>D:</code> и бесплатный установщик <code>StarRail98_Setup.exe</code> с официального сайта <code>http://hsr.hoyoverse.com</code>, который после установки также привязывает игру к библиотеке Steam.` },
+Единственные исключения из этого правила в системе — демонстрационные версии с компакт-диска журнала «Игромания» на приводе <code>D:</code> (среди них [[halflife|Half-Life 98]], [[maxpayne|Max Payne]], [[tekken3|Tekken 98]], [[bioware98|KOTOR 98 и Dragon Age: Origins 98]], [[scumm|LucasQuest 98]] и [[neonracer|Midnight Glide]]; в Steam они не продаются, а для неустановленной демоверсии система показывает путь к ней на диске) и бесплатный установщик <code>StarRail98_Setup.exe</code> с официального сайта <code>http://hsr.hoyoverse.com</code>, который после установки также привязывает игру к библиотеке Steam.` },
     { id: 'catalog_classics', title: 'Классика 1990-х в каталоге Steam', content: `Каталог службы охватывает главные вехи компьютерных игр десятилетия:
 <ul>
-<li><strong>Шутеры от первого лица:</strong> [[wolf3d|Wolfenstein 3D]], [[doom|DOOM]], [[quake|Quake]], [[quake2|Quake II]], [[quake3|Quake III Arena]], [[halflife|Half-Life]], [[unreal|Unreal]], [[ut99|Unreal Tournament]], [[dukenukem3d|Duke Nukem 3D]] и [[systemshock2|System Shock 2]].</li>
+<li><strong>Шутеры от первого лица:</strong> [[wolf3d|Wolfenstein 3D]], [[doom|DOOM]], [[quake|Quake]], [[quake2|Quake II]], [[quake3|Quake III Arena]], [[unreal|Unreal]], [[ut99|Unreal Tournament]], [[dukenukem3d|Duke Nukem 3D]] и [[systemshock2|System Shock 2]].</li>
 <li><strong>Стратегии и симуляторы:</strong> [[warcraft2|Warcraft II]], [[starcraft|StarCraft]], [[redalert|Command & Conquer: Red Alert]], [[ageofempires|Age of Empires]], [[homm3|Heroes of Might and Magic III]] и [[simcity2000|SimCity 2000]].</li>
-<li><strong>Ролевые игры и квесты:</strong> [[fallout|Fallout]], [[fallout2|Fallout 2]], [[baldursgate|Baldur's Gate]], [[diablo|Diablo]], [[diablo2|Diablo II]], [[grimfandango|Grim Fandango]] и движок [[scumm|SCUMM]].</li>
+<li><strong>Ролевые игры и квесты:</strong> [[fallout|Fallout]], [[baldursgate|Baldur's Gate]], [[diablo|Diablo]], [[diablo2|Diablo II]] и [[grimfandango|Grim Fandango]].</li>
 </ul>` },
     { id: 'catalog_98', title: 'Специальные издания для Win 98', content: `Помимо классических выпусков, в магазине представлены специальные издания и главы, адаптированные под [[win98clone|Microslop Win 98]]:
 <ul>
-<li><strong>Боевики и открытый город:</strong> неонуарный боевик [[maxpayne|Max Payne]] (первая часть «The American Dream» и тренировка DEA), трёхмерный файтинг [[tekken3|Tekken 3 98]], а также криминальные игры [[gta|Grand Theft Auto: Нижний Сити]] и [[gta|Grand Theft Auto: Екатеринбург '90]].</li>
-<li><strong>Командные арены и ролевые главы:</strong> тактические арены 5 на 5 [[dota|Dota 98 и League of Legends 98]], а также трёхмерные ролевые игры [[bioware98|Star Wars: Knights of the Old Republic 98 и Dragon Age: Origins 98]].</li>
-<li><strong>Оригинальные проекты системы:</strong> неоновая аркадная гонка [[neonracer|Neon Racer 98]], визуальная новелла [[digicharat|Di Gi Charat]], пошаговая ролевая игра <em>Honkai: Star Rail 98</em> и приключения в Зоне отчуждения.</li>
+<li><strong>Открытый город:</strong> криминальные игры [[gta|Grand Theft Auto: Нижний Сити]] и [[gta|Grand Theft Auto: Екатеринбург '90]].</li>
+<li><strong>Командные арены:</strong> тактические арены 5 на 5 [[dota|Dota 98 и League of Legends 98]].</li>
+<li><strong>Оригинальные проекты системы:</strong> визуальная новелла [[digicharat|Di Gi Charat]], пошаговая ролевая игра <em>Honkai: Star Rail 98</em> и приключения в Зоне отчуждения.</li>
 </ul>` }
   ],
   seeAlso: ['win98clone', 'halflife', 'ie5', 'quake3', 'dota', 'bioware98', 'gta'],
@@ -1965,18 +1965,18 @@ Styled in the dark olive-green and slate VGUI palette introduced by [[halflife|H
 <li>Attempting to launch a game that is not yet installed directs the player straight to its page inside the Steam client.</li>
 </ol>
 
-The only exceptions in the system are playable magazine demos installed from the Igromania cover [[cdrom|CD-ROM]] in drive <code>D:</code> and the standalone <code>StarRail98_Setup.exe</code> installer from <code>http://hsr.hoyoverse.com</code>, which automatically registers the game in the player's Steam library upon installation.` },
+The only exceptions in the system are playable magazine demos installed from the Igromania cover [[cdrom|CD-ROM]] in drive <code>D:</code> (among them [[halflife|Half-Life 98]], [[maxpayne|Max Payne]], [[tekken3|Tekken 98]], [[bioware98|KOTOR 98 and Dragon Age: Origins 98]], [[scumm|LucasQuest 98]] and [[neonracer|Midnight Glide]]; they are not sold on Steam, and for a demo that is not installed the system shows its path on the disc) and the standalone <code>StarRail98_Setup.exe</code> installer from <code>http://hsr.hoyoverse.com</code>, which automatically registers the game in the player's Steam library upon installation.` },
     { id: 'catalog_classics', title: '1990s PC classics in the catalog', content: `The Steam store brings together the defining PC games of the decade:
 <ul>
-<li><strong>First-person shooters:</strong> [[wolf3d|Wolfenstein 3D]], [[doom|DOOM]], [[quake|Quake]], [[quake2|Quake II]], [[quake3|Quake III Arena]], [[halflife|Half-Life]], [[unreal|Unreal]], [[ut99|Unreal Tournament]], [[dukenukem3d|Duke Nukem 3D]] and [[systemshock2|System Shock 2]].</li>
+<li><strong>First-person shooters:</strong> [[wolf3d|Wolfenstein 3D]], [[doom|DOOM]], [[quake|Quake]], [[quake2|Quake II]], [[quake3|Quake III Arena]], [[unreal|Unreal]], [[ut99|Unreal Tournament]], [[dukenukem3d|Duke Nukem 3D]] and [[systemshock2|System Shock 2]].</li>
 <li><strong>Strategy and simulation:</strong> [[warcraft2|Warcraft II]], [[starcraft|StarCraft]], [[redalert|Command & Conquer: Red Alert]], [[ageofempires|Age of Empires]], [[homm3|Heroes of Might and Magic III]] and [[simcity2000|SimCity 2000]].</li>
-<li><strong>Role-playing and adventure games:</strong> [[fallout|Fallout]], [[fallout2|Fallout 2]], [[baldursgate|Baldur's Gate]], [[diablo|Diablo]], [[diablo2|Diablo II]], [[grimfandango|Grim Fandango]] and [[scumm|SCUMM]] adventures.</li>
+<li><strong>Role-playing and adventure games:</strong> [[fallout|Fallout]], [[baldursgate|Baldur's Gate]], [[diablo|Diablo]], [[diablo2|Diablo II]] and [[grimfandango|Grim Fandango]].</li>
 </ul>` },
     { id: 'catalog_98', title: 'Special Win 98 editions', content: `Alongside classic releases, the store features special editions and playable chapters built for [[win98clone|Microslop Win 98]]:
 <ul>
-<li><strong>Action and open-city crime:</strong> the neo-noir thriller [[maxpayne|Max Payne]] (Part I "The American Dream" and the DEA training course), 3D fighter [[tekken3|Tekken 3 98]], and the open-city crime games [[gta|Grand Theft Auto: Nizhny City]] and [[gta|Grand Theft Auto: Yekaterinburg '90]].</li>
-<li><strong>Team battle arenas and 3D RPGs:</strong> 5v5 lane arenas [[dota|Dota 98 and League of Legends 98]], plus BioWare's [[bioware98|Star Wars: Knights of the Old Republic 98 and Dragon Age: Origins 98]].</li>
-<li><strong>Original system titles:</strong> the synthwave arcade racer [[neonracer|Neon Racer 98]], visual novel [[digicharat|Di Gi Charat]], turn-based sci-fi RPG <em>Honkai: Star Rail 98</em> and Zone survival adventures.</li>
+<li><strong>Open-city crime:</strong> [[gta|Grand Theft Auto: Nizhny City]] and [[gta|Grand Theft Auto: Yekaterinburg '90]].</li>
+<li><strong>Team battle arenas:</strong> 5v5 lane arenas [[dota|Dota 98 and League of Legends 98]].</li>
+<li><strong>Original system titles:</strong> visual novel [[digicharat|Di Gi Charat]], turn-based sci-fi RPG <em>Honkai: Star Rail 98</em> and Zone survival adventures.</li>
 </ul>` }
   ],
   seeAlso: ['win98clone', 'halflife', 'ie5', 'quake3', 'dota', 'bioware98', 'gta'],

@@ -10,7 +10,8 @@
     { id: 'scenes', label: 'Сцены', icon: 'archive' }
   ];
   const CW_TAB = { id: 'cw', label: 'Вал. войны', icon: 'warp' };
-  const tabsOf = g => (g && g.cwRun && g.cwRun() ? TABS.concat(CW_TAB) : TABS);
+  const HD_TAB = { id: 'hd', label: 'Рубеж', icon: 'warp' };
+  const tabsOf = g => TABS.concat(g && g.cwRun && g.cwRun() ? [CW_TAB] : [], g && g.hdRun && g.hdRun() && g.hdRun().players[0].hero ? [HD_TAB] : []);
   const SCENE_KINDS = [
     { id: 'ult', label: 'Абсолютная техника', icon: 'chars' },
     { id: 'fus', label: 'Слияние', icon: 'team' },
@@ -219,6 +220,7 @@
       if (st.tab >= tabsOf(g).length) st.tab = 0;
       const tab = tabsOf(g)[st.tab].id;
       if (tab === 'cw') return ui.debugCwForm(st, note, shift);
+      if (tab === 'hd') return ui.debugHdForm(st, note, shift);
       if (tab === 'chars') {
         const ids = charIds(), id = ids[st.ch.i], name = H.CHARS[id].name, owned = !!g.state.roster[id];
         const trMode = TRACE_MODES[st.ch.tr || 0], tag = () => 'ур. ' + st.ch.lvl + ' · E' + st.ch.eid + ' · Следы ' + trMode[1];
@@ -706,13 +708,14 @@
           ui.win(rx, ly, rw, lh, { alpha: 0.9 });
           if (tab === 'relics') ui.debugRelicPreview(c, st, lx, ly, lw);
           else if (tab === 'cw') ui.debugCwPreview(c, lx, ly, lw);
+          else if (tab === 'hd') ui.debugHdPreview(c, lx, ly, lw);
           else ui.debugCatalog(c, st, lx + 8, ly + 14, lw - 16);
           if (tab === 'chars') ui.debugCharPreview(c, st, rx, ly);
           if (tab === 'cones') ui.debugConePreview(c, st, rx, ly);
           if (tab === 'items') ui.debugItemPreview(c, st, rx, ly);
           if (tab === 'scenes') ui.debugScenePreview(c, st, rx, ly);
-          const fy = tab === 'relics' || tab === 'cw' ? ly + 16 : tab === 'scenes' ? ly + 190 : ly + 212;
-          if (tab !== 'relics' && tab !== 'cw') { c.fillStyle = 'rgba(242,220,154,0.25)'; c.fillRect(rx + 14, fy - 8, rw - 28, 1); }
+          const fy = tab === 'relics' || tab === 'cw' || tab === 'hd' ? ly + 16 : tab === 'scenes' ? ly + 190 : ly + 212;
+          if (tab !== 'relics' && tab !== 'cw' && tab !== 'hd') { c.fillStyle = 'rgba(242,220,154,0.25)'; c.fillRect(rx + 14, fy - 8, rw - 28, 1); }
           f.rows.forEach((r, i) => ui.debugRow(c, st, r, i, rx + 8, fy + i * ROW_H, rw - 16));
           const ay = fy + f.rows.length * ROW_H + 8, aw = Math.floor((rw - 28 - (f.acts.length - 1) * 8) / f.acts.length);
           f.acts.forEach((a, i) => {

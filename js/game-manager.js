@@ -21,19 +21,19 @@ class GameManager {
         shots: ['Тюремный блок замка', 'Ганс Гросс у выхода'],
         launch: () => window.appWolf3D && window.appWolf3D.open()
       },
-      quest: {
-        id: 'quest',
-        steam: true,
-        title: 'LucasQuest 98',
+      quest_demo: {
+        id: 'quest_demo',
+        cdDemo: true,
+        title: 'LucasQuest 98 Demo',
         subtitle: 'Пиратский квест в стиле LucasArts SCUMM',
         developer: 'Retro Quest Games (1998)',
-        price: 19.99,
-        priceDisplay: '$19.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'lucas-quest',
-        setupExe: 'Setup_LucasQuest.exe',
+        setupExe: 'questdemo.exe',
         targetExe: 'QUEST.EXE',
         folder: 'LucasQuest',
-        fileSize: '3.8 MB (4x CD-ROM)',
+        fileSize: '3.8 MB (Igromania CD Edition)',
         desc: 'Увлекательный графический квест золотой эпохи приключений! Гайбраш Байтвуд отправляется исследовать замок Редмонд и разгадать загадки пиратов.',
         genre: 'Квест',
         tags: ['Point-and-click', 'Юмор', 'Головоломки', 'Пиксельная графика'],
@@ -59,19 +59,19 @@ class GameManager {
         shots: ['Титульный экран', 'Деревня новичков: выбор действия'],
         launch: () => window.appStalker && window.appStalker.open()
       },
-      fallout2: {
-        id: 'fallout2',
-        steam: true,
-        title: 'Fallout 2 Demo',
+      fallout98_demo: {
+        id: 'fallout98_demo',
+        cdDemo: true,
+        title: 'Fallout 98 Demo',
         subtitle: 'Храм Испытаний (Temple of Trials)',
         developer: 'Black Isle Studios / Interplay (1998)',
         price: 0,
-        priceDisplay: 'FREE',
+        priceDisplay: 'DEMO',
         icon: 'fallout2',
-        setupExe: 'Setup_Fallout2.exe',
+        setupExe: 'fallout98demo.exe',
         targetExe: 'FALLOUT2.EXE',
         folder: 'Fallout2',
-        fileSize: '8.4 MB (Interactive Demo)',
+        fileSize: '8.4 MB (Igromania CD Edition)',
         desc: 'Культовая постапокалиптическая изометрическая RPG! Пройдите Храм Испытаний в роли Избранного, сразитесь с муравьями и скорпионами, разминируйте ловушки и сойдитесь в поединке с Камероном.',
         genre: 'Ролевая игра',
         tags: ['Постапокалипсис', 'Пошаговый бой', 'Изометрия', 'Демоверсия'],
@@ -80,10 +80,11 @@ class GameManager {
       },
       burnout: {
         id: 'burnout',
+        cdDemo: true,
         title: 'Burnout: Championship Drag Racing Demo',
         subtitle: 'Легендарный симулятор дрэг-рейсинга от Bethesda Softworks',
         developer: 'Bethesda Softworks / MediaTech West (1998)',
-        price: 19.99,
+        price: 0,
         priceDisplay: 'DEMO',
         icon: 'burnout',
         setupExe: 'burndemo.exe',
@@ -191,38 +192,38 @@ class GameManager {
         desc: 'Бесплатный пакет трёхмерной графики от Not a Number: полигональное моделирование, кривые и NURBS-поверхности, метаболы, 3D-текст, материалы и процедурные текстуры, scanline-рендер с тенями, IPO-анимация, редактор последовательностей и встроенный игровой движок.',
         launch: () => window.appBlender204 && window.appBlender204.open()
       },
-      'half-life': {
-        id: 'half-life',
-        steam: true,
-        title: 'Half-Life 98',
+      'half-life_demo': {
+        id: 'half-life_demo',
+        cdDemo: true,
+        title: 'Half-Life 98 Demo',
         subtitle: 'Культовый научно-фантастический 3D-шутер от Valve',
         developer: 'Valve Software / Sierra On-Line (1998)',
-        price: 34.99,
-        priceDisplay: '$34.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'half-life',
-        setupExe: 'Setup_HalfLife.exe',
+        setupExe: 'hl98demo.exe',
         targetExe: 'HL.EXE',
         folder: 'HalfLife',
-        fileSize: '24.5 MB (CD-ROM Edition)',
+        fileSize: '24.5 MB (Igromania CD Edition)',
         desc: 'Легендарный 3D-шутер! Доктор Гордон Фримен оказывается в эпицентре каскадного резонанса в исследовательском центре Чёрная Меза. Сразитесь с пришельцами из мира Зен и спецназом HECU.',
         genre: 'Шутер от первого лица',
         tags: ['Научная фантастика', 'Пришельцы', 'Чёрная Меза', 'Классика'],
         shots: ['Сектор аномальных материалов', 'Вортигонт в секторе C'],
         launch: () => window.appHalfLife && window.appHalfLife.open()
       },
-      'neon-racer': {
-        id: 'neon-racer',
-        steam: true,
-        title: 'Midnight Glide',
+      'neon-racer_demo': {
+        id: 'neon-racer_demo',
+        cdDemo: true,
+        title: 'Midnight Glide Demo',
         subtitle: 'Аркадные ночные гонки по неоновому мегаполису',
         developer: 'RetroSpeed Studios (1998)',
-        price: 19.99,
-        priceDisplay: '$19.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'burnout',
-        setupExe: 'Setup_MidnightGlide.exe',
+        setupExe: 'glidedemo.exe',
         targetExe: 'GLIDE.EXE',
         folder: 'MidnightGlide',
-        fileSize: '8.7 MB (Floppy Edition)',
+        fileSize: '8.7 MB (Igromania CD Edition)',
         desc: 'Захватывающие ночные гонки на выживание! Дрифт на крутых поворотах, закись азота, динамичный трафик и адреналиновый дух нелегальных уличных заездов конца 90-х.',
         genre: 'Аркадные гонки',
         tags: ['Ночной город', 'Нитро', 'Дрифт', 'Трафик'],
@@ -231,6 +232,7 @@ class GameManager {
       },
       hockey: {
         id: 'hockey',
+        cdDemo: true,
         title: 'NHL 98',
         subtitle: 'Официальный хоккейный симулятор от EA Sports',
         developer: 'EA Sports (1998)',
@@ -246,6 +248,7 @@ class GameManager {
       },
       worldcup98: {
         id: 'worldcup98',
+        cdDemo: true,
         title: 'World Cup 98',
         subtitle: 'Официальный симулятор Чемпионата мира по футболу France 98',
         developer: 'EA Sports (1998)',
@@ -316,19 +319,19 @@ class GameManager {
         shots: ['Песчаный каньон: взрыв камикадзе', 'Карнак: клиры, гнаар и гарпии'],
         launch: () => window.appSeriousSam && window.appSeriousSam.open()
       },
-      stalker98: {
-        id: 'stalker98',
-        steam: true,
-        title: 'S.T.A.L.K.E.R. 98: Тень Чернобыля',
+      stalker98_demo: {
+        id: 'stalker98_demo',
+        cdDemo: true,
+        title: 'S.T.A.L.K.E.R. 98: Тень Чернобыля Demo',
         subtitle: '3D-шутер с элементами RPG в Зоне отчуждения',
         developer: 'GSC Game World (2000) / Win 98 Edition',
-        price: 32.99,
-        priceDisplay: '$32.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'stalker98',
-        setupExe: 'Setup_Stalker98.exe',
+        setupExe: 'stalker98demo.exe',
         targetExe: 'XR98.EXE',
         folder: 'Stalker98',
-        fileSize: '22.6 MB (3D Accelerated Edition)',
+        fileSize: '22.6 MB (Igromania CD Edition)',
         desc: 'Меченый просыпается в бункере Сидоровича с единственной записью в КПК: «Убить Стрелка». Кордон и Свалка: аномалии и артефакты, радиация, голод и кровотечение, мутанты, бандиты и военные, торговля, тайники, смена дня и ночи и сюжет до дороги на Агропром.',
         genre: 'Шутер с элементами RPG',
         tags: ['Зона отчуждения', 'Выживание', 'Аномалии', 'Артефакты'],
@@ -411,19 +414,19 @@ class GameManager {
         shots: ['Электра в Железном лесу, Затон', 'Земснаряд в сумерках'],
         launch: () => window.appCop98 && window.appCop98.open()
       },
-      mc98: {
-        id: 'mc98',
-        steam: true,
-        title: 'Minecraft 98',
+      mc98_demo: {
+        id: 'mc98_demo',
+        cdDemo: true,
+        title: 'Minecraft 98 Demo',
         subtitle: 'Песочница выживания в мире из блоков',
         developer: 'Mojang Specifications (1999) / Win 98 Edition',
-        price: 13.99,
-        priceDisplay: '$13.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'mc98',
-        setupExe: 'Setup_MC98.exe',
+        setupExe: 'mc98demo.exe',
         targetExe: 'MINECRAFT.EXE',
         folder: 'MC98',
-        fileSize: '2.1 MB (Alpha, 3D Accelerated)',
+        fileSize: '2.1 MB (Igromania CD Edition)',
         desc: 'Бесконечный мир из кубов: копайте, стройте, выживайте. Биомы, пещеры и руды, крафт на верстаке, печь, сундуки, факелы и освещение по блокам, вода и лава, смена дня и ночи. Днём свиньи, коровы, овцы и куры, ночью зомби, скелеты, пауки и криперы. Режимы выживания и творчества, кровать, лук, динамит, достижения и автосохранение миров.',
         genre: 'Песочница',
         tags: ['Выживание', 'Строительство', 'Крафт', 'Творческий режим'],
@@ -449,57 +452,57 @@ class GameManager {
         shots: ['Бой на станции «Герта»', 'Административный район Белобога'],
         launch: () => window.appHsr98 && window.appHsr98.open()
       },
-      dao98: {
-        id: 'dao98',
-        steam: true,
-        title: 'Dragon Age: Origins 98',
+      dao98_demo: {
+        id: 'dao98_demo',
+        cdDemo: true,
+        title: 'Dragon Age: Origins 98 Demo',
         subtitle: 'Ролевая игра BioWare — глава «Мор»',
         developer: 'BioWare (2000) / Win 98 Edition',
-        price: 44.99,
-        priceDisplay: '$44.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'dao98',
-        setupExe: 'Setup_DAO98.exe',
+        setupExe: 'dao98demo.exe',
         targetExe: 'DAORIGINS.EXE',
         folder: 'DAO98',
-        fileSize: '1.9 GB (4 CD-ROM, 3D Accelerated)',
+        fileSize: '48.2 MB (Igromania CD Edition)',
         desc: 'Мор возвращается в Ферелден. Выберите одну из шести предысторий: человек-дворянин из Хайевера, маг Круга на Истязании, городской эльф в день свадьбы, долийский охотник у древнего зеркала, гном-аристократ из дома Эдукан или безкастовый из Пыльного города. Бои в реальном времени с паузой, тактика спутников, магия и таланты, травмы, одобрение Алистера и Морриган. Остагар, дебри Коркари, Посвящение, башня Ишала и хижина Флемет — до Лотеринга, где к отряду присоединяются Лелиана и Стэн.',
         genre: 'Ролевая игра',
         tags: ['Тёмное фэнтези', 'Тактическая пауза', 'Шесть предысторий', 'Спутники'],
         shots: ['Хижина Флемет в дебрях Коркари', 'Бой с генлоками у башни Ишала'],
         launch: () => window.appDao98 && window.appDao98.open()
       },
-      dmc98: {
-        id: 'dmc98',
-        steam: true,
-        title: 'Devil May Cry 4 98',
+      dmc98_demo: {
+        id: 'dmc98_demo',
+        cdDemo: true,
+        title: 'Devil May Cry 98 Demo',
         subtitle: 'Стильный слэшер — Неро против демонов Фортуны',
         developer: 'Capcom (2000) / Win 98 Edition',
-        price: 39.99,
-        priceDisplay: '$39.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'dmc98',
-        setupExe: 'Setup_DMC98.exe',
+        setupExe: 'dmc98demo.exe',
         targetExe: 'DMC4.EXE',
         folder: 'DMC98',
-        fileSize: '1.4 GB (2 CD-ROM, 3D Accelerated)',
+        fileSize: '41.7 MB (Igromania CD Edition)',
         desc: 'Остров Фортуна, Орден Меча и таинственный убийца в красном плаще. Неро с мечом «Красная королева», револьвером «Синяя роза» и демонической рукой Devil Bringer. Комбо, Exceed, Buster и Snatch, оценка стиля от Deadly до Smokin\' Sick Style, красные сферы и гордые души у Статуи божества. Пять миссий из оригинала: дуэль с Данте в Опере, Бериал в огненной шахте, ледяной Баэль, лаборатория Агнуса и пробуждение Devil Trigger, битва с Кредо на мосту. Катсцены на движке игры.',
         genre: 'Слэшер',
         tags: ['Комбо', 'Боссы', 'Демоны', 'Оценка стиля'],
         shots: ['Опера: Неро против Данте', 'Библиотека замка: Фросты'],
         launch: () => window.appDmc98 && window.appDmc98.open()
       },
-      tekken3: {
-        id: 'tekken3',
-        steam: true,
-        title: 'Tekken 3 98',
+      tekken98_demo: {
+        id: 'tekken98_demo',
+        cdDemo: true,
+        title: 'Tekken 98 Demo',
         subtitle: 'Трёхмерный файтинг — турнир концерна «Курогане»',
         developer: 'Namco (1998) / Win 98 Edition',
-        price: 26.99,
-        priceDisplay: '$26.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'tekken3',
-        setupExe: 'Setup_Tekken3.exe',
+        setupExe: 'tekken98demo.exe',
         targetExe: 'TEKKEN3.EXE',
         folder: 'Tekken3',
-        fileSize: '420 MB (1 CD-ROM, 3D Accelerated)',
+        fileSize: '36.3 MB (Igromania CD Edition)',
         desc: 'Трёхмерный файтинг на четыре кнопки: левая и правая рука, левая и правая нога. Шестнадцать бойцов со своими стилями — кёкусин-карате, капоэйра, самбо, тхэквондо, муай-тай, вин-чун, ниндзя с мечом, пьяный кулак, цирковой медведь, советский робот и деревянный манекен, который копирует чужие стили. Уходы в сторону, подбросы и джагглы, броски и цепные захваты, контрудары, подъёмы с пола и десятиударные связки. Аркада с главой турнира и древним Колоссом, бой вдвоём, командный бой, выживание, игра на время, тренировка с разучиванием приёмов, штурм небоскрёба «Курогане» и пляжный мяч. Скрытые бойцы, концовки в кинозале и рекорды.',
         genre: 'Файтинг',
         tags: ['3D', '16 бойцов', 'Аркада', 'Бой вдвоём'],
@@ -658,19 +661,19 @@ class GameManager {
         shots: ['Робот у нашего офиса', 'Мастерская Санты'],
         launch: () => window.appSamMax201 && window.appSamMax201.open()
       },
-      sammax202: {
-        id: 'sammax202',
-        steam: true,
-        title: 'Sam & Max: Moai Better Blues',
+      sammax202_demo: {
+        id: 'sammax202_demo',
+        cdDemo: true,
+        title: 'Sam & Max: Moai Better Blues Demo',
         subtitle: 'Квест про Вольную полицию, эпизод 202',
         developer: 'LucasArts (2000) / Win 98 Edition',
-        price: 30.99,
-        priceDisplay: '$30.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'sammax202',
-        setupExe: 'Setup_SamMax202.exe',
+        setupExe: 'sammax202demo.exe',
         targetExe: 'SAMMAX22.EXE',
         folder: 'SamMax202',
-        fileSize: '54 MB (1 CD-ROM, 256 цветов)',
+        fileSize: '31.0 MB (Igromania CD Edition)',
         desc: 'Прямо у входа в офис Вольной полиции открывается светящийся Бермудский треугольник, ведущий на остров Пасхи. Гигантские каменные головы предсказывают скорое пробуждение вулкана Беллависта, а на вершине кальдеры восседает верховный жрец: выживший карась Мистер Лопатка. Рисованные экраны 320x200, курсор-действие, коробка инвентаря и диалоги иконками. Плачущий Берни, хохочущий Билли, пророчества Мортимера, грот молодости с карапузом Джимми Двузубиком, свидание Сибил и Линкольна на пляже, защитные бункеры Боско, закусочная Вонючки, оркестр мариачи в пространственном разломе и перенаправление лавовых рек через порталы. В шкафу офиса бережно собраны вещдоки всех прошлых расследований.',
         genre: 'Квест',
         tags: ['Point-and-click', 'Юмор', 'Остров Пасхи', 'Пиксельная графика'],
@@ -734,38 +737,38 @@ class GameManager {
         shots: ['Старт гонки в Старой Риге', 'Фестиваль Horizon ночью'],
         launch: () => window.appForza && window.appForza.open()
       },
-      xiii: {
-        id: 'xiii',
-        steam: true,
-        title: 'XIII',
+      xiii_demo: {
+        id: 'xiii_demo',
+        cdDemo: true,
+        title: 'XIII Demo',
         subtitle: 'Шутер-комикс по мотивам графического романа',
         developer: 'Ubisoft Paris (2000) / Win 98 Edition',
-        price: 37.99,
-        priceDisplay: '$37.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'xiii',
-        setupExe: 'Setup_XIII.exe',
+        setupExe: 'xiiidemo.exe',
         targetExe: 'XIII.EXE',
         folder: 'XIII',
-        fileSize: '1.2 GB (3 CD-ROM, 3D Accelerated)',
+        fileSize: '45.1 MB (Igromania CD Edition)',
         desc: 'Амнезия, татуировка XIII на ключице и труп президента Шеридана в заголовках газет. Шутер-комикс: чернильные контуры, панели-врезки с крупным планом при каждом попадании в голову, звукоподражания и комиксные сцены между главами. Десять глав: пляж Брайтон-Бич, банк Уинслоу, штаб-квартира ФБР, майор Джонс, база «Эмеральд», камера генерала Кэррингтона, канатная дорога над ущельем, озеро и охотничий дом Келлоуни и тюрьма Плейн-Рок. Скрытность и тревоги, заложники, отмычки и кошка, метательные ножи, арбалет, гарпун под водой, снайперская винтовка и базука. Воспоминания открывают навыки: шестое чувство, меткость, бесшумный шаг и второе дыхание. Боссы — Ирландец и Мангуст. Найдите все документы, чтобы собрать досье на Двадцатку.',
         genre: 'Шутер от первого лица',
         tags: ['Комикс', 'Заговор', 'Стелс', 'Сюжет'],
         shots: ['Банк Уинслоу, Манхэттен', 'Озеро Келлоуни на закате'],
         launch: () => window.appXiii && window.appXiii.open()
       },
-      maxpayne: {
-        id: 'maxpayne',
-        steam: true,
-        title: 'Max Payne',
+      maxpayne_demo: {
+        id: 'maxpayne_demo',
+        cdDemo: true,
+        title: 'Max Payne Demo',
         subtitle: 'Нуарный экшен от третьего лица с замедлением времени',
         developer: 'Remedy Entertainment (2001) / Win 98 Edition',
-        price: 35.99,
-        priceDisplay: '$35.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'maxpayne',
-        setupExe: 'Setup_MaxPayne.exe',
+        setupExe: 'maxpaynedemo.exe',
         targetExe: 'MAXPAYNE.EXE',
         folder: 'MaxPayne',
-        fileSize: '780 MB (2 CD-ROM, 3D Accelerated)',
+        fileSize: '43.8 MB (Igromania CD Edition)',
         desc: 'Нью-Йорк, самая сильная метель в истории города. Три года назад наркоманы под «Валькирией» убили семью полицейского Макса Пейна. Теперь Макс работает под прикрытием в семье Пунчинелло, и его напарника Алекса убивают у него на глазах. Экшен от третьего лица: замедление времени, прыжки с двойными «Береттами», «Ингрэмы», дробовики, коктейли Молотова и гранаты. Обучение в академии УБН, пролог и девять глав первой части: станция метро Роско-стрит, отель Лупино и его подвалы, доходный дом, квартал, где прячется Винни Гоньитти, надземка, клуб «Рагна Рок» в старой церкви и подземелье под ним. Сюжет рассказан страницами графического романа, телевизор в каждом углу знает больше, чем полиция. Четыре уровня сложности, включая «Мёртвого по прибытии» и «Нью-йоркскую минуту».',
         genre: 'Экшен от третьего лица',
         tags: ['Нуар', 'Замедление времени', 'Графический роман', 'Сюжет'],
@@ -810,19 +813,19 @@ class GameManager {
         shots: ['Легионеры в ближнем бою', 'Карта кампании'],
         launch: () => window.appLegion && window.appLegion.open()
       },
-      homm1: {
-        id: 'homm1',
-        steam: true,
-        title: 'Heroes of Might and Magic 98',
+      homm1_demo: {
+        id: 'homm1_demo',
+        cdDemo: true,
+        title: 'Heroes of Might and Magic 98 Demo',
         subtitle: 'Стратегический поход за корону Энрота',
         developer: 'New World Computing (1995) / Win 98 Edition',
-        price: 24.99,
-        priceDisplay: '$24.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'homm1',
-        setupExe: 'Setup_HoMM1.exe',
+        setupExe: 'homm98demo.exe',
         targetExe: 'HEROES.EXE',
         folder: 'HoMM1',
-        fileSize: '28.4 MB (CD-ROM Edition)',
+        fileSize: '28.4 MB (Igromania CD Edition)',
         desc: 'Лорд Морглин Айронфист бежал через портал в неизведанные земли Энрота, где за верховный трон спорят четыре правителя: рыцарь Айронфист, варвар Слэйер, волшебница Ламанда и чернокнижник Аламар. Полная кампания из восьми сценариев от Ворот Зари и Архипелага Древних до захвата Драконьего Острова и финального штурма крепости соперников, плюс шесть отдельных карт для свободной игры. Четыре класса замков и двадцать восемь видов существ от крестьян, кентавров и эльфов до грифонов, гидр, паладинов, циклопов, фениксов и чёрных драконов. Семь видов ресурсов, шахты, лесопилки и алхимические лаборатории, четыре этажа Магической гильдии с тридцатью тремя боевыми и походными заклинаниями, сорок артефактов, обелиски с картой клада и раскопки Истинного Артефакта, постройка кораблей на верфи, тактические битвы на поле 7 на 5 клеток и осады замков с катапультой.',
         genre: 'Пошаговая стратегия',
         tags: ['Фэнтези', 'Герои и магия', 'Замки', 'Тактический бой'],
@@ -867,57 +870,38 @@ class GameManager {
         shots: ['Караваны у ворот Хаба', 'Разговор с Арадешем'],
         launch: () => window.appFallout && window.appFallout.open()
       },
-      falloutzp: {
-        id: 'falloutzp',
-        steam: true,
-        title: 'Fallout: Запорожье',
+      falloutzp_demo: {
+        id: 'falloutzp_demo',
+        cdDemo: true,
+        title: 'Fallout: Запорожье Demo',
         subtitle: 'Ролевая игра в открытом мире: СССР через двести лет после войны',
         developer: 'Obsidian Entertainment (2001) / Win 98 Edition',
-        price: 39.99,
-        priceDisplay: '$39.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'falloutzp',
-        setupExe: 'Setup_FalloutZP.exe',
+        setupExe: 'falloutzpdemo.exe',
         targetExe: 'FALLOUTZP.EXE',
         folder: 'FalloutZP',
-        fileSize: '1.6 GB (3 CD-ROM, 3D Accelerated)',
+        fileSize: '52.6 MB (Igromania CD Edition)',
         desc: 'Двести лет после Великой войны 23 октября 2077 года Советский Союз так и не распался: он просто сгорел вместе с ламповыми ЭВМ и атомными «Волгами». Запорожье, Вознесеновский район и остров Хортица. Фельдъегеря Главпочтамта подстрелили на мосту Преображенского, отобрали перфокарту особой важности и сбросили в Днепр. Ремонтный робот Тимофей выловил тело под Тарасовой грушей. Медкомиссия вместо создания персонажа: нормы ГТО, анкета, профориентация. Открытый мир по реальной карте района: проспект Ленина, площадь Маяковского и «Интурист», Вознесенский рынок, ЗАлК и шламохранилище, двухъярусный арочный мост, Запорожская Сечь за частоколом, музей казачества, Змиева пещера, колхоз «Заветы Ильича», пионерлагерь «Чайка», Скифский стан и плавни. Колорады, медведки, мартыны, сомы и Царь-сом, бройлеры, подсолнухи-турели, хоботы в вросших противогазах, ударники на «Стахановите» и дружинники АСУ «Плановик-77». Стрельба от первого и третьего лица и С.Т.Р.Е.Л.А. с прицеливанием по частям тела, тринадцать навыков, перки, карма, репутация у восьми фракций, талоны вместо денег, взлом замков и ЭВМ, ремесло у верстака и костра, «Очко» в «Интуристе», спутники Ярина и Тимофей, радио «Маяк-Запорожье» и режим «Выживание». Четыре пути к финалу на мосту: Комендатура, Сечь, Плановик или своя голова.',
         genre: 'Ролевая игра',
         tags: ['Постапокалипсис', 'Открытый мир', 'Выбор и последствия', 'СССР', 'Сюжет'],
         shots: ['Тарасова груша, Вознесенка', 'Мост Преображенского на закате'],
         launch: () => window.appFalloutZP && window.appFalloutZP.open()
       },
-      korovany: {
-        id: 'korovany',
-        steam: true,
-        title: 'Корованы',
+      korovany_demo: {
+        id: 'korovany_demo',
+        cdDemo: true,
+        title: 'Корованы Demo',
         subtitle: '3Д-экшон: лесные эльфы, охрана дворца и Злой',
         developer: 'Джва Года Софт (2000) / Win 98 Edition',
-        price: 22.22,
-        priceDisplay: '$22.22',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'korovany',
-        setupExe: 'Setup_Korovany.exe',
+        setupExe: 'korovanydemo.exe',
         targetExe: 'KOROVANY.EXE',
         folder: 'Korovany',
-        fileSize: '310 MB (1 CD-ROM, 3D Accelerated)',
-        desc: 'Игра по письму Кирилла, который джва года хотел такую игру. Три стороны делят одну долину: лесные эльфы в густом западном лесу, охрана дворца на северном холме и Злой в старом форте в горах. Посередине Развилки, откуда во все стороны ходят корованы, запряжённые коровами. Их можно грабить. Играйте эльфом: отбивайте набеги солдат дворца и войска Злого, жгите их припасы. Играйте стражником: стойте на посту, ловите шпионов, ходите в набеги и слушайтесь воеводу, иначе выговор. Играйте Злым: вербуйте войско, отдавайте приказы и сами ведите армию на дворец. Удар попадает туда, куда вы смотрите: можно отрубить руку, ногу или голову, выколоть глаз. Без перевязки культя истекает кровью, без глаза не видно половины экрана, без ноги придётся ползти, пересесть в коляску или поставить протез. Вдали деревья нарисованы картинкой и становятся трёхмерными, когда подходишь. Трупы остаются лежать. Лавки, торг, дом в Развилках, навыки, переходы по карте. Сохраняться можно.',
-        genre: 'Экшен',
-        tags: ['Корованы', 'Открытый мир', 'Три стороны', 'Отрубание конечностей', 'Протезы'],
-        shots: ['Листва в густом лесу', 'Грабёж корована на тракте'],
-        launch: () => window.appKorovany && window.appKorovany.open()
-      },
-      korovany: {
-        id: 'korovany',
-        steam: true,
-        title: 'Корованы',
-        subtitle: '3Д-экшон: лесные эльфы, охрана дворца и Злой',
-        developer: 'Джва Года Софт (2000) / Win 98 Edition',
-        price: 22.22,
-        priceDisplay: '$22.22',
-        icon: 'korovany',
-        setupExe: 'Setup_Korovany.exe',
-        targetExe: 'KOROVANY.EXE',
-        folder: 'Korovany',
-        fileSize: '310 MB (1 CD-ROM, 3D Accelerated)',
+        fileSize: '39.5 MB (Igromania CD Edition)',
         desc: 'Игра по письму Кирилла, который джва года хотел такую игру. Три стороны делят одну долину: лесные эльфы в густом западном лесу, охрана дворца на северном холме и Злой в старом форте в горах. Посередине Развилки, откуда во все стороны ходят корованы, запряжённые коровами. Их можно грабить. Играйте эльфом: отбивайте набеги солдат дворца и войска Злого, жгите их припасы. Играйте стражником: стойте на посту, ловите шпионов, ходите в набеги и слушайтесь воеводу, иначе выговор. Играйте Злым: вербуйте войско, отдавайте приказы и сами ведите армию на дворец. Удар попадает туда, куда вы смотрите: можно отрубить руку, ногу или голову, выколоть глаз. Без перевязки культя истекает кровью, без глаза не видно половины экрана, без ноги придётся ползти, пересесть в коляску или поставить протез. Вдали деревья нарисованы картинкой и становятся трёхмерными, когда подходишь. Трупы остаются лежать. Лавки, торг, дом в Развилках, навыки, переходы по карте. Сохраняться можно.',
         genre: 'Экшен',
         tags: ['Корованы', 'Открытый мир', 'Три стороны', 'Отрубание конечностей', 'Протезы'],
@@ -981,38 +965,38 @@ class GameManager {
         shots: ['Дом семьи Гот', 'Создание семьи'],
         launch: () => window.appSims3 && window.appSims3.open()
       },
-      kotor98: {
-        id: 'kotor98',
-        steam: true,
-        title: 'Star Wars: Knights of the Old Republic 98',
+      kotor98_demo: {
+        id: 'kotor98_demo',
+        cdDemo: true,
+        title: 'Star Wars: Knights of the Old Republic 98 Demo',
         subtitle: 'Ролевая игра BioWare — глава «Тарис»',
         developer: 'BioWare / LucasArts (1999) / Win 98 Edition',
-        price: 42.99,
-        priceDisplay: '$42.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'kotor98',
-        setupExe: 'Setup_KOTOR98.exe',
+        setupExe: 'kotor98demo.exe',
         targetExe: 'KOTOR.EXE',
         folder: 'KOTOR98',
-        fileSize: '1.2 GB (3 CD-ROM, 3D Accelerated)',
+        fileSize: '47.3 MB (Igromania CD Edition)',
         desc: 'За 4000 лет до Империи флот ситхов сбивает «Шпиль Эндара» над городом-планетой Тарис. Создайте Солдата, Разведчика или Негодяя и найдите джедая Бастилу Шан. Бои в реальном времени с паузой по правилам d20: раунды, броски атаки, боевые умения, гранаты и Сила. Карт, Миссия, Заалбар, Бастила, Т3-М4 и Кандерус. Верхний и Нижний город, Подгород, канализация с ранкором, базы вулкаров и ситхов, гонки на свупах, пазаак, дуэльный ринг, выбор Светлой и Тёмной стороны — до побега на «Эбеновом ястребе».',
         genre: 'Ролевая игра',
         tags: ['Звёздные войны', 'Тактическая пауза', 'Правила d20', 'Спутники'],
         shots: ['Кантина Верхнего города', 'Бой на базе «Чёрных вулкаров»'],
         launch: () => window.appKotor98 && window.appKotor98.open()
       },
-      hl2: {
-        id: 'hl2',
-        steam: true,
-        title: 'Half-Life 2',
+      hl2_demo: {
+        id: 'hl2_demo',
+        cdDemo: true,
+        title: 'Half-Life 2 Demo',
         subtitle: 'Шутер от первого лица — издание 2000 года',
         developer: 'Valve Software (2000) / Win 98 Edition',
-        price: 49.99,
-        priceDisplay: '$49.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'hl2',
-        setupExe: 'Setup_HL2.exe',
+        setupExe: 'hl2demo.exe',
         targetExe: 'HL2.EXE',
         folder: 'HL2',
-        fileSize: '620 MB (1 CD-ROM, установка 24 МБ, 3D Accelerated)',
+        fileSize: '49.0 MB (Igromania CD Edition)',
         desc: 'Доктор Гордон Фримен просыпается в оккупированном Сити 17. Четырнадцать глав одним непрерывным путём: вокзал и облава, лаборатория Кляйнера, каналы, аэролодка против вертолёта-охотника, Восточная Чёрная Меза, ночной Рейвенхолм с отцом Григорием, багги на Шоссе 17, песчаные ловушки и феропод, Нова Проспект, восстание, страйдеры и Цитадель. Гравипушка, физика предметов, отряд повстанцев, Аликс, Барни и Пёс. Программный и OpenGL-рендер, 16-битный цвет, тайники повстанцев.',
         genre: 'Шутер от первого лица',
         tags: ['Научная фантастика', 'Физика', 'Транспорт', 'Сюжет'],
@@ -1129,8 +1113,16 @@ class GameManager {
       }
     };
 
+    this.demoRenames = {
+      homm1: 'homm1_demo', sammax202: 'sammax202_demo', 'neon-racer': 'neon-racer_demo', 'half-life': 'half-life_demo',
+      hl2: 'hl2_demo', kotor98: 'kotor98_demo', maxpayne: 'maxpayne_demo', xiii: 'xiii_demo', falloutzp: 'falloutzp_demo',
+      fallout2: 'fallout98_demo', tekken3: 'tekken98_demo', dmc98: 'dmc98_demo', dao98: 'dao98_demo', mc98: 'mc98_demo',
+      stalker98: 'stalker98_demo', korovany: 'korovany_demo', quest: 'quest_demo'
+    };
+
     this.state = this.loadState();
     this.listeners = [];
+    this.renameDemoAppsInVfs();
     if (window.vfs && window.vfs.ensureIntegrity) {
       window.vfs.ensureIntegrity();
     }
@@ -1149,6 +1141,7 @@ class GameManager {
           if (!parsed.installed.includes(id)) parsed.installed.push(id);
         }
         if (!parsed.steamMigrated) this.moveGamesToSteam(parsed);
+        this.renameDemoIds(parsed);
         return parsed;
       }
     } catch (e) {
@@ -1170,6 +1163,54 @@ class GameManager {
     state.purchased = state.purchased.filter(id => !steamIds.includes(id) || !preGrantedLicenses.includes(id));
     Object.keys(state).filter(key => key.endsWith('Granted')).forEach(key => delete state[key]);
     state.steamMigrated = true;
+  }
+
+  renameDemoIds(state) {
+    for (const key of ['purchased', 'downloaded', 'installed']) {
+      const ids = state[key].map(id => this.demoRenames[id] || id);
+      state[key] = ids.filter((id, i) => ids.indexOf(id) === i);
+    }
+  }
+
+  renameDemoAppsInVfs() {
+    if (!window.vfs || !window.vfs.resolvePath) return;
+    const games = window.vfs.resolvePath(['My Computer', 'C:', 'Games']);
+    if (!games) return;
+    let changed = false;
+    const walk = node => {
+      if (node.app && this.demoRenames[node.app]) {
+        node.app = this.demoRenames[node.app];
+        changed = true;
+      }
+      Object.values(node.children || {}).forEach(walk);
+    };
+    walk(games);
+    if (changed) window.vfs.saveToStorage();
+  }
+
+  isCdDemo(id) {
+    return !!(this.catalog[id] && this.catalog[id].cdDemo);
+  }
+
+  getCdDemoIds() {
+    return Object.keys(this.catalog).filter(id => this.catalog[id].cdDemo);
+  }
+
+  showOnCd(id) {
+    const game = this.catalog[id];
+    if (!game) return false;
+    const isRu = !window.i18n || window.i18n.getLanguage() !== 'en';
+    const cd = window.vfs && window.vfs.cdRomState;
+    const igromaniaInserted = !!(cd && cd.inserted && cd.discId === 'igromania_09_1998');
+    const path = `D:\\demo\\${game.setupExe}`;
+    const message = isRu
+      ? `Игра ${game.title} не установлена.<br>Демоверсия есть на компакт-диске журнала «Игромания» (${path}).${igromaniaInserted ? '' : '<br>Вставьте диск в привод D:.'}`
+      : `${game.title} is not installed.<br>The demo is on the Igromania magazine CD (${path}).${igromaniaInserted ? '' : '<br>Insert the disc into drive D:.'}`;
+    const buttons = igromaniaInserted && window.appIgroman
+      ? [{ text: isRu ? 'Открыть диск' : 'Open disc', isDefault: true, action: () => window.appIgroman.openGame(id) }, { text: 'Cancel' }]
+      : [{ text: 'OK', isDefault: true }];
+    window.winManager.openDialog({ title: game.title, icon: 'info', message, buttons });
+    return false;
   }
 
   getSteamGameIds() {
@@ -1715,10 +1756,10 @@ class GameManager {
             let readmeContent = `${game.title}\r\n==================================\r\n${game.developer}\r\n${game.subtitle || ''}`;
             if (id === 'burnout') {
               readmeContent = `Burnout: Championship Drag Racing Demo\r\n==================================\r\nBethesda Softworks / MediaTech West (1998)\r\nLicensed by Hot Rod Magazine.\r\n\r\nControls:\r\n[Space] / [W] - Throttle\r\n[S] - Brakes\r\n[Shift] / [Z] - Shift Up\r\n[Ctrl] / [X] - Shift Down\r\n[B] - Line-Lock (Burnout Brake)\r\n[N] - Nitrous Oxide\r\n[P] - Parachute\r\n[C] - Toggle Camera View`;
-            } else if (id === 'half-life') {
-              readmeContent = `Half-Life 98\r\n==================================\r\nValve Software / Sierra On-Line (1998)\r\n\r\nControls:\r\n[WASD] - Movement\r\n[Mouse] - Look and Aim\r\n[LMB] - Fire Weapon\r\n[RMB] - Secondary Attack\r\n[R] - Reload\r\n[Space] - Jump\r\n[Ctrl] - Crouch\r\n[1-5] - Select Weapon Category`;
-            } else if (id === 'neon-racer') {
-              readmeContent = `Midnight Glide\r\n==================================\r\nRetroSpeed Studios (1998)\r\n\r\nControls:\r\n[Arrow Keys] - Steer, Accelerate, Brake\r\n[Space] - Handbrake / Drift\r\n[Shift] - Nitro Boost\r\n[C] - Change Camera View`;
+            } else if (id === 'half-life_demo') {
+              readmeContent = `Half-Life 98 Demo\r\n==================================\r\nValve Software / Sierra On-Line (1998)\r\n\r\nControls:\r\n[WASD] - Movement\r\n[Mouse] - Look and Aim\r\n[LMB] - Fire Weapon\r\n[RMB] - Secondary Attack\r\n[R] - Reload\r\n[Space] - Jump\r\n[Ctrl] - Crouch\r\n[1-5] - Select Weapon Category`;
+            } else if (id === 'neon-racer_demo') {
+              readmeContent = `Midnight Glide Demo\r\n==================================\r\nRetroSpeed Studios (1998)\r\n\r\nControls:\r\n[Arrow Keys] - Steer, Accelerate, Brake\r\n[Space] - Handbrake / Drift\r\n[Shift] - Nitro Boost\r\n[C] - Change Camera View`;
             } else if (id === 'diablo') {
               readmeContent = `Diablo\r\n==================================\r\nBlizzard North (1996)\r\n\r\nControls:\r\n[Left Click] - Move / Attack / Talk / Pick up\r\n[Shift + Click] - Attack in place\r\n[Right Click] - Cast current spell\r\n[I] Inventory  [C] Character  [B] Spellbook  [Q] Quests\r\n[S] Spell select, [F5-F8] Spell hotkeys\r\n[1-8] Belt  [Tab] Automap  [Alt] Item labels  [Esc] Menu`;
             } else if (id === 'doom') {
@@ -1769,12 +1810,12 @@ Siegfried Forest, Colditz Castle, Nordhausen.
 Passwords are entered in the main menu.`;
             } else if (id === 'cop98') {
               readmeContent = `S.T.A.L.K.E.R.: Call of Pripyat 98 - Zaton\r\n==================================\r\nGSC Game World (1999) - Win 98 Edition, software renderer\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse]/[Arrows] - Look   [Left Click]/[Enter] - Fire   [Right Click] - Aim\r\n[Shift] - Sprint   [Ctrl]/[C] - Crouch   [Space] - Jump   [R] - Reload / clear jam\r\n[1-4] - Knife, pistol, rifle, grenades   [G] - Throw grenade   [B] - Throw bolt\r\n[O] - Artifact detector   [L] - Flashlight   [V] - Fire mode   [Y] - Ammo type\r\n[F] - Talk / Search / Pick up   [I]/[Tab] - Inventory   [P]/[M] - PDA\r\n[F1-F4] - Quick slots   [F5]/[F9] - Quick save/load   [Esc] - Menu\r\n\r\nMajor Degtyarev investigates the loss of the Skat helicopters.\r\nHide from emissions indoors. Throw bolts before you step.\r\nThe text quest STALKER.EXE and XR98.EXE are different games.`;
-            } else if (id === 'dao98') {
-              readmeContent = `Dragon Age: Origins 98\r\n==================================\r\nBioWare (2000) - Win 98 Edition, 3D accelerated\r\n\r\nControls:\r\n[Left Click] - Move / Attack / Talk / Use   [W/A/S/D] - Move   [Q/E], [Right Drag] - Camera   [Wheel] - Zoom to tactical view\r\n[Space] - Pause   [F1-F4] - Select party member   [1-0] - Quickbar   [Tab] - Highlight   [H] - Hold position\r\n[C] Character  [K] Abilities  [I] Inventory  [J] Journal  [M] Map  [T] Tactics  [N] Crafting  [P] Party\r\n[F5]/[F9] - Quick save/load   [Esc] - Menu   Dialog: [1-9]\r\n\r\nSix origins, Ostagar, the Korcari Wilds, the Tower of Ishal and Lothering.`;
-            } else if (id === 'dmc98') {
-              readmeContent = `Devil May Cry 4 98\r\n==================================\r\nCapcom (2000) - Win 98 Edition, 3D accelerated\r\n\r\nControls:\r\n[W/A/S/D] - Move   [J] / [Left Click] - Red Queen   [K] / [Right Click] - Blue Rose (hold to charge)\r\n[L] / [Middle Click] - Devil Bringer: Buster, Snatch, Hell Bound   [Space] - Jump / Enemy Step\r\n[Shift] - Lock-on: toward + J = Streak, away + J = High Roller, side + Space = Roll\r\n[I] - Exceed (press on hit for EX-Act)   [O] - Devil Trigger   [U] - Taunt\r\n[Q]/[E] - Camera   [C] - Camera behind   [1-4] - Items   [Tab] - Objective   [Esc] - Pause\r\n\r\nMissions: Birds of Feathers, La Porte De L'Enfer, Cold Blooded,\r\nResurrection, Profession of Faith.\r\nSpend Red Orbs and Proud Souls at the Divinity Statue.`;
-            } else if (id === 'tekken3') {
-              readmeContent = `Tekken 3 98\r\n==================================\r\nNamco (1998) - Win 98 Edition, 3D accelerated\r\n\r\nPlayer 1: [W/A/S/D] - Move   [U] Left punch (1)   [I] Right punch (2)   [J] Left kick (3)   [K] Right kick (4)\r\nPlayer 2: [Arrows] - Move   [Num 4] (1)   [Num 5] (2)   [Num 1] (3)   [Num 2] (4)\r\n[Enter] - Start / Pause   [Esc] - Pause menu, move list   Gamepads are supported.\r\n\r\nTap up or down to sidestep. Hold back to block high and mid, hold down-back to block low.\r\n1+3 and 2+4 are throws: break them with 1 or 2. Press a button as you land to tech roll.\r\nClear the Arcade mode to unlock hidden fighters, endings and new modes.`;
+            } else if (id === 'dao98_demo') {
+              readmeContent = `Dragon Age: Origins 98 Demo\r\n==================================\r\nBioWare (2000) - Win 98 Edition, 3D accelerated\r\n\r\nControls:\r\n[Left Click] - Move / Attack / Talk / Use   [W/A/S/D] - Move   [Q/E], [Right Drag] - Camera   [Wheel] - Zoom to tactical view\r\n[Space] - Pause   [F1-F4] - Select party member   [1-0] - Quickbar   [Tab] - Highlight   [H] - Hold position\r\n[C] Character  [K] Abilities  [I] Inventory  [J] Journal  [M] Map  [T] Tactics  [N] Crafting  [P] Party\r\n[F5]/[F9] - Quick save/load   [Esc] - Menu   Dialog: [1-9]\r\n\r\nSix origins, Ostagar, the Korcari Wilds, the Tower of Ishal and Lothering.`;
+            } else if (id === 'dmc98_demo') {
+              readmeContent = `Devil May Cry 98 Demo\r\n==================================\r\nCapcom (2000) - Win 98 Edition, 3D accelerated\r\n\r\nControls:\r\n[W/A/S/D] - Move   [J] / [Left Click] - Red Queen   [K] / [Right Click] - Blue Rose (hold to charge)\r\n[L] / [Middle Click] - Devil Bringer: Buster, Snatch, Hell Bound   [Space] - Jump / Enemy Step\r\n[Shift] - Lock-on: toward + J = Streak, away + J = High Roller, side + Space = Roll\r\n[I] - Exceed (press on hit for EX-Act)   [O] - Devil Trigger   [U] - Taunt\r\n[Q]/[E] - Camera   [C] - Camera behind   [1-4] - Items   [Tab] - Objective   [Esc] - Pause\r\n\r\nMissions: Birds of Feathers, La Porte De L'Enfer, Cold Blooded,\r\nResurrection, Profession of Faith.\r\nSpend Red Orbs and Proud Souls at the Divinity Statue.`;
+            } else if (id === 'tekken98_demo') {
+              readmeContent = `Tekken 98 Demo\r\n==================================\r\nNamco (1998) - Win 98 Edition, 3D accelerated\r\n\r\nPlayer 1: [W/A/S/D] - Move   [U] Left punch (1)   [I] Right punch (2)   [J] Left kick (3)   [K] Right kick (4)\r\nPlayer 2: [Arrows] - Move   [Num 4] (1)   [Num 5] (2)   [Num 1] (3)   [Num 2] (4)\r\n[Enter] - Start / Pause   [Esc] - Pause menu, move list   Gamepads are supported.\r\n\r\nTap up or down to sidestep. Hold back to block high and mid, hold down-back to block low.\r\n1+3 and 2+4 are throws: break them with 1 or 2. Press a button as you land to tech roll.\r\nClear the Arcade mode to unlock hidden fighters, endings and new modes.`;
             } else if (id === 'ow98') {
               readmeContent = `Overwatch 98\r\n==================================\r\nBlizzard Entertainment (2000) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium II 350 MHz, 64 MB RAM, 3D accelerator with 16 MB (TNT2 / Voodoo3 / Rage 128), DirectX 7.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Primary fire   [Right Click] - Secondary fire\r\n[Space] - Jump   [Ctrl] - Crouch   [Shift] / [E] - Abilities   [Q] - Ultimate   [R] - Reload   [V] - Melee\r\n[H] - Change hero in spawn   [Tab] - Scoreboard   [T] - Spray   [B] - Emote   [X] - Need healing   [Z] - Group up\r\n[Esc] - Menu\r\n\r\nModes: Assault (Hanamura, Volskaya Industries), Escort (Dorado, Watchpoint: Gibraltar),\r\nHybrid (Hollywood, King's Row), Control (Ilios, Lijiang Tower).\r\nNew to the game? Open TRAINING and play the tutorial with Soldier: 76.\r\n\r\nThe world could always use more heroes.`;
             } else if (id === 'sammax') {
@@ -1791,8 +1832,8 @@ Passwords are entered in the main menu.`;
               readmeContent = `Sam & Max: Bright Side of the Moon\r\n==================================\r\nLucasArts (2000) - Win 98 Edition, 320x200, 256 colors\r\n\r\nControls:\r\n[Left Click] - Walk / do the current action   [Right Click] / [Wheel] - Next cursor: Walk, Look, Use, Talk\r\n[1-4] - Choose the cursor   [I]/[Tab] - Sam's box (inventory)   [Right Click] with an item - Put it back\r\n[.] - Skip a line   [Esc] - Skip a cutscene / Leave the arcade game / Menu   [F5] - Save, load, settings   [Space] - Pause\r\nConversations: click an icon, hover it to read the line, or press [1-9].\r\nThe DeSoto flies between the street and the Moon: use the car and pick a destination.\r\nTic Tac Doom: click a cell to place a cross. The talisman goes to the one who loses.\r\n\r\nA rainbow hangs over the city at night and it comes from the Moon. Hugh Bliss is waiting in the Blister of Tranquility.\r\nTalk to Max when you are stuck. Even in three pieces he still has an idea.`;
             } else if (id === 'sammax201') {
               readmeContent = `Sam & Max: Ice Station Santa\r\n==================================\r\nLucasArts (2000) - Win 98 Edition, 320x200, 256 colors\r\n\r\nControls:\r\n[Left Click] - Walk / do the current action   [Right Click] / [Wheel] - Next cursor: Walk, Look, Use, Talk\r\n[1-4] - Choose the cursor   [I]/[Tab] - Sam's box (inventory)   [Right Click] with an item - Put it back\r\n[.] - Skip a line   [Esc] - Skip a cutscene / Leave a board / Menu   [F5] - Save, load, settings   [Space] - Pause\r\nConversations: click an icon, hover it to read the line, or press [1-9].\r\nThe DeSoto flies between the street and the North Pole: use the car and pick a destination.\r\nQuiz board: whisper a letter to Lincoln, pick your own letter, press the answer button.\r\nRing: [Up]/[Z] - Punch, [Down]/[X] - Block. Race: the car follows the mouse pointer, [Left]/[Right] steer.\r\n\r\nA giant robot arrived a week before Christmas. The label on its foot says it came from Santa's workshop.\r\nTalk to Max when you are stuck. He has been on the naughty list for years and knows his way around.`;
-            } else if (id === 'sammax202') {
-              readmeContent = `Sam & Max: Moai Better Blues\r\n==================================\r\nLucasArts (2000) - Win 98 Edition, 320x200, 256 colors\r\n\r\nControls:\r\n[Left Click] - Walk / do the current action   [Right Click] / [Wheel] - Next cursor: Walk, Look, Use, Talk\r\n[1-4] - Choose the cursor   [I]/[Tab] - Sam's box (inventory)   [Right Click] with an item - Put it back\r\n[.] - Skip a line   [Esc] - Skip a cutscene / Menu   [F5] - Save, load, settings   [Space] - Pause\r\nConversations: click an icon, hover it to read the line, or press [1-9].\r\nStep through the Bermuda Triangle portal to travel between New York, Easter Island, and the dimensional rift.\r\n\r\nA dimensional triangle appeared outside the office, leading to Easter Island and an impending volcanic eruption.\r\nTalk to Max when you are stuck. He has a unique perspective on geology and ancient prophecies.`;
+            } else if (id === 'sammax202_demo') {
+              readmeContent = `Sam & Max: Moai Better Blues Demo\r\n==================================\r\nLucasArts (2000) - Win 98 Edition, 320x200, 256 colors\r\n\r\nControls:\r\n[Left Click] - Walk / do the current action   [Right Click] / [Wheel] - Next cursor: Walk, Look, Use, Talk\r\n[1-4] - Choose the cursor   [I]/[Tab] - Sam's box (inventory)   [Right Click] with an item - Put it back\r\n[.] - Skip a line   [Esc] - Skip a cutscene / Menu   [F5] - Save, load, settings   [Space] - Pause\r\nConversations: click an icon, hover it to read the line, or press [1-9].\r\nStep through the Bermuda Triangle portal to travel between New York, Easter Island, and the dimensional rift.\r\n\r\nA dimensional triangle appeared outside the office, leading to Easter Island and an impending volcanic eruption.\r\nTalk to Max when you are stuck. He has a unique perspective on geology and ancient prophecies.`;
             } else if (id === 'bttf') {
               readmeContent = `Back to the Future: The Game - Episode 1: It's About Time\r\n==================================\r\nTelltale Games (2000) - Win 98 Edition, 640x480, 256 colors\r\n\r\nControls:\r\n[Left Click] - Walk / Use / Talk   [Right Click] - Look   [Wheel] / bar at the bottom - Pockets\r\n[Click an item] then [Click a target] - Use an item   [1-6] - Pick a line in a conversation\r\n[Space] / [Click] - Skip a line   [Esc] - Skip a cutscene / Menu   [F5] - Save and load\r\nStuck? Open the menu and press THINK, McFLY: up to four hints for every goal.\r\n\r\nDoc vanished six months ago. Tonight the DeLorean came back on its own.\r\nGreat Scott!`;
             } else if (id === 'diablo2') {
@@ -1801,10 +1842,10 @@ Passwords are entered in the main menu.`;
               readmeContent = `Forza Horizon: Riga\r\n==================================\r\nPlayground Games (2000) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium II 400 MHz, 64 MB RAM, 3D accelerator with 16 MB (TNT2 / Voodoo3 / Rage 128), DirectX 7.\r\n\r\nControls:\r\n[W]/[Up] - Throttle   [S]/[Down] - Brake / Reverse   [A/D]/[Left/Right] - Steer\r\n[Space]/[Shift] - Handbrake   [Q]/[E] - Gear down / up (manual)   [R] - Rewind   [B] - Look back\r\n[C] - Camera: chase, far, hood, cockpit   [L] - Headlights   [H] - Horn   [Tab] - Radio\r\n[V] - Photo mode: free camera, lenses, film looks; photos go to My Pictures\\Forza Horizon\r\n[Enter] - Start the event you are standing at   [M] - Map, waypoints and fast travel\r\n[Backspace] - Reset the car to the road   [Esc]/[P] - Horizon menu   Gamepads are supported.\r\n\r\nWin events to earn wristbands. Smash XP boards, find barn finds,\r\nbeat speed traps and drift zones. The festival starts in Mezaparks.
 
 Street map of Riga based on OpenStreetMap data, (c) OpenStreetMap contributors, ODbL.`;
-            } else if (id === 'xiii') {
-              readmeContent = `XIII\r\n==================================\r\nUbisoft Paris (2000) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium II 350 MHz, 64 MB RAM, 3D accelerator with 16 MB (TNT2 / Voodoo3 / Rage 128), DirectX 7.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire   [Right Click] - Zoom\r\n[Space] - Jump   [C]/[Ctrl] - Crouch   [Shift] - Walk quietly   [E]/[F] - Use, pick locks, take a hostage\r\n[R] - Reload   [1-9] - Weapons   [Q] - Last weapon   [G] - Grenade   [H] - Medkit\r\n[Tab] - Objectives   [F5] - Quick save   [F9] - Quick load   [Esc] - Pause menu\r\n\r\nTen chapters from Brighton Beach to Plain Rock Penitentiary.\r\nEvery document you find is a piece of your past. Collect them all for the XX dossier.`;
-            } else if (id === 'maxpayne') {
-              readmeContent = `Max Payne\r\n==================================\r\nRemedy Entertainment (2001) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium II 450 MHz, 96 MB RAM, 3D accelerator with 16 MB (TNT2 / Voodoo3 / Rage 128), DirectX 7.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Aim   [Left Click] - Fire   [Right Click] - Bullet time / Shootdodge\r\n[Shift] - Bullet time   [Q] - Shootdodge   [Space] - Jump   [C]/[Ctrl] - Crouch   [Alt] - Walk\r\n[E]/[F] - Use   [R] - Reload   [H]/[Backspace] - Painkillers   [G] - Throw grenade or Molotov\r\n[1-5], [Wheel] - Weapons   [Tab] - Max's thoughts   [Enter] - Skip a line   [F5] - Quick save   [F9] - Quick load   [Esc] - Menu\r\n\r\nPart I: The American Dream. A tutorial, a prologue and nine chapters, from Roscoe Street Station to Aesir Plaza.\r\nKills refill the hourglass. Painkillers heal over time. Harder modes open after Part I.`;
+            } else if (id === 'xiii_demo') {
+              readmeContent = `XIII Demo\r\n==================================\r\nUbisoft Paris (2000) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium II 350 MHz, 64 MB RAM, 3D accelerator with 16 MB (TNT2 / Voodoo3 / Rage 128), DirectX 7.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire   [Right Click] - Zoom\r\n[Space] - Jump   [C]/[Ctrl] - Crouch   [Shift] - Walk quietly   [E]/[F] - Use, pick locks, take a hostage\r\n[R] - Reload   [1-9] - Weapons   [Q] - Last weapon   [G] - Grenade   [H] - Medkit\r\n[Tab] - Objectives   [F5] - Quick save   [F9] - Quick load   [Esc] - Pause menu\r\n\r\nTen chapters from Brighton Beach to Plain Rock Penitentiary.\r\nEvery document you find is a piece of your past. Collect them all for the XX dossier.`;
+            } else if (id === 'maxpayne_demo') {
+              readmeContent = `Max Payne Demo\r\n==================================\r\nRemedy Entertainment (2001) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium II 450 MHz, 96 MB RAM, 3D accelerator with 16 MB (TNT2 / Voodoo3 / Rage 128), DirectX 7.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Aim   [Left Click] - Fire   [Right Click] - Bullet time / Shootdodge\r\n[Shift] - Bullet time   [Q] - Shootdodge   [Space] - Jump   [C]/[Ctrl] - Crouch   [Alt] - Walk\r\n[E]/[F] - Use   [R] - Reload   [H]/[Backspace] - Painkillers   [G] - Throw grenade or Molotov\r\n[1-5], [Wheel] - Weapons   [Tab] - Max's thoughts   [Enter] - Skip a line   [F5] - Quick save   [F9] - Quick load   [Esc] - Menu\r\n\r\nPart I: The American Dream. A tutorial, a prologue and nine chapters, from Roscoe Street Station to Aesir Plaza.\r\nKills refill the hourglass. Painkillers heal over time. Harder modes open after Part I.`;
             } else if (id === 'legion') {
               readmeContent = `Legion Arena
 ==================================
@@ -1822,18 +1863,16 @@ Battle:
 
 The full Roman campaign: 68 battles in 14 eras, from the wars in Latium to Philippi, the Arena and the encyclopedia.
 Command points are scarce. Plan well, then let your men fight.`;
-            } else if (id === 'homm1') {
-              readmeContent = `Heroes of Might and Magic: A Strategic Quest (Win 98 Edition)\r\n==================================\r\nNew World Computing (1995) - 640x480, 256 colors\r\n\r\nAdventure Map Controls:\r\n[Left Click on tile] - Plan A* path; click same tile again or press [M] to march\r\n[Right Click on tile] - Inspect terrain, town, mine or monster stack\r\n[Arrow Keys] - Scroll Adventure Map camera\r\n[T] / [Double Click Town] - Open Town Screen\r\n[H] - Hero Sheet & Artifacts   [C] - Cast Adventure Spell   [D] - Dig for Ultimate Artifact\r\n[E] - End Day (7 days per week, weekly creature growth on Day 1)\r\n[F5] - Save Game   [F9] - Load Game\r\n\r\nTown Screen:\r\nClick Castle to build (1 structure per day), Tavern to hire heroes, Mage Guild to study spells,\r\nor creature dwellings to recruit troops. Shift-click army slots to split stacks.\r\n\r\nTactical Combat (7x5 grid):\r\n[Left Click] - Move or Attack   [C] - Cast Spell   [Space]/[D] - Defend   [A] - Auto-Combat   [R] - Retreat`;
+            } else if (id === 'homm1_demo') {
+              readmeContent = `Heroes of Might and Magic 98 Demo\r\n==================================\r\nNew World Computing (1995) - 640x480, 256 colors\r\n\r\nAdventure Map Controls:\r\n[Left Click on tile] - Plan A* path; click same tile again or press [M] to march\r\n[Right Click on tile] - Inspect terrain, town, mine or monster stack\r\n[Arrow Keys] - Scroll Adventure Map camera\r\n[T] / [Double Click Town] - Open Town Screen\r\n[H] - Hero Sheet & Artifacts   [C] - Cast Adventure Spell   [D] - Dig for Ultimate Artifact\r\n[E] - End Day (7 days per week, weekly creature growth on Day 1)\r\n[F5] - Save Game   [F9] - Load Game\r\n\r\nTown Screen:\r\nClick Castle to build (1 structure per day), Tavern to hire heroes, Mage Guild to study spells,\r\nor creature dwellings to recruit troops. Shift-click army slots to split stacks.\r\n\r\nTactical Combat (7x5 grid):\r\n[Left Click] - Move or Attack   [C] - Cast Spell   [Space]/[D] - Defend   [A] - Auto-Combat   [R] - Retreat`;
             } else if (id === 'fallout') {
               readmeContent = 'Fallout: A Post-Nuclear Role-Playing Game\r\n==================================\r\nInterplay Productions (1997) - Win 98 Edition, version 1.2, 640x480, 256 colors\r\n\r\nSystem requirements: Pentium 90 MHz, 16 MB RAM, SVGA video card (640x480, 256 colors), DirectX 3.0a, 2x CD-ROM, mouse.\r\n\r\nControls:\r\n[Left Click] - Walk or act with the current cursor   [Right Click] - Switch the walk and action cursors\r\n[Hold Left Button] on an object - Action menu: look, talk, use, skill, rotate\r\n[A] - Attack   [Space] - End turn   [Enter] - End combat   [N] - Weapon mode   [B] - Swap hands   [M] - Cursor mode\r\n[I] - Inventory   [C] - Character   [P] - Pip-Boy   [Z] - Pip-Boy clock   [S] - Skilldex   [Tab] - Automap   [O]/[Esc] - Options\r\n[1-8] - Sneak, Lockpick, Steal, Traps, First Aid, Doctor, Science, Repair\r\n[Home] - Center on you   [,]/[.] - Turn   [/] - Time   [+]/[-] - Brightness   [F1] - Help\r\n[F4]/[Ctrl+S] - Save   [F5]/[Ctrl+L] - Load   [F6] - Quick save   [F7] - Quick load   [F10]/[Ctrl+Q] - Quit\r\n\r\nVault 13, 5 December 2161. The water chip has failed and the vault has water for 150 days.\r\nThe Overseer has chosen you to find a new one.';
-            } else if (id === 'falloutzp') {
-              readmeContent = `Fallout: Запорожье\r\n==================================\r\nObsidian Entertainment (2001) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium III 600 MHz, 128 MB RAM, 3D accelerator with 32 MB (GeForce2 / Radeon), DirectX 8.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire / Swing   [Right Click] - Aim   [Shift] - Walk   [Space] - Jump\r\n[Ctrl] - Sneak   [E] - Use, talk, open   [R] - Reload   [F] - First / third person   [H] - Holster   [G] - Throw grenade\r\n[V] - S.T.R.E.L.A. targeting   [Tab] - Pioneer-77   [T] - Wait   [L] - Pioneer light   [1-8] - Hotkeys   [Wheel] - Next weapon\r\n[F5] - Quick save   [F9] - Quick load   [Esc] - Menu\r\n\r\nZaporozhye, 1 September 2280. The courier of the Main Post Office was shot on the bridge and thrown into the Dnieper.\r\nVoznesenovsky district and the island of Khortytsia are open from the start. Danger grows with distance from Voznesenka.\r\n\r\nMap of Zaporozhye based on OpenStreetMap data, (c) OpenStreetMap contributors, ODbL. Heights: SRTM, NASA.`;
+            } else if (id === 'falloutzp_demo') {
+              readmeContent = `Fallout: Запорожье Demo\r\n==================================\r\nObsidian Entertainment (2001) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium III 600 MHz, 128 MB RAM, 3D accelerator with 32 MB (GeForce2 / Radeon), DirectX 8.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire / Swing   [Right Click] - Aim   [Shift] - Walk   [Space] - Jump\r\n[Ctrl] - Sneak   [E] - Use, talk, open   [R] - Reload   [F] - First / third person   [H] - Holster   [G] - Throw grenade\r\n[V] - S.T.R.E.L.A. targeting   [Tab] - Pioneer-77   [T] - Wait   [L] - Pioneer light   [1-8] - Hotkeys   [Wheel] - Next weapon\r\n[F5] - Quick save   [F9] - Quick load   [Esc] - Menu\r\n\r\nZaporozhye, 1 September 2280. The courier of the Main Post Office was shot on the bridge and thrown into the Dnieper.\r\nVoznesenovsky district and the island of Khortytsia are open from the start. Danger grows with distance from Voznesenka.\r\n\r\nMap of Zaporozhye based on OpenStreetMap data, (c) OpenStreetMap contributors, ODbL. Heights: SRTM, NASA.`;
             } else if (id === 'anotherwar') {
               readmeContent = 'Другая война (Another War)\r\n==================================\r\nMirage Interactive (2002) - Win 98 Edition, 800x600\r\n\r\nСистемные требования: Pentium II 433 МГц, 128 MB RAM, видеокарта с 8 MB памяти, DirectX 8.1.\r\n\r\nУправление:\r\n[Левая кнопка] - идти, осмотреть, подобрать   [Правая кнопка] - говорить, использовать, открыть\r\n[D] - достать или спрятать оружие   [Ctrl]+[Левая кнопка] - прицельный выстрел   [Enter] - атаковать ближайшего врага\r\n[R] - перезарядить   [E] - починить оружие   [1-7] - предметы на поясе   [W] - шаг или бег\r\n[F1-F8] - выбрать особый навык   [Пробел] - применить навык   [Backspace] - отменить выбор\r\n[I] - снаряжение   [S] - параметры   [N] - дневник   [M] - карта   [O] - настройки   [H]/[F10] - помощь\r\n[Ctrl+S] - сохранить   [Ctrl+L] - загрузить   [F11] - быстрое сохранение   [F12] - быстрая загрузка\r\n[P] - пауза   [Пробел]/[Enter] - пропустить реплику в сценке   [Esc] - меню\r\n\r\nАкт I. Аннет, оккупированная Франция. Выберите героя: Силач, Вор или Интеллектуал.\r\nВыберитесь из подвалов вместе с Иоганном и найдите способ уехать из города.\r\nПродолжение следует: впереди Югославия.';
-            } else if (id === 'korovany') {
-              readmeContent = 'Корованы\r\n==================================\r\nДжва Года Софт (2000) - Win 98 Edition, 3D accelerated\r\n\r\nСистемные требования: Pentium II 300 МГц, 64 MB RAM, 3D-ускоритель с 8 MB памяти, DirectX 6.\r\n\r\nУправление:\r\n[W/A/S/D] - идти   [Shift] - бежать   [Пробел] - прыжок   [C] - пригнуться\r\n[Мышь] - смотреть   [Левая кнопка] - удар, выстрел   [Правая кнопка] - блок\r\nКуда смотрите, туда и бьёте: вверх - голова, прямо - корпус, вниз - ноги.\r\n[1/2/3] - оружие / лук / факел   [R] - убрать оружие   [E] - говорить, обыскать, поджечь\r\n[B] - перевязать рану   [H] - зелье   [V] - от первого лица\r\n[I] - инвентарь и протезы   [M] - карта   [J] - журнал   [T] - ждать   [Q] - приказы войску\r\n[F5/F9] - быстрое сохранение / загрузка   [Esc] - меню\r\n\r\nОтрубленная рука или нога кровоточит. Перевяжите её (B) или идите к знахарке, иначе умрёте.\r\nПротезы ставит мастер Деревяшкин в Развилках.\r\n\r\nПо письму Кирилла.';
-            } else if (id === 'korovany') {
-              readmeContent = 'Корованы\r\n==================================\r\nДжва Года Софт (2000) - Win 98 Edition, 3D accelerated\r\n\r\nСистемные требования: Pentium II 300 МГц, 64 MB RAM, 3D-ускоритель с 8 MB памяти, DirectX 6.\r\n\r\nУправление:\r\n[W/A/S/D] - идти   [Shift] - бежать   [Пробел] - прыжок   [C] - пригнуться\r\n[Мышь] - смотреть   [Левая кнопка] - удар, выстрел   [Правая кнопка] - блок\r\nКуда смотрите, туда и бьёте: вверх - голова, прямо - корпус, вниз - ноги.\r\n[1/2/3] - оружие / лук / факел   [R] - убрать оружие   [E] - говорить, обыскать, поджечь\r\n[B] - перевязать рану   [H] - зелье   [V] - от первого лица\r\n[I] - инвентарь и протезы   [M] - карта   [J] - журнал   [T] - ждать   [Q] - приказы войску\r\n[F5/F9] - быстрое сохранение / загрузка   [Esc] - меню\r\n\r\nОтрубленная рука или нога кровоточит. Перевяжите её (B) или идите к знахарке, иначе умрёте.\r\nПротезы ставит мастер Деревяшкин в Развилках.\r\n\r\nПо письму Кирилла.';
+            } else if (id === 'korovany_demo') {
+              readmeContent = 'Корованы Demo\r\n==================================\r\nДжва Года Софт (2000) - Win 98 Edition, 3D accelerated\r\n\r\nСистемные требования: Pentium II 300 МГц, 64 MB RAM, 3D-ускоритель с 8 MB памяти, DirectX 6.\r\n\r\nУправление:\r\n[W/A/S/D] - идти   [Shift] - бежать   [Пробел] - прыжок   [C] - пригнуться\r\n[Мышь] - смотреть   [Левая кнопка] - удар, выстрел   [Правая кнопка] - блок\r\nКуда смотрите, туда и бьёте: вверх - голова, прямо - корпус, вниз - ноги.\r\n[1/2/3] - оружие / лук / факел   [R] - убрать оружие   [E] - говорить, обыскать, поджечь\r\n[B] - перевязать рану   [H] - зелье   [V] - от первого лица\r\n[I] - инвентарь и протезы   [M] - карта   [J] - журнал   [T] - ждать   [Q] - приказы войску\r\n[F5/F9] - быстрое сохранение / загрузка   [Esc] - меню\r\n\r\nОтрубленная рука или нога кровоточит. Перевяжите её (B) или идите к знахарке, иначе умрёте.\r\nПротезы ставит мастер Деревяшкин в Развилках.\r\n\r\nПо письму Кирилла.';
             } else if (id === 'catniss') {
               readmeContent = 'Catniss\r\n==================================\r\nKotelok Games (2000) - Win 98 Edition, 320x240, 256 colors\r\n\r\nControls:\r\n[Left]/[Right], [A]/[D] - Run   [Z]/[Space] - Jump (hold to jump higher)   [X]/[Shift] - Pounce\r\nAgainst a wall in the air: hold toward the wall to cling, then [Z] to kick off\r\n[Down]+[Z] - Drop through a plank   [Esc]/[P] - Pause   [M] - Music on/off\r\nMap: [Enter] - Play   [C] - Choose a cat   [Q] - Aquarium   Gamepad supported.\r\n\r\nNine lives at most. Every 50 coins and every bowl of milk give one more.\r\nThe van OTLOV took the kittens. Bring all four home.\r\nTwelve goldfish in bags are hidden behind cracked walls and in other odd places.';
             } else if (id === 'plov') {
@@ -1858,18 +1897,18 @@ Controls:
 Single Player: Tier 1 (Trainee) and Tier 2 (Skilled).
 Win the three arenas of a tier to face its Arena Lord in a tournament.
 Console: map q3dm6, god, noclip, give all, addbot klesk 4.`;
-            } else if (id === 'hl2') {
-              readmeContent = `Half-Life 2 - 2000 Edition\r\n==================================\r\nValve Software (2000) - Win 98 Edition\r\n\r\nSystem requirements: Pentium II 300 MHz, 64 MB RAM, 3D accelerator with 16 MB\r\n(TNT2 / Voodoo3 / Rage 128) or software renderer, DirectX 7, 24 MB free disk space.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire   [Right Click] - Alt fire\r\n[Space] - Jump   [C]/[Ctrl] - Crouch   [Shift] - Sprint   [Z]/[Alt] - Walk\r\n[E] - Use / pick up   [R] - Reload   [F] - Flashlight   [Q] - Last weapon\r\n[1-6] / Mouse wheel - Weapons   [G] - Squad command   [F6]/[F9] - Quick save/load   [Esc] - Menu\r\n\r\nGravity gun: right click pulls and holds objects, left click punts and throws.\r\nFind all rebel lambda caches. Wake up, Mr. Freeman.`;
+            } else if (id === 'hl2_demo') {
+              readmeContent = `Half-Life 2 Demo\r\n==================================\r\nValve Software (2000) - Win 98 Edition\r\n\r\nSystem requirements: Pentium II 300 MHz, 64 MB RAM, 3D accelerator with 16 MB\r\n(TNT2 / Voodoo3 / Rage 128) or software renderer, DirectX 7, 24 MB free disk space.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire   [Right Click] - Alt fire\r\n[Space] - Jump   [C]/[Ctrl] - Crouch   [Shift] - Sprint   [Z]/[Alt] - Walk\r\n[E] - Use / pick up   [R] - Reload   [F] - Flashlight   [Q] - Last weapon\r\n[1-6] / Mouse wheel - Weapons   [G] - Squad command   [F6]/[F9] - Quick save/load   [Esc] - Menu\r\n\r\nGravity gun: right click pulls and holds objects, left click punts and throws.\r\nFind all rebel lambda caches. Wake up, Mr. Freeman.`;
             } else if (id === 'gta90') {
               readmeContent = `Grand Theft Auto: Yekaterinburg '90\r\n==================================\r\nDMA Design (1997) - Win 98 Edition, Sverdlovsk 1990\r\n\r\nControls:\r\n[Arrows]/[W/A/S/D] - Drive / Walk   [Space] - Handbrake (car) / Fire (on foot)   [Ctrl] - Fire\r\n[Enter]/[F] - Get in / out of a car   [Q]/[E]/[Tab], [1-6] - Weapons   [H] - Horn   [R] - Radio\r\n[T] - Taxi job   [M] - City map   [-]/[=] - Camera zoom   [Esc] - Pause, save, settings\r\n\r\nAnswer ringing payphones on foot to get jobs.\r\nReach the chapter target in roubles to unlock the boss mission.\r\nLose the police out of sight, at a respray shop or with a bribe.`;
-            } else if (id === 'kotor98') {
-              readmeContent = `Star Wars: Knights of the Old Republic 98 - Taris\r\n==================================\r\nBioWare / LucasArts (1999) - Win 98 Edition, 3D accelerated\r\n\r\nControls:\r\n[Left Click] - Move / Attack / Talk / Use   [W/A/S/D] - Move   [Q/E], [Right Drag] - Camera   [Wheel] - Zoom\r\n[Space] - Pause (queue orders)   [Tab]/[1-3] - Switch leader   [F] - Use nearest   [H] - Medpac   [G] - Grenade\r\n[R] - Rest   [U] Equipment  [I] Inventory  [C] Character  [K] Abilities  [J] Journal  [M] Map  [P] Party  [L] Log\r\n[F5]/[F9] - Quick save/load   [Esc] - Menu   Dialog: [1-9]\r\n\r\nFind Bastila Shan and escape Taris aboard the Ebon Hawk.\r\nSwoop racing, pazaak and the Upper City dueling ring are waiting.`;
+            } else if (id === 'kotor98_demo') {
+              readmeContent = `Star Wars: Knights of the Old Republic 98 Demo\r\n==================================\r\nBioWare / LucasArts (1999) - Win 98 Edition, 3D accelerated\r\n\r\nControls:\r\n[Left Click] - Move / Attack / Talk / Use   [W/A/S/D] - Move   [Q/E], [Right Drag] - Camera   [Wheel] - Zoom\r\n[Space] - Pause (queue orders)   [Tab]/[1-3] - Switch leader   [F] - Use nearest   [H] - Medpac   [G] - Grenade\r\n[R] - Rest   [U] Equipment  [I] Inventory  [C] Character  [K] Abilities  [J] Journal  [M] Map  [P] Party  [L] Log\r\n[F5]/[F9] - Quick save/load   [Esc] - Menu   Dialog: [1-9]\r\n\r\nFind Bastila Shan and escape Taris aboard the Ebon Hawk.\r\nSwoop racing, pazaak and the Upper City dueling ring are waiting.`;
             } else if (id === 'hsr98') {
               readmeContent = `Honkai: Star Rail 98 - Jarilo-VI Edition\r\n==================================\r\nmiHoYo (1999) - Win 98 Edition\r\n\r\nControls:\r\n[W/A/S/D]/[Arrows] - Move   [Shift] - Walk   [Space]/[Enter] - Talk / Use\r\n[F] - Attack on the map (first strike)   [E] - Technique   [1-4] - Leader   [M] - Map   [Esc] - Menu\r\nBattle: [Q] Basic ATK   [E] Skill   [1-4] Ultimate   [T] Contact   [R] Fusion   [V] Auto\r\n\r\nHerta Space Station, the Astral Express and Jarilo-VI up to Cocolia.\r\nSave and teleport at Space Anchors. Spread rumors to make them true.`;
-            } else if (id === 'mc98') {
-              readmeContent = `Minecraft 98 Alpha\r\n==================================\r\nMojang Specifications (1999) - Win 98 Edition\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse]/[Arrows] - Look   [Left Click] - Dig   [Right Click] - Place / Use\r\n[Space] - Jump / Swim   [Shift] - Sneak   [Ctrl] - Sprint   [E] - Inventory   [Q] - Drop\r\n[1-9] / Mouse wheel - Hotbar   [Middle Click] - Pick block   [F3] - Debug   [Esc] - Pause\r\nCreative: double-tap Space to fly.\r\n\r\nPunch trees. Craft a workbench. Build a shelter before night.\r\nWorlds are saved automatically every minute and on exit.`;
-            } else if (id === 'stalker98') {
-              readmeContent = `S.T.A.L.K.E.R. 98: Shadow of Chernobyl\r\n==================================\r\nGSC Game World (2000) - fan remake for Win 98\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire   [Right Click] - Aim\r\n[Shift] - Sprint   [Ctrl]/[C] - Crouch   [Space] - Jump   [Q]/[E] - Lean\r\n[R] - Reload   [B] - Fire mode   [1-6] - Knife, pistol, rifle, grenade, binoculars, bolt\r\n[F] - Talk / Search / Pick up   [I] - Inventory   [P]/[Tab] - PDA   [M] - Map   [L] - Flashlight\r\n[F1-F4] - Medkit, bandage, anti-rad, food   [F6]/[F7] - Quick save/load   [Esc] - Menu\r\n\r\nLevels: Cordon, Garbage. Find Strelok.\r\nThe text quest STALKER.EXE is a different game.`;
+            } else if (id === 'mc98_demo') {
+              readmeContent = `Minecraft 98 Demo\r\n==================================\r\nMojang Specifications (1999) - Win 98 Edition\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse]/[Arrows] - Look   [Left Click] - Dig   [Right Click] - Place / Use\r\n[Space] - Jump / Swim   [Shift] - Sneak   [Ctrl] - Sprint   [E] - Inventory   [Q] - Drop\r\n[1-9] / Mouse wheel - Hotbar   [Middle Click] - Pick block   [F3] - Debug   [Esc] - Pause\r\nCreative: double-tap Space to fly.\r\n\r\nPunch trees. Craft a workbench. Build a shelter before night.\r\nWorlds are saved automatically every minute and on exit.`;
+            } else if (id === 'stalker98_demo') {
+              readmeContent = `S.T.A.L.K.E.R. 98: Тень Чернобыля Demo\r\n==================================\r\nGSC Game World (2000) - fan remake for Win 98\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire   [Right Click] - Aim\r\n[Shift] - Sprint   [Ctrl]/[C] - Crouch   [Space] - Jump   [Q]/[E] - Lean\r\n[R] - Reload   [B] - Fire mode   [1-6] - Knife, pistol, rifle, grenade, binoculars, bolt\r\n[F] - Talk / Search / Pick up   [I] - Inventory   [P]/[Tab] - PDA   [M] - Map   [L] - Flashlight\r\n[F1-F4] - Medkit, bandage, anti-rad, food   [F6]/[F7] - Quick save/load   [Esc] - Menu\r\n\r\nLevels: Cordon, Garbage. Find Strelok.\r\nThe text quest STALKER.EXE is a different game.`;
             } else if (id === 'worldcup98') {
               readmeContent = `EA Sports World Cup 98 Demo (France 98)\r\n==================================\r\nEA Sports (1998) - Igromania CD Edition for Win 98\r\n\r\nControls:\r\n[WASD] / [Arrows] - Movement & Shot Aim\r\n[Shift] - Sprint\r\n[X] / [J] - Ground Pass / Switch Player\r\n[C] / [K] - Lob Pass & Wing Cross / Sliding Tackle\r\n[Space] / [Z] - Hold to Charge Shot (Volley in air) / Standing Tackle\r\n[E] / [V] - Skill Feint\r\n[1] / [2] / [3] - Live Tactical Mentality (Counter / Balanced / Pressing)`;
             } else if (id === 'hockey') {

@@ -123,7 +123,7 @@
       on(this.canvas, 'mousedown', e => this.click(e));
       on(this.canvas, 'wheel', e => this.wheel(e), { passive: false });
       const doc = typeof document !== 'undefined' && document.addEventListener ? document : this.root;
-      on(doc, 'mousemove', e => { if (this.drag) this.drag.move(this.pointer(e)); });
+      on(doc, 'mousemove', e => { this.mouse = Object.assign(this.pointer(e), { t: this.t }); if (this.drag) this.drag.move(this.mouse); });
       on(doc, 'mouseup', e => { const d = this.drag; this.drag = null; if (d && d.drop) d.drop(this.pointer(e)); });
       on(this.root, 'mousedown', () => { this.audio.init(); this.audio.resume(); this.root.focus({ preventScroll: true }); });
       on(this.canvas, 'contextmenu', e => e.preventDefault());
@@ -291,7 +291,7 @@
     }
 
     update(dt) {
-      const debugAt = this.screens.findIndex(s => s.debug);
+      const debugAt = this.screens.findIndex(s => s.debug || s.pause);
       this.screens.forEach((s, i) => { if (s.tick && i >= debugAt) s.tick(dt); });
       if (this.mode === 'credits') this.creditsT = (this.creditsT || 0) + dt;
       if (this.mode !== 'battle') for (const tt of this.toasts) tt.t -= dt;
@@ -774,6 +774,7 @@
         const y = y0 + i * 56, on = i === this.titleSel;
         if (on) { const gr = c.createLinearGradient(x0 - 20, 0, W, 0); gr.addColorStop(0, 'rgba(242,220,154,0)'); gr.addColorStop(1, 'rgba(242,220,154,0.28)'); c.fillStyle = gr; c.fillRect(x0 - 20, y - 4, W - x0 + 20, 50); }
         G.menuIcon(c, it.icon, x0 + 46, y, 28, it.disabled ? '#5a5a70' : on ? '#fff4c8' : '#d8dcf0');
+        if (it.badge) this.text(it.badge, x0 + 78, y - 2, { size: 9, bold: true, col: C.gold });
         this.text(it.label, x0 + 60, y + 30, { align: 'center', size: 11, bold: on, col: it.disabled ? C.dim : on ? C.gold : '#e8ecf8' });
         this.hit(x0 - 10, y - 4, W - x0 + 10, 50, () => { this.titleSel = i; it.fn(); });
       });
@@ -787,7 +788,7 @@
       c.fillStyle = 'rgba(6,8,24,0.72)'; c.fillRect(px, py, pw, 24);
       c.strokeStyle = 'rgba(242,220,154,0.7)'; c.strokeRect(px + 0.5, py + 0.5, pw - 1, 23);
       this.diamond(px + 16, py + 12, 5, cur.disabled ? '#5a5a70' : C.brassHi, '#1a1208');
-      this.text(note, px + pw / 2 + 8, py + 5, { align: 'center', size: 12, col: cur.disabled ? C.dim : C.cream });
+      this.text(note, px + pw / 2 + 8, py + 5, { align: 'center', size: 12, col: cur.disabled ? C.dim : cur.noteCol || C.cream });
       this.hit(px, HGT - 112, pw, 72, () => cur.fn());
       this.text(H.BRAND.disc, 10, HGT - 16, { size: 9, col: '#7080a8' });
       this.hints([['↑↓', 'Выбор'], ['Enter', 'Подтвердить']], W - 10, HGT - 18, { align: 'right' });

@@ -206,12 +206,12 @@ window.interpediaReg('samandmax', 'project', {
       { label: `Эпизоды`, value: `восемь: 101–106 и 201–202` },
       { label: `Экран`, value: `320×200, 256 цветов` },
       { label: `Носитель`, value: `1 [[cdrom|CD-ROM]] на эпизод, 38–54 МБ` },
-      { label: `Цена`, value: `от $21.99 до $30.99` },
-      { label: `Распространение`, value: `покупка в [[steam|Steam]]` },
+      { label: `Цена`, value: `от $21.99 до $30.49; 202 — DEMO` },
+      { label: `Распространение`, value: `покупка в [[steam|Steam]]; эпизод 202 — демоверсия с диска «Игромании»` },
       { label: `Первоисточник`, value: `комиксы Стива Пёрселла` }
     ]
   },
-  lead: `<strong>Sam & Max</strong> — серия приключенческих игр про Вольную полицию, из каталога Steam нашей системы: шесть эпизодов первого сезона (101–106) и два эпизода второго (201 и 202). Герои — Сэм, собака в костюме, и Макс, гиперактивный кролик-нечто. Все эпизоды сделаны как классические квесты: рисованные экраны 320×200, курсор-действие, инвентарь в коробке и диалоги иконками.
+  lead: `<strong>Sam & Max</strong> — серия приключенческих игр про Вольную полицию: шесть эпизодов первого сезона (101–106) и два эпизода второго (201 и 202). Эпизоды 101–106 и 201 продаются в каталоге Steam нашей системы, а эпизод 202 есть в виде демоверсии на компакт-диске журнала «Игромания». Герои — Сэм, собака в костюме, и Макс, гиперактивный кролик-нечто. Все эпизоды сделаны как классические квесты: рисованные экраны 320×200, курсор-действие, инвентарь в коробке и диалоги иконками.
 
 Персонажей придумал Стив Пёрселл в комиксах о «вольных полицейских», а первой игрой по ним стала Sam & Max Hit the Road (1993), построенная на движке [[scumm|SCUMM]]. Эпизоды нашей серии сделаны «в духе» этой игры, но у них собственный движок и четыре действия вместо девяти глаголов.`,
   sections: [
@@ -243,14 +243,14 @@ window.interpediaReg('samandmax', 'project', {
     { id: 'season2', title: 'Второй сезон (201 и 202)', content: `<table class="interpedia-wikitable">
 <tr><th>Эпизод</th><th>Название</th><th>Цена</th><th>Размер</th><th>Сюжет</th></tr>
 <tr><td>201</td><td>Ice Station Santa</td><td>$30.49</td><td>52 МБ</td><td>За неделю до Рождества робот Маймтрон 9000 пытается снести офис. Северный полюс, мастерская Санты и три Рождества за тремя порталами; финальный бой ведётся игрушками.</td></tr>
-<tr><td>202</td><td>Moai Better Blues</td><td>$30.99</td><td>54 МБ</td><td>У входа в офис открывается Бермудский треугольник, ведущий на остров Пасхи. Гигантские каменные головы, вулкан Беллависта и верховный жрец Мистер Лопатка.</td></tr>
+<tr><td>202</td><td>Moai Better Blues</td><td>DEMO</td><td>54 МБ</td><td>У входа в офис открывается Бермудский треугольник, ведущий на остров Пасхи. Гигантские каменные головы, вулкан Беллависта и верховный жрец Мистер Лопатка.</td></tr>
 </table>
 
-Эпизоды второго сезона дороже и больше эпизодов первого; в обоих в шкафу офиса хранятся вещдоки прошлых дел.` },
+Эпизоды второго сезона больше эпизодов первого, а эпизод 201 дороже любого из них; в обоих в шкафу офиса хранятся вещдоки прошлых дел.` },
     { id: 'continuity', title: 'Связь эпизодов и улики в шкафу', content: `Главный общий элемент серии — шкаф в офисе Вольной полиции. Начиная с эпизода 104 в нём лежат улики прошлых дел: парик Брэди, Мистер Мишка, шулер Леонард. В 105 к ним добавляется голова президента, в 106 — очки Реальности 2.0, а в эпизоде 201 в шкафу уже улики всех дел прошлого сезона, от парика Брэди до банки с Хью Блиссом.
 
-Эпизоды покупаются по отдельности, и каждый следующий стоит дороже предыдущего: от $21.99 за эпизод 101 до $30.99 за 202. Размер установки растёт от 38 до 54 МБ.` },
-    { id: 'distribution', title: 'Распространение', content: `Все эпизоды помечены в каталоге как покупаемые через Steam. Клиент скачивают с сайта www.steampowered.com в [[ie5|Internet Explorer]], затем покупают и скачивают нужный эпизод. У каждого эпизода свой установщик (<code>Setup_SamMax.exe</code>, <code>Setup_SamMax102.exe</code> и так далее), своя папка (<code>SamMax</code>, <code>SamMax102</code> ...) и свой запускающий файл (<code>SAMMAX.EXE</code>, <code>SAMMAX2.EXE</code> ... <code>SAMMAX22.EXE</code>). Значок на рабочем столе, пункт меню «Пуск» и файлы в разделе игр появляются, только когда эпизод установлен.
+Эпизоды покупаются по отдельности, и каждый следующий стоит дороже предыдущего: от $21.99 за эпизод 101 до $30.49 за 201. Эпизод 202 не продаётся: его демоверсия бесплатно лежит на диске «Игромании». Размер установки растёт от 38 до 54 МБ.` },
+    { id: 'distribution', title: 'Распространение', content: `Эпизоды 101–106 и 201 покупаются через Steam. Клиент скачивают с сайта www.steampowered.com в [[ie5|Internet Explorer]], затем покупают и скачивают нужный эпизод. Эпизод 202 в Steam не продаётся: демоверсия Sam & Max: Moai Better Blues Demo ставится с компакт-диска «Игромании» установщиком <code>D:\\demo\\sammax202demo.exe</code>. У каждого эпизода свой установщик (<code>Setup_SamMax.exe</code>, <code>Setup_SamMax102.exe</code> и так далее), своя папка (<code>SamMax</code>, <code>SamMax102</code> ...) и свой запускающий файл (<code>SAMMAX.EXE</code>, <code>SAMMAX2.EXE</code> ... <code>SAMMAX22.EXE</code>). Значок на рабочем столе, пункт меню «Пуск» и файлы в разделе игр появляются, только когда эпизод установлен.
 
 Игры работают в окне [[windows98|Win 98]]. Общий обзор системы — в статье [[win98clone|о Microslop Win 98 Web Clone]]. Сайт студии открывается по адресу www.lucasarts.com.` }
   ],
@@ -258,9 +258,9 @@ window.interpediaReg('samandmax', 'project', {
   references: [
     `Purcell S. Sam & Max Surf the Highway. — Marlowe & Company, 1995.`,
     `LucasArts. Sam & Max Hit the Road: руководство пользователя. — 1993.`,
-    `Каталог Steam системы Microslop Win 98 Web Clone: эпизоды Sam & Max.`
+    `Каталог Steam системы Microslop Win 98 Web Clone: эпизоды Sam & Max. Компакт-диск журнала «Игромания»: демоверсия эпизода 202.`
   ],
-  links: [['http://www.lucasarts.com', 'LucasArts'], ['http://www.steampowered.com', 'Steam']],
+  links: [['http://www.lucasarts.com', 'LucasArts'], ['http://www.steampowered.com', 'Steam'], ['http://www.igromania.ru', 'Журнал «Игромания»: демоверсия эпизода 202']],
   categories: ['Наш проект', 'Приключенческие игры', 'LucasArts']
 }, {
   title: `Sam & Max: the SAMMAX series (episodes 101-106 and 201-202)`,
@@ -274,12 +274,12 @@ window.interpediaReg('samandmax', 'project', {
       { label: `Episodes`, value: `eight: 101-106 and 201-202` },
       { label: `Screen`, value: `320×200, 256 colors` },
       { label: `Media`, value: `one [[cdrom|CD-ROM]] per episode, 38-54 MB` },
-      { label: `Price`, value: `$21.99 to $30.99` },
-      { label: `Distribution`, value: `purchased on [[steam|Steam]]` },
+      { label: `Price`, value: `$21.99 to $30.49; 202 is a DEMO` },
+      { label: `Distribution`, value: `purchased on [[steam|Steam]]; episode 202 is a demo on the Igromania CD` },
       { label: `Source material`, value: `comics by Steve Purcell` }
     ]
   },
-  lead: `<strong>Sam & Max</strong> is a series of adventure games about the Freelance Police in our system's Steam catalog: six episodes of the first season (101-106) and two of the second (201 and 202). The heroes are Sam, a dog in a suit, and Max, a hyperkinetic rabbity-thing. Every episode is built as a classic adventure: hand-drawn 320×200 screens, an action cursor, an inventory box and dialogues with icons.
+  lead: `<strong>Sam & Max</strong> is a series of adventure games about the Freelance Police: six episodes of the first season (101-106) and two of the second (201 and 202). Episodes 101-106 and 201 are sold in our system's Steam catalog, and episode 202 exists as a demo on the Igromania magazine CD. The heroes are Sam, a dog in a suit, and Max, a hyperkinetic rabbity-thing. Every episode is built as a classic adventure: hand-drawn 320×200 screens, an action cursor, an inventory box and dialogues with icons.
 
 The characters were created by Steve Purcell in his comics about "freelance police", and the first game made from them was Sam & Max Hit the Road (1993), built on the [[scumm|SCUMM]] engine. The episodes in our series are made "in the spirit of" that game, but they use their own engine and four actions instead of nine verbs.`,
   sections: [
@@ -311,14 +311,14 @@ Esc cancels a selection or opens the menu, F5 also opens the menu, Space pauses,
     { id: 'season2', title: 'Season two (201 and 202)', content: `<table class="interpedia-wikitable">
 <tr><th>Episode</th><th>Title</th><th>Price</th><th>Size</th><th>Plot</th></tr>
 <tr><td>201</td><td>Ice Station Santa</td><td>$30.49</td><td>52 MB</td><td>A week before Christmas the robot Maimtron 9000 tries to demolish the office. The North Pole, Santa's workshop and three Christmases behind three portals; the final fight is fought with toys.</td></tr>
-<tr><td>202</td><td>Moai Better Blues</td><td>$30.99</td><td>54 MB</td><td>A Bermuda Triangle opens by the office door and leads to Easter Island. Giant stone heads, the Bellavista volcano and a high priest called Mister Lopatka.</td></tr>
+<tr><td>202</td><td>Moai Better Blues</td><td>DEMO</td><td>54 MB</td><td>A Bermuda Triangle opens by the office door and leads to Easter Island. Giant stone heads, the Bellavista volcano and a high priest called Mister Lopatka.</td></tr>
 </table>
 
-Season two episodes cost more and are larger than those of season one; in both, the office closet holds evidence from earlier cases.` },
+Season two episodes are larger than those of season one, and episode 201 costs more than any of them; in both, the office closet holds evidence from earlier cases.` },
     { id: 'continuity', title: 'Episode links and the evidence closet', content: `The main shared element of the series is the closet in the Freelance Police office. From episode 104 on it holds evidence from earlier cases: Brady's wig, Mr. Teddy and the card shark Leonard. In 105 the president's head joins them, in 106 the Reality 2.0 glasses, and in episode 201 the closet holds evidence from all the cases of the previous season, from Brady's wig to a jar with Hugh Bliss.
 
-The episodes are bought separately, and each is priced above the previous one: from $21.99 for episode 101 to $30.99 for 202. The installed size grows from 38 to 54 MB.` },
-    { id: 'distribution', title: 'Distribution', content: `All episodes are marked in the catalog as purchased through Steam. The client is downloaded from www.steampowered.com in [[ie5|Internet Explorer]]; after that the player buys and downloads the needed episode. Every episode has its own installer (<code>Setup_SamMax.exe</code>, <code>Setup_SamMax102.exe</code> and so on), its own folder (<code>SamMax</code>, <code>SamMax102</code> ...) and its own executable (<code>SAMMAX.EXE</code>, <code>SAMMAX2.EXE</code> ... <code>SAMMAX22.EXE</code>). The desktop icon, the Start menu item and the files in the games section appear only when the episode is installed.
+The episodes are bought separately, and each is priced above the previous one: from $21.99 for episode 101 to $30.49 for 201. Episode 202 is not sold: its demo is free on the Igromania CD. The installed size grows from 38 to 54 MB.` },
+    { id: 'distribution', title: 'Distribution', content: `Episodes 101-106 and 201 are bought through Steam. The client is downloaded from www.steampowered.com in [[ie5|Internet Explorer]]; after that the player buys and downloads the needed episode. Episode 202 is not sold on Steam: the Sam & Max: Moai Better Blues Demo installs from the Igromania CD with <code>D:\\demo\\sammax202demo.exe</code>. Every episode has its own installer (<code>Setup_SamMax.exe</code>, <code>Setup_SamMax102.exe</code> and so on), its own folder (<code>SamMax</code>, <code>SamMax102</code> ...) and its own executable (<code>SAMMAX.EXE</code>, <code>SAMMAX2.EXE</code> ... <code>SAMMAX22.EXE</code>). The desktop icon, the Start menu item and the files in the games section appear only when the episode is installed.
 
 The games run in a [[windows98|Win 98]] window. The system as a whole is covered in the article on [[win98clone|Microslop Win 98 Web Clone]]. The studio's site opens at www.lucasarts.com.` }
   ],
@@ -326,9 +326,9 @@ The games run in a [[windows98|Win 98]] window. The system as a whole is covered
   references: [
     `Purcell, S. Sam & Max Surf the Highway. Marlowe & Company, 1995.`,
     `LucasArts. Sam & Max Hit the Road user manual, 1993.`,
-    `Steam catalog of Microslop Win 98 Web Clone: the Sam & Max episodes.`
+    `Steam catalog of Microslop Win 98 Web Clone: the Sam & Max episodes. Igromania magazine CD: the episode 202 demo.`
   ],
-  links: [['http://www.lucasarts.com', 'LucasArts'], ['http://www.steampowered.com', 'Steam']],
+  links: [['http://www.lucasarts.com', 'LucasArts'], ['http://www.steampowered.com', 'Steam'], ['http://www.igromania.ru', 'Igromania magazine: the episode 202 demo']],
   categories: ['Our Project', 'Adventure Games', 'LucasArts']
 }, ['sammax', 'sam_and_max', 'sam-max']);
 

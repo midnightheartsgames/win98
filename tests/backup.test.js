@@ -43,12 +43,13 @@ const expected = {
   'mc98.world.abc': 'game_mc98', 'doom98-save-3': 'game_doom', 'cop98-save-quick': 'game_cop98', stalker_save: 'game_stalker',
   'stalker98-save-auto': 'game_stalker98', falloutzp_save_quick_meta: 'game_falloutzp', sammax101_saves: 'game_sammax',
   sammax202_settings: 'game_sammax202', fallout98_prefs: 'game_fallout', anotherwar_settings: 'game_anotherwar', fo2_quicksave: 'game_fallout2',
-  win98_homm1_save_v1: 'game_homm1', 'tekken3-98-save': 'game_tekken3', 'midnight-stats': 'game_neon-racer', win98_ashroad98_state_v2: 'ashroad'
+  win98_homm1_save_v1: 'game_homm1', 'win98.bugs.sent': 'bugreports', 'tekken3-98-save': 'game_tekken3', 'midnight-stats': 'game_neon-racer', win98_ashroad98_state_v2: 'ashroad'
 };
 for (const [key, comp] of Object.entries(expected)) assert.equal(cat.componentOfKey(key), comp, key);
 assert.equal(cat.componentOfKey('something_unknown'), 'other', 'unknown keys go to Other');
 assert.equal(cat.componentOfDb('fallout98'), 'game_fallout');
 assert.equal(cat.componentOfDb('anotherwar98'), 'game_anotherwar');
+assert.equal(cat.componentOfDb('win98_bugs'), 'bugreports');
 assert.ok(cat.components.every(c => cat.groups.some(g => g.id === c.group)), 'every component sits in a group');
 assert.equal(new Set(cat.components.map(c => c.id)).size, cat.components.length, 'component ids are unique');
 assert.equal(cat.nameOf(cat.byId('game_hsr98'), true), 'Honkai: Star Rail 98 — сохранения', 'game names come from the Steam catalog');

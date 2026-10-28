@@ -20,7 +20,7 @@
       const h = Math.min(528, window.innerHeight - 60);
       window.winManager.createWindow({
         id,
-        title: 'Heroes of Might and Magic 98',
+        title: 'Heroes of Might and Magic 98 Demo',
         icon: 'homm1',
         width: w,
         height: h,

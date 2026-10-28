@@ -2,11 +2,11 @@
 
 Episode 202 of the Freelance Police and the second case of the second season, told as if it had been released in 2000 with the look and interface of Sam & Max Hit the Road. It runs on the custom engine (`js/apps/sammax/`) and adds its own rooms, characters and procedural artwork in `js/apps/sammax202/`. Everything is drawn in code at 320x200 with a 256-colour palette. The dialogue is original writing in Russian adhering strictly to project guidelines. The plot follows the beats and the puzzle chain of episode 202: a glowing Bermuda portal outside the office, the crying and mocking Moai heads on Easter Island, Lincoln and Sybil dating on the beach, Baby Jimmy and Mary at the Fountain of Youth, Pedro Mariachi inside the Bermuda Triangle, and High Priest Mr. Spatula commanding the Bellavista volcano.
 
-- Distribution: sold in the in-system Steam client (`steam: true` in `js/game-manager.js`, $30.49). The game is never preinstalled.
+- Distribution: Igromania CD demo (`sammax202_demo`, `cdDemo: true` in `js/game-manager.js`, `D:\demo\sammax202demo.exe`). Not sold in Steam, never preinstalled.
 - After installation: desktop icon **Sam & Max 202**, Start menu -> **Sam & Max: Moai Better Blues**, `C:\Games\SamMax202\SAMMAX22.EXE`, Run dialog: `sammax202`, `sammax22`, `sam & max 202`, `moai better blues`, `сэм и макс 202`, `блюз истуканов`.
 - Standalone page: `sammax202.html` (`window.smx22` is the UI, `smx22.g` the game instance).
 - Test: `npm run test:sammax202` (checks metadata, room boundaries, all dialogue trees, inventory combinations, full playthrough from intro to epilogue, save/load persistence, zero comments, zero dashes, and system shell integrations).
-- Steam screenshots: `node tools/steam-shots.cjs sammax202` (recipe in `tools/steam-shots-recipes.cjs`).
+- CD shell screenshots: `node tools/steam-shots.cjs sammax202_demo` (recipe in `tools/steam-shots-recipes.cjs`, output in `content/igromania/demos`).
 
 ## Controls
 

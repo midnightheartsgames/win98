@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const path = require('path');
 const DIR = path.join(__dirname, '../js/apps/hsr98');
 const H = require(path.join(DIR, 'hsr-core.js'));
-for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-guide-data', 'hsr-guide', 'hsr-domain', 'hsr-cw-data', 'hsr-cw', 'hsr-cw-battle', 'hsr-cw-bonds', 'hsr-cw-items', 'hsr-cw-kits', 'hsr-cw-special', 'hsr-cw-strats', 'hsr-cw-affixes', 'hsr-cw-envs', 'hsr-cw-foes', 'hsr-cw-meta', 'hsr-cw-perks', 'hsr-cw-goals']) require(path.join(DIR, f + '.js'));
+for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-guide-data', 'hsr-guide', 'hsr-domain', 'hsr-cw-data', 'hsr-cw', 'hsr-cw-battle', 'hsr-cw-bonds', 'hsr-cw-items', 'hsr-cw-kits', 'hsr-cw-special', 'hsr-cw-strats', 'hsr-cw-affixes', 'hsr-cw-envs', 'hsr-cw-foes', 'hsr-cw-meta', 'hsr-cw-perks', 'hsr-cw-goals', 'hsr-hd-data', 'hsr-hd-arena', 'hsr-hd-heroes', 'hsr-hd-foes', 'hsr-hd-shop', 'hsr-hd']) require(path.join(DIR, f + '.js'));
 
 let checks = 0;
 const CCC_LATER = new Set();
@@ -351,7 +351,7 @@ for (const [id, m] of Object.entries(H.MAPS)) {
   for (const [ch, list] of Object.entries(marks)) for (const [x, y] of list) ok(seen.has(x + ',' + y), 'reachable ' + id + ' ' + ch + ' @' + x + ',' + y);
 }
 
-const UIS = new Set(['book', 'synth', 'name', 'shop', 'rumor', 'warp', 'calyx', 'nav', 'databank', 'su', 'su_shop', 'fh', 'fh_shop', 'doc', 'ksboard', 'ksrate', 'kslearn', 'kscard', 'ksreport', 'tlrewards', 'hackjade', 'hackdebug', 'cw']);
+const UIS = new Set(['book', 'synth', 'name', 'shop', 'rumor', 'warp', 'calyx', 'nav', 'databank', 'su', 'su_shop', 'fh', 'fh_shop', 'doc', 'ksboard', 'ksrate', 'kslearn', 'kscard', 'ksreport', 'tlrewards', 'hackjade', 'hackdebug', 'cw', 'hd']);
 for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCRIPTS))) {
   const labels = new Set(steps.filter(s => typeof s === 'string' && s[0] === '#').map(s => s.slice(1)));
   for (const st of steps) {
@@ -619,7 +619,7 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   while (g.script && guard++ < 200) { if (g.pending && g.pending.type === 'walk') g.update(0.05); else g.resume(); }
   ok(!g.script && wolf.x === wx && wolf.y === wy && wolf.dir === 'down', 'after the talk Silver Wolf goes back to her place');
   ok(g.areaOf('express_lab').area === lab && g.areaOf('express_lab').world === g.expressWorld(), 'the Test car belongs to the Express of the parked world');
-  eq(g.map.ents.filter(e => e.kind === 'npc' && e.def.ghost).map(e => e.def.script).join(), 'lab_term_jade,lab_term_console,lab_term_cw', 'the Test car has the jade, console and Currency Wars terminals');
+  eq(g.map.ents.filter(e => e.kind === 'npc' && e.def.ghost).map(e => e.def.script).join(), 'lab_term_jade,lab_term_console,lab_term_cw,lab_term_hd', 'the Test car has the jade, console, Currency Wars and Express Frontier terminals');
   const term = ch => { const t = g.map.ents.find(e => e.ch === ch); g.placePlayer(t.x, t.y + 1); g.player.dir = 'up'; g.interact(); };
   term('j'); while (g.pending && g.pending.type === 'say') g.resume();
   ok(g.pending && g.pending.ui === 'hackjade', 'the jade terminal asks the screen for the F7 jade');
@@ -637,7 +637,9 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   g.placePlayer(wx, wy + 1); g.player.dir = 'up';
   ok(g.interact() && g.pending.spk === 'silverwolf', 'Silver Wolf can be talked to in the Test car');
   g.resume();
-  ok(g.pending && g.pending.type === 'choice' && g.pending.options.length === 5, 'she has four topics and a goodbye');
+  ok(g.pending && g.pending.type === 'choice' && g.pending.options.length === 7, 'she has six topics and a goodbye');
+  ok(/Рубеж Экспресса/.test(g.pending.options[4][0]) && /Валютные войны/.test(g.pending.options[5][0]), 'two topics are about Express Frontier and Currency Wars');
+  ok(['h5', 'h6'].every(lb => { const st = H.SCRIPTS.lab_wolf, i = st.indexOf('#' + lb); return i > 0 && st.slice(i + 1, i + 6).filter(x => typeof x === 'string' && x.startsWith('silverwolf|')).length >= 3; }), 'each new topic has several lines of Silver Wolf');
   finish();
   g.state.party = ['trail', 'silverwolf'];
   ok(!g.visible(wolf), 'Silver Wolf leaves her spot while she is in the team');
@@ -7148,7 +7150,7 @@ function trInfo(g) {
     localStorage: { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) },
     requestAnimationFrame: () => 1
   });
-  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-relic-art', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug']) require(path.join(DIR, f + '.js'));
+  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-hd-art', 'hsr-relic-art', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-debug']) require(path.join(DIR, f + '.js'));
   const G = H.Gfx;
   const lum = hex => { const n = parseInt(hex.slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255); };
   for (const id of Object.keys(H.CHARS)) {
@@ -10545,7 +10547,7 @@ function trInfo(g) {
       eq(game.map.id, 'express_lab', 'Shift + Space on the secret door with the Trailblazer alone opens the Test car');
       frame(3);
       const L = G.mapLayer(game.map);
-      ok(L.deco && L.sprites.length === 3 && L.glass.length > 8 && L.lights.length > 5, 'the Test car has windows, lights and the three terminals of Silver Wolf');
+      ok(L.deco && L.sprites.length === 4 && L.glass.length > 8 && L.lights.length > 5, 'the Test car has windows, lights and the four terminals of Silver Wolf');
       const useTerm = ch => { const t = game.map.ents.find(e => e.ch === ch); game.placePlayer(t.x, t.y + 1); game.player.dir = 'up'; key('Space'); frame(2); for (let i = 0; i < 4 && game.pending && game.pending.type === 'say'; i++) { key('Enter'); frame(2); } };
       const jade0 = game.state.jade;
       useTerm('j');
@@ -10599,6 +10601,22 @@ function trInfo(g) {
         frame(10);
         bd.press('inv', 0, 0, { x: 502, y: 164 }); ui.drag.move({ x: 170 + host * 76 + 32, y: 90 }); { const d = ui.drag; ui.drag = null; d.drop({ x: 170 + host * 76 + 32, y: 90 }); } frame();
         ok(!cr.inv.length && cr.board.on[host].items.some(x => x.id === 'starBlade'), 'Currency Wars: dragging an item from the inventory onto a hero equips it');
+        {
+          const broken = [];
+          for (const id of Object.keys(H.CW.ITEMS)) for (const sp of [false, true]) { try { ui.cwItemLines({ id, sp }); ui.cwItemDot(H.CW.ITEMS[id]); } catch (e) { broken.push(id + ': ' + e.message); } }
+          eq(broken.join(', '), '', 'Currency Wars: every item has a tooltip and a bench dot (BR-261027-XBFA)');
+          eq(ui.cwItemLines({ id: 'em_energy' }).pop(), 'Из: ' + H.CW.ITEMS.cell.name + ' + Синий алмаз', 'Currency Wars: an emblem tooltip names its simple item and diamond');
+          const benchWas = cr.board.bench[0], errs = [], realErr = console.error;
+          cr.board.bench[0] = Object.assign({}, cr.board.on[host], { uid: 9997, items: [{ id: 'em_energy', uid: 9999 }] });
+          cr.inv.push({ id: 'em_energy', uid: 9998 });
+          bd.cur = { zone: 'inv', i: cr.inv.length - 1 };
+          console.error = (...a) => errs.push(a.join(' '));
+          try { frame(2); } catch (e) { errs.push(e.message); }
+          console.error = realErr;
+          eq(errs.join(', '), '', 'Currency Wars: the board draws an emblem in the inventory and on a bench hero');
+          cr.inv.pop();
+          cr.board.bench[0] = benchWas;
+        }
         bd.cur = { zone: 'on', i: 0 };
         key('KeyI'); frame();
         ok(bd.cur.zone === 'inv', 'Currency Wars: I moves the cursor to the inventory');
@@ -11430,6 +11448,272 @@ function trInfo(g) {
     ok(ui.mode === 'field' && !fg.fhRun() && ui.top() && ui.top().fh, 'leaving after a defeat returns to the hall');
     ui.screens = []; ui.game = keepF; ui.mode = 'field'; ui.enterField();
   }
+  {
+    const HD = H.HD, keepH = ui.game, TS = 32;
+    const hg = new H.Game({ fresh: true, seed: 31 });
+    Object.assign(hg.state.flags, { lab_found: true, lab_sw: true, events_note: true, ks_note: true });
+    hg.eventsOpen = () => false;
+    hg.state.party = ['trail'];
+    hg.loadMap('express_lab', 'v');
+    hg.script = null; hg.pending = null; hg.cg = null;
+    ui.game = hg; ui.screens = []; ui.dlg = null; ui.held = []; ui.walk = false; ui.enterField(); frame(2);
+    const term = hg.map.ents.find(e => e.ch === 'h');
+    ok(term && term.x === 26 && term.y === 3 && term.def.label === 'Рубеж', 'Express Frontier: the fourth terminal stands at (26, 3) under the window');
+    hg.placePlayer(term.x, term.y + 1); hg.player.dir = 'up';
+    key('Space'); frame(2);
+    ok(hg.pending && hg.pending.type === 'say' && /РУБЕЖ ЭКСПРЕССА/.test(hg.pending.text), 'Express Frontier: the terminal shows its one note on the first use');
+    for (let i = 0; i < 4 && hg.pending && hg.pending.type === 'say'; i++) { key('Enter'); frame(2); }
+    const hub = ui.top();
+    ok(hub && hub.hd && hub.hub && hg.pending && hg.pending.ui === 'hd' && ui.audio.wanted === 'sim', 'Express Frontier: the terminal opens the arcade screen with the simulation theme');
+    key('Enter'); frame(3);
+    ok(ui.top() === hub && hub.pick && hub.sel === 1 && !hg.hdRun(), 'Express Frontier: Start defense first asks for the difficulty, Normal is selected');
+    key('ArrowDown'); frame(1); key('Enter'); frame(2);
+    ok(ui.top() === hub && hub.pick && !hg.hdRun() && !hg.hdCanDiff('hard'), 'Express Frontier: Hard stays closed until a win on Normal');
+    key('ArrowUp'); frame(1); key('Enter'); frame(3);
+    const dr = ui.top(), R0 = hg.hdRun();
+    ok(R0 && R0.diff === 'normal' && R0.threats.length === 2 && R0.threats[0] !== R0.threats[1] && R0.threats.every(t => HD.THREATS[t]), 'Express Frontier: a new run rolls two different threats');
+    ok(dr.draft && R0.phase === 'draft' && new Set(R0.draft.paths).size === 3 && R0.draft.paths.every(p => HD.draftPaths().includes(p)), 'Express Frontier: Start defense rolls three different Paths');
+    ok(R0.draft.cards.every(cd => H.CHARS[cd.hero].path === cd.path && cd.left === 2 && cd.seen.length === 1), 'Express Frontier: every Path card shows a hero of its Path with two refreshes');
+    key('KeyR'); frame();
+    ok(R0.draft.cards.every(cd => cd.left === 2), 'Express Frontier: the reels must stop before a refresh');
+    frame(25);
+    const ci = R0.draft.cards.findIndex(cd => cd.path !== 'erudition');
+    dr.sel = ci;
+    key('KeyR'); frame(); key('KeyR'); frame();
+    const cc = R0.draft.cards[ci];
+    ok(cc.left === 0 && new Set(cc.seen).size === 3 && cc.seen.includes(cc.hero) && HD.heroesOf(cc.path).every(id => cc.seen.includes(id)), 'Express Frontier: two refreshes show the other two heroes of the Path');
+    key('KeyR'); frame();
+    ok(cc.seen.length === 3, 'Express Frontier: a card has no third refresh');
+    key('KeyC'); frame();
+    ok(dr.card && dr.card.tab === 0, 'Express Frontier: C opens the hero card from the Path roll');
+    key('KeyE'); frame(); ok(dr.card.tab === 1, 'Express Frontier: E turns the hero card to the abilities');
+    key('KeyE'); frame(); ok(dr.card.tab === 2, 'Express Frontier: the third tab shows the Traces and Eidolons');
+    key('KeyC'); frame();
+    ok(!dr.card, 'Express Frontier: C closes the hero card');
+    key('Escape'); frame();
+    ok(ui.top().hub && hg.hdRun().phase === 'draft', 'Express Frontier: Esc returns to the arcade screen and keeps the cards');
+    key('Enter'); frame(3);
+    const dr2 = ui.top();
+    ok(dr2.draft && hg.hdRun().draft.cards[ci].left === 0, 'Express Frontier: Continue returns to the same cards without a new roll');
+    frame(25);
+    const ce = ci === 0 ? 1 : 0;
+    Object.assign(R0.draft.cards[ce], { path: 'erudition', hero: 'himeko' });
+    dr2.sel = ce;
+    key('Enter'); frame(3);
+    const ar = ui.top(), A = ar.arena, h = A.hero;
+    ok(ar.full && A && hg.hdRun() && hg.hdRun().players[0].hero === 'himeko' && hg.hdRun().phase === 'break' && ui.audio.wanted === 'battle', 'Express Frontier: Enter takes the card and opens the defense screen with Himeko');
+    const y0 = h.y;
+    ui.held = ['KeyW']; frame(20); ui.held = []; frame(2);
+    ok(h.y < y0 - 40, 'Express Frontier: holding W walks the hero up');
+    ui.held = ['ShiftLeft']; key('KeyQ'); ui.held = []; frame(2);
+    eq(h.abil.q, 1, 'Express Frontier: Shift + Q spends the point on the Skill');
+    const tick0 = A.tick;
+    key('Escape'); frame(5);
+    ok(ui.top().pause && A.tick === tick0, 'Express Frontier: Esc pauses the arena');
+    key('Escape'); frame(2);
+    ok(ui.top() === ar && A.tick > tick0, 'Express Frontier: Esc again resumes');
+    { let need = 0; for (let l = h.lvl; l < 10; l++) need += HD.expNext(l); A.giveExp(h, need - h.exp); }
+    frame();
+    ok(h.lvl === 10 && A.needPick(h) === 10, 'Express Frontier: level 10 shows the two Trace cards');
+    ui.held = ['ShiftLeft']; key('Digit1'); ui.held = []; frame(2);
+    ok(h.picks[10] === 0 && !A.needPick(h), 'Express Frontier: Shift + 1 takes the first Trace');
+    key('KeyC'); frame();
+    ok(ar.card && ar.card.tab === 0, 'Express Frontier: C opens the hero card on the defense screen');
+    const cdq = h.cd.q;
+    key('KeyQ'); frame();
+    ok(ar.card.tab === 2 && h.cd.q === cdq, 'Express Frontier: Q turns the hero card tab instead of casting');
+    frame();
+    ok(ui.hdCardLines(ui.hdHeroInfo(h.key, A, h), 2, 270).some(l => /Выбран: /.test(l.t)), 'Express Frontier: the hero card shows the chosen Trace');
+    key('KeyC'); frame();
+    ok(!ar.card, 'Express Frontier: C closes the hero card');
+    for (const id of Object.keys(HD.HEROES)) for (let tab = 0; tab < 3; tab++) ok(ui.hdCardLines(ui.hdHeroInfo(id), tab, 270).every(l => l.t.length * 6 <= 272 || !/ /.test(l.t)), 'Express Frontier: hero card lines of ' + id + ' fit the panel (tab ' + tab + ')');
+    A.hero.x = A.hero.px = 30 * TS; A.hero.y = A.hero.py = 29 * TS;
+    key('KeyB'); frame();
+    ok(ar.shop && ar.shop.tab === 0, 'Express Frontier: B opens the shop on the relic tab');
+    { h.gold = 2000; const g0 = h.gold; key('Enter'); frame(2);
+      ok(h.items.some(it => it && it.id === 'relic') && h.gold === g0 - HD.RELIC.price, 'Express Frontier: Enter buys the chosen relic piece');
+      const ri = h.items.findIndex(it => it && it.id === 'relic'); key('Digit' + (ri + 1)); key('KeyU'); frame(2);
+      ok(h.items[ri].up === 1, 'Express Frontier: U upgrades the chosen relic');
+      key('Delete'); frame(2);
+      ok(!h.items[ri] && h.gold === g0, 'Express Frontier: a relic bought in this break sells back with its upgrades at the full price');
+      key('ArrowRight'); frame();
+      ok(ar.shop.tab === 1 && ar.shopRows(1).length > 3 && ar.shopRows(1).every(r => H.CONES[r.id].path === H.CHARS[h.key].path), 'Express Frontier: the cone tab lists only cones of the hero Path');
+      h.gold = 5000; key('Enter'); frame(2);
+      ok(h.cone && h.cone.sup === 1, 'Express Frontier: Enter on the cone tab puts the cone into its own cell');
+      key('KeyU'); frame(2);
+      ok(h.cone.sup === 2, 'Express Frontier: U overlays the cone');
+      key('ArrowRight'); frame(); key('ArrowRight'); frame();
+      h.gold = g0; ar.shop.slot = -1; }
+    const gold = h.gold;
+    key('Enter'); frame(2);
+    ok(ar.shop.tab === 3 && h.items.some(it => it && it.id === 'medkit') && h.gold === gold - 60, 'Express Frontier: Enter buys the chosen supply');
+    { const mi = h.items.findIndex(it => it && it.id === 'medkit'); key('Digit' + (mi + 1)); key('Delete'); frame(2);
+    ok(!h.items[mi] && h.gold === gold, 'Express Frontier: 1 and Delete sell it back'); }
+    ui.held = ['KeyD']; frame(5); ui.held = [];
+    ok(Math.abs(h.x - 30 * TS) < 1, 'Express Frontier: the hero stands while the shop is open');
+    key('KeyB'); frame();
+    ok(!ar.shop, 'Express Frontier: B closes the shop');
+    ui.click({ clientX: 120, clientY: 120, button: 2 }); frame(2);
+    ok(h.path || h.moving, 'Express Frontier: right click on the ground walks the hero there');
+    ui.mouse = { x: 320, y: 200, t: ui.t };
+    const aim = ar.aim();
+    ok(aim.x != null && Math.abs(aim.x - (320 + ar.cam.x)) < 1, 'Express Frontier: the fresh cursor aims areas under itself');
+    ui.mouse = null;
+    ui.held = ['Tab']; frame(); ui.held = [];
+    ui.click({ clientX: 640 - 66, clientY: 60, button: 0 }); frame();
+    ok(ar.look && ui.drag, 'Express Frontier: holding the minimap looks around');
+    ui.drag.drop({ x: 0, y: 0 }); ui.drag = null; frame();
+    ok(!ar.look, 'Express Frontier: releasing the minimap returns the camera');
+    key('KeyN'); frame(2);
+    eq(A.phase, 'wave', 'Express Frontier: N starts the wave early');
+    eq(hg.hdRun().phase, 'break', 'Express Frontier: the saved run shows the break of the same wave');
+    for (let i = 0; i < 120 && !A.foes().length; i++) frame();
+    ok(A.foes().length > 0, 'Express Frontier: enemies come out on the defense screen');
+    frame(60);
+    h.hp = 1; A.hit(A.foes()[0], h, { amt: 1e6, type: 'divine', noCrit: true }); frame(2);
+    ok(h.dead, 'Express Frontier: the hero can fall on the defense screen');
+    h.gold = 2000; key('Enter'); frame(2);
+    ok(!h.dead && h.bought, 'Express Frontier: Enter is the urgent call while the hero is down');
+    const boss = A.spawnFoe('doomsday', 'n');
+    boss.x = boss.px = h.x; boss.y = boss.py = h.y - 80; boss.gapT = 0; boss.patI = 3;
+    frame(20);
+    ok(ui.top() === ar, 'Express Frontier: the boss, its bar and the warning circle draw');
+    for (let i = 0; i < 300 && A.phase === 'wave'; i++) { for (const f of A.foes()) A.hit(h, f, { amt: 1e7, type: 'divine', noCrit: true }); frame(4); }
+    ok(A.phase === 'break' && A.wave === 2 && hg.hdRun().wave === 2, 'Express Frontier: after the wave the run is saved in the break');
+    key('Escape'); frame();
+    const pz = ui.top(); pz.sel = 4; key('Enter'); frame(2);
+    ok(!ui.screens.length && !hg.pending && !hg.script, 'Express Frontier: Leave to the car closes the mode and frees the Trailblazer');
+    hg.placePlayer(term.x, term.y + 1); hg.player.dir = 'up';
+    key('Space'); frame(2);
+    ok(ui.top() && ui.top().hub && !hg.pending.text, 'Express Frontier: the terminal skips its note on the next use');
+    key('Enter'); frame(3);
+    const ar2 = ui.top(), A2 = ar2.arena;
+    ok(A2 && A2.wave === 2 && A2.phase === 'break' && A2.hero.key === 'himeko', 'Express Frontier: Continue returns to the break before wave 2');
+    A2.wave = HD.WAVES.length; A2.startWave();
+    for (let i = 0; i < 400 && !A2.over; i++) { for (const f of A2.foes()) A2.hit(A2.hero, f, { amt: 1e7, type: 'divine', noCrit: true }); frame(4); }
+    const res = ui.top();
+    ok(res && res.result && res.sum.win && !hg.hdRun(), 'Express Frontier: beating the last wave shows Frontier Held');
+    key('Enter'); frame();
+    ok(ui.top() && ui.top().hub, 'Express Frontier: Enter on the summary returns to the arcade screen');
+    key('Enter'); frame(2);
+    ok(hg.hdCanDiff('hard') && ui.top().pick, 'Express Frontier: a win on Normal opens Hard');
+    key('Enter'); frame(25); key('Enter'); frame(3);
+    const A3 = ui.top().arena;
+    A3.base.hp = 1; A3.hit(null, A3.base, { amt: 50, type: 'divine', noCrit: true }); frame(3);
+    ok(ui.top().result && !ui.top().sum.win, 'Express Frontier: a fallen Express shows Frontier Lost');
+    const lost = ui.top().sum;
+    ok(lost.stars === 0 && lost.meta && lost.meta.asc === Math.round(HD.META.ascWin.normal * HD.META.ascLoss * lost.cleared / lost.waves), 'Express Frontier: a loss gives no stars and half the promotion points for the cleared waves');
+    key('Enter'); frame();
+    const hub2 = ui.top();
+    ok(hub2.hub, 'Express Frontier: the summary returns to the arcade screen');
+    const openBy = id => { hub2.pick = false; hub2.sel = hub2.items().findIndex(it => it.id === id); key('Enter'); frame(3); return ui.top(); };
+    const rs = openBy('recs');
+    ok(rs.recs && hg.hdRecords('normal').some(r => r.name === 'Leveling_Solo') && hg.hdRecords('normal').some(r => !r.solo), 'Express Frontier: the record table mixes Leveling_Solo with the player');
+    key('ArrowRight'); frame(); key('ArrowDown'); frame(2);
+    ok(rs.d === 2 && rs.h === 1, 'Express Frontier: arrows switch the difficulty and the hero filter of the records');
+    key('Escape'); frame();
+    const as = openBy('asc');
+    ok(as.asc && hg.hdAscLvl() >= 1, 'Express Frontier: the promotion rail opens with the level reached');
+    as.sel = 1; const j0 = hg.state.credits; key('Enter'); frame();
+    ok(hg.hd().asc.got.includes(1) && hg.state.credits > j0, 'Express Frontier: Enter on the rail claims the level reward');
+    key('Escape'); frame();
+    const wk = openBy('week');
+    ok(wk.week && hg.hd().week.pts === HD.META.weekMax, 'Express Frontier: the weekly points reached the cap after a win');
+    wk.sel = 0; key('Enter'); frame();
+    ok(hg.hd().week.got.includes(0), 'Express Frontier: Enter claims a weekly step');
+    key('Escape'); frame();
+    const tr = openBy('trials');
+    const idx = HD.TRIALS.filter(t => t.kind === 'hero').concat(HD.TRIALS.filter(t => t.kind !== 'hero')).findIndex(t => t.id === 'hero_himeko');
+    tr.sel = idx; const jj = hg.state.jade; key('Enter'); frame();
+    ok(hg.hd().trials.got.includes('hero_himeko') && hg.state.jade === jj + HD.META.trial.jade, 'Express Frontier: a won trial pays its jade on Enter');
+    key('ArrowDown'); key('ArrowDown'); key('ArrowDown'); key('ArrowDown'); frame(2);
+    ok(tr.sel >= HD.TRIALS.filter(t => t.kind === 'hero').length, 'Express Frontier: arrows move from the hero grid to the other trials');
+    key('Escape'); frame();
+    const hs = openBy('hist');
+    ok(hs.hist && hg.hd().hist.length === 2 && hg.hd().hist[0].sum, 'Express Frontier: the history keeps both runs with their summaries');
+    hs.sel = 1; key('Enter'); frame(3);
+    ok(ui.top().result && ui.top().view && ui.top().sum.win, 'Express Frontier: a history row opens its summary without rewards');
+    key('Enter'); frame(); key('Escape'); frame();
+    ok(ui.top() === hub2, 'Express Frontier: Esc leaves the history');
+    const ids = hub2.items().map(it => it.id);
+    eq(ids.join(), 'new,coop,diff,dossier,recs,asc,week,trials,hist,rules,close', 'Express Frontier: the arcade screen lists the plan buttons in order');
+    hub2.sel = 1; key('Enter'); frame();
+    ok(ui.top() === hub2 && !hub2.pick, 'Express Frontier: 2-4 PLAYERS is not active yet');
+    hub2.sel = 2; key('Enter'); frame();
+    ok(hub2.pick === 'set', 'Express Frontier: Difficulty opens the picker without starting a run');
+    hub2.sel = 0; key('Enter'); frame();
+    ok(!hub2.pick && hg.hd().opts.diff === 'easy' && !hg.hdRun() && /Тренировка/.test(hub2.items()[2].label), 'Express Frontier: the chosen difficulty becomes the default');
+    key('KeyR'); frame(2);
+    const rl = ui.top();
+    ok(rl.rules, 'Express Frontier: R opens the rules');
+    for (let i = 0; i < 8; i++) { key('ArrowDown'); frame(); }
+    eq(rl.sel, 0, 'Express Frontier: the rules have eight pages');
+    key('KeyA'); frame();
+    eq(hg.hd().opts.aim, 'cursor', 'Express Frontier: A switches aiming to the cursor');
+    key('KeyA'); frame();
+    eq(hg.hd().opts.aim, 'target', 'Express Frontier: A switches aiming to the target');
+    rl.sel = 3; frame(2);
+    key('Escape'); frame();
+    key('KeyD'); frame(2);
+    const ds = ui.top();
+    ok(ds.dossier && ds.hero() === HD.heroesOf(HD.draftPaths()[0])[0], 'Express Frontier: D opens the hero dossier on the first Path');
+    key('KeyE'); key('ArrowDown'); key('ArrowRight'); frame(2);
+    ok(ds.p === 1 && ds.sel === 1 && ds.card.tab === 1, 'Express Frontier: Q/E switch the Path, arrows the hero and the card tab');
+    const dinfo = ui.hdHeroInfo(ds.hero(), null, null, 20);
+    ok(dinfo.lvl === 20 && dinfo.abil.r === 3 && Math.round(dinfo.hpMax) === Math.round(HD.heroStats(ds.hero(), 20).hpMax), 'Express Frontier: the dossier shows level 20 numbers');
+    const tl = ui.hdCardLines(dinfo, 2, 260).map(l => l.t).join(' ');
+    ok(HD.KITS[ds.hero()].tr.concat(HD.KITS[ds.hero()].ei).every(x => tl.includes(x.name)) && !/Предметы/.test(tl), 'Express Frontier: the dossier lists all four Traces and Eidolons');
+    key('Escape'); frame();
+    hub2.sel = 0; key('Enter'); frame(); key('Enter'); frame(25); key('Enter'); frame(3);
+    const ar4 = ui.top(), A4 = ar4.arena;
+    ok(A4 && hg.hdRun().diff === 'easy', 'Express Frontier: the picker starts on the default difficulty');
+    ui.mouse = { x: 300, y: 200, t: ui.t };
+    ok(!ar4.aim().x, 'Express Frontier: target aiming ignores the cursor');
+    hg.hd().opts.aim = 'cursor'; ui.mouse = { x: 300, y: 200, t: ui.t - 60 };
+    ok(ar4.aim().x != null, 'Express Frontier: cursor aiming uses even an old cursor');
+    hg.hd().opts.aim = 'auto';
+    ok(ar4.aim().x == null, 'Express Frontier: auto aiming drops a cursor older than 3 s');
+    A4.events.push({ t: 'struck', uid: A4.turrets[0].uid, x: 0, y: 0, sx: 0, sy: 0 }, { t: 'tshot', uid: A4.turrets[1].uid });
+    frame(2);
+    ok(ar4.alarm && !ar4.alarm.base && A4.turrets[1].fireT > 0, 'Express Frontier: a hit on a turret points the arrow and a turret shot flashes the barrel');
+    {
+      ui.openDebug(); frame(2);
+      const dbg = ui.top(), dst = ui.debugState, t0 = A4.time;
+      dbg.setTab(5); frame(2);
+      let fm = ui.debugForm(dst);
+      ok(fm.rows.length === 11 && fm.acts.length === 3 && fm.rows[0].label === 'Золото', 'Express Frontier F8: the Frontier tab opens during a run with its rows and actions');
+      const g0 = A4.hero.gold; fm.rows[0].step(1);
+      eq(A4.hero.gold, g0 + 1000, 'Express Frontier F8: gold +1000');
+      const l0 = A4.hero.lvl; fm.rows[1].step(1);
+      eq(A4.hero.lvl, l0 + 1, 'Express Frontier F8: level +1');
+      fm.rows[3].step(3);
+      ok(A4.phase === 'break' ? A4.wave === Math.min(20, 4) : A4.jumpTo, 'Express Frontier F8: the wave row moves the run to another wave');
+      fm.rows[4].step(1); fm.rows[5].step(1); fm.rows[6].step(1); fm.rows[7].step(1);
+      ok(A4.hero.invuln && A4.base.invuln && ar4.speed === 2 && ar4.dbgFlow, 'Express Frontier F8: invulnerability, arena speed and the flow field switch on');
+      dst.hd.kind = 0; dst.hd.i = 0; dst.hd.up = 5;
+      ui.debugForm(dst).acts[0].fn();
+      ok(A4.hero.items.some(it => it && it.id === 'relic' && it.up === 5), 'Express Frontier F8: a relic is handed out at +15');
+      dst.hd.kind = 1; dst.hd.i = 0; dst.hd.up = 4;
+      ui.debugForm(dst).acts[0].fn();
+      ok(A4.hero.cone && A4.hero.cone.sup === 5, 'Express Frontier F8: a cone is handed out at S5');
+      frame(10);
+      eq(A4.time, t0, 'Express Frontier F8: the arena stands while F8 is open');
+      key('Escape'); frame();
+      frame(3);
+      ok(A4.time > t0, 'Express Frontier F8: the arena runs again after F8 closes');
+      A4.hero.invuln = false; A4.base.invuln = false; ar4.speed = 1; ar4.dbgFlow = false;
+    }
+    key('Escape'); frame();
+    const pz2 = ui.top();
+    pz2.sel = 2; key('Enter'); frame(2);
+    ok(ui.top().rules, 'Express Frontier: the pause opens the rules from its third row');
+    key('Escape'); frame(); pz2.sel = 4; key('Enter'); frame(2);
+    ui.mouse = null;
+    hg.placePlayer(term.x, term.y + 1); hg.player.dir = 'up'; key('Space'); frame(2);
+    key('Escape'); frame();
+    ok(!ui.screens.length && !hg.pending, 'Express Frontier: Esc closes the arcade screen');
+    ui.screens = []; ui.game = keepH; ui.mode = 'field'; ui.enterField(); ui.held = [];
+  }
   ok(bad.length === 0, 'every colour used by the new art and UI is valid (' + bad.slice(0, 4).join('; ') + ')');
 }
 
@@ -11483,6 +11767,11 @@ function trInfo(g) {
   let bad = false;
   try { H.Midi.parse(Uint8Array.from([1, 2, 3, 4])); } catch (e) { bad = true; }
   ok(bad, 'a file without the MThd header is rejected');
+  {
+    const au = new H.Audio();
+    au.ctx = ctx; au.master = ctx.destination;
+    for (const id of ['horn', 'rift', 'turret', 'alarm']) { voices = 0; au.sfx(id); ok(voices > 0, 'Express Frontier: the sound ' + id + ' plays'); }
+  }
   const a = new H.Audio();
   a.music('menu');
   eq(a.wanted, 'menu', 'the audio keeps the wanted track until the context starts');
@@ -12574,7 +12863,7 @@ function trInfo(g) {
   const g2 = new H.Game({ state: done, seed: 3 });
   ok(g2.state.flags.calyx_seen && g2.state.flags.drift_seen && g2.state.flags.sampo_met, 'a save past the Snow Plains skips the new plains scenes');
   const fresh = new H.Game({ fresh: true, seed: 1 });
-  eq(fresh.state.jv, 11, 'a new game starts with the current Jarilo version');
+  eq(fresh.state.jv, 12, 'a new game starts with the current Jarilo version');
   for (const [map, x, y] of [['u_settle', 29, 52], ['u_boulder', 23, 32], ['j_florist', 6, 7], ['j_hotel', 12, 4], ['j_fort', 7, 8]]) {
     const wide = Object.assign(H.newState(), { map, x, y, jv: 10, lastAnchor: { map, x, y } });
     Object.assign(wide.flags, { express_intro: true, doom: true, jarilo_arrive: true, sampo_met: true, plains_met: true, belobog_intro: true, fled: true, underworld: true });
@@ -12582,6 +12871,46 @@ function trInfo(g) {
     const gw = new H.Game({ state: wide, seed: 5 });
     ok(gw.map.id === map && !gw.blocked(gw.player.x, gw.player.y) && gw.map.ents.some(e => e.kind === 'exit' && walkSet(gw, gw.player.x, gw.player.y).has(e.x + ',' + e.y)) && gw.state.lastAnchor.x === null, 'a save on the widened ' + map + ' wakes up on a free spot with a way out');
   }
+  {
+    const fest = obj => {
+      const st = Object.assign(H.newState(), { map: 'express', x: null, y: null, jv: 11, obj });
+      Object.assign(st.flags, { express_intro: true, doom: true, jarilo_arrive: true, sampo_met: true, plains_met: true, belobog_intro: true, ending: true, jarilo_done: true, fm_letter: true, fm_m1: true, fm_dh: true, fm_hm: true, fm_board: true, fm_topaz: true, fm_city: true, fm0_done: true, fm_fort1: true, fm_museum: true, fm_seele: true, fm_gate: true, fm_mine_in: true, fm_numby: true, fm_mine1: true, fm1_done: true, fm_letter2: true, fm_ask: true, fm_ow2: true, fm_uw2: true });
+      st.hsv = 2;
+      return new H.Game({ state: st, seed: 2 });
+    };
+    eq(fest('Вернитесь в Белобог вместе с Март 7 (Спальный вагон)').state.obj, 'Соберите мнения жителей Надмирья о Топаз (Сервал, Пела, Данн)', 'a save stuck on an old festival objective gets the objective of its stage back');
+    eq(fest('Вернуться в гильдию к Луне').state.obj, 'Вернуться в гильдию к Луне', 'the festival repair leaves objectives of other quests alone');
+    const g = fest('Вернуться в гильдию к Луне'), said = [];
+    const talkTo = (script, answer) => {
+      g.runScript(script);
+      let n = 0;
+      while ((g.pending || g.script) && n++ < 300) {
+        const p = g.pending;
+        if (!p) { g.advanceScript(); continue; }
+        if (p.type === 'say') said.push(p.text);
+        const i = p.type === 'choice' ? p.options.findIndex(o => o[0].includes(answer)) : 0;
+        g.resume(Math.max(0, i));
+      }
+    };
+    talkTo('himeko_talk', 'посижу'); talkTo('march_talk'); talkTo('danheng_talk');
+    ok(g.state.obj === 'Вернуться в гильдию к Луне' && !said.some(t => /Броня|Верховная хранительница организует/.test(t)), 'Himeko, March and Dan Heng after the story do not replay the festival invitation (BR-261027-T8P4)');
+    const leaks = [];
+    for (const [name, steps] of Object.entries(H.SCRIPTS)) {
+      const entries = new Map(), other = new Set();
+      for (const st of steps) { if (typeof st === 'string') { if (st[0] !== '#') break; continue; } if (st.if !== undefined && st.jump) entries.set(st.jump, st.if); else break; }
+      for (const st of steps) if (st && typeof st === 'object') { if (st.jump && st.if === undefined) other.add(st.jump); for (const o of [...(st.choice || []), ...(st.menu || []), ...(st.exit ? [st.exit] : [])]) other.add(o[1]); }
+      steps.forEach((st, i) => {
+        const label = typeof st === 'string' && st[0] === '#' ? st.slice(1) : null;
+        if (!label || !entries.has(label) || other.has(label)) return;
+        const prev = steps[i - 1];
+        if (typeof prev === 'object' && (prev.end || prev.script || prev.goto || (prev.jump && prev.if === undefined))) return;
+        const setsEntryFlag = steps.slice(0, i).some(x => x && x.flag && String(entries.get(label)).split('&').includes(x.flag));
+        if (!setsEntryFlag) leaks.push(name + ' -> ' + st);
+      });
+    }
+    eq(leaks.join(', '), '', 'no script runs into a label that its opening conditions jump to');
+  }
+
 
   const pg = new H.Game({ state: Object.assign(H.newState(), { map: 'j_plains', x: null, y: null }), seed: 4 });
   Object.assign(pg.state.flags, { express_intro: true, jarilo_arrive: true });
@@ -15603,5 +15932,1291 @@ console.log(log.join('\n'));
     }
   }
   log.push('jarilo layouts ok: ' + configs + ' layouts from ' + jariloStates.size + ' states');
+}
+{
+  const HD = H.HD, TUN = HD.TUN, TS = 32, fs = require('fs');
+  const AMP = Object.fromEntries(Object.entries(HD.HEROES).map(([k, d]) => [k, d.amp]));
+  ok(Object.values(AMP).every(v => v > 0.2 && v < 3), 'Express Frontier: every hero has a balance multiplier');
+  const AMP_HARD = Object.fromEntries(Object.entries(HD.HEROES).map(([k, d]) => [k, d.ampHard]));
+  ok(Object.values(AMP_HARD).every(v => v == null || (v > 0.5 && v < 1.5)), 'Express Frontier: Hard multipliers of the heroes stay close to 1');
+  for (const d of Object.values(HD.HEROES)) { d.amp = 1; delete d.ampHard; }
+  const near = (a, b, d, m) => ok(Math.abs(a - b) <= d, m + ' (' + a + ' vs ' + b + ')');
+  const mkA = (hero, o = {}) => { const g = new H.Game({ fresh: true, seed: 3 }); g.hdNew(Object.assign({ hero, seed: 77, threats: ['legion', 'silvermane'] }, o)); return { g, A: g.hdArena() }; };
+  const steps = (A, n) => { for (let i = 0; i < n; i++) A.step(); };
+  const dummy = (A, id, x, y, o) => { const u = A.spawnFoe(id || 'reaver', 'n', o); u.x = u.px = x; u.y = u.py = y; u.spd = 0; u.atkCd = 1e9; u.skCd = 1e9; return u; };
+  const PX = 30 * TS, PY = 26 * TS;
+
+  eq(Object.keys(HD.HEROES).length, 21, 'Express Frontier: stage 3 has 21 heroes');
+  eq(HD.draftPaths().join(), HD.PATHS.join(), 'Express Frontier: all seven Paths have three heroes each and go into the Path roll');
+  for (const p of HD.draftPaths()) eq(HD.heroesOf(p).length, 3, 'Express Frontier: three heroes of ' + p);
+  for (const [id, d] of Object.entries(HD.HEROES)) {
+    const k = H.CHARS[id];
+    ok(k && HD.PATHS.includes(k.path) && HD.ATTR_NAME[d.main] && HD.ATK_ARMOR[d.atk] && HD.ARMOR0[d.armor] != null && d.range > 0, 'Express Frontier: hero ' + id + ' has a Path, main attribute, attack and armor type');
+    const K = HD.KITS[id];
+    ok(['q', 'e', 'r'].every(s => K[s] && typeof K[s].cast === 'function' && K[s].cd > 0) && K.t && ['q', 'e', 't', 'r'].every(s => typeof K.text[s] === 'function' && [0.6, 1].every(k => K.text[s](k) && !/[—]|NaN|undefined/.test(K.text[s](k)))), 'Express Frontier: ' + id + ' has Skill, Technique, Ultimate, Talent and card texts with numbers');
+    const TR = H.TRACES[id], trNames = Object.values(TR.bonus).map(b => b.name || b[0]), eiNames = TR.eid.filter((e, n) => n !== 2 && n !== 4).map(e => e.name || e[0]);
+    ok(K.tr.length === 2 && K.ei.length === 2 && K.tr.every(x => trNames.includes(x.name) && x.text && !/—/.test(x.text)) && K.ei.every(x => eiNames.includes(x.name) && x.text && !/—/.test(x.text)), 'Express Frontier: ' + id + ' has two Traces and two Eidolons named as in the main game');
+    ok([K.q.cost, K.e.cost].every(c => c === 0 || (c >= 25 && c <= 40)) && k.energy >= 90 && k.energy <= 135, 'Express Frontier: ' + id + ' ability costs follow the plan');
+    ok(['Абсолютная техника', 'Поражение', 'Возвращение в бой'].every(t => H.INFO[id].battle.some(l => l.t === t && !l.need)), 'Express Frontier: ' + id + ' has battle lines for the Ultimate, defeat and the comeback');
+  }
+  const stat = (id, lvl) => HD.heroStats(id, lvl);
+  const T1 = { trail: [703, 50, 230, 165, 1767, 103, 515], himeko: [582, 56, 270, 159, 1190, 109, 802], seele: [546, 51, 230, 187.5, 1116, 104, 515], blade: [724, 49, 240, 161, 1788, 102, 544], clara: [708, 52, 220, 150, 1772, 105, 486], danheng: [540, 47, 210, 180, 1072, 100, 457], topaz: [547, 50, 240, 180, 1117, 103, 544], herta: [569, 48, 270, 165, 1139, 102, 802], jingyuan: [638, 54, 270, 164, 1322, 107, 802], bronya: [648, 48, 230, 164, 1370, 102, 515], asta: [579, 45, 270, 174, 1187, 98, 802], ruanmei: [607, 52, 270, 171, 1253, 105, 802], kafka: [607, 53, 270, 165, 1253, 106, 802], silverwolf: [582, 50, 220, 176, 1190, 103, 486], welt: [613, 50, 270, 168, 1259, 103, 802], march: [604, 45, 230, 167, 1212, 98, 515], gepard: [730, 46, 210, 153, 1794, 100, 457], fuxuan: [741, 43, 240, 165, 1805, 96, 563], natasha: [638, 43, 270, 162, 1322, 97, 802], bailu: [678, 45, 270, 162, 1438, 98, 802], luocha: [674, 56, 270, 167, 1396, 110, 802] };
+  for (const [id, v] of Object.entries(T1)) {
+    const a = stat(id, 1), b = stat(id, 20);
+    near(a.hpMax, v[0], 1.5, 'Express Frontier: ' + id + ' HP at level 1'); near(a.dmg, v[1], 1, 'Express Frontier: ' + id + ' damage at level 1'); near(a.enMax, v[2], 1.5, 'Express Frontier: ' + id + ' energy at level 1'); near(a.spd, v[3], 1, 'Express Frontier: ' + id + ' speed');
+    near(b.hpMax, v[4], 2, 'Express Frontier: ' + id + ' HP at level 20'); near(b.dmg, v[5], 1, 'Express Frontier: ' + id + ' damage at level 20'); near(b.enMax, v[6], 2, 'Express Frontier: ' + id + ' energy at level 20');
+  }
+  const SKILL_KINDS = new Set(['single', 'blast', 'all', 'summon', 'charge', 'lock', 'rally', 'self']);
+  for (const [id, f] of Object.entries(HD.FOES)) {
+    const e = H.ENEMIES[id];
+    ok(e && HD.ATTR_NAME[f.main] && HD.ATK_ARMOR[f.atk] && HD.ARMOR0[f.armor] != null && e.skills.every(s => SKILL_KINDS.has(s.t)), 'Express Frontier: enemy ' + id + ' exists and has known types and skills');
+  }
+  const LG = HD.THREATS.legion;
+  ok(LG.normals.length === 6 && LG.normals.concat(LG.elites, [LG.small, LG.big]).every(id => HD.FOES[id] && H.ENEMIES[id]) && H.TRACKS[LG.music], 'Express Frontier: the Legion has six normal enemies, the Trampler, the Doomsday Beast and its music');
+  ok(Object.keys(HD.THREATS).length === 4 && Object.values(HD.THREATS).every(T => T.normals.length >= 2 && T.elites.length >= 1 && T.normals.concat(T.elites, [T.small, T.big]).every(id => HD.FOES[id] && H.ENEMIES[id] && HD.FOE_THREAT[id]) && H.TRACKS[T.music] && T.hpK > 0 && T.dmgK > 0), 'Express Frontier: four threats with normals, elites, two bosses and music');
+  ok(['silvermane', 'automaton', 'winter'].every(k => { const T = HD.THREATS[k]; return T.normals.length === { silvermane: 2, automaton: 3, winter: 5 }[k] && T.elites.length === { silvermane: 2, automaton: 1, winter: 2 }[k]; }) && HD.THREATS.silvermane.small === 'bronya_b' && HD.THREATS.silvermane.big === 'gepard_b' && HD.THREATS.automaton.small === 'grizzly' && HD.THREATS.automaton.big === 'svarog_b' && HD.THREATS.winter.small === 'cocolia_echo' && HD.THREATS.winter.big === 'cocolia1', 'Express Frontier: the threat rosters follow table 6.3');
+  {
+    const W = HD.WAVES, at = (f) => W.map((w, i) => (f(w) ? i + 1 : 0)).filter(Boolean).join();
+    ok(W.length === 20 && W.every(w => w.rifts.every(r => ['n', 'w', 'e'].includes(r)) && w.dur > 0), 'Express Frontier: twenty waves with rifts and spawn time');
+    eq(at(w => w.pig), '3,8,13,18', 'Express Frontier: piggy banks come on waves 3, 8, 13 and 18');
+    eq(at(w => w.bigPig), '15', 'Express Frontier: the Big Piggy Bank comes on wave 15');
+    eq(at(w => w.boss), '10,20', 'Express Frontier: bosses come on waves 10 and 20');
+    ok(W[9].boss === 'small' && W[19].boss === 'big' && W[19].reinf && W[19].reinf.every === 20, 'Express Frontier: wave 10 has the small boss, wave 20 the big boss with reinforcements every 20 s');
+    eq(at(w => w.a && w.b), '14,17,19', 'Express Frontier: waves 14, 17 and 19 mix both threats');
+    ok(W.slice(0, 10).every(w => w.a && !w.b) && W.slice(10).every(w => w.b), 'Express Frontier: the first threat leads waves 1-10, the second 11-20');
+    eq(W.map(w => (w.a || 0) + (w.b || 0)).join(), '6,8,10,12,8,14,14,16,16,8,10,12,14,20,12,18,24,20,32,10', 'Express Frontier: normal counts follow table 14.1');
+    eq(W.map(w => (w.ea || 0) + (w.eb || 0)).join(), '0,0,0,1,3,0,2,0,3,0,0,1,2,1,3,3,4,4,6,0', 'Express Frontier: elite counts follow table 14.1');
+  }
+  ok(Object.values(HD.ATK_ARMOR).length === 3 && Object.values(HD.ATK_ARMOR).every(r => Object.keys(r).length === 5 && Object.values(r).every(v => v > 0)), 'Express Frontier: the attack and armor table is 3 by 5 without zeros');
+  ok(Object.keys(HD.SUPPLIES).every(id => H.ITEMS[id] && HD.SUPPLIES[id].price > 0 && HD.SUPPLIES[id].text.length * 6 <= 280), 'Express Frontier: every supply has a game item, a price and a short text');
+  const hdFiles = ['hsr-hd-data', 'hsr-hd-arena', 'hsr-hd-heroes', 'hsr-hd-foes', 'hsr-hd-shop', 'hsr-hd', 'hsr-hd-art', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-debug'].map(f => fs.readFileSync(path.join(DIR, f + '.js'), 'utf8')).join('\n') + fs.readFileSync(path.join(__dirname, '../tools/hsr-hd-bot.cjs'), 'utf8');
+  ok(!/—/.test(hdFiles) && !/Microsoft|Windows/.test(hdFiles) && !/\/\/|\/\*/.test(hdFiles.replace(/https?:\/\//g, '')), 'Express Frontier: no long dashes, no forbidden names, no comments');
+
+  const M = HD.perron(), Gd = HD.gridOf();
+  ok(M.w === 60 && M.h === 38 && M.rifts.n.join() === '29,1' && M.rifts.w.join() === '2,5' && M.rifts.e.join() === '57,5' && M.turrets.map(t => t.join()).join(' ') === '29,20 18,24 41,24' && M.spawn.join() === '29,29', 'Express Frontier: the Platform map follows the plan draft');
+  let freeCells = 0, lost = 0;
+  for (let y = 0; y < M.h; y++) for (let x = 0; x < M.w; x++) if (Gd.free(x, y)) { freeCells++; if (!isFinite(Gd.flow[y * M.w + x])) lost++; }
+  ok(freeCells > 600 && lost === 0, 'Express Frontier: the flow field leads to the Express from every walkable cell');
+  ok(Object.values(M.rifts).every(r => Gd.flow[r[1] * M.w + r[0]] > 25), 'Express Frontier: every rift is far from the Express');
+  const westPath = HD.astar(Gd, 29, 29, 2, 5, TUN.heroPathLimit);
+  ok(westPath && westPath.length > 30 && !HD.astar(Gd, 29, 29, 2, 5, 20), 'Express Frontier: A* finds the long path to the western rift and gives up within a small limit');
+
+  {
+    const { A } = mkA('trail'), h = A.hero;
+    eq(A.phase, 'break', 'Express Frontier: a run starts in a break');
+    near(A.breakT, TUN.firstBreak, 0.01, 'Express Frontier: the first break lasts 40 seconds');
+    ok(h.lvl === 1 && h.pts === 1 && h.gold === TUN.startGold && A.base.hp === HD.DIFFS.normal.base && A.turrets.length === 3, 'Express Frontier: level 1, one point, 400 gold, full base and three turrets');
+    h.x = h.px = PX; h.y = h.py = PY;
+    A.cmd({ t: 'move', dx: 1, dy: 1 }); steps(A, 30);
+    ok(h.x > PX + 60 && h.y > PY + 60 && Math.abs((h.x - PX) - (h.y - PY)) < 2, 'Express Frontier: the hero moves diagonally');
+    near(Math.hypot(h.x - PX, h.y - PY), A.moveSpd(h), 6, 'Express Frontier: the hero covers his speed in one second');
+    A.cmd({ t: 'move', dx: 0, dy: 0 });
+    h.x = h.px = 18.6 * TS; h.y = h.py = 20.6 * TS;
+    A.cmd({ t: 'move', dx: -1, dy: 1 }); steps(A, 15);
+    ok(h.x >= 18 * TS + h.r - 0.01 && h.y > 20.6 * TS + 40, 'Express Frontier: the hero slides along the edge of the void');
+    A.cmd({ t: 'move', dx: 0, dy: 0 }); steps(A, 1);
+    const a = dummy(A, 'reaver', PX, PY), b = dummy(A, 'reaver', PX + 1, PY);
+    steps(A, 3);
+    ok(Math.hypot(a.x - b.x, a.y - b.y) >= a.r + b.r - 0.5, 'Express Frontier: units push each other apart');
+    a.dead = b.dead = true;
+    h.x = h.px = 26 * TS; h.y = h.py = 28 * TS;
+    A.cmd({ t: 'goto', x: 33 * TS, y: 22 * TS });
+    steps(A, 150);
+    ok(Math.hypot(h.x - 33 * TS, h.y - 22 * TS) < 12, 'Express Frontier: right click walks the hero there with A*');
+  }
+
+  {
+    near(HD.armorMul(0), 1, 1e-9, 'Express Frontier: no armor takes full damage'); near(HD.armorMul(20), 0.5, 1e-9, 'Express Frontier: 20 armor halves damage'); near(HD.armorMul(-20), 1.5, 1e-9, 'Express Frontier: negative armor raises damage');
+    const { A } = mkA('trail'), h = A.hero;
+    for (const atk of Object.keys(HD.ATK_ARMOR)) for (const arm of Object.keys(HD.ARMOR0)) {
+      const t = dummy(A, 'reaver', PX, PY); t.armorType = arm; t.armor = 0; t.weak = []; t.resist = []; t.hp = t.hpMax = 1e6;
+      const v = A.hit(h, t, { amt: 100, type: atk, elem: 'imag', noCrit: true, noTough: true });
+      near(v, Math.round(100 * HD.ATK_ARMOR[atk][arm]), 0.5, 'Express Frontier: ' + atk + ' against ' + arm + ' armor');
+      t.dead = true;
+    }
+    const t = dummy(A, 'reaver', PX, PY); t.armor = 0; t.armorType = 'none'; t.hp = t.hpMax = 1e6;
+    eq(A.hit(h, t, { amt: 100, elem: 'phys', noCrit: true, noTough: true }), 120, 'Express Frontier: a hit on a weakness deals 120%');
+    t.resist = ['quant'];
+    eq(A.hit(h, t, { amt: 100, elem: 'quant', noCrit: true, noTough: true }), 80, 'Express Frontier: a resisted hit deals 80%');
+    const t0 = t.tough;
+    A.hit(h, t, { amt: 1, elem: 'wind', noCrit: true, tough: 20 });
+    near(t.tough, t0 - 20 * TUN.toughNoWeak, 1e-9, 'Express Frontier: without a weakness only part of the toughness damage lands');
+    A.hit(h, t, { amt: 1, elem: 'phys', noCrit: true, tough: 30 });
+    ok(t.brokenT === TUN.toughBack && A.stunned(t) && t.fx.some(f => f.n === 'Кровотечение'), 'Express Frontier: a physical break stuns and makes the enemy bleed');
+    steps(A, Math.ceil(TUN.toughBack * TUN.hz) + 2);
+    ok(t.brokenT <= 0 && t.tough === t.toughMax, 'Express Frontier: toughness comes back six seconds after the break');
+    const boss = dummy(A, 'doomsday', PX + 200, PY);
+    eq(A.armorType(boss), 'divine', 'Express Frontier: the boss wears divine armor');
+    boss.act = { t: 4, cancel: true, areas: [A.addArea({ shape: 'circle', x: boss.x, y: boss.y, r: 320, side: 'ally', warn: true, delay: 4 })], fn() {} };
+    boss.tough = 1;
+    A.hit(h, boss, { amt: 1, elem: 'phys', noCrit: true, tough: 30 });
+    ok(!boss.act && !A.areas.some(ar => ar.r === 320) && A.armorType(boss) === 'heavy', 'Express Frontier: breaking the boss cancels its windup and strips the divine armor');
+    A.addFx(h, { n: 'Тест', k: 'atk', v: 0.2, t: 3 }); A.addFx(h, { n: 'Тест', k: 'atk', v: 0.2, t: 5 });
+    ok(h.fx.filter(f => f.n === 'Тест').length === 1 && Math.abs(A.sum(h, 'atk') - 0.2) < 1e-9 && h.fx.find(f => f.n === 'Тест').t === 5, 'Express Frontier: an effect with the same name refreshes instead of stacking');
+    A.addFx(h, { n: 'Щит 1', k: 'shield', v: 50, t: 5 }); A.addFx(h, { n: 'Щит 2', k: 'shield', v: 30, t: 5 }); A.addFx(h, { n: 'Щит 3', k: 'shield', v: 80, t: 5 });
+    ok(h.fx.filter(f => f.k === 'shield').length === 1 && A.sum(h, 'shield') === 80, 'Express Frontier: of two shields the larger stays');
+  }
+
+  {
+    const { A } = mkA('trail'), h = A.hero;
+    h.x = h.px = 10 * TS; h.y = h.py = 24.5 * TS;
+    const t = dummy(A, 'reaver', h.x + 40, h.y); t.hp = t.hpMax = 1e6;
+    const en0 = h.en;
+    steps(A, TUN.hz * 10);
+    const hits = A.events.filter(e => e.t === 'swing' && e.uid === h.uid).length;
+    near(hits, Math.round(10 / A.interval(h)), 1.5, 'Express Frontier: the Attack follows the attack interval');
+    ok(h.en >= en0 + hits * TUN.enHit, 'Express Frontier: every Attack hit gives 3 energy');
+    A.events.length = 0;
+    const e0 = h.en; h.hp = h.hpMax; h.lossAcc = 0;
+    A.hit(t, h, { amt: Math.round(h.hpMax * 0.1), type: 'divine', elem: 'phys', noCrit: true });
+    const lost = 1 - h.hp / h.hpMax;
+    near(h.en - e0, Math.floor(lost * 100 / TUN.enLossPct), 1, 'Express Frontier: losing HP gives energy');
+    const hm = mkA('himeko').A, hh = hm.hero;
+    hh.x = hh.px = PX; hh.y = hh.py = PY;
+    const tt = dummy(hm, 'reaver', PX + 150, PY); tt.hp = tt.hpMax = 1e6;
+    steps(hm, 20);
+    ok(hm.shots.length > 0 || tt.hp < tt.hpMax, 'Express Frontier: a ranged hero fires a projectile');
+    steps(hm, 30);
+    ok(tt.hp < tt.hpMax, 'Express Frontier: the projectile reaches the target');
+  }
+
+  {
+    const { A } = mkA('seele'), h = A.hero;
+    eq(HD.expNext(1), TUN.expNext[0] + TUN.expNext[1], 'Express Frontier: experience to level 2 follows the formula');
+    let total = 0; for (let l = 1; l < 20; l++) total += HD.expNext(l);
+    eq(total, 19 * TUN.expNext[0] + 190 * TUN.expNext[1], 'Express Frontier: experience to level 20 follows the formula');
+    A.giveExp(h, HD.expNext(1));
+    ok(h.lvl === 2 && h.pts === 2, 'Express Frontier: a level gives a development point');
+    ok(HD.abilCap('q', 1) === 1 && HD.abilCap('q', 3) === 2 && HD.abilCap('q', 9) === 5 && HD.abilCap('r', 5) === 0 && HD.abilCap('r', 6) === 1 && HD.abilCap('r', 18) === 3, 'Express Frontier: ability levels are capped by half the hero level, the Ultimate opens at 6, 12 and 18');
+    ok(A.up(h, 'q') && !A.up(h, 'q') && !A.up(h, 'r'), 'Express Frontier: the cap blocks a second Skill level at hero level 2');
+    A.giveExp(h, 1e6);
+    ok(h.lvl === 20 && h.pts === 17, 'Express Frontier: level 20 is the cap; levels 10 and 20 give no point');
+    h.gold = 1000;
+    const g = h.gold;
+    h.hp = 1;
+    const foe = dummy(A, 'reaver', h.x + 30, h.y);
+    A.hit(foe, h, { amt: 1e5, type: 'divine', noCrit: true });
+    ok(h.dead && h.deaths === 1, 'Express Frontier: the hero falls');
+    near(h.respawn, (TUN.respawn[0] + TUN.respawn[1] * 20) * HD.DIFFS.normal.respawn, 1e-9, 'Express Frontier: the respawn timer depends on the level');
+    A.cmd({ t: 'buyback' }); steps(A, 1);
+    ok(!h.dead && h.gold === g - (TUN.buyback[0] + TUN.buyback[1] * 20) && h.bought, 'Express Frontier: the urgent call revives the hero for gold');
+    h.hp = 1; A.hit(foe, h, { amt: 1e5, type: 'divine', noCrit: true }); A.cmd({ t: 'buyback' }); steps(A, 1);
+    ok(h.dead, 'Express Frontier: the urgent call works once per wave');
+    steps(A, Math.ceil(h.respawn * TUN.hz) + 2);
+    ok(!h.dead && A.inPlaza(h), 'Express Frontier: the hero comes back on the square');
+    h.x = h.px = 10 * TS; h.y = h.py = 24.5 * TS;
+    A.cmd({ t: 'recall' }); steps(A, TUN.hz * 2);
+    A.hit(foe, h, { amt: 5, type: 'divine', noCrit: true });
+    ok(h.recall === 0 && !A.inPlaza(h), 'Express Frontier: damage breaks the recall channel');
+    A.cmd({ t: 'recall' }); steps(A, TUN.hz * TUN.recallT + 2);
+    ok(A.inPlaza(h) && h.recallCd > 40, 'Express Frontier: the recall brings the hero to the square and goes on cooldown');
+    h.items[0] = { id: 'revive', n: 1 };
+    h.hp = 1; A.hit(foe, h, { amt: 1e5, type: 'divine', noCrit: true });
+    ok(!h.dead && !h.items[0] && Math.abs(h.hp - h.hpMax * TUN.reviveHp) < 1, 'Express Frontier: the revival capsule raises the hero on the spot');
+  }
+
+  {
+    const { A } = mkA('trail'), h = A.hero;
+    h.items = [null, null, null, null, null, null];
+    ok(A.nearShop(h), 'Express Frontier: the hero starts next to the shop');
+    const g0 = h.gold;
+    A.cmd({ t: 'buy', id: 'medkit' }); A.cmd({ t: 'buy', id: 'medkit' }); steps(A, 1);
+    ok(h.items[0] && h.items[0].n === 2 && h.gold === g0 - 120, 'Express Frontier: supplies stack in one slot');
+    A.cmd({ t: 'sell', i: 0 }); steps(A, 1);
+    ok(!h.items[0] && h.gold === g0, 'Express Frontier: a supply bought in this break sells back at the full price');
+    h.items = ['medkit', 'thermos', 'coffee', 'medkit', 'thermos', 'coffee'].map(id => ({ id, n: 5 }));
+    h.gold = 2000;
+    A.cmd({ t: 'buy', id: 'revive' }); steps(A, 1);
+    ok(A.events.some(e => e.t === 'deny' && /полон/.test(e.why)), 'Express Frontier: a full inventory refuses a purchase');
+    h.items[1] = null; h.en = 0;
+    A.cmd({ t: 'use', i: 2 }); steps(A, 1);
+    ok(h.items[2].n === 4 && A.sum(h, 'mspd') > 0.29, 'Express Frontier: coffee speeds the hero up');
+    h.x = h.px = 10 * TS; h.y = h.py = 24.5 * TS;
+    A.cmd({ t: 'buy', id: 'medkit' }); steps(A, 1);
+    ok(A.events.some(e => e.t === 'deny' && /Лавка на площади/.test(e.why)), 'Express Frontier: the shop works only on the square');
+  }
+
+  {
+    const { A } = mkA('trail'), h = A.hero;
+    const g0 = h.gold, left = Math.ceil(A.breakT);
+    A.cmd({ t: 'early' }); steps(A, 1);
+    ok(A.phase === 'wave' && h.gold === g0 + left * TUN.earlyGold, 'Express Frontier: N starts the wave early and pays for the skipped seconds');
+    ok(A.sched.length >= 1 && A.sched.reduce((n, gr) => n + gr.ids.length, 0) === HD.WAVES[0].a && A.sched.every(gr => gr.rift === 'n' && gr.ids.length <= TUN.spawnGroup[1] + 3), 'Express Frontier: wave 1 sends six enemies in groups from the northern rift');
+    steps(A, TUN.hz * 3);
+    ok(A.foes().length > 0, 'Express Frontier: the first group comes out of the rift');
+    for (let i = 0; i < 40 && A.phase === 'wave'; i++) { for (const f of A.foes()) A.hit(h, f, { amt: 1e6, type: 'divine', noCrit: true }); steps(A, TUN.hz); }
+    ok(A.phase === 'break' && A.wave === 2 && h.exp >= TUN.expWave[0] + TUN.expWave[1], 'Express Frontier: clearing the wave starts the break before wave 2 and gives experience');
+    ok(A.events.some(e => e.t === 'cleared' && e.clean), 'Express Frontier: a wave where nobody reached a turret is a clean line');
+    ok(A.breakT > HD.DIFFS.normal.breakT - 1.5 && A.breakT <= HD.DIFFS.normal.breakT, 'Express Frontier: the break lasts 25 seconds');
+    A.base.hp = 1000;
+    steps(A, TUN.hz);
+    near(A.base.hp, 1000 + A.base.hpMax * TUN.baseRegen, 1, 'Express Frontier: the base heals 1% per second in a break');
+    const tur = A.turrets[0];
+    A.phase = 'wave'; A.hit(dummy(A, 'reaver', tur.x + 30, tur.y), tur, { amt: 1, noCrit: true }); A.phase = 'break';
+    ok(A.leaked, 'Express Frontier: an enemy hitting a turret spoils the clean line');
+    const nf = dummy(A, 'baryon', tur.x + 100, tur.y), el = dummy(A, 'trampler', tur.x + 180, tur.y);
+    nf.hp = nf.hpMax = el.hp = el.hpMax = 1e6;
+    steps(A, TUN.hz * 2);
+    ok(el.hp < el.hpMax && nf.hp === nf.hpMax, 'Express Frontier: a turret shoots the elite before a normal enemy');
+    nf.dead = el.dead = true;
+    tur.hp = 1; A.hit(el, tur, { amt: 1e5, type: 'divine', noCrit: true });
+    ok(tur.dead, 'Express Frontier: a turret can fall');
+    h.x = h.px = tur.x; h.y = h.py = tur.y + 40; h.gold = 1000;
+    A.cmd({ t: 'restore', i: 0 }); steps(A, 1);
+    ok(!tur.dead && tur.hp === tur.hpMax && h.gold === 1000 - A.restoreCost(), 'Express Frontier: a fallen turret is rebuilt for gold in a break');
+    const pig = A.spawnFoe('trotter', 'w', { goal: 'e' }), er = A.rift('e');
+    pig.x = pig.px = er.x - 30; pig.y = pig.py = er.y;
+    const gp = h.gold;
+    steps(A, TUN.hz);
+    ok(pig.dead && pig.escaped && h.gold === gp, 'Express Frontier: a piggy bank that reaches a rift escapes without a reward');
+    A.base.hp = 5;
+    A.hit(el, A.base, { amt: 100, type: 'divine', noCrit: true });
+    steps(A, 1);
+    eq(A.over, 'lose', 'Express Frontier: the run is lost when the base falls');
+  }
+
+  {
+    const run = (cmds) => {
+      const { A } = mkA('himeko');
+      A.cmd({ t: 'up', slot: 'q' }); A.cmd({ t: 'early' });
+      for (let i = 0; i < TUN.hz * 40; i++) { if (cmds[i]) A.cmd(cmds[i]); A.step(); }
+      return JSON.stringify({ h: [A.hero.x, A.hero.y, A.hero.hp, A.hero.en, A.hero.exp, A.hero.gold], b: A.base.hp, f: A.units.filter(u => u.side === 'foe').map(u => [u.key, Math.round(u.x * 100), Math.round(u.hp * 100)]), k: A.stats.kills });
+    };
+    const cmds = { 60: { t: 'goto', x: 29.5 * TS, y: 17 * TS }, 400: { t: 'cast', slot: 'q' }, 700: { t: 'cast', slot: 'q' } };
+    const r1 = run(cmds), r2 = run(cmds);
+    ok(r1 === r2 && r1.includes('"k":'), 'Express Frontier: two runs with the same seed and commands match to the number');
+    const { A } = mkA('trail');
+    A.phase = 'wave'; A.sched = [{ t: 1e9, done: false, ids: [], rift: 'n' }];
+    for (let i = 0; i < 150; i++) A.spawnFoe(['reaver', 'baryon', 'eliminator', 'distorter', 'weaver'][i % 5], ['n', 'w', 'e'][i % 3]);
+    const t0 = Date.now();
+    steps(A, 1000);
+    const ms = Date.now() - t0;
+    ok(ms < 6000, 'Express Frontier: 1000 ticks with 150 units fit the soft limit (' + ms + ' ms)');
+  }
+
+  {
+    const { A } = mkA('trail'), h = A.hero;
+    h.x = h.px = PX; h.y = h.py = PY;
+    h.abil = { q: 5, e: 5, t: 5, r: 3 }; h.en = h.enMax = 1000; h.lvl = 18;
+    const a = dummy(A, 'reaver', PX + 50, PY), b = dummy(A, 'reaver', PX + 40, PY + 30), c = dummy(A, 'reaver', PX - 60, PY);
+    for (const u of [a, b, c]) u.hp = u.hpMax = 1e6;
+    const ax = a.x;
+    A.cmd({ t: 'cast', slot: 'q', x: a.x, y: a.y }); steps(A, 1);
+    ok(a.hp < a.hpMax && b.hp < b.hpMax && c.hp === c.hpMax && a.x > ax + 20, 'Express Frontier: the Trailblazer Skill hits the arc in front and knocks back');
+    ok(a.hpMax - a.hp > b.hpMax - b.hp, 'Express Frontier: the main target of the arc takes more');
+    A.base.hp = 1000; h.x = h.px = 29 * TS; h.y = h.py = 30 * TS;
+    A.cmd({ t: 'cast', slot: 'e' }); steps(A, TUN.hz * 3 + 2);
+    ok(A.base.hp > 1000 + A.base.hpMax * 0.14, 'Express Frontier: Immortal Third Strike heals the Express');
+    a.tough = 1; A.hit(h, a, { amt: 1, elem: 'phys', tough: 10, noCrit: true });
+    ok(A.sum(h, 'atk') > 0.19, 'Express Frontier: the Trailblazer Talent raises the attack after a break');
+    h.x = h.px = PX; h.y = h.py = PY;
+    const before = a.hp;
+    A.cmd({ t: 'cast', slot: 'r', x: a.x, y: a.y }); steps(A, 1);
+    ok(Math.hypot(h.x - a.x, h.y - a.y) < 50 && a.hp < before && A.events.some(e => e.t === 'say'), 'Express Frontier: Stardust Ace leaps to the point, hits and says its line');
+
+    const hm = mkA('himeko').A, hk = hm.hero;
+    hk.x = hk.px = PX; hk.y = hk.py = PY; hk.abil = { q: 5, e: 5, t: 5, r: 2 }; hk.en = hk.enMax = 1000; hk.lvl = 12;
+    const f1 = dummy(hm, 'reaver', PX + 150, PY), f2 = dummy(hm, 'reaver', PX + 180, PY + 20);
+    for (const u of [f1, f2]) u.hp = u.hpMax = 1e6;
+    hm.cmd({ t: 'cast', slot: 'q', x: f1.x, y: f1.y }); steps(hm, 1);
+    ok(f1.hp === f1.hpMax, 'Express Frontier: Molten Detonation flies before it explodes');
+    steps(hm, 10);
+    ok(f1.hp < f1.hpMax && f2.hp < f2.hpMax, 'Express Frontier: Molten Detonation hits the circle');
+    hm.cmd({ t: 'cast', slot: 'e', x: f1.x, y: f1.y }); steps(hm, 10);
+    ok(f1.fx.some(f => f.k === 'elemVuln' && f.elem === 'fire'), 'Express Frontier: Incomplete Combustion makes enemies take more fire damage');
+    hk.tal.ch = 2;
+    const pre = f2.hp;
+    f1.tough = 1; f1.brokenT = 0; f2.brokenT = 3; hm.hit(hk, f1, { amt: 1, elem: 'fire', tough: 10, noCrit: true });
+    ok(hk.tal.ch === 0 && f2.hp < pre, 'Express Frontier: the third Talent charge sends a fire wave');
+    const weak = dummy(hm, 'baryon', PX + 160, PY - 20); weak.hp = 1;
+    const en0 = hk.en = 500;
+    hm.cmd({ t: 'cast', slot: 'r', x: f1.x, y: f1.y }); steps(hm, TUN.hz);
+    ok(weak.dead && hk.en > en0 - H.CHARS.himeko.energy, 'Express Frontier: Heavenly Flare gives energy for kills');
+
+    const sm = mkA('seele').A, sh = sm.hero;
+    sh.x = sh.px = PX; sh.y = sh.py = PY; sh.abil = { q: 5, e: 5, t: 5, r: 1 }; sh.en = sh.enMax = 1000; sh.lvl = 6;
+    const s1 = dummy(sm, 'reaver', PX + 170, PY); s1.hp = s1.hpMax = 1e6;
+    sm.cmd({ t: 'cast', slot: 'q', id: s1.uid }); steps(sm, 1);
+    ok(Math.hypot(sh.x - s1.x, sh.y - s1.y) < 40 && s1.hp < s1.hpMax && sm.sum(sh, 'aspd') > 0.2, 'Express Frontier: Sheathed Blade dashes, hits and speeds Seele up');
+    s1.tgt = sh.uid;
+    sm.cmd({ t: 'cast', slot: 'e' }); steps(sm, 1);
+    ok(sm.has(sh, 'invis') && s1.tgt !== sh.uid, 'Express Frontier: Phantom Illusion makes enemies lose Seele');
+    const s2 = dummy(sm, 'baryon', sh.x + 30, sh.y); s2.hp = 1;
+    sm.hit(sh, s2, { amt: 10, noCrit: true });
+    ok(!sm.has(sh, 'invis') && sh.fx.some(f => f.n === 'Усиление') && sh.cd.q === 0, 'Express Frontier: the hit from stealth and the kill give Resurgence and reset the Skill');
+    const hp1 = s1.hp;
+    sm.cmd({ t: 'cast', slot: 'r', id: s1.uid }); steps(sm, 1);
+    ok(hp1 - s1.hp > 200, 'Express Frontier: Butterfly Flurry strikes hard');
+  }
+
+  {
+    const { A } = mkA('trail'), h = A.hero;
+    A.wave = 10; A.phase = 'wave'; A.sched = [{ t: 1e9, done: false, ids: [], rift: 'n' }];
+    const boss = A.spawnFoe('doomsday', 'n');
+    ok(A.events.some(e => e.t === 'boss' && e.music === 'doomsday'), 'Express Frontier: the Doomsday Beast comes out with its music');
+    boss.x = boss.px = PX; boss.y = boss.py = PY - 60; boss.gapT = 0;
+    h.x = h.px = PX; h.y = h.py = PY + 20;
+    boss.patI = 3;
+    for (let i = 0; i < 60 && !boss.act; i++) steps(A, 1);
+    ok(boss.act && A.areas.some(a => a.warn && a.r === 320) && A.events.some(e => e.t === 'warn' && /антиматерию/.test(e.text)), 'Express Frontier: Gathering Antimatter warns with a large red circle and the data text');
+    const n0 = A.foes().length;
+    boss.hp = boss.hpMax * 0.7;
+    steps(A, 1);
+    eq(A.foes().length, n0 + 3, 'Express Frontier: the Call of the Legion brings three rangers at 75% HP');
+  }
+
+  {
+    const g = new H.Game({ fresh: true, seed: 4 });
+    ok(!g.state.hd && !g.hdRun(), 'Express Frontier: no run before the terminal is used');
+    g.hdNew({ hero: 'seele', seed: 9, threats: ['legion', 'silvermane'] });
+    const A = g.hdArena(); A.onBreak = () => g.hdBreak(A); A.onWave = () => g.hdSync(A);
+    A.cmd({ t: 'early' }); steps(A, 1);
+    eq(g.state.hd.run.phase, 'wave', 'Express Frontier: the run is written at the start of a wave');
+    const gold = A.hero.gold;
+    A.cmd({ t: 'buy', id: 'medkit' }); steps(A, 1);
+    ok(A.hero.gold === gold - 60, 'Express Frontier: a supply can be bought during the wave');
+    const g2 = new H.Game({ state: JSON.parse(JSON.stringify(g.serialize())), seed: 4 });
+    const r2 = g2.hdRun();
+    ok(r2.phase === 'break' && r2.wave === 1 && r2.players[0].gold === gold && !r2.players[0].items.some(Boolean), 'Express Frontier: loading during a wave returns to the break with the gold of the wave start');
+    for (let i = 0; i < 60 && A.phase === 'wave'; i++) { for (const f of A.foes()) A.hit(A.hero, f, { amt: 1e6, type: 'divine', noCrit: true }); steps(A, TUN.hz); }
+    ok(g.state.hd.run.phase === 'break' && g.state.hd.run.wave === 2 && g.events.some(e => e.t === 'autosave'), 'Express Frontier: the break writes the run and asks for an autosave');
+    const sum = g.hdFinish(A, true);
+    ok(!sum.win && !g.hdRun() && g.state.hd.hist[0].hero === 'seele' && g.state.hd.last === sum, 'Express Frontier: giving up ends the run with a simple summary');
+  }
+  {
+    const QX = 46 * TS, QY = 24.5 * TS;
+    const mk = (id, o = {}) => {
+      const { A } = mkA(id), h = A.hero;
+      h.x = h.px = QX; h.y = h.py = QY;
+      h.lvl = o.lvl || 18; A.heroStatsApply(h, true);
+      h.abil = Object.assign({ q: 5, e: 5, t: 5, r: 3 }, o.abil || {});
+      h.en = h.enMax = 5000;
+      if (o.tr != null) h.picks[10] = o.tr;
+      if (o.ei != null) h.picks[20] = o.ei;
+      return { A, h };
+    };
+    const dum = (A, dx, dy, hp, id) => { const u = dummy(A, id || 'reaver', QX + dx, QY + dy); u.hp = u.hpMax = hp || 1e6; return u; };
+    const spy = A => { const log = []; const h0 = A.hit.bind(A); A.hit = (s, t, o) => { const v = h0(s, t, o); log.push({ s: s && s.uid, t: t.uid, kind: o.kind, v }); return v; }; return log; };
+    const lost = u => u.hpMax - u.hp;
+    const cast = (A, slot, o) => { A.cmd(Object.assign({ t: 'cast', slot }, o || {})); A.step(); };
+
+    {
+      const g = new H.Game({ fresh: true, seed: 8 }), run = g.hdNew({ seed: 5 });
+      ok(run.phase === 'draft' && !run.players[0].hero && run.draft.cards.length === 3 && new Set(run.draft.paths).size === 3, 'Express Frontier: a new run starts with the Path roll');
+      const c0 = run.draft.cards[0], first = c0.hero;
+      ok(g.hdRefresh(0) && c0.hero !== first && g.hdRefresh(0) && !g.hdRefresh(0) && new Set(c0.seen).size === 3, 'Express Frontier: a card refreshes twice and never repeats a hero');
+      const back = new H.Game({ state: JSON.parse(JSON.stringify(g.serialize())), seed: 8 });
+      ok(back.hdRun().phase === 'draft' && back.hdRun().draft.cards[0].left === 0 && back.hdRun().draft.cards[0].hero === c0.hero, 'Express Frontier: the cards and refreshes survive a reload');
+      ok(back.hdTake(1) && back.hdRun().phase === 'break' && back.hdRun().players[0].hero === back.hdRun().draft.cards[1].hero, 'Express Frontier: taking a card starts the run with that hero');
+      const A2 = back.hdArena();
+      ok(A2.hero.key === back.hdRun().players[0].hero, 'Express Frontier: the arena gets the hero of the taken card');
+      ok(g.hdFinish(null, true) === null && !g.hdRun(), 'Express Frontier: giving up during the roll just drops the cards');
+      const seen = new Set();
+      const pathSeen = new Set();
+      for (let sd = 1; sd <= 120; sd++) { const gg = new H.Game({ fresh: true, seed: sd }); for (const cd of gg.hdNew({ seed: sd }).draft.cards) { seen.add(cd.hero); pathSeen.add(cd.path); } }
+      ok(seen.size === 21 && pathSeen.size === 7, 'Express Frontier: the roll offers all seven Paths and all 21 heroes over many runs');
+    }
+
+    {
+      const { A, h } = mk('trail', { lvl: 9 });
+      A.giveExp(h, HD.expNext(9));
+      ok(h.lvl === 10 && A.needPick(h) === 10, 'Express Frontier: level 10 asks for a Trace instead of a point');
+      A.cmd({ t: 'pick', i: 1 }); A.step();
+      ok(h.picks[10] === 1 && !A.needPick(h) && !A.pick(h, 10, 0), 'Express Frontier: the Trace choice stays for the run');
+      A.giveExp(h, 1e6);
+      ok(h.lvl === 20 && A.needPick(h) === 20, 'Express Frontier: level 20 asks for an Eidolon');
+    }
+
+    {
+      const dmgTo = o => { const { A, h } = mk('trail', o); const a = dum(A, 50, 0), b = dum(A, 0, -50); a.toughMax = b.toughMax = 0; cast(A, 'q', { x: a.x, y: a.y }); return [lost(a), lost(b)]; };
+      const base = dmgTo({}), will = dmgTo({ tr: 0 });
+      near(will[0] / base[0], 1.25, 0.02, 'Express Frontier: Will to Battle hits the main target of the swing 25% harder');
+      ok(base[1] === 0 && will[1] > 0, 'Express Frontier: Will to Battle widens the swing to 180°');
+      const { A, h } = mk('trail', { tr: 1 });
+      for (let i = 0; i < 4; i++) A.trail = HD.KITS.trail.t.buff(A, h, 1);
+      A.step();
+      ok(h.fx.find(f => f.n === 'Талант').stacks === 3 && A.sum(h, 'armor') === 20, 'Express Frontier: Perseverance stacks the Talent to 3 and gives 4 armor per Talent level');
+      const e = mk('trail', { ei: 0 }), weak = dum(e.A, 30, 0, 1);
+      cast(e.A, 'r', { x: weak.x, y: weak.y }); e.A.step();
+      near(e.h.cd.r, 70 - 6 - 2 / 30, 0.05, 'Express Frontier: a kill by Stardust Ace cuts its cooldown by 6 s');
+      const w = mk('trail', { ei: 1 }), k1 = dum(w.A, 30, 0, 1);
+      w.A.hit(w.h, k1, { amt: 10, noCrit: true });
+      ok(w.h.fx.some(f => f.n === 'Талант'), 'Express Frontier: Will of Exploration triggers the Talent on kills');
+    }
+
+    {
+      const { A, h } = mk('himeko', { tr: 0 }), f = dum(A, 100, 0);
+      for (let i = 0; i < 30; i++) A.hit(h, f, { amt: 1, noCrit: true });
+      ok(f.fx.some(x => x.n === 'Горение'), 'Express Frontier: Starfire sets enemies on fire');
+      const m = mk('himeko', { tr: 1 }), b1 = dum(m.A, 100, 0), b2 = dum(m.A, 130, 0);
+      m.A.addFx(b1, { n: 'Горение', k: 'dot', v: 0, dps: 1, elem: 'fire', t: 9, src: m.h });
+      eq(HD.KITS.himeko.dmgMul(m.A, m.h, b1, {}), 1.2, 'Express Frontier: Magma adds 20% damage against burning enemies');
+      b1.hp = 1; m.A.hit(m.h, b1, { amt: 10, noCrit: true, noTough: true });
+      ok(b1.dead && b2.hp < b2.hpMax, 'Express Frontier: a burning enemy explodes on death under Magma');
+      const s = mk('himeko', { ei: 0 }), t0 = [0, 1, 2].map(i => dum(s.A, 150 + i * 10, i * 10));
+      s.h.tal.ch = 0;
+      cast(s.A, 'q', { x: t0[1].x, y: t0[1].y }); for (let i = 0; i < 10; i++) s.A.step();
+      eq(s.h.tal.ch, 1, 'Express Frontier: Selfless gives a Talent charge for every three enemies hit by the Skill');
+      const r = mk('himeko', { ei: 1 }), big = dum(r.A, 150, 0), log = spy(r.A);
+      cast(r.A, 'r', { x: big.x, y: big.y }); for (let i = 0; i < 50; i++) r.A.step();
+      eq(log.filter(x => x.t === big.uid && x.kind === 'r').length, 3, 'Express Frontier: Exploration! strikes twice more after the Ultimate');
+    }
+
+    {
+      const a = mk('seele', { tr: 0 });
+      HD.KITS.seele.resurge(a.A, a.h, 1, 4);
+      ok(a.A.sum(a.h, 'pen') === 0.3, 'Express Frontier: Rippling Waves pierces 30% armor in Resurgence');
+      const b = mk('seele', { tr: 1 }), f = dum(b.A, 30, 0);
+      b.h.cd.q = 5; b.A.hit(b.h, f, { amt: 1, basic: true, kind: 'basic', noCrit: true });
+      near(b.h.cd.q, 4.4, 1e-9, 'Express Frontier: Nightshade cuts the Skill cooldown on every Attack');
+      const c = mk('seele', { ei: 0 }), f2 = dum(c.A, 100, 0);
+      cast(c.A, 'q', { id: f2.uid }); cast(c.A, 'q', { id: f2.uid });
+      ok(c.A.events.filter(e => e.t === 'cast' && e.slot === 'q').length === 2 && c.A.cdLeft(c.h, 'q') > 0 && c.h.fx.find(x => x.n === 'Ускорение').stacks === 2, 'Express Frontier: Dance of the Butterfly gives the Skill two charges and stacks its speed');
+      const d = mk('seele', { ei: 1 }), v1 = dum(d.A, 100, 0), v2 = dum(d.A, 160, 0), log = spy(d.A);
+      cast(d.A, 'r', { id: v1.uid });
+      d.A.hit(d.h, v1, { amt: 1, basic: true, kind: 'basic', noCrit: true });
+      ok(log.some(x => x.t === v1.uid && x.kind === 'bonus'), 'Express Frontier: the Butterfly Vortex adds damage to hits on its target');
+      v1.hp = 1; d.A.hit(d.h, v1, { amt: 10, noCrit: true, noTough: true });
+      eq(d.h.tal.vortex.uid, v2.uid, 'Express Frontier: the Vortex moves to the nearest enemy');
+    }
+
+    {
+      const { A, h } = mk('blade'), f = dum(A, 40, 0), g2 = dum(A, 70, 20);
+      const hp0 = h.hp;
+      cast(A, 'q');
+      ok(Math.abs(h.hp - hp0 * 0.7) < 1 && h.fx.some(x => x.n === 'Адский пейзаж'), 'Express Frontier: Hellscape costs 30% HP and turns on');
+      const hp1 = h.hp;
+      A.basicAttack(h, f);
+      ok(f.hp < f.hpMax && g2.hp < g2.hpMax && Math.abs(h.hp - hp1 * 0.97) < 1, 'Express Frontier: Shuhu Gift turns the Attack into Forest of Swords that hits around and costs 3% HP');
+      const e = mk('blade'), line = [60, 120].map(dx => dum(e.A, dx, 0)), hpE = e.h.hp;
+      cast(e.A, 'e', { x: QX + 200, y: QY });
+      ok(line.every(u => u.hp < u.hpMax) && e.h.x > QX + 150 && Math.abs(e.h.hp - hpE * 0.8) < 1, 'Express Frontier: Karma Wind dashes through enemies and costs 20% HP');
+      const t = mk('blade'), around = dum(t.A, 60, 0);
+      t.h.hp = t.h.hpMax * 0.4;
+      t.A.spendHp(t.h, t.h.hpMax * 0.1); t.A.spendHp(t.h, 0.0001);
+      ok(around.hp === around.hpMax, 'Express Frontier: Shuhu needs five charges');
+      t.h.hp = t.h.hpMax; t.h.tal.ch = 4; t.h.tal.acc = 0;
+      t.A.spendHp(t.h, t.h.hpMax * 0.1);
+      ok(around.hp < around.hpMax && t.h.tal.ch === 0, 'Express Frontier: the fifth charge of Shuhu strikes around Blade');
+      const r = mk('blade'), rf = dum(r.A, 40, 0);
+      r.h.tal.lost = r.h.hpMax * 0.5;
+      cast(r.A, 'r');
+      ok(Math.abs(r.h.hp - r.h.hpMax * 0.5) < 1 && rf.hp < rf.hpMax && r.h.tal.lost === 0, 'Express Frontier: Death Sentence sets HP to 50%, strikes and resets the tally');
+      const a0 = mk('blade', { tr: 0 }), af = dum(a0.A, 40, 0);
+      cast(a0.A, 'q'); a0.h.hp = a0.h.hpMax * 0.4; const hpA = a0.h.hp;
+      a0.A.basicAttack(a0.h, af); a0.A.step();
+      ok(a0.h.hp >= hpA && a0.A.sum(a0.h, 'healIn') === 0.5, 'Express Frontier: Infinite Life stops the cost at half HP and raises healing');
+      const a1 = mk('blade', { tr: 1 }), bf = dum(a1.A, 40, 0);
+      cast(a1.A, 'q'); bf.brokenT = 3; a1.h.hp = a1.h.hpMax * 0.5; const hpB = a1.h.hp;
+      a1.A.basicAttack(a1.h, bf);
+      ok(a1.h.hp > hpB, 'Express Frontier: Endless Deaths heals on a Forest of Swords hit against a broken enemy');
+      const dr0 = o => { const x = mk('blade', o), y = dum(x.A, 40, 0); x.h.tal.lost = x.h.hpMax * 0.6; cast(x.A, 'r'); return lost(y); };
+      ok(dr0({ ei: 0 }) > dr0({}) * 1.2, 'Express Frontier: Blade Cuts Burn Hotter adds the HP tally to the Ultimate');
+      const e1 = mk('blade', { ei: 1 }), ef = dum(e1.A, 60, 0);
+      e1.h.tal.ch = 3; e1.h.tal.acc = 0; e1.A.spendHp(e1.h, e1.h.hpMax * 0.1);
+      ok(ef.hp < ef.hpMax, 'Express Frontier: Rebirth makes Shuhu strike at four charges');
+    }
+
+    {
+      const { A, h } = mk('clara'), f = dum(A, 40, 0), log = spy(A);
+      A.step();
+      A.hit(f, h, { amt: 100, type: 'divine', noCrit: true });
+      ok(f.fx.some(x => x.n === 'Метка Сварога') && log.some(x => x.t === f.uid && x.kind === 'bonus') && A.sum(h, 'dr') > 0.09, 'Express Frontier: Svarog marks and counters the attacker, Clara takes less damage');
+      const hp1 = f.hp;
+      A.hit(f, h, { amt: 100, type: 'divine', noCrit: true });
+      eq(f.hp, hp1, 'Express Frontier: Svarog counters one enemy once per second');
+      const m2 = dum(A, -60, 0); m2.hp = m2.hpMax = 1e6;
+      const fl = lost(f), ml = lost(m2);
+      cast(A, 'q');
+      ok(lost(f) - fl > (lost(m2) - ml) * 1.6 && !f.fx.some(x => x.n === 'Метка Сварога'), 'Express Frontier: Svarog Watches hits marked enemies harder and clears the Marks');
+      const far = dum(A, 150, 0);
+      cast(A, 'e');
+      ok(far.fx.some(x => x.k === 'taunt') && far.tgt === h.uid, 'Express Frontier: A Small Price for Victory makes enemies in 160 attack Clara');
+      cast(A, 'r');
+      const side = dum(A, 200, 40);
+      A.time += 2;
+      A.hit(far, h, { amt: 50, type: 'divine', noCrit: true });
+      ok(A.sum(h, 'dr') > 0.3 && side.hp < side.hpMax && h.tal.promise === 1, 'Express Frontier: Promise lowers damage and turns a counter into a strike around the attacker');
+      const t0 = mk('clara', { tr: 0 }), a1 = dum(t0.A, 40, 0), a2 = dum(t0.A, 80, 0);
+      t0.A.step(); t0.A.hit(a1, t0.h, { amt: 50, type: 'divine', noCrit: true });
+      ok(a2.hp < a2.hpMax, 'Express Frontier: Revenge makes counters hit around the target');
+      const t1 = mk('clara', { tr: 1 });
+      cast(t1.A, 'r'); t1.A.addFx(t1.h, { n: 'Оглушение', k: 'stun', v: 1, t: 2 });
+      ok(!t1.A.stunned(t1.h), 'Express Frontier: Under Protection keeps Clara from stuns during the Ultimate');
+      const e0 = mk('clara', { ei: 0 });
+      cast(e0.A, 'r');
+      ok(e0.h.fx.some(x => x.n === 'Крепкие объятия'), 'Express Frontier: A Tight Embrace raises the attack after the Ultimate');
+      const e1 = mk('clara', { ei: 1 }), tur = e1.A.turrets[1];
+      e1.h.x = e1.h.px = tur.x + 50; e1.h.y = e1.h.py = tur.y;
+      const att = dummy(e1.A, 'reaver', tur.x + 30, tur.y + 20); att.hp = att.hpMax = 1e6;
+      for (let i = 0; i < 12; i++) { e1.A.time += 1.1; e1.A.hit(att, tur, { amt: 1, noCrit: true }); }
+      ok(att.hp < att.hpMax && att.fx.some(x => x.n === 'Метка Сварога'), 'Express Frontier: Trusty Companion lets Svarog answer for the turret');
+    }
+
+    {
+      const { A, h } = mk('danheng'), a = dum(A, 60, 0), b = dum(A, 140, 0), log = spy(A);
+      cast(A, 'q', { x: QX + 200, y: QY });
+      ok(lost(a) > lost(b) && a.fx.some(x => x.n === 'Пронзающая буря' && x.k === 'slow') && b.fx.some(x => x.k === 'slow') && h.tal.pen === 2, 'Express Frontier: Ethereal Dream pierces the line, slows and readies the Talent');
+      A.basicAttack(h, a);
+      eq(h.tal.pen, 1, 'Express Frontier: the Talent spends one armor-piercing Attack');
+      cast(A, 'e');
+      ok(A.sum(h, 'atk') > 0.39 && A.sum(h, 'mspd') > 0.19, 'Express Frontier: Gale raises attack and speed');
+      const sl = dum(A, 0, 100), un = dum(A, 0, -100);
+      A.addFx(sl, { n: 'Тест', k: 'slow', v: 0.1, t: 9 });
+      const r1 = mk('danheng'), s1 = dum(r1.A, 100, 0), r2 = mk('danheng'), s2 = dum(r2.A, 100, 0);
+      r1.A.addFx(s1, { n: 'Тест', k: 'slow', v: 0.1, t: 9 });
+      cast(r1.A, 'r', { x: s1.x, y: s1.y }); cast(r2.A, 'r', { x: s2.x, y: s2.y });
+      near(lost(s1) / lost(s2), 5.2 / 4, 0.05, 'Express Frontier: Ethereal Dream hits slowed enemies harder');
+      const t0 = mk('danheng', { tr: 0 }), ts = dum(t0.A, 50, 0);
+      t0.A.addFx(ts, { n: 'Тест', k: 'slow', v: 0.1, t: 9 });
+      ok(HD.KITS.danheng.dmgMul(t0.A, t0.h, ts, { basic: true }) === 1.4 && HD.KITS.danheng.dmgMul(t0.A, t0.h, ts, {}) === 1, 'Express Frontier: Hidden Dragon adds 40% to Attacks on slowed enemies');
+      const t1 = mk('danheng', { tr: 1 }), tf = dum(t1.A, 50, 0);
+      for (let i = 0; i < 10; i++) t1.A.basicAttack(t1.h, tf);
+      ok(t1.h.fx.some(x => x.n === 'Тень отчаяния'), 'Express Frontier: Shades of Despair speeds up the Attack');
+      const e0 = mk('danheng', { ei: 0 }), weak = dum(e0.A, 80, 0, 1);
+      cast(e0.A, 'r', { x: weak.x, y: weak.y }); e0.A.step();
+      ok(e0.h.cd.r < 30, 'Express Frontier: a kill by the Ultimate halves its cooldown');
+      const e1 = mk('danheng', { ei: 1 }), sf = dum(e1.A, 60, 0);
+      for (let i = 0; i < 4; i++) { e1.h.cd.q = 0; cast(e1.A, 'q', { x: sf.x + 50, y: sf.y }); }
+      eq(sf.fx.find(x => x.n === 'Пронзающая буря').stacks, 3, 'Express Frontier: the slow of the Skill stacks three times');
+    }
+
+    {
+      const { A, h } = mk('topaz'), f = dum(A, 150, 0), log = spy(A);
+      cast(A, 'q', { id: f.uid });
+      ok(f.fx.some(x => x.n === 'Справка о задолженности') && h.tal.debt === f.uid && log.some(x => x.t === f.uid && x.kind === 'bonus'), 'Express Frontier: Difficulty Paying marks a debtor and Numby strikes at once');
+      ok(Math.abs(HD.KITS.topaz.dmgMul(A, h, f, { kind: 'bonus' }) - 1.5) < 1e-9 && HD.KITS.topaz.dmgMul(A, h, f, { kind: 'q' }) === 1, 'Express Frontier: bonus attacks deal 50% more to the debtor');
+      log.length = 0;
+      h.atkCd = 1e9;
+      for (let i = 0; i < 9 * TUN.hz; i++) { h.atkCd = 1e9; A.step(); }
+      near(log.filter(x => x.kind === 'bonus' && x.t === f.uid).length, 3, 1, 'Express Frontier: Numby strikes every 3 seconds');
+      cast(A, 'e'); h.en = 100; const en0 = h.en; h.tal.nT = 0; A.step();
+      ok(h.en >= en0 + 14, 'Express Frontier: Turn a Profit gives energy for every Numby strike');
+      h.en = 5000; cast(A, 'r'); log.length = 0;
+      for (let i = 0; i < 6 * TUN.hz; i++) { h.atkCd = 1e9; A.step(); }
+      ok(log.filter(x => x.kind === 'bonus').length >= 3, 'Express Frontier: Turn a Profit! halves the Numby interval');
+      const t0 = mk('topaz', { tr: 0 }), tf = dum(t0.A, 150, 0), tl = spy(t0.A);
+      t0.A.basicAttack(t0.h, tf); for (let i = 0; i < 15; i++) t0.A.step();
+      ok(tl.some(x => x.t === tf.uid && x.kind === 'bonus'), 'Express Frontier: Overdraft makes the Attack a bonus attack');
+      const t1 = mk('topaz', { tr: 1 }), t1f = dum(t1.A, 150, 0);
+      cast(t1.A, 'r'); t1.h.en = 0; t1.h.tal.nT = 0; t1.A.step();
+      ok(t1.h.en >= 10, 'Express Frontier: Technical Adjustment gives energy for Numby strikes in the Rise');
+      const e0 = mk('topaz', { ei: 0 }), ef = dum(e0.A, 150, 0);
+      cast(e0.A, 'q', { id: ef.uid });
+      ok(e0.A.sum(ef, 'futures') > 0.24, 'Express Frontier: Future Market raises crit damage of bonus attacks on the debtor');
+      const e1 = mk('topaz', { ei: 1 });
+      cast(e1.A, 'r');
+      near(e1.h.fx.find(x => x.n === 'Поразительный рост!').t, 14 - 1 / 30, 0.05, 'Express Frontier: Incentive Mechanism makes the Rise 4 s longer');
+    }
+
+    {
+      const { A, h } = mk('herta'), full = dum(A, 60, 0), half = dum(A, -60, 0);
+      half.hp = half.hpMax * 0.4;
+      const l0 = [lost(full), lost(half)];
+      cast(A, 'q');
+      near((lost(full) - l0[0]) / (lost(half) - l0[1]), 1.2, 0.15, 'Express Frontier: One Time, One Pull hits enemies above half HP harder');
+      const t = dum(A, 120, 0), t2 = dum(A, 160, 0), log = spy(A);
+      A.time += 2;
+      A.hit(h, t, { amt: t.hpMax * 0.6, noCrit: true, noTough: true, type: 'divine' });
+      ok(log.some(x => x.t === t2.uid && x.kind === 't'), 'Express Frontier: the doll strikes when an enemy drops below half HP');
+      cast(A, 'e'); A.addFx(h, { n: 'Тест', k: 'slow', v: 0.3, t: 5 });
+      ok(!h.fx.some(x => x.k === 'slow') && A.sum(h, 'atk') > 0.39, 'Express Frontier: Puppet of Luck raises attack and blocks slows');
+      const r = dum(A, 0, 240);
+      cast(A, 'r');
+      ok(r.hp < r.hpMax, 'Express Frontier: Its Magic hits the large circle around Herta');
+      const t1 = mk('herta', { tr: 1 }), fz = dum(t1.A, 100, 0);
+      cast(t1.A, 'r');
+      ok(fz.fx.some(x => x.n === 'Заморозка'), 'Express Frontier: Freeze freezes the enemies hit by the Ultimate');
+      const e0 = mk('herta', { ei: 0 }), lo = dum(e0.A, 100, 0), nb = dum(e0.A, 130, 0);
+      lo.hp = lo.hpMax * 0.3;
+      e0.A.hit(e0.h, lo, { amt: 1, basic: true, kind: 'basic', noCrit: true });
+      ok(nb.hp < nb.hpMax, 'Express Frontier: Kick Them While They Are Down adds ice around low enemies');
+      const e1 = mk('herta', { ei: 1 }), c1 = dum(e1.A, 100, 0);
+      e1.A.hit(e1.h, c1, { amt: c1.hpMax * 0.6, noCrit: true, noTough: true, type: 'divine' });
+      ok(e1.A.sum(e1.h, 'crit') > 0.02, 'Express Frontier: Always Chasing Victory adds crit with every Talent strike');
+      HD.KITS.herta.onWaveEnd(e1.A, e1.h);
+      eq(e1.A.sum(e1.h, 'crit'), 0, 'Express Frontier: the crit from Always Chasing Victory ends with the wave');
+    }
+
+    {
+      const { A, h } = mk('jingyuan'), f = dum(A, 80, 0), log = spy(A);
+      h.atkCd = 1e9;
+      for (let i = 0; i < 7 * TUN.hz; i++) { h.atkCd = 1e9; A.step(); }
+      eq(log.filter(x => x.t === f.uid && x.kind === 'bonus').length, 3, 'Express Frontier: the Lightning-Lord strikes three times every 6 seconds');
+      cast(A, 'q');
+      eq(h.tal.lord.hits, 5, 'Express Frontier: the Skill adds two strikes to the next salvo');
+      log.length = 0;
+      cast(A, 'e'); for (let i = 0; i < 3 * TUN.hz; i++) { h.atkCd = 1e9; A.step(); }
+      eq(log.filter(x => x.t === f.uid && x.kind === 'bonus').length, 8, 'Express Frontier: the Technique fires the salvo at once with three more strikes');
+      cast(A, 'r');
+      eq(h.tal.lord.hits, 6, 'Express Frontier: the Ultimate adds three strikes');
+      const t1 = mk('jingyuan', { tr: 1 });
+      cast(t1.A, 'q');
+      ok(t1.A.sum(t1.h, 'crit') > 0.09, 'Express Frontier: War Marshal gives crit after the Skill');
+      const e0 = mk('jingyuan', { ei: 0 }), main = dum(e0.A, 80, 0), side = dum(e0.A, 110, 0), l0 = spy(e0.A);
+      e0.h.tal.lord = { hits: 1, t: 0 };
+      for (let i = 0; i < 3; i++) e0.A.step();
+      const first = l0.find(x => x.kind === 'bonus'), sec = l0.filter(x => x.kind === 'bonus')[1];
+      ok(first && sec && Math.abs(sec.v / first.v - 0.5) < 0.2, 'Express Frontier: Swing Crushes Rocks gives neighbours half of the strike');
+      const e1 = mk('jingyuan', { ei: 1 }), only = dum(e1.A, 80, 0);
+      e1.h.tal.lord = { hits: 4, t: 0 };
+      for (let i = 0; i < 30; i++) e1.A.step();
+      eq(only.fx.find(x => x.n === 'Слава поражает врагов').stacks, 3, 'Express Frontier: Glory raises the damage on the target up to three times');
+    }
+    {
+      const tur = A => A.turrets[2];
+      const { A, h } = mk('bronya'), f = dum(A, 120, 0);
+      A.addFx(h, { n: 'Тест', k: 'slow', v: 0.2, t: 9 });
+      h.cd.e = 10;
+      cast(A, 'q', { id: h.uid });
+      ok(!h.fx.some(x => x.n === 'Тест') && A.sum(h, 'dmg') > 0.6 && h.cd.e === 0, 'Express Frontier: Combat Redeployment cleanses, empowers Bronya and resets the Technique');
+      const t1 = tur(A);
+      h.x = h.px = t1.x + 60; h.y = h.py = t1.y; h.cd.q = 0;
+      cast(A, 'q', { id: t1.uid });
+      ok(A.sum(t1, 'aspd') > 0.45, 'Express Frontier: the order makes a turret shoot faster');
+      h.x = h.px = QX; h.y = h.py = QY;
+      cast(A, 'e', { x: QX, y: QY }); A.step();
+      ok(A.sum(h, 'atk') > 0.14 && A.sum(h, 'aspd') > 0.09, 'Express Frontier: the Banner raises attack and attack speed in its circle');
+      cast(A, 'r');
+      ok(A.sum(h, 'critD') > 0.29, 'Express Frontier: The Belobog March raises crit damage');
+      h.cd.q = 10; A.basicAttack(h, f);
+      near(h.cd.q, 9.1, 1e-6, 'Express Frontier: the Talent of Bronya shortens cooldowns with every Attack');
+      const b0 = mk('bronya', { tr: 0 }), log = spy(b0.A), bf = dum(b0.A, 120, 0);
+      b0.A.basicAttack(b0.h, bf); for (let i = 0; i < 15; i++) b0.A.step();
+      ok(b0.A.lastCrit === true && log.length > 0, 'Express Frontier: Command makes the Attack of Bronya always crit');
+      const b1 = mk('bronya', { tr: 1 }); b1.A.step();
+      ok(b1.A.sum(b1.h, 'dmg') >= 0.1 && b1.A.sum(b1.A.turrets[1], 'dmg') === 0, 'Express Frontier: Military Might works in 400 around Bronya');
+    }
+
+    {
+      const { A, h } = mk('asta'), f = [0, 1, 2, 3].map(i => dum(A, 100 + i * 50, 0)), log = spy(A);
+      cast(A, 'q', { id: f[0].uid });
+      eq(new Set(log.filter(x => x.kind === 'q').map(x => x.t)).size, 4, 'Express Frontier: Meteor Storm bounces to new enemies');
+      A.step();
+      ok(h.tal.ch === 4 && A.sum(h, 'atk') > 0.4, 'Express Frontier: every new target gives Asta a Charge');
+      for (let i = 0; i < 3 * TUN.hz + 2; i++) A.step();
+      eq(h.tal.ch, 2, 'Express Frontier: two Charges fade every 3 seconds');
+      log.length = 0;
+      cast(A, 'e', { x: f[1].x, y: f[1].y }); for (let i = 0; i < 40; i++) A.step();
+      eq(log.filter(x => x.kind === 'e' && x.t === f[1].uid).length, 3, 'Express Frontier: Skyfall strikes three times');
+      cast(A, 'r');
+      ok(A.sum(h, 'aspd') > 0.45 && A.sum(A.base, 'aspd') === 0, 'Express Frontier: Astral Blessing speeds up the allies in 300');
+      const a1 = mk('asta', { tr: 1 }); a1.A.step();
+      ok(a1.A.sum(a1.h, 'dmgE_fire') > 0.17, 'Express Frontier: Ignite raises fire damage of the allies');
+      const e0 = mk('asta', { ei: 0 }), ff = [0, 1, 2, 3, 4, 5, 6, 7].map(i => dum(e0.A, 60 + i * 40, 0)), l0 = spy(e0.A);
+      cast(e0.A, 'q', { id: ff[0].uid });
+      eq(l0.filter(x => x.kind === 'q').length, 7, 'Express Frontier: Star Sings Sans Verses or Words gives the Skill seven bounces');
+    }
+
+    {
+      const { A, h } = mk('ruanmei');
+      cast(A, 'q');
+      ok(A.sum(h, 'dmg') > 0.3 && A.sum(h, 'toughP') > 0.49, 'Express Frontier: String Sings Slow Swirls gives Overtone');
+      const f = dum(A, 120, 0), t0 = f.tough;
+      cast(A, 'e', { x: f.x, y: f.y });
+      ok((f.tough < t0 || f.brokenT > 0) && f.fx.some(x => x.k === 'slow'), 'Express Frontier: Silk Serenade slows and takes toughness without a weakness');
+      const g = dum(A, 160, 0), log = spy(A);
+      g.tough = 1; A.hit(h, g, { amt: 1, elem: 'phys', tough: 10, noCrit: true });
+      ok(log.filter(x => x.t === g.uid && x.kind === 'break').length >= 2, 'Express Frontier: the Talent of Ruan Mei adds ice break damage to every break');
+      A.step();
+      ok(A.sum(h, 'aspd') > 0.09, 'Express Frontier: the Talent of Ruan Mei speeds up the allies');
+      cast(A, 'r'); g.tough = 1; A.hit(h, g, { amt: 1, elem: 'phys', tough: 10, noCrit: true });
+      A.step(); A.step();
+      ok(g.rmBloom > A.time, 'Express Frontier: an enemy broken in the field is marked for the second stun');
+      g.brokenT = 0.01; g.fx = []; A.step(); A.step();
+      ok(A.stunned(g), 'Express Frontier: Petals to Stream stuns the enemy again after recovery');
+      const e0 = mk('ruanmei', { ei: 0 }); e0.A.step();
+      ok(e0.A.sum(e0.h, 'dmgBroken') > 0.39, 'Express Frontier: Reedside Promenade raises damage against broken enemies');
+    }
+
+    {
+      const { A, h } = mk('kafka'), f = dum(A, 120, 0), g2 = dum(A, 150, 0), log = spy(A);
+      cast(A, 'e', { x: f.x, y: f.y });
+      ok(f.fx.some(x => x.n === 'Шок') && g2.fx.some(x => x.n === 'Шок'), 'Express Frontier: Forgiveness Requires No Mercy shocks the circle');
+      log.length = 0;
+      cast(A, 'q', { id: f.uid });
+      ok(log.some(x => x.t === f.uid && x.kind === 'dot') && log.some(x => x.t === g2.uid && x.kind === 'q'), 'Express Frontier: Caressing Moonlight hits around and detonates the Shock');
+      log.length = 0;
+      for (let i = 0; i < 3; i++) { A.basicAttack(h, f); for (let j = 0; j < 15; j++) A.step(); }
+      ok(log.some(x => x.t === f.uid && x.kind === 'bonus'), 'Express Frontier: every third Attack of Kafka adds a bonus attack');
+      log.length = 0;
+      cast(A, 'r');
+      ok(log.some(x => x.kind === 'r') && log.some(x => x.kind === 'dot'), 'Express Frontier: Twilight Trill shocks and detonates at once');
+      const t1 = mk('kafka', { tr: 1 }), a = dum(t1.A, 120, 0), b = dum(t1.A, 170, 0);
+      cast(t1.A, 'e', { x: a.x - 100, y: a.y - 100 });
+      t1.A.addFx(a, { n: 'Шок', k: 'dot', v: 0, dps: 5, elem: 'elec', t: 6, src: t1.h, kafka: true });
+      a.hp = 1; t1.A.hit(t1.h, a, { amt: 10, noCrit: true, noTough: true });
+      ok(b.fx.some(x => x.n === 'Шок'), 'Express Frontier: Thorns passes the Shock to the next enemy');
+      const e0 = mk('kafka', { ei: 0 }), d = dum(e0.A, 120, 0);
+      for (let i = 0; i < 3; i++) { e0.A.basicAttack(e0.h, d); for (let j = 0; j < 15; j++) e0.A.step(); }
+      ok(d.fx.some(x => x.k === 'dotVuln'), 'Express Frontier: Da Capo raises periodic damage taken');
+    }
+
+    {
+      const { A, h } = mk('silverwolf'), f = dum(A, 120, 0);
+      cast(A, 'q', { id: f.uid });
+      ok(f.fx.some(x => x.k === 'weakAdd' && x.elem === 'quant'), 'Express Frontier: Allow Changes? implants a quantum weakness');
+      const t0 = f.tough;
+      A.hit(h, f, { amt: 1, elem: 'quant', tough: 10, noCrit: true });
+      eq(f.tough, t0 - 10, 'Express Frontier: the implanted weakness takes full toughness');
+      const g = dum(A, 160, 20), tg = g.tough;
+      cast(A, 'e', { x: g.x, y: g.y });
+      ok(g.tough === tg - 20 && A.stunned(g), 'Express Frontier: Force Quit Program takes toughness without a weakness and stalls');
+      const a0 = f.armor;
+      cast(A, 'r', { id: f.uid });
+      ok(A.armorOf(f) < a0 * 0.6, 'Express Frontier: User Banned strips armor');
+      let bugs = 0;
+      for (let i = 0; i < 20; i++) A.hit(h, g, { amt: 1, kind: 'basic', noCrit: true });
+      bugs = g.fx.filter(x => /^Баг/.test(x.n)).length;
+      ok(bugs >= 1, 'Express Frontier: the Talent of Silver Wolf implants Bugs');
+      const e1 = mk('silverwolf', { ei: 1 }), d = dum(e1.A, 120, 0);
+      for (const n of ['a', 'b', 'c']) e1.A.addFx(d, { n, k: 'slow', v: 0.01, t: 9 });
+      near(HD.KITS.silverwolf.dmgMul(e1.A, e1.h, d, {}), 1.6, 1e-9, 'Express Frontier: Overlay Network adds 20% per debuff');
+    }
+
+    {
+      const { A, h } = mk('welt'), f = [0, 1, 2].map(i => dum(A, 100 + i * 60, 0)), log = spy(A);
+      cast(A, 'q', { id: f[0].uid });
+      eq(new Set(log.filter(x => x.kind === 'q').map(x => x.t)).size, 3, 'Express Frontier: Edge of the Void bounces three times');
+      const near1 = dum(A, 60, 0), x0 = near1.x;
+      cast(A, 'e');
+      ok(near1.x > x0 + 30 && near1.fx.some(x => x.k === 'slow'), 'Express Frontier: Gravitational Imprisonment pushes and slows');
+      const s1 = dum(A, 0, 40); A.addFx(s1, { n: 'Тест', k: 'slow', v: 0.1, t: 9 }); log.length = 0;
+      A.hit(h, s1, { amt: 1, kind: 'basic', noCrit: true });
+      ok(log.some(x => x.t === s1.uid && x.kind === 'bonus'), 'Express Frontier: the Talent of Welt adds damage against slowed enemies');
+      const w2 = mk('welt'), p = dum(w2.A, 260, 0), px = p.x;
+      cast(w2.A, 'r', { x: QX + 200, y: QY });
+      for (let i = 0; i < 3 * TUN.hz + 3; i++) w2.A.step();
+      ok(p.x < px - 20 && p.fx.some(x => x.n === 'Гравитационное заточение' && x.k === 'stun'), 'Express Frontier: Synthetic Black Hole pulls enemies in and imprisons them');
+      const e0 = mk('welt', { ei: 0 });
+      cast(e0.A, 'r', { x: QX + 100, y: QY }); for (let i = 0; i < 3 * TUN.hz + 3; i++) e0.A.step();
+      eq(e0.h.tal.legacy, 2, 'Express Frontier: Legacy of Honor readies two extra strikes');
+    }
+
+    {
+      const { A, h } = mk('march'), base = A.base;
+      h.x = h.px = 29 * TS; h.y = h.py = 29.5 * TS;
+      const f = dummy(A, 'reaver', base.x, base.y - 70); f.hp = f.hpMax = 1e6;
+      cast(A, 'q', { id: base.uid });
+      ok(base.fx.some(x => x.k === 'shield' && x.by === 'march') && f.fx.some(x => x.k === 'taunt' && x.src === base), 'Express Frontier: Mystery, Shield! shields the Express and draws enemies to it');
+      const log = spy(A);
+      A.hit(f, base, { amt: 10, noCrit: true });
+      for (let i = 0; i < 15; i++) A.step();
+      ok(log.some(x => x.t === f.uid && x.kind === 'bonus'), 'Express Frontier: the Talent of March answers an enemy that hits her shield');
+      const e = mk('march'), a = dum(e.A, 100, 0), b = dum(e.A, 140, 0);
+      cast(e.A, 'e', { x: a.x + 50, y: a.y });
+      ok(e.A.stunned(a) && e.A.stunned(b), 'Express Frontier: Frozen Moment freezes the first enemy and those near it');
+      const r = mk('march'), rf = dum(r.A, 150, 0);
+      cast(r.A, 'r', { x: rf.x, y: rf.y });
+      ok(rf.hp < rf.hpMax, 'Express Frontier: Glacial Cascade hits the circle');
+      const e0 = mk('march', { ei: 0 });
+      e0.A.base.hp = 1000; e0.h.x = e0.h.px = 29 * TS; e0.h.y = e0.h.py = 29.5 * TS; e0.A.step();
+      ok(e0.A.base.fx.some(x => x.k === 'shield'), 'Express Frontier: Memories of This shields the most hurt ally');
+    }
+
+    {
+      const { A, h } = mk('gepard'), f = dum(A, 40, 0);
+      cast(A, 'q', { id: f.uid });
+      ok(f.hp < f.hpMax, 'Express Frontier: Grievous Penance strikes');
+      cast(A, 'e');
+      ok(h.fx.some(x => x.k === 'shield'), 'Express Frontier: Silvermane Shield shields Gepard');
+      cast(A, 'r');
+      ok(f.fx.some(x => x.k === 'taunt' && x.src === h), 'Express Frontier: Enduring Bulwark taunts the enemies around');
+      h.fx = []; h.hp = 1;
+      A.hit(f, h, { amt: 1e5, type: 'divine', noCrit: true });
+      ok(!h.dead && h.hp > h.hpMax * 0.4, 'Express Frontier: Unyielding Will saves Gepard once per wave');
+      h.hp = 1; h.fx = [];
+      A.hit(f, h, { amt: 1e5, type: 'divine', noCrit: true });
+      ok(h.dead, 'Express Frontier: the second deadly hit in a wave kills Gepard');
+      const t1 = mk('gepard', { tr: 1 }); t1.A.step();
+      ok(t1.A.atkOf(t1.h) > t1.h.dmg * 1.1, 'Express Frontier: Fighting Will turns armor into attack');
+      const e1 = mk('gepard', { ei: 1 }), f2 = dum(e1.A, 40, 0);
+      for (let i = 0; i < 2; i++) { e1.h.hp = 1; e1.h.fx = []; e1.A.hit(f2, e1.h, { amt: 1e5, type: 'divine', noCrit: true }); }
+      ok(!e1.h.dead && e1.h.hp === e1.h.hpMax, 'Express Frontier: Unyielding Resolve saves twice and restores full HP');
+    }
+
+    {
+      const { A, h } = mk('fuxuan'), base = A.base;
+      h.x = h.px = 29 * TS; h.y = h.py = 29.5 * TS;
+      const f = dummy(A, 'reaver', base.x, base.y - 70); f.hp = f.hpMax = 1e6;
+      cast(A, 'q');
+      const b0 = base.hp, h0 = h.hp;
+      A.hit(f, base, { amt: 100, type: 'divine', noCrit: true });
+      ok(b0 - base.hp < 50 && h.hp < h0, 'Express Frontier: the Matrix of Prescience moves damage from the Express to Fu Xuan');
+      A.step();
+      ok(A.sum(base, 'dr') > 0.17, 'Express Frontier: the Talent of Fu Xuan lowers damage taken by allies');
+      h.hp = h.hpMax * 0.4; A.step();
+      ok(h.hp > h.hpMax * 0.8, 'Express Frontier: the self-heal charge of Fu Xuan restores most of the lost HP');
+      cast(A, 'r');
+      ok(f.hp < f.hpMax && h.tal.heals >= 1, 'Express Frontier: Woes of Many Morphed to One hits and gives a heal charge');
+      const e = mk('fuxuan'), tgt = e.A.turrets[2];
+      e.h.hp = e.h.hpMax;
+      cast(e.A, 'e', { x: tgt.x, y: tgt.y });
+      ok(Math.hypot(e.h.x - tgt.x, e.h.y - tgt.y) < 80, 'Express Frontier: Known by Stars teleports Fu Xuan to a turret');
+      const e0 = mk('fuxuan', { ei: 0 }), t0 = e0.A.turrets[1];
+      e0.h.x = e0.h.px = t0.x + 40; e0.h.y = e0.h.py = t0.y;
+      e0.h.hp = e0.h.hpMax = 1e6; cast(e0.A, 'q'); t0.hp = 1;
+      e0.A.hit(f, t0, { amt: 1e6, type: 'divine', noCrit: true });
+      ok(!t0.dead && t0.hp >= t0.hpMax * 0.29, 'Express Frontier: Dark Omen keeps a turret up inside the Matrix');
+    }
+
+    {
+      const { A, h } = mk('natasha'), base = A.base;
+      h.x = h.px = 29 * TS; h.y = h.py = 29.5 * TS; base.hp = 1000;
+      cast(A, 'q', { id: base.uid });
+      ok(base.hp > 1000 + base.hpMax * 0.1 && base.fx.some(x => x.k === 'hot'), 'Express Frontier: Love, Heal, and Choose heals the Express and leaves regeneration');
+      eq(HD.KITS.natasha.healMul(A, h, { hp: 10, hpMax: 100 }), 1.5, 'Express Frontier: the Talent of Natasha heals hurt allies more');
+      const f = dummy(A, 'reaver', h.x + 100, h.y - 60); f.hp = f.hpMax = 1e6;
+      cast(A, 'e', { x: f.x, y: f.y }); A.step();
+      ok(A.sum(f, 'weaken') > 0.29 && f.fx.some(x => x.k === 'slow'), 'Express Frontier: Hypnosis Research weakens and slows');
+      base.hp = 1000;
+      cast(A, 'r');
+      ok(base.hp > 1000 + base.hpMax * 0.13, 'Express Frontier: Gift of Rebirth heals all allies around');
+      const e1 = mk('natasha', { ei: 1 }), a = dum(e1.A, 150, 0), b = dum(e1.A, 180, 0);
+      e1.A.basicAttack(e1.h, a); for (let i = 0; i < 15; i++) e1.A.step();
+      ok(b.hp < b.hpMax, 'Express Frontier: Recuperation hits the enemies around the target');
+    }
+
+    {
+      const { A, h } = mk('bailu'), base = A.base;
+      h.x = h.px = 29 * TS; h.y = h.py = 29.5 * TS; base.hp = 1000; h.hp = h.hpMax * 0.5;
+      cast(A, 'q', { id: base.uid });
+      ok(base.hp > 1000 && h.hp > h.hpMax * 0.5, 'Express Frontier: Singing Among Clouds heals and bounces to another hurt ally');
+      cast(A, 'e');
+      ok(h.fx.some(x => x.k === 'invig'), 'Express Frontier: Invigoration goes on Bailu');
+      const f = dummy(A, 'reaver', h.x + 30, h.y); f.hp = f.hpMax = 1e6;
+      h.hp = h.hpMax * 0.5; const hp0 = h.hp;
+      A.hit(f, h, { amt: 10, type: 'divine', noCrit: true });
+      ok(h.hp > hp0 - 10, 'Express Frontier: Invigoration heals Bailu when she is hit');
+      const tt = A.turrets[0]; tt.hp = 1;
+      A.hit(f, tt, { amt: 1e6, type: 'divine', noCrit: true });
+      ok(!tt.dead, 'Express Frontier: the Talent of Bailu keeps an ally from falling once per wave');
+      const lone = mk('bailu'), e1 = dum(lone.A, 100, 0), log = spy(lone.A);
+      cast(lone.A, 'q');
+      ok(log.some(x => x.kind === 'q' && x.t === e1.uid), 'Express Frontier: without hurt allies Singing Among Clouds strikes enemies');
+    }
+
+    {
+      const { A, h } = mk('luocha'), base = A.base;
+      h.x = h.px = 29 * TS; h.y = h.py = 29.5 * TS; base.hp = 1000;
+      h.tal.auto = 1e9;
+      cast(A, 'q', { id: base.uid });
+      ok(base.hp > 1000 && h.tal.fl === 1, 'Express Frontier: Prayer of Abyss Flower heals and adds a Flower');
+      cast(A, 'e');
+      ok(h.tal.zone > A.time, 'Express Frontier: Mercy of a Fool opens the Zone');
+      const f = dummy(A, 'reaver', h.x + 40, h.y); f.hp = f.hpMax = 1e6;
+      h.hp = h.hpMax * 0.5; const hp0 = h.hp;
+      A.hit(h, f, { amt: 1, kind: 'basic', noCrit: true });
+      ok(h.hp > hp0, 'Express Frontier: inside the Zone an attack heals the attacker');
+      h.tal.fl = 1; h.cd.r = 0;
+      cast(A, 'r');
+      ok(f.hp < f.hpMax && h.tal.fl === 0, 'Express Frontier: Death Wish hits and the second Flower opens the Zone');
+      const au = mk('luocha'); au.A.base.hp = 1000; au.h.x = au.h.px = 29 * TS; au.h.y = au.h.py = 29.5 * TS; au.A.step();
+      ok(au.A.base.hp > 1000 && au.h.tal.fl === 1, 'Express Frontier: the Talent of Luocha prays for an ally below half HP by itself');
+    }
+  }
+  {
+    const MP = ['destruction', 'hunt', 'erudition', 'harmony', 'nihility', 'preservation', 'abundance'];
+    const modeCones = Object.keys(H.CONES).filter(id => MP.includes(H.CONES[id].path));
+    eq(Object.keys(HD.CONE_MODE).length, 50, 'Express Frontier: the shop has 50 cones');
+    ok(modeCones.length === 59 && modeCones.filter(id => !HD.CONE_MODE[id]).sort().join() === HD.CONE_LATER.slice().sort().join(), 'Express Frontier: nine cones of the seven Paths wait for their heroes');
+    ok(Object.keys(HD.CONE_MODE).every(id => [1, 3, 5].every(sp => { const t = HD.coneText(id, sp); return t && !/NaN|undefined|\{|—/.test(t) && t.length * 6 < 1400; })), 'Express Frontier: every cone text has its numbers for S1, S3 and S5');
+    ok(Object.keys(H.RELIC_SETS).length === 14 && Object.keys(H.RELIC_SETS).every(k => HD.RELIC.text2[k] && (H.RELIC_SETS[k].planar || (HD.RELIC.text4[k] && HD.RELIC.body[k] && HD.SET_MODS[k] && HD.SET_MODS[k].four))), 'Express Frontier: all 14 relic sets have 2-piece bonuses, cavern sets 4-piece bonuses and a body stat');
+    eq(Object.keys(HD.DEVICES).length, 7, 'Express Frontier: the shop has seven devices');
+    eq(Object.keys(HD.SUPPLIES).length, 6, 'Express Frontier: the shop has six supplies');
+    ok(Object.values(HD.DEVICES).every(d => d.price > 0 && d.text && !/—/.test(d.text)) && Object.keys(HD.DEVICES).every(id => HD.devName(id)), 'Express Frontier: every device has a price, a name and a text');
+
+    const sh = (hero, o = {}) => { const { A } = mkA(hero || 'himeko'), h = A.hero; h.gold = o.gold == null ? 50000 : o.gold; h.items = [null, null, null, null, null, null]; return { A, h }; };
+    {
+      const { A, h } = sh('himeko', { gold: 300 });
+      ok(!HD.buyItem(A, h, 'relic', { set: 'firesmith', slot: 'head' }) && A.events.some(e => e.why === 'Мало золота'), 'Express Frontier: a purchase without enough gold is refused');
+      h.gold = 50000;
+      const dmg0 = A.atkOf(h), hp0 = h.hpMax;
+      ok(HD.buyItem(A, h, 'relic', { set: 'firesmith', slot: 'head' }) && h.gold === 50000 - 400 && h.hpMax > hp0 + 50 && A.atkOf(h) > dmg0, 'Express Frontier: a relic piece costs 400 and adds the main attribute and HP');
+      ok(!HD.buyItem(A, h, 'relic', { set: 'glacial', slot: 'head' }) && A.events.some(e => e.why === 'Эта часть уже надета'), 'Express Frontier: only one piece of each kind fits');
+      HD.buyItem(A, h, 'relic', { set: 'firesmith', slot: 'hands' });
+      near(A.sum(h, 'dmgE_fire'), 0.1, 1e-9, 'Express Frontier: two pieces give the 2-piece bonus');
+      HD.buyItem(A, h, 'relic', { set: 'firesmith', slot: 'body' }); HD.buyItem(A, h, 'relic', { set: 'firesmith', slot: 'feet' });
+      ok(A.sum(h, 'dmg_q') > 0.11 && h.mods.length === 2, 'Express Frontier: four pieces give the 4-piece bonus');
+      HD.buyItem(A, h, 'relic', { set: 'station', slot: 'sphere' }); HD.buyItem(A, h, 'relic', { set: 'station', slot: 'rope' });
+      ok(A.sum(h, 'atk') >= 0.12, 'Express Frontier: the planar pair gives its bonus');
+      ok(!HD.buyItem(A, h, 'medkit') && A.events.some(e => /Инвентарь полон/.test(e.why)), 'Express Frontier: a full inventory refuses');
+      const m0 = A.atkOf(h);
+      for (let i = 0; i < 5; i++) HD.upgrade(A, h, 1);
+      ok(h.items[1].up === 5 && !HD.upgrade(A, h, 1) && A.atkOf(h) > m0, 'Express Frontier: a relic upgrades up to +15');
+      eq(HD.sellValue(A, h.items[1]), 400 + 150 + 250 + 400 + 600 + 850, 'Express Frontier: in the same break the full price with upgrades comes back');
+      A.breakNo++;
+      eq(HD.sellValue(A, h.items[1]), Math.round((400 + 150 + 250 + 400 + 600 + 850) * TUN.sell), 'Express Frontier: later a relic sells for 60% with its upgrades');
+      const g0 = h.gold; HD.sellItem(A, h, 1);
+      ok(!h.items[1] && h.gold === g0 + Math.round(2650 * TUN.sell) && A.sum(h, 'dmg_q') === 0, 'Express Frontier: selling a piece takes away the 4-piece bonus');
+    }
+    {
+      const { A, h } = sh('himeko');
+      ok(!HD.buyItem(A, h, 'cone', { cone: 'collapsing' }) && A.events.some(e => e.why === 'Конус чужого Пути'), 'Express Frontier: a cone of another Path is not sold');
+      const a0 = A.atkOf(h);
+      ok(HD.buyItem(A, h, 'cone', { cone: 'geniuses' }) && h.cone.id === 'geniuses' && h.gold === 50000 - 1300 && A.atkOf(h) > a0, 'Express Frontier: a 4★ cone costs 1300, goes into its own cell and raises the attack');
+      ok(h.items.every(it => !it), 'Express Frontier: the cone cell does not take an inventory slot');
+      const s1 = A.sum(h, 'atk');
+      for (let i = 0; i < 4; i++) HD.upgrade(A, h, 'cone');
+      ok(h.cone.sup === 5 && !HD.upgrade(A, h, 'cone') && A.sum(h, 'atk') > s1 * 1.9, 'Express Frontier: overlay S5 takes the numbers of the fifth row');
+      near(HD.coneVals('geniuses', 5).a, 0.16 * H.coneParam('geniuses', 1, 5) / H.coneParam('geniuses', 1, 1), 1e-9, 'Express Frontier: overlay numbers follow the p rows of the cone');
+      const g0 = h.gold;
+      ok(HD.buyItem(A, h, 'cone', { cone: 'milkyway' }) && h.cone.id === 'milkyway' && h.gold === g0 - 3000 + (1300 + 650 * 4), 'Express Frontier: a new cone replaces the old one and the old one is sold');
+    }
+    {
+      const { A, h } = sh('trail');
+      for (let i = 0; i < 5; i++) HD.buyItem(A, h, 'medkit');
+      ok(h.items[0].n === 5 && HD.buyItem(A, h, 'medkit') && h.items[1].n === 1, 'Express Frontier: supplies stack up to five in a slot');
+      HD.buyItem(A, h, 'grenade');
+      const gi = h.items.findIndex(it => it && it.id === 'grenade');
+      const f = dummy(A, 'reaver', h.x + 120, h.y); f.hp = f.hpMax = 1e6;
+      for (let i = 0; i < 4; i++) HD.useItem(A, h, gi, { x: f.x, y: f.y });
+      for (let i = 0; i < 15; i++) A.step();
+      ok(h.items[gi].ch === 0 && f.hp < f.hpMax && A.events.some(e => /Гранаты кончились/.test(e.why || '')), 'Express Frontier: the grenade has three charges');
+      A.cmd({ t: 'early' }); A.step();
+      for (const v of A.foes()) v.dead = true;
+      f.dead = true;
+      for (let i = 0; i < 200 && A.phase === 'wave'; i++) { for (const g of A.sched) g.done = true; for (const v of A.foes()) v.dead = true; A.step(); }
+      eq(h.items[gi].ch, 3, 'Express Frontier: grenade charges come back in the break');
+      HD.buyItem(A, h, 'garrison');
+      const ci = h.items.findIndex(it => it && it.id === 'garrison');
+      ok(HD.useItem(A, h, ci) && h.fx.some(x => x.k === 'shield') && !HD.useItem(A, h, ci), 'Express Frontier: the Garrison shield has a cooldown');
+      HD.buyItem(A, h, 'findie');
+      ok(A.sum(h, 'goldP') === 0.2, 'Express Frontier: Findie raises the gold for kills');
+      HD.buyItem(A, h, 'gold_watch');
+      const wi = h.items.findIndex(it => it && it.id === 'gold_watch');
+      A.breakNo++;
+      eq(HD.sellValue(A, h.items[wi]), 1200, 'Express Frontier: the golden watch sells for the full price');
+      HD.sellItem(A, h, 0);
+      HD.buyItem(A, h, 'probe');
+      const pi = h.items.findIndex(it => it && it.id === 'probe');
+      const tur = A.turrets[0]; tur.hp = 100; h.x = h.px = tur.x; h.y = h.py = tur.y + 50;
+      HD.useItem(A, h, pi); for (let i = 0; i < 2 * TUN.hz + 2; i++) A.step();
+      ok(tur.hp > 100 + tur.hpMax * 0.14, 'Express Frontier: the geocore probe heals a turret after its channel');
+    }
+    {
+      const { A, h } = sh('trail');
+      HD.buyItem(A, h, 'cone', { cone: 'dragontrial' });
+      const t = dummy(A, 'reaver', h.x + 30, h.y); t.armor = 0; t.armorType = 'none'; t.weak = []; t.resist = []; t.hp = t.hpMax = 1e6;
+      const a = A.hit(h, t, { amt: 100, elem: 'imag', crit: -9, noTough: true });
+      t.brokenT = 3;
+      const b = A.hit(h, t, { amt: 100, elem: 'imag', crit: -9, noTough: true });
+      near(b / a, 1.24 * (1 + TUN.brokenVuln), 0.02, 'Express Frontier: Dragon Trial adds damage against broken enemies');
+      const k = sh('kafka'), kt = dummy(k.A, 'reaver', k.h.x + 30, k.h.y); kt.armor = 0; kt.armorType = 'none'; kt.weak = []; kt.hp = kt.hpMax = 1e6;
+      HD.buyItem(k.A, k.h, 'cone', { cone: 'goodnight' });
+      const c0 = k.A.hit(k.h, kt, { amt: 100, elem: 'imag', kind: 'dot', noCrit: true, noTough: true });
+      for (const n of ['a', 'b', 'c', 'd']) k.A.addFx(kt, { n, k: 'slow', v: 0.01, t: 9 });
+      const c1 = k.A.hit(k.h, kt, { amt: 100, elem: 'imag', kind: 'dot', noCrit: true, noTough: true });
+      near(c1 / c0, 1 + 0.12 * 3, 0.02, 'Express Frontier: Good Night and Sleep Well counts three debuffs and works on periodic damage');
+      const n = sh('natasha'), base = n.A.base;
+      HD.buyItem(n.A, n.h, 'cone', { cone: 'hagoromo' });
+      base.hp = 1000; n.A.heal(n.h, base, 100);
+      ok(base.fx.some(x => x.n === 'Номер на бис'), 'Express Frontier: Hey, Over Here gives effect resistance to the healed ally');
+      const r = sh('march');
+      HD.buyItem(r.A, r.h, 'relic', { set: 'knight', slot: 'head' }); HD.buyItem(r.A, r.h, 'relic', { set: 'knight', slot: 'hands' }); HD.buyItem(r.A, r.h, 'relic', { set: 'knight', slot: 'body' }); HD.buyItem(r.A, r.h, 'relic', { set: 'knight', slot: 'feet' });
+      r.h.abil.q = 5; r.h.en = 1000; r.A.cmd({ t: 'cast', slot: 'q', id: r.h.uid }); r.A.step();
+      const sv = r.h.fx.find(x => x.k === 'shield').v;
+      near(sv, (0.19 * r.h.hpMax + 30) * 1.2, 1, 'Express Frontier: four Knight pieces make the shields of the hero 20% stronger');
+      const re = sh('trail');
+      HD.buyItem(re.A, re.h, 'relic', { set: 'passerby', slot: 'head' });
+      re.A.toRun(re.A.run);
+      ok(re.A.run.players[0].items[0].set === 'passerby', 'Express Frontier: relics are written into the run');
+      const A2 = new HD.Arena({ run: JSON.parse(JSON.stringify(re.A.run)) });
+      ok(A2.hero.items[0].id === 'relic' && A2.hero.hpMax === re.h.hpMax, 'Express Frontier: a loaded run rebuilds the equipment');
+    }
+  }
+  {
+    const QX = 46 * TS, QY = 24.5 * TS;
+    const r0 = Object.assign(() => 0, { int: () => 0, pick: l => l[0] });
+    const arena = (th, o) => { const { A } = mkA('trail', Object.assign({ threats: th || ['legion', 'silvermane'] }, o)); const h = A.hero; A.phase = 'wave'; A.sched = [{ t: 1e9, done: false, ids: [], rift: 'n' }]; h.x = h.px = QX; h.y = h.py = QY; h.hp = h.hpMax = 1e6; h.atkCd = 1e9; return { A, h }; };
+    const foe = (A, id, dx, dy, o) => { const u = A.spawnFoe(id, 'e', o); u.x = u.px = QX + dx; u.y = u.py = QY + dy; return u; };
+    {
+      const { A, h } = arena();
+      const sp = foe(A, 'spider', 20, 0), g0 = h.gold;
+      sp.tgt = h.uid;
+      ok(HD.foeSkill(A, sp, h) && sp.act && A.areas.some(a => a.warn && a.src === sp.uid && a.r === 72), 'Express Frontier: the Spider warns before it blows up');
+      steps(A, 31);
+      ok(sp.dead && sp.blown && h.hp < h.hpMax && h.gold - g0 < 5, 'Express Frontier: the Spider blows up by its target and gives no gold');
+      const sp2 = foe(A, 'spider', 20, 0);
+      HD.foeSkill(A, sp2, h); A.hit(h, sp2, { amt: 1e9, type: 'divine', noCrit: true });
+      const hp1 = h.hp; steps(A, 31);
+      ok(h.hp >= hp1 && !A.areas.some(a => a.src === sp2.uid), 'Express Frontier: a Spider killed during its warning does not explode');
+      const be = foe(A, 'beetle', 30, 0);
+      be.tgt = h.uid; be.shT = A.time; HD.foeTick(A, be);
+      near(be.fx.find(f => f.k === 'shield').v, be.hpMax * 0.2, 1, 'Express Frontier: the Beetle shields itself for 20% HP');
+      ok(be.shT === A.time + 10, 'Express Frontier: the Beetle shield comes back every 10 s');
+      const so = foe(A, 'soldier', 30, 30);
+      so.tgt = h.uid; so.shT = A.time; HD.foeTick(A, so);
+      near(so.fx.find(f => f.k === 'shield').v, so.hpMax * 0.15, 1, 'Express Frontier: the Soldier forms up with a 15% shield');
+      eq(so.range, 72, 'Express Frontier: the Soldier strikes with a spear from 72');
+    }
+    {
+      const { A, h } = arena(['silvermane', 'legion']);
+      const lt = foe(A, 'lieutenant', 40, 0), mate = foe(A, 'soldier', 80, 0), far = foe(A, 'soldier', 400, 0);
+      lt.tgt = h.uid; lt.raT = A.time; HD.foeTick(A, lt);
+      ok(A.sum(mate, 'dmg') === 0.2 && A.sum(mate, 'mspd') === 0.2 && A.sum(far, 'dmg') === 0 && A.sum(lt, 'dmg') === 0.2, 'Express Frontier: the Lieutenant aura gives +20% damage and speed in 200');
+      const cn = foe(A, 'cannoneer', 50, 0);
+      cn.skCd = 0; const n0 = A.events.length;
+      ok(HD.foeSkill(A, cn, h) && !cn.act && A.events.slice(n0).some(e => e.t === 'skill' && e.name === 'Прикладом'), 'Express Frontier: the Cannoneer strikes with the butt up close');
+      const cf = foe(A, 'cannoneer', 240, 0);
+      cf.skCd = 0; HD.foeSkill(A, cf, h);
+      const ar = A.areas.find(a => a.src === cf.uid);
+      ok(ar && ar.r === 96 && ar.follow == null && ar.delay === 1.5, 'Express Frontier: the Cannoneer marks a point and fires grapeshot over 96 after 1.5 s');
+    }
+    {
+      const { A, h } = arena(['automaton', 'legion']);
+      const dw = foe(A, 'direwolf', 140, 0);
+      dw.skCd = 0; dw.skI = 1; HD.foeSkill(A, dw, h);
+      const mk = A.areas.find(a => a.src === dw.uid);
+      ok(mk && mk.mark && mk.follow === h.uid, 'Express Frontier: the Direwolf takes the hero into its sights');
+      const hp0 = h.hp; steps(A, 46);
+      ok(h.hp < hp0 && Math.hypot(dw.x - h.x, dw.y - h.y) < 60, 'Express Frontier: the Direwolf dashes in with the Tearing Bite');
+      const hn = foe(A, 'svarog_hand', 30, 0);
+      A.rng = r0; hn.skCd = 0; HD.foeSkill(A, hn, h);
+      ok(A.has(h, 'root'), 'Express Frontier: the Auxiliary Arm holds the hero in place');
+      const x0 = h.x; h.moveDir = { x: 1, y: 0 }; steps(A, 5);
+      ok(Math.abs(h.x - x0) < 0.5, 'Express Frontier: a held hero cannot move');
+    }
+    {
+      const { A, h } = arena(['winter', 'legion']);
+      A.rng = r0;
+      const fs = foe(A, 'frostspawn', 30, 0);
+      A.basicAttack(fs, h);
+      ok(h.fx.some(f => f.n === 'Заморозка' && f.k === 'stun'), 'Express Frontier: the Frostspawn can freeze with its attacks');
+      h.fx = [];
+      const inc = foe(A, 'incinerator', 120, 0);
+      inc.skCd = 0; HD.foeSkill(A, inc, h);
+      const burn = h.fx.find(f => f.n === 'Горение');
+      ok(burn && burn.k === 'dot' && burn.t === 6, 'Express Frontier: the Incinerator sets the hero on fire for 6 s');
+      const sw = foe(A, 'shadewalker', 140, 0);
+      sw.skCd = 0; HD.foeSkill(A, sw, h);
+      const bz = A.areas.find(a => a.src === sw.uid);
+      ok(bz && bz.r === 120 && bz.delay === 1 && Math.abs(bz.x - h.x) < 1, 'Express Frontier: the Shadewalker Blizzard warns 1 s over 120 at the hero');
+      const io = foe(A, 'iceout', 160, 0);
+      io.skCd = 0; HD.foeSkill(A, io, h);
+      const rain = A.areas.find(a => a.src === io.uid);
+      ok(rain && rain.r === 140 && rain.delay === 1.5, 'Express Frontier: the Ice Out of Space rain warns 1.5 s over 140');
+    }
+    const BOSS = (th, id, o) => { const { A, h } = arena(th); const u = foe(A, id, 0, -120, o); u.tgt = h.uid; u.gapT = 0; return { A, h, u, AI: HD.FOE_AI[id] }; };
+    {
+      const { A, h, u, AI } = BOSS(['silvermane', 'legion'], 'bronya_b');
+      ok(A.events.some(e => e.t === 'boss' && e.music === 'gepard'), 'Express Frontier: Bronya comes out with the Silvermane music');
+      ok(AI.moves.bullet(A, u, h) && A.areas.some(a => a.shape === 'line' && a.src === u.uid), 'Express Frontier: Bronya shows the line of the Windrider Bullet');
+      const hp0 = h.hp; steps(A, 32);
+      ok(h.hp < hp0, 'Express Frontier: the bullet hits the first one on the line');
+      u.act = null;
+      eq(AI.moves.call(A, u, h) && A.foes().filter(v => v.by === u.uid).length, 2, 'Express Frontier: Bronya calls a Soldier and a Gunner');
+      for (let i = 0; i < 3; i++) AI.moves.call(A, u, h);
+      eq(A.foes().filter(v => v.by === u.uid).length, 4, 'Express Frontier: Bronya keeps up to four of her guards');
+      const mate = A.foes().find(v => v.by === u.uid);
+      u.pT.rally = A.time; AI.think(A, u);
+      ok(A.sum(mate, 'dmg') === 0.2, 'Express Frontier: Combat Redeployment empowers the Silvermane around Bronya');
+      ok(AI.moves.ult(A, u, h) && u.act.ult && u.act.tt === 3 && A.areas.some(a => a.shape === 'cone' && a.big), 'Express Frontier: Suppressive Fire charges 3 s over a cone');
+      A.breakFoe(h, u);
+      ok(!u.act && !A.areas.some(a => a.src === u.uid && a.big), 'Express Frontier: a break cancels Suppressive Fire');
+      u.brokenT = 0; u.tough = u.toughMax = 1e9; u.fx = u.fx.filter(f => f.k !== 'stun');
+      AI.moves.ult(A, u, h); h.fx = []; const hp1 = h.hp;
+      steps(A, 91 + 61);
+      ok(h.hp < hp1 && h.fx.some(f => f.n === 'Подавление' && f.k === 'slow'), 'Express Frontier: Suppressive Fire fires for 2 s and slows');
+    }
+    {
+      const { A, h, u, AI } = BOSS(['legion', 'silvermane'], 'gepard_b', { big: true });
+      u.pT.guard = A.time; AI.think(A, u);
+      const sh = u.fx.find(f => f.guard);
+      ok(sh && Math.abs(sh.v - u.hpMax * 0.18) < 1 && sh.t === 9, 'Express Frontier: Unyielding Garrison shields Gepard for 18% HP for 9 s');
+      const t0 = u.tough; A.hit(h, u, { amt: 1, elem: 'fire', tough: 30, noCrit: true });
+      ok(u.tough === t0, 'Express Frontier: toughness does not drop while the Garrison holds');
+      u.fx = u.fx.filter(f => !f.guard);
+      ok(AI.moves.wall(A, u, h) && A.areas.some(a => a.shape === 'line' && a.w === 80 && a.len === 300), 'Express Frontier: Ice Rampart rolls a line 300 by 80');
+      u.act = null; A.areas = [];
+      h.x = h.px = QX + 800;
+      AI.moves.ult(A, u, h);
+      ok(A.areas.some(a => a.follow === A.base.uid && a.r === 96) && u.act.ult, 'Express Frontier: the Silvermane Oath marks the Express when the hero is far');
+      u.act = null; A.areas = []; h.x = h.px = QX; h.y = h.py = QY;
+      u.hp = u.hpMax * 0.49; AI.think(A, u);
+      ok(u.phase === 2 && A.foes().filter(v => v.by === u.uid && v.key === 'soldier').length === 2 && A.foes().some(v => v.by === u.uid && v.key === 'lieutenant') && u.fx.some(f => f.guard), 'Express Frontier: at 50% Gepard calls the garrison and raises the shield at once');
+      ok(u.pT.guard === A.time + 12, 'Express Frontier: in the second phase the Garrison comes every 12 s');
+    }
+    {
+      const { A, h, u, AI } = BOSS(['automaton', 'legion'], 'grizzly');
+      u.pT.swarm = A.time; AI.think(A, u);
+      eq(A.foes().filter(v => v.by === u.uid).map(v => v.key).sort().join(), 'beetle,beetle,spider', 'Express Frontier: Swarm Assembly brings two Beetles and a Spider');
+      u.y = u.py = QY - 30;
+      ok(AI.moves.grab(A, u, h) && A.areas.some(a => a.mark && a.follow === h.uid) && u.act.tt === 2, 'Express Frontier: Target Lock marks the hero for 2 s');
+      const hp0 = h.hp; steps(A, 61);
+      ok(h.hp < hp0, 'Express Frontier: Crush lands on the marked hero');
+      ok(AI.moves.ult(A, u, h) && u.act.ult && A.areas.some(a => a.r === 260 && a.big), 'Express Frontier: Earthquake charges 2 s over 260');
+      steps(A, 61);
+      ok(A.stunned(h) || h.fx.some(f => f.n === 'Оглушение'), 'Express Frontier: Earthquake stuns the hero');
+    }
+    {
+      const { A, h, u, AI } = BOSS(['legion', 'automaton'], 'svarog_b', { big: true });
+      eq(AI.moves.guard(A, u, h) && A.foes().filter(v => v.by === u.uid).map(v => v.key).sort().join(), 'beetle,hound,hound', 'Express Frontier: Call for Guards brings two Hounds and a Beetle');
+      u.act = null;
+      ok(AI.moves.ult(A, u, h) && u.act.tt === 2 && u.act.ult, 'Express Frontier: Suppression Protocol charges 2 s');
+      steps(A, 61);
+      eq(A.areas.filter(a => a.src === u.uid && a.r === 64).length, 12, 'Express Frontier: Suppression Protocol drops twelve strikes');
+      u.hp = u.hpMax * 0.49; AI.think(A, u);
+      eq(A.foes().filter(v => v.by === u.uid && v.key === 'svarog_hand').length, 4, 'Express Frontier: at 50% Svarog lets out four Auxiliary Arms');
+    }
+    {
+      const { A, h, u, AI } = BOSS(['winter', 'legion'], 'cocolia_echo');
+      u.y = u.py = QY - 300; AI.think(A, u);
+      ok(!h.fx.some(f => f.n === 'Холод эха'), 'Express Frontier: the Echo chill reaches only 200');
+      u.y = u.py = QY - 100; AI.think(A, u);
+      ok(h.fx.some(f => f.n === 'Холод эха' && f.k === 'slow' && f.v === 0.1), 'Express Frontier: the Echo slows heroes in 200 by 10%');
+      ok(AI.moves.blade(A, u, h) && A.areas.filter(a => a.src === u.uid && a.shape === 'line').length === 3, 'Express Frontier: Frost Blade throws three blades in a fan');
+      u.act = null; A.areas = [];
+      ok(AI.moves.storm(A, u, h), 'Express Frontier: the Echo calls the blizzard');
+      steps(A, 25);
+      ok(A.areas.some(a => a.src == null && a.t > 3 && a.r === 160), 'Express Frontier: the blizzard stays 4 s over 160');
+    }
+    {
+      const { A, h, u, AI } = BOSS(['legion', 'winter'], 'cocolia1', { big: true });
+      u.pT.edge = A.time; AI.think(A, u);
+      const edges = A.foes().filter(v => v.by === u.uid && v.key === 'iceedge');
+      eq(edges.length, 2, 'Express Frontier: Cocolia calls two Ice Edges');
+      u.hp = u.hpMax * 0.49; const hp0 = h.hp;
+      edges[0].x = edges[0].px = h.x + 20; edges[0].y = edges[0].py = h.y;
+      AI.think(A, u);
+      ok(u.key === 'cocolia2' && u.phase === 2 && u.invuln && u.toughMax === H.ENEMIES.cocolia2.tough && edges.every(v => v.dead) && h.hp < hp0, 'Express Frontier: at 50% Cocolia becomes the Mother of Deceit, stays untouchable and the Ice Edges explode');
+      eq(A.hit(h, u, { amt: 1000, type: 'divine', noCrit: true }), 0, 'Express Frontier: Cocolia cannot be hurt while she changes');
+      steps(A, 62);
+      ok(!u.invuln && H.ENEMIES[u.key].name === 'Коколия, Мать обмана', 'Express Frontier: after 2 s the second phase can be hurt');
+      u.act = null; u.gapT = 0;
+      h.x = h.px = QX + 900;
+      ok(AI.moves.ult(A, u, h) && A.areas.some(a => a.follow === A.base.uid && a.r === 260) && u.act.tt === 3, 'Express Frontier: the Permafrost Spear marks the Express when the hero is farther than 600');
+    }
+    {
+      const { A, h, u, AI } = BOSS(['silvermane', 'legion'], 'doomsday', { big: true });
+      u.hp = u.hpMax * 0.49; AI.think(A, u);
+      ok(u.awake && u.phase === 2 && A.sum(u, 'mspd') === 0.2, 'Express Frontier: at 50% the big Doomsday Beast awakens 20% faster');
+      ok(A.foes().some(v => v.key === 'trampler'), 'Express Frontier: the awakened Call of the Legion also brings a Trampler');
+      u.doomT = A.time; h.x = h.px = u.x; h.y = h.py = u.y + 100; AI.think(A, u);
+      ok(u.act && u.act.ult && u.doomT > A.time + 24, 'Express Frontier: the awakened Beast casts Inevitable Doom every 25 s');
+    }
+    {
+      const { A } = arena(['legion', 'automaton']);
+      A.wave = 14; A.rng = H.makeRandom(5);
+      const S = HD.buildWave(A), ids = S.flatMap(g => g.ids);
+      ok(ids.filter(id => HD.THREATS.legion.normals.includes(id)).length === 10 && ids.filter(id => HD.THREATS.automaton.normals.includes(id)).length === 10 && ids.filter(id => id === 'trampler').length === 1, 'Express Frontier: wave 14 mixes ten enemies of each threat and a Legion elite');
+      eq(HD.waveLabel(A, 14), 'Легион Антиматерии и Автоматоны', 'Express Frontier: a mixed wave names both threats');
+      eq(HD.waveLabel(A, 12), 'Автоматоны', 'Express Frontier: waves 11-20 belong to the second threat');
+      A.wave = 15; A.rng = H.makeRandom(6);
+      ok(HD.buildWave(A).some(g => g.ids[0] === 'trotter_big' && g.o.goal), 'Express Frontier: wave 15 sends the Big Piggy Bank');
+      A.wave = 20; A.rng = H.makeRandom(7);
+      const S20 = HD.buildWave(A), last = S20[S20.length - 1];
+      ok(last.ids[0] === 'svarog_b' && last.o.big && last.o.reinf.every === 20, 'Express Frontier: wave 20 ends with the big boss of the second threat');
+      A.wave = 10;
+      const r10 = foe(A, 'reaver', 0, 0);
+      A.wave = 11;
+      const r11 = foe(A, 'reaver', 0, 0), d11 = foe(A, 'doomsday', 0, 0);
+      near(r11.hpMax / r10.hpMax, HD.foeStats('reaver', 11 + A.diff.lvl, A.diff).hpMax / HD.foeStats('reaver', 10 + A.diff.lvl, A.diff).hpMax * TUN.lateHp, 0.01, 'Express Frontier: waves 11-20 change enemy HP by the late multiplier');
+      eq(d11.hpMax, HD.foeStats('doomsday', 11 + A.diff.lvl, A.diff).hpMax, 'Express Frontier: the late multiplier leaves bosses alone');
+      const hb = foe(A, 'hound', 0, 0);
+      near(hb.hpMax / HD.foeStats('hound', 11 + A.diff.lvl, A.diff).hpMax, HD.THREATS.automaton.hpK * TUN.lateHp, 0.01, 'Express Frontier: the threat multiplier scales its enemies');
+    }
+    {
+      const { A, h } = arena(['legion', 'silvermane']);
+      A.wave = 20;
+      const b = foe(A, 'gepard_b', 0, -200, { big: true, reinf: { every: 20, a: 2, b: 2 } });
+      const n0 = A.foes().length;
+      steps(A, 30 * (20 + TUN.riftGlow) + 4);
+      const fresh = A.foes().filter(v => v !== b && !v.by);
+      ok(fresh.length - (n0 - 1) === 4 && fresh.filter(v => HD.THREATS.legion.normals.includes(v.key)).length === 2 && fresh.filter(v => HD.THREATS.silvermane.normals.includes(v.key)).length === 2, 'Express Frontier: while the big boss lives, every 20 s two enemies of each threat come out');
+    }
+    {
+      const { A, h } = arena(['legion', 'silvermane']);
+      A.wave = 15;
+      const p = A.spawnFoe('trotter_big', 'n', { goal: 'e' }), small = HD.foeStats('trotter_big', 15, A.diff).hpMax;
+      eq(p.hpMax, small * TUN.bigPigHp, 'Express Frontier: the Big Piggy Bank has 20 times the HP');
+      const g0 = h.gold;
+      A.hit(h, p, { amt: p.hpMax * 0.31, type: 'divine', noCrit: true }); steps(A, 1);
+      eq(h.gold - g0 - (A.events.filter(e => e.t === 'gold' && e.v === TUN.goldSec).length ? TUN.goldSec : 0), TUN.bigPigStep * 3, 'Express Frontier: the Big Piggy Bank drops gold for every 10% of HP');
+      const g1 = h.gold;
+      A.hit(h, p, { amt: p.hpMax, type: 'divine', noCrit: true });
+      ok(p.dead && h.gold - g1 >= TUN.bigPigKill, 'Express Frontier: the Big Piggy Bank pays 400 for the kill');
+      const q = A.spawnFoe('trotter_big', 'n', { goal: 'e' });
+      q.spd = 0; steps(A, 30 * TUN.bigPigLife + 2);
+      ok(q.dead && q.escaped, 'Express Frontier: the Big Piggy Bank leaves after 25 s');
+    }
+    {
+      const seen = new Set();
+      let fine = true;
+      for (let sd = 1; sd <= 300; sd++) { const t = HD.rollThreats(sd); fine = fine && t[0] !== t[1] && t.every(k => HD.THREATS[k]) && t.join() === HD.rollThreats(sd).join(); seen.add(t.join()); }
+      ok(fine && seen.size === 12, 'Express Frontier: the threat roll gives two different threats and all twelve pairs');
+      const gg = new H.Game({ fresh: true, seed: 4 });
+      ok(!gg.hdCanDiff('hard') && gg.hdCanDiff('easy') && gg.hdCanDiff('normal'), 'Express Frontier: Hard is closed at first');
+      gg.hd().open.hard = true;
+      ok(gg.hdCanDiff('hard'), 'Express Frontier: a win on Normal opens Hard');
+      ok(HD.DIFFS.easy.hp < HD.DIFFS.normal.hp && HD.DIFFS.normal.hp < HD.DIFFS.hard.hp && HD.DIFFS.easy.base > HD.DIFFS.hard.base && HD.DIFFS.easy.breakT > HD.DIFFS.hard.breakT, 'Express Frontier: the three difficulties go from Training to Hard');
+    }
+  }
+  {
+    const fin = (o = {}) => {
+      const g = o.g || new H.Game({ fresh: true, seed: 6 });
+      g.hdNew({ hero: o.hero || 'trail', seed: 9, diff: o.diff || 'normal' });
+      const A = g.hdArena();
+      A.wave = o.wave || HD.WAVES.length;
+      if (o.win !== false) A.over = 'win';
+      A.base.hp = o.base != null ? o.base : A.base.hpMax;
+      Object.assign(A.stats, o.stats || {});
+      if (o.deaths) A.hero.deaths = o.deaths;
+      return { g, sum: g.hdFinish(A, o.win === false) };
+    };
+    ok(HD.starsOf({ win: true, base: 2900, baseMax: 3000, tfell: 0 }) === 3 && HD.starsOf({ win: true, base: 2900, baseMax: 3000, tfell: 1 }) === 2 && HD.starsOf({ win: true, base: 1500, baseMax: 3000 }) === 2 && HD.starsOf({ win: true, base: 1400, baseMax: 3000 }) === 1 && HD.starsOf({ win: false, base: 3000, baseMax: 3000 }) === 0, 'Express Frontier: stars follow the base HP and the fallen turrets');
+    const { g, sum } = fin();
+    ok(sum.win && sum.stars === 3 && sum.meta.asc === HD.META.ascWin.normal && sum.meta.week === HD.META.weekWin && g.hd().open.hard, 'Express Frontier: a clean win gives three stars, full points and opens Hard');
+    ok(['hero_trail', 'diff_normal', 'towers', 'nodeath'].every(id => sum.meta.trials.includes(id)) && !sum.meta.trials.includes('hard3'), 'Express Frontier: a clean win completes its trials');
+    eq(sum.meta.place, 1, 'Express Frontier: a fast full win takes first place');
+    ok(g.hdRecords('normal').length === g.hd().recs.length + HD.SOLO.filter(r => r.diff === 'normal').length, 'Express Frontier: the record table adds the Leveling_Solo entries');
+    const s2 = fin({ g, win: false, wave: 6 }).sum;
+    eq(s2.cleared, 5, 'Express Frontier: a loss on wave 6 counts five cleared waves');
+    eq(s2.meta.week, 0, 'Express Frontier: the weekly points stop at 18 000');
+    eq(g.hdRecords('normal').find(r => r === s2.meta.rec).wave, 5, 'Express Frontier: the record of a loss keeps the cleared waves');
+    ok(g.hdClaimWeek(0) && !g.hdClaimWeek(0), 'Express Frontier: a weekly step pays once');
+    const wk = g.hd().week.key, now0 = g.now;
+    g.now = () => now0.call(g) + HD.META.weekMs;
+    ok(g.hd().week.key === wk + 1 && g.hd().week.pts === 0, 'Express Frontier: a new two-hour week resets the weekly points');
+    g.now = now0;
+    const lvl = g.hdAscLvl();
+    ok(lvl === Math.floor(g.hd().asc.pts / HD.META.ascPer) && !g.hdClaimAsc(lvl + 1) && g.hdClaimAsc(1) && !g.hdClaimAsc(1), 'Express Frontier: a promotion level pays once and only when reached');
+    g.hd().asc.pts = HD.META.ascPer * 40;
+    eq(g.hdAscLvl(), HD.META.ascMax, 'Express Frontier: promotion stops at level 30');
+    ok(g.hdClaimAsc(30) && g.hd().plate === 'Держит рубеж', 'Express Frontier: level 30 puts the plate on the arcade');
+    const j0 = g.state.jade, p0 = g.hd().asc.pts;
+    ok(g.hdClaimTrial('hero_trail') && g.state.jade === j0 + 20 && g.hd().asc.pts === p0 + 200 && !g.hdClaimTrial('hero_trail') && !g.hdClaimTrial('hard3'), 'Express Frontier: a trial pays 20 jade and 200 promotion points once');
+    eq(g.hd().hist.length, 2, 'Express Frontier: the history keeps each run');
+    for (let i = 0; i < 25; i++) fin({ g, win: false, wave: 2 });
+    eq(g.hd().hist.length, HD.META.hist, 'Express Frontier: the history keeps the last 20 runs');
+    ok(fin({ stats: { bossMin: 45 }, win: false, wave: 12 }).sum.meta.trials.includes('fastboss'), 'Express Frontier: a boss fight under 60 s completes its trial even in a loss');
+    ok(fin({ stats: { raid: 3100 } }).sum.meta.trials.includes('raid'), 'Express Frontier: 3 000 raid gold completes its trial');
+    ok(fin({ diff: 'hard' }).sum.meta.trials.includes('hard3'), 'Express Frontier: three stars on Hard complete their trial');
+    ok(!fin({ stats: { tfell: 1 } }).sum.meta.trials.includes('towers') && !fin({ deaths: 1 }).sum.meta.trials.includes('nodeath'), 'Express Frontier: a fallen turret or a death keeps those trials open');
+    eq(HD.TRIALS.length, Object.keys(HD.HEROES).length + 3 + 5, 'Express Frontier: trials cover every hero, every difficulty and five feats');
+    ok(Object.keys(HD.META.asc).length === 30 && HD.META.week.length === 10 && HD.META.week[9][0] === 18000, 'Express Frontier: promotion has 30 rewarded levels and the week ten steps');
+    ok(HD.SOLO.every(r => r.name === 'Leveling_Solo' && HD.DIFFS[r.diff] && HD.HEROES[r.hero]) && Object.keys(HD.DIFFS).every(d => HD.SOLO.some(r => r.diff === d)), 'Express Frontier: Leveling_Solo has records on every difficulty');
+    const { A } = mkA('trail');
+    A.phase = 'wave';
+    const tt = A.turrets[0]; A.hit(null, tt, { amt: 1e9, type: 'divine', noCrit: true });
+    eq(A.stats.tfell, 1, 'Express Frontier: a fallen turret is counted');
+    const bb = A.spawnFoe('grizzly', 'n'); A.time += 42; A.hit(A.hero, bb, { amt: 1e9, type: 'divine', noCrit: true });
+    eq(A.stats.bossMin, 42, 'Express Frontier: the boss fight time is kept');
+    A.events.length = 0;
+    const rv = dummy(A, 'reaver', A.base.x, A.base.rect.y0 - 10); A.hit(rv, A.base, { amt: 5, noCrit: true });
+    ok(A.events.some(e => e.t === 'struck' && e.uid === A.base.uid && e.sx === rv.x), 'Express Frontier: a hit on the Express says where it came from');
+  }
+  {
+    for (const [k, v] of Object.entries(AMP)) HD.HEROES[k].amp = v;
+    const { A } = mkA('bailu'), t = dummy(A, 'reaver', 30 * TS, 26 * TS);
+    t.armor = 0; t.armorType = 'none'; t.weak = []; t.resist = []; t.hp = t.hpMax = 1e6;
+    eq(A.hit(A.hero, t, { amt: 100, elem: 'imag', noCrit: true, noTough: true }), Math.round(100 * AMP.bailu), 'Express Frontier: the balance multiplier scales the damage of the hero');
+    for (const [k, v] of Object.entries(AMP_HARD)) if (v != null) HD.HEROES[k].ampHard = v;
+    eq(A.hit(A.hero, t, { amt: 100, elem: 'imag', noCrit: true, noTough: true }), Math.round(100 * AMP.bailu), 'Express Frontier: the Hard multiplier does not touch Normal');
+    const H2 = mkA('bailu', { diff: 'hard' }).A, t2 = dummy(H2, 'reaver', 30 * TS, 26 * TS);
+    t2.armor = 0; t2.armorType = 'none'; t2.weak = []; t2.resist = []; t2.hp = t2.hpMax = 1e6;
+    eq(H2.hit(H2.hero, t2, { amt: 100, elem: 'imag', noCrit: true, noTough: true }), Math.round(100 * AMP.bailu * AMP_HARD.bailu), 'Express Frontier: on Hard the hero damage takes the Hard multiplier too');
+  }
+  log.push('express frontier ok');
 }
 console.log('hsr98: ' + checks + ' checks passed in ' + ((Date.now() - t0) / 1000).toFixed(1) + 's');

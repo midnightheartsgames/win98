@@ -1,6 +1,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const MARK = 'hsr98-standalone';
@@ -34,8 +35,29 @@ function musicUrls(files) {
   return [...urls].sort();
 }
 
-function pageHtml(scripts, boot, edition) {
-  const tags = ['<script>window.Hsr98Standalone=' + JSON.stringify(edition) + ';</script>', ...['game/files.js', ...scripts].map(s => '<script src="' + s + '"></script>')].join('');
+function gameVersion() {
+  const m = /const VERSION = '([^']+)'/.exec(fs.readFileSync(path.join(ROOT, 'js', 'apps', 'hsr98', 'hsr-core.js'), 'utf8'));
+  if (!m) throw new Error('VERSION not found in js/apps/hsr98/hsr-core.js');
+  return m[1];
+}
+
+function checkVersion(version) {
+  if (version === 'dev') return;
+  const base = gameVersion();
+  if (!new RegExp('^' + base.replace(/\./g, '\\.') + '\\.\\d+$').test(version)) throw new Error('version ' + version + ' must be ' + base + '.N (Hsr98.VERSION ' + base + ')');
+}
+
+function buildStamp(version) {
+  const git = args => execFileSync('git', args, { cwd: ROOT, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+  try {
+    return { version, commit: git(['rev-parse', '--short', 'HEAD']), date: git(['log', '-1', '--format=%cs']), dirty: git(['status', '--porcelain']).length > 0 };
+  } catch (err) {
+    return { version };
+  }
+}
+
+function pageHtml(scripts, boot, edition, version) {
+  const tags = ['<script>window.Hsr98Standalone=' + JSON.stringify(edition) + ';window.Win98Build=' + JSON.stringify(buildStamp(version)) + ';</script>', ...['game/files.js', ...scripts].map(s => '<script src="' + s + '"></script>')].join('');
   return '<!doctype html>\n' +
     '<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="generator" content="' + MARK + '"><title>Star Rail 98</title>\n' +
     '<link rel="stylesheet" href="game/hsr98.css"><link rel="stylesheet" href="game/touch.css">\n' +
@@ -43,7 +65,8 @@ function pageHtml(scripts, boot, edition) {
     '<body><div id="game"></div>\n' + tags + '\n<script>' + boot + '</script>\n<script src="game/touch.js"></script>\n</body></html>\n';
 }
 
-function build(out, edition = 'web') {
+function build(out, edition = 'web', version = 'dev') {
+  checkVersion(version);
   out = path.resolve(out);
   const page = readPage();
   prepareOut(out);
@@ -70,13 +93,16 @@ function build(out, edition = 'web') {
     musicBytes += data.length;
     fs.writeFileSync(path.join(out, 'music', packName(url)), 'Hsr98Files[' + JSON.stringify(url) + ']="' + data.toString('base64') + '";\n');
   }
-  fs.writeFileSync(path.join(out, 'index.html'), pageHtml(local, page.boot, edition));
-  return { out, scripts: local.length, bytes, music: urls, musicBytes };
+  fs.writeFileSync(path.join(out, 'index.html'), pageHtml(local, page.boot, edition, version));
+  return { out, version, scripts: local.length, bytes, music: urls, musicBytes };
 }
 
 if (require.main === module) {
-  const out = process.argv[2] || path.join(ROOT, 'dist', 'HonkaiStarRail98');
-  const r = build(out);
+  const args = process.argv.slice(2);
+  const v = args.indexOf('--version');
+  const version = v >= 0 ? args.splice(v, 2)[1] : 'dev';
+  const out = args[0] || path.join(ROOT, 'dist', 'HonkaiStarRail98');
+  const r = build(out, 'web', version);
   const mb = n => (n / 1048576).toFixed(1) + ' MB';
   console.log('Honkai: Star Rail 98 standalone -> ' + r.out);
   console.log('  scripts: ' + r.scripts + ' (' + mb(r.bytes) + ')');
@@ -84,4 +110,4 @@ if (require.main === module) {
   console.log('  open ' + path.join(r.out, 'index.html'));
 }
 
-module.exports = { build, packName, MUSIC_PREFIX };
+module.exports = { build, packName, gameVersion, checkVersion, MUSIC_PREFIX };

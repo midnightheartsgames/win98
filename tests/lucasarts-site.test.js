@@ -12,6 +12,7 @@ global.localStorage = {
 
 let lastNotepad = null;
 let lastSteam = null;
+let lastCd = null;
 let lastLaunch = null;
 const vfsFiles = new Map();
 const installed = new Set(['sammax']);
@@ -37,6 +38,8 @@ global.window = {
     ownsOnSteam: id => owned.has(id),
     isPurchased: id => owned.has(id),
     showInSteam: id => { lastSteam = id; },
+    showOnCd: id => { lastCd = id; },
+    isCdDemo: id => /_demo$/.test(id),
     catalog: {}
   }
 };
@@ -155,14 +158,24 @@ test('Search engines, Favorites, Yandex and the web ring list LucasArts', () => 
   assert.ok(window.retroSites.renderYandex('http://www.yandex.ru/search?q=lucasarts').includes(base));
 });
 
-test('Game data matches the Steam catalog: ids, titles, prices and executables', () => {
-  const steamIds = ['quest', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201', 'sammax202', 'kotor98'];
-  assert.deepStrictEqual(data.games.map(g => g.id).sort(), steamIds.slice().sort());
+test('Game data matches the catalog: Steam games with prices, Igromania CD demos without', () => {
+  const siteIds = ['quest', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201', 'sammax202', 'kotor98'];
+  const demos = { quest: 'quest_demo', sammax202: 'sammax202_demo', kotor98: 'kotor98_demo' };
+  assert.deepStrictEqual(data.games.map(g => g.id).sort(), siteIds.slice().sort());
   data.games.forEach(g => {
-    assert.strictEqual(g.title, catalogField(g.id, 'title'), `title ${g.id}`);
-    assert.strictEqual(g.price, catalogField(g.id, 'priceDisplay'), `price ${g.id}`);
-    assert.strictEqual(g.exe, catalogField(g.id, 'targetExe'), `exe ${g.id}`);
-    assert.ok(fs.existsSync(path.join(root, `content/steam/${g.id}-1.jpg`)) && fs.existsSync(path.join(root, `content/steam/${g.id}-2.jpg`)), `shots ${g.id}`);
+    const gmId = g.demo || g.id;
+    assert.strictEqual(g.demo, demos[g.id], `demo ${g.id}`);
+    assert.strictEqual(g.title, catalogField(gmId, 'title'), `title ${g.id}`);
+    assert.strictEqual(g.exe, catalogField(gmId, 'targetExe'), `exe ${g.id}`);
+    if (g.demo) {
+      assert.strictEqual(g.price, undefined, `no price ${g.id}`);
+      assert.strictEqual(g.setup, 'D:\\demo\\' + catalogField(gmId, 'setupExe'), `setup ${g.id}`);
+      assert.ok(gmSource.slice(gmSource.indexOf(`\n      ${gmId}: {`), gmSource.indexOf(`\n      ${gmId}: {`) + 200).includes('cdDemo: true'), `cdDemo ${g.id}`);
+      assert.ok(fs.existsSync(path.join(root, `content/igromania/demos/${gmId}-1.jpg`)) && fs.existsSync(path.join(root, `content/igromania/demos/${gmId}-2.jpg`)), `shots ${g.id}`);
+    } else {
+      assert.strictEqual(g.price, catalogField(gmId, 'priceDisplay'), `price ${g.id}`);
+      assert.ok(fs.existsSync(path.join(root, `content/steam/${g.id}-1.jpg`)) && fs.existsSync(path.join(root, `content/steam/${g.id}-2.jpg`)), `shots ${g.id}`);
+    }
     assert.ok(data.series.some(s => s.id === g.series), `series ${g.id}`);
     assert.strictEqual(g.shots.length, 2);
   });
@@ -193,13 +206,25 @@ test('Home page is a clickable street scene with text links and a dated news lis
   assert.strictEqual(env.url, base + '/hints');
 });
 
-test('Catalog shows Steam state: installed, owned and for sale', () => {
+test('Catalog shows Steam state for Steam games and the Igromania CD for demos', () => {
   const env = browse(base + '/games');
   assert.ok(env.html.includes('Установлено'));
-  assert.ok(env.html.includes('Куплено в Steam'));
-  assert.ok(env.html.includes('$42.99'));
-  env.click('[data-steam-id]', 'steamId', 'kotor98');
-  assert.strictEqual(lastSteam, 'kotor98');
+  assert.ok(env.html.includes('Купить в Steam'));
+  assert.ok(env.html.includes('$30.49'));
+  assert.ok(!env.html.includes('$42.99') && !env.html.includes('$19.99') && !env.html.includes('$30.99'), 'demos have no price');
+  assert.ok(!env.html.includes('data-steam-id="kotor98"') && !env.html.includes('data-steam-id="quest"') && !env.html.includes('data-steam-id="sammax202"'), 'demos have no Steam button');
+  assert.ok(env.html.includes('content/igromania/demos/kotor98_demo-1.jpg'));
+  env.click('[data-steam-id]', 'steamId', 'sammax201');
+  assert.strictEqual(lastSteam, 'sammax201');
+  env.click('[data-cd-id]', 'cdId', 'kotor98_demo');
+  assert.strictEqual(lastCd, 'kotor98_demo');
+  installed.add('quest_demo');
+  const env2 = browse(base + '/games');
+  assert.ok(env2.html.includes('data-launch-id="quest_demo"'));
+  assert.ok(!env2.html.includes('data-cd-id="quest_demo"'));
+  env2.click('[data-launch-id]', 'launchId', 'quest_demo');
+  assert.strictEqual(lastCd, 'quest_demo', 'launch of a demo without launch() falls back to the CD dialog');
+  installed.delete('quest_demo');
   env.click('[data-launch-id]', 'launchId', 'sammax');
   assert.strictEqual(lastSteam, 'sammax', 'launch of a game without launch() falls back to Steam');
   window.gameManager.catalog.sammax = { launch: () => { lastLaunch = 'sammax'; } };
@@ -211,12 +236,17 @@ test('Catalog shows Steam state: installed, owned and for sale', () => {
 
 test('Game box page swaps screenshots and links to its hints', () => {
   const env = browse(base + '/game?id=sammax202');
-  assert.ok(env.html.includes('content/steam/sammax202-1.jpg'));
+  assert.ok(env.html.includes('content/igromania/demos/sammax202_demo-1.jpg'));
   assert.ok(env.html.includes(`${base}/hints?game=sammax202`));
   assert.ok(env.html.includes('Системные требования'));
+  assert.ok(env.html.includes('D:\\demo\\sammax202demo.exe'));
+  assert.ok(env.html.includes('data-cd-id="sammax202_demo"'));
+  assert.ok(!/steam/i.test(env.html.replace(/class="[^"]*"/g, '')), 'demo box page does not mention Steam');
   env.click('[data-shot-game]', 'shotIdx', '1');
   assert.strictEqual(site.activeShot.sammax202, 1);
-  assert.ok(env.html.includes('class="la-shot-big" src="content/steam/sammax202-2.jpg"'));
+  assert.ok(env.html.includes('class="la-shot-big" src="content/igromania/demos/sammax202_demo-2.jpg"'));
+  const santa = site.renderSite(base + '/game?id=sammax201');
+  assert.ok(santa.includes('content/steam/sammax201-1.jpg') && santa.includes('Купить в Steam'));
 });
 
 test('The Adventurer lists three issues, opens articles, exports them and keeps escaped replies', () => {

@@ -7,6 +7,52 @@ const ROOT = path.join(__dirname, '..');
 const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
 const SCENES = {
   title: 'hsrShots.title()',
+  hdterm: "(() => { const g = hsrShots.fresh('express_lab', ['trail']); Object.assign(g.state.flags, { lab_found: true, lab_sw: true }); g.loadMap('express_lab', null, { x: 25, y: 5, silent: true }); g.player.dir = 'up'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  hdhub: "(() => { const g = hsrShots.fresh('express_lab', ['trail']); hsrui.openHdHub(); hsrui.top().hero = 1; hsrShots.pump(10); return hsrShots.shot(); })()",
+  hdroll: "(() => { const g = hsrShots.fresh('express_lab', ['trail']); g.hdNew({ seed: 5 }); hsrui.openHdHub(); hsrui.openHdDraft(); hsrui.top().age = 0.62; hsrShots.pump(1); return hsrShots.shot(); })()",
+  hdcards: "(() => { const g = hsrShots.fresh('express_lab', ['trail']); g.hdNew({ seed: 5 }); g.hdRefresh(2); hsrui.openHdHub(); hsrui.openHdDraft(); const s = hsrui.top(); s.age = 2; s.sel = 1; hsrShots.pump(1); return hsrShots.shot(); })()",
+  hdcard: "(() => { const s = hsrShots.hd('jingyuan', 12); const A = s.arena, h = A.hero; h.x = h.px = 46 * 32; h.y = h.py = 24.5 * 32; s.card = { tab: 1, top: 0 }; hsrShots.pump(20); return hsrShots.shot(); })()",
+  hdtrace: "(() => { const s = hsrShots.hd('topaz', 10); const A = s.arena, h = A.hero; h.x = h.px = 29.5 * 32; h.y = h.py = 23 * 32; hsrShots.pump(20); return hsrShots.shot(); })()",
+  hdarena: "(() => { const s = hsrShots.hd('trail', 6); const A = s.arena, h = A.hero; h.x = h.px = 29.5 * 32; h.y = h.py = 23 * 32; hsrShots.pump(40); return hsrShots.shot(); })()",
+  hdwave: "(() => { const s = hsrShots.hd('trail', 5); const A = s.arena, h = A.hero; h.x = h.px = 29.5 * 32; h.y = h.py = 12 * 32; A.wave = 5; A.cmd({ t: 'early' }); hsrShots.pump(+(window.HDP || 235)); A.cmd({ t: 'cast', slot: 'q' }); hsrShots.pump(5); return hsrShots.shot(); })()",
+  hdboss_doomsday: "(() => { const s = hsrShots.hd('trail', 12); const A = s.arena, h = A.hero; A.wave = 10; A.phase = 'wave'; A.sched = [{ t: 1e9, done: false, ids: [], rift: 'n' }]; h.x = h.px = 29.5 * 32; h.y = h.py = 23.5 * 32; const b = A.spawnFoe('doomsday', 'n'); b.x = b.px = 30 * 32; b.y = b.py = 21.5 * 32; b.patI = 3; b.gapT = 0; for (const id of ['reaver', 'eliminator', 'reaver']) { const u = A.spawnFoe(id, 'n'); u.y = u.py = 18 * 32; } hsrShots.pump(+(window.HDP || 40)); return hsrShots.shot(); })()",
+  hdshop: "hsrShots.hdShop(0, 9)",
+  hdshop_cone: "hsrShots.hdShop(1, 2)",
+  hdshop_dev: "hsrShots.hdShop(2, 1)",
+  hdshop_sup: "hsrShots.hdShop(3, 0)",
+  hdgear: "(() => { const s = hsrShots.hdGear(); const A = s.arena, h = A.hero; A.cmd({ t: 'early' }); hsrShots.pump(12); h.x = h.px = 29.5 * 32; h.y = h.py = 14 * 32; const gi = h.items.findIndex(it => it && it.id === 'grenade'); A.cmd({ t: 'use', i: gi, x: h.x + 60, y: h.y - 80 }); A.cmd({ t: 'use', i: h.items.findIndex(it => it && it.id === 'garrison') }); hsrShots.pump(+(window.HDP || 200)); return hsrShots.shot(); })()",
+  hdboss_bronya_b: "hsrShots.hdBoss('bronya_b', ['silvermane', 'legion'], { move: 'ult', escort: ['soldier', 'gunner'], post: 30 })",
+  hdboss_gepard_b: "hsrShots.hdBoss('gepard_b', ['legion', 'silvermane'], { wave: 20, big: true, phase2: true, move: 'ult', post: 25 })",
+  hdboss_grizzly: "hsrShots.hdBoss('grizzly', ['automaton', 'legion'], { move: 'ult', escort: ['beetle', 'spider'], post: 30 })",
+  hdboss_svarog_b: "hsrShots.hdBoss('svarog_b', ['legion', 'automaton'], { wave: 20, big: true, phase2: true, move: 'ult', post: 80 })",
+  hdboss_cocolia_echo: "hsrShots.hdBoss('cocolia_echo', ['winter', 'legion'], { move: 'blade', escort: ['vagrant', 'frostspawn'], post: 12 })",
+  hdboss_cocolia2: "hsrShots.hdBoss('cocolia1', ['legion', 'winter'], { wave: 20, big: true, phase2: true, pre: 75, move: 'ult', post: 30 })",
+  hdboss_doomsday_big: "hsrShots.hdBoss('doomsday', ['silvermane', 'legion'], { wave: 20, big: true, phase2: true, pre: 40, post: 20 })",
+  hdthreat_silvermane: "hsrShots.hdThreat('silvermane')",
+  hdthreat_automaton: "hsrShots.hdThreat('automaton')",
+  hdthreat_winter: "hsrShots.hdThreat('winter')",
+  hddiff: "(() => { const g = hsrShots.fresh('express_lab', ['trail']); hsrui.openHdHub(); const s = hsrui.top(); s.pick = 'start'; s.sel = 2; hsrShots.pump(20); return hsrShots.shot(); })()",
+  hdlose: "(() => { const s = hsrShots.hd('kafka', 15, ['automaton', 'winter']); const A = s.arena; A.wave = 14; Object.assign(A.stats, { kills: 160, dmg: 120400, heal: 2100, gold: 14100, spent: 12900, raid: 820, time: 640, tfell: 2, bossMin: 71 }); A.hero.deaths = 2; A.base.hp = 0; A.over = 'lose'; hsrShots.pump(30); return hsrShots.shot(); })()",
+  hdrecs: "(() => { hsrShots.hdMeta(); hsrui.openHdRecords(); hsrShots.pump(4); return hsrShots.shot(); })()",
+  hdasc: "(() => { hsrShots.hdMeta(); hsrui.openHdAsc(); hsrShots.pump(4); return hsrShots.shot(); })()",
+  hdweek: "(() => { hsrShots.hdMeta(); hsrui.openHdWeek(); hsrui.top().sel = 6; hsrShots.pump(4); return hsrShots.shot(); })()",
+  hdtrials: "(() => { hsrShots.hdMeta(); hsrui.openHdTrials(); hsrui.top().sel = 23; hsrShots.pump(4); return hsrShots.shot(); })()",
+  hdhist: "(() => { hsrShots.hdMeta(); hsrui.openHdHistory(); hsrui.top().sel = 1; hsrShots.pump(4); return hsrShots.shot(); })()",
+  hdhubmeta: "(() => { hsrShots.hdMeta(); hsrShots.pump(4); return hsrShots.shot(); })()",
+  hdalarm: "(() => { const s = hsrShots.hd('seele', 8); const A = s.arena, h = A.hero; h.x = h.px = 46 * 32; h.y = h.py = 10 * 32; A.phase = 'wave'; A.sched = [{ t: 1e9, done: false, ids: [], rift: 'n' }]; const u = A.spawnFoe('reaver', 'n'); u.x = u.px = 30 * 32; u.y = u.py = 30.5 * 32; hsrShots.pump(40); A.hit(u, A.base, { amt: 30, noCrit: true }); hsrShots.pump(4); return hsrShots.shot(); })()",
+  hdturret: "(() => { const s = hsrShots.hd('trail', 8); const A = s.arena, h = A.hero, t = A.turrets[1]; A.hit(null, t, { amt: 1e9, type: 'divine', noCrit: true }); h.x = h.px = t.x + 40; h.y = h.py = t.y + 30; h.gold = 900; hsrShots.pump(70); return hsrShots.shot(); })()",
+  hdrecords: "(() => { hsrShots.hdMeta(); hsrui.openHdRecords(); hsrShots.pump(4); return hsrShots.shot(); })()",
+  hddossier: "(() => { hsrShots.fresh('express_lab', ['trail']); hsrui.openHdHub(); hsrui.openHdDossier(); const s = hsrui.top(); s.p = 2; s.sel = 2; s.card.tab = 1; hsrShots.pump(4); return hsrShots.shot(); })()",
+  hddossier2: "(() => { hsrShots.fresh('express_lab', ['trail']); hsrui.openHdHub(); hsrui.openHdDossier(); const s = hsrui.top(); s.p = 5; s.sel = 1; s.card.tab = 2; hsrShots.pump(4); return hsrShots.shot(); })()",
+  hdrules: "(() => { hsrShots.fresh('express_lab', ['trail']); hsrui.openHdHub(); hsrui.openHdRules(); hsrui.top().sel = 3; hsrShots.pump(4); return hsrShots.shot(); })()",
+  hdrules2: "(() => { hsrShots.fresh('express_lab', ['trail']); hsrui.openHdHub(); hsrui.openHdRules(); hsrui.top().sel = 1; hsrShots.pump(4); return hsrShots.shot(); })()",
+  hdbreak: "(() => { const s = hsrShots.hd('march', 9, ['winter', 'legion']); const A = s.arena, h = A.hero; A.wave = 6; A.breakT = 18; A.turrets[2].hp = 0; A.turrets[2].dead = true; h.x = h.px = 32 * 32; h.y = h.py = 24 * 32; hsrShots.pump(60); return hsrShots.shot(); })()",
+  hddead: "(() => { const s = hsrShots.hd('blade', 12); const A = s.arena, h = A.hero; A.phase = 'wave'; A.sched = [{ t: 1e9, done: false, ids: [], rift: 'n' }]; h.gold = 700; h.x = h.px = 29.5 * 32; h.y = h.py = 18 * 32; for (const id of ['reaver', 'trampler', 'distorter']) { const u = A.spawnFoe(id, 'n'); u.y = u.py = 16 * 32; } A.hit(A.units.find(u => u.key === 'trampler'), h, { amt: 1e9, type: 'divine', noCrit: true }); hsrShots.pump(40); return hsrShots.shot(); })()",
+  hdwarn: "(() => { const s = hsrShots.hd('herta', 11, ['winter', 'legion']); const A = s.arena, h = A.hero; A.phase = 'wave'; A.wave = 8; A.sched = [{ t: 1e9, done: false, ids: [], rift: 'n' }]; h.x = h.px = 29.5 * 32; h.y = h.py = 22 * 32; const p = A.spawnFoe('prowler', 'n'); p.x = p.px = h.x + 40; p.y = p.py = h.y - 40; const io = A.spawnFoe('iceout', 'n'); io.x = io.px = h.x - 60; io.y = io.py = h.y - 150; for (const id of ['shadewalker', 'flamespawn', 'frostspawn']) { const u = A.spawnFoe(id, 'n'); u.y = u.py = h.y - 120; } hsrShots.pump(5); p.skCd = 0; p.skI = 0; Hsr98.HD.foeSkill(A, p, h); io.skCd = 0; Hsr98.HD.foeSkill(A, io, h); A.cmd({ t: 'cast', slot: 'q', x: h.x, y: h.y - 100 }); hsrShots.pump(12); return hsrShots.shot(); })()",
+  hddebug: "(() => { const s = hsrShots.hdGear(); s.dbgFlow = true; hsrShots.pump(4); hsrui.openDebug(); const tabs = hsrui.top(); tabs.setTab(5); hsrShots.pump(4); return hsrShots.shot(); })()",
+  hdflow: "(() => { const s = hsrShots.hd('trail', 6); const A = s.arena, h = A.hero; A.phase = 'wave'; A.sched = [{ t: 1e9, done: false, ids: [], rift: 'n' }]; h.x = h.px = 29.5 * 32; h.y = h.py = 15 * 32; for (const id of ['reaver', 'eliminator', 'baryon', 'reaver']) { const u = A.spawnFoe(id, 'n'); } s.dbgFlow = true; hsrShots.pump(50); return hsrShots.shot(); })()",
+  hdpause: "(() => { const s = hsrShots.hd('seele', 4); hsrShots.pump(10); hsrui.openHdPause(s); hsrShots.pump(2); return hsrShots.shot(); })()",
+  hdwin: "(() => { const s = hsrShots.hdGear(); const A = s.arena; Object.assign(A.stats, { kills: 414, dmg: 486400, heal: 9300, gold: 29120, spent: 27950, raid: 1640, time: 1490, bossMin: 58 }); A.hero.lvl = 20; A.hero.picks[10] = 1; A.hero.picks[20] = 0; A.base.hp = 2140; A.hero.deaths = 1; A.over = 'win'; hsrShots.pump(40); return hsrShots.shot(); })()",
   express: "hsrShots.field('express')",
   labwolf: "(() => { const g = hsrShots.fresh('express_party', ['trail']); g.loadMap('express_party', 'q', { silent: true }); g.player.dir = 'left'; g.interact({ shift: true }); g.resume(); g.resume(); for (let i = 0; i < 400 && g.pending && g.pending.type === 'walk'; i++) g.update(0.05); hsrui.drainGameEvents(); hsrShots.pump(40); return hsrShots.shot(); })()",
   labcar: "(() => { const g = hsrShots.fresh('express_lab', ['trail']); Object.assign(g.state.flags, { lab_found: true, lab_sw: true }); g.loadMap('express_lab', null, { x: 17, y: 7, silent: true }); g.player.dir = 'up'; hsrShots.pump(30); return hsrShots.shot(); })()",
@@ -724,6 +770,7 @@ const SCENES = {
   questmission: 'hsrShots.quest(1)',
   questnav: 'hsrShots.quest(2)'
 };
+for (const id of ['trail', 'blade', 'clara', 'seele', 'danheng', 'topaz', 'himeko', 'herta', 'jingyuan', 'bronya', 'asta', 'ruanmei', 'kafka', 'silverwolf', 'welt', 'march', 'gepard', 'fuxuan', 'natasha', 'bailu', 'luocha']) SCENES['hdhero_' + id] = 'hsrShots.hdHero(' + JSON.stringify(id) + ')';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const randomPort = (lo, span) => lo + Math.floor(Math.random() * span);
 
@@ -758,6 +805,78 @@ const PAGE = `(() => {
   };
   window.hsrShots = {
     pump, shot, fresh,
+    hdHero(id) {
+      const s = hsrShots.hd(id, 18), A = s.arena, h = A.hero, TS = 32;
+      A.phase = 'wave'; A.sched = [{ t: 1e9, done: false, ids: [], rift: 'n' }];
+      h.x = h.px = 29.5 * TS; h.y = h.py = 23 * TS; h.picks[10] = 0;
+      const spots = [[60, -70], [100, -40], [-40, -90], [130, -100], [-90, -50], [20, -140]];
+      for (const [dx, dy] of spots) { const u = A.spawnFoe(dx === 130 ? 'trampler' : 'reaver', 'n'); u.x = u.px = h.x + dx; u.y = u.py = h.y + dy; u.spd = 0; u.hp = u.hpMax = 1e6; }
+      const t = A.foes()[0];
+      h.en = h.enMax;
+      A.cmd({ t: 'cast', slot: 'q', x: t.x, y: t.y, id: t.uid }); pump(8);
+      h.en = h.enMax;
+      A.cmd({ t: 'cast', slot: 'r', x: t.x, y: t.y, id: t.uid }); pump(5);
+      return shot();
+    },
+    hdBoss(id, th, o = {}) {
+      const s = hsrShots.hd(o.hero || 'trail', o.lvl || 16, th), A = s.arena, h = A.hero, TS = 32, HD = Hsr98.HD;
+      A.wave = o.wave || 10; A.phase = 'wave'; A.sched = [{ t: 1e9, done: false, ids: [], rift: 'n' }];
+      h.x = h.px = 29.5 * TS; h.y = h.py = 23.5 * TS; h.picks[10] = 0;
+      const b = A.spawnFoe(id, 'n', o.big ? { big: true } : {});
+      b.x = b.px = 30 * TS; b.y = b.py = 20.5 * TS; b.gapT = 99; b.tgt = h.uid;
+      (o.escort || []).forEach((k, i) => { const u = A.spawnFoe(k, 'n'); u.x = u.px = (27 + i * 2) * TS; u.y = u.py = 17.5 * TS; });
+      if (o.phase2) b.hp = b.hpMax * 0.49;
+      pump(o.pre || 10);
+      const AI = HD.FOE_AI[id];
+      if (o.move) { b.act = null; AI.moves[o.move](A, b, h); }
+      pump(+(window.HDP || o.post || 18));
+      return shot();
+    },
+    hdThreat(key) {
+      const s = hsrShots.hd('himeko', 9, [key, key === 'legion' ? 'silvermane' : 'legion']), A = s.arena, h = A.hero;
+      A.wave = 7; h.x = h.px = 29.5 * 32; h.y = h.py = 14 * 32;
+      A.cmd({ t: 'early' });
+      pump(+(window.HDP || 330));
+      return shot();
+    },
+    hdMeta() {
+      const g = fresh('express_lab', ['trail']), HD = Hsr98.HD;
+      Object.assign(g.state.flags, { lab_found: true, lab_sw: true });
+      const run = (hero, diff, o) => { g.hdNew({ hero, diff, seed: 3 + g.hd().hist.length, threats: o.th }); const A = g.hdArena(); A.wave = o.wave; Object.assign(A.stats, o.stats); A.base.hp = o.base; if (o.win) A.over = 'win'; A.hero.deaths = o.deaths || 0; A.hero.lvl = o.lvl; g.hdFinish(A, !o.win); };
+      run('himeko', 'normal', { th: ['legion', 'winter'], wave: 20, win: true, base: 2810, lvl: 20, stats: { time: 1488, kills: 402, raid: 3240, bossMin: 52 } });
+      run('march', 'normal', { th: ['silvermane', 'automaton'], wave: 17, base: 0, lvl: 19, deaths: 1, stats: { time: 1210, kills: 280, tfell: 2 } });
+      run('seele', 'easy', { th: ['automaton', 'legion'], wave: 20, win: true, base: 3420, lvl: 20, stats: { time: 1395, kills: 390, tfell: 1 } });
+      g.hd().asc.got.push(1, 2);
+      ui.openHdHub();
+      return g;
+    },
+    hdGear() {
+      const s = hsrShots.hd('himeko', 9), A = s.arena, h = A.hero, HD = Hsr98.HD;
+      h.gold = 20000; h.x = h.px = A.M.shop[0] * 32; h.y = h.py = A.M.shop[1] * 32 + 48;
+      HD.buyItem(A, h, 'cone', { cone: 'geniuses' }); HD.upgrade(A, h, 'cone');
+      for (const slot of ['head', 'hands', 'body']) HD.buyItem(A, h, 'relic', { set: 'firesmith', slot });
+      HD.upgrade(A, h, 0); HD.upgrade(A, h, 0); HD.upgrade(A, h, 1);
+      HD.buyItem(A, h, 'grenade'); HD.buyItem(A, h, 'garrison');
+      for (let i = 0; i < 3; i++) HD.buyItem(A, h, 'medkit');
+      h.gold = 2350; A.events.length = 0;
+      return s;
+    },
+    hdShop(tab, sel) {
+      const s = hsrShots.hdGear();
+      s.shop = { sel, slot: -1, tab }; s.pomSay(['Пом-Пом всё разложил по полочкам.']);
+      pump(12);
+      return shot();
+    },
+    hd(hero, lvl, threats) {
+      const g = fresh('express_lab', ['trail']);
+      Object.assign(g.state.flags, { lab_found: true, lab_sw: true });
+      g.hdNew({ hero, seed: 11, threats: threats || ['legion', 'silvermane'] });
+      ui.openHdHub(); ui.openHdArena();
+      const s = ui.top(), A = s.arena, h = A.hero;
+      if (lvl) { A.giveExp(h, [...Array(lvl - 1).keys()].reduce((n, l) => n + Hsr98.HD.expNext(l + 1), 0)); for (const sl of ['q', 'e', 't', 'r', 'q', 'q', 'e', 't', 'q', 'e', 't', 'r', 'e', 't']) A.up(h, sl); h.en = h.enMax; h.gold = 1850; }
+      A.events.length = 0;
+      return s;
+    },
     cwSetupItems(g) {
       const r = hsrShots.cwSetupMix(g);
       r.board.on[0].items = [{ uid: 9001, id: 'chainsaw', sp: false }, { uid: 9002, id: 'starChase', sp: true }];

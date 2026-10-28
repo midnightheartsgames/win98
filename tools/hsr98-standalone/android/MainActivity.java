@@ -1,11 +1,18 @@
 package com.win98clone.hsr98;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageInstaller;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,9 +24,18 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.json.JSONObject;
 
 public class MainActivity extends Activity {
@@ -30,9 +46,35 @@ public class MainActivity extends Activity {
 
     private static final int REQ_SAVE = 41;
     private static final int REQ_OPEN = 42;
+    private static final String UPDATE_BASE = "https://pennygachi.men/web98/update/sr98/";
+    private static final String ACTION_INSTALL = "com.win98clone.hsr98.INSTALL_STATUS";
+    private static final long SPACE_MARGIN = 20L * 1048576;
 
     private WebView web;
     private String pendingSave;
+    private final ExecutorService io = Executors.newSingleThreadExecutor();
+    private volatile boolean cancelDownload;
+    private volatile File updateFile;
+    private boolean waitingPermission;
+
+    private final BroadcastReceiver installReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE);
+            if (status == PackageInstaller.STATUS_PENDING_USER_ACTION) {
+                Intent confirm = intent.getParcelableExtra(Intent.EXTRA_INTENT);
+                if (confirm == null) { callUi("updateResult(1)"); return; }
+                confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                try {
+                    startActivity(confirm);
+                } catch (ActivityNotFoundException e) {
+                    callUi("updateResult(1)");
+                }
+                return;
+            }
+            callUi("updateResult(" + status + ")");
+        }
+    };
 
     private class SavesBridge {
         @JavascriptInterface
@@ -43,6 +85,80 @@ public class MainActivity extends Activity {
                     pendingSave = text;
                     Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("application/json").putExtra(Intent.EXTRA_TITLE, name);
                     if (!startPicker(i, REQ_SAVE)) { pendingSave = null; callUi("fileSaved(false)"); }
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public String versionCode() {
+            try {
+                return String.valueOf(getPackageManager().getPackageInfo(getPackageName(), 0).versionCode);
+            } catch (PackageManager.NameNotFoundException e) {
+                return "0";
+            }
+        }
+
+        @JavascriptInterface
+        public void checkUpdate(final String channel) {
+            io.execute(new Runnable() {
+                @Override
+                public void run() {
+                    String name = "test".equals(channel) ? "test" : "stable";
+                    try {
+                        String pointer = httpText(UPDATE_BASE + name + ".json?t=" + (System.currentTimeMillis() / 60000));
+                        String notes = null;
+                        try {
+                            notes = httpText(UPDATE_BASE + "notes.json");
+                        } catch (IOException e) {
+                            notes = null;
+                        }
+                        String json = "{\"pointer\":" + pointer + ",\"notes\":" + (notes == null ? "null" : notes) + "}";
+                        callUi("updateInfo(" + JSONObject.quote(json) + ")");
+                    } catch (IOException e) {
+                        callUi("updateError('offline'," + JSONObject.quote(String.valueOf(e.getMessage())) + ")");
+                    }
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void downloadUpdate(final String url, final String sha256, final String bytes) {
+            io.execute(new Runnable() {
+                @Override
+                public void run() {
+                    download(url, sha256, Long.parseLong(bytes));
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void cancelUpdate() {
+            cancelDownload = true;
+        }
+
+        @JavascriptInterface
+        public void installUpdate() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    startInstall();
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void openInstallSettings() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (Build.VERSION.SDK_INT < 26) return;
+                    waitingPermission = true;
+                    try {
+                        startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getPackageName())));
+                    } catch (ActivityNotFoundException e) {
+                        waitingPermission = false;
+                        callUi("updateError('error'," + JSONObject.quote("Настройки Android не открылись") + ")");
+                    }
                 }
             });
         }
@@ -94,6 +210,10 @@ public class MainActivity extends Activity {
             }
         });
         web.addJavascriptInterface(new SavesBridge(), "Sr98Android");
+        IntentFilter installFilter = new IntentFilter(ACTION_INSTALL);
+        if (Build.VERSION.SDK_INT >= 33) registerReceiver(installReceiver, installFilter, Context.RECEIVER_NOT_EXPORTED);
+        else registerReceiver(installReceiver, installFilter);
+        clearUpdates();
         setContentView(web);
         hideBars();
         web.loadUrl(START);
@@ -132,8 +252,113 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void callUi(String call) {
-        web.evaluateJavascript("window.hsrui&&window.hsrui." + call, null);
+    private void callUi(final String call) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                web.evaluateJavascript("window.hsrui&&window.hsrui." + call, null);
+            }
+        });
+    }
+
+    private String httpText(String url) throws IOException {
+        HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
+        c.setConnectTimeout(15000);
+        c.setReadTimeout(20000);
+        c.setUseCaches(false);
+        try {
+            int code = c.getResponseCode();
+            if (code != 200) throw new IOException("HTTP " + code);
+            try (InputStream in = c.getInputStream()) {
+                return new String(readAll(in), StandardCharsets.UTF_8);
+            }
+        } finally {
+            c.disconnect();
+        }
+    }
+
+    private File updateDir() {
+        return new File(getCacheDir(), "update");
+    }
+
+    private void clearUpdates() {
+        File[] old = updateDir().listFiles();
+        if (old != null) for (File f : old) f.delete();
+    }
+
+    private void download(String url, String sha256, long bytes) {
+        if (!url.startsWith(UPDATE_BASE)) { callUi("updateError('error'," + JSONObject.quote("Чужой адрес обновления") + ")"); return; }
+        File dir = updateDir();
+        dir.mkdirs();
+        long usable = dir.getUsableSpace();
+        if (usable < bytes + SPACE_MARGIN) { callUi("updateError('space'," + JSONObject.quote(String.valueOf(bytes + SPACE_MARGIN - usable)) + ")"); return; }
+        File out = new File(dir, "StarRail98.apk");
+        cancelDownload = false;
+        updateFile = null;
+        HttpURLConnection c = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            c = (HttpURLConnection) new URL(url).openConnection();
+            c.setConnectTimeout(15000);
+            c.setReadTimeout(30000);
+            int code = c.getResponseCode();
+            if (code != 200) throw new IOException("HTTP " + code);
+            long done = 0, shown = 0;
+            try (InputStream in = c.getInputStream(); OutputStream o = new FileOutputStream(out)) {
+                byte[] buf = new byte[65536];
+                for (int n; (n = in.read(buf)) > 0; ) {
+                    if (cancelDownload) break;
+                    o.write(buf, 0, n);
+                    md.update(buf, 0, n);
+                    done += n;
+                    long now = System.currentTimeMillis();
+                    if (now - shown > 200) { shown = now; callUi("updateProgress(" + done + "," + bytes + ")"); }
+                }
+            }
+            if (cancelDownload) { out.delete(); return; }
+            StringBuilder hex = new StringBuilder();
+            for (byte b : md.digest()) hex.append(String.format("%02x", b));
+            if (done != bytes || !hex.toString().equals(sha256)) { out.delete(); callUi("updateError('corrupt')"); return; }
+            updateFile = out;
+            callUi("updateProgress(" + done + "," + bytes + ")");
+            callUi("updateReady()");
+        } catch (IOException | NoSuchAlgorithmException e) {
+            out.delete();
+            callUi("updateError('offline'," + JSONObject.quote(String.valueOf(e.getMessage())) + ")");
+        } finally {
+            if (c != null) c.disconnect();
+        }
+    }
+
+    private void startInstall() {
+        final File file = updateFile;
+        if (file == null || !file.exists()) { callUi("updateError('error'," + JSONObject.quote("Файл обновления не найден, скачайте его снова") + ")"); return; }
+        if (Build.VERSION.SDK_INT >= 26 && !getPackageManager().canRequestPackageInstalls()) { callUi("updateNeedsPermission()"); return; }
+        io.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    PackageInstaller installer = getPackageManager().getPackageInstaller();
+                    PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+                    params.setSize(file.length());
+                    int id = installer.createSession(params);
+                    PackageInstaller.Session session = installer.openSession(id);
+                    try (OutputStream o = session.openWrite("sr98", 0, file.length()); InputStream in = new FileInputStream(file)) {
+                        byte[] buf = new byte[65536];
+                        for (int n; (n = in.read(buf)) > 0; ) o.write(buf, 0, n);
+                        session.fsync(o);
+                    }
+                    Intent status = new Intent(ACTION_INSTALL).setPackage(getPackageName());
+                    int flags = PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 31 ? PendingIntent.FLAG_MUTABLE : 0);
+                    PendingIntent pending = PendingIntent.getBroadcast(MainActivity.this, id, status, flags);
+                    session.commit(pending.getIntentSender());
+                    session.close();
+                    callUi("updateWaiting()");
+                } catch (IOException | RuntimeException e) {
+                    callUi("updateError('error'," + JSONObject.quote(String.valueOf(e.getMessage())) + ")");
+                }
+            }
+        });
     }
 
     @Override
@@ -161,13 +386,17 @@ public class MainActivity extends Activity {
     private String readText(Uri uri) {
         try (InputStream in = getContentResolver().openInputStream(uri)) {
             if (in == null) return "";
-            ByteArrayOutputStream buf = new ByteArrayOutputStream();
-            byte[] chunk = new byte[65536];
-            for (int n; (n = in.read(chunk)) > 0; ) buf.write(chunk, 0, n);
-            return new String(buf.toByteArray(), StandardCharsets.UTF_8);
+            return new String(readAll(in), StandardCharsets.UTF_8);
         } catch (IOException | SecurityException e) {
             return "";
         }
+    }
+
+    private static byte[] readAll(InputStream in) throws IOException {
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        byte[] chunk = new byte[65536];
+        for (int n; (n = in.read(chunk)) > 0; ) buf.write(chunk, 0, n);
+        return buf.toByteArray();
     }
 
     private void hideBars() {
@@ -201,10 +430,17 @@ public class MainActivity extends Activity {
         web.resumeTimers();
         web.evaluateJavascript(AUDIO_JS + "(true)", null);
         hideBars();
+        if (waitingPermission) {
+            waitingPermission = false;
+            boolean allowed = Build.VERSION.SDK_INT < 26 || getPackageManager().canRequestPackageInstalls();
+            callUi("updatePermissionBack(" + allowed + ")");
+        }
     }
 
     @Override
     protected void onDestroy() {
+        unregisterReceiver(installReceiver);
+        io.shutdownNow();
         web.destroy();
         super.onDestroy();
     }

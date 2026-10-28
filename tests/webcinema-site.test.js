@@ -17,6 +17,7 @@ const vfsFiles = new Map();
 const dialogs = [];
 const opened = [];
 const steamCalls = [];
+const cdCalls = [];
 const launched = [];
 
 global.window = {
@@ -37,15 +38,16 @@ global.window = {
   appVideoPlayer: { open: (name, src, auto) => opened.push({ name, src, auto }) },
   gameManager: {
     catalog: {
-      'half-life': { title: 'Half-Life 98', priceDisplay: '$34.99', launch: () => launched.push('half-life') },
+      'half-life_demo': { title: 'Half-Life 98 Demo', cdDemo: true, priceDisplay: 'DEMO', launch: () => launched.push('half-life_demo') },
       fallout: { title: 'Fallout', priceDisplay: '$19.99', launch: () => launched.push('fallout') },
-      fallout2: { title: 'Fallout 2', priceDisplay: 'FREE', launch: () => launched.push('fallout2') },
+      fallout98_demo: { title: 'Fallout 98 Demo', cdDemo: true, priceDisplay: 'DEMO', launch: () => launched.push('fallout98_demo') },
       anotherwar: { title: 'Another War', priceDisplay: '$20.99', launch: () => launched.push('anotherwar') },
       bttf: { title: 'Back to the Future', priceDisplay: '$24.79', launch: () => launched.push('bttf') }
     },
     installed: ['fallout'],
     isInstalled(id) { return this.installed.includes(id); },
-    showInSteam(id) { steamCalls.push(id); return false; }
+    showInSteam(id) { steamCalls.push(id); return false; },
+    showOnCd(id) { cdCalls.push(id); return false; }
   }
 };
 
@@ -247,9 +249,19 @@ test('clip page: player, ticket, stills, reviews, neighbours', () => {
   assert.ok(html.includes('Билет №') && html.includes('content/webvideo/stills/halflife-2.jpg'));
   assert.ok(html.includes('Freeman_Gordon'));
   assert.ok(html.includes('clip?id=anotherwar') && html.includes('clip?id=captainjeff'));
-  assert.ok(html.includes('Half-Life 98 в Steam'));
+  assert.ok(html.includes('Half-Life 98 Demo на диске «Игромании»') && html.includes('демоверсия на компакт-диске журнала «Игромания»'));
+  assert.ok(!html.includes('Half-Life 98 Demo в Steam') && !html.includes('$34.99'));
   frame.querySelectorAll('[data-wc-game]')[0].fire();
-  assert.deepStrictEqual(steamCalls, ['half-life']);
+  assert.deepStrictEqual(cdCalls, ['half-life_demo']);
+  assert.deepStrictEqual(steamCalls, []);
+  const f2 = open(base + '/clip?id=fallout2').frame;
+  assert.ok(f2.html.includes('Fallout 98 Demo на диске «Игромании»'));
+  f2.querySelectorAll('[data-wc-game]')[0].fire();
+  assert.deepStrictEqual(cdCalls, ['half-life_demo', 'fallout98_demo']);
+  const anotherwar = open(base + '/clip?id=anotherwar').frame;
+  assert.ok(anotherwar.html.includes('Another War в Steam') && anotherwar.html.includes('продаётся в Steam за $20.99'));
+  anotherwar.querySelectorAll('[data-wc-game]')[0].fire();
+  assert.deepStrictEqual(steamCalls, ['anotherwar']);
   const f1 = open(base + '/clip?id=fallout1').frame;
   assert.ok(f1.html.includes('Запустить Fallout'));
   f1.querySelectorAll('[data-wc-game]')[0].fire();
@@ -342,7 +354,8 @@ test('new files carry no comments, Clippy uses a real site method', () => {
   const index = read('index.html');
   assert.ok(index.indexOf('webcinema-data.js') < index.indexOf('webcinema-site.js') && index.includes('css/apps/webcinema.css'));
   const catalog = read('js/game-manager.js');
-  data.clips.filter(c => c.game).forEach(c => assert.ok(new RegExp(`id: '${c.game}',\\s+steam: true`).test(catalog), c.game));
+  data.clips.filter(c => c.game).forEach(c => assert.ok(new RegExp(`id: '${c.game}',\\s+(steam|cdDemo): true`).test(catalog), c.game));
+  assert.deepStrictEqual(data.clips.filter(c => c.game && c.game.endsWith('_demo')).map(c => c.game), ['half-life_demo', 'fallout98_demo']);
 });
 
 console.log(`\nWebCinema '98: ${passed} tests passed.`);

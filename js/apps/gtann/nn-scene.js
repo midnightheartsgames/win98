@@ -354,6 +354,7 @@
         R.addSprites.bill(k.x, k.y + bob, k.z, 1.3, 0, [col[0], col[1], col[2], 110], Rv, Uv);
       }
       N.Guns.draw(this, W, fx, lights, Rv, Uv, vis, t);
+      if (f.throwAid) N.Guns.aim(this, W, t, Rv, Uv);
       for (const h of [W.drop, W.heli]) {
         if (!h || camInside) continue;
         const hm = N.Cars.heli(h.type), M = M3.euler(-0.06, -h.yaw, h.roll || 0, h.x, h.y, h.z);

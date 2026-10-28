@@ -52,9 +52,9 @@ class FargusSite {
     return [
       {
         id: 'half-life',
-        steamId: 'half-life',
+        cdDemoId: 'half-life_demo',
         num: 'F-98-112',
-        orig: 'Half-Life 98',
+        orig: 'Half-Life 98 Demo',
         title: 'Период полураспада',
         cds: 1,
         lang: 'тексты, голос, титры',
@@ -115,9 +115,9 @@ class FargusSite {
       },
       {
         id: 'fallout2',
-        steamId: 'fallout2',
+        cdDemoId: 'fallout98_demo',
         num: 'F-98-101',
-        orig: 'Fallout 2 Demo',
+        orig: 'Fallout 98 Demo',
         title: 'Радиоактивные осадки 2',
         cds: 1,
         lang: 'тексты, диалоги',
@@ -178,9 +178,9 @@ class FargusSite {
       },
       {
         id: 'quest',
-        steamId: 'quest',
+        cdDemoId: 'quest_demo',
         num: 'F-98-109',
-        orig: 'LucasQuest 98',
+        orig: 'LucasQuest 98 Demo',
         title: 'Пиратский квест Лукаса',
         cds: 2,
         lang: 'тексты, глаголы',
@@ -235,7 +235,7 @@ class FargusSite {
       ['28.11.1998', `Вышло издание ${this.link('/game?id=half-life', '«Период полураспада»')}. Записано больше 2000 реплик, включая охранника Барни.`],
       ['24.11.1998', `Открыт раздел ${this.link('/quotes', '«Голоса»')}: фрагменты нашей озвучки можно послушать прямо в браузере.`],
       ['19.11.1998', `Для «Великого автоугона» выложен патч: таксофоны больше не молчат. Скачайте его в разделе ${this.link('/support', '«Техподдержка»')}.`],
-      ['12.11.1998', 'Наши издания продаются только через клиент <a data-url="http://www.steampowered.com">Steam</a>. Диски на рынках с нашим логотипом мы не выпускали.'],
+      ['12.11.1998', 'Наши издания продаются только через клиент <a data-url="http://www.steampowered.com">Steam</a>. Демоверсии «Периода полураспада», «Радиоактивных осадков 2» и «Пиратского квеста Лукаса» записаны на компакт-диск журнала «Игромания». Диски на рынках с нашим логотипом мы не выпускали.'],
       ['02.11.1998', `Открыта ${this.link('/guestbook', 'гостевая книга')}. Пишите, что перевести следующим.`]
     ];
   }
@@ -332,7 +332,7 @@ class FargusSite {
     const voted = this.readJSON('win98_fargus_voted', null);
     const visitor = this.nextVisitor();
     return `
-      <div class="fargus-ticker"><span>Внимание! Остерегайтесь подделок! Настоящий диск «Фаргус» имеет жёлтый логотип и надпись «Полностью на русском языке». Наши издания продаются только через Steam.</span></div>
+      <div class="fargus-ticker"><span>Внимание! Остерегайтесь подделок! Настоящий диск «Фаргус» имеет жёлтый логотип и надпись «Полностью на русском языке». Наши издания продаются только через Steam, а демоверсии выходят на компакт-диске журнала «Игромания».</span></div>
       <h2 class="fargus-h">Новинки ноября</h2>
       <table class="fargus-shelf" cellspacing="0">
         ${[0, 4].map(start => `
@@ -397,12 +397,19 @@ class FargusSite {
             <td>${this.esc(g.orig)}</td>
             <td class="fargus-c">${g.cds}</td>
             <td>${g.lang}</td>
-            <td><button class="fargus-btn fargus-btn-steam" data-steam="${g.steamId}">В Steam</button></td>
+            <td>${this.storeButton(g, 'В Steam')}</td>
           </tr>
         `).join('')}
       </table>
-      <p class="fargus-small">Кнопка «В Steam» открывает страницу игры в клиенте Steam. Если клиента ещё нет, его можно скачать на <a data-url="http://www.steampowered.com">www.steampowered.com</a>.</p>
+      <p class="fargus-small">Кнопка «В Steam» открывает страницу игры в клиенте Steam. Если клиента ещё нет, его можно скачать на <a data-url="http://www.steampowered.com">www.steampowered.com</a>. Демоверсии в Steam не продаются: они записаны на компакт-диск журнала «Игромания», установщики лежат в папке D:\\demo.</p>
     `;
+  }
+
+  storeButton(g, steamLabel) {
+    if (!g.cdDemoId) return `<button class="fargus-btn fargus-btn-steam" data-steam="${g.steamId}">${steamLabel}</button>`;
+    const gm = window.gameManager;
+    const installed = !!(gm && gm.isInstalled && gm.isInstalled(g.cdDemoId));
+    return `<button class="fargus-btn fargus-btn-cd" data-cd="${g.cdDemoId}">${installed ? 'Запустить демоверсию' : 'Демо на диске «Игромании»'}</button>`;
   }
 
   renderGame(id) {
@@ -425,7 +432,7 @@ class FargusSite {
               <tr><td>Перевод:</td><td>${g.lang}</td></tr>
               <tr><td>Озвучка:</td><td>${g.cast}</td></tr>
             </table>
-            <button class="fargus-btn fargus-btn-steam" data-steam="${g.steamId}">Открыть в Steam</button>
+            ${this.storeButton(g, 'Открыть в Steam')}
           </td>
         </tr>
       </table>
@@ -485,7 +492,7 @@ class FargusSite {
       ['Вместо русских букв видны значки.', 'Откройте «Панель управления», затем «Язык и стандарты», и выберите «Русский». После перезагрузки буквы появятся.'],
       ['Персонажи молчат.', 'Проверьте громкость в микшере Win 98 и установите последний патч к игре из списка ниже.'],
       ['Почему DOOM переведён как «Рок»?', 'По словарю doom значит «рок, судьба, гибель». Мы выбрали самое короткое слово.'],
-      ['Где купить ваши диски?', 'Издания «Фаргус» продаются только через клиент Steam. Диски на рынках с нашим логотипом мы не выпускали.']
+      ['Где купить ваши диски?', 'Издания «Фаргус» продаются только через клиент Steam. Демоверсии «Периода полураспада», «Радиоактивных осадков 2» и «Пиратского квеста Лукаса» ищите на компакт-диске журнала «Игромания». Диски на рынках с нашим логотипом мы не выпускали.']
     ];
     return `
       <h2 class="fargus-h">Техническая поддержка</h2>
@@ -655,7 +662,7 @@ class FargusSite {
     if (kind === 'gta') {
       return `${line}\n  ФАРГУС МУЛЬТИМЕДИА: ТАКСОФОНЫ ДЛЯ «ВЕЛИКОГО АВТОУГОНА»\n${line}\nИсправлено:\n  1. Таксофон звонит, а текст задания не появляется.\n  2. Сообщение «ПОТРАЧЕНО» мигало два раза.\n\nСообщение «ПОТРАЧЕНО» оставлено по просьбам игроков.`;
     }
-    return `${line}\n  ФАРГУС МУЛЬТИМЕДИА: КАТАЛОГ ИЗДАНИЙ 1998 ГОДА\n${line}\n${this.getGames().map(g => `${g.num}  ${g.title} (${g.orig}), CD: ${g.cds}`).join('\n')}\n\nВсе издания продаются в клиенте Steam: www.steampowered.com`;
+    return `${line}\n  ФАРГУС МУЛЬТИМЕДИА: КАТАЛОГ ИЗДАНИЙ 1998 ГОДА\n${line}\n${this.getGames().map(g => `${g.num}  ${g.title} (${g.orig}), ${g.cdDemoId ? 'демоверсия на диске «Игромании»' : `CD: ${g.cds}`}`).join('\n')}\n\nИздания продаются в клиенте Steam: www.steampowered.com\nДемоверсии записаны на компакт-диск журнала «Игромания», папка D:\\demo.`;
   }
 
   savePatch(fileName) {
@@ -675,6 +682,16 @@ class FargusSite {
       btn.addEventListener('click', () => {
         if (window.gameManager && window.gameManager.showInSteam) window.gameManager.showInSteam(btn.dataset.steam);
         else if (window.appIE) window.appIE.navigate(win, 'http://www.steampowered.com');
+      });
+    });
+
+    container.querySelectorAll('.fargus-btn-cd').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const gm = window.gameManager;
+        if (!gm) return;
+        const game = gm.catalog && gm.catalog[btn.dataset.cd];
+        if (gm.isInstalled(btn.dataset.cd) && game && game.launch) game.launch();
+        else gm.showOnCd(btn.dataset.cd);
       });
     });
 

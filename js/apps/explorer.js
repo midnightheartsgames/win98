@@ -1839,9 +1839,9 @@ class AppExplorer {
           window.winManager.openDialog({ title: 'Wolfenstein 3D', icon: 'error', message: t('store.gameNotInstalled', 'Wolfenstein 3D') });
         } else if (window.appWolf3D) window.appWolf3D.open();
       }
-      else if (item.app === 'quest') {
-        if (window.gameManager && !window.gameManager.isInstalled('quest')) {
-          window.winManager.openDialog({ title: 'LucasQuest 98', icon: 'error', message: t('store.gameNotInstalled', 'LucasQuest 98') });
+      else if (item.app === 'quest_demo') {
+        if (window.gameManager && !window.gameManager.isInstalled('quest_demo')) {
+          window.gameManager.showOnCd('quest_demo');
         } else if (window.appScummQuest) window.appScummQuest.open();
       }
       else if (item.app === 'stalker') {
@@ -1849,9 +1849,9 @@ class AppExplorer {
           window.winManager.openDialog({ title: 'S.T.A.L.K.E.R.', icon: 'error', message: t('store.gameNotInstalled', 'S.T.A.L.K.E.R.') });
         } else if (window.appStalker) window.appStalker.open();
       }
-      else if (item.app === 'fallout2' || item.name === 'FALLOUT2.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('fallout2')) {
-          window.winManager.openDialog({ title: 'Fallout 2 Demo', icon: 'error', message: t('store.gameNotInstalled', 'Fallout 2 Demo') });
+      else if (item.app === 'fallout98_demo' || item.name === 'FALLOUT2.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('fallout98_demo')) {
+          window.gameManager.showOnCd('fallout98_demo');
         } else if (window.appFallout2) window.appFallout2.open();
       }
       else if (item.app === 'burnout' || item.name === 'BURNDEMO.EXE') {
@@ -1944,9 +1944,9 @@ class AppExplorer {
           window.winManager.openDialog({ title: 'S.T.A.L.K.E.R.: Зов Припяти 98', icon: 'error', message: t('store.gameNotInstalled', 'S.T.A.L.K.E.R.: Зов Припяти 98') });
         } else if (window.appCop98) window.appCop98.open();
       }
-      else if (item.app === 'tekken3' || item.name === 'TEKKEN3.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('tekken3')) {
-          window.gameManager.showInSteam('tekken3');
+      else if (item.app === 'tekken98_demo' || item.name === 'TEKKEN3.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('tekken98_demo')) {
+          window.gameManager.showOnCd('tekken98_demo');
         } else if (window.appTekken3) window.appTekken3.open();
       }
       else if (item.app === 'ow98' || item.name === 'OVERWATCH.EXE') {
@@ -1959,9 +1959,9 @@ class AppExplorer {
           window.gameManager.showInSteam('sammax106');
         } else if (window.appSamMax106) window.appSamMax106.open();
       }
-      else if (item.app === 'sammax202' || item.name === 'SAMMAX22.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('sammax202')) {
-          window.gameManager.showInSteam('sammax202');
+      else if (item.app === 'sammax202_demo' || item.name === 'SAMMAX22.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('sammax202_demo')) {
+          window.gameManager.showOnCd('sammax202_demo');
         } else if (window.appSamMax202) window.appSamMax202.open();
       }
       else if (item.app === 'bttf' || item.name === 'BTTF.EXE') {
@@ -2009,14 +2009,14 @@ class AppExplorer {
           window.gameManager.showInSteam('diablo2');
         } else if (window.appDiablo2) window.appDiablo2.open();
       }
-      else if (item.app === 'xiii' || item.name === 'XIII.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('xiii')) {
-          window.gameManager.showInSteam('xiii');
+      else if (item.app === 'xiii_demo' || item.name === 'XIII.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('xiii_demo')) {
+          window.gameManager.showOnCd('xiii_demo');
         } else if (window.appXiii) window.appXiii.open();
       }
-      else if (item.app === 'maxpayne' || item.name === 'MAXPAYNE.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('maxpayne')) {
-          window.gameManager.showInSteam('maxpayne');
+      else if (item.app === 'maxpayne_demo' || item.name === 'MAXPAYNE.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('maxpayne_demo')) {
+          window.gameManager.showOnCd('maxpayne_demo');
         } else if (window.appMaxPayne) window.appMaxPayne.open();
       }
       else if (item.app === 'gtann' || item.name === 'GTANN.EXE') {
@@ -2029,14 +2029,14 @@ class AppExplorer {
           window.gameManager.showInSteam('legion');
         } else if (window.appLegion) window.appLegion.open();
       }
-      else if (item.app === 'homm1' || item.name === 'HEROES.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('homm1')) {
-          window.gameManager.showInSteam('homm1');
+      else if (item.app === 'homm1_demo' || item.name === 'HEROES.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('homm1_demo')) {
+          window.gameManager.showOnCd('homm1_demo');
         } else if (window.appHomm1) window.appHomm1.open();
       }
-      else if (item.app === 'falloutzp' || item.name === 'FALLOUTZP.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('falloutzp')) {
-          window.gameManager.showInSteam('falloutzp');
+      else if (item.app === 'falloutzp_demo' || item.name === 'FALLOUTZP.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('falloutzp_demo')) {
+          window.gameManager.showOnCd('falloutzp_demo');
         } else if (window.appFalloutZP) window.appFalloutZP.open();
       }
       else if (item.app === 'anotherwar' || item.name === 'AW.EXE') {
@@ -2044,14 +2044,9 @@ class AppExplorer {
           window.gameManager.showInSteam('anotherwar');
         } else if (window.appAnotherWar) window.appAnotherWar.open();
       }
-      else if (item.app === 'korovany' || item.name === 'KOROVANY.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('korovany')) {
-          window.gameManager.showInSteam('korovany');
-        } else if (window.appKorovany) window.appKorovany.open();
-      }
-      else if (item.app === 'korovany' || item.name === 'KOROVANY.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('korovany')) {
-          window.gameManager.showInSteam('korovany');
+      else if (item.app === 'korovany_demo' || item.name === 'KOROVANY.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('korovany_demo')) {
+          window.gameManager.showOnCd('korovany_demo');
         } else if (window.appKorovany) window.appKorovany.open();
       }
       else if (item.app === 'catniss' || item.name === 'CATNISS.EXE') {
@@ -2074,19 +2069,19 @@ class AppExplorer {
           window.gameManager.showInSteam('forza');
         } else if (window.appForza) window.appForza.open();
       }
-      else if (item.app === 'dmc98' || item.name === 'DMC4.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('dmc98')) {
-          window.gameManager.showInSteam('dmc98');
+      else if (item.app === 'dmc98_demo' || item.name === 'DMC4.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('dmc98_demo')) {
+          window.gameManager.showOnCd('dmc98_demo');
         } else if (window.appDmc98) window.appDmc98.open();
       }
-      else if (item.app === 'dao98' || item.name === 'DAORIGINS.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('dao98')) {
-          window.winManager.openDialog({ title: 'Dragon Age: Origins 98', icon: 'error', message: t('store.gameNotInstalled', 'Dragon Age: Origins 98') });
+      else if (item.app === 'dao98_demo' || item.name === 'DAORIGINS.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('dao98_demo')) {
+          window.gameManager.showOnCd('dao98_demo');
         } else if (window.appDao98) window.appDao98.open();
       }
-      else if (item.app === 'hl2' || item.name === 'HL2.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('hl2')) {
-          window.winManager.openDialog({ title: 'Half-Life 2', icon: 'error', message: t('store.gameNotInstalled', 'Half-Life 2') });
+      else if (item.app === 'hl2_demo' || item.name === 'HL2.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('hl2_demo')) {
+          window.gameManager.showOnCd('hl2_demo');
         } else if (window.appHl2) window.appHl2.open();
       }
       else if (item.app === 'gta90' || item.name === 'GTA90.EXE') {
@@ -2094,9 +2089,9 @@ class AppExplorer {
           window.winManager.openDialog({ title: "Grand Theft Auto: Екатеринбург '90", icon: 'error', message: t('store.gameNotInstalled', "Grand Theft Auto: Екатеринбург '90") });
         } else if (window.appGta90) window.appGta90.open();
       }
-      else if (item.app === 'kotor98' || item.name === 'KOTOR.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('kotor98')) {
-          window.winManager.openDialog({ title: 'Star Wars: KOTOR 98', icon: 'error', message: t('store.gameNotInstalled', 'Star Wars: KOTOR 98') });
+      else if (item.app === 'kotor98_demo' || item.name === 'KOTOR.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('kotor98_demo')) {
+          window.gameManager.showOnCd('kotor98_demo');
         } else if (window.appKotor98) window.appKotor98.open();
       }
       else if (item.app === 'hsr98' || item.name === 'STARRAIL.EXE') {
@@ -2104,14 +2099,14 @@ class AppExplorer {
           window.winManager.openDialog({ title: 'Honkai: Star Rail 98', icon: 'error', message: t('store.gameNotInstalled', 'Honkai: Star Rail 98') });
         } else if (window.appHsr98) window.appHsr98.open();
       }
-      else if (item.app === 'mc98' || item.name === 'MINECRAFT.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('mc98')) {
-          window.winManager.openDialog({ title: 'Minecraft 98', icon: 'error', message: t('store.gameNotInstalled', 'Minecraft 98') });
+      else if (item.app === 'mc98_demo' || item.name === 'MINECRAFT.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('mc98_demo')) {
+          window.gameManager.showOnCd('mc98_demo');
         } else if (window.appMc98) window.appMc98.open();
       }
-      else if (item.app === 'stalker98' || item.name === 'XR98.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('stalker98')) {
-          window.winManager.openDialog({ title: 'S.T.A.L.K.E.R. 98', icon: 'error', message: t('store.gameNotInstalled', 'S.T.A.L.K.E.R. 98') });
+      else if (item.app === 'stalker98_demo' || item.name === 'XR98.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('stalker98_demo')) {
+          window.gameManager.showOnCd('stalker98_demo');
         } else if (window.appStalker98) window.appStalker98.open();
       }
       else if (item.app === 'serioussam' || item.name === 'SAM.EXE') {
@@ -2159,6 +2154,8 @@ class AppExplorer {
         window.appSysTools.openVolumeControl();
       } else if ((item.app === 'msbackup' || item.name === 'MSBACKUP.EXE') && window.appBackup) {
         window.appBackup.open();
+      } else if ((item.app === 'bugreport' || item.name === 'BUGREPORT.EXE') && window.appBugReport) {
+        window.appBugReport.open();
       } else if ((item.app === 'cleanmgr' || item.name === 'CLEANMGR.EXE') && window.appSysTools) {
         window.appSysTools.openCleanMgr();
       } else if ((item.app === 'command' || item.name === 'COMMAND.COM') && window.appSysTools) {

@@ -572,8 +572,8 @@ test('the game is wired into the system and sold on Steam', () => {
   for (const f of ['js/desktop.js', 'js/taskbar.js', 'js/filesystem.js', 'js/apps/explorer.js', 'js/apps/dialogs.js', 'js/apps/task-manager.js', 'js/icons.js']) {
     assert.ok(fs.readFileSync(path.join(ROOT, f), 'utf8').includes('legion'), f);
   }
-  const build = fs.readFileSync(path.join(ROOT, 'tools', 'build-exe.mjs'), 'utf8');
-  assert.ok(build.includes('Legion Arena'), 'raw install excluded from exe');
+  const { EXE_EXCLUDED } = require('../tools/release.cjs');
+  assert.ok(EXE_EXCLUDED.some(re => re.test('/content/Legion Arena/units.png')), 'raw install excluded from exe');
 });
 
 (async () => {

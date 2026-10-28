@@ -2,7 +2,7 @@
 
 A from-scratch 3D fighting game built on the rules of Tekken 3: four limb buttons, sidesteps, frame data, launchers and juggles, throws with breaks, a ground game and ten-hit strings. The roster, stages, music, story and endings are original: sixteen new fighters whose styles follow the Tekken 3 archetypes, with a tournament run by the Kurogane corporation and an ancient bronze Colossus under the arena.
 
-- Distribution: sold in the in-system Steam client (`steam: true` in `js/game-manager.js`, $26.99). The game is not preinstalled.
+- Distribution: Igromania CD demo Tekken 98 Demo (`tekken98_demo`, `cdDemo: true` in `js/game-manager.js`, `D:\demo\tekken98demo.exe`). Not sold in Steam, not preinstalled.
 - After installation: desktop icon **Tekken 3 98**, Start menu → **Tekken 3 98**, `C:\Games\Tekken3\TEKKEN3.EXE`, Run: `tekken`, `tekken3`, `tekken 3`, `теккен`, `tk3`.
 - Standalone page: `tekken3.html` (`window.tkui` is the UI instance).
 - Test: `npm run test:tekken3` (about 2200 checks in about 1 second).

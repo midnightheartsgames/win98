@@ -485,7 +485,7 @@ Half-Life рассказывает историю, не отнимая у игр
 Counter-Strike — командная игра террористов против спецназа — к концу 1999 года стала одной из самых популярных сетевых игр в мире, хотя официально находится в стадии бета-тестирования.` },
     { id: 'expansions', title: 'Дополнения и распространение', content: `В феврале 1999 года вышла демоверсия Half-Life: Uplink с самостоятельным эпизодом. В ноябре 1999 года студия Gearbox Software выпустила дополнение Opposing Force, в котором события «Чёрной Мезы» показаны глазами капрала морской пехоты Адриана Шепарда.
 
-Помимо коробок Sierra, Valve продаёт и доставляет свои игры через собственный сетевой сервис Steam: игра оплачивается кредитной картой и скачивается прямо на компьютер, а обновления устанавливаются автоматически.` }
+Помимо коробок Sierra, Valve продаёт и доставляет свои игры через собственный сетевой сервис Steam: игра оплачивается кредитной картой и скачивается прямо на компьютер, а обновления устанавливаются автоматически. Сама Half-Life в нашей системе через Steam не продаётся: демоверсия Half-Life 98 Demo лежит на компакт-диске журнала «Игромания» (<code>D:\\demo\\hl98demo.exe</code>).` }
   ],
   seeAlso: ['quake', 'quake2', 'unreal', 'systemshock2', 'voodoo2', 'stalker98', 'steam'],
   references: [
@@ -542,7 +542,7 @@ Soon HECU marines enter Black Mesa with orders to eliminate both the aliens and 
 Counter-Strike, a team game of terrorists against counter-terrorists, had become one of the most popular online games in the world by the end of 1999, even though it is officially still in beta.` },
     { id: 'expansions', title: 'Expansions and distribution', content: `In February 1999 Valve released Half-Life: Uplink, a demo with a standalone episode. In November 1999 Gearbox Software released the expansion Opposing Force, which shows the Black Mesa events through the eyes of marine corporal Adrian Shephard.
 
-Besides Sierra's boxes, Valve sells and delivers its games through its own online service, Steam: the game is paid for by credit card and downloaded straight to the computer, and updates install automatically.` }
+Besides Sierra's boxes, Valve sells and delivers its games through its own online service, Steam: the game is paid for by credit card and downloaded straight to the computer, and updates install automatically. Half-Life itself is not sold on Steam in our system: the Half-Life 98 Demo sits on the Igromania magazine CD (<code>D:\\demo\\hl98demo.exe</code>).` }
   ],
   seeAlso: ['quake', 'quake2', 'unreal', 'systemshock2', 'voodoo2', 'stalker98', 'steam'],
   references: [
@@ -2252,7 +2252,7 @@ Across [[lanparty|computer clubs]] and magazine pages, December 1999 has been de
 
 window.interpediaReg('maxpayne', 'games', {
   title: 'Max Payne',
-  hatnote: 'Статья о нуарном боевике финской студии Remedy Entertainment и компании 3D Realms (издание для Win 98 в каталоге Steam).',
+  hatnote: 'Статья о нуарном боевике финской студии Remedy Entertainment и компании 3D Realms (демоверсия для Win 98 на диске «Игромании»).',
   infobox: {
     title: 'Max Payne',
     badgeText: 'Remedy Entertainment / 3D Realms',
@@ -2264,10 +2264,10 @@ window.interpediaReg('maxpayne', 'games', {
       { label: 'Движок', value: 'Max-FX' },
       { label: 'Место действия', value: 'Нью-Йорк во время снежной бури' },
       { label: 'Особенность', value: 'замедление времени Bullet Time, страницы графического романа' },
-      { label: 'Издание в системе', value: 'Win 98 Edition (каталог Steam)' }
+      { label: 'Издание в системе', value: 'Max Payne Demo (диск «Игромании»)' }
     ]
   },
-  lead: `<strong>Max Payne</strong> — кинематографический боевик от третьего лица финской студии Remedy Entertainment, создаваемый при участии продюсеров 3D Realms (авторов [[dukenukem3d|Duke Nukem 3D]]). Впервые показанный на выставках E3 в 1998 и 1999 годах и представленный в каталоге Steam в издании для [[windows98|Win 98]], проект соединяет мрачный полицейский детектив в заснеженном Нью-Йорке с акробатическими перестрелками в стиле гонконгских боевиков Джона Ву.
+  lead: `<strong>Max Payne</strong> — кинематографический боевик от третьего лица финской студии Remedy Entertainment, создаваемый при участии продюсеров 3D Realms (авторов [[dukenukem3d|Duke Nukem 3D]]). Впервые показанный на выставках E3 в 1998 и 1999 годах и представленный демоверсией для [[windows98|Win 98]] на компакт-диске журнала «Игромания», проект соединяет мрачный полицейский детектив в заснеженном Нью-Йорке с акробатическими перестрелками в стиле гонконгских боевиков Джона Ву.
 
 Вместо привычных видеороликов история подаётся через озвученные полосы графического романа, а в бою игрок включает замедление времени Bullet Time и расстреливает гангстеров в затяжном прыжке с двумя береттами в руках.`,
   sections: [
@@ -2276,7 +2276,7 @@ window.interpediaReg('maxpayne', 'games', {
 Сценарий написал друг основателей студии Сами Ярви под псевдонимом Сэм Лейк. Чтобы сэкономить бюджет на актёрах для графического романа, разработчики фотографировали самих себя, своих друзей и родственников в декорациях Хельсинки, а сам Сэм Лейк подарил главному герою собственное лицо с фирменной кривой ухмылкой.` },
     { id: 'story', title: 'Сюжет: метель, «Валькирин» и первая часть «Американской мечты»', content: `Исповедь героя начинается на крыше небоскрёба под вой полицейских сирен, после чего действие возвращается на три года назад. У оперативника полиции Нью-Йорка Макса Пейна наркоманы, обезумевшие от нового синтетического наркотика «Валькирин» (Valkyr), убивают жену Мишель и новорождённую дочь. Макс переводится в Управление по борьбе с наркотиками (DEA) и уходит под прикрытие в мафиозную семью Пунчинелло.
 
-Когда на заброшенной станции метро «Роско-стрит» неизвестные убивают его единственного связного и друга Алекса Балдера, полиция объявляет самого Пейна убийцей. За одну бесконечную ночь на фоне сильнейшей в истории Нью-Йорка снежной бури Макс пробивается через станцию метро, притон в отеле Рико Муэрте, многоквартирные трущобы и готический ночной клуб «Рагна Рок» одержимого скандинавскими мифами гангстера Джека Люпино. В издании для [[windows98|Win 98]] представлены тренировочный полигон DEA, пролог и все девять глав первой части («The American Dream»).` },
+Когда на заброшенной станции метро «Роско-стрит» неизвестные убивают его единственного связного и друга Алекса Балдера, полиция объявляет самого Пейна убийцей. За одну бесконечную ночь на фоне сильнейшей в истории Нью-Йорка снежной бури Макс пробивается через станцию метро, притон в отеле Рико Муэрте, многоквартирные трущобы и готический ночной клуб «Рагна Рок» одержимого скандинавскими мифами гангстера Джека Люпино. В демоверсии Max Payne Demo для [[windows98|Win 98]] (<code>D:\\demo\\maxpaynedemo.exe</code> на диске «Игромании») представлены тренировочный полигон DEA, пролог и все девять глав первой части («The American Dream»).` },
     { id: 'bullettime', title: 'Bullet Time, стрельба в прыжке и болеутоляющие', content: `Боевая система построена вокруг механики Bullet Time («время пули»). По нажатию клавиши течение времени замедляется в несколько раз, звук выстрелов становится гулким и низким, но прицел по-прежнему двигается со скоростью руки игрока. Одновременно с этим Макс может совершить уклоняющийся прыжок (Shootdodge) вперёд, назад или вбок, продолжая вести прицельный огонь в полёте, пока гильзы медленно звенят об пол.
 
 Здоровье не восстанавливается само и не пополняется аптечками на полу: Макс глотает баночки болеутоляющего (Painkillers), которые находит в шкафчиках ванных комнат и на столах охраны. В его плаще помещается целый арсенал: две беретты, обрез и помповый дробовик, пистолеты-пулемёты Ингрэм, гранаты, коктейли Молотова и снайперская винтовка, при выстреле из которой камера летит следом за самой пулей до самого попадания во врага. Для тех, кто прошёл основную историю, открываются режимы повышенной сложности Dead on Arrival (с ограничением на семь сохранений за главу) и гонка на время New York Minute, где за каждого убитого врага начисляются драгоценные секунды.` },
@@ -2290,11 +2290,11 @@ window.interpediaReg('maxpayne', 'games', {
     'Материалы показа Max Payne на выставке E3 1999 // Журнал Game.EXE, 1999.',
     'Журнал «Страна игр», репортаж о студии Remedy Entertainment и движке Max-FX, 1999.'
   ],
-  links: [['http://www.steampowered.com', 'Каталог Steam: Max Payne'], ['http://forum.games98.com', 'Форум GamerZone']],
+  links: [['http://www.igromania.ru', 'Журнал «Игромания»: Max Payne Demo на диске'], ['http://forum.games98.com', 'Форум GamerZone']],
   categories: ['Боевики от третьего лица', 'Remedy Entertainment', '3D Realms', 'Неонуар']
 }, {
   title: 'Max Payne',
-  hatnote: 'This article is about the neo-noir third-person action game by Remedy Entertainment and 3D Realms (Win 98 Edition in the Steam catalog).',
+  hatnote: 'This article is about the neo-noir third-person action game by Remedy Entertainment and 3D Realms (Win 98 demo on the Igromania CD).',
   infobox: {
     title: 'Max Payne',
     badgeText: 'Remedy Entertainment / 3D Realms',
@@ -2306,10 +2306,10 @@ window.interpediaReg('maxpayne', 'games', {
       { label: 'Engine', value: 'Max-FX' },
       { label: 'Setting', value: 'New York City during the worst blizzard in history' },
       { label: 'Signature features', value: 'Bullet Time slow motion, graphic novel panels' },
-      { label: 'System edition', value: 'Win 98 Edition (Steam catalog)' }
+      { label: 'System edition', value: 'Max Payne Demo (Igromania CD)' }
     ]
   },
-  lead: `<strong>Max Payne</strong> is a cinematic third-person shooter developed by the Finnish studio Remedy Entertainment in partnership with 3D Realms (creators of [[dukenukem3d|Duke Nukem 3D]]). Showcased at E3 in 1998 and 1999 and available in our system's Steam catalog in its [[windows98|Win 98]] Edition, the game blends a hard-boiled police thriller set during a New York blizzard with John Woo-inspired gunplay.
+  lead: `<strong>Max Payne</strong> is a cinematic third-person shooter developed by the Finnish studio Remedy Entertainment in partnership with 3D Realms (creators of [[dukenukem3d|Duke Nukem 3D]]). Showcased at E3 in 1998 and 1999 and available in our system as a [[windows98|Win 98]] demo on the Igromania magazine CD, the game blends a hard-boiled police thriller set during a New York blizzard with John Woo-inspired gunplay.
 
 Instead of conventional pre-rendered cutscenes, the story unfolds through voice-acted graphic novel pages, while combat lets the player trigger Bullet Time slow motion and dive through doorways firing dual Berettas.`,
   sections: [
@@ -2318,7 +2318,7 @@ Instead of conventional pre-rendered cutscenes, the story unfolds through voice-
 The script was written by Sami Järvi, a close friend of the founders credited under the pen name Sam Lake. To keep production lean while shooting the graphic novel sequences, the team photographed themselves, friends and relatives around Helsinki, and Sam Lake stepped in as the face model for Max himself, complete with his trademark grimace.` },
     { id: 'story', title: 'Story: the blizzard, Valkyr and Part I "The American Dream"', content: `The story opens on the roof of a Manhattan skyscraper as police sirens wail below, then flashes back three years. NYPD detective Max Payne comes home to find his wife Michelle and baby daughter murdered by junkies high on a military designer drug called Valkyr. Max transfers to the DEA and goes deep undercover inside the Punchinello Mafia family.
 
-When his only handler and friend Alex Balder is gunned down on the platform of the derelict Roscoe Street subway station, the police frame Payne for the murder. Over one relentless night during the worst snowstorm in New York's history, Max shoots his way through the subway, a sleazy tenement hotel, mob-run slums and the gothic Ragna Rock nightclub of Norse-obsessed gangster Jack Lupino. The [[windows98|Win 98]] Edition in the Steam catalog includes the DEA training course, the prologue and all nine chapters of Part I ("The American Dream").` },
+When his only handler and friend Alex Balder is gunned down on the platform of the derelict Roscoe Street subway station, the police frame Payne for the murder. Over one relentless night during the worst snowstorm in New York's history, Max shoots his way through the subway, a sleazy tenement hotel, mob-run slums and the gothic Ragna Rock nightclub of Norse-obsessed gangster Jack Lupino. The [[windows98|Win 98]] Max Payne Demo on the Igromania CD (<code>D:\\demo\\maxpaynedemo.exe</code>) includes the DEA training course, the prologue and all nine chapters of Part I ("The American Dream").` },
     { id: 'bullettime', title: 'Bullet Time, Shootdodge and painkillers', content: `Gunfights revolve around Bullet Time. Pressing the time-slow key drops the world into slow motion and pitches gunfire down to a deep roar while keeping the crosshair responsive to the player's mouse. Combining Bullet Time with a directional movement key launches Max into a horizontal Shootdodge dive forward, backward or sideways, letting him clear a room in mid-air as brass shell casings clatter across the floorboards.
 
 Health does not regenerate and there are no glowing medkits: Max swallows bottles of painkillers scavenged from bathroom cabinets and guard desks. Under his leather trench coat he carries dual Berettas, pump-action and sawed-off shotguns, dual Ingram MAC-10 submachine guns, grenades, Molotov cocktails and a sniper rifle whose camera tracks the bullet in flight all the way to impact. Completing the story unlocks Dead on Arrival mode (which limits the player to seven saves per chapter) and New York Minute, a race against a ticking countdown clock replenished only by killing enemies.` },
@@ -2332,7 +2332,7 @@ To give the slums and subway stations an authentic look, Remedy's artists travel
     'E3 1999 coverage of Max Payne // Game.EXE magazine, 1999.',
     'Strana Igr magazine, feature on Remedy Entertainment and the Max-FX engine, 1999.'
   ],
-  links: [['http://www.steampowered.com', 'Steam Catalog: Max Payne'], ['http://forum.games98.com', 'GamerZone Forum']],
+  links: [['http://www.igromania.ru', 'Igromania magazine: Max Payne Demo on the CD'], ['http://forum.games98.com', 'GamerZone Forum']],
   categories: ['Third-Person Shooters', 'Remedy Entertainment', '3D Realms', 'Neo-Noir']
 }, ['maxpayne98']);
 
@@ -2344,15 +2344,15 @@ window.interpediaReg('tekken3', 'games', {
     fields: [
       { label: 'Разработчик', value: 'Namco' },
       { label: 'Издатель', value: 'Namco' },
-      { label: 'Выход', value: 'март 1997 (автоматы), март 1998 (консоли), издание Tekken 3 98' },
+      { label: 'Выход', value: 'март 1997 (автоматы), март 1998 (консоли), демоверсия Tekken 98 Demo' },
       { label: 'Жанр', value: 'трёхмерный файтинг' },
       { label: 'Управление', value: '4 кнопки конечностей (левая/правая рука, левая/правая нога)' },
       { label: 'Режимы', value: 'Arcade, Versus, Team Battle, Survival, Time Attack, Practice, Tekken Force, Tekken Ball' },
       { label: 'Бойцов в ростере', value: 'более 20 (включая скрытых персонажей)' },
-      { label: 'Издание в системе', value: 'Tekken 3 98 (каталог Steam)' }
+      { label: 'Издание в системе', value: 'Tekken 98 Demo (диск «Игромании»)' }
     ]
   },
-  lead: `<strong>Tekken 3</strong> — трёхмерный файтинг японской компании Namco, появившийся на аркадных автоматах System 12 весной 1997 года, перенесённый на домашние системы в марте 1998 года и представленный на ПК в издании <strong>Tekken 3 98</strong> в каталоге Steam. Турнир «Король Железного кулака 3» собирает мастеров боевых искусств со всего света спустя девятнадцать лет после событий второй части.
+  lead: `<strong>Tekken 3</strong> — трёхмерный файтинг японской компании Namco, появившийся на аркадных автоматах System 12 весной 1997 года, перенесённый на домашние системы в марте 1998 года и представленный на ПК демоверсией <strong>Tekken 98 Demo</strong> на компакт-диске журнала «Игромания». Турнир «Король Железного кулака 3» собирает мастеров боевых искусств со всего света спустя девятнадцать лет после событий второй части.
 
 В отличие от большинства файтингов, где кнопки отвечают за слабый, средний и сильный удар, в Tekken 3 каждая из четырёх кнопок привязана к конкретной конечности бойца, а свободный шаг вглубь экрана и подбрасывание соперника в воздух превращают поединок в скоростную шахматную партию.`,
   sections: [
@@ -2379,7 +2379,7 @@ window.interpediaReg('tekken3', 'games', {
 <dt>Tekken Force</dt><dd>боковой боевик в духе классических beat 'em up, где игрок бежит слева направо через четыре уровня, раскидывая отряды охраны Tekken Force и собирая жареных цыплят для лечения.</dd>
 <dt>Tekken Ball</dt><dd>пляжный волейбол на берегу моря, в котором удары по мячу заряжают его разрушительной энергией и наносят урон сопернику на другой половине площадки.</dd>
 </dl>` },
-    { id: 'pc98', title: 'Tekken 3 98 на персональных компьютерах', content: `В конце 1990-х трёхмерные файтинги редко заглядывали на ПК в полном виде, поэтому появление Tekken 3 в клубах и на домашних машинах стало событием. В издании Tekken 3 98 из каталога Steam игра работает с частотой 60 кадров в секунду, поддерживает настройку управления для двух игроков на одной клавиатуре, просмотр всех приёмов прямо из меню паузы и смену костюмов бойцов. В перерывах между сетевыми партиями в [[quake3|Quake III Arena]] и [[starcraft|StarCraft]] вокруг одного монитора собираются зрители на быстрые турниры Team Battle восемь на восемь.` }
+    { id: 'pc98', title: 'Tekken 98 Demo на персональных компьютерах', content: `В конце 1990-х трёхмерные файтинги редко заглядывали на ПК в полном виде, поэтому появление Tekken 3 в клубах и на домашних машинах стало событием. В демоверсии Tekken 98 Demo с диска «Игромании» (<code>D:\\demo\\tekken98demo.exe</code>) игра работает с частотой 60 кадров в секунду, поддерживает настройку управления для двух игроков на одной клавиатуре, просмотр всех приёмов прямо из меню паузы и смену костюмов бойцов. В перерывах между сетевыми партиями в [[quake3|Quake III Arena]] и [[starcraft|StarCraft]] вокруг одного монитора собираются зрители на быстрые турниры Team Battle восемь на восемь.` }
   ],
   seeAlso: ['quake3', 'ut99', 'lanparty', 'carmageddon', 'hockey98', 'worldcup98'],
   references: [
@@ -2387,7 +2387,7 @@ window.interpediaReg('tekken3', 'games', {
     'Журнал «Великий Dракон», полный разбор бойцов и связок Tekken 3, 1998.',
     'Журнал «Страна игр», обзор Tekken 3, 1998.'
   ],
-  links: [['http://www.steampowered.com', 'Каталог Steam: Tekken 3 98'], ['http://www.cheatcc.com', 'Cheat Code Central: секреты и бойцы Tekken 3']],
+  links: [['http://www.igromania.ru', 'Журнал «Игромания»: Tekken 98 Demo на диске'], ['http://www.cheatcc.com', 'Cheat Code Central: секреты и бойцы Tekken 3']],
   categories: ['Видеоигры 1998 года', 'Файтинги', 'Namco']
 }, {
   title: 'Tekken 3 (1998)',
@@ -2397,15 +2397,15 @@ window.interpediaReg('tekken3', 'games', {
     fields: [
       { label: 'Developer', value: 'Namco' },
       { label: 'Publisher', value: 'Namco' },
-      { label: 'Released', value: 'March 1997 (arcade), March 1998 (home), Tekken 3 98 edition' },
+      { label: 'Released', value: 'March 1997 (arcade), March 1998 (home), Tekken 98 Demo' },
       { label: 'Genre', value: '3D fighting game' },
       { label: 'Controls', value: '4 limb buttons (left/right punch, left/right kick)' },
       { label: 'Modes', value: 'Arcade, Versus, Team Battle, Survival, Time Attack, Practice, Tekken Force, Tekken Ball' },
       { label: 'Roster', value: 'over 20 fighters (including unlockable characters)' },
-      { label: 'System edition', value: 'Tekken 3 98 (Steam catalog)' }
+      { label: 'System edition', value: 'Tekken 98 Demo (Igromania CD)' }
     ]
   },
-  lead: `<strong>Tekken 3</strong> is a 3D fighting game by the Japanese company Namco, first released on System 12 arcade hardware in spring 1997, brought home in March 1998 and available on the PC as <strong>Tekken 3 98</strong> in our system's Steam catalog. Set nineteen years after the second tournament, the King of Iron Fist Tournament 3 gathers martial artists from around the globe.
+  lead: `<strong>Tekken 3</strong> is a 3D fighting game by the Japanese company Namco, first released on System 12 arcade hardware in spring 1997, brought home in March 1998 and available on the PC as the <strong>Tekken 98 Demo</strong> on the Igromania magazine CD. Set nineteen years after the second tournament, the King of Iron Fist Tournament 3 gathers martial artists from around the globe.
 
 Instead of assigning buttons to light, medium and heavy attacks, Tekken 3 maps its four attack buttons directly to the fighter's left punch, right punch, left kick and right kick, while three-dimensional sidestepping and aerial juggles turn every round into high-speed chess.`,
   sections: [
@@ -2432,7 +2432,7 @@ Unlockable fighters include Mokujin, a centuries-old wooden training dummy that 
 <dt>Tekken Force</dt><dd>a side-scrolling beat 'em up across four stages in which the player fights waves of Tekken Force soldiers and picks up roast chickens to restore health.</dd>
 <dt>Tekken Ball</dt><dd>beach volleyball where martial arts strikes charge the ball with kinetic energy that damages whoever fails to return it.</dd>
 </dl>` },
-    { id: 'pc98', title: 'Tekken 3 98 on the PC', content: `Full-featured 3D fighting games have been rare on the late-1990s PC, making the arrival of Tekken 3 98 in our system's Steam catalog a favorite for shared-keyboard matches. Running at a locked 60 frames per second, it supports two players on one keyboard, full move lists in the pause menu and alternate costumes. Between network rounds of [[quake3|Quake III Arena]] and [[starcraft|StarCraft]], players gather around a single monitor for eight-on-eight Team Battle brackets.` }
+    { id: 'pc98', title: 'Tekken 98 Demo on the PC', content: `Full-featured 3D fighting games have been rare on the late-1990s PC, making the Tekken 98 Demo on the Igromania CD (<code>D:\\demo\\tekken98demo.exe</code>) a favorite for shared-keyboard matches. Running at a locked 60 frames per second, it supports two players on one keyboard, full move lists in the pause menu and alternate costumes. Between network rounds of [[quake3|Quake III Arena]] and [[starcraft|StarCraft]], players gather around a single monitor for eight-on-eight Team Battle brackets.` }
   ],
   seeAlso: ['quake3', 'ut99', 'lanparty', 'carmageddon', 'hockey98', 'worldcup98'],
   references: [
@@ -2440,7 +2440,7 @@ Unlockable fighters include Mokujin, a centuries-old wooden training dummy that 
     'Official PlayStation Magazine, Tekken 3 review and fighter guide, 1998.',
     'Strana Igr magazine, Tekken 3 review, 1998.'
   ],
-  links: [['http://www.steampowered.com', 'Steam Catalog: Tekken 3 98'], ['http://www.cheatcc.com', 'Cheat Code Central: Tekken 3 unlockables']],
+  links: [['http://www.igromania.ru', 'Igromania magazine: Tekken 98 Demo on the CD'], ['http://www.cheatcc.com', 'Cheat Code Central: Tekken 3 unlockables']],
   categories: ['1998 Video Games', 'Fighting Games', 'Namco']
 }, ['tekken', 'tekken398']);
 
@@ -2538,7 +2538,7 @@ Its ten-champion roster covers every tactical role: the Demacian warrior Garen a
 
 window.interpediaReg('bioware98', 'games', {
   title: 'Ролевые игры BioWare: от Baldur\'s Gate к KOTOR 98 и Dragon Age 98',
-  hatnote: 'Статья о развитии отрядных ролевых игр канадской студии BioWare и об изданиях Star Wars: Knights of the Old Republic 98 и Dragon Age: Origins 98 в каталоге Steam.',
+  hatnote: 'Статья о развитии отрядных ролевых игр канадской студии BioWare и о демоверсиях Star Wars: Knights of the Old Republic 98 и Dragon Age: Origins 98 на диске «Игромании».',
   infobox: {
     title: 'Ролевые игры BioWare (Win 98)',
     badgeText: 'BioWare Corp.',
@@ -2547,20 +2547,20 @@ window.interpediaReg('bioware98', 'games', {
       { label: 'Основатели', value: 'Рэй Музика, Грег Зещук (1995)' },
       { label: 'Ключевая механика', value: 'отрядный тактический бой в реальном времени с активной паузой' },
       { label: 'Игры на Infinity Engine', value: '[[baldursgate|Baldur\'s Gate]] (1998), Tales of the Sword Coast (1999)' },
-      { label: 'Трёхмерные главы в системе', value: 'Star Wars: KOTOR 98, Dragon Age: Origins 98 (каталог Steam)' },
+      { label: 'Трёхмерные главы в системе', value: 'Star Wars: KOTOR 98, Dragon Age: Origins 98 (демоверсии с диска «Игромании»)' },
       { label: 'Платформа', value: '[[windows98|Win 98]]' }
     ]
   },
   lead: `Канадская студия <strong>BioWare</strong>, основанная в 1995 году в Эдмонтоне врачами Рэем Музикой и Грегом Зещуком, за несколько лет превратилась из дебютанта в одного из главных разработчиков компьютерных ролевых игр. Выпустив в декабре 1998 года [[baldursgate|Baldur's Gate]], студия определила свой фирменный почерк: управление отрядом спутников с собственными убеждениями, разветвлённые диалоги с проверками морали и тактический бой в реальном времени, который в любую секунду ставится на паузу клавишей пробела.
 
-В нашем системном каталоге Steam развитие этого стиля в трёхмерной графике для [[windows98|Win 98]] представлено двумя крупными главами: космической одиссеей <strong>Star Wars: Knights of the Old Republic 98</strong> и тёмным фэнтези <strong>Dragon Age: Origins 98</strong>.`,
+В нашей системе развитие этого стиля в трёхмерной графике для [[windows98|Win 98]] представлено двумя крупными главами, которые лежат демоверсиями на компакт-диске журнала «Игромания»: космической одиссеей <strong>Star Wars: Knights of the Old Republic 98</strong> и тёмным фэнтези <strong>Dragon Age: Origins 98</strong>.`,
   sections: [
     { id: 'formula', title: 'Формула BioWare: активная пауза, отряд и моральный выбор', content: `До конца 1990-х компьютерные ролевые игры обычно делились на чисто пошаговые (как [[fallout|Fallout]]) и скоростные боевики в реальном времени (как [[diablo|Diablo]]). В [[baldursgate|Baldur's Gate]] программисты BioWare спрятали настольные броски кубиков внутрь непрерывного действия: раунды длятся по шесть секунд, но игрок в любой момент нажимает пробел, осматривает поле боя, назначает каждому члену отряда цепочку приказов или заклинаний и снова снимает игру с паузы.
 
 Вторая опора стиля студии — живые спутники в отряде. Напарники не просто несут лишние мечи и щиты: они вмешиваются в разговоры с жителями городов, спорят друг с другом на привалах, одобряют или осуждают поступки героя и могут покинуть группу или даже поднять оружие против командира, если тот перейдёт черту.` },
     { id: 'kotor98', title: 'Star Wars: Knights of the Old Republic 98 — Старая Республика и Тарис', content: `В <strong>Star Wars: Knights of the Old Republic 98</strong> (сокращённо <strong>KOTOR 98</strong>) действие переносится во вселенную «Звёздных войн» за четыре тысячи лет до появления Галактической Империи, когда сотни рыцарей-джедаев сражаются против армады ситхов владыки Дарта Малака. В основе боевой системы лежат правила двадцатигранного кубика (d20): бой выглядит как кинематографическая дуэль на световых мечах и бластерах с перекатами и отражением лучей, но за кадром каждый раунд рассчитываются броски атаки, защиты и спасбросков.
 
-Издание в каталоге Steam охватывает полную первую главу саги. Герой приходит в себя на борту республиканского крейсера «Эндар Спайр» (Endar Spire), взятого на абордаж ситхами на орбите планеты-мегаполиса Тарис, пробивается к спасательным капсулам вместе с пилотом Картом Онаси и совершает аварийную посадку. Чтобы спасти рыцаря-джедая Бастилу Шан и вырваться с блокированной планеты на контрабандистском корабле «Эбоновый ястреб» (Ebon Hawk), отряду предстоит пройти три яруса Тариса: сияющий Верхний город, криминальный Нижний город с войной банд «Чёрных Вулкаров» и «Тайных Беков» и заражённое ракгулами Подземелье. По пути к герою присоединяются юная тви'лекка Мишн Вао, вуки Заалбар, дроид-взломщик T3-M4 и мандалорский ветеран Кандерос Ордо, а в кантинах и на арене можно сыграть в карточную игру пазаак (Pazaak) и поучаствовать в гонках на свуп-байках.` },
+Демоверсия с диска «Игромании» охватывает полную первую главу саги. Герой приходит в себя на борту республиканского крейсера «Эндар Спайр» (Endar Spire), взятого на абордаж ситхами на орбите планеты-мегаполиса Тарис, пробивается к спасательным капсулам вместе с пилотом Картом Онаси и совершает аварийную посадку. Чтобы спасти рыцаря-джедая Бастилу Шан и вырваться с блокированной планеты на контрабандистском корабле «Эбоновый ястреб» (Ebon Hawk), отряду предстоит пройти три яруса Тариса: сияющий Верхний город, криминальный Нижний город с войной банд «Чёрных Вулкаров» и «Тайных Беков» и заражённое ракгулами Подземелье. По пути к герою присоединяются юная тви'лекка Мишн Вао, вуки Заалбар, дроид-взломщик T3-M4 и мандалорский ветеран Кандерос Ордо, а в кантинах и на арене можно сыграть в карточную игру пазаак (Pazaak) и поучаствовать в гонках на свуп-байках.` },
     { id: 'dao98', title: 'Dragon Age: Origins 98 — шесть предысторий и битва при Остагаре', content: `Если KOTOR 98 опирается на космооперу LucasArts, то <strong>Dragon Age: Origins 98</strong> возвращает студию к классическому фэнтези и становится духовным наследником [[baldursgate|Baldur's Gate]] в собственном мире Тедас. Королевству Ферелден грозит Мор (Blight) — нашествие подземных порождений тьмы (Darkspawn), остановить которых способен лишь древний орден Серых Стражей.
 
 Главное художественное решение игры вынесено в подзаголовок Origins («Предыстории»). Перед тем как попасть в лагерь короля Кайлана при крепости Остагар, игрок не просто выбирает расу и класс в таблице, а лично проживает отдельную вступительную главу из жизни своего героя:
@@ -2573,20 +2573,20 @@ window.interpediaReg('bioware98', 'games', {
 <li><strong>Гном-простолюдин</strong> из «неприкасаемых» пробивается наверх через подпольные бои на арене Хартии.</li>
 </ol>
 
-В издании из каталога Steam после выбранной предыстории наставник Дункан приводит рекрута в Остагар. Игроку предстоит пройти через Дикие земли Коркари за кровью порождений тьмы и старинными договорами в хижине ведьмы Флемет, выпить чашу в ритуале Посвящения, зажечь сигнальный костёр на вершине Башни Ишала (Tower of Ishal) в разгар предательства лорда Логейна и отступить через деревню Лотеринг вместе с Серым Стражем Алистером, ведьмой Морриган, бардом Лелианой и пленным великаном-кунари Стеном.` },
+В демоверсии с диска «Игромании» после выбранной предыстории наставник Дункан приводит рекрута в Остагар. Игроку предстоит пройти через Дикие земли Коркари за кровью порождений тьмы и старинными договорами в хижине ведьмы Флемет, выпить чашу в ритуале Посвящения, зажечь сигнальный костёр на вершине Башни Ишала (Tower of Ishal) в разгар предательства лорда Логейна и отступить через деревню Лотеринг вместе с Серым Стражем Алистером, ведьмой Морриган, бардом Лелианой и пленным великаном-кунари Стеном.` },
     { id: 'comparison', title: 'Ролевая школа конца десятилетия', content: `Обе трёхмерные главы сохраняют возможность мгновенно менять угол обзора: можно вести героя с камерой из-за плеча, осматривая архитектуру Верхнего Тариса или разрушенные своды Остагара, а с началом тяжёлой схватки поднять камеру вверх и раздавать тактические команды во время паузы, как в классическом Infinity Engine. Благодаря сочетанию настольной математики, кинематографических бесед и живого отряда игры BioWare занимают особое место рядом с работами Black Isle Studios ([[fallout2|Fallout 2]], Planescape: Torment).` }
   ],
   seeAlso: ['baldursgate', 'fallout', 'fallout2', 'diablo', 'grimfandango'],
   references: [
-    'Star Wars: Knights of the Old Republic 98 — руководство игрока и правила d20. BioWare / каталог Steam.',
-    'Dragon Age: Origins 98 — хроники Ферелдена и описание шести предысторий. BioWare / каталог Steam.',
+    'Star Wars: Knights of the Old Republic 98 — руководство игрока и правила d20. BioWare / диск журнала «Игромания».',
+    'Dragon Age: Origins 98 — хроники Ферелдена и описание шести предысторий. BioWare / диск журнала «Игромания».',
     'Интервью с основателями BioWare Рэем Музикой и Грегом Зещуком // Computer Gaming World, 1999.'
   ],
-  links: [['http://www.steampowered.com', 'Каталог Steam: KOTOR 98 и Dragon Age: Origins 98'], ['http://www.lucasarts.com', 'Официальный сайт LucasArts'], ['http://www.igromania.ru', 'Журнал «Игромания»']],
+  links: [['http://www.igromania.ru', 'Журнал «Игромания»: демоверсии KOTOR 98 и Dragon Age: Origins 98'], ['http://www.lucasarts.com', 'Официальный сайт LucasArts']],
   categories: ['Ролевые игры', 'BioWare', 'Звёздные войны в играх']
 }, {
   title: 'BioWare Role-Playing Games: From Baldur\'s Gate to KOTOR 98 and Dragon Age 98',
-  hatnote: 'This article covers the party-based role-playing games of Canadian studio BioWare and the Star Wars: Knights of the Old Republic 98 and Dragon Age: Origins 98 editions in the Steam catalog.',
+  hatnote: 'This article covers the party-based role-playing games of Canadian studio BioWare and the Star Wars: Knights of the Old Republic 98 and Dragon Age: Origins 98 demos on the Igromania CD.',
   infobox: {
     title: 'BioWare RPGs (Win 98)',
     badgeText: 'BioWare Corp.',
@@ -2595,20 +2595,20 @@ window.interpediaReg('bioware98', 'games', {
       { label: 'Founders', value: 'Ray Muzyka, Greg Zeschuk (1995)' },
       { label: 'Core mechanic', value: 'party-based real-time tactical combat with active pause' },
       { label: 'Infinity Engine titles', value: '[[baldursgate|Baldur\'s Gate]] (1998), Tales of the Sword Coast (1999)' },
-      { label: '3D chapters in system', value: 'Star Wars: KOTOR 98, Dragon Age: Origins 98 (Steam catalog)' },
+      { label: '3D chapters in system', value: 'Star Wars: KOTOR 98, Dragon Age: Origins 98 (demos on the Igromania CD)' },
       { label: 'Platform', value: '[[windows98|Win 98]]' }
     ]
   },
   lead: `Founded in Edmonton, Canada, in 1995 by physicians Ray Muzyka and Greg Zeschuk, <strong>BioWare</strong> rose within a few years from newcomer to one of the leading studios in computer role-playing games. With the December 1998 release of [[baldursgate|Baldur's Gate]], the studio established its signature design: a party of opinionated companions, branching morality dialogues and real-time tactical combat that pauses at the tap of the spacebar.
 
-In our system's Steam catalog, the evolution of that design into full 3D for [[windows98|Win 98]] is represented by two major playable chapters: the space opera <strong>Star Wars: Knights of the Old Republic 98</strong> and the dark fantasy epic <strong>Dragon Age: Origins 98</strong>.`,
+In our system, the evolution of that design into full 3D for [[windows98|Win 98]] is represented by two major playable chapters, both demos on the Igromania magazine CD: the space opera <strong>Star Wars: Knights of the Old Republic 98</strong> and the dark fantasy epic <strong>Dragon Age: Origins 98</strong>.`,
   sections: [
     { id: 'formula', title: 'The BioWare formula: active pause, party banter and morality', content: `Through the late 1990s computer RPGs tended to split between strictly turn-based systems (such as [[fallout|Fallout]]) and fast action clickfests (such as [[diablo|Diablo]]). In [[baldursgate|Baldur's Gate]], BioWare tucked tabletop dice rolls inside continuous real-time action: combat rounds tick every six seconds, yet pressing the spacebar freezes the battlefield so the player can inspect enemy positions, queue spells and target orders for each party member and unpause at will.
 
 Equally central are the companions who travel with the protagonist. Party members interject during conversations with townsfolk, argue with one another around camp, track approval of the hero's choices and will walk away or even draw weapons if pushed against their convictions.` },
     { id: 'kotor98', title: 'Star Wars: Knights of the Old Republic 98 — the Old Republic and Taris', content: `<strong>Star Wars: Knights of the Old Republic 98</strong> (<strong>KOTOR 98</strong>) sets its story four thousand years before the Galactic Empire, during an all-out war between hundreds of Jedi Knights and the Sith armada of Darth Malak. Beneath the clashing lightsabers and blaster fire runs a twenty-sided die (d20) ruleset that resolves attack rolls, defense ratings, feats and Force powers round by round.
 
-The edition in our system's Steam catalog covers the complete opening act of the saga. Awakening aboard the Republic cruiser Endar Spire as Sith boarding parties overrun the decks above the city-world of Taris, the hero fights to the escape pods alongside Republic pilot Carth Onasi. Stranded under a planetary blockade, the party must search for the captured Jedi Bastila Shan and steal the smuggler vessel Ebon Hawk across three vertical tiers of Taris: the gleaming Upper City, the gang-torn Lower City contested by the Black Vulkars and Hidden Beks, and the rakghoul-infested Undercity. Along the way the crew grows to include the Twi'lek street thief Mission Vao, her Wookiee companion Zaalbar, the utility droid T3-M4 and Mandalorian mercenary Canderous Ordo, while cantinas and arenas offer Pazaak card tables, dueling rings and swoop bike time trials.` },
+The demo on the Igromania CD covers the complete opening act of the saga. Awakening aboard the Republic cruiser Endar Spire as Sith boarding parties overrun the decks above the city-world of Taris, the hero fights to the escape pods alongside Republic pilot Carth Onasi. Stranded under a planetary blockade, the party must search for the captured Jedi Bastila Shan and steal the smuggler vessel Ebon Hawk across three vertical tiers of Taris: the gleaming Upper City, the gang-torn Lower City contested by the Black Vulkars and Hidden Beks, and the rakghoul-infested Undercity. Along the way the crew grows to include the Twi'lek street thief Mission Vao, her Wookiee companion Zaalbar, the utility droid T3-M4 and Mandalorian mercenary Canderous Ordo, while cantinas and arenas offer Pazaak card tables, dueling rings and swoop bike time trials.` },
     { id: 'dao98', title: 'Dragon Age: Origins 98 — six playable origins and the Battle of Ostagar', content: `Where KOTOR 98 builds on LucasArts space opera, <strong>Dragon Age: Origins 98</strong> returns BioWare to dark heroic fantasy as a spiritual successor to [[baldursgate|Baldur's Gate]] set in the original world of Thedas. The kingdom of Ferelden faces a Blight, an underground invasion of corrupted darkspawn that only the ancient order of Grey Wardens can stop.
 
 Its defining structural idea gives the game its subtitle: before ever reaching King Cailan's war camp at Ostagar, the player plays through one of six standalone opening chapters determined by race and background:
@@ -2621,16 +2621,16 @@ Its defining structural idea gives the game its subtitle: before ever reaching K
 <li><strong>Dwarf Commoner:</strong> clawing out of dust-town poverty through underground Proving arena fights for the Carta.</li>
 </ol>
 
-In the Steam catalog edition, recruiter Duncan brings the survivor of any chosen origin to Ostagar. From there the player ventures into the Korcari Wilds for darkspawn blood and ancient treaties at the hut of the witch Flemeth, undergoes the Joining ritual, fights to the top of the Tower of Ishal to light the signal beacon during Teyrn Loghain's betrayal, and regroups in the village of Lothering with fellow Warden Alistair, the shapeshifter Morrigan, bard Leliana and caged Qunari warrior Sten.` },
+In the Igromania CD demo, recruiter Duncan brings the survivor of any chosen origin to Ostagar. From there the player ventures into the Korcari Wilds for darkspawn blood and ancient treaties at the hut of the witch Flemeth, undergoes the Joining ritual, fights to the top of the Tower of Ishal to light the signal beacon during Teyrn Loghain's betrayal, and regroups in the village of Lothering with fellow Warden Alistair, the shapeshifter Morrigan, bard Leliana and caged Qunari warrior Sten.` },
     { id: 'comparison', title: 'Tactical camera and role-playing craft at the end of the decade', content: `Both 3D chapters let players shift seamlessly between an over-the-shoulder exploration view for walking the promenades of Upper Taris or the ruins of Ostagar and a high tactical angle for issuing paused combat orders, preserving the rhythm of the Infinity Engine in three dimensions. Alongside the work of Black Isle Studios ([[fallout2|Fallout 2]], Planescape: Torment), BioWare's games anchor story-driven PC role-playing at the close of the 1990s.` }
   ],
   seeAlso: ['baldursgate', 'fallout', 'fallout2', 'diablo', 'grimfandango'],
   references: [
-    'Star Wars: Knights of the Old Republic 98 player manual and d20 rulebook. BioWare / Steam catalog.',
-    'Dragon Age: Origins 98 — Chronicles of Ferelden and Origin Stories guide. BioWare / Steam catalog.',
+    'Star Wars: Knights of the Old Republic 98 player manual and d20 rulebook. BioWare / Igromania magazine CD.',
+    'Dragon Age: Origins 98 — Chronicles of Ferelden and Origin Stories guide. BioWare / Igromania magazine CD.',
     'Interview with BioWare founders Ray Muzyka and Greg Zeschuk // Computer Gaming World, 1999.'
   ],
-  links: [['http://www.steampowered.com', 'Steam Catalog: KOTOR 98 and Dragon Age: Origins 98'], ['http://www.lucasarts.com', 'LucasArts official site'], ['http://www.igromania.ru', 'Igromania magazine']],
+  links: [['http://www.igromania.ru', 'Igromania magazine: KOTOR 98 and Dragon Age: Origins 98 demos'], ['http://www.lucasarts.com', 'LucasArts official site']],
   categories: ['Role-Playing Games', 'BioWare', 'Star Wars Video Games']
 }, ['kotor98', 'dao98', 'kotor', 'dao']);
 

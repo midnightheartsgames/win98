@@ -518,7 +518,7 @@ function integration() {
   }
   ok((read('js/i18n.js').match(/'app\.anotherwar': 'Another War'/g) || []).length === 4, 'i18n titles');
   ok(read('tests/steam.test.js').includes("'anotherwar'"), 'steam test covers the game');
-  ok(read('tools/build-exe.mjs').includes('content\\/Another War'), 'original install is left out of the exe');
+  ok(require('../tools/release.cjs').EXE_EXCLUDED.some(re => re.test('/content/Another War/game.exe')), 'original install is left out of the exe');
 }
 
 (async () => {

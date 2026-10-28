@@ -1,0 +1,20 @@
+[Unit]
+Description=Win 98 bug report receiver
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=debianserver
+WorkingDirectory=/opt/bug-receiver
+ExecStart=/usr/bin/node /opt/bug-receiver/receiver.cjs
+EnvironmentFile=/etc/bug-receiver.env
+StateDirectory=bug-receiver
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

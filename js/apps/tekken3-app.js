@@ -8,7 +8,7 @@
       root.style.cssText = 'width:100%;height:100%;';
       const w = Math.min(960, window.innerWidth - 30), h = Math.min(720, window.innerHeight - 60);
       window.winManager.createWindow({
-        id, title: 'Tekken 3 98', icon: 'tekken3', width: w, height: h, x: Math.max(10, (window.innerWidth - w) / 2), y: 10, content: root,
+        id, title: 'Tekken 98 Demo', icon: 'tekken3', width: w, height: h, x: Math.max(10, (window.innerWidth - w) / 2), y: 10, content: root,
         onClose: () => { if (this.ui) this.ui.destroy(); this.ui = null; }
       });
       this.ui = new T.UI(root, {

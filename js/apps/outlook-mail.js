@@ -1152,7 +1152,7 @@ This message was sent automatically.` }
       topics: [
         {
           id: 'hl', k: ['half-life', 'халф'],
-          r: `Half-Life 98 from Steam has no developer console. We tried the tilde key, the Ё key and -console, then tried them all again. If you want god mode, DOOM 98 takes IDDQD and Quake III Arena has a real console. Do not tell Gordon.`
+          r: `The Half-Life 98 Demo from the Igromania CD has no developer console. We tried the tilde key, the Ё key and -console, then tried them all again. If you want god mode, DOOM 98 takes IDDQD and Quake III Arena has a real console. Do not tell Gordon.`
         },
         {
           id: 'f7', k: ['f7', 'отладк', 'debug', 'спавнер'],
@@ -1710,7 +1710,7 @@ Thank you for your e-mail! Are you a Di Gi Charat fan too? Do you want to join t
       topics: [
         {
           id: 'sammax', k: ['sam', 'max', 'сэм', 'макс', 'кролик', 'боско', 'сибил', 'линкольн', 'моаи', 'санта'],
-          r: `Офис Вольной полиции на связи. Сэм просил передать, что телефон опять у Джимми, а Макс ищет сыр. Все восемь эпизодов, от 101 до 202, продаются в Steam. Если застряли, звоните на линию подсказок: http://www.lucasarts.com/hints. Подсказки там открываются по одной, так что решение вы увидите, только если сами попросите.`
+          r: `Офис Вольной полиции на связи. Сэм просил передать, что телефон опять у Джимми, а Макс ищет сыр. Семь эпизодов, от 101 до 201, продаются в Steam, а демоверсия эпизода 202 «Moai Better Blues» лежит на компакт-диске журнала «Игромания», в папке D:\\demo. Если застряли, звоните на линию подсказок: http://www.lucasarts.com/hints. Подсказки там открываются по одной, так что решение вы увидите, только если сами попросите.`
         },
         {
           id: 'quest', k: ['quest', 'квест', 'гайбраш', 'guybrush', 'редмонд', 'scumm', 'пират', 'грог'],
@@ -1791,7 +1791,7 @@ Thank you for your e-mail! Are you a Di Gi Charat fan too? Do you want to join t
       ],
       stages: [
         { r: `Приветствуем из Киева, сталкер!
-Редакция и отдел программирования GSC Game World получили вашу радиограмму. Все три наши сборки — STALKER.EXE (0.98 Alpha), XR98.EXE (3D Кордон и Свалка) и ZATON.EXE (Зов Припяти 98) — доступны в каталоге Steam, а полные досье, инженерные дневники и стенд КПК открыты на http://www.gsc-game.com.` },
+Редакция и отдел программирования GSC Game World получили вашу радиограмму. STALKER.EXE (0.98 Alpha) и ZATON.EXE (Зов Припяти 98) доступны в каталоге Steam, демоверсия XR98.EXE (3D Кордон и Свалка) лежит на компакт-диске журнала «Игромания», а полные досье, инженерные дневники и стенд КПК открыты на http://www.gsc-game.com.` },
         { r: `Снова на связи из офиса на бульваре Леси Украинки! Удачной ходки за Периметр, не забывайте кидать болт перед шагом и берегите патроны 9×39 для «Винтореза».` }
       ]
     },
@@ -1979,7 +1979,7 @@ Confidentiality is of utmost importance.`
       body: `Здравствуйте!
 
 Представляем еженедельный обзор Рунета и Мировой Паутины:
-1. Steam от Valve — Wolfenstein 3D и LucasQuest теперь загружаются сами!
+1. Steam от Valve — Wolfenstein 3D и DOOM 98 теперь загружаются сами!
 2. Форум GamerZone — обсуждение слухов о готовящейся игре Half-Life.
 3. Новые гифки со стройплощадками «Under Construction» для вашей домашней страницы.
 

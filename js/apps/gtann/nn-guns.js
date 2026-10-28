@@ -403,7 +403,80 @@
     return o;
   };
 
+  const AIM = {
+    arc: [255, 232, 140], fireArc: [255, 160, 70], zone: [255, 196, 60], fire: [255, 120, 40],
+    lethal: [255, 60, 40], warn: [255, 30, 30], wet: [120, 180, 255], hurt: [255, 190, 60]
+  };
+  const AIM_STEP = 0.6, AIM_SKIP = 0.7, AIM_FLOW = 1.4, AIM_DOT = 0.05, AIM_LINE = 0.03, RING_STEP = 0.55;
+  const rgba = (c, a) => [c[0], c[1], c[2], Math.round(N.clamp(a, 0, 1) * 255)];
+
+  const aimArc = (S, plan, eye, col, Rv, Uv, t) => {
+    const pts = plan.pts, n = pts.length / 3, land = plan.landed < 0 ? n : plan.landed;
+    const lit = rgba(col, 1), dim = rgba(col, 0.55), line = rgba(col, 0.6), lineDim = rgba(col, 0.3);
+    let run = 0, next = (t * AIM_FLOW) % AIM_STEP + AIM_SKIP;
+    for (let i = 1; i < n; i++) {
+      const o = i * 3, ax = pts[o - 3], ay = pts[o - 2], az = pts[o - 1], dx = pts[o] - ax, dy = pts[o + 1] - ay, dz = pts[o + 2] - az;
+      const L = Math.hypot(dx, dy, dz);
+      if (L < 1e-4) continue;
+      if (run + L > AIM_SKIP) {
+        const d = Math.hypot(ax - eye[0], ay - eye[1], az - eye[2]);
+        S.beam([ax, ay, az], [pts[o], pts[o + 1], pts[o + 2]], Math.max(0.12, d * AIM_LINE), 3, i > land ? lineDim : line, eye);
+      }
+      while (next <= run + L) {
+        const k = (next - run) / L, x = ax + dx * k, y = ay + dy * k, z = az + dz * k;
+        const d = Math.hypot(x - eye[0], y - eye[1], z - eye[2]);
+        S.bill(x, y, z, N.clamp(d * AIM_DOT, 0.4, 3.5), 11, i > land ? dim : lit, Rv, Uv);
+        next += AIM_STEP;
+      }
+      run += L;
+    }
+  };
+
+  const aimRing = (R, yAt, x, z, r, col, a, wall) => {
+    const n = Math.max(16, Math.ceil(Math.PI * 2 * r / RING_STEP));
+    const dot = rgba(col, a), side = rgba(col, a * 0.45);
+    let px = x + r, pz = z, py = yAt(px, pz);
+    for (let i = 1; i <= n; i++) {
+      const u = i / n * Math.PI * 2, qx = x + Math.cos(u) * r, qz = z + Math.sin(u) * r, qy = yAt(qx, qz);
+      R.sprites.ground(px, py + 0.06, pz, 0.5, 0.5, 0, 11, dot);
+      if (wall) R.addSprites.quad([px, py + wall, pz], [qx, qy + wall, qz], [qx, qy + 0.02, qz], [px, py + 0.02, pz], 12, side);
+      px = qx; pz = qz; py = qy;
+    }
+  };
+
   N.Guns = {
+    aim(scene, W, t, Rv, Uv) {
+      const pl = W.player, plan = pl.throwPlan;
+      if (!(pl.charging > 0) || !plan || pl.veh || pl.dead || !N.WEAPONS[pl.weapon].throw) return;
+      const R = scene.r, city = scene.city, eye = scene.camPos, GT = N.GT;
+      const fire = plan.kind === 'molotov', gy = plan.ground, blink = Math.floor(t * 5) % 2 === 0;
+      const yAt = (x, z) => {
+        if (plan.wet) return gy;
+        let y = city.groundY(x, z, gy + 1);
+        if (city.ground(x, z) === GT.WATER) { const wa = city.waterAt(x, z); if (wa) y = Math.max(y, wa.level); }
+        return Math.abs(y - gy) < 1.5 ? y : gy;
+      };
+      aimArc(R.sprites, plan, eye, fire ? AIM.fireArc : AIM.arc, Rv, Uv, t);
+      const hops = plan.hops;
+      for (let i = 0; i < hops.length; i += 3) {
+        const hx = hops[i], hy = hops[i + 1], hz = hops[i + 2], fy = yAt(hx, hz);
+        if (hy - fy < 0.4) R.sprites.ground(hx, fy + 0.05, hz, 0.34, 0.34, 0, 8, rgba(AIM.arc, 0.7));
+        else R.sprites.bill(hx, hy, hz, 0.5, 8, rgba(AIM.arc, 0.7), Rv, Uv);
+      }
+      const zone = plan.fizzle ? AIM.wet : plan.self && blink ? AIM.warn : fire ? AIM.fire : AIM.zone;
+      const pulse = 0.8 + 0.2 * Math.sin(t * 6);
+      R.sprites.ground(plan.x, gy + 0.05, plan.z, plan.radius, plan.radius, 0, 0, rgba(zone, plan.fizzle ? 0.12 : 0.2));
+      aimRing(R, yAt, plan.x, plan.z, plan.radius, zone, 0.85 * pulse, plan.fizzle ? 0 : 0.75);
+      if (plan.lethal > 0.3) aimRing(R, yAt, plan.x, plan.z, plan.lethal, AIM.lethal, 0.8, 0);
+      R.sprites.ground(plan.x, gy + 0.07, plan.z, 0.55 * pulse, 0.55 * pulse, t, 8, rgba(zone, 0.95));
+      for (const h of plan.hits) {
+        const e = h.e;
+        if (e === pl || e.dead) continue;
+        const top = e.kind === 'veh' ? e.y + e.spec.shape.H + 0.9 : e.y + 2.2;
+        const d = Math.hypot(e.x - eye[0], top - eye[1], e.z - eye[2]);
+        R.sprites.bill(e.x, top + Math.sin(t * 6 + e.id) * 0.08, e.z, N.clamp(d * 0.03, 0.45, 1.3), 13, rgba(h.kill ? AIM.lethal : AIM.hurt, 0.92), Rv, Uv);
+      }
+    },
     draw(scene, W, fx, lights, Rv, Uv, vis, t) {
       const R = scene.r, M3 = N.M3, FT = N.FXT, WHITE = [255, 255, 255, 255];
       for (const g of W.projs) {

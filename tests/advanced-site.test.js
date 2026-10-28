@@ -1,18 +1,16 @@
-/**
- * Tests for the 3ADVANCED SOFTWORKS site (http://www.3advanced.com) in Internet Explorer.
- */
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 
 const opened = [];
 const wizards = [];
+const cdDemos = [];
 global.localStorage = { store: {}, getItem(k) { return this.store[k] || null; }, setItem(k, v) { this.store[k] = String(v); } };
 global.window = {
   addEventListener: () => {},
   soundSys: { playClick: () => {}, playDing: () => {} },
   winManager: { windows: new Map(), openDialog: () => {}, createWindow: () => ({}) },
-  gameManager: { isInstalled: id => id === 'doom', openSetupWizard: id => wizards.push(id) },
+  gameManager: { isInstalled: id => id === 'doom', openSetupWizard: id => wizards.push(id), isCdDemo: id => id.endsWith('_demo'), showOnCd: id => cdDemos.push(id) },
   appNotepad: { open: (...a) => opened.push(['notepad', a]) },
   appExplorer: { open: (...a) => opened.push(['explorer', a]) },
   appDoom: { open: () => opened.push(['doom', []]) }
@@ -65,6 +63,16 @@ test('launch opens installed apps with args, wizard for missing ones', () => {
 test('program hero shows install button for missing game', () => {
   const html = site.renderSite('http://www.3advanced.com/program/diablo');
   assert.ok(html.includes('УСТАНОВИТЬ') && html.includes('NOT.INSTALLED'));
+});
+
+test('Igromania CD demos point to the disc instead of a setup wizard', () => {
+  site.launch('tekken3');
+  site.launch('fallout2');
+  assert.deepStrictEqual(cdDemos, ['tekken98_demo', 'fallout98_demo']);
+  assert.deepStrictEqual(wizards, ['diablo']);
+  const html = site.renderSite('http://www.3advanced.com/program/tekken3');
+  assert.ok(html.includes('ДЕМО НА CD') && !html.includes('УСТАНОВИТЬ'));
+  assert.ok(site.renderSite('http://www.3advanced.com/games').includes('CD DEMO'));
 });
 
 test('mailing list stores subscribers', () => {

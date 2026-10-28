@@ -174,6 +174,7 @@ function createHarness() {
   const vfsFiles = {};
   const launchedGames = [];
   const steamShown = [];
+  const cdShown = [];
   const notepadOpened = [];
   const ownedGames = new Set();
   const installedGames = new Set();
@@ -185,6 +186,7 @@ function createHarness() {
     vfsFiles,
     launchedGames,
     steamShown,
+    cdShown,
     notepadOpened,
     ownedGames,
     installedGames,
@@ -265,6 +267,7 @@ function createHarness() {
     isDownloading(id) { return downloadingGames.has(id); },
     getDownloadProgress(id) { return downloadingGames.get(id) || 0; },
     showInSteam(id) { steamShown.push(id); },
+    showOnCd(id) { cdShown.push(id); },
     launchGame(id) { launchedGames.push(id); },
     onChange(cb) { gmListeners.push(cb); }
   };
@@ -385,37 +388,42 @@ test('Данные Star Wars: KOTOR 98 синхронизированы с дв�
   assert.strictEqual(Object.keys(kotor.QUESTS).length, 7, 'Должно быть 7 основных квестов Тариса');
 });
 
-console.log('\n3. Интеграция со Steam (dao98 и kotor98) и политика дистрибуции');
+console.log('\n3. Демоверсии dao98_demo и kotor98_demo на CD «Игромании»');
 
-test('Витрина Steam для dao98 и kotor98 отражает состояния Store -> Owned -> Installed и не содержит прямых ссылок на исполняемые архивы', () => {
+test('Витрина демоверсий для dao98_demo и kotor98_demo отражает состояния CD -> Installed и не упоминает Steam', () => {
   env.ownedGames.clear();
   env.installedGames.clear();
+  env.cdShown.length = 0;
   env.steamShown.length = 0;
   env.launchedGames.length = 0;
 
   env.navigate('http://www.bioware98.com/');
-  assert.ok(env.html.includes('ДОСТУПНА В МАГАЗИНЕ STEAM'), 'По умолчанию обе игры доступны в магазине Steam');
+  assert.ok(env.html.includes('ДЕМОВЕРСИЯ НА CD «ИГРОМАНИИ»'), 'По умолчанию обе демоверсии лежат на диске «Игромании»');
+  assert.ok(env.html.includes('D:\\demo\\dao98demo.exe') && env.html.includes('D:\\demo\\kotor98demo.exe'), 'Кнопки называют установщики на диске D:');
+  assert.ok(!/steam/i.test(env.html), 'На главной странице не должно быть упоминаний Steam');
+  assert.ok(!/\$\d/.test(env.html), 'У демоверсий нет цены');
   assert.ok(!/href="[^"]*\.(exe|zip|msi)"/i.test(env.html), 'На сайте не должно быть прямых ссылок на скачивание .exe/.zip');
 
-  const steamBtnDao = env.container.querySelector('[data-bw-open-steam="dao98"]');
-  const steamBtnKotor = env.container.querySelector('[data-bw-open-steam="kotor98"]');
-  assert.ok(steamBtnDao && steamBtnKotor, 'Кнопки перехода в Steam должны присутствовать для обеих игр');
+  const cdBtnDao = env.container.querySelector('[data-bw-open-cd="dao98_demo"]');
+  const cdBtnKotor = env.container.querySelector('[data-bw-open-cd="kotor98_demo"]');
+  assert.ok(cdBtnDao && cdBtnKotor, 'Кнопки демоверсий на диске должны присутствовать для обеих игр');
 
-  steamBtnDao.click();
-  steamBtnKotor.click();
-  assert.deepStrictEqual(env.steamShown, ['dao98', 'kotor98'], 'Клик по кнопкам Steam должен вызывать gameManager.showInSteam');
+  cdBtnDao.click();
+  cdBtnKotor.click();
+  assert.deepStrictEqual(env.cdShown, ['dao98_demo', 'kotor98_demo'], 'Клик по кнопкам должен вызывать gameManager.showOnCd');
+  assert.deepStrictEqual(env.steamShown, [], 'Steam не открывается');
 
-  env.ownedGames.add('dao98');
-  env.installedGames.add('kotor98');
+  env.installedGames.add('kotor98_demo');
   env.navigate('http://www.bioware98.com/');
 
-  assert.ok(env.html.includes('В БИБЛИОТЕКЕ STEAM (НЕ УСТАНОВЛЕНА)'), 'Купленная dao98 должна отображать статус библиотеки Steam');
-  assert.ok(env.html.includes('УСТАНОВЛЕНА В СИСТЕМЕ'), 'Установленная kotor98 должна отображать статус готовности к запуску');
+  assert.ok(env.html.includes('ДЕМОВЕРСИЯ НА CD «ИГРОМАНИИ»'), 'Неустановленная dao98_demo по-прежнему на диске');
+  assert.ok(env.html.includes('ДЕМОВЕРСИЯ УСТАНОВЛЕНА'), 'Установленная kotor98_demo должна отображать статус готовности к запуску');
 
-  const launchBtnKotor = env.container.querySelector('[data-bw-launch-game="kotor98"]');
-  assert.ok(launchBtnKotor, 'Для установленной игры kotor98 должна появиться кнопка запуска');
+  const launchBtnKotor = env.container.querySelector('[data-bw-launch-game="kotor98_demo"]');
+  assert.ok(launchBtnKotor, 'Для установленной kotor98_demo должна появиться кнопка запуска');
+  assert.ok(!env.container.querySelector('[data-bw-open-cd="kotor98_demo"]'), 'У установленной демоверсии нет кнопки диска');
   launchBtnKotor.click();
-  assert.deepStrictEqual(env.launchedGames, ['kotor98'], 'Клик по кнопке запуска должен вызывать gameManager.launchGame("kotor98")');
+  assert.deepStrictEqual(env.launchedGames, ['kotor98_demo'], 'Клик по кнопке запуска должен вызывать gameManager.launchGame("kotor98_demo")');
 });
 
 console.log('\n4. Интерактивность главной страницы (новости, экспорт в Блокнот, опрос сообщества)');

@@ -30,7 +30,7 @@ class AppFallout2 {
 
     this.win = window.winManager.createWindow({
       id: winId,
-      title: 'Fallout 2 Demo — Храм Испытаний (Temple of Trials)',
+      title: 'Fallout 98 Demo — Храм Испытаний (Temple of Trials)',
       icon: 'fallout2',
       width: 820,
       height: 610,

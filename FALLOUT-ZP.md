@@ -2,7 +2,7 @@
 
 An open-world role-playing game in the spirit of Fallout: New Vegas, moved to the Soviet Union of the Fallout universe, where the USSR never fell apart and lived on with vacuum tubes, atomic optimism and five-year plans until the Great War of 23 October 2077. The game takes place in Zaporozhye on 1 September 2280. This first release covers the Voznesenovsky district (Вознесеновский район, before 2016 Орджоникидзевский) on the left bank of the Dnieper and the islands Khortytsia and Bayda, the way the district's real borders run. The DniproHES dam stands just outside the district and is visible from almost everywhere in the north: it is the prize every faction wants, and the next chapter.
 
-- Sold in Steam (`steam: true`, id `falloutzp`, `C:\Games\FalloutZP\FALLOUTZP.EXE`). Not preinstalled.
+- Igromania CD demo (`cdDemo: true`, id `falloutzp_demo`, title Fallout: Запорожье Demo, installer `D:\demo\falloutzpdemo.exe`, `C:\Games\FalloutZP\FALLOUTZP.EXE`). Not sold in Steam, not preinstalled.
 - Run: `falloutzp`, `fallout zp`, `fallout`, `фоллаут`, `запорожье`, `new vegas`.
 - Standalone page: `falloutzp.html` (`window.zpui` is the UI instance).
 - Code: `js/apps/falloutzp/zp-*.js`, namespace `globalThis.FalloutZP`, zero comments (AGENTS.md).
@@ -171,7 +171,7 @@ The dam, Sotsgorod, the right bank and the rest of the left bank are a backdrop 
 ### Commands
 
 - `node tests/falloutzp.test.js` — map and sites, both bridge tiers, all interiors, references, six main-quest routes (Комендатура, Сечь, Плановик, своя голова, суд Рады, поединок), side quests, arena, save/load with a companion, combat, F7 debug helpers, an icon for every item, Steam rules, no comments, Microslop/Win names.
-- `node tools/steam-shots.cjs falloutzp` — Steam screenshots `content/steam/falloutzp-1.jpg` (Тарасова груша) and `-2.jpg` (the bridge at sunset).
+- `node tools/steam-shots.cjs falloutzp_demo` — CD shell screenshots `content/igromania/demos/falloutzp_demo-1.jpg` (Тарасова груша) and `-2.jpg` (the bridge at sunset).
 - `node tools/falloutzp-shots.cjs <outDir> <steps.cjs>` — headless Edge screenshots of `falloutzp.html` driven by eval/key/shot steps.
 
 ## Interface

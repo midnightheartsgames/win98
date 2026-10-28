@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Microslop Win 98</title>
+  <script src="js/bugreport-core.js"></script>
+  <script src="js/bugreport-shot.js"></script>
 
   <link rel="stylesheet" href="css/win98-base.css">
   <link rel="stylesheet" href="css/desktop.css">
@@ -33,6 +35,7 @@
   <link rel="stylesheet" href="css/apps/clippy.css">
   <link rel="stylesheet" href="css/apps/defrag.css">
   <link rel="stylesheet" href="css/apps/backup.css">
+  <link rel="stylesheet" href="css/apps/bugreport.css">
   <link rel="stylesheet" href="css/apps/sound-recorder.css">
   <link rel="stylesheet" href="css/apps/task-manager.css">
   <link rel="stylesheet" href="css/apps/regedit.css">
@@ -121,6 +124,8 @@
   <link rel="stylesheet" href="css/apps/korovany.css">
   <link rel="stylesheet" href="css/apps/catniss.css">
   <link rel="stylesheet" href="css/apps/anotherwar.css">
+  <link rel="stylesheet" href="css/apps/kirill98.css">
+  <link rel="stylesheet" href="css/apps/aayla98.css">
   <link rel="stylesheet" href="css/apps/falloutzp.css">
   <link rel="stylesheet" href="css/apps/fallout.css">
   <link rel="stylesheet" href="css/apps/quake3.css">
@@ -316,6 +321,9 @@
   <script src="js/apps/backup-catalog.js"></script>
   <script src="js/apps/backup-store.js"></script>
   <script src="js/apps/backup.js"></script>
+  <script src="js/apps/bugreport-where.js"></script>
+  <script src="js/apps/bugreport.js"></script>
+  <script src="js/apps/update-notice.js"></script>
   <script src="js/apps/sound-recorder.js"></script>
   <script src="js/apps/task-manager.js"></script>
   <script src="js/apps/regedit.js"></script>
@@ -757,12 +765,20 @@
   <script src="js/apps/hsr98/hsr-cw-meta.js"></script>
   <script src="js/apps/hsr98/hsr-cw-perks.js"></script>
   <script src="js/apps/hsr98/hsr-cw-goals.js"></script>
+  <script src="js/apps/hsr98/hsr-hd-data.js"></script>
+  <script src="js/apps/hsr98/hsr-hd-arena.js"></script>
+  <script src="js/apps/hsr98/hsr-hd-heroes.js"></script>
+  <script src="js/apps/hsr98/hsr-hd-foes.js"></script>
+  <script src="js/apps/hsr98/hsr-hd-shop.js"></script>
+  <script src="js/apps/hsr98/hsr-hd.js"></script>
   <script src="js/apps/hsr98/hsr-gfx.js"></script>
   <script src="js/apps/hsr98/hsr-art.js"></script>
   <script src="js/apps/hsr98/hsr-icons.js"></script>
   <script src="js/apps/hsr98/hsr-cw-art.js"></script>
+  <script src="js/apps/hsr98/hsr-hd-art.js"></script>
   <script src="js/apps/hsr98/hsr-relic-art.js"></script>
   <script src="js/apps/hsr98/hsr-cone-pix.js"></script>
+  <script src="js/apps/hsr98/hsr-ability-pix.js"></script>
   <script src="js/apps/hsr98/hsr-cones.js"></script>
   <script src="js/apps/hsr98/hsr-tiles.js"></script>
   <script src="js/apps/hsr98/hsr-foes.js"></script>
@@ -838,6 +854,10 @@
   <script src="js/apps/hsr98/hsr-ui-cw-perks.js"></script>
   <script src="js/apps/hsr98/hsr-ui-cw-goals.js"></script>
   <script src="js/apps/hsr98/hsr-ui-cw-debug.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-hd.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-hd-arena.js"></script><script src="js/apps/hsr98/hsr-ui-hd-debug.js"></script>
+  <script src="js/apps/hsr98/hsr-bug.js"></script>
+  <script src="js/apps/hsr98/hsr-ui-bug.js"></script>
   <script src="js/apps/hsr98-app.js"></script>
   <script src="js/apps/kotor98/kt-core.js"></script>
   <script src="js/apps/kotor98/kt-data.js"></script>
@@ -1680,6 +1700,61 @@
   <script src="js/apps/emulator/emu-games-16bit.js"></script>
   <script src="js/apps/emulator-app.js"></script>
   <script src="js/apps/hearts.js"></script>
+  <script src="js/apps/kirill98/ki-core.js"></script>
+  <script src="js/apps/kirill98/ki-data.js"></script>
+  <script src="js/apps/kirill98/ki-places.js"></script>
+  <script src="js/apps/kirill98/ki-terrain.js"></script>
+  <script src="js/apps/kirill98/ki-flora.js"></script>
+  <script src="js/apps/kirill98/ki-detail.js"></script>
+  <script src="js/apps/kirill98/ki-weather.js"></script>
+  <script src="js/apps/kirill98/ki-edge.js"></script>
+  <script src="js/apps/kirill98/ki-body.js"></script>
+  <script src="js/apps/kirill98/ki-combat.js"></script>
+  <script src="js/apps/kirill98/ki-wounds.js"></script>
+  <script src="js/apps/kirill98/ki-missile.js"></script>
+  <script src="js/apps/kirill98/ki-senses.js"></script>
+  <script src="js/apps/kirill98/ki-move.js"></script>
+  <script src="js/apps/kirill98/ki-nav.js"></script>
+  <script src="js/apps/kirill98/ki-beasts.js"></script>
+  <script src="js/apps/kirill98/ki-ai.js"></script>
+  <script src="js/apps/kirill98/ki-econ.js"></script>
+  <script src="js/apps/kirill98/ki-caravan.js"></script>
+  <script src="js/apps/kirill98/ki-world.js"></script>
+  <script src="js/apps/kirill98/ki-elves.js"></script>
+  <script src="js/apps/kirill98/ki-guard.js"></script>
+  <script src="js/apps/kirill98/ki-villain.js"></script>
+  <script src="js/apps/kirill98/ki-save.js"></script>
+  <script src="js/apps/kirill98/ki-gl.js"></script>
+  <script src="js/apps/kirill98/ki-tex.js"></script>
+  <script src="js/apps/kirill98/ki-models.js"></script>
+  <script src="js/apps/kirill98/ki-trees.js"></script>
+  <script src="js/apps/kirill98/ki-anim.js"></script>
+  <script src="js/apps/kirill98/ki-render.js"></script>
+  <script src="js/apps/kirill98/ki-fx.js"></script>
+  <script src="js/apps/kirill98/ki-audio.js"></script>
+  <script src="js/apps/kirill98/ki-hud.js"></script>
+  <script src="js/apps/kirill98/ki-screens.js"></script>
+  <script src="js/apps/kirill98/ki-ui.js"></script>
+  <script src="js/apps/kirill98-app.js"></script>
+  <script src="js/apps/aayla98/ay-core.js"></script>
+  <script src="js/apps/aayla98/ay-data.js"></script>
+  <script src="js/apps/aayla98/ay-script.js"></script>
+  <script src="js/apps/aayla98/ay-ch0.js"></script>
+  <script src="js/apps/aayla98/ay-maps.js"></script>
+  <script src="js/apps/aayla98/ay-files.js"></script>
+  <script src="js/apps/aayla98/ay-art.js"></script>
+  <script src="js/apps/aayla98/ay-pix.js"></script>
+  <script src="js/apps/aayla98/ay-field.js"></script>
+  <script src="js/apps/aayla98/ay-battle.js"></script>
+  <script src="js/apps/aayla98/ay-font.js"></script>
+  <script src="js/apps/aayla98/ay-gfx.js"></script>
+  <script src="js/apps/aayla98/ay-audio.js"></script>
+  <script src="js/apps/aayla98/ay-vn.js"></script>
+  <script src="js/apps/aayla98/ay-draw-field.js"></script>
+  <script src="js/apps/aayla98/ay-draw-battle.js"></script>
+  <script src="js/apps/aayla98/ay-screens.js"></script>
+  <script src="js/apps/aayla98/ay-ui.js"></script>
+  <script src="js/apps/aayla98-app.js"></script>
   <script src="js/main.js"></script>
 
 </body>

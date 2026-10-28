@@ -10,7 +10,7 @@ window.interpediaReg('igromania', 'project', {
       { label: 'Главный редактор', value: 'Денис Давыдов' },
       { label: 'Редакторы CD', value: 'Игорь Варнавский, Олег Хажинский' },
       { label: 'Оболочка диска', value: 'igroman.exe, Macromedia Director Projector' },
-      { label: 'Содержимое диска', value: '16 демоверсий, 24 патча, 6 видеороликов, программы, бонусная игра' },
+      { label: 'Содержимое диска', value: '20 демоверсий, 24 патча, 6 видеороликов, программы, бонусная игра' },
       { label: 'Метка тома', value: 'ИГРОМАНИЯ_09_98, около 563 МБ' },
       { label: 'Сайт', value: 'www.igromania.ru' }
     ]
@@ -25,20 +25,20 @@ window.interpediaReg('igromania', 'project', {
     { id: 'disc', title: 'Диск D:', content: `В файловой системе диск называется «Игромания (D:)», метка тома — ИГРОМАНИЯ_09_98. Свойства привода показывают 563 МБ данных. На рабочем столе значок диска появляется отдельно, а запустить его можно и через значок CD-ROM в области уведомлений. Там же можно сменить диск на сборник «Офисные игры ’98» объёмом 640 МБ.
 
 Диск смешанного типа: [[cdrom|CD-плеер]] и программа CDex видят пять дорожек. Первая — данные «Архив журнала Игромания № 9 (ISO9660)», далее четыре звуковые: Sonic Mayhem — Quake II Stroggos Industrial, Alexander Brandon — Unreal Na Pali Flyby, Mark Morgan — Fallout 2 Highwayman Ambient и Future Crew — Igromania #9 Demoscene Chiptune. Папки диска названы по разделам: demo, patch, soft_int, soft_u, bc3k, winamp.` },
-    { id: 'shell', title: 'Оболочка igroman.exe', content: `Оболочка написана в Macromedia Director и, как сказано на странице выхода, работает как Director Projector. Она состоит из 26 страниц. Первая — лицензионное соглашение: пользователь вправе копировать программы для резервного хранения, но не вправе дизассемблировать их и продавать. Вторая — содержание.
+    { id: 'shell', title: 'Оболочка igroman.exe', content: `Оболочка написана в Macromedia Director и, как сказано на странице выхода, работает как Director Projector. Она состоит из 30 страниц. Первая — лицензионное соглашение: пользователь вправе копировать программы для резервного хранения, но не вправе дизассемблировать их и продавать. Вторая — содержание.
 
 Цвет заголовка показывает раздел: красный у соглашения и содержания, синий у раздела «Играем», зелёный у «Вооружаемся», фиолетовый у бонуса и страницы выхода. Навигация идёт стрелками и номерами страниц, внизу отображается текущая страница.
 
 <table class="interpedia-wikitable">
 <tr><th>Раздел</th><th>Страницы</th><th>Что внутри</th></tr>
-<tr><td>Играем</td><td>3–21</td><td>демоверсии (4–19), патчи (20), видеоролики (21)</td></tr>
-<tr><td>Вооружаемся</td><td>22–24</td><td>программы для Интернета, программы для всех, Winamp и всё-всё-всё</td></tr>
-<tr><td>Супербонус</td><td>25</td><td>Battlecruiser 3000AD</td></tr>
-<tr><td>Выход</td><td>26</td><td>выходные данные номера</td></tr>
+<tr><td>Играем</td><td>3–25</td><td>список демоверсий (3), демоверсии (4–23), патчи (24), видеоролики (25)</td></tr>
+<tr><td>Вооружаемся</td><td>26–28</td><td>программы для Интернета, программы для всех, Winamp и всё-всё-всё</td></tr>
+<tr><td>Супербонус</td><td>29</td><td>Battlecruiser 3000AD</td></tr>
+<tr><td>Выход</td><td>30</td><td>выходные данные номера</td></tr>
 </table>` },
-    { id: 'demos', title: 'Игры, патчи и ролики', content: `На страницах 4–19 лежат 16 демоверсий. Для каждой указаны разработчик, издатель, жанр, системные требования и снимок экрана. Среди них Panzer Commander, Nightmare Creatures, Sin, KKnD 2: Krossfire, Croc: Legend of the Gobbos, Wargames, Longbow 2, Sid Meier’s Gettysburg!, Addiction Pinball, а также отечественный квест «Полная труба».
+    { id: 'demos', title: 'Игры, патчи и ролики', content: `На странице 3 собран список, а на страницах 4–23 лежат 20 демоверсий. Для каждой указаны разработчик, издатель, жанр, системные требования и снимки экрана. Все они ставятся с диска своим мастером установки из папки <code>D:\\demo</code> и запускаются после установки.
 
-Три демоверсии воспроизведены в системе целиком и запускаются после установки: Burnout: Championship Drag Racing, NHL ’98 и EA Sports World Cup 98. Остальные ставятся мастером установки.
+Кроме Burnout: Championship Drag Racing, NHL ’98 и EA Sports World Cup 98, на диске лежат демоверсии семнадцати игр, которые не продаются в [[steam|Steam]]: LucasQuest 98, Fallout 98, [[halflife|Half-Life 98]], Midnight Glide, Heroes of Might and Magic 98, Tekken 98, S.T.A.L.K.E.R. 98: Тень Чернобыля, Minecraft 98, Sam & Max: Moai Better Blues, Star Wars: Knights of the Old Republic 98, XIII, Devil May Cry 98, «Корованы», Dragon Age: Origins 98, Max Payne, Fallout: Запорожье и Half-Life 2. У каждой в названии стоит пометка Demo, а цена в каталоге — «DEMO».
 
 В разделе патчей 24 файла: от обновления The Summoning до Jedi Knight: Dark Forces II. В нём есть патчи для Fallout, [[unreal|Unreal]] и Wing Commander: Prophecy с поддержкой [[voodoo|Voodoo]]. Шесть роликов показывают Ultima: Ascension, Heretic II, Metro City, Alien vs Predator, Turok 2 и Blackstone Chronicles; в списке они помечены как AVI (Cinepak).` },
     { id: 'soft', title: 'Раздел «Вооружаемся»', content: `Страница «Программы для Интернет» делится на две части. В первой — браузеры: Netscape Communicator 4.05 и Microslop Internet Explorer 4.01 в русской и английской версиях ([[netscape|Netscape]], [[ie5|Internet Explorer]]). Во второй — ConnectionPal Professional, Net.Medic, [[icq|ICQ]] 98a, [[mirc|mIRC]] 5.41 для RusNet, DALnet и EFnet, The Bat! ([[outlook|почтовые клиенты]]) и WinDownload 4.01.
@@ -53,12 +53,12 @@ window.interpediaReg('igromania', 'project', {
 Сайт входит в [[webring|кольцо ретро-сайтов]]; на странице есть счётчик посетителей.` },
     { id: 'inworld', title: 'Диск в системе', content: `Интерпедия и [[clippy|Скрепыш]] знают о диске. Когда в приводе D: раскручивается «Игромания», помощник сообщает, что на диске лежат демоверсии, видеоролики и оболочка igroman.exe, а на странице сайта восхищается тем, что Half-Life и Fallout 2 получили «Выбор редакции». ACDSee показывает папку D:\\ARTWORK_98.
 
-Согласно правилам проекта, игры в системе покупаются и скачиваются через [[steam|Steam]]; исключение сделано для демоверсий с диска «Игромании», которые ставятся с диска. Подробнее — в статье [[win98clone|о проекте]].` }
+Согласно правилам проекта, игры в системе покупаются и скачиваются через [[steam|Steam]]; исключение сделано для двадцати демоверсий с диска «Игромании», которые ставятся с диска. Если такая игра не установлена, система отсылает игрока не в Steam, а к диску D:. Подробнее — в статье [[win98clone|о проекте]].` }
   ],
   seeAlso: ['cdrom', 'winamp', 'halflife', 'fallout2', 'directx', 'steam', 'win98clone', 'clippy'],
   references: [
     'Журнал «Игромания». — М., 1997–1999 (выпуски № 9 (12), сентябрь 1998, и № 11, ноябрь 1998).',
-    'Компакт-диск журнала «Игромания» № 9 (12), сентябрь 1998: оболочка igroman.exe, страницы 1–26.',
+    'Компакт-диск журнала «Игромания» № 9 (12), сентябрь 1998: оболочка igroman.exe, страницы 1–30.',
     'Сайт журнала «Игромания», выпуск № 11, ноябрь 1998 (www.igromania.ru).',
     'Свойства привода D: и файловой системы Microslop Win 98 Web Clone.'
   ],
@@ -76,7 +76,7 @@ window.interpediaReg('igromania', 'project', {
       { label: 'Editor-in-chief', value: 'Denis Davydov' },
       { label: 'CD editors', value: 'Igor Varnavsky, Oleg Khazhinsky' },
       { label: 'Disc shell', value: 'igroman.exe, Macromedia Director Projector' },
-      { label: 'On the disc', value: '16 demos, 24 patches, 6 videos, utilities, a bonus game' },
+      { label: 'On the disc', value: '20 demos, 24 patches, 6 videos, utilities, a bonus game' },
       { label: 'Volume label', value: 'ИГРОМАНИЯ_09_98, about 563 MB' },
       { label: 'Website', value: 'www.igromania.ru' }
     ]
@@ -91,20 +91,20 @@ Readers wrote to the "Mail" and "Hotline" columns. The website prints letters to
     { id: 'disc', title: 'Drive D:', content: `In the file system the disc is called "Igromania (D:)" with the volume label ИГРОМАНИЯ_09_98. The drive properties show 563 MB of data. The disc has its own icon on the desktop and can also be started from the CD-ROM icon in the notification area, where it can be swapped for the "Office Games ’98" compilation of 640 MB.
 
 It is a mixed-mode disc: the [[cdrom|CD player]] and CDex see five tracks. The first is data, "Archive of Igromania No. 9 (ISO9660)"; then come four audio tracks: Sonic Mayhem – Quake II Stroggos Industrial, Alexander Brandon – Unreal Na Pali Flyby, Mark Morgan – Fallout 2 Highwayman Ambient and Future Crew – Igromania #9 Demoscene Chiptune. The folders follow the sections of the shell: demo, patch, soft_int, soft_u, bc3k and winamp.` },
-    { id: 'shell', title: 'The igroman.exe shell', content: `The shell is built in Macromedia Director and, as the exit page says, runs as a Director Projector. It has 26 pages. The first is the license agreement: the user may copy programs for backup but may not disassemble or sell them. The second is the table of contents.
+    { id: 'shell', title: 'The igroman.exe shell', content: `The shell is built in Macromedia Director and, as the exit page says, runs as a Director Projector. It has 30 pages. The first is the license agreement: the user may copy programs for backup but may not disassemble or sell them. The second is the table of contents.
 
 The header colour marks the section: red for the agreement and contents, blue for "Играем" (Playing), green for "Вооружаемся" (Arming Up), purple for the bonus and exit pages. Navigation uses arrow buttons and page numbers, and the current page is shown in the footer.
 
 <table class="interpedia-wikitable">
 <tr><th>Section</th><th>Pages</th><th>Contents</th></tr>
-<tr><td>Playing</td><td>3–21</td><td>demos (4–19), patches (20), videos (21)</td></tr>
-<tr><td>Arming Up</td><td>22–24</td><td>Internet programs, programs for everyone, Winamp and more</td></tr>
-<tr><td>Superbonus</td><td>25</td><td>Battlecruiser 3000AD</td></tr>
-<tr><td>Exit</td><td>26</td><td>credits of the issue</td></tr>
+<tr><td>Playing</td><td>3–25</td><td>demo list (3), demos (4–23), patches (24), videos (25)</td></tr>
+<tr><td>Arming Up</td><td>26–28</td><td>Internet programs, programs for everyone, Winamp and more</td></tr>
+<tr><td>Superbonus</td><td>29</td><td>Battlecruiser 3000AD</td></tr>
+<tr><td>Exit</td><td>30</td><td>credits of the issue</td></tr>
 </table>` },
-    { id: 'demos', title: 'Games, patches and videos', content: `Pages 4–19 hold 16 demos. Each lists the developer, publisher, genre, system requirements and a screenshot. They include Panzer Commander, Nightmare Creatures, Sin, KKnD 2: Krossfire, Croc: Legend of the Gobbos, Wargames, Longbow 2, Sid Meier’s Gettysburg!, Addiction Pinball and the Russian adventure "Polnaya Truba".
+    { id: 'demos', title: 'Games, patches and videos', content: `Page 3 holds the list, and pages 4–23 hold 20 demos. Each lists the developer, publisher, genre, system requirements and screenshots. All of them install from the <code>D:\\demo</code> folder with their own setup wizard and run after installation.
 
-Three demos are fully recreated in the system and run after installation: Burnout: Championship Drag Racing, NHL ’98 and EA Sports World Cup 98. The rest are put through the setup wizard.
+Besides Burnout: Championship Drag Racing, NHL ’98 and EA Sports World Cup 98, the disc carries demos of seventeen games that are not sold on [[steam|Steam]]: LucasQuest 98, Fallout 98, [[halflife|Half-Life 98]], Midnight Glide, Heroes of Might and Magic 98, Tekken 98, S.T.A.L.K.E.R. 98: Тень Чернобыля, Minecraft 98, Sam & Max: Moai Better Blues, Star Wars: Knights of the Old Republic 98, XIII, Devil May Cry 98, Korovany, Dragon Age: Origins 98, Max Payne, Fallout: Запорожье and Half-Life 2. Each title carries the Demo mark, and the catalog price reads "DEMO".
 
 The patch section has 24 files, from the update for The Summoning to Jedi Knight: Dark Forces II. It includes patches for Fallout, [[unreal|Unreal]] and Wing Commander: Prophecy with [[voodoo|Voodoo]] support. Six videos show Ultima: Ascension, Heretic II, Metro City, Alien vs Predator, Turok 2 and Blackstone Chronicles; the list labels them AVI (Cinepak).` },
     { id: 'soft', title: 'The "Arming Up" section', content: `The "Internet programs" page has two parts. The first holds browsers: Netscape Communicator 4.05 and Microslop Internet Explorer 4.01 in Russian and English versions ([[netscape|Netscape]], [[ie5|Internet Explorer]]). The second holds ConnectionPal Professional, Net.Medic, [[icq|ICQ]] 98a, [[mirc|mIRC]] 5.41 for RusNet, DALnet and EFnet, The Bat! ([[outlook|mail clients]]) and WinDownload 4.01.
@@ -119,12 +119,12 @@ The "CD supplement" tab plays the same six videos in a player on the page. The c
 The site belongs to the [[webring|retro web ring]] and has a visitor counter.` },
     { id: 'inworld', title: 'The disc inside the system', content: `Interpedia and [[clippy|Clippy]] both know about the disc. When "Igromania" spins up in drive D:, the assistant announces demos, videos and the igroman.exe shell, and on the magazine’s page it admires the fact that Half-Life and Fallout 2 earned the "Editors’ Choice". ACDSee shows the folder D:\\ARTWORK_98.
 
-By the project’s rules, games in the system are bought and downloaded through [[steam|Steam]]; the demos from the Igromania disc are the exception and install from the disc. See the article [[win98clone|about the project]].` }
+By the project’s rules, games in the system are bought and downloaded through [[steam|Steam]]; the twenty demos from the Igromania disc are the exception and install from the disc. When such a game is not installed, the system points the player to drive D:, not to Steam. See the article [[win98clone|about the project]].` }
   ],
   seeAlso: ['cdrom', 'winamp', 'halflife', 'fallout2', 'directx', 'steam', 'win98clone', 'clippy'],
   references: [
     'Igromania magazine. Moscow, 1997–1999 (issues No. 9 (12), September 1998, and No. 11, November 1998).',
-    'Igromania CD No. 9 (12), September 1998: the igroman.exe shell, pages 1–26.',
+    'Igromania CD No. 9 (12), September 1998: the igroman.exe shell, pages 1–30.',
     'Igromania website, issue No. 11, November 1998 (www.igromania.ru).',
     'Properties of drive D: and the file system of Microslop Win 98 Web Clone.'
   ],

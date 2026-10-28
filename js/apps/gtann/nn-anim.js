@@ -408,9 +408,10 @@
       inc(PB.SPINE, 0.22 * ext, 0, 0);
     }
     if (act === 'windup') {
-      set(PB.UAR, -2.2, -0.2, 0.55); set(PB.FAR, 1.5, 0, 0);
-      set(PB.UAL, 1.25, 0, -0.25); set(PB.FAL, 0.35, 0, 0);
-      inc(PB.CHEST, 0.12, 0.45, 0); inc(PB.SPINE, 0, 0.2, 0);
+      const wk = N.clamp(p.charging || 1, 0, 1);
+      set(PB.UAR, N.lerp(-1.75, -2.4, wk), -0.2, 0.55); set(PB.FAR, N.lerp(1.2, 1.6, wk), 0, 0);
+      set(PB.UAL, N.lerp(0.9, 1.35, wk), 0, -0.25); set(PB.FAL, 0.35, 0, 0);
+      inc(PB.CHEST, 0.12, N.lerp(0.2, 0.55, wk), 0); inc(PB.SPINE, 0, N.lerp(0.08, 0.26, wk), 0);
       set(PB.THL, 0.35, 0, -0.08); set(PB.SHL, -0.15, 0, 0);
     }
     if (act === 'throw') {

@@ -60,7 +60,7 @@ module.exports = {
       { steps: ['await ssHorde(3, "minigun", [["gnaar", -2, 10], ["kleer", 3, 12], ["kleer", -5, 15], ["harpy", 1, 11], ["harpy", -2, 13], ["rocketeer", 6, 17]], 900);'] }
     ]
   },
-  stalker98: {
+  stalker98_demo: {
     page: 'stalker98.html',
     ready: '!!window.stui && !!stui.renderer',
     setup: [`window.stPlace = (x, z, tx, tz, pitch, hour) => {
@@ -107,7 +107,7 @@ module.exports = {
       { steps: ['cpPlace(813, 777, 862, 724, 0.02, 18 * 60 + 40); await __shots.sleep(2200); cpClean(); await __shots.sleep(300);'] }
     ]
   },
-  mc98: {
+  mc98_demo: {
     page: 'mc98.html',
     ready: '!!window.mcui',
     setup: [`window.mcSpawn = list => {
@@ -123,7 +123,7 @@ module.exports = {
       { steps: ['mcui.game.time = 12600; mcui.yaw += 2.4; mcui.pitch = -0.08; mcSpawn([["creeper", -1, 5], ["zombie", 2, 7], ["skeleton", -3, 9]]); await __shots.sleep(1800); mcui.messages = []; mcui.toasts = []; await __shots.sleep(200);'] }
     ]
   },
-  hl2: {
+  hl2_demo: {
     page: 'hl2.html',
     ready: '!!window.hlui',
     setup: [`window.hlClean = () => { const h = hlui.hud; h.subs = []; h.hints = []; h.title = null; h.notice = null; h.fade = null; h.flash = null; };
@@ -174,7 +174,7 @@ module.exports = {
       { steps: ['await q3Action("q3dm1", [{ bot: "orbb", skill: 3 }, { bot: "daemia", skill: 3 }, { bot: "bitterman", skill: 3 }]);'] }
     ]
   },
-  tekken3: {
+  tekken98_demo: {
     page: 'tekken3.html',
     ready: '!!window.tkui && !!window.Tk3 && !!Tk3.FIGHTER',
     setup: [`window.tkFight = async (stage, a, b, wait) => {
@@ -186,7 +186,7 @@ module.exports = {
       { steps: ['await tkFight("temple", "ray", "volkov", 7200);'] }
     ]
   },
-  dmc98: {
+  dmc98_demo: {
     page: 'dmc98.html',
     ready: '!!window.dmui && !!dmui.renderer',
     setup: [`window.dmFight = async (mi, foes, wait) => {
@@ -231,7 +231,7 @@ module.exports = {
     ['street', 312, 158, { introDone: true, flintHole: true }],
     ['workshop', 262, 172, { introDone: true, robotDown: true, labelRead: true, poleSeen: true }]
   ]),
-  sammax202: samMaxEpisode('sammax202.html', 'smx22', [
+  sammax202_demo: samMaxEpisode('sammax202.html', 'smx22', [
     ['beach', 250, 160, { introDone: true, beachVisited: true }],
     ['volcano', 160, 166, { introDone: true, volcanoReady: true }]
   ]),
@@ -376,7 +376,7 @@ module.exports = {
       { steps: ['const w = nnui.game.world, pl = w.player; if (pl.veh) w.exitVehicle(pl); nnPlace("ferris", 20, 30, -0.6, 15 * 60); nnPump(200); await __shots.sleep(400);'] }
     ]
   },
-  maxpayne: {
+  maxpayne_demo: {
     page: 'maxpayne.html',
     ready: '!!window.mpui',
     setup: ['MaxPayne.fastFrames = true;'],
@@ -385,7 +385,7 @@ module.exports = {
       { steps: ['for (let i = 0; i < 40 && mpui.mode !== "play"; i++) { if (mpui.novel.page) mpui.novel.page.t = 1; mpui.novel.key("next"); await __shots.sleep(250); } await mpLevel; mpui.mode = "play"; await __shots.sleep(2500);'] }
     ]
   },
-  xiii: {
+  xiii_demo: {
     page: 'xiii.html',
     ready: '!!(window.x13ui && x13ui.menu)',
     setup: ['window.x13Go = async id => { x13ui.startLevel(id, {}); await __shots.until(() => x13ui.mode === "play" && x13ui.game, 40000); x13ui.lock = () => {}; await __shots.sleep(2500); x13ui.hud.notes = []; x13ui.hud.msgs = []; await __shots.sleep(150); };'],
@@ -394,7 +394,7 @@ module.exports = {
       { steps: ['await x13Go("lake");'] }
     ]
   },
-  kotor98: {
+  kotor98_demo: {
     page: 'kotor98.html',
     ready: '!!(window.ktui && ktui.screen === "title")',
     setup: [`ktui.settings.game.autoPause = false; ktui.startNewGame({ cls: 'soldier' }); await __shots.sleep(300); ktui.closeSub(); ktui.enterGame();
@@ -422,7 +422,7 @@ module.exports = {
       { steps: ['await ktGo("vulkar_base", { dist: 9, pitch: 0.7 }, true);'] }
     ]
   },
-  dao98: {
+  dao98_demo: {
     page: 'dao98.html',
     ready: '!!window.daui',
     setup: [`const g0 = new Dao98.Game({}); g0.newGame({ origin: 'hn', race: 'human', cls: 'warrior', sex: 'm', name: 'Эдан' }); daui.settings.autoPause = false; daui.startGame(g0); await __shots.sleep(1500);
@@ -502,7 +502,7 @@ module.exports = {
       { steps: ['s3ui.newCASGame(); await __shots.sleep(3500);'] }
     ]
   },
-  korovany: {
+  korovany_demo: {
     page: 'korovany.html',
     ready: '!!(window.kvui && kvui.state === "title")',
     setup: [`window.kvStart = async (fac) => { kvui.newGame(fac, fac === 'elf' ? 'Ольха' : 'Гаврила'); await __shots.until(() => kvui.state === 'play' && kvui.game && kvui.game.pf === fac, 20000); await __shots.sleep(400); kvui.S.close(); kvui.toasts = []; return kvui.game; };
@@ -558,7 +558,7 @@ module.exports = {
       { steps: [`lgui.go('campaign'); await __shots.sleep(1800); document.querySelectorAll('.lga-modal-back').forEach(e => e.remove()); await __shots.sleep(600);`] }
     ]
   },
-  falloutzp: {
+  falloutzp_demo: {
     page: 'falloutzp.html',
     ready: '!!(window.zpui && zpui.r && zpui.r.env && zpui.mode !== "loading")',
     timeout: 90000,
@@ -652,7 +652,7 @@ module.exports = {
       { steps: [`const ms = av98.scenes.find(s => s.startBattle); if (ms) ms.startBattle("t_docks_thugs"); await __shots.sleep(3500);`] }
     ]
   },
-  fallout2: {
+  fallout98_demo: {
     page: 'fallout2.html',
     frameEl: '#standalone-root',
     el: '#standalone-root',
@@ -663,7 +663,7 @@ module.exports = {
       { steps: ['__shots.clickText("CHA"); await __shots.sleep(1500);'] }
     ]
   },
-  'half-life': {
+  'half-life_demo': {
     page: 'half-life.html',
     el: '.hl98-stage',
     size: [800, 640],
@@ -680,7 +680,7 @@ module.exports = {
         await __shots.sleep(900); p.yaw = Math.atan2(vort.z - p.z, vort.x - p.x); hlQuiet(); await __shots.sleep(150);`] }
     ]
   },
-  'neon-racer': {
+  'neon-racer_demo': {
     page: 'midnight-glide.html',
     el: '#game canvas',
     ready: 'typeof game !== "undefined" && !!game.menu',
@@ -719,13 +719,14 @@ module.exports = {
       { steps: ['await wolfShot(0, 0, g => { g.px = 15.5; g.py = 18; g.angle = Math.PI - 0.12; const a = g.actors.find(x => x.tx === 10 && x.ty === 17); if (a) a.dir = 0; });'] },
       { steps: ['await wolfShot(0, 8, g => { g.px = 21.5; g.py = 21.5; g.angle = Math.atan2(13.5 - 21.5, 17.5 - 21.5) + 0.22; g.weapons[3] = true; g.weapon = 3; g.chosen = 3; g.ammo = 99; g.god = true; g.hideGod = true; }); appWolf3D.ui.held.add("ControlLeft"); await __shots.sleep(260);'] }
     ]
-  }),  quest: Object.assign(desktopGame('appScummQuest', 'app_scumm_quest', 820, 640), {
+  }),
+  quest_demo: Object.assign(desktopGame('appScummQuest', 'app_scumm_quest', 820, 640), {
     shots: [
       { steps: ['await __shots.sleep(300);'] },
       { steps: ['appScummQuest.changeRoom("rooftop", 40, 115); await __shots.sleep(1800);'] }
     ]
   }),
-  homm1: {
+  homm1_demo: {
     page: 'homm1.html',
     ready: '!!(window.hmui && window.HoMM1)',
     size: [640, 480],

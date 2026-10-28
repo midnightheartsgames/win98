@@ -74,17 +74,17 @@
 
     games: [
       {
-        id: 'dao98',
-        title: 'Dragon Age: Origins 98',
+        id: 'dao98_demo',
+        title: 'Dragon Age: Origins 98 Demo',
         subtitle: 'Хроники Пятого Мора в королевстве Ферелден',
         exe: 'DAORIGINS.EXE',
         installDir: 'C:\\Games\\DAO98',
-        price: '$44.99',
-        size: '1.9 GB (4 CD-ROM, 3D Accelerated)',
+        setupPath: 'D:\\demo\\dao98demo.exe',
+        size: '48.2 MB (демоверсия, 3D Accelerated)',
         releaseYear: '1998',
         engine: 'Eclipse 98 Tactical Engine',
-        bannerShot: 'content/steam/dao98-1.jpg',
-        secondaryShot: 'content/steam/dao98-2.jpg',
+        bannerShot: 'content/igromania/demos/dao98_demo-1.jpg',
+        secondaryShot: 'content/igromania/demos/dao98_demo-2.jpg',
         pitch: 'Шесть играбельных предысторий (Кусланд, Маг Круга, Городской эльф, Долийский эльф, Эдукан, Броска), посвящение в Серые Стражи в Остагаре, битва у башни Ишала и сбор соратников в Лотеринге.',
         highlights: [
           '6 уникальных прологов с собственными картами, спутниками и сюжетными последствиями',
@@ -94,17 +94,17 @@
         ]
       },
       {
-        id: 'kotor98',
-        title: 'Star Wars: Knights of the Old Republic 98',
+        id: 'kotor98_demo',
+        title: 'Star Wars: Knights of the Old Republic 98 Demo',
         subtitle: 'Блокада Тариса — за 4 000 лет до Галактической Империи',
         exe: 'KOTOR.EXE',
         installDir: 'C:\\Games\\KOTOR98',
-        price: '$42.99',
-        size: '1.2 GB (3 CD-ROM, 3D Accelerated)',
+        setupPath: 'D:\\demo\\kotor98demo.exe',
+        size: '47.3 MB (демоверсия, 3D Accelerated)',
         releaseYear: '1998',
         engine: 'Odyssey d20 3D Engine',
-        bannerShot: 'content/steam/kotor98-1.jpg',
-        secondaryShot: 'content/steam/kotor98-2.jpg',
+        bannerShot: 'content/igromania/demos/kotor98_demo-1.jpg',
+        secondaryShot: 'content/igromania/demos/kotor98_demo-2.jpg',
         pitch: 'После гибели крейсера «Шпиль Эндара» над оккупированным ситхами Тарисом вам предстоит пройти Верхний и Нижний город, Подгород и канализацию, спасти Бастилу Шан на гонках свупов и угнать «Эбеновый ястреб» из поместья Давика Канга.',
         highlights: [
           'Полная ролевая механика d20: атака 1d20 + BAB + модификатор, защита, криты и 3 типа спасбросков',

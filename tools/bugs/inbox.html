@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Приёмка отчётов</title>
+<style>
+  :root { --bg: #f4f3ef; --panel: #fff; --line: #d8d5cc; --ink: #1d1d1b; --mute: #6b6a64; --accent: #0b5cad; --new: #b3261e; --ok: #1e7b34; --warn: #9a6200; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 13px/1.4 system-ui, 'Segoe UI', sans-serif; color: var(--ink); background: var(--bg); height: 100vh; display: flex; flex-direction: column; }
+  header { display: flex; gap: 10px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+  header h1 { font-size: 15px; margin: 0 8px 0 0; }
+  header .msg { color: var(--mute); }
+  select, input, button { font: inherit; }
+  input, select { padding: 3px 6px; border: 1px solid var(--line); border-radius: 3px; background: #fff; }
+  button { padding: 4px 10px; border: 1px solid var(--line); border-radius: 3px; background: #fff; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button:disabled { opacity: .5; cursor: default; }
+  main { flex: 1; display: grid; grid-template-columns: minmax(300px, 420px) 1fr; min-height: 0; }
+  #list { overflow: auto; border-right: 1px solid var(--line); background: var(--panel); }
+  .row { display: grid; grid-template-columns: 96px 1fr; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .row:hover { background: #f0f5fb; }
+  .row.sel { background: #e1ecf8; }
+  .row img, .row .noimg { width: 96px; height: 72px; object-fit: cover; background: #ddd; border: 1px solid var(--line); }
+  .row .t { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .m { color: var(--mute); font-size: 12px; }
+  .chip { display: inline-block; padding: 0 6px; border-radius: 8px; font-size: 11px; border: 1px solid currentColor; }
+  .s-new { color: var(--new); } .s-accepted { color: var(--accent); } .s-fixed { color: var(--ok); } .s-duplicate, .s-notabug, .s-wontfix { color: var(--mute); }
+  .cheat { color: var(--warn); font-weight: 600; }
+  #detail { overflow: auto; padding: 14px 18px 40px; }
+  #detail h2 { margin: 0 0 6px; font-size: 18px; }
+  .bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 8px 0 12px; }
+  .facts { display: grid; grid-template-columns: max-content 1fr; gap: 3px 12px; margin: 10px 0; }
+  .facts b { color: var(--mute); font-weight: 500; }
+  .shot { max-width: 100%; border: 1px solid var(--line); background: #ddd; display: block; }
+  .tabs { display: flex; gap: 4px; margin: 6px 0; }
+  .tabs button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  h3 { font-size: 13px; margin: 18px 0 6px; text-transform: uppercase; letter-spacing: .04em; color: var(--mute); }
+  pre { background: var(--panel); border: 1px solid var(--line); padding: 8px; overflow: auto; max-height: 360px; margin: 0; font: 12px/1.35 Consolas, monospace; white-space: pre-wrap; word-break: break-word; }
+  .user { background: #fffbe6; border: 1px solid #e8dca0; padding: 8px 10px; white-space: pre-wrap; }
+  .empty { color: var(--mute); padding: 30px; }
+  @media (max-width: 760px) { main { grid-template-columns: 1fr; } #list { max-height: 40vh; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Приёмка отчётов</h1>
+  <button id="pull" class="primary">Забрать с сервера</button>
+  <select id="f-status"><option value="">все статусы</option><option value="new" selected>новые</option><option value="accepted">принятые</option><option value="fixed">исправленные</option><option value="duplicate">дубликаты</option><option value="notabug">не ошибка</option><option value="wontfix">не будет исправлен</option></select>
+  <select id="f-kind"><option value="">все типы</option><option value="bug">не работает</option><option value="crash">зависло</option><option value="visual">графика</option><option value="text">текст</option><option value="sound">звук</option><option value="balance">баланс</option><option value="idea">идея</option></select>
+  <input id="f-text" placeholder="поиск: номер, заголовок, приложение">
+  <label><input type="checkbox" id="f-cheats"> без читов</label>
+  <span class="msg" id="msg"></span>
+</header>
+<main>
+  <div id="list"></div>
+  <div id="detail"><div class="empty">Выберите отчёт слева.</div></div>
+</main>
+<script>
+  const STATUS = { new: 'новый', accepted: 'принят', fixed: 'исправлен', duplicate: 'дубликат', notabug: 'не ошибка', wontfix: 'не будет исправлен' };
+  const KIND = { bug: 'не работает', crash: 'зависло или закрылось', visual: 'графика', text: 'текст или перевод', sound: 'звук', balance: 'баланс', idea: 'идея' };
+  let items = [];
+  let selected = null;
+  const $ = id => document.getElementById(id);
+  const el = (tag, props, ...kids) => {
+    const n = document.createElement(tag);
+    Object.assign(n, props || {});
+    kids.flat().forEach(k => k != null && n.append(k instanceof Node ? k : String(k)));
+    return n;
+  };
+  const api = async (url, body) => {
+    const res = await fetch(url, body ? { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Inbox': '1' }, body: JSON.stringify(body) } : {});
+    const data = await res.json();
+    if (!res.ok || data.ok === false) throw new Error(data.error || 'HTTP ' + res.status);
+    return data;
+  };
+  const msg = text => { $('msg').textContent = text; };
+  const age = iso => {
+    const h = Math.round((Date.now() - Date.parse(iso)) / 3600000);
+    return h < 1 ? 'только что' : h < 48 ? h + ' ч назад' : Math.round(h / 24) + ' дн назад';
+  };
+
+  async function load() {
+    items = (await api('/api/reports')).items;
+    renderList();
+    if (selected && items.some(i => i.id === selected)) show(selected);
+  }
+
+  function visible() {
+    const st = $('f-status').value, kind = $('f-kind').value, text = $('f-text').value.trim().toLowerCase(), noCheats = $('f-cheats').checked;
+    return items.filter(i => (!st || i.status === st) && (!kind || i.kind === kind) && (!noCheats || !i.cheats) && (!text || (i.id + ' ' + i.title + ' ' + i.app + ' ' + i.where).toLowerCase().includes(text)));
+  }
+
+  function renderList() {
+    const list = $('list');
+    list.replaceChildren();
+    const shown = visible();
+    if (!shown.length) list.append(el('div', { className: 'empty', textContent: items.length ? 'Под фильтр ничего не попало.' : 'Отчётов нет. Нажмите «Забрать с сервера».' }));
+    for (const i of shown) {
+      const pic = i.thumb ? el('img', { src: '/files/' + i.id + '/' + i.thumb, loading: 'lazy', alt: '' }) : el('div', { className: 'noimg' });
+      const row = el('div', { className: 'row' + (i.id === selected ? ' sel' : '') }, pic, el('div', {},
+        el('div', { className: 't', textContent: i.title || '(без заголовка)' }),
+        el('div', { className: 'm' }, el('span', { className: 'chip s-' + i.status, textContent: STATUS[i.status] + (i.fixedIn ? ' ' + i.fixedIn : '') }), ' ', i.id),
+        el('div', { className: 'm' }, (i.app || '?') + ' · ' + (KIND[i.kind] || i.kind) + ' · ' + age(i.created) + ' ', i.cheats ? el('span', { className: 'cheat', textContent: 'читы' }) : null)
+      ));
+      row.addEventListener('click', () => { selected = i.id; renderList(); show(i.id); });
+      list.append(row);
+    }
+  }
+
+  function pre(text) { return el('pre', { textContent: text }); }
+
+  async function show(id) {
+    const d = await api('/api/reports/' + id);
+    const r = d.report, s = d.status, u = r.user || {}, files = d.files;
+    const box = $('detail');
+    box.replaceChildren();
+    box.append(el('h2', { textContent: id + ' — ' + (u.title || '(без заголовка)') }));
+
+    const bar = el('div', { className: 'bar' });
+    const setSt = async (status, extra) => {
+      try {
+        await api('/api/reports/' + id + '/status', Object.assign({ status }, extra || {}));
+        msg(id + ': ' + STATUS[status]);
+        await load();
+      } catch (err) { msg('Ошибка: ' + err.message); }
+    };
+    bar.append(
+      el('button', { textContent: 'Принять', onclick: () => setSt('accepted') }),
+      el('button', { textContent: 'Исправлен в...', onclick: () => { const v = prompt('Версия, в которой исправлено', s.fixedIn || ''); if (v != null) setSt('fixed', { fixedIn: v.trim() }); } }),
+      el('button', { textContent: 'Дубликат...', onclick: () => { const v = prompt('Номер исходного отчёта (BR-...)', ''); if (v) setSt('duplicate', { dup: v.trim().toUpperCase() }); } }),
+      el('button', { textContent: 'Не ошибка', onclick: () => setSt('notabug') }),
+      el('button', { textContent: 'Не будет исправлен', onclick: () => setSt('wontfix') }),
+      el('button', { textContent: 'Новый', onclick: () => setSt('new') }),
+      el('button', { textContent: 'Заметка...', onclick: () => { const v = prompt('Заметка для игрока', s.note || ''); if (v != null) setSt(s.status, { note: v.trim() }); } }),
+      el('button', { className: 'primary', textContent: 'Копировать для Claude', onclick: () => {
+        const text = 'Разбери баг ' + id + ' (bugreports/' + id + '/report.md' + (files.length ? ', кадр ' + files.filter(f => f.startsWith('shot')).join(', ') : '') + ').';
+        navigator.clipboard.writeText(text).then(() => msg('Скопировано: ' + text), () => msg(text));
+      } }),
+      el('button', { textContent: 'Воспроизвести', onclick: async () => {
+        try { const res = await api('/api/reports/' + id + '/repro', {}); msg('Открыто: ' + res.url); } catch (err) { msg('Ошибка: ' + err.message); }
+      } })
+    );
+    box.append(bar);
+
+    const facts = el('div', { className: 'facts' });
+    const fact = (k, v) => { if (v) facts.append(el('b', { textContent: k }), el('span', { textContent: v })); };
+    fact('Статус', STATUS[s.status] + (s.fixedIn ? ' в ' + s.fixedIn : '') + (s.dup ? ', дубликат ' + s.dup : '') + ' (' + s.origin + ')');
+    fact('Заметка', s.note);
+    fact('Где', (r.where || {}).summary);
+    fact('Тип', (KIND[u.kind] || u.kind) + ', повторяется: ' + u.repeat);
+    fact('Источник', r.source + ' через ' + r.channel + ', ' + r.created);
+    fact('Сборка', [r.build && r.build.version && r.build.version !== 'dev' ? r.build.version + (r.build.build ? ' (' + r.build.build + ')' : '') : '', r.build && r.build.commit, r.build && r.build.dirty ? 'с незакоммиченными изменениями' : '', r.build && r.build.dev ? 'dev' : '', r.build && r.build.hsr ? 'HSR ' + r.build.hsr : ''].filter(Boolean).join(' · '));
+    fact('После сборки', d.changes ? (d.changes.unknown ? 'коммит не найден' : d.changes.files.length ? d.changes.files.join(', ') : 'код не менялся') : '');
+    fact('Контакт', u.contact);
+    fact('Читы', d.cheats ? 'F7/F8 использовались' : '');
+    fact('Файлы', files.join(', '));
+    box.append(facts);
+    if (u.text) box.append(el('div', { className: 'user', textContent: u.text }));
+
+    const shots = ['shot-marked', 'shot', 'shot-window', 'repro'].map(b => files.find(f => f.startsWith(b + '.'))).filter(Boolean);
+    if (shots.length) {
+      const img = el('img', { className: 'shot', src: '/files/' + id + '/' + shots[0], alt: '' });
+      const tabs = el('div', { className: 'tabs' });
+      shots.forEach((f, n) => {
+        const b = el('button', { className: n ? '' : 'on', textContent: f.startsWith('shot-marked') ? 'с рамками' : f.startsWith('shot-window') ? 'окно крупно' : f.startsWith('repro') ? 'воспроизведение' : 'кадр' });
+        b.onclick = () => { img.src = '/files/' + id + '/' + f; tabs.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); };
+        tabs.append(b);
+      });
+      box.append(el('h3', { textContent: 'Снимок' }), tabs, img);
+    }
+    const errors = r.errors || [];
+    box.append(el('h3', { textContent: 'Ошибки (' + errors.length + ')' }), pre(errors.length ? errors.map(e => e.msg + (e.src ? ' @ ' + e.src : '') + (e.count > 1 ? ' ×' + e.count : '') + (e.stack ? '\n' + e.stack : '')).join('\n\n') : 'нет'));
+    if ((r.missing || []).length) box.append(el('h3', { textContent: 'Не загрузились' }), pre(r.missing.map(m => m.tag + ' ' + m.url).join('\n')));
+    box.append(el('h3', { textContent: 'Последние действия' }), pre((r.trail || []).map(e => String(e.t).padStart(7) + '  ' + e.type + '  ' + Object.entries(e).filter(([k, v]) => k !== 't' && k !== 'type' && v !== '').map(([k, v]) => k + '=' + (typeof v === 'string' ? v : JSON.stringify(v))).join(' ')).join('\n') || 'нет'));
+    box.append(el('h3', { textContent: 'Состояние приложения' }), pre(JSON.stringify(r.apps || {}, null, 2)));
+    box.append(el('h3', { textContent: 'Окна' }), pre((r.windows || []).map(w => (w.active ? '* ' : '  ') + w.id + '  «' + w.title + '»' + (w.min ? ' свёрнуто' : '') + (w.max ? ' развёрнуто' : '')).join('\n') || 'нет'));
+    box.append(el('h3', { textContent: 'Система' }), pre(JSON.stringify(r.system || {}, null, 2)));
+    box.append(el('h3', { textContent: 'Консоль' }), pre((r.log || []).map(l => String(l.t).padStart(7) + ' ' + l.level.padEnd(5) + ' ' + l.msg).join('\n') || 'нет'));
+  }
+
+  $('pull').onclick = async () => {
+    $('pull').disabled = true;
+    msg('Забираю...');
+    try {
+      const res = await api('/api/pull', {});
+      msg('На сервере ' + res.total + ', новых ' + res.added.length + ', изменений статуса ' + res.changed.length);
+      await load();
+    } catch (err) { msg('Ошибка: ' + err.message); }
+    $('pull').disabled = false;
+  };
+  ['f-status', 'f-kind', 'f-cheats'].forEach(id => $(id).addEventListener('change', renderList));
+  $('f-text').addEventListener('input', renderList);
+  load().catch(err => msg('Ошибка: ' + err.message));
+</script>
+</body>
+</html>

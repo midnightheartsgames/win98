@@ -985,10 +985,10 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           games.children['WOLF3D.EXE'] = { type: 'executable', name: 'WOLF3D.EXE', icon: 'wolf3d', app: 'wolf3d' };
         }
 
-        if (!gmInstalled.includes('quest') && games.children['QUEST.EXE']) {
+        if (!gmInstalled.includes('quest_demo') && games.children['QUEST.EXE']) {
           delete games.children['QUEST.EXE'];
-        } else if (gmInstalled.includes('quest') && !games.children['QUEST.EXE']) {
-          games.children['QUEST.EXE'] = { type: 'executable', name: 'QUEST.EXE', icon: 'lucas-quest', app: 'quest' };
+        } else if (gmInstalled.includes('quest_demo') && !games.children['QUEST.EXE']) {
+          games.children['QUEST.EXE'] = { type: 'executable', name: 'QUEST.EXE', icon: 'lucas-quest', app: 'quest_demo' };
         }
 
         if (!gmInstalled.includes('stalker') && games.children['STALKER.EXE']) {
@@ -997,10 +997,10 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           games.children['STALKER.EXE'] = { type: 'executable', name: 'STALKER.EXE', icon: 'stalker', app: 'stalker' };
         }
 
-        if (!gmInstalled.includes('fallout2') && games.children['FALLOUT2.EXE']) {
+        if (!gmInstalled.includes('fallout98_demo') && games.children['FALLOUT2.EXE']) {
           delete games.children['FALLOUT2.EXE'];
-        } else if (gmInstalled.includes('fallout2') && !games.children['FALLOUT2.EXE']) {
-          games.children['FALLOUT2.EXE'] = { type: 'executable', name: 'FALLOUT2.EXE', icon: 'fallout2', app: 'fallout2' };
+        } else if (gmInstalled.includes('fallout98_demo') && !games.children['FALLOUT2.EXE']) {
+          games.children['FALLOUT2.EXE'] = { type: 'executable', name: 'FALLOUT2.EXE', icon: 'fallout2', app: 'fallout98_demo' };
         }
 
         if (!gmInstalled.includes('doom') && games.children['Doom']) {
@@ -1047,32 +1047,32 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           };
         }
 
-        if (!gmInstalled.includes('mc98') && games.children['MC98']) {
+        if (!gmInstalled.includes('mc98_demo') && games.children['MC98']) {
           delete games.children['MC98'];
-        } else if (gmInstalled.includes('mc98') && !games.children['MC98']) {
+        } else if (gmInstalled.includes('mc98_demo') && !games.children['MC98']) {
           games.children['MC98'] = {
             type: 'folder', name: 'MC98', icon: 'folder', children: {
-              'MINECRAFT.EXE': { type: 'executable', name: 'MINECRAFT.EXE', icon: 'mc98', app: 'mc98' },
+              'MINECRAFT.EXE': { type: 'executable', name: 'MINECRAFT.EXE', icon: 'mc98', app: 'mc98_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Minecraft 98 Alpha\r\n==================================\r\nMojang Specifications (1999) - Win 98 Edition\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse]/[Arrows] - Look   [Left Click] - Dig   [Right Click] - Place / Use\r\n[Space] - Jump / Swim   [Shift] - Sneak   [Ctrl] - Sprint   [E] - Inventory   [Q] - Drop\r\n[1-9] / Mouse wheel - Hotbar   [Middle Click] - Pick block   [F3] - Debug   [Esc] - Pause\r\nCreative: double-tap Space to fly.\r\n\r\nPunch trees. Craft a workbench. Build a shelter before night.\r\nWorlds are saved automatically every minute and on exit.' }
             }
           };
         }
-        if (!gmInstalled.includes('dao98') && games.children['DAO98']) {
+        if (!gmInstalled.includes('dao98_demo') && games.children['DAO98']) {
           delete games.children['DAO98'];
-        } else if (gmInstalled.includes('dao98') && !games.children['DAO98']) {
+        } else if (gmInstalled.includes('dao98_demo') && !games.children['DAO98']) {
           games.children['DAO98'] = {
             type: 'folder', name: 'DAO98', icon: 'folder', children: {
-              'DAORIGINS.EXE': { type: 'executable', name: 'DAORIGINS.EXE', icon: 'dao98', app: 'dao98' },
+              'DAORIGINS.EXE': { type: 'executable', name: 'DAORIGINS.EXE', icon: 'dao98', app: 'dao98_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Dragon Age: Origins 98\r\n==================================\r\nBioWare (2000) - Win 98 Edition\r\n\r\n[Left Click] - Move / Attack / Talk / Use   [W/A/S/D] - Move   [Space] - Pause\r\n[F1-F4] - Party   [1-0] - Quickbar   [C/K/I/J/M/T/N/P] - Panels   [F5]/[F9] - Quick save/load\r\n\r\nChoose your origin. Survive Ostagar. Reach Lothering.' }
             }
           };
         }
-        if (!gmInstalled.includes('tekken3') && games.children['Tekken3']) {
+        if (!gmInstalled.includes('tekken98_demo') && games.children['Tekken3']) {
           delete games.children['Tekken3'];
-        } else if (gmInstalled.includes('tekken3') && !games.children['Tekken3']) {
+        } else if (gmInstalled.includes('tekken98_demo') && !games.children['Tekken3']) {
           games.children['Tekken3'] = {
             type: 'folder', name: 'Tekken3', icon: 'folder', children: {
-              'TEKKEN3.EXE': { type: 'executable', name: 'TEKKEN3.EXE', icon: 'tekken3', app: 'tekken3' },
+              'TEKKEN3.EXE': { type: 'executable', name: 'TEKKEN3.EXE', icon: 'tekken3', app: 'tekken98_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Tekken 3 98\r\n==================================\r\nNamco (1998) - Win 98 Edition\r\n\r\nP1: [W/A/S/D] move, [U] 1  [I] 2  [J] 3  [K] 4\r\nP2: [Arrows] move, [Num 4] 1  [Num 5] 2  [Num 1] 3  [Num 2] 4\r\n[Enter] - Start / Pause   [Esc] - Pause menu and move list\r\n\r\nTap up or down to sidestep. 1+3 / 2+4 throw, break with 1 / 2.\r\nClear Arcade to unlock hidden fighters, endings and modes.' }
             }
           };
@@ -1107,12 +1107,12 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
-        if (!gmInstalled.includes('sammax202') && games.children['SamMax202']) {
+        if (!gmInstalled.includes('sammax202_demo') && games.children['SamMax202']) {
           delete games.children['SamMax202'];
-        } else if (gmInstalled.includes('sammax202') && !games.children['SamMax202']) {
+        } else if (gmInstalled.includes('sammax202_demo') && !games.children['SamMax202']) {
           games.children['SamMax202'] = {
             type: 'folder', name: 'SamMax202', icon: 'folder', children: {
-              'SAMMAX22.EXE': { type: 'executable', name: 'SAMMAX22.EXE', icon: 'sammax202', app: 'sammax202' },
+              'SAMMAX22.EXE': { type: 'executable', name: 'SAMMAX22.EXE', icon: 'sammax202', app: 'sammax202_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Sam & Max: Moai Better Blues\r\n==================================\r\nLucasArts (2000) - Win 98 Edition\r\n\r\n[Left Click] - Walk / Act   [Right Click] - Next cursor   [1-4] - Cursors\r\n[I] - Inventory   [.] - Skip line   [Esc] - Skip / Back / Menu   [F5] - Save and load\r\nStep through the Bermuda Triangle portal to visit Easter Island.\r\n\r\nA triangular portal opened right outside the office and the volcano is rumbling.\r\nTalk to Max when you are stuck.' }
             }
           };
@@ -1206,23 +1206,23 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
-        if (!gmInstalled.includes('xiii') && games.children['XIII']) {
+        if (!gmInstalled.includes('xiii_demo') && games.children['XIII']) {
           delete games.children['XIII'];
-        } else if (gmInstalled.includes('xiii') && !games.children['XIII']) {
+        } else if (gmInstalled.includes('xiii_demo') && !games.children['XIII']) {
           games.children['XIII'] = {
             type: 'folder', name: 'XIII', icon: 'folder', children: {
-              'XIII.EXE': { type: 'executable', name: 'XIII.EXE', icon: 'xiii', app: 'xiii' },
+              'XIII.EXE': { type: 'executable', name: 'XIII.EXE', icon: 'xiii', app: 'xiii_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'XIII\r\n==================================\r\nUbisoft Paris (2000) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium II 350 MHz, 64 MB RAM, 3D accelerator with 16 MB (TNT2 / Voodoo3 / Rage 128), DirectX 7.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire   [Right Click] - Zoom\r\n[Space] - Jump   [C]/[Ctrl] - Crouch   [Shift] - Walk quietly   [E]/[F] - Use, pick locks, take a hostage\r\n[R] - Reload   [1-9] - Weapons   [Q] - Last weapon   [G] - Grenade   [H] - Medkit\r\n[Tab] - Objectives   [F5] - Quick save   [F9] - Quick load   [Esc] - Pause menu\r\n\r\nTen chapters from Brighton Beach to Plain Rock Penitentiary.\r\nEvery document you find is a piece of your past. Collect them all for the XX dossier.' },
               'SAVE': { type: 'folder', name: 'SAVE', icon: 'folder', children: {} }
             }
           };
         }
-        if (!gmInstalled.includes('maxpayne') && games.children['MaxPayne']) {
+        if (!gmInstalled.includes('maxpayne_demo') && games.children['MaxPayne']) {
           delete games.children['MaxPayne'];
-        } else if (gmInstalled.includes('maxpayne') && !games.children['MaxPayne']) {
+        } else if (gmInstalled.includes('maxpayne_demo') && !games.children['MaxPayne']) {
           games.children['MaxPayne'] = {
             type: 'folder', name: 'MaxPayne', icon: 'folder', children: {
-              'MAXPAYNE.EXE': { type: 'executable', name: 'MAXPAYNE.EXE', icon: 'maxpayne', app: 'maxpayne' },
+              'MAXPAYNE.EXE': { type: 'executable', name: 'MAXPAYNE.EXE', icon: 'maxpayne', app: 'maxpayne_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Max Payne\r\n==================================\r\nRemedy Entertainment (2001) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium II 450 MHz, 96 MB RAM, 3D accelerator with 16 MB (TNT2 / Voodoo3 / Rage 128), DirectX 7.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Aim   [Left Click] - Fire   [Right Click] - Bullet time / Shootdodge\r\n[Shift] - Bullet time   [Q] - Shootdodge   [Space] - Jump   [C]/[Ctrl] - Crouch   [Alt] - Walk\r\n[E]/[F] - Use   [R] - Reload   [H]/[Backspace] - Painkillers   [G] - Throw grenade or Molotov\r\n[1-5], [Wheel] - Weapons   [Tab] - Max\'s thoughts   [Enter] - Skip a line   [F5] - Quick save   [F9] - Quick load   [Esc] - Menu\r\n\r\nPart I: The American Dream. A tutorial, a prologue and nine chapters, from Roscoe Street Station to Aesir Plaza.\r\nKills refill the hourglass. Painkillers heal over time. Harder modes open after Part I.' },
               'SAVEGAMES': { type: 'folder', name: 'SAVEGAMES', icon: 'folder', children: {} }
             }
@@ -1261,12 +1261,12 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
-        if (!gmInstalled.includes('falloutzp') && games.children['FalloutZP']) {
+        if (!gmInstalled.includes('falloutzp_demo') && games.children['FalloutZP']) {
           delete games.children['FalloutZP'];
-        } else if (gmInstalled.includes('falloutzp') && !games.children['FalloutZP']) {
+        } else if (gmInstalled.includes('falloutzp_demo') && !games.children['FalloutZP']) {
           games.children['FalloutZP'] = {
             type: 'folder', name: 'FalloutZP', icon: 'folder', children: {
-              'FALLOUTZP.EXE': { type: 'executable', name: 'FALLOUTZP.EXE', icon: 'falloutzp', app: 'falloutzp' },
+              'FALLOUTZP.EXE': { type: 'executable', name: 'FALLOUTZP.EXE', icon: 'falloutzp', app: 'falloutzp_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Fallout: Запорожье\r\n==================================\r\nObsidian Entertainment (2001) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium III 600 MHz, 128 MB RAM, 3D accelerator with 32 MB (GeForce2 / Radeon), DirectX 8.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire / Swing   [Right Click] - Aim   [Shift] - Walk   [Space] - Jump\r\n[Ctrl] - Sneak   [E] - Use, talk, open   [R] - Reload   [F] - First / third person   [H] - Holster   [G] - Throw grenade\r\n[V] - S.T.R.E.L.A. targeting   [Tab] - Pioneer-77   [T] - Wait   [L] - Pioneer light   [1-8] - Hotkeys   [Wheel] - Next weapon\r\n[F5] - Quick save   [F9] - Quick load   [Esc] - Menu\r\n\r\nZaporozhye, 1 September 2280. The courier of the Main Post Office was shot on the bridge and thrown into the Dnieper.\r\nVoznesenovsky district and the island of Khortytsia are open from the start. Danger grows with distance from Voznesenka.\r\n\r\nMap of Zaporozhye based on OpenStreetMap data, (c) OpenStreetMap contributors, ODbL. Heights: SRTM, NASA.' },
               'SAVE': { type: 'folder', name: 'SAVE', icon: 'folder', children: {} }
             }
@@ -1283,24 +1283,12 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
-        if (!gmInstalled.includes('korovany') && games.children['Korovany']) {
+        if (!gmInstalled.includes('korovany_demo') && games.children['Korovany']) {
           delete games.children['Korovany'];
-        } else if (gmInstalled.includes('korovany') && !games.children['Korovany']) {
+        } else if (gmInstalled.includes('korovany_demo') && !games.children['Korovany']) {
           games.children['Korovany'] = {
             type: 'folder', name: 'Korovany', icon: 'folder', children: {
-              'KOROVANY.EXE': { type: 'executable', name: 'KOROVANY.EXE', icon: 'korovany', app: 'korovany' },
-              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Корованы\r\n==================================\r\nДжва Года Софт (2000) - Win 98 Edition, 3D accelerated\r\n\r\nСистемные требования: Pentium II 300 МГц, 64 MB RAM, 3D-ускоритель с 8 MB памяти, DirectX 6.\r\n\r\nУправление:\r\n[W/A/S/D] - идти   [Shift] - бежать   [Пробел] - прыжок   [C] - пригнуться\r\n[Мышь] - смотреть   [Левая кнопка] - удар, выстрел   [Правая кнопка] - блок\r\nКуда смотрите, туда и бьёте: вверх - голова, прямо - корпус, вниз - ноги.\r\n[1/2/3] - оружие / лук / факел   [R] - убрать оружие   [E] - говорить, обыскать, поджечь\r\n[B] - перевязать рану   [H] - зелье   [V] - от первого лица\r\n[I] - инвентарь и протезы   [M] - карта   [J] - журнал   [T] - ждать   [Q] - приказы войску\r\n[F5/F9] - быстрое сохранение / загрузка   [Esc] - меню\r\n\r\nОтрубленная рука или нога кровоточит. Перевяжите её (B) или идите к знахарке, иначе умрёте.\r\nПротезы ставит мастер Деревяшкин в Развилках.\r\n\r\nПо письму Кирилла.' },
-              'KIRILL.TXT': { type: 'file', name: 'KIRILL.TXT', icon: 'notepad', app: 'notepad', content: 'Здраствуйте. Я, Кирилл. Хотел бы чтобы вы сделали игру, 3Д-экшон суть такова...\r\n\r\n...P.S. Я джва года хочу такую игру.\r\n\r\nПисьмо целиком: главное меню игры, «Письмо Кирилла».' },
-              'SAVES': { type: 'folder', name: 'SAVES', icon: 'folder', children: {} }
-            }
-          };
-        }
-        if (!gmInstalled.includes('korovany') && games.children['Korovany']) {
-          delete games.children['Korovany'];
-        } else if (gmInstalled.includes('korovany') && !games.children['Korovany']) {
-          games.children['Korovany'] = {
-            type: 'folder', name: 'Korovany', icon: 'folder', children: {
-              'KOROVANY.EXE': { type: 'executable', name: 'KOROVANY.EXE', icon: 'korovany', app: 'korovany' },
+              'KOROVANY.EXE': { type: 'executable', name: 'KOROVANY.EXE', icon: 'korovany', app: 'korovany_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Корованы\r\n==================================\r\nДжва Года Софт (2000) - Win 98 Edition, 3D accelerated\r\n\r\nСистемные требования: Pentium II 300 МГц, 64 MB RAM, 3D-ускоритель с 8 MB памяти, DirectX 6.\r\n\r\nУправление:\r\n[W/A/S/D] - идти   [Shift] - бежать   [Пробел] - прыжок   [C] - пригнуться\r\n[Мышь] - смотреть   [Левая кнопка] - удар, выстрел   [Правая кнопка] - блок\r\nКуда смотрите, туда и бьёте: вверх - голова, прямо - корпус, вниз - ноги.\r\n[1/2/3] - оружие / лук / факел   [R] - убрать оружие   [E] - говорить, обыскать, поджечь\r\n[B] - перевязать рану   [H] - зелье   [V] - от первого лица\r\n[I] - инвентарь и протезы   [M] - карта   [J] - журнал   [T] - ждать   [Q] - приказы войску\r\n[F5/F9] - быстрое сохранение / загрузка   [Esc] - меню\r\n\r\nОтрубленная рука или нога кровоточит. Перевяжите её (B) или идите к знахарке, иначе умрёте.\r\nПротезы ставит мастер Деревяшкин в Развилках.\r\n\r\nПо письму Кирилла.' },
               'KIRILL.TXT': { type: 'file', name: 'KIRILL.TXT', icon: 'notepad', app: 'notepad', content: 'Здраствуйте. Я, Кирилл. Хотел бы чтобы вы сделали игру, 3Д-экшон суть такова...\r\n\r\n...P.S. Я джва года хочу такую игру.\r\n\r\nПисьмо целиком: главное меню игры, «Письмо Кирилла».' },
               'SAVES': { type: 'folder', name: 'SAVES', icon: 'folder', children: {} }
@@ -1347,22 +1335,22 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
-        if (!gmInstalled.includes('dmc98') && games.children['DMC98']) {
+        if (!gmInstalled.includes('dmc98_demo') && games.children['DMC98']) {
           delete games.children['DMC98'];
-        } else if (gmInstalled.includes('dmc98') && !games.children['DMC98']) {
+        } else if (gmInstalled.includes('dmc98_demo') && !games.children['DMC98']) {
           games.children['DMC98'] = {
             type: 'folder', name: 'DMC98', icon: 'folder', children: {
-              'DMC4.EXE': { type: 'executable', name: 'DMC4.EXE', icon: 'dmc98', app: 'dmc98' },
+              'DMC4.EXE': { type: 'executable', name: 'DMC4.EXE', icon: 'dmc98', app: 'dmc98_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Devil May Cry 4 98\r\n==================================\r\nCapcom (2000) - Win 98 Edition\r\n\r\n[W/A/S/D] - Move   [J] - Sword   [K] - Gun   [L] - Devil Bringer   [Space] - Jump\r\n[Shift] - Lock-on   [I] - Exceed   [O] - Devil Trigger   [U] - Taunt   [Esc] - Pause\r\n\r\nThis party is getting crazy. Five missions, five bosses.' }
             }
           };
         }
-        if (!gmInstalled.includes('hl2') && games.children['HL2']) {
+        if (!gmInstalled.includes('hl2_demo') && games.children['HL2']) {
           delete games.children['HL2'];
-        } else if (gmInstalled.includes('hl2') && !games.children['HL2']) {
+        } else if (gmInstalled.includes('hl2_demo') && !games.children['HL2']) {
           games.children['HL2'] = {
             type: 'folder', name: 'HL2', icon: 'folder', children: {
-              'HL2.EXE': { type: 'executable', name: 'HL2.EXE', icon: 'hl2', app: 'hl2' },
+              'HL2.EXE': { type: 'executable', name: 'HL2.EXE', icon: 'hl2', app: 'hl2_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Half-Life 2 - 2000 Edition\r\n==================================\r\nValve Software (2000) - Win 98 Edition\r\n\r\n[W/A/S/D] - Move   [Mouse] - Look   [LMB]/[RMB] - Fire / Alt fire   [E] - Use\r\n[Space] - Jump   [C] - Crouch   [Shift] - Sprint   [F] - Flashlight   [G] - Squad\r\n[1-6] - Weapons   [F6]/[F9] - Quick save/load   [Esc] - Menu\r\n\r\nWake up, Mr. Freeman.' }
             }
           };
@@ -1377,12 +1365,12 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
-        if (!gmInstalled.includes('kotor98') && games.children['KOTOR98']) {
+        if (!gmInstalled.includes('kotor98_demo') && games.children['KOTOR98']) {
           delete games.children['KOTOR98'];
-        } else if (gmInstalled.includes('kotor98') && !games.children['KOTOR98']) {
+        } else if (gmInstalled.includes('kotor98_demo') && !games.children['KOTOR98']) {
           games.children['KOTOR98'] = {
             type: 'folder', name: 'KOTOR98', icon: 'folder', children: {
-              'KOTOR.EXE': { type: 'executable', name: 'KOTOR.EXE', icon: 'kotor98', app: 'kotor98' },
+              'KOTOR.EXE': { type: 'executable', name: 'KOTOR.EXE', icon: 'kotor98', app: 'kotor98_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Star Wars: Knights of the Old Republic 98 - Taris\r\n==================================\r\nBioWare / LucasArts (1999) - Win 98 Edition\r\n\r\n[Left Click] - Move / Attack / Talk / Use   [W/A/S/D] - Move   [Space] - Pause\r\n[Tab] - Switch leader   [U/I/C/K/J/M/P/L] - Panels   [F5]/[F9] - Quick save/load\r\n\r\nFind Bastila Shan and escape Taris aboard the Ebon Hawk.' }
             }
           };
@@ -1398,12 +1386,12 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           };
         }
 
-        if (!gmInstalled.includes('stalker98') && games.children['Stalker98']) {
+        if (!gmInstalled.includes('stalker98_demo') && games.children['Stalker98']) {
           delete games.children['Stalker98'];
-        } else if (gmInstalled.includes('stalker98') && !games.children['Stalker98']) {
+        } else if (gmInstalled.includes('stalker98_demo') && !games.children['Stalker98']) {
           games.children['Stalker98'] = {
             type: 'folder', name: 'Stalker98', icon: 'folder', children: {
-              'XR98.EXE': { type: 'executable', name: 'XR98.EXE', icon: 'stalker98', app: 'stalker98' },
+              'XR98.EXE': { type: 'executable', name: 'XR98.EXE', icon: 'stalker98', app: 'stalker98_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'S.T.A.L.K.E.R. 98: Shadow of Chernobyl\r\n==================================\r\nGSC Game World (2000) - fan remake for Win 98\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire   [Right Click] - Aim\r\n[Shift] - Sprint   [Ctrl]/[C] - Crouch   [Space] - Jump   [Q]/[E] - Lean\r\n[R] - Reload   [B] - Fire mode   [1-6] - Knife, pistol, rifle, grenade, binoculars, bolt\r\n[F] - Talk / Search / Pick up   [I] - Inventory   [P]/[Tab] - PDA   [M] - Map   [L] - Flashlight\r\n[F1-F4] - Medkit, bandage, anti-rad, food   [F6]/[F7] - Quick save/load   [Esc] - Menu\r\n\r\nLevels: Cordon, Garbage. Find Strelok.\r\nThe text quest STALKER.EXE is a different game.' }
             }
           };
@@ -1645,6 +1633,9 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
         if (!winDir.children['MSBACKUP.EXE']) {
           winDir.children['MSBACKUP.EXE'] = { type: 'executable', name: 'MSBACKUP.EXE', icon: 'backup', app: 'msbackup' };
         }
+        if (!winDir.children['BUGREPORT.EXE']) {
+          winDir.children['BUGREPORT.EXE'] = { type: 'executable', name: 'BUGREPORT.EXE', icon: 'bugreport', app: 'bugreport' };
+        }
         if (!winDir.children['CLEANMGR.EXE']) {
           winDir.children['CLEANMGR.EXE'] = { type: 'executable', name: 'CLEANMGR.EXE', icon: 'cleanmgr', app: 'cleanmgr' };
         }
@@ -1692,18 +1683,10 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
               this.saveToStorage();
             } else {
               let changed = false;
-              if (dDrive.children['demo'] && dDrive.children['demo'].children) {
-                const demoFiles = dDrive.children['demo'].children;
-                if (demoFiles['nhl98demo.exe'] && demoFiles['nhl98demo.exe'].gameId !== 'hockey') {
-                  demoFiles['nhl98demo.exe'].gameId = 'hockey';
-                  demoFiles['nhl98demo.exe'].icon = 'setup-installer';
-                  changed = true;
-                }
-                if (demoFiles['worldcup98.exe'] && demoFiles['worldcup98.exe'].gameId !== 'worldcup98') {
-                  demoFiles['worldcup98.exe'].gameId = 'worldcup98';
-                  demoFiles['worldcup98.exe'].icon = 'setup-installer';
-                  changed = true;
-                }
+              const freshDemo = this.getIgromaniaCdTree().demo;
+              if (JSON.stringify(Object.keys((dDrive.children['demo'] || {}).children || {})) !== JSON.stringify(Object.keys(freshDemo.children))) {
+                dDrive.children['demo'] = freshDemo;
+                changed = true;
               }
               if (dDrive.children['video'] && dDrive.children['video'].children) {
                 const vids = dDrive.children['video'].children;
@@ -1983,30 +1966,26 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
         name: 'demo',
         icon: 'folder',
         children: {
-          'pipe.exe': { type: 'executable', name: 'pipe.exe', icon: 'file-exe', app: 'setup', content: 'Полная Труба (Демо-версия квеста Никита)' },
-          'sin_demo.exe': { type: 'executable', name: 'sin_demo.exe', icon: 'file-exe', app: 'setup', content: 'SiN 3D Action Demo (Activision)' },
-          'kknd2_demoall.exe': { type: 'executable', name: 'kknd2_demoall.exe', icon: 'file-exe', app: 'setup', content: 'KKnD 2: Krossfire RTS Demo' },
-          'crocdem6.exe': { type: 'executable', name: 'crocdem6.exe', icon: 'file-exe', app: 'setup', content: 'Croc: Legend of the Gobbos Demo' },
-          'addictiondemo.exe': { type: 'executable', name: 'addictiondemo.exe', icon: 'file-exe', app: 'setup', content: 'Addiction Pinball Demo (Team17)' },
           'burndemo.exe': { type: 'executable', name: 'burndemo.exe', icon: 'setup-installer', app: 'setup', gameId: 'burnout', content: 'Burnout Championship Drag Racing Demo Installer' },
-          'demour-nointro.exe': { type: 'executable', name: 'demour-nointro.exe', icon: 'file-exe', app: 'setup', content: 'Ultim@te Race Pro Demo (MicroProse)' },
-          'lb2demo.exe': { type: 'executable', name: 'lb2demo.exe', icon: 'file-exe', app: 'setup', content: 'Jane\'s Longbow 2 Helicopter Demo' },
           'nhl98demo.exe': { type: 'executable', name: 'nhl98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'hockey', content: 'EA Sports NHL 98 Demo Installer' },
           'worldcup98.exe': { type: 'executable', name: 'worldcup98.exe', icon: 'setup-installer', app: 'setup', gameId: 'worldcup98', content: 'EA Sports World Cup 98 Demo Installer' },
-          'msgolf98.exe': { type: 'executable', name: 'msgolf98.exe', icon: 'file-exe', app: 'setup', content: 'Microslop Golf 1998 Edition Demo' },
-          'nic_demo.exe': { type: 'executable', name: 'nic_demo.exe', icon: 'file-exe', app: 'setup', content: 'Nightmare Creatures Demo (Activision)' },
-          'pcdemo.exe': { type: 'executable', name: 'pcdemo.exe', icon: 'file-exe', app: 'setup', content: 'Panzer Commander Tank Sim Demo' },
-          'kopinst.exe': { type: 'executable', name: 'kopinst.exe', icon: 'file-exe', app: 'setup', content: 'Neophyte: Koplio\'s Story Demo' },
-          'smgdemo_c.exe': { type: 'executable', name: 'smgdemo_c.exe', icon: 'file-exe', app: 'setup', content: 'Sid Meier\'s Gettysburg! (Северяне)' },
-          'smgdemo_u.exe': { type: 'executable', name: 'smgdemo_u.exe', icon: 'file-exe', app: 'setup', content: 'Sid Meier\'s Gettysburg! (Южане)' },
-          'wargames': {
-            type: 'folder',
-            name: 'wargames',
-            icon: 'folder',
-            children: {
-              'SETUP.EXE': { type: 'executable', name: 'SETUP.EXE', icon: 'setup-installer', app: 'setup', content: 'WarGames: Defcon 1 Demo Setup' }
-            }
-          }
+          'homm98demo.exe': { type: 'executable', name: 'homm98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'homm1_demo', content: 'Heroes of Might and Magic 98 Demo Installer' },
+          'sammax202demo.exe': { type: 'executable', name: 'sammax202demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'sammax202_demo', content: 'Sam & Max: Moai Better Blues Demo Installer' },
+          'glidedemo.exe': { type: 'executable', name: 'glidedemo.exe', icon: 'setup-installer', app: 'setup', gameId: 'neon-racer_demo', content: 'Midnight Glide Demo Installer' },
+          'hl98demo.exe': { type: 'executable', name: 'hl98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'half-life_demo', content: 'Half-Life 98 Demo Installer' },
+          'hl2demo.exe': { type: 'executable', name: 'hl2demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'hl2_demo', content: 'Half-Life 2 Demo Installer' },
+          'kotor98demo.exe': { type: 'executable', name: 'kotor98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'kotor98_demo', content: 'Star Wars: Knights of the Old Republic 98 Demo Installer' },
+          'maxpaynedemo.exe': { type: 'executable', name: 'maxpaynedemo.exe', icon: 'setup-installer', app: 'setup', gameId: 'maxpayne_demo', content: 'Max Payne Demo Installer' },
+          'xiiidemo.exe': { type: 'executable', name: 'xiiidemo.exe', icon: 'setup-installer', app: 'setup', gameId: 'xiii_demo', content: 'XIII Demo Installer' },
+          'falloutzpdemo.exe': { type: 'executable', name: 'falloutzpdemo.exe', icon: 'setup-installer', app: 'setup', gameId: 'falloutzp_demo', content: 'Fallout: Запорожье Demo Installer' },
+          'fallout98demo.exe': { type: 'executable', name: 'fallout98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'fallout98_demo', content: 'Fallout 98 Demo Installer' },
+          'tekken98demo.exe': { type: 'executable', name: 'tekken98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'tekken98_demo', content: 'Tekken 98 Demo Installer' },
+          'dmc98demo.exe': { type: 'executable', name: 'dmc98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'dmc98_demo', content: 'Devil May Cry 98 Demo Installer' },
+          'dao98demo.exe': { type: 'executable', name: 'dao98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'dao98_demo', content: 'Dragon Age: Origins 98 Demo Installer' },
+          'mc98demo.exe': { type: 'executable', name: 'mc98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'mc98_demo', content: 'Minecraft 98 Demo Installer' },
+          'stalker98demo.exe': { type: 'executable', name: 'stalker98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'stalker98_demo', content: 'S.T.A.L.K.E.R. 98: Тень Чернобыля Demo Installer' },
+          'korovanydemo.exe': { type: 'executable', name: 'korovanydemo.exe', icon: 'setup-installer', app: 'setup', gameId: 'korovany_demo', content: 'Корованы Demo Installer' },
+          'questdemo.exe': { type: 'executable', name: 'questdemo.exe', icon: 'setup-installer', app: 'setup', gameId: 'quest_demo', content: 'LucasQuest 98 Demo Installer' }
         }
       },
       'patch': {
@@ -2484,6 +2463,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
                     'SNDVOL32.EXE': { type: 'executable', name: 'SNDVOL32.EXE', icon: 'volume-mixer', app: 'sndvol32' },
                     'CLEANMGR.EXE': { type: 'executable', name: 'CLEANMGR.EXE', icon: 'cleanmgr', app: 'cleanmgr' },
                     'MSBACKUP.EXE': { type: 'executable', name: 'MSBACKUP.EXE', icon: 'backup', app: 'msbackup' },
+                    'BUGREPORT.EXE': { type: 'executable', name: 'BUGREPORT.EXE', icon: 'bugreport', app: 'bugreport' },
                     'COMMAND.COM': { type: 'executable', name: 'COMMAND.COM', icon: 'dos-prompt', app: 'command' },
                     'QBASIC.EXE': { type: 'executable', name: 'QBASIC.EXE', icon: 'qbasic', app: 'qbasic' },
                     'CDPLAYER.EXE': { type: 'executable', name: 'CDPLAYER.EXE', icon: 'cdplayer', app: 'cdplayer' },

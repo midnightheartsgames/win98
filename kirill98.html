@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kirill The Game</title>
+<link rel="stylesheet" href="css/apps/kirill98.css">
+<style>html,body{height:100%;margin:0;background:#2f3a2c}body{display:grid;place-items:center}.ki-page{width:min(98vw,1024px);height:min(96vh,792px);display:flex;flex-direction:column;background:#c0c0c0;border:2px outset #e4e4e4}.ki-page-title{font:bold 12px Tahoma,Verdana,sans-serif;color:#fff;background:linear-gradient(90deg,#000080,#1084d0);padding:4px 6px}.ki-page-game{flex:1;min-height:0;position:relative}</style></head>
+<body><main class="ki-page"><div class="ki-page-title">Kirill The Game</div><div class="ki-page-game" id="game"></div></main>
+<script src="js/apps/kirill98/ki-core.js"></script>
+<script src="js/apps/kirill98/ki-data.js"></script>
+<script src="js/apps/kirill98/ki-places.js"></script>
+<script src="js/apps/kirill98/ki-terrain.js"></script>
+<script src="js/apps/kirill98/ki-flora.js"></script>
+<script src="js/apps/kirill98/ki-detail.js"></script>
+<script src="js/apps/kirill98/ki-weather.js"></script>
+<script src="js/apps/kirill98/ki-edge.js"></script>
+<script src="js/apps/kirill98/ki-body.js"></script>
+<script src="js/apps/kirill98/ki-combat.js"></script>
+<script src="js/apps/kirill98/ki-wounds.js"></script>
+<script src="js/apps/kirill98/ki-missile.js"></script>
+<script src="js/apps/kirill98/ki-senses.js"></script>
+<script src="js/apps/kirill98/ki-move.js"></script>
+<script src="js/apps/kirill98/ki-nav.js"></script>
+<script src="js/apps/kirill98/ki-beasts.js"></script>
+<script src="js/apps/kirill98/ki-ai.js"></script>
+<script src="js/apps/kirill98/ki-econ.js"></script>
+<script src="js/apps/kirill98/ki-caravan.js"></script>
+<script src="js/apps/kirill98/ki-world.js"></script>
+<script src="js/apps/kirill98/ki-elves.js"></script>
+<script src="js/apps/kirill98/ki-guard.js"></script>
+<script src="js/apps/kirill98/ki-villain.js"></script>
+<script src="js/apps/kirill98/ki-save.js"></script>
+<script src="js/apps/kirill98/ki-gl.js"></script>
+<script src="js/apps/kirill98/ki-tex.js"></script>
+<script src="js/apps/kirill98/ki-models.js"></script>
+<script src="js/apps/kirill98/ki-trees.js"></script>
+<script src="js/apps/kirill98/ki-anim.js"></script>
+<script src="js/apps/kirill98/ki-render.js"></script>
+<script src="js/apps/kirill98/ki-fx.js"></script>
+<script src="js/apps/kirill98/ki-audio.js"></script>
+<script src="js/apps/kirill98/ki-hud.js"></script>
+<script src="js/apps/kirill98/ki-screens.js"></script>
+<script src="js/apps/kirill98/ki-ui.js"></script>
+<script>const el=document.getElementById('game');window.kiui=new Kirill98.UI(el,{standalone:true,shots:/[?&]shots(&|=|$)/.test(location.search)});addEventListener('pagehide',()=>window.kiui.destroy(),{once:true});</script>
+</body></html>

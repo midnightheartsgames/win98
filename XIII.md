@@ -2,7 +2,7 @@
 
 A first-person shooter built from scratch for this project in the spirit of XIII: an amnesiac with a XIII tattoo on his collarbone, the murder of President Sheridan, and a conspiracy of twenty men known as "XX". The whole game is presented as a comic book. The WebGL 1 renderer draws ink outlines, flat cel lighting, hatching and paper grain; every headshot opens a strip of three frozen close-up panels; alarms, cameras and bosses appear in live picture-in-picture panels with red borders; sounds pop up as onomatopoeia ("TAP TAP", "BLAM", "AARGH"); and every chapter opens and closes with a comic page built from staged 3D scenes and procedural art panels. Menus are DOM, the HUD and speech balloons are a 2D canvas, music and sound effects are synthesised with Web Audio. All text is in Russian.
 
-- Distribution: sold in the in-system Steam client (`steam: true` in `js/game-manager.js`, $37.99). The game is not preinstalled.
+- Distribution: Igromania CD demo (`xiii_demo`, `cdDemo: true` in `js/game-manager.js`, `D:\demo\xiiidemo.exe`). Not sold in Steam, not preinstalled.
 - After installation: desktop icon **XIII**, Start menu → **XIII**, `C:\Games\XIII\XIII.EXE` (with `README.TXT` and `SAVE`), Run: `xiii`, `xiii.exe`, `13`, `тринадцать`, `тринадцатый`. Task Manager shows `xiii.exe`. Clippy has tips for the game window, and a Steam friend (`Rowland_XIII`) plays it.
 - Window: `appXiii.open()` in `js/apps/xiii-app.js`, window id `app_xiii`.
 - Standalone page: `xiii.html` (`window.x13ui` is the UI instance, `x13ui.game` the running game, `x13ui.r` the renderer, `x13ui.startLevel(id, opts)` starts a chapter).

@@ -435,7 +435,7 @@ const newGame = (o = {}) => { const g = new M.Game(Object.assign({ seed: 1999, r
   for (const f of FILES) ok(html.includes('js/apps/mc98/' + f + '.js'), 'index.html loads ' + f);
   ok(html.includes('mc98-app.js') && html.includes('css/apps/mc98.css'), 'index.html wires app and css');
   const gm = fs.readFileSync(path.join(__dirname, '../js/game-manager.js'), 'utf8');
-  ok(/mc98: \{\s*id: 'mc98',\s*steam: true/.test(gm), 'game manager sells mc98 through Steam');
+  ok(/mc98_demo: \{\s*id: 'mc98_demo',\s*cdDemo: true/.test(gm), 'Minecraft 98 Demo ships on the Igromania CD');
   const fsys = fs.readFileSync(path.join(__dirname, '../js/filesystem.js'), 'utf8');
   ok(fsys.includes('MINECRAFT.EXE'), 'filesystem has MINECRAFT.EXE');
   const dlg = fs.readFileSync(path.join(__dirname, '../js/apps/dialogs.js'), 'utf8');

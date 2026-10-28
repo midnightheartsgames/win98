@@ -11,6 +11,11 @@
   const FLY_FAST = 36;
   const FLY_Y0 = -60;
   const FLY_Y1 = 400;
+  const THROW_CHARGE = 1.2;
+  const PED_CHEST = 0.9;
+  N.QUICK_THROW = 0.8;
+  N.throwPower = charge => 0.35 + N.clamp(charge, 0, 1) * 0.65;
+  N.throwCharge = power => N.clamp((power - 0.35) / 0.65, 0, 1);
   N.HEAT = HEAT;
   N.crashDamage = (v, dv) => (dv > 5 ? Math.pow(dv - 5, 1.5) * 2.6 * Phys.handling(v.spec).dmg : 0);
 
@@ -466,7 +471,7 @@
       if (ml > 0.05 && !p.ride) speed = (scope ? 0 : aiming ? 2.0 : inp.walk || p.eat ? 1.6 : inp.sprint ? 6.6 : 4.3) * (w.heavy || 1) * (this.superRun ? SUPER_RUN : 1);
       p.wantVx = dirx * speed * ml;
       p.wantVz = dirz * speed * ml;
-      if (aiming || (inp.fire && !w.melee && !w.throw) || inp.face && !p.ride) p.yaw = N.turnTo(p.yaw, cy, dt * 14);
+      if (aiming || (inp.fire && !w.melee && !w.throw) || p.charging > 0 && w.throw || inp.face && !p.ride) p.yaw = N.turnTo(p.yaw, cy, dt * 14);
       else if (ml > 0.05) p.yaw = N.turnTo(p.yaw, N.yawOf(dirx, dirz), dt * 12);
       p.anim.aim = N.approach(p.anim.aim, aiming || ((inp.fire || inp.face) && !w.melee && !w.throw) ? 1 : 0, dt * 8);
       p.scope = scope;
@@ -573,13 +578,25 @@
       }
       if (inp.reload && slot && !w.melee && !w.throw && slot.clip < w.clip && slot.ammo > 0) { p.reloadT = w.reload; this.emit({ t: 'reload', p }); return; }
       if (w.throw) {
-        if (inp.fire && !p.charging && p.fireT <= 0 && slot && slot.ammo > 0) { p.charging = 0.001; }
+        if (p.charging && inp.reload) {
+          p.charging = 0;
+          p.throwPlan = null;
+          p.anim.action = null;
+          p.throwHold = true;
+          this.emit({ t: 'throwCancel', p });
+          return;
+        }
+        if (!inp.fire) p.throwHold = false;
+        if (inp.fire && !p.charging && !p.throwHold && p.fireT <= 0 && slot && slot.ammo > 0) { p.charging = 0.001; }
         if (p.charging) {
-          p.charging = Math.min(1, p.charging + dt * 1.2);
-          p.anim.action = 'windup';
-          if (!inp.fire) {
-            this.throwGrenade(p, inp, 0.35 + p.charging * 0.65, p.weapon);
+          if (inp.fire) {
+            p.charging = Math.min(1, p.charging + dt * THROW_CHARGE);
+            p.anim.action = 'windup';
+            if (p.isPlayer) p.throwPlan = this.planThrow(p, inp, N.throwPower(p.charging), p.weapon);
+          } else {
+            this.throwGrenade(p, inp, N.throwPower(p.charging), p.weapon);
             p.charging = 0;
+            p.throwPlan = null;
             slot.ammo--;
             p.fireT = w.rate;
             p.anim.action = 'throw';
@@ -589,9 +606,10 @@
         }
         return;
       }
+      p.charging = 0;
       const gid = p.weapons && p.weapons.grenade && p.weapons.grenade.ammo > 0 ? 'grenade' : p.weapons && p.weapons.molotov && p.weapons.molotov.ammo > 0 ? 'molotov' : null;
       if (inp.grenade && gid && p.fireT <= 0 && !inCar) {
-        this.throwGrenade(p, inp, 0.8, gid);
+        this.throwGrenade(p, inp, N.QUICK_THROW, gid);
         p.weapons[gid].ammo--;
         if (p.weapons[gid].ammo <= 0) delete p.weapons[gid];
         p.fireT = 0.8;
@@ -901,7 +919,7 @@
       else if (!best.dead) { best.vx += fx * 1.8; best.vz += fz * 1.8; best.anim.flinch = 0.25; }
     }
 
-    throwGrenade(p, inp, power, type) {
+    throwLaunch(p, inp, power, type) {
       let dx, dy, dz;
       if (inp && inp.aimD) { dx = inp.aimD[0]; dy = inp.aimD[1]; dz = inp.aimD[2]; } else { dx = Math.sin(p.yaw); dy = 0.1; dz = -Math.cos(p.yaw); }
       const hl = Math.hypot(dx, dz) || 1;
@@ -910,8 +928,112 @@
       const sp = 7 + 12 * power;
       const m = this.muzzle(p);
       const kind = type === 'molotov' ? 'molotov' : 'grenade';
-      this.projs.push({ id: this.nextId++, type: kind, x: m.x, y: m.y + 0.2, z: m.z, vx: dx * sp + p.vx * 0.5, vy: up * sp * 0.75, vz: dz * sp + p.vz * 0.5, t: kind === 'molotov' ? 8 : N.WEAPONS.grenade.fuse, owner: p, rot: 0 });
+      return { type: kind, x: m.x, y: m.y + 0.2, z: m.z, vx: dx * sp + p.vx * 0.5, vy: up * sp * 0.75, vz: dz * sp + p.vz * 0.5, t: kind === 'molotov' ? 8 : N.WEAPONS.grenade.fuse, rot: 0 };
+    }
+
+    throwGrenade(p, inp, power, type) {
+      const g = this.throwLaunch(p, inp, power, type);
+      g.id = this.nextId++;
+      g.owner = p;
+      this.projs.push(g);
       this.emit({ t: 'throw', p });
+    }
+
+    moveProj(g, dt, quiet) {
+      g.t -= dt;
+      g.vy -= N.G * dt;
+      const nx = g.x + g.vx * dt, ny = g.y + g.vy * dt, nz = g.z + g.vz * dt;
+      let bx = false, bz = false, wall = null, hop = false;
+      this.city.hash.query(nx - 0.2, nz - 0.2, nx + 0.2, nz + 0.2, it => {
+        if (it.brk && this.broken.has(it.brk)) return;
+        if (it.circle) { if (N.dist2(nx, nz, it.x, it.z) < it.r * it.r + 0.04 && ny < it.y1) { bx = bz = true; } return; }
+        if (ny > it.y1 || ny < it.y0) return;
+        if (it.poly) {
+          if (N.pointInPoly(it.poly, nx, nz) && !N.pointInPoly(it.poly, g.x, g.z)) { const c = N.circlePoly(nx, nz, 0.01, it.poly); if (c) wall = c; }
+          return;
+        }
+        if (nx > it.x0 && nx < it.x1 && nz > it.z0 && nz < it.z1) {
+          const inX = g.x > it.x0 && g.x < it.x1, inZ = g.z > it.z0 && g.z < it.z1;
+          if (!inX) bx = true;
+          if (!inZ) bz = true;
+          if (inX && inZ) { bx = bz = true; }
+        }
+      });
+      for (const v of this.vehs) {
+        if (Math.abs(v.x - nx) > 4 || Math.abs(v.z - nz) > 4) continue;
+        if (ny < v.y + v.spec.shape.H && N.pointInObb(Phys.obbOf(v), nx, nz)) { bx = bz = true; g.vy = Math.abs(g.vy) * 0.3; }
+      }
+      const struck = bx || bz || !!wall;
+      if (wall && !bx && !bz) {
+        const vn = g.vx * wall.nx + g.vz * wall.nz;
+        if (vn < 0) { g.vx -= 1.35 * vn * wall.nx; g.vz -= 1.35 * vn * wall.nz; }
+      } else {
+        if (bx) g.vx *= -0.35; else g.x = nx;
+        if (bz) g.vz *= -0.35; else g.z = nz;
+      }
+      g.y = ny;
+      const gy = this.city.groundY(g.x, g.z, g.y + 0.3);
+      const roof = this.city.roofAt(g.x, g.z);
+      const floor = roof > 0 && roof > gy && g.y > roof - 0.5 ? roof : gy;
+      const wa = !g.wet && this.city.ground(g.x, g.z) === GT.WATER ? this.city.waterAt(g.x, g.z) : null;
+      if (wa && g.y < wa.level) {
+        g.wet = true;
+        g.wetY = wa.level;
+        g.t = Math.min(g.t, 0.8);
+        g.vx *= 0.15; g.vz *= 0.15;
+        if (!quiet) this.emit({ t: 'splash', x: g.x, y: wa.level, z: g.z, big: false });
+      }
+      if (g.wet) g.vy = -1.1;
+      if (g.y < floor + 0.08) {
+        g.y = floor + 0.08;
+        if (g.wet) { g.vx = 0; g.vz = 0; g.vy = 0; }
+        else if (g.vy < -1.5) { g.vy = -g.vy * 0.32; g.vx *= 0.6; g.vz *= 0.6; hop = true; if (!quiet) this.emit({ t: 'bounce', x: g.x, z: g.z }); } else { g.vy = 0; g.vx *= Math.max(0, 1 - dt * 5); g.vz *= Math.max(0, 1 - dt * 5); }
+      }
+      g.rot += dt * 10;
+      return { struck, floor, hop: hop || struck };
+    }
+
+    planThrow(p, inp, power, type) {
+      const g = this.throwLaunch(p, inp, power, type);
+      const pts = [g.x, g.y, g.z], hops = [];
+      let floor = g.y, landed = -1;
+      const steps = Math.ceil(g.t / N.TICK);
+      for (let i = 0; i < steps; i++) {
+        const m = this.moveProj(g, N.TICK, true);
+        floor = m.floor;
+        pts.push(g.x, g.y, g.z);
+        if (g.type === 'molotov' && (g.wet || m.struck || g.y <= m.floor + 0.1)) break;
+        if (m.hop) { hops.push(g.x, g.y, g.z); if (landed < 0) landed = pts.length / 3 - 1; }
+        if (g.t <= 0) break;
+      }
+      const W = N.WEAPONS[g.type], fire = g.type === 'molotov';
+      const plan = { kind: g.type, power, pts, hops, landed, x: g.x, y: fire ? floor : g.y, z: g.z, ground: g.wet ? g.wetY : floor, wet: !!g.wet, fizzle: fire && !!g.wet, radius: W.radius, lethal: fire ? 0 : W.radius * Math.max(0, 1 - 100 / W.dmg), flight: (pts.length / 3 - 1) * N.TICK };
+      plan.hits = plan.fizzle ? [] : this.throwHits(plan, p);
+      plan.self = plan.hits.some(h => h.e === p);
+      return plan;
+    }
+
+    throwHits(plan, owner) {
+      const out = [], R = plan.radius, W = N.WEAPONS[plan.kind];
+      this.near(plan.x, plan.z, R + 4, e => {
+        if (e.dead) return;
+        if (e.kind === 'ped') {
+          if (e.veh || e.hidden) return;
+          if (plan.kind === 'molotov') {
+            if (Math.abs(e.y - plan.y) <= 1.6 && N.dist2(e.x, e.z, plan.x, plan.z) < R * R) out.push({ e, kill: false });
+            return;
+          }
+          const d = Math.hypot(e.x - plan.x, e.y + PED_CHEST - plan.y, e.z - plan.z);
+          if (d > R) return;
+          const safe = e.isPlayer && (this.god || e.invuln > 0 || this.truce) || e.ai && e.ai.invuln;
+          out.push({ e, kill: !safe && W.dmg * (1 - d / R) >= e.hp + (e.armor || 0) });
+          return;
+        }
+        if (e.kind !== 'veh' || e === (owner && owner.veh)) return;
+        const d = plan.kind === 'molotov' ? Math.hypot(e.x - plan.x, e.z - plan.z) - e.spec.hw : Math.hypot(e.x - plan.x, e.y + 0.7 - plan.y, e.z - plan.z) - e.spec.hl * 0.5;
+        if (d < R) out.push({ e, kill: false });
+      });
+      return out;
     }
 
     stepProjectiles(dt) {
@@ -919,59 +1041,11 @@
         const g = this.projs[i];
         if (g.type === 'rocket') { if (this.stepRocket(g, dt)) this.projs.splice(i, 1); continue; }
         if (g.type === 'shell') { if (this.stepShell(g, dt)) this.projs.splice(i, 1); continue; }
-        g.t -= dt;
-        g.vy -= N.G * dt;
-        const nx = g.x + g.vx * dt, ny = g.y + g.vy * dt, nz = g.z + g.vz * dt;
-        let bx = false, bz = false, wall = null;
-        this.city.hash.query(nx - 0.2, nz - 0.2, nx + 0.2, nz + 0.2, it => {
-          if (it.brk && this.broken.has(it.brk)) return;
-          if (it.circle) { if (N.dist2(nx, nz, it.x, it.z) < it.r * it.r + 0.04 && ny < it.y1) { bx = bz = true; } return; }
-          if (ny > it.y1 || ny < it.y0) return;
-          if (it.poly) {
-            if (N.pointInPoly(it.poly, nx, nz) && !N.pointInPoly(it.poly, g.x, g.z)) { const c = N.circlePoly(nx, nz, 0.01, it.poly); if (c) wall = c; }
-            return;
-          }
-          if (nx > it.x0 && nx < it.x1 && nz > it.z0 && nz < it.z1) {
-            const inX = g.x > it.x0 && g.x < it.x1, inZ = g.z > it.z0 && g.z < it.z1;
-            if (!inX) bx = true;
-            if (!inZ) bz = true;
-            if (inX && inZ) { bx = bz = true; }
-          }
-        });
-        for (const v of this.vehs) {
-          if (Math.abs(v.x - nx) > 4 || Math.abs(v.z - nz) > 4) continue;
-          if (ny < v.y + v.spec.shape.H && N.pointInObb(Phys.obbOf(v), nx, nz)) { bx = bz = true; g.vy = Math.abs(g.vy) * 0.3; }
-        }
-        const struck = bx || bz || !!wall;
-        if (wall && !bx && !bz) {
-          const vn = g.vx * wall.nx + g.vz * wall.nz;
-          if (vn < 0) { g.vx -= 1.35 * vn * wall.nx; g.vz -= 1.35 * vn * wall.nz; }
-        } else {
-          if (bx) g.vx *= -0.35; else g.x = nx;
-          if (bz) g.vz *= -0.35; else g.z = nz;
-        }
-        g.y = ny;
-        const gy = this.city.groundY(g.x, g.z, g.y + 0.3);
-        const roof = this.city.roofAt(g.x, g.z);
-        const floor = roof > 0 && roof > gy && g.y > roof - 0.5 ? roof : gy;
-        const wa = !g.wet && this.city.ground(g.x, g.z) === GT.WATER ? this.city.waterAt(g.x, g.z) : null;
-        if (wa && g.y < wa.level) {
-          g.wet = true;
-          g.t = Math.min(g.t, 0.8);
-          g.vx *= 0.15; g.vz *= 0.15;
-          this.emit({ t: 'splash', x: g.x, y: wa.level, z: g.z, big: false });
-        }
-        if (g.wet) g.vy = -1.1;
-        if (g.y < floor + 0.08) {
-          g.y = floor + 0.08;
-          if (g.wet) { g.vx = 0; g.vz = 0; g.vy = 0; }
-          else if (g.vy < -1.5) { g.vy = -g.vy * 0.32; g.vx *= 0.6; g.vz *= 0.6; this.emit({ t: 'bounce', x: g.x, z: g.z }); } else { g.vy = 0; g.vx *= Math.max(0, 1 - dt * 5); g.vz *= Math.max(0, 1 - dt * 5); }
-        }
+        const m = this.moveProj(g, dt, false);
         if (g.type === 'molotov') {
           if (g.wet) { this.projs.splice(i, 1); this.emit({ t: 'fizzle', x: g.x, y: g.y, z: g.z }); continue; }
-          if (struck || g.y <= floor + 0.1 || g.t <= 0) { this.projs.splice(i, 1); this.molotov(g, floor); continue; }
+          if (m.struck || g.y <= m.floor + 0.1 || g.t <= 0) { this.projs.splice(i, 1); this.molotov(g, m.floor); continue; }
         }
-        g.rot += dt * 10;
         if (g.t <= 0) {
           this.projs.splice(i, 1);
           this.explode(g.x, g.y, g.z, N.WEAPONS.grenade.radius, N.WEAPONS.grenade.dmg, g.owner, 'grenade');
@@ -1006,7 +1080,7 @@
       this.alarm(x, z, 50, by);
       for (const p of this.peds.slice()) {
         if (p.veh) continue;
-        const d = Math.hypot(p.x - x, p.y + 0.9 - y, p.z - z);
+        const d = Math.hypot(p.x - x, p.y + PED_CHEST - y, p.z - z);
         if (d > radius) continue;
         const k = 1 - d / radius;
         this.damagePed(p, dmg * k, by, 'explosion');

@@ -1067,7 +1067,8 @@ class AppClippy {
     if (fixed.some(gid => id === gid || id.startsWith(`${gid}_`))) return true;
     const gm = window.gameManager;
     if (!gm || !gm.catalog) return false;
-    return Object.keys(gm.catalog).some(gid => !gm.catalog[gid].isApp && (id === `app_${gid}` || id.startsWith(`app_${gid}_`)));
+    const gameIds = Object.keys(gm.catalog).filter(gid => !gm.catalog[gid].isApp).concat(Object.keys(gm.demoRenames || {}));
+    return gameIds.some(gid => id === `app_${gid}` || id.startsWith(`app_${gid}_`));
   }
 
   triggerBossKey() {
@@ -1499,7 +1500,9 @@ class AppClippy {
   }
 
   launchProgram(catalogId, appName) {
-    if (window.advancedSite && window.advancedSite.launch(catalogId)) return;
+    const site = window.advancedSite;
+    const program = site && site.programs && site.programs.find(p => p.id === catalogId || p.gm === catalogId);
+    if (program && site.launch(program.id)) return;
     const app = window[appName];
     if (app && typeof app.open === 'function') app.open();
   }
@@ -3046,7 +3049,7 @@ class AppClippy {
           },
           {
             text: '• Что делает F7?',
-            action: () => this.speak('Во многих играх из Steam <strong>F7</strong> открывает меню разработчиков: деньги, телепорт, погода. Но в «Тени Чернобыля 98» это быстрая загрузка. Сохранитесь, прежде чем экспериментировать!', [], '🕵️')
+            action: () => this.speak('Во многих играх из Steam <strong>F7</strong> открывает меню разработчиков: деньги, телепорт, погода. Но в демоверсии «Тени Чернобыля 98» с диска «Игромании» это быстрая загрузка. Сохранитесь, прежде чем экспериментировать!', [], '🕵️')
           },
           {
             text: '• Я играю честно!',
@@ -3189,14 +3192,14 @@ class AppClippy {
         text: '<strong>3ADVANCED SOFTWORKS</strong>! Каталог из 40 программ на Flash 5 — любую можно установить и запустить прямо со страницы. Что запустим?',
         actions: [
           { text: '• DOOM 98', action: () => this.launchProgram('doom', 'appDoom') },
-          { text: '• S.T.A.L.K.E.R. 98', action: () => this.launchProgram('stalker98', 'appStalker98') },
+          { text: '• S.T.A.L.K.E.R. 98', action: () => this.launchProgram('stalker98_demo', 'appStalker98') },
           { text: '• Medal of Honor 98', action: () => this.launchProgram('moh98', 'appMoh98') },
           { text: '• Зов Припяти 98', action: () => this.launchProgram('cop98', 'appCop98') },
-          { text: '• Minecraft 98', action: () => this.launchProgram('mc98', 'appMc98') },
+          { text: '• Minecraft 98', action: () => this.launchProgram('mc98_demo', 'appMc98') },
           { text: '• Honkai: Star Rail 98', action: () => this.launchProgram('hsr98', 'appHsr98') },
-          { text: '• Dragon Age: Origins 98', action: () => this.launchProgram('dao98', 'appDao98') },
-          { text: '• Star Wars: KOTOR 98', action: () => this.launchProgram('kotor98', 'appKotor98') },
-          { text: '• Tekken 3 98', action: () => this.launchProgram('tekken3', 'appTekken3') },
+          { text: '• Dragon Age: Origins 98', action: () => this.launchProgram('dao98_demo', 'appDao98') },
+          { text: '• Star Wars: KOTOR 98', action: () => this.launchProgram('kotor98_demo', 'appKotor98') },
+          { text: '• Tekken 3 98', action: () => this.launchProgram('tekken98_demo', 'appTekken3') },
           { text: '• Overwatch 98', action: () => this.launchProgram('ow98', 'appOw98') },
           { text: '• Sam & Max: Culture Shock', action: () => this.launchProgram('sammax', 'appSamMax') },
           { text: '• Sam & Max: Situation: Comedy', action: () => this.launchProgram('sammax102', 'appSamMax102') },
@@ -3205,21 +3208,21 @@ class AppClippy {
           { text: '• Sam & Max: Reality 2.0', action: () => this.launchProgram('sammax105', 'appSamMax105') },
           { text: '• Sam & Max: Bright Side of the Moon', action: () => this.launchProgram('sammax106', 'appSamMax106') },
           { text: '• Sam & Max: Ice Station Santa', action: () => this.launchProgram('sammax201', 'appSamMax201') },
-          { text: '• Sam & Max: Moai Better Blues', action: () => this.launchProgram('sammax202', 'appSamMax202') },
+          { text: '• Sam & Max: Moai Better Blues', action: () => this.launchProgram('sammax202_demo', 'appSamMax202') },
           { text: '• Back to the Future: The Game', action: () => this.launchProgram('bttf', 'appBTTF') },
           { text: '• Diablo II', action: () => this.launchProgram('diablo2', 'appDiablo2') },
-          { text: '• XIII', action: () => this.launchProgram('xiii', 'appXiii') },
-          { text: '• Max Payne', action: () => this.launchProgram('maxpayne', 'appMaxPayne') },
+          { text: '• XIII', action: () => this.launchProgram('xiii_demo', 'appXiii') },
+          { text: '• Max Payne', action: () => this.launchProgram('maxpayne_demo', 'appMaxPayne') },
           { text: '• GTA: Нижний Сити', action: () => this.launchProgram('gtann', 'appGtaNN') },
           { text: '• Legion Arena', action: () => this.launchProgram('legion', 'appLegion') },
           { text: '• Another War', action: () => this.launchProgram('anotherwar', 'appAnotherWar') },
           { text: '• Fallout', action: () => this.launchProgram('fallout', 'appFallout') },
-          { text: '• Fallout: Запорожье', action: () => this.launchProgram('falloutzp', 'appFalloutZP') },
+          { text: '• Fallout: Запорожье', action: () => this.launchProgram('falloutzp_demo', 'appFalloutZP') },
           { text: '• Хаято, Где плов?', action: () => this.launchProgram('plov', 'appPlov') },
           { text: '• The Sims 3', action: () => this.launchProgram('sims3', 'appSims3') },
           { text: '• Forza Horizon: Рига', action: () => this.launchProgram('forza', 'appForza') },
           { text: "• GTA: Екатеринбург '90", action: () => this.launchProgram('gta90', 'appGta90') },
-          { text: '• Half-Life 2', action: () => this.launchProgram('hl2', 'appHl2') },
+          { text: '• Half-Life 2', action: () => this.launchProgram('hl2_demo', 'appHl2') },
           { text: '• Quake III Arena', action: () => this.launchProgram('quake3', 'appQuake3') },
           { text: '• Dota 98', action: () => this.launchProgram('dota', 'appDota') },
           { text: '• Аватар: Тихий цикл', action: () => this.launchProgram('avatar98', 'appAvatar98') },

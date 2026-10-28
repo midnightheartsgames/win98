@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Star Wars: Aayla Secura — Twilight</title>
+<link rel="stylesheet" href="css/apps/aayla98.css">
+<style>html,body{height:100%;margin:0;background:#1c1840}body{display:grid;place-items:center}.ay-page{width:min(98vw,1288px);height:min(96vh,996px);display:flex;flex-direction:column;background:#c0c0c0;border:2px outset #e4e4e4}.ay-page-title{font:bold 12px Tahoma,Verdana,sans-serif;color:#fff;background:linear-gradient(90deg,#000080,#1084d0);padding:4px 6px}.ay-page-game{flex:1;min-height:0;position:relative}</style></head>
+<body><main class="ay-page"><div class="ay-page-title">Star Wars: Aayla Secura — Twilight</div><div class="ay-page-game" id="game"></div></main>
+<script src="js/apps/aayla98/ay-core.js"></script>
+<script src="js/apps/aayla98/ay-data.js"></script>
+<script src="js/apps/aayla98/ay-script.js"></script>
+<script src="js/apps/aayla98/ay-ch0.js"></script>
+<script src="js/apps/aayla98/ay-maps.js"></script>
+<script src="js/apps/aayla98/ay-files.js"></script>
+<script src="js/apps/aayla98/ay-art.js"></script>
+<script src="js/apps/aayla98/ay-pix.js"></script>
+<script src="js/apps/aayla98/ay-field.js"></script>
+<script src="js/apps/aayla98/ay-battle.js"></script>
+<script src="js/apps/aayla98/ay-font.js"></script>
+<script src="js/apps/aayla98/ay-gfx.js"></script>
+<script src="js/apps/aayla98/ay-audio.js"></script>
+<script src="js/apps/aayla98/ay-vn.js"></script>
+<script src="js/apps/aayla98/ay-draw-field.js"></script>
+<script src="js/apps/aayla98/ay-draw-battle.js"></script>
+<script src="js/apps/aayla98/ay-screens.js"></script>
+<script src="js/apps/aayla98/ay-ui.js"></script>
+<script>const el=document.getElementById('game');window.ayui=new Aayla98.UI(el,{standalone:true,pattern:/[?&]pattern(&|=|$)/.test(location.search),map:new URLSearchParams(location.search).get('map'),entry:new URLSearchParams(location.search).get('entry'),battle:new URLSearchParams(location.search).get('battle'),advantage:new URLSearchParams(location.search).get('adv')});addEventListener('pagehide',()=>window.ayui.destroy(),{once:true});</script>
+</body></html>

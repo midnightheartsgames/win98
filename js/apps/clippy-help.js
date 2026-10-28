@@ -83,7 +83,7 @@ class ClippyHelp {
       { id: 'excel-sum', q: 'Как посчитать сумму в Excel', keys: ['сумм', 'автосумм', 'excel', 'таблиц', 'бюджет'], a: 'Выделите ячейку под числами и нажмите кнопку Σ «Автосумма». Excel сам найдёт, что сложить.', go: 'cmd:excel', label: 'Открыть Excel' },
       { id: 'bold', q: 'Как сделать текст жирным', keys: ['жирн', 'шрифт', 'курсив', 'подчерк', 'wordpad'], a: 'В WordPad выделите текст и нажмите кнопку «Ж» на панели форматирования. В Блокноте шрифтов нет: он для серьёзных людей.', go: () => window.appWordPad && window.appWordPad.open(), label: 'Открыть WordPad' },
       { id: 'print', q: 'Как напечатать документ', keys: ['печат', 'принтер', 'распечат', 'print'], a: '«Файл → Печать». Принтер матричный, так что предупредите соседей.' },
-      { id: 'games', q: 'Где взять игры', keys: ['игр', 'steam', 'купить', 'поиграть', 'game'], a: 'Игры продаются и скачиваются через Steam. Клиент загружается с www.steampowered.com, а дальше игры сами приходят по модему.', go: () => window.gameManager && window.gameManager.showInSteam(), label: 'Открыть Steam' },
+      { id: 'games', q: 'Где взять игры', keys: ['игр', 'steam', 'купить', 'поиграть', 'game'], a: 'Игры продаются и скачиваются через Steam. Клиент загружается с www.steampowered.com, а дальше игры сами приходят по модему. Демоверсии с компакт-диска «Игромании» ставятся с привода D:, из папки D:\\demo.', go: () => window.gameManager && window.gameManager.showInSteam(), label: 'Открыть Steam' },
       { id: 'minesweeper', q: 'Сыграть в «Сапёра»', keys: ['сапер', 'мины', 'minesweeper', 'winmine'], a: 'Начинайте с центра поля. Цифра — это число мин вокруг клетки. Правая кнопка ставит флажок.', go: 'cmd:winmine', label: 'Запустить «Сапёра»' },
       { id: 'solitaire', q: 'Разложить «Косынку»', keys: ['косынк', 'пасьянс', 'карты', 'solitaire'], a: 'Перекладывайте карты по убыванию с чередованием цвета. Двойной щелчок отправляет карту в «дом».', go: 'cmd:sol', label: 'Запустить «Косынку»' },
       {
@@ -100,7 +100,7 @@ class ClippyHelp {
             return 'В дисководе D: сейчас стоит сборник <strong>«Офисные игры ’98»</strong> (<code>OFFICE_GAMES_98</code>): восемь офисных игр с маскировкой под Excel по F12 и три дорожки CD-Audio.';
           }
           if (cd && cd.inserted) {
-            return 'В дисководе D: сейчас лежит сентябрьский выпуск журнала <strong>«Игромания»</strong> с демоверсиями и видеороликами. Через значок CD-ROM в трее его можно сменить на «Офисные игры ’98».';
+            return 'В дисководе D: сейчас лежит сентябрьский выпуск журнала <strong>«Игромания»</strong> с двадцатью демоверсиями и видеороликами. Эти демки в Steam не продаются: Half-Life 98, Max Payne, Minecraft 98 и остальные ставятся только с диска. Через значок CD-ROM в трее его можно сменить на «Офисные игры ’98».';
           }
           return 'Лоток привода D: сейчас пуст. Щёлкните по значку CD-ROM в системном трее, чтобы вставить диск «Офисные игры ’98» или «Игромания».';
         },
@@ -181,8 +181,21 @@ class ClippyHelp {
     if (gm && gm.catalog) {
       Object.keys(gm.catalog).forEach(id => {
         const game = gm.catalog[id];
-        if (!game || !game.steam) return;
+        if (!game || !(game.steam || game.cdDemo)) return;
         const installed = gm.isInstalled && gm.isInstalled(id);
+        if (game.cdDemo) {
+          out.push({
+            id: `game:${id}`,
+            q: `${installed ? 'Играть' : 'Демоверсия на диске «Игромании»'}: ${game.title}`,
+            keys: [game.title, id, game.genre || ''].concat(game.tags || []).map(k => this.normalize(k)).filter(Boolean),
+            a: installed
+              ? `<strong>${this.esc(game.title)}</strong> установлена. ${this.esc(game.subtitle || '')}`
+              : `<strong>${this.esc(game.title)}</strong> в Steam не продаётся. Демоверсия лежит на компакт-диске журнала «Игромания»: D:\\demo\\${this.esc(game.setupExe)}. ${this.esc(game.subtitle || '')}`,
+            go: () => (installed && game.launch ? game.launch() : gm.showOnCd(id)),
+            label: installed ? 'Запустить игру' : 'Где лежит демоверсия'
+          });
+          return;
+        }
         out.push({
           id: `game:${id}`,
           q: `${installed ? 'Играть' : game.price > 0 ? 'Купить в Steam' : 'Получить в Steam'}: ${game.title}`,

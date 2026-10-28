@@ -837,24 +837,25 @@ function commentFree(src) {
   return -1;
 }
 
-test('desktop wiring: Steam catalog, no preinstall, shell entry points, zero comments', () => {
+test('desktop wiring: Igromania CD demo, no preinstall, shell entry points, zero comments', () => {
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
   for (const f of [...CORE, ...MAPS, 'h2-ui']) assert.ok(html.includes(`js/apps/hl2/${f}.js`), `index.html loads ${f}`);
   assert.ok(html.includes('js/apps/hl2-app.js') && html.includes('css/apps/hl2.css'), 'index.html loads the wrapper and styles');
   const standalone = fs.readFileSync(path.join(ROOT, 'hl2.html'), 'utf8');
   for (const f of [...CORE, ...MAPS, 'h2-ui']) assert.ok(standalone.includes(`js/apps/hl2/${f}.js`), `hl2.html loads ${f}`);
   const gmSrc = fs.readFileSync(path.join(ROOT, 'js', 'game-manager.js'), 'utf8');
-  const entry = gmSrc.slice(gmSrc.indexOf('      hl2: {'), gmSrc.indexOf('      hl2: {') + 1400);
-  assert.ok(/steam: true/.test(entry) && /price: 49\.99/.test(entry) && /targetExe: 'HL2\.EXE'/.test(entry) && /appHl2/.test(entry), 'catalog entry sold on Steam');
+  const entryAt = gmSrc.indexOf('      hl2_demo: {');
+  const entry = gmSrc.slice(entryAt, gmSrc.indexOf('appHl2', entryAt) + 'appHl2'.length);
+  assert.ok(gmSrc.includes('      hl2_demo: {') && /cdDemo: true/.test(entry) && !/steam: true/.test(entry) && /price: 0/.test(entry) && /targetExe: 'HL2\.EXE'/.test(entry) && /appHl2/.test(entry), 'catalog entry is an Igromania CD demo');
   assert.ok(!/hl2Granted/.test(gmSrc), 'no grant flag');
   const loadState = gmSrc.slice(gmSrc.indexOf('loadState'), gmSrc.indexOf('moveGamesToSteam(state)'));
-  assert.ok(!/'hl2'/.test(loadState), 'not in default lists');
+  assert.ok(!/'hl2_demo'/.test(loadState.slice(loadState.indexOf('return {'))), 'not in default lists');
   const shell = {
-    'js/desktop.js': ["isInstalled('hl2')", 'appHl2'],
-    'js/taskbar.js': ["isInstalled('hl2')", "case 'hl2'"],
-    'js/apps/dialogs.js': ["cmd === 'hl2'", "showInSteam(\\'hl2\\')"],
-    'js/apps/explorer.js': ["item.app === 'hl2'", 'HL2.EXE'],
-    'js/filesystem.js': ["gmInstalled.includes('hl2')", "'HL2.EXE'"],
+    'js/desktop.js': ["isInstalled('hl2_demo')", 'appHl2'],
+    'js/taskbar.js': ["isInstalled('hl2_demo')", "case 'hl2_demo'"],
+    'js/apps/dialogs.js': ["cmd === 'hl2'", "showOnCd('hl2_demo')"],
+    'js/apps/explorer.js': ["item.app === 'hl2_demo'", 'HL2.EXE'],
+    'js/filesystem.js': ["gmInstalled.includes('hl2_demo')", "'HL2.EXE'", "gameId: 'hl2_demo'"],
     'js/apps/task-manager.js': ["'app_hl2'", 'hl2.exe'],
     'js/icons.js': ["'hl2': `<svg"],
     'js/apps/hl2-app.js': ["id = 'app_hl2'", 'H.UI(root']

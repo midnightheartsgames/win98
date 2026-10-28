@@ -7,7 +7,7 @@
 
   const store = () => (typeof localStorage !== 'undefined' ? localStorage : null);
 
-  N.defaultSettings = () => ({ sfx: 0.8, radio: 0.6, voice: 0.9, tts: true, sens: 1, invert: false, draw: 1, traffic: 1, peds: 1, scale: 1, trails: false, subtitles: true, camDist: 1, gfx: 'high', cars: 'high', city: 'high' });
+  N.defaultSettings = () => ({ sfx: 0.8, radio: 0.6, voice: 0.9, tts: true, sens: 1, invert: false, draw: 1, traffic: 1, peds: 1, scale: 1, trails: false, subtitles: true, throwAid: true, camDist: 1, gfx: 'high', cars: 'high', city: 'high' });
   N.loadSettings = () => {
     const s = N.defaultSettings();
     try { const raw = store() && store().getItem(SET_KEY); if (raw) Object.assign(s, JSON.parse(raw)); } catch (e) { }

@@ -82,14 +82,18 @@ class GSCSite {
   getGameCatalogEntry(id) {
     const d = this.data();
     const meta = (d.games || []).find(g => g.id === id) || d.games[0];
-    const cat = window.gameManager && window.gameManager.catalog && window.gameManager.catalog[meta.id]
-      ? window.gameManager.catalog[meta.id]
+    const gmId = meta.demo || meta.id;
+    const isDemo = Boolean(meta.demo);
+    const cat = window.gameManager && window.gameManager.catalog && window.gameManager.catalog[gmId]
+      ? window.gameManager.catalog[gmId]
       : null;
-    const isInstalled = Boolean(window.gameManager && window.gameManager.isInstalled && window.gameManager.isInstalled(meta.id));
-    const isPurchased = Boolean(window.gameManager && window.gameManager.isPurchased && window.gameManager.isPurchased(meta.id));
+    const isInstalled = Boolean(window.gameManager && window.gameManager.isInstalled && window.gameManager.isInstalled(gmId));
+    const isPurchased = !isDemo && Boolean(window.gameManager && window.gameManager.isPurchased && window.gameManager.isPurchased(gmId));
 
     return {
       ...meta,
+      gmId,
+      isDemo,
       title: cat ? cat.title : meta.shortTitle,
       subtitle: cat ? cat.subtitle : meta.lead,
       developer: cat ? cat.developer : 'GSC Game World',
@@ -110,8 +114,21 @@ class GSCSite {
     return (this.data().games || []).map(g => this.getGameCatalogEntry(g.id));
   }
 
+  cdPath(game) {
+    return `D:\\demo\\${game.setupExe}`;
+  }
+
+  shotSrc(game, n) {
+    return game.isDemo ? `content/igromania/demos/${game.gmId}-${n}.jpg` : `content/steam/${game.id}-${n}.jpg`;
+  }
+
+  priceText(game) {
+    return game.isDemo ? 'демоверсия, бесплатно на CD «Игромании»' : game.priceDisplay;
+  }
+
   gameStatusText(game) {
     if (game.isInstalled) return `Установлено: C:\\Games\\${game.folder}\\${game.exe}`;
+    if (game.isDemo) return `Демоверсия на компакт-диске журнала «Игромания»: ${this.cdPath(game)}`;
     if (game.isPurchased) return 'Куплено в Steam, ещё не установлено';
     return `В продаже в Steam: ${game.priceDisplay}`;
   }
@@ -124,13 +141,15 @@ class GSCSite {
   renderGameButtons(game) {
     const primaryLabel = game.isInstalled
       ? `Запустить ${this.esc(game.exe)}`
-      : game.isPurchased
-        ? 'Установить через Steam'
-        : `Купить в Steam (${this.esc(game.priceDisplay)})`;
-    const steamButton = game.isInstalled
-      ? `<button class="win-btn btn-gsc-steam" data-game-id="${this.esc(game.id)}">Страница в Steam</button>`
+      : game.isDemo
+        ? 'Демоверсия на диске «Игромании»'
+        : game.isPurchased
+          ? 'Установить через Steam'
+          : `Купить в Steam (${this.esc(game.priceDisplay)})`;
+    const steamButton = game.isInstalled && !game.isDemo
+      ? `<button class="win-btn btn-gsc-steam" data-game-id="${this.esc(game.gmId)}">Страница в Steam</button>`
       : '';
-    return `<button class="win-btn btn-gsc-game-primary" data-game-id="${this.esc(game.id)}"><b>${primaryLabel}</b></button>${steamButton}`;
+    return `<button class="win-btn btn-gsc-game-primary" data-game-id="${this.esc(game.gmId)}"><b>${primaryLabel}</b></button>${steamButton}`;
   }
 
   downloadTimes(fileSize) {
@@ -264,10 +283,11 @@ class GSCSite {
       ...(article.body || []).reduce((acc, p) => acc.concat([p, '']), []),
       '###',
       '',
-      'Все три игры серии S.T.A.L.K.E.R. для Win 98 продаются в клиенте Steam:',
+      'Две игры серии S.T.A.L.K.E.R. для Win 98 продаются в клиенте Steam:',
       '- S.T.A.L.K.E.R.: Тень Чернобыля (1998 Alpha Edition), STALKER.EXE, 14.2 MB',
-      '- S.T.A.L.K.E.R. 98: Тень Чернобыля (3D), XR98.EXE, 22.6 MB',
       '- S.T.A.L.K.E.R.: Зов Припяти 98 (Затон), ZATON.EXE, 9.8 MB',
+      'Демоверсия на компакт-диске журнала «Игромания»:',
+      '- S.T.A.L.K.E.R. 98: Тень Чернобыля Demo, XR98.EXE, 22.6 MB, D:\\demo\\stalker98demo.exe',
       '',
       'http://www.gsc-game.com    zone@gsc-game.com'
     ].join('\n')).replace(/\n/g, '\r\n');
@@ -282,8 +302,8 @@ class GSCSite {
       `Разработчик:    ${game.developer}`,
       `Движок:         ${game.engine}`,
       `Файл запуска:   C:\\Games\\${game.folder}\\${game.exe}`,
-      `Установщик:     ${game.setupExe} (${game.fileSize})`,
-      `Цена в Steam:   ${game.priceDisplay}`,
+      game.isDemo ? `Установщик:     ${this.cdPath(game)} (${game.fileSize})` : `Установщик:     ${game.setupExe} (${game.fileSize})`,
+      game.isDemo ? 'Где взять:      компакт-диск журнала «Игромания», бесплатно' : `Цена в Steam:   ${game.priceDisplay}`,
       '',
       'ОПИСАНИЕ',
       game.lead,
@@ -533,11 +553,11 @@ class GSCSite {
           <table class="gsc-shelf" width="100%" cellspacing="0" cellpadding="0"><tr>
             ${games.map(g => `
               <td class="gsc-shelf-item" valign="top" data-game-card="${this.esc(g.id)}">
-                <a data-url="${this.url(`/game?id=${g.id}`)}"><img class="gsc-shelf-shot" src="content/steam/${this.esc(g.id)}-1.jpg" width="160" height="120" alt="${this.esc(g.shots[0])}"></a>
+                <a data-url="${this.url(`/game?id=${g.id}`)}"><img class="gsc-shelf-shot" src="${this.esc(this.shotSrc(g, 1))}" width="160" height="120" alt="${this.esc(g.shots[0])}"></a>
                 <div class="gsc-shelf-title"><a data-url="${this.url(`/game?id=${g.id}`)}">${this.esc(g.title)}</a></div>
                 <div class="gsc-shelf-sub">${this.esc(g.subtitle)}</div>
                 <div class="gsc-shelf-file"><tt>${this.esc(g.exe)}</tt>, ${this.esc(parseFloat(g.fileSize))} МБ</div>
-                ${g.isInstalled || g.isPurchased ? `<div>${this.renderGameStatus(g)}</div>` : ''}
+                ${g.isInstalled || g.isPurchased || g.isDemo ? `<div>${this.renderGameStatus(g)}</div>` : ''}
                 <div class="gsc-shelf-btn">${this.renderGameButtons(g)}</div>
               </td>
             `).join('')}
@@ -578,7 +598,7 @@ class GSCSite {
           <div class="gsc-side-link"><a data-url="${this.url('/stalkers')}">Слушать эфир и ответить</a></div>
 
           <div class="gsc-side-h">Где купить</div>
-          <p class="gsc-side-p">Игры GSC продаются только через клиент Steam. Сам клиент можно скачать на <a data-url="http://www.steampowered.com">www.steampowered.com</a>. После установки ярлык игры появится на Рабочем столе.</p>
+          <p class="gsc-side-p">Текстовая альфа и Зов Припяти 98 продаются только через клиент Steam. Сам клиент можно скачать на <a data-url="http://www.steampowered.com">www.steampowered.com</a>. Демоверсия S.T.A.L.K.E.R. 98 лежит на компакт-диске журнала «Игромания», установщик D:\\demo\\stalker98demo.exe. После установки ярлык игры появится на Рабочем столе.</p>
 
           <div class="gsc-side-h">Справочник</div>
           <ul class="gsc-side-list">
@@ -635,7 +655,7 @@ class GSCSite {
 
       ${relatedGame ? `
         <table class="gsc-related" width="600" cellspacing="0" cellpadding="0" align="center"><tr>
-          <td class="gsc-related-shot" valign="top"><a data-url="${this.url(`/game?id=${relatedGame.id}`)}"><img src="content/steam/${this.esc(relatedGame.id)}-2.jpg" width="120" height="90" alt="${this.esc(relatedGame.shots[1])}"></a></td>
+          <td class="gsc-related-shot" valign="top"><a data-url="${this.url(`/game?id=${relatedGame.id}`)}"><img src="${this.esc(this.shotSrc(relatedGame, 2))}" width="120" height="90" alt="${this.esc(relatedGame.shots[1])}"></a></td>
           <td valign="top">
             <div>Игра из этого релиза: <a data-url="${this.url(`/game?id=${relatedGame.id}`)}"><b>${this.esc(relatedGame.title)}</b></a></div>
             <div class="gsc-related-status">${this.renderGameStatus(relatedGame)}</div>
@@ -680,13 +700,13 @@ class GSCSite {
         ${row('Жанр', g => this.esc(g.genre))}
         ${row('Файл', g => `<tt>${this.esc(g.exe)}</tt>`)}
         ${row('Размер', g => `${this.esc(parseFloat(g.fileSize))} МБ`)}
-        ${row('Скачать на 33 600', g => this.esc(this.downloadTimes(g.fileSize)[2][1]))}
+        ${row('Скачать на 33 600', g => this.esc(g.isDemo ? 'не нужно, есть на CD «Игромании»' : this.downloadTimes(g.fileSize)[2][1]))}
         ${row('3D-ускоритель', g => this.esc(g.needs3d), 'gsc-mx-hot')}
         ${row('Минимум', g => this.esc(`${g.sysreq[0][1]}, ${g.sysreq[1][1]}`))}
         ${row('Где идёт игра', g => this.esc(g.sector))}
         ${row('Герой', g => this.esc(g.protagonist.split(' (')[0]))}
         ${row('Финал', g => this.esc(g.finale))}
-        ${row('Цена', g => `<b>${this.esc(g.priceDisplay)}</b>`)}
+        ${row('Цена', g => `<b>${this.esc(this.priceText(g))}</b>`)}
         ${row('У вас', g => this.renderGameStatus(g))}
         ${row('', g => this.renderGameButtons(g), 'gsc-mx-actions')}
       </table>
@@ -710,7 +730,7 @@ class GSCSite {
       ['features', 'Особенности'],
       ['gear', 'Снаряжение'],
       ['sysreq', 'Требования'],
-      ['buy', 'Где купить']
+      ['buy', game.isDemo ? 'Где взять' : 'Где купить']
     ];
     const zoomN = this.zoomShot.startsWith(game.id + '-') ? this.zoomShot.slice(game.id.length + 1) : '';
     const route = String(game.territory).split('->').map(s => s.trim()).filter(Boolean);
@@ -737,14 +757,14 @@ class GSCSite {
       ${this.renderSectionTitle('Скриншоты')}
       ${zoomN ? `
         <div class="gsc-g-zoom">
-          <img src="content/steam/${this.esc(game.id)}-${this.esc(zoomN)}.jpg" width="640" height="480" alt="${this.esc(game.shots[Number(zoomN) - 1] || game.title)}">
+          <img src="${this.esc(this.shotSrc(game, zoomN))}" width="640" height="480" alt="${this.esc(game.shots[Number(zoomN) - 1] || game.title)}">
           <div class="gsc-g-zoom-cap">${this.esc(game.shots[Number(zoomN) - 1] || '')} (640×480) &nbsp; <a class="btn-gsc-shot" data-shot="">закрыть</a></div>
         </div>
       ` : ''}
       <table class="gsc-g-thumbs" cellspacing="0" cellpadding="0"><tr>
         ${[1, 2].map(n => `
           <td valign="top">
-            <a class="btn-gsc-shot" data-shot="${this.esc(game.id)}-${n}"><img src="content/steam/${this.esc(game.id)}-${n}.jpg" width="200" height="150" alt="${this.esc(game.shots[n - 1] || game.title)}"></a>
+            <a class="btn-gsc-shot" data-shot="${this.esc(game.id)}-${n}"><img src="${this.esc(this.shotSrc(game, n))}" width="200" height="150" alt="${this.esc(game.shots[n - 1] || game.title)}"></a>
             <div class="gsc-g-thumb-cap">${this.esc(game.shots[n - 1] || '')}<br><small>щёлкните, чтобы увеличить</small></div>
           </td>
         `).join('')}
@@ -766,14 +786,16 @@ class GSCSite {
         <tr><th></th><th>Минимум</th><th>Рекомендуется</th></tr>
         ${(game.sysreq || []).map(([k, min, rec]) => `<tr><th align="left">${this.esc(k)}</th><td>${this.esc(min)}</td><td>${this.esc(rec)}</td></tr>`).join('')}
         <tr><th align="left">3D-ускоритель</th><td colspan="2">${this.esc(game.needs3d)}</td></tr>
-        <tr><th align="left">Система</th><td colspan="2">Microslop Win 95 или Win 98, клиент Steam</td></tr>
+        <tr><th align="left">Система</th><td colspan="2">Microslop Win 95 или Win 98, ${game.isDemo ? 'привод CD-ROM' : 'клиент Steam'}</td></tr>
       </table>
 
       <a name="buy" id="gsc-sec-buy"></a>
-      ${this.renderSectionTitle('Где купить')}
+      ${this.renderSectionTitle(game.isDemo ? 'Где взять' : 'Где купить')}
       <table class="gsc-g-buy" width="100%" cellspacing="0" cellpadding="0"><tr>
         <td valign="top" class="gsc-g-buy-main">
-          <p>Игра продаётся только в клиенте Steam: ${this.esc(game.priceDisplay)}. Установщик <tt>${this.esc(game.setupExe)}</tt>, ${this.esc(game.fileSize)}. Steam сам докачивает файл после обрыва связи.</p>
+          ${game.isDemo
+            ? `<p>Игра не продаётся: её демоверсия бесплатно записана на компакт-диск журнала «Игромания». Вставьте диск в привод D: и запустите установщик <tt>${this.esc(this.cdPath(game))}</tt>, ${this.esc(game.fileSize)}.</p>`
+            : `<p>Игра продаётся только в клиенте Steam: ${this.esc(game.priceDisplay)}. Установщик <tt>${this.esc(game.setupExe)}</tt>, ${this.esc(game.fileSize)}. Steam сам докачивает файл после обрыва связи.</p>`}
           <p>${this.renderGameStatus(game)}</p>
           <p>${this.renderGameButtons(game)}</p>
           <p class="gsc-g-patch"><b>Сборка:</b> ${this.esc(game.patchStatus)}</p>
@@ -782,12 +804,12 @@ class GSCSite {
             <button class="win-btn btn-gsc-dossier-save" data-game-id="${this.esc(game.id)}">Сохранить .TXT</button>
           </p>
         </td>
-        <td valign="top" class="gsc-g-buy-times">
+        ${game.isDemo ? '' : `<td valign="top" class="gsc-g-buy-times">
           <table class="gsc-g-dl" cellspacing="0" cellpadding="3" border="1">
             <tr><th colspan="2">Сколько качать ${this.esc(parseFloat(game.fileSize))} МБ</th></tr>
             ${this.downloadTimes(game.fileSize).map(([label, time]) => `<tr><td>${this.esc(label)}</td><td align="right">${this.esc(time)}</td></tr>`).join('')}
           </table>
-        </td>
+        </td>`}
       </tr></table>
 
       <div class="gsc-pager">
@@ -1041,16 +1063,16 @@ ${docs.map((doc, i) => {
           <p><b>Телефон:</b> ${this.esc(s.phone)}<br><b>Факс:</b> ${this.esc(s.fax)}</p>
           <p><b>Почта:</b> <a class="web-mail-link" href="mailto:zone@gsc-game.com">${this.gif('mail')}zone@gsc-game.com</a></p>
           <p><b>Связь:</b> ${this.esc(s.uplink)}</p>
-          <p>Игры мы не продаём ни в офисе, ни по почте: только через <a data-url="http://www.steampowered.com">Steam</a>.</p>
+          <p>Игры мы не продаём ни в офисе, ни по почте: только через <a data-url="http://www.steampowered.com">Steam</a>. Демоверсия S.T.A.L.K.E.R. 98 бесплатно выходит на компакт-диске журнала «Игромания».</p>
         </td>
         <td valign="top"><pre class="gsc-findus-map">${this.esc(s.routeMap.join('\n'))}</pre></td>
       </tr></table>
 
       <h3 class="gsc-h3">Друзья студии</h3>
       <ul class="gsc-side-list">
-        <li><a data-url="http://www.steampowered.com">Steam</a>: здесь продаются все наши игры</li>
+        <li><a data-url="http://www.steampowered.com">Steam</a>: здесь продаются текстовая альфа и Зов Припяти 98</li>
         <li><a data-url="http://forum.games98.com">GamerZone</a>: форум, где обсуждают Кордон и Затон</li>
-        <li><a data-url="http://www.igromania.ru">Журнал «Игромания»</a></li>
+        <li><a data-url="http://www.igromania.ru">Журнал «Игромания»</a>: на его компакт-диске демоверсия S.T.A.L.K.E.R. 98</li>
       </ul>
     `;
   }
@@ -1173,6 +1195,8 @@ ${docs.map((doc, i) => {
       const gm = window.gameManager;
       if (gm && gm.isInstalled && gm.isInstalled(id) && gm.catalog && gm.catalog[id] && typeof gm.catalog[id].launch === 'function') {
         gm.catalog[id].launch();
+      } else if (gm && typeof gm.isCdDemo === 'function' && gm.isCdDemo(id) && typeof gm.showOnCd === 'function') {
+        gm.showOnCd(id);
       } else if (gm && typeof gm.showInSteam === 'function') {
         gm.showInSteam(id);
       }

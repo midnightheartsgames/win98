@@ -45,12 +45,19 @@ test('IE routes every page of the site here', () => {
   });
 });
 
-test('every game on the site is a Steam game from the catalog', () => {
+test('every game on the site is a Steam game or an Igromania CD demo from the catalog', () => {
   site.games.forEach(g => {
-    assert.ok(catalog[g.id], g.id);
-    assert.ok(catalog[g.id].steam, `${g.id} is sold in Steam`);
+    const entry = catalog[g.cdDemoId || g.id];
+    assert.ok(entry, g.id);
+    if (g.cdDemoId) {
+      assert.ok(entry.cdDemo && !entry.steam, `${g.id} is a CD demo`);
+      assert.strictEqual(g.title, entry.title, g.id);
+    } else {
+      assert.ok(entry.steam, `${g.id} is sold in Steam`);
+    }
     assert.ok(g.blocks.length && g.tested.length === 2, g.id);
   });
+  assert.deepStrictEqual(site.games.filter(g => g.cdDemoId).map(g => g.cdDemoId), ['falloutzp_demo', 'stalker98_demo', 'mc98_demo', 'tekken98_demo']);
 });
 
 test('DOOM 98 codes are the ones the game listens for', () => {
@@ -149,6 +156,26 @@ test('the game button launches an installed game and sends the rest to Steam', (
   assert.ok(site.renderSite(`${base}/pc/doom.html`).includes('Запустить игру'));
   handlers[0]();
   assert.deepStrictEqual(calls, ['steam:doom', 'launch']);
+  delete window.gameManager;
+});
+
+test('a CD demo button sends the player to the Igromania disc, never to Steam', () => {
+  const calls = [];
+  window.gameManager = { catalog: { tekken98_demo: { launch: () => calls.push('launch') } }, isInstalled: () => false, showInSteam: (id) => calls.push('steam:' + id), showOnCd: (id) => calls.push('cd:' + id) };
+  const html = site.renderSite(`${base}/pc/tekken3.html`);
+  assert.ok(html.includes('Демоверсия на диске «Игромании»') && html.includes('Tekken 98 Demo'));
+  assert.ok(!html.includes('Купить в Steam') && !html.includes('продаётся в Steam') && !html.includes('Tekken 3 98'));
+  const handlers = [];
+  const btn = { dataset: { game: 'tekken3' }, addEventListener: (t, fn) => handlers.push(fn) };
+  const container = { querySelector: () => null, querySelectorAll: (sel) => (sel === '.ccc-play' ? [btn] : []) };
+  site.attachEvents({}, container, `${base}/pc/tekken3.html`);
+  handlers[0]();
+  window.gameManager.isInstalled = (id) => id === 'tekken98_demo';
+  assert.ok(site.renderSite(`${base}/pc/tekken3.html`).includes('Запустить игру'));
+  handlers[0]();
+  assert.deepStrictEqual(calls, ['cd:tekken98_demo', 'launch']);
+  const myths = site.renderSite(base + '/myths.html');
+  assert.ok(!/Half-Life 98 из Steam/.test(myths) && myths.includes('Fallout 98 Demo'));
   delete window.gameManager;
 });
 

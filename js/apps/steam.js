@@ -17,7 +17,7 @@ const STEAM_HOSTS = ['VALVE CONTENT SERVERS', 'ZONA-NET GAME SERVERS', 'CYBERNET
 const STEAM_DEFAULT_FRIENDS = [
   { name: 'Stiffer', status: 'online' },
   { name: 'R2aD2 [MoD]', status: 'game', game: 'dota' },
-  { name: 'Gordon_F', status: 'game', game: 'half-life' },
+  { name: 'Gordon_F', status: 'online' },
   { name: 'Vovan_EKB', status: 'game', game: 'gta90' },
   { name: 'FreelanceMax', status: 'game', game: 'sammax' },
   { name: 'MooGooGaiPan', status: 'game', game: 'sammax102' },
@@ -26,21 +26,21 @@ const STEAM_DEFAULT_FRIENDS = [
   { name: 'Curt_286', status: 'game', game: 'sammax105' },
   { name: 'Rogatik_Red', status: 'game', game: 'sammax106' },
   { name: 'Elf_Intern', status: 'game', game: 'sammax201' },
-  { name: 'Moai_Billy', status: 'game', game: 'sammax202' },
+  { name: 'Moai_Billy', status: 'online' },
   { name: 'Doc_88mph', status: 'game', game: 'bttf' },
   { name: 'Wirts_Leg', status: 'game', game: 'diablo2' },
   { name: 'Vilks_2105', status: 'game', game: 'forza' },
   { name: 'Tyoma_Avto', status: 'game', game: 'gtann' },
   { name: 'Bella_G', status: 'game', game: 'sims3' },
-  { name: 'Rowland_XIII', status: 'game', game: 'xiii' },
+  { name: 'Rowland_XIII', status: 'online' },
   { name: 'Klesk_NN', status: 'game', game: 'quake3' },
-  { name: 'Mona_S', status: 'game', game: 'maxpayne' },
+  { name: 'Mona_S', status: 'online' },
   { name: 'Legatus_Iulius', status: 'game', game: 'legion' },
   { name: 'Oshpaz_Rustam', status: 'game', game: 'plov' },
   { name: 'Ryzhik_9', status: 'game', game: 'catniss' },
-  { name: 'Kirill_2goda', status: 'game', game: 'korovany' },
+  { name: 'Kirill_2goda', status: 'online' },
   { name: 'Rokfor_Verdun', status: 'game', game: 'anotherwar' },
-  { name: 'Kurier_147', status: 'game', game: 'falloutzp' },
+  { name: 'Kurier_147', status: 'online' },
   { name: 'Morph', status: 'online' },
   { name: 'LenaCat', status: 'offline' },
   { name: 'Serega_Voodoo2', status: 'offline' }
@@ -59,12 +59,10 @@ const STEAM_FRIEND_REPLIES = [
 ];
 
 const STEAM_SERVER_MAPS = {
-  'half-life': ['crossfire', 'bounce', 'stalkyard', 'datacore', 'snark_pit', 'boot_camp'],
   doom: ['E1M1', 'E1M3', 'E1M5', 'E1M7'],
   serioussam: ['Hatshepsut', 'Sand Canyon', 'Valley of the Kings'],
   dota: ['DotA Allstars 6.48', 'DotA -ap', 'DotA -sd'],
   lol: ['Ущелье призывателей', 'Ущелье призывателей (боты)'],
-  mc98: ['world', 'survival', 'creative_town'],
   moh98: ['Бревиль', 'Лорьян', 'Рьюкан'],
   quake3: ['q3dm6', 'q3dm1', 'q3tourney2', 'q3dm3', 'q3dm4']
 };

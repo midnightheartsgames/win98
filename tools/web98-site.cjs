@@ -19,21 +19,26 @@ function loadCatalog() {
   return sandbox.window.gameManager.catalog;
 }
 
+const shotFile = (g, n) => path.join(ROOT, g.cdDemo ? 'content/igromania/demos' : 'content/steam', `${g.id}-${n}.jpg`);
+
 function listGames() {
   const catalog = loadCatalog();
   return Object.values(catalog)
-    .filter(g => g.steam && g.genre && Array.isArray(g.shots) && g.shots.length >= 2)
-    .filter(g => [1, 2].every(n => fs.existsSync(path.join(ROOT, 'content/steam', `${g.id}-${n}.jpg`))));
+    .filter(g => (g.steam || g.cdDemo) && g.genre && Array.isArray(g.shots) && g.shots.length >= 2)
+    .filter(g => [1, 2].every(n => fs.existsSync(shotFile(g, n))));
 }
 
 const escapeHtml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-function gamesNoun(n) {
+function plural(n, one, few, many) {
   const d10 = n % 10, d100 = n % 100;
-  if (d10 === 1 && d100 !== 11) return 'игра';
-  if (d10 >= 2 && d10 <= 4 && (d100 < 12 || d100 > 14)) return 'игры';
-  return 'игр';
+  if (d10 === 1 && d100 !== 11) return one;
+  if (d10 >= 2 && d10 <= 4 && (d100 < 12 || d100 > 14)) return few;
+  return many;
 }
+
+const gamesNoun = n => plural(n, 'игра', 'игры', 'игр');
+const demosNoun = n => plural(n, 'демоверсия', 'демоверсии', 'демоверсий');
 
 const LEVELS = {
   purple: { short: 'Готово, обновляется', long: 'Готово полностью, будет обновляться' },
@@ -47,9 +52,9 @@ const LEVELS = {
 
 const READINESS = {
   purple: ['hsr98'],
-  red: ['half-life', 'neon-racer', 'sammax202', 'homm1'],
-  orange: ['fallout2', 'stalker98', 'moh98', 'mc98', 'dao98', 'dmc98', 'tekken3', 'diablo2', 'xiii', 'maxpayne', 'falloutzp', 'sims3', 'kotor98', 'hl2', 'gta90'],
-  yellow: ['wolf3d', 'quest', 'diablo', 'doom', 'lol', 'avatar98', 'cop98', 'ow98', 'gtann', 'dota', 'korovany'],
+  red: ['half-life_demo', 'neon-racer_demo', 'sammax202_demo', 'homm1_demo'],
+  orange: ['fallout98_demo', 'stalker98_demo', 'moh98', 'mc98_demo', 'dao98_demo', 'dmc98_demo', 'tekken98_demo', 'diablo2', 'xiii_demo', 'maxpayne_demo', 'falloutzp_demo', 'sims3', 'kotor98_demo', 'hl2_demo', 'gta90'],
+  yellow: ['wolf3d', 'quest_demo', 'diablo', 'doom', 'lol', 'avatar98', 'cop98', 'ow98', 'gtann', 'dota', 'korovany_demo'],
   lime: ['serioussam', 'forza', 'plov', 'quake3', 'bttf', 'catniss'],
   green: ['stalker', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201'],
   blue: ['legion', 'anotherwar', 'fallout']
@@ -72,7 +77,7 @@ function syncGames() {
     for (const n of [1, 2]) {
       const name = `${g.id}-${n}.jpg`;
       keep.add(name);
-      fs.copyFileSync(path.join(ROOT, 'content/steam', name), path.join(dir, name));
+      fs.copyFileSync(shotFile(g, n), path.join(dir, name));
     }
   }
   for (const name of fs.readdirSync(dir)) if (!keep.has(name)) fs.unlinkSync(path.join(dir, name));
@@ -87,7 +92,7 @@ function syncGames() {
         <li class="is-${level}"><span class="game-level">${LEVELS[level].long}</span><span class="legend-count">${READINESS[level].filter(id => games.some(g => g.id === id)).length}</span></li>`).join('');
   const data = games.map(g => {
     const level = levelOf(g.id);
-    return { id: g.id, title: g.title, subtitle: g.subtitle, genre: g.genre, tags: g.tags || [], shots: g.shots.slice(0, 2), desc: g.desc || '', level, levelText: level ? LEVELS[level].long : '' };
+    return { id: g.id, title: g.title, subtitle: g.subtitle, genre: g.genre, tags: g.tags || [], shots: g.shots.slice(0, 2), desc: g.desc || '', cd: g.cdDemo ? `D:\\demo\\${g.setupExe}` : '', level, levelText: level ? LEVELS[level].long : '' };
   });
   const json = JSON.stringify(data).replace(/</g, '\\u003c');
 
@@ -96,10 +101,15 @@ function syncGames() {
   html = html.replace(/(<ul class="shelf" id="games">)[\s\S]*?(\n      <\/ul>)/, `$1${tiles}$2`);
   html = html.replace(/(<ul class="legend" id="legend">)[\s\S]*?(\n        <\/ul>)/, `$1${legend}$2`);
   html = html.replace(/(<script type="application\/json" id="games-data">)[\s\S]*?(<\/script>)/, `$1${json}$2`);
+  const steamCount = games.filter(g => g.steam).length;
+  const demoCount = games.filter(g => g.cdDemo).length;
   html = html.replace(/(data-fill="games-n">)[^<]*/g, `$1${games.length}`);
   html = html.replace(/(data-fill="games">)[^<]*/g, `$1${games.length} ${gamesNoun(games.length)}`);
+  html = html.replace(/(data-fill="steam-n">)[^<]*/g, `$1${steamCount}`);
+  html = html.replace(/(data-fill="steam">)[^<]*/g, `$1${steamCount} ${gamesNoun(steamCount)}`);
+  html = html.replace(/(data-fill="demos">)[^<]*/g, `$1${demoCount} ${demosNoun(demoCount)}`);
   fs.writeFileSync(file, html);
-  console.log(`games: ${games.length}`);
+  console.log(`games: ${games.length} (Steam ${steamCount}, Igromania CD ${demoCount})`);
 }
 
 const STATE = JSON.stringify({

@@ -61,24 +61,34 @@ class LucasArtsSite {
     return this.data.games.find(g => g.id === id) || null;
   }
 
-  catalogEntry(id) {
+  gmId(g) {
+    return g.demo || g.id;
+  }
+
+  catalogEntry(g) {
     const gm = window.gameManager;
-    return gm && gm.catalog ? gm.catalog[id] || null : null;
+    return gm && gm.catalog ? gm.catalog[this.gmId(g)] || null : null;
   }
 
   priceOf(g) {
-    const entry = this.catalogEntry(g.id);
+    const entry = this.catalogEntry(g);
     return entry && entry.priceDisplay ? entry.priceDisplay : g.price;
   }
 
   exeOf(g) {
-    const entry = this.catalogEntry(g.id);
+    const entry = this.catalogEntry(g);
     return entry && entry.targetExe ? entry.targetExe : g.exe;
   }
 
-  status(id) {
+  shotSrc(g, n) {
+    return g.demo ? `content/igromania/demos/${g.demo}-${n}.jpg` : `content/steam/${g.id}-${n}.jpg`;
+  }
+
+  status(g) {
     const gm = window.gameManager;
+    const id = this.gmId(g);
     if (gm && gm.isInstalled && gm.isInstalled(id)) return 'installed';
+    if (g.demo) return 'cd';
     if (gm && gm.ownsOnSteam && gm.ownsOnSteam(id)) return 'owned';
     return 'store';
   }
@@ -250,7 +260,7 @@ class LucasArtsSite {
                 </table>
               </td>
               <td class="la-inv-cell">
-                <div class="la-inv-head">Новое в Steam:</div>
+                <div class="la-inv-head">Новые игры:</div>
                 ${fresh.map(g => `<a class="la-inv" data-url="${this.baseUrl}/game?id=${g.id}" data-la-say="Смотреть на ${this.esc(g.title)}">${this.esc(g.title)}</a>`).join('')}
               </td>
             </tr>
@@ -271,11 +281,15 @@ class LucasArtsSite {
     `;
   }
 
-  steamCell(g) {
-    const st = this.status(g.id);
+  buyCell(g) {
+    const st = this.status(g);
     if (st === 'installed') {
       return `<span class="la-state la-state-installed">Установлено</span>
-        <button class="la-btn la-btn-buy" data-launch-id="${g.id}">Запустить</button>`;
+        <button class="la-btn la-btn-buy" data-launch-id="${this.gmId(g)}">Запустить</button>`;
+    }
+    if (st === 'cd') {
+      return `<span class="la-state la-state-owned">Демоверсия</span>
+        <button class="la-btn la-btn-buy" data-cd-id="${g.demo}">На диске «Игромании»</button>`;
     }
     if (st === 'owned') {
       return `<span class="la-state la-state-owned">Куплено в Steam</span>
@@ -292,20 +306,20 @@ class LucasArtsSite {
       <div class="la-page">
         ${this.header('games')}
         <h1 class="la-h1">Игры</h1>
-        <p class="la-lede">Все игры LucasArts продаются и скачиваются через Steam. Если игра уже установлена, её можно запустить прямо отсюда.</p>
+        <p class="la-lede">Эпизоды Sam & Max с 101 по 201 продаются и скачиваются через Steam. Демоверсии Sam & Max 202, LucasQuest 98 и KOTOR 98 записаны на компакт-диск журнала «Игромания», их ставят с диска D:. Если игра уже установлена, её можно запустить прямо отсюда.</p>
         ${seriesFilter ? `<p class="la-lede"><a data-url="${this.baseUrl}/games">Показать весь каталог</a></p>` : ''}
         ${list.map(s => `
           <table class="la-cat" cellspacing="0">
             <tr class="la-cat-series"><td colspan="3">${this.esc(s.title)} <small>${this.esc(s.note)}</small></td></tr>
             ${this.data.games.filter(g => g.series === s.id).map(g => `
               <tr class="la-cat-row">
-                <td class="la-cat-thumb"><img src="content/steam/${g.id}-1.jpg" alt="${this.esc(g.title)}" data-url="${this.baseUrl}/game?id=${g.id}"></td>
+                <td class="la-cat-thumb"><img src="${this.shotSrc(g, 1)}" alt="${this.esc(g.title)}" data-url="${this.baseUrl}/game?id=${g.id}"></td>
                 <td>
                   <div class="la-cat-title"><a data-url="${this.baseUrl}/game?id=${g.id}">${this.esc(g.title)}</a></div>
                   <div class="la-cat-meta">${this.esc(g.ru)} &middot; ${this.esc(this.exeOf(g))}</div>
                   ${this.esc(g.tagline)}
                 </td>
-                <td class="la-cat-buy">${this.steamCell(g)}</td>
+                <td class="la-cat-buy">${this.buyCell(g)}</td>
               </tr>`).join('')}
           </table>`).join('')}
       </div>
@@ -330,8 +344,8 @@ class LucasArtsSite {
     const series = this.data.series.find(s => s.id === g.series);
     const shot = Math.min(this.activeShot[g.id] || 0, g.shots.length - 1);
     const hints = this.data.hintBook[g.id];
-    const st = this.status(g.id);
-    const entry = this.catalogEntry(g.id);
+    const st = this.status(g);
+    const entry = this.catalogEntry(g);
     const size = entry && entry.fileSize ? entry.fileSize : g.size;
     return `
       <div class="la-page">
@@ -344,13 +358,15 @@ class LucasArtsSite {
                   <div class="la-cover-series">${this.esc(series ? series.title : '')}</div>
                   <div class="la-cover-title">${this.esc(g.title)}</div>
                 </div>
-                <img src="content/steam/${g.id}-1.jpg" alt="${this.esc(g.title)}">
+                <img src="${this.shotSrc(g, 1)}" alt="${this.esc(g.title)}">
                 <div class="la-cover-foot">LUCASARTS <span>${this.esc(this.exeOf(g))}</span></div>
               </div>
               <div class="la-box-actions">
                 ${st === 'installed' ? `<span class="la-state la-state-installed">Установлено в системе</span>
-                  <button class="la-btn la-btn-buy" data-launch-id="${g.id}">Запустить ${this.esc(this.exeOf(g))}</button><br>
-                  <button class="la-btn" data-steam-id="${g.id}">Страница в Steam</button>`
+                  <button class="la-btn la-btn-buy" data-launch-id="${this.gmId(g)}">Запустить ${this.esc(this.exeOf(g))}</button>${g.demo ? '' : `<br>
+                  <button class="la-btn" data-steam-id="${g.id}">Страница в Steam</button>`}`
+                : st === 'cd' ? `<span class="la-state la-state-owned">Демоверсия на компакт-диске журнала «Игромания»: ${this.esc(g.setup)}</span>
+                  <button class="la-btn la-btn-buy" data-cd-id="${g.demo}">Демоверсия на диске «Игромании»</button>`
                 : st === 'owned' ? `<span class="la-state la-state-owned">Куплено в Steam</span>
                   <button class="la-btn la-btn-buy" data-steam-id="${g.id}">Скачать в Steam</button>`
                 : `<span class="la-state la-state-price">${this.esc(this.priceOf(g))}</span>
@@ -365,10 +381,10 @@ class LucasArtsSite {
             <td class="la-box-back">
               <p class="la-tagline">${this.esc(g.tagline)}</p>
               <p>${this.esc(g.summary)}</p>
-              <img class="la-shot-big" src="content/steam/${g.id}-${shot + 1}.jpg" alt="${this.esc(g.shots[shot])}">
+              <img class="la-shot-big" src="${this.shotSrc(g, shot + 1)}" alt="${this.esc(g.shots[shot])}">
               <table class="la-shots" cellspacing="0"><tr>
                 ${g.shots.map((cap, i) => `<td>
-                  <img class="${i === shot ? 'on' : ''}" src="content/steam/${g.id}-${i + 1}.jpg" alt="${this.esc(cap)}" data-shot-game="${g.id}" data-shot-idx="${i}">
+                  <img class="${i === shot ? 'on' : ''}" src="${this.shotSrc(g, i + 1)}" alt="${this.esc(cap)}" data-shot-game="${g.id}" data-shot-idx="${i}">
                   <div class="la-shot-cap">${this.esc(cap)}</div>
                 </td>`).join('')}
               </tr></table>
@@ -1115,12 +1131,18 @@ class LucasArtsSite {
       click();
       if (window.gameManager && window.gameManager.showInSteam) window.gameManager.showInSteam(el.dataset.steamId);
     });
+    onAll('[data-cd-id]', 'click', (el, e) => {
+      e.preventDefault();
+      click();
+      if (window.gameManager && window.gameManager.showOnCd) window.gameManager.showOnCd(el.dataset.cdId);
+    });
     onAll('[data-launch-id]', 'click', (el, e) => {
       e.preventDefault();
       const gm = window.gameManager;
       const id = el.dataset.launchId;
       const entry = gm && gm.catalog && gm.catalog[id];
       if (entry && gm.isInstalled && gm.isInstalled(id) && entry.launch) entry.launch();
+      else if (gm && gm.isCdDemo && gm.isCdDemo(id) && gm.showOnCd) gm.showOnCd(id);
       else if (gm && gm.showInSteam) gm.showInSteam(id);
     });
     onAll('[data-shot-game]', 'click', (el, e) => {

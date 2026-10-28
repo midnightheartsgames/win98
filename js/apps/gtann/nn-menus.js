@@ -290,7 +290,8 @@
         { label: 'Эффекты', note: s.gfx === 'low' ? 'простые' : 'полные', fn: () => { s.gfx = s.gfx === 'low' ? 'high' : 'low'; this.ui.applySettings(); this.refreshSettings(); }, adj: () => { s.gfx = s.gfx === 'low' ? 'high' : 'low'; this.ui.applySettings(); this.refreshSettings(); } },
         { label: 'Детализация машин', note: (N.CAR_DETAIL[s.cars] || N.CAR_DETAIL.high).name, fn: () => this.cycleCars(1), adj: d => this.cycleCars(d) },
         { label: 'Детализация города', note: (N.CITY_DETAIL[s.city] || N.CITY_DETAIL.high).name, fn: () => this.cycleCity(1), adj: d => this.cycleCity(d) },
-        { label: 'Субтитры', note: s.subtitles !== false ? 'да' : 'нет', fn: () => { s.subtitles = s.subtitles === false; this.ui.applySettings(); this.refreshSettings(); }, adj: () => { s.subtitles = s.subtitles === false; this.ui.applySettings(); this.refreshSettings(); } }
+        { label: 'Субтитры', note: s.subtitles !== false ? 'да' : 'нет', fn: () => { s.subtitles = s.subtitles === false; this.ui.applySettings(); this.refreshSettings(); }, adj: () => { s.subtitles = s.subtitles === false; this.ui.applySettings(); this.refreshSettings(); } },
+        { label: 'Траектория броска', note: s.throwAid !== false ? 'да' : 'нет', fn: () => { s.throwAid = s.throwAid === false; this.ui.applySettings(); this.refreshSettings(); }, adj: () => { s.throwAid = s.throwAid === false; this.ui.applySettings(); this.refreshSettings(); } }
       ];
     }
 

@@ -136,13 +136,14 @@ test('The six sites look different from each other', () => {
   });
 });
 
-test('Fargus: catalog games are real Steam games, votes and patches work', () => {
+test('Fargus: catalog games are real Steam games or CD demos, votes and patches work', () => {
   const site = window.fargusSite;
   const gm = read('js/game-manager.js');
   site.getGames().forEach(g => {
-    const at = gm.indexOf(`id: '${g.steamId}'`);
-    assert.ok(at > 0, `${g.steamId} in catalog`);
-    assert.ok(gm.slice(at, at + 80).includes('steam: true'), `${g.steamId} is sold in Steam`);
+    const id = g.cdDemoId || g.steamId;
+    const at = gm.indexOf(`id: '${id}'`);
+    assert.ok(at > 0, `${id} in catalog`);
+    assert.ok(gm.slice(at, at + 80).includes(g.cdDemoId ? 'cdDemo: true' : 'steam: true'), `${id} is sold in Steam or ships on the Igromania CD`);
     assert.ok(site.renderSite(`http://www.goldfargus.ru/game?id=${g.id}`).includes(g.num));
   });
   const before = site.getVotes().gta90;

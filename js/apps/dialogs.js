@@ -340,6 +340,7 @@ class AppDialogs {
           <div class="win-menu-separator" style="margin:10px 0;"></div>
           <p>${t('about.memory')}</p>
           <p>${t('about.resources')}</p>
+          <p class="about-project-build" hidden></p>
         </div>
       </div>
 
@@ -353,13 +354,23 @@ class AppDialogs {
       title: t('about.title'),
       icon: 'help',
       width: 410,
-      height: 250,
+      height: 266,
       resizable: false,
       minimizable: false,
       maximizable: false,
       isDialog: true,
       content
     });
+
+    const buildLine = dialog.element.querySelector('.about-project-build');
+    if (window.BugReport && buildLine) {
+      window.BugReport.buildInfo().then(info => {
+        const label = info.version && info.version !== 'dev' ? info.version + (info.build ? ' (' + info.build + ')' : '') : info.commit ? 'dev, ' + info.commit : '';
+        if (!label) return;
+        buildLine.textContent = t('about.projectBuild', label);
+        buildLine.hidden = false;
+      }).catch(() => {});
+    }
 
     dialog.element.querySelector('.btn-about-ok').addEventListener('click', () => {
       window.winManager.closeWindow('app_about_windows');
@@ -753,7 +764,7 @@ class AppDialogs {
       },
       {
         id: 'system',
-        keywords: L('служебные, диспетчер задач, системный монитор, sysmon, msconfig, sysedit, редактор файлов конфигурации, dxdiag, реестр, regedit, scandisk, дефрагментация, архивация, резервная копия, восстановление, сохранения, перенос, сброс, очистка диска, wintune, clibench, тест монитора, nokia, mon_test, антивирус, avp, касперский', 'system tools, task manager, system monitor, sysmon, msconfig, sysedit, system configuration editor, dxdiag, registry, regedit, scandisk, defrag, backup, restore, saves, transfer, reset, disk cleanup, wintune, clibench, monitor test, nokia, mon_test, antivirus, avp, kaspersky'),
+        keywords: L('служебные, лаунчер, обновление win 98, обновить, диспетчер задач, системный монитор, sysmon, msconfig, sysedit, редактор файлов конфигурации, dxdiag, реестр, regedit, scandisk, дефрагментация, архивация, резервная копия, восстановление, сохранения, перенос, сброс, очистка диска, wintune, clibench, тест монитора, nokia, mon_test, антивирус, avp, касперский', 'system tools, launcher, win 98 update, task manager, system monitor, sysmon, msconfig, sysedit, system configuration editor, dxdiag, registry, regedit, scandisk, defrag, backup, restore, saves, transfer, reset, disk cleanup, wintune, clibench, monitor test, nokia, mon_test, antivirus, avp, kaspersky'),
         content: `
           <h2>${titles.system}</h2>
           <p>${L('Служебные программы расположены в меню «Пуск» → «Программы» → «Стандартные» → «Служебные». Они позволяют следить за ресурсами компьютера, редактировать конфигурационные файлы и реестр, обслуживать диск и тестировать оборудование.', 'System tools are located in Start → Programs → Accessories → System Tools. They monitor system resources, edit configuration files and the Registry, maintain disk drives, and benchmark hardware.')}</p>
@@ -767,6 +778,8 @@ class AppDialogs {
             <tr><td class="win-help-table-glyph">${glyph('scandisk')}</td><td><b>ScanDisk</b> — ${L('стандартная и полная проверка поверхности диска C: на сбойные сектора и потерянные кластеры.', 'runs standard or thorough surface scans on drive C: to repair bad sectors and lost clusters.')}</td><td><button class="win-help-shortcut" data-run="scandisk">${icon('shortcut-overlay')}</button></td></tr>
             <tr><td class="win-help-table-glyph">${glyph('defrag')}</td><td><b>${L('Дефрагментация диска (Disk Defragmenter)', 'Disk Defragmenter')}</b> — ${L('визуальная укладка кластеров диска C: с подробной картой занятых, фрагментированных и системных блоков.', 'defragments clusters on drive C: with a live block map legend.')}</td><td><button class="win-help-shortcut" data-run="defrag">${icon('shortcut-overlay')}</button></td></tr>
             <tr><td class="win-help-table-glyph">${glyph('backup')}</td><td><b>${L('Архивация данных (Backup)', 'Backup')}</b> — ${L('архивы файлов, настроек и сохранений игр в хранилище на диске C: или в файл .bkf для переноса на другой компьютер; восстановление всей системы или отдельных программ; сброс Win 98 к первому запуску.', 'backs up files, settings and game saves to storage on drive C: or to a .bkf file for another computer; restores the whole system or single programs; resets Win 98 to its first start.')}</td><td><button class="win-help-shortcut" data-run="msbackup">${icon('shortcut-overlay')}</button></td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('bugreport')}</td><td><b>${L('Сообщение об ошибке', 'Report a Problem')}</b> — ${L('клавиша F10 (в любой программе Ctrl+F10) снимает экран, запоминает открытые окна и место в игре и отправляет отчёт разработчику. «Мои отчёты об ошибках» показывают, что с отчётом стало.', 'F10 (Ctrl+F10 in any program) takes a screenshot, records open windows and your place in the game and sends a report to the developer. "My Problem Reports" shows what happened to it.')}</td></tr>
+            <tr><td class="win-help-table-glyph">${glyph('win-update')}</td><td><b>${L('Лаунчер Win 98', 'Win 98 Launcher')}</b> — ${L('открывается при запуске Win98.exe: показывает новости и изменения всех версий и ставит обновления, скачивая только изменённые файлы. Если обновление отложено, в области уведомлений появляется значок, а «Обновить сейчас» завершает работу Win 98 и открывает лаунчер. Сохранения при обновлении не меняются.', 'opens when Win98.exe starts: shows news and changes of every version and installs updates by downloading only the changed files. If you postpone an update, an icon appears in the notification area, and Update now shuts Win 98 down and opens the launcher. Saves never change on update.')}</td></tr>
             <tr><td class="win-help-table-glyph">${glyph('cleanmgr')}</td><td><b>${L('Очистка диска (Disk Cleanup)', 'Disk Cleanup')}</b> — ${L('удаление временных файлов Интернета, старых файлов установки и очистка Корзины.', 'frees disk space by removing temporary Internet files, setup logs, and Recycle Bin contents.')}</td><td><button class="win-help-shortcut" data-run="cleanmgr">${icon('shortcut-overlay')}</button></td></tr>
             <tr><td class="win-help-table-glyph">${glyph('wintune')}</td><td><b>Wintune 98 / CLIbench</b> — ${L('испытательный пакет для замера производительности процессора (MIPS/MFLOPS), видеокарты 2D/3D, памяти и диска и сравнения с эталонными ПК 1998 года.', 'hardware benchmark suite measuring CPU (MIPS/MFLOPS), 2D/3D video, RAM, and disk speed against 1998 reference systems.')}</td><td><button class="win-help-shortcut" data-run="wintune">${icon('shortcut-overlay')}</button></td></tr>
             <tr><td class="win-help-table-glyph">${glyph('mon-test')}</td><td><b>NOKIA Monitor Test</b> — ${L('набор полноэкранных настроечных таблиц для проверки геометрии, сведения лучей, муара, контрастности и фокусировки монитора.', 'fullscreen calibration patterns for testing monitor geometry, convergence, moiré, contrast, and focus.')}</td><td><button class="win-help-shortcut" data-run="mon_test">${icon('shortcut-overlay')}</button></td></tr>
@@ -797,6 +810,7 @@ class AppDialogs {
             <tr><td><code>iexplore</code> / <code>netscape</code> / <code>outlook</code> / <code>icq</code> / <code>mirc</code> / <code>hypertrm</code></td><td>${L('Internet Explorer / Netscape / Outlook Express / ICQ / mIRC / HyperTerminal', 'Internet Explorer / Netscape / Outlook Express / ICQ / mIRC / HyperTerminal')}</td></tr>
             <tr><td><code>taskmgr</code> / <code>sysmon</code> / <code>msconfig</code> / <code>sysedit</code> / <code>dxdiag</code> / <code>regedit</code></td><td>${L('Диспетчер задач / Системный монитор / Настройка системы / SysEdit / DirectX / Реестр', 'Task Manager / System Monitor / MSConfig / SysEdit / DirectX Diagnostic / Registry Editor')}</td></tr>
             <tr><td><code>msbackup</code> / <code>restore</code></td><td>${L('Архивация данных / Восстановление из архива', 'Backup / Restore from a backup')}</td></tr>
+            <tr><td><code>bugreport</code> / <code>bugreport /list</code></td><td>${L('Сообщение об ошибке / Мои отчёты об ошибках', 'Report a Problem / My Problem Reports')}</td></tr>
             <tr><td><code>scandisk</code> / <code>defrag</code> / <code>cleanmgr</code> / <code>wintune</code> / <code>clibench</code> / <code>mon_test</code></td><td>${L('ScanDisk / Дефрагментация / Очистка диска / Wintune 98 / CLIbench / Тест монитора', 'ScanDisk / Disk Defragmenter / Disk Cleanup / Wintune 98 / CLIbench / Monitor Test')}</td></tr>
             <tr><td><code>qbasic</code> / <code>command</code> / <code>clippy</code> / <code>winver</code></td><td>${L('QBasic 1.1 / Сеанс MS-DOS / Помощник Скрепыш / О программе Win', 'QBasic 1.1 / MS-DOS Prompt / Clippy / About Win')}</td></tr>
           </table>
@@ -1566,6 +1580,13 @@ class AppDialogs {
       if (window.appBackup) window.appBackup.open('backup');
       return;
     }
+    if (cmd === 'bugreport' || cmd === 'bugreport.exe') {
+      if (window.appBugReport) {
+        if (args[0] && args[0].toLowerCase() === '/list') window.appBugReport.openList();
+        else window.appBugReport.open();
+      }
+      return;
+    }
     if (cmd === 'restore' || cmd === 'восстановление') {
       if (window.appBackup) window.appBackup.open('restore');
       return;
@@ -1704,14 +1725,8 @@ class AppDialogs {
       return;
     }
     if (cmd === 'quest' || cmd === 'scumm' || cmd === 'monkey' || cmd === 'lucas') {
-      if (window.gameManager && !window.gameManager.isInstalled('quest')) {
-        window.winManager.openDialog({
-          title: 'LucasQuest 98',
-          icon: 'error',
-          message: isRu
-            ? 'Игра LucasQuest 98 не установлена.<br>Вы можете получить её в <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-            : 'Game LucasQuest 98 is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('quest_demo')) {
+        window.gameManager.showOnCd('quest_demo');
       } else if (window.appScummQuest) window.appScummQuest.open();
       return;
     }
@@ -1740,14 +1755,8 @@ class AppDialogs {
       return;
     }
     if (cmd === 'fallout2' || val === 'fallout 2' || cmd === 'fallout2.exe') {
-      if (window.gameManager && !window.gameManager.isInstalled('fallout2')) {
-        window.winManager.openDialog({
-          title: 'Fallout 2 Demo',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Fallout 2 Demo не установлена.<br>Вы можете получить её в <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-            : 'Game Fallout 2 Demo is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('fallout98_demo')) {
+        window.gameManager.showOnCd('fallout98_demo');
       } else if (window.appFallout2) window.appFallout2.open();
       return;
     }
@@ -1814,14 +1823,8 @@ class AppDialogs {
       return;
     }
     if (cmd === 'tekken' || cmd === 'tekken3' || cmd === 'tekken3.exe' || cmd === 'tekken 3' || cmd === 'теккен' || cmd === 'теккен 3' || cmd === 'tk3') {
-      if (window.gameManager && !window.gameManager.isInstalled('tekken3')) {
-        window.winManager.openDialog({
-          title: 'Tekken 3 98',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Tekken 3 98 не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'tekken3\');">Steam</a>'
-            : 'Game Tekken 3 98 is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'tekken3\');">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('tekken98_demo')) {
+        window.gameManager.showOnCd('tekken98_demo');
       } else if (window.appTekken3) window.appTekken3.open();
       return;
     }
@@ -1862,14 +1865,8 @@ class AppDialogs {
       return;
     }
     if (cmd === 'sammax202' || cmd === 'sammax22' || cmd === 'sammax22.exe' || cmd === 'sam & max 202' || cmd === 'sam and max 202' || cmd === 'moai better blues' || cmd === 'сэм и макс 202' || cmd === 'блюз истуканов') {
-      if (window.gameManager && !window.gameManager.isInstalled('sammax202')) {
-        window.winManager.openDialog({
-          title: 'Sam & Max: Moai Better Blues',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Sam &amp; Max: Moai Better Blues не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'sammax202\');">Steam</a>'
-            : 'Game Sam &amp; Max: Moai Better Blues is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'sammax202\');">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('sammax202_demo')) {
+        window.gameManager.showOnCd('sammax202_demo');
       } else if (window.appSamMax202) window.appSamMax202.open();
       return;
     }
@@ -1970,26 +1967,14 @@ class AppDialogs {
       return;
     }
     if (cmd === 'xiii' || cmd === 'xiii.exe' || cmd === '13' || cmd === 'тринадцать' || cmd === 'тринадцатый') {
-      if (window.gameManager && !window.gameManager.isInstalled('xiii')) {
-        window.winManager.openDialog({
-          title: 'XIII',
-          icon: 'error',
-          message: isRu
-            ? 'Игра XIII не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'xiii\');">Steam</a>'
-            : 'Game XIII is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'xiii\');">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('xiii_demo')) {
+        window.gameManager.showOnCd('xiii_demo');
       } else if (window.appXiii) window.appXiii.open();
       return;
     }
     if (cmd === 'maxpayne' || cmd === 'maxpayne.exe' || cmd === 'max payne' || cmd === 'макс пейн' || cmd === 'max') {
-      if (window.gameManager && !window.gameManager.isInstalled('maxpayne')) {
-        window.winManager.openDialog({
-          title: 'Max Payne',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Max Payne не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'maxpayne\');">Steam</a>'
-            : 'Game Max Payne is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'maxpayne\');">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('maxpayne_demo')) {
+        window.gameManager.showOnCd('maxpayne_demo');
       } else if (window.appMaxPayne) window.appMaxPayne.open();
       return;
     }
@@ -2006,14 +1991,8 @@ class AppDialogs {
       return;
     }
     if (cmd === 'falloutzp' || cmd === 'falloutzp.exe' || cmd === 'fallout zp' || cmd === 'запорожье' || cmd === 'new vegas' || val === 'fallout: запорожье' || val === 'fallout запорожье') {
-      if (window.gameManager && !window.gameManager.isInstalled('falloutzp')) {
-        window.winManager.openDialog({
-          title: 'Fallout: Запорожье',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Fallout: Запорожье не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'falloutzp\');">Steam</a>'
-            : 'Game Fallout: Zaporozhye is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'falloutzp\');">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('falloutzp_demo')) {
+        window.gameManager.showOnCd('falloutzp_demo');
       } else if (window.appFalloutZP) window.appFalloutZP.open();
       return;
     }
@@ -2030,26 +2009,8 @@ class AppDialogs {
       return;
     }
     if (cmd === 'korovany' || cmd === 'korovany.exe' || cmd === 'корованы' || cmd === 'kirill') {
-      if (window.gameManager && !window.gameManager.isInstalled('korovany')) {
-        window.winManager.openDialog({
-          title: 'Корованы',
-          icon: 'error',
-          message: isRu
-            ? 'Игра «Корованы» не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'korovany\');">Steam</a>'
-            : 'Game Korovany is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'korovany\');">Steam</a>'
-        });
-      } else if (window.appKorovany) window.appKorovany.open();
-      return;
-    }
-    if (cmd === 'korovany' || cmd === 'korovany.exe' || cmd === 'корованы' || cmd === 'kirill') {
-      if (window.gameManager && !window.gameManager.isInstalled('korovany')) {
-        window.winManager.openDialog({
-          title: 'Корованы',
-          icon: 'error',
-          message: isRu
-            ? 'Игра «Корованы» не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'korovany\');">Steam</a>'
-            : 'Game Korovany is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'korovany\');">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('korovany_demo')) {
+        window.gameManager.showOnCd('korovany_demo');
       } else if (window.appKorovany) window.appKorovany.open();
       return;
     }
@@ -2114,38 +2075,20 @@ class AppDialogs {
       return;
     }
     if (cmd === 'dmc' || cmd === 'dmc4' || cmd === 'dmc98' || cmd === 'dmc4.exe' || cmd === 'devil may cry' || cmd === 'devil may cry 4' || cmd === 'девил май край') {
-      if (window.gameManager && !window.gameManager.isInstalled('dmc98')) {
-        window.winManager.openDialog({
-          title: 'Devil May Cry 4 98',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Devil May Cry 4 98 не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-            : 'Game Devil May Cry 4 98 is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('dmc98_demo')) {
+        window.gameManager.showOnCd('dmc98_demo');
       } else if (window.appDmc98) window.appDmc98.open();
       return;
     }
     if (cmd === 'dao' || cmd === 'dao98' || cmd === 'daorigins' || cmd === 'daorigins.exe' || cmd === 'dragonage' || cmd === 'dragon age' || cmd === 'драгон эйдж' || cmd === 'эпоха драконов') {
-      if (window.gameManager && !window.gameManager.isInstalled('dao98')) {
-        window.winManager.openDialog({
-          title: 'Dragon Age: Origins 98',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Dragon Age: Origins 98 не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-            : 'Game Dragon Age: Origins 98 is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('dao98_demo')) {
+        window.gameManager.showOnCd('dao98_demo');
       } else if (window.appDao98) window.appDao98.open();
       return;
     }
     if (cmd === 'hl2' || cmd === 'hl2.exe' || cmd === 'half-life 2' || cmd === 'halflife2' || cmd === 'халф-лайф 2' || cmd === 'гордон') {
-      if (window.gameManager && !window.gameManager.isInstalled('hl2')) {
-        window.winManager.openDialog({
-          title: 'Half-Life 2',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Half-Life 2 не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'hl2\');">Steam</a>'
-            : 'Game Half-Life 2 is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'hl2\');">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('hl2_demo')) {
+        window.gameManager.showOnCd('hl2_demo');
       } else if (window.appHl2) window.appHl2.open();
       return;
     }
@@ -2162,14 +2105,8 @@ class AppDialogs {
       return;
     }
     if (cmd === 'kotor' || cmd === 'kotor.exe' || cmd === 'kotor98' || cmd === 'swkotor' || cmd === 'котор' || cmd === 'star wars') {
-      if (window.gameManager && !window.gameManager.isInstalled('kotor98')) {
-        window.winManager.openDialog({
-          title: 'Star Wars: KOTOR 98',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Star Wars: Knights of the Old Republic 98 не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-            : 'Game Star Wars: Knights of the Old Republic 98 is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('kotor98_demo')) {
+        window.gameManager.showOnCd('kotor98_demo');
       } else if (window.appKotor98) window.appKotor98.open();
       return;
     }
@@ -2186,14 +2123,8 @@ class AppDialogs {
       return;
     }
     if (cmd === 'minecraft' || cmd === 'mc98' || cmd === 'minecraft98' || cmd === 'minecraft.exe' || cmd === 'майнкрафт') {
-      if (window.gameManager && !window.gameManager.isInstalled('mc98')) {
-        window.winManager.openDialog({
-          title: 'Minecraft 98',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Minecraft 98 не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-            : 'Game Minecraft 98 is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('mc98_demo')) {
+        window.gameManager.showOnCd('mc98_demo');
       } else if (window.appMc98) window.appMc98.open();
       return;
     }
@@ -2210,14 +2141,8 @@ class AppDialogs {
       return;
     }
     if (cmd === 'xr98' || cmd === 'xr98.exe' || cmd === 'stalker98' || cmd === 'stalker 98' || cmd === 'soc' || cmd === 'shadow of chernobyl') {
-      if (window.gameManager && !window.gameManager.isInstalled('stalker98')) {
-        window.winManager.openDialog({
-          title: 'S.T.A.L.K.E.R. 98',
-          icon: 'error',
-          message: isRu
-            ? 'Игра S.T.A.L.K.E.R. 98 не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-            : 'Game S.T.A.L.K.E.R. 98 is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('stalker98_demo')) {
+        window.gameManager.showOnCd('stalker98_demo');
       } else if (window.appStalker98) window.appStalker98.open();
       return;
     }
@@ -2246,26 +2171,14 @@ class AppDialogs {
       return;
     }
     if (cmd === 'hl' || cmd === 'half-life' || cmd === 'halflife' || cmd === 'hl.exe') {
-      if (window.gameManager && !window.gameManager.isInstalled('half-life')) {
-        window.winManager.openDialog({
-          title: 'Half-Life 98',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Half-Life 98 не установлена.<br>Вы можете получить её в <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-            : 'Game Half-Life 98 is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('half-life_demo')) {
+        window.gameManager.showOnCd('half-life_demo');
       } else if (window.appHalfLife) window.appHalfLife.open();
       return;
     }
     if (cmd === 'glide' || cmd === 'neon-racer' || cmd === 'midnight' || cmd === 'midnight-glide' || cmd === 'glide.exe') {
-      if (window.gameManager && !window.gameManager.isInstalled('neon-racer')) {
-        window.winManager.openDialog({
-          title: 'Midnight Glide',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Midnight Glide не установлена.<br>Вы можете получить её в <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-            : 'Game Midnight Glide is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam();">Steam</a>'
-        });
+      if (window.gameManager && !window.gameManager.isInstalled('neon-racer_demo')) {
+        window.gameManager.showOnCd('neon-racer_demo');
       } else if (window.appNeonRacer) window.appNeonRacer.open();
       return;
     }

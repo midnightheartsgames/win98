@@ -40,7 +40,7 @@ window.interpediaReg('win98clone', 'project', {
     { id: 'web', title: 'Сайты', content: `Internet Explorer открывает десятки сайтов, воссоздающих Сеть конца 1990-х: Интерпедию, поисковики «Яндекс» и «Рамблер», [[geocities|GeoCities]], шлюз [[fidonet|ФидоНета]], библиотеку Мошкова, журнал «Игромания», архив скинов [[winamp|Winamp]], центр [[y2k|проблемы 2000 года]], видеосайт YouVid, фан-клуб [[digicharat|Di Gi Charat]], сайт [[blender|Blender]], сайт Steam и многие другие. Многие из них объединены в [[webring|кольцо ретро-сайтов]].` },
     { id: 'steam', title: 'Игры и Steam', content: `Игры в системе не установлены заранее. Сначала пользователь скачивает клиент Steam с сайта www.steampowered.com в Internet Explorer, затем покупает игры в каталоге, скачивает и устанавливает их. У каждой игры есть страница с описанием и снимками экрана. Исключение — демоверсии с компакт-диска журнала «Игромания» (диск D:), которые устанавливаются с диска.
 
-Среди игр каталога — [[wolf3d|Wolfenstein 3D]], [[diablo|Diablo]], [[halflife|Half-Life 98]], квест [[scumm|LucasQuest 98]] и гонки [[neonracer|Midnight Glide]].` },
+Среди игр каталога Steam — [[wolf3d|Wolfenstein 3D]], [[diablo|Diablo]] и [[doom|DOOM 98]]. На диске «Игромании» лежат демоверсии [[halflife|Half-Life 98]], квеста [[scumm|LucasQuest 98]] и гонки [[neonracer|Midnight Glide]].` },
     { id: 'clippy', title: 'Скрепыш', content: `На рабочем столе живёт [[clippy|Скрепыш]]. Он комментирует открытые программы и посещённые сайты, отвечает на вопросы, ведёт беседы с выбором реплик, переодевается в наряды с сайта «Скрепыш '98» и, как положено, иногда предлагает помощь в самый неподходящий момент.` }
   ],
   seeAlso: ['windows98', 'bios', 'clippy', 'ie5', 'interpedia', 'samandmax', 'kovcheg', 'steam'],
@@ -92,7 +92,7 @@ The project recreates not just the system but its era: the accessories, [[ie5|In
     { id: 'web', title: 'Websites', content: `Internet Explorer opens dozens of sites recreating the late-1990s Web: Interpedia, the Yandex and Rambler search engines, [[geocities|GeoCities]], a [[fidonet|FidoNet]] gateway, the Moshkov library, Igromania magazine, the [[winamp|Winamp]] skins archive, a [[y2k|Year 2000]] center, the YouVid video site, the [[digicharat|Di Gi Charat]] fan club, the [[blender|Blender]] site, the Steam site and many more. Many of them are joined in a [[webring|retro web ring]].` },
     { id: 'steam', title: 'Games and Steam', content: `No games come preinstalled. The user first downloads the Steam client from www.steampowered.com in Internet Explorer, then buys games in the catalog, downloads and installs them. Every game has a page with a description and screenshots. The exception is the demos on the Igromania magazine CD (drive D:), which install from the disc.
 
-Catalog games include [[wolf3d|Wolfenstein 3D]], [[diablo|Diablo]], [[halflife|Half-Life 98]], the adventure [[scumm|LucasQuest 98]] and the racer [[neonracer|Midnight Glide]].` },
+Steam catalog games include [[wolf3d|Wolfenstein 3D]], [[diablo|Diablo]] and [[doom|DOOM 98]]. The Igromania CD carries demos of [[halflife|Half-Life 98]], the adventure [[scumm|LucasQuest 98]] and the racer [[neonracer|Midnight Glide]].` },
     { id: 'clippy', title: 'Clippy', content: `[[clippy|Clippy]] lives on the desktop. He comments on open programs and visited sites, answers questions, holds conversations with reply choices, dresses up in outfits from the Clippy '98 site and, as is only proper, sometimes offers help at the worst possible moment.` }
   ],
   seeAlso: ['windows98', 'bios', 'clippy', 'ie5', 'interpedia', 'samandmax', 'kovcheg', 'steam'],
@@ -116,7 +116,7 @@ window.interpediaReg('scumm', 'project', {
       { label: 'Музыкальная система', value: 'iMUSE (с 1991 года)' },
       { label: 'Интерфейс', value: 'девять глаголов и инвентарь' },
       { label: 'Наследник', value: 'GrimE ([[grimfandango|Grim Fandango]], 1998)' },
-      { label: 'Игра нашего проекта', value: 'LucasQuest 98 (продаётся в Steam)' }
+      { label: 'Игра нашего проекта', value: 'LucasQuest 98 Demo (диск «Игромании»)' }
     ]
   },
   lead: `<strong>SCUMM</strong> (<em>Script Creation Utility for Maniac Mansion</em>) — движок и язык сценариев для приключенческих игр, созданный Роном Гилбертом и Ариком Уилмундером в Lucasfilm Games для игры Maniac Mansion (1987). На нём построены классические квесты студии: The Secret of Monkey Island, Day of the Tentacle, Sam & Max Hit the Road и другие.
@@ -143,7 +143,7 @@ SCUMM заменил ввод текстовых команд панелью г�
 </table>
 
 В Monkey Island 2 впервые применена система iMUSE Майкла Лэнда и Питера Макконнелла: музыка плавно меняет аранжировку, когда герой переходит из одной комнаты в другую.` },
-    { id: 'lucasquest', title: 'LucasQuest 98', content: `<strong>LucasQuest 98</strong> (в игре — «The Curse of Win 98 — A SCUMM Adventure») — небольшой квест, который можно купить и скачать в каталоге Steam нашей системы. Гайбраш Байтвуд, «могучий пират-программист», оказывается в серверной лаборатории замка Редмонд 1998 года. Ему нужно вернуть сервер Win 98 в Сеть: разбудить уснувшего сисадмина, капитана Боба, трое суток без сна отлаживавшего код на COBOL, починить сгоревший предохранитель в подвале и отобрать загрузочный компакт-диск у кибер-голубя на крыше.
+    { id: 'lucasquest', title: 'LucasQuest 98', content: `<strong>LucasQuest 98</strong> (в игре — «The Curse of Win 98 — A SCUMM Adventure») — небольшой квест, демоверсия которого лежит на компакт-диске журнала «Игромания» (<code>D:\\demo\\questdemo.exe</code>) и ставится с диска. Гайбраш Байтвуд, «могучий пират-программист», оказывается в серверной лаборатории замка Редмонд 1998 года. Ему нужно вернуть сервер Win 98 в Сеть: разбудить уснувшего сисадмина, капитана Боба, трое суток без сна отлаживавшего код на COBOL, починить сгоревший предохранитель в подвале и отобрать загрузочный компакт-диск у кибер-голубя на крыше.
 
 Экран разделён по классическому образцу: сверху — сцена, снизу — строка действия, девять глаголов (Дать, Открыть, Закрыть, Взять, Осмотреть, Говорить, Использовать, Толкнуть, Потянуть) и инвентарь. В игре три локации, головоломки с резиновой курицей, кофе и проводом и диалоги с выбором реплик, в том числе пародия на знаменитые словесные дуэли Monkey Island.` }
   ],
@@ -153,7 +153,7 @@ SCUMM заменил ввод текстовых команд панелью г�
     'LucasArts. The Secret of Monkey Island: руководство. — 1990.',
     'Land M., McConnell P. Патент США 5 315 057 (iMUSE). — 1994.'
   ],
-  links: [['http://www.steampowered.com', 'Steam: LucasQuest 98'], ['http://www.igromania.ru', 'Журнал «Игромания»']],
+  links: [['http://www.igromania.ru', 'Журнал «Игромания»: LucasQuest 98 Demo на диске']],
   categories: ['Наш проект', 'Приключенческие игры', 'LucasArts']
 }, {
   title: 'LucasQuest 98 & SCUMM Engine',
@@ -167,7 +167,7 @@ SCUMM заменил ввод текстовых команд панелью г�
       { label: 'Music system', value: 'iMUSE (since 1991)' },
       { label: 'Interface', value: 'nine verbs and an inventory' },
       { label: 'Successor', value: 'GrimE ([[grimfandango|Grim Fandango]], 1998)' },
-      { label: 'Our project\'s game', value: 'LucasQuest 98 (sold on Steam)' }
+      { label: 'Our project\'s game', value: 'LucasQuest 98 Demo (Igromania CD)' }
     ]
   },
   lead: `<strong>SCUMM</strong> (<em>Script Creation Utility for Maniac Mansion</em>) is an adventure game engine and scripting language created by Ron Gilbert and Aric Wilmunder at Lucasfilm Games for Maniac Mansion (1987). The studio's classic adventures were built on it: The Secret of Monkey Island, Day of the Tentacle, Sam & Max Hit the Road and others.
@@ -194,7 +194,7 @@ The engine outlived more than a dozen games and kept evolving, gaining full-colo
 </table>
 
 Monkey Island 2 was the first to use iMUSE by Michael Land and Peter McConnell: the music smoothly changes its arrangement as the hero moves from room to room.` },
-    { id: 'lucasquest', title: 'LucasQuest 98', content: `<strong>LucasQuest 98</strong> (in-game title "The Curse of Win 98 — A SCUMM Adventure") is a small adventure you can buy and download from our system's Steam catalog. Guybrush Bytepwood, "a mighty pirate-programmer", finds himself in the server lab of Castle Redmond, 1998. He must bring the Win 98 server back online: wake the sleeping sysadmin, Captain Bob, who has been debugging COBOL code for 72 straight hours, fix the blown fuse in the basement and take the boot CD from a cyber-pigeon on the roof.
+    { id: 'lucasquest', title: 'LucasQuest 98', content: `<strong>LucasQuest 98</strong> (in-game title "The Curse of Win 98 — A SCUMM Adventure") is a small adventure whose demo sits on the Igromania magazine CD (<code>D:\\demo\\questdemo.exe</code>) and installs from the disc. Guybrush Bytepwood, "a mighty pirate-programmer", finds himself in the server lab of Castle Redmond, 1998. He must bring the Win 98 server back online: wake the sleeping sysadmin, Captain Bob, who has been debugging COBOL code for 72 straight hours, fix the blown fuse in the basement and take the boot CD from a cyber-pigeon on the roof.
 
 The screen follows the classic layout: the scene on top, then the sentence line, nine verbs (Give, Open, Close, Pick up, Look at, Talk to, Use, Push, Pull) and the inventory. The game has three locations, puzzles with a rubber chicken, coffee and wire, and dialogues with reply choices, including a parody of Monkey Island's famous insult duels.` }
   ],
@@ -204,7 +204,7 @@ The screen follows the classic layout: the scene on top, then the sentence line,
     'LucasArts. The Secret of Monkey Island manual, 1990.',
     'Land, M., McConnell, P. US Patent 5,315,057 (iMUSE), 1994.'
   ],
-  links: [['http://www.steampowered.com', 'Steam: LucasQuest 98'], ['http://www.igromania.ru', 'Igromania magazine']],
+  links: [['http://www.igromania.ru', 'Igromania magazine: LucasQuest 98 Demo on the CD']],
   categories: ['Our Project', 'Adventure Games', 'LucasArts']
 }, ['lucasquest']);
 
@@ -216,14 +216,14 @@ window.interpediaReg('neonracer', 'project', {
     fields: [
       { label: 'Разработчик', value: 'RetroSpeed Studios' },
       { label: 'Жанр', value: 'аркадные ночные гонки' },
-      { label: 'Распространение', value: 'Steam, 19,99 $' },
+      { label: 'Распространение', value: 'Midnight Glide Demo, диск «Игромании»' },
       { label: 'Разрешение', value: '320 × 240' },
       { label: 'Режимы графики', value: '3dfx Glide (сглаживание) и PS1 (дрожание вершин)' },
       { label: 'Машины', value: 'PULSE GT, SPARK RS, VANDAL V8' },
       { label: 'Трассы', value: 'Dockside Afterdark, Neon District, Coastal Express' }
     ]
   },
-  lead: `<strong>Midnight Glide</strong> (рабочее название — <em>Neon Racer 3D</em>) — аркадная трёхмерная гонка по ночному городу из каталога Steam нашей системы. Игрок выбирает одну из трёх машин и проходит ночную серию из трёх заездов против соперников и городского трафика, используя дрифт и закись азота.
+  lead: `<strong>Midnight Glide</strong> (рабочее название — <em>Neon Racer 3D</em>) — аркадная трёхмерная гонка по ночному городу; в нашей системе она есть в виде демоверсии Midnight Glide Demo на компакт-диске журнала «Игромания». Игрок выбирает одну из трёх машин и проходит ночную серию из трёх заездов против соперников и городского трафика, используя дрифт и закись азота.
 
 Игра нарочно выглядит как аркада конца 1990-х: низкополигональные машины, разрешение 320×240 и выбор между «гладкой» картинкой в духе ускорителей [[voodoo|3dfx]] и «дрожащей» графикой первых игровых приставок. Девиз игры: «Low polygons. Late nights».`,
   sections: [
@@ -253,14 +253,14 @@ window.interpediaReg('neonracer', 'project', {
 </ul>
 
 Неоновые вывески, мокрый асфальт и огни встречных машин создают атмосферу нелегальных ночных заездов.` },
-    { id: 'distribution', title: 'Распространение', content: `Игра продаётся через Steam и после покупки скачивается и устанавливается на диск C:. Её размер невелик — около 9 МБ, — поэтому загрузка через [[modem56k|модем]] занимает разумное время.` }
+    { id: 'distribution', title: 'Распространение', content: `В Steam игра не продаётся. Демоверсия Midnight Glide Demo лежит на [[cdrom|компакт-диске]] журнала «Игромания»: установщик <code>D:\\demo\\glidedemo.exe</code> ставит её на диск C: своим мастером установки. Её размер невелик — около 9 МБ.` }
   ],
   seeAlso: ['win98clone', 'scumm', 'voodoo', 'carmageddon'],
   references: [
     'RetroSpeed Studios. Midnight Glide: справка «Управление и об игре».',
-    'Страница игры в каталоге Steam.'
+    'Журнал «Игромания»: раздел демоверсий на компакт-диске.'
   ],
-  links: [['http://www.steampowered.com', 'Steam: Midnight Glide'], ['http://www.3dfx-zone.com', '3dfx Voodoo Zone']],
+  links: [['http://www.igromania.ru', 'Журнал «Игромания»: Midnight Glide Demo на диске'], ['http://www.3dfx-zone.com', '3dfx Voodoo Zone']],
   categories: ['Наш проект', 'Гоночные игры', 'Видеоигры']
 }, {
   title: 'Midnight Glide (Neon Racer 3D)',
@@ -270,14 +270,14 @@ window.interpediaReg('neonracer', 'project', {
     fields: [
       { label: 'Developer', value: 'RetroSpeed Studios' },
       { label: 'Genre', value: 'arcade night racing' },
-      { label: 'Distribution', value: 'Steam, $19.99' },
+      { label: 'Distribution', value: 'Midnight Glide Demo, Igromania CD' },
       { label: 'Resolution', value: '320 × 240' },
       { label: 'Render modes', value: '3dfx Glide (filtered) and PS1 (vertex jitter)' },
       { label: 'Cars', value: 'PULSE GT, SPARK RS, VANDAL V8' },
       { label: 'Tracks', value: 'Dockside Afterdark, Neon District, Coastal Express' }
     ]
   },
-  lead: `<strong>Midnight Glide</strong> (working title <em>Neon Racer 3D</em>) is an arcade 3D night-city racer from our system's Steam catalog. The player picks one of three cars and runs a night series of three races against rivals and city traffic, using drifts and nitrous oxide.
+  lead: `<strong>Midnight Glide</strong> (working title <em>Neon Racer 3D</em>) is an arcade 3D night-city racer; our system has it as the Midnight Glide Demo on the Igromania magazine CD. The player picks one of three cars and runs a night series of three races against rivals and city traffic, using drifts and nitrous oxide.
 
 The game deliberately looks like a late-1990s arcade racer: low-poly cars, 320×240 resolution and a choice between a "smooth" picture in the style of [[voodoo|3dfx]] accelerators and the "wobbly" graphics of the first game consoles. Its motto: "Low polygons. Late nights."`,
   sections: [
@@ -307,14 +307,14 @@ Paint and body kit come with the car and are chosen before the race.` },
 </ul>
 
 Neon signs, wet asphalt and the lights of oncoming cars set the mood of illegal night racing.` },
-    { id: 'distribution', title: 'Distribution', content: `The game is sold through Steam and, once bought, is downloaded and installed to drive C:. It is small, about 9 MB, so a [[modem56k|modem]] download takes a reasonable time.` }
+    { id: 'distribution', title: 'Distribution', content: `The game is not sold on Steam. The Midnight Glide Demo sits on the Igromania magazine [[cdrom|CD]]: the installer <code>D:\\demo\\glidedemo.exe</code> puts it on drive C: with its own setup wizard. It is small, about 9 MB.` }
   ],
   seeAlso: ['win98clone', 'scumm', 'voodoo', 'carmageddon'],
   references: [
     'RetroSpeed Studios. Midnight Glide: Controls / About help.',
-    'The game\'s Steam catalog page.'
+    'Igromania magazine: the demo section of the CD.'
   ],
-  links: [['http://www.steampowered.com', 'Steam: Midnight Glide'], ['http://www.3dfx-zone.com', '3dfx Voodoo Zone']],
+  links: [['http://www.igromania.ru', 'Igromania magazine: Midnight Glide Demo on the CD'], ['http://www.3dfx-zone.com', '3dfx Voodoo Zone']],
   categories: ['Our Project', 'Racing Games', 'Video Games']
 });
 

@@ -247,46 +247,21 @@
 
     getGameStatusInfo(gameId) {
       const gm = window.gameManager;
-      const isOwned = !!(
-        gm && (
-          (typeof gm.isOwned === 'function' && gm.isOwned(gameId)) ||
-          (typeof gm.isPurchased === 'function' && gm.isPurchased(gameId)) ||
-          (typeof gm.ownsOnSteam === 'function' && gm.ownsOnSteam(gameId))
-        )
-      );
       const isInstalled = !!(gm && typeof gm.isInstalled === 'function' && gm.isInstalled(gameId));
-      const isDownloading = !!(gm && typeof gm.isDownloading === 'function' && gm.isDownloading(gameId));
-      const progress = gm && typeof gm.getDownloadProgress === 'function' ? gm.getDownloadProgress(gameId) : 0;
 
       if (isInstalled) {
         return {
           code: 'installed',
           badgeClass: 'is-green',
-          badgeText: 'УСТАНОВЛЕНА В СИСТЕМЕ',
+          badgeText: 'ДЕМОВЕРСИЯ УСТАНОВЛЕНА',
           detail: 'Исполняемый модуль готов к запуску с жёсткого диска C:\\Games.'
         };
       }
-      if (isDownloading) {
-        return {
-          code: 'downloading',
-          badgeClass: 'is-gold',
-          badgeText: 'ЗАГРУЗКА В STEAM (' + progress + '%)',
-          detail: 'Пакеты ресурсов передаются через контент-сервер Steam.'
-        };
-      }
-      if (isOwned) {
-        return {
-          code: 'owned',
-          badgeClass: 'is-kotor',
-          badgeText: 'В БИБЛИОТЕКЕ STEAM (НЕ УСТАНОВЛЕНА)',
-          detail: 'Лицензия приобретена. Запустите установку дистрибутива в клиенте Steam.'
-        };
-      }
       return {
-        code: 'store',
+        code: 'cd',
         badgeClass: 'is-dao',
-        badgeText: 'ДОСТУПНА В МАГАЗИНЕ STEAM',
-        detail: 'Официальная цифровая дистрибуция BioWare Edmonton осуществляется через клиент Steam.'
+        badgeText: 'ДЕМОВЕРСИЯ НА CD «ИГРОМАНИИ»',
+        detail: 'Демоверсия записана на компакт-диск журнала «Игромания». Вставьте диск в привод D: и запустите установщик.'
       };
     }
 
@@ -446,9 +421,9 @@
       return this.renderHomePage();
     }
 
-    renderSteamShelfCard(game) {
+    renderDemoShelfCard(game) {
       const st = this.getGameStatusInfo(game.id);
-      const isDao = game.id === 'dao98';
+      const isDao = game.id === 'dao98_demo';
       const cardClass = isDao ? 'bw-game-card is-dao' : 'bw-game-card is-kotor';
       const btnClass = isDao ? 'bw-btn bw-btn-dao' : 'bw-btn bw-btn-kotor';
       const worldLink = isDao ? '/ferelden' : '/taris';
@@ -457,17 +432,10 @@
       let actionButtons = '';
       if (st.code === 'installed') {
         actionButtons =
-          '<button type="button" class="' + btnClass + '" data-bw-launch-game="' + game.id + '">&#9654; Запустить ' + this.escapeHtml(game.exe) + '</button> ' +
-          '<button type="button" class="bw-btn" data-bw-open-steam="' + game.id + '">Страница в Steam</button>';
-      } else if (st.code === 'owned') {
-        actionButtons =
-          '<button type="button" class="' + btnClass + '" data-bw-open-steam="' + game.id + '">Установить через Steam (' + this.escapeHtml(game.size) + ')</button>';
-      } else if (st.code === 'downloading') {
-        actionButtons =
-          '<button type="button" class="bw-btn" data-bw-open-steam="' + game.id + '">Открыть загрузку в Steam</button>';
+          '<button type="button" class="' + btnClass + '" data-bw-launch-game="' + game.id + '">&#9654; Запустить ' + this.escapeHtml(game.exe) + '</button>';
       } else {
         actionButtons =
-          '<button type="button" class="' + btnClass + '" data-bw-open-steam="' + game.id + '">Купить и скачать в Steam (' + this.escapeHtml(game.price) + ')</button>';
+          '<button type="button" class="' + btnClass + '" data-bw-open-cd="' + game.id + '">Демоверсия на диске «Игромании» (' + this.escapeHtml(game.setupPath) + ')</button>';
       }
 
       const highlightsHtml = (game.highlights || []).map((h) => '<li>' + this.escapeHtml(h) + '</li>').join('');
@@ -515,7 +483,7 @@
 
       const selectedArticle = allNews.find((n) => n.id === this.activeNewsId) || filteredNews[0] || allNews[0];
 
-      const shelfCells = games.map((g) => '<td width="50%" valign="top" style="padding:4px;">' + this.renderSteamShelfCard(g) + '</td>').join('');
+      const shelfCells = games.map((g) => '<td width="50%" valign="top" style="padding:4px;">' + this.renderDemoShelfCard(g) + '</td>').join('');
 
       const filterButtons = [
         { id: 'all', label: 'Все записи (' + allNews.length + ')' },
@@ -564,7 +532,7 @@
 
       return (
         '<div class="bw-panel">' +
-          '<div class="bw-panel-head is-bronze">ВИТРИНА РОЛЕВЫХ МИРОВ BIOWARE EDMONTON (ИНТЕГРАЦИЯ С КЛИЕНТОМ STEAM)</div>' +
+          '<div class="bw-panel-head is-bronze">ВИТРИНА РОЛЕВЫХ МИРОВ BIOWARE EDMONTON (ДЕМОВЕРСИИ НА CD «ИГРОМАНИИ»)</div>' +
           '<div class="bw-panel-body">' +
             '<table class="bw-shelf" cellspacing="0" cellpadding="0"><tr>' + shelfCells + '</tr></table>' +
           '</div>' +
@@ -2038,13 +2006,11 @@
         });
       });
 
-      container.querySelectorAll('[data-bw-open-steam]').forEach((btn) => {
+      container.querySelectorAll('[data-bw-open-cd]').forEach((btn) => {
         btn.addEventListener('click', () => {
-          const gameId = btn.getAttribute('data-bw-open-steam');
-          if (window.gameManager && typeof window.gameManager.showInSteam === 'function') {
-            window.gameManager.showInSteam(gameId);
-          } else if (window.AppRegistry && typeof window.AppRegistry.launch === 'function') {
-            window.AppRegistry.launch('steam', { gameId });
+          const gameId = btn.getAttribute('data-bw-open-cd');
+          if (window.gameManager && typeof window.gameManager.showOnCd === 'function') {
+            window.gameManager.showOnCd(gameId);
           }
         });
       });

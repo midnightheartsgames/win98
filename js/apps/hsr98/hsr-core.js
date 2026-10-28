@@ -397,24 +397,26 @@
   const breakBase = lvl => 10 + 4 * lvl;
   const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
-  const EDITION = globalThis.Hsr98Standalone === 'apk' ? 'Издание «Портативное» · Android APK' : 'Издание «Ярило-VI»';
+  const VERSION = '1.6';
+  const BUILD_VERSION = globalThis.Win98Build && /^\d/.test(globalThis.Win98Build.version || '') ? globalThis.Win98Build.version : VERSION;
+  const EDITION = globalThis.Hsr98Standalone === 'apk' ? 'Издание «Портативное» · Android APK' : globalThis.Hsr98Standalone === 'pc' ? 'Издание «Ярило-VI» · ПК' : 'Издание «Ярило-VI»';
   const BRAND = globalThis.Hsr98Standalone ? {
     standalone: true,
     edition: EDITION,
     team: 'Команда Star Rail 98',
     event: 'KonoSuba x SR98',
-    disc: 'v1.6 · фанатский проект Midnight Hearts',
+    disc: 'v' + BUILD_VERSION + ' · фанатский проект Midnight Hearts',
     credits: ['STAR RAIL 98', '', EDITION, '', 'Фанатский проект Midnight Hearts', 'Мир и персонажи принадлежат HoYoverse', '', 'Механики боя — по мотивам оригинала'],
     makers: 'Midnight Hearts'
   } : {
     standalone: false,
     team: 'Команда Honkai: Star Rail 98',
     event: 'KonoSuba x HSR 98',
-    disc: 'CD-ROM v1.6 · Win 98 · © 1999 miHoYo Shanghai',
+    disc: 'CD-ROM v' + VERSION + ' · Win 98 · © 1999 miHoYo Shanghai',
     credits: ['HONKAI: STAR RAIL 98', '', 'Издание «Ярило-VI»', '', 'Сценарий по мотивам Honkai: Star Rail', '(c) miHoYo / HoYoverse', '', 'Механики боя — Honkai: Star Rail'],
     makers: 'Win 98 Edition Team'
   };
 
-  Object.assign(H, { clamp, lerp, makeRandom, ELEMENTS, ELEMENT_KEYS, PATHS, BREAK_EFFECT, TUNING, grow, statAt, CHAR_EXP, expToNext, tlExpToNext, charExp, enemyExp, breakBase, fmt, BRAND });
+  Object.assign(H, { clamp, lerp, makeRandom, ELEMENTS, ELEMENT_KEYS, PATHS, BREAK_EFFECT, TUNING, grow, statAt, CHAR_EXP, expToNext, tlExpToNext, charExp, enemyExp, breakBase, fmt, VERSION, BUILD_VERSION, BRAND });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

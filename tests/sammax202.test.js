@@ -260,20 +260,18 @@ function talk(g, who, opts) {
 
 {
   const gm = read('js/game-manager.js');
-  ok(gm.includes("id: 'sammax202'"), 'catalog entry in game-manager');
-  ok(gm.includes("steam: true"), 'marked as steam game');
+  ok(gm.includes("id: 'sammax202_demo',\n        cdDemo: true,") || gm.includes("id: 'sammax202_demo',\r\n        cdDemo: true,"), 'catalog entry is an Igromania CD demo');
   ok(!/sammax202Granted/.test(gm), 'no grant flag in game-manager');
 
   const shell = {
-    'js/desktop.js': ["isInstalled('sammax202')", 'appSamMax202'],
-    'js/taskbar.js': ["isInstalled('sammax202')", "case 'sammax202'", "showInSteam('sammax202')"],
-    'js/apps/dialogs.js': ["cmd === 'sammax202'", "showInSteam(\\'sammax202\\')"],
-    'js/apps/explorer.js': ["item.app === 'sammax202'", 'SAMMAX22.EXE'],
-    'js/filesystem.js': ["'sammax202'", "'SAMMAX22.EXE'"],
+    'js/desktop.js': ["isInstalled('sammax202_demo')", 'appSamMax202'],
+    'js/taskbar.js': ["isInstalled('sammax202_demo')", "case 'sammax202_demo'", "showOnCd('sammax202_demo')"],
+    'js/apps/dialogs.js': ["cmd === 'sammax202'", "showOnCd('sammax202_demo')"],
+    'js/apps/explorer.js': ["item.app === 'sammax202_demo'", 'SAMMAX22.EXE'],
+    'js/filesystem.js': ["'sammax202_demo'", "'SAMMAX22.EXE'"],
     'js/apps/task-manager.js': ["'app_sammax202'", 'sammax22.exe'],
     'js/icons.js': ["'sammax202': `<svg"],
-    'js/apps/clippy.js': ["id.startsWith('app_sammax202')", "launchProgram('sammax202', 'appSamMax202')"],
-    'js/apps/steam.js': ["game: 'sammax202'"],
+    'js/apps/clippy.js': ["id.startsWith('app_sammax202')", "launchProgram('sammax202_demo', 'appSamMax202')"],
     'js/apps/advanced-site.js': ["id: 'sammax202'"],
     'js/apps/sammax202-app.js': ["id = 'app_sammax202'", 'ep: S.EP202']
   };
@@ -283,10 +281,10 @@ function talk(g, who, opts) {
   }
 
   for (const n of [1, 2]) {
-    const p = path.join(ROOT, 'content/steam/sammax202-' + n + '.jpg');
-    ok(fs.existsSync(p), 'steam shot ' + n + ' exists');
+    const p = path.join(ROOT, 'content/igromania/demos/sammax202_demo-' + n + '.jpg');
+    ok(fs.existsSync(p), 'CD demo shot ' + n + ' exists');
     const buf = fs.readFileSync(p);
-    ok(buf.length > 5000, 'steam shot ' + n + ' has valid size');
+    ok(buf.length > 5000, 'CD demo shot ' + n + ' has valid size');
   }
   ok(fs.existsSync(path.join(ROOT, 'SAM-MAX-202.md')), 'episode document exists');
   ok(read('package.json').includes('"test:sammax202": "node tests/sammax202.test.js"'), 'package script registered');

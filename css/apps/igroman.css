@@ -1,8 +1,3 @@
-/* ==========================================================================
-   ИГРОМАНИЯ (Сентябрь 1998) - CD Shell Stylesheet
-   Faithful recreation of Macromedia Director shell
-   ========================================================================== */
-
 .igroman-window {
   display: flex;
   flex-direction: column;
@@ -16,12 +11,6 @@
   position: relative;
 }
 
-/* Color theme classes:
-   theme-red    (Pages 1-2: Содержание, Лицензия)
-   theme-blue   (Pages 3-21: ИГРАЕМ - Демо, Патчи, Видео)
-   theme-green  (Pages 22-24: ВООРУЖАЕМСЯ - Интернет, Софт, Winamp)
-   theme-purple (Page 25: СУПЕРБОНУС)
-*/
 .igroman-window.theme-red {
   --sec-color: #e60000;
   --sec-dark: #b30000;
@@ -43,7 +32,6 @@
   --sec-bg: #ffe6f7;
 }
 
-/* --- Header Area --- */
 .igroman-header {
   position: relative;
   height: 95px;
@@ -57,7 +45,6 @@
   box-sizing: border-box;
 }
 
-/* Big grey background watermark */
 .igroman-watermark {
   position: absolute;
   left: 100px;
@@ -72,7 +59,6 @@
   z-index: 1;
 }
 
-/* Left target block */
 .igroman-target-box {
   position: relative;
   width: 130px;
@@ -119,7 +105,6 @@
   line-height: 1.2;
 }
 
-/* --- Main Layout Body --- */
 .igroman-body {
   display: flex;
   flex: 1;
@@ -129,7 +114,6 @@
   overflow: hidden;
 }
 
-/* --- Left Sidebar Menu --- */
 .igroman-sidebar {
   width: 130px;
   background-color: #dcdcdc;
@@ -194,7 +178,6 @@
   color: #ffffff;
 }
 
-/* --- Main Content Stage --- */
 .igroman-stage {
   flex: 1;
   background-color: #ffffff;
@@ -204,7 +187,6 @@
   position: relative;
 }
 
-/* Page 2: Содержание (Contents) */
 .igroman-toc-container {
   display: flex;
   flex-direction: column;
@@ -280,7 +262,6 @@
   transform: translateX(4px);
 }
 
-/* Page 3: Список демоверсий (Screenshot media_1788550588341.png) */
 .igroman-demo-list-container {
   display: flex;
   flex-direction: column;
@@ -321,7 +302,6 @@
   transform: scale(1.04);
 }
 
-/* Pages 4-19: Демоверсии (Games Layout) */
 .igroman-game-container {
   display: flex;
   flex-direction: column;
@@ -385,6 +365,31 @@
   position: relative;
 }
 
+.igroman-game-screenshot-frame[data-shot-launch],
+.igroman-game-screenshot-frame[data-shot-next] {
+  cursor: pointer;
+}
+
+.igroman-game-screenshot-frame.is-photo {
+  width: 192px;
+  height: 144px;
+}
+
+.igroman-game-shot-caption {
+  width: 196px;
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 10px;
+  line-height: 1.3;
+  color: #000000;
+}
+
+.igroman-game-shot-count {
+  color: #0078d7;
+  white-space: nowrap;
+}
+
 .igroman-game-screenshot-img {
   width: 100%;
   height: 100%;
@@ -421,7 +426,6 @@
   background-color: #c0c0c0;
 }
 
-/* Page 20: Патчи (Patches List) */
 .igroman-patches-title {
   font-family: 'Arial Black', sans-serif;
   font-size: 17px;
@@ -474,7 +478,6 @@
   min-height: 48px;
 }
 
-/* Page 21: Видеоролики (Video list) */
 .igroman-video-list {
   display: flex;
   flex-direction: column;
@@ -519,7 +522,6 @@
   gap: 4px;
 }
 
-/* Page 22: Вооружаемся - Интернет (Software list) */
 .igroman-soft-category {
   margin-bottom: 16px;
 }
@@ -564,7 +566,6 @@
   color: #ffffff;
 }
 
-/* Page 24: Winamp Skins Gallery */
 .igroman-skins-gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -609,7 +610,6 @@
   width: 100%;
 }
 
-/* Page 1: Лицензионное соглашение */
 .igroman-license-box {
   background: #fdfdfd;
   border: 1px solid #a0a0a0;
@@ -627,7 +627,6 @@
   gap: 15px;
 }
 
-/* --- Bottom Footer Bar --- */
 .igroman-footer {
   height: 40px;
   width: 100%;

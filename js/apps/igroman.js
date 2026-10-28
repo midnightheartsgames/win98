@@ -6,194 +6,47 @@ class AppIgroman {
     this.winId = 'app_igroman';
     this.windowRef = null;
 
+    this.games = [
+      { gameId: 'burnout', pub: 'Bethesda Softworks', genre: 'автогонки', art: 'burnout', req: 'Pentium-75, 16 MB RAM, видео SVGA с 1MB, DOS или Win 95, Необходим DirectX 5.0', desc: 'Какой же русский не любит быстрой езды? Вот мы и предлагаем вам поучаствовать в настоящих соревнованиях по дрэг-рейсингу на бешеной скорости в четверть мили. Настройка двигателя, переключение передач и жжёная резина!' },
+      { gameId: 'worldcup98', pub: 'EA Sports', genre: 'спортивный симулятор', art: 'worldcup98', req: 'Pentium-100, 16 MB RAM, видео SVGA с 1MB, Win 95, Необходим DirectX 5.0', desc: 'Игра EA Sports World Cup 98 дарит вам ещё одну возможность пережить все волнения только что завершившегося во Франции мундиаля! Реалистичные стадионы, официальный саундтрек Chumbawamba и 3D-анимация футболистов.' },
+      { gameId: 'hockey', pub: 'EA Sports', genre: 'спортивный симулятор', art: 'nhl98', req: 'Pentium-90, 16 MB RAM, видео SVGA с 1MB, мышь, Win 95', desc: 'Хоккей – игра увлекательная, но вот только на коньках кататься умеют далеко не все. С NHL 98 от EA Sports вы получите лучший хоккейный симулятор с реальными составами команд НХЛ, силовыми приёмами и комментаторами.' },
+      { gameId: 'quest_demo', pub: 'Retro Quest Games', req: 'Pentium-75, 16 MB RAM, SVGA 256 цветов, звуковая карта, Win 95/98' },
+      { gameId: 'fallout98_demo', pub: 'Interplay', req: 'Pentium-90, 16 MB RAM, SVGA 640x480 256 цветов, Win 95/98, Необходим DirectX 3.0a' },
+      { gameId: 'half-life_demo', pub: 'Sierra On-Line', req: 'Pentium-133, 24 MB RAM, видео SVGA, Win 95/98, рекомендуется 3D-ускоритель' },
+      { gameId: 'neon-racer_demo', pub: 'RetroSpeed Studios', req: 'Pentium-166, 32 MB RAM, видео с 4MB, Win 95/98, Необходим DirectX 6.0' },
+      { gameId: 'homm1_demo', pub: 'New World Computing / 3DO', req: 'Pentium-90, 16 MB RAM, SVGA 640x480, мышь, Win 95/98, Необходим DirectX 5.0' },
+      { gameId: 'tekken98_demo', pub: 'Namco', req: 'Pentium II-233, 32 MB RAM, 3D-ускоритель с 8MB, Win 95/98, Необходим DirectX 6.0' },
+      { gameId: 'stalker98_demo', pub: 'GSC Game World', req: 'Pentium II-300, 64 MB RAM, 3D-ускоритель с 16MB, Win 98, Необходим DirectX 7.0' },
+      { gameId: 'mc98_demo', pub: 'Mojang Specifications', req: 'Pentium II-266, 64 MB RAM, 3D-ускоритель с поддержкой OpenGL, Win 95/98' },
+      { gameId: 'sammax202_demo', pub: 'LucasArts', req: 'Pentium-133, 32 MB RAM, SVGA 256 цветов, Win 95/98, Необходим DirectX 6.0' },
+      { gameId: 'kotor98_demo', pub: 'LucasArts', req: 'Pentium II-300, 64 MB RAM, 3D-ускоритель с 16MB, Win 98, Необходим DirectX 7.0' },
+      { gameId: 'xiii_demo', pub: 'Ubisoft', req: 'Pentium II-350, 64 MB RAM, 3D-ускоритель с 16MB (TNT2 / Voodoo3 / Rage 128), Необходим DirectX 7.0' },
+      { gameId: 'dmc98_demo', pub: 'Capcom', req: 'Pentium II-400, 64 MB RAM, 3D-ускоритель с 16MB, Win 98, Необходим DirectX 7.0' },
+      { gameId: 'korovany_demo', pub: 'Джва Года Софт', req: 'Pentium II-350, 64 MB RAM, 3D-ускоритель с 16MB, Win 98, Необходим DirectX 7.0' },
+      { gameId: 'dao98_demo', pub: 'Electronic Arts', req: 'Pentium II-400, 128 MB RAM, 3D-ускоритель с 32MB, Win 98, Необходим DirectX 8.0' },
+      { gameId: 'maxpayne_demo', pub: 'Gathering of Developers', req: 'Pentium II-450, 96 MB RAM, 3D-ускоритель с 16MB (TNT2 / Voodoo3 / Rage 128), Необходим DirectX 7.0' },
+      { gameId: 'falloutzp_demo', pub: 'Interplay', req: 'Pentium III-600, 128 MB RAM, 3D-ускоритель с 32MB (GeForce2 / Radeon), Необходим DirectX 8.0' },
+      { gameId: 'hl2_demo', pub: 'Sierra / Valve Software', req: 'Pentium III-700, 128 MB RAM, 3D-ускоритель с 32MB (GeForce2 / Radeon), Необходим DirectX 8.0' }
+    ];
+    this.games.forEach((g, i) => { g.page = 4 + i; });
+    const afterGames = 4 + this.games.length;
+    this.pages = {
+      patches: afterGames,
+      videos: afterGames + 1,
+      softInternet: afterGames + 2,
+      softAll: afterGames + 3,
+      winamp: afterGames + 4,
+      superbonus: afterGames + 5,
+      exit: afterGames + 6
+    };
+    this.lastPage = this.pages.exit;
+    this.shotIndex = {};
+
     if (window.gameManager) {
       window.gameManager.addListener(() => {
-        if (this.currentPage === 10 || this.currentPage === 15 || this.currentPage === 18) this.updateView();
+        if (this.isGamePage(this.currentPage)) this.updateView();
       });
     }
-
-    this.games = [
-      {
-        page: 4,
-        title: 'PANZER COMMANDER',
-        dev: 'Ultimation Inc.',
-        pub: 'SSI',
-        genre: 'симулятор танка',
-        req: 'Pentium-133, 16 MB RAM, видео SVGA с 2MB, мышь, Win 95, Необходим DirectX 5.0',
-        desc: 'Почувствуйте себя внутри стальной громадины времён Второй мировой войны! Исторически достоверные баллистика, бронирование, прицельные сетки и кампания за танковые дивизии СССР, США, Германии и Британии.',
-        file: 'demo/pcdemo.exe',
-        previewColor: '#3a3a3a'
-      },
-      {
-        page: 5,
-        title: 'NIGHTMARE CREATURES',
-        dev: 'Kalisto',
-        pub: 'Activision',
-        genre: '3D action + fighting',
-        req: 'Pentium-133, 16 MB RAM, видео SVGA с 1MB, мышь, Win 95',
-        desc: 'Ужас бродит по ночным туманным улицам Лондона 1834 года. Безумный алхимик Адам Кроули выпустил полчища мутантов и зомби. Вооружитесь мечом или пистолями и очистите город от чудовищ в захватывающем слэшере!',
-        file: 'demo/nic_demo.exe',
-        previewColor: '#140152'
-      },
-      {
-        page: 6,
-        title: 'NEOPHYTE: KOPLIO’S STORY',
-        dev: 'Alien Software Inc.',
-        pub: 'Alien Software Inc.',
-        genre: 'adventure',
-        req: 'Pentium-60, 8 MB RAM, Win 95',
-        desc: 'Вы – Коплио (Koplio), юный послушник, живущий в отдалённом монастыре. Спокойно жить ему не суждено: раскрывая древние тайны ордена, герою придётся исследовать подземелья, решать головоломки и сражаться с монстрами.',
-        file: 'demo/kopinst.exe',
-        previewColor: '#2b2d42'
-      },
-      {
-        page: 7,
-        title: 'ADDICTION PINBALL',
-        dev: 'Team17',
-        pub: 'MicroProse',
-        genre: 'пинбол',
-        req: 'Pentium-75, 16 MB RAM, видео 1MB, Win 95. Необходим DirectX 5.0',
-        desc: 'Очередной пинбол, создатели которого постарались соблюсти все законы физики в поведении шарика и деталей стола. Два детализированных стола с множеством бонусов, секретных зон и великолепным звуковым сопровождением.',
-        file: 'demo/addictiondemo.exe',
-        previewColor: '#2b1055'
-      },
-      {
-        page: 8,
-        title: 'ULTIM@TE RACE PRO',
-        dev: 'Kalisto',
-        pub: 'MicroProse',
-        genre: 'автогонки',
-        req: 'Pentium-133, 16 MB RAM, видео SVGA с 1MB, Win 95, Необходим DirectX 5.0',
-        desc: 'Демо-версия динамичных кольцевых гонок, в которой вам предлагаются две мощные спортивные машины и семь разнообразных трасс с переменными погодными условиями и ночными заездами.',
-        file: 'demo/demour-nointro.exe',
-        previewColor: '#800000'
-      },
-      {
-        page: 9,
-        title: 'SID MEIER’S GETTYSBURG!',
-        dev: 'Firaxis Games',
-        pub: 'Origin Systems',
-        genre: 'real-time wargame',
-        req: 'Pentium-90, 16 MB RAM, видео SVGA, мышь, Win 95, Необходим DirectX 5.0',
-        desc: 'Данное демо известной исторической стратегии Сида Мейера позволит вам сыграть за северян или южан в величайшей битве Гражданской войны в США при Геттисберге. Полное тактическое управление пехотой, кавалерией и артиллерией.',
-        file: 'demo/smgdemo_c.exe',
-        previewColor: '#1c3144'
-      },
-      {
-        page: 10,
-        title: 'BURNOUT: CHAMPIONSHIP DRAG RACING',
-        dev: 'Bethesda Softworks',
-        pub: 'Bethesda Softworks',
-        genre: 'автогонки',
-        req: 'Pentium-75, 16 MB RAM, видео SVGA с 1MB, DOS или Win 95, Необходим DirectX 5.0',
-        desc: 'Какой же русский не любит быстрой езды? Вот мы и предлагаем вам поучаствовать в настоящих соревнованиях по дрэг-рейсингу на бешеной скорости в четверть мили. Настройка двигателя, переключение передач и жжёная резина!',
-        file: 'demo/burndemo.exe',
-        previewColor: '#333333',
-        isBurnout: true
-      },
-      {
-        page: 11,
-        title: 'SIN',
-        dev: 'Ritual Entertainment',
-        pub: 'Activision',
-        genre: '3D-action',
-        req: 'Pentium-133, 32 Mb RAM, Win 95, рекомендуется 3Dfx',
-        desc: 'Игра, которую ждут очень многие! Игра, которая должна стать новым словом в жанре 3D-action. Полковник Блейд вступает в беспощадную войну с корпорацией SinTEK во главе с коварной Элексис Синклер. Реалистичные повреждения и интерактивное окружение.',
-        file: 'demo/sin_demo.exe',
-        previewColor: '#0a192f'
-      },
-      {
-        page: 12,
-        title: 'KKnD 2: KROSSFIRE',
-        dev: 'Beam Software',
-        pub: 'Melbourne House',
-        genre: 'real-time strategy',
-        req: 'Pentium-133, 16MB RAM, Win 95, DirectX',
-        desc: '100 лет прошло после ядерной войны на Земле. 40 лет прошло после яростных битв, в которых сошлись Выжившие, Мутанты и киборги 9-й серии. Бескомпромиссная RTS старой школы с массивными штурмами и безумным арсеналом.',
-        file: 'demo/kknd2_demoall.exe',
-        previewColor: '#4a2810'
-      },
-      {
-        page: 13,
-        title: 'CROC: LEGEND OF THE GOBBOS',
-        dev: 'Argonaut Software',
-        pub: 'Fox Interactive',
-        genre: '3D платформер',
-        req: 'Pentium-133, 16 MB RAM, видео SVGA с 1MB, Win 95',
-        desc: 'Попробуйте помочь симпатяге-крокодилу по имени Крок спасти его маленьких друзей-Gobbos от коварного злодея Барона Данте. Красочный трёхмерный платформер с отличной анимацией, прыжками и секретами.',
-        file: 'demo/crocdem6.exe',
-        previewColor: '#1a472a'
-      },
-      {
-        page: 14,
-        title: 'MICROSLOP GOLF 1998 EDITION',
-        dev: 'Friendly Software',
-        pub: 'Microslop',
-        genre: 'спортивный имитатор',
-        req: 'Pentium-90, 16 MB RAM, видео SVGA с 2MB, мышь, Win 95; Win NT',
-        desc: 'Симуляторы гольфа пользуются в США огромной популярностью. Почему? Установите эту демонстрационную версию и прочувствуйте потрясающую медитативную атмосферу, физику ветра и идеальные газоны Президентского кубка.',
-        file: 'demo/msgolf98.exe',
-        previewColor: '#2d6a4f'
-      },
-      {
-        page: 15,
-        title: 'WORLD CUP 98',
-        dev: 'EA Sports',
-        pub: 'EA Sports',
-        genre: 'спортивный симулятор',
-        req: 'Pentium-100, 16 MB RAM, видео SVGA с 1MB, Win 95, Необходим DirectX 5.0',
-        desc: 'Игра EA Sports World Cup 98 дарит вам ещё одну возможность пережить все волнения только что завершившегося во Франции мундиаля! Реалистичные стадионы, официальный саундтрек Chumbawamba и 3D-анимация футболистов.',
-        file: 'demo/worldcup98.exe',
-        isWorldCup98: true,
-        previewColor: '#1d3557'
-      },
-      {
-        page: 16,
-        title: 'ПОЛНАЯ ТРУБА',
-        dev: 'Никита',
-        pub: 'Никита',
-        genre: 'квест',
-        req: 'Pentium-100, 16 MB RAM, видео SVGA с 1MB, Win 95, Необходим DirectX 5.0',
-        desc: 'Один уровень из необычных приключений необычного существа в каком-то необычном месте. Вашего героя окружают необычные персонажи, которые заняты своими необычными делами.',
-        file: 'demo/pipe.exe',
-        isPolnayaTruba: true,
-        previewColor: '#5c544d'
-      },
-      {
-        page: 17,
-        title: 'WARGAMES',
-        dev: 'MGM Interactive',
-        pub: 'MGM Interactive',
-        genre: 'real-time strategy',
-        req: 'Pentium-133, 16 MB RAM, Win 95, DirectX 5.0, рекомендуется 3Dfx',
-        desc: 'Полностью трёхмерная стратегия реального времени по мотивам культового фильма Военные игры. Вы можете вращать карту, приближать камеру к любому танку и координировать действия армии против суперкомпьютера WOPR.',
-        file: 'demo/wargames/setup.exe',
-        previewColor: '#3d348b'
-      },
-      {
-        page: 18,
-        title: 'NHL \'98',
-        dev: 'EA Sports',
-        pub: 'EA Sports',
-        genre: 'спортивный симулятор',
-        req: 'Pentium-90, 16 MB RAM, видео SVGA с 1MB, мышь, Win 95',
-        desc: 'Хоккей – игра увлекательная, но вот только на коньках кататься умеют далеко не все. С NHL 98 от EA Sports вы получите лучший хоккейный симулятор с реальными составами команд НХЛ, силовыми приёмами и комментаторами.',
-        file: 'demo/nhl98demo.exe',
-        isNhl98: true,
-        previewColor: '#0b2545'
-      },
-      {
-        page: 19,
-        title: 'LONGBOW 2',
-        dev: 'Jane\'s Combat Simulations',
-        pub: 'Origin Systems',
-        genre: 'симулятор вертолета',
-        req: 'Pentium-133, 16 MB RAM, видео SVGA с 2MB, мышь, Win 95, Необходим DirectX 5.0',
-        desc: 'Продолжение легендарного симулятора Jane\'s AH-64D Longbow. В новом Longbow 2 вы снова окажетесь за штурвалом боевого винтокрыла, управляя передовыми системами наведения, РЛС и ПТУР Hellfire в масштабных ночных операциях.',
-        file: 'demo/lb2demo.exe',
-        previewColor: '#2b3a2a'
-      }
-    ];
 
     this.patches = [
       { name: 'The Summoning', file: 'patch/SUMM_12.exe', desc: 'Данный патч сменит вашу версию игры на версию 1.2, устраняя некоторые ошибки предыдущей версии, в частности, проблемы со сбором камнеметательной машины гномов.' },
@@ -279,19 +132,36 @@ class AppIgroman {
     this.updateView();
   }
 
+  openGame(gameId) {
+    const game = this.games.find(g => g.gameId === gameId);
+    this.open(game ? game.page : 3);
+  }
+
+  isGamePage(page) {
+    return page >= 4 && page < this.pages.patches;
+  }
+
+  isPlaySection(page) {
+    return page >= 3 && page <= this.pages.videos;
+  }
+
+  isArmSection(page) {
+    return page >= this.pages.softInternet && page <= this.pages.winamp;
+  }
+
   getThemeClass(page) {
     if (page === 1 || page === 2) return 'theme-red';
-    if (page >= 3 && page <= 21) return 'theme-blue';
-    if (page >= 22 && page <= 24) return 'theme-green';
+    if (this.isPlaySection(page)) return 'theme-blue';
+    if (this.isArmSection(page)) return 'theme-green';
     return 'theme-purple';
   }
 
   getSectionTitle(page) {
     if (page === 1) return 'ЛИЦЕНЗИОННОЕ СОГЛАШЕНИЕ';
     if (page === 2) return 'СОДЕРЖАНИЕ';
-    if (page >= 3 && page <= 21) return 'ИГРАЕМ';
-    if (page >= 22 && page <= 24) return 'ВООРУЖАЕМСЯ';
-    if (page === 25) return 'СУПЕРБОНУС';
+    if (this.isPlaySection(page)) return 'ИГРАЕМ';
+    if (this.isArmSection(page)) return 'ВООРУЖАЕМСЯ';
+    if (page === this.pages.superbonus) return 'СУПЕРБОНУС';
     return 'ВЫХОД';
   }
 
@@ -321,29 +191,29 @@ class AppIgroman {
                 <div class="igroman-body">
                     <div class="igroman-sidebar" id="igroman_sidebar">
             <div class="igroman-nav-group">
-              <div class="igroman-nav-title ${this.currentPage === 2 ? 'active' : ''}" data-nav="2">СОДЕРЖАНИЕ</div>
+              <div class="igroman-nav-title" data-nav="2">СОДЕРЖАНИЕ</div>
             </div>
 
             <div class="igroman-nav-group">
-              <div class="igroman-nav-title ${this.currentPage >= 3 && this.currentPage <= 21 ? 'active' : ''}" data-nav="3">ИГРАЕМ</div>
+              <div class="igroman-nav-title" data-nav="3">ИГРАЕМ</div>
               <div class="igroman-nav-subs">
-                <div class="igroman-nav-subitem ${this.currentPage >= 3 && this.currentPage <= 19 ? 'active' : ''}" data-nav="3">демоверсии</div>
-                <div class="igroman-nav-subitem ${this.currentPage === 20 ? 'active' : ''}" data-nav="20">патчи</div>
-                <div class="igroman-nav-subitem ${this.currentPage === 21 ? 'active' : ''}" data-nav="21">видеоролики</div>
+                <div class="igroman-nav-subitem" data-nav="3">демоверсии</div>
+                <div class="igroman-nav-subitem" data-nav="${this.pages.patches}">патчи</div>
+                <div class="igroman-nav-subitem" data-nav="${this.pages.videos}">видеоролики</div>
               </div>
             </div>
 
             <div class="igroman-nav-group">
-              <div class="igroman-nav-title ${this.currentPage >= 22 && this.currentPage <= 24 ? 'active' : ''}" data-nav="22">ВООРУЖАЕМСЯ</div>
+              <div class="igroman-nav-title" data-nav="${this.pages.softInternet}">ВООРУЖАЕМСЯ</div>
               <div class="igroman-nav-subs">
-                <div class="igroman-nav-subitem ${this.currentPage === 22 ? 'active' : ''}" data-nav="22">программы для интернет</div>
-                <div class="igroman-nav-subitem ${this.currentPage === 23 ? 'active' : ''}" data-nav="23">программы для всех</div>
-                <div class="igroman-nav-subitem ${this.currentPage === 24 ? 'active' : ''}" data-nav="24">WinAMP и все-все-все</div>
+                <div class="igroman-nav-subitem" data-nav="${this.pages.softInternet}">программы для интернет</div>
+                <div class="igroman-nav-subitem" data-nav="${this.pages.softAll}">программы для всех</div>
+                <div class="igroman-nav-subitem" data-nav="${this.pages.winamp}">WinAMP и все-все-все</div>
               </div>
             </div>
 
             <div class="igroman-nav-group">
-              <div class="igroman-nav-title ${this.currentPage === 25 ? 'active' : ''}" data-nav="25">СУПЕРБОНУС</div>
+              <div class="igroman-nav-title" data-nav="${this.pages.superbonus}">СУПЕРБОНУС</div>
             </div>
           </div>
 
@@ -358,7 +228,7 @@ class AppIgroman {
             <div class="igroman-btn-exit" id="igroman_btn_exit">ВЫХОД</div>
             <div class="igroman-arrow-btns">
               <div class="igroman-btn-arrow ${this.currentPage <= 1 ? 'disabled' : ''}" id="igroman_btn_prev">&#9668;</div>
-              <div class="igroman-btn-arrow ${this.currentPage >= 26 ? 'disabled' : ''}" id="igroman_btn_next">&#9658;</div>
+              <div class="igroman-btn-arrow ${this.currentPage >= this.lastPage ? 'disabled' : ''}" id="igroman_btn_next">&#9658;</div>
             </div>
           </div>
         </div>
@@ -390,7 +260,7 @@ class AppIgroman {
     });
 
     btnNext.addEventListener('click', () => {
-      if (this.currentPage < 26) {
+      if (this.currentPage < this.lastPage) {
         this.goToPage(this.currentPage + 1);
       }
     });
@@ -420,7 +290,7 @@ class AppIgroman {
 
   goToPage(num) {
     if (num < 1) num = 1;
-    if (num > 26) num = 26;
+    if (num > this.lastPage) num = this.lastPage;
     this.currentPage = num;
 
     if (window.soundSys) {
@@ -446,75 +316,41 @@ class AppIgroman {
     pageNumEl.textContent = this.currentPage;
 
     btnPrev.classList.toggle('disabled', this.currentPage <= 1);
-    btnNext.classList.toggle('disabled', this.currentPage >= 26);
+    btnNext.classList.toggle('disabled', this.currentPage >= this.lastPage);
 
     el.querySelectorAll('.igroman-nav-title, .igroman-nav-subitem').forEach(item => {
       item.classList.remove('active');
     });
 
-    if (this.currentPage === 2) {
-      const t = el.querySelector('.igroman-nav-title[data-nav="2"]');
-      if (t) t.classList.add('active');
-    } else if (this.currentPage >= 3 && this.currentPage <= 21) {
-      const t = el.querySelector('.igroman-nav-title[data-nav="3"]');
-      if (t) t.classList.add('active');
-      if (this.currentPage >= 3 && this.currentPage <= 19) {
-        const sub = el.querySelector('.igroman-nav-subitem[data-nav="3"]');
-        if (sub) sub.classList.add('active');
-      } else if (this.currentPage === 20) {
-        const sub = el.querySelector('.igroman-nav-subitem[data-nav="20"]');
-        if (sub) sub.classList.add('active');
-      } else if (this.currentPage === 21) {
-        const sub = el.querySelector('.igroman-nav-subitem[data-nav="21"]');
-        if (sub) sub.classList.add('active');
-      }
-    } else if (this.currentPage >= 22 && this.currentPage <= 24) {
-      const t = el.querySelector('.igroman-nav-title[data-nav="22"]');
-      if (t) t.classList.add('active');
-      if (this.currentPage === 22) {
-        const sub = el.querySelector('.igroman-nav-subitem[data-nav="22"]');
-        if (sub) sub.classList.add('active');
-      } else if (this.currentPage === 23) {
-        const sub = el.querySelector('.igroman-nav-subitem[data-nav="23"]');
-        if (sub) sub.classList.add('active');
-      } else if (this.currentPage === 24) {
-        const sub = el.querySelector('.igroman-nav-subitem[data-nav="24"]');
-        if (sub) sub.classList.add('active');
-      }
-    } else if (this.currentPage === 25) {
-      const t = el.querySelector('.igroman-nav-title[data-nav="25"]');
-      if (t) t.classList.add('active');
-    }
+    const page = this.currentPage;
+    const activeTitle = page === 2 ? 2
+      : this.isPlaySection(page) ? 3
+      : this.isArmSection(page) ? this.pages.softInternet
+      : page === this.pages.superbonus ? this.pages.superbonus : null;
+    const activeSub = page >= 3 && page < this.pages.patches ? 3
+      : this.isPlaySection(page) || this.isArmSection(page) ? page : null;
+    const title = activeTitle && el.querySelector(`.igroman-nav-title[data-nav="${activeTitle}"]`);
+    if (title) title.classList.add('active');
+    const sub = activeSub && el.querySelector(`.igroman-nav-subitem[data-nav="${activeSub}"]`);
+    if (sub) sub.classList.add('active');
 
     stage.innerHTML = this.renderStageContent();
     this.bindStageEvents(stage);
   }
 
   renderStageContent() {
-    switch (this.currentPage) {
-      case 1:
-        return this.renderLicensePage();
-      case 2:
-        return this.renderContentsPage();
-      case 3:
-        return this.renderDemoListPage();
-      case 20:
-        return this.renderPatchesPage();
-      case 21:
-        return this.renderVideosPage();
-      case 22:
-        return this.renderSoftInternetPage();
-      case 23:
-        return this.renderSoftAllPage();
-      case 24:
-        return this.renderWinampPage();
-      case 25:
-        return this.renderSuperbonusPage();
-      case 26:
-        return this.renderExitPage();
-      default:
-        return this.renderGamePage(this.currentPage);
-    }
+    const page = this.currentPage;
+    if (page === 1) return this.renderLicensePage();
+    if (page === 2) return this.renderContentsPage();
+    if (page === 3) return this.renderDemoListPage();
+    if (this.isGamePage(page)) return this.renderGamePage(page);
+    if (page === this.pages.patches) return this.renderPatchesPage();
+    if (page === this.pages.videos) return this.renderVideosPage();
+    if (page === this.pages.softInternet) return this.renderSoftInternetPage();
+    if (page === this.pages.softAll) return this.renderSoftAllPage();
+    if (page === this.pages.winamp) return this.renderWinampPage();
+    if (page === this.pages.superbonus) return this.renderSuperbonusPage();
+    return this.renderExitPage();
   }
 
   renderLicensePage() {
@@ -552,30 +388,30 @@ class AppIgroman {
           </div>
           <div class="igroman-toc-items">
             <div class="igroman-toc-item" data-nav="3">ДЕМОВЕРСИИ</div>
-            <div class="igroman-toc-item" data-nav="20">ПАТЧИ</div>
-            <div class="igroman-toc-item" data-nav="21">ВИДЕОРОЛИКИ</div>
+            <div class="igroman-toc-item" data-nav="${this.pages.patches}">ПАТЧИ</div>
+            <div class="igroman-toc-item" data-nav="${this.pages.videos}">ВИДЕОРОЛИКИ</div>
           </div>
         </div>
 
-                <div class="igroman-toc-section">
-          <div class="igroman-toc-header green" data-nav="22">
+        <div class="igroman-toc-section">
+          <div class="igroman-toc-header green" data-nav="${this.pages.softInternet}">
             <div class="igroman-toc-title">ВООРУЖАЕМСЯ</div>
-            <div class="igroman-toc-page-num">22</div>
+            <div class="igroman-toc-page-num">${this.pages.softInternet}</div>
           </div>
           <div class="igroman-toc-items">
-            <div class="igroman-toc-item" data-nav="22">ПРОГРАММЫ ДЛЯ ИНТЕРНЕТ</div>
-            <div class="igroman-toc-item" data-nav="23">ПРОГРАММЫ ДЛЯ ВСЕХ</div>
-            <div class="igroman-toc-item" data-nav="24">WINAMP И ВСЕ–ВСЕ–ВСЕ</div>
+            <div class="igroman-toc-item" data-nav="${this.pages.softInternet}">ПРОГРАММЫ ДЛЯ ИНТЕРНЕТ</div>
+            <div class="igroman-toc-item" data-nav="${this.pages.softAll}">ПРОГРАММЫ ДЛЯ ВСЕХ</div>
+            <div class="igroman-toc-item" data-nav="${this.pages.winamp}">WINAMP И ВСЕ–ВСЕ–ВСЕ</div>
           </div>
         </div>
 
-                <div class="igroman-toc-section">
-          <div class="igroman-toc-header purple" data-nav="25">
+        <div class="igroman-toc-section">
+          <div class="igroman-toc-header purple" data-nav="${this.pages.superbonus}">
             <div class="igroman-toc-title">СУПЕРБОНУС</div>
-            <div class="igroman-toc-page-num">25</div>
+            <div class="igroman-toc-page-num">${this.pages.superbonus}</div>
           </div>
           <div class="igroman-toc-items">
-            <div class="igroman-toc-item" data-nav="25">BATTLECRUISER 3000</div>
+            <div class="igroman-toc-item" data-nav="${this.pages.superbonus}">BATTLECRUISER 3000</div>
           </div>
         </div>
       </div>
@@ -585,7 +421,7 @@ class AppIgroman {
   renderDemoListPage() {
     const listHtml = this.games.map(g => `
       <div class="igroman-demo-list-item" data-demo-page="${g.page}">
-        ${g.title}
+        ${this.gameInfo(g).title}
       </div>
     `).join('');
 
@@ -598,35 +434,20 @@ class AppIgroman {
     `;
   }
 
-  renderGamePage(pageNum) {
-    const game = this.games.find(g => g.page === pageNum) || this.games[0];
+  gameInfo(g) {
+    const entry = (window.gameManager && window.gameManager.catalog[g.gameId]) || {};
+    return {
+      title: entry.title || g.gameId,
+      dev: entry.developer || '',
+      genre: g.genre || entry.genre || '',
+      desc: g.desc || entry.desc || '',
+      shots: entry.shots || []
+    };
+  }
 
-    let screenshotHtml = '';
-    if (game.isPolnayaTruba) {
-      screenshotHtml = `
-        <svg viewBox="0 0 190 130" width="190" height="130" style="background:#5c544d;">
-                    <rect width="190" height="130" fill="#665f57"/>
-          <line x1="0" y1="110" x2="190" y2="110" stroke="#333" stroke-width="1.5"/>
-          <rect y="110" width="190" height="20" fill="#4d463f"/>
-                    <rect x="10" y="20" width="16" height="85" fill="#3a332c"/>
-          <rect x="165" y="15" width="18" height="90" fill="#3a332c"/>
-                    <circle cx="95" cy="45" r="14" fill="#332c25" stroke="#776e64" stroke-width="2"/>
-          <circle cx="120" cy="42" r="4.5" fill="#ff2200"/>
-                    <text x="100" y="80" font-family="'Courier New', monospace" font-weight="bold" font-size="12" fill="#201a14">02-107</text>
-                    <rect x="25" y="60" width="22" height="30" rx="3" fill="#88bbcc" opacity="0.75" stroke="#447788"/>
-          <path d="M30 90 Q36 93 42 90 Q36 97 30 100 Q42 105 30 110" stroke="#111" stroke-width="2" fill="none"/>
-                    <line x1="75" y1="108" x2="135" y2="98" stroke="#332211" stroke-width="3"/>
-          <circle cx="105" cy="106" r="3" fill="#000"/>
-                    <ellipse cx="82" cy="100" rx="4" ry="7" fill="#e0e8d0"/>
-          <circle cx="82" cy="91" r="3.5" fill="#e0e8d0"/>
-                    <ellipse cx="130" cy="112" rx="14" ry="4" fill="#6699aa" opacity="0.6"/>
-                    <circle cx="150" cy="102" r="7" fill="#ee9988"/>
-          <ellipse cx="150" cy="93" rx="5" ry="4" fill="#ee9988"/>
-        </svg>
-      `;
-    } else if (game.isBurnout) {
-      screenshotHtml = `
-        <svg viewBox="0 0 190 130" width="190" height="130" style="background:#0a0f18; cursor:pointer;" id="burnout_screenshot_click" title="Нажмите для запуска демо-версии">
+  renderArt(art) {
+    if (art === 'burnout') return `
+        <svg viewBox="0 0 190 130" width="190" height="130" style="background:#0a0f18;">
           <defs>
             <linearGradient id="bo_sky" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#0a192f"/>
@@ -634,13 +455,13 @@ class AppIgroman {
               <stop offset="100%" stop-color="#e67e22"/>
             </linearGradient>
           </defs>
-                    <rect width="190" height="52" fill="url(#bo_sky)"/>
+          <rect width="190" height="52" fill="url(#bo_sky)"/>
           <line x1="0" y1="52" x2="190" y2="52" stroke="#333" stroke-width="1.5"/>
-                    <polygon points="15,130 175,130 110,52 80,52" fill="#1e1e24"/>
+          <polygon points="15,130 175,130 110,52 80,52" fill="#1e1e24"/>
           <line x1="95" y1="52" x2="95" y2="130" stroke="#f1c40f" stroke-width="2"/>
-                    <rect x="93.5" y="22" width="3" height="38" fill="#f1c40f"/>
+          <rect x="93.5" y="22" width="3" height="38" fill="#f1c40f"/>
           <rect x="89" y="24" width="12" height="30" fill="#111"/>
-                    <circle cx="92" cy="27" r="1.3" fill="#fff"/>
+          <circle cx="92" cy="27" r="1.3" fill="#fff"/>
           <circle cx="98" cy="27" r="1.3" fill="#fff"/>
           <circle cx="92" cy="32" r="1.3" fill="#f39c12"/>
           <circle cx="98" cy="32" r="1.3" fill="#f39c12"/>
@@ -648,24 +469,22 @@ class AppIgroman {
           <circle cx="98" cy="37" r="1.3" fill="#f39c12"/>
           <circle cx="92" cy="43" r="1.6" fill="#2ecc71"/>
           <circle cx="98" cy="43" r="1.6" fill="#2ecc71"/>
-                    <rect x="42" y="84" width="40" height="22" rx="3" fill="#c0392b" stroke="#000" stroke-width="1"/>
+          <rect x="42" y="84" width="40" height="22" rx="3" fill="#c0392b" stroke="#000" stroke-width="1"/>
           <rect x="36" y="86" width="9" height="18" fill="#111" rx="2"/>
           <rect x="76" y="91" width="7" height="11" fill="#111" rx="2"/>
           <rect x="52" y="77" width="8" height="8" fill="#ecf0f1"/>
           <polygon points="50,77 62,77 64,73 48,73" fill="#e74c3c"/>
-                    <circle cx="36" cy="96" r="8" fill="#ecf0f1" opacity="0.75"/>
+          <circle cx="36" cy="96" r="8" fill="#ecf0f1" opacity="0.75"/>
           <circle cx="27" cy="90" r="11" fill="#ecf0f1" opacity="0.6"/>
           <circle cx="20" cy="83" r="8" fill="#ecf0f1" opacity="0.4"/>
-                    <rect x="114" y="78" width="34" height="18" rx="2" fill="#2980b9" stroke="#000" stroke-width="1"/>
+          <rect x="114" y="78" width="34" height="18" rx="2" fill="#2980b9" stroke="#000" stroke-width="1"/>
           <rect x="142" y="80" width="7" height="13" fill="#111"/>
           <rect x="110" y="82" width="7" height="11" fill="#111"/>
-                    <rect x="4" y="4" width="82" height="12" fill="#cc0000" rx="1"/>
+          <rect x="4" y="4" width="82" height="12" fill="#cc0000" rx="1"/>
           <text x="45" y="13" fill="#ffff00" font-family="'Arial Black'" font-size="7" text-anchor="middle">HOT ROD RACING</text>
-        </svg>
-      `;
-    } else if (game.isWorldCup98) {
-      screenshotHtml = `
-        <svg viewBox="0 0 190 130" width="190" height="130" style="background:#09152e; cursor:pointer;" id="worldcup98_screenshot_click" title="Нажмите для запуска EA Sports World Cup 98">
+        </svg>`;
+    if (art === 'worldcup98') return `
+        <svg viewBox="0 0 190 130" width="190" height="130" style="background:#09152e;">
           <rect width="190" height="130" fill="#09152e"/>
           <rect x="12" y="20" width="166" height="98" rx="4" fill="#1e7e34" stroke="#ffffff" stroke-width="1.5"/>
           <rect x="28" y="20" width="22" height="98" fill="#238c3b"/>
@@ -680,11 +499,9 @@ class AppIgroman {
           <circle cx="97" cy="68" r="3" fill="#ffffff" stroke="#111111" stroke-width="1"/>
           <rect x="18" y="4" width="154" height="13" fill="#1d4ed8" stroke="#facc15" stroke-width="1" rx="2"/>
           <text x="95" y="13" fill="#fde047" font-family="'Arial Black', Impact, sans-serif" font-size="8" font-weight="bold" text-anchor="middle">EA SPORTS • WORLD CUP 98</text>
-        </svg>
-      `;
-    } else if (game.isNhl98) {
-      screenshotHtml = `
-        <svg viewBox="0 0 190 130" width="190" height="130" style="background:#07192f; cursor:pointer;" id="nhl98_screenshot_click" title="Нажмите для запуска NHL '98">
+        </svg>`;
+    return `
+        <svg viewBox="0 0 190 130" width="190" height="130" style="background:#07192f;">
           <defs>
             <linearGradient id="nhl_ice" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#d6edfc"/>
@@ -692,85 +509,76 @@ class AppIgroman {
               <stop offset="100%" stop-color="#c5e3f6"/>
             </linearGradient>
           </defs>
-                    <rect width="190" height="130" fill="#07192f"/>
-                    <rect x="15" y="15" width="160" height="100" rx="18" fill="url(#nhl_ice)" stroke="#3a6073" stroke-width="2"/>
-                    <line x1="95" y1="15" x2="95" y2="115" stroke="#cc2222" stroke-width="2"/>
-                    <line x1="55" y1="15" x2="55" y2="115" stroke="#1d4ed8" stroke-width="2"/>
+          <rect width="190" height="130" fill="#07192f"/>
+          <rect x="15" y="15" width="160" height="100" rx="18" fill="url(#nhl_ice)" stroke="#3a6073" stroke-width="2"/>
+          <line x1="95" y1="15" x2="95" y2="115" stroke="#cc2222" stroke-width="2"/>
+          <line x1="55" y1="15" x2="55" y2="115" stroke="#1d4ed8" stroke-width="2"/>
           <line x1="135" y1="15" x2="135" y2="115" stroke="#1d4ed8" stroke-width="2"/>
-                    <circle cx="95" cy="65" r="18" fill="none" stroke="#1d4ed8" stroke-width="1.5"/>
+          <circle cx="95" cy="65" r="18" fill="none" stroke="#1d4ed8" stroke-width="1.5"/>
           <circle cx="95" cy="65" r="3" fill="#1d4ed8"/>
-                    <path d="M 23 57 A 8 8 0 0 1 23 73 Z" fill="#93c5fd" stroke="#cc2222" stroke-width="1.5"/>
+          <path d="M 23 57 A 8 8 0 0 1 23 73 Z" fill="#93c5fd" stroke="#cc2222" stroke-width="1.5"/>
           <line x1="23" y1="25" x2="23" y2="105" stroke="#cc2222" stroke-width="1.5"/>
           <path d="M 167 57 A 8 8 0 0 0 167 73 Z" fill="#93c5fd" stroke="#cc2222" stroke-width="1.5"/>
           <line x1="167" y1="25" x2="167" y2="105" stroke="#cc2222" stroke-width="1.5"/>
-                    <circle cx="40" cy="40" r="1.5" fill="#cc2222"/>
+          <circle cx="40" cy="40" r="1.5" fill="#cc2222"/>
           <circle cx="40" cy="90" r="1.5" fill="#cc2222"/>
           <circle cx="150" cy="40" r="1.5" fill="#cc2222"/>
           <circle cx="150" cy="90" r="1.5" fill="#cc2222"/>
-                    <rect x="25" y="6" width="140" height="14" fill="#000066" rx="2"/>
+          <rect x="25" y="6" width="140" height="14" fill="#000066" rx="2"/>
           <text x="95" y="16" fill="#ffff00" font-family="'Arial Black', Impact, sans-serif" font-size="8" font-weight="bold" text-anchor="middle">EA SPORTS • NHL '98</text>
-                    <ellipse cx="98" cy="67" rx="3" ry="1.8" fill="#111111"/>
-        </svg>
-      `;
-    } else {
-      screenshotHtml = `
-        <svg viewBox="0 0 190 130" width="190" height="130" style="background:${game.previewColor || '#000000'};">
-          <rect width="190" height="130" fill="${game.previewColor || '#111111'}"/>
-          <circle cx="95" cy="65" r="35" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
-          <line x1="20" y1="65" x2="170" y2="65" stroke="rgba(255,255,255,0.15)"/>
-          <line x1="95" y1="15" x2="95" y2="115" stroke="rgba(255,255,255,0.15)"/>
-          <text x="95" y="68" font-family="'Arial Black'" font-size="10" fill="#ffffff" text-anchor="middle" opacity="0.85">${game.title.slice(0, 20)}</text>
-          <text x="95" y="85" font-family="'Tahoma'" font-size="9" fill="#00ffff" text-anchor="middle" opacity="0.8">1998 DEMO PREVIEW</text>
-        </svg>
-      `;
-    }
+          <ellipse cx="98" cy="67" rx="3" ry="1.8" fill="#111111"/>
+        </svg>`;
+  }
 
-    const isBurnoutInstalled = (game.isBurnout && window.gameManager && window.gameManager.isInstalled('burnout'));
-    const isHockeyInstalled = (game.isNhl98 && window.gameManager && window.gameManager.isInstalled('hockey'));
-    const isWorldCupInstalled = (game.isWorldCup98 && window.gameManager && window.gameManager.isInstalled('worldcup98'));
-
-    let actionBtnHtml = '';
-    if (isBurnoutInstalled) {
-      actionBtnHtml = `
-        <button class="igroman-btn-install" id="btn_launch_burnout" style="background:#008800;">ЗАПУСТИТЬ ИГРУ</button>
-        <button class="win-btn" id="btn_reinstall_burnout" data-file="${game.file}" data-title="${game.title}" style="padding:4px 10px; font-size:11px;">Переустановить</button>
-      `;
-    } else if (isWorldCupInstalled) {
-      actionBtnHtml = `
-        <button class="igroman-btn-install" id="btn_launch_worldcup98" style="background:#008800;">ЗАПУСТИТЬ ИГРУ</button>
-        <button class="win-btn" id="btn_reinstall_worldcup98" data-file="${game.file}" data-title="${game.title}" style="padding:4px 10px; font-size:11px;">Переустановить</button>
-      `;
-    } else if (isHockeyInstalled) {
-      actionBtnHtml = `
-        <button class="igroman-btn-install" id="btn_launch_hockey" style="background:#008800;">ЗАПУСТИТЬ ИГРУ</button>
-        <button class="win-btn" id="btn_reinstall_hockey" data-file="${game.file}" data-title="${game.title}" style="padding:4px 10px; font-size:11px;">Переустановить</button>
-      `;
-    } else {
-      actionBtnHtml = `
-        <button class="igroman-btn-install" id="btn_install_game" data-file="${game.file}" data-title="${game.title}">УСТАНОВИТЬ ИГРУ</button>
-      `;
+  renderShot(g, info) {
+    if (g.art) {
+      return `<div class="igroman-game-screenshot-frame" data-shot-launch="${g.gameId}" title="Нажмите, чтобы установить или запустить">${this.renderArt(g.art)}</div>`;
     }
+    const count = info.shots.length;
+    const idx = Math.min(this.shotIndex[g.gameId] || 0, Math.max(0, count - 1));
+    return `
+      <div class="igroman-game-screenshot-frame is-photo" data-shot-next="${g.gameId}" title="Следующий кадр">
+        <img class="igroman-game-screenshot-img" src="content/igromania/demos/${g.gameId}-${idx + 1}.jpg" alt="${info.shots[idx] || ''}">
+      </div>
+      <div class="igroman-game-shot-caption">
+        <span>${info.shots[idx] || ''}</span>
+        <span class="igroman-game-shot-count">кадр ${idx + 1} из ${count}</span>
+      </div>
+    `;
+  }
+
+  renderGamePage(pageNum) {
+    const game = this.games.find(g => g.page === pageNum) || this.games[0];
+    const info = this.gameInfo(game);
+    const installed = !!(window.gameManager && window.gameManager.isInstalled(game.gameId));
+
+    const actionBtnHtml = installed
+      ? `
+        <button class="igroman-btn-install" data-game-launch="${game.gameId}" style="background:#008800;">ЗАПУСТИТЬ ИГРУ</button>
+        <button class="win-btn" data-game-setup="${game.gameId}" style="padding:4px 10px; font-size:11px;">Переустановить</button>
+      `
+      : `
+        <button class="igroman-btn-install" data-game-setup="${game.gameId}">УСТАНОВИТЬ ИГРУ</button>
+      `;
 
     return `
       <div class="igroman-game-container">
-        <div class="igroman-game-header-title">${game.title}</div>
+        <div class="igroman-game-header-title">${info.title}</div>
         <div class="igroman-game-cols">
-                    <div class="igroman-game-left-col">
-            ${game.desc}
+          <div class="igroman-game-left-col">
+            ${info.desc}
           </div>
 
-                    <div class="igroman-game-right-col">
+          <div class="igroman-game-right-col">
             <div class="igroman-game-specs">
-              <div><b>Разработчик:</b> ${game.dev}</div>
+              <div><b>Разработчик:</b> ${info.dev}</div>
               <div><b>Издатель:</b> ${game.pub}</div>
-              <div><b>Жанр:</b> ${game.genre}</div>
+              <div><b>Жанр:</b> ${info.genre}</div>
               <div><b>Системные требования:</b></div>
               <div style="margin-left:4px;">${game.req}</div>
             </div>
 
-            <div class="igroman-game-screenshot-frame">
-              ${screenshotHtml}
-            </div>
+            ${this.renderShot(game, info)}
           </div>
         </div>
 
@@ -779,6 +587,17 @@ class AppIgroman {
         </div>
       </div>
     `;
+  }
+
+  launchGame(gameId) {
+    const entry = window.gameManager && window.gameManager.catalog[gameId];
+    if (window.soundSys) window.soundSys.playClick();
+    if (entry && entry.launch) entry.launch();
+  }
+
+  setupGame(gameId) {
+    if (window.soundSys) window.soundSys.playClick();
+    if (window.gameManager) window.gameManager.openSetupWizard(gameId);
   }
 
   renderPatchesPage() {
@@ -1039,92 +858,32 @@ class AppIgroman {
       });
     });
 
-    const btnInstallGame = stage.querySelector('#btn_install_game');
-    if (btnInstallGame) {
-      btnInstallGame.addEventListener('click', () => {
-        const file = btnInstallGame.getAttribute('data-file');
-        const title = btnInstallGame.getAttribute('data-title');
-        this.runInstallWizard(title, file);
-      });
-    }
+    stage.querySelectorAll('[data-game-launch]').forEach(btn => {
+      btn.addEventListener('click', () => this.launchGame(btn.dataset.gameLaunch));
+    });
 
-    const btnLaunchBurnout = stage.querySelector('#btn_launch_burnout');
-    if (btnLaunchBurnout) {
-      btnLaunchBurnout.addEventListener('click', () => {
+    stage.querySelectorAll('[data-game-setup]').forEach(btn => {
+      btn.addEventListener('click', () => this.setupGame(btn.dataset.gameSetup));
+    });
+
+    stage.querySelectorAll('[data-shot-launch]').forEach(frame => {
+      frame.addEventListener('click', () => {
+        const id = frame.dataset.shotLaunch;
+        if (window.gameManager && window.gameManager.isInstalled(id)) this.launchGame(id);
+        else this.setupGame(id);
+      });
+    });
+
+    stage.querySelectorAll('[data-shot-next]').forEach(frame => {
+      frame.addEventListener('click', () => {
+        const id = frame.dataset.shotNext;
+        const game = this.games.find(g => g.gameId === id);
+        const count = Math.max(1, this.gameInfo(game).shots.length);
+        this.shotIndex[id] = ((this.shotIndex[id] || 0) + 1) % count;
         if (window.soundSys) window.soundSys.playClick();
-        if (window.appBurnout) window.appBurnout.open();
+        this.updateView();
       });
-    }
-
-    const btnReinstallBurnout = stage.querySelector('#btn_reinstall_burnout');
-    if (btnReinstallBurnout) {
-      btnReinstallBurnout.addEventListener('click', () => {
-        if (window.gameManager) window.gameManager.openSetupWizard('burnout');
-      });
-    }
-
-    const burnoutClickImg = stage.querySelector('#burnout_screenshot_click');
-    if (burnoutClickImg) {
-      burnoutClickImg.addEventListener('click', () => {
-        if (window.gameManager && window.gameManager.isInstalled('burnout')) {
-          if (window.appBurnout) window.appBurnout.open();
-        } else {
-          this.runInstallWizard('BURNOUT: CHAMPIONSHIP DRAG RACING', 'demo/burndemo.exe');
-        }
-      });
-    }
-
-    const btnLaunchWorldCup = stage.querySelector('#btn_launch_worldcup98');
-    if (btnLaunchWorldCup) {
-      btnLaunchWorldCup.addEventListener('click', () => {
-        if (window.soundSys) window.soundSys.playClick();
-        if (window.appWorldCup98) window.appWorldCup98.open();
-      });
-    }
-
-    const btnReinstallWorldCup = stage.querySelector('#btn_reinstall_worldcup98');
-    if (btnReinstallWorldCup) {
-      btnReinstallWorldCup.addEventListener('click', () => {
-        if (window.gameManager) window.gameManager.openSetupWizard('worldcup98');
-      });
-    }
-
-    const wcClickImg = stage.querySelector('#worldcup98_screenshot_click');
-    if (wcClickImg) {
-      wcClickImg.addEventListener('click', () => {
-        if (window.gameManager && window.gameManager.isInstalled('worldcup98')) {
-          if (window.appWorldCup98) window.appWorldCup98.open();
-        } else {
-          this.runInstallWizard('WORLD CUP 98', 'demo/worldcup98.exe');
-        }
-      });
-    }
-
-    const btnLaunchHockey = stage.querySelector('#btn_launch_hockey');
-    if (btnLaunchHockey) {
-      btnLaunchHockey.addEventListener('click', () => {
-        if (window.soundSys) window.soundSys.playClick();
-        if (window.appHockey) window.appHockey.open();
-      });
-    }
-
-    const btnReinstallHockey = stage.querySelector('#btn_reinstall_hockey');
-    if (btnReinstallHockey) {
-      btnReinstallHockey.addEventListener('click', () => {
-        if (window.gameManager) window.gameManager.openSetupWizard('hockey');
-      });
-    }
-
-    const nhlClickImg = stage.querySelector('#nhl98_screenshot_click');
-    if (nhlClickImg) {
-      nhlClickImg.addEventListener('click', () => {
-        if (window.gameManager && window.gameManager.isInstalled('hockey')) {
-          if (window.appHockey) window.appHockey.open();
-        } else {
-          this.runInstallWizard("NHL '98", 'demo/nhl98demo.exe');
-        }
-      });
-    }
+    });
 
     stage.querySelectorAll('.igroman-patch-item').forEach(item => {
       item.addEventListener('click', () => {
@@ -1264,21 +1023,6 @@ class AppIgroman {
 
   runInstallWizard(appName, exePath) {
     if (window.soundSys) window.soundSys.playClick();
-
-    if ((exePath === 'demo/burndemo.exe' || appName.toLowerCase().includes('burnout')) && window.gameManager) {
-      window.gameManager.openSetupWizard('burnout');
-      return;
-    }
-
-    if ((exePath === 'demo/worldcup98.exe' || appName.toLowerCase().includes('world cup')) && window.gameManager) {
-      window.gameManager.openSetupWizard('worldcup98');
-      return;
-    }
-
-    if ((exePath === 'demo/nhl98demo.exe' || appName.toLowerCase().includes('nhl') || appName.toLowerCase().includes('хоккей')) && window.gameManager) {
-      window.gameManager.openSetupWizard('hockey');
-      return;
-    }
 
     let percent = 0;
     let finished = false;

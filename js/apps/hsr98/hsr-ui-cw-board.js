@@ -145,7 +145,7 @@
             if (z === 'bench' && ui.cwMarked(r, u.id)) ui.diamond(p.x + 5, p.y + 5, 3.5, '#9affb0', '#0a2a14');
             const its = u.items || [];
             if (z === 'on') its.forEach((it, j) => ui.cwItemIcon(c, it, p.x + p.s - 15, p.y + 2 + j * 15, 13));
-            else its.forEach((it, j) => { c.fillStyle = '#000000'; c.fillRect(p.x + 1 + j * 7, p.y + 1, 6, 6); c.fillStyle = (CW.ITEMS[it.id].col || (CW.ITEMS[it.id].from ? CW.ITEMS[CW.ITEMS[it.id].from[0]].col : '#ffffff')); c.fillRect(p.x + 2 + j * 7, p.y + 2, 4, 4); });
+            else its.forEach((it, j) => { c.fillStyle = '#000000'; c.fillRect(p.x + 1 + j * 7, p.y + 1, 6, 6); c.fillStyle = ui.cwItemDot(CW.ITEMS[it.id]); c.fillRect(p.x + 2 + j * 7, p.y + 2, 4, 4); });
           }
           if (on && !(this.drag && this.drag.moved)) { c.strokeStyle = K.gold; c.lineWidth = 2; c.strokeRect(p.x - 2, p.y - 2, p.s + 4, p.s + 4); c.lineWidth = 1; }
           ui.hit(p.x, p.y, p.s, p.s, (btn, q) => this.press(z, i, btn, q));
@@ -749,6 +749,12 @@
       if (o.rec) this.diamond(x + s - 3, y + 3, 3, '#ffd471', '#1a1208');
     },
 
+    cwItemDot(D) {
+      if (D.col) return D.col;
+      if (D.kind === 'emblem') return (CW.BONDS[D.bond] || {}).col || '#ffffff';
+      return Array.isArray(D.from) ? CW.ITEMS[D.from[0]].col : '#ffffff';
+    },
+
     cwItemLines(it) {
       const D = CW.ITEMS[it.id], out = [];
       const stats = Object.entries(D.stats).map(([k, v]) => { const n = Array.isArray(v) ? v[it.sp ? 1 : 0] : v; return CW.ITEM_STAT_NAMES[k] + ' ' + (k === 'en' ? '+' + n : '+' + Math.round(n * 100) + '%'); });
@@ -758,7 +764,7 @@
         const f = v => (v < 1 && v > 0 ? Math.round(v * 100) : v);
         out.push(D.text.replace(/#00%/g, (p * 100) + '%').replace(/#/g, f(p)).replace(/@/g, f(q)));
       }
-      if (D.from) out.push('Из: ' + D.from.map(k => CW.ITEMS[k].name).join(' + '));
+      if (D.from) out.push('Из: ' + (Array.isArray(D.from) ? D.from.map(k => CW.ITEMS[k].name) : [CW.ITEMS[D.from].name, D.dia === 'any' ? 'любой алмаз' : CW.ITEMS[D.dia].name]).join(' + '));
       return out;
     },
 

@@ -262,14 +262,14 @@ window.interpediaReg('stalker98', 'project', {
       { label: 'Студия', value: 'GSC Game World, Киев, с 1995 года' },
       { label: 'Сайт', value: 'www.gsc-game.com' },
       { label: 'Текстовая альфа', value: 'STALKER.EXE, 14.2 МБ, $29.99' },
-      { label: 'Трёхмерная версия', value: 'XR98.EXE, 22.6 МБ, $32.99' },
+      { label: 'Трёхмерная версия', value: 'XR98.EXE, 22.6 МБ, DEMO' },
       { label: 'Зов Припяти 98', value: 'ZATON.EXE, 9.8 МБ, $36.99' },
       { label: 'Движки', value: 'Text-CRT 0.98, X-Ray 98, программный рендерер' },
-      { label: 'Распространение', value: 'только через [[steam|Steam]]' },
+      { label: 'Распространение', value: '[[steam|Steam]]; XR98 — демоверсия с диска «Игромании»' },
       { label: 'Место действия', value: 'Чернобыльская Зона отчуждения' }
     ]
   },
-  lead: `<strong>S.T.A.L.K.E.R.</strong> — три самостоятельные игры киевской студии GSC Game World о Зоне отчуждения вокруг Чернобыльской АЭС: текстовая альфа STALKER.EXE, трёхмерный боевик XR98.EXE и открытый мир ZATON.EXE под названием «Зов Припяти 98». У них разные движки, разные сюжеты и разные требования к [[pentium2|процессору]] и видеокарте. Все три продаются только в клиенте [[steam|Steam]].
+  lead: `<strong>S.T.A.L.K.E.R.</strong> — три самостоятельные игры киевской студии GSC Game World о Зоне отчуждения вокруг Чернобыльской АЭС: текстовая альфа STALKER.EXE, трёхмерный боевик XR98.EXE и открытый мир ZATON.EXE под названием «Зов Припяти 98». У них разные движки, разные сюжеты и разные требования к [[pentium2|процессору]] и видеокарте. Текстовая альфа и «Зов Припяти 98» продаются в клиенте [[steam|Steam]], а XR98.EXE есть в виде демоверсии S.T.A.L.K.E.R. 98: Тень Чернобыля Demo на компакт-диске журнала «Игромания» (<code>D:\\demo\\stalker98demo.exe</code>).
 
 Сайт студии, www.gsc-game.com, оформлен как дневник разработчиков: новости, досье игр, технические заметки, справочник аномалий и радио. Он входит в [[webring|кольцо ретро-сайтов]]. Слово «сталкер» в этом значении ввели Стругацкие в повести «Пикник на обочине» (1972), а Тарковский снял по ней фильм «Сталкер» (1979).`,
   sections: [
@@ -295,7 +295,7 @@ window.interpediaReg('stalker98', 'project', {
 База находится на сухогрузе «Скадовск». Чёрный ящик «Скат-3» можно получить четырьмя способами: выкупить у отряда Тесака за 8000 RU, зачистить Земснаряд, выкрасть кейс Шустрого или пробраться в цех. В игре 12 видов оружия, 6 костюмов, 3 детектора («Отклик», «Медведь», «Велес») и 14 артефактов. Управление сходно с XR98, но болт — на клавише B, детектор — на O, быстрое сохранение — F5, загрузка — F9.` },
     { id: 'site', title: 'Сайт gsc-game.com', content: `Сайт датирован 25 ноября 1998 года, на нём показан счётчик посещений, адрес студии и канал связи «Укртелеком, выделенная линия 64 Кбит/с». На главной странице висит «дозиметр» с показаниями по локациям: 18 мкР/ч на Кордоне, 145 на Свалке, 62 в Затоне.
 
-На сайте есть новости студии, три технические заметки (о симуляции жизни XR98, о программном рендерере и о графе секторов текстового ядра), справочник аномалий, вакансии (программист C++, 3D-художник, тестировщик) и три канала радио: «Кордон / Бар «100 Рентген»», «Затон — сухогруз «Скадовск»» и «Вопросы к GSC (Киев)». Кнопки на сайте запускают игру напрямую, если она уже установлена из Steam.` }
+На сайте есть новости студии, три технические заметки (о симуляции жизни XR98, о программном рендерере и о графе секторов текстового ядра), справочник аномалий, вакансии (программист C++, 3D-художник, тестировщик) и три канала радио: «Кордон / Бар «100 Рентген»», «Затон — сухогруз «Скадовск»» и «Вопросы к GSC (Киев)». Кнопки на сайте запускают игру напрямую, если она уже установлена из Steam или, в случае XR98, с диска «Игромании».` }
   ],
   seeAlso: ['steam', 'voodoo', 'rivatnt', 'pentium2', 'cdrom', 'fallout', 'halflife'],
   references: [
@@ -304,7 +304,7 @@ window.interpediaReg('stalker98', 'project', {
     'Стругацкие А., Стругацкие Б. Пикник на обочине. — 1972.',
     'Тарковский А. «Сталкер» (фильм). — Мосфильм, 1979.'
   ],
-  links: [['http://www.gsc-game.com', 'GSC Game World'], ['http://www.steampowered.com', 'Steam']],
+  links: [['http://www.gsc-game.com', 'GSC Game World'], ['http://www.steampowered.com', 'Steam'], ['http://www.igromania.ru', 'Журнал «Игромания»: демоверсия XR98']],
   categories: ['Наш проект', 'Шутеры от первого лица', 'GSC Game World']
 }, {
   title: 'S.T.A.L.K.E.R. 98 and GSC Game World',
@@ -316,14 +316,14 @@ window.interpediaReg('stalker98', 'project', {
       { label: 'Studio', value: 'GSC Game World, Kyiv, since 1995' },
       { label: 'Website', value: 'www.gsc-game.com' },
       { label: 'Text alpha', value: 'STALKER.EXE, 14.2 MB, $29.99' },
-      { label: '3D version', value: 'XR98.EXE, 22.6 MB, $32.99' },
+      { label: '3D version', value: 'XR98.EXE, 22.6 MB, DEMO' },
       { label: 'Call of Pripyat 98', value: 'ZATON.EXE, 9.8 MB, $36.99' },
       { label: 'Engines', value: 'Text-CRT 0.98, X-Ray 98, software renderer' },
-      { label: 'Distribution', value: 'only through [[steam|Steam]]' },
+      { label: 'Distribution', value: '[[steam|Steam]]; XR98 is a demo on the Igromania CD' },
       { label: 'Setting', value: 'the Chernobyl Exclusion Zone' }
     ]
   },
-  lead: `<strong>S.T.A.L.K.E.R.</strong> is a set of three separate games from the Kyiv studio GSC Game World about the exclusion zone around the Chernobyl nuclear plant: the text alpha STALKER.EXE, the 3D action game XR98.EXE and the open-world ZATON.EXE, titled "Call of Pripyat 98". They have different engines, different plots and different demands on the [[pentium2|processor]] and video card. All three are sold only through the [[steam|Steam]] client.
+  lead: `<strong>S.T.A.L.K.E.R.</strong> is a set of three separate games from the Kyiv studio GSC Game World about the exclusion zone around the Chernobyl nuclear plant: the text alpha STALKER.EXE, the 3D action game XR98.EXE and the open-world ZATON.EXE, titled "Call of Pripyat 98". They have different engines, different plots and different demands on the [[pentium2|processor]] and video card. The text alpha and Call of Pripyat 98 are sold through the [[steam|Steam]] client, while XR98.EXE exists as the S.T.A.L.K.E.R. 98: Тень Чернобыля Demo on the Igromania magazine CD (<code>D:\\demo\\stalker98demo.exe</code>).
 
 The studio's site, www.gsc-game.com, is laid out as a developer diary: news, game dossiers, technical notes, an anomaly handbook and a radio. It belongs to the [[webring|retro web ring]]. The word "stalker" in this sense was introduced by the Strugatsky brothers in "Roadside Picnic" (1972), and Tarkovsky made the film "Stalker" (1979) after it.`,
   sections: [
@@ -349,7 +349,7 @@ Controls: WASD to move, mouse to look and fire, 1-4 for weapons, 5 binoculars, 6
 The base is the dry cargo ship "Skadovsk". The "Skat-3" flight recorder can be obtained four ways: buy it back from Tesak's squad for 8000 RU, clear the Dredger, steal Shustry's case or sneak into the workshop. The game has 12 weapons, 6 suits, 3 detectors ("Echo", "Bear", "Veles") and 14 artifacts. Controls resemble XR98, but the bolt is on B, the detector on O, quick save on F5 and load on F9.` },
     { id: 'site', title: 'The gsc-game.com site', content: `The site is dated 25 November 1998 and shows a visitor counter, the studio's address and a connection line, "Ukrtelecom, leased line 64 Kbps". The main page carries a "dosimeter" with readings by location: 18 microroentgen per hour in the Cordon, 145 in the Garbage and 62 in Zaton.
 
-The site contains studio news, three technical notes (on the XR98 life simulation, the software renderer and the sector graph of the text core), an anomaly handbook, vacancies (C++ programmer, 3D artist, tester) and three radio channels: "Cordon / the 100 Roentgen bar", "Zaton: the Skadovsk ship" and "Questions to GSC (Kyiv)". Buttons on the site start a game directly if it is already installed from Steam.` }
+The site contains studio news, three technical notes (on the XR98 life simulation, the software renderer and the sector graph of the text core), an anomaly handbook, vacancies (C++ programmer, 3D artist, tester) and three radio channels: "Cordon / the 100 Roentgen bar", "Zaton: the Skadovsk ship" and "Questions to GSC (Kyiv)". Buttons on the site start a game directly if it is already installed from Steam or, for XR98, from the Igromania CD.` }
   ],
   seeAlso: ['steam', 'voodoo', 'rivatnt', 'pentium2', 'cdrom', 'fallout', 'halflife'],
   references: [
@@ -358,7 +358,7 @@ The site contains studio news, three technical notes (on the XR98 life simulatio
     'Strugatsky A., Strugatsky B. Roadside Picnic. — 1972.',
     'Tarkovsky A. "Stalker" (film). — Mosfilm, 1979.'
   ],
-  links: [['http://www.gsc-game.com', 'GSC Game World'], ['http://www.steampowered.com', 'Steam']],
+  links: [['http://www.gsc-game.com', 'GSC Game World'], ['http://www.steampowered.com', 'Steam'], ['http://www.igromania.ru', 'Igromania magazine: the XR98 demo']],
   categories: ['Our Project', 'First-Person Shooters', 'GSC Game World']
 });
 

@@ -2,7 +2,7 @@
 
 What *Minecraft* could have looked like if Mojang had shipped an Alpha in 1999: a block-world survival sandbox rendered at 320x240–800x600 through a first-generation 3D accelerator (WebGL), with 16x16 procedural textures, per-block flood-fill lighting, 16-bit ordered dithering and a 64-block-high world. Written from scratch for the Win 98 desktop; it shares no code with the other games.
 
-- Launch from the desktop, the Start menu, the Run command (`minecraft`, `mc98`, `майнкрафт`), the Steam client (after downloading it there) or `C:\Games\MC98\MINECRAFT.EXE`.
+- Launch from the desktop, the Start menu, the Run command (`minecraft`, `mc98`, `майнкрафт`), or `C:\Games\MC98\MINECRAFT.EXE` after installing the Minecraft 98 Demo (`mc98_demo`) from the Igromania CD (`D:\demo\mc98demo.exe`). It is not sold in Steam.
 - Run it standalone at `mc98.html`; the page exposes `window.mcui`.
 - Run the tests with `npm run test:mc98`, which is `node tests/mc98.test.js` (about 5 s, ~980 checks).
 

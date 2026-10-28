@@ -287,7 +287,8 @@
     },
     {
       id: 'falloutzp',
-      title: 'Fallout: Запорожье',
+      cdDemoId: 'falloutzp_demo',
+      title: 'Fallout: Запорожье Demo',
       aliases: ['fallout', 'фоллаут', 'запорожье', 'талоны'],
       tested: ['Krot', '03.12.98'],
       blocks: [{
@@ -304,7 +305,8 @@
     },
     {
       id: 'stalker98',
-      title: 'S.T.A.L.K.E.R. 98: Тень Чернобыля',
+      cdDemoId: 'stalker98_demo',
+      title: 'S.T.A.L.K.E.R. 98: Тень Чернобыля Demo',
       aliases: ['тень чернобыля', 'кордон', 'свалка'],
       tested: ['Krot', '05.12.98'],
       blocks: [{
@@ -341,7 +343,8 @@
     },
     {
       id: 'mc98',
-      title: 'Minecraft 98',
+      cdDemoId: 'mc98_demo',
+      title: 'Minecraft 98 Demo',
       aliases: ['minecraft', 'майнкрафт', 'f3', 'seed', 'зерно'],
       tested: ['Den', '27.11.98'],
       blocks: [{
@@ -361,8 +364,9 @@
     },
     {
       id: 'tekken3',
-      title: 'Tekken 3 98',
-      aliases: ['tekken', 'теккен', 'колосс'],
+      cdDemoId: 'tekken98_demo',
+      title: 'Tekken 98 Demo',
+      aliases: ['tekken', 'tekken 3', 'теккен', 'колосс'],
       tested: ['Mike T.', '27.11.98'],
       blocks: [{
         kind: 'secrets',
@@ -387,7 +391,7 @@
       claim: 'Запустить с ключом -console, ввести sv_cheats 1 и impulse 101.',
       heard: 'журналы и форумы',
       verdict: 'no',
-      truth: 'Это рецепт для американской коробки Half-Life. В Half-Life 98 из Steam консоли нет совсем, ни по тильде, ни по Ё.'
+      truth: 'Это рецепт для американской коробки Half-Life. В демоверсии Half-Life 98 с диска «Игромании» консоли нет совсем, ни по тильде, ни по Ё.'
     },
     {
       game: 'Сапёр',
@@ -432,7 +436,7 @@
       truth: 'У Нижнего Сити свои коды: ZDOROVIE, BRONYA, STVOLY, BABKI, MENTY, POGODA. Бессмертие и танк есть только в меню F7.'
     },
     {
-      game: 'Fallout 2 Demo',
+      game: 'Fallout 98 Demo',
       claim: 'Бесконечный багажник у машины Хайвеймен.',
       heard: 'письмо читателя',
       verdict: 'no',
@@ -557,7 +561,7 @@
       }).join('');
       return `
         <h1 class="ccc-h1">Коды к играм для PC</h1>
-        <p class="ccc-lead">Здесь только то, что работает. Каждый код наш тестер набрал руками на Win 98 с игрой из Steam, прежде чем код попал на страницу. Что не сработало, лежит в разделе ${link('/myths.html', 'Мифы и фейки')}.</p>
+        <p class="ccc-lead">Здесь только то, что работает. Каждый код наш тестер набрал руками на Win 98 с игрой из Steam или с демоверсией с компакт-диска «Игромании», прежде чем код попал на страницу. Что не сработало, лежит в разделе ${link('/myths.html', 'Мифы и фейки')}.</p>
         <table class="ccc-index" cellspacing="0" cellpadding="0">
           <tr><th>Игра</th><th>Что есть</th><th>Проверено</th></tr>
           ${groups}
@@ -604,9 +608,10 @@
 
     renderPlayButton(game) {
       const gm = window.gameManager;
-      if (!gm || !gm.catalog || !gm.catalog[game.id]) return '';
-      const installed = gm.isInstalled(game.id);
-      return `<button type="button" class="win-btn ccc-play" data-game="${game.id}">${installed ? 'Запустить игру' : 'Купить в Steam'}</button>`;
+      const gameId = game.cdDemoId || game.id;
+      if (!gm || !gm.catalog || !gm.catalog[gameId]) return '';
+      const offer = game.cdDemoId ? 'Демоверсия на диске «Игромании»' : 'Купить в Steam';
+      return `<button type="button" class="win-btn ccc-play" data-game="${game.id}">${gm.isInstalled(gameId) ? 'Запустить игру' : offer}</button>`;
     },
 
     renderGame(id) {
@@ -619,7 +624,7 @@
           <tr>
             <td>
               <h1 class="ccc-h1">${esc(game.title)}</h1>
-              <div class="ccc-meta">PC &middot; Win 98 &middot; продаётся в Steam &middot; ${this.renderBadges(game)}</div>
+              <div class="ccc-meta">PC &middot; Win 98 &middot; ${game.cdDemoId ? 'демоверсия на компакт-диске «Игромании»' : 'продаётся в Steam'} &middot; ${this.renderBadges(game)}</div>
             </td>
             <td align="right" valign="top"><span class="ccc-stamp ccc-stamp-ok">ПРОВЕРЕНО<br><small>${esc(date)} &middot; ${esc(tester)}</small></span></td>
           </tr>
@@ -746,9 +751,11 @@
 
       container.querySelectorAll('.ccc-play').forEach(btn => btn.addEventListener('click', () => {
         const gm = window.gameManager;
-        const id = btn.dataset.game;
+        const game = gameById(btn.dataset.game);
+        const id = game && game.cdDemoId ? game.cdDemoId : btn.dataset.game;
         if (!gm || !gm.catalog[id]) return;
         if (gm.isInstalled(id)) gm.catalog[id].launch();
+        else if (game && game.cdDemoId) gm.showOnCd(id);
         else gm.showInSteam(id);
       }));
 

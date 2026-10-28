@@ -75,7 +75,7 @@ window.webcinemaData = {
       fps: '29.97',
       added: '20.11.1998',
       downloads: 1874,
-      game: 'half-life',
+      game: 'half-life_demo',
       gameNote: 'Шутер от Valve',
       lead: 'Шутер от Valve Software. В США игра вышла 19 ноября 1998 года, в Европе ждут 27 ноября.',
       text: [
@@ -116,7 +116,7 @@ window.webcinemaData = {
       fps: '29.97',
       added: '02.11.1998',
       downloads: 1543,
-      game: 'fallout2',
+      game: 'fallout98_demo',
       gameNote: 'Ролевая игра Black Isle Studios',
       lead: 'Продолжение Fallout от Black Isle Studios, вышло в конце октября 1998 года.',
       text: [
