@@ -1855,6 +1855,18 @@ class ClippySystem {
       ], '💿', 12000);
       return true;
     }
+    if (discId === 'office_games_2') {
+      clippy.animate('lookAround');
+      clippy.speak(L(
+        'Привод D: раскрутил том <strong>OFFICE_GAMES_2</strong> («Офисные игры 2»). Внутри восемь новых игр: кабель в 3D, разгром архива, забег до лифта, тир, канцелярский микс, шарики, стопка папок и гонки на креслах. Если в коридоре послышатся шаги шефа, жмите <strong>F12</strong>!',
+        'Drive D: spun up volume <strong>OFFICE_GAMES_2</strong> ("Office Games 2"). Eight new games inside: a 3D patch cord, an archive smash, a dash to the lift, a shooting range, a stationery mix, colour balls, a folder stack and chair racing. If the boss comes down the hall, press <strong>F12</strong>!'
+      ), [
+        { text: L('▶ Запустить лаунчер (LAUNCHER.EXE)', '▶ Launch LAUNCHER.EXE'), action: () => window.appOg2Launcher && window.appOg2Launcher.open() },
+        { text: L('🎵 Слушать CD-Audio (дорожки 2–3)', '🎵 Play CD-Audio (Tracks 2–3)'), action: () => window.appCdPlayer && window.appCdPlayer.open() },
+        { text: L('📂 Открыть диск D:', '📂 Open Drive D:'), action: () => window.appExplorer && window.appExplorer.open(['My Computer', drive]) }
+      ], '💿', 12000);
+      return true;
+    }
     if (discId === 'igromania_09_1998') {
       clippy.animate('lookAround');
       clippy.speak(L(
@@ -1898,9 +1910,22 @@ class ClippySystem {
       }
       return true;
     }
+    if (prevDiscId === 'office_games_2') {
+      const running = wm && wm.windows && Array.from(wm.windows.keys()).some(id => typeof id === 'string' && id.startsWith('og2_'));
+      clippy.speak(running ? L(
+        'Лоток привода D: выехал с диском <strong>«Офисные игры 2»</strong>. Открытая игра уже в оперативной памяти, партию можно доиграть без диска.',
+        'Drive D: tray ejected <strong>"Office Games 2"</strong>. The open game is already in RAM, so you can finish the round without the disc.'
+      ) : L(
+        'Диск <strong>«Офисные игры 2»</strong> извлечён из привода D:. Вставить его снова можно через значок CD-ROM в трее.',
+        '<strong>"Office Games 2"</strong> has been ejected from drive D:. Reinsert it anytime from the CD-ROM tray icon.'
+      ), [
+        { text: L('• Вставить «Офисные игры 2» обратно', '• Reinsert "Office Games 2"'), action: () => window.vfs && window.vfs.insertCdRom(drive, 'office_games_2') }
+      ], '📀', 9500);
+      return true;
+    }
     clippy.speak(L(
-      'Лоток дисковода D: открылся, компакт-диск извлечён. Через значок CD-ROM в трее можно вставить <strong>«Офисные игры ’98»</strong> или <strong>«Игроманию»</strong>.',
-      'Drive D: tray opened and the CD-ROM was ejected. Use the CD-ROM tray icon to insert <strong>"Office Games ’98"</strong> or <strong>"Igromania"</strong>.'
+      'Лоток дисковода D: открылся, компакт-диск извлечён. Через значок CD-ROM в трее можно вставить <strong>«Офисные игры 2»</strong>, <strong>«Офисные игры ’98»</strong> или <strong>«Игроманию»</strong>.',
+      'Drive D: tray opened and the CD-ROM was ejected. Use the CD-ROM tray icon to insert <strong>"Office Games 2"</strong>, <strong>"Office Games ’98"</strong> or <strong>"Igromania"</strong>.'
     ), [
       { text: L('• Вставить «Офисные игры ’98»', '• Insert "Office Games ’98"'), action: () => window.vfs && window.vfs.insertCdRom(drive, 'office_games_98') }
     ], '📀', 9000);

@@ -12,6 +12,7 @@
   const ZOOMS = [4, 6, 8, 10, 12, 16];
   const VIEW = { x: 12, y: 54, w: 428, h: 358 };
   const PANEL = { x: 450, y: 52, w: 180, h: 362 };
+  const LIST = { top: 48, bottom: 8, bar: 14 };
   const WALK = new Set(['floor', 'floor2', 'floor3', 'floor4', 'floor5', 'road', 'rail', 'bridge', 'door', 'stairs']);
   const PROPS = new Set(['tree', 'crate', 'pipe', 'console', 'lamp', 'fence', 'statue', 'table', 'crystal', 'shelf', 'block']);
   const BLOCKS = new Set(['house', 'window', 'housedoor', 'gate']);
@@ -467,33 +468,64 @@
       pill(528, on ? 'anchor' : 'anchorOff', anchors.length ? on + ' / ' + anchors.length : '—', anchors.length > 0 && on === anchors.length);
     },
 
-    navList(c, s) {
+    navListLayout(s) {
       const g = this.game, p = PANEL, rows = this.navRows(s.world), goal = g.objTarget(), qt = g.questTarget();
+      const tight = rows.length > 10, y0 = p.y + LIST.top, view = p.h - LIST.top - LIST.bottom;
+      const measure = inset => rows.map(r => {
+        if (r.head) return { head: r.head, h: tight ? 18 : 22 };
+        const a = r.area, open = g.areaOpen(a), here = a.map === g.map.id, aim = !!(goal && goal.map === a.map), qaim = !!(qt && qt.map === a.map);
+        const label = open ? a.name : '???', avail = p.w - 42 - inset - ((here ? 1 : 0) + (aim ? 1 : 0) + (qaim ? 1 : 0) + (open ? 0 : 1)) * 16;
+        const lines = this.measure(label, 12, true) <= avail ? [label] : this.wrap(label, avail - 4, 11).slice(0, 2);
+        const rh = lines.length > 1 ? (tight ? 30 : 34) : (tight ? 20 : 24);
+        return { area: a, open, here, aim, qaim, lines, rh, h: rh + (tight ? 1 : 2) };
+      });
+      const total = list => list.reduce((sum, r) => sum + r.h, 0);
+      let items = measure(0), inset = 0, maxTop = 0;
+      if (total(items) > view) {
+        inset = LIST.bar;
+        items = measure(inset);
+        maxTop = items.length;
+        for (let used = 0; maxTop > 0 && used + items[maxTop - 1].h <= view; maxTop--) used += items[maxTop - 1].h;
+      }
+      const sc = s.sc;
+      sc.top = clamp(Math.round(sc.top), 0, maxTop);
+      if (sc.sel !== s.area) {
+        sc.sel = s.area;
+        const i = items.findIndex(r => r.area && r.area.map === s.area);
+        if (i >= 0) {
+          const first = i > 0 && items[i - 1].head ? i - 1 : i;
+          if (first < sc.top) sc.top = first;
+          for (let used = total(items.slice(sc.top, i + 1)); used > view; sc.top++) used -= items[sc.top].h;
+        }
+      }
+      const shown = [];
+      let y = y0;
+      for (let i = sc.top; i < items.length && y + items[i].h <= y0 + view; i++) { shown.push(Object.assign({ y }, items[i])); y += items[i].h; }
+      return { items, shown, tight, inset, maxTop, y: y0, view };
+    },
+
+    navList(c, s) {
+      const g = this.game, p = PANEL, qt = g.questTarget(), L = this.navListLayout(s), tight = L.tight, w = p.w - L.inset;
       this.button(p.x + 10, p.y + 12, p.w - 20, 26, 'Звёздный путь', () => s.key(null, 'Tab'), { icon: 'warp' });
-      let y = p.y + 48;
-      const tight = rows.length > 10, headH = tight ? 18 : 22;
-      for (const r of rows) {
+      for (const r of L.shown) {
+        const y = r.y;
         if (r.head) {
           const hy = y - (tight ? 2 : 0);
-          c.fillStyle = 'rgba(242,220,154,0.08)'; c.fillRect(p.x + 6, hy + 2, p.w - 12, 18);
+          c.fillStyle = 'rgba(242,220,154,0.08)'; c.fillRect(p.x + 6, hy + 2, w - 12, 18);
           this.diamond(p.x + 14, hy + 11, 3, C.brass);
           this.text(r.head, p.x + 22, hy + 5, { size: 10, col: C.sub });
-          c.fillStyle = 'rgba(201,164,92,0.35)'; c.fillRect(p.x + 28 + this.measure(r.head, 10), hy + 11, p.w - 40 - this.measure(r.head, 10), 1);
-          y += headH;
+          c.fillStyle = 'rgba(201,164,92,0.35)'; c.fillRect(p.x + 28 + this.measure(r.head, 10), hy + 11, w - 40 - this.measure(r.head, 10), 1);
           continue;
         }
-        const a = r.area, open = g.areaOpen(a), on = a.map === s.area, here = a.map === g.map.id, aim = !!(goal && goal.map === a.map), qaim = !!(qt && qt.map === a.map);
-        const label = open ? a.name : '???', avail = p.w - 42 - ((here ? 1 : 0) + (aim ? 1 : 0) + (qaim ? 1 : 0) + (open ? 0 : 1)) * 16;
-        const lines = this.measure(label, 12, true) <= avail ? [label] : this.wrap(label, avail - 4, 11).slice(0, 2);
-        const rh = lines.length > 1 ? (tight ? 30 : 34) : (tight ? 20 : 24), mid = y + rh / 2;
+        const a = r.area, on = a.map === s.area, { open, here, aim, qaim, lines, rh } = r, mid = y + rh / 2;
         if (on) {
-          const gr = c.createLinearGradient(p.x + 6, 0, p.x + p.w - 6, 0);
+          const gr = c.createLinearGradient(p.x + 6, 0, p.x + w - 6, 0);
           gr.addColorStop(0, 'rgba(242,220,154,0.32)'); gr.addColorStop(1, 'rgba(242,220,154,0.04)');
-          c.fillStyle = gr; c.fillRect(p.x + 6, y, p.w - 12, rh);
+          c.fillStyle = gr; c.fillRect(p.x + 6, y, w - 12, rh);
           c.fillStyle = C.brassHi; c.fillRect(p.x + 6, y, 2, rh);
           this.cursor(p.x + 10, mid);
         }
-        let rx = p.x + p.w - 14;
+        let rx = p.x + w - 14;
         if (here) {
           c.fillStyle = '#08202a'; c.beginPath(); c.moveTo(rx - 6, mid - 6); c.lineTo(rx + 6, mid - 6); c.lineTo(rx, mid + 6); c.closePath(); c.fill();
           c.fillStyle = C.cyan; c.beginPath(); c.moveTo(rx - 4, mid - 5); c.lineTo(rx + 4, mid - 5); c.lineTo(rx, mid + 3); c.closePath(); c.fill();
@@ -504,8 +536,11 @@
         if (!open) G.mapIcon(c, 'padlock', rx - 6, mid - 7, 14);
         const size = lines.length > 1 ? 11 : 12;
         lines.forEach((l, i) => this.text(l, p.x + 22, mid - lines.length * (size + 2) / 2 + i * (size + 2), { size, bold: on, col: open ? (on ? C.gold : C.cream) : C.dim }));
-        this.hit(p.x + 6, y, p.w - 12, rh, () => { if (s.area !== a.map) { s.setArea(a.map); this.sfx('select'); } });
-        y += rh + (tight ? 1 : 2);
+        this.hit(p.x + 6, y, w - 12, rh, () => { if (s.area !== a.map) { s.setArea(a.map); this.sfx('select'); } });
+      }
+      if (L.maxTop) {
+        this.wheelZone(p.x, L.y, p.w, L.view, d => { s.sc.top += d; });
+        this.scrollBar(p.x + p.w - 17, L.y, L.view, s.sc, L.items.length, L.items.length - L.maxTop);
       }
     },
 
@@ -599,7 +634,7 @@
       const ui = this, g = this.game;
       const here = g.areaOf(g.map.id), target = opts.area && g.areaOf(opts.area);
       const s = {
-        full: true, close, detail: false, sel: -1, zoom: 0, px: 0, py: 0, scale: 0, snap: true, action: null,
+        full: true, close, detail: false, sel: -1, zoom: 0, px: 0, py: 0, scale: 0, snap: true, action: null, sc: { top: 0 },
         world: opts.world || (target ? target.world : here ? here.world : g.currentWorld()),
         area: g.map.id,
         points() { const a = ui.navArea(this.area); return a && g.areaOpen(a) ? g.navPoints(this.area) : []; },
@@ -611,6 +646,7 @@
         },
         setWorld(w) {
           this.world = w;
+          this.sc = { top: 0 };
           const rows = ui.navRows(w).filter(r => r.area && g.areaOpen(r.area));
           const cur = here && here.world === w ? rows.find(r => r.area.map === g.map.id) : null, first = rows.find(r => !H.expressArea(r.area.map)) || rows[0];
           const land = rows.find(r => !H.expressArea(r.area.map) && H.DESTINATIONS.some(d => d.map === r.area.map && g.cond(d.need)));

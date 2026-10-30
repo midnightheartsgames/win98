@@ -97,6 +97,34 @@ class AppCDPlayer {
             notes: [196.0, 246.94, 293.66, 392.0, 349.23, 293.66, 246.94, 220.0, 261.63, 329.63, 293.66, 196.0]
           }
         ]
+      },
+      office_games_2: {
+        artist: 'Офисные игры 2',
+        title: 'Office Games 2 Audio Tracks [D:]',
+        playlist: [2, 3],
+        tracks: [
+          {
+            num: 1,
+            isData: true,
+            title: '[DATA] Оболочка «Офисные игры 2» (ISO9660)',
+            durationSec: 1480,
+            notes: []
+          },
+          {
+            num: 2,
+            isData: false,
+            title: 'Патч-корд - Link Light Chiptune',
+            durationSec: 150,
+            notes: [261.63, 311.13, 392.0, 466.16, 392.0, 311.13, 261.63, 233.08, 261.63, 349.23, 392.0, 311.13]
+          },
+          {
+            num: 3,
+            isData: false,
+            title: 'Последний лифт - Floor 18 Jingle',
+            durationSec: 130,
+            notes: [440.0, 392.0, 349.23, 392.0, 440.0, 440.0, 440.0, 392.0, 392.0, 392.0, 440.0, 523.25]
+          }
+        ]
       }
     };
 
@@ -676,7 +704,9 @@ class AppCDPlayer {
     if (typeof window.vfs.isCdRomInserted === 'function' && window.vfs.isCdRomInserted()) {
       const currentId = window.vfs.cdRomState && window.vfs.cdRomState.discId;
       if (currentId === 'igromania_09_1998' && typeof window.vfs.insertCdRom === 'function') {
-        window.vfs.insertCdRom('office_games_98');
+        window.vfs.insertCdRom('D:', 'office_games_98');
+      } else if (currentId === 'office_games_98' && typeof window.vfs.insertCdRom === 'function') {
+        window.vfs.insertCdRom('D:', 'office_games_2');
       } else if (typeof window.vfs.ejectCdRom === 'function') {
         window.vfs.ejectCdRom();
       }

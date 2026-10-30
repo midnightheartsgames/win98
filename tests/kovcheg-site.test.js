@@ -125,7 +125,7 @@ test('visit counter counts the home page once per session', () => {
 
 test('hub shows live game data, leaders from the bench and every banner', () => {
   const html = site.renderSite(base + '/hsr98/');
-  assert.ok(html.includes('версия ' + site.gameVersion(H)) && site.gameVersion(H) === '1.6');
+  assert.ok(html.includes('версия ' + site.gameVersion(H)) && site.gameVersion(H) === H.VERSION);
   assert.ok(html.includes('персонажей ' + Object.keys(H.CHARS).length));
   assert.ok(html.includes('Слияний ' + Object.keys(H.FUSIONS).length));
   const rows = site.banners(H);
@@ -762,6 +762,9 @@ test('my crew: a save marks the tier list and picks squads from own characters',
   const crew = site.loadCrew(makeSave(ids, 'trail_p', sigs), 'SAVE1.SAV');
   assert.ok(!crew.error && crew.chars.trail_p && !crew.chars.trail, 'Trailblazer path from the save');
   assert.deepStrictEqual(Object.keys(crew.chars).sort(), ids.slice().sort());
+  const grown = site.parseSave(JSON.stringify({ state: { roster: { seele: { lvl: 52, asc: 4, cone: 7 }, bronya: { lvl: 12 } }, inv: { cones: [{ uid: 7, id: sigs[0], lvl: 40 }] } } }), 'G.SAV');
+  assert.ok(grown.chars.seele.asc === 4 && grown.chars.seele.coneLvl === 40, 'crew keeps the ascension phase and the cone level');
+  assert.ok(grown.chars.bronya.asc === 0 && grown.chars.bronya.coneLvl === 0, 'a hero without a cone shows none');
   assert.deepStrictEqual(crew.cones.slice().sort(), sigs.slice().sort());
   const html = site.renderSite(base + '/hsr98/mycrew');
   assert.ok(html.includes('SAVE1.SAV') && html.includes('В экипаже ' + ids.length + ' из ' + Object.keys(H.CHARS).length), 'summary');

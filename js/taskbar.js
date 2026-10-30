@@ -360,6 +360,10 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['pinball']}</div>
                   <div class="start-menu-item-text">${t('app.pinball')}</div>
                 </div>
+                <div class="start-menu-item" data-action="bliss">
+                  <div class="start-menu-item-icon">${Icons['bliss']}</div>
+                  <div class="start-menu-item-text">${t('app.bliss')}</div>
+                </div>
                 <div class="start-menu-item" data-action="hearts">
                   <div class="start-menu-item-icon">${Icons['hearts'] || Icons['solitaire']}</div>
                   <div class="start-menu-item-text">The Microslop Hearts Network</div>
@@ -544,15 +548,20 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['catniss']}</div>
                   <div class="start-menu-item-text">Catniss</div>
                 </div>` : ''}
+                ${(window.gameManager && window.gameManager.isInstalled('kirill98')) ? `
+                <div class="start-menu-item" data-action="kirill98">
+                  <div class="start-menu-item-icon">${Icons['kirill98']}</div>
+                  <div class="start-menu-item-text">Kirill The Game</div>
+                </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('plov')) ? `
                 <div class="start-menu-item" data-action="plov">
                   <div class="start-menu-item-icon">${Icons['plov']}</div>
                   <div class="start-menu-item-text">Хаято, Где плов?</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('sims3')) ? `
-                <div class="start-menu-item" data-action="sims3">
+                ${(window.gameManager && window.gameManager.isInstalled('sims3_demo')) ? `
+                <div class="start-menu-item" data-action="sims3_demo">
                   <div class="start-menu-item-icon">${Icons['sims3']}</div>
-                  <div class="start-menu-item-text">The Sims 3</div>
+                  <div class="start-menu-item-text">The Sims 3 Demo</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('kotor98_demo')) ? `
                 <div class="start-menu-item" data-action="kotor98_demo">
@@ -574,10 +583,10 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['gta90']}</div>
                   <div class="start-menu-item-text">GTA: Екатеринбург '90</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('moh98')) ? `
-                <div class="start-menu-item" data-action="moh98">
+                ${(window.gameManager && window.gameManager.isInstalled('moh98_demo')) ? `
+                <div class="start-menu-item" data-action="moh98_demo">
                   <div class="start-menu-item-icon">${Icons['moh98']}</div>
-                  <div class="start-menu-item-text">Medal of Honor 98</div>
+                  <div class="start-menu-item-text">Medal of Honor 98 Demo</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('lol')) ? `
                 <div class="start-menu-item" data-action="lol">
@@ -1004,6 +1013,9 @@ class Taskbar {
       case 'freecell':
         if (window.appFreeCell) window.appFreeCell.open();
         break;
+      case 'bliss':
+        if (window.appBliss) window.appBliss.open();
+        break;
       case 'wordpad':
         if (window.appWordPad) window.appWordPad.open();
         break;
@@ -1246,6 +1258,13 @@ class Taskbar {
           window.appKorovany.open();
         }
         break;
+      case 'kirill98':
+        if (window.gameManager && !window.gameManager.isInstalled('kirill98')) {
+          window.gameManager.showInSteam('kirill98');
+        } else if (window.appKirill98) {
+          window.appKirill98.open();
+        }
+        break;
       case 'catniss':
         if (window.gameManager && !window.gameManager.isInstalled('catniss')) {
           window.gameManager.showInSteam('catniss');
@@ -1260,9 +1279,9 @@ class Taskbar {
           window.appPlov.open();
         }
         break;
-      case 'sims3':
-        if (window.gameManager && !window.gameManager.isInstalled('sims3')) {
-          window.gameManager.showInSteam('sims3');
+      case 'sims3_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('sims3_demo')) {
+          window.gameManager.showOnCd('sims3_demo');
         } else if (window.appSims3) {
           window.appSims3.open();
         }
@@ -1311,10 +1330,9 @@ class Taskbar {
           window.appMc98.open();
         }
         break;
-      case 'moh98':
-        if (window.gameManager && !window.gameManager.isInstalled('moh98')) {
-          const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-          window.winManager.openDialog({ title: 'Medal of Honor 98', icon: 'error', message: t('store.gameNotInstalled', 'Medal of Honor 98') });
+      case 'moh98_demo':
+        if (window.gameManager && !window.gameManager.isInstalled('moh98_demo')) {
+          window.gameManager.showOnCd('moh98_demo');
         } else if (window.appMoh98) {
           window.appMoh98.open();
         }
@@ -1830,23 +1848,13 @@ class Taskbar {
       if (window.contextMenu) {
         const items = [];
         if (isInserted) {
-          if (discId === 'office_games_98') {
-            items.push({
-              label: t('cdrom.runOffice'),
-              bold: true,
-              action: () => {
-                if (window.appOfficeLauncher) window.appOfficeLauncher.open();
-              }
-            });
-          } else {
-            items.push({
-              label: t('cdrom.run'),
-              bold: true,
-              action: () => {
-                if (window.appIgroman) window.appIgroman.open();
-              }
-            });
-          }
+          const catalog = window.vfs.getDiscCatalog();
+          const current = catalog.find(d => d.id === discId);
+          items.push({
+            label: current ? current.runLabel : t('cdrom.run'),
+            bold: true,
+            action: () => window.vfs.openDiscShell(discId)
+          });
           items.push({
             label: t('cdrom.openExplorer'),
             action: () => {
@@ -1854,21 +1862,12 @@ class Taskbar {
             }
           });
           items.push({ separator: true });
-          if (discId === 'office_games_98') {
+          catalog.filter(d => d.id !== discId).forEach(d => {
             items.push({
-              label: t('cdrom.insertIgromania'),
-              action: () => {
-                if (window.vfs) window.vfs.insertCdRom('D:', 'igromania_09_1998');
-              }
+              label: d.insertLabel,
+              action: () => window.vfs.insertCdRom('D:', d.id)
             });
-          } else {
-            items.push({
-              label: t('cdrom.insertOffice'),
-              action: () => {
-                if (window.vfs) window.vfs.insertCdRom('D:', 'office_games_98');
-              }
-            });
-          }
+          });
           items.push({ separator: true });
           items.push({
             label: t('cdrom.eject'),
@@ -1877,18 +1876,12 @@ class Taskbar {
             }
           });
         } else {
-          items.push({
-            label: t('cdrom.insertOffice'),
-            bold: true,
-            action: () => {
-              if (window.vfs) window.vfs.insertCdRom('D:', 'office_games_98');
-            }
-          });
-          items.push({
-            label: t('cdrom.insertIgromania'),
-            action: () => {
-              if (window.vfs) window.vfs.insertCdRom('D:', 'igromania_09_1998');
-            }
+          window.vfs.getDiscCatalog().slice().reverse().forEach((d, i) => {
+            items.push({
+              label: d.insertLabel,
+              bold: i === 0,
+              action: () => window.vfs.insertCdRom('D:', d.id)
+            });
           });
         }
         window.contextMenu.show(e.clientX, e.clientY, items);
@@ -1899,13 +1892,7 @@ class Taskbar {
       const isInserted = window.vfs && window.vfs.isCdRomInserted();
       const discId = window.vfs && window.vfs.cdRomState && window.vfs.cdRomState.discId;
       if (isInserted) {
-        if (discId === 'office_games_98' && window.appOfficeLauncher) {
-          window.appOfficeLauncher.open();
-        } else if (window.appIgroman) {
-          window.appIgroman.open();
-        } else {
-          showCdRomMenu(e);
-        }
+        window.vfs.openDiscShell(discId);
       } else {
         showCdRomMenu(e);
       }
@@ -1967,7 +1954,7 @@ class Taskbar {
     const discId = window.vfs && window.vfs.cdRomState && window.vfs.cdRomState.discId;
     this.cdRomEl.innerHTML = isInserted ? (Icons['drive-cd'] || Icons['drive-d']) : (Icons['drive-cd-empty'] || Icons['drive-d']);
     this.cdRomEl.title = isInserted
-      ? (discId === 'office_games_98' ? t('cdrom.insertedOffice') : t('cdrom.inserted'))
+      ? (discId === 'office_games_98' ? t('cdrom.insertedOffice') : discId === 'office_games_2' ? (window.i18n && window.i18n.getLanguage() === 'en' ? 'CD-ROM Drive (D:) [Office Games 2]' : 'Дисковод CD-ROM (D:) [Офисные игры 2]') : t('cdrom.inserted'))
       : t('cdrom.ejected');
     this.cdRomEl.style.width = '16px';
     this.cdRomEl.style.height = '16px';

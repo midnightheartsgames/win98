@@ -757,6 +757,22 @@ Sources: fandom `Pom-Pom` (dialogue in the Parlor Car), `Trailblaze Level` (rewa
 - The setup wizard draws Pom-Pom with `G.figureCanvas(SPEAKERS.pompom.look, 2)`; the old call `H.PomPom.figure` stopped existing after the 2D redraw.
 - Shots: `mail15`, `mail15got`.
 
+## Version 1.7: ascension, cone levels, phone menu, profile
+
+The plan and every decision are in `HSR-ASCEND.md`.
+
+- Hero: `state.roster[k].asc`, caps 20 to 80, `H.statAt(base, lvl, asc)` adds a fading jump per phase. Level-up screen `openLevelUp` (U in Characters), normal and quick mode, ascension needs materials, credits and Trailblaze Level 15/20/30/40/50/60. Phases 1, 3, 5 give a Star Rail Pass. Credits are `T.upCredit` of the original. Battle EXP burns at the cap.
+- Cones: `inv.cones[i].{lvl, exp, asc}`, `H.coneStatsAt`, screen `openConeUp`, Aether items, free cones as EXP in the manual mode. Superimposition is automatic or manual, a row in the settings.
+- Materials: 15 `asc_*` items in `hsr-ascend.js`, 7 new Stagnant Shadows, `cx_aether`. Data tables `hsr-ascend-data.js` are imported by `tools/hsr-ascend-import.cjs`.
+- Old saves: `fixAscension` sets phases and cone levels once, `state.asv`, no stat drops. Letter `v17_growth` replaces the passes of phases already passed.
+- Phone: `drawPhone`, `H.PHONE_SKINS`, `hsr-phone-pix.js` (`python tools/hsr-cone-pix.py --phone <id> <file> --pixel --colors 64`, prompt in `content/hsr98/phone/PROMPTS.md`). Button «…» and Tab open `openPhoneMenu`.
+- Wardrobe `openWardrobe`: every outfit, Enter wears, removes or leads to the purchase.
+- Promo codes: `H.PROMOS` and letters `promo_<code>`, `g.redeemPromo`, `ui.openPromo` over `ui.openTextEntry` (reads `e.code` for codes, `e.key` for names). Expiry field `until` is supported and not set.
+- Profile `hsr-ui-profile.js`: card, stage, tabs Battle records, Characters, Collections. `g.profile()` creates `state.profile` lazily and fills the log from `warpLog` once. UID freezes on first show, the name is cosmetic.
+- Guide: `targetCost` counts ascension and the worn cone, daily tasks `levelup` and `coneup`.
+- Kovcheg bench still holds version 1.6 results: `tests/kovcheg-site.test.js` stays red until `node tools/kovcheg-bench.cjs` runs with `VERSION` 2.
+- Shots: `lvlup`, `ascend`, `coneup`, `phonemenu`, `wardrobe`, `skins`, `promo`, `profile`, `profilerec`, `profilecoll`, `profilelog`, `guide2`.
+
 ## Version 1.6: nine 5★ of versions 1.x
 
 Plan and status: `HSR-16.md`. Jing Yuan, Luocha, Dan Heng: Imbibitor Lunae (`imbibitor`), Fu Xuan, Jingliu, Topaz and Numby (`topaz`), Huohuo, Argenti and Dr. Ratio join the event banner (`BANNERS.ev.stars`, 4★ trios of the first original run) and the event cone banner (`BANNERS.cone.stars`, signature cones). They never drop from the standard pool.

@@ -1504,6 +1504,112 @@ const SCENES = {
     return { pass: rows.length === shots.length, rows };
   },
 
+  async look(cdp, out) {
+    await cdp.open('/kirill98.html?shots');
+    await cdp.until('!!window.kiui && window.kiui.ready && window.kiui.frames > 2', 30000);
+    const rows = [], spots = [
+      { name: 'ford', at: [790, 745], yaw: -1.9, pitch: 0.02 },
+      { name: 'town', at: [826, 1340], yaw: 0.6, pitch: 0.02 },
+      { name: 'thicket', at: [480, 640], yaw: 0.2, pitch: 0.05 },
+      { name: 'pass', at: [650, 214], yaw: 2.6, pitch: -0.08 },
+      { name: 'peaks', at: [900, 300], yaw: -0.3, pitch: 0.12 }
+    ], times = [['day', 12, false], ['dusk', 20.3, false], ['night', 23.5, false], ['dither', 12, true]];
+    for (const s of spots) for (const [tag, hour, dither] of times) {
+      await cdp.eval(`(() => {
+        const s = ${JSON.stringify(s)}, S = kiui.state, T = kiui.T;
+        S.wxForce = 'cloudy';
+        S.day = 3;
+        kiui.settings.dither = ${dither};
+        kiui.setView({ free: [s.at[0], T.heightAt(s.at[0], s.at[1]) + 1.65, s.at[1]], yaw: s.yaw, pitch: s.pitch, hour: ${hour} });
+        kiui.hour = ${hour};
+        S.hour = ${hour};
+        kiui.paused = false;
+      })()`);
+      await settle(cdp);
+      await cdp.eval('kiui.dirty = true;');
+      await settle(cdp);
+      await cdp.shot(path.join(out, 'look-' + s.name + '-' + tag + '.png'), '#game');
+      rows.push(s.name + '-' + tag);
+    }
+    await cdp.eval('kiui.state.wxForce = null; kiui.settings.dither = false;');
+    return { pass: rows.length === spots.length * times.length, rows };
+  },
+
+  async frames(cdp, out) {
+    await cdp.open('/kirill98.html?shots');
+    await cdp.until('!!window.kiui && window.kiui.ready && window.kiui.frames > 2', 60000);
+    const rows = [];
+    const sides = [['elf', 'elf.m', 'village'], ['guard', 'guard.m', 'book'], ['villain', 'villain', 'warTable']];
+    for (const [side, hero, own] of sides) {
+      await cdp.eval(`(() => { kiui.closeAll(); kiui.startSetup = { side: '${side}', hero: '${hero}', look: { face: 1, hair: 'crop', hairColor: [0.3, 0.22, 0.15] }, name: ${side === 'villain' ? "'Мрак'" : 'null'} }; kiui.startGame(); kiui.hold = false; kiui.state.campaign.intro = null; kiui.closeAll(); for (let i = 0; i < 20; i++) kiui.update(1 / 60); kiui.dirty = true; kiui.draw(); return true; })()`);
+      const views = [
+        ['menu', 'kiui.openMenu()'],
+        ['wounds', "kiui.showPanel(Kirill98.Screens.wounds(kiui), 'yard')"],
+        ['own', `kiui.showPanel(Kirill98.Screens.${own}(kiui), '${own === 'warTable' ? 'war' : own}')`],
+        ['settings', "kiui.showPanel(Kirill98.Screens.settings(kiui), 'settings')"],
+        ['wait', "kiui.showPanel(Kirill98.Screens.wait(kiui), 'wait')"],
+        ['fallen', "kiui.showPanel(Kirill98.Screens.fallen(kiui, { title: 'Вас некому было вынести', line: 'Вы истекли кровью без сознания.', where: 'Лесная дорога', by: '' }), 'fallen')"]
+      ];
+      for (const [name, js] of views) {
+        const okv = await cdp.eval(`(() => { try { kiui.closeAll(); ${js}; kiui.dirty = true; kiui.draw(); return (document.querySelector('.ki-side-${side}') || document.querySelector('[class*="ki-side-"]') || {}).className || 'none'; } catch (e) { return 'error: ' + e.message; } })()`);
+        await sleep(250);
+        await cdp.shot(path.join(out, 'frames-' + side + '-' + name + '.png'), '#game');
+        rows.push({ side, name, cls: okv });
+      }
+      await cdp.eval('kiui.closeAll()');
+    }
+    return { pass: rows.every(r => !/^error|none/.test(r.cls)), rows };
+  },
+
+  async steam(cdp, out) {
+    await cdp.open('/index.html');
+    await cdp.until('!!(window.winManager && window.gameManager && window.appSteam && window.appIE && window.desktop && window.vfs)', 60000);
+    await sleep(6000);
+    const log = [];
+    const ev = js => cdp.eval(`(async () => { ${js} })()`);
+    await ev(`const gm = window.gameManager; for (const id of ['kirill98', 'steam']) { if (gm.isInstalled(id)) gm.uninstallGame(id); } gm.state.purchased = gm.state.purchased.filter(x => x !== 'kirill98' && x !== 'steam'); gm.state.downloaded = (gm.state.downloaded || []).filter(x => x !== 'kirill98' && x !== 'steam'); gm.saveState(); if (window.desktop) window.desktop.renderIcons(); return true;`);
+    log.push({ step: 'clean', icon: await ev(`return !!document.querySelector('.desktop-icon[data-id="kirill98"]');`), run: await ev(`window.dialogs && 0; return window.gameManager.isInstalled('kirill98');`) });
+    await ev(`window.appIE.open('http://www.steampowered.com'); return true;`);
+    await cdp.until('!!document.querySelector(\'[data-sps="download"]\')', 30000);
+    await cdp.shot(path.join(out, 'steam-1-site.png'));
+    await ev(`document.querySelector('[data-sps="download"]').click(); return true;`);
+    await cdp.until('window.gameManager.isDownloaded("steam")', 400000);
+    await ev(`window.gameManager.openSetupWizard('steam'); return true;`);
+    for (let i = 0; i < 40; i++) {
+      const done = await ev(`if (window.gameManager.isInstalled('steam')) return true; const w = document.querySelector('[id^="wizard_steam"]') || document.getElementById('wizard_steam'); if (!w) return false; const b = [...w.querySelectorAll('button')].find(x => /Далее|Next|Установить|Install|Готово|Finish|Принимаю|Agree/i.test(x.textContent) && !x.disabled); if (b) b.click(); return false;`);
+      if (done) break;
+      await sleep(700);
+    }
+    log.push({ step: 'steam installed', ok: await ev(`return window.gameManager.isInstalled('steam');`) });
+    await ev(`window.appSteam.open(); window.appSteam.openBuy('kirill98'); return true;`);
+    await cdp.until('!!document.querySelector("[data-buy]")', 20000);
+    await ev(`const f = n => document.querySelector('[data-f="' + n + '"]') || document.querySelector('input[name="' + n + '"]'); const set = (n, v) => { const e = f(n); if (e) { e.value = v; e.dispatchEvent(new Event('input')); } }; set('num', '4111 1111 1111 1111'); set('exp', '12/03'); set('cvv', '123'); const d = document.querySelector('[data-dlnow]'); if (d) d.checked = true; return true;`);
+    await cdp.shot(path.join(out, 'steam-2-buy.png'));
+    await ev(`document.querySelector('[data-buy]').click(); return true;`);
+    await cdp.until('window.gameManager.isPurchased("kirill98") && window.appSteam.downloads && window.appSteam.downloads.has("kirill98")', 30000);
+    await sleep(1500);
+    await cdp.shot(path.join(out, 'steam-3-download.png'));
+    await ev(`window.appSteam.completeDownload(window.appSteam.downloads.get('kirill98')); return true;`);
+    await cdp.until('window.gameManager.isInstalled("kirill98")', 30000);
+    await ev(`if (window.desktop) window.desktop.renderIcons(); return true;`);
+    await sleep(800);
+    const after = await ev(`const fs = window.vfs.resolvePath(['My Computer', 'C:', 'Games', 'KirillTheGame']); const rd = fs && fs.children && fs.children['README.TXT']; return { icon: !!document.querySelector('.desktop-icon[data-id="kirill98"]'), exe: !!(fs && fs.children && fs.children['KIRILL98.EXE']), readme: !!(rd && /джва года/.test(rd.content || '')) };`);
+    log.push(Object.assign({ step: 'installed' }, after));
+    await cdp.shot(path.join(out, 'steam-4-desktop.png'));
+    await ev(`const el = document.querySelector('.desktop-icon[data-id="kirill98"]'); el.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })); return true;`);
+    await cdp.until('window.winManager.windows.has("app_kirill98") && window.appKirill98.ui && window.appKirill98.ui.ready', 90000);
+    await sleep(3000);
+    await cdp.shot(path.join(out, 'steam-5-game.png'));
+    log.push({ step: 'opened', ok: await ev(`return window.winManager.windows.has('app_kirill98');`) });
+    await ev(`window.winManager.closeWindow('app_kirill98'); window.gameManager.uninstallGame('kirill98'); if (window.desktop) window.desktop.renderIcons(); return true;`);
+    await sleep(800);
+    const gone = await ev(`const fs = window.vfs.resolvePath(['My Computer', 'C:', 'Games', 'KirillTheGame']); return { icon: !!document.querySelector('.desktop-icon[data-id="kirill98"]'), folder: !!fs, owned: window.gameManager.isPurchased('kirill98') };`);
+    log.push(Object.assign({ step: 'uninstalled' }, gone));
+    await ev(`const gm = window.gameManager; gm.state.purchased = gm.state.purchased.filter(x => x !== 'kirill98'); gm.saveState(); return true;`);
+    const pass = log[0].icon === false && log[1].ok && after.icon && after.exe && after.readme && log[3].ok && !gone.icon && !gone.folder;
+    return { pass, log };
+  },
+
   async zones(cdp, out) {
     await cdp.open('/kirill98.html?shots');
     await cdp.until('!!window.kiui && window.kiui.ready && window.kiui.frames > 2', 30000);

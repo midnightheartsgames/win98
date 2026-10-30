@@ -251,7 +251,8 @@
     },
     {
       id: 'sims3',
-      title: 'The Sims 3',
+      cdDemoId: 'sims3_demo',
+      title: 'The Sims 3 Demo',
       aliases: ['sims', 'симс', 'симы', 'деньги'],
       tested: ['Den', '02.12.98'],
       blocks: [{

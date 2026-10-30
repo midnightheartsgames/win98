@@ -283,6 +283,8 @@ section('floors, stairs and elevator', () => {
   a.lv = 1; a.x = x0 + 1.5; a.y = y0 + 1.5;
   const down = walkUp(game, a, [x0 + 3, y0 + 4, 0], 600);
   ok(a.lv === 0 && down.has(1), 'sim rides the elevator down');
+  game.hardStop(b);
+  b.lv = 0; b.x = x0 + 1.5; b.y = y0 + 1.5;
   const up = walkUp(game, b, [x0 + 4, y0 + 3, 1], 600);
   ok(b.lv === 1 && up.has(0), 'sim rides the elevator up');
   ok(!errors.length, 'no action errors on two floors: ' + errors.slice(0, 2).join(' | '));
@@ -443,17 +445,20 @@ section('integration', () => {
     for (const m of src.matchAll(/\bS\.([A-Za-z_]\w*)/g)) ok(S[m[1]] !== undefined || m[1] === 'SIMS3_SEED', f + ' uses existing S.' + m[1]);
   }
   const gm = read('js/game-manager.js');
-  const at = gm.indexOf('      sims3: {');
+  const at = gm.indexOf('      sims3_demo: {');
   const entry = gm.slice(at, at + 3000);
-  ok(at > 0 && /steam: true/.test(entry) && /price: 43\.99/.test(entry) && /targetExe: 'SIMS3\.EXE'/.test(entry) && /appSims3/.test(entry), 'Steam catalog entry');
+  ok(at > 0 && /cdDemo: true/.test(entry) && !/steam: true/.test(entry) && /setupExe: 'sims3demo\.exe'/.test(entry) && /targetExe: 'SIMS3\.EXE'/.test(entry) && /appSims3/.test(entry), 'Igromania CD demo catalog entry');
+  ok(/sims3: 'sims3_demo'/.test(gm), 'old saves move to the demo id');
+  ok(/'sims3demo\.exe': \{[^}]*gameId: 'sims3_demo'/.test(read('js/filesystem.js')), 'installer in D:\\demo');
+  ok(/gameId: 'sims3_demo'/.test(read('js/apps/igroman.js')), 'Igromania CD page');
   ok(!/sims3Granted/.test(gm), 'no grant flag');
   const loadState = gm.slice(gm.indexOf('loadState'), gm.indexOf('moveGamesToSteam(state)'));
-  ok(!/'sims3'/.test(loadState), 'not preinstalled');
-  ok(/isInstalled\('sims3'\)/.test(read('js/desktop.js')), 'desktop icon only when installed');
-  ok(/isInstalled\('sims3'\)/.test(read('js/taskbar.js')) && /showInSteam\('sims3'\)/.test(read('js/taskbar.js')), 'start menu points to Steam');
-  ok(/showInSteam\(\\'sims3\\'\)/.test(read('js/apps/dialogs.js')), 'Run dialog points to Steam');
-  ok(/showInSteam\('sims3'\)/.test(read('js/apps/explorer.js')), 'explorer points to Steam');
-  ok(/gmInstalled\.includes\('sims3'\)/.test(read('js/filesystem.js')), 'C:\\Games folder only when installed');
+  ok(!/'sims3(_demo)?'/.test(loadState), 'not preinstalled');
+  ok(/isInstalled\('sims3_demo'\)/.test(read('js/desktop.js')), 'desktop icon only when installed');
+  ok(/isInstalled\('sims3_demo'\)/.test(read('js/taskbar.js')) && /showOnCd\('sims3_demo'\)/.test(read('js/taskbar.js')), 'start menu points to the CD');
+  ok(/showOnCd\('sims3_demo'\)/.test(read('js/apps/dialogs.js')), 'Run dialog points to the CD');
+  ok(/showOnCd\('sims3_demo'\)/.test(read('js/apps/explorer.js')), 'explorer points to the CD');
+  ok(/gmInstalled\.includes\('sims3_demo'\)/.test(read('js/filesystem.js')), 'C:\\Games folder only when installed');
   ok(/'sims3':/.test(read('js/icons.js')), 'shell icon');
   ok((read('js/i18n.js').match(/'app\.sims3'/g) || []).length === 4, 'window titles in every language table');
   ok(/app_sims3/.test(read('js/apps/task-manager.js')) && /app_sims3/.test(read('js/apps/clippy.js')), 'task manager and Clippy know the game');

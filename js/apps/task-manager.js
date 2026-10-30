@@ -215,6 +215,9 @@ class AppTaskManager {
     if (idLower.includes('solitaire') || titleLower.includes('косынка')) {
       return { pid, imageName: 'sol.exe', baseCpu: 0.2, mem: 1890, priority: 'Normal' };
     }
+    if (idLower.includes('bliss')) {
+      return { pid, imageName: 'bliss.exe', baseCpu: 6.5, mem: 24800, priority: 'Normal' };
+    }
     if (idLower.includes('pinball')) {
       return { pid, imageName: 'pinball.exe', baseCpu: 4.5, mem: 8400, priority: 'Normal' };
     }
@@ -310,6 +313,9 @@ class AppTaskManager {
     }
     if (idLower === 'app_korovany') {
       return { pid, imageName: 'korovany.exe', baseCpu: 34.0, mem: 96400, priority: 'Normal' };
+    }
+    if (idLower === 'app_kirill98') {
+      return { pid, imageName: 'kirill98.exe', baseCpu: 22.0, mem: 186400, priority: 'Normal' };
     }
     if (idLower === 'app_catniss') {
       return { pid, imageName: 'catniss.exe', baseCpu: 14.0, mem: 18400, priority: 'Normal' };

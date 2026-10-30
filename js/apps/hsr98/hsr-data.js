@@ -774,10 +774,10 @@
   for (const k of ELEM_MAINS) MAIN_VALUE[k] = [0.062, 0.019];
 
   const SHOPS = {
-    express: { name: 'Буфет Пом-Пом', items: ['medkit', 'soup', 'coffee', 'revive', 'exp1', 'fuel:1500'] },
-    belobog: { name: 'Магазин в Административном районе', items: ['medkit', 'soup', 'coffee', 'hotpot', 'thermos', 'exp1', 'exp2', 'cone:arrows:2400', 'cone:amber:2400', 'cone:chorus:2400', 'shadow_pres:8000:4'] },
-    boulder: { name: 'Магазин Подземья', items: ['medkit', 'pie', 'revive', 'hotpot', 'sbiten', 'spark', 'exp2', 'cone:collapsing:2400', 'cone:void:2400', 'cone:cornucopia:2400', 'cone:databank:2400', 'shadow_dest:8000:2'] },
-    procure: { name: 'Внутренние закупки станции', items: ['exp1', 'exp2', 'exp3', 'revive', 'relic:musketeer:head:1600', 'relic:musketeer:hands:1600', 'relic:musketeer:body:2600', 'relic:musketeer:feet:2600', 'shadow_dest:8000:2'] },
+    express: { name: 'Буфет Пом-Пом', items: ['medkit', 'soup', 'coffee', 'revive', 'exp1', 'aether1', 'fuel:1500'] },
+    belobog: { name: 'Магазин в Административном районе', items: ['medkit', 'soup', 'coffee', 'hotpot', 'thermos', 'exp1', 'exp2', 'aether1', 'aether2', 'cone:arrows:2400', 'cone:amber:2400', 'cone:chorus:2400', 'shadow_pres:8000:4'] },
+    boulder: { name: 'Магазин Подземья', items: ['medkit', 'pie', 'revive', 'hotpot', 'sbiten', 'spark', 'exp2', 'aether2', 'cone:collapsing:2400', 'cone:void:2400', 'cone:cornucopia:2400', 'cone:databank:2400', 'shadow_dest:8000:2'] },
+    procure: { name: 'Внутренние закупки станции', items: ['exp1', 'exp2', 'exp3', 'aether1', 'aether2', 'aether3', 'revive', 'relic:musketeer:head:1600', 'relic:musketeer:hands:1600', 'relic:musketeer:body:2600', 'relic:musketeer:feet:2600', 'shadow_dest:8000:2'] },
     robot: { name: 'Кулинарный гений № 123', items: ['lunch', 'friedrice', 'coffee', 'medkit'] }
   };
 
@@ -966,11 +966,14 @@
   }
   const coneText = (id, sup) => coneSegs(id, sup).map(s => s.t).join('');
   const coneLegacyMul = sup => 1 + 0.25 * (supOf(sup) - 1);
-  const coneStats = (id, lvl) => { const s = CONES[id].stats, g = H.grow(lvl || 1); return { hp: Math.round(s.hp * g), atk: Math.round(s.atk * g), def: Math.round(s.def * g) }; };
+  const CONE_ADD = [0, 1.2, 2.8, 4.4, 6, 7.6, 9.2];
+  const coneK = (lvl, asc) => 1 + 0.15 * (lvl - 1) + CONE_ADD[asc];
+  const coneStatsAt = (id, lvl, asc) => { const s = CONES[id].stats, k = coneK(lvl, asc); return { hp: Math.floor(s.hp * k), atk: Math.floor(s.atk * k), def: Math.floor(s.def * k) }; };
+  const coneStats = (id, lvl) => coneStatsAt(id, lvl || 1, H.ascPhase(lvl || 1));
   const coneInit = map => { for (const id of Object.keys(map)) if (map[id].tpl) map[id].text = coneText(id, 1); };
   coneInit(CONES);
 
-  Object.assign(H, { coneParam, coneSegs, coneText, coneLegacyMul, coneStats, coneInit });
+  Object.assign(H, { coneParam, coneSegs, coneText, coneLegacyMul, coneStats, coneStatsAt, coneInit });
   Object.assign(H, { CHARS, FUSIONS, UNHOLY, CONTACT, ENEMIES, BOSS_JADE, ITEMS, CONES, RELIC_SETS, RELIC_SLOTS, CAVERN_SLOTS, PLANAR_SLOTS, CAVERN_SETS, PLANAR_SETS, STAT_NAMES, STAT_ROLL, MAIN_VALUE, SHOPS, WARP_POOL, BANNERS, COMET_GIFT, TRAIL_WILL, MAIL, SPEAKERS });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

@@ -364,6 +364,7 @@
       this.player.swing = 0.3;
       if (t && t.entity) {
         if (held && held.id === K.wheat.id && t.entity instanceof M.Mob && !t.entity.def.hostile) { this.consumeHeld(1); this.entities.push(new M.Mob(t.entity.type, t.entity.x, t.entity.y, t.entity.z)); this.sound(t.entity.def.sound, t.entity.x, t.entity.y, t.entity.z); return; }
+        this.useItem(t);
         return;
       }
       if (t && !p.sneaking && this.interactBlock(t)) return;

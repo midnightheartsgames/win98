@@ -2091,7 +2091,7 @@ class AppCPanel {
           },
           {
             id: 'games',
-            name: isRu ? 'Игры (Сапер, Косынка, Солитер, Pinball)' : 'Games (Minesweeper, Solitaire, FreeCell, Pinball)',
+            name: isRu ? 'Игры (Сапер, Косынка, Солитер, Pinball, Безмятежность)' : 'Games (Minesweeper, Solitaire, FreeCell, Pinball, Bliss)',
             size: 6.2,
             defaultChecked: true,
             desc: isRu ? 'Классические настольные игры для отдыха в перерыве.' : 'Classic card and arcade games for Win 98.'

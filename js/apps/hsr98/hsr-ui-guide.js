@@ -240,7 +240,7 @@
       c.fillStyle = 'rgba(0,0,0,0.2)'; c.fillRect(x + 2, y + 2, w, IDX.rh);
       c.fillStyle = on ? '#fbf6e8' : PAPER.card; c.fillRect(x, y, w, IDX.rh);
       c.fillStyle = r.open ? cat.col : PAPER.bar; c.fillRect(x, y, 4, IDX.rh);
-      const drops = r.kind === 'su' ? [['relic:sphere', r.set], ['relic:rope', r.set]] : r.c.sets ? r.c.sets.map(st => ['relic:head', st]) : ui.calyxDrops(r.c).slice(0, 2).map(d => [d, 'thunder']);
+      const drops = r.kind === 'su' ? [['relic:sphere', r.set], ['relic:rope', r.set]] : r.c.sets ? (r.c.mat ? [[r.c.mat, 'thunder']] : []).concat(r.c.sets.map(st => ['relic:head', st])).slice(0, 2) : ui.calyxDrops(r.c).slice(0, 2).map(d => [d, 'thunder']);
       drops.forEach(([d, st], i) => {
         const it = H.ITEMS[d], dx = x + 10 + i * 30;
         G.rarityCell(c, dx, y + 8, 28, 28, it ? it.rar : 4);
@@ -369,8 +369,14 @@
       return { needs, sets, all: needs.concat(sets) };
     },
 
+    guideItemQuick(it) {
+      const g = this.game, row = it.row, price = row && row.kind === 'calyx' ? g.domainCoupons(row.id) : 0;
+      return it.type === 'need' && row.open && price > 0 && (g.state.inv.items.fuelv || 0) >= price;
+    },
+
     guideItemGo(it) {
       const ui = this;
+      if (it.row && ui.guideItemQuick(it)) { ui.guideQuick(it.row); return; }
       if (it.row) { ui.guideEnter(it.row); return; }
       if (it.supply) { ui.openSupply(); return; }
       ui.sfx('deny');
@@ -378,7 +384,7 @@
     },
 
     guideGoButton(c, x, y, it, on) {
-      const ui = this, label = it.row ? '▶ Войти' : it.supply ? '▶ Снабжение' : '';
+      const ui = this, label = it.row ? (ui.guideItemQuick(it) ? '▶ Быстро' : '▶ Войти') : it.supply ? '▶ Снабжение' : '';
       if (!label) return;
       const w = it.supply ? 86 : 64, open = !it.row || it.row.open;
       c.fillStyle = on ? PAPER.dark : '#4a4434'; c.fillRect(x - w, y, w, 18);
@@ -632,6 +638,11 @@
       else if (go === 'synth') ui.openSynth();
       else if (go === 'trace') ui.guideOpenChar(g.guideTarget() && g.guideOwned(g.guideTarget()) ? g.guideTarget() : g.state.party[0], 'traces');
       else if (go === 'item') ui.openInventory(0);
+      else if (go === 'levelup') ui.openLevelUp(g.guideTarget() && g.guideOwned(g.guideTarget()) ? g.guideTarget() : g.state.party[0]);
+      else if (go === 'coneup') {
+        const worn = g.state.party.map(k => g.state.roster[k].cone).find(uid => uid != null);
+        if (worn != null) ui.openConeUp(worn); else ui.openInventory(4);
+      }
     },
 
     dailyStepClaim(i) {

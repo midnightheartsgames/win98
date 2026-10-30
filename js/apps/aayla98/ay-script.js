@@ -4,7 +4,9 @@
   const SLOTS = ['left', 'center', 'right'];
   const NAME = /^[a-z][a-z0-9_]*$/;
   const KEY = '[a-z_][a-z0-9_.]*';
-  const SPECIAL = /^(dark|restraint|bond\.[a-z]+|lekku_read|lekku_tell|lekku_pose|info_[a-z0-9_]+|clue_[a-z0-9_]+)$/;
+  const SPECIAL = /^(dark|restraint|xp|missed|palace|stark_told|sus|respite|(bond|rank|letgo)\.[a-z]+|lekku_read|lekku_tell|lekku_pose|info_[a-z0-9_]+|clue_[a-z0-9_]+|archive_[a-z0-9]+|ambush_score|placed(_a\d)?|clear_[a-z0-9_]+|credits|spent|duel_[a-z0-9_]+)$/;
+  const MEMORY_ARGS = ['restore', 'palace', 'stark'];
+  const SCENERY = ['say', 'bg', 'show', 'face', 'hide', 'cg', 'still', 'music', 'sfx'];
   X.SLOTS = SLOTS;
   X.GESTURES = ['hello', 'bye', 'love', 'insult'];
 
@@ -18,12 +20,30 @@
     throw new Error('bad effect: ' + tok);
   });
 
-  X.parseCond = src => src.split('&&').map(p => p.trim()).map(p => {
+  const atoms = src => src.split('&&').map(p => p.trim()).map(p => {
     let m;
     if ((m = new RegExp('^(' + KEY + ')\\s*(>=|<=|==|!=|>|<)\\s*([\\w.-]+)$').exec(p))) return { key: m[1], cmp: m[2], v: value(m[3]) };
     if ((m = new RegExp('^(!?)(' + KEY + ')$').exec(p))) return { key: m[2], cmp: m[1] ? 'not' : 'truthy' };
     throw new Error('bad condition: ' + p);
   });
+
+  X.parseCond = src => {
+    const groups = src.split('||').map(atoms);
+    return groups.length === 1 ? groups[0] : [{ cmp: 'or', groups, key: null }];
+  };
+
+  X.respiteBg = S => {
+    const R = S.respite && A.RESPITES[S.respite.id], place = R && A.PLACES[R.place], room = place && place.rooms.find(r => r.acts.includes('train'));
+    const id = room ? room.bg : 'temple_hall', art = A.Art && A.Art.LIST.bg[id];
+    return { id, time: art ? art.times[0] : 'day' };
+  };
+
+  X.thinker = who => {
+    const m = /^([a-z][a-z0-9]*)_thinks$/.exec(who || '');
+    return m && A.CAST && A.CAST[m[1]] ? m[1] : null;
+  };
+
+  X.condKeys = cond => cond.flatMap(c => (c.cmp === 'or' ? c.groups.flatMap(X.condKeys) : [c.key]));
 
   const pairs = (rest, allowed) => {
     const out = {}, words = [];
@@ -143,6 +163,9 @@
           case 'stop':
             steps.push({ op: 'stop', line: n });
             break;
+          case 'credits':
+            steps.push({ op: 'credits', line: n });
+            break;
           case 'map':
             if (args.length < 1 || args.length > 2) throw new Error('map <id> [entry]');
             steps.push({ op: 'map', id: args[0], at: args[1] || 'start', line: n });
@@ -153,14 +176,36 @@
             break;
           case 'field':
           case 'forget':
+          case 'rest':
+          case 'return':
             if (args.length) throw new Error(word + ' takes no arguments');
             steps.push({ op: word, line: n });
             break;
+          case 'chapter':
+            if (args.length !== 1 || !NAME.test(args[0])) throw new Error('chapter <id>');
+            if (steps.length) throw new Error('chapter must open its label');
+            steps.push({ op: 'chapter', id: args[0], line: n });
+            break;
+          case 'recall':
+            if (args.length !== 1 || !/^\d+$/.test(args[0])) throw new Error('recall <fragment number>');
+            steps.push({ op: 'recall', id: +args[0], line: n });
+            break;
+          case 'bond':
+          case 'respite':
+          case 'cover':
+          case 'flight':
+            if (args.length !== 1 || !NAME.test(args[0])) throw new Error(word + ' <id>');
+            steps.push({ op: word, id: args[0], line: n });
+            break;
+          case 'memory':
+            if (args.length !== 1 || !MEMORY_ARGS.includes(args[0])) throw new Error('memory <' + MEMORY_ARGS.join('|') + '>');
+            steps.push({ op: 'memory', what: args[0], line: n });
+            break;
           case 'choice': {
-            const p = pairs(rest, ['lekku', 'need', 'gestures']);
-            if (p.words.length) throw new Error('choice [lekku=who need=N gestures=a,b]');
+            const p = pairs(rest, ['lekku', 'need', 'gestures', 'timer']);
+            if (p.words.length) throw new Error('choice [lekku=who need=N gestures=a,b timer=sec]');
             const lekku = p.out.lekku ? { who: p.out.lekku, need: +(p.out.need || 0), gestures: p.out.gestures ? p.out.gestures.split(',') : [] } : null;
-            choice = { op: 'choice', lekku, options: [], line: n };
+            choice = { op: 'choice', lekku, timer: p.out.timer ? +p.out.timer : 0, options: [], line: n };
             break;
           }
           default:
@@ -175,6 +220,8 @@
     return { labels, order, file };
   };
 
+  X.build = () => X.merge(Object.values(A.Scripts).map(sc => X.parse(sc.src, sc.file)));
+
   X.merge = programs => {
     const labels = {}, order = [];
     for (const p of programs) {
@@ -187,17 +234,39 @@
     return { labels, order };
   };
 
+  const bondOf = (S, id) => S.bonds[id] || (S.bonds[id] = { rank: 0, pts: 0, letgo: 0 });
+  const aaylaOf = S => (S.party || []).find(m => m.id === 'aayla');
+
   X.getVar = (S, key) => {
     if (key === 'dark') return S.dark;
     if (key === 'restraint') return S.restraint || 0;
-    if (key.startsWith('bond.')) return S.bonds[key.slice(5)] || 0;
+    if (key === 'xp') return (aaylaOf(S) || {}).xp || 0;
+    if (key === 'missed') return A.Memory.missed(S).length;
+    if (key === 'palace') return A.Memory.will(S);
+    if (key === 'sus') return S.cover ? Math.round(S.cover.sus) : 0;
+    if (key === 'respite') return S.respite ? S.respite.id : '';
+    if (key === 'credits') return S.credits || 0;
+    const dot = key.indexOf('.');
+    if (dot > 0) {
+      const b = S.bonds[key.slice(dot + 1)] || {}, kind = key.slice(0, dot);
+      if (kind === 'bond') return b.pts || 0;
+      if (kind === 'rank') return b.rank || 0;
+      if (kind === 'letgo') return b.letgo || 0;
+    }
     return S.flags[key];
   };
 
   X.setVar = (S, key, v) => {
     if (key === 'dark') S.dark = A.clamp(v, 0, 100);
     else if (key === 'restraint') S.restraint = A.clamp(v, 0, 3);
-    else if (key.startsWith('bond.')) S.bonds[key.slice(5)] = Math.max(0, v);
+    else if (key === 'suspicion') S.flags.suspicion = A.clamp(v, 0, 100);
+    else if (key === 'xp') A.Party.gain(S, v - X.getVar(S, 'xp'));
+    else if (key === 'sus') A.Cover.add(S, v - X.getVar(S, 'sus'), 'word');
+    else if (key === 'respite') throw new Error('respite is read only');
+    else if (key === 'credits') S.credits = Math.max(0, v);
+    else if (key.startsWith('bond.')) bondOf(S, key.slice(5)).pts = A.clamp(v, -3, 9);
+    else if (key.startsWith('letgo.')) bondOf(S, key.slice(6)).letgo = A.clamp(v, 0, 3);
+    else if (key.startsWith('rank.')) throw new Error('ranks grow only through the bond command: ' + key);
     else S.flags[key] = v;
   };
 
@@ -209,6 +278,7 @@
   };
 
   X.test = (S, cond) => cond.every(c => {
+    if (c.cmp === 'or') return c.groups.some(g => X.test(S, g));
     const v = X.getVar(S, c.key);
     switch (c.cmp) {
       case 'truthy': return !!v;
@@ -225,7 +295,7 @@
 
   X.lekkuResult = (S, lekku, option, pose) => {
     const shown = pose !== 'calm';
-    const tell = !shown && option.lie && (S.restraint || 0) < lekku.need;
+    const tell = !shown && option.lie && ((A.CAST[lekku.who] || {}).truth || (S.restraint || 0) < lekku.need);
     return { read: shown || tell, tell, pose: shown ? (pose === 'show' ? 'up' : pose) : tell ? 'twitch' : 'still' };
   };
 
@@ -237,6 +307,7 @@
       this.pc = { label: start, i: 0 };
       this.vn = { bg: null, time: null, cg: null, still: null, music: null, busts: {} };
       this.sounds = [];
+      this.stack = [];
       this.done = false;
     }
 
@@ -251,7 +322,13 @@
         const s = this.step();
         if (!s) throw new Error('fell off label ' + this.pc.label);
         switch (s.op) {
-          case 'bg': vn.bg = s.id; vn.time = s.time; vn.cg = null; break;
+          case 'bg': {
+            const b = s.id === 'respite' ? X.respiteBg(this.S) : s;
+            vn.bg = b.id;
+            vn.time = b.time;
+            vn.cg = null;
+            break;
+          }
           case 'show':
             for (const [who, b] of Object.entries(vn.busts)) if (b.slot === s.slot && who !== s.who) delete vn.busts[who];
             vn.busts[s.who] = { slot: s.slot, outfit: s.outfit, face: s.face, lekku: s.lekku || 'still' };
@@ -279,6 +356,7 @@
           case 'jmp': this.pc.i = s.at; continue;
           case 'goto': this.pc = { label: s.to, i: 0 }; continue;
           case 'stop': this.done = true; return { type: 'end' };
+          case 'credits': this.done = true; return { type: 'credits' };
           case 'map':
             this.pc.i++;
             this.clear();
@@ -293,8 +371,52 @@
           case 'forget':
             this.pc.i++;
             return { type: 'forget' };
+          case 'flight':
+            this.pc.i++;
+            return { type: 'flight', id: s.id, label: this.pc.label };
+          case 'chapter':
+            this.pc.i++;
+            this.clear();
+            this.S.chapter = s.id;
+            if (A.CHAPTERS[s.id] && A.CHAPTERS[s.id].credits !== undefined) this.S.credits = A.CHAPTERS[s.id].credits;
+            return { type: 'chapter', id: s.id, label: this.pc.label };
+          case 'recall':
+            this.pc.i++;
+            A.Memory.recall(this.S, s.id);
+            return { type: 'recall', id: s.id };
+          case 'rest':
+            A.Party.ensure(this.S);
+            A.Party.rest(this.S);
+            break;
+          case 'bond': {
+            const r = A.Bonds.plot(this.S, s.id);
+            this.stack.push({ label: this.pc.label, i: this.pc.i + 1, bond: s.id, rank: r.rank });
+            this.pc = { label: r.label, i: 0 };
+            continue;
+          }
+          case 'return': {
+            const back = this.stack.pop();
+            if (!back) throw new Error('return without a call in ' + this.pc.label);
+            this.pc = { label: back.label, i: back.i };
+            if (back.ui || back.bond) return { type: 'return', ui: back.ui || null, bond: back.bond || null, rank: back.rank || 0 };
+            continue;
+          }
+          case 'respite':
+            this.pc.i++;
+            return { type: 'respite', id: s.id };
+          case 'cover':
+            if (s.id === 'end') { A.Cover.end(this.S); break; }
+            this.pc.i++;
+            A.Cover.start(this.S, s.id);
+            return { type: 'cover', id: s.id };
+          case 'memory': {
+            this.pc.i++;
+            const ids = s.what === 'restore' ? A.Memory.restore(this.S) : [];
+            if (s.what === 'stark') A.Memory.tell(this.S);
+            return { type: 'memory', what: s.what, ids };
+          }
           case 'say': this.pc.i++; return { type: 'say', who: s.who, text: s.text, id: s.id };
-          case 'choice': return { type: 'choice', lekku: s.lekku, options: s.options.map(o => ({ text: o.text, id: o.id })) };
+          case 'choice': return { type: 'choice', lekku: s.lekku, timer: s.timer, options: s.options.map(o => ({ text: o.text, id: o.id })) };
         }
         this.pc.i++;
       }
@@ -307,6 +429,14 @@
 
     jump(label) {
       if (!this.program.labels[label]) throw new Error('no label ' + label);
+      this.pc = { label, i: 0 };
+      this.stack = [];
+      this.done = false;
+    }
+
+    call(label, ret) {
+      if (!this.program.labels[label]) throw new Error('no label ' + label);
+      this.stack.push(Object.assign({ label: this.pc.label, i: this.pc.i }, ret || {}));
       this.pc = { label, i: 0 };
       this.done = false;
     }
@@ -329,13 +459,14 @@
     }
 
     snapshot() {
-      return { pc: { ...this.pc }, vn: JSON.parse(JSON.stringify(this.vn)), done: this.done };
+      return { pc: { ...this.pc }, vn: JSON.parse(JSON.stringify(this.vn)), done: this.done, stack: this.stack.map(f => ({ ...f })) };
     }
 
     restore(snap) {
       this.pc = { ...snap.pc };
       this.vn = JSON.parse(JSON.stringify(snap.vn));
       this.done = snap.done;
+      this.stack = (snap.stack || []).map(f => ({ ...f }));
     }
   };
 
@@ -356,7 +487,7 @@
         seen.add(i);
         if (i >= steps.length) { err(lab, steps[steps.length - 1], 'falls off the end of the label'); continue; }
         const s = steps[i];
-        if (s.op === 'goto' || s.op === 'stop' || s.op === 'choice' || s.op === 'map' || s.op === 'field') continue;
+        if (s.op === 'goto' || s.op === 'stop' || s.op === 'credits' || s.op === 'choice' || s.op === 'map' || s.op === 'field' || s.op === 'return') continue;
         if (s.op === 'jmp') { todo.push(s.at); continue; }
         if (s.op === 'if') todo.push(s.at);
         todo.push(i + 1);
@@ -364,7 +495,7 @@
       let dashes = 0;
       for (const s of steps) {
         const cast = ctx.cast;
-        const person = w => cast[w] || null;
+        const person = w => cast[w] || (X.thinker(w) ? cast[X.thinker(w)] : null);
         if (s.op === 'say') {
           if (s.who !== '-' && !person(s.who)) err(lab, s, 'unknown speaker ' + s.who);
           dashes += (s.text.match(/—/g) || []).length;
@@ -382,7 +513,7 @@
         }
         if (s.op === 'hide' && s.who !== 'all' && !person(s.who)) err(lab, s, 'unknown character ' + s.who);
         if (s.op === 'bg') {
-          const b = ctx.art.bg[s.id];
+          const b = s.id === 'respite' ? { times: [s.time] } : ctx.art.bg[s.id];
           if (!b) err(lab, s, 'unknown background ' + s.id);
           else if (s.time && !b.times.includes(s.time)) err(lab, s, `background ${s.id} has no time ${s.time}`);
         }
@@ -394,12 +525,24 @@
           if (ctx.groups && !ctx.groups[s.group]) err(lab, s, 'unknown battle group ' + s.group);
           if (!['party', 'enemy', 'none'].includes(s.advantage)) err(lab, s, 'unknown advantage ' + s.advantage);
         }
+        if (s.op === 'chapter' && ctx.chapters && !ctx.chapters[s.id]) err(lab, s, 'unknown chapter ' + s.id);
+        if (s.op === 'bond' && ctx.bonds && !ctx.bonds[s.id]) err(lab, s, 'unknown bond ' + s.id);
+        if (s.op === 'respite' && ctx.respites && !ctx.respites[s.id]) err(lab, s, 'unknown respite ' + s.id);
+        if (s.op === 'cover' && ctx.covers && s.id !== 'end' && !ctx.covers[s.id]) err(lab, s, 'unknown cover ' + s.id);
+        if (s.op === 'flight') {
+          if (ctx.flights && !ctx.flights[s.id]) err(lab, s, 'unknown flight ' + s.id);
+          if (steps.slice(0, steps.indexOf(s)).some(p => !SCENERY.includes(p.op))) err(lab, s, 'flight must come before anything that changes the state, the autosave replays its label');
+        }
+        if (s.op === 'recall' && ctx.memory) {
+          const e = ctx.memory.find(x => x.id === s.id);
+          if (!e || e.gap) err(lab, s, 'unknown memory fragment ' + s.id);
+        }
         if (s.op === 'map' && ctx.maps) {
           const def = ctx.maps[s.id];
           if (!def) err(lab, s, 'unknown map ' + s.id);
           else if (!def.entries[s.at]) err(lab, s, `map ${s.id} has no entry ${s.at}`);
         }
-        if (s.op === 'if') s.cond.forEach(c => { if (!sets.has(c.key) && !SPECIAL.test(c.key)) err(lab, s, 'condition reads a flag nobody sets: ' + c.key); });
+        if (s.op === 'if') X.condKeys(s.cond).forEach(k => { if (!sets.has(k) && !SPECIAL.test(k) && !(ctx.flags || []).includes(k)) err(lab, s, 'condition reads a flag nobody sets: ' + k); });
         if (s.op === 'choice') {
           for (const o of s.options) {
             if (!L[o.to]) err(lab, s, 'option goes to unknown label ' + o.to);
@@ -430,7 +573,7 @@
       todo.push(...edges(n));
     }
     for (const name of program.order) if (!reach.has(name)) err(L[name], null, 'label is not reachable from the chapter start');
-    const ends = new Set(program.order.filter(n => L[n].steps.some(s => s.op === 'stop' || s.op === 'map' || s.op === 'field')));
+    const ends = new Set(program.order.filter(n => L[n].steps.some(s => s.op === 'stop' || s.op === 'credits' || s.op === 'map' || s.op === 'field' || s.op === 'return')));
     let grew = true;
     while (grew) {
       grew = false;

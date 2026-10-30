@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Heroes 98</title>
+<link rel="stylesheet" href="css/apps/heroes98.css">
+<style>html,body{height:100%;margin:0;background:#10183a}body{display:grid;place-items:center}.he-page{width:min(98vw,1612px);height:min(96vh,1236px);display:flex;flex-direction:column;background:#c0c0c0;border:2px outset #e4e4e4}.he-page-title{font:bold 12px Tahoma,Verdana,sans-serif;color:#fff;background:linear-gradient(90deg,#000080,#1084d0);padding:4px 6px}.he-page-game{flex:1;min-height:0;position:relative}</style></head>
+<body><main class="he-page"><div class="he-page-title">Heroes 98</div><div class="he-page-game" id="game"></div></main>
+<script src="js/apps/heroes98/he-core.js"></script>
+<script src="js/apps/heroes98/he-data.js"></script>
+<script src="js/apps/heroes98/he-units.js"></script>
+<script src="js/apps/heroes98/he-factions.js"></script>
+<script src="js/apps/heroes98/he-skills.js"></script>
+<script src="js/apps/heroes98/he-heroes.js"></script>
+<script src="js/apps/heroes98/he-artifacts.js"></script>
+<script src="js/apps/heroes98/he-spells.js"></script>
+<script src="js/apps/heroes98/he-moons.js"></script>
+<script src="js/apps/heroes98/he-battle.js"></script>
+<script src="js/apps/heroes98/he-battle-ai.js"></script>
+<script src="js/apps/heroes98/he-map.js"></script>
+<script src="js/apps/heroes98/he-path.js"></script>
+<script src="js/apps/heroes98/he-objects.js"></script>
+<script src="js/apps/heroes98/he-hero.js"></script>
+<script src="js/apps/heroes98/he-town.js"></script>
+<script src="js/apps/heroes98/he-adventure.js"></script>
+<script src="js/apps/heroes98/he-ai.js"></script>
+<script src="js/apps/heroes98/he-save.js"></script>
+<script src="js/apps/heroes98/he-maps.js"></script>
+<script src="js/apps/heroes98/he-font.js"></script>
+<script src="js/apps/heroes98/he-art.js"></script>
+<script src="js/apps/heroes98/he-files.js"></script>
+<script src="js/apps/heroes98/he-audio.js"></script>
+<script src="js/apps/heroes98/he-gfx.js"></script>
+<script src="js/apps/heroes98/he-draw-battle.js"></script>
+<script src="js/apps/heroes98/he-draw-map.js"></script>
+<script src="js/apps/heroes98/he-draw-town.js"></script>
+<script src="js/apps/heroes98/he-ui-battle.js"></script>
+<script src="js/apps/heroes98/he-ui-map.js"></script>
+<script src="js/apps/heroes98/he-ui-hero.js"></script>
+<script src="js/apps/heroes98/he-ui-town.js"></script>
+<script src="js/apps/heroes98/he-ui-menu.js"></script>
+<script src="js/apps/heroes98/he-ui.js"></script>
+<script>window.heui=new Heroes98.UI(document.getElementById('game'));addEventListener('pagehide',()=>window.heui.destroy(),{once:true});</script>
+</body></html>

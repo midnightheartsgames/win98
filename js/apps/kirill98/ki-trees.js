@@ -325,6 +325,7 @@ void main() {
       const tr = F.trees, outer = K.Edge ? K.Edge.trees(T, F) : new Float32Array(0), all = new Float32Array(tr.count * 8 + outer.length);
       for (let i = 0; i < tr.count; i++) all.set([tr.X[i], tr.Y[i], tr.Z[i], tr.YAW[i], tr.S[i], tr.TINT[i], tr.V[i], 0], i * 8);
       all.set(outer, tr.count * 8);
+      this.inner = tr.count;
       this.quad = this.instanced({ data: new Float32Array([-0.5, 0, 0.5, 0, -0.5, 1, 0.5, 1]), verts: 4, tris: 2 }, [2]);
       this.upload(this.quad, all);
       this.key = null;
@@ -453,7 +454,7 @@ void main() {
       this.stats.tris = tris;
     }
 
-    draw(vp, eye, D, fogFar, R, border) {
+    draw(vp, eye, D, fogFar, R, border, outer) {
       const gl = this.gpu.gl, u = this.prog.u;
       let draws = 0;
       gl.useProgram(this.prog.p);
@@ -505,7 +506,7 @@ void main() {
       gl.uniform3fv(iu.uFog, D.horizon); gl.uniform3fv(iu.uFogDir, D.sunDir); gl.uniform3fv(iu.uFogSun, D.sunFog);
       gl.uniform1f(iu.uFogFar, fogFar);
       gl.bindVertexArray(this.quad.vao);
-      gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, this.quad.n);
+      gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, outer === false ? this.inner : this.quad.n);
       draws++;
       gl.bindVertexArray(null);
       this.stats.draws = draws;

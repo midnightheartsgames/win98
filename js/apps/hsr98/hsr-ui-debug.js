@@ -224,7 +224,7 @@
       if (tab === 'chars') {
         const ids = charIds(), id = ids[st.ch.i], name = H.CHARS[id].name, owned = !!g.state.roster[id];
         const trMode = TRACE_MODES[st.ch.tr || 0], tag = () => 'ур. ' + st.ch.lvl + ' · E' + st.ch.eid + ' · Следы ' + trMode[1];
-        const grant = k => { const res = g.debugChar(k, st.ch.lvl, st.ch.eid); g.fillTraces(k === 'trail_p' ? 'trail' : k, trMode[0]); return res; };
+        const grant = k => { const res = g.debugChar(k, st.ch.lvl, st.ch.eid, st.ch.asc); g.fillTraces(k === 'trail_p' ? 'trail' : k, trMode[0]); return res; };
         const outs = ui.debugOutfits(id), oi = H.clamp(st.ch.o || 0, 0, Math.max(0, outs.length - 1)), oid = outs[oi];
         const outLabel = !oid ? 'нет нарядов' : oid === '*' ? 'Все наряды игры (' + Object.keys(H.OUTFITS).length + ')' : H.OUTFITS[oid].name + (g.ownsOutfit(oid) ? ' · есть' : '');
         return {
@@ -233,7 +233,8 @@
             { label: 'Уровень', value: String(st.ch.lvl), step: d => { st.ch.lvl = H.clamp(st.ch.lvl + d * (shift() ? 10 : 1), 1, H.MAX_LVL); } },
             { label: 'Эйдолоны', value: st.ch.eid ? 'E' + st.ch.eid + ' · до ' + EIDOLON_NUM[st.ch.eid - 1] : 'E0 · нет', step: d => { st.ch.eid = H.clamp(st.ch.eid + d, 0, 6); } },
             { label: 'Наряд', value: outLabel, col: oid && oid !== '*' ? RAR_TXT[H.OUTFITS[oid].rarity] : null, fixed: outs.length < 2, step: d => { st.ch.o = wrapIdx(oi + d, outs.length); } },
-            { label: 'Следы', value: trMode[1], step: d => { st.ch.tr = wrapIdx((st.ch.tr || 0) + d, TRACE_MODES.length); } }
+            { label: 'Следы', value: trMode[1], step: d => { st.ch.tr = wrapIdx((st.ch.tr || 0) + d, TRACE_MODES.length); } },
+            { label: 'Возвышение', value: st.ch.asc == null ? 'по уровню · ' + H.ascPhase(st.ch.lvl) : 'фаза ' + st.ch.asc, step: d => { st.ch.asc = st.ch.asc == null ? (d > 0 ? 0 : 6) : st.ch.asc + d < 0 || st.ch.asc + d > 6 ? null : st.ch.asc + d; } }
           ],
           acts: [
             { label: owned ? 'Применить' : 'Выдать', icon: 'chars', fn: () => { const res = grant(id); note((res === 'new' ? 'новый персонаж ' : 'изменён ') + name + ', ' + tag(), 'levelup'); } },
@@ -257,11 +258,12 @@
           rows: [
             { label: 'Конус', value: d.name, col: RAR_TXT[d.rarity], step: k => { st.cn.i = wrapIdx(st.cn.i + k, ids.length); } },
             { label: 'Наложение', value: 'S' + st.cn.sup, step: k => { st.cn.sup = H.clamp(st.cn.sup + k, 1, 5); } },
-            { label: 'Копий', value: '×' + st.cn.n, step: k => { st.cn.n = H.clamp(st.cn.n + k, 1, 5); } }
+            { label: 'Копий', value: '×' + st.cn.n, step: k => { st.cn.n = H.clamp(st.cn.n + k, 1, 5); } },
+            { label: 'Уровень', value: String(st.cn.lvl || H.MAX_LVL), step: k => { st.cn.lvl = H.clamp((st.cn.lvl || H.MAX_LVL) + k * (shift() ? 10 : 1), 1, H.MAX_LVL); } }
           ],
           acts: [
-            { label: 'Выдать', icon: 'cones', fn: () => { g.debugCone(id, st.cn.sup, st.cn.n); note('конус «' + d.name + '» S' + st.cn.sup + (st.cn.n > 1 ? ' ×' + st.cn.n : '')); } },
-            { label: 'Все конусы', icon: 'cones', fn: () => { for (const k of ids) g.debugCone(k, st.cn.sup, 1); note('все конусы (' + ids.length + ' шт.) S' + st.cn.sup); } }
+            { label: 'Выдать', icon: 'cones', fn: () => { g.debugCone(id, st.cn.sup, st.cn.n, st.cn.lvl || H.MAX_LVL); note('конус «' + d.name + '» S' + st.cn.sup + (st.cn.n > 1 ? ' ×' + st.cn.n : '')); } },
+            { label: 'Все конусы', icon: 'cones', fn: () => { for (const k of ids) g.debugCone(k, st.cn.sup, 1, st.cn.lvl || H.MAX_LVL); note('все конусы (' + ids.length + ' шт.) S' + st.cn.sup); } }
           ]
         };
       }
@@ -415,7 +417,7 @@
       G.pathIcon(c, d.path, tx, ty, 14);
       ui.text(H.PATHS[d.path].name + ' · ' + '★'.repeat(d.rarity), tx + 18, ty, { size: 11, col: RAR_TXT[d.rarity] });
       ty += 20;
-      const cs = H.coneStats(id, 1);
+      const cs = H.coneStats(id, st.cn.lvl || H.MAX_LVL);
       ui.text('HP +' + cs.hp + ' · Ат. +' + cs.atk + ' · Защ. +' + cs.def, tx, ty, { size: 10 });
       ty += 18;
       ui.text((d.skill || 'Эффект') + ' при S' + st.cn.sup + ':', tx, ty, { size: 10, col: C.sub });

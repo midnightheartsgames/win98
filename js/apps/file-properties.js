@@ -9,6 +9,7 @@ class AppFileProperties {
       minesweeper: 'C:\\WINDOWS\\WINMINE.EXE',
       solitaire: 'C:\\WINDOWS\\SOL.EXE',
       freecell: 'C:\\WINDOWS\\FREECELL.EXE',
+      bliss: 'C:\\WINDOWS\\BLISS.EXE',
       dialup: 'C:\\WINDOWS\\RNAAPP.EXE',
       paint: 'C:\\Program Files\\Accessories\\MSPAINT.EXE',
       wordpad: 'C:\\Program Files\\Accessories\\WORDPAD.EXE',

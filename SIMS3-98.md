@@ -2,8 +2,8 @@
 
 A life simulation built from scratch for this project, imagined as The Sims 3 released in 2000: the gameplay and interface of The Sims 3 (base game only, no expansions) drawn with the look of The Sims 1. The whole town of Sunset Valley (Сансет Вэлли) is simulated at once: neighbours go to work, make friends, fall in love, age and have children while the player runs one household. The renderer is WebGL 1 with an isometric orthographic camera (four rotations, four zoom levels, walls up / cutaway / down), low-poly sims assembled from rigid parts, and a procedural texture atlas. Menus, the HUD and dialogs are DOM; music, sound effects, ambience and Simlish voices are synthesised with Web Audio. All text is in Russian.
 
-- Distribution: sold in the in-system Steam client (`steam: true` in `js/game-manager.js`, $43.99). The game is not preinstalled.
-- After installation: desktop icon **The Sims 3**, Start menu → **The Sims 3**, `C:\Games\Sims3\SIMS3.EXE` (with `README.TXT`), Run: `sims`, `sims3`, `sims3.exe`, `sims 3`, `the sims 3`, `симс`, `симс 3`, `симы`. Task Manager shows `sims3.exe`. Clippy has tips for the game window.
+- Distribution: Igromania CD demo (`sims3_demo`, `cdDemo: true` in `js/game-manager.js`, `D:\demo\sims3demo.exe`). Not sold in Steam and not preinstalled; everything that launches it points to the CD (`gameManager.showOnCd('sims3_demo')`). Old saves with `sims3` move to `sims3_demo` through `gameManager.demoRenames`.
+- After installation: desktop icon **The Sims 3 Demo**, Start menu → **The Sims 3 Demo**, `C:\Games\Sims3\SIMS3.EXE` (with `README.TXT`), Run: `sims`, `sims3`, `sims3.exe`, `sims 3`, `the sims 3`, `симс`, `симс 3`, `симы`. Task Manager shows `sims3.exe`. Clippy has tips for the game window.
 - Window: `appSims3.open()` in `js/apps/sims3-app.js`, window id `app_sims3`.
 - Standalone page: `sims3.html` (`window.s3ui` is the UI instance, `s3ui.game` the running game, `s3ui.r` the renderer).
 - Saves: `localStorage` key `sims3_2000_saves` (up to six slots with thumbnails), settings under `sims3_2000_settings`.

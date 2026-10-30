@@ -363,14 +363,14 @@
   color: #99ff99;
 }
 
-.sv-steam-state {
+.sv-game-state {
   border: 1px solid #33cc33;
   background-color: #003300;
   padding: 5px 6px;
   margin: 6px 0;
 }
 
-.sv-steam-state b {
+.sv-game-state b {
   color: #ffff66;
 }
 

@@ -222,7 +222,7 @@
 
           const n = Math.min(this.n, max), pay = ui.domainPay(id, this.tier, n);
           ui.domainStartButton(c, R.x, 342, R.w - 4, 32, pay.free ? 0 : cx.cost * n, open && (pay.ok || !!o.enter), () => this.key('ok'), o.enter ? 'Войти' : 'Начать испытание');
-          const note = !open ? (cx.owns ? 'Нужен герой этого Пути в экипаже.' : 'Откроется дальше по сюжету.')
+          const note = !open ? (cx.ownsMat ? 'Нужен герой с этим материалом в экипаже.' : cx.owns ? 'Нужен герой этого Пути в экипаже.' : 'Откроется дальше по сюжету.')
             : !pay.ok ? 'Не хватает энергии: ещё ' + pay.short + '. Enter откроет пополнение.'
             : pay.take ? 'Из резерва возьмётся ' + pay.take + ' энергии.'
             : kind === 'golden' || kind === 'crimson' ? (n > 1 ? n + ' волн в одном бою, награда за каждую.' : 'Одна волна противников.')
@@ -266,8 +266,8 @@
           const cur = list[this.sel];
           c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(42, 250, 556, 150);
           if (cur) {
-            ui.wrap(cur.c.text, 530, 12).slice(0, 2).forEach((l, i) => ui.text(l, 54, 260 + i * 16, { col: '#c8d8ff' }));
-            if (!cur.open) ui.text(cur.c.owns ? 'Нужен герой Пути ' + H.TRACE_PATH_LINES[Object.keys(H.TRACE_PATH_LINES).find(k => H.TRACE_PATH_LINES[k][0] === cur.c.owns)][1] + '.' : 'Откроется дальше по сюжету.', 54, 296, { col: C.bad });
+            ui.wrap(cur.c.text, 530, 12).slice(0, 3).forEach((l, i) => ui.text(l, 54, 256 + i * 15, { col: '#c8d8ff' }));
+            if (!cur.open) ui.text(cur.c.ownsMat ? 'Нужен герой с этим материалом в экипаже.' : cur.c.owns ? 'Нужен герой Пути ' + H.TRACE_PATH_LINES[Object.keys(H.TRACE_PATH_LINES).find(k => H.TRACE_PATH_LINES[k][0] === cur.c.owns)][1] + '.' : 'Откроется дальше по сюжету.', 54, 304, { col: C.bad });
             ui.text('Награда:', 54, 334);
             ui.calyxDrops(cur.c).forEach((rk, i) => { const it = H.ITEMS[rk]; G.rarityCell(c, 120 + i * 40, 324, 36, 36, it ? it.rar : 4); G.itemIcon(c, rk, 122 + i * 40, 326, 32, cur.c.sets ? cur.c.sets[i % cur.c.sets.length] : 'thunder'); });
             const cap = g.domainRunCap(cur.c.id);

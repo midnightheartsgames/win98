@@ -26,7 +26,9 @@ class AppIgroman {
       { gameId: 'dao98_demo', pub: 'Electronic Arts', req: 'Pentium II-400, 128 MB RAM, 3D-ускоритель с 32MB, Win 98, Необходим DirectX 8.0' },
       { gameId: 'maxpayne_demo', pub: 'Gathering of Developers', req: 'Pentium II-450, 96 MB RAM, 3D-ускоритель с 16MB (TNT2 / Voodoo3 / Rage 128), Необходим DirectX 7.0' },
       { gameId: 'falloutzp_demo', pub: 'Interplay', req: 'Pentium III-600, 128 MB RAM, 3D-ускоритель с 32MB (GeForce2 / Radeon), Необходим DirectX 8.0' },
-      { gameId: 'hl2_demo', pub: 'Sierra / Valve Software', req: 'Pentium III-700, 128 MB RAM, 3D-ускоритель с 32MB (GeForce2 / Radeon), Необходим DirectX 8.0' }
+      { gameId: 'hl2_demo', pub: 'Sierra / Valve Software', req: 'Pentium III-700, 128 MB RAM, 3D-ускоритель с 32MB (GeForce2 / Radeon), Необходим DirectX 8.0' },
+      { gameId: 'moh98_demo', pub: 'Electronic Arts', req: 'Pentium II-266, 64 MB RAM, 3D-ускоритель с 8MB, Win 95/98, Необходим DirectX 6.1' },
+      { gameId: 'sims3_demo', pub: 'Electronic Arts', req: 'Pentium II-300, 64 MB RAM, 3D-ускоритель с 16MB (TNT2 / Voodoo3 / Rage 128), Необходим DirectX 7.0' }
     ];
     this.games.forEach((g, i) => { g.page = 4 + i; });
     const afterGames = 4 + this.games.length;

@@ -1,0 +1,65 @@
+.he-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #05070f;
+  outline: none;
+  user-select: none;
+}
+
+.he-canvas {
+  position: absolute;
+  display: block;
+}
+
+.he-canvas.he-sharp {
+  image-rendering: pixelated;
+}
+
+.he-menu {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(5, 7, 15, 0.55);
+}
+
+.he-menu-box {
+  min-width: 200px;
+  padding: 6px 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #2e2212;
+  border: 2px solid;
+  border-color: #8a6e3c #1a1208 #1a1208 #8a6e3c;
+  box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #142048;
+}
+
+.he-menu-title {
+  padding: 2px 0 6px;
+  text-align: center;
+  font: bold 16px "Times New Roman", serif;
+  color: #f0e2b8;
+  letter-spacing: 1px;
+}
+
+.he-btn {
+  padding: 4px 10px;
+  font: 12px Tahoma, Verdana, sans-serif;
+  color: #f0e2b8;
+  background: #142048;
+  border: 2px solid;
+  border-color: #6a5430 #0a0c18 #0a0c18 #6a5430;
+  cursor: pointer;
+}
+
+.he-btn:hover {
+  background: #1d2c60;
+}
+
+.he-btn:active {
+  border-color: #0a0c18 #6a5430 #6a5430 #0a0c18;
+  padding: 5px 9px 3px 11px;
+}

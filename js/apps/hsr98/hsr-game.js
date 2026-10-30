@@ -278,6 +278,7 @@
       if (this.fixConductor) this.fixConductor();
       if (this.fixTraces) this.fixTraces(!!opts.state && !opts.state.trv);
       if (this.fixOutfitTiers) this.fixOutfitTiers(!!opts.state && !opts.state.otv);
+      if (this.fixAscension) this.fixAscension(!!opts.state && !opts.state.asv);
       this.mailSync();
       this.pending = null;
       this.script = null;
@@ -1010,7 +1011,8 @@
       let jade = rw.jade;
       if (ctx.encId && H.ENCOUNTERS[ctx.encId].boss) {
         const fk = 'first_' + ctx.encId;
-        if (s.flags[fk]) jade = 0; else s.flags[fk] = true;
+        if (s.flags[fk]) jade = 0;
+        else { s.flags[fk] = true; if (this.profileNote) this.profileNote('boss', ctx.encId); }
       }
       if (ctx.calyx) jade = 0;
       s.credits += rw.credits;
@@ -1089,6 +1091,7 @@
       for (const [id, n] of Object.entries(g.items || {})) { s.inv.items[id] = (s.inv.items[id] || 0) + n; out.push(H.ITEMS[id].name + (n > 1 ? ' ×' + n : '')); }
       if (g.cone) { this.addCone(g.cone); out.push('конус «' + H.CONES[g.cone].name + '»'); }
       for (const id of [].concat(g.outfit || [])) if (H.OUTFITS && H.OUTFITS[id]) { if (!s.outfits.includes(id)) s.outfits.push(id); out.push('наряд «' + H.OUTFITS[id].name + '»'); }
+      for (const id of [].concat(g.skin || [])) if (H.PHONE_SKINS && H.PHONE_SKINS[id]) { if (!s.phoneSkins) s.phoneSkins = []; if (!s.phoneSkins.includes(id)) s.phoneSkins.push(id); out.push('обои «' + H.PHONE_SKINS[id].name + '»'); }
       for (let i = 0; i < (g.relic || 0); i++) { const r = this.rollRelic(g.lvl || this.avgLevel(), g.sets); out.push('реликвия «' + H.RELIC_SETS[r.set].name + '» (' + H.RELIC_SLOTS.find(x => x.key === r.slot).name + ')'); }
       for (const o of [].concat(g.ornament || [])) {
         for (let i = 0; i < (o.n || 1); i++) for (const sl of H.PLANAR_SLOTS) this.rollPlanar(o.set, o.rl, sl.key);
@@ -1116,8 +1119,9 @@
       if (!r || n <= 0) return false;
       r.exp += n;
       let up = false;
-      while (r.lvl < MAX_LVL && r.exp >= H.expToNext(r.lvl)) { r.exp -= H.expToNext(r.lvl); r.lvl++; up = true; }
-      if (r.lvl >= MAX_LVL) r.exp = 0;
+      const cap = this.levelCap ? this.levelCap(key) : MAX_LVL;
+      while (r.lvl < cap && r.exp >= H.expToNext(r.lvl)) { r.exp -= H.expToNext(r.lvl); r.lvl++; up = true; }
+      if (r.lvl >= cap) r.exp = 0;
       return up;
     }
 
@@ -1151,18 +1155,18 @@
       return this.state.tl.lvl;
     }
 
-    baseStats(kitId, lvl, eid) {
+    baseStats(kitId, lvl, eid, asc) {
       const c = H.CHARS[kitId];
       const e = 1 + 0.04 * (H.TRACES && H.TRACES[kitId] && H.TRACES[kitId].eidFx ? 0 : Math.min(6, eid || 0));
       return {
-        hp: Math.round(H.statAt(c.base.hp, lvl) * e), atk: Math.round(H.statAt(c.base.atk, lvl) * e), def: Math.round(H.statAt(c.base.def, lvl) * e), spd: c.base.spd,
+        hp: Math.round(H.statAt(c.base.hp, lvl, asc) * e), atk: Math.round(H.statAt(c.base.atk, lvl, asc) * e), def: Math.round(H.statAt(c.base.def, lvl, asc) * e), spd: c.base.spd,
         critR: 0.05, critD: 0.5, breakE: 0, ehr: 0, res: 0, healP: 0, err: 0, dmgP: 0, ultP: 0
       };
     }
 
     charStats(key) {
       const s = this.state, r = s.roster[key], kitId = this.kitOf(key), c = H.CHARS[kitId];
-      const st = this.baseStats(kitId, r.lvl, r.eid);
+      const st = this.baseStats(kitId, r.lvl, r.eid, this.statAsc ? this.statAsc(key) : undefined);
       const pct = { hpP: 0, atkP: 0, defP: 0 }, flat = { hpF: 0, atkF: 0, defF: 0 };
       const addStat = (k, v) => {
         if (k in pct) pct[k] += v;
@@ -1171,8 +1175,8 @@
       };
       const cone = r.cone ? s.inv.cones.find(x => x.uid === r.cone) : null;
       if (cone) {
-        const cd = H.CONES[cone.id], g = H.grow(r.lvl);
-        flat.hpF += Math.round(cd.stats.hp * g); flat.atkF += Math.round(cd.stats.atk * g); flat.defF += Math.round(cd.stats.def * g);
+        const cd = H.CONES[cone.id], cs = cone.lvl == null ? H.coneStats(cone.id, r.lvl) : H.coneStatsAt(cone.id, cone.lvl, cone.asc || 0);
+        flat.hpF += cs.hp; flat.atkF += cs.atk; flat.defF += cs.def;
         if (cd.path === c.path) for (const [k, v] of Object.entries(cd.bonus)) addStat(k, cd.p ? H.coneParam(cone.id, v, cone.sup) : v * H.coneLegacyMul(cone.sup));
       }
       const sets = {};
@@ -1207,15 +1211,15 @@
         s.starlight += charGlow(res, rar);
         return res;
       }
-      s.roster[id] = { lvl: Math.max(1, lvl || 1), exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+      s.roster[id] = { lvl: Math.max(1, lvl || 1), exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0, asc: H.ascPhase(Math.max(1, lvl || 1)) };
       return 'new';
     }
 
     addCone(id) {
       const s = this.state;
-      const same = s.inv.cones.find(c => c.id === id && (c.sup || 1) < 5);
+      const same = s.coneSup === 'manual' ? null : s.inv.cones.find(c => c.id === id && (c.sup || 1) < 5);
       if (same) { same.sup = (same.sup || 1) + 1; return same; }
-      const c = { uid: s.uid++, id, sup: 1 };
+      const c = { uid: s.uid++, id, sup: 1, lvl: 1, exp: 0, asc: 0 };
       s.inv.cones.push(c);
       return c;
     }
@@ -1426,7 +1430,7 @@
       else if (u.power) { this.powerSync(); if (s.power + u.power > T.powerTop) return false; s.power += u.power; }
       else if (u.energy) { if (!this.canCharge(key)) return false; this.charge(key, u.energy); }
       else if (u.energyAll) { const ks = s.party.slice(0, 4).filter(k => this.canCharge(k)); if (!ks.length) return false; for (const k of ks) this.charge(k, u.energyAll); }
-      else if (u.exp) { const r = s.roster[key]; if (!r || r.lvl >= MAX_LVL) return false; this.addExp(key, u.exp); }
+      else if (u.exp) { const r = s.roster[key], cost = this.expCredits ? this.expCredits(u.exp) : 0; if (!r || r.lvl >= (this.levelCap ? this.levelCap(key) : MAX_LVL) || s.credits < cost) return false; s.credits -= cost; this.addExp(key, u.exp); }
       else return false;
       s.inv.items[id]--;
       if (!s.inv.items[id]) delete s.inv.items[id];
@@ -1464,13 +1468,14 @@
       return true;
     }
 
-    debugChar(id, lvl, eid) {
+    debugChar(id, lvl, eid, asc) {
       const s = this.state, key = id === 'trail_p' ? 'trail' : id;
       if (!H.CHARS[key]) return null;
       const fresh = !s.roster[key];
       if (fresh) s.roster[key] = { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
       const r = s.roster[key], was = r.eid;
       r.lvl = H.clamp(Math.round(lvl) || 1, 1, MAX_LVL);
+      r.asc = asc == null ? H.ascPhase(r.lvl) : H.clamp(asc, Math.ceil((r.lvl - 20) / 10), 6);
       r.exp = 0;
       r.eid = H.clamp(Math.round(eid) || 0, 0, 6);
       if (r.eid > was && r.eidSeen == null) r.eidSeen = was;
@@ -1479,11 +1484,12 @@
       return fresh ? 'new' : 'set';
     }
 
-    debugCone(id, sup, n) {
+    debugCone(id, sup, n, lvl) {
       const s = this.state, out = [];
       if (!H.CONES[id]) return out;
       for (let i = 0; i < Math.max(1, n || 1); i++) {
         const cn = { uid: s.uid++, id, sup: H.clamp(Math.round(sup) || 1, 1, 5) };
+        if (lvl != null) Object.assign(cn, { lvl, exp: 0, asc: H.ascPhase(lvl) });
         s.inv.cones.push(cn);
         out.push(cn);
       }
@@ -1904,7 +1910,7 @@
 
     calyxOpen(c) {
       const s = this.state;
-      return (!c.need || this.cond(c.need)) && (!c.owns || Object.keys(s.roster).some(k => !s.roster[k].guest && H.CHARS[this.kitOf(k)].path === c.owns));
+      return (!c.need || this.cond(c.need)) && (!c.owns || Object.keys(s.roster).some(k => !s.roster[k].guest && H.CHARS[this.kitOf(k)].path === c.owns)) && (!c.ownsMat || this.ascMatNeeded(c.mat));
     }
 
     calyxList() {
@@ -1943,8 +1949,9 @@
       switch (c.reward) {
         case 'exp': return this.give({ items: tier >= 2 ? { exp2: 2 + tier, exp1: 2 } : { exp1: 3 + tier * 2 } }).concat(mats);
         case 'credits': return this.give({ credits: T.treasure ? T.treasure[tier] : 1500 + 1500 * tier }).concat(mats);
+        case 'aether': return (H.AETHER_CALYX ? this.give({ items: H.AETHER_CALYX[tier] }) : []).concat(mats);
         case 'path': return mats;
-        case 'relic': return this.give({ relic: 2 + (this.rng() < 0.5 ? 1 : 0), lvl: lvl + 6, sets: c.sets });
+        case 'relic': return this.give({ relic: 2 + (this.rng() < 0.5 ? 1 : 0), lvl: lvl + 6, sets: c.sets }).concat(c.mat ? this.give({ items: { [c.mat]: 2 + tier } }) : []);
         case 'echo': { const g = this.give({ relic: 3, lvl: lvl + 9, jade: 40 }).concat(mats); return this.fhEchoLucent ? g.concat(this.fhEchoLucent()) : g; }
       }
       return [];

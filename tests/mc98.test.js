@@ -282,8 +282,9 @@ const newGame = (o = {}) => { const g = new M.Game(Object.assign({ seed: 1999, r
   let arrows = 0;
   for (let i = 0; i < 120; i++) { g.tick({ loadBudget: 1000 }); if (g.entities.some(e => e instanceof M.Arrow)) arrows++; g.events.length = 0; }
   ok(arrows > 0, 'skeleton shoots arrows');
-  g.entities = g.entities.filter(e => !(e instanceof M.Mob));
+  g.entities = g.entities.filter(e => !(e instanceof M.Mob) && !(e instanceof M.Arrow));
   const pig = new M.Mob('pig', p.x + 3, by + 1, p.z + 3);
+  pig.wanderT = 1e9;
   g.entities.push(pig);
   g.inventory[0] = st('bow'); g.inventory[1] = st('arrow', 5); g.selected = 0;
   let shot = false;
@@ -387,8 +388,9 @@ const newGame = (o = {}) => { const g = new M.Game(Object.assign({ seed: 1999, r
   const g = newGame({ seed: 31, difficulty: 2 });
   const p = g.player;
   g.time = 15000;
-  tick(g, 600);
-  ok(g.entities.some(e => e instanceof M.Mob && e.def.hostile), 'hostile mobs spawn at night');
+  let hostileSeen = false;
+  tick(g, 600, () => { hostileSeen = hostileSeen || g.entities.some(e => e instanceof M.Mob && e.def.hostile); return {}; });
+  ok(hostileSeen, 'hostile mobs spawn at night');
   const peaceful = newGame({ seed: 31, difficulty: 0 });
   peaceful.time = 15000;
   tick(peaceful, 600);

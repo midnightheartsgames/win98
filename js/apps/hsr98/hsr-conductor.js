@@ -53,10 +53,12 @@
     18: { dest1: 5 }, 19: { shadow_dest: 1, hunt1: 5 }, 20: { erud1: 5 }, 21: { pres1: 5 }, 22: { nihil1: 5 }, 23: { harm1: 5 }, 24: { abund1: 5 }, 30: { shadow_dest: 1 },
     41: { tracks: 1 }, 46: { tracks: 1 }, 51: { tracks: 1 }, 56: { tracks: 1 }, 61: { tracks: 1 }, 66: { tracks: 1 }
   };
+  const ASC_ITEMS = { 5: { aether1: 6 }, 10: { aether1: 10 }, 15: { aether2: 5 }, 20: { aether3: 4 }, 30: { aether3: 6, asc_ecto: 4 }, 40: { aether3: 10, asc_ecto: 6 }, 50: { aether3: 14, asc_ecto: 8 }, 60: { aether3: 18, asc_ecto: 10 }, 65: { aether3: 22 } };
   const TL_REWARDS = {};
   for (let lvl = 2; lvl <= H.TL_MAX; lvl++) {
     const row = Object.assign({ credits: credit(lvl) }, EARLY[lvl] || lateRow(lvl));
     if (TRACE_ITEMS[lvl]) row.items = Object.assign({}, row.items, TRACE_ITEMS[lvl]);
+    if (ASC_ITEMS[lvl]) row.items = Object.assign({}, row.items, ASC_ITEMS[lvl]);
     TL_REWARDS[lvl] = row;
   }
 
@@ -389,6 +391,6 @@
   }
   Object.assign(H.MISSION_CHAPTERS, { adv_express: { type: 'adv', label: 'Приключения: Звёздный экспресс', name: 'Звёздный экспресс' } });
   H.CHAT.THREADS.push(...THREADS);
-  Object.assign(H, { TL_REWARDS, TL_TRACE_ITEMS: TRACE_ITEMS, POM_FACTS: FACTS });
+  Object.assign(H, { TL_REWARDS, TL_TRACE_ITEMS: TRACE_ITEMS, TL_ASC_ITEMS: ASC_ITEMS, POM_FACTS: FACTS });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

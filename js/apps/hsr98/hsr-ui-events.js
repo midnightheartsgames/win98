@@ -400,7 +400,7 @@
       if (!m.give) return;
       c.fillStyle = 'rgba(201,164,92,0.45)'; c.fillRect(lx + 14, ay - 10, lw - 28, 1);
       this.text('Вложения', lx + 20, ay, { size: 11, bold: true, col: C.sub });
-      const fits = [].concat(m.give.outfit || []).filter(id => H.OUTFITS && H.OUTFITS[id]).map(id => ['outfit', id]);
+      const fits = [].concat(m.give.outfit || []).filter(id => H.OUTFITS && H.OUTFITS[id]).map(id => ['outfit', id]).concat([].concat(m.give.skin || []).filter(id => H.PHONE_SKINS && H.PHONE_SKINS[id]).map(id => ['skin', id]));
       const gifts = fits.concat(rewardList(m.give));
       const strip = this.giftStrip(gifts, m.id, asc || { top: 0 });
       if (strip.more) {
@@ -414,6 +414,7 @@
       strip.shown.forEach(([id, n], i) => {
         const cx = gx + i * strip.step;
         if (id === 'outfit') this.outfitCell(c, n, cx, ay + 18, strip.cs);
+        else if (id === 'skin') this.phoneThumb(c, n, cx, ay + 18, strip.cs, strip.cs);
         else this.rewardCell(c, id, n, cx, ay + 18, strip.cs);
         if (st.got) { c.fillStyle = 'rgba(4,6,20,0.5)'; c.fillRect(cx, ay + 18, strip.cs, strip.cs); }
       });

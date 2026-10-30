@@ -432,7 +432,7 @@ function fingerprint() {
     kits[id] = o;
   }
   const strip = v => JSON.parse(JSON.stringify(v, (k, x) => (['text', 'name', 'title', 'look', 'col', 'lines', 'poster', 'tag'].includes(k) ? undefined : x)));
-  const data = { VERSION, CFG, kits, T: H.TUNING, FH: strip({ TUN: H.FH.TUN, TURB: H.FH.TURB, STAGES: H.FH.STAGES }), EN: strip(H.ENEMIES), ENC: strip(H.ENCOUNTERS), CONES: strip(H.CONES), RELICS: strip(H.RELIC_SETS), MAIN: H.MAIN_VALUE, ROLL: H.STAT_ROLL, FUS: strip(H.FUSIONS), SITE: { P: K.PRESETS, C: Object.fromEntries(Object.entries(K.CHARS).map(([id, c]) => [id, { cols: c.cols, build: c.build, su: c.su }])), S: K.STD_CONE, E: K.EARLY_CONE, F: K.FREE, T: K.TIERS.map(t => [t.id, t.min]), TM: K.TEAMS.map(t => [t.id, t.members, t.alts]) } };
+  const data = { VERSION, CFG, kits, T: Object.fromEntries(Object.entries(H.TUNING).filter(([k]) => !['ascOn', 'ascJump', 'upCredit'].includes(k))), FH: strip({ TUN: H.FH.TUN, TURB: H.FH.TURB, STAGES: H.FH.STAGES }), EN: strip(H.ENEMIES), ENC: strip(H.ENCOUNTERS), CONES: strip(H.CONES), RELICS: strip(H.RELIC_SETS), MAIN: H.MAIN_VALUE, ROLL: H.STAT_ROLL, FUS: strip(H.FUSIONS), SITE: { P: K.PRESETS, C: Object.fromEntries(Object.entries(K.CHARS).map(([id, c]) => [id, { cols: c.cols, build: c.build, su: c.su }])), S: K.STD_CONE, E: K.EARLY_CONE, F: K.FREE, T: K.TIERS.map(t => [t.id, t.min]), TM: K.TEAMS.map(t => [t.id, t.members, t.alts]) } };
   return crypto.createHash('sha1').update(JSON.stringify(data)).digest('hex').slice(0, 16);
 }
 

@@ -11,7 +11,7 @@
   const KIT_AB = { basic: 'basic', skill: 'skill', ult: 'ult' };
   const STAT_ICON = { hpP: 'hp', atkP: 'atk', defP: 'def', spd: 'spd', critR: 'critR', critD: 'critD', breakE: 'breakE', ehr: 'ehr', res: 'res' };
   const ELEM_OF = { physP: 'phys', fireP: 'fire', iceP: 'ice', elecP: 'elec', windP: 'wind', quantP: 'quant', imagP: 'imag' };
-  const WHY = { lvl: 'Нужен уровень героя ', pre: 'Сначала откройте узел «', credits: 'Не хватает кредитов.', mats: 'Не хватает материалов.', max: 'Узел уже на максимуме.' };
+  const WHY = { pre: 'Сначала откройте узел «', credits: 'Не хватает кредитов.', mats: 'Не хватает материалов.', max: 'Узел уже на максимуме.' };
 
   const layouts = new Map();
   function layout(kit) {
@@ -80,7 +80,7 @@
       } else if (n.kind === 'bonus') {
         this.diamond(p.x, p.y, 11, on ? '#fff0b0' : '#1a1e48', on ? '#8a6a20' : locked ? '#4a4e78' : ready ? '#7ae0f0' : '#9aa0d0');
         this.text(n.id.toUpperCase(), p.x, p.y - 5, { align: 'center', size: 9, bold: true, col: on ? '#3a2a08' : C.cream });
-        if (locked) this.text('ур. ' + st.gate, p.x + 15, p.y - 5, { size: 9, col: C.dim });
+        if (locked) this.text(this.traceGate(st.gate), p.x + 15, p.y - 5, { size: 9, col: C.dim });
       } else {
         c.fillStyle = on ? '#4a3a14' : '#10142e'; c.beginPath(); c.arc(p.x, p.y, 9, 0, Math.PI * 2); c.fill();
         c.strokeStyle = ready ? 'rgba(122,224,240,' + (0.5 + 0.5 * pulse) + ')' : on ? C.brassHi : locked ? '#3a3e64' : '#7a80b0'; c.stroke();
@@ -124,14 +124,14 @@
       const id = s.trSel || 'skill', st = g.traceNode(k, id);
       const sep = y => { c.fillStyle = 'rgba(242,220,154,0.35)'; c.fillRect(px + 10, y, pw - 20, 1); };
       this.text('Следы', px + 12, py + 12, { size: 14, bold: true, serif: true, col: C.gold });
-      this.text('ур. ' + r.lvl + ' · фаза ' + H.tracePhase(r.lvl), px + pw - 12, py + 15, { size: 10, align: 'right', col: C.sub });
+      this.text('ур. ' + r.lvl + ' · фаза ' + (g.ascOf ? g.ascOf(k) : H.tracePhase(r.lvl)), px + pw - 12, py + 15, { size: 10, align: 'right', col: C.sub });
       sep(py + 34);
       if (!d || !st) { this.text('Следов пока нет.', px + 12, py + 46, { size: 11, col: C.dim }); return; }
       const n = st.node;
       let y = py + 42;
       this.wrap(this.traceTitle(k, n), pw - 24, 12).slice(0, 2).forEach(l => { this.text(l, px + 12, y, { size: 12, bold: true, col: C.cream }); y += 15; });
       if (n.kind === 'ability') {
-        const cap = H.traceAbilityCap(id, r.lvl);
+        const cap = H.traceAbilityCap(id, g.ascOf ? H.TRACE_PHASE_LVL[g.ascOf(k)] : r.lvl);
         this.text('Уровень ' + st.cur + ' / ' + n.max + (st.up ? ' (+' + st.up + ')' : '') + ' · потолок ' + cap, px + 12, y, { size: 10, col: st.up ? C.cyan : C.sub }); y += 16;
         const kab = KIT_AB[id] && H.CHARS[kit][KIT_AB[id]];
         if (kab && kab.fx && !kab.text) {
@@ -143,11 +143,11 @@
         this.wrap(H.CHARS[kit].tech.text, pw - 24, 10).slice(0, 4).forEach(l => { this.text(l, px + 12, y, { size: 10, col: '#c8d0f0' }); y += 12; });
         this.text('Открыта с самого начала.', px + 12, y + 4, { size: 10, col: C.ok });
       } else if (n.kind === 'bonus') {
-        this.text('Доп. способность · ур. ' + n.gate, px + 12, y, { size: 10, col: C.sub }); y += 15;
+        this.text('Доп. способность · ' + this.traceGate(n.gate), px + 12, y, { size: 10, col: C.sub }); y += 15;
         this.wrap(n.text ? g.fill(n.text) : 'Описание появится вместе с переделкой героя.', pw - 24, 10).slice(0, 7).forEach(l => { this.text(l, px + 12, y, { size: 10, col: st.cur ? C.ok : '#c8d0f0' }); y += 12; });
       } else {
         this.text(this.traceStatText(n), px + 12, y, { size: 12, bold: true, col: st.cur ? C.ok : C.cream }); y += 16;
-        this.text('Нужен уровень ' + n.gate, px + 12, y, { size: 10, col: C.sub }); y += 14;
+        this.text(this.traceGate(n.gate, true), px + 12, y, { size: 10, col: C.sub }); y += 14;
       }
       y = Math.max(y + 6, py + 196);
       sep(y);
@@ -170,7 +170,7 @@
         this.text(H.fmt(st.cost.credits), px + pw - 12, y + 2, { size: 10, bold: true, align: 'right', col: g.state.credits < st.cost.credits ? C.bad : C.ok });
         y += 18;
         const missing = rows.find(([m, need]) => (inv[m] || 0) < need && !covered(m));
-        const why = st.why === 'lvl' ? WHY.lvl + st.gate + '.' : st.why === 'pre' ? WHY.pre + this.traceTitle(k, H.traceNodes(kit).find(x => x.id === n.pre)) + '».' : st.why === 'mats' && missing ? 'Где взять: ' + sourceOf(missing[0]) : st.why ? WHY[st.why] : st.tears ? 'Недостающие материалы Пути заменят Слёзы мечтаний ×' + st.tears + '.' : '';
+        const why = st.why === 'lvl' ? this.traceGate(st.gate, true) + '.' : st.why === 'pre' ? WHY.pre + this.traceTitle(k, H.traceNodes(kit).find(x => x.id === n.pre)) + '».' : st.why === 'mats' && missing ? 'Где взять: ' + sourceOf(missing[0]) : st.why ? WHY[st.why] : st.tears ? 'Недостающие материалы Пути заменят Слёзы мечтаний ×' + st.tears + '.' : '';
         this.wrap(why, pw - 24, 10).slice(0, 3).forEach(l => { this.text(l, px + 12, y, { size: 10, col: st.why === 'lvl' || st.why === 'pre' ? C.bad : C.sub }); y += 12; });
       }
       this.button(px + 12, py + ph - 38, pw - 24, 24, st.why === 'max' ? 'Открыто' : 'Улучшить', () => this.traceUpgrade(s, k, id), { size: 11, icon: 'traces', disabled: !st.ok });
@@ -178,6 +178,11 @@
 
     traceHints(s) {
       return s.trFocus ? [['←↑↓→', 'Узел'], ['Enter', 'Улучшить'], ['R', 'Купон'], ['Esc', 'Назад']] : [['Enter', 'К Следам']];
+    },
+
+    traceGate(gate, long) {
+      if (H.TUNING.ascOn && gate <= 70 && gate > 1) return (long ? 'Нужно возвышение ' : 'возв. ') + (gate - 10) / 10;
+      return (long ? 'Нужен уровень ' : 'ур. ') + gate;
     },
 
     traceQuickRow(m) {
@@ -222,7 +227,7 @@
       const g = this.game, st = g.traceNode(k, id);
       if (!st || !st.ok) {
         this.sfx('deny');
-        if (st && st.why) this.toast(st.why === 'lvl' ? WHY.lvl + st.gate + '.' : st.why === 'pre' ? 'Сначала откройте предыдущий узел.' : WHY[st.why]);
+        if (st && st.why) this.toast(st.why === 'lvl' ? this.traceGate(st.gate, true) + '.' : st.why === 'pre' ? 'Сначала откройте предыдущий узел.' : WHY[st.why]);
         return false;
       }
       const rare = Object.keys(st.cost.items).filter(m => H.ITEMS[m].mat === 'echo' || H.ITEMS[m].mat === 'tracks');

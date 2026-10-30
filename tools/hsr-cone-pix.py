@@ -10,6 +10,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ART = os.path.join(ROOT, 'content', 'hsr98', 'cones')
 MODULE = os.path.join(ROOT, 'js', 'apps', 'hsr98', 'hsr-cone-pix.js')
 W, H = 160, 224
+NAME = 'CONE_PIX'
 
 
 def fit(img, crop):
@@ -106,14 +107,16 @@ def build_module():
     for k in keys:
         with open(os.path.join(ART, k + '.png'), 'rb') as fh:
             rows.append("    '" + k + "': 'data:image/png;base64," + base64.b64encode(fh.read()).decode('ascii') + "'")
-    body = "(function (H) {\n  'use strict';\n  H.CONE_PIX = {\n" + ',\n'.join(rows) + "\n  };\n  if (typeof module !== 'undefined') module.exports = H;\n})(globalThis.Hsr98 = globalThis.Hsr98 || {});\n"
+    body = "(function (H) {\n  'use strict';\n  H." + NAME + " = {\n" + ',\n'.join(rows) + "\n  };\n  if (typeof module !== 'undefined') module.exports = H;\n})(globalThis.Hsr98 = globalThis.Hsr98 || {});\n"
     with open(MODULE, 'w', encoding='utf8', newline='\n') as fh:
         fh.write(body)
     return keys
 
 
 def main():
+    global ART, MODULE, W, H, NAME
     ap = argparse.ArgumentParser()
+    ap.add_argument('--phone', action='store_true', help='phone wallpaper: 268x464, content/hsr98/phone, hsr-phone-pix.js')
     ap.add_argument('key', nargs='?')
     ap.add_argument('image', nargs='?')
     ap.add_argument('--colors', type=int, default=48)
@@ -122,6 +125,11 @@ def main():
     ap.add_argument('--preview')
     ap.add_argument('--pixel', action='store_true', help='source is already pixel art: sample its grid, trim the border, crop 160x224')
     a = ap.parse_args()
+    if a.phone:
+        ART = os.path.join(ROOT, 'content', 'hsr98', 'phone')
+        MODULE = os.path.join(ROOT, 'js', 'apps', 'hsr98', 'hsr-phone-pix.js')
+        W, H = 268, 464
+        NAME = 'PHONE_PIX'
     os.makedirs(ART, exist_ok=True)
     if a.key and a.image:
         src = Image.open(a.image).convert('RGB')
@@ -134,7 +142,7 @@ def main():
             out.resize((W * 2, H * 2), Image.NEAREST).save(a.preview)
         print(a.key, len(buf.getvalue()), 'bytes')
     keys = build_module()
-    print('hsr-cone-pix.js:', len(keys), 'cones')
+    print(os.path.basename(MODULE) + ':', len(keys), 'pictures')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Team Fortress 98</title>
+<link rel="stylesheet" href="css/apps/tf98.css">
+<style>html,body{height:100%;margin:0;background:#008080}body{display:grid;place-items:center}.window{width:min(98vw,1280px);height:96vh;border:3px outset #ddd;display:flex;flex-direction:column;background:silver}.title{background:linear-gradient(90deg,navy,#1084d0);color:#fff;font:bold 12px Tahoma;padding:5px}#game{flex:1;min-height:0}</style></head>
+<body><main class="window"><div class="title">Team Fortress 98</div><div id="game"></div></main>
+<script src="js/apps/tf98/tf-core.js"></script>
+<script src="js/apps/tf98/tf-data.js"></script>
+<script src="js/apps/tf98/tf-weapons.js"></script>
+<script src="js/apps/tf98/tf-build.js"></script>
+<script src="js/apps/tf98/tf-world.js"></script>
+<script src="js/apps/tf98/tf-nav.js"></script>
+<script src="js/apps/tf98/tf-maps-yard.js"></script>
+<script src="js/apps/tf98/tf-maps-arena.js"></script>
+<script src="js/apps/tf98/tf-maps-2fort.js"></script>
+<script src="js/apps/tf98/tf-game.js"></script>
+<script src="js/apps/tf98/tf-modes.js"></script>
+<script src="js/apps/tf98/tf-ai.js"></script>
+<script src="js/apps/tf98/tf-audio.js"></script>
+<script src="js/apps/tf98/tf-render.js"></script>
+<script src="js/apps/tf98/tf-ui.js"></script>
+<script>const el=document.getElementById('game');const ui=new Tf98.UI(el,{});window.tfui=ui;el.focus();addEventListener('pagehide',()=>ui.destroy(),{once:true});</script>
+</body></html>

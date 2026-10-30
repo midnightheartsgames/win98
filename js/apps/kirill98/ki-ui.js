@@ -23,6 +23,7 @@
   const VILLAGE_PAL = { side: 'town', fig: 'm', face: 0, skin: [0.8, 0.7, 0.6], hairColor: [0.3, 0.2, 0.1], main: [0.32, 0.5, 0.2], accent: [0.82, 0.48, 0.14], metal: [0.4, 0.4, 0.42] };
   const START_SCREEN = { elf: 'pond', guard: 'muster', villain: 'chronicle' };
   const MODE_ITEM = { bow: 'bow', crossbow: 'crossbow', taxe: 'throwingAxe', javelin: 'javelin' };
+  const TOWN_PANELS = new Set(['shop', 'doctor', 'inn', 'fit', 'deed', 'cart', 'chest']);
   const SETTINGS = { grass: [0, 1, 2], treeRadius: [25, 40, 60], lines: [384, 480, 600], forest: [0.75, 1, 1.3], bodies: [60, 100, 160] };
   const CART_PAL = { side: 'town', fig: 'm', face: 0, skin: [0.8, 0.7, 0.6], hairColor: [0.3, 0.2, 0.1], main: [0.8, 0.74, 0.58], accent: [0.8, 0.52, 0.16], metal: [0.42, 0.42, 0.44] };
   const BALE_MESH = { bread: 'w.sack', grain: 'w.sack', cloth: 'w.bolt', wine: 'w.cask', medicine: 'w.crate', ore: 'w.ore', iron: 'w.ingots' };
@@ -73,6 +74,7 @@
       this.duelSetup = { me: { weapon: K.Body.HERO_GEAR[this.settings.hero][0], shield: K.Body.HERO_GEAR[this.settings.hero][1] }, foe: { side: 'villain', weapon: 'axe', shield: false, exp: 'soldier' } };
       this.sound = new K.Sound();
       this.sound.volume = this.settings.volume / 100;
+      this.sound.musicVolume = this.settings.music / 100;
       root.classList.add('ki-root');
       root.tabIndex = -1;
       this.canvas = document.createElement('canvas');
@@ -289,7 +291,7 @@
     }
 
     loadSettings() {
-      const s = { grass: 2, precip: true, treeRadius: 40, border: false, hero: 'elf.m', blood: true, lines: 600, forest: 1, bodies: 160, dither: false, volume: 80, music: 60, sens: 100, invert: false, difficulty: 'normal', villainName: '' };
+      const s = { grass: 2, precip: true, clutter: true, clouds: true, outer: true, treeRadius: 40, border: false, hero: 'elf.m', blood: true, lines: 600, forest: 1, bodies: 160, dither: false, volume: 80, music: 60, sens: 100, invert: false, difficulty: 'normal', villainName: '' };
       try {
         const raw = localStorage.getItem('kirill98_settings');
         if (raw) Object.assign(s, JSON.parse(raw));
@@ -313,6 +315,7 @@
       this.saveSettings();
       if (key === 'lines' && !this.opts.lines) { this.lines = value; this.resize(); }
       if (key === 'volume') { this.sound.volume = value / 100; if (this.sound.master) this.sound.master.gain.value = this.sound.volume; }
+      if (key === 'music') { this.sound.musicVolume = value / 100; if (this.sound.musicBus) this.sound.musicBus.gain.value = this.sound.musicVolume; }
       this.dirty = true;
     }
 
@@ -392,6 +395,7 @@
       if (this.panel) this.closePanel(false);
       this.release();
       this.menu = K.Screens.pause(this);
+      this.menu.classList.add('ki-side-' + this.skin('menu'));
       this.root.appendChild(this.menu);
       this.menu.querySelector('.ki-btn').focus({ preventScroll: true });
       this.dirty = true;
@@ -404,9 +408,16 @@
       if (relock) this.lock();
     }
 
+    skin(kind) {
+      const P = this.state && this.state.player;
+      if (TOWN_PANELS.has(kind)) return 'town';
+      return P && P.team ? P.team : 'town';
+    }
+
     showPanel(el, kind) {
       if (this.panel) this.panel.remove();
       this.release();
+      el.classList.add('ki-side-' + this.skin(kind));
       this.panel = el;
       this.panelKind = kind;
       this.root.appendChild(el);
@@ -716,12 +727,113 @@
       const S = this.state, P = S.player, F = P.fight, wx = K.Weather.at(S), eye = this.camera().eye;
       if (F && F.torch && K.Weather.douses(wx, P.mv.pos)) { F.torch = false; this.hud.toast('Ливень залил факел'); }
       const bolt = K.Weather.bolt(S.seed || 0, S.time, wx);
-      if (bolt && bolt.id !== this.boltId) {
-        this.boltId = bolt.id;
-        (this.thunders = this.thunders || []).push({ at: S.time - bolt.age + bolt.dist / 340, power: K.clamp(1.4 - bolt.dist / 2000, 0.3, 1.4), near: bolt.dist < 700 });
-      }
-      if (this.thunders && this.thunders.length) this.thunders = this.thunders.filter(t => { if (S.time < t.at) return true; this.sound.play('thunder', { power: t.power, near: t.near }); return false; });
+      if (bolt && bolt.id !== this.boltSeen) { this.boltSeen = bolt.id; this.later(S.time - bolt.age + bolt.dist / 340, 'thunder', { power: K.clamp(1.4 - bolt.dist / 2000, 0.3, 1.4), near: bolt.dist < 700 }); }
       this.sound.rain(wx.rain * (K.Weather.sheltered(eye) ? 0.45 : 1));
+    }
+
+    later(at, kind, opts) {
+      (this.queue = this.queue || []).push({ at, kind, opts });
+    }
+
+    surfaceAt(q) {
+      const mv = q.mv, x = mv.pos[0], z = mv.pos[2], T = this.T;
+      if (mv.swim || T.waterAt(x, z) > mv.pos[1] + 0.05) return 'water';
+      for (const b of this.W.near(x, z, 0.3)) if (Math.abs(b.y1 - mv.pos[1]) < 0.2) return /plank|log|wood|floor|straw/.test(b.kind || '') ? 'wood' : 'stone';
+      const g = T.groundAt(x, z);
+      if (g.snow > 0.5) return 'snow';
+      return g.rock + g.cobble + g.gravel + g.scree > 0.5 ? 'stone' : 'soft';
+    }
+
+    footsteps(eye) {
+      const S = this.state, P = S.player, TAU = Math.PI * 2, near = [P];
+      for (const q of S.people) if (q !== P && q.anim && q.fight && !q.fight.down && Math.hypot(q.mv.pos[0] - eye[0], q.mv.pos[2] - eye[2]) < 22) near.push(q);
+      near.length = Math.min(near.length, 9);
+      const ear = this.ear();
+      for (const q of near) {
+        const a = q.anim, mv = q.mv;
+        if (!a) continue;
+        const prev = q.stepPhase === undefined ? a.phase : q.stepPhase;
+        q.stepPhase = a.phase;
+        if (mv.chair) { if (mv.speed > 0.3 && !(q.creakT > S.time)) { q.creakT = S.time + 0.6; this.sound.play('creak', { at: mv.pos, ear }); } continue; }
+        if (mv.speed < 0.4 || (!mv.onGround && !mv.swim)) continue;
+        const d = (a.phase - prev + TAU) % TAU;
+        if (d <= 0 || d > 3) continue;
+        for (const [c, shin] of [[0, 'lShin'], [Math.PI, 'rShin']]) {
+          if ((c - prev + TAU) % TAU >= d) continue;
+          const pro = q.kit && q.kit.pros && q.kit.pros[shin], leg = pro === 'peg' || pro === 'willow' ? 'peg' : pro ? 'iron' : null;
+          const power = (mv.crouch || mv.crawl ? 0.4 : mv.speed > 3 ? 1 : 0.7) * (q === P ? 0.8 : 1);
+          this.sound.play('step', { at: mv.pos, ear, surface: this.surfaceAt(q), leg, power });
+          if (mv.crutchOn && shin === 'rShin') this.sound.play('tap', { at: mv.pos, ear, power: 0.8 });
+        }
+      }
+    }
+
+    wildlife(eye, D) {
+      const S = this.state, ear = this.ear(), r = this.rnd;
+      const soon = (key, gap) => { if ((this.cool = this.cool || {})[key] > S.time) return false; this.cool[key] = S.time + gap; return true; };
+      for (const b of S.beasts || []) {
+        if (!b.fight || b.fight.down) continue;
+        const d = Math.hypot(b.mv.pos[0] - eye[0], b.mv.pos[2] - eye[2]);
+        if (b.beast === 'wolf' && D.night > 0.5 && d < 500 && b.leader && soon('howl' + (b.group || b.id), 25 + r() * 35)) this.sound.play('howl', { at: b.mv.pos, ear, far: 600, n: 1 + Math.floor(r() * 2) });
+        if (b.beast === 'bear' && b.fight.hostile && d < 60 && soon('roar' + b.id, 8)) this.sound.play('roar', { at: b.mv.pos, ear, far: 120 });
+        if (b.beast === 'boar' && d < 25 && soon('grunt' + b.id, 4 + r() * 4)) this.sound.play('grunt', { at: b.mv.pos, ear });
+      }
+      if (D.night < 0.5 && (S.bodies || []).some(b => { const k = (b.anchor !== undefined ? b.anchor : 8) * 3; return b.pts && Math.hypot(b.pts[k] - eye[0], b.pts[k + 2] - eye[2]) < 50; }) && soon('caw', 6 + r() * 8)) this.sound.play('caw', { at: [eye[0] + (r() - 0.5) * 30, eye[1] + 14, eye[2] + (r() - 0.5) * 30], ear, n: 2 + Math.floor(r() * 2) });
+    }
+
+    clocks(eye) {
+      const S = this.state, h = Math.floor(S.hour || 0);
+      if (this.clockHour === h) return;
+      const first = this.clockHour === undefined;
+      this.clockHour = h;
+      if (first) return;
+      const at = (x, z, y) => [x, this.T.heightAt(x, z) + y, z], dist = q => Math.hypot(q[0] - eye[0], q[2] - eye[2]);
+      const bf = K.Places.LANDMARKS.find(L => L.id === 'belfry'), bell = bf ? at(bf.at[0], bf.at[1], 24) : null;
+      if (bell && h >= 6 && h <= 21 && h % 3 === 0 && dist(bell) < 900) for (let k = 0; k < 3; k++) this.later(S.time + k * 1.6, 'bell', { at: bell, far: 900 });
+      const pal = K.Places.PALACE, yard = at((pal.x0 + pal.x1) / 2, (pal.z0 + pal.z1) / 2, 2);
+      if ((h === 7 || h === 19) && dist(yard) < 700) this.later(S.time, 'bila', { at: yard, far: 700, n: 8 });
+      const fort = at(K.Places.FORT.at[0], K.Places.FORT.at[1], 6);
+      if ((h === 22 || h === 6) && dist(fort) < 800) for (let k = 0; k < 2; k++) this.later(S.time + k * 3.5, 'gong', { at: fort, far: 800 });
+    }
+
+    ambienceStep(eye, D, wx) {
+      const S = this.state, T = this.T, F = this.F, r = this.rnd, ear = this.ear(), inside = K.Weather.sheltered(eye) ? 0.4 : 1;
+      const zone = T.zoneAt(eye[0], eye[2]), high = K.clamp((eye[1] - 60) / 120, 0, 1), dense = F && F.densityAt ? K.clamp(F.densityAt(eye[0], eye[2]) * 1.4, 0, 1) : 0;
+      const town = K.Places.inTown(eye[0], eye[2]), day = 1 - D.night, h = S.hour || 0;
+      this.sound.ambience({
+        wind: K.clamp(0.15 + Math.max(high, zone === 4 ? 0.7 : 0) + wx.wind * 0.5, 0, 1.2) * inside,
+        forest: dense * (0.4 + 0.6 * day) * inside,
+        market: town && h >= 8 && h < 19 ? inside : 0
+      });
+      const soon = (key, gap) => { if ((this.cool = this.cool || {})[key] > S.time) return false; this.cool[key] = S.time + gap; return true; };
+      if (dense > 0.3 && day > 0.6 && wx.rain < 0.3 && soon('chirp', 1.5 + r() * 3.5)) this.sound.play('chirp', { at: [eye[0] + (r() - 0.5) * 40, eye[1] + 6, eye[2] + (r() - 0.5) * 40], ear });
+      if (D.night > 0.6 && dense < 0.3 && (zone === 1 || zone === 2) && wx.rain < 0.2 && soon('cricket', 0.8 + r() * 1.2)) this.sound.play('cricket', { at: [eye[0] + (r() - 0.5) * 16, eye[1] - 1, eye[2] + (r() - 0.5) * 16], ear });
+      const pal = K.Places.PALACE;
+      if (day > 0.5 && eye[0] > pal.x0 && eye[0] < pal.x1 && eye[2] > pal.z0 && eye[2] < pal.z1 && soon('clink', 3 + r() * 4)) this.sound.play('clink', { at: [eye[0] + (r() - 0.5) * 30, eye[1], eye[2] + (r() - 0.5) * 30], ear });
+    }
+
+    musicStep(eye) {
+      const S = this.state, P = S.player, M = this.musicState = this.musicState || { zone: null, quiet: 0, fight: -99, alarm: false };
+      const fight = S.people.some(q => q.fight && !q.fight.down && q.fight.hostile === P && Math.hypot(q.mv.pos[0] - P.mv.pos[0], q.mv.pos[2] - P.mv.pos[2]) < 30) || (S.beasts || []).some(b => b.fight && !b.fight.down && b.fight.hostile === P);
+      if (fight) M.fight = S.time;
+      const side = P.team || 'town', theme = { 1: 'town', 2: 'palace', 3: 'forest', 4: 'fort' }[this.T.zoneAt(eye[0], eye[2])];
+      if (S.time - M.fight < 12) {
+        if (!M.alarm || !this.sound.playing()) { this.sound.music('alarm', side); M.alarm = true; }
+        return;
+      }
+      if (M.alarm) { this.sound.stopMusic(1.5); M.alarm = false; M.quiet = S.time; }
+      if (this.sound.playing()) return;
+      if (M.zone !== theme && S.time - M.quiet > 20 || S.time - M.quiet > 180) { if (this.sound.music(theme, side)) { M.zone = theme; M.quiet = S.time + K.Sound.lengthOf(K.Sound.THEMES[theme]); } }
+    }
+
+    soundStep(dt) {
+      const S = this.state, eye = this.camera().eye, D = K.daylight(S.hour || 0), wx = K.Weather.at(S);
+      if (this.queue && this.queue.length) this.queue = this.queue.filter(q => { if (S.time < q.at) return true; this.sound.play(q.kind, Object.assign({ ear: this.ear() }, q.opts)); return false; });
+      this.footsteps(eye);
+      this.wildlife(eye, D);
+      this.clocks(eye);
+      this.ambienceStep(eye, D, wx);
+      this.musicStep(eye);
     }
 
     weatherView(eye) {
@@ -1539,6 +1651,7 @@
       S.hour = hour;
       S.time += dt;
       this.weatherStep();
+      this.soundStep(dt);
       this.track(false);
     }
 
@@ -2060,7 +2173,7 @@
       const c = this.camera(), b = this.player, f = this.figures(c), S = this.state, F = S.player.fight;
       this.renderer.render({
         eye: c.eye, yaw: c.yaw, pitch: c.pitch, fov: this.fov, hour: this.hour, time: this.time, fogScale: (this.fogScale || 1) * this.settings.forest, dither: this.settings.dither,
-        treeRadius: this.settings.treeRadius, grass: this.settings.grass, day: this.state.day || 1, border: this.settings.border, people: f.people, hands: f.hands, leg: f.leg,
+        treeRadius: this.settings.treeRadius, grass: this.settings.grass, clutter: this.settings.clutter !== false, clouds: this.settings.clouds !== false, outer: this.settings.outer !== false, day: this.state.day || 1, border: this.settings.border, people: f.people, hands: f.hands, leg: f.leg,
         fx: { S, blood: this.settings.blood }, glows: this.flames(f), smoke: this.smoke(), burnt: K.Elves ? K.Elves.burntKey(S) : '',
         sight: this.free ? null : this.sight(), weather: this.weatherView(c.eye)
       }, this.width, this.height);

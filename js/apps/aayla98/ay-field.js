@@ -4,12 +4,14 @@
   const SPEED = { run: 100, walk: 60, sneak: 35 };
   const SENSE = { radius: 96, cool: 6, show: 5 };
   const SIGHT = { range: 80, half: Math.PI / 4 };
+  const SENSE_NEAR = 40;
   const HEAR = { run: 48, walk: 24, sneak: 0 };
-  const FORCE_RANGE = 5, PATROL = 30, CHASE = 70, CONTACT = 12, CALM = 3, CRATE = 160, JUMP_TIME = 0.6;
+  const FORCE_RANGE = 5, PATROL = 30, CHASE = 70, CONTACT = 12, CALM = 3, CRATE = 160, JUMP_TIME = 0.6, DRIFT = 0.55, SHELTER = 24;
   const DIRV = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+  const MOBILE = new Set(['enemy', 'watch']);
   const ANG = { right: 0, down: Math.PI / 2, left: Math.PI, up: -Math.PI / 2 };
   const COMPASS = { E: 'right', W: 'left', N: 'up', S: 'down' };
-  A.FIELD = { SPEED, SENSE, SIGHT, HEAR, FORCE_RANGE, PATROL, CHASE, CONTACT, CALM, DIRV };
+  A.FIELD = { SPEED, SENSE, SIGHT, HEAR, FORCE_RANGE, PATROL, CHASE, CONTACT, CALM, DIRV, DRIFT, SHELTER };
 
   const angDiff = (a, b) => {
     let d = a - b;
@@ -26,10 +28,10 @@
   };
 
   A.Field = class {
-    constructor(S, mapId, entry) {
+    constructor(S, mapId, entry, at) {
       this.S = S;
       if (!S.field) S.field = { map: null, x: 0, y: 0, dir: 'up', maps: {} };
-      this.load(mapId, entry);
+      this.load(mapId, entry, at);
     }
 
     mem(id) {
@@ -38,23 +40,26 @@
       return maps[id];
     }
 
-    load(mapId, entry) {
+    load(mapId, entry, pos) {
       const map = M.parse(mapId), mem = this.mem(mapId);
       for (const [idx, code] of Object.entries(mem.tiles)) map.tiles[+idx] = code;
       this.map = map;
-      this.objs = [];
       for (const o of map.objects) {
         const st = mem.objs[o.id];
-        if (st && st.gone) continue;
-        if (o.type === 'enemy' && mem.beat[o.id]) continue;
         if (st) Object.assign(o, st);
         o.ax = o.x * TS;
         o.ay = o.y * TS;
-        if (o.type === 'enemy') this.initEnemy(o);
-        this.objs.push(o);
+        if (MOBILE.has(o.type)) this.initEnemy(o);
+        if (o.type === 'drift') Object.assign(o, { home: [o.x, o.y], k: 0, sign: 1, t: DRIFT * ((o.x + o.y) % 3) / 3 });
       }
+      this.objs = [];
+      this.sync();
       const at = map.entries[entry] || map.entries.start || map.entries['@'] || Object.values(map.entries)[0];
       this.p = { x: at[0] * TS + 8, y: at[1] * TS + 14, dir: 'up', moving: false, sneak: false, anim: 0, frame: 'idle0', jump: null, speed: 0 };
+      if (pos) Object.assign(this.p, { x: pos.x, y: pos.y, dir: pos.dir || 'up' });
+      this.storm = map.def.storm ? { phase: 'calm', t: map.def.storm.calm, heat: 0 } : null;
+      this.timer = map.def.timer ? map.def.timer.sec * (map.def.timer.breath && A.Bonds.has(this.S, 'kit', 1) ? map.def.timer.breath : 1) : null;
+      this.timerOut = false;
       this.trail = [];
       this.followers = [];
       this.refresh();
@@ -75,11 +80,29 @@
       return this.followers[0] || null;
     }
 
+    present(o) {
+      const mem = this.mem(this.map.id), st = mem.objs[o.id];
+      if (st && st.gone) return false;
+      if (o.type === 'enemy' && mem.beat[o.id]) return false;
+      if (!o.cond) return true;
+      if (!o.condParsed) o.condParsed = A.Script.parseCond(o.cond);
+      return A.Script.test(this.S, o.condParsed);
+    }
+
+    sync() {
+      this.objs = this.map.objects.filter(o => this.present(o));
+    }
+
+    can(ability) {
+      return A.Memory.can(this.S, ability);
+    }
+
     refresh() {
+      this.sync();
       const def = this.map.def, list = def.followers || (def.follower ? [def.follower] : []);
-      const want = list.map(f => (typeof f === 'string' ? { look: f } : f)).filter(f => !f.flag || this.S.flags[f.flag]);
+      const want = list.map(f => (typeof f === 'string' ? { look: f } : f)).filter(f => (!f.flag || this.S.flags[f.flag]) && (!f.cond || A.Script.test(this.S, A.Script.parseCond(f.cond))));
       const old = this.followers;
-      this.followers = want.map(f => old.find(o => o.look === f.look) || this.spawnFollower(f.look));
+      this.followers = want.map(f => old.find(o => o.key === (f.id || f.look)) || Object.assign(this.spawnFollower(f.look), { key: f.id || f.look }));
     }
 
     spawnFollower(look) {
@@ -119,22 +142,25 @@
     }
 
     objAt(x, y, test) {
-      return this.objs.find(o => o.type !== 'enemy' && o.x === x && o.y === y && (!test || test(o)));
+      return this.objs.find(o => !MOBILE.has(o.type) && o.x === x && o.y === y && (!test || test(o)));
     }
 
     objSolid(o) {
       if (o.hidden && o.type === 'fragile') return true;
-      if (o.type === 'bridge') return !o.on;
-      return o.type === 'crate' || o.type === 'npc' || o.type === 'lever' || o.type === 'brace' || o.type === 'fragile' || o.type === 'end' || o.type === 'cocoon' || !!o.solid;
+      if (o.type === 'bridge' || o.type === 'gate') return !o.on;
+      return o.type === 'crate' || o.type === 'npc' || o.type === 'lever' || o.type === 'brace' || o.type === 'fragile' || o.type === 'end' || o.type === 'cocoon' || o.type === 'drift' || !!o.solid;
     }
 
     walkable(x, y) {
       return !this.tileSolid(x, y) && !this.objAt(x, y, o => this.objSolid(o));
     }
 
+    bodySpan(px, py) {
+      return [Math.floor((px - 5) / TS), Math.floor((px + 4.999) / TS), Math.floor((py - 6) / TS), Math.floor((py - 0.001) / TS)];
+    }
+
     blocked(px, py) {
-      const x0 = Math.floor((px - 5) / TS), x1 = Math.floor((px + 4.999) / TS);
-      const y0 = Math.floor((py - 6) / TS), y1 = Math.floor((py - 0.001) / TS);
+      const [x0, x1, y0, y1] = this.bodySpan(px, py);
       for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) if (!this.walkable(tx, ty)) return true;
       return false;
     }
@@ -182,10 +208,19 @@
       this.senseShow = Math.max(0, this.senseShow - dt);
       if (this.wave >= 0) this.wave = this.wave + dt > 0.6 ? -1 : this.wave + dt;
       for (const o of this.objs) {
-        if (o.type === 'crate' || o.type === 'fragile') {
-          const tx = o.x * TS, ty = o.y * TS, k = CRATE * dt;
+        if (o.type === 'crate' || o.type === 'fragile' || o.type === 'drift') {
+          const tx = o.x * TS, ty = o.y * TS, k = (o.type === 'drift' ? TS / DRIFT : CRATE) * dt;
           o.ax += Math.max(-k, Math.min(k, tx - o.ax));
           o.ay += Math.max(-k, Math.min(k, ty - o.ay));
+        }
+        if (o.type === 'drift') this.drift(o, dt);
+      }
+      if (this.storm) this.weather(dt);
+      if (this.timer !== null && !this.timerOut) {
+        this.timer = Math.max(0, this.timer - dt);
+        if (this.timer <= 0) {
+          this.timerOut = true;
+          this.events.push({ type: 'scene', label: this.map.def.timer.fail });
         }
       }
       if (p.jump) {
@@ -202,7 +237,7 @@
       }
       let dx = inp.dx, dy = inp.dy;
       const len = Math.hypot(dx, dy);
-      p.sneak = !!inp.sneak;
+      p.sneak = !!inp.sneak && this.can('sneak');
       p.moving = len > 0;
       p.speed = 0;
       if (p.moving) {
@@ -224,9 +259,9 @@
       p.frame = p.moving ? 'walk' + (Math.floor(p.anim * (p.sneak ? 5 : 8)) % 4) : 'idle' + (Math.floor(p.anim / 0.6) % 2);
       this.moveFollower(dt, p.moving);
       if (p.moving) this.triggers();
-      if (inp.sense) this.sense();
-      if (inp.push) this.force('push');
-      if (inp.pull) this.force('pull');
+      if (inp.sense && this.can('sense') && this.sense()) this.coverForce();
+      if (inp.push && this.can('push') && this.force('push')) this.coverForce();
+      if (inp.pull && this.can('pull') && this.force('pull')) this.coverForce();
       if (inp.interact) this.interact();
       this.stepEnemies(dt);
       this.save();
@@ -260,7 +295,52 @@
       if (!o) return;
       this.objs.splice(this.objs.indexOf(o), 1);
       this.remember(o, { gone: true });
-      this.events.push({ type: 'scene', label: o.label, obj: o.id });
+      this.events.push({ type: 'scene', label: o.label, obj: o.id, autosave: !!o.autosave });
+    }
+
+    drift(o, dt) {
+      o.t -= dt;
+      if (o.t > 0) return;
+      o.t += DRIFT;
+      const m = /^([EWNS])(\d+)$/.exec(o.lane), v = DIRV[COMPASS[m[1]]], n = +m[2];
+      if ((o.sign > 0 && o.k >= n) || (o.sign < 0 && o.k <= 0)) o.sign = -o.sign;
+      const nx = o.x + v[0] * o.sign, ny = o.y + v[1] * o.sign;
+      if (!this.driftFree(o, nx, ny)) { o.sign = -o.sign; return; }
+      o.x = nx;
+      o.y = ny;
+      o.k += o.sign;
+    }
+
+    driftFree(o, x, y) {
+      const [x0, x1, y0, y1] = this.bodySpan(this.p.x, this.p.y);
+      if (x >= x0 && x <= x1 && y >= y0 && y <= y1) return false;
+      if (this.tileSolid(x, y) && this.tile(x, y) !== T.pit) return false;
+      return !this.objs.some(q => q !== o && !MOBILE.has(q.type) && q.x === x && q.y === y && this.objSolid(q));
+    }
+
+    sheltered() {
+      return this.objs.some(o => o.type === 'shelter' && Math.hypot(o.x * TS + 8 - this.p.x, o.y * TS + 8 - this.p.y) <= SHELTER);
+    }
+
+    weather(dt) {
+      const W = this.map.def.storm, s = this.storm;
+      s.t -= dt;
+      if (s.t <= 0) {
+        s.phase = s.phase === 'calm' ? 'warn' : s.phase === 'warn' ? 'blow' : 'calm';
+        s.t += W[s.phase];
+        this.events.push({ type: 'storm', phase: s.phase });
+      }
+      if (s.phase !== 'blow' || this.sheltered()) { s.heat = Math.max(0, s.heat - dt * 2); return; }
+      s.heat = Math.min(1, s.heat + dt);
+      const a = this.S.party.find(m => m.id === 'aayla');
+      if (!a) return;
+      s.burn = (s.burn || 0) + W.hpPerSec * dt;
+      if (s.burn >= 1) {
+        const d = Math.floor(s.burn);
+        s.burn -= d;
+        a.hp = Math.max(1, a.hp - d);
+        this.events.push({ type: 'scorch', hp: a.hp });
+      }
     }
 
     ahead(dist) {
@@ -269,7 +349,7 @@
     }
 
     visible(o) {
-      return !o.hidden || !!this.mem(this.map.id).sensed[o.id];
+      return !o.hidden || !!this.mem(this.map.id).sensed[o.id] || (!!o.calc && A.Bonds.has(this.S, 'ekria', 2));
     }
 
     verb(o) {
@@ -279,13 +359,23 @@
         case 'examine': return 'Осмотреть';
         case 'clue': return this.follower && this.follower.look.startsWith('vos') ? 'Вос, прочти' : 'Осмотреть';
         case 'cache': return this.mem(this.map.id).taken[o.id] ? null : 'Взять';
-        case 'meditate': return 'Медитировать';
+        case 'meditate': return this.can('meditate') ? 'Медитировать' : null;
         case 'exit': return o.name;
         case 'end': return o.name;
         case 'scene': return o.name;
         case 'cocoon': return 'Осмотреть';
+        case 'rest': return 'Отдохнуть';
+        case 'duty': return this.mem(this.map.id).taken[o.id] ? null : o.verb || 'Работать';
+        case 'screen': return o.verb || 'Слушать у ширмы';
+        case 'repair': return this.mem(this.map.id).taken[o.id] ? null : o.verb || 'Починить';
+        case 'lock': return 'Осмотреть';
+        case 'fire': return 'Осмотреть';
+        case 'spot': return !o.occupied && this.S.flags.retinue && (this.S.flags.placed || 0) < 2 ? 'Посадить анзата в засаду' : null;
         case 'lever': return 'Рычаг';
+        case 'decoy': return this.mem(this.map.id).taken[o.id] ? null : o.verb;
+        case 'gate': return o.on ? null : 'Осмотреть';
         case 'jump': {
+          if (!this.can('jump')) return null;
           const v = DIRV[this.p.dir], s = [Math.sign(o.to[0]), Math.sign(o.to[1])];
           return v[0] === s[0] && v[1] === s[1] ? 'Прыжок' : null;
         }
@@ -295,16 +385,16 @@
 
     target() {
       const [ax, ay] = this.ahead(14), [px, py] = this.playerTile();
-      const front = this.objs.find(o => o.type !== 'enemy' && o.x === ax && o.y === ay && this.verb(o));
+      const front = this.objs.find(o => !MOBILE.has(o.type) && o.x === ax && o.y === ay && this.verb(o));
       if (front) return front;
-      return this.objs.find(o => o.type !== 'enemy' && o.x === px && o.y === py && this.verb(o)) || null;
+      return this.objs.find(o => !MOBILE.has(o.type) && o.x === px && o.y === py && this.verb(o)) || null;
     }
 
     forceTarget() {
       const [px, py] = this.playerTile(), v = DIRV[this.p.dir];
       for (let i = 1; i <= FORCE_RANGE; i++) {
         const x = px + v[0] * i, y = py + v[1] * i;
-        const o = this.objAt(x, y, q => ['crate', 'lever', 'bridge', 'brace', 'fragile'].includes(q.type) && this.visible(q));
+        const o = this.objAt(x, y, q => ['crate', 'lever', 'bridge', 'brace', 'fragile', 'grab'].includes(q.type) && this.visible(q));
         if (o) return o;
         if (this.objAt(x, y, q => this.objSolid(q)) || M.SIGHT.has(this.tile(x, y))) return null;
       }
@@ -319,13 +409,14 @@
         case 'bridge': return [o.on ? 'push' : 'pull'];
         case 'brace': return ['push'];
         case 'fragile': return ['push'];
+        case 'grab': return ['pull'];
       }
       return [];
     }
 
     prompt() {
       const t = this.target(), f = this.forceTarget();
-      return { verb: this.verb(t), target: t, force: f, push: this.forceVerbs(f).includes('push'), pull: this.forceVerbs(f).includes('pull') };
+      return { verb: this.verb(t), target: t, force: f, push: this.can('push') && this.forceVerbs(f).includes('push'), pull: this.can('pull') && this.forceVerbs(f).includes('pull') };
     }
 
     sense() {
@@ -339,6 +430,7 @@
         if (!o.hidden || mem.sensed[o.id]) continue;
         if (Math.hypot(o.x * TS + 8 - this.p.x, o.y * TS + 8 - (this.p.y - 6)) <= SENSE.radius) {
           mem.sensed[o.id] = true;
+          if (o.flag) this.S.flags[o.flag] = true;
           found++;
         }
       }
@@ -347,11 +439,11 @@
     }
 
     slide(o, d) {
-      const mem = this.mem(this.map.id), [px, py] = this.playerTile();
+      const mem = this.mem(this.map.id), [x0, x1, y0, y1] = this.bodySpan(this.p.x, this.p.y);
       let x = o.x, y = o.y, moved = 0;
       for (;;) {
         const nx = x + d[0], ny = y + d[1];
-        if (nx === px && ny === py) break;
+        if (nx >= x0 && nx <= x1 && ny >= y0 && ny <= y1) break;
         const t = this.tile(nx, ny);
         if (t === T.pit || (t === T.bridge && !this.bridgeDown())) {
           this.setTile(nx, ny, T.filled);
@@ -415,6 +507,12 @@
         this.events.push({ type: 'break', obj: o.id });
         return true;
       }
+      if (o.type === 'grab') {
+        this.objs.splice(this.objs.indexOf(o), 1);
+        this.mem(this.map.id).objs[o.id] = { gone: true };
+        this.events.push({ type: 'scene', label: o.label, obj: o.id });
+        return true;
+      }
       return false;
     }
 
@@ -428,8 +526,8 @@
     }
 
     onBridge() {
-      const x0 = Math.floor((this.p.x - 5) / TS), x1 = Math.floor((this.p.x + 4.999) / TS), y = Math.floor((this.p.y - 1) / TS);
-      for (let x = x0; x <= x1; x++) if (this.tile(x, y) === T.bridge) return true;
+      const [x0, x1, y0, y1] = this.bodySpan(this.p.x, this.p.y);
+      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (this.tile(x, y) === T.bridge) return true;
       return false;
     }
 
@@ -437,11 +535,51 @@
       const o = this.target();
       if (!o) return false;
       const mem = this.mem(this.map.id);
+      if (o.type === 'screen') {
+        const d = this.coverActive();
+        if (d && this.watched()) this.events.push({ type: 'cover', add: d.seen, why: 'screen', obj: o.id });
+        else this.events.push({ type: 'scene', label: o.label, obj: o.id });
+        return true;
+      }
+      if (o.type === 'duty') {
+        if (mem.taken[o.id]) return false;
+        mem.taken[o.id] = true;
+        const d = this.coverActive();
+        this.events.push({ type: 'lines', lines: o.lines, name: o.name, obj: o.id });
+        if (d) this.events.push({ type: 'cover', add: -d.duty, why: 'duty', obj: o.id });
+        return true;
+      }
+      if (o.type === 'repair') {
+        if (mem.taken[o.id]) return false;
+        this.events.push({ type: 'repair', obj: o.id, puzzle: o.puzzle, name: o.name });
+        return true;
+      }
+      if (o.type === 'decoy') {
+        if (mem.taken[o.id]) return false;
+        mem.taken[o.id] = true;
+        const tx = o.to[0] * TS + 8, ty = o.to[1] * TS + 8;
+        const fooled = this.objs.filter(e => e.type === 'enemy' && e.mode !== 'engaged' && Math.hypot(e.px - tx, e.py - ty) <= (o.range || 8) * TS);
+        for (const e of fooled) {
+          e.mode = 'look';
+          e.lookT = o.sec || 10;
+          e.angle = Math.atan2(ty - e.py, tx - e.px);
+        }
+        this.events.push({ type: 'lines', lines: o.lines, name: o.name, obj: o.id });
+        this.events.push({ type: 'decoy', obj: o.id, fooled: fooled.map(e => e.id) });
+        return true;
+      }
+      if (o.label && o.type !== 'trigger') {
+        this.events.push({ type: 'scene', label: o.label, obj: o.id, autosave: !!o.autosave });
+        return true;
+      }
       switch (o.type) {
         case 'npc':
           this.events.push({ type: 'lines', lines: o.lines, name: o.name, look: o.look, obj: o.id });
           return true;
         case 'examine':
+        case 'lock':
+        case 'fire':
+        case 'gate':
         case 'clue':
           this.events.push({ type: 'lines', lines: o.lines, name: o.name, obj: o.id });
           if (o.type === 'clue') this.S.flags['clue_' + this.map.id + '_' + o.id] = true;
@@ -470,6 +608,20 @@
         case 'cocoon':
           this.events.push({ type: 'lines', lines: o.lines || M.COCOON, name: o.name || 'Кокон', obj: o.id });
           return true;
+        case 'rest':
+          this.events.push({ type: 'rest', obj: o.id });
+          return true;
+        case 'spot': {
+          const n = (this.S.flags.placed || 0) + 1;
+          o.occupied = true;
+          this.remember(o, { occupied: true });
+          this.S.flags.placed = n;
+          this.S.flags['placed_a' + n] = true;
+          this.S.flags.ambush_score = (this.S.flags.ambush_score || 0) + (o.score || 0);
+          this.refresh();
+          this.events.push({ type: 'placed', obj: o.id, score: o.score || 0, n });
+          return true;
+        }
         case 'lever':
           return this.toggle(o);
         case 'jump': {
@@ -477,16 +629,65 @@
           if (!this.walkable(tx, ty)) return false;
           this.p.jump = { from: [this.p.x, this.p.y], to: [tx * TS + 8, ty * TS + 14], t: 0 };
           this.events.push({ type: 'jump', obj: o.id });
+          this.coverForce();
           return true;
         }
       }
       return false;
     }
 
+    fixed(id) {
+      const o = this.objs.find(q => q.id === id), mem = this.mem(this.map.id);
+      if (!o || o.type !== 'repair' || mem.taken[o.id]) return false;
+      mem.taken[o.id] = true;
+      if (o.flag) this.S.flags[o.flag] = true;
+      this.S.credits = (this.S.credits || 0) + (o.pay || 0);
+      this.events.push({ type: 'lines', lines: o.done, name: o.name, obj: o.id, pay: o.pay || 0 });
+      const d = this.coverActive();
+      if (d) this.events.push({ type: 'cover', add: -d.duty, why: 'duty', obj: o.id });
+      this.refresh();
+      return true;
+    }
+
+    coverActive() {
+      const d = A.Cover.def(this.S);
+      return d && this.map.def.cover === this.S.cover.id && !this.S.cover.exposed ? d : null;
+    }
+
+    forbidden() {
+      const [x, y] = this.playerTile();
+      return (this.map.def.forbid || []).some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1);
+    }
+
+    watched() {
+      return this.objs.some(o => o.type === 'watch' && !o.watch && this.canSee(o));
+    }
+
+    coverForce() {
+      const d = this.coverActive();
+      if (d && this.watched()) this.events.push({ type: 'cover', add: d.force, why: 'force' });
+    }
+
+    beast(e) {
+      const g = A.GROUPS[e.group];
+      return !!g && g.units.every(([type]) => (A.ENEMIES[type] || {}).kind === 'beast');
+    }
+
+    senses(e) {
+      const g = A.GROUPS[e.group];
+      return !!g && g.units.some(([type]) => (A.ENEMIES[type] || {}).senses) && !A.Bonds.has(this.S, 'tholme', 3);
+    }
+
+    sightRange(e) {
+      if (!this.p.sneak) return SIGHT.range;
+      if (A.Bonds.has(this.S, 'tholme', 2) && this.beast(e)) return 0;
+      return A.Bonds.has(this.S, 'tholme', 1) ? SIGHT.range / 2 : SIGHT.range;
+    }
+
     canSee(e) {
       const ex = e.px, ey = e.py - 8, px = this.p.x, py = this.p.y - 8;
       const d = Math.hypot(px - ex, py - ey);
-      if (d > SIGHT.range) return false;
+      if (d > this.sightRange(e)) return false;
       if (d > 4 && angDiff(Math.atan2(py - ey, px - ex), e.angle) > SIGHT.half) return false;
       const n = Math.ceil(d / 4);
       for (let i = 1; i < n; i++) {
@@ -542,20 +743,21 @@
 
     stepEnemies(dt) {
       const p = this.p, noise = this.noise();
-      for (const e of this.objs.filter(o => o.type === 'enemy')) {
+      for (const e of this.objs.filter(o => MOBILE.has(o.type))) {
         if (e.mode === 'engaged') continue;
         if (e.calm > 0) e.calm -= dt;
         const dist = Math.hypot(e.px - p.x, e.py - p.y);
+        if (e.type === 'watch') { this.watchStep(e, dt, dist, noise); continue; }
         if (!p.jump && dist < CONTACT && !(e.calm > 0)) {
           const engaged = e.mode === 'alert' || e.mode === 'chase';
           const toP = Math.atan2(p.y - e.py, p.x - e.px);
           const behind = angDiff(toP, e.angle) > Math.PI / 2;
-          const advantage = engaged ? 'enemy' : behind ? 'party' : 'none';
+          const advantage = engaged || (e.hidden && !this.visible(e)) ? 'enemy' : behind ? 'party' : 'none';
           this.events.push({ type: 'encounter', obj: e.id, group: e.group, name: e.name, advantage });
           e.mode = 'engaged';
           continue;
         }
-        const sees = !p.jump && this.canSee(e);
+        const sees = !p.jump && (this.canSee(e) || (dist < SENSE_NEAR && this.senses(e)));
         if (e.mode === 'patrol' || e.mode === 'look' || e.mode === 'return') {
           if (sees) { e.mode = 'alert'; e.alert = 0.6; this.events.push({ type: 'spotted', obj: e.id }); continue; }
           if (noise && dist <= noise) { e.mode = 'look'; e.lookT = 1; e.angle = Math.atan2(p.y - e.py, p.x - e.px); }
@@ -596,6 +798,31 @@
       }
     }
 
+    watchStep(e, dt, dist, noise) {
+      const p = this.p;
+      const covered = !e.watch && this.coverActive();
+      if (!(e.calm > 0) && !p.jump && (covered ? this.forbidden() : !!e.watch) && (dist < CONTACT || this.canSee(e))) {
+        e.calm = covered ? 3 : 4;
+        e.mode = 'look';
+        e.lookT = 1.2;
+        e.angle = Math.atan2(p.y - e.py, p.x - e.px);
+        if (covered) this.events.push({ type: 'cover', add: covered.seen, why: 'seen', obj: e.id });
+        else this.events.push({ type: 'scene', label: e.watch, obj: e.id });
+        return;
+      }
+      if (noise && dist <= noise && e.mode === 'patrol') {
+        e.mode = 'look';
+        e.lookT = 1;
+        e.angle = Math.atan2(p.y - e.py, p.x - e.px);
+      }
+      if (e.mode === 'look') {
+        e.lookT -= dt;
+        if (e.lookT <= 0) e.mode = 'patrol';
+        return;
+      }
+      this.patrol(e, dt);
+    }
+
     patrol(e, dt) {
       if (!e.route.length) return;
       const c = e.route[e.ri];
@@ -622,6 +849,14 @@
       const mem = this.mem(this.map.id);
       mem.beat[id] = how || 'won';
       this.objs = this.objs.filter(o => o.id !== id);
+      if (!this.objs.some(o => o.type === 'enemy')) {
+        this.S.flags['clear_' + this.map.id] = true;
+        this.sync();
+      }
+    }
+
+    enemiesLeft() {
+      return this.objs.filter(o => o.type === 'enemy').length;
     }
 
     release(id) {
@@ -636,5 +871,6 @@
     }
 
     static dirOfAngle(a) { return dirOfAngle(a); }
+    static mobile(o) { return MOBILE.has(o.type); }
   };
 })(globalThis.Aayla98 = globalThis.Aayla98 || {});

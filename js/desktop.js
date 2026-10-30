@@ -328,6 +328,7 @@ class Desktop {
       { id: 'minesweeper', title: t('app.minesweeper'), icon: 'minesweeper', action: () => window.appMinesweeper && window.appMinesweeper.open() },
       { id: 'solitaire', title: t('app.solitaire'), icon: 'solitaire', action: () => window.appSolitaire && window.appSolitaire.open() },
       { id: 'pinball', title: '3D Pinball', icon: 'pinball', action: () => window.appPinball && window.appPinball.open() },
+      { id: 'bliss', title: t('app.bliss'), icon: 'bliss', action: () => window.appBliss && window.appBliss.open() },
       { id: 'icq', title: 'ICQ 98a', icon: 'icq-online', action: () => window.appICQ && window.appICQ.open() },
       { id: 'outlook', title: 'Outlook Express', icon: 'outlook', action: () => window.appOutlook && window.appOutlook.open() },
       { id: 'dialup', title: t('app.dialup'), icon: 'dialup', action: () => window.appDialUp && window.appDialUp.open() },
@@ -373,8 +374,8 @@ class Desktop {
       if (window.gameManager.isInstalled('stalker98_demo')) {
         list.push({ id: 'stalker98_demo', title: 'S.T.A.L.K.E.R. 98 Demo', icon: 'stalker98', action: () => window.appStalker98 && window.appStalker98.open() });
       }
-      if (window.gameManager.isInstalled('moh98')) {
-        list.push({ id: 'moh98', title: 'Medal of Honor 98', icon: 'moh98', action: () => window.appMoh98 && window.appMoh98.open() });
+      if (window.gameManager.isInstalled('moh98_demo')) {
+        list.push({ id: 'moh98_demo', title: 'Medal of Honor 98 Demo', icon: 'moh98', action: () => window.appMoh98 && window.appMoh98.open() });
       }
       if (window.gameManager.isInstalled('cop98')) {
         list.push({ id: 'cop98', title: 'Зов Припяти 98', icon: 'cop98', action: () => window.appCop98 && window.appCop98.open() });
@@ -457,14 +458,17 @@ class Desktop {
       if (window.gameManager.isInstalled('catniss')) {
         list.push({ id: 'catniss', title: 'Catniss', icon: 'catniss', action: () => window.appCatniss && window.appCatniss.open() });
       }
+      if (window.gameManager.isInstalled('kirill98')) {
+        list.push({ id: 'kirill98', title: 'Kirill The Game', icon: 'kirill98', action: () => window.appKirill98 && window.appKirill98.open() });
+      }
       if (window.gameManager.isInstalled('plov')) {
         list.push({ id: 'plov', title: 'Хаято, Где плов?', icon: 'plov', action: () => window.appPlov && window.appPlov.open() });
       }
       if (window.gameManager.isInstalled('homm1_demo')) {
         list.push({ id: 'homm1_demo', title: 'Heroes 98 Demo', icon: 'homm1', action: () => window.appHomm1 && window.appHomm1.open() });
       }
-      if (window.gameManager.isInstalled('sims3')) {
-        list.push({ id: 'sims3', title: 'The Sims 3', icon: 'sims3', action: () => window.appSims3 && window.appSims3.open() });
+      if (window.gameManager.isInstalled('sims3_demo')) {
+        list.push({ id: 'sims3_demo', title: 'The Sims 3 Demo', icon: 'sims3', action: () => window.appSims3 && window.appSims3.open() });
       }
       if (window.gameManager.isInstalled('kotor98_demo')) {
         list.push({ id: 'kotor98_demo', title: 'KOTOR 98 Demo', icon: 'kotor98', action: () => window.appKotor98 && window.appKotor98.open() });
@@ -537,6 +541,13 @@ class Desktop {
           action: () => {
             if (window.appOfficeLauncher) window.appOfficeLauncher.open();
           }
+        });
+      } else if (discId === 'office_games_2') {
+        list.push({
+          id: 'cdrom_office_games_2',
+          title: window.i18n && window.i18n.getLanguage() === 'en' ? 'Office Games 2 (D:)' : 'Офисные игры 2 (D:)',
+          icon: 'game-manager',
+          action: () => window.vfs.openDiscShell('office_games_2')
         });
       } else {
         list.push({
@@ -635,6 +646,8 @@ class Desktop {
               if (window.appIE) window.appIE.open(targetUrl);
             } else if (file.action) {
               file.action();
+            } else if (window.Og2 && window.Og2.isOg2App(file.app)) {
+              window.Og2.openApp(file.app);
             } else if (file.app === 'office_launcher') {
               if (window.appOfficeLauncher) window.appOfficeLauncher.open();
             } else if (file.app === 'og_snake3d') {

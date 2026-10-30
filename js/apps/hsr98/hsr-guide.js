@@ -24,6 +24,8 @@
     { id: 'breaks', text: 'Нанесите Пробитие уязвимости 5 раз', pts: 100, need: 5, go: 'field' },
     { id: 'synth', text: 'Используйте Синтез 1 раз', pts: 100, need: 1, go: 'synth' },
     { id: 'trace', text: 'Активируйте или поднимите уровень Следов 1 раз', pts: 100, need: 1, go: 'trace' },
+    { id: 'levelup', text: 'Повысьте уровень персонажа 1 раз', pts: 100, need: 1, go: 'levelup' },
+    { id: 'coneup', text: 'Повысьте уровень светового конуса 1 раз', pts: 100, need: 1, when: g => g.state.inv.cones.length > 0, go: 'coneup' },
     { id: 'tech', text: 'Используйте Технику 1 раз', pts: 100, need: 1, go: 'field' },
     { id: 'item', text: 'Используйте расходный предмет 1 раз', pts: 100, need: 1, go: 'item' },
     { id: 'fusion', text: 'Проведите Слияние в бою 1 раз', pts: 100, need: 1, when: g => Object.keys((g.state.bank || {}).fusions || {}).length > 0, go: 'field' }
@@ -46,14 +48,14 @@
     { id: 'orn', label: 'Извлечение украшений', sub: 'Планарные украшения', icon: 'gcosmic', col: '#80c8ff' },
     { id: 'golden', label: 'Чашелист (золотой)', sub: 'Материалы опыта и кредиты', icon: 'calyx', col: '#e8c060' },
     { id: 'crimson', label: 'Чашелист (багровый)', sub: 'Материалы Следов', icon: 'calyx', col: '#e05a5a' },
-    { id: 'shadow', label: 'Застойная тень', sub: 'Реликвии', icon: 'calyx', col: '#b080ff' },
+    { id: 'shadow', label: 'Застойная тень', sub: 'Возвышение, реликвии', icon: 'calyx', col: '#b080ff' },
     { id: 'cavern', label: 'Пещера коррозии', sub: 'Реликвии', icon: 'calyx', col: '#5ad0c0' },
     { id: 'echo', label: 'Эхо войны', sub: 'Материалы Эха войны', icon: 'calyx', col: '#ff8a5a' }
   ];
   const SIMULATOR = { map: 'express', ch: 't' };
   const HOP_NEAR = 4;
 
-  const MAT_ORDER = ['path', 'foe', 'echo', 'tracks'];
+  const MAT_ORDER = ['path', 'foe', 'echo', 'asc', 'tracks'];
   const SCORE = [[12, 'S'], [9, 'A'], [6, 'B'], [0, 'C']];
   const REC_ABILITY = ['skill', 'ult', 'talent'];
   const REC_NODE = n => n.kind === 'bonus' || (n.kind === 'ability' && REC_ABILITY.includes(n.id));
@@ -70,7 +72,7 @@
     return out;
   };
 
-  const calyxKind = c => c.reward === 'path' ? 'crimson' : c.reward === 'echo' ? 'echo' : c.reward === 'exp' || c.reward === 'credits' ? 'golden' : c.boss ? 'shadow' : 'cavern';
+  const calyxKind = c => c.reward === 'path' ? 'crimson' : c.reward === 'echo' ? 'echo' : c.reward === 'exp' || c.reward === 'credits' || c.reward === 'aether' ? 'golden' : c.boss ? 'shadow' : 'cavern';
 
   const CHAPTER_PHOTO = { prologue: 'doom', winter: 'belobog_intro', dawn: 'ending', awake: 'fm2_done' };
   const CHAPTER_SCENE = { crown: { bg: 'station', cast: ['ruanmei', 'trail'] } };
@@ -145,7 +147,7 @@
       }
       return H.CALYX.filter(c => calyxKind(c) === cat).map(c => {
         const site = this.guideSite('calyx', c.id), path = c.owns && Object.values(H.TRACE_PATH_LINES || {}).find(l => l[0] === c.owns);
-        return { kind: 'calyx', id: c.id, c, name: c.name.split(': ').slice(1).join(': ') || c.name, cost: c.cost, open: this.calyxOpen(c), why: c.owns ? 'Нужен герой Пути ' + (path ? path[1] : c.owns) + '.' : 'Откроется по сюжету.', place: this.guidePlace(site) };
+        return { kind: 'calyx', id: c.id, c, name: c.name.split(': ').slice(1).join(': ') || c.name, cost: c.cost, open: this.calyxOpen(c), why: c.ownsMat ? 'Нужен герой с этим материалом.' : c.owns ? 'Нужен герой Пути ' + (path ? path[1] : c.owns) + '.' : 'Откроется по сюжету.', place: this.guidePlace(site) };
       }).sort((a, b) => (b.open ? 1 : 0) - (a.open ? 1 : 0));
     },
 
@@ -282,9 +284,26 @@
           for (const [m, x] of Object.entries(c.items)) items[m] = (items[m] || 0) + x;
         }
       }
+      const pay = c => {
+        credits += c.credits;
+        for (const [m, x] of Object.entries(c.items)) items[m] = (items[m] || 0) + x;
+      };
+      for (let p = this.state.roster[key] ? this.ascOf(key) : 0; p < 6; p++) pay(this.ascCost(key, p));
       let exp = -r.exp;
       for (let l = r.lvl; l < H.MAX_LVL; l++) exp += H.expToNext(l);
-      return { items, credits, exp: r.lvl >= H.MAX_LVL ? 0 : Math.max(0, exp) };
+      exp = r.lvl >= H.MAX_LVL ? 0 : Math.max(0, exp);
+      credits += this.expCredits(exp);
+      let coneExp = 0;
+      const cn = r.cone != null ? this.coneOf(r.cone) : null;
+      if (cn) {
+        this.coneFix(cn);
+        for (let p = cn.asc; p < 6; p++) pay(this.coneAscCost(cn, p));
+        coneExp = -cn.exp;
+        for (let l = cn.lvl; l < H.MAX_LVL; l++) coneExp += this.coneNeed(cn, l);
+        coneExp = cn.lvl >= H.MAX_LVL ? 0 : Math.max(0, coneExp);
+        credits += this.coneCredits(coneExp);
+      }
+      return { items, credits, exp, coneExp };
     },
 
     targetNeeds(key) {
@@ -294,6 +313,8 @@
       out.sort((a, b) => rank(a.id) - rank(b.id));
       const book = H.ITEMS.exp3.use.exp, have = ['exp1', 'exp2', 'exp3'].reduce((a, id) => a + (inv[id] || 0) * H.ITEMS[id].use.exp, 0);
       if (cost.exp > have) out.push({ id: 'exp3', need: Math.ceil(cost.exp / book), miss: Math.ceil((cost.exp - have) / book) });
+      const aether = H.ITEMS.aether3.coneExp, haveAether = ['aether1', 'aether2', 'aether3'].reduce((a, id) => a + (inv[id] || 0) * H.ITEMS[id].coneExp, 0);
+      if (cost.coneExp > haveAether) out.push({ id: 'aether3', need: Math.ceil(cost.coneExp / aether), miss: Math.ceil((cost.coneExp - haveAether) / aether) });
       if (cost.credits > s.credits) out.push({ id: 'credits', need: cost.credits, miss: cost.credits - s.credits });
       return out.map(o => Object.assign(o, this.needSource(o.id)));
     },
@@ -304,11 +325,14 @@
       if (it && it.mat === 'path') { const path = H.TRACE_PATH_LINES[it.line][0]; row = rows('crimson').find(r => r.c.path === path); }
       else if (it && it.mat === 'foe') row = rows('golden').find(r => (r.c.pool || []).some(e => H.ENEMIES[e] && H.TRACE_FOE_OF_FAMILY[H.ENEMIES[e].fam] === it.line)) || null;
       else if (it && it.mat === 'echo') row = rows('echo').find(r => r.c.mat === id);
+      else if (it && it.mat === 'asc') row = rows('shadow').find(r => r.c.mat === id);
       else if (id === 'exp3') row = rows('golden').find(r => r.id === 'cx_exp');
+      else if (it && it.coneExp) row = rows('golden').find(r => r.id === 'cx_aether');
       else if (id === 'credits') row = rows('golden').find(r => r.id === 'cx_credits');
       if (row) return { row, src: row.name + (row.place ? ', ' + row.place : '') };
       if (it && it.mat === 'foe') return { row: null, src: 'Враги: ' + H.TRACE_FOE_LINES[it.line][0] };
       if (it && it.mat === 'tracks') return { row: null, src: 'Снабжение, награды проводника', supply: true };
+      if (it && it.src) return { row: null, src: it.src };
       return { row: null, src: '' };
     },
 
@@ -347,6 +371,14 @@
   const spending = name => { const base = P[name]; if (base) P[name] = function (...a) { const p0 = this.state.power, r = base.apply(this, a), d = p0 - this.state.power; if (d > 0) this.dailyCount('power', d); return r; }; };
   ['synth', 'exchange', 'cook', 'craftRelic'].forEach(n => counted(n, 'synth'));
   counted('trace', 'trace');
+  const raising = (name, id, levelOf) => {
+    const base = P[name];
+    if (base) P[name] = function (who, ...a) { const before = levelOf.call(this, who), r = base.call(this, who, ...a); if (r && levelOf.call(this, who) > before) this.dailyCount(id); return r; };
+  };
+  const heroLevel = function (key) { const r = this.state.roster[key]; return r ? r.lvl : 0; };
+  const coneLevel = cn => (cn && cn.lvl) || 1;
+  ['useExp', 'applyUp'].forEach(n => raising(n, 'levelup', heroLevel));
+  ['coneUseExp', 'coneApply'].forEach(n => raising(n, 'coneup', coneLevel));
   counted('technique', 'tech', r => r !== false);
   counted('useItem', 'item', (r, a) => r && a[0] !== 'fuel');
   counted('suComplete', 'su', function () { const su = this.state.su; return !!(su && su.result && su.result.win); });

@@ -47,6 +47,9 @@
 
   const TUNING = {
     growth: 0.12,
+    ascOn: true,
+    ascJump: 0.5,
+    upCredit: 0.2,
     avBase: 10000,
     spMax: 5,
     spStart: 3,
@@ -388,7 +391,10 @@
   };
 
   const grow = lvl => 1 + TUNING.growth * (Math.max(1, lvl) - 1);
-  const statAt = (base, lvl) => Math.round(base * grow(lvl));
+  const ascCap = asc => 20 + 10 * asc;
+  const ascPhase = lvl => clamp(Math.floor(lvl / 10) - 1, 0, 6);
+  const ascGrow = (lvl, asc) => grow(lvl) + (asc > 0 ? TUNING.ascJump * clamp((ascCap(asc) - lvl) / 10, 0, 1) : 0);
+  const statAt = (base, lvl, asc) => Math.round(base * (asc == null ? grow(lvl) : ascGrow(lvl, asc)));
   const CHAR_EXP = [200, 300, 500, 600, 1050, 1670, 2320, 3060, 3860, 4740, 5710, 6730, 7830, 9000, 10240, 11550, 12920, 14360, 15870, 16580, 16840, 17100, 17370, 17640, 17910, 18190, 18480, 18760, 19040, 19340, 19630, 19930, 20220, 20530, 20840, 21140, 21450, 21760, 22080, 22390, 25550, 29140, 32830, 36600, 40470, 44430, 48480, 52630, 56870, 61190, 65620, 70130, 74740, 79450, 84240, 89120, 94110, 99190, 104350, 106240, 111830, 117530, 123320, 129210, 135200, 141290, 147480, 153780, 160170, 179260, 199920, 220920, 242260, 263930, 285950, 308300, 331000, 354040, 377420];
   const tlExpToNext = lvl => 40 * lvl + 2 * lvl * lvl;
   const expToNext = lvl => CHAR_EXP[clamp(Math.round(lvl), 1, CHAR_EXP.length) - 1];
@@ -397,7 +403,7 @@
   const breakBase = lvl => 10 + 4 * lvl;
   const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
-  const VERSION = '1.6';
+  const VERSION = '1.7';
   const BUILD_VERSION = globalThis.Win98Build && /^\d/.test(globalThis.Win98Build.version || '') ? globalThis.Win98Build.version : VERSION;
   const EDITION = globalThis.Hsr98Standalone === 'apk' ? 'Издание «Портативное» · Android APK' : globalThis.Hsr98Standalone === 'pc' ? 'Издание «Ярило-VI» · ПК' : 'Издание «Ярило-VI»';
   const BRAND = globalThis.Hsr98Standalone ? {
@@ -417,6 +423,6 @@
     makers: 'Win 98 Edition Team'
   };
 
-  Object.assign(H, { clamp, lerp, makeRandom, ELEMENTS, ELEMENT_KEYS, PATHS, BREAK_EFFECT, TUNING, grow, statAt, CHAR_EXP, expToNext, tlExpToNext, charExp, enemyExp, breakBase, fmt, VERSION, BUILD_VERSION, BRAND });
+  Object.assign(H, { clamp, lerp, makeRandom, ELEMENTS, ELEMENT_KEYS, PATHS, BREAK_EFFECT, TUNING, grow, statAt, ascCap, ascPhase, ascGrow, CHAR_EXP, expToNext, tlExpToNext, charExp, enemyExp, breakBase, fmt, VERSION, BUILD_VERSION, BRAND });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

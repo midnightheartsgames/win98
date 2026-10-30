@@ -7,7 +7,7 @@
     ['ПКМ', 'держать: блок; мышью вверх, вниз, влево или вправо; поднятый в последний миг блок парирует'],
     ['F', 'пинок'], ['E', 'лестница, обыскать тело, поднять вещь, освежевать тушу (нужен нож); сдавшегося связать, вести или отпустить'], ['B', 'перевязать себя или того, на кого смотрите (нужен бинт)'], ['G', 'нести упавшего на плече, положить; у лекаря отдать'], ['Q', 'команды своему отряду, затем 1 – 6'], ['1 – 4, колесо', 'ближний бой, лук или арбалет, топорики, сулицы'], ['5', 'факел в левой руке: волки не подходят ближе 5 м'], ['R', 'перезарядить арбалет'], ['V', 'вид от первого или третьего лица'],
     ['M', 'карта долины'], ['T', 'ждать до 4 часов'], ['F5 / F9', 'быстрое сохранение и загрузка'], ['F6', 'уронить манекен перед собой'],
-    ['F2', 'свободная камера'], ['F3', 'сведения'], ['F4', 'час вперёд']
+    ['F2', 'свободная камера'], ['F3', 'сведения'], ['F4', 'час вперёд'], ['F7', 'погода по кругу']
   ];
   const WEAPON_IDS = ['knife', 'sickle', 'sword', 'axe', 'mace', 'spear', 'bardiche'];
   const FOES = [['elf', 'эльф'], ['guard', 'стражник'], ['villain', 'солдат Злого'], ['town', 'горожанин']];
@@ -162,7 +162,30 @@
   }
   const HAIR_NAMES = { long: 'длинные', tail: 'хвост', crop: 'коротко', braid: 'коса', bun: 'узел', short: 'стрижка', bald: 'бритая' };
 
+  const README_DEBUG = new Set(['F2', 'F3', 'F4', 'F6', 'F7']);
+  const wrap = (s, w) => { const out = []; let line = ''; for (const word of s.split(' ')) { if (line && (line + ' ' + word).length > w) { out.push(line); line = word; } else line = line ? line + ' ' + word : word; } if (line) out.push(line); return out; };
+  function readme() {
+    const keys = KEYS.filter(([k]) => !README_DEBUG.has(k)).flatMap(([k, v]) => wrap(v, 54).map((l, i) => (i ? '' : k).padEnd(14) + l));
+    const lines = [
+      K.TITLE, '3Д-экшон по письму Кирилла', 'Четыре Зоны Софт (2000) / Win 98 Edition', '',
+      'Кириллу, который джва года хотел такую игру.', '',
+      'О ИГРЕ', '',
+      ...wrap('Долина из четырёх зон: Земли людей, Земли императора, Эльфийский лес и Горы Злого. Можно играть за эльфов, за охрану дворца или за Злого. Эльфы ходят в набеги на корованы и берегут Корни, охрана держит дворец и тракт, Злой собирает войско и готовит штурм. Мостовица и хутора ни за кого не воюют: там лавки, лекарь и мастер протезов.', 72), '',
+      ...wrap('Всё, что сделано, остаётся в мире: убитые лежат, срубленный лес не растёт, сгоревший дом стоит пустым. Части тела можно отрубить, кровь надо остановить, потерянную руку или ногу мастер Шарнир заменит протезом.', 72), '',
+      'УПРАВЛЕНИЕ', '', ...keys, '',
+      'НАСТРОЙКИ', '',
+      ...wrap('Разрешение картинки, радиус 3D-деревьев, дальность леса, 16-битный цвет с точечным смешением, предел тел, громкость звука и музыки, мышь и сложность. В группе «Детали мира» отключаются трава и цветы, мелочи под ногами, облака, земля за краем долины и капли дождя: так игра идёт быстрее на слабом ускорителе.', 72), '',
+      'СОХРАНЕНИЯ', '',
+      ...wrap('Ячейки сохранения открываются из меню (Esc). F5 сохраняет быстро, F9 загружает быструю запись. Игра сама сохраняется после сна и при входе в новое место, три последних автосохранения хранятся отдельно.', 72), '',
+      'ТРЕБОВАНИЯ', '',
+      'Win 98, Pentium II 300 МГц, 64 МБ памяти, 3D-ускоритель с 8 МБ памяти,', 'звуковая карта, 420 МБ на диске.', '',
+      'Удачи на корованах.'
+    ];
+    return lines.join('\r\n') + '\r\n';
+  }
+
   K.Screens = {
+    readme,
     title(ui) {
       const el = document.createElement('div');
       el.className = 'ki-title';
@@ -350,14 +373,19 @@
             <div class="ki-settings-cols">
               <fieldset><legend>Картинка</legend>
                 <div class="ki-set"><span>Разрешение</span>${opt('lines', [[384, '512×384'], [480, '640×480'], [600, '800×600']])}</div>
-                <div class="ki-set"><span>Трава и цветы</span>${opt('grass', [[0, 'нет'], [1, 'мало'], [2, 'много']])}</div>
                 <div class="ki-set"><span>Радиус 3D-деревьев</span>${opt('treeRadius', [[25, '25 м'], [40, '40 м'], [60, '60 м']])}</div>
                 <div class="ki-set"><span>Дальность леса</span>${opt('forest', [[0.75, 'близко'], [1, 'обычно'], [1.3, 'далеко']])}</div>
                 <div class="ki-set"><span>Предел тел</span>${opt('bodies', [[60, '60'], [100, '100'], [160, '160']])}</div>
                 ${check('dither', '16-битный цвет с точечным смешением')}
-                ${check('precip', 'Капли дождя и снежинки')}
                 ${check('blood', 'Брызги и лужи крови')}
                 ${check('border', 'Показать границу 3D-деревьев')}
+              </fieldset>
+              <fieldset><legend>Детали мира</legend>
+                <div class="ki-set"><span>Трава и цветы</span>${opt('grass', [[0, 'нет'], [1, 'мало'], [2, 'много']])}</div>
+                ${check('clutter', 'Камешки, грибы и ветки')}
+                ${check('clouds', 'Облака')}
+                ${check('outer', 'Земля за краем долины')}
+                ${check('precip', 'Капли дождя и снежинки')}
               </fieldset>
               <fieldset><legend>Звук и мышь</legend>
                 ${range('volume', 'Звук', 0, 100)}
@@ -1114,9 +1142,9 @@
                 <div class="ki-war-sub">Войско</div>
                 <div class="ki-war-row"><span>Верность</span>${bar(st.loyalty, 100, 'loy')}<em>${st.loyalty}%</em></div>
                 <div class="ki-war-row"><span>Страх</span>${bar(st.fear, 100, 'fear')}<em>${st.fear}%</em></div>
-                <div class="ki-war-row"><span>Казна</span><em>${V.stock.silver} сер., хлеба ${V.stock.bread}</em></div>
+                <div class="ki-war-row"><span>Казна</span><em>${V.stock.silver} сер., хлеба ${V.stock.bread}</em>${first ? '' : `<button class="ki-opt" data-act="take"${V.stock.silver < Vi.TAKE ? ' disabled' : ''}>Взять ${Vi.TAKE} себе</button>`}</div>
                 <div class="ki-war-row"><span>Жалованье</span><em>${next ? "через " + next + " дн." : "сегодня"}, ${Vi.soldiers(S).length * Vi.PAY} сер.</em>${first ? '' : `<button class="ki-opt${A.pay.held ? ' on' : ''}" data-act="hold">${A.pay.held ? 'Задержано' : 'Задержать'}</button>`}</div>
-                ${A.share ? `<div class="ki-war-share">Доля добычи: ${A.share.silver} сер.<button class="ki-opt" data-share="1">Раздать</button><button class="ki-opt" data-share="0">В казну</button></div>` : ''}
+                ${A.share ? `<div class="ki-war-share">Доля добычи: ${A.share.silver} сер.<button class="ki-opt" data-share="1">Раздать</button><button class="ki-opt" data-share="0">В казну</button><button class="ki-opt" data-share="self">Себе</button></div>` : ''}
                 ${first ? '' : `<div class="ki-war-sub">Молот</div>
                 <div class="ki-war-build"><button class="ki-opt" data-build="ladder">Лестница: ${Vi.LADDER} брёвен</button><button class="ki-opt" data-build="ram"${V.ram ? ' disabled' : ''}>Таран: ${Vi.RAM_LOGS} брёвен, ${Vi.RAM_IRON} железа</button></div>
                 <div class="ki-war-sub">Штурм дворца</div>
@@ -1149,11 +1177,12 @@
         else if (d.arm) { const r = Vi.forgeArm(S, +d.arm, []); sel.said = r.ok ? r.text : r.why; }
         else if (d.flog) { const r = Vi.punish(S, +d.flog, 'flog', []); sel.said = r.ok ? r.text : r.why; }
         else if (d.pit) { const r = Vi.punish(S, +d.pit, 'pit', []); sel.said = r.ok ? r.text : r.why; }
-        else if (d.share !== undefined) { const n = Vi.share(S, d.share === '1', []); sel.said = n ? `Роздано людям ${n} серебра` : 'Добыча ушла в казну'; }
+        else if (d.share !== undefined) { const n = Vi.share(S, d.share === 'self' ? 'self' : d.share === '1', []); sel.said = n > 0 ? `Роздано людям ${n} серебра` : n < 0 ? `Взято себе ${-n} серебра, люди ворчат` : 'Добыча ушла в казну'; }
         else if (d.build) { const r = Vi.build(S, d.build); sel.said = r.ok ? r.text : r.why; }
         else if (d.assault) { const r = ui.villainAssault(d.assault); if (r && r.ok) return; sel.said = r ? r.why : ''; }
         else if (d.act === 'order') { const r = ui.warOrder(sel.squad, sel.kind, sel.target, sel.lead); if (r && r.ok && sel.lead) return; sel.said = r ? (r.ok ? r.text : r.why) : ''; if (r && r.ok) { sel.kind = null; sel.target = null; } }
         else if (d.act === 'hold') { Vi.holdPay(S); }
+        else if (d.act === 'take') { const n = Vi.takeChest(S, []); sel.said = n ? `Взято из казны ${n} серебра, войско ворчит` : 'В казне не хватает серебра'; }
         else if (d.act === 'tab') sel.tab = sel.tab === 'army' ? 'map' : 'army';
         else if (d.act === 'sortie') { ui.villainSortie(); return; }
         else if (d.act === 'close') { ui.closePanel(true); return; }

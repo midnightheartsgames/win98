@@ -259,48 +259,30 @@ class SunsetValleySite {
     return `Город ${town} - официальный сервер`;
   }
 
-  getSteamStatus() {
+  getGameStatus() {
     const gm = this.gm;
-    const cat = gm && gm.catalog && gm.catalog.sims3 ? gm.catalog.sims3 : {
-      title: 'The Sims 3',
-      priceDisplay: '$43.99',
+    const cat = gm && gm.catalog && gm.catalog.sims3_demo ? gm.catalog.sims3_demo : {
+      title: 'The Sims 3 Demo',
+      setupExe: 'sims3demo.exe',
       targetExe: 'SIMS3.EXE',
       folder: 'Sims3',
-      fileSize: '1.4 GB',
       shots: ['Дом семьи Гот', 'Создание семьи']
     };
-    const installed = Boolean(gm && typeof gm.isInstalled === 'function' && gm.isInstalled('sims3'));
-    const owned = Boolean(gm && typeof gm.ownsOnSteam === 'function' && gm.ownsOnSteam('sims3'));
-    const dl = typeof window !== 'undefined' && window.appSteam && window.appSteam.downloads
-      ? window.appSteam.downloads.get('sims3')
-      : null;
-    return { cat, installed, owned, dl };
+    const installed = Boolean(gm && typeof gm.isInstalled === 'function' && gm.isInstalled('sims3_demo'));
+    return { cat, installed };
   }
 
-  renderSteamState() {
-    const { cat, installed, owned, dl } = this.getSteamStatus();
+  renderGameState() {
+    const { cat, installed } = this.getGameStatus();
     if (installed) {
       return {
-        text: `Игра установлена в <b>C:\\Games\\${this.esc(cat.folder)}</b>.`,
-        buttons: `<button type="button" class="sv-btn sv-btn-go" data-sv-action="game-launch">Запустить ${this.esc(cat.targetExe)}</button> <button type="button" class="sv-btn" data-sv-action="steam-open">Страница в Steam</button>`
-      };
-    }
-    if (dl) {
-      const pct = Math.max(0, Math.min(100, Math.round(dl.progress || 0)));
-      return {
-        text: `Steam загружает игру: <b>${pct}%</b>.`,
-        buttons: `<button type="button" class="sv-btn sv-btn-go" data-sv-action="steam-open">Загрузка в Steam: ${pct}%</button>`
-      };
-    }
-    if (owned) {
-      return {
-        text: 'Игра есть в вашей библиотеке Steam, но ещё не установлена.',
-        buttons: `<button type="button" class="sv-btn sv-btn-go" data-sv-action="steam-open">Установить через Steam</button>`
+        text: `Демоверсия установлена в <b>C:\\Games\\${this.esc(cat.folder)}</b>.`,
+        buttons: `<button type="button" class="sv-btn sv-btn-go" data-sv-action="game-launch">Запустить ${this.esc(cat.targetExe)}</button>`
       };
     }
     return {
-      text: `Игра продаётся в Steam за <b>${this.esc(cat.priceDisplay)}</b>.`,
-      buttons: `<button type="button" class="sv-btn sv-btn-go" data-sv-action="steam-open">Купить в Steam за ${this.esc(cat.priceDisplay)}</button>`
+      text: `Демоверсия есть на компакт-диске журнала «Игромания»: <b>D:\\demo\\${this.esc(cat.setupExe)}</b>.`,
+      buttons: `<button type="button" class="sv-btn sv-btn-go" data-sv-action="cd-open">Демоверсия на CD «Игромании»</button>`
     };
   }
 
@@ -427,7 +409,7 @@ class SunsetValleySite {
           </div>
           <div class="sv-foot">
             <p><b>Мэрия города Сансет Вэлли</b>, ${this.esc(cityhall ? cityhall.address : 'Ратушная улица')}. Письма: <a href="mailto:mayor@sunsetvalley98.com">mayor@sunsetvalley98.com</a></p>
-            <p>Сервер ведёт ${this.esc(this.data.site.webmaster)}. Город создан студией <a data-url="${this.url('/maxis')}">Maxis</a> для игры The Sims 3, которая продаётся в <a data-url="http://www.steampowered.com">Steam</a>.</p>
+            <p>Сервер ведёт ${this.esc(this.data.site.webmaster)}. Город создан студией <a data-url="${this.url('/maxis')}">Maxis</a> для игры The Sims 3, демоверсия которой есть на компакт-диске журнала «Игромания».</p>
             <p>Лучше всего смотреть в Microslop Internet Explorer 5.0 при разрешении 800x600. Последнее обновление ${this.esc(this.data.site.date)}.</p>
             ${webRingHtml}
           </div>
@@ -536,7 +518,7 @@ class SunsetValleySite {
   }
 
   renderMaxisBox() {
-    const st = this.renderSteamState();
+    const st = this.renderGameState();
     return `
       <div class="sv-maxis">
         <div class="sv-maxis-head">Maxis представляет</div>
@@ -545,7 +527,7 @@ class SunsetValleySite {
             <td valign="top" style="padding-right:6px;">${this.plumbob(24)}</td>
             <td valign="top"><b style="font-size:13px;">The Sims 3</b><br>Весь наш город в одной игре для Win 98.</td>
           </tr></table>
-          <div class="sv-steam-state">${st.text}</div>
+          <div class="sv-game-state">${st.text}</div>
           ${st.buttons}
           <p style="margin:6px 0 0 0;"><a class="sv-a" data-url="${this.url('/maxis')}">Об игре, клавиши и требования</a></p>
         </div>
@@ -1701,8 +1683,8 @@ class SunsetValleySite {
   renderMaxisPage() {
     const d = this.data;
     const S = this.s3;
-    const st = this.renderSteamState();
-    const { cat } = this.getSteamStatus();
+    const st = this.renderGameState();
+    const { cat } = this.getGameStatus();
     const shots = (cat.shots || []).slice(0, 2);
     return `
       <table class="sv-product"><tr>
@@ -1710,10 +1692,10 @@ class SunsetValleySite {
         <td>
           <p class="sv-product-title">The Sims 3</p>
           <p class="sv-product-sub">Сансет Вэлли целиком: 39 участков, 10 семей и ни одного экрана загрузки между домом и маяком.</p>
-          <div class="sv-steam-state">${st.text}</div>
+          <div class="sv-game-state">${st.text}</div>
           ${st.buttons}
           <table class="sv-shots" style="margin-top:10px;"><tr>
-            ${shots.map((s, i) => `<td><img src="content/steam/sims3-${i + 1}.jpg" width="160" height="120" alt="${this.esc(s)}"><br>${this.esc(s)}</td>`).join('')}
+            ${shots.map((s, i) => `<td><img src="content/igromania/demos/sims3_demo-${i + 1}.jpg" width="160" height="120" alt="${this.esc(s)}"><br>${this.esc(s)}</td>`).join('')}
           </tr></table>
         </td>
       </tr></table>
@@ -1961,10 +1943,10 @@ class SunsetValleySite {
     on('[data-sv-action]', (el) => {
       const act = el.dataset.svAction;
       const gm = this.gm;
-      if (act === 'steam-open') {
-        if (gm && typeof gm.showInSteam === 'function') gm.showInSteam('sims3');
+      if (act === 'cd-open') {
+        if (gm && typeof gm.showOnCd === 'function') gm.showOnCd('sims3_demo');
       } else if (act === 'game-launch') {
-        if (gm && gm.catalog && gm.catalog.sims3 && typeof gm.catalog.sims3.launch === 'function') gm.catalog.sims3.launch();
+        if (gm && gm.catalog && gm.catalog.sims3_demo && typeof gm.catalog.sims3_demo.launch === 'function') gm.catalog.sims3_demo.launch();
       } else if (act === 'poll-reset') {
         this.resetPoll();
         refresh();

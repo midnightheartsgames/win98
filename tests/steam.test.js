@@ -6,9 +6,9 @@ const vm = require('node:vm');
 const root = path.join(__dirname, '..');
 const read = f => fs.readFileSync(path.join(root, f), 'utf8');
 
-const PREINSTALLED_BEFORE_STEAM = ['lol', 'doom', 'avatar98', 'hsr98', 'serioussam', 'dota', 'diablo', 'moh98', 'cop98', 'gta90'];
-const PREINSTALLED_NOW_ON_CD = ['fallout98_demo', 'mc98_demo', 'dao98_demo', 'stalker98_demo', 'kotor98_demo'];
-const CD_DEMOS = ['burnout', 'hockey', 'worldcup98', 'homm1_demo', 'sammax202_demo', 'neon-racer_demo', 'half-life_demo', 'hl2_demo', 'kotor98_demo', 'maxpayne_demo', 'xiii_demo', 'falloutzp_demo', 'fallout98_demo', 'tekken98_demo', 'dmc98_demo', 'dao98_demo', 'mc98_demo', 'stalker98_demo', 'korovany_demo', 'quest_demo'];
+const PREINSTALLED_BEFORE_STEAM = ['lol', 'doom', 'avatar98', 'hsr98', 'serioussam', 'dota', 'diablo', 'cop98', 'gta90'];
+const PREINSTALLED_NOW_ON_CD = ['fallout98_demo', 'mc98_demo', 'dao98_demo', 'stalker98_demo', 'kotor98_demo', 'moh98_demo'];
+const CD_DEMOS = ['burnout', 'hockey', 'worldcup98', 'homm1_demo', 'sammax202_demo', 'neon-racer_demo', 'half-life_demo', 'hl2_demo', 'kotor98_demo', 'maxpayne_demo', 'xiii_demo', 'falloutzp_demo', 'fallout98_demo', 'tekken98_demo', 'dmc98_demo', 'dao98_demo', 'mc98_demo', 'stalker98_demo', 'korovany_demo', 'quest_demo', 'moh98_demo', 'sims3_demo'];
 
 function jpegSize(file) {
   const b = fs.readFileSync(path.join(root, file));
@@ -219,7 +219,7 @@ test('steampowered.com offers the client download, then setup, then launch', () 
 
 test('own Steam games are paid with distinct prices, Star Rail 98 is free', () => {
   const { gm } = createSystem();
-  const ownGames = ['doom', 'serioussam', 'lol', 'dota', 'avatar98', 'moh98', 'cop98', 'gta90', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201', 'ow98', 'diablo2', 'forza', 'sims3', 'gtann', 'legion', 'plov', 'anotherwar', 'fallout'];
+  const ownGames = ['doom', 'serioussam', 'lol', 'dota', 'avatar98', 'cop98', 'gta90', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201', 'ow98', 'diablo2', 'forza', 'gtann', 'legion', 'plov', 'anotherwar', 'fallout'];
   const prices = ownGames.map(id => gm.catalog[id].price);
   assert.ok(prices.every(p => p > 0), 'every own game costs money');
   assert.equal(new Set(prices).size, prices.length, 'prices differ');

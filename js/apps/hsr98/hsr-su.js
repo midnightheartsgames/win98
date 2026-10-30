@@ -416,6 +416,7 @@
       const first = this.suFirst(w), rw = this.suReward(w, first), res = { world: w.id, first, win: true, jade: rw.jade, credits: rw.credits, sets: [], power: rw.power, pending: false, frag: su.frag, bless: su.bless.length, curios: su.curios.length };
       for (let i = 0; i < rw.sets; i++) res.sets.push({ set: w.set || H.PLANAR_SETS[this.rng.int(H.PLANAR_SETS.length)], rl: Math.min(15, w.orn + this.rng.int(3)) });
       s.flags['su_clear_' + w.id] = true;
+      if (first && this.profileNote) this.profileNote('su', w.id);
       if (su.tut) { s.flags.su_beta_run = true; this.setQuest('su_beta', 'report'); }
       if (!first && s.power < rw.power) {
         const claims = this.suClaims();

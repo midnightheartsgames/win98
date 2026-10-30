@@ -5,14 +5,29 @@
 <body><main class="ay-page"><div class="ay-page-title">Star Wars: Aayla Secura — Twilight</div><div class="ay-page-game" id="game"></div></main>
 <script src="js/apps/aayla98/ay-core.js"></script>
 <script src="js/apps/aayla98/ay-data.js"></script>
+<script src="js/apps/aayla98/ay-memory.js"></script>
 <script src="js/apps/aayla98/ay-script.js"></script>
 <script src="js/apps/aayla98/ay-ch0.js"></script>
+<script src="js/apps/aayla98/ay-ch1.js"></script>
+<script src="js/apps/aayla98/ay-ch2.js"></script>
+<script src="js/apps/aayla98/ay-int.js"></script>
+<script src="js/apps/aayla98/ay-ch3.js"></script>
+<script src="js/apps/aayla98/ay-ch4.js"></script>
+<script src="js/apps/aayla98/ay-ch5.js"></script>
+<script src="js/apps/aayla98/ay-ch6.js"></script>
+<script src="js/apps/aayla98/ay-ch7.js"></script>
+<script src="js/apps/aayla98/ay-bonds-text.js"></script>
 <script src="js/apps/aayla98/ay-maps.js"></script>
 <script src="js/apps/aayla98/ay-files.js"></script>
 <script src="js/apps/aayla98/ay-art.js"></script>
 <script src="js/apps/aayla98/ay-pix.js"></script>
 <script src="js/apps/aayla98/ay-field.js"></script>
 <script src="js/apps/aayla98/ay-battle.js"></script>
+<script src="js/apps/aayla98/ay-duels.js"></script>
+<script src="js/apps/aayla98/ay-respite.js"></script>
+<script src="js/apps/aayla98/ay-cover.js"></script>
+<script src="js/apps/aayla98/ay-flight.js"></script>
+<script src="js/apps/aayla98/ay-save.js"></script>
 <script src="js/apps/aayla98/ay-font.js"></script>
 <script src="js/apps/aayla98/ay-gfx.js"></script>
 <script src="js/apps/aayla98/ay-audio.js"></script>
@@ -21,5 +36,5 @@
 <script src="js/apps/aayla98/ay-draw-battle.js"></script>
 <script src="js/apps/aayla98/ay-screens.js"></script>
 <script src="js/apps/aayla98/ay-ui.js"></script>
-<script>const el=document.getElementById('game');window.ayui=new Aayla98.UI(el,{standalone:true,pattern:/[?&]pattern(&|=|$)/.test(location.search),map:new URLSearchParams(location.search).get('map'),entry:new URLSearchParams(location.search).get('entry'),battle:new URLSearchParams(location.search).get('battle'),advantage:new URLSearchParams(location.search).get('adv')});addEventListener('pagehide',()=>window.ayui.destroy(),{once:true});</script>
+<script>const el=document.getElementById('game');window.ayui=new Aayla98.UI(el,{standalone:true,pattern:/[?&]pattern(&|=|$)/.test(location.search),map:new URLSearchParams(location.search).get('map'),entry:new URLSearchParams(location.search).get('entry'),battle:new URLSearchParams(location.search).get('battle'),flight:new URLSearchParams(location.search).get('flight'),label:new URLSearchParams(location.search).get('label'),advantage:new URLSearchParams(location.search).get('adv')});addEventListener('pagehide',()=>window.ayui.destroy(),{once:true});</script>
 </body></html>

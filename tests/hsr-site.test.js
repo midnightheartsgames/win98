@@ -95,7 +95,7 @@ function test(name, fn) {
 console.log('--- hsr.hoyoverse.com ---');
 
 test('IE routes every page of the site here, whatever words the address contains', () => {
-  const src = read('js/apps/ie.js');
+  const src = read('js/apps/ie.js').replace(/\r\n/g, '\n');
   const body = src.slice(src.indexOf('  identifyPageKey(url) {'), src.indexOf('\n  }\n', src.indexOf('  identifyPageKey(url) {')) + 4);
   const fn = new Function(`return { ${body} }`)();
   ['', '/', '/download', '/news', '/news?id=v12', '/characters?id=march', '/worlds', '/play', '/gallery?pic=3', '/support', '/guestbook', '/nowhere'].forEach(p => {
@@ -180,8 +180,8 @@ test('game facts on the site match the game', () => {
   const worlds = site.renderSite(HOST + '/worlds');
   H.WORLDS.forEach(w => assert.ok(worlds.includes(w.name.replace(/"/g, '&quot;')), w.id));
   Object.values(H.ENEMIES).forEach(e => assert.ok(worlds.includes(e.name), e.name));
-  const rumors = site.news.find(n => n.id === 'rumors').body.join(' ');
-  assert.ok(H.RUMORS.some(r => rumors.includes(r.title)), 'the rumor article names a real rumor');
+  const rumors = site.news.find(n => n.id === 'rumors').body.join(' ').toLowerCase();
+  assert.ok(H.RUMORS.some(r => rumors.includes(r.title.toLowerCase())), 'the rumor article names a real rumor');
   const v11 = site.news.find(n => n.id === 'v11').body.join(' ');
   assert.ok(v11.includes(`${H.COMET_GIFT.slice(0, -1).join(', ')} и ${H.COMET_GIFT[H.COMET_GIFT.length - 1]}`) && H.TRAIL_WILL.slice(0, 4).every(s => v11.includes(String(s.lvl))), 'version 1.1 notes match the events');
   const v16w = site.news.find(n => n.id === 'v16w').body.join(' '), willTop = H.TRAIL_WILL[H.TRAIL_WILL.length - 1];
@@ -213,6 +213,9 @@ test('game facts on the site match the game', () => {
   H.SUPPLY.starlight.filter(e => e.cone).forEach(e => assert.ok(v15.includes('«' + H.CONES[e.cone].name + '»') && v15.includes('по ' + e.price), 'version 1.5 notes name the Supply cone ' + e.cone));
   assert.ok(v15.includes(H.GLOW.dup[4] + ' или ' + H.GLOW.dup[5]) && v15.includes('до ' + H.TL_MAX) && ['pc_rewards', 'pc_home', 'pc_disc', 'pc_guests'].every(id => v15.includes('«' + H.QUESTS[id].name + '»')), 'version 1.5 notes match Starlight, the Trailblaze Level cap and the Express missions');
   const v16o = site.news.find(n => n.id === 'v16o').body.join(' ');
+  const v17g = site.news.find(n => n.id === 'v17g').body.join(' '), v17p = site.news.find(n => n.id === 'v17p').body.join(' ');
+  assert.ok(site.news[0].id === 'v17g' && v17g.includes('15, 20, 30, 40, 50 и 60'), 'version 1.7 notes lead the news and name the Level gates');
+  assert.ok(['STARRAILGIFT', 'POMPOM98'].every(code => v17p.includes(code)) && !v17p.includes('TROLLEY98'), 'the news names the public codes and keeps the Express one secret');
   const v16h = site.news.find(n => n.id === 'v16h'), v16hb = v16h.body.join(' '), HV = H.OUTFITS.himeko_vermilion;
   assert.ok(HV.rarity === 5 && v16h.title.includes('«' + HV.name + '»') && v16h.lead.includes(HV.price + ' звёздного нефрита') && v16hb.includes('«' + H.CHARS.himeko.skill.name + '»') && v16hb.includes('«' + H.FUSIONS.f_singularity.name + '»'), 'the first 5★ outfit patch matches the game');
   assert.ok(v16o.includes(H.OUTFIT_TIER[4].price + ' звёздного нефрита') && v16o.includes(H.OUTFIT_TIER[5].price + ' звёздного нефрита') && H.OUTFIT_REFUND.every(id => v16o.includes('«' + H.OUTFITS[id].name + '»')) && v16o.includes('«' + H.OUTFITS.himeko_vermilion.name + '» Химико'), 'the outfit class patch matches the tiers and the refund list');

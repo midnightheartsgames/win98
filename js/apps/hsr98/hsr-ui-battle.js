@@ -1074,8 +1074,10 @@
         this.portraitCard(c, G.lookOf(kid, g), x + 18, 112, 64, { elem: H.CHARS[kid].elem });
         this.text(this.shortName(k), x + 50, 182, { align: 'center', size: 11, bold: true });
         this.text('ур. ' + r.lvl, x + 50, 197, { align: 'center', size: 10, col: C.sub });
-        this.rail(x + 12, 216, 76, r.exp / H.expToNext(r.lvl), '#80c0ff');
-        if (out.levelUps.some(l => l.key === k)) this.text('▲ Новый уровень', x + 50, 226, { align: 'center', size: 10, bold: true, col: C.ok });
+        const capped = g.levelCap && r.lvl >= g.levelCap(k) && r.lvl < H.MAX_LVL;
+        this.rail(x + 12, 216, 76, capped ? 1 : r.exp / H.expToNext(r.lvl), capped ? C.brassHi : '#80c0ff');
+        if (capped) this.text('Нужно возвышение', x + 50, 226, { align: 'center', size: 10, bold: true, col: C.gold });
+        else if (out.levelUps.some(l => l.key === k)) this.text('▲ Новый уровень', x + 50, 226, { align: 'center', size: 10, bold: true, col: C.ok });
       });
       const items = out.items || [];
       if (items.length) this.text('Добыча', W / 2 - 212, 250, { size: 12, bold: true, serif: true, col: C.gold });

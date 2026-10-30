@@ -31,7 +31,7 @@ const STEAM_DEFAULT_FRIENDS = [
   { name: 'Wirts_Leg', status: 'game', game: 'diablo2' },
   { name: 'Vilks_2105', status: 'game', game: 'forza' },
   { name: 'Tyoma_Avto', status: 'game', game: 'gtann' },
-  { name: 'Bella_G', status: 'game', game: 'sims3' },
+  { name: 'Bella_G', status: 'online' },
   { name: 'Rowland_XIII', status: 'online' },
   { name: 'Klesk_NN', status: 'game', game: 'quake3' },
   { name: 'Mona_S', status: 'online' },
@@ -63,7 +63,6 @@ const STEAM_SERVER_MAPS = {
   serioussam: ['Hatshepsut', 'Sand Canyon', 'Valley of the Kings'],
   dota: ['DotA Allstars 6.48', 'DotA -ap', 'DotA -sd'],
   lol: ['Ущелье призывателей', 'Ущелье призывателей (боты)'],
-  moh98: ['Бревиль', 'Лорьян', 'Рьюкан'],
   quake3: ['q3dm6', 'q3dm1', 'q3tourney2', 'q3dm3', 'q3dm4']
 };
 

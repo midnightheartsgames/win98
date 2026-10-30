@@ -12,7 +12,9 @@
       { id: 's_butthebattle', cone: 'butthebattle', price: 600, limit: 1 },
       { id: 's_moment', cone: 'moment', price: 600, limit: 1 },
       { id: 's_four0', four: 0, price: 140, limit: 1 },
-      { id: 's_four1', four: 1, price: 140, limit: 1 }
+      { id: 's_four1', four: 1, price: 140, limit: 1 },
+      { id: 's_aether2', item: 'aether2', per: 2, price: 5, limit: 80 },
+      { id: 's_aether3', item: 'aether3', price: 14, limit: 30 }
     ],
     embers: [
       { id: 'e_spass', item: 'spass', price: 90, was: 160, limit: 5 },

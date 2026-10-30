@@ -3,7 +3,7 @@
   const F = () => A.Font;
   const BOX = { x: 12, y: 348, w: 616, h: 124 };
   const TEXT = { x: 30, y: 368, w: 580, line: 18, lines: 3 };
-  const INK = '#f4ecd8', NARR = '#dccb9e', SHADOW = '#05030a', GOLD = '#f4bf6a';
+  const INK = '#f4ecd8', NARR = '#dccb9e', THOUGHT = '#b8cce0', SHADOW = '#05030a', GOLD = '#f4bf6a';
   const READ_KEY = 'aayla98_album';
 
   const mix = (a, b, f) => {
@@ -41,15 +41,21 @@
         const saved = JSON.parse(localStorage.getItem(READ_KEY) || '{}');
         (saved.read || []).forEach(id => this.read.add(id));
       } catch (e) { }
-      const sc = A.Scripts.pro;
-      this.program = A.Script.parse(sc.src, sc.file);
-      this.startLabel = sc.start;
-      this.restart();
+      this.program = A.Script.build();
+      this.startLabel = A.Scripts.pro.start;
+      this.load(A.newState());
     }
 
     restart() {
-      this.state = A.newState();
-      this.story = new A.Script.Story(this.program, this.state, this.startLabel);
+      this.load(A.newState());
+      this.advance();
+    }
+
+    load(S) {
+      this.state = S;
+      const snap = S.scene;
+      this.story = new A.Script.Story(this.program, S, snap ? snap.pc.label : this.startLabel);
+      if (snap) this.story.restore(snap);
       this.log = [];
       this.line = null;
       this.choice = null;
@@ -60,7 +66,6 @@
       this.autoWait = 0;
       this.t = 0;
       this.extra = null;
-      this.advance();
     }
 
     idle() {
@@ -76,13 +81,16 @@
 
     person(who, name) {
       if (who === '-') return A.NARRATOR;
+      if (who === 'mem') return { name: 'Память', plate: '#8a6a2a', pitch: 520 };
       if (A.CAST[who]) return A.CAST[who];
+      const self = A.Script.thinker(who);
+      if (self) return { name: A.CAST[self].name + ', про себя', plate: A.CAST[self].plate, pitch: A.CAST[self].pitch, thought: true };
       return { name: name || '', plate: '#6a6a7a', pitch: 420 };
     }
 
     setLine(who, text, id, name) {
       const person = this.person(who, name);
-      this.line = { who, name: person.name, pitch: person.pitch, plate: person.plate, text, id, lines: F().wrap('text', text, TEXT.w), shown: 0 };
+      this.line = { who, name: person.name, pitch: person.pitch, plate: person.plate, thought: !!person.thought, text, id, lines: F().wrap('text', text, TEXT.w), shown: 0 };
       this.line.total = this.line.lines.join('').length;
       this.log.push({ name: person.name, text });
       if (this.log.length > 200) this.log.shift();
@@ -117,27 +125,80 @@
     advance() {
       if (this.extra) { this.nextExtra(); return; }
       const e = this.story.next();
+      if (e.type === 'credits') {
+        this.line = null;
+        this.choice = null;
+        if (this.ui.startCredits) this.ui.startCredits();
+        else this.ended = true;
+        return;
+      }
       if (e.type === 'end') {
         this.line = null;
         if (this.ui.storyEnd) { this.ui.storyEnd(); return; }
         this.ended = true;
         return;
       }
-      if (e.type === 'map' || e.type === 'field' || e.type === 'battle' || e.type === 'forget') {
+      if (e.type === 'map' || e.type === 'field' || e.type === 'battle' || e.type === 'forget' || e.type === 'flight') {
         this.line = null;
         this.choice = null;
         if (e.type === 'map' && this.ui.enterField) this.ui.enterField(e.id, e.at);
         if (e.type === 'field' && this.ui.resumeField) this.ui.resumeField();
         if (e.type === 'battle' && this.ui.scriptBattle) this.ui.scriptBattle(e.group, e.advantage);
         if (e.type === 'forget' && this.ui.startForget) this.ui.startForget();
+        if (e.type === 'flight' && this.ui.startFlight) this.ui.startFlight(e.id, e.label);
         return;
       }
       if (e.type === 'say') {
         this.setLine(e.who, e.text, e.id);
         return;
       }
+      if (e.type === 'chapter') {
+        this.line = null;
+        if (this.ui.startChapter) this.ui.startChapter(e.id, e.label);
+        else this.advance();
+        return;
+      }
+      if (e.type === 'recall') {
+        const m = A.Memory.get(e.id);
+        this.sound.sfx('heal');
+        this.setLine('mem', `Обрывок памяти «${m.title}». Вернулось: ${A.Memory.reward(m)}.`, 'mem.' + e.id);
+        return;
+      }
+      if (e.type === 'memory') {
+        this.line = null;
+        if (e.what === 'palace') {
+          if (this.ui.openPalace) this.ui.openPalace(() => this.advance());
+          else this.advance();
+          return;
+        }
+        const list = e.what === 'stark' ? [['mem', 'Пустое место в памяти занял рассказ ветеранов о войне Старка.']]
+          : e.ids.map(id => ['mem', `Обрывок «${A.Memory.get(id).title}» вернулся бледным. Умение придёт в главе 3: ${A.Memory.reward(A.Memory.get(id))}.`]);
+        if (!list.length) { this.advance(); return; }
+        this.sound.sfx('heal');
+        this.showLines(list, { id: 'mem.' + e.what }, () => this.advance());
+        return;
+      }
+      if (e.type === 'cover') {
+        this.line = null;
+        if (this.ui.openDossier) this.ui.openDossier(() => this.advance());
+        else this.advance();
+        return;
+      }
+      if (e.type === 'respite') {
+        this.line = null;
+        if (this.ui.startRespite) this.ui.startRespite(e.id);
+        else this.advance();
+        return;
+      }
+      if (e.type === 'return') {
+        this.line = null;
+        const go = () => (e.ui === 'respite' && this.ui.resumeRespite ? this.ui.resumeRespite() : this.advance());
+        if (e.bond && this.ui.bondCard) this.ui.bondCard(e.bond, e.rank, go);
+        else go();
+        return;
+      }
       this.line = null;
-      this.choice = { stage: 'words', lekku: e.lekku, options: e.options, index: 0, picked: -1 };
+      this.choice = { stage: 'words', lekku: e.lekku, options: e.options, index: 0, picked: -1, timer: e.timer || 0, left: e.timer || 0 };
     }
 
     markRead(id) {
@@ -196,6 +257,11 @@
 
     update(dt) {
       this.t += dt;
+      const c = this.choice;
+      if (c && c.timer && c.stage === 'words' && !this.backlog) {
+        c.left = Math.max(0, c.left - dt);
+        if (c.left <= 0) this.pick(c.options.length - 1);
+      }
       const l = this.line;
       const held = this.ui.held ? this.ui.held() : this.ui.keys;
       const skip = (held.has('ControlLeft') || held.has('ControlRight')) && !this.backlog;
@@ -327,7 +393,7 @@
         F().draw(g, 'bold', l.name, BOX.x + 20, BOX.y - 18, '#ffffff', SHADOW);
       }
       let left = Math.floor(l.shown);
-      const color = l.who === '-' ? NARR : INK;
+      const color = l.who === '-' ? NARR : l.thought ? THOUGHT : INK;
       l.lines.slice(0, TEXT.lines).forEach((ln, i) => {
         if (left <= 0) return;
         const part = ln.slice(0, left);
@@ -351,6 +417,13 @@
       bevel(g, b.x, b.y, b.w, b.h, 'rgba(20,14,32,0.95)', '#d8b884', '#4a3020');
       const title = this.choiceTitle();
       F().draw(g, 'bold', title, b.x + 14, b.y + 8, GOLD, SHADOW);
+      if (this.choice.timer && this.choice.stage === 'words') {
+        const k = this.choice.left / this.choice.timer, w = b.w - 28;
+        g.fillStyle = '#2a1a1a';
+        g.fillRect(b.x + 14, b.y + 24, w, 3);
+        g.fillStyle = k < 0.4 ? '#ff6a4a' : '#f4bf6a';
+        g.fillRect(b.x + 14, b.y + 24, Math.round(w * k), 3);
+      }
       rows.forEach((r, i) => {
         const y = b.y + 30 + i * 22, on = i === this.choice.index;
         if (on) {
@@ -380,7 +453,7 @@
       if (vn.still) A.Art.drawStill(g, vn.still);
       else if (vn.cg) A.Art.drawCg(g, vn.cg);
       else {
-        const speaker = this.line && this.line.who;
+        const speaker = this.line && (A.Script.thinker(this.line.who) || this.line.who);
         for (const [who, b] of Object.entries(vn.busts)) A.Art.drawBust(g, who, b, speaker && speaker !== '-' && speaker !== who, this.t);
       }
       if (this.hidden || !this.active()) return;

@@ -2847,3 +2847,111 @@
 .ki-ending-villain .ki-chronicle-page {
   border-image: repeating-linear-gradient(90deg, #2a2a2e 0 8px, #101012 8px 10px, #3a2a24 10px 14px) 10;
 }
+
+.ki-side-elf .ki-yard-board,
+.ki-side-elf .ki-menu-plate,
+.ki-side-elf .ki-settings-board {
+  color: #eef0d8;
+  background-color: #2e3a20;
+  background-image:
+    radial-gradient(circle at 10% 0%, rgba(120, 160, 70, 0.4), transparent 38%),
+    radial-gradient(circle at 92% 100%, rgba(110, 150, 60, 0.35), transparent 42%),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.2) 0 3px, transparent 3px 11px, rgba(255, 255, 255, 0.05) 11px 13px, transparent 13px 19px);
+  border-color: #8aa060 #2a2414 #2a2414 #8aa060;
+  box-shadow: 0 0 0 2px #14180c, inset 0 0 0 3px #4a3a22, 6px 6px 0 rgba(0, 0, 0, 0.45);
+}
+
+.ki-side-elf .ki-btn {
+  background: #3c4a28;
+  border-color: #9cb070 #1e2410 #1e2410 #9cb070;
+}
+
+.ki-side-elf .ki-menu-title,
+.ki-side-elf legend,
+.ki-side-elf [class$="-cap"] {
+  color: #d8e8a0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+}
+
+.ki-side-guard .ki-yard-board,
+.ki-side-guard .ki-menu-plate,
+.ki-side-guard .ki-settings-board {
+  color: #f6ecdc;
+  background-color: #5a1616;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 3px);
+  border: 6px solid;
+  border-color: #f0ebe0 #a8a090 #a8a090 #f0ebe0;
+  box-shadow: 0 0 0 2px #2a2420, inset 0 0 0 2px #c8a040, 6px 6px 0 rgba(0, 0, 0, 0.45);
+}
+
+.ki-side-guard .ki-btn {
+  background: #7a2020;
+  border-color: #e8d8b0 #3a0c0c #3a0c0c #e8d8b0;
+}
+
+.ki-side-guard .ki-menu-title,
+.ki-side-guard legend,
+.ki-side-guard [class$="-cap"] {
+  color: #f4d870;
+  font-family: "Times New Roman", Georgia, serif;
+  font-variant: small-caps;
+  letter-spacing: 1px;
+}
+
+.ki-side-villain .ki-yard-board,
+.ki-side-villain .ki-menu-plate,
+.ki-side-villain .ki-settings-board {
+  color: #e4e0d8;
+  background-color: #1e1e22;
+  background-image:
+    radial-gradient(circle at 8px 8px, #8a8a90 0 2px, #2a2a2e 2px 3px, transparent 3px),
+    radial-gradient(circle at calc(100% - 8px) 8px, #8a8a90 0 2px, #2a2a2e 2px 3px, transparent 3px),
+    radial-gradient(circle at 8px calc(100% - 8px), #8a8a90 0 2px, #2a2a2e 2px 3px, transparent 3px),
+    radial-gradient(circle at calc(100% - 8px) calc(100% - 8px), #8a8a90 0 2px, #2a2a2e 2px 3px, transparent 3px),
+    radial-gradient(ellipse at 50% 120%, rgba(0, 0, 0, 0.7), transparent 60%),
+    linear-gradient(180deg, #2c2c30, #18181b);
+  border-color: #6a6a70 #0c0c0e #0c0c0e #6a6a70;
+  box-shadow: 0 0 0 2px #050506, 6px 6px 0 rgba(0, 0, 0, 0.55);
+}
+
+.ki-side-villain .ki-btn {
+  background: #34343a;
+  border-color: #7c7c84 #101012 #101012 #7c7c84;
+}
+
+.ki-side-villain .ki-menu-title,
+.ki-side-villain legend,
+.ki-side-villain [class$="-cap"] {
+  color: #d84a30;
+  font-family: Impact, "Arial Black", sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.ki-side-town .ki-yard-board,
+.ki-side-town .ki-menu-plate,
+.ki-side-town .ki-settings-board {
+  color: #f6ead0;
+  background-color: #4a3218;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.16) 0 2px, transparent 2px 9px, rgba(255, 220, 160, 0.05) 9px 10px, transparent 10px 17px),
+    linear-gradient(90deg, rgba(255, 220, 160, 0.06), rgba(0, 0, 0, 0.14));
+  border-color: #e0bc6a #6a4818 #6a4818 #e0bc6a;
+  box-shadow: 0 0 0 2px #2a1a08, inset 0 0 0 2px #b08838, 6px 6px 0 rgba(0, 0, 0, 0.45);
+}
+
+.ki-side-town .ki-btn {
+  background: #6a4a22;
+  border-color: #e8c878 #2e1e08 #2e1e08 #e8c878;
+}
+
+.ki-side-town .ki-menu-title,
+.ki-side-town legend,
+.ki-side-town [class$="-cap"] {
+  color: #f8d878;
+  font-family: Verdana, Tahoma, sans-serif;
+  font-weight: bold;
+}

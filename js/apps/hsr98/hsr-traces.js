@@ -34,7 +34,7 @@
     ITEMS[line + (i + 1)] = { name, kind: 'mat', mat: 'path', line, tier: i + 1, rar: i + 2, price: 0, text: 'Материал для Следов героев Пути ' + gen + '.' };
   });
   for (const [line, [from, names]] of Object.entries(FOE_LINES)) names.forEach((name, i) => {
-    ITEMS[line + (i + 1)] = { name, kind: 'mat', mat: 'foe', line, tier: i + 1, rar: i + 2, price: 0, text: 'Материал для Следов. Остаётся после ' + from + '.' };
+    ITEMS[line + (i + 1)] = { name, kind: 'mat', mat: 'foe', line, tier: i + 1, rar: i + 2, price: 0, text: 'Материал для Следов и возвышения. Остаётся после ' + from + '.' };
   });
   for (const [id, [name, boss]] of Object.entries(ECHOES)) ITEMS[id] = { name, kind: 'mat', mat: 'echo', boss, rar: 4, price: 0, text: 'Продвинутый материал для Следов. Память о бое: ' + boss + '.' };
   ITEMS.tracks = { name: 'Отпечатки судьбы', kind: 'mat', mat: 'tracks', rar: 5, price: 0, text: 'Продвинутый материал для Следов. Победа держится на бесчисленных неудачах, и каждый маленький шаг вёл к повороту судьбы.' };
@@ -71,7 +71,7 @@
     iceP: 'Усиление ледяного урона', elecP: 'Усиление электрического урона', windP: 'Усиление ветряного урона', quantP: 'Усиление квантового урона', imagP: 'Усиление мнимого урона', elation: 'Усиление Радости'
   };
 
-  const phaseOf = lvl => { let p = 0; for (let i = 1; i < PHASE_LVL.length; i++) if (lvl >= PHASE_LVL[i]) p = i; return p; };
+  const phaseOf = H.ascPhase;
   const abilityCap = (ab, lvl) => (ab === 'basic' ? CAP.basic : CAP.gen)[phaseOf(lvl)];
   const abilityGate = (ab, to) => PHASE_LVL[(ab === 'basic' ? CAP.basic : CAP.gen).findIndex(c => c >= to)];
 
@@ -264,7 +264,7 @@
       out.cost = traceCost(kit, id, out.to);
       const inv = this.state.inv.items;
       out.tears = tearsFor(out.cost.items, inv);
-      if (r.lvl < out.gate) out.why = 'lvl';
+      if (!(this.gateOk ? this.gateOk(key, out.gate) : r.lvl >= out.gate)) out.why = 'lvl';
       else if (n.pre && !t.on.includes(n.pre)) out.why = 'pre';
       else if (this.state.credits < out.cost.credits) out.why = 'credits';
       else if (Object.entries(out.cost.items).some(([m, c]) => (inv[m] || 0) < c && H.ITEMS[m].mat !== 'path') || out.tears > (inv.tears || 0)) out.why = 'mats';

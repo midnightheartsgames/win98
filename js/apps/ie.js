@@ -804,6 +804,9 @@ class AppIE {
     if (clean.replace(/^[a-z]+:\/{2}/, '').split(/[/?#]/)[0].endsWith('pereplet99.ru')) {
       return 'pereplet';
     }
+    if (clean.replace(/^[a-z]+:\/{2}/, '').split(/[/?#]/)[0].endsWith('lucasarts.com')) {
+      return 'lucasarts';
+    }
     if (clean.includes('ashroad98') || clean.includes('ashroad') || clean.includes('pepel98') || clean.includes('mmo98')) {
       return 'ashroad';
     }
@@ -2249,7 +2252,7 @@ class AppIE {
       results.push({
         title: 'Honkai: Star Rail 98 - Официальный сайт',
         url: 'http://hsr.hoyoverse.com',
-        snippet: 'Пошаговая ролевая игра о Звёздном экспрессе и ледяной планете Ярило-VI. Полная версия 1.6 бесплатно: установщик 3,1 МБ, зеркала в Москве, Франкфурте и Шанхае. Персонажи, новости, галерея.'
+        snippet: 'Пошаговая ролевая игра о Звёздном экспрессе и ледяной планете Ярило-VI. Полная версия 1.7 бесплатно: установщик 3,1 МБ, зеркала в Москве, Франкфурте и Шанхае. Персонажи, новости, галерея.'
       });
     }
 

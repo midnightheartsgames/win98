@@ -183,6 +183,19 @@ class ClippyTips {
           }
         }
       },
+      'office-games-2-cd': {
+        mood: '💿', cooldown: 360,
+        text: 'Есть и второй диск: <strong>«Офисные игры 2»</strong>. Патч-корд в 3D, гонки на креслах по коридору и «Стопка» из папок ждут через значок CD-ROM в трее. Если появится шеф, жмите <strong>F12</strong>!',
+        action: {
+          text: '▶ Открыть «Офисные игры 2»',
+          run: () => {
+            if (window.vfs && (!window.vfs.cdRomState || window.vfs.cdRomState.discId !== 'office_games_2') && typeof window.vfs.insertCdRom === 'function') {
+              window.vfs.insertCdRom('D:', 'office_games_2');
+            }
+            if (window.appOg2Launcher) window.appOg2Launcher.open();
+          }
+        }
+      },
       'neko-pet': {
         mood: '🐈', cooldown: 360,
         text: 'В папке <code>C:\\WINDOWS\\NEKO.EXE</code> живёт экранный кот <strong>Neko 98</strong>! Его можно таскать за шкирку, перекрашивать в корзинке и перекидываться с ним моими бумажными шариками.',
@@ -280,7 +293,7 @@ class ClippyTips {
     const wm = window.winManager;
     if (wm && wm.windows && wm.windows.size >= 6) this.trigger('many-windows');
     const clippy = this.clippy();
-    const desk = ['app_minesweeper', 'app_solitaire', 'app_freecell', 'app_pinball'];
+    const desk = ['app_minesweeper', 'app_solitaire', 'app_freecell', 'app_pinball', 'app_bliss'];
     if (clippy && clippy.isGameWindow && clippy.isGameWindow(id) && !desk.includes(id)) {
       this.session.games++;
       if (this.session.games === 1) setTimeout(() => this.trigger('boss-key'), 9000);

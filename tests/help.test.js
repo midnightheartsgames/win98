@@ -253,7 +253,7 @@ topicItems.forEach(item => {
 console.log('PASS 3. Games section completely removed as requested');
 
 const expectedTopics = [
-  'welcome', 'whatsnew', 'clippy', 'desktop', 'startmenu', 'explorer', 'apps',
+  'welcome', 'whatsnew', 'startup', 'clippy', 'desktop', 'startmenu', 'explorer', 'install', 'apps',
   'multimedia', 'internet', 'system', 'cpanel',
   'run', 'shortcuts', 'troubleshooting', 'about'
 ];
@@ -290,6 +290,54 @@ assert.ok(cpanelPane.innerHTML.includes('Система (sysdm.cpl)'), 'Control 
 assert.ok(cpanelPane.innerHTML.includes('Электропитание (powercfg.cpl)'), 'Control Panel help must document Power Management applet');
 assert.ok(cpanelPane.innerHTML.includes('Установка и удаление программ (appwiz.cpl)'), 'Control Panel help must document Add/Remove Programs applet');
 console.log('PASS 7. All 10 Control Panel applets and detailed subsections verified in cpanel topic');
+
+const otherApplets = [
+  'sounds.cpl', 'keyboard.cpl', 'fonts', 'printers', 'netcpl.cpl', 'access.cpl',
+  'joy.cpl', 'modem.cpl', 'password.cpl', 'users.cpl', 'mstask'
+];
+otherApplets.forEach(appletCmd => {
+  assert.ok(cpanelPane.querySelector(`[data-run="${appletCmd}"]`), `Control Panel help must include shortcut for ${appletCmd}`);
+});
+assert.ok(cpanelPane.innerHTML.includes('21 значок'), 'Control Panel help must state that it holds 21 items');
+console.log('PASS 8. All 21 Control Panel items are documented in the cpanel topic');
+
+const topicPane = (id) => {
+  appDialogs.openHelp(id);
+  return createdWindows.get('app_help_dialog').options.content.querySelector('.help-content-pane');
+};
+
+expectedTopics.forEach(topId => {
+  const pane = topicPane(topId);
+  assert.ok(pane.innerHTML.includes('<h2>'), `Topic ${topId} must render a heading`);
+  pane.querySelectorAll('.win-help-link').forEach(link => {
+    assert.ok(expectedTopics.includes(link.dataset.topic), `Topic ${topId} links to unknown topic ${link.dataset.topic}`);
+  });
+});
+console.log('PASS 9. Every topic renders and every related link points to an existing topic');
+
+const startupHtml = topicPane('startup').innerHTML;
+['F8', 'CMOS', 'BOOTLOG.TXT', 'Безопасный режим', '22 значка'].forEach(fragment => {
+  assert.ok(startupHtml.includes(fragment), `Startup topic must mention ${fragment}`);
+});
+const installHtml = topicPane('install').innerHTML;
+['SteamInstall.exe', 'WIN98SE', 'CYBER1998', 'SoftStore', 'D:\\demo'].forEach(fragment => {
+  assert.ok(installHtml.includes(fragment), `Install topic must mention ${fragment}`);
+});
+console.log('PASS 10. Startup and installation topics describe the boot menu, first-start state, Steam, the CD, and SoftStore');
+
+const runHtml = topicPane('run').innerHTML;
+['matrix', 'starwars', 'netstat', 'tracert'].forEach(removed => {
+  assert.ok(!runHtml.toLowerCase().includes(removed), `Run topic must not list the nonexistent command ${removed}`);
+});
+assert.ok(runHtml.includes('emuland') && runHtml.includes('msbackup') && runHtml.includes('reset'), 'Run topic must list current commands');
+console.log('PASS 11. Run and MS-DOS topics list only commands that exist');
+
+ctx.window.i18n = { getLanguage: () => 'en', t: (key) => key };
+const englishStartup = topicPane('startup');
+assert.ok(englishStartup.innerHTML.includes('Starting the System'), 'English help must render the startup topic in English');
+assert.ok(englishStartup.innerHTML.includes('Startup Menu'), 'English startup topic must describe the startup menu');
+delete ctx.window.i18n;
+console.log('PASS 12. Help renders in English when the system language is English');
 
 console.log('\n========================================');
 console.log('ALL WIN 98 HELP TESTS PASSED!');

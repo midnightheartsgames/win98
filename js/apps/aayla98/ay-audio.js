@@ -4,7 +4,7 @@
     constructor(ui) {
       this.ui = ui;
       this.volume = 0.5;
-      this.musicVolume = 0.7;
+      this.musicVolume = 0.35;
       this.last = 0;
       this.track = null;
     }
@@ -19,6 +19,13 @@
       }
       this.out.gain.value = this.volume;
       return ac;
+    }
+
+    setVolumes(music, sfx) {
+      this.musicVolume = 0.5 * music / 100;
+      this.volume = 0.625 * sfx / 100;
+      if (this.musicOut) this.musicOut.gain.value = this.musicVolume;
+      if (this.out) this.out.gain.value = this.volume;
     }
 
     blip(pitch) {
@@ -104,7 +111,7 @@
       if (!this.musicOut || this.musicOut.context !== ac) {
         this.musicOut = ac.createGain();
         this.musicOut.gain.value = this.musicVolume;
-        this.musicOut.connect(this.out);
+        this.musicOut.connect(ac.destination);
       }
       const now = ac.currentTime;
       for (const p of tr.parts) {

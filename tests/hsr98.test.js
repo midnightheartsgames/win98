@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const path = require('path');
 const DIR = path.join(__dirname, '../js/apps/hsr98');
 const H = require(path.join(DIR, 'hsr-core.js'));
-for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-guide-data', 'hsr-guide', 'hsr-domain', 'hsr-cw-data', 'hsr-cw', 'hsr-cw-battle', 'hsr-cw-bonds', 'hsr-cw-items', 'hsr-cw-kits', 'hsr-cw-special', 'hsr-cw-strats', 'hsr-cw-affixes', 'hsr-cw-envs', 'hsr-cw-foes', 'hsr-cw-meta', 'hsr-cw-perks', 'hsr-cw-goals', 'hsr-hd-data', 'hsr-hd-arena', 'hsr-hd-heroes', 'hsr-hd-foes', 'hsr-hd-shop', 'hsr-hd']) require(path.join(DIR, f + '.js'));
+for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-ascend-data', 'hsr-traces', 'hsr-ascend', 'hsr-phone', 'hsr-phone-pix', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-guide-data', 'hsr-guide', 'hsr-domain', 'hsr-cw-data', 'hsr-cw', 'hsr-cw-battle', 'hsr-cw-bonds', 'hsr-cw-items', 'hsr-cw-kits', 'hsr-cw-special', 'hsr-cw-strats', 'hsr-cw-affixes', 'hsr-cw-envs', 'hsr-cw-foes', 'hsr-cw-meta', 'hsr-cw-perks', 'hsr-cw-goals', 'hsr-hd-data', 'hsr-hd-arena', 'hsr-hd-heroes', 'hsr-hd-foes', 'hsr-hd-shop', 'hsr-hd']) require(path.join(DIR, f + '.js'));
 
 let checks = 0;
 const CCC_LATER = new Set();
@@ -5296,7 +5296,7 @@ function drive(g, maxSteps = 4000) {
       }
       ok(out && out.win, 'script battle won');
       g.afterBattle();
-      for (const k of g.state.party) g.autoTraces(k);
+      for (const k of g.state.party) { g.autoAscend(k); g.autoTraces(k); }
       continue;
     }
     const p = g.pending;
@@ -5937,6 +5937,7 @@ function trInfo(g) {
   log.push('final ' + lv(g) + ' jade ' + g.state.jade + ' credits ' + g.state.credits + ' roster ' + Object.keys(g.state.roster).length + ' relics ' + g.state.inv.relics.length);
   ok(g.useItem('medkit', 'trail') || true, 'item use callable');
   g.state.inv.items.exp2 = 1;
+  g.state.roster.hook.asc = 6;
   const lv0 = g.state.roster.hook.lvl, e0 = g.state.roster.hook.exp;
   ok(g.useItem('exp2', 'hook'), 'exp book');
   ok(g.state.roster.hook.lvl > lv0 || g.state.roster.hook.exp > e0, 'exp book grants exp');
@@ -6106,7 +6107,7 @@ function trInfo(g) {
   eq(JSON.stringify(g.planarSets('seele')), '{"station":true}', 'sphere and rope of one set activate it');
   const withSet = g.charStats('seele'), pctOf = (rel, k) => (rel.main === k ? rel.mv : 0) + rel.subs.filter(s => s[0] === k).reduce((a, s) => a + s[1], 0);
   const atkP = 0.12 + pctOf(sph, 'atkP') + pctOf(rope, 'atkP'), flat = pctOf(sph, 'atkF') + pctOf(rope, 'atkF');
-  eq(withSet.atk, Math.round(g.baseStats('seele', 40, 0).atk * (1 + atkP) + flat), 'the station set adds 12% ATK outside battle');
+  eq(withSet.atk, Math.round(g.baseStats('seele', 40, 0, g.statAsc('seele')).atk * (1 + atkP) + flat), 'the station set adds 12% ATK outside battle');
   ok(withSet.atk > base.atk, 'the set raises ATK on the character screen');
   eq(g.partySpecs().length >= 1 && JSON.stringify(g.partySpecs().find(p => p.key === 'trail').sets), '{}', 'battle specs carry the planar sets of each character');
   g.state.party = ['seele'];
@@ -6358,9 +6359,9 @@ function trInfo(g) {
   ok(!g.ownsOutfit('march_spring'), 'Nascent Spring waits in the 1.5 letter');
   g.readMail('v16_outfits');
   const claimed = g.claimAllMail();
-  ok(claimed.length === 46 && g.state.jade === jm + 2100 && !g.alerts().mail, 'claim all takes the other letters and clears the alert (' + claimed.length + ')');
+  ok(claimed.length === 53 && g.state.jade === jm + 2100 && !g.alerts().mail, 'claim all takes the other letters and clears the alert (' + claimed.length + ')');
   ok(g.ownsOutfit('march_spring') && !g.outfitOf('march'), 'the 1.5 letter adds Nascent Spring to the collection without putting it on');
-  eq(g.deleteReadMail(), 14, 'read and claimed letters can be deleted');
+  eq(g.deleteReadMail(), 15, 'read and claimed letters can be deleted');
   eq(g.mailbox().length, 0, 'the mailbox is empty after deleting');
   const back = new H.Game({ state: g.serialize(), clock: () => now });
   ok(!back.mailbox().length && back.cometAllGot() && back.state.will.length === H.TRAIL_WILL.length, 'events and mail survive a save');
@@ -6860,9 +6861,9 @@ function trInfo(g) {
     const ga = new H.Game({ seed: 3 });
     ga.state.roster.seele = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
     const bare = ga.charStats('seele');
-    const ac = ga.addCone('arrows'); ga.equipCone('seele', ac.uid);
+    const ac = ga.addCone('arrows'); ac.lvl = 30; ac.asc = 2; ga.equipCone('seele', ac.uid);
     const worn = ga.charStats('seele'), cs = H.coneStats('arrows', 30);
-    ok(worn.critR === bare.critR && worn.atk - bare.atk === cs.atk && cs.atk === Math.round(14.4 * H.grow(30)), 'Arrows give original base stats and no permanent CRIT Rate');
+    ok(worn.critR === bare.critR && worn.atk - bare.atk === cs.atk && cs.atk === Math.floor(14.4 * (1 + 0.15 * 29 + 2.8)), 'Arrows give original base stats and no permanent CRIT Rate');
     ok(ga.coneEffect('seele') && ga.coneEffect('seele').fx === 'arrows', 'Arrows reach the battle as an effect');
     eq(H.CONES.arrows.text, 'В начале боя шанс крита владельца повышается на 12% на 3 хода.', 'Arrows text follows the original');
   }
@@ -6903,8 +6904,8 @@ function trInfo(g) {
     const ga = new H.Game({ seed: 3 });
     ga.state.roster.gepard = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
     const bare = ga.charStats('gepard');
-    const am = ga.addCone('amber'); am.sup = 5; ga.equipCone('gepard', am.uid);
-    const worn = ga.charStats('gepard'), cs = H.coneStats('amber', 30), plain = ga.baseStats('gepard', 30, 0).def;
+    const am = ga.addCone('amber'); am.sup = 5; am.lvl = 30; am.asc = 2; ga.equipCone('gepard', am.uid);
+    const worn = ga.charStats('gepard'), cs = H.coneStats('amber', 30), plain = ga.baseStats('gepard', 30, 0, ga.statAsc('gepard')).def;
     ok(Math.abs(worn.def - bare.def - cs.def - Math.round(plain * 0.32)) <= 1, 'Amber S5: always +32% DEF on the hero sheet');
   }
   const base = dmgOf(null, 'skill', 45), boosted = dmgOf({ id: 'night', fx: 'night', sup: 1 }, 'skill', 45);
@@ -7150,7 +7151,7 @@ function trInfo(g) {
     localStorage: { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) },
     requestAnimationFrame: () => 1
   });
-  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-hd-art', 'hsr-relic-art', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-debug']) require(path.join(DIR, f + '.js'));
+  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-hd-art', 'hsr-relic-art', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-levelup', 'hsr-ui-coneup', 'hsr-ui-phone', 'hsr-ui-profile', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-debug']) require(path.join(DIR, f + '.js'));
   const G = H.Gfx;
   const lum = hex => { const n = parseInt(hex.slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255); };
   for (const id of Object.keys(H.CHARS)) {
@@ -7492,6 +7493,491 @@ function trInfo(g) {
     g.loadMap(m0, null, { silent: true }); g.placePlayer(at0[0], at0[1]); g.player.dir = at0[2]; frame();
   }
   const j0 = ui.game.state.jade;
+  {
+    const lg = ui.game, ls = lg.state, keep = ui.screens.slice(), snap = JSON.parse(JSON.stringify({ roster: ls.roster, items: ls.inv.items, credits: ls.credits }));
+    const hero = ls.party[0], rr = ls.roster[hero];
+    const texts = [], realText = ui.text;
+    ui.text = function (str, ...rest) { texts.push(String(str)); return realText.call(this, str, ...rest); };
+    ui.screens = [];
+    Object.assign(ls.inv.items, { exp1: 5, exp2: 5, exp3: 5 });
+    ls.credits = 100000; rr.lvl = 10; rr.exp = 0; rr.asc = 0;
+    ui.openLevelUp(hero); texts.length = 0; frame();
+    ok(ui.top().upHero === hero && texts.includes('Повышение уровня') && texts.includes('Необходимые кредиты'), 'Level up: the screen opens for the hero');
+    ok(texts.includes('Встречи в путешествиях') && texts.includes('+1 000 опыта за штуку'), 'Level up: the selected book is named');
+    key('ArrowUp'); key('ArrowRight'); key('ArrowUp'); key('ArrowUp'); ui.held = []; texts.length = 0; frame();
+    ok(ui.top().picks.exp1 === 1 && ui.top().picks.exp2 === 2, 'Level up: arrows pick books');
+    ok(texts.includes('+11 000'), 'Level up: the panel previews the EXP');
+    key('ArrowDown'); key('ArrowUp'); ui.held = [];
+    const lv0 = rr.lvl, cr0 = ls.credits, e1 = ls.inv.items.exp1, e2 = ls.inv.items.exp2;
+    key('Enter'); frame();
+    ok(rr.lvl > lv0 && ls.inv.items.exp1 === e1 - 1 && ls.inv.items.exp2 === e2 - 2, 'Level up: Enter spends the books and raises the level');
+    eq(cr0 - ls.credits, 220, 'Level up: books cost a fifth of 1 credit per 10 EXP');
+    eq(Object.keys(ui.top().picks).length, 0, 'Level up: the choice clears after use');
+    const lv1 = rr.lvl; key('Enter'); frame();
+    eq(rr.lvl, lv1, 'Level up: nothing happens without books chosen');
+    rr.lvl = 79; rr.exp = 0; ui.top().picks = {}; ui.top().slot = 2; key('ArrowUp'); ui.held = [];
+    const need79 = H.expToNext(79), n79 = ui.top().picks.exp3;
+    for (let i = 0; i < 5; i++) { key('ArrowUp'); ui.held = []; }
+    ok(ui.top().picks.exp3 === Math.ceil(need79 / 20000) || ui.top().picks.exp3 === 5, 'Level up: books stop at the level cap or the stock');
+    ok(n79 >= 1, 'Level up: a book can be chosen at level 79');
+    rr.lvl = H.MAX_LVL; rr.exp = 0; ui.top().picks = {}; texts.length = 0; frame();
+    ok(texts.includes('Максимальный уровень'), 'Level up: the maximum level is shown');
+    key('ArrowUp'); ui.held = []; eq(Object.keys(ui.top().picks).filter(x => ui.top().picks[x]).length, 0, 'Level up: no books at the maximum');
+    rr.lvl = 10; ls.credits = 0; ui.top().picks = { exp1: 1 }; ui.top().slot = 0;
+    const shortEx = ls.inv.items.exp1; const scrLu = ui.top(); key('Enter'); frame();
+    eq(ls.inv.items.exp1, shortEx, 'Level up: without credits the books stay');
+    ok(ui.top() !== scrLu || scrLu.picks.exp1 === 1, 'Level up: without credits the choice stays');
+    ui.screens = []; ls.credits = 100000;
+    ui.useItemFlow('exp2'); frame();
+    const idx = ui.rosterKeys().indexOf(hero); ui.top().sel = idx; key('Enter'); frame();
+    ok(ui.top().upHero === hero && ui.top().picks.exp2 === 1, 'Level up: a book from the inventory opens the screen with it chosen');
+    ui.screens = [];
+    ui.openChars(hero); frame(); key('KeyU'); frame();
+    ok(ui.top().upHero === hero, 'Level up: U opens the screen from the characters menu');
+    if (ui.rosterKeys().length > 1) { const before = ui.top().upHero; key('KeyE'); frame(); ok(ui.top().upHero !== before, 'Level up: E takes the next hero'); }
+    ui.screens = [];
+    ui.openChars(hero); texts.length = 0; frame();
+    ok(texts.includes('Повысить уровень'), 'Level up: the details panel has the button');
+    {
+      ui.screens = [];
+      const tk = ls.party[0], tr = ls.roster[tk], tlWas = ls.tl.lvl, line = H.TRACES[lg.kitOf(tk)].mats[1];
+      tr.lvl = 20; tr.exp = 0; tr.asc = 0; ls.tl.lvl = 25; ls.credits = 100000; ls.inv.items[line + '1'] = 20; ls.flags.asc_note = true;
+      const pass0 = ls.inv.items.pass || 0;
+      ui.openLevelUp(tk); texts.length = 0; frame();
+      ok(texts.includes('Возвышение') && texts.includes('Возвысить') && texts.includes('Ур. 20/20') && texts.includes('Ур. 20/30'), 'Ascend: at the cap the same screen ascends');
+      ok(texts.some(x => /^Навык/.test(x)) && texts.includes('Награда: Звёздный пропуск'), 'Ascend: the screen says what it opens');
+      const lvlUp = ui.top();
+      key('Enter'); frame(5);
+      ok(tr.asc === 1 && ls.inv.items.pass === pass0 + 1 && ui.top() !== lvlUp, 'Ascend: Enter ascends and shows the result');
+      texts.length = 0; frame();
+      ok(texts.includes('Возвышение завершено') && texts.includes('Предел уровня: 20 → 30'), 'Ascend: the result names the new limit');
+      key('Enter'); frame();
+      ok(ui.top() === lvlUp, 'Ascend: the result returns to the screen');
+      tr.lvl = 30; tr.asc = 1; ls.tl.lvl = 10; texts.length = 0; frame();
+      ok(texts.includes('Нужен Уровень Освоения 20'), 'Ascend: a low Trailblaze Level blocks the button');
+      key('Enter'); frame();
+      eq(tr.asc, 1, 'Ascend: Enter does nothing below the Trailblaze gate');
+      ls.tl.lvl = 25; ls.inv.items[line + '1'] = 0; texts.length = 0; frame();
+      ok(texts.includes('Где взять') || texts.includes('Синтез материалов'), 'Ascend: a shortage changes the button');
+      ui.screens = [];
+      delete ls.flags.asc_note; tr.lvl = 20; tr.asc = 0;
+      ok(lg.ascNoteDue(), 'Ascend: the notice is due');
+      ui.openAscNotice(); texts.length = 0; frame();
+      ok(texts.includes('Предел уровня') && ls.flags.asc_note, 'Ascend: the notice opens once');
+      key('Enter'); frame();
+      ok(ui.top().upHero === tk, 'Ascend: the notice leads to the screen');
+      ls.tl.lvl = tlWas;
+    }
+    {
+      ui.screens = [];
+      const qk = ls.party[0], qr = ls.roster[qk], tlWas = ls.tl.lvl, line = H.TRACES[lg.kitOf(qk)].mats[1];
+      qr.lvl = 15; qr.exp = 0; qr.asc = 0; ls.tl.lvl = 25; ls.credits = 1e6; Object.assign(ls.inv.items, { exp3: 100, [line + '1']: 20 }); ls.upQuick = {};
+      ui.openLevelUp(qk); frame();
+      key('KeyT'); texts.length = 0; frame();
+      ok(ui.top().quick && lg.upQuick('hero') && texts.includes('Быстрое повышение уровня'), 'Quick: T switches the mode');
+      ok(texts.some(x => /^Можно повысить до ур\. /.test(x)), 'Quick: the reach is shown');
+      const t0 = ui.top().target;
+      key('ArrowLeft'); ui.held = []; frame();
+      eq(ui.top().target, t0 - 1, 'Quick: left lowers the target');
+      key('ArrowUp'); ui.held = []; frame();
+      eq(ui.top().target, Math.min(t0 + 9, lg.upLimit(qk)), 'Quick: up adds ten levels');
+      ui.top().target = 25; const lv0 = qr.lvl;
+      key('Enter'); frame(3);
+      ok(qr.lvl >= 25 && qr.lvl > lv0 && qr.asc === 1, 'Quick: Enter levels through the phase');
+      ok(ui.top().upHero !== qk, 'Quick: crossing a phase shows the result');
+      key('Enter'); frame();
+      ok(ui.top().upHero === qk, 'Quick: the result returns to the screen');
+      qr.lvl = 15; qr.exp = 0; qr.asc = 0; ls.inv.items = { exp3: 100 }; ui.top().target = 30; texts.length = 0; frame();
+      ok(texts.includes('Где взять') || texts.includes('Синтез материалов'), 'Quick: a shortage changes the button');
+      key('KeyR'); frame();
+      ok(ui.top().upHero !== qk || ui.screens.length > 1, 'Quick: R opens where to get it');
+      ui.screens = []; ui.openLevelUp(qk); key('KeyT'); frame();
+      ok(!ui.top().quick && !lg.upQuick('hero'), 'Quick: T switches back');
+      ls.tl.lvl = tlWas; ls.upQuick = {};
+    }
+    {
+      ui.screens = [];
+      const cnKeep = ls.inv.cones, tlWas = ls.tl.lvl, it0 = Object.assign({}, ls.inv.items);
+      ls.inv.cones = [{ uid: 'cu1', id: 'postop', sup: 2, lvl: 1, exp: 0, asc: 0 }, { uid: 'cu2', id: 'arrows', sup: 1, lvl: 20, exp: 0, asc: 0 }];
+      const cu = ls.inv.cones[0], cv = ls.inv.cones[1];
+      ls.tl.lvl = 40; ls.credits = 1e6; ls.upQuick = {}; Object.assign(ls.inv.items, { aether1: 3, aether2: 3, aether3: 3, core1: 20, legion1: 20, hunt1: 20, abund1: 20 });
+      ui.openConeUp('cu1'); texts.length = 0; frame();
+      ok(ui.top().coneUid === 'cu1' && texts.includes('Световой конус') && texts.includes('Повысить уровень') && texts.includes('Наложить') && texts.includes('Подробнее'), 'Cone up: the screen opens with its three sections');
+      key('ArrowUp'); ui.held = []; frame();
+      eq(ui.top().picks.aether1, 1, 'Cone up: arrows choose aether');
+      key('Enter'); frame();
+      ok(cu.lvl > 1 && ls.inv.items.aether1 === 2, 'Cone up: Enter levels the cone');
+      key('KeyE'); frame();
+      eq(ui.top().coneUid, 'cu2', 'Cone up: E takes the next cone');
+      texts.length = 0; frame();
+      ok(texts.includes('Возвышение завершено') === false && texts.includes('Возвысить') && texts.includes('Ур. 20/20') && texts.includes('Ур. 20/30'), 'Cone up: a capped cone shows ascension');
+      const cuTop = ui.top();
+      key('Enter'); frame(3);
+      ok(cv.asc === 1 && ui.top() !== cuTop, 'Cone up: Enter ascends and shows the result');
+      texts.length = 0; frame();
+      ok(texts.includes('Возвышение завершено') && texts.includes('Предел уровня: 20 → 30'), 'Cone up: the result names the new limit');
+      key('Enter'); frame();
+      ok(ui.top() === cuTop, 'Cone up: the result returns to the screen');
+      key('KeyT'); texts.length = 0; frame();
+      ok(cuTop.quick && lg.upQuick('cone') && !lg.upQuick('hero') && texts.includes('Быстрое повышение уровня') || texts.includes('Где взять') || texts.includes('Синтез материалов'), 'Cone up: T switches to the quick mode');
+      key('KeyT'); frame();
+      key('Tab'); texts.length = 0; frame();
+      ok(cuTop.tab === 2 && texts.includes('Наложение') && texts.includes('S2') === true, 'Cone up: Tab shows superimposition');
+      key('Tab'); frame();
+      key('KeyV'); frame();
+      ok(ui.top().view != null, 'Cone up: V opens the details');
+      ui.screens = []; ui.openInventory(4); frame();
+      key('KeyU'); frame();
+      ok(ui.top().coneUid === 'cu1', 'Cone up: U works in the inventory');
+      ui.screens = []; ui.openConePick(ls.party[0]); frame();
+      key('KeyU'); frame();
+      ok(ui.top().coneUid, 'Cone up: U works in the cone picker');
+      ui.screens = []; ui.openConeView('postop', 'cu1'); frame();
+      key('KeyU'); frame();
+      ok(ui.top().coneUid === 'cu1' && ui.top().list().length === 1, 'Cone up: U works in the cone view');
+      ui.screens = []; ls.inv.cones = cnKeep; ls.tl.lvl = tlWas; ls.inv.items = it0; ls.upQuick = {};
+    }
+    {
+      ui.screens = [];
+      const cnKeep = ls.inv.cones, rKeep = ls.roster[ls.party[0]].cone, it0 = Object.assign({}, ls.inv.items), modeWas = ls.coneSup;
+      ls.roster[ls.party[0]].cone = null;
+      ls.inv.cones = [{ uid: 'su1', id: 'postop', sup: 1, lvl: 10, exp: 0, asc: 0 }, { uid: 'su2', id: 'postop', sup: 2, lvl: 1, exp: 0, asc: 0 }, { uid: 'su3', id: 'arrows', sup: 1, lvl: 1, exp: 0, asc: 0 }, { uid: 'su4', id: 'night', sup: 1, lvl: 1, exp: 0, asc: 0 }];
+      ls.credits = 1e6;
+      ui.openSettings(); texts.length = 0; frame();
+      ok(texts.includes('Наложение конусов') && texts.includes('Авто') && texts.includes('Вручную'), 'Superimpose: Settings has the row');
+      ui.screens = [];
+      ui.openConeUp('su1'); key('Tab'); texts.length = 0; frame();
+      ok(texts.includes('Копии этого конуса') && texts.includes('S1 + S2 = S3'), 'Superimpose: the tab lists the copies');
+      key('Enter'); texts.length = 0; frame();
+      ok(texts.includes('S3'), 'Superimpose: the window shows the sum');
+      key('Enter'); frame();
+      ok(ls.inv.cones[0].sup === 3 && !ls.inv.cones.some(x => x.uid === 'su2'), 'Superimpose: Enter in the window merges');
+      key('Tab'); frame();
+      key('KeyC'); frame();
+      const fd = ui.top();
+      ok(fd.toggle, 'Feed: C opens the choice');
+      fd.sel = 0; key('Enter'); frame();
+      eq(ui.screens[0].feed.length, 1, 'Feed: Enter marks a cone');
+      key('Escape'); frame();
+      key('Enter'); frame();
+      ok(!ls.inv.cones.some(x => x.uid === 'su3') && ls.inv.cones[0].exp + ls.inv.cones[0].lvl > 10, 'Feed: Enter spends a plain cone without a question');
+      key('KeyC'); frame();
+      ui.top().sel = 0; key('Enter'); frame(); key('Escape'); frame();
+      const up = ui.top();
+      key('Enter'); frame();
+      ok(ui.top() !== up && ls.inv.cones.some(x => x.uid === 'su4'), 'Feed: a 5★ asks first');
+      key('Enter'); frame();
+      ok(ls.inv.cones.some(x => x.uid === 'su4') && ui.top() === up, 'Feed: Cancel is the default and keeps the cone');
+      key('Enter'); frame(); key('ArrowLeft'); key('Enter'); frame(); ui.held = [];
+      ok(!ls.inv.cones.some(x => x.uid === 'su4'), 'Feed: confirming spends it');
+      ui.screens = []; ls.inv.cones = cnKeep; ls.roster[ls.party[0]].cone = rKeep; ls.inv.items = it0; ls.coneSup = modeWas;
+    }
+    {
+      ui.screens = [];
+      ui.openMenu(); texts.length = 0; frame();
+      const pm = ui.top();
+      ok(texts.includes('Просмотр профиля'), 'Phone: the signature strip stands on the phone');
+      ok(ui.hits.some(h => h.w === 32 && h.h === 18), 'Phone: the dots button has a hit area');
+      key('Tab'); texts.length = 0; frame();
+      ok(ui.top() !== pm && texts.includes('Профиль Первопроходца') && texts.includes('Украшения для смартфона') && texts.includes('Наряды') && texts.includes('Промокод'), 'Phone: Tab opens the menu with four items');
+      key('ArrowDown'); ui.held = []; frame();
+      eq(ui.top().sel, 1, 'Phone: arrows move in the menu');
+      key('Tab'); frame();
+      ok(ui.top() === pm, 'Phone: Tab closes the menu');
+      ui.hits.find(h => h.w === 32 && h.h === 18).fn(0, {}); frame();
+      ok(ui.top() !== pm, 'Phone: the dots open the menu');
+      const mh = ui.hits[0]; mh.fn(0, {}); frame();
+      ok(ui.top() === pm, 'Phone: a click outside closes the menu');
+      eq(ui.phoneSkin().name, 'Обычный вид', 'Phone: the plain look is the default');
+      const n0 = ui.hits.length;
+      ui.drawPhone(ui.ctx, pm, { preview: true });
+      eq(ui.hits.length, n0, 'Phone: a preview takes no clicks');
+      ui.screens = [];
+    }
+    {
+      ui.screens = [];
+      const outKeep = ls.outfits.slice(), jadeKeep = ls.jade, mr = ls.roster.march || (lg.addChar('march', 1), ls.roster.march), flagWas = ls.flags.express_intro;
+      const introWas = ls.shop.intro; ls.shop.intro = true; ls.flags.express_intro = true; ls.outfits = ['march_spring']; ls.jade = 0; delete mr.outfit;
+      ui.openWardrobe(); texts.length = 0; frame();
+      const wd = ui.top(), order = wd.list();
+      eq(order.length, Object.keys(H.OUTFITS).length, 'Wardrobe: every outfit of the game is listed');
+      eq(order[0], 'march_spring', 'Wardrobe: owned outfits come first');
+      ok(texts.includes('Наряды') && texts.includes('В коллекции: 1 из ' + order.length), 'Wardrobe: the screen counts the collection');
+      wd.sel = 0; key('Enter'); frame();
+      eq(lg.outfitOf('march'), 'march_spring', 'Wardrobe: Enter puts the outfit on');
+      key('Enter'); frame();
+      eq(lg.outfitOf('march'), null, 'Wardrobe: Enter on a worn outfit takes it off');
+      key('Enter'); frame();
+      eq(lg.outfitOf('march'), 'march_spring', 'Wardrobe: Enter puts it on again');
+      key('KeyF'); frame();
+      ok(wd.mine && wd.list().length === 1, 'Wardrobe: F shows only owned outfits');
+      key('KeyF'); frame();
+      eq(wd.list().length, order.length, 'Wardrobe: F shows all again');
+      const locked = wd.list().findIndex(id => !lg.ownsOutfit(id));
+      wd.sel = locked; const lockedId = wd.list()[locked];
+      key('Enter'); frame();
+      ok(ui.top() !== wd && ui.top().fsel === Object.keys(H.OUTFITS).indexOf(lockedId), 'Wardrobe: without jade Enter opens the shop on this outfit');
+      ui.screens = [wd]; ls.jade = 5000;
+      key('Enter'); texts.length = 0; frame();
+      ok(ui.top() !== wd && texts.includes('Покупка наряда'), 'Wardrobe: with jade Enter opens the purchase');
+      ui.screens = [wd]; const ghost = wd.list().find(id => !ls.roster[H.OUTFITS[id].char]);
+      if (ghost) { ls.outfits.push(ghost); wd.sel = wd.list().indexOf(ghost); const worn0 = lg.outfitOf(H.OUTFITS[ghost].char); key('Enter'); frame(); eq(lg.outfitOf(H.OUTFITS[ghost].char), worn0, 'Wardrobe: an outfit of a missing hero stays in the collection'); }
+      ui.screens = [];
+      ui.openMenu(); frame(); key('Tab'); frame();
+      ui.top().sel = 2; key('Enter'); frame();
+      ok(ui.top().wardId !== undefined && ui.top().mine !== undefined && ui.top().list, 'Wardrobe: the phone menu opens it');
+      ui.screens = []; ls.outfits = outKeep; ls.jade = jadeKeep; delete mr.outfit; ls.flags.express_intro = flagWas; ls.shop.intro = introWas;
+    }
+    {
+      ui.screens = [];
+      const skinWas = ls.phoneSkin, skinsWas = ls.phoneSkins;
+      ls.phoneSkin = undefined; ls.phoneSkins = [];
+      ui.openPhoneDecor(); texts.length = 0; frame();
+      const pd = ui.top();
+      ok(pd.phoneDecor && texts.includes('Обои для смартфона') && texts.includes('Используется'), 'Skin: the screen opens');
+      key('ArrowRight'); ui.held = []; texts.length = 0; frame();
+      ok(pd.sel === 1 && texts.includes('Навсегда рядом') && texts.includes('Не получено'), 'Skin: a locked wallpaper says so');
+      key('Enter'); frame();
+      eq(lg.phoneSkinId(), 'express', 'Skin: Enter does not set a locked wallpaper');
+      ls.phoneSkins = ['nexttoyou']; texts.length = 0; frame();
+      ok(texts.includes('Установить'), 'Skin: an owned wallpaper can be set');
+      key('Enter'); frame();
+      eq(lg.phoneSkinId(), 'nexttoyou', 'Skin: Enter sets it');
+      ui.screens = []; ui.openMenu(); frame();
+      ok(ui.phoneSkin().wall === 'nexttoyou', 'Skin: the phone draws with it');
+      ui.screens = []; ui.openMenu(); frame(); key('Tab'); frame();
+      ui.top().sel = 1; key('Enter'); frame();
+      ok(ui.top().phoneDecor, 'Skin: the phone menu opens the screen');
+      ui.screens = []; ls.phoneSkin = skinWas; ls.phoneSkins = skinsWas;
+    }
+    {
+      const promoFlags = Object.keys(ls.flags).filter(f => f.startsWith('promo_')), promoWas = ls.promo, introFlag = ls.flags.express_intro;
+      ls.promo = {}; ls.flags.express_intro = true;
+      ui.screens = []; ui.openMenu(); frame(); key('Tab'); frame();
+      ui.top().sel = 3; key('Enter'); frame();
+      ok(ui.top().textEntry, 'Promo: the phone menu opens the entry screen');
+      const ent = ui.top(), okAt = ent.sel;
+      for (const code of ['KeyA', 'KeyS', 'KeyD', 'KeyW', 'KeyQ', 'KeyE', 'KeyU', 'Digit9', 'Numpad8']) key(code);
+      frame();
+      eq(ent.value, 'ASDWQEU98', 'Promo: letters come by physical key, not as moves');
+      ok(ui.top() === ent, 'Promo: letters do not close the screen');
+      key('Backspace');
+      eq(ent.value, 'ASDWQEU9', 'Promo: Backspace erases and does not close');
+      key('Space'); key('Minus');
+      eq(ent.value, 'ASDWQEU9', 'Promo: space and hyphen are not typed');
+      key('Enter'); frame();
+      ok(ent.note && ent.note.text === 'Такого кода нет.' && ent.value === 'ASDWQEU9', 'Promo: a wrong code stays in the field to fix');
+      ent.value = '';
+      for (const ch of 'POMPOM98') key(/\d/.test(ch) ? 'Digit' + ch : 'Key' + ch);
+      key('Enter'); frame();
+      ok(ent.note.ok && ent.value === '' && ls.promo.POMPOM98, 'Promo: the typed code is accepted and the field clears');
+      for (const ch of 'POMPOM98') key(/\d/.test(ch) ? 'Digit' + ch : 'Key' + ch);
+      key('Enter'); frame();
+      eq(ent.note.text, 'Этот код уже использован.', 'Promo: the screen reports a used code');
+      ent.value = 'A'.repeat(16); key('KeyB');
+      eq(ent.value.length, 16, 'Promo: the field holds 16 characters');
+      ent.value = '';
+      key('ArrowUp'); key('ArrowUp'); key('ArrowLeft'); key('ArrowLeft'); key('ArrowLeft');
+      ok(ent.sel < okAt, 'Promo: arrows walk the grid');
+      const gridCh = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'][ent.sel];
+      key('Enter');
+      eq(ent.value, gridCh, 'Promo: Enter types the selected grid cell');
+      ent.sel = 35; key('ArrowDown');
+      eq(ent.sel, okAt, 'Promo: the last column leads to the button');
+      key('ArrowUp'); ok(ent.sel < okAt, 'Promo: the button leads back to the grid');
+      ent.sel = okAt - 2; key('Enter');
+      eq(ent.value, '', 'Promo: the erase cell works');
+      key('Escape');
+      ok(ui.top() !== ent, 'Promo: Esc closes the screen');
+      ui.screens = [];
+      ls.promo = promoWas; ls.flags.express_intro = introFlag;
+      for (const f of Object.keys(ls.flags)) if (f.startsWith('promo_') && !promoFlags.includes(f)) delete ls.flags[f];
+      for (const id of Object.keys(ls.mail)) if (id.startsWith('promo_') && !promoFlags.includes(id)) delete ls.mail[id];
+    }
+    {
+      const profileWas = ls.profile, nameWas = ls.name, genderWas = ls.gender, typed = (code, ch) => ui.keydown({ code, key: ch, repeat: false, preventDefault: noop });
+      ls.profile = undefined;
+      ui.screens = []; ui.openMenu(); frame();
+      const uidBefore = ui.profileUid();
+      key('Tab'); frame();
+      ui.top().sel = 0; key('Enter'); frame();
+      const pr = ui.top();
+      ok(pr.profile, 'Profile: the phone menu opens it');
+      const seen = new Set([pr.sel]), queue = [pr.sel];
+      while (queue.length) {
+        const from = queue.shift();
+        for (const code of ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']) {
+          pr.sel = from; key(code);
+          if (!seen.has(pr.sel)) { seen.add(pr.sel); queue.push(pr.sel); }
+        }
+      }
+      eq(seen.size, 13, 'Profile: arrows reach every stop');
+      pr.sel = 1; key('Enter'); frame();
+      const nm = ui.top();
+      ok(nm.textEntry && nm.value === ls.name, 'Profile: the name entry opens on the current name');
+      nm.value = '';
+      for (const [code, ch] of [['KeyD', 'В'], ['KeyF', 'а'], ['KeyC', 'с'], ['KeyZ', 'я']]) typed(code, ch);
+      eq(nm.value, 'Вася', 'Profile: letters come by the typed character, so Cyrillic works');
+      typed('Space', ' '); typed('KeyA', 'a');
+      eq(nm.value, 'Вася a', 'Profile: space is a character in the name');
+      key('Backspace'); key('Backspace');
+      eq(nm.value, 'Вася', 'Profile: Backspace erases');
+      key('Enter'); frame();
+      ok(ui.top() === pr && ls.name === 'Вася', 'Profile: Enter saves the name and closes');
+      eq(ui.profileUid(), uidBefore, 'Profile: UID does not follow the name');
+      eq(ls.gender, genderWas, 'Profile: the name leaves the gender');
+      pr.sel = 3; key('Enter'); frame();
+      const sg = ui.top();
+      ok(sg.textEntry && sg.value === '', 'Profile: the signature entry opens');
+      const pageOne = sg.grid()[0];
+      sg.sel = sg.grid().length + 2; key('Enter');
+      ok(sg.page === 1 && sg.grid()[0] !== pageOne, 'Profile: the layout button changes the grid');
+      sg.sel = 0; key('Enter');
+      eq(sg.value, sg.grid()[0], 'Profile: the grid types on the shown layout');
+      sg.sel = sg.grid().length + 1; key('Enter');
+      eq(sg.value, sg.grid()[0] + ' ', 'Profile: the space button types a space');
+      eq(sg.grid().length, 44, 'Profile: the layouts keep the cell count');
+      sg.value = 'Едем дальше';
+      sg.sel = sg.grid().length + 4; key('Enter'); frame();
+      ok(ui.top() === pr && ls.profile.sign === 'Едем дальше', 'Profile: the signature is saved');
+      ui.screens = []; ui.openMenu(); texts.length = 0; frame();
+      ok(texts.includes('Едем дальше'), 'Profile: the phone shows the signature');
+      ui.screens = []; ui.openMenu(); ui.openProfile(); frame();
+      const pr2 = ui.top();
+      pr2.sel = 2; key('Enter'); frame();
+      const bd = ui.top();
+      ok(bd.profileBday && bd.d === 1 && bd.m === 1, 'Profile: the birthday opens on 01.01');
+      key('ArrowDown');
+      eq(bd.d, 31, 'Profile: the day wraps');
+      key('ArrowRight'); key('ArrowUp');
+      ok(bd.m === 2 && bd.d === 29, 'Profile: the day fits the month');
+      key('Enter'); frame();
+      ok(ui.top() === pr2 && ls.profile.bday.d === 29 && ls.profile.bday.m === 2, 'Profile: the birthday is saved');
+      key('Enter'); frame();
+      key('Delete'); frame();
+      ok(ui.top() === pr2 && ls.profile.bday === null, 'Profile: Del removes the birthday');
+      const stageKeep = lg.profileStageHero(), other = ui.rosterKeys().find(k => k !== stageKeep);
+      pr2.sel = 4; key('Enter'); frame();
+      const pick = ui.top();
+      ok(pick.profilePick && pick.keys[pick.sel] === stageKeep, 'Profile: the picker opens on the stage hero');
+      pick.sel = pick.keys.indexOf(other); key('Enter'); frame();
+      ok(ui.top() === pr2 && lg.profileStageHero() === other, 'Profile: the picked hero goes on stage');
+      pr2.sel = 5; key('Enter'); frame();
+      const slotPick = ui.top();
+      ok(slotPick.keys[0] === null, 'Profile: a slot can be cleared from the picker');
+      slotPick.sel = 0; key('Enter'); frame();
+      ok(lg.profileSlots().show[0] === null, 'Profile: the slot is empty now');
+      key('KeyV');
+      ok(ui.top() === pr2, 'Profile: V on an empty slot stays here');
+      lg.setProfileSlot('show', 0, other); frame();
+      key('KeyV'); frame();
+      ok(ui.top() !== pr2, 'Profile: V opens the hero');
+      ui.pop(); frame();
+      ok(ui.top() === pr2, 'Profile: the hero screen returns here');
+      key('Escape');
+      ok(ui.top() !== pr2, 'Profile: Esc closes it');
+      ui.screens = [];
+      ls.profile = profileWas; ls.name = nameWas;
+    }
+    {
+      const profileWas = ls.profile, flagsWas = Object.assign({}, ls.flags), bankWas = ui.openBank, cwWas = ui.openCwHub;
+      delete ls.profile;
+      ui.screens = []; ui.openMenu(); ui.openProfile(); frame();
+      const pr = ui.top();
+      key('KeyE'); frame();
+      ok(pr.tab === 2 && pr.sel === 5, 'Profile tabs: E goes to Collections on its first row');
+      ok(pr.coll && pr.coll.length === 8, 'Profile tabs: Collections fill once');
+      key('KeyQ'); key('KeyQ'); frame();
+      ok(pr.tab === 0 && pr.sel === 5, 'Profile tabs: Q goes back to the Battle records');
+      key('KeyQ');
+      eq(pr.tab, 2, 'Profile tabs: Q wraps around');
+      for (const t of [0, 2]) {
+        pr.setTab(t); frame();
+        const seen = new Set([pr.sel]), queue = [pr.sel];
+        while (queue.length) {
+          const from = queue.shift();
+          for (const code of ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']) {
+            pr.sel = from; key(code);
+            if (!seen.has(pr.sel)) { seen.add(pr.sel); queue.push(pr.sel); }
+          }
+        }
+        eq(seen.size, pr.stops().length, 'Profile tabs: arrows reach every row of tab ' + t);
+        pr.sel = 5;
+      }
+      pr.setTab(0); frame();
+      ls.flags.lab_cw = false;
+      const cwRow = pr.stops().findIndex(st => st.rowId === 'cw');
+      pr.sel = cwRow; key('Enter'); frame();
+      ok(ui.top() === pr, 'Profile tabs: a closed mode does not open');
+      ls.flags.lab_cw = true;
+      let opened = 0;
+      ui.openCwHub = () => { opened++; };
+      pr.sel = cwRow; key('Enter');
+      eq(opened, 1, 'Profile tabs: an open mode opens from its row');
+      ui.openCwHub = cwWas;
+      const suWas = ls.su; ls.su = { world: 1 };
+      opened = 0; ui.openCwHub = () => { opened++; };
+      key('Enter');
+      eq(opened, 0, 'Profile tabs: the war terminal stays closed inside the universe');
+      ui.openCwHub = cwWas; ls.su = suWas;
+      pr.sel = pr.stops().findIndex(st => st.rowId === 'boss'); key('Enter'); frame();
+      ok(ui.top() !== pr, 'Profile tabs: the boss row opens the Archive');
+      ui.pop(); frame();
+      pr.setTab(2); frame();
+      pr.sel = pr.stops().findIndex(st => st.rowId === 'fusions'); key('Enter'); frame();
+      eq(ui.top().tab, 1, 'Profile tabs: the fusion row opens the Archive on fusions');
+      ui.pop(); frame();
+      ok(ui.top() === pr && !!pr.coll, 'Profile tabs: Collections refresh after a visit');
+      pr.setTab(1); frame();
+      lg.profileNote('su', 1);
+      texts.length = 0; frame();
+      ok(texts.some(t => t.startsWith('Сегодня')), 'Profile tabs: the log shows the age of a record');
+      ui.screens = [];
+      ls.profile = profileWas;
+      for (const f of Object.keys(ls.flags)) if (!(f in flagsWas)) delete ls.flags[f];
+      Object.assign(ls.flags, flagsWas);
+      ui.openBank = bankWas;
+    }
+    {
+      ui.screens = []; ui.openGuide(); frame();
+      const ctl = ui.top();
+      ok(ctl.controls && ctl.page === 0, 'Controls: the screen opens on the first page');
+      key('ArrowRight'); texts.length = 0; frame();
+      ok(ctl.page === 1 && texts.includes('Повышение') && texts.includes('Профиль') && texts.includes('Ввод текста'), 'Controls: the second page lists the new keys');
+      key('ArrowLeft');
+      eq(ctl.page, 0, 'Controls: arrows turn back');
+      key('Escape');
+      ok(ui.top() !== ctl, 'Controls: Esc closes');
+      const fuelWas = ls.inv.items.fuelv, firstCone = ls.inv.cones[0];
+      ui.screens = [];
+      ui.dailyGo({}, { def: { go: 'levelup' }, done: false, got: false });
+      ok(ui.top() && ui.top().upHero, 'Daily: the level-up task opens the level-up screen');
+      ui.screens = [];
+      const uidKeep = ls.party.map(k => ls.roster[k].cone);
+      ls.party.forEach(k => { ls.roster[k].cone = null; });
+      ui.dailyGo({}, { def: { go: 'coneup' }, done: false, got: false });
+      ok(ui.top() && ui.top().tab === 4, 'Daily: without a worn cone the task opens the cone inventory');
+      ui.screens = [];
+      if (firstCone) {
+        ls.roster[ls.party[0]].cone = firstCone.uid;
+        ui.dailyGo({}, { def: { go: 'coneup' }, done: false, got: false });
+        ok(ui.top() && ui.top().coneUid === firstCone.uid, 'Daily: the cone task opens the worn cone');
+      }
+      ui.screens = [];
+      ls.party.forEach((k, i) => { ls.roster[k].cone = uidKeep[i]; });
+      const row = { kind: 'calyx', id: 'cx_exp', open: true };
+      const coupons = lg.domainCoupons('cx_exp');
+      ls.inv.items.fuelv = 0;
+      ok(!ui.guideItemQuick({ type: 'need', row }), 'Target: without coupons the row enters the calyx');
+      ls.inv.items.fuelv = coupons;
+      ok(ui.guideItemQuick({ type: 'need', row }), 'Target: with coupons the row leads to quick farming');
+      ok(!ui.guideItemQuick({ type: 'need', row: Object.assign({}, row, { open: false }) }), 'Target: a closed calyx never farms');
+      ok(!ui.guideItemQuick({ type: 'set', row }), 'Target: a relic set row still enters');
+      if (fuelWas === undefined) delete ls.inv.items.fuelv; else ls.inv.items.fuelv = fuelWas;
+    }
+    ui.text = realText;
+    ui.screens = keep; ls.roster = snap.roster; ls.inv.items = snap.items; ls.credits = snap.credits; ui.held = [];
+  }
   key('F7'); frame();
   eq(ui.game.state.jade, j0 + 1600, 'F7 grants 1600 Stellar Jade');
   ok(ui.toasts.some(t => /нефрит/.test(t.text)), 'F7 shows a toast');
@@ -7515,9 +8001,9 @@ function trInfo(g) {
       const dst = ui.debugState, chIds = Object.keys(H.CHARS).filter(k => k !== 'trail_p');
       dst.ch.i = chIds.indexOf('march'); dst.ch.o = 0; dst.row = 3; frame();
       eq(ui.debugForm(dst).rows[3].value, 'Зарождение весны', 'the characters tab lists the outfits of the character');
-      dst.row = 6; key('Enter'); frame(); release();
+      dst.row = 7; key('Enter'); frame(); release();
       ok(ui.game.ownsOutfit('march_spring') && ui.game.outfitOf('march') === 'march_spring', 'the outfit button grants the outfit and puts it on');
-      key('ArrowUp'); key('ArrowUp'); key('ArrowUp'); key('ArrowRight'); dst.row = 6; key('Enter'); frame(); release();
+      key('ArrowUp'); key('ArrowUp'); key('ArrowUp'); key('ArrowUp'); key('ArrowRight'); dst.row = 7; key('Enter'); frame(); release();
       ok(Object.keys(H.OUTFITS).every(id => ui.game.ownsOutfit(id)), 'the last choice grants every outfit of the game');
       dst.ch.i = chIds.indexOf('danheng'); dst.ch.o = 0; frame();
       ok(ui.debugForm(dst).rows[3].fixed && ui.debugForm(dst).rows[3].value === 'нет нарядов', 'a character without outfits says so');
@@ -8243,7 +8729,11 @@ function trInfo(g) {
       const t = game.traceOf(tk), cur = n.kind === 'ability' ? t.lv[n.id] : t.on.includes(n.id) ? 1 : 0;
       for (let to = cur + 1; to <= n.max; to++) { const c = H.traceCost(kit, n.id, to); if (c) credits += c.credits; }
     }
-    eq(cost.credits, credits, 'the target counts every Trace step that is left');
+    for (let p = game.ascOf(tk); p < 6; p++) credits += game.ascCost(tk, p).credits;
+    credits += game.expCredits(cost.exp) + game.coneCredits(cost.coneExp);
+    const worn = s.roster[tk].cone != null ? game.coneOf(s.roster[tk].cone) : null;
+    if (worn) for (let p = worn.asc; p < 6; p++) credits += game.coneAscCost(worn, p).credits;
+    eq(cost.credits, credits, 'the target counts every step that is left');
     s.inv.items = {}; s.credits = 0;
     const needs = game.targetNeeds(tk);
     ok(needs.length && needs.some(x => H.ITEMS[x.id].mat === 'path' && x.row && x.row.c.reward === 'path'), 'a missing Path material points to its crimson Calyx');
@@ -8395,7 +8885,12 @@ function trInfo(g) {
       const cur = n.kind === 'ability' ? t.lv[n.id] : t.on.includes(n.id) ? 1 : 0;
       for (let to = cur + 1; to <= n.max; to++) { const c = H.traceCost(kit, n.id, to); if (!c) continue; credits += c.credits; for (const [m, x] of Object.entries(c.items)) items[m] = (items[m] || 0) + x; }
     }
-    ok(rec.credits === credits && JSON.stringify(Object.entries(rec.items).sort()) === JSON.stringify(Object.entries(items).sort()), 'recommended Traces are Skill, Ultimate, Talent and the bonus abilities');
+    const payRec = c => { credits += c.credits; for (const [m, x] of Object.entries(c.items)) items[m] = (items[m] || 0) + x; };
+    for (let p = game.ascOf(tk); p < 6; p++) payRec(game.ascCost(tk, p));
+    credits += game.expCredits(rec.exp) + game.coneCredits(rec.coneExp);
+    const recCone = s.roster[tk].cone != null ? game.coneOf(s.roster[tk].cone) : null;
+    if (recCone) for (let p = recCone.asc; p < 6; p++) payRec(game.coneAscCost(recCone, p));
+    ok(rec.credits === credits && JSON.stringify(Object.entries(rec.items).sort()) === JSON.stringify(Object.entries(items).sort()), 'recommended Traces are Skill, Ultimate, Talent and the bonus abilities, plus ascension');
     ok(rec.credits <= all.credits && Object.entries(rec.items).every(([m, n]) => n <= (all.items[m] || 0)) && rec.exp === all.exp, 'the recommended cost is a part of the full cost, levels stay the same');
     ok(H.GUIDE_REC_ABILITY.join() === 'skill,ult,talent', 'Basic ATK and stat nodes are left out');
     ui.screens = []; ui.openIpg('index'); frame();
@@ -10346,7 +10841,7 @@ function trInfo(g) {
     ok(ui.top() !== view, 'Esc closes the cone view');
     s.roster[k].cone = 'probe_v';
     texts.length = 0; ui.openConeView(id, 'probe_v'); frame();
-    ok(texts.some(t => t.startsWith('Надет: ')) && texts.includes('на ур. ' + s.roster[k].lvl + ' владельца'), 'the cone view shows the holder and the stats at the holder level');
+    ok(texts.some(t => t.startsWith('Надет: ')) && texts.some(t => /^Ур\. \d+\/\d+ · фаза \d$/.test(t)), 'the cone view shows the holder and the level of the cone');
     texts.length = 0; ui.screens = []; ui.openConeView(absent); frame();
     ok(texts.includes('нет в наличии'), 'the cone view says when the player has no copy');
     H.CONES.__probe = { name: 'Проба', path, rarity: 4, ref: 1, stats: { hp: 40, atk: 20, def: 15 }, skill: 'Пробный приём', tpl: 'Урон +#1%.', p: [[0.1], [0.12], [0.14], [0.16], [0.2]], bonus: {}, fx: '__probe', desc: Array.from({ length: 30 }, (_, i) => 'Строка истории номер ' + i + ', длинная, чтобы перенестись.').join('\n') };
@@ -10721,6 +11216,25 @@ function trInfo(g) {
       key('KeyM'); frame(3);
       const nav = ui.top(), cars = ui.navRows(nav.world).filter(r => r.area && H.expressArea(r.area.map)).map(r => r.area.map);
       ok(nav.points && cars.length === 3 && !cars.includes('express_lab'), 'the navigation list never shows the Test car, even from inside it');
+      ui.openNav(null, { world: H.WORLDS.find(w => w.id === 'jarilo') }); frame(2);
+      const longNav = ui.top(), navFits = L => { const end = L.shown[L.shown.length - 1]; return end.y + end.h <= L.y + L.view; };
+      const areaCount = ui.navRows(longNav.world).filter(r => r.area).length;
+      ok(ui.navListLayout(longNav).maxTop > 0, 'a navigation list taller than the panel gets a scroll bar');
+      let navAlwaysShown = true;
+      for (let i = 0; i < areaCount; i++) {
+        key('ArrowDown'); frame();
+        const L = ui.navListLayout(longNav);
+        if (!navFits(L) || !L.shown.some(r => r.area && r.area.map === longNav.area)) navAlwaysShown = false;
+      }
+      ok(navAlwaysShown, 'the arrows keep the chosen zone inside the panel and no row leaves it');
+      for (let i = 0; i < 40; i++) ui.wheel({ clientX: 540, clientY: 200, deltaY: 120, preventDefault: noop });
+      frame();
+      const navEnd = ui.navListLayout(longNav);
+      eq(navEnd.shown[navEnd.shown.length - 1].area, navEnd.items[navEnd.items.length - 1].area, 'the wheel reaches the last zone');
+      for (let i = 0; i < 40; i++) ui.wheel({ clientX: 540, clientY: 200, deltaY: -120, preventDefault: noop });
+      frame();
+      eq(longNav.sc.top, 0, 'the wheel returns to the top of the list');
+      key('Escape'); frame();
       key('Escape'); frame(2); ui.screens = [];
       game.state.party = lead;
     }
@@ -13699,6 +14213,11 @@ function trInfo(g) {
   ok(g.routeExit('ax_town', 'ax_gate') === 'x', 'KonoSuba: the objective route from Axel finds the gate field');
   talk(g, 'п');
   ok(g.state.flags.ks_proto && g.state.quests.ks_q6 === 'done', 'KonoSuba: the early Destroyer falls');
+  {
+    const shown = H.Axel.buildLayer(g.map).sprites.filter(s => !s.if || g.cond(s.if));
+    const pile = shown.find(s => s.k === 'proto' && [19, 20].every(x => x >= s.x && x < s.x + s.w && 19 >= s.y && 19 < s.y + s.h));
+    ok(g.map.id === 'ax_gate' && pile && pile.w * pile.h >= 48, 'KonoSuba: the stone pile of the golem lies right under its prop (BR-261028-Z2QW)');
+  }
   eq(g.state.party.join(), 'kazuma,aqua,megumin,darkness', 'KonoSuba: Kazuma leads his own party again');
   g.loadMap('ax_town', null, { x: 25, y: 44, silent: true });
   exitVia(g, 'x');
@@ -17227,4 +17746,597 @@ console.log(log.join('\n'));
   }
   log.push('express frontier ok');
 }
+{
+  const A = H.ASC, sum = a => a.reduce((x, y) => x + y, 0), total = (rows, f) => sum(rows.map(f));
+  const tier = (rows, key, n) => total(rows, r => (r[key] && r[key][0] === n ? r[key][1] : 0));
+  const toLvl = (a, b) => { let n = 0; for (let l = a; l < b; l++) n += H.expToNext(l); return n; };
+  const coneK = (lvl, asc) => 1 + A.coneLevelK * (lvl - 1) + A.coneAdd[asc];
+  eq(A.tl.join(), '0,15,20,30,40,50,60', 'Ascension: Trailblaze Level gates follow the original');
+  eq(toLvl(1, 80), 5797920, 'Ascension: a hero needs 5 797 920 EXP to reach level 80');
+  eq(toLvl(60, 70), 1326050, 'Ascension: level 60 to 70 costs what the screenshot shows');
+  eq(total(A.heroCost[4], r => r.cr), 246400, 'Ascension: 4★ hero credits');
+  eq(total(A.heroCost[5], r => r.cr), 308000, 'Ascension: 5★ hero credits');
+  eq(total(A.heroCost.trail, r => r.cr), 246400, 'Ascension: the Trailblazer pays like a 4★');
+  eq(total(A.heroCost[4], r => r.boss), 50, 'Ascension: 4★ hero needs 50 Shadow materials');
+  eq(total(A.heroCost[5], r => r.boss), 65, 'Ascension: 5★ hero needs 65 Shadow materials');
+  eq(total(A.heroCost.trail, r => r.boss), 28, 'Ascension: the Trailblazer needs 28 Enigmatic Ectostella');
+  eq([1, 2, 3].map(n => tier(A.heroCost[5], 'foe', n)).join(), '15,15,15', 'Ascension: 5★ hero enemy materials');
+  eq([1, 2, 3].map(n => tier(A.heroCost[4], 'foe', n)).join(), '12,13,12', 'Ascension: 4★ hero enemy materials');
+  eq([3, 4, 5].map(r => total(A.coneCost[r], x => x.cr)).join(), '231000,308000,385000', 'Ascension: cone credits by rarity');
+  eq([3, 4, 5].map(r => [1, 2, 3].map(n => tier(A.coneCost[r], 'foe', n)).join('/')).join(), '12/10/8,15/15/12,20/20/14', 'Ascension: cone enemy materials by rarity');
+  eq([3, 4, 5].map(r => [1, 2, 3].map(n => tier(A.coneCost[r], 'path', n)).join('/')).join(), '2/6/9,3/9/12,4/12/15', 'Ascension: cone Path materials by rarity');
+  ok([3, 4, 5].every(r => A.coneExp[r].length === 79), 'Ascension: cone EXP covers every level from 1 to 80');
+  eq([3, 4, 5].map(r => sum(A.coneExp[r])).join(), '597440,796590,995700', 'Ascension: cone EXP totals');
+  eq([3, 4, 5].map(r => A.coneFodder[r]).join(), '500,12000,60000', 'Ascension: a spent cone gives the original EXP');
+  const asc2 = A.coneCost[4][1];
+  ok(asc2.cr === 8000 && asc2.foe.join() === '1,10' && asc2.path.join() === '1,3', 'Ascension: 4★ cone phase 2 costs what the screenshot shows');
+  const shot = (lvl, asc) => [43.2, 21.6, 15].map(b => Math.floor(b * coneK(lvl, asc))).join('/');
+  eq(shot(30, 1), '282/141/98', 'Ascension: cone stats match the level 30 screenshot');
+  eq(shot(30, 2), '352/176/122', 'Ascension: cone stats match the ascended screenshot');
+  eq(shot(80, 6), '952/476/330', 'Ascension: cone stats match the level 80 screenshot');
+  const LATER = new Set(['cx_quanta', 'cx_icicle', 'cx_doom', 'cx_celestial', 'cx_abomination', 'cx_puppetry', 'cx_perdition']);
+  for (const k of Object.keys(H.CHARS)) ok(A.shadows[A.shadowOf[k]], 'Ascension: ' + k + ' has a Shadow material');
+  eq(A.shadowOf.trail, 'asc_ecto', 'Ascension: the Trailblazer uses Enigmatic Ectostella');
+  eq(A.shadowOf.hanya, 'asc_perdition', 'Ascension: Hanya keeps her original material');
+  eq(Object.keys(A.shadows).length, 15, 'Ascension: 14 Shadow materials and the Ectostella');
+  for (const [id, m] of Object.entries(A.shadows)) ok(id === 'asc_ecto' ? m.cx === null : LATER.has(m.cx) || H.CALYX.some(c => c.id === m.cx && /^Застойная тень/.test(c.name)), 'Ascension: ' + id + ' comes from a Stagnant Shadow');
+  for (const [id, c] of Object.entries(H.CONES)) {
+    ok(H.TRACE_FOE_LINES[A.coneFoe[id]], 'Ascension: cone ' + id + ' has an enemy line');
+    ok(Object.values(H.TRACE_PATH_LINES).some(l => l[0] === c.path), 'Ascension: cone ' + id + ' has a Path line');
+    ok(A.coneCost[c.rarity], 'Ascension: cone ' + id + ' has a cost table');
+  }
+  log.push('ascension data ok');
+}
+{
+  const T = H.TUNING, was = T.ascOn;
+  eq([19, 20, 29, 30, 69, 70, 80].map(H.ascPhase).join(), '0,1,1,2,5,6,6', 'Ascension: the phase a level implies');
+  eq([0, 1, 6].map(H.ascCap).join(), '20,30,80', 'Ascension: each phase raises the cap by 10');
+  eq([[19, 0], [20, 0], [20, 1], [25, 1], [30, 1], [30, 2], [70, 5], [70, 6], [80, 6]].map(([l, a]) => H.statAt(100, l, a)).join(), '316,328,378,413,448,498,928,978,1048', 'Ascension: the stat curve never drops under the old line');
+  eq(H.statAt(100, 30), 448, 'Ascension: without a phase the old line stays');
+  for (let l = 1; l <= 80; l++) for (let a = Math.ceil((l - 20) / 10) > 0 ? Math.ceil((l - 20) / 10) : 0; a <= Math.min(6, H.ascPhase(l)); a++) ok(H.statAt(1000, l, a) >= H.statAt(1000, l), 'Ascension: level ' + l + ' phase ' + a + ' is not under the line');
+  const g = new H.Game({ seed: 11 }), r = g.state.roster.trail;
+  eq(r.asc, 0, 'Ascension: a new save starts at phase 0');
+  g.addChar('seele', 30);
+  eq(g.state.roster.seele.asc, 2, 'Ascension: a hero who joins at level 30 counts as ascended');
+  g.addChar('march', 1);
+  eq(g.state.roster.march.asc, 0, 'Ascension: a hero who joins at level 1 is at phase 0');
+  T.ascOn = false;
+  ok(g.addExp('march', 400000) && g.state.roster.march.lvl > 20, 'Ascension: while switched off levels pass the cap');
+  eq(g.levelCap('march'), H.MAX_LVL, 'Ascension: while switched off the cap is level 80');
+  T.ascOn = true;
+  g.state.roster.march = Object.assign(g.state.roster.march, { lvl: 19, exp: 0, asc: 0 });
+  g.addExp('march', 900000);
+  ok(g.state.roster.march.lvl === 20 && g.state.roster.march.exp === 0, 'Ascension: battle EXP stops at the cap and burns');
+  eq(g.levelCap('march'), 20, 'Ascension: phase 0 caps level at 20');
+  g.state.roster.march.asc = 1;
+  const before = g.charStats('march').atk;
+  g.state.roster.march.asc = 0;
+  ok(before > g.charStats('march').atk, 'Ascension: a new phase raises the stats');
+  g.state.roster.march.asc = 1;
+  g.addExp('march', 900000);
+  eq(g.state.roster.march.lvl, 30, 'Ascension: the next phase lets the level go on to the next cap');
+  g.state.roster.march.lvl = 50; g.state.roster.march.asc = 1;
+  eq(g.ascOf('march'), 4, 'Ascension: a level set above the cap heals the phase');
+  g.state.roster.march.lvl = 30; g.state.roster.march.asc = 1;
+  eq(g.traceNode('march', 'a2').why === 'lvl', true, 'Ascension: A2 needs phase 2 even at level 30');
+  ok(g.gateOk('march', 20) && !g.gateOk('march', 30), 'Ascension: gates read the real phase');
+  g.state.roster.march.asc = 2;
+  ok(g.gateOk('march', 30) && !g.gateOk('march', 75), 'Ascension: level 75 and 80 nodes still read the level');
+  g.state.roster.march.asc = 1;
+  ok(/возвышение 2/.test(H.UI.prototype.traceGate(30, true)) && H.UI.prototype.traceGate(30) === 'возв. 2', 'Ascension: the lock names the phase');
+  g.state.roster.trail.guest = true;
+  eq(g.statAsc('trail'), undefined, 'Ascension: guests keep the old line');
+  delete g.state.roster.trail.guest;
+  T.ascOn = was;
+  const old = new H.Game({ seed: 12 }), st = JSON.parse(JSON.stringify(old.state));
+  st.roster.trail.lvl = 35; delete st.roster.trail.asc;
+  st.roster.seele = { lvl: 20, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+  const moved = new H.Game({ seed: 12, state: st });
+  ok(moved.state.roster.trail.asc === 2 && moved.state.roster.seele.asc === 1, 'Ascension: an old save gets its phase from the level');
+  eq(moved.ascOf('seele'), 1, 'Ascension: an old level 20 hero can go on levelling');
+  const dbg = new H.Game({ seed: 13 });
+  dbg.debugChar('seele', 45, 0);
+  eq(dbg.state.roster.seele.asc, 3, 'Ascension: F8 sets the phase from the level');
+  dbg.debugChar('seele', 45, 0, 6);
+  eq(dbg.state.roster.seele.asc, 6, 'Ascension: F8 can pick a phase');
+  dbg.debugChar('seele', 45, 0, 0);
+  eq(dbg.state.roster.seele.asc, 3, 'Ascension: F8 never sets a phase under the level');
+  log.push('ascension model ok');
+}
+{
+  const A = H.ASC, G = H.Gfx;
+  eq(Object.keys(A.shadows).filter(id => H.ITEMS[id] && H.ITEMS[id].mat === 'asc').length, 15, 'Ascension: 15 materials are items');
+  for (const id of Object.keys(A.shadows)) { ok(G.ITEM_ART[id], 'Ascension: ' + id + ' has an icon'); G.itemCanvas(id); }
+  const shadows = H.CALYX.filter(c => H.guideCalyxKind(c) === 'shadow');
+  eq(shadows.length, 14, 'Ascension: 14 Stagnant Shadows');
+  ok(shadows.every(c => c.mat && H.ITEMS[c.mat] && c.sets.every(s => H.RELIC_SETS[s])), 'Ascension: every Shadow gives its material and its relic sets');
+  ok(shadows.every(c => H.ENEMIES[c.boss] && c.adds.every(e => H.ENEMIES[e])), 'Ascension: every Shadow has real enemies');
+  const g = new H.Game({ seed: 21 }), far = shadows.filter(c => c.ownsMat);
+  eq(far.length, 6, 'Ascension: six Shadows live in the Simulator');
+  ok(far.every(c => !g.calyxOpen(c)), 'Ascension: far Shadows wait for a hero with their material');
+  g.addChar('hanya', 30);
+  ok(g.calyxOpen(H.CALYX.find(c => c.id === 'cx_perdition')) && !g.calyxOpen(H.CALYX.find(c => c.id === 'cx_doom')), 'Ascension: Hanya opens only her own Shadow');
+  g.guideState().target = 'kafka';
+  ok(g.calyxOpen(H.CALYX.find(c => c.id === 'cx_doom')), 'Ascension: a development target opens the Shadow too');
+  const site = g.guideSite('calyx', 'cx_quanta');
+  ok(site && site.map === 'hs_base' && H.MAPS.hs_base.marks[site.ch].calyx === 'cx_quanta', 'Ascension: the Form of Quanta stands in the Base Zone');
+  ok(g.guideSite('calyx', 'cx_perdition').sim, 'Ascension: far Shadows are entered from the Simulator');
+  for (const [tier, n] of [[0, 2], [1, 3], [2, 4], [3, 5]]) {
+    const before = g.state.inv.items.asc_perdition || 0, rel = g.state.inv.relics.length;
+    g.state.power = 600;
+    const got = g.calyxReward({ id: 'cx_perdition', tier, cost: 30 });
+    eq((g.state.inv.items.asc_perdition || 0) - before, n, 'Ascension: tier ' + (tier + 1) + ' of a Shadow gives ' + n + ' materials');
+    ok(g.state.inv.relics.length > rel && got.length >= 3, 'Ascension: the Shadow still gives relics');
+  }
+  ok(H.UI.prototype.calyxDrops(H.CALYX.find(c => c.id === 'cx_gust'))[0] === 'asc_gust', 'Ascension: the domain window shows the material first');
+  const src = g.needSource('asc_perdition');
+  ok(src.row && src.row.id === 'cx_perdition', 'Ascension: the material knows its Shadow');
+  ok(/Награды проводника/.test(g.needSource('asc_ecto').src), 'Ascension: the Ectostella comes from level rewards');
+  eq(Object.values(H.TL_ASC_ITEMS).reduce((a, x) => a + (x.asc_ecto || 0), 0), 28, 'Ascension: level rewards give the 28 Ectostella the Trailblazer needs');
+  ok(H.TL_REWARDS[30].items.asc_ecto === 4 && H.TL_REWARDS[60].items.asc_ecto === 10 && H.TL_REWARDS[30].items.shadow_dest === 1, 'Ascension: level rewards keep their old items');
+  const old = new H.Game({ seed: 22 }), st = JSON.parse(JSON.stringify(old.state));
+  st.tlGot = [29, 30, 40]; delete st.asv;
+  const moved = new H.Game({ seed: 22, state: st });
+  ok(moved.state.inv.items.asc_ecto === 10 && moved.state.asv === 1, 'Ascension: old saves get the Ectostella of claimed levels');
+  eq(new H.Game({ seed: 22, state: JSON.parse(JSON.stringify(moved.state)) }).state.inv.items.asc_ecto, 10, 'Ascension: the Ectostella back pay happens once');
+  const beat = (c, tier) => {
+    const lvl = H.CALYX_TIERS[tier].lvl, foes = [c.boss + ':' + (lvl + 2)].concat(c.adds.map(a => a + ':' + lvl));
+    let w = 0;
+    for (let i = 1; i <= 6; i++) {
+      const pg = new H.Game({ seed: 30 + i }), party = ['seele', 'bronya', 'natasha', 'gepard'];
+      party.forEach(k => { pg.addChar(k, lvl + 10); pg.fillTraces(k, 'cap'); });
+      const b = new H.Battle({ party: party.map(k => ({ charId: k, key: k, lvl: lvl + 10, stats: pg.charStats(k), tr: pg.traceSpec(k) })), enemies: foes, boss: true, seed: i * 19 });
+      b.start();
+      let n = 0;
+      while (!b.over && n++ < 700) if (!b.autoStep()) break;
+      if (b.result && b.result.win) w++;
+    }
+    return w / 6;
+  };
+  for (const c of shadows.filter(x => x.ownsMat || x.id === 'cx_quanta')) for (const tier of [0, 3]) ok(beat(c, tier) >= 0.9, 'Ascension: a party can beat ' + c.id + ' at tier ' + (tier + 1));
+  log.push('ascension materials ok');
+}
+{
+  const g = new H.Game({ seed: 41 }), s = g.state, r = s.roster.trail;
+  s.inv.items.exp3 = 2; s.credits = 1000;
+  eq(g.useExp('trail', { exp3: 1 }).cost, 400, 'Level up: a Guide costs 400 credits at the current share');
+  eq(s.inv.items.exp3, 1, 'Level up: the book is spent');
+  ok(!g.useExp('trail', { exp3: 5 }), 'Level up: no more books than the stock');
+  ok(!g.useExp('trail', {}), 'Level up: an empty choice does nothing');
+  s.credits = 10;
+  ok(!g.useExp('trail', { exp3: 1 }) && s.inv.items.exp3 === 1, 'Level up: without credits nothing is spent');
+  s.credits = 1000;
+  ok(g.useItem('exp3', 'trail') && s.credits === 600, 'Level up: using a book from code costs credits too');
+  eq(g.expCredits(1327000), 26540, 'Level up: 60 to 70 costs a fifth of the screenshot');
+  eq(g.expAfter('trail', 0).lvl, r.lvl, 'Level up: a preview without EXP stays');
+  const lv = r.lvl, st = g.statsAt('trail', 40);
+  ok(st.atk > g.charStats('trail').atk && r.lvl === lv, 'Level up: the stat preview leaves the hero as he is');
+  eq(g.expAfter('trail', 1e9).lvl, g.levelCap('trail'), 'Level up: a preview stops at the cap');
+  log.push('level up ok');
+}
+{
+  const g = new H.Game({ seed: 51 }), s = g.state;
+  g.debugChar('hanya', 20, 0, 0); g.setTrailLevel(30); s.credits = 100000; s.inv.items = {};
+  const info0 = g.ascInfo('hanya');
+  ok(info0.atCap && info0.why === 'mats' && info0.short.length === 1, 'Ascend: at the cap without materials the hero waits');
+  eq(info0.cost.credits, 640, 'Ascend: phase 1 of a 4★ hero costs a fifth of 3200');
+  eq(info0.cost.items.artifex1, 4, 'Ascend: phase 1 needs 4 enemy materials of the hero line');
+  ok(!g.ascend('hanya') && s.roster.hanya.asc === 0, 'Ascend: nothing happens without materials');
+  s.inv.items.artifex1 = 4;
+  s.credits = 1;
+  eq(g.ascInfo('hanya').why, 'credits', 'Ascend: credits are checked');
+  s.credits = 100000;
+  g.setTrailLevel(14);
+  eq(g.ascInfo('hanya').why, 'tl', 'Ascend: Trailblaze Level 15 is needed for phase 1');
+  g.setTrailLevel(30);
+  ok(g.ascReady('hanya') && g.alerts().chars, 'Ascend: a ready hero raises the alert');
+  const passes = s.inv.items.pass || 0, st0 = g.charStats('hanya').atk, res = g.ascend('hanya');
+  ok(res && res.to === 1 && res.cap === 30 && res.pass, 'Ascend: phase 1 gives the cap 30 and a pass');
+  eq(s.inv.items.pass, passes + 1, 'Ascend: the Star Rail Pass arrives');
+  ok(!s.inv.items.artifex1 && s.credits === 100000 - 640, 'Ascend: materials and credits are spent');
+  ok(g.charStats('hanya').atk > st0, 'Ascend: the stats jump');
+  eq(g.levelCap('hanya'), 30, 'Ascend: the level cap rises');
+  g.addExp('hanya', 1e7);
+  eq(s.roster.hanya.lvl, 30, 'Ascend: battle EXP runs to the new cap');
+  s.inv.items.artifex1 = 8;
+  ok(g.ascend('hanya') && !g.ascend('hanya'), 'Ascend: phase 2 works and then the hero is under the cap');
+  eq(s.inv.items.pass, passes + 1, 'Ascend: phase 2 gives no pass');
+  g.addExp('hanya', 1e7);
+  const c3 = g.ascCost('hanya');
+  eq(c3.items.artifex2 + '/' + c3.items.asc_perdition, '5/2', 'Ascend: phase 3 needs enemy and Shadow materials');
+  s.inv.items.artifex1 = 15; s.inv.items.asc_perdition = 2;
+  const inf3 = g.ascInfo('hanya');
+  ok(inf3.why === 'mats' && inf3.synth, 'Ascend: lower materials can cover the shortage by synthesis');
+  s.inv.items.artifex1 = 14;
+  ok(!g.ascInfo('hanya').synth, 'Ascend: 14 lower materials do not make 5');
+  s.inv.items.artifex1 = 15; delete s.inv.items.asc_perdition;
+  ok(!g.ascInfo('hanya').synth, 'Ascend: Shadow materials cannot be synthesised');
+  eq(g.ascUnlocks('hanya', 2).join('|'), 'Навык, абсолютная техника и талант до ур. 3|Атака до ур. 2|Доп. способность: ' + H.traceNodes('hanya').find(n => n.id === 'a2').title + '|Новые Следы характеристик: ' + H.traceNodes('hanya').filter(n => n.kind === 'stat' && n.gate === 30).length, 'Ascend: phase 2 lists what it opens');
+  const tr = new H.Game({ seed: 52 });
+  tr.state.roster.trail.lvl = 40; tr.state.roster.trail.asc = 2; tr.setTrailLevel(40); tr.state.credits = 1e6;
+  eq(tr.ascCost('trail').items.asc_ecto, 4, 'Ascend: the Trailblazer pays with Ectostella');
+  tr.state.inv.items.legion2 = 5; tr.state.inv.items.asc_ecto = 4;
+  ok(tr.ascend('trail') && tr.state.roster.trail.asc === 3, 'Ascend: the Trailblazer ascends');
+  eq(tr.autoAscend('trail'), 0, 'Ascend: autoAscend stops under the cap');
+  eq(H.traceAbilityCap('skill', H.TRACE_PHASE_LVL[0]), 1, 'Ascend: phase 0 leaves the Skill at level 1');
+  const hit = new H.Game({ seed: 53 });
+  hit.state.roster.trail.lvl = 20; hit.state.roster.trail.asc = 0;
+  ok(hit.ascNoteDue(), 'Ascend: the field notice waits for the first capped hero');
+  hit.state.flags.asc_note = true;
+  ok(!hit.ascNoteDue(), 'Ascend: the notice shows once');
+  log.push('ascend ok');
+}
+{
+  const g = new H.Game({ seed: 61 }), s = g.state;
+  const pick = H.pickExp(1326050, g.expBooks(), { exp1: 224, exp2: 80, exp3: 2346 });
+  eq(pick.out.exp1 + '/' + pick.out.exp2 + '/' + pick.out.exp3, '207/80/36', 'Quick: the screenshot stock gives 36 guides, 80 logs and 207 notes');
+  eq(pick.sum, 1327000, 'Quick: the screenshot sum is 1 327 000');
+  eq(H.pickExp(100, g.expBooks(), {}).sum, 0, 'Quick: nothing to pick from');
+  g.setTrailLevel(65); g.debugChar('hanya', 60, 0);
+  Object.assign(s.inv.items, { exp1: 224, exp2: 80, exp3: 2346 }); s.credits = 200000;
+  const p60 = g.planUp('hanya', 70);
+  ok(p60.ok && p60.ascTo === p60.ascFrom && p60.sum === 1327000 && p60.credits === 26540, 'Quick: 60 to 70 is the screenshot plan at a fifth of the credits');
+  const cr = s.credits, res = g.applyUp('hanya', 70);
+  ok(res && s.roster.hanya.lvl === 70, 'Quick: the plan reaches the level');
+  ok(s.credits === cr - 26540 && s.inv.items.exp1 === 224 - 207 && s.inv.items.exp2 === undefined && s.inv.items.exp3 === 2346 - 36, 'Quick: the plan spends exactly what it showed');
+  const g2 = new H.Game({ seed: 62 }), s2 = g2.state;
+  g2.setTrailLevel(65); g2.debugChar('hanya', 30, 0, 1);
+  Object.assign(s2.inv.items, { exp3: 900, artifex1: 8, artifex2: 13, artifex3: 12, asc_perdition: 50 }); s2.credits = 1e6;
+  const pass0 = s2.inv.items.pass || 0, full = g2.planUp('hanya', 80);
+  ok(full.ok && full.ascFrom === 1 && full.ascTo === 6, 'Quick: the plan crosses phases');
+  eq(full.items.artifex1 + '/' + full.items.artifex2 + '/' + full.items.artifex3 + '/' + full.items.asc_perdition, '8/13/12/50', 'Quick: the plan adds up the phases');
+  eq(full.credits, Math.round((6400 + 12800 + 32000 + 64000 + 128000) * 0.2) + g2.expCredits(full.sum), 'Quick: phase credits and book credits add up');
+  ok(g2.applyUp('hanya', 80) && s2.roster.hanya.lvl === 80 && s2.roster.hanya.asc === 6, 'Quick: 30 to 80 in one step');
+  eq(s2.inv.items.pass, pass0 + 2, 'Quick: phases 3 and 5 pay their passes');
+  ok(!s2.inv.items.artifex1 && !s2.inv.items.asc_perdition, 'Quick: materials are spent');
+  const g3 = new H.Game({ seed: 63 }), s3 = g3.state;
+  g3.setTrailLevel(25); g3.debugChar('hanya', 20, 0, 0); s3.credits = 1e6; Object.assign(s3.inv.items, { exp3: 900, artifex1: 99, artifex2: 99, asc_perdition: 99 });
+  eq(g3.upLimit('hanya'), 40, 'Quick: Trailblaze Level 25 allows phase 2');
+  eq(g3.planUp('hanya', 80).target, 40, 'Quick: the plan stops at the Trailblaze gate');
+  eq(g3.upReach('hanya'), 40, 'Quick: the reach follows the gate');
+  s3.inv.items = { exp3: 1 };
+  ok(!g3.planUp('hanya', 40).ok && g3.planUp('hanya', 40).short.length === 1, 'Quick: a missing material is named');
+  ok(g3.planUp('hanya', 40).expShort > 0, 'Quick: missing EXP is counted');
+  eq(g3.upReach('hanya'), 20, 'Quick: without materials the hero stays');
+  eq(g3.upDefault('hanya'), 30, 'Quick: the default target is the next cap');
+  ok(!g3.applyUp('hanya', 30), 'Quick: a short plan does nothing');
+  s3.credits = 0; s3.inv.items = { exp3: 900, artifex1: 99 };
+  ok(g3.planUp('hanya', 30).creditsShort > 0 && !g3.applyUp('hanya', 30), 'Quick: credits are checked');
+  g3.setUpQuick('hero', true);
+  ok(g3.upQuick('hero') && !g3.upQuick('cone') && new H.Game({ seed: 63, state: JSON.parse(JSON.stringify(s3)) }).upQuick('hero'), 'Quick: the switch is kept in the save');
+  log.push('quick level ok');
+}
+{
+  const A = H.ASC;
+  eq(A.coneAdd.join(), [0, 1.2, 2.8, 4.4, 6, 7.6, 9.2].join(), 'Cone: the phase table matches the import');
+  H.CONES.__shot = { stats: { hp: 43.2, atk: 21.6, def: 15 } };
+  const shot = (l, a) => { const s = H.coneStatsAt('__shot', l, a); return s.hp + '/' + s.atk + '/' + s.def; };
+  eq(shot(30, 1), '282/141/98', 'Cone: stats at level 30 match the screenshot');
+  eq(shot(30, 2), '352/176/122', 'Cone: stats after the phase match the screenshot');
+  eq(shot(80, 6), '952/476/330', 'Cone: stats at level 80 match the screenshot');
+  eq(shot(1, 0), '43/21/15', 'Cone: level 1 is the base');
+  delete H.CONES.__shot;
+  const g = new H.Game({ seed: 71 }), s = g.state;
+  const cn = g.addCone('arrows');
+  ok(cn.lvl === 1 && cn.exp === 0 && cn.asc === 0 && cn.sup === 1, 'Cone: a new cone starts at level 1');
+  cn.lvl = 40; cn.asc = 3;
+  const again = g.addCone('arrows');
+  ok(again === cn && cn.sup === 2 && cn.lvl === 40 && cn.asc === 3, 'Cone: a duplicate keeps the level');
+  g.addChar('seele', 60); g.state.roster.seele.asc = 5;
+  const bare = g.charStats('seele').atk;
+  g.equipCone('seele', cn.uid);
+  eq(g.charStats('seele').atk - bare, H.coneStatsAt('arrows', 40, 3).atk, 'Cone: stats come from the cone level, not the hero');
+  g.state.roster.seele.lvl = 70;
+  const same = g.charStats('seele').atk - g.baseStats('seele', 70, 0, g.statAsc('seele')).atk;
+  eq(same, H.coneStatsAt('arrows', 40, 3).atk, 'Cone: a higher hero level does not change the cone');
+  const old = new H.Game({ seed: 72 }), st = JSON.parse(JSON.stringify(old.state));
+  st.roster.trail.lvl = 35;
+  st.roster.seele = { lvl: 50, exp: 0, eid: 0, cone: 901, relics: {}, hp: null, energy: 0 };
+  st.party = ['trail', 'seele'];
+  st.inv.cones = [{ uid: 901, id: 'arrows', sup: 2 }, { uid: 902, id: 'amber', sup: 1 }];
+  delete st.asv;
+  const moved = new H.Game({ seed: 72, state: st }), mc = moved.state.inv.cones;
+  ok(mc[0].lvl === 50 && mc[0].asc === 4 && mc[0].exp === 0 && mc[0].sup === 2, 'Cone: a worn cone takes the level of its owner');
+  ok(mc[1].lvl === moved.avgLevel() && mc[1].asc === H.ascPhase(moved.avgLevel()), 'Cone: a free cone takes the average party level');
+  ok(moved.charStats('seele').atk >= new H.Game({ seed: 72 }).baseStats('seele', 50, 0).atk + Math.round(14.4 * H.grow(50)), 'Cone: no old save loses stats');
+  const dbg = new H.Game({ seed: 73 }), dc = dbg.debugCone('arrows', 3, 1, 45)[0];
+  ok(dc.lvl === 45 && dc.asc === 3 && dc.sup === 3, 'Cone: F8 grants a cone at a level');
+  ok(dbg.debugCone('arrows', 1, 1)[0].lvl == null, 'Cone: the guide site simulator keeps cones at the hero level');
+  log.push('cone model ok');
+}
+{
+  const g = new H.Game({ seed: 81 }), s = g.state, G = H.Gfx, cx = H.CALYX.find(c => c.id === 'cx_aether');
+  eq(['aether1', 'aether2', 'aether3'].map(id => H.ITEMS[id].coneExp).join(), '500,2000,6000', 'Aether: the original EXP values');
+  eq(['aether1', 'aether2', 'aether3'].map(id => H.ITEMS[id].name).join('|'), 'Разрежённый эфир|Конденсированный эфир|Очищенный эфир', 'Aether: official names');
+  ok(['aether1', 'aether2', 'aether3'].every(id => G.ITEM_ART[id] && H.ITEMS[id].kind === 'exp' && !H.ITEMS[id].use), 'Aether: icons, the EXP tab and no use on heroes');
+  eq(cx.reward, 'aether', 'Aether: the Bud of Aether gives aether');
+  eq(H.guideCalyxKind(cx), 'golden', 'Aether: the Bud of Aether stays a golden Calyx');
+  const exp = t => { const b = {}; for (const [id, n] of Object.entries(H.AETHER_CALYX[t])) b[id] = n * H.ITEMS[id].coneExp; return Object.values(b).reduce((a, x) => a + x, 0); };
+  eq([0, 1, 2, 3].map(exp).join(), '1500,3500,7000,10000', 'Aether: EXP per run by tier');
+  for (const tier of [0, 1, 2, 3]) {
+    const before = Object.assign({}, s.inv.items);
+    s.power = 600;
+    g.calyxReward({ id: 'cx_aether', tier, cost: 10 });
+    for (const [id, n] of Object.entries(H.AETHER_CALYX[tier])) eq((s.inv.items[id] || 0) - (before[id] || 0), n, 'Aether: tier ' + (tier + 1) + ' gives ' + id);
+    ok(!Object.keys(s.inv.items).some(id => /^exp\d/.test(id)), 'Aether: the Bud gives no hero books');
+  }
+  ok(H.UI.prototype.calyxDrops(cx)[0] === 'aether2', 'Aether: the domain window shows aether');
+  const q = new H.Game({ seed: 82 });
+  q.state.flags.fled = true; q.state.inv.items.fuelv = 9; q.state.power = 100;
+  const qr = q.quickFarm('cx_aether', 0, 1);
+  ok(qr && q.state.inv.items.aether1 >= 3, 'Aether: Quick Farm gives aether');
+  const src = q.needSource('aether3');
+  ok(src.row && src.row.id === 'cx_aether', 'Aether: the source leads to the Bud of Aether');
+  const total = [5, 10, 15, 20, 30].reduce((a, l) => a + Object.entries(H.TL_ASC_ITEMS[l]).reduce((x, [id, n]) => x + (H.ITEMS[id].coneExp || 0) * n, 0), 0);
+  eq(total, 78000, 'Aether: level rewards up to 30 give 78 000 EXP');
+  ok(H.TL_REWARDS[20].items.aether3 === 4 && H.TL_REWARDS[65].items.aether3 === 22, 'Aether: milestones follow the original');
+  eq(H.SHOPS.procure.items.filter(x => /^aether/.test(x)).length, 3, 'Aether: the station shop sells all three');
+  ok(H.SHOPS.express.items.includes('aether1') && H.SHOPS.belobog.items.includes('aether2') && H.SHOPS.boulder.items.includes('aether2'), 'Aether: shops carry it next to the books');
+  const sg = new H.Game({ seed: 83 });
+  sg.state.starlight = 100;
+  ok(sg.supplyBuy('s_aether3', 1) && sg.state.inv.items.aether3 === 1 && sg.state.starlight === 86, 'Aether: Supply sells it for Starlight');
+  ok(sg.supplyBuy('s_aether2', 1) && sg.state.inv.items.aether2 === 2, 'Aether: the Starlight lot holds two');
+  log.push('aether ok');
+}
+{
+  const g = new H.Game({ seed: 91 }), s = g.state;
+  const pc = H.CONES.postop;
+  const cn = g.addCone('postop');
+  eq(pc.rarity, 4, 'Cone up: the probe cone is 4★');
+  s.credits = 1e6; g.setTrailLevel(65);
+  Object.assign(s.inv.items, { aether1: 2, aether2: 2, aether3: 200 });
+  eq(g.coneToCap(cn), H.ASC.coneExp[4].slice(0, 19).reduce((a, x) => a + x, 0), 'Cone up: EXP to the first cap');
+  const u = g.coneUseExp(cn, { aether3: 1, aether1: 1 });
+  ok(u && cn.lvl > 1 && u.gain === 6500, 'Cone up: aether gives EXP');
+  eq(u.cost, 650, 'Cone up: 1 credit per 2 EXP at a fifth');
+  ok(s.inv.items.aether3 === 199 && s.inv.items.aether1 === 1, 'Cone up: aether is spent');
+  ok(!g.coneUseExp(cn, { aether1: 5 }) && !g.coneUseExp(cn, {}), 'Cone up: a bad choice does nothing');
+  g.coneAddExp(cn, 1e7);
+  eq(cn.lvl, 20, 'Cone up: EXP stops at the cap');
+  eq(cn.exp, 0, 'Cone up: EXP at the cap burns');
+  const i0 = g.coneAscInfo(cn);
+  ok(i0.atCap && i0.why === 'mats', 'Cone up: a capped cone waits for materials');
+  eq(i0.cost.items.core1, 5, 'Cone up: 4★ phase 1 costs 5 enemy materials of its line');
+  eq(i0.cost.credits, 800, 'Cone up: phase 1 costs a fifth of 4000');
+  s.inv.items.core1 = 5;
+  const st0 = g.coneStatsOf(cn).atk, r0 = g.coneAscend(cn);
+  ok(r0 && r0.to === 1 && r0.cap === 30 && cn.asc === 1 && !s.inv.items.core1, 'Cone up: the cone ascends');
+  ok(g.coneStatsOf(cn).atk > st0, 'Cone up: ascension raises the stats');
+  g.coneAddExp(cn, 1e7);
+  const c2 = g.coneAscCost(cn);
+  eq(c2.items.core1 + '/' + c2.items.abund1, '10/3', 'Cone up: phase 2 adds the Path material');
+  eq(c2.credits, 1600, 'Cone up: the screenshot phase costs 8000 at a fifth');
+  const fp = new H.Game({ seed: 92 }), fs = fp.state, fc = fp.addCone('postop');
+  fp.setTrailLevel(65); fs.credits = 1e7; fc.lvl = 30; fc.asc = 1; fc.exp = 0;
+  Object.assign(fs.inv.items, { aether3: 200, core1: 10, abund1: 3, core2: 15, abund2: 9, core3: 12, abund3: 12 });
+  const full = fp.conePlan(fc, 80);
+  ok(full.ok && full.ascTo === 6, 'Cone up: the plan runs from 30 to 80');
+  eq(fp.coneReach(fc), 80, 'Cone up: the reach is level 80');
+  eq(full.items.core3 + '/' + full.items.abund3, '12/12', 'Cone up: the plan adds up the phases');
+  const pass = fs.inv.items.pass || 0, ap = fp.coneApply(fc, 80);
+  ok(ap && fc.lvl === 80 && fc.asc === 6 && (fs.inv.items.pass || 0) === pass, 'Cone up: 30 to 80 in one step, no passes');
+  ok(!fs.inv.items.core3 && !fs.inv.items.abund3, 'Cone up: the plan spends its materials');
+  const st80 = H.coneStatsAt('postop', 80, 6), s4 = H.CONES.postop.stats;
+  eq(st80.atk, Math.floor(s4.atk * 22.05), 'Cone up: level 80 uses the full multiplier');
+  const gg = new H.Game({ seed: 93 }), gc = gg.addCone('postop');
+  gg.setTrailLevel(25);
+  eq(gg.coneLimit(gc), 40, 'Cone up: Trailblaze Level 25 allows phase 2');
+  eq(gg.coneDefault(gc), 20, 'Cone up: without aether the target is the first cap');
+  ok(gg.conePlan(gc, 20).expShort > 0 && !gg.coneApply(gc, 20), 'Cone up: a short plan does nothing');
+  const legacy = { uid: 999, id: 'postop', sup: 1 };
+  gg.state.inv.cones.push(legacy);
+  ok(gg.coneFix(legacy).lvl === 1 && legacy.asc === 0, 'Cone up: a cone without a level gets one');
+  log.push('cone up ok');
+}
+{
+  const g = new H.Game({ seed: 95 }), s = g.state;
+  eq(g.coneSupMode(), 'auto', 'Superimpose: automatic by default');
+  const a1 = g.addCone('arrows'), a2 = g.addCone('arrows');
+  ok(a1 === a2 && a1.sup === 2 && s.inv.cones.length === 1, 'Superimpose: automatic mode merges a duplicate');
+  g.setConeSup('manual');
+  eq(g.coneSupMode(), 'manual', 'Superimpose: the mode changes');
+  const a3 = g.addCone('arrows');
+  ok(a3 !== a1 && a3.sup === 1 && s.inv.cones.length === 2 && a1.sup === 2, 'Superimpose: manual mode keeps a duplicate apart and leaves the old stack');
+  eq(new H.Game({ seed: 95, state: JSON.parse(JSON.stringify(s)) }).coneSupMode(), 'manual', 'Superimpose: the mode is kept in the save');
+  eq(g.coneCopies(a1).map(x => x.uid).join(), String(a3.uid), 'Superimpose: copies exclude the cone itself');
+  a3.lvl = 40; a3.asc = 3;
+  const m = g.coneMerge(a1, a3);
+  ok(m && a1.sup === 3 && s.inv.cones.length === 1, 'Superimpose: ranks add up and the copy goes');
+  eq(a1.lvl, 1, 'Superimpose: the level of the copy is not returned');
+  const c4 = g.addCone('arrows'), c5 = g.addCone('arrows'); c4.sup = 2; c5.sup = 3;
+  ok(!g.coneMerge(a1, c5), 'Superimpose: S3 + S3 is above S5');
+  ok(g.coneMerge(a1, c4) && a1.sup === 5, 'Superimpose: S3 + S2 reaches S5');
+  ok(!g.coneMerge(a1, a1), 'Superimpose: a cone cannot eat itself');
+  g.addChar('seele', 30);
+  const wornC = g.addCone('arrows'), keep2 = g.addCone('arrows');
+  g.equipCone('seele', wornC.uid);
+  ok(!g.coneMerge(keep2, wornC), 'Superimpose: a worn copy cannot be spent');
+  ok(!g.coneCopies(keep2).some(x => x.uid === wornC.uid), 'Superimpose: a worn copy is not offered');
+  ok(g.coneMerge(wornC, keep2) && wornC.sup === 2, 'Superimpose: a worn cone can receive a copy');
+  const w = new H.Game({ seed: 96 }), ws = w.state;
+  w.setConeSup('manual'); ws.credits = 1e6;
+  const f = w.addCone('postop'), d3 = w.addCone('arrows'), d4 = w.addCone('swordplay');
+  eq(w.coneFeedExp([d3.uid, d4.uid]), H.ASC.coneFodder[H.CONES.arrows.rarity] + H.ASC.coneFodder[H.CONES.swordplay.rarity], 'Feed: EXP adds up');
+  ok(!w.coneFeedRisky([d3.uid]), 'Feed: a plain 3★ is not risky');
+  d3.lvl = 5;
+  ok(w.coneFeedRisky([d3.uid]), 'Feed: a levelled cone needs a question');
+  const r = w.coneUseExp(f, {}, [d3.uid]);
+  ok(r && r.gain === 500 && r.cost === 50 && !ws.inv.cones.some(x => x.uid === d3.uid), 'Feed: a spent 3★ gives 500 EXP for 50 credits');
+  ok(f.exp + f.lvl > 1, 'Feed: the cone gained EXP');
+  const wf = w.addCone('arrows');
+  w.addChar('himeko', 30); w.equipCone('himeko', wf.uid);
+  ok(!w.coneUseExp(f, {}, [wf.uid]), 'Feed: a worn cone cannot be spent');
+  ok(!w.coneUseExp(f, {}, [f.uid]), 'Feed: a cone cannot eat itself');
+  ok(!w.coneFree(f).some(x => x.uid === wf.uid), 'Feed: worn cones are not offered');
+  log.push('superimpose ok');
+}
+{
+  const g = new H.Game({ seed: 99 }), s = g.state;
+  eq(g.phoneSkinId(), 'express', 'Skin: the plain look is the default');
+  ok(g.ownsSkin('express') && !g.ownsSkin('nexttoyou') && !g.ownsSkin('nope'), 'Skin: only the plain look is owned at first');
+  ok(!g.setPhoneSkin('nexttoyou') && g.phoneSkinId() === 'express', 'Skin: a locked wallpaper cannot be set');
+  const got = g.give({ skin: 'nexttoyou' });
+  ok(g.ownsSkin('nexttoyou') && got.join().includes('Навсегда рядом'), 'Skin: a gift unlocks the wallpaper');
+  ok(g.setPhoneSkin('nexttoyou') && g.phoneSkinId() === 'nexttoyou', 'Skin: the wallpaper can be set');
+  eq(new H.Game({ seed: 99, state: JSON.parse(JSON.stringify(s)) }).phoneSkinId(), 'nexttoyou', 'Skin: the choice is kept in the save');
+  ok(g.setPhoneSkin('express') && g.phoneSkinId() === 'express', 'Skin: the plain look comes back');
+  s.phoneSkin = 'nexttoyou'; s.phoneSkins = [];
+  eq(g.phoneSkinId(), 'express', 'Skin: an unowned wallpaper falls back to the plain look');
+  ok(H.MAIL.find(m => m.id === 'v17_growth').give.skin === 'nexttoyou', 'Skin: the 1.7 letter carries it');
+  ok(typeof H.PHONE_PIX === 'object', 'Skin: the picture table is loaded');
+  log.push('phone skin ok');
+}
+{
+  const pg = new H.Game({ fresh: true, seed: 5 });
+  eq(H.PROMOS.map(p => p.code).join(), 'STARRAILGIFT,POMPOM98,TROLLEY98', 'Promo: two public codes and the Express note');
+  ok(H.PROMOS.every(p => /^[A-Z0-9]{1,16}$/.test(p.code) && H.MAIL.some(m => m.id === 'promo_' + p.code && m.need === 'promo_' + p.code && m.give === p.give)), 'Promo: every code fits the entry grid and has its letter');
+  ok(!pg.mailbox().some(x => x.m.id.startsWith('promo_')), 'Promo: no letter before a code is entered');
+  ok(!pg.redeemPromo('').ok && pg.redeemPromo('').text === 'Введите код.', 'Promo: empty entry');
+  eq(pg.redeemPromo('NOSUCHCODE').text, 'Такого кода нет.', 'Promo: unknown code');
+  const pr = pg.redeemPromo(' pom-pom 98 ');
+  ok(pr.ok && pr.text === 'Код принят. Подарок в Почте.', 'Promo: case, spaces and hyphens do not matter');
+  eq(pg.redeemPromo('POMPOM98').text, 'Этот код уже использован.', 'Promo: a code works once');
+  eq(pg.redeemPromo('pompom98').text, 'Этот код уже использован.', 'Promo: once in any spelling');
+  const pjade = pg.state.jade, pfuel = pg.state.inv.items.fuel || 0;
+  ok(pg.mailbox().some(x => x.m.id === 'promo_POMPOM98') && pg.alerts().mail, 'Promo: the gift waits in the Mail');
+  pg.claimMail('promo_POMPOM98');
+  ok(pg.state.jade === pjade + 60 && (pg.state.inv.items.fuel || 0) === pfuel + 1, 'Promo: the letter pays the gift');
+  ok(!pg.claimMail('promo_POMPOM98'), 'Promo: the letter pays once');
+  eq(pg.promosUsed().map(u => u.code).join(), 'POMPOM98', 'Promo: the used list shows what was entered');
+  const pp = H.PROMOS[0], untilWas = pp.until;
+  pp.until = '2020-01-31';
+  eq(pg.redeemPromo(pp.code).text, 'Срок действия кода истёк.', 'Promo: an expired code is refused');
+  ok(!pg.state.flags['promo_' + pp.code] && !(pg.state.promo || {})[pp.code], 'Promo: an expired code leaves no mark');
+  pp.until = '2999-01-31';
+  ok(pg.redeemPromo(pp.code).ok, 'Promo: a code inside its term works');
+  pp.until = untilWas;
+  ok(H.SCRIPTS.exp_trolley.join(' ').includes('TROLLEY98'), 'Promo: the third code is written on the Express');
+}
+
+{
+  const pf = new H.Game({ fresh: true, seed: 5 }), ps = pf.state;
+  ps.name = 'Стелла';
+  ['himeko', 'welt', 'bronya', 'seele', 'clara', 'gepard', 'pela'].forEach(k => pf.addChar(k, 20));
+  ps.party = ['himeko', 'welt', 'bronya', 'seele'];
+  const auto = pf.profileSlots();
+  eq(auto.show.join(), 'himeko,welt,bronya', 'Profile: the showcase starts from the team');
+  ok(auto.comp[0] === 'seele' && auto.comp.length === 5, 'Profile: companions follow the team');
+  ok(pf.state.profile.show === null, 'Profile: nothing is frozen until the player chooses');
+  pf.setProfileSlot('show', 0, 'seele');
+  let sl = pf.profileSlots();
+  ok(sl.show[0] === 'seele' && sl.comp[0] === 'himeko', 'Profile: a hero from another slot trades places');
+  eq(new Set([...sl.show, ...sl.comp].filter(Boolean)).size, [...sl.show, ...sl.comp].filter(Boolean).length, 'Profile: a hero stands in one slot only');
+  pf.setProfileSlot('show', 1, null);
+  ok(pf.profileSlots().show[1] === null, 'Profile: a slot can be emptied');
+  ok(!pf.setProfileSlot('show', 1, 'nobody') && !pf.setProfileStage('nobody') && !pf.setProfileAvatar('nobody'), 'Profile: only owned heroes are accepted');
+  eq(pf.profileStageHero(), 'himeko', 'Profile: the leader stands on the stage by default');
+  pf.setProfileStage('welt');
+  eq(pf.profileStageHero(), 'welt', 'Profile: the stage hero is kept');
+  const gender = ps.gender;
+  ok(!pf.setProfileName('   ').ok && ps.name === 'Стелла', 'Profile: an empty name is refused');
+  ok(!pf.setProfileName('А'.repeat(13)).ok && ps.name === 'Стелла', 'Profile: a long name is refused');
+  ok(pf.setProfileName('  Вася  Пупкин ').ok && ps.name === 'Вася Пупкин' && ps.gender === gender, 'Profile: the name changes, the gender stays');
+  ok(!pf.setProfileSign('я'.repeat(41)).ok && pf.setProfileSign(' Привет, мир! ').ok && pf.profile().sign === 'Привет, мир!', 'Profile: the signature is trimmed and capped at 40');
+  ok(pf.setProfileSign('').ok && pf.profile().sign === '', 'Profile: the signature can be emptied');
+  ok(!pf.setProfileBday(30, 2) && !pf.setProfileBday(0, 5) && !pf.setProfileBday(1, 13), 'Profile: impossible dates are refused');
+  ok(pf.setProfileBday(29, 2) && pf.profile().bday.d === 29 && pf.setProfileBday(null) && pf.profile().bday === null, 'Profile: February 29 is a birthday and the date can be removed');
+}
+
+{
+  let clock = 1700000000000;
+  const pl = new H.Game({ fresh: true, seed: 5, clock: () => clock }), ps = pl.state;
+  ps.warpLog = [
+    { kind: 'char', id: 'himeko', res: 'new', at: clock - 1000 },
+    { kind: 'char', id: 'himeko', res: 'eid', at: clock - 500 },
+    { kind: 'cone', id: 'postop', at: clock - 400 },
+    { kind: 'char', id: 'welt', res: 'new', at: clock - 2000 }
+  ];
+  delete ps.profile;
+  eq(pl.profile().log.map(e => e.id).join(), 'himeko,welt', 'Log: an old save collects new heroes from the warp log');
+  eq(pl.profile().log.length, 2, 'Log: the collection runs once');
+  pl.addChar('bronya', 10);
+  eq(pl.profile().log[0].id, 'bronya', 'Log: a new hero is noted first');
+  const before = pl.profile().log.length;
+  pl.addChar('bronya', 10);
+  eq(pl.profile().log.length, before, 'Log: a duplicate hero is not noted');
+  pl.addChar('trail_p', 10);
+  eq(pl.profile().log.length, before, 'Log: the Trailblazer is not a new hero');
+  ok(pl.profileLogText(pl.profile().log[0]).includes('Броня') || pl.profileLogText(pl.profile().log[0]).includes('★'), 'Log: the hero line names rarity and hero');
+  ok(!pl.profileLogText({ kind: 'boss', id: 'doomsday' }).includes('сильный противник'), 'Log: a boss has a name');
+  ok(Object.keys(H.ENCOUNTERS).filter(id => H.ENCOUNTERS[id].boss).every(id => pl.profileLogText({ kind: 'boss', id }).length > 15), 'Log: every boss line reads');
+  ok(pl.profileLogText({ kind: 'su', id: 1 }).includes(H.SU.WORLDS[0].title), 'Log: a world line names the world');
+  ok(pl.profileLogText({ kind: 'cw', id: H.CW.RANKS[0].code }).includes(H.CW.RANKS[0].name), 'Log: a war line names the rank');
+  pl.profileCwWin('A0'); const afterWar = pl.profile().log.length; pl.profileCwWin('A0');
+  eq(pl.profile().log.length, afterWar, 'Log: one note per war rank');
+  for (let i = 0; i < 30; i++) pl.profileNote('su', 1);
+  eq(pl.profile().log.length, 20, 'Log: the feed holds 20 records');
+  const mer = pl.profileMerits();
+  eq(mer.map(r => r.id).join(), 'fh,su,cw,hd,boss,warp,time', 'Merits: seven rows');
+  ok(!mer.find(r => r.id === 'cw').open && mer.find(r => r.id === 'cw').value === 'Не открыто', 'Merits: a closed mode says so');
+  ps.flags.lab_cw = true; ps.flags.lab_hd = true; ps.flags.su_open = true; ps.flags.fh_met = true;
+  const mer2 = pl.profileMerits();
+  ok(mer2.find(r => r.id === 'fh').value.endsWith('/ ' + H.FH.STAGES.length * 3 + ' ★'), 'Merits: the Hall counts its stars from the data');
+  ok(mer2.find(r => r.id === 'su').value.includes('/ ' + H.SU.WORLDS.length), 'Merits: the universe counts its worlds from the data');
+  ok(mer2.find(r => r.id === 'cw').value.startsWith(H.CW.RANKS[0].name), 'Merits: the war row shows the best rank');
+  eq(mer2.find(r => r.id === 'hd').value, 'Нет записей', 'Merits: an empty record is honest');
+  pl.hd().recs.push({ wave: 7, diff: 'normal' }, { wave: 3, diff: 'normal' });
+  eq(pl.profileMerits().find(r => r.id === 'hd').value, 'Волна 7', 'Merits: the best wave counts');
+  const col = pl.profileCollections();
+  eq(col.map(r => r.id).join(), 'five,four,cones,outfits,pets,foes,fusions,chests', 'Collections: eight rows');
+  ok(col.every(r => r.total > 0 && r.got >= 0 && r.got <= r.total), 'Collections: every count is sane');
+  const heroes = Object.keys(H.CHARS).filter(k => k === 'trail' || !k.startsWith('trail'));
+  eq(col[0].total + col[1].total, heroes.filter(k => [4, 5].includes(H.CHARS[k].rarity)).length, 'Collections: the Trailblazer counts once');
+  ok(col[0].got >= 1, 'Collections: owned heroes are counted');
+}
+
+{
+  const tg = new H.Game({ fresh: true, seed: 5 }), ts = tg.state;
+  tg.addChar('himeko', 1);
+  const bare = tg.targetCost('himeko'), first = tg.ascCost('himeko', 0);
+  ok(Object.entries(first.items).every(([id, n]) => (bare.items[id] || 0) >= n), 'Target: ascension materials are in the cost');
+  ok(bare.credits >= first.credits + tg.expCredits(bare.exp), 'Target: ascension and EXP credits are in the cost');
+  eq(bare.coneExp, 0, 'Target: no cone, no cone EXP');
+  const cn = tg.addCone('postop');
+  ts.roster.himeko.cone = cn.uid;
+  const worn = tg.targetCost('himeko');
+  ok(worn.coneExp > 0 && worn.credits > bare.credits && Object.keys(worn.items).length >= Object.keys(bare.items).length, 'Target: the worn cone joins the cost');
+  const needs = tg.targetNeeds('himeko');
+  ok(needs.some(n => n.id === 'aether3' && n.row && n.row.id === 'cx_aether'), 'Target: Aether leads to its calyx');
+  const shadow = needs.find(n => H.ITEMS[n.id] && H.ITEMS[n.id].mat === 'asc');
+  ok(shadow && shadow.row && shadow.row.c.mat === shadow.id, 'Target: the ascension material leads to its Shadow');
+  ts.guide = Object.assign(ts.guide || {}, { target: 'himeko' });
+  const ids = tg.guideTargetIds();
+  ok(ids.has(shadow.row.id) && ids.has('cx_aether'), 'Target: the Index marks the Shadow and the Aether calyx');
+  ts.roster.himeko.lvl = 80; ts.roster.himeko.asc = 6; ts.roster.himeko.exp = 0; cn.lvl = 80; cn.asc = 6; cn.exp = 0;
+  const top = tg.targetCost('himeko');
+  ok(top.exp === 0 && top.coneExp === 0, 'Target: a finished hero asks for no EXP');
+  ok(!Object.keys(top.items).some(id => H.ITEMS[id] && H.ITEMS[id].mat === 'asc'), 'Target: a finished hero asks for no ascension material');
+  ts.roster.himeko.lvl = 1; ts.roster.himeko.asc = 0; cn.lvl = 1; cn.asc = 0;
+  const dd = tg.dailySync();
+  dd.pick.push('levelup', 'coneup');
+  ts.credits = 1e7; ts.inv.items.exp3 = 5; ts.inv.items.aether3 = 5;
+  ok(!tg.useExp('himeko', {}) && !dd.prog.levelup, 'Daily: a refused level-up does not count');
+  ok(tg.useExp('himeko', { exp3: 1 }) && tg.dailySync().prog.levelup === 1, 'Daily: a level-up counts');
+  ok(tg.coneUseExp(cn, { aether3: 1 }) && tg.dailySync().prog.coneup === 1, 'Daily: a cone level-up counts');
+  const fresh2 = new H.Game({ fresh: true, seed: 5 });
+  fresh2.addChar('himeko', 1);
+  const d2 = fresh2.dailySync();
+  d2.pick.push('levelup');
+  fresh2.state.credits = 1e7; fresh2.state.inv.items.exp3 = 5;
+  ok(fresh2.applyUp('himeko', fresh2.upDefault('himeko')) && fresh2.dailySync().prog.levelup === 1, 'Daily: the quick mode counts too');
+}
+
+{
+  eq(H.VERSION, '1.7', 'Version: the game says 1.7');
+  const letter = H.MAIL.find(m => m.id === 'v17_growth');
+  ok(letter.give.skin === 'nexttoyou' && letter.give.credits > 0 && letter.give.items.aether3 > 0 && letter.need === 'express_intro', 'Version: the letter brings the wallpaper and a stock');
+  ok(Object.keys(letter.give.items).every(id => H.ITEMS[id]), 'Version: every item of the letter exists');
+  ok(letter.text.join(' ').includes('Звёздные пропуска') && letter.text.join(' ').includes('Навсегда рядом'), 'Version: the letter explains passes and the wallpaper');
+  const lg17 = new H.Game({ fresh: true, seed: 5 });
+  lg17.state.flags.express_intro = true;
+  lg17.mailSync();
+  lg17.claimMail('v17_growth');
+  ok(lg17.ownsSkin('nexttoyou'), 'Version: claiming the letter gives the wallpaper');
+}
+
 console.log('hsr98: ' + checks + ' checks passed in ' + ((Date.now() - t0) / 1000).toFixed(1) + 's');

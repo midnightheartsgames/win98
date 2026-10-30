@@ -311,6 +311,7 @@
       if (this.mode === 'field' && g.map) this.updateMinimap(dt);
       if (this.mode === 'field') this.updateChat(dt);
       if (this.mode === 'field' && this.passTick) this.passTick(dt);
+      if (this.mode === 'field' && !this.screens.length && !this.dlg && !this.toasts.length && !g.busy() && !g.cg && g.ascNoteDue && g.ascNoteDue() && this.openAscNotice) this.openAscNotice();
       if (this.mode === 'field' && !this.screens.length && !this.dlg && !this.toasts.length && !g.busy() && !g.cg && g.eventsOpen() && !g.state.flags.events_note) this.openEventsNotice();
       else if (this.mode === 'field' && !this.screens.length && !this.dlg && !this.toasts.length && !g.busy() && !g.cg && g.eventsOpen() && this.newEventNotice) this.newEventNotice();
     }
@@ -1393,7 +1394,7 @@
         { label: 'Сцены навыков облика', k: 'skinCine', presets: H.Ults ? H.Ults.MODES : [{ id: 'off', tag: 'Выкл.' }], cur: () => ui.options.skinCine || 'first', set: setCine('skinCine'), fmt: () => '' },
         { label: 'Скорость текста', k: 'textSpeed', step: 1, max: 5, min: 1, fmt: v => '×' + v },
         { label: 'Разрешение', k: 'res', presets: RES, cur: () => ui.resPreset().id, set: id => setRes(id), fmt: () => ui.canvas.width + '×' + ui.canvas.height }
-      ];
+      ].concat(ui.game && ui.game.coneSupMode ? [{ label: 'Наложение конусов', k: 'coneSup', presets: [{ id: 'auto', tag: 'Авто' }, { id: 'manual', tag: 'Вручную' }], cur: () => ui.game.coneSupMode(), set: id => { if (ui.game.coneSupMode() !== id) { ui.game.setConeSup(id); ui.sfx('select'); } }, fmt: () => '' }] : []);
       const setCine = k => id => {
         if (ui.options[k] === id) return;
         ui.options[k] = id;

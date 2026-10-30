@@ -76,7 +76,7 @@ module.exports = {
       { steps: ['stui.game = new Stalker98.Game({ level: "garbage", skill: 1, seed: 11, lang: "ru" }); stui.enterGame(true); stClean(); stPlace(-70, -56, -90, -38, 0.0, 16.5); await __shots.sleep(1800); stClean(); await __shots.sleep(200);'] }
     ]
   },
-  moh98: {
+  moh98_demo: {
     page: 'moh98.html',
     ready: '!!window.mhui && !!mhui.renderer',
     setup: [`window.mhPlace = (x, z, tx, tz, pitch) => {
@@ -491,7 +491,7 @@ module.exports = {
         g.msgs = []; g.brief = null; await __shots.sleep(200);`] }
     ]
   },
-  sims3: {
+  sims3_demo: {
     page: 'sims3.html',
     ready: '!!(window.s3ui && s3ui.r && s3ui.mode === "menu")',
     timeout: 90000,
@@ -511,6 +511,49 @@ module.exports = {
     shots: [
       { steps: [`const g = await kvStart('elf'); kvHour(9.5); const V = g.world.places.village; kvTp(V.x + 12, V.z + 44, -1.05, 0.16); kvui.camDist = 3.4; g.player.drawn = true; g.player.slot = 'ranged'; const el = g.actors.filter(a => a.fac === 'elf' && !a.player && a.role !== 'service').slice(0, 3); el.forEach((a, i) => { a.x = V.x + 2 - i * 3; a.z = V.z + 40 - i * 2; a.y = g.world.groundAt(a.x, a.z); a.ai.mode = 'post'; a.ai.post = { x: a.x, z: a.z, yaw: 1.4 }; }); g.updateCells(); await __shots.sleep(2500); kvui.toasts = []; await __shots.sleep(200);`] },
       { steps: [`const g = kvui.game; kvHour(15.5); const K = Korovany; for (const w of g.wagons.slice()) w.gone = true; K.AI.launchCaravan(g, 'supply', { tag: 'shot' }); const ws = g.wagons.filter(w => w.tag === 'shot'); for (const w of ws) K.AI.wagonSkip(g, w, 2.6 - ws.indexOf(w) * 0.12); for (const w of ws) w.wait = 999; const w0 = ws[0]; const rx = Math.cos(w0.yaw), rz = Math.sin(w0.yaw), fx = Math.sin(w0.yaw), fz = -Math.cos(w0.yaw); const px = w0.x + rx * 8 - fx * 5.5, pz = w0.z + rz * 8 - fz * 5.5; const gd = w0.guards.map(id => g.byId.get(id)); const mx = (px + w0.x) / 2, mz = (pz + w0.z) / 2; gd[0].x = mx; gd[0].z = mz; gd[0].y = g.world.groundAt(mx, mz); g.updateCells(); g.computePose(gd[0]); g.kill(gd[0], g.player, 'wound'); for (let i = 0; i < 4; i++) g.decal(mx + (Math.random() - 0.5) * 1.5, mz + (Math.random() - 0.5) * 1.5, 0.45, 'blood'); kvTp(px, pz, Math.atan2(w0.x - px, -(w0.z - pz)) - 0.1, -0.1); g.player.drawn = true; g.player.slot = 'melee'; kvui.camDist = 3.8; gd.slice(1).forEach((a, i) => { a.x = w0.x + rx * 4.5 + fx * (i * 3 - 2); a.z = w0.z + rz * 4.5 + fz * (i * 3 - 2); a.y = g.world.groundAt(a.x, a.z); a.hostile.add(g.player.id); a.aware.set(g.player.id, { known: true, s: 1 }); a.drawn = true; }); g.updateCells(); await __shots.sleep(1300); kvui.toasts = []; kvui.drawPrompt = () => {}; await __shots.sleep(200);`] }
+    ]
+  },
+  kirill98: {
+    page: 'kirill98.html?shots',
+    ready: '!!(window.kiui && kiui.ready && kiui.frames > 2)',
+    size: [800, 600],
+    el: '#game',
+    setup: [`kiui.closeAll(); kiui.hold = false; const st = document.createElement('style'); st.textContent = '.ki-hud{display:none!important}'; document.head.appendChild(st); window.kiRun = n => { for (let i = 0; i < n; i++) kiui.update(1 / 60); kiui.dirty = true; kiui.draw(); };`],
+    shots: [
+      { steps: [`kiui.startSetup = { side: 'guard', hero: 'guard.m', look: { face: 1, hair: 'crop', hairColor: [0.3, 0.22, 0.15] }, name: null }; kiui.startGame(); kiui.hold = false; kiui.closeAll();
+        const K = Kirill98, S = kiui.state, Cv = K.Caravan, W = kiui.W;
+        S.campaign.intro = null; S.wxForce = 'clear'; S.day = 3; kiui.hour = 9.5; S.hour = 9.5;
+        S.people = S.people.filter(p => !p.convoy && !p.tell); S.beasts = (S.beasts || []).filter(b => !b.hitch);
+        S.caravans = null; Cv.state(S);
+        for (const k of Object.keys(Cv.KINDS)) for (let d = 0; d < 40; d++) S.caravans.spawned[k + ':' + d] = true;
+        const r = Cv.make(S, 'ore', S.day, 1000, K.rng(5)), at = K.Terrain.pointAt(Cv.routes().ore.line, 1000);
+        S.player.mv = K.Move.body(W, at.x - at.tz * 120, at.z + at.tx * 120, 0);
+        kiRun(240);
+        const c = Cv.byId(S, r.id), crew = Cv.crewOf(S, c), lead = c.carts[0].pos;
+        for (let k = 0; k < 6; k++) {
+          const side = k % 2 ? 1 : -1, x = lead[0] - at.tz * side * (3 + k * 0.6) + at.tx * (k - 3), z = lead[2] + at.tx * side * (3 + k * 0.6) + at.tz * (k - 3);
+          const e = K.Body.member(S.nextId++, 'elf', x, z, 0, W);
+          e.fight = K.Combat.fighter({ weapon: ['sword', 'axe', 'sickle'][k % 3], shield: k < 2 });
+          e.anim = K.Anim.state(); e.frames = new Float32Array(132);
+          e.fight.hostile = crew[k % crew.length]; S.people.push(e);
+        }
+        kiRun(50);
+        const ex = lead[0] - at.tx * 9 + at.tz * 5, ez = lead[2] - at.tz * 9 - at.tx * 5;
+        kiui.setView({ free: [ex, kiui.T.heightAt(ex, ez) + 2.1, ez], yaw: Math.atan2(lead[0] - ex, -(lead[2] - ez)), pitch: -0.08, hour: 9.5 });
+        kiui.dirty = true; kiui.draw(); await __shots.sleep(1500);`] },
+      { steps: [`kiui.startSetup = { side: 'guard', hero: 'guard.m', look: { face: 1, hair: 'crop', hairColor: [0.3, 0.22, 0.15] }, name: null }; kiui.startGame(); kiui.hold = false; kiui.closeAll();
+        const K = Kirill98, S = kiui.state, W = kiui.W, Wo = K.World, PP = K.Places.PALACE_PTS, E = Wo.state(S);
+        S.campaign.intro = null; S.day = 20; S.hour = 15; kiui.hour = 15; S.wxForce = 'cloudy'; K.Guard.state(S).order = null;
+        kiRun(30);
+        Object.assign(E.sides.villain, { ladders: 4, ram: 1, intel: 2 });
+        E.assault = { day: 20, n: 46 };
+        const g = Wo.launch(S, 'villain', 'assault', [1092, 700], Wo.POSTS.palace.gate, 46, { target: 'palace' });
+        kiui.update(1 / 60);
+        S.people.filter(q => q.march && q.march.id === g.id).forEach((q, i) => { q.mv = K.Move.body(W, 1112 + Math.floor(i / 8) * 4 + (i % 2), 666 + (i % 8) * 8.5, Math.PI / 2); });
+        for (let k = 0; k < 30; k++) { const w = PP.wall[k % 2], q = K.Body.member(S.nextId++, 'guard', w[0] + 4 + (k % 3) * 1.4, w[1] - 8 + Math.floor(k / 3) * 2.2, -Math.PI / 2, W); q.fight = K.Combat.fighter({ weapon: k % 2 ? 'spear' : 'sword', shield: k % 2 === 0 }); q.anim = K.Anim.state(); q.frames = new Float32Array(132); S.people.push(q); }
+        kiRun(120);
+        kiui.setView({ free: [1112, 36, 742], yaw: 0.78, pitch: -0.12, hour: 15 });
+        kiui.dirty = true; kiui.draw(); await __shots.sleep(1500);`] }
     ]
   },
   catniss: {

@@ -57,7 +57,7 @@ test('every game on the site is a Steam game or an Igromania CD demo from the ca
     }
     assert.ok(g.blocks.length && g.tested.length === 2, g.id);
   });
-  assert.deepStrictEqual(site.games.filter(g => g.cdDemoId).map(g => g.cdDemoId), ['falloutzp_demo', 'stalker98_demo', 'mc98_demo', 'tekken98_demo']);
+  assert.deepStrictEqual(site.games.filter(g => g.cdDemoId).map(g => g.cdDemoId), ['sims3_demo', 'falloutzp_demo', 'stalker98_demo', 'mc98_demo', 'tekken98_demo']);
 });
 
 test('DOOM 98 codes are the ones the game listens for', () => {

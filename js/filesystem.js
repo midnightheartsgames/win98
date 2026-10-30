@@ -975,6 +975,9 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
 
       const games = this.resolvePath(['My Computer', 'C:', 'Games']);
       if (games && games.children) {
+        if (!games.children['BLISS.EXE']) {
+          games.children['BLISS.EXE'] = { type: 'executable', name: 'BLISS.EXE', icon: 'bliss', app: 'bliss' };
+        }
         const gmInstalled = (window.gameManager && window.gameManager.state)
           ? window.gameManager.state.installed
           : ['minesweeper'];
@@ -1025,13 +1028,13 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           };
         }
 
-        if (!gmInstalled.includes('moh98') && games.children['MOH98']) {
+        if (!gmInstalled.includes('moh98_demo') && games.children['MOH98']) {
           delete games.children['MOH98'];
-        } else if (gmInstalled.includes('moh98') && !games.children['MOH98']) {
+        } else if (gmInstalled.includes('moh98_demo') && !games.children['MOH98']) {
           games.children['MOH98'] = {
             type: 'folder', name: 'MOH98', icon: 'folder', children: {
-              'MOH.EXE': { type: 'executable', name: 'MOH.EXE', icon: 'moh98', app: 'moh98' },
-              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Medal of Honor 98\r\n==================================\r\nDreamWorks Interactive (1999) - fan remake for Win 98\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire   [Right Click] - Aim / scope\r\n[Shift] - Walk quietly   [Ctrl]/[C] - Crouch   [Space] - Jump   [Q]/[E] - Lean\r\n[R] - Reload   [F] - Use (doors, explosives, prisoners, papers)   [G] - Grenade\r\n[1-7] / Mouse wheel - Weapons (7 - papers)   [Tab] - Objectives   [Esc] - Menu\r\n\r\nMissions: Operation Retriever, U-4902, Heavy Water,\r\nSiegfried Forest, Colditz Castle, Nordhausen.\r\nPasswords are entered in the main menu.' }
+              'MOH.EXE': { type: 'executable', name: 'MOH.EXE', icon: 'moh98', app: 'moh98_demo' },
+              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Medal of Honor 98 Demo\r\n==================================\r\nDreamWorks Interactive (1999) - fan remake for Win 98\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire   [Right Click] - Aim / scope\r\n[Shift] - Walk quietly   [Ctrl]/[C] - Crouch   [Space] - Jump   [Q]/[E] - Lean\r\n[R] - Reload   [F] - Use (doors, explosives, prisoners, papers)   [G] - Grenade\r\n[1-7] / Mouse wheel - Weapons (7 - papers)   [Tab] - Objectives   [Esc] - Menu\r\n\r\nMissions: Operation Retriever, U-4902, Heavy Water,\r\nSiegfried Forest, Colditz Castle, Nordhausen.\r\nPasswords are entered in the main menu.' }
             }
           };
         }
@@ -1305,6 +1308,16 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
+        if (!gmInstalled.includes('kirill98') && games.children['KirillTheGame']) {
+          delete games.children['KirillTheGame'];
+        } else if (gmInstalled.includes('kirill98') && !games.children['KirillTheGame']) {
+          games.children['KirillTheGame'] = {
+            type: 'folder', name: 'KirillTheGame', icon: 'folder', children: {
+              'KIRILL98.EXE': { type: 'executable', name: 'KIRILL98.EXE', icon: 'kirill98', app: 'kirill98' },
+              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: window.Kirill98 && window.Kirill98.Screens && window.Kirill98.Screens.readme ? window.Kirill98.Screens.readme() : 'Kirill The Game\r\n3Д-экшон по письму Кирилла\r\n' }
+            }
+          };
+        }
         if (!gmInstalled.includes('plov') && games.children['HayatoPlov']) {
           delete games.children['HayatoPlov'];
         } else if (gmInstalled.includes('plov') && !games.children['HayatoPlov']) {
@@ -1315,13 +1328,13 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
-        if (!gmInstalled.includes('sims3') && games.children['Sims3']) {
+        if (!gmInstalled.includes('sims3_demo') && games.children['Sims3']) {
           delete games.children['Sims3'];
-        } else if (gmInstalled.includes('sims3') && !games.children['Sims3']) {
+        } else if (gmInstalled.includes('sims3_demo') && !games.children['Sims3']) {
           games.children['Sims3'] = {
             type: 'folder', name: 'Sims3', icon: 'folder', children: {
-              'SIMS3.EXE': { type: 'executable', name: 'SIMS3.EXE', icon: 'sims3', app: 'sims3' },
-              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'The Sims 3 - 2000 Edition\r\n==================================\r\nMaxis (2000) - Win 98 Edition, 3D accelerated\r\n\r\n[Left Click] - Interact   [Right Click] - Cancel action   [Q/E] - Rotate   [Wheel] - Zoom\r\n[Space] - Pause   [1-3] - Speed   [F1/F2/F3] - Live, Buy, Build   [M] - Map   [Esc] - Menu\r\n\r\nWelcome to Sunset Valley.' }
+              'SIMS3.EXE': { type: 'executable', name: 'SIMS3.EXE', icon: 'sims3', app: 'sims3_demo' },
+              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'The Sims 3 Demo - 2000 Edition\r\n==================================\r\nMaxis (2000) - Win 98 Edition, 3D accelerated\r\n\r\n[Left Click] - Interact   [Right Click] - Cancel action   [Q/E] - Rotate   [Wheel] - Zoom\r\n[Space] - Pause   [1-3] - Speed   [F1/F2/F3] - Live, Buy, Build   [M] - Map   [Esc] - Menu\r\n\r\nWelcome to Sunset Valley.' }
             }
           };
         }
@@ -1630,6 +1643,9 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
         if (!winDir.children['SNDVOL32.EXE']) {
           winDir.children['SNDVOL32.EXE'] = { type: 'executable', name: 'SNDVOL32.EXE', icon: 'volume-mixer', app: 'sndvol32' };
         }
+        if (!winDir.children['BLISS.EXE']) {
+          winDir.children['BLISS.EXE'] = { type: 'executable', name: 'BLISS.EXE', icon: 'bliss', app: 'bliss' };
+        }
         if (!winDir.children['MSBACKUP.EXE']) {
           winDir.children['MSBACKUP.EXE'] = { type: 'executable', name: 'MSBACKUP.EXE', icon: 'backup', app: 'msbackup' };
         }
@@ -1673,6 +1689,13 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             dDrive.icon = 'drive-cd';
             if (!dDrive.children || !dDrive.children['LAUNCHER.EXE']) {
               dDrive.children = this.getOfficeGamesCdTree();
+              this.saveToStorage();
+            }
+          } else if (this.cdRomState.discId === 'office_games_2') {
+            dDrive.name = 'Офисные игры 2 (D:)';
+            dDrive.icon = 'drive-cd';
+            if (!dDrive.children || !dDrive.children['LAUNCHER.EXE']) {
+              dDrive.children = this.getOfficeGames2CdTree();
               this.saveToStorage();
             }
           } else {
@@ -1740,8 +1763,8 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     if (window.taskbar && window.taskbar.updateCdRomTray) {
       window.taskbar.updateCdRomTray();
     }
-    if (window.desktop && window.desktop.render) {
-      window.desktop.render();
+    if (window.desktop && window.desktop.renderIcons) {
+      window.desktop.renderIcons();
     }
     if (window.appClippy && window.appClippy.onCdRomEjected) {
       window.appClippy.onCdRomEjected(prevDiscId, drive);
@@ -1755,6 +1778,13 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
         discId: 'office_games_98',
         label: 'Офисные игры ’98 (D:)',
         volumeLabel: 'OFFICE_GAMES_98'
+      };
+    } else if (discId === 'office_games_2') {
+      this.cdRomState = {
+        inserted: true,
+        discId: 'office_games_2',
+        label: 'Офисные игры 2 (D:)',
+        volumeLabel: 'OFFICE_GAMES_2'
       };
     } else {
       this.cdRomState = {
@@ -1771,7 +1801,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     if (dDrive) {
       dDrive.name = this.cdRomState.label;
       dDrive.icon = 'drive-cd';
-      dDrive.children = discId === 'office_games_98' ? this.getOfficeGamesCdTree() : this.getIgromaniaCdTree();
+      dDrive.children = this.getDiscTree(this.cdRomState.discId);
       this.saveToStorage();
     }
     if (window.soundSys) {
@@ -1784,12 +1814,97 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     if (window.taskbar && window.taskbar.updateCdRomTray) {
       window.taskbar.updateCdRomTray();
     }
-    if (window.desktop && window.desktop.render) {
-      window.desktop.render();
+    if (window.desktop && window.desktop.renderIcons) {
+      window.desktop.renderIcons();
     }
     if (window.appClippy && window.appClippy.onCdRomInserted) {
       window.appClippy.onCdRomInserted(discId, drive);
     }
+  }
+
+  getDiscTree(discId) {
+    if (discId === 'office_games_98') return this.getOfficeGamesCdTree();
+    if (discId === 'office_games_2') return this.getOfficeGames2CdTree();
+    return this.getIgromaniaCdTree();
+  }
+
+  getDiscCatalog() {
+    const ru = !window.i18n || window.i18n.getLanguage() === 'ru';
+    const t = (k) => window.i18n ? window.i18n.t(k) : k;
+    return [
+      {
+        id: 'igromania_09_1998',
+        insertLabel: t('cdrom.insertIgromania'),
+        insertButton: t('cdrom.insertIgromaniaBtn'),
+        runLabel: t('cdrom.run'),
+        shell: () => window.appIgroman && window.appIgroman.open()
+      },
+      {
+        id: 'office_games_98',
+        insertLabel: t('cdrom.insertOffice'),
+        insertButton: t('cdrom.insertOfficeBtn'),
+        runLabel: t('cdrom.runOffice'),
+        shell: () => window.appOfficeLauncher && window.appOfficeLauncher.open()
+      },
+      {
+        id: 'office_games_2',
+        insertLabel: ru ? '💿 Вставить диск: Офисные игры 2' : '💿 Insert Disc: Office Games 2',
+        insertButton: ru ? 'Офисные игры 2' : 'Office Games 2',
+        runLabel: ru ? '▶ Запустить «Офисные игры 2»' : '▶ Run "Office Games 2"',
+        shell: () => window.appOg2Launcher && window.appOg2Launcher.open()
+      }
+    ];
+  }
+
+  openDiscShell(discId) {
+    const disc = this.getDiscCatalog().find(d => d.id === discId);
+    if (disc) disc.shell();
+  }
+
+  getOfficeGames2CdTree() {
+    const exe = (name, app, content) => ({ type: 'executable', name, icon: 'file-exe', app, content });
+    const game = (folder, name, app, content) => ({
+      type: 'folder',
+      name: folder,
+      icon: 'folder',
+      children: { [name]: exe(name, app, content) }
+    });
+    return {
+      'AUTORUN.INF': {
+        type: 'file',
+        name: 'AUTORUN.INF',
+        icon: 'file-txt',
+        content: '[autorun]\r\nopen=LAUNCHER.EXE\r\nicon=LAUNCHER.EXE,0\r\n'
+      },
+      'LAUNCHER.EXE': {
+        type: 'executable',
+        name: 'LAUNCHER.EXE',
+        icon: 'game-manager',
+        app: 'og2_launcher',
+        content: 'Офисные игры 2'
+      },
+      'README.TXT': {
+        type: 'file',
+        name: 'README.TXT',
+        icon: 'file-txt',
+        content: '================================================================\r\n   ОФИСНЫЕ ИГРЫ 2\r\n================================================================\r\n\r\nВосемь игр для перерыва между отчётами:\r\n1. ПАТЧ-КОРД 3D (GAMES\\CABLE3D\\CABLE3D.EXE)\r\n2. РАЗГРОМ АРХИВА (GAMES\\ARCHIVE\\ARCHIVE.EXE)\r\n3. ПОСЛЕДНИЙ ЛИФТ (GAMES\\LIFT\\LIFT.EXE)\r\n4. ТИР OPEN-SPACE (GAMES\\RANGE\\RANGE.EXE)\r\n5. КАНЦЕЛЯРСКИЙ МИКС (GAMES\\MIX\\MIX.EXE)\r\n6. ПЯТЬ В ЛИНИЮ (GAMES\\FIVE\\FIVE.EXE)\r\n7. СТОПКА (GAMES\\STACK\\STACK.EXE)\r\n8. РАЛЛИ НА КОЛЁСИКАХ (GAMES\\RALLY\\RALLY.EXE)\r\n\r\nЕсли в коридоре послышались шаги начальника, нажмите F12:\r\nна экране появится скучная таблица.\r\n'
+      },
+      'GAMES': {
+        type: 'folder',
+        name: 'GAMES',
+        icon: 'folder',
+        children: {
+          'CABLE3D': game('CABLE3D', 'CABLE3D.EXE', 'og2_cable3d', 'Патч-корд 3D'),
+          'ARCHIVE': game('ARCHIVE', 'ARCHIVE.EXE', 'og2_archive', 'Разгром архива'),
+          'LIFT': game('LIFT', 'LIFT.EXE', 'og2_lift', 'Последний лифт'),
+          'RANGE': game('RANGE', 'RANGE.EXE', 'og2_range', 'Тир Open-space'),
+          'MIX': game('MIX', 'MIX.EXE', 'og2_mix', 'Канцелярский микс'),
+          'FIVE': game('FIVE', 'FIVE.EXE', 'og2_five', 'Пять в линию'),
+          'STACK': game('STACK', 'STACK.EXE', 'og2_stack', 'Стопка'),
+          'RALLY': game('RALLY', 'RALLY.EXE', 'og2_rally', 'Ралли на колёсиках')
+        }
+      }
+    };
   }
 
   getOfficeGamesCdTree() {
@@ -1975,6 +2090,8 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           'hl98demo.exe': { type: 'executable', name: 'hl98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'half-life_demo', content: 'Half-Life 98 Demo Installer' },
           'hl2demo.exe': { type: 'executable', name: 'hl2demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'hl2_demo', content: 'Half-Life 2 Demo Installer' },
           'kotor98demo.exe': { type: 'executable', name: 'kotor98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'kotor98_demo', content: 'Star Wars: Knights of the Old Republic 98 Demo Installer' },
+          'moh98demo.exe': { type: 'executable', name: 'moh98demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'moh98_demo', content: 'Medal of Honor 98 Demo Installer' },
+          'sims3demo.exe': { type: 'executable', name: 'sims3demo.exe', icon: 'setup-installer', app: 'setup', gameId: 'sims3_demo', content: 'The Sims 3 Demo Installer' },
           'maxpaynedemo.exe': { type: 'executable', name: 'maxpaynedemo.exe', icon: 'setup-installer', app: 'setup', gameId: 'maxpayne_demo', content: 'Max Payne Demo Installer' },
           'xiiidemo.exe': { type: 'executable', name: 'xiiidemo.exe', icon: 'setup-installer', app: 'setup', gameId: 'xiii_demo', content: 'XIII Demo Installer' },
           'falloutzpdemo.exe': { type: 'executable', name: 'falloutzpdemo.exe', icon: 'setup-installer', app: 'setup', gameId: 'falloutzp_demo', content: 'Fallout: Запорожье Demo Installer' },
@@ -2453,6 +2570,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
                     'AVP.EXE': { type: 'executable', name: 'AVP.EXE', icon: 'avp', app: 'avp' },
                     'RASPHONE.EXE': { type: 'executable', name: 'RASPHONE.EXE', icon: 'dialup', app: 'dialup' },
                     'FREECELL.EXE': { type: 'executable', name: 'FREECELL.EXE', icon: 'freecell', app: 'freecell' },
+                    'BLISS.EXE': { type: 'executable', name: 'BLISS.EXE', icon: 'bliss', app: 'bliss' },
                     'NEKO.EXE': { type: 'executable', name: 'NEKO.EXE', icon: 'neko', app: 'neko' },
                     'KODAKIMG.EXE': { type: 'executable', name: 'KODAKIMG.EXE', icon: 'imaging', app: 'imaging' },
                     'MSCONFIG.EXE': { type: 'executable', name: 'MSCONFIG.EXE', icon: 'msconfig', app: 'msconfig' },
@@ -2723,7 +2841,8 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
                   children: {
                     'WINMINE.EXE': { type: 'executable', name: 'WINMINE.EXE', icon: 'minesweeper', app: 'minesweeper' },
                     'MSHEARTS.EXE': { type: 'executable', name: 'MSHEARTS.EXE', icon: 'hearts', app: 'hearts' },
-                    'FREECELL.EXE': { type: 'executable', name: 'FREECELL.EXE', icon: 'freecell', app: 'freecell' }
+                    'FREECELL.EXE': { type: 'executable', name: 'FREECELL.EXE', icon: 'freecell', app: 'freecell' },
+                    'BLISS.EXE': { type: 'executable', name: 'BLISS.EXE', icon: 'bliss', app: 'bliss' }
                   }
                 },
                 'Downloads': {
@@ -2912,6 +3031,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     if (name === 'Мои видео' || key === 'Мои видео' || name === 'My Videos' || key === 'My Videos') return window.i18n.t('app.myVideos');
     if (name === 'Игромания (D:)' || key === 'Игромания (D:)') return window.i18n.t('cdrom.label');
     if (name === 'Офисные игры ’98 (D:)' || key === 'Офисные игры ’98 (D:)') return window.i18n.t('cdrom.officeLabel');
+    if (name === 'Офисные игры 2 (D:)' || key === 'Офисные игры 2 (D:)') return window.i18n.getLanguage() === 'en' ? 'Office Games 2 (D:)' : 'Офисные игры 2 (D:)';
     if (name === 'Network Neighborhood' || key === 'Network Neighborhood' || name === 'Сетевое окружение' || key === 'Сетевое окружение') return window.i18n.t('app.network');
     const isEn = window.i18n.getLanguage && window.i18n.getLanguage() === 'en';
     if (key === 'A:' || name === 'Диск 3,5 (A:)' || name === '3½ Floppy (A:)') return isEn ? '3½ Floppy (A:)' : 'Диск 3,5 (A:)';

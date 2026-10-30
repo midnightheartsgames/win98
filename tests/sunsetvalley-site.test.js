@@ -11,11 +11,10 @@ global.localStorage = {
 };
 
 let lastNotepad = null;
-let lastSteam = null;
+let lastCd = null;
 let lastLaunch = null;
 const vfsFiles = new Map();
 const installed = new Set();
-const owned = new Set();
 
 const root = path.join(__dirname, '..');
 const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
@@ -39,9 +38,7 @@ global.window = {
 
 eval(read('js/game-manager.js'));
 window.gameManager.isInstalled = id => installed.has(id);
-window.gameManager.isPurchased = id => owned.has(id);
-window.gameManager.ownsOnSteam = id => owned.has(id);
-window.gameManager.showInSteam = id => { lastSteam = id; };
+window.gameManager.showOnCd = id => { lastCd = id; };
 
 eval(read('js/apps/retro-sites.js'));
 eval(read('js/apps/sunsetvalley-data.js'));
@@ -164,13 +161,13 @@ test('IE routes every Sunset Valley URL and the site is registered in search, We
   assert.ok(!/Редвуд|Саммер Хилл|Плезант|рыбу-ангела|Монотонность/.test(replies));
 });
 
-test('Town model and site counts match the Sims 3 modules and the Steam catalog', () => {
-  const cat = window.gameManager.catalog.sims3;
-  assert.ok(cat && cat.steam);
-  assert.strictEqual(cat.priceDisplay, '$43.99');
+test('Town model and site counts match the Sims 3 modules and the Igromania CD demo', () => {
+  const cat = window.gameManager.catalog.sims3_demo;
+  assert.ok(cat && cat.cdDemo && !cat.steam);
+  assert.strictEqual(cat.setupExe, 'sims3demo.exe');
   assert.strictEqual(cat.targetExe, 'SIMS3.EXE');
-  assert.ok(fs.existsSync(path.join(root, 'content/steam/sims3-1.jpg')));
-  assert.ok(fs.existsSync(path.join(root, 'content/steam/sims3-2.jpg')));
+  assert.ok(fs.existsSync(path.join(root, 'content/igromania/demos/sims3_demo-1.jpg')));
+  assert.ok(fs.existsSync(path.join(root, 'content/igromania/demos/sims3_demo-2.jpg')));
 
   assert.strictEqual(Object.keys(S3.TRAITS).length, 56);
   assert.strictEqual(Object.keys(S3.LTW).length, 29);
@@ -266,33 +263,28 @@ test('Every number in the Vestnik, letters and services is taken from the game c
   assert.ok(!JSON.stringify(data).includes('Никаких счетов'));
 });
 
-test('Home: Steam box in every ownership state, town facts, day clock, news links and poll', () => {
+test('Home: CD demo box when installed and not, town facts, day clock, news links and poll', () => {
   global.localStorage.clear();
   installed.clear();
-  owned.clear();
-  window.gameManager.catalog.sims3.launch = () => { lastLaunch = 'sims3'; };
+  window.gameManager.catalog.sims3_demo.launch = () => { lastLaunch = 'sims3_demo'; };
 
   let env = browse(base);
-  assert.ok(env.html.includes('Купить в Steam за $43.99'));
-  env.click('[data-sv-action]', 'svAction', 'steam-open');
-  assert.strictEqual(lastSteam, 'sims3');
+  assert.ok(env.html.includes('D:\\demo\\sims3demo.exe'));
+  assert.ok(!env.html.includes('Steam'));
+  env.click('[data-sv-action]', 'svAction', 'cd-open');
+  assert.strictEqual(lastCd, 'sims3_demo');
   assert.ok(env.text.includes('Ландграаб (§68 000)'));
   data.dayClock.forEach(([t]) => assert.ok(env.html.includes(t)));
   assert.strictEqual(env.els.filter(e => (e.attrs['data-url'] || '').includes('/news?id=')).length, 4);
   assert.strictEqual(env.count('.sv-sign'), 9);
   assert.ok(env.find('.sv-sign').classList.includes('is-here'));
 
-  owned.add('sims3');
-  env = browse(base);
-  assert.ok(env.html.includes('Установить через Steam'));
-
-  installed.add('sims3');
+  installed.add('sims3_demo');
   env = browse(base);
   assert.ok(env.html.includes('Запустить SIMS3.EXE'));
   env.click('[data-sv-action]', 'svAction', 'game-launch');
-  assert.strictEqual(lastLaunch, 'sims3');
+  assert.strictEqual(lastLaunch, 'sims3_demo');
   installed.clear();
-  owned.clear();
 
   env = browse(base);
   env.click('[data-sv-vote]', 'svVote', 'coast');
@@ -451,7 +443,7 @@ test('Reference book: four chapters, career ladders with both branches, skills, 
 
 test('Maxis page, letters, guestbook escaping, search and the raw 404 page', () => {
   let env = browse(base + '/maxis');
-  assert.ok(env.html.includes('content/steam/sims3-1.jpg'));
+  assert.ok(env.html.includes('content/igromania/demos/sims3_demo-1.jpg'));
   data.controls.forEach(([keys]) => keys.forEach(k => assert.ok(env.html.includes(`<span class="sv-key">${site.esc(k)}</span>`), k)));
   assert.ok(env.html.includes('Молодой'));
 

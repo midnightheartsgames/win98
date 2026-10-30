@@ -1,0 +1,257 @@
+.og2-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  background: #c0c0c0;
+}
+
+.og2-status {
+  display: flex;
+  gap: 2px;
+  height: 22px;
+  padding: 2px;
+  box-sizing: border-box;
+  background: #c0c0c0;
+  font-size: 11px;
+}
+
+.og2-status span {
+  flex: 1;
+  padding: 2px 6px;
+  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #ffffff;
+  white-space: nowrap;
+}
+
+.og2-cable-canvas {
+  display: block;
+  width: 640px;
+  height: 400px;
+  background: #16213a;
+  cursor: pointer;
+}
+
+.og2-archive-canvas {
+  display: block;
+  width: 480px;
+  height: 420px;
+  background: #2b2f3a;
+  cursor: none;
+}
+
+.og2-lift-canvas {
+  display: block;
+  width: 640px;
+  height: 360px;
+  background: #d9d2bd;
+}
+
+.og2-range-canvas {
+  display: block;
+  width: 640px;
+  height: 400px;
+  background: #cfc9b6;
+  cursor: none;
+}
+
+.og2-mix-canvas {
+  display: block;
+  width: 560px;
+  height: 432px;
+  background: #35523f;
+}
+
+.og2-five-canvas {
+  display: block;
+  width: 560px;
+  height: 432px;
+  background: #4a5a6a;
+}
+
+.og2-stack-canvas {
+  display: block;
+  width: 480px;
+  height: 440px;
+  background: #2a3140;
+}
+
+.og2-rally-canvas {
+  display: block;
+  width: 640px;
+  height: 400px;
+  background: #3a5876;
+}
+
+.og2-boss {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: #ffffff;
+  font-size: 11px;
+  color: #000000;
+  overflow: hidden;
+}
+
+.og2-boss-title {
+  padding: 3px 6px;
+  background: #000080;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.og2-boss-formula {
+  padding: 3px 6px;
+  background: #c0c0c0;
+  border-bottom: 1px solid #808080;
+}
+
+.og2-boss-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.og2-boss-table th {
+  background: #c0c0c0;
+  font-weight: normal;
+  border: 1px solid #808080;
+  padding: 1px 6px;
+  min-width: 24px;
+}
+
+.og2-boss-table td {
+  border: 1px solid #d0d0d0;
+  padding: 1px 6px;
+  height: 17px;
+}
+
+.og2-boss-table td.og2-num {
+  text-align: right;
+}
+
+.og2-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 3px;
+  gap: 4px;
+}
+
+.og2-shell-banner {
+  padding: 8px 12px;
+  background: linear-gradient(90deg, #000080, #1084d0);
+  color: #ffffff;
+  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #ffffff;
+}
+
+.og2-shell-title {
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.og2-shell-sub {
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.og2-shell-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.og2-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 2px 4px;
+  background: #c0c0c0;
+  border: none;
+  font: inherit;
+  font-size: 11px;
+  cursor: default;
+  box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #404040, inset 2px 2px 0 #dfdfdf, inset -2px -2px 0 #808080;
+}
+
+.og2-tile canvas {
+  box-shadow: 0 0 0 1px #000000;
+}
+
+.og2-tile-title {
+  font-weight: bold;
+  margin-top: 3px;
+  text-align: center;
+}
+
+.og2-tile-genre {
+  font-size: 10px;
+  color: #404040;
+  text-align: center;
+  min-height: 24px;
+}
+
+.og2-tile-record {
+  font-size: 10px;
+  padding: 0 3px;
+}
+
+.og2-tile-locked canvas {
+  opacity: 0.55;
+}
+
+.og2-tile-locked .og2-tile-record {
+  color: #800000;
+}
+
+.og2-tile-selected {
+  box-shadow: inset 1px 1px 0 #404040, inset -1px -1px 0 #ffffff, inset 2px 2px 0 #808080, inset -2px -2px 0 #dfdfdf;
+}
+
+.og2-tile-selected .og2-tile-title {
+  background: #000080;
+  color: #ffffff;
+  padding: 0 4px;
+}
+
+.og2-shell-detail {
+  flex: 1;
+  padding: 6px 8px;
+  background: #ffffff;
+  font-size: 11px;
+  line-height: 1.4;
+  overflow: hidden;
+  box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #dfdfdf;
+}
+
+.og2-detail-head {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+
+.og2-detail-head span {
+  font-weight: normal;
+}
+
+.og2-detail-keys {
+  margin-top: 4px;
+}
+
+.og2-detail-file {
+  margin-top: 4px;
+  color: #606060;
+  font-family: 'Courier New', monospace;
+}
+
+.og2-shell-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.og2-shell-buttons .win-btn {
+  min-width: 80px;
+}

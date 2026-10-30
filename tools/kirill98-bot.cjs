@@ -82,7 +82,7 @@ function battlefield() {
   const K = globalThis.Kirill98, T = K.Terrain.build(), F = K.Flora.build(T), W = K.Move.world(T, F), spots = { forest: [], field: [] };
   const trunks = (x, z, r) => { let n = 0; F.trunksNear(x, z, r, t => { if (Math.hypot(F.trees.X[t] - x, F.trees.Z[t] - z) < r) n++; }); return n; };
   for (let z = 90; z < 1450; z += 29) for (let x = 90; x < 1450; x += 31) {
-    if (T.normalAt(x, z)[1] < 0.985 || T.waterAt(x, z) > T.heightAt(x, z) - 1 || W.near(x, z, 32).length) continue;
+    if (T.normalAt(x, z)[1] < 0.985 || T.waterAt(x, z) > T.heightAt(x, z) - 1 || W.near(x, z, 32).some(b => !String(b.id || '').startsWith('prop-'))) continue;
     const zone = T.zoneAt(x, z);
     if (zone === 3 && spots.forest.length < 16 && trunks(x, z, 14) >= 30 && trunks(x, z, 1.5) === 0) { let bush = null; for (let k = 0; k < 40 && !bush; k++) { const bx = x + (k % 7 - 3) * 1.3, bz = z + (Math.floor(k / 7) - 3) * 1.3; if (F.bushAt(bx, bz, 0.4) && trunks(bx, bz, 1.2) === 0) bush = [bx, bz]; } if (bush) spots.forest.push(bush); }
     if (zone === 1 && spots.field.length < 16 && trunks(x, z, 36) === 0) spots.field.push([x, z]);
@@ -154,13 +154,13 @@ function javelins(seed) {
 
 const SQUAD_SIDES = { forest: ['elf', 'guard'], field: ['guard', 'villain'], yard: ['guard', 'villain'], fort: ['villain', 'elf'] };
 
-function squadFight(place, seed) {
+function squadFight(place, seed, size) {
   const { K, W } = battlefield(), B = K.Body, G = K.Places.GROUNDS[place], sides = SQUAD_SIDES[place], rnd = K.rng(seed), jit = K.rng(seed * 7 + 1);
   const people = [];
   [[0, G.a, G.face], [1, G.b, G.face + Math.PI]].forEach(([t, at, yaw]) => {
     const b = K.basis(yaw, 0), back = (jit() - 0.5) * 4;
-    for (let i = 0; i < 5; i++) {
-      const x = at[0] + b.right[0] * (i - 2) * 1.6 - b.fwd[0] * back, z = at[1] + b.right[2] * (i - 2) * 1.6 - b.fwd[2] * back;
+    for (let i = 0; i < (size || 5); i++) {
+      const col = i % 5, row = Math.floor(i / 5), x = at[0] + b.right[0] * (col - 2) * 1.6 - b.fwd[0] * (back + row * 1.8), z = at[1] + b.right[2] * (col - 2) * 1.6 - b.fwd[2] * (back + row * 1.8);
       const p = B.member(seed * 20 + t * 10 + i, sides[t], x, z, yaw, W);
       p.anim = K.Anim.state();
       people.push(p);
@@ -287,6 +287,8 @@ function warRun(seed) {
   const { K, W } = battlefield(), Wo = K.World, S = { day: 1, hour: 6, time: 0, nextId: 5000, people: [], beasts: [], bodies: [], relations: {} }, rnd = K.rng(seed * 31), out = { seed, gone: null, outpost: null };
   K.Caravan.init(S, rnd);
   Wo.state(S);
+  const snap = () => { const E = S.world; return { elf: E.sides.elf.people, guard: E.sides.guard.men, villain: E.sides.villain.men, houses: E.sides.elf.houses, posts: Object.fromEntries(['guard', 'elf', 'villain'].map(s => [s, Object.values(E.posts).filter(p => p.side === s).length])) }; };
+  out.start = snap();
   for (let t = 0; t < 60 * 24 * 80; t += 4) {
     S.hour += 4 / 80;
     if (S.hour >= 24) { S.hour -= 24; S.day++; }
@@ -297,6 +299,7 @@ function warRun(seed) {
     const a = Wo.alive(S);
     for (const k of Object.keys(a)) if (!a[k] && !out.gone) out.gone = [k, S.day];
     if (!out.outpost && S.world.posts.outpost.side === 'villain') out.outpost = S.day;
+    if (!out.day3 && S.day === 4) out.day3 = snap();
   }
   const E = S.world;
   return Object.assign(out, { assault: E.assault ? E.assault.day : null, result: E.assault ? E.assault.result : null, korni: E.raidsOn.korni || 0, battles: E.stats.battles, dead: E.stats.dead, houses: E.sides.elf.houses, elves: E.sides.elf.people, guard: E.sides.guard.men, villain: E.sides.villain.men, lost: S.caravans.stats.lost, robbedOre: (S.caravans.stats.lost.ore || 0) + (S.caravans.stats.lost.bread || 0) });
@@ -311,12 +314,15 @@ function war() {
     const days = rows.map(r => r.assault).filter(d => d !== null).sort((a, b) => a - b), raids = rows.map(r => r.korni).sort((a, b) => a - b);
     const res = { mode: 'war', n, seconds: Math.round((Date.now() - t0) / 100) / 10, assault: { min: days[0], median: days[Math.floor(days.length / 2)], max: days[days.length - 1], hist: hist(rows.map(r => r.assault), 5), taken: rows.filter(r => r.result === 'taken').length / n }, korni: { min: raids[0], median: raids[Math.floor(n / 2)], max: raids[n - 1], hist: hist(raids, 1) }, gone: rows.filter(r => r.gone).map(r => r.gone), early: rows.filter(r => r.gone && r.gone[1] < 20).length, outpost: { taken: rows.filter(r => r.outpost).length / n, day8: rows.filter(r => r.outpost === 8 || r.outpost === 9).length / n }, battles: avg(r => r.battles), dead: { guard: avg(r => r.dead.guard), elf: avg(r => r.dead.elf), villain: avg(r => r.dead.villain) }, end: { guard: avg(r => r.guard), elves: avg(r => r.elves), villain: avg(r => r.villain), houses: avg(r => r.houses) }, lostOre: avg(r => r.robbedOre) };
     console.log(`${n} worlds of 60 days without the hero in ${res.seconds} s`);
+    const keep = s => Math.min(...rows.map(r => r.day3[s] / Math.max(1, r.start[s])));
+    res.day3 = { elf: keep('elf'), guard: keep('guard'), villain: keep('villain'), houses: Math.min(...rows.map(r => r.day3.houses)), posts: Object.fromEntries(['guard', 'elf', 'villain'].map(s => [s, Math.min(...rows.map(r => r.day3.posts[s]))])) };
+    console.log(`after 3 days at worst: elves keep ${pc(res.day3.elf)} of people and ${res.day3.houses} houses, guards ${pc(res.day3.guard)}, villain ${pc(res.day3.villain)}; posts held at least ${JSON.stringify(res.day3.posts)}`);
     console.log(`storm of the palace: day ${res.assault.min}–${res.assault.max}, median ${res.assault.median}; palace falls in ${pc(res.assault.taken)}; by 5 days ${JSON.stringify(res.assault.hist)}`);
     console.log(`raids on Корни: ${res.korni.min}–${res.korni.max}, median ${res.korni.median}; ${JSON.stringify(res.korni.hist)}`);
     console.log(`the outpost falls to the villain in ${pc(res.outpost.taken)} of worlds, on day 8–9 in ${pc(res.outpost.day8)}; ore and bread caravans lost to elf ambushes ${res.lostOre.toFixed(1)} per world`);
     console.log(`battles ${res.battles.toFixed(1)} per world; dead: guard ${res.dead.guard.toFixed(1)}, elves ${res.dead.elf.toFixed(1)}, villain ${res.dead.villain.toFixed(1)}; at day 60: guards ${res.end.guard.toFixed(0)}, elves ${res.end.elves.toFixed(0)} with ${res.end.houses.toFixed(1)} houses, villain ${res.end.villain.toFixed(0)}; a side gone before day 20 in ${res.early} worlds`);
-    res.pass = res.early === 0 && res.assault.min >= 25 && res.assault.max <= 45 && days.length === n && res.korni.min >= 6 && res.korni.max <= 12;
-    console.log(`${res.pass ? 'PASS' : 'FAIL'}: no side gone before day 20, storm on day 25–45, Корни raided 6–12 times`);
+    res.pass = res.early === 0 && res.day3.elf >= 0.6 && res.day3.guard >= 0.6 && res.day3.villain >= 0.6 && res.day3.houses >= 10 && res.assault.min >= 25 && res.assault.max <= 45 && days.length === n && res.korni.min >= 6 && res.korni.max <= 12;
+    console.log(`${res.pass ? 'PASS' : 'FAIL'}: no side gone before day 20 or below 60 % of its people after 3 days, storm on day 25–45, Корни raided 6–12 times`);
     if (out) fs.writeFileSync(out, JSON.stringify(res, null, 2));
     process.exit(res.pass ? 0 : 1);
   }).catch(e => { console.error(e); process.exit(2); });
@@ -804,10 +810,10 @@ function nights() {
 }
 
 function squads() {
-  const per = Math.max(1, +arg('n', 50)), jobsN = Math.max(1, +arg('jobs', Math.min(8, os.cpus().length))), out = arg('json', null), t0 = Date.now(), tasks = [];
-  for (const place of [...Object.keys(SQUAD_SIDES), 'march']) {
+  const size = Math.max(1, Math.min(10, +arg('size', 5))), per = Math.max(1, +arg('n', 50)), jobsN = Math.max(1, +arg('jobs', Math.min(8, os.cpus().length))), out = arg('json', null), t0 = Date.now(), tasks = [];
+  for (const place of [...Object.keys(SQUAD_SIDES), ...(size > 5 ? [] : ['march'])]) {
     const count = place === 'march' ? Math.max(4, Math.round(per / 2)) : per, seeds = Array.from({ length: count }, (v, i) => 700 + i * 31);
-    for (let w = 0; w < jobsN; w++) { const part = seeds.filter((s, i) => i % jobsN === w); if (part.length) tasks.push({ mode: 'squads', place, seeds: part }); }
+    for (let w = 0; w < jobsN; w++) { const part = seeds.filter((s, i) => i % jobsN === w); if (part.length) tasks.push({ mode: 'squads', place, seeds: part, size }); }
   }
   Promise.all(tasks.map(job => new Promise((res, rej) => { const w = new Worker(__filename, { workerData: job }); w.on('message', res); w.on('error', rej); }))).then(chunks => {
     const rows = chunks.flat(), pc = x => (x * 100).toFixed(1) + ' %', res = { mode: 'squads', seconds: Math.round((Date.now() - t0) / 100) / 10, places: {} };
@@ -822,14 +828,15 @@ function squads() {
       console.log(`${place} (${k.sides.join(' vs ')}): ${n} fights, ${k.sides[0]} wins ${pc(k.win)}, ${k.sides[1]} wins ${pc(k.lose)}, median ${k.median.toFixed(1)} s, per fight: fell ${(k.ko + k.dead).toFixed(1)} (${k.dead.toFixed(1)} killed outright), crawled ${k.crawl.toFixed(2)}, surrendered ${k.surrender.toFixed(2)}, drew a knife ${k.knife.toFixed(2)}, tied ${k.tied.toFixed(2)}, jailed ${k.jailed.toFixed(2)}, carried to a healer ${k.carried.toFixed(2)}; bandaged ${k.helped} of ${k.cases} fallen with a free friend near, stuck ${k.stuck} in ${k.npcMin.toFixed(0)} NPC-minutes`);
     }
     const m = rows.filter(x => x.place === 'march'), mt = m.filter(x => x.t > 0).map(x => x.t).sort((p, q) => p - q);
-    res.march = { n: m.length, arrived: m.filter(x => x.arrived === 5).length / m.length, median: mt.length ? mt[Math.floor(mt.length / 2)] : -1, stuck: m.reduce((s, x) => s + x.stuck, 0), npcMin: m.reduce((s, x) => s + x.npcMin, 0) };
+    res.size = size;
+    res.march = m.length ? { n: m.length, arrived: m.filter(x => x.arrived === 5).length / m.length, median: mt.length ? mt[Math.floor(mt.length / 2)] : -1, stuck: m.reduce((s, x) => s + x.stuck, 0), npcMin: m.reduce((s, x) => s + x.npcMin, 0) } : { n: 0, arrived: 1, median: -1, stuck: 0, npcMin: 0 };
     stuck += res.march.stuck;
     npcMin += res.march.npcMin;
-    console.log(`march: ${m.length} squads of 5 through 120 m of thicket, all five arrived in ${pc(res.march.arrived)}, median ${res.march.median.toFixed(1)} s, stuck ${res.march.stuck} in ${res.march.npcMin.toFixed(0)} NPC-minutes`);
+    if (m.length) console.log(`march: ${m.length} squads of 5 through 120 m of thicket, all five arrived in ${pc(res.march.arrived)}, median ${res.march.median.toFixed(1)} s, stuck ${res.march.stuck} in ${res.march.npcMin.toFixed(0)} NPC-minutes`);
     res.stuckPer1000 = stuck / npcMin * 1000;
     res.helpRate = cases ? helped / cases : 1;
-    res.pass = res.stuckPer1000 <= 1 && res.helpRate >= 0.7 && res.march.arrived >= 0.9;
-    console.log(`${res.pass ? 'PASS' : 'FAIL'}: stuck ${res.stuckPer1000.toFixed(2)} per 1000 NPC-minutes (limit 1), bandaged ${pc(res.helpRate)} of fallen with a free friend near (limit 70 %), squads through the thicket ${pc(res.march.arrived)} (limit 90 %)`);
+    res.pass = res.stuckPer1000 <= 1 && (size > 5 || res.helpRate >= 0.7) && res.march.arrived >= 0.9;
+    console.log(`${res.pass ? 'PASS' : 'FAIL'}: stuck ${res.stuckPer1000.toFixed(2)} per 1000 NPC-minutes (limit 1), bandaged ${pc(res.helpRate)} of fallen with a free friend near (limit 70 % in fights of 5 on 5), squads through the thicket ${pc(res.march.arrived)} (limit 90 %)`);
     if (out) fs.writeFileSync(out, JSON.stringify(res, null, 2));
     process.exit(res.pass ? 0 : 1);
   }).catch(e => { console.error(e); process.exit(2); });
@@ -921,6 +928,43 @@ function report(V, rows, armorMode, ms) {
   return out;
 }
 
+function money() {
+  const { K } = battlefield(), E = K.Econ, Cv = K.Caravan, days = Math.max(10, +arg('days', 30)), out = arg('json', null);
+  const S = { seed: 3, day: 1, hour: 12, relations: {}, standing: { service: 0, respect: 0, loyalty: 0 } }, rnd = K.rng(17);
+  const buy = id => E.price(S, id, 'buy'), sell = id => E.price(S, id, 'sell');
+  const sackSilver = side => { const s = K.Data.SACKS[side].find(x => x[0] === 'silver'); return s[1] + Math.floor(rnd() * (s[2] - s[1] + 1)); }, bodySilver = () => 3 + Math.floor(rnd() * 8);
+  const guards = k => Cv.KINDS[k].guards[0] + Math.floor(rnd() * (Cv.KINDS[k].guards[1] - Cv.KINDS[k].guards[0] + 1));
+  const bale = k => { const g = Cv.KINDS[k].goods; const id = { bread: 'baleBread', cloth: 'baleCloth', wine: 'baleWine', medicine: 'baleMedicine', ore: 'baleOre', iron: 'baleIron', grain: 'baleGrain' }[g[Math.floor(rnd() * g.length)]]; return sell(id); };
+  const hides = ['deerHide', 'wolfHide', 'boarHide', 'deerHide', 'hareFur'];
+  const rankPay = service => { let pay = 0; for (const r of K.Guard.RANKS) if (service >= r.at) pay = r.pay; return pay; };
+  const sides = {
+    elf: { hinge: buy('hingeArm'), how: 'покупает у Шарнира', day: d => ({ herbs: 8 * sell('herbs'), hunt: sell(hides[d % hides.length]), raid: d % 2 === 0 ? Array.from({ length: guards('trade') }, bodySilver).reduce((a, b) => a + b, 0) + bale('trade') + bale('trade') : 0 }) },
+    guard: { hinge: Math.round(E.GOODS.hingeArm[0] * E.SIDE_PROS.guard.share), how: 'по казённой грамоте за полцены, когда служба 6', day: (d, st) => { st.service = (st.service || 0) + 1; return { pay: d > 1 ? rankPay(st.service) : 0, spy: d % 5 === 0 ? 50 : 0 }; }, need: st => st.service >= E.SIDE_PROS.guard.need },
+    villain: { hinge: buy('hingeArm'), how: 'покупает у Шарнира, дважды берёт из казны', day: d => ({ sortie: d % 2 === 0 ? sackSilver('guard') + sackSilver('guard') + sackSilver('guard') : 0, chest: d === 7 || d === 14 ? K.Villain.TAKE : 0, hunt: d % 3 === 0 ? sell('wolfHide') : 0 }) }
+  };
+  const res = { mode: 'money', days, sides: {} };
+  for (const [side, R] of Object.entries(sides)) {
+    let silver = E.START_SILVER, bandages = 3, heals = 0, hingeDay = -1;
+    const st = {}, log = [], spent = { bandage: 0, doctor: 0 }, got = {};
+    for (let d = 1; d <= days; d++) {
+      const inc = R.day(d, st);
+      for (const [k, v] of Object.entries(inc)) { silver += v; got[k] = (got[k] || 0) + v; }
+      bandages--;
+      if (bandages < 2) { const n = 3, c = n * buy('bandage'); silver -= c; spent.bandage += c; bandages += n; }
+      if (d % 3 === 0) { silver -= E.DOCTOR.wounds; spent.doctor += E.DOCTOR.wounds; heals++; }
+      if (d % 7 === 0) { silver -= E.DOCTOR.stop; spent.doctor += E.DOCTOR.stop; heals++; }
+      if (hingeDay < 0 && silver >= R.hinge && (!R.need || R.need(st))) hingeDay = d;
+      log.push(silver);
+    }
+    res.sides[side] = { hinge: R.hinge, how: R.how, hingeDay, heals: heals / days * 7, at: [3, 7, 14, 21, 30].filter(x => x <= days).map(x => log[x - 1]), got, spent };
+    console.log(`${side}: hinge arm ${R.hinge} silver (${R.how}), affordable on day ${hingeDay < 0 ? 'never' : hingeDay}; silver on days 3/7/14/21/30: ${res.sides[side].at.join(' / ')}; heals ${res.sides[side].heals.toFixed(1)} a week; income ${Object.entries(got).map(([k, v]) => k + ' ' + v).join(', ')}; spent on bandages ${spent.bandage}, doctor ${spent.doctor}`);
+  }
+  res.pass = Object.values(res.sides).every(s => s.hingeDay > 0 && s.hingeDay <= 20 && s.at[0] > 0);
+  console.log(`${res.pass ? 'PASS' : 'FAIL'}: every side can afford the hinge arm by day 20 (mid-campaign) and is not broke on day 3`);
+  if (out) fs.writeFileSync(out, JSON.stringify(res, null, 2));
+  process.exit(res.pass ? 0 : 1);
+}
+
 if (isMainThread && require.main === module) {
   const mode = process.argv[2] && !process.argv[2].startsWith('--') ? process.argv[2] : 'duels';
   if (mode === 'archer' || mode === 'javelin') fights(mode);
@@ -934,7 +978,8 @@ if (isMainThread && require.main === module) {
   else if (mode === 'guard') guard();
   else if (mode === 'villain') villain();
   else if (mode === 'storms') storms();
-  else if (mode !== 'duels') { console.error('unknown mode ' + mode + ', known: duels, archer, javelin, squads, night, town, roads, war, campaign, elves, guard, villain, storms'); process.exit(2); }
+  else if (mode === 'money') money();
+  else if (mode !== 'duels') { console.error('unknown mode ' + mode + ', known: duels, archer, javelin, squads, night, town, roads, war, campaign, elves, guard, villain, storms, money'); process.exit(2); }
   else {
   const per = Math.max(2, +arg('n', 1000)), armorMode = arg('armor', 'mix'), jobsN = Math.max(1, +arg('jobs', Math.min(8, os.cpus().length))), out = arg('json', null);
   const V = loadouts(), jobs = [];
@@ -960,7 +1005,7 @@ if (isMainThread && require.main === module) {
   else if (workerData.mode === 'guard') parentPort.postMessage(workerData.seeds.map(guardRun));
   else if (workerData.mode === 'villain') parentPort.postMessage(workerData.seeds.map(villainRun));
   else if (workerData.mode === 'storms') parentPort.postMessage(workerData.jobs.map(stormRun));
-  else if (workerData.mode === 'squads') parentPort.postMessage(workerData.seeds.map(s => workerData.place === 'march' ? march(s) : squadFight(workerData.place, s)));
+  else if (workerData.mode === 'squads') parentPort.postMessage(workerData.seeds.map(s => workerData.place === 'march' ? march(s) : squadFight(workerData.place, s, workerData.size)));
   else if (workerData.mode === 'archer') parentPort.postMessage(workerData.seeds.map(s => skirmish(workerData.kind, s)));
   else if (workerData.mode === 'javelin') parentPort.postMessage(workerData.seeds.map(javelins));
   else parentPort.postMessage(play(workerData));

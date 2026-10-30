@@ -5,7 +5,7 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const DIR = 'js/apps/kirill98';
 const ORDER = ['ki-core', 'ki-data', 'ki-places', 'ki-terrain', 'ki-flora', 'ki-detail', 'ki-weather', 'ki-edge', 'ki-body', 'ki-combat', 'ki-wounds', 'ki-missile', 'ki-senses', 'ki-move', 'ki-nav', 'ki-beasts', 'ki-ai', 'ki-econ', 'ki-caravan', 'ki-world', 'ki-elves', 'ki-guard', 'ki-villain', 'ki-save', 'ki-gl', 'ki-tex', 'ki-models', 'ki-trees', 'ki-anim', 'ki-render', 'ki-fx', 'ki-audio', 'ki-hud', 'ki-screens', 'ki-ui'];
-const NODE = ['ki-core', 'ki-data', 'ki-places', 'ki-terrain', 'ki-flora', 'ki-detail', 'ki-weather', 'ki-edge', 'ki-body', 'ki-combat', 'ki-wounds', 'ki-missile', 'ki-senses', 'ki-move', 'ki-nav', 'ki-beasts', 'ki-ai', 'ki-econ', 'ki-caravan', 'ki-world', 'ki-elves', 'ki-guard', 'ki-villain', 'ki-save', 'ki-tex', 'ki-models', 'ki-trees', 'ki-anim'];
+const NODE = ['ki-core', 'ki-data', 'ki-places', 'ki-terrain', 'ki-flora', 'ki-detail', 'ki-weather', 'ki-edge', 'ki-body', 'ki-combat', 'ki-wounds', 'ki-missile', 'ki-senses', 'ki-move', 'ki-nav', 'ki-beasts', 'ki-ai', 'ki-econ', 'ki-caravan', 'ki-world', 'ki-elves', 'ki-guard', 'ki-villain', 'ki-save', 'ki-tex', 'ki-models', 'ki-trees', 'ki-anim', 'ki-audio', 'ki-screens'];
 const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
 const SPname = i => ['сосна', 'ель', 'берёза', 'дуб', 'ольха', 'липа'][Math.floor(i / 3)] + ' ' + ['молодая', 'взрослая', 'старая'][i % 3];
 let checks = 0;
@@ -2421,7 +2421,7 @@ const cutsOf = R => R.log.filter(e => e.kind === 'cut').map(e => e.parts.join('+
   ok(['512×384', '640×480', '800×600', 'Радиус 3D-деревьев', 'Дальность леса', '16-битный цвет', 'Предел тел', "'Звук'", "'Музыка'", 'Чувствительность', 'Инверсия мыши', 'Сложность', 'границу 3D-деревьев'].every(s => scr.includes(s)), 'the settings screen has every option of plan 8.16');
   ok(/Вас некому было вынести/.test(ui) && /Последний удар/.test(ui) && /ui\.openSlots\('load', 'fallen'\)/.test(scr) && /data-act="menu">Главное меню/.test(scr), 'the death screen says where and from what, and offers loading and the main menu');
   ok(/BAYER\[16\]/.test(rn) && /vec3\(31\.0, 63\.0, 31\.0\)/.test(rn) && /v\.dither \? this\.target\(w, h\)/.test(rn), '16-bit colour: 5-6-5 levels with a 4×4 ordered dither after the 3D picture');
-  ok(/getAll/.test(sv) && /keyPath: 'id'/.test(sv) && /toDataURL\('image\/jpeg'/.test(ui) && /c\.width = 160;\n\s+c\.height = 120;/.test(ui), 'each slot keeps a 160×120 thumbnail of the frame');
+  ok(/getAll/.test(sv) && /keyPath: 'id'/.test(sv) && /toDataURL\('image\/jpeg'/.test(ui) && /c\.width = 160;\r?\n\s+c\.height = 120;/.test(ui), 'each slot keeps a 160×120 thumbnail of the frame');
 }
 
 {
@@ -2904,6 +2904,11 @@ const cutsOf = R => R.log.filter(e => e.kind === 'cut').map(e => e.parts.join('+
   Sf.army.share = { silver: 40, squad: 'pen', men: [i0 + 6, i0 + 7] };
   const sharer = Sf.army.people[i0 + 6], ls = sharer.loyalty;
   ok(Vi.share(Sf, true, []) === 40 && sharer.loyalty > ls && !Sf.army.share, 'a share of the loot for the men who went: loyalty');
+  Sf.army.share = { silver: 30, squad: 'pen', men: [i0 + 6] };
+  const purse0 = K.Econ.purse(Sf.player.bag), ls2 = sharer.loyalty;
+  ok(Vi.share(Sf, 'self', []) === -30 && K.Econ.purse(Sf.player.bag) === purse0 + 30 && sharer.loyalty < ls2, 'the villain can keep a share for himself; the men who went grumble');
+  const chest0 = Wo.state(Sf).sides.villain.stock.silver, loy0 = Vi.loyalty(Sf);
+  ok(Vi.takeChest(Sf, []) === Vi.TAKE && Wo.state(Sf).sides.villain.stock.silver === chest0 - Vi.TAKE && K.Econ.purse(Sf.player.bag) === purse0 + 30 + Vi.TAKE && Vi.loyalty(Sf) < loy0, `the villain takes ${Vi.TAKE} silver from the chest for himself, and the whole army's loyalty drops`);
 
   const Sb = fresh(), Vb = Wo.state(Sb).sides.villain;
   Vb.stock.logs = 100; Vb.stock.iron = 40;
@@ -3213,6 +3218,46 @@ const cutsOf = R => R.log.filter(e => e.kind === 'cut').map(e => e.parts.join('+
 }
 
 {
+  const scr = read(`${DIR}/ki-screens.js`), ui = read(`${DIR}/ki-ui.js`), rn = read(`${DIR}/ki-render.js`), tr = read(`${DIR}/ki-trees.js`);
+  const group = scr.slice(scr.indexOf('<legend>Детали мира</legend>'), scr.indexOf('</fieldset>', scr.indexOf('<legend>Детали мира</legend>')));
+  ok(['grass', 'clutter', 'clouds', 'outer', 'precip'].every(k => group.includes(`'${k}'`)) && /clutter: true, clouds: true, outer: true/.test(ui), 'the settings group «Детали мира» holds grass, small clutter, clouds, the land past the edge and rain, all on by default');
+  ok(/v\.clutter !== false/.test(rn) && /v\.clouds === false \? 0 : 1/.test(rn) && /v\.outer !== false\) \{ gl\.drawArrays/.test(rn) && /outer === false \? this\.inner/.test(tr), 'each world detail can be switched off in the renderer');
+}
+
+{
+  const au = read(`${DIR}/ki-audio.js`), ui = read(`${DIR}/ki-ui.js`), css = read('css/apps/kirill98.css');
+  const need = ['jingle', 'horn', 'bell', 'bila', 'gong', 'step', 'creak', 'tap', 'flesh', 'mail', 'wood', 'fire', 'caw', 'howl', 'roar', 'grunt', 'bark', 'chirp', 'cricket', 'clink', 'thunder', 'splash'];
+  ok(need.every(k => au.includes(`kind === '${k}'`)) && /plate:/.test(au) && /iron:/.test(au) && ['water', 'stone', 'wood', 'snow'].every(s => au.includes(`s === '${s}'`)) && /o\.leg === 'peg'/.test(au) && /o\.leg === 'iron'/.test(au), 'every sound of section 9: bells and horn, footsteps on each ground with a peg leg or an iron foot, the wheelchair, blows on flesh, mail, plate, wood and iron, fire, crows, wolves, the bear, boars and dogs');
+  const TH = K.Sound.THEMES, names = ['forest', 'palace', 'fort', 'town', 'alarm'];
+  const bad = [];
+  for (const n of names) for (const v of TH[n].voices) for (const x of K.Sound.parse(v.seq)) if (x.n !== '-' && (v.inst === 'drum' ? !/^[KTS]$/.test(x.n) : !(K.Sound.freqOf(x.n) > 20))) bad.push(n + ':' + x.n);
+  const lens = names.map(n => K.Sound.lengthOf(TH[n]));
+  ok(!bad.length && lens.every(l => l > 6 && l < 40) && TH.forest.voices[0].inst === 'pipe' && TH.palace.voices[0].inst === 'brass' && TH.fort.voices[0].inst === 'drum' && TH.town.voices[0].inst === 'fiddle', `zone themes: pipes in the forest, brass at the palace, drums at the fort, a fiddle in town, plus the alarm (${lens.map(l => l.toFixed(0)).join(', ')} s)`);
+  const param = () => ({ value: 0, setValueAtTime() { }, exponentialRampToValueAtTime() { }, linearRampToValueAtTime() { }, setTargetAtTime() { } });
+  const node = () => ({ connect() { }, disconnect() { }, start() { }, stop() { }, gain: param(), frequency: param(), Q: param(), pan: param(), type: '', buffer: null, loop: false });
+  let made = 0;
+  class FakeCtx { constructor() { this.state = 'running'; this.currentTime = 0; this.sampleRate = 8000; this.destination = node(); } createGain() { made++; return node(); } createOscillator() { made++; return node(); } createBiquadFilter() { return node(); } createBufferSource() { return node(); } createStereoPanner() { return node(); } createBuffer(c, n) { return { getChannelData: () => new Float32Array(n) }; } resume() { } close() { } }
+  const old = globalThis.AudioContext;
+  globalThis.AudioContext = FakeCtx;
+  const snd = new K.Sound();
+  snd.wake();
+  const ear = { eye: [0, 0, 0], right: [1, 0, 0] };
+  for (const k of need.concat(['parry', 'plate', 'iron', 'whoosh', 'cut', 'kick', 'straw', 'chop'])) snd.play(k, { at: [3, 0, 4], ear, surface: 'stone', leg: 'iron', n: 2 });
+  for (const s of ['soft', 'water', 'wood', 'snow']) snd.play('step', { at: [1, 0, 1], ear, surface: s, leg: 'peg' });
+  const len = names.map(n => snd.music(n, 'villain'));
+  snd.ambience({ wind: 1, forest: 1, market: 1 });
+  snd.rain(1);
+  const playing = snd.playing();
+  snd.stopMusic(0.1);
+  globalThis.AudioContext = old;
+  ok(made > 300 && len.every(l => l > 6) && playing && Object.keys(snd.beds).length === 4, `every sound, theme and background bed plays on a stand-in WebAudio (${made} nodes)`);
+  ok(/footsteps\(eye\)/.test(ui) && /wildlife\(eye, D\)/.test(ui) && /clocks\(eye\)/.test(ui) && /ambienceStep\(eye, D, wx\)/.test(ui) && /musicStep\(eye\)/.test(ui) && /'alarm', side/.test(ui) && /musicBus\.gain\.value = this\.sound\.musicVolume/.test(ui), 'the game plays footsteps, animals, bells by the hour, the background of forest, mountains and market, zone themes and the alarm in a fight; music has its own volume');
+  ok(['elf', 'guard', 'villain', 'town'].every(s => css.includes(`.ki-side-${s} .ki-menu-plate`)) && /el\.classList\.add\('ki-side-' \+ this\.skin\(kind\)\)/.test(ui) && /TOWN_PANELS = new Set\(\['shop', 'doctor'/.test(ui), 'each side has its own frame material: bark and moss, plaster and red cloth, iron and soot, wood and brass; town counters wear the town frame');
+  const rd = K.Screens.readme(), rl = rd.split('\r\n');
+  ok(rd.includes('Кириллу, который джва года хотел такую игру.') && rl[0] === 'Kirill The Game' && /W A S D/.test(rd) && !/свободная камера|F2|F3 |F4 |манекен/.test(rd) && rl.every(l => l.length <= 80) && !/\n(?<!\r\n)/.test(rd.replace(/\r\n/g, '')) && !/Windows|Microsoft/.test(rd), 'README.TXT: title, the dedication to Kirill, controls without debug keys, lines up to 80 signs with CRLF');
+}
+
+{
   const app = read('js/apps/kirill98-app.js');
   ok(/globalThis\.appKirill98/.test(app) && /'app_kirill98'/.test(app), 'window wrapper and window id');
   ok(/onClose: \(\) => \{ if \(this\.ui\) this\.ui\.destroy\(\)/.test(app), 'closing the window releases the game');
@@ -3224,9 +3269,24 @@ const cutsOf = R => R.log.filter(e => e.kind === 'cut').map(e => e.parts.join('+
 }
 
 {
-  const gm = read('js/game-manager.js');
-  ok(!/kirill98/.test(gm), 'not in the catalog before the Steam stage');
-  for (const f of ['js/desktop.js', 'js/taskbar.js', 'js/filesystem.js', 'js/apps/dialogs.js']) ok(!/kirill98/.test(read(f)), 'no shortcut or command in ' + f + ' before the Steam stage');
+  const gm = read('js/game-manager.js'), start = gm.indexOf('      kirill98: {');
+  ok(start > 0, 'Kirill The Game is in the game catalog');
+  const entry = gm.slice(start, gm.indexOf('launch:', start) + 80);
+  const str = k => { const m = new RegExp(k + ": '([^']*)'").exec(entry); return m ? m[1] : null; }, list = k => { const m = new RegExp(k + ': \\[([^\\]]*)\\]').exec(entry); return m ? m[1].split(',').map(s => s.trim().replace(/^'|'$/g, '')) : []; };
+  ok(/steam: true/.test(entry) && str('title') === 'Kirill The Game' && str('subtitle') === '3Д-экшон по письму Кирилла' && str('developer') === 'Четыре Зоны Софт (2000) / Win 98 Edition', 'sold on Steam as Kirill The Game by Четыре Зоны Софт');
+  ok(/price: 24,/.test(entry) && str('priceDisplay') === '$24.00' && str('targetExe') === 'KIRILL98.EXE' && str('folder') === 'KirillTheGame' && str('setupExe') === 'Setup_KirillTheGame.exe', 'costs $24.00, installs KIRILL98.EXE into KirillTheGame');
+  const tags = list('tags'), shots = list('shots'), genre = str('genre');
+  ok(genre === '3Д-экшон' && tags.length >= 3 && tags.length <= 5 && tags.every(x => x.length <= 24 && x !== genre) && shots.length === 2 && shots.every(x => x.length <= 32), `store page: genre ${genre}, tags ${tags.join(', ')}, shots ${shots.join(' / ')}`);
+  ok(/джва года/.test(str('desc') || '') && /window\.appKirill98 && window\.appKirill98\.open\(\)/.test(entry), 'description from the letter and launch through the window wrapper');
+  const shot = n => { const f = path.join(ROOT, `content/steam/kirill98-${n}.jpg`); if (!fs.existsSync(f)) return null; const b = fs.readFileSync(f); for (let i = 2; i < b.length;) { const m = b[i + 1], len = b.readUInt16BE(i + 2); if (m >= 0xc0 && m <= 0xc3) return [b.readUInt16BE(i + 7), b.readUInt16BE(i + 5)]; i += 2 + len; } return null; };
+  ok([1, 2].every(n => { const s = shot(n); return s && s[0] === 640 && s[1] === 480; }) && /  kirill98: \{/.test(read('tools/steam-shots-recipes.cjs')), 'two Steam screenshots 640×480 from the real game by the recipe');
+  const load = gm.slice(gm.indexOf('loadState'), gm.indexOf('loadState') + 4000);
+  ok(!/'kirill98'/.test(load) && !/kirill98Granted/.test(gm), 'not purchased, downloaded or installed by default, no grant flag');
+  ok(/isInstalled\('kirill98'\)/.test(read('js/desktop.js')) && /isInstalled\('kirill98'\)\) \? `[\s\S]*?data-action="kirill98"/.test(read('js/taskbar.js')) && /gmInstalled\.includes\('kirill98'\)[\s\S]*?KIRILL98\.EXE[\s\S]*?README\.TXT/.test(read('js/filesystem.js')), 'desktop icon, Start menu item and C:\\Games\\KirillTheGame only when installed');
+  const dlg = read('js/apps/dialogs.js'), ex = read('js/apps/explorer.js'), tb = read('js/taskbar.js');
+  ok(['kirill98', 'kirillthegame', 'kirillgame'].every(c => dlg.includes(`cmd === '${c}'`)) && /showInSteam\(\\'kirill98\\'\)/.test(dlg) && /KIRILL98\.EXE[\s\S]{0,200}showInSteam\('kirill98'\)/.test(ex) && /case 'kirill98':[\s\S]{0,200}showInSteam\('kirill98'\)/.test(tb), 'Run, the .exe and the Start menu lead to Steam when the game is not installed');
+  ok(/app_kirill98[\s\S]{0,80}kirill98\.exe/.test(read('js/apps/task-manager.js')) && (read('js/i18n.js').match(/'app\.kirill98': 'Kirill The Game'/g) || []).length === 4 && /game\('kirill98', \['kirill98_\*'\], \{ dbs: \['kirill98'\] \}\)/.test(read('js/apps/backup-catalog.js')) && /'kirill98': px\(/.test(read('js/icons.js')), 'task manager process, window name in both languages, backup of saves and settings, pixel icon');
+  ok(/id === 'kirill98'[\s\S]{0,200}Screens\.readme\(\)/.test(gm), 'README.TXT of the installed game comes from the game itself');
 }
 
 Promise.all(pending).then(() => console.log(`kirill98: ${checks} checks passed in ${((Date.now() - t0) / 1000).toFixed(1)} s`), e => { console.error(e); process.exit(1); });

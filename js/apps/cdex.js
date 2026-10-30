@@ -147,6 +147,56 @@ class AppCDex {
             notes: [196.0, 246.94, 293.66, 392.0, 349.23, 293.66, 246.94, 220.0, 261.63, 329.63, 293.66, 196.0]
           }
         ]
+      },
+      office_games_2: {
+        cddbId: '3a7c1d05',
+        rawArtist: 'Unknown Artist',
+        rawAlbum: 'OFFICE_GAMES_2 (Mixed-Mode CD)',
+        year: '1999',
+        genre: 'Arcade / Chiptune',
+        cddbArtist: 'Офисные игры 2',
+        cddbAlbum: 'Office Games 2 Audio Tracks',
+        tracks: [
+          {
+            num: 1,
+            isData: true,
+            checked: false,
+            rawTitle: 'Data Track [ISO9660 Mode 1]',
+            cddbTitle: '[DATA] Оболочка «Офисные игры 2» (ISO9660)',
+            start: '00:00:00',
+            duration: '24:40',
+            sectors: 111000,
+            wavMb: '260.0 МБ',
+            mp3Mb: '—',
+            notes: []
+          },
+          {
+            num: 2,
+            isData: false,
+            checked: true,
+            rawTitle: 'Audio Track 02',
+            cddbTitle: 'Патч-корд - Link Light Chiptune',
+            start: '24:40:00',
+            duration: '02:30',
+            sectors: 11250,
+            wavMb: '26.4 МБ',
+            mp3Mb: '2.3 МБ',
+            notes: [261.63, 311.13, 392.0, 466.16, 392.0, 311.13, 261.63, 233.08, 261.63, 349.23, 392.0, 311.13]
+          },
+          {
+            num: 3,
+            isData: false,
+            checked: true,
+            rawTitle: 'Audio Track 03',
+            cddbTitle: 'Последний лифт - Floor 18 Jingle',
+            start: '27:10:00',
+            duration: '02:10',
+            sectors: 9750,
+            wavMb: '22.9 МБ',
+            mp3Mb: '2.0 МБ',
+            notes: [440.0, 392.0, 349.23, 392.0, 440.0, 440.0, 440.0, 392.0, 392.0, 392.0, 440.0, 523.25]
+          }
+        ]
       }
     };
   }

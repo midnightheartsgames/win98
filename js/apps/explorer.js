@@ -1172,34 +1172,19 @@ class AppExplorer {
               cdMenuItems.push({
                 label: t('explorer.autoPlay'),
                 bold: true,
-                action: () => {
-                  if (discId === 'office_games_98') {
-                    if (window.appOfficeLauncher) window.appOfficeLauncher.open();
-                  } else if (window.appIgroman) {
-                    window.appIgroman.open();
-                  }
-                }
+                action: () => window.vfs.openDiscShell(discId)
               });
               cdMenuItems.push({
                 label: t('menu.open'),
                 action: () => this.navigateTo(win, [...this.currentPath, item.key])
               });
               cdMenuItems.push({ separator: true });
-              if (discId === 'office_games_98') {
+              window.vfs.getDiscCatalog().filter(d => d.id !== discId).forEach(d => {
                 cdMenuItems.push({
-                  label: t('cdrom.insertIgromania'),
-                  action: () => {
-                    if (window.vfs) window.vfs.insertCdRom('D:', 'igromania_09_1998');
-                  }
+                  label: d.insertLabel,
+                  action: () => window.vfs.insertCdRom('D:', d.id)
                 });
-              } else {
-                cdMenuItems.push({
-                  label: t('cdrom.insertOffice'),
-                  action: () => {
-                    if (window.vfs) window.vfs.insertCdRom('D:', 'office_games_98');
-                  }
-                });
-              }
+              });
               cdMenuItems.push({ separator: true });
               cdMenuItems.push({
                 label: t('explorer.eject'),
@@ -1208,18 +1193,12 @@ class AppExplorer {
                 }
               });
             } else {
-              cdMenuItems.push({
-                label: t('cdrom.insertOffice'),
-                bold: true,
-                action: () => {
-                  if (window.vfs) window.vfs.insertCdRom('D:', 'office_games_98');
-                }
-              });
-              cdMenuItems.push({
-                label: t('cdrom.insertIgromania'),
-                action: () => {
-                  if (window.vfs) window.vfs.insertCdRom('D:', 'igromania_09_1998');
-                }
+              window.vfs.getDiscCatalog().slice().reverse().forEach((d, i) => {
+                cdMenuItems.push({
+                  label: d.insertLabel,
+                  bold: i === 0,
+                  action: () => window.vfs.insertCdRom('D:', d.id)
+                });
               });
             }
             cdMenuItems.push({ separator: true });
@@ -1767,37 +1746,23 @@ class AppExplorer {
           icon: 'warning',
           message: t('cdrom.notReadyMsg'),
           buttons: [
-            {
-              text: t('cdrom.insertOfficeBtn'),
+            ...window.vfs.getDiscCatalog().slice().reverse().map(d => ({
+              text: d.insertButton,
+              isDefault: d.id === 'igromania_09_1998',
+              primary: d.id === 'igromania_09_1998',
               action: () => {
-                window.vfs.insertCdRom('D:', 'office_games_98');
+                window.vfs.insertCdRom('D:', d.id);
                 this.renderFolder(win);
               }
-            },
-            {
-              text: t('cdrom.insertIgromaniaBtn'),
-              isDefault: true,
-              primary: true,
-              action: () => {
-                window.vfs.insertCdRom('D:', 'igromania_09_1998');
-                this.renderFolder(win);
-              }
-            },
+            })),
             { text: t('btn.cancel'), action: () => {} }
           ]
         });
         return;
       }
       if (this.currentPath.length === 1 && this.currentPath[0] === 'My Computer') {
-        if (discId === 'office_games_98') {
-          if (window.appOfficeLauncher) {
-            window.appOfficeLauncher.open();
-            return;
-          }
-        } else if (window.appIgroman) {
-          window.appIgroman.open();
-          return;
-        }
+        window.vfs.openDiscShell(discId);
+        return;
       }
       this.navigateTo(win, [...this.currentPath, item.key]);
       return;
@@ -1808,6 +1773,8 @@ class AppExplorer {
     } else if (item.type === 'executable') {
       if (item.app === 'igroman' || item.name === 'igroman.exe') {
         if (window.appIgroman) window.appIgroman.open();
+      } else if (window.Og2 && window.Og2.isOg2App(item.app)) {
+        window.Og2.openApp(item.app);
       } else if (item.app === 'office_launcher' || item.name === 'LAUNCHER.EXE') {
         if (window.appOfficeLauncher) window.appOfficeLauncher.open();
       } else if (item.app === 'og_snake3d' || item.name === 'SNAKE3D.EXE') {
@@ -1834,6 +1801,7 @@ class AppExplorer {
       else if (item.app === 'paint' && window.appPaint) window.appPaint.open();
       else if (item.app === 'calculator' && window.appCalculator) window.appCalculator.open();
       else if (item.app === 'minesweeper' && window.appMinesweeper) window.appMinesweeper.open();
+      else if (item.app === 'bliss' && window.appBliss) window.appBliss.open();
       else if (item.app === 'wolf3d') {
         if (window.gameManager && !window.gameManager.isInstalled('wolf3d')) {
           window.winManager.openDialog({ title: 'Wolfenstein 3D', icon: 'error', message: t('store.gameNotInstalled', 'Wolfenstein 3D') });
@@ -1934,9 +1902,9 @@ class AppExplorer {
           window.winManager.openDialog({ title: 'League of Legends 98', icon: 'error', message: t('store.gameNotInstalled', 'League of Legends 98') });
         } else if (window.appLoL) window.appLoL.open();
       }
-      else if (item.app === 'moh98' || item.name === 'MOH.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('moh98')) {
-          window.winManager.openDialog({ title: 'Medal of Honor 98', icon: 'error', message: t('store.gameNotInstalled', 'Medal of Honor 98') });
+      else if (item.app === 'moh98_demo' || item.name === 'MOH.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('moh98_demo')) {
+          window.gameManager.showOnCd('moh98_demo');
         } else if (window.appMoh98) window.appMoh98.open();
       }
       else if (item.app === 'cop98' || item.name === 'ZATON.EXE') {
@@ -2049,6 +2017,11 @@ class AppExplorer {
           window.gameManager.showOnCd('korovany_demo');
         } else if (window.appKorovany) window.appKorovany.open();
       }
+      else if (item.app === 'kirill98' || item.name === 'KIRILL98.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('kirill98')) {
+          window.gameManager.showInSteam('kirill98');
+        } else if (window.appKirill98) window.appKirill98.open();
+      }
       else if (item.app === 'catniss' || item.name === 'CATNISS.EXE') {
         if (window.gameManager && !window.gameManager.isInstalled('catniss')) {
           window.gameManager.showInSteam('catniss');
@@ -2059,9 +2032,9 @@ class AppExplorer {
           window.gameManager.showInSteam('plov');
         } else if (window.appPlov) window.appPlov.open();
       }
-      else if (item.app === 'sims3' || item.name === 'SIMS3.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('sims3')) {
-          window.gameManager.showInSteam('sims3');
+      else if (item.app === 'sims3_demo' || item.name === 'SIMS3.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('sims3_demo')) {
+          window.gameManager.showOnCd('sims3_demo');
         } else if (window.appSims3) window.appSims3.open();
       }
       else if (item.app === 'forza' || item.name === 'FORZA.EXE') {

@@ -251,6 +251,6 @@ pol: Сначала пусть выпьет. Каждый день понемн�
 -: Напиток холодный и сладкий. Мысли путаются и уходят одна за другой.
 cg off
 forget
-stop
+goto ch1_start
 ` };
 })(globalThis.Aayla98 = globalThis.Aayla98 || {});

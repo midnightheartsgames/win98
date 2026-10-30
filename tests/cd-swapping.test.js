@@ -150,6 +150,21 @@ const igroDDrive = vfsReboot.resolvePath(['My Computer', 'D:']);
 assert.ok(igroDDrive.children['igroman.exe']);
 console.log('PASS 6. Switching back to Igromania works properly');
 
+vfsReboot.insertCdRom('D:', 'office_games_2');
+assert.equal(vfsReboot.cdRomState.discId, 'office_games_2');
+const og2Drive = vfsReboot.resolvePath(['My Computer', 'D:']);
+assert.equal(og2Drive.name, 'Офисные игры 2 (D:)');
+assert.equal(og2Drive.children['LAUNCHER.EXE'].app, 'og2_launcher');
+const og2Games = Object.values(og2Drive.children['GAMES'].children);
+assert.equal(og2Games.length, 8);
+og2Games.forEach(folder => {
+  const exe = Object.values(folder.children)[0];
+  assert.equal(exe.type, 'executable');
+  assert.ok(exe.app.startsWith('og2_'));
+});
+assert.deepEqual(Array.from(vfsReboot.getDiscCatalog(), d => d.id), ['igromania_09_1998', 'office_games_98', 'office_games_2']);
+console.log('PASS 7. Office Games 2 disc mounts with eight games');
+
 console.log('========================================');
 console.log('ALL CD SWAPPING TESTS PASSED!');
 console.log('========================================');

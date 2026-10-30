@@ -255,14 +255,14 @@ assert.equal(cdExe.app, 'setup');
 assert.equal(cdExe.gameId, 'worldcup98');
 
 appIgroman.open();
-appIgroman.goToPage(15);
-const page15Html = appIgroman.renderStageContent();
-assert.ok(page15Html.includes('worldcup98.exe') && page15Html.includes('btn_install_game'), 'Igromania page 15 renders World Cup 98 installer view');
+appIgroman.goToPage(appIgroman.games.find(g => g.gameId === 'worldcup98').page);
+const installerHtml = appIgroman.renderStageContent();
+assert.ok(installerHtml.includes('data-game-setup="worldcup98"') && !installerHtml.includes('data-game-launch="worldcup98"'), 'Igromania demo page renders World Cup 98 installer view');
 
 gm.finishInstallation('worldcup98', 'C:\\Games\\WorldCup98');
 assert.equal(gm.isInstalled('worldcup98'), true, 'worldcup98 installed from Igromania CD');
-const page15InstalledHtml = appIgroman.renderStageContent();
-assert.ok(page15InstalledHtml.includes('btn_launch_worldcup98'), 'Igromania page 15 renders launch button when installed');
+const installedHtml = appIgroman.renderStageContent();
+assert.ok(installedHtml.includes('data-game-launch="worldcup98"'), 'Igromania demo page renders launch button when installed');
 const wcExe = vfs.resolvePath(['My Computer', 'C:', 'Games', 'WorldCup98', 'WORLDCUP98.EXE']);
 const wcReadme = vfs.resolvePath(['My Computer', 'C:', 'Games', 'WorldCup98', 'README.TXT']);
 assert.ok(wcExe && wcReadme, 'WORLDCUP98.EXE and README.TXT created in C:\\Games\\WorldCup98');

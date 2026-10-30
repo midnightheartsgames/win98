@@ -30,6 +30,7 @@ uniform float uTime;
 uniform float uMoon;
 uniform float uCloud;
 uniform float uStorm;
+uniform float uCloudLayer;
 uniform float uMist;
 uniform float uFlash;
 uniform vec2 uCloudOff;
@@ -90,8 +91,8 @@ void main() {
     cc *= 1.0 - uStorm * (0.5 - 0.25 * thick);
     cc += vec3(0.55, 0.6, 0.75) * uFlash * (0.4 + 0.6 * thick);
     float fade = smoothstep(0.0, 0.18, d.y);
-    c = mix(c, cc, cov * fade * mix(0.92, 1.0, smoothstep(0.7, 0.95, uCloud)));
-    c = mix(c, mix(mix(vec3(0.95), vec3(1.0, 0.75, 0.55), uDusk), vec3(0.12, 0.13, 0.17), uNight), hi * 0.35 * fade * (1.0 - cov));
+    c = mix(c, cc, cov * fade * mix(0.92, 1.0, smoothstep(0.7, 0.95, uCloud)) * uCloudLayer);
+    c = mix(c, mix(mix(vec3(0.95), vec3(1.0, 0.75, 0.55), uDusk), vec3(0.12, 0.13, 0.17), uNight), hi * 0.35 * fade * (1.0 - cov) * uCloudLayer);
   }
   c = mix(c, uHorizon + uFogSun * side, (1.0 - smoothstep(0.0, 0.16, d.y)) * smoothstep(0.3, 0.8, uCloud + uMist));
   if (uBolt.w > 0.0 && d.y > -0.01 && d.y < uBolt.z) {
@@ -334,6 +335,7 @@ void main() {
   c = mix(c, c * vec3(0.82, 0.86, 0.9), aux.g * 0.35);
   float diff = max(dot(n, uLightDir), 0.0);
   c *= uAmbient + uLight * diff;
+  c = min(c, vec3(0.9)) + max(c - 0.9, 0.0) * 0.25;
   float sw = max(sum, 1e-3), wet = uWet * (1.0 - w[8] / sw) * (0.7 + 0.3 * aux.g);
   float soft = clamp((w[3] + w[9] + w[11] + w[1] * 0.4 + w[5] * 0.6) / sw, 0.0, 1.0);
   float pool = smoothstep(0.3, 0.85, uWet) * soft * smoothstep(0.66, 0.73, vnoise(vWorld.xz / 2.7) * 0.65 + vnoise(vWorld.xz / 0.8) * 0.35 + aux.g * 0.15) * smoothstep(0.96, 0.99, n.y);
@@ -590,6 +592,7 @@ void main() {
   c = mix(c, lay(8), smoothstep(200.0, 215.0, h) * smoothstep(0.6, 0.7, n.y));
   c *= 0.86 + 0.28 * on(vWorld.xz / 90.0);
   c *= uAmbient + uLight * max(dot(n, uLightDir), 0.0);
+  c = min(c, vec3(0.9)) + max(c - 0.9, 0.0) * 0.25;
   float f = clamp(distance(vWorld, uEye) / uFogFar, 0.0, 1.0);
   outColor = vec4(mix(c, fogTint(vWorld), f * f * (3.0 - 2.0 * f)), 1.0);
 }`;
@@ -1689,6 +1692,7 @@ void main() {
       gl.uniform1f(su.uTime, v.time || 0);
       gl.uniform1f(su.uMoon, D.moon);
       gl.uniform1f(su.uCloud, D.cloud);
+      gl.uniform1f(su.uCloudLayer, v.clouds === false ? 0 : 1);
       gl.uniform3fv(su.uFogSun, D.sunFog);
       gl.uniform1f(su.uStorm, D.storm || 0);
       gl.uniform1f(su.uMist, WX ? WX.mist : 0);
@@ -1764,9 +1768,8 @@ void main() {
       gl.enable(gl.POLYGON_OFFSET_FILL);
       gl.polygonOffset(2, 8);
       gl.bindVertexArray(this.outer.vao);
-      gl.drawArrays(gl.TRIANGLES, 0, this.outer.count);
+      if (v.outer !== false) { gl.drawArrays(gl.TRIANGLES, 0, this.outer.count); tris += this.outer.count / 3; }
       gl.disable(gl.POLYGON_OFFSET_FILL);
-      tris += this.outer.count / 3;
       const rp = this.roadProg, ru = rp.u;
       gl.useProgram(rp.p);
       gl.uniformMatrix4fv(ru.uViewProj, false, vp);
@@ -1833,7 +1836,7 @@ void main() {
         tris += G.n * 4;
       }
       const C = this.clutter;
-      if (C.counts.some(x => x)) {
+      if (v.clutter !== false && C.counts.some(x => x)) {
         const cu = C.prog.u;
         gl.useProgram(C.prog.p);
         gl.uniformMatrix4fv(cu.uViewProj, false, vp);
@@ -1906,7 +1909,7 @@ void main() {
       if (this.forest) {
         const R = v.treeRadius || 40;
         this.forest.update(v.eye, R);
-        this.forest.draw(vp, v.eye, D, fogFar, R, !!v.border);
+        this.forest.draw(vp, v.eye, D, fogFar, R, !!v.border, v.outer !== false);
         tris += this.forest.stats.tris;
       }
 

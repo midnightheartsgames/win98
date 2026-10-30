@@ -72,12 +72,6 @@ function balance(n) {
   return rows;
 }
 
-if (require.main === module) {
-  const a = process.argv.slice(2), n = +(a.find(x => /^\d+$/.test(x)) || 16);
-  if (a.includes('balance') || !a.length) balance(n);
-  if (a.includes('economy') || !a.length) economy();
-}
-
 module.exports = { H, BOSSES, rate, balance };
 
 function probe(lvl, n, foes) {
@@ -146,3 +140,9 @@ function economy() {
 
 module.exports.needs = needs;
 module.exports.economy = economy;
+
+if (require.main === module) {
+  const a = process.argv.slice(2), n = +(a.find(x => /^\d+$/.test(x)) || 16);
+  if (a.includes('balance') || !a.length) balance(n);
+  if (a.includes('economy') || !a.length) economy();
+}

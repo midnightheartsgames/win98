@@ -520,7 +520,7 @@
         '########################################'
       ],
       anchors: [], chests: [], enemies: {},
-      decor: [['axgate', 18, 1], ['proto', 16, 19, 'awake', '!ks_proto'], ['rocks', 17, 21, null, 'ks_proto'], ['rocks', 20, 22, null, 'ks_proto'], ['rocks', 22, 20, null, 'ks_proto'], ['turret', 10, 21, null, '!ks_proto'], ['turret', 29, 21, null, '!ks_proto'], ['turret', 12, 16, null, '!ks_proto'], ['turret', 27, 16, null, '!ks_proto'], ['crater', 6, 18, '3x2'], ['crater', 31, 24, '2x1'], ['flowers', 4, 22, 6]],
+      decor: [['axgate', 18, 1], ['proto', 16, 19, 'awake', '!ks_proto'], ['proto', 16, 19, 'ruin', 'ks_proto'], ['rocks', 15, 23, null, 'ks_proto'], ['rocks', 25, 21, null, 'ks_proto'], ['turret', 10, 21, null, '!ks_proto'], ['turret', 29, 21, null, '!ks_proto'], ['turret', 12, 16, null, '!ks_proto'], ['turret', 27, 16, null, '!ks_proto'], ['crater', 6, 18, '3x2'], ['crater', 31, 24, '2x1'], ['flowers', 4, 22, 6]],
       marks: {
         v: { type: 'spawn' },
         x: { type: 'exit', to: 'ax_town', at: 'x' },

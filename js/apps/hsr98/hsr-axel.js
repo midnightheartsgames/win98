@@ -487,6 +487,23 @@
     return null;
   }
 
+  function protoRuin(P, st) {
+    P.shadow(64, 116, 62, 10);
+    P.line(6, 92, 22, 74, st[2], 4); P.line(22, 74, 30, 84, st[3], 3);
+    P.line(122, 98, 108, 78, st[2], 4); P.line(108, 78, 100, 90, st[3], 3);
+    P.line(16, 120, 34, 110, st[2], 3);
+    P.oval(64, 96, 56, 22, st[3]); P.oval(64, 90, 50, 26, st[2]);
+    for (let i = 0; i < 70; i++) {
+      const a = hash(i, 3, 262), b = hash(i, 4, 262), dx = (a - 0.5) * 2, x = 64 + dx * 54;
+      const top = 100 - (1 - dx * dx) * 58, y = top + b * (114 - top);
+      const r = 3 + Math.floor(hash(i, 5, 262) * 7), c = i % 3;
+      P.oval(x, y + 1, r, r * 0.7, st[3]); P.oval(x, y, r - 1, r * 0.6, st[c ? 0 : 2]); P.oval(x - 1, y - 1, r * 0.5, r * 0.3, st[1]);
+    }
+    P(40, 40, 24, 8, st[2]); P(42, 38, 20, 3, st[0]); P(48, 32, 6, 8, st[2]); P(49, 30, 4, 2, st[1]);
+    P.oval(78, 58, 9, 7, '#1a1a22'); P.oval(78, 58, 6, 4, '#3a2a3e'); P.line(72, 54, 84, 63, st[3], 1);
+    for (let i = 0; i < 12; i++) P.dot(16 + Math.floor(hash(i, 6, 262) * 96), 108 + Math.floor(hash(i, 7, 262) * 14), st[3]);
+  }
+
   const DECOR = {
     camp: {
       w: 3, h: 2, up: 16,
@@ -527,6 +544,7 @@
       w: 8, h: 6, up: 30,
       draw(P, v) {
         const st = ['#6e6e7a', '#8e8e9a', '#4a4a56', '#2e2e38'];
+        if (v === 'ruin') return protoRuin(P, st);
         for (let i = 0; i < 4; i++) {
           const ly = 70 + i * 10;
           P.line(30, ly - 10, 4, ly + 14, st[2], 4); P.line(4, ly + 14, 2, ly + 30, st[3], 3);

@@ -60,7 +60,8 @@ class AppClippy {
       'Рядом со мной загорелась лампочка? Значит, у меня есть совет. Щёлкните по ней, когда будет минутка.',
       'Игры теперь продаются в Steam. Клиент скачивается с www.steampowered.com прямо в Internet Explorer.',
       'В Блокноте клавиша F5 вставляет дату и время. Удобно, если вы ведёте дневник.',
-      'Двойной щелчок по заголовку окна разворачивает его на весь экран. И обратно.'
+      'Двойной щелчок по заголовку окна разворачивает его на весь экран. И обратно.',
+      'В каталоге SoftStore \'98 бесплатно раздают овечку По (Sheep.exe). Если перетащить её на меня мышью, она поздоровается!'
     ];
 
     this.quizQuestions = [
@@ -355,6 +356,7 @@ class AppClippy {
           <g id="clippy-slot-mouth" class="clippy-slot"></g>
           <g id="clippy-slot-eyes" class="clippy-slot"></g>
           <g id="clippy-slot-head" class="clippy-slot"></g>
+          <g id="clippy-slot-accessory" class="clippy-slot"></g>
 
           <g id="clippy-headphones" class="clippy-accessory">
             <path d="M16 26C16 8 55 8 55 26" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round"/>
@@ -595,6 +597,7 @@ class AppClippy {
           this.isDragging = false;
           this.sound('playClick');
           this.snapToNearestWindow();
+          if (window.clippySystem && window.clippySystem.checkDroppedNearNeko && window.clippySystem.checkDroppedNearNeko()) return;
           if (window.clippyTalk) window.clippyTalk.onDragged();
         } else {
           this.poke();
@@ -636,39 +639,40 @@ class AppClippy {
     }
   }
 
+  pointEyesAt(targetX, targetY) {
+    if (this.state === 'sleeping' || this.isDragging || !this.charEl || !this.pupilL || !this.pupilR || !this.browL || !this.browR) return;
+    const rect = this.charEl.getBoundingClientRect();
+    const eyesX = rect.left + 36;
+    const eyesY = rect.top + 26;
+    const dx = targetX - eyesX;
+    const dy = targetY - eyesY;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist < 48) {
+      this.pupilL.setAttribute('transform', 'translate(1.8, 0.4)');
+      this.pupilR.setAttribute('transform', 'translate(-1.8, 0.4)');
+      this.browL.setAttribute('transform', 'translate(0, -3)');
+      this.browR.setAttribute('transform', 'translate(0, -3)');
+      return;
+    }
+
+    const maxOffset = 2.6;
+    const angle = Math.atan2(dy, dx);
+    const offsetX = Math.cos(angle) * maxOffset;
+    const offsetY = Math.sin(angle) * maxOffset;
+
+    this.pupilL.setAttribute('transform', `translate(${offsetX.toFixed(2)}, ${offsetY.toFixed(2)})`);
+    this.pupilR.setAttribute('transform', `translate(${offsetX.toFixed(2)}, ${offsetY.toFixed(2)})`);
+
+    const browTilt = Math.max(-2, Math.min(2, -dy / 100));
+    this.browL.setAttribute('transform', `translate(0, ${browTilt.toFixed(1)})`);
+    this.browR.setAttribute('transform', `translate(0, ${browTilt.toFixed(1)})`);
+  }
+
   initEyeTracking() {
     window.addEventListener('mousemove', (e) => {
       this.resetIdleTimer();
-
-      if (this.state === 'sleeping' || this.isDragging) return;
-
-      const rect = this.charEl.getBoundingClientRect();
-      const eyesX = rect.left + 36;
-      const eyesY = rect.top + 26;
-
-      const dx = e.clientX - eyesX;
-      const dy = e.clientY - eyesY;
-      const dist = Math.hypot(dx, dy);
-
-      if (dist < 48) {
-        this.pupilL.setAttribute('transform', 'translate(1.8, 0.4)');
-        this.pupilR.setAttribute('transform', 'translate(-1.8, 0.4)');
-        this.browL.setAttribute('transform', 'translate(0, -3)');
-        this.browR.setAttribute('transform', 'translate(0, -3)');
-        return;
-      }
-
-      const maxOffset = 2.6;
-      const angle = Math.atan2(dy, dx);
-      const offsetX = Math.cos(angle) * maxOffset;
-      const offsetY = Math.sin(angle) * maxOffset;
-
-      this.pupilL.setAttribute('transform', `translate(${offsetX.toFixed(2)}, ${offsetY.toFixed(2)})`);
-      this.pupilR.setAttribute('transform', `translate(${offsetX.toFixed(2)}, ${offsetY.toFixed(2)})`);
-
-      const browTilt = Math.max(-2, Math.min(2, -dy / 100));
-      this.browL.setAttribute('transform', `translate(0, ${browTilt.toFixed(1)})`);
-      this.browR.setAttribute('transform', `translate(0, ${browTilt.toFixed(1)})`);
+      this.pointEyesAt(e.clientX, e.clientY);
     });
 
     const scheduleBlink = () => {
@@ -1062,8 +1066,10 @@ class AppClippy {
   }
 
   isGameWindow(id) {
+    if (id.startsWith('og2_') && id !== 'og2_launcher') return true;
+    if (typeof id === 'string' && id.startsWith('app_og_')) return true;
     const fixed = ['app_wolf3d', 'app_stalker', 'app_half_life', 'app_fallout2', 'app_burnout', 'app_neon_racer', 'app_hockey',
-      'app_minesweeper', 'app_solitaire', 'app_pinball', 'app_freecell', 'app_scumm_quest'];
+      'app_minesweeper', 'app_solitaire', 'app_pinball', 'app_freecell', 'app_bliss', 'app_scumm_quest'];
     if (fixed.some(gid => id === gid || id.startsWith(`${gid}_`))) return true;
     const gm = window.gameManager;
     if (!gm || !gm.catalog) return false;
@@ -1139,14 +1145,24 @@ class AppClippy {
     if (!wardrobe) return;
     const owned = wardrobe.items.filter(i => wardrobe.isOwned(i.id));
     if (!owned.length) {
-      this.speak('В моём шкафу пока пусто! Загляните на <strong>www.clippy98.com</strong> — там можно бесплатно скачать шляпы, галстуки и очки.', [
+      this.speak('В моём шкафу пока пусто! Загляните на <strong>www.clippy98.com</strong> — там можно бесплатно скачать шляпы, галстуки, очки и аксессуары.', [
         { text: '• Открыть гардероб', action: () => this.openWardrobeSite() }
       ], '👔');
       return;
     }
-    const item = owned[Math.floor(Math.random() * owned.length)];
-    wardrobe.equip(item.id);
+    const picked = [];
+    wardrobe.slots.forEach(slot => {
+      const slotOwned = owned.filter(i => i.slot === slot.id);
+      if (slotOwned.length) {
+        const choice = slotOwned[Math.floor(Math.random() * slotOwned.length)];
+        wardrobe.equip(choice.id);
+        picked.push(choice);
+      }
+    });
+    const item = picked[Math.floor(Math.random() * picked.length)] || owned[0];
     this.speak(`Надел: <strong>${item.name}</strong>! ${item.quip}`, [], '✨');
+
+
   }
 
   toggleGlasses() {
@@ -1269,6 +1285,7 @@ class AppClippy {
   trayDelta() {
     const tray = window.taskbar && window.taskbar.clippyTrayEl;
     if (!tray || !tray.getBoundingClientRect || !this.charEl || !this.charEl.getBoundingClientRect) return null;
+    if (typeof window.taskbar.peekTaskbar === 'function') window.taskbar.peekTaskbar(1200);
     const a = this.charEl.getBoundingClientRect();
     const b = tray.getBoundingClientRect();
     if (!a.width || !b.width) return null;
@@ -1423,6 +1440,13 @@ class AppClippy {
       return;
     }
     const name = actor && actors ? actors.pick(actor.name) : 'другого помощника';
+    const cd = window.vfs && window.vfs.cdRomState;
+    if (cd && cd.inserted && cd.discId === 'office_games_98') {
+      this.speak(`Вы хотели выбрать «${name}»? В приводе D: сейчас лежит диск «Офисные игры ’98». Слово «Офисные» на обложке есть, но внутри только <code>ARKANOID.EXE</code> и <code>LINES98.EXE</code>, а папки <code>Actors</code> нет. Значит, пока я. Ура... То есть — сожалею.`, [
+        { text: '• Запустить «Офисные игры ’98»', action: () => window.appOfficeLauncher && window.appOfficeLauncher.open() }
+      ], '😅');
+      return;
+    }
     this.speak(`Вы хотели выбрать «${name}»? Без компакт-диска Office 97 не получится. Значит, пока я. Ура... То есть — сожалею. Очень.`, [], '😅');
   }
 
@@ -1770,6 +1794,34 @@ class AppClippy {
         ]
       },
       {
+        match: (id) => id.startsWith('app_korovany'),
+        mood: '🐄', delay: 1500, bossSign: true,
+        text: '<strong>Корованы</strong>! Бьёте туда, куда смотрите: взгляд вверх целит в голову, вниз в ноги. Отрубили руку? Жмите [B], пока не истекли кровью.',
+        actions: [
+          ...bossKeyActions('• Я заполняю ведомость!'),
+          { text: '• Где корованы?', action: () => this.speak('Спросите в трактире «Корова и колесо» про слухи. Трактирщица скажет, когда из Развилок во дворец выйдет казённый корован. Отгоните охрану, потом [E] у телеги.', [], '🐄') }
+        ]
+      },
+      {
+        match: (id) => id.startsWith('app_korovany'),
+        mood: '🐄', delay: 1500, bossSign: true,
+        text: '<strong>Корованы</strong>! Бьёте туда, куда смотрите: взгляд вверх целит в голову, вниз в ноги. Отрубили руку? Жмите [B], пока не истекли кровью.',
+        actions: [
+          ...bossKeyActions('• Я заполняю ведомость!'),
+          { text: '• Где корованы?', action: () => this.speak('Спросите в трактире «Корова и колесо» про слухи. Трактирщица скажет, когда из Развилок во дворец выйдет казённый корован. Отгоните охрану, потом [E] у телеги.', [], '🐄') }
+        ]
+      },
+      {
+        match: (id) => id.startsWith('app_catniss'),
+        mood: '🐱', delay: 1500, bossSign: true,
+        text: '<strong>Catniss</strong>, мяу! Котят увёз фургон, а у кошки всего девять жизней. Прыгайте врагам на голову, а у стены жмите к ней и прыгайте ещё раз: кошки умеют отталкиваться.',
+        actions: [
+          ...bossKeyActions('• Я заполняю ведомость!'),
+          { text: '• Не допрыгиваю!', action: () => this.speak('Держите прыжок дольше, тогда кошка взлетит выше. А в прыжке жмите [X]: наскок пронесёт ещё на три клетки. Наскок сбивает птиц и кур, а после удара можно наскочить снова.', [], '🐾') },
+          { text: '• Где рыбки?', action: () => this.speak('В каждом уровне спрятан пакет с золотой рыбкой. Ищите треснувшие стены, в них можно пройти. Иногда пакет видно издалека, но к нему надо найти дорогу.', [], '🐟') }
+        ]
+      },
+      {
         match: (id) => id.startsWith('app_plov'),
         mood: '🍚', delay: 1500, bossSign: true,
         text: '<strong>Хаято, Где плов?</strong> Чайхана открывается! Главное тут казан: пока одни гости едят, заложите новый плов, иначе в обед будет очень неловко.',
@@ -1943,6 +1995,12 @@ class AppClippy {
         ]
       },
       {
+        match: (id) => id === 'app_bliss',
+        mood: '☁️', delay: 800,
+        text: '<strong>Безмятежность</strong>! Разбиться тут нельзя, я проверял. Золотые рамки в небе — это кадры, ищите их и не спешите.',
+        actions: []
+      },
+      {
         match: (id) => id === 'app_freecell',
         mood: '🂡', delay: 800,
         text: '<strong>FreeCell</strong>! Почти любая раздача решаема. Секрет: не занимайте все свободные ячейки сразу!',
@@ -2087,7 +2145,224 @@ class AppClippy {
         mood: '💿', delay: 1000,
         text: 'Диск «Игромании» в приводе! Демоверсии, видеоролики и патчи — целых 650 МБ счастья.',
         actions: []
-      }
+      },
+      {
+        match: (id) => id === 'app_appwiz_cpl',
+        mood: '📦', delay: 900,
+        text: '<strong>Установка и удаление программ</strong>! Заглянули навести порядок на диске C:? Только, чур, строчку <strong>Microslop Office 97</strong> руками не трогать — я там прописан!',
+        actions: [
+          {
+            text: '• А что будет, если удалить Office 97?',
+            action: () => this.speak('Я останусь без дома, без словаря и без пенсионного фонда в Редмонде! Придётся ночевать в Корзине по соседству со старыми файлами .BAK.', [], '😱')
+          },
+          {
+            text: '• Зачем вкладка «Загрузочный диск»?',
+            action: () => this.speak('Она записывает спасательную дискету 3,5" на диск A: — с драйвером CD-ROM OAKCDROM.SYS, FDISK и ScanDisk. На случай, если кто-нибудь опять решит «почистить» папку C:\\WINDOWS!', [], '💾')
+          }
+        ]
+      },
+      {
+        match: (id) => id === 'app_powercfg_cpl',
+        mood: '🔌', delay: 900,
+        text: '<strong>Свойства: Электропитание</strong>! Решили поберечь кинескоп монитора и шпиндель жёсткого диска? Только не ставьте отключение экрана на 1 минуту, если читаете длинные статьи — придётся всё время шевелить мышью!',
+        actions: [
+          {
+            text: '• Зачем останавливать жёсткие диски?',
+            action: () => this.speak('У винчестера внутри крутятся блины на 5400 оборотов в минуту. Когда они засыпают, в комнате становится тихо, как в библиотеке! Правда, при первом обращении к диску C: он будет секунду раскручиваться с характерным свистом.', [], '💿')
+          },
+          {
+            text: '• Что значит наклейка Energy Star?',
+            action: () => this.speak('Это стандарт экономии энергии: когда вы уходите пить чай, монитор гасит электронную пушку, а зелёный огонёк на корпусе становится янтарным и начинает сонно мигать.', [], '⚡')
+          }
+        ]
+      },
+      {
+        match: (id) => id === 'app_esheep_props',
+        mood: '🐑', delay: 800,
+        text: '<strong>Свойства: eSheep 98</strong>! Настраиваете отару на рабочем столе? Между прочим, овечка По весит всего 174 кадра в одном спрайте, а внимания получает больше, чем весь пакет Microslop Office 97.',
+        actions: [
+          {
+            text: '• Выпустить ещё овечку',
+            action: () => {
+              if (window.appESheep) {
+                window.appESheep.spawnSheep();
+                window.appESheep.playSound('baa');
+              }
+              this.speak('Бе-е! Ещё одна спрыгнула с верхней кромки экрана. Главное, чтобы они не начали жевать ярлыки.', [], '🐑', 7000);
+            }
+          },
+          {
+            text: '• Запустить метеорит и ванну',
+            action: () => {
+              if (window.appESheep) window.appESheep.triggerCommand('meteor_bath');
+              this.speak('Внимание на панель задач! Сейчас прилетит огненный шар прямо в пену!', [], '☄️', 7000);
+            }
+          },
+          {
+            text: '• Ты ревнуешь к овечке?',
+            action: () => this.speak('Я? К экранной овце? Ну что вы. Просто она ходит по заголовкам окон и спит в цветочном горшке, а меня при малейшем шорохе прячут в трей. Но я не в обиде!', [], '📎', 9000)
+          }
+        ]
+      },
+      {
+        match: (id) => id === 'app_esheep_about',
+        mood: '📋', delay: 800,
+        text: 'Справка <strong>Sheep.exe</strong>! Тут ведётся точный учёт съеденных ромашек, чугунных ванн и визитов НЛО. Бухгалтерия в Excel 97 позавидует такой отчётности.',
+        actions: [
+          {
+            text: '• Угостить овечку ромашкой',
+            action: () => {
+              if (window.appESheep) window.appESheep.triggerCommand('eat_daisy');
+              this.speak('Приятного аппетита, коллега по рабочему столу!', [], '🌼', 6000);
+            }
+          }
+        ]
+      },
+      {
+        match: (id) => id === 'app_neko_basket',
+        mood: '🧺', delay: 800,
+        text: 'Плетёная корзинка <strong>Neko 98</strong> (<code>C:\\WINDOWS\\NEKO.EXE</code>)! Тут можно перекрасить кота в сиамца, черепаховую трёхцветку или даже в бумажного Скрибла из <code>SCRIBBLE.ACT</code>, а заодно выбрать повадки и бросить игрушку.',
+        actions: [
+          {
+            text: '• Скатаем ему бумажный шарик!',
+            action: () => {
+              if (window.appNeko) window.appNeko.playWithClippy('paper');
+            }
+          },
+          {
+            text: '• А вы со Скриблом были знакомы?',
+            action: () => this.speak('Ещё бы! Скрибл спал в папке <code>OFFICE97\\ACT</code> прямо на клавише Caps Lock. Когда он линял, по всему Word 97 разлетались обрезки бумажных полей!', [], '📎', 9000)
+          }
+        ]
+      },
+      {
+        match: (id) => id === 'app_office_launcher',
+        mood: '💿', delay: 900,
+        text: 'Похоже, вы запустили сборник <strong>«Офисные игры ’98»</strong> с тома <code>OFFICE_GAMES_98</code>! Восемь игр работают прямо с диска D: без установки, в каждой припасена своя таблица Microslop Excel по клавише <strong>F12</strong>, а на дорожках 2–4 записана музыка RedBook CD-Audio.',
+        actions: [
+          {
+            text: '• Посоветуй игру под настроение',
+            action: () => {
+              this.speak('Какой у вас сейчас рабочий график?', [
+                {
+                  text: '• Спокойная логика под кофе',
+                  action: () => {
+                    if (window.appOfficeLauncher) window.appOfficeLauncher.selectGame('lines98');
+                    this.speak('Выбирайте <strong>«Цветные Линии 98»</strong> или <strong>«Офисные Самоцветы»</strong>! Никакого таймера, чистый расчёт и форма 2-НДФЛ наготове по F12.', [
+                      { text: '▶ Запустить «Цветные Линии 98»', action: () => window.appOgLines && window.appOgLines.open() },
+                      { text: '▶ Запустить «Офисные Самоцветы»', action: () => window.appOgGems && window.appOgGems.open() }
+                    ], '🟢', 11000);
+                  }
+                },
+                {
+                  text: '• Драйв и бегство с работы',
+                  action: () => {
+                    if (window.appOfficeLauncher) window.appOfficeLauncher.selectGame('chairs');
+                    this.speak('Тогда <strong>«Гонки на креслах»</strong>, <strong>«Побег в 18:00»</strong> или <strong>«Офисный Арканоид»</strong>! Главное, объезжайте лужи у кулера.', [
+                      { text: '▶ Запустить «Гонки на креслах»', action: () => window.appOgChairs && window.appOgChairs.open() },
+                      { text: '▶ Запустить «Побег в 18:00»', action: () => window.appOgRush && window.appOgRush.open() },
+                      { text: '▶ Запустить «Офисный Арканоид»', action: () => window.appOgArkanoid && window.appOgArkanoid.open() }
+                    ], '🏁', 11000);
+                  }
+                },
+                {
+                  text: '• Пострелять по мишеням',
+                  action: () => {
+                    if (window.appOfficeLauncher) window.appOfficeLauncher.selectGame('hunt');
+                    this.speak('В <strong>«Офисном Тире»</strong> дают 90 секунд и резиновые пульки. Только чур по золотым скрепкам в красной шапочке не целиться!', [
+                      { text: '▶ Запустить «Офисный Тир»', action: () => window.appOgHunt && window.appOgHunt.open() }
+                    ], '🎯', 10000);
+                  }
+                }
+              ], '🕹️', 12000);
+            }
+          },
+          {
+            text: '• Сводка моих рекордов на диске',
+            action: () => window.clippySystem && window.clippySystem.speakOfficeGamesRecords && window.clippySystem.speakOfficeGamesRecords()
+          },
+          {
+            text: '• Послушать CD-Audio (дорожки 2–4)',
+            action: () => window.appCDPlayer && window.appCDPlayer.open()
+          }
+        ]
+      },
+      {
+        match: (id) => id === 'app_og_snake3d',
+        mood: '🐍', delay: 900, bossSign: true,
+        text: '<strong>3D Змейка 98</strong>! Изометрический офис: собирайте дискеты по 10 очков, чашки эспрессо по 25 и синие папки по 50. С третьей съеденной находки на полу вырастают системные блоки и кактусы, а по <strong>F12</strong> открывается ведомость «Кадры_1998»!',
+        actions: [
+          { text: '• Проверить маскировку (F12)', action: () => window.appOgSnake3d && window.appOgSnake3d.toggleBossKey() },
+          { text: '🚨 Свернуть все игры (Шеф идёт!)', action: () => this.triggerBossKey() }
+        ]
+      },
+      {
+        match: (id) => id === 'app_og_arkanoid',
+        mood: '🧱', delay: 900, bossSign: true,
+        text: '<strong>Офисный Арканоид</strong>! Три этажа обороны: «Бухгалтерия», «Отдел кадров» и «Серверная». Зелёная капсула <strong>W</strong> расширяет ракетку, красная <strong>L</strong> включает лазерную указку по Пробелу, а голубая <strong>M</strong> утраивает шарик!',
+        actions: [
+          { text: '• Проверить маскировку (F12)', action: () => window.appOgArkanoid && window.appOgArkanoid.toggleBossKey() },
+          { text: '🚨 Свернуть все игры (Шеф идёт!)', action: () => this.triggerBossKey() }
+        ]
+      },
+      {
+        match: (id) => id === 'app_og_rush',
+        mood: '🏃', delay: 900, bossSign: true,
+        text: '<strong>Побег в 18:00</strong>! Ровно шесть вечера: прыгайте через лужи у кулера, стопки отчётов и катающиеся кресла прямо к лифту. Конверты дают 100 очков, дискеты — 250, чашка кофе ускоряет шаг, а по <strong>F12</strong> открывается табель учёта рабочего времени!',
+        actions: [
+          { text: '• Проверить маскировку (F12)', action: () => window.appOgRush && window.appOgRush.toggleBossKey() },
+          { text: '🚨 Свернуть все игры (Шеф идёт!)', action: () => this.triggerBossKey() }
+        ]
+      },
+      {
+        match: (id) => id === 'app_og_hunt',
+        mood: '😰', delay: 900, bossSign: true, panic: true,
+        text: 'Постойте! Это же <strong>«Офисный Тир 98: Охота на скрепки»</strong> (<code>MOORHUNT.EXE</code>)! За скрепку с крылышками тут дают 50 очков, а за золотого меня в красной шапочке — все 100! Пожалуйста, цельтесь лучше в бумажные самолётики и настенные часы (+5 секунд)!',
+        actions: [
+          {
+            text: '• Обещаю по тебе не стрелять',
+            action: () => this.speak('Фух. Спасибо! Стреляйте по часам на стене и кружкам кофе, а обойму на 6 резинок перезаряжайте правой кнопкой мыши или Пробелом.', [], '😮‍💨', 8500)
+          },
+          { text: '• Проверить маскировку (F12)', action: () => window.appOgHunt && window.appOgHunt.toggleBossKey() }
+        ]
+      },
+      {
+        match: (id) => id === 'app_og_gems',
+        mood: '💎', delay: 900, bossSign: true,
+        text: '<strong>Офисные Самоцветы 98</strong>! На закрытие квартала даётся 30 ходов: меняйте местами дискеты, чашки кофе, степлеры и круглые печати. Каскадные совпадения умножают счёт, а <strong>F12</strong> прячет поле за сметой на мониторы ViewSonic и кофеварки DeLonghi.',
+        actions: [
+          { text: '• Проверить маскировку (F12)', action: () => window.appOgGems && window.appOgGems.toggleBossKey() },
+          { text: '🚨 Свернуть все игры (Шеф идёт!)', action: () => this.triggerBossKey() }
+        ]
+      },
+      {
+        match: (id) => id === 'app_og_lines',
+        mood: '🔵', delay: 900, bossSign: true,
+        text: '<strong>Цветные Линии 98</strong> (<code>LINES98.EXE</code>)! Любимая классика главной бухгалтерии: поле 9×9, пять и более шариков в ряд по горизонтали, вертикали или диагонали. Шарик катится только по свободным клеткам, а по <strong>F12</strong> открывается справка <strong>2-НДФЛ</strong>!',
+        actions: [
+          { text: '• Проверить маскировку (F12)', action: () => window.appOgLines && window.appOgLines.toggleBossKey() },
+          { text: '🚨 Свернуть все игры (Шеф идёт!)', action: () => this.triggerBossKey() }
+        ]
+      },
+      {
+        match: (id) => id === 'app_og_tetris',
+        mood: '📦', delay: 900, bossSign: true,
+        text: '<strong>Офисный Тетрис 98 (Архив)</strong>! Укладывайте папки и коробки в стакан 10×20: четыре ряда сразу дают <strong>ТЕТРИС (+800 очков)</strong>. Пробел мгновенно сбрасывает фигуру вниз, а <strong>F12</strong> выводит на экран «Опись документов постоянного хранения»!',
+        actions: [
+          { text: '• Проверить маскировку (F12)', action: () => window.appOgTetris && window.appOgTetris.toggleBossKey() },
+          { text: '🚨 Свернуть все игры (Шеф идёт!)', action: () => this.triggerBossKey() }
+        ]
+      },
+      {
+        match: (id) => id === 'app_og_chairs',
+        mood: '🪑', delay: 900, bossSign: true,
+        text: '<strong>Гонки на креслах 98 (Chair GP)</strong>! Отталкивайтесь ногами (Стрелка вверх или Пробел), ловите горячий кофе для турбо-рывка до 85 км/ч и объезжайте лужи у кулера, чтобы кресло не закрутило волчком. По <strong>F12</strong> открывается план командировок!',
+        actions: [
+          { text: '• Проверить маскировку (F12)', action: () => window.appOgChairs && window.appOgChairs.toggleBossKey() },
+          { text: '🚨 Свернуть все игры (Шеф идёт!)', action: () => this.triggerBossKey() }
+        ]
+      },
+      ...(window.clippySystem ? window.clippySystem.shellAppReactions() : [])
     ];
   }
 
@@ -2205,7 +2480,9 @@ class AppClippy {
     }
 
     if (id.startsWith('app_netscape')) {
-      setTimeout(() => {
+      if (this._nsOpenTimer) clearTimeout(this._nsOpenTimer);
+      this._nsOpenTimer = setTimeout(() => {
+        this._nsOpenTimer = null;
         this.speak('Netscape Navigator?! Должен предупредить: Билл Гейтс настаивает, что Internet Explorer работает быстрее и лучше интегрирован с Win 98!', [
           { text: '• Запустить Internet Explorer', action: () => window.appIE && window.appIE.open() },
           { text: '• Мне нравится штурвал Netscape', action: () => this.speak('Что ж, логотип со штурвалом у них действительно стильный...', [], '🧭') }
@@ -2242,6 +2519,10 @@ class AppClippy {
         once('doom', 'IDDQD? IDKFA? Я тоже знаю чит-коды!', '👾');
       } else if (val.includes('скрепыш') || val.includes('clippy')) {
         once('clippy', 'Вы пишете обо мне? Я ничего не читаю. Почти ничего. Ладно, читаю. Пишите хорошее.', '😳');
+      } else if (val.includes('овечк') || val.includes('sheep') || val.includes('esheep')) {
+        once('esheep', 'Пишете про овечку По? Передайте ей, чтобы не топталась по заголовку Блокнота, пока вы не нажали Ctrl+S!', '🐑');
+      } else if (val.includes('neko') || val.includes('неко') || val.includes('котик') || val.includes('мяу')) {
+        once('neko', 'Пишете про котика Neko? Только не шуршите страницами слишком громко — он решит, что мы скатали ему новый бумажный шарик!', '🐾');
       }
     });
   }
@@ -2295,7 +2576,13 @@ class AppClippy {
       ], '🃏', 9000);
     }
     this.solitaireWon = won;
-    if (window.clippySystem) window.clippySystem.checkNeko();
+    if (window.appNeko && window.appNeko.enabled && this.visible) {
+      this.pointEyesAt(window.appNeko.x, window.appNeko.y);
+    }
+    if (window.clippySystem) {
+      window.clippySystem.checkNeko();
+      window.clippySystem.checkESheep();
+    }
   }
 
   playingPoligonClip() {
@@ -2357,7 +2644,8 @@ class AppClippy {
       'vladik-v-depressii': ['📝', 'Похоже, вы смотрите песню про депрессию. Хотите, помогу написать Владику письмо поддержки? Хотя лучше досмотреть кавер до конца: от унитаза-карта настроение поднимается само.'],
       'tarakan-i-chervyachok': ['🎸', '<strong>Таракан и червячок</strong> в стиле visual-kei: грим, шипы, дым! Цензурную плашку я не трогал, честное скрепочное.'],
       'neck-hurts': ['🍈', '<strong>Neck Hurts</strong>: DJ Мелон кивает в такт так старательно, что зал из дынь кивает вместе с ней. Совет от Скрепыша: после 126 ударов в минуту сделайте разминку для шеи.'],
-      'war-song': ['🎺', 'Сэм и Макс, <strong>War Song</strong>! Агент Суперболл поёт про войну, а президент Макс даже не моргнул. Совет от Скрепыша: если над дверью замигала красная надпись, сначала сохраните документ.']
+      'war-song': ['🎺', 'Сэм и Макс, <strong>War Song</strong>! Агент Суперболл поёт про войну, а президент Макс даже не моргнул. Совет от Скрепыша: если над дверью замигала красная надпись, сначала сохраните документ.'],
+      'cosplay-convention-crisis': ['💘', '<strong>Cosplay Convention Crisis</strong>! Три героини, один Джейкоб и горилла на стене, которая всё видит. Похоже, вам скоро выбирать. Совет от Скрепыша: перед каждым выбором нажимайте Ctrl+S.']
     };
     const [mood, line] = lines[clip.id] || ['📼', `<strong>${clip.artist} — ${clip.title}</strong>, собранный заново из полигонов!`];
     const others = this.poligonClipsInOrder().filter(c => c.id !== clip.id);
@@ -2482,6 +2770,66 @@ class AppClippy {
         line: '<strong>Стрей Подскочил</strong>! На седьмой секунде он так взлетает с кресла от доната, что даже моя пружинка подпрыгнула вместе с ним.',
         end: 'Прыжок в кресле выполнен на отлично, донат осуждён трижды. Можете ставить пятёрку за реакцию!',
         draft: `Здравствуйте, ${ch.name}!\nПрыжок на 0:07 в ролике «Стрей Подскочил» — рекорд высоты среди всех стримеров. Осуждаем и поддерживаем!\nС уважением, ${user}`
+      },
+      y0Ph0neL1ng: {
+        mood: '📞',
+        line: 'У <strong>Диалинь</strong> на канале <strong>m1s3n</strong> звонит косичка! Только не берите трубку на настоящем телефоне, а то модем 56K тут же оборвёт связь!',
+        end: 'Трубку она так и бросила! Хорошо, что у меня вместо провода стальная скрепка: никто не дозвонится в неподходящий момент.',
+        draft: `Здравствуйте, ${ch.name}!\nСпасибо за напоминание о телефонном звонке. Проверил свою линию: она занята модемом.\nС уважением, ${user}`
+      },
+      k0n0SuBa3Ed: {
+        mood: '🐸',
+        line: 'Эндинг третьего сезона <strong>KONOSUBA</strong> на канале <strong>Crunchyroll</strong>! Чомуске и фиолетовый головастик проводят день в особняке, но финальная встреча с родителями-жабами на лугу обещает сюрприз для Аквы.',
+        end: 'Полторы минуты тихой пасторали — и в самом конце две гигантские жабы всё-таки добрались до Аквы! Хорошо, что стальные скрепки жабам не по зубам.',
+        draft: `Здравствуйте, ${ch.name}!\nСпасибо за эндинг KONOSUBA 3. Очень трогательная история про головастика и Чомуске, а финал с гигантскими жабами выше всяких похвал.\nС уважением, ${user}`
+      },
+      Sav3lOtpusk: {
+        mood: '🍁',
+        line: '<strong>Влад</strong> ждёт такси и хочет побыть один, а друг с розовой камерой не отходит ни на шаг. Видео идёт пятнадцать минут: справа под описанием есть «Содержание», по нему удобно прыгать к нужному месту.',
+        end: 'Такси так и не показали, а Влад так и не уехал. Совет от скрепки: если человек трижды просит оставить его в покое, лучше оставить. Хотите побыть одни — я тоже умею прятаться.',
+        draft: `Здравствуйте, ${ch.name}!\nСпасибо за видео. Владу хорошего отпуска и спокойной дороги. Другу с камерой предлагаю в следующий раз подождать такси молча.\nС уважением, ${user}`
+      },
+      pAmPaRam98: {
+        mood: '👋',
+        line: 'Широкий проход по оконному цеху на канале <strong>Планета Ебатории</strong>! Осторожнее с громкостью на первых секундах: басы такие, что у меня скрепка звенит о стекло монитора.',
+        end: 'Десять секунд, два «пам-парам» и вежливое приветствие у готовых рам. Люблю, когда со зрителями здороваются по всем правилам этикета!',
+        draft: `Здравствуйте, ${ch.name}!\nИ я вас категорически приветствую! Спасибо за экскурсию по цеху и бодрый шаг.\nС уважением, ${user}`
+      },
+      Str3yHarmon1: {
+        mood: '🎧',
+        line: '<strong>«Стрей Не Оценил Губную Гармошку»</strong> на канале <strong>Планета Ебатории</strong>! Веб-камера, наушники, чат сбоку и лицо, которое говорит больше любых субтитров.',
+        end: 'На 12-й секунде он подался к самому объективу, и у меня скрепка вытянулась по стойке смирно. Хорошо, что между нами стекло монитора!',
+        draft: `Здравствуйте, ${ch.name}!\nСпасибо за видео. Особенно понравилось, как мимика заменяет половину диалога. Гармошку, надеюсь, оценят в следующей серии.\nС уважением, ${user}`
+      },
+      wAk3UpR0mAn: {
+        mood: '⏰',
+        line: '<strong>«WAKE UP ROMAN»</strong> на канале <strong>Планета Ебатории</strong>! Сначала горничная-дракон надевает очки прямо на камеру, а потом кузен Нико будит Романа в таксопарке.',
+        end: 'Вот это пробуждение: на часах 10:24, а смена в депо уже в разгаре! Хорошо, что скрепкам не нужно спать — я всегда на посту и в полной резкости без очков.',
+        draft: `Здравствуйте, ${ch.name}!\nПереход от сна с очками к реальности в таксопарке получился очень бодрящим. Лучше любого будильника!\nС уважением, ${user}`
+      },
+      sPaRkL3Mono: {
+        mood: '🎭',
+        line: 'Трейлер <strong>«Sparkle Trailer - Monodrama»</strong> на канале <strong>HSR98</strong>! Искорка меняет маски кицунэ, школьную форму и алую сцену Пенаконии быстрее, чем модем мигает лампочками.',
+        end: 'Две минуты театрального безумия и фейерверков! Хорошо, что у меня всего одна роль — верного канцелярского помощника без всяких масок.',
+        draft: `Здравствуйте, ${ch.name}!\nПостановка «Монодрамы» и работа со светом на сцене Пенаконии произвели большое впечатление. Отдельное спасибо за золотых рыбок!\nС уважением, ${user}`
+      },
+      Str3yOsud1l: {
+        mood: '⚖️',
+        line: '<strong>«Стрей Осудил Наполовину»</strong> на канале <strong>Планета Ебатории</strong>! Сломанный алерт оборвал речь прямо на слове «О-су...», так что сегодня осуждение работает ровно на пятьдесят процентов.',
+        end: 'Вердикт вынесен: осудил наполовину, не одобряет максимально! Хорошо, что мои подсказки никогда не обрываются на полуслове из-за алертов.',
+        draft: `Здравствуйте, ${ch.name}!\nСпасибо за видео «Стрей Осудил Наполовину». Половина осуждения — это даже надёжнее целого!\nС уважением, ${user}`
+      },
+      Str3yTr3k98: {
+        mood: '🎵',
+        line: '<strong>«Стрей Перепутал Трэк»</strong> на канале <strong>СТРЕЙ ОСУЖДАЕТ</strong>! Донатер Катос прислал 250 рублей без ссылки, а Стрей вместо «Наташи Королёвой» включил суровый трек и взял кружку.',
+        end: 'Слово в слово угадал! Только вместо сказочной страны в наушниках заиграло совсем другое.',
+        draft: `Здравствуйте, ${ch.name}!\nСпасибо за запись со стрима. Момент с кружкой на двадцать пятой секунде и «Маленькой страной» получился отличный.\nС уважением, ${user}`
+      },
+      kL33T4T4T4a: {
+        mood: '💥',
+        line: '<strong>«Та-та-та!» Кли (Пиро)</strong> на канале <strong>HSR98</strong>! Девочка в красном поджигает луг, хиличурлов и слаймов. Держитесь подальше от монитора: ЭЛТ и так греется.',
+        end: 'Полторы минуты взрывного веселья! Хорошо, что я стальная скрепка: на пиро-реакции я не реагирую.',
+        draft: `Здравствуйте, ${ch.name}!\nСпасибо за ролик про Кли. Прыг-скок, взрывное веселье и закат над лугом — отличное сочетание.\nС уважением, ${user}`
       }
     };
     return notes[v.id] || {
@@ -2580,7 +2928,11 @@ class AppClippy {
       jawed: ['🐘', 'У <strong>jawed</strong> пока одно видео, зато про слонов.'],
       Hayato_me: ['🎮', `<strong>Hayato</strong> снимает игровые челленджи. В профиле подпись «${site.esc(ch.about)}» — я тоже так думаю каждый раз, когда меня закрывают крестиком.`],
       EbatoriyaPlanet: ['🪐', `Девиз канала: «${site.esc(ch.about.replace(/\.$/, ''))}». Похоже на мою папку «Мои документы»: файлы туда попадают, а обратно уже никто не находит.`],
-      MisterBucks: ['💸', `<strong>Мистер Бакс</strong> — самый большой канал на YouVid: ${site.num(ch.subs)} подписчиков! Название звучит так, будто тут платят за просмотры. Я проверил: не платят.`]
+      MisterBucks: ['💸', `<strong>Мистер Бакс</strong> — самый большой канал на YouVid: ${site.num(ch.subs)} подписчиков! Название звучит так, будто тут платят за просмотры. Я проверил: не платят.`],
+      m1s3n: ['📞', `На канале <strong>m1s3n</strong> (${site.num(ch.subs)} подписчиков) телефонную трубку достают прямо из косички. Удобно: никогда не забудешь, куда положил аппарат.`],
+      Crunchyroll: ['🍥', `Официальный аниме-канал <strong>Crunchyroll</strong> (${site.num(ch.subs)} подписчиков)! Опенинги и эндинги прямо в браузере, без обмена болванками на Горбушке.`],
+      HSR98: ['🎭', `Официальный канал <strong>HSR98</strong> (${site.num(ch.subs)} подписчиков)! Трейлеры Звёздного экспресса и театр Искорки прямо в окне браузера.`],
+      StreyOsuzhdaet: ['🤨', `Канал <strong>СТРЕЙ ОСУЖДАЕТ</strong> (${site.num(ch.subs)} подписчиков)! Архив моментов со стримов усатого: перепутанные треки, донаты без ссылок и суровый взгляд поверх белой кружки.`]
     };
     const [mood, line] = lines[ch.user] || ['📺', `Канал <strong>${site.esc(ch.name)}</strong>.`];
     const vids = site.videosOf(ch);
@@ -2720,8 +3072,9 @@ class AppClippy {
     if (this.opt('siteReactions') === false) return;
 
     const now = Date.now();
-    if (this._lastIePageKey === pageKey && now - (this._lastIeTime || 0) < 6000) return;
-    this._lastIePageKey = pageKey;
+    const navKey = (pageKey === 'softstore' && String(url || '').includes('id=esheep')) ? 'softstore:esheep' : pageKey;
+    if (this._lastIePageKey === navKey && now - (this._lastIeTime || 0) < 6000) return;
+    this._lastIePageKey = navKey;
     this._lastIeTime = now;
 
     const navigateIE = (targetUrl) => {
@@ -2741,6 +3094,16 @@ class AppClippy {
           { text: '• Спасибо, я сам', action: () => {} }
         ]
       },
+      'avp': {
+        mood: '🛡️',
+        text: 'Официальный сервер <strong>«Лаборатории Касперского» (AVP 3.0)</strong>! Здесь можно купить лицензию и скачать <strong>Setup_AVP.exe</strong>, обновить базы <code>DAILY.AVC</code> и протестировать эвристик CodeAnalyzer!',
+        actions: [
+          { text: '▶ Магазин и загрузка AVP 3.0', action: () => navigateIE('http://www.avp.ru/store') },
+          { text: '• Стенд CodeAnalyzer', action: () => navigateIE('http://www.avp.ru/lab') },
+          { text: '• Визг кабанчика!', action: () => window.soundSys && window.soundSys.playAvpPigSqueal && window.soundSys.playAvpPigSqueal() }
+        ]
+      },
+      'winupdate': () => (window.clippySystem ? window.clippySystem.winUpdateSiteReaction() : null),
       'microslop': {
         mood: '💻',
         text: '<strong>Microslop Win 98 Portal</strong>! Мой родной дом. Не забудьте проверить обновления безопасности и компонентов!',
@@ -2764,13 +3127,51 @@ class AppClippy {
           { text: '• Открыть Steam', action: () => window.gameManager && window.gameManager.showInSteam() }
         ]
       },
-      'softstore': {
-        mood: '💾',
-        text: '<strong>SoftStore \'98</strong> — каталог программ! Обязательно загрузите Winamp и Office 97 — со мной ваши таблицы станут веселее!',
-        actions: [
-          { text: '• Открыть Excel 97', action: () => window.appExcel && window.appExcel.open() },
-          { text: '• Запустить Winamp', action: () => window.appWinamp && window.appWinamp.open() }
-        ]
+      'softstore': () => {
+        if (String(url || '').includes('id=esheep')) {
+          const installed = Boolean(window.gameManager && window.gameManager.isInstalled && window.gameManager.isInstalled('esheep'));
+          if (installed) {
+            return {
+              mood: '🐑',
+              text: 'Страница <strong>eSheep 98 (Sheep.exe)</strong> в SoftStore \'98! У вас она уже установлена. Выпустим овечку По погулять по заголовкам окон?',
+              actions: [
+                { text: '▶ Выпустить овечку', action: () => window.appESheep && window.appESheep.open() },
+                { text: '• Открыть свойства eSheep', action: () => window.appESheep && window.appESheep.openSettings() }
+              ]
+            };
+          }
+          return {
+            mood: '🐑',
+            text: 'О, <strong>eSheep 98 (Sheep.exe)</strong> — знаменитая экранная овечка По с японского телеканала Fuji TV! Раздаётся бесплатно (Freeware, 320 КБ). Скачаем мне пушистого соседа по рабочему столу?',
+            actions: [
+              {
+                text: '▶ Скачать бесплатно',
+                action: () => {
+                  const btn = typeof document !== 'undefined' && document.querySelector('#btn-softstore-action');
+                  if (btn) {
+                    btn.click();
+                  } else if (window.gameManager) {
+                    window.gameManager.buyGame('esheep');
+                    window.gameManager.startDownload('esheep');
+                  }
+                }
+              },
+              {
+                text: '• Не тесно вам будет двоим?',
+                action: () => this.speak('Я сижу в правом нижнем углу и вешу один грамм, а она любит бегать по заголовкам окон. Главное — поделить панель задач по-братски!', [], '📎', 8500)
+              }
+            ]
+          };
+        }
+        return {
+          mood: '💾',
+          text: '<strong>SoftStore \'98</strong> — каталог программ! Обязательно загрузите Winamp, Office 97 и бесплатную экранную овечку <strong>eSheep 98 (Sheep.exe)</strong>!',
+          actions: [
+            { text: '• Овечка eSheep 98 (Freeware)', action: () => navigateIE('http://www.softstore98.com/product?id=esheep') },
+            { text: '• Открыть Excel 97', action: () => window.appExcel && window.appExcel.open() },
+            { text: '• Запустить Winamp', action: () => window.appWinamp && window.appWinamp.open() }
+          ]
+        };
       },
       'mp3vault': {
         mood: '🎵',
@@ -2783,6 +3184,65 @@ class AppClippy {
           }}
         ]
       },
+      'muzzone': {
+        mood: '🎸',
+        text: '<strong>МузЗона \'98</strong>! Metallica выпустила «Garage Inc.», по MTV крутят «Pretty Fly», а Лагутенко записывает альбом Земфиры из Уфы! Загляните в аккорды и хит-парад.',
+        actions: [
+          { text: '• Открыть разбор клипов', action: () => navigateIE('http://www.muzzone98.ru/clips') },
+          { text: '• Включить Winamp', action: () => {
+            if (window.appWinamp) window.appWinamp.open();
+            this.setAccessory('headphones', true);
+            this.charEl.classList.add('bobbing');
+          }}
+        ]
+      },
+      'carman': {
+        mood: '🎹',
+        text: '<strong>Кар-Мэн \'99</strong>, фан-клуб группы! На этой неделе вышел альбом ремиксов «Назад в будущее»: табло на главной показывает, откуда взялся каждый трек. А на карте песен видно, сколько стран группа объехала с 1990 года!',
+        actions: [
+          { text: '• Альбомы и треклисты', action: () => navigateIE('http://www.carman99.ru/albums') },
+          { text: '• Атлас песен', action: () => navigateIE('http://www.carman99.ru/atlas') },
+          { text: '• Состав по годам', action: () => navigateIE('http://www.carman99.ru/lineup') },
+          { text: '• Гостевая книга', action: () => navigateIE('http://www.carman99.ru/guestbook') }
+        ]
+      },
+      'svodka': {
+        mood: '📰',
+        text: '<strong>Интернет-газета «Сводка.ру \'99»</strong>, вторник, 28 декабря 1999 года. До 2000-го три дня, доллар по 26,95, а завтра ЦБ поднимет его до 27. Первой полночь встретит Камчатка, в 15:00 по Москве. Куда заглянем?',
+        actions: [
+          { text: '• Лента за сутки', action: () => navigateIE('http://www.svodka99.ru/lenta') },
+          { text: '• Полночь по часовым поясам', action: () => navigateIE('http://www.svodka99.ru/y2k') },
+          { text: '• Справочная: картотека', action: () => navigateIE('http://www.svodka99.ru/dossiers') },
+          { text: '• Правка: проверить заметку', action: () => navigateIE('http://www.svodka99.ru/editorial') }
+        ]
+      },
+      'zooportal': {
+        mood: '🦉',
+        text: '<strong>ЗооПортал \'98 — Живая Планета</strong>! Настоящий полевой атлас фауны 1998 года: послушайте радиопеленг 6 заповедников, проверьте совместимость рыбок в Конструкторе аквариума (не сажайте суматранских барбусов к скаляриям!) и загляните в справочник скорой ветпомощи!',
+        actions: [
+          { text: '• Атлас фауны (12 видов и голоса)', action: () => navigateIE('http://www.zooportal98.ru/atlas') },
+          { text: '• Конструктор аквариума и рациона', action: () => navigateIE('http://www.zooportal98.ru/aquarium') },
+          { text: '• Скорая ветпомощь и дневник юнната', action: () => navigateIE('http://www.zooportal98.ru/vetclinic') }
+        ]
+      },
+      'pereplet': {
+        mood: '📚',
+        text: '<strong>Альманах «Переплёт \'99»</strong>! Сайт свёрстан как книга: слева корешок с разделами, у каждой страницы свой номер, а на титуле оглавление. Книги на полке открываются каталожными карточками, которые можно распечатать из Блокнота.',
+        actions: [
+          { text: '• Книжная полка', action: () => navigateIE('http://www.pereplet99.ru/shelf') },
+          { text: '• Сколько качать по модему', action: () => navigateIE('http://www.pereplet99.ru/net') },
+          { text: '• Букинист: обмен книгами', action: () => navigateIE('http://www.pereplet99.ru/bukinist') }
+        ]
+      },
+      'lucasarts': {
+        mood: '🐰',
+        text: '<strong>LucasArts Entertainment</strong>! Главная страница у них нарисована как улица из квеста: щёлкайте по киоску, будке и витрине. А в <strong>SCUMM-лаборатории</strong> можно сдать билд тестеру девятью глаголами!',
+        actions: [
+          { text: '• Лаборатория SCUMM', action: () => navigateIE('http://www.lucasarts.com/scumm') },
+          { text: '• Линия подсказок', action: () => navigateIE('http://www.lucasarts.com/hints') },
+          { text: '• Почта Сэму и Максу', action: () => navigateIE('http://www.lucasarts.com/letters') }
+        ]
+      },
       'kinomania': {
         mood: '🎬',
         text: '<strong>Киномания \'98</strong>! В прокате гремят «Титаник», «Армагеддон» и «Люди в черном». Приготовьте носовые платки и попкорн!',
@@ -2792,9 +3252,11 @@ class AppClippy {
       },
       'webvideo': {
         mood: '📹',
-        text: '<strong>WebCinema \'98</strong>! Видео в интернете через модем — это фантастика! Разрешение 160х120 пикселей, зато настоящее кино!',
+        text: '<strong>WebCinema \'98</strong>! Интернет-кинотеатр из Самары, зал на одно место. Ролики сжаты для окна 192x144, а время загрузки доска считает под ваш модем.',
         actions: [
-          { text: '• Открыть Медиаплеер', action: () => window.appVideoPlayer && window.appVideoPlayer.open() }
+          { text: '• Сколько качать концерт The Prodigy?', action: () => this.speak(window.webcinemaSite ? window.webcinemaSite.timeFor('prodigy') + ' Включите ночной тариф и программу для докачки.' : 'Очень долго. Лучше ночью.', [], '⏳') },
+          { text: '• Показать самые лёгкие ролики', action: () => navigateIE('http://www.webcinema98.com/programme?sort=light') },
+          { text: '• Ролик не открывается', action: () => navigateIE('http://www.webcinema98.com/booth') }
         ]
       },
       'forum': {
@@ -2834,6 +3296,15 @@ class AppClippy {
           { text: '• Разогнать до 100 МГц!', action: () => this.speak('Кулеры загудели на максимум! Температура в норме, прирост в Quake II целых +5 FPS!', [], '🔥') }
         ]
       },
+      'ferrum': {
+        mood: '🔧',
+        text: '<strong>Железный Цех \'98</strong>! Сводка на 25 ноября 1998 года: 3dfx показала Voodoo3, и говорят, что она покупает STB Systems, а Celeron 300A с заклеенным контактом B21 берёт 450 МГц! Проверьте джампер JP1 от вируса CIH.',
+        actions: [
+          { text: '• Проверить пин B21 и защиту BIOS', action: () => navigateIE('http://www.ferrum98.ru/jumpers') },
+          { text: '• Запустить тестовый стенд FPS', action: () => navigateIE('http://www.ferrum98.ru/bench') },
+          { text: '• Прайс Савёловского и Митино', action: () => navigateIE('http://www.ferrum98.ru/prices') }
+        ]
+      },
       'antivirus': {
         mood: '🛡️',
         text: '<strong>AntiVirus Lab</strong>! В сети бродит опасный вирус CIH (Чернобыль), портящий Flash BIOS! Обновите антивирусные базы!',
@@ -2845,6 +3316,20 @@ class AppClippy {
         ]
       },
       'hsr': () => this.hsrSiteReaction(url, navigateIE),
+      'kovcheg': () => this.kovchegReaction(url, navigateIE),
+      'animatrix': {
+        mood: '📼',
+        text: '<strong>АниМатрица \'99</strong>! Клубный фонд кассет с очередью, русские титры <code>.SSA</code> и сходка по субботам в 14:00 у правой колонны Большого театра. Кстати, кто прав: Синдзи или Шинжи?',
+        actions: [
+          { text: '• Кассета недели: «Воспоминания»', action: () => navigateIE('http://www.animatrix99.ru/tape?id=kenshin-ova-99') },
+          { text: '• Скрипты .SSA', action: () => navigateIE('http://www.animatrix99.ru/fansub') },
+          { text: '• Перевести имя по Поливанову', action: () => navigateIE('http://www.animatrix99.ru/polivanov?q=Shinji+Ikari') },
+          { text: '• Писать имена как на кассетах', action: () => {
+            if (window.animatrixSite) window.animatrixSite.transcription = 'slang99';
+            navigateIE('http://www.animatrix99.ru/');
+          }}
+        ]
+      },
       'digicharat': {
         mood: '🎀',
         text: '<strong>Di Gi Charat Fan Club</strong>! Все 16 серий по 3 минуты, и есть русские субтитры. Дедзико передаёт фанатам: «Ня-ня-ня!»',
@@ -3193,7 +3678,7 @@ class AppClippy {
         actions: [
           { text: '• DOOM 98', action: () => this.launchProgram('doom', 'appDoom') },
           { text: '• S.T.A.L.K.E.R. 98', action: () => this.launchProgram('stalker98_demo', 'appStalker98') },
-          { text: '• Medal of Honor 98', action: () => this.launchProgram('moh98', 'appMoh98') },
+          { text: '• Medal of Honor 98', action: () => this.launchProgram('moh98_demo', 'appMoh98') },
           { text: '• Зов Припяти 98', action: () => this.launchProgram('cop98', 'appCop98') },
           { text: '• Minecraft 98', action: () => this.launchProgram('mc98_demo', 'appMc98') },
           { text: '• Honkai: Star Rail 98', action: () => this.launchProgram('hsr98', 'appHsr98') },
@@ -3218,8 +3703,10 @@ class AppClippy {
           { text: '• Another War', action: () => this.launchProgram('anotherwar', 'appAnotherWar') },
           { text: '• Fallout', action: () => this.launchProgram('fallout', 'appFallout') },
           { text: '• Fallout: Запорожье', action: () => this.launchProgram('falloutzp_demo', 'appFalloutZP') },
+          { text: '• Корованы', action: () => this.launchProgram('korovany_demo', 'appKorovany') },
+          { text: '• Catniss', action: () => this.launchProgram('catniss', 'appCatniss') },
           { text: '• Хаято, Где плов?', action: () => this.launchProgram('plov', 'appPlov') },
-          { text: '• The Sims 3', action: () => this.launchProgram('sims3', 'appSims3') },
+          { text: '• The Sims 3', action: () => this.launchProgram('sims3_demo', 'appSims3') },
           { text: '• Forza Horizon: Рига', action: () => this.launchProgram('forza', 'appForza') },
           { text: "• GTA: Екатеринбург '90", action: () => this.launchProgram('gta90', 'appGta90') },
           { text: '• Half-Life 2', action: () => this.launchProgram('hl2_demo', 'appHl2') },
@@ -3244,24 +3731,37 @@ class AppClippy {
       'youvid': () => this.youvidReaction(),
       'themeworld': {
         mood: '🎨',
-        text: '<strong>ThemeWorld \'98</strong>! Пора преобразить ваш рабочий стол! Заставки с падающими буквами Матрицы и темы Microslop Plus! 98!',
+        text: '<strong>ThemeWorld \'98</strong>! Обои, заставки и темы. Маленький монитор в шапке показывает ваш рабочий стол прямо сейчас.',
         actions: [
           {
-            text: '• Включить заставку Матрицы',
+            text: '• Сделать Матрицу заставкой',
             action: () => {
-              if (window.themeWorldSite && window.themeWorldSite.applyScreensaver) {
-                window.themeWorldSite.applyScreensaver('matrix');
+              const site = window.themeWorldSite;
+              if (site && site.applyScreensaver && site.applyScreensaver('matrix')) {
+                if (site.refreshView) site.refreshView();
+                this.speak('Готово! Заставка «The Matrix Code» выбрана. Оставьте мышь в покое, и пойдёт зелёный дождь.', [], '🕶️');
+              } else {
+                this.speak('Не вышло: «Свойства экрана» сейчас недоступны.', [], '😕');
               }
-              this.speak('Зеленый цифровой дождь Матрицы активирован!', [], '🕶️');
             }
           },
           {
             text: '• Поставить космические обои',
             action: () => {
-              if (window.themeWorldSite && window.themeWorldSite.applyWallpaper) {
-                window.themeWorldSite.applyWallpaper('space');
+              const site = window.themeWorldSite;
+              if (site && site.applyWallpaper && site.applyWallpaper('spacecadet')) {
+                if (site.refreshView) site.refreshView();
+                this.speak('Обои «Space Cadet» на рабочем столе. Туманность вместо бирюзы!', [], '🚀');
+              } else {
+                this.speak('Не вышло: «Свойства экрана» сейчас недоступны.', [], '😕');
               }
-              this.speak('Рабочий стол преобразился в глубокий космос!', [], '🚀');
+            }
+          },
+          {
+            text: '• Почему обои такие тяжёлые?',
+            action: () => {
+              navigateIE('http://www.themeworld98.com/help');
+              this.speak('BMP хранит каждую точку тремя байтами. 1024x768 весит 2,25 МБ, на модеме 33.6K это больше 11 минут. Берите 640x480!', [], '📏');
             }
           }
         ]
@@ -3450,6 +3950,69 @@ class AppClippy {
             }
           }
         ]
+      },
+      'valve': {
+        mood: '🔧',
+        text: '<strong>Valve Software — Киркланд, штат Вашингтон</strong>! Гейб Ньюэлл и Майк Харрингтон ушли из Microslop в 1996-м и построили здесь Чёрную Мезу, Сити 17, сеть Steam и Dota 98.',
+        actions: [
+          {
+            text: '• Проверить гравипушку на стенде',
+            action: () => {
+              if (window.valveSite) {
+                window.valveSite.labWeaponId = 'grav_sawblade';
+                window.valveSite.labTargetId = 'fast_zombie';
+              }
+              this.openInIE('http://www.valvesoftware.com/lab');
+              this.speak('Дисковая пила (18 кг) в нуль-гравитационном захвате разрезает мишень насквозь с одного пуска!', [], '⚡');
+            }
+          },
+          {
+            text: '• Выгрузить протокол стенда в Блокнот',
+            action: () => {
+              if (window.valveSite) window.valveSite.exportLabReport();
+              this.speak('Инженерный отчёт VALVE_LAB_REPORT.TXT сохранён в «Мои документы» и открыт в Блокноте.', [], '📝');
+            }
+          },
+          {
+            text: '• Открыть досье Half-Life 2',
+            action: () => {
+              this.openInIE('http://www.valvesoftware.com/game?id=hl2');
+              this.speak('14 непрерывных глав от вокзала Сити 17 до вершины Цитадели — и все работают прямо в Win 98!', [], '🟠');
+            }
+          }
+        ]
+      },
+      'blizzard': {
+        mood: '⚔️',
+        text: '<strong>Blizzard Entertainment — Irvine &amp; Blizzard North</strong>! В Steam уже кипят бои в <strong>Diablo</strong>, <strong>Diablo II</strong> и <strong>Overwatch 98</strong>, а на подходе в Азероте строятся казармы грядущего <strong>Warcraft</strong>!',
+        actions: [
+          {
+            text: '• Открыть превью Warcraft (Скоро)',
+            action: () => {
+              this.openInIE('http://www.blizzard.com/warcraft');
+              this.speak('Пехотинцы Лордерона и батраки Орды уже рубят лес! Пощёлкайте по щиту отряда несколько раз подряд, и он начнёт ворчать!', [], '🪓');
+            }
+          },
+          {
+            text: '• Собрать рунное слово «Дух»',
+            action: () => {
+              if (window.blizzardSite) {
+                window.blizzardSite.selectedRunewordId = 'spirit';
+                window.blizzardSite.slottedRunes = ['tal', 'thul', 'ort', 'amn'];
+                window.blizzardSite.forgeBase = 'sword';
+              }
+              this.openInIE('http://www.blizzard.com/sanctuary');
+              this.speak('Тал + Тул + Орт + Амн в мече или щите с четырьмя гнёздами! Рунное слово <strong>«Дух»</strong> даёт +2 ко всем навыкам и быстрые заклинания.', [], '🔮');
+            }
+          },
+          {
+            text: '• Справочник рунных слов в Блокнот',
+            action: () => {
+              if (window.blizzardSite) window.blizzardSite.exportSanctuaryScroll();
+              this.speak('«Постой и послушай!» Все 18 рунных слов Акта I открыты в Блокноте.', [], '📜');
+            }
+          }
+        ]
       }
     };
 
@@ -3466,6 +4029,250 @@ class AppClippy {
         this.speak(current.text, current.actions || [], current.mood || '🌐', 14000);
       }, 700);
     }
+  }
+
+  isNetscapeMinimized() {
+    const win = window.winManager && window.winManager.windows.get('app_netscape');
+    return Boolean(win && win.isMinimized);
+  }
+
+  identifyNetscapePageKey(url) {
+    const raw = String(url || '').trim().toLowerCase();
+    if (!raw || raw.startsWith('about:')) return null;
+    if (/pennygachi\.men\/web98\/win98\.zip/.test(raw) || /pennygachi\.men\/web98\/?(?:index\.html)?(?:#download|\?.*download)/.test(raw)) {
+      return 'web98-download';
+    }
+    if (/pennygachi\.men\/web98(?:\/|$|\?|#)/.test(raw)) {
+      return 'web98';
+    }
+    return null;
+  }
+
+  scrollNetscapeSection(keyword) {
+    try {
+      const frame = window.appNetscape && window.appNetscape.frame;
+      const doc = frame && frame.contentDocument;
+      if (!doc) return false;
+      const needle = String(keyword || '').toLowerCase();
+      const headings = doc.querySelectorAll('h1, h2, h3, b, a');
+      for (const el of headings) {
+        if ((el.textContent || '').toLowerCase().includes(needle)) {
+          if (typeof el.scrollIntoView === 'function') el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return true;
+        }
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  reactToWeb98Download(pageTitle) {
+    this.scrollNetscapeSection('Загрузиться');
+    this.tapScreen();
+    this.speak(
+      'Вы хотите скачать <strong>Win98.zip</strong> (1.5 ГБ, а после распаковки 1.9 ГБ) прямо внутрь Win 98 через Netscape 6?! Осторожно, так можно вызвать рекурсию Вселенной: система внутри системы, и в каждой сижу я! К тому же на модеме 56K это займёт около 78 часов и 1067 дискет 3,5″!',
+      [
+        {
+          text: '• А что такое «Win 10 и 11»?',
+          action: () => {
+            this.speak(
+              'На кнопке написано «Скачать для Win 10 и 11»... Подождите, после Win 98 же должен идти Win 2000! Неужели в далёком будущем в Редмонде разучились считать по порядку?!',
+              [
+                {
+                  text: '• Вернуться к обзору сайта',
+                  action: () => this.onNavigateNetscape('https://pennygachi.men/web98/', pageTitle, true)
+                }
+              ],
+              '🤯',
+              16000
+            );
+          }
+        },
+        {
+          text: '• Сохранить памятку в Блокнот',
+          action: () => {
+            const note = [
+              '=== WIN 98 WEB EDITION — ЗАМЕТКА СКРЕПЫША ===',
+              'Адрес в Сети: https://pennygachi.men/web98/',
+              'Сводка BIOS: Office Assistant ... Clippy, awake',
+              'Каталог Steam: 44 игры | Сайтов в Сети: 40 | Номер ICQ: 199898',
+              '',
+              'Памятка по безопасности:',
+              'Не запускайте Win98.exe из архива Win98.zip (1.5 ГБ) внутри этой же',
+              'копии Win 98, иначе в правом нижнем углу появится второй Скрепыш,',
+              'и мы будем давать советы друг другу до скончания веков!'
+            ].join('\r\n');
+            if (window.appNotepad) window.appNotepad.open('WEB98_META.TXT', note);
+            this.speak('Я записал координаты нашего зеркала и предупреждение о рекурсии в Блокнот!', [], '📝', 10000);
+          }
+        },
+        {
+          text: '• Ладно, без рекурсии',
+          action: () => {
+            this.speak('Фух! Мой жёсткий диск C: и телефонная линия спасены. Нам и в этой копии Win 98 отлично живётся!', [], '😅', 10000);
+          }
+        }
+      ],
+      '🌀',
+      18000
+    );
+    return true;
+  }
+
+  onNavigateNetscape(url, pageTitle, force = false) {
+    const pageKey = this.identifyNetscapePageKey(url);
+    if (!pageKey) return false;
+
+    if (this._nsOpenTimer) {
+      clearTimeout(this._nsOpenTimer);
+      this._nsOpenTimer = null;
+    }
+
+    if (window.clippyTips) window.clippyTips.onSiteVisited(pageKey);
+    if (!this.visible || this.annoyance === 'quiet' || this.isNetscapeMinimized()) return false;
+    if (this.opt('siteReactions') === false) return false;
+
+    const now = Date.now();
+    if (!force && this._lastNsPageKey === pageKey && now - (this._lastNsTime || 0) < 8000) return false;
+    this._lastNsPageKey = pageKey;
+    this._lastNsTime = now;
+
+    this.countReaction('site');
+
+    if (pageKey === 'web98-download') {
+      return this.reactToWeb98Download(pageTitle);
+    }
+
+    this.tapScreen();
+    this.speak(
+      'Стоп... <strong>pennygachi.men/web98</strong>?! Это же сайт про <strong>нашу систему Win 98 Web Edition</strong>! Посмотрите на первый скриншот рабочего стола: вон же я стою в правом нижнем углу! И в сводке BIOS сверху написано: <tt>Office Assistant ... Clippy, awake</tt>!',
+      [
+        {
+          text: '• Раздел «Скрепыш всё видит»',
+          action: () => {
+            this.scrollNetscapeSection('Скрепыш всё видит');
+            this.speak(
+              'Целая глава обо мне и мой портрет на «Полигоне»! Всё правда: я прихожу по F1, заглядываю в черновики Блокнота и Outlook Express, зажигаю лампочку 💡 и храню историю из девяти глав. Только тс-с — никому не рассказывайте, чем кончается девятая!',
+              [
+                {
+                  text: '• Написать мне в ICQ (199898)',
+                  action: () => {
+                    if (window.appICQ) window.appICQ.open();
+                    this.speak('На сайте даже мой номер ICQ выдали — UIN 199898! Пишите, я всегда в сети!', [], '🌸', 10000);
+                  }
+                },
+                {
+                  text: '• Назад к обзору сайта',
+                  action: () => this.onNavigateNetscape('https://pennygachi.men/web98/', pageTitle, true)
+                }
+              ],
+              '🤫',
+              16000
+            );
+          }
+        },
+        {
+          text: '• Про 44 игры в каталоге Steam',
+          action: () => {
+            this.scrollNetscapeSection('В каталоге Steam');
+            const gm = window.gameManager;
+            const installedCount = gm && gm.state && Array.isArray(gm.state.installed)
+              ? gm.state.installed.filter(id => gm.catalog && gm.catalog[id] && gm.catalog[id].steam).length
+              : 0;
+            this.speak(
+              `На сайте расписана шкала готовности всех 44 игр в нашем Steam — от заготовок на 10–30% до полноценных портов DOOM 98, Diablo II и Quake III Arena! В шапке сайта написано «0 installed», а у вас сейчас установлено: <strong>${installedCount}</strong>!`,
+              [
+                {
+                  text: '• Открыть наш Steam',
+                  action: () => {
+                    if (window.appSteam) window.appSteam.open();
+                  }
+                },
+                {
+                  text: '• Назад к обзору сайта',
+                  action: () => this.onNavigateNetscape('https://pennygachi.men/web98/', pageTitle, true)
+                }
+              ],
+              '🎮',
+              16000
+            );
+          }
+        },
+        {
+          text: '• Скачать Win98.zip (1.5 ГБ)?',
+          action: () => {
+            this._lastNsPageKey = 'web98-download';
+            this._lastNsTime = Date.now();
+            this.reactToWeb98Download(pageTitle);
+          }
+        }
+      ],
+      '📎',
+      18000
+    );
+    return true;
+  }
+
+  kovchegReaction(url, navigateIE) {
+    const site = window.kovchegSite;
+    if (!site || this.kovchegQuiet) return null;
+    this.kovchegSeen = this.kovchegSeen || new Set();
+    const route = site.parseUrl(url);
+    if (!['tier', 'builder', 'guestbook'].includes(route.view) || this.kovchegSeen.has(route.view)) return null;
+    this.kovchegSeen.add(route.view);
+    const R = site.bench();
+    const go = path => navigateIE(site.url(path));
+    const quiet = {
+      text: '• Я сам разберусь',
+      action: () => {
+        this.kovchegQuiet = true;
+        this.speak('Понял, на «Ковчеге» молчу. Спорить о тирах всё равно лучше в гостевой.', [], '🤐', 5000);
+      }
+    };
+    const top = (mode, col) => {
+      if (!R || !site.placement) return [];
+      const place = site.placement(mode, 'sig', col);
+      return Object.keys(place).filter(id => place[id] === 'T0').map(id => site.charName(id));
+    };
+    if (route.view === 'tier') {
+      const dps = top('hall', 'dps');
+      return {
+        mood: '⚓',
+        text: `Тир-лист <strong>«Ковчега»</strong>! Они не верят тирам на глаз и гоняют бои настоящим движком игры. В Т0 урона в Зале забвения у них ${dps.length === 1 ? 'одна' : 'только'} <strong>${dps.join(', ') || 'никого'}</strong>. Смело.`,
+        actions: [
+          { text: '• А кто лучший усилитель?', action: () => this.speak(`В Т0 «Усиления» в Зале: <strong>${top('hall', 'amp').join(', ') || 'никого'}</strong>. Броня только в Т0.5, в гостевой из-за этого уже спорят.`, [], '📊') },
+          { text: '• Собрать свой отряд', action: () => go('/hsr98/builder') },
+          quiet
+        ]
+      };
+    }
+    if (route.view === 'builder') {
+      const best = R && R.stages && R.stages[12] && R.stages[12].best;
+      return {
+        mood: '🧮',
+        text: 'Конструктор отряда считает бой прямо в браузере, двенадцать раз подряд, тем же кодом, что и их стенд. Я считаю только слова в документе, и то медленнее.',
+        actions: [
+          best ? { text: '• Показать лучший отряд этапа 12', action: () => go('/hsr98/builder?team=' + best.teams[0].join(',') + '&goal=h12-1') } : null,
+          { text: '• Спасибо, я сам', action: () => {} }
+        ].filter(Boolean)
+      };
+    }
+    return {
+      mood: '📓',
+      text: 'Судовой журнал «Ковчега»! Здесь спорят о тир-листе, а Боцман отвечает всем. Можно попросить, чтобы ответ пришёл в Outlook.',
+      actions: [
+        {
+          text: '• Оставь запись от себя',
+          action: () => {
+            if (!site.addGuestbookEntry) return;
+            const d = new Date();
+            const entry = site.addGuestbookEntry('Скрепыш', 'Редмонд', 'Отличный тир-лист. Только почему в нём нет помощников Office? Я бы занял Т0 «Выживания»: меня невозможно закрыть с первого раза.', site.guestStamp(d), false);
+            if (entry) go('/guestbook');
+            this.speak(entry ? 'Записался. Боцман ответит, я уверен.' : 'Журнал не сохраняет записи. Видимо, у них кончились чернила.', [], '✍️');
+          }
+        },
+        quiet
+      ]
+    };
   }
 
   hsrSiteReaction(url, navigateIE) {
@@ -3540,7 +4347,26 @@ class AppClippy {
       hanya: ['Ханья записывает чужие грехи кистью оракула. У меня для этого есть Журнал событий, но его никто не читает.', '🖌️'],
       qingque: ['Цинцюэ играет в кости в рабочее время и ничего не делает сверх нужного. Сочувствую её начальству.', '🀄'],
       yukong: ['Юйкун когда-то была лучшим пилотом Лофу. Я тоже когда-то был самым полезным помощником в Office.', '🪁'],
-      guinaifen: ['Гуйнайфэнь глотает мечи и ведёт стримы. Подписаться на неё, к сожалению, можно только в игре.', '🔥']
+      guinaifen: ['Гуйнайфэнь глотает мечи и ведёт стримы. Подписаться на неё, к сожалению, можно только в игре.', '🔥'],
+      billy: ['Билли смотрит «Звёздного рыцаря» и тратит на ремонт больше, чем зарабатывает. Меня хотя бы чинят бесплатно.', '🔫'],
+      nicole: ['Николь берёт плату за всё, даже за взгляд. Я подсказываю бесплатно и, кажется, зря.', '💰'],
+      anby: ['Энби учится жить по фильмам и говорит чужими репликами. Я учился по справке Win 98, у меня та же беда.', '🎧'],
+      jingyuan: [`Генерал Цзин Юань в прыжке события. Он дремлет на посту, а Повелитель молний воюет за двоих. Гарант ${pity.toLocaleString('ru-RU')} нефрита.`, '⚡'],
+      luocha: ['Лоча лечит союзника сам, стоит тому ослабеть. Я тоже прихожу без вызова, но меня за это почему-то не благодарят.', '🌼'],
+      imbibitor: ['Пожиратель Луны вкладывает в один удар все очки навыка отряда. Я так же трачу всю память на одну анимацию.', '🐉'],
+      fuxuan: ['Фу Сюань принимает на себя чужой урон и всё предсказывает заранее. Я тоже предсказываю: сейчас вы закроете это окно.', '🔮'],
+      jingliu: ['Цзинлю берёт силы прямо из HP отряда. Мои аппетиты скромнее: я беру только ваше внимание.', '🌙'],
+      topaz: ['Топаз взыскивает долги, а Счетовод бегает за должником. Свинки у меня нет, но закрытые окна я тоже считаю.', '🐷'],
+      huohuo: ['Хохо всего боится, зато духа в её хвосте боятся все остальные. Меня тоже побаиваются, только без хвоста.', '👻'],
+      argenti: ['Аргенти дарит розы Красоте и копит энергию на большую оду. Я тоже копил на большую речь, но меня скрыли на первом слове.', '🌹'],
+      ratio: ['Доктор Рацио носит гипсовую голову и называет всех вокруг дураками. Я хотя бы сначала спрашиваю, нужна ли помощь.', '🗿'],
+      kazuma: ['Казума крадёт у врагов что попало. Я тоже краду: фокус у окна, в котором вы печатаете. Говорят, это хуже.', '🧤'],
+      aqua: ['Аква богиня воды, но долги у неё как у смертной. Я бы открыл ей шаблон «Домашний бюджет», но она опять заплачет.', '💧'],
+      megumin: ['Мегумин колдует один Взрыв в день и потом не может встать. Со мной то же самое после проверки орфографии.', '💥'],
+      darkness: ['Даркнесс сама просит, чтобы её били. А меня бьют по кнопке «Скрыть», даже когда я не прошу.', '🛡️'],
+      makoto: [`Макото Майн уходит в другое измерение и возвращается точным критом. Шанс на неё 50%, поэтому полный гарант стоит ${(pity * 2).toLocaleString('ru-RU')} нефрита.`, '🐱'],
+      amanda: ['Аманду раз в месяц зовут спасать Землю. Меня тоже зовут, но только когда нажимают F1 по ошибке.', '💗'],
+      talleah: ['Гиноиды Таллеи всё считают в процентах. Я тоже посчитал: меня закрывают в 94 случаях из 100.', '🛸']
     };
     const roster = site.characterIds();
     const n10 = roster.length % 10, n100 = roster.length % 100;
@@ -3578,7 +4404,10 @@ class AppClippy {
       reaction = {
         mood: '❄️',
         text: 'Белобог семьсот лет живёт за стеной. Я бы столько не выдержал. Мне и в трее бывает тесно.',
-        actions: [{ text: '• Кто там главный?', action: () => this.speak('Верховный хранитель Коколия. Дальше не скажу: спойлеры портят сюжет, как макровирусы документы.', [], '🤫') }]
+        actions: [
+          { text: '• Кто там главный?', action: () => this.speak('Верховный хранитель Коколия. Дальше не скажу: спойлеры портят сюжет, как макровирусы документы.', [], '🤫') },
+          { text: '• А что за Белзерг?', action: () => this.speak('Королевство из события KonoSuba x HSR 98. Там жабы глотают искателей приключений целиком. Меня бы не тронули: скрепки невкусные.', [], '🐸') }
+        ]
       };
     } else if (route.view === 'play') {
       reaction = {
@@ -3595,6 +4424,18 @@ class AppClippy {
         text: 'Картины Эйдолонов собираются по кусочку, с каждой копией героя. Как мой гардероб на clippy98.com.',
         actions: [{ text: '• Показать гардероб', action: () => navigateIE('http://www.clippy98.com/wardrobe') }]
       };
+    } else if (route.view === 'article' && route.id === 'v17g') {
+      reaction = {
+        mood: '📈',
+        text: 'Теперь у героев есть предел уровня, а у конусов свой уровень. У меня предела нет: я могу мешать вам бесконечно.',
+        actions: [{ text: '• С чего начать?', action: () => this.speak('Откройте «Персонажи» и нажмите U. Экран сам покажет, чего не хватает, и подскажет, где это взять.') }, quiet]
+      };
+    } else if (route.view === 'article' && route.id === 'v17p') {
+      reaction = {
+        mood: '🎁',
+        text: 'Промокоды! Вводятся на телефоне, за кнопкой «…». Третий код прячут на самом Экспрессе, а я никому не скажу, что на тележке что-то лежит.',
+        actions: [quiet]
+      };
     } else if (route.view === 'article' && route.id === 'v16d') {
       reaction = {
         mood: '⛽',
@@ -3606,6 +4447,12 @@ class AppClippy {
         mood: '📖',
         text: 'Путеводитель Корпорации сам говорит, куда идти и что взять. Почти как моя справка по F1, только за выполненное ещё и платят.',
         actions: [{ text: '• А зачем расщеплять реликвии?', action: () => this.speak('Из ста Обломков выходит реликвия нужного набора. Это как переплавить десять скрепок в одну, но правильной формы.', [], '♻️') }]
+      };
+    } else if (route.view === 'article' && route.id === 'v16t') {
+      reaction = {
+        mood: '🌿',
+        text: 'Следы растут, как дерево папок в Проводнике: сначала корень, потом ветки. Только материалы для веток приходится выбивать из врагов.',
+        actions: [{ text: '• Где брать материалы?', action: () => this.speak('Материалы врагов падают после боя, материалы Пути растут в багровых чашелистах, а редкие дают Эхо войны. Лишнее меняется в Омни-синтезаторе.') }]
       };
     } else if (route.view === 'article' && route.id === 'steam') {
       reaction = {
@@ -3685,12 +4532,161 @@ class AppClippy {
     if (window.clippySystem) window.clippySystem.onRecycleBinEmptied(items);
   }
 
+  onDisplayEffectsChanged(changes, source) {
+    if (window.clippySystem && typeof window.clippySystem.onDisplayEffectsChanged === 'function') window.clippySystem.onDisplayEffectsChanged(changes, source);
+  }
+
   onShutdownDialog() {
     if (window.clippySystem) window.clippySystem.onShutdownDialog();
   }
 
   onEndTask() {
     if (window.clippySystem) window.clippySystem.onEndTask();
+  }
+
+  onTaskbarChanged(previous, next) {
+    if (window.clippySystem) window.clippySystem.onTaskbarChanged(previous, next);
+  }
+
+  onStartMenuChanged(kind, info) {
+    if (window.clippySystem) window.clippySystem.onStartMenuChanged(kind, info);
+  }
+
+  onSafeMode() {
+    if (window.clippySystem) window.clippySystem.onSafeMode();
+  }
+
+  onBootLogged() {
+    if (window.clippySystem) window.clippySystem.onBootLogged();
+  }
+
+  onHeartsEvent(kind, info) {
+    if (window.clippySystem) window.clippySystem.onHeartsEvent(kind, info);
+  }
+
+  onFloppyFormatted(info) {
+    if (window.clippySystem) window.clippySystem.onFloppyFormatted(info);
+  }
+
+  onRegistryBackup() {
+    if (window.clippySystem) window.clippySystem.onRegistryBackup();
+  }
+
+  onWinUpdateInstalled(ids) {
+    if (window.clippySystem) window.clippySystem.onWinUpdateInstalled(ids);
+  }
+
+  onTestPagePrinted(printerName, port) {
+    if (window.clippySystem) window.clippySystem.onTestPagePrinted(printerName, port);
+  }
+
+  onDosEditor(fileName) {
+    if (window.clippySystem) window.clippySystem.onDosEditor(fileName);
+  }
+
+  onNetworkNeighborhood() {
+    if (window.clippySystem) window.clippySystem.onNetworkNeighborhood();
+  }
+
+  onPowerHelp(activeTabId) {
+    if (window.clippySystem && typeof window.clippySystem.onPowerHelp === 'function') {
+      return window.clippySystem.onPowerHelp(activeTabId);
+    }
+    return false;
+  }
+
+  onPowerSettingsChanged(prev, next, source) {
+    if (window.clippySystem && typeof window.clippySystem.onPowerSettingsChanged === 'function') {
+      return window.clippySystem.onPowerSettingsChanged(prev, next, source);
+    }
+    return false;
+  }
+
+  onPowerSchemeSaved(name, timers) {
+    if (window.clippySystem && typeof window.clippySystem.onPowerSchemeSaved === 'function') {
+      return window.clippySystem.onPowerSchemeSaved(name, timers);
+    }
+    return false;
+  }
+
+  onPowerSchemeDeleted(name) {
+    if (window.clippySystem && typeof window.clippySystem.onPowerSchemeDeleted === 'function') {
+      return window.clippySystem.onPowerSchemeDeleted(name);
+    }
+    return false;
+  }
+
+  onMonitorStandbyWake() {
+    if (window.clippySystem && typeof window.clippySystem.onMonitorStandbyWake === 'function') {
+      return window.clippySystem.onMonitorStandbyWake();
+    }
+    return false;
+  }
+
+  onHardDiskSpinDown() {
+    if (window.clippySystem && typeof window.clippySystem.onHardDiskSpinDown === 'function') {
+      return window.clippySystem.onHardDiskSpinDown();
+    }
+    return false;
+  }
+
+  onHardDiskWake() {
+    if (window.clippySystem && typeof window.clippySystem.onHardDiskWake === 'function') {
+      return window.clippySystem.onHardDiskWake();
+    }
+    return false;
+  }
+
+  onMouseClicksRescued(blockedClicks = 0, disableCount = 1) {
+    if (window.clippySystem && typeof window.clippySystem.onMouseClicksRescued === 'function') {
+      return window.clippySystem.onMouseClicksRescued(blockedClicks, disableCount);
+    }
+    this.show();
+    this.tapScreen();
+    this.speak('Тук-тук! Похоже, вы отключили щелчки мыши. Я снял эту галочку изнутри, мышь снова работает!', [], '📎', 12000);
+    return true;
+  }
+
+  onCdRomInserted(discId, drive = 'D:') {
+    if (window.clippySystem && typeof window.clippySystem.onCdRomInserted === 'function') {
+      return window.clippySystem.onCdRomInserted(discId, drive);
+    }
+    return false;
+  }
+
+  onCdRomEjected(prevDiscId, drive = 'D:') {
+    if (window.clippySystem && typeof window.clippySystem.onCdRomEjected === 'function') {
+      return window.clippySystem.onCdRomEjected(prevDiscId, drive);
+    }
+    return false;
+  }
+
+  onOfficeLauncherSelect(game) {
+    if (window.clippySystem && typeof window.clippySystem.onOfficeLauncherSelect === 'function') {
+      return window.clippySystem.onOfficeLauncherSelect(game);
+    }
+    return false;
+  }
+
+  onOfficeGameShortcut(game) {
+    if (window.clippySystem && typeof window.clippySystem.onOfficeGameShortcut === 'function') {
+      return window.clippySystem.onOfficeGameShortcut(game);
+    }
+    return false;
+  }
+
+  onOfficeLauncherHelp() {
+    if (window.clippySystem && typeof window.clippySystem.onOfficeLauncherHelp === 'function') {
+      return window.clippySystem.onOfficeLauncherHelp();
+    }
+    return false;
+  }
+
+  onOfficeGameEvent(gameId, event, data) {
+    if (window.clippySystem && typeof window.clippySystem.onOfficeGameEvent === 'function') {
+      return window.clippySystem.onOfficeGameEvent(gameId, event, data);
+    }
+    return false;
   }
 
   icqReply(text) {

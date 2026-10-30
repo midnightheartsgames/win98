@@ -132,7 +132,7 @@
       this.text(String(lvl), x + STUB / 2, y + 17, { align: 'center', size: 22, bold: true, serif: true, col: st === 'ready' ? '#8a2a1a' : ink, shadow: false });
       const cells = cellsOf(H.TL_REWARDS[lvl]);
       cells.forEach((cl, j) => {
-        const cx = px + 10 + j * (CELL + 3), cy = y + (rh - CELL) / 2;
+        const cx = px + 10 + j * (cells.length > 6 ? CELL - 1 : CELL + 3), cy = y + (rh - CELL) / 2;
         if (cl.cone) { G.rarityCell(c, cx, cy, CELL, CELL, H.CONES[cl.cone].rarity); G.drawConeCard(c, cl.cone, cx + 5, cy + 2, 20, CELL - 4, { info: false }); }
         else if (cl.relic) {
           G.rarityCell(c, cx, cy, CELL, CELL, cl.relic.stars);

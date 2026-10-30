@@ -1,0 +1,12 @@
+.tf98 { position: relative; width: 100%; height: 100%; overflow: hidden; background: #3a3a3a; outline: none; font-family: Tahoma, sans-serif; }
+.tf98-gl, .tf98-hud { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.tf98-menu { position: absolute; left: 24px; top: 96px; width: 240px; display: flex; flex-direction: column; gap: 8px; padding: 12px; background: #c9bfa6; border: 2px outset #efe8d4; color: #2a2620; }
+.tf98-menu[hidden] { display: none; }
+.tf98-title { font-size: 18px; font-weight: bold; letter-spacing: 1px; }
+.tf98-sides { display: flex; gap: 4px; }
+.tf98-sides span { flex: 1; padding: 3px 4px; color: #f4efe2; font-size: 11px; font-weight: bold; text-align: center; }
+.tf98-buttons { display: flex; flex-direction: column; gap: 6px; }
+.tf98-menu button { padding: 6px; font: bold 12px Tahoma, sans-serif; color: #2a2620; background: #d8cfb8; border: 2px outset #efe8d4; cursor: pointer; }
+.tf98-menu button:active { border-style: inset; }
+.tf98-note { font-size: 11px; color: #4d473b; }
+.tf98-nogl { background: #808080; }

@@ -2,7 +2,7 @@
   'use strict';
 
   const P = K.Places, FP = P.FORT_PTS, CENTER = [960, 105];
-  const NEAR = 260, FAR = 330, ID0 = 94000, PAY = 5, IRON_ARM = 15, HEAL = 15, LADDER = 20, RAM_LOGS = 60, RAM_IRON = 20;
+  const NEAR = 260, FAR = 330, ID0 = 94000, TAKE = 100, PAY = 5, IRON_ARM = 15, HEAL = 15, LADDER = 20, RAM_LOGS = 60, RAM_IRON = 20;
   const KEY = Object.freeze([
     { name: 'Гусь', role: 'scribe', look: { head: null, hairColor: [0.5, 0.48, 0.44], beard: false, main: [0.3, 0.27, 0.22] }, gear: [null, false] },
     { name: 'Кривой', role: 'scout', look: { head: null, hairColor: [0.2, 0.16, 0.12], beard: true, eyes: { l: 'ruby' } }, gear: ['sword', false] },
@@ -341,9 +341,19 @@
     if (!sh) return null;
     A.share = null;
     const men = sh.men.map(i => A.people[i]).filter(r => r && r.alive);
-    if (give && (V.stock.silver || 0) >= sh.silver) { V.stock.silver -= sh.silver; note(S, men, 8, -2, 'доля добычи', events); return sh.silver; }
+    if (give === 'self' && S.player && (V.stock.silver || 0) >= sh.silver) { V.stock.silver -= sh.silver; K.Econ.earn(S, S.player.bag, sh.silver); note(S, men, -6, 3, 'хозяин забрал долю себе', events); return -sh.silver; }
+    if (give === true && (V.stock.silver || 0) >= sh.silver) { V.stock.silver -= sh.silver; note(S, men, 8, -2, 'доля добычи', events); return sh.silver; }
     note(S, men, -3, 0, 'вся добыча в казну', events);
     return 0;
+  }
+
+  function takeChest(S, events) {
+    const V = world(S).sides.villain;
+    if (!S.player || (V.stock.silver || 0) < TAKE) return 0;
+    V.stock.silver -= TAKE;
+    K.Econ.earn(S, S.player.bag, TAKE);
+    note(S, 'all', -2, 1, 'хозяин запустил руку в казну', events);
+    return TAKE;
   }
 
   function build(S, what) {
@@ -741,5 +751,5 @@
     introRun(S, W, rnd, events);
   }
 
-  K.Villain = { KEY, ARMY, SQUADS, ORDERS, TARGETS, ENDINGS, INTRO, ATTACKS, NEAR, FAR, PAY, IRON_ARM, HEAL, LADDER, RAM_LOGS, RAM_IRON, state, roster, soldiers, loyalty, fear, stats, note, spotFor, census, order, track, settle, enlist, sync, heal, forgeArm, punish, holdPay, share, build, payday, daily, nightly, attackFar, raid, cutRope, flames, startAssault, banner, climb, plan, finish, startIntro, introStep, introGoal, talked, hvosh, startSortie, react, run, post, stump, squadOf, members, ready };
+  K.Villain = { TAKE, takeChest, KEY, ARMY, SQUADS, ORDERS, TARGETS, ENDINGS, INTRO, ATTACKS, NEAR, FAR, PAY, IRON_ARM, HEAL, LADDER, RAM_LOGS, RAM_IRON, state, roster, soldiers, loyalty, fear, stats, note, spotFor, census, order, track, settle, enlist, sync, heal, forgeArm, punish, holdPay, share, build, payday, daily, nightly, attackFar, raid, cutRope, flames, startAssault, banner, climb, plan, finish, startIntro, introStep, introGoal, talked, hvosh, startSortie, react, run, post, stump, squadOf, members, ready };
 })(globalThis.Kirill98 = globalThis.Kirill98 || {});

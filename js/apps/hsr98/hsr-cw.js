@@ -263,6 +263,7 @@
       C.hist.unshift(Object.assign({ at: Date.now() }, sum));
       C.hist = C.hist.slice(0, 20);
       C.run = null;
+      if (cleared && this.profileCwWin) this.profileCwWin(sum.rank);
       return sum;
     },
 

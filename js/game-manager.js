@@ -376,19 +376,19 @@ class GameManager {
         shots: ['Рынок Шинрю', 'Бой с головорезами в доках'],
         launch: () => window.appAvatar98 && window.appAvatar98.open()
       },
-      moh98: {
-        id: 'moh98',
-        steam: true,
-        title: 'Medal of Honor 98',
+      moh98_demo: {
+        id: 'moh98_demo',
+        cdDemo: true,
+        title: 'Medal of Honor 98 Demo',
         subtitle: 'Шутер от первого лица — операции УСС, 1944–1945',
         developer: 'DreamWorks Interactive (1999) / Win 98 Edition',
-        price: 27.99,
-        priceDisplay: '$27.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'moh98',
-        setupExe: 'Setup_MOH98.exe',
+        setupExe: 'moh98demo.exe',
         targetExe: 'MOH.EXE',
         folder: 'MOH98',
-        fileSize: '18.4 MB (3D Accelerated Edition)',
+        fileSize: '18.4 MB (Igromania CD Edition)',
         desc: 'Лейтенант Джимми Паттерсон из УСС в тылу врага: шесть миссий от нормандской деревни и базы подлодок Лорьяна до норвежского завода тяжёлой воды, Зигфридова леса, замка Кольдиц и подземных цехов Фау-2. Работа под прикрытием с документами, взрывчатка, базука против «Тигра», сбиваемые каски, солдаты, которые сдаются и возвращают гранаты, тревога с подкреплением, медали по итогам заданий и пароли.',
         genre: 'Шутер от первого лица',
         tags: ['Вторая мировая', 'Диверсии', 'Под прикрытием', 'Сюжетные миссии'],
@@ -445,7 +445,7 @@ class GameManager {
         setupExe: 'Setup_StarRail98.exe',
         targetExe: 'STARRAIL.EXE',
         folder: 'StarRail98',
-        fileSize: '3.3 MB (полная версия 1.6, установка 4,1 МБ)',
+        fileSize: '3.3 MB (полная версия 1.7, установка 4,1 МБ)',
         desc: 'Бесплатная игра, её можно загрузить и с официального сайта hsr.hoyoverse.com. Первопроходец просыпается на станции «Герта» со Стеллароном в груди и отправляется на Звёздном экспрессе на ледяную Ярило-VI. Пошаговые бои по шкале хода, общие очки навыка, абсолютные техники вне очереди, пробитие уязвимостей стихий. Контакт с врагами, совместные Слияния и Слухи, которые становятся правдой. Звёздный прыжок, световые конусы, реликвии, Симулятор и Эхо войны. Белобог, Подземье, Большая шахта, Заклёпкоград и финальная битва с Коколией.',
         genre: 'JRPG',
         tags: ['Пошаговые бои', 'Космос', 'Отряд героев', 'Сюжет'],
@@ -927,6 +927,25 @@ class GameManager {
         shots: ['Утро во дворе', 'Фургон «ОТЛОВ» в неоновом городе'],
         launch: () => window.appCatniss && window.appCatniss.open()
       },
+      kirill98: {
+        id: 'kirill98',
+        steam: true,
+        title: 'Kirill The Game',
+        subtitle: '3Д-экшон по письму Кирилла',
+        developer: 'Четыре Зоны Софт (2000) / Win 98 Edition',
+        price: 24,
+        priceDisplay: '$24.00',
+        icon: 'kirill98',
+        setupExe: 'Setup_KirillTheGame.exe',
+        targetExe: 'KIRILL98.EXE',
+        folder: 'KirillTheGame',
+        fileSize: '420 MB (1 CD-ROM, 3D Accelerated)',
+        desc: '«Здраствуйте. Я, Кирилл». Игра по письму Кирилла, который джва года хотел такую игру. Долину Студёной делят четыре зоны: в густом лесу живут эльфы, на Белом холме стоит дворец императора, в горах старый форт Злого, а у моста торгует Мостовица, которая ни за кого не воюет. По дорогам ходят корованы с бубенцами. Эльф устраивает засады, собирает травы и тушит горящие срубы. Стражник стоит на посту, ловит шпионов по поддельным печатям и ходит в набеги строем. Злой сам рассылает отряды, делит добычу и ведёт войско на штурм дворца. Каждый удар куда-то попадает: в руку, в ногу, в глаз. С потерями играют дальше: на костыле, в коляске, на протезе. Упавшего выносят свои, если они у него есть. Погода, ночь с луной, волки у дороги, трава и цветы до горизонта. Сохраняться можно.',
+        genre: '3Д-экшон',
+        tags: ['Три стороны', 'Корованы', 'Густой лес', 'Протезы', 'Открытый мир'],
+        shots: ['Засада на корован в лесу', 'Штурм дворца войском Злого'],
+        launch: () => window.appKirill98 && window.appKirill98.open()
+      },
       plov: {
         id: 'plov',
         steam: true,
@@ -946,19 +965,19 @@ class GameManager {
         shots: ['День 3: плов и чай', 'День 8: деловые люди'],
         launch: () => window.appPlov && window.appPlov.open()
       },
-      sims3: {
-        id: 'sims3',
-        steam: true,
-        title: 'The Sims 3',
+      sims3_demo: {
+        id: 'sims3_demo',
+        cdDemo: true,
+        title: 'The Sims 3 Demo',
         subtitle: 'Симулятор жизни в открытом городе, издание 2000 года',
         developer: 'Maxis (2000) / Win 98 Edition',
-        price: 43.99,
-        priceDisplay: '$43.99',
+        price: 0,
+        priceDisplay: 'DEMO',
         icon: 'sims3',
-        setupExe: 'Setup_Sims3.exe',
+        setupExe: 'sims3demo.exe',
         targetExe: 'SIMS3.EXE',
         folder: 'Sims3',
-        fileSize: '1.4 GB (3 CD-ROM, 3D Accelerated)',
+        fileSize: '612 MB (Igromania CD Edition)',
         desc: 'Сансет Вэлли живёт без загрузочных экранов: соседи ходят на работу, влюбляются, стареют и заводят детей, пока ваша семья строит свою жизнь. Создайте симов в редакторе: внешность, одежда на пять случаев, пять черт характера из пятидесяти шести и мечта всей жизни. Желания и обещания, настроение из мудлетов, очки счастья и награды за них. Десять навыков, одиннадцать карьер с развилками, подработки, школа и домашние задания. Режимы покупки и строительства: стены, комнаты, двери, окна, обои, полы и восемьдесят три предмета с выбором цвета. Кулинария, рыбалка, огород, картины и романы, свадьбы и дети, пожары, грабители, призраки и Мрачный Жнец. Десять семей города, от богачей Ландграабов до загадочных Готов. Графика в духе The Sims 1: изометрия, четыре поворота камеры и стены в разрезе.',
         genre: 'Симулятор жизни',
         tags: ['Открытый город', 'Строительство', 'Редактор симов', 'Карьера'],
@@ -1117,7 +1136,7 @@ class GameManager {
       homm1: 'homm1_demo', sammax202: 'sammax202_demo', 'neon-racer': 'neon-racer_demo', 'half-life': 'half-life_demo',
       hl2: 'hl2_demo', kotor98: 'kotor98_demo', maxpayne: 'maxpayne_demo', xiii: 'xiii_demo', falloutzp: 'falloutzp_demo',
       fallout2: 'fallout98_demo', tekken3: 'tekken98_demo', dmc98: 'dmc98_demo', dao98: 'dao98_demo', mc98: 'mc98_demo',
-      stalker98: 'stalker98_demo', korovany: 'korovany_demo', quest: 'quest_demo'
+      stalker98: 'stalker98_demo', korovany: 'korovany_demo', quest: 'quest_demo', moh98: 'moh98_demo', sims3: 'sims3_demo'
     };
 
     this.state = this.loadState();
@@ -1782,8 +1801,8 @@ class GameManager {
 в «Мои документы» и загрузить обратно из меню «Загрузить».`;
             } else if (id === 'serioussam') {
               readmeContent = `Serious Sam 98: The First Encounter\r\n==================================\r\nCroteam (2001) - fan remake for Win 98\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] / [Ctrl] - Fire\r\n[Space] - Jump   [Shift] - Walk   [1-9, 0] / Mouse wheel - Weapons   [Q] - Previous weapon\r\n[Tab] - NETRICSA   [Esc] - Menu\r\n\r\nLevels: Hatshepsut, Sand Canyon, Valley of the Kings,\r\nAlley of Sphinxes, The Great Pyramid.\r\nConsole: please god / please giveall / please killall`;
-            } else if (id === 'moh98') {
-              readmeContent = `Medal of Honor 98
+            } else if (id === 'moh98_demo') {
+              readmeContent = `Medal of Honor 98 Demo
 
 ==================================
 
@@ -1873,14 +1892,16 @@ Command points are scarce. Plan well, then let your men fight.`;
               readmeContent = 'Другая война (Another War)\r\n==================================\r\nMirage Interactive (2002) - Win 98 Edition, 800x600\r\n\r\nСистемные требования: Pentium II 433 МГц, 128 MB RAM, видеокарта с 8 MB памяти, DirectX 8.1.\r\n\r\nУправление:\r\n[Левая кнопка] - идти, осмотреть, подобрать   [Правая кнопка] - говорить, использовать, открыть\r\n[D] - достать или спрятать оружие   [Ctrl]+[Левая кнопка] - прицельный выстрел   [Enter] - атаковать ближайшего врага\r\n[R] - перезарядить   [E] - починить оружие   [1-7] - предметы на поясе   [W] - шаг или бег\r\n[F1-F8] - выбрать особый навык   [Пробел] - применить навык   [Backspace] - отменить выбор\r\n[I] - снаряжение   [S] - параметры   [N] - дневник   [M] - карта   [O] - настройки   [H]/[F10] - помощь\r\n[Ctrl+S] - сохранить   [Ctrl+L] - загрузить   [F11] - быстрое сохранение   [F12] - быстрая загрузка\r\n[P] - пауза   [Пробел]/[Enter] - пропустить реплику в сценке   [Esc] - меню\r\n\r\nАкт I. Аннет, оккупированная Франция. Выберите героя: Силач, Вор или Интеллектуал.\r\nВыберитесь из подвалов вместе с Иоганном и найдите способ уехать из города.\r\nПродолжение следует: впереди Югославия.';
             } else if (id === 'korovany_demo') {
               readmeContent = 'Корованы Demo\r\n==================================\r\nДжва Года Софт (2000) - Win 98 Edition, 3D accelerated\r\n\r\nСистемные требования: Pentium II 300 МГц, 64 MB RAM, 3D-ускоритель с 8 MB памяти, DirectX 6.\r\n\r\nУправление:\r\n[W/A/S/D] - идти   [Shift] - бежать   [Пробел] - прыжок   [C] - пригнуться\r\n[Мышь] - смотреть   [Левая кнопка] - удар, выстрел   [Правая кнопка] - блок\r\nКуда смотрите, туда и бьёте: вверх - голова, прямо - корпус, вниз - ноги.\r\n[1/2/3] - оружие / лук / факел   [R] - убрать оружие   [E] - говорить, обыскать, поджечь\r\n[B] - перевязать рану   [H] - зелье   [V] - от первого лица\r\n[I] - инвентарь и протезы   [M] - карта   [J] - журнал   [T] - ждать   [Q] - приказы войску\r\n[F5/F9] - быстрое сохранение / загрузка   [Esc] - меню\r\n\r\nОтрубленная рука или нога кровоточит. Перевяжите её (B) или идите к знахарке, иначе умрёте.\r\nПротезы ставит мастер Деревяшкин в Развилках.\r\n\r\nПо письму Кирилла.';
+            } else if (id === 'kirill98') {
+              readmeContent = window.Kirill98 && window.Kirill98.Screens && window.Kirill98.Screens.readme ? window.Kirill98.Screens.readme() : 'Kirill The Game\r\n3Д-экшон по письму Кирилла\r\n';
             } else if (id === 'catniss') {
               readmeContent = 'Catniss\r\n==================================\r\nKotelok Games (2000) - Win 98 Edition, 320x240, 256 colors\r\n\r\nControls:\r\n[Left]/[Right], [A]/[D] - Run   [Z]/[Space] - Jump (hold to jump higher)   [X]/[Shift] - Pounce\r\nAgainst a wall in the air: hold toward the wall to cling, then [Z] to kick off\r\n[Down]+[Z] - Drop through a plank   [Esc]/[P] - Pause   [M] - Music on/off\r\nMap: [Enter] - Play   [C] - Choose a cat   [Q] - Aquarium   Gamepad supported.\r\n\r\nNine lives at most. Every 50 coins and every bowl of milk give one more.\r\nThe van OTLOV took the kittens. Bring all four home.\r\nTwelve goldfish in bags are hidden behind cracked walls and in other odd places.';
             } else if (id === 'plov') {
               readmeContent = 'Хаято, Где плов?\r\n==================================\r\nKishlak Soft (2000) - Win 98 Edition, 800x600, 16-bit color\r\n\r\nControls:\r\n[Left Click] - Walk and act, clicks queue up to five jobs   [Right Click]/[Q] - Cancel the jobs\r\n[Drag] - Drag guests from the gate to a table   [Tab] - Pick guests in the line   [1-6] - Seat them at table N\r\n[W/A/S/D]/[Arrows] - Walk   [Space]/[E] - Use what is next to you   [Esc]/[P] - Pause\r\n\r\nKeep the kazan busy: meat, carrots with onion, rice, then steam.\r\nGroups of three and four sit only on the topchans. Tea brews two pots at a time.\r\nA quarter of every day goes to the savings box. Spend it at the bazaar.';
             } else if (id === 'gtann') {
               readmeContent = `Grand Theft Auto: Nizhny City\r\n==================================\r\nRockstar North (2002) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium III 600 MHz, 128 MB RAM, 3D accelerator with 32 MB (GeForce2 / Radeon), DirectX 8.\r\n\r\nControls:\r\n[W/A/S/D] - Walk / Drive   [Mouse] - Look   [Left Click]/[Ctrl] - Attack, fire   [Right Click] - Aim, sniper scope\r\n[Shift] - Sprint   [Space] - Jump / Handbrake   [F]/[Enter] - Get in / out of a car   [Q]/[E], [1-7] - Weapons (in a car: look sideways, drive-by)\r\n[G] - Grenade   [R] - Reload / Next radio station   [H] - Horn, siren   [T] - Taxi or militia job   [C] - Camera   [M]/[Tab] - Map   [Esc] - Pause\r\n\r\nSave the game at the hotel «Zarechnaya». Lose the militia out of sight, at a respray shop or with a bribe.\r\nCheats: ZDOROVIE, BRONYA, STVOLY, BABKI, MENTY, POGODA.`;
-            } else if (id === 'sims3') {
-              readmeContent = `The Sims 3 - 2000 Edition\r\n==================================\r\nMaxis (2000) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium II 300 MHz, 64 MB RAM, 3D accelerator with 16 MB (TNT2 / Voodoo3 / Rage 128), DirectX 7.\r\n\r\nControls:\r\n[Left Click] - Interact with an object, a Sim or the ground   [Right Click] - Cancel the current action\r\n[Drag], [Arrows]/[W/A/S/D] - Scroll   [Q]/[E] - Rotate   [Wheel], [Z]/[X] - Zoom\r\n[Space]/[0] - Pause   [1] [2] [3] - Game speed   [Tab] - Next Sim   [Home] - Center on Sim\r\n[F1] - Live mode   [F2] - Buy mode   [F3] - Build mode   [M] - Map view\r\n[Page Up]/[Page Down] - Walls   [R] - Rotate an object   [Del] - Sell   [F5] - Save   [Esc] - Menu\r\n\r\nPromise wishes to earn Lifetime Happiness. Spend it on rewards.\r\nWelcome to Sunset Valley.`;
+            } else if (id === 'sims3_demo') {
+              readmeContent = `The Sims 3 Demo - 2000 Edition\r\n==================================\r\nMaxis (2000) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium II 300 MHz, 64 MB RAM, 3D accelerator with 16 MB (TNT2 / Voodoo3 / Rage 128), DirectX 7.\r\n\r\nControls:\r\n[Left Click] - Interact with an object, a Sim or the ground   [Right Click] - Cancel the current action\r\n[Drag], [Arrows]/[W/A/S/D] - Scroll   [Q]/[E] - Rotate   [Wheel], [Z]/[X] - Zoom\r\n[Space]/[0] - Pause   [1] [2] [3] - Game speed   [Tab] - Next Sim   [Home] - Center on Sim\r\n[F1] - Live mode   [F2] - Buy mode   [F3] - Build mode   [M] - Map view\r\n[Page Up]/[Page Down] - Walls   [R] - Rotate an object   [Del] - Sell   [F5] - Save   [Esc] - Menu\r\n\r\nPromise wishes to earn Lifetime Happiness. Spend it on rewards.\r\nWelcome to Sunset Valley.`;
             } else if (id === 'quake3') {
               readmeContent = `Quake III Arena
 ==================================
