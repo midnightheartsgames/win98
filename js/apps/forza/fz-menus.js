@@ -335,6 +335,8 @@
       });
       sb('Перемещение', 'ft', () => this.push(this.mapScreen({ ft: true })));
       sb('Фоторежим', 'photo', () => ui.openPhoto());
+      if (globalThis.Parohod98Report) sb('Сообщить об ошибке', 'bug', () => globalThis.Parohod98Report.open());
+      if (globalThis.TouchControls && globalThis.TouchControls.testChannel()) sb('Отладка', 'gear', () => ui.toggleDebug());
       const car = F.Cars.get(g.entry.id);
       tile('t-car', `<img src="${this.entryThumb(g.entry)}"><div class="fz-tbig">${carTitle(car)}</div><div class="fz-tlabel">СМЕНИТЬ МАШИНУ<small>Доставка к текущему месту</small></div>`, () => this.push(this.garage()));
       const need = F.EV.xpForLevel(p.level);
@@ -1041,7 +1043,8 @@
         ['Двигатель', 'engine', 1.2],
         ['Эффекты (шины, удары, меню)', 'sfx', 1],
         ['Окружение (дождь, гроза, салют)', 'ambient', 1],
-        ['Радио', 'music', 1]
+        ['Радио', 'music', 1],
+        ...(ui.touch ? ui.touch.settingsRows() : [])
       ];
       let first = true;
       for (const r of rows) {
@@ -1201,7 +1204,7 @@
         const cl = h('div', 'fz-show-cars');
         const sp = h('div', 'fz-show-spec');
         makes.forEach(m => {
-          const b = this.nav(h('div', 'fz-smake' + (m === scr.make ? ' on' : ''), esc(m)), () => { scr.make = m; render(); });
+          const b = this.nav(h('div', 'fz-smake' + (m === scr.make ? ' on' : ''), esc(m)), () => { if (scr.make !== m) { scr.make = m; fillCars(); } });
           b._onFocus = () => { if (scr.make !== m) { scr.make = m; fillCars(); } };
           ml.appendChild(b);
         });
@@ -1467,6 +1470,7 @@
       });
       cv.addEventListener('mouseup', () => { if (scr.drag && !scr.drag.moved) act(); scr.drag = null; });
       if (opts.ft) filters.ev = filters.st = filters.bd = filters.bf = false;
+      if (ui.touch) ui.touch.bindMap(cv, scr, act);
       return scr;
     }
 
@@ -1647,6 +1651,8 @@
       add('Перезапустить', () => { this.closeAll(); ui.restartEvent(); });
       add('Фоторежим', () => ui.openPhoto());
       add('Настройки', () => this.push(this.settingsScreen(true)));
+      if (globalThis.Parohod98Report) add('Сообщить об ошибке', () => globalThis.Parohod98Report.open());
+      if (globalThis.TouchControls && globalThis.TouchControls.testChannel()) add('Отладка', () => ui.toggleDebug());
       if (g.race.ev.id !== 'prologue') add('Покинуть гонку', () => this.confirm('Покинуть гонку', 'Результат не будет засчитан.', () => { this.closeAll(); ui.quitEvent(); }));
       el.appendChild(box);
       return { el };

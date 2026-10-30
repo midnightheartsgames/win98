@@ -120,9 +120,11 @@ function entryOf(report, files, now) {
   };
 }
 
+const SOURCE_TEXT = { hsr98: 'HSR 98', parohod98: 'Пароход 98' };
+
 function caption(report, entry) {
   const user = report.user || {};
-  const head = ['🐞 ' + report.id, report.source === 'hsr98' ? 'HSR 98' : 'Win 98', report.channel, KIND_TEXT[user.kind] || user.kind, REPEAT_TEXT[user.repeat] || ''].filter(Boolean).join(' · ');
+  const head = ['🐞 ' + report.id, SOURCE_TEXT[report.source] || 'Win 98', report.channel, KIND_TEXT[user.kind] || user.kind, REPEAT_TEXT[user.repeat] || ''].filter(Boolean).join(' · ');
   const lines = [head, clip(user.title, 200)];
   if (user.text) lines.push(clip(user.text, 300));
   if (report.where && report.where.summary) lines.push('Где: ' + clip(report.where.summary, 200));

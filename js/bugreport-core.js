@@ -295,6 +295,8 @@
 
   function channel(local) {
     if (root.Hsr98Standalone) return 'sr98-' + root.Hsr98Standalone;
+    if (root.Parohod98 && typeof root.Parohod98 === 'object' && root.Parohod98.edition) return 'parohod98-' + root.Parohod98.edition;
+    if (root.Parohod98) return 'parohod98-apk';
     const ua = (root.navigator && root.navigator.userAgent) || '';
     if (/Electron\//.test(ua)) return 'exe';
     return local ? 'browser-dev' : 'browser';

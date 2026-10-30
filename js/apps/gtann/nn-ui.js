@@ -99,6 +99,7 @@
       this.menus = new N.Menus(this);
       this.debug = new N.Debug(this);
       this.photo = new N.Photo(this);
+      if (N.Touch && N.Touch.wanted()) this.touch = new N.Touch(this);
       this.loadArt();
       setTimeout(() => this.load(), 30);
     }
@@ -129,7 +130,7 @@
       const logo = this.loadEl.querySelector('.nn-load-logo');
       logo.width = 520; logo.height = 200;
       N.Art.logo(logo);
-      this.loadEl.querySelector('.nn-load-tip').textContent = TIPS[Math.floor(Math.random() * TIPS.length)];
+      this.loadEl.querySelector('.nn-load-tip').textContent = N.touchText(TIPS[Math.floor(Math.random() * TIPS.length)]);
     }
 
     progress(p, text) {
@@ -413,7 +414,7 @@
       }
       if (pl.veh && P.has('r')) this.cycleRadio();
       if (P.has('cam')) this.cycleCamera();
-      return inp;
+      return this.touch ? this.touch.merge(inp, pl) : inp;
     }
 
     cycleRadio() {
@@ -432,6 +433,8 @@
     frame(ts) {
       if (this.destroyed) return;
       this.raf = requestAnimationFrame(t => this.frame(t));
+      const cap = this.touch ? this.settings.fps : 0;
+      if (cap && this.last && ts - this.last < 1000 / cap - 2) return;
       const dtr = Math.min(0.1, Math.max(0, (ts - (this.last || ts)) / 1000));
       this.last = ts;
       this.step(dtr);
@@ -439,6 +442,7 @@
 
     step(dtr) {
       if (!this.game || !this.renderer) return;
+      if (this.touch) this.touch.update(dtr);
       const active = this.opts.isActive ? this.opts.isActive() : true;
       const g = this.game;
       const still = this.photo.on;
@@ -450,6 +454,7 @@
         while (this.acc >= N.TICK && n < 5) {
           const inp = this.buildInput();
           this.updateCameraYaw(N.TICK);
+          this.motion = this.snapshotMotion(g.world);
           g.step(N.TICK, inp);
           this.pressed.clear();
           this.mouse.lp = false;
@@ -467,10 +472,38 @@
       }
       if (!still) this.fx.step(dtr * (g.world.slowmo || 1));
       this.debug.tick(dtr);
-      this.render(dtr);
+      if (this.state === 'play' && !still) this.withMotionLerp(() => this.render(dtr));
+      else this.render(dtr);
       this.frames++;
       this.fpsT += dtr;
       if (this.fpsT > 1) { this.fpsText = this.frames + ' fps · ' + this.renderer.stats.draws + ' dc · ' + Math.round(this.renderer.stats.tris / 1000) + 'k'; this.frames = 0; this.fpsT = 0; }
+    }
+
+    snapshotMotion(w) {
+      const out = [];
+      const add = o => out.push([o, o.x, o.y, o.z, o.yaw]);
+      for (const p of w.peds) add(p);
+      for (const v of w.vehs) add(v);
+      for (const p of w.projs) add(p);
+      return out;
+    }
+
+    withMotionLerp(fn) {
+      const list = this.motion, k = N.clamp(this.acc / N.TICK, 0, 1);
+      if (!list || !list.length || k >= 1) return fn();
+      const keep = [];
+      for (const [o, x, y, z, yaw] of list) {
+        if (o.x === undefined || Math.abs(o.x - x) + Math.abs(o.z - z) > 20) continue;
+        keep.push([o, o.x, o.y, o.z, o.yaw]);
+        o.x = x + (o.x - x) * k; o.z = z + (o.z - z) * k;
+        if (y !== undefined && o.y !== undefined) o.y = y + (o.y - y) * k;
+        if (yaw !== undefined && o.yaw !== undefined) o.yaw = yaw + N.wrap(o.yaw - yaw) * k;
+      }
+      try {
+        return fn();
+      } finally {
+        for (const [o, x, y, z, yaw] of keep) { o.x = x; o.y = y; o.z = z; o.yaw = yaw; }
+      }
     }
 
     updateCameraYaw(dt) {
@@ -513,6 +546,7 @@
       const mute = !A.on;
       let hits = 0;
       for (const e of w.ev) {
+        if (this.touch) this.touch.event(e);
         switch (e.t) {
           case 'shot': {
             const W = N.WEAPONS[e.w] || N.VEH_GUNS[e.w] || {};
@@ -559,7 +593,7 @@
           case 'click': if (e.p === pl && !mute) A.play('click'); break;
           case 'throw': if (!mute) A.play('swing', e.p.x, e.p.z, lis); break;
           case 'bounce': if (!mute) A.play('bounce', e.x, e.z, lis); break;
-          case 'enter': if (e.v.spec.type === 'bike' && !mute) A.play('door', pl.x, pl.z, lis); if (e.v.spec.turret) g.msg.radio = { text: e.v.spec.name, sub: 'ЛКМ — ' + N.VEH_GUNS[e.v.spec.turret.main].name + ', ПКМ — ' + N.VEH_GUNS[e.v.spec.turret.coaxGun].name + '. Башня идёт за мышью.', t: 6 }; else this.showRadio(false); break;
+          case 'enter': if (e.v.spec.type === 'bike' && !mute) A.play('door', pl.x, pl.z, lis); if (e.v.spec.turret) g.msg.radio = { text: e.v.spec.name, sub: N.touchUi ? 'ПУШКА — ' + N.VEH_GUNS[e.v.spec.turret.main].name + ', ПУЛЕМЁТ — ' + N.VEH_GUNS[e.v.spec.turret.coaxGun].name + '. Башня идёт за пальцем.' : 'ЛКМ — ' + N.VEH_GUNS[e.v.spec.turret.main].name + ', ПКМ — ' + N.VEH_GUNS[e.v.spec.turret.coaxGun].name + '. Башня идёт за мышью.', t: 6 }; else this.showRadio(false); break;
           case 'rsnd': if (!mute) A.play(e.k, e.x, e.z, lis); if (e.p && (e.k === 'eject' || e.k === 'pump')) this.shells(e.p, e.k === 'pump' ? 1 : Math.min(6, N.WEAPONS[e.p.weapon].clip || 1)); break;
           case 'door': if (!mute) A.play(e.open ? 'dooropen' : 'doorclose', e.v.x, e.v.z, lis); break;
           case 'mdoor': if (!mute) A.play(e.open ? 'mdooropen' : 'mdoorclose', e.x, e.z, lis); break;
@@ -866,10 +900,12 @@
       const wa = city.ground(cx, cz) === N.GT.WATER ? city.waterAt(cx, cz) : null;
       const gy = Math.max(metro && w.metro ? w.metro.floorY(cx, cz, pl.y + 0.5) : city.groundY(cx, cz), wa ? wa.level : -99) + 0.4;
       if (cy < gy && !ghost) cy = gy;
-      if (this.camPos && !aiming) {
-        const k = Math.min(1, dt * (v ? 10 : 14));
-        cx = N.lerp(this.camPos[0], cx, k); cy = N.lerp(this.camPos[1], cy, k); cz = N.lerp(this.camPos[2], cz, k);
+      const aimAt = [cx, cy, cz];
+      if (this.camPos && !aiming && this.camTo) {
+        const rate = v ? 10 : 14, to = this.camTo;
+        cx = N.follow(this.camPos[0], to[0], cx, rate, dt); cy = N.follow(this.camPos[1], to[1], cy, rate, dt); cz = N.follow(this.camPos[2], to[2], cz, rate, dt);
       }
+      this.camTo = aimAt;
       this.camPos = [cx, cy, cz];
       const sh = this.fx.shake;
       const sx = sh ? (Math.random() - 0.5) * sh * 0.5 : 0, sy = sh ? (Math.random() - 0.5) * sh * 0.5 : 0;
@@ -980,7 +1016,8 @@
         dot: !!pl.tir,
         fpDot: !pl.veh && !!cam.headless && !(this.mouse.r && !N.WEAPONS[pl.weapon].melee),
         camYaw: this.camYaw,
-        prompt: this.prompt(),
+        prompt: this.touch ? this.touch.promptText(this.prompt()) : this.prompt(),
+        layout: this.touch && this.state === 'play' ? this.touch.hudLayout(this.hudc.width, this.hudc.height, this.hud.S || 1) : null,
         fps: this.opts.debug ? this.fpsText : null
       };
       const tv = pl.veh && pl.veh.driver === pl && pl.veh.spec.turret && !g.cut ? pl.veh : null;
@@ -1057,6 +1094,7 @@
 
     destroy() {
       this.destroyed = true;
+      if (this.touch) this.touch.destroy();
       if (this.raf) cancelAnimationFrame(this.raf);
       for (const [t, ev, fn, o] of this.handlers) t.removeEventListener(ev, fn, o);
       if (this.ro) this.ro.disconnect();

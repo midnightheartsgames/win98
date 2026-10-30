@@ -850,7 +850,7 @@
 
     static slots() {
       const out = [];
-      for (let i = 1; i <= 4; i++) {
+      for (let i = 1; i <= N.saveSlots; i++) {
         let s = null;
         try { const raw = store() && store().getItem(SAVE_PREFIX + i); if (raw) { const j = JSON.parse(raw); if (j && j.v === 1) s = j; } } catch (e) { }
         out.push({ slot: i, s });

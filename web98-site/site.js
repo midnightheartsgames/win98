@@ -1,4 +1,29 @@
 (() => {
+  const BASE = 'update/parohod98/';
+  const links = document.querySelectorAll('[data-parohod-apk]');
+  if (!links.length) return;
+  const mb = bytes => (bytes / 1e6).toFixed(1).replace('.', ',') + '\u00a0МБ';
+  const sizeOf = (catalog, id) => {
+    if (id === 'apk') return catalog.apk.bytes;
+    const [game, part] = id.split(':');
+    const entry = catalog.games[game];
+    if (!entry) return 0;
+    return part ? entry.parts[part] && entry.parts[part].download : entry.download;
+  };
+  fetch(BASE + 'stable.json', { cache: 'no-store' })
+    .then(r => (r.ok ? r.json() : null))
+    .then(catalog => {
+      if (!catalog || !catalog.apk) return;
+      links.forEach(link => { link.href = BASE + catalog.apk.url; });
+      document.querySelectorAll('[data-parohod-size]').forEach(node => {
+        const bytes = sizeOf(catalog, node.dataset.parohodSize);
+        if (bytes) node.textContent = mb(bytes);
+      });
+    })
+    .catch(() => {});
+})();
+
+(() => {
   const dialog = document.getElementById('game-window');
   const dataNode = document.getElementById('games-data');
   if (!dialog || typeof dialog.showModal !== 'function' || !dataNode) return;
@@ -6,7 +31,6 @@
   const games = new Map(JSON.parse(dataNode.textContent).map(game => [game.id, game]));
   const title = dialog.querySelector('.window-title');
   const sub = dialog.querySelector('.window-sub');
-  const cd = dialog.querySelector('.window-cd');
   const shots = [...dialog.querySelectorAll('.window-shots figure')];
   const level = dialog.querySelector('.window-level');
   const genre = dialog.querySelector('.window-genre');
@@ -32,8 +56,6 @@
   const fill = game => {
     title.textContent = game.title;
     sub.textContent = game.subtitle;
-    cd.textContent = game.cd ? `Демоверсия есть на компакт-диске журнала «Игромания»: ${game.cd}` : '';
-    cd.hidden = !game.cd;
     shots.forEach((figure, index) => {
       const img = figure.querySelector('img');
       const src = shotSrc(game.id, index);

@@ -7,6 +7,13 @@
 
   N.clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
   N.lerp = (a, b, t) => a + (b - a) * t;
+  N.touchText = t => t;
+  N.saveSlots = 4;
+  N.follow = (cur, from, to, rate, dt) => {
+    const n = Math.max(1, Math.ceil(dt * 240)), h = dt / n, k = 1 - Math.exp(-rate * h);
+    for (let i = 1; i <= n; i++) cur += (from + (to - from) * i / n - cur) * k;
+    return cur;
+  };
   N.smooth = (a, b, t) => {
     const x = N.clamp((t - a) / (b - a), 0, 1);
     return x * x * (3 - 2 * x);

@@ -3,6 +3,7 @@
   const PLAY_URL = 'play/index.html';
   let APK_URL = BUILD.apk;
   let PC = null;
+  let PAROHOD = null;
   const TELEGRAM = 'https://t.me/Penny_Gachimen';
   const SHOTS = ['Бой на станции «Герта»', 'Административный район Белобога'];
 
@@ -19,6 +20,7 @@
   const art = (spec, w, h, cls = '') => `<canvas class="hsrs-art${cls ? ' ' + cls : ''}" data-art="${spec}" width="${w}" height="${h}"></canvas>`;
   const diamonds = (n) => `<span class="hsrs-rar hsrs-rar-${n}">${'&#9670;'.repeat(n)}</span>`;
   const mb = (bytes) => (bytes / 1048576).toFixed(1).replace('.', ',');
+  const parohodLink = () => `<a href="${PAROHOD.url}" download>Пароход 98 для Android</a>, ${mb(PAROHOD.bytes)} МБ`;
 
   const NAV = [
     ['home', '', 'Главная'],
@@ -215,7 +217,7 @@
               </div>
               <p class="hsrs-motto">Да приведёт нас этот путь к звёздам</p>
               <p class="hsrs-head-text">Пошаговая ролевая игра о Звёздном экспрессе. Полная версия, бесплатно, на русском языке.</p>
-              <div class="hsrs-head-action">${this.primaryActions()}<span class="hsrs-head-note">Версия ${BUILD.version}. В браузере, на ПК или на Android</span></div>
+              <div class="hsrs-head-action">${this.primaryActions()}<span class="hsrs-head-note">Версия ${BUILD.version}. В браузере, на ПК или на Android</span>${PAROHOD ? `<p class="hsrs-small">Другие игры на телефон: ${parohodLink()}</p>` : ''}</div>
             </td>
             <td class="hsrs-head-right">
               <div class="hsrs-window">${art('title', 320, 240, 'hsrs-window-view')}</div>
@@ -295,7 +297,7 @@
           <div class="hsrs-ticket-mini-h">${art('item:spass:24', 24, 24)} Билет на Экспресс</div>
           <p>Полная версия ${BUILD.version}. Бесплатно, без регистрации.</p>
           <a class="hsrs-btn hsrs-btn-big" href="${PLAY_URL}">Играть</a>
-          <p class="hsrs-small">${PC ? `<a href="${PC.url}" download>Для ПК</a>, ${mb(PC.bytes)} МБ · ` : ''}<a href="${APK_URL}" download>Android версия</a>, ${mb(BUILD.apkBytes)} МБ</p>
+          <p class="hsrs-small">${PC ? `<a href="${PC.url}" download>Для ПК</a>, ${mb(PC.bytes)} МБ · ` : ''}<a href="${APK_URL}" download>Android версия</a>, ${mb(BUILD.apkBytes)} МБ${PAROHOD ? ` · ${parohodLink()}` : ''}</p>
         </div>`;
     },
 
@@ -367,6 +369,7 @@
                 <tr><td>Экран</td><td>горизонтальный</td></tr>
                 <tr><td>Интернет</td><td>только для обновлений, игра внутри APK</td></tr>
               </table>
+              ${PAROHOD ? `<p class="hsrs-small">Другие игры на телефон: Forza Horizon: Рига, Grand Theft Auto: Нижний Сити и Serious Sam 98. Это отдельное приложение, игры скачиваются внутри него: ${parohodLink()}.</p>` : ''}
             </td>
           </tr>
         </table>
@@ -758,6 +761,14 @@
         BUILD.apkBytes = p.apk.bytes || BUILD.apkBytes;
       }
       if (p.full && p.full.url) PC = { url: '../update/sr98/' + p.full.url, bytes: p.full.bytes, version: p.full.version };
+      site.show();
+    })
+    .catch(() => {});
+  fetch('../update/parohod98/stable.json', { cache: 'no-store' })
+    .then(r => (r.ok ? r.json() : null))
+    .then(p => {
+      if (!p || !p.apk) return;
+      PAROHOD = { url: '../update/parohod98/' + p.apk.url, bytes: p.apk.bytes };
       site.show();
     })
     .catch(() => {});

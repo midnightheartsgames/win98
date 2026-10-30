@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Пароход 98 · замер</title>
+<link rel="stylesheet" href="probe.css"></head>
+<body>
+<header class="bar"><img src="icon.png" alt="" width="40" height="40"><div><h1>ПАРОХОД 98</h1><p>Замер игр на этом телефоне</p></div></header>
+<main>
+  <section class="panel" id="status" aria-live="polite"></section>
+  <section class="actions">
+    <button id="run" class="btn primary">Начать замер (около 15 минут)</button>
+    <button id="long" class="btn">Долгий замер (3 × 10 минут)</button>
+    <button id="send" class="btn">Отправить замер</button>
+    <button id="clear" class="btn">Сбросить результаты</button>
+  </section>
+  <section class="panel"><h2>Сцены</h2><div id="scenes"></div></section>
+  <section class="panel"><h2>Телефон</h2><div id="device"></div></section>
+  <section class="panel"><h2>Возможности WebView</h2><div id="caps"></div></section>
+  <section class="panel"><h2>Играть</h2><p class="dim">Serious Sam 98 уже с управлением касаниями. Forza и GTA пока без него, только посмотреть картинку. «Назад» в игре — пауза, в главном меню игры — выход сюда.</p><div class="actions" id="open"></div></section>
+</main>
+<script src="../js/bugreport-core.js"></script>
+<script src="probe.js"></script>
+</body></html>

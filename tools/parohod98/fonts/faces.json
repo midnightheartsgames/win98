@@ -1,0 +1,162 @@
+[
+ {
+  "family": "Arimo",
+  "style": "italic",
+  "weight": "400 700",
+  "name": "arimo-400-700i-cyrillic.woff2",
+  "range": "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116",
+  "bytes": 15844
+ },
+ {
+  "family": "Arimo",
+  "style": "italic",
+  "weight": "400 700",
+  "name": "arimo-400-700i-latin.woff2",
+  "range": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  "bytes": 22416
+ },
+ {
+  "family": "Arimo",
+  "style": "normal",
+  "weight": "400 700",
+  "name": "arimo-400-700-cyrillic.woff2",
+  "range": "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116",
+  "bytes": 13404
+ },
+ {
+  "family": "Arimo",
+  "style": "normal",
+  "weight": "400 700",
+  "name": "arimo-400-700-latin.woff2",
+  "range": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  "bytes": 20204
+ },
+ {
+  "family": "Montserrat",
+  "style": "normal",
+  "weight": "900",
+  "name": "montserrat-900-cyrillic.woff2",
+  "range": "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116",
+  "bytes": 8512
+ },
+ {
+  "family": "Montserrat",
+  "style": "normal",
+  "weight": "900",
+  "name": "montserrat-900-latin.woff2",
+  "range": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  "bytes": 15536
+ },
+ {
+  "family": "Oswald",
+  "style": "normal",
+  "weight": "400 700",
+  "name": "oswald-400-700-cyrillic.woff2",
+  "range": "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116",
+  "bytes": 11708
+ },
+ {
+  "family": "Oswald",
+  "style": "normal",
+  "weight": "400 700",
+  "name": "oswald-400-700-latin.woff2",
+  "range": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  "bytes": 21412
+ },
+ {
+  "family": "Cousine",
+  "style": "normal",
+  "weight": "400",
+  "name": "cousine-400-cyrillic.woff2",
+  "range": "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116",
+  "bytes": 5624
+ },
+ {
+  "family": "Cousine",
+  "style": "normal",
+  "weight": "400",
+  "name": "cousine-400-latin.woff2",
+  "range": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  "bytes": 9420
+ },
+ {
+  "family": "Cousine",
+  "style": "normal",
+  "weight": "700",
+  "name": "cousine-700-cyrillic.woff2",
+  "range": "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116",
+  "bytes": 5636
+ },
+ {
+  "family": "Cousine",
+  "style": "normal",
+  "weight": "700",
+  "name": "cousine-700-latin.woff2",
+  "range": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  "bytes": 9428
+ },
+ {
+  "family": "PT Serif",
+  "style": "italic",
+  "weight": "400",
+  "name": "ptserif-400i-cyrillic.woff2",
+  "range": "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116",
+  "bytes": 10176
+ },
+ {
+  "family": "PT Serif",
+  "style": "italic",
+  "weight": "400",
+  "name": "ptserif-400i-latin.woff2",
+  "range": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  "bytes": 14236
+ },
+ {
+  "family": "PT Serif",
+  "style": "normal",
+  "weight": "400",
+  "name": "ptserif-400-cyrillic.woff2",
+  "range": "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116",
+  "bytes": 9348
+ },
+ {
+  "family": "PT Serif",
+  "style": "normal",
+  "weight": "400",
+  "name": "ptserif-400-latin.woff2",
+  "range": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  "bytes": 13400
+ },
+ {
+  "family": "PT Serif",
+  "style": "normal",
+  "weight": "700",
+  "name": "ptserif-700-cyrillic.woff2",
+  "range": "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116",
+  "bytes": 9516
+ },
+ {
+  "family": "PT Serif",
+  "style": "normal",
+  "weight": "700",
+  "name": "ptserif-700-latin.woff2",
+  "range": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  "bytes": 13540
+ },
+ {
+  "family": "Neucha",
+  "style": "normal",
+  "weight": "400",
+  "name": "neucha-400-cyrillic.woff2",
+  "range": "U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116",
+  "bytes": 8776
+ },
+ {
+  "family": "Neucha",
+  "style": "normal",
+  "weight": "400",
+  "name": "neucha-400-latin.woff2",
+  "range": "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
+  "bytes": 11888
+ }
+]

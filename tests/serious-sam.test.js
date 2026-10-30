@@ -283,4 +283,55 @@ for (let L = 0; L < S.LEVELS.length; L++) {
   tick(g2, 30, { fwd: 1 });
   ok(Number.isFinite(g2.player.x), 'game runs after the debug actions');
 }
+
+{
+  const g = new S.Game({ level: 0, skill: 2 }); place(g, 0, 10);
+  const e = g.spawnEnemy('gnaar', 0, 40, null); e.spawnT = 0;
+  tick(g, 30);
+  const seen = [];
+  let acc = 0;
+  for (let f = 0; f < 24; f++) {
+    acc += 1 / 120;
+    while (acc >= DT) { S.snapshotMotion(g); g.tick({}); g.events.length = 0; acc -= DT; }
+    const shown = S.withMotionLerp(g, Math.min(1, acc / DT), () => [e.x, e.z]);
+    seen.push(shown);
+  }
+  const changes = seen.slice(1).filter((v, i) => Math.hypot(v[0] - seen[i][0], v[1] - seen[i][1]) > 1e-4).length;
+  ok(changes >= seen.length - 2, 'at 120 frames per second a moving enemy is drawn at a new place almost every frame: ' + changes + '/' + (seen.length - 1));
+  ok(changes > 12 + 6, 'drawing between steps gives more distinct frames than the 12 steps of the same time');
+  const before = [e.x, e.y, e.z, e.yaw];
+  S.snapshotMotion(g); g.tick({}); g.events.length = 0;
+  const now = [e.x, e.y, e.z, e.yaw];
+  const mid = S.withMotionLerp(g, 0.5, () => [e.x, e.z]);
+  ok(Math.abs(mid[0] - (before[0] + now[0]) / 2) < 1e-9 && Math.abs(mid[1] - (before[2] + now[2]) / 2) < 1e-9, 'half a step draws the enemy halfway');
+  ok(e.x === now[0] && e.z === now[2] && e.yaw === now[3], 'drawing between steps does not change the simulation');
+  const t0 = g.time; tick(g, 60); ok(Math.abs(g.time - t0 - 1) < 1e-9, 'the simulation still runs 60 steps per second');
+}
+
+{
+  require(path.join(__dirname, '..', 'js', 'touch-controls.js'));
+  require(path.join(DIR, 'ss-touch.js'));
+  const T = S.Touch, TC = globalThis.TouchControls;
+  ok(T && typeof T.aimAssist === 'function', 'the touch module loads in Node without a page');
+  ok(T.ACTIONS.every(a => T.LAYOUT[a]), 'every Serious Sam action has a touch control: ' + T.ACTIONS.filter(a => !T.LAYOUT[a]).join(', '));
+  ok(!T.wanted(), 'without the Parohod98 flag the game has no touch controls');
+  const view = { x: 0, y: 1.6, z: 0, yaw: 0, pitch: 0 };
+  const at = deg => ({ x: Math.sin(deg * Math.PI / 180) * 20, y: 1.6, z: Math.cos(deg * Math.PI / 180) * 20 });
+  const near = T.aimAssist(view, [at(3)], 2, 1 / 60, false);
+  ok(Math.abs(near.scale - 0.6) < 1e-9 && near.dyaw === 0, 'normal assist slows the turn near an enemy and does not pull without fire');
+  const pull = T.aimAssist(view, [at(5)], 2, 1 / 60, true);
+  ok(pull.dyaw > 0 && pull.dyaw <= 8 * Math.PI / 180 / 60 + 1e-12, 'with fire held the view turns to the enemy no faster than 8 deg/s');
+  ok(T.aimAssist(view, [at(20)], 2, 1 / 60, true).scale === 1 && T.aimAssist(view, [at(20)], 2, 1 / 60, true).dyaw === 0, 'enemies outside the cone get no help');
+  const off = T.aimAssist(view, [at(2)], 0, 1 / 60, true);
+  ok(off.scale === 1 && off.dyaw === 0, 'assist off changes nothing');
+  const v0 = TC.stickVector(2, 0, 100, 0.08), v1 = TC.stickVector(150, 0, 100, 0.08), v2 = TC.stickVector(54, 0, 100, 0.08);
+  ok(v0.x === 0 && v1.x === 1 && v2.x > 0.49 && v2.x < 0.51 && v1.over > 1.4, 'the stick has a dead zone, is analog and reports pushing past the ring');
+  const page = fs.readFileSync(path.join(__dirname, '..', 'serious-sam.html'), 'utf8');
+  ok(page.indexOf('js/touch-controls.js') > page.indexOf('ss-ui.js') && page.indexOf('ss-touch.js') > page.indexOf('js/touch-controls.js') && page.indexOf('ss-touch.js') < page.indexOf('<script>'), 'the standalone page loads the touch files before it boots the game');
+  const index = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  ok(!index.includes('ss-touch.js') && !index.includes('touch-controls.js'), 'Win 98 does not load the touch controls');
+  for (const f of [path.join(DIR, 'ss-touch.js'), path.join(DIR, 'ss-ui.js'), path.join(DIR, 'ss-data.js'), path.join(DIR, 'ss-game.js'), path.join(__dirname, '..', 'js', 'touch-controls.js')]) {
+    ok(!/^\s*\/\/|\/\*/m.test(fs.readFileSync(f, 'utf8').replace(/https?:\/\/\S+/g, '')), path.basename(f) + ' has no comments');
+  }
+}
 console.log(`serious-sam: ${checks} checks passed`);

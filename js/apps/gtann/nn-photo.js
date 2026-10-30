@@ -308,6 +308,7 @@
   const cycle = (list, id, d) => { const i = list.findIndex(x => x.id === id); return list[(Math.max(0, i) + d + list.length) % list.length].id; };
   const fmtM = d => (d >= 999 ? '∞' : d >= 20 ? Math.round(d) + ' м' : (Math.round(d * 10) / 10).toString().replace('.', ',') + ' м');
   const HINT = 'WASD, Пробел, Alt — камера · мышь с кнопкой — обзор · колесо — объектив · Q/E — наклон · F — резкость по центру · Enter — снять · H — скрыть · Esc — выйти';
+  const TOUCH_HINT = 'Стик, ВЫШЕ и НИЖЕ — камера · палец — обзор · щипок — объектив · СНЯТЬ — кадр · СКРЫТЬ — панель · «Назад» — выйти';
 
   class Photo {
     constructor(ui) {
@@ -660,7 +661,7 @@
 
     shoot() {
       const ui = this.ui, g = ui.game, w = g.world, pl = w.player;
-      if (N.PhotoAlbum.count() >= PHOTO.roll) { this.deny('Плёнка кончилась: ' + PHOTO.roll + ' кадра из ' + PHOTO.roll + '. Лишние снимки удаляются в «Фотоальбоме» (Esc → Пауза).'); return null; }
+      if (N.PhotoAlbum.count() >= PHOTO.roll) { this.deny('Плёнка кончилась: ' + PHOTO.roll + ' кадра из ' + PHOTO.roll + '. Лишние снимки удаляются в «Фотоальбоме»' + (N.touchUi ? '.' : ' (Esc → Пауза).')); return null; }
       const ids = this.seen();
       const shot = this.capture();
       if (!shot) { this.deny('Не получилось снять.'); return null; }
@@ -786,7 +787,7 @@
         g.shadowOffsetX = g.shadowOffsetY = 1;
         g.fillText((man ? 'фокус ' : 'АФ ') + fmtM(this.focusDist()), cx, cy + b + 4 * S);
         g.restore();
-        this.textBox(g, HINT, mx, H - 8 * S, S, 'bottom', 'rgba(255,255,255,0.85)', 11, 1, mx * 2 - 24 * S);
+        this.textBox(g, (N.touchUi ? TOUCH_HINT : HINT), mx, H - 8 * S, S, 'bottom', 'rgba(255,255,255,0.85)', 11, 1, mx * 2 - 24 * S);
         if (this.edgeT > 0) this.textBox(g, 'Дальше от Тёмы не отойти: ' + this.reach + ' м', mx, H - 52 * S, S, 'bottom', '#ffd23a', 13, Math.min(1, this.edgeT * 2));
       }
       if (this.note) this.textBox(g, this.note.text, mx, 14 * S, S, 'top', '#ffffff', 14, Math.min(1, this.note.t * 2), Math.min(mx * 1.6, 640 * S));

@@ -141,6 +141,8 @@
       const tabs = [
         ['resume', 'Продолжить'], ['map', 'Карта'], ['brief', 'Задание'], ['stats', 'Статистика'], ['photo', 'Фотоаппарат'], ['album', 'Фотоальбом'], ['settings', 'Настройки'], ['controls', 'Управление'], ['quit', 'В главное меню']
       ];
+      if (globalThis.Parohod98Report) tabs.splice(tabs.length - 1, 0, ['report', 'Сообщить об ошибке']);
+      if (globalThis.TouchControls && globalThis.TouchControls.testChannel()) tabs.splice(tabs.length - 1, 0, ['debug', 'Отладка']);
       const items = tabs.map(([id, label]) => ({ label, id, fn: () => this.pauseTab(id) }));
       this.sel = Math.max(0, tabs.findIndex(t => t[0] === tab));
       let content = '';
@@ -160,6 +162,8 @@
 
     pauseTab(id) {
       if (id === 'resume') this.ui.resume();
+      else if (id === 'report') globalThis.Parohod98Report.open();
+      else if (id === 'debug') { this.ui.resume(); this.ui.debug.show(); }
       else if (id === 'quit') { this.ui.exitToMenu(); }
       else if (id === 'photo') {
         this.ui.resume();
@@ -174,7 +178,7 @@
       if (!(this.albumSel >= 0) || this.albumSel >= list.length) this.albumSel = list.length - 1;
       const views = `<div class="nn-alb-views"><h4>Виды Автозавода для «Автозаводца»</h4><p>${got.size} из ${P.VIEWS.length} · ${esc(N.money(P.fee))} за каждый новый вид, за все — премия ${esc(N.money(P.bonus))}. Вид засчитывается, если он целиком и крупно в кадре и ничем не заслонён.</p><ul>${P.VIEWS.map(v => `<li class="${got.has(v.id) ? 'got' : ''}">${got.has(v.id) ? '\u2713' : '\u2022'} ${esc(v.name)}</li>`).join('')}</ul></div>`;
       const where = A.kept() ? 'C:\\Мои документы\\' + P.shown : 'без рабочего стола снимки живут до конца сеанса';
-      if (!list.length) return `<div class="nn-album nn-alb-none"><div class="nn-alb-empty"><b>Плёнка пустая</b><span>F8 или «Фотоаппарат» — снимать. На плёнке ${P.roll} кадра; ${esc(where)}.</span></div>${views}</div>`;
+      if (!list.length) return `<div class="nn-album nn-alb-none"><div class="nn-alb-empty"><b>Плёнка пустая</b><span>${N.touchUi ? '«Фотоаппарат» в паузе' : 'F8 или «Фотоаппарат»'} — снимать. На плёнке ${P.roll} кадра; ${esc(where)}.</span></div>${views}</div>`;
       const sel = this.albumSel, cur = list[sel], m = cur.meta || {}, url = A.read(cur.file) || '';
       const name = id => (P.VIEWS.find(v => v.id === id) || { name: id }).name;
       const facts = [
@@ -187,7 +191,7 @@
       return `<div class="nn-album"><div class="nn-alb-left"><div class="nn-alb-main"><img class="nn-alb-img" src="${esc(url)}" alt="${esc(cur.file)}"></div><div class="nn-alb-strip">${thumbs}</div></div>`
         + `<div class="nn-alb-side"><table class="nn-alb-facts">${facts.map(([a, b]) => `<tr><td>${esc(a)}</td><td>${esc(b)}</td></tr>`).join('')}</table>`
         + `<div class="nn-alb-nav"><button type="button" data-b="prev">\u25c4</button><span>${sel + 1} из ${list.length}</span><button type="button" data-b="next">\u25ba</button></div>`
-        + `<div class="nn-alb-acts"><button type="button" data-b="wall">На рабочий стол <small>B</small></button><button type="button" data-b="view">Открыть в программе <small>O</small></button><button type="button" data-b="del" class="${this.delArm ? 'arm' : ''}">${this.delArm ? 'Точно удалить?' : 'Удалить'} <small>Del</small></button></div>`
+        + `<div class="nn-alb-acts">${globalThis.Parohod98 ? '' : '<button type="button" data-b="wall">На рабочий стол <small>B</small></button><button type="button" data-b="view">Открыть в программе <small>O</small></button>'}<button type="button" data-b="del" class="${this.delArm ? 'arm' : ''}">${this.delArm ? 'Точно удалить?' : 'Удалить'} <small>Del</small></button></div>`
         + `<div class="nn-alb-msg">${esc(this.albumMsg || where)}</div>${views}</div></div>`;
     }
 
@@ -291,7 +295,8 @@
         { label: 'Детализация машин', note: (N.CAR_DETAIL[s.cars] || N.CAR_DETAIL.high).name, fn: () => this.cycleCars(1), adj: d => this.cycleCars(d) },
         { label: 'Детализация города', note: (N.CITY_DETAIL[s.city] || N.CITY_DETAIL.high).name, fn: () => this.cycleCity(1), adj: d => this.cycleCity(d) },
         { label: 'Субтитры', note: s.subtitles !== false ? 'да' : 'нет', fn: () => { s.subtitles = s.subtitles === false; this.ui.applySettings(); this.refreshSettings(); }, adj: () => { s.subtitles = s.subtitles === false; this.ui.applySettings(); this.refreshSettings(); } },
-        { label: 'Траектория броска', note: s.throwAid !== false ? 'да' : 'нет', fn: () => { s.throwAid = s.throwAid === false; this.ui.applySettings(); this.refreshSettings(); }, adj: () => { s.throwAid = s.throwAid === false; this.ui.applySettings(); this.refreshSettings(); } }
+        { label: 'Траектория броска', note: s.throwAid !== false ? 'да' : 'нет', fn: () => { s.throwAid = s.throwAid === false; this.ui.applySettings(); this.refreshSettings(); }, adj: () => { s.throwAid = s.throwAid === false; this.ui.applySettings(); this.refreshSettings(); } },
+        ...(this.ui.touch ? this.ui.touch.settingsRows().map(r => Object.assign({}, r, { fn: () => { r.fn(); this.refreshSettings(); }, adj: d => { r.adj(d); this.refreshSettings(); } })) : [])
       ];
     }
 
@@ -370,7 +375,7 @@
       this.bindList();
     }
 
-    controlsHtml() { return `<table class="nn-stats nn-ctl">${CONTROLS.map(([a, b]) => `<tr><td>${esc(a)}</td><td>${esc(b)}</td></tr>`).join('')}</table>`; }
+    controlsHtml() { return `<table class="nn-stats nn-ctl">${(this.ui.touch ? this.ui.touch.controlsRows() : CONTROLS).map(([a, b]) => `<tr><td>${esc(a)}</td><td>${esc(b)}</td></tr>`).join('')}</table>`; }
 
     controls() {
       this.frame(0, 'Управление', this.controlsHtml() + this.list([{ label: 'Назад', fn: () => this.back() }]));
@@ -394,7 +399,7 @@
     }
 
     save(at) {
-      const slots = N.Game.slots();
+      const slots = N.Game.slots().filter(s => s.slot <= 4);
       const items = slots.map(s => ({ label: 'Ячейка ' + s.slot, note: s.s ? s.s.label + ' · ' + new Date(s.s.savedAt).toLocaleString('ru-RU') : 'пусто', fn: () => {
         const ok = this.ui.game.save(s.slot, at);
         this.ui.game.help(ok ? 'Игра сохранена в ячейку ' + s.slot + '.' : 'Не удалось сохранить игру.');
@@ -407,7 +412,7 @@
 
     load() {
       const slots = N.Game.slots();
-      const items = slots.map(s => ({ label: 'Ячейка ' + s.slot, note: s.s ? s.s.label : 'пусто', disabled: !s.s, fn: () => this.ui.loadGame(s.slot) }));
+      const items = slots.map(s => ({ label: s.slot > 4 ? 'Автосохранение' : 'Ячейка ' + s.slot, note: s.s ? s.s.label : 'пусто', disabled: !s.s, fn: () => this.ui.loadGame(s.slot) }));
       items.push({ label: 'Назад', fn: () => this.back() });
       this.frame(0, 'Загрузить игру', this.list(items, 'nn-mslots'));
       this.bindList();
@@ -455,7 +460,7 @@
       ctx.fillStyle = '#fff';
       ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(7, 8); ctx.lineTo(0, 4); ctx.lineTo(-7, 8); ctx.closePath(); ctx.fill(); ctx.stroke();
       ctx.restore();
-      const hint = 'Колесо — масштаб · тяни мышью · Esc — назад';
+      const hint = N.touchText('Колесо — масштаб · тяни мышью · Esc — назад');
       ctx.fillStyle = 'rgba(0,0,0,0.6)';
       ctx.fillRect(8, 8, ctx.measureText(hint).width + 12, 24);
       ctx.fillStyle = '#fff';
@@ -468,6 +473,7 @@
         c.addEventListener('mousedown', e => { drag = [e.clientX, e.clientY]; });
         window.addEventListener('mouseup', () => { drag = null; });
         c.addEventListener('mousemove', e => { if (!drag) return; V.x -= (e.clientX - drag[0]) / V.zoom; V.z -= (e.clientY - drag[1]) / V.zoom; drag = [e.clientX, e.clientY]; this.drawMap(); });
+        if (this.ui.touch) this.ui.touch.bindMap(c, V, () => this.drawMap());
       }
     }
 

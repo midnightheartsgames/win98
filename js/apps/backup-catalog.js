@@ -41,8 +41,9 @@
     { id: 'cdplayer', group: 'apps', ru: 'Лазерный проигрыватель', en: 'CD Player', icon: 'cdplayer', keys: ['win98_cdplayer_*'] },
     { id: 'emulator', group: 'apps', ru: 'EmuLand: сохранения эмулятора', en: 'EmuLand emulator states', icon: 'emulator', keys: ['win98_emuland_states*'] },
     { id: 'blender204', group: 'apps', ru: 'Blender 2.04: настройки', en: 'Blender 2.04 preferences', icon: 'blender204', keys: ['b204_*'] },
-    { id: 'builtin', group: 'games', ru: 'Стандартные игры: Сапер, Косынка, Солитер, Пинбол', en: 'Standard games: Minesweeper, Solitaire, FreeCell, Pinball', icon: 'minesweeper', keys: ['win98_minesweeper_*', 'win98_solitaire_*', 'win98_freecell_*', 'win98_pinball_*'] },
+    { id: 'builtin', group: 'games', ru: 'Стандартные игры: Сапер, Косынка, Солитер, Пинбол, Безмятежность', en: 'Standard games: Minesweeper, Solitaire, FreeCell, Pinball, Bliss', icon: 'minesweeper', keys: ['win98_minesweeper_*', 'win98_solitaire_*', 'win98_freecell_*', 'win98_pinball_*', 'win98_bliss_*'] },
     { id: 'office', group: 'games', ru: 'Офисные игры: рекорды', en: 'Office games high scores', icon: 'joystick', keys: ['office_games_*'] },
+    { id: 'office2', group: 'games', ru: 'Офисные игры 2: рекорды', en: 'Office Games 2 high scores', icon: 'joystick', keys: ['office_games2_*'] },
     game('hsr98', ['hsr98.*']),
     game('mc98_demo', ['mc98.*'], { id: 'game_mc98' }),
     game('doom', ['doom98-*']),
@@ -59,7 +60,7 @@
     game('gta90', ['gta90_*']),
     game('hl2_demo', ['hl2_2000_*'], { id: 'game_hl2' }),
     game('maxpayne_demo', ['mp98_*'], { id: 'game_maxpayne' }),
-    game('sims3', ['sims3_2000_*']),
+    game('sims3_demo', ['sims3_2000_*'], { id: 'game_sims3' }),
     game('sammax', ['sammax101_*']),
     game('sammax102', ['sammax102_*']),
     game('sammax103', ['sammax103_*']),
@@ -78,7 +79,7 @@
     game('dmc98_demo', ['dmc98-*'], { id: 'game_dmc98' }),
     game('dota', ['dota98-*']),
     game('lol', ['lol98-*']),
-    game('moh98', ['moh98-*']),
+    game('moh98_demo', ['moh98-*'], { id: 'game_moh98' }),
     game('serioussam', ['ss98-*']),
     game('half-life_demo', ['hl98-*'], { id: 'game_half-life' }),
     game('quake3', ['q3a_*']),
@@ -88,6 +89,7 @@
     game('ow98', ['ow98_*']),
     game('tekken98_demo', ['tekken3-98-*'], { id: 'game_tekken3' }),
     game('catniss', ['catniss98_*']),
+    game('kirill98', ['kirill98_*'], { dbs: ['kirill98'] }),
     game('plov', ['plov98_*']),
     game('worldcup98', ['wc98_*']),
     game('burnout', ['win98_burnout_*']),
@@ -100,6 +102,64 @@
 
   const matches = (rule, name) => (rule.endsWith('*') ? name.startsWith(rule.slice(0, -1)) : name === rule);
   const byId = id => components.find(c => c.id === id) || other;
+
+  const PHONE_ONLY_KEYS = ['gtann_settings', 'ss98-options'];
+  const PHONE_ONLY_FORZA = ['gfx', 'res', 'draw', 'flora', 'traffic', 'fps', 'tsteer', 'tslide', 'ttilt', 'tauto', 'tpreset', 'tpresetV'];
+  const GTA_AUTO_SLOT = 'gtann_save_5';
+
+  const localValue = key => {
+    try {
+      return localStorage.getItem(key);
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const forzaForPc = (text, pcText) => {
+    try {
+      const profile = JSON.parse(text);
+      const pc = pcText ? JSON.parse(pcText) : null;
+      const settings = profile.settings || {};
+      for (const key of PHONE_ONLY_FORZA) {
+        delete settings[key];
+        if (pc && pc.settings && pc.settings[key] !== undefined) settings[key] = pc.settings[key];
+      }
+      profile.settings = settings;
+      return JSON.stringify(profile);
+    } catch (e) {
+      return text;
+    }
+  };
+
+  const gtaAutoToSlot = ls => {
+    if (!ls[GTA_AUTO_SLOT]) return;
+    const savedAt = key => {
+      try {
+        return String(JSON.parse(ls[key]).savedAt || '');
+      } catch (e) {
+        return '';
+      }
+    };
+    const slots = [1, 2, 3, 4].map(n => 'gtann_save_' + n);
+    const target = slots.find(k => !ls[k]) || slots.slice().sort((a, b) => savedAt(a).localeCompare(savedAt(b)))[0];
+    if (!ls[target] || savedAt(GTA_AUTO_SLOT) >= savedAt(target)) ls[target] = ls[GTA_AUTO_SLOT];
+    delete ls[GTA_AUTO_SLOT];
+  };
+
+  const fromPhone = raw => {
+    const component = 'game_' + raw.game;
+    const ls = {};
+    for (const [k, v] of Object.entries(raw.keys || {})) if (Catalog.componentOfKey(k) === component && !PHONE_ONLY_KEYS.includes(k)) ls[k] = typeof v === 'string' ? v : JSON.stringify(v);
+    if (!Object.keys(ls).length) return null;
+    for (const key of PHONE_ONLY_KEYS) {
+      const pc = Catalog.componentOfKey(key) === component ? localValue(key) : null;
+      if (pc !== null) ls[key] = pc;
+    }
+    if (ls.fh_riga_profile_v1) ls.fh_riga_profile_v1 = forzaForPc(ls.fh_riga_profile_v1, localValue('fh_riga_profile_v1'));
+    gtaAutoToSlot(ls);
+    const c = byId(component);
+    return { label: 'Пароход 98: ' + Catalog.nameOf(c, true), created: raw.date, data: { ls, idb: {} } };
+  };
 
   const gameEntry = c => (c.gameId && window.gameManager && window.gameManager.catalog ? window.gameManager.catalog[c.gameId] : null);
 
@@ -124,6 +184,7 @@
       return (g && g.icon) || c.icon || 'joystick';
     },
     convertForeign(raw) {
+      if (raw.format === 'Parohod98-saves') return fromPhone(raw);
       const slots = raw.format === 'StarRail98-saves' && raw.slots ? raw.slots : null;
       const ls = {};
       if (slots) {

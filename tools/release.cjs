@@ -635,6 +635,272 @@ async function releaseSr98(args) {
   await verify(product, channel);
 }
 
+const PAROHOD = { product: 'parohod98', notes: path.join(ROOT, 'releases', 'parohod98'), minApk: '1.0', credit: 'Игра проекта Win 98 · фанатский проект Midnight Hearts' };
+
+function packageDigest(dir, files) {
+  const games = require('./parohod98-game.cjs');
+  const lines = files.slice().sort().map(rel => rel + ' ' + sha256(games.digestText(rel, fs.readFileSync(path.join(dir, rel)))));
+  return sha256(lines.join('\n'));
+}
+
+async function gameManifest(built, meta) {
+  const cache = readJson(PACKED_CACHE, {});
+  const files = [];
+  for (const rel of built.files.slice().sort()) {
+    const full = path.join(built.out, rel);
+    const size = fs.statSync(full).size;
+    const sha = await hashFile(full);
+    const row = [rel, size, sha, await makeBlob(full, size, sha, cache)];
+    if (built.parts[rel]) row.push(built.parts[rel]);
+    files.push(row);
+  }
+  fs.mkdirSync(WORK, { recursive: true });
+  fs.writeFileSync(PACKED_CACHE, JSON.stringify(cache));
+  return Object.assign({ format: 'win98-manifest', v: 1, product: PAROHOD.product }, meta, { files });
+}
+
+function sumFiles(files, part) {
+  const rows = files.filter(f => (f[4] || '') === part);
+  return { files: rows.length, bytes: rows.reduce((s, f) => s + f[1], 0), download: rows.reduce((s, f) => s + (f[3] || f[1]), 0) };
+}
+
+async function storeBlob(file, cache) {
+  const size = fs.statSync(file).size;
+  const sha = await hashFile(file);
+  await makeBlob(file, size, sha, cache);
+  return sha;
+}
+
+async function gameEntry(id, manifest, digest) {
+  const games = require('./parohod98-game.cjs');
+  const info = games.storeInfo(id);
+  checkNames(JSON.stringify([info.title, info.subtitle, info.genre, info.tags, info.desc, info.shots.map(s => s.caption)]), 'js/game-manager.js ' + id);
+  const cache = readJson(PACKED_CACHE, {});
+  const iconFile = path.join(WORK, 'parohod98-icons', id + '.png');
+  fs.mkdirSync(path.dirname(iconFile), { recursive: true });
+  fs.writeFileSync(iconFile, info.icon);
+  const icon = await storeBlob(iconFile, cache);
+  const shots = [];
+  for (const s of info.shots) shots.push({ sha256: await storeBlob(s.file, cache), caption: s.caption });
+  fs.writeFileSync(PACKED_CACHE, JSON.stringify(cache));
+  const parts = {};
+  for (const [name, part] of Object.entries(games.GAMES[id].parts)) {
+    const sum = sumFiles(manifest.files, name);
+    if (sum.files) parts[name] = Object.assign({ title: part.title }, sum);
+  }
+  return Object.assign({
+    version: manifest.version, date: manifest.date, minApk: PAROHOD.minApk,
+    manifest: id + '/manifest-' + manifest.version + '.json', notes: id + '/notes.json', digest
+  }, sumFiles(manifest.files, ''), {
+    title: info.title, subtitle: info.subtitle, genre: info.genre, tags: info.tags, desc: info.desc, credit: PAROHOD.credit,
+    icon, shots, parts, needs: games.GAMES[id].needs || []
+  });
+}
+
+function emptyCatalog(channel) {
+  return { format: 'win98-update', v: 1, product: PAROHOD.product, channel, date: '', commit: '', blobs: '../blobs/', games: {} };
+}
+
+async function releaseParohodGames(args, ids) {
+  const games = require('./parohod98-game.cjs');
+  const key = loadKey();
+  const channel = args.channel || 'test';
+  if (!['test', 'stable'].includes(channel)) throw new Error('--channel is test or stable');
+  const all = Object.keys(games.GAMES);
+  ids = ids.length ? ids : all;
+  for (const id of ids) if (!all.includes(id)) throw new Error('unknown game ' + id + ': ' + all.join(', '));
+  const git = gitState();
+  if (git.dirty && !(args.dirty && channel === 'test')) throw new Error('Uncommitted changes. Commit first, or use --dirty for the test channel.');
+  const ptrs = await pointers(PAROHOD.product);
+  const catalog = JSON.parse(JSON.stringify(ptrs[channel] || emptyCatalog(channel)));
+  const now = new Date();
+  const out = path.join(WORK, 'out-parohod98-' + Date.now());
+  const metaFiles = [];
+  const blobs = [];
+  const released = [];
+  for (const id of ids) {
+    const prev = (ptrs.test && ptrs.test.games[id]) || (ptrs.stable && ptrs.stable.games[id]) || null;
+    const dir = path.join(ROOT, 'dist', 'parohod98-games', id);
+    const draft = games.build(id, dir, { edition: 'apk', version: prev ? prev.version : '1.0' });
+    const digest = packageDigest(dir, draft.files);
+    if (prev && prev.digest === digest) {
+      console.log(games.GAMES[id].title + ': no changes since ' + prev.version);
+      continue;
+    }
+    const nextFile = path.join(PAROHOD.notes, id, 'next.md');
+    if (!fs.existsSync(nextFile)) throw new Error(games.GAMES[id].title + ' changed: write ' + path.relative(ROOT, nextFile) + ' first (what is new, for players)');
+    const notes = parseNotes(fs.readFileSync(nextFile, 'utf8'), path.relative(ROOT, nextFile));
+    const version = nextVersion({ stable: ptrs.stable && ptrs.stable.games[id], test: ptrs.test && ptrs.test.games[id] });
+    console.log(games.GAMES[id].title + ' ' + version + ' → channel ' + channel + (git.dirty ? ' (dirty)' : ''));
+    const built = games.build(id, dir, { edition: 'apk', version });
+    if (!args['no-check']) {
+      const check = await games.checkPackage(id, dir);
+      console.log('  main menu in Edge, ' + check.requests + ' requests, no exceptions');
+    }
+    const manifest = await gameManifest(built, { game: id, version, date: isoDate(now), commit: git.commit });
+    const entry = await gameEntry(id, manifest, digest);
+    const date = isoDate(now).split('-').reverse().join('.');
+    const notesEntry = { version, build: '', date, title: notes.title, summary: notes.summary, sections: notes.sections, fixed: notes.fixed };
+    metaFiles.push(...writeSigned(out, PAROHOD.product + '/' + entry.manifest, manifest, key));
+    metaFiles.push(...writeSigned(out, PAROHOD.product + '/' + entry.notes, notesJson(PAROHOD.product + '/' + id, path.join(PAROHOD.notes, id), notesEntry), key));
+    blobs.push(...manifest.files.map(f => blobPath(f[2])), blobPath(entry.icon), ...entry.shots.map(s => blobPath(s.sha256)));
+    catalog.games[id] = entry;
+    released.push({ id, version, notes, date, nextFile });
+    console.log('  ' + entry.files + ' files, ' + mb(entry.bytes) + ', download ' + mb(entry.download) + Object.entries(entry.parts).map(([n, p]) => ', part ' + n + ' ' + mb(p.download)).join(''));
+  }
+  if (!released.length) {
+    console.log('Nothing to release.');
+    return;
+  }
+  Object.assign(catalog, { channel, date: isoDate(now), commit: git.commit });
+  const pointerName = PAROHOD.product + '/' + channel + '.json';
+  metaFiles.push(...writeSigned(out, pointerName, catalog, key));
+  await upload(PAROHOD.product, out, metaFiles, pointerName, blobs);
+  fs.rmSync(out, { recursive: true, force: true });
+  for (const r of released) {
+    fs.writeFileSync(path.join(PAROHOD.notes, r.id, r.version + '.md'), versionMd(r.notes, r.version, '', r.date, []));
+    fs.rmSync(r.nextFile);
+    console.log('Notes: ' + path.relative(ROOT, path.join(PAROHOD.notes, r.id, r.version + '.md')) + ' (next.md removed)');
+  }
+  await verifyParohod(channel);
+}
+
+async function parohodBundle(channel) {
+  const rel = PAROHOD.product + '/' + channel + '.json';
+  const q = '?t=' + Date.now();
+  const [a, b] = await Promise.all([getPublic(PUBLIC_URL + '/' + rel + q), getPublic(PUBLIC_URL + '/' + rel + '.sig' + q)]);
+  if (!a.data || !b.data) return null;
+  const sig = b.data.toString('utf8').trim();
+  if (!verifyBytes(a.data, sig)) throw new Error(rel + ': bad signature');
+  const catalog = JSON.parse(a.data.toString('utf8'));
+  const pictures = {};
+  for (const g of Object.values(catalog.games || {})) {
+    for (const sha of [g.icon].concat((g.shots || []).map(s => s.sha256))) {
+      const { data } = await getPublic(PUBLIC_URL + '/blobs/' + blobPath(sha));
+      if (!data) throw new Error('picture ' + sha + ' is missing on the server');
+      const raw = data[0] === 0x1f && data[1] === 0x8b ? zlib.gunzipSync(data) : data;
+      if (sha256(raw) !== sha) throw new Error('picture ' + sha + ' does not match');
+      pictures[sha] = raw;
+    }
+  }
+  return { catalog: a.data, sig, pictures };
+}
+
+async function releaseParohodApk(args) {
+  const key = loadKey();
+  const channel = args.channel || 'test';
+  if (!['test', 'stable'].includes(channel)) throw new Error('--channel is test or stable');
+  const git = gitState();
+  if (git.dirty && !(args.dirty && channel === 'test')) throw new Error('Uncommitted changes. Commit first, or use --dirty for the test channel.');
+  const nextFile = path.join(PAROHOD.notes, 'next.md');
+  if (!fs.existsSync(nextFile)) throw new Error('Write ' + path.relative(ROOT, nextFile) + ' first (what is new in the launcher, for players)');
+  const notes = parseNotes(fs.readFileSync(nextFile, 'utf8'), path.relative(ROOT, nextFile));
+  const ptrs = await pointers(PAROHOD.product);
+  const known = { stable: ptrs.stable && ptrs.stable.apk && { version: ptrs.stable.apk.versionName }, test: ptrs.test && ptrs.test.apk && { version: ptrs.test.apk.versionName } };
+  const version = args.version || nextVersion(known);
+  if (!/^\d+\.\d+$/.test(version)) throw new Error('launcher versions are 1.N, not ' + version);
+  for (const k of [known.stable, known.test]) if (k && compareVersions(version, k.version) <= 0) throw new Error('version ' + version + ' is not newer than ' + k.version);
+  console.log('Пароход 98 ' + version + ' → channel ' + channel + (git.dirty ? ' (dirty)' : ''));
+  const apkFile = path.join(ROOT, 'dist', 'Parohod98.apk');
+  const bundle = await parohodBundle(channel);
+  const apk = require('./parohod98-apk.cjs').buildApk(apkFile, { version, bundle });
+  console.log('  APK ' + mb(apk.size) + ', versionCode ' + apk.versionCode + ', catalog copy with ' + Object.keys(bundle ? JSON.parse(bundle.catalog).games : {}).length + ' games and ' + apk.bundled + ' pictures');
+  const now = new Date();
+  const date = isoDate(now).split('-').reverse().join('.');
+  const out = path.join(WORK, 'out-parohod98-apk-' + version);
+  fs.rmSync(out, { recursive: true, force: true });
+  fs.mkdirSync(path.join(out, PAROHOD.product), { recursive: true });
+  const apkName = 'Parohod98-' + version + '.apk';
+  fs.copyFileSync(apkFile, path.join(out, PAROHOD.product, apkName));
+  const metaFiles = [PAROHOD.product + '/' + apkName];
+  const entry = { version, build: '', date, title: notes.title, summary: notes.summary, sections: notes.sections, fixed: notes.fixed };
+  metaFiles.push(...writeSigned(out, PAROHOD.product + '/notes.json', notesJson(PAROHOD.product, PAROHOD.notes, entry), key));
+  const catalog = JSON.parse(JSON.stringify(ptrs[channel] || emptyCatalog(channel)));
+  catalog.apk = { url: apkName, versionName: version, versionCode: apk.versionCode, bytes: apk.size, sha256: await hashFile(apkFile) };
+  Object.assign(catalog, { channel, date: isoDate(now), commit: git.commit });
+  const pointerName = PAROHOD.product + '/' + channel + '.json';
+  metaFiles.push(...writeSigned(out, pointerName, catalog, key));
+  await upload(PAROHOD.product, out, metaFiles, pointerName, []);
+  fs.rmSync(out, { recursive: true, force: true });
+  fs.writeFileSync(path.join(PAROHOD.notes, version + '.md'), versionMd(notes, version, '', date, []));
+  fs.rmSync(nextFile);
+  console.log('Notes: releases/parohod98/' + version + '.md (next.md removed)');
+  console.log('Link: ' + PUBLIC_URL + '/' + PAROHOD.product + '/' + apkName);
+  await verifyParohod(channel);
+}
+
+async function promoteParohod(id, version) {
+  const key = loadKey();
+  const ptrs = await pointers(PAROHOD.product);
+  const stable = JSON.parse(JSON.stringify(ptrs.stable || emptyCatalog('stable')));
+  if (id === 'apk') {
+    const apk = ptrs.test && ptrs.test.apk;
+    if (!apk || apk.versionName !== version) throw new Error('test channel has launcher ' + (apk ? apk.versionName : 'nothing') + ', not ' + version);
+    if (stable.apk && compareVersions(version, stable.apk.versionName) <= 0) throw new Error('stable already has launcher ' + stable.apk.versionName);
+    stable.apk = apk;
+  } else {
+    const entry = ptrs.test && ptrs.test.games[id];
+    if (!entry || entry.version !== version) throw new Error('test channel has ' + id + ' ' + (entry ? entry.version : 'nothing') + ', not ' + version);
+    if (stable.games[id] && compareVersions(version, stable.games[id].version) <= 0) throw new Error('stable already has ' + id + ' ' + stable.games[id].version);
+    stable.games[id] = entry;
+  }
+  Object.assign(stable, { channel: 'stable', date: isoDate(), commit: gitState().commit });
+  const out = path.join(WORK, 'promote-parohod98');
+  fs.rmSync(out, { recursive: true, force: true });
+  const pointerName = PAROHOD.product + '/stable.json';
+  await upload(PAROHOD.product, out, writeSigned(out, pointerName, stable, key), pointerName, []);
+  await verifyParohod('stable');
+}
+
+async function checkBlobs(files, count) {
+  const pool = files.slice();
+  const sample = [];
+  for (let i = 0; i < count && pool.length; i++) sample.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+  let bytes = 0;
+  for (const [rel, size, sha, packed] of sample) {
+    const { res, data } = await getPublic(PUBLIC_URL + '/blobs/' + blobPath(sha));
+    if (!data) throw new Error(rel + ': HTTP ' + res.status);
+    const raw = packed ? zlib.gunzipSync(data) : data;
+    if (raw.length !== size || sha256(raw) !== sha) throw new Error(rel + ': blob does not match the manifest');
+    bytes += data.length;
+  }
+  return { sample, bytes };
+}
+
+async function verifyParohod(channel) {
+  const ptr = await getSignedPublic(PAROHOD.product + '/' + channel + '.json');
+  if (!ptr) throw new Error(PAROHOD.product + '/' + channel + '.json is missing');
+  if (ptr.apk) {
+    const notes = await getSignedPublic(PAROHOD.product + '/notes.json');
+    if (!notes || !notes.versions.some(v => v.version === ptr.apk.versionName)) throw new Error('launcher notes have no ' + ptr.apk.versionName);
+    const { res, data } = await getPublic(PUBLIC_URL + '/' + PAROHOD.product + '/' + ptr.apk.url);
+    if (!data || data.length !== ptr.apk.bytes || sha256(data) !== ptr.apk.sha256) throw new Error(ptr.apk.url + ': HTTP ' + res.status + ', does not match the catalog');
+    const head = await fetch(PUBLIC_URL + '/' + PAROHOD.product + '/' + ptr.apk.url, { method: 'HEAD' });
+    console.log('Verified parohod98 ' + channel + ' launcher ' + ptr.apk.versionName + ': ' + ptr.apk.url + ' ' + mb(data.length) + ' sha256 ok, versionCode ' + ptr.apk.versionCode + ', type ' + head.headers.get('content-type'));
+  }
+  for (const [id, g] of Object.entries(ptr.games)) {
+    const manifest = await getSignedPublic(PAROHOD.product + '/' + g.manifest);
+    if (!manifest || manifest.version !== g.version || manifest.game !== id) throw new Error(id + ': manifest does not match the catalog');
+    const notes = await getSignedPublic(PAROHOD.product + '/' + g.notes);
+    if (!notes || !notes.versions.some(v => v.version === g.version)) throw new Error(id + ': notes have no ' + g.version);
+    const pictures = [g.icon].concat(g.shots.map(s => s.sha256));
+    for (const sha of pictures) {
+      const { res, data } = await getPublic(PUBLIC_URL + '/blobs/' + blobPath(sha));
+      if (!data || sha256(data) !== sha) throw new Error(id + ': picture ' + sha + ' HTTP ' + res.status);
+    }
+    const { sample, bytes } = await checkBlobs(manifest.files, 12);
+    const radio = manifest.files.find(f => f[4]);
+    let range = '';
+    if (radio) {
+      const r = await fetch(PUBLIC_URL + '/blobs/' + blobPath(radio[2]), { headers: { Range: 'bytes=0-99' } });
+      await r.arrayBuffer();
+      if (r.status !== 206) throw new Error(id + ': Range request gave ' + r.status);
+      range = ', Range ' + r.status;
+    }
+    console.log('Verified parohod98 ' + channel + ' ' + id + ' ' + g.version + ': signatures ok, ' + sample.length + ' blobs ok (' + mb(bytes) + '), ' + pictures.length + ' pictures' + range);
+  }
+}
+
 async function uploadFull(product, version) {
   const p = PRODUCTS[product];
   const zip = path.join(ROOT, 'dist', 'Win98.new.zip');
@@ -680,18 +946,7 @@ async function verify(product, channel) {
   if (!manifest || manifest.version !== ptr.version) throw new Error('manifest does not match the pointer');
   await getSignedPublic(product + '/notes.json');
   await getSignedPublic(product + '/news.json');
-  const files = manifest.files.slice();
-  const sample = [];
-  for (let i = 0; i < 20 && files.length; i++) sample.push(files.splice(Math.floor(Math.random() * files.length), 1)[0]);
-  let bytes = 0;
-  for (const [rel, size, sha, packed] of sample) {
-    const url = PUBLIC_URL + '/blobs/' + blobPath(sha);
-    const { res, data } = await getPublic(url);
-    if (!data) throw new Error(rel + ': HTTP ' + res.status);
-    const raw = packed ? zlib.gunzipSync(data) : data;
-    if (raw.length !== size || sha256(raw) !== sha) throw new Error(rel + ': blob does not match the manifest');
-    bytes += data.length;
-  }
+  const { sample, bytes } = await checkBlobs(manifest.files, 20);
   const one = sample.find(f => (f[3] || f[1]) > 200) || sample[0];
   const range = await fetch(PUBLIC_URL + '/blobs/' + blobPath(one[2]), { headers: { Range: 'bytes=0-99' } });
   await range.arrayBuffer();
@@ -707,6 +962,12 @@ async function status() {
       const p = ptrs[ch];
       console.log(product.padEnd(6) + ch.padEnd(7) + (p ? displayVersion(p) + '  ' + p.date + '  ' + p.commit + (p.full ? '  full ' + p.full.version : '') : '—'));
     }
+  }
+  const ptrs = await pointers(PAROHOD.product);
+  for (const ch of ['stable', 'test']) {
+    const p = ptrs[ch];
+    const games = p ? Object.entries(p.games).map(([id, g]) => id + ' ' + g.version).join(', ') : '';
+    console.log('parohod98 ' + ch.padEnd(7) + (p ? (p.apk ? 'apk ' + p.apk.versionName + '  ' : '') + (games || 'no games') + '  ' + p.date + '  ' + p.commit : '—'));
   }
   console.log(ssh('cd ' + REMOTE_DIR + ' && du -sh . blobs 2>/dev/null | tr "\\t" " "; echo "$(find blobs -type f | wc -l) blobs"').trim());
 }
@@ -728,6 +989,24 @@ async function gc(args) {
     for (const n of apks.filter((n, i) => i >= keep && !liveApk.includes(n))) dropFiles.push(product + '/' + n);
     for (const n of kept) {
       const m = JSON.parse(ssh('cat ' + REMOTE_DIR + '/' + product + '/' + n));
+      for (const f of m.files) referenced.add(blobPath(f[2]));
+    }
+  }
+  const pp = await pointers(PAROHOD.product);
+  const liveLauncher = [pp.stable, pp.test].filter(p => p && p.apk).map(p => p.apk.url);
+  const launcherApks = ssh('cd ' + REMOTE_DIR + ' && ls ' + PAROHOD.product + '/ 2>/dev/null | grep -E "^Parohod98-[0-9.]+\\.apk$" || true').split('\n').filter(Boolean)
+    .sort((a, b) => compareVersions(b.replace(/^Parohod98-|\.apk$/g, ''), a.replace(/^Parohod98-|\.apk$/g, '')));
+  for (const n of launcherApks.filter((n, i) => i >= keep && !liveLauncher.includes(n))) dropFiles.push(PAROHOD.product + '/' + n);
+  const liveGames = [pp.stable, pp.test].filter(Boolean).flatMap(p => Object.entries(p.games));
+  for (const [, g] of liveGames) for (const sha of [g.icon].concat(g.shots.map(s => s.sha256))) referenced.add(blobPath(sha));
+  for (const id of [...new Set(liveGames.map(([id]) => id))]) {
+    const live = liveGames.filter(([gid]) => gid === id).map(([, g]) => path.posix.basename(g.manifest));
+    const names = ssh('cd ' + REMOTE_DIR + ' && ls ' + PAROHOD.product + '/' + id + '/ 2>/dev/null | grep -E "^manifest-.*\\.json$" || true').split('\n').filter(Boolean)
+      .sort((a, b) => compareVersions(b.replace(/^manifest-|\.json$/g, ''), a.replace(/^manifest-|\.json$/g, '')));
+    const kept = names.filter((n, i) => i < keep || live.includes(n));
+    for (const n of names.filter(n => !kept.includes(n))) dropFiles.push(PAROHOD.product + '/' + id + '/' + n, PAROHOD.product + '/' + id + '/' + n + '.sig');
+    for (const n of kept) {
+      const m = JSON.parse(ssh('cat ' + REMOTE_DIR + '/' + PAROHOD.product + '/' + id + '/' + n));
       for (const f of m.files) referenced.add(blobPath(f[2]));
     }
   }
@@ -784,9 +1063,11 @@ const USAGE = [
   '  win98 [--channel test|stable] [--version 1.N] [--full] [--dirty] [--skip-build] [--no-smoke] [--ignore-errors]',
   '  news [win98|sr98]',
   '  sr98 [--channel test|stable] [--version 1.6.N] [--full] [--no-pc] [--dirty] [--no-smoke] [--ignore-errors]',
-  '  promote win98|sr98 <version>',
+  '  parohod98 [--channel test|stable] [--version 1.N] [--dirty]',
+  '  parohod98 games [serioussam forza gtann] [--channel test|stable] [--no-check] [--dirty]',
+  '  promote win98|sr98 <version> | promote parohod98 apk|<game> <version>',
   '  status',
-  '  verify win98|sr98 [--channel test|stable]',
+  '  verify win98|sr98|parohod98 [--channel test|stable]',
   '  gc [--keep 5] [--yes]',
   '  keygen [--force] | ping'
 ].join('\n');
@@ -800,8 +1081,12 @@ async function main(argv) {
   if (cmd === 'win98') return releaseWin98(args);
   if (cmd === 'sr98') return releaseSr98(args);
   if (cmd === 'news') return uploadNews(a1 || 'win98');
+  if (cmd === 'parohod98' && a1 === 'games') return releaseParohodGames(args, args._.slice(2));
+  if (cmd === 'parohod98' && !a1) return releaseParohodApk(args);
+  if (cmd === 'promote' && a1 === PAROHOD.product && a2 && args._[3]) return promoteParohod(a2, args._[3]);
   if (cmd === 'promote' && PRODUCTS[a1] && a2) return promote(a1, a2);
   if (cmd === 'status') return status();
+  if (cmd === 'verify' && a1 === PAROHOD.product) return verifyParohod(args.channel || 'test');
   if (cmd === 'verify' && PRODUCTS[a1]) return verify(a1, args.channel || 'test');
   if (cmd === 'gc') return gc(args);
   console.log(USAGE);
@@ -815,4 +1100,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { nextSr98Version, EXE_EXCLUDED, RELEASE_FILE, VERSION_PATTERN, PRODUCTS, buildDate, isoDate, displayVersion, listFiles, hashTree, writeRelease, publicKeyText, parseNotes, versionMd, notesJson, newsJson, checkNames, nextVersion, fixedReports };
+module.exports = { packageDigest, gameManifest, gameEntry, emptyCatalog, parohodBundle, PAROHOD, nextSr98Version,EXE_EXCLUDED, RELEASE_FILE, VERSION_PATTERN, PRODUCTS, buildDate, isoDate, displayVersion, listFiles, hashTree, writeRelease, publicKeyText, parseNotes, versionMd, notesJson, newsJson, checkNames, nextVersion, fixedReports };

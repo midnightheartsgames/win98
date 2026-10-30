@@ -414,7 +414,11 @@ vec3 skyCol(vec3 d, out float occ) {
 }`;
 
   const SKY_FS = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 uniform mat4 uInv; uniform float uDither; uniform float uMask;
 varying vec2 vP;` + SKY_FN + `
 void main() {
@@ -430,7 +434,11 @@ void main() {
 }`;
 
   const ENV_FS = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 uniform mat4 uInv; uniform vec3 uGround; uniform float uCity;
 varying vec2 vP;` + SKY_FN + `
 void main() {
@@ -1127,7 +1135,12 @@ void main() {
       const view = M4.lookAt(cam.x, cam.y, cam.z, cam.tx, cam.ty, cam.tz, cam.ux || 0, cam.uy === undefined ? 1 : cam.uy, cam.uz || 0);
       const vp = M4.mul(proj, view);
       this.eyeY = cam.y;
-      return { proj, view, vp, planes: M4.planes(vp), inv: M4.invert(vp) };
+      const skyProj = M4.persp(cam.fov * Math.PI / 180, aspect, 1, 2);
+      if (cam.mirror) skyProj[0] = -skyProj[0];
+      if (cam.shiftX) skyProj[8] = -cam.shiftX;
+      const turn = view.slice();
+      turn[12] = turn[13] = turn[14] = 0;
+      return { proj, view, vp, planes: M4.planes(vp), inv: M4.invert(vp), skyInv: M4.invert(M4.mul(skyProj, turn)) };
     }
 
     setGfx(mode) { this.opts.gfx = mode; }
@@ -1316,7 +1329,7 @@ void main() {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.skyBuf);
       gl.enableVertexAttribArray(s.a.aP);
       gl.vertexAttribPointer(s.a.aP, 2, gl.FLOAT, false, 0, 0);
-      gl.uniformMatrix4fv(s.u.uInv, false, C.inv);
+      gl.uniformMatrix4fv(s.u.uInv, false, C.skyInv || C.inv);
       this.skyUniforms(s, env, false);
       const fd = env.flashDir || [0, 1, 0];
       gl.uniform4f(s.u.uFlash, fd[0], fd[1], fd[2], env.flash || 0);

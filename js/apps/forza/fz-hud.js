@@ -52,17 +52,24 @@
       c.clearRect(0, 0, w, h);
       if (!ui.game || ui.mode !== 'play') { this.drawBanners(c, w, h); return; }
       const g = ui.game;
-      const s = Math.min(1.25, Math.max(0.62, h / 720));
+      const L = this.layout = ui.touch ? ui.touch.hudLayout() : null;
+      const s = Math.min(1.25, Math.max(L ? L.minScale : 0.62, h / 720));
       this.s = s;
       if (ui.mirrorRect) this.drawMirror(c, w, h, ui.mirrorRect);
       if (ui.menuOpen) { this.drawToasts(c, w, h, s); this.drawBanners(c, w, h); return; }
       if (ui.rewinding) this.drawRewind(c, w, h, s);
+      c.save();
+      if (L) c.translate(0, L.topDy);
       if (g.race) this.drawRace(c, w, h, s, ui);
       else this.drawFree(c, w, h, s, ui);
+      c.restore();
       if (ui.showHud !== false) {
         this.drawMinimap(c, w, h, s, ui);
+        c.save();
+        if (L) c.translate(0, -L.lift);
         this.drawSpeedo(c, w, h, s, ui);
         this.drawDamage(c, w, h, s, ui);
+        c.restore();
       }
       this.drawChain(c, w, h, s, ui);
       this.drawToasts(c, w, h, s);
@@ -300,9 +307,10 @@
 
     drawMinimap(c, w, h, s, ui) {
       const g = ui.game, v = g.veh;
-      const R = 88 * s;
-      const cx = 30 * s + R, cy = h - 30 * s - R;
-      const scale = (g.race ? 0.55 : 0.42) * s;
+      const M = this.layout && this.layout.map;
+      const R = 88 * s * (M ? M.k : 1);
+      const cx = M ? M.cx : 30 * s + R, cy = M ? M.cy : h - 30 * s - R;
+      const scale = (g.race ? 0.55 : 0.42) * s * (M ? M.k : 1);
       c.save();
       c.beginPath(); c.arc(cx, cy, R, 0, Math.PI * 2); c.closePath();
       c.fillStyle = 'rgba(8,10,14,0.55)'; c.fill();

@@ -2504,6 +2504,136 @@ section('camera', () => {
   ok(/\['Обзор мышью', 'mlook'/.test(menus) && /'msens'/.test(menus) && /'minv'/.test(menus) && /'mret'/.test(menus) && /<kbd>Мышь<\/kbd> обзор/.test(menus) && /\.fz-looking \.fz-view \{ cursor: none; \}/.test(css), 'mouse look settings, key help and a hidden cursor while looking');
 });
 
+section('touch', () => {
+  require(path.join(ROOT, 'js/touch-controls.js'));
+  require(path.join(DIR, 'fz-touch.js'));
+  const TC = globalThis.TouchControls, T = F.Touch;
+  const src = read('js/apps/forza/fz-touch.js');
+  for (const a of T.ACTIONS) {
+    const where = T.LAYOUT[a];
+    ok(!!where, 'touch action ' + a + ' has a place on the pad');
+    for (const name of where.split('|').map(w => w.split(':')[0])) ok(name === 'slider' && /this\.slider = tc\.slider/.test(src) || name === 'tilt' && /bridge\.tilt\(\)/.test(src) || name === 'buttons' && /this\.left = tc\.button/.test(src) || new RegExp('this\\.' + name + ' = (tc\\.|top\\()|this\\.' + name + ' = \\{').test(src), a + ' -> ' + name + ' is built');
+  }
+  const methods = Object.getOwnPropertyNames(T.prototype);
+  const fields = [...src.matchAll(/this\.([a-zA-Z]+) = /g)].map(m => m[1]);
+  ok(fields.length > 20 && fields.every(f => !methods.includes(f)), 'no pad field hides a method of the pad: ' + fields.filter(f => methods.includes(f)).join(', '));
+  let prev = -1, jump = 0;
+  for (let mm = -40; mm <= 40; mm += 0.16) {
+    const v = TC.slide(mm, 18, 0.04);
+    jump = Math.max(jump, Math.abs(v - prev));
+    prev = v;
+  }
+  ok(jump < 0.012 && TC.slide(18, 18, 0.04) === 1 && TC.slide(-30, 18, 0.04) === -1 && TC.slide(0.5, 18, 0.04) === 0, 'the slider turns the wheel smoothly pixel by pixel, full lock at 18 mm, a small dead zone: biggest step ' + jump.toFixed(4));
+  prev = -1; jump = 0;
+  for (let a = -60; a <= 60; a += 0.1) {
+    const v = T.tiltSteer(a, 0, 25, 2);
+    jump = Math.max(jump, Math.abs(v - prev));
+    prev = v;
+  }
+  ok(jump < 0.01 && T.tiltSteer(1.5, 0, 25, 2) === 0 && T.tiltSteer(25, 0, 25, 2) === 1 && T.tiltSteer(-40, 0, 25, 2) === -1, 'tilt steering has no jumps, a 2 degree dead zone and full lock at 25 degrees: biggest step ' + jump.toFixed(4));
+  ok(Math.abs(T.tiltSteer(-175, 175, 25, 2) - T.tiltSteer(10, 0, 25, 2)) < 1e-9 && T.tiltSteer(NaN, 0, 25, 2) === 0, 'tilt across 180 degrees and a phone without the sensor stay sane');
+  const stub = (part, over) => Object.assign({ tc: { visible: true, userHidden: false }, steerValue: () => ({ steer: 0.5, analog: true }), pedals: { part }, hand: { down: false }, rewind: { down: false }, fix: { down: false }, settings: () => ({ tauto: false }) }, over || {});
+  const merge = (st, inp) => T.prototype.merge.call(st, Object.assign({ thr: 0, brk: 0, steer: 0, analog: false, hand: false, rewind: false, fix: false }, inp || {}));
+  let i = merge(stub('gas'));
+  ok(i.thr === 1 && i.brk === 0 && i.steer === 0.5 && i.analog, 'gas pedal and slider reach the game input');
+  i = merge(stub('brake'));
+  ok(i.thr === 0 && i.brk === 1, 'rolling the finger onto the brake releases the gas');
+  i = merge(stub(null, { settings: () => ({ tauto: true }) }));
+  ok(i.thr === 1, 'auto throttle keeps the gas pressed');
+  i = merge(stub('brake', { settings: () => ({ tauto: true }) }));
+  ok(i.thr === 0 && i.brk === 1, 'auto throttle lets go on the brake');
+  i = merge(stub(null, { settings: () => ({ tauto: true }), hand: { down: true } }));
+  ok(i.thr === 0 && i.hand, 'auto throttle lets go on the handbrake');
+  i = merge(stub(null, { tc: { visible: true, userHidden: true }, steerValue: () => ({ steer: 1, analog: true }) }), { thr: 1, steer: -1 });
+  ok(i.thr === 1 && i.steer === -1, 'a real keyboard hides the pad and keeps its own input');
+  const drive = (toFinger) => {
+    const profile = F.Profile.newProfile('touch');
+    profile.settings.traffic = 0;
+    const game = new F.Game(world, { profile });
+    const race = game.startEvent('vecriga', { difficulty: 1, seed: 3 });
+    const st = { idx: race.lastIdx };
+    let t = 0, stuck = 0, wheel = 0, maxStep = 0;
+    while (t < 600 && race.state !== 'done') {
+      let inp = race.state === 'grid' ? { thr: 0.6, brk: 0, steer: 0 } : driveInput(game, race, st);
+      if (race.state !== 'grid') {
+        const steer = toFinger(inp.steer);
+        maxStep = Math.max(maxStep, Math.abs(steer - wheel));
+        wheel = steer;
+        inp = merge(stub(inp.thr > 0.5 ? 'gas' : inp.brk > 0.2 ? 'brake' : null, { steerValue: () => ({ steer, analog: true }) }));
+      }
+      game.step(1 / 60, inp);
+      t += 1 / 60;
+      if (race.state === 'race' && game.veh.speed < 1.5) stuck += 1 / 60; else stuck = 0;
+      if (stuck > 4) { game.resetCar(); stuck = 0; }
+      game.drain();
+    }
+    return { race, t };
+  };
+  const px = 25.4 / 160;
+  const viaSlider = drive(steer => TC.slide(Math.round(Math.sign(steer) * (Math.abs(steer) * 0.96 + (steer ? 0.04 : 0)) * 18 / px) * px, 18, 0.04));
+  ok(viaSlider.race.state === 'done', 'the bot finishes the Old Riga event steering through the slider and the pedals: ' + viaSlider.t.toFixed(0) + ' s');
+  const viaTilt = drive(steer => T.tiltSteer(Math.round((Math.sign(steer) * (Math.abs(steer) * 23 + (steer ? 2 : 0))) * 10) / 10 + 3, 3, 25, 2));
+  ok(viaTilt.race.state === 'done', 'the bot finishes the same event steering by tilt: ' + viaTilt.t.toFixed(0) + ' s');
+  const ui = read('js/apps/forza/fz-ui.js'), page = read('forza.html');
+  ok(/if \(F\.Touch && F\.Touch\.wanted\(\)\) this\.touch = new F\.Touch\(this\)/.test(ui) && /return this\.touch \? this\.touch\.merge\(inp\) : inp/.test(ui), 'the game creates the pad only for phones and reads it in input()');
+  ok(/while \(this\.acc >= TICK && steps < 5\) \{\n\s+this\.prevPose = /.test(ui) && /this\.withMotionLerp\(\(\) => this\.render\(dt\)\)/.test(ui), 'the player car, rivals and traffic are drawn between simulation steps');
+  ok(page.indexOf('fz-ui.js') < page.indexOf('js/touch-controls.js') && page.indexOf('js/touch-controls.js') < page.indexOf('fz-touch.js') && page.indexOf('fz-touch.js') < page.indexOf('new Forza.UI'), 'the standalone page loads the pad before the game starts');
+  ok(!read('index.html').includes('fz-touch.js'), 'Win 98 does not load the pad');
+  require(path.join(DIR, 'fz-ui.js'));
+  const rival = { x: 10, y: 0, z: 0, yaw: 0 }, far = { x: 500, y: 0, z: 0, yaw: 0 };
+  const lerpUi = { acc: F.TICK / 2, motion: [[rival, 0, 0, 0, 0], [far, 0, 0, 0, 0]] };
+  let seen = null;
+  F.UI.prototype.withMotionLerp.call(lerpUi, () => { seen = [rival.x, far.x]; });
+  ok(seen[0] === 5 && seen[1] === 500 && rival.x === 10, 'half a step draws a rival halfway, a teleport is not smeared, the simulation keeps its values');
+  ok(!/^\s*\/\/|\/\*/m.test(src), 'fz-touch.js has no comments');
+  if (!F.Renderer) require(path.join(DIR, 'fz-render.js'));
+  const C = F.Renderer.prototype.camera.call({}, { x: 870, y: 6, z: -1700, tx: 880, ty: 5, tz: -1690, fov: 70, near: 0.3, far: 3000 }, 800, 360);
+  const dirOf = (inv, px, py) => {
+    const mul = (m, v) => [0, 1, 2, 3].map(r => m[r] * v[0] + m[4 + r] * v[1] + m[8 + r] * v[2] + m[12 + r] * v[3]);
+    const a = mul(inv, [px, py, -1, 1]), b = mul(inv, [px, py, 1, 1]);
+    const d = [0, 1, 2].map(i => b[i] / b[3] - a[i] / a[3]), l = Math.hypot(...d);
+    return { d: d.map(x => x / l), big: Math.max(...a.concat(b).map(Math.abs)) };
+  };
+  let worst = 0, big = 0;
+  for (const [px, py] of [[0, 0], [-1, 1], [1, 0.5], [0.3, -0.8]]) {
+    const w = dirOf(C.inv, px, py), sky = dirOf(C.skyInv, px, py);
+    worst = Math.max(worst, ...w.d.map((x, i) => Math.abs(x - sky.d[i])));
+    big = Math.max(big, sky.big);
+  }
+  ok(worst < 1e-4 && big < 10, 'the sky gets the view direction from a rotation-only matrix with small numbers, so phone GPUs with 16-bit floats draw it steady: max ' + big.toFixed(2));
+  const lagSpread = (frames, follow) => {
+    let t = 0, pos = 0, to = 0;
+    const lags = [];
+    for (let i = 0; i < 300; i++) {
+      const dt = frames[i % frames.length];
+      t += dt;
+      const target = 30 * t;
+      pos = follow(pos, to, target, dt);
+      to = target;
+      if (i > 100) lags.push(target - pos);
+    }
+    return Math.max(...lags) - Math.min(...lags);
+  };
+  const oldFollow = (pos, to, target, dt) => pos + (target - pos) * Math.min(1, dt * 12);
+  const newFollow = (pos, to, target, dt) => F.follow(pos, to, target, 12, dt);
+  const uneven = [1 / 30, 4 / 90, 1 / 30, 1 / 30, 4 / 90];
+  ok(lagSpread(uneven, oldFollow) > 0.1 && lagSpread(uneven, newFollow) < 0.01, 'at 30 m/s with frames of 33 and 44 ms the chase camera keeps its distance: ' + lagSpread(uneven, oldFollow).toFixed(2) + ' m before, ' + lagSpread(uneven, newFollow).toFixed(3) + ' m now');
+  ok(Math.abs(F.followAngle(3.1, 3.1, -3.1, 3.2, 0.1) - 3.1) < 0.1 && F.followAngle(3.1, 3.1, -3.1, 3.2, 0.1) > 3.1, 'the camera turns the short way across 180 degrees');
+  ok(/weak: \{[^}]*fps: 30/.test(src), 'weak phones get an even 30 frames per second');
+  const phoneCss = read('css/apps/fz-touch.css');
+  const cssRules = phoneCss.split('\n').filter(l => l.trim() && !l.startsWith('@'));
+  ok(cssRules.every(l => /^\.fz-phone[ .]|^\.fz-tback|^\.fz-tmapbtns/.test(l)), 'phone menu styles apply only on a phone: ' + cssRules.filter(l => !/^\.fz-phone[ .]|^\.fz-tback|^\.fz-tmapbtns/.test(l)).slice(0, 2).join(' | '));
+  ok(/\.fz-phone \.fz-hints \{ display: none; \}/.test(phoneCss) && /\.fz-phone \.fz-setrow \{ min-height: 46px/.test(phoneCss), 'on a phone the key hints go away and setting rows are finger-sized');
+  ok(page.includes('css/apps/fz-touch.css') && !read('index.html').includes('fz-touch.css'), 'only the standalone page loads the phone menu styles');
+  ok(/ui\.el\.classList\.add\('fz-phone'\)/.test(src) && /this\.backBtn\.className = 'fz-tback'/.test(src) && /if \(ui\.touch\) ui\.touch\.bindMap\(cv, scr, act\)/.test(read('js/apps/forza/fz-menus.js')), 'the pad marks the phone, adds a Back button and finger gestures on the map');
+  ok(/clipPath = bare \? '' : 'inset\(0 0 0 '/.test(src) && /ph\.held\.add\(code\)/.test(src) && /shiftKey: true/.test(src), 'photo mode: the stick moves the camera, the panel stays tappable, a pinch changes the lens');
+  ok(!/\/\*/.test(phoneCss), 'fz-touch.css has no comments');
+  ok(!/'fz-smake'[^\n]*render\(\)/.test(read('js/apps/forza/fz-menus.js')), 'tapping a make in the autoshow keeps the choice instead of rebuilding the screen and jumping back to the first make');
+  ok(/\['fz-results', 'fz-credits'\]/.test(src), 'the Back button stays away from screens with their own way out (results, credits)');
+  const shaders = read('js/apps/forza/fz-render.js');
+  ok((shaders.match(/#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;/g) || []).length >= 2, 'sky and environment shaders ask for high precision where the phone has it');
+});
+
 section('integration', () => {
   const LINE = String.fromCharCode(47, 47), BLOCK = String.fromCharCode(47, 42);
   const files = fs.readdirSync(DIR).filter(f => f.endsWith('.js')).map(f => 'js/apps/forza/' + f).concat(['js/apps/forza-app.js', 'tests/forza.test.js']);
@@ -2523,7 +2653,7 @@ section('integration', () => {
     ok(ia > lastA && ib > lastB, 'script order ' + f);
     lastA = ia; lastB = ib;
   }
-  ok(fs.readdirSync(DIR).filter(f => f.endsWith('.js')).length === ORDER.length, 'every module is loaded');
+  ok(fs.readdirSync(DIR).filter(f => f.endsWith('.js') && f !== 'fz-touch.js').length === ORDER.length, 'every module is loaded, the phone pad only in the standalone page');
   ok(html.indexOf('js/apps/forza-app.js') > lastA && html.includes('css/apps/forza.css'), 'desktop loads wrapper and styles');
   const gm = read('js/game-manager.js');
   const at = gm.indexOf('      forza: {');

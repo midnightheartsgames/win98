@@ -267,7 +267,7 @@
         this.title(game, W, H, S);
         if (c && c.t < 3.5 && c.i === 0) {
           g.globalAlpha = N.clamp(Math.min(c.t * 2, 3.5 - c.t), 0, 0.75);
-          this.text('Пробел — дальше · X — пропустить сценку', W - 18 * S, H - 10 * S, { font: `bold ${12 * S | 0}px Arial`, align: 'right', fill: '#d8d8d8' });
+          this.text(N.touchUi ? 'Касание — дальше' : 'Пробел — дальше · X — пропустить сценку', W - 18 * S, H - 10 * S, { font: `bold ${12 * S | 0}px Arial`, align: 'right', fill: '#d8d8d8' });
           g.globalAlpha = 1;
         }
         this.fade(game, W, H);
@@ -279,7 +279,8 @@
       else if (st.crosshair && !st.scope) this.crosshair(W, H, S, st.crossTarget, st.dot, st.fpDot);
       if (st.throwAim) this.throwMeter(W, H, S, st.throwAim, world.t);
       this.topRight(game, W, S, st);
-      this.radar(game, st, 22 * S, H - 22 * S, 92 * S);
+      if (st.layout && st.layout.radar) this.radar(game, st, st.layout.radar[0], st.layout.radar[1], st.layout.radar[2]);
+      else this.radar(game, st, 22 * S, H - 22 * S, 92 * S);
       this.messages(game, W, H, S, st);
       this.fade(game, W, H);
     }
@@ -613,7 +614,7 @@
           ty += 18 * S;
         }
       }
-      this.text('Отпусти — бросок · R — отмена', x, y0 + 38 * S, { font: `bold ${11 * S | 0}px Arial`, align: 'center', stroke: 3 * S, fill: '#d8d8d8' });
+      this.text(N.touchUi ? 'Отпусти — бросок · ✕ — отмена' : 'Отпусти — бросок · R — отмена', x, y0 + 38 * S, { font: `bold ${11 * S | 0}px Arial`, align: 'center', stroke: 3 * S, fill: '#d8d8d8' });
       g.restore();
     }
 
@@ -720,10 +721,10 @@
     messages(game, W, H, S, st) {
       const g = this.g;
       const m = game.msg;
-      let ly = 20 * S;
+      let ly = 20 * S + (st.layout && st.layout.topDy || 0);
       if (m.help) {
         g.font = `bold ${17 * S | 0}px Arial`;
-        const lines = this.wrap(m.help.text, 330 * S);
+        const lines = this.wrap(N.touchText(m.help.text), 330 * S);
         const h = lines.length * 22 * S + 16 * S;
         g.globalAlpha = Math.min(1, m.help.t * 2);
         this.box(20 * S, ly, 360 * S, h);
@@ -804,7 +805,7 @@
         this.text(st.prompt, W / 2, H * 0.62 + 20 * S, { font: `bold ${16 * S | 0}px Arial`, align: 'center', fill: '#fff' });
       }
       if (st.fps) this.text(st.fps, 10, H - 8, { font: '11px monospace', fill: '#ff0' });
-      if (game.shop) this.shop(game, W, H, S);
+      if (game.shop && !N.touchUi) this.shop(game, W, H, S);
     }
 
     shop(game, W, H, S) {

@@ -771,6 +771,29 @@
     }
   }
 
-  S.Game = Game; S.rayCyl = rayCyl; S.newInventory = newInventory; S.GAME = { DT, EYE, PR, PH, RUN, WALK, JUMP, FLY };
+  const MOTION_KEYS = ['x', 'y', 'z'];
+  const TELEPORT = 6;
+  function snapshotMotion(g) {
+    for (const list of [g.enemies, g.projs]) for (const o of list) { o.ipx = o.x; o.ipy = o.y; o.ipz = o.z; o.ipyaw = o.yaw; }
+    const p = g.player; p.ipbob = p.bob; p.ipkick = p.kick;
+  }
+  function withMotionLerp(g, a, draw) {
+    const saved = [];
+    const lerp = o => {
+      if (o.ipx == null || Math.hypot(o.x - o.ipx, o.z - o.ipz) > TELEPORT) return;
+      saved.push([o, o.x, o.y, o.z, o.yaw]);
+      for (const k of MOTION_KEYS) o[k] = o['ip' + k] + (o[k] - o['ip' + k]) * a;
+      if (o.yaw != null && o.ipyaw != null) o.yaw = o.ipyaw + wrapAng(o.yaw - o.ipyaw) * a;
+    };
+    for (const list of [g.enemies, g.projs]) for (const o of list) lerp(o);
+    const p = g.player, bob = p.bob, kick = p.kick;
+    if (p.ipbob != null) { p.bob = p.ipbob + (p.bob - p.ipbob) * a; p.kick = p.ipkick + (p.kick - p.ipkick) * a; }
+    try { return draw(); } finally {
+      for (const [o, x, y, z, yaw] of saved) { o.x = x; o.y = y; o.z = z; o.yaw = yaw; }
+      p.bob = bob; p.kick = kick;
+    }
+  }
+
+  S.Game = Game; S.rayCyl = rayCyl; S.snapshotMotion = snapshotMotion; S.withMotionLerp = withMotionLerp; S.newInventory = newInventory; S.GAME = { DT, EYE, PR, PH, RUN, WALK, JUMP, FLY };
   if (typeof module !== 'undefined') module.exports = S;
 })(globalThis.SeriousSam98 = globalThis.SeriousSam98 || {});

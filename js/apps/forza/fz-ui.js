@@ -96,6 +96,7 @@
         this.glError = String(e && e.message || e);
       }
       this.bind();
+      if (F.Touch && F.Touch.wanted()) this.touch = new F.Touch(this);
       this.loadStep = 0;
       if (this.glError) this.showError();
       this.raf = requestAnimationFrame(t => this.frame(t));
@@ -492,11 +493,13 @@
 
     frame(t) {
       this.raf = requestAnimationFrame(tt => this.frame(tt));
+      const cap = this.touch ? this.settings().fps : 0;
+      if (cap && this.last && t - this.last < 1000 / cap - 2) return;
       const dt = Math.min(0.1, Math.max(0, (t - (this.last || t)) / 1000));
       this.last = t;
       try {
         this.update(dt);
-        this.render(dt);
+        this.withMotionLerp(() => this.render(dt));
       } catch (e) {
         if (!this.errShown) { this.errShown = true; console.error(e); }
       }
@@ -549,12 +552,13 @@
         hand: !!(k.hand || p.hand), rewind: !!(k.rewind || p.rewind), shiftUp: this.shiftUp, shiftDown: this.shiftDown, fix: !!(k.fix || p.fix)
       };
       this.shiftUp = this.shiftDown = false;
-      return inp;
+      return this.touch ? this.touch.merge(inp) : inp;
     }
 
     update(dt) {
       this.hud.update(dt);
       this.pollPad();
+      if (this.touch) this.touch.update(dt);
       if (this.mode === 'loading') { this.load(dt); return; }
       if (!this.active()) { this.audio.update(null); return; }
       if (this.mode === 'title') {
@@ -569,12 +573,13 @@
         if (this.menus.top && this.menus.top.draw) this.menus.top.draw();
         return;
       }
-      this.prevPose = { x: g.veh.x, y: g.veh.y, z: g.veh.z, yaw: g.veh.yaw };
       this.acc += dt;
       let steps = 0;
       const inp = this.input();
       this.lastThrottle = inp.thr;
       while (this.acc >= TICK && steps < 5) {
+        this.prevPose = { x: g.veh.x, y: g.veh.y, z: g.veh.z, yaw: g.veh.yaw };
+        this.motion = this.snapshotMotion(g);
         g.step(TICK, inp);
         inp.shiftUp = inp.shiftDown = false;
         this.acc -= TICK;
@@ -626,6 +631,7 @@
       const g = this.game, hud = this.hud, au = this.audio;
       for (const e of list) {
         this.driverEvent(e);
+        if (this.touch) this.touch.event(e, g);
         switch (e.t) {
           case 'bank':
             au.play('bank');
@@ -1077,6 +1083,30 @@
       }
     }
 
+    snapshotMotion(g) {
+      const out = [];
+      const add = o => out.push([o, o.x, o.y, o.z, o.yaw]);
+      if (g.race) for (const a of g.race.rivals) add(a);
+      for (const t of g.traffic.cars) add(t);
+      return out;
+    }
+
+    withMotionLerp(fn) {
+      const list = this.motion, k = F.clamp(this.acc / TICK, 0, 1);
+      if (!list || !list.length || k >= 1) return fn();
+      const keep = [];
+      for (const [o, x, y, z, yaw] of list) {
+        if (Math.abs(o.x - x) + Math.abs(o.z - z) > 20) continue;
+        keep.push([o, o.x, o.y, o.z, o.yaw]);
+        o.x = F.lerp(x, o.x, k); o.y = F.lerp(y, o.y, k); o.z = F.lerp(z, o.z, k); o.yaw = yaw + F.wrap(o.yaw - yaw) * k;
+      }
+      try {
+        return fn();
+      } finally {
+        for (const [o, x, y, z, yaw] of keep) { o.x = x; o.y = y; o.z = z; o.yaw = yaw; }
+      }
+    }
+
     renderPose() {
       const v = this.game.veh, pp = this.prevPose, k = F.clamp(this.acc / TICK, 0, 1);
       if (!pp) return { x: v.x, y: v.y, z: v.z, yaw: v.yaw };
@@ -1117,9 +1147,10 @@
         const velYaw = v.speed > 3 ? Math.atan2(v.vx, -v.vz) : yaw;
         const blend = F.clamp((v.speed - 3) / 12, 0, 1) * 0.5 * (v.u >= 0 ? 1 : 0);
         const target = yaw + F.wrap(velYaw - yaw) * blend + (look ? Math.PI : 0);
-        if (this.camPos === null || look !== this.lastLook) this.camYaw = target;
+        if (this.camPos === null || look !== this.lastLook) this.camYaw = this.camYawTo = target;
         this.lastLook = look;
-        this.camYaw += F.wrap(target - this.camYaw) * Math.min(1, dt * (3.2 + Math.abs(v.r) * 1.5));
+        this.camYaw = F.followAngle(this.camYaw, this.camYawTo, target, 3.2 + Math.abs(v.r) * 1.5, dt);
+        this.camYawTo = target;
         const L = v.spec.len, zoom = this.camZoom, aim = 0.6 + v.spec.hgt * 0.3;
         const dist = ((far ? 7.6 : 4.6) + L * 0.45 + speedK * 1.2) * zoom;
         const hgt = aim + ((far ? 3.3 : 2.0) + v.spec.hgt * 0.5 - aim) * zoom;
@@ -1129,10 +1160,11 @@
         if (hit < 1) { cx = F.lerp(x, cx, hit); cz = F.lerp(z, cz, hit); cy = F.lerp(y + 1.2, cy, hit) + (1 - hit) * 1.5; }
         const gy = this.world.groundY(cx, cz);
         if (cy < gy + 0.6) cy = gy + 0.6;
-        const k = Math.min(1, dt * 12), ky = Math.min(1, dt * 6);
         if (this.camPos) {
-          this.camPos[0] = F.lerp(this.camPos[0], cx, k); this.camPos[1] = F.lerp(this.camPos[1], cy, ky); this.camPos[2] = F.lerp(this.camPos[2], cz, k);
-        } else { this.camPos = [cx - v.vx * (1 - k) / 12, cy - v.vy * (1 - ky) / 6, cz - v.vz * (1 - k) / 12]; this.camHit = 1; }
+          const to = this.camTo;
+          this.camPos[0] = F.follow(this.camPos[0], to[0], cx, 12, dt); this.camPos[1] = F.follow(this.camPos[1], to[1], cy, 6, dt); this.camPos[2] = F.follow(this.camPos[2], to[2], cz, 12, dt);
+        } else { this.camPos = [cx - v.vx / 12, cy - v.vy / 6, cz - v.vz / 12]; this.camHit = 1; }
+        this.camTo = [cx, cy, cz];
         const oy = look ? 0 : lk.yaw, op = look ? 0 : lk.pitch;
         let pos = this.camPos, lx = fx, lz = fz, lead = 3.2;
         if (oy || op) {
@@ -2193,6 +2225,7 @@
 
     destroy() {
       cancelAnimationFrame(this.raf);
+      if (this.touch) this.touch.destroy();
       if (this.game) this.game.save();
       this.el.removeEventListener('keydown', this.onKeyDown);
       this.el.removeEventListener('keyup', this.onKeyUp);

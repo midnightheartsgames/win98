@@ -577,6 +577,21 @@ F7 → Телепорт has the four platforms. The test section «metro» check
 - **Улица:** how many things are broken, how many pieces lie around and how many move; «Восстановить сломанное» puts the whole street back at once.
 - **Транспорт:** every model in four groups (cars, trucks and buses, army, motorcycles) and the paints of the chosen one («Обычная» plus its liveries; army vehicles start in army paint). «Поставить рядом» puts it in front of the player (persistent), «Сесть за руль» puts the player in it as the driver and closes the menu, «Убрать поставленные» removes what was put, except the vehicle the player is in.
 
+## Phone
+
+The game also runs in the Android launcher Пароход 98 ([ANDROID-LAUNCHER.md](ANDROID-LAUNCHER.md)). Everything below works only under `Parohod98` or `?touch`; in Win 98 the game stays the same.
+
+- `nn-touch.js` holds `TUNE`, `ACTIONS` and `LAYOUT` for walking and `CAR_ACTIONS` and `CAR_LAYOUT` for driving, on the shared pad `js/touch-controls.js`. The photo camera has its own pad.
+- On foot: a stick with a sprint past 1.25 radii, the right half of the screen for the camera, fire with turning, an aim toggle, jump, enter (its label comes from the game's own prompt), reload, throw cancel and weapons.
+- Aim assist works only while firing. Targets are attackers, and the militia when wanted. «Обычная» is a 10° cone at 20°/s, «Слабая» a 6° cone at 10°/s.
+- In a car: steering as in Forza (slider, tilt, buttons), pedals, handbrake, horn, reverse, exit, drive-by zone, radio and job buttons. Tanks and APCs add a cannon and a machine gun.
+- Radio is a separate download of 113 MB (`radio` part). Without it the station list is empty and the button is gone.
+- Voice uses Android TextToSpeech (`Speech.java`), and `nn-voice.js` goes there when `speechSynthesis` is missing.
+- `N.touchText` removes key names from hints. Cutscenes advance on a tap, shops become button lists (`renderShop`), and menus for small screens are in `css/apps/nn-touch.css` under `.nn-phone`.
+- Minimising the app outside a mission, cutscene or shop writes the auto save `gtann_save_5`. Win 98 has four slots (`N.saveSlots`), so a phone file puts the auto save into a free or the oldest slot.
+- Presets: «Телефон» and «Слабый телефон» (simple effects, scale 0.4, 30 FPS). `N.follow` moves the camera in 1/240 s steps, and people, cars and shots are drawn between physics steps.
+- The `touch` section of `tests/gtann.test.js` covers the pad.
+
 ## Photo mode
 
 F8 (or «Фотоаппарат» in the pause menu) stops the world and hands the player a camera of the summer of 2000. Everything lives in `nn-photo.js` (`GtaNN.Photo`, the data in `GtaNN.PHOTO`, storage in `GtaNN.PhotoAlbum`); the renderer, the scene, the audio, the pause menu and the game state have small hooks for it.

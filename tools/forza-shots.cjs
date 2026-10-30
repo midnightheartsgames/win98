@@ -5,7 +5,17 @@ const path = require('node:path');
 
 const ROOT = path.join(__dirname, '..');
 const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
-const SCENES = ['perf', 'breakdown', 'presets', 'sheet', 'showroom', 'details', 'liveries', 'finish', 'cabin', 'wheels', 'faces', 'cockpit', 'motion', 'night', 'rain', 'time', 'stats', 'city', 'weather', 'ads', 'festival', 'streets', 'airport', 'zakusala', 'lucavsala', 'market', 'bisumuiza', 'debug', 'photo', 'damage', 'flora', 'driver', 'heads', 'anim', 'outfits', 'drvmenu', 'register', 'rivals'];
+const SCENES = ['perf', 'breakdown', 'presets', 'sheet', 'showroom', 'details', 'liveries', 'finish', 'cabin', 'wheels', 'faces', 'cockpit', 'motion', 'night', 'rain', 'time', 'stats', 'city', 'weather', 'ads', 'festival', 'streets', 'airport', 'zakusala', 'lucavsala', 'market', 'bisumuiza', 'debug', 'photo', 'damage', 'flora', 'driver', 'heads', 'anim', 'outfits', 'drvmenu', 'register', 'rivals', 'phone'];
+const PHONE_SIZES = [[800, 360], [640, 360]];
+const PHONE_SCREENS = [
+  ['hub-home', 'fzui.menus.push(fzui.menus.hub(0))'], ['hub-festival', 'fzui.menus.push(fzui.menus.hub(1))'], ['hub-cars', 'fzui.menus.push(fzui.menus.hub(2))'],
+  ['hub-driver', 'fzui.menus.push(fzui.menus.hub(3))'], ['hub-skills', 'fzui.menus.push(fzui.menus.hub(4))'], ['hub-settings', 'fzui.menus.push(fzui.menus.hub(5))'],
+  ['garage', 'fzui.menus.push(fzui.menus.garage())'], ['autoshow', 'fzui.menus.push(fzui.menus.autoshow())'],
+  ['tune', 'fzui.menus.push(fzui.menus.tune(fzui.game.entry.uid))'], ['paint', 'fzui.menus.push(fzui.menus.paint(fzui.game.entry.uid))'],
+  ['map', 'fzui.menus.push(fzui.menus.mapScreen())'], ['lobby', "fzui.menus.push(fzui.menus.lobby(Forza.EV.get('vecriga')))"], ['time', 'fzui.menus.push(fzui.menus.timeScreen())'],
+  ['appearance', 'fzui.menus.push(fzui.menus.appearance())'], ['wardrobe', 'fzui.menus.push(fzui.menus.wardrobe())'], ['boutique', 'fzui.menus.push(fzui.menus.boutique())'],
+  ['outfits', 'fzui.menus.push(fzui.menus.outfits())'], ['settings', 'fzui.menus.push(fzui.menus.settingsScreen(false))'], ['photo', 'fzui.openPhoto()']
+];
 const WRECK_SPOT = [1500, -830];
 const SMASH = ['lamp', 'bench', 'fence', 'bin', 'citylight', 'stall'];
 const LANDMARK_VIEWS = [
@@ -781,12 +791,12 @@ async function open() {
   };
   await send('Runtime.enable');
   await send('Page.enable');
-  const load = async () => {
+  const load = async (query = '') => {
     for (let i = 0; i < 60; i++) {
       try { if ((await (await fetch(`http://127.0.0.1:${sport}/forza.html`)).status) === 200) break; } catch {}
       await sleep(250);
     }
-    await send('Page.navigate', { url: `http://127.0.0.1:${sport}/forza.html` });
+    await send('Page.navigate', { url: `http://127.0.0.1:${sport}/forza.html${query}` });
     for (let i = 0; i < 80; i++) {
       await sleep(250);
       try { if (await ev('typeof fzui === "object"')) break; } catch {}
@@ -801,7 +811,13 @@ async function open() {
     await ev(PAGE);
   };
   const capture = async () => 'data:image/png;base64,' + (await send('Page.captureScreenshot', { format: 'png' })).data;
-  return { ev, load, close, errors, capture };
+  const phone = async (w, h) => {
+    await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: true });
+    await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+    await load('?touch');
+    await ev("(() => { const t = document.querySelector('.title'); if (t) t.remove(); const w = document.querySelector('main.window'); if (w) Object.assign(w.style, { width: '100vw', height: '100vh', border: '0' }); document.body.style.display = 'block'; return true; })()");
+  };
+  return { ev, load, close, errors, capture, phone };
 }
 
 async function main() {
@@ -811,6 +827,31 @@ async function main() {
   fs.mkdirSync(out, { recursive: true });
   const b = await open();
   try {
+    if (scenes.includes('phone')) {
+      for (const [w, h] of PHONE_SIZES) {
+        await b.phone(w, h);
+        const tag = 'phone-' + w + 'x' + h + '-';
+        const snap = async (name, js, frames = 8) => {
+          await b.ev(`(async () => { fzui.menus.closeAll(); if (fzui.photo) fzui.photo.close && fzui.photo.close(); ${js}; document.querySelectorAll('.tc-hint').forEach(e => e.remove()); await fzShots.pump(${frames}); return true; })()`);
+          fs.writeFileSync(path.join(out, tag + name + '.png'), Buffer.from((await b.capture()).split(',')[1], 'base64'));
+          console.log(tag + name + '.png');
+        };
+        await snap('title', 'fzui.menus.push(fzui.menus.title())');
+        await snap('title-settings', 'fzui.menus.push(fzui.menus.settingsScreen(true))');
+        await snap('register', 'fzui.menus.push(fzui.menus.register())');
+        await b.ev("localStorage.setItem('parohod98.hint.forza', '1'), fzShots.start(['golf2']), true");
+        await b.ev('fzShots.pump(60)');
+        await snap('drive', 'true', 30);
+        for (const [name, js] of PHONE_SCREENS) await snap(name, js);
+        await snap('race-pause', "fzui.beginEvent('vecriga'), fzShots.pump(30), fzui.menus.push(fzui.menus.racePause())", 30);
+      }
+      if (scenes.length === 1) {
+        console.log('saved to ' + out);
+        if (b.errors.length) { console.log('page errors:\n' + b.errors.join('\n')); process.exitCode = 1; }
+        return;
+      }
+      await b.ev('document.body && true');
+    }
     await b.load();
     const save = (name, url) => {
       fs.writeFileSync(path.join(out, name + '.png'), Buffer.from(url.slice(url.indexOf(',') + 1), 'base64'));

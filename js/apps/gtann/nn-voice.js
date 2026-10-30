@@ -26,6 +26,9 @@
       this.cache = {};
       this.cur = null;
       this.keep = [];
+      const bridge = globalThis.Parohod98Game;
+      this.native = !this.ok && bridge && typeof bridge.speak === 'function' ? bridge : null;
+      this.seq = 0;
       if (this.ok) {
         this.load();
         try { speechSynthesis.addEventListener('voiceschanged', () => this.load()); } catch (e) { }
@@ -63,7 +66,27 @@
       return { g: male ? 'm' : 'f', pitch: male ? 0.84 + h * 0.3 : 1.04 + h * 0.24, rate: 1.02 + h * 0.12 };
     }
 
+    speakNative(sub) {
+      const b = this.native;
+      try {
+        if (!b.speechReady()) return null;
+        const pr = this.profile(sub);
+        const id = 'v' + (++this.seq);
+        const pitch = N.clamp((pr.pitch || 1) * (pr.g === 'm' ? 0.75 : 1), 0.1, 2);
+        const rate = N.clamp((pr.rate || 1) * (sub.via ? 1.04 : 1), 0.5, 2);
+        const vol = N.clamp(this.vol * (sub.prio === 0 ? 0.7 : 1) * (sub.via ? 0.85 : 1), 0, 1);
+        b.speak(id, clean(sub.text), pitch, rate, vol);
+        const h = { id, native: true, done: false, started: false, t0: Date.now() };
+        this.cur = h;
+        return h;
+      } catch (e) {
+        this.native = null;
+        return null;
+      }
+    }
+
     speak(sub) {
+      if (this.native && this.on && this.vol > 0.01 && sub.text) return this.speakNative(sub);
       if (!this.ok || !this.on || this.vol <= 0.01 || !sub.text) return null;
       if (!this.list.length) this.load();
       if (!this.list.length) return null;
@@ -96,6 +119,13 @@
 
     alive(h) {
       if (!h || h.done) return !!h;
+      if (h.native) {
+        const st = this.native ? this.native.speechState(h.id) : 'done';
+        if (st === 'start') h.started = true;
+        if (st === 'done') { h.done = true; return true; }
+        if (!h.started && Date.now() - h.t0 > 4000) { h.done = true; h.dead = true; return false; }
+        return true;
+      }
       if (!h.started && Date.now() - h.t0 > 1500) { h.done = true; h.dead = true; return false; }
       return true;
     }
@@ -105,6 +135,7 @@
     stop() {
       if (this.cur) this.cur.done = true;
       this.cur = null;
+      if (this.native) { try { this.native.stopSpeech(); } catch (e) { } }
       if (!this.ok) return;
       try { speechSynthesis.cancel(); } catch (e) { }
       this.keep.length = 0;

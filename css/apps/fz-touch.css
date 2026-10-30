@@ -1,0 +1,108 @@
+.fz-phone .fz-hints { display: none; }
+.fz-phone .fz-lb, .fz-phone .fz-rb { display: none; }
+.fz-phone .fz-top { padding: 4px 10px 2px; }
+.fz-phone .fz-tabs { margin: 0 10px 6px; }
+.fz-phone .fz-tab, .fz-phone .fz-mtab { padding: 11px 4px; font-size: 12px; letter-spacing: 0; }
+.fz-phone .fz-gtitle { margin: 4px 0 6px 10px; font-size: 18px; padding: 5px 40px 5px 12px; }
+.fz-phone .fz-hub-body { margin: 0 10px; padding-bottom: 60px; overscroll-behavior: contain; }
+
+.fz-phone .fz-home { grid-template-columns: repeat(4, 1fr); grid-template-rows: none; grid-auto-rows: 128px; grid-template-areas: "map map carx carx" "map map lvl stats" "btns btns weather radio" "btns btns fest coll"; }
+.fz-phone .fz-sbtn { font-size: 13px; min-height: 40px; }
+.fz-phone .fz-lvnum { font-size: 44px; }
+.fz-phone .fz-wtemp { font-size: 30px; }
+
+.fz-phone .fz-bands { grid-template-columns: repeat(3, 1fr); }
+.fz-phone .fz-fcols { grid-template-columns: 1fr; }
+.fz-phone .fz-evrow { grid-template-columns: 64px 1fr 34px 70px; min-height: 44px; font-size: 14px; }
+.fz-phone .fz-carstab { grid-template-rows: 130px 130px; }
+.fz-phone .fz-skillstab { grid-template-columns: 160px 1fr; }
+.fz-phone .fz-spnum { font-size: 44px; }
+.fz-phone .fz-perks { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+
+.fz-phone .fz-settab { max-width: none; }
+.fz-phone .fz-setscr { padding: 6px 10px 60px; }
+.fz-phone .fz-setrow { min-height: 46px; font-size: 14px; padding: 4px 10px; }
+.fz-phone .fz-setrow b i { font-size: 14px; padding: 10px 6px; }
+.fz-phone .fz-setrow em { min-width: 120px; }
+.fz-phone .fz-sethead { padding: 12px 4px 4px; }
+.fz-phone .fz-vol { width: 160px; height: 40px; }
+.fz-phone .fz-vol::before, .fz-phone .fz-vol-fill { top: 17px; }
+.fz-phone .fz-vol-knob { top: 8px; height: 24px; width: 16px; margin-left: -8px; }
+
+.fz-phone .fz-gbody { grid-template-columns: 170px 1fr; margin: 0 10px 56px; }
+.fz-phone .fz-brand { font-size: 18px; padding: 10px 8px; }
+.fz-phone .fz-stats div { font-size: 13px; padding: 2px 0; }
+.fz-phone .fz-value { font-size: 17px; padding: 5px; }
+.fz-phone .fz-gcards { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); grid-auto-rows: 140px; }
+.fz-phone .fz-show-cols { grid-template-columns: 120px 190px 1fr; margin: 0 10px 56px; }
+.fz-phone .fz-smake, .fz-phone .fz-scar, .fz-phone .fz-tcat, .fz-phone .fz-topt { min-height: 42px; font-size: 13px; padding: 6px 8px; }
+.fz-phone .fz-show-spec { width: min(300px, 100%); }
+.fz-phone .fz-show-spec h2 { font-size: 16px; }
+.fz-phone .fz-price { font-size: 17px; margin: 4px 14px; }
+.fz-phone .fz-tune-cols { grid-template-columns: 150px 170px minmax(200px, 1fr); margin: 0 10px 56px; }
+.fz-phone .fz-btn { padding: 11px 18px; font-size: 14px; }
+.fz-phone .fz-ppanel { margin: 0 10px 56px; width: min(380px, 62%); }
+.fz-phone .fz-sw { height: 32px; }
+.fz-phone .fz-liv { padding: 10px 12px; }
+
+.fz-phone .fz-dpanel { margin: 0 10px 56px; width: min(360px, 52%); }
+.fz-phone .fz-drow { min-height: 44px; }
+.fz-phone .fz-drow em { min-width: 110px; }
+.fz-phone .fz-regscr { padding-top: 4px; }
+.fz-phone .fz-regscr .fz-gtitle { margin-top: 2px; }
+.fz-phone .fz-namerow input { width: 150px; font-size: 16px; padding: 6px 8px; }
+.fz-phone.fz-typing .fz-regnote, .fz-phone.fz-typing .fz-regscr .fz-gtitle { display: none; }
+
+.fz-phone .fz-maptitle { left: 10px; top: 8px; font-size: 16px; padding: 4px 30px 4px 10px; }
+.fz-phone .fz-mapinfo { right: 10px; top: 8px; width: 250px; }
+.fz-phone .fz-legend { left: 10px; bottom: 8px; right: 200px; flex-wrap: wrap; }
+.fz-phone .fz-legend label { padding: 10px 10px; font-size: 13px; }
+.fz-phone .fz-bigmap { touch-action: none; }
+
+.fz-phone .fz-lcard { width: min(440px, 56%); margin: 4px 10px 56px; max-height: none; }
+.fz-phone .fz-lmap { height: 130px; }
+.fz-phone .fz-lside { width: min(300px, 38%); margin: 4px 0 56px; }
+.fz-phone .fz-lcar img { height: 90px; }
+.fz-phone .fz-go { font-size: 20px; padding: 12px; }
+
+.fz-phone .fz-tpanel { padding: 6px 10px 8px; }
+.fz-phone .fz-tread b { font-size: 34px; }
+.fz-phone .fz-tread span { font-size: 22px; }
+.fz-phone .fz-tstrip canvas { height: 64px; }
+.fz-phone .fz-tpre { min-height: 44px; }
+
+.fz-phone .fz-results { padding: 8px 12px; }
+.fz-phone .fz-rhead b { font-size: 28px; }
+.fz-phone .fz-rrow { grid-template-columns: 30px 120px 1fr 80px; min-height: 30px; }
+.fz-phone .fz-modal { padding: 12px 14px; }
+.fz-phone .fz-rpause .fz-btn { margin: 6px 14px 0; }
+
+.fz-phone .fz-ph-panel { left: 8px; top: 8px; width: 270px; max-height: calc(100% - 16px); }
+.fz-phone .fz-ph-tab { padding: 10px 0; font-size: 11px; }
+.fz-phone .fz-ph-row { min-height: 40px; }
+.fz-phone .fz-ph-row i { border-top-width: 10px; border-bottom-width: 10px; padding: 0 6px; }
+.fz-phone .fz-ph-l { border-right-width: 12px; }
+.fz-phone .fz-ph-r { border-left-width: 12px; }
+.fz-phone .fz-ph-btn { padding: 10px 4px; font-size: 12px; }
+.fz-phone .fz-ph-strip { left: 290px; }
+.fz-phone .fz-al-strip { flex-basis: 84px; padding: 10px; }
+
+.fz-phone .fz-title { overflow-y: auto; justify-content: flex-start; padding-top: 10px; }
+.fz-phone .fz-tmenu { margin-top: 10px; gap: 5px; }
+.fz-phone .fz-titem { padding: 8px 40px 8px 14px; font-size: 17px; }
+.fz-phone .fz-logo-f { font-size: 20px; letter-spacing: 8px; }
+.fz-phone .fz-logo-h { font-size: 44px; }
+.fz-phone .fz-logo-r { font-size: 18px; letter-spacing: 12px; margin-top: 4px; }
+
+.fz-tback { position: absolute; left: max(8px, env(safe-area-inset-left)); bottom: 8px; z-index: 6; min-width: 112px; height: 44px; display: none; align-items: center; justify-content: center; gap: 6px; background: rgba(12,14,20,0.82); color: #fff; border: 2px solid rgba(255,255,255,0.8); font: italic 800 14px 'Segoe UI', 'Trebuchet MS', Tahoma, Arial, sans-serif; text-transform: uppercase; touch-action: manipulation; }
+.fz-tback.on { display: flex; }
+.fz-tback:active { background: #e6146e; }
+.fz-tmapbtns { position: absolute; right: 10px; bottom: 8px; z-index: 4; display: flex; gap: 8px; }
+.fz-tmapbtns button { min-width: 120px; height: 44px; background: #e6146e; color: #fff; border: 0; font: italic 800 14px 'Segoe UI', 'Trebuchet MS', Tahoma, Arial, sans-serif; text-transform: uppercase; }
+.fz-tmapbtns button.quiet { background: rgba(12,14,20,0.82); border: 2px solid rgba(255,255,255,0.8); }
+.fz-phone .fz-tfoot { left: auto; right: 10px; bottom: 6px; max-width: 42%; text-align: right; font-size: 10px; line-height: 1.3; }
+.fz-phone .fz-tpanel { padding-bottom: 56px; }
+.fz-phone .fz-legend { left: 130px; }
+.fz-phone .fz-home { padding-bottom: 56px; }
+.fz-phone .fz-carstab, .fz-phone .fz-festtab, .fz-phone .fz-skillstab, .fz-phone .fz-settab { padding-bottom: 56px; }
+.fz-phone .fz-rpause { padding-bottom: 8px; }

@@ -2,6 +2,17 @@
   'use strict';
 
   F.TICK = 1 / 60;
+  F.FOLLOW_STEP = 1 / 240;
+  F.follow = (cur, from, to, rate, dt) => {
+    const n = Math.max(1, Math.ceil(dt / F.FOLLOW_STEP)), h = dt / n, k = 1 - Math.exp(-rate * h);
+    for (let i = 1; i <= n; i++) cur += (from + (to - from) * i / n - cur) * k;
+    return cur;
+  };
+  F.followAngle = (cur, from, to, rate, dt) => {
+    const n = Math.max(1, Math.ceil(dt / F.FOLLOW_STEP)), h = dt / n, k = 1 - Math.exp(-rate * h), span = F.wrap(to - from);
+    for (let i = 1; i <= n; i++) cur += F.wrap(from + span * i / n - cur) * k;
+    return cur;
+  };
   F.SUB = 2;
   F.G = 9.81;
   F.RHO = 1.225;

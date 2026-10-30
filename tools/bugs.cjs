@@ -2,6 +2,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const http = require('http');
+const zlib = require('zlib');
 const { execFileSync, spawn } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -340,9 +341,74 @@ async function cdpPage(port) {
   throw new Error('Edge did not open a debugging page');
 }
 
+function savedStorage(dir) {
+  const file = path.join(dir, 'save.json.gz');
+  if (!fs.existsSync(file)) return null;
+  const archive = JSON.parse(zlib.gunzipSync(fs.readFileSync(file)).toString('utf8'));
+  return (archive.data && archive.data.ls) || {};
+}
+
+async function reproParohod(config, id, report, opts) {
+  const o = opts || {};
+  const games = require('./parohod98-game.cjs');
+  const app = report.where && report.where.app;
+  const result = { id, opened: '', ready: false, restored: [], missing: [], exceptions: [], consoleErrors: [], storageKeys: 0, png: '', parohod98: app };
+  if (!games.GAMES[app]) throw new Error(id + ' comes from the Пароход 98 ' + (app || 'launcher') + ', only game reports open in repro; look at its shots');
+  const pkg = path.join(config.repo, 'dist', 'parohod98-repro', app);
+  games.build(app, pkg, { edition: 'apk', version: (report.build && report.build.version) || 'repro' });
+  const ls = savedStorage(path.join(config.dir, id)) || {};
+  result.restored = Object.keys(ls);
+  const srv = await games.serveDir(path.resolve(pkg));
+  const port = 9370 + Math.floor(Math.random() * 60);
+  const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'parohod98-repro-'));
+  const edge = spawn(EDGE, ['--headless=new', '--remote-debugging-port=' + port, '--user-data-dir=' + profile, '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--autoplay-policy=no-user-gesture-required', 'about:blank'], { stdio: 'ignore' });
+  try {
+    const page = await cdpPage(port);
+    const value = async expr => {
+      const r = await page.send('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true });
+      return r.result && r.result.result ? r.result.result.value : undefined;
+    };
+    await page.send('Runtime.enable');
+    await page.send('Page.enable');
+    const view = (report.system && report.system.viewport) || [846, 387];
+    await page.send('Emulation.setDeviceMetricsOverride', { width: view[0] || 846, height: view[1] || 387, deviceScaleFactor: 2, mobile: true });
+    await page.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+    await page.send('Page.addScriptToEvaluateOnNewDocument', { source: 'if(!sessionStorage.getItem("p98repro")){localStorage.clear();const d=' + JSON.stringify(Object.assign({ ['parohod98.hint.' + app]: '1' }, ls)) + ';for(const k in d)localStorage.setItem(k,d[k]);sessionStorage.setItem("p98repro","1");}' });
+    result.opened = 'http://127.0.0.1:' + srv.address().port + '/index.html';
+    await page.send('Page.navigate', { url: result.opened });
+    const deadline = Date.now() + (o.timeout || 240000);
+    while (Date.now() < deadline && !result.ready) {
+      await sleep(1000);
+      result.ready = !!(await value(games.GAMES[app].ready));
+    }
+    if (result.ready && result.restored.length) result.resumed = !!(await value(games.GAMES[app].resume));
+    await sleep(o.settle || 8000);
+    result.storageKeys = await value('Object.keys(localStorage).length');
+    result.where = await value('JSON.stringify(Parohod98Report.GAMES[' + JSON.stringify(app) + '].where())');
+    const shot = await page.send('Page.captureScreenshot', { format: 'png' });
+    result.png = path.join(config.dir, id, 'repro.png');
+    fs.writeFileSync(result.png, Buffer.from(shot.result.data, 'base64'));
+    for (const e of page.events) {
+      if (e.method === 'Runtime.exceptionThrown') {
+        const d = e.params.exceptionDetails;
+        result.exceptions.push({ text: d.exception && d.exception.description ? d.exception.description.split('\n').slice(0, 4).join('\n') : d.text, count: 1 });
+      } else if (e.method === 'Runtime.consoleAPICalled' && e.params.type === 'error') {
+        result.consoleErrors.push({ text: e.params.args.map(a => a.value != null ? a.value : a.description || '').join(' ').split('\n').slice(0, 4).join('\n'), count: 1 });
+      }
+    }
+    fs.writeFileSync(path.join(config.dir, id, 'repro.log'), JSON.stringify(Object.assign({}, result, { at: new Date().toISOString() }), null, 2));
+    return result;
+  } finally {
+    try { execFileSync('taskkill', ['/PID', String(edge.pid), '/T', '/F'], { stdio: 'ignore' }); } catch (err) {}
+    srv.close();
+  }
+}
+
 async function reproHeadless(config, id, opts) {
   const o = opts || {};
   if (!fs.existsSync(path.join(config.dir, id, 'report.json'))) throw new Error('No report ' + id);
+  const report = JSON.parse(fs.readFileSync(path.join(config.dir, id, 'report.json'), 'utf8'));
+  if (report.source === 'parohod98') return reproParohod(config, id, report, o);
   const server = await ensureReproServer(config);
   const port = 9370 + Math.floor(Math.random() * 60);
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'win98-repro-'));
@@ -554,8 +620,10 @@ async function main(argv) {
   if (command === 'repro') {
     const id = String(args._[1] || '').toUpperCase();
     if (!fs.existsSync(path.join(config.dir, id, 'report.json'))) throw new Error('No report ' + id);
-    if (args.headless) {
+    const parohod = JSON.parse(fs.readFileSync(path.join(config.dir, id, 'report.json'), 'utf8')).source === 'parohod98';
+    if (args.headless || parohod) {
       const r = await reproHeadless(config, id);
+      if (r.parohod98) console.log('Пароход 98 ' + r.parohod98 + (r.resumed ? ', save continued' : '') + (r.where ? ', where now: ' + JSON.parse(r.where).summary : ''));
       console.log((r.ready ? 'Ready' : 'Timed out') + (r.opened ? ', opened ' + r.opened : '') + (r.live ? ', live state loaded' : '') + ', restored keys: ' + r.restored.length + (r.missing.length ? ' (missing ' + r.missing.join(', ') + ')' : '') + ', localStorage keys: ' + r.storageKeys + ', exceptions: ' + r.exceptions.length + ', console errors: ' + r.consoleErrors.length);
       r.exceptions.concat(r.consoleErrors).forEach(e => console.log('  ' + e.text.split('\n')[0] + (e.count > 1 ? ' x' + e.count : '')));
       console.log('Screenshot: ' + r.png);

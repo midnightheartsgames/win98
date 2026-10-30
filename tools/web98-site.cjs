@@ -19,12 +19,11 @@ function loadCatalog() {
   return sandbox.window.gameManager.catalog;
 }
 
-const shotFile = (g, n) => path.join(ROOT, g.cdDemo ? 'content/igromania/demos' : 'content/steam', `${g.id}-${n}.jpg`);
+const shotFile = (g, n) => path.join(ROOT, 'content/steam', `${g.id}-${n}.jpg`);
 
-function listGames() {
-  const catalog = loadCatalog();
+function listGames(catalog) {
   return Object.values(catalog)
-    .filter(g => (g.steam || g.cdDemo) && g.genre && Array.isArray(g.shots) && g.shots.length >= 2)
+    .filter(g => g.steam && g.genre && Array.isArray(g.shots) && g.shots.length >= 2)
     .filter(g => [1, 2].every(n => fs.existsSync(shotFile(g, n))));
 }
 
@@ -52,9 +51,9 @@ const LEVELS = {
 
 const READINESS = {
   purple: ['hsr98'],
-  red: ['half-life_demo', 'neon-racer_demo', 'sammax202_demo', 'homm1_demo'],
-  orange: ['fallout98_demo', 'stalker98_demo', 'moh98', 'mc98_demo', 'dao98_demo', 'dmc98_demo', 'tekken98_demo', 'diablo2', 'xiii_demo', 'maxpayne_demo', 'falloutzp_demo', 'sims3', 'kotor98_demo', 'hl2_demo', 'gta90'],
-  yellow: ['wolf3d', 'quest_demo', 'diablo', 'doom', 'lol', 'avatar98', 'cop98', 'ow98', 'gtann', 'dota', 'korovany_demo'],
+  red: [],
+  orange: ['diablo2', 'gta90'],
+  yellow: ['wolf3d', 'diablo', 'doom', 'lol', 'avatar98', 'cop98', 'ow98', 'gtann', 'dota', 'kirill98'],
   lime: ['serioussam', 'forza', 'plov', 'quake3', 'bttf', 'catniss'],
   green: ['stalker', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201'],
   blue: ['legion', 'anotherwar', 'fallout']
@@ -67,7 +66,8 @@ const levelRank = id => {
 };
 
 function syncGames() {
-  const games = listGames().sort((a, b) => levelRank(a.id) - levelRank(b.id));
+  const catalog = loadCatalog();
+  const games = listGames(catalog).sort((a, b) => levelRank(a.id) - levelRank(b.id));
   const unrated = games.filter(g => !levelOf(g.id)).map(g => g.id);
   if (unrated.length) console.log(`no readiness level: ${unrated.join(', ')}`);
   const dir = path.join(SITE, 'img/games');
@@ -88,11 +88,11 @@ function syncGames() {
     return `
         <li><a class="game${level ? ' is-' + level : ''}" href="img/games/${g.id}-1.jpg" data-id="${g.id}"><img src="img/games/${g.id}-1.jpg" alt="" width="640" height="480" loading="lazy" decoding="async"><span class="game-title">${escapeHtml(g.title)}</span><span class="game-genre">${escapeHtml(g.genre)}</span>${mark}</a></li>`;
   }).join('');
-  const legend = Object.keys(LEVELS).map(level => `
+  const legend = Object.keys(LEVELS).filter(level => READINESS[level].some(id => games.some(g => g.id === id))).map(level => `
         <li class="is-${level}"><span class="game-level">${LEVELS[level].long}</span><span class="legend-count">${READINESS[level].filter(id => games.some(g => g.id === id)).length}</span></li>`).join('');
   const data = games.map(g => {
     const level = levelOf(g.id);
-    return { id: g.id, title: g.title, subtitle: g.subtitle, genre: g.genre, tags: g.tags || [], shots: g.shots.slice(0, 2), desc: g.desc || '', cd: g.cdDemo ? `D:\\demo\\${g.setupExe}` : '', level, levelText: level ? LEVELS[level].long : '' };
+    return { id: g.id, title: g.title, subtitle: g.subtitle, genre: g.genre, tags: g.tags || [], shots: g.shots.slice(0, 2), desc: g.desc || '', level, levelText: level ? LEVELS[level].long : '' };
   });
   const json = JSON.stringify(data).replace(/</g, '\\u003c');
 
@@ -101,15 +101,15 @@ function syncGames() {
   html = html.replace(/(<ul class="shelf" id="games">)[\s\S]*?(\n      <\/ul>)/, `$1${tiles}$2`);
   html = html.replace(/(<ul class="legend" id="legend">)[\s\S]*?(\n        <\/ul>)/, `$1${legend}$2`);
   html = html.replace(/(<script type="application\/json" id="games-data">)[\s\S]*?(<\/script>)/, `$1${json}$2`);
-  const steamCount = games.filter(g => g.steam).length;
-  const demoCount = games.filter(g => g.cdDemo).length;
+  const steamCount = games.length;
+  const demoCount = Object.values(catalog).filter(g => g.cdDemo).length;
   html = html.replace(/(data-fill="games-n">)[^<]*/g, `$1${games.length}`);
   html = html.replace(/(data-fill="games">)[^<]*/g, `$1${games.length} ${gamesNoun(games.length)}`);
   html = html.replace(/(data-fill="steam-n">)[^<]*/g, `$1${steamCount}`);
   html = html.replace(/(data-fill="steam">)[^<]*/g, `$1${steamCount} ${gamesNoun(steamCount)}`);
   html = html.replace(/(data-fill="demos">)[^<]*/g, `$1${demoCount} ${demosNoun(demoCount)}`);
   fs.writeFileSync(file, html);
-  console.log(`games: ${games.length} (Steam ${steamCount}, Igromania CD ${demoCount})`);
+  console.log(`games: ${steamCount} (Steam), Igromania CD demos not listed: ${demoCount}`);
 }
 
 const STATE = JSON.stringify({

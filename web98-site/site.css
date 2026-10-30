@@ -481,11 +481,6 @@ a {
   font-variant-numeric: tabular-nums;
 }
 
-.games-foot {
-  margin-top: 40px;
-  font-size: 0.95rem;
-}
-
 .web {
   padding: clamp(56px, 9vw, 120px) var(--gutter);
 }
@@ -677,6 +672,54 @@ a {
   }
 }
 
+.phone {
+  padding: clamp(56px, 9vw, 120px) var(--gutter);
+  background: var(--navy);
+  color: var(--paper);
+}
+
+.phone h2 {
+  margin-bottom: 20px;
+  color: var(--vga-yellow);
+}
+
+.phone-lede {
+  max-width: var(--measure);
+  margin-bottom: 36px;
+  font: 1.05rem/1.6 var(--font-body);
+}
+
+.phone-games {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  margin: 0 0 44px;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-post);
+}
+
+.phone-games img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  margin-bottom: 8px;
+  border: 2px solid var(--vga-gray);
+}
+
+.phone-games span {
+  color: var(--vga-cyan);
+  white-space: nowrap;
+}
+
+@media (min-width: 720px) {
+  .phone-games {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .window {
   width: min(900px, calc(100vw - 32px));
   max-height: calc(100svh - 32px);
@@ -750,14 +793,6 @@ body:has(.window[open]) {
 }
 
 .window-sub {
-  font-size: 0.95rem;
-}
-
-.window-cd {
-  margin-top: 10px;
-  padding: 6px 10px;
-  border: 1px solid var(--ink);
-  background: var(--tip);
   font-size: 0.95rem;
 }
 

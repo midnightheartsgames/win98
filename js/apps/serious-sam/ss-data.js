@@ -1,7 +1,3 @@
-/**
- * Serious Sam 98 — static tables: weapons, ammo, projectiles, enemies, pickups, difficulty levels and UI strings.
- * Pure data (no DOM). Units: metres, seconds, hit points.
- */
 (function (S) {
   'use strict';
   const D = S.DEG;
@@ -15,7 +11,6 @@
     balls: { max: 30, name: { ru: 'Ядра', en: 'Cannonballs' } }
   };
 
-  // key = keyboard slot (0 = '0'); order = cycling order
   const WEAPONS = {
     knife: { key: 1, name: { ru: 'Нож', en: 'Military Knife' }, melee: true, dmg: 60, range: 2.4, rate: 0.5, sound: 'knife' },
     colt: { key: 2, name: { ru: 'Револьвер Шофилда', en: 'Schofield .45' }, dmg: 20, rate: 0.3, clip: 6, reload: 1.2, spread: 0.4 * D, sound: 'colt' },
@@ -30,7 +25,6 @@
   };
   const WEAPON_ORDER = ['knife', 'colt', 'shotgun', 'dshotgun', 'tommy', 'minigun', 'rocket', 'grenade', 'laser', 'cannon'];
 
-  // owner 'p' = player, 'e' = enemy
   const PROJ = {
     rocket: { owner: 'p', speed: 45, dmg: 80, splash: 70, radius: 5, size: 0.25, light: [1, 0.7, 0.3], trail: 'smoke', model: 'rocket' },
     grenade: { owner: 'p', speed: 26, up: 4, gravity: 20, bounce: 0.45, fuse: 2.2, dmg: 0, splash: 110, radius: 6, size: 0.2, trail: 'smoke', contact: true, model: 'grenade' },
@@ -47,7 +41,6 @@
     e_bossrock: { owner: 'e', speed: 28, dmg: 30, splash: 20, radius: 4, homing: 1.0, life: 6, size: 0.35, light: [1, 0.6, 0.2], trail: 'smoke', model: 'rocket' }
   };
 
-  // ai: kamikaze | ranged | melee | kleer | charge | flyer | hopper | gunner | boss
   const ENEMIES = {
     kamikaze: { name: { ru: 'Безголовый камикадзе', en: 'Beheaded Kamikaze' }, hp: 10, speed: 9.2, r: 0.45, h: 1.8, ai: 'kamikaze', dmg: 35, blast: 4.5, score: 250, model: 'kamikaze', sounds: { alert: 'scream' },
       info: { ru: 'Безголовый солдат с двумя бомбами в руках. С воплем «А-а-а-а!» бежит прямо на вас и взрывается. Стреляйте издалека и не подпускайте их близко — взрыв задевает и других монстров.', en: 'A headless soldier holding two bombs. Screaming "AAAAAAA!" he runs straight at you and explodes. Shoot from afar — his blast also hurts other monsters.' } },
@@ -79,7 +72,6 @@
       info: { ru: 'Уг-Зан Третий, личный страж Ментала. Двадцатиметровый гигант: огненные шары, ракеты и сокрушительные удары. Держитесь на расстоянии и стреляйте без остановки!', en: 'Ugh-Zan the Third, Mental\'s personal guardian. A twenty-metre giant: fireballs, rockets and crushing stomps. Keep your distance and never stop shooting!' } }
   };
 
-  // pickups: kind health/armor/ammo/weapon/power
   const ITEMS = {
     pill: { kind: 'health', amount: 1, max: 200, color: [0.3, 0.9, 1] },
     health_s: { kind: 'health', amount: 10, max: 100, color: [0.2, 0.9, 0.3] },
@@ -116,7 +108,18 @@
       on: 'ВКЛ', off: 'ВЫКЛ', low: 'НИЗКОЕ', med: 'СРЕДНЕЕ', high: 'ВЫСОКОЕ',
       clickToPlay: 'Щёлкните, чтобы захватить мышь', paused: 'ПАУЗА', youDied: 'ВЫ ПОГИБЛИ', pressFire: 'Щёлкните или нажмите Пробел, чтобы начать уровень заново',
       kills: 'Убито', secrets: 'Секреты', time: 'Время', score: 'Счёт', levelDone: 'УРОВЕНЬ ПРОЙДЕН', next: 'Щёлкните, чтобы продолжить', secretFound: 'Вы нашли секрет!',
-      netricsa: 'НЕТРИКСА', newEnemy: 'Новый противник', ammoFull: '', loading: 'ЗАГРУЗКА...', boss: 'УГ-ЗАН III',
+      netricsa: 'НЕТРИКСА', report: 'СООБЩИТЬ ОБ ОШИБКЕ', newEnemy: 'Новый противник', ammoFull: '', loading: 'ЗАГРУЗКА...', boss: 'УГ-ЗАН III',
+      fpsCap: 'Частота кадров', screenHz: 'КАК У ЭКРАНА', touchSens: 'Чувствительность пальца', aim: 'Помощь прицела', aimOff: 'ВЫКЛ', aimWeak: 'СЛАБАЯ', aimNormal: 'ОБЫЧНАЯ',
+      pressFireTouch: 'Коснитесь экрана, чтобы начать уровень заново', nextTouch: 'Коснитесь экрана, чтобы продолжить', gfxReset: 'Графика сброшена, перезапуск...', hintTitle: 'Управление', fireBtn: 'ОГОНЬ', jumpBtn: 'ПРЫЖОК',
+      helpTouch: [
+        'Левая половина экрана — движение: стик появляется под пальцем, чем дальше палец, тем быстрее',
+        'Правая половина — обзор: ведите пальцем',
+        'ОГОНЬ — стрелять; не отпуская кнопку, ведите пальцем, чтобы целиться',
+        'Пушка: держите ОГОНЬ для сильного выстрела',
+        'Значок оружия вверху справа: касание — следующее, сдвиг — листать, долгое нажатие — список',
+        'ПРЫЖОК — над кнопкой огня, R — перезарядка револьвера',
+        'II вверху слева или «Назад» — пауза; НЕТРИКСА — в меню паузы'
+      ],
       help: [
         'W A S D / стрелки — движение',
         'Мышь — обзор, ЛКМ — огонь',
@@ -149,7 +152,18 @@
       on: 'ON', off: 'OFF', low: 'LOW', med: 'MEDIUM', high: 'HIGH',
       clickToPlay: 'Click to capture the mouse', paused: 'PAUSED', youDied: 'YOU DIED', pressFire: 'Click or press Space to restart the level',
       kills: 'Kills', secrets: 'Secrets', time: 'Time', score: 'Score', levelDone: 'LEVEL COMPLETE', next: 'Click to continue', secretFound: 'You found a secret!',
-      netricsa: 'NETRICSA', newEnemy: 'New enemy', ammoFull: '', loading: 'LOADING...', boss: 'UGH-ZAN III',
+      netricsa: 'NETRICSA', report: 'REPORT A BUG', newEnemy: 'New enemy', ammoFull: '', loading: 'LOADING...', boss: 'UGH-ZAN III',
+      fpsCap: 'Frame rate', screenHz: 'LIKE THE SCREEN', touchSens: 'Finger sensitivity', aim: 'Aim assist', aimOff: 'OFF', aimWeak: 'WEAK', aimNormal: 'NORMAL',
+      pressFireTouch: 'Tap the screen to restart the level', nextTouch: 'Tap the screen to continue', gfxReset: 'Graphics were reset, restarting...', hintTitle: 'Controls', fireBtn: 'FIRE', jumpBtn: 'JUMP',
+      helpTouch: [
+        'Left half of the screen — move: the stick appears under your finger, further is faster',
+        'Right half — look: drag your finger',
+        'FIRE — shoot; keep holding and drag to aim',
+        'Cannon: hold FIRE for a stronger shot',
+        'Weapon icon top right: tap — next, swipe — browse, long press — list',
+        'JUMP — above the fire button, R — reload the revolver',
+        'II top left or Back — pause; NETRICSA is in the pause menu'
+      ],
       help: [
         'W A S D / arrows — move',
         'Mouse — look, LMB — fire',

@@ -182,6 +182,10 @@ function pkg(id, extra) {
   assert.match(long, /^🐞 BR-261027-GGGG · Win 98 · browser · Идея/);
   console.log('✓ caption limits');
 
+  const phone = caption({ id: 'BR-261029-HHHH', source: 'parohod98', channel: 'parohod98-apk', user: { title: 'Кнопка не жмётся', kind: 'bug', repeat: 'always' }, where: { summary: 'Serious Sam 98 > Уровень 1. Храм Хатшепсут', app: 'serioussam' }, errors: [] }, { files: ['save.json.gz'], status: 'new', cheats: false });
+  assert.match(phone, /^🐞 BR-261029-HHHH · Пароход 98 · parohod98-apk · Не работает · всегда\nКнопка не жмётся\nГде: Serious Sam 98 > Уровень 1\. Храм Хатшепсут\nсохранение приложено$/);
+  console.log('✓ reports from Пароход 98 are labelled');
+
   console.log('Bug receiver tests passed.');
 })().catch(err => {
   console.error(err);

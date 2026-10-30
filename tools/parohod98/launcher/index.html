@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Пароход 98</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="launcher.css">
+</head>
+<body>
+<nav id="rail" class="rail">
+  <img class="logo" src="icon.png" alt="">
+  <button type="button" class="tab" data-view="library"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 2h6v5H1zM9 2h6v5H9zM1 9h6v5H1zM9 9h6v5H9z"/></svg><span data-t="library"></span></button>
+  <button type="button" class="tab" data-view="news"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1h8l3 3v11H3zM5 6h7v1H5zM5 8h7v1H5zM5 10h7v1H5zM5 12h5v1H5z" fill-rule="evenodd"/></svg><span data-t="news"></span><b id="unread" class="badge" hidden></b></button>
+  <button type="button" class="tab" data-view="settings"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M7 0h2v2h2v1h1v1h1v2h2v2h-2v2h-1v1h-1v1H9v2H7v-2H5v-1H4v-1H3V8H1V6h2V4h1V3h1V2h2zM7 5v1H6v3h1v1h2V9h1V6H9V5z" fill-rule="evenodd"/></svg><span data-t="settings"></span></button>
+</nav>
+<main id="view" class="view"></main>
+<div id="full" class="full" hidden></div>
+<div id="dialog" class="dialog" hidden><div class="box" role="dialog"><p id="dialog-text"></p><div id="dialog-buttons" class="row"></div></div></div>
+<script src="../js/bugreport-core.js"></script>
+<script src="launcher-state.js"></script>
+<script src="../js/bugreport-shot.js"></script>
+<script src="../js/parohod98-report.js"></script>
+<script src="launcher.js"></script>
+</body>
+</html>

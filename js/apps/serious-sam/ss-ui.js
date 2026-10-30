@@ -1,8 +1,3 @@
-/**
- * Serious Sam 98 — DOM front end: WebGL view + HUD canvas, pointer-lock input, fixed 60 Hz loop with a smoothed
- * camera, Serious-style HUD (health, armor, ammo, score, boss bar, NETRICSA messages), menus, level stats,
- * death/restart, victory, checkpoint saves and console cheats.
- */
 (function (S) {
   'use strict';
   const { clamp } = S;
@@ -13,6 +8,7 @@
   const KEYW = { Digit1: 'knife', Digit2: 'colt', Digit3: 'shotgun', Digit4: 'dshotgun', Digit5: 'tommy', Digit6: 'minigun', Digit7: 'rocket', Digit8: 'grenade', Digit9: 'laser', Digit0: 'cannon' };
   const FONT = 'Impact, "Arial Black", "Arial Narrow", sans-serif';
   const QUALITY = [0.5, 0.75, 1];
+  const FPS_CAPS = [0, 30, 60, 90, 120];
   const RUN_MULS = [1, 1.5, 2, 3], JUMP_MULS = [1, 2, 4, 8];
 
   class UI {
@@ -34,6 +30,8 @@
       this.toasts = []; this.netricsa = null; this.netQueue = []; this.popup = null; this.flash = { r: 0, g: 0 }; this.hurtDir = null; this.hurtT = 0;
       this.acc = 0; this.last = 0; this.fpsT = 0; this.fpsN = 0; this.fps = 0; this.showLog = false; this.wsel = 0; this.sway = [0, 0];
       this.debug = false; this.dbgRows = []; this.dbgSel = 1; this.dbgPick = 0; this.dbgNote = null; this.dbgRects = [];
+      if (this.options.fpsCap == null) this.options.fpsCap = 0;
+      this.touch = S.Touch && S.Touch.wanted() ? new S.Touch(this) : null;
       this.bind();
       this.ro = new ResizeObserver(() => this.resize()); this.ro.observe(root); this.resize();
       this.loadDemo();
@@ -50,7 +48,6 @@
     saveOptions() { store.set(OPT_KEY, JSON.stringify(this.options)); this.audio.sfxVol = this.options.sfx; this.audio.musicVol = this.options.music; this.audio.applyVolume(); }
     saveGame() { store.set(SAVE_KEY, JSON.stringify(this.save)); }
 
-    // ================================================================ layout & input
     resize() {
       const r = this.root.getBoundingClientRect(); if (!r.width || !r.height) return;
       const dpr = Math.min(2, globalThis.devicePixelRatio || 1), q = QUALITY[this.options.quality] || 1;
@@ -60,7 +57,7 @@
       this.hud.width = Math.round(r.width * dpr); this.hud.height = Math.round(r.height * dpr);
     }
     locked() { return document.pointerLockElement === this.glc; }
-    lock() { if (!this.locked() && this.glc.requestPointerLock) { try { const p = this.glc.requestPointerLock(); if (p && p.catch) p.catch(() => { this.lockDenied = true; }); } catch (_) { this.lockDenied = true; } } }
+    lock() { if (this.touch) return; if (!this.locked() && this.glc.requestPointerLock) { try { const p = this.glc.requestPointerLock(); if (p && p.catch) p.catch(() => { this.lockDenied = true; }); } catch (_) { this.lockDenied = true; } } }
     unlock() { if (this.locked() && document.exitPointerLock) document.exitPointerLock(); }
     bind() {
       const sig = { signal: this.ac.signal }, root = this.root;
@@ -114,7 +111,6 @@
       }
     }
 
-    // ================================================================ game flow
     loadDemo() {
       if (this.failed) return;
       const lv = this.save.cont ? Math.min(this.save.cont.level, S.LEVELS.length - 1) : 0;
@@ -150,7 +146,6 @@
     toast(text, color = '#fff') { this.toasts.push({ text, color, t: 0 }); if (this.toasts.length > 4) this.toasts.shift(); }
     say(text, dur = 6) { if (!text) return; text = text.replace(/^(Нетрикса|NETRICSA):\s*/i, ''); text = text.charAt(0).toUpperCase() + text.slice(1); this.netQueue.push({ text, dur }); }
 
-    // ================================================================ menus
     openMenu(name) {
       this.menu = name; this.menuSel = 0; this.hover = -1; this.mouse.fire = false;
       if (name === 'pause' || name === 'main') this.unlock();
@@ -179,6 +174,9 @@
           it.push({ label: T('restart'), act: () => { this.menu = null; this.audio.pause(false); this.restartLevel(); } });
           it.push({ label: T('options'), act: () => { this.menu = 'options'; this.menuSel = 0; this.buildMenu(); } });
           it.push({ label: T('controls'), act: () => { this.menu = 'controls'; this.menuSel = 0; this.buildMenu(); } });
+          if (this.touch) it.push({ label: T('netricsa'), act: () => { this.menu = 'log'; this.menuSel = 0; this.buildMenu(); } });
+          if (globalThis.Parohod98Report) it.push({ label: T('report'), act: () => globalThis.Parohod98Report.open() });
+          if (globalThis.TouchControls && globalThis.TouchControls.testChannel()) it.push({ label: this.lang === 'ru' ? 'ОТЛАДКА' : 'DEBUG', act: () => this.openDebug() });
           it.push({ label: T('mainMenu'), act: () => { this.audio.pause(false); this.state = 'title'; this.loadDemo(); this.openMenu('main'); } });
           break;
         case 'skill':
@@ -199,10 +197,16 @@
           it.push({ label: T('quality'), value: () => [T('low'), T('med'), T('high')][o.quality], adj: d => { o.quality = (o.quality + d + 3) % 3; this.resize(); } });
           it.push({ label: T('bob'), value: () => onoff(o.bob), adj: () => { o.bob = !o.bob; } });
           it.push({ label: T('fps'), value: () => onoff(o.fps), adj: () => { o.fps = !o.fps; } });
+          it.push({ label: T('fpsCap'), value: () => (FPS_CAPS[o.fpsCap] ? String(FPS_CAPS[o.fpsCap]) : T('screenHz')), adj: d => { o.fpsCap = (o.fpsCap + d + FPS_CAPS.length) % FPS_CAPS.length; } });
+          if (this.touch) {
+            it.push({ label: T('touchSens'), value: () => String(o.touchSens), adj: d => { o.touchSens = clamp(o.touchSens + d, 1, 20); } });
+            it.push({ label: T('aim'), value: () => [T('aimOff'), T('aimWeak'), T('aimNormal')][o.aim], adj: d => { o.aim = (o.aim + d + 3) % 3; } });
+          }
           it.push(back(parent));
           break;
         }
-        case 'controls': for (const line of this.S.help) it.push({ label: line, text: true }); it.push(back(parent)); break;
+        case 'controls': for (const line of (this.touch ? this.S.helpTouch : this.S.help)) it.push({ label: line, text: true }); it.push(back(parent)); break;
+        case 'log': it.push(back('pause')); break;
       }
       this.menuItems = it;
       if (this.menuItems[this.menuSel] && this.menuItems[this.menuSel].text) this.menuSel = this.menuItems.findIndex(x => !x.text);
@@ -217,8 +221,7 @@
       else if (c === 'Enter' || c === 'Space') this.activate(it[this.menuSel], 1);
       else if (c === 'Escape') {
         if (this.menu === 'pause') this.closeMenu();
-        else if (this.menu === 'main') { /* stay */ }
-        else { const back = it[n - 1]; if (back && back.act) back.act(); }
+        else if (this.menu !== 'main') { const back = it[n - 1]; if (back && back.act) back.act(); }
       }
     }
     adjust(item, d) { if (item && item.adj) { item.adj(d); this.saveOptions(); this.audio.play('switch'); } }
@@ -231,12 +234,13 @@
     menuHover(e) { const h = this.menuHit(e); this.hover = h ? h.i : -1; if (h && !this.menuItems[h.i].text && h.i !== this.menuSel) this.menuSel = h.i; }
     menuClick(e) { const h = this.menuHit(e); if (!h) return; const item = this.menuItems[h.i]; this.menuSel = h.i; this.activate(item, item.adj && h.x < h.b[4] ? -1 : 1); }
 
-    // ================================================================ main loop
     isActive() { return !document.hidden && this.root.getClientRects().length && (!this.opts.isActive || this.opts.isActive()); }
     frame(ts) {
       if (this.destroyed) return;
       this.raf = requestAnimationFrame(this.frame);
       if (this.failed) return;
+      const cap = FPS_CAPS[this.options.fpsCap] || 0;
+      if (cap && this.last && ts - this.last < 1000 / cap - 2) return;
       const dt = Math.min(0.1, this.last ? (ts - this.last) / 1000 : 0.016); this.last = ts;
       this.fpsT += dt; this.fpsN++; if (this.fpsT > 0.5) { this.fps = Math.round(this.fpsN / this.fpsT); this.fpsT = 0; this.fpsN = 0; }
       const active = this.isActive();
@@ -250,9 +254,11 @@
           if (!p.dead) { p.yaw = S.wrapAng(p.yaw - this.mouse.dx * k); p.pitch = clamp(p.pitch - this.mouse.dy * k * (this.options.invert ? -1 : 1), -1.5, 1.5); }
           this.sway[0] = clamp(this.sway[0] * 0.85 - this.mouse.dx * 0.00004, -0.03, 0.03); this.sway[1] = clamp(this.sway[1] * 0.85 + this.mouse.dy * 0.00004, -0.03, 0.03);
           this.mouse.dx = this.mouse.dy = 0;
+          if (this.touch) this.touch.look(dt, g, p);
           this.acc += dt; let n = 0;
           while (this.acc >= DT && n < 6) {
             this.prevPos = [p.x, p.y, p.z];
+            S.snapshotMotion(g);
             g.tick(this.input());
             this.handleEvents(g.events); R.events(g.events, g); g.events.length = 0;
             this.acc -= DT; n++;
@@ -273,7 +279,7 @@
         const cam = { x, y: this.camY + eye, z, yaw: p.yaw, pitch: p.pitch, roll: p.dead ? 0.4 : 0 };
         this.shadeT = (this.shadeT || 0) - dt; if (this.shadeT <= 0) { this.shadeT = 0.2; this.shade = R.shadeAt(p.x, p.y, p.z); }
         this.shadeS = this.shadeS == null ? this.shade : this.shadeS + (this.shade - this.shadeS) * Math.min(1, dt * 4);
-        R.render(g, cam, { fov: this.options.fov, viewmodel: this.state === 'play', bob: this.options.bob, sway: this.sway, shade: this.shadeS });
+        S.withMotionLerp(g, a, () => R.render(g, cam, { fov: this.options.fov, viewmodel: this.state === 'play', bob: this.options.bob, sway: this.sway, shade: this.shadeS }));
       } else if (this.demo) {
         this.demoT = (this.demoT || 0) + dt;
         const d = this.demo, st = d.def.start, a = this.demoT * 0.05, r = 16, fx = st.x, fz = st.z + 22;
@@ -282,6 +288,7 @@
         R.render(d, { x: cx, y: cy, z: cz, yaw: Math.atan2(fx - cx, fz - cz) + 0.5, pitch: 0.12 }, { fov: 85, viewmodel: false });
       }
       if (this.state === 'victory') this.victoryT += dt;
+      if (this.touch) this.touch.update(dt);
       this.drawHud();
     }
     input() {
@@ -296,11 +303,12 @@
       if (this.pendPrev) { i.prev = true; this.pendPrev = false; this.wsel = 1.6; }
       if (this.pendReload) { i.reload = true; this.pendReload = false; }
       if (this.mouse.wheel) { i.cycle = this.mouse.wheel > 0 ? 1 : -1; this.mouse.wheel = 0; this.wsel = 1.6; }
-      void g; return i;
+      void g; return this.touch ? this.touch.merge(i) : i;
     }
     handleEvents(evs) {
       const g = this.game, A = this.audio;
       for (const e of evs) {
+        if (this.touch) this.touch.event(e);
         switch (e.t) {
           case 'sound': A.play(e.s, e.x, e.y, e.z, e.vol); break;
           case 'hurt': this.flash.r = Math.min(0.6, this.flash.r + 0.1 + e.dmg * 0.012); if (e.dir != null) { this.hurtDir = e.dir; this.hurtT = 1; } break;
@@ -317,7 +325,6 @@
           default: break;
         }
       }
-      // footsteps
       const p = g.player, step = Math.floor(p.bob / 2);
       if (step !== this.lastStep) { this.lastStep = step; if (p.ground && !p.dead) A.play('step'); }
     }
@@ -330,7 +337,6 @@
       if (this.popup) { this.popup.t += dt; if (this.popup.t > 7) this.popup = null; }
     }
 
-    // ================================================================ HUD
     drawHud() {
       const c = this.hctx, W = this.hud.width, H = this.hud.height;
       c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, W, H);
@@ -341,12 +347,13 @@
       if (this.state === 'dead') {
         c.fillStyle = `rgba(90,0,0,${Math.min(0.45, this.deadT * 0.3)})`; c.fillRect(0, 0, w, h);
         this.bigText(c, this.t('youDied'), w / 2, h * 0.4, 54, '#ff4020');
-        if (this.deadT > 1) this.bigText(c, this.t('pressFire'), w / 2, h * 0.52, 18, '#fff');
+        if (this.deadT > 1) this.bigText(c, this.t(this.touch ? 'pressFireTouch' : 'pressFire'), w / 2, h * 0.52, 18, '#fff');
       }
       if (this.state === 'stats') this.drawStats(c, w, h);
       if (this.state === 'victory') this.drawVictory(c, w, h);
       if (this.debug) this.drawDebug(c, w, h, k);
-      if (this.menu) this.drawMenu(c, w, h, k);
+      if (this.menu && !this.cleanShot) this.drawMenu(c, w, h, k);
+      if (this.gfxReset) { c.fillStyle = 'rgba(0,0,0,0.8)'; c.fillRect(0, 0, w, h); this.bigText(c, this.t('gfxReset'), w / 2, h / 2, 26, '#ffd040'); }
       if (this.options.fps) { c.font = `bold 13px ${FONT}`; c.fillStyle = '#0f0'; c.textAlign = 'right'; c.fillText(`${this.fps} FPS  ${this.renderer ? this.renderer.frame.enemies : 0}e`, w - 8, h - 98); }
       c.restore();
     }
@@ -379,21 +386,24 @@
       c.save(); c.translate(w / 2, h / 2); c.strokeStyle = on ? '#ff5030' : 'rgba(255,255,255,0.9)'; c.lineWidth = 2;
       c.beginPath(); c.arc(0, 0, 9, 0, Math.PI * 2); c.stroke(); for (const [a, b] of [[0, -1], [0, 1], [-1, 0], [1, 0]]) { c.beginPath(); c.moveTo(a * 5, b * 5); c.lineTo(a * 14, b * 14); c.stroke(); }
       c.fillStyle = c.strokeStyle; c.fillRect(-1, -1, 2, 2); c.restore();
+      const top = !!this.touch, ins = top ? this.touch.hudInsets() : null, hy = top ? 12 : h - 62, ax = top ? w - ins.right - 248 - 8 : w - 248;
       const hpCol = p.hp <= 25 ? (Math.floor(g.time * 4) % 2 ? '#ff3020' : '#ffa090') : p.hp > 100 ? '#80e0ff' : '#ffffff';
-      this.panel(c, 10, h - 62, 238, 52);
-      this.icon(c, 'health', 18, h - 54, 36); this.bigText(c, String(Math.ceil(p.hp)), 60, h - 36, 38, hpCol, 'left');
-      this.icon(c, 'armor', 132, h - 54, 36); this.bigText(c, String(Math.ceil(p.armor)), 174, h - 36, 38, p.armor > 100 ? '#80e0ff' : '#ffd860', 'left');
+      const hx = top ? ins.left + 8 : 10;
+      this.panel(c, hx, hy, 238, 52);
+      this.icon(c, 'health', hx + 8, hy + 8, 36); this.bigText(c, String(Math.ceil(p.hp)), hx + 50, hy + 26, 38, hpCol, 'left');
+      this.icon(c, 'armor', hx + 122, hy + 8, 36); this.bigText(c, String(Math.ceil(p.armor)), hx + 164, hy + 26, 38, p.armor > 100 ? '#80e0ff' : '#ffd860', 'left');
       const wd = WEAPONS[p.cur];
-      this.panel(c, w - 248, h - 62, 238, 52);
-      if (wd.ammo) { this.icon(c, wd.ammo, w - 240, h - 54, 36); this.bigText(c, p.infAmmo ? '∞' : String(p.ammo[wd.ammo]), w - 196, h - 36, p.infAmmo ? 56 : 38, p.infAmmo ? '#80e0ff' : p.ammo[wd.ammo] <= (wd.use || 1) * 3 ? '#ff6040' : '#fff', 'left'); }
-      else this.bigText(c, p.cur === 'colt' ? (p.reloadT > 0 ? 'RELOAD' : `${p.clip}/${p.dual ? 12 : 6}`) : '∞', w - 196, h - 36, 30, '#fff', 'left');
-      c.font = `13px ${FONT}`; c.fillStyle = '#9fd4ff'; c.textAlign = 'right'; c.textBaseline = 'middle'; c.fillText(this.L(wd.name).toUpperCase(), w - 16, h - 72);
+      this.panel(c, ax, hy, 238, 52);
+      if (wd.ammo) { this.icon(c, wd.ammo, ax + 8, hy + 8, 36); this.bigText(c, p.infAmmo ? '∞' : String(p.ammo[wd.ammo]), ax + 52, hy + 26, p.infAmmo ? 56 : 38, p.infAmmo ? '#80e0ff' : p.ammo[wd.ammo] <= (wd.use || 1) * 3 ? '#ff6040' : '#fff', 'left'); }
+      else this.bigText(c, p.cur === 'colt' ? (p.reloadT > 0 ? 'RELOAD' : `${p.clip}/${p.dual ? 12 : 6}`) : '∞', ax + 52, hy + 26, 30, '#fff', 'left');
+      c.font = `13px ${FONT}`; c.fillStyle = '#9fd4ff'; c.textAlign = 'right'; c.textBaseline = 'middle'; c.fillText(this.L(wd.name).toUpperCase(), ax + 232, top ? hy + 62 : h - 72);
       if (p.cur === 'cannon' && p.charging) { c.fillStyle = 'rgba(0,0,0,0.5)'; c.fillRect(w / 2 - 60, h / 2 + 30, 120, 8); c.fillStyle = '#ffb030'; c.fillRect(w / 2 - 60, h / 2 + 30, 120 * (p.charge / WEAPONS.cannon.charge), 8); }
-      this.bigText(c, String(g.stats.score).padStart(7, '0'), w - 14, 22, 24, '#ffe070', 'right');
-      c.font = `14px ${FONT}`; c.textAlign = 'right'; c.fillStyle = '#cfe8ff'; c.fillText(`${T('kills')}: ${g.stats.kills}/${g.stats.total}`, w - 14, 46);
+      const sy = top ? hy + 82 : 22;
+      this.bigText(c, String(g.stats.score).padStart(7, '0'), top ? ax + 232 : w - 14, sy, 24, '#ffe070', 'right');
+      c.font = `14px ${FONT}`; c.textAlign = 'right'; c.fillStyle = '#cfe8ff'; c.fillText(`${T('kills')}: ${g.stats.kills}/${g.stats.total}`, top ? ax + 232 : w - 14, sy + 24);
       if (p.power > 0) this.bigText(c, `SERIOUS DAMAGE ${Math.ceil(p.power)}`, w / 2, 90, 20, '#ff60e0');
       const tags = this.debugTags(p);
-      if (tags) { c.fillStyle = '#ffe070'; c.textAlign = 'left'; c.fillText(tags, 14, 22); }
+      if (tags) { c.fillStyle = '#ffe070'; c.textAlign = 'left'; c.fillText(tags, top ? hx : 14, top ? hy + 66 : 22); }
       const boss = g.boss();
       if (boss) {
         const bw = Math.min(500, w * 0.6), x = (w - bw) / 2;
@@ -402,7 +412,7 @@
         this.bigText(c, this.t('boss'), w / 2, 49, 16, '#fff');
       }
       if (this.wsel > 0) {
-        const own = WEAPON_ORDER.filter(x => p.weapons.has(x)), bw = 58, x0 = w / 2 - (own.length * bw) / 2, y = h - 116, cur = p.next || p.cur;
+        const own = WEAPON_ORDER.filter(x => p.weapons.has(x)), bw = 58, x0 = w / 2 - (own.length * bw) / 2, y = top ? h - 70 : h - 116, cur = p.next || p.cur;
         c.globalAlpha = clamp(this.wsel, 0, 1);
         own.forEach((x, i) => {
           const d = WEAPONS[x], sel = x === cur, has = g.hasAmmo(x);
@@ -437,15 +447,17 @@
         c.fillStyle = '#dfefff'; c.font = `13px Tahoma, Arial, sans-serif`; lines.forEach((l, i) => c.fillText(l, x + 10, y + 48 + i * 16));
         c.globalAlpha = 1;
       }
-      if (this.showLog) {
-        const bw = Math.min(640, w - 40), x = (w - bw) / 2, y = 60, hh = h - 180; this.panel(c, x, y, bw, hh, 0.85);
-        c.textAlign = 'left'; c.textBaseline = 'top'; c.fillStyle = '#6fe0ff'; c.font = `20px ${FONT}`; c.fillText(`${this.t('netricsa')} — ${this.L(g.def.name).toUpperCase()}`, x + 16, y + 12);
-        c.font = `14px Tahoma, Arial, sans-serif`; c.fillStyle = '#cfe8ff';
-        c.fillText(`${T('kills')}: ${g.stats.kills}/${g.stats.total}    ${T('secrets')}: ${g.stats.secrets}/${g.stats.secretsTotal}    ${T('time')}: ${this.fmtTime(g.time)}    ${this.L(SKILLS[g.skillIndex].name)}`, x + 16, y + 44);
-        let yy = y + 74;
-        for (const m of g.msgs.slice().reverse()) { for (const l of this.wrap(c, this.L(m.text), bw - 40)) { if (yy > y + hh - 20) break; c.fillStyle = '#e8f6ff'; c.fillText(l, x + 16, yy); yy += 18; } yy += 6; }
-      }
-      if (!this.locked() && !this.menu && !this.debug && this.state === 'play') this.bigText(c, this.lockDenied ? (this.lang === 'ru' ? 'Мышь не захвачена: удерживайте ПКМ для обзора или используйте стрелки' : 'Mouse not captured: hold RMB to look or use arrow keys') : this.t('clickToPlay'), w / 2, h * 0.3, 16, '#fff');
+      if (this.showLog) this.drawLog(c, w, h, 60, h - 180);
+      if (!this.touch && !this.locked() && !this.menu && !this.debug && this.state === 'play') this.bigText(c, this.lockDenied ? (this.lang === 'ru' ? 'Мышь не захвачена: удерживайте ПКМ для обзора или используйте стрелки' : 'Mouse not captured: hold RMB to look or use arrow keys') : this.t('clickToPlay'), w / 2, h * 0.3, 16, '#fff');
+    }
+    drawLog(c, w, h, y, hh) {
+      const g = this.game, T = k => this.t(k);
+      const bw = Math.min(640, w - 40), x = (w - bw) / 2; this.panel(c, x, y, bw, hh, 0.85);
+      c.textAlign = 'left'; c.textBaseline = 'top'; c.fillStyle = '#6fe0ff'; c.font = `20px ${FONT}`; c.fillText(`${this.t('netricsa')} — ${this.L(g.def.name).toUpperCase()}`, x + 16, y + 12);
+      c.font = `14px Tahoma, Arial, sans-serif`; c.fillStyle = '#cfe8ff';
+      c.fillText(`${T('kills')}: ${g.stats.kills}/${g.stats.total}    ${T('secrets')}: ${g.stats.secrets}/${g.stats.secretsTotal}    ${T('time')}: ${this.fmtTime(g.time)}    ${this.L(SKILLS[g.skillIndex].name)}`, x + 16, y + 44);
+      let yy = y + 74;
+      for (const m of g.msgs.slice().reverse()) { for (const l of this.wrap(c, this.L(m.text), bw - 40)) { if (yy > y + hh - 20) break; c.fillStyle = '#e8f6ff'; c.fillText(l, x + 16, yy); yy += 18; } yy += 6; }
     }
     fmtTime(t) { const m = Math.floor(t / 60), s = Math.floor(t % 60); return `${m}:${String(s).padStart(2, '0')}`; }
     drawStats(c, w, h) {
@@ -455,7 +467,7 @@
       this.bigText(c, this.L(g.def.name).toUpperCase(), w / 2, h * 0.28, 24, '#fff');
       const rows = [[T('kills'), `${st.kills} / ${st.total}`], [T('secrets'), `${st.secrets} / ${st.secretsTotal}`], [T('time'), this.fmtTime(st.time)], [T('score'), String(st.score)]];
       rows.forEach(([a, b], i) => { const y = h * 0.4 + i * 42; if (this.statsT < 0.3 + i * 0.35) return; this.bigText(c, a, w / 2 - 20, y, 26, '#9fd4ff', 'right'); this.bigText(c, b, w / 2 + 20, y, 26, '#fff', 'left'); });
-      if (this.statsT > 1.5) this.bigText(c, T('next'), w / 2, h * 0.82, 18, '#fff');
+      if (this.statsT > 1.5) this.bigText(c, T(this.touch ? 'nextTouch' : 'next'), w / 2, h * 0.82, 18, '#fff');
     }
     drawVictory(c, w, h) {
       c.fillStyle = `rgba(0,0,0,${Math.min(0.85, this.victoryT * 0.3)})`; c.fillRect(0, 0, w, h);
@@ -463,9 +475,9 @@
       if (this.game) this.bigText(c, `${this.t('score')}: ${this.game.stats.score}`, w / 2, h * 0.75, 24, '#ffe070');
     }
     drawMenu(c, w, h, k) {
+      if (this.touch) { this.drawTouchMenu(c, w, h, k); return; }
       const inGame = !!this.game && this.state !== 'title';
       c.fillStyle = inGame ? 'rgba(0,0,0,0.55)' : 'rgba(0,0,0,0.25)'; c.fillRect(0, 0, w, h);
-      // logo
       const ly = inGame ? 90 : 110;
       c.save(); c.translate(w / 2, ly);
       const grd = c.createLinearGradient(0, -40, 0, 30); grd.addColorStop(0, '#fff6c0'); grd.addColorStop(0.5, '#ffb020'); grd.addColorStop(1, '#a04000');
@@ -491,6 +503,58 @@
         if (sel && !m.value) { c.fillStyle = '#ffb020'; c.beginPath(); c.moveTo(w / 2 - c.measureText(m.label).width / 2 - 30, y - 8); c.lineTo(w / 2 - c.measureText(m.label).width / 2 - 16, y); c.lineTo(w / 2 - c.measureText(m.label).width / 2 - 30, y + 8); c.fill(); }
       });
       c.font = `12px Tahoma, Arial, sans-serif`; c.fillStyle = 'rgba(255,255,255,0.6)'; c.textAlign = 'center'; c.fillText('Croteam-style fan remake for Win 98 · WebGL', w / 2, h - 16);
+    }
+
+    drawTouchMenu(c, w, h, k) {
+      const inGame = !!this.game && this.state !== 'title';
+      c.fillStyle = inGame ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.3)'; c.fillRect(0, 0, w, h);
+      const main = this.menu === 'main';
+      const grd = c.createLinearGradient(0, 10, 0, 70); grd.addColorStop(0, '#fff6c0'); grd.addColorStop(0.5, '#ffb020'); grd.addColorStop(1, '#a04000');
+      c.font = `${main ? 54 : 34}px ${FONT}`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.lineWidth = 6; c.strokeStyle = '#1a0a00';
+      const ly = main ? 52 : 32; c.strokeText(this.t('title'), w / 2, ly); c.fillStyle = grd; c.fillText(this.t('title'), w / 2, ly);
+      const title = { skill: this.t('difficulty'), levels: this.t('levelSelect'), options: this.t('options'), controls: this.t('controls'), pause: this.t('paused'), log: this.t('netricsa') }[this.menu];
+      if (title) this.bigText(c, title, w / 2, ly + (main ? 44 : 34), 22, '#9fd4ff');
+      const it = this.menuItems, top = main ? 130 : 96, bottom = h - 20;
+      const backRow = i => {
+        const y = bottom - 32;
+        this.bigText(c, it[i].label, w / 2, y, 30, '#ffe070');
+        this.itemRects[i] = [(w / 2 - 200) * k, (y - 30) * k, (w / 2 + 200) * k, (y + 30) * k];
+      };
+      if (this.menu === 'log') {
+        this.drawLog(c, w, h, top - 6, bottom - top - 70);
+        backRow(0);
+        return;
+      }
+      if (this.menu === 'controls') {
+        c.font = `16px Tahoma, Arial, sans-serif`; c.textAlign = 'left'; c.textBaseline = 'top'; c.fillStyle = '#e0e8ff';
+        let yy = top;
+        for (const m of it) { if (!m.text) continue; for (const l of this.wrap(c, m.label, w - 160)) { c.fillText(l, 80, yy); yy += 21; } yy += 4; }
+        backRow(it.length - 1);
+        return;
+      }
+      const rows = it.length, cols = rows * 50 > bottom - top ? 2 : 1;
+      const perCol = Math.ceil(rows / cols), lh = Math.min(64, (bottom - top) / perCol), colW = Math.min(cols === 1 ? 640 : 560, (w - 120) / cols);
+      it.forEach((m, i) => {
+        const col = Math.floor(i / perCol), row = i % perCol;
+        const cx = cols === 1 ? w / 2 : w / 2 + (col - 0.5) * (colW + 30), y = top + lh / 2 + row * lh, sel = i === this.menuSel && !m.text;
+        const x0 = cx - colW / 2, x1 = cx + colW / 2;
+        c.fillStyle = sel ? 'rgba(255,180,40,0.18)' : 'rgba(10,30,60,0.45)'; c.fillRect(x0, y - lh / 2 + 3, colW, lh - 6);
+        c.strokeStyle = sel ? '#ffb020' : 'rgba(120,200,255,0.5)'; c.lineWidth = 1.5; c.strokeRect(x0 + 0.5, y - lh / 2 + 3.5, colW - 1, lh - 7);
+        const size = Math.min(26, lh * 0.45);
+        if (m.value) {
+          this.bigText(c, m.label.toUpperCase(), x0 + 16, y, size * 0.8, sel ? '#ffe070' : '#fff', 'left');
+          this.bigText(c, '◄ ' + m.value() + ' ►', x1 - 16, y, size * 0.85, '#9fd4ff', 'right');
+          this.itemRects[i] = [x0 * k, (y - lh / 2) * k, x1 * k, (y + lh / 2) * k, (x1 - colW * 0.28) * k];
+        } else {
+          this.bigText(c, m.label, cx, y, size, sel ? '#ffe070' : '#fff');
+          this.itemRects[i] = [x0 * k, (y - lh / 2) * k, x1 * k, (y + lh / 2) * k];
+        }
+      });
+      const build = globalThis.Parohod98 && globalThis.Parohod98.version;
+      if (main && build && build !== 'dev') {
+        c.font = `12px Tahoma, Arial, sans-serif`; c.fillStyle = 'rgba(255,255,255,0.55)'; c.textAlign = 'right'; c.textBaseline = 'bottom';
+        c.fillText('v' + build, w * 0.86, h - 8);
+      }
     }
 
     debugRows() {
@@ -607,6 +671,7 @@
     }
 
     destroy() {
+      if (this.touch) this.touch.destroy();
       if (this.destroyed) return;
       this.destroyed = true; this.unlock(); cancelAnimationFrame(this.raf); this.ac.abort(); if (this.ro) this.ro.disconnect();
       this.audio.destroy(); if (this.renderer) this.renderer.destroy();

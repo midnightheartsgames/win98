@@ -69,7 +69,22 @@ do not create new web stores for games; the old RetroGame Store (www.buygames98.
 
 Exception: demos shipped on the Igromania CD (D:) keep their CD installers. The CD shell (js/apps/igroman.js) lists only demos that really install: Burnout, NHL 98, World Cup 98 and the project games moved there from Steam. Their catalog entries have cdDemo: true and no steam flag, the moved ones have ids ending in `_demo` and titles ending in Demo, installers sit in D:\demo (getIgromaniaCdTree in js/filesystem.js), screenshots live in content/igromania/demos/<id>-<n>.jpg (node tools/steam-shots.cjs <id> writes `_demo` ids there), and not-installed paths call gameManager.showOnCd(id) instead of showInSteam.
 
+Exception: Безмятежность (Bliss, js/apps/bliss, BLISS-98.md) is a standard system game like Minesweeper, FreeCell and 3D Pinball, by the user's decision: always present on the desktop, in Start > Games and as C:\WINDOWS\BLISS.EXE, with no catalog entry in js/game-manager.js and no Steam page.
+
 Exception: Honkai: Star Rail 98 is free and can also be downloaded from its official site http://hsr.hoyoverse.com (js/apps/hsr-site.js). The site saves StarRail98_Setup.exe to Downloads, and its own setup wizard installs the game and adds it to the Steam library. Steam sells it for free as well. No other game gets a download outside Steam.
+
+Exception: the Android launcher Пароход 98 (ANDROID-LAUNCHER.md) is a real phone app outside Win 98. It downloads Serious Sam 98, Forza Horizon: Рига and Grand Theft Auto: Нижний Сити for free, with touch controls, from update/parohod98/ on the mini PC. Packages come from tools/parohod98-game.cjs, npm run release -- parohod98 games publishes changed games to test (player notes in releases/parohod98/<game>/next.md), and promote parohod98 <game> <version> moves one to stable only with the user's go-ahead. The launcher shows no prices and no purchase. A new game goes there only when the user asks for it. Inside Win 98 these games stay on Steam as usual.
+
+Running Tests
+
+The full test suite loads the user's PC to 100%. Run only the tests of what the current task changes:
+
+working on HSR 98: node tests/hsr98.test.js (plus hsr-site or kovcheg-site when their texts or data change); same for any other game or app: its own tests/<name>.test.js;
+changing shared code (js/apps/ie.js, js/apps/clippy*.js, js/game-manager.js, js/filesystem.js and similar): only the test files of the callers the change really touches, found with a search, one file at a time;
+never run npm test, a loop over tests/*, or several test files in parallel, and never repeat runs to hunt flaky tests, unless the user asks for it in that task;
+a subagent gets the same limit: name the exact test files in its prompt.
+
+When a change may reach further than the tests that were run, say which tests were not run; do not run them.
 
 Bug Reports
 
@@ -103,6 +118,21 @@ the test channel is checked by the user (five clicks on the version number in th
 npm run release -- status shows what is published, verify checks a channel from outside, gc deletes unused files (only with --yes).
 
 The signing key is %USERPROFILE%\.win98-release.key and the APK key is %USERPROFILE%\.android\hsr98.keystore; neither goes into git, and losing them means existing installs stop getting updates. Never reuse a published file name: Cloudflare keeps old copies. SR98 news for the launcher come from web98-site/sr98/news.js (the site loads the same file); Win 98 news are releases/news/*.md.
+
+Android Launcher (Пароход 98)
+
+ANDROID-LAUNCHER.md describes the whole system. The APK (tools/parohod98/android, its page in tools/parohod98/launcher) downloads game packages into the app from https://pennygachi.men/web98/update/parohod98/; a game never becomes its own APK. Players get the APK from the web98 landing or the sr98 site, and both read the link and size from update/parohod98/stable.json.
+
+To add a game, only when the user asks for it:
+
+touch module js/apps/<game>/<prefix>-touch.js on js/touch-controls.js with the tables TUNE, ACTIONS and LAYOUT, created only under Parohod98 or ?touch, so the game inside Win 98 stays the same;
+presets «Телефон» and «Слабый телефон», one of them set on first start, plus a frame-rate setting;
+an entry in GAMES in tools/parohod98-game.cjs; title, genre, tags and description come from js/game-manager.js at release;
+its save keys in js/apps/backup-catalog.js, in SAVES in tools/parohod98/launcher/launcher-state.js and in GAMES and PREFIXES in js/parohod98-report.js;
+player notes in releases/parohod98/<game>/next.md;
+a touch section in the game's test file, then npm run test:parohod98.
+
+Releases: npm run release -- parohod98 games [ids] --channel test publishes changed games, npm run release -- parohod98 --channel test publishes the launcher (notes in releases/parohod98/next.md, never reuse a published APK name). --dirty works only for test. The user checks the test channel on the phones; only with the user's go-ahead promote parohod98 apk <version> and promote parohod98 <game> <version> move them to stable. Commit the files that go into the packages first: promote records HEAD. The APK key ~/.android/parohod98.keystore never goes into git.
 
 Naming: Microslop and Win
 
