@@ -333,7 +333,7 @@
       const s = { x0: Math.min(x0, x1), y0: Math.min(y0, y1), z0: Math.min(z0, z1), x1: Math.max(x0, x1), y1: Math.max(y0, y1), z1: Math.max(z0, z1) };
       if (o.nobul) s.nobul = true;
       if (o.grate) s.grate = true;
-      if (o.clip) s.clip = true;
+      if (o.offGrid) s.offGrid = true;
       if (o.nomove) s.nomove = true;
       if (o.only) s.only = o.only;
       if (o.oneWay) s.oneWay = o.oneWay;

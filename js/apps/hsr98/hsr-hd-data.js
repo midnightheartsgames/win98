@@ -22,7 +22,8 @@
     tRange: 230, tBat: 1.2, tDmg: [20, 4], tHp: [900, 60], tRestore: [200, 25], baseArmor: [6, 0.3],
     projSpd: 520, chaseLimit: 400, heroPathLimit: 2400, shopR: 400, sell: 0.6,
     spawnGroup: [2, 4], spawnGap: [2, 3], riftGlow: 2, pigSpd: 195, pigFlee: 3, bigPigHp: 20, bigPigLife: 25, bigPigStep: 20, bigPigKill: 400,
-    holdChase: 120, alarmT: 1.5, aimFresh: 3, resumeAtk: 0.1, maxNums: 40, maxParticles: 300
+    holdChase: 120, alarmT: 1.5, aimFresh: 3, resumeAtk: 0.1, maxNums: 40, maxParticles: 300,
+    coop: { hp: [1, 1.5, 2, 2.4], hpEnd: [1, 3, 6.8, 9.6], bossHp: [1, 1.6, 2.2, 2.8], bossEnd: [1, 3.3, 7.3, 10.8], span: 19, groups: [1, 1.25, 1.5, 1.75], gold: [1, 0.82, 0.7, 0.6], exp: [1, 0.85, 0.73, 0.63], idle: 60 }
   };
 
   const ARMOR0 = { none: 0, light: 1, medium: 2, heavy: 4, divine: 6 };
@@ -284,7 +285,10 @@
       { id: 'nodeath', kind: 'run', name: 'Победа без гибели героя' },
       { id: 'fastboss', kind: 'run', name: 'Бой с боссом короче 60 с' },
       { id: 'raid', kind: 'run', name: '3 000 золота с вылазок за партию' },
-      { id: 'hard3', kind: 'run', name: 'Три звёзды на Тяжёлой' }
+      { id: 'hard3', kind: 'run', name: 'Три звёзды на Тяжёлой' },
+      { id: 'crew2', kind: 'run', name: 'Победа вдвоём' },
+      { id: 'crew4', kind: 'run', name: 'Победа вчетвером' },
+      { id: 'crewstay', kind: 'run', name: 'Победа, и никто не вышел из-за стола' }
     ]);
   const SOLO_DATE = Date.UTC(2026, 9, 24, 12);
   const SOLO = [

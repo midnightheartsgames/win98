@@ -1,381 +1,444 @@
 (function (T) {
   'use strict';
-  const HALF_X = 56, HALF_Z = 30;
+  const HALF_X = 90, HALF_Z = 44;
   const G = 0, UP = 3.4, TUN = -3.2, LOW = -5, WATER_TOP = -3.4, WATER_FLOOR = -6.4;
-  const TOP = 7, SLAB = 0.4, ROOM_ROOF = 3, LOW_ROOF = -2.2, SPIRAL_ROOF = 6.6, STAIRS_ROOF = 3.2, TUN_ROOF = -SLAB;
-  const DOOR = 2.4, DOOR_H = 2.6, THIN = 0.3, LEG_TURN = 1.2, LEG_MID = -1.7;
-  const CLIP_FORT = TOP + 0.3, CLIP_ROCK = 9, CLIP_TOP = 22;
+  const TOP = 7, SLAB = 0.4, ROOM_ROOF = 3, LOW_ROOF = -2.2, BASE_ROOF = -1.4, SPIRAL_ROOF = 6.6, STAIRS_ROOF = 3.2, TUN_ROOF = -SLAB, TUN_PASS = TUN + 2.76;
+  const DOOR = 2.4, DOOR_H = 2.6, THIN = 0.3;
+  const BRIDGE = 10, CANAL = 9, CANAL_Z = 11, ROCK_TOP = 8, CLIP_FORT = TOP + 0.3, CLIP_TOP = 22;
+  const LEG_HIGH = 0.6, LEG_MID = -1.4;
 
-  function kit(B, side) {
-    const X = u => side * u;
+  function kit(B, side, team) {
+    const X = u => side * u, Z = z => side * z;
+    const holesOf = (map, base, holes, y0) => holes.map(([a, b, lo, hi]) => {
+      const p = map(a), q = map(b);
+      return [Math.min(p, q) - base, Math.max(p, q) - base, lo - y0, hi - y0];
+    });
     const K = {
       X,
-      toCanal: side < 0 ? 'x+' : 'x-',
-      toBack: side < 0 ? 'x-' : 'x+',
-      yaw: (du, dz) => Math.atan2(side * du, dz),
-      box(u0, y0, z0, u1, y1, z1, mat, o) { return B.box(X(u0), y0, z0, X(u1), y1, z1, mat, o); },
+      Z,
+      team,
+      toward: dir => ({ 'u+': side > 0 ? 'x+' : 'x-', 'u-': side > 0 ? 'x-' : 'x+', 'z+': side > 0 ? 'z+' : 'z-', 'z-': side > 0 ? 'z-' : 'z+' })[dir],
+      yaw: (du, dz) => Math.atan2(side * du, side * dz),
+      box(u0, y0, z0, u1, y1, z1, mat, o) { return B.box(X(u0), y0, Z(z0), X(u1), y1, Z(z1), mat, o); },
       plate(u0, z0, u1, z1, y) { return K.box(u0, y - SLAB, z0, u1, y, z1, 'plate'); },
       roof(u0, z0, u1, z1, y) { return K.box(u0, y, z0, u1, y + 0.3, z1, 'roof'); },
       holed(u0, z0, u1, z1, y, holes, mat, o) {
-        const mapped = holes.map(([a, c, b, d]) => [Math.min(X(a), X(b)), c, Math.max(X(a), X(b)), d]);
-        return B.ground(Math.min(X(u0), X(u1)), z0, Math.max(X(u0), X(u1)), z1, y, mapped, mat, Object.assign({ t: SLAB }, o));
+        const mapped = holes.map(([a, c, b, d]) => [Math.min(X(a), X(b)), Math.min(Z(c), Z(d)), Math.max(X(a), X(b)), Math.max(Z(c), Z(d))]);
+        return B.ground(Math.min(X(u0), X(u1)), Math.min(Z(z0), Z(z1)), Math.max(X(u0), X(u1)), Math.max(Z(z0), Z(z1)), y, mapped, mat, Object.assign({ t: SLAB }, o));
       },
       alongZ(u, z0, z1, y0, y1, holes = [], t = 0.5) {
-        return B.wall(X(u), z0, X(u), z1, y1 - y0, t, 'wall', { y: y0, holes: holes.map(([a, b, lo, hi]) => [a - z0, b - z0, lo - y0, hi - y0]) });
+        return B.wall(X(u), Z(z0), X(u), Z(z1), y1 - y0, t, 'wall', { y: y0, holes: holesOf(Z, Math.min(Z(z0), Z(z1)), holes, y0) });
       },
       alongU(z, u0, u1, y0, y1, holes = [], t = 0.5) {
-        const base = Math.min(X(u0), X(u1));
-        const mapped = holes.map(([a, b, lo, hi]) => {
-          const p = X(a), q = X(b);
-          return [Math.min(p, q) - base, Math.max(p, q) - base, lo - y0, hi - y0];
-        });
-        return B.wall(X(u0), z, X(u1), z, y1 - y0, t, 'wall', { y: y0, holes: mapped });
+        return B.wall(X(u0), Z(z), X(u1), Z(z), y1 - y0, t, 'wall', { y: y0, holes: holesOf(X, Math.min(X(u0), X(u1)), holes, y0) });
       },
-      stairs(u0, z0, u1, z1, lo, hi, dir) { return B.stairs(X(u0), z0, X(u1), z1, lo, hi, dir, 'plate'); },
-      health(u, z, size, y) { B.pickupAt('health', X(u), z, size, y); },
-      ammo(u, z, size, y) { B.pickupAt('ammo', X(u), z, size, y); },
-      label(u, y, z, text) { B.label(X(u), y, z, text); },
-      hint(kind, team, u, y, z, du, dz) { B.hint(kind, team, X(u), y, z, K.yaw(du, dz)); }
+      stairs(u0, z0, u1, z1, lo, hi, dir) { return B.stairs(X(u0), Z(z0), X(u1), Z(z1), lo, hi, K.toward(dir), 'plate'); },
+      doorZ(u, z0, y) { return B.door(X(u), Z(z0), X(u), Z(z0 + DOOR), DOOR_H, team, { y }); },
+      doorU(z, u0, y) { return B.door(X(u0), Z(z), X(u0 + DOOR), Z(z), DOOR_H, team, { y }); },
+      noBuild(u0, z0, u1, z1) { B.noBuild(Math.min(X(u0), X(u1)), Math.min(Z(z0), Z(z1)), Math.max(X(u0), X(u1)), Math.max(Z(z0), Z(z1))); },
+      health(u, z, size, y) { B.pickupAt('health', X(u), Z(z), size, y); },
+      ammo(u, z, size, y) { B.pickupAt('ammo', X(u), Z(z), size, y); },
+      label(u, y, z, text) { B.label(X(u), y, Z(z), text); },
+      spawn(u, z, y, du, dz) { B.spawn(team, X(u), Z(z), K.yaw(du, dz), y); },
+      locker(u, z, y) { B.locker(X(u), Z(z), y); },
+      post(role, u, z, y) { B.post(team, role, X(u), Z(z), y); },
+      hint(kind, who, u, y, z, du, dz) { B.hint(kind, who, X(u), y, Z(z), K.yaw(du, dz)); },
+      clip(u0, y0, z0, u1, z1) { B.solid(X(u0), y0, Z(z0), X(u1), CLIP_TOP, Z(z1), { nobul: true, offGrid: true }); }
     };
     return K;
   }
 
-  function facade(B, K) {
-    K.plate(12, -14, 24.5, 14, G);
-    K.box(10, WATER_FLOOR, -HALF_Z, 12, TUN, HALF_Z, 'ground');
-    K.alongZ(12.25, -HALF_Z, HALF_Z, WATER_FLOOR, -SLAB, [[-1.2, 1.2, TUN, -SLAB]]);
-    K.box(12, -SLAB, 14, 23.7, CLIP_ROCK, HALF_Z, 'block');
-    K.box(12, -SLAB, -HALF_Z, 23.7, CLIP_ROCK, -14, 'block');
-    K.alongZ(24.25, -14, 16, G, TOP, [[-3.7, -1.3, G, DOOR_H], [1.3, 3.7, G, DOOR_H], [7.6, 10, UP, UP + DOOR_H], [-10, -7.6, UP, UP + DOOR_H]]);
-    K.box(15.5, G, -9, 16.7, 1.2, -5, 'block');
-    K.box(15.5, G, 5, 16.7, 1.2, 9, 'block');
-    K.health(14, -11, 0.2, G);
-    K.ammo(14, 11, 0.2, G);
-    K.label(18, 2.2, -12, '3. Фасад');
-    K.label(21, 2.4, 0, 'К ВЕНТИЛЮ: двери в вестибюль');
+  function facade(K) {
+    K.plate(CANAL, -16, 19, 16, G);
+    K.alongZ(CANAL + 0.25, -CANAL_Z - 0.5, CANAL_Z + 0.5, WATER_FLOOR, -SLAB, [[-7.2, -4.8, TUN, TUN_ROOF], [4.8, 7.2, TUN, TUN_ROOF]]);
+    K.box(BRIDGE, -SLAB, 16, 19, ROCK_TOP, HALF_Z, 'block');
+    K.box(BRIDGE, -SLAB, -HALF_Z, 19, ROCK_TOP, -16, 'block');
+    K.alongZ(18.75, -16, 16, G, ROOM_ROOF, [[-8.2, -5.8, G, DOOR_H], [5.8, 8.2, G, DOOR_H]]);
+    K.box(12.5, G, -12.5, 13.7, 1.2, -8.5, 'block');
+    K.box(12.5, G, 8.5, 13.7, 1.2, 12.5, 'block');
+    K.box(BRIDGE, 3.1, -3, 18, 3.5, 3, 'roof', { offGrid: true });
+    K.box(13.8, G, -3, 14.2, 3.1, -2.6, 'wall');
+    K.box(13.8, G, 2.6, 14.2, 3.1, 3, 'wall');
+    K.health(12, -14.5, 0.2, G);
+    K.ammo(12, 14.5, 0.2, G);
+    K.label(15, 2.4, -10, '3. Фасад');
+    K.label(17.8, 2.8, -7, 'К ВЕНТИЛЮ: двери');
+    K.label(17.8, 2.8, 7, 'К ВЕНТИЛЮ: двери');
   }
 
-  function bastion(B, K) {
-    K.plate(20.5, -14, 24.5, 14, UP);
-    K.box(20.5, UP, -14, 20.8, UP + 1, 14, 'block');
-    K.box(20.9, G, -9.3, 21.5, UP - SLAB, -8.7, 'wall');
-    K.box(20.9, G, 8.7, 21.5, UP - SLAB, 9.3, 'wall');
-    K.health(22.5, -12.5, 0.5, UP);
-    K.ammo(22.5, 12.5, 0.5, UP);
-    K.label(22.5, UP + 1.6, 0, '10. Бастион');
+  function battlements(K) {
+    K.plate(18, -16, 25.5, 16, UP);
+    K.box(18, UP, -16, 18.3, UP + 1, -6, 'block');
+    K.box(18, UP, 6, 18.3, UP + 1, 16, 'block');
+    K.alongZ(18.15, -6, 6, UP, UP + 3, [[-5.2, -0.8, UP + 0.6, UP + 2.4], [0.8, 5.2, UP + 0.6, UP + 2.4]], THIN);
+    K.alongU(-6, 18, 25, UP, UP + 3, [[20, 23, UP, UP + DOOR_H]], THIN);
+    K.alongU(6, 18, 25, UP, UP + 3, [[20, 23, UP, UP + DOOR_H]], THIN);
+    K.roof(18, -6.15, 25, 6.15, UP + 3);
+    K.alongZ(25.25, -16, 16, UP - SLAB, TOP, [[8, 10.4, UP, UP + DOOR_H], [-14, -11.6, UP, UP + DOOR_H]]);
+    K.doorZ(25.25, -14, UP);
+    K.health(20, -14.5, 0.5, UP);
+    K.ammo(20, 14.5, 0.5, UP);
+    K.label(23, UP + 2, 0, '10. Бастион');
   }
 
-  function lobby(B, K) {
-    K.holed(24, -5.5, 32, 5.5, G, [[24.5, -1.2, 29.4, 1.2]], 'plate');
-    K.alongZ(31.75, -9, 5.5, G, TOP);
-    K.alongU(-5.25, 24.5, 31.5, G, TOP, [[26, 28.4, G, DOOR_H]]);
-    K.health(30.4, 3.8, 0.2, G);
-    K.label(30.3, 2.2, -3.6, '4. Вестибюль');
-    K.label(27, 1.4, 0, 'Вниз: тоннели');
-    K.label(27.2, 2.4, -4.8, 'Коридор');
-    K.label(27.2, 2.4, 4.8, 'Боковая комната');
+  function lobby(K) {
+    K.plate(19, -9, 24.5, 9, G);
+    K.alongU(-9.25, 18.5, 25, G, ROOM_ROOF);
+    K.alongU(9.25, 18.5, 25, G, ROOM_ROOF);
+    K.alongZ(24.75, -9.5, 9.5, G, ROOM_ROOF, [[-3, 3, G, ROOM_ROOF]]);
+    K.plate(24.5, -3.5, 36.5, 3.5, G);
+    K.box(25.5, ROOM_ROOF, -3.5, 26.6, UP, 3.5, 'roof');
+    K.alongU(-3.25, 25, 36.5, G, ROOM_ROOF, [[28, 30.4, G, DOOR_H]]);
+    K.alongU(3.25, 25, 37.5, G, ROOM_ROOF, [[29.5, 31.9, G, DOOR_H]]);
+    K.alongZ(36.25, -3.5, 3, G, ROOM_ROOF, [[-1.2, 1.2, G, DOOR_H]]);
+    K.health(26, -2.2, 0.2, G);
+    K.label(22, 2.2, 0, '4. Вестибюль');
+    K.label(29.2, 2.4, -2.8, 'Вниз: тоннели');
+    K.label(30.7, 2.4, 2.8, 'Боковая комната');
+    K.label(35.6, 2.4, 0, 'Коридор');
   }
 
-  function grate(B, K) {
-    K.holed(24.5, -5, 31.5, 5, UP, [[28, -4.4, 30.4, -2]], 'grate', { t: 0.2, nobul: true, grate: true, vis: false });
-    for (let u = 24.7; u < 31.5; u += 0.4) {
-      if (u > 28 && u < 30.4) {
-        K.box(u - 0.03, UP - 0.08, -5, u + 0.03, UP, -4.4, 'grate', { col: false, grid: false });
-        K.box(u - 0.03, UP - 0.08, -2, u + 0.03, UP, 5, 'grate', { col: false, grid: false });
+  function grate(K) {
+    K.holed(26.6, -4.8, 36, 3, UP, [[33, -2.4, 35.4, 0]], 'grate', { t: 0.2, nobul: true, grate: true, vis: false });
+    for (let u = 26.8; u < 36; u += 0.4) {
+      if (u > 33 && u < 35.4) {
+        K.box(u - 0.03, UP - 0.08, -4.8, u + 0.03, UP, -2.4, 'grate', { col: false, grid: false });
+        K.box(u - 0.03, UP - 0.08, 0, u + 0.03, UP, 3, 'grate', { col: false, grid: false });
       } else {
-        K.box(u - 0.03, UP - 0.08, -5, u + 0.03, UP, 5, 'grate', { col: false, grid: false });
+        K.box(u - 0.03, UP - 0.08, -4.8, u + 0.03, UP, 3, 'grate', { col: false, grid: false });
       }
     }
-    K.roof(24.5, -5, 31.5, 5, TOP);
-    K.ammo(26, 3.5, 0.2, UP);
-    K.label(30.8, UP + 1.5, 0, '8. Решётка');
+    K.roof(26.1, -5.3, 36.5, 3, TOP);
+    K.alongU(-5.05, 26.1, 36.5, UP - SLAB, TOP);
+    K.alongZ(26.35, -5.3, 3, UP - SLAB, TOP);
+    K.alongZ(36.25, -5.3, 3, UP - SLAB, TOP);
+    K.ammo(28, 1.5, 0.2, UP);
+    K.label(31, UP + 1.6, -1.5, '8. Решётка');
   }
 
-  function sideRoom(B, K) {
-    K.holed(24, 5, 35, 13, G, [[24.5, 9.1, 29.4, 11.5]], 'plate');
-    K.alongZ(34.75, 5.5, 13, G, ROOM_ROOF);
-    K.alongU(12.75, 24.5, 35, G, ROOM_ROOF);
-    K.health(32.8, 11, 0.5, G);
-    K.label(31, 2.2, 8, '6. Боковая комната');
-    K.label(33.2, 2.4, 5.8, 'Двор');
+  function hallway(K) {
+    K.plate(36, -1.2, 39, 1.2, G);
+    K.alongU(-1.45, 36.5, 38.5, G, ROOM_ROOF);
+    K.alongU(1.45, 36.5, 38.5, G, ROOM_ROOF);
+    K.roof(36.5, -1.7, 38.5, 1.7, ROOM_ROOF);
+    K.plate(39, -17, 41.6, 15, G);
+    K.alongZ(38.75, -17.5, 14.5, G, ROOM_ROOF, [[-1.2, 1.2, G, DOOR_H]]);
+    K.alongZ(41.85, -17.5, 14.5, G, ROOM_ROOF);
+    K.alongU(-17.25, 38.5, 42.1, G, ROOM_ROOF);
+    K.roof(38.5, -14.5, 42.1, 14.5, ROOM_ROOF);
+    K.label(40.3, 2.2, -8, '5. Узкий коридор');
+    K.label(40.3, 2.4, 13, 'Двор');
   }
 
-  function corridor(B, K) {
-    K.plate(25.9, -13, 28.5, -5, G);
-    K.plate(28.5, -13, 36, -10.4, G);
-    K.plate(33.4, -10.4, 36, -8.5, G);
-    K.alongZ(25.65, -13.5, -5.5, G, ROOM_ROOF);
-    K.alongZ(28.75, -9.9, -5.5, G, ROOM_ROOF);
-    K.alongU(-10.15, 28.5, 33.4, G, ROOM_ROOF);
-    K.alongU(-13.25, 25.4, 36.5, G, ROOM_ROOF);
-    K.alongZ(36.25, -13.5, -9, G, ROOM_ROOF);
-    K.alongZ(33.15, -9.9, -9, G, ROOM_ROOF);
-    K.roof(31.5, -13.5, 36.5, -9, ROOM_ROOF);
-    K.label(30.5, 2.2, -11.7, '5. Коридор');
+  function sideRoom(K) {
+    K.plate(26.6, 3.5, 37, 15, G);
+    K.alongZ(26.35, 3, 14.5, G, ROOM_ROOF);
+    K.alongZ(37.25, 3, 14.5, G, ROOM_ROOF);
+    K.box(28, G, 8, 29.2, 1.2, 11, 'block');
+    K.health(28, 13, 0.5, G);
+    K.label(32, 2.2, 8.5, '6. Боковая комната');
+    K.label(35.7, 2.4, 14.2, 'Двор');
   }
 
-  function yard(B, K) {
-    K.plate(31.5, -9, 48.5, 5.5, G);
-    K.plate(32, 3, 48, 5, UP);
-    K.alongU(-8.75, 31.5, 48.5, G, TOP, [[33.6, 36, G, DOOR_H]]);
-    K.alongZ(48.25, -9, 5.5, G, TOP, [[-2, 0.4, G, DOOR_H]]);
-    K.box(37, G, -2.5, 38.2, 1.2, 1.5, 'block');
-    K.box(42, G, -7, 45, 1.2, -5.8, 'block');
-    K.box(43, G, -1, 45, 2.4, 1, 'block');
-    K.box(39.5, G, -8.5, 41, 13, -7.5, 'wall');
-    K.health(46, -7, 0.5, G);
-    K.ammo(34, -6, 0.5, G);
-    K.label(40, 2.8, -2, '7. Двор');
-    K.label(47.6, 2.8, -0.8, 'К ВЕНТИЛЮ: вниз');
-    K.label(34.8, 2.8, -8.2, 'Коридор');
-    K.label(33.2, 2.8, 2.6, 'Боковая комната, к мосту');
+  function upstairs(K) {
+    K.plate(25.5, 3.5, 37, 15, UP);
+    K.roof(25.5, 3.5, 37, 14.5, TOP);
+    K.alongU(3.25, 25.5, 37, UP - SLAB, TOP, [[29, 31.4, UP, UP + DOOR_H]]);
+    K.alongZ(37.25, 3, 14.5, UP - SLAB, TOP, [[8, 10.4, UP, UP + DOOR_H]]);
+    K.plate(27, 15, 29.4, 19, UP);
+    K.alongZ(26.75, 15, 18.5, UP - SLAB, TOP);
+    K.alongZ(29.65, 15, 18.5, UP - SLAB, TOP);
+    K.roof(26.5, 15, 29.9, 18.5, TOP);
+    K.health(35.5, 12.5, 0.2, UP);
+    K.label(31, UP + 2, 9, '9. Верхний зал');
+    K.label(30.2, UP + 2.3, 3.8, 'Решётка');
+    K.label(36.8, UP + 2.3, 9.2, 'К ВЕНТИЛЮ: спираль');
+    K.label(25.8, UP + 2.3, 9.2, 'Бастион');
   }
 
-  function wall5(B, K) {
-    K.alongU(5.25, 24.5, 48, G, TOP, [
-      [26, 28.4, G, DOOR_H], [32, 34.4, G, DOOR_H], [41, 43.4, G, DOOR_H],
-      [27, 29.4, UP, UP + DOOR_H], [32, 36.5, UP, UP + DOOR_H]
-    ]);
+  function courtyard(K) {
+    K.plate(33.5, 15, 50.5, 29.5, G);
+    K.plate(34, 15, 50, 17.4, UP);
+    K.alongU(14.75, 25.5, 50.5, G, TOP, [[34.5, 36.9, G, DOOR_H], [39, 41.6, G, DOOR_H], [34, 37, UP, UP + DOOR_H], [27, 29.4, UP, UP + DOOR_H]]);
+    K.alongZ(33.75, 14.5, 18.5, G, TOP);
+    K.alongZ(50.25, 14.5, 29.5, G, TOP, [[24, 26.4, G, DOOR_H]]);
+    K.alongU(29.25, 33.5, 50.5, G, TOP);
+    K.box(38, G, 20, 39.2, 1.2, 24, 'block');
+    K.box(44, G, 19.5, 47, 1.2, 20.7, 'block');
+    K.box(42, G, 26.5, 44, 2.4, 28.5, 'block');
+    K.box(48.5, G, 27.5, 49.8, 13, 28.8, 'wall');
+    K.health(48.2, 19.5, 0.5, G);
+    K.ammo(36, 27.5, 0.5, G);
+    K.label(42, 3, 22, '7. Двор');
+    K.label(49.6, 2.8, 25.2, 'К ВЕНТИЛЮ: вниз');
+    K.label(40.3, 2.8, 15.6, 'Коридор');
+    K.label(35.7, 2.8, 15.6, 'Боковая комната');
   }
 
-  function hall(B, K) {
-    K.plate(24.5, 5, 37, 16, UP);
-    K.roof(24.5, 5.5, 37, 16, TOP);
-    K.alongZ(36.75, 5.5, 16, G, TOP, [[6, 8.4, UP, UP + DOOR_H]]);
-    K.alongU(15.75, 24, 38, LOW, TOP, [[26, 28.4, UP, UP + DOOR_H], [35.6, 38, LOW, LOW + 2.8]]);
-    K.health(34, 14, 0.2, UP);
-    K.label(31, UP + 2, 10, '9. Верхний зал');
-    K.label(27.2, UP + 2.3, 15.2, 'К ВЕНТИЛЮ: спираль');
-    K.label(25, UP + 2.3, 8.8, 'Бастион');
+  function mainShower(K) {
+    K.plate(24, 19, 33.5, 40, G);
+    K.alongZ(23.75, 18.5, 40.5, G, TOP);
+    K.alongZ(33.75, 18.5, 40.5, G, TOP, [[21, 23.4, G, DOOR_H]]);
+    K.alongU(18.75, 23.5, 34, G, TOP, [[27, 29.4, UP, UP + DOOR_H]]);
+    K.alongU(40.25, 23.5, 34, G, TOP);
+    K.roof(23.5, 18.5, 34, 40.5, TOP);
+    K.alongU(32, 24, 33.5, G, TOP, [[27, 29.4, G, DOOR_H], [30.5, 32.9, G, DOOR_H]]);
+    K.box(24, G, 19, 29.6, UP, 22, 'block');
+    K.stairs(24, 22, 26.6, 31.5, G, UP, 'z-');
+    K.doorZ(33.75, 21, G);
+    K.doorU(18.75, 27, UP);
+    for (const u of [27, 30.5]) K.gate(u);
+    K.locker(32.8, 26.5, G);
+    K.locker(25, 20.4, UP);
+    for (const [u, z] of [[26, 35], [29, 36.5], [32, 35], [26, 38.5], [29, 39], [32, 38.5], [30.5, 33.8]]) K.spawn(u, z, G, 0, -1);
+    K.noBuild(24, 19, 33.5, 40);
+    K.label(29, 3.6, 36, '16. Главная душевая');
   }
 
-  function sideShower(B, K, team) {
-    K.holed(24.5, -13.5, 31.5, -5.5, UP, [[25.9, -13, 28.5, -10.4]], 'plate');
-    K.roof(24.5, -14, 32, -5.5, TOP);
-    K.alongU(-13.75, 24.5, 32, UP - SLAB, TOP);
-    K.alongZ(31.75, -14, -9, UP - SLAB, TOP);
-    B.door(K.X(24.25), -10, K.X(24.25), -7.6, DOOR_H, team, { y: UP });
-    B.locker(K.X(25), -6.4, UP);
-    for (const [u, z] of [[29.5, -8], [30.5, -12], [27.5, -7.5], [30, -6.5], [29.5, -10]]) B.spawn(team, K.X(u), z, K.yaw(-1, 0), UP);
-    B.noBuild(Math.min(K.X(24.5), K.X(31.5)), -13.5, Math.max(K.X(24.5), K.X(31.5)), -5.5);
-    K.label(28, UP + 2.2, -8.5, '17. Боковая душевая');
+  function sideShower(K) {
+    K.holed(33.8, -32.5, 43.1, -14.5, UP, [[39, -17, 41.6, -14.6]], 'plate');
+    K.roof(33.3, -33, 43.6, -14.5, TOP);
+    K.alongU(-32.75, 33.3, 43.6, UP - SLAB, TOP);
+    K.alongZ(33.55, -33, -14, UP - SLAB, TOP);
+    K.alongZ(43.35, -33, -14, UP - SLAB, TOP);
+    K.alongU(-14.25, 25.5, 43.6, UP - SLAB, TOP, [[34, 36.4, UP, UP + DOOR_H]]);
+    K.doorU(-14.25, 34, UP);
+    K.plate(25, -14.5, 36.4, -11.6, UP);
+    K.alongU(-11.35, 25.5, 36.9, UP - SLAB, TOP);
+    K.alongZ(36.65, -14, -11.1, UP - SLAB, TOP);
+    K.roof(25.5, -14, 36.9, -11.1, TOP);
+    K.locker(37, -15.2, UP);
+    for (const [u, z] of [[36, -21], [38.5, -28], [41.5, -24], [36, -30], [41.5, -30]]) K.spawn(u, z, UP, 0, 1);
+    K.noBuild(33.8, -32.5, 43.1, -14.5);
+    K.label(38.5, UP + 2.2, -22, '17. Боковая душевая');
+    K.label(30, UP + 2.2, -12.8, 'Заслонка на бастион');
   }
 
-  function mainShower(B, K, team) {
-    K.box(37, G, 5.5, 39.9, UP, 15.5, 'block');
-    K.plate(39.9, 5, 47.5, 15.5, G);
-    K.stairs(39.9, 13, 46.5, 15.5, G, UP, K.toCanal);
-    K.roof(37, 5.5, 47.5, 15.5, TOP);
-    K.alongZ(47.25, 5.5, 15.5, G, TOP);
-    K.alongU(15.75, 38, 47.5, G, TOP);
-    B.door(K.X(41), 5.25, K.X(43.4), 5.25, DOOR_H, team);
-    B.door(K.X(36.75), 6, K.X(36.75), 8.4, DOOR_H, team, { y: UP });
-    B.locker(K.X(45.8), 6.2, G);
-    B.locker(K.X(38.8), 10.5, UP);
-    for (const [u, z] of [[44, 8], [42, 9], [45.5, 10.5], [41.5, 11.5], [43.5, 12], [46, 8.5], [42.2, 7]]) B.spawn(team, K.X(u), z, Math.PI, G);
-    B.noBuild(Math.min(K.X(37), K.X(47)), 5.5, Math.max(K.X(37), K.X(47)), 15.5);
-    K.label(43, 3.2, 10, '16. Главная душевая');
+  function spiral(K) {
+    K.plate(37, 8, 46.4, 10.4, UP);
+    K.alongU(7.75, 37.5, 43.5, UP - SLAB, TOP);
+    K.alongU(10.65, 37.5, 46.9, UP - SLAB, SPIRAL_ROOF);
+    K.roof(37.5, 7.5, 43.5, 10.9, TOP);
+    K.stairs(44, -3.4, 46.4, 8, LEG_HIGH, UP, 'z+');
+    K.plate(44, -5.8, 46.4, -3.4, LEG_HIGH);
+    K.stairs(46.4, -5.8, 52, -3.4, LEG_MID, LEG_HIGH, 'u-');
+    K.plate(52, -5.8, 54.4, -3.4, LEG_MID);
+    K.stairs(52, -3.4, 54.4, 11.5, LOW, LEG_MID, 'z-');
+    K.alongZ(43.75, -6.3, 7.75, LEG_HIGH - SLAB, SPIRAL_ROOF);
+    K.alongZ(46.65, -3.15, 10.9, LEG_HIGH - SLAB, SPIRAL_ROOF);
+    K.alongU(-6.05, 43.5, 54.9, LEG_MID - SLAB, SPIRAL_ROOF);
+    K.alongU(-3.15, 46.9, 51.5, LEG_MID - SLAB, SPIRAL_ROOF);
+    K.alongZ(51.75, -3.15, 11.5, LOW, SPIRAL_ROOF);
+    K.alongZ(54.65, -6.3, 11.5, LOW, SPIRAL_ROOF);
+    K.roof(43.5, -6.3, 54.9, 10.9, SPIRAL_ROOF);
+    K.health(42.5, 9.7, 0.2, UP);
+    K.ammo(42.5, 8.7, 0.2, UP);
+    K.label(40, UP + 1.6, 9.2, '11. Спираль');
+    K.label(53.2, LOW + 2.2, 9, 'Подвал');
   }
 
-  function spiral(B, K) {
-    K.plate(26, 16, 28.4, 18.4, UP);
-    K.stairs(28.4, 16, 35.6, 18.4, LEG_TURN, UP, K.toCanal);
-    K.plate(35.6, 16, 38, 21.1, LEG_TURN);
-    K.stairs(26.4, 18.7, 35.6, 21.1, LEG_MID, LEG_TURN, K.toBack);
-    K.plate(24, 18.7, 26.4, 23.8, LEG_MID);
-    K.stairs(26.4, 21.4, 35.6, 23.8, LOW, LEG_MID, K.toCanal);
-    K.plate(35.6, 13, 38, 23.8, LOW);
-    K.alongZ(25.85, 15.9, 18.4, UP - SLAB, SPIRAL_ROOF, [], THIN);
-    K.alongU(18.55, 23.7, 35.6, LOW, SPIRAL_ROOF, [], THIN);
-    K.alongU(21.25, 26.4, 38, LOW, SPIRAL_ROOF, [[35.6, 38, LOW, LOW + 2.8]], THIN);
-    K.alongU(23.95, 23.7, 38.3, LOW, SPIRAL_ROOF, [], THIN);
-    K.alongZ(23.85, 18.4, 24.1, LEG_MID - SLAB, SPIRAL_ROOF, [], THIN);
-    K.alongZ(38.15, 16, 24.1, LOW, SPIRAL_ROOF, [], THIN);
-    K.alongZ(35.45, 15.9, 21.25, LOW, LEG_TURN - SLAB, [], THIN);
-    K.alongZ(35.35, 12.5, 15.5, LOW, LOW + 2.9);
-    K.alongU(12.75, 35.1, 38, LOW, LOW + 2.9);
-    K.roof(35.1, 12.5, 38, 15.5, LOW + 2.9);
-    K.roof(23.7, 16, 38.3, 24.1, SPIRAL_ROOF);
-    K.health(36.8, 17.2, 0.2, LEG_TURN);
-    K.ammo(25.2, 21, 0.2, LEG_MID);
-    K.label(30, UP + 1, 17.2, '11. Спираль');
-    K.label(36.8, LOW + 2, 14.2, 'В подвал');
+  function stairsDown(K) {
+    K.stairs(50.5, 24, 75, 26.4, LOW, G, 'u-');
+    K.alongU(23.75, 50.5, 75, LOW, STAIRS_ROOF);
+    K.alongU(26.65, 50.5, 77.9, LOW, STAIRS_ROOF);
+    K.roof(50.5, 23.5, 77.9, 26.9, STAIRS_ROOF);
+    K.plate(75, 14, 77.4, 26.4, LOW);
+    K.alongU(23.75, 75, 77.9, LOW + 3, STAIRS_ROOF);
+    K.alongZ(77.65, 13.5, 26.9, LOW, LOW + 3, [[18, 20.4, LOW, LOW + DOOR_H]]);
+    K.alongZ(77.65, 23.5, 26.9, LOW + 3, STAIRS_ROOF);
+    K.alongU(13.75, 75, 77.9, LOW, LOW + 3);
+    K.alongZ(75.25, 18.5, 23.5, LOW, LOW + 3);
+    K.roof(75, 13.5, 77.9, 23.5, LOW + 3);
+    K.label(53, 2, 25.2, '12. Лестница');
+    K.label(76.2, LOW + 2.2, 15.8, 'Подвал');
+    K.label(76.2, LOW + 2.2, 19.2, 'Кладовка');
   }
 
-  function basement(B, K) {
-    K.plate(38, 7, 49, 19, LOW);
-    K.box(38.5, -SLAB, 15.5, 48.5, G, 18.5, 'roof');
-    K.box(47, -SLAB, 7.5, 48.5, G, 15.5, 'roof');
-    K.alongZ(38.25, 7, 19, LOW, G, [[9, 11.4, LOW, LOW + DOOR_H], [13, 15.4, LOW, LOW + DOOR_H]]);
-    K.alongZ(48.75, 7, 19, LOW, G, [[9, 11.4, LOW, LOW + DOOR_H], [16, 18.4, LOW, LOW + DOOR_H]]);
-    K.alongU(7.25, 38, 49, LOW, G);
-    K.alongU(18.75, 38, 49, LOW, G, [[40, 42.4, LOW, LOW + DOOR_H]]);
-    K.health(39.5, 17.3, 0.5, LOW);
-    K.ammo(47.2, 8.6, 0.5, LOW);
-    K.label(43.5, LOW + 2.4, 13, '13. Подвал');
-    K.label(39, LOW + 2.8, 10.2, 'К ВЕНТИЛЮ');
-    K.label(48, LOW + 2.8, 10.2, 'К ВЕНТИЛЮ');
+  function basement(K) {
+    K.plate(51.5, 11.5, 75.5, 18.5, LOW);
+    K.alongU(11.75, 51.5, 75.5, LOW, BASE_ROOF, [[52, 54.4, LOW, LOW + 2.8], [55.4, 57.8, LOW, LOW + 2.8], [72.5, 74.9, LOW, LOW + 2.8]]);
+    K.alongU(18.25, 51.5, 75.5, LOW, BASE_ROOF);
+    K.alongZ(51.75, 11.5, 18.5, LOW, BASE_ROOF);
+    K.alongZ(75.25, 11.5, 18.5, LOW, BASE_ROOF, [[14.5, 16.9, LOW, LOW + DOOR_H]]);
+    K.roof(51.5, 11.5, 75.5, 18.5, BASE_ROOF);
+    K.health(62.5, 15, 0.5, LOW);
+    K.ammo(65, 15, 0.5, LOW);
+    K.label(63.5, LOW + 2.4, 13, '13. Подвал');
+    K.label(56.6, LOW + 2.8, 12.2, 'К ВЕНТИЛЮ');
+    K.label(73.7, LOW + 2.8, 12.2, 'К ВЕНТИЛЮ');
+    K.label(53.2, LOW + 2.8, 12.2, 'Спираль наверх');
   }
 
-  function pantry(B, K, team) {
-    K.plate(39, 18.5, 43.5, 23, LOW);
-    K.alongZ(39.25, 19, 23, LOW, LOW_ROOF);
-    K.alongZ(43.25, 19, 23, LOW, LOW_ROOF);
-    K.alongU(22.75, 39, 43.5, LOW, LOW_ROOF);
-    K.roof(39, 19, 43.5, 23, LOW_ROOF);
-    B.door(K.X(40), 18.75, K.X(42.4), 18.75, DOOR_H, team, { y: LOW });
-    B.locker(K.X(41.2), 21.9, LOW);
-    K.label(41.2, LOW + 2, 20.2, '15. Кладовка');
+  function pantry(K) {
+    K.plate(77.4, 15, 86, 24, LOW);
+    K.alongZ(86.25, 14.5, 24.5, LOW, -2);
+    K.alongU(14.75, 77.9, 86.5, LOW, -2);
+    K.alongU(24.25, 77.9, 86.5, LOW, -2);
+    K.roof(77.9, 14.5, 86.5, 24.5, -2);
+    K.doorZ(77.65, 18, LOW);
+    K.locker(84.5, 19.5, LOW);
+    K.label(82, LOW + 2, 19.5, '15. Кладовка');
   }
 
-  function corridors(B, K) {
-    K.plate(33.6, 9, 38, 11.4, LOW);
-    K.plate(33.6, 5, 36, 9, LOW);
-    K.alongU(11.65, 33.1, 38, LOW, LOW_ROOF);
-    K.alongZ(33.35, 5.5, 11.9, LOW, LOW_ROOF);
-    K.alongZ(36.25, 5.5, 8.75, LOW, LOW_ROOF);
-    K.alongU(8.75, 36, 38, LOW, LOW_ROOF);
-    K.roof(33.1, 5.5, 38, 11.9, LOW_ROOF);
-    K.plate(48.5, -5.4, 51.4, -3, LOW);
-    K.plate(49, -3, 51.4, 11.4, LOW);
-    K.alongZ(48.75, -3, 7, LOW, LOW_ROOF);
-    K.alongU(-5.65, 48.5, 51.9, LOW, LOW_ROOF);
-    K.alongZ(51.65, -5.9, 0.4, LOW, LOW_ROOF);
-    K.alongU(11.65, 49, 51.5, LOW, LOW_ROOF);
-    K.roof(48.5, -5.9, 51.5, 11.9, LOW_ROOF);
+  function corridors(K) {
+    K.plate(55.4, -7, 57.8, 11.5, LOW);
+    K.alongZ(55.15, -7.5, 11.5, LOW, LOW_ROOF);
+    K.alongZ(58.25, 1, 11.5, LOW, LOW_ROOF);
+    K.alongU(-7.25, 54.9, 58, LOW, LOW_ROOF);
+    K.roof(54.9, -7.5, 58.5, 11.5, LOW_ROOF);
+    K.plate(72.5, -7, 74.9, 11.5, LOW);
+    K.alongZ(75.15, -7.5, 11.5, LOW, LOW_ROOF);
+    K.alongZ(72.25, 1, 11.5, LOW, LOW_ROOF);
+    K.alongU(-7.25, 72.5, 75.4, LOW, LOW_ROOF);
+    K.roof(72, -7.5, 75.4, 11.5, LOW_ROOF);
   }
 
-  function control(B, K, team) {
-    K.plate(31.5, -9, 48.5, 5.5, LOW);
-    K.alongZ(31.75, -9, 5.5, LOW, -SLAB);
-    K.alongZ(48.25, -9, 5.5, LOW, -SLAB, [[-5.4, -3, LOW, LOW + DOOR_H]]);
-    K.alongU(-8.75, 31.5, 48.5, LOW, -SLAB);
-    K.alongU(5.25, 31.5, 48.5, LOW, -SLAB, [[33.6, 36, LOW, LOW + DOOR_H]]);
-    K.box(42.8, LOW, -2, 44.2, LOW + 0.9, -1, 'brass');
-    K.box(36, LOW, -6.5, 37, LOW + 1.4, -3.5, 'block');
-    K.box(36, LOW, 0.5, 37, LOW + 1.4, 3.5, 'block');
-    K.box(40, LOW, -7, 41, LOW + 1.4, -4, 'block');
-    K.box(40, LOW, 1, 41, LOW + 1.4, 4, 'block');
-    K.box(47.9, LOW + 1.2, 1, 48, LOW + 3.4, 4.8, 'mark', { col: false, grid: false });
-    K.box(37.1, LOW, -2.9, 39.9, LOW + 0.03, -0.1, 'brass', { col: false, grid: false });
-    B.flag(team, K.X(43.5), LOW + 0.9, -1.5);
-    B.capture(team, K.X(38.5), LOW, -1.5, 1.6);
-    B.noBuild(Math.min(K.X(36.9), K.X(40.1)), -3.1, Math.max(K.X(36.9), K.X(40.1)), 0.1);
-    B.noBuild(Math.min(K.X(42.3), K.X(44.7)), -2.5, Math.max(K.X(42.3), K.X(44.7)), -0.5);
-    K.label(43.5, LOW + 2, -1.5, '14. Диспетчерская: вентиль');
-    K.label(38.5, LOW + 1, -1.5, 'Распределитель');
-    K.label(47.6, LOW + 2.4, 2.9, 'Мнемосхема');
+  function warRoom(K) {
+    const shell = { col: false, grid: false };
+    K.box(46, LOW - 1.5, -34, 84, LOW - 1.2, -14.5, 'roof', shell);
+    K.box(46, TOP, -34, 84, TOP + 0.3, -14.5, 'roof', shell);
+    K.box(45.7, LOW - 1.5, -34.3, 46, TOP, -14.5, 'wall', shell);
+    K.box(84, LOW - 1.5, -34.3, 84.3, TOP, -14.5, 'wall', shell);
+    K.box(45.7, LOW - 1.5, -34.3, 84.3, TOP, -34, 'wall', shell);
+    for (const z of [-30, -25, -20]) {
+      K.box(50, LOW - 1.2, z, 62, LOW - 0.4, z + 1, 'block', shell);
+      K.box(68, LOW - 1.2, z, 80, LOW - 0.4, z + 1, 'block', shell);
+    }
+    K.box(52, LOW + 0.5, -33.9, 78, LOW + 5, -33.7, 'mark', shell);
+    K.box(46, LOW - 1.5, -14.8, 58, TOP, -14.5, 'wall', shell);
+    K.box(72.5, LOW - 1.5, -14.8, 84, TOP, -14.5, 'wall', shell);
   }
 
-  function stairsDown(B, K) {
-    K.plate(48.5, -2, 54.4, 0.4, G);
-    K.alongU(-2.25, 48.5, 54.9, G, STAIRS_ROOF);
-    K.alongU(0.65, 48.5, 51.5, G, STAIRS_ROOF);
-    K.stairs(52, 0.4, 54.4, 16, LOW, G, 'z-');
-    K.alongZ(54.65, -2.5, 18.9, LOW, STAIRS_ROOF);
-    K.alongZ(51.75, 0.4, 16, LOW, STAIRS_ROOF);
-    K.alongZ(51.75, 16, 19, LOW_ROOF, STAIRS_ROOF);
-    K.plate(49, 16, 54.4, 18.4, LOW);
-    K.alongU(18.65, 49, 54.9, LOW, STAIRS_ROOF);
-    K.alongU(15.75, 49, 51.5, LOW, LOW_ROOF);
-    K.roof(49, 15.5, 51.5, 18.9, LOW_ROOF);
-    K.roof(48.5, -2.5, 54.9, 0.9, STAIRS_ROOF);
-    K.roof(51.5, 0.9, 54.9, 18.9, STAIRS_ROOF);
-    K.label(53.2, 2, -0.8, '12. Лестница');
+  function control(B, K) {
+    K.plate(58, -14, 72.5, 1, LOW);
+    K.alongZ(58.25, -14.5, 1, LOW, -SLAB, [[-7, -4.6, LOW, LOW + DOOR_H]]);
+    K.alongZ(72.25, -14.5, 1, LOW, -SLAB, [[-7, -4.6, LOW, LOW + DOOR_H]]);
+    K.alongU(-14.25, 58, 72.5, LOW, -SLAB, [[60, 70, LOW + 1.2, LOW + 3.6]]);
+    K.alongU(0.75, 58, 72.5, LOW, -SLAB);
+    K.roof(58, -14.5, 72.5, 1, -SLAB);
+    B.solid(K.X(60), LOW + 1.2, K.Z(-14.5), K.X(70), LOW + 3.6, K.Z(-14), { offGrid: true });
+    K.box(63.8, LOW, -6.3, 65.2, LOW + 0.9, -5.3, 'brass');
+    K.box(59.5, LOW, -12, 62, LOW + 1.4, -10.8, 'block');
+    K.box(67, LOW, -12, 69.5, LOW + 1.4, -10.8, 'block');
+    K.box(59.5, LOW, -1, 61.5, LOW + 1.4, 0.2, 'block');
+    K.box(67.5, LOW, -1, 69.5, LOW + 1.4, 0.2, 'block');
+    K.box(63.1, LOW, -2.9, 65.9, LOW + 0.03, -0.1, 'brass', { col: false, grid: false });
+    B.flag(K.team, K.X(64.5), LOW + 0.9, K.Z(-5.8));
+    B.capture(K.team, K.X(64.5), LOW, K.Z(-1.5), 1.6);
+    K.noBuild(62.9, -3.1, 66.1, 0.1);
+    K.noBuild(63.3, -6.8, 65.7, -4.8);
+    K.label(64.5, LOW + 2, -5.8, '14. Диспетчерская: вентиль');
+    K.label(64.5, LOW + 1, -1.5, 'Распределитель');
   }
 
-  function tunnels(B, K) {
-    K.plate(12, -1.2, 23.2, 1.2, TUN);
-    K.stairs(23.2, -1.2, 29.4, 1.2, TUN, G, K.toBack);
-    K.alongU(-1.45, 12.5, 29.9, TUN, -0.02);
-    K.alongU(1.45, 12.5, 29.9, TUN, -0.02, [[20.8, 23.2, TUN, TUN + 2.76]]);
-    K.plate(20.8, 1.2, 23.2, 11.5, TUN);
-    K.alongZ(20.55, 1.7, 12, TUN, TUN_ROOF, [[5, 7.4, TUN, TUN + 2.76]]);
-    K.alongZ(23.45, 1.7, 8.6, TUN, TUN_ROOF);
-    K.alongU(8.85, 23.2, 29.9, TUN, -0.02);
-    K.alongU(11.75, 20.3, 29.9, TUN, -0.02);
-    K.stairs(23.2, 9.1, 29.4, 11.5, TUN, G, K.toBack);
-    K.plate(18.4, 5, 20.8, 7.4, TUN);
-    K.alongZ(18.15, 4.5, 7.9, TUN, TUN_ROOF);
-    K.alongU(4.75, 17.9, 20.3, TUN, TUN_ROOF);
-    K.alongU(7.65, 17.9, 20.3, TUN, TUN_ROOF);
-    K.health(19.4, 6.2, 0.5, TUN);
-    K.ammo(22, 10.3, 0.2, TUN);
-    K.label(16, TUN + 2, 0, '18. Служебные тоннели');
-    K.label(22, TUN + 2.2, 3, 'К боковой комнате');
-    K.label(11, TUN + 1.6, 0, 'Лаз в тоннели');
+  function sewers(K) {
+    K.plate(CANAL, -7.2, 16, -4.8, TUN);
+    K.plate(CANAL, 4.8, 16, 7.2, TUN);
+    K.alongU(-7.45, CANAL + 0.5, 15.5, TUN, TUN_ROOF);
+    K.alongU(-4.55, CANAL + 0.5, 15.5, TUN, TUN_ROOF);
+    K.alongU(4.55, CANAL + 0.5, 15.5, TUN, TUN_ROOF);
+    K.alongU(7.45, CANAL + 0.5, 18.9, TUN, TUN_ROOF);
+    K.plate(16, -22.4, 18.4, 7.2, TUN);
+    K.alongZ(15.75, -22.9, 7.7, TUN, TUN_ROOF, [[-7.2, -4.8, TUN, TUN_PASS], [4.8, 7.2, TUN, TUN_PASS]]);
+    K.alongZ(18.65, -19.5, 7.7, TUN, TUN_ROOF);
+    K.plate(18.4, -22.4, 30.4, -20, TUN);
+    K.alongU(-19.75, 18.9, 28, TUN, TUN_ROOF);
+    K.alongU(-22.65, 15.5, 30.9, TUN, TUN_ROOF);
+    K.roof(19, -23, 31, -19.5, TUN_ROOF);
+    K.stairs(28, -20, 30.4, -3.5, TUN, G, 'z+');
+    K.alongZ(27.75, -20, -3, TUN, ROOM_ROOF);
+    K.alongZ(30.65, -20, -3, TUN, ROOM_ROOF);
+    K.roof(27.5, -20, 30.9, -3.5, ROOM_ROOF);
+    K.plate(30.4, -26, 36, -19.5, TUN);
+    K.alongZ(30.65, -26.5, -22.4, TUN, TUN_ROOF);
+    K.alongU(-26.25, 30.4, 36.5, TUN, TUN_ROOF);
+    K.alongZ(36.25, -26.5, -19, TUN, TUN_ROOF);
+    K.alongU(-19.25, 30.9, 36.5, TUN, TUN_ROOF);
+    K.roof(30.4, -26.5, 36.5, -19, TUN_ROOF);
+    K.health(34.5, -24.5, 0.5, TUN);
+    K.ammo(34.5, -21, 0.5, TUN);
+    K.label(17.2, TUN + 2.2, -8, '18. Служебные тоннели');
+    K.label(33, TUN + 2.2, -23, '19. Комната при тоннелях');
+    K.label(29.2, TUN + 2.2, -18, 'Наверх: вестибюль');
+    K.label(CANAL + 1.6, TUN + 2.2, -6, 'Лаз в тоннели');
+    K.label(CANAL + 1.6, TUN + 2.2, 6, 'Лаз в тоннели');
   }
 
-  function clips(B, K) {
-    const clip = (u0, y0, z0, u1, z1) => B.solid(K.X(u0), y0, z0, K.X(u1), CLIP_TOP, z1, { nobul: true, clip: true });
-    clip(24, CLIP_FORT, -14, 32, 25);
-    clip(48, CLIP_FORT, -14, 55.5, 25);
-    clip(32, CLIP_FORT, -14, 48, -9);
-    clip(32, CLIP_FORT, 5.5, 48, 25);
-    clip(12, CLIP_ROCK, 14, 24, HALF_Z);
-    clip(12, CLIP_ROCK, -HALF_Z, 24, -14);
+  function clips(K) {
+    K.clip(25.5, CLIP_FORT, -HALF_Z, 34, HALF_Z);
+    K.clip(50, CLIP_FORT, -HALF_Z, 88, HALF_Z);
+    K.clip(34, CLIP_FORT, -HALF_Z, 50, 14.5);
+    K.clip(34, CLIP_FORT, 29.5, 50, HALF_Z);
+    K.clip(BRIDGE, ROCK_TOP, 16, 25.5, HALF_Z);
+    K.clip(BRIDGE, ROCK_TOP, -HALF_Z, 25.5, -16);
   }
 
-  function orders(B, K, team, foe) {
-    for (const [u, z] of [[45.5, 2.5], [45.5, -6], [38.5, 3], [38.5, -6.5], [34, -3]]) B.post(team, 'guard', K.X(u), z, LOW);
-    for (const [u, z] of [[13.5, -2.5], [13.5, 2.5], [15, -7], [15, 7], [18.5, 0], [19, -6], [19, 6]]) B.post(team, 'bridge', K.X(u), z, G);
-    B.post(team, 'mouth', K.X(11.2), 0, TUN);
-    K.hint('sentry', team, 45.5, LOW, 2, -1, 0);
-    K.hint('sentry', team, 34.5, LOW, -5, 1, 0);
-    K.hint('sentry', team, 40, G, -6.5, 0, 1);
-    K.hint('sniper', team, 21.6, UP, -4, -1, 0);
-    K.hint('sniper', team, 21.6, UP, 5, -1, 0);
-    K.hint('sticky', team, 35, LOW, 4, 0, -1);
-    K.hint('sticky', team, 27, G, -3, -1, 0);
-    K.hint('flank', foe, 11, TUN, 0, 1, 0);
-    K.hint('flank', foe, 22, TUN, 3, 0, 1);
-    K.hint('charge', foe, 53.2, G, -0.8, 0, 1);
+  function orders(K, foe) {
+    const team = K.team;
+    for (const [u, z] of [[70.5, -9], [59.7, -3], [70.5, -3], [59.7, -9]]) K.post('guard', u, z, LOW);
+    for (const [u, z] of [[11.5, -5], [11.5, 5], [13, 0], [16, -11], [16, 11]]) K.post('bridge', u, z, G);
+    for (const z of [-11, 11]) K.post('bridge', 19.5, z, UP);
+    K.post('mouth', CANAL + 1.6, -6, TUN);
+    K.hint('sentry', team, 70, LOW, -2, -1, 0);
+    K.hint('sentry', team, 59.6, LOW, -8, 1, 0);
+    K.hint('sentry', team, 46, G, 18.5, -1, 0);
+    K.hint('sniper', team, 19, UP, -3, -1, 0);
+    K.hint('sniper', team, 19, UP, 3, -1, 0);
+    K.hint('sniper', team, 19.5, UP, -13, -1, 0);
+    K.hint('sticky', team, 64.5, LOW, -8.5, 0, 1);
+    K.hint('sticky', team, 31, G, 0, -1, 0);
+    K.hint('flank', foe, CANAL + 1.6, TUN, -6, 1, 0);
+    K.hint('flank', foe, 17.2, TUN, 0, 0, -1);
+    K.hint('charge', foe, 51.5, -0.3, 25.2, 1, 0);
     K.hint('charge', team, 15, G, 0, -1, 0);
-    K.hint('ambush', team, 25.5, G, 6.6, 1, 0);
-    K.hint('ambush', team, 30.5, G, -4.2, -1, 0);
+    K.hint('ambush', team, 27.5, G, 13, 1, 0);
+    K.hint('ambush', team, 26, G, -2.2, 1, 0);
     K.hint('jump', team, 14, G, 6, 1, 0);
-    K.hint('jump', team, 13, G, 0, -1, 0);
+    K.hint('jump', team, 12, G, 0, -1, 0);
   }
 
   function fort(B, side, team) {
-    const K = kit(B, side);
-    facade(B, K);
-    bastion(B, K);
-    lobby(B, K);
-    grate(B, K);
-    sideRoom(B, K);
-    corridor(B, K);
-    yard(B, K);
-    wall5(B, K);
-    hall(B, K);
-    sideShower(B, K, team);
-    mainShower(B, K, team);
-    spiral(B, K);
-    basement(B, K);
-    pantry(B, K, team);
-    corridors(B, K);
-    control(B, K, team);
-    stairsDown(B, K);
-    tunnels(B, K);
-    clips(B, K);
-    orders(B, K, team, T.enemyOf(team));
+    const K = kit(B, side, team);
+    K.gate = u => B.gate(K.X(u), K.Z(32), K.X(u + DOOR), K.Z(32), DOOR_H, K.toward('z-'));
+    facade(K);
+    battlements(K);
+    lobby(K);
+    grate(K);
+    hallway(K);
+    sideRoom(K);
+    upstairs(K);
+    courtyard(K);
+    mainShower(K);
+    sideShower(K);
+    spiral(K);
+    stairsDown(K);
+    basement(K);
+    pantry(K);
+    corridors(K);
+    warRoom(K);
+    control(B, K);
+    sewers(K);
+    clips(K);
+    orders(K, T.enemyOf(team));
   }
 
   function bridge(B) {
-    B.box(-12, -SLAB, -3, 12, G, 3, 'plate');
-    B.ground(-12, -3, 12, 3, 3.2, [[-6.25, -1, -5.75, 1], [-0.25, -1, 0.25, 1], [5.75, -1, 6.25, 1]], 'roof', { t: 0.3 });
-    for (const x of [-11.6, -6, 0, 6, 11.6]) {
-      for (const z of [-2.8, 2.8]) B.box(x - 0.2, G, z - 0.2, x + 0.2, 2.9, z + 0.2, 'wall');
+    B.box(-BRIDGE, -SLAB, -3, BRIDGE, G, 3, 'plate');
+    B.ground(-BRIDGE, -3, BRIDGE, 3, 3.5, [[-5.25, -1, -4.75, 1], [-0.25, -1, 0.25, 1], [4.75, -1, 5.25, 1]], 'roof', { t: 0.4, offGrid: true });
+    for (const x of [-9.6, -5, 0, 5, 9.6]) {
+      for (const z of [-2.8, 2.8]) B.box(x - 0.2, G, z - 0.2, x + 0.2, 3.1, z + 0.2, 'wall');
     }
     B.label(0, 2, -2.2, '1. Мост');
   }
 
   function canal(B) {
-    B.water(-10, -HALF_Z, 10, HALF_Z, WATER_FLOOR, WATER_TOP);
-    B.box(-10, WATER_FLOOR - 1, -HALF_Z, 10, WATER_FLOOR, HALF_Z, 'ground');
-    B.wall(-12, -HALF_Z, 12, -HALF_Z, 18.4, 1, 'wall', { y: WATER_FLOOR });
-    B.wall(-12, HALF_Z, 12, HALF_Z, 18.4, 1, 'wall', { y: WATER_FLOOR });
-    B.label(0, WATER_TOP + 1, 8, '2. Канал');
+    B.water(-CANAL, -CANAL_Z, CANAL, CANAL_Z, WATER_FLOOR, WATER_TOP);
+    B.box(-CANAL, WATER_FLOOR - 1, -CANAL_Z, CANAL, WATER_FLOOR, CANAL_Z, 'ground');
+    B.box(-BRIDGE, WATER_FLOOR - 1, CANAL_Z, BRIDGE, ROCK_TOP, HALF_Z, 'block');
+    B.box(-BRIDGE, WATER_FLOOR - 1, -HALF_Z, BRIDGE, ROCK_TOP, -CANAL_Z, 'block');
+    B.solid(-BRIDGE, ROCK_TOP, CANAL_Z, BRIDGE, CLIP_TOP, HALF_Z, { nobul: true, offGrid: true });
+    B.solid(-BRIDGE, ROCK_TOP, -HALF_Z, BRIDGE, CLIP_TOP, -CANAL_Z, { nobul: true, offGrid: true });
+    B.label(0, WATER_TOP + 1, 6, '2. Канал');
   }
 
   T.MAPS['2fort'] = {
@@ -383,8 +446,8 @@
     build(B) {
       bridge(B);
       canal(B);
-      fort(B, -1, 'hot');
-      fort(B, 1, 'cold');
+      fort(B, 1, 'hot');
+      fort(B, -1, 'cold');
       B.bounds(-HALF_X, -HALF_Z, HALF_X, HALF_Z);
       B.killY(-14);
     }

@@ -1,24 +1,22 @@
-/**
- * Win 98 Dial-Up Networking (rasphone.exe)
- * Complete 56k V.90 modem dialing simulation, provider selection,
- * connection lifecycle, tray dual monitors, and offline mode integration.
- */
+const ETHER_WAIT_MS = 10000, ETHER_POLL_MS = 200;
+
 class AppDialUp {
   constructor() {
     this.winId = 'app_dialup';
     this.statusWinId = 'app_dialup_status';
-    this.state = 'disconnected'; // 'disconnected', 'dialing', 'handshaking', 'authenticating', 'connected'
-    this.isOnline = true; // Default online
+    this.state = 'disconnected';
+    this.isOnline = true;
     window.isOnline = true;
 
     this.providers = [
       { id: 'mtu', name: 'МТУ-Интел (MTU-Intel Dial-up 56k)', phone: '232-0000', speed: '48 000 бит/с' },
       { id: 'rol', name: 'РОЛ (Россия-Он-Лайн / ROL)', phone: '995-5555', speed: '50 666 бит/с' },
       { id: 'cityline', name: 'Ситилайн (Cityline 56k V.90)', phone: '755-6565', speed: '45 333 бит/с' },
-      { id: 'aol', name: 'AOL (America Online 56k)', phone: '1-800-827-6364', speed: '52 000 бит/с' }
+      { id: 'aol', name: 'AOL (America Online 56k)', phone: '1-800-827-6364', speed: '52 000 бит/с' },
+      { id: 'ether', name: 'Эфирная связь / Ether Link (pennygachi.men)', phone: '098-0098', speed: '', real: true }
     ];
 
-    this.selectedProviderIndex = 0;
+    this.selectedProviderIndex = window.Net98 && window.Net98.hasConsent() ? this.etherIndex() : 0;
     this.username = 'alexey_98';
     this.password = 'redmond98';
     this.connectionStartTime = Date.now();
@@ -26,9 +24,25 @@ class AppDialUp {
     this.bytesRecv = 894200;
     this.timer = null;
     this.trayEl = null;
+    this.etherTimer = null;
+    this.etherWasOnline = true;
 
     this.initTray();
     this.startTrafficLoop();
+  }
+
+  etherIndex() {
+    return this.providers.findIndex(p => p.id === 'ether');
+  }
+
+  provider() {
+    return this.providers[this.selectedProviderIndex];
+  }
+
+  selectEther() {
+    this.selectedProviderIndex = this.etherIndex();
+    const win = window.winManager && window.winManager.windows.get(this.winId);
+    if (win && win.element) this.applyProvider(win);
   }
 
   initTray() {
@@ -58,44 +72,71 @@ class AppDialUp {
     tray.insertBefore(this.trayEl, clock);
   }
 
+  etherLine() {
+    const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k, n = window.Net98;
+    if (!n || !n.hasConsent()) return t('dialup.etherOff');
+    if (n.state !== 'online') return t('dialup.etherLost');
+    return n.rtt == null ? t('dialup.etherOn') : t('dialup.etherPing', Math.round(n.rtt));
+  }
+
+  etherFriends() {
+    const F = window.Net98 && window.Net98.friends;
+    return F ? F.list.filter(r => r.on).length : 0;
+  }
+
+  trayTitle(prov) {
+    const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
+    const durationSec = Math.floor((Date.now() - this.connectionStartTime) / 1000);
+    const mins = String(Math.floor(durationSec / 60)).padStart(2, '0');
+    const secs = String(durationSec % 60).padStart(2, '0');
+    const line = prov.real ? this.etherLine() : t('dialup.speed', prov.speed);
+    return `${t('dialup.statusConnected', prov.name)}\n${t('dialup.duration', `${mins}:${secs}`)}\n${line}\n${t('dialup.bytesSent', Math.round(this.bytesSent / 1024))}, ${t('dialup.bytesRecv', Math.round(this.bytesRecv / 1024))}`;
+  }
+
   startTrafficLoop() {
     const loop = setInterval(() => {
       if (!this.isOnline) return;
+      const prov = this.provider(), n = window.Net98;
+      let leftOn = Math.random() > 0.4, rightOn = Math.random() > 0.3;
+      if (prov.real) {
+        const sent = n ? n.bytesSent : 0, recv = n ? n.bytesRecv : 0;
+        leftOn = sent !== this.bytesSent;
+        rightOn = recv !== this.bytesRecv;
+        this.bytesSent = sent;
+        this.bytesRecv = recv;
+      } else {
+        this.bytesSent += Math.floor(Math.random() * 800) + 120;
+        this.bytesRecv += Math.floor(Math.random() * 2400) + 350;
+      }
 
-      // Increment random byte counts to simulate lively network traffic
-      const deltaSent = Math.floor(Math.random() * 800) + 120;
-      const deltaRecv = Math.floor(Math.random() * 2400) + 350;
-      this.bytesSent += deltaSent;
-      this.bytesRecv += deltaRecv;
-
-      // Animate tray monitors
       if (this.trayEl) {
         const leftMon = this.trayEl.querySelector('.dialup-mon-screen-left');
         const rightMon = this.trayEl.querySelector('.dialup-mon-screen-right');
         if (leftMon && rightMon) {
-          if (Math.random() > 0.4) leftMon.classList.add('active');
-          else leftMon.classList.remove('active');
-
-          if (Math.random() > 0.3) rightMon.classList.add('active');
-          else rightMon.classList.remove('active');
+          leftMon.classList.toggle('active', leftOn);
+          rightMon.classList.toggle('active', rightOn);
         }
-
-        const durationSec = Math.floor((Date.now() - this.connectionStartTime) / 1000);
-        const mins = String(Math.floor(durationSec / 60)).padStart(2, '0');
-        const secs = String(durationSec % 60).padStart(2, '0');
-        const prov = this.providers[this.selectedProviderIndex];
-        const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-        this.trayEl.title = `${t('dialup.statusConnected', prov.name)}\n${t('dialup.duration', `${mins}:${secs}`)}\n${t('dialup.speed', prov.speed)}\n${t('dialup.bytesSent', Math.round(this.bytesSent / 1024))}, ${t('dialup.bytesRecv', Math.round(this.bytesRecv / 1024))}`;
+        this.trayEl.title = this.trayTitle(prov);
       }
 
-      // Update status window if open
-      if (this.statusInterval) {
-        this.updateStatusValues();
-      }
+      this.updateStatusDom();
     }, 450);
     if (typeof loop === 'object' && loop && typeof loop.unref === 'function') {
       loop.unref();
     }
+  }
+
+  applyProvider(win) {
+    const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
+    const prov = this.provider(), n = window.Net98, el = win.element;
+    const user = el.querySelector('#dialup-user-input'), pass = el.querySelector('#dialup-pass-input');
+    const save = el.querySelector('#dialup-save-pass'), phone = el.querySelector('#dialup-phone-input'), sel = el.querySelector('#dialup-provider-select');
+    if (sel) sel.value = String(this.selectedProviderIndex);
+    if (user) { user.value = prov.real && n ? n.uid() : this.username; user.readOnly = !!prov.real; }
+    if (pass) { pass.value = prov.real ? '' : this.password; pass.disabled = !!prov.real; }
+    if (save) save.disabled = !!prov.real;
+    if (phone) { phone.value = prov.phone; phone.readOnly = !!prov.real; }
+    if (win.titleElement) win.titleElement.textContent = t('dialup.connectTo', prov.name);
   }
 
   open() {
@@ -105,7 +146,7 @@ class AppDialUp {
     }
 
     const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-    const prov = this.providers[this.selectedProviderIndex];
+    const prov = this.provider();
 
     const content = document.createElement('div');
     content.className = 'dialup-window';
@@ -164,19 +205,21 @@ class AppDialUp {
       content
     });
 
+    this.applyProvider(win);
+
     const sel = win.element.querySelector('#dialup-provider-select');
-    const phoneInput = win.element.querySelector('#dialup-phone-input');
     sel.addEventListener('change', (e) => {
       this.selectedProviderIndex = parseInt(e.target.value, 10) || 0;
-      phoneInput.value = this.providers[this.selectedProviderIndex].phone;
-      win.titleElement.textContent = t('dialup.connectTo', this.providers[this.selectedProviderIndex].name);
+      this.applyProvider(win);
     });
 
     const btnConnect = win.element.querySelector('#btn-dialup-connect');
     btnConnect.addEventListener('click', () => {
-      this.username = win.element.querySelector('#dialup-user-input').value;
-      const savePass = win.element.querySelector('#dialup-save-pass').checked;
-      this.password = savePass ? win.element.querySelector('#dialup-pass-input').value : '';
+      if (!this.provider().real) {
+        this.username = win.element.querySelector('#dialup-user-input').value;
+        const savePass = win.element.querySelector('#dialup-save-pass').checked;
+        this.password = savePass ? win.element.querySelector('#dialup-pass-input').value : '';
+      }
       this.startDialingProcess(win);
     });
 
@@ -187,21 +230,43 @@ class AppDialUp {
     });
   }
 
+  askConsent(accept) {
+    const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
+    window.winManager.openDialog({
+      title: t('net98.consentTitle'),
+      icon: 'network',
+      width: 460,
+      message: t('net98.consent'),
+      buttons: [
+        { text: t('net98.agree'), onClick: () => { window.Net98.setConsent(true); accept(); } },
+        { text: t('net98.notNow'), primary: true, onClick: null }
+      ]
+    });
+  }
+
   startDialingProcess(win) {
+    const prov = this.provider(), n = window.Net98;
+    if (prov.real && n && !n.hasConsent()) {
+      this.askConsent(() => this.startDialingProcess(win));
+      return;
+    }
     const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
     const statusMsg = win.element.querySelector('#dialup-status-msg');
     const btnConnect = win.element.querySelector('#btn-dialup-connect');
     if (btnConnect) btnConnect.disabled = true;
 
-    const prov = this.providers[this.selectedProviderIndex];
     this.state = 'dialing';
+    if (prov.real && n) {
+      this.etherWasOnline = window.isOnline !== false;
+      window.isOnline = true;
+      n.connect();
+    }
 
     if (statusMsg) statusMsg.textContent = t('dialup.dialing', prov.phone);
 
     if (window.soundSys) {
       window.soundSys.playDialTone();
 
-      // Play DTMF tones
       const digits = prov.phone.replace(/[^0-9]/g, '').split('');
       digits.forEach((d, idx) => {
         setTimeout(() => {
@@ -212,7 +277,6 @@ class AppDialUp {
         }, 800 + idx * 110);
       });
 
-      // Ringback & handshake
       const ringbackDelay = 800 + digits.length * 110 + 400;
       setTimeout(() => {
         if (this.state !== 'dialing') return;
@@ -228,15 +292,53 @@ class AppDialUp {
 
           if (window.soundSys) {
             window.soundSys.playModemHandshake(() => {
-              this.finishConnection(win);
+              this.afterHandshake(win);
             });
           } else {
-            setTimeout(() => this.finishConnection(win), 3000);
+            setTimeout(() => this.afterHandshake(win), 3000);
           }
         }, 2200);
       }, ringbackDelay);
     } else {
-      setTimeout(() => this.finishConnection(win), 2500);
+      setTimeout(() => this.afterHandshake(win), 2500);
+    }
+  }
+
+  afterHandshake(win) {
+    if (this.state === 'disconnected') return;
+    if (!this.provider().real) {
+      this.finishConnection(win);
+      return;
+    }
+    const n = window.Net98;
+    let left = ETHER_WAIT_MS;
+    const wait = () => {
+      if (this.state === 'disconnected') return;
+      if (n.state === 'online') { this.finishConnection(win); return; }
+      if (left <= 0) { this.etherBusy(win); return; }
+      left -= ETHER_POLL_MS;
+      this.etherTimer = setTimeout(wait, ETHER_POLL_MS);
+    };
+    wait();
+  }
+
+  etherRestoreModem() {
+    if (this.etherWasOnline) return;
+    window.isOnline = false;
+    const n = window.Net98;
+    if (n && n.state !== 'off') n.disconnect('modem');
+  }
+
+  etherBusy(win) {
+    const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
+    this.state = 'disconnected';
+    this.etherRestoreModem();
+    if (window.soundSys) window.soundSys.stopModemAudio();
+    if (win && win.element) {
+      const statusMsg = win.element.querySelector('#dialup-status-msg');
+      const btnConnect = win.element.querySelector('#btn-dialup-connect');
+      if (statusMsg) statusMsg.textContent = t('dialup.etherBusy');
+      if (btnConnect) btnConnect.disabled = false;
     }
   }
 
@@ -252,8 +354,8 @@ class AppDialUp {
     if (win && win.element) {
       const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
       const statusMsg = win.element.querySelector('#dialup-status-msg');
-      const prov = this.providers[this.selectedProviderIndex];
-      if (statusMsg) statusMsg.innerHTML = t('dialup.welcome', prov.speed);
+      const prov = this.provider();
+      if (statusMsg) statusMsg.innerHTML = t('dialup.welcome', prov.real ? this.etherLine() : prov.speed);
 
       setTimeout(() => {
         if (win.close) win.close();
@@ -267,7 +369,10 @@ class AppDialUp {
   }
 
   cancelDialing() {
+    const dialing = this.state === 'dialing' || this.state === 'handshaking';
     this.state = 'disconnected';
+    clearTimeout(this.etherTimer);
+    if (dialing && this.provider().real) this.etherRestoreModem();
     if (window.soundSys) {
       window.soundSys.stopModemAudio();
     }
@@ -307,7 +412,13 @@ class AppDialUp {
     }
 
     const t = (k, ...a) => window.i18n ? window.i18n.t(k, ...a) : k;
-    const prov = this.providers[this.selectedProviderIndex];
+    const prov = this.provider(), n = window.Net98;
+    const rows = prov.real
+      ? `<span>${t('dialup.etherLabel')}</span> <strong id="dialup-stat-ether">${this.etherLine()}</strong>
+         <span>UID:</span> <strong>${n ? n.uid() : ''}</strong>
+         <span>${t('dialup.etherFriends')}</span> <strong id="dialup-stat-friends">${this.etherFriends()}</strong>`
+      : `<span>${t('dialup.speed', '').replace(/: ?$/, '')}:</span> <strong>${prov.speed}</strong>
+         <span>${t('dialup.etherLabel')}</span> <span id="dialup-stat-ether">${this.etherLine()}</span>`;
 
     const content = document.createElement('div');
     content.className = 'dialup-window';
@@ -324,7 +435,7 @@ class AppDialUp {
         <legend>${t('dialup.sessionStats')}</legend>
         <div style="display:grid; grid-template-columns:120px 1fr; gap:6px; margin-bottom:4px;">
           <span>${t('dialup.duration', '').replace(/: ?$/, '')}:</span> <strong id="dialup-stat-time">00:00:00</strong>
-          <span>${t('dialup.speed', '').replace(/: ?$/, '')}:</span> <strong>${prov.speed}</strong>
+          ${rows}
         </div>
         <hr style="border:none; border-top:1px solid #808080; border-bottom:1px solid #fff; margin:6px 0;">
         <div style="display:grid; grid-template-columns:120px 1fr; gap:6px;">
@@ -334,6 +445,7 @@ class AppDialUp {
       </fieldset>
 
       <div class="dialup-buttons">
+        ${prov.real ? `<button class="win-btn" id="btn-dialup-network" style="min-width:90px;">${t('app.network')}</button>` : ''}
         <button class="win-btn" id="btn-dialup-disconnect" style="min-width:90px; font-weight:bold;">${t('dialup.disconnect')}</button>
         <button class="win-btn" id="btn-dialup-close-status" style="min-width:75px;">${t('dialup.hide')}</button>
       </div>
@@ -343,11 +455,18 @@ class AppDialUp {
       id: this.statusWinId,
       title: t('dialup.connectTo', prov.name),
       icon: 'tray-dialup',
-      width: 340,
-      height: 255,
+      width: 360,
+      height: prov.real ? 300 : 280,
       resizable: false,
       content
     });
+
+    const btnNet = win.element.querySelector('#btn-dialup-network');
+    if (btnNet) {
+      btnNet.addEventListener('click', () => {
+        if (window.appExplorer) window.appExplorer.open(['Network Neighborhood']);
+      });
+    }
 
     const btnDisc = win.element.querySelector('#btn-dialup-disconnect');
     btnDisc.addEventListener('click', () => {
@@ -370,6 +489,8 @@ class AppDialUp {
     const timeEl = win.element.querySelector('#dialup-stat-time');
     const sentEl = win.element.querySelector('#dialup-stat-sent');
     const recvEl = win.element.querySelector('#dialup-stat-recv');
+    const etherEl = win.element.querySelector('#dialup-stat-ether');
+    const friendsEl = win.element.querySelector('#dialup-stat-friends');
 
     if (timeEl) {
       const sec = Math.floor((Date.now() - this.connectionStartTime) / 1000);
@@ -380,6 +501,8 @@ class AppDialUp {
     }
     if (sentEl) sentEl.textContent = this.bytesSent.toLocaleString();
     if (recvEl) recvEl.textContent = this.bytesRecv.toLocaleString();
+    if (etherEl) etherEl.textContent = this.etherLine();
+    if (friendsEl) friendsEl.textContent = String(this.etherFriends());
   }
 }
 

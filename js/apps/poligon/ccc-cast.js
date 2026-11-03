@@ -48,10 +48,12 @@
     }
   };
 
-  const FACES = ['calm', 'happy', 'grin', 'angry', 'scowl', 'shy', 'sad', 'surprised', 'sleep', 'wink', 'smug', 'pathos', 'awe', 'blank', 'sing', 'yawn', 'sly'];
+  const FACES = ['calm', 'happy', 'grin', 'angry', 'scowl', 'shy', 'sad', 'surprised', 'sleep', 'wink', 'smug', 'pathos', 'awe', 'blank', 'sing', 'yawn', 'sly', 'say', 'belt', 'shout', 'grit', 'beam', 'smile'];
+  const ANGRY_BROWS = ['angry', 'pathos', 'sly', 'shout', 'grit'];
 
   function drawFace(person, kind, mask, skinOver) {
     const P = PEOPLE[person];
+    if (P.paint) return P.paint(P, kind, mask, skinOver);
     const skin = css(skinOver === undefined ? P.skin : skinOver);
     return (ctx, w, h) => {
       ctx.clearRect(0, 0, w, h);
@@ -82,9 +84,19 @@
           [52, 204].forEach(x => [-10, 0, 10].forEach(d => { ctx.beginPath(); ctx.moveTo(x + d - 4, 168); ctx.lineTo(x + d + 4, 156); ctx.stroke(); }));
         }
       }
-      const shut = ['happy', 'sleep', 'yawn'].includes(kind);
+      const shut = ['happy', 'sleep', 'yawn', 'shout'].includes(kind);
       xs.forEach((x, i) => {
         const s = i ? 1 : -1;
+        if (kind === 'shout') {
+          ctx.strokeStyle = P.lash;
+          ctx.lineWidth = 6;
+          ctx.beginPath();
+          ctx.moveTo(x + s * 24, eyeY - 10);
+          ctx.lineTo(x - s * 16, eyeY + 1);
+          ctx.lineTo(x + s * 24, eyeY + 10);
+          ctx.stroke();
+          return;
+        }
         if (shut || (kind === 'wink' && i === 1)) {
           ctx.strokeStyle = P.lash;
           ctx.lineWidth = 6;
@@ -168,7 +180,7 @@
             ctx.fill();
           }
         }
-        const lid = kind === 'sly' ? 0.34 : kind === 'scowl' ? 0.38 : kind === 'smug' ? 0.45 : kind === 'shy' ? 0.3 : kind === 'angry' ? 0.22 : kind === 'blank' ? 0.25 : 0;
+        const lid = kind === 'sly' ? 0.34 : kind === 'scowl' ? 0.38 : kind === 'smug' ? 0.45 : kind === 'shy' ? 0.3 : kind === 'angry' ? 0.22 : kind === 'blank' ? 0.25 : kind === 'grit' ? 0.14 : 0;
         if (lid > 0) {
           ctx.fillStyle = skin;
           ctx.fillRect(-32, -34, 64, 8 + lid * 52);
@@ -213,7 +225,7 @@
       xs.forEach((x, i) => {
         const s = i ? 1 : -1;
         let inner = 0, outer = 0;
-        if (kind === 'angry' || kind === 'pathos' || kind === 'sly') { inner = 9; outer = -4; }
+        if (ANGRY_BROWS.includes(kind)) { inner = 9; outer = -4; }
         if (kind === 'scowl') { inner = 6; outer = 0; }
         if (kind === 'sad' || kind === 'shy') { inner = -7; outer = 4; }
         if (kind === 'surprised' || kind === 'awe') { inner = -8; outer = -8; }
@@ -243,8 +255,60 @@
           ctx.fill();
         }
       };
+      const teeth = (w, y, h) => {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(mx - w, y, w * 2, h);
+      };
       if (kind === 'sing') open(9, 11, true);
-      else if (kind === 'surprised') open(6, 8, false);
+      else if (kind === 'say') open(6, 5, false);
+      else if (kind === 'belt') {
+        open(12, 15, true);
+        teeth(8, my - 13, 4);
+      } else if (kind === 'shout') {
+        ctx.beginPath();
+        ctx.moveTo(mx - 17, my - 8);
+        ctx.quadraticCurveTo(mx, my - 12, mx + 17, my - 8);
+        ctx.quadraticCurveTo(mx + 12, my + 24, mx, my + 25);
+        ctx.quadraticCurveTo(mx - 12, my + 24, mx - 17, my - 8);
+        ctx.fill();
+        teeth(12, my - 10, 5);
+        ctx.fillStyle = P.lip;
+        ctx.beginPath();
+        ctx.ellipse(mx, my + 17, 9, 5, 0, 0, PI * 2);
+        ctx.fill();
+      } else if (kind === 'grit') {
+        ctx.fillStyle = '#fbfbfb';
+        ctx.beginPath();
+        ctx.moveTo(mx - 15, my - 3);
+        ctx.quadraticCurveTo(mx, my - 6, mx + 15, my - 3);
+        ctx.lineTo(mx + 13, my + 7);
+        ctx.quadraticCurveTo(mx, my + 10, mx - 13, my + 7);
+        ctx.closePath();
+        ctx.fill();
+        ctx.lineWidth = 2.4;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(mx - 14, my + 2);
+        ctx.lineTo(mx + 14, my + 2);
+        ctx.moveTo(mx, my - 4);
+        ctx.lineTo(mx, my + 9);
+        ctx.stroke();
+      } else if (kind === 'beam') {
+        ctx.beginPath();
+        ctx.moveTo(mx - 15, my - 4);
+        ctx.quadraticCurveTo(mx, my - 1, mx + 15, my - 4);
+        ctx.quadraticCurveTo(mx, my + 20, mx - 15, my - 4);
+        ctx.fill();
+        ctx.fillStyle = P.lip;
+        ctx.beginPath();
+        ctx.ellipse(mx, my + 8, 7, 4, 0, 0, PI * 2);
+        ctx.fill();
+      } else if (kind === 'smile') {
+        ctx.beginPath();
+        ctx.moveTo(mx - 12, my - 2);
+        ctx.quadraticCurveTo(mx, my + 8, mx + 12, my - 2);
+        ctx.stroke();
+      } else if (kind === 'surprised') open(6, 8, false);
       else if (kind === 'yawn') open(11, 15, true);
       else if (kind === 'pathos' || kind === 'awe') {
         ctx.beginPath();
@@ -489,6 +553,7 @@
     } else if (style === 'witch') {
       backHair(back, H, 0.5, 0.26, false, 0.1);
     }
+    if (sh.extra) sh.extra(head, back, H);
     return { head, back };
   }
 
@@ -565,7 +630,9 @@
     const K = spec.skirt;
     if (!K) return null;
     const b = new Builder();
-    if (K.type === 'pleat') {
+    if (K.build) {
+      K.build(b, spec);
+    } else if (K.type === 'pleat') {
       const n = 18;
       for (let i = 0; i < n; i++) {
         const a0 = (i / n) * PI * 2, a1 = ((i + 1) / n) * PI * 2;
@@ -861,7 +928,10 @@
     return b;
   }
 
+  const PRINTS = {};
+
   function printTex(ctx, w, h, kind) {
+    if (PRINTS[kind]) return PRINTS[kind](ctx, w, h);
     ctx.fillStyle = kind === 'lantern' ? '#2f9a4a' : '#f2f6fd';
     ctx.fillRect(0, 0, w, h);
     if (kind === 'lantern') {
@@ -898,7 +968,9 @@
   function gearMesh(kinds) {
     const b = new Builder();
     kinds.forEach(kind => {
-      if (kind === 'magnitude') {
+      if (typeof kind === 'function') {
+        kind(b);
+      } else if (kind === 'magnitude') {
         b.ellipsoid(R * 1.12, R * 1.16, R * 1.14, 14, 9, 0xb02028);
         headPatch(b, R * HX * 1.16, R * HY * 1.08, R * HZ * 1.2, -0.62, 0.62, -0.2, 0.0, 8, 1, [0.06, 0.04, 0.06, 0.2]);
         b.at(0, -R * 0.62, R * 0.62, (h) => h.box(R * 1.2, R * 0.4, R * 0.5, 0x8a1820));
@@ -978,9 +1050,13 @@
     return b;
   }
 
+  const PROPS = {};
+
   function propMesh(id) {
     const b = new Builder();
-    if (id === 'badge') {
+    if (PROPS[id]) {
+      PROPS[id](b);
+    } else if (id === 'badge') {
       b.box(0.06, 0.085, 0.004, 0xf4f4f0);
       b.at(0, 0.02, 0.003, (h) => h.box(0.05, 0.03, 0.002, 0xc02040));
       b.at(-0.012, -0.015, 0.003, (h) => h.box(0.02, 0.025, 0.002, 0x8aa0c0));
@@ -1103,6 +1179,7 @@
     const armR = armMeshes(spec);
     const armL = spec.armL ? armMeshes(Object.assign({}, spec, { arm: Object.assign({}, spec.arm, spec.armL) })) : armR;
     const legs = legMeshes(spec);
+    const legsL = spec.legL ? legMeshes(Object.assign({}, spec, { leg: Object.assign({}, spec.leg, spec.legL) })) : null;
     const hair = spec.hair ? buildHair(spec.hair) : null;
     const set = {
       spec,
@@ -1111,6 +1188,7 @@
       skirt: mk(skirtMesh(spec)),
       upperR: mk(armR.up), foreR: mk(armR.fo), upperL: mk(armL.up), foreL: mk(armL.fo),
       thigh: mk(legs.th), shin: mk(legs.sh),
+      thighL: legsL ? mk(legsL.th) : null, shinL: legsL ? mk(legsL.sh) : null,
       hair: hair ? mk(hair.head) : null,
       back: hair && hair.back.data.length ? mk(hair.back) : null,
       glasses: spec.glasses ? mk(glassesMesh(spec.glasses)) : null,
@@ -1273,8 +1351,8 @@
     ['L', 'R'].forEach(s => {
       D(F['upper' + s], m['upper' + s], pass);
       D(F['fore' + s], m['fore' + s], pass);
-      D(F.thigh, m['thigh' + s], pass);
-      D(F.shin, m['shin' + s], pass);
+      D(s === 'L' && F.thighL ? F.thighL : F.thigh, m['thigh' + s], pass);
+      D(s === 'L' && F.shinL ? F.shinL : F.shin, m['shin' + s], pass);
     });
     const hm = M4.mul(m.head, M4.translate(0, -0.005, 0.006));
     D(X.head, hm, skinPass);
@@ -1308,5 +1386,9 @@
     if (F.bubble && !o.flat) D(F.bubble, hm, { blend: true, alpha: 0.28 });
   }
 
-  window.P3DCccCast = { HER, HIM, GYN, R, CROWD_COUNT: CROWD.length, drawPov, viewFrame, FORMS, FACES, PEOPLE, solve, solver, makeCast, drawActor, isHeroine: (form) => form === 'gynoid' || !!FORMS[form] };
+  window.P3DCccCast = {
+    HER, HIM, GYN, R, NECK_TOP, CROWD_COUNT: CROWD.length, drawPov, viewFrame, FORMS, FACES, PEOPLE, HAIR, SHELLS, PROPS, PRINTS, solve, solver, makeCast, drawActor,
+    headPoint, headNormal, headPatch, sideLocks, backHair, band,
+    isHeroine: (form) => form === 'gynoid' || !!FORMS[form]
+  };
 })();

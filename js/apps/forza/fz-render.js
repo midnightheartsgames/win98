@@ -1100,10 +1100,10 @@ void main() {
       return tx;
     }
 
-    wheelMesh(def, tread, kind) {
-      const key = 'wheel|' + def.id + '|' + tread + '|' + kind;
+    wheelMesh(def, tread, kind, rear) {
+      const bt = F.Blueprints.of(def), split = !!(rear && bt && Array.isArray(bt.tyre)), key = 'wheel|' + def.id + '|' + tread + '|' + kind + (split ? '|r' : '');
       let m = this.meshes.get(key);
-      if (!m) { m = this.upload(F.Models.buildWheel(def, { tread, kind })); this.meshes.set(key, m); }
+      if (!m) { m = this.upload(F.Models.buildWheel(def, { tread, kind, rear: split })); this.meshes.set(key, m); }
       return m;
     }
 
@@ -1636,7 +1636,7 @@ void main() {
         const kind = lod ? 'far' : Math.abs(rate) > BLUR_RATE ? 'blur' : 'sharp';
         const drop = (car.susp ? car.susp[i] : 0) + (dm && dm.flat[i] && (!car.susp || !dm.mechOn) ? 0.07 : 0);
         M4.mul(model, wheelPose(tmp, wl, steer, left, spin, drop), wm);
-        this.drawMesh(this.wheelMesh(def, tread, kind), wm);
+        this.drawMesh(this.wheelMesh(def, tread, kind, !wl.front), wm);
         if (kind === 'sharp' && main && d < BRAKE_DIST) {
           M4.mul(model, wheelPose(tmp, wl, steer, left, 0, drop), wm);
           this.drawMesh(this.brakeMesh(def, red), wm);
@@ -2149,17 +2149,17 @@ void main() {
       const key = 'lcd|' + id;
       let m = this.meshes.get(key);
       if (!m) {
-        const b = new F.Batch(128), f = cp.face, white = F.col('#ffffff');
+        const b = new F.Batch(128), f = cp.face, white = F.col('#ffffff'), H = F.Cluster.lcdH(lay);
         const P = (px, py) => [0, 1, 2].map(i => f.c[i] + f.r[i] * (px / 256 - 1) * f.hw + f.u[i] * (1 - py / 128) * f.hh + f.n[i] * 0.0025);
         const put = (x, y, w, h, r) => {
-          const u0 = r[0] / 256, v0 = r[1] / 96, u1 = (r[0] + r[2]) / 256, v1 = (r[1] + r[3]) / 96;
+          const u0 = r[0] / 256, v0 = r[1] / H, u1 = (r[0] + r[2]) / 256, v1 = (r[1] + r[3]) / H;
           b.quad(P(x - w / 2, y + h / 2), P(x + w / 2, y + h / 2), P(x + w / 2, y - h / 2), P(x - w / 2, y - h / 2), white, 0, [u0, v1, u1, v1, u1, v0, u0, v0], f.n);
         };
         for (const l of lay.lcd) put(l.x, l.y, l.w, l.h, F.Cluster.SLOTS[l.k]);
         lay.lamps.forEach((l, i) => put(l.x, l.y, 18, 18, F.Cluster.LAMP_CELL(i)));
         if (cp.radio) {
           const r = F.Cluster.SLOTS.radio, q = cp.radio;
-          const u0 = r[0] / 256, v0 = r[1] / 96, u1 = (r[0] + r[2]) / 256, v1 = (r[1] + r[3]) / 96;
+          const u0 = r[0] / 256, v0 = r[1] / H, u1 = (r[0] + r[2]) / 256, v1 = (r[1] + r[3]) / H;
           b.quad(q[0], q[1], q[2], q[3], white, 0, [u0, v1, u1, v1, u1, v0, u0, v0], [0, 0, 1]);
         }
         m = this.upload(b);
@@ -2270,7 +2270,7 @@ void main() {
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       const car = F.Cars.get(id);
-      const L = car.sh.len;
+      const L = Math.max(car.sh.len, 3.7);
       const cam = { x: -L * 0.95, y: 1.35, z: -L * 0.62, tx: 0, ty: 0.45, tz: 0, fov: 30 };
       const C = this.camera(cam, w, h);
       const env = studioEnv();
@@ -2342,14 +2342,14 @@ void main() {
   }
 
   function dialPose(out, f, d, deg) {
-    const len = d.r * 0.86 * 2 * f.hw / 512;
+    const len = d.r * ((d.len || 0.86) - (d.from || 0)) * 2 * f.hw / 512, wide = d.from ? d.r * 0.2 * 2 * f.hw / 512 : len, off = d.r * (d.from || 0) * 2 * f.hw / 512;
     const px = (d.x / 256 - 1) * f.hw, py = (1 - d.y / 128) * f.hh;
     const a = (deg - 90) * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
     for (let i = 0; i < 3; i++) {
       out[i] = (f.r[i] * c - f.u[i] * s) * len;
-      out[4 + i] = (f.r[i] * s + f.u[i] * c) * len;
-      out[8 + i] = f.n[i] * len;
-      out[12 + i] = f.c[i] + f.r[i] * px + f.u[i] * py + f.n[i] * 0.003;
+      out[4 + i] = (f.r[i] * s + f.u[i] * c) * wide;
+      out[8 + i] = f.n[i] * wide;
+      out[12 + i] = f.c[i] + f.r[i] * px + f.u[i] * py + f.n[i] * 0.003 + (f.r[i] * c - f.u[i] * s) * off;
     }
     out[3] = 0; out[7] = 0; out[11] = 0; out[15] = 1;
     return out;

@@ -92,6 +92,7 @@
 
     destroy() {
       this.running = false;
+      if (this.netDetach) this.netDetach();
       if (this.game && this.mode !== 'title') this.writeSave('auto');
       for (const [o, t, f] of this.listeners) o.removeEventListener(t, f);
       this.audio.destroy();
@@ -125,6 +126,7 @@
       const doc = typeof document !== 'undefined' && document.addEventListener ? document : this.root;
       on(doc, 'mousemove', e => { this.mouse = Object.assign(this.pointer(e), { t: this.t }); if (this.drag) this.drag.move(this.mouse); });
       on(doc, 'mouseup', e => { const d = this.drag; this.drag = null; if (d && d.drop) d.drop(this.pointer(e)); });
+      on(doc, 'paste', e => this.paste(e));
       on(this.root, 'mousedown', () => { this.audio.init(); this.audio.resume(); this.root.focus({ preventScroll: true }); });
       on(this.canvas, 'contextmenu', e => e.preventDefault());
     }
@@ -145,6 +147,7 @@
       this.audio.init(); this.audio.resume();
       const code = e.code;
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Tab', 'Backspace', 'F7', 'F8'].includes(code)) e.preventDefault();
+      if ((code === 'F7' || code === 'F8') && (this.netSession || (this.game && this.game.guest))) { this.sfx('deny'); return; }
       if (code === 'F7') { if (!e.repeat) this.debugJade(); return; }
       if (code === 'F8') { if (!e.repeat) this.toggleDebug(); return; }
       if (code === 'ShiftLeft' || code === 'ShiftRight') this.walk = true;
@@ -152,6 +155,13 @@
       if (!this.held.includes(code)) this.held.push(code);
       if (e.repeat && !['up', 'down', 'left', 'right'].includes(k)) return;
       this.handleKey(k, code, e);
+    }
+
+    paste(e) {
+      const s = this.top();
+      if (!this.active() || !s || !s.takeText || !e.clipboardData) return;
+      e.preventDefault();
+      s.takeText(e.clipboardData.getData('text'));
     }
 
     pointer(e) {
@@ -291,6 +301,7 @@
     }
 
     update(dt) {
+      if (this.netTick) this.netTick(dt);
       const debugAt = this.screens.findIndex(s => s.debug || s.pause);
       this.screens.forEach((s, i) => { if (s.tick && i >= debugAt) s.tick(dt); });
       if (this.mode === 'credits') this.creditsT = (this.creditsT || 0) + dt;
@@ -308,6 +319,7 @@
       g.update(dt, blocked ? {} : { dir, walk: this.walk });
       this.drainGameEvents();
       this.syncPending(dt);
+      if (g.guest) return;
       if (this.mode === 'field' && g.map) this.updateMinimap(dt);
       if (this.mode === 'field') this.updateChat(dt);
       if (this.mode === 'field' && this.passTick) this.passTick(dt);
@@ -464,6 +476,7 @@
       });
       if (this.game && this.game.skipping && this.mode === 'field') this.drawSkipping(c);
       if (this.mode === 'field') this.drawChatNotice(c);
+      if (this.mode === 'field' && this.drawNetNotice) this.drawNetNotice(c);
       if (this.mode !== 'battle') this.drawToasts(c);
       c.restore();
     }
@@ -723,6 +736,7 @@
     }
 
     glowOf(r) {
+      if (r.lab) return null;
       if (r.glow) return r.glow;
       const n = r.kind === 'char' ? H.charGlow(r.res, r.rar) : 0;
       return n ? { cur: 'starlight', n } : null;
@@ -731,7 +745,7 @@
     resultTag(x, y, r, fresh) {
       const lines = r.kind === 'char'
         ? (r.res === 'new' ? fresh : r.res === 'eid' ? [['Дубликат', C.sub], ['Эйдолон +1', C.gold]] : r.res === 'max' ? [['Дубликат', C.sub], ['Все эйдолоны открыты', C.gold]] : [['Дубликат', C.sub], ['+3 000 кредитов', C.gold]])
-        : r.sup > 1 ? [['Дубликат', C.sub], ['Наложение S' + r.sup, C.gold]] : [['Световой конус', C.sub], ['добавлен в инвентарь', C.cream]];
+        : r.ghost ? [['Статист', C.sub], ['в сохранение не идёт', C.cream]] : r.sup > 1 ? [['Дубликат', C.sub], ['Наложение S' + r.sup, C.gold]] : [['Световой конус', C.sub], ['добавлен в инвентарь', C.cream]];
       const gl = this.glowOf(r);
       this.win(x, y, 182, gl ? 68 : 50, { alpha: 0.9 });
       lines.forEach(([s, col], i) => this.text(s, x + 14, y + 10 + i * 16, { size: i ? 11 : 12, bold: !i, col }));
@@ -834,7 +848,7 @@
         const px = p.fx * TS - cx, py = p.fy * TS - cy;
         if (g.state.pendingTechs.length) { c.fillStyle = 'rgba(120,200,255,' + (0.25 + 0.15 * Math.sin(this.t * 6)) + ')'; c.beginPath(); c.ellipse(px + 16, py + 26, 18, 7, 0, 0, Math.PI * 2); c.fill(); }
         if (this.drawCarry) this.drawCarry(c, px, py, p.dir, true);
-        G.drawSprite(c, G.lookOf(g.kitOf(lead), g), p.dir, frame, px, py);
+        G.drawSprite(c, g.guest ? g.guest.look : G.lookOf(g.kitOf(lead), g), p.dir, frame, px, py);
         if (this.drawCarry) this.drawCarry(c, px, py, p.dir, false);
         if (g.attackAnim > 0) {
           const [dx, dy] = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[p.dir];
@@ -844,6 +858,7 @@
       } });
       const pet = this.drawPetField && g.pet;
       if (pet) draws.push({ y: pet.fy + 0.005, fn: () => this.drawPetField(c, pet, pet.fx * TS - cx, pet.fy * TS - cy) });
+      if (this.visitDraws) this.visitDraws(c, draws, cx, cy);
       draws.sort((a, b) => a.y - b.y);
       for (const d of draws) d.fn();
       if (pet) this.drawPetSay(c, pet, pet.fx * TS - cx, pet.fy * TS - cy);
@@ -1004,21 +1019,24 @@
       lines.forEach((l, i) => this.text(l, 14, 48 + i * 13, { size: 11, col: '#ffe8b0' }));
     }
 
+    drawMapBanner(c) {
+      if (!this.banner) return;
+      const a = Math.min(1, this.banner.t * 1.5), parts = this.banner.text.split(': ');
+      c.globalAlpha = a;
+      const main = parts.pop(), region = parts.join(': ');
+      const w = Math.max(240, this.measure(main, 20, true, true) + 80);
+      c.fillStyle = 'rgba(4,6,20,0.72)'; c.fillRect(W / 2 - w / 2, 58, w, 50);
+      c.fillStyle = C.brass; c.fillRect(W / 2 - w / 2, 58, w, 1); c.fillRect(W / 2 - w / 2, 107, w, 1);
+      this.diamond(W / 2 - w / 2 + 12, 83, 4, C.brassHi); this.diamond(W / 2 + w / 2 - 12, 83, 4, C.brassHi);
+      if (region) this.text(region, W / 2, 63, { align: 'center', size: 10, col: C.sub });
+      this.text(main, W / 2, region ? 76 : 70, { align: 'center', size: 20, bold: true, serif: true, col: C.gold });
+      c.globalAlpha = 1;
+    }
+
     drawHud(c) {
       const g = this.game, s = g.state;
-      if (this.banner) {
-        const a = Math.min(1, this.banner.t * 1.5), parts = this.banner.text.split(': ');
-        c.globalAlpha = a;
-        const main = parts.pop(), region = parts.join(': ');
-        const w = Math.max(240, this.measure(main, 20, true, true) + 80);
-        c.fillStyle = 'rgba(4,6,20,0.72)'; c.fillRect(W / 2 - w / 2, 58, w, 50);
-        c.fillStyle = C.brass; c.fillRect(W / 2 - w / 2, 58, w, 1); c.fillRect(W / 2 - w / 2, 107, w, 1);
-        this.diamond(W / 2 - w / 2 + 12, 83, 4, C.brassHi); this.diamond(W / 2 + w / 2 - 12, 83, 4, C.brassHi);
-        if (region) this.text(region, W / 2, 63, { align: 'center', size: 10, col: C.sub });
-        this.text(main, W / 2, region ? 76 : 70, { align: 'center', size: 20, bold: true, serif: true, col: C.gold });
-        c.globalAlpha = 1;
-      }
-      if (s.su) this.drawSuHudTop(c);
+      this.drawMapBanner(c);
+      if (s.su) this.drawNetChip(c, 10 + this.drawSuHudTop(c), 6);
       else {
         const place = g.map.def.name.split(': ').pop();
         const pw = this.measure(place, 11, true) + 34;
@@ -1026,6 +1044,7 @@
         c.fillStyle = C.brass; c.fillRect(6, 25, pw, 1);
         G.menuIcon(c, 'nav', 9, 8, 16, C.brassHi);
         this.text(place, 28, 10, { size: 11, bold: true, col: C.cream });
+        this.drawNetChip(c, 10 + pw, 6);
         this.drawHudMission(c);
       }
       const step = Math.max(0, this.t - (this.hudEnT == null ? this.t : this.hudEnT));
@@ -1060,11 +1079,13 @@
         const pt = !e && g.petFront && g.petFront();
         if (e || pt) {
           const label = pt ? 'Погладить: ' + H.PETS[pt.id].name : (e.def && e.def.hint) || { npc: 'Говорить', prop: 'Осмотреть', chest: g.state.opened[e.key] ? 'Пусто' : 'Открыть', anchor: 'Якорь пространства', lever: 'Рубильник', destr: 'Разбить (F)', gate: 'Переборка', su_frame: 'Событие', su_heal: 'Капсула восстановления', su_tp: 'Очко техники' }[e.kind] || '';
+          if (label) {
           const w = this.measure(label, 12, true) + 70;
           c.fillStyle = 'rgba(4,6,20,0.82)'; c.fillRect(W / 2 - w / 2, HGT - 86, w, 22);
           c.strokeStyle = C.brass; c.strokeRect(W / 2 - w / 2 + 0.5, HGT - 85.5, w - 1, 21);
           const kw = this.keycap(W / 2 - w / 2 + 8, HGT - 81, 'Пробел');
           this.text(label, W / 2 - w / 2 + 14 + kw, HGT - 82, { size: 12, bold: true });
+          }
         }
       }
     }
@@ -1394,7 +1415,7 @@
         { label: 'Сцены навыков облика', k: 'skinCine', presets: H.Ults ? H.Ults.MODES : [{ id: 'off', tag: 'Выкл.' }], cur: () => ui.options.skinCine || 'first', set: setCine('skinCine'), fmt: () => '' },
         { label: 'Скорость текста', k: 'textSpeed', step: 1, max: 5, min: 1, fmt: v => '×' + v },
         { label: 'Разрешение', k: 'res', presets: RES, cur: () => ui.resPreset().id, set: id => setRes(id), fmt: () => ui.canvas.width + '×' + ui.canvas.height }
-      ].concat(ui.game && ui.game.coneSupMode ? [{ label: 'Наложение конусов', k: 'coneSup', presets: [{ id: 'auto', tag: 'Авто' }, { id: 'manual', tag: 'Вручную' }], cur: () => ui.game.coneSupMode(), set: id => { if (ui.game.coneSupMode() !== id) { ui.game.setConeSup(id); ui.sfx('select'); } }, fmt: () => '' }] : []);
+      ].concat(ui.game && ui.game.coneSupMode ? [{ label: 'Наложение конусов', k: 'coneSup', presets: [{ id: 'auto', tag: 'Авто' }, { id: 'manual', tag: 'Вручную' }], cur: () => ui.game.coneSupMode(), set: id => { if (ui.game.coneSupMode() !== id) { ui.game.setConeSup(id); ui.sfx('select'); } }, fmt: () => '' }] : []).concat(globalThis.Net98 ? [{ label: 'Эфирная связь', k: 'net', open: () => ui.openNetLink(), fmt: () => '' }] : []);
       const setCine = k => id => {
         if (ui.options[k] === id) return;
         ui.options[k] = id;
@@ -1429,8 +1450,9 @@
             const yy = y + 36 + i * 34, on = i === this.sel, v = ui.options[r.k];
             if (on) { c.fillStyle = 'rgba(242,220,154,0.15)'; c.fillRect(x + 60, yy - 3, 324, 30); ui.cursor(x + 62, yy + 6); }
             ui.text(r.label, x + 76, yy, { bold: on, col: on ? C.gold : C.cream });
-            ui.hit(x + 60, yy - 3, 324, 30, () => { this.sel = i; });
+            ui.hit(x + 60, yy - 3, 324, 30, () => { this.sel = i; if (r.open) r.open(); });
             if (r.presets) presetStrip(r, x + 76, yy + 14, r.fmt(v) ? 220 : 300, on, id => { this.sel = i; r.set(id); });
+            else if (r.open) ui.text(ui.netStateText(), x + 76, yy + 13, { size: 10, col: C.sub });
             else ui.rail(x + 76, yy + 20, 220, (v - r.min) / (r.max - r.min));
             ui.text(r.fmt(v), x + 376, yy + 12, { align: 'right', size: 11, col: C.sub });
           });
@@ -1440,6 +1462,11 @@
           const r = rows();
           if (ui.listNav(this, k, r.length)) return;
           const it = r[this.sel];
+          if (it.open) {
+            if (k === 'ok') it.open();
+            else if (k === 'back') ui.pop();
+            return;
+          }
           if ((k === 'left' || k === 'right') && it.presets) {
             const i = it.presets.findIndex(p => p.id === it.cur()) + (k === 'left' ? -1 : 1);
             if (it.presets[i]) it.set(it.presets[i].id);
@@ -1470,7 +1497,7 @@
     drawCredits(c) {
       G.drawCG(c, 'express', W, HGT, this.t);
       c.fillStyle = 'rgba(0,0,0,0.55)'; c.fillRect(0, 0, W, HGT);
-      const lines = [...H.BRAND.credits, 'Контакт, Слияния и Слухи — Persona 2', 'Тема главного меню — HOYO-MiX (MIDI-переложение)', 'Боевые темы — HOYO-MiX (MIDI-переложения)', '', 'Программирование, графика, музыка:', H.BRAND.makers, '', 'Звёздный экспресс: Химико, Вельт, Март 7, Дань Хэн, Пом-Пом', 'Белобог: Броня, Зеле, Гепард, Сервал, Наташа, Хук, Сампо', '', 'Спасибо за игру!', '', 'Следующая остановка — Сяньчжоу «Лофу»...'];
+      const lines = [...H.BRAND.credits, 'Контакт, Слияния и Слухи — Persona 2', 'Тема главного меню — HOYO-MiX (MIDI-переложение)', 'Боевые темы — HOYO-MiX (MIDI-переложения)', '', 'Программирование, графика, музыка:', H.BRAND.makers, '', 'Звёздный экспресс: Химико, Вельт, Март 7, Дань Хэн, Пом-Пом', 'Белобог: Броня, Зеле, Гепард, Сервал, Наташа, Хук, Сампо', '', 'Спасибо за игру!', '', 'Следующая остановка — Лофу Сяньчжоу...'];
       const y0 = HGT - this.creditsT * 30;
       lines.forEach((l, i) => this.text(l, W / 2, y0 + i * 26, { align: 'center', size: i === 0 ? 22 : 13, bold: i === 0, serif: i === 0, col: i === 0 ? C.gold : C.cream }));
       if (y0 + lines.length * 26 < 0) this.endCredits();

@@ -73,8 +73,9 @@
 
     profile() {
       const s = this.state;
-      if (!s.profile) s.profile = { uid: null, sign: '', bday: null, avatar: null, stage: null, show: null, comp: null, log: [] };
+      if (!s.profile) s.profile = { sign: '', bday: null, avatar: null, stage: null, show: null, comp: null, log: [] };
       const p = s.profile;
+      delete p.uid;
       if (!p.logFilled) {
         p.logFilled = true;
         const past = (s.warpLog || []).filter(e => e.kind === 'char' && e.res === 'new' && H.CHARS[e.id]).map(e => ({ at: e.at, kind: 'char', id: e.id }));
@@ -113,10 +114,11 @@
     profileMerits() {
       const s = this.state, f = s.flags, bosses = Object.keys(H.ENCOUNTERS).filter(id => H.ENCOUNTERS[id].boss);
       const worlds = H.SU.WORLDS, cleared = worlds.filter(w => f['su_clear_' + w.id]).length;
-      const cwOn = !!f.lab_cw, rank = cwOn ? this.cwRankBest() : null, hdOn = !!f.lab_hd, wave = hdOn ? this.hd().recs.reduce((a, r) => Math.max(a, r.wave || 0), 0) : 0;
+      const cwOn = !!f.lab_cw, rank = cwOn ? this.cwRankBest() : null, hdOn = !!f.lab_hd, wave = hdOn ? this.hd().recs.reduce((a, r) => Math.max(a, r.wave || 0), 0) : 0, pfOn = !!f.pf_open;
       const closed = 'Не открыто';
       return [
         { id: 'fh', label: 'Зал забвения', open: this.fhOpen(), value: this.fhOpen() ? this.fhTotal() + ' / ' + H.FH.STAGES.length * 3 + ' ★' : closed },
+        { id: 'pf', label: 'Чистый вымысел', open: pfOn, value: pfOn ? 'Звёзд в сезоне ' + this.pfStarTotal() + ' / 12' : closed },
         { id: 'su', label: 'Виртуальная вселенная', open: !!f.su_open, value: f.su_open ? 'Миров: ' + cleared + ' / ' + worlds.length : closed },
         { id: 'cw', label: 'Валютные войны', open: cwOn, value: cwOn ? H.CW.RANKS[rank.tier].name + ' ' + rank.sub : closed },
         { id: 'hd', label: 'Рубеж Экспресса', open: hdOn, value: hdOn ? (wave ? 'Волна ' + wave : 'Нет записей') : closed },
@@ -146,35 +148,35 @@
 
     profileStageHero() {
       const s = this.state, p = this.profile();
-      return p.stage && s.roster[p.stage] ? p.stage : s.party[0];
+      return p.stage && s.roster[p.stage] && !H.labOnly(p.stage) ? p.stage : s.party.find(k => !H.labOnly(k)) || 'trail';
     },
 
     profileAvatar() {
       const s = this.state, p = this.profile();
-      return p.avatar && s.roster[p.avatar] ? p.avatar : s.party[0];
+      return p.avatar && s.roster[p.avatar] && !H.labOnly(p.avatar) ? p.avatar : s.party.find(k => !H.labOnly(k)) || 'trail';
     },
 
     setProfileStage(key) {
-      if (!this.state.roster[key]) return false;
+      if (!this.state.roster[key] || H.labOnly(key)) return false;
       this.profile().stage = key;
       return true;
     },
 
     setProfileAvatar(key) {
-      if (!this.state.roster[key]) return false;
+      if (!this.state.roster[key] || H.labOnly(key)) return false;
       this.profile().avatar = key;
       return true;
     },
 
     profileSlots() {
-      const s = this.state, p = this.profile(), fit = (list, n) => Array.from({ length: n }, (_, i) => (list[i] && s.roster[list[i]] ? list[i] : null));
+      const s = this.state, p = this.profile(), fit = (list, n) => Array.from({ length: n }, (_, i) => (list[i] && s.roster[list[i]] && !H.labOnly(list[i]) ? list[i] : null));
       if (p.show) return { show: fit(p.show, 3), comp: fit(p.comp || [], 5) };
-      const order = Object.keys(H.CHARS), rest = Object.keys(s.roster).filter(k => !s.party.includes(k)).sort((a, b) => order.indexOf(a) - order.indexOf(b)), all = [...s.party, ...rest];
+      const order = Object.keys(H.CHARS), rest = Object.keys(s.roster).filter(k => !s.party.includes(k)).sort((a, b) => order.indexOf(a) - order.indexOf(b)), all = [...s.party, ...rest].filter(k => !H.labOnly(k));
       return { show: fit(all.slice(0, 3), 3), comp: fit(all.slice(3, 8), 5) };
     },
 
     setProfileSlot(kind, i, key) {
-      if (key && !this.state.roster[key]) return false;
+      if (key && (!this.state.roster[key] || H.labOnly(key))) return false;
       const p = this.profile(), slots = this.profileSlots(), held = slots[kind][i];
       if (key) for (const other of ['show', 'comp']) { const at = slots[other].indexOf(key); if (at >= 0) slots[other][at] = held; }
       slots[kind][i] = key || null;

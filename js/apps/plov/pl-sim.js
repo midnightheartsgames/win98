@@ -676,7 +676,7 @@
       const info = this.targetInfo(id);
       if (!info) return false;
       const h = this.hero;
-      if (h.queue.length >= TUNE.queueMax) { this.nope('Хаято помнит только пять дел'); return false; }
+      if (h.queue.length >= TUNE.queueMax) { this.nope('Ошпаз помнит только пять дел'); return false; }
       h.queue.push({ id });
       this.emit({ t: 'queued', id });
       return true;

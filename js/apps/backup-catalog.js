@@ -33,6 +33,7 @@
     { id: 'outlook', group: 'net', ru: 'Outlook Express: почта', en: 'Outlook Express mail', icon: 'outlook', keys: ['win98_outlook_*'] },
     { id: 'icq', group: 'net', ru: 'ICQ: профиль и контакты', en: 'ICQ profile and contacts', icon: 'icq-online', keys: ['win98_icq_*'] },
     { id: 'netscape', group: 'net', ru: 'Netscape: закладки и журнал', en: 'Netscape bookmarks and history', icon: 'netscape', keys: ['win98_netscape_*'] },
+    { id: 'net98_account', group: 'net', ru: 'Эфирная связь: аккаунт и UID', en: 'Ether Link: account and UID', icon: 'internet-explorer', keys: ['net98.*'] },
     { id: 'sites', group: 'net', ru: 'Сайты: гостевые книги, форумы, опросы', en: 'Web sites: guestbooks, forums, polls', icon: 'ie-page', keys: [...SITE_PREFIXES, 'blizzard98_*', 'poligon3d', 'youvid98'] },
     { id: 'clippy', group: 'apps', ru: 'Скрепыш: настройки, переписка, гардероб', en: 'Clippy: options, letters, wardrobe', icon: 'clippy', keys: ['win98_clippy_*'] },
     { id: 'neko', group: 'apps', ru: 'Neko', en: 'Neko', icon: 'neko', keys: ['win98_neko_*'] },

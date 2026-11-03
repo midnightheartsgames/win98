@@ -287,6 +287,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .explorer-item-icon svg {
@@ -467,6 +468,18 @@
   height: 16px;
   margin-bottom: 0;
   flex-shrink: 0;
+}
+
+.explorer-file-view .explorer-item-icon .shortcut-overlay svg {
+  width: 11px;
+  height: 11px;
+}
+
+.explorer-file-view.view-small .explorer-item-icon .shortcut-overlay svg,
+.explorer-file-view.view-list .explorer-item-icon .shortcut-overlay svg,
+.explorer-file-view.view-details .explorer-item-icon .shortcut-overlay svg {
+  width: 8px;
+  height: 8px;
 }
 
 .explorer-file-view.view-small .explorer-item-label,

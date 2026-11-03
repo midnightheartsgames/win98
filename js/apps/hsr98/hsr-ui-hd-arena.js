@@ -2,7 +2,7 @@
   'use strict';
   const G = H.Gfx, HD = H.HD, TUN = HD.TUN;
   const { W, HGT, C } = H.UI_CONST;
-  const TS = 32, FY = 20, FH = 372, PY = 392;
+  const TS = 32, FY = 20, FH = 372, PY = 392, MARK_S = 2.5, FEED_S = 5;
   const MM = { x: W - 126, y: FY + 4, w: 120, h: 76 };
   const SHOP = { x: W - 300, w: 300, drop: 10 };
   const WARN = '#ff4a3a';
@@ -17,6 +17,7 @@
   const foeData = id => FOE_DATA[id] || (FOE_DATA[id] = Object.assign({ id }, H.ENEMIES[id]));
   const rgba = (elem, a) => 'rgba(' + (G.HD_ELEM_RGB[elem] || G.HD_ELEM_RGB.phys) + ',' + a.toFixed(3) + ')';
   const SFX_GAP = 0.06;
+  const MINE_ONLY = new Set(['gold', 'level', 'deny', 'cast', 'herodie', 'respawn', 'buy', 'upgrade', 'sell', 'use', 'up', 'pick']);
   function skull(c, x, y, col) {
     c.fillStyle = col; c.fillRect(x - 2, y - 3, 5, 4); c.fillRect(x - 1, y + 1, 3, 1);
     c.fillStyle = '#05060e'; c.fillRect(x - 1, y - 2, 1, 1); c.fillRect(x + 1, y - 2, 1, 1);
@@ -111,24 +112,50 @@
       this.hints(hints || [['Q E', 'Вкладки'], ['↑↓', 'Листать'], ['C', 'Закрыть']], x + 12, y + hh - 18);
     },
 
-    openHdArena() {
-      const ui = this, g = this.game, A = g.hdArena();
-      A.onBreak = () => g.hdBreak(A);
-      A.onWave = () => g.hdSync(A);
+    openHdArena(net) {
+      const ui = this, g = this.game, A = net ? net.A : g.hdArena(), me = net ? net.seat : 0;
+      if (net) A.cmd = c => {
+        if (ui.netPaused()) {
+          if (c.t !== 'move') s.flashes.push({ kind: 'note', text: 'Партия на паузе', t: 1.2 });
+          return;
+        }
+        if (c.t === 'attack' || c.t === 'target') s.wantSel = { id: c.id, t: 0.8 };
+        const seq = lead.nextSeq();
+        if (net.send(Object.assign({ seq }, c))) lead.sent(seq, c, performance.now() / 1000);
+      };
+      else { A.onBreak = () => g.hdBreak(A); A.onWave = () => g.hdSync(A); }
       this.audio.music('battle');
-      const h = A.hero, M = A.M, L = G.mapLayer(M);
+      const h = A.heroes[me], M = A.M, L = G.mapLayer(M), lead = net ? new HD.HeroLead(A, h, () => globalThis.Net98.rtt) : null;
+      if (net) net.onAck = seq => lead.landed(seq);
       const s = this.push({
-        full: true, hd: true, arena: A, acc: 0, nums: [], flashes: [], says: [], banner: null, shop: null, move: '0,0', look: null, sfxAt: {}, sfxWin: [], flashT: 0, deadT: 0,
+        full: true, hd: true, hdRound: !!net, arena: A, net, me, lead, wantSel: null, echo: 0, slotLit: {}, acc: 0, nums: [], flashes: [], says: [], banner: null, shop: null, move: '0,0', look: null, sfxAt: {}, sfxWin: [], flashT: 0, deadT: 0, marks: [], feed: [], phrases: false, watch: null, signalAt: {},
         cam: { x: h.x - W / 2, y: h.y - FH / 2 },
         tick(dt) {
-          if (ui.top() !== this) return;
-          if (!ui.active()) { ui.openHdPause(this); return; }
+          if (net) {
+            if (!ui.screens.includes(this)) return;
+            if (net.A !== A) { ui.netRoute(); return; }
+          } else {
+            if (ui.top() !== this) return;
+            if (!ui.active()) { ui.openHdPause(this); return; }
+          }
           this.input();
           if (this.alarm) this.alarm.t -= dt;
-          this.acc += dt * (this.speed || 1);
-          let n = 0;
-          while (this.acc >= HD.DT && n < TUN.maxSteps * (this.speed || 1)) { A.step(); this.acc -= HD.DT; n++; this.drain(); if (A.over) break; }
-          if (n >= TUN.maxSteps * (this.speed || 1)) this.acc = Math.min(this.acc, HD.DT);
+          if (net) {
+            net.advance(dt, () => this.drain());
+            lead.frame(performance.now() / 1000, dt, !ui.netPaused() && !net.catching && globalThis.Net98.state === 'online', net.acc / HD.DT);
+            if (this.wantSel && (this.wantSel.t -= dt) <= 0) this.wantSel = null;
+            for (const sl of Object.keys(this.slotLit)) this.slotLit[sl] -= dt;
+            for (const x of this.marks) x.t -= dt;
+            this.marks = this.marks.filter(x => x.t > 0);
+            for (const x of this.feed) x.t -= dt;
+            this.feed = this.feed.filter(x => x.t > 0);
+            if (!h.dead) this.watch = null;
+          } else {
+            this.acc += dt * (this.speed || 1);
+            let n = 0;
+            while (this.acc >= HD.DT && n < TUN.maxSteps * (this.speed || 1)) { A.step(); this.acc -= HD.DT; n++; this.drain(); if (A.over) break; }
+            if (n >= TUN.maxSteps * (this.speed || 1)) this.acc = Math.min(this.acc, HD.DT);
+          }
           for (const x of this.nums) x.t -= dt;
           this.nums = this.nums.filter(x => x.t > 0);
           for (const x of this.flashes) x.t -= dt;
@@ -140,16 +167,20 @@
           if (this.flashT > 0) this.flashT -= dt;
           this.follow(dt);
           if (A.over) this.finish();
+          else if (ui.netStalled && ui.netStalled()) ui.netFinish(true, 'Партия прервана');
         },
         input() {
+          if (net && globalThis.Net98.state !== 'online') { this.move = null; return; }
+          if (net && ui.netPaused()) return;
           let dx = 0, dy = 0;
-          if (!this.shop) for (const code of ui.held) { const d = MOVE_KEYS[code]; if (d && !(this.card && (code === 'ArrowUp' || code === 'ArrowDown'))) { dx += d[0]; dy += d[1]; } }
+          if (!this.shop && ui.top() === this) for (const code of ui.held) { const d = MOVE_KEYS[code]; if (d && !(this.card && (code === 'ArrowUp' || code === 'ArrowDown'))) { dx += d[0]; dy += d[1]; } }
           dx = Math.sign(dx); dy = Math.sign(dy);
           const key = dx + ',' + dy;
           if (key !== this.move) { this.move = key; A.cmd({ t: 'move', dx, dy }); }
         },
         follow(dt) {
-          const t = this.look || { x: h.x + (this.shop ? SHOP.w / 2 : this.card ? -150 : 0), y: h.y };
+          const ally = this.watch != null ? A.heroes[this.watch] : null;
+          const t = this.look || ally || { x: (lead ? lead.x : h.x) + (this.shop ? SHOP.w / 2 : this.card ? -150 : 0), y: lead ? lead.y : h.y };
           const tx = Math.max(0, Math.min(M.w * TS - W, t.x - W / 2)), ty = Math.max(0, Math.min(M.h * TS - FH, t.y - FH / 2));
           const k = this.look ? 1 : Math.min(1, dt * 8);
           this.cam.x += (tx - this.cam.x) * k; this.cam.y += (ty - this.cam.y) * k;
@@ -163,6 +194,7 @@
         },
         drain() {
           for (const e of A.events) {
+            if (e.p != null && e.p !== me && (MINE_ONLY.has(e.t) || (e.t === 'msg' && e.x == null))) continue;
             switch (e.t) {
               case 'num': {
                 const col = e.kind === 'heal' ? '#86e39a' : e.kind === 'shield' ? '#80e0ff' : e.kind === 'dot' ? rgba(e.elem, 1) : e.ally ? '#ff8a8a' : e.crit ? '#ffe04a' : '#ffffff';
@@ -180,13 +212,14 @@
               case 'cleared': this.banner = { text: 'Волна ' + e.n + ' отбита', sub: e.clean ? 'Чистая линия: +10% золота' : 'Перерыв', t: 2.2 }; break;
               case 'break': this.sound('break'); this.flashes.push({ kind: 'text', x: e.x, y: e.y - 40, text: e.text, col: '#ffffff', t: 1 }); break;
               case 'level': this.banner = { text: 'Уровень ' + e.lvl, sub: h.pts ? 'Очко развития: Shift + Q, E, R или T' : '', t: 2 }; this.flashT = 0.5; this.sound('levelup'); break;
-              case 'deny': if (e.why) this.flashes.push({ kind: 'note', text: e.why, t: 1.6 }); this.sound('deny'); break;
+              case 'deny': if (e.slot && this.echo > 0) this.echo--; if (e.why) this.flashes.push({ kind: 'note', text: e.why, t: 1.6 }); this.sound('deny'); break;
               case 'msg': this.flashes.push({ kind: e.x != null ? 'text' : 'note', x: e.x, y: e.y, text: e.text, col: '#ffe0a0', t: 1.6 }); break;
               case 'warn': this.banner = { text: e.text, t: 2.6, red: true, small: true }; break;
-              case 'cast': this.sound(e.slot === 'r' ? 'ult' : 'swing'); break;
+              case 'cast': if (this.echo > 0) this.echo--; else this.sound(e.slot === 'r' ? 'ult' : 'swing'); break;
               case 'swing': this.flashes.push({ kind: 'swing', x: e.x, y: e.y, elem: e.elem || 'phys', t: 0.18 }); break;
               case 'fx': this.flashes.push(Object.assign({ t: e.kind === 'ring' ? 0.5 : 0.35, d: e.kind === 'ring' ? 0.5 : 0.35 }, e, { kind: 'fx', fx: e.kind })); break;
               case 'skill': this.flashes.push({ kind: 'text', x: e.x, y: e.y - 50, text: e.name, col: '#ffb0a0', t: 1.2 }); if (e.r) this.flashes.push({ kind: 'fx', fx: 'ring', x: e.x, y: e.y, r: e.r, elem: 'quant', t: 0.3, d: 0.3 }); break;
+              case 'vote': this.flashes.push({ kind: 'note', text: 'N: досрочно ' + e.n + '/' + e.of, t: 1.6 }); break;
               case 'herodie': this.sound('lose'); break;
               case 'respawn': this.sound('heal'); break;
               case 'buy': this.sound('confirm'); if (e.cost >= 1000) this.pomSay(POM.rich); break;
@@ -203,7 +236,41 @@
           A.events.length = 0;
           for (const x of this.nums) x.age += HD.DT;
         },
+        signal(m) {
+          if (m.op === 'mark') {
+            this.marks = this.marks.filter(x => x.p !== m.p);
+            this.marks.push({ p: m.p, x: m.x, y: m.y, id: m.id, t: MARK_S });
+            this.sound('glint');
+            return;
+          }
+          const text = ui.netPhrase(m.id), hero = A.heroes[m.p];
+          if (!text || !hero) return;
+          this.says = this.says.filter(x => x.uid !== hero.uid);
+          this.says.push({ uid: hero.uid, text, t: 3.2 });
+          if (m.p !== me) this.feed = this.feed.concat({ p: m.p, text, t: FEED_S }).slice(-3);
+          this.sound('msg_in');
+        },
+        signalReady(kind) {
+          if (performance.now() - (this.signalAt[kind] || -Infinity) < 1000) { ui.sfx('deny'); return false; }
+          this.signalAt[kind] = performance.now();
+          return true;
+        },
+        sayPhrase(id) {
+          this.phrases = false;
+          if (this.signalReady('say')) globalThis.Net98.send('say', { id });
+        },
+        markHere() {
+          const m = ui.mouse, fresh = !!m && ui.t - m.t <= TUN.aimFresh && m.y >= FY && m.y <= FY + FH, f = fresh ? this.foeAt(m) : h.sel != null ? A.byId(h.sel) : null, at = f || (fresh ? this.world(m) : lead || h);
+          if (!this.signalReady('mark')) return;
+          globalThis.Net98.send('mark', Object.assign({ x: Math.round(at.x), y: Math.round(at.y) }, f ? { id: f.uid } : {}));
+        },
+        watchAlly(p) {
+          if (!h.dead) { ui.sfx('deny'); return; }
+          this.watch = this.watch === p ? null : p;
+          ui.sfx('select');
+        },
         finish() {
+          if (net) { ui.netFinish(false); return; }
           const sum = g.hdFinish(A);
           ui.screens.splice(ui.screens.indexOf(this), 1);
           ui.openHdResult(sum);
@@ -221,7 +288,14 @@
           const f = this.foeAt(m), w = this.world(m);
           return f ? { id: f.uid, x: f.x, y: f.y } : { x: w.x, y: w.y };
         },
-        cast(slot) { A.cmd(Object.assign({ t: 'cast', slot }, this.aim())); },
+        cast(slot) {
+          if (net && !ui.netPaused() && h.abil[slot] && !h.dead && !A.stunned(h) && A.cdLeft(h, slot) <= 1e-9 && A.costOf(h, slot) <= h.en) {
+            this.sound(slot === 'r' ? 'ult' : 'swing');
+            this.echo++;
+            this.slotLit[slot] = 0.25;
+          }
+          A.cmd(Object.assign({ t: 'cast', slot }, this.aim()));
+        },
         cycle() {
           const list = A.foes().filter(f => Math.hypot(f.x - h.x, f.y - h.y) < 420).sort((a, b) => Math.hypot(a.x - h.x, a.y - h.y) - Math.hypot(b.x - h.x, b.y - h.y));
           if (!list.length) return;
@@ -231,7 +305,7 @@
         },
         toggleShop() {
           if (this.shop) { this.shop = null; ui.sfx('cancel'); return; }
-          if (!A.nearShop(h) || h.dead) { this.flashes.push({ kind: 'note', text: 'Лавка на площади. F: возврат', t: 1.8 }); ui.sfx('deny'); return; }
+          if (!A.nearShop(lead || h) || h.dead) { this.flashes.push({ kind: 'note', text: 'Лавка на площади. F: возврат', t: 1.8 }); ui.sfx('deny'); return; }
           this.shop = { sel: 0, slot: -1, tab: 0 };
           this.pomSay(A.base.hp < A.base.hpMax * 0.35 ? POM.low : POM.open);
           A.cmd({ t: 'move', dx: 0, dy: 0 }); this.move = '0,0';
@@ -241,6 +315,13 @@
         nearDeadTurret() { return A.turrets.find(t => t.dead && Math.hypot(t.x - h.x, t.y - h.y) <= 96); },
         key(k, code) {
           const shift = ui.held.includes('ShiftLeft') || ui.held.includes('ShiftRight');
+          if (net && code === 'KeyP') { ui.netPauseToggle(); return; }
+          if (net && this.phrases) {
+            if (/^Digit[1-6]$/.test(code)) { this.sayPhrase(+code.slice(5) - 1); return; }
+            if (code === 'KeyV' || k === 'back') { this.phrases = false; ui.sfx('cancel'); return; }
+          }
+          if (net && code === 'KeyV') { this.phrases = true; ui.sfx('select'); return; }
+          if (net && code === 'KeyG') { this.markHere(); return; }
           if (this.shop) {
             const sh = this.shop, rows = this.shopRows(sh.tab);
             if (code === 'KeyB' || k === 'back') { this.toggleShop(); return; }
@@ -275,17 +356,18 @@
           }
         },
         click(btn, p) {
-          const f = this.foeAt(p), w = this.world(p);
-          if (btn === 2) { if (f) A.cmd({ t: 'attack', id: f.uid }); else A.cmd({ t: 'goto', x: w.x, y: w.y }); this.flashes.push({ kind: 'mark', x: w.x, y: w.y, t: 0.4 }); return; }
-          const S = M.shop;
-          if (Math.hypot(w.x - (S[0] * TS), w.y - (S[1] * TS)) < 30) { this.toggleShop(); return; }
-          const t = A.turrets.find(x => x.dead && Math.hypot(w.x - x.x, w.y - x.y) < 20);
-          if (t) { A.cmd({ t: 'restore', i: t.idx }); return; }
+          const f = this.foeAt(p), w = this.world(p), S = M.shop, tap = !!ui.touchTap;
+          if (btn !== 2) {
+            if (Math.hypot(w.x - (S[0] * TS), w.y - (S[1] * TS)) < 30 && (!tap || A.nearShop(lead || h))) { this.toggleShop(); return; }
+            const t = A.turrets.find(x => x.dead && Math.hypot(w.x - x.x, w.y - x.y) < 20);
+            if (t) { A.cmd({ t: 'restore', i: t.idx }); return; }
+          }
+          if (btn === 2 || tap) { if (f) A.cmd({ t: 'attack', id: f.uid }); else A.cmd({ t: 'goto', x: w.x, y: w.y }); this.flashes.push({ kind: 'mark', x: w.x, y: w.y, t: 0.4 }); return; }
           A.cmd({ t: 'target', id: f ? f.uid : null });
         },
         draw(c) {
-          const cx = Math.round(this.cam.x), cy = Math.round(this.cam.y), a = Math.min(1, this.acc / HD.DT);
-          const P = u => ({ x: u.px + (u.x - u.px) * a - cx, y: u.py + (u.y - u.py) * a - cy });
+          const cx = Math.round(this.cam.x), cy = Math.round(this.cam.y), a = Math.min(1, (net || this).acc / HD.DT);
+          const P = u => (lead && u === h ? { x: lead.x - cx, y: lead.y - cy } : { x: u.px + (u.x - u.px) * a - cx, y: u.py + (u.y - u.py) * a - cy });
           c.save();
           c.beginPath(); c.rect(0, FY, W, FH); c.clip();
           c.translate(0, FY);
@@ -313,9 +395,10 @@
           for (const sh of A.shots) G.hdShot(c, sh.x - cx, sh.y - cy, sh.ang, sh.elem, sh.kind);
           this.drawAreas(c, cx, cy, true);
           this.drawFlashes(c, cx, cy);
+          if (net) ui.drawHdMarks(c, this, cx, cy);
           if (L.deco) H.Train.drawFx(c, L, M, cx, cy, ui.t, W, FH, () => true);
           for (const u of A.units) if (!u.dead && u.kind !== 'base') this.drawBars(c, u, P(u));
-          const sel = h.sel != null ? A.byId(h.sel) : null;
+          const selId = this.wantSel ? this.wantSel.id : h.sel, sel = selId != null ? A.byId(selId) : null;
           if (sel) { const p = P(sel); c.strokeStyle = '#ffe04a'; c.lineWidth = 2; c.beginPath(); c.ellipse(p.x, p.y + 2, sel.r + 6, (sel.r + 6) * 0.45, 0, 0, Math.PI * 2); c.stroke(); }
           if (this.dbgFlow) this.drawFlow(c, cx, cy);
           this.drawNums(c, cx, cy);
@@ -331,15 +414,18 @@
           this.drawTop(c);
           this.drawAlarm(c);
           this.drawMini(c);
+          if (net) ui.drawHdAllies(c, this);
           this.drawPanel(c);
           if (h.dead) this.drawDead(c);
           if (this.banner) this.drawBanner(c);
           this.drawNotes(c);
           if (A.needPick(h) && !this.card) this.drawPick(c);
+          if (net && this.phrases) ui.drawHdPhrases(c, this, PY - (A.needPick(h) && !this.card ? 98 : 28));
           if (this.shop) this.drawShop(c);
           if (this.card) ui.drawHdCard(c, ui.hdHeroInfo(h.key, A, h), this.card, 0, FY, 300, FH);
           if (ui.held.includes('Tab')) this.drawBigMap(c);
           if (this.flashT > 0) { c.fillStyle = 'rgba(255,240,180,' + (this.flashT * 0.4).toFixed(3) + ')'; c.fillRect(0, FY, W, FH); }
+          if (net) ui.drawHdNet(c, net, A);
         },
         drawUnit(c, u, p) {
           if (u.kind === 'turret') {
@@ -356,11 +442,13 @@
           }
           c.fillStyle = 'rgba(2,4,12,0.4)'; c.beginPath(); c.ellipse(p.x, p.y + 2, u.r + 2, (u.r + 2) * 0.4, 0, 0, Math.PI * 2); c.fill();
           if (u.kind === 'hero') {
-            const frame = u.moving ? Math.floor(ui.t * 8) % 4 : 0, inv = A.has(u, 'invis');
+            const own = lead && u === h, frame = (own ? lead.moving : u.moving) ? Math.floor(ui.t * 8) % 4 : 0, inv = A.has(u, 'invis');
             if (u.recall > 0) { c.strokeStyle = 'rgba(128,224,255,0.8)'; c.lineWidth = 2; c.beginPath(); c.arc(p.x, p.y - 16, 22, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - u.recall / TUN.recallT)); c.stroke(); }
+            if (net) { c.strokeStyle = ui.netSeatCol(u.pl); c.lineWidth = 2; c.beginPath(); c.ellipse(p.x, p.y + 2, u.r + 5, (u.r + 5) * 0.45, 0, 0, Math.PI * 2); c.stroke(); }
             if (inv) c.globalAlpha = 0.45;
-            G.drawSprite(c, G.lookOf(u.key, g), u.dir, frame, p.x - 16, p.y - 34);
+            G.drawSprite(c, G.lookOf(u.key, g), own ? lead.dir : u.dir, frame, p.x - 16, p.y - 34);
             c.globalAlpha = 1;
+            if (net && u.pl !== me) ui.text(net.names[u.pl] + (ui.netOffline(u.pl) ? ' · нет связи' : ''), p.x, p.y - 66, { align: 'center', size: 9, bold: true, col: ui.netSeatCol(u.pl) });
             if (u.hold) { c.fillStyle = '#ffd471'; c.fillRect(p.x - 2, p.y - 46, 4, 4); }
             this.drawSummons(c, u, p);
             return;
@@ -497,7 +585,7 @@
         drawBoss(c) {
           const b = A.units.find(u => !u.dead && u.kind === 'boss');
           if (!b) return;
-          const x = 110, w = 390, y = FY + 6;
+          const x = net ? 128 : 110, w = net ? 372 : 390, y = FY + 6;
           c.fillStyle = 'rgba(10,4,16,0.82)'; c.fillRect(x - 4, y - 2, w + 8, 26);
           ui.text(ui.clip(H.ENEMIES[b.key].name + (b.phase === 2 ? ' · фаза 2' : ''), w - 110, 11, true), x, y, { size: 11, bold: true, col: '#ffb0a0' });
           ui.text(fmt(b.hp) + ' / ' + fmt(b.hpMax), x + w, y, { align: 'right', size: 10, col: C.cream });
@@ -518,15 +606,20 @@
           ui.text(ui.clip('Волна ' + A.wave + '/' + n + ' · ' + HD.waveLabel(A, A.wave), 190, 10, true), 136, 4, { size: 10, bold: true, col: C.gold });
           if (A.phase === 'break') {
             ui.text('Перерыв ' + mmss(A.breakT), 330, 4, { size: 10, bold: true, col: C.cream });
-            const bw = ui.measure('N: досрочно', 9, true) + 10;
-            c.fillStyle = '#2a3478'; c.fillRect(410, 3, bw, 14);
-            ui.text('N: досрочно', 415, 5, { size: 9, bold: true, col: '#ffe0a0' });
-            ui.hit(410, 3, bw, 14, () => A.cmd({ t: 'early' }));
+            const votes = net ? A.earlyVotes() : null, early = 'N: досрочно' + (votes ? ' ' + votes.n + '/' + votes.of : ''), bw = ui.measure(early, 9, true) + 10, ex = net ? 398 : 410;
+            c.fillStyle = '#2a3478'; c.fillRect(ex, 3, bw, 14);
+            ui.text(early, ex + 5, 5, { size: 9, bold: true, col: '#ffe0a0' });
+            ui.hit(ex, 3, bw, 14, () => A.cmd({ t: 'early' }));
           } else ui.text('Врагов ' + A.foes().length, 330, 4, { size: 10, bold: true, col: '#ffb0a0' });
           const blink = this.alarm && this.alarm.t > 0 && this.alarm.base && Math.sin(ui.t * 18) > 0;
           if (blink) { c.fillStyle = 'rgba(255,74,58,0.35)'; c.fillRect(484, 1, 132, FY - 3); }
           ui.text('Экспресс', 488, 4, { size: 10, col: blink ? '#ffffff' : C.sub });
-          ui.bar(540, 7, 70, 6, A.base.hp / A.base.hpMax, A.base.hp < A.base.hpMax * 0.35 ? '#ff5a4a' : '#80e0ff');
+          ui.bar(540, 7, net ? 46 : 70, 6, A.base.hp / A.base.hpMax, A.base.hp < A.base.hpMax * 0.35 ? '#ff5a4a' : '#80e0ff');
+          if (net) {
+            ui.netBars(c, 593, 16);
+            const ping = ui.netPingText();
+            if (ping) ui.text(ping, MM.x + MM.w, MM.y + MM.h + 3, { align: 'right', size: 9, bold: true, col: globalThis.Net98.state === 'online' ? C.cream : '#ff9a8a' });
+          }
           c.fillStyle = '#c8c4b8'; c.fillRect(620, 4, 4, 12); c.fillRect(628, 4, 4, 12);
           ui.hit(614, 0, 26, FY, () => ui.openHdPause(this));
         },
@@ -556,10 +649,15 @@
             if (u.kind === 'boss') { skull(c, Math.round(x + u.x * kx), Math.round(y + u.y * ky), '#ffffff'); continue; }
             c.fillRect(Math.round(x + u.x * kx - 1), Math.round(y + u.y * ky - 1), 2, 2);
           }
-          if (!h.dead) {
-            const hx = x + h.x * kx, hy = y + h.y * ky, ang = { right: 0, down: Math.PI / 2, left: Math.PI, up: -Math.PI / 2 }[h.dir] || 0;
-            c.save(); c.translate(hx, hy); c.rotate(ang); c.fillStyle = '#ffffff'; c.beginPath(); c.moveTo(4, 0); c.lineTo(-3, -3); c.lineTo(-1, 0); c.lineTo(-3, 3); c.closePath(); c.fill(); c.restore();
+          const arrow = (o, col) => {
+            const ang = { right: 0, down: Math.PI / 2, left: Math.PI, up: -Math.PI / 2 }[o.dir] || 0;
+            c.save(); c.translate(x + o.x * kx, y + o.y * ky); c.rotate(ang); c.fillStyle = col; c.beginPath(); c.moveTo(4, 0); c.lineTo(-3, -3); c.lineTo(-1, 0); c.lineTo(-3, 3); c.closePath(); c.fill(); c.restore();
+          };
+          if (net) {
+            for (const o of A.heroes) if (o !== h && !o.dead) arrow(o, ui.netSeatCol(o.pl));
+            ui.drawHdMiniMarks(c, this, x, y, kx, ky);
           }
+          if (!h.dead) arrow(h, '#ffffff');
           c.strokeStyle = 'rgba(255,255,255,0.6)'; c.strokeRect(x + this.cam.x * kx + 0.5, y + this.cam.y * ky + 0.5, W * kx, FH * ky);
           ui.hit(x, y, w, hh, (btn, p) => {
             if (btn !== 0) return;
@@ -573,7 +671,7 @@
           gr.addColorStop(0, '#141a3a'); gr.addColorStop(1, '#070a1c');
           c.fillStyle = gr; c.fillRect(0, PY, W, HGT - PY);
           c.fillStyle = '#c9a45c'; c.fillRect(0, PY, W, 1);
-          c.fillStyle = '#000000'; c.fillRect(5, PY + 7, 50, 50);
+          c.fillStyle = net ? ui.netSeatCol(me) : '#000000'; c.fillRect(5, PY + 7, 50, 50);
           G.drawPortrait(c, G.lookOf(h.key, g), 6, PY + 8, 48);
           c.fillStyle = 'rgba(4,6,20,0.85)'; c.fillRect(6, PY + 44, 18, 12);
           ui.text(String(h.lvl), 15, PY + 44, { align: 'center', size: 10, bold: true, col: C.gold });
@@ -614,6 +712,7 @@
           if (l && cost > h.en) { c.fillStyle = 'rgba(30,60,160,0.45)'; c.fillRect(x, y, s, s); }
           if (cd > 0) { const k = Math.min(1, cd / K.cd); c.fillStyle = 'rgba(0,0,0,0.6)'; c.fillRect(x, y, s, Math.round(s * k)); ui.text(String(Math.ceil(cd)), x + s / 2, y + 13, { align: 'center', size: 12, bold: true, col: '#ffffff' }); }
           if (ch > 1 && l) { const left = Math.min(ch, Math.floor((ch * K.cd - Math.max(0, h.cd[sl])) / K.cd + 1e-9)); ui.text('×' + left, x + s - 2, y + 2, { align: 'right', size: 9, bold: true, col: '#ffe04a' }); }
+          if (this.slotLit[sl] > 0) { c.strokeStyle = '#ffe04a'; c.lineWidth = 2; c.strokeRect(x + 1, y + 1, s - 2, s - 2); c.lineWidth = 1; }
           ui.text(SLOT_KEY[sl], x + 3, y + s - 12, { size: 10, bold: true, col: '#ffffff' });
           if (cost) ui.text(String(cost), x + s - 2, y + s - 12, { align: 'right', size: 9, col: '#ffe0a0' });
           const max = sl === 'r' ? 3 : 5;
@@ -793,7 +892,7 @@
           c.strokeStyle = '#c9a45c'; c.strokeRect(x - 0.5, y - 0.5, w + 1, hh + 1);
           for (const u of A.units) {
             if (u.dead || u.kind === 'base') continue;
-            c.fillStyle = u.kind === 'hero' ? '#ffffff' : u.kind === 'turret' ? '#56d4ff' : u.kind === 'boss' ? '#ffffff' : u.elite ? '#ff9a3a' : '#ff3a3a';
+            c.fillStyle = u.kind === 'hero' ? (net ? ui.netSeatCol(u.pl) : '#ffffff') : u.kind === 'turret' ? '#56d4ff' : u.kind === 'boss' ? '#ffffff' : u.elite ? '#ff9a3a' : '#ff3a3a';
             c.fillRect(Math.round(x + u.x * k) - 2, Math.round(y + u.y * k) - 2, u.kind === 'boss' ? 6 : 4, u.kind === 'boss' ? 6 : 4);
           }
           for (const key of Object.keys(M.rifts)) { const r = A.rift(key); ui.text(HD.RIFT_NAME[key], x + r.x * k, y + r.y * k + 6, { align: 'center', size: 9, col: '#d0a0ff' }); }

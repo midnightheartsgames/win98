@@ -38,6 +38,7 @@
   F.NullWorld = NullWorld;
 
   const INNER = 1 / 240, TIRE_PEN = 0.08;
+  const LIMIT_SIDES = [[-1, 0, 'x0'], [1, 0, 'x1'], [0, -1, 'z0'], [0, 1, 'z1']];
   const RPM = 60 / (2 * Math.PI);
   const TIRE_C = 1.3, TIRE_B = Math.tan(Math.PI / (2 * TIRE_C)), TIRE_K = TIRE_C * TIRE_B, LONG = 1.12;
   function tireCurve(r) { return Math.sin(TIRE_C * Math.atan(TIRE_B * r)); }
@@ -210,6 +211,7 @@
       if (this.assist.auto && this.gear > 0 && this.shiftT <= 0 && !this.air) this.autoShift(this.u, thrIn, brkIn);
       this.collide(world);
       this.water(dt, world);
+      this.keepIn(dt, world);
       if (this.hitCool > 0) this.hitCool -= dt;
       if (this.scrapeT > 0) this.scrapeT -= dt;
       if (this.dmg) {
@@ -686,6 +688,29 @@
         for (const wl of this.wheels) wl.w *= k;
         if (this.waterT > 0.05 && this.waterT - dt <= 0.05) this.events.push({ t: 'splash' });
       } else this.waterT = 0;
+    }
+
+    keepIn(dt, world) {
+      const L = world.out && world.out.limit;
+      if (!L) return;
+      if (this.edgeT > 0) this.edgeT -= dt;
+      const fx = Math.sin(this.yaw), fz = -Math.cos(this.yaw), u0 = this.vx * fx + this.vz * fz;
+      let cut = 0;
+      for (const [nx, nz, k] of LIMIT_SIDES) {
+        const d = nx ? nx * (L[k] - this.x) : nz * (L[k] - this.z);
+        if (d < 0) { this.x += nx * d; this.z += nz * d; }
+        const vo = this.vx * nx + this.vz * nz, cap = Math.sqrt(2 * (this.racing ? L.race : L.brake) * Math.max(0, d));
+        if (vo <= cap) continue;
+        this.vx -= nx * (vo - cap);
+        this.vz -= nz * (vo - cap);
+        cut += vo - cap;
+      }
+      if (!cut) return;
+      this.edgeT = 1.2;
+      if (Math.abs(u0) > 0.5) {
+        const k = F.clamp((this.vx * fx + this.vz * fz) / u0, 0, 1);
+        for (const wl of this.wheels) wl.w *= k;
+      }
     }
 
     snap() {

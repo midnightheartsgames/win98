@@ -164,6 +164,7 @@
     openBugReport(opts) {
       const top = this.top();
       if (top && (top.bugReport || top.bugList)) return;
+      if (globalThis.Net98) globalThis.Net98.hideCode();
       const crash = opts && opts.crash;
       const ui = this;
       const d = {

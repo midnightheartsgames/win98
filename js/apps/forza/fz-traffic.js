@@ -23,6 +23,8 @@
       this.max = o.max || 24;
       this.rng = F.rng(o.seed || 99);
       this.edges = world.edges.filter(drivable);
+      this.exits = new Map();
+      if (world.out) for (const [id, e] of world.out.exits) if (drivable(e)) { this.exits.set(id, e); this.edges.push(e); }
       this.uid = 0;
       this.density = 1;
       this.frames = new Map();
@@ -214,6 +216,11 @@
         opts.push({ e: n, dir: d, wgt });
         sum += wgt;
       }
+      const ex = this.exits.get(node);
+      if (ex && ex !== e && Math.abs(F.wrap(headingOf(this.at(ex, 1, 0.5, 0)) - hin)) <= 2.5) {
+        opts.push({ e: ex, dir: 1, wgt: ex.k.traffic * 1.6 });
+        sum += ex.k.traffic * 1.6;
+      }
       if (!opts.length) return { e, dir: -dir };
       let r = this.rng() * sum;
       for (const o of opts) { r -= o.wgt; if (r <= 0) return o; }
@@ -221,7 +228,9 @@
     }
 
     makePlan(c, e, dir, t, lane) {
-      const node = dir > 0 ? e.b : e.a, nd = this.w.nodes[node];
+      const node = dir > 0 ? e.b : e.a;
+      if (node < 0) return { e, dir, node, nd: null, nx: null, uturn: false, th: 0, inT: 0, outT: 0, laneIn: Math.min(lane, this.perDir(e) - 1), laneOut: 0, deg: 1, cv: null, minor: false, vTurn: 40, go: true, stopT: 0, wait: 0, end: true };
+      const nd = this.w.nodes[node];
       const nx = this.pick(e, dir, node);
       const uturn = nx.e === e;
       const endIn = dir > 0 ? 1 : 0, endOut = nx.dir > 0 ? 0 : 1;
@@ -284,7 +293,7 @@
     ahead(c, dist) {
       if (c.seg === 'turn') return this.bez(c.plan.cv, c.u + dist);
       const t0 = c.e.len - c.plan.inT, t = c.t + dist;
-      return t <= t0 ? this.at(c.e, c.dir, t, c.off) : this.bez(c.plan.cv, t - t0);
+      return t <= t0 || c.plan.end ? this.at(c.e, c.dir, t, c.off) : this.bez(c.plan.cv, t - t0);
     }
 
     enterTurn(c) {
@@ -314,6 +323,7 @@
         if (c.seg === 'edge') {
           const t0 = c.e.len - c.plan.inT;
           if (c.t + ds < t0) { c.t += ds; return; }
+          if (c.plan.end) { c.t = t0; c.gone = true; return; }
           if (c.holding) { c.t = t0; c.v = 0; return; }
           ds -= Math.max(0, t0 - c.t);
           c.t = t0;
@@ -557,7 +567,7 @@
       for (let i = this.cars.length - 1; i >= 0; i--) {
         const c = this.cars[i];
         const d = Math.hypot(c.x - px, c.z - pz);
-        if (d > 620 || (c.state === 'hit' && c.hitT > 8 && d > 90) || (c.state === 'hit' && c.hitT > 30)) { this.cars.splice(i, 1); continue; }
+        if (d > 620 || c.gone || (c.state === 'hit' && c.hitT > 8 && d > 90) || (c.state === 'hit' && c.hitT > 30)) { this.cars.splice(i, 1); continue; }
         if (c.state === 'hit') {
           c.hitT += dt;
           const k = Math.exp(-dt * 1.4);

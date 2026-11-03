@@ -8,8 +8,14 @@
   };
   const QUICK = {
     field: [['KeyF', 'F', 'Удар'], ['KeyM', 'M', 'Карта'], ['Tab', 'Tab', 'Сцена'], ['ShiftLeft', 'Шаг', 'Шагом', true], ['Digit1', '1', ''], ['Digit2', '2', ''], ['Digit3', '3', ''], ['Digit4', '4', '']],
+    field_g: [['KeyF', 'F', 'Удар'], ['KeyM', 'M', 'Карта'], ['Tab', 'Tab', 'Сцена'], ['KeyG', 'G', 'Дитин'], ['Digit1', '1', ''], ['Digit2', '2', ''], ['Digit3', '3', ''], ['Digit4', '4', '']],
     battle: [['KeyT', 'T', 'Контакт'], ['KeyR', 'R', 'Слияние'], ['KeyV', 'V', 'Авто'], ['ShiftLeft', '»', 'Быстрее', true], ['Digit1', '1', ''], ['Digit2', '2', ''], ['Digit3', '3', ''], ['Digit4', '4', '']],
+    battle_g: [['KeyT', 'T', 'Контакт'], ['KeyR', 'R', 'Слияние'], ['KeyV', 'V', 'Авто'], ['KeyG', 'G', 'Рёв'], ['Digit1', '1', ''], ['Digit2', '2', ''], ['Digit3', '3', ''], ['Digit4', '4', '']],
     menu: [['Tab', 'Tab', ''], ['KeyF', 'F', ''], ['KeyX', 'X', ''], ['KeyA', 'A', ''], ['KeyV', 'V', ''], ['ShiftLeft', 'Shift', '', true], ['PageUp', 'PgUp', ''], ['PageDown', 'PgDn', '']],
+    hd: [['KeyR', 'R', 'Ульта'], ['KeyB', 'B', 'Лавка'], ['KeyF', 'F', 'Возврат'], ['KeyN', 'N', 'Волна'], ['KeyC', 'C', 'Герой'], ['KeyX', 'X', 'Стоять'], ['Tab', 'Tab', 'Карта'], ['ShiftLeft', 'Shift', 'Навыки', true]],
+    hd_net: [['KeyR', 'R', 'Ульта'], ['KeyB', 'B', 'Лавка'], ['KeyF', 'F', 'Возврат'], ['KeyN', 'N', 'Волна'], ['KeyC', 'C', 'Герой'], ['KeyG', 'G', 'Метка'], ['KeyV', 'V', 'Фразы'], ['KeyP', 'P', 'Пауза'], ['KeyX', 'X', 'Стоять'], ['Tab', 'Tab', 'Карта'], ['ShiftLeft', 'Shift', 'Навыки', true]],
+    hd_draft: [['KeyR', 'R', 'Новый'], ['KeyC', 'C', 'Герой']],
+    visit: [['KeyT', 'T', 'Фраза'], ['Tab', 'Tab', 'Меню'], ['ShiftLeft', 'Шаг', 'Шагом', true]],
     title: []
   };
   const PANEL = [
@@ -118,7 +124,13 @@
       const t = [...e.changedTouches].find(c => c.identifier === touch.id);
       if (!t) return;
       e.preventDefault();
-      if (!touch.moved && e.type === 'touchend') { mouse(canvas(), 'mousedown', t); mouse(document, 'mouseup', t); }
+      if (!touch.moved && e.type === 'touchend') {
+        const g = window.hsrui;
+        if (g) g.touchTap = true;
+        mouse(canvas(), 'mousedown', t);
+        if (g) g.touchTap = false;
+        mouse(document, 'mouseup', t);
+      }
       touch = null;
     };
     root().addEventListener('touchend', end, { passive: false });
@@ -134,7 +146,14 @@
   function modeNow() {
     const g = window.hsrui;
     if (!g) return 'title';
-    if (g.screens && g.screens.length) return 'menu';
+    if (g.screens && g.screens.length) {
+      const top = g.screens[g.screens.length - 1];
+      return top.arena ? (top.net ? 'hd_net' : 'hd') : top.draft ? 'hd_draft' : 'menu';
+    }
+    const game = g.game;
+    if (game && game.guest && g.mode === 'field') return 'visit';
+    if (g.mode === 'field' && game && game.map && game.map.def.trails && game.state.flags.lf_diting) return 'field_g';
+    if (g.mode === 'battle' && game && game.battle && game.battle.lf && game.battle.lf.assist) return 'battle_g';
     return QUICK[g.mode] ? g.mode : 'menu';
   }
 

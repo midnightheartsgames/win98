@@ -17,9 +17,29 @@
   Object.assign(H.UI.prototype, {
     hdDebugScreen() { return this.screens.find(s => s.arena && s.arena.hero) || null; },
 
+    hdCheckStart() {
+      if (this.hdCheck && !this.hdCheck.job.done) return;
+      const job = HD.goldenCheck(), check = this.hdCheck = { job, ms: 0 };
+      const pump = () => {
+        const t0 = performance.now();
+        while (!job.done && performance.now() - t0 < 12) job.step(200);
+        check.ms += performance.now() - t0;
+        if (!job.done && this.running) setTimeout(pump, 0);
+      };
+      pump();
+    },
+
+    hdCheckText() {
+      const check = this.hdCheck;
+      if (!check) return 'Запустить';
+      if (!check.job.done) return Math.floor(check.job.ticks * 100 / check.job.total) + '%';
+      return check.job.same ? 'Совпало' : 'НЕ совпало';
+    },
+
     debugHdForm(st, note) {
       const ui = this, g = this.game, run = g.hdRun();
-      if (!run || !run.players[0].hero) return { rows: [], acts: [] };
+      const checkRow = { label: 'Проверка', value: ui.hdCheckText(), fixed: true, open: () => ui.hdCheckStart() };
+      if (!run || !run.players[0].hero) return { rows: [checkRow], acts: [] };
       const scr = ui.hdDebugScreen(), A = scr && scr.arena, h = A ? A.hero : null, p = run.players[0];
       const D = st.hd || (st.hd = { kind: 0, i: 0, up: 0 });
       const kind = KINDS[D.kind][0], list = goods(kind, p.hero);
@@ -48,7 +68,8 @@
           { label: 'Поле и цели', value: scr ? (scr.dbgFlow ? 'видно' : 'скрыто') : needA, step: () => { if (scr) scr.dbgFlow = !scr.dbgFlow; } },
           { label: 'Выдать', value: KINDS[D.kind][1], step: k => { D.kind = wrap(D.kind + k, KINDS.length); D.i = 0; D.up = 0; } },
           { label: 'Что', value: ui.clip(pick.name, 150, 10), step: k => { D.i = wrap(D.i + k, list.length); } },
-          { label: 'Улучшение', value: upLabel, step: k => { D.up = wrap(D.up + k, kind === 'relic' ? 6 : 5); } }
+          { label: 'Улучшение', value: upLabel, step: k => { D.up = wrap(D.up + k, kind === 'relic' ? 6 : 5); } },
+          checkRow
         ],
         acts: [
           { label: 'Выдать', icon: 'bag', fn: () => {
@@ -74,7 +95,16 @@
 
     debugHdPreview(c, x, y, w) {
       const ui = this, g = this.game, run = g.hdRun();
-      if (!run || !run.players[0].hero) return;
+      const check = ui.hdCheck;
+      if (check && check.job.done) ui.text(ui.clip('Проверка партии: ' + check.job.hash + ' · ' + Math.round(check.ms * 1000 / Math.max(1, check.job.ticks)) + ' мкс на такт', w - 28, 9), x + 14, y + 304, { size: 9, col: C.sub });
+      ui.text('Вкладка видна только на экранах Рубежа.', x + 14, y + 318, { size: 9, col: C.dim });
+      ui.text('Пока F8 открыта, арена стоит.', x + 14, y + 332, { size: 9, col: C.dim });
+      if (!run || !run.players[0].hero) {
+        ui.text('Партия Рубежа Экспресса', x + 14, y + 12, { size: 12, bold: true, col: C.gold });
+        ui.text('Партия не начата.', x + 14, y + 36, { size: 10, col: C.sub });
+        ui.text('Строки партии появятся после выбора героя.', x + 14, y + 54, { size: 10, col: C.sub });
+        return;
+      }
       const scr = ui.hdDebugScreen(), A = scr && scr.arena, p = run.players[0];
       ui.text('Партия Рубежа Экспресса', x + 14, y + 12, { size: 12, bold: true, col: C.gold });
       const rows = [
@@ -91,8 +121,6 @@
       ];
       rows.forEach(([a, b], i) => { ui.text(a, x + 14, y + 36 + i * 18, { size: 10, col: C.sub }); ui.text(ui.clip(b, w - 140, 10), x + w - 14, y + 36 + i * 18, { align: 'right', size: 10, bold: true, col: C.cream }); });
       if (A) A.hero.items.forEach((it, i) => { const ix = x + 14 + i * 34, iy = y + 230; c.fillStyle = '#10142e'; c.fillRect(ix, iy, 30, 30); if (it) H.Gfx.hdItemIcon(c, it, ix + 3, iy + 3, 24); });
-      ui.text('Вкладка видна только во время партии.', x + 14, y + 318, { size: 9, col: C.dim });
-      ui.text('Пока F8 открыта, арена стоит.', x + 14, y + 332, { size: 9, col: C.dim });
     }
   });
 

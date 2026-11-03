@@ -4,8 +4,8 @@ const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
 const DIR = path.join(ROOT, 'js/apps/forza');
-const SIM = ['fz-core', 'fz-cars', 'fz-phys', 'fz-damage', 'fz-map', 'fz-events', 'fz-wear', 'fz-world', 'fz-city', 'fz-flora', 'fz-race', 'fz-traffic', 'fz-game'];
-const ORDER = SIM.concat(['fz-tex', 'fz-models', 'fz-carmesh', 'fz-driver', 'fz-dents', 'fz-landmarks', 'fz-ads', 'fz-festival', 'fz-street', 'fz-airport', 'fz-market', 'fz-bisumuiza', 'fz-trees', 'fz-scene', 'fz-debris', 'fz-render', 'fz-hud', 'fz-audio', 'fz-menus', 'fz-photo', 'fz-ui']);
+const SIM = ['fz-core', 'fz-cars', 'fz-blueprints', 'fz-phys', 'fz-damage', 'fz-map', 'fz-events', 'fz-wear', 'fz-world', 'fz-city', 'fz-flora', 'fz-outskirts', 'fz-race', 'fz-traffic', 'fz-game'];
+const ORDER = SIM.concat(['fz-tex', 'fz-models', 'fz-carmesh', 'fz-driver', 'fz-dents', 'fz-landmarks', 'fz-ads', 'fz-festival', 'fz-street', 'fz-airport', 'fz-market', 'fz-bisumuiza', 'fz-trees', 'fz-scene', 'fz-backdrop', 'fz-debris', 'fz-render', 'fz-hud', 'fz-audio', 'fz-menus', 'fz-photo', 'fz-ui']);
 
 const store = new Map();
 globalThis.localStorage = { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) };
@@ -22,6 +22,8 @@ function section(name, fn) { const s = Date.now(); fn(); log(name + ': ' + (Date
 
 const world = new F.World();
 const CLASS_CAR = { D: 'vaz2105', C: 'golf2', B: 'celica', A: 'm5e39', S1: 'f355', S2: 'mclarenf1' };
+const BLUE_BODY = 4500;
+let scanBatch = null;
 
 function driveInput(game, race, st) {
   const v = game.veh, r = race.route;
@@ -33,7 +35,7 @@ function driveInput(game, race, st) {
   const fx = Math.sin(v.yaw), fz = -Math.cos(v.yaw);
   const dx = tx - v.x, dz = tz - v.z;
   const ang = Math.atan2(dx * -fz + dz * fx, dx * fx + dz * fz);
-  const mu = v.spec.grip * 0.92;
+  const mu = v.spec.grip * 0.88;
   const dec = Math.min(v.spec.grip * 1.05, v.spec.brake) * 9.81 * 0.82;
   let vt = 200;
   for (let k = 0; k < 60; k++) {
@@ -69,7 +71,7 @@ function runEvent(id, carId, diff) {
 
 section('cars', () => {
   const cars = F.Cars.CARS;
-  ok(cars.length >= 28 && cars.length <= 34, 'about thirty cars: ' + cars.length);
+  ok(cars.length >= 28 && cars.length <= 52, 'thirty to fifty cars: ' + cars.length);
   ok(new Set(cars.map(c => c.id)).size === cars.length, 'car ids are unique');
   const profile = F.Profile.newProfile('test');
   ok(profile.cars.length === 1 && profile.cars[0].id === 'vaz2105', 'the career starts with the Lada 2105');
@@ -86,7 +88,7 @@ section('cars', () => {
     const pf = F.perfOf(c.id, {});
     ok(sp.mass > 500 && sp.mass < 3500 && sp.P > 10000 && Array.isArray(sp.ratios) && sp.ratios.length >= 3, 'spec sane ' + c.id);
     ok(pf.pi >= 100 && pf.pi <= 998 && F.classOf(pf.pi).c === pf.cls, 'PI and class ' + c.id);
-    ok(pf.t100 > 2.5 && pf.t100 < 40 && pf.vmax > 100, 'performance sane ' + c.id);
+    ok(c.vmax <= 100 ? pf.t60 < 40 && pf.vmax > c.vmax * 0.9 : pf.t100 > 2.5 && pf.t100 < (c.year < 1960 ? 60 : 40) && pf.vmax > 100, 'performance sane ' + c.id);
     ok(typeof c.make === 'string' && typeof c.model === 'string' && c.year >= 1950 && c.year <= 2000, 'identity ' + c.id);
     ok(c.barn || c.price > 0, 'price ' + c.id);
     if (!top || pf.pi > top.pi) top = { id: c.id, pi: pf.pi };
@@ -146,10 +148,12 @@ section('meshes', () => {
     }
     return r;
   };
+  scanBatch = scan;
   for (const car of F.Cars.CARS) {
     const sh = car.sh, W = sh.wid / 2, L = sh.len / 2;
     const problems = [];
     const tris = [0, 0, 0];
+    const bpc = F.Blueprints.of(car), sills = bpc ? bpc.side.belt.filter(p => p[0] >= sh.ws * sh.len && p[0] <= sh.rb * sh.len).map(p => p[1]) : [];
     {
       for (const wing of new Set([null, 'lip', 'high', sh.wing || null])) {
         for (const lod of [0, 1, 2]) {
@@ -161,7 +165,7 @@ section('meshes', () => {
         if (wing === (sh.wing || null)) tris[lod] = s.t;
         if (s.bad.size) problems.push(tag + [...s.bad].join(','));
         const cut = built.cut, outer = cut ? (cut.b - cut.w) / 3 : s.t;
-        if (outer < 100 || outer > BUDGET.body[lod]) problems.push(tag + 'triangles ' + outer);
+        if (outer < 100 || outer > (lod === 0 && F.Blueprints.of(car) ? BLUE_BODY : BUDGET.body[lod])) problems.push(tag + 'triangles ' + outer);
         const ranged = cut && built.batch.parts.length === 0 && cut.w >= 0 && cut.w < cut.b && cut.b <= cut.c && cut.c < cut.g && cut.g === built.batch.ni && (cut.c - cut.b) / 3 <= BUDGET.cabin && (cut.g - cut.c) / 3 <= BUDGET.glass[lod];
         if ((lod < 2) !== !!cut || (cut && !ranged) || (lod === 0 && cut && !(cut.w > 0 && cut.c > cut.b)) || (lod === 1 && cut && (cut.w || cut.c !== cut.b))) problems.push(tag + 'wiper, body, cabin and glass ranges in the body batch');
         if (s.flipped) problems.push(tag + 'flipped faces ' + s.flipped);
@@ -170,7 +174,7 @@ section('meshes', () => {
           if (!bt) continue;
           const g = scan(bt);
           if (g.bad.size || g.flipped || g.t < 20 || g.t > cap) problems.push(tag + name + ' ' + g.t + ' ' + [...g.bad].join(',') + (g.flipped ? ' flipped ' + g.flipped : ''));
-          if (name === 'glass' && (Math.max(-g.lo[0], g.hi[0]) > W * (1 + Math.max(0, ...[].concat(sh.flare || 0))) + 0.01 || g.hi[1] > sh.hgt + 0.05 || g.lo[1] < sh.hood - 0.1)) problems.push(tag + 'glass outside the greenhouse');
+          if (name === 'glass' && (Math.max(-g.lo[0], g.hi[0]) > W * (1 + Math.max(0, ...[].concat(sh.flare || 0))) + 0.01 || g.hi[1] > sh.hgt + 0.05 || g.lo[1] < Math.min(sh.hood, sh.deck, ...sills) - 0.1)) problems.push(tag + 'glass outside the greenhouse');
           if (name === 'cabin' && (g.lo[0] < -W || g.hi[0] > W || g.hi[1] > sh.hgt - 0.02 || g.lo[1] < sh.clr)) problems.push(tag + 'cabin pokes through the body');
         }
         if (s.lo[0] < -W - 0.2 || s.hi[0] > W + 0.2 || s.hi[0] - s.lo[0] < sh.wid * 0.95) problems.push(tag + 'width');
@@ -187,7 +191,7 @@ section('meshes', () => {
     if (!sk.gaps.length || !sk.gaps.every(pl => pl.length >= 2 && pl.every(p => pxOk('L', p[0], p[1]) && pxOk('R', p[0], p[1])))) skinBad.push('door gaps');
     if (!sk.seams.every(pl => pl.every(p => pxOk('T', p[0], p[1])))) skinBad.push('hood seams');
     if (!(sk.panel.w > 30 && sk.panel.h > 20 && (sk.hood ? sk.hood.len > 40 && sk.hood.w > 60 : !!sh.van) && sk.roof.f1 > sk.roof.f0)) skinBad.push('decal areas ' + [sk.panel.w, sk.panel.h].map(v => v.toFixed(0)).join('/'));
-    if (!/^[A-Z]{2}-\d{3,4}$/.test(sk.plate) || !(sk.number >= 2 && sk.number <= 98) || !sk.badge.every(s => s && s.length <= 14)) skinBad.push('plate, number or badges ' + sk.plate + ' ' + sk.number + ' ' + sk.badge.join('/'));
+    if (!/^[A-Z]{2}-\d{3,4}$/.test(sk.plate) || !(sk.number >= 2 && sk.number <= 98) || !sk.badge.every(s => s && s.length <= 16)) skinBad.push('plate, number or badges ' + sk.plate + ' ' + sk.number + ' ' + sk.badge.join('/'));
     const fr = sk.frame('L', sk.panel.f, sk.panel.y), ft = sk.frame('T', sk.roof.f, 0);
     if (!(fr[0] > 0 && fr[3] > 0 && ft[1] > 0 && ft[2] < 0)) skinBad.push('decal frames');
     ok(!skinBad.length, 'skin layout ' + car.id + (skinBad.length ? ': ' + skinBad.join('; ') : ''));
@@ -205,13 +209,14 @@ section('meshes', () => {
       ok(!s.bad.size && !s.flipped && s.t <= BUDGET.lamp && (sh.lights === 'hidden' ? !g.lamp.hinge : g.lamp.hinge.every(Number.isFinite) && g.lamp.shut < 0), 'hidden headlight mesh ' + car.id);
     } else ok(!g.lamp, 'no hidden headlight mesh ' + car.id);
     const front = g.wheels.filter(w => w.front), rear = g.wheels.filter(w => !w.front);
-    const fl = Array.isArray(sh.flare) ? sh.flare : [sh.flare || 0, sh.flare || 0], ww = 0.2 + (sh.wid - 1.55) * 0.15;
+    const fl = Array.isArray(sh.flare) ? sh.flare : [sh.flare || 0, sh.flare || 0], bpw = F.Blueprints.of(car), ww = bpw && bpw.tyre ? Math.max(...[].concat(bpw.tyre)) : 0.2 + (sh.wid - 1.55) * 0.15;
     ok(front.length === 2 && rear.length === 2 && g.wheels.every(w => w.r === sh.wr && w.y === sh.wr && Math.abs(w.x) + ww / 2 <= W * (1 + fl[w.front ? 0 : 1]) + 1e-6), 'four wheels inside the fenders ' + car.id);
     ok(front.every(f => rear.every(b => Math.abs(b.z - f.z - sh.wb) < 1e-6)), 'wheelbase matches the spec ' + car.id);
     const [ex, ey, ez] = g.eye;
     ok(Math.abs(ex) < W && ey > sh.hood && ey < sh.hgt && ez > g.Z(sh.ws) && ez < g.Z(sh.rb), 'driver eye inside the cabin ' + car.id);
-    const lamps = (list, z, reach = 0.1) => list.length >= 2 && list.every(p => p.every(Number.isFinite) && Math.abs(p[0]) < W && p[1] > g.yb && p[1] < sh.hgt && Math.abs(p[2] - z) < reach);
-    ok(lamps(g.lightsF, -L, sh.lights === 'popup' ? 0.35 : 0.1) && lamps(g.lightsR, L) && lamps(g.lightsB, L), 'lamp anchors on the nose and tail ' + car.id);
+    const lamps = (list, z, reach = 0.1, min = 2) => list.length >= min && list.every(p => p.every(Number.isFinite) && Math.abs(p[0]) < W && p[1] > g.yb && p[1] < sh.hgt && Math.abs(p[2] - z) < reach);
+    const pods = bpc && bpc.front.some(e => e.k === 'lamp' && e.use === 'head' && e.wall === 'paint');
+    ok(lamps(g.lightsF, -L, sh.lights === 'popup' ? 0.35 : pods ? 0.5 : 0.1) && lamps(g.lightsR, L) && lamps(g.lightsB, L, 0.1, car.year < 1960 ? 0 : 1), 'lamp anchors on the nose and tail ' + car.id);
     const mats = (bt, want) => {
       const found = new Set(), rgb = [255, 0];
       const parts = bt.parts.map(p => [p.data, p.nv]).concat(bt.n ? [[bt.u8.subarray(0, bt.n * S), bt.n]] : []);
@@ -222,7 +227,7 @@ section('meshes', () => {
       }
       return want.every(m => found.has(m)) && rgb;
     };
-    const bodyMats = mats(g.batch, [F.MAT.REVERSE, F.MAT.TRIM]), cabinMats = mats(g.cabin, [F.MAT.INTERIOR]);
+    const bodyMats = mats(g.batch, car.year < 1960 ? [F.MAT.TRIM] : [F.MAT.REVERSE, F.MAT.TRIM]), cabinMats = mats(g.cabin, [F.MAT.INTERIOR]);
     ok(bodyMats && cabinMats && bodyMats[0] >= 110 && bodyMats[0] < 250 && bodyMats[1] === 255, 'materials and baked occlusion ' + car.id + ' ' + bodyMats);
     const wheelProblems = [];
     for (const tires of [0, 1, 2, 3, 4]) {
@@ -247,7 +252,7 @@ section('meshes', () => {
     const cp = g.cockpit, fc = cp.face, wc = cp.wheelPos, al = -cp.tilt, rho = cp.wheelR - cp.tube - 0.004;
     const nw = [0, Math.sin(al), Math.cos(al)], uw = [0, Math.cos(al), -Math.sin(al)];
     const dot3 = (p, q) => p[0] * q[0] + p[1] * q[1] + p[2] * q[2];
-    let blocked = '';
+    let blocked = '', hidden = 0;
     for (let k = 0; k < 24 && !blocked; k++) {
       const th = k / 24 * Math.PI * 2, cx = Math.cos(th) * fc.hw * 0.97, cy = Math.sin(th) * fc.hh * 0.97;
       const p = [0, 1, 2].map(i => fc.c[i] + fc.r[i] * cx + fc.u[i] * cy);
@@ -255,16 +260,129 @@ section('meshes', () => {
       const s = dot3([0, 1, 2].map(i => wc[i] - g.eye[i]), nw) / dot3(d, nw);
       const q = [0, 1, 2].map(i => g.eye[i] + d[i] * s - wc[i]);
       const dx = q[0], du = dot3(q, uw);
-      if (Math.hypot(dx, du) > rho) blocked = 'rim';
-      else if (Math.abs(dx) < cp.pad + 0.004 && du < cp.pad * 0.8 + 0.004) blocked = 'hub';
+      let why = '';
+      if (Math.hypot(dx, du) > rho) why = fc.central && Math.hypot(dx, du) > cp.wheelR + cp.tube + 0.004 ? '' : 'rim';
+      else if (Math.abs(dx) < cp.pad + 0.004 && du < cp.pad * 0.8 + 0.004) why = 'hub';
       else for (const deg of cp.spokes) {
         const sa = deg * Math.PI / 180;
-        if (dx * Math.cos(sa) + du * Math.sin(sa) > 0 && Math.abs(-dx * Math.sin(sa) + du * Math.cos(sa)) < 0.022) blocked = 'spoke ' + deg;
+        if (dx * Math.cos(sa) + du * Math.sin(sa) > 0 && Math.abs(-dx * Math.sin(sa) + du * Math.cos(sa)) < 0.022) why = 'spoke ' + deg;
       }
+      if (fc.central) hidden += why ? 1 : 0;
+      else blocked = why;
     }
+    if (hidden > 6) blocked = 'central dials hidden at ' + hidden + ' of 24 points';
     ok(!blocked && fc.hw > 0.1 && fc.hh > 0.05, 'instrument dials visible through the steering wheel ' + car.id + ' ' + blocked + ' ' + fc.hw.toFixed(3) + 'x' + fc.hh.toFixed(3));
     const fe = (g.eye[2] + sh.len / 2) / sh.len;
     ok(g.eye[2] <= g.Z(sh.rt) - 0.15 && g.shape.topAt(fe) - g.eye[1] >= 0.08, 'driver head under the roof ' + car.id);
+  }
+});
+
+section('blueprints', () => {
+  const M = F.Models, BP = F.Blueprints, SK = F.Tex.SKIN;
+  const KINDS = new Set(['lamp', 'grille', 'mark', 'plate', 'badge']), USES = new Set(['head', 'fog', 'ind', 'side', 'tail', 'stop', 'rfog', 'rev', 'refl']), SHAPES = new Set(['round', 'rect', 'poly']);
+  const FILLS = new Set(['clear', 'fresnel', 'ribs', 'cells', 'dots', 'hbars', 'vbars', 'grid', 'mesh']);
+  const base = F.Cars.get('raf2203');
+  const sh = Object.assign({}, base.sh, { len: 5.0, wid: 1.94, hgt: 1.95, wb: 2.6, ws: 0.03, wt: 0.09, rt: 0.98, rb: 1, hood: 1.0, nose: 0.85, deck: 1.9, tail: 1.9 });
+  for (const k of ['lights', 'grille', 'bump']) delete sh[k];
+  const synth = Object.assign({}, base, { id: 'bp-test', sh });
+  BP.LIST[synth.id] = {
+    fo: 1.0,
+    side: { top: [[0, 0.85], [0.15, 1.0], [0.45, 1.85], [0.7, 1.95], [4.9, 1.95], [5.0, 1.9]], belt: [[0, 0.8], [0.2, 0.95], [0.6, 1.05], [4.9, 1.1], [5.0, 1.05]] },
+    plan: [[0, 0.88], [0.3, 0.95], [4.7, 0.97], [5.0, 0.9]],
+    roof: [[0, 0.8], [0.6, 0.9], [4.9, 0.9], [5.0, 0.85]],
+    sec: { tuck: 0.03, flank: 0.01, shoulder: 0.92, crown: 0.6, dome: 0.45 },
+    glass: { pillars: [[1.35, 0.08], [2.4, 0.06], [3.4, 0.06]], end: 4.85 },
+    engine: [0, 0.8, -1.9],
+    front: [
+      { k: 'lamp', use: 'head', shape: 'rect', s: 0.66, y: 0.66, w: 0.28, h: 0.13, rc: 0.05, bezel: 'chrome' },
+      { k: 'lamp', use: 'ind', shape: 'round', s: 0.66, y: 0.47, r: 0.04 },
+      { k: 'grille', shape: 'rect', s: 0, y: 0.66, w: 0.8, h: 0.11, fill: 'grid', bezel: 'black' },
+      { k: 'plate', y: 0.4 }
+    ],
+    rear: [
+      { k: 'lamp', use: 'tail', shape: 'rect', s: 0.82, y: 0.86, w: 0.1, h: 0.1 },
+      { k: 'lamp', use: 'ind', shape: 'rect', s: 0.82, y: 0.74, w: 0.1, h: 0.1 },
+      { k: 'lamp', use: 'rev', shape: 'rect', s: 0.82, y: 0.62, w: 0.1, h: 0.1 },
+      { k: 'plate', y: 0.62 },
+      { k: 'badge', x: -0.5, y: 1.0 }, { k: 'badge', x: 0.5, y: 1.0 }
+    ],
+    bump: { f: { kind: 'alu', y: 0.4, h: 0.1, out: 0.06, wrap: 0.18 }, r: { kind: 'alu', y: 0.42, h: 0.1, out: 0.06, wrap: 0.18 } }
+  };
+  try {
+    const ids = Object.keys(BP.LIST);
+    ok(ids.length >= 1 && ids.every(id => id === synth.id || F.Cars.get(id)), 'every blueprint belongs to a car: ' + ids.join(','));
+    for (const id of ids) {
+      const car = id === synth.id ? synth : F.Cars.get(id), s = car.sh, blue = BP.LIST[id], L = s.len, W = s.wid / 2, yb = s.clr + 0.07;
+      const bad = [];
+      for (const k of ['lights', 'grille', 'bump', 'tailRound', 'tailBand', 'fog']) if (s[k] !== undefined) bad.push('sh.' + k + ' is replaced by the blueprint');
+      const lines = Object.assign({ top: blue.side.top, belt: blue.side.belt, plan: blue.plan, roof: blue.roof }, blue.side.sill ? { sill: blue.side.sill } : {});
+      for (const [name, pts] of Object.entries(lines)) {
+        if (!(pts.length >= 2 && pts[0][0] === 0 && Math.abs(pts[pts.length - 1][0] - L) < 0.02 && pts.every((p, i) => i === 0 || p[0] > pts[i - 1][0]) && pts.every(p => p.every(Number.isFinite)))) bad.push(name + ' runs from 0 to the length');
+      }
+      const at = k => BP.line(lines[k]), crown = blue.sec && Array.isArray(blue.sec.crown) ? BP.line(blue.sec.crown) : null;
+      const sil = x => at('top')(x) + (crown ? Math.max(0, -crown(x)) * 0.025 : 0);
+      let hi = 0;
+      for (let x = 0; x <= L; x += 0.05) {
+        hi = Math.max(hi, sil(x));
+        if (at('belt')(x) > sil(x) + 1e-6) { bad.push('belt above the top at ' + x.toFixed(2)); break; }
+        if (at('roof')(x) > at('plan')(x) + 1e-6) { bad.push('roof wider than the body at ' + x.toFixed(2)); break; }
+        if (lines.sill && at('sill')(x) > at('belt')(x) - 0.2) { bad.push('sill too close to the belt at ' + x.toFixed(2)); break; }
+      }
+      if (Math.abs(hi - s.hgt) > 0.01) bad.push('top ' + hi.toFixed(3) + ' against height ' + s.hgt);
+      if (Math.abs(at('top')(s.ws * L) - s.hood) > 0.03) bad.push('windscreen base ' + at('top')(s.ws * L).toFixed(3) + ' against hood ' + s.hood);
+      if (Math.abs(Math.max(...blue.plan.map(p => p[1]), ...((blue.parts && blue.parts.fenders) || []).flat().map(q => q[3])) - W) > 0.01) bad.push('plan width');
+      if (!(blue.fo > s.wr && blue.fo + s.wb < L - s.wr)) bad.push('axles inside the body');
+      for (const end of ['front', 'rear']) {
+        const list = blue[end] || [], boxes = [];
+        for (const e of list) {
+          if (!KINDS.has(e.k)) { bad.push(end + ' kind ' + e.k); continue; }
+          if (e.k === 'lamp' && !USES.has(e.use)) bad.push(end + ' lamp use ' + e.use);
+          if ((e.k === 'lamp' || e.k === 'grille' || e.k === 'mark') && !SHAPES.has(e.shape)) bad.push(end + ' shape ' + e.shape);
+          if (e.fill && !FILLS.has(e.fill)) bad.push(end + ' fill ' + e.fill);
+          if (!(e.y > yb - 0.15 && e.y < s.hgt)) bad.push(end + ' ' + e.k + ' height ' + e.y);
+          if (e.k !== 'lamp' && e.k !== 'grille' && e.k !== 'mark') continue;
+          const hw = e.shape === 'round' ? e.r || e.w / 2 : e.shape === 'poly' ? Math.max(...e.pts.map(p => Math.abs(p[0]))) : e.w / 2;
+          const hh = e.shape === 'round' ? e.r || e.h / 2 : e.shape === 'poly' ? Math.max(...e.pts.map(p => Math.abs(p[1]))) : e.h / 2;
+          if (!(hw > 0.005 && hh > 0.005 && (e.s || 0) + hw <= W)) bad.push(end + ' ' + e.k + ' size or reach');
+          if (e.s && e.s - hw <= 0) bad.push(end + ' ' + e.k + ' overlaps its mirror');
+          if (e.k !== 'mark') for (const x of e.s ? [e.s, -e.s] : [0]) boxes.push([x - hw, e.y - hh, x + hw, e.y + hh, e.use || e.k]);
+        }
+        for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+          const a = boxes[i], c = boxes[j];
+          if (a[0] < c[2] - 0.002 && c[0] < a[2] - 0.002 && a[1] < c[3] - 0.002 && c[1] < a[3] - 0.002) bad.push(end + ' ' + a[4] + ' overlaps ' + c[4]);
+        }
+      }
+      if (!BP.items(blue, 'front', 'lamp', 'head').length || !BP.items(blue, 'rear', 'lamp', 'tail').length || (car.year >= 1960 && !BP.items(blue, 'rear', 'lamp', 'rev').length)) bad.push('head, tail and reverse lamps');
+      if (!(blue.bump && blue.bump.f && blue.bump.r && [blue.bump.f, blue.bump.r].every(e => e.y > yb - 0.1 && e.h > 0.02 && e.out >= 0))) bad.push('bumpers');
+      ok(!bad.length, 'blueprint data ' + id + (bad.length ? ': ' + bad.join('; ') : ''));
+    }
+    const problems = [], blue = BP.LIST[synth.id], L = sh.len, W = sh.wid / 2;
+    const tris = [];
+    for (const lod of [0, 1, 2]) {
+      const g = M.buildCar(synth, { lod }), r = scanBatch(g.batch), outer = g.cut ? (g.cut.b - g.cut.w) / 3 : r.t;
+      tris.push(outer);
+      if (r.bad.size || r.flipped || r.offSkin) problems.push('lod' + lod + ' ' + [...r.bad].join(',') + ' flipped ' + r.flipped + ' off skin ' + r.offSkin);
+      if (outer > [BLUE_BODY, 1100, 250][lod]) problems.push('lod' + lod + ' triangles ' + outer);
+      if (Math.abs(g.wheels[0].z - (-L / 2 + blue.fo)) > 1e-9 || Math.abs(g.wheels[2].z - g.wheels[0].z - sh.wb) > 1e-9) problems.push('axles at fo');
+      if (lod > 0) continue;
+      const lamps = (list, z) => list.length >= 2 && list.every(p => Math.abs(p[2] - z) < 0.1 && Math.abs(p[0]) < W);
+      if (!lamps(g.lightsF, -L / 2) || !lamps(g.lightsR, L / 2) || !lamps(g.lightsB, L / 2)) problems.push('lamp anchors');
+      const head = blue.front[0], tail = blue.rear[0];
+      if (!g.lightsF.some(p => Math.abs(p[0] - head.s) < 0.03 && Math.abs(p[1] - head.y) < 0.03)) problems.push('head lamp anchor');
+      if (!g.lightsR.some(p => Math.abs(p[0] + tail.s) < 0.03 && Math.abs(p[1] - tail.y) < 0.03)) problems.push('tail lamp anchor');
+      const fz = g.skin.fascia;
+      if (!fz || fz.length !== 11 ||!fz.every(e => e.pts.every(p => { const q = g.skin.px(e.where, p[0], p[1]); const rr = e.where === 'F' ? SK.front : SK.rear; return q[0] >= rr[0] && q[0] <= rr[0] + rr[2] && q[1] >= rr[1] && q[1] <= rr[1] + rr[3]; }))) problems.push('painted fascia inside the end regions ' + (fz && fz.length));
+      if (!(g.skin.badgeY === 1.0 && g.skin.badgeX[0] === -0.5)) problems.push('badges from the blueprint');
+      const lay = F.DMG.layout(synth, null);
+      if (Math.abs(lay.P.headR.a[0] - head.s) > 0.03 || Math.abs(lay.P.headR.a[1] - head.y) > 0.03 || Math.abs(lay.P.tailR.a[1] - tail.y) > 0.03) problems.push('damage lamp anchors');
+      if (Math.abs(lay.P.bumperF.a[1] - g.dmgInfo.bumperF.y) > 0.03 || Math.abs(lay.wheels[0][2] - g.wheels[0].z) > 1e-9 || lay.engine[2] !== -1.9) problems.push('damage bumper, axle or engine anchors');
+      const tagged = new Set(g.tags);
+      for (const p of [F.DMG.PART.headL, F.DMG.PART.headR, F.DMG.PART.tailL, F.DMG.PART.tailR, F.DMG.PART.bumperF, F.DMG.PART.bumperR]) if (!tagged.has(p)) problems.push('damage tag ' + p);
+    }
+    if (!(tris[0] > tris[1] && tris[1] > tris[2])) problems.push('levels of detail ' + tris.join('/'));
+    ok(!problems.length, 'synthetic blueprint van builds' + (problems.length ? ': ' + problems.join('; ') : ' ' + tris.join('/')));
+  } finally {
+    delete BP.LIST[synth.id];
   }
 });
 
@@ -302,8 +420,8 @@ section('driver', () => {
   const tall = D.rig({ hair: 'curly' }), flat = D.rig({ hair: 'bald' });
   ok(tall.crown > flat.crown + 0.01 && D.seatOf(F.Models.carGeo('viper'), tall.fig, 'm', tall.crown).head[1] <= D.seatOf(F.Models.carGeo('viper'), flat.fig, 'm', flat.crown).head[1], 'tall hair lowers the head in low cars');
   ok(/bool skinM = m > 20\.5 && m < 21\.5;/.test(read('js/apps/forza/fz-render.js')) && F.MAT.SKIN === 21, 'skin has its own material');
-  const REWARDS = /^(band(:[1-5])?|finale|stunts|drift|photo|barn:(p356|m300sl|gaz21|raf2203))$/;
-  ok(D.ITEMS.length === 67 && new Set(D.ITEMS.map(x => x.id)).size === 67 && D.SLOTS.length === 9, '67 wardrobe items in nine slots and the festival band');
+  const REWARDS = /^(band(:[1-5])?|finale|stunts|drift|photo|barn:(p356|m300sl|gaz21|raf2203|gazm20|gaz14))$/;
+  ok(D.ITEMS.length === 69 && new Set(D.ITEMS.map(x => x.id)).size === 69 && D.SLOTS.length === 9, '69 wardrobe items in nine slots and the festival band');
   const itemBad = D.ITEMS.filter(x => !(D.SLOTS.some(([sl]) => sl === x.slot) || x.slot === 'band') || !x.cols.length || !x.cols.every(c => /^#[0-9a-f]{6}$/i.test(c)) || !(x.band >= 0 && x.band <= 5) || (x.price === null ? !REWARDS.test(x.reward || '') : !(x.price >= 0 && !x.reward)));
   ok(!itemBad.length, 'every item has a slot, colours and a price or a reward: ' + itemBad.map(x => x.id).join(','));
   ok(D.STARTER.every(id => D.ITEM[id].price === 0) && D.ITEM.blazer.price === 45000 && D.ITEM.suit_vetra.band === 5 && D.ITEM.helmet_full.reward === 'finale', 'starter set is free, prices and conditions follow the plan');
@@ -406,6 +524,12 @@ section('driver', () => {
     let gifts = 0;
     for (let i = 0; i < 12; i++) { lg.addXp(F.EV.xpForLevel(lv.level)); gifts += lg.drain().filter(e => e.t === 'item' && e.why === 'level').length; }
     ok(lv.level === 13 && gifts === 2 && lv.wardrobe.length === W.STARTER.length + 2 && lv.wardrobe.slice(W.STARTER.length).every(id => W.ITEM[id].price > 0 && W.ITEM[id].band <= lv.band), 'every fifth level gives a boutique item from the open shelves');
+    ok(lv.gifts.join() === '5,10' && lv.cars.some(c => c.id === 'niva') && lv.cars.some(c => c.id === 'merc190') && lg.lateGifts().length === 0, 'level gift cars are recorded when they are given');
+    const lateGift = F.Cars.CARS.find(c => c.lateGift), kept = store.get(F.Profile.SAVE_KEY);
+    store.set(F.Profile.SAVE_KEY, JSON.stringify(Object.assign(F.Profile.newProfile('old'), { level: 35, gifts: undefined, cars: [{ uid: 1, id: 'vaz2105', up: {}, c1: '#fff', c2: '#fff', livery: 'none' }] })));
+    const old = F.Profile.loadProfile(), og = new F.Game(world, { profile: old }), late = og.lateGifts();
+    ok(lateGift && lateGift.gift <= 35 && late.join() === lateGift.id && old.cars.some(c => c.id === lateGift.id) && !old.cars.some(c => c.id === 'niva') && og.lateGifts().length === 0, 'an old save above the level gets the new gift car once and not the gifts it already had: ' + late.join(','));
+    if (kept === undefined) store.delete(F.Profile.SAVE_KEY); else store.set(F.Profile.SAVE_KEY, kept);
     let career = 0;
     for (const e of F.EV.EVENTS) if (e.id !== 'prologue') career += (e.id === 'finale' ? 100000 : F.EV.CLASS_PAY[e.cls] * (e.type === 'showcase' ? 1.5 : 1)) * 1.05;
     for (let l = 2; l <= 27; l++) career += F.EV.levelReward(l).cr;
@@ -540,12 +664,13 @@ section('driver', () => {
 
 section('cluster', () => {
   require(path.join(DIR, 'fz-hud.js'));
-  const K = F.Cluster, KINDS = new Set(['speed', 'rpm', 'boost', 'fuel', 'temp', 'oil', 'volt']);
+  const K = F.Cluster, KINDS = new Set(['speed', 'rpm', 'boost', 'fuel', 'temp', 'oil', 'volt', 'clockH', 'clockM']);
   for (const car of F.Cars.CARS) {
     const sp = F.Cars.spec(car.id, {}), lay = K.layoutOf(car, sp), bad = [];
     const inBox = (x, y, rx, ry) => x - rx >= 0 && x + rx <= 512 && y - ry >= 0 && y + ry <= 256;
     if (!K.PALETTES[F.COCK[car.cock].face]) bad.push('palette');
-    if (!lay.dials.some(d => d.k === 'speed' || d.k === 'rpm')) bad.push('no main dial');
+    if (!lay.dials.some(d => d.k === 'speed' || d.k === 'rpm') && !(lay.lcd.some(l => l.k === 'speed') && lay.lcd.some(l => l.k === 'revs'))) bad.push('no main dial');
+    if (lay.lcd.some(l => K.SLOTS[l.k] && K.SLOTS[l.k][1] >= 96) !== (K.lcdH(lay) === 192)) bad.push('lcd canvas height');
     for (const d of lay.dials) {
       if (!KINDS.has(d.k)) bad.push('kind ' + d.k);
       if (!d.fan && !inBox(d.x, d.y, d.r + 5, d.r + 5)) bad.push('dial outside ' + d.k);
@@ -558,10 +683,20 @@ section('cluster', () => {
     const inset = (big, small) => {
       if (Math.hypot(small.x - big.x, small.y - big.y) + small.r + 5 > big.r * 0.97) return false;
       const ang = Math.atan2(small.x - big.x, big.y - small.y) * 180 / Math.PI;
-      return ang < big.a0 || ang > big.a1;
+      return ang < big.a0 || ang > big.a1 || Math.hypot(small.x - big.x, small.y - big.y) + small.r <= big.r * 0.62;
     };
+    const hands = (p, q) => /^clock/.test(p.k) && /^clock/.test(q.k) && p.x === q.x && p.y === q.y && p.r === q.r;
+    for (const rg of lay.rings || []) {
+      if (!inBox(rg.x, rg.y, rg.r + 5, rg.r + 5)) bad.push('ring outside');
+      for (const d of round) if (!d.bare && Math.hypot(d.x - rg.x, d.y - rg.y) < d.r + rg.r + 4) bad.push('ring overlaps ' + d.k);
+    }
+    const inOval = d => (lay.plates || []).some(p => p.oval && ((d.x - p.x) / (p.w / 2 - d.r)) ** 2 + ((d.y - p.y) / (p.h / 2 - d.r)) ** 2 <= 1);
+    for (const d of lay.dials) if (d.bare && !inOval(d) && !(lay.rings || []).some(rg => Math.hypot(d.x - rg.x, d.y - rg.y) + d.r <= rg.r)) bad.push('bare dial outside its ring ' + d.k);
+    for (const d of lay.dials) if (d.from && !(d.fan && d.from < (d.len || 0.86))) bad.push('needle start ' + d.k);
+    for (const d of lay.dials) if (/^clock/.test(d.k) && (d.a1 - d.a0 !== 360 || !lay.dials.some(q => q !== d && hands(d, q)))) bad.push('clock hands ' + d.k);
     for (let i = 0; i < round.length; i++) for (let j = i + 1; j < round.length; j++) {
       const p = round[i], q = round[j];
+      if (hands(p, q)) continue;
       if (Math.hypot(p.x - q.x, p.y - q.y) < p.r + q.r + 4 && !inset(p, q) && !inset(q, p)) bad.push('dials overlap ' + p.k + '/' + q.k);
     }
     const boxes = lay.lcd.map(l => [l.x - l.w / 2, l.y - l.h / 2, l.x + l.w / 2, l.y + l.h / 2]).concat(lay.lamps.map(l => [l.x - 9, l.y - 9, l.x + 9, l.y + 9]));
@@ -934,10 +1069,11 @@ section('wrecks', () => {
   const problems = [];
   for (const car of F.Cars.CARS) {
     const sh = car.sh, wing = F.Cars.spec(car.id, {}).wing || null, g = M.carGeo(car.id, wing);
+    const blue = F.Blueprints.of(car), mo = blue && blue.parts && blue.parts.mirror, mirrors = mo && mo.side ? ['mirror' + mo.side] : ['mirrorL', 'mirrorR'];
     for (let lod = 0; lod < 3; lod++) {
       const tags = g.tagLods[lod], has = p => tags.some(t => t === p);
       if (!tags || tags.length !== g.lods[lod].n) { problems.push(car.id + '/lod' + lod + ' tags'); continue; }
-      const want = ['bumperF', 'bumperR', 'glassF'].concat(sh.ws > 0.12 ? ['hood'] : [], !(sh.suv || sh.van) && sh.rb < 0.9 ? ['trunk'] : [], lod < 2 ? ['mirrorL', 'mirrorR'] : [], wing && (lod < 2 || wing !== 'lip') ? ['wing'] : [], sh.lights !== 'hidden' && sh.lights !== 'popup' ? ['headL', 'headR'] : [], lod < 2 ? ['tailL', 'tailR'] : []);
+      const want = ['bumperF', 'bumperR', 'glassF'].concat(sh.ws > 0.12 ? ['hood'] : [], !(sh.suv || sh.van) && sh.rb < 0.9 ? ['trunk'] : [], lod < 2 ? mirrors : [], wing && (lod < 2 || wing !== 'lip') ? ['wing'] : [], sh.lights !== 'hidden' && sh.lights !== 'popup' ? ['headL', 'headR'] : [], lod < 2 ? ['tailL', 'tailR'] : []);
       const miss = want.filter(n => !has(P[n]));
       if (miss.length) problems.push(car.id + '/lod' + lod + ' untagged ' + miss.join(','));
     }
@@ -1882,6 +2018,109 @@ section('bridges', () => {
   ok(lamps.length > 20 && outward.length === 0, 'bridge lamps hang over the road: ' + outward.length + ' of ' + lamps.length + ' face away');
 });
 
+section('outskirts', () => {
+  require(path.join(DIR, 'fz-backdrop.js'));
+  const o = world.out, b = world.b, L = o.limit, toEdge = (x, z) => Math.min(x - b.x0, b.x1 - x, z - b.z0, b.z1 - z);
+  const ends = world.nodes.filter(nd => nd.arms.length === 1 && nd.arms[0].e.k.lanes && toEdge(nd.x, nd.z) < 30);
+  const exits = [...o.exits.entries()];
+  const shape = exits.filter(([id, r]) => {
+    const nd = world.nodes[id], A = r.arm, e = A.e, n = e.pts.length, end = A.end ? n - 1 : 0, back = A.end ? n - 4 : 3, far = r.pts[r.pts.length - 1];
+    const tx = e.pts[end][0] - e.pts[back][0], tz = e.pts[end][1] - e.pts[back][1], ux = r.pts[1][0] - r.pts[0][0], uz = r.pts[1][1] - r.pts[0][1];
+    const along = nd.arms.length > 1 || (tx * ux + tz * uz) / Math.hypot(tx, tz) / Math.hypot(ux, uz) > 0.98;
+    return along && Math.hypot(r.pts[0][0] - nd.x, r.pts[0][1] - nd.z) < 0.01 && r.kind === e.kind && r.name === e.name && Math.abs(r.y[0] - (nd.arms.length > 1 ? nd.y : e.y[end])) < 0.01 && world.edgeDist(far[0], far[1]) > 1300;
+  });
+  ok(ends.length >= 16 && ends.every(nd => o.exits.has(nd.id)) && exits.length === ends.length + 1 && shape.length === exits.length, 'every road that ran into the edge of the map goes on beyond it: same name, kind, width and height at the joint and 1.3 km of road outside: ' + shape.length + ' of ' + exits.length);
+  ok(o.roads.filter(r => r.a < 0).length >= 3 && o.roads.filter(r => r.side).length >= 12 && o.lamps.length > 200 && world.edges.every(e => !e.outer), 'cross streets, pavements and lamps continue outside, and the outer roads stay out of the road network: ' + o.lamps.length + ' lamps');
+  let step = 0, where = '';
+  for (const [, r] of exits) {
+    const tx = r.pts[1][0] - r.pts[0][0], tz = r.pts[1][1] - r.pts[0][1], l = Math.hypot(tx, tz), ux = tx / l, uz = tz / l;
+    for (const lat of [-0.8, 0.8]) {
+      let prev = null;
+      for (let s = -30; s <= 30; s += 0.5) {
+        const y = world.ground(r.pts[0][0] + ux * s - uz * lat, r.pts[0][1] + uz * s + ux * lat, r.y[0] + 2);
+        if (prev !== null && Math.abs(y - prev) > step) { step = Math.abs(y - prev); where = r.name + ' ' + s; }
+        prev = y;
+      }
+    }
+  }
+  ok(step < 0.15, 'a car drives from the end of a street onto its continuation without a step: ' + step.toFixed(2) + ' at ' + where);
+  let jump = 0;
+  for (let t = 0; t <= 1; t += 0.002) {
+    for (const [x, z, dx, dz] of [[b.x0 + t * (b.x1 - b.x0), b.z0, 0, -1], [b.x0 + t * (b.x1 - b.x0), b.z1, 0, 1], [b.x0, b.z0 + t * (b.z1 - b.z0), -1, 0], [b.x1, b.z0 + t * (b.z1 - b.z0), 1, 0]]) jump = Math.max(jump, Math.abs(world.terrainH(x + dx, z + dz) - world.terrainH(x - dx, z - dz)));
+  }
+  ok(jump < 0.55, 'the ground goes on past the edge of the map without a step: ' + jump.toFixed(2) + ' m over 2 m');
+  const water = (x, z) => world.outWater(x, z) < 0;
+  ok([[0, -3500], [3000, -3200], [-4000, -3000], [5000, -3500]].every(p => water(...p)) && [[-4000, 2650], [-3600, 2080], [3200, 3150], [4200, 3760]].every(p => water(...p)) && !water(4000, 0) && !water(-4000, -1800), 'the gulf, the Lielupe and the Daugava go on to the horizon');
+  const onRoad = (x, z, pad) => o.grid.query(x - 30, z - 30, x + 30, z + 30, [], F.stamp()).some(sg => F.segDist(x, z, sg.ax, sg.az, sg.bx, sg.bz).d < sg.hw + sg.side + pad);
+  const homes = o.buildings.filter(bd => bd.poly.concat([[bd.x, bd.z]]).every(p => world.outside(p[0], p[1]) && !onRoad(p[0], p[1], 0.3) && !water(p[0], p[1])));
+  const styles = new Set(o.buildings.map(bd => bd.style)), kinds = new Set(o.trees.map(t => t.kind));
+  ok(o.buildings.length > 1500 && homes.length === o.buildings.length && ['soviet', 'wood', 'villa', 'industry'].every(s => styles.has(s)) && o.buildings.some(bd => bd.jv), 'blocks, wooden houses, Jūrmala villas and works stand beyond the edge, never on a road, in water or inside the map: ' + o.buildings.length);
+  ok(o.trees.length > 20000 && o.trees.every(t => world.outside(t.x, t.z) && !water(t.x, t.z) && (t.street || !onRoad(t.x, t.z, 0.3))) && ['pine', 'spruce', 'birch', 'linden', 'apple'].every(k => kinds.has(k)), 'forests, yards and street trees grow beyond the edge: ' + o.trees.length + ' trees');
+  ok(o.rail && Math.hypot(o.rail.pts[0][0] - world.rail.pts[world.rail.pts.length - 1][0], o.rail.pts[0][1] - world.rail.pts[world.rail.pts.length - 1][1]) < 0.01 && world.edgeDist(...o.rail.pts[o.rail.pts.length - 1]) > 1300, 'the Jūrmala railway runs on to the west');
+  ok(!world.colliders(b.x1 - 12, -20, b.x1, 20).some(c => c.k === 'seg' && c.y1 >= 500) && !world.props.some(p => p.type === 'rblock'), 'no invisible wall and no road blocks at the edge of the map');
+  let grassy = 0;
+  for (let x = 3700; x < 4400; x += 37) for (let z = -1000; z < 1000; z += 41) if (world.coverAt(x, z) > 0) grassy++;
+  ok(o.buildings.concat(o.trees).every(q => Math.abs(q.y - world.terrainH(q.x, q.z)) < (q.poly ? 3 : 0.01)) && grassy > 400 && world.coverAt(4000, -126) === 0, 'buildings, trees and grass outside stand on the same ground the physics uses, and no grass grows on the roads: ' + grassy + ' grassy spots');
+
+  const profile = F.Profile.newProfile('edge');
+  profile.settings.traffic = 0;
+  const game = new F.Game(world, { profile });
+  game.mode = 'free';
+  let over = 0, decel = 0, hits = 0, stopped = 0, hint = 0;
+  for (const [x, z, tx, tz] of [[3300, -130, 1, 0], [-60, 2500, -0.301, 0.954], [-3000, -1490, -0.951, -0.308], [3400, 2480, 0.757, 0.653]]) {
+    const nr = world.nearestRoad(x, z, 80);
+    game.veh.place(nr.x, nr.z, Math.atan2(tx, -tz), world);
+    let pv = null;
+    for (let i = 0; i < 60 * 30; i++) {
+      game.step(1 / 60, { thr: 1, brk: 0, steer: 0 });
+      const v = game.veh;
+      over = Math.max(over, v.x - L.x1, L.x0 - v.x, v.z - L.z1, L.z0 - v.z);
+      if (pv) decel = Math.max(decel, Math.hypot(v.vx - pv[0], v.vz - pv[1]) * 60);
+      pv = [v.vx, v.vz];
+      if (v.edgeT > 0) hint++;
+      for (const e of game.drain()) if (e.t === 'hit' || e.t === 'dent') hits++;
+    }
+    if (game.veh.speed < 1) stopped++;
+  }
+  ok(over < 0.01 && stopped === 4 && hint > 0 && hits === 0 && decel < 20, 'full throttle into the edge: the car slows down without a crash and stops at the border of the map: ' + over.toFixed(3) + ' m over, ' + decel.toFixed(1) + ' m/s² at most');
+  ok(L.x0 > b.x0 && L.x1 < b.x1 && L.z0 > b.z0 && L.z1 < b.z1 && L.race > L.brake, 'the border sits just inside the edge of the ground and brakes harder during a race');
+
+  const T = game.traffic;
+  profile.settings.traffic = T.density = 1.5;
+  T.clear();
+  const at = world.nearestRoad(3480, -130, 40);
+  game.veh.place(at.x, at.z, Math.PI / 2, world);
+  const last = new Map(), uturns = new Set();
+  let out = 0, inn = 0;
+  for (let i = 0; i < 60 * 120; i++) {
+    game.veh.vx = game.veh.vz = 0;
+    T.update(1 / 60, game.veh);
+    for (const c of T.cars) {
+      const p = last.get(c.uid);
+      if (p !== undefined && p <= b.x1 && c.x > b.x1) out++;
+      if (p !== undefined && p > b.x1 && c.x <= b.x1) inn++;
+      if (c.plan && c.plan.uturn && o.exits.has(c.plan.node)) uturns.add(c.uid);
+      last.set(c.uid, c.x);
+    }
+  }
+  ok(out >= 3 && inn >= 1 && uturns.size === 0, 'traffic drives out past the edge and comes back in, nobody turns round at the end of a street: ' + out + ' out, ' + inn + ' in');
+  T.clear();
+  const seen = new Set(game.roadsSeen);
+  game.veh.place(at.x, at.z, Math.PI / 2, world);
+  for (let i = 0; i < 60 * 30; i++) game.step(1 / 60, { thr: 0, brk: 1, steer: 0 });
+  const found = [...game.roadsSeen].filter(id => !seen.has(id));
+  ok(found.every(id => world.edges[id] && world.edges[id].name === at.e.name), 'roads are discovered by the player\'s wheels, not by passing traffic: ' + found.length);
+
+  const sc = new F.Scene(world, { lazy: true });
+  while (!sc.ready) sc.stepBuild();
+  const outer = sc.chunks.filter(c => c.outer), filled = c => ['ground', 'water'].some(k => c.groups[k] && !c.groups[k].empty);
+  ok(outer.length > 600 && outer.every(filled) && outer.some(c => c.groups.road4) && outer.some(c => c.groups.panel9b) && outer.some(c => c.groups.trees) && outer.some(c => c.props.length), 'the scene adds a ring of chunks with ground, water, roads, houses, trees and lamps: ' + outer.length);
+  ok([[b.x1 + 600, 0], [b.x0 - 600, 0], [0, b.z1 + 700], [0, b.z0 - 900], [b.x1 + 1400, b.z1 + 1400]].every(([x, z]) => { const c = sc.chunkAt(x, z); return c.outer && x >= c.x0 && x < c.x1 && z >= c.z0 && z < c.z1; }), 'points beyond the edge land in their own chunks');
+  const groups = [];
+  for (const c of outer) for (const k of ['ground', 'water', 'road4', 'road2', 'lane', 'pave']) if (c.groups[k]) groups.push(c.groups[k]);
+  ok(!meshProblems(groups, F.STRIDE).length, 'outer ground, water and road meshes are valid: ' + meshProblems(groups, F.STRIDE).join(', '));
+});
+
 section('traffic', () => {
   const profile = F.Profile.newProfile('traffic');
   profile.settings.traffic = 1.5;
@@ -2182,6 +2421,17 @@ section('audio', () => {
   ok(a.rain.g.gain.value === 0 && !a.raining, 'the title screen has no rain');
   ok(through(() => a.sample('ambient')).every(o => o === a.amb) && through(() => a.sample('ambient')).length === 1, 'the ambient slider plays a rain sample on its own bus');
   ok(through(() => a.sample('engine')).every(o => o === a.engBus) && through(() => a.sample('music')).every(o => o === a.music) && !a.sample('sfx') && !a.sample('vol'), 'engine and radio sliders play samples on their buses');
+  a.setEngineType('diesel');
+  a.update({ rpm: 800, thr: 0, speed: 0, skid: 0, rough: 0 });
+  const idle = a.clatG.gain.value;
+  a.update({ rpm: 4200, thr: 1, speed: 30, skid: 0, rough: 0 });
+  ok(idle > 0 && a.clatG.gain.value < idle && a.clatG.out[0] === a.engBus, 'a diesel clatters at idle on the engine bus');
+  a.setEngineType('i5');
+  a.update({ rpm: 3000, thr: 0.5, speed: 20, skid: 0, rough: 0 });
+  ok(a.osc1.frequency.value === 125 && a.lfo.frequency.value === 25, 'a five-cylinder fires two and a half times per turn and warbles at half the crank speed');
+  a.setEngineType('i4');
+  a.update({ rpm: 800, thr: 0, speed: 0, skid: 0, rough: 0 });
+  ok(a.clatG.gain.value === 0, 'petrol engines do not clatter');
   a.destroy();
   delete globalThis.AudioContext;
   const def = F.Profile.defaultSettings();

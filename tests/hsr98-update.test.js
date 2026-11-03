@@ -136,7 +136,7 @@ check('the first start of a new version says so', () => {
 check('the APK asks for the install permission and keeps the bridge methods', () => {
   assert.match(fs.readFileSync(path.join(ROOT, 'tools/hsr98-standalone/android/AndroidManifest.xml'), 'utf8'), /android\.permission\.REQUEST_INSTALL_PACKAGES/);
   const java = fs.readFileSync(path.join(ROOT, 'tools/hsr98-standalone/android/MainActivity.java'), 'utf8');
-  for (const m of ['versionCode()', 'checkUpdate(final String channel)', 'downloadUpdate(final String url', 'cancelUpdate()', 'installUpdate()', 'openInstallSettings()']) assert.ok(java.includes('public ' + (m === 'versionCode()' ? 'String ' : 'void ') + m), m);
+  for (const m of ['versionCode()', 'clipboardText()', 'copyText(String text)', 'checkUpdate(final String channel)', 'downloadUpdate(final String url', 'cancelUpdate()', 'installUpdate()', 'openInstallSettings()']) assert.ok(java.includes('public ' + (m === 'versionCode()' || m === 'clipboardText()' ? 'String ' : 'void ') + m), m);
   assert.match(java, /url\.startsWith\(UPDATE_BASE\)/);
   assert.match(java, /PackageInstaller\.SessionParams\.MODE_FULL_INSTALL/);
 });

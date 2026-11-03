@@ -13,7 +13,8 @@
     stars: { name: 'Звездочёты', body: '#b89860', dark: '#2a3050', colors: ['#c09040', '#1a2a5a', '#f0f4f8', '#f0d060', '#a0603a', '#4a5260'] },
     spore: { name: 'Грибница', body: '#9a8aa8', dark: '#3a2a46', colors: ['#5a3a6a', '#a0e0a0', '#c8d0d8', '#c03020', '#3a2e26', '#e8dcc0'] },
     neutral: { name: 'Нейтралы', body: '#9a8a7a', dark: '#3a3028', colors: ['#7a6a5a', '#b0a080', '#5a6a4a', '#8a8a8a'] },
-    summon: { name: 'Призванные', body: '#6a8a52', dark: '#2a3a20', colors: ['#2a4a2a', '#5a3a22', '#7a8a5a'] }
+    summon: { name: 'Призванные', body: '#6a8a52', dark: '#2a3a20', colors: ['#2a4a2a', '#5a3a22', '#7a8a5a'] },
+    machine: { name: 'Машины', body: '#8a7048', dark: '#3a2c18', colors: ['#5a4426', '#b09868', '#6a6a70'] }
   };
   A.TEAM_KEY = '#ff00ff';
 
@@ -116,7 +117,7 @@
       ['devourer', 7, 'b', 'Кракен-пожиратель', 'serpent', 'big skill', 'огромная пасть-клюв']
     ],
     forge: [
-      ['apprentice', 1, '', 'Подмастерья горна', 'foot', '', 'закопчённые парни в фартуках с молотками, искры'],
+      ['apprentice', 1, '', 'Подмастерья', 'foot', '', 'закопчённые парни в фартуках с молотками, искры'],
       ['hammerer', 1, 'a', 'Молотобойцы', 'foot', '', 'тяжёлые кувалды'],
       ['stoker', 1, 'b', 'Кочегары', 'shooter', 'shoot', 'лопаты и мешки угля, бросают угли'],
       ['salamander', 2, '', 'Саламандры', 'beast', '', 'ящеролюди с огненными прожилками на коже'],
@@ -233,7 +234,15 @@
       ['ancientlizard', 7, '', 'Древний ящер', 'serpent', 'big fly', 'старый крылатый ящер, пламя по линии']
     ],
     summon: [
-      ['forestgiant', 6, '', 'Лесной великан', 'heavy', 'big', 'великан из стволов и мха, в волосах птичьи гнёзда, призван заклинанием']
+      ['woodtree', 4, '', 'Пробуждённое древо', 'heavy', '', 'заросль, вставшая на корни: кривой ствол, ветки вместо рук'],
+      ['forestgiant', 6, '', 'Лесной великан', 'heavy', 'big', 'великан из стволов и мха, в волосах птичьи гнёзда, призван заклинанием'],
+      ['moonking', 7, '', 'Лунный царь', 'idol', 'big fly', 'призрак древнего царя в серебряном венце и белой мантии, лица не видно за светом']
+    ],
+    machine: [
+      ['ballista', 4, '', 'Стреломёт', 'engine', 'shoot', 'большой станковый самострел на деревянной раме с колёсами, расчёт из одного стрелка'],
+      ['tent', 4, '', 'Лекарский шатёр', 'engine', '', 'белый шатёр с красной полосой, у входа стол с бинтами и котёл'],
+      ['wagon', 4, '', 'Повозка с припасами', 'engine', '', 'крытая телега с бочонками и связками болтов, лошадь распряжена'],
+      ['catapult', 4, '', 'Катапульта', 'engine', '', 'деревянная катапульта с камнем в ложке, противовес на цепи']
     ]
   };
   A.ADDON = ['stars', 'spore'];
@@ -264,6 +273,11 @@
   A.PORTRAITS = list('portrait', [
     ['adelina', 'Аделина Корвен', 'капитан стражи Звонграда, около 30 лет, тёмные волосы под шлемом-капеллиной, шрам на подбородке'],
     ['malse', 'Хендрик Мальс', 'бургомистр Звонграда, полный, в бархате и золотой цепи, бегающий взгляд'],
+    ['bellman', 'Старый Тис', 'звонарь с колокольни у Мельничного Брода, за шестьдесят, сутулый, большие руки в мозолях, туг на ухо'],
+    ['sergeant', 'Йорис Бок', 'сержант стражи Звонграда, за сорок, сломанный нос, седина на висках, потёртый кожаный шлем'],
+    ['cloak', 'Белый плащ', 'человек Ордена Зеркала, лицо в тени капюшона, чистый белый плащ, зеркальная застёжка'],
+    ['spirit', 'Пленный дух', 'тень степного воина в цепях Лиги, бледное лицо, соль на бровях, смотрит прямо'],
+    ['guildman', 'Цеховой старшина', 'глава цеха Звонграда, широкий, седые усы, кожаный передник поверх бархата'],
     ['aisulu', 'Айсулу', 'молодая шаманка степи, 17 лет, белый войлочный колпак, косы с бусами, внимательные глаза'],
     ['kaidar', 'Кайдар-хан', 'дух хана: соляная маска, шлем с бармицей, свет в пустых глазницах'],
     ['vedana', 'Ведана', 'ведунья лет сорока, русые косы, венок из полыни, рубаха с вышивкой'],
@@ -290,10 +304,39 @@
     ['ketebai', 'Кетебай', 'мёртвый проводник караванов, лицо замотано платком, видны только светлые глаза'],
     ['kulpash', 'Кулпаш', 'старая шаманка, морщинистое лицо, белый войлочный колпак, соль на ресницах'],
     ['saryg', 'Сарыг-кам', 'шаман средних лет, иней в бороде, шапка из белого тура, бубен у плеча'],
-    ['erden', 'Ерден', 'молодой хранитель преданий, бритая голова, узор родов на шее, внимательный взгляд']
+    ['erden', 'Ерден', 'молодой хранитель преданий, бритая голова, узор родов на шее, внимательный взгляд'],
+    ['yarina', 'Ярина', 'ловчая лет тридцати, седая прядь, волчья шкура на плече, цепкий взгляд'],
+    ['miroslav', 'Мирослав', 'седой проводник с обветренным лицом, берестяная шапка, лосиный рог на шнуре'],
+    ['gorazd', 'Горазд', 'жилистый охотник, короткая борода, пучок силков на поясе'],
+    ['lubava', 'Любава', 'молодая ловчая, рыжие косы, хитрая улыбка, на плече сидит аука'],
+    ['zvenislav', 'Звенислав', 'худой ведун, бывший звонарь, берестяная трещотка, шрам от ожога на щеке'],
+    ['milava', 'Милава', 'полная женщина с янтарными бусами, цепкий взгляд торговки'],
+    ['velimir', 'Велимир', 'болотный ведун, разноцветные глаза, тина в бороде'],
+    ['zmey', 'Змей', 'огромная зелёная голова с жёлтыми глазами, чешуя в ряске, усталая усмешка'],
+    ['luar', 'Луар', 'старый китобой, левой руки нет, панцирные наплечники, глубокие морщины'],
+    ['ellar', 'Эллар', 'поджарый вожак с соляными разводами на коже, узкие глаза, жгут из водорослей на лбу'],
+    ['rolle', 'Ролэ', 'широкий спокойный вожак, панцирный ворот, кусочки ракушки в бороде'],
+    ['arla', 'Арла', 'весёлая женщина с нитями жемчуга, короткие волосы, шрам через бровь'],
+    ['oola', 'Оола', 'седая певчая с большой раковиной на шнуре, полузакрытые глаза'],
+    ['lerei', 'Лэрей', 'тонкий жрец в соляной корке на плечах, белёсые брови, хитрый взгляд'],
+    ['mirael', 'Мираэль', 'молодая жрица с волосами-водорослями, кораллы в косах, очень тихое лицо'],
+    ['brant', 'Брант', 'широкий мужик с шлаковой пылью в бороде, плечи как у великана'],
+    ['kerm', 'Керм Наковальня', 'кряжистый горновой с перебитым носом и шрамом поперёк лба'],
+    ['tamma', 'Тамма Кремень', 'седеющая женщина с серными пятнами на рукавах, прищур торговки'],
+    ['ilm', 'Ильм', 'спокойный пламенник с лысой головой, на лбу угольный знак'],
+    ['ruta', 'Рута Зола', 'молодая пламенница, волосы в саже, капли пара на лице'],
+    ['seyra', 'Сейра', 'смуглая пламенница в жёлтом шарфе, серные бусы, улыбка без глаз'],
+    ['otta', 'Отта Сажа', 'пламенница с чёрными пальцами, обугленный посох, внимательные глаза'],
+    ['marcella', 'Марцелла Вирт', 'рыцарь Престола лет сорока, коротко стриженные седые волосы, белые латы, шрам у брови'],
+    ['decius', 'Деций Арн', 'смотритель оленей, обветренное лицо, серебряная серьга-полумесяц, плащ с оленьими рогами на застёжке'],
+    ['octavia', 'Октавия Сол', 'знаменосица, крепкая, тёмная коса под шлемом с гребнем, серебряное знамя за плечом'],
+    ['cassian', 'Кассиан Мор', 'зерцальщик средних лет, гладко выбрит, разные глаза, зеркальная пластина на груди'],
+    ['lucretia', 'Лукреция Вейн', 'казначейша Престола, высокий воротник, серебряные кольца на всех пальцах, прищур'],
+    ['cornelius', 'Корнелий Дан', 'старый служитель Белого храма, белая борода, венец-полумесяц, добрые усталые глаза'],
+    ['sabina', 'Сабина Квинт', 'молодая жрица рассвета, светлые волосы в узле, белая мантия с золотой каймой']
   ], { size: [64, 64] });
 
-  const TERRAINS = [['meadow', 'Луг'], ['steppe', 'Степь'], ['palegrass', 'Бледный луг'], ['forest', 'Лес'], ['swamp', 'Болото'], ['sand', 'Песок'], ['saltflat', 'Солончак'], ['highland', 'Нагорье и снег'], ['ash', 'Пепел'], ['lava', 'Лава'], ['water', 'Вода'], ['cave', 'Пещерный пол'], ['fungal', 'Грибной мох'], ['rock', 'Скалы']];
+  const TERRAINS = [['meadow', 'Луг'], ['steppe', 'Степь'], ['palegrass', 'Бледный луг'], ['forest', 'Лес'], ['swamp', 'Болото'], ['sand', 'Песок'], ['saltflat', 'Солончак'], ['highland', 'Нагорье и снег'], ['ash', 'Пепел'], ['lava', 'Лава'], ['water', 'Вода'], ['cave', 'Пещерный пол'], ['fungal', 'Грибной мох'], ['rock', 'Скалы'], ['thicket', 'Бурелом']];
   A.TERRAINS = TERRAINS.map(([id, name]) => ({ id: 'terrain/' + id, kind: 'terrain', name, size: [32, 32], frames: id === 'water' || id === 'lava' ? '3 целых плитки и 16 краёв, по 8 кадров анимации' : '3 целых плитки и 16 краёв по углам', look: '' }));
   A.ROADS = list('road', [['dirt', 'Грунтовая дорога'], ['paved', 'Мощёная дорога'], ['moon', 'Лунная дорога', 'белые плиты с серебряными прожилками'], ['river', 'Река'], ['muddy', 'Мутная река']], { size: [32, 32], frames: '16 форм' });
 
@@ -305,18 +348,18 @@
     ['atkstone', 'Камень натиска', [2, 2], ''], ['ancestorshield', 'Щит предков', [2, 2], ''], ['charmspring', 'Источник чар', [2, 2], '4 кадра'], ['sagescroll', 'Свиток мудреца', [2, 2], ''], ['knowledgetree', 'Древо познания', [3, 3], ''], ['witchhut', 'Хижина ведуна', [2, 2], ''], ['camp', 'Учебный лагерь', [3, 2], ''], ['arena', 'Арена', [3, 3], ''],
     ['shrine1', 'Святилище 1 круга', [2, 2], ''], ['shrine2', 'Святилище 2 круга', [2, 2], ''], ['shrine3', 'Святилище 3 круга', [2, 2], ''], ['weekaltar', 'Алтарь недели', [2, 2], 'цвет луны недели'], ['library', 'Библиотека', [3, 2], ''],
     ['chapel', 'Часовня', [2, 2], ''], ['luckspring', 'Родник удачи', [2, 1], ''], ['idol', 'Идол', [1, 1], ''], ['graveyard', 'Погост', [3, 2], ''],
-    ['portal1', 'Портал в одну сторону', [2, 2], '8 кадров'], ['portal2', 'Портал в обе стороны', [2, 2], '8 кадров'], ['moongate', 'Лунные врата', [3, 2], 'закрыты и открыты, 8 кадров'], ['shipyard', 'Верфь', [3, 3], 'флаг'], ['boat', 'Лодка', [2, 1], '8 направлений, флаг'], ['whirlpool', 'Водоворот', [2, 2], '8 кадров'], ['stairsdown', 'Спуск в Подлунье', [2, 2], ''], ['stairsup', 'Ход наверх', [2, 2], ''], ['ferry', 'Паром', [2, 1], ''],
-    ['watchtower', 'Дозорная башня', [2, 2], ''], ['observatory', 'Обсерватория', [3, 3], ''], ['cartographer', 'Картограф', [2, 2], ''],
+    ['portal1', 'Портал в одну сторону', [2, 2], '8 кадров'], ['portal2', 'Портал в обе стороны', [2, 2], '8 кадров'], ['moongate', 'Лунные врата', [3, 2], 'закрыты и открыты, 8 кадров'], ['shipyard', 'Верфь', [3, 3], 'флаг'], ['boat', 'Лодка', [1, 1], '8 направлений, флаг'], ['whirlpool', 'Водоворот', [2, 2], '8 кадров'], ['stairsdown', 'Спуск в Подлунье', [2, 2], ''], ['stairsup', 'Ход наверх', [2, 2], ''], ['ferry', 'Паром', [2, 1], ''],
+    ['caravan', 'Обоз', [1, 1], 'флаг, идёт 8 направлений'], ['watchtower', 'Дозорная башня', [2, 2], ''], ['observatory', 'Обсерватория', [3, 3], ''], ['cartographer', 'Картограф', [2, 2], ''],
     ['market', 'Рынок', [3, 2], ''], ['fair', 'Ярмарка', [3, 2], ''], ['blackmarket', 'Чёрный рынок', [2, 2], ''], ['inn', 'Придорожная таверна', [3, 2], ''], ['mercenarycamp', 'Наёмничий лагерь', [3, 2], ''], ['changeforge', 'Кузня перемен', [2, 2], ''],
     ['outpost', 'Застава', [2, 1], 'флаг'], ['prison', 'Острог', [3, 2], ''], ['sealer', 'Печатник', [2, 2], 'шатёр в цвет печати'], ['sealgate', 'Застава печати', [1, 1], 'шлагбаум в цвет печати'],
-    ['petitioner', 'Хижина просителя', [2, 2], ''], ['questgate', 'Ворота задания', [1, 1], ''], ['signstone', 'Камень с надписью', [1, 1], ''],
+    ['petitioner', 'Хижина просителя', [2, 2], ''], ['questgate', 'Ворота задания', [1, 1], ''], ['signstone', 'Камень с надписью', [1, 1], ''], ['hamlet', 'Село', [2, 2], ''], ['boundstone', 'Межевой камень', [2, 2], ''],
     ['wagonruin', 'Разорённый обоз', [3, 2], ''], ['wolfden', 'Волчье логово', [3, 2], ''], ['eaglenest', 'Гнездо орлов', [2, 3], ''], ['wildhive', 'Дикий улей', [2, 2], ''], ['sunkentemple', 'Затонувший храм', [3, 3], ''], ['khancrypt', 'Склеп ханов', [3, 2], ''], ['piratecove', 'Пиратская бухта', [3, 3], ''], ['trollcave', 'Пещера троллей', [3, 2], ''], ['giantforge', 'Кузня великанов', [3, 3], 'дым'], ['moonmine', 'Лунный рудник', [3, 2], ''], ['ruinedobservatory', 'Руина обсерватории', [3, 3], ''], ['thronetreasury', 'Сокровищница Престола', [3, 3], ''],
-    ['whiteruin', 'Белая руина', [3, 2], 'флаг'], ['menhir', 'Менгир', [1, 2], ''], ['digspot', 'Ямка', [1, 1], ''],
+    ['whiteruin', 'Белая руина', [3, 2], 'флаг'], ['menhir', 'Менгир', [1, 2], ''], ['digspot', 'Ямка', [1, 1], ''], ['heartstone', 'Сердце Восьмой луны', [1, 1], 'светится'],
     ['fungalring', 'Грибной круг', [2, 2], 'светится'], ['crystalgrotto', 'Кристальный грот', [3, 2], ''], ['witchring', 'Ведьмин круг', [2, 2], ''], ['kurganstone', 'Курганный камень', [2, 2], '']
   ];
   A.OBJECTS = OBJ.map(([id, name, foot, note]) => ({ id: 'object/' + id, kind: 'mapObject', name, foot, size: [foot[0] * 32 + 16, foot[1] * 32 + 32], frames: note, look: '', team: /флаг/.test(note) }));
-  A.DWELLINGS = Object.values(A.UNITS).filter(u => !u.branch).map(u => ({ id: 'dwelling/' + u.id, kind: 'mapObject', name: 'Жилище: ' + u.name, foot: u.tier >= 5 ? [3, 2] : [2, 2], size: u.tier >= 5 ? [112, 96] : [80, 96], frames: 'флаг', look: 'жилище, где живут ' + u.name.toLowerCase() + ' (' + u.look + ')', team: true, faction: u.faction, addon: u.addon }));
-  A.DECOR = TERRAINS.filter(([id]) => id !== 'water' && id !== 'lava').flatMap(([id, name]) => ['tree1', 'tree2', 'tree3', 'rock1', 'rock2', 'mountain'].map(d => ({ id: 'decor/' + id + '-' + d, kind: 'decor', name: name + ': ' + (d.startsWith('tree') ? 'дерево' : d.startsWith('rock') ? 'камень' : 'гора'), size: d === 'mountain' ? [160, 128] : [64, 64], frames: '', look: '' })));
+  A.DWELLINGS = Object.values(A.UNITS).filter(u => !u.branch && u.faction !== 'summon' && u.faction !== 'machine').map(u => ({ id: 'dwelling/' + u.id, kind: 'mapObject', name: 'Жилище: ' + u.name, foot: u.tier >= 5 ? [3, 2] : [2, 2], size: u.tier >= 5 ? [112, 96] : [80, 96], frames: 'флаг', look: 'жилище, где живут ' + u.name.toLowerCase() + ' (' + u.look + ')', team: true, faction: u.faction, addon: u.addon }));
+  A.DECOR = TERRAINS.filter(([id]) => id !== 'water' && id !== 'lava' && id !== 'thicket').flatMap(([id, name]) => ['tree1', 'tree2', 'tree3', 'rock1', 'rock2', 'mountain'].map(d => ({ id: 'decor/' + id + '-' + d, kind: 'decor', name: name + ': ' + (d.startsWith('tree') ? 'дерево' : d.startsWith('rock') ? 'камень' : 'гора'), size: d === 'mountain' ? [160, 128] : [64, 64], frames: '', look: '' })));
   A.OVERLAYS = list('overlay', [['moonglade', 'Лунная поляна'], ['moonless', 'Пустошь без луны'], ['holyground', 'Святая земля'], ['foglow', 'Туманная низина'], ['saltcrust', 'Солёная корка']], { size: [32, 32], frames: '4 варианта' });
 
   const SPECIAL = {
@@ -326,7 +369,7 @@
   A.TOWNS = Object.keys(SPECIAL).map(f => ({ id: 'town/' + f, kind: 'townScene', name: 'Город: ' + A.PALETTES[f].name, faction: f, size: [800, 432], layers: A.TOWN_LAYERS.map(([id, name], i) => [id, name || SPECIAL[f][+id.slice(-1) - 1]]), frames: 'фон и слои построек, циклы 8–16 кадров', look: '', addon: A.ADDON.includes(f) }));
   A.TOWN_MAP = Object.keys(SPECIAL).flatMap(f => [1, 2, 3].map(n => ({ id: 'townmap/' + f + '-' + n, kind: 'mapObject', name: 'Город ' + A.PALETTES[f].name + ': ' + ['частокол', 'стена', 'крепость'][n - 1], faction: f, foot: [5, 3], size: [192, 160], frames: 'флаг', team: true, look: '', addon: A.ADDON.includes(f) })));
 
-  A.FIELDS = [...TERRAINS.filter(([id]) => !['lava', 'water', 'rock'].includes(id)).map(([id, name]) => ({ id: 'field/' + id, kind: 'battlefield', name: 'Поле: ' + name, size: [800, 496], look: '', frames: '6 препятствий 48–96 пикселей' })), { id: 'field/deck', kind: 'battlefield', name: 'Поле: палубы двух кораблей', size: [800, 496], look: '', frames: '' }, ...Object.keys(SPECIAL).map(f => ({ id: 'siege/' + f, kind: 'battlefield', name: 'Осада: ' + A.PALETTES[f].name, faction: f, size: [800, 496], look: 'стены, ворота, башни и ров города', frames: 'стены целые, в трещинах, разбитые', addon: A.ADDON.includes(f) }))];
+  A.FIELDS = [...TERRAINS.filter(([id]) => !['lava', 'water', 'rock', 'thicket'].includes(id)).map(([id, name]) => ({ id: 'field/' + id, kind: 'battlefield', name: 'Поле: ' + name, size: [800, 496], look: '', frames: '6 препятствий 48–96 пикселей' })), { id: 'field/deck', kind: 'battlefield', name: 'Поле: палубы двух кораблей', size: [800, 496], look: '', frames: '' }, ...Object.keys(SPECIAL).map(f => ({ id: 'siege/' + f, kind: 'battlefield', name: 'Осада: ' + A.PALETTES[f].name, faction: f, size: [800, 496], look: 'стены, ворота, башни и ров города', frames: 'стены целые, в трещинах, разбитые', addon: A.ADDON.includes(f) }))];
 
   const SPELLS = {
     yasna: [['balm', 'Лунный бальзам'], ['clearshield', 'Ясный щит'], ['blessing', 'Благословение'], ['cleanse', 'Очищение'], ['dawn', 'Свет зари'], ['mirrorarmor', 'Отражающий доспех'], ['skyveil', 'Небесный покров'], ['banish', 'Изгнание'], ['resurrect', 'Воскрешение'], ['whitefull', 'Белое полнолуние']],
@@ -354,11 +397,13 @@
     ...list('picture', [['title', 'Титул', 'Чаша ночью, семь лун дугой, восьмой свет над водой'], ['campaignmap', 'Карта кампаний', 'материк Венец кольцом вокруг Чаши, края народов как часы на циферблате'], ['victory', 'Победа', 'знамя над взятым городом на рассвете'], ['defeat', 'Поражение', 'брошенный шлем в траве под тучами']], { size: [800, 600] }),
     ...['league', 'barrows', 'thicket', 'tide', 'forge', 'throne', 'stars', 'spore'].map((f, i) => ({ id: 'picture/campaign' + (i + 1), kind: 'picture', name: 'Заставка кампании: ' + A.PALETTES[f].name, faction: f, size: [800, 600], frames: '', look: '', addon: A.ADDON.includes(f) })),
     ...['league', 'barrows', 'thicket', 'tide', 'forge', 'throne', 'stars', 'spore'].map(f => ({ id: 'picture/epilogue-' + f, kind: 'picture', name: 'Эпилог: ' + A.PALETTES[f].name, faction: f, size: [800, 600], frames: '', look: 'первое утро тысячного года в краю народа', addon: A.ADDON.includes(f) })),
+    ...['league', 'barrows', 'thicket', 'tide', 'forge', 'throne', 'stars', 'spore'].map((f, i) => ({ id: 'picture/ending' + (i + 1), kind: 'picture', name: 'Картина в конце кампании: ' + A.PALETTES[f].name, faction: f, size: [800, 600], frames: '', look: '', addon: A.ADDON.includes(f) })),
     ...['Белая', 'Алая', 'Лазурная', 'Зелёная', 'Серебряная', 'Золотая', 'Чёрная', 'Схождение'].map((n, i) => ({ id: 'moon/' + (i + 1), kind: 'icon', name: n === 'Схождение' ? 'Схождение' : n + ' луна', size: [24, 24], frames: 'и копия 48×48', look: '' }))
   ];
 
   A.creatures = () => Object.values(A.UNITS).map(u => ({ id: 'unit/' + u.id, kind: 'creature', name: u.name, faction: u.faction, look: u.look, size: A.FRAME[A.sizeOf(u)], anchor: A.ANCHOR[A.sizeOf(u)], frames: A.animsOf(u).map(([n, k]) => n + ' ' + k).join(', '), portrait: [64, 64], addon: u.addon, unit: u.id, tier: u.tier, branch: u.branch }));
-  A.all = () => [...A.creatures(), ...A.MAP_HEROES, ...A.PORTRAITS, ...A.TERRAINS, ...A.ROADS, ...A.OBJECTS, ...A.DWELLINGS, ...A.DECOR, ...A.OVERLAYS, ...A.TOWNS, ...A.TOWN_MAP, ...A.FIELDS, ...A.SPELLS, ...A.EFFECTS, ...A.PROJECTILES, ...A.SKILL_ICONS, ...A.RESOURCES, ...A.PICTURES];
+  A.artifactIcons = () => (H.ARTIFACTS ? Object.values(H.ARTIFACTS).filter(a => !a.scroll).map(a => ({ id: 'artifact/' + a.id, kind: 'icon', name: a.name, size: [32, 32], frames: 'и копия 16×16', look: H.ART_RANKS[a.rank][0] + ', ' + a.slot + (a.set ? ', набор ' + H.ART_SETS[a.set].name : '') + ': ' + a.about })) : []);
+  A.all = () => [...A.artifactIcons(), ...A.creatures(), ...A.MAP_HEROES, ...A.PORTRAITS, ...A.TERRAINS, ...A.ROADS, ...A.OBJECTS, ...A.DWELLINGS, ...A.DECOR, ...A.OVERLAYS, ...A.TOWNS, ...A.TOWN_MAP, ...A.FIELDS, ...A.SPELLS, ...A.EFFECTS, ...A.PROJECTILES, ...A.SKILL_ICONS, ...A.RESOURCES, ...A.PICTURES];
 
   const shade = (hex, k) => {
     const n = parseInt(hex.slice(1), 16), f = v => Math.max(0, Math.min(255, Math.round(v * k)));
@@ -539,6 +584,44 @@
       blob(0, -16, 18, 9);
       for (const lx of [-12, -6, 6, 12]) box(lx - 1.5, -10, 3, 10, shade(body, 0.75));
       blob(18, -22, 7, 6, light);
+    } else if (u.faction === 'machine') {
+      if (id === 'tent') {
+        c.fillStyle = '#e4dcc8';
+        c.beginPath();
+        c.moveTo(-20, -4);
+        c.lineTo(0, -38);
+        c.lineTo(20, -4);
+        c.closePath();
+        c.fill();
+        c.stroke();
+        box(-20, -14, 40, 3, '#b83a2a');
+        box(-4, -16, 8, 12, dark);
+      } else if (id === 'wagon') {
+        box(-20, -16, 36, 9, shade(body, 0.7));
+        blob(-12, -6, 6, 6, dark);
+        blob(10, -6, 6, 6, dark);
+        for (const bx of [-16, -6, 4]) blob(bx, -22, 5, 7, '#a07840');
+      } else if (id === 'ballista') {
+        box(-14, -12, 28, 6, shade(body, 0.7));
+        blob(-9, -5, 5, 5, dark);
+        blob(9, -5, 5, 5, dark);
+        box(-20, -24, 40, 4, '#8a6a3a');
+        c.beginPath();
+        c.moveTo(-18, -32);
+        c.quadraticCurveTo(24, -24, -18, -14);
+        c.stroke();
+      } else {
+        box(-16, -10, 32, 6, shade(body, 0.7));
+        blob(-10, -4, 5, 5, dark);
+        blob(10, -4, 5, 5, dark);
+        c.lineWidth = 3 / k;
+        c.beginPath();
+        c.moveTo(-8, -10);
+        c.lineTo(14, -38);
+        c.stroke();
+        c.lineWidth = 1.5 / k;
+        blob(15, -40, 5, 5, '#8e8a80');
+      }
     } else if (u.shape === 'engine') {
       if (u.fly) {
         blob(0, -44, 16, 18, light);
@@ -578,7 +661,7 @@
       c.globalCompositeOperation = 'source-over';
     }
     c.restore();
-    if (opt.tier !== false && H.Font) H.Font.draw(c, 'small', String(u.tier), x - 2, y - 22 * k - 6, 'rgba(0,0,0,0.6)');
+    if (opt.tier !== false && u.faction !== 'machine' && H.Font) H.Font.draw(c, 'small', String(u.tier), x - 2, y - 22 * k - 6, 'rgba(0,0,0,0.6)');
   };
 
   A.drawPortrait = (g, h, x, y, size) => {

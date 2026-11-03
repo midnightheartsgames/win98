@@ -28,6 +28,7 @@
     luckLow: 0.5,
     far: 7,
     farMul: 0.5,
+    farSpotted: 0.75,
     meleeShooter: 0.5,
     statBase: 1.04,
     multMin: 0.3,
@@ -40,7 +41,12 @@
     nabatReady: 40,
     nabatMorale: 2,
     nabatRounds: 2,
-    raiseShare: 0.5
+    raiseShare: 0.5,
+    deckGap: [6, 7],
+    deckPlanks: 3,
+    plankRows: [4, 5],
+    fogShots: 0.75,
+    holyMana: 2
   };
 
   H.TERRAIN = [
@@ -57,10 +63,14 @@
     { id: 'water', name: 'Вода', cost: 0 },
     { id: 'cave', name: 'Пещерный пол', cost: 1 },
     { id: 'fungal', name: 'Грибной мох', cost: 1.25 },
-    { id: 'rock', name: 'Скалы', cost: 0 }
+    { id: 'rock', name: 'Скалы', cost: 0 },
+    { id: 'thicket', name: 'Бурелом', cost: 0 }
   ];
   H.TERRAIN_INDEX = Object.fromEntries(H.TERRAIN.map((t, i) => [t.id, i]));
   H.ROADS = [null, { id: 'dirt', name: 'Грунтовая дорога', cost: 0.75 }, { id: 'paved', name: 'Мощёная дорога', cost: 0.65 }, { id: 'moon', name: 'Лунная дорога', cost: 0.6 }];
+  H.PLAYER_COLORS = ['#d02818', '#2850d0', '#20a030', '#e0c820', '#9030c0', '#20b0b0', '#e07818', '#8c8c8c'];
+  H.PLAYER_NAMES = ['красный', 'синий', 'зелёный', 'жёлтый', 'фиолетовый', 'бирюзовый', 'оранжевый', 'серый'];
+  H.RIVERS = [null, { id: 'stream', name: 'Ручей' }, { id: 'muddy', name: 'Мутная река' }];
   H.RESOURCES = [['gold', 'Золото'], ['wood', 'Древесина'], ['ore', 'Руда'], ['salt', 'Соль'], ['amber', 'Янтарь'], ['sulfur', 'Сера'], ['moonsilver', 'Лунное серебро']];
 
   H.MAP = {
@@ -74,6 +84,12 @@
     mineSight: 2,
     townSight: 5,
     townless: 7,
+    caravanSteps: 14,
+    boatStep: 1,
+    boat: { gold: 1000, wood: 10 },
+    whirlLoss: 0.1,
+    underSight: 2,
+    weeksStock: 2,
     growth: 0.1,
     power: 3,
     strength: [[1, 'Несколько'], [5, 'Отряд'], [10, 'Дружина'], [20, 'Полк'], [50, 'Рать'], [100, 'Орда'], [250, 'Тьма']],
@@ -84,11 +100,43 @@
     start: { gold: 10000, wood: 15, ore: 15, salt: 3, amber: 3, sulfur: 3, moonsilver: 3 }
   };
 
+  H.FIELDS = [null,
+    { id: 'moonglade', name: 'Лунная поляна', about: 'Заклинания на ступень сильнее', color: 'rgba(200,220,255,0.28)' },
+    { id: 'moonless', name: 'Пустошь без луны', about: 'Колдовать нельзя', color: 'rgba(30,20,40,0.42)' },
+    { id: 'holyground', name: 'Святая земля', about: 'Заклинания на 2 маны дешевле', color: 'rgba(255,240,170,0.3)' },
+    { id: 'foglow', name: 'Туманная низина', about: 'Стрелки бьют на четверть слабее', color: 'rgba(210,215,220,0.42)' },
+    { id: 'saltcrust', name: 'Солёная корка', about: 'Курганам +1 мораль', color: 'rgba(245,245,235,0.4)' }
+  ];
+  H.FIELD_INDEX = Object.fromEntries(H.FIELDS.map((f, i) => [f ? f.id : '', i]));
+
+  H.HEART = { close: 14, mid: 34, need: 3, box: 5, fine: 3 };
+
   H.DIFFICULTY = {
     easy: { name: 'Лёгкая', income: 0.8, growth: 0.9, days: 2, start: 1.5, sees: false },
     normal: { name: 'Обычная', income: 1, growth: 1, days: 3, start: 1, sees: false },
     hard: { name: 'Трудная', income: 1.15, growth: 1.1, days: 4, start: 0.75, sees: false },
     impossible: { name: 'Невозможная', income: 1.3, growth: 1.2, days: 4, start: 0.375, sees: true }
+  };
+
+  H.SIEGE = {
+    col: 9,
+    wall: { 1: 1, 2: 2, 3: 3 },
+    gate: { 1: 1, 2: 2, 3: 2 },
+    towers: { 1: 0, 2: 2, 3: 3 },
+    towerBase: 10,
+    towerShare: 0.003,
+    throughWall: 0.5,
+    catapultAim: 0.7,
+    hold: 10
+  };
+  H.MACHINE = {
+    crewLevel: 0.12,
+    skilled: 1.25,
+    tent: [30, 5],
+    fleeRound: 3,
+    fleeRatio: 4,
+    thicket: 0.02,
+    forgeCap: 0.15
   };
 
   H.TOWN = {
@@ -97,6 +145,10 @@
     maxHeroes: 8,
     poolWeeks: 2,
     maxMarket: 9,
+    caravanFee: 0.2,
+    caravanLoot: 0.5,
+    barrow: { share: 0.4, trizna: 0.55, price: 0.5, limits: [4000, 8000, 14000], ratPrice: 0.25, ratLimit: 0.5, speakerStep: 0.02, speakerTop: 0.4, stoneLimit: 3000 },
+    contract: { board: 3, active: 3, radius: 20, term: 14, sight: 2, hire: 1, recruiter: 0.75, bounty: 0.35, bountyCap: 10000, heroShare: 0.34, supply: 1.25, supplyBase: 1500, supplyWeek: 300, supplyTop: 6000 },
     value: { wood: 300, ore: 300, salt: 600, amber: 600, sulfur: 600, moonsilver: 800 },
     sell: [0.2, 0.05],
     buy: [2.2, 0.1]
@@ -121,6 +173,15 @@
     earlySteps: 4,
     windSteps: 3,
     windTerrain: ['steppe', 'saltflat'],
+    beastSteps: 2,
+    beastTerrain: ['forest', 'swamp'],
+    worldTreeSteps: 2,
+    brush: { base: 2, whisper: 1, thorn: 0.05, roots: 15, blood: 0.1, perLevel: 6 },
+    forest: { rounds: 3, perLevel: 4 },
+    ring: { share: 0.5, short: 0.25, show: 5 },
+    forge: { per: 0.1, hot: 0.15, cap: 3, hold: 4, burn: 0.05, cool: 0.1, slag: 0.05, fireCut: 0.3, smoke: 0.2, smokeRounds: 2, erupt: 20, eruptRounds: 2, atk: 3, reforge: { plain: 1000, rare: 3000 }, relic: 0.25 },
+    throne: { share: 0.3, rounds: 3, tier: 5, guardRounds: 4, guardTier: 6, heir: 0.05, heirPer: 3, hall: 0.1, road: 0.4, kingRoad: 0.3, light: 1, spellBack: 0.2, guardGrowth: 15, guardFrom: 5, kingPer: 6, kingRounds: 3, edge: 1, seat: 'Белый престол у вас уже есть' },
+    tide: { high: 0.35, heal: 0.1, brine: 1, brineMax: 4, water: 1.5, harbor: 4, floodInit: 0.3, floodCells: 5, waveCells: 2, waveReady: 30 },
     parleyChance: 1.25,
     parleyPrice: 0.75,
     treasureGold: 1.25,
@@ -131,8 +192,9 @@
     wallShare: 0.15,
     lamentReady: 10,
     lastStrike: 0.5,
+    saltShare: 0.25,
     closedRanks: 0.45,
-    gun: { units: ['bombard', 'mortar', 'culverin'], shots: 1, dmg: 0.2 },
+    gun: { units: ['bombard', 'mortar', 'culverin', 'ballista'], shots: 1, dmg: 0.2 },
     ambushReady: 20,
     chargeReady: 20,
     standBonus: 0.2,

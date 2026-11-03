@@ -326,7 +326,7 @@
       ell(g, ok ? '#5aff7a' : '#ff4a4a', 160, 53, 5, 5);
       lighter(g, () => glow(g, 160, 53, 14, ok ? '#5aff7a' : '#ff4a4a', 0.8));
       g.save(); g.font = 'bold 9px Georgia, serif'; g.textAlign = 'center'; g.fillStyle = '#f2e8ff'; g.fillText('КОН-ТОН', 132, 56); g.fillText('ВХОД', 190, 56); g.restore();
-      const pp = G.bustCanvas(G.lookOf('pompom', this.game), 64), lift = eOut(seg(t, 0.1, 0.7)), bx = 236, by = 112;
+      const pp = G.bustCanvas(H.SPEAKERS.pompom.look, 64), lift = eOut(seg(t, 0.1, 0.7)), bx = 236, by = 112;
       g.save(); g.imageSmoothingEnabled = false; g.drawImage(pp, bx, by, 80, 80); g.restore();
       rect(g, '#c8243a', bx + 22, by + 72, 36, 8);
       g.save(); g.font = 'bold 6px sans-serif'; g.textAlign = 'center'; g.fillStyle = '#ffffff'; g.fillText('STAFF', bx + 40, by + 79); g.restore();
@@ -791,7 +791,7 @@
       const kz = G.lookOf('kazuma', this.game), walk = eOut(seg(t, 0, 0.5)), kx = lerp(-20, 92, walk);
       ell(g, 'rgba(0,0,0,0.4)', kx, 222, 20, 5);
       figure(g, kz, kx, 224 - (t < 0.5 ? Math.abs(Math.sin(t * 14)) * 2 : 0), 3, { s: 0.6 });
-      const pp = G.bustCanvas(G.lookOf('pompom', this.game), 64), block = eOut(seg(t, 0.35, 0.6));
+      const pp = G.bustCanvas(H.SPEAKERS.pompom.look, 64), block = eOut(seg(t, 0.35, 0.6));
       g.save(); g.imageSmoothingEnabled = false; g.drawImage(pp, Math.round(lerp(250, 120, block)), 132, 88, 88); g.restore();
       rect(g, '#c8243a', lerp(250, 120, block) + 26, 210, 36, 8);
       g.save(); g.font = 'bold 6px sans-serif'; g.textAlign = 'center'; g.fillStyle = '#ffffff'; g.fillText('STAFF', lerp(250, 120, block) + 44, 217); g.restore();
@@ -917,7 +917,7 @@
       ell(g, 'rgba(0,0,0,0.45)', 96, 222, 26, 6);
       figure(g, look, 96, 224, 3, { s: 0.68 });
       if (held > 0) lighter(g, () => glow(g, 110, 150, 16, '#c8a0ff', 0.8 * held * (1 - drop)));
-      const pp = G.bustCanvas(G.lookOf('pompom', this.game), 64);
+      const pp = G.bustCanvas(H.SPEAKERS.pompom.look, 64);
       g.save(); g.imageSmoothingEnabled = false; g.translate(px, 214); g.rotate(-0.4 * trip * (1 - drop)); g.drawImage(pp, -40, -80, 80, 80); g.restore();
       for (let i = 0; i < 5; i++) {
         const sx = px - 4, sy = 128 - i * 13, fly = Math.min(t, 0.42) - 0.3;
@@ -1454,7 +1454,7 @@
     marchPompom(g, t, T) {
       this.stageFloor(g, T, 0.55);
       this.beam(g, CX, '#ff9ac8', 1, 56);
-      const pp = G.bustCanvas(G.lookOf('pompom', this.game), 64), pop = eOut(seg(t, 0, 0.3)), x = CX, y = 214;
+      const pp = G.bustCanvas(H.SPEAKERS.pompom.look, 64), pop = eOut(seg(t, 0, 0.3)), x = CX, y = 214;
       lighter(g, () => sparks(g, x, 120, seg(t, 0, 0.5), '#ff9ac8', 16, 47));
       g.save(); g.imageSmoothingEnabled = false; g.translate(x, y); g.scale(pop, pop); g.drawImage(pp, -64, -128, 128, 128); g.restore();
       if (pop > 0.9) {

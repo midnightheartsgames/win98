@@ -141,6 +141,7 @@
   }
 
   function onKey(e) {
+    if (root.Net98 && root.Net98.codeScreen) return;
     if (e.repeat || ['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) return;
     const t = e.target;
     if (t && t.type === 'password') return;
@@ -172,6 +173,7 @@
   }
 
   function onPointer(e) {
+    if (root.Net98 && root.Net98.codeScreen) return;
     if (isTextField(e.target)) {
       note('click', { win: clickedWindow(e.target), el: String(e.target.tagName).toLowerCase() });
       return;

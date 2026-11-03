@@ -2698,6 +2698,6 @@
     }
   }
 
-  Object.assign(H, { Battle, battleStat: { sv, atkOf, defOf, spdOf, alive, tallyOf }, DOT_NAME, DOT_ELEM, DOT_TYPES, coneP });
+  Object.assign(H, { Battle, battleStat: { sv, atkOf, defOf, spdOf, alive, tallyOf, condOk }, DOT_NAME, DOT_ELEM, DOT_TYPES, coneP });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

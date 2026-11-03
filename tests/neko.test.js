@@ -484,10 +484,10 @@ console.log('  ok - Clippy Help, Tips, Talk nodes, and ICQ integration');
 
 const baseIcons = sandbox.window.Desktop.prototype.getBaseIcons.call({ systemIcon: (k) => k });
 const nekoIcon = baseIcons.find(i => i.id === 'neko');
-assert.ok(nekoIcon, 'Neko 98 should be on the desktop by default');
+assert.ok(nekoIcon, 'Neko 98 should be in the base icons by default');
 assert.equal(nekoIcon.title, 'Neko 98');
 assert.equal(nekoIcon.icon, 'neko', 'Desktop icon should show the cat while the coat is a cat');
-console.log('  ok - Neko 98 desktop icon is present by default');
+console.log('  ok - Neko 98 base icon is present by default');
 
 for (const frameKey of expectedFrames) {
   assert.ok(Array.isArray(neko.clawdFrames[frameKey]) && neko.clawdFrames[frameKey].length > 10, `Clawd frame ${frameKey} should be compiled`);

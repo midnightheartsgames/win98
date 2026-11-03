@@ -74,7 +74,7 @@
       const list = this.world.near(x - 0.01, z - 0.01, x + 0.01, z + 0.01, this._l || (this._l = []));
       const tops = [];
       for (const s of list) {
-        if (!s.nomove && !s.clip && !isDoor(s) && covers(s, x, z)) tops.push(T.topAt(s, x, z));
+        if (!s.nomove && !s.offGrid && !isDoor(s) && covers(s, x, z)) tops.push(T.topAt(s, x, z));
       }
       tops.sort((a, b) => b - a);
       const res = [];
@@ -105,7 +105,7 @@
       const list = this.world.near(x, z, x, z, this._w || (this._w = []));
       for (const s of list) {
         if (s.nomove || isDoor(s) || !covers(s, x, z)) continue;
-        if (s.y0 < y + HEAD && T.topAt(s, x, z) > y + STEP + 0.02) return true;
+        if (s.y0 < y + HEAD && T.topAt(s, x, z) > y + STEP - 0.01) return true;
       }
       return false;
     }
@@ -115,7 +115,7 @@
       let y = ay;
       for (let i = 1; i <= n; i++) {
         const k = i / n, x = ax + (bx - ax) * k, z = az + (bz - az) * k;
-        const g = this.world.groundAt(x, z, y + STEP + 0.02, 0);
+        const g = this.world.groundAt(x, z, y + STEP - 0.01, 0);
         if (g === -Infinity || y - g > STEP + 0.05 || this.lowWall(x, y, z)) return false;
         y = g;
       }

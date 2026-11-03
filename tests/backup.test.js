@@ -53,6 +53,8 @@ assert.equal(cat.componentOfDb('anotherwar98'), 'game_anotherwar');
 assert.equal(cat.componentOfDb('win98_bugs'), 'bugreports');
 assert.ok(cat.components.every(c => cat.groups.some(g => g.id === c.group)), 'every component sits in a group');
 assert.equal(new Set(cat.components.map(c => c.id)).size, cat.components.length, 'component ids are unique');
+assert.equal(cat.components.find(c => c.id === 'net98_account').group, 'net', 'the ether link account is its own component');
+assert.ok(!cat.components.find(c => c.id === 'net98_account').gameId, 'and not a game save, so reports do not attach it');
 assert.equal(cat.nameOf(cat.byId('game_hsr98'), true), 'Honkai: Star Rail 98 — сохранения', 'game names come from the Steam catalog');
 console.log('✓ storage keys map to components');
 

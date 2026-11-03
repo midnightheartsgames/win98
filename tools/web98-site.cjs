@@ -54,7 +54,7 @@ const READINESS = {
   red: [],
   orange: ['diablo2', 'gta90'],
   yellow: ['wolf3d', 'diablo', 'doom', 'lol', 'avatar98', 'cop98', 'ow98', 'gtann', 'dota', 'kirill98'],
-  lime: ['serioussam', 'forza', 'plov', 'quake3', 'bttf', 'catniss'],
+  lime: ['serioussam', 'forza', 'quake3', 'bttf', 'catniss'],
   green: ['stalker', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201'],
   blue: ['legion', 'anotherwar', 'fallout']
 };

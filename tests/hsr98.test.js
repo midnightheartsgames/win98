@@ -2,22 +2,24 @@ const assert = require('node:assert/strict');
 const path = require('path');
 const DIR = path.join(__dirname, '../js/apps/hsr98');
 const H = require(path.join(DIR, 'hsr-core.js'));
-for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-ascend-data', 'hsr-traces', 'hsr-ascend', 'hsr-phone', 'hsr-phone-pix', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-guide-data', 'hsr-guide', 'hsr-domain', 'hsr-cw-data', 'hsr-cw', 'hsr-cw-battle', 'hsr-cw-bonds', 'hsr-cw-items', 'hsr-cw-kits', 'hsr-cw-special', 'hsr-cw-strats', 'hsr-cw-affixes', 'hsr-cw-envs', 'hsr-cw-foes', 'hsr-cw-meta', 'hsr-cw-perks', 'hsr-cw-goals', 'hsr-hd-data', 'hsr-hd-arena', 'hsr-hd-heroes', 'hsr-hd-foes', 'hsr-hd-shop', 'hsr-hd']) require(path.join(DIR, f + '.js'));
+for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-lab-kits', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-ascend-data', 'hsr-traces', 'hsr-ascend', 'hsr-phone', 'hsr-phone-pix', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-lab-info', 'hsr-express', 'hsr-net', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-lab', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-luofu-foes', 'hsr-luofu-field', 'hsr-luofu-maps', 'hsr-luofu-story', 'hsr-luofu-story2', 'hsr-luofu-life', 'hsr-conductor', 'hsr-coatroom', 'hsr-guide-data', 'hsr-guide', 'hsr-domain', 'hsr-cw-data', 'hsr-cw', 'hsr-cw-battle', 'hsr-cw-bonds', 'hsr-cw-items', 'hsr-cw-kits', 'hsr-cw-special', 'hsr-cw-strats', 'hsr-cw-affixes', 'hsr-cw-envs', 'hsr-cw-foes', 'hsr-cw-meta', 'hsr-cw-perks', 'hsr-cw-goals', 'hsr-hd-data', 'hsr-hd-math', 'hsr-hd-arena', 'hsr-hd-heroes', 'hsr-hd-foes', 'hsr-hd-shop', 'hsr-hd', 'hsr-hd-net', 'hsr-hd-simver', 'hsr-hd-lead', 'hsr-range', 'hsr-pf-data', 'hsr-pf-battle', 'hsr-pf', 'hsr-pf-story']) require(path.join(DIR, f + '.js'));
 
 let checks = 0;
 const CCC_LATER = new Set();
 const notLater = k => !CCC_LATER.has(k);
+const heroIds = () => Object.getOwnPropertyNames(H.CHARS);
 const ok = (c, m) => { assert.ok(c, m); checks++; };
 const eq = (a, b, m) => { assert.equal(a, b, m); checks++; };
 const t0 = Date.now();
 const log = [];
 
-const FX = new Set(['dmg', 'punch', 'heal', 'hot', 'shield', 'taunt', 'buff', 'debuff', 'dot', 'freeze', 'imprison', 'delay', 'advance', 'energy', 'cleanse', 'dispel', 'selfCost', 'extendDots', 'killEnergy', 'magma', 'hookEnhance', 'resurge', 'bloom', 'invig', 'sync', 'yanqingUlt', 'svarogMarked', 'svMark', 'promise', 'frost', 'polarity', 'stance', 'shinra', 'eclipse', 'chaosAll', 'note', 'reinc', 'cue', 'maestro', 'notesAll', 'ember', 'elysium', 'elysiumAll', 'nightmare', 'steal', 'bind', 'drain', 'heist', 'purge', 'wet', 'freezeWet', 'chant', 'collapse', 'swing', 'cover', 'ecstasy', 'ecstasySpend', 'luck', 'onMe', 'tauntTo', 'cleanseAll', 'detonate', 'implant', 'implantAll', 'hpCost', 'hellscape', 'sentence', 'tallyReset', 'shuhuFull', 'freeSkill', 'stitch', 'stitchAll', 'analyze', 'wave', 'execute', 'allOut', ...H.FOURS.FX, ...H.CONTON.FX, ...H.HARES.FX, ...H.FIVES.FX]);
+const FX = new Set(['dmg', 'punch', 'heal', 'hot', 'shield', 'taunt', 'buff', 'debuff', 'dot', 'freeze', 'imprison', 'delay', 'advance', 'energy', 'cleanse', 'dispel', 'selfCost', 'extendDots', 'killEnergy', 'magma', 'hookEnhance', 'resurge', 'bloom', 'invig', 'sync', 'yanqingUlt', 'svarogMarked', 'svMark', 'promise', 'frost', 'polarity', 'stance', 'shinra', 'eclipse', 'chaosAll', 'note', 'reinc', 'cue', 'maestro', 'notesAll', 'ember', 'elysium', 'elysiumAll', 'nightmare', 'steal', 'bind', 'drain', 'heist', 'purge', 'wet', 'freezeWet', 'chant', 'collapse', 'swing', 'cover', 'ecstasy', 'ecstasySpend', 'luck', 'onMe', 'tauntTo', 'cleanseAll', 'detonate', 'implant', 'implantAll', 'hpCost', 'hellscape', 'sentence', 'tallyReset', 'shuhuFull', 'freeSkill', 'stitch', 'stitchAll', 'analyze', 'wave', 'execute', 'allOut', ...H.FOURS.FX, ...H.CONTON.FX, ...H.HARES.FX, ...H.FIVES.FX, ...H.LAB.FX]);
 let afterJarilo = null;
 const G0bg = id => ['station', 'express', 'snow', 'city', 'under', 'rivet', 'hill', 'meadow'].includes(id);
 const TARGETS = new Set(['single', 'blast', 'all', 'bounce', 'ally', 'allies', 'self']);
 
-for (const [id, c] of Object.entries(H.CHARS)) {
+for (const id of heroIds()) {
+  const c = H.CHARS[id];
   ok(H.PATHS[c.path] && H.ELEMENTS[c.elem], 'char path/elem ' + id);
   for (const k of ['basic', 'skill', 'ult']) {
     ok(c[k] && TARGETS.has(c[k].target), 'ability target ' + id + '.' + k);
@@ -39,9 +41,9 @@ for (const [id, f] of Object.entries(H.FUSIONS)) {
   const EX = require(path.join(__dirname, '../content/hsr-traces/extract.json'));
   const LINE_IDS = { path: Object.keys(H.TRACE_PATH_LINES), foe: Object.keys(H.TRACE_FOE_LINES) };
   const GATES = new Set([1, 30, 40, 50, 60, 70, 75, 80]);
-  eq(Object.keys(H.TRACES).sort().join(), Object.keys(H.CHARS).sort().join(), 'every kit has traces and every traces entry has a kit');
-  for (const [id, d] of Object.entries(H.TRACES)) {
-    const c = H.CHARS[id];
+  eq(Object.getOwnPropertyNames(H.TRACES).sort().join(), heroIds().sort().join(), 'every kit has traces and every traces entry has a kit');
+  for (const id of Object.getOwnPropertyNames(H.TRACES)) {
+    const d = H.TRACES[id], c = H.CHARS[id];
     ok(d.cost === 4 || d.cost === 5, 'trace cost class ' + id);
     eq(d.cost, id.startsWith('trail') ? 4 : c.rarity, 'trace cost class follows rarity ' + id);
     ok(LINE_IDS.path.includes(d.mats[0]) && H.TRACE_PATH_LINES[d.mats[0]][0] === c.path, 'trace path line matches the path ' + id);
@@ -346,12 +348,14 @@ for (const [id, m] of Object.entries(H.MAPS)) {
       if (seen.has(k)) continue;
       seen.add(k);
       if (!npcs.has(k)) q.push([nx, ny]);
+      const link = m.marks[ch] && m.marks[ch].type === 'screen' && marks[m.marks[ch].to];
+      if (link) for (const [sx, sy] of link) if (!seen.has(sx + ',' + sy)) { seen.add(sx + ',' + sy); q.push([sx, sy]); }
     }
   }
   for (const [ch, list] of Object.entries(marks)) for (const [x, y] of list) ok(seen.has(x + ',' + y), 'reachable ' + id + ' ' + ch + ' @' + x + ',' + y);
 }
 
-const UIS = new Set(['book', 'synth', 'name', 'shop', 'rumor', 'warp', 'calyx', 'nav', 'databank', 'su', 'su_shop', 'fh', 'fh_shop', 'doc', 'ksboard', 'ksrate', 'kslearn', 'kscard', 'ksreport', 'tlrewards', 'hackjade', 'hackdebug', 'cw', 'hd']);
+const UIS = new Set(['pf', 'book', 'synth', 'name', 'shop', 'rumor', 'warp', 'calyx', 'nav', 'databank', 'su', 'su_shop', 'fh', 'fh_shop', 'doc', 'ksboard', 'ksrate', 'kslearn', 'kscard', 'ksreport', 'tlrewards', 'hackjade', 'hackdebug', 'lfchat', 'abacus', 'mutare', 'cw', 'hd', 'labwarp', 'range', 'coatroom', 'phono']);
 for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCRIPTS))) {
   const labels = new Set(steps.filter(s => typeof s === 'string' && s[0] === '#').map(s => s.slice(1)));
   for (const st of steps) {
@@ -571,11 +575,23 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   ok(g.records().length < H.RECORDS.length && g.records().every(r => !r.need || g.cond(r.need)), 'records unlock with the journey');
   g.loadMap('express', 'v');
   g.runScript('exp_phono'); g.resume();
-  const pick = g.pending.options.findIndex(o => o[0] === H.RECORDS[1].name);
-  ok(g.pending.type === 'choice' && pick >= 0 && !g.pending.options.some(o => o[0] === H.RECORDS[6].name), 'the phonograph lists only owned records');
+  ok(g.pending && g.pending.type === 'ui' && g.pending.ui === 'phono', 'the phonograph opens its own menu');
+  g.resume();
+  ok(['express', 'express_party'].every(id => Object.values(H.MAPS[id].marks).some(m => m.script === 'exp_phono')), 'both Express phonographs open the menu');
+  ok(H.RECORDS.every(r => H.RECORD_ALBUMS.some(a => a.id === r.album) && H.RECORD_PARTS[r.part] && r.track === (r.id || 'express')), 'every record lies in an album and a section and plays its own track');
+  ok(new Set(H.RECORDS.map(r => r.track)).size === H.RECORDS.length, 'no two records play the same track');
+  ok(H.RECORD_ALBUMS.every(a => g.phonoRows(a.id).every(row => row.ok === (!row.rec.need || g.cond(row.rec.need)))), 'the menu marks as found only the records the journey unlocked');
+  {
+    const lock = H.RECORDS.find(r => r.need && !g.cond(r.need)), n0 = g.records().length;
+    eq(g.debugRecord(lock.track), 'new', 'the debug menu grants a record the journey has not unlocked');
+    ok(g.records().length === n0 + 1 && g.phonoRows(lock.album).find(x => x.rec === lock).ok && !g.cond(lock.need), 'a granted record lies in the phonograph and the story flag stays unset');
+    eq(g.debugRecord(lock.track), 'have', 'a record is granted only once');
+    eq(g.debugRecord('battle'), null, 'a track without a record cannot be granted');
+    delete g.state.gotRecords;
+  }
   g.events.length = 0;
-  g.resume(pick);
-  ok(g.state.record === 'menu' && g.events.some(e => e.t === 'music' && e.id === 'menu') && g.events.some(e => e.t === 'toast'), 'a record changes the music of the train');
+  g.setRecord('menu');
+  ok(g.state.record === 'menu' && g.events.some(e => e.t === 'music' && e.id === 'menu'), 'a record changes the music of the train');
   ok(g.mapMusic(H.MAPS.express_cabin) === 'menu' && g.mapMusic(H.MAPS.j_plains) === H.MAPS.j_plains.music, 'the record plays only aboard the Express');
   eq(g.bookPages('guests').map(p => p.who).join(), 'Герта', 'the guest book starts with Herta');
   g.state.flags.asta_met = true;
@@ -619,7 +635,7 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   while (g.script && guard++ < 200) { if (g.pending && g.pending.type === 'walk') g.update(0.05); else g.resume(); }
   ok(!g.script && wolf.x === wx && wolf.y === wy && wolf.dir === 'down', 'after the talk Silver Wolf goes back to her place');
   ok(g.areaOf('express_lab').area === lab && g.areaOf('express_lab').world === g.expressWorld(), 'the Test car belongs to the Express of the parked world');
-  eq(g.map.ents.filter(e => e.kind === 'npc' && e.def.ghost).map(e => e.def.script).join(), 'lab_term_jade,lab_term_console,lab_term_cw,lab_term_hd', 'the Test car has the jade, console, Currency Wars and Express Frontier terminals');
+  eq(g.map.ents.filter(e => e.kind === 'npc' && e.def.ghost).map(e => e.def.script).join(), 'lab_term_range,lab_term_jade,lab_term_console,lab_term_cw,lab_term_hd,lab_term_warp', 'the Test car has the range, jade, console, Currency Wars, Express Frontier and secret warp terminals');
   const term = ch => { const t = g.map.ents.find(e => e.ch === ch); g.placePlayer(t.x, t.y + 1); g.player.dir = 'up'; g.interact(); };
   term('j'); while (g.pending && g.pending.type === 'say') g.resume();
   ok(g.pending && g.pending.ui === 'hackjade', 'the jade terminal asks the screen for the F7 jade');
@@ -637,9 +653,11 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   g.placePlayer(wx, wy + 1); g.player.dir = 'up';
   ok(g.interact() && g.pending.spk === 'silverwolf', 'Silver Wolf can be talked to in the Test car');
   g.resume();
-  ok(g.pending && g.pending.type === 'choice' && g.pending.options.length === 7, 'she has six topics and a goodbye');
+  ok(g.pending && g.pending.type === 'choice' && g.pending.options.length === 11, 'she has ten topics and a goodbye');
   ok(/Рубеж Экспресса/.test(g.pending.options[4][0]) && /Валютные войны/.test(g.pending.options[5][0]), 'two topics are about Express Frontier and Currency Wars');
-  ok(['h5', 'h6'].every(lb => { const st = H.SCRIPTS.lab_wolf, i = st.indexOf('#' + lb); return i > 0 && st.slice(i + 1, i + 6).filter(x => typeof x === 'string' && x.startsWith('silverwolf|')).length >= 3; }), 'each new topic has several lines of Silver Wolf');
+  ok(/Полигон/.test(g.pending.options[6][0]), 'the seventh topic is about the Range');
+  ok(/шестой терминал/.test(g.pending.options[7][0]), 'the eighth topic is about the secret warp');
+  ok(['h5', 'h6', 'h7', 'h8'].every(lb => { const st = H.SCRIPTS.lab_wolf, i = st.indexOf('#' + lb); return i > 0 && st.slice(i + 1, i + 6).filter(x => typeof x === 'string' && x.startsWith('silverwolf|')).length >= 3; }), 'each new topic has several lines of Silver Wolf');
   finish();
   g.state.party = ['trail', 'silverwolf'];
   ok(!g.visible(wolf), 'Silver Wolf leaves her spot while she is in the team');
@@ -6359,9 +6377,9 @@ function trInfo(g) {
   ok(!g.ownsOutfit('march_spring'), 'Nascent Spring waits in the 1.5 letter');
   g.readMail('v16_outfits');
   const claimed = g.claimAllMail();
-  ok(claimed.length === 53 && g.state.jade === jm + 2100 && !g.alerts().mail, 'claim all takes the other letters and clears the alert (' + claimed.length + ')');
+  ok(claimed.length === 54 && g.state.jade === jm + 2100 && !g.alerts().mail, 'claim all takes the other letters and clears the alert (' + claimed.length + ')');
   ok(g.ownsOutfit('march_spring') && !g.outfitOf('march'), 'the 1.5 letter adds Nascent Spring to the collection without putting it on');
-  eq(g.deleteReadMail(), 15, 'read and claimed letters can be deleted');
+  eq(g.deleteReadMail(), 16, 'read and claimed letters can be deleted');
   eq(g.mailbox().length, 0, 'the mailbox is empty after deleting');
   const back = new H.Game({ state: g.serialize(), clock: () => now });
   ok(!back.mailbox().length && back.cometAllGot() && back.state.will.length === H.TRAIL_WILL.length, 'events and mail survive a save');
@@ -6369,6 +6387,63 @@ function trInfo(g) {
   for (const k of ['mail', 'comet', 'will', 'pityEv', 'warpNEv']) delete legacy[k];
   const lg = new H.Game({ state: legacy });
   ok(lg.mailbox().length === H.MAIL.filter(m => !m.need).length && !lg.state.comet.got.length && lg.state.comet.start === null && lg.state.pityEv.five === 0, 'old saves get the letters and empty event state');
+}
+
+{
+  const P = H.POM_OUTFITS, g = new H.Game({ seed: 9 });
+  eq(Object.keys(P).join(), 'uniform,pajamas', 'the coatroom holds the conductor uniform and the pajamas');
+  ok(P.uniform.rarity === 5 && P.pajamas.rarity === 4 && P.pajamas.name === 'Пижама «Сладких снов!»' && P.uniform.name === 'Униформа проводника «Торжественный алый!»', 'costumes keep the official names and stars');
+  ok(Object.values(P).every(o => o.text && !/—/.test(o.text + (o.wear || []).join('') + (o.greet || []).join('')) && o.wear.length), 'costume texts are clean and every costume has a line for the coatroom');
+  ok(g.pomWorn() === 'uniform' && g.pomOwns('uniform') && !g.pomOwns('pajamas') && !g.pomWear('pajamas'), 'a new game has only the uniform');
+  ok(H.pomOutfitLook('uniform') === H.SPEAKERS.pompom.look && H.pomOutfitLook('pajamas').coat === 'pajamas' && H.pomOutfitLook('pajamas').style === 'pompom', 'the pajamas look is the conductor look with the costume keys');
+  const letter = H.MAIL.find(m => m.id === 'v18_coatroom');
+  ok(letter && letter.need === 'express_intro' && letter.give.pom === 'pajamas' && !g.mailbox().some(x => x.m.id === 'v18_coatroom'), 'the 1.8 letter with the pajamas waits for the Express');
+  for (const f of ['intro', 'asta_met', 'hs_power', 'doom', 'express_intro']) g.state.flags[f] = true;
+  ok(g.mailbox().some(x => x.m.id === 'v18_coatroom'), 'the letter arrives after the Express introduction');
+  g.events.length = 0;
+  const got = g.claimMail('v18_coatroom');
+  ok(got.length === 1 && /Пижама/.test(got[0]) && g.pomOwns('pajamas') && g.pomWorn() === 'uniform', 'the letter adds the pajamas without putting them on');
+  ok(g.state.quests.pom_coat === 'talk' && g.events.some(e => e.t === 'toast' && e.text === 'В гардеробную комнату Пом-Пом добавлены новые костюмы'), 'the new costume starts «Многоликий Пом-Пом» and says so');
+  ok(!g.give({ pom: 'pajamas' }).length && g.pomState().have.length === 1, 'a costume is given once');
+  g.loadMap('express', 'v');
+  const parlor = g.map.ents.find(e => e.kind === 'npc' && e.def.who === 'pompom');
+  ok(!g.visible(parlor), 'Pom-Pom leaves the Parlor car while he sets up the coatroom');
+  g.loadMap('express_party', 'v');
+  const coat = g.map.ents.find(e => e.kind === 'npc' && e.ch === 'z'), rack = g.map.ents.find(e => e.kind === 'prop' && e.def.script === 'exp_coatroom');
+  ok(coat && g.visible(coat) && rack.def.hint === 'Сменить костюм Пом-Пом', 'Pom-Pom waits at the coat rack, the rack offers to change his costume');
+  eq(g.questTarget().mark, 'z', 'the mission points at Pom-Pom in the Party car');
+  g.missionTick();
+  const c0 = g.state.credits;
+  g.runScript('exp_coatroom');
+  let n = 0, saw = null;
+  while (g.pending && n++ < 40) { if (g.pending.type === 'ui') saw = g.pending.ui; g.resume(g.pending.type === 'choice' ? 1 : 0); }
+  ok(saw === 'coatroom' && g.state.quests.pom_coat === 'done' && g.state.credits === c0 + H.QUESTS.pom_coat.reward.credits, 'the rack starts the talk, the talk opens the coatroom and pays the mission');
+  ok(!g.visible(coat) && g.visible(parlor), 'after the mission Pom-Pom is back in the Parlor car');
+  const rackRun = () => {
+    const lines = [];
+    let ui = null, k = 0;
+    g.runScript('exp_coatroom');
+    while (g.pending && k++ < 10) { if (g.pending.type === 'ui') ui = g.pending.ui; if (g.pending.type === 'say') lines.push(g.pending.text); g.resume(0); }
+    return { ui, lines: lines.length };
+  };
+  const firstRack = rackRun(), laterRack = rackRun();
+  ok(firstRack.ui === 'coatroom' && firstRack.lines === 2 && laterRack.ui === 'coatroom' && !laterRack.lines, 'the rack describes the corner once, then opens the coatroom at once');
+  ok(g.pomWear('pajamas') && g.pomWorn() === 'pajamas' && g.state.flags.pom_dressed && g.pomInScenes() === 'uniform', 'the pajamas go on, story scenes keep the uniform');
+  g.pomSetScenes(true);
+  eq(g.pomInScenes(), 'pajamas', 'the switch lets the costume into story scenes');
+  const back = new H.Game({ state: g.serialize(), seed: 2 });
+  ok(back.pomWorn() === 'pajamas' && back.pomInScenes() === 'pajamas' && back.pomOwns('pajamas'), 'the costume and the switch survive a save');
+  g.loadMap('express', 'v');
+  g.runScript('pompom_talk'); n = 0;
+  const hello = g.pending && g.pending.text, opts = [];
+  while (g.pending && n++ < 6) { if (g.pending.type === 'choice') { opts.push(...g.pending.options.map(o => o.label || o[0])); break; } g.resume(0); }
+  ok(P.pajamas.greet.some(l => g.fill(l.slice(l.indexOf('|') + 1)) === hello), 'Pom-Pom in pajamas greets with a pajamas line');
+  ok(opts.includes('«Тебе идёт этот наряд.»'), 'the compliment shows while Pom-Pom wears a costume');
+  ok(g.pomWear('uniform') && g.pomWorn() === 'uniform' && !g.state.flags.pom_dressed && !g.pomWear('chef'), 'the uniform goes back on and unknown costumes are refused');
+  const old = H.newState();
+  delete old.pom;
+  const og = new H.Game({ state: old, seed: 3 });
+  ok(og.pomWorn() === 'uniform' && og.pomInScenes() === 'uniform' && !og.pomOwns('pajamas'), 'an old save wears the uniform');
 }
 
 {
@@ -6613,7 +6688,8 @@ function trInfo(g) {
 }
 
 {
-  for (const [id, d] of Object.entries(H.CONES)) {
+  for (const id of Object.getOwnPropertyNames(H.CONES)) {
+    const d = H.CONES[id];
     if (!d.ref) continue;
     ok(Array.isArray(d.p) && d.p.length === 5 && d.p.every(r => r.length === d.p[0].length), id + ': five superimposition rows of one length');
     const used = [...d.tpl.matchAll(/#(\d)/g)].map(m => +m[1]);
@@ -7151,10 +7227,10 @@ function trInfo(g) {
     localStorage: { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) },
     requestAnimationFrame: () => 1
   });
-  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-hd-art', 'hsr-relic-art', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-levelup', 'hsr-ui-coneup', 'hsr-ui-phone', 'hsr-ui-profile', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-debug']) require(path.join(DIR, f + '.js'));
+  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-hd-art', 'hsr-relic-art', 'hsr-splash-pix', 'hsr-splash', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-luofu', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-luofu-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-lab-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-phono', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-coatroom', 'hsr-ui-debug', 'hsr-ui-music-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-lab', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-levelup', 'hsr-ui-coneup', 'hsr-ui-phone', 'hsr-ui-profile', 'hsr-ui-net', 'hsr-ui-friends', 'hsr-ui-visit', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-table', 'hsr-ui-hd-debug', 'hsr-ui-luofu', 'hsr-pf-art', 'hsr-ui-pf', 'hsr-ui-pf-team', 'hsr-ui-pf-battle', 'hsr-foe-lore', 'hsr-details', 'hsr-ui-details']) require(path.join(DIR, f + '.js'));
   const G = H.Gfx;
   const lum = hex => { const n = parseInt(hex.slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255); };
-  for (const id of Object.keys(H.CHARS)) {
+  for (const id of heroIds()) {
     const L = G.lookOf(id, null);
     ok(L.skin && L.hair && L.eye && L.body && L.top && L.bangs, 'full look ' + id);
     G.bustCanvas(L, 64); G.bustCanvas(L, 34); G.figureCanvas(L);
@@ -7167,7 +7243,7 @@ function trInfo(g) {
   ok(H.PomPom && typeof H.PomPom.draw === 'function', 'Pom-Pom 3D model drives the Warp scene');
   ok(G.bustCanvas(pom, 64).width === 64 && G.bustCanvas(pom, 34).height === 34 && G.figureCanvas(pom).height === 96 && G.figureCanvas(pom, 2).width === 96, 'Pom-Pom bust and figure are hand-drawn 2D art');
   for (const d of ['down', 'up', 'left', 'right']) for (const f of [0, 1, 3]) { const cv = G.spriteCanvas(pom, d, f); ok(cv.width === 36 && cv.height === 52, 'Pom-Pom field sprite ' + d + ' ' + f); }
-  for (const id of Object.keys(H.CHARS)) { const cv = G.figureCanvas(G.lookOf(id, null), 2); ok(cv.width === 96 && cv.height === 192, 'double-size warp figure ' + id); }
+  for (const id of heroIds()) { const cv = G.figureCanvas(G.lookOf(id, null), 2); ok(cv.width === 96 && cv.height === 192, 'double-size warp figure ' + id); }
   {
     const R3 = H.R3, M = R3.M, R = new R3.Raster(64, 48);
     const px = (x, y) => Array.from(R.px.slice((y * 64 + x) * 4, (y * 64 + x) * 4 + 3));
@@ -7724,7 +7800,7 @@ function trInfo(g) {
       if (ghost) { ls.outfits.push(ghost); wd.sel = wd.list().indexOf(ghost); const worn0 = lg.outfitOf(H.OUTFITS[ghost].char); key('Enter'); frame(); eq(lg.outfitOf(H.OUTFITS[ghost].char), worn0, 'Wardrobe: an outfit of a missing hero stays in the collection'); }
       ui.screens = [];
       ui.openMenu(); frame(); key('Tab'); frame();
-      ui.top().sel = 2; key('Enter'); frame();
+      ui.top().sel = ui.phoneMenuItems().findIndex(it => it.label === 'Наряды'); key('Enter'); frame();
       ok(ui.top().wardId !== undefined && ui.top().mine !== undefined && ui.top().list, 'Wardrobe: the phone menu opens it');
       ui.screens = []; ls.outfits = outKeep; ls.jade = jadeKeep; delete mr.outfit; ls.flags.express_intro = flagWas; ls.shop.intro = introWas;
     }
@@ -7746,15 +7822,43 @@ function trInfo(g) {
       ui.screens = []; ui.openMenu(); frame();
       ok(ui.phoneSkin().wall === 'nexttoyou', 'Skin: the phone draws with it');
       ui.screens = []; ui.openMenu(); frame(); key('Tab'); frame();
-      ui.top().sel = 1; key('Enter'); frame();
+      ui.top().sel = ui.phoneMenuItems().findIndex(it => it.label === 'Украшения для смартфона'); key('Enter'); frame();
       ok(ui.top().phoneDecor, 'Skin: the phone menu opens the screen');
       ui.screens = []; ls.phoneSkin = skinWas; ls.phoneSkins = skinsWas;
+    }
+    {
+      ui.screens = [];
+      const pomWas = ls.pom, dressedWas = ls.flags.pom_dressed;
+      ls.pom = { have: [], wear: null, scenes: false }; delete ls.flags.pom_dressed;
+      ui.openCoatroom(); texts.length = 0; frame();
+      const cr = ui.top();
+      ok(cr.coatroom && texts.includes('Гардеробная комната Пом-Пом') && texts.includes('Надет') && texts.includes('Наряд в сюжетных сценах'), 'Coatroom: the screen opens on the worn uniform');
+      key('ArrowRight'); ui.held = []; frame(10); texts.length = 0; frame();
+      ok(cr.sel === 1 && cr.shown === 'pajamas' && texts.includes('Не получен'), 'Coatroom: a missing costume can be tried on and says so');
+      key('Enter'); frame();
+      eq(lg.pomWorn(), 'uniform', 'Coatroom: Enter does not put on a missing costume');
+      ls.pom.have = ['pajamas']; texts.length = 0; frame();
+      ok(texts.includes('Сменить') && texts.includes('Костюм в коллекции.'), 'Coatroom: an owned costume can be changed into');
+      key('Enter'); frame(4);
+      ok(lg.pomWorn() === 'pajamas' && ls.flags.pom_dressed && cr.say && cr.notes.length === 5, 'Coatroom: Enter puts the pajamas on, Pom-Pom speaks and hums');
+      ok(G.lookOf('pompom', lg).coat === 'pajamas' && G.sceneLookOf('pompom', lg) === H.SPEAKERS.pompom.look && G.lookOf('pompom', null) === H.SPEAKERS.pompom.look, 'Coatroom: the field look follows the costume, scenes and the Warp keep the uniform');
+      key('ArrowDown'); key('Enter'); ui.held = []; frame();
+      ok(ls.pom.scenes && G.sceneLookOf('pompom', lg).coat === 'pajamas', 'Coatroom: the switch lets the costume into story scenes');
+      key('ArrowUp'); key('ArrowLeft'); ui.held = []; frame(10); key('Enter'); frame(4);
+      ok(lg.pomWorn() === 'uniform' && !ls.flags.pom_dressed, 'Coatroom: the uniform goes back on');
+      key('Escape'); frame();
+      ok(ui.top() !== cr, 'Coatroom: Esc closes it');
+      const visit = lg.guest;
+      lg.guest = { uid: 1 }; ui.screens = [];
+      ok(!ui.openCoatroom() && !ui.screens.length, 'Coatroom: a guest on a visit cannot open it');
+      lg.guest = visit;
+      ui.screens = []; ls.pom = pomWas; if (dressedWas) ls.flags.pom_dressed = true; else delete ls.flags.pom_dressed;
     }
     {
       const promoFlags = Object.keys(ls.flags).filter(f => f.startsWith('promo_')), promoWas = ls.promo, introFlag = ls.flags.express_intro;
       ls.promo = {}; ls.flags.express_intro = true;
       ui.screens = []; ui.openMenu(); frame(); key('Tab'); frame();
-      ui.top().sel = 3; key('Enter'); frame();
+      ui.top().sel = ui.phoneMenuItems().findIndex(it => it.label === 'Промокод'); key('Enter'); frame();
       ok(ui.top().textEntry, 'Promo: the phone menu opens the entry screen');
       const ent = ui.top(), okAt = ent.sel;
       for (const code of ['KeyA', 'KeyS', 'KeyD', 'KeyW', 'KeyQ', 'KeyE', 'KeyU', 'Digit9', 'Numpad8']) key(code);
@@ -8231,7 +8335,54 @@ function trInfo(g) {
       key('Enter'); frame(); key('F8'); frame();
       ok(ui.top() === menu, 'F8 in a scene view returns to the debug menu');
     }
-    for (let i = 0; i < 5; i++) { key('Digit' + (i + 1)); for (let r = 0; r < 12; r++) { key('ArrowDown'); frame(); } }
+    {
+      const dst = ui.debugState, au = ui.audio, mg = ui.game, list = H.debugMusicList(), form = () => ui.debugForm(dst);
+      const keysOf = e => [...new Set([e.key].concat(e.alias, e.vars ? e.vars.list.map(v => v[1]) : []))], all = list.flatMap(keysOf);
+      ok(Object.keys(H.TRACKS).every(k => all.includes(k)) && Object.keys(H.SONGS).every(k => all.includes(k)), 'the music tab lists every track and song of the game');
+      eq(new Set(all).size, all.length, 'every track and song sits in one row of the music tab');
+      ok(H.RECORDS.every(r => list.filter(e => e.rec === r).length === 1), 'every phonograph record has its own row in the music tab');
+      ok(list.every(e => e.name && !keysOf(e).includes(e.name) && (H.RECORD_ALBUMS.some(a => a.id === e.album) || e.album === 'events')), 'every music row has a name and a group');
+      key('Digit6'); frame();
+      ok(form().rows[0].label === 'Трек' && form().acts.map(a => a.label).join() === 'Слушать,Выдать,Выдать все', 'the sixth tab is the music section with listening and records');
+      const prev = au.wanted, city = list.findIndex(e => e.key === 'city');
+      dst.mu.i = city; dst.row = 0; frame();
+      key('Enter'); frame();
+      ok(au.wanted === 'city' && dst.mu.play && form().acts[0].label === 'Стоп', 'Enter plays the chosen track');
+      key('Enter'); frame();
+      ok(au.wanted === prev && !dst.mu.play, '«Стоп» brings back the music of the game');
+      dst.mu.i = list.findIndex(e => e.key === 'signal'); dst.mu.v = 0; dst.row = 1; frame();
+      eq(form().rows[1].label, 'Вокал', 'Golden Sign has a vocal row');
+      key('ArrowRight'); key('ArrowRight'); frame();
+      eq(form().rows[1].value, 'Женский', 'the vocal row picks the female vocal');
+      dst.row = 2; key('Enter'); frame();
+      ok(au.wantedSong === 'signal' && au.wanted === prev, 'a song plays over the game track');
+      key('F8'); frame();
+      ok(!ui.screens.some(x => x.debug) && !au.wantedSong && au.wanted === prev && !dst.mu.play, 'closing the menu stops the song and keeps the game music');
+      key('F8'); frame();
+      eq(dst.tab, 5, 'the menu opens again on the music tab');
+      const texts = [], realText = ui.text;
+      ui.text = function (str, ...rest) { texts.push(String(str)); return realText.call(this, str, ...rest); };
+      dst.mu.i = list.findIndex(e => e.key === 'pedu2'); dst.row = 0; frame();
+      delete ui.text;
+      ok(texts.some(t => /Фантилия/.test(t) && /волна 2/.test(t)), 'the music tab says where a track plays');
+      const locked = list.find(e => e.rec && !mg.recordOk(e.rec));
+      ok(locked, 'the test save still misses some records');
+      dst.mu.i = list.indexOf(locked); dst.row = 2; key('Enter'); frame();
+      ok(mg.recordOk(locked.rec) && !mg.cond(locked.rec.need) && /пластинка/.test(dst.log.text), '«Выдать» puts the record into the phonograph without the story flag');
+      ok(H.phonoItems(mg, locked.album).find(x => !x.head && x.rec === locked.rec).ok, 'the phonograph shows the granted record');
+      key('Enter'); frame();
+      ok(/уже есть/.test(dst.log.text), 'a record is granted once');
+      dst.row = 3; key('Enter'); frame();
+      eq(mg.records().length, H.RECORDS.length, '«Выдать все» fills the phonograph');
+      ok(form().acts[1].off && form().acts[2].off, 'the grant buttons go grey when nothing is left to grant');
+      dst.mu.i = list.findIndex(e => !e.rec); dst.row = 2; key('Enter'); frame();
+      ok(/нет пластинки/.test(dst.log.text), 'a track without a record says so');
+      dst.mu.i = city; dst.row = 0; key('Enter'); frame();
+      key('KeyQ'); frame();
+      ok(au.wanted === prev && !dst.mu.play && dst.tab === 4, 'leaving the music tab stops the track');
+      delete mg.state.gotRecords;
+    }
+    for (let i = 0; i < 6; i++) { key('Digit' + (i + 1)); for (let r = 0; r < 12; r++) { key('ArrowDown'); frame(); } }
     key('F8'); frame();
     ok(!ui.screens.some(x => x.debug), 'F8 closes the debug menu');
     key('F8'); frame();
@@ -8351,11 +8502,13 @@ function trInfo(g) {
     key('Enter'); frame();
     ok(ui.top() !== ph && ui.top().full && ui.top().list, 'the envelope opens the mail');
     key('Escape'); frame();
-    key('ArrowDown'); frame(); eq(ph.rail, 1, 'down moves to the settings gear');
+    key('ArrowDown'); frame(); eq(ph.rail, 1, 'down moves to Friends');
+    eq(ui.phoneRail()[1].icon, 'friends', 'Friends sit above the settings gear');
+    key('ArrowDown'); frame(); eq(ph.rail, 2, 'and further down to the settings gear');
     key('Enter'); frame(); ok(ui.top() !== ph && !ui.top().full, 'the gear opens the settings');
     key('Escape'); frame();
     key('ArrowLeft'); frame(); ok(ph.rail === -1 && ph.sel === 2, 'left returns to the tile grid');
-    ph.sel = 0; key('ArrowLeft'); frame(); ok(ph.rail === 1 && ph.from === 2, 'left from the first column wraps to the side panel');
+    ph.sel = 0; key('ArrowLeft'); frame(); ok(ph.rail === 2 && ph.from === 2, 'left from the first column wraps to the side panel');
     key('ArrowRight'); frame(); ok(ph.rail === -1 && ph.sel === 0, 'right from the panel wraps to the first column');
     ph.sel = 7; key('Enter'); frame(); ok(ui.top() !== ph && ui.top().full && ui.top().act === 0, 'the Guide tile opens the Interastral Guide');
     ui.screens = [ph]; frame();
@@ -8365,19 +8518,19 @@ function trInfo(g) {
     ok(ui.top() !== ph && ui.top().ev, 'the Events tile opens the events');
     ui.screens = [ph]; ph.sel = 11; key('Enter'); frame();
     ok(ui.top() !== ph && ui.top().full && ui.top().focus, 'the last tile opens Messages');
-    ui.screens = [ph]; ph.sel = 2; key('ArrowRight'); ph.rail = ph.railSel = 1; key('ArrowDown'); frame();
-    eq(ph.rail, 2, 'Save sits right under the settings gear');
+    ui.screens = [ph]; ph.sel = 2; key('ArrowRight'); ph.rail = ph.railSel = 2; key('ArrowDown'); frame();
+    eq(ph.rail, 3, 'Save sits right under the settings gear');
     const near = ui.canSaveHere, realSaves = ui.openSaves, savesAsked = [];
     ui.openSaves = function (mode, done) { savesAsked.push(mode); return realSaves.call(this, mode, done); };
     ui.canSaveHere = () => false; ui.toasts = []; key('Enter'); frame();
     ok(ui.top() === ph && ui.toasts.some(t => String(t.text || t).includes('у якоря пространства')), 'Save in the rail is off away from an anchor and says why');
     ui.canSaveHere = () => true; key('Enter'); frame();
     ok(ui.top() !== ph && savesAsked.pop() === 'save', 'Save in the rail opens the memory card');
-    ui.screens = [ph]; ui.canSaveHere = near; key('ArrowDown'); frame(); eq(ph.rail, 3, 'Load sits under Save');
+    ui.screens = [ph]; ui.canSaveHere = near; key('ArrowDown'); frame(); eq(ph.rail, 4, 'Load sits under Save');
     key('Enter'); frame(); ok(ui.top() !== ph && savesAsked.pop() === 'load', 'Load in the rail opens the memory card');
     ui.openSaves = realSaves;
     ui.screens = [ph]; key('ArrowDown'); key('ArrowDown'); frame();
-    eq(ph.rail, 5, 'the exit to the title closes the rail');
+    eq(ph.rail, 6, 'the exit to the title closes the rail');
     key('Enter'); frame();
     ok(ui.top() !== ph && !ui.top().full, 'the exit asks before leaving to the title');
     key('Escape'); frame();
@@ -8637,7 +8790,7 @@ function trInfo(g) {
     eq(H.GUIDE_SECTIONS.map(x => x.label).join('|'), 'Ежедневная тренировка|Индекс выживаемости|Космический раздор|Озарённые светом сокровища|Первопроходческий опыт', 'the guide has the five sections of the original');
     ok(!Object.values(H.MISSION_CHAPTERS).some(ch => /Глава/.test(ch.label)), 'chapters say «Акт», as in the original');
     const acts = game.guideActs();
-    ok(acts.map(a => a.title).join('|') === 'Пролог: Космическая станция «Герта»|Акт I: Ярило-VI|Акт II: Сяньчжоу «Лофу»' && !acts[2].open && !acts[2].parts.length, 'the acts follow the worlds and the Luofu stays closed');
+    ok(acts.map(a => a.title).join('|') === 'Пролог: Космическая станция «Герта»|Акт I: Ярило-VI|Акт II: Лофу Сяньчжоу' && !acts[2].open && acts[2].parts.length === 3, 'the acts follow the worlds and the Luofu stays closed');
     for (const a of acts) for (const p of a.parts) {
       const ids = H.TRAIL_MISSIONS.filter(m => m.ch === p.ch).length + Object.keys(H.QUESTS).filter(id => H.QUESTS[id].type === 'trail' && H.QUESTS[id].ch === p.ch).length;
       ok(p.total === ids && p.total > 0 && game.chapterPhoto(p.ch).bg, 'chapter ' + p.ch + ' lists all its missions and has a photo');
@@ -9035,7 +9188,7 @@ function trInfo(g) {
     ui.screens = []; ui.openMenu(); frame();
     ok(texts.includes('Снабжение') && !texts.includes('Управление'), 'the phone shows Supply where Controls was');
     ok(texts.includes('Путеводитель') && texts.includes('Синтез') && !texts.includes('Сохранить') && !texts.includes('Загрузить'), 'the phone shows the Guide and Synthesis where Save and Load were');
-    const ph = ui.top(); ph.rail = ph.railSel = 4; texts.length = 0; frame();
+    const ph = ui.top(); ph.rail = ph.railSel = 5; texts.length = 0; frame();
     ok(texts.includes('Управление: клавиши поля, боя и карты'), 'Controls moved to the right rail under Settings');
     ph.key('ok'); frame();
     ok(ui.screens.length === 2, 'the rail opens Controls');
@@ -9237,7 +9390,8 @@ function trInfo(g) {
   for (let s = 0; s < 5; s++) { ui.top().sec = s; frame(); key('KeyE'); frame(); }
   {
     const texts = [];
-    for (const [k, inf] of Object.entries(H.INFO)) {
+    for (const k of Object.getOwnPropertyNames(H.INFO)) {
+      const inf = H.INFO[k];
       ok(H.CHARS[k] && inf.full && inf.faction && inf.about, 'info ' + k + ' has full name, faction and about');
       ok(inf.story.length >= 1 && inf.story.length <= H.STORY_NUM.length && inf.story.every(st => st.text && (!st.need || !st.need.lvl || st.need.lvl <= H.MAX_LVL)), 'info ' + k + ' story parts unlock within the level cap');
       ok(inf.voice.length && inf.battle.length && inf.voice.concat(inf.battle).every(v => v.h || (v.t && v.text)), 'info ' + k + ' voice lines have titles and text');
@@ -9247,7 +9401,7 @@ function trInfo(g) {
       ok(needs.every(n => (!n.char || H.CHARS[n.char]) && (!n.eid || n.eid <= 6)), 'info ' + k + ' unlock conditions name real characters');
       texts.push(inf.full, inf.aka || '', inf.faction, inf.home || '', inf.about, ...(inf.intro || []).flatMap(q => [q.q, q.a, q.note]), ...(inf.extra || []).flatMap(e => [e.h, e.text]), ...inf.story.map(st => st.text), ...inf.voice.concat(inf.battle).flatMap(v => [v.h || v.t, v.text || '']));
     }
-    ok(Object.keys(H.CHARS).filter(k => k !== 'trail_p' && !CCC_LATER.has(k)).every(k => H.INFO[k]), 'every roster character has an information page');
+    ok(Object.keys(H.CHARS).filter(k => k !== 'trail_p' && !CCC_LATER.has(k)).concat(H.LAB.IDS).every(k => H.INFO[k]), 'every roster character has an information page');
     ok(texts.every(t => !/[—–]/.test(t) && !/Microsoft|Windows/.test(t)), 'info texts have no em dashes or real brand names');
     const cs = ui.top(), infoSec = 5, keepLvl = game.state.roster.march.lvl;
     cs.k = 'march'; cs.sec = infoSec; frame();
@@ -9337,7 +9491,7 @@ function trInfo(g) {
     key('Escape'); frame();
   }
   {
-    const E = H.Eidolons, keys = Object.keys(H.CHARS).filter(k => k !== 'trail_p' && notLater(k)), R = game.state.roster, DASH = String.fromCharCode(8212);
+    const E = H.Eidolons, keys = Object.keys(H.CHARS).filter(k => k !== 'trail_p' && notLater(k)).concat(H.LAB.IDS.filter(k => E.has(k))), R = game.state.roster, DASH = String.fromCharCode(8212);
     ok(E && keys.every(k => E.has(k)), 'every character has an Eidolon picture');
     for (const k of keys) {
       const sc = E.SCENES[k];
@@ -9355,7 +9509,7 @@ function trInfo(g) {
     eq([0, 1, 2, 3, 4, 5, 6].map(n => { const v = E.view('march', n); return '' + v.colorK + v.decorK + v.lifeK; }).join(), '000,100,100,110,110,110,111', 'picture stages: colour at Eidolon I, decor at III, life at VI');
     ui.screens = []; ui.openChars('march');
     const cs = ui.top(); cs.sec = 4;
-    for (const k of keys) for (const n of [0, 1, 3, 6]) { const was = R[k].eid; R[k].eid = n; delete R[k].eidSeen; cs.k = k; frame(); R[k].eid = was; }
+    for (const k of keys) { const added = !R[k]; if (added) game.debugChar(k, 20, 0); for (const n of [0, 1, 3, 6]) { const was = R[k].eid; R[k].eid = n; delete R[k].eidSeen; cs.k = k; frame(); R[k].eid = was; } if (added) { cs.k = 'march'; delete R[k]; } }
     ok(!cs.asm, 'pictures of every character render at every stage without an assembly');
     for (const [oid, set] of Object.entries(H.OUTFIT_CUTS)) {
       if (!set.eidolon) continue;
@@ -9423,7 +9577,7 @@ function trInfo(g) {
     const pl = R.pela; pl.eid = 1; delete pl.eidSeen;
     game.debugChar('pela', 30, 4); ok(game.eidNew('pela') === 3, 'the debug grant leaves its pieces to be placed');
     game.debugChar('pela', 30, 0); ok(game.eidNew('pela') === 0 && pl.eidSeen === undefined, 'lowering the Eidolons clears the pending pieces');
-    for (const k of keys) delete R[k].eidSeen;
+    for (const k of keys) if (R[k]) delete R[k].eidSeen;
   }
   ui.screens = [];
   ui.openTeam(); frame(); key('ArrowRight'); key('ArrowRight'); key('ArrowRight'); key('Enter'); frame();
@@ -9547,6 +9701,7 @@ function trInfo(g) {
     const WI = H.WarpIntro, pulled = new Set();
     for (const p of [...H.WARP_POOL.five, ...H.WARP_POOL.four]) if (!p.startsWith('cone:')) pulled.add(p);
     for (const [id, st] of Object.entries(H.BANNERS.ev.stars)) { pulled.add(id); for (const f of st.four) pulled.add(f); }
+    for (const id of H.LAB.IDS) if (H.WarpIntro.SHOWS[id]) pulled.add(id);
     pulled.add('kazuma');
     const audio = require('fs').readFileSync(path.join(DIR, 'hsr-audio.js'), 'utf8'), SFX = new Set([...audio.matchAll(/case '([a-z0-9_]+)':/g)].map(m => m[1]));
     ok(pulled.size >= 18, 'the Warp can give ' + pulled.size + ' characters');
@@ -11042,15 +11197,18 @@ function trInfo(g) {
       eq(game.map.id, 'express_lab', 'Shift + Space on the secret door with the Trailblazer alone opens the Test car');
       frame(3);
       const L = G.mapLayer(game.map);
-      ok(L.deco && L.sprites.length === 4 && L.glass.length > 8 && L.lights.length > 5, 'the Test car has windows, lights and the four terminals of Silver Wolf');
+      ok(L.deco && L.sprites.length === 7 && L.glass.length > 8 && L.lights.length > 5, 'the Test car has windows, lights, the six terminals of Silver Wolf and the Range target');
       const useTerm = ch => { const t = game.map.ents.find(e => e.ch === ch); game.placePlayer(t.x, t.y + 1); game.player.dir = 'up'; key('Space'); frame(2); for (let i = 0; i < 4 && game.pending && game.pending.type === 'say'; i++) { key('Enter'); frame(2); } };
       const jade0 = game.state.jade;
       useTerm('j');
       ok(game.state.jade === jade0 + H.TUNING.debugJade && !game.pending && !game.script, 'the jade terminal grants the same jade as F7');
       useTerm('k');
       ok(ui.top() && ui.top().debug && game.pending && game.pending.ui === 'hackdebug', 'the console terminal opens the F8 debug menu');
+      const labMusic = ui.audio.wanted;
+      ui.debugMusicPlay(ui.debugState, H.debugMusicList().find(e => e.key === 'kafka'));
       key('F8'); frame(2);
       ok(!ui.screens.length && !game.pending && !game.script, 'closing the debug menu frees the Trailblazer');
+      ok(ui.audio.wanted === labMusic && !ui.debugState.mu.play, 'closing the console terminal menu also stops the music tab');
       useTerm('m');
       ok(ui.top() && ui.top().cw && game.pending && game.pending.ui === 'cw', 'the Currency Wars terminal opens the mode screen');
       key('Escape'); frame(2);
@@ -11178,12 +11336,26 @@ function trInfo(g) {
           {
             ui.openDebug(); frame(2);
             const st0 = Object.assign({}, ui.debugState, { tab: 5 });
-            ui.debugForm(st0);
-            ok(ui.top().debug && st0.tab === 0, 'Currency Wars F8: without a run there is no sixth tab');
+            const noRunForm = ui.debugForm(st0);
+            ok(ui.top().debug && st0.tab === 5 && noRunForm.rows.length === 1 && noRunForm.rows[0].label === 'Ранг' && noRunForm.acts.length === 1 && noRunForm.acts[0].label === 'Весь банк', 'Currency Wars F8: the mode screens show the sixth tab with rank and bank before a run');
+            ui.top().setTab(5); frame(2);
+            const log0 = ui.debugState.log;
+            key('Enter'); frame();
+            ok(ui.debugState.log === log0, 'Currency Wars F8: Enter on the rank row grants nothing before a run');
             key('Escape'); frame();
             const rd = game.cwNew({ tier: 0 }); rd.envPick = null;
             ui.openDebug(); frame(2);
-            ui.top().setTab(5); frame(2);
+            const cwScreens = ui.screens, battle0 = game.battle;
+            ui.screens = cwScreens.filter(s => !s.cw);
+            const stWorld = Object.assign({}, ui.debugState, { tab: 5 });
+            eq(ui.debugForm(stWorld).rows[0].label, 'Трек', 'Currency Wars F8: outside the mode a saved run does not add the tab');
+            game.battle = { cw: true };
+            const stFight = Object.assign({}, ui.debugState, { tab: 5 });
+            ui.debugForm(stFight);
+            eq(stFight.tab, 5, 'Currency Wars F8: a battle of the mode shows the tab with no mode screens under it');
+            game.battle = battle0;
+            ui.screens = cwScreens;
+            ui.top().setTab(0); ui.top().setTab(5); frame(2);
             const g0 = rd.gold;
             key('ArrowRight'); frame();
             ok(rd.gold === g0 + 10, 'Currency Wars F8: the sixth tab changes the run coins');
@@ -11264,7 +11436,7 @@ function trInfo(g) {
   key('Enter'); frame(5);
   eq(ui.mode, 'field', 'back to the field after victory');
   {
-    const SH = H.Ults.SHOWS, ids = Object.keys(H.CHARS);
+    const SH = H.Ults.SHOWS, ids = Object.keys(H.CHARS).concat(H.LAB.IDS.filter(id => SH[id]));
     for (const id of ids) ok(SH[id] && SH[id].line && typeof SH[id].act === 'function' && SH[id].d >= 1, 'Ultimate cutscene exists for ' + id);
     for (const id of Object.keys(SH)) ok(H.CHARS[id], 'Ultimate cutscene belongs to a character: ' + id);
     for (const id of ids) ok(!/[—–]/.test(SH[id].line) && SH[id].line.length <= 40, 'the Ultimate line of ' + id + ' is short and has no dashes');
@@ -11695,6 +11867,41 @@ function trInfo(g) {
     ui.screens = []; ui.game = keepP; ui.enterField();
   }
   {
+    const ps = H.newState();
+    Object.assign(ps, { map: 'express', x: null, y: null });
+    ps.flags.doom = true; ps.flags.crises_vote = true;
+    const pg = new H.Game({ state: ps, seed: 4 }), keepP = ui.game;
+    ui.game = pg; ui.screens = []; ui.dlg = null; ui.mode = 'field';
+    const ph = ui.openUi_phono();
+    frame();
+    ok(ui.top() === ph && ph.album === 0, 'Phonograph: the menu opens on the album of the record in the car');
+    ok(pg.state.heard.includes('station') && !H.phonoItems(pg, 'herta').some(x => x.fresh), 'Phonograph: records found before the first visit are not marked new');
+    ph.key('right', 'ArrowRight'); frame();
+    const herta = ph.items();
+    ok(herta.map(x => x.head || x.rec.id).join() === 'Места,station,Бои,crises,doomsday' && herta[ph.sel].rec.id === 'station', 'Phonograph: the station album lists places and battles and selects the first record');
+    ph.key('ok', 'Enter'); frame();
+    eq(ui.audio.wanted, 'station', 'Phonograph: Enter plays the record in the menu');
+    ph.key('down', 'ArrowDown'); frame();
+    eq(ph.items()[ph.sel].rec.id, 'crises', 'Phonograph: the arrows skip the section headers');
+    ph.key('ok', 'Space'); frame();
+    ok(pg.state.record === 'crises' && ui.audio.wanted === 'crises' && H.TRACKS.crises.midi === H.TRACKS.battle.midi, 'Phonograph: Space puts Crises on the Express, and it plays the Battle Theme');
+    ph.key('right', 'ArrowRight'); ph.key('right', 'ArrowRight'); frame();
+    ok(ph.items().filter(x => !x.head).every(x => !x.ok), 'Phonograph: Luofu records stay locked before the voyage');
+    ph.key('ok', 'Enter'); ph.key('ok', 'Space'); frame();
+    ok(pg.state.record === 'crises' && ui.audio.wanted === 'crises', 'Phonograph: a locked record can be neither played nor put on');
+    pg.state.flags.jarilo_arrive = true;
+    eq(H.phonoItems(pg, 'jarilo').filter(x => x.fresh).map(x => x.rec.id).join(), 'snow,order', 'Phonograph: records found later are marked new');
+    ph.key('left', 'ArrowLeft'); frame();
+    ph.key('ok', 'Enter'); frame();
+    ok(!H.phonoItems(pg, 'jarilo').find(x => !x.head && x.rec.id === 'snow').fresh, 'Phonograph: a played record loses its mark');
+    ph.key(null, 'KeyR'); frame();
+    ok(pg.state.record === null && ui.audio.wanted === 'express', 'Phonograph: R brings back the usual Express music');
+    ph.key('ok', 'Enter'); frame();
+    ph.key('back', 'Escape'); frame();
+    ok(!ui.screens.length && ui.audio.wanted === pg.mapMusic(H.MAPS.express), 'Phonograph: Esc closes the menu and the car music comes back');
+    ui.screens = []; ui.game = keepP; ui.enterField();
+  }
+  {
     const ms = H.newState();
     Object.assign(ms, { name: 'Стелла', gender: 'f', map: 'u_boulder', x: 8, y: 6 });
     for (const m of H.TRAIL_MISSIONS.slice(0, 17)) for (const f of m.done.split('|')) ms.flags[f] = true;
@@ -11979,6 +12186,13 @@ function trInfo(g) {
     for (let i = 0; i < 4 && hg.pending && hg.pending.type === 'say'; i++) { key('Enter'); frame(2); }
     const hub = ui.top();
     ok(hub && hub.hd && hub.hub && hg.pending && hg.pending.ui === 'hd' && ui.audio.wanted === 'sim', 'Express Frontier: the terminal opens the arcade screen with the simulation theme');
+    ui.openDebug(); frame(2);
+    ui.top().setTab(5); frame(2);
+    const hubForm = ui.debugForm(ui.debugState);
+    ok(ui.debugState.tab === 5 && hubForm.rows.length === 1 && hubForm.rows[0].label === 'Проверка' && !hubForm.acts.length, 'Express Frontier F8: the arcade screen shows the Frontier tab with only the check row before a run');
+    key('ArrowDown'); key('ArrowRight'); frame(2);
+    ui.pop();
+    ok(ui.top() === hub, 'Express Frontier F8: closing the console returns to the arcade screen');
     key('Enter'); frame(3);
     ok(ui.top() === hub && hub.pick && hub.sel === 1 && !hg.hdRun(), 'Express Frontier: Start defense first asks for the difficulty, Normal is selected');
     key('ArrowDown'); frame(1); key('Enter'); frame(2);
@@ -12160,8 +12374,8 @@ function trInfo(g) {
     key('KeyR'); frame(2);
     const rl = ui.top();
     ok(rl.rules, 'Express Frontier: R opens the rules');
-    for (let i = 0; i < 8; i++) { key('ArrowDown'); frame(); }
-    eq(rl.sel, 0, 'Express Frontier: the rules have eight pages');
+    for (let i = 0; i < 9; i++) { key('ArrowDown'); frame(); }
+    eq(rl.sel, 0, 'Express Frontier: the rules have nine pages');
     key('KeyA'); frame();
     eq(hg.hd().opts.aim, 'cursor', 'Express Frontier: A switches aiming to the cursor');
     key('KeyA'); frame();
@@ -12193,9 +12407,22 @@ function trInfo(g) {
     {
       ui.openDebug(); frame(2);
       const dbg = ui.top(), dst = ui.debugState, t0 = A4.time;
+      const modeScreens = ui.screens;
+      ui.screens = modeScreens.filter(s => !s.hd);
+      dst.tab = 5;
+      eq(ui.debugForm(dst).rows[0].label, 'Трек', 'Express Frontier F8: outside the mode a saved run does not add the Frontier tab');
+      ui.screens = modeScreens;
       dbg.setTab(5); frame(2);
       let fm = ui.debugForm(dst);
-      ok(fm.rows.length === 11 && fm.acts.length === 3 && fm.rows[0].label === 'Золото', 'Express Frontier F8: the Frontier tab opens during a run with its rows and actions');
+      ok(fm.rows.length === 12 && fm.acts.length === 3 && fm.rows[0].label === 'Золото', 'Express Frontier F8: the Frontier tab opens during a run with its rows and actions');
+      const checkRow = () => ui.debugForm(dst).rows[11];
+      ok(checkRow().label === 'Проверка' && checkRow().value === 'Запустить' && checkRow().fixed && checkRow().open, 'Express Frontier F8: the check row waits for a start');
+      checkRow().open();
+      const checkJob = ui.hdCheck.job;
+      while (!checkJob.done) checkJob.step(5000);
+      ok(checkRow().value === 'Совпало' || checkRow().value === 'НЕ совпало', 'Express Frontier F8: the check row shows the result of the golden run');
+      frame(2);
+      ok(A4.time === t0, 'Express Frontier F8: the check does not move the open arena');
       const g0 = A4.hero.gold; fm.rows[0].step(1);
       eq(A4.hero.gold, g0 + 1000, 'Express Frontier F8: gold +1000');
       const l0 = A4.hero.lvl; fm.rows[1].step(1);
@@ -12228,6 +12455,170 @@ function trInfo(g) {
     ok(!ui.screens.length && !hg.pending, 'Express Frontier: Esc closes the arcade screen');
     ui.screens = []; ui.game = keepH; ui.mode = 'field'; ui.enterField(); ui.held = [];
   }
+  {
+    const keepL = ui.game, lg = new H.Game({ fresh: true, seed: 41 }), ls = lg.state, labIds = H.LAB.IDS, cones0 = lg.profileCollections().map(r => r.total).join();
+    Object.assign(ls.flags, { express_intro: true, events_note: true, ks_note: true, lab_found: true, lab_sw: true });
+    lg.eventsOpen = () => false;
+    for (const id of labIds) lg.addChar(id, 40);
+    for (const id of H.LAB.CONE_IDS) lg.addCone(id);
+    lg.state.party = ['trail'];
+    lg.loadMap('express_lab', 'v');
+    lg.script = null; lg.pending = null; lg.cg = null;
+    ui.game = lg; ui.screens = []; ui.dlg = null; ui.held = []; ui.walk = false; ui.enterField(); frame(2);
+    eq(lg.profileCollections().map(r => r.total).join(), cones0, 'Lab: test heroes and cones stay out of the collection totals');
+    ok(labIds.every(id => !lg.visitors().includes(id)), 'Lab: test heroes do not visit the Express cars');
+    const slots = lg.profileSlots();
+    ok(labIds.every(id => !slots.show.includes(id) && !slots.comp.includes(id)), 'Lab: test heroes stay off the profile showcase');
+    ok(labIds.every(id => !lg.setProfileAvatar(id) && !lg.setProfileStage(id) && !lg.setProfileSlot('show', 0, id)), 'Lab: the profile refuses test heroes');
+    lg.state.party = ['theherta', 'trail'];
+    ok(lg.profileAvatar() === 'trail' && lg.profileStageHero() === 'trail', 'Lab: a test hero leading the party is not the profile face');
+    lg.state.party = ['trail'];
+    ok(ui.rosterKeys().includes('theherta'), 'Lab: the Characters list shows an owned test hero');
+    let thrown = null;
+    try {
+      for (const id of labIds) {
+        ui.screens = []; ui.openChars(id); const cs = ui.top();
+        for (let i = 0; i < 7; i++) { cs.sec = i; for (let pg = 0; pg < 3; pg++) { cs.infoPage = pg; frame(); } }
+        ui.screens = []; ui.openLevelUp(id); frame();
+      }
+      for (const id of H.LAB.CONE_IDS) { ui.screens = []; ui.openConeView(id); frame(); }
+      ui.screens = []; ui.openTeam(); frame();
+      ui.screens = []; ui.openMenu(); ui.openProfile(); frame();
+      ui.openProfilePick('Проба', null, noop, true);
+      ok(ui.top().keys.every(k => !H.labOnly(k)), 'Lab: the profile picker hides test heroes');
+      ui.screens = []; ui.openGuide(); frame();
+      ui.screens = []; ui.openFhTeam(1, noop); frame();
+    } catch (e) { thrown = e; }
+    ok(!thrown, 'Lab: every roster screen opens with a test hero' + (thrown ? ': ' + thrown.stack : ''));
+    for (const id of labIds) {
+      lg.state.party = [id, 'trail'];
+      ui.screens = [];
+      lg.startBattle({ enemies: ['reaver:10', 'eliminator:10'], lvl: 10, bg: 'station', music: 'battle' });
+      ui.drainGameEvents();
+      ui.bt.auto = true;
+      for (let i = 0; i < 4000 && !ui.bt.result; i++) frame(1, 0.1);
+      ok(ui.bt.result, 'Lab: an auto battle with ' + id + ' ends');
+      key('Enter'); frame(5);
+    }
+    ui.screens = []; ui.game = keepL; ui.mode = 'field'; ui.enterField(); ui.held = [];
+  }
+  {
+    const keepL = ui.game, lg = new H.Game({ fresh: true, seed: 61 }), ls = lg.state;
+    Object.assign(ls.flags, { lab_found: true, lab_sw: true, events_note: true, ks_note: true });
+    lg.eventsOpen = () => false;
+    ls.party = ['trail'];
+    lg.loadMap('express_lab', 'v');
+    lg.script = null; lg.pending = null; lg.cg = null;
+    ui.game = lg; ui.screens = []; ui.dlg = null; ui.held = []; ui.walk = false; ui.enterField(); frame(2);
+    const term = lg.map.ents.find(e => e.ch === 'b');
+    ok(term && term.x === 29 && term.y === 3 && term.def.label === 'Секретный прыжок', 'Secret warp: the sixth terminal stands at (29, 3)');
+    lg.placePlayer(term.x, term.y + 1); lg.player.dir = 'up';
+    key('Space'); frame(2);
+    ok(ls.flags.lab_warp && lg.pending && /Шестой терминал/.test(lg.pending.text), 'Secret warp: the terminal introduces itself once');
+    for (let i = 0; i < 6 && !ui.screens.length; i++) { key('Enter'); frame(2); }
+    const win = ui.top();
+    ok(win && win.ban === 'lab', 'Secret warp: the terminal opens the secret window');
+    const texts = [], text0 = ui.text;
+    ui.text = function (s, ...rest) { texts.push(String(s)); return text0.call(this, s, ...rest); };
+    frame();
+    ok(texts.includes('Секретный прыжок') && !texts.some(t => /Нефрит/.test(t)), 'Secret warp: the window has its title and shows no jade');
+    ok(texts.includes('Следующий 5★: Великая Герта'), 'Secret warp: the window names the next 5★');
+    ok(texts.includes('+1') && texts.includes('+10') && texts.includes('+100') && texts.includes('Прыжок ×1') && texts.includes('Прыжок ×10'), 'Secret warp: three grant buttons and two warp buttons');
+    eq(win.sel, 1, 'Secret warp: without passes the focus rests on +10');
+    win.sel = 3; key('Enter'); frame();
+    ok(!win.show && win.sel === 1, 'Secret warp: a refused warp moves the focus to +10');
+    key('Enter'); frame();
+    eq(ls.inv.items.lpass, 10, 'Secret warp: Enter on +10 grants ten passes');
+    key('KeyG'); frame();
+    eq(ls.inv.items.lpass, 20, 'Secret warp: G grants ten passes');
+    key('ArrowRight'); frame(); eq(win.sel, 2, 'Secret warp: the arrows walk the buttons');
+    key('ArrowLeft'); key('ArrowLeft'); key('ArrowLeft'); frame(); eq(win.sel, 4, 'Secret warp: the arrows wrap around');
+    ui.held = [];
+    key('ArrowDown'); frame(); eq(lg.starOf('lab'), 'tribbie', 'Secret warp: down chooses the next heroine');
+    key('ArrowUp'); frame(); eq(lg.starOf('lab'), 'theherta', 'Secret warp: up chooses the previous heroine');
+    ui.held = [];
+    key('Enter'); frame();
+    ok(win.show && win.show.res.length === 10 && ls.inv.items.lpass === 10, 'Secret warp: Enter on ×10 spends ten passes and starts the show');
+    ok(win.show instanceof H.WarpShow && !win.show.std, 'Secret warp: the show is the ordinary Warp cinematic');
+    let thrown = null;
+    try {
+      for (let i = 0; i < 30; i++) frame(1, 0.4);
+      key('Escape'); frame(3);
+      for (let i = 0; i < 40 && win.show && win.show.phase !== 'rack'; i++) { key('Enter'); frame(1, 0.5); }
+      ok(win.show && win.show.phase === 'rack', 'Secret warp: the show reaches the results rack');
+      frame(10, 0.2);
+      for (let i = 0; i < 4 && win.show; i++) { key('Enter'); frame(1, 0.5); }
+    } catch (e) { thrown = e; }
+    ok(!thrown, 'Secret warp: the whole show plays' + (thrown ? ': ' + thrown.stack : ''));
+    ok(!win.show && ls.roster.theherta && ui.top() === win, 'Secret warp: the show ends in the window with the heroine in the roster');
+    win.sel = 3; key('Enter'); frame();
+    ok(win.show && win.show.res.length === 1, 'Secret warp: ×1 starts a single show');
+    win.show.begin([0]); frame(2);
+    const one = win.show.res[0];
+    key('Escape'); frame(2);
+    ok(!win.show, 'Secret warp: Esc closes a single show');
+    ok(one.lab && ui.glowOf(one) === null, 'Secret warp: results never promise Starlight');
+    ls.inv.items.lpass = (ls.inv.items.lpass || 0) + 1000;
+    ok(ui.glowOf({ kind: 'char', res: 'max', rar: 5 }) !== null && ui.glowOf({ kind: 'char', res: 'max', rar: 5, lab: true }) === null, 'Secret warp: only secret results lose the Starlight tag');
+    ui.resultTag(10, 10, { kind: 'cone', rar: 3, ghost: true, sup: 1, lab: true }, []);
+    ok(texts.includes('Статист'), 'Secret warp: an extra says it is not saved');
+    texts.length = 0;
+    key('KeyH'); frame();
+    ok(ui.top() !== win && texts.includes('История прыжков') && texts.includes('Великая Герта') && !texts.includes('Стандартный'), 'Secret warp: history lists the own log');
+    const hist = ui.top(), rows0 = hist.rows().length;
+    ok(rows0 > 0 && rows0 === ls.lab.log.length && !ls.warpLog.length, 'Secret warp: history reads the own log, the ordinary one stays empty');
+    ok(hist.rows().some(e => e.rar === 5 && e.ban === 'lab'), 'Secret warp: history holds the 5★');
+    key('Tab'); frame();
+    eq(hist.ban, 'lab', 'Secret warp: Tab does not leave the secret history');
+    key('Escape'); frame();
+    ok(ui.top() === win, 'Secret warp: Esc returns from history to the window');
+    key('KeyV'); frame();
+    ok(ui.top() !== win, 'Secret warp: V opens the cone');
+    key('Escape'); frame();
+    ok(ui.top() === win, 'Secret warp: Esc returns from the cone to the window');
+    lg.state.roster.theherta.eid = 6;
+    for (let i = 0; i < 5; i++) lg.addCone('undeniable');
+    texts.length = 0; frame();
+    ok(texts.some(t => /дальше только копии/.test(t)), 'Secret warp: the window says when the pair is complete');
+    key('Escape'); frame(2);
+    ok(!ui.screens.length && !lg.pending, 'Secret warp: Esc closes the window and finishes the script');
+    ui.text = text0;
+    lg.placePlayer(term.x, term.y + 1); lg.player.dir = 'up';
+    key('Space'); frame(2);
+    ok(ui.top() && ui.top().ban === 'lab', 'Secret warp: the next visit skips the note');
+    key('Escape'); frame(2);
+    const stars = H.BANNERS.lab.stars;
+    H.BANNERS.lab.stars = {};
+    ok(lg.cond('%lab_empty'), 'Secret warp: an empty banner is seen by the script');
+    lg.placePlayer(term.x, term.y + 1); lg.player.dir = 'up';
+    key('Space'); frame(2);
+    ok(!ui.screens.length && lg.pending && /ЗАКРЫТЫЙ ТЕСТ ЗАВЕРШЁН/.test(lg.pending.text), 'Secret warp: with nobody on test the terminal only says so');
+    key('Enter'); frame(2);
+    H.BANNERS.lab.stars = stars;
+    ui.held = [];
+    ui.netSession = { code: 'X' };
+    ui.openUi_labwarp();
+    ok(!ui.screens.length, 'Secret warp: the window stays closed in a network session');
+    ui.netSession = null;
+    lg.pending = null; lg.script = null;
+    ui.screens = []; ui.openDebug(); frame();
+    const ds = ui.debugState;
+    ds.tab = 0; frame();
+    const fm = ui.debugForm(ds);
+    ok(fm && fm.rows, 'Secret warp: the console form builds with an owned heroine');
+    ds.ch.i = Object.keys(H.CHARS).filter(k => k !== 'trail_p').length; frame();
+    ok(JSON.stringify(ui.debugForm(ds).rows).includes('Великая Герта'), 'Secret warp: the console can show the owned heroine');
+    ds.tab = 1; ds.cn.i = 0; frame();
+    ui.screens = []; ds.tab = 0; ds.ch.i = 0;
+    const outsider = new H.Game({ fresh: true, seed: 62 });
+    ui.game = outsider; ui.openDebug(); frame();
+    ds.ch.i = Object.keys(H.CHARS).filter(k => k !== 'trail_p').length - 1; frame();
+    ok(H.CHARS[Object.keys(H.CHARS).filter(k => k !== 'trail_p')[ds.ch.i]] && !H.labOnly(Object.keys(H.CHARS).filter(k => k !== 'trail_p')[ds.ch.i]), 'Secret warp: the console list ends with ordinary heroes for a player without them');
+    ds.ch.i = 0;
+    ui.screens = [];
+    ui.game = lg;
+    ui.screens = []; ui.game = keepL; ui.mode = 'field'; ui.enterField(); ui.held = [];
+  }
   ok(bad.length === 0, 'every colour used by the new art and UI is valid (' + bad.slice(0, 4).join('; ') + ')');
 }
 
@@ -12244,7 +12635,7 @@ function trInfo(g) {
     createDynamicsCompressor: () => node({ threshold: param(), knee: param(), ratio: param(), attack: param(), release: param() }),
     createConvolver: () => node({ buffer: null }),
     createBuffer: (ch, n) => ({ getChannelData: () => new Float32Array(n) }),
-    createBufferSource: () => node({ buffer: null, loop: false, start() {}, stop() {} }),
+    createBufferSource: () => node({ buffer: null, loop: false, start() { voices++; }, stop() {} }),
     createPeriodicWave: () => ({}),
     createWaveShaper: () => node({ curve: null }),
     createOscillator: () => node({ type: 'sine', frequency: param(), detune: param(), setPeriodicWave() {}, start() { voices++; }, stop() {} })
@@ -12275,8 +12666,18 @@ function trInfo(g) {
     voices = 0;
     real.base = 0; real.i = 0;
     real.pump(song.loopEnd);
-    ok(voices > song.notes.length, 'track ' + id + ' builds voices for every channel (' + voices + ' oscillators)');
+    ok(voices > song.notes.length, 'track ' + id + ' builds voices for every channel (' + voices + ' voices)');
   }
+  const STUB_TRACKS = ['title', 'dungeon', 'final', 'sim'];
+  const musicUse = new Map();
+  const useMusic = (id, where) => { if (id && !musicUse.has(id)) musicUse.set(id, where); };
+  Object.entries(H.MAPS).forEach(([id, m]) => useMusic(m.music, 'map ' + id));
+  Object.entries(H.Cine.CINES).forEach(([id, c]) => useMusic(c.music, 'cine ' + id));
+  Object.entries(H.ENCOUNTERS).forEach(([id, e]) => useMusic(e.music, 'encounter ' + id));
+  H.RECORDS.forEach(r => useMusic(r.track, 'record ' + r.name));
+  for (const [id, where] of musicUse) ok(H.TRACKS[id] && (H.TRACKS[id].midi || STUB_TRACKS.includes(id)), where + ' plays ' + id + (STUB_TRACKS.includes(id) ? ', a chiptune stub left for HSR-MUSIC.md' : ' from a MIDI file'));
+  ok(STUB_TRACKS.every(id => H.TRACKS[id] && !H.TRACKS[id].midi), 'every track left as a stub still has no MIDI file');
+  for (const [cine, music] of [['c_attack', 'threat'], ['c_vessel', 'mystery'], ['c_lf_kafka', 'mystery'], ['c_lf_undying_end', 'threat']]) eq(H.Cine.CINES[cine].music, music, 'cine ' + cine + ' plays ' + music);
   eq(H.Midi.parse(Uint8Array.from([77, 84, 104, 100, 0, 0, 0, 6, 0, 0, 0, 0, 0, 96])).notes.length, 0, 'an empty MIDI file parses');
   let bad = false;
   try { H.Midi.parse(Uint8Array.from([1, 2, 3, 4])); } catch (e) { bad = true; }
@@ -12291,15 +12692,15 @@ function trInfo(g) {
   eq(a.wanted, 'menu', 'the audio keeps the wanted track until the context starts');
   eq(H.TRACKS.battle.midi, 'content/music/Battle Theme.mid', 'regular battles outside Jarilo-VI play the Battle Theme MIDI');
   eq(H.TRACKS.boss.midi, H.TRACKS.battle.midi, 'bosses without their own theme play the Battle Theme MIDI');
-  const THEMES = { order: 'Order.mid', svarog: 'Godfather.mid', doomsday: 'Dawn of Disaster.mid', gepard: 'Braving the Cold.mid' };
+  const THEMES = { order: 'Order.mid', svarog: 'Godfather.mid', doomsday: 'Dawn of Disaster.mid', gepard: 'Braving the Cold.mid', breach: 'Into the Breach.mid', kafka: 'Hunters Intuition.mid' };
   for (const [id, file] of Object.entries(THEMES)) eq(H.TRACKS[id] && H.TRACKS[id].midi, 'content/music/' + file, 'track ' + id + ' plays ' + file);
-  const BOSS_THEMES = { doomsday: 'doomsday', gepard: 'gepard', gepard2: 'gepard', svarog: 'svarog', mine: 'boss', bp_bronya: 'order', seele: 'order' };
+  const BOSS_THEMES = { doomsday: 'doomsday', gepard: 'gepard', gepard2: 'gepard', svarog: 'svarog', mine: 'boss', bp_bronya: 'order', seele: 'order', lf_kafka: 'kafka' };
   for (const [enc, music] of Object.entries(BOSS_THEMES)) eq(H.ENCOUNTERS[enc].music, music, 'encounter ' + enc + ' plays ' + music);
   eq(H.CALYX.find(c => c.boss === 'doomsday').music, 'doomsday', 'the Echo of War with the Doomsday Beast plays Dawn of Disaster');
   for (const id of Object.keys(H.MAPS)) {
     const probe = new H.Game({ state: Object.assign(H.newState(), { map: id, x: null, y: null }), seed: 1 });
     const area = probe.areaOf(id);
-    eq(probe.battleTheme(), area && area.world.id === 'jarilo' ? 'order' : 'battle', 'regular battles on map ' + id + ' play ' + probe.battleTheme());
+    eq(probe.battleTheme(), H.MAPS[id].battleMusic || (area && area.world.id === 'jarilo' ? 'order' : area && area.world.id === 'luofu' ? 'breach' : 'battle'), 'regular battles on map ' + id + ' play ' + probe.battleTheme());
   }
   for (const [mapId, music] of [['j_plains', 'order'], ['hs_base', 'battle']]) {
     const fg = new H.Game({ state: Object.assign(H.newState(), { map: mapId, x: null, y: null }), seed: 3 });
@@ -12744,7 +13145,7 @@ function trInfo(g) {
   st.roster.trail.lvl = 45;
   st.party = ['trail', 'natasha', 'hook', 'march'];
   Object.assign(st, { map: 'u_boulder', x: 8, y: 6, name: 'Стелла', gender: 'f' });
-  st.quests.su_beta = 'done'; st.flags.su_beta_done = true; st.flags.su_open = true;
+  st.quests.su_beta = 'done'; st.flags.su_beta_done = true; st.flags.su_open = true; st.quests.lf_q1 = 'done';
   const g = new H.Game({ state: st, seed: 41 });
   ok(!g.trailCurrent() && !g.missionList().length, 'after the Jarilo-VI story no Trailblaze mission is left');
   chats(g);
@@ -16516,7 +16917,7 @@ console.log(log.join('\n'));
   }
   ok(Object.values(HD.ATK_ARMOR).length === 3 && Object.values(HD.ATK_ARMOR).every(r => Object.keys(r).length === 5 && Object.values(r).every(v => v > 0)), 'Express Frontier: the attack and armor table is 3 by 5 without zeros');
   ok(Object.keys(HD.SUPPLIES).every(id => H.ITEMS[id] && HD.SUPPLIES[id].price > 0 && HD.SUPPLIES[id].text.length * 6 <= 280), 'Express Frontier: every supply has a game item, a price and a short text');
-  const hdFiles = ['hsr-hd-data', 'hsr-hd-arena', 'hsr-hd-heroes', 'hsr-hd-foes', 'hsr-hd-shop', 'hsr-hd', 'hsr-hd-art', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-debug'].map(f => fs.readFileSync(path.join(DIR, f + '.js'), 'utf8')).join('\n') + fs.readFileSync(path.join(__dirname, '../tools/hsr-hd-bot.cjs'), 'utf8');
+  const hdFiles = ['hsr-hd-data', 'hsr-hd-math', 'hsr-hd-arena', 'hsr-hd-heroes', 'hsr-hd-foes', 'hsr-hd-shop', 'hsr-hd', 'hsr-hd-net', 'hsr-hd-simver', 'hsr-hd-lead', 'hsr-hd-art', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-table', 'hsr-ui-hd-debug'].map(f => fs.readFileSync(path.join(DIR, f + '.js'), 'utf8')).join('\n') + fs.readFileSync(path.join(__dirname, '../tools/hsr-hd-bot.cjs'), 'utf8');
   ok(!/—/.test(hdFiles) && !/Microsoft|Windows/.test(hdFiles) && !/\/\/|\/\*/.test(hdFiles.replace(/https?:\/\//g, '')), 'Express Frontier: no long dashes, no forbidden names, no comments');
 
   const M = HD.perron(), Gd = HD.gridOf();
@@ -17720,7 +18121,7 @@ console.log(log.join('\n'));
     ok(fin({ stats: { raid: 3100 } }).sum.meta.trials.includes('raid'), 'Express Frontier: 3 000 raid gold completes its trial');
     ok(fin({ diff: 'hard' }).sum.meta.trials.includes('hard3'), 'Express Frontier: three stars on Hard complete their trial');
     ok(!fin({ stats: { tfell: 1 } }).sum.meta.trials.includes('towers') && !fin({ deaths: 1 }).sum.meta.trials.includes('nodeath'), 'Express Frontier: a fallen turret or a death keeps those trials open');
-    eq(HD.TRIALS.length, Object.keys(HD.HEROES).length + 3 + 5, 'Express Frontier: trials cover every hero, every difficulty and five feats');
+    eq(HD.TRIALS.length, Object.keys(HD.HEROES).length + 3 + 5 + 3, 'Express Frontier: trials cover every hero, every difficulty, five feats and three crew wins');
     ok(Object.keys(HD.META.asc).length === 30 && HD.META.week.length === 10 && HD.META.week[9][0] === 18000, 'Express Frontier: promotion has 30 rewarded levels and the week ten steps');
     ok(HD.SOLO.every(r => r.name === 'Leveling_Solo' && HD.DIFFS[r.diff] && HD.HEROES[r.hero]) && Object.keys(HD.DIFFS).every(d => HD.SOLO.some(r => r.diff === d)), 'Express Frontier: Leveling_Solo has records on every difficulty');
     const { A } = mkA('trail');
@@ -17775,12 +18176,13 @@ console.log(log.join('\n'));
   eq(shot(30, 2), '352/176/122', 'Ascension: cone stats match the ascended screenshot');
   eq(shot(80, 6), '952/476/330', 'Ascension: cone stats match the level 80 screenshot');
   const LATER = new Set(['cx_quanta', 'cx_icicle', 'cx_doom', 'cx_celestial', 'cx_abomination', 'cx_puppetry', 'cx_perdition']);
-  for (const k of Object.keys(H.CHARS)) ok(A.shadows[A.shadowOf[k]], 'Ascension: ' + k + ' has a Shadow material');
+  for (const k of heroIds()) ok(A.shadows[A.shadowOf[k]], 'Ascension: ' + k + ' has a Shadow material');
   eq(A.shadowOf.trail, 'asc_ecto', 'Ascension: the Trailblazer uses Enigmatic Ectostella');
   eq(A.shadowOf.hanya, 'asc_perdition', 'Ascension: Hanya keeps her original material');
   eq(Object.keys(A.shadows).length, 15, 'Ascension: 14 Shadow materials and the Ectostella');
   for (const [id, m] of Object.entries(A.shadows)) ok(id === 'asc_ecto' ? m.cx === null : LATER.has(m.cx) || H.CALYX.some(c => c.id === m.cx && /^Застойная тень/.test(c.name)), 'Ascension: ' + id + ' comes from a Stagnant Shadow');
-  for (const [id, c] of Object.entries(H.CONES)) {
+  for (const id of Object.getOwnPropertyNames(H.CONES)) {
+    const c = H.CONES[id];
     ok(H.TRACE_FOE_LINES[A.coneFoe[id]], 'Ascension: cone ' + id + ' has an enemy line');
     ok(Object.values(H.TRACE_PATH_LINES).some(l => l[0] === c.path), 'Ascension: cone ' + id + ' has a Path line');
     ok(A.coneCost[c.rarity], 'Ascension: cone ' + id + ' has a cost table');
@@ -18271,7 +18673,7 @@ console.log(log.join('\n'));
   for (let i = 0; i < 30; i++) pl.profileNote('su', 1);
   eq(pl.profile().log.length, 20, 'Log: the feed holds 20 records');
   const mer = pl.profileMerits();
-  eq(mer.map(r => r.id).join(), 'fh,su,cw,hd,boss,warp,time', 'Merits: seven rows');
+  eq(mer.map(r => r.id).join(), 'fh,pf,su,cw,hd,boss,warp,time', 'Merits: eight rows');
   ok(!mer.find(r => r.id === 'cw').open && mer.find(r => r.id === 'cw').value === 'Не открыто', 'Merits: a closed mode says so');
   ps.flags.lab_cw = true; ps.flags.lab_hd = true; ps.flags.su_open = true; ps.flags.fh_met = true;
   const mer2 = pl.profileMerits();
@@ -18327,7 +18729,7 @@ console.log(log.join('\n'));
 }
 
 {
-  eq(H.VERSION, '1.7', 'Version: the game says 1.7');
+  eq(H.VERSION, '1.8', 'Version: the game says 1.8');
   const letter = H.MAIL.find(m => m.id === 'v17_growth');
   ok(letter.give.skin === 'nexttoyou' && letter.give.credits > 0 && letter.give.items.aether3 > 0 && letter.need === 'express_intro', 'Version: the letter brings the wallpaper and a stock');
   ok(Object.keys(letter.give.items).every(id => H.ITEMS[id]), 'Version: every item of the letter exists');
@@ -18337,6 +18739,486 @@ console.log(log.join('\n'));
   lg17.mailSync();
   lg17.claimMail('v17_growth');
   ok(lg17.ownsSkin('nexttoyou'), 'Version: claiming the letter gives the wallpaper');
+}
+
+{
+  const LI = ['theherta', 'tribbie'], LC = ['undeniable', 'timeflower'];
+  ok(LI.every(id => H.CHARS[id] && !Object.keys(H.CHARS).includes(id) && H.TRACES[id] && !Object.keys(H.TRACES).includes(id)), 'Lab: test heroes answer by id and stay out of every enumeration');
+  ok(LC.every(id => H.CONES[id] && !Object.keys(H.CONES).includes(id)), 'Lab: signature cones answer by id and stay out of every enumeration');
+  ok([...LI, ...LC].every(id => H.labOnly(id)) && !H.labOnly('himeko') && !H.labOnly('mirror'), 'Lab: labOnly names only the test content');
+  ok(LI.every(id => !Object.values(H.BANNERS).some(B => B.stars && B.stars[id]) && !Object.values(H.WARP_POOL).some(p => p.includes(id))), 'Lab: test heroes are on no ordinary banner or pool');
+  ok(LC.every(id => !Object.values(H.BANNERS).some(B => B.stars && Object.values(B.stars).some(S => S.cone === id)) && !Object.values(H.WARP_POOL).some(p => p.includes('cone:' + id))), 'Lab: test cones are on no ordinary banner or pool');
+  ok(LI.every(id => H.CONES[Object.entries(H.LAB_TESTING).find(([k]) => k === id)[1]].sig === id), 'Lab: every test hero names her signature cone');
+  const probe = {};
+  H.labPut(probe, 'theherta', 1);
+  H.labPut(probe, 'himeko', 2);
+  H.labPut(probe, 'undeniable', 3, 'theherta');
+  eq(Object.keys(probe).join(), 'himeko', 'Lab: labPut hides only the entries of test heroes');
+  ok(probe.theherta === 1 && probe.undeniable === 3, 'Lab: hidden entries still answer by key');
+}
+
+{
+  const T = H.TUNING, lw = new H.Game({ fresh: true, seed: 53 }), ls = lw.state, B = H.BANNERS.lab;
+  ok(B && !Object.keys(H.BANNERS).includes('lab') && H.ITEMS.lpass && !Object.keys(H.ITEMS).includes('lpass'), 'Lab warp: the banner and the pass answer by id and stay out of every enumeration');
+  eq(Object.keys(B.stars).join(), 'theherta,tribbie', 'Lab warp: two heroines on the banner');
+  ok(Object.entries(B.stars).every(([id, S]) => H.CONES[S.cone].sig === id && S.cone === H.LAB_TESTING[id]), 'Lab warp: each heroine brings her signature cone');
+  eq(lw.bannerOf('lab').star, 'theherta', 'Lab warp: the first heroine is the default');
+  eq(lw.bannerOf('lab').pity5, 10, 'Lab warp: the banner has its own guarantee');
+  ok(!lw.setStarOf('lab', 'himeko') && lw.starOf('lab') === 'theherta', 'Lab warp: only a heroine of the banner can be chosen');
+  eq(lw.labGrant(7), null, 'Lab warp: only the offered amounts can be granted');
+  eq(lw.labWarp(1), null, 'Lab warp: no pass, no warp');
+  const jade0 = ls.jade = 100000;
+  eq(lw.labWarp(10), null, 'Lab warp: jade does not replace passes');
+  eq(ls.jade, jade0, 'Lab warp: a refused warp keeps the jade');
+  eq(ls.lab.pity.five, 0, 'Lab warp: a refused warp keeps the counter');
+  eq(lw.labGrant(1), 1, 'Lab warp: +1 grants one pass');
+  eq(lw.labGrant(10), 11, 'Lab warp: +10 adds ten passes');
+  eq(lw.labGrant(100), 111, 'Lab warp: +100 adds a hundred passes');
+  eq(lw.labWarp(112), null, 'Lab warp: more warps than passes are refused');
+  eq(ls.inv.items.lpass, 111, 'Lab warp: a refused warp keeps the passes');
+  ls.starlight = 500; ls.embers = 70; ls.credits = 4000;
+  lw.addCone('arrows');
+  const realCones = ls.inv.cones.filter(c => !H.labOnly(c.id)).length, before = JSON.stringify({ warpN: ls.warpN, warpNEv: ls.warpNEv, warpBatch: ls.warpBatch, warpBan: ls.warpBan, warpLog: ls.warpLog, pity: ls.pity, pityEv: ls.pityEv, pityCone: ls.pityCone, starlight: ls.starlight, embers: ls.embers, credits: ls.credits, jade: ls.jade }), roster0 = Object.keys(ls.roster).join();
+  const fives = { theherta: [], tribbie: [] };
+  let everyTen = true, shape = true, ghostsOk = true, passes = true;
+  for (let i = 0; i < 1000; i++) {
+    const star = i < 500 ? 'theherta' : 'tribbie';
+    lw.setStarOf('lab', star);
+    lw.labGrant(10);
+    const had = ls.inv.items.lpass, res = lw.labWarp(10);
+    passes = passes && (ls.inv.items.lpass || 0) === had - 10;
+    everyTen = everyTen && res.some(r => r.rar === 5);
+    for (const r of res) {
+      shape = shape && r.lab && r.name && r.id && (r.kind === 'char' ? H.CHARS[r.id] && r.res : H.CONES[r.id] && r.sup >= 1);
+      if (r.rar === 5) fives[star].push(r);
+      else ghostsOk = ghostsOk && r.ghost && r.kind === 'cone' && H.CONES[r.id].rarity === r.rar && !H.labOnly(r.id);
+    }
+  }
+  ok(passes, 'Lab warp: every warp spends one pass');
+  ok(everyTen, 'Lab warp: every ×10 holds a 5★');
+  ok(shape, 'Lab warp: results have the fields WarpShow reads');
+  ok(ghostsOk, 'Lab warp: 3★ and 4★ are cones from the standard pool marked as extras');
+  for (const [star, list] of Object.entries(fives)) {
+    const cone = B.stars[star].cone;
+    ok(list.length >= 100, 'Lab warp: enough 5★ of ' + star);
+    ok(list.every((r, i) => r.id === (i % 2 ? cone : star)), 'Lab warp: 5★ alternate strictly between ' + star + ' and her cone');
+    eq(list[0].res, 'new', 'Lab warp: the first copy of ' + star + ' is new');
+    eq(list[2].res, 'eid', 'Lab warp: the next copy of ' + star + ' raises her Eidolon');
+    eq(list[1].sup, 1, 'Lab warp: the first cone of ' + star + ' is S1');
+    eq(list[3].sup, 2, 'Lab warp: the second cone of ' + star + ' is S2');
+    eq(ls.roster[star].eid, 6, 'Lab warp: duplicates reach E6 for ' + star);
+    ok(ls.inv.cones.some(c => c.id === cone && c.sup === 5), 'Lab warp: copies reach S5 for ' + cone);
+    ok(list.some((r, i) => i % 2 === 0 && r.res === 'max'), 'Lab warp: copies past E6 report the cap for ' + star);
+  }
+  eq(JSON.stringify({ warpN: ls.warpN, warpNEv: ls.warpNEv, warpBatch: ls.warpBatch, warpBan: ls.warpBan, warpLog: ls.warpLog, pity: ls.pity, pityEv: ls.pityEv, pityCone: ls.pityCone, starlight: ls.starlight, embers: ls.embers, credits: ls.credits, jade: ls.jade }), before, 'Lab warp: 10000 warps leave jade, currencies, ordinary counters and the ordinary log untouched');
+  eq(ls.inv.cones.filter(c => !H.labOnly(c.id)).length, realCones, 'Lab warp: extras never reach the inventory');
+  eq(Object.keys(ls.roster).join(), roster0 + ',theherta,tribbie', 'Lab warp: only the heroines join the roster');
+  ok(ls.lab.log.length === T.labLog && ls.lab.log[0].n === ls.lab.n && ls.lab.n === 10000, 'Lab warp: the log is capped and newest first');
+  ok(lw.warpLogOf('lab') === ls.lab.log && lw.warpLogOf('std') === ls.warpLog, 'Lab warp: the log follows the banner');
+  ok(ls.lab.log.every(e => e.ban === 'lab' && e.star && (e.rar === 5 ? !e.ghost : e.ghost)), 'Lab warp: log entries name the banner and mark extras');
+  const st = lw.warpStats('lab');
+  ok(st.total === 10000 && st.five === ls.lab.log.filter(e => e.rar === 5).length && st.last5 && st.last5.rar === 5, 'Lab warp: statistics read the own log');
+  eq(lw.warpStats('std').total, 0, 'Lab warp: the standard banner still counts nothing');
+  ok(lw.pityOf('lab') === ls.lab.pity && lw.pityOf('std') === ls.pity, 'Lab warp: the guarantee follows the banner');
+  ok(lw.defaultBanner() !== 'lab', 'Lab warp: the ordinary window never opens on the secret banner');
+  lw.setStarOf('lab', 'tribbie');
+  const rt = new H.Game({ state: JSON.parse(JSON.stringify(ls)), seed: 54 });
+  ok(rt.starOf('lab') === 'tribbie' && rt.labState().n === 10000 && rt.labNext('theherta').kind === lw.labNext('theherta').kind, 'Lab warp: the state survives a save');
+  const old = new H.Game({ state: JSON.parse(JSON.stringify(Object.assign({}, ls, { lab: undefined }))), seed: 55 });
+  ok(old.starOf('lab') === 'theherta' && old.labNext('theherta').kind === 'char', 'Lab warp: a save without the banner state starts clean');
+  const plain = new H.Game({ fresh: true, seed: 57 }), LAB = new Set(['theherta', 'tribbie', 'undeniable', 'timeflower']);
+  plain.state.jade = 160 * 15000;
+  let leak = false;
+  for (const ban of ['std', 'ev', 'cone']) for (let i = 0; i < 500; i++) for (const r of plain.warp(10, ban)) leak = leak || LAB.has(r.id);
+  ok(!leak, 'Lab warp: ordinary warps never give the heroines or their cones');
+  eq(plain.state.lab, undefined, 'Lab warp: ordinary warps create no banner state');
+}
+
+{
+  const T = H.TUNING, spec = (id, o) => Object.assign(mkSpec(id, 30), { key: id }, o || {});
+  const fresh = (party, foes, seed, techs) => { const b = new H.Battle({ party: party.map(p => (typeof p === 'string' ? spec(p) : p)), enemies: foes, lvl: 20, seed: seed || 7, techs: techs || [] }); b.start(); b.drain(); return b; };
+  const tank = b => { for (const e of b.living) { e.hp = e.maxHp = 1e9; e.tough = e.maxTough = 1e9; } };
+  const turnOf = (b, id) => { let g = 0; while (!b.over && b.current && b.current.charId !== id && g++ < 60) { const u = b.current; if (b.sp < 1) b.sp = 3; b.act('basic', u.kit.basic.target === 'single' || u.kit.basic.target === 'blast' ? b.living[0] : u); b.drain(); } return b.current && b.current.charId === id ? b.current : null; };
+  const th = e => e.flags.th || 0;
+  const hitsOn = (ev, e) => ev.filter(x => x.t === 'dmg' && x.u === e).length;
+  const FIVE = ['reaver:20', 'reaver:20', 'reaver:20', 'reaver:20', 'reaver:20'];
+  const K = H.CHARS.theherta;
+  ok(K.talent.length <= 99 && !/[\u2014\u2013]/.test(K.skill.text + K.enhanced.text + K.ult.text), 'The Herta: texts fit and have no dashes');
+
+  let b = fresh(['theherta', 'march'], ['reaver:20', 'trampler:20', 'reaver:20']);
+  const elite = b.living.find(e => e.data.elite);
+  eq(th(elite), 26, 'The Herta: the elite takes 25 at the wave start and 1 for entering');
+  ok(b.living.filter(e => e !== elite).every(e => th(e) === 1), 'The Herta: others take 1 for entering');
+  b = fresh(['theherta', 'march'], ['reaver:20', 'reaver:20', 'reaver:20']);
+  eq(b.living.map(th).sort((x, y) => y - x).join(), '26,1,1', 'The Herta: without an elite a random enemy takes the 25');
+  b.thAdd(b.allies[0], b.living[0], 100);
+  eq(th(b.living[0]), T.thCap, 'The Herta: Interpretation stops at 42');
+
+  b = fresh(['theherta', 'march'], FIVE);
+  tank(b);
+  let u = turnOf(b, 'theherta');
+  ok(u, 'The Herta: her turn comes');
+  const mid = b.living[2], a0 = b.living[0], a1 = b.living[1], a3 = b.living[3], a4 = b.living[4];
+  b.sp = 3; u.energy = 0;
+  const pre0 = th(mid);
+  b.act('skill', mid);
+  const ev0 = b.drain();
+  eq([a0, a1, mid, a3, a4].map(e => hitsOn(ev0, e)).join(), '1,2,3,2,1', 'The Herta: the Skill spreads hit by hit');
+  ok(th(mid) >= pre0 + 2, 'The Herta: the Skill and the ally-attack trace add Interpretation to the target');
+  ok(ev0.filter(x => x.t === 'dmg').every(x => !x.label), 'The Herta: the Skill hits have no extra label');
+  eq(u.energy, T.energySkill + T.thEnergy * 5, 'The Herta: the trace gives 3 Energy for each of up to 5 targets');
+
+  b = fresh(['theherta', 'march'], ['reaver:20']);
+  tank(b);
+  u = turnOf(b, 'theherta');
+  u.energy = 0;
+  b.act('basic', b.living[0]);
+  b.drain();
+  eq(u.energy, T.energyBasic + T.thEnergy, 'The Herta: one target gives 3 Energy without a second Erudition hero');
+  b = fresh(['theherta', 'himeko'], ['reaver:20']);
+  tank(b);
+  u = turnOf(b, 'theherta');
+  u.energy = 0;
+  b.act('basic', b.living[0]);
+  b.drain();
+  eq(u.energy, T.energyBasic + T.thEnergy * T.thMinTargets, 'The Herta: with two Erudition heroes the trace counts at least 3 targets');
+  ok(b.allies.every(a => a.buffs.some(x => x.s === 'critD' && x.v === T.thCritD)), 'The Herta: two Erudition heroes give everyone 80% CRIT DMG');
+  ok(!fresh(['theherta', 'march'], ['reaver:20']).allies.some(a => a.buffs.some(x => x.s === 'critD' && x.v === T.thCritD)), 'The Herta: one Erudition hero gives no CRIT DMG');
+
+  b = fresh(['theherta', 'himeko'], ['reaver:20', 'reaver:20']);
+  tank(b);
+  u = b.allies[0];
+  const himeko = b.allies[1], t0 = b.living[0], t1 = b.living[1];
+  t0.flags.th = 10; t1.flags.th = 3;
+  b.thAttacked(u, himeko, [t0, t1]);
+  eq(th(t0) + '/' + th(t1), '14/4', 'The Herta: an Erudition attacker adds 3 more to the most charged target');
+  b = fresh(['theherta', 'march'], ['reaver:20', 'reaver:20']);
+  tank(b);
+  u = b.allies[0];
+  b.living[0].flags.th = 10; b.living[1].flags.th = 3;
+  b.thAttacked(u, b.allies[1], b.living.slice());
+  eq(th(b.living[0]) + '/' + th(b.living[1]), '12/4', 'The Herta: another attacker adds 1 more to the most charged target');
+
+  b = fresh(['theherta', 'march'], ['reaver:20', 'trampler:20', 'reaver:20']);
+  tank(b);
+  u = turnOf(b, 'theherta');
+  const el2 = b.living.find(e => e.data.elite), sm = b.living.filter(e => e !== el2);
+  sm[0].flags.th = 40; el2.flags.th = 2; sm[1].flags.th = 7;
+  u.flags.thAnswer = 0; u.energy = u.maxEnergy;
+  const atk0 = H.battleStat.atkOf(u);
+  ok(b.ult(u, b.living[0]), 'The Herta: the Ultimate fires');
+  const evU = b.drain();
+  ok(th(el2) >= 40, 'The Herta: the elite takes the highest Interpretation');
+  ok(b.living.every(e => hitsOn(evU, e) === 1), 'The Herta: the Ultimate hits everyone once');
+  ok(H.battleStat.atkOf(u) > atk0 * 1.3, 'The Herta: the Ultimate raises ATK');
+  eq(u.flags.thInsp, 1, 'The Herta: the Ultimate gives Inspiration');
+  ok(u.flags.pendingAdvance >= 1 || u.av === 0 || u.flags.advanceAfter >= 1, 'The Herta: the Ultimate advances her');
+  for (let i = 0; i < 10; i++) b.fivesFx({ k: 'thInspire' }, u, u, {}, new Set(), 'ult');
+  eq(u.flags.thInsp, T.thInsp, 'The Herta: Inspiration stops at 4');
+
+  const enh = (party, foes, stacksOn, mk) => {
+    const bb = fresh(party, foes);
+    tank(bb);
+    const uu = turnOf(bb, 'theherta');
+    (mk || (() => {}))(bb, uu);
+    bb.sp = 3;
+    uu.flags.thInsp = 1;
+    bb.living.forEach(e => { e.flags.th = 1; e.base.res = 0; });
+    const tg = bb.living[Math.floor(bb.living.length / 2)];
+    tg.flags.th = stacksOn;
+    uu.base.critR = 0;
+    return { bb, uu, tg };
+  };
+  const THREE = ['reaver:20', 'reaver:20', 'reaver:20'];
+  let E = enh(['theherta', 'march'], THREE, 5);
+  ok(E.bb.abilityFor(E.uu, 'skill').ab === E.uu.kit.enhanced, 'The Herta: Inspiration enhances the Skill');
+  const pv = E.bb.preview('skill', E.tg);
+  E.bb.act('skill', E.tg);
+  const evE = E.bb.drain();
+  eq(E.uu.flags.thInsp, 0, 'The Herta: the enhanced Skill spends Inspiration');
+  ok(th(E.tg) <= 5, 'The Herta: the enhanced Skill resets the target before the traces add theirs');
+  eq(hitsOn(evE, E.tg), 4, 'The Herta: three strikes and the final hit reach the target');
+  const dealt = evE.filter(x => x.t === 'dmg' && x.u === E.tg).reduce((a, x) => a + x.v, 0), row = pv.rows.get(E.tg);
+  ok(dealt >= row.lo - 2 && dealt <= row.hi + 2, 'The Herta: the preview of the enhanced Skill matches the damage (' + dealt + ' in ' + row.lo + '..' + row.hi + ')');
+  const finalOf = (st, party) => { const R = enh(party || ['theherta', 'march'], THREE, st); return R.bb.preview('skill', R.tg).rows.get(R.tg).lo; };
+  ok(finalOf(30) > finalOf(5), 'The Herta: more Interpretation means more damage');
+  ok(finalOf(30, ['theherta', 'himeko']) > finalOf(30) * 1.3, 'The Herta: a second Erudition hero doubles the bonus');
+  const main41 = enh(['theherta', 'march'], THREE, 41), main40 = enh(['theherta', 'march'], THREE, 40);
+  ok(main41.bb.preview('skill', main41.tg).rows.get(main41.tg).lo > main40.bb.preview('skill', main40.tg).rows.get(main40.tg).lo * 1.35, 'The Herta: 42 stacks with the Skill stack add 50% DMG');
+  const skillLv = (lv, st) => { const R = enh([spec('theherta', { tr: { basic: 1, skill: lv, ult: 1, talent: lv, on: ['a2', 'a4', 'a6'] } }), 'march'], THREE, st); return R.bb.preview('skill', R.tg).rows.get(R.tg).lo; };
+  ok(skillLv(1, 5) < skillLv(10, 5) * 0.7, 'The Herta: the Skill and Talent levels scale the enhanced Skill');
+
+  b = fresh(['theherta', 'march'], FIVE);
+  u = b.allies[0];
+  eq(u.flags.thAnswer, 25 + 5, 'The Herta: every Interpretation stack feeds Answer');
+  for (let i = 0; i < 12; i++) b.thAdd(u, b.living[i % 5], 41);
+  eq(u.flags.thAnswer, T.thAnswer, 'The Herta: Answer stops at 99');
+  const ultM = (o) => { const bb = fresh([spec('theherta', o), 'march'], THREE), uu = bb.allies[0]; uu.flags.thAnswer = 50; return bb.thUltM(uu, { m: 2 }); };
+  ok(Math.abs(ultM() - 2.5) < 1e-9, 'The Herta: each Answer adds 1% to the Ultimate');
+  ok(Math.abs(ultM({ tr: { basic: 1, skill: 1, ult: 1, talent: 1, on: [] } }) - 2) < 1e-9, 'The Herta: without the trace Answer adds nothing');
+  const off = fresh([spec('theherta', { tr: { basic: 1, skill: 1, ult: 1, talent: 1, on: [] } }), 'himeko'], ['reaver:20']);
+  tank(off);
+  ok(!off.allies.some(a => a.buffs.some(x => x.s === 'critD' && x.v === T.thCritD)), 'The Herta: without the trace no CRIT DMG aura');
+  const offN = th(off.living[0]);
+  off.thAttacked(off.allies[0], off.allies[1], off.living.slice());
+  eq(th(off.living[0]), offN, 'The Herta: without the traces attacks add nothing');
+
+  b = fresh(['theherta', 'march'], ['reaver:20', 'trampler:20']);
+  const dead = b.living.find(e => !e.data.elite), heir = b.living.find(e => e.data.elite);
+  dead.flags.th = 9;
+  const heir0 = th(heir);
+  b.hit(b.allies[0], dead, 0, { raw: dead.hp + 5 });
+  eq(th(heir), heir0 + 9, 'The Herta: the stacks of a fallen enemy move to the elite');
+  b = fresh(['theherta', 'march'], ['reaver:20'], 7, [{ charId: 'theherta', fx: 'thTech' }]);
+  ok(b.allies[0].buffs.some(x => x.s === 'atkP' && x.v === T.thTechAtk), 'The Herta: the Technique raises ATK');
+  b = fresh(['theherta', 'march'], ['reaver:20', 'reaver:20']);
+  const lateFoe = b.living[0];
+  delete lateFoe.flags.thSeen; lateFoe.flags.th = 0;
+  b.thSweep(b.allies[0]);
+  eq(th(lateFoe), 1, 'The Herta: an enemy entering later takes 1');
+  b = fresh(['theherta', 'march'], ['reaver:20']);
+  tank(b);
+  const foe = b.living[0];
+  foe.flags.th = 4; b.actN = 900;
+  b.fivesHit(b.allies[1], foe, { kind: 'follow' }, 10, foe.hp);
+  const f1 = th(foe);
+  b.fivesHit(b.allies[1], foe, { kind: 'follow' }, 10, foe.hp);
+  ok(f1 > 4 && th(foe) === f1, 'The Herta: a follow-up counts once per action');
+
+  const e = n => spec('theherta', { eid: n });
+  let eb = enh([e(1), 'march'], THREE, 5, (bb, uu) => { uu.eid = 1; });
+  eb.bb.living[0].flags.th = 20;
+  eq(eb.bb.thCount(eb.uu, eb.tg, 0), 5 + 10, 'The Herta E1: half of the most charged neighbour counts');
+  eb.bb.act('skill', eb.tg);
+  ok(th(eb.tg) >= 15, 'The Herta E1: the reset leaves 15');
+  eq(fresh([e(2), 'march'], THREE).allies[0].flags.thInsp, 1, 'The Herta E2: Inspiration at the start of battle');
+  eb = enh([e(2), 'march'], THREE, 5, (bb, uu) => { uu.eid = 2; });
+  eb.bb.fivesFx({ k: 'thInspire' }, eb.uu, eb.uu, {}, new Set(), 'ult');
+  eq(eb.uu.flags.thInsp, 3, 'The Herta E2: the Ultimate gives one more Inspiration');
+  const e4 = fresh([e(4), 'himeko', 'march'], THREE);
+  ok(e4.allies[0].buffs.some(x => x.s === 'spdP') && e4.allies[1].buffs.some(x => x.s === 'spdP') && !e4.allies[2].buffs.some(x => x.s === 'spdP'), 'The Herta E4: only Erudition heroes gain SPD');
+  const e6 = fresh([e(6), 'march'], ['reaver:20']);
+  ok(e6.allies[0].buffs.some(x => x.s === 'resPen' && x.v === T.thE6Pen), 'The Herta E6: RES PEN');
+  eq(e6.thUltM(e6.allies[0], { m: 2 }), 2 + 4 + (e6.allies[0].flags.thAnswer || 0) * T.thAnswerM, 'The Herta E6: the Ultimate grows against one enemy');
+  ok(fresh([e(6), 'march'], THREE).thUltM(fresh([e(6), 'march'], THREE).allies[0], { m: 0 }) >= 1.4, 'The Herta E6: the Ultimate grows against three enemies');
+  ok(H.TRACES.theherta.eid.length === 6 && H.TRACES.theherta.up[3].skill === 2, 'The Herta: Eidolons III and V raise the right abilities');
+
+  const wearer = (fx, party) => { const bb = fresh([spec('theherta', fx ? { cone: { id: 'undeniable', fx: 'undeniable', sup: 1 } } : {}), ...(party || ['march'])], ['reaver:20']); tank(bb); return bb; };
+  const cB = wearer(true), pB = wearer(false), cU = cB.allies[0], pU = pB.allies[0];
+  cU.energy = cU.maxEnergy; pU.energy = pU.maxEnergy;
+  cU.flags.thAnswer = pU.flags.thAnswer = 0;
+  cU.base.critR = pU.base.critR = 0;
+  const lo = (bb, kind) => bb.dmgCalc(bb.allies[0], bb.living[0], 1, { kind }, false);
+  ok(lo(cB, 'ult') > lo(pB, 'ult') * 1.2, 'Mind Game: the Ultimate of the wearer deals more');
+  ok(Math.abs(lo(cB, 'skill') - lo(pB, 'skill')) < 2, 'Mind Game: the Skill waits for the Ultimate');
+  cB.current = cU; cB.phase = 'input'; cB.sp = 1;
+  cB.ult(cU, cB.living[0]);
+  ok(cU.buffs.some(x => x.name === 'Игра разума'), 'Mind Game: the Ultimate starts the buff');
+  ok(lo(cB, 'skill') > lo(pB, 'skill') * 1.2, 'Mind Game: the Skill deals more after the Ultimate');
+  eq(cB.sp, 2, 'Mind Game: 140 Energy or more returns a Skill Point');
+  const cheap = fresh([spec('march', { cone: { id: 'undeniable', fx: 'undeniable', sup: 1 } }), 'trail'], ['reaver:20']), mU = cheap.allies[0];
+  tank(cheap);
+  mU.energy = mU.maxEnergy; cheap.current = mU; cheap.phase = 'input'; cheap.sp = 1;
+  cheap.ult(mU, cheap.living[0]);
+  eq(cheap.sp, 1, 'Mind Game: a cheap Ultimate returns nothing');
+  eq(H.coneText('undeniable', 5).includes('20%'), true, 'Mind Game: S5 text shows the fifth row');
+
+  const auto = fresh(['theherta', 'himeko', 'march', 'natasha'], ['reaver:20', 'trampler:20', 'eliminator:20'], 11);
+  auto.runAuto(3000);
+  ok(auto.over, 'The Herta: an auto battle ends');
+  log.push('the herta ok');
+}
+
+{
+  const T = H.TUNING, spec = (id, o) => Object.assign(mkSpec(id, 30), { key: id }, o || {});
+  const fresh = (party, foes, seed, techs) => { const b = new H.Battle({ party: party.map(p => (typeof p === 'string' ? spec(p) : p)), enemies: foes, lvl: 20, seed: seed || 9, techs: techs || [] }); b.start(); b.drain(); return b; };
+  const tank = b => { for (const e of b.living) { e.hp = e.maxHp = 1e9; e.tough = e.maxTough = 1e9; e.base.res = 0; } };
+  const THREE = ['reaver:20', 'reaver:20', 'reaver:20'];
+  const K = H.CHARS.tribbie, resPen = u => H.battleStat.sv(u, 'resPen');
+  ok(K.talent.length <= 99 && !/[\u2014\u2013]/.test(K.skill.text + K.ult.text), 'Tribbie: texts fit and have no dashes');
+  const on = (b, id, sp) => { b.current = b.allies.find(a => a.charId === id); b.phase = 'input'; b.sp = sp == null ? 3 : sp; b.drain(); return b.current; };
+
+  let b = fresh(['tribbie', 'march'], THREE);
+  tank(b);
+  let u = on(b, 'tribbie');
+  b.drain();
+  const mid = b.living[1], pv = b.preview('basic', mid);
+  ok(pv.rows.get(mid).lo > pv.rows.get(b.living[0]).lo * 1.5, 'Tribbie: the Basic ATK hits the target harder than its neighbours');
+  const lowHp = b.dmgCalc(u, mid, 0, { hpM: 0.3, kind: 'basic' }, false);
+  u.maxHp *= 2;
+  ok(b.dmgCalc(u, mid, 0, { hpM: 0.3, kind: 'basic' }, false) > lowHp * 1.9, 'Tribbie: damage grows from Max HP');
+  u.maxHp /= 2;
+
+  b.act('skill', u);
+  b.drain();
+  eq(u.flags.trNum, T.trNumTurns, 'Tribbie: the Skill gives Numinosity for 3 turns');
+  ok(b.allies.every(a => Math.abs(resPen(a) - 0.24) < 1e-9), 'Tribbie: Numinosity gives every ally 24% RES PEN');
+  const m = b.allies[1];
+  const down = (n) => { for (let i = 0; i < n; i++) b.fivesTurn(u); };
+  down(1);
+  eq(u.flags.trNum, 2, 'Tribbie: Numinosity counts down at the start of her turn');
+  ok(Math.abs(resPen(m) - 0.24) < 1e-9, 'Tribbie: an ally keeps RES PEN while it lasts');
+  b.fivesTurn(m);
+  eq(u.flags.trNum, 2, 'Tribbie: an ally turn does not count it down');
+  down(2);
+  eq(u.flags.trNum, 0, 'Tribbie: Numinosity ends after three of her turns');
+  ok(b.allies.every(a => Math.abs(resPen(a)) < 1e-9), 'Tribbie: RES PEN leaves with Numinosity');
+  const penOn = fresh(['tribbie', 'march'], THREE);
+  tank(penOn);
+  const dry = penOn.dmgCalc(penOn.allies[1], penOn.living[0], 1, { kind: 'basic' }, false);
+  penOn.trNumOn(penOn.allies[0], 0.24);
+  ok(penOn.dmgCalc(penOn.allies[1], penOn.living[0], 1, { kind: 'basic' }, false) > dry * 1.15, 'Tribbie: RES PEN raises ally damage');
+
+  b = fresh(['tribbie', 'march', 'natasha'], THREE);
+  tank(b);
+  u = on(b, 'tribbie');
+  u.energy = u.maxEnergy;
+  const hp0 = u.maxHp, sum = b.allies.reduce((a, x) => a + x.maxHp, 0), foe = b.living[0], ally = b.allies[1];
+  const dmg0 = b.dmgCalc(ally, foe, 1, { kind: 'basic' }, false);
+  ok(b.ult(u, foe), 'Tribbie: the Ultimate fires');
+  const evU = b.drain();
+  eq(u.flags.trZone, T.trZoneTurns, 'Tribbie: the Zone lasts 2 turns');
+  ok(b.living.every(e => evU.some(x => x.t === 'dmg' && x.u === e && !x.label)), 'Tribbie: the Ultimate hits everyone');
+  ok(b.dmgCalc(ally, foe, 1, { kind: 'basic' }, false) > dmg0 * 1.25, 'Tribbie: enemies take 30% more damage in the Zone');
+  eq(u.maxHp, hp0 + Math.round(sum * T.trHpShare), 'Tribbie: the Zone adds 9% of the team Max HP');
+  ok(u.hp > hp0 * 0.9, 'Tribbie: the extra HP also heals');
+  const hpIn = u.maxHp;
+  b.trZoneOpen(u, { vuln: 0.3, add: 0.12 });
+  ok(Math.abs(u.maxHp - hpIn) < hpIn * 0.12, 'Tribbie: reopening the Zone does not stack the HP');
+  b.fivesTurn(u);
+  eq(u.flags.trZone, 1, 'Tribbie: the Zone counts down at the start of her turn');
+  b.fivesTurn(u);
+  eq(u.flags.trZone, 0, 'Tribbie: the Zone ends');
+  eq(u.maxHp, hp0, 'Tribbie: the extra Max HP goes away');
+  ok(u.hp <= u.maxHp, 'Tribbie: HP never stays above the maximum');
+  ok(Math.abs(b.dmgCalc(ally, foe, 1, { kind: 'basic' }, false) - dmg0) < dmg0 * 0.02, 'Tribbie: the vulnerability leaves with the Zone');
+
+  const addHits = ev => ev.filter(x => x.t === 'dmg' && x.label === 'Зона');
+  b = fresh(['tribbie', 'march'], THREE);
+  tank(b);
+  u = b.allies[0];
+  b.trZoneOpen(u, { vuln: 0.3, add: 0.12 });
+  b.drain();
+  const rich = b.living[2];
+  rich.hp = 1e9; b.living[0].hp = 5e8; b.living[1].hp = 6e8;
+  b.trAttacked(u, b.allies[1], b.living.slice(), 100);
+  let ev = b.drain();
+  eq(addHits(ev).length, 3, 'Tribbie: the Zone deals one instance for each target hit');
+  ok(addHits(ev).every(x => x.u === rich), 'Tribbie: instances go to the target with the highest HP');
+  const en0 = u.energy;
+  b.trAttacked(u, b.allies[1], [b.living[0], b.living[1]], 0);
+  ok(Math.abs(u.energy - en0 - 2 * T.trAllyEnergy) < 1e-6, 'Tribbie: another ally attack gives 1.5 Energy per target');
+  b.drain();
+  const en1 = u.energy;
+  b.trAttacked(u, u, [b.living[0]], 0);
+  eq(u.energy, en1, 'Tribbie: her own attack gives no such Energy');
+  b.drain();
+  u.flags.trZone = 0;
+  b.trAttacked(u, b.allies[1], b.living.slice(), 100);
+  eq(addHits(b.drain()).length, 0, 'Tribbie: no Zone, no instances');
+  eq(fresh(['tribbie', 'march'], THREE).allies[0].energy >= T.trStartEnergy, true, 'Tribbie: Energy at the start of battle');
+
+  const busy = ev2 => ev2.filter(x => x.t === 'act' && x.name === 'Трибби и её заботы').length;
+  b = fresh(['tribbie', 'march', 'himeko'], THREE);
+  tank(b);
+  u = b.allies[0];
+  const ma = b.allies[1], hi = b.allies[2];
+  ma.energy = ma.maxEnergy; hi.energy = hi.maxEnergy;
+  b.current = ma; b.phase = 'input'; b.drain();
+  b.ult(ma, ma);
+  let e1 = b.drain();
+  eq(busy(e1), 1, 'Tribbie: an ally Ultimate brings a follow-up');
+  ok(b.living.every(e => e1.some(x => x.t === 'dmg' && x.u === e && x.label === 'Трибби и её заботы')), 'Tribbie: the follow-up hits everyone');
+  ma.energy = ma.maxEnergy; b.current = ma; b.phase = 'input';
+  b.ult(ma, ma);
+  eq(busy(b.drain()), 0, 'Tribbie: once per ally');
+  hi.energy = hi.maxEnergy; b.current = hi; b.phase = 'input';
+  b.ult(hi, b.living[0]);
+  eq(busy(b.drain()), 1, 'Tribbie: another ally counts separately');
+  u.energy = u.maxEnergy; b.current = u; b.phase = 'input';
+  b.ult(u, b.living[0]);
+  eq(busy(b.drain()), 0, 'Tribbie: her own Ultimate brings no follow-up before E6');
+  ma.energy = ma.maxEnergy; b.current = ma; b.phase = 'input';
+  b.ult(ma, ma);
+  eq(busy(b.drain()), 1, 'Tribbie: her Ultimate resets the count');
+  eq(u.flags.trLamb, 3, 'Tribbie: each follow-up stacks the trace');
+  ok(u.buffs.some(x => x.name === 'Агнец за стеной...' && Math.abs(x.v - 3 * T.trLamb) < 1e-9), 'Tribbie: the trace gives 72% DMG per stack');
+  const lv = t => { const bb = fresh([spec('tribbie', { tr: { basic: 1, skill: t, ult: t, talent: t, on: [] } }), 'march'], THREE); return bb.abilityFor(bb.allies[0], 'skill').ab.fx[0].v; };
+  ok(lv(1) < lv(10) * 0.6, 'Tribbie: the Skill level scales RES PEN');
+
+  const noTr = fresh([spec('tribbie', { tr: { basic: 1, skill: 1, ult: 1, talent: 1, on: [] } }), 'march'], THREE);
+  eq(noTr.allies[0].energy, 0, 'Tribbie: without the trace no Energy at the start');
+  const nu = noTr.allies[0], hpN = nu.maxHp;
+  noTr.trZoneOpen(nu, { vuln: 0.3, add: 0.12 });
+  eq(nu.maxHp, hpN, 'Tribbie: without the trace the Zone adds no Max HP');
+  const te = fresh(['tribbie', 'march'], THREE, 9, [{ charId: 'tribbie', fx: 'trTech' }]);
+  ok(te.allies[0].flags.trNum === T.trNumTurns && resPen(te.allies[1]) > 0.2, 'Tribbie: the Technique starts Numinosity');
+
+  const down2 = fresh(['tribbie', 'march'], THREE);
+  const tv = down2.allies[0];
+  down2.trNumOn(tv, 0.24);
+  down2.trZoneOpen(tv, { vuln: 0.3, add: 0.12 });
+  const hpBefore = tv.maxHp;
+  down2.hit(down2.living[0], tv, 0, { raw: tv.hp + tv.shield + 5 });
+  ok(tv.flags.trZone === 0 && tv.flags.trNum === 0 && resPen(down2.allies[1]) === 0 && tv.maxHp < hpBefore, 'Tribbie: her fall ends the Zone and Numinosity');
+
+  const e = n => spec('tribbie', { eid: n });
+  let eb = fresh([e(1), 'march'], THREE);
+  tank(eb);
+  eb.trZoneOpen(eb.allies[0], { vuln: 0.3, add: 0.12 });
+  eb.drain();
+  eb.trAttacked(eb.allies[0], eb.allies[1], [eb.living[0]], 1000);
+  let ee = eb.drain().filter(x => x.t === 'dmg' && x.label === 'Истинный урон');
+  ok(ee.length === 1 && ee[0].v === 240, 'Tribbie E1: 24% of the attack as True DMG');
+  eb = fresh([e(2), 'march'], THREE);
+  tank(eb);
+  eb.trZoneOpen(eb.allies[0], { vuln: 0.3, add: 0.12 });
+  eb.drain();
+  eb.trAttacked(eb.allies[0], eb.allies[1], [eb.living[0]], 0);
+  eq(addHits(eb.drain()).length, 2, 'Tribbie E2: one more instance');
+  eb = fresh([e(4), 'march'], THREE);
+  eb.trNumOn(eb.allies[0], 0.24);
+  ok(eb.allies[1].buffs.some(x => x.s === 'defIgnore' && x.v === T.trE4Def), 'Tribbie E4: Numinosity ignores DEF');
+  eb.allies[0].flags.trNum = 1;
+  eb.fivesTurn(eb.allies[0]);
+  ok(!eb.allies[1].buffs.some(x => x.name === 'Освящение'), 'Tribbie E4: the DEF ignore leaves with Numinosity');
+  eb = fresh([e(6), 'march'], THREE);
+  tank(eb);
+  const e6u = eb.allies[0];
+  e6u.energy = e6u.maxEnergy; eb.current = e6u; eb.phase = 'input'; eb.drain();
+  eb.ult(e6u, eb.living[0]);
+  const e6ev = eb.drain();
+  eq(busy(e6ev), 1, 'Tribbie E6: her Ultimate brings the follow-up');
+  const plain = fresh(['tribbie', 'march'], THREE);
+  tank(plain);
+  plain.trFollow(plain.allies[0]);
+  const hitOf = list => list.filter(x => x.t === 'dmg' && x.label === 'Трибби и её заботы').reduce((a, x) => Math.max(a, x.v), 0);
+  ok(hitOf(e6ev) > hitOf(plain.drain()) * 3, 'Tribbie E6: the follow-up deals far more');
+  ok(H.TRACES.tribbie.up[3].ult === 2 && H.TRACES.tribbie.up[5].talent === 2, 'Tribbie: Eidolons III and V raise the right abilities');
+
+  const worn = (id, sup) => spec(id, { cone: { id: 'timeflower', fx: 'timeflower', sup: sup || 1 } });
+  const cb = fresh([worn('tribbie'), 'march'], THREE), cw = cb.allies[0], cm = cb.allies[1];
+  ok(cw.energy >= T.trStartEnergy + 21 && cw.flags.tfPresage === 2, 'Flower: Energy and Presage at the start of battle');
+  ok(cm.buffs.some(x => x.name === 'Предсказание' && x.v === 0.48), 'Flower: Presage gives all allies 48% CRIT DMG');
+  cb.fivesTurn(cw);
+  ok(cm.buffs.some(x => x.name === 'Предсказание'), 'Flower: Presage holds for its second turn');
+  cb.fivesTurn(cw);
+  ok(!cm.buffs.some(x => x.name === 'Предсказание'), 'Flower: Presage ends');
+  tank(cb);
+  cw.energy = 0;
+  cb.trFollow(cw);
+  ok(cm.buffs.some(x => x.name === 'Предсказание') && cw.energy >= 12, 'Flower: a follow-up renews Presage and gives Energy');
+  ok(H.coneText('timeflower', 5).includes('96%'), 'Flower: S5 text shows the fifth row');
+
+  const elB = fresh(['kazuma', 'tribbie'], THREE);
+  tank(elB);
+  const elDry = elB.dmgCalc(elB.allies[0], elB.living[0], 1, { elation: true, kind: 'elation' }, false);
+  elB.trNumOn(elB.allies[1], 0.24);
+  ok(elB.dmgCalc(elB.allies[0], elB.living[0], 1, { elation: true, kind: 'elation' }, false) > elDry * 1.15, 'Tribbie: Numinosity also raises Elation DMG');
+  const auto = fresh(['tribbie', 'jingliu', 'march', 'theherta'], ['reaver:20', 'trampler:20', 'eliminator:20'], 13);
+  auto.runAuto(3000);
+  ok(auto.over, 'Tribbie: an auto battle ends');
+  log.push('tribbie ok');
 }
 
 console.log('hsr98: ' + checks + ' checks passed in ' + ((Date.now() - t0) / 1000).toFixed(1) + 's');

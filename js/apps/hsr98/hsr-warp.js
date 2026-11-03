@@ -94,7 +94,7 @@
     }),
     path: id => R3.paint('w|path|' + id, 64, 64, g => G.pathIcon(g, id, 0, 0, 64, '#ffffff')),
     cone: id => R3.tex(G.coneArt(id, 72, 100)),
-    bust: look => R3.tex(G.bustCanvas(look, 64))
+    bust: (look, id, gender) => R3.tex(G.splashPortrait(id, gender, 120, 128) || G.bustCanvas(look, 64))
   };
 
   function sideQ(m, x, s, y0, y1, z0, z1, col, o) {
@@ -232,14 +232,14 @@
   function pathOf(r) { return r.kind === 'char' ? H.CHARS[r.id].path : (H.CONES[r.id] || {}).path; }
 
   function plateMesh(r, game) {
-    return cached('plate|' + r.kind + '|' + r.id, () => {
+    return cached('plate|' + r.kind + '|' + r.id + '|' + (G.hasSplash(r.id, game && game.state.gender) ? 1 : 0), () => {
       const m = R3.mesh(), rar = r.rar;
       R3.box(m, 0, 0, 0, 1.6, 0.9, 0.06, '#141c40', { cols: ['#1a2452'] });
       frontQ(m, 0.045, -0.8, 0.8, -0.45, -0.405, G.RARITY[rar], { emit: 0.8 });
       if (r.kind === 'cone') {
         R3.box(m, 0.36, 0.03, 0.07, 0.58, 0.8, 0.04, '#c6cad6');
         frontQ(m, 0.105, 0.1, 0.62, -0.34, 0.4, '#ffffff', { tex: TX.cone(r.id), emit: 0.6 });
-      } else frontQ(m, 0.05, 0.0, 0.8, -0.405, 0.45, '#ffffff', { tex: TX.bust(G.lookOf(r.id, game)), emit: 0.9 });
+      } else frontQ(m, 0.05, 0.0, 0.8, -0.405, 0.45, '#ffffff', { tex: TX.bust(G.lookOf(r.id, game), r.id, game && game.state.gender), emit: 0.9 });
       const p = pathOf(r);
       if (p) frontQ(m, 0.05, -0.64, -0.3, -0.02, 0.32, '#f2dc9a', { tex: TX.path(p), emit: 1 });
       for (let i = 0; i < rar; i++) diamond(m, -0.47 + (i - (rar - 1) / 2) * 0.1, -0.2, 0.05, 0.045, LIGHT[rar], { emit: 1 });

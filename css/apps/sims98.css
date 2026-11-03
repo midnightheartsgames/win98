@@ -1,0 +1,22 @@
+.ts-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #05070f;
+  outline: none;
+  user-select: none;
+}
+
+.ts-layer {
+  position: absolute;
+  display: block;
+}
+
+.ts-over {
+  pointer-events: none;
+}
+
+.ts-layer.ts-sharp {
+  image-rendering: pixelated;
+}

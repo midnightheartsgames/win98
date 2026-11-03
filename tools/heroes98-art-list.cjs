@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-for (const m of ['he-core', 'he-data', 'he-units', 'he-factions', 'he-art', 'he-files']) require(path.join(ROOT, 'js/apps/heroes98', m + '.js'));
+for (const m of ['he-core', 'he-data', 'he-units', 'he-factions', 'he-artifacts', 'he-art', 'he-files']) require(path.join(ROOT, 'js/apps/heroes98', m + '.js'));
 const A = globalThis.Heroes98.Art;
 const OUT = path.join(ROOT, 'HEROES-98-ART-LIST.md');
 
@@ -35,7 +35,7 @@ const table = (title, rows, cols) => {
 };
 
 const units = A.creatures();
-const FACTIONS = ['league', 'barrows', 'thicket', 'tide', 'forge', 'throne', 'stars', 'spore', 'neutral', 'summon'];
+const FACTIONS = ['league', 'barrows', 'thicket', 'tide', 'forge', 'throne', 'stars', 'spore', 'neutral', 'summon', 'machine'];
 for (const f of FACTIONS) {
   const p = A.PALETTES[f];
   table('Существа: ' + p.name + (A.ADDON.includes(f) ? ' (доп.)' : ''), units.filter(e => e.faction === f), [
@@ -60,6 +60,7 @@ table('Эффекты', A.EFFECTS, [['id', e => '`' + e.id + '`'], ['Что', e 
 table('Снаряды', A.PROJECTILES, [['id', e => '`' + e.id + '`'], ['Что', e => e.name], ['Кадр', size], ['Кадры', e => e.frames]]);
 table('Значки навыков, приёмов и даров', A.SKILL_ICONS, [['id', e => '`' + e.id + '`'], ['Имя', e => e.name + (e.addon ? ' (доп.)' : '')], ['Размер', size], ['Заметка', e => e.frames]]);
 table('Ресурсы', A.RESOURCES, [['id', e => '`' + e.id + '`'], ['Что', e => e.name], ['Размер', size], ['Заметка', e => e.frames]]);
+table('Значки артефактов', A.artifactIcons(), [['id', e => '`' + e.id + '`'], ['Что', e => e.name], ['Размер', size], ['Свойства', e => e.look], ['Заметка', e => e.frames]]);
 table('Картины и значки лун', A.PICTURES, [['id', e => '`' + e.id + '`'], ['Что', e => e.name + (e.addon ? ' (доп.)' : '')], ['Размер', size], ['Как выглядит', e => e.look]]);
 
 fs.writeFileSync(OUT, lines.join('\r\n') + '\r\n');

@@ -4049,87 +4049,131 @@ const arenaRun = (levels, seconds, seed) => {
   const m = T.buildMap('2fort', { visual: false });
   const nav = new T.Nav(m);
   const near0 = (a, b) => Math.abs(a - b) < 1e-6;
-  const mirrored = s => m.solids.some(o => near0(o.x0, -s.x1) && near0(o.x1, -s.x0) && near0(o.y0, s.y0) && near0(o.y1, s.y1) && near0(o.z0, s.z0) && near0(o.z1, s.z1) && !!o.ramp === !!s.ramp);
-  ok(m.solids.every(mirrored), 'the two stations mirror each other over the bridge axis');
+  const turned = s => m.solids.some(o => near0(o.x0, -s.x1) && near0(o.x1, -s.x0) && near0(o.y0, s.y0) && near0(o.y1, s.y1) && near0(o.z0, -s.z1) && near0(o.z1, -s.z0) && !!o.ramp === !!s.ramp);
+  ok(m.solids.every(turned), 'one station is the other turned half a circle around the bridge');
   ok(m.flags.length === 2 && m.captures.length === 2, 'two valves and two distributors');
+  const hotFlag = m.flags.find(f => f.team === 'hot'), coldFlag = m.flags.find(f => f.team === 'cold');
+  ok(hotFlag.x > 55 && coldFlag.x < -55, 'the hot station stands on the right, the cold on the left, valves deep inside');
+  const hotMain = m.spawns.find(s => s.team === 'hot' && s.y === 0), coldMain = m.spawns.find(s => s.team === 'cold' && s.y === 0);
+  const hotSide = m.spawns.find(s => s.team === 'hot' && s.y > 3), coldSide = m.spawns.find(s => s.team === 'cold' && s.y > 3);
+  ok(hotMain.z > 18 && hotSide.z < -14, 'the hot main shower lies south of the bridge line, its side shower north');
+  ok(coldMain.z < -18 && coldSide.z > 14, 'the cold ones the other way round');
+  ok(hotMain.x > 20 && hotMain.x < 36 && hotSide.x > 33 && hotSide.x < 44, 'both showers stand by the front of the station');
+  ok(hotFlag.z < 0, 'the valve lies north of the bridge line, past the side shower');
   for (const team of ['hot', 'cold']) {
-    const own = m.spawns.filter(s => s.team === team);
-    ok(own.length >= 10 && own.some(s => s.y > 3) && own.some(s => s.y === 0), team + ' has a main and a side shower');
-    ok(m.flags.some(f => f.team === team && (team === 'hot' ? f.x < 0 : f.x > 0)), team + ' keeps its valve at home');
+    ok(m.spawns.filter(s => s.team === team).length === 12, team + ' has twelve spawn points');
     const kinds = new Set(m.hints.filter(h => h.team === team).map(h => h.kind));
     for (const k of ['sentry', 'sniper', 'sticky', 'charge', 'ambush', 'jump', 'flank']) ok(kinds.has(k), team + ' has a hint for ' + k);
   }
   ok(m.lockers.length === 8, 'four lockers per station');
-  ok(m.bounds.x1 === -m.bounds.x0, 'the grid is centred on the bridge');
-  for (const n of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]) ok(m.labels.some(l => l.text.startsWith(n + '. ')), 'zone ' + n + ' has its number');
-  const doors = m.solids.filter(s => s.only);
-  ok(doors.length === 8, 'four team doors per station: ' + doors.length);
-  for (const s of doors) {
-    ok(Math.max(s.x1 - s.x0, s.z1 - s.z0) >= 2.4 - 1e-6 && s.y1 - s.y0 >= 2.6 - 1e-6, 'a door keeps its size');
-  }
+  for (let n = 1; n <= 19; n++) ok(m.labels.some(l => l.text.startsWith(n + '. ')), 'zone ' + n + ' has its number');
+  const doors = m.solids.filter(s => s.only), gates = m.solids.filter(s => s.oneWay);
+  ok(doors.length === 10, 'five team doors per station: ' + doors.length);
+  ok(gates.length === 4, 'two glass doors per main shower: ' + gates.length);
+  for (const s of doors.concat(gates)) ok(Math.max(s.x1 - s.x0, s.z1 - s.z0) >= 2.4 - 1e-6 && s.y1 - s.y0 >= 2.6 - 1e-6, 'a door keeps its size');
 
-  const hotMain = m.spawns.find(s => s.team === 'hot' && s.y === 0), coldMain = m.spawns.find(s => s.team === 'cold' && s.y === 0);
-  const hotSide = m.spawns.find(s => s.team === 'hot' && s.y > 3), coldSide = m.spawns.find(s => s.team === 'cold' && s.y > 3);
   const at = p => nav.nearest(p.x, p.y, p.z, 3);
+  const pt = (x, y, z) => nav.nearest(x, y, z, 2);
   const a = { hot: at(hotMain), cold: at(coldMain) };
   const len = p => p.slice(1).reduce((sum, k, i) => sum + Math.hypot(nav.x[k] - nav.x[p[i]], nav.y[k] - nav.y[p[i]], nav.z[k] - nav.z[p[i]]), 0);
-  ok(!nav.path(a.hot, a.cold, 'hot') && !nav.path(a.cold, a.hot, 'cold'), 'nobody walks into the other shower');
-  ok(nav.path(a.cold, at(hotSide), 'cold') === null, 'nor into the other side shower');
-  ok(nav.path(a.hot, at(hotSide), 'hot'), 'a side reaches its own side shower over the bastion');
-  const hole = nav.path(at(hotSide), nav.nearest(-27.2, 0, -8, 2), 'hot');
-  ok(hole && hole.length < 12, 'and its hole drops straight into the corridor: ' + (hole && hole.length));
+  const way = (from, to, team) => {
+    const p = nav.path(from, to, team || 'hot');
+    return p ? len(p) : Infinity;
+  };
+  ok(way(a.hot, a.cold, 'hot') === Infinity && way(a.cold, a.hot, 'cold') === Infinity, 'nobody walks into the other main shower');
+  ok(way(a.cold, at(hotSide), 'cold') === Infinity, 'nor into the other side shower');
   for (const team of ['hot', 'cold']) {
     const start = a[team];
     for (const p of m.pickups) {
       const k = at(p);
-      ok(nav.path(start, k, team) && Math.abs(nav.y[k] - p.y) < 0.5, team + ' reaches a pickup at ' + p.x + ' ' + p.y + ' ' + p.z);
+      ok(way(start, k, team) < Infinity && Math.abs(nav.y[k] - p.y) < 0.5, team + ' reaches a pickup at ' + p.x + ' ' + p.y + ' ' + p.z);
     }
-    for (const h of m.hints) ok(h.team !== team || nav.path(start, at(h), team), team + ' reaches its hint ' + h.kind);
-    for (const q of m.posts) ok(q.team !== team || nav.path(start, at(q), team), team + ' reaches its post');
+    for (const h of m.hints) ok(h.team !== team || way(start, at(h), team) < Infinity, team + ' reaches its hint ' + h.kind);
+    for (const q of m.posts) ok(q.team !== team || way(start, at(q), team) < Infinity, team + ' reaches its post');
     for (const l of m.lockers) {
-      const ownSide = team === 'hot' ? l.x < 0 : l.x > 0;
-      if (l.y > 3) continue;
-      ok(!!nav.path(start, at(l), team) === ownSide, team + (ownSide ? ' reaches its locker' : ' stays out of the other locker room'));
+      const ownSide = team === 'hot' ? l.x > 0 : l.x < 0;
+      ok((way(start, at(l), team) < Infinity) === ownSide, team + (ownSide ? ' reaches its locker' : ' stays out of the other locker room'));
     }
   }
+
+  const lobbyHall = pt(30, 0, 0), courtyard = pt(42, 0, 22), sideRoom = pt(32, 0, 9), corridor = pt(40.3, 0, 5), upstairs = pt(31, 3.4, 9);
+  const grateRoom = pt(30, 3.4, 1), ledge = pt(20, 3.4, 11), sewer = pt(17.2, -3.2, -2), basement = pt(63.5, -5, 15), desk = pt(62.5, -5, -5.8);
+  ok(way(pt(22, 0, 7), lobbyHall) < 15 && way(pt(22, 0, -7), lobbyHall) < 15, 'both front doors lead into the same short lobby');
+  ok(way(lobbyHall, sideRoom) < 12, 'to the right of it lies the side room');
+  ok(way(lobbyHall, corridor) < 15, 'a narrow corridor leaves it');
+  ok(way(pt(28.2, 0, -2.5), pt(28.5, -3, -18)) < 18, 'and to the left go the stairs down to the tunnels');
+  ok(way(sideRoom, courtyard) < 20, 'the side room has a door to the yard');
+  ok(way(corridor, courtyard) < 20, 'so does the corridor');
+  ok(way(courtyard, pt(29, 0, 25)) < 20, 'the main shower opens on the yard');
+  ok(way(pt(32, 0, 26), courtyard) < 15, 'through its own door');
+  ok(way(courtyard, pt(29, 0, 25), 'cold') === Infinity, 'closed to the enemy');
+  ok(way(upstairs, ledge) < 18, 'the upper hall leads to the bastion');
+  ok(way(upstairs, grateRoom) < 12, 'to the grate');
+  ok(way(grateRoom, lobbyHall) < 12, 'whose hole drops into the lobby');
+  ok(way(upstairs, courtyard) < 22, 'and a ledge drops into the yard');
+  ok(way(pt(29, 3.4, 20.5), upstairs) < 14, 'the main shower has its second door to the upper hall');
+  const down = way(upstairs, basement);
+  ok(down > 40 && down < 75, 'the spiral goes from the upper hall to the basement: ' + down);
+  const ramp = nav.path(upstairs, basement, 'hot');
+  ok(ramp.some(k => nav.x[k] > 43 && nav.y[k] < 3 && nav.y[k] > -1), 'and winds around in the shaft behind the corridor');
+  const stairsWay = way(courtyard, basement);
+  ok(stairsWay > 40 && stairsWay < 70, 'the long stairs go from the yard to the basement: ' + stairsWay);
+  ok(way(basement, pt(82, -5, 19.5), 'hot') < 28 && way(pt(76.2, -5, 21), pt(82, -5, 19.5), 'cold') === Infinity, 'the basement has a supply room for its own side only');
+  ok(way(basement, desk) < 40, 'and leads on to the control room');
+  ok(way(pt(56.6, -5, 5), desk) < 18 && way(pt(73.7, -5, 5), pt(66.5, -5, -5.8)) < 18, 'by two long corridors, one each side');
+  const lastTurns = [pt(56.6, -5, 5), pt(73.7, -5, 5)].map(from => nav.path(from, pt(64.5, -5, -7.5), 'hot'));
+  ok(lastTurns.every(p => p.some(k => nav.z[k] < -4) && p.some(k => nav.z[k] > 3)), 'each with a turn before facing the desk');
+  ok(way(pt(38, 3.4, -20), corridor) < 32, 'the side shower drops through a hole into the corridor');
+  ok(way(pt(38, 3.4, -20), ledge) < 55, 'and has a door to the bastion');
+  ok(way(corridor, pt(38, 3.4, -20)) > 80, 'nobody climbs back through the hole');
+  for (const z of [-6, 6]) ok(way(pt(5, -6.4, z), sewer) < 40, 'a tunnel leads from the canal at ' + z);
+  ok(way(sewer, lobbyHall) < 55, 'the tunnels come up in the lobby');
+  ok(way(pt(5, -6.4, 6), pt(34, -3.2, -23)) < 65, 'past the recessed tunnel room');
+
   const home = f => nav.nearest(f.x, f.y - 0.9, f.z, 3);
-  const hotFlag = m.flags.find(f => f.team === 'hot'), coldFlag = m.flags.find(f => f.team === 'cold');
   const hotZone = m.captures.find(c => c.team === 'hot');
-  const carry = len(nav.path(home(coldFlag), at(hotZone), 'hot'));
-  ok(carry > 190 && carry < 235, 'the valve run takes the time the plan gives it: ' + carry);
-  near(carry / T.MERCS.runner.speed, 28, 3.5, 'a courier carries it');
-  ok(carry / T.MERCS.strongman.speed < 54, 'a strongman carries it in under a minute');
-  const attack = len(nav.path(a.hot, home(coldFlag), 'hot')), defend = len(nav.path(a.hot, home(hotFlag), 'hot'));
-  ok(attack > 90 && attack < 165, 'the attack is a long way: ' + attack);
-  ok(defend > 45 && defend < 90, 'the defence a short one: ' + defend);
+  const carry = way(home(coldFlag), at(hotZone));
+  ok(carry > 230 && carry < 290, 'the valve run: ' + carry);
+  near(carry / T.MERCS.runner.speed, 34, 5, 'a courier carries it');
+  ok(carry / T.MERCS.strongman.speed < 68, 'a strongman in about a minute');
+  const attack = way(a.hot, home(coldFlag)), defend = way(a.hot, home(hotFlag));
+  ok(attack > 170 && attack < 235, 'the attack is a long way: ' + attack);
+  ok(defend > 70 && defend < 120, 'the defence a shorter one: ' + defend);
+  ok(way(a.hot, pt(0, 0, 0)) < 85, 'the bridge is close to the main shower');
 
   const w = m.world;
-  ok(w.clear(-22, 4.8, 0, 22, 4.8, 0), 'one bastion sees the other');
-  ok(w.clear(-23.9, 4.8, 8, 23.9, 4.8, 8), 'over nearly fifty metres');
-  ok(!w.clear(-22, 4.8, 0, 2, 1, 0) && !w.clear(-22, 4.8, 0, 8, 1, 0), 'but the far bridge deck stays hidden under the roof');
-  ok(!!w.raycast(1, 5, 2, 0, -1, 0, 3), 'the bridge roof stops a shot');
+  ok(w.clear(21, 4.8, 3, -21, 4.8, -3), 'one bastion sees the other through the windows');
+  ok(w.clear(20, 4.8, 10, -20, 4.8, -10), 'and over the ledges');
+  ok(!w.clear(21, 4.8, 3, -6, 1, 0) && !w.clear(21, 4.8, 3, -9, 1, 0), 'but the far bridge deck stays hidden under the roof');
+  ok(!!w.raycast(2, 5, 2, 0, -1, 0, 3), 'the bridge roof stops a shot');
   ok(!w.raycast(0, 5, 0, 0, -1, 0, 4, false, true), 'a gap in it lets a shell through');
-  const gridY = 3.2;
-  ok(!w.raycast(-26, gridY + 1, 3, 0, -1, 0, 2), 'bullets pass the grate');
-  ok(!!w.raycast(-26, gridY + 1, 3, 0, -1, 0, 2, false, true), 'shells stop on it');
-  ok(w.clear(-26, gridY + 1, 3, -26, gridY - 1, 3), 'and a blast goes through it');
-  ok(!w.raycast(-29, 5, -3, 0, -1, 0, 5, false, true), 'there is a hole down to the lobby');
-  ok(w.waterTop(0, -5, 10) === -3.4, 'the canal is deep');
+  ok(!w.raycast(30, 4.4, 1, 0, -1, 0, 2), 'bullets pass the grate');
+  ok(!!w.raycast(30, 4.4, 1, 0, -1, 0, 2, false, true), 'shells stop on it');
+  ok(w.clear(30, 4.4, 1, 30, 2.4, 1), 'and a blast goes through it');
+  ok(!w.raycast(34, 5, -1, 0, -1, 0, 4, false, true), 'there is a hole down to the lobby');
+  ok(w.waterTop(0, -5, 5) === -3.4, 'the canal is deep');
+  ok(w.groundAt(0, 20, 10, 0) === 8 && w.groundAt(0, -20, 10, 0) === 8, 'rock closes the canal at both ends');
 
   const drop = new T.Game({ map: '2fort', visual: false, merc: 'runner', team: 'hot' });
   const diver = drop.player;
-  place(diver, 0, 4, 10, EAST);
+  place(diver, 0, 4, 8, EAST);
   hold(drop, 2, { yaw: EAST });
   ok(diver.hp === diver.maxHp && diver.level >= 2, 'a fall into the canal does not hurt');
-  place(diver, -5, -4.6, 0, -EAST);
-  ok(holdUntil(drop, 8, { fwd: 1, yaw: -EAST, jump: true }, () => diver.pos.x < -12.5 && diver.pos.y > -3.3), 'and the bank and tunnel mouth lead out of it');
-  const walk = new T.Game({ map: '2fort', visual: false, merc: 'runner', team: 'hot' });
-  const q = walk.player;
-  place(q, -27, 0, 0.6, 0);
-  q.onGround = true;
-  ok(q.pos.y === 0, 'the courier stands in the lobby');
-  hold(walk, 0.1, { yaw: 0 });
-  ok(q.pos.y < 0, 'the stairwell opens in the lobby floor');
+  place(diver, 5, -4.6, -6, EAST);
+  ok(holdUntil(drop, 8, { fwd: 1, yaw: EAST, jump: true }, () => diver.pos.x > 12 && diver.pos.y > -3.3), 'and a tunnel mouth leads out of it');
+
+  const stepping = (team, x, y, z, yaw, done, seconds) => {
+    const s = new T.Game({ map: '2fort', visual: false, merc: 'runner', team });
+    place(s.player, x, y, z, yaw);
+    s.player.onGround = true;
+    return holdUntil(s, seconds || 3, { fwd: 1, yaw }, () => done(s.player));
+  };
+  ok(stepping('hot', 29.2, 0, -2.5, Math.PI, p => p.pos.y < -1), 'the tunnel stairs go down from the lobby');
+  ok(stepping('hot', 40.3, 3.4, -15.8, Math.PI, p => p.pos.y < 0.5), 'the side shower hole drops a body');
+  ok(stepping('hot', 28.2, 0, 34, Math.PI, p => p.pos.z < 31), 'the glass doors open from inside');
+  ok(!stepping('hot', 28.2, 0, 30, 0, p => p.pos.z > 32.5), 'and not from outside');
+  ok(stepping('hot', 36, 0, 22, -EAST, p => p.pos.x < 33), 'the main shower door lets its own side in');
+  ok(!stepping('cold', 36, 0, 22, -EAST, p => p.pos.x < 33), 'and stops the enemy');
 }
 
 const ctf = (merc, team, opts = {}) => {
@@ -4188,8 +4232,8 @@ const spotOf = (g, team) => g.mode.zones[team];
   ({ g, p, m } = ctf());
   toFlag(p, m.flags.cold);
   hold(g, 0.1, { yaw: 0 });
-  const locker = g.map.lockers.find(l => l.x < 0 && l.y === 0);
-  place(p, locker.x + 1, locker.y, locker.z, 0);
+  const locker = g.map.lockers.find(l => l.x > 0 && l.y === 0);
+  place(p, locker.x - 1, locker.y, locker.z, 0);
   p.onGround = true;
   hold(g, 0.1, { yaw: 0 });
   ok(m.flags.cold.state === 'dropped', 'stepping into your own locker drops it');
@@ -4371,7 +4415,7 @@ const spotOf = (g, team) => g.mode.zones[team];
   for (const team of ['hot', 'cold']) {
     const bots = g.heroes.filter(h => h.team === team);
     const count = r => bots.filter(h => h.role === r).length;
-    ok(count('attack') === 5 && count('guard') === 4 && count('bridge') === 3, team + ' splits four, three and three in ten: ' + count('attack') + ' ' + count('guard') + ' ' + count('bridge'));
+    ok(count('attack') === 5 && count('guard') === 3 && count('bridge') === 4, team + ' splits five for the valve, three guards, four on the bridge: ' + count('attack') + ' ' + count('guard') + ' ' + count('bridge'));
     ok(bots.some(h => h.role === 'attack' && h.merc === 'runner'), team + ' sends a courier for the valve');
     ok(bots.some(h => h.byTunnel) && bots.some(h => h.role === 'attack' && !h.byTunnel), team + ' sends attackers both ways');
     ok(bots.every(h => h.role !== 'guard' || !h.byTunnel), team + ' keeps guards home');
@@ -4388,15 +4432,15 @@ const spotOf = (g, team) => g.mode.zones[team];
   const courier = lone2fort('runner', 'worker');
   courier.b.role = 'attack';
   courier.b.byTunnel = false;
-  ok(courier.b.pos.x < 0, 'the courier starts at home');
+  ok(courier.b.pos.x > 0, 'the courier starts at home');
   let took = -1, brought = -1;
-  for (let i = 0; i < 60 * 80 && brought < 0; i++) {
+  for (let i = 0; i < 60 * 100 && brought < 0; i++) {
     courier.g.step(T.blankInput());
     if (took < 0 && courier.b.flag) took = i / 60;
     if (courier.m.captures.hot === 1) brought = i / 60;
   }
-  ok(took > 0 && took < 32, 'alone a courier reaches the valve in half a minute: ' + took);
-  ok(brought > took && brought - took < 45, 'and brings it home: ' + (brought - took));
+  ok(took > 0 && took < 40, 'alone a courier reaches the valve in half a minute: ' + took);
+  ok(brought > took && brought - took < 50, 'and brings it home: ' + (brought - took));
   log('courier took', took, 'brought', brought);
 
   const swimmer = lone2fort('runner', 'worker');
@@ -4412,7 +4456,7 @@ const spotOf = (g, team) => g.mode.zones[team];
 
   const guard = lone2fort('strongman', 'worker');
   guard.b.role = 'guard';
-  runFor(guard.g, 25);
+  runFor(guard.g, 32);
   const home = guard.m.flags.hot.home;
   ok(Math.hypot(guard.b.pos.x - home.x, guard.b.pos.z - home.z) < 18 && guard.b.pos.y < -4, 'a guard goes down to the control room');
 

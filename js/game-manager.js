@@ -946,25 +946,6 @@ class GameManager {
         shots: ['Засада на корован в лесу', 'Штурм дворца войском Злого'],
         launch: () => window.appKirill98 && window.appKirill98.open()
       },
-      plov: {
-        id: 'plov',
-        steam: true,
-        title: 'Хаято, Где плов?',
-        subtitle: 'Весёлый симулятор чайханы: плов, чай и самса',
-        developer: 'Kishlak Soft (2000) / Win 98 Edition',
-        price: 16.99,
-        priceDisplay: '$16.99',
-        icon: 'plov',
-        setupExe: 'Setup_HayatoPlov.exe',
-        targetExe: 'PLOV.EXE',
-        folder: 'HayatoPlov',
-        fileSize: '36 MB (1 CD-ROM)',
-        desc: 'Бахтиёр-ака сорок лет варил плов в своём дворе, а теперь отдаёт казан Хаято. Рассаживайте гостей на топчаны и за столы, принимайте заказы и держите казан в работе: мясо, морковь с луком, рис, томление, и вот уже можно накладывать ляганы. Чай из самовара, компот, ачичук, самса и лепёшки из тандыра. Соседи, аксакалы, студенты, строители, семьи с детьми, туристы, бизнесмены с мобильниками, кулинарный критик и тойчи за свадебным пловом. Десять дней от открытия до трёх свадеб в махалле, чаевые, серии, звёзды мастера и базар с улучшениями: ичиги, пчак, большой казан, саксауловые дрова и вывеска с лампочками.',
-        genre: 'Симулятор',
-        tags: ['Тайм-менеджмент', 'Кулинария', 'Юмор', 'Улучшения'],
-        shots: ['День 3: плов и чай', 'День 8: деловые люди'],
-        launch: () => window.appPlov && window.appPlov.open()
-      },
       sims3_demo: {
         id: 'sims3_demo',
         cdDemo: true,
@@ -1129,6 +1110,28 @@ class GameManager {
         downloadUrl: 'http://www.softstore98.com',
         desc: 'Знаменитая настольная овечка По (Stray Sheep / Sheep.exe)! Падает с неба на панель задач и заголовки открытых окон, гуляет, прыгает, спит в четырёх позах, щиплет ромашки, чихает, карабкается по краям экрана, встречает чёрную овечку, падает горящим метеором в ванну и похищается летающей тарелкой НЛО.',
         launch: () => window.appESheep && window.appESheep.open()
+      }
+    };
+
+    this.hiddenGames = {
+      plov: {
+        id: 'plov',
+        steam: true,
+        title: 'Где плов?',
+        subtitle: 'Весёлый симулятор чайханы: плов, чай и самса',
+        developer: 'Kishlak Soft (2000) / Win 98 Edition',
+        price: 16.99,
+        priceDisplay: '$16.99',
+        icon: 'plov',
+        setupExe: 'Setup_Plov.exe',
+        targetExe: 'PLOV.EXE',
+        folder: 'Plov',
+        fileSize: '36 MB (1 CD-ROM)',
+        desc: 'Бахтиёр-ака сорок лет варил плов в своём дворе, а теперь отдаёт казан молодому ошпазу. Рассаживайте гостей на топчаны и за столы, принимайте заказы и держите казан в работе: мясо, морковь с луком, рис, томление, и вот уже можно накладывать ляганы. Чай из самовара, компот, ачичук, самса и лепёшки из тандыра. Соседи, аксакалы, студенты, строители, семьи с детьми, туристы, бизнесмены с мобильниками, кулинарный критик и тойчи за свадебным пловом. Десять дней от открытия до трёх свадеб в махалле, чаевые, серии, звёзды мастера и базар с улучшениями: ичиги, пчак, большой казан, саксауловые дрова и вывеска с лампочками.',
+        genre: 'Симулятор',
+        tags: ['Тайм-менеджмент', 'Кулинария', 'Юмор', 'Улучшения'],
+        shots: ['День 3: плов и чай', 'День 8: деловые люди'],
+        launch: () => window.appPlov && window.appPlov.open()
       }
     };
 
@@ -1319,8 +1322,12 @@ class GameManager {
     return this.state.downloaded.includes(id);
   }
 
+  isHidden(id) {
+    return !!this.hiddenGames[id];
+  }
+
   isInstalled(id) {
-    return this.state.installed.includes(id);
+    return !this.isHidden(id) && this.state.installed.includes(id);
   }
 
   purchaseGame(id, cardDetails) {
@@ -1897,7 +1904,7 @@ Command points are scarce. Plan well, then let your men fight.`;
             } else if (id === 'catniss') {
               readmeContent = 'Catniss\r\n==================================\r\nKotelok Games (2000) - Win 98 Edition, 320x240, 256 colors\r\n\r\nControls:\r\n[Left]/[Right], [A]/[D] - Run   [Z]/[Space] - Jump (hold to jump higher)   [X]/[Shift] - Pounce\r\nAgainst a wall in the air: hold toward the wall to cling, then [Z] to kick off\r\n[Down]+[Z] - Drop through a plank   [Esc]/[P] - Pause   [M] - Music on/off\r\nMap: [Enter] - Play   [C] - Choose a cat   [Q] - Aquarium   Gamepad supported.\r\n\r\nNine lives at most. Every 50 coins and every bowl of milk give one more.\r\nThe van OTLOV took the kittens. Bring all four home.\r\nTwelve goldfish in bags are hidden behind cracked walls and in other odd places.';
             } else if (id === 'plov') {
-              readmeContent = 'Хаято, Где плов?\r\n==================================\r\nKishlak Soft (2000) - Win 98 Edition, 800x600, 16-bit color\r\n\r\nControls:\r\n[Left Click] - Walk and act, clicks queue up to five jobs   [Right Click]/[Q] - Cancel the jobs\r\n[Drag] - Drag guests from the gate to a table   [Tab] - Pick guests in the line   [1-6] - Seat them at table N\r\n[W/A/S/D]/[Arrows] - Walk   [Space]/[E] - Use what is next to you   [Esc]/[P] - Pause\r\n\r\nKeep the kazan busy: meat, carrots with onion, rice, then steam.\r\nGroups of three and four sit only on the topchans. Tea brews two pots at a time.\r\nA quarter of every day goes to the savings box. Spend it at the bazaar.';
+              readmeContent = 'Где плов?\r\n==================================\r\nKishlak Soft (2000) - Win 98 Edition, 800x600, 16-bit color\r\n\r\nControls:\r\n[Left Click] - Walk and act, clicks queue up to five jobs   [Right Click]/[Q] - Cancel the jobs\r\n[Drag] - Drag guests from the gate to a table   [Tab] - Pick guests in the line   [1-6] - Seat them at table N\r\n[W/A/S/D]/[Arrows] - Walk   [Space]/[E] - Use what is next to you   [Esc]/[P] - Pause\r\n\r\nKeep the kazan busy: meat, carrots with onion, rice, then steam.\r\nGroups of three and four sit only on the topchans. Tea brews two pots at a time.\r\nA quarter of every day goes to the savings box. Spend it at the bazaar.';
             } else if (id === 'gtann') {
               readmeContent = `Grand Theft Auto: Nizhny City\r\n==================================\r\nRockstar North (2002) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium III 600 MHz, 128 MB RAM, 3D accelerator with 32 MB (GeForce2 / Radeon), DirectX 8.\r\n\r\nControls:\r\n[W/A/S/D] - Walk / Drive   [Mouse] - Look   [Left Click]/[Ctrl] - Attack, fire   [Right Click] - Aim, sniper scope\r\n[Shift] - Sprint   [Space] - Jump / Handbrake   [F]/[Enter] - Get in / out of a car   [Q]/[E], [1-7] - Weapons (in a car: look sideways, drive-by)\r\n[G] - Grenade   [R] - Reload / Next radio station   [H] - Horn, siren   [T] - Taxi or militia job   [C] - Camera   [M]/[Tab] - Map   [Esc] - Pause\r\n\r\nSave the game at the hotel «Zarechnaya». Lose the militia out of sight, at a respray shop or with a bribe.\r\nCheats: ZDOROVIE, BRONYA, STVOLY, BABKI, MENTY, POGODA.`;
             } else if (id === 'sims3_demo') {

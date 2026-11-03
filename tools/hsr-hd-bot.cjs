@@ -16,6 +16,7 @@ for (const [k, v] of Object.entries(args)) if (typeof TUN[k] === 'number') TUN[k
 if (WAVES < HD.WAVES.length) HD.WAVES.length = WAVES;
 for (const [k, v] of Object.entries(args)) if (k.startsWith('amp_') && HD.HEROES[k.slice(4)]) HD.HEROES[k.slice(4)].amp = +v;
 for (const [k, v] of Object.entries(args)) if (k.startsWith('hamp_') && HD.HEROES[k.slice(5)]) HD.HEROES[k.slice(5)].ampHard = +v;
+for (const [k, v] of Object.entries(args)) if (k.startsWith('coop_') && TUN.coop[k.slice(5)]) TUN.coop[k.slice(5)] = v.split(',').map(Number);
 for (const [k, v] of Object.entries(args)) { const m = /^d_(\w+?)_(\w+)$/.exec(k); if (m && HD.DIFFS[m[1]] && typeof HD.DIFFS[m[1]][m[2]] === 'number') HD.DIFFS[m[1]][m[2]] = +v; }
 for (const [k, v] of Object.entries(args)) { const m = /^(hpK|dmgK)_(\w+)$/.exec(k); if (m && (HD.THREATS[m[2]] || HD.FOES[m[2]])) (HD.THREATS[m[2]] || HD.FOES[m[2]])[m[1]] = +v; }
 
@@ -87,7 +88,7 @@ const SELF = {
 };
 const ALLY = { bronya: 'buff', march: 'shield', natasha: 'heal', bailu: 'heal', luocha: 'heal' };
 
-function think(A, B) {
+function think(A, B, p = 0) {
   const h = A.hero, foes = A.foes();
   if (h.dead) { if (A.phase === 'wave' && A.base.hp < A.base.hpMax * 0.5) A.cmd({ t: 'buyback' }); return; }
   for (const s of ['r'].concat(HD.HEROES[h.key].order, ['q', 'e', 't'])) if (A.canUp(h, s)) { A.cmd({ t: 'up', slot: s }); break; }
@@ -110,7 +111,7 @@ function think(A, B) {
   if (A.phase === 'break') {
     if (A.breakT < 3 || B.lastBreak === A.breakNo) return;
     const W = HD.WAVES[A.wave - 1];
-    const lane = W ? W.rifts[0] : 'n';
+    const lane = W ? W.rifts[p % W.rifts.length] : 'n';
     const step = NOBUILD ? null : nextBuy(h);
     if (step && h.gold >= step.cost && A.breakT > 8 && !A.nearShop(h)) { if (!h.path) A.cmd({ t: 'goto', x: A.M.shop[0] * TS, y: A.M.shop[1] * TS + 48 }); return; }
     if (!h.path && Math.hypot(h.x - MOUTH[lane].x, h.y - MOUTH[lane].y) > 48) {
@@ -122,7 +123,8 @@ function think(A, B) {
   const threat = { n: 0, w: 0, e: 0, p: 0 };
   for (const f of foes) { if (f.pig) continue; const d = Math.max(64, A.gap(f, A.base)); threat[laneOf(f)] += f.hp / d; }
   threat.p *= 3;
-  const lane = Object.keys(threat).sort((a, b) => threat[b] - threat[a])[0];
+  const order = Object.keys(threat).sort((a, b) => threat[b] - threat[a]), hot = order.filter(l => threat[l] > 0);
+  const lane = hot.length ? hot[p % hot.length] : order[0];
   const pool = foes.filter(f => threat[lane] > 0 ? laneOf(f) === lane : f.pig);
   const tgt = pool.sort((a, b) => A.gap(a, A.base) - A.gap(b, A.base))[0] || foes[0];
   if (tgt && (h.forced !== tgt.uid || B.reT-- <= 0)) { A.cmd({ t: 'attack', id: tgt.uid }); B.reT = 15; }
@@ -197,6 +199,67 @@ function play(hero, seed) {
   out.up = rel.length ? avg(rel.map(it => 3 * (it.up || 0))) : 0;
   out.sup = A.hero.cone ? A.hero.cone.sup : 0;
   return Object.assign(out, sum, { won: A.over === 'win', timeAll: A.time });
+}
+
+const SUPPORT_HEROES = Object.keys(HD.HEROES).filter(id => SUPPORT[H.CHARS[id].path]);
+const ATTACK_HEROES = Object.keys(HD.HEROES).filter(id => ['destruction', 'hunt', 'erudition'].includes(H.CHARS[id].path));
+
+function crewOf(n, seed) {
+  if (args.team) return args.team.split(',').slice(0, n);
+  const rng = H.makeRandom(seed * 97 + 13), pool = (args.comp === 'support' ? SUPPORT_HEROES : args.comp === 'attack' ? ATTACK_HEROES : Object.keys(HD.HEROES)).slice(), crew = [];
+  while (crew.length < n && pool.length) crew.push(pool.splice(rng.int(pool.length), 1)[0]);
+  return crew;
+}
+
+function playCrew(n, seed) {
+  const crew = crewOf(n, seed), A = HD.setupArena({ heroes: crew, diff: DIFF, seed, threats: args.threats ? args.threats.split(',') : null });
+  const brains = A.heroes.map((h, p) => {
+    const V = Object.create(A);
+    Object.defineProperty(V, 'hero', { value: h });
+    V.cmd = c => A.cmd(Object.assign({}, c, { p }));
+    return { V, B: { reT: 0 } };
+  });
+  const out = { crew, n, gold10: 0, gold20: 0, lvl10: 0, lvl20: 0, deaths: 0 };
+  const t0 = process.hrtime.bigint();
+  let steps = 0;
+  for (let i = 0; i < TUN.hz * 60 * 40 && !A.over; i++) {
+    brains.forEach((b, p) => { if ((i + p) % 6 === 0) think(b.V, b.B, p); });
+    A.step(); steps++;
+    for (const e of A.events) {
+      if (e.t === 'cleared' && (e.n === 10 || e.n === 20)) { out['gold' + e.n] = avg(A.heroes.map(h => h.st.gold)); out['lvl' + e.n] = avg(A.heroes.map(h => h.lvl)); }
+      if (e.t === 'cleared') (out.baseAt = out.baseAt || {})[e.n] = A.base.hp / A.base.hpMax;
+    }
+    A.events.length = 0;
+  }
+  out.ms = Number(process.hrtime.bigint() - t0) / 1e6 / steps;
+  out.won = A.over === 'win'; out.wave = A.wave; out.base = A.base.hp / A.base.hpMax; out.time = A.time;
+  out.deaths = avg(A.heroes.map(h => h.deaths));
+  out.dmg = A.heroes.map(h => h.st.dmg);
+  return out;
+}
+
+if (args.crew) {
+  const table = [];
+  for (const n of args.crew.split(',').map(Number)) {
+    const res = [];
+    for (let r = 0; r < RUNS; r++) res.push(playCrew(n, 1000 + r * 37));
+    const wins = res.filter(x => x.won), share = res.map(x => { const sum = x.dmg.reduce((a, b) => a + b, 0) || 1; return Math.max(...x.dmg) / sum; });
+    table.push({
+      n, diff: DIFF, comp: args.comp || args.team || 'любой', runs: res.length, win: Math.round(100 * wins.length / res.length) + '%',
+      loseWave: res.some(x => !x.won) ? avg(res.filter(x => !x.won).map(x => x.wave)).toFixed(1) : '-', baseWin: Math.round(100 * avg(wins.map(x => x.base))) + '%',
+      deaths: avg(res.map(x => x.deaths)).toFixed(1), lvl10: avg(res.filter(x => x.lvl10).map(x => x.lvl10)).toFixed(1), lvl20: avg(res.filter(x => x.lvl20).map(x => x.lvl20)).toFixed(1),
+      gold10: Math.round(avg(res.filter(x => x.gold10).map(x => x.gold10))), gold20: Math.round(avg(res.filter(x => x.gold20).map(x => x.gold20))), top: Math.round(100 * avg(share)) + '%',
+      game: (avg(res.map(x => x.time)) / 60).toFixed(1) + ' мин', tick: (avg(res.map(x => x.ms)) * 1000).toFixed(0) + ' мкс'
+    });
+  }
+  console.table(table);
+  if (args.detail) {
+    const res = [];
+    for (let r = 0; r < RUNS; r++) res.push(playCrew(+args.crew.split(',')[0], 1000 + r * 37));
+    for (const x of res.filter(y => !y.won)) console.log('lost wave ' + x.wave + ': ' + x.crew.join(' '));
+    console.log('base by wave ' + [3, 5, 7, 9, 10, 12, 15, 18, 20].map(w => { const l = res.filter(x => x.baseAt && x.baseAt[w] != null).map(x => x.baseAt[w]); return w + ':' + Math.round(100 * avg(l)) + '(' + l.length + ')'; }).join(' '));
+  }
+  process.exit(0);
 }
 
 const rows = [], ALL_RES = [];

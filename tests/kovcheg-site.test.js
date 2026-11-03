@@ -490,6 +490,10 @@ test('boss pages cover every story boss with notes', () => {
     for (const sk of H.ENEMIES[id].skills) assert.ok(html.includes(site.esc(sk.n)), 'skill ' + sk.n);
     for (const m of list[id]) assert.ok(html.includes(site.esc(K.BOSS_NOTES[m.enc])), 'note ' + m.enc);
   }
+  for (const id of ['lf_undying1', 'danshu', 'ebon', 'ebon_r', 'yanqing_b', 'kafka_b']) assert.ok(!/Тинъюнь/.test(site.renderSite(base + '/hsr98/bosses?id=' + id)), 'the boss pages of Luofu keep the reveal: ' + id);
+  assert.ok(site.renderSite(base + '/hsr98/bosses?id=yanqing_b').includes('Отряд в этом бою выдаёт сама игра'), 'a fight with a fixed party names no team');
+  assert.ok(!site.buildGoals().some(g => g.enc === 'lf_yanqing'), 'a fight with a fixed party is not a builder goal');
+  for (const enc of ['lf_kafka', 'lf_deer1', 'lf_deer2', 'lf_danshu', 'lf_phantylia']) assert.ok(site.runBuild(site.buildQuery({ team: 'seele,bronya,natasha,tingyun', goal: 'b-' + enc })).cyc > 0, 'the builder plays ' + enc);
   const proto = site.renderSite(base + '/hsr98/bosses?id=ks_proto');
   for (const id of K.BOSS_NEED.ks_proto) assert.ok(proto.includes('/hsr98/char?id=' + id), 'required ' + id);
   assert.ok(site.renderSite(base + '/hsr98/bosses?id=cocolia1').includes('бой кончается, когда у босса остаётся 50% HP'));
@@ -757,6 +761,12 @@ test('my crew: a save marks the tier list and picks squads from own characters',
   assert.ok(!site.renderSite(base + '/hsr98/tier').includes('data-kv-f="mine"'), 'no crew filter without a save');
   assert.ok(site.parseSave('мусор', 'X.SAV').error.includes('не сохранение'));
   assert.ok(site.parseSave(JSON.stringify({ state: { roster: { nobody: {} } } }), 'X.SAV').error.includes('ни одного'));
+  H.labPut(H.CHARS, 'theherta', { name: 'Проба', path: 'erudition', elem: 'ice', rarity: 5 });
+  H.labPut(H.CONES, 'undeniable', { name: 'Проба', path: 'erudition', rarity: 5 }, 'theherta');
+  const lab = site.parseSave(JSON.stringify({ state: { roster: { seele: { lvl: 5 }, theherta: { lvl: 5 } }, inv: { cones: [{ uid: 1, id: 'undeniable' }] } } }), 'L.SAV');
+  assert.ok(lab.chars.seele && !lab.chars.theherta && !lab.cones.includes('undeniable'), 'a test hero and her cone stay out of the crew');
+  delete H.CHARS.theherta;
+  delete H.CONES.undeniable;
   const ids = ['seele', 'silverwolf', 'bronya', 'lynx', 'tingyun', 'kafka', 'luka', 'guinaifen', 'natasha', 'march', 'danheng', 'trail_p'];
   const sigs = ['seele', 'silverwolf', 'bronya', 'lynx'].map(id => Object.keys(H.CONES).find(k => H.CONES[k].sig === id)).filter(Boolean);
   const crew = site.loadCrew(makeSave(ids, 'trail_p', sigs), 'SAVE1.SAV');

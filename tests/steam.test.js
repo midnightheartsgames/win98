@@ -219,7 +219,7 @@ test('steampowered.com offers the client download, then setup, then launch', () 
 
 test('own Steam games are paid with distinct prices, Star Rail 98 is free', () => {
   const { gm } = createSystem();
-  const ownGames = ['doom', 'serioussam', 'lol', 'dota', 'avatar98', 'cop98', 'gta90', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201', 'ow98', 'diablo2', 'forza', 'gtann', 'legion', 'plov', 'anotherwar', 'fallout'];
+  const ownGames = ['doom', 'serioussam', 'lol', 'dota', 'avatar98', 'cop98', 'gta90', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201', 'ow98', 'diablo2', 'forza', 'gtann', 'legion', 'anotherwar', 'fallout'];
   const prices = ownGames.map(id => gm.catalog[id].price);
   assert.ok(prices.every(p => p > 0), 'every own game costs money');
   assert.equal(new Set(prices).size, prices.length, 'prices differ');

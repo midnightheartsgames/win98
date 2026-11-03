@@ -12,7 +12,12 @@ build.json
 web98-site/sr98/play/
 web98-site/sr98/*.apk
 content/YouVid/scratch/
+content/music/*.mp4
+content/music/preview/
 content/YouVid/klee.mp4
 content/YouVid/Савельев берет отпуск тли тотальное неуважение.mp4
 
 .env
+content/hsr98/splash/refs/
+src/sims98/bake/
+content/forza/refs/

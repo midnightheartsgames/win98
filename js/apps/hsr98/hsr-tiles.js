@@ -572,7 +572,7 @@
 
   function layerOf(map) {
     let L = layers.get(map.id);
-    if (!L || L.map !== map) { L = map.def.zone && H.Station ? H.Station.buildLayer(map) : map.def.land && H.Axel && H.Axel.LANDS[map.def.land] ? H.Axel.buildLayer(map) : map.def.land && H.Jarilo ? H.Jarilo.buildLayer(map) : map.def.car && H.Train ? H.Train.buildLayer(map) : buildLayer(map); L.map = map; layers.set(map.id, L); }
+    if (!L || L.map !== map) { L = map.def.zone && H.Station ? H.Station.buildLayer(map) : map.def.land && H.Luofu && H.Luofu.LANDS[map.def.land] ? H.Luofu.buildLayer(map) : map.def.land && H.Axel && H.Axel.LANDS[map.def.land] ? H.Axel.buildLayer(map) : map.def.land && H.Jarilo ? H.Jarilo.buildLayer(map) : map.def.car && H.Train ? H.Train.buildLayer(map) : buildLayer(map); L.map = map; layers.set(map.id, L); }
     return L;
   }
 

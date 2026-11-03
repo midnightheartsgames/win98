@@ -62,8 +62,10 @@
   font-size: 11px;
   line-height: 13px;
   padding: 0 2px 1px;
+  margin: 0 -2px;
   word-break: break-word;
-  max-width: 100%;
+  max-width: calc(100% + 4px);
+  box-sizing: border-box;
 }
 
 #desktop.has-wallpaper .desktop-icon-label {

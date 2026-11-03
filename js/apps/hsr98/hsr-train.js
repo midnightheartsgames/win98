@@ -205,17 +205,25 @@
       P.tri([3, -16, 13, -16, 11, -22, 5, -22], '#f6e4b8'); P(3, -16, 10, 1, '#c8a060'); P(5, -22, 6, 1, '#fff4d8');
     }, lights: () => [[8, -18, 22, '#ffd890', 0.35]] },
     hackterm: { w: 1, h: 1, up: 22, draw(P, v) {
-      const jade = v === 'jade', cw = v === 'cw', hd = v === 'hd', glow = jade ? '#4ef0a0' : cw ? '#ffd471' : hd ? '#ff7a5a' : '#5ad8ff';
+      const jade = v === 'jade', cw = v === 'cw', hd = v === 'hd', range = v === 'range', warp = v === 'warp', glow = jade ? '#4ef0a0' : cw ? '#ffd471' : hd ? '#ff7a5a' : range ? '#ff7ad8' : warp ? '#c88aff' : '#5ad8ff';
       P.shadow(8, 15, 7, 2); P.box(1, 6, 14, 2, 6, '#2a2238', '#1a1424', C.purpleHi); P(2, 13, 12, 1, C.purpleDk);
       P(2, -16, 12, 22, '#120e1a'); P(2, -16, 12, 1, C.purpleHi); P(1, -14, 1, 20, C.purple); P(14, -14, 1, 20, C.purple);
       P(3, -14, 10, 12, '#05080c'); P(3, -14, 10, 1, glow);
       if (jade) { P.tri([8, -12, 11, -8, 8, -4, 5, -8], '#2aa070'); P.tri([8, -11, 10, -8, 8, -6, 6, -8], glow); P.dot(7, -9, '#e8fff4'); }
       else if (cw) { P.tri([8, -13, 11, -9, 8, -5, 5, -9], '#a8782a'); P.tri([8, -12, 10, -9, 8, -6, 8, -12], glow); P.dot(7, -10, '#fff4c8'); P(4, -4, 8, 1, '#5cff8a'); }
       else if (hd) { P(4, -7, 8, 2, '#c8d4f0'); P(4, -7, 8, 1, '#ffd890'); P(11, -8, 1, 1, '#ffd890'); P(4, -5, 8, 1, '#3a4258'); P.dot(4, -13, glow); P.dot(7, -12, glow); P.dot(11, -13, glow); P.dot(5, -10, '#ff3a2a'); P.dot(10, -11, '#ff3a2a'); P(4, -3, 8, 1, '#5cff8a'); }
+      else if (warp) { P(4, -12, 8, 6, glow); P(5, -11, 6, 4, '#d8a840'); P(5, -11, 6, 1, '#ffe08a'); P(10, -11, 1, 1, glow); P(7, -9, 2, 1, '#fff4c8'); P(4, -4, 8, 1, '#e8e4ff'); }
+      else if (range) { for (let r = 0; r < 4; r++) { P(4, -12 + r * 2, 8, 1, '#3a2a5a'); P(4, -12 + r * 2, 2, 1, '#7a6a9a'); P(7, -12 + r * 2, 2, 1, '#5ad8ff'); } P(10, -8, 2, 1, glow); }
       else { P(4, -12, 2, 1, glow); P(7, -12, 4, 1, '#2f6f86'); P(4, -10, 6, 1, '#2f6f86'); P(4, -8, 3, 1, glow); P(8, -8, 1, 2, '#e8f8ff'); P(4, -6, 5, 1, '#2f6f86'); }
       P(3, 0, 10, 4, '#1a1424'); for (let i = 0; i < 4; i++) P(4 + i * 2, 1, 1, 1, i % 2 ? C.pink : glow);
       P(12, -19, 1, 4, C.purpleHi); P.dot(12, -20, C.pink);
-    }, lights: v => [[8, -8, 20, v === 'jade' ? '#4ef0a0' : v === 'cw' ? '#ffd471' : v === 'hd' ? '#ff7a5a' : '#5ad8ff', 0.3, true]] },
+    }, lights: v => [[8, -8, 20, v === 'jade' ? '#4ef0a0' : v === 'cw' ? '#ffd471' : v === 'hd' ? '#ff7a5a' : v === 'range' ? '#ff7ad8' : v === 'warp' ? '#c88aff' : '#5ad8ff', 0.3, true]] },
+    target: { w: 1, h: 1, up: 20, draw(P) {
+      P.shadow(8, 15, 6, 2); P(7, 2, 2, 12, '#3a4258'); P(4, 13, 8, 2, '#2a3048'); P(5, 13, 6, 1, '#4a5470');
+      P.oval(8, -6, 5, 5, '#9aa4bc'); P(4, -1, 8, 5, '#9aa4bc'); P(3, 0, 1, 7, '#7a8498'); P(12, 0, 1, 7, '#7a8498');
+      P.oval(8, -6, 3, 3, '#ffd471'); P.oval(8, -6, 1, 1, '#c03040'); P(6, 1, 4, 3, '#ffd471'); P(7, 2, 2, 1, '#c03040');
+      P.dot(5, -3, '#5a6478'); P.dot(11, 2, '#5a6478'); P.dot(10, -8, '#5a6478');
+    } },
     term: { w: 1, h: 1, up: 16, draw(P, v) {
       const sim = v === 'sim';
       P.shadow(8, 15, 7, 2); P.box(2, 6, 12, 2, 6, C.navyHi, C.navy, C.gold); P(3, 13, 10, 1, C.goldDk);
@@ -440,6 +448,11 @@
       }
       for (let x = 2; x < 32; x += 5) P.dot(x, 5 + (x % 2), '#fff0a0');
     },
+    rangepad(P) {
+      const w = 128, h = 48;
+      for (let x = 0; x < w; x += 8) { const c = (x / 8) % 2 ? '#1a1820' : '#d8b030'; P(x, 0, 8, 3, c); P(x, h - 3, 8, 3, c); }
+      for (let y = 0; y < h; y += 8) { const c = (y / 8) % 2 ? '#1a1820' : '#d8b030'; P(0, y, 3, 8, c); P(w - 3, y, 3, 8, c); }
+    },
     spot() {},
     water(P) {
       P(0, 0, 64, 48, '#14304a');
@@ -459,7 +472,7 @@
     }
   };
 
-  const LAYER_SIZE = { emblem: [2, 2], screen: [4, 2], sconce: [1, 2], door: [1, 4], stairs: [2, 2], inlay: [4, 2], lockers: [7, 2], shelfwall: [7, 2], photos: [2, 2], spot: [3, 2], water: [4, 3], cdoor: [1, 2] };
+  const LAYER_SIZE = { rangepad: [8, 3], emblem: [2, 2], screen: [4, 2], sconce: [1, 2], door: [1, 4], stairs: [2, 2], inlay: [4, 2], lockers: [7, 2], shelfwall: [7, 2], photos: [2, 2], spot: [3, 2], water: [4, 3], cdoor: [1, 2] };
   const LAYER_LIGHT = { sconce: () => [[8, 12, 18, '#ffd890', 0.32]], screen: () => [[32, 16, 40, '#4aa0ff', 0.2, true]], spot: () => [[24, 16, 26, '#ffd890', 0.3]] };
 
   function floorPaint(P, kind, car, e) {
@@ -669,6 +682,7 @@
     c = G.mkCanvas(w, h);
     const g = c.getContext('2d'), P = pen(g, 0, 0);
     if (world === 'belzerg') { meadowView(g, P, w, h); panos.set(key, c); return c; }
+    if (world === 'luofu') { luofuView(g, P, w, h); panos.set(key, c); return c; }
     const sky = g.createLinearGradient(0, 0, 0, h);
     sky.addColorStop(0, world === 'jarilo' ? '#060914' : '#050716'); sky.addColorStop(1, world === 'jarilo' ? '#0e1a30' : '#120e2e');
     g.fillStyle = sky; g.fillRect(0, 0, w, h);
@@ -720,6 +734,36 @@
     }
     panos.set(key, c);
     return c;
+  }
+
+  function luofuView(g, P, w, h) {
+    const sky = g.createLinearGradient(0, 0, 0, h);
+    sky.addColorStop(0, '#060d2a'); sky.addColorStop(0.12, '#123a5a'); sky.addColorStop(1, '#2e7470');
+    g.fillStyle = sky; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < w * h / 80; i++) P.dot(Math.floor(hash(i, 5, 88) * w), Math.floor(hash(i, 6, 88) * 40), hash(i, 7, 88) > 0.7 ? '#ffffff' : '#8ab0e0');
+    const hz = 40, K = '#0c2230', M = '#163a48', Rf = '#0a1a26', Au = '#e8b850', Win = '#ffd890', Jd = '#58f0d0';
+    for (let i = 0; i < Math.ceil(w / 130) + 1; i++) {
+      const x = i * 130 + Math.floor(hash(i, 1, 89) * 40), bw = 58 + Math.floor(hash(i, 2, 89) * 44), tiers = 1 + Math.floor(hash(i, 3, 89) * 2);
+      let y = hz, tw = bw;
+      for (let t = 0; t < tiers; t++) {
+        const th = 14 + Math.floor(hash(i, 4 + t, 89) * 8), tx = x + Math.round((bw - tw) / 2);
+        P(tx, y - th, tw, th, t % 2 ? M : K);
+        for (let a = tx + 4; a < tx + tw - 5; a += 7) if (hash(i * 7 + t, a, 90) > 0.35) P(a, y - th + 4, 3, 4, Win);
+        P.tri([tx - 7, y - th, tx + 4, y - th - 8, tx + tw - 4, y - th - 8, tx + tw + 7, y - th], Rf);
+        P(tx - 7, y - th, tw + 14, 1, Au);
+        y -= th + 8;
+        tw = Math.max(16, Math.round(tw * 0.68));
+      }
+      P(x + Math.round(bw / 2), y - 14, 1, 14, Au);
+      P.dot(x + Math.round(bw / 2), y - 15, Jd);
+    }
+    P(0, hz, w, h - hz, '#0a1c2a'); P(0, hz, w, 1, Au); P(0, hz + 3, w, 1, Jd);
+    for (let x = 6; x < w; x += 22) P(x, hz + 8, 3, 2, Win);
+    for (let i = 0; i < Math.ceil(w / 90); i++) {
+      const sx = Math.floor(hash(i, 8, 91) * w), sy = 22 + Math.floor(hash(i, 9, 91) * 12);
+      P.oval(sx, sy, 5, 1, '#d8e8f0'); P(sx - 2, sy - 2, 4, 1, Jd);
+      for (let t = 1; t < 5; t++) P.dot(sx - 5 - t * 3, sy, t % 2 ? Jd : '#2a8a88');
+    }
   }
 
   function meadowView(g, P, w, h) {
@@ -829,15 +873,17 @@
   const INK = '#2a2018', INK_NAME = '#6a2a1a', WALL_PAGE = 8;
 
   function openBook(kind, close) {
-    const ui = this, g = this.game, { W, HGT } = H.UI_CONST, entries = g.bookPages(kind), photos = kind === 'photos';
-    const spreads = Math.max(1, Math.ceil(entries.length / 6));
+    const ui = this, g = this.game, { W, HGT } = H.UI_CONST, photos = kind === 'photos', spreadsOf = () => Math.max(1, Math.ceil(entries.length / 6));
+    let entries = g.bookPages(kind);
     this.push({
       page: 0, sel: Math.max(0, entries.findIndex(e => e.ok)),
       draw(c) {
         c.fillStyle = 'rgba(2,2,8,0.6)'; c.fillRect(0, 0, W, HGT);
-        if (photos) ui.drawPhotoWall(c, entries, this.sel, d => this.flip(d)); else ui.drawGuestBook(c, entries, this.page, spreads);
+        if (!photos) { entries = g.bookPages(kind); this.page = Math.min(this.page, spreadsOf() - 1); }
+        if (photos) ui.drawPhotoWall(c, entries, this.sel, d => this.flip(d)); else ui.drawGuestBook(c, entries, this.page, spreadsOf());
         ui.hints(photos ? [['←→↑↓', 'Снимок'], ['Q E', 'Страница'], ['Esc', 'Закрыть']] : [['←→', 'Листать'], ['Esc', 'Закрыть']], W / 2, HGT - 30, { align: 'center' });
         ui.closeBtn(W - 50, 30, () => this.key('back'));
+        if (!photos && ui.drawBookNet) ui.drawBookNet(c);
       },
       flip(d) {
         const pages = Math.max(1, Math.ceil(entries.length / WALL_PAGE)), page = Math.floor(this.sel / WALL_PAGE) + d;
@@ -846,6 +892,7 @@
         ui.sfx('select');
       },
       key(k, code) {
+        if (!photos && ui.bookNetKey && ui.bookNetKey(code)) return;
         if (k === 'back' || k === 'ok') { ui.screens.pop(); ui.sfx('cancel'); if (close) close(); return; }
         if (photos) {
           if (code === 'KeyQ' || code === 'KeyE') { this.flip(code === 'KeyQ' ? -1 : 1); return; }
@@ -854,7 +901,7 @@
           return;
         }
         if (k === 'left' && this.page > 0) { this.page--; ui.sfx('select'); }
-        if (k === 'right' && this.page < spreads - 1) { this.page++; ui.sfx('select'); }
+        if (k === 'right' && this.page < spreadsOf() - 1) { this.page++; ui.sfx('select'); }
       }
     });
   }
@@ -945,8 +992,8 @@
   }
 
   function openUi_hackdebug() {
-    const s = this.openDebug();
-    s.onClose = () => this.finishPending();
+    const s = this.openDebug(), close = s.onClose;
+    s.onClose = () => { if (close) close(); this.finishPending(); };
   }
 
   if (H.UI) Object.assign(H.UI.prototype, { openBook, drawGuestBook, drawPhotoWall, openUi_hackjade, openUi_hackdebug });

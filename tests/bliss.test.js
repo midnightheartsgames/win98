@@ -68,7 +68,8 @@ const fly = (flyer, input, seconds, each) => {
   assert.ok(html.includes('js/apps/bliss-app.js') && html.includes('css/apps/bliss.css'));
   assert.ok(html.indexOf('bl-core.js') < html.indexOf('bl-game.js') && html.indexOf('bl-game.js') < html.indexOf('bliss-app.js'), 'modules load in order');
 
-  assert.match(source('js/desktop.js'), /id: 'bliss'.*appBliss/, 'desktop icon is always there');
+  assert.match(source('js/desktop.js'), /id: 'bliss'.*appBliss/, 'base icon for the shortcut in the desktop folder');
+  assert.match(source('js/desktop.js'), /icons: \[[^\]]*'bliss'/, 'shortcut in the desktop folder');
   assert.match(source('js/taskbar.js'), /data-action="bliss"/, 'Start menu item');
   assert.match(source('js/taskbar.js'), /case 'bliss':/, 'Start menu action');
   assert.match(source('js/apps/dialogs.js'), /cmd === 'bliss'/, 'Run command');

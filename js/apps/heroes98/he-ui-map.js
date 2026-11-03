@@ -16,6 +16,8 @@
       this.pid = Math.max(0, this.S.players.findIndex(p => p.human));
       this.level = 0;
       this.sel = (this.myHeroes()[0] || { id: 0 }).id;
+      this.selOf = {};
+      this.goalOf = {};
       this.ai = null;
       this.theme = 'meadow';
       this.finished = false;
@@ -35,6 +37,7 @@
       this.hoverPath = null;
       const col = [['end', 'Конец дня (E)'], ['next', 'Герой (H)'], ['level', 'Подлунье (U)'], ['book', 'Книга (B)'], ['kingdom', 'Держава (K)'], ['menu', 'Меню (Esc)']];
       this.buttons = col.map(([id, label], i) => ({ id, label, x: 684, y: 476 + i * 20, w: 112, h: 18 }));
+      this.buttons.push({ id: 'dig', label: 'Копать (G)', x: 358, y: 520, w: 84, h: 16 });
       this.center(this.hero());
       this.toast((def.name || this.S.mapName) + ': ' + H.Moons.dateText(this.S));
       this.pickTheme();
@@ -51,24 +54,56 @@
       const B = this.S.battle;
       if (B) {
         this.ui.show(this);
-        this.showBattle({ name: B.name, player: B.player, seed: B.seed, B: B.B, resumed: true });
+        this.showBattle({ name: B.name, player: B.player, humans: B.humans, colors: B.colors, seed: B.seed, B: B.B, resumed: true });
         return;
       }
       this.beginTurn(false);
     }
 
-    beginTurn(fresh) {
+    hotSeat() {
+      return this.S.players.filter(p => p.human && !p.out).length > 1;
+    }
+
+    beginTurn(fresh, first) {
       if (this.S.over) return;
-      if (this.S.turn !== this.pid) {
-        this.ai = H.AI.begin(this.S, this.S.turn);
+      const t = this.S.turn;
+      if (!this.S.players[t].human) {
+        this.ai = H.AI.begin(this.S, t);
         return;
       }
       this.ai = null;
-      if (fresh) {
-        this.ui.autosave(this);
-        this.restoreGoal();
-        this.pickTheme();
+      const handOver = this.hotSeat() && (fresh || first || t !== this.pid);
+      if (t !== this.pid) this.takeSeat(t);
+      if (!handOver) {
+        this.turnStarts(fresh);
+        return;
       }
+      this.ui.show(new H.PassView(this.ui, this, () => {
+        this.ui.show(this);
+        this.turnStarts(fresh);
+      }));
+    }
+
+    takeSeat(pid) {
+      this.selOf[this.pid] = this.sel;
+      this.pid = pid;
+      const mine = this.myHeroes(), keep = this.selOf[pid];
+      this.sel = mine.some(h => h.id === keep) ? keep : (mine[0] || { id: 0 }).id;
+      this.plan = null;
+      this.kingdom = null;
+      this.calendar = false;
+      this.info = null;
+      this.ver = -1;
+      const h = this.hero(), town = H.Town.list(this.S, pid)[0];
+      if (h && h.alive && h.owner === pid) this.center(h);
+      else if (town) this.center(town);
+    }
+
+    turnStarts(fresh) {
+      if (!fresh) return;
+      this.ui.autosave(this);
+      this.restoreGoal();
+      this.pickTheme();
     }
 
     thumb() {
@@ -121,6 +156,7 @@
     foreign(ev) {
       for (const e of ev) {
         if (e.t === 'lost' && this.S.heroes[e.hero].owner === this.pid) this.toast('Ваш герой пал: ' + this.S.heroes[e.hero].name, '#ff9080');
+        else if (e.t === 'caravanTaken' && this.S.heroes[e.hero].owner !== this.pid) this.toast('Обоз разграблен', '#ffb080');
         else if (e.t === 'townTaken') {
           const t = H.Town.byId(this.S, e.town);
           this.toast(t.name + ': город взял ' + H.PLAYER_NAMES[this.S.players[this.S.heroes[e.hero].owner].color] + ' игрок', '#ffb080');
@@ -136,6 +172,10 @@
         else if (e.t === 'won' && this.S.heroes[e.hero].owner === this.pid) this.toast('Победа! +' + e.xp + ' опыта', '#ffe080');
         else if (e.t === 'looted' && this.S.heroes[e.hero].owner === this.pid) this.toast('Взято артефактов: ' + e.count, '#ffe080');
         else if (e.t === 'out') this.toast(H.PLAYER_NAMES[this.S.players[e.player].color] + ' игрок выбыл', '#ffb080');
+        else if (e.t === 'barrow' && e.player === this.pid) this.toast(e.town != null ? 'В курган ушли тени павших: ' + e.count : 'Тени павших бродят без кургана: ' + e.count, '#d8d0b0');
+        else if (e.t === 'goal') this.toast((e.state === 'done' ? 'Выполнено: ' : e.state === 'fail' ? 'Провалено: ' : 'Новая цель: ') + e.text, e.state === 'fail' ? '#ff9080' : '#ffe080');
+        else if (e.t === 'dealDone' && e.player === this.pid) this.toast('Контракт исполнен' + (Object.keys(e.res).length ? ': ' + gainText(e.res) : ''), '#ffe080');
+        else if (e.t === 'dealLost' && e.player === this.pid) this.toast('Контракт «' + H.Contracts.TITLE[e.kind] + '» сорван' + (e.late ? ': срок вышел' : ''), '#ff9080');
         else if (e.t === 'joined') this.toast(H.UNITS[e.unit].name + ' в войске' + (e.price ? ' (−' + e.price + ' золота)' : ''), '#a0ffa0');
         else if (e.t === 'fled') this.toast(H.UNITS[e.unit].name + ' ушли');
         else if (e.t === 'retreat') this.toast('Герой отошёл');
@@ -143,10 +183,15 @@
         else if (e.t === 'income' && e.player === this.pid) this.toast('Доход: ' + gainText(e.res), '#ffe080');
         else if (e.t === 'week') {
           const m = H.Moons.current(this.S);
-          this.openModal(m ? 'Неделя ' + m.of : 'Неделя ' + e.week, [...(m ? H.Font.wrap('text', m.about, 380) : []), 'В городах новый прирост существ, нейтралы выросли.'], [['ok', 'Дальше']], () => {});
+          this.openModal(m ? 'Неделя ' + m.of : 'Неделя ' + e.week, [...(m ? H.Font.wrap('text', m.about, 380) : []), 'В городах новый прирост существ, нейтралы выросли.', ...(H.Town.list(this.S, this.pid).some(H.Contracts.desk) ? ['В Ратуше контрактов новые бумаги.'] : [])], [['ok', 'Дальше']], () => {});
         }
         else if (e.t === 'lost') this.toast(this.S.heroes[e.hero].owner === this.pid ? 'Герой пал' : 'Вражеский герой пал', this.S.heroes[e.hero].owner === this.pid ? '#ff9080' : '#a0ffa0');
         else if (e.t === 'townTaken') this.toast(H.Town.byId(this.S, e.town).name + (this.S.heroes[e.hero].owner === this.pid ? ': город теперь ваш' : ': город потерян'), this.S.heroes[e.hero].owner === this.pid ? '#a0e0ff' : '#ff9080');
+        else if (e.t === 'withdrew' && this.S.heroes[e.hero].owner === this.pid) this.toast(this.S.heroes[e.hero].name + ': завтра ждёт в таверне', '#ffe080');
+        else if (e.t === 'withdrew') this.toast('Вражеский герой ' + (e.kind === 'ransom' ? 'откупился' : 'бежал'), '#a0ffa0');
+        else if (e.t === 'machineLost' && this.S.heroes[e.hero].owner === this.pid) this.toast(H.UNITS[e.unit].name + ': машина разбита', '#ff9080');
+        else if (e.t === 'caravanTaken' && this.S.heroes[e.hero].owner === this.pid) this.toast('Обоз взят, существа в войске', '#a0ffa0');
+        else if (e.t === 'caravanCame' && e.owner === this.pid) this.toast('Обоз пришёл: ' + H.Town.byId(this.S, e.town).name, '#a0e0ff');
         else if (e.t === 'star' && this.S.heroes[e.hero].owner === this.pid) this.toast(H.UNITS[e.unit].name + ': звезда бывалых', '#ffe060');
         else if (e.t === 'artifact') this.toast('Найдено: ' + H.ARTIFACTS[e.art].name, '#ffe080');
         else if (e.t === 'bagfull') this.toast('Сумка полна, вещь осталась лежать', '#ff9080');
@@ -156,6 +201,22 @@
         else if (e.t === 'landed') this.toast(this.S.heroes[e.hero].name + ' вернулся на сушу', '#ffe080');
         else if (e.t === 'collect' && this.S.heroes[e.hero].owner === this.pid) this.openModal('Сборщик: ' + this.S.heroes[e.hero].name, ['Какой редкий ресурс собрать на этой неделе?'], HE.RARE.map(r => [r, RES_NAMES[r]]), id => HE.collect(this.S, this.S.heroes[e.hero], id));
         else if (e.t === 'town' && this.S.heroes[e.hero].owner === this.pid) this.townAfter = e.town;
+        else if (e.t === 'note') this.toast(e.text, e.color);
+        else if (e.t === 'read') this.openModal(e.title, H.Font.wrap('text', e.text, 380), [['ok', 'Дальше']], () => {});
+        else if (e.t === 'menhir') this.openModal('Менгир', ['Камень показывает, где лежит Сердце Восьмой луны.', 'Посещено менгиров: ' + e.count + '. Карта Сердца в Державе.'], [['ok', 'Дальше']], () => {});
+        else if (e.t === 'teleport') {
+          this.plan = null;
+          this.center(this.S.heroes[e.hero]);
+        } else if (e.t === 'boarded') this.toast(this.S.heroes[e.hero].name + ' на борту');
+        else if (e.t === 'freed') this.toast(this.S.heroes[e.hero].name + ' теперь с вами', '#a0ffa0');
+        else if (e.t === 'risen' && this.S.heroes[e.hero].owner === this.pid) this.toast(this.S.heroes[e.hero].name + ' встал на алтаре', '#a0e0ff');
+        else if (e.t === 'heartFound') this.openModal('Сердце Восьмой луны', ['Камень светит без неба. Его надо привезти в свой город', 'и построить там лунный алтарь.'], [['ok', 'Дальше']], () => {});
+        else if (e.t === 'heartHome') this.toast('Сердце в городе: можно строить лунный алтарь', '#ffe080');
+        else if (e.t === 'terrain') this.cache.clear();
+        else if (e.t === 'scene') {
+          this.plan = null;
+          this.moving = null;
+        }
       }
       this.ensureHero();
     }
@@ -175,7 +236,7 @@
       if (this.finished) return;
       this.finished = true;
       this.ai = null;
-      this.ui.show(new H.ResultView(this.ui, this));
+      this.ui.show(this.S.campaign ? new H.MissionEndView(this.ui, this) : new H.ResultView(this.ui, this));
     }
 
     openModal(title, lines, buttons, pick) {
@@ -199,10 +260,27 @@
       if (!p || this.modal) return;
       const hero = this.S.heroes[p.hero];
       if (hero.owner !== this.pid) return;
+      if (p.kind === 'caravan') {
+        const wagon = this.S.caravans.find(v => v.id === p.caravan);
+        const lines = ['Обоз без героя везёт:', ...wagon.stacks.map(s => H.UNITS[s.unit].name + ': ' + Adv.strength(s.count).toLowerCase()), 'Победитель забирает половину существ, если в войске есть место.', this.forecastText({ stacks: wagon.stacks.map(s => ({ unit: s.unit, count: s.count })) })];
+        this.openModal('Обоз: ' + H.PLAYER_NAMES[this.S.players[wagon.owner].color] + ' игрок', lines, [['fight', 'В бой'], ['retreat', 'Отойти']], id => (id === 'fight' ? this.fight() : this.events(Adv.resolve(this.S, id))));
+        return;
+      }
       if (p.kind === 'duel') {
         const foe = this.S.heroes[p.enemy], exact = HE.hasPerk(hero, 'recon') || HE.hasPerk(hero, 'spy');
         const lines = [H.CLASSES[foe.cls].name + ', уровень ' + foe.level, ...foe.army.filter(Boolean).map(s => H.UNITS[s.unit].name + ': ' + (exact ? s.count : Adv.strength(s.count).toLowerCase())), this.forecastText(HE.battleSide(foe, foe.army.map((s, i) => (s ? i : -1)).filter(i => i >= 0)))];
         this.openModal('Вражеский герой: ' + foe.name, lines, [['fight', 'В бой'], ['retreat', 'Отойти']], id => (id === 'fight' ? this.fight() : this.events(Adv.resolve(this.S, id))));
+        return;
+      }
+      if (p.kind === 'choice') {
+        this.openModal(p.title, p.lines, p.options, id => this.events(Adv.resolve(this.S, id)));
+        return;
+      }
+      if (p.kind === 'vault') {
+        const o = Adv.obj(this.S, p.obj), stacks = H.Sites.vaultGuards(o), prize = H.Sites.vaultPrize(o), exact = HE.hasPerk(hero, 'recon') || HE.hasPerk(hero, 'spy'), rows = new Map();
+        for (const s of stacks) rows.set(s.unit, (rows.get(s.unit) || 0) + s.count);
+        const lines = [...[...rows].map(([u, n]) => H.UNITS[u].name + ': ' + (exact ? n : Adv.strength(n).toLowerCase())), 'Награда: ' + prize.gold + ' золота' + (Object.keys(prize.res).length ? ', ' + gainText(prize.res).replace(/\+/g, '') : '') + (prize.rank ? ', ' + H.ART_RANKS[prize.rank][0] + ' артефакт' : ''), this.forecastText({ stacks })];
+        this.openModal(H.OBJ[o.t].name, lines, [['fight', 'В бой'], ['retreat', 'Отойти']], id => (id === 'fight' ? this.fight() : this.events(Adv.resolve(this.S, id))));
         return;
       }
       if (p.kind === 'chest') {
@@ -210,10 +288,13 @@
         return;
       }
       if (p.kind === 'town') {
-        const t = Adv.obj(this.S, p.obj), stacks = t.garrison.filter(Boolean);
-        const exact = HE.hasPerk(hero, 'recon') || HE.hasPerk(hero, 'spy');
-        const lines = ['Город держит гарнизон:', ...stacks.map(s => H.UNITS[s.unit].name + ': ' + (exact ? s.count : Adv.strength(s.count).toLowerCase())), 'Бой пойдёт в поле перед воротами.', this.forecastText({ stacks: stacks.map(s => ({ unit: s.unit, count: s.count, stars: s.stars || 0, vet: s.vet || 0 })) })];
-        this.openModal('Город ' + t.name, lines, [['fight', 'В бой'], ['retreat', 'Отойти']], id => (id === 'fight' ? this.fight() : this.events(Adv.resolve(this.S, id))));
+        const t = Adv.obj(this.S, p.obj), guest = H.Town.visitor(this.S, t), own = guest ? guest.army.filter(Boolean) : [], stacks = [...own, ...t.garrison.filter(Boolean)];
+        const exact = HE.hasPerk(hero, 'recon') || HE.hasPerk(hero, 'spy'), fort = Adv.fortLevel(t);
+        const side = guest ? HE.battleSide(guest, guest.army.map((s, i) => (s ? i : -1)).filter(i => i >= 0)) : {};
+        side.stacks = stacks.map(s => ({ unit: s.unit, count: s.count, stars: s.stars || 0, vet: s.vet || 0 }));
+        const held = side.stacks.reduce((n, s) => n + s.count * H.UNITS[s.unit].cost, 0);
+        const lines = [(guest ? 'Внутри герой ' + guest.name + ' и гарнизон:' : 'Держит гарнизон:'), ...stacks.slice(0, 7).map(s => H.UNITS[s.unit].name + ': ' + (exact ? s.count : Adv.strength(s.count).toLowerCase())), fort ? 'Осада: ' + H.Town.def(t, 'fort' + fort).name.toLowerCase() + (H.SIEGE.towers[fort] ? ', башни бьют каждый раунд' : '') + (fort >= 3 ? ', ров' : '') : 'Стен нет, бой в поле.', this.forecastText(side, Adv.siegeOf(t, held))];
+        this.openModal(t.t === 'town' ? 'Город ' + t.name : H.OBJ[t.t].name, lines, [['fight', 'В бой'], ['retreat', 'Отойти']], id => (id === 'fight' ? this.fight() : this.events(Adv.resolve(this.S, id))));
         return;
       }
       if (p.kind !== 'encounter') return;
@@ -224,7 +305,7 @@
       lines.push(this.forecastText({ stacks: Adv.splitNeutral(o) }));
       if (p.offer === 'join') {
         const res = this.S.players[hero.owner].res, slot = hero.army.some(s => !s || s.unit === o.unit);
-        lines.push('Они просятся к вам ' + (p.price ? 'за ' + p.price + ' золота' : 'даром') + ' (шанс ' + pct(p.chance) + ')');
+        lines.push(p.deal != null ? 'По контракту они идут к вам за ' + p.price + ' золота' : 'Они просятся к вам ' + (p.price ? 'за ' + p.price + ' золота' : 'даром') + ' (шанс ' + pct(p.chance) + ')');
         if (!slot) lines.push('В войске нет свободной ячейки');
         buttons = [['accept', 'Принять', !slot || res.gold < p.price], ['fight', 'В бой'], ['retreat', 'Отойти']];
       } else if (p.offer === 'flee') {
@@ -237,9 +318,9 @@
       this.openModal('Встреча: ' + u.name, lines, buttons, id => (id === 'fight' ? this.fight() : this.events(Adv.resolve(this.S, id))));
     }
 
-    forecastText(side) {
+    forecastText(side, siege) {
       const h = this.hero(), slots = h.army.map((s, i) => (s ? i : -1)).filter(i => i >= 0);
-      const e = H.BattleAI.estimate([HE.battleSide(h, slots), side], H.Moons.battle(this.S));
+      const e = H.BattleAI.estimate([HE.battleSide(h, slots), side], H.Moons.battle(this.S), siege);
       if (!e.win) return 'Оценка боя: скорее поражение';
       const loss = Math.round(e.lost[0] * 100);
       return 'Оценка боя: победа, потери около ' + loss + ' %';
@@ -252,8 +333,8 @@
     runBattle(setup) {
       this.plan = null;
       this.moving = null;
-      setup.B = H.Battle.create({ seed: setup.seed, sides: setup.sides, moon: setup.moon || null });
-      this.S.battle = { B: setup.B, name: setup.name, player: setup.player, seed: setup.seed };
+      setup.B = H.Battle.create({ seed: setup.seed, sides: setup.sides, moon: setup.moon || null, siege: setup.siege || null, deck: setup.deck, field: setup.field });
+      this.S.battle = { B: setup.B, name: setup.name, player: setup.player, humans: setup.humans, colors: setup.colors, seed: setup.seed };
       setup.replay = () => this.runBattle(setup);
       this.showBattle(setup);
     }
@@ -274,8 +355,8 @@
         this.foreign(r.ev);
         if (this.S.over) return;
         if (r.battle) {
-          const hero = this.S.heroes[this.S.pending.hero];
-          this.openModal('Враг нападает!', [hero.name + ' ведёт войско на вас.'], [['fight', 'В бой']], () => this.runBattle(r.battle));
+          const hero = this.S.heroes[this.S.pending.hero], who = (r.battle.humans || []).length && this.hotSeat() ? this.S.players[this.defenderOf(this.S.pending)] : null;
+          this.openModal(who ? 'Враг нападает: ' + H.PLAYER_NAMES[who.color] + ' игрок' : 'Враг нападает!', [hero.name + ' ведёт войско на ' + (who ? H.PLAYER_NAMES[who.color] + ' игрока.' : 'вас.')], [['fight', 'В бой']], () => this.runBattle(r.battle));
           return;
         }
         if (r.done) {
@@ -295,8 +376,25 @@
       }
     }
 
+    defenderOf(p) {
+      if (p.target === 'hero') return this.S.heroes[p.enemy].owner;
+      if (p.target === 'town') return H.Town.byId(this.S, p.obj).owner;
+      if (p.target === 'caravan') return this.S.caravans.find(v => v.id === p.caravan).owner;
+      return this.pid;
+    }
+
+    meet(friend) {
+      this.plan = null;
+      this.moving = null;
+      this.ui.show(new H.ExchangeView(this.ui, this, this.hero(), friend, { allied: true }));
+    }
+
     go() {
       if (!this.plan || this.moving || this.S.pending) return;
+      if (this.plan.here && this.plan.kind === 'meet') {
+        this.meet(this.S.heroes[this.plan.target]);
+        return;
+      }
       if (this.plan.here) {
         this.events(Adv.engage(this.S, this.hero(), this.plan.target, this.plan.kind));
         this.plan = null;
@@ -319,11 +417,22 @@
         this.moving = null;
         return;
       }
+      if (!this.plan) {
+        this.moving = null;
+        return;
+      }
       this.anim = { hero: h.id, from, to: [h.c, h.r], t: 0 };
       this.ui.sfx('step', MD.terrainAt(this.S.map, h.l, h.c, h.r).id);
       this.plan.steps.shift();
+      if (!this.S.pending && !this.plan.steps.length && this.plan.kind === 'meet') {
+        const friend = this.S.heroes[this.plan.target];
+        if (friend.alive && HE.adjacent(h, friend)) this.meet(friend);
+        else this.plan = null;
+        this.moving = null;
+        return;
+      }
       if (this.S.pending || !this.plan.steps.length) {
-        if (!this.S.pending && this.plan.kind === 'duel') this.events(Adv.engage(this.S, h, this.plan.target, 'duel'));
+        if (!this.S.pending && (this.plan.kind === 'duel' || this.plan.kind === 'caravan' || this.plan.kind === 'manage')) this.events(Adv.engage(this.S, h, this.plan.target, this.plan.kind));
         this.moving = null;
         this.plan = null;
       }
@@ -358,6 +467,7 @@
         }
       }
       if (this.moving && !this.anim) this.stepOnce();
+      if (this.S.scene) return;
       if (this.S.over && !this.moving && !this.anim && !this.modal) {
         this.finish();
         return;
@@ -474,30 +584,34 @@
     whatAt(c, r) {
       const S = this.S, M = S.map, l = this.level, seen = S.players[this.pid].seen[l][r * M.w + c], vis = this.vis[r * M.w + c];
       if (!seen) return { text: ['Не разведано'] };
+      const wagon = Adv.caravanAt(S, l, c, r);
+      if (wagon) return { text: ['Обоз: ' + H.PLAYER_NAMES[S.players[wagon.owner].color] + ' игрок', wagon.owner === this.pid ? wagon.stacks.map(x => H.UNITS[x.unit].name + ' ' + x.count).join(', ') : 'Без героя: ' + Adv.strength(wagon.stacks.reduce((t, x) => t + x.count, 0)).toLowerCase(), 'В город ' + H.Town.byId(S, wagon.to).name] };
       const h = Adv.heroAt(S, l, c, r);
-      if (h && vis) return { hero: h, text: [h.name, h.owner === this.pid ? 'войско: ' + h.army.filter(Boolean).map(s => H.UNITS[s.unit].name + ' ' + s.count).join(', ') : H.CLASSES[h.cls].name + ', ' + H.PLAYER_NAMES[S.players[h.owner].color] + ' игрок, войско: ' + Adv.strength(h.army.filter(Boolean).reduce((t, s) => t + s.count, 0)).toLowerCase()] };
+      const bounty = h && vis ? S.players[this.pid].deals.find(d => d.hero === h.id) : null;
+      if (h && vis) return { hero: h, text: [...(bounty ? ['Контракт, награда: ' + H.Contracts.rewardText(bounty)] : []), h.name, h.owner === this.pid ? 'войско: ' + h.army.filter(Boolean).map(s => H.UNITS[s.unit].name + ' ' + s.count).join(', ') : H.CLASSES[h.cls].name + ', ' + (Adv.allied(S, h.owner, this.pid) ? 'союзник' : H.PLAYER_NAMES[S.players[h.owner].color] + ' игрок') + ', войско: ' + Adv.strength(h.army.filter(Boolean).reduce((t, s) => t + s.count, 0)).toLowerCase()] };
       const g = Adv.grid(S, l), id = g.block[r * M.w + c] || g.entry[r * M.w + c], o = id && Adv.obj(S, id);
-      if (o && (o.t !== 'monster' || vis)) {
+      if (o && (o.t !== 'monster' || vis || H.Contracts.dealOn(S, this.pid, o.id))) {
         const def = H.OBJ[o.t];
         if (def.kind === 'monster') {
           const me = this.hero(), exact = me && (HE.hasPerk(me, 'recon') || HE.hasPerk(me, 'spy'));
-          return { obj: o, text: [H.UNITS[o.unit].name, (exact ? 'точно ' + o.count : Adv.strength(o.count)) + ', нрав ' + H.MAP.mood[o.mood]] };
+          const deal = H.Contracts.dealOn(S, this.pid, o.id);
+          return { obj: o, text: [H.UNITS[o.unit].name, (exact ? 'точно ' + o.count : Adv.strength(o.count)) + ', нрав ' + H.MAP.mood[o.mood], ...(deal ? ['Контракт, ' + H.Contracts.TITLE[deal.kind].toLowerCase() + ': ' + H.Contracts.rewardText(deal)] : [])] };
         }
         if (def.kind === 'town') {
           const fort = D.fortOf(o), g = o.garrison.filter(Boolean).reduce((n, x) => n + x.count, 0);
           return { obj: o, text: [o.name, H.FACTIONS[o.faction].full, (o.owner === this.pid ? 'ваш город' : o.owner >= 0 ? 'чужой город' : 'ничей город') + ', ' + (fort ? H.Town.def(o, 'fort' + fort).name.toLowerCase() : 'без стен'), g ? 'гарнизон: ' + Adv.strength(g).toLowerCase() : 'гарнизона нет'] };
         }
-        if (def.kind === 'mine') return { obj: o, text: [def.name, (o.owner === this.pid ? 'ваш' : o.owner >= 0 ? 'чужой' : 'ничей') + ', в день +' + H.MAP.mineIncome[def.res] + ' ' + RES_NAMES[def.res].toLowerCase()] };
+        if (def.kind === 'mine') return { obj: o, text: [def.name, (o.owner === this.pid ? 'ваш' : o.owner >= 0 ? 'чужой' : 'ничей') + (H.mineRes(o) ? ', в день +' + H.MAP.mineIncome[H.mineRes(o)] + ' ' + RES_NAMES[H.mineRes(o)].toLowerCase() : ', что внутри, неизвестно')] };
         if (def.kind === 'pile') return { obj: o, text: [def.name, 'подобрать'] };
         if (def.kind === 'chest') return { obj: o, text: ['Сундук', 'золото или опыт на выбор'] };
         if (def.kind === 'artifact') return { obj: o, text: [H.ARTIFACTS[o.art].name, H.ARTIFACTS[o.art].about] };
         if (def.kind === 'shrine') return { obj: o, text: [def.name, o.spell ? 'Учит: ' + H.SPELLS[o.spell].name + ' (' + H.SCHOOLS[H.SPELLS[o.spell].school] + ')' : 'Учит одному заклинанию'] };
         if (def.kind === 'scroll') return { obj: o, text: ['Свиток', o.spell ? H.SPELLS[o.spell].name : 'Заклинание на пергаменте'] };
         if (def.kind === 'campfire') return { obj: o, text: ['Костёр', 'золото и немного ресурсов'] };
-        return { obj: o, text: [def.name] };
+        return { obj: o, text: H.Sites.tip(S, o, this.pid, this.hero()) };
       }
-      const t = MD.terrainAt(M, l, c, r), road = MD.roadAt(M, l, c, r);
-      return { text: [road ? H.ROADS[road].name : t.name, MD.groundCost(M, l, c, r) ? 'шаг стоит ' + MD.groundCost(M, l, c, r) : 'непроходимо'] };
+      const t = MD.terrainAt(M, l, c, r), road = MD.roadAt(M, l, c, r), place = MD.fieldAt(M, l, c, r) && H.FIELDS[H.FIELD_INDEX[MD.fieldAt(M, l, c, r)]];
+      return { text: [road ? H.ROADS[road].name : t.name, MD.groundCost(M, l, c, r) ? 'шаг стоит ' + MD.groundCost(M, l, c, r) : t.id === 'water' ? 'только на корабле' : 'непроходимо', ...(place ? [place.name + ': ' + place.about.toLowerCase()] : [])] };
     }
 
     aim(c, r) {
@@ -521,8 +635,8 @@
       const p = this.aim(cell[0], cell[1]);
       if (!p) return g.cursor(this.S.players[this.pid].seen[this.level][cell[1] * this.S.map.w + cell[0]] ? 'no' : 'arrow');
       const days = p.steps.length ? p.steps[p.steps.length - 1].day + 1 : 1;
-      if (p.kind === 'attack' || p.kind === 'duel') return g.cursor('sword', 0, days > 1 ? days : 0);
-      if (p.kind === 'visit') return g.cursor('hand', 0, days > 1 ? days : 0);
+      if (p.kind === 'attack' || p.kind === 'duel' || p.kind === 'caravan') return g.cursor('sword', 0, days > 1 ? days : 0);
+      if (p.kind === 'visit' || p.kind === 'meet') return g.cursor('hand', 0, days > 1 ? days : 0);
       return g.cursor('step', 0, days);
     }
 
@@ -540,6 +654,9 @@
       } else if (id === 'level') {
         this.level = (this.level + 1) % this.S.map.levels;
         this.plan = null;
+      } else if (id === 'dig') {
+        this.plan = null;
+        this.events(H.Sites.dig(this.S, this.hero()));
       } else if (id === 'book') this.openBook();
       else if (id === 'kingdom') this.kingdom = { tab: 'towns' };
       else if (id === 'menu') this.ui.openMenu();
@@ -548,14 +665,14 @@
     endDay() {
       const goal = this.plan && this.plan.goal;
       this.plan = null;
-      this.nextGoal = goal;
+      this.goalOf[this.pid] = goal;
       this.events(Adv.endTurn(this.S));
       this.beginTurn(true);
     }
 
     restoreGoal() {
-      const goal = this.nextGoal, h = this.hero();
-      this.nextGoal = null;
+      const goal = this.goalOf[this.pid], h = this.hero();
+      this.goalOf[this.pid] = null;
       if (!goal || !h || !h.alive) return;
       const p = Adv.path(this.S, h, goal[0], goal[1]);
       if (p) this.plan = Object.assign({}, p, { goal });
@@ -564,6 +681,10 @@
     pointer(type, x, y, btn) {
       this.mouse = [x, y];
       this.edge = true;
+      if (this.S.scene) {
+        this.scenePointer(type, x, y, btn);
+        return;
+      }
       if (this.ai && !this.modal) {
         const b = this.buttons.find(o => o.id === 'menu' && hit(o, x, y));
         this.hot = b ? b.id : null;
@@ -660,6 +781,11 @@
         this.plan = null;
         return;
       }
+      const hero = this.hero();
+      if (h && hero && hero.alive && Adv.allied(this.S, h.owner, this.pid) && HE.adjacent(hero, h)) {
+        this.meet(h);
+        return;
+      }
       if (this.plan && this.plan.goal[0] === cell[0] && this.plan.goal[1] === cell[1]) {
         this.go();
         return;
@@ -669,6 +795,10 @@
     }
 
     key(code) {
+      if (this.S.scene) {
+        this.sceneKey(code);
+        return;
+      }
       if (this.ai && !this.modal) return;
       if (this.calendar) {
         if (code === 'KeyC') this.calendar = false;
@@ -688,6 +818,7 @@
       else if (code === 'KeyU') this.press('level');
       else if (code === 'KeyK') this.press('kingdom');
       else if (code === 'KeyB') this.press('book');
+      else if (code === 'KeyG') this.press('dig');
       else if (code === 'KeyC') this.calendar = true;
       else if (code === 'KeyT') {
         const h = this.hero(), list = this.myTowns(), t = list.find(o => H.Town.visitor(this.S, o) === h) || list[0];
@@ -697,6 +828,7 @@
 
     enabled(id) {
       if (id === 'level') return this.S.map.levels > 1;
+      if (id === 'dig') return !this.moving && !!this.hero() && this.hero().alive && !this.hero().boat;
       return !this.moving;
     }
 
@@ -725,8 +857,11 @@
         if (o.gone || o.l !== l) continue;
         const def = H.OBJ[o.t], i = o.r * M.w + o.c;
         if (!S.players[this.pid].seen[l][i]) continue;
-        if (def.kind === 'monster' && !this.vis[i]) continue;
+        if (def.kind === 'monster' && !o.route && !this.vis[i]) continue;
         items.push({ y: (o.r + def.foot[1]) * T, draw: () => D.object(c, o, VIEW.x + o.c * T - this.cam.x, VIEW.y + o.r * T - this.cam.y, this.time, o.owner >= 0 ? H.PLAYER_COLORS[S.players[o.owner].color] : null) });
+      }
+      for (const v of S.caravans) {
+        if (v.l === l) items.push({ y: (v.r + 1) * T, draw: () => D.caravan(c, v, VIEW.x + v.c * T - this.cam.x, VIEW.y + v.r * T - this.cam.y, H.PLAYER_COLORS[S.players[v.owner].color], this.time) });
       }
       for (const h of S.heroes) {
         if (!h.alive || h.l !== l || !this.vis[h.r * M.w + h.c]) continue;
@@ -734,6 +869,10 @@
         items.push({ y: y + T + 0.5, draw: () => D.hero(c, h, VIEW.x + x - this.cam.x, VIEW.y + y - this.cam.y, H.PLAYER_COLORS[S.players[h.owner].color], this.time) });
       }
       items.sort((a, b) => a.y - b.y).forEach(it => it.draw());
+      for (const d of S.players[this.pid].deals) {
+        const x = H.Contracts.target(S, d);
+        if (x && x.l === l && d.obj != null) this.drawDealMark(c, VIEW.x + x.c * T - this.cam.x, VIEW.y + x.r * T - this.cam.y);
+      }
       if (this.plan && this.hero() && this.hero().l === l) D.steps(c, this.plan, this.cam, VIEW, (s, x, y) => g.text(s, x, y, { bold: true, color: '#fff6c8' }));
       if (!this.fogPattern) {
         const tile = document.createElement('canvas');
@@ -768,6 +907,85 @@
       if (this.calendar) this.drawCalendar(g);
       if (this.info) this.drawInfo(g);
       if (this.modal) this.drawModal(g);
+      if (S.scene) this.drawScene(g);
+    }
+
+    sceneNext(answer) {
+      const s = this.S.scene;
+      if (s && s.text) {
+        this.sceneLog = this.sceneLog || [];
+        this.sceneLog.push((s.name ? s.name + ': ' : '') + s.text);
+      }
+      this.events(H.Script.advance(this.S, answer));
+      this.ver = -1;
+    }
+
+    sceneSkip() {
+      let guard = 0;
+      while (this.S.scene && this.S.scene.seen && !this.S.scene.choice && guard++ < 500) this.sceneNext();
+    }
+
+    scenePointer(type, x, y, btn) {
+      const r = (this.sceneRegions || []).find(o => hit(o, x, y));
+      this.sceneHot = r ? r.id : null;
+      this.ui.gfx.cursor(r ? 'hand' : 'arrow');
+      if (type !== 'down' || btn !== 0) return;
+      if (this.sceneJournal) {
+        this.sceneJournal = false;
+        return;
+      }
+      if (r) r.act();
+      else if (!this.S.scene.choice) this.sceneNext();
+    }
+
+    sceneKey(code) {
+      const s = this.S.scene;
+      if (this.sceneJournal) {
+        this.sceneJournal = false;
+        return;
+      }
+      if (code === 'KeyL') this.sceneJournal = true;
+      else if (s.choice) {
+        const n = +code.replace('Digit', '') - 1;
+        if (code.startsWith('Digit') && s.choice[n]) this.sceneNext(n);
+      } else if (code === 'Space' || code === 'Enter') this.sceneNext();
+    }
+
+    drawScene(g) {
+      const c = g.ctx, s = this.S.scene, box = { x: 150, y: 440, w: 500, h: 150 };
+      this.sceneRegions = [];
+      c.fillStyle = 'rgba(5,7,15,0.6)';
+      c.fillRect(0, 0, H.W, H.H);
+      for (const who of s.shown) {
+        const rec = H.HEROES.find(x => x.id === who.id), x = who.side === 'left' ? 10 : H.W - 138, cls = rec ? rec.cls : null, face = { hid: rec || H.PEOPLE[who.id] ? who.id : null, cls, faction: cls ? H.CLASSES[cls].faction : 'neutral', name: who.name || (rec ? rec.name : H.PEOPLE[who.id] || who.id) };
+        g.panel(x - 2, 460 - 2, 132, 132, 'plate');
+        H.Art.drawPortrait(g, face, x + 6, 466, 116);
+        if (who.id === s.who) {
+          c.strokeStyle = '#ffe080';
+          c.strokeRect(x + 5.5, 465.5, 117, 117);
+        }
+      }
+      g.panel(box.x, box.y, box.w, box.h);
+      if (s.name) g.text(s.name, box.x + 18, box.y + 18, { bold: true, color: '#ffe080' });
+      if (s.choice) {
+        s.choice.forEach((text, i) => {
+          const y = box.y + 14 + i * 26, id = 'answer-' + i;
+          this.sceneRegions.push({ id, x: box.x + 12, y, w: box.w - 24, h: 24, act: () => this.sceneNext(i) });
+          g.button({ x: box.x + 12, y, w: box.w - 24, h: 24, label: (i + 1) + '. ' + text, hot: this.sceneHot === id });
+        });
+      } else H.Font.wrap('text', s.text, box.w - 36).slice(0, 5).forEach((line, i) => g.text(line, box.x + 18, box.y + 40 + i * 16));
+      const tool = (id, label, x, act) => {
+        this.sceneRegions.push({ id, x, y: box.y + box.h - 28, w: 90, h: 20, act });
+        g.button({ x, y: box.y + box.h - 28, w: 90, h: 20, label, hot: this.sceneHot === id });
+      };
+      if (!s.choice) tool('journal', 'Журнал (L)', box.x + 14, () => { this.sceneJournal = true; });
+      if (s.seen && !s.choice) tool('skip', 'Пропустить', box.x + 110, () => this.sceneSkip());
+      if (this.sceneJournal) {
+        const list = (this.sceneLog || []).flatMap(t => H.Font.wrap('text', t, 620)).slice(-24);
+        g.panel(70, 30, 660, 420);
+        g.text('Журнал реплик', H.W / 2, 52, { align: 'center', serif: true });
+        list.forEach((line, i) => g.text(line, 86, 78 + i * 15));
+      }
     }
 
     drawCalendar(g) {
@@ -796,8 +1014,17 @@
           H.Art.drawMoon(c, m, mx - size / 2, my - size / 2, size);
           g.text(m.name, mx, my + size / 2 + 8, { align: 'center', size: 10, color: i === week ? '#ffe060' : '#c8b88a' });
         });
-        H.Moons.ahead(S, 4).forEach((m, i) => {
-          const ry = y + 62 + i * 96, tx = x + 340;
+        const weeks = H.Sites.calendarWeeks(S, this.pid);
+        H.Moons.ahead(S, weeks).forEach((m, i) => {
+          const tx = x + 340;
+          if (weeks > 4) {
+            const ry = y + 58 + i * 46;
+            H.Art.drawMoon(c, m, tx, ry, 24);
+            g.text((i ? 'Через ' + i + ' ' + H.plural(i, 'неделю', 'недели', 'недель') + ': ' : 'Сейчас: ') + m.full, tx + 32, ry + 6, { bold: true, color: i ? '#f0e2b8' : '#ffe060' });
+            g.text(H.Font.wrap('small', m.about, 250)[0], tx + 32, ry + 22, { size: 10 });
+            return;
+          }
+          const ry = y + 62 + i * 96;
           H.Art.drawMoon(c, m, tx, ry, 32);
           g.text((i ? 'Через ' + i + ' ' + H.plural(i, 'неделю', 'недели', 'недель') + ': ' : 'Сейчас: ') + m.full, tx + 40, ry + 8, { bold: true, color: i ? '#f0e2b8' : '#ffe060' });
           H.Font.wrap('small', m.about, 240).slice(0, 3).forEach((s, k) => g.text(s, tx + 40, ry + 26 + k * 13, { size: 10 }));
@@ -805,6 +1032,56 @@
         });
       }
       g.button({ x: 185, y: 492, w: 110, h: 26, label: 'Закрыть', hot: this.kHot === 'cal' });
+    }
+
+    drawDealMark(c, x, y) {
+      c.fillStyle = '#d8c698';
+      c.fillRect(x + 20, y - 2, 13, 10);
+      c.strokeStyle = '#3a2a12';
+      c.strokeRect(x + 20.5, y - 1.5, 12, 9);
+      c.fillStyle = '#a02818';
+      c.fillRect(x + 24, y + 1, 5, 4);
+    }
+
+    drawDeals(g, x, top) {
+      const S = this.S, C = H.Contracts, deals = S.players[this.pid].deals, c = g.ctx, desks = H.Town.list(S, this.pid).filter(C.desk);
+      g.text('Идут: ' + deals.length + ' из ' + H.TOWN.contract.active + ', исполнено за партию: ' + S.players[this.pid].dealsDone, x + 24, top, { bold: true, color: '#c8b88a' });
+      if (!desks.length && !deals.length) g.text('Контракты вывешивает Ратуша контрактов в городах Лиги.', x + 24, top + 28, { color: '#a89870' });
+      deals.forEach((d, i) => {
+        const ry = top + 18 + i * 64, text = C.describe(S, d), left = d.until - S.day;
+        c.fillStyle = 'rgba(5,7,15,0.6)';
+        c.fillRect(x + 20, ry, 600, 58);
+        g.text(text.title, x + 30, ry + 16, { bold: true });
+        g.text(text.lines.join(' '), x + 110, ry + 16, { size: 10 });
+        g.text('Плата: ' + text.reward, x + 110, ry + 34, { size: 10 });
+        g.text('Осталось дней: ' + left + '. Выдал город ' + H.Town.byId(S, d.town).name, x + 110, ry + 48, { size: 10, color: left <= 2 ? '#ff9a8a' : '#c8b88a' });
+      });
+      desks.forEach((t, i) => g.text(t.name + ': на доске ' + C.board(S, t).length + ' ' + H.plural(C.board(S, t).length, 'бумага', 'бумаги', 'бумаг'), x + 24, top + 228 + i * 16, { size: 10 }));
+    }
+
+    drawGoals(g, x, top, btn) {
+      const S = this.S, text = Adv.goalText(S.map, S.goals), STATE = { open: ['идёт', '#f0e2b8'], done: ['выполнено', '#a0e0a0'], fail: ['провалено', '#ff9080'] };
+      let y = top;
+      const line = (s, color, bold) => {
+        g.text(s, x + 24, y, { color, bold });
+        y += 18;
+      };
+      line('Победа', '#c8b88a', true);
+      for (const s of text.win) line(s, '#a0e0a0');
+      y += 8;
+      line('Поражение', '#c8b88a', true);
+      for (const s of text.lose) line(s, '#ffb0a0');
+      if (!S.script.goals.length) return;
+      y += 8;
+      line('Задания', '#c8b88a', true);
+      for (const q of S.script.goals) {
+        const aim = q.state === 'open' ? (q.targets || []).map(t => S.map.objs.find(o => o.tag === t && !o.gone) || S.heroes.find(h => h.tag === t && h.alive)).find(o => o && S.players[this.pid].seen[o.l][o.r * S.map.w + o.c]) : null;
+        if (aim) btn('k-goal-' + q.id, 'На карте', x + 516, y - 12, 96, 18, () => {
+          this.kingdom = null;
+          this.center(aim);
+        });
+        line(q.text + ': ' + STATE[q.state][0], STATE[q.state][1]);
+      }
     }
 
     drawKingdom(g) {
@@ -825,7 +1102,7 @@
       c.fillRect(0, 0, H.W, H.H);
       g.panel(x, y, W, Hh);
       g.text('Держава', x + W / 2, y + 26, { align: 'center', serif: true });
-      [['towns', 'Города'], ['heroes', 'Герои'], ['income', 'Доход']].forEach(([id, label], i) => btn('k-' + id, label, x + 20 + i * 130, y + 44, 120, 22, () => { k.tab = id; }, k.tab === id));
+      [['towns', 'Города'], ['heroes', 'Герои'], ['income', 'Доход'], ['deals', 'Контракты'], ['heart', 'Сердце'], ['goals', 'Цели']].forEach(([id, label], i) => btn('k-' + id, label, x + 20 + i * 102, y + 44, 96, 22, () => { k.tab = id; }, k.tab === id));
       const top = y + 92, head = (cols, xs) => cols.forEach((s, i) => g.text(s, xs[i], top, { bold: true, color: '#c8b88a' }));
       if (k.tab === 'towns') {
         const xs = [x + 24, x + 196, x + 300, x + 400, x + 540];
@@ -860,11 +1137,14 @@
           g.text(Adv.strength(n) + ', ' + Adv.armyValue(h.army) + ' зол.', xs[3], ry, { size: 10 });
           g.text((Math.floor(h.steps * 10) / 10) + ' из ' + Adv.daySteps(S, h), xs[4], ry, { size: 10 });
         });
-      } else {
+      } else if (k.tab === 'heart') this.drawHeart(g, x, top);
+      else if (k.tab === 'goals') this.drawGoals(g, x, top, btn);
+      else if (k.tab === 'deals') this.drawDeals(g, x, top);
+      else {
         const xs = [x + 24, x + 190, x + 280, x + 370, x + 460, x + 540], towns = H.Town.income(S, this.pid), heroes = HE.income(S, this.pid), mines = {};
         for (const o of S.map.objs) {
           if (o.gone || o.owner !== this.pid || H.OBJ[o.t].kind !== 'mine') continue;
-          const r = H.OBJ[o.t].res;
+          const r = H.mineRes(o);
           mines[r] = (mines[r] || 0) + H.MAP.mineIncome[r];
         }
         head(['Ресурс', 'Города', 'Шахты', 'Герои', 'В день', 'За неделю'], xs);
@@ -877,6 +1157,42 @@
         });
       }
       btn('k-close', 'Закрыть', x + W - 130, y + Hh - 40, 110, 26, () => { this.kingdom = null; });
+    }
+
+    drawHeart(g, x, top) {
+      const S = this.S, M = S.map, c = g.ctx, me = S.players[this.pid], cell = Math.floor(320 / Math.max(M.w, M.h)), ox = x + 24, oy = top + 8;
+      if (!M.heart) {
+        g.text('На этой карте Сердца нет', x + 24, top + 28, { color: '#8a7a5a' });
+        return;
+      }
+      const area = H.Sites.heartArea(S, this.pid), inside = area ? new Set(area.map(([ac, ar]) => ar * M.w + ac)) : null, seen = me.seen[M.heart.l];
+      for (let r = 0; r < M.h; r++) {
+        for (let q = 0; q < M.w; q++) {
+          const i = r * M.w + q;
+          c.fillStyle = seen[i] ? D.COLORS[MD.terrainAt(M, M.heart.l, q, r).id][0] : '#14161e';
+          c.fillRect(ox + q * cell, oy + r * cell, cell, cell);
+          if (inside && inside.has(i)) {
+            c.fillStyle = 'rgba(255,224,96,0.55)';
+            c.fillRect(ox + q * cell, oy + r * cell, cell, cell);
+          }
+        }
+      }
+      c.strokeStyle = '#6a5430';
+      c.strokeRect(ox - 0.5, oy - 0.5, M.w * cell + 1, M.h * cell + 1);
+      for (const o of M.objs) {
+        if (o.gone || o.t !== 'digspot' || o.l !== M.heart.l) continue;
+        c.fillStyle = '#20140a';
+        c.fillRect(ox + o.c * cell, oy + o.r * cell, cell, cell);
+      }
+      for (const m of me.menhirs) {
+        c.fillStyle = '#a0e0ff';
+        c.fillRect(ox + m.c * cell - 1, oy + m.r * cell - 1, cell + 2, cell + 2);
+      }
+      const tx = ox + M.w * cell + 24;
+      g.text('Посещено менгиров: ' + me.menhirs.length, tx, top + 16, {});
+      g.text(area ? 'Клеток в области поиска: ' + area.length : 'Область поиска пока неизвестна', tx, top + 34, {});
+      g.text(M.heart.l ? 'Сердце лежит в Подлунье' : 'Сердце лежит на поверхности', tx, top + 52, { size: 10, color: '#c8b88a' });
+      H.Font.wrap('small', 'Менгир показывает сторону в 45° и дальность. Три менгира сужают поиск до квадрата 5×5. Копать можно целый день, кнопка «Копать».', 190).forEach((s, i) => g.text(s, tx, top + 76 + i * 13, { size: 10, color: '#c8b88a' }));
     }
 
     drawTop(g) {
@@ -918,6 +1234,8 @@
         c.fillRect(193, 509, 158 * Math.min(1, h.steps / full), 7);
         g.text('Шаги ' + (Math.floor(h.steps * 10) / 10) + ' из ' + full, 358, 512, { size: 10 });
         g.text('Мана ' + h.mana + ' из ' + HE.maxMana(h), 192, 526, { size: 10, color: '#a0c8ff' });
+        if (h.heart) g.text('Несёт Сердце', 284, 526, { size: 10, color: '#ffe060' });
+        else if (h.boat) g.text('На корабле', 284, 526, { size: 10, color: '#a0c8ff' });
         h.army.forEach((s, i) => {
           const x = 130 + i * 44, y = 540;
           c.fillStyle = '#05070f';

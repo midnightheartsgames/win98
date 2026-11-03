@@ -29,6 +29,7 @@
   const PLAIN_JUMP = 0.85;
   const STUCK_AFTER = 1.1;
   const STUCK_MOVE = 0.012;
+  const LOST_AFTER = 8;
   const LOW_HEALTH = 0.4;
   const SUPPLY_RANGE = 45;
   const STRAFE_MIN = 0.5;
@@ -69,7 +70,7 @@
       goal: null, goalKey: 0, path: null, at: 0, repath: 0, noPathUntil: 0,
       roam: -1, roamT: 0, highJump: false,
       strafe: 1, strafeT: 0, swapT: 0, tap: false, detonate: false, rolled: new WeakSet(),
-      stuckT: 0, dodgeT: 0, dodge: 1, lastX: h.pos.x, lastZ: h.pos.z
+      stuckT: 0, dodgeT: 0, dodge: 1, lastX: h.pos.x, lastZ: h.pos.z, bestLeft: Infinity, noGainT: 0
     };
   }
 
@@ -192,7 +193,7 @@
   }
 
   function setGoal(ai, x, y, z, key) {
-    if (ai.goalKey !== key) { ai.goalKey = key; ai.repath = 0; }
+    if (ai.goalKey !== key) { ai.goalKey = key; ai.repath = 0; ai.bestLeft = Infinity; ai.noGainT = 0; }
     ai.goal = ai.goal || { x: 0, y: 0, z: 0 };
     ai.goal.x = x; ai.goal.y = y; ai.goal.z = z;
   }
@@ -213,7 +214,8 @@
 
   function reached(nav, n, h) {
     if (Math.hypot(nav.x[n] - h.pos.x, nav.z[n] - h.pos.z) >= NODE_REACH) return false;
-    return nav.wet[n] > 0 || (nav.y[n] - h.pos.y < 0.4 && h.pos.y - nav.y[n] < 1.4);
+    if (nav.wet[n] > 0) return h.pos.y < nav.y[n] + nav.wet[n] + 0.2;
+    return nav.y[n] - h.pos.y < 0.4 && h.pos.y - nav.y[n] < 1.4;
   }
 
   function followPath(g, h, ai, inp) {
@@ -377,7 +379,7 @@
     const ideal = IDEAL[def.kind] || 10, fx = Math.sin(ai.yaw), fz = Math.cos(ai.yaw);
     if (dist > ideal * 1.3) {
       if (dist < DIRECT_RANGE && !h.wall && Math.abs(t.pos.y - h.pos.y) < 1) return { x: t.pos.x - h.pos.x, z: t.pos.z - h.pos.z, following: false };
-      return step ? { x: step.x, z: step.z, following: true } : { x: fx, z: fz, following: false };
+      return step ? { x: step.x, z: step.z, following: Math.hypot(step.x, step.z) > ARRIVED } : { x: fx, z: fz, following: false };
     }
     ai.strafeT -= dt;
     if (ai.strafeT <= 0 || (h.wall && h.blocked > 0.5)) {
@@ -466,20 +468,27 @@
       const moved = Math.hypot(h.pos.x - ai.lastX, h.pos.z - ai.lastZ);
       ai.lastX = h.pos.x;
       ai.lastZ = h.pos.z;
-      if (move && move.following && moved < STUCK_MOVE && !h.frozen) {
-        ai.stuckT += dt;
-        if (ai.stuckT > STUCK_AFTER) {
-          ai.stuckT = 0;
-          ai.repath = 0;
-          ai.path = null;
-          ai.roam = -1;
-          ai.dodgeT = 0.5;
-          ai.dodge = g.aiRand() < 0.5 ? -1 : 1;
-          inp.jump = true;
-          g.aiStuck++;
-        }
+      const left = ai.path ? ai.path.length - ai.at : Infinity;
+      if (move && move.following) {
+        if (left < ai.bestLeft - 1) { ai.bestLeft = left; ai.noGainT = 0; }
+        else ai.noGainT += dt;
       } else {
+        ai.bestLeft = Infinity;
+        ai.noGainT = 0;
+      }
+      if (move && move.following && moved < STUCK_MOVE && !h.frozen) ai.stuckT += dt;
+      else ai.stuckT = 0;
+      if (ai.stuckT > STUCK_AFTER || ai.noGainT > LOST_AFTER) {
         ai.stuckT = 0;
+        ai.noGainT = 0;
+        ai.bestLeft = Infinity;
+        ai.repath = 0;
+        ai.path = null;
+        ai.roam = -1;
+        ai.dodgeT = 0.5;
+        ai.dodge = g.aiRand() < 0.5 ? -1 : 1;
+        inp.jump = true;
+        if (!t) g.aiStuck++;
       }
       if (ai.dodgeT > 0) {
         ai.dodgeT -= dt;

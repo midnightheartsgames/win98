@@ -19,10 +19,22 @@
 <script src="js/apps/heroes98/he-objects.js"></script>
 <script src="js/apps/heroes98/he-hero.js"></script>
 <script src="js/apps/heroes98/he-town.js"></script>
+<script src="js/apps/heroes98/he-contracts.js"></script>
 <script src="js/apps/heroes98/he-adventure.js"></script>
 <script src="js/apps/heroes98/he-ai.js"></script>
+<script src="js/apps/heroes98/he-script.js"></script>
 <script src="js/apps/heroes98/he-save.js"></script>
+<script src="js/apps/heroes98/he-mapfile.js"></script>
 <script src="js/apps/heroes98/he-maps.js"></script>
+<script src="js/apps/heroes98/he-rmg.js"></script>
+<script src="js/apps/heroes98/he-campaign.js"></script>
+<script src="js/apps/heroes98/he-camp1.js"></script>
+<script src="js/apps/heroes98/he-camp2.js"></script>
+<script src="js/apps/heroes98/he-camp3.js"></script>
+<script src="js/apps/heroes98/he-camp4.js"></script>
+<script src="js/apps/heroes98/he-camp5.js"></script>
+<script src="js/apps/heroes98/he-camp6.js"></script>
+<script src="js/apps/heroes98/he-modes.js"></script>
 <script src="js/apps/heroes98/he-font.js"></script>
 <script src="js/apps/heroes98/he-art.js"></script>
 <script src="js/apps/heroes98/he-files.js"></script>
@@ -36,6 +48,9 @@
 <script src="js/apps/heroes98/he-ui-hero.js"></script>
 <script src="js/apps/heroes98/he-ui-town.js"></script>
 <script src="js/apps/heroes98/he-ui-menu.js"></script>
+<script src="js/apps/heroes98/he-ui-campaign.js"></script>
+<script src="js/apps/heroes98/he-ui-modes.js"></script>
+<script src="js/apps/heroes98/he-editor.js"></script>
 <script src="js/apps/heroes98/he-ui.js"></script>
-<script>window.heui=new Heroes98.UI(document.getElementById('game'));addEventListener('pagehide',()=>window.heui.destroy(),{once:true});</script>
+<script>window.heui=new Heroes98.UI(document.getElementById('game'),{editor:new URLSearchParams(location.search).has('editor')});addEventListener('pagehide',()=>window.heui.destroy(),{once:true});</script>
 </body></html>

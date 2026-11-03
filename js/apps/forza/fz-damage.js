@@ -46,7 +46,8 @@
     const sh = car.sh, L = sh.len, W = sh.wid / 2, Z = f => -L / 2 + f * L;
     const yb = sh.clr + 0.07, wr = sh.wr, boxy = !!(sh.suv || sh.van);
     const lightY = Math.max(yb + 0.22, sh.nose * 0.86 - 0.13), tailY = Math.max(yb + 0.2, sh.tail * 0.9 - 0.12);
-    const belt = sh.hood + 0.02, zF = Z(0) + (L - sh.wb) * 0.47, zR = zF + sh.wb, tw = sh.wid * 0.42;
+    const blue = F.Blueprints.of(car);
+    const belt = sh.hood + 0.02, zF = blue ? Z(0) + blue.fo : Z(0) + (L - sh.wb) * 0.47, zR = zF + sh.wb, tw = sh.wid * 0.42;
     const zm = Z(sh.ws + 0.12 / L), ym = belt + 0.1;
     const seg = (a, b, r) => ({ a, b, r });
     const pt = (p, r) => seg(p, p, r);
@@ -67,10 +68,19 @@
       glassL: seg([-W * 0.95, (belt + sh.hgt) / 2, Z(sh.ws + 0.05)], [-W * 0.95, (belt + sh.hgt) / 2, Z(sh.rt)], 0.42),
       glassR: seg([W * 0.95, (belt + sh.hgt) / 2, Z(sh.ws + 0.05)], [W * 0.95, (belt + sh.hgt) / 2, Z(sh.rt)], 0.42)
     };
+    if (blue) {
+      const lamp = (end, use) => F.Blueprints.items(blue, end, 'lamp', use)[0];
+      const head = lamp('front', 'head'), tail = lamp('rear', 'tail'), bf = blue.bump.f, br = blue.bump.r;
+      if (head) { P.headL = pt([-(head.s || 0), head.y, Z(0)], 0.2); P.headR = pt([head.s || 0, head.y, Z(0)], 0.2); }
+      if (tail) { P.tailL = pt([-(tail.s || 0), tail.y, Z(1)], 0.2); P.tailR = pt([tail.s || 0, tail.y, Z(1)], 0.2); }
+      P.bumperF = seg([-W, bf.y, Z(0)], [W, bf.y, Z(0)], 0.32);
+      P.bumperR = seg([-W, br.y, Z(1)], [W, br.y, Z(1)], 0.32);
+      if (blue.rearDoor) P.trunk = seg([0, br.y + br.h, Z(1)], [0, blue.rearDoor.y, Z(1)], W * 0.75);
+    }
     const wheels = [[-tw, wr, zF], [tw, wr, zF], [-tw, wr, zR], [tw, wr, zR]];
     const rear = car.wf < 0.48;
-    const engine = rear ? [0, Math.max(sh.deck, sh.tail) * 0.72, Z(0.84)] : [0, sh.hood * 0.72, Z(Math.max(0.1, sh.ws * 0.5))];
-    return { L, W, yb, belt, P, wheels, engine, rear, Z, bumperY: yb + 0.12, doorY: (yb + belt) / 2, hgt: sh.hgt, hood: sh.hood, deck: sh.deck };
+    const engine = blue && blue.engine ? blue.engine.slice() : rear ? [0, Math.max(sh.deck, sh.tail) * 0.72, Z(0.84)] : [0, sh.hood * 0.72, Z(Math.max(0.1, sh.ws * 0.5))];
+    return { L, W, yb, belt, P, wheels, engine, rear, Z, bumperY: blue ? blue.bump.f.y : yb + 0.12, doorY: (yb + belt) / 2, hgt: sh.hgt, hood: sh.hood, deck: sh.deck };
   }
 
   class Damage {

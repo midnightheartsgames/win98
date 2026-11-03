@@ -1,0 +1,83 @@
+{
+  "name": "Threat",
+  "out": "content/music/hsr98-threat.mid",
+  "bpm": 128,
+  "time": [4, 4],
+  "seed": 128,
+  "form": ["hit", "A", "B", "C"],
+  "loop": [1, 4],
+  "parts": {
+    "strings": { "ch": 0, "prog": 48, "vol": 104, "pan": 56, "rev": 50, "vel": 90, "gate": 0.8 },
+    "low": { "ch": 1, "prog": 43, "vol": 79, "pan": 64, "rev": 30, "vel": 94 },
+    "brass": { "ch": 2, "prog": 61, "vol": 127, "pan": 70, "rev": 55, "vel": 116 },
+    "horn": { "ch": 3, "prog": 60, "vol": 110, "pan": 48, "rev": 60, "vel": 96, "gate": 0.98 },
+    "choir": { "ch": 4, "prog": 53, "vol": 90, "pan": 64, "rev": 80, "vel": 88 },
+    "sub": { "ch": 5, "prog": 39, "vol": 73, "pan": 64, "rev": 0, "vel": 104, "gate": 1 },
+    "drums": { "drums": true, "vol": 80, "rev": 40, "vel": 96 }
+  },
+  "sections": {
+    "hit": {
+      "bars": 1,
+      "chords": "Cm",
+      "brass": { "type": "chord", "rhythm": "X---------------", "voices": 4, "center": 60 },
+      "sub": { "type": "bass", "rhythm": "x-------........", "seq": "1", "low": 24 },
+      "low": { "type": "bass", "rhythm": "x.......x.x.x.x.", "seq": "1", "low": 36 },
+      "strings": { "type": "arp", "rhythm": "........xxxxxxxx", "voices": 3, "center": 62, "order": [0, 0, 1, 0, 2, 0, 1, 0] },
+      "drums": { "crash": "x...............", "boom": "x...............", "tom3": "........x.x.x.x.", "snare": "............xxxx" }
+    },
+    "A": {
+      "bars": 8,
+      "chords": "Cm | Cm | Ab | Ab | Fm | Fm | G | G",
+      "expr": { "strings": [90, 127] },
+      "strings": { "type": "arp", "rhythm": "xxxxxxxxxxxxxxxx", "voices": 3, "center": 62, "order": [0, 0, 1, 0, 2, 0, 1, 0] },
+      "low": { "type": "bass", "rhythm": "x.x.x.x.x.x.x.x.", "seq": "1 8", "low": 36 },
+      "brass": { "type": "chord", "rhythm": "X.....x...x.....................", "voices": 3, "center": 60, "len": 2, "vel": 84 },
+      "sub": { "type": "bass", "rhythm": "x...............................", "seq": "1", "low": 24, "len": 8 },
+      "drums": {
+        "boom": "x.......x.......",
+        "tom3": "x..x..x...x..x..",
+        "tom2": "......x.......x.",
+        "shaker": "x.x.x.x.x.x.x.x.",
+        "once": { "crash": "x..............." },
+        "fill": { "snare": "....x.x.xxxxXXXX", "tom3": "x..x............", "tom2": "................" }
+      }
+    },
+    "B": {
+      "bars": 8,
+      "chords": "Cm | Db/C | Cm | Db/C | Ab | Bbm | Fm | G7",
+      "strings": { "type": "arp", "rhythm": "xxxxxxxxxxxxxxxx", "voices": 3, "center": 62, "order": [0, 0, 1, 0, 2, 0, 1, 0] },
+      "low": { "type": "bass", "rhythm": "x.x.x.x.x.x.x.x.", "seq": "1 8", "low": 36 },
+      "horn": "G4:6 Ab4:2 G4:8 | Ab4:6 Bb4:2 Ab4:8 | G4:4 C5:4 Eb5:6 D5:2 | Db5:8 C5:4 Ab4:4 | C5:6 Bb4:2 Ab4:8 | Bb4:6 Db5:2 F5:8 | Ab5:6 G5:2 F5:4 Eb5:4 | D5:8 B4:8",
+      "brass": { "type": "chord", "rhythm": "X.....x.........................", "voices": 3, "center": 60, "len": 2, "vel": 84 },
+      "sub": { "type": "bass", "rhythm": "x...............................", "seq": "1", "low": 24, "len": 8 },
+      "drums": {
+        "boom": "x.......x.......",
+        "tom3": "x..x..x...x..x..",
+        "snare": "....x.......x...",
+        "hat": "o.o.o.o.o.o.o.o.",
+        "once": { "crash": "x..............." },
+        "fill": { "snare": "x.x.x.x.xxxxXXXX", "hat": "................" }
+      }
+    },
+    "C": {
+      "bars": 8,
+      "chords": "Ab | Eb/G | Fm | Cm/Eb | Db | Bbm | Gsus4 | G",
+      "expr": { "choir": [70, 110] },
+      "strings": { "type": "arp", "rhythm": "xxxxxxxxxxxxxxxx", "voices": 3, "center": 67, "order": [0, 0, 1, 0, 2, 0, 1, 0] },
+      "low": { "type": "bass", "rhythm": "x.x.x.x.x.x.x.x.", "seq": "1 8", "low": 36 },
+      "choir": { "type": "pad", "voices": 4, "center": 64 },
+      "brass": "Eb5:8 C5:8 | Bb4:8 G4:8 | Ab4:4 C5:4 F5:8 | Eb5:16 | Db5:8 F5:8 | Bb5:8 Ab5:4 F5:4 | G5:8 F5:4 Eb5:4 | D5:8 B4:8",
+      "horn": { "line": "Eb5:8 C5:8 | Bb4:8 G4:8 | Ab4:4 C5:4 F5:8 | Eb5:16 | Db5:8 F5:8 | Bb5:8 Ab5:4 F5:4 | G5:8 F5:4 Eb5:4 | D5:8 B4:8", "shift": -12, "vel": 80 },
+      "sub": { "type": "bass", "rhythm": "x...............................", "seq": "1", "low": 24, "len": 8 },
+      "drums": {
+        "boom": "x.......x.......",
+        "tom3": "x..x..x...x..x..",
+        "tom2": "......x.......x.",
+        "snare": "....x.......x...",
+        "hat": "o.o.o.o.o.o.o.o.",
+        "once": { "crash": "x..............." },
+        "fill": { "snare": "....x.x.xxxxXXXX", "tom1": "x...x...........", "hat": "................" }
+      }
+    }
+  }
+}

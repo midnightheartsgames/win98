@@ -257,16 +257,16 @@ H.coneStatsAt = (id, lvl, asc) => { const s = H.CONES[id].stats, k = coneK(lvl, 
 
 Тени Лофу в Симуляторе (новые, все 6). Как `cx_memory`: Симулятор воссоздаёт их по записям, домен открыт, когда в экипаже есть герой с этим материалом или такой герой выбран целью развития (`ownsMat`). Стоимость 30.
 
-| Домен | Материал (официальное имя) | Id | Герои | Враги из тех, что есть в игре | Реликвии |
+| Домен | Материал (официальное имя) | Id | Герои | Враги (с выпуска Лофу, версия 1.8) | Реликвии |
 | --- | --- | --- | --- | --- | --- |
-| `cx_icicle` Форма сосульки | Гелидный хитин | `asc_icicle` | ruanmei, yanqing, jingliu | `iceout`, два `weaver` (в оригинале Лёд из космоса и Мнимый ткач) | `glacial`, `eagle` |
-| `cx_doom` Форма рока | Электрический посох оборотня | `asc_doom` | kafka, jingyuan | `lieutenant`, `soldier`, `gunner` | `knight`, `thunder` |
-| `cx_celestial` Форма небожителя | Прах вознёсшейся | `asc_celestial` | blade, huohuo | `blazeout`, два `incinerator` | `glacial`, `eagle` |
-| `cx_abomination` Форма оборотня | Обезьяний шип | `asc_abomination` | lynx, xueyi, fuxuan | `etherhound`, два `ethereal` | `genius`, `passerby` |
-| `cx_puppetry` Форма идола | Усмиряющий талисман | `asc_puppetry` | imbibitor, ratio | `mimic`, два `weaver` | `knight`, `thunder` |
-| `cx_perdition` Форма погибели | Призрачный пропуск | `asc_perdition` | hanya, argenti | `ipc_leader`, два `ipc_security` | `champion`, `thief` |
+| `cx_icicle` Форма сосульки | Гелидный хитин | `asc_icicle` | ruanmei, yanqing, jingliu | `iceout`, `weaver`, `mara` | `glacial`, `eagle` |
+| `cx_doom` Форма рока | Электрический посох оборотня | `asc_doom` | kafka, jingyuan | `shifter`, `mara`, `dracolion` | `knight`, `thunder` |
+| `cx_celestial` Форма небожителя | Прах вознёсшейся | `asc_celestial` | blade, huohuo | `ascended`, два `ballista` | `glacial`, `eagle` |
+| `cx_abomination` Форма оборотня | Обезьяний шип | `asc_abomination` | lynx, xueyi, fuxuan | `ape`, `ghound`, `lupus` | `genius`, `passerby` |
+| `cx_puppetry` Форма идола | Усмиряющий талисман | `asc_puppetry` | imbibitor, ratio | `aurumaton`, два `dragonfish` | `knight`, `thunder` |
+| `cx_perdition` Форма погибели | Призрачный пропуск | `asc_perdition` | hanya, argenti | `spectral`, два `dracolion` | `champion`, `thief` |
 
-Настоящих врагов Лофу в игре нет, поэтому состав выбран из имеющихся. Запись этой таблицы меняется одной строкой, когда враги появятся. Этап 2 проверяет ботом, что каждая Тень проходится на своей сложности: `mimic` и `etherhound` писались как особые враги, при проблемах их заменит другой элитный враг.
+Составы взяты со страниц Теней на вики вместе с выпуском Лофу (версия 1.8, `HSR-LUOFU.md`). До него Тени собирались из врагов, которые уже были в игре. Бот проходит каждую Тень на её сложности, проверка в `tests/hsr-luofu.test.js`. Новые элитные `ascended` и `spectral` сделаны для Теней, Призрачной стражницы в игре нет.
 
 ### 8.2. Экзоплазма Первопроходца
 
@@ -832,7 +832,6 @@ H.PROMOS = [
 
 Позже:
 - Скины телефона в событиях и наградах. Письмо-поздравление на день рождения: реплики «В день рождения» у героев уже есть (`hsr-info.js`).
-- Настоящие враги Лофу в Тенях Симулятора (вместе с Лофу).
 - Настоящие достижения: профиль получит ещё одну вкладку.
 
 ## 24. Статус

@@ -49,6 +49,17 @@
     }
     return done;
   };
+  const baseLabGrant = UI.prototype.labGrant;
+  if (baseLabGrant) {
+    UI.prototype.labGrant = function () {
+      const done = baseLabGrant.apply(this, arguments);
+      if (done != null) {
+        markCheat(this);
+        trace('hsr secret pass grant');
+      }
+      return done;
+    };
+  }
   const baseOpenDebug = UI.prototype.openDebug;
   if (baseOpenDebug) {
     UI.prototype.openDebug = function () {
@@ -65,6 +76,14 @@
     trace('hsr battle start', { enc: (o && o.encId) || '', waves: b ? b.waves.length : 0 });
     return b;
   };
+  const baseRange = Game.prototype.rangeFight;
+  if (baseRange) {
+    Game.prototype.rangeFight = function () {
+      const b = baseRange.apply(this, arguments);
+      trace('hsr range fight', { waves: b ? b.waves.length : 0, seed: b ? b.opts.seed : 0 });
+      return b;
+    };
+  }
   const baseEnd = Game.prototype.endBattle;
   Game.prototype.endBattle = function () {
     const r = this.battle && this.battle.result;
@@ -113,7 +132,8 @@
       over: b.over,
       allies: b.allies.map(unit),
       enemies: b.enemies.map(unit),
-      su: !!b.su
+      su: !!b.su,
+      range: !!(b.opts && b.opts.range)
     };
   }
 
@@ -134,6 +154,8 @@
     const out = {};
     const s = g.state;
     if (s.su) out.su = flat(s.su, 1);
+    if (s.range) out.range = flat(s.range, 2);
+    if (s.pf && s.pf.run) out.pf = flat(s.pf.run, 1);
     try {
       const cw = g.cwRun && g.cwRun();
       if (cw) out.cw = flat(cw, 1);
@@ -156,6 +178,12 @@
     const def = g.map && g.map.def;
     state.cheats = !!s.dbgUsed;
     state.dbgUsed = s.dbgUsed || 0;
+    const labHeroes = Object.keys(s.roster).filter(k => H.labOnly(k));
+    if (labHeroes.length) state.lab = labHeroes;
+    if (this.netSession) {
+      const net = this.netSession, link = globalThis.Net98;
+      state.table = { code: net.code, seat: net.seat, turn: net.n, last: net.last, tick: net.A ? net.A.tick : null, wave: net.A ? net.A.wave : null, resyncs: net.resyncs, link: link ? link.state : null, rtt: link && link.rtt != null ? Math.round(link.rtt) : null };
+    }
     state.map = g.map ? g.map.id : s.map;
     state.mapName = def ? def.name : '';
     state.pos = [g.player.x, g.player.y, g.player.dir];
@@ -177,12 +205,16 @@
     if (state.script) summary += ', сценка ' + state.script.name + ', шаг ' + state.script.pc;
     if (screens.length) summary += ', экран ' + screens[screens.length - 1];
     if (state.cheats) summary += ' [F7/F8]';
+    if (state.lab) summary += ' [закрытый тест: ' + state.lab.join(', ') + ']';
     return { summary, details: { map: state.map, mode: this.mode, cheats: state.cheats }, state };
   };
 
   UI.prototype.bugSave = function () {
-    if (!this.game) return null;
-    return { date: new Date().toLocaleString('ru-RU'), summary: this.game.summary(), state: this.game.serialize() };
+    const g = this.homeGame || this.game;
+    if (!g) return null;
+    const data = { date: new Date().toLocaleString('ru-RU'), summary: g.summary(), state: g.serialize() };
+    if (this.netSession) data.table = this.netJournal();
+    return data;
   };
 
   UI.prototype.bugLoad = function (data) {
@@ -191,6 +223,7 @@
     this.screens = [];
     this.enterField();
     this.toast('Состояние из отчёта об ошибке');
+    if (data.table) this.netReplay(data.table);
     return true;
   };
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

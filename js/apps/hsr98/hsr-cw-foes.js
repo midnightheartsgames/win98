@@ -13,7 +13,7 @@
     svarog_hand: E({ name: 'Вспомогательный манипулятор', fam: 'automaton', shape: 'hand', col: ['#3a3048', '#ff4aa8'], hp: 2.4, atk: 1.2, spd: 105, tough: 40, weak: ['fire', 'ice', 'imag'], resist: ['phys'], exp: 1, credits: 1, noContact: true,
       skills: [{ n: 'Хватка манипулятора', w: 2, t: 'single', m: 1.3, e: 'phys' }, { n: 'Удержание', w: 1, t: 'single', m: 0.8, e: 'phys', fx: [{ k: 'delay', v: 0.25 }] }], pat: [0, 1] }),
     phantylia_x: E({ name: 'Фантилия Неумирающая (исправная)', fam: 'boss', shape: 'phantylia', col: ['#141024', '#ffd08a'], boss: true, hp: 16, atk: 2.2, spd: 124, tough: 200, weak: ['elec', 'wind', 'imag'], resist: ['phys', 'fire', 'ice', 'quant'], exp: 18, credits: 16, noContact: true,
-      skills: EN.phantylia2.skills.concat([{ n: 'Буйное цветение', t: 'summon', summon: ['lotus_ab', 'lotus_de'], max: 3 }]),
+      skills: EN.phantylia2.skills.concat([{ n: 'Бурное цветение', t: 'summon', summon: ['lotus_ab', 'lotus_de'], max: 3 }]),
       pat: [0, 4, 1, 0, 3, 1, 4] }),
     timekiller: E({ name: 'Убийца времени', fam: 'voidranger', shape: 'ranger3', col: ['#1a1030', '#c88aff'], hp: 1.3, atk: 1.1, spd: 130, tough: 30, weak: ['wind', 'imag'], resist: ['quant'], exp: 1, credits: 1, noContact: true,
       skills: [{ n: 'Разрыв секунды', w: 2, t: 'single', m: 1.1, e: 'quant' }, { n: 'Петля времени', w: 1, t: 'single', m: 0.8, e: 'imag', fx: [{ k: 'delay', v: 0.15 }] }], pat: [0, 1] }),

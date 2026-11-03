@@ -229,8 +229,7 @@
         draw(c) {
           const k = this.upHero, s = g.state, r = s.roster[k], kitId = g.kitOf(k), kit = H.CHARS[kitId], look = G.lookOf(kitId, g);
           ui.fullBg(c, 392);
-          ui.platform(c, 186, 404, 130);
-          G.drawBust(c, look, 26, 66, 5);
+          if (!G.drawSplash(c, kitId, s.gender, 186, 0, 386, 1)) { ui.platform(c, 186, 404, 130); G.drawBust(c, look, 26, 66, 5); }
           const info = g.ascInfo(k), quickMode = this.quick && r.lvl < H.MAX_LVL, ascMode = info.atCap && info.asc < 6 && !quickMode;
           ui.upHeader(c, ascMode ? 'Возвышение' : 'Повышение уровня', null);
           G.pathIcon(c, kit.path, 16, 34, 14);

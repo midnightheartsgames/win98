@@ -1300,7 +1300,9 @@
       c.save();
       c.beginPath(); c.rect(x, y, w, h); c.clip();
       c.imageSmoothingEnabled = false;
-      if (r.kind === 'char') { const cv = G.figureCanvas(G.lookOf(r.id, g), 2), s = 1.3; c.drawImage(cv, Math.round(x + w / 2 - cv.width * s / 2), y + 8, Math.round(cv.width * s), Math.round(cv.height * s)); }
+      if (r.kind === 'char') {
+        if (!G.drawSplashCard(c, r.id, g.state.gender, x, y, w, h)) { const cv = G.figureCanvas(G.lookOf(r.id, g), 2), s = 1.3; c.drawImage(cv, Math.round(x + w / 2 - cv.width * s / 2), y + 8, Math.round(cv.width * s), Math.round(cv.height * s)); }
+      }
       else { const cv = G.coneArt(r.id, 72, 100), s = h / cv.height; c.drawImage(cv, Math.round(x + w / 2 - cv.width * s / 2), y, Math.round(cv.width * s), h); }
       c.restore();
       c.strokeStyle = RCOL[r.rar]; c.lineWidth = 1; c.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);

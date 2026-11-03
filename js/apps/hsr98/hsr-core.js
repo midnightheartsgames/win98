@@ -276,6 +276,43 @@
     tlCapsuleHp: 0.5,
     cccApplause: 6,
     conFeatured: 0.5,
+    labPity5: 10,
+    labRate5: 0.012,
+    labGrants: [1, 10, 100],
+    labLog: 300,
+    thCap: 42,
+    thWave: 25,
+    thInsp: 4,
+    thAnswer: 99,
+    thAnswerM: 0.01,
+    thBonusMain: 0.08,
+    thBonusOther: 0.04,
+    thFull: 0.5,
+    thEnergy: 3,
+    thEnergyMax: 5,
+    thMinTargets: 3,
+    thCritD: 0.8,
+    thTechAtk: 0.6,
+    thE1Share: 0.5,
+    thE1Reset: 15,
+    thE2Advance: 0.35,
+    thE4Spd: 0.12,
+    thE6Pen: 0.2,
+    thE6Ult: [0, 4, 2.5, 1.4],
+    trNumTurns: 3,
+    trZoneTurns: 2,
+    trFollowHp: 0.18,
+    trFollowEnergy: 5,
+    trLamb: 0.72,
+    trLambMax: 3,
+    trLambTurns: 3,
+    trHpShare: 0.09,
+    trStartEnergy: 30,
+    trAllyEnergy: 1.5,
+    trE1True: 0.24,
+    trE2Add: 1.2,
+    trE4Def: 0.18,
+    trE6Bonus: 7.29,
     conRegBadges: 1,
     billyShot: 0.45,
     billySkill: 1.2,
@@ -403,7 +440,7 @@
   const breakBase = lvl => 10 + 4 * lvl;
   const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
-  const VERSION = '1.7';
+  const VERSION = '1.8';
   const BUILD_VERSION = globalThis.Win98Build && /^\d/.test(globalThis.Win98Build.version || '') ? globalThis.Win98Build.version : VERSION;
   const EDITION = globalThis.Hsr98Standalone === 'apk' ? 'Издание «Портативное» · Android APK' : globalThis.Hsr98Standalone === 'pc' ? 'Издание «Ярило-VI» · ПК' : 'Издание «Ярило-VI»';
   const BRAND = globalThis.Hsr98Standalone ? {
@@ -423,6 +460,13 @@
     makers: 'Win 98 Edition Team'
   };
 
+  const LAB_TESTING = { theherta: 'undeniable', tribbie: 'timeflower' };
+  const labHidden = new Set(Object.entries(LAB_TESTING).flat());
+  const labOnly = id => labHidden.has(id);
+  const labHide = (table, key, value) => { Object.defineProperty(table, key, { value, enumerable: false, writable: true, configurable: true }); };
+  const labPut = (table, key, value, owner = key) => { if (labHidden.has(owner)) labHide(table, key, value); else table[key] = value; };
+
+  Object.assign(H, { LAB_TESTING, labOnly, labHide, labPut });
   Object.assign(H, { clamp, lerp, makeRandom, ELEMENTS, ELEMENT_KEYS, PATHS, BREAK_EFFECT, TUNING, grow, statAt, ascCap, ascPhase, ascGrow, CHAR_EXP, expToNext, tlExpToNext, charExp, enemyExp, breakBase, fmt, VERSION, BUILD_VERSION, BRAND });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

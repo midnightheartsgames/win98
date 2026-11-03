@@ -1465,12 +1465,6 @@
         if (!this.nearNode(x, z, 4) && this.offRoad(x, z, 0.8, e) && !bis.gates.some(g => Math.hypot(g[0] - x, g[1] - z) < 9)) add('lamp', x, z, Math.atan2(p.tx, -p.tz) + (side > 0 ? -Math.PI / 2 : Math.PI / 2), { smash: true, mass: 90 });
       }
     }
-    for (const [x, z, kind] of B.ends) {
-      const nr = this.nearestRoad(x, z, 20, e => e.own && e.kind === kind);
-      if (!nr) continue;
-      const n = Math.ceil((nr.e.hw + (nr.e.k.side || 0)) / 1.75);
-      for (let k = 0; k < n; k++) { const l = (k - (n - 1) / 2) * 3.5; add('rblock', x + nr.rx * l, z + nr.rz * l, yawOf(nr.tx, nr.tz), { solid: true, r: 1.8 }); }
-    }
     for (const sp of B.posts) {
       const nr = this.nearestRoad(sp.at[0], sp.at[1], 20, e => e.own), k = (sp.to[0] - nr.x) * nr.tx + (sp.to[1] - nr.z) * nr.tz > 0 ? 1 : -1, off = nr.e.hw + (nr.e.k.side || 0) * 0.6 + 0.8;
       const x = nr.x - nr.tz * k * off, z = nr.z + nr.tx * k * off;

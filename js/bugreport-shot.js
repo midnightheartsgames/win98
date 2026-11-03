@@ -275,6 +275,7 @@
 
   async function capture(options) {
     const opts = options || {};
+    if (root.Net98) root.Net98.hideCode();
     const started = Date.now();
     const done = (full, method, error) => ({
       canvas: full ? (full.width > MAX_WIDTH ? fitWidth(full, full.width, full.height) : full) : null,

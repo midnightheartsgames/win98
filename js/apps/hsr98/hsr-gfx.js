@@ -52,7 +52,7 @@
       rivet: ['#40464e', '#8a929c', '#a0a8b0', '#ff7040'], ice: ['#0a1828', '#2a4a68', '#6a90b0', '#c0f4ff'],
       hill: ['#1a2440', '#5a6a90', '#b8c8dc', '#a0e0ff'], sim: ['#000814', '#082038', '#0a3050', '#40ffc0'],
       stellaron: ['#02040c', '#0a1a3a', '#1a3a5a', '#80ffff'], express: ['#140a08', '#3a2418', '#6a2a2a', '#ffd070'],
-      memory: ['#02030e', '#121a44', '#1c2a5a', '#9ad8ff'], meadow: ['#4a90d8', '#c4e6f6', '#7ab84a', '#ffe890']
+      memory: ['#02030e', '#121a44', '#1c2a5a', '#9ad8ff'], meadow: ['#4a90d8', '#c4e6f6', '#7ab84a', '#ffe890'], lf_port: ['#3c7fd0', '#c2e4f8', '#7c8694', '#ffb060'], lf_ship: ['#081830', '#1e4a7a', '#2e4a66', '#58d8c0'], lf_night: ['#0e1234', '#28367c', '#3e4464', '#ffc878'], lf_seat: ['#140e30', '#4a3a90', '#3a3258', '#e0b458'], lf_div: ['#241a60', '#6a58c8', '#2e3a80', '#58f0e0'], lf_art: ['#2a3a78', '#7a9ae0', '#2a4a6a', '#ffd060'], lf_alch: ['#4a84a4', '#b4d4dc', '#8e989c', '#ff9a50'], lf_mist: ['#0c2a24', '#2e6a50', '#34463f', '#7affa0'], lf_sea: ['#2a5a84', '#a4c4d8', '#7c8c98', '#7affc8'], lf_roots: ['#040806', '#1e3a20', '#2e3020', '#d8f080'], lf_dusk: ['#1a1e48', '#7a5a70', '#4a4e6a', '#ffc060']
     }[id] || ['#000', '#223', '#445', '#8cf'];
     const hz = h * 0.55;
     const sky = g.createLinearGradient(0, 0, 0, hz);

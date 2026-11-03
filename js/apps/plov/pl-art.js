@@ -157,10 +157,10 @@
     return D;
   }
 
-  const HAYATO = {
-    key: 'hayato', hayato: true, scale: 1.06,
+  const CHEF = {
+    key: 'chef', chef: true, scale: 1.06,
     skin: '#9c6444', skinShade: '#7c4a30', hair: '#efeee9', hairShade: '#bfc0ca', streak: '#3b2a24', eye: '#d8338a',
-    hairStyle: 'hayato', hat: 'toque', top: '#e6dfcc', topShade: '#c7bb9f', topKind: 'apron', bottom: '#2f52b4', shoes: '#1c1c22',
+    hairStyle: 'chef', hat: 'toque', top: '#e6dfcc', topShade: '#c7bb9f', topKind: 'apron', bottom: '#2f52b4', shoes: '#1c1c22',
     armR: { sleeve: 'long', col: '#e6dfcc', trim: '#2d56c8', hand: '#26262c', gauntlet: true },
     armL: { sleeve: 'short', col: '#1f1f26', hand: '#efe8d6', band: '#2d56c8', skin: true },
     acc: [], female: false
@@ -186,7 +186,7 @@
   function face(ctx, D, pose, x0, headY) {
     const ex = pose.expr || 'ok';
     const hy = headY === undefined ? -40 + (pose.dy || 0) : headY;
-    const big = D.hayato || pose.hd;
+    const big = D.chef || pose.hd;
     const eyeY = hy + 0.6;
     const sx = x0 || 0;
     const eyes = (dxs) => {
@@ -197,10 +197,10 @@
         } else if (ex === 'blink') {
           ctx.beginPath(); ctx.moveTo(x - (big ? 2 : 1.5), eyeY + 0.5); ctx.quadraticCurveTo(x, eyeY + 1.4, x + (big ? 2 : 1.5), eyeY + 0.5); ctx.strokeStyle = INK; ctx.lineWidth = 1; ctx.stroke();
         } else if (big) {
-          const iris = D.hayato ? D.eye : O.shade(D.eye, 0.25);
+          const iris = D.chef ? D.eye : O.shade(D.eye, 0.25);
           ell(ctx, x, eyeY, 1.9, 2.5, '#fff', null);
           ell(ctx, x, eyeY + 0.3, 1.5, 2.1, iris, null);
-          ell(ctx, x, eyeY + 0.6, 0.8, 1.2, D.hayato ? '#3a0a24' : '#120806', null);
+          ell(ctx, x, eyeY + 0.6, 0.8, 1.2, D.chef ? '#3a0a24' : '#120806', null);
           ell(ctx, x - 0.6, eyeY - 0.8, 0.55, 0.55, '#fff', null);
           if (pose.hd) ell(ctx, x + 0.6, eyeY + 1.2, 0.3, 0.3, 'rgba(255,255,255,0.8)', null);
           ctx.beginPath(); ctx.moveTo(x - 2.3, eyeY - 2.3); ctx.lineTo(x + 2.2, eyeY - 2.6); ctx.strokeStyle = INK; ctx.lineWidth = 1; ctx.stroke();
@@ -318,7 +318,7 @@
       if (s === 'pigtails') { ell(ctx, -10.5, hy + 3, 3, 4, c, INK); ell(ctx, 10.5, hy + 3, 3, 4, c, INK); }
       return;
     }
-    if (s === 'hayato') {
+    if (s === 'chef') {
       ctx.beginPath();
       ctx.moveTo(-10, hy + 2.5);
       ctx.bezierCurveTo(-11.2, hy - 9, -4, hy - 12.4, 1, hy - 11.6);
@@ -431,7 +431,7 @@
         limb(ctx, [[-3.6, -8], [-3.6, -2.6 - lift[0]]], 3.6, D.skin);
         limb(ctx, [[3.6, -8], [3.6, -2.6 - lift[1]]], 3.6, D.skin);
       }
-      if (D.hayato) {
+      if (D.chef) {
         const kx = back ? 3.6 : -3.6;
         rrect(ctx, kx - 2.6, -10.2 - (back ? lift[1] : lift[0]) * 0.6, 5.2, 3.8, 1.4, '#b8bcc8', INK, 0.8);
         limb(ctx, [[-3.6, -6 - lift[0]], [-3.6, -2.6 - lift[0]]], 5.6, D.shoes);
@@ -439,7 +439,7 @@
       }
       ell(ctx, -3.8, -1.4 - lift[0], 3.2, 1.9, D.shoes, INK);
       ell(ctx, 3.8, -1.4 - lift[1], 3.2, 1.9, D.shoes, INK);
-      if (D.hayato || D.shoes === '#f0f0f0') {
+      if (D.chef || D.shoes === '#f0f0f0') {
         ctx.fillStyle = '#e8e8e8';
         ctx.fillRect(-6.6, -0.6 - lift[0], 5.6, 0.9);
         ctx.fillRect(1, -0.6 - lift[1], 5.6, 0.9);
@@ -602,7 +602,7 @@
     const headDraw = () => {
       ctx.fillStyle = D.skin;
       rrect(ctx, -2.4, HY + 6.5, 4.8, 4.2, 1, D.skinShade, null);
-      if (D.hayato && !back) poly(ctx, [[-4.2, HY + 8.4], [-3.4, HY + 11], [3.4, HY + 11], [4.2, HY + 8.4], [2.2, HY + 7.2], [-2.2, HY + 7.2]], '#1f1f26', INK, 0.8);
+      if (D.chef && !back) poly(ctx, [[-4.2, HY + 8.4], [-3.4, HY + 11], [3.4, HY + 11], [4.2, HY + 8.4], [2.2, HY + 7.2], [-2.2, HY + 7.2]], '#1f1f26', INK, 0.8);
       ell(ctx, 0, HY, 9.6, 9.2, D.skin, INK);
       clipDo(ctx, () => { ctx.beginPath(); ctx.ellipse(0, HY, 9.6, 9.2, 0, 0, TAU); }, () => {
         ell(ctx, 5.5, HY + 2, 6, 9, D.skinShade, null);
@@ -612,7 +612,7 @@
         ell(ctx, -9.4, HY + 1, 1.6, 2.2, D.skin, INK, 0.9);
         ell(ctx, 9.4, HY + 1, 1.6, 2.2, D.skin, INK, 0.9);
       }
-      if (back && D.hayato) {
+      if (back && D.chef) {
         ctx.beginPath();
         ctx.moveTo(-9.9, HY + 1);
         ctx.bezierCurveTo(-10.9, HY - 9.6, 10.9, HY - 9.6, 9.9, HY + 1);
@@ -640,12 +640,12 @@
       F.eyes([-3.5, 3.5]);
       if (angry) F.brows([-3.5, 3.5], 1.2);
       else if (F.ex === 'impatient') F.brows([-3.5, 3.5], -0.6);
-      else if (!D.hayato && D.hairStyle !== 'hayato') F.brows([-3.5, 3.5], 0);
+      else if (!D.chef && D.hairStyle !== 'chef') F.brows([-3.5, 3.5], 0);
       if (D.glasses) {
         ctx.strokeStyle = '#2a2a2a'; ctx.lineWidth = 0.8;
         ctx.beginPath(); ctx.arc(-3.5, F.eyeY, 2.4, 0, TAU); ctx.moveTo(5.9, F.eyeY); ctx.arc(3.5, F.eyeY, 2.4, 0, TAU); ctx.moveTo(-1.1, F.eyeY); ctx.lineTo(1.1, F.eyeY); ctx.stroke();
       }
-      if (D.hayato) {
+      if (D.chef) {
         rrect(ctx, -2.1, HY + 2.2, 4.2, 1.7, 0.6, '#f3e2c4', INK, 0.6);
         ctx.fillStyle = '#c8a878'; ctx.fillRect(-0.9, HY + 2.8, 0.6, 0.6); ctx.fillRect(0.4, HY + 2.8, 0.6, 0.6);
       } else if (pose.hd) {
@@ -697,9 +697,9 @@
       ell(ctx, sw[1] + 1.2, -1.5, 3.3, 1.8, O.shade(D.shoes, -0.1), INK);
       limb(ctx, [[0, legTop], [sw[0] * 0.6, -8], [sw[0], -2.6]], 5.2, legC);
       if (D.shorts) limb(ctx, [[sw[0] * 0.6, -8], [sw[0], -2.6]], 3.6, D.skin);
-      if (D.hayato) { limb(ctx, [[sw[0] * 0.8, -6.2], [sw[0], -2.6]], 5.6, D.shoes); rrect(ctx, sw[0] * 0.6 - 0.6, -10.6, 4.2, 3.8, 1.3, '#b8bcc8', INK, 0.8); }
+      if (D.chef) { limb(ctx, [[sw[0] * 0.8, -6.2], [sw[0], -2.6]], 5.6, D.shoes); rrect(ctx, sw[0] * 0.6 - 0.6, -10.6, 4.2, 3.8, 1.3, '#b8bcc8', INK, 0.8); }
       ell(ctx, sw[0] + 1.2, -1.5, 3.4, 1.9, D.shoes, INK);
-      if (D.hayato || D.shoes === '#f0f0f0') { ctx.fillStyle = '#e8e8e8'; ctx.fillRect(sw[0] - 2, -0.4, 6.4, 0.9); }
+      if (D.chef || D.shoes === '#f0f0f0') { ctx.fillStyle = '#e8e8e8'; ctx.fillRect(sw[0] - 2, -0.4, 6.4, 0.9); }
     }
     armFarDraw();
     if (D.acc.includes('backpack')) rrect(ctx, -tw / 2 - 5, shY + 1, 6, 11, 2.4, D.bag, INK);
@@ -767,7 +767,7 @@
     if (aa === 'drink') { ell(ctx, 7, HY + 3.6, 2, 1.3, '#f4f0e6', INK, 0.7); }
     ctx.fillStyle = D.skinShade;
     ctx.fillRect(-1.8, HY + 6.5, 4, 4);
-    if (D.hayato) poly(ctx, [[-3, HY + 7.6], [-2.4, HY + 10.4], [3.4, HY + 10.4], [3.8, HY + 7.6]], '#1f1f26', INK, 0.7);
+    if (D.chef) poly(ctx, [[-3, HY + 7.6], [-2.4, HY + 10.4], [3.4, HY + 10.4], [3.8, HY + 7.6]], '#1f1f26', INK, 0.7);
     if (D.hairStyle === 'long' && D.hat !== 'kerchief') rrect(ctx, -9.4, HY - 5, 9, 17, 4, D.hairShade, INK);
     if (D.hairStyle === 'ponytail') ell(ctx, -10.5, HY + 1, 3, 5.5, D.hair, INK);
     ell(ctx, 0.5, HY, 9.3, 9.2, D.skin, INK);
@@ -777,11 +777,11 @@
     const eyX = 5.2, eyY = HY + 0.6;
     if (ex === 'happy') { ctx.beginPath(); ctx.arc(eyX, eyY + 0.8, 1.5, Math.PI * 1.1, Math.PI * 1.9); ctx.strokeStyle = INK; ctx.lineWidth = 1.1; ctx.stroke(); }
     else if (ex === 'blink') { ctx.beginPath(); ctx.moveTo(eyX - 1.5, eyY + 0.5); ctx.quadraticCurveTo(eyX, eyY + 1.3, eyX + 1.4, eyY + 0.5); ctx.strokeStyle = INK; ctx.lineWidth = 1; ctx.stroke(); }
-    else if (D.hayato || pose.hd) { ell(ctx, eyX, eyY, 1.5, 2.4, '#fff', null); ell(ctx, eyX + 0.3, eyY + 0.3, 1.2, 2, D.hayato ? D.eye : O.shade(D.eye, 0.25), null); ell(ctx, eyX + 0.4, eyY + 0.6, 0.6, 1.1, D.hayato ? '#3a0a24' : '#120806', null); ell(ctx, eyX, eyY - 0.8, 0.5, 0.5, '#fff', null); }
+    else if (D.chef || pose.hd) { ell(ctx, eyX, eyY, 1.5, 2.4, '#fff', null); ell(ctx, eyX + 0.3, eyY + 0.3, 1.2, 2, D.chef ? D.eye : O.shade(D.eye, 0.25), null); ell(ctx, eyX + 0.4, eyY + 0.6, 0.6, 1.1, D.chef ? '#3a0a24' : '#120806', null); ell(ctx, eyX, eyY - 0.8, 0.5, 0.5, '#fff', null); }
     else { ell(ctx, eyX, eyY, 1.05, 1.55, D.eye, null); ell(ctx, eyX - 0.3, eyY - 0.6, 0.35, 0.35, '#fff', null); }
     if (ex === 'angry') { ctx.strokeStyle = INK; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(eyX - 2, eyY - 3.6); ctx.lineTo(eyX + 1.6, eyY - 2.4); ctx.stroke(); }
     if (D.glasses) { ctx.strokeStyle = '#2a2a2a'; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.arc(eyX + 0.4, eyY, 2.3, 0, TAU); ctx.moveTo(eyX - 1.9, eyY); ctx.lineTo(-1, eyY - 0.5); ctx.stroke(); }
-    if (D.hayato) { rrect(ctx, 7.6, HY + 1.8, 2.6, 1.5, 0.5, '#f3e2c4', INK, 0.5); }
+    if (D.chef) { rrect(ctx, 7.6, HY + 1.8, 2.6, 1.5, 0.5, '#f3e2c4', INK, 0.5); }
     mouth(ctx, 7.2, HY + 5.2, ex, 0.6);
     if (D.beard) {
       ctx.beginPath(); ctx.moveTo(-2, HY + 2); ctx.quadraticCurveTo(0, HY + 11, 6, HY + 11.8); ctx.quadraticCurveTo(9.8, HY + 9, 8.8, HY + 6.6); ctx.quadraticCurveTo(5, HY + 6.8, 2, HY + 3); ctx.closePath();
@@ -802,7 +802,7 @@
       return;
     }
     ctx.beginPath();
-    if (s === 'hayato') {
+    if (s === 'chef') {
       ctx.moveTo(-9.4, HY + 4);
       ctx.bezierCurveTo(-11.5, HY - 7, -2, HY - 12.5, 5, HY - 11);
       ctx.bezierCurveTo(10, HY - 9.5, 12.4, HY - 4, 11, HY + 1.4);
@@ -880,7 +880,7 @@
     if (pose.dir === 'down') drawFront(ctx, D, pose, false);
     else if (pose.dir === 'up') drawFront(ctx, D, pose, true);
     else {
-      const Dm = D.hayato ? Object.assign({}, D, flip ? { armN: D.armL, armF: D.armR } : { armN: D.armR, armF: D.armL }) : D;
+      const Dm = D.chef ? Object.assign({}, D, flip ? { armN: D.armL, armF: D.armR } : { armN: D.armR, armF: D.armL }) : D;
       if (flip) ctx.scale(-1, 1);
       drawSide(ctx, Dm, pose);
     }
@@ -959,6 +959,6 @@
     finish(ctx, fill, line || '#6a3a08', 1);
   }
 
-  P.Art = { K, INK, TAU, mk, blit, cached, ell, rrect, poly, limb, finish, clipDo, lookFor, HAYATO, charSprite, drawChar, drawCharHD, shadow, heart, coin, star };
+  P.Art = { K, INK, TAU, mk, blit, cached, ell, rrect, poly, limb, finish, clipDo, lookFor, CHEF, charSprite, drawChar, drawCharHD, shadow, heart, coin, star };
   if (typeof module !== 'undefined' && module.exports) module.exports = P;
 })(globalThis.Plov = globalThis.Plov || {});

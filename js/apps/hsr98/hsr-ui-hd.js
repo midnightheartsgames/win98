@@ -11,7 +11,8 @@
     ['W A S D', 'Движение в восемь сторон'], ['ПКМ', 'Идти в точку или бить врага'], ['ЛКМ, Space', 'Выбрать цель'],
     ['Q E R', 'Навык, Техника, Абсолютная техника'], ['Shift + Q E R T', 'Повысить способность'], ['1–6', 'Припасы'],
     ['X', 'Стоять на месте'], ['B', 'Лавка (на площади)'], ['F', 'Возврат на площадь'], ['N', 'Начать волну раньше'],
-    ['Enter', 'Срочный вызов, восстановить турель'], ['Tab', 'Большая карта'], ['Esc', 'Пауза']
+    ['Enter', 'Срочный вызов, восстановить турель'], ['Tab', 'Большая карта'], ['Esc', 'Пауза'],
+    ['G', 'За столом: метка под курсором'], ['V', 'За столом: готовые фразы'], ['P', 'За столом: пауза для всех']
   ];
 
   Object.assign(H.UI.prototype, {
@@ -35,7 +36,9 @@
         }
         if (run) list.push({ id: 'go', label: run.phase === 'draft' ? 'Продолжить (выбор героя)' : 'Продолжить (волна ' + run.wave + ')' });
         else list.push({ id: 'new', label: '1 ИГРОК: начать оборону' });
-        list.push({ id: 'coop', label: '2–4 ИГРОКА: скоро', off: true });
+        const link = globalThis.Net98;
+        if (link && link.me && link.me.table) list.push({ id: 'rejoin', label: 'Вернуться за стол' });
+        list.push(link ? { id: 'coop', label: '2–4 ИГРОКА' } : { id: 'coop', label: '2–4 ИГРОКА: скоро', off: true });
         list.push({ id: 'diff', label: 'Сложность: ' + HD.DIFFS[pref()].name });
         const cl = g.hdClaimable(), n = v => (v ? ' (' + v + ')' : '');
         list.push({ id: 'dossier', label: 'Досье героев' }, { id: 'recs', label: 'Рекорды' }, { id: 'asc', label: 'Продвижение' + n(cl.asc) }, { id: 'week', label: 'Недельные очки' + n(cl.week) }, { id: 'trials', label: 'Испытания' + n(cl.trials) }, { id: 'hist', label: 'История' }, { id: 'rules', label: 'Правила' });
@@ -47,7 +50,8 @@
         if (id === 'go') { if (g.hdRun().phase === 'draft') ui.openHdDraft(); else ui.openHdArena(); return; }
         if (id === 'new' || id === 'diff') { s.pick = id === 'new' ? 'start' : 'set'; s.back = s.sel; s.sel = Object.keys(HD.DIFFS).indexOf(pref()); return; }
         if (id === 'back') { s.pick = false; s.sel = s.back || 0; return; }
-        if (id === 'coop') { ui.sfx('deny'); return; }
+        if (id === 'rejoin') { ui.netRejoin(); return; }
+        if (id === 'coop') { if (globalThis.Net98) ui.netOpenTable(); else ui.sfx('deny'); return; }
         if (id.startsWith('d:')) {
           const d = id.slice(2);
           if (!g.hdCanDiff(d)) { ui.sfx('deny'); return; }
@@ -75,30 +79,13 @@
         draw(c) {
           const list = items(), run = g.hdRun();
           if (this.sel >= list.length) this.sel = list.length - 1;
-          this.drawCabinet(c);
+          ui.hdCabinet(c, BY);
           ui.hdCrt(c, SX, SY, SW, SH);
           if (this.pick) this.drawDiff(c, list[this.sel]);
           else { this.drawAttract(c, run); this.drawTable(c); }
           this.drawButtons(c, list);
           if (this.confirm === 'quit') ui.text('Ещё раз Enter: сдаться', W / 2, SY + SH + 6, { align: 'center', size: 10, bold: true, col: K.red });
           else ui.text(this.pick ? '↑↓ выбор · Enter · Esc назад' : '↑↓ ←→ выбор · Enter · R правила · D досье · Esc выход', W / 2, SY + SH + 6, { align: 'center', size: 9, col: '#6a6080' });
-        },
-        drawCabinet(c) {
-          c.fillStyle = '#07050c'; c.fillRect(0, 0, W, HGT);
-          const gr = c.createLinearGradient(0, 0, W, 0);
-          gr.addColorStop(0, '#1a1024'); gr.addColorStop(0.5, '#2a1a3a'); gr.addColorStop(1, '#1a1024');
-          c.fillStyle = gr; c.fillRect(24, 0, W - 48, HGT);
-          c.fillStyle = ui.dither(); c.fillRect(24, 0, W - 48, HGT);
-          c.fillStyle = '#3a2450'; c.fillRect(24, 0, 6, HGT); c.fillRect(W - 30, 0, 6, HGT);
-          c.fillStyle = '#120818'; c.fillRect(40, 8, W - 80, 48);
-          const k = 0.75 + 0.25 * Math.sin(ui.t * 2.4);
-          c.fillStyle = 'rgba(255,122,90,' + (0.18 * k).toFixed(3) + ')'; c.fillRect(40, 8, W - 80, 48);
-          c.strokeStyle = '#ff7a5a'; c.lineWidth = 2; c.strokeRect(41, 9, W - 82, 46); c.lineWidth = 1;
-          ui.text('РУБЕЖ ЭКСПРЕССА', W / 2, 18, { align: 'center', size: 22, bold: true, serif: true, col: k > 0.9 ? '#ffe0c8' : '#ffb090' });
-          for (let i = 0; i < 9; i++) { c.fillStyle = (Math.floor(ui.t * 4) + i) % 3 ? '#5a2a20' : '#ffd471'; c.fillRect(54 + i * 8, 46, 4, 4); c.fillRect(W - 90 + i * 4, 46, 2, 4); }
-          if (D.plate) { const pw = ui.measure(D.plate, 9, true) + 14; c.fillStyle = '#c9a45c'; c.fillRect(W / 2 - pw / 2, 57, pw, 11); ui.text(D.plate, W / 2, 57, { align: 'center', size: 9, bold: true, col: '#1a1208', shadow: false }); }
-          c.fillStyle = '#100a18'; c.fillRect(36, BY - 8, W - 72, HGT - BY);
-          c.fillStyle = '#4a3060'; c.fillRect(36, BY - 8, W - 72, 2);
         },
         drawAttract(c, run) {
           const x = SX + 10, y = SY + 10, w = 300, hh = 170, t = ui.t;
@@ -182,18 +169,57 @@
       }));
     },
 
-    openHdDraft() {
+    hdCabinet(c, deckY) {
+      const plate = this.game.hd().plate;
+      c.fillStyle = '#07050c'; c.fillRect(0, 0, W, HGT);
+      const gr = c.createLinearGradient(0, 0, W, 0);
+      gr.addColorStop(0, '#1a1024'); gr.addColorStop(0.5, '#2a1a3a'); gr.addColorStop(1, '#1a1024');
+      c.fillStyle = gr; c.fillRect(24, 0, W - 48, HGT);
+      c.fillStyle = this.dither(); c.fillRect(24, 0, W - 48, HGT);
+      c.fillStyle = '#3a2450'; c.fillRect(24, 0, 6, HGT); c.fillRect(W - 30, 0, 6, HGT);
+      c.fillStyle = '#120818'; c.fillRect(40, 8, W - 80, 48);
+      const k = 0.75 + 0.25 * Math.sin(this.t * 2.4);
+      c.fillStyle = 'rgba(255,122,90,' + (0.18 * k).toFixed(3) + ')'; c.fillRect(40, 8, W - 80, 48);
+      c.strokeStyle = '#ff7a5a'; c.lineWidth = 2; c.strokeRect(41, 9, W - 82, 46); c.lineWidth = 1;
+      this.text('РУБЕЖ ЭКСПРЕССА', W / 2, 18, { align: 'center', size: 22, bold: true, serif: true, col: k > 0.9 ? '#ffe0c8' : '#ffb090' });
+      for (let i = 0; i < 9; i++) { c.fillStyle = (Math.floor(this.t * 4) + i) % 3 ? '#5a2a20' : '#ffd471'; c.fillRect(54 + i * 8, 46, 4, 4); c.fillRect(W - 90 + i * 4, 46, 2, 4); }
+      if (plate) { const pw = this.measure(plate, 9, true) + 14; c.fillStyle = '#c9a45c'; c.fillRect(W / 2 - pw / 2, 57, pw, 11); this.text(plate, W / 2, 57, { align: 'center', size: 9, bold: true, col: '#1a1208', shadow: false }); }
+      c.fillStyle = '#100a18'; c.fillRect(36, deckY - 8, W - 72, HGT - deckY);
+      c.fillStyle = '#4a3060'; c.fillRect(36, deckY - 8, W - 72, 2);
+    },
+
+    openHdDraft(net) {
       const ui = this, g = this.game, STOP = [0.5, 0.8, 1.1], CW = 200, CH = 352, CY = 64;
-      const run = () => g.hdRun();
+      const run = () => (net ? net.drafts[net.seat] : g.hdRun());
       const take = s => {
+        if (net) {
+          if (s.sent || net.takes[net.seat]) return;
+          s.sent = true;
+          net.send({ t: 'take', i: s.sel });
+          ui.sfx('confirm');
+          return;
+        }
         if (!g.hdTake(s.sel)) return;
         ui.sfx('confirm');
         ui.screens.splice(ui.screens.indexOf(s), 1);
         ui.openHdArena();
       };
+      const refresh = (s, R) => {
+        if (net) { if (!net.takes[net.seat] && R.draft.cards[s.sel].left > 0) net.send({ t: 'refresh', i: s.sel }); else ui.sfx('deny'); return; }
+        if (g.hdRefresh(s.sel)) { s.roll[s.sel] = 0.35; ui.sfx('shuffle'); } else ui.sfx('deny');
+      };
       return this.push({
-        full: true, hd: true, draft: true, sel: 0, age: 0, roll: [0, 0, 0], card: null,
-        tick(dt) { this.age += dt; this.roll = this.roll.map(r => Math.max(0, r - dt)); },
+        full: true, hd: true, hdRound: !!net, draft: true, sel: 0, age: 0, roll: [0, 0, 0], card: null, sent: false, leave: false, shown: null,
+        tick(dt) {
+          this.age += dt; this.roll = this.roll.map(r => Math.max(0, r - dt));
+          if (!net) return;
+          if (ui.netSession !== net || !ui.screens.includes(this)) return;
+          net.advance(dt);
+          if (net.A) { ui.netRoute(); return; }
+          const now = run().draft.cards.map(cd => cd.hero);
+          if (this.shown) now.forEach((id, i) => { if (id !== this.shown[i]) { this.roll[i] = 0.35; ui.sfx('shuffle'); } });
+          this.shown = now;
+        },
         ready() { return this.age >= STOP[2]; },
         draw(c) {
           const R = run();
@@ -208,7 +234,8 @@
           ui.text(ui.clip('Волны 1–10: ' + boss.name + ' · 11–20: ' + big.name, 470, 10), 42, 19, { size: 10, col: '#d08a80' });
           ui.text('Сложность: ' + HD.DIFFS[R.diff].name, W - 10, 11, { align: 'right', size: 10, col: C.sub });
           R.draft.cards.forEach((cd, i) => this.drawCard(c, R, cd, i));
-          ui.hints([['←→', 'Карточка'], ['R', 'Обновить'], ['Enter', 'Взять'], ['C', 'Карточка героя'], ['Esc', 'Назад']], W / 2, HGT - 18, { align: 'center' });
+          if (net) ui.drawHdDraftSeats(c, net);
+          ui.hints([['←→', 'Карточка'], ['R', 'Обновить'], ['Enter', 'Взять'], ['C', 'Карточка героя'], ['Esc', !net ? 'Назад' : this.leave ? 'Ещё раз: покинуть стол' : 'Покинуть']], W / 2, HGT - 18, { align: 'center' });
           if (this.card) ui.drawHdCard(c, ui.hdHeroInfo(R.draft.cards[this.sel].hero), this.card, 4, 40, 300, 410);
         },
         drawCard(c, R, cd, i) {
@@ -252,6 +279,7 @@
           ui.text('Обновлений:', x + 12, y + CH - 22, { size: 10, col: C.sub });
           for (let j = 0; j < 2; j++) { c.fillStyle = j < cd.left ? '#ffd471' : '#2a2a3a'; c.beginPath(); c.arc(x + 96 + j * 14, y + CH - 16, 5, 0, Math.PI * 2); c.fill(); }
           ui.hit(x, y, CW, CH, () => { if (this.sel === i && this.ready()) take(this); else { this.sel = i; ui.sfx('select'); } });
+          ui.hit(x + 8, y + CH - 28, CW - 16, 24, () => { this.sel = i; if (this.ready()) refresh(this, R); });
         },
         key(k, code) {
           const R = run();
@@ -261,10 +289,17 @@
             if (k === 'up' || k === 'down') { this.card.top = Math.max(0, this.card.top + (k === 'up' ? -3 : 3)); return; }
             return;
           }
-          if (k === 'back') { ui.pop(); return; }
+          if (k === 'back') {
+            if (!net) { ui.pop(); return; }
+            if (this.leave) { ui.netFinish(true); return; }
+            this.leave = true;
+            ui.sfx('deny');
+            return;
+          }
+          this.leave = false;
           if (!this.ready()) { if (k === 'ok') this.age = STOP[2]; return; }
           if (k === 'left' || k === 'right') { this.sel = (this.sel + (k === 'left' ? 2 : 1)) % 3; ui.sfx('select'); return; }
-          if (code === 'KeyR') { if (g.hdRefresh(this.sel)) { this.roll[this.sel] = 0.35; ui.sfx('shuffle'); } else ui.sfx('deny'); return; }
+          if (code === 'KeyR') { refresh(this, R); return; }
           if (code === 'KeyC') { this.card = { tab: 0, top: 0 }; ui.sfx('select'); return; }
           if (k === 'ok' && R) take(this);
         }
@@ -272,10 +307,23 @@
     },
 
     openHdPause(arena) {
-      const ui = this, g = this.game, A = arena.arena;
-      const items = () => [{ id: 'go', label: 'Продолжить' }, { id: 'keys', label: 'Управление' }, { id: 'rules', label: 'Правила' }, { id: 'quit', label: 'Сдаться' }, { id: 'exit', label: 'Выйти в вагон' }];
+      const ui = this, g = this.game, A = arena.arena, net = arena.net, hero = A.heroes[arena.me];
+      const items = () => (net
+        ? [{ id: 'go', label: 'Продолжить' }, { id: 'share', label: ui.netPaused() ? 'Снять паузу' : ui.netPausesLeft() == null ? 'Пауза для всех' : 'Пауза для всех (осталось ' + ui.netPausesLeft() + ')' }, { id: 'keys', label: 'Управление' }, { id: 'rules', label: 'Правила' }, { id: 'leave', label: 'Покинуть партию' }]
+        : [{ id: 'go', label: 'Продолжить' }, { id: 'keys', label: 'Управление' }, { id: 'rules', label: 'Правила' }, { id: 'quit', label: 'Сдаться' }, { id: 'exit', label: 'Выйти в вагон' }]);
       const act = (s, id) => {
         if (id === 'go') { ui.pop(); return; }
+        if (id === 'share') {
+          if (!ui.netPaused() && ui.netPausesLeft() === 0) { ui.sfx('deny'); return; }
+          ui.netPauseToggle();
+          ui.pop();
+          return;
+        }
+        if (id === 'leave') {
+          if (s.confirm !== 'quit') { s.confirm = 'quit'; ui.sfx('deny'); return; }
+          ui.netFinish(true);
+          return;
+        }
         if (id === 'keys') { ui.openHdControls(); return; }
         if (id === 'rules') { ui.openHdRules(); return; }
         if (id === 'quit') {
@@ -291,14 +339,14 @@
         }
       };
       return this.push({
-        hd: true, pause: true, sel: 0, confirm: null,
+        hd: true, pause: !net, hdRound: !!net, sel: 0, confirm: null,
         draw(c) {
           const list = items(), x = W / 2 - 130, y = 120, h = 60 + list.length * 24;
-          ui.win(x, y, 260, h + 30, { title: 'Пауза' });
+          ui.win(x, y, 260, h + 30, { title: net ? 'Меню' : 'Пауза' });
           ui.list(x + 14, y + 22, 232, list.map(it => ({ label: it.label })), this.sel, { rowH: 24, onClick: i => { this.sel = i; act(this, list[i].id); } });
-          const note = this.confirm === 'quit' ? 'Ещё раз Enter: сдаться' : A.phase === 'wave' ? 'Выход в вагон: волна начнётся заново' : 'Партия сохранится в перерыве';
-          ui.text(note, W / 2, y + 30 + list.length * 24, { align: 'center', size: 10, col: this.confirm || A.phase === 'wave' ? K.red : C.sub });
-          ui.text('Волна ' + A.wave + ' · ' + H.CHARS[A.hero.key].name + ', ур. ' + A.hero.lvl, W / 2, y + 46 + list.length * 24, { align: 'center', size: 10, col: C.sub });
+          const note = net ? (this.confirm === 'quit' ? 'Ещё раз Enter: покинуть партию' : 'Партия не остановлена') : this.confirm === 'quit' ? 'Ещё раз Enter: сдаться' : A.phase === 'wave' ? 'Выход в вагон: волна начнётся заново' : 'Партия сохранится в перерыве';
+          ui.text(note, W / 2, y + 30 + list.length * 24, { align: 'center', size: 10, col: this.confirm || (!net && A.phase === 'wave') ? K.red : C.sub });
+          ui.text('Волна ' + A.wave + ' · ' + H.CHARS[hero.key].name + ', ур. ' + hero.lvl, W / 2, y + 46 + list.length * 24, { align: 'center', size: 10, col: C.sub });
         },
         key(k) {
           if (k !== 'ok') this.confirm = null;
@@ -388,6 +436,13 @@
           'В перерыве Экспресс восстанавливает ' + Math.round(T.baseRegen * 100) + '% НР в секунду, а герой на площади всё НР и энергию за ' + T.plazaFull + ' с.',
           'Вылазка: добивание у разлома даёт +' + Math.round(T.raidGold * 100) + '% золота. «Чистая линия»: если ни один враг не дошёл до турели, золото за волну +' + Math.round(T.cleanBonus * 100) + '%.',
           'Продвижение: победа ' + fmt(M.ascWin.easy) + ', ' + fmt(M.ascWin.normal) + ' или ' + fmt(M.ascWin.hard) + ' очков. Недельные очки: ' + fmt(M.weekWave) + ' за волну, победа сразу ' + fmt(M.weekWin) + '.'
+        ]],
+        ['Экипаж', [
+          'За столом от двух до четырёх игроков. Хозяин выбирает сложность, зовёт друзей и начинает партию, когда все нажали «Готов». Открытый стол виден всем в списке, закрытый только по коду.',
+          'У каждого свой бросок Путей, одного героя двоим не дают. Экспресс и турели общие. Золото за добивание получают все поровну, золото с вылазки только добивший. Волна досрочно начнётся, когда согласны все.',
+          'G ставит метку под курсором, V открывает готовые фразы. Их видят все за столом.',
+          'Esc партию не останавливает. P ставит паузу для всех: за открытым столом 3 раза по 2 минуты, за закрытым без счёта и до 10 минут. Снять её может сразу тот, кто поставил, остальные через 15 секунд.',
+          'Если связь пропала, партия идёт дальше, а ваш герой стоит и бьёт сам. Вернуться можно в любой момент: кнопка «Вернуться за стол».'
         ]]
       ];
       return this.push({
@@ -467,6 +522,19 @@
       }
     },
 
+    hdMetaLine(c, M, y, x0) {
+      const P = HD.META, D = this.game.hd(), lv = M.ascLvl[1], x1 = x0 + 212, x2 = x0 + 422;
+      this.text('Продвижение +' + fmt(M.asc), x0, y, { size: 11, bold: true, col: C.gold });
+      this.text(M.ascLvl[0] === lv ? 'уровень ' + lv : 'уровень ' + M.ascLvl[0] + ' → ' + lv, x0, y + 16, { size: 10, col: M.ascLvl[0] === lv ? C.sub : C.ok });
+      this.bar(x0, y + 32, 190, 5, lv >= P.ascMax ? 1 : (D.asc.pts % P.ascPer) / P.ascPer, '#ffd471');
+      this.text('Недельные очки +' + fmt(M.week), x1, y, { size: 11, bold: true, col: C.gold });
+      this.text(fmt(D.week.pts) + ' / ' + fmt(P.weekMax), x1, y + 16, { size: 10, col: C.sub });
+      this.bar(x1, y + 32, 190, 5, D.week.pts / P.weekMax, '#80e0ff');
+      const tr = M.trials.map(id => HD.TRIALS.find(T => T.id === id).name);
+      this.text(tr.length ? 'Испытания: ' + tr.length : 'Новых испытаний нет', x2, y, { size: 11, bold: true, col: tr.length ? C.ok : C.sub });
+      if (tr.length) this.text(this.clip(tr[0] + (tr.length > 1 ? ' и ещё ' + (tr.length - 1) : ''), W - 16 - x2, 10), x2, y + 16, { size: 10, col: C.cream });
+    },
+
     hdRecRows(c, list, x, y, w, rows, o = {}) {
       const ui = this, rh = o.rh || 15, place = o.place || 0;
       let show = list.slice(0, rows).map((r, i) => ({ r, n: i + 1 }));
@@ -478,8 +546,11 @@
         if (fresh) { c.fillStyle = 'rgba(90,255,122,' + (0.18 + 0.1 * Math.sin(ui.t * 6)).toFixed(3) + ')'; c.fillRect(x + dx, yy - 2, w, rh - 1); }
         const col = fresh ? CRT.hi : r.solo ? CRT.fg : CRT.mid;
         ui.text(String(n).padStart(2, ' '), x + 4 + dx, yy, { size: 10, bold: true, col, shadow: false });
-        ui.text(ui.clip(r.name, o.wide ? 96 : 70, 10, true), x + 24 + dx, yy, { size: 10, bold: true, col, shadow: false });
-        if (o.wide) ui.text(ui.clip(H.CHARS[r.hero].name, 120, 10), x + 126 + dx, yy, { size: 10, col, shadow: false });
+        if (o.crew) ui.text(ui.clip(r.crew.join(', '), 220, 10, true), x + 24 + dx, yy, { size: 10, bold: true, col, shadow: false });
+        else {
+          ui.text(ui.clip(r.name, o.wide ? 96 : 70, 10, true), x + 24 + dx, yy, { size: 10, bold: true, col, shadow: false });
+          if (o.wide) ui.text(ui.clip(H.CHARS[r.hero].name, 120, 10), x + 126 + dx, yy, { size: 10, col, shadow: false });
+        }
         ui.text('В' + r.wave, x + w - (o.wide ? 184 : 72) + dx, yy, { size: 10, bold: true, col, shadow: false });
         ui.text(mmss(r.time), x + w - (o.wide ? 144 : 40) + dx, yy, { size: 10, col, shadow: false });
         if (o.wide) { ui.hdStars(c, x + w - 100 + dx, yy + 6, r.stars, 4); ui.text(dateOf(r.date), x + w - 6 + dx, yy, { align: 'right', size: 10, col: CRT.mid, shadow: false }); }
@@ -488,6 +559,7 @@
     },
 
     openHdResult(sum, view) {
+      if (sum.crewRows) return this.openHdCrewResult(sum, { view });
       const ui = this, g = this.game;
       if (!view) { this.sfx(sum.win ? 'win' : 'lose'); this.audio.music('sim'); }
       const M = sum.meta, recs = g.hdRecords(sum.diff);
@@ -546,21 +618,12 @@
           ui.text('РЕКОРДЫ', x + w / 2, y + 8, { align: 'center', size: 12, bold: true, col: CRT.hi, shadow: false });
           ui.text(HD.DIFFS[sum.diff].name, x + w / 2, y + 24, { align: 'center', size: 10, col: CRT.mid, shadow: false });
           ui.hdRecRows(c, recs, x + 6, y + 46, w - 12, 11, { place: M && !view ? M.place : 0, mark: M && !view ? M.rec : null, age: this.age, rh: 16 });
-          if (M && !view) ui.text(M.place <= HD.META.recShow ? 'Новая запись: место ' + M.place : 'Место ' + M.place, x + w / 2, y + h - 18, { align: 'center', size: 10, bold: true, col: CRT.hi, shadow: false });
+          if (M && !view && M.place) ui.text(M.place <= HD.META.recShow ? 'Новая запись: место ' + M.place : 'Место ' + M.place, x + w / 2, y + h - 18, { align: 'center', size: 10, bold: true, col: CRT.hi, shadow: false });
         },
         drawMeta(c) {
           const y = 392;
           if (view || !M) { ui.text('Запись из истории: награды за неё уже получены', W / 2, y + 16, { align: 'center', size: 11, col: C.sub }); return; }
-          const P = HD.META, D = g.hd(), lv = M.ascLvl[1];
-          ui.text('Продвижение +' + fmt(M.asc), 16, y, { size: 11, bold: true, col: C.gold });
-          ui.text(M.ascLvl[0] === lv ? 'уровень ' + lv : 'уровень ' + M.ascLvl[0] + ' → ' + lv, 16, y + 16, { size: 10, col: M.ascLvl[0] === lv ? C.sub : C.ok });
-          ui.bar(16, y + 32, 190, 5, lv >= P.ascMax ? 1 : (D.asc.pts % P.ascPer) / P.ascPer, '#ffd471');
-          ui.text('Недельные очки +' + fmt(M.week), 228, y, { size: 11, bold: true, col: C.gold });
-          ui.text(fmt(D.week.pts) + ' / ' + fmt(P.weekMax), 228, y + 16, { size: 10, col: C.sub });
-          ui.bar(228, y + 32, 190, 5, D.week.pts / P.weekMax, '#80e0ff');
-          const tr = M.trials.map(id => HD.TRIALS.find(T => T.id === id).name);
-          ui.text(tr.length ? 'Испытания: ' + tr.length : 'Новых испытаний нет', 438, y, { size: 11, bold: true, col: tr.length ? C.ok : C.sub });
-          if (tr.length) ui.text(ui.clip(tr[0] + (tr.length > 1 ? ' и ещё ' + (tr.length - 1) : ''), 186, 10), 438, y + 16, { size: 10, col: C.cream });
+          ui.hdMetaLine(c, M, y, 16);
         },
         key(k) { if (k === 'ok' || k === 'back') ui.pop(); }
       });
@@ -569,11 +632,17 @@
     openHdRecords() {
       const ui = this, g = this.game, DIFF = Object.keys(HD.DIFFS), HEROES = [null].concat(Object.keys(HD.HEROES));
       return this.push({
-        full: true, hd: true, recs: true, d: 1, h: 0,
+        full: true, hd: true, recs: true, d: 1, h: 0, tab: 0,
+        setTab(i) { if (this.tab !== i) { this.tab = i; ui.sfx('select'); } },
         draw(c) {
           c.fillStyle = '#050608'; c.fillRect(0, 0, W, HGT);
           ui.hdCrt(c, 24, 24, W - 48, HGT - 80);
           ui.text('ТАБЛИЦА РЕКОРДОВ', W / 2, 36, { align: 'center', size: 16, bold: true, col: CRT.hi, shadow: false });
+          ['Один игрок', 'Экипаж'].forEach((t, i) => {
+            const on = i === this.tab, tx = 36 + i * 76;
+            ui.text((on ? '[' : '') + t + (on ? ']' : ''), tx + 36, 40, { align: 'center', size: 10, bold: on, col: on ? CRT.hi : CRT.mid, shadow: false });
+            ui.hit(tx, 34, 72, 18, () => this.setTab(i));
+          });
           DIFF.forEach((d, i) => {
             const tx = W / 2 - 150 + i * 100, on = i === this.d;
             ui.text((on ? '[ ' : '') + HD.DIFFS[d].name + (on ? ' ]' : ''), tx + 50, 62, { align: 'center', size: 11, bold: on, col: on ? CRT.hi : CRT.mid, shadow: false });
@@ -582,13 +651,14 @@
           const hero = HEROES[this.h];
           ui.text('Герой: ' + (hero ? H.CHARS[hero].name : 'все'), W / 2, 82, { align: 'center', size: 11, col: CRT.fg, shadow: false });
           const y = 108;
-          [['№', 40], ['Ник', 60], ['Герой', 162], ['Волна', W - 220], ['Время', W - 180], ['Звёзды', W - 140]].forEach(([t, x]) => ui.text(t, x, y, { size: 10, col: CRT.dim, shadow: false }));
+          (this.tab ? [['№', 40], ['Экипаж', 60], ['Волна', W - 220], ['Время', W - 180], ['Звёзды', W - 140]] : [['№', 40], ['Ник', 60], ['Герой', 162], ['Волна', W - 220], ['Время', W - 180], ['Звёзды', W - 140]]).forEach(([t, x]) => ui.text(t, x, y, { size: 10, col: CRT.dim, shadow: false }));
           ui.text('Дата', W - 42, y, { align: 'right', size: 10, col: CRT.dim, shadow: false });
           c.fillStyle = CRT.dim; c.fillRect(36, y + 14, W - 72, 1);
-          ui.hdRecRows(c, g.hdRecords(DIFF[this.d], hero), 36, y + 22, W - 72, 16, { wide: true, rh: 18 });
-          ui.hints([['←→', 'Сложность'], ['↑↓', 'Герой'], ['Esc', 'Назад']], W / 2, HGT - 30, { align: 'center' });
+          ui.hdRecRows(c, this.tab ? g.hdCrewRecords(DIFF[this.d], hero) : g.hdRecords(DIFF[this.d], hero), 36, y + 22, W - 72, 16, { wide: true, rh: 18, crew: !!this.tab });
+          ui.hints([['Q E', 'Таблица'], ['←→', 'Сложность'], ['↑↓', 'Герой'], ['Esc', 'Назад']], W / 2, HGT - 30, { align: 'center' });
         },
-        key(k) {
+        key(k, code) {
+          if (code === 'KeyQ' || code === 'KeyE') { this.setTab(1 - this.tab); return; }
           if (k === 'left' || k === 'right') { this.d = (this.d + (k === 'left' ? DIFF.length - 1 : 1)) % DIFF.length; ui.sfx('select'); return; }
           if (k === 'up' || k === 'down') { this.h = (this.h + (k === 'up' ? HEROES.length - 1 : 1)) % HEROES.length; ui.sfx('select'); return; }
           if (k === 'back' || k === 'ok') ui.pop();
@@ -743,7 +813,7 @@
             const col = r.win ? C.cream : '#e0a0a0';
             ui.text(dateOf(r.date), 20, yy, { size: 10, col: C.sub });
             ui.text(HD.DIFFS[r.diff].name, 104, yy, { size: 10, col });
-            ui.text(ui.clip(H.CHARS[r.hero].name, 150, 10), 196, yy, { size: 10, col });
+            ui.text(ui.clip(H.CHARS[r.hero].name + (r.crew ? ' · экипаж' : ''), 150, 10), 196, yy, { size: 10, col });
             ui.text(String(r.wave), 352, yy, { size: 10, col });
             ui.text(r.win ? 'удержан' : 'пал', 404, yy, { size: 10, bold: true, col: r.win ? C.ok : C.bad });
             ui.text(fmt(r.base), 500, yy, { size: 10, col });

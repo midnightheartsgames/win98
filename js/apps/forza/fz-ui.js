@@ -309,8 +309,8 @@
         }
         if (this.skinQueue.length) {
           txt.textContent = 'Машины…';
-          const id = this.skinQueue.shift(), m = this.renderer.carMesh(id);
-          this.renderer.carSkin(id, 'none', m.geo.skin);
+          const id = this.skinQueue.shift(), m = this.renderer.carMesh(id), fl = this.factory(id);
+          this.renderer.carSkin(id, fl ? fl.livery : 'none', m.geo.skin);
           bar.style.width = Math.round(95 + (1 - this.skinQueue.length / F.Traffic.MODELS.length) * 5) + '%';
           if (!this.skinQueue.length) this.driverQueue = F.Driver.crowdLooks();
           continue;
@@ -380,8 +380,8 @@
       this.applySettings();
       if (p.settings.radio) this.audio.setStation(p.settings.radio);
       this.audio.onTrack = np => { if (np && this.mode === 'play') this.hud.toast(np.station, `${np.title} — ${np.artist}`, '#ffcf20', 4); };
-      const news = F.Driver.adopt(p);
-      if (news) F.Profile.saveProfile(p);
+      const news = F.Driver.adopt(p), late = this.game.lateGifts();
+      if (news || late.length) F.Profile.saveProfile(p);
       if (prologue) {
         this.beginEvent('prologue');
         this.hud.banner('ДОБРО ПОЖАЛОВАТЬ В РИГУ', 'Фестиваль Horizon ждёт вас в Межапарксе. Следуйте за синими стрелками!', '#e6146e', 6);
@@ -391,6 +391,10 @@
           this.hud.banner('НОВОЕ НА ФЕСТИВАЛЕ: ВАШ ВОДИТЕЛЬ', 'Esc → ВОДИТЕЛЬ: внешность, гардероб и пропуск участника', '#2f86e6', 6);
           p.driverNews = false;
           F.Profile.saveProfile(p);
+        }
+        for (const id of late) {
+          const car = F.Cars.get(id);
+          this.hud.banner('ПОДАРОК ФЕСТИВАЛЯ', `${car.year} ${car.make} ${car.model} — награда за ${car.gift}-й уровень уже в гараже`, '#3fc46a', 7);
         }
       }
     }
@@ -723,7 +727,7 @@
       this.locCheck = 0.7;
       const v = this.game.veh, w = this.world;
       const d = w.districtAt(v.x, v.z);
-      const e = w.lastEdge;
+      const e = this.game.roadEdge;
       const name = d ? d.name : 'Рига';
       const sub = e ? e.name : '';
       if (name !== this.locName) { this.locName = name; this.locSub = sub; this.locT = 2.5; }
@@ -1107,6 +1111,15 @@
       }
     }
 
+    factory(id) {
+      const cache = this.factories || (this.factories = {});
+      if (cache[id] === undefined) {
+        const c = F.Cars.get(id);
+        cache[id] = c && c.livery && F.Tex.OWN[c.livery] ? { livery: c.livery, paint2: F.hexRgb(c.col2 || c.col) } : null;
+      }
+      return cache[id];
+    }
+
     renderPose() {
       const v = this.game.veh, pp = this.prevPose, k = F.clamp(this.acc / TICK, 0, 1);
       if (!pp) return { x: v.x, y: v.y, z: v.z, yaw: v.yaw };
@@ -1399,7 +1412,7 @@
           spec: sp, units, faceKey: fc.key, face: fc.cv, layout, pal: F.Cluster.paletteOf(sp.car),
           scales: layout.dials.map(d => F.Cluster.scaleOf(d.k, sp, units)),
           needles: layout.dials.map(d => ({ a: d.a0, w: 0 })),
-          lcd: cl ? cl.lcd : F.Tex.canvas(256, 96), text: '', dirty: true, heat: cl ? cl.heat : 0.15, boost: 0
+          lcd: cl && cl.lcd.height === F.Cluster.lcdH(layout) ? cl.lcd : F.Tex.canvas(256, F.Cluster.lcdH(layout)), text: '', dirty: true, heat: cl ? cl.heat : 0.15, boost: 0
         };
       }
       const k = Math.min(dt, 0.05);
@@ -1417,11 +1430,14 @@
           case 'boost': return cl.boost;
           case 'temp': return cl.heat;
           case 'oil': return F.clamp(0.25 + 0.6 * v.rpm / sp.red, 0, 1);
+          case 'clockH': return g.clock % 12 / 12;
+          case 'clockM': return g.clock % 1;
           default: return 0.72;
         }
       };
       cl.layout.dials.forEach((d, i) => {
-        const n = cl.needles[i], target = F.Cluster.angleOf(d, val(d, cl.scales[i]), cl.scales[i]);
+        const n = cl.needles[i], to = F.Cluster.angleOf(d, val(d, cl.scales[i]), cl.scales[i]);
+        const target = d.a1 - d.a0 >= 360 ? to + 360 * Math.round((n.a - to) / 360) : to;
         n.w += ((target - n.a) * 110 - n.w * 15) * k;
         n.a += n.w * k;
       });
@@ -1435,9 +1451,11 @@
       const s = {
         odo: (g.entry.odo || 0) / 1000, clock: two(Math.floor(g.clock) % 24) + ':' + two(Math.floor(g.clock % 1 * 60)),
         gear: v.gear < 0 ? 'R' : v.gear === 0 ? 'N' : String(v.gear), speed: String(Math.round(speed)),
-        radio: st ? st.name.replace(/^(Horizon|Radio)\s+/, '').toUpperCase() : 'ВЫКЛ', lamps
+        radio: st ? st.name.replace(/^(Horizon|Radio)\s+/, '').toUpperCase() : 'ВЫКЛ', lamps,
+        revs: sweep >= 0 ? sweep : F.clamp(v.rpm / 1000 / F.Cluster.scaleOf('rpm', sp, units).max, 0, 1), red: sp.red / 1000 / F.Cluster.scaleOf('rpm', sp, units).max,
+        fuel: sweep >= 0 ? sweep : 0.72, temp: sweep >= 0 ? sweep : cl.heat
       };
-      const text = cl.layout.lcd.map(l => (l.k === 'odo' ? Math.floor(s.odo * 10) : s[l.k])).concat([s.radio, lamps.join()]).join('|');
+      const text = cl.layout.lcd.map(l => (l.k === 'odo' ? Math.floor(s.odo * 10) : l.k === 'revs' ? Math.round(s.revs * 32) : l.k === 'fuelbar' ? Math.round(s.fuel * 12) : l.k === 'tempbar' ? Math.round(s.temp * 12) : s[l.k])).concat([s.radio, lamps.join()]).join('|');
       if (text !== cl.text) {
         cl.text = text;
         F.Cluster.lcd(cl.lcd, cl.pal, cl.layout, s);
@@ -1600,7 +1618,7 @@
     }
 
     lampProps() {
-      if (this.lampsOf !== this.world) { this.lampsOf = this.world; this.lampList = this.world.props.filter(p => LAMP_GLOW[p.type]); }
+      if (this.lampsOf !== this.world) { this.lampsOf = this.world; this.lampList = this.world.props.filter(p => LAMP_GLOW[p.type]).concat(this.world.out ? this.world.out.lamps : []); }
       return this.lampList;
     }
 
@@ -1633,7 +1651,7 @@
         const d = Math.hypot(t.x - cam.x, t.z - cam.z);
         if (d > 600) continue;
         if (t.drvUid !== t.uid) { t.drv = F.Driver.make(F.Driver.trafficLook(t.uid, t.id)); t.drvUid = t.uid; }
-        r.drawCar({ driver: t.drv, id: t.id, x: t.x, y: t.y, z: t.z, yaw: t.yaw, pitch: t.pitch, roll: t.roll, paint1: t.paint1, metal: t.uid % 10 < 3, dirt: (t.uid * 7 % 10) * 0.035, wipe: env.rain > 0.05 ? env.time + t.uid * 0.37 : -1, steer: t.steer, spin: -t.wheel, speed: t.v, brake: t.brake, lights: lightsOn, dmg: t.dmg }, env);
+        r.drawCar(Object.assign({ driver: t.drv, id: t.id, x: t.x, y: t.y, z: t.z, yaw: t.yaw, pitch: t.pitch, roll: t.roll, paint1: t.paint1, metal: t.uid % 10 < 3, dirt: (t.uid * 7 % 10) * 0.035, wipe: env.rain > 0.05 ? env.time + t.uid * 0.37 : -1, steer: t.steer, spin: -t.wheel, speed: t.v, brake: t.brake, lights: lightsOn, dmg: t.dmg }, this.factory(t.id)), env);
       }
       if (this.rubble && this.rubble.list.length && !mirror) r.drawDebris(this.rubble.list, C);
       this.drawFestival(g, env, cam);
@@ -1657,7 +1675,7 @@
         for (const p of list) {
           const d = Math.hypot(p.x - cam.x, p.z - cam.z);
           if (d > 190 || !M4.boxVisible(C.planes, p.x - 2.6, p.y - 0.5, p.z - 2.6, p.x + 2.6, p.y + 2.2, p.z + 2.6)) continue;
-          r.drawCar({ id: p.id, x: p.x, y: p.y + 0.04, z: p.z, yaw: p.yaw, paint1: p.rgb || (p.rgb = F.hexRgb(p.col)), steer: 0, spin: 0, far: d > 45, dmg: p.dmg }, env);
+          r.drawCar(Object.assign({ id: p.id, x: p.x, y: p.y + 0.04, z: p.z, yaw: p.yaw, paint1: p.rgb || (p.rgb = F.hexRgb(p.col)), steer: 0, spin: 0, far: d > 45, dmg: p.dmg }, this.factory(p.id)), env);
         }
       }
     }

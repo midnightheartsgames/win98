@@ -336,8 +336,9 @@
         ctx.lineWidth = 0.022 * m.ky;
         ctx.beginPath();
         const lid = state === 'half' || state === 'annoyed';
-        const by = m.y(state === 'terror' || state === 'worry' ? 0.2 : lid ? 0.12 : 0.15);
-        if (state === 'terror' || state === 'worry') {
+        const raised = state === 'terror' || state === 'worry' || state === 'cry';
+        const by = m.y(raised ? 0.2 : lid ? 0.12 : 0.15);
+        if (raised) {
           ctx.moveTo(cx - outer * rw * 0.8, by - 0.05 * m.ky);
           ctx.quadraticCurveTo(cx, by - 0.02 * m.ky, cx + outer * rw * 0.95, by + 0.04 * m.ky);
         } else if (state === 'annoyed') {
@@ -354,6 +355,31 @@
         ctx.stroke();
 
         const lash = cfg.lash;
+        if (state === 'cry') {
+          const tg = ctx.createLinearGradient(0, ey, 0, h);
+          tg.addColorStop(0, 'rgba(120,200,255,0.95)');
+          tg.addColorStop(1, 'rgba(170,226,255,0.75)');
+          ctx.fillStyle = tg;
+          [-0.55, 0.45].forEach(k => {
+            const tx = cx + outer * rw * k;
+            ctx.beginPath();
+            ctx.moveTo(tx - 0.035 * m.kx, ey);
+            ctx.quadraticCurveTo(tx - 0.05 * m.kx, ey + (h - ey) * 0.6, tx - 0.03 * m.kx, h);
+            ctx.lineTo(tx + 0.045 * m.kx, h);
+            ctx.quadraticCurveTo(tx + 0.05 * m.kx, ey + (h - ey) * 0.5, tx + 0.035 * m.kx, ey);
+            ctx.closePath();
+            ctx.fill();
+          });
+          ctx.strokeStyle = lash;
+          ctx.lineWidth = 0.036 * m.ky;
+          ctx.beginPath();
+          ctx.moveTo(cx - rw * 0.9, ey + 0.01 * m.ky);
+          ctx.lineTo(cx - rw * 0.3, ey - 0.05 * m.ky);
+          ctx.lineTo(cx + rw * 0.3, ey + 0.01 * m.ky);
+          ctx.lineTo(cx + rw * 0.9, ey - 0.05 * m.ky);
+          ctx.stroke();
+          return;
+        }
         if (state === 'shut' || state === 'sleep') {
           ctx.strokeStyle = lash;
           ctx.lineWidth = 0.034 * m.ky;
@@ -948,5 +974,8 @@
     if (P.mHat && pose.hat) r.draw(P.mHat, m.head);
   }
 
-  window.KonosubaCast = { CHARS, DIMS, build, solve, drawChar, standY, standLegs, legLength };
+  window.KonosubaCast = {
+    CHARS, DIMS, build, solve, drawChar, standY, standLegs, legLength,
+    EYE_PATCH, MOUTH_PATCH, boxAt, ellAt, hex, headGrid, hp, lock, capGrid, bangs, eyeState, mouthState, limbMesh, handMesh, footMesh
+  };
 })();

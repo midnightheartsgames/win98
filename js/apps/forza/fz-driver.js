@@ -45,7 +45,7 @@
   const { SLOTS, BAND_COLS, ITEMS, ITEM, STARTER, DEFAULT_FIT, normFit, fitList, fitKey } = F.Wear;
   const LONG_TOPS = new Set(['plaid', 'turtle', 'deer', 'hoodie', 'suit']);
   const BULK = { olymp: 1.05, denim: 1.07, windbreaker: 1.08, leather: 1.07, bomber: 1.09, blazer: 1.05, racing: 1.07, vest: 1.04, hoodie: 1.05, deer: 1.03, suit: 1.03 };
-  const HEAD_COVER = { cap: 'cap', beanie: 'cap', bandana: 'cap', panama: 'cap', leatherCap: 'helmet', helmetOpen: 'helmet', helmetFull: 'helmet' };
+  const HEAD_COVER = { cap: 'cap', beanie: 'cap', bandana: 'cap', panama: 'cap', peaked: 'cap', leatherCap: 'helmet', helmetOpen: 'helmet', helmetFull: 'helmet' };
 
 
 
@@ -385,6 +385,23 @@
         P[0].push(base); P[1].push(v3.add(base, [out[0] * 0.055, -0.025, out[2] * 0.055]));
       }
       grid(b, P, () => v3.add(HEAD_C, [0, -0.3, 0]), { open: true, col, uv: () => WHITE });
+    } else if (k === 'peaked') {
+      const band = C('#141416'), n = 16, low = [], rim = [];
+      headPatch(b, fig, f, 16, 2, all[0], all[1], () => 0.9, () => 1.27, 0.016, band, MAT.TRIM);
+      for (let j = 0; j <= n; j++) {
+        const ph = -Math.PI + Math.PI * 2 * j / n, base = onHead(fig, f, 0.9, ph, 0.016), out = v3.unit([base[0] - HEAD_C[0], 0, base[2] - HEAD_C[2]]), lift = 0.052 + Math.max(0, Math.cos(ph)) * 0.014;
+        low.push(base);
+        rim.push(v3.add(base, [out[0] * 0.026, lift, out[2] * 0.026]));
+      }
+      const c = v3.mul(rim.slice(0, n).reduce((a, p) => v3.add(a, p), [0, 0, 0]), 1 / n), core = rim.map(p => v3.add(c, v3.mul(v3.sub(p, c), 0.04)));
+      grid(b, [low, rim, core], () => HEAD_C, { open: true, col, uv: () => WHITE });
+      const vis = [];
+      for (let i = 0; i <= 6; i++) {
+        const ph = -0.7 + 1.4 * i / 6, base = onHead(fig, f, 1.26, ph, 0.016), fw = [Math.sin(ph) * 0.4, 0, -Math.cos(ph)];
+        vis.push([base, v3.add(base, [fw[0] * 0.055, -0.024, fw[2] * 0.055 - 0.006])]);
+      }
+      grid(b, [vis.map(q => q[0]), vis.map(q => q[1])], () => v3.add(HEAD_C, [0, -0.2, 0]), { open: true, col: band, mat: MAT.TRIM, uv: () => WHITE });
+      blob(b, onHead(fig, f, 1.08, 0, 0.022), [0.012, 0.009, 0.005], 6, 3, C('#d8b450'), MAT.CHROME);
     } else if (k === 'leatherCap') {
       headPatch(b, fig, f, 16, 6, all[0], all[1], () => 0, ph => (Math.abs(ph) < 0.7 ? 1.15 : Math.abs(ph) < 1.2 ? 1.95 : 1.8), 0.012, col, MAT.TRIM);
       for (const s of [-1, 1]) strand(b, [onHead(fig, f, 1.95, s * 1.1, 0.012), onHead(fig, f, 2.35, s * 0.9, 0.008), onHead(fig, f, 2.5, s * 0.3, 0.006)], [0.004, 0.004, 0.003], 3, col, () => WHITE);
@@ -445,6 +462,11 @@
     if (k === 'chain' || k === 'tag') loop(b, path(0.075, 14), 0.0034, col, MAT.CHROME);
     if (k === 'tag') b.box(0, cL - 0.093, -cz * 1.02 * bk - fig.bust * 0.8 - 0.009, 0.014, 0.02, 0.003, col, MAT.CHROME);
     if (k === 'beads') for (const p of path(0.065, 12)) blob(b, p, [0.011, 0.011, 0.011], 4, 2, col, MAT.LENS);
+    if (k === 'pin') {
+      const z = -cz * 1.02 * bk - fig.bust * 0.7 - 0.004, y = cL - 0.075;
+      b.box(-0.075, y, z, 0.016, 0.019, 0.002, C('#d8b450'), MAT.CHROME);
+      b.box(-0.075, y, z - 0.003, 0.012, 0.014, 0.002, col, MAT.LENS);
+    }
     if (k === 'scarf') {
       loop(b, path(0.015, 10).map(p => [p[0] * 1.05, p[1] + 0.012, p[2] * 1.05]), 0.02, col);
       strand(b, [[-0.045, cL, -nr * 1.2 - 0.02], [-0.06, cL - 0.12, -cz * 0.95 - 0.02], [-0.065, cL - 0.24, -cz - 0.02]], [0.02, 0.018, 0.016], 4, col, () => WHITE);
@@ -608,7 +630,7 @@
     const ck = key + '|' + crownAt.toFixed(3) + '|' + geo.len + '|' + geo.eye.join(',');
     let st = seats.get(ck);
     if (st) return st;
-    const eye = geo.eye, cp = geo.cockpit, L = geo.len, yF = geo.yb + 0.06;
+    const eye = geo.eye, cp = geo.cockpit, L = geo.len, yF = geo.floor ? geo.floor - 0.02 : geo.yb + 0.06;
     const roof = z => geo.shape.topAt(F.clamp((z + L / 2) / L, 0, 1)) - 0.045;
     const place = s => {
       const head = [eye[0], eye[1] + 0.015 * s, eye[2] + 0.085 * s];

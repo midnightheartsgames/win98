@@ -5,6 +5,7 @@
   const EDITS_KEY = 'win98_astralwiki_edits_v1';
   const TALK_KEY = 'win98_astralwiki_talk_v1';
   const SPOILER_KEY = 'win98_astralwiki_spoilers_v1';
+  const SPOILER_DESC = 'Описание скрыто: это спойлер сюжета. Включить спойлеры можно в шапке страницы.';
   const HITS_KEY = 'win98_astralwiki_hits_v1';
   const CHECKS_KEY = 'win98_astralwiki_checks_v1';
   const SAVE_KEY = 'win98_hsr98_save_v3';
@@ -31,7 +32,7 @@
     ['station', 'Станция «Герта» и Общество гениев', ['herta', 'asta', 'arlan', 'ruanmei']],
     ['hunters', 'Охотники за Стелларонами', ['kafka', 'silverwolf', 'blade']],
     ['jarilo', 'Ярило-VI', ['bronya', 'seele', 'gepard', 'serval', 'pela', 'natasha', 'sampo', 'hook', 'clara', 'lynx', 'luka']],
-    ['luofu', 'Сяньчжоу «Лофу»', ['bailu', 'yanqing', 'sushang', 'xueyi', 'hanya', 'tingyun', 'qingque', 'yukong', 'guinaifen']],
+    ['luofu', 'Лофу Сяньчжоу', ['bailu', 'yanqing', 'sushang', 'xueyi', 'hanya', 'tingyun', 'qingque', 'yukong', 'guinaifen']],
     ['guests', 'Гости Междумирья', null]
   ];
 
@@ -41,7 +42,8 @@
     ['j_', 'Ярило-VI: Надмирье и Снежные равнины', 'Надмирье'],
     ['u_', 'Ярило-VI: Подземье', 'Подземье'],
     ['su_', 'Виртуальная вселенная', 'Виртуальная вселенная'],
-    ['ax_', 'Королевство Белзерг: Аксель', 'Белзерг']
+    ['ax_', 'Королевство Белзерг: Аксель', 'Белзерг'],
+    ['lf_', 'Лофу Сяньчжоу', 'Лофу']
   ];
 
   const DOC_KINDS = [
@@ -919,7 +921,7 @@
         <td>
           <div class="hwk-welcome">
             <div class="hwk-welcome-h">Добро пожаловать в АстралВики '98!</div>
-            <p class="hwk-p">Мы собираем всё, что известно о мире <b>Honkai: Star Rail 98</b> (версия 1.7): устройство Вселенной, фракции и миры, судьбы ${characterIds().length} персонажей, ${mapIds().length} карт с отметками сундуков и записок, тексты всех ${docIds().length} документов и решения загадок. Любой читатель может дополнить статью или оставить реплику в обсуждении.</p>
+            <p class="hwk-p">Мы собираем всё, что известно о мире <b>Honkai: Star Rail 98</b> (версия 1.8): устройство Вселенной, фракции и миры, судьбы ${characterIds().length} персонажей, ${mapIds().length} карт с отметками сундуков и записок, тексты всех ${docIds().length} документов и решения загадок. Любой читатель может дополнить статью или оставить реплику в обсуждении.</p>
             <p class="hwk-small">Сейчас в Архиве <b>${total}</b> статей. Официальный сайт игры: ${A('http://hsr.hoyoverse.com', 'hsr.hoyoverse.com')}. Замеры урона и сборки: ${A('http://www.kovcheg98.ru/hsr98/', '«Ковчег»')}.</p>
           </div>
 
@@ -1673,7 +1675,7 @@
         <table class="hwk-table">
           ${items.map(([qid, q], i) => `<tr${alt(i)}>
             <td width="30%"><b>${A(`${HOST}/quest?id=${qid}`, esc(q.name))}</b>${q.giver ? `<br><span class="hwk-small">выдаёт: ${esc(q.giver)}</span>` : ''}</td>
-            <td>${esc(q.desc || '')}</td>
+            <td>${esc(q.spoiler && !spoilersOpen() ? SPOILER_DESC : q.desc || '')}</td>
             <td width="22%" class="hwk-small">${areaName(q)}</td>
           </tr>`).join('')}
         </table>`;
@@ -1712,7 +1714,8 @@
     const q = h.QUESTS && h.QUESTS[id];
     const item = tm || q;
     const rawSteps = item.steps;
-    const steps = Array.isArray(rawSteps)
+    const hidden = item.spoiler && !spoilersOpen();
+    const steps = hidden ? [] : Array.isArray(rawSteps)
       ? rawSteps
       : (rawSteps && typeof rawSteps === 'object'
         ? Object.entries(rawSteps).map(([k, v]) => Object.assign({ key: k }, typeof v === 'object' ? v : { text: String(v) }))
@@ -1728,7 +1731,7 @@
       ${doneInSave ? `<p class="hwk-done">■ В вашем сохранении (${esc(sv.name || 'Первопроходец')}) эта миссия уже выполнена.</p>` : ''}
       <table class="hwk-cols"><tr>
         <td>
-          <p class="hwk-lead">${esc(item.desc || 'Сюжетное поручение Первопроходца.')}</p>
+          <p class="hwk-lead">${esc(hidden ? SPOILER_DESC : item.desc || 'Сюжетное поручение Первопроходца.')}</p>
           ${steps.length ? `<h2 class="hwk-h2">Что нужно сделать</h2>
             <p class="hwk-small">Отмечайте пройденные шаги галочкой. Отметки хранятся в вашем браузере.</p>
             <table class="hwk-check">
@@ -1740,7 +1743,7 @@
                   <td>${esc(st.text || st.title || `Шаг ${i + 1}`)}${mapId && h.MAPS[mapId] ? `<br><span class="hwk-small">Где: ${A(`${HOST}/atlas?map=${mapId}`, esc(h.MAPS[mapId].name))}</span>` : ''}</td>
                 </tr>`;
               }).join('')}
-            </table>` : '<p class="hwk-small">Эта миссия проходит одним событием, без отдельных шагов.</p>'}
+            </table>` : hidden ? '' : '<p class="hwk-small">Эта миссия проходит одним событием, без отдельных шагов.</p>'}
         </td>
         <td class="hwk-gap"></td>
         <td class="hwk-side">

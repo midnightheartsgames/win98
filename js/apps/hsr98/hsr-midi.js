@@ -91,7 +91,9 @@
     bass: [0, 0.45, 1, 0.62, 0.42, 0.27, 0.17, 0.11, 0.07, 0.045, 0.03],
     voice: [0, 1, 0.62, 0.36, 0.42, 0.28, 0.12, 0.1, 0.07, 0.04, 0.025],
     brass: [0, 1, 0.86, 0.68, 0.52, 0.4, 0.3, 0.22, 0.16, 0.12, 0.09, 0.065, 0.048, 0.035],
-    sub: [0, 1, 0.42, 0.2, 0.09, 0.04]
+    sub: [0, 1, 0.42, 0.2, 0.09, 0.04],
+    pluck: [0, 1, 0.72, 0.5, 0.34, 0.24, 0.16, 0.11, 0.08, 0.055, 0.04, 0.028, 0.02],
+    flute: [0, 1, 0.3, 0.11, 0.045, 0.02, 0.008]
   };
   const PATCHES = {
     piano: { wave: 'piano', layers: [[1, -3, 0.62], [1, 4, 0.56]], a: 0.004, sus: 0, rel: 0.3, cut: 520, cutVel: 2700, cutEnv: 2.8, cutT: 0.2, level: 0.36 },
@@ -107,7 +109,11 @@
     voice: { wave: 'voice', layers: [[1, -6, 0.5], [1, 6, 0.5]], a: 0.07, sus: 1, rel: 0.28, cut: 1200, cutVel: 1800, cutKey: 0.2, vib: 16, vibDelay: 0.15, level: 0.3 },
     brass: { wave: 'brass', layers: [[1, -6, 0.5], [1, 6, 0.5]], a: 0.025, sus: 0.8, dec: 0.55, rel: 0.22, cut: 520, cutVel: 2400, cutKey: 0.25, cutEnv: 2.1, cutT: 0.07, vib: 5, vibDelay: 0.4, level: 0.27 },
     sub: { wave: 'sub', layers: [[1, 0, 1]], a: 0.006, sus: 0.85, dec: 0.7, rel: 0.12, cut: 700, cutVel: 500, level: 0.5 },
-    drop: { wave: 'sub', layers: [[1, 0, 1]], a: 0.004, sus: 0.7, dec: 0.5, rel: 0.2, cut: 900, cutVel: 600, glide: 0.5, level: 0.55 }
+    drop: { wave: 'sub', layers: [[1, 0, 1]], a: 0.004, sus: 0.7, dec: 0.5, rel: 0.2, cut: 900, cutVel: 600, glide: 0.5, level: 0.55 },
+    bell: { wave: 'sine', layers: [[1, 0, 0.55], [1, 7, 0.3], [2.76, 0, 0.2], [5.4, 0, 0.08], [8.93, 0, 0.03]], keep: true, a: 0.002, sus: 0, rel: 1.1, cut: 7000, cutVel: 6000, level: 0.2 },
+    mallet: { wave: 'sine', layers: [[1, 0, 0.62], [1, -6, 0.3], [4, 0, 0.14], [10, 0, 0.03]], keep: true, a: 0.002, sus: 0, rel: 0.6, cut: 6000, cutVel: 4000, level: 0.24 },
+    pluck: { wave: 'pluck', layers: [[1, -4, 0.55], [1, 4, 0.55]], a: 0.002, sus: 0, dec: 0.5, rel: 0.25, cut: 700, cutVel: 2600, cutKey: 0.3, cutEnv: 4, cutT: 0.06, level: 0.3 },
+    flute: { wave: 'flute', layers: [[1, -3, 0.6], [1, 3, 0.5]], a: 0.05, sus: 1, rel: 0.16, cut: 2400, cutVel: 2600, cutKey: 0.4, vib: 6, vibDelay: 0.3, level: 0.26 }
   };
   const patchFor = prog => {
     if (prog < 8 || prog === 45 || prog === 46) return PATCHES.piano;
@@ -123,6 +129,9 @@
     if (prog === 49 || prog === 51 || (prog >= 88 && prog < 96)) return PATCHES.slow;
     if (prog >= 56 && prog < 72) return PATCHES.horn;
     if (prog >= 80 && prog < 88) return PATCHES.lead;
+    if (prog >= 8 && prog <= 15) return prog >= 11 && prog <= 13 ? PATCHES.mallet : PATCHES.bell;
+    if (prog >= 24 && prog <= 28) return PATCHES.pluck;
+    if (prog === 72 || (prog >= 74 && prog <= 79)) return PATCHES.flute;
     return PATCHES.strings;
   };
   const TOMS = { 41: 82, 43: 98, 45: 117, 47: 140, 48: 165, 50: 196 };
@@ -247,7 +256,7 @@
         lfo.start(t); lfo.stop(stop);
       }
       const wave = this.wave(P.wave);
-      const layers = short && P.layers.length > 1 ? [[P.layers[0][0], 0, Math.hypot(...P.layers.filter(l => l[0] === P.layers[0][0]).map(l => l[2]))]] : P.layers;
+      const layers = short && P.layers.length > 1 && !P.keep ? [[P.layers[0][0], 0, Math.hypot(...P.layers.filter(l => l[0] === P.layers[0][0]).map(l => l[2]))]] : P.layers;
       for (const [ratio, cents, g] of layers) {
         const o = c.createOscillator(), og = c.createGain();
         if (wave) o.setPeriodicWave(wave); else o.type = P.wave;
@@ -316,6 +325,19 @@
       if (TOMS[key]) {
         this.toneHit(ch, t, 'sine', TOMS[key], TOMS[key] * 0.72, 0.25, 0.3 * v, 0.13);
         this.noiseHit(ch, t, 'lowpass', 900, 0.7, 0.1 * v, 0.03);
+        return;
+      }
+      if (key === 39) {
+        for (let i = 0; i < 3; i++) this.noiseHit(ch, t + i * 0.011, 'bandpass', 1300, 1.1, 0.3 * v, i < 2 ? 0.006 : 0.05);
+        return;
+      }
+      if (key === 54) {
+        this.noiseHit(ch, t, 'highpass', 6500, 0.8, 0.2 * v, 0.05);
+        this.noiseHit(ch, t + 0.012, 'bandpass', 9000, 3, 0.12 * v, 0.07);
+        return;
+      }
+      if (key === 70) {
+        this.noiseHit(ch, t, 'highpass', 5200, 0.9, 0.16 * v, 0.018);
         return;
       }
       const crash = key === 49 || key === 57 || key === 52 || key === 55;

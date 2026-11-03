@@ -1,11 +1,13 @@
 (function (H) {
   'use strict';
-  const HD = H.HD, TUN = HD.TUN, TS = 32;
+  const HD = H.HD, TUN = HD.TUN, TS = 32, N = HD.N;
   const DT = 1 / TUN.hz;
   const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
   const lin = (p, n) => p[0] + p[1] * n;
   const D8 = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
   const ROLE_LINE = { q: 'Навык', e: 'Техника', r: 'Абсолютная техника' };
+  const HASH_D = new Float64Array(1), HASH_W = new Uint32Array(HASH_D.buffer);
+  const SPAWN_OFF = [[0, 0], [26, 0], [-26, 0], [0, 26]];
 
   let gridCache = null;
   function gridOf() {
@@ -114,6 +116,7 @@
       this.uid = 0; this.tick = 0; this.time = 0;
       this.units = []; this.shots = []; this.areas = []; this.events = []; this.queue = [];
       this.rng = H.makeRandom((run.seed * 7919 + run.wave * 104729) >>> 0);
+      this.fxRng = H.makeRandom((run.seed * 6151 + run.wave * 1543 + 5) >>> 0);
       this.stats = Object.assign({ kills: 0, dmg: 0, heal: 0, gold: 0, spent: 0, raid: 0, time: 0, tfell: 0, bossMin: null }, run.stats);
       this.glow = { n: 0, w: 0, e: 0 };
       this.breakNo = 0; this.over = null; this.sched = []; this.waveFoes = 0; this.leaked = false;
@@ -128,15 +131,51 @@
         return t;
       });
       this.baseStats();
-      const p = run.players[0];
-      const hero = this.add({ side: 'ally', kind: 'hero', key: p.hero, x: M.spawn[0] * TS + 16, y: M.spawn[1] * TS + 16, r: 11, aggro: H.PATHS[H.CHARS[p.hero].path].aggro, cd: { q: 0, e: 0, r: 0 }, atkCd: 0, still: 1, lossAcc: 0, voiceT: -99, recallCd: 0, recall: 0, respawn: 0, moveDir: null, path: null, standAt: null, hold: false, sel: null, forced: null, tal: {} });
-      Object.assign(hero, { lvl: p.lvl, exp: p.exp, pts: p.pts, abil: Object.assign({ q: 0, e: 0, t: 0, r: 0 }, p.abil), picks: Object.assign({}, p.picks), gold: p.gold, items: p.items.map(it => (it ? Object.assign({}, it) : null)), cone: p.cone, deaths: p.deaths, bought: !!p.buyback, pl: 0 });
-      if (hero.cone) hero.cone = Object.assign({}, hero.cone);
-      if (HD.equip) HD.equip(this, hero, true); else this.heroStatsApply(hero, true);
-      this.heroes = [hero];
-      this.hero = hero;
+      this.heroes = run.players.map((p, i) => this.addHero(p, i));
+      this.waveN = this.heroes.length;
+      this.evP = null;
       this.phase = run.phase === 'done' ? 'done' : 'break';
       this.breakT = this.wave === 1 ? TUN.firstBreak : this.diff.breakT;
+    }
+
+    get hero() { return this.heroes[0]; }
+
+    addHero(p, i) {
+      const at = this.spawnAt(i);
+      const hero = this.add({ side: 'ally', kind: 'hero', key: p.hero, x: at.x, y: at.y, r: 11, aggro: H.PATHS[H.CHARS[p.hero].path].aggro, cd: { q: 0, e: 0, r: 0 }, atkCd: 0, still: 1, lossAcc: 0, voiceT: -99, recallCd: 0, recall: 0, respawn: 0, moveDir: null, path: null, standAt: null, hold: false, sel: null, forced: null, tal: {} });
+      Object.assign(hero, { lvl: p.lvl, exp: p.exp, pts: p.pts, abil: Object.assign({ q: 0, e: 0, t: 0, r: 0 }, p.abil), picks: Object.assign({}, p.picks), gold: p.gold, items: p.items.map(it => (it ? Object.assign({}, it) : null)), cone: p.cone, deaths: p.deaths, bought: !!p.buyback, pl: i, away: false, vote: false, cmdT: 0, st: Object.assign({ kills: 0, dmg: 0, heal: 0, gold: 0 }, p.st) });
+      if (hero.cone) hero.cone = Object.assign({}, hero.cone);
+      if (HD.equip) HD.equip(this, hero, true); else this.heroStatsApply(hero, true);
+      return hero;
+    }
+
+    spawnAt(i) {
+      const S = this.M.spawn, off = SPAWN_OFF[i] || SPAWN_OFF[0];
+      return { x: S[0] * TS + 16 + off[0], y: S[1] * TS + 16 + off[1] };
+    }
+
+    heroOf(src) { return src.kind === 'hero' ? src : src.owner ? this.heroes.find(h => h.uid === src.owner) || null : null; }
+
+    activeHeroes() {
+      const list = this.heroes.filter(h => !h.away && (this.heroes.length === 1 || this.time - h.cmdT <= TUN.coop.idle));
+      return list.length ? list : this.heroes;
+    }
+
+    coopK(name) { return TUN.coop[name][this.waveN - 1]; }
+
+    coopHp(boss) {
+      const a = this.coopK(boss ? 'bossHp' : 'hp'), b = this.coopK(boss ? 'bossEnd' : 'hpEnd');
+      return a + (b - a) * (this.wave - 1) / TUN.coop.span;
+    }
+
+    nearestHero(u) {
+      let best = this.heroes[0], bd = Infinity;
+      for (const h of this.heroes) {
+        if (h.dead) continue;
+        const d = this.gap(u, h);
+        if (d < bd) { bd = d; best = h; }
+      }
+      return best;
     }
 
     add(u) {
@@ -146,7 +185,11 @@
       return o;
     }
 
-    emit(e) { this.events.push(e); if (this.events.length > 600) this.events.splice(0, this.events.length - 600); }
+    emit(e) {
+      if (this.evP != null && e.p == null) e.p = this.evP;
+      this.events.push(e);
+      if (this.events.length > 600) this.events.splice(0, this.events.length - 600);
+    }
 
     towerStats(t) {
       const max = Math.round(lin(TUN.tHp, this.wave));
@@ -208,30 +251,30 @@
     chance(src, tgt, base) { const res = tgt.kind === 'boss' ? TUN.resBoss : tgt.side === 'foe' ? TUN.resFoe : this.sum(tgt, 'res'); return base * (1 + (src ? this.sum(src, 'ehr') : 0)) * (1 - res); }
 
     gap(a, b) {
-      if (b.rect) { const x = clamp(a.x, b.rect.x0, b.rect.x1), y = clamp(a.y, b.rect.y0, b.rect.y1); return Math.hypot(a.x - x, a.y - y); }
-      return Math.hypot(a.x - b.x, a.y - b.y) - (b.r || 0);
+      if (b.rect) { const x = clamp(a.x, b.rect.x0, b.rect.x1), y = clamp(a.y, b.rect.y0, b.rect.y1); return N.hypot(a.x - x, a.y - y); }
+      return N.hypot(a.x - b.x, a.y - b.y) - (b.r || 0);
     }
 
     inPlaza(u) { const P = this.M.plaza, x = u.x / TS, y = u.y / TS; return x >= P.x0 && x < P.x1 && y >= P.y0 && y < P.y1; }
-    nearShop(u) { const S = this.M.shop; return this.inPlaza(u) && Math.hypot(u.x - S[0] * TS, u.y - (S[1] * TS + 16)) <= TUN.shopR; }
+    nearShop(u) { const S = this.M.shop; return this.inPlaza(u) && N.hypot(u.x - S[0] * TS, u.y - (S[1] * TS + 16)) <= TUN.shopR; }
 
     foes() { return this.units.filter(u => u.side === 'foe' && !u.dead); }
     byId(id) { return this.units.find(u => u.uid === id && !u.dead) || null; }
 
     inShape(a, u) {
       const p = u.rect ? { x: clamp(a.x, u.rect.x0, u.rect.x1), y: clamp(a.y, u.rect.y0, u.rect.y1) } : u;
-      const dx = p.x - a.x, dy = p.y - a.y, d = Math.hypot(dx, dy), ur = u.rect ? 0 : u.r || 0;
+      const dx = p.x - a.x, dy = p.y - a.y, d = N.hypot(dx, dy), ur = u.rect ? 0 : u.r || 0;
       if (a.shape === 'line') {
-        const c = Math.cos(a.ang), s = Math.sin(a.ang), along = dx * c + dy * s, side = Math.abs(-dx * s + dy * c);
+        const c = N.cos(a.ang), s = N.sin(a.ang), along = dx * c + dy * s, side = Math.abs(-dx * s + dy * c);
         return along >= -ur && along <= a.len + ur && side <= a.w / 2 + ur;
       }
       if (d - ur > a.r) return false;
       if (a.shape === 'cone') {
         if (d < ur) return true;
-        let da = Math.atan2(dy, dx) - a.ang;
+        let da = N.atan2(dy, dx) - a.ang;
         while (da > Math.PI) da -= Math.PI * 2;
         while (da < -Math.PI) da += Math.PI * 2;
-        return Math.abs(da) <= a.arc / 2 + Math.asin(Math.min(1, ur / Math.max(1, d)));
+        return Math.abs(da) <= a.arc / 2 + N.asin(Math.min(1, ur / Math.max(1, d)));
       }
       return true;
     }
@@ -242,7 +285,7 @@
       let best = null, bd = r;
       for (const u of this.units) {
         if (u.dead || u.side !== 'foe' || (filter && !filter(u))) continue;
-        const d = Math.hypot(u.x - x, u.y - y) - u.r;
+        const d = N.hypot(u.x - x, u.y - y) - u.r;
         if (d <= bd) { bd = d; best = u; }
       }
       return best;
@@ -251,7 +294,7 @@
     solidAt(x, y) { const G = this.G, cx = Math.floor(x / TS), cy = Math.floor(y / TS); return !G.free(cx, cy); }
 
     clearLine(x0, y0, x1, y1, r) {
-      const d = Math.hypot(x1 - x0, y1 - y0), n = Math.max(1, Math.ceil(d / 8)), nx = d ? -(y1 - y0) / d : 0, ny = d ? (x1 - x0) / d : 0;
+      const d = N.hypot(x1 - x0, y1 - y0), n = Math.max(1, Math.ceil(d / 8)), nx = d ? -(y1 - y0) / d : 0, ny = d ? (x1 - x0) / d : 0;
       for (let i = 0; i <= n; i++) {
         const x = x0 + (x1 - x0) * i / n, y = y0 + (y1 - y0) * i / n;
         if (this.solidAt(x, y) || (r && (this.solidAt(x + nx * r, y + ny * r) || this.solidAt(x - nx * r, y - ny * r)))) return false;
@@ -265,7 +308,7 @@
         const x0 = Math.floor((u.x - r) / TS), x1 = Math.floor((u.x + r) / TS), y0 = Math.floor((u.y - r) / TS), y1 = Math.floor((u.y + r) / TS);
         for (let cy = y0; cy <= y1; cy++) for (let cx = x0; cx <= x1; cx++) {
           if (G.free(cx, cy)) continue;
-          const px = clamp(u.x, cx * TS, cx * TS + TS), py = clamp(u.y, cy * TS, cy * TS + TS), dx = u.x - px, dy = u.y - py, d = Math.hypot(dx, dy);
+          const px = clamp(u.x, cx * TS, cx * TS + TS), py = clamp(u.y, cy * TS, cy * TS + TS), dx = u.x - px, dy = u.y - py, d = N.hypot(dx, dy);
           if (d >= r) continue;
           if (d > 0.001) { u.x += dx / d * (r - d); u.y += dy / d * (r - d); }
           else {
@@ -278,7 +321,7 @@
     }
 
     stepTo(u, tx, ty, spd) {
-      const dx = tx - u.x, dy = ty - u.y, d = Math.hypot(dx, dy);
+      const dx = tx - u.x, dy = ty - u.y, d = N.hypot(dx, dy);
       if (d < 0.5) return true;
       const s = Math.min(d, spd * DT);
       u.x += dx / d * s; u.y += dy / d * s;
@@ -291,14 +334,14 @@
     face(u, dx, dy) { if (Math.abs(dx) > Math.abs(dy)) u.dir = dx > 0 ? 'right' : 'left'; else if (dy) u.dir = dy > 0 ? 'down' : 'up'; }
 
     dash(u, tx, ty, maxD, stopAt) {
-      const dx = tx - u.x, dy = ty - u.y, d = Math.hypot(dx, dy), go = Math.min(maxD, Math.max(0, d - (stopAt || 0)));
+      const dx = tx - u.x, dy = ty - u.y, d = N.hypot(dx, dy), go = Math.min(maxD, Math.max(0, d - (stopAt || 0)));
       if (d < 1) return;
       const n = Math.ceil(go / 6);
       for (let i = 0; i < n; i++) {
         const ox = u.x, oy = u.y;
         u.x += dx / d * go / n; u.y += dy / d * go / n;
         this.collide(u);
-        if (Math.hypot(u.x - ox, u.y - oy) < go / n * 0.3) break;
+        if (N.hypot(u.x - ox, u.y - oy) < go / n * 0.3) break;
       }
       this.face(u, dx, dy);
       u.px = u.x; u.py = u.y;
@@ -306,7 +349,7 @@
 
     push(u, fx, fy, d) {
       if (u.fixed || u.kind === 'boss' || u.dead) return;
-      const dx = u.x - fx, dy = u.y - fy, l = Math.hypot(dx, dy) || 1, n = Math.ceil(d / 6);
+      const dx = u.x - fx, dy = u.y - fy, l = N.hypot(dx, dy) || 1, n = Math.ceil(d / 6);
       for (let i = 0; i < n; i++) { u.x += dx / l * d / n; u.y += dy / l * d / n; this.collide(u); }
     }
 
@@ -352,7 +395,7 @@
       const list = info.battle.filter(l => l.t === label && !l.need);
       if (!list.length) return;
       u.voiceT = this.time;
-      this.emit({ t: 'say', uid: u.uid, text: list[this.rng.int(list.length)].text });
+      this.emit({ t: 'say', uid: u.uid, text: list[this.fxRng.int(list.length)].text });
     }
 
     hit(src, tgt, o) {
@@ -372,10 +415,10 @@
       if (src && src.kind === 'hero') { const HR = HD.HEROES[src.key]; amt *= (HR.amp || 1) * (this.diff === HD.DIFFS.hard && HR.ampHard || 1); }
       amt *= HD.ATK_ARMOR[type][this.armorType(tgt)];
       amt *= armorMul(this.armorOf(tgt) * (1 - (o.pen || 0) - (src ? this.sum(src, 'pen') : 0) - (hero ? this.plus(src, 'penBonus', tgt, o) : 0)));
-      const weak = (tgt.weak && tgt.weak.includes(elem)) || tgt.fx.some(f => f.k === 'weakAdd' && f.elem === elem);
+      const weak = (tgt.weak && tgt.weak.includes(elem)) || tgt.fx.some(f => f.k === 'weakAdd' && (f.elem === elem || (f.elems && f.elems.includes(elem))));
       if (weak) amt *= TUN.weakMul; else if (tgt.resist && tgt.resist.includes(elem)) amt *= TUN.resistMul;
       let vuln = 1 + this.sum(tgt, 'vuln') - this.sum(tgt, 'dr') + (tgt.brokenT > 0 ? TUN.brokenVuln : 0) + (o.kind === 'dot' ? this.sum(tgt, 'dotVuln') : 0);
-      for (const f of tgt.fx) if (f.k === 'elemVuln' && f.elem === elem) vuln += f.v;
+      for (const f of tgt.fx) if (f.k === 'elemVuln' && (f.elem === elem || (f.elems && f.elems.includes(elem)))) vuln += f.v;
       if (src && src.side === 'foe' && tgt.side === 'ally') vuln -= this.sum(src, 'weaken');
       if (src && src.kind === 'boss' && tgt.kind === 'base') amt *= TUN.bossBaseMul;
       amt *= Math.max(0.1, vuln);
@@ -386,13 +429,17 @@
       if (sh) { absorbed = Math.min(sh.v, dealt); sh.v -= absorbed; dealt -= absorbed; if (sh.v <= 0) tgt.fx.splice(tgt.fx.indexOf(sh), 1); }
       const before = tgt.hp;
       tgt.hp -= dealt;
-      if (src && (src.kind === 'hero' || src.owner)) this.stats.dmg += dealt + absorbed;
+      if (src && (src.kind === 'hero' || src.owner)) {
+        this.stats.dmg += dealt + absorbed;
+        const who = this.heroOf(src);
+        if (who) who.st.dmg += dealt + absorbed;
+      }
       this.emit({ t: 'num', x: tgt.x, y: tgt.y - (tgt.r || 20) - 14, v: dealt + absorbed, crit, kind: o.kind === 'dot' ? 'dot' : absorbed && !dealt ? 'shield' : 'dmg', elem, uid: tgt.uid, ally: tgt.side === 'ally' });
       if (tgt.kind === 'hero') {
         tgt.lossAcc += (dealt / tgt.hpMax) * 100;
         while (tgt.lossAcc >= TUN.enLossPct) { tgt.lossAcc -= TUN.enLossPct; tgt.en = Math.min(tgt.enMax, tgt.en + 1); }
-        if (tgt.recall > 0) { tgt.recall = 0; this.emit({ t: 'msg', text: 'Возврат прерван' }); }
-        if (tgt.chan) { tgt.chan = null; this.emit({ t: 'msg', text: 'Канал прерван' }); }
+        if (tgt.recall > 0) { tgt.recall = 0; this.emit({ t: 'msg', text: 'Возврат прерван', p: tgt.pl }); }
+        if (tgt.chan) { tgt.chan = null; this.emit({ t: 'msg', text: 'Канал прерван', p: tgt.pl }); }
         if (dealt > 0) this.each(tgt, 'onLose', dealt);
         if (src && src.side === 'foe') this.each(tgt, 'onHurt', src, dealt, o);
       }
@@ -418,7 +465,7 @@
       const mul = src && src.kind === 'hero' ? this.fold(src, 'healMul', 1, tgt) : 1;
       const v = Math.max(0, Math.min(tgt.hpMax - tgt.hp, amt * mul * (1 + (src ? this.sum(src, 'healP') : 0) + this.sum(tgt, 'healIn'))));
       tgt.hp += v;
-      if (src && src.kind === 'hero') { this.stats.heal += v; if (v > 0) this.each(src, 'onHeal', tgt, v); }
+      if (src && src.kind === 'hero') { this.stats.heal += v; src.st.heal += v; if (v > 0) this.each(src, 'onHeal', tgt, v); }
       if (v >= 1) this.emit({ t: 'num', x: tgt.x, y: tgt.y - (tgt.r || 20) - 14, v: Math.round(v), kind: 'heal', uid: tgt.uid });
       return v;
     }
@@ -465,7 +512,7 @@
         u.recall = 0; u.path = null; u.moveDir = null; u.forced = null;
         u.fx = [];
         this.say(u, 'Поражение');
-        this.emit({ t: 'herodie', uid: u.uid });
+        this.emit({ t: 'herodie', uid: u.uid, p: u.pl });
         return;
       }
       u.hp = 0; u.dead = true;
@@ -474,22 +521,25 @@
       if (u.side !== 'foe') return;
       if (u.act) { for (const a of u.act.areas || []) { const i = this.areas.indexOf(a); if (i >= 0) this.areas.splice(i, 1); } u.act = null; }
       if (u.kind === 'boss' && u.bornT != null) { const d = Math.round(this.time - u.bornT); this.stats.bossMin = this.stats.bossMin == null ? d : Math.min(this.stats.bossMin, d); }
-      const h = this.hero, byHero = src && (src.kind === 'hero' || src.owner === h.uid);
-      const w = this.wave, near = !h.dead && Math.hypot(h.x - u.x, h.y - u.y) <= TUN.expR;
-      const raid = Object.keys(this.M.rifts).some(k => { const r = this.rift(k); return Math.hypot(r.x - u.x, r.y - u.y) <= TUN.raidR; });
-      let gold = u.key === 'trotter_big' ? TUN.bigPigKill : u.pig ? lin(TUN.pigGold, w) : u.kind === 'boss' ? TUN.goldBoss : u.elite ? lin(TUN.goldElite, w) : lin(TUN.goldNormal, w);
-      let exp = u.kind === 'boss' ? TUN.expBoss : u.elite ? lin(TUN.expElite, w) : lin(TUN.expNormal, w);
-      if (!byHero) gold *= TUN.goldShare; else gold *= 1 + this.sum(h, 'goldP');
-      if (raid && byHero) { gold *= 1 + TUN.raidGold; exp *= 1 + TUN.raidExp; }
-      gold = Math.round(gold * this.diff.gold);
-      if (byHero) this.stats.kills++;
-      this.giveGold(h, gold, raid && byHero ? 'raid' : null, u);
-      if (byHero || near) this.giveExp(h, exp);
-      if (byHero && src.kind === 'hero') {
-        h.en = Math.min(h.enMax, h.en + TUN.enKill);
-        const K = HD.KITS[h.key];
-        if (K && K.t && K.t.onKill && h.abil.t) K.t.onKill(this, h, this.lvlK('t', h.abil.t), u, o);
-        this.each(h, 'onKill', u, o);
+      const killer = src ? this.heroOf(src) : null;
+      const w = this.wave;
+      const raid = Object.keys(this.M.rifts).some(k => { const r = this.rift(k); return N.hypot(r.x - u.x, r.y - u.y) <= TUN.raidR; });
+      const goldBase = u.key === 'trotter_big' ? TUN.bigPigKill : u.pig ? lin(TUN.pigGold, w) : u.kind === 'boss' ? TUN.goldBoss : u.elite ? lin(TUN.goldElite, w) : lin(TUN.goldNormal, w);
+      const expBase = u.kind === 'boss' ? TUN.expBoss : u.elite ? lin(TUN.expElite, w) : lin(TUN.expNormal, w);
+      if (killer) { this.stats.kills++; killer.st.kills++; }
+      for (const h of this.heroes) {
+        const mine = h === killer, near = !h.dead && N.hypot(h.x - u.x, h.y - u.y) <= TUN.expR;
+        let gold = goldBase, exp = expBase;
+        if (!killer) gold *= TUN.goldShare; else gold *= 1 + this.sum(h, 'goldP');
+        if (raid && mine) { gold *= 1 + TUN.raidGold; exp *= 1 + TUN.raidExp; }
+        this.giveGold(h, Math.round(gold * this.coopK('gold') * this.diff.gold), raid && mine ? 'raid' : null, u);
+        if (mine || near) this.giveExp(h, exp * this.coopK('exp'));
+      }
+      if (killer && src.kind === 'hero') {
+        killer.en = Math.min(killer.enMax, killer.en + TUN.enKill);
+        const K = HD.KITS[killer.key];
+        if (K && K.t && K.t.onKill && killer.abil.t) K.t.onKill(this, killer, this.lvlK('t', killer.abil.t), u, o);
+        this.each(killer, 'onKill', u, o);
       }
       for (const hh of this.heroes) this.each(hh, 'onFoeDie', u, src, o);
       if (u.onDeath) u.onDeath(this, u);
@@ -497,9 +547,9 @@
 
     giveGold(h, v, tag, at) {
       if (v <= 0) return;
-      h.gold += v; this.stats.gold += v;
+      h.gold += v; this.stats.gold += v; h.st.gold += v;
       if (tag === 'raid') this.stats.raid += v;
-      this.emit({ t: 'gold', v, raid: tag === 'raid', x: at ? at.x : h.x, y: at ? at.y - 30 : h.y - 40 });
+      this.emit({ t: 'gold', v, raid: tag === 'raid', x: at ? at.x : h.x, y: at ? at.y - 30 : h.y - 40, p: h.pl });
     }
 
     giveExp(h, v) {
@@ -509,7 +559,7 @@
         h.exp -= expNext(h.lvl); h.lvl++;
         if (h.lvl !== 10 && h.lvl !== 20) h.pts++;
         this.heroStatsApply(h, false);
-        this.emit({ t: 'level', lvl: h.lvl });
+        this.emit({ t: 'level', lvl: h.lvl, p: h.pl });
       }
       if (h.lvl >= 20) h.exp = 0;
     }
@@ -556,8 +606,8 @@
       const range = K.range || 260;
       if (K.aim === 'target') {
         let t = aim.id != null ? this.byId(aim.id) : null;
-        if (t && (t.side !== 'foe' || Math.hypot(t.x - h.x, t.y - h.y) - t.r > range)) t = null;
-        if (!t && h.sel != null) { const s = this.byId(h.sel); if (s && s.side === 'foe' && Math.hypot(s.x - h.x, s.y - h.y) - s.r <= range) t = s; }
+        if (t && (t.side !== 'foe' || N.hypot(t.x - h.x, t.y - h.y) - t.r > range)) t = null;
+        if (!t && h.sel != null) { const s = this.byId(h.sel); if (s && s.side === 'foe' && N.hypot(s.x - h.x, s.y - h.y) - s.r <= range) t = s; }
         if (!t) t = this.nearestFoe(h.x, h.y, range);
         return t ? { id: t.uid, x: t.x, y: t.y, t } : null;
       }
@@ -574,7 +624,7 @@
           const s = h.sel != null ? this.byId(h.sel) : null, t = s && s.side === 'foe' ? s : this.nearestFoe(h.x, h.y, Math.max(range, 300));
           if (t) { x = t.x; y = t.y; } else { const d = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[h.dir]; x = h.x + d[0] * 80; y = h.y + d[1] * 80; }
         }
-        const dx = x - h.x, dy = y - h.y, d = Math.hypot(dx, dy);
+        const dx = x - h.x, dy = y - h.y, d = N.hypot(dx, dy);
         if (d > range) { x = h.x + dx / d * range; y = h.y + dy / d * range; }
         return { x, y };
       }
@@ -602,7 +652,7 @@
       h.cd[slot] = Math.max(0, h.cd[slot]) + K.cd;
       h.recall = 0; h.still = 0;
       this.emit({ t: 'cast', slot, uid: h.uid, x: a.x, y: a.y });
-      if (slot === 'r' || (this.time - h.voiceT >= TUN.voiceGap && this.rng() < TUN.voiceChance)) this.say(h, ROLE_LINE[slot]);
+      if (slot === 'r' || (this.time - h.voiceT >= TUN.voiceGap && this.fxRng() < TUN.voiceChance)) this.say(h, ROLE_LINE[slot]);
       return true;
     }
 
@@ -653,9 +703,11 @@
       for (const c of q) {
         const h = this.heroes[c.p];
         if (!h) continue;
+        this.evP = c.p;
+        if (c.t !== 'away') h.cmdT = this.time;
         switch (c.t) {
           case 'move': {
-            const l = Math.hypot(c.dx || 0, c.dy || 0);
+            const l = N.hypot(c.dx || 0, c.dy || 0);
             h.moveDir = l ? { x: c.dx / l, y: c.dy / l } : null;
             if (l) { h.path = null; h.forced = null; h.recall = 0; h.chan = null; } else h.standAt = { x: h.x, y: h.y };
             break;
@@ -676,10 +728,12 @@
             if (!h.dead && h.recallCd <= 0 && h.recall <= 0) { h.recall = TUN.recallT; h.path = null; h.moveDir = null; h.forced = null; this.emit({ t: 'msg', text: 'Возврат на площадь' }); }
             break;
           case 'buyback': this.buyback(h); break;
-          case 'early': this.early(); break;
+          case 'early': this.early(h); break;
           case 'restore': this.restore(h, c.i); break;
+          case 'away': h.away = !!c.on; break;
         }
       }
+      this.evP = null;
     }
 
     buyback(h) {
@@ -692,18 +746,29 @@
     }
 
     respawnHero(h) {
-      const S = this.M.spawn;
-      Object.assign(h, { dead: false, hp: h.hpMax, en: Math.max(h.en, 0), x: S[0] * TS + 16, y: S[1] * TS + 16, respawn: 0, path: null, moveDir: null, forced: null, standAt: null });
+      const at = this.spawnAt(h.pl);
+      Object.assign(h, { dead: false, hp: h.hpMax, en: Math.max(h.en, 0), x: at.x, y: at.y, respawn: 0, path: null, moveDir: null, forced: null, standAt: null });
       h.px = h.x; h.py = h.y;
       if (HD.equip) HD.equip(this, h);
       this.each(h, 'onRespawn');
-      this.emit({ t: 'respawn', uid: h.uid });
+      this.emit({ t: 'respawn', uid: h.uid, p: h.pl });
     }
 
-    early() {
+    earlyVotes() {
+      const need = this.activeHeroes();
+      return { n: need.filter(h => h.vote).length, of: need.length };
+    }
+
+    early(by) {
       if (this.phase !== 'break') return false;
+      if (this.heroes.length > 1) {
+        by.vote = true;
+        const v = this.earlyVotes();
+        this.emit({ t: 'vote', n: v.n, of: v.of });
+        if (v.n < v.of) return false;
+      }
       const g = Math.ceil(this.breakT) * TUN.earlyGold;
-      this.giveGold(this.hero, g, 'early');
+      for (const h of this.heroes) this.giveGold(h, g, 'early');
       this.startWave();
       return true;
     }
@@ -712,7 +777,7 @@
 
     restore(h, i) {
       const t = this.turrets[i], cost = this.restoreCost();
-      if (!t || !t.dead || this.phase !== 'break' || h.dead || Math.hypot(h.x - t.x, h.y - t.y) > 96 || h.gold < cost) { this.emit({ t: 'deny', why: !t || !t.dead ? '' : this.phase !== 'break' ? 'Только в перерыве' : h.gold < cost ? 'Мало золота' : 'Подойдите к турели' }); return false; }
+      if (!t || !t.dead || this.phase !== 'break' || h.dead || N.hypot(h.x - t.x, h.y - t.y) > 96 || h.gold < cost) { this.emit({ t: 'deny', why: !t || !t.dead ? '' : this.phase !== 'break' ? 'Только в перерыве' : h.gold < cost ? 'Мало золота' : 'Подойдите к турели' }); return false; }
       h.gold -= cost; this.stats.spent += cost;
       t.dead = false; t.hp = t.hpMax; t.fx = [];
       this.emit({ t: 'msg', text: 'Турель восстановлена', x: t.x, y: t.y - 30 });
@@ -762,7 +827,7 @@
         }
         if (h.recall > 0) {
           h.recall -= DT;
-          if (h.recall <= 0) { h.recall = 0; h.recallCd = TUN.recallCd; const S = this.M.spawn; h.x = S[0] * TS + 16; h.y = S[1] * TS + 16; h.px = h.x; h.py = h.y; h.standAt = null; this.emit({ t: 'msg', text: 'Герой на площади' }); }
+          if (h.recall <= 0) { h.recall = 0; h.recallCd = TUN.recallCd; const at = this.spawnAt(h.pl); h.x = at.x; h.y = at.y; h.px = h.x; h.py = h.y; h.standAt = null; this.emit({ t: 'msg', text: 'Герой на площади', p: h.pl }); }
         }
         if (h.chan) { h.chan.t -= DT; if (h.chan.t <= 0) { const ch = h.chan; h.chan = null; ch.fn(); } }
         this.each(h, 'tick');
@@ -800,7 +865,7 @@
           if (n && n !== t) { if (!t) u.leashAt = { x: u.x, y: u.y }; t = n; }
         }
         if (u.ignore > 0) u.ignore -= DT;
-        if (t && t.kind !== 'base' && u.leashAt && Math.hypot(u.x - u.leashAt.x, u.y - u.leashAt.y) > TUN.leash && !taunt) { t = null; u.ignore = 2; u.leashAt = null; }
+        if (t && t.kind !== 'base' && u.leashAt && N.hypot(u.x - u.leashAt.x, u.y - u.leashAt.y) > TUN.leash && !taunt) { t = null; u.ignore = 2; u.leashAt = null; }
         if (!t && this.gap(u, this.base) <= u.range + 2) t = this.base;
         if (!t) u.leashAt = null;
         u.tgt = t ? t.uid : null;
@@ -833,7 +898,7 @@
       if (u.pigHits >= TUN.pigFlee && !u.fled) { u.fled = true; this.addFx(u, { n: 'Рывок', k: 'mspd', v: 1, t: 1.5 }); }
       if (!u.path || !u.path.length) {
         const r = this.rift(u.goal);
-        if (Math.hypot(u.x - r.x, u.y - r.y) < 24) { u.dead = true; u.escaped = true; this.emit({ t: 'msg', text: 'Свинка-копилка убежала', x: u.x, y: u.y - 30 }); return; }
+        if (N.hypot(u.x - r.x, u.y - r.y) < 24) { u.dead = true; u.escaped = true; this.emit({ t: 'msg', text: 'Свинка-копилка убежала', x: u.x, y: u.y - 30 }); return; }
         u.path = this.pathTo(u, r.x, r.y, 4000) || [r];
       }
       u.moving = true;
@@ -873,8 +938,8 @@
       if (!h.hold) {
         const t = this.autoTarget(h, h.range + TUN.holdChase);
         if (t && !this.inRange(h, t)) {
-          const dx = t.x - h.x, dy = t.y - h.y, d = Math.hypot(dx, dy), nx = h.x + dx / d * spd * DT, ny = h.y + dy / d * spd * DT;
-          if (Math.hypot(nx - h.standAt.x, ny - h.standAt.y) <= TUN.holdChase && this.clearLine(h.x, h.y, t.x, t.y, h.r - 2)) { this.stepTo(h, t.x, t.y, spd); h.moving = true; h.still = 0; return; }
+          const dx = t.x - h.x, dy = t.y - h.y, d = N.hypot(dx, dy), nx = h.x + dx / d * spd * DT, ny = h.y + dy / d * spd * DT;
+          if (N.hypot(nx - h.standAt.x, ny - h.standAt.y) <= TUN.holdChase && this.clearLine(h.x, h.y, t.x, t.y, h.r - 2)) { this.stepTo(h, t.x, t.y, spd); h.moving = true; h.still = 0; return; }
         }
       }
       h.still += DT;
@@ -883,7 +948,7 @@
     autoTarget(h, r) {
       const s = h.sel != null ? this.byId(h.sel) : null;
       if (s && s.side === 'foe' && this.gap(h, s) <= r) return s;
-      if (h.sel != null && (!s || Math.hypot(s.x - h.x, s.y - h.y) > 600)) h.sel = null;
+      if (h.sel != null && (!s || N.hypot(s.x - h.x, s.y - h.y) > 600)) h.sel = null;
       let best = null, bd = r;
       for (const u of this.units) {
         if (u.dead || u.side !== 'foe') continue;
@@ -904,7 +969,7 @@
           for (const b of B.get((cx + ox) + ',' + (cy + oy)) || []) {
             if (b.uid <= a.uid && !b.fixed) continue;
             if (b === a) continue;
-            const dx = a.x - b.x, dy = a.y - b.y, d = Math.hypot(dx, dy), min = a.r + b.r;
+            const dx = a.x - b.x, dy = a.y - b.y, d = N.hypot(dx, dy), min = a.r + b.r;
             if (d >= min) continue;
             const nx = d > 0.01 ? dx / d : 1, ny = d > 0.01 ? dy / d : 0, over = min - d;
             const af = b.fixed || b.kind === 'boss' ? 1 : a.kind === 'boss' ? 0 : 0.5;
@@ -964,7 +1029,7 @@
       for (const s of this.shots) {
         const t = this.byId(s.tgt);
         if (!t) continue;
-        const ty = t.y - (t.rect ? 0 : 12), dx = t.x - s.x, dy = ty - s.y, d = Math.hypot(dx, dy), st = s.spd * DT;
+        const ty = t.y - (t.rect ? 0 : 12), dx = t.x - s.x, dy = ty - s.y, d = N.hypot(dx, dy), st = s.spd * DT;
         if (d <= st + 6) {
           const src = s.srcU;
           const dealt = this.hit(src, t, s.o);
@@ -972,7 +1037,7 @@
           if (s.o.after) s.o.after(this, t, dealt);
           continue;
         }
-        s.x += dx / d * st; s.y += dy / d * st; s.ang = Math.atan2(dy, dx);
+        s.x += dx / d * st; s.y += dy / d * st; s.ang = N.atan2(dy, dx);
         keep.push(s);
       }
       this.shots = keep;
@@ -1004,7 +1069,8 @@
       this.phase = 'wave';
       this.waveT = 0; this.secT = 0; this.leaked = false;
       this.rng = H.makeRandom((this.run.seed * 7919 + this.wave * 104729 + 17) >>> 0);
-      this.hero.bought = false;
+      this.waveN = this.activeHeroes().length;
+      for (const h of this.heroes) { h.bought = false; h.vote = false; }
       for (const h of this.heroes) this.each(h, 'onWave');
       this.sched = HD.buildWave ? HD.buildWave(this) : [];
       this.waveFoes = 0;
@@ -1025,10 +1091,10 @@
         aggroRift: key, rift: key, tgt: null, rt: 0, ignore: 0, atkCd: 0.5, skCd: TUN.foeSkillCd[0] + this.rng() * (TUN.foeSkillCd[1] - TUN.foeSkillCd[0]), hits: 0, wave: true, elem: (e.skills && e.skills[0] && e.skills[0].e) || 'phys'
       }, o));
       if (boss) u.bornT = this.time;
-      if (u.pig) { u.spd = TUN.pigSpd; u.hpMax = u.hp = Math.round(s.hpMax); u.pigHits = 0; u.goal = o.goal; }
+      if (u.pig) { u.spd = TUN.pigSpd; u.hpMax = u.hp = Math.round(s.hpMax * this.coopHp(false)); u.pigHits = 0; u.goal = o.goal; }
       else {
         const T = HD.THREATS[HD.FOE_THREAT[id]], late = this.wave >= TUN.lateFrom && !boss;
-        u.hpMax = u.hp = Math.round(u.hpMax * (T && !boss ? T.hpK : 1) * (late ? TUN.lateHp : 1) * (o.big ? f.bigHpK || 1 : 1));
+        u.hpMax = u.hp = Math.round(u.hpMax * (T && !boss ? T.hpK : 1) * (late ? TUN.lateHp : 1) * (o.big ? f.bigHpK || 1 : 1) * this.coopHp(boss));
         u.dmg *= (T && !boss ? T.dmgK : 1) * (late ? TUN.lateDmg : 1);
       }
       this.collide(u);
@@ -1048,7 +1114,7 @@
       if (this.phase !== 'wave') return;
       this.waveT += DT; this.stats.time += DT;
       this.secT += DT;
-      if (this.secT >= 1) { this.secT -= 1; this.hero.gold += TUN.goldSec; this.stats.gold += TUN.goldSec; }
+      if (this.secT >= 1) { this.secT -= 1; for (const h of this.heroes) { h.gold += TUN.goldSec; h.st.gold += TUN.goldSec; this.stats.gold += TUN.goldSec; } }
       for (const g of this.sched) {
         if (g.done) continue;
         if (!g.glowed && this.waveT >= g.t - TUN.riftGlow) { g.glowed = true; this.glow[g.rift] = TUN.riftGlow; this.emit({ t: 'rift', key: g.rift }); }
@@ -1058,11 +1124,13 @@
     }
 
     clearWave() {
-      const h = this.hero, w = this.wave;
+      const w = this.wave;
       let gold = lin(TUN.goldWave, w);
       if (!this.leaked) gold *= 1 + TUN.cleanBonus;
-      this.giveGold(h, Math.round(gold * this.diff.gold), 'wave');
-      this.giveExp(h, lin(TUN.expWave, w));
+      for (const h of this.heroes) {
+        this.giveGold(h, Math.round(gold * this.diff.gold), 'wave');
+        this.giveExp(h, lin(TUN.expWave, w));
+      }
       this.emit({ t: 'cleared', n: w, clean: !this.leaked });
       for (const hh of this.heroes) this.each(hh, 'onWaveEnd');
       if (w >= HD.WAVES.length) { this.over = 'win'; this.phase = 'done'; return; }
@@ -1080,15 +1148,38 @@
     }
 
     toRun(run) {
-      const h = this.hero, p = run.players[0];
       const keep = it => { const c = Object.assign({}, it); delete c.at; delete c.phase; delete c.cdT; return c; };
-      Object.assign(p, { hero: h.key, lvl: h.lvl, exp: h.exp, pts: h.pts, abil: Object.assign({}, h.abil), picks: Object.assign({}, h.picks), gold: h.gold, items: h.items.map(it => (it ? keep(it) : null)), cone: h.cone ? keep(h.cone) : null, deaths: h.deaths, buyback: h.bought });
+      run.players.forEach((p, i) => {
+        const h = this.heroes[i];
+        Object.assign(p, { hero: h.key, lvl: h.lvl, exp: h.exp, pts: h.pts, abil: Object.assign({}, h.abil), picks: Object.assign({}, h.picks), gold: h.gold, items: h.items.map(it => (it ? keep(it) : null)), cone: h.cone ? keep(h.cone) : null, deaths: h.deaths, buyback: h.bought, st: Object.assign({}, h.st) });
+      });
       run.base.hp = Math.max(0, Math.round(this.base.hp));
       run.towers = this.turrets.map(t => (t.dead ? 0 : Math.round(t.hp)));
       run.stats = Object.assign({}, this.stats);
       run.wave = this.wave;
       run.phase = this.over ? 'done' : this.phase;
       return run;
+    }
+
+    stateHash() {
+      let v = 2166136261;
+      const mix = x => {
+        HASH_D[0] = x || 0;
+        v = Math.imul(v ^ HASH_W[0], 16777619);
+        v = Math.imul(v ^ HASH_W[1], 16777619);
+      };
+      for (const x of [this.tick, this.uid, this.rng.state(), this.wave, this.phase === 'wave' ? 1 : 0, this.over ? 1 : 0, this.breakT, this.waveT, this.units.length, this.shots.length, this.areas.length, this.stats.dmg, this.stats.gold, this.stats.kills]) mix(x);
+      for (const u of this.units) {
+        for (const x of [u.uid, u.x, u.y, u.hp, u.en, u.dead ? 1 : 0, u.atkCd, u.tough, u.brokenT, u.fx.length]) mix(x);
+        if (u.kind === 'hero') for (const x of [u.gold, u.lvl, u.exp, u.pts, u.deaths, u.cd.q, u.cd.e, u.cd.r]) mix(x);
+      }
+      for (const s of this.shots) for (const x of [s.x, s.y, s.tgt]) mix(x);
+      for (const a of this.areas) for (const x of [a.x, a.y, a.t, a.delay]) mix(x);
+      if (this.heroes.length > 1) {
+        mix(this.waveN);
+        for (const h of this.heroes) for (const x of [h.away ? 1 : 0, h.vote ? 1 : 0, h.cmdT, h.st.kills, h.st.dmg, h.st.heal, h.st.gold]) mix(x);
+      }
+      return (v >>> 0).toString(16).padStart(8, '0');
     }
   }
 

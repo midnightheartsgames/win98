@@ -14,6 +14,7 @@
   const WEATHER_ICON = { clear: 'sun', overcast: 'cloud', downpour: 'rain', storm: 'storm', fog: 'fog' };
   const weatherName = id => F.WEATHER[F.weatherId(id)].name;
   const LIVERIES = [['none', 'Без ливреи'], ['stripes', 'Гоночные полосы'], ['side', 'Боковая полоса'], ['twotone', 'Двухцветная'], ['tail', 'Хвостовая полоса'], ['number', 'Номер в круге'], ['horizon', 'Horizon'], ['rally', 'Раллийная'], ['cola', 'BALTIC COLA'], ['fm', 'RĪGA FM 101.5'], ['mobile', 'DZINTARS MOBILE'], ['kafija', 'Sprīdītis Kafija']];
+  const OWN_LIVERIES = [['raf', 'Заводская'], ['route', 'Маршрутное такси'], ['ambulance', 'Скорая помощь'], ['taxi', 'Такси']];
 
   function clsBadge(pi) {
     const k = F.classOf(pi);
@@ -1350,7 +1351,7 @@
       panel.appendChild(fin);
       panel.appendChild(h('div', 'fz-sethead', 'Ливрея'));
       const lv = h('div', 'fz-livs');
-      for (const [id, name] of LIVERIES) {
+      for (const [id, name] of LIVERIES.concat(OWN_LIVERIES.filter(([lid]) => (F.Tex.OWN[lid] || []).includes(entry.id)))) {
         const b = this.nav(h('div', 'fz-liv' + (st.livery === id ? ' on' : ''), esc(name)), () => { st.livery = id; lv.querySelectorAll('.fz-liv').forEach(x => x.classList.toggle('on', x === b)); upd(); });
         lv.appendChild(b);
       }

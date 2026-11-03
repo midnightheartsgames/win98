@@ -1341,8 +1341,8 @@ class ClippySystem {
   onNetworkNeighborhood() {
     if (!this.canReact() || !this.firstTimeThisSession('network-neighborhood')) return false;
     this.clippy().speak(this.lang(
-      'Сетевое окружение! Рабочая группа WORKGROUP, несколько компьютеров. Где-то здесь Гений ждёт мой ход в шахматах. Третий день ждёт.',
-      'Network Neighborhood! The WORKGROUP workgroup and a few computers. Somewhere in here the Genius is waiting for my chess move. Third day now.'
+      'Сетевое окружение! Здесь видно, кто из друзей сейчас на связи. Гений на другой линии: ждёт мой ход в шахматах. Третий день ждёт.',
+      'Network Neighborhood! This shows which of your friends are online. The Genius is on another line, waiting for my chess move. Third day now.'
     ), [], '🌐', 10000);
     return true;
   }

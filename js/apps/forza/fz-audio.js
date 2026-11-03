@@ -16,7 +16,10 @@
     v8f: { cyl: 8, wave: 'sawtooth', sub: 0.1, rough: 0.05, cut: 2.0, vol: 0.85 },
     v10: { cyl: 10, wave: 'sawtooth', sub: 0.4, rough: 0.25, cut: 1.3, vol: 0.95 },
     v12: { cyl: 12, wave: 'sawtooth', sub: 0.1, rough: 0.02, cut: 2.2, vol: 0.85 },
-    f6t: { cyl: 6, wave: 'square', sub: 0.35, rough: 0.12, cut: 1.4, vol: 0.85, turbo: 1 }
+    f6t: { cyl: 6, wave: 'square', sub: 0.35, rough: 0.12, cut: 1.4, vol: 0.85, turbo: 1 },
+    diesel: { cyl: 4, wave: 'square', sub: 0.5, rough: 0.45, cut: 0.6, vol: 0.95, clatter: 0.6 },
+    sv4: { cyl: 4, wave: 'sawtooth', sub: 0.6, rough: 0.12, cut: 0.5, vol: 0.85 },
+    i5: { cyl: 5, wave: 'sawtooth', sub: 0.3, rough: 0.32, cut: 1.15, vol: 0.88, half: 1 }
   };
 
   const STATIONS = [
@@ -114,6 +117,11 @@
       this.intake.connect(this.inFilt); this.inFilt.connect(this.inG); this.inG.connect(this.engBus); this.intake.start();
       this.turbo = c.createOscillator(); this.turbo.type = 'sine'; this.turboG = c.createGain(); this.turboG.gain.value = 0;
       this.turbo.connect(this.turboG); this.turboG.connect(this.engBus); this.turbo.start();
+      this.clat = this.noise(); this.clatFl = c.createBiquadFilter(); this.clatFl.type = 'bandpass'; this.clatFl.frequency.value = 2400; this.clatFl.Q.value = 2.5;
+      this.clatG = c.createGain(); this.clatG.gain.value = 0;
+      this.clat.connect(this.clatFl); this.clatFl.connect(this.clatG); this.clatG.connect(this.engBus); this.clat.start();
+      this.clatLfo = c.createOscillator(); this.clatLfo.type = 'square'; this.clatDepth = c.createGain(); this.clatDepth.gain.value = 0;
+      this.clatLfo.connect(this.clatDepth); this.clatDepth.connect(this.clatG.gain); this.clatLfo.start();
     }
 
     buildLoops() {
@@ -199,6 +207,7 @@
         this.eOut.gain.setTargetAtTime(0, t, 0.08);
         this.inG.gain.setTargetAtTime(0, t, 0.08);
         this.turboG.gain.setTargetAtTime(0, t, 0.08);
+        this.clatG.gain.setTargetAtTime(0, t, 0.08); this.clatDepth.gain.setTargetAtTime(0, t, 0.08);
         for (const k of ['tire', 'gravel', 'wind', 'hiss', 'fireL', 'scrapeL']) this[k].g.gain.setTargetAtTime(0, t, 0.1);
         return;
       }
@@ -207,7 +216,7 @@
       this.osc1.frequency.setTargetAtTime(f, t, 0.02);
       this.osc2.frequency.setTargetAtTime(f * 2.005, t, 0.02);
       this.oscSub.frequency.setTargetAtTime(f * 0.5, t, 0.02);
-      this.lfo.frequency.setTargetAtTime(Math.max(4, f / e.cyl * 1.5), t, 0.05);
+      this.lfo.frequency.setTargetAtTime(e.half ? f / e.cyl : Math.max(4, f / e.cyl * 1.5), t, 0.05);
       const load = st.thr;
       const cut = (300 + rpm * 0.18 * e.cut + load * 1400 * e.cut) * (st.inside ? 0.7 : 1);
       this.eFilt.frequency.setTargetAtTime(Math.min(cut, 8000), t, 0.03);
@@ -220,6 +229,10 @@
       this.scrapeL.g.gain.setTargetAtTime(Math.min(0.3, scr * 0.3) * F.clamp(st.speed / 12, 0.25, 1), t, 0.04);
       this.scrapeL.fl.frequency.setTargetAtTime(1700 + st.speed * 32, t, 0.1);
       this.inG.gain.setTargetAtTime(load * rpm / 8000 * 0.12 * (st.inside ? 0.5 : 1), t, 0.05);
+      const clat = (e.clatter || 0) * (1 - 0.6 * F.clamp((rpm - 800) / 2800, 0, 1)) * (st.dead ? 0 : 1) * (st.inside ? 0.6 : 1);
+      this.clatLfo.frequency.setTargetAtTime(f, t, 0.02);
+      this.clatG.gain.setTargetAtTime(clat * 0.045, t, 0.05);
+      this.clatDepth.gain.setTargetAtTime(clat * 0.045, t, 0.05);
       this.inFilt.frequency.setTargetAtTime(600 + rpm * 0.25, t, 0.05);
       if (e.turbo) {
         this.turbo.frequency.setTargetAtTime(2500 + rpm * 0.6, t, 0.1);

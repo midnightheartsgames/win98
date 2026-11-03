@@ -3,7 +3,7 @@
   const TW = H.Town, TD = H.TownDraw, MDR = H.MapDraw, Adv = H.Adv;
   const PANEL = 432, RES_NAME = Object.fromEntries(H.RESOURCES);
   const hit = (b, x, y) => x >= b.x && y >= b.y && x < b.x + b.w && y < b.y + b.h;
-  const BLUEPRINT = [['hall1', 'hall2', 'hall3', 'hall4'], ['fort1', 'fort2', 'fort3'], ['guild1', 'guild2', 'guild3', 'guild4', 'guild5'], ['market', 'store', 'caravan'], ['tavern', 'smith', 'shipyard'], ['special1', 'special2', 'special3', 'special4'], ['altar']];
+  const BLUEPRINT = [['hall1', 'hall2', 'hall3', 'hall4'], ['fort1', 'fort2', 'fort3'], ['guild1', 'guild2', 'guild3', 'guild4', 'guild5'], ['market', 'store', 'caravan'], ['tavern', 'smith', 'shipyard'], ['special1', 'special2', 'special3', 'special4'], ['altar', 'barrow2', 'barrow3']];
   const FRAME = {
     built: ['#e8f0ff', 'rgba(232,240,255,0.18)', '#ffffff'],
     ok: ['#ffe060', 'rgba(255,224,96,0.14)', '#fff0b0'],
@@ -33,8 +33,10 @@
       this.drag = null;
       this.carry = null;
       this.split = null;
+      this.theme = H.THEMES['town_' + town.faction] ? 'town_' + town.faction : null;
       const fresh = TW.teach(this.S, this.o);
       if (fresh.length) this.toast('Выучено: ' + fresh.map(id => H.SPELLS[id].name).join(', '), '#a0e0ff');
+      if (this.S.players[this.pid].deals.some(d => H.Contracts.canDeliver(this.S, town, d))) this.toast('Ратуша контрактов ждёт вашу поставку', '#ffe080');
     }
 
     get res() {
@@ -53,6 +55,8 @@
         else if (e.t === 'upgrade') this.toast('Улучшено: ' + H.UNITS[e.unit].name + ' ' + e.count, '#a0ffa0');
         else if (e.t === 'hired') this.toast('Новый герой: ' + this.S.heroes[e.hero].name, '#a0ffa0');
         else if (e.t === 'learned') this.toast('Выучено: ' + e.spells.map(id => H.SPELLS[id].name).join(', '), '#a0e0ff');
+        else if (e.t === 'dealDone') this.toast('Контракт исполнен', '#a0ffa0');
+        else if (e.t === 'risen2') this.toast('Поднято: ' + H.UNITS[e.unit].name + ' ' + e.count, '#a0ffa0');
         else if (e.t === 'trade') this.toast(RES_NAME[e.from] + ' −' + e.give + ', ' + RES_NAME[e.to].toLowerCase() + ' +' + e.get, '#ffe080');
       }
     }
@@ -140,6 +144,14 @@
       const x = TW.def(this.o, id);
       if (x.dwelling || x.upgrade) this.openRecruit(x.dwelling || x.upgrade);
       else if (id === 'tavern') this.openWin({ kind: 'tavern' });
+      else if (id === 'smith') this.openWin({ kind: 'smith' });
+      else if (id === 'caravan') this.openCaravan();
+      else if (id === 'shipyard') this.openWin({ kind: 'shipyard' });
+      else if (x.contracts) this.openWin({ kind: 'contracts' });
+      else if (x.barrow) this.openWin({ kind: 'barrow' });
+      else if (x.ring) this.openWin({ kind: 'ring' });
+      else if (x.reforge) this.openWin({ kind: 'reforge' });
+      else if (x.shop) this.openWin({ kind: 'chamber', id });
       else if (x.market) this.openMarket();
       else if (x.guild) this.openWin({ kind: 'guild' });
       else if (/^hall/.test(id)) this.openWin({ kind: 'blueprint' });
@@ -152,6 +164,11 @@
       this.win.n = Math.min(1, TW.canRecruit(this.S, this.o, tier, this.win.unit));
     }
 
+    openCaravan() {
+      const list = TW.caravanSources(this.S, this.o);
+      this.openWin({ kind: 'caravan', from: list.length ? list[0].id : null, off: {} });
+    }
+
     openMarket() {
       this.openWin({ kind: 'market', from: 'wood', to: 'gold', m: 0 });
     }
@@ -162,6 +179,7 @@
         const t = x.dwelling || x.upgrade, u = TW.offers(this.o, t).map(v => H.UNITS[v].name).join(', ');
         out.push('Наём: ' + u, 'Доступно: ' + this.o.pool[t - 1] + ', прирост ' + TW.growth(this.S, this.o, t) + ' в неделю');
       } else out.push(...H.Font.wrap('small', x.about, 260));
+      if (x.barrow) out.push('В кургане существ: ' + (this.o.barrow || []).reduce((t, e) => t + e.count, 0));
       return out;
     }
 
@@ -235,7 +253,7 @@
       const v = TW.visitor(S, o);
       this.drawRow(g, 'garrison', 'Гарнизон', o.garrison, PANEL + 6, null);
       this.drawRow(g, 'hero', v ? 'Гость: ' + v.name + ', уровень ' + v.level : 'Гостя нет', v ? v.army : null, PANEL + 64, v);
-      const B = [['blueprint', 'Чертёж', true], ['all', 'Нанять всех', o.pool.some((n, i) => n > 0 && TW.offers(o, i + 1).length)], ['guild', 'Гильдия', TW.has(o, 'guild1')], ['market', 'Рынок', TW.markets(S, this.pid) > 0], ['tavern', 'Таверна', TW.has(o, 'tavern')], ['caravan', 'Обоз', false], ['exit', 'Выход', true]];
+      const B = [['blueprint', 'Чертёж', true], ['all', 'Нанять всех', o.pool.some((n, i) => n > 0 && TW.offers(o, i + 1).length)], ['guild', 'Гильдия', TW.has(o, 'guild1')], ['market', 'Рынок', TW.markets(S, this.pid) > 0], ['tavern', 'Таверна', TW.has(o, 'tavern')], ['caravan', 'Обоз', TW.has(o, 'caravan')], ['smith', 'Кузня', TW.has(o, 'smith')], ['exit', 'Выход', true]];
       B.forEach(([id, label, on], i) => this.button(g, 'p-' + id, label, 598 + (i >> 2) * 100, PANEL + 8 + (i % 4) * 26, 96, 22, () => this.press(id), !on));
       this.resStrip(g, 14, PANEL + 150, 112);
     }
@@ -246,6 +264,8 @@
       else if (id === 'guild') this.openWin({ kind: 'guild' });
       else if (id === 'market') this.openMarket();
       else if (id === 'tavern') this.openWin({ kind: 'tavern' });
+      else if (id === 'smith') this.openWin({ kind: 'smith' });
+      else if (id === 'caravan') this.openCaravan();
       else if (id === 'exit') this.exit();
     }
 
@@ -545,10 +565,287 @@
           if (r.ok) this.closeWin();
         }, !!why);
       });
-      if (why) g.text(why, x + W / 2, y + 302, { align: 'center', color: '#ff9a8a' });
+      const back = TW.backHeroes(S, o)[0];
+      if (back) {
+        g.text('Вернулся: ' + back.name + ', уровень ' + back.level + (back.army.some(Boolean) ? ', с войском' : ''), x + 24, y + 304, { bold: true, color: '#a0e0a0' });
+        this.button(g, 'tv-back', 'Нанять за ' + H.TOWN.heroPrice, x + W - 224, y + 292, 200, 24, () => {
+          const r = TW.hireBack(S, o, back.id);
+          this.events(r.ev);
+          if (r.ok) this.closeWin();
+        }, !!why);
+      } else if (why) g.text(why, x + W / 2, y + 302, { align: 'center', color: '#ff9a8a' });
       g.text('Слух недели', x + 24, y + 324, { bold: true });
       H.Font.wrap('text', TW.rumor(S), W - 48).slice(0, 3).forEach((s, i) => g.text(s, x + 24, y + 342 + i * 15, { size: 11, color: '#e8dcb8' }));
       this.button(g, 'tv-close', 'Закрыть', x + W - 134, y + Hh - 40, 110, 26, () => this.closeWin());
+    }
+
+    drawSmithWin(g) {
+      const o = this.o, S = this.S, x = 130, y = 90, W = 540, Hh = 400, hero = TW.visitor(S, o), c = g.ctx;
+      g.panel(x, y, W, Hh);
+      g.text(TW.def(o, 'smith').name, x + W / 2, y + 26, { align: 'center', serif: true });
+      g.text(hero ? 'Машины для героя ' + hero.name : 'Машину можно купить только герою в городе', x + W / 2, y + 48, { align: 'center', size: 10, color: hero ? '#c8b88a' : '#ff9a8a' });
+      Object.entries(H.MACHINES).forEach(([id, m], i) => {
+        const my = y + 66 + i * 92, u = H.UNITS[m.unit], price = H.Town.machinePrice(S, this.pid, id), has = hero && hero.machines.includes(id), poor = this.res.gold < price;
+        c.fillStyle = 'rgba(5,7,15,0.6)';
+        c.fillRect(x + 20, my, W - 40, 84);
+        H.Art.drawUnit(c, m.unit, x + 62, my + 68, { scale: 0.7, tier: false });
+        g.text(u.name, x + 110, my + 16, { bold: true });
+        H.Font.wrap('small', m.about, 250).slice(0, 2).forEach((s, k) => g.text(s, x + 110, my + 34 + k * 13, { size: 10 }));
+        g.text('Здоровье ' + u.hp + (u.machine === 'ballista' ? ', урон ' + u.dmg[0] + '–' + u.dmg[1] : ''), x + 110, my + 66, { size: 10, color: '#c8b88a' });
+        this.cost(g, { gold: price }, x + 380, my + 22);
+        this.button(g, 'sm-' + id, has ? 'Уже есть' : 'Купить', x + 380, my + 44, 120, 26, () => {
+          if (H.Hero.buyMachine(S, hero, id)) this.toast(u.name + ': куплено', '#a0ffa0');
+        }, !hero || has || poor);
+      });
+      g.text('Катапульта есть у каждого нападающего героя. Разбитую машину покупают снова.', x + W / 2, y + Hh - 54, { align: 'center', size: 10, color: '#a89870' });
+      this.button(g, 'sm-close', 'Закрыть', x + W - 134, y + Hh - 40, 110, 26, () => this.closeWin());
+    }
+
+    drawChamberWin(g, w) {
+      const o = this.o, S = this.S, x = 130, y = 90, W = 540, Hh = 400, hero = TW.visitor(S, o), c = g.ctx;
+      g.panel(x, y, W, Hh);
+      g.text(TW.def(o, w.id).name, x + W / 2, y + 26, { align: 'center', serif: true });
+      g.text(hero ? 'Покупает герой ' + hero.name : 'Купить может только герой в городе', x + W / 2, y + 48, { align: 'center', size: 10, color: hero ? '#c8b88a' : '#ff9a8a' });
+      TW.shop(S, o).forEach((id, i) => {
+        const my = y + 66 + i * 92;
+        c.fillStyle = 'rgba(5,7,15,0.6)';
+        c.fillRect(x + 20, my, W - 40, 84);
+        if (!id) {
+          g.text('Продано', x + W / 2, my + 42, { align: 'center', color: '#8a7a5a' });
+          return;
+        }
+        const a = H.ARTIFACTS[id];
+        H.Art.drawArtifact(c, id, x + 32, my + 18, 48);
+        g.text(a.name, x + 96, my + 18, { bold: true });
+        H.Font.wrap('small', a.about, 260).slice(0, 2).forEach((s, k) => g.text(s, x + 96, my + 36 + k * 13, { size: 10 }));
+        if (a.set) g.text('Набор: ' + H.ART_SETS[a.set].name, x + 96, my + 68, { size: 10, color: '#a0c8ff' });
+        this.cost(g, { gold: a.cost }, x + 380, my + 22);
+        this.button(g, 'ch-' + i, 'Купить', x + 380, my + 44, 120, 26, () => {
+          const r = TW.buyArt(S, o, i);
+          if (r.ok) this.toast(a.name + ': куплено', '#a0ffa0');
+          else this.toast(r.why, '#ff9080');
+        }, !hero || this.res.gold < a.cost);
+      });
+      this.button(g, 'ch-close', 'Закрыть', x + W - 134, y + Hh - 40, 110, 26, () => this.closeWin());
+    }
+
+    drawRingWin(g) {
+      const o = this.o, S = this.S, x = 170, y = 90, W = 460, Hh = 360, c = g.ctx, hero = TW.visitor(S, o), why = hero ? H.Sites.ringWhy(S, hero) : 'Нужен герой Чащи у ворот города', list = hero ? H.Sites.ringTargets(S, hero, o) : [];
+      c.fillStyle = 'rgba(5,7,15,0.7)';
+      c.fillRect(0, 0, H.W, H.H);
+      c.fillStyle = '#10180e';
+      c.fillRect(x, y, W, Hh);
+      c.strokeStyle = '#6a8a52';
+      c.strokeRect(x + 0.5, y + 0.5, W - 1, Hh - 1);
+      for (let k = 0; k < 12; k++) {
+        const a = k / 12 * Math.PI * 2, gx = x + W / 2 + Math.cos(a) * 60, gy = y + 84 + Math.sin(a) * 22;
+        c.fillStyle = '#d8d0b0';
+        c.fillRect(gx - 3, gy - 2, 6, 3);
+        c.fillStyle = '#6a4a2a';
+        c.fillRect(gx - 1, gy + 1, 2, 3);
+      }
+      g.text('Ведьмино кольцо', x + W / 2, y + 30, { align: 'center', serif: true, size: 18 });
+      if (hero && !why) g.text('Переход стоит ' + H.Sites.ringCost(S, hero) + ' шагов, раз в день. У героя ' + Math.floor(hero.steps), x + W / 2, y + 130, { align: 'center', size: 10, color: '#c8b88a' });
+      if (why) g.text(why, x + W / 2, y + 130, { align: 'center', color: '#e0a080' });
+      else if (!list.length) g.text('Кольцу некуда вести: постройте ещё одно или займите ведьмин круг', x + W / 2, y + 130, { align: 'center', color: '#a89870' });
+      if (!why) {
+        list.forEach((t, i) => this.button(g, 'ring-' + t.id, H.Sites.ringName(S, t), x + 90, y + 148 + i * 32, W - 180, 26, () => {
+          const ev = [];
+          if (H.Sites.ringJump(S, hero, t, ev)) this.exit();
+        }));
+      }
+      this.button(g, 'ring-close', 'Закрыть', x + W - 134, y + Hh - 40, 110, 26, () => this.closeWin());
+    }
+
+    drawReforgeWin(g) {
+      const o = this.o, S = this.S, x = 140, y = 70, W = 520, Hh = 430, c = g.ctx, hero = TW.visitor(S, o), pairs = hero ? TW.reforgePairs(hero).slice(0, 6) : [], items = hero ? TW.forgeables(hero) : [];
+      c.fillStyle = 'rgba(5,7,15,0.7)';
+      c.fillRect(0, 0, H.W, H.H);
+      c.fillStyle = '#1a100c';
+      c.fillRect(x, y, W, Hh);
+      c.strokeStyle = '#a8602a';
+      c.strokeRect(x + 0.5, y + 0.5, W - 1, Hh - 1);
+      c.fillStyle = '#3a3634';
+      c.fillRect(x + W / 2 - 40, y + 56, 80, 14);
+      c.fillRect(x + W / 2 - 14, y + 70, 28, 14);
+      c.fillStyle = 'rgba(255,140,40,0.7)';
+      c.fillRect(x + W / 2 - 40, y + 52, 80, 4);
+      g.text('Великий горн', x + W / 2, y + 30, { align: 'center', serif: true, size: 18 });
+      g.text('Две вещи одного места и одной редкости дают одну вещь того же места, на ступень реже', x + W / 2, y + 100, { align: 'center', size: 10, color: '#d8c8a8' });
+      if (!hero) g.text('Нужен герой у ворот города', x + W / 2, y + 140, { align: 'center', color: '#e0a080' });
+      else if (!pairs.length) g.text('У героя нет двух вещей одного места и одной редкости', x + W / 2, y + 140, { align: 'center', color: '#a89870' });
+      pairs.forEach(([i, j], k) => {
+        const a = H.ARTIFACTS[items[i].id], b = H.ARTIFACTS[items[j].id], yy = y + 122 + k * 44, cost = TW.reforgeCost(hero, a.rank);
+        c.fillStyle = 'rgba(40,24,16,0.8)';
+        c.fillRect(x + 16, yy - 4, W - 32, 40);
+        H.Art.drawArtifact(c, a.id, x + 22, yy, 32);
+        H.Art.drawArtifact(c, b.id, x + 58, yy, 32);
+        g.text(a.name + ' и ' + b.name, x + 100, yy + 10, { size: 10, bold: true });
+        g.text(H.ART_RANKS[a.rank][0] + ' → ' + H.ART_RANKS[a.rank === 'plain' ? 'rare' : 'relic'][0], x + 100, yy + 26, { size: 10, color: '#c8b88a' });
+        this.button(g, 'reforge-' + k, 'Перековать: ' + cost, x + W - 190, yy + 2, 170, 26, () => {
+          const made = TW.reforge(S, o, hero, i, j);
+          if (made) this.toast('Вышло: ' + H.ARTIFACTS[made].name, '#ffd080');
+        }, this.res.gold < cost);
+      });
+      this.button(g, 'reforge-close', 'Закрыть', x + W - 134, y + Hh - 40, 110, 26, () => this.closeWin());
+    }
+
+    drawBarrowWin(g) {
+      const o = this.o, S = this.S, x = 110, y = 56, W = 580, Hh = 484, c = g.ctx, list = o.barrow.slice().sort((a, b) => H.UNITS[b.unit].cost - H.UNITS[a.unit].cost), limit = TW.barrowLimit(S, o), left = TW.raiseLeft(S, o);
+      c.fillStyle = 'rgba(5,7,15,0.7)';
+      c.fillRect(0, 0, H.W, H.H);
+      c.fillStyle = '#17120c';
+      c.fillRect(x, y, W, Hh);
+      c.fillStyle = '#2a2318';
+      c.beginPath();
+      c.ellipse(x + W / 2, y + 96, W / 2 - 20, 62, 0, Math.PI, Math.PI * 2);
+      c.fill();
+      c.fillStyle = '#e8e4d0';
+      for (let k = 0; k < 40; k++) c.fillRect(x + 40 + ((k * 37) % (W - 80)), y + 40 + ((k * 13) % 54), 2, 1);
+      c.strokeStyle = '#8a7a5a';
+      c.strokeRect(x + 0.5, y + 0.5, W - 1, Hh - 1);
+      const name = ['barrow3', 'barrow2', 'special1'].find(id => TW.has(o, id));
+      g.text(TW.def(o, name).name, x + W / 2, y + 30, { align: 'center', serif: true, size: 18 });
+      g.text('Поднять за неделю ещё на ' + left + ' из ' + limit + ' золота ценности', x + W / 2, y + 118, { align: 'center', size: 10, color: '#c8b88a' });
+      c.fillStyle = '#05070f';
+      c.fillRect(x + 90, y + 126, W - 180, 8);
+      c.fillStyle = '#d8d0b0';
+      c.fillRect(x + 90, y + 126, (W - 180) * (limit ? left / limit : 0), 8);
+      if (!list.length) g.text('В кургане пусто. Сюда уходят тени павших после боя.', x + W / 2, y + 190, { align: 'center', color: '#a89870' });
+      list.slice(0, 7).forEach((e, i) => {
+        const ry = y + 146 + i * 42, u = H.UNITS[e.unit], max = TW.canRaise(S, o, e.unit);
+        c.fillStyle = 'rgba(232,228,208,0.06)';
+        c.fillRect(x + 16, ry, W - 32, 38);
+        H.Art.drawUnit(c, e.unit, x + 40, ry + 36, { scale: 0.34, tier: false });
+        g.text(u.name, x + 66, ry + 15, { bold: true });
+        g.text('в кургане ' + e.count + ', цена ' + TW.raisePrice(S, o.owner, e.unit) + ' золота', x + 66, ry + 31, { size: 10, color: '#c8b88a' });
+        this.button(g, 'bw-one-' + e.unit, 'Одного', x + W - 196, ry + 7, 80, 24, () => this.events(TW.raise(S, o, e.unit, 1).ev), max < 1);
+        this.button(g, 'bw-all-' + e.unit, max > 0 ? 'Всех: ' + max : 'Всех', x + W - 110, ry + 7, 90, 24, () => this.events(TW.raise(S, o, e.unit, max).ev), max < 1);
+      });
+      this.button(g, 'bw-raise', 'Поднять всех', x + 24, y + Hh - 40, 150, 26, () => this.events(TW.raiseAll(S, o)), !list.some(e => TW.canRaise(S, o, e.unit) > 0));
+      this.button(g, 'bw-close', 'Закрыть', x + W - 134, y + Hh - 40, 110, 26, () => this.closeWin());
+    }
+
+    drawContractsWin(g) {
+      const o = this.o, S = this.S, C = H.Contracts, x = 56, y = 40, W = 688, Hh = 516, c = g.ctx, deals = S.players[this.pid].deals, cap = H.TOWN.contract.active, offers = C.board(S, o), inHand = deals.length >= cap, ink = '#2a1c0c';
+      g.panel(x, y, W, Hh);
+      g.text('Ратуша контрактов', x + W / 2, y + 26, { align: 'center', serif: true });
+      g.text('На доске новые бумаги каждую неделю. Срок контракта ' + H.TOWN.contract.term + ' дней с того дня, как его взяли.', x + W / 2, y + 46, { align: 'center', size: 10, color: '#c8b88a' });
+      for (let i = 0; i < H.TOWN.contract.board; i++) {
+        const d = offers[i], sx = x + 18 + i * 220, sy = y + 60, sw = 212, sh = 216;
+        c.fillStyle = '#17110a';
+        c.fillRect(sx + 3, sy + 3, sw, sh);
+        c.fillStyle = d ? '#d8c698' : '#4a3f2c';
+        c.fillRect(sx, sy, sw, sh);
+        c.strokeStyle = d ? '#8a7446' : '#2a2318';
+        c.strokeRect(sx + 3.5, sy + 3.5, sw - 7, sh - 7);
+        if (!d) {
+          g.text('Бумагу сняли', sx + sw / 2, sy + sh / 2, { align: 'center', color: '#a89870' });
+          continue;
+        }
+        const text = C.describe(S, d);
+        c.fillStyle = '#7a1e14';
+        c.beginPath();
+        c.arc(sx + sw - 24, sy + 24, 11, 0, Math.PI * 2);
+        c.fill();
+        g.text(text.title, sx + 14, sy + 24, { serif: true, color: ink });
+        text.lines.flatMap(l => H.Font.wrap('small', l, sw - 28)).slice(0, 6).forEach((l, k) => g.text(l, sx + 14, sy + 54 + k * 14, { size: 10, color: ink }));
+        g.text('Плата:', sx + 14, sy + 148, { size: 10, bold: true, color: ink });
+        H.Font.wrap('small', text.reward, sw - 28).slice(0, 2).forEach((l, k) => g.text(l, sx + 14, sy + 162 + k * 13, { size: 10, color: ink }));
+        this.button(g, 'ct-take-' + i, 'Взять', sx + sw / 2 - 50, sy + sh - 30, 100, 22, () => {
+          const r = C.take(S, o, i);
+          this.toast(r.ok ? 'Контракт взят: ' + text.title : r.why, r.ok ? '#a0ffa0' : '#ff9080');
+        }, inHand);
+      }
+      g.text('Идут контракты: ' + deals.length + ' из ' + cap, x + 24, y + 298, { bold: true });
+      if (!deals.length) g.text('Пока ни одного. Возьмите бумагу с доски.', x + 24, y + 322, { size: 10, color: '#a89870' });
+      deals.forEach((d, i) => {
+        const ry = y + 310 + i * 52, text = C.describe(S, d), left = d.until - S.day, here = C.canDeliver(S, o, d);
+        c.fillStyle = 'rgba(5,7,15,0.6)';
+        c.fillRect(x + 20, ry, W - 40, 46);
+        g.text(text.title + ': ' + text.lines[0], x + 30, ry + 14, { size: 10 });
+        g.text(text.reward + ', осталось ' + left + ' ' + H.plural(left, 'день', 'дня', 'дней'), x + 30, ry + 32, { size: 10, color: left <= 2 ? '#ff9a8a' : '#c8b88a' });
+        if (d.kind === 'supply') {
+          this.button(g, 'ct-give-' + d.id, 'Сдать', x + W - 244, ry + 10, 96, 24, () => {
+            const r = C.deliver(S, o, d.id);
+            this.events(r.ev);
+            if (!r.ok) this.toast(r.why, '#ff9080');
+          }, !here);
+        }
+        this.button(g, 'ct-drop-' + d.id, 'Отказаться', x + W - 136, ry + 10, 106, 24, () => C.dropDeal(S, this.pid, d.id));
+      });
+      this.button(g, 'ct-close', 'Закрыть', x + W - 134, y + Hh - 36, 110, 26, () => this.closeWin());
+    }
+
+    drawShipyardWin(g) {
+      const o = this.o, S = this.S, x = 200, y = 180, W = 400, Hh = 200, free = H.Sites.dockFree(S, o), rich = TW.afford(this.res, H.MAP.boat);
+      g.panel(x, y, W, Hh);
+      g.text(TW.def(o, 'shipyard').name, x + W / 2, y + 26, { align: 'center', serif: true });
+      g.text(free ? 'Лодка встанет у причала. На ней герой идёт по воде.' : 'У причала уже стоит лодка', x + W / 2, y + 62, { align: 'center' });
+      this.cost(g, H.MAP.boat, x + 120, y + 88);
+      this.button(g, 'yard-build', 'Построить лодку', x + 60, y + Hh - 44, 150, 26, () => {
+        if (H.Sites.buildBoat(S, o, o.owner)) this.toast('Лодка у причала', '#a0ffa0');
+      }, !free || !rich);
+      this.button(g, 'yard-close', 'Закрыть', x + W - 170, y + Hh - 44, 110, 26, () => this.closeWin());
+    }
+
+    drawCaravanWin(g, w) {
+      const o = this.o, S = this.S, x = 90, y = 70, W = 620, Hh = 450, c = g.ctx, list = TW.caravanSources(S, o), from = list.find(t => t.id === w.from) || list[0] || null;
+      g.panel(x, y, W, Hh);
+      g.text('Обоз в город ' + o.name, x + W / 2, y + 26, { align: 'center', serif: true });
+      g.text('Откуда', x + 24, y + 54, { bold: true });
+      if (!list.length) g.text('В других ваших городах некого нанять', x + 24, y + 76, { color: '#8a7a5a' });
+      list.forEach((t, i) => {
+        const id = 'cv-from-' + t.id, ty = y + 66 + i * 30, on = from === t;
+        this.region(id, x + 20, ty, 190, 26, () => {
+          w.from = t.id;
+          w.off = {};
+        });
+        g.button({ x: x + 20, y: ty, w: 190, h: 26, label: t.name || H.OBJ[t.t].name, hot: this.hot === id, down: on });
+      });
+      const rows = from ? TW.caravanRows(S, from).filter(r => !w.off[r.tier]) : [], route = from ? Adv.caravanRoute(S, from, o) : null;
+      if (route) this.drawRoute(c, route, from, x + 24, y + 186, 100);
+      if (from) {
+        g.text('Кого везти', x + 230, y + 54, { bold: true });
+        TW.caravanRows(S, from).forEach((r, i) => {
+          const ry = y + 66 + i * 30, id = 'cv-t-' + r.tier, on = !w.off[r.tier];
+          this.region(id, x + 228, ry, 360, 26, () => { w.off[r.tier] = on; });
+          c.fillStyle = on ? 'rgba(80,110,200,0.25)' : 'rgba(5,7,15,0.5)';
+          c.fillRect(x + 228, ry, 360, 26);
+          c.strokeStyle = '#6a5430';
+          c.strokeRect(x + 228.5, ry + 0.5, 359, 25);
+          g.text((on ? '+ ' : '− ') + H.UNITS[r.unit].name + ': ' + r.n, x + 238, ry + 13, { color: on ? '#fff6d0' : '#8a7a5a' });
+        });
+      }
+      const line = y + 300, cost = rows.length ? TW.caravanCost(o, rows) : null, why = from ? TW.caravanWhy(S, from, o, rows) : 'Некого отправить';
+      if (cost) {
+        g.text('Цена с платой за обоз:', x + 24, line, { bold: true });
+        this.cost(g, cost, x + 200, line);
+        g.text((route ? 'В пути около ' + Math.max(1, Math.ceil(route.cost / H.MAP.caravanSteps)) + ' дн., ' : 'Пути нет. ') + H.MAP.caravanSteps + ' шагов в день. Обоз виден всем, чужой герой может на него напасть.', x + 24, line + 22, { size: 10, color: '#c8b88a' });
+      }
+      const going = S.caravans.filter(v => v.to === o.id && v.owner === this.pid);
+      g.text('В пути сюда: ' + (going.length ? going.map(v => v.stacks.map(q => H.UNITS[q.unit].name + ' ' + q.count).join(', ')).join('; ').slice(0, 80) : 'нет'), x + 24, line + 44, { size: 10 });
+      if (why && from) g.text(why, x + 24, line + 66, { color: '#ff9a8a' });
+      const go = () => {
+        const r = TW.sendCaravan(S, from, o, rows);
+        if (r.ok) {
+          this.toast('Обоз вышел', '#a0ffa0');
+          this.closeWin();
+        }
+      };
+      w.enter = !why ? go : null;
+      this.button(g, 'cv-go', 'Отправить', x + W - 264, y + Hh - 40, 120, 26, go, !!why);
+      this.button(g, 'cv-close', 'Закрыть', x + W - 134, y + Hh - 40, 110, 26, () => this.closeWin());
+    }
+
+    drawRoute(c, route, from, x, y, size) {
+      const M = this.S.map, k = size / Math.max(M.w, M.h), a = MDR.minimap(this.S, this.o.l, this.pid, Adv.visible(this.S, this.pid, this.o.l));
+      c.imageSmoothingEnabled = false;
+      c.drawImage(a, x, y, M.w * k, M.h * k);
+      c.strokeStyle = '#6a5430';
+      c.strokeRect(x - 0.5, y - 0.5, M.w * k + 1, M.h * k + 1);
+      c.fillStyle = '#ffe060';
+      for (const i of route.cells) c.fillRect(x + (i % M.w) * k, y + ((i / M.w) | 0) * k, Math.max(1, k), Math.max(1, k));
     }
 
     drawMarketWin(g, w) {

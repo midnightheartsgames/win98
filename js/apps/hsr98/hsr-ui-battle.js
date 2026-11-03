@@ -30,10 +30,12 @@
       const bt = this.bt;
       const list = bt.foes.filter(u => u.appear && (!bt.fade.has(u) || bt.fade.get(u) > 0));
       const out = new Map();
-      const size = u => u.data.boss ? 200 : u.data.elite ? 140 : 104;
-      const total = list.reduce((a, u) => a + size(u) * 0.8, 0);
+      const meta = u => G.FOE_META[G.foeId(u.data)] || {};
+      const size = u => meta(u).size || (u.data.boss ? 200 : u.data.elite ? 140 : 104);
+      const span = u => size(u) * (meta(u).slot || 0.8);
+      const total = list.reduce((a, u) => a + span(u), 0);
       let x = W / 2 + 34 - total / 2;
-      for (const u of list) { const s = size(u); out.set(u, { x: x + s * 0.4, y: 290, s }); x += s * 0.8; }
+      for (const u of list) { const s = size(u), w = span(u); out.set(u, { x: x + w / 2, y: 290, s }); x += w; }
       return out;
     },
 
@@ -661,7 +663,7 @@
       if (u.frostbite) tags.unshift('Обморожение');
       this.contonFoeTags(u, tags);
       this.haresFoeTags(u, tags);
-      if (tags.length) this.text(tags.slice(0, 3).join(' · '), p.x, y + 26, { align: 'center', size: 9, col: '#ffb0b0' });
+      if (tags.length) this.text(bt.tagW ? this.fitText(tags.slice(0, 3).join(' · '), 9, bt.tagW) : tags.slice(0, 3).join(' · '), p.x, y + 26, { align: 'center', size: 9, col: '#ffb0b0' });
       this.icefirePips(u, x + w - 4, y + 4);
       if (u === bt.target) this.text(u.name + ' · ур.' + u.lvl, p.x, r ? y - 28 : y - 13, { align: 'center', size: 10, bold: true, col: C.gold });
       const mv = Object.entries(u.mood).filter(([, v]) => v > 0);
@@ -782,22 +784,28 @@
       });
     },
 
+    turnCell(i) { return i === 0 ? { x: 8, y: 8, size: 48 } : { x: 15, y: 26 + i * 42, size: 34 }; },
+
+    turnIcon(c, u, x, y, size) {
+      if (u.aha && this.ahaIcon) this.ahaIcon(c, x, y, size);
+      else if (u.summon && u.id === 'gynoids') this.gynoidIcon(c, x, y, size);
+      else if (u.summon) { if (!this.fivesIcon(c, u, x, y, size)) G.foeIcon(c, { id: 'hecate', boss: true }, x, y, size, { border: false }); }
+      else if (u.side === 'ally') G.drawPortrait(c, G.lookOf(u.charId, this.game), x, y, size);
+      else G.foeIcon(c, u.data, x, y, size, { border: false });
+    },
+
     drawTurnOrder(c) {
       const list = this.turnOrder(7);
       if (!list.length) return;
       c.fillStyle = 'rgba(242,220,154,0.45)'; c.fillRect(31, 30, 2, 60 + (list.length - 1) * 42);
       list.forEach((o, i) => {
-        const u = o.u, cur = i === 0, size = cur ? 48 : 34, x = cur ? 8 : 15, y = cur ? 8 : 26 + i * 42;
+        const u = o.u, cur = i === 0, { x, y, size } = this.turnCell(i);
         const ally = u.side === 'ally';
         c.fillStyle = '#000'; c.fillRect(x - 1, y - 1, size + 2, size + 2);
         const gr = c.createLinearGradient(0, y, 0, y + size);
         gr.addColorStop(0, ally ? '#2a4a9a' : '#8a2a2a'); gr.addColorStop(1, ally ? '#101a44' : '#3a0c10');
         c.fillStyle = gr; c.fillRect(x, y, size, size);
-        if (u.aha && this.ahaIcon) this.ahaIcon(c, x, y, size);
-        else if (u.summon && u.id === 'gynoids') this.gynoidIcon(c, x, y, size);
-        else if (u.summon) { if (!this.fivesIcon(c, u, x, y, size)) G.foeIcon(c, { id: 'hecate', boss: true }, x, y, size, { border: false }); }
-        else if (ally) G.drawPortrait(c, G.lookOf(u.charId, this.game), x, y, size);
-        else G.foeIcon(c, u.data, x, y, size, { border: false });
+        this.turnIcon(c, u, x, y, size);
         c.strokeStyle = cur ? C.brassHi : u.summon ? (u.aha ? '#ff9ae0' : u.id === 'gynoids' ? '#7ab4ff' : u.id === 'lord' ? '#b48aff' : u.id === 'numby' ? '#ffd060' : '#ff6a96') : ally ? '#6a8ad8' : '#d86a6a'; c.lineWidth = cur ? 2 : 1; c.strokeRect(x - 0.5, y - 0.5, size + 1, size + 1); c.lineWidth = 1;
         this.contonRail(c, u, x, y, size);
         if (!cur) { c.fillStyle = 'rgba(4,6,20,0.85)'; c.fillRect(x + size - 14, y + size - 10, 16, 10); this.text(String(o.av), x + size + 1, y + size - 10, { align: 'right', size: 9, bold: true, col: C.cream }); }

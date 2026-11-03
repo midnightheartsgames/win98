@@ -829,6 +829,6 @@
   Object.assign(WI.SHOWS, WARP);
   Object.assign(E.SCENES, EID);
   Object.assign(G.CONE_SCENES, CONE_ART);
-  H.FivesScenes = { ULTS, FUS, WARP, EID, BACKDROPS, CONE_ART, luofuNight, lordGiant, waterDragon, divRing, thirdEye, bigMoon, iceBloom, coin, chart, tailSpirit, talisman, rose, petals, plasterBust, chalkboard, irisField };
+  H.FivesScenes = { ULTS, FUS, WARP, EID, BACKDROPS, CONE_ART, intro5, luofuNight, lordGiant, waterDragon, divRing, thirdEye, bigMoon, iceBloom, coin, chart, tailSpirit, talisman, rose, petals, plasterBust, chalkboard, irisField };
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

@@ -5,12 +5,24 @@
   const create = (w, h, fills) => ({
     v: 1, w, h, levels: fills.length, next: 1, objs: [],
     ter: fills.map(id => new Array(w * h).fill(H.TERRAIN_INDEX[id])),
-    road: fills.map(() => new Array(w * h).fill(0))
+    road: fills.map(() => new Array(w * h).fill(0)),
+    river: fills.map(() => new Array(w * h).fill(0)),
+    over: fills.map(() => new Array(w * h).fill(0))
   });
   const inside = (M, c, r) => c >= 0 && r >= 0 && c < M.w && r < M.h;
   const idx = (M, c, r) => r * M.w + c;
   const terrainAt = (M, l, c, r) => T[M.ter[l][idx(M, c, r)]];
   const roadAt = (M, l, c, r) => M.road[l][idx(M, c, r)];
+  const riverAt = (M, l, c, r) => (M.river ? M.river[l][idx(M, c, r)] : 0);
+  const isWater = (M, l, c, r) => terrainAt(M, l, c, r).id === 'water' && !roadAt(M, l, c, r);
+  const fieldAt = (M, l, c, r) => {
+    const f = H.FIELDS[M.over[l][idx(M, c, r)]];
+    return f ? f.id : null;
+  };
+  const paintField = (M, l, id, test) => {
+    const v = H.FIELD_INDEX[id];
+    for (let r = 0; r < M.h; r++) for (let c = 0; c < M.w; c++) if (test(c, r)) M.over[l][idx(M, c, r)] = v;
+  };
   const groundCost = (M, l, c, r) => {
     const road = roadAt(M, l, c, r);
     return road ? H.ROADS[road].cost : terrainAt(M, l, c, r).cost;
@@ -49,5 +61,5 @@
     return e ? [o.c + e[0], o.r + e[1]] : null;
   };
 
-  H.MapData = { create, inside, idx, terrainAt, roadAt, groundCost, paint, line, road, add, type, cells, entry };
+  H.MapData = { riverAt, isWater, fieldAt, paintField, create, inside, idx, terrainAt, roadAt, groundCost, paint, line, road, add, type, cells, entry };
 })(globalThis.Heroes98 = globalThis.Heroes98 || {});

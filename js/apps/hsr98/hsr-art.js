@@ -125,9 +125,15 @@
     if (id === '@' || id === 'trail' || id === 'trail_p') return (H.wornLook && H.wornLook('trail', game)) || trailLook(game && game.state ? game.state.gender : 'm');
     if (H.CHARS[id]) return (H.wornLook && H.wornLook(id, game)) || H.CHARS[id].look;
     const sp = H.SPEAKERS[id];
+    if (id === 'pompom' && game && game.pomWorn) return H.pomOutfitLook(game.pomWorn());
     if (sp && sp.look) return sp.look;
     if (sp && sp.char) return lookOf(sp.char, game);
     return H.SPEAKERS.townsman.look;
+  }
+
+  function sceneLookOf(id, game) {
+    if (id !== 'pompom') return lookOf(id, game);
+    return game && game.pomInScenes ? H.pomOutfitLook(game.pomInScenes()) : H.SPEAKERS.pompom.look;
   }
 
   function hairCap(p, P, L) {
@@ -493,6 +499,10 @@
 
   function backAcc(p, P, L) {
     let tb;
+    if ((tb = accOf(L, 'trwings'))) for (const X of [x => x, x => 64 - x]) {
+      p.poly(dark(tb, 0.22), [X(17), 56, X(9), 49, X(6.4), 51, X(8), 54.4, X(6.4), 57, X(10), 59.6, X(17), 61]);
+      p.poly(tb, [X(17), 57, X(9.6), 50.6, X(7.8), 52, X(9.4), 54.8, X(8.2), 56.6, X(11), 58.4, X(17), 60]);
+    }
     if ((tb = accOf(L, 'memohood'))) { p.poly(dark(tb, 0.12), [10, 46, 9, 26, 14, 11, 24, 3.4, 40, 3.4, 50, 11, 55, 26, 54, 46, 46, 50, 18, 50]); p.poly(tb, [11, 44, 10.4, 26, 15, 12, 24.6, 4.6, 39.4, 4.6, 49, 12, 53.6, 26, 53, 44]); p.poly(dark(tb, 0.1), [49, 12, 53.6, 26, 53, 44, 49, 44, 50, 26]); }
     if ((tb = accOf(L, 'cathood'))) { p.poly(dark(tb, 0.16), [11, 51, 9, 28, 13, 12, 23, 4, 41, 4, 51, 12, 55, 28, 53, 51, 45, 45, 19, 45]); p.poly(dark(tb, 0.06), [12, 47, 10.6, 28, 14.6, 13, 24, 5.4, 40, 5.4, 49.4, 13, 53.4, 28, 52, 47, 45, 43, 19, 43]); }
     if ((tb = accOf(L, 'greatsword'))) {
@@ -543,6 +553,34 @@
     }
   }
 
+  function thHat(p, v) {
+    const lav = '#b8a4ec', lavDk = '#7a5ac8', band = '#b02a3a', pet = '#8a5ae8', petHi = '#c8a8ff';
+    const brim = (rx, ry, dy) => { const o = []; for (let i = 0; i < 28; i++) { const a = i / 28 * Math.PI * 2; o.push(31 + Math.cos(a) * rx, 17 + dy + Math.sin(a) * ry - Math.cos(a) * 1.6); } return o; };
+    p.poly(lavDk, brim(31, 7, 1));
+    p.poly(lav, brim(30.4, 6.4, 0.8));
+    const top = brim(29.6, 5, -0.4);
+    p.poly(v, top);
+    p.clipPoly(top, () => {
+      p.poly(light(v, 0.16), [6, 15.4, 20, 12.4, 19, 14.2, 7, 17]);
+      p.poly('#9a8cc8', [3, 17.6, 15, 15.4, 15, 16, 3.4, 18.4]);
+      p.poly('#9a8cc8', [61, 15, 48, 13.8, 48, 14.6, 60.6, 16]);
+    });
+    const crown = [19, 15.6, 21.6, 9.6, 26, 4.6, 31, 1, 37, -2.2, 45, -4.6, 46.4, -3.4, 44, 0, 43.4, 4.6, 44.4, 9.6, 45.2, 15.4];
+    p.poly(v, crown);
+    p.clipPoly(crown, () => {
+      p.poly(dark(v, 0.3), [40, -8, 50, -8, 50, 18, 41.6, 18, 40.4, 6]);
+      p.poly(lavDk, [27.4, 11, 31, 4, 36.4, 0, 34.4, 4.6, 31.8, 11]);
+      p.poly(lavDk, [35.6, 11, 37.6, 5, 41.6, -1.6, 40.2, 5, 38.6, 11]);
+    });
+    const bandPts = [19.4, 12.8, 31.2, 11.6, 44.8, 12.6, 45.2, 14.8, 31.2, 13.8, 19, 15];
+    p.poly(band, bandPts);
+    for (const [x, y, r] of [[23.8, 11.8, 4.2], [30.6, 13.2, 3.6], [36.8, 12, 3.2]]) {
+      for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 - 0.4; p.ell(pet, x + Math.cos(a) * r * 0.62, y + Math.sin(a) * r * 0.62, r * 0.56, r * 0.56); }
+      for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 - 0.4; p.ell(petHi, x + Math.cos(a) * r * 0.52 - 0.2, y + Math.sin(a) * r * 0.52 - 0.2, r * 0.28, r * 0.28); }
+      p.ell('#f4d86a', x, y, r * 0.24, r * 0.24);
+    }
+  }
+
   function witchHat(p, v) {
     const rim = '#f0b030', band = '#d03a2c', zig = '#f8a030';
     const brim = (rx, ry, dy) => { const o = []; for (let i = 0; i < 28; i++) { const a = i / 28 * Math.PI * 2; o.push(31 + Math.cos(a) * rx, 17.4 + dy + Math.sin(a) * ry - Math.cos(a) * 1.4); } return o; };
@@ -588,6 +626,7 @@
     if (accOf(L, 'roundglasses')) glassesAt(p, true, '#9a7448');
     let v;
     if ((v = accOf(L, 'witchhat'))) witchHat(p, v);
+    if ((v = accOf(L, 'thhat'))) thHat(p, v);
     if ((v = accOf(L, 'xclips'))) for (const [x, y] of [[20.4, 21.6], [43.6, 21.6]]) {
       for (const d of [-1, 1]) {
         p.poly(dark(v, 0.35), [x - d * 2.4, y - 2.6, x - d * 1.2, y - 3.2, x + d * 2.4, y + 2.8, x + d * 1.2, y + 3.4]);
@@ -688,6 +727,15 @@
       p.ell(L.bead || '#e8c050', X(7.9), 53, 1.2, 1.2);
     }
     if ((v = accOf(L, 'tassel'))) { p.snap('#e8e4ee', 17.4, 35.4, 1.6, 1.4); p.snap(v, 17, 36.8, 2.4, 2.4); p.snap(dark(v, 0.25), 17.4, 39.2, 1.6, 2.6); }
+    if ((v = accOf(L, 'trbob'))) for (const X of [x => x, x => 64 - x]) {
+      p.poly(dark(v, 0.2), [X(19), 20, X(13.6), 28, X(12.4), 37, X(14), 43, X(18.6), 45, X(21.8), 42, X(21), 33, X(22), 26]);
+      p.poly(v, [X(19), 20, X(14.6), 28, X(13.6), 36, X(15), 41.6, X(18.6), 43.2, X(20.8), 40.6, X(20), 32, X(21), 25]);
+      p.poly(light(v, 0.2), [X(16.4), 27, X(15.4), 34, X(16.2), 38, X(17), 34, X(18), 28]);
+    }
+    if ((v = accOf(L, 'trtuft'))) {
+      p.poly(dark(v, 0.18), [43, 12.6, 46, 6.4, 51.4, 4.6, 50.4, 8.4, 53, 11, 48.6, 14.6]);
+      p.poly(v, [44, 12.2, 46.6, 7.2, 50.2, 5.8, 49.2, 8.8, 51.2, 11, 48, 13.4]);
+    }
     if ((v = accOf(L, 'headband'))) {
       const outer = [], inner = [];
       for (let i = 0; i <= 18; i++) { const an = Math.PI * (1.06 + i * 0.88 / 18); outer.push(32 + Math.cos(an) * 17.2, 27 + Math.sin(an) * 15.2); inner.unshift(32 + Math.cos(an) * 15.8, 27 + Math.sin(an) * 12.6); }
@@ -867,6 +915,11 @@
       p.poly(light(v, 0.45), [x + s * 1.5, 4.2, x + s * 1.6, 2.6, x + s * 2.6, 3.4, x + s * 2.4, 4.6]);
       p.poly(dark(v, 0.18), [x - s * 0.2, 13.6, x + s * 1.3, 13.8, x + s * 2.4, 10, x + s * 1, 9.8]);
     }
+    if ((v = accOf(L, 'trflowers'))) for (const [x, y, r] of [[33.4, 11, 3], [40.6, 12.6, 3.5], [47, 18, 3.1]]) {
+      for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 - 0.3; p.ell(dark(v, 0.08), x + Math.cos(a) * r * 0.66, y + Math.sin(a) * r * 0.66, r * 0.56, r * 0.56); }
+      p.ell(v, x, y, r * 0.66, r * 0.66);
+      p.ell('#5a7ae8', x, y, r * 0.3, r * 0.3);
+    }
     if ((v = accOf(L, 'hairflower'))) {
       const fx = x => (L.sideR ? 64 - x : x);
       for (let i = 0; i < 5; i++) { const a = i * Math.PI * 0.4; p.ell(dark(v, 0.15), fx(17 + Math.cos(a) * 2), 22 + Math.sin(a) * 2, 2, 1.6, L.sideR ? -a : a); }
@@ -904,9 +957,9 @@
       p.poly(light(v, 0.32), [32 + s * 10.2, 11.6, 32 + s * 12.2, 11.8, 32 + s * 12.4, 3.6]);
     }
     if (accOf(L, 'elfears')) for (const s of [-1, 1]) {
-      const x = 32 + s * 13.4;
-      p.poly(P.skin, [x - s * 0.6, 28.6, x + s * 9.4, 24.6, x + s * 1.6, 35.6, x - s * 0.6, 34.6]);
-      p.poly(P.skinSh, [x + s * 0.8, 30.6, x + s * 6.6, 27, x + s * 1.6, 33.8]);
+      const x = 32 + s * 13.4, e = L.earLen || 9.4;
+      p.poly(P.skin, [x - s * 0.6, 28.6, x + s * e, 28.6 - e * 0.42, x + s * 1.6, 35.6, x - s * 0.6, 34.6]);
+      p.poly(P.skinSh, [x + s * 0.8, 30.6, x + s * e * 0.7, 30.6 - e * 0.38, x + s * 1.6, 33.8]);
     }
     if ((v = accOf(L, 'helmet'))) {
       p.poly(v, [15.5, 23, 15.5, 11, 21.5, 4.5, 42.5, 4.5, 48.5, 11, 48.5, 23, 44, 18.5, 20, 18.5]);
@@ -2413,6 +2466,20 @@
       p.ell('#8a909c', 44.6, 55, 4.4, 1.8); p.ell('#e2e6ee', 44.4, 54.6, 4, 1.4); p.ell('#e2e6ee', 42.6, 53.4, 1.8, 1.4); p.ell('#e2e6ee', 46.2, 53, 2, 1.6);
       p.snap('#c8384a', 44, 56.4, 1, 3);
     }
+    if ((v = accOf(L, 'trdress'))) {
+      p.poly(P.top, [20, 52, 27, 47, 37, 47, 44, 52]);
+      p.rect('#34323e', 27.2, 45.4, 9.6, 2);
+      p.poly(dark(v, 0.2), [28, 49.4, 36, 49.4, 37, 55, 32, 61, 27, 55]);
+      p.poly(v, [28.8, 49.8, 35.2, 49.8, 36, 54.8, 32, 59.4, 28, 54.8]);
+      for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 - 0.3; p.ell('#f8f4ec', 48 + Math.cos(a) * 1.9, 53 + Math.sin(a) * 1.9, 1.5, 1.5); }
+      p.ell('#5a7ae8', 48, 53, 0.9, 0.9);
+    }
+    if ((v = accOf(L, 'thcorset'))) {
+      p.rect(v, 24.6, 50, 14.8, 0.9);
+      p.poly(v, [27.4, 51, 32, 58.6, 36.6, 51, 35.4, 51, 32, 56.6, 28.6, 51]);
+      p.ell('#8a5ae8', 32, 59, 1.7, 1.7);
+      p.ell('#d8c0ff', 31.5, 58.5, 0.7, 0.7);
+    }
     if ((v = accOf(L, 'keychoker'))) { p.rect(v, 27.8, 45.4, 8.4, 1.8); p.ell('#c8ccd4', 32, 48.6, 1.3, 1.3); p.snap('#c8ccd4', 31.6, 49.6, 0.9, 3); p.snap('#c8ccd4', 32.4, 51.4, 1.2, 0.8); }
     if ((v = accOf(L, 'chains'))) for (const sd of [-1, 1]) for (let i = 0; i < 5; i++) p.snap(v, 32 + sd * (4 + i * 2.6), 61 - i * 0.4, 1.2, 0.8);
     if ((v = accOf(L, 'padlock'))) { p.poly(dark(v, 0.3), [26, 57.4, 38, 57.4, 37, 63, 32, 64.6, 27, 63]); p.poly(v, [26.6, 57.8, 37.4, 57.8, 36.4, 62.4, 32, 63.8, 27.6, 62.4]); p.poly(light(v, 0.4), [27.6, 58.4, 31.4, 58.4, 30.6, 61, 28, 60.6]); p.snap('#5a4020', 31.6, 59.6, 0.8, 1.6); }
@@ -2479,30 +2546,19 @@
     p.ell(L.hair, 24, 7.5, 7, 6); p.ell(L.hair, 32, 4.6, 8, 6.4); p.ell(L.hair, 40, 7.5, 7, 6); p.ell(light(L.hair, 0.5), 29, 3.4, 3.4, 2);
   }
 
-  function pomArt(p, L, q) {
-    const fine = q < 1.3, lw = Math.max(0.9, q * 0.95);
-    const FUR = L.hair, FURs = mix(FUR, '#9c8ea4', 0.3), DK = L.ear, DKh = mix(DK, '#9a98b4', 0.3);
-    const IN = mix(FUR, '#d4c6bc', 0.45), INs = mix(FUR, '#8c7e90', 0.45);
-    const RED = L.top, REDs = dark(RED, 0.34), REDh = light(RED, 0.16);
-    const GOLD = L.trim, GOLDs = mix(GOLD, '#6a3a14', 0.4), GOLDh = light(GOLD, 0.55);
-    const VIS = '#1d1b26', VISh = '#55536a', COL = L.beard || '#eee0c0', COLs = mix(COL, '#9a8270', 0.36);
-    const PAW = '#f6f2ea', WH = '#fbfaf6', WHs = '#d4d0dc', LENS = '#dde2ea', LENSs = '#a8aebe';
-    const M = (s, pts) => pts.map((v, i) => (i % 2 || s < 0 ? v : 100 - v));
-    const line = (col, pts, w) => {
-      for (let i = 0; i + 3 < pts.length; i += 2) {
-        const x0 = pts[i], y0 = pts[i + 1], x1 = pts[i + 2], y1 = pts[i + 3], d = Math.hypot(x1 - x0, y1 - y0) || 1;
-        const nx = -(y1 - y0) / d * w / 2, ny = (x1 - x0) / d * w / 2;
-        p.poly(col, [x0 + nx, y0 + ny, x1 + nx, y1 + ny, x1 - nx, y1 - ny, x0 - nx, y0 - ny]);
-      }
-      for (let i = 0; i < pts.length; i += 2) p.ell(col, pts[i], pts[i + 1], w / 2, w / 2);
-    };
-    const trefoil = (x, y, r) => {
-      for (const [dx, dy] of [[-0.95, 0.55], [0.95, 0.55], [0, -1.05]]) p.ell(GOLDs, x + dx * r, y + dy * r + 0.25 * r, r, r);
-      for (const [dx, dy] of [[-0.95, 0.55], [0.95, 0.55], [0, -1.05]]) p.ell(GOLD, x + dx * r, y + dy * r, r * 0.92, r * 0.92);
-      p.ell(GOLD, x, y, r * 0.8, r * 0.8);
-      if (fine) p.ell(GOLDh, x - r * 0.3, y - r * 1.3, r * 0.4, r * 0.32);
-    };
+  const pomMirror = (s, pts) => pts.map((v, i) => (i % 2 || s < 0 ? v : 100 - v));
 
+  function pomLine(p, col, pts, w) {
+    for (let i = 0; i + 3 < pts.length; i += 2) {
+      const x0 = pts[i], y0 = pts[i + 1], x1 = pts[i + 2], y1 = pts[i + 3], d = Math.hypot(x1 - x0, y1 - y0) || 1;
+      const nx = -(y1 - y0) / d * w / 2, ny = (x1 - x0) / d * w / 2;
+      p.poly(col, [x0 + nx, y0 + ny, x1 + nx, y1 + ny, x1 - nx, y1 - ny, x0 - nx, y0 - ny]);
+    }
+    for (let i = 0; i < pts.length; i += 2) p.ell(col, pts[i], pts[i + 1], w / 2, w / 2);
+  }
+
+  function pomLimbs(p, L) {
+    const M = pomMirror, DK = L.ear, DKh = mix(DK, '#9a98b4', 0.3), IN = mix(L.hair, '#d4c6bc', 0.45), INs = mix(L.hair, '#8c7e90', 0.45);
     for (const s of [-1, 1]) {
       p.poly(DK, M(s, [31, 37, 27, 46, 22, 60, 17, 74, 12, 85, 8.6, 92, 10, 96.6, 15.6, 97.4, 21, 93, 26.4, 83, 31.6, 69, 35.6, 55, 37.6, 43]));
       p.poly(DKh, M(s, [21.4, 64, 17.6, 74, 14, 82, 11.6, 87, 13.4, 87.4, 16.4, 82.6, 20, 74.6, 23.4, 66]));
@@ -2510,13 +2566,31 @@
       p.poly(INs, M(s, [29.6, 44, 26.8, 51.6, 24.4, 59.4, 25.6, 66, 26.4, 72, 27.4, 69.4, 26.8, 62.4, 27.6, 54, 30.6, 45.4]));
       p.poly(INs, M(s, [21.6, 88, 18.6, 93.4, 17.2, 96.6, 21, 93, 23.6, 88.6]));
     }
-
     for (const s of [-1, 1]) {
       p.poly(DK, M(s, [40.4, 85, 48, 85, 47.6, 96, 40.8, 96]));
-      p.ell(PAW, s < 0 ? 44 : 56, 97.4, 4.8, 2.4);
-      p.ell(WHs, s < 0 ? 44.6 : 56.6, 98.4, 3.6, 1.1);
+      p.ell('#f6f2ea', s < 0 ? 44 : 56, 97.4, 4.8, 2.4);
+      p.ell('#d4d0dc', s < 0 ? 44.6 : 56.6, 98.4, 3.6, 1.1);
     }
     p.poly(mix(DK, '#0c0a12', 0.3), [56.4, 85, 60, 85, 59.6, 96, 57, 96]);
+  }
+
+  function pomArt(p, L, q) {
+    if (L.coat === 'pajamas') return pomPajamas(p, L, q);
+    const fine = q < 1.3, lw = Math.max(0.9, q * 0.95);
+    const FUR = L.hair, FURs = mix(FUR, '#9c8ea4', 0.3), DK = L.ear, DKh = mix(DK, '#9a98b4', 0.3);
+    const RED = L.top, REDs = dark(RED, 0.34), REDh = light(RED, 0.16);
+    const GOLD = L.trim, GOLDs = mix(GOLD, '#6a3a14', 0.4), GOLDh = light(GOLD, 0.55);
+    const VIS = '#1d1b26', VISh = '#55536a', COL = L.beard || '#eee0c0', COLs = mix(COL, '#9a8270', 0.36);
+    const PAW = '#f6f2ea', WH = '#fbfaf6', WHs = '#d4d0dc', LENS = '#dde2ea', LENSs = '#a8aebe';
+    const M = pomMirror, line = (col, pts, w) => pomLine(p, col, pts, w);
+    const trefoil = (x, y, r) => {
+      for (const [dx, dy] of [[-0.95, 0.55], [0.95, 0.55], [0, -1.05]]) p.ell(GOLDs, x + dx * r, y + dy * r + 0.25 * r, r, r);
+      for (const [dx, dy] of [[-0.95, 0.55], [0.95, 0.55], [0, -1.05]]) p.ell(GOLD, x + dx * r, y + dy * r, r * 0.92, r * 0.92);
+      p.ell(GOLD, x, y, r * 0.8, r * 0.8);
+      if (fine) p.ell(GOLDh, x - r * 0.3, y - r * 1.3, r * 0.4, r * 0.32);
+    };
+
+    pomLimbs(p, L);
 
     p.poly(RED, [36.4, 62.6, 63.6, 62.6, 66.8, 71, 68, 83.4, 66.4, 88.8, 33.6, 88.8, 32, 83.4, 33.2, 71]);
     p.poly(REDs, [58, 64, 63.6, 62.6, 66.8, 71, 68, 83.4, 66.4, 88.8, 59.6, 88.8, 61.4, 76]);
@@ -2558,34 +2632,7 @@
     trefoil(50, 64.2, 2.1);
 
     p.ell(COLs, 50, 64, 13, 3.6);
-    for (const s of [-1, 1]) p.poly(FURs, M(s, [31, 49, 27.6, 55.4, 31.6, 54.6, 30, 58.6, 34.4, 56]));
-    p.ell(FURs, 50.8, 50.4, 21, 14.6);
-    p.ell(FUR, 49.6, 49.6, 20.6, 14.2);
-    for (const s of [-1, 1]) p.poly(FUR, M(s, [30.4, 48, 27.8, 54.4, 31.6, 53.6, 30.6, 57.2, 34.4, 54.6]));
-    p.poly(DK, [29.4, 45, 30.6, 38, 69.4, 38, 70.6, 45, 66, 42.2, 57.6, 41.2, 51, 46.8, 50, 47.6, 49, 46.8, 42.4, 41.2, 34, 42.2]);
-
-    for (const s of [-1, 1]) {
-      const ex = s < 0 ? 40 : 60, ey = 50.4, io = -s * 0.5;
-      p.ell(FURs, ex, ey + 0.4, 5.6, 6);
-      p.ell(WH, ex, ey, 5, 5.6);
-      p.ell('#1c3c94', ex + io, ey + 0.6, 3.9, 4.8);
-      p.ell(L.eye, ex + io, ey + 1.6, 3.5, 3.7);
-      p.ell(mix(L.eye, '#c0f4ff', 0.55), ex + io, ey + 3.2, 2.6, 1.8);
-      p.ell('#0e1434', ex + io, ey + 0.8, 1.7, 2.5);
-      p.ell(WH, ex + io - 1.4, ey - 1.2, 1.3, 1.3);
-      if (fine) p.ell(WH, ex + io + 1.5, ey + 2.6, 0.6, 0.6);
-      p.poly(FUR, M(s, [33, 40, 47.4, 40, 47.4, 46.8, 46.4, 47, 34.8, 45.4, 33, 46]));
-      p.poly('#1c1622', M(s, [33.2, 46.8, 34.4, 44.6, 46.8, 45.8, 46.4, 47.8, 35, 46.6]));
-      p.poly('#1c1622', M(s, [34.6, 45.4, 32, 43.8, 32.8, 47]));
-    }
-    p.poly(DK, [41.6, 41, 47.6, 45.6, 50, 50.4, 52.4, 45.6, 58.4, 41]);
-
-    p.ell('#f4a0aa', 32.4, 56.4, 4.2, 2.4); p.ell('#f4a0aa', 67.6, 56.4, 4.2, 2.4);
-    if (q < 0.8) line('#6a3040', [46.2, 56.8, 48.1, 58.4, 50, 57, 51.9, 58.4, 53.8, 56.8], 1.1);
-    else {
-      const mouth = q < 1.3 ? ['X..X..X', '.XX.XX.'] : ['X.X', '.X.'];
-      mouth.forEach((row, j) => [...row].forEach((ch, i) => { if (ch === 'X') p.snap('#6a3040', 50 + (i - row.length / 2) * q, 56.6 + j * q, q * 0.9, q * 0.9); }));
-    }
+    pomFace(p, L, q);
 
     p.poly(RED, [32, 37.4, 68, 37.4, 70.6, 3, 29.4, 3]);
     p.poly(REDs, [61.8, 37.4, 68, 37.4, 70.6, 3, 63.4, 3]);
@@ -2625,6 +2672,117 @@
     p.poly(VIS, [27.6, 35.4, 72.4, 35.4, 73.2, 38, 67.8, 41.4, 50, 42.8, 32.2, 41.4, 26.8, 38]);
     p.poly(VISh, [32, 36.2, 54, 36.2, 52.4, 37.6, 33.6, 38.4]);
     if (fine) for (const x of [57.4, 59.4, 61.4, 63.4, 65.4]) p.poly(GOLD, [x, 38.6, x + 1.2, 38.4, x + 1.2, 39.8, x, 40]);
+  }
+
+  function pomFace(p, L, q) {
+    const fine = q < 1.3, M = pomMirror, FUR = L.hair, FURs = mix(FUR, '#9c8ea4', 0.3), DK = L.ear, WH = '#fbfaf6';
+    for (const s of [-1, 1]) p.poly(FURs, M(s, [31, 49, 27.6, 55.4, 31.6, 54.6, 30, 58.6, 34.4, 56]));
+    p.ell(FURs, 50.8, 50.4, 21, 14.6);
+    p.ell(FUR, 49.6, 49.6, 20.6, 14.2);
+    for (const s of [-1, 1]) p.poly(FUR, M(s, [30.4, 48, 27.8, 54.4, 31.6, 53.6, 30.6, 57.2, 34.4, 54.6]));
+    p.poly(DK, [29.4, 45, 30.6, 38, 69.4, 38, 70.6, 45, 66, 42.2, 57.6, 41.2, 51, 46.8, 50, 47.6, 49, 46.8, 42.4, 41.2, 34, 42.2]);
+
+    for (const s of [-1, 1]) {
+      const ex = s < 0 ? 40 : 60, ey = 50.4, io = -s * 0.5;
+      p.ell(FURs, ex, ey + 0.4, 5.6, 6);
+      p.ell(WH, ex, ey, 5, 5.6);
+      p.ell('#1c3c94', ex + io, ey + 0.6, 3.9, 4.8);
+      p.ell(L.eye, ex + io, ey + 1.6, 3.5, 3.7);
+      p.ell(mix(L.eye, '#c0f4ff', 0.55), ex + io, ey + 3.2, 2.6, 1.8);
+      p.ell('#0e1434', ex + io, ey + 0.8, 1.7, 2.5);
+      p.ell(WH, ex + io - 1.4, ey - 1.2, 1.3, 1.3);
+      if (fine) p.ell(WH, ex + io + 1.5, ey + 2.6, 0.6, 0.6);
+      p.poly(FUR, M(s, [33, 40, 47.4, 40, 47.4, 46.8, 46.4, 47, 34.8, 45.4, 33, 46]));
+      p.poly('#1c1622', M(s, [33.2, 46.8, 34.4, 44.6, 46.8, 45.8, 46.4, 47.8, 35, 46.6]));
+      p.poly('#1c1622', M(s, [34.6, 45.4, 32, 43.8, 32.8, 47]));
+    }
+    p.poly(DK, [41.6, 41, 47.6, 45.6, 50, 50.4, 52.4, 45.6, 58.4, 41]);
+
+    p.ell('#f4a0aa', 32.4, 56.4, 4.2, 2.4); p.ell('#f4a0aa', 67.6, 56.4, 4.2, 2.4);
+    if (q < 0.8) pomLine(p, '#6a3040', [46.2, 56.8, 48.1, 58.4, 50, 57, 51.9, 58.4, 53.8, 56.8], 1.1);
+    else {
+      const mouth = q < 1.3 ? ['X..X..X', '.XX.XX.'] : ['X.X', '.X.'];
+      mouth.forEach((row, j) => [...row].forEach((ch, i) => { if (ch === 'X') p.snap('#6a3040', 50 + (i - row.length / 2) * q, 56.6 + j * q, q * 0.9, q * 0.9); }));
+    }
+  }
+
+  function pomPajamas(p, L, q) {
+    const fine = q < 1.3, lw = Math.max(0.9, q * 0.95), M = pomMirror, line = (col, pts, w) => pomLine(p, col, pts, w);
+    const BL = L.top, BLs = mix(BL, '#3a5e94', 0.45), WT = L.stripe, WTs = mix(WT, BL, 0.5);
+    const CAP = L.cap, CAPs = mix(CAP, '#3a5e94', 0.45), CAPh = light(CAP, 0.38);
+    const GOLD = L.trim, GOLDs = mix(GOLD, '#6a3a14', 0.4), GOLDh = light(GOLD, 0.55);
+    const RUF = L.beard, RUFs = mix(RUF, '#9c9ab0', 0.3), CR = L.bib, GEM = L.gem;
+    const pitch = Math.max(3.6, 4 * q);
+    const stripes = col => { for (let i = -8; i <= 8; i++) p.snap(col, 50 + i * pitch - pitch / 4, 58, pitch / 2, 36); };
+
+    pomLimbs(p, L);
+
+    const gown = [37.4, 62.6, 62.6, 62.6, 65.8, 71, 68.8, 85, 69.6, 91.8, 30.4, 91.8, 31.2, 85, 34.2, 71];
+    const shade = [60.6, 58, 74, 58, 74, 94, 63, 94];
+    p.poly(WT, gown);
+    p.clipPoly(gown, () => {
+      stripes(BL);
+      p.clipPoly(shade, () => { p.rect(WTs, 58, 58, 16, 36); stripes(BLs); });
+      p.rect(BLs, 28, 89.8, 44, 3);
+    });
+
+    p.poly(GOLDs, [38.4, 64.6, 61.6, 64.6, 61, 72.2, 55.4, 82.6, 50, 77.4, 44.6, 82.6, 39, 72.2]);
+    p.poly(GOLD, [38.4, 64, 61.6, 64, 61, 71.6, 55.4, 82, 50, 76.8, 44.6, 82, 39, 71.6]);
+    p.poly(CR, [39.8, 64, 60.2, 64, 59.6, 71.2, 55, 79.6, 50, 74.8, 45, 79.6, 40.4, 71.2]);
+    if (fine) for (const x of [45.2, 54.8]) { p.ell(GOLD, x, 73, 1.7, 0.6, 0.785); p.ell(GOLD, x, 73, 1.7, 0.6, -0.785); p.ell(GOLDh, x, 73, 0.5, 0.5); }
+
+    line(GOLD, [55.4, 86.8, 53, 89.6, 48.8, 91.2, 44.6, 91.8], lw * 0.8);
+    p.ell(GOLDs, 54.8, 85.6, 2, 2); p.ell(GOLD, 54.6, 85.2, 1.7, 1.7);
+    if (fine) p.ell(GOLDh, 54, 84.6, 0.6, 0.5);
+    line('#3a414e', [56.4, 85, 58.8, 84.4], lw * 0.55);
+
+    for (const s of [-1, 1]) {
+      const sleeve = M(s, [37.4, 63.4, 32.8, 65.8, 28.6, 77, 28.8, 81, 36, 81, 38.4, 71.4]), cx = s < 0 ? 32.4 : 67.6;
+      p.poly(s < 0 ? WT : WTs, sleeve);
+      p.clipPoly(sleeve, () => stripes(s < 0 ? BL : BLs));
+      p.ell(RUFs, cx, 82.6, 5.6, 3.3);
+      p.ell(RUF, cx - s * 0.2, 82, 5.2, 2.9);
+      for (const dx of [-3, 0, 3]) p.ell(RUF, cx + dx, 80.6, 2, 1.6);
+      p.ell('#f6f2ea', cx - s * 0.4, 86.6, 3.6, 2.6);
+      p.ell('#d4d0dc', cx - s * 0.4 + 0.6, 88, 2.6, 1.1);
+    }
+
+    p.ell(RUFs, 50, 63.6, 13.8, 5.6);
+    for (const [x, y, r] of [[37.6, 61.4, 3.2], [40.4, 64.2, 3.4], [44.6, 66, 3.4], [50, 66.6, 3.6], [55.4, 66, 3.4], [59.6, 64.2, 3.4], [62.4, 61.4, 3.2]]) { p.ell(RUFs, x, y + 0.8, r, r * 0.9); p.ell(RUF, x, y, r * 0.94, r * 0.84); }
+    p.ell(RUF, 50, 62.4, 12.8, 4.6);
+    if (fine) for (const [x, y] of [[42, 64.6], [47.4, 66.2], [53.2, 66.2], [58.4, 64.4]]) p.ell(RUFs, x, y, 1.2, 0.6);
+    p.ell(RUFs, 50, 64, 13, 3.4);
+
+    pomFace(p, L, q);
+
+    const droop = [36, 10.6, 28.4, 13.6, 22.4, 20.4, 18.8, 28.6, 17.8, 37.2, 19.4, 45, 24.4, 46.6, 25.8, 40.4, 26.6, 33, 29.2, 25.4, 33.6, 18.8];
+    p.poly(CAP, droop);
+    p.poly(CAPs, [22.4, 20.4, 18.8, 28.6, 17.8, 37.2, 19.4, 45, 24.4, 46.6, 22.6, 40.6, 22.2, 32.4, 24.6, 24.6]);
+    p.poly(CAP, [26.6, 39.4, 25.8, 30.6, 28.4, 21, 33.6, 13.2, 41.6, 7.8, 50.6, 5.8, 59.6, 6.8, 67, 10.6, 71.8, 16.8, 74, 24.8, 74, 34]);
+    p.poly(CAPs, [64.6, 9.6, 67, 10.6, 71.8, 16.8, 74, 24.8, 74, 34, 68.6, 35.2, 69.4, 24.6, 67.2, 15.6]);
+    p.poly(CAPh, [37.4, 12.8, 44.2, 9, 51.6, 8, 50.2, 11.2, 43.6, 13.4, 38.6, 17.6]);
+    if (fine) { line(CAPs, [30.6, 22, 27.4, 30.4, 27, 37.6], 0.8); line(CAPs, [44, 16.6, 38.6, 24, 36.4, 34], 0.7); }
+
+    p.poly(GOLDs, [25.8, 38.6, 74.4, 32.6, 75, 38.6, 26.6, 44.4]);
+    p.poly(GOLD, [25.8, 37.8, 74.4, 31.8, 74.8, 37.4, 26.4, 43.2]);
+    p.poly(GOLDh, [26, 38.4, 74.2, 32.4, 74.3, 33.6, 26.2, 39.6]);
+    if (fine) line(GOLDs, [27.4, 41.6, 73.6, 36.2], 0.5);
+    p.poly(GOLDs, [70.4, 32.8, 75.6, 32, 76.6, 40.6, 71.4, 41.4]);
+    p.poly(GOLD, [70.4, 32.2, 75.4, 31.4, 76.2, 39.8, 71.2, 40.6]);
+
+    p.ell(GOLDs, 58.8, 24.8, 9.8, 9.8);
+    p.ell(GOLD, 58.6, 24.2, 9.6, 9.6);
+    p.ell(CAP, 63, 21.6, 6.6, 6.6);
+    if (fine) { line(GOLDh, [51.2, 20.8, 52.2, 26.8, 55.8, 31.4], 0.8); line(GOLDs, [51, 26.8, 52.8, 28.8, 55.2, 29.8], 0.7); for (const [x, y] of [[51.6, 28.6], [53, 30], [54.6, 30.8]]) line(GOLDs, [x, y, x - 0.4, y + 1.3], 0.5); }
+    p.ell(mix(GEM, '#0c1e48', 0.45), 62.8, 23.6, 2.7, 3.2);
+    p.ell(GEM, 62.6, 23.2, 2.4, 2.9);
+    p.poly(GEM, [60.9, 21.6, 62, 17.8, 64.3, 21.4]);
+    p.ell(light(GEM, 0.7), 61.8, 22.2, 0.8, 1.1);
+
+    p.ell(RUFs, 23.4, 51.4, 6.9, 6.6);
+    p.ell(RUF, 22.8, 50.4, 6.4, 6);
+    for (const [dx, dy] of [[-4.2, -2.4], [-1.2, -4.8], [3, -4], [4.8, -0.6], [-4.8, 1.4]]) p.ell(RUF, 22.8 + dx, 50.4 + dy, 2.2, 2);
+    if (fine) p.ell(RUFs, 24.8, 53.2, 2.6, 1.5);
   }
 
   function bustSvarog(p) {
@@ -2766,6 +2924,10 @@
   function figBackAcc(p, P, L, B) {
     const cx = 24;
     let v;
+    if ((v = accOf(L, 'trwings'))) for (const s of [-1, 1]) {
+      p.poly(dark(v, 0.22), [cx + s * (B.shW - 1), B.sh + 2, cx + s * (B.shW + 3.6), B.sh - 2, cx + s * (B.shW + 5), B.sh + 0.6, cx + s * (B.shW + 3.8), B.sh + 2.6, cx + s * (B.shW + 3), B.sh + 5, cx + s * (B.shW - 1), B.sh + 5]);
+      p.poly(v, [cx + s * (B.shW - 1), B.sh + 2.4, cx + s * (B.shW + 3.2), B.sh - 1.2, cx + s * (B.shW + 4.2), B.sh + 0.6, cx + s * (B.shW + 2.8), B.sh + 2.4, cx + s * (B.shW - 1), B.sh + 4]);
+    }
     if ((v = accOf(L, 'greatsword'))) {
       const x0 = cx - B.hiW - 3, y0 = B.knee + 6, x1 = cx + B.shW + 9, y1 = B.head + 2;
       p.poly(dark(v, 0.5), [x0 - 1.6, y0, x0 + 1.4, y0 + 1.4, x1 + 1.6, y1 + 3, x1 + 2, y1 - 2, x1 - 2.4, y1 + 1]);
@@ -2987,6 +3149,7 @@
     if ((v = accOf(L, 'soles'))) for (const [x0, mirror] of [[cx - g - lw, -1], [cx + 1 + g, 1]]) p.rect(v, x0 + (mirror < 0 ? -1.3 : 0.2), FOOT - 0.9, lw + 1.1, 0.9);
     const bootTop = L.bootsTo === 'calf' ? B.knee + 5 : B.knee - 3;
     if (boots) for (const s of [-1, 1]) shaft(boots, bootTop, s);
+    if ((v = accOf(L, 'trboot'))) shaft(v, bootTop, 1);
     const bootCuff = col => {
       for (const s of [-1, 1]) {
         const o = legO(s);
@@ -3924,6 +4087,17 @@
       if ((v = accOf(L, 'sleeve1')) && s < 0) { p.poly(v, armPts); if (B.male) p.poly(v, [x0 - s * 2.6, B.sh - 0.6, x0 + s * 0.6, B.sh + 0.2, x0 + s * 1.8, B.sh + 3.4, x0 + s * 1.3, B.sh + 6, x0 - s * 2, B.sh + 5]); p.rect(P.top, Math.min(x0 - s * (B.armW - 0.6), x0 + s * 1.3), wr - 1.6, B.armW + 0.7, 1.2); p.rect(light(v, 0.2), x0 - 0.4, B.sh + 3, 0.8, wr - B.sh - 5); }
       if ((v = accOf(L, 'cuffbtn')) && s < 0) for (const y of [wr - 3.4, wr - 1.8]) p.snap(v, x0 - 0.4, y, 0.9, 0.9);
       if (!bareArm && !opera && !half && !rolled && L.coat !== 'shrug' && L.coat !== 'hoodcape') p.rect(P.trim, Math.min(x0 - s * (B.armW - 0.6), x0 + s * 1.3), wr - 1, B.armW + 0.7, 1);
+      if ((v = accOf(L, 'trarm'))) {
+        if (s < 0) {
+          p.poly(v, [x0 + s * 1.6, wr - 2, x0 - s * (B.armW + 0.8), wr - 2, x0 - s * (B.armW + 1), wr + 0.2, x0 + s * 1.8, wr + 0.2]);
+          p.ell(v, x0 - s * (B.armW * 0.5 - 0.6), B.sh + 2.6, B.armW * 0.5 + 1.2, 3);
+        } else {
+          const ey = B.sh + (wr - B.sh) * 0.55;
+          p.band(B.sh + 3, ey, () => p.poly(P.skin, armPts));
+          p.poly('#34323e', [x0 + s * 1.8, ey, x0 - s * (B.armW + 0.6), ey + 0.3, x0 - s * (B.armW + 0.2), wr + 0.4, x0 + s * 2, wr + 0.2]);
+          p.poly('#9a9cac', [x0 + s * 1.8, ey + 0.4, x0 - s * (B.armW + 0.6), ey + 0.7, x0 - s * (B.armW + 0.5), ey + 1.5, x0 + s * 1.8, ey + 1.2]);
+        }
+      }
       if ((v = accOf(L, 'gauntlets'))) {
         const ey = B.sh + (wr - B.sh) * 0.66;
         p.poly(v, [x0 + s * 1.7, ey, x0 - s * (B.armW - 0.3), ey + 0.3, x0 - s * (B.armW - 0.4), wr + 0.4, x0 + s * 1.9, wr + 0.2]);
@@ -4101,6 +4275,12 @@
         p.poly(P.top, [x0 + s * 2.6, ey - 0.4, x0 - s * (B.armW + 0.4), ey, x0 - s * (B.armW + 0.8), wr + 1.6, x0 + s * 1.6, wr + 3.6, x0 + s * 4.4, wr + 3.4]);
         p.poly(P.innerSh, [x0 + s * 2.6, ey - 0.4, x0 + s * 1.2, ey - 0.2, x0 + s * 2.4, wr + 3.4, x0 + s * 4.4, wr + 3.4]);
         p.poly(P.trim, [x0 + s * 2.6, ey - 0.6, x0 - s * (B.armW + 0.4), ey - 0.2, x0 - s * (B.armW + 0.4), ey + 0.6, x0 + s * 2.6, ey + 0.2]);
+        if ((v = accOf(L, 'thlace'))) {
+          p.poly(v, [x0 + s * 1.6, wr - 0.4, x0 - s * (B.armW + 0.8), wr - 0.4, x0 - s * (B.armW + 1.2), wr + 2.6, x0 + s * 2, wr + 2.6]);
+          p.poly(dark(v, 0.14), [x0 + s * 2, wr + 2, x0 - s * (B.armW + 1.2), wr + 2, x0 - s * (B.armW + 1.2), wr + 2.6, x0 + s * 2, wr + 2.6]);
+          p.poly(P.skin, [x0 - s * (B.armW - 0.6), wr + 2.6, x0 + s * 1.6, wr + 2.6, x0 + s * 1.2, wr + 2.6 + hl, x0 - s * (B.armW - 1.2), wr + 2.6 + hl]);
+          p.ell('#7a78e8', x0 - s * (B.armW * 0.3), wr - 1, 1.3, 0.9);
+        }
         if ((v = accOf(L, 'bracelets')) && s < 0) { p.rect(v, Math.min(x0 - s * (B.armW - 0.6), x0 + s * 1.3), wr - 1.6, B.armW + 0.7, 0.6); p.rect('#f070c0', Math.min(x0 - s * (B.armW - 0.6), x0 + s * 1.3), wr - 0.8, B.armW + 0.7, 0.6); }
       }
       if (L.coat === 'half') {
@@ -5057,6 +5237,26 @@
       p.snap('#d8b050', x - 0.6, B.hip - 2.6, 1.6, 0.8);
     }
     if ((v = accOf(L, 'neckband'))) p.rect(v, cx - 2.2, neckTop + 2, 4.4, 0.8);
+    if ((v = accOf(L, 'trdress'))) {
+      p.poly(P.top, [cx - B.shW + 2, B.sh + 0.8, cx - 3, B.sh - 1.4, cx + 3, B.sh - 1.4, cx + B.shW - 2, B.sh + 0.8]);
+      p.rect('#34323e', cx - 2.4, B.sh - 2.4, 4.8, 1.2);
+      p.poly(dark(v, 0.2), [cx - 2.4, B.sh + 0.4, cx + 2.4, B.sh + 0.4, cx + 2.8, B.chest + 0.6, cx, B.chest + 4, cx - 2.8, B.chest + 0.6]);
+      p.poly(v, [cx - 1.8, B.sh + 0.8, cx + 1.8, B.sh + 0.8, cx + 2.1, B.chest + 0.4, cx, B.chest + 3, cx - 2.1, B.chest + 0.4]);
+      const fx = cx + B.hiW * 0.46, fy = B.hip + 2;
+      for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 - 0.3; p.ell('#f8f4ec', fx + Math.cos(a) * 1.5, fy + Math.sin(a) * 1.5, 1.2, 1.2); }
+      p.ell('#5a7ae8', fx, fy, 0.8, 0.8);
+    }
+    if ((v = accOf(L, 'thcorset'))) {
+      p.rect(v, cx - 3.6, B.sh + 1.6, 7.2, 0.7);
+      p.poly(v, [cx - 2.8, B.sh + 2.4, cx, B.chest + 3.4, cx + 2.8, B.sh + 2.4, cx + 2, B.sh + 2.4, cx, B.chest + 1.6, cx - 2, B.sh + 2.4]);
+      p.ell('#8a5ae8', cx, B.chest + 3.8, 1, 1);
+      p.poly(v, [cx - B.waW, B.waist - 1.6, cx + B.waW, B.waist - 3.4, cx + B.waW, B.waist - 2.4, cx - B.waW, B.waist - 0.6]);
+    }
+    if ((v = accOf(L, 'thkeys'))) for (const s of [-1, 1]) {
+      const kx = cx + s * (B.hiW * 0.46);
+      p.rect(v, kx - 0.4, B.knee + 9, 0.8, 2.6);
+      p.ell(v, kx, B.knee + 8.6, 0.9, 0.9);
+    }
     if ((v = accOf(L, 'keychoker'))) { p.rect(v, cx - 2, neckTop + 1.4, 4, 1); p.snap('#c8ccd4', cx - 0.4, neckTop + 2.4, 0.8, 1.6); }
     if ((v = accOf(L, 'shoulderfrill'))) for (const s of [-1, 1]) for (let i = 0; i < 3; i++) p.ell(v, cx + s * (B.shW - 0.6 - i * 1.4), B.sh + 1.2, 0.9, 0.8);
     if ((v = accOf(L, 'diamonds'))) for (const [dx, dy] of [[-2.4, 3], [2.4, 3], [0, 6], [-3.6, 8], [3.6, 8]]) p.poly(v, [cx + dx, B.chest + dy - 1, cx + dx + 0.9, B.chest + dy, cx + dx, B.chest + dy + 1, cx + dx - 0.9, B.chest + dy]);
@@ -5494,7 +5694,65 @@
     R(9, 5, 4, 1, Ph); R(8, 6, 6, 2, P); R(12, 6, 2, 2, Pd); R(8, 8, 6, 1, Pd);
   }
 
+  function spritePomPajamas(draw, L, dir, frame) {
+    const side = dir === 'left' || dir === 'right', flip = dir === 'left', back = dir === 'up';
+    const R = (x, y, w, h, col) => draw(flip ? 17 - x - w : x, y, w, h, col);
+    const BL = L.top, BLs = mix(BL, '#3a5e94', 0.45), WT = L.stripe, WTs = mix(WT, BL, 0.5), CAP = L.cap, CAPs = mix(CAP, '#3a5e94', 0.45);
+    const GOLD = L.trim, DK = L.ear, DKs = mix(DK, '#0c0a12', 0.3), FUR = L.hair, FURs = mix(FUR, '#9c8ea4', 0.3), IN = mix(FUR, '#d4c6bc', 0.45);
+    const RUF = L.beard, RUFs = mix(RUF, '#9c9ab0', 0.3), CR = L.bib, GEM = L.gem, INK = '#1c1622', PAW = '#f6f2ea';
+    const l1 = frame === 1 ? 1 : 0, l3 = frame === 3 ? 1 : 0;
+    const gown = (x0, w, shadeX) => { for (let x = x0; x < x0 + w; x++) R(x, 13, 1, 7, x === shadeX ? (x % 2 ? WTs : BLs) : (x % 2 ? WT : BL)); };
+    if (!side) {
+      R(3, 22, 11, 1, 'rgba(0,0,0,0.25)');
+      for (const s of [-1, 1]) {
+        const X = (x, w) => (s < 0 ? x : 17 - x - w);
+        R(X(2, 2), 7, 2, 5, DK); R(X(1, 3), 12, 3, 6, DK); R(X(1, 3), 18, 3, 2, DK); R(X(1, 2), 20, 2, 1, DK);
+        if (!back) { R(X(3, 1), 7, 1, 6, IN); R(X(3, 1), 18, 1, 2, IN); }
+      }
+      R(6, 20, 2, 1 - l1, back ? DKs : DK); R(9, 20, 2, 1 - l3, back ? DK : DKs);
+      R(6, 21 - l1, 2, 1, PAW); R(9, 21 - l3, 2, 1, PAW);
+      gown(4, 9, back ? 4 : 12);
+      R(4, 19, 9, 1, BLs);
+      R(3, 13, 1, 4, back ? BLs : BL); R(13, 13, 1, 4, back ? BL : BLs); R(3, 17, 1, 1, RUF); R(13, 17, 1, 1, RUFs); R(3, 18, 1, 1, PAW); R(13, 18, 1, 1, PAW);
+      if (back) {
+        R(4, 7, 9, 4, DK); R(5, 11, 7, 1, FURs); R(4, 12, 9, 1, RUF);
+        R(6, 0, 5, 1, CAP); R(5, 1, 7, 5, CAP); R(5, 1, 1, 5, CAPs); R(12, 2, 1, 4, CAP); R(13, 4, 1, 3, CAP);
+        R(4, 6, 9, 1, GOLD);
+        R(13, 6, 3, 3, RUF); R(13, 8, 3, 1, RUFs);
+        return;
+      }
+      R(6, 13, 5, 1, CR); R(7, 14, 1, 1, CR); R(9, 14, 1, 1, CR); R(9, 16, 1, 1, GOLD);
+      R(4, 7, 9, 5, FUR); R(4, 12, 9, 1, RUF);
+      R(7, 7, 3, 1, DK); R(8, 8, 1, 1, DK);
+      R(5, 8, 2, 1, INK); R(10, 8, 2, 1, INK);
+      R(5, 9, 2, 2, L.eye); R(10, 9, 2, 2, L.eye); R(5, 9, 1, 1, '#ffffff'); R(10, 9, 1, 1, '#ffffff'); R(6, 10, 1, 1, '#1c3c94'); R(11, 10, 1, 1, '#1c3c94');
+      R(4, 10, 1, 1, '#f4a0aa'); R(12, 10, 1, 1, '#f4a0aa'); R(8, 11, 1, 1, '#c4848c');
+      R(6, 0, 5, 1, CAP); R(5, 1, 7, 5, CAP); R(11, 1, 1, 5, CAPs); R(12, 2, 1, 4, CAPs); R(4, 2, 1, 4, CAP); R(3, 3, 1, 3, CAP); R(2, 5, 1, 2, CAPs);
+      R(4, 6, 9, 1, GOLD);
+      R(9, 2, 1, 3, GOLD); R(10, 4, 2, 1, GOLD); R(10, 3, 1, 1, GEM);
+      R(0, 7, 3, 3, RUF); R(0, 9, 3, 1, RUFs); R(2, 7, 1, 1, RUFs);
+      return;
+    }
+    R(3, 22, 10, 1, 'rgba(0,0,0,0.25)');
+    R(4, 7, 2, 6, DK); R(3, 13, 2, 5, DK); R(2, 18, 3, 2, DK); R(1, 20, 2, 1, DK); R(4, 18, 1, 2, IN);
+    R(8, 20, 2, 1 - l3, DKs); R(6, 20, 2, 1 - l1, DK);
+    R(8, 21 - l3, 3, 1, PAW); R(6, 21 - l1, 3, 1, PAW);
+    gown(5, 7, 5);
+    R(5, 19, 7, 1, BLs);
+    R(10, 13, 2, 2, CR); R(10, 16, 1, 1, GOLD);
+    R(7, 14, 2, 3, BL); R(8, 14, 1, 3, WT); R(7, 17, 2, 1, RUF); R(7, 18, 2, 1, PAW);
+    R(5, 7, 7, 5, FUR); R(5, 7, 2, 1, DK); R(6, 8, 1, 3, IN); R(5, 12, 7, 1, RUF);
+    R(9, 7, 2, 1, DK);
+    R(9, 8, 2, 1, INK); R(10, 9, 1, 2, L.eye); R(10, 9, 1, 1, '#ffffff');
+    R(11, 10, 1, 1, '#f4a0aa');
+    R(6, 0, 5, 1, CAP); R(5, 1, 7, 5, CAP); R(5, 1, 1, 5, CAPs); R(4, 2, 1, 4, CAP); R(3, 4, 1, 3, CAP);
+    R(5, 6, 8, 1, GOLD);
+    R(9, 2, 1, 2, GOLD); R(10, 4, 2, 1, GOLD); R(10, 3, 1, 1, GEM);
+    R(1, 6, 3, 3, RUF); R(1, 8, 3, 1, RUFs);
+  }
+
   function spritePom(draw, L, dir, frame) {
+    if (L.coat === 'pajamas') return spritePomPajamas(draw, L, dir, frame);
     const side = dir === 'left' || dir === 'right', flip = dir === 'left', back = dir === 'up';
     const R = (x, y, w, h, col) => draw(flip ? 17 - x - w : x, y, w, h, col);
     const RED = L.top, REDs = dark(RED, 0.34), GOLD = L.trim, DK = L.ear, DKs = mix(DK, '#0c0a12', 0.3), FUR = L.hair, FURs = mix(FUR, '#9c8ea4', 0.3);
@@ -5611,7 +5869,7 @@
       R(6, 21 - legA, 3, 1, shoe); R(8, 21 - legB, 3, 1, shoe);
     } else {
       R(5, 17, 3, 5 - legA, legCol); R(9, 17, 3, 5 - legB, legCol);
-      R(5, 21 - legA, 3, 1, shoe); R(9, 21 - legB, 3, 1, shoe);
+      R(5, 21 - legA, 3, 1, shoe); R(9, 21 - legB, 3, 1, accOf(L, 'trboot') || shoe);
     }
     if ((v = accOf(L, 'greaves'))) {
       if (side) { R(6, 20 - legA, 3, 1, v); R(8, 20 - legB, 3, 1, mix(v, '#9a88b8', 0.3)); }
@@ -5998,6 +6256,11 @@
         if (belt) R(4, 15, 9, 1, belt);
       }
     }
+    if ((v = accOf(L, 'trwings'))) {
+      if (!side) { R(1, bodyTop - 1, 2, 3, v); R(14, bodyTop - 1, 2, 3, v); }
+      else R(dir === 'left' ? 12 : 3, bodyTop, 2, 3, v);
+    }
+    if (accOf(L, 'trarm') && !side) R(aR, bodyTop + 3 - sw, 1, 2, '#34323e');
     if ((v = accOf(L, 'gauntlets'))) {
       if (!side) { R(aL, bodyTop + 3 + sw, 1, 2, v); R(aR, bodyTop + 3 - sw, 1, 2, v); }
       else R(dir === 'left' ? 8 : 7, bodyTop + 4, 2, 2, v);
@@ -6235,7 +6498,7 @@
       if (L.sides === 'feather') { R(dir === 'left' ? 11 : 4, hy + 4, 2, 4, P.hair); R(dir === 'left' ? 13 : 3, hy + 5, 1, 2, P.hair); }
       if (L.sides === 'flick') { R(dir === 'left' ? 11 : 4, hy + 4, 2, 4, P.hair); R(dir === 'left' ? 11 : 4, hy + 6, 2, 2, P.tips || P.hair); }
     }
-    if (P.tips && !side && L.back === 'long') R(3, 13 + oy, 10, 3, P.tips);
+    if (P.tips && !side && L.back === 'long' && L.tipsBand !== false) R(3, 13 + oy, 10, 3, P.tips);
     const eyeCol = mix(P.eye, INK, 0.25);
     if (dir === 'down') {
       if (male) { R(6, hy + 5, 1, 1, eyeCol); R(10, hy + 5, 1, 1, eyeCol); R(5, hy + 4, 2, 1, P.hairDk); R(10, hy + 4, 2, 1, P.hairDk); }
@@ -6273,6 +6536,15 @@
       if (back) { R(7, hy + 6, 3, 10, P.hair); R(8, hy + 7, 1, 8, P.hairSh); if (P.tips) R(7, hy + 13, 3, 3, P.tips); }
     }
     if ((v = accOf(L, 'xclips')) && !back) { if (dir === 'down') { R(4, hy + 3, 1, 1, v); R(12, hy + 3, 1, 1, v); } else R(dir === 'left' ? 5 : 11, hy + 3, 1, 1, v); }
+    if ((v = accOf(L, 'trflowers')) && !back) { R(dir === 'left' ? 4 : 8, hy, 2, 1, v); R(dir === 'left' ? 7 : 11, hy + 1, 2, 1, v); R(dir === 'left' ? 2 : 13, hy + 2, 2, 1, v); }
+    if ((v = accOf(L, 'trtuft'))) R(dir === 'left' ? 2 : 12, hy - 2, 3, 2, v);
+    if ((v = accOf(L, 'thhat'))) {
+      const lean = dir === 'right' ? -1 : back ? -1 : 1, tipX = lean > 0 ? 9 : 6;
+      R(0, hy + 2, 17, 1, '#b8a4ec'); R(0, hy + 1, 17, 1, v); R(0, hy + 1, 1, 1, '#b8a4ec'); R(16, hy + 1, 1, 1, '#b8a4ec');
+      R(4, hy, 9, 1, '#b02a3a');
+      if (!back) { R(5, hy, 2, 1, '#8a5ae8'); R(8, hy, 2, 1, '#c8a8ff'); R(11, hy, 1, 1, '#8a5ae8'); }
+      R(5, hy - 1, 7, 1, v); R(lean > 0 ? 6 : 5, hy - 2, 5, 1, v); R(tipX - 1, hy - 3, 3, 1, v); R(tipX, hy - 4, 1, 1, v);
+    }
     if ((v = accOf(L, 'witchhat'))) {
       const band = '#d03a2c', zig = '#f8a030', lean = dir === 'right' ? -1 : back ? -1 : 1, tipX = lean > 0 ? 10 : 5;
       R(1, hy + 1, 15, 1, v); R(1, hy + 1, 1, 1, '#f0b030'); R(15, hy + 1, 1, 1, '#f0b030');
@@ -6407,6 +6679,6 @@
     return [24 - B.shW - 2.8, 4.8];
   }
 
-  Object.assign(G, { isMale, pixelArt, pen, downsample, dark, light, lookOf, trailLook, accOf, paletteOf, mix, bustCanvas, portraitCanvas: bustCanvas, figureCanvas, spriteCanvas, drawSprite, drawPortrait, drawBust, drawFigure, figEye, bustEye, staffOrb, FIG_W, FIG_H, FIG_FOOT: FOOT });
+  Object.assign(G, { isMale, pixelArt, pen, downsample, dark, light, lookOf, sceneLookOf, trailLook, accOf, paletteOf, mix, bustCanvas, portraitCanvas: bustCanvas, figureCanvas, spriteCanvas, drawSprite, drawPortrait, drawBust, drawFigure, figEye, bustEye, staffOrb, FIG_W, FIG_H, FIG_FOOT: FOOT });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

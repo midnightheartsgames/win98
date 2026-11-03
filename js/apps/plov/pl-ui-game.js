@@ -422,7 +422,7 @@
 
     drawHero(ctx, t) {
       const g = this.game, h = g.hero;
-      const D = A.HAYATO;
+      const D = A.CHEF;
       let act = h.moving ? 'walk' : 'stand';
       let arm = null;
       let frame = h.moving ? Math.floor(h.walkT * 9) % 4 : 0;

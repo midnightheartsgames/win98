@@ -8,7 +8,7 @@ const read = f => fs.readFileSync(path.join(root, f), 'utf8');
 const BASE = 'http://www.astralwiki98.ru';
 const EMOJI = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
 
-const HSR_MODULES = ['hsr-core', 'hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes'];
+const HSR_MODULES = ['hsr-core', 'hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-luofu-foes', 'hsr-luofu-field', 'hsr-luofu-maps', 'hsr-luofu-story', 'hsr-luofu-story2', 'hsr-luofu-life', 'hsr-conductor', 'hsr-pf-data', 'hsr-pf-battle', 'hsr-pf', 'hsr-pf-story', 'hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-luofu', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-luofu-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-pf-art'];
 
 const noop = () => {};
 function makeCanvas(w = 300, h = 150) {
@@ -175,8 +175,26 @@ test('IE routes astralwiki98.ru, lists it in directory and search, and hsr.hoyov
   assert.ok(officialHome.includes('data-url="http://www.astralwiki98.ru"') && officialHome.includes("АстралВики '98"), 'official HSR 98 site links to AstralWiki 98');
 });
 
+test('Pure Fiction: the article follows the tables of the mode and its links work', () => {
+  const pf = D.systems.find(s => s.id === 'pure_fiction'), PF = H.PF, TUN = PF.TUN;
+  assert.ok(pf, 'the article exists');
+  assert.deepEqual(pf.tableRows.map(r => r[1]), TUN.lvl.map(v => 'Ур. ' + v));
+  assert.deepEqual(pf.tableRows.map(r => r[2]), TUN.cycles.map(String));
+  const text = pf.body.join(' ');
+  for (const v of [TUN.clear, ...TUN.stars]) assert.ok(text.includes(H.fmt(v)), `score ${v}`);
+  assert.ok(text.includes(TUN.days + ' дня'), 'the length of a season');
+  assert.ok(text.includes(String(PF.STAR_TIERS.reduce((a, t) => a + t.jade, 0))) && text.includes(String(PF.STAR_TIERS.reduce((a, t) => a + t.feather, 0))), 'the rewards of a season');
+  for (const s of PF.SEASONS) assert.ok(text.includes(s.name), s.name);
+  assert.ok(pf.tableRows[3][3].includes(String(TUN.eloq)), 'the Rhetoric count');
+  const html = site.renderSite(`${BASE}/system?id=pure_fiction`);
+  assert.ok(html.includes('/atlas?map=lf_sanctum'), 'the place links to the atlas');
+  assert.ok(html.includes('/quest?id=pf_decor'), 'the mission links to its page');
+  assert.ok(html.includes('Мастерское приукрашивание Юцы'), 'with its name');
+  assert.ok(site.renderSite(`${BASE}/quest?id=pf_decor`).includes('Мастерское приукрашивание Юцы'), 'the mission page opens');
+});
+
 test('Worldbuilding: cosmic systems, factions, and worlds have complete structured registries', () => {
-  assert.equal(D.systems.length, 7);
+  assert.equal(D.systems.length, 8);
   for (const s of D.systems) {
     assert.ok(s.id && s.title && s.summary.length > 40, s.id);
     assert.ok(Array.isArray(s.body) && s.body.length >= 2, `${s.id} body`);
@@ -192,7 +210,13 @@ test('Worldbuilding: cosmic systems, factions, and worlds have complete structur
     const html = site.renderSite(`${BASE}/faction?id=${f.id}`);
     assert.ok(html.includes(site.esc(f.name)) && html.includes(site.esc(f.goal)), f.name);
   }
-  assert.equal(D.worlds.length, 6);
+  assert.equal(D.worlds.length, 7);
+  const luofuWorld = site.renderSite(`${BASE}/world?id=w_luofu`);
+  assert.ok(luofuWorld.includes('Переулок ауруматонов') && !/Фантил/.test(luofuWorld), 'the world page of Luofu shows its maps and keeps the reveal');
+  const questsPage = site.renderSite(`${BASE}/quests`);
+  assert.ok(questsPage.includes('Конец погребения, начало пути') && !/Фантил/.test(questsPage), 'the quest list shows Luofu and keeps the reveal');
+  const hiddenQuest = site.renderSite(`${BASE}/quest?id=lf_q12`);
+  assert.ok(!/Фантил|Тинъюнь/.test(hiddenQuest) && !hiddenQuest.includes('без отдельных шагов'), 'the last mission of Luofu hides its steps behind the spoiler switch');
   for (const w of D.worlds) {
     assert.ok(w.id && w.name && w.region && w.currency && w.hierarchy && w.customs && w.taboos && w.body, w.id);
     assert.ok(Array.isArray(w.timeline) && w.timeline.length >= 3, `${w.id} timeline`);

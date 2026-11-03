@@ -11,7 +11,10 @@
   ];
   const CW_TAB = { id: 'cw', label: 'Вал. войны', icon: 'warp' };
   const HD_TAB = { id: 'hd', label: 'Рубеж', icon: 'warp' };
-  const tabsOf = g => TABS.concat(g && g.cwRun && g.cwRun() ? [CW_TAB] : [], g && g.hdRun && g.hdRun() && g.hdRun().players[0].hero ? [HD_TAB] : []);
+  const MUSIC_TAB = { id: 'music', label: 'Музыка', icon: 'disc' };
+  const inHdMode = ui => ui.screens.some(s => s.hd);
+  const inCwMode = ui => ui.screens.some(s => s.cw) || !!(ui.game && ui.game.battle && ui.game.battle.cw);
+  const tabsOf = ui => TABS.concat(inCwMode(ui) ? [CW_TAB] : [], inHdMode(ui) ? [HD_TAB] : [], [MUSIC_TAB]);
   const SCENE_KINDS = [
     { id: 'ult', label: 'Абсолютная техника', icon: 'chars' },
     { id: 'fus', label: 'Слияние', icon: 'team' },
@@ -50,8 +53,11 @@
   const PLANAR_COL = '#d8c0ff';
   const SET_GROUPS = [['Пещерные реликвии', false], ['Планарные украшения', true]];
   const wrapIdx = (i, n) => ((i % n) + n) % n;
-  const charIds = () => Object.keys(H.CHARS).filter(k => k !== 'trail_p');
-  const coneIds = () => Object.keys(H.CONES).sort((a, b) => H.CONES[b].rarity - H.CONES[a].rarity);
+  let debugGame = null;
+  const labHeroes = () => (debugGame ? H.LAB.IDS.filter(k => debugGame.state.roster[k]) : []);
+  const labCones = () => (debugGame ? H.LAB.CONE_IDS.filter(id => debugGame.state.inv.cones.some(c => c.id === id)) : []);
+  const charIds = () => Object.keys(H.CHARS).filter(k => k !== 'trail_p').concat(labHeroes());
+  const coneIds = () => Object.keys(H.CONES).concat(labCones()).sort((a, b) => H.CONES[b].rarity - H.CONES[a].rarity);
   const itemIds = () => Object.keys(MONEY).concat(Object.keys(H.ITEMS).sort((a, b) => KIND_ORDER.indexOf(H.ITEMS[a].kind) - KIND_ORDER.indexOf(H.ITEMS[b].kind)));
   const itemDef = id => MONEY[id] || H.ITEMS[id];
   const qtyOf = id => QTY[id] || QTY_ITEM;
@@ -61,7 +67,8 @@
     cn: { i: 0, sup: 1, n: 1 },
     rl: { set: 0, slot: 0, main: 'hpF', subs: ['critR', 'critD', 'atkP', 'spd'], lvl: 15, roll: 1 },
     it: { i: 0, q: 0 },
-    sc: { kind: 0, id: null, aim: 0, cut: 0, ban: 0, res: 0, stage: 1, gen: null, out: 0 }
+    sc: { kind: 0, id: null, aim: 0, cut: 0, ban: 0, res: 0, stage: 1, gen: null, out: 0 },
+    mu: { i: 0, v: 0, play: null }
   });
   const preview = { key: null, show: null, eid: null };
 
@@ -72,7 +79,7 @@
     if (kind === 'skin') return Object.keys(H.CHARS).filter(k => sceneOutfits('skin', k).length);
     if (kind === 'sig' || kind === 'conv' || kind === 'guild' || kind === 'mid' || kind === 'con') return charIds();
     const has = kind === 'ult' ? H.Ults.SHOWS : kind === 'warp' ? H.WarpIntro.SHOWS : H.Eidolons.SCENES;
-    return Object.keys(H.CHARS).filter(k => has[k]);
+    return Object.keys(H.CHARS).concat(labHeroes()).filter(k => has[k]);
   }
   function sceneAt(st) { const ids = sceneIds(sceneKind(st)), i = Math.max(0, ids.indexOf(st.sc.id)); return { ids, i, id: ids[i] }; }
   const fusionKit = id => { const f = H.FUSIONS[id]; return { name: f.name, rarity: Math.max(...f.members.map(m => H.CHARS[m].rarity)), ult: { name: f.name, target: f.target } }; };
@@ -215,12 +222,14 @@
 
     debugForm(st) {
       const ui = this, g = this.game;
+      debugGame = g;
       const shift = () => ui.held.includes('ShiftLeft') || ui.held.includes('ShiftRight');
       const note = (text, sfx) => { st.log = { text, t: ui.t }; ui.sfx(sfx || 'chest'); };
-      if (st.tab >= tabsOf(g).length) st.tab = 0;
-      const tab = tabsOf(g)[st.tab].id;
+      if (st.tab >= tabsOf(ui).length) st.tab = 0;
+      const tab = tabsOf(ui)[st.tab].id;
       if (tab === 'cw') return ui.debugCwForm(st, note, shift);
       if (tab === 'hd') return ui.debugHdForm(st, note, shift);
+      if (tab === 'music') return ui.debugMusicForm(st, note);
       if (tab === 'chars') {
         const ids = charIds(), id = ids[st.ch.i], name = H.CHARS[id].name, owned = !!g.state.roster[id];
         const trMode = TRACE_MODES[st.ch.tr || 0], tag = () => 'ур. ' + st.ch.lvl + ' · E' + st.ch.eid + ' · Следы ' + trMode[1];
@@ -570,8 +579,9 @@
     },
 
     debugCatalog(c, st, x, y, w) {
-      const ui = this, g = this.game, tab = tabsOf(g)[st.tab].id;
+      const ui = this, g = this.game, tab = tabsOf(ui)[st.tab].id;
       if (tab === 'scenes' && sceneKind(st) === 'aha') { this.debugAhaCatalog(c, st, x, y, w); return; }
+      if (tab === 'music') { this.debugMusicCatalog(c, st, x, y, w); return; }
       const row = tab === 'scenes' ? 1 : 0, focus = st.row === row;
       const views = st.views || (st.views = {}), view = tab === 'scenes' ? tab + ':' + sceneKind(st) : tab;
       const opt = (sel, set) => ({ rowH: 19, max: 19, size: 11, focus, scroll: views[view] || (views[view] = { top: 0, sel: null }), onClick: i => { if (sel === i && st.row === row) return; set(i); st.row = row; ui.sfx('select'); } });
@@ -691,19 +701,21 @@
 
     openDebug() {
       const ui = this, g = this.game;
+      debugGame = g;
       const st = this.debugState = this.debugState || freshState();
       return this.push({
         full: true, debug: true,
-        setTab(i) { if (i === st.tab) return; st.tab = i; st.row = 0; ui.sfx('select'); },
+        setTab(i) { if (i === st.tab) return; ui.debugMusicStop(st); st.tab = i; st.row = 0; ui.sfx('select'); },
+        onClose() { ui.debugMusicStop(st); },
         act(f, a) { a.fn(); if (!a.view && ui.mode === 'battle' && ui.bt && st.log) { ui.bt.msg = 'Отладка: ' + st.log.text; ui.bt.msgT = 1.8; ui.bt.msgWarn = false; } },
         draw(c) {
-          const f = ui.debugForm(st), n = f.rows.length + f.acts.length, TB = tabsOf(ui.game), tab = TB[st.tab].id;
+          const f = ui.debugForm(st), n = f.rows.length + f.acts.length, TB = tabsOf(ui), tab = TB[st.tab].id;
           st.row = Math.min(st.row, n - 1);
           ui.fullBg(c, false);
           c.fillStyle = 'rgba(4,6,20,0.6)'; c.fillRect(0, 0, W, HGT);
           ui.plate(12, 10, 'Отладка');
           const tw = Math.floor((W - 148) / TB.length);
-          TB.forEach((t, i) => ui.button(108 + i * tw, 8, tw - 4, 24, t.label, () => this.setTab(i), { active: i === st.tab, size: 11, icon: t.icon }));
+          TB.forEach((t, i) => ui.button(108 + i * tw, 8, tw - 4, 24, t.label, () => this.setTab(i), { active: i === st.tab, size: 11, icon: tw >= 80 ? t.icon : null }));
           ui.closeBtn(W - 32, 10, () => ui.pop());
           const lx = 10, ly = 42, lw = 296, lh = 392, rx = 314, rw = 316;
           ui.win(lx, ly, lw, lh, { alpha: 0.9 });
@@ -716,28 +728,31 @@
           if (tab === 'cones') ui.debugConePreview(c, st, rx, ly);
           if (tab === 'items') ui.debugItemPreview(c, st, rx, ly);
           if (tab === 'scenes') ui.debugScenePreview(c, st, rx, ly);
+          if (tab === 'music') ui.debugMusicPreview(c, st, rx, ly);
           const fy = tab === 'relics' || tab === 'cw' || tab === 'hd' ? ly + 16 : tab === 'scenes' ? ly + 190 : ly + 212;
           if (tab !== 'relics' && tab !== 'cw' && tab !== 'hd') { c.fillStyle = 'rgba(242,220,154,0.25)'; c.fillRect(rx + 14, fy - 8, rw - 28, 1); }
           f.rows.forEach((r, i) => ui.debugRow(c, st, r, i, rx + 8, fy + i * ROW_H, rw - 16));
           const ay = fy + f.rows.length * ROW_H + 8, aw = Math.floor((rw - 28 - (f.acts.length - 1) * 8) / f.acts.length);
           f.acts.forEach((a, i) => {
             const idx = f.rows.length + i;
-            ui.button(rx + 14 + i * (aw + 8), ay, aw, 26, a.label, () => { st.row = idx; this.act(f, a); }, { active: st.row === idx, size: 11, bold: true, icon: a.icon });
+            ui.button(rx + 14 + i * (aw + 8), ay, aw, 26, a.label, () => { st.row = idx; this.act(f, a); }, { active: st.row === idx, disabled: !!a.off, size: 11, bold: true, icon: a.icon });
           });
           if (tab === 'relics') {
             ['Основная характеристика зависит от слота.', 'Доп. характеристики: до четырёх, без повторов.', 'Уровень и броски задают их значения.'].forEach((l, i) => ui.text(l, rx + 14, ay + 40 + i * 14, { size: 10, col: C.dim }));
           }
           if (tab === 'scenes') ui.debugSceneNotes(st).forEach((l, i) => ui.text(ui.clip(l, rw - 28, 10), rx + 14, ay + 32 + i * 13, { size: 10, col: i ? C.dim : C.sub }));
+          if (tab === 'music') ui.debugMusicNotes(st, rx + 14, ay + 34, rw - 28);
           const by = HGT - 40, wx = ui.debugWallet(st, by), room = wx - 30;
           if (st.log && (tab !== 'scenes' || ui.t - st.log.t < 3)) {
             const fresh = ui.t - st.log.t < 1.2;
             ui.text(ui.clip('Выдано: ' + st.log.text, room, 11, true), 14, by, { size: 11, bold: true, col: fresh ? C.ok : C.sub });
-          } else ui.text(ui.clip(tab === 'scenes' ? 'Ролики и картины не меняют сохранение.' : 'Выдача сразу попадает в сохранение при следующей записи.', room, 11), 14, by, { size: 11, col: C.dim });
-          const enter = tab === 'scenes' ? 'Смотреть' : f.rows[st.row] && f.rows[st.row].open ? 'Список' : 'Выдать';
-          ui.hints(tab === 'scenes' ? [['Q/E', 'Раздел'], ['↑↓', 'Поле'], ['←→', 'Значение'], ['Enter', enter], ['F8', 'Закрыть']] : [['Q/E', 'Раздел'], ['↑↓', 'Поле'], ['←→', 'Значение'], ['Shift', 'Шаг больше'], ['Enter', enter], ['F8', 'Закрыть']], 12, HGT - 18);        },
+          } else ui.text(ui.clip(f.foot || (tab === 'scenes' ? 'Ролики и картины не меняют сохранение.' : 'Выдача сразу попадает в сохранение при следующей записи.'), room, 11), 14, by, { size: 11, col: C.dim });
+          const enter = f.enter || (tab === 'scenes' ? 'Смотреть' : f.rows[st.row] && f.rows[st.row].open ? 'Список' : 'Выдать');
+          ui.hints([['Q/E', 'Раздел'], ['↑↓', 'Поле'], ['←→', 'Значение']].concat(tab === 'scenes' || tab === 'music' ? [] : [['Shift', 'Шаг больше']], [['Enter', enter], ['F8', 'Закрыть']]), 12, HGT - 18);
+        },
         key(k, code) {
           if (k === 'back') { ui.pop(); return; }
-          const TBk = tabsOf(ui.game);
+          const TBk = tabsOf(ui);
           if (code === 'KeyQ' || code === 'KeyE') { this.setTab(wrapIdx(st.tab + (code === 'KeyQ' ? -1 : 1), TBk.length)); return; }
           if (/^Digit[1-9]$/.test(code) && +code.slice(5) <= TBk.length) { this.setTab(+code.slice(5) - 1); return; }
           const f = ui.debugForm(st), nr = f.rows.length, n = nr + f.acts.length;

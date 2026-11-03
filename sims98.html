@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Sims 98</title>
+<link rel="stylesheet" href="css/apps/sims98.css">
+<style>html,body{height:100%;margin:0;background:#10183a}body{display:grid;place-items:center}.ts-page{width:min(98vw,1612px);height:min(96vh,1236px);display:flex;flex-direction:column;background:#c0c0c0;border:2px outset #e4e4e4}.ts-page-title{font:bold 12px Tahoma,Verdana,sans-serif;color:#fff;background:linear-gradient(90deg,#000080,#1084d0);padding:4px 6px}.ts-page-game{flex:1;min-height:0;position:relative}</style></head>
+<body><main class="ts-page"><div class="ts-page-title">The Sims 98</div><div class="ts-page-game" id="game"></div></main>
+<script src="js/apps/sims98/ts-core.js"></script>
+<script src="js/apps/sims98/ts-data.js"></script>
+<script src="js/apps/sims98/ts-camera.js"></script>
+<script src="js/apps/sims98/ts-terrain.js"></script>
+<script src="js/apps/sims98/ts-placeholder.js"></script>
+<script src="js/apps/sims98/ts-style.js"></script>
+<script src="js/apps/sims98/ts-dummy.js"></script>
+<script src="js/apps/sims98/ts-house.js"></script>
+<script src="js/apps/sims98/ts-house-mesh.js"></script>
+<script src="js/apps/sims98/ts-body.js"></script>
+<script src="js/apps/sims98/ts-clips.js"></script>
+<script src="js/apps/sims98/ts-nav.js"></script>
+<script src="js/apps/sims98/ts-sim.js"></script>
+<script src="js/apps/sims98/ts-skin.js"></script>
+<script src="js/apps/sims98/ts-objects.js"></script>
+<script src="js/apps/sims98/ts-ads.js"></script>
+<script src="js/apps/sims98/ts-social.js"></script>
+<script src="js/apps/sims98/ts-skills.js"></script>
+<script src="js/apps/sims98/ts-food.js"></script>
+<script src="js/apps/sims98/ts-econ.js"></script>
+<script src="js/apps/sims98/ts-fish.js"></script>
+<script src="js/apps/sims98/ts-garden.js"></script>
+<script src="js/apps/sims98/ts-collect.js"></script>
+<script src="js/apps/sims98/ts-art-craft.js"></script>
+<script src="js/apps/sims98/ts-jobs.js"></script>
+<script src="js/apps/sims98/ts-upkeep.js"></script>
+<script src="js/apps/sims98/ts-services.js"></script>
+<script src="js/apps/sims98/ts-opps.js"></script>
+<script src="js/apps/sims98/ts-moodlets.js"></script>
+<script src="js/apps/sims98/ts-traits.js"></script>
+<script src="js/apps/sims98/ts-wishes.js"></script>
+<script src="js/apps/sims98/ts-acts.js"></script>
+<script src="js/apps/sims98/ts-sample.js"></script>
+<script src="js/apps/sims98/ts-town.js"></script>
+<script src="js/apps/sims98/ts-game.js"></script>
+<script src="js/apps/sims98/ts-save.js"></script>
+<script src="js/apps/sims98/ts-sprite-index.js"></script>
+<script src="js/apps/sims98/ts-font.js"></script>
+<script src="js/apps/sims98/ts-audio.js"></script>
+<script src="js/apps/sims98/ts-gl.js"></script>
+<script src="js/apps/sims98/ts-atlas.js"></script>
+<script src="js/apps/sims98/ts-render.js"></script>
+<script src="js/apps/sims98/ts-ui-kit.js"></script>
+<script src="js/apps/sims98/ts-ui-icons.js"></script>
+<script src="js/apps/sims98/ts-ui-map.js"></script>
+<script src="js/apps/sims98/ts-ui-save.js"></script>
+<script src="js/apps/sims98/ts-ui-pie.js"></script>
+<script src="js/apps/sims98/ts-ui-live.js"></script>
+<script src="js/apps/sims98/ts-ui-journal.js"></script>
+<script src="js/apps/sims98/ts-ui-news.js"></script>
+<script src="js/apps/sims98/ts-ui.js"></script>
+<script>window.tsui=new Sims98.UI(document.getElementById('game'),{bench:new URLSearchParams(location.search).has('bench')});addEventListener('pagehide',()=>window.tsui.destroy(),{once:true});</script>
+</body></html>

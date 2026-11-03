@@ -4,10 +4,10 @@
   const C = T.CTF;
   const ATTACK_SHARE = 0.4, GUARD_SHARE = 0.3;
   const ATTACK_FIRST = ['runner', 'knight', 'inspector', 'diver', 'vet', 'welder', 'plumber', 'miner', 'strongman', 'hunter'];
-  const GUARD_FIRST = ['strongman', 'plumber', 'miner', 'vet', 'welder', 'diver', 'hunter', 'inspector', 'knight', 'runner'];
+  const GUARD_FIRST = ['plumber', 'miner', 'vet', 'welder', 'diver', 'strongman', 'hunter', 'inspector', 'knight', 'runner'];
   const ROLE_NEAR = 30, GRAB_NEAR = 25;
   const ORDER_HOME = 1, ORDER_GRAB = 2, ORDER_CHASE = 3, ORDER_OWN_DROPPED = 4, ORDER_ESCORT = 5, ORDER_FOE_FLAG = 6, ORDER_TUNNEL = 7, ORDER_POST = 20;
-  const MOUTH_NEAR = 3;
+  const MOUTH_NEAR = 3, RUSH_NEAR = 12;
 
   class Ctf {
     constructor(g) {
@@ -32,7 +32,7 @@
         const ranked = order => bots.filter(h => !h.role).sort((a, b) => order.indexOf(a.merc) - order.indexOf(b.merc) || a.id - b.id);
         const attackers = ranked(ATTACK_FIRST).slice(0, Math.round(bots.length * ATTACK_SHARE));
         attackers.forEach((h, i) => { h.role = 'attack'; h.byTunnel = i % 2 === 1; h.tunnelStep = 0; });
-        ranked(GUARD_FIRST).slice(0, Math.round(bots.length * GUARD_SHARE)).forEach(h => { h.role = 'guard'; });
+        ranked(GUARD_FIRST).slice(0, Math.floor(bots.length * GUARD_SHARE)).forEach(h => { h.role = 'guard'; });
         bots.forEach(h => { if (!h.role) h.role = 'bridge'; });
       }
     }
@@ -214,7 +214,7 @@
         return { x: z.x, y: z.y, z: z.z, key: ORDER_HOME, urgent: true };
       }
       if (this.phase === 'act' || this.phase === 'over') return this.post(h, 'bridge');
-      if (foe.state === 'dropped' && this.near(h, foe, GRAB_NEAR)) return { x: foe.x, y: foe.y, z: foe.z, key: ORDER_GRAB, push: true };
+      if (foe.state === 'dropped' && this.near(h, foe, GRAB_NEAR)) return { x: foe.x, y: foe.y, z: foe.z, key: ORDER_GRAB, push: true, urgent: this.near(h, foe, RUSH_NEAR) };
       if (h.role !== 'attack' && own.state === 'carried' && (h.role === 'guard' || this.near(h, own, ROLE_NEAR))) {
         return { x: own.x, y: own.carrier.pos.y, z: own.z, key: ORDER_CHASE, push: true };
       }
@@ -226,7 +226,8 @@
         if (this.near(h, m, MOUTH_NEAR) && Math.abs(h.pos.y - m.y) < 1.5) h.tunnelStep++;
         else return { x: m.x, y: m.y, z: m.z, key: ORDER_TUNNEL + h.tunnelStep, push: true };
       }
-      return { x: foe.x, y: foe.state === 'home' ? foe.home.y - 0.9 : foe.y, z: foe.z, key: ORDER_FOE_FLAG, push: true };
+      const floor = foe.state === 'home' ? foe.home.y - 0.9 : foe.y;
+      return { x: foe.x, y: floor, z: foe.z, key: ORDER_FOE_FLAG, push: true, urgent: this.near(h, foe, RUSH_NEAR) && Math.abs(h.pos.y - floor) < 2 };
     }
 
     hash() {

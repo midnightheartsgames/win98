@@ -218,12 +218,26 @@
       });
     },
 
+    clipboardText() {
+      const android = globalThis.Sr98Android, clip = globalThis.navigator && globalThis.navigator.clipboard;
+      if (android && android.clipboardText) return Promise.resolve(android.clipboardText());
+      return clip && clip.readText ? clip.readText() : Promise.reject(new Error('no clipboard'));
+    },
+
+    copyText(text) {
+      const android = globalThis.Sr98Android, clip = globalThis.navigator && globalThis.navigator.clipboard;
+      if (android && android.copyText) { android.copyText(text); return Promise.resolve(); }
+      return clip && clip.writeText ? clip.writeText(text) : Promise.reject(new Error('no clipboard'));
+    },
+
     openTextEntry(o) {
       const ui = this, X = o.side ? 18 : 130, Y = 70, WID = 380, COLS = o.cols, GX = X + 22, CELL = Math.floor(336 / COLS), ROW = 24;
       const pages = o.pages || [{ grid: o.grid }], SIZE = pages[0].grid.length, rows = Math.ceil(SIZE / COLS), many = pages.length > 1, HEI = 134 + rows * ROW;
       const bottom = many
         ? [{ id: 'erase', label: '←', dx: 0, w: 40 }, { id: 'space', label: 'Пробел', dx: 44, w: 74 }, { id: 'page', dx: 122, w: 44 }, { id: 'clear', label: 'Очистить', dx: 170, w: 76 }, { id: 'ok', label: o.okLabel, dx: 250, w: 86 }]
-        : [{ id: 'erase', label: '←', dx: 0, w: 60 }, { id: 'clear', label: 'Очистить', dx: 67, w: 110 }, { id: 'ok', label: o.okLabel, dx: 184, w: 150 }];
+        : o.paste
+          ? [{ id: 'erase', label: '←', dx: 0, w: 40 }, { id: 'clear', label: 'Очистить', dx: 44, w: 84 }, { id: 'paste', label: 'Вставить', dx: 132, w: 84 }, { id: 'ok', label: o.okLabel, dx: 220, w: 116 }]
+          : [{ id: 'erase', label: '←', dx: 0, w: 60 }, { id: 'clear', label: 'Очистить', dx: 67, w: 110 }, { id: 'ok', label: o.okLabel, dx: 184, w: 150 }];
       const OK = SIZE + bottom.length - 1;
       return this.push({
         textEntry: true, value: o.value || '', sel: OK, note: null, page: 0,
@@ -236,9 +250,19 @@
           if (!this.value) { ui.sfx('deny'); return; }
           this.value = this.value.slice(0, -1); this.note = null; ui.sfx('select');
         },
+        takeText(text) {
+          if (!o.paste) return;
+          const value = o.paste(String(text || ''));
+          if (!value) { this.note = { ok: false, text: o.pasteMiss }; ui.sfx('deny'); return; }
+          this.value = value; this.note = null; this.sel = OK; ui.sfx('select');
+        },
+        readClipboard() {
+          ui.clipboardText().then(text => this.takeText(text), () => { this.note = { ok: false, text: 'Браузер не дал доступ к буферу. Нажмите Ctrl+V.' }; ui.sfx('deny'); });
+        },
         submit() {
           const res = o.submit(this.value);
           this.note = res;
+          if (res.wait) return;
           ui.sfx(res.ok ? o.okSfx || 'chest' : 'deny');
           if (!res.ok) return;
           this.value = '';
@@ -251,6 +275,7 @@
           else if (id === 'erase') this.erase();
           else if (id === 'space') this.type(' ');
           else if (id === 'page') { this.page = (this.page + 1) % pages.length; ui.sfx('select'); }
+          else if (id === 'paste') this.readClipboard();
           else { this.value = ''; this.note = null; ui.sfx('select'); }
         },
         drawField(c, fy) {
@@ -312,10 +337,14 @@
       });
     },
 
+    openLatinEntry(o) {
+      return this.openTextEntry(Object.assign({ grid: LATIN_GRID, cols: 6, read: latinOfKey }, o));
+    },
+
     openPromo() {
       const ui = this, g = this.game;
-      return this.openTextEntry({
-        title: 'Промокод', max: 16, grid: LATIN_GRID, cols: 6, read: latinOfKey, okLabel: 'Активировать',
+      return this.openLatinEntry({
+        title: 'Промокод', max: 16, okLabel: 'Активировать',
         hint: 'Код набирается латиницей, раскладка не важна.',
         hints: [['A-Z 0-9', 'Ввод'], ['Backspace', 'Стереть'], ['↑↓←→', 'Сетка'], ['Enter', 'Нажать'], ['Esc', 'Назад']],
         submit: text => g.redeemPromo(text),
@@ -338,6 +367,7 @@
       const ui = this, g = this.game, intro = !!g.state.flags.express_intro;
       return [
         { label: 'Профиль Первопроходца', icon: 'chars', fn: ui.openProfile && (() => ui.openProfile()) },
+        { label: 'Друзья', icon: 'friends', lock: !intro, fn: ui.openFriends && (() => ui.openFriends(0)) },
         { label: 'Украшения для смартфона', icon: 'phone', fn: ui.openPhoneDecor && (() => ui.openPhoneDecor()) },
         { label: 'Наряды', icon: 'outfit', lock: !intro, fn: ui.openWardrobe && (() => ui.openWardrobe()) },
         { label: 'Промокод', icon: 'gift', lock: !intro, fn: ui.openPromo && (() => ui.openPromo()) }

@@ -1,6 +1,6 @@
 (function (H) {
   'use strict';
-  const VERSION = 1;
+  const VERSION = 6;
   const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
   const MANUAL = 10, AUTO = 3, MAX_BYTES = 1536 * 1024;
 
@@ -36,6 +36,54 @@
         p.out = !!p.out;
         p.townless = p.townless || 0;
         p.hadTown = p.hadTown == null ? true : p.hadTown;
+      }
+    },
+    1: d => {
+      const S = d.S;
+      S.caravans = S.caravans || [];
+      S.nextCaravan = S.nextCaravan || 1;
+      S.returning = S.returning || [];
+      for (const h of S.heroes) h.machines = h.machines || [];
+    },
+    2: d => {
+      const S = d.S, M = S.map, n = M.w * M.h;
+      M.over = M.over || M.ter.map(() => new Array(n).fill(0));
+      for (const p of S.players) {
+        p.seals = p.seals || [];
+        p.menhirs = p.menhirs || [];
+        p.kills = p.kills || 0;
+      }
+      for (const h of S.heroes) {
+        h.boat = h.boat || null;
+        h.heart = !!h.heart;
+        h.fresh = h.fresh || { morale: 0, luck: 0 };
+        h.week = h.week || { morale: 0, luck: 0, steps: 0, altar: null };
+      }
+    },
+    3: d => {
+      const S = d.S, M = S.map;
+      M.river = M.river || M.ter.map(() => new Array(M.w * M.h).fill(0));
+      S.scene = S.scene || null;
+      S.script = S.script || { flags: {}, done: [], goals: [], read: [], queue: [], run: null, slots: null, hero: null, owners: {} };
+    },
+    4: d => {
+      const S = d.S;
+      S.nextDeal = S.nextDeal || 1;
+      for (const p of S.players) {
+        p.deals = p.deals || [];
+        p.dealsDone = p.dealsDone || 0;
+      }
+    },
+    5: d => {
+      const S = d.S;
+      for (const p of S.players) {
+        p.shades = p.shades || [];
+        p.risen = p.risen || 0;
+      }
+      for (const o of S.map.objs) {
+        if (o.t !== 'town') continue;
+        o.barrow = o.barrow || [];
+        o.raised = o.raised || 0;
       }
     }
   };
@@ -105,22 +153,23 @@
       });
       return opening;
     };
-    const run = (mode, fn) => open().then(db => new Promise((ok, no) => {
-      const q = fn(db.transaction('saves', mode).objectStore('saves'));
+    const run = (mode, fn, name) => open().then(db => new Promise((ok, no) => {
+      const q = fn(db.transaction(name, mode).objectStore(name));
       q.onsuccess = () => ok(q.result);
       q.onerror = () => no(q.error);
     }));
-    return {
-      put: rec => run('readwrite', st => st.put(rec)).then(() => undefined),
-      get: id => run('readonly', st => st.get(id)).then(v => v || null),
-      all: () => run('readonly', st => st.getAll()),
-      del: id => run('readwrite', st => st.delete(id)).then(() => undefined)
-    };
+    const shelf = name => ({
+      put: rec => run('readwrite', st => st.put(rec), name).then(() => undefined),
+      get: id => run('readonly', st => st.get(id), name).then(v => v || null),
+      all: () => run('readonly', st => st.getAll(), name),
+      del: id => run('readwrite', st => st.delete(id), name).then(() => undefined)
+    });
+    return Object.assign(shelf('saves'), { maps: shelf('maps') });
   };
 
   let store = null;
   const backend = () => {
-    if (!store) store = typeof indexedDB !== 'undefined' ? idb() : memory();
+    if (!store) store = typeof indexedDB !== 'undefined' ? idb() : Object.assign(memory(), { maps: memory() });
     return store;
   };
 
@@ -149,5 +198,12 @@
   const latest = async () => (await list())[0] || null;
   const remove = id => backend().del(id);
 
-  H.Save = { VERSION, MIGRATE, MAX_BYTES, SLOTS, packBits, unpackBits, pack, unpack, hash, gzip, gunzip, slotName, autoSlot, meta, write, read, list, latest, remove, memory };
+  const maps = {
+    put: rec => backend().maps.put(rec),
+    get: id => backend().maps.get(id),
+    all: () => backend().maps.all(),
+    del: id => backend().maps.del(id)
+  };
+
+  H.Save = { maps, VERSION, MIGRATE, MAX_BYTES, SLOTS, packBits, unpackBits, pack, unpack, hash, gzip, gunzip, slotName, autoSlot, meta, write, read, list, latest, remove, memory };
 })(globalThis.Heroes98 = globalThis.Heroes98 || {});

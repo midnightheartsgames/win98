@@ -103,6 +103,20 @@ ui.debugJade();
 assert.ok(g.state.jade > jadeBefore && g.state.dbgUsed === 2, 'F7 counts as a cheat too');
 console.log('✓ screen names and F7/F8 mark');
 
+assert.equal(ui.bugInfo().state.lab, undefined, 'a save without test heroes has no lab line');
+ui.labGrant(10);
+assert.ok(g.state.dbgUsed === 3 && g.state.inv.items.lpass === 10, 'granting secret passes counts as a cheat');
+ui.labGrant(7);
+assert.equal(g.state.dbgUsed, 3, 'a refused grant is not a cheat');
+g.addChar('theherta', 10);
+const labInfo = ui.bugInfo();
+assert.deepEqual(labInfo.state.lab, ['theherta'], 'the report lists test heroes in the save');
+assert.match(labInfo.summary, /\[закрытый тест: theherta\]$/);
+delete g.state.roster.theherta;
+delete g.state.inv.items.lpass;
+g.state.dbgUsed = 2;
+console.log('✓ secret warp: grant mark and test heroes');
+
 const live = ui.bugSave();
 assert.ok(live.state && live.summary && live.summary.where);
 assert.equal(live.state.dbgUsed, 2, 'the cheat mark is saved with the game');

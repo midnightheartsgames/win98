@@ -683,7 +683,7 @@ class AppDialogs {
             <li>${L('<b>Свойства папки</b> («Вид» → «Свойства папки...» или «Пуск» → «Настройка»): стиль «Интернета» или «Классический», показ скрытых и системных файлов, скрытие расширений.', '<b>Folder Options</b> (View → Folder Options... or Start → Settings): Web style or Classic style, showing hidden and system files, and hiding extensions.')}</li>
           </ul>
           <h3>${L('Сетевое окружение', 'Network Neighborhood')}</h3>
-          <p>${L('Папка содержит «Вся сеть» и рабочую группу WORKGROUP с компьютерами ADMIN-PC и FILESERVER: на них лежат общие папки и несколько текстовых файлов.', 'The folder holds Entire Network and the WORKGROUP workgroup with the computers ADMIN-PC and FILESERVER, which contain shared folders and a few text files.')}</p>
+          <p>${L('Это настоящая сеть Эфирной связи. В папке ваш компьютер, друзья из Honkai: Star Rail 98, которые сейчас на связи, и открытые столы Рубежа Экспресса. Ярлыки внутри запускают игру. Без подключения здесь только значок «Подключить Эфирную связь»; подключение и отключение идут через «Удалённый доступ к сети».', 'This is the real Ether Link network. The folder holds your computer, your Honkai: Star Rail 98 friends who are online now and the open Express Frontier tables. Shortcuts inside start the game. Without a connection there is only the Connect to Ether Link icon; connecting and disconnecting go through Dial-Up Networking.')}</p>
           <h3>${L('Поиск файлов и папок (' + key('F3') + ')', 'Finding files and folders (' + key('F3') + ')')}</h3>
           <p>${L('Откройте «Пуск» → «Найти» → «Файлы и папки...» (или нажмите ' + key('F3') + ' на рабочем столе). На вкладке <b>«Имя и размещение»</b> введите имя (можно с масками <code>*</code> и <code>?</code> и несколькими шаблонами через <code>;</code>), при необходимости текст внутри файла, выберите, где искать (Мои документы, Рабочий стол, C:, Мой компьютер) и нажмите <b>Найти</b>. Вкладка <b>«Дополнительно»</b> ограничивает поиск типом файла и размером. Результаты показываются таблицей с папкой, размером и типом; двойной щелчок открывает найденный файл или папку.', 'Open Start → Find → Files or Folders... (or press ' + key('F3') + ' on the desktop). On the <b>Name & Location</b> tab type a name (wildcards <code>*</code> and <code>?</code> and several patterns separated by <code>;</code> work), optionally text inside the file, choose where to look (My Documents, Desktop, C:, My Computer), and click <b>Find Now</b>. The <b>Advanced</b> tab limits the search by file type and size. Results appear in a table with folder, size, and type; double-click a result to open the file or folder.')}</p>
           ${shortcut('explorer', L('Щелкните здесь, чтобы открыть «Мой компьютер».', 'Click here to open My Computer.'))}
@@ -1133,7 +1133,7 @@ class AppDialogs {
       ['Разгон процессора и BIOS Setup', 'troubleshooting'], ['Редактор реестра (RegEdit)', 'system'], ['Редактор файлов конфигурации (SysEdit)', 'system'],
       ['Режим энергосбережения монитора', 'cpanel'], ['Сброс к первому запуску', 'troubleshooting'], ['Сведения о системе (MSInfo32)', 'system'],
       ['Свойства обозревателя (inetcpl.cpl)', 'cpanel'], ['Свойства папки (Folder Options)', 'explorer'], ['Свойства файла и диска', 'explorer'],
-      ['Сеанс MS-DOS (command.com)', 'run'], ['Сеть и Сетевое окружение', 'explorer'], ['Синий экран (BSOD)', 'troubleshooting'],
+      ['Сеанс MS-DOS (command.com)', 'run'], ['Сеть и Сетевое окружение', 'explorer'], ['Эфирная связь и друзья', 'explorer'], ['Синий экран (BSOD)', 'troubleshooting'],
       ['Система (sysdm.cpl)', 'cpanel'], ['Системное меню окна', 'desktop'], ['Системный монитор (SysMon)', 'system'],
       ['Снять задачу', 'troubleshooting'], ['Сообщение об ошибке (F10)', 'troubleshooting'], ['Специальные возможности', 'cpanel'],
       ['Стандартные программы', 'apps'], ['Таблица символов (CharMap)', 'apps'], ['Темы рабочего стола (Plus! 98)', 'cpanel'],
@@ -1176,7 +1176,7 @@ class AppDialogs {
       ['Media Player', 'multimedia'], ['Microslop Excel 97', 'apps'], ['mIRC 98 (IRC client)', 'internet'],
       ['Monitor standby (Energy Star)', 'cpanel'], ['Mouse Properties (main.cpl)', 'cpanel'], ['MS-DOS Prompt (command.com)', 'run'],
       ['MSConfig (System Configuration)', 'system'], ['Multimedia Properties (mmsys.cpl)', 'cpanel'], ['My Computer and drives', 'explorer'],
-      ['Netscape 6', 'internet'], ['Network and Network Neighborhood', 'explorer'], ['NOKIA Monitor Test', 'system'],
+      ['Netscape 6', 'internet'], ['Network and Network Neighborhood', 'explorer'], ['Ether Link and friends', 'explorer'], ['NOKIA Monitor Test', 'system'],
       ['Notepad', 'apps'], ['Notification area (system tray)', 'startmenu'], ['Outlook Express', 'internet'],
       ['Overclocking and BIOS Setup', 'troubleshooting'], ['Paint', 'apps'], ['Passwords and Users', 'cpanel'],
       ['Performance and Graphics acceleration', 'cpanel'], ['Pointer schemes and trails', 'cpanel'], ['Power Management (powercfg.cpl)', 'cpanel'],
@@ -2305,14 +2305,14 @@ class AppDialogs {
       } else if (window.appCatniss) window.appCatniss.open();
       return;
     }
-    if (cmd === 'plov' || cmd === 'plov.exe' || cmd === 'плов' || cmd === 'hayato' || cmd === 'хаято' || cmd === 'хаято,' || val === 'где плов' || val === 'где плов?' || val === 'хаято, где плов?' || val === 'хаято где плов') {
+    if (!(window.gameManager && window.gameManager.isHidden && window.gameManager.isHidden('plov')) && (cmd === 'plov' || cmd === 'plov.exe' || cmd === 'плов' || val === 'где плов' || val === 'где плов?')) {
       if (window.gameManager && !window.gameManager.isInstalled('plov')) {
         window.winManager.openDialog({
-          title: 'Хаято, Где плов?',
+          title: 'Где плов?',
           icon: 'error',
           message: isRu
-            ? 'Игра «Хаято, Где плов?» не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'plov\');">Steam</a>'
-            : 'Game Hayato, Where is the plov? is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'plov\');">Steam</a>'
+            ? 'Игра «Где плов?» не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'plov\');">Steam</a>'
+            : 'Game Where Is the Plov? is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'plov\');">Steam</a>'
         });
       } else if (window.appPlov) window.appPlov.open();
       return;

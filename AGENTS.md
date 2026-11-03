@@ -69,7 +69,7 @@ do not create new web stores for games; the old RetroGame Store (www.buygames98.
 
 Exception: demos shipped on the Igromania CD (D:) keep their CD installers. The CD shell (js/apps/igroman.js) lists only demos that really install: Burnout, NHL 98, World Cup 98 and the project games moved there from Steam. Their catalog entries have cdDemo: true and no steam flag, the moved ones have ids ending in `_demo` and titles ending in Demo, installers sit in D:\demo (getIgromaniaCdTree in js/filesystem.js), screenshots live in content/igromania/demos/<id>-<n>.jpg (node tools/steam-shots.cjs <id> writes `_demo` ids there), and not-installed paths call gameManager.showOnCd(id) instead of showInSteam.
 
-Exception: Безмятежность (Bliss, js/apps/bliss, BLISS-98.md) is a standard system game like Minesweeper, FreeCell and 3D Pinball, by the user's decision: always present on the desktop, in Start > Games and as C:\WINDOWS\BLISS.EXE, with no catalog entry in js/game-manager.js and no Steam page.
+Exception: Безмятежность (Bliss, js/apps/bliss, BLISS-98.md) is a standard system game like Minesweeper, FreeCell and 3D Pinball, by the user's decision: always present as a shortcut in the desktop folder Развлечение, in Start > Games and as C:\WINDOWS\BLISS.EXE, with no catalog entry in js/game-manager.js and no Steam page.
 
 Exception: Honkai: Star Rail 98 is free and can also be downloaded from its official site http://hsr.hoyoverse.com (js/apps/hsr-site.js). The site saves StarRail98_Setup.exe to Downloads, and its own setup wizard installs the game and adds it to the Steam library. Steam sells it for free as well. No other game gets a download outside Steam.
 
@@ -133,6 +133,20 @@ player notes in releases/parohod98/<game>/next.md;
 a touch section in the game's test file, then npm run test:parohod98.
 
 Releases: npm run release -- parohod98 games [ids] --channel test publishes changed games, npm run release -- parohod98 --channel test publishes the launcher (notes in releases/parohod98/next.md, never reuse a published APK name). --dirty works only for test. The user checks the test channel on the phones; only with the user's go-ahead promote parohod98 apk <version> and promote parohod98 <game> <version> move them to stable. Commit the files that go into the packages first: promote records HEAD. The APK key ~/.android/parohod98.keystore never goes into git.
+
+Multiplayer (Эфирная связь)
+
+HSR-NET.md describes the whole system: UID, Friends, visits to the Express and co-op of «Рубеж Экспресса» in HSR 98, and in Win 98 the modem provider and Network Neighborhood (js/net98-shell.js). Clients simulate the arena; the server tools/net/server.cjs on the mini-PC numbers and relays commands and keeps accounts, friends and guest books.
+
+No network before consent (Net98.hasConsent). The secret in net98.account never reaches saves, reports or the backup of a game, which is why the key stays outside hsr98.*.
+«Нет связи» texts stay neutral and never advise how to get around a block.
+The simulation modules (SIM_FILES in tools/hsr-net-simver.cjs) use HD.N instead of native maths and never use Math.random, Date.now, new Date or performance; heroes come from A.heroes[], never A.hero. tests/hsr-net.test.js lists what is banned.
+After any edit of those modules or the tables they read, run node tools/hsr-net-simver.cjs. tests/hsr-net.test.js fails and tools/release.cjs refuses win98 and sr98 while HD.SIM is stale. Only players with the same HD.SIM sit at one table, so a changed HD.SIM means everyone has to update.
+Names and texts of other players are cleaned and drawn only on the canvas, or escaped in the shell. UIDs of others never go into saves or the stored VFS. A visit runs in a temporary game (H.visitGame, ui.homeGame) and never writes the save.
+
+To update the server, copy it with scp tools/net/server.cjs mini-pc:/tmp/server.cjs; the user runs sudo cp /tmp/server.cjs /opt/net98/ && sudo systemctl restart net98. The server has no dependencies and must run on Node 20.19. Data lives in /var/lib/net98. Admin: node tools/net.cjs stats, desync, ban, unban, rename, unrename, book-clear.
+
+Tests: tests/net-server.test.js, tests/hsr-net.test.js, tests/hsr-net-ui.test.js, tests/hsr-visit.test.js, tests/net98-shell.test.js. Real windows in headless Edge with a local server: node tools/net/e2e.cjs, e2e-table.cjs, e2e-friends.cjs, e2e-visit.cjs, e2e-shell.cjs, with --shots=<folder>. A report made at a table carries the journal of the game: node tools/bugs.cjs repro <id> --headless replays it and says whether the hash matches.
 
 Naming: Microslop and Win
 

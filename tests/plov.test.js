@@ -53,8 +53,8 @@ function typical(n) {
   for (const t of Object.keys(TYPES)) ok(TEXT.guests[t], 'guest note ' + t);
   const texts = [...Object.values(TEXT.tut), ...Object.values(TEXT.tips), ...Object.values(TEXT.guests), ...Object.values(TEXT.lines).flat(), ...LEVELS.map(L => L.story)];
   for (const s of texts) ok(!s.includes('—'), 'no em dash in game text: ' + s.slice(0, 40));
-  const heroForms = /Хаято (сам|сама|готов|готова|успел|успела|сделал|сделала)\b|самому|самой/;
-  for (const s of texts) ok(!heroForms.test(s), 'gender-neutral text about Hayato: ' + s.slice(0, 50));
+  const heroForms = /[Оо]шпаз (сам|сама|готов|готова|успел|успела|сделал|сделала)\b|самому|самой/;
+  for (const s of texts) ok(!heroForms.test(s), 'gender-neutral text about the chef: ' + s.slice(0, 50));
 }
 
 {
@@ -425,8 +425,11 @@ function stubCanvas() {
   ok(fs.readdirSync(DIR).filter(f => f.endsWith('.js')).length === ORDER.length, 'every module is loaded by the pages');
   ok(html.indexOf('js/apps/plov-app.js') > lastA && html.includes('css/apps/plov.css'), 'desktop loads the wrapper and styles');
   const gm = read('js/game-manager.js');
+  const hiddenAt = gm.indexOf('    this.hiddenGames = {');
   const at = gm.indexOf('      plov: {');
   const entry = gm.slice(at, at + 2600);
+  ok(hiddenAt > 0 && at > hiddenAt && at < gm.indexOf('    this.demoRenames = {'), 'the game sits in hiddenGames, not in the catalog');
+  ok(/isInstalled\(id\) \{\s*return !this\.isHidden\(id\) &&/.test(gm), 'hidden games never count as installed');
   ok(at > 0 && /steam: true/.test(entry) && /price: 16\.99/.test(entry) && /targetExe: 'PLOV\.EXE'/.test(entry) && /appPlov/.test(entry), 'Steam catalog entry');
   ok(!/plovGranted/.test(gm), 'no grant flag');
   const loadState = gm.slice(gm.indexOf('loadState'), gm.indexOf('moveGamesToSteam(state)'));
@@ -434,23 +437,21 @@ function stubCanvas() {
   const shell = {
     'js/desktop.js': ["isInstalled('plov')", 'appPlov'],
     'js/taskbar.js': ["isInstalled('plov')", "case 'plov'", "showInSteam('plov')"],
-    'js/apps/dialogs.js': ["cmd === 'plov'", "showInSteam(\\'plov\\')"],
+    'js/apps/dialogs.js': ["isHidden('plov')", "cmd === 'plov'", "showInSteam(\\'plov\\')"],
     'js/apps/explorer.js': ["item.app === 'plov'", 'PLOV.EXE'],
-    'js/filesystem.js': ["gmInstalled.includes('plov')", "'PLOV.EXE'"],
+    'js/filesystem.js': ["gmInstalled.includes('plov')", "'PLOV.EXE'", 'isHidden(id)'],
     'js/apps/task-manager.js': ["'app_plov'", 'plov.exe'],
     'js/icons.js': ["'plov': `<svg"],
-    'js/apps/clippy.js': ["id.startsWith('app_plov')", "launchProgram('plov', 'appPlov')"],
-    'js/apps/advanced-site.js': ["gm: 'plov'"],
-    'js/apps/steam.js': ["game: 'plov'"],
+    'js/apps/clippy.js': ["id.startsWith('app_plov')"],
     'js/apps/plov-app.js': ["id = 'app_plov'", 'P.UI(root']
   };
   for (const [f, needles] of Object.entries(shell)) {
     const src = read(f);
     for (const n of needles) ok(src.includes(n), `${f} contains ${n}`);
   }
-  ok((read('js/i18n.js').match(/'app\.plov': 'Хаято, Где плов\?'/g) || []).length === 2, 'i18n title in Russian');
-  ok((read('js/i18n.js').match(/'app\.plov': 'Hayato, Where Is the Plov\?'/g) || []).length === 2, 'i18n title in English');
-  ok(read('tests/steam.test.js').includes("'plov'"), 'steam test covers the game');
+  ok((read('js/i18n.js').match(/'app\.plov': 'Где плов\?'/g) || []).length === 2, 'i18n title in Russian');
+  ok((read('js/i18n.js').match(/'app\.plov': 'Where Is the Plov\?'/g) || []).length === 2, 'i18n title in English');
+  ok(!read('js/apps/clippy.js').includes("launchProgram('plov'") && !read('js/apps/advanced-site.js').includes("gm: 'plov'") && !read('js/apps/steam.js').includes("game: 'plov'"), 'no shortcuts to the hidden game');
 }
 
 console.log(`plov: ${checks} checks passed in ${Date.now() - t0} ms`);

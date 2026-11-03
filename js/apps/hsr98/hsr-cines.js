@@ -66,7 +66,7 @@
 
   const CINES = {
     c_attack: {
-      music: 'station',
+      music: 'threat',
       shots: [
         { d: 3.4, sfx: [[0.1, 'rumble']], draw: S => {
           const t = S.t, g = S.g;
@@ -160,7 +160,7 @@
     },
 
     c_vessel: {
-      music: 'title',
+      music: 'mystery',
       shots: [
         { d: 3.0, sub: [[0.4, 'silverwolf|Сосуд готов.']], sfx: [[0.2, 'tech']], draw: S => {
           const t = S.t, g = S.g;
@@ -182,7 +182,7 @@
     },
 
     c_awaken: {
-      music: 'title',
+      music: 'mystery',
       shots: [
         { d: 2.6, sub: [[0.4, 'kafka|Ну вот.']], sfx: [[0.1, 'steam']], draw: S => {
           const t = S.t, g = S.g;
@@ -485,7 +485,7 @@
     },
 
     c_whisper: {
-      music: 'title',
+      music: 'mystery',
       shots: [
         { d: 2.8, draw: S => {
           const t = S.t;
@@ -504,7 +504,7 @@
     },
 
     c_dream: {
-      music: 'title',
+      music: 'mystery',
       shots: [
         dream('=Голос Стелларона|Коколия... Коколия...', null, { voice: true }),
         dream('cocolia=Юная Коколия|Кто ты?.. Что ты такое?', 'cocolia', { voice: false }),
@@ -633,7 +633,7 @@
     },
 
     c_dream2: {
-      music: 'title',
+      music: 'mystery',
       shots: [
         dream('cocolia=Юная Коколия|...Из-за моего приказа они будут страдать, жертвовать собой и умирать.', 'cocolia', { d: 3.8 }),
         dream('=Голос Стелларона|Их встретит не смерть... Их унесёт в младенчество нового мира.', 'cocolia', { voice: true, d: 3.8 }),
@@ -718,7 +718,7 @@
     },
 
     c_archive: {
-      music: 'title',
+      music: 'mystery',
       shots: [
         { d: 2.6, sub: [[0.2, 'svarog|Запрос кэша базы данных. Серийный номер 13175. Уровень шифрования: высший. Передача...']], sfx: [[0.3, 'tech']], draw: S => { S.bg('rivet', S.T, { kind: 'factory' }); S.foe('svarog_b', 160, 226, 160); lighter(S.g, () => glow(S.g, 160, 83, 70, '#ff2e8e', 0.3 + 0.2 * Math.sin(S.T * 6))); } },
         archive([

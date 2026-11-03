@@ -2704,7 +2704,7 @@
     g.save();
     g.imageSmoothingEnabled = false; g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
     rect(g, '#000000', 0, 0, LW, LH);
-    p.paint(g, st.lt, { look: G.lookOf(id, game), lookOf: k => G.lookOf(k, game), game });
+    p.paint(g, st.lt, { look: G.lookOf(id, game), lookOf: k => G.sceneLookOf(k, game), game });
     g.restore();
     const sg = B.small.getContext('2d');
     sg.imageSmoothingEnabled = true;

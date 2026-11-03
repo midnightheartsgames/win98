@@ -4,6 +4,7 @@
   const FONT = "'Segoe UI', 'Trebuchet MS', Tahoma, Arial, sans-serif";
   const THIN = (px, w = 300) => `italic ${w} ${px}px ${FONT}`;
   const BOLD = (px) => `italic 700 ${px}px ${FONT}`;
+  const MAP_MARGIN = 900;
 
   class Hud {
     constructor(canvas) {
@@ -62,6 +63,7 @@
       if (L) c.translate(0, L.topDy);
       if (g.race) this.drawRace(c, w, h, s, ui);
       else this.drawFree(c, w, h, s, ui);
+      this.drawEdge(c, w, h, s, ui);
       c.restore();
       if (ui.showHud !== false) {
         this.drawMinimap(c, w, h, s, ui);
@@ -553,9 +555,10 @@
     }
 
     mapArt(world) {
-      const x0 = world.b.x0, z0 = world.b.z0;
+      const out = world.out, R = out ? world.outRaster() : null, M = out ? MAP_MARGIN : 0;
+      const x0 = world.b.x0 - M, z0 = world.b.z0 - M;
       const k = 0.25;
-      const W = Math.round((world.b.x1 - x0) * k), H = Math.round((world.b.z1 - z0) * k);
+      const W = Math.round((world.b.x1 + M - x0) * k), H = Math.round((world.b.z1 + M - z0) * k);
       const cv = F.Tex.canvas(W, H);
       const c = cv.getContext('2d');
       const img = c.createImageData(W, H);
@@ -563,8 +566,14 @@
       for (let y = 0; y < H; y++) {
         for (let xx = 0; xx < W; xx++) {
           const wx = x0 + xx / k, wz = z0 + y / k;
-          const gi = world.gi(wx, wz);
-          const col = world.water[gi] ? bcol[0] : (bcol[world.biome[gi]] || bcol[2]);
+          let col;
+          if (R && world.outside(wx, wz)) {
+            const zone = R.cells[Math.floor((wz - R.z0) / R.cell) * R.nx + Math.floor((wx - R.x0) / R.cell)];
+            col = zone ? bcol[F.OUT.BIOME[F.OUT.ZONES[zone]]] : bcol[0];
+          } else {
+            const gi = world.gi(wx, wz);
+            col = world.water[gi] ? bcol[0] : (bcol[world.biome[gi]] || bcol[2]);
+          }
           const i = (y * W + xx) * 4;
           img.data[i] = col[0]; img.data[i + 1] = col[1]; img.data[i + 2] = col[2]; img.data[i + 3] = 255;
         }
@@ -578,7 +587,7 @@
         if (pt.poly) { c.closePath(); c.fill(); } else { c.lineWidth = Math.max(1, pt.w * k); c.stroke(); }
       }
       c.fillStyle = 'rgba(70,64,60,0.85)';
-      for (const b of world.buildings) {
+      for (const b of out ? world.buildings.concat(out.buildings) : world.buildings) {
         c.beginPath();
         b.poly.forEach((p, i) => { if (i) c.lineTo((p[0] - x0) * k, (p[1] - z0) * k); else c.moveTo((p[0] - x0) * k, (p[1] - z0) * k); });
         c.closePath();
@@ -613,7 +622,7 @@
       const kc = { hwy: '#f2c230', ave: '#f4f4f0', str: '#e8e8e2', old: '#d8b890', lane: '#d8d8d0', gravel: '#b8a888', dirt: '#a88a58', sand: '#f0e0a8', grass: '#90b060', track: '#f05050', runway: '#9a9a9a' };
       c.lineCap = 'round'; c.lineJoin = 'round';
       for (const pass of [0, 1]) {
-        for (const e of world.edges) {
+        for (const e of out ? world.edges.concat(out.roads) : world.edges) {
           c.strokeStyle = pass === 0 ? 'rgba(20,20,20,0.55)' : (kc[e.kind] || '#ddd');
           c.lineWidth = Math.max(1.2, e.w * k * (pass === 0 ? 1.6 : 1.1));
           c.beginPath();
@@ -636,10 +645,11 @@
           c.beginPath(); c.moveTo(px + fx * L, pz + fz * L); c.lineTo(px - fx * L, pz - fz * L); c.moveTo(px + fz * L * 0.9, pz - fx * L * 0.9); c.lineTo(px - fz * L * 0.9, pz + fx * L * 0.9); c.stroke();
         }
       }
-      if (world.rail) {
+      for (const rail of [world.rail, out && out.rail]) {
+        if (!rail) continue;
         c.strokeStyle = 'rgba(40,40,40,0.8)'; c.lineWidth = 1.5; c.setLineDash([4, 3]);
         c.beginPath();
-        world.rail.pts.forEach((p, i) => { const px = (p[0] - x0) * k, pz = (p[1] - z0) * k; if (i) c.lineTo(px, pz); else c.moveTo(px, pz); });
+        rail.pts.forEach((p, i) => { const px = (p[0] - x0) * k, pz = (p[1] - z0) * k; if (i) c.lineTo(px, pz); else c.moveTo(px, pz); });
         c.stroke(); c.setLineDash([]);
       }
       const bis = world.bis;
@@ -657,7 +667,25 @@
           c.stroke();
         }
       }
+      if (out) {
+        const L = out.limit, lx0 = (L.x0 - x0) * k, lz0 = (L.z0 - z0) * k, lx1 = (L.x1 - x0) * k, lz1 = (L.z1 - z0) * k;
+        c.fillStyle = 'rgba(14,20,34,0.42)';
+        c.fillRect(0, 0, W, lz0); c.fillRect(0, lz1, W, H - lz1); c.fillRect(0, lz0, lx0, lz1 - lz0); c.fillRect(lx1, lz0, W - lx1, lz1 - lz0);
+        c.strokeStyle = 'rgba(255,207,32,0.85)'; c.lineWidth = 2; c.setLineDash([10, 6]);
+        c.strokeRect(lx0, lz0, lx1 - lx0, lz1 - lz0);
+        c.setLineDash([]);
+      }
       return { cv, x0, z0, scale: k, W, H };
+    }
+
+    drawEdge(c, w, h, s, ui) {
+      const k = F.clamp((ui.game.veh.edgeT || 0) / 0.4, 0, 1);
+      if (k <= 0) return;
+      c.save();
+      c.globalAlpha = k;
+      this.shadowText(c, 'ГРАНИЦА КАРТЫ', w / 2, h * 0.22, BOLD(Math.round(22 * s)), '#ffcf20', 'center');
+      this.shadowText(c, 'Дальше проезда нет — разворачивайтесь', w / 2, h * 0.22 + 22 * s, `italic 600 ${Math.round(14 * s)}px ${FONT}`, '#ffffff', 'center');
+      c.restore();
     }
   }
 
@@ -729,6 +757,97 @@
       dials: [{ k: 'temp', x: 108, y: 134, r: 56, a0: -70, a1: 70 }, { k: 'rpm', x: 256, y: 122, r: 82, a0: -135, a1: 135 }, { k: 'speed', x: 404, y: 134, r: 56, a0: -135, a1: 135 }],
       lamps: [{ k: 'beam', x: 236, y: 226 }, { k: 'oil', x: 276, y: 226 }],
       lcd: [{ k: 'odo', x: 404, y: 175, w: 46, h: 12 }]
+    },
+    raf: {
+      dials: [{ k: 'speed', x: 256, y: 124, r: 96, a0: -120, a1: 120 }, { k: 'fuel', x: 90, y: 138, r: 42, a0: -55, a1: 55 }, { k: 'temp', x: 422, y: 138, r: 42, a0: -55, a1: 55 }],
+      lamps: [{ k: 'beam', x: 206, y: 228 }, { k: 'oil', x: 236, y: 234 }, { k: 'bat', x: 276, y: 234 }, { k: 'hand', x: 306, y: 228 }],
+      lcd: [{ k: 'odo', x: 256, y: 186, w: 72, h: 16 }]
+    },
+    zhiguli: {
+      pal: { bg: '#e6e2d4', face: '#e6e2d4', ink: '#151515', needle: '#ee6418', rim: '#e6e2d4', red: '#d02818', lcd: ['#0c0c0c', '#ecece4'] },
+      dials: [{ k: 'speed', x: 256, y: 226, r: 186, a0: -54, a1: 54, fan: true }, { k: 'fuel', x: 64, y: 142, r: 40, a0: -50, a1: 50 }, { k: 'temp', x: 448, y: 142, r: 40, a0: -50, a1: 50 }],
+      lamps: [{ k: 'oil', x: 112, y: 228 }, { k: 'bat', x: 148, y: 232 }, { k: 'choke', x: 184, y: 234 }, { k: 'hand', x: 328, y: 234 }, { k: 'beam', x: 364, y: 232 }],
+      lcd: [{ k: 'odo', x: 256, y: 168, w: 70, h: 16 }]
+    },
+    volvo: {
+      pal: { lcd: ['#0a0a0a', '#f2f2ea'], drum: true },
+      dials: [{ k: 'rpm', x: 134, y: 120, r: 84, a0: -130, a1: 130 }, { k: 'speed', x: 318, y: 120, r: 96, a0: -130, a1: 130 }, { k: 'temp', x: 458, y: 78, r: 34, a0: -55, a1: 55 }, { k: 'fuel', x: 458, y: 180, r: 34, a0: -55, a1: 55 }],
+      lamps: [{ k: 'beam', x: 226, y: 232 }, { k: 'oil', x: 256, y: 236 }, { k: 'bat', x: 286, y: 236 }, { k: 'hand', x: 316, y: 232 }],
+      lcd: [{ k: 'odo', x: 318, y: 190, w: 72, h: 16 }]
+    },
+    w123: {
+      pal: { rim: '#9a9ca0', lcd: ['#0a0a0a', '#f2f2ea'], drum: true },
+      rings: [{ x: 92, y: 128, r: 66 }],
+      dials: [{ k: 'speed', x: 256, y: 124, r: 88, a0: -130, a1: 130 }, { k: 'fuel', x: 92, y: 106, r: 32, a0: -55, a1: 55, bare: true }, { k: 'temp', x: 68, y: 158, r: 20, a0: -60, a1: 60, bare: true }, { k: 'oil', x: 116, y: 158, r: 20, a0: -60, a1: 60, bare: true }, { k: 'clockH', x: 420, y: 128, r: 62, a0: 0, a1: 360, len: 0.55 }, { k: 'clockM', x: 420, y: 128, r: 62, a0: 0, a1: 360 }],
+      lamps: [{ k: 'oil', x: 204, y: 232 }, { k: 'bat', x: 232, y: 240 }, { k: 'beam', x: 280, y: 240 }, { k: 'hand', x: 308, y: 232 }],
+      lcd: [{ k: 'odo', x: 256, y: 172, w: 64, h: 14 }]
+    },
+    pobeda: {
+      pal: { bg: '#2a2018', face: '#5a3a22', ink: '#efe2c4', needle: '#f2ead6', rim: '#c8ccd0', red: '#e0301c', lcd: ['#140c06', '#efe2c4'], drum: true },
+      dials: [{ k: 'speed', x: 256, y: 122, r: 104, a0: -120, a1: 120 }, { k: 'fuel', x: 218, y: 188, r: 11, a0: -60, a1: 60 }, { k: 'temp', x: 243, y: 197, r: 11, a0: -60, a1: 60 }, { k: 'oil', x: 269, y: 197, r: 11, a0: -60, a1: 60 }, { k: 'volt', x: 294, y: 188, r: 11, a0: -60, a1: 60 }],
+      lamps: [{ k: 'beam', x: 206, y: 240 }, { k: 'oil', x: 256, y: 244 }, { k: 'bat', x: 306, y: 240 }],
+      lcd: [{ k: 'odo', x: 256, y: 150, w: 56, h: 13 }]
+    },
+    delta: {
+      dials: [{ k: 'speed', x: 104, y: 128, r: 82, a0: -135, a1: 135 }, { k: 'rpm', x: 408, y: 128, r: 82, a0: -135, a1: 135 }, { k: 'boost', x: 224, y: 74, r: 24, a0: -110, a1: 110 }, { k: 'oil', x: 288, y: 74, r: 24, a0: -60, a1: 60 }, { k: 'fuel', x: 224, y: 146, r: 24, a0: -60, a1: 60 }, { k: 'temp', x: 288, y: 146, r: 24, a0: -60, a1: 60 }],
+      lamps: [{ k: 'beam', x: 210, y: 214 }, { k: 'oil', x: 238, y: 222 }, { k: 'bat', x: 274, y: 222 }, { k: 'hand', x: 302, y: 214 }],
+      lcd: [{ k: 'odo', x: 104, y: 184, w: 60, h: 14 }]
+    },
+    audi: {
+      dials: [{ k: 'fuel', x: 50, y: 170, r: 30, a0: -55, a1: 55 }, { k: 'speed', x: 172, y: 124, r: 84, a0: -130, a1: 130 }, { k: 'rpm', x: 344, y: 124, r: 80, a0: -130, a1: 130 }, { k: 'temp', x: 462, y: 170, r: 30, a0: -55, a1: 55 }],
+      lamps: [{ k: 'beam', x: 226, y: 232 }, { k: 'oil', x: 254, y: 238 }, { k: 'bat', x: 282, y: 238 }, { k: 'hand', x: 310, y: 232 }],
+      lcd: [{ k: 'odo', x: 172, y: 180, w: 64, h: 15 }, { k: 'clock', x: 258, y: 34, w: 50, h: 15 }]
+    },
+    moskvich: {
+      pal: { bg: '#0d0d0d', face: '#0d0d0d', ink: '#ecebe4', needle: '#e8301c', rim: '#2c2c2c', red: '#d02818', lcd: ['#0c0c0c', '#ecece4'], drum: true },
+      plates: [{ arc: [256, 430, 288], col: '#3a3a3a' }, { arc: [256, 430, 284], col: '#b4b2aa', mesh: true }, { x: 158, y: 210, w: 136, h: 46, oval: true, col: '#101010' }, { x: 354, y: 210, w: 136, h: 46, oval: true, col: '#101010' }],
+      dials: [{ k: 'speed', x: 256, y: 430, r: 330, a0: -27, a1: 27, fan: true, band: false, tick: 0.06, labels: 'out', from: 0.885, len: 0.955 }, { k: 'volt', x: 128, y: 211, r: 16, a0: -55, a1: 55, bare: true }, { k: 'fuel', x: 188, y: 211, r: 16, a0: -55, a1: 55, bare: true }, { k: 'oil', x: 324, y: 211, r: 16, a0: -55, a1: 55, bare: true }, { k: 'temp', x: 384, y: 211, r: 16, a0: -55, a1: 55, bare: true }],
+      lamps: [{ k: 'hand', x: 46, y: 160 }, { k: 'beam', x: 466, y: 160 }],
+      lcd: [{ k: 'odo', x: 256, y: 232, w: 52, h: 13 }]
+    },
+    e34: {
+      dials: [{ k: 'fuel', x: 42, y: 150, r: 32, a0: -60, a1: 60 }, { k: 'speed', x: 168, y: 118, r: 84, a0: -125, a1: 125 }, { k: 'rpm', x: 344, y: 118, r: 84, a0: -125, a1: 125 }, { k: 'temp', x: 470, y: 150, r: 32, a0: -60, a1: 60 }],
+      lamps: [{ k: 'abs', x: 196, y: 232 }, { k: 'beam', x: 226, y: 236 }, { k: 'oil', x: 256, y: 238 }, { k: 'bat', x: 286, y: 236 }, { k: 'hand', x: 316, y: 232 }],
+      lcd: [{ k: 'odo', x: 168, y: 172, w: 56, h: 14 }]
+    },
+    mini: {
+      pal: { bg: '#161616', face: '#0c0c0c', ink: '#f0f0ea', needle: '#f2f2f2', rim: '#c8ccd0', red: '#e0301c', lcd: ['#060606', '#f0f0e8'], drum: true },
+      plates: [{ x: 256, y: 128, w: 508, h: 252, oval: true, col: '#c8ccd0' }, { x: 256, y: 128, w: 494, h: 238, oval: true, col: '#141414' }],
+      dials: [{ k: 'speed', x: 256, y: 128, r: 100, a0: -135, a1: 135 }, { k: 'oil', x: 104, y: 128, r: 42, a0: -60, a1: 60 }, { k: 'temp', x: 408, y: 128, r: 42, a0: -60, a1: 60 }, { k: 'fuel', x: 256, y: 196, r: 16, a0: -55, a1: 55, bare: true }],
+      lamps: [{ k: 'beam', x: 232, y: 96 }, { k: 'oil', x: 280, y: 96 }],
+      lcd: [{ k: 'odo', x: 256, y: 162, w: 52, h: 12 }]
+    },
+    kadett: {
+      pal: { bg: '#0b0d0d', face: '#0b0d0d', ink: '#b8c4bc', needle: '#ff5a1e', rim: '#2c2e30', red: '#ff3a1c', lcd: ['#040705', '#a4f064'], drum: true, seg: true },
+      dials: [],
+      lamps: [{ k: 'beam', x: 140, y: 168 }, { k: 'hand', x: 372, y: 168 }, { k: 'oil', x: 176, y: 234 }, { k: 'bat', x: 336, y: 234 }],
+      lcd: [{ k: 'revs', x: 256, y: 72, w: 440, h: 110 }, { k: 'speed', x: 256, y: 168, w: 132, h: 44 }, { k: 'fuelbar', x: 74, y: 210, w: 104, h: 26 }, { k: 'tempbar', x: 438, y: 210, w: 104, h: 26 }, { k: 'odo', x: 256, y: 226, w: 80, h: 18 }],
+      texts: [{ t: 'x1000 1/min', x: 452, y: 152, size: 11 }, { t: 'km/h', x: 340, y: 182, size: 11 }, { t: 'TANK', x: 74, y: 236, size: 10 }, { t: '°C', x: 438, y: 236, size: 10 }]
+    },
+    luaz: {
+      pal: { bg: '#121212', face: '#0a0a0a', ink: '#f0f0ea', needle: '#f2f2f2', rim: '#3a3a3c', red: '#e0301c', lcd: ['#050505', '#f0f0e8'], drum: true },
+      dials: [{ k: 'speed', x: 256, y: 124, r: 78, a0: -130, a1: 130 }, { k: 'oil', x: 120, y: 90, r: 34, a0: -55, a1: 55 }, { k: 'temp', x: 120, y: 176, r: 34, a0: -55, a1: 55 }, { k: 'volt', x: 392, y: 90, r: 34, a0: -55, a1: 55 }, { k: 'fuel', x: 392, y: 176, r: 34, a0: -55, a1: 55 }],
+      lamps: [{ k: 'oil', x: 210, y: 234 }, { k: 'beam', x: 256, y: 232 }, { k: 'bat', x: 302, y: 234 }, { k: 'hand', x: 40, y: 232 }],
+      lcd: [{ k: 'odo', x: 256, y: 160, w: 56, h: 13 }]
+    },
+    kafer: {
+      pal: { bg: '#141414', face: '#0c0c0c', ink: '#f2f2f2', needle: '#ff5a1e', rim: '#2a2a2c', red: '#e8261c', lcd: ['#0a0a0a', '#ececec'], drum: true },
+      dials: [{ k: 'speed', x: 256, y: 128, r: 112, a0: -135, a1: 135 }, { k: 'fuel', x: 256, y: 86, r: 16, a0: -55, a1: 55 }],
+      lamps: [{ k: 'beam', x: 214, y: 196 }, { k: 'oil', x: 242, y: 202 }, { k: 'bat', x: 270, y: 202 }, { k: 'hand', x: 298, y: 196 }],
+      lcd: [{ k: 'odo', x: 256, y: 166, w: 60, h: 14 }]
+    },
+    chaika: {
+      bg: 'wood',
+      pal: { bg: '#3a2416', face: '#0c0c0c', ink: '#f2f0e8', needle: '#ff7a2a', rim: '#c8ccd0', red: '#e0301c', lcd: ['#0a0a0a', '#ecece4'], drum: true },
+      rings: [{ x: 352, y: 124, r: 86 }],
+      dials: [{ k: 'speed', x: 160, y: 124, r: 86, a0: -130, a1: 130 }, { k: 'fuel', x: 322, y: 96, r: 22, a0: -60, a1: 60, bare: true }, { k: 'temp', x: 382, y: 96, r: 22, a0: -60, a1: 60, bare: true }, { k: 'oil', x: 322, y: 152, r: 22, a0: -60, a1: 60, bare: true }, { k: 'volt', x: 382, y: 152, r: 22, a0: -60, a1: 60, bare: true }],
+      lamps: [{ k: 'beam', x: 214, y: 236 }, { k: 'oil', x: 242, y: 240 }, { k: 'bat', x: 270, y: 240 }, { k: 'hand', x: 298, y: 236 }],
+      lcd: [{ k: 'odo', x: 160, y: 176, w: 60, h: 14 }]
+    },
+    p959: {
+      dials: [{ k: 'fuel', x: 40, y: 150, r: 34, a0: -55, a1: 55 }, { k: 'oil', x: 116, y: 140, r: 38, a0: -55, a1: 55 }, { k: 'rpm', x: 224, y: 116, r: 66, a0: -130, a1: 130 }, { k: 'speed', x: 358, y: 116, r: 64, a0: -130, a1: 130 }, { k: 'boost', x: 462, y: 140, r: 36, a0: -110, a1: 110 }],
+      lamps: [{ k: 'beam', x: 200, y: 232 }, { k: 'oil', x: 236, y: 236 }, { k: 'bat', x: 276, y: 236 }, { k: 'hand', x: 312, y: 232 }],
+      lcd: [{ k: 'odo', x: 358, y: 168, w: 56, h: 13 }]
     }
   };
 
@@ -747,7 +866,10 @@
     return Object.assign({}, base, { dials: turbo ? base.dials.concat([base.boost]) : base.dials });
   }
 
-  function paletteOf(car) { return PALETTES[styleOf(car)] || PALETTES.eu; }
+  function paletteOf(car) {
+    const base = PALETTES[styleOf(car)] || PALETTES.eu, lay = LAYOUTS[car.sh.cluster];
+    return lay && lay.pal ? Object.assign({}, base, lay.pal) : base;
+  }
 
   function scaleOf(k, spec, units) {
     if (k === 'speed') {
@@ -757,6 +879,7 @@
     }
     if (k === 'rpm') return { min: 0, max: Math.ceil(spec.red / 1000 + 0.5), step: 1, sub: 0.5, red: spec.red / 1000 };
     if (k === 'boost') return { min: -1, max: 1.5, step: 1, sub: 0.5 };
+    if (k === 'clockH' || k === 'clockM') return { min: 0, max: 1, step: 1 / 12, sub: 1 / 60 };
     return { min: 0, max: 1, step: 1, sub: 0.5 };
   }
 
@@ -785,13 +908,35 @@
     const text = (s, px, py, size, col, weight = 'bold') => {
       x.fillStyle = col; x.font = `${weight} ${Math.round(size)}px Arial`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(s, px, py);
     };
+    for (const rg of lay.rings || []) {
+      x.fillStyle = pal.rim; x.beginPath(); x.arc(rg.x, rg.y, rg.r + 5, 0, Math.PI * 2); x.fill();
+      x.fillStyle = pal.face; x.beginPath(); x.arc(rg.x, rg.y, rg.r, 0, Math.PI * 2); x.fill();
+    }
+    for (const p of lay.plates || []) {
+      x.save();
+      x.beginPath();
+      if (p.oval) x.ellipse(p.x, p.y, p.w / 2, p.h / 2, 0, 0, Math.PI * 2);
+      else {
+        const [cx, cy, R] = p.arc, dx = Math.sqrt(Math.max(0, R * R - (cy - 256) * (cy - 256)));
+        x.moveTo(cx - dx, 256); x.arc(cx, cy, R, Math.atan2(256 - cy, -dx), Math.atan2(256 - cy, dx)); x.closePath();
+      }
+      x.fillStyle = p.col; x.fill();
+      if (p.mesh) {
+        x.clip(); x.fillStyle = 'rgba(24,24,24,0.5)';
+        for (let yy = 0; yy < 256; yy += 4) for (let xx = (yy >> 2) % 2 * 2; xx < 512; xx += 4) x.fillRect(xx, yy, 2, 2);
+      }
+      x.restore();
+    }
     for (const d of lay.dials) {
+      if (d.k === 'clockM') continue;
       const sc = scaleOf(d.k, spec, units);
       const small = d.k !== 'speed' && d.k !== 'rpm' && d.k !== 'boost';
       if (d.fan) {
-        x.fillStyle = pal.rim; x.beginPath(); x.arc(d.x, d.y, d.r + 10, rad(d.a0 - 6), rad(d.a1 + 6)); x.arc(d.x, d.y, d.r * 0.55, rad(d.a1 + 6), rad(d.a0 - 6), true); x.closePath(); x.fill();
-        x.fillStyle = pal.face; x.beginPath(); x.arc(d.x, d.y, d.r + 4, rad(d.a0 - 4), rad(d.a1 + 4)); x.arc(d.x, d.y, d.r * 0.58, rad(d.a1 + 4), rad(d.a0 - 4), true); x.closePath(); x.fill();
-      } else {
+        if (d.band !== false) {
+          x.fillStyle = pal.rim; x.beginPath(); x.arc(d.x, d.y, d.r + 10, rad(d.a0 - 6), rad(d.a1 + 6)); x.arc(d.x, d.y, d.r * 0.55, rad(d.a1 + 6), rad(d.a0 - 6), true); x.closePath(); x.fill();
+          x.fillStyle = pal.face; x.beginPath(); x.arc(d.x, d.y, d.r + 4, rad(d.a0 - 4), rad(d.a1 + 4)); x.arc(d.x, d.y, d.r * 0.58, rad(d.a1 + 4), rad(d.a0 - 4), true); x.closePath(); x.fill();
+        }
+      } else if (!d.bare) {
         x.fillStyle = pal.rim; x.beginPath(); x.arc(d.x, d.y, d.r + 5, 0, Math.PI * 2); x.fill();
         x.fillStyle = pal.face; x.beginPath(); x.arc(d.x, d.y, d.r, 0, Math.PI * 2); x.fill();
       }
@@ -805,22 +950,29 @@
       for (let v = sc.min; v <= sc.max + 1e-6; v += sc.sub) {
         const major = Math.abs(v / sc.step - Math.round(v / sc.step)) < 1e-6;
         const hot = sc.red !== undefined && v >= sc.red - 1e-6;
-        const a = pt(v, 0.96), c = pt(v, major ? (small ? 0.72 : 0.8) : 0.87);
-        x.strokeStyle = hot ? pal.red : pal.ink; x.lineWidth = major ? Math.max(2, d.r * 0.035) : Math.max(1, d.r * 0.02);
+        const a = pt(v, 0.96), c = pt(v, d.tick ? 0.96 - (major ? d.tick : d.tick * 0.56) : major ? (small ? 0.72 : 0.8) : 0.87);
+        x.strokeStyle = hot ? pal.red : pal.ink; x.lineWidth = d.tick ? (major ? 3 : 1.5) : major ? Math.max(2, d.r * 0.035) : Math.max(1, d.r * 0.02);
         x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(c[0], c[1]); x.stroke();
         if (major && !small && !d.fan && d.k !== 'boost') { const q = pt(v, 0.64); text(String(Math.round(v * 10) / 10), q[0], q[1], d.r * 0.19, hot ? pal.red : pal.ink); }
-        if (major && d.fan) { const q = pt(v, 0.78); text(String(Math.round(v)), q[0], q[1], 17, pal.ink); }
+        if (major && d.fan) { const q = pt(v, d.labels === 'out' ? 1.06 : 0.78); text(String(Math.round(v)), q[0], q[1], 17, pal.ink); }
       }
-      if (small || d.k === 'boost') {
+      if (d.k === 'clockH') for (const [v, s] of [[0, '12'], [0.25, '3'], [0.5, '6'], [0.75, '9']]) { const q = pt(v, 0.6); text(s, q[0], q[1], d.r * 0.26, pal.ink); }
+      else if (small || d.k === 'boost') {
         const ends = d.k === 'boost' ? ['-1', '1.5'] : ENDS[d.k] || ['', ''];
         const p0 = pt(sc.min, 0.55), p1 = pt(sc.max, 0.55);
         text(ends[0], p0[0], p0[1], d.r * 0.32, pal.ink); text(ends[1], p1[0], p1[1], d.r * 0.32, pal.ink);
         text(NAMES[d.k] || '', d.x, d.y + d.r * 0.42, d.r * 0.26, pal.ink, 'normal');
-      } else if (d.k === 'speed') text(units === 'mph' ? 'MPH' : 'КМ/Ч', d.x, d.y - d.r * (d.fan ? 0.66 : 0.3), d.fan ? 13 : d.r * 0.13, pal.ink, 'normal');
+      } else if (d.k === 'speed' && d.labels !== 'out') text(units === 'mph' ? 'MPH' : 'КМ/Ч', d.x, d.y - d.r * (d.fan ? 0.66 : 0.3), d.fan ? 13 : d.r * 0.13, pal.ink, 'normal');
       else if (d.k === 'rpm') text('×1000 ОБ/МИН', d.x, d.y - d.r * 0.3, d.r * 0.1, pal.ink, 'normal');
     }
     for (const l of lay.lcd) {
       x.fillStyle = pal.lcd[0]; x.fillRect(l.x - l.w / 2 - 2, l.y - l.h / 2 - 2, l.w + 4, l.h + 4);
+    }
+    for (const t of lay.texts || []) text(t.t, t.x, t.y, t.size, pal.ink, 'normal');
+    const rv = lay.lcd.find(l => l.k === 'revs');
+    if (rv) {
+      const sc = scaleOf('rpm', spec, units);
+      for (let v = 0; v <= sc.max; v++) text(String(v), rv.x - rv.w / 2 + v / sc.max * rv.w, rv.y + rv.h / 2 + 10, 12, v >= sc.red ? pal.red : pal.ink);
     }
     for (const l of lay.lamps) {
       x.fillStyle = '#000000'; x.beginPath(); x.arc(l.x, l.y, 11, 0, Math.PI * 2); x.fill();
@@ -837,10 +989,22 @@
 
   const SLOTS = { odo: [0, 0, 128, 32], clock: [128, 0, 128, 32], gear: [0, 32, 48, 32], speed: [48, 32, 96, 32], radio: [144, 32, 112, 32] };
   const LAMP_CELL = i => [i * 32, 64, 32, 32];
+  Object.assign(SLOTS, { revs: [0, 96, 256, 64], fuelbar: [0, 160, 128, 32], tempbar: [128, 160, 128, 32] });
+  const lcdH = lay => (lay.lcd.some(l => SLOTS[l.k][1] >= 96) ? 192 : 96);
+
+  const SEG = { 0: 'abcdef', 1: 'bc', 2: 'abged', 3: 'abgcd', 4: 'fgbc', 5: 'afgcd', 6: 'afgedc', 7: 'abc', 8: 'abcdefg', 9: 'abcdfg' };
+  function segDigits(x, s, r, on, off) {
+    const n = 3, cw = r[2] / n, t = 4;
+    for (let i = 0; i < n; i++) {
+      const ch = s.padStart(n, ' ')[i], lit = SEG[ch] || '', x0 = r[0] + i * cw + 6, x1 = x0 + cw - 12, y0 = r[1] + 3, y1 = r[1] + r[3] - 3, ym = (y0 + y1) / 2;
+      const seg = { a: [x0 + t, y0, x1 - x0 - 2 * t, t], b: [x1 - t, y0 + t, t, ym - y0 - t], c: [x1 - t, ym, t, y1 - ym - t], d: [x0 + t, y1 - t, x1 - x0 - 2 * t, t], e: [x0, ym, t, y1 - ym - t], f: [x0, y0 + t, t, ym - y0 - t], g: [x0 + t, ym - t / 2, x1 - x0 - 2 * t, t] };
+      for (const k of 'abcdefg') { x.fillStyle = lit.includes(k) ? on : off; x.fillRect(...seg[k]); }
+    }
+  }
 
   function drawLcd(cv, pal, lay, st) {
     const x = cv.getContext('2d');
-    x.clearRect(0, 0, 256, 96);
+    x.clearRect(0, 0, 256, cv.height);
     const box = (r, bg) => { x.fillStyle = bg; x.fillRect(r[0], r[1], r[2], r[3]); };
     const text = (s, r, size, col, font = 'bold') => {
       x.fillStyle = col; x.font = `${font} ${size}px 'Courier New', monospace`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(s, r[0] + r[2] / 2, r[1] + r[3] / 2 + 1);
@@ -858,7 +1022,8 @@
     } else text(String(Math.floor(st.odo)).padStart(6, '0'), odo, 24, fg);
     box(SLOTS.clock, bg); text(st.clock, SLOTS.clock, 24, fg);
     box(SLOTS.gear, bg); text(st.gear, SLOTS.gear, 28, fg);
-    box(SLOTS.speed, bg); text(st.speed, SLOTS.speed, 30, fg);
+    box(SLOTS.speed, bg);
+    if (pal.seg) segDigits(x, st.speed, SLOTS.speed, fg, '#0e1a10'); else text(st.speed, SLOTS.speed, 30, fg);
     box(SLOTS.radio, '#06100a'); text(st.radio, SLOTS.radio, st.radio.length > 12 ? 11 : 13, '#7cf0a0');
     lay.lamps.forEach((l, i) => {
       const r = LAMP_CELL(i), on = st.lamps[i];
@@ -873,9 +1038,26 @@
       else if (l.k === 'choke') { x.beginPath(); x.arc(cx, cy, 8, 0, Math.PI * 2); x.stroke(); x.beginPath(); x.moveTo(cx - 6, cy + 6); x.lineTo(cx + 6, cy - 6); x.stroke(); }
       else { x.font = `bold ${l.k === 'shift' ? 9 : 10}px Arial`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(l.k.toUpperCase(), cx, cy + 1); }
     });
+    if (cv.height < 192) return;
+    const rv = SLOTS.revs, n = 32;
+    box(rv, bg);
+    for (let i = 0; i < n; i++) {
+      const t = (i + 0.5) / n, hgt = (0.16 + 0.84 * Math.sin(Math.min(1, t * 1.12) * Math.PI / 2)) * (rv[3] - 6), lit = i < Math.round((st.revs || 0) * n);
+      x.fillStyle = !lit ? (t > (st.red || 0.86) ? '#2c1410' : '#122016') : t > (st.red || 0.86) ? '#ff3a1c' : t > (st.red || 0.86) - 0.14 ? '#ffc020' : fg;
+      x.fillRect(rv[0] + i * 8 + 1, rv[1] + rv[3] - 3 - hgt, 6, hgt);
+    }
+    for (const [k, v] of [['fuelbar', st.fuel], ['tempbar', st.temp]]) {
+      const r = SLOTS[k], m = 12;
+      box(r, bg);
+      for (let i = 0; i < m; i++) {
+        const lit = i < Math.round((v || 0) * m), hot = k === 'tempbar' ? i >= m - 2 : i < 2;
+        x.fillStyle = !lit ? '#122016' : hot ? '#ff3a1c' : fg;
+        x.fillRect(r[0] + 4 + i * 10, r[1] + 8, 8, r[3] - 16);
+      }
+    }
   }
 
-  F.Cluster = { PALETTES, LAYOUTS, LAMP, SLOTS, LAMP_CELL, layoutOf, paletteOf, scaleOf, angleOf, face, lcd: drawLcd };
+  F.Cluster = { PALETTES, LAYOUTS, LAMP, SLOTS, LAMP_CELL, layoutOf, paletteOf, scaleOf, angleOf, face, lcd: drawLcd, lcdH };
 
   F.Hud = Hud;
   F.star = star;

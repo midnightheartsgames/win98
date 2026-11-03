@@ -93,6 +93,9 @@ class PoligonPlayer {
     this.root.querySelectorAll('.pg-loc').forEach(btn => {
       btn.addEventListener('click', () => this.jumpTo(btn.dataset.loc));
     });
+    this.root.querySelectorAll('.pg-at').forEach(btn => {
+      btn.addEventListener('click', () => this.playFrom(Number(btn.dataset.at)));
+    });
     const full = this.root.querySelector('.pg-full');
     if (full) {
       full.addEventListener('click', () => {
@@ -257,6 +260,15 @@ class PoligonPlayer {
     this.seek(next.start + 0.01);
   }
 
+  playFrom(t) {
+    this.seek(t);
+    if (this.state !== 'playing') this.play();
+    const box = (this.root.parentElement || this.root).getBoundingClientRect();
+    const r = this.viewport.getBoundingClientRect();
+    if (r.top < box.top || r.bottom > box.bottom) this.viewport.scrollIntoView({ block: 'start' });
+    this.viewport.focus({ preventScroll: true });
+  }
+
   loop() {
     if (!this.root.isConnected) {
       this.destroy();
@@ -400,13 +412,15 @@ class PoligonSite {
           </a>
           <span class="pg-tag">Музыкальные клипы, собранные заново из полигонов</span>
         </header>
-        ${clip ? this.renderClip(clip) : '<p class="pg-empty">Клипов пока нет. Первый выпуск готовится.</p>'}
-        ${this.renderList(list, clip)}
-        <section class="pg-how">
-          <h2>Как это сделано</h2>
-          <p>Каждый клип мы разбираем по склейкам: где снят план, кто в кадре, куда смотрит камера. Потом строим декорации и артистов из кубиков и призм, освещаем по вершинам и ставим камеры на те же доли такта.</p>
-          <p>Картинку рисует ваша видеокарта прямо во время просмотра, в разрешении 512×384. Звук идёт из оригинальной фонограммы в MP3, поэтому губы и шаги попадают в музыку.</p>
-        </section>
+        <main class="pg-main">
+          ${clip ? this.renderClip(clip) : '<p class="pg-empty">Клипов пока нет. Первый выпуск готовится.</p>'}
+          ${this.renderList(list, clip)}
+          <section class="pg-how">
+            <h2>Как это сделано</h2>
+            <p>Каждый клип мы разбираем по склейкам: где снят план, кто в кадре, куда смотрит камера. Потом строим декорации и артистов из кубиков и призм, освещаем по вершинам и ставим камеры на те же доли такта.</p>
+            <p>Картинку рисует ваша видеокарта прямо во время просмотра, в разрешении 512×384. Звук идёт из оригинальной фонограммы в MP3, поэтому губы и шаги попадают в музыку.</p>
+          </section>
+        </main>
         <footer class="pg-foot">Смотреть лучше с 3D-ускорителем и колонками. © «Полигон», 2001. Заявки на клипы: <a href="mailto:poligon@poligon3d.ru">poligon@poligon3d.ru</a></footer>
       </div>`;
   }
@@ -426,7 +440,6 @@ class PoligonSite {
     const sets = new Set(clip.locations.map(l => l.scene)).size;
     const actors = Object.keys(clip.looks).length;
     return `
-      <main class="pg-main">
         <section class="pg-stage">
           <div class="pg-viewport" tabindex="0" aria-label="Клип ${this.esc(clip.title)}. Пробел: смотреть или пауза, стрелки: перемотка">
             <span class="pg-vp-label">Перспектива</span>
@@ -474,7 +487,25 @@ class PoligonSite {
           </dl>
           <p class="pg-note">Полоса перемотки раскрашена по местам съёмки: видно, как монтаж прыгает между декорациями. Кнопки под плеером переносят к следующему плану в выбранном месте.</p>
         </aside>
-      </main>`;
+        ${this.renderStory(clip)}`;
+  }
+
+  renderStory(clip) {
+    const story = (window.poligonStories || {})[clip.id];
+    if (!story) return '';
+    const moment = (at) => ` <button type="button" class="pg-at" data-at="${at}" title="Смотреть этот момент" aria-label="Смотреть с ${this.fmt(at)}">&#9658; ${this.fmt(at)}</button>`;
+    const facts = story.facts.map(f => `<li>${this.esc(f.text)}${typeof f.at === 'number' ? moment(f.at) : ''}</li>`).join('');
+    return `
+        <section class="pg-story">
+          <h2>История оригинала</h2>
+          <div class="pg-story-body">
+            <div class="pg-story-text">${story.history.map(p => `<p>${this.esc(p)}</p>`).join('')}</div>
+            <div class="pg-did">
+              <h3>Знаете ли вы?</h3>
+              <ul>${facts}</ul>
+            </div>
+          </div>
+        </section>`;
   }
 
   renderList(list, current) {

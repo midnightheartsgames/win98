@@ -111,7 +111,8 @@
         ['Площадка фестиваля', () => this.buildFest()],
         ['Коллизии', () => this.buildColliders()],
         ['Фестиваль', () => this.buildHorizon()],
-        ['Кусты и камни', () => this.buildFlora()]
+        ['Кусты и камни', () => this.buildFlora()],
+        ['Окрестности', () => this.buildOutskirts()]
       ];
       this.phase = 0;
       if (!opts.lazy) while (this.phase < this.phases.length) this.stepBuild();
@@ -1657,15 +1658,6 @@
           }
         }
       }
-      const b = this.b;
-      const walls = [[b.x0 + 5, b.z0 + 5, b.x1 - 5, b.z0 + 5], [b.x1 - 5, b.z0 + 5, b.x1 - 5, b.z1 - 5], [b.x1 - 5, b.z1 - 5, b.x0 + 5, b.z1 - 5], [b.x0 + 5, b.z1 - 5, b.x0 + 5, b.z0 + 5]];
-      for (const w of walls) {
-        const L = Math.hypot(w[2] - w[0], w[3] - w[1]);
-        const n = Math.ceil(L / 200);
-        for (let i = 0; i < n; i++) {
-          add({ k: 'seg', x1: F.lerp(w[0], w[2], i / n), z1: F.lerp(w[1], w[3], i / n), x2: F.lerp(w[0], w[2], (i + 1) / n), z2: F.lerp(w[1], w[3], (i + 1) / n), r: 2, y0: -50, y1: 500 });
-        }
-      }
       this.colBuf = [];
     }
 
@@ -1748,6 +1740,7 @@
     }
 
     terrainH(x, z) {
+      if (this.out && (x < this.b.x0 || x > this.b.x1 || z < this.b.z0 || z > this.b.z1)) return this.outTerrain(x, z);
       const fx = (x - this.b.x0) / CS, fz = (z - this.b.z0) / CS;
       const ix = F.clamp(Math.floor(fx), 0, this.nx - 2), iz = F.clamp(Math.floor(fz), 0, this.nz - 2);
       const tx = F.clamp(fx - ix, 0, 1), tz = F.clamp(fz - iz, 0, 1);

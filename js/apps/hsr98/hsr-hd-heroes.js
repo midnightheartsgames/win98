@@ -1,15 +1,15 @@
 (function (H) {
   'use strict';
-  const HD = H.HD, TUN = HD.TUN, T = H.TUNING, DT = HD.DT, tr = HD.tr, ei = HD.ei;
+  const HD = H.HD, TUN = HD.TUN, T = H.TUNING, DT = HD.DT, tr = HD.tr, ei = HD.ei, N = HD.N;
   const ARC_Q = Math.PI * 2 / 3;
   const P = v => Math.round(v * 100) + '%';
   const ultType = (u, l) => (l >= 3 ? 'divine' : u.atkType);
-  const closestTo = (list, x, y) => list.reduce((b, v) => (!b || Math.hypot(v.x - x, v.y - y) < Math.hypot(b.x - x, b.y - y) ? v : b), null);
+  const closestTo = (list, x, y) => list.reduce((b, v) => (!b || N.hypot(v.x - x, v.y - y) < N.hypot(b.x - x, b.y - y) ? v : b), null);
   const circle = (x, y, r) => ({ shape: 'circle', x, y, r });
   const hpK = u => u.hpMax * TUN.hpDmgK;
   const tk = (A, u) => (u.abil.t ? A.lvlK('t', u.abil.t) : 0);
   const near = (A, u, r) => A.unitsIn(circle(u.x, u.y, r), 'foe');
-  const lineFrom = (u, x, y, len, w) => ({ shape: 'line', x: u.x, y: u.y, ang: Math.atan2(y - u.y, x - u.x), len, w });
+  const lineFrom = (u, x, y, len, w) => ({ shape: 'line', x: u.x, y: u.y, ang: N.atan2(y - u.y, x - u.x), len, w });
 
   function burst(A, u, x, y, r, mMain, mOther, o) {
     const hits = A.unitsIn(circle(x, y, r), 'foe'), main = closestTo(hits, x, y);
@@ -23,7 +23,7 @@
     q: {
       cost: 30, cd: 6, aim: 'point', range: 80,
       cast(A, u, k, aim) {
-        const arc = tr(u, 0) ? Math.PI : ARC_Q, ang = Math.atan2(aim.y - u.y, aim.x - u.x), cone = { shape: 'cone', x: u.x, y: u.y, r: 80, ang, arc };
+        const arc = tr(u, 0) ? Math.PI : ARC_Q, ang = N.atan2(aim.y - u.y, aim.x - u.x), cone = { shape: 'cone', x: u.x, y: u.y, r: 80, ang, arc };
         const hits = A.unitsIn(cone, 'foe'), main = closestTo(hits, aim.x, aim.y);
         for (const v of hits) {
           A.hit(u, v, { m: (v === main ? 1.25 * (tr(u, 0) ? 1.25 : 1) : 0.5) * k * TUN.kQ, kind: 'q', tough: v === main ? T.toughSkill : T.toughSkill / 2 });
@@ -99,7 +99,7 @@
         A.spendHp(u, u.hp * 0.2);
         const x0 = u.x, y0 = u.y;
         A.dash(u, aim.x, aim.y, 180, 0);
-        const len = Math.hypot(u.x - x0, u.y - y0), zone = { shape: 'line', x: x0, y: y0, ang: Math.atan2(u.y - y0, u.x - x0), len: Math.max(24, len), w: 48 };
+        const len = N.hypot(u.x - x0, u.y - y0), zone = { shape: 'line', x: x0, y: y0, ang: N.atan2(u.y - y0, u.x - x0), len: Math.max(24, len), w: 48 };
         for (const v of A.unitsIn(zone, 'foe')) A.hit(u, v, { amt: 0.4 * hpK(u) * k * TUN.kE, kind: 'e', tough: TUN.toughTech });
         A.emit({ t: 'fx', kind: 'slash', x: u.x, y: u.y, elem: u.elem, big: true });
       }
@@ -195,7 +195,7 @@
       svarog(A, u, f, big);
     },
     onHurt(A, u, f) { if (u.abil.t && !f.dead) KITS.clara.counter(A, u, f); },
-    onAllyHurt(A, u, tgt, f) { if (ei(u, 1) && tgt.kind !== 'hero' && !f.dead && Math.hypot(tgt.x - u.x, tgt.y - u.y) <= 300 && A.rng() < 0.5) KITS.clara.counter(A, u, f); },
+    onAllyHurt(A, u, tgt, f) { if (ei(u, 1) && tgt.kind !== 'hero' && !f.dead && N.hypot(tgt.x - u.x, tgt.y - u.y) <= 300 && A.rng() < 0.5) KITS.clara.counter(A, u, f); },
     tick(A, u) { if (u.abil.t) A.addFx(u, { n: 'Сварог рядом', k: 'dr', v: 0.1 * tk(A, u), t: 0.5 }); },
     text: {
       q: k => 'Сварог бьёт всех врагов в 160: ' + P(1.2 * k * TUN.kQ) + ', врагов с Меткой Сварога ещё на ' + P(1.2 * k * TUN.kQ) + '; Метки снимаются.',
@@ -287,7 +287,7 @@
     q: {
       cost: 30, cd: 7, aim: 'point', range: 220,
       cast(A, u, k, aim) {
-        const zone = lineFrom(u, aim.x, aim.y, 220, 40), hits = A.unitsIn(zone, 'foe').sort((a, b) => Math.hypot(a.x - u.x, a.y - u.y) - Math.hypot(b.x - u.x, b.y - u.y));
+        const zone = lineFrom(u, aim.x, aim.y, 220, 40), hits = A.unitsIn(zone, 'foe').sort((a, b) => N.hypot(a.x - u.x, a.y - u.y) - N.hypot(b.x - u.x, b.y - u.y));
         hits.forEach((v, i) => {
           A.hit(u, v, { m: (i ? 0.5 : 2.6) * k * TUN.kQ, kind: 'q', tough: i ? T.toughSkill / 2 : T.toughSkill });
           const slow = (ei(u, 1) ? 0.2 : 0.12) * k * (A.lastCrit ? 2 : 1);
@@ -499,7 +499,7 @@
       }
     },
     onFoeHurt(A, u, f, before) {
-      if (!u.abil.t || before < f.hpMax * 0.5 || f.hp >= f.hpMax * 0.5 || A.time - (u.tal.dollAt || -9) < 1 || Math.hypot(f.x - u.x, f.y - u.y) > 300) return;
+      if (!u.abil.t || before < f.hpMax * 0.5 || f.hp >= f.hpMax * 0.5 || A.time - (u.tal.dollAt || -9) < 1 || N.hypot(f.x - u.x, f.y - u.y) > 300) return;
       u.tal.dollAt = A.time;
       for (const v of A.unitsIn(circle(f.x, f.y, 120), 'foe')) A.hit(u, v, { m: 0.4 * tk(A, u) * TUN.kT, kind: 't', tough: T.toughBasic });
       if (ei(u, 1)) A.addFx(u, { n: 'Всегда в погоне за победой', k: 'crit', v: 0.03, t: 9999, max: 10 });
@@ -835,8 +835,9 @@
         const t = aim.t;
         A.hit(u, t, { m: 1.96 * k * TUN.kQ, kind: 'q', tough: T.toughSkill });
         if (t.dead) return;
-        A.addFx(t, { n: 'Разрешить изменения?', k: 'weakAdd', v: 0, elem: 'quant', t: 6, deb: true });
-        A.addFx(t, { n: 'Разрешить изменения?: сопротивление', k: 'elemVuln', elem: 'quant', v: 0.13 * k, t: 6 });
+        const elems = A.heroes.length > 1 ? A.heroes.map(h => h.elem) : null;
+        A.addFx(t, { n: 'Разрешить изменения?', k: 'weakAdd', v: 0, elem: 'quant', elems, t: 6, deb: true });
+        A.addFx(t, { n: 'Разрешить изменения?: сопротивление', k: 'elemVuln', elem: 'quant', elems, v: 0.13 * k, t: 6 });
         if (tr(u, 1) && HD.debuffs(t).length >= 3) A.addFx(t, { n: 'Примечание', k: 'armor', v: -0.15 * t.armor, t: 6, deb: true });
       }
     },
@@ -869,7 +870,7 @@
     onAnyBreak(A, u, f) { if (tr(u, 0) && A.rng() < 0.65) bug(A, u, f, 1); },
     dmgMul(A, u, t) { return ei(u, 1) ? 1 + Math.min(1, 0.2 * HD.debuffs(t).length) : 1; },
     text: {
-      q: k => P(1.96 * k * TUN.kQ) + '; цель получает слабость к квантовому урону и +' + P(0.13 * k) + ' квантового урона по ней на 6 с.',
+      q: k => P(1.96 * k * TUN.kQ) + '; цель получает слабость к квантовому урону и +' + P(0.13 * k) + ' квантового урона по ней на 6 с; в кооперативе и к стихиям союзников.',
       e: k => 'Взлом по кругу 140 в точке: ' + P(0.8 * k * TUN.kE) + ', 20 стойкости без учёта слабости, враги зависают на 0,8 с.',
       t: k => 'Удар с шансом ' + P(0.72 * k) + ' вносит Баг на 9 с: урон врага −10%, броня −8% или скорость −6%.',
       r: k => P(3.8 * k * TUN.kR) + ' и −' + P(0.45 * k) + ' брони цели на 9 с.'
@@ -902,7 +903,7 @@
       cd: 60, aim: 'point', range: 300,
       cast(A, u, k, aim, l) {
         A.addArea({ shape: 'circle', x: aim.x, y: aim.y, r: 180, side: 'foe', t: 3, every: 0.1, kind: 'zone', elem: 'imag', onTick(A2, a) {
-          for (const v of A2.unitsIn(a, 'foe')) { const d = Math.hypot(v.x - a.x, v.y - a.y); if (d > 12) A2.push(v, 2 * v.x - a.x, 2 * v.y - a.y, Math.min(14, d - 10)); }
+          for (const v of A2.unitsIn(a, 'foe')) { const d = N.hypot(v.x - a.x, v.y - a.y); if (d > 12) A2.push(v, 2 * v.x - a.x, 2 * v.y - a.y, Math.min(14, d - 10)); }
         } });
         A.later(3, () => {
           for (const v of A.unitsIn(circle(aim.x, aim.y, 180), 'foe')) {
@@ -954,7 +955,7 @@
     e: {
       cost: 30, cd: 15, aim: 'point', range: 300,
       cast(A, u, k, aim) {
-        const zone = lineFrom(u, aim.x, aim.y, 300, 32), hits = A.unitsIn(zone, 'foe').sort((a, b) => Math.hypot(a.x - u.x, a.y - u.y) - Math.hypot(b.x - u.x, b.y - u.y)), first = hits[0];
+        const zone = lineFrom(u, aim.x, aim.y, 300, 32), hits = A.unitsIn(zone, 'foe').sort((a, b) => N.hypot(a.x - u.x, a.y - u.y) - N.hypot(b.x - u.x, b.y - u.y)), first = hits[0];
         if (first) {
           A.hit(u, first, { m: 0.5 * k * TUN.kE, kind: 'e', tough: TUN.toughTech });
           A.addFx(first, { n: 'Заморозка', k: 'stun', v: 1, t: 2 });
@@ -1270,7 +1271,7 @@
       }
     },
     onAllyAttack(A, u, src, t) {
-      if (!(u.tal.zone > A.time) || Math.hypot(src.x - u.x, src.y - u.y) > 220) return;
+      if (!(u.tal.zone > A.time) || N.hypot(src.x - u.x, src.y - u.y) > 220) return;
       const k = tk(A, u) || A.lvlK('t', 1);
       A.heal(u, src, 0.06 * k * A.atkOf(u) * TUN.atkHealK + 10);
       if (tr(u, 1)) for (const v of allies(A, u.x, u.y, 220)) if (v !== src) A.heal(u, v, 0.07 * A.atkOf(u) * TUN.atkHealK);

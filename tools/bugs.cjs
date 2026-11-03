@@ -429,6 +429,7 @@ async function reproHeadless(config, id, opts) {
         result.restored = state.restored || [];
         result.missing = state.missing || [];
         result.live = !!state.live;
+        if (state.table) result.table = state.table;
         break;
       }
     }
@@ -624,7 +625,7 @@ async function main(argv) {
     if (args.headless || parohod) {
       const r = await reproHeadless(config, id);
       if (r.parohod98) console.log('Пароход 98 ' + r.parohod98 + (r.resumed ? ', save continued' : '') + (r.where ? ', where now: ' + JSON.parse(r.where).summary : ''));
-      console.log((r.ready ? 'Ready' : 'Timed out') + (r.opened ? ', opened ' + r.opened : '') + (r.live ? ', live state loaded' : '') + ', restored keys: ' + r.restored.length + (r.missing.length ? ' (missing ' + r.missing.join(', ') + ')' : '') + ', localStorage keys: ' + r.storageKeys + ', exceptions: ' + r.exceptions.length + ', console errors: ' + r.consoleErrors.length);
+      console.log((r.ready ? 'Ready' : 'Timed out') + (r.opened ? ', opened ' + r.opened : '') + (r.live ? ', live state loaded' : '') + (r.table ? ', table at tick ' + r.table.tick + (r.table.match ? ', hash matches' : ', HASH DIFFERS' + (r.table.sameArena ? '' : ' (another arena version)')) : '') + ', restored keys: ' + r.restored.length + (r.missing.length ? ' (missing ' + r.missing.join(', ') + ')' : '') + ', localStorage keys: ' + r.storageKeys + ', exceptions: ' + r.exceptions.length + ', console errors: ' + r.consoleErrors.length);
       r.exceptions.concat(r.consoleErrors).forEach(e => console.log('  ' + e.text.split('\n')[0] + (e.count > 1 ? ' x' + e.count : '')));
       console.log('Screenshot: ' + r.png);
       return;

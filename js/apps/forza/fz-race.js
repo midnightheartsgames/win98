@@ -359,7 +359,7 @@
             const room = r.hw[i0] - 1.4;
             const left = od - 3.1, right = od + 3.1;
             const target = Math.abs(left) <= room && Math.abs(right) <= room ? (Math.abs(left - this.d) < Math.abs(right - this.d) ? left : right) : Math.abs(left) <= room ? left : Math.abs(right) <= room ? right : null;
-            if (target === null) blockV = Math.min(blockV, ov + gap * 0.2);
+            if (target === null) blockV = Math.min(blockV, Math.max(0, ov) + gap * 0.2);
             else if ((gap - this.hl * 2) / Math.max(0.1, this.v - ov) < 3) avoid = target;
           }
         }

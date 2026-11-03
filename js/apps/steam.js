@@ -36,7 +36,7 @@ const STEAM_DEFAULT_FRIENDS = [
   { name: 'Klesk_NN', status: 'game', game: 'quake3' },
   { name: 'Mona_S', status: 'online' },
   { name: 'Legatus_Iulius', status: 'game', game: 'legion' },
-  { name: 'Oshpaz_Rustam', status: 'game', game: 'plov' },
+  { name: 'Oshpaz_Rustam', status: 'online' },
   { name: 'Ryzhik_9', status: 'game', game: 'catniss' },
   { name: 'Kirill_2goda', status: 'online' },
   { name: 'Rokfor_Verdun', status: 'game', game: 'anotherwar' },

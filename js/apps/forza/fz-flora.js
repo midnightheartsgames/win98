@@ -112,7 +112,7 @@
 
   W.coverAt = function (x, z) {
     const i = this.oi(x, z);
-    if (i < 0) return 0;
+    if (i < 0) return this.out && this.outside(x, z) ? this.outCover(x, z) : 0;
     const O = this.occ[i];
     if (O === 2 || O === 3 || O === 4 || O === 8 || this.patchSurf[i] || (this.floraMask[i] & 3)) return 0;
     const gi = this.gi(x, z), bi = this.biome[gi];

@@ -180,6 +180,7 @@
         return `<li>Встреча ${m.lvl} уровня${bits.length ? ': ' + this.esc(bits.join('; ')) : ''}.${ed ? ' ' + this.esc(ed) : ''}</li>`;
       }).join('');
       const charge = (f.skills || []).some(s => s.t === 'charge' || s.t === 'lock');
+      const fixedParty = meets.every(m => m.e.lfTrials);
       const sc = R.scores.boss.sig;
       const need = [...new Set(meets.flatMap(m => K.BOSS_NEED[m.enc] || []))];
       const fighters = Object.keys(sc.dps).filter(c => f.weak.includes(H.CHARS[c].elem)).sort((a, b) => sc.dps[b] - sc.dps[a]).slice(0, 6);
@@ -206,11 +207,11 @@
         <table class="kv-grid" width="100%" cellspacing="0" cellpadding="3"><tr><th>Приём</th><th>По кому</th><th>Сила</th><th>Примечание</th></tr>${skills}</table>
         <h2 class="kv-h2">Кого брать</h2>
         ${need.length ? `<p class="kv-warn">${this.gif('warn')} Без этих персонажей бой не пройти:</p><p>${need.map(c => this.charChip(c)).join('')}</p>` : ''}
-        <table class="kv-grid" width="100%" cellspacing="0" cellpadding="4">
+        ${fixedParty ? '<p>Отряд в этом бою выдаёт сама игра, выбирать некого.</p>' : `<table class="kv-grid" width="100%" cellspacing="0" cellpadding="4">
           <tr><td class="kv-team-label">${need.length ? 'Остальные места' : 'Урон'}</td><td>${fighters.map(c => this.charChip(c)).join('') || 'нет'}<br><span class="kv-small">Бойцы, чья стихия бьёт в уязвимость, по тир-листу боссов.</span></td></tr>
           <tr><td class="kv-team-label">Усиление</td><td>${amps.map(c => this.charChip(c)).join('')}</td></tr>
           <tr><td class="kv-team-label">Выживание</td><td>${sus.map(c => this.charChip(c)).join('')}</td></tr>
-        </table>`;
+        </table>`}`;
     },
 
     tableBreak() {

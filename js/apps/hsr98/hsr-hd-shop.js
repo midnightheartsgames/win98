@@ -1,6 +1,6 @@
 (function (H) {
   'use strict';
-  const HD = H.HD, TUN = HD.TUN, R = HD.RELIC, TS = 32;
+  const HD = H.HD, TUN = HD.TUN, R = HD.RELIC, TS = 32, N = HD.N;
   const P = v => Math.round(v * 100) + '%';
   const SLOT_KINDS = H.RELIC_SLOTS.map(s => s.key);
   const circle = (x, y, r) => ({ shape: 'circle', x, y, r });
@@ -315,7 +315,7 @@
       if (!it.ch) return deny(A, 'Гранаты кончились до перерыва');
       const t = aim && aim.x != null ? aim : A.nearestFoe(h.x, h.y, D.range);
       if (!t) return deny(A, 'Нет цели рядом');
-      let x = t.x, y = t.y; const d = Math.hypot(x - h.x, y - h.y);
+      let x = t.x, y = t.y; const d = N.hypot(x - h.x, y - h.y);
       if (d > D.range) { x = h.x + (x - h.x) / d * D.range; y = h.y + (y - h.y) / d * D.range; }
       it.ch--;
       A.addArea({ shape: 'circle', x, y, r: 72, side: 'foe', delay: 0.4, kind: 'blast', elem: 'phys', onFire(A2, a) {
@@ -326,16 +326,16 @@
     }
     if (it.cdT > A.time) return deny(A, 'Перезарядка');
     if (it.id === 'anchor') {
-      const tur = A.turrets.filter(t => !t.dead).sort((a, b) => Math.hypot(a.x - (aim && aim.x != null ? aim.x : h.x), a.y - (aim && aim.y != null ? aim.y : h.y)) - Math.hypot(b.x - (aim && aim.x != null ? aim.x : h.x), b.y - (aim && aim.y != null ? aim.y : h.y)))[0];
+      const tur = A.turrets.filter(t => !t.dead).sort((a, b) => N.hypot(a.x - (aim && aim.x != null ? aim.x : h.x), a.y - (aim && aim.y != null ? aim.y : h.y)) - N.hypot(b.x - (aim && aim.x != null ? aim.x : h.x), b.y - (aim && aim.y != null ? aim.y : h.y)))[0];
       const S = A.M.spawn, to = aim && aim.x != null && tur ? { x: tur.x, y: tur.y + 34 } : { x: S[0] * TS + 16, y: S[1] * TS + 16 };
       it.cdT = A.time + D.cd;
-      channel(A, h, D.chan, () => { h.x = h.px = to.x; h.y = h.py = to.y; A.collide(h); A.emit({ t: 'msg', text: 'Якорь сработал' }); }, 'Якорь: канал 1,5 с');
+      channel(A, h, D.chan, () => { h.x = h.px = to.x; h.y = h.py = to.y; A.collide(h); A.emit({ t: 'msg', text: 'Якорь сработал', p: h.pl }); }, 'Якорь: канал 1,5 с');
       return true;
     }
     if (it.id === 'garrison') { it.cdT = A.time + D.cd; A.addFx(h, { n: 'Щит Гарнизона', k: 'shield', v: h.hpMax * 0.25, t: 5 }); return true; }
     if (it.id === 'rz_key') {
       const t = aim && aim.id != null ? A.byId(aim.id) : A.nearestFoe(h.x, h.y, D.range);
-      if (!t || t.side !== 'foe' || Math.hypot(t.x - h.x, t.y - h.y) > D.range + t.r) return deny(A, 'Нет цели рядом');
+      if (!t || t.side !== 'foe' || N.hypot(t.x - h.x, t.y - h.y) > D.range + t.r) return deny(A, 'Нет цели рядом');
       it.cdT = A.time + D.cd;
       t.fx = t.fx.filter(f => f.deb || f.k === 'stun' || f.k === 'slow' || f.k === 'dot' || f.k === 'vuln');
       A.addFx(t, { n: 'Взлом', k: 'armor', v: -0.3 * t.armor, t: 6, deb: true });

@@ -5,14 +5,14 @@
     { id: 'daily', label: 'Ежедневная тренировка', icon: 'gdaily', open: g => g.state.flags.express_intro ? null : 'после знакомства с Экспрессом' },
     { id: 'index', label: 'Индекс выживаемости', icon: 'gindex', open: g => g.calyxList().some(x => x.open) ? null : 'с первым открытым чашелистом' },
     { id: 'cosmic', label: 'Космический раздор', icon: 'gcosmic', open: g => g.state.flags.su_open ? null : 'после первого теста Виртуальной вселенной' },
-    { id: 'treasure', label: 'Озарённые светом сокровища', icon: 'gtreasure', open: g => g.fhOpen() ? null : 'после встречи с Посланником Зала забвения' },
+    { id: 'treasure', label: 'Озарённые светом сокровища', icon: 'gtreasure', open: g => g.fhOpen() || g.state.flags.pf_open ? null : 'после встречи с Посланником Зала забвения' },
     { id: 'trail', label: 'Первопроходческий опыт', icon: 'gtrail', open: () => null }
   ];
 
   const ACTS = [
     { world: 'herta', title: 'Пролог: Космическая станция «Герта»', parts: [['prologue', 'Раздел I'], ['crown', 'Продолжение I']] },
     { world: 'jarilo', title: 'Акт I: Ярило-VI', parts: [['winter', 'Раздел I'], ['dawn', 'Раздел II'], ['awake', 'Продолжение I']] },
-    { world: 'luofu', title: 'Акт II: Сяньчжоу «Лофу»', parts: [] }
+    { world: 'luofu', title: 'Акт II: Лофу Сяньчжоу', parts: [['wander', 'Раздел I'], ['tower', 'Раздел II'], ['karmic', 'Раздел III']] }
   ];
 
   const DAILY = [
@@ -75,7 +75,7 @@
   const calyxKind = c => c.reward === 'path' ? 'crimson' : c.reward === 'echo' ? 'echo' : c.reward === 'exp' || c.reward === 'credits' || c.reward === 'aether' ? 'golden' : c.boss ? 'shadow' : 'cavern';
 
   const CHAPTER_PHOTO = { prologue: 'doom', winter: 'belobog_intro', dawn: 'ending', awake: 'fm2_done' };
-  const CHAPTER_SCENE = { crown: { bg: 'station', cast: ['ruanmei', 'trail'] } };
+  const CHAPTER_SCENE = { crown: { bg: 'station', cast: ['ruanmei', 'trail'] }, wander: { bg: 'lf_port', cast: ['march', 'trail', 'welt'] }, tower: { bg: 'lf_sea', cast: ['imbibitor', 'jingyuan'] }, karmic: { bg: 'lf_night', cast: ['yukong', 'trail', 'march'] } };
 
   const RULES = {
     intro: [
@@ -88,7 +88,7 @@
     daily: 'Ежедневная тренировка обновляется каждый час. Выполняйте задачи, забирайте за них очки активности и получайте награды на 100, 200, 300, 400 и 500 очках. Награды растут с уровнем равновесия. Набрать можно 500 очков, остальные задачи этого часа можно пропустить.',
     index: 'Индекс выживаемости перечисляет места, куда можно возвращаться за материалами и реликвиями: чашелисты, Застойные тени, Пещеры коррозии, Эхо войны и миры Виртуальной вселенной. «Войти» переносит команду к ближайшему активированному якорю пространства и сразу открывает вход. Телепорт работает, когда команда стоит у якоря пространства или в безопасной зоне. Круглая кнопка Топливного купона (F) проводит быстрое получение чашелиста или Застойной тени без телепорта, лупа (L) показывает испытание. Бюст цели развития отмечает строки, где растёт то, что ей нужно.',
     cosmic: 'Космический раздор показывает миры Виртуальной вселенной Герты: какие открыты, какие пройдены, какую награду дадут и какие украшения выпадут. «Перейти к испытанию» ведёт к машине в офисе Герты.',
-    treasure: 'Озарённые светом сокровища показывают испытания Зала забвения: звёзды, награды за них, Эхо Зала на этой неделе и обновление лавки «Шутки сбываются». «Перейти к испытанию» ведёт к зеркалу в гостиной Экспресса, сумка открывает лавку Зала.',
+    treasure: 'Озарённые светом сокровища показывают испытания Зала забвения: звёзды, награды за них, Эхо Зала на этой неделе и обновление лавки «Шутки сбываются». Вторая строка показывает Чистый вымысел: сезон, этапы, звёзды и награды, которые можно забрать. «Перейти к испытанию» ведёт к зеркалу в гостиной Экспресса, сумка открывает лавку Зала.',
     trail: 'Раздел собирает главы Освоения, которые вы прошли или проходите сейчас. Карточка главы открывает её миссии в порядке прохождения.'
   };
 
@@ -97,7 +97,7 @@
   Object.assign(H.Game.prototype, {
     alerts() {
       const out = baseAlerts.call(this);
-      out.guide_treasure = this.fhOpen && this.fhAlert ? this.fhAlert() : false;
+      out.guide_treasure = (this.fhOpen && this.fhAlert ? this.fhAlert() : false) || (this.pfAlert ? this.pfAlert() : false);
       out.guide_cosmic = !!this.state.flags.su_open && this.suClaims().length > 0;
       out.guide_daily = this.dailyAlert();
       out.guide = out.guide_treasure || out.guide_cosmic || out.guide_daily;
@@ -130,6 +130,7 @@
         if (kind === 'calyx' && mk.type === 'prop' && [].concat(mk.calyx || []).includes(id)) return { map, ch };
         if (kind === 'su' && mk.obj === 'su_machine') return { map, ch };
         if (kind === 'fh' && mk.obj === 'fhmirror') return { map, ch };
+        if (kind === 'pf' && mk.obj === 'pfcage') return { map, ch };
       }
       return kind === 'calyx' ? Object.assign({ sim: true }, SIMULATOR) : null;
     },

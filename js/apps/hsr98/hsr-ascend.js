@@ -4,14 +4,14 @@
 
   const NEW_SHADOWS = [
     { id: 'cx_quanta', name: 'Застойная тень: Форма кванта', boss: 'trampler', adds: ['reaver', 'reaver'], need: 'doom', sets: ['genius', 'passerby'], text: 'Рейнджер пустоты и два Захватчика в Базовой зоне станции «Герта». Реликвии за каждую победу.' },
-    { id: 'cx_icicle', name: 'Застойная тень: Форма сосульки', boss: 'iceout', adds: ['weaver', 'weaver'], ownsMat: true, sets: ['glacial', 'eagle'] },
-    { id: 'cx_doom', name: 'Застойная тень: Форма рока', boss: 'lieutenant', adds: ['soldier', 'gunner'], ownsMat: true, sets: ['knight', 'thunder'] },
-    { id: 'cx_celestial', name: 'Застойная тень: Форма небожителя', boss: 'blazeout', adds: ['incinerator', 'incinerator'], ownsMat: true, sets: ['glacial', 'eagle'] },
-    { id: 'cx_abomination', name: 'Застойная тень: Форма оборотня', boss: 'etherhound', adds: ['ethereal', 'ethereal'], ownsMat: true, sets: ['genius', 'passerby'] },
-    { id: 'cx_puppetry', name: 'Застойная тень: Форма идола', boss: 'mimic', adds: ['weaver', 'weaver'], ownsMat: true, sets: ['knight', 'thunder'] },
-    { id: 'cx_perdition', name: 'Застойная тень: Форма погибели', boss: 'ipc_leader', adds: ['ipc_security', 'ipc_security'], ownsMat: true, sets: ['champion', 'thief'] }
+    { id: 'cx_icicle', name: 'Застойная тень: Форма сосульки', boss: 'iceout', adds: ['weaver', 'mara'], ownsMat: true, sets: ['glacial', 'eagle'] },
+    { id: 'cx_doom', name: 'Застойная тень: Форма рока', boss: 'shifter', adds: ['mara', 'dracolion'], ownsMat: true, sets: ['knight', 'thunder'] },
+    { id: 'cx_celestial', name: 'Застойная тень: Форма небожителя', boss: 'ascended', adds: ['ballista', 'ballista'], ownsMat: true, sets: ['glacial', 'eagle'] },
+    { id: 'cx_abomination', name: 'Застойная тень: Форма оборотня', boss: 'ape', adds: ['ghound', 'lupus'], ownsMat: true, sets: ['genius', 'passerby'] },
+    { id: 'cx_puppetry', name: 'Застойная тень: Форма идола', boss: 'aurumaton', adds: ['dragonfish', 'dragonfish'], ownsMat: true, sets: ['knight', 'thunder'] },
+    { id: 'cx_perdition', name: 'Застойная тень: Форма погибели', boss: 'spectral', adds: ['dracolion', 'dracolion'], ownsMat: true, sets: ['champion', 'thief'] }
   ];
-  const FAR_SHADOW = 'Эта Тень лежит далеко от Ярило-VI. Симулятор воссоздаёт её по записям, когда в экипаже есть герой с её материалом. Реликвии за каждую победу.';
+  const FAR_SHADOW = 'Эта Тень лежит на Лофу Сяньчжоу. Симулятор воссоздаёт её по записям, когда в экипаже есть герой с её материалом. Реликвии за каждую победу.';
   for (const c of NEW_SHADOWS) if (!H.CALYX.some(x => x.id === c.id)) H.CALYX.push(Object.assign({ cost: 30, music: 'boss', reward: 'relic', text: FAR_SHADOW }, c));
 
   for (const [id, m] of Object.entries(A.shadows)) {

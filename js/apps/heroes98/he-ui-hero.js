@@ -282,8 +282,10 @@
     }
 
     artLines(id) {
-      const a = H.ARTIFACTS[id];
-      return [a.name, a.about, H.ART_RANKS[a.rank][0] + ', ' + (a.slot === 'ring' ? 'кольцо' : H.ART_SLOTS.find(s => s[0] === a.slot)[1].toLowerCase())];
+      const a = H.ARTIFACTS[id], base = [a.name, a.about, H.ART_RANKS[a.rank][0] + ', ' + (a.slot === 'ring' ? 'кольцо' : H.ART_SLOTS.find(s => s[0] === a.slot)[1].toLowerCase())];
+      if (!a.set) return base;
+      const set = H.ART_SETS[a.set], worn = (HE.setsOn(this.h).find(x => x.set === set) || { count: 0 }).count;
+      return [...base, 'Набор: ' + set.name + ', надето ' + worn + ' из ' + set.items.length, 'За 2 вещи: ' + set.twoAbout, 'За все: ' + set.fullAbout];
     }
 
     draw(g) {
@@ -363,6 +365,7 @@
       this.region('tal-high', hx, hy, 40, 40, null, { info: () => ['Высший дар: ' + hi.name, hi.about, hi.open ? 'Открыт' : 'С ' + HR.highLevel + ' уровня' + (hi.missing.length ? ', мастер: ' + hi.missing.join(', ') : '')] });
       g.text('Войско', X + 14, Y + 372, { bold: true });
       this.armyCells(g, 'hero', h.army, X + 14, Y + 382, 44, 48, { hero: h });
+      g.text('Машины: ' + (h.machines.length ? h.machines.map(id => H.UNITS[id].name).join(', ') : 'нет'), X + 370, Y + 384, { size: 10, color: '#c8b88a' });
       this.button(g, 'h-book', 'Книга', X + 370, Y + 400, 82, 26, () => {
         const S = this.S;
         this.ui.show(new BookView(this.ui, this, { hero: HE.battleHero(h), board: { moon: H.Moons.battle(S) }, known: h.spells, road: HE.roadSpells(h), level: h.level }));
@@ -390,6 +393,7 @@
       c.fillRect(cx + 4, y + 186, 20, 80);
       const at = { head: [55, 2], neck: [55, 46], shoulders: [105, 46], body: [55, 92], right: [5, 92], left: [105, 92], ring1: [5, 138], ring2: [105, 138], legs: [55, 196], charm: [5, 46] };
       for (const [slot, label] of H.ART_SLOTS) this.artCell(g, { slot }, x + at[slot][0], y + at[slot][1], 40, label);
+      HE.setsOn(this.h).filter(q => q.count >= 2).slice(0, 2).forEach((q, i) => g.text(q.set.name + ' ' + q.count + '/' + q.set.items.length, x + 75, y + 242 + i * 12, { align: 'center', size: 10, color: q.count >= q.set.items.length ? '#ffe060' : '#a0c8ff' }));
     }
 
     askFire() {
@@ -538,12 +542,13 @@
   Object.assign(LevelView.prototype, H.Regions);
 
   class ExchangeView {
-    constructor(ui, parent, a, b) {
+    constructor(ui, parent, a, b, o) {
       this.ui = ui;
       this.parent = parent;
       this.S = parent.S;
       this.a = a;
       this.b = b;
+      this.allied = !!(o && o.allied);
       this.mouse = [0, 0];
       this.regions = [];
       this.toasts = [];
@@ -575,9 +580,17 @@
     key() {}
 
     armyMove(k, t, n) {
+      if (k.army !== t.army && this.locked(k.army === this.a.army ? this.a : this.b)) {
+        this.toast('Союзник под рукой ИИ своё войско не отдаёт', '#ff9080');
+        return true;
+      }
       const ok = HE.moveStack(k.army, k.slot, t.army, t.slot, { n, keep: true });
       if (ok) this.S.ver++;
       return ok;
+    }
+
+    locked(h) {
+      return this.allied && !this.S.players[h.owner].human;
     }
 
     pointer(type, x, y, btn) {
@@ -647,6 +660,16 @@
       g.text('Натиск ' + HE.stat(h, 'atk') + ', Стойкость ' + HE.stat(h, 'def') + ', Чары ' + HE.stat(h, 'power') + ', Мудрость ' + HE.stat(h, 'wis'), x + 74, y + 44, { size: 10 });
       g.text('Войско', x, y + 78, { bold: true });
       this.armyCells(g, 'h' + h.id, army, x, y + 88, 44, 48, { hero: h });
+      if (this.allied) {
+        g.text(H.PLAYER_NAMES[this.S.players[h.owner].color] + ' игрок', x, y + 156, { bold: true, color: H.PLAYER_COLORS[this.S.players[h.owner].color] });
+        H.Font.wrap('text', this.locked(h) ? 'Союзник под рукой ИИ принимает отряды, но своих не отдаёт.' : 'Союзники отдают друг другу отряды. Вещи остаются у своих героев.', 300).forEach((t, i) => g.text(t, x, y + 176 + i * 15, { size: 10, color: '#c8b88a' }));
+        if (!this.locked(h)) {
+          this.button(g, 'give-a' + h.id, 'Отдать всё войско', x, y + 342, 164, 24, () => {
+            if (HE.giveArmy(h.army, other.army)) this.S.ver++;
+          });
+        }
+        return;
+      }
       g.text('Вещи', x, y + 146, { bold: true });
       H.ART_SLOTS.forEach(([slot, label], i) => {
         const cx = x + (i % 5) * 42, cy = y + 156 + Math.floor(i / 5) * 42, id = h.arts[slot];
@@ -684,7 +707,7 @@
       c.fillRect(0, 0, H.W, H.H);
       this.region('block', 0, 0, H.W, H.H, null);
       g.panel(20, 60, 760, 470);
-      g.text('Встреча героев', H.W / 2, 84, { align: 'center', serif: true });
+      g.text(this.allied ? 'Встреча союзников' : 'Встреча героев', H.W / 2, 84, { align: 'center', serif: true });
       this.side(g, this.a, this.b, 40, 104);
       this.side(g, this.b, this.a, 424, 104);
       c.fillStyle = '#6a5430';

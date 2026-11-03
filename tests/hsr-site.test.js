@@ -7,7 +7,7 @@ const root = path.join(__dirname, '..');
 const read = f => fs.readFileSync(path.join(root, f), 'utf8');
 const HOST = 'http://hsr.hoyoverse.com';
 
-const HSR_MODULES = ['hsr-core', 'hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-conductor', 'hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes'];
+const HSR_MODULES = ['hsr-core', 'hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-traces', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-express', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-velvet', 'hsr-badge', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-luofu-foes', 'hsr-luofu-field', 'hsr-luofu-maps', 'hsr-luofu-story', 'hsr-luofu-story2', 'hsr-luofu-life', 'hsr-conductor', 'hsr-pf-data', 'hsr-pf-battle', 'hsr-pf', 'hsr-pf-story', 'hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-luofu', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-luofu-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-pf-art'];
 
 const noop = () => {};
 function makeCanvas(w = 300, h = 150) {
@@ -179,7 +179,16 @@ test('game facts on the site match the game', () => {
   H.ELEMENT_KEYS.forEach(k => assert.ok(play.includes(H.BREAK_EFFECT[k]), k));
   const worlds = site.renderSite(HOST + '/worlds');
   H.WORLDS.forEach(w => assert.ok(worlds.includes(w.name.replace(/"/g, '&quot;')), w.id));
-  Object.values(H.ENEMIES).forEach(e => assert.ok(worlds.includes(e.name), e.name));
+  Object.values(H.ENEMIES).filter(e => !e.spoiler).forEach(e => assert.ok(worlds.includes(e.name), e.name));
+  assert.ok(!worlds.includes('Мастер Дань Шу'), 'the worlds page does not spoil the Disciples of Luofu');
+  assert.ok(worlds.includes('Переулок ауруматонов') && worlds.includes('still:lfs_alley'), 'the areas of Luofu are on the worlds page with their pictures');
+  const v18 = site.news.find(n => n.id === 'v18');
+  assert.ok(v18 && site.news[0] === v18, 'version 1.8 is the newest article');
+  assert.ok(!/Фантил|Опустошител/.test(v18.lead + v18.body.join(' ')) && !/Тинъюнь/.test(v18.lead + v18.body.join(' ')), 'the news of version 1.8 keeps the reveal of Luofu');
+  const v18Text = v18.body.join(' '), PFT = H.PF.TUN;
+  assert.ok(v18Text.includes('Чистый вымысел'), 'the news of version 1.8 names the new trial');
+  assert.ok(PFT.stars.every(v => v18Text.includes(H.fmt(v))) && v18Text.includes(PFT.days + ' дня'), 'with the numbers of the mode');
+  assert.ok(v18Text.includes(H.PF.STAR_TIERS.reduce((a, t) => a + t.jade, 0) + ' звёздного нефрита') && v18Text.includes(H.PF.STAR_TIERS.reduce((a, t) => a + t.feather, 0) + ' нефритовых перьев'), 'and the rewards of a season');
   const rumors = site.news.find(n => n.id === 'rumors').body.join(' ').toLowerCase();
   assert.ok(H.RUMORS.some(r => rumors.includes(r.title.toLowerCase())), 'the rumor article names a real rumor');
   const v11 = site.news.find(n => n.id === 'v11').body.join(' ');
@@ -214,13 +223,16 @@ test('game facts on the site match the game', () => {
   assert.ok(v15.includes(H.GLOW.dup[4] + ' или ' + H.GLOW.dup[5]) && v15.includes('до ' + H.TL_MAX) && ['pc_rewards', 'pc_home', 'pc_disc', 'pc_guests'].every(id => v15.includes('«' + H.QUESTS[id].name + '»')), 'version 1.5 notes match Starlight, the Trailblaze Level cap and the Express missions');
   const v16o = site.news.find(n => n.id === 'v16o').body.join(' ');
   const v17g = site.news.find(n => n.id === 'v17g').body.join(' '), v17p = site.news.find(n => n.id === 'v17p').body.join(' ');
-  assert.ok(site.news[0].id === 'v17g' && v17g.includes('15, 20, 30, 40, 50 и 60'), 'version 1.7 notes lead the news and name the Level gates');
+  assert.ok(v17g.includes('15, 20, 30, 40, 50 и 60'), 'version 1.7 notes name the Level gates');
+  const v17n = site.news.find(n => n.id === 'v17n').body.join(' ');
+  assert.ok(site.news[1].id === 'v17n' && ['согласия', 'UID', '2 000', '«2–4 ИГРОКА»', 'Сетевом окружении'].every(t => v17n.includes(t)), 'the ether link comes right after version 1.8');
+  assert.ok(site.faq.some(([q]) => q === 'Что игра отправляет в сеть?'), 'the FAQ says what goes to the network');
   assert.ok(['STARRAILGIFT', 'POMPOM98'].every(code => v17p.includes(code)) && !v17p.includes('TROLLEY98'), 'the news names the public codes and keeps the Express one secret');
   const v16h = site.news.find(n => n.id === 'v16h'), v16hb = v16h.body.join(' '), HV = H.OUTFITS.himeko_vermilion;
   assert.ok(HV.rarity === 5 && v16h.title.includes('«' + HV.name + '»') && v16h.lead.includes(HV.price + ' звёздного нефрита') && v16hb.includes('«' + H.CHARS.himeko.skill.name + '»') && v16hb.includes('«' + H.FUSIONS.f_singularity.name + '»'), 'the first 5★ outfit patch matches the game');
   assert.ok(v16o.includes(H.OUTFIT_TIER[4].price + ' звёздного нефрита') && v16o.includes(H.OUTFIT_TIER[5].price + ' звёздного нефрита') && H.OUTFIT_REFUND.every(id => v16o.includes('«' + H.OUTFITS[id].name + '»')) && v16o.includes('«' + H.OUTFITS.himeko_vermilion.name + '» Химико'), 'the outfit class patch matches the tiers and the refund list');
   const v16 = site.news.find(n => n.id === 'v16').body.join(' '), v16mail = H.MAIL.find(m => m.id === 'v16_fives');
-  assert.ok(site.news.find(n => n.tag === 'Обновление').id === 'v16' && v16.includes(v16mail.give.items.spass + ' особых звёздных пропусков и ' + v16mail.give.jade + ' звёздного нефрита'), 'version 1.6 is the newest article and matches its letter');
+  assert.ok(site.news.filter(n => n.tag === 'Обновление')[1].id === 'v16' && v16.includes(v16mail.give.items.spass + ' особых звёздных пропусков и ' + v16mail.give.jade + ' звёздного нефрита'), 'version 1.6 is the update before Luofu and matches its letter');
   H.FIVES.IDS.forEach(id => assert.ok(v16.includes(H.CHARS[id].name) && v16.includes('«' + H.BANNERS.ev.stars[id].name + '»') && v16.includes('«' + H.CONES[H.BANNERS.cone.stars[id].cone].name + '»') && site.source(id).includes('Прыжок события'), 'version 1.6 notes name ' + id + ', the banner and the cone'));
   Object.keys(H.FIVES.FUSIONS).forEach(id => assert.ok(v16.includes('«' + H.FUSIONS[id].name + '»'), 'version 1.6 notes name the Fusion ' + id));
   const v13 = site.news.find(n => n.id === 'v13').body.join(' ');

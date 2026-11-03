@@ -242,7 +242,7 @@
     return recapIndex;
   }
 
-  const TERMINALS = { warp: 'Звёздный прыжок', calyx: 'Симулятор', nav: 'Навигационный пульт', su: 'Виртуальная вселенная' };
+  const TERMINALS = { warp: 'Звёздный прыжок', calyx: 'Симулятор', nav: 'Навигационный пульт', su: 'Виртуальная вселенная', pf: 'Чистый вымысел' };
   function npcRole(mk) {
     for (const st of H.SCRIPTS[mk.script] || []) {
       if (!st || !st.ui) continue;
@@ -279,6 +279,7 @@
       if (this.fixTraces) this.fixTraces(!!opts.state && !opts.state.trv);
       if (this.fixOutfitTiers) this.fixOutfitTiers(!!opts.state && !opts.state.otv);
       if (this.fixAscension) this.fixAscension(!!opts.state && !opts.state.asv);
+      if (this.pfRefresh) this.pfRefresh();
       this.mailSync();
       this.pending = null;
       this.script = null;
@@ -1091,6 +1092,7 @@
       for (const [id, n] of Object.entries(g.items || {})) { s.inv.items[id] = (s.inv.items[id] || 0) + n; out.push(H.ITEMS[id].name + (n > 1 ? ' ×' + n : '')); }
       if (g.cone) { this.addCone(g.cone); out.push('конус «' + H.CONES[g.cone].name + '»'); }
       for (const id of [].concat(g.outfit || [])) if (H.OUTFITS && H.OUTFITS[id]) { if (!s.outfits.includes(id)) s.outfits.push(id); out.push('наряд «' + H.OUTFITS[id].name + '»'); }
+      for (const id of [].concat(g.pom || [])) if (this.pomGive && this.pomGive(id)) out.push('костюм Пом-Пом «' + H.POM_OUTFITS[id].name + '»');
       for (const id of [].concat(g.skin || [])) if (H.PHONE_SKINS && H.PHONE_SKINS[id]) { if (!s.phoneSkins) s.phoneSkins = []; if (!s.phoneSkins.includes(id)) s.phoneSkins.push(id); out.push('обои «' + H.PHONE_SKINS[id].name + '»'); }
       for (let i = 0; i < (g.relic || 0); i++) { const r = this.rollRelic(g.lvl || this.avgLevel(), g.sets); out.push('реликвия «' + H.RELIC_SETS[r.set].name + '» (' + H.RELIC_SLOTS.find(x => x.key === r.slot).name + ')'); }
       for (const o of [].concat(g.ornament || [])) {
@@ -1652,6 +1654,8 @@
       s.warpLog.length = Math.min(s.warpLog.length, WARP_LOG);
       return res;
     }
+
+    warpLogOf() { return this.state.warpLog; }
 
     warpStats(ban) {
       const s = this.state, log = ban ? s.warpLog.filter(e => (e.ban || 'std') === ban) : s.warpLog, five = log.filter(e => e.rar === 5);

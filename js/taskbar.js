@@ -556,7 +556,7 @@ class Taskbar {
                 ${(window.gameManager && window.gameManager.isInstalled('plov')) ? `
                 <div class="start-menu-item" data-action="plov">
                   <div class="start-menu-item-icon">${Icons['plov']}</div>
-                  <div class="start-menu-item-text">Хаято, Где плов?</div>
+                  <div class="start-menu-item-text">Где плов?</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('sims3_demo')) ? `
                 <div class="start-menu-item" data-action="sims3_demo">

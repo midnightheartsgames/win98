@@ -1039,10 +1039,42 @@
 
   const SKIN = { size: 512, left: [0, 0, 512, 144], right: [0, 144, 512, 144], top: [0, 288, 512, 104], front: [0, 392, 256, 88], rear: [256, 392, 256, 88], plate: [0, 480, 128, 32], tail: [128, 480, 64, 32], head: [192, 480, 64, 32], grille: [256, 480, 64, 32], white: [320, 480, 64, 32], tread: [384, 480, 128, 32] };
   const SPONSORS = { cola: ['#d0141e', '#ffffff', 'BALTIC', 'COLA'], fm: ['#12305a', '#ffd23a', 'RĪGA FM', '101.5'], mobile: ['#1a7a3a', '#ffffff', 'DZINTARS', 'MOBILE'], kafija: ['#f4e6c8', '#6a2a14', 'Sprīdītis', 'Kafija'] };
-  const LIVERIES = ['none', 'stripes', 'side', 'twotone', 'tail', 'number', 'horizon', 'cola', 'fm', 'mobile', 'kafija', 'rally'];
+  const LIVERIES = ['none', 'stripes', 'side', 'twotone', 'tail', 'number', 'horizon', 'cola', 'fm', 'mobile', 'kafija', 'rally', 'raf', 'route', 'ambulance', 'taxi'];
+  const OWN = { raf: ['raf2203'], route: ['raf2203'], ambulance: ['raf2203'], taxi: ['w123'] };
   const INK = 'rgba(16,16,18,0.85)', PINK = '#e6146e', LIME = '#d7ff1e';
 
+  function fasciaFill(x, kind, x0, y0, x1, y1, grid) {
+    const w = x1 - x0, h = y1 - y0;
+    if (kind === 'clear' || kind === 'fresnel') {
+      const g = x.createRadialGradient((x0 + x1) / 2, (y0 + y1) / 2, 1, (x0 + x1) / 2, (y0 + y1) / 2, Math.max(w, h) / 2);
+      g.addColorStop(0, '#ffffff'); g.addColorStop(1, '#c8ccd2');
+      x.fillStyle = g; x.fillRect(x0, y0, w, h);
+      if (kind === 'clear') return;
+      x.fillStyle = 'rgba(110,118,126,0.35)';
+      for (let i = x0 + 2; i < x1; i += 3) x.fillRect(i, y0, 1, h);
+      for (let j = y0 + 2; j < y1; j += 4) x.fillRect(x0, j, w, 1);
+      return;
+    }
+    if (kind === 'ribs' || kind === 'cells' || kind === 'dots') {
+      x.fillStyle = '#b8b8b8'; x.fillRect(x0, y0, w, h);
+      x.fillStyle = '#ffffff';
+      if (kind === 'ribs') for (let j = y0 + 1; j < y1; j += 3) x.fillRect(x0, j, w, 2);
+      else if (kind === 'cells') for (let j = y0 + 1; j < y1; j += 4) for (let i = x0 + 1; i < x1; i += 4) x.fillRect(i, j, 3, 3);
+      else for (let j = y0 + 2; j < y1; j += 4) for (let i = x0 + 2; i < x1; i += 4) { x.beginPath(); x.arc(i, j, 1.2, 0, Math.PI * 2); x.fill(); }
+      return;
+    }
+    x.fillStyle = '#404040'; x.fillRect(x0, y0, w, h);
+    x.fillStyle = '#ffffff'; x.strokeStyle = '#ffffff'; x.lineWidth = 1;
+    if (kind === 'vbars') for (let i = x0 + 1; i < x1; i += 4) x.fillRect(i, y0, 2, h);
+    else if (kind === 'grid' && grid) { for (let i = 0; i < grid[0]; i++) x.fillRect(x0 + (i + 0.5) * w / grid[0] - 0.75, y0, 1.5, h); for (let j = 0; j < grid[1]; j++) x.fillRect(x0, y0 + (j + 0.5) * h / grid[1] - 0.7, w, 1.4); }
+    else if (kind === 'grid') { for (let i = x0 + 1; i < x1; i += 4) x.fillRect(i, y0, 1, h); for (let j = y0 + 1; j < y1; j += 4) x.fillRect(x0, j, w, 1); }
+    else if (kind === 'mesh') for (let i = x0 - h; i < x1 + h; i += 4) { x.beginPath(); x.moveTo(i, y0); x.lineTo(i + h, y1); x.moveTo(i + h, y0); x.lineTo(i, y1); x.stroke(); }
+    else for (let j = y0 + 1; j < y1; j += 3) x.fillRect(x0, j, w, 2);
+  }
+
   function carSkin(d, livery) {
+    const own = OWN[livery];
+    if (own && !own.includes(d.car)) livery = 'none';
     const N = SKIN.size;
     const A = canvas(N, N), M = canvas(N, N);
     const a = A.getContext('2d', { willReadFrequently: true }), m = M.getContext('2d', { willReadFrequently: true });
@@ -1100,12 +1132,30 @@
       a.fillStyle = g; a.fillRect(r[0], y0, r[2], y1 - y0);
       for (const pl of d.gaps) { path(a, s, pl); stroke(a, 1.5, INK); }
     }
-    if (d.fuel) { path(a, 'R', d.fuel, true); stroke(a, 0.9, 'rgba(16,16,18,0.55)'); }
+    if (d.fuel && d.fuelRound) {
+      const c0 = d.px(d.fuelSide || 'R', (d.fuel[0][0] + d.fuel[1][0]) / 2, (d.fuel[0][1] + d.fuel[2][1]) / 2), c1 = d.px(d.fuelSide || 'R', d.fuel[1][0], d.fuel[2][1]);
+      a.beginPath(); a.ellipse(c0[0], c0[1], Math.abs(c1[0] - c0[0]), Math.abs(c1[1] - c0[1]), 0, 0, Math.PI * 2); stroke(a, 0.9, 'rgba(16,16,18,0.55)');
+    } else if (d.fuel) { path(a, d.fuelSide || 'R', d.fuel, true); stroke(a, 0.9, 'rgba(16,16,18,0.55)'); }
     for (const pl of d.seams) { path(a, 'T', pl); stroke(a, 1.4, INK); }
-    if (d.molding) decal((x, c) => { for (const s of sides) { path(x, s, [[d.molding.f0, d.molding.y], [d.molding.f1, d.molding.y]]); stroke(x, 2.6, c(d.molding.col)); } });
+    for (const ln of d.lines || []) { path(a, ln.where, ln.pts); stroke(a, 1.5, INK); }
+    for (const t of d.texts || []) decal((x, c) => { frame(x, t.where, t.p, t.q); label(x, t.text, 0, 0, t.size, t.style || 'bold italic', c(t.col), t.maxW || 300, t.edge && c(t.edge)); });
+    for (const mo of d.molding ? [d.molding].concat(d.trims || []) : []) decal((x, c) => {
+      const y0 = mo.y0 === undefined ? mo.y : mo.y0, y1 = mo.y1 === undefined ? mo.y : mo.y1;
+      for (const s of sides) {
+        path(x, s, [[mo.f0, y0], [mo.f1, y1]]); stroke(x, mo.w || 2.6, c(mo.col));
+        if (mo.edge) { path(x, s, [[mo.f0, y0 + mo.edgeY], [mo.f1, y1 + mo.edgeY]]); stroke(x, 1.2, c(mo.edge)); }
+      }
+    });
+    for (const v of d.vents || []) for (const w of v.where === 'S' ? sides : ['T']) decal((x, c) => {
+      frame(x, w, v.p, v.q);
+      if (v.bg) { x.fillStyle = c(v.bg); x.fillRect(-v.h / 2, -v.w / 2, v.h, v.w); }
+      x.fillStyle = c(v.col || '#161618');
+      if (v.across) for (let i = 0; i < v.n; i++) x.fillRect(-v.h / 2, (i + 0.2 - v.n / 2) * v.w / v.n, v.h, v.w / v.n * 0.6);
+      else for (let i = 0; i < v.n; i++) x.fillRect((i + 0.2 - v.n / 2) * v.h / v.n, -v.w / 2, v.h / v.n * 0.6, v.w);
+    });
     decal((x, c) => {
-      frame(x, 'B', d.badgeX[0], d.badgeY); label(x, d.badge[0], 0, 0, 7, 'bold', c('#d4d7db'), 36, c('#3a3c40'));
-      frame(x, 'B', d.badgeX[1], d.badgeY); label(x, d.badge[1], 0, 0, 7, 'bold italic', c('#d4d7db'), 36, c('#3a3c40'));
+      frame(x, 'B', d.badgeX[0], d.badgeY); label(x, d.badge[0], 0, 0, d.badgeSize || 7, d.badgeStyle || 'bold', c('#d4d7db'), d.badgeW || 36, c('#3a3c40'));
+      if (d.badgeX[1] !== null) { frame(x, 'B', d.badgeX[1], d.badgeY); label(x, d.badge[1], 0, 0, d.badgeSize2 || 7, d.badgeStyle2 || 'bold italic', c('#d4d7db'), d.badgeW2 || 36, c('#3a3c40')); }
     });
     cell(SKIN.plate, (x, w, h) => {
       x.fillStyle = '#f4f4ee'; x.fillRect(0, 0, w, h);
@@ -1193,6 +1243,48 @@
           if (H) { frame(x, 'T', H.f, 0); sponsor(x, c, livery, Math.min(80, H.w * 0.7), Math.min(34, H.len * 0.45)); }
         });
         break;
+      case 'raf': case 'route': case 'ambulance': {
+        const B = d.band;
+        if (!B) break;
+        const band = x => {
+          for (const s of sides) { path(x, s, sideBand(() => B.lo, f => d.belt(f), 0, 1), true); x.fill(); }
+          path(x, 'F', [[-1.5, B.nose], [1.5, B.nose], [1.5, d.yHiE + 1], [-1.5, d.yHiE + 1]], true); x.fill();
+          path(x, 'T', [[0, -1.5], [B.ws, -1.5], [B.ws, 1.5], [0, 1.5]], true); x.fill();
+          path(x, 'B', [[-1.5, B.lo], [1.5, B.lo], [1.5, B.hi], [-1.5, B.hi]], true); x.fill();
+        };
+        const sideText = (x, text, size, col) => {
+          for (const s of sides) { frame(x, s, B.text, (B.lo + d.belt(B.text)) / 2); label(x, text, 0, 1, size, 'bold', col, B.textW); }
+        };
+        if (livery === 'ambulance') {
+          decal((x, c) => {
+            x.fillStyle = c('#c81e1e'); band(x);
+            flat(x); sideText(x, 'ĀTRĀ PALĪDZĪBA', 16, c('#ffffff'));
+            frame(x, 'T', B.cross, 0); x.fillStyle = c('#d01e1e'); x.fillRect(-7, -22, 14, 44); x.fillRect(-22, -7, 44, 14);
+            for (const s of sides) { frame(x, s, B.door, B.lo - 0.2); label(x, '03', 0, 0, 22, 'bold', c('#c81e1e'), 60); }
+          });
+        } else {
+          second(band);
+          if (livery === 'route') { m.save(); sideText(m, 'MARŠRUTA TAKSOMETRS', 15, '#ff0000'); m.restore(); }
+        }
+        break;
+      }
+      case 'taxi': {
+        const T = d.taxi;
+        if (!T) break;
+        decal((x, c) => {
+          const n = Math.round((T.f1 - T.f0) * d.L / T.sq), df = (T.f1 - T.f0) / n;
+          for (const s of sides) {
+            flat(x);
+            for (let i = 0; i < n; i++) for (let j = 0; j < 2; j++) {
+              const f0 = T.f0 + i * df, y0 = T.y0 + j * T.sq;
+              path(x, s, [[f0, y0], [f0 + df, y0], [f0 + df, y0 + T.sq], [f0, y0 + T.sq]], true);
+              x.fillStyle = c((i + j) % 2 ? '#141414' : '#f2c21a'); x.fill();
+            }
+            frame(x, s, T.text, T.textY); label(x, 'TAKSOMETRS', 0, 0, 11, 'bold', c('#f2c21a'), 150, c('#141414'));
+          }
+        });
+        break;
+      }
       case 'rally':
         second(x => {
           for (const q of [H, d.roof]) if (q) { path(x, 'T', [[q.f0, -q.hw], [q.f1, -q.hw], [q.f1, q.hw], [q.f0, q.hw]], true); x.fill(); }
@@ -1216,6 +1308,14 @@
         });
         break;
       default: break;
+    }
+    for (const e of d.fascia || []) {
+      const q = e.pts.map(p => d.px(e.where, p[0], p[1])), xs = q.map(p => p[0]), ys = q.map(p => p[1]);
+      a.save();
+      path(a, e.where, e.pts, true);
+      a.clip();
+      fasciaFill(a, e.fill, Math.min(...xs) - 1, Math.min(...ys) - 1, Math.max(...xs) + 1, Math.max(...ys) + 1, e.grid);
+      a.restore();
     }
 
     const pa = a.getImageData(0, 0, N, N).data, pm = m.getImageData(0, 0, N, N).data;
@@ -1244,5 +1344,5 @@
     if (flag) flags[name] = flag;
   }
 
-  F.Tex = { paint, flags, canvas, carSkin, register, tileNoise, SKIN, LIVERIES, list: () => Object.keys(P).concat(Object.keys(FAC)) };
+  F.Tex = { paint, flags, canvas, carSkin, register, tileNoise, SKIN, LIVERIES, OWN, list: () => Object.keys(P).concat(Object.keys(FAC)) };
 })(globalThis.Forza = globalThis.Forza || {});

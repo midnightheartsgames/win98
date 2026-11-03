@@ -430,12 +430,12 @@
     ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';
     ctx.lineJoin = 'round';
-    ctx.strokeStyle = '#3b1a08'; ctx.lineWidth = 10; ctx.strokeText('Хаято,', 0, 0 + wob);
-    ctx.fillStyle = grad; ctx.fillText('Хаято,', 0, 0 + wob);
-    ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.strokeText('Хаято,', 0, -1 + wob);
+    ctx.strokeStyle = '#3b1a08'; ctx.lineWidth = 10; ctx.strokeText('Где плов?', 0, 0 + wob);
+    ctx.fillStyle = grad; ctx.fillText('Где плов?', 0, 0 + wob);
+    ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.strokeText('Где плов?', 0, -1 + wob);
     ctx.font = 'bold 40px ' + SERIF;
-    ctx.strokeStyle = '#3b0a0e'; ctx.lineWidth = 7; ctx.strokeText('Где плов?', 0, 92);
-    ctx.fillStyle = '#fff4d0'; ctx.fillText('Где плов?', 0, 92);
+    ctx.strokeStyle = '#3b0a0e'; ctx.lineWidth = 7; ctx.strokeText('Чайхана', 0, 92);
+    ctx.fillStyle = '#fff4d0'; ctx.fillText('Чайхана', 0, 92);
     ctx.restore();
   }
 
@@ -461,7 +461,7 @@
       A.shadow(ctx, hx, hy + 2, 60, 12, 0.35);
       const smile = Math.sin(t * 0.8) > 0.85;
       const blink = !smile && (t % 4.2) < 0.13;
-      A.drawCharHD(ctx, A.HAYATO, { dir: 'down', act: 'stand', arm: 'carry', frame: 0, expr: smile ? 'happy' : blink ? 'blink' : 'ok' }, hx, hy, 4);
+      A.drawCharHD(ctx, A.CHEF, { dir: 'down', act: 'stand', arm: 'carry', frame: 0, expr: smile ? 'happy' : blink ? 'blink' : 'ok' }, hx, hy, 4);
       P.Icons.food(ctx, 'plov', hx, hy - 104, 86);
       P.Scene.steam(ctx, hx, hy - 150, t, 6, 16, 0.6);
       drawLogo(ctx, 230, 150, t);

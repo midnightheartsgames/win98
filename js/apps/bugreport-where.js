@@ -131,7 +131,9 @@
   function applyLive(winId, live) {
     if (winId !== 'app_hsr98' || !live || !live.hsr98) return false;
     const ui = hsrUi();
-    return !!(ui && typeof ui.bugLoad === 'function' && ui.bugLoad(live.hsr98));
+    const loaded = !!(ui && typeof ui.bugLoad === 'function' && ui.bugLoad(live.hsr98));
+    if (loaded && ui.bugTable && root.bugRepro) root.bugRepro.table = ui.bugTable;
+    return loaded;
   }
 
   root.BugWhere = { describe, saveComponent, gameOf, liveSave, applyLive, ADAPTERS };

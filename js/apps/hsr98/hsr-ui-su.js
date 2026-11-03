@@ -653,6 +653,7 @@
       G.curioIcon(c, 'c_box', x, y + 2, 16); x += 18;
       this.text(String(su.curios.length), x, y + 4, { size: 11, bold: true }); x += this.measure(String(su.curios.length), 11, true) + 8;
       this.text(own >= 3 ? 'Резонанс ✓' : 'Резонанс ' + own + '/3', 214, y + 5, { align: 'right', size: 10, bold: own >= 3, col: own >= 3 ? C.gold : C.sub });
+      return w;
     },
 
     drawSuPortal(c, e, x, y) {

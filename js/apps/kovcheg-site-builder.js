@@ -25,6 +25,7 @@
       const lead = this.bossList();
       for (const [foe, meets] of Object.entries(lead)) {
         for (const m of meets) {
+          if (m.e.lfTrials) continue;
           const bits = [];
           if (m.e.endAt) bits.push('до ' + this.pct(m.e.endAt) + ' HP');
           if (m.e.allyBuff) bits.push('с подкреплением');

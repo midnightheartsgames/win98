@@ -10,6 +10,18 @@ class AppExplorer {
     this.showFoldersTree = false;
     this.expandedTreePaths = new Set(['Desktop', 'My Computer', 'My Computer/C:', 'Network Neighborhood']);
     this.folderOptions = this.loadFolderOptions();
+    if (window.addEventListener) window.addEventListener('net98-changed', () => this.netChanged());
+  }
+
+  netChanged() {
+    const wm = window.winManager;
+    if (this.currentPath[0] !== 'Network Neighborhood' || !wm || !wm.windows.has('app_explorer') || !window.Net98Shell) return;
+    const print = window.Net98Shell.fingerprint();
+    if (print === this.netPrint) return;
+    this.netPrint = print;
+    const win = wm.windows.get('app_explorer');
+    if (window.vfs.resolvePath(this.currentPath)) this.renderFolder(win);
+    else this.navigateTo(win, ['Network Neighborhood']);
   }
 
   loadFolderOptions() {
@@ -757,6 +769,7 @@ class AppExplorer {
   }
 
   getItemIconKey(item) {
+    if (item.app === 'neko' && item.isShortcut && window.appNeko && window.appNeko.isClawd()) return 'clawd';
     if (item.icon && Icons[item.icon]) return item.icon;
     const nm = (item.name || item.key || '').toLowerCase();
     if (nm.endsWith('.ttf')) return 'file-ttf';
@@ -955,8 +968,10 @@ class AppExplorer {
     el.querySelector('.explorer-sidebar-icon').innerHTML = pathIcon;
     const sidebarDetails = el.querySelector('.explorer-sidebar-details');
     sidebarDetails.textContent = (window.i18n ? window.i18n.t('explorer.sidebarDesc') : '');
+    if (this.currentPath[0] === 'Network Neighborhood' && window.Net98Shell && window.Net98Shell.note()) sidebarDetails.textContent = window.Net98Shell.note();
     this.selectedItem = null;
     win.titleElement.textContent = pathText;
+    if (window.winManager.setTitle) window.winManager.setTitle(win.id, pathText);
 
     btnBack.disabled = this.historyIndex <= 0;
     btnForward.disabled = this.historyIndex >= this.history.length - 1;
@@ -968,7 +983,8 @@ class AppExplorer {
     }
     this.renderTreePane(win);
 
-    let items = window.vfs.list(this.currentPath);
+    let items = window.vfs.list(this.currentPath)
+      .filter(it => !it.requiresInstalled || !window.gameManager || window.gameManager.isInstalled(it.requiresInstalled));
     if (!this.folderOptions.showAllFiles) {
       items = items.filter(it => !(it.attributes && it.attributes.hidden) && !/\.(sys|ini)$/i.test(it.name || ''));
     }
@@ -1102,10 +1118,11 @@ class AppExplorer {
         labelText = labelText.replace(/\.(txt|bmp|wav|mp3|mid|avi|mp4|rtf|doc|xls|pdf|zip|rar|lnk|htm|html|url|bfc)$/i, '');
       }
       const iconKey = this.getItemIconKey(item);
+      const shortcutOverlay = item.isShortcut ? `<span class="shortcut-overlay">${Icons['shortcut-overlay']}</span>` : '';
       if (this.viewMode === 'details') {
         itemEl.innerHTML = `
           <div class="explorer-details-name">
-            <div class="explorer-item-icon">${Icons[iconKey] || Icons[item.icon] || Icons['folder']}</div>
+            <div class="explorer-item-icon">${Icons[iconKey] || Icons[item.icon] || Icons['folder']}${shortcutOverlay}</div>
             <div class="explorer-item-label">${labelText}</div>
           </div>
           <div class="explorer-details-cell align-right">${this.getItemSizeStr(item)}</div>
@@ -1114,7 +1131,7 @@ class AppExplorer {
         `;
       } else {
         itemEl.innerHTML = `
-          <div class="explorer-item-icon">${Icons[iconKey] || Icons[item.icon] || Icons['folder']}</div>
+          <div class="explorer-item-icon">${Icons[iconKey] || Icons[item.icon] || Icons['folder']}${shortcutOverlay}</div>
           <div class="explorer-item-label">${labelText}</div>
         `;
       }
@@ -2243,7 +2260,9 @@ class AppExplorer {
         });
       }
     } else if (item.type === 'action') {
-      if (item.action === 'display-properties' && window.appDialogs) {
+      if (item.action === 'net98' && window.Net98Shell) {
+        window.Net98Shell.run(item);
+      } else if (item.action === 'display-properties' && window.appDialogs) {
         window.appDialogs.openDisplayProperties();
       } else if (item.action === 'regional-settings' && window.appDialogs) {
         window.appDialogs.openRegionalSettings();

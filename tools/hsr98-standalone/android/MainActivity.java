@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -96,6 +98,18 @@ public class MainActivity extends Activity {
             } catch (PackageManager.NameNotFoundException e) {
                 return "0";
             }
+        }
+
+        @JavascriptInterface
+        public String clipboardText() {
+            ClipData clip = ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).getPrimaryClip();
+            if (clip == null || clip.getItemCount() == 0) return "";
+            return clip.getItemAt(0).coerceToText(MainActivity.this).toString();
+        }
+
+        @JavascriptInterface
+        public void copyText(String text) {
+            ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("Star Rail 98", text));
         }
 
         @JavascriptInterface

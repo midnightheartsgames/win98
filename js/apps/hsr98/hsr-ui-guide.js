@@ -193,6 +193,7 @@
       else ui.navTravel(hop.dest);
       if (row.kind === 'su') { g.runScript('su_terminal'); ui.drainGameEvents(); return; }
       if (row.kind === 'fh') { ui.openFh(() => {}); return; }
+      if (row.kind === 'pf') { ui.openPfEntry(() => {}); return; }
       ui.openCalyx(() => {}, [row.id]);
     },
 
@@ -582,8 +583,10 @@
     },
 
     guideTreasureView(c, scr) {
-      const ui = this, g = this.game, t = g.guideTreasure(), done = t.stars >= t.total;
-      ui.guideSideRow(c, ACT.x, ACT.y, 'Зал забвения', (done ? '✓ ' : '') + '★ ' + t.stars + ' / ' + t.total, true, t.open, 0, scr, 'tsel');
+      const ui = this, g = this.game, t = g.guideTreasure(), done = t.stars >= t.total, fiction = g.guidePf();
+      ui.guideSideRow(c, ACT.x, ACT.y, 'Зал забвения', (done ? '✓ ' : '') + '★ ' + t.stars + ' / ' + t.total, scr.tsel === 0, t.open, 0, scr, 'tsel');
+      ui.guideSideRow(c, ACT.x, ACT.y + 64, 'Чистый вымысел', fiction.open ? (fiction.stars >= fiction.total ? '✓ ' : '') + '★ ' + fiction.stars + ' / ' + fiction.total : 'Закрыт', scr.tsel === 1, fiction.open, 1, scr, 'tsel');
+      if (scr.tsel === 1) { ui.guidePfView(c, fiction); return; }
       const b = ui.guideStage(c, cc => ui.fhBackdrop(cc));
       ui.text(t.name, b.x + b.w - 14, b.y + 14, { align: 'right', size: 16, bold: true, serif: true, col: C.gold });
       ui.text('Зал забвения · пройдено этапов: ' + t.cleared + ' из ' + H.FH.STAGES.length, b.x + b.w - 14, b.y + 38, { align: 'right', size: 10, col: C.cream });
@@ -602,11 +605,16 @@
       ui.text('Эхо Зала на этой неделе: ' + t.echo + ' из ' + t.echoMax, b.x + 14, b.y + 244, { size: 10, col: C.cream });
       ui.text('«Шутки сбываются»: обновление через ' + t.shopLeft + ' дн.', b.x + 14, b.y + 260, { size: 10, col: C.cream });
       if (!t.open) return;
+      ui.guideShopBtn(c, b);
+      ui.guideGoBig(c, b.x + 60, b.y + b.h - 40, b.w - 80, 'Перейти к испытанию', () => ui.guideEnter(t), true);
+    },
+
+    guideShopBtn(c, b) {
+      const ui = this;
       c.fillStyle = '#010208'; c.beginPath(); c.arc(b.x + 34, b.y + b.h - 27, 15, 0, Math.PI * 2); c.fill();
       c.fillStyle = '#e6dec8'; c.beginPath(); c.arc(b.x + 34, b.y + b.h - 27, 13, 0, Math.PI * 2); c.fill();
       G.menuIcon(c, 'bag', b.x + 23, b.y + b.h - 38, 22, PAPER.ink);
       ui.hit(b.x + 19, b.y + b.h - 42, 30, 30, () => ui.openFhShop(() => {}));
-      ui.guideGoBig(c, b.x + 60, b.y + b.h - 40, b.w - 80, 'Перейти к испытанию', () => ui.guideEnter(t), true);
     },
 
     guideCosmicKey(scr, k) {
@@ -617,10 +625,12 @@
     },
 
     guideTreasureKey(scr, k, code) {
-      const ui = this, g = this.game;
+      const ui = this, g = this.game, fiction = scr.tsel === 1;
+      if (k === 'up' || k === 'down') { scr.tsel = 1 - scr.tsel; ui.sfx('select'); return true; }
+      if (code === 'KeyF' && fiction) { ui.pfPaid(g.pfUnlocked() ? g.pfClaimAll() : []); return true; }
       if (code === 'KeyF') { const got = g.fhClaimAll(); if (!got.length) { ui.sfx('deny'); return true; } ui.sfx('chest'); ui.toast('Награды за звёзды: ' + got.join(', ')); return true; }
       if (code === 'KeyB') { ui.openFhShop(() => {}); return true; }
-      if (k === 'ok') { ui.guideEnter(g.guideTreasure()); return true; }
+      if (k === 'ok') { ui.guideEnter(fiction ? g.guidePf() : g.guideTreasure()); return true; }
       return false;
     },
 
@@ -775,7 +785,7 @@
           if (!lock && S[this.tab].id === 'index' && this.focus === 'rows' && H.GUIDE_INDEX[this.cat].id !== 'target') hints.push(['L', 'Испытание']);
           if (!lock && S[this.tab].id === 'daily') hints.push(['←→', 'Задача'], ['↑↓', 'Шкала'], ['Enter', 'Получить'], ['F', 'Всё']);
           if (!lock && S[this.tab].id === 'cosmic') hints.push(['↑↓', 'Мир'], ['Enter', 'Перейти']);
-          if (!lock && S[this.tab].id === 'treasure') hints.push(['Enter', 'Перейти'], ['B', 'Лавка'], ['F', 'Награды']);
+          if (!lock && S[this.tab].id === 'treasure') hints.push(['↑↓', 'Режим'], ['Enter', 'Перейти'], ['B', 'Лавка'], ['F', 'Награды']);
           ui.hints(hints.concat([['Esc', 'Закрыть']]), 12, HGT - 18);
         },
         key(k, code) {

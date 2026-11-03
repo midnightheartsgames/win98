@@ -12,9 +12,13 @@
   const pad2 = n => String(n).padStart(2, '0');
   const PROFILE_TABS = [{ id: 'rec', label: 'Боевые заслуги' }, { id: 'chars', label: 'Персонажи' }, { id: 'coll', label: 'Коллекции' }];
   const TAB_CHARS = PROFILE_TABS.findIndex(t => t.id === 'chars');
-  const REC_ICONS = { fh: 'ipg', su: 'nav', cw: 'shop', hd: 'team', boss: 'mission', warp: 'warp', time: 'events' };
+  const REC_ICONS = { fh: 'ipg', pf: 'archive', su: 'nav', cw: 'shop', hd: 'team', boss: 'mission', warp: 'warp', time: 'events' };
   const COLL_ICONS = { five: 'chars', four: 'team', cones: 'cones', outfits: 'outfit', pets: 'pet', foes: 'archive', fusions: 'synth', chests: 'bag' };
-  const REC_ROW = 38, COLL_ROW = 34, ROWS_Y = 48;
+  const ROW_LABEL = {
+    merit: { fh: 'Зал забвения', pf: 'Чистый вымысел', su: 'Виртуальная вселенная', cw: 'Валютные войны', hd: 'Рубеж Экспресса', boss: 'Боссов побеждено', warp: 'Прыжков', time: 'В пути' },
+    coll: { five: 'Персонажи 5★', four: 'Персонажи 4★', cones: 'Световые конусы', outfits: 'Наряды', pets: 'Питомцы', foes: 'Враги в Архиве', fusions: 'Слияния', chests: 'Сундуки' }
+  };
+  const REC_ROW = 36, COLL_ROW = 34, ROWS_Y = 48;
   const CARD_STOPS = [
     { id: 'avatar', x: 22, y: 50, w: 64, h: 64 },
     { id: 'name', x: 92, y: 50, w: 94, h: 24 },
@@ -25,14 +29,14 @@
   const FIRST_TAB_STOP = CARD_STOPS.length;
   const rowStops = (ids, row) => ids.map((rowId, i) => ({ id: 'row', rowId, i, x: 422, y: ROWS_Y + i * row, w: 200, h: row - 3 }));
   const SLOT_STOPS = [
-    { id: 'show', i: 0, x: 424, y: 64, w: 64, h: 100 },
-    { id: 'show', i: 1, x: 494, y: 64, w: 64, h: 100 },
-    { id: 'show', i: 2, x: 564, y: 64, w: 64, h: 100 },
-    { id: 'comp', i: 0, x: 424, y: 196, w: 36, h: 56 },
-    { id: 'comp', i: 1, x: 466, y: 196, w: 36, h: 56 },
-    { id: 'comp', i: 2, x: 508, y: 196, w: 36, h: 56 },
-    { id: 'comp', i: 3, x: 550, y: 196, w: 36, h: 56 },
-    { id: 'comp', i: 4, x: 592, y: 196, w: 36, h: 56 }
+    { id: 'show', i: 0, x: 424, y: 68, w: 62, h: 100 },
+    { id: 'show', i: 1, x: 491, y: 68, w: 62, h: 100 },
+    { id: 'show', i: 2, x: 558, y: 68, w: 62, h: 100 },
+    { id: 'comp', i: 0, x: 424, y: 201, w: 36, h: 56 },
+    { id: 'comp', i: 1, x: 464, y: 201, w: 36, h: 56 },
+    { id: 'comp', i: 2, x: 504, y: 201, w: 36, h: 56 },
+    { id: 'comp', i: 3, x: 544, y: 201, w: 36, h: 56 },
+    { id: 'comp', i: 4, x: 584, y: 201, w: 36, h: 56 }
   ];
   const TAB_STOPS = [
     CARD_STOPS.concat(rowStops(Object.keys(REC_ICONS), REC_ROW)),
@@ -98,9 +102,7 @@
 
   Object.assign(H.UI.prototype, {
     profileUid() {
-      const s = this.game.state, p = this.game.profile();
-      if (!p.uid) p.uid = String(70000000 + Math.floor(G.hash(s.name.length, s.name.charCodeAt(0), 7) * 9999999));
-      return p.uid;
+      return globalThis.Net98 ? globalThis.Net98.uid() : '700000000';
     },
 
     profileRoom() {
@@ -113,64 +115,83 @@
       return k === 'trail' ? g.state.name : kit.short || kit.name;
     },
 
+    profileSource() {
+      const ui = this, g = this.game, s = g.state, p = g.profile(), stage = g.profileStageHero();
+      const view = k => {
+        if (!k) return null;
+        const id = g.kitOf(k), kit = H.CHARS[id], r = s.roster[k];
+        return { look: G.lookOf(id, g), rarity: kit.rarity, elem: kit.elem, path: kit.path, title: ui.heroTitle(k), lvl: r.lvl, eid: r.eid };
+      };
+      return {
+        own: true, name: s.name, tl: s.tl.lvl, bday: p.bday, uid: ui.profileUid(), sign: p.sign, presence: null, view,
+        avatarLook: G.lookOf(g.kitOf(g.profileAvatar()), g), stageLook: G.lookOf(g.kitOf(stage), g), stageTitle: ui.heroTitle(stage),
+        log: p.log.map(e => ui.profileAgo(e.at) + ' ' + g.profileLogText(e)),
+        merits: () => g.profileMerits(), coll: () => g.profileCollections(), slot: (id, i) => view(g.profileSlots()[id][i])
+      };
+    },
+
+    friendRows(list, kind) {
+      return list.map(row => Object.assign({ label: ROW_LABEL[kind][row.id] || row.id }, row));
+    },
+
     profileCard(c, scr) {
-      const ui = this, g = this.game, s = g.state, p = g.profile(), avatar = g.profileAvatar();
+      const ui = this, d = scr.src;
       ui.win(12, 40, 180, 404, { top: '#2a1630', bottom: '#120a1c' });
-      ui.circlePortrait(c, G.lookOf(g.kitOf(avatar), g), 22, 50, 64, C.brassHi);
-      ui.text(ui.fitText(s.name, 15, 92, true), 94, 54, { size: 15, bold: true, serif: true, col: C.gold });
+      ui.circlePortrait(c, d.avatarLook, 22, 50, 64, C.brassHi);
+      const nameSize = ui.measure(d.name, 15, true, true) > 92 ? 11 : 15;
+      ui.text(ui.fitText(d.name, nameSize, 92, true), 94, nameSize === 15 ? 54 : 58, { size: nameSize, bold: true, serif: true, col: C.gold });
       c.fillStyle = C.brass; c.fillRect(94, 73, 88, 1);
       ui.text('Ур. Освоения', 94, 80, { size: 10, col: C.sub });
-      ui.text(String(s.tl.lvl), 94, 92, { size: 16, bold: true, serif: true, col: C.gold });
+      ui.text(String(d.tl), 94, 92, { size: 16, bold: true, serif: true, col: C.gold });
       ui.text('День рождения', 24, 126, { size: 10, col: C.sub });
-      ui.text(p.bday ? pad2(p.bday.d) + '.' + pad2(p.bday.m) : 'не указан', 180, 126, { size: 11, align: 'right', col: p.bday ? C.cream : C.dim });
+      ui.text(d.bday ? pad2(d.bday.d) + '.' + pad2(d.bday.m) : d.own ? 'не указан' : 'скрыт', 180, 126, { size: 11, align: 'right', col: d.bday ? C.cream : C.dim });
       ui.text('UID', 24, 148, { size: 10, col: C.sub });
-      ui.text(ui.profileUid(), 180, 148, { size: 11, align: 'right', col: C.cream });
+      ui.text(d.uid, 180, 148, { size: 11, align: 'right', col: C.cream });
       c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(20, 168, 164, 76);
       ui.text('Подпись', 26, 172, { size: 10, bold: true, col: C.sub });
-      if (p.sign) ui.wrap(p.sign, 150, 11).slice(0, 4).forEach((line, i) => ui.text(line, 26, 186 + i * 14, { size: 11, col: C.cream }));
+      if (d.sign) ui.wrap(d.sign, 150, 11).slice(0, 4).forEach((line, i) => ui.text(line, 26, 186 + i * 14, { size: 11, col: C.cream }));
       else ui.text('Пока пусто.', 26, 186, { size: 11, col: C.dim });
       ui.text('Успехи Освоения', 24, 256, { size: 11, bold: true, serif: true, col: C.gold });
       c.fillStyle = C.brass; c.fillRect(24, 272, 156, 1);
-      const log = p.log;
-      if (!log.length) ui.text('Записей пока нет.', 24, 280, { size: 10, col: C.dim });
+      if (!d.log.length) ui.text('Записей пока нет.', 24, 280, { size: 10, col: C.dim });
       let ly = 280;
-      for (const e of log) {
-        const lines = ui.wrap(ui.profileAgo(e.at) + ' ' + g.profileLogText(e), 156, 10).slice(0, 2);
+      for (const line0 of d.log) {
+        const lines = ui.wrap(line0, 156, 10).slice(0, 2);
         if (ly + lines.length * 12 > 438) break;
         lines.forEach((line, i) => ui.text(line, 24, ly + i * 12, { size: 10, col: C.cream }));
         ly += lines.length * 12 + 3;
       }
-      scr.stopHit(0); scr.stopHit(1); scr.stopHit(2); scr.stopHit(3);
+      if (d.own) { scr.stopHit(0); scr.stopHit(1); scr.stopHit(2); scr.stopHit(3); }
     },
 
     profileStage(c, scr) {
-      const ui = this, g = this.game, k = g.profileStageHero(), look = G.lookOf(g.kitOf(k), g);
+      const ui = this, d = scr.src;
       ui.platform(c, 308, 378, 58);
-      G.drawFigure(c, look, 308, 378, 3);
-      ui.text(ui.fitText(ui.heroTitle(k), 12, 200, true), 308, 400, { size: 12, bold: true, align: 'center', col: '#fff0c8' });
-      ui.button(222, 424, 172, 26, 'Разместить в комнате', () => { scr.sel = 4; scr.act(); }, { size: 11, active: scr.sel === 4 });
+      G.drawFigure(c, d.stageLook, 308, 378, 3);
+      ui.text(ui.fitText(d.stageTitle, 12, 200, true), 308, 400, { size: 12, bold: true, align: 'center', col: '#fff0c8' });
+      if (d.own) ui.button(222, 424, 172, 26, 'Разместить в комнате', () => { scr.sel = 4; scr.act(); }, { size: 11, active: scr.sel === 4 });
     },
 
-    profileSlot(c, k, st, big) {
-      const ui = this, g = this.game;
-      if (!k) {
+    profileSlot(c, v, st, big) {
+      const ui = this;
+      if (!v) {
         c.fillStyle = 'rgba(4,6,20,0.7)'; c.fillRect(st.x, st.y, st.w, st.h);
         c.strokeStyle = '#3a4070'; c.strokeRect(st.x + 0.5, st.y + 0.5, st.w - 1, st.h - 1);
         ui.text('+', st.x + st.w / 2, st.y + st.h / 2 - 9, { size: 16, align: 'center', col: C.dim });
         return;
       }
-      const kit = H.CHARS[g.kitOf(k)], r = g.state.roster[k], size = big ? 56 : 36;
-      G.rarityCell(c, st.x, st.y, st.w, st.h, kit.rarity);
-      G.drawPortrait(c, G.lookOf(g.kitOf(k), g), st.x + (st.w - size) / 2, st.y + (big ? 2 : 4), size);
-      c.fillStyle = H.ELEMENTS[kit.elem].col; c.fillRect(st.x + 2, st.y + 2, 4, 4);
+      const size = big ? 56 : 36;
+      G.rarityCell(c, st.x, st.y, st.w, st.h, v.rarity);
+      G.drawPortrait(c, v.look, st.x + (st.w - size) / 2, st.y + (big ? 2 : 4), size);
+      c.fillStyle = H.ELEMENTS[v.elem].col; c.fillRect(st.x + 2, st.y + 2, 4, 4);
       if (big) {
         c.fillStyle = 'rgba(4,6,20,0.8)'; c.fillRect(st.x, st.y + 60, st.w, 40);
-        ui.text(ui.fitText(ui.heroTitle(k), 10, st.w - 4, true), st.x + st.w / 2, st.y + 62, { size: 10, bold: true, align: 'center', col: C.cream });
-        ui.text('Ур. ' + r.lvl, st.x + st.w / 2, st.y + 75, { size: 10, align: 'center', col: C.gold });
-        ui.text('Эйдолон ' + r.eid, st.x + st.w / 2, st.y + 87, { size: 9, align: 'center', col: C.sub });
+        ui.text(ui.fitText(v.title, 10, st.w - 4, true), st.x + st.w / 2, st.y + 62, { size: 10, bold: true, align: 'center', col: C.cream });
+        ui.text('Ур. ' + v.lvl, st.x + st.w / 2, st.y + 75, { size: 10, align: 'center', col: C.gold });
+        ui.text('Эйдолон ' + v.eid, st.x + st.w / 2, st.y + 87, { size: 9, align: 'center', col: C.sub });
       } else {
         c.fillStyle = 'rgba(4,6,20,0.8)'; c.fillRect(st.x, st.y + 41, st.w, 15);
-        ui.text('Ур. ' + r.lvl, st.x + st.w / 2, st.y + 43, { size: 9, bold: true, align: 'center', col: C.gold });
+        ui.text('Ур. ' + v.lvl, st.x + st.w / 2, st.y + 43, { size: 9, bold: true, align: 'center', col: C.gold });
       }
     },
 
@@ -180,12 +201,13 @@
     },
 
     profileRec(c, scr) {
-      const ui = this, g = this.game;
+      const ui = this;
       ui.win(416, 40, 212, 296, { top: '#2a1630', bottom: '#120a1c' });
-      g.profileMerits().forEach((row, i) => {
+      scr.src.merits().forEach((row, i) => {
         const st = TAB_STOPS[scr.tab][FIRST_TAB_STOP + i];
+        if (!st) return;
         c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(st.x, st.y, st.w, st.h);
-        G.menuIcon(c, REC_ICONS[row.id], st.x + 4, st.y + 8, 20, row.open ? '#f0d8a0' : '#4c5070');
+        G.menuIcon(c, REC_ICONS[row.id] || 'guide', st.x + 4, st.y + 8, 20, row.open ? '#f0d8a0' : '#4c5070');
         ui.text(row.label, st.x + 30, st.y + 4, { size: 10, col: C.sub });
         ui.text(ui.fitText(row.value, 13, st.w - 36, true), st.x + 30, st.y + 17, { size: 13, bold: true, col: row.open ? C.gold : C.dim });
         scr.stopHit(FIRST_TAB_STOP + i);
@@ -193,13 +215,14 @@
     },
 
     profileColl(c, scr) {
-      const ui = this, g = this.game;
-      if (!scr.coll) scr.coll = g.profileCollections();
+      const ui = this;
+      if (!scr.coll) scr.coll = scr.src.coll();
       ui.win(416, 40, 212, 296, { top: '#2a1630', bottom: '#120a1c' });
       scr.coll.forEach((row, i) => {
-        const st = TAB_STOPS[scr.tab][FIRST_TAB_STOP + i], full = row.total > 0 && row.got >= row.total;
+        const st = TAB_STOPS[scr.tab][FIRST_TAB_STOP + i], full = st && row.total > 0 && row.got >= row.total;
+        if (!st) return;
         c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(st.x, st.y, st.w, st.h);
-        G.menuIcon(c, COLL_ICONS[row.id], st.x + 4, st.y + 6, 18, '#f0d8a0');
+        G.menuIcon(c, COLL_ICONS[row.id] || 'guide', st.x + 4, st.y + 6, 18, '#f0d8a0');
         ui.text(row.label, st.x + 28, st.y + 3, { size: 10, col: C.cream });
         ui.text(row.got + ' / ' + row.total, st.x + st.w - 6, st.y + 3, { size: 11, bold: true, align: 'right', col: full ? '#8fe08a' : C.gold });
         ui.rail(st.x + 28, st.y + 20, st.w - 36, row.total ? row.got / row.total : 0);
@@ -212,6 +235,7 @@
       const merit = g.profileMerits().find(row => row.id === id);
       if (merit && !merit.open) { closed(); return; }
       if (id === 'fh' || id === 'su') { ui.guideEnter({ kind: id, open: true }); return; }
+      if (id === 'pf') { ui.guideEnter(g.guidePf()); return; }
       if (id === 'cw' || id === 'hd') {
         if (g.state.su) { ui.sfx('deny'); ui.toast('Из Виртуальной вселенной сюда не попасть.'); return; }
         if (id === 'cw') ui.openCwHub(); else ui.openHdHub();
@@ -228,29 +252,30 @@
     },
 
     profileChars(c, scr) {
-      const ui = this, g = this.game, slots = g.profileSlots(), stops = TAB_STOPS[scr.tab], cur = stops[scr.sel], hero = scr.heroAt(scr.sel);
+      const ui = this, d = scr.src, stops = TAB_STOPS[scr.tab], cur = stops[scr.sel], v = scr.viewAt(scr.sel);
       ui.win(416, 40, 212, 296, { top: '#2a1630', bottom: '#120a1c' });
-      ui.text('Витрина', 424, 47, { size: 12, bold: true, serif: true, col: C.gold });
-      ui.text('Звёздные попутчики', 424, 178, { size: 12, bold: true, serif: true, col: C.gold });
+      ui.text('Витрина', 424, 50, { size: 12, bold: true, serif: true, col: C.gold });
+      ui.text('Звёздные попутчики', 424, 183, { size: 12, bold: true, serif: true, col: C.gold });
       stops.forEach((st, i) => {
         if (st.id !== 'show' && st.id !== 'comp') return;
-        ui.profileSlot(c, slots[st.id][st.i], st, st.id === 'show');
+        ui.profileSlot(c, d.slot(st.id, st.i), st, st.id === 'show');
         scr.stopHit(i);
       });
-      c.fillStyle = C.brass; c.fillRect(424, 260, 196, 1);
-      if (hero) {
-        const kit = H.CHARS[g.kitOf(hero)];
-        ui.text(ui.fitText(ui.heroTitle(hero), 12, 196, true), 424, 268, { size: 12, bold: true, col: C.cream });
-        ui.text(H.PATHS[kit.path].name + ' · ' + H.ELEMENTS[kit.elem].name, 424, 284, { size: 10, col: C.sub });
-        ui.text('Ур. ' + g.state.roster[hero].lvl + ' · Эйдолон ' + g.state.roster[hero].eid, 424, 298, { size: 10, col: C.sub });
-      } else if (cur.id === 'show' || cur.id === 'comp') ui.text('Свободное место. Enter выбирает героя.', 424, 268, { size: 10, col: C.dim });
+      c.fillStyle = C.brass; c.fillRect(424, 269, 196, 1);
+      if (v) {
+        ui.text(ui.fitText(v.title, 12, 196, true), 424, 278, { size: 12, bold: true, col: C.cream });
+        ui.text((v.path ? H.PATHS[v.path].name + ' · ' : '') + H.ELEMENTS[v.elem].name, 424, 294, { size: 10, col: C.sub });
+        ui.text('Ур. ' + v.lvl + ' · Эйдолон ' + v.eid, 424, 308, { size: 10, col: C.sub });
+      } else if (d.own && (cur.id === 'show' || cur.id === 'comp')) ui.text('Свободное место. Enter выбирает героя.', 424, 278, { size: 10, col: C.dim });
     },
 
     openProfile() {
       const ui = this, g = this.game;
       return this.push({
-        full: true, profile: true, sel: FIRST_TAB_STOP, tab: TAB_CHARS, coll: null,
+        full: true, profile: true, sel: FIRST_TAB_STOP, tab: TAB_CHARS, coll: null, src: null,
+        onClose() { if (ui.netCardDue) ui.netCardDue(); },
         stops() { return TAB_STOPS[this.tab]; },
+        viewAt(i) { const hero = this.heroAt(i); return hero ? this.src.view(hero) : null; },
         setTab(i) {
           if (i === this.tab) return;
           this.tab = i; this.sel = FIRST_TAB_STOP; this.coll = null;
@@ -277,6 +302,7 @@
           else ui.openProfilePick(st.id === 'show' ? 'Витрина' : 'Звёздные попутчики', g.profileSlots()[st.id][st.i], key => g.setProfileSlot(st.id, st.i, key), true);
         },
         draw(c) {
+          this.src = ui.profileSource();
           c.drawImage(ui.profileRoom(), 0, 0);
           ui.plate(12, 10, 'Профиль Первопроходца');
           PROFILE_TABS.forEach((t, i) => ui.button(290 + i * 106, 10, 102, 22, t.label, () => this.setTab(i), { size: 10, active: i === this.tab }));
@@ -305,8 +331,67 @@
       });
     },
 
+    openFriendProfile(row) {
+      const ui = this, n = globalThis.Net98, card = () => (row.solo ? H.FRIEND_TEXT.SOLO_CARD : n.cards[row.uid] || null);
+      if (!row.solo) n.send('cardOf', { uid: row.uid });
+      return this.push({
+        full: true, friendProfile: true, row, sel: FIRST_TAB_STOP, tab: TAB_CHARS, coll: null, src: null, confirm: false,
+        stops() { return TAB_STOPS[this.tab]; },
+        viewAt(i) { const st = this.stops()[i]; return st && (st.id === 'show' || st.id === 'comp') ? this.src.slot(st.id, st.i) : null; },
+        setTab(i) { if (i === this.tab) return; this.tab = i; this.sel = FIRST_TAB_STOP; this.coll = null; ui.sfx('select'); },
+        stopHit(i) {
+          const st = this.stops()[i];
+          if (i === this.sel) { const c = ui.ctx; c.strokeStyle = C.brassHi; c.lineWidth = 2; c.strokeRect(st.x, st.y, st.w, st.h); c.lineWidth = 1; }
+          ui.hit(st.x, st.y, st.w, st.h, () => { this.sel = i; ui.sfx('select'); });
+        },
+        invite() {
+          if (row.solo || !n.table || n.table.state !== 'lobby') { ui.sfx('deny'); ui.toast('Сначала сядьте за стол Рубежа'); return; }
+          n.send('invite', { uid: row.uid });
+        },
+        remove() {
+          if (row.solo) { ui.sfx('deny'); return; }
+          if (!this.confirm) { this.confirm = true; ui.sfx('deny'); return; }
+          n.send('unfriend', { uid: row.uid });
+          ui.pop();
+        },
+        draw(c) {
+          const data = card();
+          this.src = ui.cardSource(data, row);
+          if (data && !this.had) { this.had = true; this.coll = null; }
+          c.drawImage(ui.profileRoom(), 0, 0);
+          ui.plate(12, 10, 'Профиль: ' + this.src.name);
+          PROFILE_TABS.forEach((t, i) => ui.button(290 + i * 106, 10, 102, 22, t.label, () => this.setTab(i), { size: 10, active: i === this.tab }));
+          ui.closeBtn(W - 32, 10, () => this.key('back'));
+          ui.profileStage(c, this);
+          ui.profileCard(c, this);
+          ui.text(ui.fitText(this.src.presence, 10, 88), 94, 110, { size: 10, col: row.on ? '#a8f0b0' : C.dim });
+          if (PROFILE_TABS[this.tab].id === 'rec') ui.profileRec(c, this);
+          else if (PROFILE_TABS[this.tab].id === 'coll') ui.profileColl(c, this);
+          else ui.profileChars(c, this);
+          if (!data) ui.text('Загружаем карточку...', 308, 44, { size: 11, align: 'center', col: C.sub });
+          if (!row.solo) {
+            ui.button(120, 424, 84, 26, 'В гости', () => ui.visitGo(row), { size: 10 });
+            ui.button(210, 424, 104, 26, 'Позвать за стол', () => this.invite(), { size: 10 });
+            ui.button(320, 424, 84, 26, this.confirm ? 'Точно?' : 'Удалить', () => this.remove(), { size: 10 });
+          }
+          ui.hints(row.solo ? [['←↑↓→', 'Герой'], ['Q E', 'Вкладка'], ['Esc', 'Назад']] : [['←↑↓→', 'Герой'], ['Q E', 'Вкладка'], ['I', 'Позвать'], ['Del', 'Удалить'], ['Esc', 'Назад']], 14, HGT - 18);
+        },
+        key(k, code) {
+          if (code !== 'Delete') this.confirm = false;
+          if (k === 'back') { ui.pop(); return; }
+          if (code === 'KeyQ' || code === 'KeyE') { this.setTab((this.tab + (code === 'KeyE' ? 1 : PROFILE_TABS.length - 1)) % PROFILE_TABS.length); return; }
+          if (code === 'KeyI') { this.invite(); return; }
+          if (code === 'KeyG' && !row.solo) { ui.visitGo(row); return; }
+          if (code === 'Delete') { this.remove(); return; }
+          if (!DIRS[k]) return;
+          const list = this.stops().slice(FIRST_TAB_STOP), to = stopFrom(list, this.sel - FIRST_TAB_STOP, k) + FIRST_TAB_STOP;
+          if (to !== this.sel) { this.sel = to; ui.sfx('select'); }
+        }
+      });
+    },
+
     openProfilePick(title, cur, pick, canClear) {
-      const ui = this, g = this.game, keys = ui.rosterKeys(), X = 170, Y = 44, WID = 300, MAX = 12, ROW = 30;
+      const ui = this, g = this.game, keys = ui.rosterKeys().filter(k => !H.labOnly(k)), X = 170, Y = 44, WID = 300, MAX = 12, ROW = 30;
       const items = keys.map(k => ({
         label: ui.heroTitle(k), right: 'Ур. ' + g.state.roster[k].lvl, iconW: 30,
         icon: (c, x, y) => ui.circlePortrait(c, G.lookOf(g.kitOf(k), g), x, y - 13, 26, H.ELEMENTS[H.CHARS[g.kitOf(k)].elem].col),
@@ -344,10 +429,14 @@
       });
     },
 
+    openShortText(o) {
+      return this.openTextEntry(Object.assign({ max: 40, pages: TEXT_PAGES, cols: 11, read: textOfKey, okLabel: 'Готово', closeOnOk: true, okSfx: 'confirm' }, o));
+    },
+
     openProfileSign() {
       const g = this.game;
-      return this.openTextEntry({
-        title: 'Подпись', max: 40, pages: TEXT_PAGES, cols: 11, read: textOfKey, okLabel: 'Готово', closeOnOk: true, okSfx: 'confirm', value: g.profile().sign,
+      return this.openShortText({
+        title: 'Подпись', value: g.profile().sign,
         hint: 'До 40 знаков. Пустая подпись тоже подойдёт.',
         hints: [['Буквы', 'Ввод'], ['Backspace', 'Стереть'], ['←↑↓→', 'Сетка'], ['Enter', 'Нажать'], ['Esc', 'Назад']],
         submit: text => g.setProfileSign(text)

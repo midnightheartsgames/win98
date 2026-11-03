@@ -117,6 +117,7 @@ def main():
     global ART, MODULE, W, H, NAME
     ap = argparse.ArgumentParser()
     ap.add_argument('--phone', action='store_true', help='phone wallpaper: 268x464, content/hsr98/phone, hsr-phone-pix.js')
+    ap.add_argument('--splash', action='store_true', help='hero splash art: 200x280, content/hsr98/splash, hsr-splash-pix.js')
     ap.add_argument('key', nargs='?')
     ap.add_argument('image', nargs='?')
     ap.add_argument('--colors', type=int, default=48)
@@ -130,6 +131,11 @@ def main():
         MODULE = os.path.join(ROOT, 'js', 'apps', 'hsr98', 'hsr-phone-pix.js')
         W, H = 268, 464
         NAME = 'PHONE_PIX'
+    if a.splash:
+        ART = os.path.join(ROOT, 'content', 'hsr98', 'splash')
+        MODULE = os.path.join(ROOT, 'js', 'apps', 'hsr98', 'hsr-splash-pix.js')
+        W, H = 200, 280
+        NAME = 'SPLASH_PIX'
     os.makedirs(ART, exist_ok=True)
     if a.key and a.image:
         src = Image.open(a.image).convert('RGB')

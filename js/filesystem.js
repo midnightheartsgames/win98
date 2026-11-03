@@ -1,3 +1,6 @@
+const OLD_NETWORK_FOLDER = 'Старое сетевое окружение';
+const OLD_NETWORK_FILES = {"Entire Network": "", "Entire Network/WORKGROUP": "", "Entire Network/WORKGROUP/ADMIN-PC": "", "Entire Network/WORKGROUP/ADMIN-PC/SharedDocs": "", "Entire Network/WORKGROUP/ADMIN-PC/SharedDocs/LAN_PARTY_98.TXT": "3d178ecb", "ADMIN-PC": "", "ADMIN-PC/SharedDocs": "", "ADMIN-PC/SharedDocs/LAN_PARTY_98.TXT": "3d178ecb", "FILESERVER": "", "FILESERVER/Public": "", "FILESERVER/Public/NET_README.TXT": "f54a58c1", "FILESERVER/Public/WIN98_TIPS.TXT": "2222357", "FILESERVER/Drivers_98": "", "FILESERVER/Drivers_98/RTL8029.INF": "157ca0bf", "FILESERVER/Drivers_98/SB16AWE.INF": "3bdf2550", "FILESERVER/HP LaserJet 4L": "811c9dc5", "MISHA-PC": "", "MISHA-PC/DOOM_LAN": "", "MISHA-PC/DOOM_LAN/DWANGO5.TXT": "28f50fa2"};
+
 class VirtualFileSystem {
   constructor() {
     this.storageKey = 'win98_vfs_data';
@@ -325,6 +328,43 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     } catch (e) {
       console.warn('generateSamplePictures failed:', e);
       return {};
+    }
+  }
+
+  moveOldNetworkFiles(oldChildren) {
+    const fnv = text => { let h = 0x811c9dc5; for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h.toString(16); };
+    const found = [];
+    const walk = (kids, prefix) => {
+      for (const key of Object.keys(kids)) {
+        const node = kids[key], path = prefix ? prefix + '/' + key : key, known = OLD_NETWORK_FILES[path];
+        if (known === '' && node && node.children) { walk(node.children, path); continue; }
+        if (known != null && known !== '' && fnv(String(node && node.content != null ? node.content : '')) === known) continue;
+        found.push([key, node]);
+      }
+    };
+    walk(oldChildren, '');
+    const docs = this.resolvePath(['My Computer', 'C:', 'My Documents']);
+    if (!found.length || !docs || !docs.children) return;
+    const box = docs.children[OLD_NETWORK_FOLDER] || (docs.children[OLD_NETWORK_FOLDER] = { type: 'folder', name: OLD_NETWORK_FOLDER, icon: 'folder', children: {} });
+    for (const [key, node] of found) {
+      let name = key;
+      for (let i = 2; box.children[name]; i++) name = key + ' (' + i + ')';
+      box.children[name] = Object.assign({}, node, { name });
+    }
+  }
+
+  installNetworkNode() {
+    const kids = this.root.children;
+    const node = kids['Network Neighborhood'] || (kids['Network Neighborhood'] = { type: 'special', name: 'Network Neighborhood', icon: 'network', dynamic: true });
+    if (Object.getOwnPropertyDescriptor(node, 'toJSON')) return;
+    const old = !node.dynamic && node.children;
+    delete node.children;
+    node.dynamic = true;
+    Object.defineProperty(node, 'children', { enumerable: true, configurable: true, get: () => (typeof window !== 'undefined' && window.Net98Shell ? window.Net98Shell.children() : {}) });
+    Object.defineProperty(node, 'toJSON', { enumerable: false, value() { return { type: this.type, name: this.name, icon: this.icon, dynamic: true }; } });
+    if (old) {
+      this.moveOldNetworkFiles(old);
+      this.saveToStorage();
     }
   }
 
@@ -979,7 +1019,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           games.children['BLISS.EXE'] = { type: 'executable', name: 'BLISS.EXE', icon: 'bliss', app: 'bliss' };
         }
         const gmInstalled = (window.gameManager && window.gameManager.state)
-          ? window.gameManager.state.installed
+          ? window.gameManager.state.installed.filter(id => !(window.gameManager.isHidden && window.gameManager.isHidden(id)))
           : ['minesweeper'];
 
         if (!gmInstalled.includes('wolf3d') && games.children['WOLF3D.EXE']) {
@@ -1318,13 +1358,15 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
-        if (!gmInstalled.includes('plov') && games.children['HayatoPlov']) {
-          delete games.children['HayatoPlov'];
-        } else if (gmInstalled.includes('plov') && !games.children['HayatoPlov']) {
-          games.children['HayatoPlov'] = {
-            type: 'folder', name: 'HayatoPlov', icon: 'folder', children: {
+        Object.keys(games.children).filter(k => {
+          const c = games.children[k].children;
+          return c && c['PLOV.EXE'] && c['PLOV.EXE'].app === 'plov' && (k !== 'Plov' || !gmInstalled.includes('plov'));
+        }).forEach(k => delete games.children[k]);
+        if (gmInstalled.includes('plov') && !games.children['Plov']) {
+          games.children['Plov'] = {
+            type: 'folder', name: 'Plov', icon: 'folder', children: {
               'PLOV.EXE': { type: 'executable', name: 'PLOV.EXE', icon: 'plov', app: 'plov' },
-              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Хаято, Где плов?\r\n==================================\r\nKishlak Soft (2000) - Win 98 Edition, 800x600, 16-bit color\r\n\r\nControls:\r\n[Left Click] - Walk and act, clicks queue up to five jobs   [Right Click]/[Q] - Cancel the jobs\r\n[Drag] - Drag guests from the gate to a table   [Tab] - Pick guests in the line   [1-6] - Seat them at table N\r\n[W/A/S/D]/[Arrows] - Walk   [Space]/[E] - Use what is next to you   [Esc]/[P] - Pause\r\n\r\nKeep the kazan busy: meat, carrots with onion, rice, then steam.\r\nGroups of three and four sit only on the topchans. Tea brews two pots at a time.\r\nA quarter of every day goes to the savings box. Spend it at the bazaar.' }
+              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Где плов?\r\n==================================\r\nKishlak Soft (2000) - Win 98 Edition, 800x600, 16-bit color\r\n\r\nControls:\r\n[Left Click] - Walk and act, clicks queue up to five jobs   [Right Click]/[Q] - Cancel the jobs\r\n[Drag] - Drag guests from the gate to a table   [Tab] - Pick guests in the line   [1-6] - Seat them at table N\r\n[W/A/S/D]/[Arrows] - Walk   [Space]/[E] - Use what is next to you   [Esc]/[P] - Pause\r\n\r\nKeep the kazan busy: meat, carrots with onion, rice, then steam.\r\nGroups of three and four sit only on the topchans. Tea brews two pots at a time.\r\nA quarter of every day goes to the savings box. Spend it at the bazaar.' }
             }
           };
         }
@@ -1502,20 +1544,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
         this.saveToStorage();
       }
 
-      if (this.root && this.root.children) {
-        if (!this.root.children['Network Neighborhood']) {
-          this.root.children['Network Neighborhood'] = {
-            type: 'special',
-            name: 'Network Neighborhood',
-            icon: 'network',
-            children: this.getDefaultNetworkTree()
-          };
-          this.saveToStorage();
-        } else if (!this.root.children['Network Neighborhood'].children || Object.keys(this.root.children['Network Neighborhood'].children).length === 0) {
-          this.root.children['Network Neighborhood'].children = this.getDefaultNetworkTree();
-          this.saveToStorage();
-        }
-      }
+      if (this.root && this.root.children) this.installNetworkNode();
 
       if (games && games.children && !games.children['MSHEARTS.EXE']) {
         games.children['MSHEARTS.EXE'] = { type: 'executable', name: 'MSHEARTS.EXE', icon: 'hearts', app: 'hearts' };
@@ -2352,162 +2381,6 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     };
   }
 
-  getDefaultNetworkTree() {
-    return {
-      'Entire Network': {
-        type: 'folder',
-        name: 'Entire Network',
-        icon: 'network-group',
-        comment: 'Вся сеть (Microslop Network)',
-        children: {
-          'WORKGROUP': {
-            type: 'folder',
-            name: 'WORKGROUP',
-            icon: 'network-group',
-            comment: 'Рабочая группа офиса и дома',
-            children: {
-              'ADMIN-PC': {
-                type: 'folder',
-                name: 'ADMIN-PC',
-                icon: 'network-pc',
-                comment: 'Pentium II 350MHz (Главный ПК)',
-                children: {
-                  'SharedDocs': {
-                    type: 'folder',
-                    name: 'SharedDocs',
-                    icon: 'folder-shared',
-                    comment: 'Общие документы',
-                    children: {
-                      'LAN_PARTY_98.TXT': {
-                        type: 'file',
-                        name: 'LAN_PARTY_98.TXT',
-                        icon: 'file-txt',
-                        app: 'notepad',
-                        size: '2 KB',
-                        content: '=== СПИСОК НА СУББОТНИЙ LAN-ТУРНИР (ОКТЯБРЬ 1998) ===\r\n1. DOOM II / Quake II Deathmatch (IPX/SPX и TCP/IP 192.168.0.x)\r\n2. Червы (The Microslop Hearts Network) — стол создаёт Мишка!\r\n3. Не забыть коаксиальный Т-коннектор BNC и два терминатора 50 Ом!'
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      'ADMIN-PC': {
-        type: 'folder',
-        name: 'ADMIN-PC',
-        icon: 'network-pc',
-        comment: 'Pentium II 350MHz (Этот компьютер)',
-        children: {
-          'SharedDocs': {
-            type: 'folder',
-            name: 'SharedDocs',
-            icon: 'folder-shared',
-            comment: 'Общие документы',
-            children: {
-              'LAN_PARTY_98.TXT': {
-                type: 'file',
-                name: 'LAN_PARTY_98.TXT',
-                icon: 'file-txt',
-                app: 'notepad',
-                size: '2 KB',
-                content: '=== СПИСОК НА СУББОТНИЙ LAN-ТУРНИР (ОКТЯБРЬ 1998) ===\r\n1. DOOM II / Quake II Deathmatch (IPX/SPX и TCP/IP 192.168.0.x)\r\n2. Червы (The Microslop Hearts Network) — стол создаёт Мишка!\r\n3. Не забыть коаксиальный Т-коннектор BNC и два терминатора 50 Ом!'
-              }
-            }
-          }
-        }
-      },
-      'FILESERVER': {
-        type: 'folder',
-        name: 'FILESERVER',
-        icon: 'network-pc',
-        comment: 'Файловый сервер 10Base-T (192.168.0.2)',
-        children: {
-          'Public': {
-            type: 'folder',
-            name: 'Public',
-            icon: 'folder-shared',
-            comment: 'Общий файлообменник',
-            children: {
-              'NET_README.TXT': {
-                type: 'file',
-                name: 'NET_README.TXT',
-                icon: 'file-txt',
-                app: 'notepad',
-                size: '3 KB',
-                content: 'Сервер рабочей группы WORKGROUP (Win NT 4.0 / Samba)\r\nIP-адрес: 192.168.0.2\r\nМаска подсети: 255.255.255.0\r\nСетевой принтер: \\\\FILESERVER\\HP_LaserJet_4L'
-              },
-              'WIN98_TIPS.TXT': {
-                type: 'file',
-                name: 'WIN98_TIPS.TXT',
-                icon: 'file-txt',
-                app: 'notepad',
-                size: '4 KB',
-                content: 'Полезные команды «Выполнить» в Win 98 SE:\r\n- winipcfg  (конфигурация IP)\r\n- msinfo32  (сведения о системе)\r\n- sfc       (проверка системных файлов)\r\n- scanregw  (проверка реестра)\r\n- drvspace  (уплотнение диска DriveSpace 3)\r\n- mshearts  (сетевая карточная игра Червы)'
-              }
-            }
-          },
-          'Drivers_98': {
-            type: 'folder',
-            name: 'Drivers_98',
-            icon: 'folder-shared',
-            comment: 'Драйверы 3dfx, Sound Blaster и Realtek',
-            children: {
-              'RTL8029.INF': {
-                type: 'file',
-                name: 'RTL8029.INF',
-                icon: 'file-txt',
-                app: 'notepad',
-                size: '5 KB',
-                content: '[Version]\r\nSignature="$CHICAGO$"\r\nClass=Net\r\nProvider=%Realtek%\r\nDriverVer=05/11/1998,4.10.1998\r\nAdapter=Realtek RTL8029(AS) PCI Ethernet Adapter'
-              },
-              'SB16AWE.INF': {
-                type: 'file',
-                name: 'SB16AWE.INF',
-                icon: 'file-txt',
-                app: 'notepad',
-                size: '4 KB',
-                content: '[Version]\r\nSignature="$CHICAGO$"\r\nClass=MEDIA\r\nAdapter=Creative Sound Blaster 16 / AWE64 PnP (A220 I5 D1 H5 P330)'
-              }
-            }
-          },
-          'HP LaserJet 4L': {
-            type: 'action',
-            name: 'HP LaserJet 4L',
-            icon: 'printer',
-            action: 'printers-folder',
-            comment: 'Сетевой лазерный принтер LPT1'
-          }
-        }
-      },
-      'MISHA-PC': {
-        type: 'folder',
-        name: 'MISHA-PC',
-        icon: 'network-pc',
-        comment: 'Компьютер Мишки (кв. 42, коаксиал RG-58)',
-        children: {
-          'DOOM_LAN': {
-            type: 'folder',
-            name: 'DOOM_LAN',
-            icon: 'folder-shared',
-            comment: 'Карты и конфиги для игры по сетке',
-            children: {
-              'DWANGO5.TXT': {
-                type: 'file',
-                name: 'DWANGO5.TXT',
-                icon: 'file-txt',
-                app: 'notepad',
-                size: '2 KB',
-                content: 'Лёха, заходи в Червы (MSHEARTS.EXE) или запускай DOOM по IPX!\r\nМой IP: 192.168.0.15, карточка Realtek 8029 на 10 Мбит/с.'
-              }
-            }
-          }
-        }
-      }
-    };
-  }
-
   getDefaultTree() {
     return {
       type: 'root',
@@ -2910,7 +2783,7 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           type: 'special',
           name: 'Network Neighborhood',
           icon: 'network',
-          children: this.getDefaultNetworkTree()
+          dynamic: true
         },
         'Recycle Bin': {
           type: 'recycle',
@@ -3046,7 +2919,6 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
     if (name === 'Passwords' || key === 'Passwords') return isEn ? 'Passwords' : 'Пароли';
     if (name === 'Users' || key === 'Users') return isEn ? 'Users' : 'Пользователи';
     if (name === 'Scheduled Tasks' || key === 'Scheduled Tasks') return isEn ? 'Scheduled Tasks' : 'Назначенные задания';
-    if (name === 'Entire Network' || key === 'Entire Network') return isEn ? 'Entire Network' : 'Вся сеть';
     return name;
   }
 
@@ -3222,7 +3094,9 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
       name: item.name,
       icon: restoredIcon,
       app: restoredApp,
-      content: item.content || ''
+      content: item.content || '',
+      ...(item.children ? { children: item.children } : {}),
+      ...(item.isShortcut ? { isShortcut: true } : {})
     };
 
     bin.items.splice(itemIndex, 1);
@@ -3296,7 +3170,9 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
           content: item.content || '',
           icon: item.icon || 'file-txt',
           app: item.app || null,
-          type: item.type || 'file'
+          type: item.type || 'file',
+          ...(item.children ? { children: item.children } : {}),
+          ...(item.isShortcut ? { isShortcut: true } : {})
         });
         bin.icon = 'recycle-bin';
       }

@@ -306,7 +306,7 @@
     if (id === 'plov') {
       label(ctx, 'Казан', 218, 70, { size: 18, serif: true, color: '#6a1e1a', font: 'bold 18px ' + SERIF });
       let y = 92;
-      y += step(ctx, X2, y, 1, 'Пустой казан: щелчок, и Хаято раскалит масло и заложит мясо. Мясо жарится само.', (c, x, yy) => I.glyph(c, 'meat', x, yy + 4, 28));
+      y += step(ctx, X2, y, 1, 'Пустой казан: щелчок, и ошпаз раскалит масло и заложит мясо. Мясо жарится само.', (c, x, yy) => I.glyph(c, 'meat', x, yy + 4, 28));
       y += step(ctx, X2, y, 2, 'Пока мясо жарится, нарежьте на доске морковь с луком. Мясо подрумянилось? Кладите в казан.', (c, x, yy) => I.food(c, 'veg', x, yy + 5, 28));
       y += step(ctx, X2, y, 3, 'Зирвак протомился: щелчок по казану, и туда идут рис и зира.', (c, x, yy) => I.glyph(c, 'rice', x, yy + 4, 28));
       y += step(ctx, X2, y, 4, 'Плов томится под крышкой, потом из казана выходит 8 ляганов. Каждый щелчок даёт один.', (c, x, yy) => I.food(c, 'plov', x, yy + 5, 30));
@@ -337,8 +337,8 @@
       y += step(ctx, X2, y, 3, 'Из корзины берут по одной штуке. В корзине помещается восемь.', null);
       label(ctx, 'Ачичук', 582, 70, { size: 18, serif: true, color: '#6a1e1a', font: 'bold 18px ' + SERIF });
       let y2 = 92;
-      y2 += step(ctx, X + 4, y2, 1, 'Помидоры, лук, соль, райхон. Хаято режет на второй доске сам, стоя на месте.', (c, x, yy) => I.food(c, 'achichuk', x, yy + 5, 30));
-      y2 += para(ctx, X, y2 + 6, 'Пока Хаято режет, он не может ничего носить. Режьте, когда гости едят или ждут чай.');
+      y2 += step(ctx, X + 4, y2, 1, 'Помидоры, лук, соль, райхон. Ошпаз режет на второй доске, стоя на месте.', (c, x, yy) => I.food(c, 'achichuk', x, yy + 5, 30));
+      y2 += para(ctx, X, y2 + 6, 'Пока ошпаз режет, руки заняты. Режьте, когда гости едят или ждут чай.');
       return;
     }
     if (id === 'guests') {
@@ -458,7 +458,7 @@
         ctx.closePath(); ctx.fill(); ctx.strokeStyle = '#c8bca0'; ctx.lineWidth = 1; ctx.stroke();
         const mono = '"Courier New", Courier, monospace';
         const tx = (s, yy, opts = {}) => label(ctx, s, opts.x || 400, yy, Object.assign({ size: 13, color: '#2a2a2a', font: (opts.bold ? 'bold ' : '') + (opts.size || 13) + 'px ' + mono }, opts));
-        tx('ЧАЙХАНА «У ХАЯТО»', y + 30, { bold: true, size: 16 });
+        tx('ЧАЙХАНА «ГДЕ ПЛОВ?»', y + 30, { bold: true, size: 16 });
         tx('махалля Ширин, касса № 1', y + 50, { size: 11 });
         tx('─'.repeat(30), y + 64, { size: 11 });
         tx('ДЕНЬ ' + arg.day + ': ' + L.title.toUpperCase(), y + 82, { bold: true });
@@ -501,7 +501,7 @@
         }
         if (t > 2.4) {
           A.shadow(ctx, 140, 422, 48, 10, 0.35);
-          A.drawCharHD(ctx, A.HAYATO, { dir: 'down', act: 'stand', arm: res.passed ? 'carry' : null, frame: 0, expr: res.passed ? 'happy' : 'impatient' }, 140, 420, 3.2);
+          A.drawCharHD(ctx, A.CHEF, { dir: 'down', act: 'stand', arm: res.passed ? 'carry' : null, frame: 0, expr: res.passed ? 'happy' : 'impatient' }, 140, 420, 3.2);
           if (res.passed) I.food(ctx, 'plov', 140, 342, 70);
           ctx.font = 'italic 13px ' + SERIF; ctx.fillStyle = '#f8e8c0'; ctx.textAlign = 'center';
           const say = res.stars >= 3 ? 'Бахтиёр-ака доволен: «Вот это плов!»' : res.passed ? 'Бахтиёр-ака кивает: «Яхши, болам».' : 'Бахтиёр-ака: «Ничего. Завтра казан раньше ставь».';
@@ -532,10 +532,9 @@
     const sparks = [];
     const r = P.rng(2000);
     const credits = [
-      ['Хаято, Где плов?', 30], ['', 10],
+      ['Где плов?', 30], ['', 10],
       ['Сезон в чайхане закрыт.', 16], ['Десять дней, сотни ляганов, ни одного холодного чайника.', 14], ['', 12],
-      ['Ошпаз', 13], ['Хаято', 18], ['', 8],
-      ['Наставник', 13], ['Бахтиёр-ака', 18], ['', 8],
+            ['Наставник', 13], ['Бахтиёр-ака', 18], ['', 8],
       ['Разработка', 13], ['Kishlak Soft, 2000', 18], ['', 8],
       ['Узоры', 13], ['икат, сюзане и риштанская керамика', 16], ['сгенерированы программой, каждый по своему семени', 13], ['', 8],
       ['Музыка', 13], ['дойра и дутар из синтезатора', 16], ['', 12],
@@ -564,7 +563,7 @@
         for (let i = 0; i < 24; i++) { const x = i * 34 + 10; const y = 60 + Math.sin(i / 23 * Math.PI) * 25; A.ell(ctx, x, y + 4, 4, 5, cols[i % 4], '#2a1a0c', 0.8); ctx.globalAlpha = 0.25 + 0.2 * Math.sin(t * 4 + i); A.ell(ctx, x, y + 4, 10, 10, cols[i % 4], null); ctx.globalAlpha = 1; }
         O.basketweave(ctx, 0, 470, W, 130, 7, { brick: 14 });
         ctx.fillStyle = 'rgba(20,10,30,0.45)'; ctx.fillRect(0, 470, W, 130);
-        A.drawCharHD(ctx, A.HAYATO, { dir: 'down', act: 'stand', arm: 'carry', frame: 0, expr: 'happy' }, 170, 520, 3.6);
+        A.drawCharHD(ctx, A.CHEF, { dir: 'down', act: 'stand', arm: 'carry', frame: 0, expr: 'happy' }, 170, 520, 3.6);
         ctx.save(); ctx.translate(170, 520); ctx.scale(3.6, 3.6);
         const gg = ctx.createLinearGradient(-12, -26, 12, -12);
         gg.addColorStop(0, '#fff2a0'); gg.addColorStop(0.5, '#ffd23a'); gg.addColorStop(1, '#c88a10');

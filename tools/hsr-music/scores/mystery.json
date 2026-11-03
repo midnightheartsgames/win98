@@ -1,0 +1,45 @@
+{
+  "name": "Mystery",
+  "out": "content/music/hsr98-mystery.mid",
+  "bpm": 76,
+  "time": [4, 4],
+  "seed": 76,
+  "form": ["A", "B"],
+  "loop": [0, 2],
+  "parts": {
+    "piano": { "ch": 0, "prog": 0, "vol": 80, "pan": 60, "rev": 75, "vel": 70 },
+    "celesta": { "ch": 1, "prog": 8, "vol": 127, "pan": 74, "rev": 85, "vel": 112 },
+    "violin": { "ch": 2, "prog": 40, "vol": 112, "pan": 70, "rev": 75, "vel": 104, "gate": 0.98 },
+    "cello": { "ch": 3, "prog": 42, "vol": 90, "pan": 50, "rev": 50, "vel": 84, "gate": 1 },
+    "pad": { "ch": 4, "prog": 91, "vol": 90, "pan": 64, "rev": 90, "vel": 80 },
+    "sub": { "ch": 5, "prog": 39, "vol": 84, "pan": 64, "rev": 0, "vel": 92, "gate": 1 },
+    "riser": { "ch": 6, "prog": 119, "vol": 80, "pan": 64, "rev": 60, "vel": 100, "gate": 1 },
+    "drums": { "drums": true, "vol": 80, "rev": 55, "vel": 70 }
+  },
+  "sections": {
+    "A": {
+      "bars": 8,
+      "chords": "F#m9 | Dmaj9 | Bm9 | C#7sus4 C#7 | F#m9 | Dmaj9 | G#m7b5 | C#7b9",
+      "expr": { "pad": 90 },
+      "piano": { "type": "arp", "rhythm": "x.x.x.x.x.x.x.x.", "voices": 4, "center": 76, "order": [0, 2, 1, 3], "len": 4 },
+      "celesta": "G#5:6 A5:2 C#6:8 | E6:6 C#6:2 A5:8 | F#5:6 A5:2 C#6:4 B5:4 | F#5:8 E#5:8 | G#5:6 A5:2 C#6:4 E6:4 | F#6:8 E6:4 C#6:4 | D6:6 B5:2 G#5:8 | E#5:8 D5:4 C#5:4",
+      "cello": { "type": "bass", "rhythm": "x---------------", "seq": "1", "low": 36 },
+      "pad": { "type": "pad", "voices": 3, "center": 57 },
+      "sub": "F#1:16 | .:16 | .:16 | .:16 | F#1:16 | .:16 | .:16 | .:16",
+      "drums": { "once": { "boom": "x..............." } }
+    },
+    "B": {
+      "bars": 8,
+      "chords": "Amaj7 | G#m7 | F#m9 | Emaj7#11 | Dmaj7#11 | C#m7 | Bm9 | C#7sus4 C#7",
+      "expr": { "pad": [90, 120] },
+      "piano": { "type": "arp", "rhythm": "x.x.x.x.x.x.x.x.", "voices": 4, "center": 76, "order": [0, 2, 1, 3], "len": 4 },
+      "violin": "G#5:8 E5:4 C#5:4 | D#5:8 F#5:4 B5:4 | A5:6 G#5:2 E5:8 | A#5:8 G#5:4 D#5:4 | G#5:8 F#5:4 C#5:4 | E5:6 G#5:2 B5:8 | C#6:8 A5:4 F#5:4 | F#5:8 E#5:8",
+      "celesta": { "type": "arp", "rhythm": "........x.......", "voices": 3, "center": 88, "order": "down", "len": 8, "vel": 80 },
+      "cello": { "type": "bass", "rhythm": "x---------------", "seq": "1", "low": 36 },
+      "pad": { "type": "pad", "voices": 3, "center": 57 },
+      "sub": ".:16 | .:16 | .:16 | .:16 | D2:16 | .:16 | .:16 | .:16",
+      "riser": ".:16 | .:16 | .:16 | .:16 | .:16 | .:16 | .:16 | .:8 C5:8",
+      "drums": { "pedal": "o...o...o...o..." }
+    }
+  }
+}

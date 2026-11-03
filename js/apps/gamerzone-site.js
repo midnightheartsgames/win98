@@ -23,7 +23,7 @@
     { key: 'action', name: '3D Action / Шутеры', about: 'DOOM, Quake, Half-Life, GTA и всё, что стреляет или бьёт ногой.', mod: 'BJ_Blazkowicz', icon: 'joy' },
     { key: 'rpg', name: 'RPG / Квесты', about: 'Fallout, Diablo, KOTOR, Sam & Max, Зона и все, кто любит читать диалоги.', mod: 'Chosen_One', icon: 'book' },
     { key: 'strategy', name: 'Стратегии', about: 'StarCraft, «Герои», Legion Arena, Dota и LoL против ботов.', mod: 'Zealot_Rush', icon: 'crown' },
-    { key: 'sim', name: 'Гонки и симуляторы', about: 'Forza, Midnight Glide, The Sims 3, Minecraft и плов у Хаято.', mod: 'Lenka_Pixel', icon: 'rocket' },
+    { key: 'sim', name: 'Гонки и симуляторы', about: 'Forza, Midnight Glide, The Sims 3 и Minecraft.', mod: 'Lenka_Pixel', icon: 'rocket' },
     { key: 'codes', name: 'Читы и секреты', about: 'Коды, меню F7 и открываемые бойцы. Сначала посмотри на www.cheatcc.com.', mod: 'Krot_Tester', icon: 'bolt' },
     { key: 'hard', name: 'Железо и Модемы', about: 'Voodoo, TNT, разгон Celeron и как дозвониться до провайдера.', mod: 'Overclock_98', icon: 'pc' }
   ];
@@ -322,14 +322,6 @@
       ['Kolya_Celeron', '20.11.1998 21:40', 'Как добавить этаж?'],
       ['Lenka_Pixel', '20.11.1998 21:55', 'Режим строительства (F3), этажи переключаются Page Up и Page Down.'],
       ['Krot_Tester', '21.11.1998 10:00', 'Деньги ищите на F7 в режиме жизни. Там же погода и время суток. Но вы этого не слышали.']
-    ]),
-    T(39, 'sim', '«Хаято, где плов?»: рецепт из игры против бабушкиного', 560, {}, [
-      ['Tashkent_Chef', '21.11.1998 20:00', '«Хаято, где плов?» это игра про чайхану в ташкентской махалле. Я сам ошпаз, проверил рецепт: мясо, обжарка, морковь с луком, зирвак, рис, томление. Порядок правильный!'],
-      ['Lenka_Pixel', '21.11.1998 20:30', 'А почему у меня всё сгорает?'],
-      ['Tashkent_Chef', '21.11.1998 20:45', 'Морковь с луком надо положить в казан за 14 секунд после обжарки, а рис за 16 после зирвака. Опоздала, и казан горит. Нарезай морковь на доске заранее.'],
-      ['CyberDemon98', '22.11.1998 13:20', 'Гостей сажайте на топчаны, туда садятся по четверо.'],
-      ['Tashkent_Chef', '22.11.1998 14:00', 'В жизни плов томится не десять секунд, а сорок минут. Но это уже не игра :)'],
-      ['Lenka_Pixel', '30.11.1998 22:10', 'Прошла все десять дней! На базаре купила всё, что было.']
     ]),
     T(40, 'sim', 'Midnight Glide: Vandal V8 против Spark RS', 340, {}, [
       ['Kolya_Celeron', '15.11.1998 21:00', 'Midnight Glide: ночные гонки, неон. На Neon District взял Vandal V8, его заносит в каждом повороте.'],

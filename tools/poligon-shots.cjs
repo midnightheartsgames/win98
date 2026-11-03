@@ -15,7 +15,19 @@ const SCRIPTS = [
   'js/apps/poligon/clip-neck-hurts.js',
   'js/apps/poligon/clip-war-song.js',
   'js/apps/poligon/ccc-cast.js',
-  'js/apps/poligon/clip-ccc.js'
+  'js/apps/poligon/clip-ccc.js',
+  'js/apps/poligon/gk-cast.js',
+  'js/apps/poligon/clip-god-knows.js',
+  'js/apps/poligon/uts-cast.js',
+  'js/apps/poligon/clip-uhn-tiss.js',
+  'js/apps/poligon/step-cast.js',
+  'js/apps/poligon/clip-step.js',
+  'js/apps/poligon/radio-cast.js',
+  'js/apps/poligon/clip-radio-star.js',
+  'js/apps/poligon/rc-cast.js',
+  'js/apps/poligon/clip-romeo.js',
+  'js/apps/poligon/hello-cast.js',
+  'js/apps/poligon/clip-hello.js'
 ];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const randomPort = (lo, span) => lo + Math.floor(Math.random() * span);

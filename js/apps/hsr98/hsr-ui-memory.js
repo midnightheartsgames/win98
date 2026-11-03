@@ -621,8 +621,8 @@
           ui.wrap(d.text, 176, 11).forEach((l, i) => ui.text(l, 436, 152 + i * 14, { size: 11, col: C.cream }));
           ui.text('ОЗ ' + d.stats.hp + ' · Атака ' + d.stats.atk + ' · Защита ' + d.stats.def, 436, 250, { size: 10, col: C.sub });
           ui.text('Есть: ' + (r.own ? 'S' + r.own : 'нет'), 436, 268, { size: 10, col: r.own ? C.ok : C.sub });
-          ui.text('Сияющий отсвет дают этапы Зала забвения', 436, 330, { size: 9, col: C.sub });
-          ui.text('и Эхо войны (3 раза в неделю).', 436, 342, { size: 9, col: C.sub });
+          ui.text('Сияющий отсвет дают этапы Зала забвения,', 436, 330, { size: 9, col: C.sub });
+          ui.text('Чистый вымысел и Эхо войны.', 436, 342, { size: 9, col: C.sub });
           ui.button(436, 360, 176, 26, 'Купить · 200', () => buy(this), { active: r.afford, disabled: !r.afford, bold: true });
         },
         drawJokes(c) {
@@ -659,7 +659,7 @@
           ui.text('Смола: ' + resin, 436, 262, { size: 11, bold: true, col: resin ? C.gold : C.sub });
           ui.button(436, 280, 176, 26, 'Синтез реликвий', () => ui.openSynth(null, 3, { resin: true }), { disabled: !g.relicCraftOpen(), size: 11 });
           ui.text('Лавка обновляется раз в ' + FH.TUN.shopDays + ' дня.', 436, 318, { size: 9, col: C.sub });
-          ui.text('Нефритовые перья дают награды за звёзды.', 436, 330, { size: 9, col: C.sub });
+          ui.text('Перья дают звёзды Зала и Чистого вымысла.', 436, 330, { size: 9, col: C.sub });
         },
         key(k, code) {
           const tab = TABS[this.tab], n = g.fhShop(tab).length;

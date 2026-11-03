@@ -1,3 +1,9 @@
+const DESKTOP_FOLDERS = [
+  { ru: 'Развлечение', en: 'Entertainment', icons: ['neko', 'minesweeper', 'freecell', 'icq', 'winamp', 'solitaire', 'pinball', 'bliss'] },
+  { ru: 'Программы', en: 'Programs', icons: ['winrar', 'paint', 'notepad', 'wordpad', 'calc', 'outlook'] }
+];
+const DESKTOP_FOLDER_ICON_IDS = DESKTOP_FOLDERS.flatMap(folder => folder.icons);
+
 class Desktop {
   constructor() {
     this.desktopEl = document.getElementById('desktop');
@@ -28,8 +34,36 @@ class Desktop {
       window.i18n.addListener(() => this.renderIcons());
     }
 
+    this.ensureDesktopFolders();
     this.renderIcons();
     this.initEvents();
+  }
+
+  ensureDesktopFolders() {
+    const vfs = window.vfs;
+    if (!vfs || !vfs.root || !vfs.root.children || vfs.root.desktopFoldersCreated) return;
+    const baseIcons = this.getBaseIcons();
+    const language = window.i18n && window.i18n.getLanguage() === 'en' ? 'en' : 'ru';
+    DESKTOP_FOLDERS.forEach(spec => {
+      let name = spec[language];
+      while (vfs.root.children[name] && !vfs.root.children[name].children) name += ' 2';
+      const folder = vfs.root.children[name] || (vfs.root.children[name] = { type: 'folder', name, icon: 'folder', children: {} });
+      spec.icons.forEach(id => {
+        const item = baseIcons.find(icon => icon.id === id);
+        if (item && !folder.children[item.title]) folder.children[item.title] = this.folderShortcut(item);
+      });
+    });
+    baseIcons.concat([{ id: 'cdrom_igromania' }, { id: 'cdrom_office_games' }, { id: 'cdrom_office_games_2' }]).forEach(item => delete this.iconPositions[item.id]);
+    vfs.root.desktopFoldersCreated = true;
+    vfs.saveToStorage();
+    this.saveIconPositions();
+  }
+
+  folderShortcut(item) {
+    if (item.id === 'neko') return { type: 'executable', name: item.title, icon: 'neko', app: 'neko', isShortcut: true };
+    const node = { type: 'file', name: item.title, icon: item.icon, app: 'shortcut', isShortcut: true, content: `action:${item.id}` };
+    if (item.id === 'winamp') node.requiresInstalled = 'winamp';
+    return node;
   }
 
   loadIconPositions() {
@@ -308,6 +342,7 @@ class Desktop {
   }
 
   isShortcut(item) {
+    if (item.isFile) return Boolean(item.fileData && item.fileData.isShortcut);
     const systemIcons = ['my-computer', 'my-documents', 'network', 'recycle-bin', 'ie', 'cdrom_igromania'];
     return !item.isFile && !systemIcons.includes(item.id);
   }
@@ -318,10 +353,12 @@ class Desktop {
     return [
       { id: 'my-computer', title: t('app.myComputer'), icon: this.systemIcon('my-computer'), action: () => window.appExplorer && window.appExplorer.open(['My Computer']) },
       { id: 'my-documents', title: t('app.myDocs'), icon: this.systemIcon('my-documents'), action: () => window.appExplorer && window.appExplorer.open(['My Computer', 'C:', 'My Documents']) },
-      { id: 'network', title: t('app.network'), icon: this.systemIcon('network'), action: () => window.appExplorer ? window.appExplorer.open(['Network Neighborhood']) : (window.winManager && window.winManager.openDialog({ title: t('network.title'), icon: 'network', message: t('network.msg') })) },
       { id: 'recycle-bin', title: t('app.recycleBin'), icon: this.systemIcon(isBinEmpty ? 'recycle-bin-empty' : 'recycle-bin'), action: () => window.appRecycleBin && window.appRecycleBin.open() },
+      { id: 'network', title: t('app.network'), icon: this.systemIcon('network'), action: () => window.appExplorer ? window.appExplorer.open(['Network Neighborhood']) : (window.winManager && window.winManager.openDialog({ title: t('network.title'), icon: 'network', message: t('network.msg') })) },
+      { id: 'dialup', title: t('app.dialup'), icon: 'dialup', action: () => window.appDialUp && window.appDialUp.open() },
       { id: 'ie', title: 'Internet Explorer', icon: 'internet-explorer', action: () => window.appIE && window.appIE.open() },
       { id: 'netscape', title: 'Netscape 6', icon: 'netscape', action: () => window.appNetscape && window.appNetscape.open() },
+      { id: 'msbackup', title: t('app.backup'), icon: 'backup', action: () => window.appBackup && window.appBackup.open() },
       { id: 'notepad', title: t('app.notepad'), icon: 'notepad', action: () => window.appNotepad && window.appNotepad.open() },
       { id: 'paint', title: t('app.paint'), icon: 'paint', action: () => window.appPaint && window.appPaint.open() },
       { id: 'calc', title: t('app.calculator'), icon: 'calculator', action: () => window.appCalculator && window.appCalculator.open() },
@@ -331,17 +368,16 @@ class Desktop {
       { id: 'bliss', title: t('app.bliss'), icon: 'bliss', action: () => window.appBliss && window.appBliss.open() },
       { id: 'icq', title: 'ICQ 98a', icon: 'icq-online', action: () => window.appICQ && window.appICQ.open() },
       { id: 'outlook', title: 'Outlook Express', icon: 'outlook', action: () => window.appOutlook && window.appOutlook.open() },
-      { id: 'dialup', title: t('app.dialup'), icon: 'dialup', action: () => window.appDialUp && window.appDialUp.open() },
       { id: 'winrar', title: 'WinRAR 2.x', icon: 'winrar', action: () => window.appWinRAR && window.appWinRAR.open() },
       { id: 'freecell', title: t('app.freecell'), icon: 'freecell', action: () => window.appFreeCell && window.appFreeCell.open() },
       { id: 'wordpad', title: t('app.wordpad'), icon: 'wordpad', action: () => window.appWordPad && window.appWordPad.open() },
       { id: 'neko', title: 'Neko 98', icon: window.appNeko && window.appNeko.isClawd() ? 'clawd' : 'neko', action: () => window.appNeko && window.appNeko.open() },
-      { id: 'msbackup', title: t('app.backup'), icon: 'backup', action: () => window.appBackup && window.appBackup.open() }
+      { id: 'winamp', title: 'WinAmp 98', icon: 'winamp', action: () => window.appWinamp && window.appWinamp.open() }
     ];
   }
 
   computeCurrentIcons() {
-    const list = [...this.getBaseIcons()];
+    const list = this.getBaseIcons().filter(item => !DESKTOP_FOLDER_ICON_IDS.includes(item.id));
 
     if (window.gameManager) {
       if (window.gameManager.isInstalled('wolf3d')) {
@@ -462,7 +498,7 @@ class Desktop {
         list.push({ id: 'kirill98', title: 'Kirill The Game', icon: 'kirill98', action: () => window.appKirill98 && window.appKirill98.open() });
       }
       if (window.gameManager.isInstalled('plov')) {
-        list.push({ id: 'plov', title: 'Хаято, Где плов?', icon: 'plov', action: () => window.appPlov && window.appPlov.open() });
+        list.push({ id: 'plov', title: 'Где плов?', icon: 'plov', action: () => window.appPlov && window.appPlov.open() });
       }
       if (window.gameManager.isInstalled('homm1_demo')) {
         list.push({ id: 'homm1_demo', title: 'Heroes 98 Demo', icon: 'homm1', action: () => window.appHomm1 && window.appHomm1.open() });
@@ -512,9 +548,6 @@ class Desktop {
       }
       if (window.gameManager.isInstalled('wincommander')) {
         list.push({ id: 'wincommander', title: 'WinCommander 98', icon: 'wincommander', action: () => window.appWinCommander && window.appWinCommander.open() });
-      }
-      if (window.gameManager.isInstalled('winamp')) {
-        list.push({ id: 'winamp', title: 'WinAmp 98', icon: 'winamp', action: () => window.appWinamp && window.appWinamp.open() });
       }
       if (window.gameManager.isInstalled('blender')) {
         list.push({ id: 'blender', title: 'Blender 1.60', icon: 'blender', action: () => window.appBlender && window.appBlender.open() });
@@ -592,7 +625,9 @@ class Desktop {
           fileData: file,
           action: () => {
             const nameLower = (file.name || '').toLowerCase();
-            if (file.type === 'folder') {
+            if (file.app === 'shortcut') {
+              if (window.taskbar) window.taskbar.openStartMenuLink({ ref: file.content, name: file.name });
+            } else if (file.type === 'folder') {
               if (window.appExplorer) window.appExplorer.open(['Desktop', file.name]);
             } else if (file.type === 'briefcase' || nameLower.endsWith('.bfc')) {
               if (window.appExplorer && window.appExplorer.openBriefcaseWindow) window.appExplorer.openBriefcaseWindow(file);
@@ -824,11 +859,7 @@ class Desktop {
                 dragItems.forEach(d => {
                   if (d.item && d.item.isFile && d.item.fileData && d.id !== dropTargetId) {
                     const src = d.item.fileData;
-                    if (src.type === 'folder') {
-                      window.vfs.createFolder(['Desktop', targetItem.fileData.name], src.name);
-                    } else {
-                      window.vfs.createFile(['Desktop', targetItem.fileData.name], src.name, src.content || '', src.icon || 'file-txt');
-                    }
+                    this.placeVfsCopy(['Desktop', targetItem.fileData.name], src);
                     window.vfs.deleteItem(['Desktop'], src.name, false);
                     delete this.iconPositions[d.id];
                   }
@@ -874,6 +905,14 @@ class Desktop {
   clearSelection() {
     this.selectedIcons.forEach(el => el.classList.remove('selected'));
     this.selectedIcons.clear();
+  }
+
+  placeVfsCopy(targetPath, source) {
+    const target = window.vfs.resolvePath(targetPath);
+    if (!target || !target.children) return;
+    const { key, displayName, ...node } = JSON.parse(JSON.stringify(source));
+    target.children[source.name] = node;
+    window.vfs.saveToStorage();
   }
 
   launchApp(item) {
@@ -1160,11 +1199,7 @@ class Desktop {
           const clip = window.sharedFileClipboard;
           if (!clip || !clip.item || !window.vfs) return;
           const src = clip.item;
-          if (src.type === 'folder') {
-            window.vfs.createFolder(['Desktop'], src.name);
-          } else {
-            window.vfs.createFile(['Desktop'], src.name, src.content || '', src.icon || 'file-txt');
-          }
+          this.placeVfsCopy(['Desktop'], src);
           if (clip.mode === 'cut' && clip.sourcePath) {
             window.vfs.deleteItem(clip.sourcePath, src.name, false);
             window.sharedFileClipboard = null;
@@ -1303,7 +1338,7 @@ class Desktop {
         { label: t('menu.open'), bold: true, action: () => this.launchApp(item) },
         { label: t('menu.explore'), action: () => window.appExplorer && window.appExplorer.open(['Network Neighborhood'], { showTree: true }) },
         { label: ru ? 'Найти компьютер...' : 'Find Computer...', action: () => window.appDialogs && window.appDialogs.openFindDialog() },
-        { label: ru ? 'Подключить сетевой диск...' : 'Map Network Drive...', action: () => window.winManager.openDialog({ title: ru ? 'Подключение сетевого диска' : 'Map Network Drive', icon: 'network', message: ru ? 'Диск Z: подключен к \\\\FILESERVER\\Public' : 'Drive Z: mapped to \\\\FILESERVER\\Public' }) },
+        { label: ru ? 'Подключить сетевой диск...' : 'Map Network Drive...', action: () => window.winManager.openDialog({ title: ru ? 'Подключение сетевого диска' : 'Map Network Drive', icon: 'network', message: ru ? 'В этой сети нет общих папок: на компьютерах друзей лежат только ярлыки игры. Подключать диск некуда.' : 'This network has no shared folders: the computers of your friends hold only game shortcuts. There is nothing to map.' }) },
         { separator: true },
         { label: t('menu.createShortcut'), action: () => {} },
         { label: t('menu.rename'), action: () => {} },

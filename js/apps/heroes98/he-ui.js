@@ -37,6 +37,10 @@
       this.onKeyDown = e => {
         this.keys.add(e.code);
         if (this.dead || !this.isActive()) return;
+        if (this.editor && this.editor.visible) {
+          this.editor.key(e);
+          return;
+        }
         if (e.code === 'F5' || e.code === 'F6' || DEBUG_KEYS.includes(e.code)) {
           e.preventDefault();
           if (!this.paused && !e.repeat) this.functionKey(e.code);
@@ -49,7 +53,7 @@
           return;
         }
         if (this.paused || e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
-        if (/^(Key[A-Z]|Digit\d|Arrow(Up|Down|Left|Right)|Space|Enter)$/.test(e.code)) {
+        if (/^(Key[A-Z]|Digit\d|Arrow(Up|Down|Left|Right)|Space|Enter|Backspace)$/.test(e.code)) {
           if (e.code.startsWith('Arrow') || e.code === 'Space') e.preventDefault();
           this.view.key(e.code);
         }
@@ -74,6 +78,7 @@
       this.loop = now => {
         if (this.dead) return;
         this.raf = requestAnimationFrame(this.loop);
+        if (this.editor && this.editor.visible) return;
         const dt = this.last ? Math.min(0.1, (now - this.last) / 1000) : 0;
         this.last = now;
         if (!this.paused) {
@@ -89,6 +94,7 @@
       this.raf = requestAnimationFrame(this.loop);
       H.live.uis++;
       H.live.loops++;
+      if (this.opts.editor) this.openEditor();
     }
 
     get paused() {
@@ -146,7 +152,7 @@
     drawNotes(dt) {
       for (const n of this.notes) n.t += dt;
       this.notes = this.notes.filter(n => n.t < 2.6);
-      this.notes.forEach((n, i) => this.gfx.text(n.text, H.W / 2, 450 - i * 16, { align: 'center', bold: true, color: n.color }));
+      this.notes.forEach((n, i) => this.gfx.text(n.text, H.W / 2, 104 + i * 16, { align: 'center', bold: true, color: n.color }));
     }
 
     saveSettings() {
@@ -172,7 +178,8 @@
     startGame(def) {
       this.game = new H.MapView(this, def);
       this.show(this.game);
-      this.game.beginTurn(false);
+      this.game.events(H.Script.opening(this.game.S));
+      this.game.beginTurn(false, true);
     }
 
     resume(S) {
@@ -227,9 +234,30 @@
       }
     }
 
+    openEditor() {
+      if (!this.editor) this.editor = new H.Editor(this.root, this);
+      this.editor.open();
+    }
+
+    closeEditor() {
+      this.editor.destroy();
+      this.editor = null;
+      if (this.opts.editor && this.opts.onExit) this.opts.onExit();
+    }
+
+    playFromEditor(def) {
+      this.editor.close();
+      this.startGame(def);
+    }
+
     toTitle() {
       this.game = null;
       this.closeMenu();
+      if (this.editor) {
+        this.show(new H.TitleView(this));
+        this.editor.open();
+        return;
+      }
       this.show(new H.TitleView(this));
     }
 
@@ -289,6 +317,10 @@
       this.gfx.canvas.removeEventListener('contextmenu', this.onContext);
       this.observer.disconnect();
       this.closeMenu();
+      if (this.editor) {
+        this.editor.destroy();
+        this.editor = null;
+      }
       if (this.sound) {
         this.sound.destroy();
         this.sound = null;

@@ -63,6 +63,7 @@ const EXE_EXCLUDED = [
   /^\/transcript[^/]*\.jsonl$/,
   /^\/techies\.txt$/,
   /^\/tsconfig\.json$/,
+  /^\/content\/music\/[^/]+\.mp4$/i,
   /^\/content\/Legion Arena($|\/)/,
   /^\/content\/Another War($|\/)/,
   /^\/content\/Fallout\/(Manual|Extras|DATA\/SAVEGAME)($|\/)/,
@@ -485,7 +486,13 @@ function gitState() {
   return { commit: git(['rev-parse', '--short', 'HEAD']), dirty: git(['status', '--porcelain']).length > 0 };
 }
 
+function checkArenaVersion() {
+  const res = spawnSync(process.execPath, [path.join(ROOT, 'tools/hsr-net-simver.cjs'), '--check'], { encoding: 'utf8' });
+  if (res.status !== 0) throw new Error((res.stderr || res.stdout || 'Arena version check failed').trim());
+}
+
 async function releaseWin98(args) {
+  checkArenaVersion();
   const product = 'win98';
   const p = PRODUCTS[product];
   const key = loadKey();
@@ -557,6 +564,7 @@ function nextSr98Version(ptrs, base) {
 }
 
 async function releaseSr98(args) {
+  checkArenaVersion();
   const product = 'sr98';
   const p = PRODUCTS[product];
   const key = loadKey();

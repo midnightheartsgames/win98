@@ -117,7 +117,8 @@
         ['Рельсы', () => this.buildRail()],
         ['Реклама', () => this.buildAds()],
         ['Памятники', () => this.buildLandmarks()],
-        ['Детали', () => this.assignProps()]
+        ['Детали', () => this.assignProps()],
+        ['Окрестности', () => F.Backdrop.build(this)]
       ];
       this.step = 0;
       if (!opts.lazy) while (this.step < this.steps.length) this.stepBuild();
@@ -127,9 +128,12 @@
     get ready() { return this.step >= this.steps.length; }
 
     chunkAt(x, z) {
-      const ix = F.clamp(Math.floor((x - this.w.b.x0) / CH), 0, this.nx - 1);
-      const iz = F.clamp(Math.floor((z - this.w.b.z0) / CH), 0, this.nz - 1);
-      return this.chunks[iz * this.nx + ix];
+      const fx = Math.floor((x - this.w.b.x0) / CH), fz = Math.floor((z - this.w.b.z0) / CH);
+      if (this.outer && (fx < 0 || fz < 0 || fx >= this.nx || fz >= this.nz)) {
+        const ch = this.outer.get(fx * 4096 + fz);
+        if (ch) return ch;
+      }
+      return this.chunks[F.clamp(fz, 0, this.nz - 1) * this.nx + F.clamp(fx, 0, this.nx - 1)];
     }
 
     g(ch, key) {
@@ -209,7 +213,7 @@
           };
           for (let c = 0; c <= cells; c++) {
             const x = ch.x0 + c * 10, z = ch.z0 + a * 10;
-            const wet = c < cells && w.water[w.gi(x, z)];
+            const wet = c < cells && x <= w.b.x1 && z <= w.b.z1 && w.water[w.gi(x, z)];
             if (wet && run < 0) run = c;
             if (!wet) flush(c);
           }
@@ -274,23 +278,25 @@
 
     buildRoads() {
       const w = this.w;
-      for (const e of w.edges) {
-        const tex = e.k.tex;
-        const segN = e.pts.length;
-        let start = 0;
-        let sAcc = 0;
-        while (start < segN - 1) {
-          const mid = e.pts[start];
-          const ch = this.chunkAt(mid[0], mid[1]);
-          let end = start + 1;
-          while (end < segN - 1 && this.chunkAt(e.pts[end][0], e.pts[end][1]) === ch && end - start < 60) end++;
-          const pts = e.pts.slice(start, end + 1), ys = e.y.slice(start, end + 1);
-          sAcc = this.ribbon(ch, tex, pts, ys, e.hw, e.hw, 0.02, TEXLEN[tex] || 12, sAcc);
-          start = end;
-        }
-        if (e.walks && !e.bridge) for (const lat of [-1, 1]) for (const run of e.walks[lat]) this.sidewalk(e, lat, run);
-      }
+      for (const e of w.edges) this.roadMesh(e);
       for (const nd of w.nodes) this.junction(nd);
+    }
+
+    roadMesh(e, sOff = 0, vflip = false) {
+      const tex = e.k.tex;
+      const segN = e.pts.length;
+      let start = 0;
+      let sAcc = sOff;
+      while (start < segN - 1) {
+        const mid = e.pts[start];
+        const ch = this.chunkAt(mid[0], mid[1]);
+        let end = start + 1;
+        while (end < segN - 1 && this.chunkAt(e.pts[end][0], e.pts[end][1]) === ch && end - start < 60) end++;
+        const pts = e.pts.slice(start, end + 1), ys = e.y.slice(start, end + 1);
+        sAcc = this.ribbon(ch, tex, pts, ys, e.hw, e.hw, 0.02, TEXLEN[tex] || 12, sAcc, C('#ffffff'), 0, vflip);
+        start = end;
+      }
+      if (e.walks && !e.bridge) for (const lat of [-1, 1]) for (const run of e.walks[lat]) this.sidewalk(e, lat, run);
     }
 
     sidewalk(e, lat, run) {
@@ -362,7 +368,7 @@
       const ch = this.chunkAt(nd.x, nd.z);
       const b = this.g(ch, tex);
       if (arms.length === 1) {
-        b.disc(nd.x, nd.y + 0.05, nd.z, nd.r, 16, C('#ffffff'), 0, (x, z) => [x / 8, z / 8]);
+        if (!(this.w.out && this.w.out.exits.has(nd.id))) b.disc(nd.x, nd.y + 0.05, nd.z, nd.r, 16, C('#ffffff'), 0, (x, z) => [x / 8, z / 8]);
         return;
       }
       const straight = arms.length === 2 && arms[0].e.kind === arms[1].e.kind && Math.abs(arms[0].hw - arms[1].hw) < 0.5 && arms.every(A => A.mouth < 1);
@@ -518,62 +524,62 @@
     }
 
     buildBuildings() {
-      const w = this.w;
-      const rng = this.rng;
-      for (const bd of w.buildings) {
-        const ch = this.chunkAt(bd.x, bd.z);
-        const st = F.STYLES[bd.style];
-        const fac = F.FAC[bd.fac] || F.FAC.panel9;
-        const floorH = st.floorH || 3.2;
-        const y0 = bd.y, yTop = bd.y + bd.h;
-        this.grow(ch, y0, yTop + 14);
-        const tint = C(bd.col);
-        const lit = Math.floor(rng.range(0.2, 0.85) * 255);
-        const colTop = [F.clamp(Math.round(tint[0] * 0.55 + 115), 0, 255), F.clamp(Math.round(tint[1] * 0.55 + 115), 0, 255), F.clamp(Math.round(tint[2] * 0.55 + 115), 0, 255), lit];
-        const colBot = [Math.round(colTop[0] * 0.7), Math.round(colTop[1] * 0.7), Math.round(colTop[2] * 0.7), lit];
-        const B = normPoly(bd);
-        const block = (bd.style === 'hansa' || bd.style === 'jugend') && bd.gy !== undefined;
-        const fb = this.g(ch, bd.fac);
-        const r2 = F.rng(bd.seed || bd.id * 7919 + 1);
-        const gy = block ? bd.gy : y0, yb = block ? gy + st.ground : y0, ya = block ? yTop - st.attic : yTop;
-        const colMid = mixCol(colBot, colTop, block ? (yb - y0) / (yTop - y0) : 0);
-        for (let i = 0; i < 4; i++) {
-          const a = B.p[i], c = B.p[(i + 1) % 4], face = B.faces[i];
-          const len = Math.hypot(c[0] - a[0], c[1] - a[1]);
-          if (face === 'p') {
-            const runs = B.party[i] || [[0, 1, -1e9]];
-            runs.forEach(([t0, t1, top], k) => {
-              const yc = Math.max(y0, top - 0.2), seg = len * (t1 - t0);
-              if (yTop - yc <= 0.3 || seg < 0.05) return;
-              const p0 = lerp2(a, c, t0), p1 = lerp2(a, c, t1);
-              this.wallQuad(this.g(ch, 'side'), p0, p1, yc, yTop, len * t0 / 4, len * t1 / 4, (yTop - yc) / 4, 0, colBot, colTop);
-              if (yTop - yc > 11 && seg > 8 && F.hash2(bd.id, i * 8 + k, 29) < (bd.style === 'jugend' ? 0.05 : 0.025)) this.mural(ch, p0, p1, seg, yc, yTop, bd.id * 4 + i);
-            });
-            continue;
-          }
-          if (face === 'b' && block) {
-            this.wallQuad(this.g(ch, 'back'), a, c, y0, yTop, 0, Math.max(1, Math.round(len / 3.4)), (yTop - y0) / floorH, 0, colBot, colTop);
-            continue;
-          }
-          const bays = Math.max(1, Math.round(len / fac.bay));
-          if (block && face === 's') {
-            this.groundFloor(ch, bd, st, a, c, len, bays, y0, gy, colBot, colMid, i === B.front, F.rng((bd.seed || bd.id) * 4 + i + 1));
-            this.wallQuad(fb, a, c, yb, ya, 0, bays, (ya - yb) / floorH, 0, colMid, colTop);
-            this.wallQuad(fb, a, c, ya, yTop, 0, bays, 0.045, 0, colTop, colTop);
-            this.cornice(ch, a, c, yb + 0.24, 0.22, colMid);
-            this.cornice(ch, a, c, yTop, bd.style === 'jugend' ? 0.7 : 0.45, colTop);
-            continue;
-          }
-          this.wallQuad(fb, a, c, y0, yTop, 0, bays, (yTop - y0) / floorH, 0, colBot, colTop);
+      for (const bd of this.w.buildings) this.building(bd, this.rng);
+    }
+
+    building(bd, rng) {
+      const ch = this.chunkAt(bd.x, bd.z);
+      const st = F.STYLES[bd.style];
+      const fac = F.FAC[bd.fac] || F.FAC.panel9;
+      const floorH = st.floorH || 3.2;
+      const y0 = bd.y, yTop = bd.y + bd.h;
+      this.grow(ch, y0, yTop + 14);
+      const tint = C(bd.col);
+      const lit = Math.floor(rng.range(0.2, 0.85) * 255);
+      const colTop = [F.clamp(Math.round(tint[0] * 0.55 + 115), 0, 255), F.clamp(Math.round(tint[1] * 0.55 + 115), 0, 255), F.clamp(Math.round(tint[2] * 0.55 + 115), 0, 255), lit];
+      const colBot = [Math.round(colTop[0] * 0.7), Math.round(colTop[1] * 0.7), Math.round(colTop[2] * 0.7), lit];
+      const B = normPoly(bd);
+      const block = (bd.style === 'hansa' || bd.style === 'jugend') && bd.gy !== undefined;
+      const fb = this.g(ch, bd.fac);
+      const r2 = F.rng(bd.seed || bd.id * 7919 + 1);
+      const gy = block ? bd.gy : y0, yb = block ? gy + st.ground : y0, ya = block ? yTop - st.attic : yTop;
+      const colMid = mixCol(colBot, colTop, block ? (yb - y0) / (yTop - y0) : 0);
+      for (let i = 0; i < 4; i++) {
+        const a = B.p[i], c = B.p[(i + 1) % 4], face = B.faces[i];
+        const len = Math.hypot(c[0] - a[0], c[1] - a[1]);
+        if (face === 'p') {
+          const runs = B.party[i] || [[0, 1, -1e9]];
+          runs.forEach(([t0, t1, top], k) => {
+            const yc = Math.max(y0, top - 0.2), seg = len * (t1 - t0);
+            if (yTop - yc <= 0.3 || seg < 0.05) return;
+            const p0 = lerp2(a, c, t0), p1 = lerp2(a, c, t1);
+            this.wallQuad(this.g(ch, 'side'), p0, p1, yc, yTop, len * t0 / 4, len * t1 / 4, (yTop - yc) / 4, 0, colBot, colTop);
+            if (yTop - yc > 11 && seg > 8 && F.hash2(bd.id, i * 8 + k, 29) < (bd.style === 'jugend' ? 0.05 : 0.025)) this.mural(ch, p0, p1, seg, yc, yTop, bd.id * 4 + i);
+          });
+          continue;
         }
-        if (block) this.blockRoof(ch, bd, B, yTop, fb, colTop, r2);
-        else {
-          const tx = bd.tx, tz = bd.tz, hw = bd.w / 2, hd = bd.d / 2, nx = -tz, nz = tx;
-          const P = (a, c) => [bd.x + tx * a + nx * c, bd.z + tz * a + nz * c];
-          this.roof(ch, bd, [P(-hw, -hd), P(hw, -hd), P(hw, hd), P(-hw, hd)], yTop, tx, tz, hw, hd, fb);
-          if (bd.roof === 'flat') this.flatDetails(ch, bd, B.p, yTop, colTop, r2);
-          if (bd.jv) this.resortDetails(ch, bd, B, y0, yTop, fb, colBot, colTop);
+        if (face === 'b' && block) {
+          this.wallQuad(this.g(ch, 'back'), a, c, y0, yTop, 0, Math.max(1, Math.round(len / 3.4)), (yTop - y0) / floorH, 0, colBot, colTop);
+          continue;
         }
+        const bays = Math.max(1, Math.round(len / fac.bay));
+        if (block && face === 's') {
+          this.groundFloor(ch, bd, st, a, c, len, bays, y0, gy, colBot, colMid, i === B.front, F.rng((bd.seed || bd.id) * 4 + i + 1));
+          this.wallQuad(fb, a, c, yb, ya, 0, bays, (ya - yb) / floorH, 0, colMid, colTop);
+          this.wallQuad(fb, a, c, ya, yTop, 0, bays, 0.045, 0, colTop, colTop);
+          this.cornice(ch, a, c, yb + 0.24, 0.22, colMid);
+          this.cornice(ch, a, c, yTop, bd.style === 'jugend' ? 0.7 : 0.45, colTop);
+          continue;
+        }
+        this.wallQuad(fb, a, c, y0, yTop, 0, bays, (yTop - y0) / floorH, 0, colBot, colTop);
+      }
+      if (block) this.blockRoof(ch, bd, B, yTop, fb, colTop, r2);
+      else {
+        const tx = bd.tx, tz = bd.tz, hw = bd.w / 2, hd = bd.d / 2, nx = -tz, nz = tx;
+        const P = (a, c) => [bd.x + tx * a + nx * c, bd.z + tz * a + nz * c];
+        this.roof(ch, bd, [P(-hw, -hd), P(hw, -hd), P(hw, hd), P(-hw, hd)], yTop, tx, tz, hw, hd, fb);
+        if (bd.roof === 'flat') this.flatDetails(ch, bd, B.p, yTop, colTop, r2);
+        if (bd.jv) this.resortDetails(ch, bd, B, y0, yTop, fb, colBot, colTop);
       }
     }
 
@@ -1200,6 +1206,7 @@
   }
 
   F.Scene = Scene;
+  F.BIOME_COL = BIOME_COL;
   F.CHUNK = CH;
   F.TILES = { tree: TC, grass: GC };
 })(globalThis.Forza = globalThis.Forza || {});

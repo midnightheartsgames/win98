@@ -1,0 +1,20 @@
+[Unit]
+Description=Star Rail 98 ether link server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=debianserver
+WorkingDirectory=/opt/net98
+ExecStart=/usr/bin/node /opt/net98/server.cjs
+EnvironmentFile=-/etc/net98.env
+StateDirectory=net98
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

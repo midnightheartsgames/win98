@@ -855,7 +855,7 @@
         v: { type: 'spawn' },
         l: { type: 'exit', to: 'express_party', at: 'r' },
         r: { type: 'exit', to: 'express_cabin', at: 'l' },
-        p: { type: 'npc', who: 'pompom', script: 'pompom_talk', dir: 'down' },
+        p: { type: 'npc', who: 'pompom', script: 'pompom_talk', dir: 'down', if: '!?pom_coat=talk' },
         h: { type: 'npc', who: 'himeko', script: 'himeko_talk', dir: 'down' },
         w: { type: 'npc', who: 'welt', script: 'welt_talk', dir: 'left' },
         q: { type: 'npc', who: 'terminal', ghost: true, script: 'warp_terminal', dir: 'down', label: 'Звёздный прыжок' },
@@ -927,7 +927,7 @@
         '########################################',
         '##########WWWWWWWWWWWWWWWWW#WWWWWW######',
         '##########WWWWWWWWWWWWWWWWW#WWWWWW######',
-        '#"XoXX"""XXXXXXXXXXXXXXXXXX"""XgXX"""""#',
+        '#"XoXXz""XXXXXXXXXXXXXXXXXX"""XgXX"""""#',
         '#""""""""":xX:::::X:::::Xy:""""""""""""#',
         '#"""""""",,,,,,,,,,,,,,,,,,,,,"""""""""#',
         '#"""""""",,,,XXX,X,X,X,XXX,,,,""""v""""#',
@@ -960,7 +960,8 @@
         r: { type: 'exit', to: 'express', at: 'l' },
         x: { type: 'npc', visitor: 0, dir: 'down' },
         y: { type: 'npc', visitor: 1, dir: 'down' },
-        o: { type: 'prop', obj: 'none', script: 'exp_coatroom' },
+        o: { type: 'prop', obj: 'none', script: 'exp_coatroom', hint: 'Сменить костюм Пом-Пом' },
+        z: { type: 'npc', who: 'pompom', script: 'pom_coat_talk', dir: 'down', if: '?pom_coat=talk' },
         g: { type: 'prop', obj: 'none', script: 'exp_lounge' },
         j: { type: 'prop', obj: 'none', script: 'exp_drinks' },
         u: { type: 'prop', obj: 'none', script: 'exp_counter' },
@@ -977,9 +978,9 @@
         '################################',
         '##WWWWWW##WWWWWW##WWWWWW##WWWW##',
         '##WWWWWW##WWWWWW##WWWWWW##WWWW##',
-        '#.............j....k..m...h....#',
+        '#.........p...j....k..m...h..b.#',
         '#...............w..............#',
-        '#..............................#',
+        '#...t..........................#',
         '#..............................#',
         '#;;;;;;;;;;;;;;;;;;;;;;;;;;;;v;r',
         '#;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;r',
@@ -993,7 +994,7 @@
       enemies: {},
       decor: [
         ['sconce', 8, 1], ['sconce', 9, 1], ['emblem', 16, 1], ['sconce', 24, 1], ['sconce', 25, 1],
-        ['door', 31, 6, 'r'], ['inlay', 14, 7], ['hackterm', 14, 3, 'jade'], ['hackterm', 19, 3, 'console'], ['hackterm', 22, 3, 'cw'], ['hackterm', 26, 3, 'hd']
+        ['door', 31, 6, 'r'], ['inlay', 14, 7], ['hackterm', 14, 3, 'jade'], ['hackterm', 19, 3, 'console'], ['hackterm', 22, 3, 'cw'], ['hackterm', 26, 3, 'hd'], ['hackterm', 10, 3, 'range'], ['hackterm', 29, 3, 'warp'], ['rangepad', 2, 4], ['target', 4, 5]
       ],
       marks: {
         v: { type: 'spawn' },
@@ -1002,7 +1003,10 @@
         j: { type: 'npc', who: 'terminal', ghost: true, script: 'lab_term_jade', dir: 'down', label: 'Нефрит' },
         k: { type: 'npc', who: 'terminal', ghost: true, script: 'lab_term_console', dir: 'down', label: 'Консоль' },
         m: { type: 'npc', who: 'terminal', ghost: true, script: 'lab_term_cw', dir: 'down', label: 'Валютные войны' },
-        h: { type: 'npc', who: 'terminal', ghost: true, script: 'lab_term_hd', dir: 'down', label: 'Рубеж' }
+        h: { type: 'npc', who: 'terminal', ghost: true, script: 'lab_term_hd', dir: 'down', label: 'Рубеж' },
+        p: { type: 'npc', who: 'terminal', ghost: true, script: 'lab_term_range', dir: 'down', label: 'Полигон' },
+        b: { type: 'npc', who: 'terminal', ghost: true, script: 'lab_term_warp', dir: 'down', label: 'Секретный прыжок' },
+        t: { type: 'prop', obj: 'none', script: 'lab_target' }
       }
     },
     j_plains: {
@@ -1955,7 +1959,7 @@
       }
     },
     u_mine: {
-      name: 'Подземье: Большая шахта', land: 'cavern', theme: 'mine', music: 'dungeon', floor: '.',
+      name: 'Подземье: Большая шахта', land: 'cavern', theme: 'mine', music: 'faded', floor: '.',
       rows: [
         '###########################################',
         '#RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR#',
@@ -2054,7 +2058,7 @@
       onEnter: [{ if: 'seele_trial', unless: 'mine_in', script: 'mine_enter' }, { if: 'fm_gate', unless: 'fm_mine_in', script: 'fm_mine_in' }]
     },
     u_rivet: {
-      name: 'Подземье: Заклёпкоград', land: 'rivet', theme: 'rivet', music: 'dungeon', floor: '.',
+      name: 'Подземье: Заклёпкоград', land: 'rivet', theme: 'rivet', music: 'ghost', floor: '.',
       rows: [
         '#########################################',
         '#RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR#',
@@ -2161,7 +2165,7 @@
       onEnter: [{ if: 'night_talk', unless: 'riv_in', script: 'riv_enter' }]
     },
     u_rivet2: {
-      name: 'Подземье: Заклёпкоград, холм приюта', land: 'rivet', theme: 'rivet', music: 'dungeon', floor: '.',
+      name: 'Подземье: Заклёпкоград, холм приюта', land: 'rivet', theme: 'rivet', music: 'heat', floor: '.',
       rows: [
         '##########################',
         '#RRRRRRHHHHHHHHHHHHHHRRRR#',
@@ -2544,7 +2548,7 @@
       onEnter: [{ if: 'finale_open', unless: 'rz_in', script: 'rz_enter' }]
     },
     j_fissures: {
-      name: 'Ярило-VI: Коридор исчезающего эха', land: 'corridor', theme: 'ice', music: 'snow', floor: '.', gearFlag: 'cor_ew', gearPit: '#a8b8d0',
+      name: 'Ярило-VI: Коридор исчезающего эха', land: 'corridor', theme: 'ice', music: 'floe', floor: '.', gearFlag: 'cor_ew', gearPit: '#a8b8d0',
       rows: [
         '###########################################',
         '#HHHHHHHHHHHHHHHHHHHHHHHHHHWWzWWЕWWHWHHHHH#',
@@ -2664,7 +2668,7 @@
       onEnter: []
     },
     j_everwinter: {
-      name: 'Ярило-VI: Холм вечнозимья', land: 'hill', theme: 'hill', music: 'final', floor: '.',
+      name: 'Ярило-VI: Холм вечнозимья', land: 'hill', theme: 'hill', music: 'everwinter', floor: '.',
       rows: [
         '####################RRRRRRRRRRRRRRRR##########',
         '#RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR#',
@@ -2731,7 +2735,7 @@
       onEnter: [{ unless: 'everwinter_intro', script: 'dawn_enter' }]
     },
     j_pathspace: {
-      name: 'Пространство Пути', land: 'pathspace', theme: 'sim', music: 'final', floor: '.',
+      name: 'Пространство Пути', land: 'pathspace', theme: 'sim', music: 'fate', floor: '.',
       rows: [
         '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
         '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
@@ -2775,7 +2779,7 @@
       onEnter: []
     },
     j_pillars: {
-      name: 'Ярило-VI: Столп творения', land: 'pillars', theme: 'snow', music: 'snow', floor: '.',
+      name: 'Ярило-VI: Столп творения', land: 'pillars', theme: 'snow', music: 'pillars', floor: '.',
       rows: [
         '############################################################',
         '#RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR#',
@@ -2869,7 +2873,7 @@
       onEnter: []
     },
     u_rivet3: {
-      name: 'Подземье: Заклёпкоград, окраина', land: 'rivet', theme: 'rivet', music: 'dungeon', floor: '.',
+      name: 'Подземье: Заклёпкоград, окраина', land: 'rivet', theme: 'rivet', music: 'ghost', floor: '.',
       rows: [
         '##########################################',
         '#HHHHHHHHHHHHHHHHHHHHHHHHHHWWHWWHWWHHHHHH#',
@@ -3042,7 +3046,7 @@
     { map: 'express', name: 'Общий вагон', open: 'doom', text: 'Главный вагон Экспресса, где принимают гостей. Здесь терминал прыжков, симулятор и навигационный пульт, а Пом-Пом держит буфет.' },
     { map: 'express_cabin', name: 'Спальный вагон', open: 'doom', text: 'Вагон, где отдыхает экипаж. Архив Дань Хэна с Банком данных, комната Март 7 и запертые двери Химико и Вельта.' },
     { map: 'express_party', name: 'Вагон для вечеринок', open: 'doom', text: 'Бывший вагон для совещаний. Барная стойка, диваны у окон, гардероб Пом-Пом и игровой автомат. Сюда заглядывают гости Экспресса.' },
-    { map: 'express_lab', name: 'Испытательный вагон', hidden: true, text: 'Вагон за запертой дверью Вагона для вечеринок. Она открывается только Первопроходцу, который пришёл один. Серебряный Волк поставила здесь четыре терминала: первый выдаёт звёздный нефрит, второй открывает консоль отладки, третий запускает «Валютные войны», четвёртый её собственную игру «Рубеж Экспресса».' }
+    { map: 'express_lab', name: 'Испытательный вагон', hidden: true, text: 'Вагон за запертой дверью Вагона для вечеринок. Она открывается только Первопроходцу, который пришёл один. Серебряный Волк поставила здесь шесть терминалов: первый выдаёт звёздный нефрит, второй открывает консоль отладки, третий запускает «Валютные войны», четвёртый её собственную игру «Рубеж Экспресса», пятый, у жёлтой разметки, открывает Полигон: бой с любым врагом по своим настройкам, а шестой, у самой двери, даёт секретный прыжок.' }
   ];
   const EXPRESS_AREA = EXPRESS_AREAS[0];
   const expressArea = map => EXPRESS_AREAS.find(a => a.map === map) || null;
@@ -3096,7 +3100,7 @@
         ] }
       ]
     },
-    { id: 'luofu', name: 'Сяньчжоу «Лофу»', open: null, express: null, groups: [] }
+    { id: 'luofu', name: 'Лофу Сяньчжоу', open: null, express: null, groups: [] }
   ];
 
   Object.assign(H, { TILES, MAPS, ENCOUNTERS, RUMORS, CALYX, CALYX_TIERS, DESTINATIONS, WORLDS, EXPRESS_AREA, EXPRESS_AREAS, expressArea });

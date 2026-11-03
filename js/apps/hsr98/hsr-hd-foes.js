@@ -1,6 +1,6 @@
 (function (H) {
   'use strict';
-  const HD = H.HD, TUN = HD.TUN, DT = HD.DT;
+  const HD = H.HD, TUN = HD.TUN, DT = HD.DT, N = HD.N;
   const TAIL_ARC = Math.PI * 2 / 3, DEG = Math.PI / 180;
 
   const circle = (x, y, r) => ({ shape: 'circle', x, y, r });
@@ -27,10 +27,10 @@
   }
 
   function buildWave(A) {
-    const W = HD.WAVES[A.wave - 1], TA = threatA(A), TB = threatB(A), rng = A.rng;
+    const W = HD.WAVES[A.wave - 1], TA = threatA(A), TB = threatB(A), rng = A.rng, more = n => Math.round(n * A.coopK('groups'));
     let packs = [];
-    if (W.a) packs = packs.concat(packsOf(A, TA, W.a, W.ranged));
-    if (W.b) packs = packs.concat(packsOf(A, TB, W.b, W.ranged));
+    if (W.a) packs = packs.concat(packsOf(A, TA, more(W.a), W.ranged));
+    if (W.b) packs = packs.concat(packsOf(A, TB, more(W.b), W.ranged));
     for (let i = 0; i < (W.ea || 0); i++) packs.push([rng.pick(TA.elites)]);
     for (let i = 0; i < (W.eb || 0); i++) packs.push([rng.pick(TB.elites)]);
     for (let i = packs.length - 1; i > 0; i--) { const j = rng.int(i + 1); [packs[i], packs[j]] = [packs[j], packs[i]]; }
@@ -175,7 +175,7 @@
       if (alive + n >= cap) break;
       const v = A.spawnFoe(id, u.rift, { by: u.uid });
       const a = A.rng() * Math.PI * 2;
-      v.x = u.x + Math.cos(a) * (u.r + 30); v.y = u.y + Math.sin(a) * (u.r + 20);
+      v.x = u.x + N.cos(a) * (u.r + 30); v.y = u.y + N.sin(a) * (u.r + 20);
       A.collide(v); v.px = v.x; v.py = v.y;
       n++;
     }
@@ -196,8 +196,9 @@
     u.reinfT += u.reinf.every;
     const keys = ['n', 'w', 'e'], key = keys[A.rng.int(3)];
     const ids = [];
-    for (let i = 0; i < u.reinf.a; i++) ids.push(A.rng.pick(threatA(A).normals));
-    for (let i = 0; i < u.reinf.b; i++) ids.push(A.rng.pick(threatB(A).normals));
+    const more = n => Math.round(n * A.coopK('groups'));
+    for (let i = 0; i < more(u.reinf.a); i++) ids.push(A.rng.pick(threatA(A).normals));
+    for (let i = 0; i < more(u.reinf.b); i++) ids.push(A.rng.pick(threatB(A).normals));
     A.glow[key] = TUN.riftGlow;
     A.emit({ t: 'rift', key });
     A.later(TUN.riftGlow, () => { if (!u.dead && !A.over) for (const id of ids) A.spawnFoe(id, key); });
@@ -225,7 +226,7 @@
   }
 
   function markTarget(A, u, t, far) {
-    const h = A.hero;
+    const h = A.nearestHero(u);
     if (far && (!h || h.dead || A.gap(u, h) > far)) return A.base;
     return t || (h && !h.dead ? h : A.base);
   }
@@ -269,7 +270,7 @@
       const t = u.tgt != null ? A.byId(u.tgt) : null;
       if (s === 0) {
         if (!t || A.gap(u, t) > 140) return false;
-        const k = e.skills[0], ang = Math.atan2(t.y - u.y, t.x - u.x);
+        const k = e.skills[0], ang = N.atan2(t.y - u.y, t.x - u.x);
         warn(A, u, { shape: 'cone', x: u.x, y: u.y, r: 140, ang, arc: TAIL_ARC, onHit: (A2, v) => { A2.hit(u, v, { m: k.m, elem: k.e, kind: 'skill' }); A2.push(v, u.x, u.y, 80); } }, 0.8);
         say(A, u, k.n);
       } else if (s === 4) {
@@ -304,10 +305,10 @@
     moves: {
       bullet(A, u, t) {
         if (!near(A, u, t, 420)) return false;
-        const k = sk(u, 0), ang = Math.atan2(t.y - u.y, t.x - u.x);
+        const k = sk(u, 0), ang = N.atan2(t.y - u.y, t.x - u.x);
         warn(A, u, Object.assign(lineAt(u, ang, 440, 26), {
           onFire: (A2, a) => {
-            const c = Math.cos(a.ang), s = Math.sin(a.ang);
+            const c = N.cos(a.ang), s = N.sin(a.ang);
             const first = A2.unitsIn(a, 'ally').sort((p, q) => ((p.x - a.x) * c + (p.y - a.y) * s) - ((q.x - a.x) * c + (q.y - a.y) * s))[0];
             if (first) strike(A2, u, first, k);
           }
@@ -322,7 +323,7 @@
       },
       ult(A, u, t) {
         if (!near(A, u, t, 340)) return false;
-        const k = sk(u, 3), ang = Math.atan2(t.y - u.y, t.x - u.x), cone = { shape: 'cone', x: u.x, y: u.y, r: 340, ang, arc: 60 * DEG };
+        const k = sk(u, 3), ang = N.atan2(t.y - u.y, t.x - u.x), cone = { shape: 'cone', x: u.x, y: u.y, r: 340, ang, arc: 60 * DEG };
         warn(A, u, Object.assign({}, cone, {
           big: true,
           onFire: A2 => {
@@ -364,7 +365,7 @@
       wall(A, u, t) {
         if (!near(A, u, t, 300)) return false;
         const k = sk(u, 1);
-        warn(A, u, Object.assign(lineAt(u, Math.atan2(t.y - u.y, t.x - u.x), 300, 80), { onHit: (A2, v) => strike(A2, u, v, k, 1, { slow: [0.3, 3] }) }), 0.8);
+        warn(A, u, Object.assign(lineAt(u, N.atan2(t.y - u.y, t.x - u.x), 300, 80), { onHit: (A2, v) => strike(A2, u, v, k, 1, { slow: [0.3, 3] }) }), 0.8);
         say(A, u, k.n);
         return true;
       },
@@ -455,7 +456,7 @@
             u.act = { t: 3, tt: 3, cancel: false, name: k.n, areas: [], fn() {} };
             for (let i = 0; i < 12; i++) {
               const a = A2.rng() * Math.PI * 2, r = Math.sqrt(A2.rng()) * 300;
-              A2.addArea(Object.assign(circle(u.x + Math.cos(a) * r, u.y + Math.sin(a) * r, 64), { side: 'ally', warn: true, delay: 0.4 + i * 0.22, src: u.uid, onHit: (A3, v) => strike(A3, u, v, k) }));
+              A2.addArea(Object.assign(circle(u.x + N.cos(a) * r, u.y + N.sin(a) * r, 64), { side: 'ally', warn: true, delay: 0.4 + i * 0.22, src: u.uid, onHit: (A3, v) => strike(A3, u, v, k) }));
             }
           }
         }), 2, { ult: true, name: k.n });
@@ -468,7 +469,7 @@
   };
 
   function blades(A, u, t, k, m, fx) {
-    const base = Math.atan2(t.y - u.y, t.x - u.x);
+    const base = N.atan2(t.y - u.y, t.x - u.x);
     const areas = [-15, 0, 15].map(da => A.addArea(Object.assign(lineAt(u, base + da * DEG, 320, 22), { side: 'ally', warn: true, delay: 0.6, src: u.uid, onHit: (A2, v) => strike(A2, u, v, k, m, fx) })));
     u.act = { t: 0.6, tt: 0.6, cancel: true, ult: false, name: k.n, areas, fn() {} };
   }
@@ -484,7 +485,7 @@
     init: bossInit,
     think(A, u) {
       bossTick(A, u);
-      for (const h of A.heroes) if (!h.dead && Math.hypot(h.x - u.x, h.y - u.y) <= 200) A.addFx(h, { n: 'Холод эха', k: 'slow', v: 0.1, t: 0.5, deb: true });
+      for (const h of A.heroes) if (!h.dead && N.hypot(h.x - u.x, h.y - u.y) <= 200) A.addFx(h, { n: 'Холод эха', k: 'slow', v: 0.1, t: 0.5, deb: true });
     },
     moves: {
       blade(A, u, t) {
@@ -577,7 +578,7 @@
     },
     think(A, u) {
       const k = Math.min(9, Math.floor((1 - u.hp / u.hpMax) * 10));
-      while (u.drops < k) { u.drops++; A.giveGold(A.hero, Math.round(TUN.bigPigStep * A.diff.gold), null, u); }
+      while (u.drops < k) { u.drops++; for (const h of A.heroes) A.giveGold(h, Math.round(TUN.bigPigStep * A.coopK('gold') * A.diff.gold), null, u); }
       u.life -= DT;
       if (u.life <= 0) { u.dead = true; u.escaped = true; A.emit({ t: 'msg', text: 'Большая свинка-копилка убежала', x: u.x, y: u.y - 30 }); }
     }

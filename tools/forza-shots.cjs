@@ -5,7 +5,10 @@ const path = require('node:path');
 
 const ROOT = path.join(__dirname, '..');
 const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
-const SCENES = ['perf', 'breakdown', 'presets', 'sheet', 'showroom', 'details', 'liveries', 'finish', 'cabin', 'wheels', 'faces', 'cockpit', 'motion', 'night', 'rain', 'time', 'stats', 'city', 'weather', 'ads', 'festival', 'streets', 'airport', 'zakusala', 'lucavsala', 'market', 'bisumuiza', 'debug', 'photo', 'damage', 'flora', 'driver', 'heads', 'anim', 'outfits', 'drvmenu', 'register', 'rivals', 'phone'];
+const SCENES = ['perf', 'breakdown', 'presets', 'sheet', 'showroom', 'details', 'liveries', 'finish', 'cabin', 'wheels', 'faces', 'cockpit', 'motion', 'night', 'rain', 'time', 'stats', 'city', 'weather', 'ads', 'festival', 'streets', 'airport', 'zakusala', 'lucavsala', 'market', 'bisumuiza', 'outskirts', 'debug', 'photo', 'damage', 'flora', 'driver', 'heads', 'anim', 'outfits', 'drvmenu', 'register', 'rivals', 'phone', 'blueprint', 'refs'];
+const ARGS = process.argv.slice(2);
+const CAR = ARGS.includes('--car') ? ARGS.splice(ARGS.indexOf('--car'), 2)[1] : null;
+const REFS = path.join(ROOT, 'content/forza/refs');
 const PHONE_SIZES = [[800, 360], [640, 360]];
 const PHONE_SCREENS = [
   ['hub-home', 'fzui.menus.push(fzui.menus.hub(0))'], ['hub-festival', 'fzui.menus.push(fzui.menus.hub(1))'], ['hub-cars', 'fzui.menus.push(fzui.menus.hub(2))'],
@@ -131,6 +134,16 @@ const BIS_VIEWS = [
   { name: 'bis-race-evening', x: 1791, y: 1.8, z: 2470, tx: 1792, ty: 5, tz: 2587, fov: 58, clock: 17.8 }, { name: 'bis-terminus-night', x: 1838, y: 2.6, z: 2399, tx: 1862, ty: 2.4, tz: 2428, fov: 66, clock: 22.5 },
   { name: 'bis-manor-night', x: 1792, y: 2.2, z: 2546, tx: 1792, ty: 5.2, tz: 2587, fov: 66, clock: 22.5 }, { name: 'bis-street-night', road: [1400, 2476], ahead: 80, clock: 22.5 }
 ];
+const OUT_VIEWS = [
+  { name: 'out-krasta', x: 3540, y: 3, z: 2604, tx: 3720, ty: 1, tz: 2760, fov: 70 }, { name: 'out-dzelzavas', x: 3500, y: 2.4, z: -126, tx: 3800, ty: 2, tz: -122, fov: 70 },
+  { name: 'out-jurmala', x: -3200, y: 5, z: -1937, tx: -3500, ty: 4, tz: -1985, fov: 70 }, { name: 'out-vienibas', x: -95, y: 2.4, z: 2610, tx: -170, ty: 2, tz: 2850, fov: 70 },
+  { name: 'out-bauskas', x: 2010, y: 2.4, z: 2600, tx: 2020, ty: 2, tz: 2900, fov: 70 }, { name: 'out-meadow', x: 500, y: 1.6, z: 2660, tx: 560, ty: 1, tz: 2800, fov: 70 },
+  { name: 'out-air-east', x: 3300, y: 160, z: 300, tx: 3900, ty: 0, tz: 300, fov: 70 }, { name: 'out-air-south', x: 1300, y: 160, z: 2400, tx: 1400, ty: 0, tz: 3000, fov: 70 },
+  { name: 'out-air-west', x: -3000, y: 140, z: -1800, tx: -3700, ty: 0, tz: -1900, fov: 70 }, { name: 'out-beach', x: 3450, y: 3, z: -2640, tx: 3800, ty: 2, tz: -2760, fov: 70 },
+  { name: 'out-lielupe', x: -3150, y: 30, z: 1500, tx: -3600, ty: 0, tz: 2100, fov: 70 }, { name: 'out-daugava', x: 2700, y: 40, z: 2450, tx: 3300, ty: 0, tz: 3200, fov: 70 },
+  { name: 'out-night', x: 3500, y: 2.4, z: -126, tx: 3800, ty: 2, tz: -122, fov: 70, clock: 22.8 }, { name: 'out-night-air', x: 3300, y: 120, z: 300, tx: 3900, ty: 0, tz: 300, fov: 70, clock: 23 },
+  { name: 'out-fog', x: 3540, y: 3, z: 2604, tx: 3720, ty: 1, tz: 2760, fov: 70, weather: 'fog', clock: 9 }
+];
 const FLORA_VIEWS = [
   { name: 'flora-mezaparks', road: [700, -1800], ahead: 70 }, { name: 'flora-bikernieki', road: [3000, -1500], ahead: 70 },
   { name: 'flora-jurmala', road: [-2800, -1800], ahead: 70 }, { name: 'flora-park', x: 470, y: 2, z: -760, tx: 560, ty: 4, tz: -800, fov: 62 },
@@ -150,14 +163,16 @@ const FLORA_SPOTS = [
   { name: 'boulder', type: 'rock', kind: 'boulder', d: 6, h: 1.4, ty: 0.3 }, { name: 'log', type: 'log', d: 6, h: 1.4, ty: 0.2 }, { name: 'stump', type: 'stump', d: 4, h: 1.2, ty: 0.3 },
   { name: 'pile', type: 'pile', d: 8, h: 1.6, ty: 0.4 }, { name: 'bale', prop: 'bale', d: 9, h: 1.6, ty: 0.4, gap: 3 }
 ];
-const DETAILS = [['uaz469', 3.93], ['gaz21', 3.6], ['e30', 3.7], ['f355', 0.6], ['raf2203', 3.9], ['m5e39', 0.9], ['diablo', 3.75]];
-const FACES = ['vaz2105', 'e30', 'sierra', 'r34', 'charger', 'viper', 'f355', 'mclarenf1', 'gaz21', 'p356', 'm300sl', 'uaz469'];
+const DETAILS = CAR ? [[CAR, 3.9, 'front'], [CAR, 0.75, 'rear']] : [['uaz469', 3.93], ['gaz21', 3.6], ['e30', 3.7], ['f355', 0.6], ['raf2203', 3.9], ['m5e39', 0.9], ['diablo', 3.75]];
+const FACES = CAR ? [CAR] : ['vaz2105', 'e30', 'sierra', 'r34', 'charger', 'viper', 'f355', 'mclarenf1', 'gaz21', 'p356', 'm300sl', 'uaz469'];
 const VIEWS = { front: 3.93, rear: 0.785, side: 0 };
-const SHOWROOM = ['vaz2105', 'uaz469', 'e30', 'r34', 'f355', 'charger'];
-const COCKPITS = ['vaz2105', 'e30', 'r34', 'charger', 'f355', 'mclarenf1', 'gaz21'];
-const WHEELS = ['vaz2105', 'gaz21', 'golf2', 'audi80', 'r34', 'f355', 'g500', 'impreza22b'];
-const DRIVER_CARS = ['vaz2105', 'e30', 'r34', 'uaz469', 'raf2203', 'f355', 'diablo', 'mclarenf1', 'viper', 'p356', 'charger', 'gaz21'];
-const DRIVER_VIEWS = [
+const SHOWROOM = CAR ? [CAR] : ['vaz2105', 'uaz469', 'e30', 'r34', 'f355', 'charger'];
+const BASE_COCKPITS = ['vaz2105', 'e30', 'r34', 'charger', 'f355', 'mclarenf1', 'gaz21'];
+const COCKPITS = CAR ? [CAR] : BASE_COCKPITS;
+const WHEELS = CAR ? [CAR] : ['vaz2105', 'gaz21', 'golf2', 'audi80', 'r34', 'f355', 'g500', 'impreza22b'];
+const BASE_DRIVERS = ['vaz2105', 'e30', 'r34', 'uaz469', 'raf2203', 'f355', 'diablo', 'mclarenf1', 'viper', 'p356', 'charger', 'gaz21'];
+const DRIVER_CARS = CAR ? [CAR] : BASE_DRIVERS;
+const DRIVER_VIEWS_ALL = [
   ['side', { orbit: [-1.57, 3.4, 1.25] }, DRIVER_CARS],
   ['front', { orbit: [-0.4, 4.2, 1.5] }, DRIVER_CARS],
   ['rear', { orbit: [-2.6, 4.6, 1.7] }, ['vaz2105', 'e30', 'uaz469', 'p356']],
@@ -170,6 +185,7 @@ const DRIVER_VIEWS = [
   ['hood-back', { cam: 'hood', back: true }, ['e30', 'uaz469']],
   ['retro', { orbit: [-1.57, 3.4, 1.25], gfx: 'retro' }, ['vaz2105', 'r34']]
 ];
+const DRIVER_VIEWS = CAR ? DRIVER_VIEWS_ALL.filter(v => !['rear', 'female', 'cockpit-right', 'hood-back'].includes(v[0])).map(([n, o]) => [n, o, [CAR]]) : DRIVER_VIEWS_ALL;
 const HEADS_VIEWS = [0, 0.7, 1.57, 3.14];
 const HAIR_IDS = ['crew', 'short', 'boxfringe', 'slick', 'side', 'mullet', 'kare', 'bob', 'pony', 'highpony', 'braid', 'bun', 'long', 'curly', 'dreads', 'bald'];
 const HEADS = [
@@ -186,11 +202,11 @@ const OUTFITS = [
   ['tops', ['tee', 'tank', 'polo', 'plaid', 'jurmala', 'turtle', 'deer', 'hoodie'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', face: k % 6, hair: k % 2 ? 'pony' : 'short', fit: fitOf({ top: [id, k % 3] }) }))],
   ['prints', ['tee_cola', 'tee_rigafm', 'tee_ambernet', 'tee_band', 'suit_vetra', 'suit_horizon', 'suit_raf'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', hair: 'short', fit: fitOf({ top: [id, k === 3 ? 3 : 0] }) }))],
   ['outer', ['olymp', 'denim', 'windbreaker', 'leather', 'bomber', 'dzintars', 'blazer', 'race_jacket', 'photo_vest', 'champ', 'gaz_leather'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', hair: k % 2 ? 'bob' : 'slick', fit: fitOf({ outer: [id, 0], top: ['tee', k % 2 ? 2 : 0] }) }))],
-  ['neck', ['chain', 'tag', 'scarf', 'amber', 'phones'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', hair: 'short', fit: fitOf({ neck: [id, 0], top: ['tee', 1] }) }))],
+  ['neck', ['chain', 'tag', 'scarf', 'amber', 'phones', 'badge_pobeda'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', hair: 'short', fit: fitOf({ neck: [id, 0], top: ['tee', k === 5 ? 0 : 1] }) }))],
   ['legs', ['jeans', 'track', 'cargo', 'shorts', 'trousers', 'skirt', 'leather_pants'].map((id, k) => ({ body: id === 'skirt' || k % 2 ? 'f' : 'm', hair: 'short', fit: fitOf({ legs: [id, 0], feet: [['kedy', 'sneakers', 'boots', 'moccasins', 'race_boots', 'boots', 'sneakers'][k], 0], hands: [['gloves_cut', 'mitts', 'race_gloves', null, 'drift_gloves', null, null][k], 0], wrist: [['digital', 'steel', 'amber_bracelet', 'digital', null, 'amber_bracelet', 'steel'][k], 0] }) }))]
 ];
 const OUTFIT_HEADS = [
-  ['hats', ['cap_horizon', 'cap_vetra', 'cap_riga800', 'beanie', 'bandana', 'panama', 'helmet_open', 'helmet_full', 'helmet_50s'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', hair: k % 2 ? 'long' : 'short', fit: fitOf({ head: [id, 0] }) }))],
+  ['hats', ['cap_horizon', 'cap_vetra', 'cap_riga800', 'beanie', 'bandana', 'panama', 'helmet_open', 'helmet_full', 'helmet_50s', 'cap_chauffeur'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', hair: k % 2 ? 'long' : 'short', fit: fitOf({ head: [id, 0] }) }))],
   ['glasses', ['drops', 'sport_zibens', 'round', 'horn', 'yellow', 'mirror', 'goggles50'].map((id, k) => ({ body: k % 2 ? 'f' : 'm', hair: 'short', fit: fitOf({ eyes: [id, 0], head: id === 'goggles50' ? ['helmet_50s', 0] : null }) }))]
 ];
 const ANIM_SHOTS = [
@@ -203,7 +219,7 @@ const ANIM_SHOTS = [
   ['hit', 'vaz2105', { at: 0.4, cue: ['hit', 0.25, { power: 20, dx: 0, dz: 1 }], orbit: [-1.57, 3.4, 1.25] }],
   ['win', 'r34', { at: 0.7, cue: ['win', 0.2], orbit: [-0.4, 4.2, 1.5] }]
 ];
-const FLEET = [...new Set(COCKPITS.concat(['diablo', 'uaz469'], DRIVER_CARS))];
+const FLEET = [...new Set((CAR ? [CAR] : []).concat(BASE_COCKPITS, ['diablo', 'uaz469'], BASE_DRIVERS))];
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const randomPort = (lo, span) => lo + Math.floor(Math.random() * span);
 
@@ -272,16 +288,16 @@ const PAGE = `(() => {
         const car = F.Cars.get(id), sp = F.Cars.spec(id, {}), lay = F.Cluster.layoutOf(car, sp), pal = F.Cluster.paletteOf(car);
         const ox = (i % 2) * 512, oy = Math.floor(i / 2) * 256;
         x.drawImage(F.Cluster.face(car, sp, 'kmh').cv, ox, oy);
-        const lcd = F.Tex.canvas(256, 96);
-        F.Cluster.lcd(lcd, pal, lay, { odo: 12345.6, clock: '14:35', gear: '3', speed: '128', radio: 'PULSE RĪGA', lamps: lay.lamps.map((l, k) => k % 2 === 0) });
+        const lcd = F.Tex.canvas(256, F.Cluster.lcdH(lay));
+        F.Cluster.lcd(lcd, pal, lay, { odo: 12345.6, clock: '14:35', gear: '3', speed: '128', radio: 'PULSE RĪGA', lamps: lay.lamps.map((l, k) => k % 2 === 0), revs: 0.62, red: sp.red / 1000 / F.Cluster.scaleOf('rpm', sp, 'kmh').max, fuel: 0.72, temp: 0.5 });
         for (const l of lay.lcd) { const r = F.Cluster.SLOTS[l.k]; x.drawImage(lcd, r[0], r[1], r[2], r[3], ox + l.x - l.w / 2, oy + l.y - l.h / 2, l.w, l.h); }
         lay.lamps.forEach((l, k) => { const r = F.Cluster.LAMP_CELL(k); x.drawImage(lcd, r[0], r[1], r[2], r[3], ox + l.x - 9, oy + l.y - 9, 18, 18); });
         x.fillStyle = '#ff00ff'; x.font = 'bold 12px Arial'; x.fillText(id, ox + 4, oy + 12);
       });
       return cv.toDataURL('image/png');
     },
-    sheet(angle) {
-      const cars = F.Cars.CARS, cols = 4, cw = 320, ch = 160;
+    sheet(angle, ids) {
+      const cars = ids ? ids.map(id => F.Cars.get(id)) : F.Cars.CARS, cols = ids ? Math.min(4, ids.length) : 4, cw = 320, ch = 160;
       const cv = document.createElement('canvas');
       cv.width = cols * cw; cv.height = Math.ceil(cars.length / cols) * ch;
       const x = cv.getContext('2d');
@@ -336,6 +352,102 @@ const PAGE = `(() => {
       });
       fzui.showroom = null;
       return cv.toDataURL('image/png');
+    },
+    refImage(id, file) {
+      const key = id + '/' + file, c = this.refCache || (this.refCache = {});
+      return c[key] || (c[key] = new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('no reference image ' + key)); im.src = '/content/forza/refs/' + key; }));
+    },
+    studio(id, w, h, cam, proj, gfx, look) {
+      const r = fzui.renderer, gl = r.gl, car = F.Cars.get(id), old = r.opts.gfx, bg = look ? 0.9 : 1;
+      r.setGfx(gfx);
+      try {
+        r.resize(w, h);
+        r.beginFrame(w, h);
+        gl.clearColor(bg, look ? bg : 0, bg, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        const env = F.studioEnv(), C = r.camera(cam, w, h);
+        if (proj) { C.proj = proj; C.vp = F.M4.mul(proj, C.view); C.planes = F.M4.planes(C.vp); C.inv = F.M4.invert(C.vp); }
+        r.setWorldUniforms(env, cam, C);
+        gl.uniform1f(r.pw.u.uDither, 0);
+        r.drawCar({ id, livery: look ? car.livery || 'none' : 'none', wing: F.Cars.spec(id, {}).wing, x: 0, y: 0, z: 0, yaw: 0, paint1: F.hexRgb(car.col), paint2: F.hexRgb(car.col2 || car.col), metal: false, steer: 0, spin: 0 }, env);
+        r.flushGlass();
+        r.endFrame(fzui.postFx(env, 0));
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(fzui.view, 0, 0);
+        return cv;
+      } finally { r.setGfx(old); }
+    },
+    async blueprint(id, fit) {
+      const car = F.Cars.get(id), geo = F.Models.carGeo(id), L = car.sh.len, wr = car.sh.wr, zF = geo.wheels[0].z, out = [];
+      for (const [name, v] of Object.entries(fit.views)) {
+        const [x0, y0, w, h] = v.crop, k = v.pxPerM || fit.pxPerM, ky = v.pxPerMy || fit.pxPerMy || k, far = 30;
+        let target, eye, up = [0, 1, 0], u, vv;
+        if (name === 'side') { const s = v.nose === 'left' ? -1 : 1; target = [0, wr, zF]; eye = [far * s, wr, zF]; u = v.wheel[0] - x0; vv = v.wheel[1] - y0; }
+        else if (name === 'front' || name === 'rear') { const z = name === 'front' ? -L / 2 : L / 2; target = [0, 0, z]; eye = [0, 0, z + (name === 'front' ? -far : far)]; u = v.centre - x0; vv = v.ground - y0; }
+        else { target = [0, 0, zF]; eye = [0, far, zF]; up = [v.nose === 'left' ? 1 : -1, 0, 0]; u = v.axle - x0; vv = v.centre - y0; }
+        const P = new Float32Array(16);
+        P[0] = 2 * k / w; P[5] = 2 * ky / h; P[10] = -2 / 99; P[12] = 2 * u / w - 1; P[13] = 1 - 2 * vv / h; P[14] = -101 / 99; P[15] = 1;
+        const cam = { x: eye[0], y: eye[1], z: eye[2], tx: target[0], ty: target[1], tz: target[2], ux: up[0], uy: up[1], uz: up[2], fov: 30, near: 1, far: 100, lodK: 0.05 };
+        const render = this.studio(id, w, h, cam, P, 'retro'), rd = render.getContext('2d').getImageData(0, 0, w, h).data;
+        const model = new Uint8Array(w * h);
+        for (let i = 0; i < w * h; i++) { const j = i * 4; model[i] = Math.abs(rd[j] - 255) + rd[j + 1] + Math.abs(rd[j + 2] - 255) > 60 ? 1 : 0; }
+        const im = await this.refImage(id, v.file), bc = document.createElement('canvas');
+        bc.width = w; bc.height = h;
+        const bx = bc.getContext('2d');
+        bx.fillStyle = '#ffffff'; bx.fillRect(0, 0, w, h);
+        bx.drawImage(im, x0, y0, w, h, 0, 0, w, h);
+        const bd = bx.getImageData(0, 0, w, h).data, wall = new Uint8Array(w * h), outside = new Uint8Array(w * h), stack = [];
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+          const j = (y * w + x) * 4;
+          if (bd[j] * 0.3 + bd[j + 1] * 0.59 + bd[j + 2] * 0.11 >= 150) continue;
+          for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < w && yy < h) wall[yy * w + xx] = 1; }
+        }
+        if (v.axis) for (let y = 0; y < h; y++) wall[y * w + (v.axis === 'left' ? 0 : w - 1)] = 1;
+        const seed = i => { if (!wall[i] && !outside[i]) { outside[i] = 1; stack.push(i); } };
+        for (let x = 0; x < w; x++) { seed(x); seed((h - 1) * w + x); }
+        for (let y = 0; y < h; y++) { seed(y * w); seed(y * w + w - 1); }
+        while (stack.length) { const i = stack.pop(), x = i % w, y = (i - x) / w; if (x > 0) seed(i - 1); if (x < w - 1) seed(i + 1); if (y > 0) seed(i - w); if (y < h - 1) seed(i + w); }
+        const near = (m, i, val) => { const x = i % w, y = (i - x) / w; for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < w && yy < h && m[yy * w + xx] === val) return true; } return false; };
+        const print = new Uint8Array(w * h);
+        for (let i = 0; i < w * h; i++) print[i] = !outside[i] && !near(outside, i, 1) ? 1 : 0;
+        let both = 0, any = 0;
+        for (let i = 0; i < w * h; i++) { if (model[i] && print[i]) both++; if (model[i] || print[i]) any++; }
+        const ov = bx.createImageData(w, h);
+        for (let i = 0; i < w * h; i++) {
+          const j = i * 4, edgeM = model[i] && near(model, i, 0), edgeP = print[i] && near(print, i, 0);
+          if (edgeM) { ov.data[j] = 230; ov.data[j + 3] = 255; }
+          else if (edgeP) { ov.data[j + 2] = 230; ov.data[j + 1] = 90; ov.data[j + 3] = 255; }
+          else if (model[i]) { ov.data[j] = rd[j]; ov.data[j + 1] = rd[j + 1]; ov.data[j + 2] = rd[j + 2]; ov.data[j + 3] = 110; }
+        }
+        const tc = document.createElement('canvas');
+        tc.width = w; tc.height = h;
+        tc.getContext('2d').putImageData(ov, 0, 0);
+        bx.drawImage(tc, 0, 0);
+        const iou = any ? both / any : 0;
+        bx.fillStyle = '#000000'; bx.font = 'bold 14px Arial'; bx.fillText(id + ' / ' + name + ' / IoU ' + iou.toFixed(3), 6, h - 8);
+        out.push({ name, iou: Math.round(iou * 1000) / 1000, url: bc.toDataURL('image/png') });
+      }
+      fzui.render(0);
+      return out;
+    },
+    async refs(id, fit) {
+      const out = [];
+      for (const p of fit.photos || []) {
+        const im = await this.refImage(id, p.file), h = 480, w = Math.round(im.width * h / im.height);
+        const d = p.dist || 6, a = p.yaw || 0, ty = p.ty === undefined ? 0.8 : p.ty;
+        const cam = { x: Math.sin(a) * d, y: p.y === undefined ? 1.3 : p.y, z: -Math.cos(a) * d, tx: 0, ty, tz: 0, fov: p.fov || 40 };
+        const render = this.studio(id, w, h, cam, null, 'ultra', true);
+        const cv = document.createElement('canvas');
+        cv.width = w * 2; cv.height = h;
+        const x = cv.getContext('2d');
+        x.drawImage(im, 0, 0, w, h);
+        x.drawImage(render, w, 0);
+        x.fillStyle = '#ff00ff'; x.font = 'bold 14px Arial'; x.fillText(p.file, 6, 16);
+        out.push({ name: p.file.replace(/\.[a-z]+$/i, ''), url: cv.toDataURL('image/png') });
+      }
+      fzui.render(0);
+      return out;
     },
     paintShop() {
       const g = fzui.game;
@@ -821,8 +933,8 @@ async function open() {
 }
 
 async function main() {
-  const out = path.resolve(process.argv[2] || path.join(os.tmpdir(), 'forza-shots'));
-  const scenes = (process.argv[3] || SCENES.join(',')).split(',');
+  const out = path.resolve(ARGS[0] || path.join(os.tmpdir(), 'forza-shots'));
+  const scenes = (ARGS[1] || SCENES.join(',')).split(',');
   for (const s of scenes) if (!SCENES.includes(s)) throw new Error('unknown scene "' + s + '", use: ' + SCENES.join(','));
   fs.mkdirSync(out, { recursive: true });
   const b = await open();
@@ -876,18 +988,33 @@ async function main() {
       await b.ev('fzShots.pump(20)');
       save('register-oldsave', await b.capture());
     }
-    if (scenes.includes('sheet')) for (const [view, angle] of Object.entries(VIEWS)) save('sheet-' + view, await b.ev(`fzShots.sheet(${angle})`));
+    if (scenes.includes('sheet')) for (const [view, angle] of Object.entries(VIEWS)) save('sheet-' + view, await b.ev(`fzShots.sheet(${angle}, ${JSON.stringify(CAR ? [CAR] : null)})`));
     if (scenes.includes('showroom')) for (const id of SHOWROOM) for (const view of ['front', 'rear']) save(`showroom-${id}-${view}`, await b.ev(`fzShots.showroom('${id}', ${VIEWS[view]})`));
-    if (scenes.includes('details')) for (const [id, angle] of DETAILS) save('detail-' + id, await b.ev(`fzShots.showroom('${id}', ${angle}, 1.05)`));
-    if (scenes.includes('details')) for (const [id, popup] of [['diablo', 1], ['f355', 0.5], ['charger', 1]]) save('detail-lit-' + id, await b.ev(`fzShots.lit('${id}', 3.75, 1.1, ${popup})`));
-    if (scenes.includes('liveries')) for (const [id, angle, c1, c2] of [['e30', 3.6, '#1a2f6e', '#e8e6dc'], ['r34', 0.7, '#e8e6dc', '#b7282e'], ['vaz2105', 3.2, '#6f9fc8', '#141416']]) save('liveries-' + id, await b.ev(`fzShots.liveries('${id}', ${angle}, '${c1}', '${c2}')`));
-    if (scenes.includes('finish')) for (const [id, angle] of [['e30', 3.7], ['r34', 0.8], ['vaz2105', 3.4]]) save('finish-' + id, await b.ev(`fzShots.finish('${id}', ${angle})`));
+    if (scenes.includes('details')) for (const [id, angle, tag] of DETAILS) save('detail-' + id + (tag ? '-' + tag : ''), await b.ev(`fzShots.showroom('${id}', ${angle}, 1.05)`));
+    if (scenes.includes('details')) for (const [id, popup] of CAR ? [[CAR, 1]] : [['diablo', 1], ['f355', 0.5], ['charger', 1]]) save('detail-lit-' + id, await b.ev(`fzShots.lit('${id}', 3.75, 1.1, ${popup})`));
+    if (scenes.includes('liveries')) for (const [id, angle, c1, c2] of CAR ? [[CAR, 3.6, '#1a2f6e', '#e8e6dc']] : [['e30', 3.6, '#1a2f6e', '#e8e6dc'], ['r34', 0.7, '#e8e6dc', '#b7282e'], ['vaz2105', 3.2, '#6f9fc8', '#141416']]) save('liveries-' + id, await b.ev(`fzShots.liveries('${id}', ${angle}, '${c1}', '${c2}')`));
+    if (scenes.includes('finish')) for (const [id, angle] of CAR ? [[CAR, 3.7]] : [['e30', 3.7], ['r34', 0.8], ['vaz2105', 3.4]]) save('finish-' + id, await b.ev(`fzShots.finish('${id}', ${angle})`));
     if (scenes.includes('faces')) save('faces', await b.ev(`fzShots.faces(${JSON.stringify(FACES)})`));
+    if (scenes.includes('blueprint') || scenes.includes('refs')) {
+      const ids = CAR ? [CAR] : (fs.existsSync(REFS) ? fs.readdirSync(REFS) : []).filter(d => fs.existsSync(path.join(REFS, d, 'fit.json')));
+      for (const id of ids) {
+        const fitFile = path.join(REFS, id, 'fit.json');
+        if (!fs.existsSync(fitFile)) { console.log('no ' + path.relative(ROOT, fitFile)); continue; }
+        const fit = JSON.parse(fs.readFileSync(fitFile, 'utf8'));
+        if (scenes.includes('blueprint') && fit.views) {
+          const report = {};
+          for (const v of await b.ev(`fzShots.blueprint('${id}', ${JSON.stringify(fit)})`)) { save(`blueprint-${id}-${v.name}`, v.url); report[v.name] = v.iou; }
+          fs.writeFileSync(path.join(out, `blueprint-${id}.json`), JSON.stringify(report, null, 2) + '\n');
+          console.log('blueprint ' + id + ': ' + JSON.stringify(report));
+        }
+        if (scenes.includes('refs') && fit.photos) for (const v of await b.ev(`fzShots.refs('${id}', ${JSON.stringify(fit)})`)) save(`refs-${id}-${v.name}`, v.url);
+      }
+    }
     if (scenes.includes('wheels')) {
       for (const id of WHEELS) save('wheel-' + id, await b.ev(`fzShots.showroom('${id}', 3.45, 0.85)`));
       for (const id of ['r34', 'vaz2105']) save('wheel-' + id + '-spinning', await b.ev(`fzShots.spinning('${id}', 3.45, 0.85)`));
     }
-    if (scenes.some(s => ['perf', 'breakdown', 'presets', 'liveries', 'cabin', 'cockpit', 'motion', 'night', 'rain', 'time', 'stats', 'city', 'weather', 'ads', 'festival', 'streets', 'airport', 'zakusala', 'lucavsala', 'market', 'bisumuiza', 'debug', 'photo', 'damage', 'flora', 'driver', 'heads', 'anim', 'outfits', 'drvmenu', 'rivals'].includes(s))) {
+    if (scenes.some(s => ['perf', 'breakdown', 'presets', 'liveries', 'cabin', 'cockpit', 'motion', 'night', 'rain', 'time', 'stats', 'city', 'weather', 'ads', 'festival', 'streets', 'airport', 'zakusala', 'lucavsala', 'market', 'bisumuiza', 'outskirts', 'debug', 'photo', 'damage', 'flora', 'driver', 'heads', 'anim', 'outfits', 'drvmenu', 'rivals'].includes(s))) {
       await b.ev(`fzShots.start(${JSON.stringify(FLEET)})`);
       await b.ev('fzShots.pump(120)');
     }
@@ -905,7 +1032,7 @@ async function main() {
       save('city-map', await b.capture());
       await b.ev('fzui.menus.closeAll(), true');
     }
-    for (const [scene, list] of [['weather', WEATHER_VIEWS], ['ads', AD_VIEWS], ['festival', FEST_VIEWS], ['streets', STREET_VIEWS], ['airport', AIRPORT_VIEWS], ['zakusala', ZAK_VIEWS], ['lucavsala', LUC_VIEWS], ['market', MARKET_VIEWS], ['bisumuiza', BIS_VIEWS]]) {
+    for (const [scene, list] of [['weather', WEATHER_VIEWS], ['ads', AD_VIEWS], ['festival', FEST_VIEWS], ['streets', STREET_VIEWS], ['airport', AIRPORT_VIEWS], ['zakusala', ZAK_VIEWS], ['lucavsala', LUC_VIEWS], ['market', MARKET_VIEWS], ['bisumuiza', BIS_VIEWS], ['outskirts', OUT_VIEWS]]) {
       if (!scenes.includes(scene)) continue;
       if (scene === 'ads') save('ad-atlas', await b.ev("Forza.Tex.paint('adatlas').toDataURL()"));
       if (scene === 'market') save('mkt-atlas', await b.ev("Forza.Tex.paint('mkt').toDataURL()"));
@@ -923,6 +1050,15 @@ async function main() {
       if (scene === 'bisumuiza') {
         await b.ev('fzui.menus.closeAll(), fzui.menus.push(fzui.menus.mapScreen()), fzShots.pump(8)');
         save('bis-map', await b.capture());
+        await b.ev('fzui.menus.closeAll(), true');
+      }
+      if (scene === 'outskirts') {
+        await b.ev("(() => { const g = fzui.game; g.clock = 14.5; g.setWeather('clear', true); g.veh.place(3420, -126, Math.PI / 2, fzui.world); fzui.camMode = 'chase'; fzui.camPos = null; fzui.keys = { up: true }; return true; })()");
+        await b.ev('fzShots.pump(760)');
+        save('out-border', await b.capture());
+        await b.ev("(() => { fzui.keys = {}; fzui.menus.closeAll(); const s = fzui.menus.mapScreen(); fzui.menus.push(s); s.cx = 3400; s.cz = 2300; s.zoom = 0.3; return true; })()");
+        await b.ev('fzShots.pump(8)');
+        save('out-map', await b.capture());
         await b.ev('fzui.menus.closeAll(), true');
       }
       await b.ev("fzui.game.setWeather('clear', true), true");
@@ -1027,7 +1163,7 @@ async function main() {
     if (scenes.includes('damage')) {
       const spot = JSON.stringify(WRECK_SPOT);
       const shot = async (name, frames) => { await b.ev(`fzShots.pump(${frames})`); save(name, await b.ev('fzShots.frame()')); };
-      for (const id of ['e30', 'vaz2105', 'r34']) {
+      for (const id of CAR ? [CAR] : ['e30', 'vaz2105', 'r34']) {
         console.log('damage ' + id + ': ' + await b.ev(`fzShots.wreckAt('${id}', ${spot}, { hits: ['front', 'left', 'rear', 'front'] })`));
         await b.ev('fzShots.pump(50)');
         for (const [view, ang, d, h] of [['front', -0.7, 5.6, 1.6], ['rear', -2.4, 5.6, 1.6], ['side', -1.57, 5.2, 1.1]]) {
@@ -1036,15 +1172,16 @@ async function main() {
         }
         await b.ev('fzShots.free()');
       }
-      await b.ev(`fzShots.wreckAt('e30', ${spot}, { cam: 'cockpit', hits: ['front', 'front', 'front'] })`);
+      const dmgCar = CAR || 'e30';
+      await b.ev(`fzShots.wreckAt('${dmgCar}', ${spot}, { cam: 'cockpit', hits: ['front', 'front', 'front'] })`);
       await shot('damage-cockpit-cracked', 20);
       await b.ev('fzui.game.veh.dmg.anim.hood = 0.95, true');
       await shot('damage-cockpit-hood', 1);
-      await b.ev(`fzShots.wreckAt('e30', ${spot}, { clock: 22.5, lights: true, hits: ['front'] })`);
+      await b.ev(`fzShots.wreckAt('${dmgCar}', ${spot}, { clock: 22.5, lights: true, hits: ['front'] })`);
       await b.ev('fzShots.orbit(7, -0.25, 1.4)');
       await shot('damage-night-headlight', 30);
       await b.ev('fzShots.free()');
-      for (const type of SMASH) {
+      for (const type of CAR ? [] : SMASH) {
         await b.ev(`fzShots.wreckAt('e30', ${spot}, {})`);
         const s = await b.ev(`fzShots.smashSetup('${type}', ${spot})`);
         if (!s) { console.log('smash: no ' + type); continue; }
@@ -1057,13 +1194,15 @@ async function main() {
         console.log('smash ' + s.join(' ') + ': rubble ' + await b.ev('fzui.rubble.list.length + " bodies, " + fzui.rubble.list.filter(x => x.sleep).length + " at rest"'));
         await b.ev('fzShots.free()');
       }
-      await b.ev(`fzShots.wreckAt('vaz2105', ${spot}, {})`);
-      console.log('parked: ' + await b.ev(`fzShots.parkedSetup(${spot})`));
-      await shot('damage-parked-1', 40);
-      await b.ev('fzui.keys = {}, fzShots.spotCam()');
-      await shot('damage-parked-2', 90);
-      await b.ev('fzShots.free()');
-      await b.ev(`fzShots.wreckAt('r34', ${spot}, { clock: 19.4, hits: ['front', 'fire'] })`);
+      if (!CAR) {
+        await b.ev(`fzShots.wreckAt('vaz2105', ${spot}, {})`);
+        console.log('parked: ' + await b.ev(`fzShots.parkedSetup(${spot})`));
+        await shot('damage-parked-1', 40);
+        await b.ev('fzui.keys = {}, fzShots.spotCam()');
+        await shot('damage-parked-2', 90);
+        await b.ev('fzShots.free()');
+      }
+      await b.ev(`fzShots.wreckAt('${CAR || 'r34'}', ${spot}, { clock: 19.4, hits: ['front', 'fire'] })`);
       await b.ev('fzShots.orbit(7.5, -0.8, 2.2)');
       await shot('damage-fire', 200);
       await shot('damage-explosion', 352);
@@ -1075,20 +1214,29 @@ async function main() {
         await world('chase-' + id, id, {}, 40);
         await world('cockpit-' + id, id, { cam: 'cockpit' }, 12);
       }
-      await world('hood-r34', 'r34', { cam: 'hood' }, 12);
-      await world('cockpit-back-vaz2105', 'vaz2105', { cam: 'cockpit', back: true }, 12);
-      await world('cockpit-back-f355', 'f355', { cam: 'cockpit', back: true }, 12);
+      if (CAR) {
+        await world('hood-' + CAR, CAR, { cam: 'hood' }, 12);
+        await world('cockpit-back-' + CAR, CAR, { cam: 'cockpit', back: true }, 12);
+      } else {
+        await world('hood-r34', 'r34', { cam: 'hood' }, 12);
+        await world('cockpit-back-vaz2105', 'vaz2105', { cam: 'cockpit', back: true }, 12);
+        await world('cockpit-back-f355', 'f355', { cam: 'cockpit', back: true }, 12);
+      }
     }
     if (scenes.includes('motion')) await world('motion-chase-e30', 'e30', { drive: true }, 150);
     if (scenes.includes('night')) {
       const night = { clock: 22.5, lights: true };
-      await world('night-chase-e30', 'e30', night, 40);
-      await world('night-front-e30', 'e30', { ...night, back: true }, 40);
-      await world('night-cockpit-e30', 'e30', { ...night, cam: 'cockpit' }, 12);
-      await world('night-front-diablo', 'diablo', { ...night, back: true }, 40);
-      await world('night-front-charger', 'charger', { ...night, back: true }, 40);
-      await world('night-reverse-e30', 'e30', { ...night, rev: true }, 90);
-      await world('night-chase-uaz469', 'uaz469', night, 40);
+      if (CAR) {
+        for (const [name, o, n] of [['chase', night, 40], ['front', { ...night, back: true }, 40], ['cockpit', { ...night, cam: 'cockpit' }, 12], ['reverse', { ...night, rev: true }, 90]]) await world(`night-${name}-${CAR}`, CAR, o, n);
+      } else {
+        await world('night-chase-e30', 'e30', night, 40);
+        await world('night-front-e30', 'e30', { ...night, back: true }, 40);
+        await world('night-cockpit-e30', 'e30', { ...night, cam: 'cockpit' }, 12);
+        await world('night-front-diablo', 'diablo', { ...night, back: true }, 40);
+        await world('night-front-charger', 'charger', { ...night, back: true }, 40);
+        await world('night-reverse-e30', 'e30', { ...night, rev: true }, 90);
+        await world('night-chase-uaz469', 'uaz469', night, 40);
+      }
     }
     if (scenes.includes('presets')) {
       for (const gfx of ['retro', 'high', 'ultra']) {

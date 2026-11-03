@@ -237,4 +237,14 @@
 #### `cccstandee`: Картонный злодей (4★, Разрушение) — готово 22.10.2026
 > Talleah of Avia in a cosplay of a red-haired alien superheroine (long red wig, orange-tinted skin, purple top and skirt, bright big eyes) in the busy main hall of a cosplay convention, aiming a sleek alien blaster with a furious face at a life-size cardboard cutout of a huge purple-skinned cosmic villain with a golden gauntlet that she has just knocked to the floor; cosplayers around look at her in surprise, convention booths and banners behind. Comedic, dynamic mood.
 
+### Закрытый тест
+
+Героини секретного прыжка (`HSR-LAB.md`). Референс: Full Artwork оригинала. Импорт: `python tools/hsr-cone-pix.py <ключ> <картинка> --pixel --colors 64`.
+
+#### `undeniable`: Навстречу неоспоримому (5★, Эрудиция, Великая Герта) — готово 01.11.2026
+> The Herta (young woman with very long straight ash-beige hair, violet eyes, calm proud profile, a huge wide-brimmed black witch hat with a lavender underside, purple iris flowers and a thin red band; black off-shoulder corset with silver trim, long black detached sleeves with white lace cuffs, dark stockings) sits in profile on a stack of books in a dark clock-tower study at the edge of the cosmos, one hand raised thoughtfully near her chin. In front of her an open book glows with golden handwriting while a purple quill writes by itself in the air. Foreground: a round glass flask of dark violet liquid with a teal stopper, a short candle with a purple flame, an old brass key on a purple ribbon. Tall shelves fade into shadow, a starry sky shows behind her. Quiet, thoughtful mood. Palette of deep indigo, violet and silver with warm gold from the book.
+
+#### `timeflower`: Если бы время было цветком (5★, Гармония, Трибби) — готово 01.11.2026
+> Tribbie (small girl with a short bright-red bob and a little side tuft, pointed elf ears, a black headband with white flowers with blue centers, cream dress with gold embroidery and red ribbons, a golden cloud pendant, two small golden wings, one black armored gauntlet) lies asleep on her back among scattered letters and sealed envelopes, eyes closed, soft smile, warm stripes of morning sunlight across her. At the top corner a second red-haired girl leans in with a red pen, her face half hidden by hair; at the lower corner a third red-haired girl with a flower crown is seen from behind, sorting envelopes. Around them an inkwell, a red wax seal and a feather. Tender, sleepy mood. Palette of warm cream, gold and vivid red with soft sunlight.
+
 Промпты следующих конусов добавляются на их этапах.

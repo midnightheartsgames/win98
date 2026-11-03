@@ -339,12 +339,14 @@ async function main() {
       if (!await waitFor('!!window.tfui', 80)) { console.log('page not ready'); failed = true; return; }
       await evalJs('tfui.start("2fort", "novice"); tfui.game.player.hp = tfui.game.player.maxHp = 1e6; true');
       const views = [
-        ['fort-bridge', -13, 0, 0, 1.57, 0], ['fort-facade', 8, 0, 0, -1.57, 0.05], ['fort-canal', -8, -3.4, 18, 2.72, 0.1],
-        ['fort-lobby', -30.5, 0, -3.5, 0.82, 0], ['fort-side', -33, 0, 11, 2.09, 0], ['fort-corridor', -27.2, 0, -7, 3.14, 0],
-        ['fort-yard', -33.5, 0, -7, -0.9, 0.05], ['fort-hall', -35.5, 3.4, 13.5, 2.05, 0], ['fort-grate', -25.5, 3.4, 4, -2.68, -0.3],
-        ['fort-bastion', -23.5, 3.4, 1, 1.57, -0.02], ['fort-spiral', -29, 3.4, 17.2, -1.57, -0.1], ['fort-stairs', -53.2, 0, -0.6, 0, -0.2],
-        ['fort-basement', -39.5, -5, 8.5, -0.72, 0], ['fort-control', -34.8, -5, 4, -2.13, -0.05], ['fort-tunnel', -13, -3.2, 0, -1.57, 0],
-        ['fort-shower', -46, 0, 13, 2.68, 0]
+        ['fort-bridge', 12, 0, 0, -1.57, 0], ['fort-facade', 6, 0, 0, 1.57, 0.08], ['fort-canal', 0, -3.4, 8, 2.4, 0.1],
+        ['fort-lobby', 20.5, 0, -7, 1.2, 0], ['fort-stem', 34.5, 0, 0, -1.57, 0], ['fort-corridor', 40.3, 0, 13, 3.14, 0],
+        ['fort-side', 35.5, 0, 5, -0.8, 0], ['fort-yard', 36, 0, 27.5, 2.2, 0.05], ['fort-hall', 35.5, 3.4, 5, -0.8, 0],
+        ['fort-grate', 28, 3.4, 2, 2.03, -0.3], ['fort-bastion', 20.5, 3.4, 0, -1.57, -0.02], ['fort-ledge', 21, 3.4, 13, -1.8, -0.05],
+        ['fort-spiral', 38, 3.4, 9.2, 1.57, -0.05], ['fort-spiral2', 45.2, 3.2, 7, 3.14, -0.2], ['fort-stairs', 51.5, 0, 25.2, 1.57, -0.15],
+        ['fort-basement', 53.5, -5, 15, 1.57, 0], ['fort-corridor2', 73.7, -5, 11, 3.14, 0], ['fort-control', 59.2, -5, -5.8, 1.57, -0.05],
+        ['fort-window', 64.5, -5, -3.5, 3.14, 0.05], ['fort-tunnel', 12.5, -3.2, -6, -1.57, 0], ['fort-shower', 29, 0, 38.5, 3.14, 0],
+        ['fort-side-shower', 36, 3.4, -30, 0.4, 0]
       ];
       for (const [name, x, y, z, yaw, pitch] of views) {
         await evalJs(`(() => { const p = tfui.game.player; p.hp = 1e6; p.pos.x = p.prev.x = ${x}; p.pos.y = p.prev.y = ${y}; p.pos.z = p.prev.z = ${z}; p.vel.x = p.vel.y = p.vel.z = 0; tfui.yaw = ${yaw}; tfui.pitch = ${pitch}; return true; })()`);

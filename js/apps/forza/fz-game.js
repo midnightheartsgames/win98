@@ -62,7 +62,7 @@
       band: 0, pts: 0, results: {}, stunts: {}, boards: [], barns: [], outposts: ['hub'], roads: [],
       settings: defaultSettings(), stats: { dist: 0, drift: 0, top: 0, wins: 0, races: 0, smashed: 0, near: 0, air: 0, bestChain: 0, time: 0 },
       prologue: false, finale: false, clock: 11.5, weather: 'clear', pos: null, ftCount: 0,
-      driver: null, wardrobe: WARDROBE_START.slice(), outfits: [null, null, null], wardrobeSeen: []
+      driver: null, wardrobe: WARDROBE_START.slice(), outfits: [null, null, null], wardrobeSeen: [], gifts: []
     };
   }
 
@@ -83,6 +83,7 @@
       if (!Array.isArray(p.outfits)) p.outfits = [null, null, null];
       if (!Array.isArray(p.wardrobeSeen)) p.wardrobeSeen = [];
       if (p.driver === undefined) p.driver = null;
+      if (!Array.isArray(p.gifts)) p.gifts = F.Cars.CARS.filter(c => c.gift && !c.lateGift && c.gift <= p.level).map(c => c.gift);
       return p;
     } catch (e) { return null; }
   }
@@ -118,7 +119,7 @@
     const offroad = ev.type === 'dirt' || ev.type === 'cc';
     const cands = [];
     for (const c of F.Cars.CARS) {
-      if (c.barn || c.id === 'mclarenf1') continue;
+      if (c.barn || c.id === 'mclarenf1' || (!offroad && c.vmax < 100)) continue;
       const stock = F.perfOf(c.id, {}).pi;
       if (stock > target + 12) continue;
       if (stock < target - 320) continue;
@@ -370,7 +371,7 @@
 
     placeStart() {
       const p = this.profile.pos;
-      if (p && isFinite(p.x) && !this.world.isWaterAt(p.x, p.z)) this.veh.place(p.x, p.z, p.yaw || 0, this.world);
+      if (p && isFinite(p.x) && !this.world.isWaterAt(p.x, p.z) && !this.world.outside(p.x, p.z)) this.veh.place(p.x, p.z, p.yaw || 0, this.world);
       else {
         const h = F.MAP.HUB;
         this.veh.place(h.x, h.z, h.yaw, this.world);
@@ -392,10 +393,12 @@
       const events = [];
       const pre = { x: veh.x, z: veh.z };
       this.field(dt, inp);
+      veh.racing = !!this.race;
       for (let i = 0; i < sub; i++) {
         veh.step(dt / sub, inp, this.world);
         for (const e of veh.events) events.push(e);
       }
+      this.roadEdge = this.world.lastEdge;
       this.wreck(dt);
       const moved = Math.hypot(veh.x - pre.x, veh.z - pre.z);
       this.profile.stats.dist += moved;
@@ -822,8 +825,8 @@
 
     discover() {
       const v = this.veh;
-      const e = this.world.lastEdge;
-      if (e && !this.roadsSeen.has(e.id)) {
+      const e = this.roadEdge;
+      if (e && !e.outer && !this.roadsSeen.has(e.id)) {
         this.roadsSeen.add(e.id);
         this.profile.roads.push(e.id);
         const pct = Math.floor(this.roadsSeen.size / this.world.edges.length * 100);
@@ -937,7 +940,7 @@
         v.place(p.x, p.z, Math.atan2(p.tx, -p.tz), this.world);
         this.race.lastIdx = p.i;
       } else {
-        const nr = this.world.nearestRoad(v.x, v.z, 400, e => !e.bridge || true);
+        const nr = this.world.nearestRoad(v.x, v.z, 400, e => !e.outer);
         if (nr) {
           const fx = Math.sin(v.yaw), fz = -Math.cos(v.yaw);
           const sgn = nr.tx * fx + nr.tz * fz >= 0 ? 1 : -1;
@@ -979,6 +982,10 @@
         const r = EV().levelReward(p.level);
         p.credits += r.cr;
         let car = null;
+        if (r.car) {
+          if (!p.gifts) p.gifts = [];
+          if (!p.gifts.includes(p.level)) p.gifts.push(p.level);
+        }
         if (r.car && !p.cars.some(c => c.id === r.car)) { this.giveCar(r.car, false); car = r.car; }
         if (p.level % F.Wear.GIFT_EVERY === 0) {
           const it = F.Wear.giftFor(p, (p.level * 7919) ^ p.wardrobe.length);
@@ -987,6 +994,19 @@
         this.emit({ t: 'levelup', level: p.level, cr: r.cr, car });
         need = EV().xpForLevel(p.level);
       }
+    }
+
+    lateGifts() {
+      const p = this.profile, out = [];
+      if (!p.gifts) p.gifts = [];
+      for (const c of F.Cars.CARS) {
+        if (!c.gift || c.gift > p.level || p.gifts.includes(c.gift)) continue;
+        p.gifts.push(c.gift);
+        if (p.cars.some(q => q.id === c.id)) continue;
+        this.giveCar(c.id, true);
+        out.push(c.id);
+      }
+      return out;
     }
 
     giveCar(id, silent) {
@@ -1355,7 +1375,7 @@
       const w = this.world, v = this.veh;
       let x = spot.x, z = spot.z, yaw = spot.yaw || 0;
       if (!spot.exact) {
-        const nr = w.nearestRoad(spot.x, spot.z, 400, e => !e.bridge);
+        const nr = w.nearestRoad(spot.x, spot.z, 400, e => !e.bridge && !e.outer);
         if (!nr) return false;
         const aim = spot.toward || [spot.x, spot.z];
         let sgn = nr.tx * (aim[0] - nr.x) + nr.tz * (aim[1] - nr.z) >= 0 ? 1 : -1;
