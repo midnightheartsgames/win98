@@ -11,7 +11,7 @@
   const buf = { cv: null };
 
   function zoom(g, fx, fy, z, fn) { g.save(); g.translate(fx, fy); g.scale(z, z); g.translate(-fx, -fy); fn(); g.restore(); }
-  function clip(g, x, y, w, h, fn) { g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip(); fn(); g.restore(); }
+  function clip(g, x, y, w, h, fn) { if (g._wide && x <= 0 && x + w >= LW) { x = -60; w = LW + 120; } g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip(); fn(); g.restore(); }
   function cuts(g, t, list) { for (const c of list) if (t >= c && t < c + 0.1) flash(g, '#ffffff', 0.45 * (1 - (t - c) / 0.1)); }
   function stand(g, col, w) { lighter(g, () => glow(g, CX, CY - 96, 92, col, 0.16)); ell(g, 'rgba(0,0,0,0.42)', CX, CY, w || 26, (w || 26) * 0.2); }
   function hand(P, side) { const h = HANDS[P.look.body] || HANDS.m; return { x: CX + side * (h[0] - 0.5) * 2, y: CY - (G.FIG_FOOT - h[1]) * 2 }; }
@@ -171,8 +171,8 @@
     vgrad(g, 0, LH, [[0, '#4a7ac0'], [0.55, '#9ac0e4'], [1, '#e4eef8']]);
     lighter(g, () => glow(g, 250, 44, 90, '#fff4d8', 0.35));
     const b = base || 170;
-    for (let i = 0; i < 6; i++) {
-      const x = 4 + i * 56 + (i % 2) * 8, h = 34 + hx(i, 4, 31) * 46, w = 26, tiers = h > 60 ? 2 : 1;
+    for (let i = (g._wide ? -1 : 0); i < (g._wide ? 7 : 6); i++) {
+      const x = 4 + i * 56 + ((i & 1) * 8), h = 34 + hx(i + 2, 4, 31) * 46, w = 26, tiers = h > 60 ? 2 : 1;
       rect(g, '#a8bcd6', x, b - h, w, h); rect(g, '#bccce0', x, b - h, 6, h);
       for (let j = 0; j < tiers; j++) {
         const ty = b - h + j * 22, ew = w + 14 - j * 4;
@@ -2020,10 +2020,13 @@
     return { id: r.id, rar: r.rar, std: !!std, path: d.path || 'destruction', elem: d.elem || 'phys', col: el.col, look, seed: hx(r.id.length, r.id.charCodeAt(0), 3) * 4 };
   }
 
-  function render(game, r, t, std) {
-    const cv = buf.cv || (buf.cv = G.mkCanvas(LW, LH)), g = cv.getContext('2d'), P = params(game, r, std);
+  function render(game, r, t, std, wide) {
+    const rw = wide ? 427 : LW, ox = (rw - LW) >> 1;
+    const cv = buf.cv && buf.cv.width === rw ? buf.cv : (buf.cv = G.mkCanvas(rw, LH)), g = cv.getContext('2d'), P = params(game, r, std);
+    g._wide = !!wide;
     g.save();
     g.imageSmoothingEnabled = false;
+    if (ox) g.translate(ox, 0);
     const S = H.Cine.stage(g, game, t);
     if (t < SIGN) { S.t = t; S.d = SIGN; sign(S, P, t); }
     else {
@@ -2043,8 +2046,8 @@
     const show = showOf(r, game), end = SIGN + show.d, col = RAR[r.rar] || RAR[4];
     const h = Math.round(BAR * 2 * (t < end ? sm(seg(t, 0, 0.35)) : 1 - sm(seg(t, end, end + 0.4))));
     if (h > 0) {
-      c.fillStyle = '#000000'; c.fillRect(0, 0, W, h); c.fillRect(0, HGT - h, W, h);
-      c.fillStyle = rgba(col, 0.55); c.fillRect(0, h - 1, W, 1); c.fillRect(0, HGT - h, W, 1);
+      c.fillStyle = '#000000'; c.fillRect(ui.left, 0, ui.vw, h); c.fillRect(ui.left, HGT - h, ui.vw, h);
+      c.fillStyle = rgba(col, 0.55); c.fillRect(ui.left, h - 1, ui.vw, 1); c.fillRect(ui.left, HGT - h, ui.vw, 1);
     }
     const path = (H.CHARS[r.id] || {}).path, a = seg(t, 0.5, 0.8) * (1 - seg(t, 1.0, 1.15));
     if (t < SIGN && path && a > 0) {

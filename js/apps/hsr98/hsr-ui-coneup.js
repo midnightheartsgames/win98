@@ -145,6 +145,8 @@
           ui.text(stars, rx0 + rowW, sy + 3, { size: 11, align: 'right', col: G.RARITY[d.rarity] });
           const hk = this.holder();
           ui.text(hk ? 'Надет: ' + ui.shortName(hk) : 'Не надет', 14, 216, { size: 11, bold: true, col: hk ? C.ok : C.dim });
+          G.lockIcon(c, 146, 213, !!cn.lock, { badge: true, r: 7 });
+          ui.hit(142, 209, 22, 22, () => { g.toggleConeLock(cn.uid); ui.sfx('select'); });
           ui.button(14, 234, 148, 24, 'Надеть на…', () => ui.openConeTarget(cn.uid), { size: 11, icon: 'chars' });
           if (this.list().length > 1) {
             ui.keycap(180, 380, 'Q'); ui.hit(172, 374, 30, 26, () => this.setCone(-1));
@@ -248,6 +250,7 @@
           if (code === 'KeyQ') return this.setCone(-1);
           if (code === 'KeyE') return this.setCone(1);
           if (code === 'KeyV') return this.pick(0);
+          if (code === 'KeyL') { g.toggleConeLock(this.coneUid); ui.sfx('select'); return; }
           if (code === 'Tab') { this.tab = this.tab === 1 ? 2 : 1; ui.sfx('select'); return; }
           if (this.tab === 2) {
             const n2 = g.coneCopies(this.cone()).length;
@@ -400,6 +403,413 @@
           ui.button(x + w / 2 - 70, y + h - 42, 140, 28, 'Дальше', () => ui.pop(), { size: 12, active: true });
         },
         key(kk) { if (kk === 'ok' || kk === 'back') ui.pop(); }
+      });
+    },
+
+    makeConeSalvageState() {
+      const ui = this, g = this.game, sorts = H.ASC.coneSorts;
+      return {
+        full: true, picked: new Set(), focusUid: null, sel: 0, sc: { top: 0 }, includeEnhanced: false, sortKey: 'rarity', sortDir: 1, sortMenu: false,
+        list() { return g.coneSalvageList(this.sortKey, this.sortDir, { includeEnhanced: this.includeEnhanced }); },
+        syncPicked() {
+          for (const uid of [...this.picked]) {
+            const cn = g.coneOf(uid);
+            if (!cn || !g.coneCanSalvage(cn, { includeEnhanced: this.includeEnhanced })) this.picked.delete(uid);
+          }
+        },
+        toggleEnhanced() {
+          this.includeEnhanced = !this.includeEnhanced;
+          this.syncPicked();
+          this.sel = 0;
+          this.sc.top = 0;
+          ui.sfx('select');
+        },
+        togglePick(cn) {
+          if (!cn) return;
+          this.focusUid = cn.uid;
+          if (cn.lock) { ui.sfx('select'); return; }
+          if (this.picked.has(cn.uid)) {
+            this.picked.delete(cn.uid);
+            ui.sfx('cancel');
+            return;
+          }
+          if (this.picked.size >= H.ASC.coneSalvageCap) {
+            ui.sfx('deny');
+            ui.toast('Выбрано максимум предметов (' + H.ASC.coneSalvageCap + ').');
+            return;
+          }
+          this.picked.add(cn.uid);
+          ui.sfx('select');
+        },
+        toggleAll() {
+          const all = this.list(), unlocked = all.filter(x => !x.lock);
+          if (!unlocked.length) { ui.sfx('deny'); ui.toast('Нет разблокированных конусов для выбора.'); return; }
+          const allOn = unlocked.every(x => this.picked.has(x.uid)) || this.picked.size >= H.ASC.coneSalvageCap;
+          if (allOn) {
+            this.picked.clear();
+            ui.sfx('cancel');
+            return;
+          }
+          this.picked.clear();
+          for (const x of unlocked) {
+            if (this.picked.size >= H.ASC.coneSalvageCap) break;
+            this.picked.add(x.uid);
+          }
+          if (!this.focusUid && unlocked[0]) this.focusUid = unlocked[0].uid;
+          ui.sfx('select');
+        },
+        act() {
+          this.syncPicked();
+          const prev = g.coneSalvagePreview([...this.picked]);
+          if (!prev.count) { ui.sfx('deny'); ui.toast('Выберите Световые конусы для разбора.'); return; }
+          ui.openConeSalvageConfirm(this, prev);
+        },
+        drawLeft(c, cn) {
+          const px = 12, py = 36, pw = 192, ph = 384;
+          ui.win(px, py, pw, ph, { alpha: 0.9, corners: false });
+          if (!cn) {
+            c.strokeStyle = 'rgba(154,166,208,0.35)';
+            c.lineWidth = 1.5;
+            c.beginPath();
+            c.arc(px + pw / 2, py + 162, 10, Math.PI, 0, false);
+            c.lineTo(px + pw / 2 + 10, py + 178);
+            c.lineTo(px + pw / 2 - 10, py + 178);
+            c.closePath();
+            c.stroke();
+            c.lineWidth = 1;
+            ui.text('Выберите предмет для разбора', px + pw / 2, py + 190, { align: 'center', size: 10, col: C.dim });
+            return;
+          }
+          const d = H.CONES[cn.id], st = g.coneStatsOf(cn), cl = g.coneLvlOf(cn, null), col = G.RARITY[d.rarity];
+          ui.text(ui.fitText(d.name, 11, pw - 18, true), px + 9, py + 8, { size: 11, bold: true, col });
+          c.fillStyle = col; c.fillRect(px + 9, py + 23, pw - 18, 1.5);
+          const ax = px + 9, ay = py + 28, aw = pw - 18, ah = 56;
+          const art = G.coneArt(cn.id, 160, 224);
+          c.save();
+          c.beginPath(); c.rect(ax, ay, aw, ah); c.clip();
+          c.fillStyle = '#0a0c18'; c.fillRect(ax, ay, aw, ah);
+          c.imageSmoothingEnabled = false;
+          c.drawImage(art, ax, ay - 68, aw, Math.round(aw * 1.4));
+          c.strokeStyle = 'rgba(242,220,154,0.28)'; c.strokeRect(ax + 0.5, ay + 0.5, aw - 1, ah - 1);
+          c.fillStyle = 'rgba(6,8,20,0.86)'; c.fillRect(ax, ay + ah - 14, aw, 14);
+          ui.text('★'.repeat(d.rarity), ax + 4, ay + ah - 13, { size: 9, col });
+          let sx = ax + aw - 4;
+          [['def', st.def], ['atk', st.atk], ['hp', st.hp]].forEach(([k, v]) => {
+            const vs = String(v), tw = ui.measure(vs, 9);
+            ui.text(vs, sx, ay + ah - 12, { size: 9, bold: true, align: 'right', col: C.cream });
+            G.statIcon(c, k, sx - tw - 11, ay + ah - 12, 10, '#c8d0f0');
+            sx -= tw + 15;
+          });
+          c.restore();
+          let y = ay + ah + 6;
+          ui.text('Ур. ' + cl.lvl + '/' + cl.cap, px + 9, y + 2, { size: 11, bold: true, col: C.cream });
+          G.lockIcon(c, px + pw - 23, y, !!cn.lock, { badge: true, r: 7 });
+          ui.hit(px + pw - 27, y - 2, 20, 20, () => {
+            const locked = g.toggleConeLock(cn.uid);
+            if (locked) this.picked.delete(cn.uid);
+            ui.sfx('select');
+          });
+          y += 20;
+          G.pathIcon(c, d.path, px + 9, y + 1, 12);
+          ui.text('Только для Пути «' + H.PATHS[d.path].name + '»', px + 24, y + 1, { size: 9, col: C.gold });
+          y += 17;
+          G.supBadge(c, px + 9, y, cn.sup || 1, 6);
+          ui.text('Наложение ур. ' + (cn.sup || 1), px + 24, y + 1, { size: 10, col: C.sub });
+          y += 16;
+          ui.text(ui.fitText(d.skill || 'Эффект', 10, pw - 18, true), px + 9, y, { size: 10, bold: true, col: C.cream });
+          y += 14;
+          ui.coneLines(cn.id, cn.sup || 1, pw - 18, 9, 5).forEach(l => {
+            ui.richText(l, px + 9, y, { size: 9, col: C.sub });
+            y += 12;
+          });
+          y += 4;
+          c.fillStyle = 'rgba(242,220,154,0.22)'; c.fillRect(px + 9, y, pw - 18, 1);
+          y += 5;
+          const loreLines = (d.desc || '').split('\n').filter(Boolean).flatMap(p => ui.wrap(p, pw - 18, 9));
+          const maxLore = Math.max(1, Math.floor((py + ph - 6 - y) / 11));
+          loreLines.slice(0, maxLore).forEach((l, i) => ui.text(l, px + 9, y + i * 11, { size: 9, col: C.dim }));
+        },
+        drawSortPopup(c) {
+          const mx = 212, my = 426 - sorts.length * 26 - 6, mw = 138, mh = sorts.length * 26 + 4;
+          ui.hit(0, 0, W, HGT, () => { this.sortMenu = false; });
+          c.fillStyle = 'rgba(6,8,20,0.96)'; c.fillRect(mx, my, mw, mh);
+          c.strokeStyle = C.brass; c.strokeRect(mx + 0.5, my + 0.5, mw - 1, mh - 1);
+          sorts.forEach((s, i) => {
+            const ry = my + 2 + i * 26, on = s.id === this.sortKey;
+            if (on) { c.fillStyle = 'rgba(242,220,154,0.16)'; c.fillRect(mx + 2, ry, mw - 4, 25); }
+            if (i > 0) { c.fillStyle = 'rgba(154,166,208,0.2)'; c.fillRect(mx + 8, ry, mw - 16, 1); }
+            ui.text(s.label, mx + 10, ry + 7, { size: 10, bold: on, col: on ? C.gold : C.cream });
+            const rcx = mx + mw - 16, rcy = ry + 13;
+            c.strokeStyle = on ? '#e69c3a' : C.sub; c.lineWidth = 1.4;
+            c.beginPath(); c.arc(rcx, rcy, 5.5, 0, Math.PI * 2); c.stroke();
+            if (on) { c.fillStyle = '#e69c3a'; c.beginPath(); c.arc(rcx, rcy, 2.8, 0, Math.PI * 2); c.fill(); }
+            c.lineWidth = 1;
+            ui.hit(mx + 2, ry, mw - 4, 25, () => { this.sortKey = s.id; this.sortMenu = false; this.sel = 0; ui.sfx('select'); });
+          });
+        }
+      };
+    },
+
+    drawConeSalvageBody(c, st, opts = {}) {
+      const ui = this, g = this.game, COLS = 7, CW = 58, CH = 66, VIS = 5, sorts = H.ASC.coneSorts;
+      st.syncPicked();
+      const all = st.list(), rows = Math.ceil(all.length / COLS);
+      if (st.sel >= all.length) st.sel = Math.max(0, all.length - 1);
+      const focusCn = st.focusUid != null ? g.coneOf(st.focusUid) : null;
+      st.drawLeft(c, focusCn);
+      const gx = 212, gy = 56, gw = 416, gh = 334;
+      ui.text('Количество: ' + g.state.inv.cones.length + '/' + H.ASC.coneInvCap, gx, 38, { size: 10, col: C.cream });
+      ui.text('Можно разобрать ' + g.coneSalvageableTotal({ includeEnhanced: st.includeEnhanced }), gx + 114, 38, { size: 10, col: C.sub });
+      ui.text('Включать усиленные конусы', gx + gw - 34, 39, { size: 9, align: 'right', col: st.includeEnhanced ? C.gold : C.sub });
+      ui.drawToggleSwitch(c, gx + gw - 30, 36, st.includeEnhanced, () => st.toggleEnhanced());
+      ui.win(gx - 4, gy - 4, gw + 4, gh + 4, { alpha: 0.85, corners: false });
+      const start = ui.listTop(st.sc, Math.floor(st.sel / COLS), rows, VIS) * COLS;
+      ui.wheelZone(gx, gy, gw, gh, d => { st.sc.top += d; });
+      if (rows > VIS) ui.scrollBar(gx + gw - 10, gy + 2, gh - 8, st.sc, rows, VIS);
+      all.slice(start, start + COLS * VIS).forEach((cn, j) => {
+        const i = start + j, cx = gx + 4 + (j % COLS) * CW, cy = gy + 4 + Math.floor(j / COLS) * CH;
+        const isPicked = st.picked.has(cn.uid), isFocus = st.focusUid === cn.uid || i === st.sel;
+        if (isFocus && !isPicked) { c.fillStyle = 'rgba(242,220,154,0.22)'; c.fillRect(cx - 2, cy - 2, 54, 66); }
+        G.drawConeCard(c, cn.id, cx, cy, 50, 62, { sup: cn.sup || 1, supBadge: true, lock: !!cn.lock, selected: isPicked, lvl: cn.lvl || 1 });
+        ui.hit(cx, cy, 50, 62, () => { st.sel = i; st.togglePick(cn); });
+        if (isPicked) ui.hit(cx - 5, cy - 5, 16, 16, () => { st.focusUid = cn.uid; st.picked.delete(cn.uid); ui.sfx('cancel'); });
+      });
+      if (!all.length) {
+        const msg = !st.includeEnhanced && g.coneSalvageableTotal({ includeEnhanced: true }) > 0
+          ? 'Нет конусов 1-го уровня. Включите «Включать усиленные конусы».'
+          : 'Нет подходящих Световых конусов для разбора.';
+        ui.text(msg, gx + gw / 2, gy + gh / 2 - 8, { align: 'center', size: 10, col: C.dim });
+      }
+      const prev = g.coneSalvagePreview([...st.picked]);
+      ui.text('Выбрано ', gx, 400, { size: 11, col: C.cream });
+      const w0 = ui.measure('Выбрано ', 11);
+      ui.text(String(prev.count), gx + w0, 400, { size: 11, bold: true, col: '#e69c3a' });
+      ui.text(' / ' + H.ASC.coneSalvageCap, gx + w0 + ui.measure(String(prev.count), 11, true), 400, { size: 11, col: C.cream });
+      if (prev.items.length) {
+        const rx0 = W - 12 - prev.items.length * 36;
+        ui.text('Результат', rx0 - 6, 400, { size: 11, align: 'right', col: C.sub });
+        prev.items.forEach((it, idx) => {
+          const ix = rx0 + idx * 36, iy = 390;
+          G.rarityCell(c, ix, iy, 32, 32, it.rar);
+          G.itemIcon(c, it.id, ix + 4, iy + 1, 24);
+          c.fillStyle = 'rgba(6,8,20,0.85)'; c.fillRect(ix + 1, iy + 22, 30, 9);
+          ui.text(String(it.count), ix + 16, iy + 22, { size: 8, bold: true, align: 'center', col: C.cream });
+          ui.hit(ix, iy, 32, 32, () => ui.toast(it.name + ': +' + H.ITEMS[it.id].coneExp + ' опыта Светового конуса'));
+        });
+      }
+      const curSort = (sorts.find(s => s.id === st.sortKey) || sorts[0]).label;
+      ui.button(gx, 426, 98, 24, curSort + ' ▾', () => { st.sortMenu = !st.sortMenu; ui.sfx('select'); }, { size: 10, active: st.sortMenu });
+      ui.button(gx + 100, 426, 30, 24, st.sortDir === 1 ? '1↓' : '1↑', () => { st.sortDir = -st.sortDir; ui.sfx('select'); }, { size: 10 });
+      c.fillStyle = '#e8e4d8';
+      c.beginPath(); c.arc(gx + 147, 438, 12, 0, Math.PI * 2); c.fill();
+      c.strokeStyle = C.brass; c.stroke();
+      G.lockGearIcon(c, gx + 140, 431);
+      ui.hit(gx + 135, 426, 24, 24, () => { ui.openConeLockManage(st); ui.sfx('select'); });
+      const unlocked = all.filter(x => !x.lock);
+      const allOn = unlocked.length > 0 && (unlocked.every(x => st.picked.has(x.uid)) || st.picked.size >= H.ASC.coneSalvageCap);
+      const cbx = gx + 168, cby = 431;
+      c.fillStyle = allOn ? '#e69c3a' : 'rgba(10,12,28,0.85)';
+      c.fillRect(cbx, cby, 14, 14);
+      c.strokeStyle = allOn ? '#ffe8a0' : C.sub;
+      c.strokeRect(cbx + 0.5, cby + 0.5, 13, 13);
+      if (allOn) ui.text('✓', cbx + 7, cby + 1, { size: 11, bold: true, align: 'center', col: '#18140a' });
+      ui.text('Выбрать всё', cbx + 19, cby + 1, { size: 11, col: C.cream });
+      ui.hit(cbx - 2, 426, 96, 24, () => st.toggleAll());
+      ui.button(W - 144, 426, 132, 24, 'Разобрать', () => st.act(), { size: 11, icon: 'synth', active: prev.count > 0, disabled: prev.count === 0 });
+      const enhKey = opts.inSynth ? 'T' : 'E';
+      const baseHints = [['←↑↓→', 'Выбор'], ['Enter', 'Отметить'], ['L', 'Замок'], [enhKey, 'Усиленные'], ['A', 'Выбрать всё'], ['M', 'Блокировка'], ['S/D', 'Сортировка'], ['X', 'Разобрать']];
+      ui.hints(opts.inSynth ? [['Q/E', 'Раздел']].concat(baseHints) : baseHints.concat([['Esc', 'Назад']]), 12, HGT - 16);
+      if (st.sortMenu) st.drawSortPopup(c);
+    },
+
+    coneSalvageKey(st, kk, code, opts = {}) {
+      const ui = this, g = this.game, COLS = 7, sorts = H.ASC.coneSorts;
+      if (st.sortMenu) {
+        const idx = sorts.findIndex(s => s.id === st.sortKey);
+        if (kk === 'up' || kk === 'down') {
+          const next = (idx + (kk === 'up' ? sorts.length - 1 : 1)) % sorts.length;
+          st.sortKey = sorts[next].id;
+          ui.sfx('select');
+          return true;
+        }
+        if (kk === 'ok' || kk === 'back' || code === 'KeyS') { st.sortMenu = false; ui.sfx('select'); return true; }
+        return true;
+      }
+      if (kk === 'back') {
+        if (opts.inSynth) return false;
+        ui.pop();
+        return true;
+      }
+      if (code === 'KeyI') { ui.openConeSalvageRules(); return true; }
+      if (code === 'KeyT' || code === 'KeyU' || (!opts.inSynth && code === 'KeyE')) { st.toggleEnhanced(); return true; }
+      if (code === 'KeyS') { st.sortMenu = !st.sortMenu; ui.sfx('select'); return true; }
+      if (code === 'KeyD') { st.sortDir = -st.sortDir; ui.sfx('select'); return true; }
+      if (code === 'KeyM') { ui.openConeLockManage(st); ui.sfx('select'); return true; }
+      if (code === 'KeyA') { st.toggleAll(); return true; }
+      if (code === 'KeyX') { st.act(); return true; }
+      const all = st.list(), n = all.length;
+      if (!n) return true;
+      if (code === 'KeyL') {
+        const target = (st.focusUid != null && g.coneOf(st.focusUid)) || all[st.sel];
+        if (target) {
+          const locked = g.toggleConeLock(target.uid);
+          if (locked) st.picked.delete(target.uid);
+          ui.sfx('select');
+        }
+        return true;
+      }
+      const to = kk === 'left' ? st.sel - 1 : kk === 'right' ? st.sel + 1 : kk === 'up' ? st.sel - COLS : kk === 'down' ? st.sel + COLS : st.sel;
+      if (to !== st.sel && to >= 0 && to < n) {
+        st.sel = to;
+        st.focusUid = all[st.sel].uid;
+        ui.sfx('select');
+        return true;
+      }
+      if (kk === 'ok' && all[st.sel]) { st.togglePick(all[st.sel]); return true; }
+      return false;
+    },
+
+    openConeSalvage() {
+      const ui = this, st = ui.makeConeSalvageState();
+      st.draw = function (c) {
+        ui.fullBg(c, false);
+        c.fillStyle = 'rgba(4,6,20,0.6)'; c.fillRect(ui.left, 0, ui.vw, HGT);
+        G.menuIcon(c, 'bag', 14, 9, 20, C.gold);
+        ui.text('Инвентарь', 38, 6, { size: 9, col: C.sub });
+        ui.text('Разобрать Световой конус', 38, 16, { size: 13, bold: true, serif: true, col: C.gold });
+        ui.button(W - 118, 8, 80, 22, 'Правила', () => ui.openConeSalvageRules(), { size: 10, icon: 'info' });
+        ui.closeBtn(W - 32, 8, () => ui.pop());
+        ui.drawConeSalvageBody(c, this, { inSynth: false });
+      };
+      st.key = function (kk, code) {
+        ui.coneSalvageKey(this, kk, code, { inSynth: false });
+      };
+      return this.push(st);
+    },
+
+    openConeLockManage(salvage) {
+      const ui = this, g = this.game;
+      const OPTS = [
+        { id: 'unlock4', group: 0, label: 'Все Световые конусы 4★', x: 96, y: 162, w: 214 },
+        { id: 'unlock4_extra', group: 0, label: 'Лишние копии Световых конусов 4★', x: 318, y: 162, w: 226 },
+        { id: 'lock4_down', group: 1, label: 'Все Световые конусы 4★ и ниже', x: 96, y: 212, w: 214 }
+      ];
+      return this.push({
+        mode: 'unlock4_extra', cursor: 1,
+        apply() {
+          if (!this.mode) { ui.sfx('deny'); ui.toast('Выберите режим блокировки.'); return; }
+          const n = g.coneManageLock(this.mode);
+          if (salvage && salvage.syncPicked) salvage.syncPicked();
+          ui.screens.pop();
+          ui.sfx('confirm');
+          ui.toast(n ? 'Блокировка обновлена: затронуто конусов — ' + n + '.' : 'Изменений блокировки не требуется.');
+        },
+        draw(c) {
+          const x = 80, y = 108, w = 480, h = 248;
+          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(0, 0, W, HGT);
+          ui.win(x, y, w, h, { title: 'Управление блокировкой' });
+          ui.closeBtn(x + w - 28, y + 6, () => ui.pop());
+          ui.text('• Разблокировать всё', x + 16, y + 36, { size: 11, bold: true, col: C.gold });
+          ui.text('• Заблокировать всё', x + 16, y + 86, { size: 11, bold: true, col: C.gold });
+          OPTS.forEach((o, i) => {
+            const on = this.mode === o.id, cur = this.cursor === i;
+            c.fillStyle = on ? 'rgba(242,220,154,0.22)' : 'rgba(255,255,255,0.06)';
+            c.fillRect(o.x, o.y, o.w, 24);
+            c.strokeStyle = on ? C.brassHi : cur ? C.sub : 'rgba(154,166,208,0.3)';
+            c.strokeRect(o.x + 0.5, o.y + 0.5, o.w - 1, 23);
+            ui.text(o.label, o.x + 8, o.y + 6, { size: 10, bold: on, col: on ? C.gold : C.cream });
+            const rx = o.x + o.w - 12, ry = o.y + 12;
+            c.strokeStyle = on ? '#e69c3a' : C.sub; c.lineWidth = 1.4;
+            c.beginPath(); c.arc(rx, ry, 5, 0, Math.PI * 2); c.stroke();
+            if (on) { c.fillStyle = '#e69c3a'; c.beginPath(); c.arc(rx, ry, 2.5, 0, Math.PI * 2); c.fill(); }
+            c.lineWidth = 1;
+            ui.hit(o.x, o.y, o.w, 24, () => { this.cursor = i; this.mode = o.id; ui.sfx('select'); });
+          });
+          c.fillStyle = 'rgba(0,0,0,0.38)'; c.fillRect(x + 8, y + 136, w - 16, 52);
+          const note = 'Обратите внимание: опция «Лишние копии Световых конусов 4★» означает, что заблокированным останется только то количество копий одного Светового конуса, которого достаточно для максимального уровня наложения, а остальные разблокируются.';
+          ui.wrap(note, w - 32, 9).slice(0, 4).forEach((l, i) => ui.text(l, x + w / 2, y + 141 + i * 11, { align: 'center', size: 9, col: C.sub }));
+          ui.button(x + 66, y + h - 42, 156, 28, 'Очистить всё', () => { this.mode = null; ui.sfx('cancel'); }, { size: 11, disabled: !this.mode });
+          ui.button(x + w - 222, y + h - 42, 156, 28, 'Подтвердить', () => this.apply(), { size: 11, active: !!this.mode, disabled: !this.mode });
+        },
+        key(kk, code) {
+          if (kk === 'back') { ui.pop(); return; }
+          if (code === 'KeyC') { this.mode = null; ui.sfx('cancel'); return; }
+          if (kk === 'left' || kk === 'right' || kk === 'up' || kk === 'down') {
+            const d = (kk === 'left' || kk === 'up') ? OPTS.length - 1 : 1;
+            this.cursor = (this.cursor + d) % OPTS.length;
+            this.mode = OPTS[this.cursor].id;
+            ui.sfx('select');
+            return;
+          }
+          if (kk === 'ok') this.apply();
+        }
+      });
+    },
+
+    openConeSalvageRules() {
+      const ui = this;
+      const lines = [
+        '1. Для разборки доступны неэкипированные и незаблокированные Световые конусы 3★ и 4★. По умолчанию отображаются только конусы 1-го уровня с наложением I; переключатель «Включать усиленные конусы» добавляет в список прокачанные конусы и конусы с наложением II–V.',
+        '2. Надетые на персонажей конусы, заблокированные конусы и Световые конусы 5★ разобрать нельзя.',
+        '3. За каждый разобранный Световой конус 3★ выдаётся Разрежённый эфир ×1 (+500 опыта конуса), за Световой конус 4★ — Конденсированный эфир ×3 (+6 000 опыта конуса), а за усиленные конусы дополнительно возвращается эфир за вложенный опыт и наложения.',
+        '4. В окне «Управление блокировкой» опция «Лишние копии Световых конусов 4★» оставляет заблокированным количество копий, достаточное для максимального уровня наложения V, и разблокирует остальные копии 1-го уровня.'
+      ];
+      return this.push({
+        draw(c) {
+          const x = W / 2 - 220, y = 96, w = 440, h = 272;
+          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(0, 0, W, HGT);
+          ui.win(x, y, w, h, { title: 'Правила разборки Световых конусов' });
+          ui.closeBtn(x + w - 28, y + 6, () => ui.pop());
+          let ry = y + 32;
+          lines.forEach(p => {
+            ui.wrap(p, w - 32, 10).forEach(l => {
+              ui.text(l, x + 16, ry, { size: 10, col: C.cream });
+              ry += 13;
+            });
+            ry += 6;
+          });
+          ui.button(W / 2 - 70, y + h - 40, 140, 26, 'Понятно', () => ui.pop(), { size: 11, active: true });
+        },
+        key(kk) { if (kk === 'ok' || kk === 'back') ui.pop(); }
+      });
+    },
+
+    openConeSalvageConfirm(salvage, prev) {
+      const ui = this, g = this.game;
+      return this.push({
+        sel: 0,
+        draw(c) {
+          const x = W / 2 - 190, y = 128, w = 380, h = 214;
+          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(0, 0, W, HGT);
+          ui.win(x, y, w, h, { title: 'Подтверждение разборки' });
+          ui.text('Выбрано Световых конусов: ' + prev.count, W / 2, y + 28, { align: 'center', size: 12, bold: true, col: C.cream });
+          if (prev.hasRare4 && prev.hasEnhanced) ui.text('Внимание: выбраны конусы 4★ и усиленные конусы (до ур. ' + prev.maxLvl + ')!', W / 2, y + 46, { align: 'center', size: 10, bold: true, col: C.bad });
+          else if (prev.hasRare4) ui.text('Внимание: среди выбранных предметов есть Световые конусы 4★!', W / 2, y + 46, { align: 'center', size: 10, bold: true, col: C.bad });
+          else if (prev.hasEnhanced) ui.text('Внимание: среди выбранных есть усиленные конусы (до ур. ' + prev.maxLvl + ')!', W / 2, y + 46, { align: 'center', size: 10, bold: true, col: C.bad });
+          else ui.text('Разобранные Световые конусы исчезнут безвозвратно.', W / 2, y + 46, { align: 'center', size: 10, col: C.sub });
+          ui.text('Вы получите:', W / 2, y + 68, { align: 'center', size: 11, col: C.gold });
+          const totalW = prev.items.length * 56 - 8, sx0 = Math.round(W / 2 - totalW / 2);
+          prev.items.forEach((it, idx) => {
+            const ix = sx0 + idx * 56, iy = y + 86;
+            G.rarityCell(c, ix, iy, 48, 48, it.rar);
+            G.itemIcon(c, it.id, ix + 8, iy + 4, 32);
+            ui.text('×' + it.count, ix + 44, iy + 34, { size: 10, bold: true, align: 'right', col: C.cream });
+          });
+          ui.button(x + 30, y + h - 42, 146, 28, 'Разобрать', () => { this.sel = 0; this.key('ok'); }, { size: 12, active: this.sel === 0 });
+          ui.button(x + w - 176, y + h - 42, 146, 28, 'Отмена', () => { this.sel = 1; this.key('ok'); }, { size: 12, active: this.sel === 1 });
+        },
+        key(kk) {
+          if (kk === 'left' || kk === 'right') { this.sel = 1 - this.sel; ui.sfx('select'); return; }
+          if (kk === 'back') { ui.pop(); return; }
+          if (kk !== 'ok') return;
+          ui.screens.pop();
+          if (this.sel === 1) return;
+          const res = g.coneSalvage([...salvage.picked]);
+          salvage.picked.clear();
+          if (!res) { ui.sfx('deny'); return; }
+          ui.sfx('chest');
+          ui.toast('Получено: ' + res.items.map(it => it.name + ' ×' + it.count).join(', ') + '.');
+        }
       });
     }
   });

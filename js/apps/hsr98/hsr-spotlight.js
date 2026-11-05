@@ -191,7 +191,7 @@
     constructor(ui, res, opts = {}) {
       this.ui = ui; this.res = res; this.game = ui.game; this.ban = opts.ban || 'con';
       this.best = Math.max(...res.map(r => r.rar));
-      this.R = new R3.Raster(LW, LH);
+      this.R = new R3.Raster(ui && ui.wide && ui.wide() ? 427 : LW, LH);
       this.phase = 'cine'; this.t = 0; this.cue = 0; this.rt = 0;
       this.queue = []; this.cur = -1; this.seen = new Set(); this.fade = 0; this.done = false; this.hop = 0; this.rc = []; this.sel = 0; this.blinked = false;
       const top = res.find(r => r.rar === this.best && r.kind === 'char' && heroine(r.id));
@@ -343,10 +343,10 @@
 
     stageFloor(g, T, dim) {
       vgrad(g, 0, LH, [[0, '#04040c'], [0.62, '#0a0a18'], [1, '#141024']]);
-      for (let i = 0; i < 9; i++) { const x = 18 + i * 36; rect(g, rgba('#2a2a40', dim), x, 0, 3, 18); }
+      for (let i = (g._wide ? -2 : 0); i < (g._wide ? 11 : 9); i++) { const x = 18 + i * 36; rect(g, rgba('#2a2a40', dim), x, 0, 3, 18); }
       rect(g, rgba('#1a1a2a', dim), 0, 16, LW, 3);
       g.save(); g.translate(CX, 196); g.scale(1, 0.26);
-      ell(g, rgba('#1c1a30', 0.9 * dim + 0.1), 0, 0, 170, 170);
+      ell(g, rgba('#1c1a30', 0.9 * dim + 0.1), 0, 0, g._wide ? 224 : 170, 170);
       g.restore();
     }
 
@@ -412,9 +412,9 @@
     }
 
     polaroid(g, r, t, T, col) {
-      const k = eOut(seg(t, 0, SNAP)), px = 84, py = 16, pw = 152, ph = 170, ix = px + 8, iy = py + 8, iw = pw - 16, ih = pw - 16;
+      const k = eOut(seg(t, 0, SNAP)), px = 84, py = 16, pw = 152, ph = 170, ix = px + 8, iy = py + 8, iw = pw - 16, ih = pw - 16, pad = g._wide ? 60 : 0;
       g.save(); g.globalAlpha = k;
-      rect(g, 'rgba(2,2,10,0.7)', 0, 0, LW, py); rect(g, 'rgba(2,2,10,0.7)', 0, py + ph, LW, LH - py - ph); rect(g, 'rgba(2,2,10,0.7)', 0, py, px, ph); rect(g, 'rgba(2,2,10,0.7)', px + pw, py, LW - px - pw, ph);
+      rect(g, 'rgba(2,2,10,0.7)', -pad, 0, LW + pad * 2, py); rect(g, 'rgba(2,2,10,0.7)', -pad, py + ph, LW + pad * 2, LH - py - ph); rect(g, 'rgba(2,2,10,0.7)', -pad, py, px + pad, ph); rect(g, 'rgba(2,2,10,0.7)', px + pw, py, LW - px - pw + pad, ph);
       rect(g, '#f4f2ea', px, py, pw, 8); rect(g, '#f4f2ea', px, iy + ih, pw, ph - 8 - ih); rect(g, '#f4f2ea', px, py, 8, ph); rect(g, '#f4f2ea', px + pw - 8, py, 8, ph);
       rect(g, rgba(col, 0.85), px + pw / 2 - 18, py - 4, 36, 9);
       if (r.rar === 5) lighter(g, () => { for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2 + T; const sx = px + pw / 2 + Math.cos(a) * 100, sy = py + ph / 2 + Math.sin(a) * 86; poly(g, rgba(RHOT[5], 0.8 * seg(t, 0.3, 0.6)), [sx, sy - 5, sx + 1.2, sy, sx, sy + 5, sx - 1.2, sy]); } });
@@ -497,7 +497,7 @@
       rect(g, '#7a7a82', 0, 76, LW, 24);
       for (let i = 0; i < 8; i++) { const x = ((i * 74 - T * 160) % 592 + 592) % 592 - 60; rect(g, '#6a4a2a', x, 40, 3, 36); poly(g, '#3a7a4a', [x - 12, 42, x + 1, 36, x + 16, 42, x + 2, 40]); }
       for (let i = 0; i < 12; i++) { const x = ((i * 40 - T * 220) % 480 + 480) % 480 - 40; rect(g, '#e8e8e0', x, 90, 14, 2); }
-      for (let x = 0; x < LW; x += 80) rect(g, '#2a2a30', x, 22, 8, 82);
+      for (let x = (g._wide ? -80 : 0); x < (g._wide ? LW + 80 : LW); x += 80) rect(g, '#2a2a30', x, 22, 8, 82);
       rect(g, '#2a2a30', 0, 22, LW, 6); rect(g, '#2a2a30', 0, 98, LW, 6);
       rect(g, '#f0e6c8', 0, 0, LW, 22);
     }
@@ -522,11 +522,12 @@
     }
 
     corridor(g, T, col) {
+      const xL = g._wide ? -54 : 0, xR = g._wide ? LW + 54 : LW;
       vgrad(g, 0, LH, [[0, '#2a2440'], [0.6, '#3a3058'], [1, '#1c1830']]);
-      poly(g, '#4a1a2a', [0, LH, 120, 150, 200, 150, LW, LH]);
-      for (let i = 0; i < 6; i++) { const y = 150 + i * 16; rect(g, rgba('#7a2a3a', 0.4), 0, y, LW, 1); }
-      poly(g, '#221c34', [0, 0, 120, 40, 120, 150, 0, LH]); poly(g, '#221c34', [LW, 0, 200, 40, 200, 150, LW, LH]);
-      for (let i = 0; i < 3; i++) { const x = 20 + i * 28; rect(g, ['#e8b040', '#5ab8e8', '#e85a8a'][i], x, 60 + i * 6, 20, 30 - i * 4); rect(g, ['#e8b040', '#5ab8e8', '#e85a8a'][(i + 1) % 3], LW - x - 20, 60 + i * 6, 20, 30 - i * 4); }
+      poly(g, '#4a1a2a', [xL, LH, 120, 150, 200, 150, xR, LH]);
+      for (let i = 0; i < 6; i++) { const y = 150 + i * 16; rect(g, rgba('#7a2a3a', 0.4), xL, y, xR - xL, 1); }
+      poly(g, '#221c34', [xL, 0, 120, 40, 120, 150, xL, LH]); poly(g, '#221c34', [xR, 0, 200, 40, 200, 150, xR, LH]);
+      for (let i = (g._wide ? -1 : 0); i < 3; i++) { const x = 20 + i * 28, h = Math.min(34, 30 - i * 4); rect(g, ['#e8b040', '#5ab8e8', '#e85a8a'][(i + 3) % 3], x, 60 + i * 6, 20, h); rect(g, ['#e8b040', '#5ab8e8', '#e85a8a'][(i + 4) % 3], LW - x - 20, 60 + i * 6, 20, h); }
       lighter(g, () => glow(g, CX, 40, 80, col || '#ffe0c0', 0.25));
     }
 
@@ -674,8 +675,8 @@
       rect(g, '#d8c0d0', 5, -6, 6, 20); rect(g, '#d8c0d0', -11, 1, 22, 1); rect(g, '#d8c0d0', -11, 7, 22, 1);
       rect(g, '#ff7ab8', -11, 12, 22, 3);
       g.restore();
-      for (let i = 0; i < 26; i++) {
-        const cx2 = 6 + i * 13, cy2 = 222 + (i % 3) * 6, hop = Math.abs(Math.sin(T * 14 + i)) * 3;
+      for (let i = (g._wide ? -4 : 0); i < (g._wide ? 30 : 26); i++) {
+        const cx2 = 6 + i * 13, cy2 = 222 + ((i + 9) % 3) * 6, hop = Math.abs(Math.sin(T * 14 + i)) * 3;
         ell(g, '#0a0816', cx2, cy2 - hop, 6, 6); rect(g, '#0a0816', cx2 - 8, cy2 + 4 - hop, 16, 20);
         const clap = Math.sin(T * 20 + i) > 0 ? 2 : 5;
         rect(g, '#0a0816', cx2 - clap - 2, cy2 - 14 - hop, 2, 8); rect(g, '#0a0816', cx2 + clap, cy2 - 14 - hop, 2, 8);
@@ -841,17 +842,19 @@
     }
 
     conHall(g, T) {
+      const x0 = g._wide ? -54 : 0, w = g._wide ? LW + 108 : LW;
       vgrad(g, 0, LH, [[0, '#16121e'], [0.5, '#2a2030'], [1, '#1a1420']]);
-      for (let i = 0; i < 6; i++) { const x = 26 + i * 54; line(g, '#3a3040', 1, x, 0, x, 22); poly(g, '#5a4a32', [x - 10, 22, x + 10, 22, x + 6, 28, x - 6, 28]); }
-      lighter(g, () => { for (let i = 0; i < 6; i++) glow(g, 26 + i * 54, 32, 34, '#ffd890', 0.3); });
-      for (let i = 0; i < 5; i++) {
+      for (let i = (g._wide ? -1 : 0); i < (g._wide ? 7 : 6); i++) { const x = 26 + i * 54; line(g, '#3a3040', 1, x, 0, x, 22); poly(g, '#5a4a32', [x - 10, 22, x + 10, 22, x + 6, 28, x - 6, 28]); }
+      lighter(g, () => { for (let i = (g._wide ? -1 : 0); i < (g._wide ? 7 : 6); i++) glow(g, 26 + i * 54, 32, 34, '#ffd890', 0.3); });
+      for (let i = (g._wide ? -1 : 0); i < (g._wide ? 6 : 5); i++) {
         const x = 8 + i * 64;
-        for (let k = 0; k < 3; k++) rect(g, ['#e8b040', '#5ab8e8', '#e85a8a'][(i + k) % 3], x + 6 + k * 16, 66 + ((i + k) % 2) * 5, 12, 24);
+        for (let k = 0; k < 3; k++) rect(g, ['#e8b040', '#5ab8e8', '#e85a8a'][(i + k + 3) % 3], x + 6 + k * 16, 66 + ((i + k + 2) % 2) * 5, 12, 24);
         rect(g, '#3a2a3a', x, 92, 52, 24); rect(g, '#5a3a4a', x, 92, 52, 3);
       }
-      for (let i = 0; i < 9; i++) { const x = ((i * 44 + T * (10 + i % 3 * 4) * (i % 2 ? 1 : -1)) % 380 + 380) % 380 - 30; ell(g, '#100c16', x, 100, 6, 7); rect(g, '#100c16', x - 7, 106, 14, 24); }
-      rect(g, '#221a26', 0, 128, LW, LH - 128);
-      for (let i = 0; i < 5; i++) rect(g, rgba('#3a2a3a', 0.6), 0, 136 + i * 22, LW, 1);
+      const span = g._wide ? 488 : 380, minX = g._wide ? -84 : -30;
+      for (let i = 0; i < (g._wide ? 11 : 9); i++) { const x = ((i * 44 + T * (10 + i % 3 * 4) * (i % 2 ? 1 : -1)) % span + span) % span + minX; ell(g, '#100c16', x, 100, 6, 7); rect(g, '#100c16', x - 7, 106, 14, 24); }
+      rect(g, '#221a26', x0, 128, w, LH - 128);
+      for (let i = 0; i < 5; i++) rect(g, rgba('#3a2a3a', 0.6), x0, 136 + i * 22, w, 1);
     }
 
     doodle(g, x, y, s, p, col) {
@@ -869,10 +872,10 @@
 
     weltAlley(g, t, T) {
       this.conHall(g, T);
-      const look = G.lookOf('welt', this.game);
+      const look = G.lookOf('welt', this.game), x0 = g._wide ? -54 : 0, w = g._wide ? LW + 108 : LW;
       figure(g, look, 104, 318, 3, { s: 0.88 });
-      poly(g, '#4a3630', [0, 166, LW, 166, LW, LH, 0, LH]);
-      rect(g, '#6a4a7a', 0, 166, LW, 4);
+      poly(g, '#4a3630', [x0, 166, x0 + w, 166, x0 + w, LH, x0, LH]);
+      rect(g, '#6a4a7a', x0, 166, w, 4);
       g.save(); g.translate(46, 184); g.rotate(-0.06); rect(g, '#f2ecdc', -26, -9, 52, 18); g.font = 'bold 7px sans-serif'; g.textAlign = 'center'; g.fillStyle = '#3a2a4a'; g.fillText('НАБРОСКИ', 0, 3); g.restore();
       g.save(); g.translate(234, 186); g.rotate(-0.08);
       rect(g, 'rgba(0,0,0,0.35)', -60, -18, 124, 42);
@@ -885,8 +888,9 @@
     }
 
     weltFlip(g, t, T) {
+      const x0 = g._wide ? -54 : 0, x1 = g._wide ? LW + 54 : LW;
       vgrad(g, 0, LH, [[0, '#4a3020'], [1, '#2e1c12']]);
-      for (let i = 0; i < 9; i++) line(g, rgba('#6a4a30', 0.5), 1, 0, 12 + i * 27, LW, 18 + i * 27);
+      for (let i = 0; i < 9; i++) line(g, rgba('#6a4a30', 0.5), 1, x0, 12 + i * 27, x1, 18 + i * 27);
       rect(g, 'rgba(0,0,0,0.4)', 26, 30, 270, 190);
       rect(g, '#f4f0e4', 22, 24, 136, 190); rect(g, '#fbf8ee', 162, 24, 136, 190); rect(g, '#c8c0b0', 158, 24, 4, 190);
       const FL = BEAT / 2, run = t < 1.4, f = run ? Math.floor(t / FL) : Math.floor(1.4 / FL), k = run ? (t % FL) / FL : 1;
@@ -1030,7 +1034,7 @@
 
     bronyaMirror(g, t, T) {
       vgrad(g, 0, LH, [[0, '#2a2230'], [1, '#1a141e']]);
-      for (let i = 0; i < 8; i++) rect(g, rgba('#3a2e40', 0.5), i * 40, 0, 1, LH);
+      for (let i = (g._wide ? -2 : 0); i < (g._wide ? 10 : 8); i++) rect(g, rgba('#3a2e40', 0.5), i * 40, 0, 1, LH);
       const look = G.lookOf('bronya', this.game), mx = 80, my = 22, mw = 160, mh = 150, x = CX, y = 196, s = 2.1;
       rect(g, '#6a5a40', mx - 8, my - 8, mw + 16, mh + 16);
       g.save(); g.beginPath(); g.rect(mx, my, mw, mh); g.clip();
@@ -2360,10 +2364,11 @@
     }
 
     rack(g, T) {
+      const x0 = g._wide ? -60 : 0, x1 = g._wide ? LW + 60 : LW;
       vgrad(g, 0, LH, [[0, '#0e1a1e'], [1, '#18282c']]);
-      for (let x = 0; x < LW; x += 12) rect(g, 'rgba(255,255,255,0.03)', x, 0, 5, LH);
-      for (let y = 6; y < LH; y += 16) for (let x = (y / 16) % 2 ? 6 : 0; x < LW; x += 12) rect(g, 'rgba(200,220,200,0.06)', x, y, 2, 2);
-      lighter(g, () => poly(g, 'rgba(140,170,255,0.08)', [0, 0, 60, 0, 140, LH, 0, LH]));
+      for (let x = x0; x < x1; x += 12) rect(g, 'rgba(255,255,255,0.03)', x, 0, 5, LH);
+      for (let y = 6; y < LH; y += 16) for (let x = x0 + ((y / 16) % 2 ? 6 : 0); x < x1; x += 12) rect(g, 'rgba(200,220,200,0.06)', x, y, 2, 2);
+      lighter(g, () => poly(g, 'rgba(140,170,255,0.08)', [x0, 0, x0 + 60, 0, x0 + 140, LH, x0, LH]));
       const L = this.rackLayout(), k = i => eOut(seg(this.rt, i * 0.06, i * 0.06 + 0.35));
       this.res.forEach((r, i) => {
         const p = L[i], a = k(i);
@@ -2380,7 +2385,12 @@
     }
 
     paint() {
+      const rw = this.ui && this.ui.wide && this.ui.wide() ? 427 : LW, ox = (rw - LW) >> 1;
+      if (this.R.w !== rw) this.R = new R3.Raster(rw, LH);
       const R = this.R, g = R.g, T = this.t + this.rt;
+      g._wide = rw > LW;
+      g.save();
+      if (ox) g.translate(ox, 0);
       if (this.phase === 'cine') {
         const [n, t] = this.shot();
         if (n === 'lot') this.lot(R, g, t, T);
@@ -2394,6 +2404,7 @@
         else if (r.kind === 'char') this.charShot(g, r, t, T);
         else this.coneShot(g, r, t, T);
       } else this.rack(g, T);
+      g.restore();
       H.Cine.dither(g);
       return R.cv;
     }
@@ -2401,18 +2412,18 @@
     render() { return this.paint(); }
 
     draw(c) {
-      const cv = this.paint(), was = c.imageSmoothingEnabled;
+      const ui = this.ui, cv = this.paint(), was = c.imageSmoothingEnabled;
       c.imageSmoothingEnabled = false;
-      c.drawImage(cv, 0, 0, W, HGT);
+      c.drawImage(cv, ui.left, 0, ui.vw, HGT);
       c.imageSmoothingEnabled = was;
       if (this.phase === 'cine') this.cineOverlay(c);
       else if (this.phase === 'reveal') this.revealOverlay(c);
       else this.rackOverlay(c);
-      if (this.fade > 0) { c.fillStyle = 'rgba(255,255,255,' + this.fade.toFixed(3) + ')'; c.fillRect(0, 0, W, HGT); }
+      if (this.fade > 0) { c.fillStyle = 'rgba(255,255,255,' + this.fade.toFixed(3) + ')'; c.fillRect(ui.left, 0, ui.vw, HGT); }
     }
 
     skipButton(c, label) {
-      const ui = this.ui, w = ui.measure(label, 10) + 44, x = W - w - 10, y = 10;
+      const ui = this.ui, w = ui.measure(label, 10) + 44, x = ui.right - w - 10, y = 10;
       c.fillStyle = 'rgba(10,6,24,0.6)'; c.fillRect(x, y, w, 20);
       c.strokeStyle = 'rgba(255,150,210,0.7)'; c.strokeRect(x + 0.5, y + 0.5, w - 1, 19);
       const kw = ui.keycap(x + 6, y + 4, 'Esc');
@@ -2422,13 +2433,13 @@
 
     cineOverlay(c) {
       this.skipButton(c, this.res.length > 1 ? 'К итогам' : 'Пропустить');
-      this.ui.hints([['Enter', 'Пропустить ролик']], 12, HGT - 20, { col: 'rgba(230,210,240,0.8)' });
+      this.ui.hints([['Enter', 'Пропустить ролик']], this.ui.left + 12, HGT - 20, { col: 'rgba(230,210,240,0.8)' });
     }
 
     plate(c, r, a) {
       if (a <= 0) return;
       const ui = this.ui, ch = r.kind === 'char', d = ch ? H.CHARS[r.id] : H.CONES[r.id], name = ch ? d.fullName || d.name : r.name, col = ch && heroine(r.id) ? HER[r.id] : RCOL[r.rar];
-      const x0 = Math.round(30 - 50 * (1 - eOut(a))), y = 392;
+      const x0 = ui.left + Math.round(30 - 50 * (1 - eOut(a))), y = 392;
       c.save(); c.globalAlpha = cl(a);
       const gr = c.createLinearGradient(x0 - 30, 0, x0 + 380, 0);
       gr.addColorStop(0, 'rgba(10,6,24,0.88)'); gr.addColorStop(0.7, 'rgba(10,6,24,0.5)'); gr.addColorStop(1, 'rgba(10,6,24,0)');
@@ -2445,7 +2456,7 @@
 
     jury(c, r, a) {
       if (a <= 0 || r.kind !== 'char' || heroine(r.id)) return;
-      const ui = this.ui, d = H.CHARS[r.id], s = 'Косплей: ' + d.name + ' · сходство 100%', w = ui.measure(s, 11, true) + 28, x = W - w - 24, y = 300;
+      const ui = this.ui, d = H.CHARS[r.id], s = 'Косплей: ' + d.name + ' · сходство 100%', w = ui.measure(s, 11, true) + 28, x = ui.right - w - 24, y = 300;
       c.save(); c.globalAlpha = cl(a);
       c.translate(x + w / 2, y); c.rotate(-0.05);
       c.fillStyle = '#14121c'; c.fillRect(-w / 2 - 2, -18, w + 4, 38);
@@ -2469,7 +2480,7 @@
       if (a <= 0) return;
       const ui = this.ui;
       c.save(); c.globalAlpha = cl(a);
-      ui.resultTag(W - 196, 50, r, [['Новый персонаж!', C.ok], ['присоединился к экипажу', C.cream]]);
+      ui.resultTag(ui.right - 196, 50, r, [['Новый персонаж!', C.ok], ['присоединился к экипажу', C.cream]]);
       c.restore();
     }
 
@@ -2493,20 +2504,20 @@
         } else this.plate(c, r, seg(t, 0.6, 0.9));
         this.resultTag(c, r, seg(t, L - 0.4, L - 0.1));
       }
-      if (this.res.length > 1) ui.plate(12, 10, (this.cur + 1) + ' / ' + this.res.length);
+      if (this.res.length > 1) ui.plate(ui.left + 12, 10, (this.cur + 1) + ' / ' + this.res.length);
       this.skipButton(c, this.res.length > 1 ? 'К итогам' : 'Закрыть');
-      ui.hints([['Enter', this.rt < this.intro() ? 'Показать' : this.queue.length || this.res.length > 1 ? 'Далее' : 'Готово']], 12, HGT - 20);
+      ui.hints([['Enter', this.rt < this.intro() ? 'Показать' : this.queue.length || this.res.length > 1 ? 'Далее' : 'Готово']], ui.left + 12, HGT - 20);
     }
 
     rackOverlay(c) {
-      const ui = this.ui, L = this.rackLayout();
-      ui.text('ФОТОСТЕНА', 18, 8, { size: 22, bold: true, serif: true, col: '#ffd8ec' });
-      ui.text('Номер 302', 20, 36, { size: 10, col: '#b8c8c0' });
-      L.forEach((p, i) => ui.hit(p.x * 2, p.y * 2, p.w * 2, p.h * 2, () => { if (this.sel === i) this.done = true; else { this.sel = i; ui.sfx('select'); } }));
+      const ui = this.ui, L = this.rackLayout(), ox = (this.R.w - LW) >> 1, rx = ui.left + (ox + 268) * 2;
+      ui.text('ФОТОСТЕНА', ui.left + 18, 8, { size: 22, bold: true, serif: true, col: '#ffd8ec' });
+      ui.text('Номер 302', ui.left + 20, 36, { size: 10, col: '#b8c8c0' });
+      L.forEach((p, i) => ui.hit(ui.left + (ox + p.x) * 2, p.y * 2, p.w * 2, p.h * 2, () => { if (this.sel === i) this.done = true; else { this.sel = i; ui.sfx('select'); } }));
       const r = this.res[this.sel];
-      if (r) { const d = r.kind === 'char' ? H.CHARS[r.id] : H.CONES[r.id]; ui.wrap((r.kind === 'char' ? d.fullName || d.name : '«' + d.name + '»'), 150, 12).forEach((l, i) => ui.text(l, 536, 236 + i * 15, { size: 12, bold: true, align: 'center', col: RCOL[r.rar] })); ui.text('★'.repeat(r.rar), 536, 268, { size: 12, align: 'center', col: RCOL[r.rar] }); }
+      if (r) { const d = r.kind === 'char' ? H.CHARS[r.id] : H.CONES[r.id]; ui.wrap((r.kind === 'char' ? d.fullName || d.name : '«' + d.name + '»'), 150, 12).forEach((l, i) => ui.text(l, rx, 236 + i * 15, { size: 12, bold: true, align: 'center', col: RCOL[r.rar] })); ui.text('★'.repeat(r.rar), rx, 268, { size: 12, align: 'center', col: RCOL[r.rar] }); }
       const five = this.res.filter(x => x.rar === 5).length, four = this.res.filter(x => x.rar === 4).length;
-      ui.text('5★: ' + five + ' · 4★: ' + four, 536, 288, { align: 'center', size: 11, col: C.sub });
+      ui.text('5★: ' + five + ' · 4★: ' + four, rx, 288, { align: 'center', size: 11, col: C.sub });
       ui.hints([['←↑↓→', 'Снимок'], ['Enter', 'Готово']], W / 2, HGT - 22, { align: 'center' });
     }
   }

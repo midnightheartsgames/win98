@@ -174,12 +174,12 @@
   }
 
   function burn(g, thr, T) {
-    const F = burnField(), flick = Math.floor(T * 14);
-    for (let y = 0; y < 60; y++) for (let x = 0; x < 80; x++) {
-      const v = F[y * 80 + x] * 0.42 + ((79 - x) / 79 * 0.58 + (59 - y) / 59 * 0.42) * 0.58;
+    const F = burnField(), flick = Math.floor(T * 14), x0 = g._wide ? -15 : 0, x1 = g._wide ? 95 : 80;
+    for (let y = 0; y < 60; y++) for (let x = x0; x < x1; x++) {
+      const cx = Math.max(0, Math.min(79, x)), v = F[y * 80 + cx] * 0.42 + ((79 - cx) / 79 * 0.58 + (59 - y) / 59 * 0.42) * 0.58;
       if (v >= thr + 0.04) continue;
       if (v < thr - 0.05) rect(g, '#060304', x * 4, y * 4, 4, 4);
-      else if (v < thr) rect(g, hx(x, y, flick) > 0.5 ? '#ffb040' : '#ff6a1a', x * 4, y * 4, 4, 4);
+      else if (v < thr) rect(g, hx(x + 20, y, flick) > 0.5 ? '#ffb040' : '#ff6a1a', x * 4, y * 4, 4, 4);
       else rect(g, 'rgba(70,34,10,0.55)', x * 4, y * 4, 4, 4);
     }
   }
@@ -453,13 +453,18 @@
     });
   }
 
+  function proj(R, p) {
+    const q = R.project(p);
+    return q ? [q[0] - ((R.w - LW) >> 1), q[1], q[2]] : null;
+  }
+
   class ConveneShow {
     constructor(ui, res, opts = {}) {
       this.ui = ui; this.res = res; this.game = ui.game; this.ban = opts.ban || 'conv';
       const B = H.BANNERS[this.ban];
       this.pass = (B && B.pass) || 'rtide';
       this.best = Math.max(...res.map(r => r.rar));
-      this.R = new R3.Raster(LW, LH);
+      this.R = new R3.Raster(ui && ui.wide && ui.wide() ? 427 : LW, LH);
       this.phase = 'cine'; this.t = 0; this.cue = 0; this.rt = 0;
       this.queue = []; this.cur = -1; this.seen = new Set(); this.fade = 0; this.done = false; this.hop = 0; this.rc = [];
       this.cues = this.cueList();
@@ -757,7 +762,7 @@
       R.look([0, 0, 4.4], [0, 0, 0], 46);
       R.clear('#050816', '#1a2442', '#0c1226');
       R.stars(120, 51, 0.55, T * 3);
-      for (let i = 0; i < 6; i++) R.flat(40 + hx(i, 1, 95) * 240, 30 + hx(i, 2, 95) * 180, 40 + hx(i, 3, 95) * 40, i % 2 ? '#2a3a70' : R3.rgb(col).map(v => v * 0.35), { shape: 'puff', a: 0.35 });
+      for (let i = 0; i < 6; i++) R.flat(40 + hx(i, 1, 95) * (R.w - 80), 30 + hx(i, 2, 95) * 180, 40 + hx(i, 3, 95) * 40, i % 2 ? '#2a3a70' : R3.rgb(col).map(v => v * 0.35), { shape: 'puff', a: 0.35 });
       for (let w = 0; w < 2; w++) for (let i = 0; i < 24; i++) {
         const f = x => [x, 0.35 * Math.sin(x * (0.9 + w * 0.4) + T * (1 + w * 0.6) + w * 2) + (w ? -0.2 : 0.15), -1.6];
         R.streak(f(-4 + i / 3), f(-4 + (i + 1) / 3), 0.03, w ? '#d8e8ff' : col, w ? '#d8e8ff' : col, { world: true, a: 0.6 * Math.sin(Math.PI * i / 24) });
@@ -777,9 +782,9 @@
         R.draw(flatQuad('cone', R3.tex(G.coneArt(r.id, 72, 100)), 1.1, 1.53), mat, show < 1 ? { lit: false, mode: 'alpha', alpha: show } : { lit: false });
       }
       R.bake();
-      if (t > 0.28 && t < 1.0) { const bp = R.project([0.9, 0, 0.3]); if (bp) K.shards(g, seg(t, 0.28, 1.0), bp[0], bp[1], 24, 97, '#bfe4ff', 120, '#ffffff'); }
+      if (t > 0.28 && t < 1.0) { const bp = proj(R, [0.9, 0, 0.3]); if (bp) K.shards(g, seg(t, 0.28, 1.0), bp[0], bp[1], 24, 97, '#bfe4ff', 120, '#ffffff'); }
       if (mat) {
-        const tip = R.project(M.pt(mat, 0.5, 0.72, 0));
+        const tip = proj(R, M.pt(mat, 0.5, 0.72, 0));
         if (tip) lighter(g, () => star4(g, tip[0], tip[1], 7 + 3 * Math.sin(T * 7), RHOT[rar], 0.8 * show, 0.12));
       }
       if (t > 0.28 && t < 0.45) K.flash(g, '#ffffff', 0.5 * (1 - seg(t, 0.28, 0.45)));
@@ -835,10 +840,10 @@
       R.glow([0, 0.75, 0], 0.9, '#ff9ab0', { a: 0.35, depth: false });
       R.bake();
       for (let i = 0; i < 12; i++) {
-        const s = i % 2 ? 1 : -1, p = R.project([s * (4.2 + hx(i, 2, 103) * 3), 0.25, -0.5 - hx(i, 3, 103) * 5]);
+        const s = i % 2 ? 1 : -1, p = proj(R, [s * (4.2 + hx(i, 2, 103) * 3), 0.25, -0.5 - hx(i, 3, 103) * 5]);
         if (p) lily(g, p[0], p[1], 0.55 * R.fl / p[2], T * 0.3 + i, '#5a2a8a', '#b07aff', 0.85);
       }
-      const p0 = R.project([0, 10, 0]), p1 = R.project([0, 0.67, 0]);
+      const p0 = proj(R, [0, 10, 0]), p1 = proj(R, [0, 0.67, 0]);
       if (p0 && p1) lighter(g, () => {
         const w0 = 0.35 * R.fl / p0[2], w1 = 1.1 * R.fl / p1[2], gr = g.createLinearGradient(0, p0[1], 0, p1[1]);
         gr.addColorStop(0, rgba('#ffe8f0', 0.05)); gr.addColorStop(1, rgba('#ffe0ea', 0.35));
@@ -895,7 +900,7 @@
       for (let i = 0; i < 6; i++) {
         const y0 = hx(i, 1, 107) * LH, ph = T * (0.8 + i * 0.1) + i;
         g.strokeStyle = rgba(i % 2 ? '#c0101e' : '#e0283a', 0.85); g.lineWidth = 4 + hx(i, 2, 107) * 10;
-        g.beginPath(); g.moveTo(-20, y0); g.bezierCurveTo(90, y0 + Math.sin(ph) * 90, 220, y0 - Math.cos(ph) * 100, 340, y0 + Math.sin(ph * 1.3) * 60); g.stroke();
+        g.beginPath(); g.moveTo(-60, y0); g.bezierCurveTo(90, y0 + Math.sin(ph) * 90, 220, y0 - Math.cos(ph) * 100, LW + 60, y0 + Math.sin(ph * 1.3) * 60); g.stroke();
       }
       g.restore();
       const art = lineArt(G.bustCanvas(look, 128)), s = lerp(1.9, 2.1, sm(t / 0.8)), w = art.width, h = art.height;
@@ -908,7 +913,7 @@
       g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
       g.drawImage(art, -w / 2, -h);
       g.restore();
-      K.glitch(g, T, 0, 0, LW, LH, 0.25 * seg(t, 0.5, 0.8), 7);
+      K.glitch(g, T, g._wide ? -60 : 0, 0, g._wide ? LW + 120 : LW, LH, 0.25 * seg(t, 0.5, 0.8), 7);
     }
 
     faceShot(g, t, T, look) {
@@ -933,7 +938,7 @@
       R.draw(figureQuad(look, 1.2), M.t(0, 0.54, -3), { lit: false, tint: '#5a3a44' });
       R.bake();
       for (let i = 0; i < 7; i++) {
-        const p = R.project([(i % 2 ? 1 : -1) * (1.4 + hx(i, 1, 111) * 2.5), 1.3 + hx(i, 2, 111) * 0.6 + i * 0.06, 3.6 + hx(i, 3, 111) * 4.5]), bloom = eOut(seg(t, 0.15 + i * 0.07, 0.55 + i * 0.07));
+        const p = proj(R, [(i % 2 ? 1 : -1) * (1.4 + hx(i, 1, 111) * 2.5), 1.3 + hx(i, 2, 111) * 0.6 + i * 0.06, 3.6 + hx(i, 3, 111) * 4.5]), bloom = eOut(seg(t, 0.15 + i * 0.07, 0.55 + i * 0.07));
         if (!p || bloom <= 0) continue;
         const r = 0.75 * R.fl / p[2] * bloom;
         lighter(g, () => glow(g, p[0], p[1], r * 1.6, '#ff2a40', 0.45));
@@ -963,6 +968,7 @@
     }
 
     bookShot(g, t, T) {
+      rect(g, '#ecdcb8', 0, 0, LW, LH);
       const z = lerp(1, 1.08, sm(t / 1.1));
       g.save(); g.translate(CX, CY); g.scale(z, z); g.translate(-CX, -CY); g.drawImage(bookPage(), 0, 0); g.restore();
       const thr = lerp(-0.05, 1.05, seg(t, 0.4, 1.1));
@@ -999,16 +1005,16 @@
       R.draw(fenceMesh(), M.id(), { lit: false });
       R.draw(figureQuad(look, 1.75), M.t(0.3, 1.14, 0), { lit: false, tint: '#3a2a3a' });
       R.bake();
-      const hp = R.project([0.62, 2.55, 0]);
+      const hp = proj(R, [0.62, 2.55, 0]);
       if (hp) {
         const ph = (T * 1.4) % 1, up = Math.sin(ph * Math.PI) * 22;
         knife(g, hp[0], hp[1] - up, 14, T * 11, 1);
         lighter(g, () => star4(g, hp[0] + 2, hp[1] - up - 6, 5, '#ffe0e0', 0.5 + 0.5 * Math.sin(T * 20)));
       }
       g.fillStyle = '#05040a';
-      g.beginPath(); g.moveTo(0, LH);
-      for (let x = 0; x <= LW; x += 4) g.lineTo(x, LH - 6 - 10 * hx(x, 2, 119));
-      g.lineTo(LW, LH); g.closePath(); g.fill();
+      g.beginPath(); g.moveTo(-60, LH);
+      for (let x = -60; x <= LW + 60; x += 4) g.lineTo(x, LH - 6 - 10 * hx(x + 120, 2, 119));
+      g.lineTo(LW + 60, LH); g.closePath(); g.fill();
     }
 
     domeShot(g, t, T, look) {
@@ -1060,7 +1066,7 @@
       for (let i = 0; i < 14; i++) rect(g, rgba('#bcd8ff', 0.5), Math.round((hx(i, 1, 133) * LW + T * 8) % LW), 116 + Math.floor(hx(i, 2, 133) * 48), 4 + Math.floor(hx(i, 3, 133) * 8), 1);
       lighter(g, () => {
         g.strokeStyle = rgba(RCOL[4], 0.8); g.lineWidth = 1; g.beginPath();
-        for (let x = 0; x <= LW; x += 2) { const y = 111 + Math.sin(x * 0.11 + T * 4) * 2 + Math.exp(-Math.pow((x - 200) / 18, 2)) * Math.sin(T * 20) * 6 * (sea || 0); if (x) g.lineTo(x, y); else g.moveTo(x, y); }
+        for (let x = -60; x <= LW + 60; x += 2) { const y = 111 + Math.sin(x * 0.11 + T * 4) * 2 + Math.exp(-Math.pow((x - 200) / 18, 2)) * Math.sin(T * 20) * 6 * (sea || 0); if (x > -60) g.lineTo(x, y); else g.moveTo(x, y); }
         g.stroke();
       });
       vgrad(g, 166, LH, [[0, '#3a3448'], [1, '#1a1622']]);
@@ -1068,9 +1074,9 @@
 
     kazFoam(g, T, reach) {
       for (const [k, col] of [[1, rgba('#d8ecff', 0.75)], [0.8, rgba('#5a8ab0', 0.35)]]) {
-        g.fillStyle = col; g.beginPath(); g.moveTo(0, 164);
-        for (let x = 0; x <= LW; x += 8) g.lineTo(x, 164 + reach * k + Math.sin(x * 0.07 + T * 3) * 4);
-        g.lineTo(LW, 164); g.closePath(); g.fill();
+        g.fillStyle = col; g.beginPath(); g.moveTo(-60, 164);
+        for (let x = -60; x <= LW + 60; x += 8) g.lineTo(x, 164 + reach * k + Math.sin(x * 0.07 + T * 3) * 4);
+        g.lineTo(LW + 60, 164); g.closePath(); g.fill();
       }
     }
 
@@ -1087,7 +1093,7 @@
 
     kazScan(g, t, T, look) {
       vgrad(g, 0, LH, [[0, '#030814'], [1, '#0c1e3a']]);
-      for (let x = 0; x < LW; x += 16) rect(g, rgba('#2a5a8a', 0.25), x, 0, 1, LH);
+      for (let x = (g._wide ? -64 : 0); x < (g._wide ? LW + 64 : LW); x += 16) rect(g, rgba('#2a5a8a', 0.25), x, 0, 1, LH);
       for (let y = 0; y < LH; y += 16) rect(g, rgba('#2a5a8a', 0.25), 0, y, LW, 1);
       const wow = seg(t, 0.55, 0.7), sh = wow > 0 ? Math.sin(T * 50) * 2 * (1 - seg(t, 0.7, 1.0)) : 0;
       bust(g, look, lerp(20, 76, eOut(seg(t, 0, 0.3))) - wow * 6, LH + 8, 128, 1.3);
@@ -1126,7 +1132,7 @@
       this.kazShore(g, T, 1);
       const tx = 214, ty = lerp(250, 186, rise);
       lighter(g, () => glow(g, tx - 10, ty - 50, 90, '#9a6aff', 0.35 * rise));
-      g.save(); g.beginPath(); g.rect(0, 0, LW, 178); g.clip();
+      g.save(); g.beginPath(); g.rect(-60, 0, LW + 120, 178); g.clip();
       H.ExplosionKit.toad(g, tx, ty, 0.95, T, { gape: roar, puff: 0.2 + 0.1 * Math.sin(T * 9) });
       g.restore();
       const mx = tx - 44 * 0.95, my = ty - 106 * 0.95;
@@ -1173,12 +1179,17 @@
 
     rackBg(R, T) {
       this.space(R, T);
-      for (let i = 0; i < 5; i++) R.flat(hx(i, 1, 117) * LW, 40 + hx(i, 2, 117) * 160, 60 + hx(i, 3, 117) * 40, i % 2 ? '#1a2a5a' : R3.rgb(RCOL[this.best]).map(v => v * 0.25), { shape: 'puff', a: 0.5 });
+      for (let i = 0; i < 5; i++) R.flat(hx(i, 1, 117) * R.w, 40 + hx(i, 2, 117) * 160, 60 + hx(i, 3, 117) * 40, i % 2 ? '#1a2a5a' : R3.rgb(RCOL[this.best]).map(v => v * 0.25), { shape: 'puff', a: 0.5 });
       R.bake();
     }
 
     paint() {
+      const rw = this.ui && this.ui.wide && this.ui.wide() ? 427 : LW, ox = (rw - LW) >> 1;
+      if (this.R.w !== rw) this.R = new R3.Raster(rw, LH);
       const R = this.R, g = R.g, T = this.t + this.rt;
+      g._wide = rw > LW;
+      g.save();
+      if (ox) g.translate(ox, 0);
       if (this.phase === 'cine') {
         const [n, t] = this.shot();
         if (n === 'tide') this.tide(R, g, t, T);
@@ -1194,6 +1205,7 @@
         else if (CUTS[r.id]) this.cutShot(R, g, r, t - this.waveLen(r), T);
         else this.shore(R, g, r, t - this.waveLen(r), T);
       } else this.rackBg(R, T);
+      g.restore();
       H.Cine.dither(g);
       return R.cv;
     }
@@ -1201,18 +1213,18 @@
     render() { return this.paint(); }
 
     draw(c) {
-      const cv = this.paint(), was = c.imageSmoothingEnabled;
+      const ui = this.ui, cv = this.paint(), was = c.imageSmoothingEnabled;
       c.imageSmoothingEnabled = false;
-      c.drawImage(cv, 0, 0, W, HGT);
+      c.drawImage(cv, ui.left, 0, ui.vw, HGT);
       c.imageSmoothingEnabled = was;
       if (this.phase === 'cine') this.cineOverlay(c);
       else if (this.phase === 'reveal') this.revealOverlay(c);
       else this.rackOverlay(c);
-      if (this.fade > 0) { c.fillStyle = 'rgba(255,255,255,' + this.fade.toFixed(3) + ')'; c.fillRect(0, 0, W, HGT); }
+      if (this.fade > 0) { c.fillStyle = 'rgba(255,255,255,' + this.fade.toFixed(3) + ')'; c.fillRect(ui.left, 0, ui.vw, HGT); }
     }
 
     skipButton(c, label) {
-      const ui = this.ui, w = ui.measure(label, 10) + 44, x = W - w - 10, y = 10;
+      const ui = this.ui, w = ui.measure(label, 10) + 44, x = ui.right - w - 10, y = 10;
       c.fillStyle = 'rgba(4,8,20,0.6)'; c.fillRect(x, y, w, 20);
       c.strokeStyle = 'rgba(160,210,255,0.7)'; c.strokeRect(x + 0.5, y + 0.5, w - 1, 19);
       const kw = ui.keycap(x + 6, y + 4, 'Esc');
@@ -1222,7 +1234,7 @@
 
     cineOverlay(c) {
       this.skipButton(c, this.res.length > 1 ? 'К итогам' : 'Пропустить');
-      this.ui.hints([['Enter', 'Пропустить ролик']], 12, HGT - 20, { col: 'rgba(200,220,240,0.8)' });
+      this.ui.hints([['Enter', 'Пропустить ролик']], this.ui.left + 12, HGT - 20, { col: 'rgba(200,220,240,0.8)' });
     }
 
     sparkRow(c, x, y, n, col, s) {
@@ -1239,7 +1251,7 @@
     plate(c, r, a) {
       if (a <= 0) return;
       const ui = this.ui, ch = r.kind === 'char', d = ch ? H.CHARS[r.id] : H.CONES[r.id], path = d && d.path, name = ch ? d.fullName || d.name : r.name;
-      const x0 = Math.round(36 - 50 * (1 - eOut(a))), y = 178;
+      const x0 = ui.left + Math.round(36 - 50 * (1 - eOut(a))), y = 178;
       c.save(); c.globalAlpha = cl(a);
       const gr = c.createLinearGradient(x0 - 36, 0, x0 + 334, 0);
       gr.addColorStop(0, 'rgba(4,8,20,0.78)'); gr.addColorStop(0.7, 'rgba(4,8,20,0.45)'); gr.addColorStop(1, 'rgba(4,8,20,0)');
@@ -1272,7 +1284,7 @@
       if (a <= 0) return;
       const ui = this.ui;
       c.save(); c.globalAlpha = cl(a);
-      ui.resultTag(W - 196, HGT - 108, r, [['Новый персонаж!', C.ok], ['присоединился к экипажу', C.cream]]);
+      ui.resultTag(ui.right - 196, HGT - 108, r, [['Новый персонаж!', C.ok], ['присоединился к экипажу', C.cream]]);
       c.restore();
     }
 
@@ -1286,9 +1298,9 @@
         } else this.plate(c, r, seg(t, 0.45, 0.8));
         this.resultTag(c, r, seg(t, L - 0.4, L - 0.1));
       }
-      if (this.res.length > 1) ui.plate(12, 10, (this.cur + 1) + ' / ' + this.res.length);
+      if (this.res.length > 1) ui.plate(ui.left + 12, 10, (this.cur + 1) + ' / ' + this.res.length);
       this.skipButton(c, this.res.length > 1 ? 'К итогам' : 'Закрыть');
-      ui.hints([['Enter', this.rt < this.intro() ? 'Показать' : this.queue.length || this.res.length > 1 ? 'Далее' : 'Готово']], 12, HGT - 20);
+      ui.hints([['Enter', this.rt < this.intro() ? 'Показать' : this.queue.length || this.res.length > 1 ? 'Далее' : 'Готово']], ui.left + 12, HGT - 20);
     }
 
     rackCard(c, r, x, y, w, h) {
@@ -1313,7 +1325,7 @@
 
     rackOverlay(c) {
       const ui = this.ui, t = this.rt, n = this.res.length;
-      c.fillStyle = 'rgba(4,6,14,0.35)'; c.fillRect(0, 0, W, HGT);
+      c.fillStyle = 'rgba(4,6,14,0.35)'; c.fillRect(ui.left, 0, ui.vw, HGT);
       for (let k = 5; k > 0; k--) ui.text('ИТОГИ ПРИЗЫВА', W / 2 + k, 26 + k, { size: 28, bold: true, serif: true, align: 'center', col: k > 1 ? '#0a1020' : '#2a3a5a', shadow: false });
       ui.text('ИТОГИ ПРИЗЫВА', W / 2, 26, { size: 28, bold: true, serif: true, align: 'center', col: '#eef4ff', shadow: false });
       const cw = 56, gap = 4, ch = 300, x0 = Math.round(W / 2 - (n * cw + (n - 1) * gap) / 2), y0 = 80;

@@ -1412,7 +1412,7 @@ const run = (b, onStep) => {
   press('back', 'Escape');
   eq(bt.sub && bt.sub.type, 'pause', 'Esc opens the pause');
   pump(1);
-  eq(ui.subOptions().map(o => o.label).join('|'), 'Продолжить бой|Список противников|Повторить узел|Покинуть', 'the pause of the mode');
+  eq(ui.subOptions().map(o => o.label).join('|'), 'Продолжить бой|Список противников|Повторить узел|Покинуть|Настройки', 'the pause of the mode');
   bt.sub.sel = 1;
   press('ok');
   pump(1);

@@ -26,6 +26,13 @@
       this.bt.queue.push(...ev);
     },
 
+    hecateAt() { return this.wide() ? { x: -38, y: 248, s: 132 } : HECATE_AT; },
+
+    allySlotWide(i) {
+      const S = [{ x: 148, y: 266, s: 1.15 }, { x: 4, y: 284, s: 1.18 }, { x: 202, y: 342, s: 1.24 }, { x: 58, y: 358, s: 1.28 }];
+      return S[i] || S[0];
+    },
+
     enemyLayout() {
       const bt = this.bt;
       const list = bt.foes.filter(u => u.appear && (!bt.fade.has(u) || bt.fade.get(u) > 0));
@@ -33,17 +40,31 @@
       const meta = u => G.FOE_META[G.foeId(u.data)] || {};
       const size = u => meta(u).size || (u.data.boss ? 200 : u.data.elite ? 140 : 104);
       const span = u => size(u) * (meta(u).slot || 0.8);
+      if (this.wide()) {
+        const raw = list.reduce((a, u) => a + span(u), 0), k = raw > 356 ? 356 / raw : 0.92, total = raw * k;
+        let x = 532 - total / 2;
+        list.forEach((u, i) => {
+          const s = size(u), w = span(u) * k, y = list.length === 1 ? 286 : 266 + (i % 2) * 38;
+          out.set(u, { x: x + w / 2, y, s });
+          x += w;
+        });
+        return out;
+      }
       const total = list.reduce((a, u) => a + span(u), 0);
       let x = W / 2 + 34 - total / 2;
       for (const u of list) { const s = size(u), w = span(u); out.set(u, { x: x + w / 2, y: 290, s }); x += w; }
       return out;
     },
 
-    allyPos(u) { return { x: 12 + u.idx * 112 + 54, y: 400 }; },
+    allyPos(u) {
+      if (this.wide()) { const s = this.allySlotWide(u.idx); return { x: s.x, y: s.y, s: s.s }; }
+      return { x: this.left + 12 + u.idx * 112 + 54, y: 400 };
+    },
 
     unitPos(u) {
-      if (u.summon) return u.id === 'gynoids' ? this.gynoidPos() : this.fivesPos(u) || { x: HECATE_AT.x, y: HECATE_AT.y - HECATE_AT.s * 0.55 };
-      if (u.side === 'ally') return this.allyPos(u);
+      const hc = this.hecateAt();
+      if (u.summon) return u.id === 'gynoids' ? this.gynoidPos() : this.fivesPos(u) || { x: hc.x, y: hc.y - hc.s * 0.55 };
+      if (u.side === 'ally') { const p = this.allyPos(u); return this.wide() ? { x: p.x, y: p.y - 48 } : p; }
       const p = this.enemyLayout().get(u);
       return p ? { x: p.x, y: p.y - p.s * 0.5 } : { x: W / 2, y: 200 };
     },
@@ -417,7 +438,7 @@
       if (sub.type === 'contact') return u.kit.contact.map((c, i) => ({ label: c.name, right: { joke: 'шутка', cute: 'милота', threat: 'угроза', science: 'наука', kind: 'доброта', sing: 'музыка', bribe: 'выгода', silent: 'молчание', weird: 'странное' }[c.tag], fn: () => { b.contact(i, bt.target); this.pullEvents(); } }));
       if (sub.type === 'fusion') return b.availableFusions().map(f => ({ label: f.f.name, right: f.ready ? 'готово' : 'нужна энергия', rcol: f.ready ? C.ok : C.dim, disabled: !f.ready, members: f.members, fn: () => { b.fusion(f.id, bt.target); this.pullEvents(); } }));
       if (sub.type === 'aoa') return this.aoaOptions();
-      if (sub.type === 'pause') return [{ label: 'Продолжить бой', fn: () => { } }, { label: b.noFlee ? 'Отступить нельзя' : 'Отступить', disabled: b.noFlee, fn: () => { b.flee(); this.pullEvents(); } }, { label: 'Авто-бой: ' + (bt.auto ? 'вкл' : 'выкл'), fn: () => { bt.auto = !bt.auto; } }];
+      if (sub.type === 'pause') return [{ label: 'Продолжить бой', fn: () => { } }, { label: b.noFlee ? 'Отступить нельзя' : 'Отступить', disabled: b.noFlee, fn: () => { b.flee(); this.pullEvents(); } }, { label: 'Авто-бой: ' + (bt.auto ? 'вкл' : 'выкл'), fn: () => { bt.auto = !bt.auto; } }, { label: 'Настройки', fn: () => this.openSettings() }];
       return [];
     },
 
@@ -477,7 +498,7 @@
       const sx = bt.shake ? (Math.random() - 0.5) * bt.shake : 0, sy = bt.shake ? (Math.random() - 0.5) * bt.shake : 0;
       c.save();
       c.translate(sx, sy);
-      c.drawImage(G.bgCanvas(bt.bg, W, HGT), 0, 0);
+      c.drawImage(G.bgCanvas(bt.bg, this.vw, HGT, this.wide()), this.left, 0);
       const lay = this.enemyLayout();
       const boss = [...lay.keys()].find(u => u.data.boss && !bt.fade.has(u));
       const inputOk = b.phase === 'input' && !bt.queue.length && !bt.cur && !bt.result && !bt.sub;
@@ -488,7 +509,9 @@
       this.contonBack(c, lay);
       this.haresBack(c, lay);
       this.fivesBack(c, lay);
-      for (const [u, p] of lay) {
+      if (this.wide()) this.drawAlliesFieldWide(c, b);
+      const foeEntries = this.wide() ? [...lay.entries()].sort((a, z) => a[1].y - z[1].y) : [...lay.entries()];
+      for (const [u, p] of foeEntries) {
         const fade = bt.fade.has(u) ? bt.fade.get(u) : 1;
         if ((u.dead || u.gone) && fade <= 0) continue;
         const lunge = bt.lunge.get(u) || 0;
@@ -534,7 +557,7 @@
         const a = Math.min(1, bt.bannerT * 3), ally = bt.banner.side === 'ally';
         c.globalAlpha = a;
         const col = ally ? (bt.banner.kind === 'ult' || bt.banner.kind === 'fusion' ? '#ffc040' : '#80c0ff') : '#ff7070';
-        const w = Math.max(220, this.measure(bt.banner.name, 14, true, true) + 60), y = boss ? 66 : 14;
+        const w = Math.max(220, this.measure(bt.banner.name, 14, true, true) + 60), y = (boss ? 66 : 14) + (this.wide() ? 24 : 0);
         c.fillStyle = 'rgba(4,6,20,0.82)'; c.fillRect(W / 2 - w / 2, y, w, 36);
         c.fillStyle = col; c.fillRect(W / 2 - w / 2, y, w, 1); c.fillRect(W / 2 - w / 2, y + 35, w, 1);
         this.diamond(W / 2 - w / 2 + 10, y + 18, 4, col); this.diamond(W / 2 + w / 2 - 10, y + 18, 4, col);
@@ -543,7 +566,7 @@
         c.globalAlpha = 1;
       }
       if (bt.msgT > 0 && bt.msg) {
-        const lines = this.wrap(bt.msg, 380, 12), y = boss ? 108 : 58;
+        const lines = this.wrap(bt.msg, 380, 12), y = (boss ? 108 : 58) + (this.wide() ? 24 : 0);
         this.win(W / 2 - 210, y, 420, 16 + lines.length * 15, { border: bt.msgWarn ? '#ff8080' : C.brass, corners: false });
         lines.forEach((l, i) => this.text(l, W / 2, y + 8 + i * 15, { align: 'center', col: bt.msgWarn ? '#ffb0b0' : C.cream }));
       }
@@ -565,7 +588,7 @@
       if (bt.intro > 0) {
         c.fillStyle = '#000';
         const p = bt.intro / 0.8;
-        for (let i = 0; i < 12; i++) { c.fillRect(0, i * 40, W * p, 20); c.fillRect(W - W * p, i * 40 + 20, W * p, 20); }
+        for (let i = 0; i < 12; i++) { c.fillRect(this.left, i * 40, this.vw * p, 20); c.fillRect(this.right - this.vw * p, i * 40 + 20, this.vw * p, 20); }
       }
       if (bt.sub) this.drawSub(c);
       if (bt.result) this.drawResult(c);
@@ -573,7 +596,7 @@
     },
 
     drawHecate(c, h) {
-      const { x, y, s } = HECATE_AT, bt = this.bt, bob = Math.sin(h.t * 1.6) * 4, lunge = (bt.lunge.get(h.u) || 0) * 30;
+      const { x, y, s } = this.hecateAt(), bt = this.bt, bob = Math.sin(h.t * 1.6) * 4, lunge = (bt.lunge.get(h.u) || 0) * 30;
       c.save();
       c.globalAlpha = h.a;
       const gr = c.createRadialGradient(x, y - s * 0.5, 6, x, y - s * 0.5, s * 0.8);
@@ -682,7 +705,7 @@
     },
 
     bossHud(c, u) {
-      const x = 170, y = 8, w = 300;
+      const x = 170, y = this.wide() ? 32 : 8, w = 300;
       c.fillStyle = 'rgba(4,6,20,0.72)'; c.fillRect(x - 8, y - 2, w + 16, 56);
       c.fillStyle = '#c85050'; c.fillRect(x - 8, y + 53, w + 16, 1);
       G.foeIcon(c, u.data, x - 50, y, 40);
@@ -764,7 +787,7 @@
       if (!bt.dmgBy) return;
       const rows = b.allies.map(u => ({ u, v: bt.dmgBy.get(u) || 0 })).sort((a, z) => z.v - a.v || a.u.idx - z.u.idx);
       const top = Math.max(1, rows[0].v), total = rows.reduce((a, r) => a + r.v, 0);
-      const w = 100, x = W - w - 8, y = 38, h = 22 + rows.length * 22;
+      const w = 100, h = 22 + rows.length * 22, x = this.wide() ? this.left + 8 : this.right - w - 8, y = this.wide() ? HGT - h - 6 : 38;
       c.fillStyle = 'rgba(4,6,20,0.7)'; c.fillRect(x, y, w, h);
       c.fillStyle = 'rgba(242,220,154,0.6)'; c.fillRect(x, y, w, 1);
       c.fillStyle = 'rgba(242,220,154,0.25)'; c.fillRect(x, y + h - 1, w, 1);
@@ -784,7 +807,10 @@
       });
     },
 
-    turnCell(i) { return i === 0 ? { x: 8, y: 8, size: 48 } : { x: 15, y: 26 + i * 42, size: 34 }; },
+    turnCell(i) {
+      if (this.wide()) return i === 0 ? { x: 58, y: HGT - 58, size: 52 } : { x: 70 + i * 48, y: HGT - 48, size: 42 };
+      return i === 0 ? { x: this.left + 8, y: 8, size: 48 } : { x: this.left + 15, y: 26 + i * 42, size: 34 };
+    },
 
     turnIcon(c, u, x, y, size) {
       if (u.aha && this.ahaIcon) this.ahaIcon(c, x, y, size);
@@ -795,9 +821,11 @@
     },
 
     drawTurnOrder(c) {
-      const list = this.turnOrder(7);
+      const list = this.turnOrder(this.wide() ? 10 : 7);
       if (!list.length) return;
-      c.fillStyle = 'rgba(242,220,154,0.45)'; c.fillRect(31, 30, 2, 60 + (list.length - 1) * 42);
+      c.fillStyle = 'rgba(242,220,154,0.45)';
+      if (this.wide()) c.fillRect(84, HGT - 28, Math.max(0, (list.length - 1) * 48 + 7), 2);
+      else c.fillRect(this.left + 31, 30, 2, 60 + (list.length - 1) * 42);
       list.forEach((o, i) => {
         const u = o.u, cur = i === 0, { x, y, size } = this.turnCell(i);
         const ally = u.side === 'ally';
@@ -809,6 +837,7 @@
         c.strokeStyle = cur ? C.brassHi : u.summon ? (u.aha ? '#ff9ae0' : u.id === 'gynoids' ? '#7ab4ff' : u.id === 'lord' ? '#b48aff' : u.id === 'numby' ? '#ffd060' : '#ff6a96') : ally ? '#6a8ad8' : '#d86a6a'; c.lineWidth = cur ? 2 : 1; c.strokeRect(x - 0.5, y - 0.5, size + 1, size + 1); c.lineWidth = 1;
         this.contonRail(c, u, x, y, size);
         if (!cur) { c.fillStyle = 'rgba(4,6,20,0.85)'; c.fillRect(x + size - 14, y + size - 10, 16, 10); this.text(String(o.av), x + size + 1, y + size - 10, { align: 'right', size: 9, bold: true, col: C.cream }); }
+        else if (this.wide()) this.diamond(x + size / 2, y - 6, 4, C.brassHi, '#1a1208');
         else this.diamond(x + size + 6, y + size / 2, 4, C.brassHi, '#1a1208');
       });
       this.contonRailFx(c);
@@ -829,7 +858,7 @@
         { label: 'II', on: false, fn: () => this.battleKey('back', 'Escape') }
       ];
       items.forEach((it, i) => {
-        const x = W - 150 + i * 48, y = 8;
+        const x = (this.wide() ? W / 2 - 70 : this.right - 150) + i * 48, y = this.wide() ? 6 : 8;
         c.fillStyle = it.on ? 'rgba(242,220,154,0.85)' : 'rgba(4,6,20,0.72)'; c.fillRect(x, y, 44, 22);
         c.strokeStyle = it.on ? '#1a1208' : 'rgba(242,220,154,0.6)'; c.strokeRect(x + 0.5, y + 0.5, 43, 21);
         this.text(it.label, x + 22, y + 5, { align: 'center', size: 11, bold: true, col: it.on ? '#1c1208' : C.cream, shadow: !it.on });
@@ -837,10 +866,130 @@
       });
     },
 
-    drawAllies(c, b) {
+    drawAlliesFieldWide(c, b) {
+      const bt = this.bt, list = b.allies.slice().sort((a, z) => this.allySlotWide(a.idx).y - this.allySlotWide(z.idx).y);
+      for (const u of list) {
+        const slot = this.allySlotWide(u.idx), s = slot.s, lunge = bt.lunge.get(u) || 0, dead = u.dead, cur = u === b.current && !dead;
+        const bob = dead ? 0 : Math.sin(this.t * 2.4 + u.idx * 1.3) * 2;
+        const px = Math.round(slot.x + lunge * 36), py = Math.round(slot.y + bob - lunge * 6);
+        const tab = bt.pv && bt.pv.ab.target;
+        const aimed = (!dead && (tab === 'allies' || (tab === 'self' && cur))) || (bt.allyMode && bt.allyMode.target === u && (!dead || (bt.pv && bt.pv.revive)));
+        c.fillStyle = 'rgba(0,0,0,0.38)'; c.beginPath(); c.ellipse(px, py + 3, 24 * s, 7 * s, 0, 0, Math.PI * 2); c.fill();
+        if (aimed) {
+          const a = 0.65 + 0.35 * Math.sin(this.t * 6);
+          c.strokeStyle = 'rgba(128,255,144,' + a.toFixed(2) + ')'; c.lineWidth = 2; c.beginPath(); c.ellipse(px, py + 3, 28 * s, 9 * s, 0, 0, Math.PI * 2); c.stroke(); c.lineWidth = 1;
+        } else if (cur) {
+          const a = 0.65 + 0.35 * Math.sin(this.t * 5);
+          c.strokeStyle = 'rgba(242,220,154,' + a.toFixed(2) + ')'; c.lineWidth = 2; c.beginPath(); c.ellipse(px, py + 3, 28 * s, 9 * s, 0, 0, Math.PI * 2); c.stroke(); c.lineWidth = 1;
+        } else if (bt.allyMode && this.allyChoices().includes(u)) {
+          c.strokeStyle = 'rgba(128,255,144,0.45)'; c.beginPath(); c.ellipse(px, py + 3, 24 * s, 7 * s, 0, 0, Math.PI * 2); c.stroke();
+        }
+        const away = u.dAway === undefined ? u.flags.away : u.dAway;
+        const form = u.dForm != null ? u.dForm : u.flags.nightmare > 0;
+        if (away === 'portal') {
+          if (this.portalRing) this.portalRing(c, px, py - 42 * s, 26 * s, 0.9);
+        } else if (form) {
+          G.drawEnemy(c, { id: 'scar_nightmare', boss: true }, px, py, Math.round(92 * s), { alpha: dead ? 0.35 : 1, flash: bt.flash.has(u) ? 0.7 : 0, t: this.t });
+        } else {
+          const pink = u.dPink == null ? u.flags.pink > 0 : u.dPink;
+          const look = pink && u.kit && u.kit.pinkLook ? u.kit.pinkLook : G.lookOf(u.charId, this.game);
+          G.drawFigure(c, look, px, py, s, { flip: true, alpha: dead ? 0.35 : away === 'capsule' ? 0.55 : 1 });
+          if (bt.flash.has(u)) { c.fillStyle = 'rgba(255,90,90,0.45)'; c.beginPath(); c.ellipse(px, py - 44 * s, 18 * s, 40 * s, 0, 0, Math.PI * 2); c.fill(); }
+          if (away === 'capsule' && this.capsuleGlyph) this.capsuleGlyph(c, px, py - 44 * s, 0.85 * s);
+        }
+        if (u.frozen) { c.fillStyle = 'rgba(170,235,255,0.32)'; c.beginPath(); c.ellipse(px, py - 44 * s, 20 * s, 44 * s, 0, 0, Math.PI * 2); c.fill(); this.text('ЛЁД', px, py - 24 * s, { align: 'center', size: 10, bold: true, col: '#c0f4ff' }); }
+      }
+    },
+
+    drawAlliesHudWide(c, b) {
       const bt = this.bt;
       b.allies.forEach((u, i) => {
-        const x = 8 + i * 112, lift = u === b.current ? 8 : 0, lunge = (bt.lunge.get(u) || 0) * 40;
+        const slot = this.allySlotWide(i), s = slot.s, lunge = bt.lunge.get(u) || 0, dead = u.dead, cur = u === b.current && !dead;
+        const px = Math.round(slot.x + lunge * 36), py = Math.round(slot.y - lunge * 6);
+        const hy = Math.round(py - 84 * s - 22), bw = 80, bx = Math.round(px - bw / 2 + 8);
+        const pr = bt.pv && bt.pv.rows.get(u), tab = bt.pv && bt.pv.ab.target;
+        const aimed = (!dead && (tab === 'allies' || (tab === 'self' && cur))) || (bt.allyMode && bt.allyMode.target === u && (!dead || (bt.pv && bt.pv.revive)));
+        if (aimed) {
+          const ay = hy - 12 + Math.sin(this.t * 6) * 2;
+          c.fillStyle = '#0a1810'; c.beginPath(); c.moveTo(px - 7, ay - 1); c.lineTo(px + 7, ay - 1); c.lineTo(px, ay + 7); c.fill();
+          c.fillStyle = '#80ff90'; c.beginPath(); c.moveTo(px - 5, ay); c.lineTo(px + 5, ay); c.lineTo(px, ay + 5); c.fill();
+        } else if (cur) this.diamond(px, hy - 8, 3.5, C.brassHi, '#1a1208');
+        c.fillStyle = 'rgba(4,6,20,0.68)'; c.fillRect(bx - 22, hy - 2, bw + 26, 26);
+        c.fillStyle = aimed ? '#80ff90' : cur ? C.brassHi : 'rgba(106,138,216,0.5)'; c.fillRect(bx - 22, hy - 2, bw + 26, 1);
+        const ec = H.ELEMENTS[u.elem], ready = b.ultReady(u), cx2 = bx - 10, cy2 = hy + 10;
+        if (u.kit.notes) {
+          c.save(); c.translate(cx2, cy2); c.scale(0.5, 0.5); this.noteStaff(c, u, 0, 0, ready); c.restore();
+        } else {
+          const ef = u.energy / u.maxEnergy;
+          c.fillStyle = 'rgba(0,0,0,0.65)'; c.beginPath(); c.arc(cx2, cy2, 10, 0, Math.PI * 2); c.fill();
+          c.strokeStyle = '#1a1c2c'; c.lineWidth = 3; c.beginPath(); c.arc(cx2, cy2, 8.5, 0, Math.PI * 2); c.stroke();
+          c.strokeStyle = ready ? 'hsl(' + ((this.t * 200) % 360) + ',90%,65%)' : ec.col; c.beginPath(); c.arc(cx2, cy2, 8.5, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * ef); c.stroke(); c.lineWidth = 1;
+          if (ready) { const gl = c.createRadialGradient(cx2, cy2, 2, cx2, cy2, 14); gl.addColorStop(0, 'rgba(255,240,180,0.5)'); gl.addColorStop(1, 'rgba(255,240,180,0)'); c.fillStyle = gl; c.fillRect(cx2 - 14, cy2 - 14, 28, 28); }
+          G.elemIcon(c, u.elem, cx2, cy2, 5);
+        }
+        if (ready) this.keycap(cx2 - 15, cy2 - 6, String(i + 1));
+        const nm = u.name.length > 9 ? (u.kit && u.kit.short) || u.name.slice(0, 9) : u.name;
+        this.text(nm, bx, hy - 1, { size: 9, bold: true, col: cur ? C.gold : C.cream });
+        this.text(dead ? 'Повержен' : String(Math.max(0, Math.round(u.dHp || 0))), bx + bw, hy - 1, { size: 9, bold: true, align: 'right', col: dead ? C.bad : C.cream });
+        const gain = pr && (pr.heal > 0 || pr.shield > 0);
+        if (gain) this.text(pr.heal > 0 ? '+' + H.fmt(pr.heal) : 'Щит ' + H.fmt(pr.shield), px, hy - 13, { size: 9, bold: true, align: 'center', col: pr.heal > 0 ? '#80ffa0' : '#9ad0ff' });
+        this.bar(bx, hy + 10, bw, 5, (u.dHp || 0) / u.maxHp, (u.dHp || 0) / u.maxHp < 0.3 ? '#ff4040' : '#52d67a');
+        if (u.dShield > 0) { c.fillStyle = 'rgba(140,200,255,0.95)'; c.fillRect(bx, hy + 9, Math.min(1, u.dShield / u.maxHp) * bw, 2); }
+        if (gain) {
+          const pulse = (0.5 + 0.35 * Math.sin(this.t * 7)).toFixed(2);
+          if (pr.heal > 0) { const a = Math.round(bx + bw * u.hp / u.maxHp), z = Math.round(bx + bw * Math.min(1, (u.hp + pr.heal) / u.maxHp)); c.fillStyle = 'rgba(170,255,190,' + pulse + ')'; c.fillRect(a, hy + 10, z - a, 5); }
+          if (pr.shield > 0) { c.fillStyle = 'rgba(170,220,255,' + pulse + ')'; c.fillRect(bx, hy + 9, Math.round(Math.min(1, pr.shield / u.maxHp) * bw), 2); }
+        }
+        const tags = [], cardX = bx - 6, cardY = hy - 74;
+        if (u.taunt > 0) tags.push('Пров.');
+        if (u.frozen) tags.push('Лёд');
+        for (const d of u.dots) tags.push(H.DOT_NAME[d.type]);
+        if (u.charId === 'trail_p' && u.flags.magma) tags.push('Магма ' + u.flags.magma);
+        if (u.charId === 'himeko' && u.flags.charges) tags.push('Заряд ' + u.flags.charges);
+        if (u.charId === 'asta' && u.flags.charge) tags.push('Заряд ' + u.flags.charge);
+        if (u.charId === 'yanagi' && u.flags.shinra > 0) tags.push('Синрабансё ' + u.flags.shinra);
+        if (b.inHell(u)) tags.push('Ад ' + u.buffs.find(x => x.name === 'Адский пейзаж').turns);
+        if (u.kit.notes) tags.push('Послезв. ' + (u.dAfter != null ? u.dAfter : u.flags.after || 0));
+        if (u.kit.nbasic && u.flags.nightmare > 0) tags.push('Кошмар ' + u.flags.nightmare);
+        if (u.flags.collapse > 0) tags.push('Без сил ' + u.flags.collapse);
+        if (u.flags.cover > 0) tags.push('Прикрытие');
+        this.inabaTags(u, tags);
+        let tx = cardX + 6;
+        if (u.kit.charged) {
+          const fr = u.dFrost == null ? u.flags.frost || 0 : u.dFrost;
+          for (let k = 0; k < T.frostMax; k++) this.diamond(cardX + 9 + k * 8, cardY + 93, 3, k < fr ? '#bfe8ff' : '#20263e', '#0a1020');
+          tx = cardX + 58;
+        }
+        const pip = PIPS[u.charId];
+        if (pip) {
+          const n = u[pip[1]] == null ? u.flags[pip[0]] || 0 : u[pip[1]], max = u.flags[pip[2]] || T[pip[2]];
+          for (let k = 0; k < max; k++) this.diamond(cardX + 9 + k * 8, cardY + 93, 3, k < n ? pip[3] : '#20263e', '#0a1020');
+          tx = cardX + 12 + max * 8;
+        }
+        if (this.elationCard) tx = this.elationCard(c, u, cardX, cardY, tx);
+        tx = this.foursCard(c, u, cardX, cardY, tags, tx);
+        tx = this.contonCard(c, u, cardX, cardY, tags, tx);
+        tx = this.haresCard(c, u, cardX, cardY, tags, tx);
+        tx = this.fivesCard(c, u, cardX, cardY, tags, tx);
+        if (u.charId === 'yanagi') this.moonGlyph(c, bx + bw - 5, hy + 19, 4, u.dStance || u.flags.stance);
+        if (tags.length) this.text(this.fitText(tags.slice(0, 2).join(' '), 8, Math.max(24, bx + bw - tx)), tx, hy + 14, { size: 8, col: C.gold });
+        this.hit(px - 46, hy - 6, 96, py - hy + 16, () => {
+          if (bt.allyMode) {
+            if (dead && !this.allyChoices().includes(u)) return;
+            if (bt.allyMode.target === u) this.battleKey('ok', 'Enter');
+            else { bt.allyMode.target = u; this.sfx('select'); }
+            return;
+          }
+          if (b.ultReady(u) && b.phase === 'input') this.doUlt(u);
+        });
+      });
+    },
+
+    drawAllies(c, b) {
+      if (this.wide()) { this.drawAlliesHudWide(c, b); return; }
+      const bt = this.bt;
+      b.allies.forEach((u, i) => {
+        const x = this.left + 8 + i * 112, lift = u === b.current ? 8 : 0, lunge = (bt.lunge.get(u) || 0) * 40;
         const y = 376 - lift - lunge, dead = u.dead, cur = u === b.current;
         const gr = c.createLinearGradient(0, y, 0, y + 100);
         gr.addColorStop(0, cur ? 'rgba(60,72,160,0.95)' : 'rgba(16,22,62,0.9)'); gr.addColorStop(1, 'rgba(6,8,26,0.95)');
@@ -959,10 +1108,10 @@
 
     drawCommands(c, b) {
       const bt = this.bt, u = b.current;
-      const x = 462, y = 336;
-      const gr = c.createLinearGradient(x, y, W, HGT);
+      const x = this.right - 178, y = 336;
+      const gr = c.createLinearGradient(x, y, this.right, HGT);
       gr.addColorStop(0, 'rgba(4,6,20,0)'); gr.addColorStop(0.35, 'rgba(4,6,20,0.62)'); gr.addColorStop(1, 'rgba(4,6,20,0.88)');
-      c.fillStyle = gr; c.fillRect(x - 4, y - 6, W - x + 4, HGT - y + 6);
+      c.fillStyle = gr; c.fillRect(x - 4, y - 6, this.right - x + 4, HGT - y + 6);
       this.text(String(b.sp), x + 8, y, { size: 26, bold: true, serif: true, col: C.gold });
       this.text('очки навыка', x + 32, y + 4, { size: 9, col: C.sub });
       for (let i = 0; i < T.spMax; i++) this.diamond(x + 38 + i * 14, y + 22, 5, i < b.sp ? C.brassHi : '#20263e', '#1a1208');
@@ -984,7 +1133,7 @@
         this.roundButton(c, x + 40, y + 92, qr, 'Q', bab.lv ? 'Симоцуки' : 'Атака', TARGET_NAME[bab.target], () => this.battleKey(null, 'KeyQ'), { col: '#5a6ab8', active: !onSkill, disabled: b.basicLocked(u), icon: (ix, iy) => G.statIcon(c, 'atk', ix - 8, iy - 8, 16, '#ffffff') });
         this.roundButton(c, x + 128, y + 92, er, 'E', 'Навык', TARGET_NAME[sab.target], () => this.battleKey(null, 'KeyE'), { col: ec, disabled: noSp, active: onSkill, icon: (ix, iy) => G.pathIcon(c, u.kit.path, ix - 10, iy - 10, 20, '#ffffff') });
         this.fivesCommands(c, b, u, x + 4, y + 62);
-        if (bt.allyMode) this.text('←→ союзник', W - 8, y + 17, { align: 'right', size: 9, bold: true, col: C.ok });
+        if (bt.allyMode) this.text('←→ союзник', this.right - 8, y + 17, { align: 'right', size: 9, bold: true, col: C.ok });
         this.drawCastPlate(c, b, u, onSkill ? sab : bab, onSkill);
       } else this.text(bt.auto ? 'Авто-бой' : this.chainOpen() ? 'Цепочка атак' : 'Ход противника…', x + 88, y + 84, { align: 'center', size: 12, col: C.sub });
     },
@@ -1002,7 +1151,7 @@
     },
 
     drawSkillModes(c, u) {
-      const sel = u.flags.skillSel | 0, w = 112, x = W - 8 - w, y = 248;
+      const sel = u.flags.skillSel | 0, w = 112, x = this.right - 8 - w, y = this.wide() ? 272 : 248;
       c.fillStyle = 'rgba(4,6,20,0.82)'; c.fillRect(x, y, w, 56);
       c.fillStyle = 'rgba(242,220,154,0.5)'; c.fillRect(x, y, w, 1);
       this.text(u.kit.skillsTitle || 'Навык Казумы', x + 6, y + 3, { size: 9, bold: true, col: C.gold });
@@ -1017,7 +1166,7 @@
     },
 
     drawImplantModes(c, b, u) {
-      const list = b.implantChoices(), t = this.bt.target, cur = b.implantElem(u, t), w = 124, x = W - 8 - w, y = 300 - 18 - list.length * 13;
+      const list = b.implantChoices(), t = this.bt.target, cur = b.implantElem(u, t), w = 124, x = this.right - 8 - w, y = (this.wide() ? 326 : 300) - 18 - list.length * 13;
       c.fillStyle = 'rgba(4,6,20,0.82)'; c.fillRect(x, y, w, 18 + list.length * 13);
       c.fillStyle = 'rgba(200,170,255,0.6)'; c.fillRect(x, y, w, 1);
       this.text('Внести уязвимость', x + 6, y + 3, { size: 9, bold: true, col: '#d8c8ff' });
@@ -1039,7 +1188,7 @@
       const extra = pv && pv.bounce ? ' +' + pv.bounce + ' отск.' : '';
       const capW = Math.max(14, Math.round(this.measure('Пробел', 9, true) + 8));
       const nw = this.measure(name + extra, 10, true), kw = this.measure(kind, 9, false);
-      const w = Math.round(Math.min(300, capW + nw + kw + 26)), x = W - 8 - w, y = 308;
+      const w = Math.round(Math.min(300, capW + nw + kw + 26)), x = (this.wide() ? 544 : this.right - 8) - w, y = this.wide() ? HGT - 74 : 308;
       c.fillStyle = 'rgba(4,6,20,0.82)'; c.fillRect(x, y, w, 21);
       c.fillStyle = onSkill ? H.ELEMENTS[u.elem].col : C.brassHi; c.fillRect(x, y, 2, 21);
       c.fillStyle = 'rgba(242,220,154,0.5)'; c.fillRect(x, y + 20, w, 1);

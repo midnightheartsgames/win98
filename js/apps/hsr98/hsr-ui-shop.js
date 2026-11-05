@@ -9,10 +9,13 @@
   ];
   const TABS = [['starlight', 'Неугасаемый звёздный свет'], ['embers', 'Неугасаемый пепел']];
   const GRID = { x: 170, y: 70, cols: 5, w: 86, h: 134, gap: 5, row: 6 };
+  const WIDE_GRID = { x: 73, y: 70, cols: 5, w: 124, h: 134, gap: 10, row: 6 };
   const CUR_NAME = { starlight: 'неугасаемого звёздного света', embers: 'неугасаемого пепла', jade: 'звёздного нефрита' };
   const TAG = { ok: '#e8a030', none: '#c83434', dark: 'rgba(10,12,30,0.78)' };
   const SHOW = { x: 166, y: 40, w: 304, h: 412 };
+  const WIDE_SHOW = { x: 73, y: 40, w: 396, h: 412 };
   const WARDROBE = { x: 40, y: 42, w: 560, h: 414, cols: 4, rows: 2, cw: 120, ch: 162, gap: 10 };
+  const WIDE_WARDROBE = { x: -47, y: 42, w: 734, h: 414, cols: 5, rows: 2, cw: 132, ch: 162, gap: 10 };
   const fmt = H.fmt;
   const CUT_FOES = ['reaver', 'eliminator', 'flamespawn'];
   const cl = v => Math.max(0, Math.min(1, v));
@@ -465,20 +468,25 @@
     }
   };
 
-  function showcase(id) {
-    if (showCache[id]) return showCache[id];
-    const w = SHOW.w / 2, h = SHOW.h / 2, cv = G.mkCanvas(w, h);
+  function showcase(id, wide) {
+    const key = wide ? id + '_w' : id;
+    if (showCache[key]) return showCache[key];
+    const box = wide ? WIDE_SHOW : SHOW, w = box.w / 2, h = box.h / 2, cv = G.mkCanvas(w, h);
     (SCENES[(H.OUTFITS[id] || {}).scene] || SCENES.snow)(cv.getContext('2d'), w, h);
-    showCache[id] = cv;
+    showCache[key] = cv;
     return cv;
   }
 
   function archPath(c, x, y, w, h) {
-    const r = w / 2;
-    c.beginPath(); c.moveTo(x, y + h); c.lineTo(x, y + r); c.arc(x + r, y + r, r, Math.PI, 0); c.lineTo(x + w, y + h); c.closePath();
+    const r = w > 180 ? 18 : Math.min(w / 2, h * 0.48);
+    c.beginPath(); c.moveTo(x, y + h); c.lineTo(x, y + r); c.arc(x + r, y + r, r, Math.PI, -Math.PI / 2); c.lineTo(x + w - r, y); c.arc(x + w - r, y + r, r, -Math.PI / 2, 0); c.lineTo(x + w, y + h); c.closePath();
   }
 
   Object.assign(H.UI.prototype, {
+    supplyGrid() {
+      return this.wide && this.wide() ? WIDE_GRID : GRID;
+    },
+
     supplyTag(x, y, label, col, dark) {
       const w = Math.round(this.measure(label, 9, true) + 8);
       this.ctx.fillStyle = col; this.ctx.fillRect(x, y, w, 12);
@@ -502,7 +510,7 @@
     },
 
     supplyCard(c, it, x, y, on, have) {
-      const { w, h } = GRID, foot = 26, can = have >= it.price && !it.block;
+      const { w, h } = this.supplyGrid(), wide = !!(this.wide && this.wide()), foot = 26, can = have >= it.price && !it.block;
       if (on) { c.fillStyle = C.brassHi; c.fillRect(x - 2, y - 2, w + 4, h + 4); }
       c.fillStyle = '#000'; c.fillRect(x - 1, y - 1, w + 2, h + 2);
       G.rarityCell(c, x, y, w, h - foot, it.rar);
@@ -510,9 +518,9 @@
       gl.addColorStop(0, 'rgba(255,255,255,0.28)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
       c.fillStyle = gl; c.fillRect(x, y, w, h - foot);
       this.supplyArt(c, it, x + w / 2, y + 16);
-      const name = it.per > 1 ? it.name + ' ×' + fmt(it.per) : it.name, lines = this.wrap(name, w - 8, 9).slice(0, 2);
+      const ns = wide ? 10 : 9, name = it.per > 1 ? it.name + ' ×' + fmt(it.per) : it.name, lines = this.wrap(name, w - 8, ns).slice(0, 2);
       c.fillStyle = 'rgba(8,8,24,0.35)'; c.fillRect(x, y + 75, w, h - foot - 75);
-      lines.forEach((l, i) => this.text(l, x + w / 2, y + (lines.length > 1 ? 77 : 82) + i * 10, { size: 9, bold: true, align: 'center' }));
+      lines.forEach((l, i) => this.text(l, x + w / 2, y + (lines.length > 1 ? 76 : 81) + i * 10, { size: ns, bold: true, align: 'center' }));
       this.text('★'.repeat(it.rar), x + w / 2, y + 97, { size: 8, align: 'center', col: G.RARITY[it.rar] });
       c.fillStyle = '#f2ead6'; c.fillRect(x, y + h - foot, w, foot);
       c.fillStyle = '#c8b890'; c.fillRect(x, y + h - foot, w, 1);
@@ -544,24 +552,24 @@
         setSec(i) { if (i === this.sec) return; this.sec = i; ui.sfx('select'); },
         setTab(i) { if (i === this.tab) return; this.tab = i; this.sel = 0; ui.sfx('select'); },
         draw(c) {
-          const s = g.state, secId = SECTIONS[this.sec].id;
+          const s = g.state, secId = SECTIONS[this.sec].id, wide = !!(ui.wide && ui.wide()), sx = wide ? ui.left : 0, sw = wide ? 168 : 160;
           ui.fullBg(c, false);
-          const side = c.createLinearGradient(0, 0, 160, 0);
+          const side = c.createLinearGradient(sx, 0, sx + sw, 0);
           side.addColorStop(0, 'rgba(2,3,14,0.85)'); side.addColorStop(1, 'rgba(2,3,14,0.35)');
-          c.fillStyle = side; c.fillRect(0, 0, 160, HGT);
-          ui.plate(12, 10, 'Снабжение');
-          ui.closeBtn(W - 32, 10, () => this.key('back'));
+          c.fillStyle = side; c.fillRect(sx, 0, sw, HGT);
+          ui.plate(sx + 12, 10, 'Снабжение');
+          ui.closeBtn(ui.right - 32, 10, () => this.key('back'));
           SECTIONS.forEach((sc, i) => {
-            const y = 70 + i * 52, on = i === this.sec;
-            if (on) { const gr = c.createLinearGradient(8, 0, 158, 0); gr.addColorStop(0, 'rgba(242,220,154,0.3)'); gr.addColorStop(1, 'rgba(242,220,154,0)'); c.fillStyle = gr; c.fillRect(8, y - 6, 150, 40); c.fillStyle = C.brassHi; c.fillRect(8, y - 6, 2, 40); }
-            c.fillStyle = on ? 'rgba(242,220,154,0.25)' : 'rgba(10,12,40,0.6)'; c.beginPath(); c.arc(32, y + 14, 16, 0, Math.PI * 2); c.fill();
+            const y = 70 + i * 52, on = i === this.sec, bx = sx + 8, bw = sw - 10;
+            if (on) { const gr = c.createLinearGradient(bx, 0, sx + sw - 2, 0); gr.addColorStop(0, 'rgba(242,220,154,0.3)'); gr.addColorStop(1, 'rgba(242,220,154,0)'); c.fillStyle = gr; c.fillRect(bx, y - 6, bw, 40); c.fillStyle = C.brassHi; c.fillRect(bx, y - 6, 2, 40); }
+            c.fillStyle = on ? 'rgba(242,220,154,0.25)' : 'rgba(10,12,40,0.6)'; c.beginPath(); c.arc(sx + 32, y + 14, 16, 0, Math.PI * 2); c.fill();
             c.strokeStyle = on ? C.brassHi : 'rgba(154,166,208,0.5)'; c.lineWidth = 1; c.stroke();
-            G.menuIcon(c, sc.icon, 21, y + 3, 22, on ? '#fff0c0' : '#c8cce4');
-            const ls = [11, 10, 9].find(sz => ui.measure(sc.label, sz, on) <= 102) || 9;
-            ui.text(sc.label, 54, y + 8 + (11 - ls) / 2, { size: ls, bold: on, col: on ? C.gold : C.cream });
-            ui.hit(8, y - 6, 150, 40, () => this.setSec(i));
+            G.menuIcon(c, sc.icon, sx + 21, y + 3, 22, on ? '#fff0c0' : '#c8cce4');
+            const ls = [11, 10, 9].find(sz => ui.measure(sc.label, sz, on) <= bw - 48) || 9;
+            ui.text(sc.label, sx + 54, y + 8 + (11 - ls) / 2, { size: ls, bold: on, col: on ? C.gold : C.cream });
+            ui.hit(bx, y - 6, bw, 40, () => this.setSec(i));
           });
-          for (let y = 70 + SECTIONS.length * 52 - 10; y < HGT - 40; y += 7) { c.fillStyle = 'rgba(106,83,40,0.3)'; c.fillRect(30, y, 4, 2); }
+          for (let y = 70 + SECTIONS.length * 52 - 10; y < HGT - 40; y += 7) { c.fillStyle = 'rgba(106,83,40,0.3)'; c.fillRect(sx + 30, y, 4, 2); }
           if (secId === 'shop') this.drawShop(c, s);
           else if (secId === 'fashion') this.drawFashion(c, s);
           else if (secId === 'pass') ui.drawPassSupply(c, this);
@@ -569,9 +577,10 @@
           else ui.drawPetSupply(c, this);
         },
         drawShop(c, s) {
-          const cur = TABS[this.tab][0], list = this.list();
-          ui.supplyPill(W - 154, 10, cur, s[cur]);
-          let tx = 170;
+          const cur = TABS[this.tab][0], other = TABS[1 - this.tab][0], list = this.list(), wide = !!(ui.wide && ui.wide()), gr = ui.supplyGrid();
+          if (wide) ui.supplyPill(ui.right - 270, 10, other, s[other]);
+          ui.supplyPill(ui.right - 154, 10, cur, s[cur]);
+          let tx = gr.x;
           TABS.forEach(([id, label], i) => {
             const on = i === this.tab, w = Math.round(ui.measure(label, 10, on) + 26);
             c.fillStyle = '#000'; c.fillRect(tx - 1, 39, w + 2, 24);
@@ -585,25 +594,29 @@
           ui.keycap(tx + 4, 45, 'Q/E');
           if (this.sel >= list.length) this.sel = list.length - 1;
           list.forEach((it, i) => {
-            const x = GRID.x + (i % GRID.cols) * (GRID.w + GRID.gap), y = GRID.y + Math.floor(i / GRID.cols) * (GRID.h + GRID.row);
+            const x = gr.x + (i % gr.cols) * (gr.w + gr.gap), y = gr.y + Math.floor(i / gr.cols) * (gr.h + gr.row);
             ui.supplyCard(c, it, x, y, i === this.sel, s[cur]);
-            ui.hit(x, y, GRID.w, GRID.h, () => { if (this.sel === i) this.buy(); else { this.sel = i; ui.sfx('select'); } });
+            ui.hit(x, y, gr.w, gr.h, () => { if (this.sel === i) this.buy(); else { this.sel = i; ui.sfx('select'); } });
           });
           const it = list[this.sel];
           if (it) this.drawInfo(c, s, it);
-          ui.hints([['←↑↓→', 'Товар'], ['Q/E', 'Валюта'], ['Tab', 'Раздел'], ['Enter', 'Купить'], ['Esc', 'Назад']], 170, HGT - 18);
+          ui.hints([['←↑↓→', 'Товар'], ['Q/E', 'Валюта'], ['Tab', 'Раздел'], ['Enter', 'Купить'], ['Esc', 'Назад']], gr.x, HGT - 18);
         },
         drawInfo(c, s, it) {
-          const x = 166, y = 352, w = 458, h = 102;
+          const wide = !!(ui.wide && ui.wide()), x = wide ? 73 : 166, y = 352, w = wide ? 660 : 458, h = 102, tx = wide ? x + 88 : x + 14;
           ui.win(x, y, w, h, { alpha: 0.88 });
-          ui.text(it.per > 1 ? it.name + ' ×' + fmt(it.per) : it.name, x + 14, y + 10, { size: 13, bold: true, serif: true, col: C.gold });
-          ui.text('★'.repeat(it.rar), x + 14, y + 28, { size: 10, col: G.RARITY[it.rar] });
+          if (wide) {
+            G.rarityCell(c, x + 12, y + 16, 64, 70, it.rar);
+            ui.supplyArt(c, it, x + 44, y + 23);
+          }
+          ui.text(it.per > 1 ? it.name + ' ×' + fmt(it.per) : it.name, tx, y + 10, { size: wide ? 14 : 13, bold: true, serif: true, col: C.gold });
+          ui.text('★'.repeat(it.rar), tx, y + 28, { size: 10, col: G.RARITY[it.rar] });
           const own = it.kind === 'item' ? 'В инвентаре: ' + fmt(s.inv.items[it.ref] || 0)
             : it.kind === 'credits' ? 'Кредитов: ' + fmt(s.credits)
             : it.kind === 'cone' ? 'В инвентаре: ' + s.inv.cones.filter(x2 => x2.id === it.ref).length
             : s.roster[it.ref] ? 'Эйдолон ' + s.roster[it.ref].eid + ' из 6' : 'Ещё нет в экипаже';
-          ui.text(own, x + 80, y + 29, { size: 10, col: C.sub });
-          ui.wrap(it.text, 280, 10).slice(0, 4).forEach((l, i) => ui.text(l, x + 14, y + 46 + i * 12, { size: 10, col: '#c8d0f0' }));
+          ui.text(own, tx + 66, y + 29, { size: 10, col: C.sub });
+          ui.wrap(it.text, wide ? 380 : 280, wide ? 11 : 10).slice(0, 4).forEach((l, i) => ui.text(l, tx, y + 46 + i * 12, { size: wide ? 11 : 10, col: '#c8d0f0' }));
           const rx = x + w - 14, left = g.supplyRefresh() - g.now();
           ui.text(it.limit ? (it.left ? 'Можно купить: ' + it.left + ' из ' + it.limit : 'Лимит исчерпан') : 'Без ограничений', rx, y + 12, { size: 11, bold: true, align: 'right', col: it.limit && !it.left ? C.bad : C.cream });
           if (it.limit) ui.text('Обновление через ' + clock(left), rx, y + 28, { size: 10, align: 'right', col: C.sub });
@@ -620,14 +633,14 @@
           ui.openSupplyBuy(it.id);
         },
         drawFashion(c, s) {
-          const ids = this.outfits();
+          const ids = this.outfits(), wide = !!(ui.wide && ui.wide()), showBox = wide ? WIDE_SHOW : SHOW, tx0 = wide ? 73 : 170;
           if (this.fsel >= ids.length) this.fsel = ids.length - 1;
-          ui.supplyPill(W - 154, 10, 'jade', s.jade);
+          ui.supplyPill(ui.right - 154, 10, 'jade', s.jade);
           const tabW = Math.round(ui.measure('Витрина моды', 11, true) + 28);
-          c.fillStyle = '#000'; c.fillRect(169, 39, tabW + 2, 24);
-          c.fillStyle = '#efe6cc'; c.fillRect(170, 40, tabW, 22);
-          ui.text('Витрина моды', 170 + tabW / 2, 45, { size: 11, bold: true, align: 'center', col: '#20140c', shadow: false });
-          const allX = 170 + tabW + 8, allW = Math.round(ui.measure('Все наряды', 11) + 34);
+          c.fillStyle = '#000'; c.fillRect(tx0 - 1, 39, tabW + 2, 24);
+          c.fillStyle = '#efe6cc'; c.fillRect(tx0, 40, tabW, 22);
+          ui.text('Витрина моды', tx0 + tabW / 2, 45, { size: 11, bold: true, align: 'center', col: '#20140c', shadow: false });
+          const allX = tx0 + tabW + 8, allW = Math.round(ui.measure('Все наряды', 11) + 34);
           ui.button(allX, 40, allW, 22, 'Все наряды', () => ui.openOutfitGrid(this), { size: 11, icon: 'outfit' });
           ui.keycap(allX + allW + 4, 45, 'F');
           const id = ids[this.fsel], o = H.OUTFITS[id], look = H.outfitLook(id, g.state.gender), ch = H.CHARS[o.char];
@@ -636,11 +649,11 @@
             ui.button(cutX, 40, cutW, 22, 'Катсцены', () => ui.openOutfitCuts(id), { size: 11, icon: 'warp' });
             ui.keycap(cutX + cutW + 4, 45, 'V');
           }
-          const { x, y, w, h } = { x: SHOW.x, y: 70, w: SHOW.w, h: 384 };
+          const { x, y, w, h } = { x: showBox.x, y: 70, w: showBox.w, h: 384 };
           c.fillStyle = '#000'; c.fillRect(x - 2, y - 2, w + 4, h + 4);
           c.save(); c.beginPath(); c.rect(x, y, w, h); c.clip();
           c.imageSmoothingEnabled = false;
-          c.drawImage(showcase(id), x, y - 14, SHOW.w, SHOW.h);
+          c.drawImage(showcase(id, wide), x, y - 14, showBox.w, showBox.h);
           ui.platform(c, x + w / 2 + 34, y + h - 24, 80);
           G.drawFigure(c, look, x + w / 2 + 34, y + h - 20, 3);
           c.restore();
@@ -648,7 +661,7 @@
           const tag = ch.name + ': ' + H.PATHS[ch.path].name;
           c.fillStyle = 'rgba(30,20,40,0.72)'; c.fillRect(x + 8, y + 10, ui.measure(tag, 10, true) + 12, 15);
           ui.text(tag, x + 14, y + 12, { size: 10, bold: true, col: '#ffcf80' });
-          const ts = [18, 16, 14].find(sz => ui.measure(o.name, sz, true, true) <= SHOW.w - 32) || 14;
+          const ts = [18, 16, 14].find(sz => ui.measure(o.name, sz, true, true) <= showBox.w - 32) || 14;
           c.fillStyle = 'rgba(30,20,40,0.72)'; c.fillRect(x + 8, y + 27, ui.measure(o.name, ts, true, true) + 16, 26);
           ui.text(o.name, x + 16, y + 31 + (18 - ts) / 2, { size: ts, bold: true, serif: true, col: '#fff8f0' });
           c.fillStyle = 'rgba(30,20,40,0.72)'; c.fillRect(x + 8, y + 55, ui.measure(o.kind + ' · ' + '★'.repeat(o.rarity), 10) + 12, 15);
@@ -656,7 +669,7 @@
           const perk = H.OUTFIT_TIER[o.rarity].perk;
           c.fillStyle = 'rgba(30,20,40,0.72)'; c.fillRect(x + 8, y + 72, ui.measure(perk, 9) + 12, 14);
           ui.text(perk, x + 14, y + 74, { size: 9, col: '#e8dcc0' });
-          const rx = 480, rw = 144, cardH = 102, vis = 2, bar = ids.length > vis, first = ui.listTop(this.fsc, this.fsel, ids.length, vis);
+          const rx = wide ? 481 : 480, rw = wide ? 252 : 144, cardH = 102, vis = 2, bar = ids.length > vis, first = ui.listTop(this.fsc, this.fsel, ids.length, vis);
           const cw = bar ? rw - 14 : rw;
           ui.wheelZone(rx, 70, rw, vis * (cardH + 6), d => { this.fsc.top += d; });
           ids.slice(first, first + vis).forEach((oid, j) => {
@@ -666,10 +679,17 @@
             const gr = c.createLinearGradient(0, cy, 0, cy + cardH), [g0, g1] = G.RARITY_BG[O.rarity];
             gr.addColorStop(0, g0); gr.addColorStop(1, g1);
             c.fillStyle = gr; c.fillRect(rx, cy, cw, cardH);
-            G.drawPortrait(c, H.outfitLook(oid, g.state.gender), rx + (cw - 76) / 2, cy + 4, 76);
-            c.fillStyle = 'rgba(20,12,4,0.6)'; c.fillRect(rx, cy + cardH - 46, cw, 20);
-            const ns = [11, 10, 9].find(sz => ui.measure(O.name, sz, true) <= cw - 6) || 9;
-            ui.text(O.name, rx + cw / 2, cy + cardH - 43 + (11 - ns) / 2, { size: ns, bold: true, align: 'center' });
+            if (wide) {
+              G.drawPortrait(c, H.outfitLook(oid, g.state.gender), rx + 10, cy + 4, 72);
+              ui.text(H.CHARS[O.char].name, rx + 90, cy + 14, { size: 10, col: '#ffe8b8' });
+              ui.wrap(O.name, cw - 98, 12).slice(0, 2).forEach((l, li) => ui.text(l, rx + 90, cy + 30 + li * 14, { size: 12, bold: true, col: '#fff' }));
+              ui.text('★'.repeat(O.rarity), rx + 90, cy + 60, { size: 9, col: G.RARITY[O.rarity] });
+            } else {
+              G.drawPortrait(c, H.outfitLook(oid, g.state.gender), rx + (cw - 76) / 2, cy + 4, 76);
+              c.fillStyle = 'rgba(20,12,4,0.6)'; c.fillRect(rx, cy + cardH - 46, cw, 20);
+              const ns = [11, 10, 9].find(sz => ui.measure(O.name, sz, true) <= cw - 6) || 9;
+              ui.text(O.name, rx + cw / 2, cy + cardH - 43 + (11 - ns) / 2, { size: ns, bold: true, align: 'center' });
+            }
             c.fillStyle = '#f2ead6'; c.fillRect(rx, cy + cardH - 26, cw, 26);
             if (own) ui.text('В коллекции', rx + cw / 2, cy + cardH - 20, { size: 12, bold: true, align: 'center', col: '#3a7a3a', shadow: false });
             else { const pw = ui.measure(fmt(O.price), 13, true) + 20; G.itemIcon(c, 'jade', rx + (cw - pw) / 2, cy + cardH - 21, 16); ui.text(fmt(O.price), rx + (cw - pw) / 2 + 20, cy + cardH - 20, { size: 13, bold: true, col: '#c84a1a', shadow: false }); }
@@ -682,10 +702,10 @@
           }
           const own = g.ownsOutfit(id), worn = g.outfitOf(o.char) === id;
           ui.win(rx - 4, 294, rw + 8, 120, { alpha: 0.88 });
-          ui.wrap(g.fill(o.text), rw - 12, 10).slice(0, 9).forEach((l, i) => ui.text(l, rx + 4, 302 + i * 12, { size: 10, col: '#c8d0f0' }));
+          ui.wrap(g.fill(o.text), rw - 12, wide ? 11 : 10).slice(0, 9).forEach((l, i) => ui.text(l, rx + 4, 302 + i * (wide ? 13 : 12), { size: wide ? 11 : 10, col: '#c8d0f0' }));
           const label = !own ? 'Купить' : worn ? 'Надето' : !s.roster[o.char] ? 'В коллекции' : 'Надеть';
           ui.button(rx - 4, 420, rw + 8, 28, label, () => this.fashionAct(), { size: 12, bold: true, active: !own || (!worn && !!s.roster[o.char]), disabled: own && (worn || !s.roster[o.char]) });
-          ui.hints([['↑↓', 'Наряд'], ['F', 'Все']].concat(o.cuts ? [['V', 'Катсцены']] : [], [['Tab', 'Раздел'], ['Enter', !own ? 'Купить' : 'Надеть'], ['Esc', 'Назад']]), 170, HGT - 18);
+          ui.hints([['↑↓', 'Наряд'], ['F', 'Все']].concat(o.cuts ? [['V', 'Катсцены']] : [], [['Tab', 'Раздел'], ['Enter', !own ? 'Купить' : 'Надеть'], ['Esc', 'Назад']]), tx0, HGT - 18);
         },
         fashionAct() {
           const id = this.outfits()[this.fsel], o = H.OUTFITS[id];
@@ -750,13 +770,14 @@
           tick(dt) { this.t += dt; if (this.t >= 4.5) this.done = true; },
           skip() { this.done = true; },
           draw(c) {
+            ui.fullBg(c, false);
             E.scene(ui, c, o.char, 6, null, id);
             const cap = kit.name + ' · ' + sc.title, w = Math.max(250, Math.round(ui.measure(cap, 13, true, true) + 40)), x = Math.round(W / 2 - w / 2), y = HGT - 74;
             ui.win(x, y, w, 40, { alpha: 0.82 });
             ui.text(cap, W / 2, y + 7, { align: 'center', size: 13, bold: true, serif: true, col: C.gold });
             ui.text('Эйдолоны 6 / 6 · ' + E.stageName(6), W / 2, y + 24, { align: 'center', size: 10, col: C.sub });
-            ui.hints([['Esc', 'Дальше']], W - 12, 12, { align: 'right' });
-            ui.hit(0, 0, W, HGT, () => this.skip());
+            ui.hints([['Esc', 'Дальше']], ui.right - 12, 12, { align: 'right' });
+            ui.hit(ui.left, 0, ui.vw, HGT, () => this.skip());
           }
         };
       }
@@ -770,13 +791,13 @@
         skip() { this.done = true; },
         draw(c) {
           c.save(); c.imageSmoothingEnabled = false;
-          c.drawImage(WI.render(g, r, Math.min(this.t, len), false), 0, 0, W, HGT);
+          c.drawImage(WI.render(g, r, Math.min(this.t, len), false, !!(ui.wide && ui.wide())), ui.left, 0, ui.vw, HGT);
           c.restore();
           WI.overlay(ui, c, r, this.t, g);
           const said = WI.line(o.char, g, id), a = cl((this.t - WI.SIGN - 0.6) / 0.3);
           if (said && a > 0) { c.save(); c.globalAlpha = a; ui.text('«' + said + '»', W / 2, HGT - 40, { align: 'center', size: 13, col: C.cream }); c.restore(); }
-          ui.hints([['Esc', 'Пропустить']], W - 12, 20, { align: 'right' });
-          ui.hit(0, 0, W, HGT, () => this.skip());
+          ui.hints([['Esc', 'Пропустить']], ui.right - 12, 20, { align: 'right' });
+          ui.hit(ui.left, 0, ui.vw, HGT, () => this.skip());
         }
       };
     },
@@ -919,11 +940,12 @@
 
     openOutfitGrid(sup) {
       const ui = this, g = this.game, ids = Object.keys(H.OUTFITS);
-      const { x, y, w, h, cols, rows, cw, ch, gap } = WARDROBE;
       this.push({
         sel: sup.fsel, sc: { top: 0 },
+        box() { return ui.wide && ui.wide() ? WIDE_WARDROBE : WARDROBE; },
         pick(i) { sup.fsel = i; ui.pop(); },
         draw(c) {
+          const { x, y, w, h, cols, rows, cw, ch, gap } = this.box();
           ui.win(x, y, w, h, { title: 'Все наряды', alpha: 0.96 });
           ui.closeBtn(x + w - 30, y + 8, () => ui.pop());
           const owned = ids.filter(id => g.ownsOutfit(id)).length;
@@ -940,7 +962,7 @@
           ui.hints([['←↑↓→', 'Наряд'], ['Enter', 'Выбрать'], ['Esc', 'Назад']], x + w / 2, y + h - 22, { align: 'center' });
         },
         key(k, code) {
-          const n = ids.length;
+          const n = ids.length, { cols } = this.box();
           if (k === 'back' || code === 'KeyF') { ui.pop(); return; }
           if (k === 'ok') { this.pick(this.sel); return; }
           const to = k === 'left' ? this.sel - 1 : k === 'right' ? this.sel + 1 : k === 'up' ? this.sel - cols : k === 'down' ? Math.min(n - 1, this.sel + cols) : this.sel;
@@ -950,7 +972,7 @@
     },
 
     wardrobeCard(c, id, x, y, on, shown) {
-      const { cw: w, ch: h } = WARDROBE, o = H.OUTFITS[id], g = this.game, own = g.ownsOutfit(id), foot = 24, strip = 26;
+      const { cw: w, ch: h } = this.wide && this.wide() ? WIDE_WARDROBE : WARDROBE, o = H.OUTFITS[id], g = this.game, own = g.ownsOutfit(id), foot = 24, strip = 26;
       if (on) { c.fillStyle = C.brassHi; c.fillRect(x - 2, y - 2, w + 4, h + 4); }
       c.fillStyle = '#000'; c.fillRect(x - 1, y - 1, w + 2, h + 2);
       G.rarityCell(c, x, y, w, h - foot - strip, o.rarity);

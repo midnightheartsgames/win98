@@ -31,13 +31,16 @@
       return bt.five;
     },
 
+    lordAt() { return this.wide() ? { x: -46, y: 254, s: 156 } : LORD_AT; },
+
     fivesPos(u) {
-      if (u.id === 'lord') return { x: LORD_AT.x, y: LORD_AT.y - LORD_AT.s * 0.55 };
+      const l = this.lordAt();
+      if (u.id === 'lord') return { x: l.x, y: l.y - l.s * 0.55 };
       if (u.id === 'numby') { const n = this.numbySpot(u); return { x: n.x, y: n.y - n.s * 0.5 }; }
       return null;
     },
 
-    numbySpot(u) { const o = u.owner ? this.allyPos(u.owner) : { x: 180 }; return { x: o.x + 32, y: 362, s: 60 }; },
+    numbySpot(u) { const o = u.owner ? this.allyPos(u.owner) : { x: 180, y: 362 }; return { x: o.x + 32, y: this.wide() ? (o.y || 320) + 6 : 362, s: 60 }; },
 
     fivesEvent(e) {
       const bt = this.bt, f = this.fivesUi();
@@ -129,7 +132,7 @@
     },
 
     drawLord(c, l) {
-      const { x, y, s } = LORD_AT, bt = this.bt, bob = Math.sin(l.t * 1.3) * 5, lunge = (bt.lunge.get(l.u) || 0) * 26;
+      const { x, y, s } = this.lordAt(), bt = this.bt, bob = Math.sin(l.t * 1.3) * 5, lunge = (bt.lunge.get(l.u) || 0) * 26;
       c.save();
       c.globalAlpha = l.a * (0.8 + 0.1 * Math.sin(l.t * 5));
       const gr = c.createRadialGradient(x, y - s * 0.55, 8, x, y - s * 0.55, s * 0.8);

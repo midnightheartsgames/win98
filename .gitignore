@@ -11,6 +11,8 @@ bugreports/
 build.json
 web98-site/sr98/play/
 web98-site/sr98/*.apk
+web98-site/youvid/content/
+web98-site/poligon/content/
 content/YouVid/scratch/
 content/music/*.mp4
 content/music/preview/

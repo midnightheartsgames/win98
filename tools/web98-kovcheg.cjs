@@ -127,4 +127,4 @@ if (require.main === module) {
   console.log('  ' + r.own + ' site scripts, ' + r.game + ' game scripts from ../sr98/play, ' + mb(r.bytes) + ' written');
 }
 
-module.exports = { build, transform, BRAND };
+module.exports = { build, transform, gifs, BRAND };

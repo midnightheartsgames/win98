@@ -13,7 +13,7 @@
   const PROFILE_TABS = [{ id: 'rec', label: 'Боевые заслуги' }, { id: 'chars', label: 'Персонажи' }, { id: 'coll', label: 'Коллекции' }];
   const TAB_CHARS = PROFILE_TABS.findIndex(t => t.id === 'chars');
   const REC_ICONS = { fh: 'ipg', pf: 'archive', su: 'nav', cw: 'shop', hd: 'team', boss: 'mission', warp: 'warp', time: 'events' };
-  const COLL_ICONS = { five: 'chars', four: 'team', cones: 'cones', outfits: 'outfit', pets: 'pet', foes: 'archive', fusions: 'synth', chests: 'bag' };
+  const COLL_ICONS = { five: 'chars', four: 'team', cones: 'cones', outfits: 'outfit', pets: 'pet', foes: 'foes', fusions: 'fusions', chests: 'bag' };
   const ROW_LABEL = {
     merit: { fh: 'Зал забвения', pf: 'Чистый вымысел', su: 'Виртуальная вселенная', cw: 'Валютные войны', hd: 'Рубеж Экспресса', boss: 'Боссов побеждено', warp: 'Прыжков', time: 'В пути' },
     coll: { five: 'Персонажи 5★', four: 'Персонажи 4★', cones: 'Световые конусы', outfits: 'Наряды', pets: 'Питомцы', foes: 'Враги в Архиве', fusions: 'Слияния', chests: 'Сундуки' }
@@ -26,8 +26,16 @@
     { id: 'sign', x: 20, y: 168, w: 164, h: 76 },
     { id: 'room', x: 222, y: 424, w: 172, h: 26 }
   ];
+  const WIDE_CARD_STOPS = [
+    { id: 'avatar', x: -85, y: 50, w: 64, h: 64 },
+    { id: 'name', x: -13, y: 50, w: 152, h: 24 },
+    { id: 'bday', x: -87, y: 122, w: 224, h: 20 },
+    { id: 'sign', x: -87, y: 168, w: 224, h: 76 },
+    { id: 'room', x: 178, y: 424, w: 172, h: 26 }
+  ];
   const FIRST_TAB_STOP = CARD_STOPS.length;
   const rowStops = (ids, row) => ids.map((rowId, i) => ({ id: 'row', rowId, i, x: 422, y: ROWS_Y + i * row, w: 200, h: row - 3 }));
+  const wideRowStops = ids => ids.map((rowId, i) => ({ id: 'row', rowId, i, x: 394, y: 50 + i * 48, w: 331, h: 43 }));
   const SLOT_STOPS = [
     { id: 'show', i: 0, x: 424, y: 68, w: 62, h: 100 },
     { id: 'show', i: 1, x: 491, y: 68, w: 62, h: 100 },
@@ -38,10 +46,25 @@
     { id: 'comp', i: 3, x: 544, y: 201, w: 36, h: 56 },
     { id: 'comp', i: 4, x: 584, y: 201, w: 36, h: 56 }
   ];
+  const WIDE_SLOT_STOPS = [
+    { id: 'show', i: 0, x: 396, y: 68, w: 103, h: 122 },
+    { id: 'show', i: 1, x: 508, y: 68, w: 103, h: 122 },
+    { id: 'show', i: 2, x: 620, y: 68, w: 103, h: 122 },
+    { id: 'comp', i: 0, x: 396, y: 218, w: 62, h: 82 },
+    { id: 'comp', i: 1, x: 462, y: 218, w: 62, h: 82 },
+    { id: 'comp', i: 2, x: 528, y: 218, w: 62, h: 82 },
+    { id: 'comp', i: 3, x: 594, y: 218, w: 62, h: 82 },
+    { id: 'comp', i: 4, x: 660, y: 218, w: 62, h: 82 }
+  ];
   const TAB_STOPS = [
     CARD_STOPS.concat(rowStops(Object.keys(REC_ICONS), REC_ROW)),
     CARD_STOPS.concat(SLOT_STOPS),
     CARD_STOPS.concat(rowStops(Object.keys(COLL_ICONS), COLL_ROW))
+  ];
+  const WIDE_TAB_STOPS = [
+    WIDE_CARD_STOPS.concat(wideRowStops(Object.keys(REC_ICONS))),
+    WIDE_CARD_STOPS.concat(WIDE_SLOT_STOPS),
+    WIDE_CARD_STOPS.concat(wideRowStops(Object.keys(COLL_ICONS)))
   ];
   const DIRS = { left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] };
 
@@ -57,23 +80,23 @@
     return best;
   }
 
-  function paintRoom(g) {
-    g.fillStyle = '#4a1420'; g.fillRect(0, 0, W, HGT);
+  function paintRoom(g, vw = W, sx = 200) {
+    g.fillStyle = '#4a1420'; g.fillRect(0, 0, vw, HGT);
     g.fillStyle = '#3a0e18';
-    for (let y = 0; y < 400; y += 2) for (let x = y % 4; x < W; x += 4) g.fillRect(x, y, 1, 1);
+    for (let y = 0; y < 400; y += 2) for (let x = y % 4; x < vw; x += 4) g.fillRect(x, y, 1, 1);
     g.fillStyle = 'rgba(214,170,92,0.1)';
-    for (let y = 16; y < 400; y += 32) for (let x = (y % 64 ? 16 : 0); x < W; x += 32) { g.fillRect(x + 7, y, 2, 6); g.fillRect(x + 5, y + 2, 6, 2); }
+    for (let y = 16; y < 400; y += 32) for (let x = (y % 64 ? 16 : 0); x < vw; x += 32) { g.fillRect(x + 7, y, 2, 6); g.fillRect(x + 5, y + 2, 6, 2); }
     const dado = g.createLinearGradient(0, 400, 0, HGT);
     dado.addColorStop(0, '#5a3418'); dado.addColorStop(1, '#2a1608');
-    g.fillStyle = dado; g.fillRect(0, 400, W, HGT - 400);
-    g.fillStyle = '#c09a50'; g.fillRect(0, 398, W, 2);
-    g.fillStyle = '#1a0c04'; g.fillRect(0, 400, W, 1);
-    for (let x = 0; x < W; x += 64) { g.fillStyle = '#1a0c04'; g.fillRect(x, 410, 1, 60); g.fillStyle = 'rgba(255,214,150,0.14)'; g.fillRect(x + 1, 410, 1, 60); }
-    g.fillStyle = '#100a24'; g.fillRect(200, 40, 216, 346);
+    g.fillStyle = dado; g.fillRect(0, 400, vw, HGT - 400);
+    g.fillStyle = '#c09a50'; g.fillRect(0, 398, vw, 2);
+    g.fillStyle = '#1a0c04'; g.fillRect(0, 400, vw, 1);
+    for (let x = 0; x < vw; x += 64) { g.fillStyle = '#1a0c04'; g.fillRect(x, 410, 1, 60); g.fillStyle = 'rgba(255,214,150,0.14)'; g.fillRect(x + 1, 410, 1, 60); }
+    g.fillStyle = '#100a24'; g.fillRect(sx, 40, 216, 346);
     const glow = g.createLinearGradient(0, 56, 0, 386);
     glow.addColorStop(0, 'rgba(255,226,170,0.32)'); glow.addColorStop(1, 'rgba(255,226,170,0.04)');
-    g.fillStyle = glow; g.beginPath(); g.moveTo(278, 56); g.lineTo(338, 56); g.lineTo(404, 386); g.lineTo(212, 386); g.closePath(); g.fill();
-    for (const [x0, flip] of [[200, 1], [416, -1]]) {
+    g.fillStyle = glow; g.beginPath(); g.moveTo(sx + 78, 56); g.lineTo(sx + 138, 56); g.lineTo(sx + 204, 386); g.lineTo(sx + 12, 386); g.closePath(); g.fill();
+    for (const [x0, flip] of [[sx, 1], [sx + 216, -1]]) {
       for (let i = 0; i < 9; i++) {
         const wid = 34 - i * 2, x = x0 + flip * (i * 3);
         g.fillStyle = i % 2 ? '#8a1c24' : '#6a1018';
@@ -81,23 +104,23 @@
         else g.fillRect(x - Math.max(2, wid - i * 2), 40, Math.max(2, wid - i * 2), 346);
       }
     }
-    g.fillStyle = '#7a1820'; g.fillRect(196, 36, 224, 26);
+    g.fillStyle = '#7a1820'; g.fillRect(sx - 4, 36, 224, 26);
     g.fillStyle = '#5a0e16';
-    for (let x = 196; x < 420; x += 14) g.fillRect(x, 36, 3, 26);
-    g.fillStyle = '#d8b060'; g.fillRect(196, 62, 224, 2);
+    for (let x = sx - 4; x < sx + 220; x += 14) g.fillRect(x, 36, 3, 26);
+    g.fillStyle = '#d8b060'; g.fillRect(sx - 4, 62, 224, 2);
     g.fillStyle = '#a07c38';
-    for (let x = 198; x < 420; x += 6) g.fillRect(x, 64, 3, 5);
-    for (const lx of [206, 410]) {
+    for (let x = sx - 2; x < sx + 220; x += 6) g.fillRect(x, 64, 3, 5);
+    for (const lx of [sx + 6, sx + 210]) {
       g.fillStyle = '#c09a50'; g.fillRect(lx - 1, 70, 2, 12);
       g.fillStyle = '#ffe8a8'; g.fillRect(lx - 4, 82, 8, 7);
       g.fillStyle = 'rgba(255,232,168,0.25)'; g.fillRect(lx - 8, 78, 16, 15);
     }
     const shelf = g.createLinearGradient(0, 386, 0, 412);
     shelf.addColorStop(0, '#8a5a2a'); shelf.addColorStop(1, '#4a2a10');
-    g.fillStyle = '#000'; g.fillRect(190, 385, 236, 30);
-    g.fillStyle = shelf; g.fillRect(191, 386, 234, 28);
-    g.fillStyle = 'rgba(255,224,170,0.4)'; g.fillRect(191, 386, 234, 1);
-    g.fillStyle = '#c09a50'; g.fillRect(191, 398, 234, 1);
+    g.fillStyle = '#000'; g.fillRect(sx - 10, 385, 236, 30);
+    g.fillStyle = shelf; g.fillRect(sx - 9, 386, 234, 28);
+    g.fillStyle = 'rgba(255,224,170,0.4)'; g.fillRect(sx - 9, 386, 234, 1);
+    g.fillStyle = '#c09a50'; g.fillRect(sx - 9, 398, 234, 1);
   }
 
   Object.assign(H.UI.prototype, {
@@ -106,8 +129,16 @@
     },
 
     profileRoom() {
-      if (!this.profileRoomCv) { this.profileRoomCv = G.mkCanvas(W, HGT); paintRoom(this.profileRoomCv.getContext('2d')); }
+      if (this.wide && this.wide()) {
+        if (!this.profileRoomWideCv) { this.profileRoomWideCv = G.mkCanvas(this.vw, HGT); paintRoom(this.profileRoomWideCv.getContext('2d'), this.vw, 156 - this.left); }
+        return this.profileRoomWideCv;
+      }
+      if (!this.profileRoomCv) { this.profileRoomCv = G.mkCanvas(W, HGT); paintRoom(this.profileRoomCv.getContext('2d'), W, 200); }
       return this.profileRoomCv;
+    },
+
+    profileStops(tab) {
+      return (this.wide && this.wide() ? WIDE_TAB_STOPS : TAB_STOPS)[tab];
     },
 
     heroTitle(k) {
@@ -135,60 +166,66 @@
     },
 
     profileCard(c, scr) {
-      const ui = this, d = scr.src;
-      ui.win(12, 40, 180, 404, { top: '#2a1630', bottom: '#120a1c' });
-      ui.circlePortrait(c, d.avatarLook, 22, 50, 64, C.brassHi);
-      const nameSize = ui.measure(d.name, 15, true, true) > 92 ? 11 : 15;
-      ui.text(ui.fitText(d.name, nameSize, 92, true), 94, nameSize === 15 ? 54 : 58, { size: nameSize, bold: true, serif: true, col: C.gold });
-      c.fillStyle = C.brass; c.fillRect(94, 73, 88, 1);
-      ui.text('Ур. Освоения', 94, 80, { size: 10, col: C.sub });
-      ui.text(String(d.tl), 94, 92, { size: 16, bold: true, serif: true, col: C.gold });
-      ui.text('День рождения', 24, 126, { size: 10, col: C.sub });
-      ui.text(d.bday ? pad2(d.bday.d) + '.' + pad2(d.bday.m) : d.own ? 'не указан' : 'скрыт', 180, 126, { size: 11, align: 'right', col: d.bday ? C.cream : C.dim });
-      ui.text('UID', 24, 148, { size: 10, col: C.sub });
-      ui.text(d.uid, 180, 148, { size: 11, align: 'right', col: C.cream });
-      c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(20, 168, 164, 76);
-      ui.text('Подпись', 26, 172, { size: 10, bold: true, col: C.sub });
-      if (d.sign) ui.wrap(d.sign, 150, 11).slice(0, 4).forEach((line, i) => ui.text(line, 26, 186 + i * 14, { size: 11, col: C.cream }));
-      else ui.text('Пока пусто.', 26, 186, { size: 11, col: C.dim });
-      ui.text('Успехи Освоения', 24, 256, { size: 11, bold: true, serif: true, col: C.gold });
-      c.fillStyle = C.brass; c.fillRect(24, 272, 156, 1);
-      if (!d.log.length) ui.text('Записей пока нет.', 24, 280, { size: 10, col: C.dim });
+      const ui = this, d = scr.src, wide = !!(ui.wide && ui.wide());
+      const cx = wide ? ui.left + 12 : 12, cw = wide ? 240 : 180, ix = cx + 12, rx = cx + cw - 12, nx = cx + 82, nw = cw - 88;
+      ui.win(cx, 40, cw, 404, { top: '#2a1630', bottom: '#120a1c' });
+      ui.circlePortrait(c, d.avatarLook, cx + 10, 50, 64, C.brassHi);
+      const nameSize = ui.measure(d.name, 15, true, true) > nw ? 11 : 15;
+      ui.text(ui.fitText(d.name, nameSize, nw, true), nx, nameSize === 15 ? 54 : 58, { size: nameSize, bold: true, serif: true, col: C.gold });
+      c.fillStyle = C.brass; c.fillRect(nx, 73, nw - 4, 1);
+      ui.text('Ур. Освоения', nx, 80, { size: 10, col: C.sub });
+      ui.text(String(d.tl), nx, 92, { size: 16, bold: true, serif: true, col: C.gold });
+      ui.text('День рождения', ix, 126, { size: 10, col: C.sub });
+      ui.text(d.bday ? pad2(d.bday.d) + '.' + pad2(d.bday.m) : d.own ? 'не указан' : 'скрыт', rx, 126, { size: 11, align: 'right', col: d.bday ? C.cream : C.dim });
+      ui.text('UID', ix, 148, { size: 10, col: C.sub });
+      ui.text(d.uid, rx, 148, { size: 11, align: 'right', col: C.cream });
+      c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(cx + 8, 168, cw - 16, 76);
+      ui.text('Подпись', cx + 14, 172, { size: 10, bold: true, col: C.sub });
+      if (d.sign) ui.wrap(d.sign, cw - 30, 11).slice(0, 4).forEach((line, i) => ui.text(line, cx + 14, 186 + i * 14, { size: 11, col: C.cream }));
+      else ui.text('Пока пусто.', cx + 14, 186, { size: 11, col: C.dim });
+      ui.text('Успехи Освоения', ix, 256, { size: 11, bold: true, serif: true, col: C.gold });
+      c.fillStyle = C.brass; c.fillRect(ix, 272, cw - 24, 1);
+      if (!d.log.length) ui.text('Записей пока нет.', ix, 280, { size: 10, col: C.dim });
       let ly = 280;
       for (const line0 of d.log) {
-        const lines = ui.wrap(line0, 156, 10).slice(0, 2);
+        const lines = ui.wrap(line0, cw - 24, 10).slice(0, 2);
         if (ly + lines.length * 12 > 438) break;
-        lines.forEach((line, i) => ui.text(line, 24, ly + i * 12, { size: 10, col: C.cream }));
+        lines.forEach((line, i) => ui.text(line, ix, ly + i * 12, { size: 10, col: C.cream }));
         ly += lines.length * 12 + 3;
       }
       if (d.own) { scr.stopHit(0); scr.stopHit(1); scr.stopHit(2); scr.stopHit(3); }
     },
 
     profileStage(c, scr) {
-      const ui = this, d = scr.src;
-      ui.platform(c, 308, 378, 58);
-      G.drawFigure(c, d.stageLook, 308, 378, 3);
-      ui.text(ui.fitText(d.stageTitle, 12, 200, true), 308, 400, { size: 12, bold: true, align: 'center', col: '#fff0c8' });
-      if (d.own) ui.button(222, 424, 172, 26, 'Разместить в комнате', () => { scr.sel = 4; scr.act(); }, { size: 11, active: scr.sel === 4 });
+      const ui = this, d = scr.src, wide = !!(ui.wide && ui.wide()), sx = wide ? 264 : 308;
+      ui.platform(c, sx, 378, 58);
+      G.drawFigure(c, d.stageLook, sx, 378, 3);
+      ui.text(ui.fitText(d.stageTitle, 12, 200, true), sx, 400, { size: 12, bold: true, align: 'center', col: '#fff0c8' });
+      if (d.own) ui.button(sx - 86, 424, 172, 26, 'Разместить в комнате', () => { scr.sel = 4; scr.act(); }, { size: 11, active: scr.sel === 4 });
     },
 
     profileSlot(c, v, st, big) {
-      const ui = this;
+      const ui = this, wide = !!(ui.wide && ui.wide());
       if (!v) {
         c.fillStyle = 'rgba(4,6,20,0.7)'; c.fillRect(st.x, st.y, st.w, st.h);
         c.strokeStyle = '#3a4070'; c.strokeRect(st.x + 0.5, st.y + 0.5, st.w - 1, st.h - 1);
         ui.text('+', st.x + st.w / 2, st.y + st.h / 2 - 9, { size: 16, align: 'center', col: C.dim });
         return;
       }
-      const size = big ? 56 : 36;
+      const size = big ? (wide ? 64 : 56) : (wide ? 46 : 36);
       G.rarityCell(c, st.x, st.y, st.w, st.h, v.rarity);
-      G.drawPortrait(c, v.look, st.x + (st.w - size) / 2, st.y + (big ? 2 : 4), size);
-      c.fillStyle = H.ELEMENTS[v.elem].col; c.fillRect(st.x + 2, st.y + 2, 4, 4);
+      G.drawPortrait(c, v.look, st.x + (st.w - size) / 2, st.y + (big ? (wide ? 4 : 2) : (wide ? 3 : 4)), size);
+      c.fillStyle = H.ELEMENTS[v.elem].col; c.fillRect(st.x + 2, st.y + 2, wide ? 5 : 4, wide ? 5 : 4);
       if (big) {
-        c.fillStyle = 'rgba(4,6,20,0.8)'; c.fillRect(st.x, st.y + 60, st.w, 40);
-        ui.text(ui.fitText(v.title, 10, st.w - 4, true), st.x + st.w / 2, st.y + 62, { size: 10, bold: true, align: 'center', col: C.cream });
-        ui.text('Ур. ' + v.lvl, st.x + st.w / 2, st.y + 75, { size: 10, align: 'center', col: C.gold });
-        ui.text('Эйдолон ' + v.eid, st.x + st.w / 2, st.y + 87, { size: 9, align: 'center', col: C.sub });
+        const fy = st.y + (wide ? 72 : 60), fh = st.h - (wide ? 72 : 60);
+        c.fillStyle = 'rgba(4,6,20,0.82)'; c.fillRect(st.x, fy, st.w, fh);
+        ui.text(ui.fitText(v.title, wide ? 11 : 10, st.w - 6, true), st.x + st.w / 2, fy + (wide ? 4 : 2), { size: wide ? 11 : 10, bold: true, align: 'center', col: C.cream });
+        ui.text('Ур. ' + v.lvl, st.x + st.w / 2, fy + (wide ? 19 : 15), { size: 10, align: 'center', col: C.gold });
+        ui.text('Эйдолон ' + v.eid, st.x + st.w / 2, fy + (wide ? 33 : 27), { size: 9, align: 'center', col: C.sub });
+      } else if (wide) {
+        c.fillStyle = 'rgba(4,6,20,0.82)'; c.fillRect(st.x, st.y + 50, st.w, st.h - 50);
+        ui.text(ui.fitText(v.title, 9, st.w - 4, true), st.x + st.w / 2, st.y + 53, { size: 9, bold: true, align: 'center', col: C.cream });
+        ui.text('Ур. ' + v.lvl, st.x + st.w / 2, st.y + 66, { size: 9, bold: true, align: 'center', col: C.gold });
       } else {
         c.fillStyle = 'rgba(4,6,20,0.8)'; c.fillRect(st.x, st.y + 41, st.w, 15);
         ui.text('Ур. ' + v.lvl, st.x + st.w / 2, st.y + 43, { size: 9, bold: true, align: 'center', col: C.gold });
@@ -201,31 +238,38 @@
     },
 
     profileRec(c, scr) {
-      const ui = this;
-      ui.win(416, 40, 212, 296, { top: '#2a1630', bottom: '#120a1c' });
+      const ui = this, wide = !!(ui.wide && ui.wide()), stops = scr.stops();
+      ui.win(wide ? 384 : 416, 40, wide ? 351 : 212, wide ? 404 : 296, { top: '#2a1630', bottom: '#120a1c' });
       scr.src.merits().forEach((row, i) => {
-        const st = TAB_STOPS[scr.tab][FIRST_TAB_STOP + i];
+        const st = stops[FIRST_TAB_STOP + i];
         if (!st) return;
         c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(st.x, st.y, st.w, st.h);
-        G.menuIcon(c, REC_ICONS[row.id] || 'guide', st.x + 4, st.y + 8, 20, row.open ? '#f0d8a0' : '#4c5070');
-        ui.text(row.label, st.x + 30, st.y + 4, { size: 10, col: C.sub });
-        ui.text(ui.fitText(row.value, 13, st.w - 36, true), st.x + 30, st.y + 17, { size: 13, bold: true, col: row.open ? C.gold : C.dim });
+        G.menuIcon(c, REC_ICONS[row.id] || 'guide', st.x + (wide ? 8 : 4), st.y + (wide ? 10 : 8), wide ? 22 : 20, row.open ? '#f0d8a0' : '#4c5070');
+        if (wide) {
+          ui.text(row.label, st.x + 38, st.y + 7, { size: 11, bold: true, col: row.open ? C.cream : C.sub });
+          ui.text(row.open ? 'Испытание открыто' : 'Режим закрыт', st.x + 38, st.y + 23, { size: 9, col: C.dim });
+          ui.text(ui.fitText(row.value, 14, 150, true), st.x + st.w - 10, st.y + 13, { size: 14, bold: true, align: 'right', col: row.open ? C.gold : C.dim });
+        } else {
+          ui.text(row.label, st.x + 30, st.y + 4, { size: 10, col: C.sub });
+          ui.text(ui.fitText(row.value, 13, st.w - 36, true), st.x + 30, st.y + 17, { size: 13, bold: true, col: row.open ? C.gold : C.dim });
+        }
         scr.stopHit(FIRST_TAB_STOP + i);
       });
     },
 
     profileColl(c, scr) {
-      const ui = this;
+      const ui = this, wide = !!(ui.wide && ui.wide()), stops = scr.stops();
       if (!scr.coll) scr.coll = scr.src.coll();
-      ui.win(416, 40, 212, 296, { top: '#2a1630', bottom: '#120a1c' });
+      ui.win(wide ? 384 : 416, 40, wide ? 351 : 212, wide ? 404 : 296, { top: '#2a1630', bottom: '#120a1c' });
       scr.coll.forEach((row, i) => {
-        const st = TAB_STOPS[scr.tab][FIRST_TAB_STOP + i], full = st && row.total > 0 && row.got >= row.total;
+        const st = stops[FIRST_TAB_STOP + i], full = st && row.total > 0 && row.got >= row.total, pct = row.total ? row.got / row.total : 0;
         if (!st) return;
         c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(st.x, st.y, st.w, st.h);
-        G.menuIcon(c, COLL_ICONS[row.id] || 'guide', st.x + 4, st.y + 6, 18, '#f0d8a0');
-        ui.text(row.label, st.x + 28, st.y + 3, { size: 10, col: C.cream });
-        ui.text(row.got + ' / ' + row.total, st.x + st.w - 6, st.y + 3, { size: 11, bold: true, align: 'right', col: full ? '#8fe08a' : C.gold });
-        ui.rail(st.x + 28, st.y + 20, st.w - 36, row.total ? row.got / row.total : 0);
+        G.menuIcon(c, COLL_ICONS[row.id] || 'guide', st.x + (wide ? 8 : 4), st.y + (wide ? 10 : 6), wide ? 22 : 18, '#f0d8a0');
+        ui.text(row.label, st.x + (wide ? 38 : 28), st.y + (wide ? 6 : 3), { size: wide ? 11 : 10, bold: wide, col: C.cream });
+        if (wide) ui.text(Math.floor(pct * 100) + '%', st.x + st.w - 78, st.y + 7, { size: 10, align: 'right', col: C.sub });
+        ui.text(row.got + ' / ' + row.total, st.x + st.w - (wide ? 10 : 6), st.y + (wide ? 6 : 3), { size: wide ? 12 : 11, bold: true, align: 'right', col: full ? '#8fe08a' : C.gold });
+        ui.rail(st.x + (wide ? 38 : 28), st.y + (wide ? 26 : 20), st.w - (wide ? 48 : 36), pct);
         scr.stopHit(FIRST_TAB_STOP + i);
       });
     },
@@ -252,21 +296,41 @@
     },
 
     profileChars(c, scr) {
-      const ui = this, d = scr.src, stops = TAB_STOPS[scr.tab], cur = stops[scr.sel], v = scr.viewAt(scr.sel);
-      ui.win(416, 40, 212, 296, { top: '#2a1630', bottom: '#120a1c' });
-      ui.text('Витрина', 424, 50, { size: 12, bold: true, serif: true, col: C.gold });
-      ui.text('Звёздные попутчики', 424, 183, { size: 12, bold: true, serif: true, col: C.gold });
+      const ui = this, d = scr.src, wide = !!(ui.wide && ui.wide()), stops = scr.stops(), cur = stops[scr.sel], v = scr.viewAt(scr.sel);
+      const wx = wide ? 384 : 416, ww = wide ? 351 : 212, wh = wide ? 404 : 296, ix = wide ? 396 : 424, iw = ww - (wide ? 24 : 16);
+      ui.win(wx, 40, ww, wh, { top: '#2a1630', bottom: '#120a1c' });
+      ui.text('Витрина', ix, 50, { size: 12, bold: true, serif: true, col: C.gold });
+      ui.text('Звёздные попутчики', ix, wide ? 198 : 183, { size: 12, bold: true, serif: true, col: C.gold });
       stops.forEach((st, i) => {
         if (st.id !== 'show' && st.id !== 'comp') return;
         ui.profileSlot(c, d.slot(st.id, st.i), st, st.id === 'show');
         scr.stopHit(i);
       });
-      c.fillStyle = C.brass; c.fillRect(424, 269, 196, 1);
+      const dy = wide ? 310 : 269;
+      c.fillStyle = C.brass; c.fillRect(ix, dy, iw, 1);
       if (v) {
-        ui.text(ui.fitText(v.title, 12, 196, true), 424, 278, { size: 12, bold: true, col: C.cream });
-        ui.text((v.path ? H.PATHS[v.path].name + ' · ' : '') + H.ELEMENTS[v.elem].name, 424, 294, { size: 10, col: C.sub });
-        ui.text('Ур. ' + v.lvl + ' · Эйдолон ' + v.eid, 424, 308, { size: 10, col: C.sub });
-      } else if (d.own && (cur.id === 'show' || cur.id === 'comp')) ui.text('Свободное место. Enter выбирает героя.', 424, 278, { size: 10, col: C.dim });
+        if (wide) {
+          c.fillStyle = 'rgba(0,0,0,0.32)'; c.fillRect(ix, dy + 8, iw, 114);
+          G.rarityCell(c, ix + 8, dy + 16, 64, 64, v.rarity);
+          G.drawPortrait(c, v.look, ix + 10, dy + 18, 60);
+          ui.text(ui.fitText(v.title, 14, iw - 90, true), ix + 82, dy + 16, { size: 14, bold: true, serif: true, col: C.gold });
+          ui.text('★'.repeat(v.rarity), ix + 82, dy + 35, { size: 10, col: G.RARITY[v.rarity] });
+          ui.text((v.path ? H.PATHS[v.path].name + ' · ' : '') + H.ELEMENTS[v.elem].name, ix + 82, dy + 50, { size: 11, col: C.cream });
+          ui.text('Ур. ' + v.lvl + ' · Эйдолон ' + v.eid, ix + 82, dy + 66, { size: 11, col: C.sub });
+          if (d.own && scr.heroAt) {
+            const hero = scr.heroAt(scr.sel);
+            ui.button(ix + 8, dy + 88, 148, 26, 'Сменить', () => scr.act(), { size: 11 });
+            if (hero) ui.button(ix + 166, dy + 88, 152, 26, 'К персонажу (V)', () => ui.openChars(hero), { size: 11, icon: 'chars' });
+          }
+        } else {
+          ui.text(ui.fitText(v.title, 12, iw, true), ix, dy + 9, { size: 12, bold: true, col: C.cream });
+          ui.text((v.path ? H.PATHS[v.path].name + ' · ' : '') + H.ELEMENTS[v.elem].name, ix, dy + 25, { size: 10, col: C.sub });
+          ui.text('Ур. ' + v.lvl + ' · Эйдолон ' + v.eid, ix, dy + 39, { size: 10, col: C.sub });
+        }
+      } else if (d.own && (cur.id === 'show' || cur.id === 'comp')) {
+        ui.text('Свободное место. Enter выбирает героя.', ix, dy + (wide ? 22 : 9), { size: wide ? 11 : 10, col: C.dim });
+        if (wide) ui.button(ix, dy + 48, 156, 26, 'Выбрать героя', () => scr.act(), { size: 11, active: true });
+      }
     },
 
     openProfile() {
@@ -274,7 +338,7 @@
       return this.push({
         full: true, profile: true, sel: FIRST_TAB_STOP, tab: TAB_CHARS, coll: null, src: null,
         onClose() { if (ui.netCardDue) ui.netCardDue(); },
-        stops() { return TAB_STOPS[this.tab]; },
+        stops() { return ui.profileStops(this.tab); },
         viewAt(i) { const hero = this.heroAt(i); return hero ? this.src.view(hero) : null; },
         setTab(i) {
           if (i === this.tab) return;
@@ -302,18 +366,20 @@
           else ui.openProfilePick(st.id === 'show' ? 'Витрина' : 'Звёздные попутчики', g.profileSlots()[st.id][st.i], key => g.setProfileSlot(st.id, st.i, key), true);
         },
         draw(c) {
+          const wide = !!(ui.wide && ui.wide()), tx0 = wide ? 384 : 290, tw = wide ? 104 : 102, ts = wide ? 108 : 106;
           this.src = ui.profileSource();
-          c.drawImage(ui.profileRoom(), 0, 0);
-          ui.plate(12, 10, 'Профиль Первопроходца');
-          PROFILE_TABS.forEach((t, i) => ui.button(290 + i * 106, 10, 102, 22, t.label, () => this.setTab(i), { size: 10, active: i === this.tab }));
-          ui.closeBtn(W - 32, 10, () => this.key('back'));
+          c.drawImage(ui.profileRoom(), wide ? ui.left : 0, 0);
+          ui.plate(ui.left + 12, 10, 'Профиль Первопроходца');
+          PROFILE_TABS.forEach((t, i) => ui.button(tx0 + i * ts, 10, tw, 22, t.label, () => this.setTab(i), { size: 10, active: i === this.tab }));
+          ui.closeBtn(ui.right - 32, 10, () => this.key('back'));
           ui.profileStage(c, this);
           ui.profileCard(c, this);
           if (PROFILE_TABS[this.tab].id === 'rec') ui.profileRec(c, this);
           else if (PROFILE_TABS[this.tab].id === 'coll') ui.profileColl(c, this);
           else ui.profileChars(c, this);
-          if (this.sel === 4) { c.strokeStyle = C.brassHi; c.lineWidth = 2; c.strokeRect(222, 424, 172, 26); c.lineWidth = 1; }
-          ui.hints([['←↑↓→', 'Выбор'], ['Enter', 'Открыть'], ['Q E', 'Вкладка'], ['V', 'Герой'], ['Esc', 'Назад']], 14, HGT - 18);
+          const rm = this.stops()[4];
+          if (this.sel === 4) { c.strokeStyle = C.brassHi; c.lineWidth = 2; c.strokeRect(rm.x, rm.y, rm.w, rm.h); c.lineWidth = 1; }
+          ui.hints([['←↑↓→', 'Выбор'], ['Enter', 'Открыть'], ['Q E', 'Вкладка'], ['V', 'Герой'], ['Esc', 'Назад']], ui.left + 14, HGT - 18);
         },
         key(k, code) {
           if (k === 'back') { ui.pop(); return; }
@@ -336,7 +402,7 @@
       if (!row.solo) n.send('cardOf', { uid: row.uid });
       return this.push({
         full: true, friendProfile: true, row, sel: FIRST_TAB_STOP, tab: TAB_CHARS, coll: null, src: null, confirm: false,
-        stops() { return TAB_STOPS[this.tab]; },
+        stops() { return ui.profileStops(this.tab); },
         viewAt(i) { const st = this.stops()[i]; return st && (st.id === 'show' || st.id === 'comp') ? this.src.slot(st.id, st.i) : null; },
         setTab(i) { if (i === this.tab) return; this.tab = i; this.sel = FIRST_TAB_STOP; this.coll = null; ui.sfx('select'); },
         stopHit(i) {
@@ -355,26 +421,28 @@
           ui.pop();
         },
         draw(c) {
+          const wide = !!(ui.wide && ui.wide()), tx0 = wide ? 384 : 290, tw = wide ? 104 : 102, ts = wide ? 108 : 106, sx = wide ? 264 : 308;
           const data = card();
           this.src = ui.cardSource(data, row);
           if (data && !this.had) { this.had = true; this.coll = null; }
-          c.drawImage(ui.profileRoom(), 0, 0);
-          ui.plate(12, 10, 'Профиль: ' + this.src.name);
-          PROFILE_TABS.forEach((t, i) => ui.button(290 + i * 106, 10, 102, 22, t.label, () => this.setTab(i), { size: 10, active: i === this.tab }));
-          ui.closeBtn(W - 32, 10, () => this.key('back'));
+          c.drawImage(ui.profileRoom(), wide ? ui.left : 0, 0);
+          ui.plate(ui.left + 12, 10, 'Профиль: ' + this.src.name);
+          PROFILE_TABS.forEach((t, i) => ui.button(tx0 + i * ts, 10, tw, 22, t.label, () => this.setTab(i), { size: 10, active: i === this.tab }));
+          ui.closeBtn(ui.right - 32, 10, () => this.key('back'));
           ui.profileStage(c, this);
           ui.profileCard(c, this);
-          ui.text(ui.fitText(this.src.presence, 10, 88), 94, 110, { size: 10, col: row.on ? '#a8f0b0' : C.dim });
+          ui.text(ui.fitText(this.src.presence, 10, wide ? 148 : 88), wide ? ui.left + 94 : 94, 110, { size: 10, col: row.on ? '#a8f0b0' : C.dim });
           if (PROFILE_TABS[this.tab].id === 'rec') ui.profileRec(c, this);
           else if (PROFILE_TABS[this.tab].id === 'coll') ui.profileColl(c, this);
           else ui.profileChars(c, this);
-          if (!data) ui.text('Загружаем карточку...', 308, 44, { size: 11, align: 'center', col: C.sub });
+          if (!data) ui.text('Загружаем карточку...', sx, 44, { size: 11, align: 'center', col: C.sub });
           if (!row.solo) {
-            ui.button(120, 424, 84, 26, 'В гости', () => ui.visitGo(row), { size: 10 });
-            ui.button(210, 424, 104, 26, 'Позвать за стол', () => this.invite(), { size: 10 });
-            ui.button(320, 424, 84, 26, this.confirm ? 'Точно?' : 'Удалить', () => this.remove(), { size: 10 });
+            const bx = wide ? 148 : 120, bw0 = wide ? 68 : 84, bw1 = wide ? 92 : 104, bw2 = wide ? 64 : 84, gap = wide ? 4 : 6;
+            ui.button(bx, 424, bw0, 26, 'В гости', () => ui.visitGo(row), { size: 10 });
+            ui.button(bx + bw0 + gap, 424, bw1, 26, 'Позвать за стол', () => this.invite(), { size: 10 });
+            ui.button(bx + bw0 + bw1 + gap * 2, 424, bw2, 26, this.confirm ? 'Точно?' : 'Удалить', () => this.remove(), { size: 10 });
           }
-          ui.hints(row.solo ? [['←↑↓→', 'Герой'], ['Q E', 'Вкладка'], ['Esc', 'Назад']] : [['←↑↓→', 'Герой'], ['Q E', 'Вкладка'], ['I', 'Позвать'], ['Del', 'Удалить'], ['Esc', 'Назад']], 14, HGT - 18);
+          ui.hints(row.solo ? [['←↑↓→', 'Герой'], ['Q E', 'Вкладка'], ['Esc', 'Назад']] : [['←↑↓→', 'Герой'], ['Q E', 'Вкладка'], ['I', 'Позвать'], ['Del', 'Удалить'], ['Esc', 'Назад']], ui.left + 14, HGT - 18);
         },
         key(k, code) {
           if (code !== 'Delete') this.confirm = false;

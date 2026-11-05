@@ -71,6 +71,15 @@
       P(-8, -1, 4, 5, L.cap); P(-9, 4, 3, 5, L.cap); P(-10, 8, 4, 4, L.beard); P(-8, -1, 4, 1, gold); P(-9, 6, 1, 3, '#5a7eae');
       return;
     }
+    if (o.look && o.look.coat === 'chef') {
+      P(-5, 3, 11, 13, L.top); P(4, 3, 2, 13, '#d8d4ca');
+      P(-4, 7, 9, 9, L.apron); P(3, 7, 2, 9, '#98241c');
+      P(-4, 7, 9, 1, gold); P(-2, 10, 5, 3, '#f6eedb');
+      P(-4, 2, 9, 2, L.scarf); P(-1, 4, 3, 2, L.scarf); P(0, 3, 1, 1, gold);
+      P(6, -10, 7, 6, L.cap); P(5, -8, 9, 4, L.cap); P(11, -10, 2, 6, '#dcdae4');
+      P(6, -4, 7, 2, L.apron); P(6, -2, 7, 1, gold);
+      return;
+    }
     P(-5, 3, 11, 13, L.top); P(3, 3, 3, 13, '#7c1620'); P(-5, 15, 11, 2, L.ear);
     P(-1, 3, 3, 12, L.hair);
     for (let i = 0; i < 4; i++) P(-1 + Math.floor(i / 2), 6 + i * 2, 1, 1, gold);

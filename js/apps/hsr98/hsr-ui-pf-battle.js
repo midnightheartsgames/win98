@@ -11,14 +11,14 @@
   const inPf = ui => { const b = activeBattle(ui); return !!(b && b.opts && b.opts.pf); };
   const shown = bt => bt.pf || (bt.pf = { score: 0, disp: 0, wave: 0, kills: 0, cyc: 1, feathers: [], starT: [0, 0, 0] });
 
-  function slotX(u) {
-    const cx = W / 2 + 34, max = u.pfMax || 5, mid = Math.floor(max / 2);
+  function slotX(u, wide) {
+    const cx = wide ? 532 : W / 2 + 34, k = wide ? 0.78 : 1, max = u.pfMax || 5, mid = Math.floor(max / 2);
     if (u.pfBossWave) {
       if (u.pfSlot === mid) return cx;
       const side = Math.abs(u.pfSlot - mid);
-      return cx + Math.sign(u.pfSlot - mid) * (TUN.bossPitch / 2 + TUN.bossSide / 2 + (side - 1) * TUN.bossSide);
+      return cx + Math.sign(u.pfSlot - mid) * (TUN.bossPitch / 2 + TUN.bossSide / 2 + (side - 1) * TUN.bossSide) * k;
     }
-    return cx + (u.pfSlot - (max - 1) / 2) * (TUN.pitch[max] || TUN.pitch[5]);
+    return cx + (u.pfSlot - (max - 1) / 2) * (TUN.pitch[max] || TUN.pitch[5]) * k;
   }
 
   Object.assign(UP, {
@@ -83,7 +83,7 @@
     },
 
     pfHud(c, b) {
-      const bt = this.bt, S = shown(bt), O = b.opts.pf, { x, y, w, h } = HUD;
+      const bt = this.bt, S = shown(bt), O = b.opts.pf, { w, h } = HUD, x = this.wide() ? this.left + 8 : HUD.x, y = this.wide() ? HGT - h - 6 : HUD.y;
       this.pfPanel(c, x, y, { total: this.pfOtherScore(b) + Math.floor(S.disp), wave: S.wave + 1, waves: O.waves.length, kills: S.kills, pool: PF.poolSize(O.waves[S.wave]), cyc: Math.min(S.cyc, O.cycles), cycles: O.cycles, node: O.node + 1, starT: S.starT });
       this.hit(x, y, w, h, () => this.pfAsk());
     },
@@ -108,12 +108,13 @@
     },
 
     pfCycleMark(c, b) {
-      const bt = this.bt, O = b.opts.pf, S = shown(bt), list = this.turnOrder(7), av = bt.order && bt.order.pfAv;
+      const bt = this.bt, O = b.opts.pf, S = shown(bt), list = this.turnOrder(this.wide() ? 10 : 7), av = bt.order && bt.order.pfAv;
       if (!list.length || av == null) return;
       const left = Math.max(1, O.cycles - Math.min(S.cyc, O.cycles) + 1), last = left <= 1;
       let i = list.findIndex((o, k) => k > 0 && o.av > av);
       if (i < 0) i = list.length;
-      this.pfCyclePlate(c, 8, 26 + i * 42 - 9, left, last, !last || Math.sin(this.t * 8) > -0.2);
+      if (this.wide()) this.pfCyclePlate(c, 70 + i * 48 - 19, HGT - 62, left, last, !last || Math.sin(this.t * 8) > -0.2);
+      else this.pfCyclePlate(c, 8, 26 + i * 42 - 9, left, last, !last || Math.sin(this.t * 8) > -0.2);
     },
 
     pfCyclePlate(c, x, y, left, last, on) {
@@ -261,7 +262,7 @@
     if (!inPf(this)) return enemyLayout0.call(this);
     const bt = this.bt, out = new Map();
     const list = bt.foes.filter(u => u.appear && (!bt.fade.has(u) || bt.fade.get(u) > 0)).slice().sort((a, b) => a.pfSlot - b.pfSlot);
-    for (const u of list) out.set(u, { x: slotX(u), y: 290, s: u.data.boss ? 200 : u.data.elite ? 140 : 104 });
+    for (const u of list) out.set(u, { x: slotX(u, this.wide()), y: this.wide() ? 266 + (u.pfSlot % 2) * 38 : 290, s: u.data.boss ? 200 : u.data.elite ? 140 : 104 });
     return out;
   };
 
@@ -435,7 +436,8 @@
       { label: 'Продолжить бой', fn: () => { } },
       { label: 'Список противников', right: 'Z', fn: () => this.pfAsk() },
       { label: 'Повторить узел', fn: () => this.pfPlay() },
-      { label: 'Покинуть', fn: () => { this.bt.sub = { type: 'pfquit', sel: 1 }; } }
+      { label: 'Покинуть', fn: () => { this.bt.sub = { type: 'pfquit', sel: 1 }; } },
+      { label: 'Настройки', fn: () => this.openSettings() }
     ];
   };
 

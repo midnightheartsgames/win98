@@ -142,9 +142,9 @@
   function room() {
     if (roomMesh) return roomMesh;
     const m = R3.mesh();
-    R3.grid(m, -9, -6, 9, 6, 0, 6, 4, '#ffffff', { tex: floorTex(), rep: 3 });
+    R3.grid(m, -12, -8, 12, 8, 0, 8, 5, '#ffffff', { tex: floorTex(), rep: 4 });
     const wt = wallTex();
-    for (let i = 0; i < 9; i++) {
+    for (let i = -2; i < 11; i++) {
       const a0 = -1.2 + i * 0.3, a1 = a0 + 0.3, r = 6.5, x0 = Math.sin(a0) * r, z0 = -Math.cos(a0) * r, x1 = Math.sin(a1) * r, z1 = -Math.cos(a1) * r;
       R3.quad(m, [x0, 0, z0, x1, 0, z1, x1, 7, z1, x0, 7, z0], '#ffffff', { tex: wt, uv: [0, wt.h * 2, wt.w, wt.h * 2, wt.w, 0, 0, 0] });
     }
@@ -189,7 +189,7 @@
     constructor(ui, res, opts = {}) {
       this.ui = ui; this.res = res; this.game = ui.game; this.ban = opts.ban || 'sig';
       this.best = Math.max(...res.map(r => r.rar));
-      this.R = new R3.Raster(LW, LH);
+      this.R = new R3.Raster(ui && ui.wide && ui.wide() ? 427 : LW, LH);
       this.phase = 'cine'; this.t = 0; this.cue = 0; this.rt = 0;
       this.queue = []; this.cur = -1; this.seen = new Set(); this.fade = 0; this.done = false; this.hop = 0;
       this.slots = res.map((r, i) => TVS[ORDER[i % ORDER.length]]);
@@ -364,7 +364,7 @@
       const tx = R3.tex(G.coneArt(r.id, 72, 100)), m = cached('cone|' + tid(tx), () => { const q = R3.mesh(); R3.quad(q, [-0.5, 0, 0, 0.5, 0, 0, 0.5, 1.39, 0, -0.5, 1.39, 0], '#ffffff', { tex: tx, two: true, emit: 0.5 }); return q; });
       R.draw(m, M.of(M.t(0, 0.62 + Math.sin(t * 2) * 0.03, 0), M.ry(t * 1.4 - 0.6)));
       R.glow([0, 1.0, 0], 1.2, RCOL[rar], { a: 0.35 * seg(t, 0, 0.3), depth: false });
-      if (rar === 5) R.shaft(LW / 2, 26, RCOL[5], 0.25 * seg(t, 0.2, 0.6));
+      if (rar === 5) R.shaft(R.w / 2, 26, RCOL[5], 0.25 * seg(t, 0.2, 0.6));
     }
 
     agentScene(R, r, t) {
@@ -382,7 +382,7 @@
       }
       R.light({ amb: [1, 1, 1], sun: null });
       R.draw(figureQuad(look, 2.0), M.t(0, 0.24, 0.1), { lit: false, tint: lit < 1 ? (lit > 0 ? '#ffffff' : '#0c0c12') : null });
-      if (t > on && t < on + 0.3) R.shaft(LW / 2, 60, '#ffffff', 0.6 * (1 - seg(t, on, on + 0.3)));
+      if (t > on && t < on + 0.3) R.shaft(R.w / 2, 60, '#ffffff', 0.6 * (1 - seg(t, on, on + 0.3)));
     }
 
     closeScene(R, r, t) {
@@ -400,6 +400,8 @@
     render() { this.scene(); return this.R.bake(); }
 
     scene() {
+      const rw = this.ui && this.ui.wide && this.ui.wide() ? 427 : LW;
+      if (this.R.w !== rw) this.R = new R3.Raster(rw, LH);
       const R = this.R;
       if (this.phase === 'cine') this.cine(R);
       else if (this.phase === 'reveal') {
@@ -414,17 +416,17 @@
     }
 
     draw(c) {
-      const R = this.R;
+      const ui = this.ui;
       this.scene();
-      R.finish(c, 0, 0, W, HGT);
+      this.R.finish(c, ui.left, 0, ui.vw, HGT);
       if (this.phase === 'cine') this.cineOverlay(c);
       else if (this.phase === 'reveal') this.revealOverlay(c);
       else this.rackOverlay(c);
-      if (this.fade > 0) { c.fillStyle = 'rgba(255,255,255,' + this.fade.toFixed(3) + ')'; c.fillRect(0, 0, W, HGT); }
+      if (this.fade > 0) { c.fillStyle = 'rgba(255,255,255,' + this.fade.toFixed(3) + ')'; c.fillRect(ui.left, 0, ui.vw, HGT); }
     }
 
     skipButton(c, label) {
-      const ui = this.ui, w = ui.measure(label, 10) + 44, x = W - w - 10, y = 10;
+      const ui = this.ui, w = ui.measure(label, 10) + 44, x = ui.right - w - 10, y = 10;
       c.fillStyle = 'rgba(4,6,20,0.6)'; c.fillRect(x, y, w, 20);
       c.strokeStyle = 'rgba(232,224,64,0.7)'; c.strokeRect(x + 0.5, y + 0.5, w - 1, 19);
       const kw = ui.keycap(x + 6, y + 4, 'Esc');
@@ -443,19 +445,19 @@
 
     cineOverlay(c) {
       const [n, t] = this.shot(), ui = this.ui;
-      if (n === 'power' && t < 0.42) { c.fillStyle = '#000'; c.fillRect(0, 0, W, HGT); }
+      if (n === 'power' && t < 0.42) { c.fillStyle = '#000'; c.fillRect(ui.left, 0, ui.vw, HGT); }
       if (n === 'glitch') {
         for (let i = 0; i < 18; i++) {
           const y = Math.floor(hx(i, Math.floor(t * 30), 7) * HGT), h = 4 + Math.floor(hx(i, 2, Math.floor(t * 30)) * 18), dx = (hx(i, 3, Math.floor(t * 30)) - 0.5) * 80;
-          c.drawImage(this.R.cv, 0, Math.floor(y / 2), LW, Math.max(1, Math.floor(h / 2)), dx, y, W, h);
+          c.drawImage(this.R.cv, 0, Math.floor(y / 2), this.R.w, Math.max(1, Math.floor(h / 2)), ui.left + dx, y, ui.vw, h);
         }
-        c.fillStyle = 'rgba(' + R3.rgb(RCOL[this.best]).join(',') + ',0.35)'; c.fillRect(0, 0, W, HGT);
+        c.fillStyle = 'rgba(' + R3.rgb(RCOL[this.best]).join(',') + ',0.35)'; c.fillRect(ui.left, 0, ui.vw, HGT);
         this.bigLetter(c, this.best, W / 2 + (hx(1, Math.floor(t * 24), 4) - 0.5) * 24, 150, 160, 1);
       }
       const flash = shotLen('dial') - 0.15;
-      if (n === 'dial' && t > flash) { c.fillStyle = 'rgba(255,255,255,' + seg(t, flash, flash + 0.15).toFixed(3) + ')'; c.fillRect(0, 0, W, HGT); }
+      if (n === 'dial' && t > flash) { c.fillStyle = 'rgba(255,255,255,' + seg(t, flash, flash + 0.15).toFixed(3) + ')'; c.fillRect(ui.left, 0, ui.vw, HGT); }
       this.skipButton(c, this.res.length > 1 ? 'К итогам' : 'Пропустить');
-      ui.hints([['Enter', 'Пропустить ролик']], 12, HGT - 20, { col: 'rgba(200,210,240,0.8)' });
+      ui.hints([['Enter', 'Пропустить ролик']], ui.left + 12, HGT - 20, { col: 'rgba(200,210,240,0.8)' });
     }
 
     plate(c, r, a) {
@@ -482,7 +484,7 @@
       if (a <= 0) return;
       const ui = this.ui;
       c.save(); c.globalAlpha = a;
-      ui.resultTag(W - 196, HGT - 104, r, [['Контракт заключён!', C.ok], ['новый агент в экипаже', C.cream]]);
+      ui.resultTag(ui.right - 196, HGT - 104, r, [['Контракт заключён!', C.ok], ['новый агент в экипаже', C.cream]]);
       c.restore();
     }
 
@@ -491,11 +493,11 @@
       if (t >= 0) {
         if (r.kind === 'char') {
           const on = r.rar === 5 ? 0.55 : 0.35;
-          if (t > on && t < on + 0.25) { c.fillStyle = 'rgba(255,255,255,' + (0.7 * (1 - seg(t, on, on + 0.25))).toFixed(3) + ')'; c.fillRect(0, 0, W, HGT); }
+          if (t > on && t < on + 0.25) { c.fillStyle = 'rgba(255,255,255,' + (0.7 * (1 - seg(t, on, on + 0.25))).toFixed(3) + ')'; c.fillRect(ui.left, 0, ui.vw, HGT); }
           const ca = this.closeAt(r);
           if (ca != null && t > ca) {
             const k = eOut(seg(t, ca, ca + 0.5));
-            G.drawBust(c, G.lookOf(r.id, this.game), Math.round(lerp(-120, 30, k)), 120, 4);
+            G.drawBust(c, G.lookOf(r.id, this.game), Math.round(lerp(ui.left - 196, 30, k)), 120, 4);
             const q = QUOTES[r.id] || (H.WarpIntro && H.WarpIntro.line ? H.WarpIntro.line(r.id, this.game) : '');
             if (q) {
               const lw = Math.min(560, ui.measure('«' + q + '»', 12) + 30);
@@ -511,14 +513,14 @@
           this.resultTag(c, r, seg(t, L - 0.4, L - 0.1));
         }
       }
-      if (this.res.length > 1) ui.plate(12, 10, (this.cur + 1) + ' / ' + this.res.length);
+      if (this.res.length > 1) ui.plate(ui.left + 12, 10, (this.cur + 1) + ' / ' + this.res.length);
       this.skipButton(c, this.res.length > 1 ? 'К итогам' : 'Закрыть');
-      ui.hints([['Enter', this.rt < this.intro() ? 'Показать' : this.queue.length || this.res.length > 1 ? 'Далее' : 'Готово']], 12, HGT - 20);
+      ui.hints([['Enter', this.rt < this.intro() ? 'Показать' : this.queue.length || this.res.length > 1 ? 'Далее' : 'Готово']], ui.left + 12, HGT - 20);
     }
 
     rackOverlay(c) {
       const ui = this.ui, t = this.rt, g = this.game;
-      c.fillStyle = 'rgba(6,6,10,0.62)'; c.fillRect(0, 0, W, HGT);
+      c.fillStyle = 'rgba(6,6,10,0.62)'; c.fillRect(ui.left, 0, ui.vw, HGT);
       for (let k = 5; k > 0; k--) ui.text('ИТОГИ ПОИСКА', W / 2 + k, 56 + k, { size: 30, bold: true, serif: true, align: 'center', col: k > 1 ? '#121216' : '#3a3a44', shadow: false });
       ui.text('ИТОГИ ПОИСКА', W / 2, 56, { size: 30, bold: true, serif: true, align: 'center', col: '#e8e8f0', shadow: false });
       const n = this.res.length, cols = Math.min(5, n), rows = Math.ceil(n / 5), cw = 92, ch = 104, x0 = W / 2 - cols * cw / 2, y0 = 116 + (rows === 1 ? 52 : 0);

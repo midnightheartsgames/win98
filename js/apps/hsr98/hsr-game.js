@@ -1219,9 +1219,10 @@
 
     addCone(id) {
       const s = this.state;
-      const same = s.coneSup === 'manual' ? null : s.inv.cones.find(c => c.id === id && (c.sup || 1) < 5);
+      const d = H.CONES[id], maxed = s.coneSup === 'manual' || s.inv.cones.some(c => c.id === id && (c.sup || 1) >= 5);
+      const same = maxed ? null : s.inv.cones.find(c => c.id === id && (c.sup || 1) < 5);
       if (same) { same.sup = (same.sup || 1) + 1; return same; }
-      const c = { uid: s.uid++, id, sup: 1, lvl: 1, exp: 0, asc: 0 };
+      const c = { uid: s.uid++, id, sup: 1, lvl: 1, exp: 0, asc: 0, lock: !!(d && d.rarity >= 4) };
       s.inv.cones.push(c);
       return c;
     }
@@ -1249,7 +1250,7 @@
         const k = pool.splice(rng.int(pool.length), 1)[0];
         subs.push([k, this.relicSub(k, rl, lvl, 0.8 + rng() * 0.4)]);
       }
-      const rel = { uid: s.uid++, set, slot: slot.key, main, mv: this.relicMain(main, rl), subs, lvl: rl };
+      const rel = { uid: s.uid++, set, slot: slot.key, main, mv: this.relicMain(main, rl), subs, lvl: rl, lock: false, trash: false };
       s.inv.relics.push(rel);
       return rel;
     }
@@ -1313,7 +1314,7 @@
       const s = this.state;
       for (const r of Object.values(s.roster)) for (const [sl, u] of Object.entries(r.relics)) if (u === uid) return false;
       const i = s.inv.relics.findIndex(x => x.uid === uid);
-      if (i < 0) return false;
+      if (i < 0 || s.inv.relics[i].lock) return false;
       s.inv.relics.splice(i, 1);
       s.credits += 150;
       return true;
@@ -2192,7 +2193,7 @@
         if (st.cine) { if (this.skipping) continue; this.pending = { type: 'cine', id: st.cine }; return; }
         if (st.magflow) { this.pending = { type: 'ui', ui: 'magflow', id: st.magflow, fail: st.fail }; return; }
         if (st.carts) { this.pending = { type: 'ui', ui: 'carts', id: st.carts, fail: st.fail }; return; }
-        if (st.ui) { this.pending = Object.assign({ type: 'ui' }, st); return; }
+        if (st.ui) { if (st.ui === 'doc' && st.doc) s.flags['doc_' + st.doc] = true; this.pending = Object.assign({ type: 'ui' }, st); return; }
         if (st.tut) { this.pending = { type: 'tut', text: st.tut }; return; }
         if (st.credits) { this.skipping = false; this.pending = { type: 'credits', id: st.credits === true ? null : st.credits }; return; }
       }

@@ -11,7 +11,7 @@
       const I = b.cwInfo, cw = b.cw, bt = this.bt;
       if (!I) return;
       const boss = !!this.enemyLayout && [...this.enemyLayout().keys()].some(u => u.data.boss && !bt.fade.has(u));
-      const x = 62, y = boss ? 66 : 8, w = 88, h = 30;
+      const x = this.wide() ? this.left + 8 : 62, y = !this.wide() && boss ? 66 : 8, w = 88, h = 30;
       c.fillStyle = '#000000'; c.fillRect(x, y, w, h);
       c.strokeStyle = I.finale ? K.red : K.gold; c.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
       if (I.left == null) this.text('НАГРАДЫ', x + w / 2, y + 9, { align: 'center', size: 11, bold: true, col: K.gold, shadow: false });
@@ -50,7 +50,7 @@
       if (t('follow') && I.combo) tags.push(['Подряд +' + Math.round(I.combo * 100) + '%', '#ffd471']);
       if (I.dayT > 0) tags.push(['Удачный день', '#9affb0']);
       if (cw.frenzy) tags.push(['Неистовый узел', '#ff7a7a']);
-      let tx = 8, ty = 330;
+      let tx = this.wide() ? this.left + 8 : 8, ty = this.wide() ? 86 : 330;
       for (const [tag, col, frac] of tags) {
         const tw = this.measure(tag, 9, true) + 8;
         if (tx + tw > 452) { tx = 8; ty -= 16; }
@@ -64,7 +64,7 @@
     cwOffStrip(c, b) {
       const I = b.cwInfo, bt = this.bt, off = I.off || [];
       if (!off.length) return;
-      const sx = 8, sy = 344;
+      const sx = this.wide() ? this.left + 8 : 8, sy = this.wide() ? 104 : 344;
       c.fillStyle = 'rgba(4,6,20,0.78)'; c.fillRect(sx, sy, 58 + off.length * 24, 26);
       this.text('ВНЕ ПОЛЯ', sx + 5, sy + 8, { size: 9, bold: true, col: K.gold });
       off.forEach((u, i) => {
@@ -78,7 +78,7 @@
 
     cwSummonPos(u) {
       const b = this.game.battle || this.lastBattle, I = b && b.cwInfo;
-      if (u.cwOff && I) { const i = Math.max(0, I.off.indexOf(u)); return { x: 8 + 58 + i * 24 + 10, y: 350 }; }
+      if (u.cwOff && I) { const i = Math.max(0, I.off.indexOf(u)); return this.wide() ? { x: this.left + 8 + 58 + i * 24 + 10, y: 112 } : { x: 8 + 58 + i * 24 + 10, y: 350 }; }
       if (u.cwBond === 'lord') return { x: 120, y: 180 };
       if (u.cwBond === 'express') return { x: 90, y: 230 };
       if (u.cwBond === 'engine') return { x: W / 2, y: 150 };

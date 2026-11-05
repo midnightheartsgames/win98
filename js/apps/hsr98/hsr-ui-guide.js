@@ -716,11 +716,13 @@
       if (top + cards.vis < tasks.length) ui.text('►', cards.x + cards.vis * (cards.w + cards.gap) - 4, cards.y + cards.h / 2, { size: 12, bold: true, col: PAPER.ink, shadow: false });
       ui.wheelZone(cards.x, cards.y, cards.vis * (cards.w + cards.gap), cards.h, dd => { scr.dcard = Math.max(0, Math.min(tasks.length - 1, scr.dcard + dd)); });
       const mins = Math.ceil(g.dailyLeft() / 60000);
+      if (ui.openTutorial) ui.button(BODY.x + 16, BODY.y + BODY.h - 26, 178, 20, 'Тактическая тренировка', () => ui.openTutorial({ mode: 1 }), { size: 10, icon: 'guide' });
       ui.text('Обновление через ' + mins + ' мин.', BODY.x + BODY.w - 16, BODY.y + BODY.h - 20, { align: 'right', size: 12, col: PAPER.ink, shadow: false });
     },
 
     guideDailyKey(scr, k, code) {
       const ui = this, g = this.game, tasks = g.dailyTasks();
+      if (code === 'KeyT' && ui.openTutorial) { ui.openTutorial({ mode: 1 }); return true; }
       if (code === 'KeyF') { const got = g.dailyClaimAll(); if (!got.length) { ui.sfx('deny'); return true; } ui.sfx('chest'); ui.toast('Тренировка: ' + got.join(', ')); return true; }
       if (scr.dfocus === 'steps') {
         if (k === 'left' || k === 'right') { scr.dstep = Math.max(0, Math.min(4, scr.dstep + (k === 'left' ? -1 : 1))); ui.sfx('select'); return true; }
@@ -766,7 +768,7 @@
         setTab(i) { this.tab = (i + S.length) % S.length; this.focus = 'list'; ui.sfx('select'); },
         draw(c) {
           ui.fullBg(c, false);
-          c.fillStyle = 'rgba(4,6,20,0.5)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(4,6,20,0.5)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.guideHeader(c, this);
           ui.guideTabs(c, this);
           ui.guidePaper(c);

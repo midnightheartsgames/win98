@@ -626,4 +626,42 @@ const isDetails = () => !!(top() && top().name === 'battleDetails');
   ok(src.includes("['C', 'детали боя']"), 'the controls list the C key for battle details');
 }
 
+{
+  const g = mkGame(103);
+  if (!g.state.roster.march) g.debugChar('march', 80, 0);
+  g.state.roster.march.lvl = 80;
+  g.fillTraces('march', 'reset');
+  g.traceOf('march').on.push('s2');
+  ui.game = g; ui.mode = 'field'; ui.screens = [];
+  const spy = () => {
+    const out = [], real = ui.text;
+    ui.text = function (str, ...rest) { out.push(String(str)); return real.call(this, str, ...rest); };
+    pump(1);
+    delete ui.text;
+    return out;
+  };
+  ui.openChars('march');
+  let texts = spy();
+  ok(texts.includes('HP') && texts.includes('Сила атаки') && texts.includes('Защита') && texts.includes('Скорость') && texts.includes('Крит. шанс') && texts.includes('Крит. урон'), 'main character Details panel shows the six primary stats');
+  ok(!texts.includes('Эфф. пробития') && !texts.includes('Энергия') && texts.includes('Подробнее'), 'Break Effect and Energy are removed from main character Details panel and replaced with the More button');
+  press('d', 'KeyD');
+  const stScr = ui.top();
+  ok(stScr && stScr.charStats && stScr.k === 'march', 'pressing D on Details opens the full Character Stats modal');
+  texts = spy();
+  ok(texts.includes('Характеристики') && texts.includes('Базовые характеристики') && texts.includes('Продвинутые характеристики'), 'Character Stats modal shows Base and Advanced sections');
+  ok(texts.includes('Эффект пробития') && texts.includes('Бонус исцеления') && texts.includes('Максимальная энергия') && texts.includes('Скорость восстановления энергии') && texts.includes('Шанс попадания эффектов') && texts.includes('Сопротивление эффектам') && texts.includes('Радость'), 'Advanced section lists all nine advanced stats');
+  ok(texts.some(t => /^\+\d+$/.test(t)), 'Base section shows the cyan bonus breakdown next to the base stat');
+  press('i', 'KeyI');
+  eq(stScr.helpKey, 'spd', 'pressing I opens the first stat help explanation');
+  texts = spy();
+  ok(texts.some(t => t.includes('интервал между ходами')), 'inline stat help explanation is rendered beneath the stat row');
+  stScr.sc.top = 20;
+  texts = spy();
+  ok(texts.includes('Тип урона') && texts.includes('Бонус физ. урона') && texts.includes('Бонус лед. урона') && texts.includes('Бонус мним. урона') && texts.includes('Бонус физ. сопр.') && texts.includes('Бонус мним. сопр.'), 'scrolling down in Character Stats shows the Damage Type section with all elemental damage and resistance bonuses');
+  press('e', 'KeyE');
+  ok(stScr.k !== 'march' && ui.screens[0].k === stScr.k, 'switching character inside Character Stats syncs the underlying character menu');
+  press('back', 'Escape');
+  eq(ui.top(), ui.screens[0], 'Esc closes Character Stats back to the character screen');
+}
+
 console.log('hsr-details: ' + checks + ' checks passed');

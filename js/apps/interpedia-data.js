@@ -40,7 +40,10 @@
         '...что в ранних вариантах сценария «[[bttf|Назад в будущее]]» машиной времени был холодильник?',
         '...что номер интернет-газеты «[[svodka|Сводка.ру ’99]]» за 28 декабря 1999 года — 303, а её первая страница весит меньше 40 КБ?',
         '...что [[stalker98|S.T.A.L.K.E.R.]] — это три самостоятельные игры киевской студии GSC Game World с разными движками?',
-        '...что диск журнала «[[igromania|Игромания]]» с демоверсиями лежит в приводе D: этого компьютера?'
+        '...что диск журнала «[[igromania|Игромания]]» с демоверсиями лежит в приводе D: этого компьютера?',
+        '...что в системной игре «[[bliss|Безмятежность]]» можно взлететь на планере над тем самым калифорнийским холмом в Сономе и поставить снятый в полёте кадр на рабочий стол?',
+        '...что по знаменитому письму школьника Кирилла с фразой «можно грабить корованы» в нашей системе созданы сразу две игры (см. [[korovany|Письмо Кирилла и игры про корованы]])?',
+        '...что на сайте лаборатории «[[ferrum|Железный цех]]» приведена схема перемычки JP1, спасающей материнскую плату от вируса Чернобыль (CIH)?'
       ],
       pictureTitle: '3dfx Voodoo 2 SLI',
       pictureGif: 'pc',
@@ -71,7 +74,10 @@
         '...that in early drafts of the "[[bttf|Back to the Future]]" script the time machine was a refrigerator?',
         '...that issue 303 of the online daily "[[svodka|Svodka.ru \'99]]", dated December 28, 1999, has a front page under 40 KB?',
         '...that [[stalker98|S.T.A.L.K.E.R.]] is three separate games from the Kyiv studio GSC Game World, each on its own engine?',
-        '...that the demo disc of the magazine "[[igromania|Igromania]]" sits in the D: drive of this computer?'
+        '...that the demo disc of the magazine "[[igromania|Igromania]]" sits in the D: drive of this computer?',
+        '...that in the built-in system game "[[bliss|Bliss]]" you can soar a glider over Charles O\'Rear\'s Sonoma hill and set any viewfinder snapshot as your desktop wallpaper?',
+        '...that Kirill\'s famous game-design letter ("you can rob korovans") inspired two separate games in our system — see [[korovany|Kirill\'s Letter and the Caravan Games]]?',
+        '...that the hardware lab "[[ferrum|Ferrum 98]]" publishes a motherboard JP1 jumper map that physically blocks the CIH (Chernobyl) virus from erasing Flash BIOS?'
       ],
       pictureTitle: '3dfx Voodoo 2 SLI',
       pictureGif: 'pc',

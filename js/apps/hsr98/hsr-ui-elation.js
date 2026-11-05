@@ -82,16 +82,17 @@
     if (glove) { rect(g, '#ff7ad0', Math.round(x - 6 * s), Math.round(y + 5 * s), Math.round(12 * s), Math.round(3 * s)); }
   }
   function confettiRain(g, T, n, a) {
+    const x0 = g._wide ? -53 : 0, w = g._wide ? 427 : LW;
     for (let i = 0; i < n; i++) {
-      const ph = (T * (0.18 + hx(i, 5, 71) * 0.16) + hx(i, 3, 71)) % 1, x = hx(i, 4, 71) * LW + Math.sin(T * 2 + i) * 6, y = ph * (LH + 20) - 10;
+      const ph = (T * (0.18 + hx(i, 5, 71) * 0.16) + hx(i, 3, 71)) % 1, x = x0 + hx(i, 4, 71) * w + Math.sin(T * 2 + i) * 6, y = ph * (LH + 20) - 10;
       rect(g, rgba(RAINBOW[i % RAINBOW.length], a * (0.5 + 0.4 * Math.sin(ph * Math.PI))), Math.round(x), Math.round(y), 1 + Math.round(Math.abs(Math.cos(T * 5 + i)) * 2), 2);
     }
   }
   function partyBg(S, tint) {
-    const g = S.g;
+    const g = S.g, x0 = g._wide ? -54 : 0, span = g._wide ? 528 : 420;
     vgrad(g, 0, LH, [[0, '#1a0628'], [0.55, tint || '#4a1446'], [1, '#12041a']]);
-    for (let i = 0; i < 8; i++) { const off = ((S.T * 160 + i * 52) % 420) - 60; poly(g, rgba(i % 2 ? '#ff9ae0' : '#b48aff', 0.06), [off, 0, off + 22, 0, off - 90, LH, off - 112, LH]); }
-    confettiRain(g, S.T, 40, 1);
+    for (let i = 0; i < (g._wide ? 10 : 8); i++) { const off = ((S.T * 160 + i * 52) % span) + x0 - 60; poly(g, rgba(i % 2 ? '#ff9ae0' : '#b48aff', 0.06), [off, 0, off + 22, 0, off - 90, LH, off - 112, LH]); }
+    confettiRain(g, S.T, g._wide ? 54 : 40, 1);
   }
 
   const CUTS = {
@@ -189,27 +190,30 @@
     }
     skip() { if (!this.fade) this.fade = 0.001; }
     render() {
-      const cv = buf.cv || (buf.cv = G.mkCanvas(LW, LH)), g = cv.getContext('2d');
+      const wide = !!(this.ui && this.ui.wide && this.ui.wide()), rw = wide ? 427 : LW, ox = (rw - LW) >> 1;
+      const cv = buf.cv && buf.cv.width === rw ? buf.cv : (buf.cv = G.mkCanvas(rw, LH)), g = cv.getContext('2d');
+      g._wide = wide;
       g.save();
       g.imageSmoothingEnabled = false;
+      if (ox) g.translate(ox, 0);
       const S = H.Cine.stage(g, this.game, this.T);
       S.t = Math.min(this.t, this.def.d); S.d = this.def.d;
       this.def.draw(S, this.P);
-      g.restore();
       if (this.t < 0.1) flash(g, '#ffffff', 0.6 * (1 - this.t / 0.1));
+      g.restore();
       H.Cine.dither(g);
       return cv;
     }
     paint(c) {
-      const ui = this.ui, d = this.def, t = Math.min(this.t, d.d), cv = this.render();
+      const ui = this.ui, d = this.def, t = Math.min(this.t, d.d), cv = this.render(), x0 = ui.left || 0, vw = ui.vw || W;
       c.save();
       c.globalAlpha = this.fade > 0 ? 1 - cl(this.fade / FADE) : 1;
       c.imageSmoothingEnabled = false;
-      c.drawImage(cv, 0, 0, W, HGT);
-      c.fillStyle = '#000000'; c.fillRect(0, 0, W, BAR * 2); c.fillRect(0, HGT - BAR * 2, W, BAR * 2);
-      c.fillStyle = rgba(PINK, 0.7); c.fillRect(0, BAR * 2 - 1, W, 1); c.fillRect(0, HGT - BAR * 2, W, 1);
-      ui.text(d.title, 14, 18, { size: 10, bold: true, col: '#ffd0f0' });
-      ui.text(d.name, 14, 32, { size: 13, bold: true, serif: true, col: C.gold });
+      c.drawImage(cv, x0, 0, vw, HGT);
+      c.fillStyle = '#000000'; c.fillRect(x0, 0, vw, BAR * 2); c.fillRect(x0, HGT - BAR * 2, vw, BAR * 2);
+      c.fillStyle = rgba(PINK, 0.7); c.fillRect(x0, BAR * 2 - 1, vw, 1); c.fillRect(x0, HGT - BAR * 2, vw, 1);
+      ui.text(d.title, x0 + 14, 18, { size: 10, bold: true, col: '#ffd0f0' });
+      ui.text(d.name, x0 + 14, 32, { size: 13, bold: true, serif: true, col: C.gold });
       if (d.calls) { let call = null; for (const [at, s] of d.calls) if (t >= at) call = [at, s]; if (call) { const k = eOut(cl((t - call[0]) / 0.12)); ui.text(call[1], W / 2, 76 - (1 - k) * 12, { align: 'center', size: 26 + (call[1].endsWith('!') ? 6 : 0), bold: true, serif: true, col: call[1].endsWith('!') ? '#fff0a0' : PINK }); } }
       if (d.over) d.over(ui, t, this.P);
       if (d.line && t > 0.1) { c.globalAlpha *= cl((t - 0.1) / 0.15); ui.text(this.id === 'kazuma' ? 'Казума' : 'Аха', W / 2, HGT - BAR * 2 + 10, { align: 'center', size: 11, bold: true, serif: true, col: C.gold }); ui.text(d.line, W / 2, HGT - BAR * 2 + 27, { align: 'center', size: 13, col: C.cream }); }
@@ -218,7 +222,7 @@
     draw(c) {
       const ui = this.ui;
       this.paint(c);
-      if (!this.fade) { ui.hints([['Esc', 'Пропустить']], W - 12, 20, { align: 'right' }); ui.hit(0, 0, W, HGT, () => this.skip()); }
+      if (!this.fade) { ui.hints([['Esc', 'Пропустить']], (ui.right || W) - 12, 20, { align: 'right' }); ui.hit(ui.left || 0, 0, ui.vw || W, HGT, () => this.skip()); }
     }
   }
 
@@ -344,7 +348,8 @@
     },
 
     debugAhaPreview(c, st, x, y) {
-      const A = st.aha || (st.aha = { i: 0, p: 2 }), id = DEBUG_CUTS[A.i][0], px = x + 46, py = y + 12, pw = 224, ph = 168;
+      const wide = !!(this.wide && this.wide()), pw = wide ? 288 : 224, ph = wide ? 162 : 168;
+      const A = st.aha || (st.aha = { i: 0, p: 2 }), id = DEBUG_CUTS[A.i][0], px = x + Math.round((316 - pw) / 2), py = y + 12 + Math.round((168 - ph) / 2);
       c.fillStyle = '#000000'; c.fillRect(px - 1, py - 1, pw + 2, ph + 2);
       const key = id + '|' + A.p;
       if (ahaPreview.key !== key) {
@@ -355,11 +360,14 @@
       const shows = ahaPreview.shows, total = shows.reduce((a, s) => a + s.def.d, 0);
       let at = this.t % total, k = 0;
       while (k < shows.length - 1 && at >= shows[k].def.d) at -= shows[k++].def.d;
-      const show = shows[k], cv = ahaPreview.cv || (ahaPreview.cv = G.mkCanvas(W, HGT)), pc = cv.getContext('2d'), main = this.ctx;
+      const vw = this.vw || W, x0 = this.left || 0;
+      const show = shows[k], cv = ahaPreview.cv && ahaPreview.cv.width === vw ? ahaPreview.cv : (ahaPreview.cv = G.mkCanvas(vw, HGT)), pc = cv.getContext('2d'), main = this.ctx;
       show.t = show.T = at;
-      pc.clearRect(0, 0, W, HGT);
+      pc.clearRect(0, 0, vw, HGT);
+      pc.save();
+      if (x0) pc.translate(-x0, 0);
       this.ctx = pc;
-      try { show.paint(pc); } finally { this.ctx = main; }
+      try { show.paint(pc); } finally { this.ctx = main; pc.restore(); }
       const was = c.imageSmoothingEnabled;
       c.imageSmoothingEnabled = true;
       c.drawImage(cv, px, py, pw, ph);

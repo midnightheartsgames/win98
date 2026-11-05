@@ -80,7 +80,7 @@
         draw(c) {
           const s = g.state, list = this.list();
           ui.fullBg(c, false);
-          c.fillStyle = 'rgba(4,6,20,0.45)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(4,6,20,0.45)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.plate(12, 10, 'Наряды');
           ui.closeBtn(W - 32, 10, () => this.key('back'));
           const owned = Object.keys(H.OUTFITS).filter(id => g.ownsOutfit(id)).length;
@@ -181,7 +181,7 @@
         draw(c) {
           const cur = g.phoneSkinId(), id = ids[this.sel], skin = H.PHONE_SKINS[id], own = g.ownsSkin(id), used = cur === id;
           ui.fullBg(c, false);
-          c.fillStyle = 'rgba(4,6,20,0.45)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(4,6,20,0.45)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.plate(12, 10, 'Украшения для смартфона');
           ui.text('Обои для смартфона', 16, 36, { size: 12, bold: true, col: C.cream });
           ui.closeBtn(W - 32, 10, () => this.key('back'));
@@ -370,7 +370,8 @@
         { label: 'Друзья', icon: 'friends', lock: !intro, fn: ui.openFriends && (() => ui.openFriends(0)) },
         { label: 'Украшения для смартфона', icon: 'phone', fn: ui.openPhoneDecor && (() => ui.openPhoneDecor()) },
         { label: 'Наряды', icon: 'outfit', lock: !intro, fn: ui.openWardrobe && (() => ui.openWardrobe()) },
-        { label: 'Промокод', icon: 'gift', lock: !intro, fn: ui.openPromo && (() => ui.openPromo()) }
+        { label: 'Промокод', icon: 'gift', lock: !intro, fn: ui.openPromo && (() => ui.openPromo()) },
+        { label: 'Книги', icon: 'archive', fn: ui.openBookshelf && (() => ui.openBookshelf(null)) }
       ];
     },
 

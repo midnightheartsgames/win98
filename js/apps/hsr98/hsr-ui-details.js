@@ -112,7 +112,7 @@
     bdButton(c) {
       const bt = this.bt;
       if (!bt || bt.result || bt.intro > 0) return;
-      const { x, y, w, h } = BTN, want = !!bt.bdWant;
+      const { w, h } = BTN, x = this.wide() ? this.left + 114 : BTN.x, y = this.wide() ? HGT - 36 : BTN.y, want = !!bt.bdWant;
       c.fillStyle = '#000'; c.fillRect(x - 1, y - 1, w + 2, h + 2);
       const gr = c.createLinearGradient(0, y, 0, y + h);
       gr.addColorStop(0, '#2a3478'); gr.addColorStop(1, '#0e1438');
@@ -394,13 +394,15 @@
         cost = r.id === 'basic' ? '+1 очко навыка' : r.id === 'skill' ? (!kit.skills && kit.skill.noSp ? 'Тратит HP' : '−1 очко навыка') : 'Энергия ' + (u.maxEnergy || kit.energy);
         tough = this.bdTough(ab, eff ? eff.kind : r.id);
         if (eff) now = 'Сейчас: ' + eff.ab.name;
-        desc = eff ? eff.ab.text || this.describeFx(eff.ab) : r.desc;
-      } else if (it.type === 'talent') { name = 'Талант'; lv = it.lv ? it.lv.lv : null; up = it.lv ? it.lv.up : 0; desc = kit.talent; }
-      else if (it.type === 'enh') { name = 'Усиление: ' + kit.enhanced.short; desc = kit.enhanced.text; }
-      else if (it.type === 'el') { name = 'Навык Радости: ' + kit.elSkill.name; desc = kit.elSkill.text; }
+        desc = eff ? (eff.ab.text ? (H.traceScaleText ? H.traceScaleText(u.charId, eff.kind || r.id, lv || 1, eff.ab.text) : eff.ab.text) : this.describeFx(eff.ab)) : r.desc;
+      } else if (it.type === 'talent') { name = 'Талант'; lv = it.lv ? it.lv.lv : null; up = it.lv ? it.lv.up : 0; desc = H.traceScaleText ? H.traceScaleText(u.charId, 'talent', lv || 1, kit.talent) : kit.talent; }
+      else if (it.type === 'enh') { const eUseSkill = kit.enhSkill || u.charId === 'hook' || u.charId === 'theherta'; const refR = items[eUseSkill ? 1 : 0] && items[eUseSkill ? 1 : 0].r; name = 'Усиление: ' + kit.enhanced.short; lv = refR ? refR.lv : null; up = refR ? refR.up : 0; desc = H.traceScaleText ? H.traceScaleText(u.charId, eUseSkill ? 'skill' : 'enhanced', lv || 1, kit.enhanced.text) : kit.enhanced.text; }
+      else if (it.type === 'el') { const sR = items[1] && items[1].r; name = 'Навык Радости: ' + kit.elSkill.name; lv = sR ? sR.lv : null; up = sR ? sR.up : 0; desc = H.traceScaleText ? H.traceScaleText(u.charId, 'skill', lv || 1, kit.elSkill.text) : kit.elSkill.text; }
       else if (it.type === 'tech') { name = kit.tech.name; tag = 'Техника'; desc = kit.tech.text + ' Применяется в поле до боя.'; }
       else { name = 'Контакт'; desc = 'Фраза для врага на клавише T. Исход решают ' + H.TUNING.contactThreshold + ' очка одного настроения.'; list = kit.contact.map(x => '· ' + x.name + ' (' + H.BD.TAGS[x.tag] + ')'); }
-      const lvText = lv != null ? 'ур. ' + lv : '', lw = lvText ? this.measure(lvText, 11, true) + 12 : 0;
+      const isBasic = (it.type === 'ab' && it.r.id === 'basic') || (it.type === 'enh' && !(kit.enhSkill || u.charId === 'hook' || u.charId === 'theherta'));
+      const maxLv = (isBasic ? 6 : 10) + (up || 0);
+      const lvText = lv != null ? 'ур. ' + lv + (up ? '/' + maxLv + ' (+' + up + ')' : '') : '', lw = lvText ? this.measure(lvText, 11, true) + 12 : 0;
       const names = this.wrap(name, w - lw, 14, true, true).slice(0, 2);
       rows.push({ h: names.length * 17 + 4, draw: y => {
         names.forEach((l, i) => this.text(l, x, y + i * 17, { size: 14, bold: true, serif: true, col: C.gold }));
@@ -411,6 +413,18 @@
       if (now) rows.push({ h: 15, draw: y => this.text(now, x, y + 1, { size: 10, bold: true, col: C.ok }) });
       rows.push({ h: 6, draw: () => { } });
       for (const l of this.richWrap(this.bdSegs(desc || ''), w, 11)) rows.push({ h: 14, draw: y => this.richText(l, x, y, { size: 11, col: C.cream, hot: C.gold }) });
+      if (H.SkillsInfo && H.SkillsInfo.buildNode && ['ab', 'talent', 'enh', 'el', 'tech'].includes(it.type)) {
+        const nid = it.type === 'ab' ? it.r.id : it.type === 'enh' ? ((kit.enhSkill || u.charId === 'hook' || u.charId === 'theherta') ? 'skill' : 'basic') : it.type === 'el' ? 'skill' : it.type;
+        const nd = H.SkillsInfo.buildNode(this.game, u.key || u.charId, u.charId, nid, lv);
+        const fm = nd && nd.forms ? (it.type === 'enh' ? (nd.forms[1] || nd.forms[0]) : it.type === 'el' ? (nd.forms[nd.forms.length - 1] || nd.forms[0]) : nd.forms.find(f => f.title === name) || nd.forms[0]) : null;
+        if (fm && fm.full && fm.full !== desc) {
+          rows.push({ h: 10, draw: y => { this.ctx.fillStyle = 'rgba(242,220,154,0.22)'; this.ctx.fillRect(x, y + 4, w, 1); } });
+          for (const para of String(fm.full).split('\n\n')) {
+            for (const l of this.richWrap(this.bdSegs(para), w, 10)) rows.push({ h: 13, draw: y => this.richText(l, x, y, { size: 10, col: C.sub, hot: C.gold }) });
+            rows.push({ h: 4, draw: () => { } });
+          }
+        }
+      }
       for (const t of list) rows.push({ h: 14, draw: y => this.text(t, x + 4, y, { size: 10, col: C.sub }) });
       return rows;
     },
@@ -548,7 +562,7 @@
   UP.drawTurnOrder = function (c, b) {
     drawTurnOrder0.call(this, c, b);
     const bt = this.bt;
-    if (bt && !bt.result && !(bt.intro > 0)) this.turnOrder(7).forEach((o, i) => { const { x, y, size } = this.turnCell(i); this.hit(x - 1, y - 1, size + 2, size + 2, () => this.bdAsk(o.u)); });
+    if (bt && !bt.result && !(bt.intro > 0)) this.turnOrder(this.wide() ? 10 : 7).forEach((o, i) => { const { x, y, size } = this.turnCell(i); this.hit(x - 1, y - 1, size + 2, size + 2, () => this.bdAsk(o.u)); });
     this.bdButton(c);
   };
 

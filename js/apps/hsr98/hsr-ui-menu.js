@@ -4,7 +4,52 @@
   const { W, HGT, C } = H.UI_CONST;
 
   const STRIP = { x: 232, vis: 9, pitch: 36 };
-  const STAT_ROWS =[['hp', 'HP'], ['atk', 'Атака'], ['def', 'Защита'], ['spd', 'Скорость'], ['critR', 'Крит. шанс'], ['critD', 'Крит. урон'], ['breakE', 'Эфф. пробития'], ['err', 'Энергия']];
+  const STAT_ROWS = [['hp', 'HP'], ['atk', 'Сила атаки'], ['def', 'Защита'], ['spd', 'Скорость'], ['critR', 'Крит. шанс'], ['critD', 'Крит. урон']];
+  const CHAR_STAT_SECTIONS = [
+    ['Базовые характеристики', [
+      ['hp', 'HP', 'base'],
+      ['atk', 'Сила атаки', 'base'],
+      ['def', 'Защита', 'base'],
+      ['spd', 'Скорость', 'base', true]
+    ]],
+    ['Продвинутые характеристики', [
+      ['critR', 'Крит. шанс', 'pct'],
+      ['critD', 'Крит. урон', 'pct'],
+      ['breakE', 'Эффект пробития', 'pct', true],
+      ['healP', 'Бонус исцеления', 'pct'],
+      ['energy', 'Максимальная энергия', 'energy', true],
+      ['err', 'Скорость восстановления энергии', 'err', true],
+      ['ehr', 'Шанс попадания эффектов', 'pct', true],
+      ['res', 'Сопротивление эффектам', 'pct', true],
+      ['elation', 'Радость', 'pct', true]
+    ]],
+    ['Тип урона', [
+      ['physP', 'Бонус физ. урона', 'pct'],
+      ['fireP', 'Бонус огн. урона', 'pct'],
+      ['iceP', 'Бонус лед. урона', 'pct'],
+      ['elecP', 'Бонус элек. урона', 'pct'],
+      ['windP', 'Бонус ветр. урона', 'pct'],
+      ['quantP', 'Бонус квант. урона', 'pct'],
+      ['imagP', 'Бонус мним. урона', 'pct'],
+      ['physRes', 'Бонус физ. сопр.', 'pct'],
+      ['fireRes', 'Бонус огн. сопр.', 'pct'],
+      ['iceRes', 'Бонус лед. сопр.', 'pct'],
+      ['elecRes', 'Бонус элек. сопр.', 'pct'],
+      ['windRes', 'Бонус ветр. сопр.', 'pct'],
+      ['quantRes', 'Бонус квант. сопр.', 'pct'],
+      ['imagRes', 'Бонус мним. сопр.', 'pct']
+    ]]
+  ];
+  const CHAR_STAT_HELP = {
+    spd: 'Определяет интервал между ходами персонажа. Чем выше скорость, тем чаще персонаж ходит в бою.',
+    breakE: 'Увеличивает урон пробития уязвимости, периодический урон от пробития и задержку действия врагов.',
+    energy: 'Объём энергии, необходимый для активации сверхспособности. Восстанавливается в бою от умений, попаданий и побед над врагами.',
+    err: 'Повышает количество энергии, получаемой от атак, навыков и других источников восстановления (кроме эффектов с фиксированным числом единиц энергии).',
+    ehr: 'Повышает вероятность наложения ослаблений и периодического урона на противников.',
+    res: 'Снижает вероятность получения ослаблений, периодического урона и эффектов контроля от врагов.',
+    elation: 'Увеличивает урон и силу эффектов умений Пути Радости и срабатываний Веселья.'
+  };
+  const CHAR_HELP_KEYS = ['spd', 'breakE', 'energy', 'err', 'ehr', 'res', 'elation'];
   const SECTIONS = [
     { id: 'details', label: 'Детали', icon: 'chars' },
     { id: 'traces', label: 'Следы', icon: 'traces' },
@@ -26,6 +71,13 @@
     { id: 'key', label: 'Ключевые', icon: 'mission' },
     { id: 'cones', label: 'Конусы', icon: 'cones' },
     { id: 'relics', label: 'Реликвии', icon: 'relic' }
+  ];
+  const BANK_TABS = [
+    { id: 'foes', label: 'Враги', icon: 'foes' },
+    { id: 'fusions', label: 'Слияния', icon: 'fusions' },
+    { id: 'rumors', label: 'Слухи', icon: 'chat' },
+    { id: 'warps', label: 'Прыжки', icon: 'warp' },
+    { id: 'story', label: 'Сюжет', icon: 'archive' }
   ];
   const TARGET_NAME = { single: 'одна цель', blast: 'цель и соседи', all: 'все враги', bounce: 'отскоки', ally: 'союзник', allies: 'все союзники', self: 'на себя' };
   const TAG_NAME = { joke: 'шутка', cute: 'милота', threat: 'угроза', science: 'наука', kind: 'доброта', sing: 'музыка', bribe: 'выгода', silent: 'молчание', weird: 'странное' };
@@ -80,34 +132,36 @@
     if (e.kind === 'char') { c.fillStyle = G.RARITY[e.rar]; c.fillRect(x - 1, y - 1, size + 2, size + 2); G.drawPortrait(c, G.lookOf(e.id, g), x, y, size); }
     else G.drawConeCard(c, e.id, x + Math.round(size * 0.15), y, Math.round(size * 0.72), size, { info: false });
   };
-  let spaceCache = null;
+  const spaceCache = new Map();
 
-  function spaceCanvas() {
-    if (spaceCache) return spaceCache;
-    const cv = G.mkCanvas(W, HGT), g = cv.getContext('2d');
+  function spaceCanvas(vw) {
+    const w = vw || W;
+    if (spaceCache.has(w)) return spaceCache.get(w);
+    const cv = G.mkCanvas(w, HGT), g = cv.getContext('2d');
     const gr = g.createLinearGradient(0, 0, 0, HGT);
     gr.addColorStop(0, '#060820'); gr.addColorStop(0.5, '#171a48'); gr.addColorStop(1, '#2e2a66');
-    g.fillStyle = gr; g.fillRect(0, 0, W, HGT);
+    g.fillStyle = gr; g.fillRect(0, 0, w, HGT);
     for (let i = 0; i < 5; i++) {
-      const x = G.hash(i, 1, 4) * W, y = G.hash(i, 2, 4) * HGT * 0.7, r = 60 + G.hash(i, 3, 4) * 120;
+      const x = G.hash(i, 1, 4) * w, y = G.hash(i, 2, 4) * HGT * 0.7, r = 60 + G.hash(i, 3, 4) * 120;
       const n = g.createRadialGradient(x, y, 0, x, y, r);
       n.addColorStop(0, i % 2 ? 'rgba(120,90,220,0.22)' : 'rgba(80,130,230,0.18)'); n.addColorStop(1, 'rgba(0,0,0,0)');
       g.fillStyle = n; g.fillRect(x - r, y - r, r * 2, r * 2);
     }
-    for (let i = 0; i < 300; i++) { g.fillStyle = 'rgba(255,255,255,' + (0.2 + 0.8 * G.hash(i, 5, 5)) + ')'; g.fillRect(Math.floor(G.hash(i, 6, 6) * W), Math.floor(G.hash(6, i, 7) * HGT), G.hash(i, 7, 8) > 0.96 ? 2 : 1, 1); }
-    spaceCache = cv;
+    for (let i = 0; i < 300; i++) { g.fillStyle = 'rgba(255,255,255,' + (0.2 + 0.8 * G.hash(i, 5, 5)) + ')'; g.fillRect(Math.floor(G.hash(i, 6, 6) * w), Math.floor(G.hash(6, i, 7) * HGT), G.hash(i, 7, 8) > 0.96 ? 2 : 1, 1); }
+    spaceCache.set(w, cv);
     return cv;
   }
 
   Object.assign(H.UI.prototype, {
     fullBg(c, floor) {
-      c.drawImage(spaceCanvas(), 0, 0);
+      const lx = this.left, vw = this.vw;
+      c.drawImage(spaceCanvas(vw), lx, 0);
       if (floor) {
         const fy = floor === true ? 380 : floor;
         const gr = c.createLinearGradient(0, fy - 30, 0, HGT);
         gr.addColorStop(0, 'rgba(60,60,130,0)'); gr.addColorStop(0.3, 'rgba(90,90,160,0.55)'); gr.addColorStop(1, 'rgba(40,40,90,0.9)');
-        c.fillStyle = gr; c.fillRect(0, fy - 30, W, HGT - fy + 30);
-        c.fillStyle = 'rgba(210,220,255,0.55)'; c.fillRect(0, fy - 1, W, 1);
+        c.fillStyle = gr; c.fillRect(lx, fy - 30, vw, HGT - fy + 30);
+        c.fillStyle = 'rgba(210,220,255,0.55)'; c.fillRect(lx, fy - 1, vw, 1);
       }
     },
 
@@ -175,11 +229,11 @@
         { label: 'Команда', icon: 'team', disabled: !!g.state.su, why: 'вне Виртуальной вселенной', fn: () => ui.openTeam() },
         { label: 'Инвентарь', icon: 'bag', fn: () => ui.openInventory(0) },
         { label: 'Прыжок', icon: 'warp', disabled: !g.state.flags.express_intro, why: 'после знакомства с Экспрессом', fn: () => ui.openWarp(null) },
-        { label: 'Архив', icon: 'archive', fn: () => ui.openBank(null) },
+        { label: 'База данных', sub: 'и книги', icon: 'archive', fn: () => ui.openBank(null) },
         { label: 'Миссии', icon: 'mission', alert: 'missions', fn: () => ui.openMission() },
         g.state.su ? { label: 'Погружение', icon: 'nav', fn: () => ui.openSuRun() } : { label: 'Навигация', icon: 'nav', fn: () => ui.openNav(null) },
         { label: 'Путеводитель', icon: 'ipg', alert: 'guide', disabled: !g.state.flags.express_intro, why: 'после знакомства с Экспрессом', fn: () => ui.openIpg() },
-        { label: 'Синтез', icon: 'synth', fn: () => ui.openSynth() },
+        { label: 'Синтез', sub: 'и разборка', icon: 'synth', fn: () => ui.openSynth() },
         { label: 'События', icon: 'events', disabled: !g.eventsOpen(), why: 'после станции «Герта»', alert: 'events', fn: () => ui.openEvents() },
         { label: 'Снабжение', icon: 'shop', disabled: !g.state.flags.express_intro, why: 'после знакомства с Экспрессом', fn: () => ui.openSupply() },
         { label: 'Сообщения', icon: 'chat', alert: 'chat', fn: () => ui.openChats(null) }
@@ -191,10 +245,11 @@
       return [
         { label: 'Почта', icon: 'mail', alert: 'mail', fn: () => ui.openMail() },
         { label: 'Друзья', icon: 'friends', alert: 'friends', disabled: !g.state.flags.express_intro, why: 'после знакомства с Экспрессом', fn: () => ui.openFriends(0) },
+        { label: 'Обучение', icon: 'guide', alert: 'tutorial', fn: () => ui.openTutorial() },
         { label: 'Настройки', icon: 'settings', fn: () => ui.openSettings() },
         { label: 'Сохранить', icon: 'save', disabled: !!g.state.su || !near(), why: g.state.su ? 'вне Виртуальной вселенной: каждая зона сохраняется сама' : 'у якоря пространства или в городе', fn: () => ui.openSaves('save') },
         { label: 'Загрузить', icon: 'load', fn: () => ui.openSaves('load') },
-        { label: 'Управление', icon: 'guide', fn: () => ui.openGuide() },
+        { label: 'Управление', icon: 'gamepad', fn: () => ui.openGuide() },
         { label: 'В титры', icon: 'exit', fn: () => ui.confirmTitle() }
       ];
     },
@@ -227,8 +282,9 @@
         c.fillStyle = bg; c.fillRect(x + 1, y + 1, tw - 2, th - 2);
         c.fillStyle = 'rgba(255,255,255,0.08)'; c.fillRect(x + 1, y + 1, tw - 2, 1);
         if (on) { c.strokeStyle = C.brassHi; c.lineWidth = 2; c.strokeRect(x + 1, y + 1, tw - 2, th - 2); c.lineWidth = 1; }
-        G.menuIcon(c, t.icon, x + tw / 2 - 14, y + 6, 28, t.disabled ? '#4c5070' : on ? '#fff0c0' : '#d8dcf0');
-        ui.text(t.label, x + tw / 2, y + 40, { align: 'center', size: t.label.length > 10 ? 10 : 11, bold: on, col: t.disabled ? C.dim : on ? C.gold : C.cream });
+        G.menuIcon(c, t.icon, x + tw / 2 - 14, y + (t.sub ? 4 : 6), 28, t.disabled ? '#4c5070' : on ? '#fff0c0' : '#d8dcf0');
+        ui.text(t.label, x + tw / 2, y + (t.sub ? 34 : 40), { align: 'center', size: t.label.length > 10 ? 10 : 11, bold: on, col: t.disabled ? C.dim : on ? C.gold : C.cream });
+        if (t.sub) ui.text(t.sub, x + tw / 2, y + 46, { align: 'center', size: 8, col: t.disabled ? C.dim : on ? C.gold : C.sub });
         if (t.alert && al[t.alert]) ui.badge(x + tw - 9, y + 9);
         ui.hit(x, y, tw, th, () => { scr.rail = -1; scr.sel = i; scr.key('ok'); });
       });
@@ -238,14 +294,14 @@
       c.fillStyle = C.brassDk; c.fillRect(rx + 8, dy + 44, rw - 16, 1);
       ui.diamond(rx + rw / 2, dy + 44.5, 3, C.brass, '#1a1208');
       R.forEach((t, i) => {
-        const x = rx + 4, y = dy + 56 + i * 44, cw = rw - 8, ch = 38, on = scr.rail === i;
+        const x = rx + 4, y = dy + 54 + i * 40, cw = rw - 8, ch = 35, on = scr.rail === i;
         c.fillStyle = on ? 'rgba(242,220,154,0.2)' : 'rgba(255,255,255,0.04)'; c.fillRect(x, y, cw, ch);
         if (on) { c.strokeStyle = C.brassHi; c.lineWidth = 2; c.strokeRect(x + 1, y + 1, cw - 2, ch - 2); c.lineWidth = 1; }
-        G.menuIcon(c, t.icon, x + (cw - 24) / 2, y + 7, 24, t.disabled ? '#4c5070' : on ? '#fff0c0' : '#d8dcf0');
+        G.menuIcon(c, t.icon, x + (cw - 24) / 2, y + 5.5, 24, t.disabled ? '#4c5070' : on ? '#fff0c0' : '#d8dcf0');
         if (t.alert && al[t.alert]) ui.badge(x + cw - 4, y + 5);
         ui.hit(x, y, cw, ch, () => { if (scr.rail < 0) scr.toRail(scr.sel); scr.rail = scr.railSel = i; scr.key('ok'); });
       });
-      const ry = dy + 56 + R.length * 44 + 14;
+      const ry = dy + 54 + R.length * 40 + 10;
       for (let y = ry + 2; y < dy + dh - 16; y += 7) { c.fillStyle = 'rgba(106,83,40,0.35)'; c.fillRect(rx + rw / 2 - 6, y, 12, 2); }
       c.fillStyle = 'rgba(201,164,92,0.3)'; c.fillRect(rx + rw / 2 - 4, ry, 1, dy + dh - 14 - ry); c.fillRect(rx + rw / 2 + 3, ry, 1, dy + dh - 14 - ry);
       const fy = dy + dh - 44;
@@ -256,7 +312,7 @@
       ui.powerChip(mx, fy + 4);
       const cur = scr.rail < 0 ? list[scr.sel] : null, rcur = scr.rail >= 0 ? R[scr.rail] : null;
       const unread = g.mailbox().filter(x => g.mailNew(x)).length;
-      const railNote = { friends: 'Друзья: список, запросы и приглашения', mail: 'Почта: ' + (unread ? 'новых писем ' + unread : 'новых писем нет'), settings: 'Настройки: звук, скорость, разрешение', save: 'Сохранить: карта памяти, слоты 1-3', load: 'Загрузить: слоты и автосохранение', guide: 'Управление: клавиши поля, боя и карты', exit: 'В титры: выйти в главное меню' };
+      const railNote = { friends: 'Друзья: список, запросы и приглашения', mail: 'Почта: ' + (unread ? 'новых писем ' + unread : 'новых писем нет'), guide: 'Обучение: справочник механик и тактическая тренировка', settings: 'Настройки: звук, скорость, разрешение', save: 'Сохранить: карта памяти, слоты 1-3', load: 'Загрузить: слоты и автосохранение', gamepad: 'Управление: клавиши поля, боя и карты', exit: 'В титры: выйти в главное меню' };
       const off = (rcur || cur || {}).disabled;
       const note = off ? 'Доступно ' + (rcur || cur).why : rcur ? railNote[rcur.icon] : 'F7: +' + T.debugJade + ' нефрита (отладка)';
       ui.text(note, dx + dw / 2, fy + 21, { align: 'center', size: 9, col: off ? C.bad : rcur ? C.cream : C.dim });
@@ -333,7 +389,7 @@
         ['Диалог', [['Enter', 'дальше'], ['Tab', 'пропустить сцену']], 0],
         ['Карта', [['↑↓', 'зона'], ['←→', 'метка'], ['Enter', 'карточка и телепорт'], ['Q E', 'масштаб'], ['Tab', 'Звёздный путь']], 1],
         ['Испытание', [['↑↓ ←→', 'сложность, количество'], ['Q', 'быстрое получение'], ['T R', 'резерв энергии, ещё раз']], 0],
-        ['Синтез', [['Q E', 'вкладка'], ['A D', 'количество'], ['F R', 'фильтр, автодобавление, смола']], 0],
+        ['Синтез и Разборка', [['Q E', 'раздел'], ['A D', 'количество'], ['F R X', 'фильтр, авто, разборка']], 0],
         ['Отладка', [['F7', '+' + T.debugJade + ' звёздного нефрита'], ['F8', 'меню выдачи']], 0]
       ];
       const growth = [
@@ -352,7 +408,7 @@
         draw(c) {
           ui.win(60, 18, 520, 434, { title: 'Управление' });
           ui.closeBtn(60 + 520 - 30, 18 + 8, () => ui.pop());
-          G.menuIcon(c, 'guide', 76, 36, 32);
+          G.menuIcon(c, 'gamepad', 76, 36, 32);
           const col = { 0: [120, 40], 1: [350, 40] };
           pages[this.page].forEach(([head, list, side]) => {
             const at = col[side];
@@ -373,7 +429,7 @@
     },
 
     statValue(st, key, r, kit) {
-      if (key === 'hp') return (r.hp == null ? st.hp : r.hp) + '/' + st.hp;
+      if (key === 'hp') return r && r.hp != null && r.hp < st.hp ? r.hp + '/' + st.hp : String(st.hp);
       if (key === 'err') return Math.round(r.energy || 0) + '/' + kit.energy;
       if (key === 'critR' || key === 'critD' || key === 'breakE' || key === 'elation') return pct(st[key] || 0);
       return String(st[key]);
@@ -382,14 +438,14 @@
     openChars(startKey) {
       const ui = this, g = this.game;
       this.push({
-        full: true, trSel: 'skill', trFocus: false, k: startKey || ui.rosterKeys()[0], sec: 0, slot: 0, slotFocus: false, star: 0, starFocus: false, asm: null, asmK: null, infoPage: 0, infoFocus: false, infoSc: { top: 0 }, infoFor: null, skillSc: { top: 0 }, skillFor: null, outfitPick: 0, outfitFocus: false, outfitFor: null,
-        switchChar(d) { const list = ui.rosterKeys(), i = list.indexOf(this.k); this.k = list[(i + d + list.length) % list.length]; ui.sfx('select'); },
+        full: true, trSel: 'skill', trFocus: false, k: startKey || ui.rosterKeys()[0], sec: 0, slot: 0, slotFocus: false, star: 0, starFocus: false, asm: null, asmK: null, infoPage: 0, infoFocus: false, infoSc: { top: 0 }, infoFor: null, skillSc: { top: 0 }, skillFor: null, skillFocus: false, skillNode: 'basic', skillSub: 0, skillBrief: false, skillLvPreview: null, skillKitOverride: null, skillDetailSc: { top: 0 }, skillDetailFor: null, outfitPick: 0, outfitFocus: false, outfitFor: null,
+        switchChar(d) { const list = ui.rosterKeys(), i = list.indexOf(this.k); this.k = list[(i + d + list.length) % list.length]; this.skillKitOverride = null; this.skillLvPreview = null; ui.sfx('select'); },
         tick(dt) {
           if (H.Eidolons) H.Eidolons.tickAsm(this, dt, ui, g);
           if (this.rPos != null) { this.rPos += (this.rTop - this.rPos) * Math.min(1, dt * 14); if (Math.abs(this.rTop - this.rPos) < 0.01) this.rPos = this.rTop; }
         },
         followStrip(list) {
-          const ci = list.indexOf(this.k), V = STRIP.vis;
+          const ci = list.indexOf(this.k), V = ui.wide && ui.wide() ? 10 : STRIP.vis;
           if (this.rFor !== this.k) {
             if (this.rTop == null) this.rTop = ci - Math.floor(V / 2);
             else if (ci < this.rTop + 1) this.rTop = ci - 1;
@@ -405,9 +461,9 @@
           if (to !== this.rTop) { this.rTop = to; ui.sfx('select'); }
         },
         drawStrip(c, s, k) {
-          const list = ui.rosterKeys(), n = list.length, P = STRIP.pitch, scroll = n > STRIP.vis, vw = Math.min(n, STRIP.vis) * P;
+          const list = ui.rosterKeys(), n = list.length, P = STRIP.pitch, V = ui.wide && ui.wide() ? 10 : STRIP.vis, scroll = n > V, vw = Math.min(n, V) * P;
           this.followStrip(list);
-          const x0 = scroll ? STRIP.x : Math.round(STRIP.x + (STRIP.vis * P - vw) / 2), off = scroll ? this.rPos : 0, slotX = i => x0 + (i - off) * P;
+          const x0 = ui.wide && ui.wide() ? Math.round(W / 2 - vw / 2) : scroll ? STRIP.x : Math.round(STRIP.x + (V * P - vw) / 2), off = scroll ? this.rPos : 0, slotX = i => x0 + (i - off) * P;
           c.save(); c.beginPath(); c.rect(x0 - 4, 0, vw + 8, 54); c.clip();
           list.forEach((kk, i) => {
             const x = slotX(i);
@@ -422,7 +478,7 @@
           list.forEach((kk, i) => { if (g.isFav(kk)) ui.favStar(c, slotX(i) + 6, 12, 5, true); });
           list.forEach((kk, i) => { if (ui.guideTargetMark && kk === (g.guideTarget && g.guideTarget())) ui.guideTargetMark(c, slotX(i) + P - 7, 40); });
           c.restore();
-          list.forEach((kk, i) => { const x = slotX(i); if (x > x0 - P / 2 && x < x0 + vw - P / 2) ui.hit(x, 4, P, 46, () => { this.k = kk; ui.sfx('select'); }); });
+          list.forEach((kk, i) => { const x = slotX(i); if (x > x0 - P / 2 && x < x0 + vw - P / 2) ui.hit(x, 4, P, 46, () => { this.k = kk; this.skillKitOverride = null; this.skillLvPreview = null; ui.sfx('select'); }); });
           let qx = x0 - 22, ex = x0 + vw + 6;
           if (scroll) {
             const left = this.rTop, right = this.rMax - this.rTop;
@@ -435,81 +491,87 @@
           ui.keycap(ex, 18, 'E'); ui.hit(ex - 2, 14, 18, 22, () => this.switchChar(1));
         },
         stripArrow(c, x, dir, hidden) {
-          const cx = x + 7, on = hidden > 0;
+          const cx = x + 7, on = hidden > 0, V = ui.wide && ui.wide() ? 10 : STRIP.vis;
           c.fillStyle = on ? C.brassHi : 'rgba(154,166,208,0.3)';
           c.beginPath(); c.moveTo(cx - 4 * dir, 18); c.lineTo(cx + 4 * dir, 25); c.lineTo(cx - 4 * dir, 32); c.closePath(); c.fill();
           if (on) { c.strokeStyle = '#1a1208'; c.lineWidth = 1; c.stroke(); ui.text('+' + hidden, cx, 36, { align: 'center', size: 9, bold: true, col: C.cream }); }
-          ui.hit(x - 2, 4, 18, 46, () => this.scrollStrip(dir * (STRIP.vis - 1)));
+          ui.hit(x - 2, 4, 18, 46, () => this.scrollStrip(dir * (V - 1)));
         },
         draw(c) {
-          const s = g.state, k = this.k, r = s.roster[k], kitId = g.kitOf(k), kit = H.CHARS[kitId], st = g.charStats(k), look = G.lookOf(kitId, g);
-          const secId = SECTIONS[this.sec].id, E = H.Eidolons, pic = secId === 'eidolons' && E && E.has(k);
+          const s = g.state, k = this.k, r = s.roster[k], secId = SECTIONS[this.sec].id, kitId = (secId === 'skills' && this.skillFocus && this.skillKitOverride) || g.kitOf(k), kit = H.CHARS[kitId], st = g.charStats(k), look = G.lookOf(kitId, g);
+          const E = H.Eidolons, pic = secId === 'eidolons' && E && E.has(k), lx = ui.left + 12;
           let EV = null;
           if (E && this.asm && !pic) E.skipAsm(this, g);
           if (pic) {
+            if (ui.wide && ui.wide()) ui.fullBg(c, false);
             E.syncAsm(this, g, k);
             const cur = this.asm && (this.asm.current('fly') || this.asm.current('snap'));
             if (cur) this.star = cur.n - 1;
             EV = E.backdrop(ui, c, k, r.eid, { asm: this.asm, sel: this.star, focus: this.starFocus });
-            E.shade(c);
+            E.shade(c, false, ui);
           }
           else ui.fullBg(c, 392);
           const splash = secId === 'traces' && G.drawSplash(c, kitId, s.gender, 306, 0, 520, 0.9);
-          ui.plate(12, 10, 'Персонажи');
-          G.pathIcon(c, kit.path, 16, 34, 14);
-          ui.text(H.PATHS[kit.path].name + ' / ' + (k === 'trail' ? s.name : kit.name.length > 18 && kit.short ? kit.short : kit.name), 34, 35, { size: 12, bold: true, col: C.cream });
+          ui.plate(lx, 10, 'Персонажи');
+          G.pathIcon(c, kit.path, lx + 4, 34, 14);
+          ui.text(H.PATHS[kit.path].name + ' / ' + (k === 'trail' ? s.name : kit.name.length > 18 && kit.short ? kit.short : kit.name), lx + 22, 35, { size: 12, bold: true, col: C.cream });
           this.drawStrip(c, s, k);
-          ui.closeBtn(W - 32, 10, () => ui.pop());
-          SECTIONS.forEach((sec, i) => {
-            const y = 80 + i * SEC_STEP, on = i === this.sec;
-            if (on) { const gr = c.createLinearGradient(12, 0, 180, 0); gr.addColorStop(0, 'rgba(242,220,154,0.3)'); gr.addColorStop(1, 'rgba(242,220,154,0)'); c.fillStyle = gr; c.fillRect(12, y - 4, 170, 34); c.fillStyle = C.brassHi; c.fillRect(12, y - 4, 2, 34); }
-            c.fillStyle = on ? 'rgba(242,220,154,0.25)' : 'rgba(10,12,40,0.6)'; c.beginPath(); c.arc(34, y + 13, 15, 0, Math.PI * 2); c.fill();
-            c.strokeStyle = on ? C.brassHi : 'rgba(154,166,208,0.5)'; c.stroke();
-            G.menuIcon(c, sec.icon, 24, y + 3, 20, on ? '#fff0c0' : '#c8cce4');
-            ui.text(sec.label, 56, y + 6, { size: 13, bold: on, serif: on, col: on ? C.gold : C.cream });
-            if (sec.id === 'eidolons' && g.eidNew(k) > 0) ui.badge(56 + ui.measure(sec.label, 13, on, on) + 10, y + 6);
-            ui.hit(12, y - 4, 170, 34, () => { this.sec = i; this.slotFocus = false; this.starFocus = false; this.infoFocus = false; this.outfitFocus = false; this.trFocus = false; ui.sfx('select'); });
-          });
-          this.drawFav(c, k);
-          this.drawListBtn(c);
-          if (!splash) ui.platform(c, 306, 440, 108);
-          if (secId === 'eidolons') this.drawEidolons(c, EV ? EV.shown : r.eid);
-          if (EV) { E.figure(c, look, 306, 444, 3, ui.t, EV.lifeK, k); E.aura(c, E.sceneOf(E.keyOf(k, g)).aura, 306, 444, ui.t, EV.lifeK); }
-          else if (!splash) G.drawFigure(c, secId === 'outfits' ? ui.outfitPreview(this, k) : look, 306, 444, 3);
-          if (secId === 'traces') ui.drawTraces(this, c, k);
-          if (secId === 'relics') this.drawRelicSlots(c, k);
-          const wide = secId === 'info' || secId === 'skills', px = wide ? 388 : 440, py = 58, pw = wide ? 244 : 192, ph = 414;
-          ui.win(px, py, pw, ph, { alpha: 0.9 });
-          if (secId === 'details') this.panelDetails(c, px, py, pw, k, r, kit, st, look);
-          if (secId === 'traces') ui.panelTraces(this, c, px, py, pw, ph, k);
-          if (secId === 'relics') this.panelRelic(c, px, py, pw, k, r);
-          if (secId === 'skills') this.panelSkills(c, px, py, pw, ph, kitId, kit);
-          if (secId === 'eidolons') this.panelEidolons(c, px, py, pw, r, kitId, kit, EV);
-          if (secId === 'info') this.panelInfo(c, px, py, pw, ph, k, kit);
-          if (secId === 'outfits') ui.panelOutfits(this, c, px, py, pw, ph, k);
-          const hint = secId === 'relics' ? (this.slotFocus ? [['←↑↓→', 'Слот'], ['Enter', 'Сменить'], ['Del', 'Снять'], ['A', 'Авто'], ['Esc', 'Назад']] : [['Enter', 'К слотам'], ['A', 'Авто-реликвии']]) : secId === 'traces' ? ui.traceHints(this) : secId === 'details' ? [['Enter', 'Действия'], ['U', 'Повысить уровень']] : secId === 'eidolons' ? (this.asm ? [['Enter', 'Пропустить сборку']] : this.starFocus ? [['←↑↓→', 'Эйдолон'], ['V', 'Картина'], ['Esc', 'Назад']] : [['Enter', 'К созвездию'], ['V', 'Картина']]) : secId === 'info' ? (this.infoFocus ? [['←→', 'Вкладка'], ['↑↓', 'Прокрутка'], ['Esc', 'Назад']] : [['Enter', 'Читать']]) : secId === 'outfits' ? ui.outfitHints(this, k) : [];
-          const deep = (secId === 'eidolons' && this.starFocus) || (secId === 'info' && this.infoFocus) || (secId === 'outfits' && this.outfitFocus) || (secId === 'traces' && this.trFocus);
-          ui.hints((deep ? [['Q/E', 'Персонаж']] : [['Q/E', 'Персонаж'], ['↑↓', 'Раздел']]).concat(hint), 12, HGT - 18);
-          if (this.asm) ui.hit(0, 0, W, HGT, () => E.skipAsm(this, g));
+          ui.closeBtn(ui.right - 32, 10, () => ui.pop());
+          if (secId === 'skills' && this.skillFocus && ui.drawSkillsDetail) {
+            G.drawFigure(c, look, lx + 18, 444, 3);
+            ui.drawSkillsDetail(this, c, k);
+          } else {
+            SECTIONS.forEach((sec, i) => {
+              const y = 80 + i * SEC_STEP, on = i === this.sec;
+              if (on) { const gr = c.createLinearGradient(lx, 0, lx + 168, 0); gr.addColorStop(0, 'rgba(242,220,154,0.3)'); gr.addColorStop(1, 'rgba(242,220,154,0)'); c.fillStyle = gr; c.fillRect(lx, y - 4, 170, 34); c.fillStyle = C.brassHi; c.fillRect(lx, y - 4, 2, 34); }
+              c.fillStyle = on ? 'rgba(242,220,154,0.25)' : 'rgba(10,12,40,0.6)'; c.beginPath(); c.arc(lx + 22, y + 13, 15, 0, Math.PI * 2); c.fill();
+              c.strokeStyle = on ? C.brassHi : 'rgba(154,166,208,0.5)'; c.stroke();
+              G.menuIcon(c, sec.icon, lx + 12, y + 3, 20, on ? '#fff0c0' : '#c8cce4');
+              ui.text(sec.label, lx + 44, y + 6, { size: 13, bold: on, serif: on, col: on ? C.gold : C.cream });
+              if (sec.id === 'eidolons' && g.eidNew(k) > 0) ui.badge(lx + 44 + ui.measure(sec.label, 13, on, on) + 10, y + 6);
+              ui.hit(lx, y - 4, 170, 34, () => { this.sec = i; this.slotFocus = false; this.starFocus = false; this.infoFocus = false; this.skillFocus = false; this.outfitFocus = false; this.trFocus = false; ui.sfx('select'); });
+            });
+            this.drawFav(c, k);
+            this.drawListBtn(c);
+            if (!splash) ui.platform(c, 306, 440, 108);
+            if (secId === 'eidolons') this.drawEidolons(c, EV ? EV.shown : r.eid);
+            if (EV) { E.figure(c, look, 306, 444, 3, ui.t, EV.lifeK, k); E.aura(c, E.sceneOf(E.keyOf(k, g)).aura, 306, 444, ui.t, EV.lifeK); }
+            else if (!splash) G.drawFigure(c, secId === 'outfits' ? ui.outfitPreview(this, k) : look, 306, 444, 3);
+            if (secId === 'traces') ui.drawTraces(this, c, k);
+            if (secId === 'relics') this.drawRelicSlots(c, k);
+            const wide = secId === 'info' || secId === 'skills', pw = wide ? 244 : 192, px = ui.right - 8 - pw, py = 58, ph = 414;
+            ui.win(px, py, pw, ph, { alpha: 0.9 });
+            if (secId === 'details') this.panelDetails(c, px, py, pw, k, r, kit, st, look);
+            if (secId === 'traces') ui.panelTraces(this, c, px, py, pw, ph, k);
+            if (secId === 'relics') this.panelRelic(c, px, py, pw, k, r);
+            if (secId === 'skills') this.panelSkills(c, px, py, pw, ph, kitId, kit);
+            if (secId === 'eidolons') this.panelEidolons(c, px, py, pw, r, kitId, kit, EV);
+            if (secId === 'info') this.panelInfo(c, px, py, pw, ph, k, kit);
+            if (secId === 'outfits') ui.panelOutfits(this, c, px, py, pw, ph, k);
+          }
+          const hint = secId === 'relics' ? (this.slotFocus ? [['←↑↓→', 'Слот'], ['Enter', 'Сменить'], ['Del', 'Снять'], ['A', 'Авто'], ['Esc', 'Назад']] : [['Enter', 'К слотам'], ['A', 'Авто-реликвии']]) : secId === 'traces' ? ui.traceHints(this) : secId === 'details' ? [['Enter', 'Действия'], ['D', 'Подробнее'], ['U', 'Повысить уровень']] : secId === 'eidolons' ? (this.asm ? [['Enter', 'Пропустить сборку']] : this.starFocus ? [['←↑↓→', 'Эйдолон'], ['V', 'Картина'], ['Esc', 'Назад']] : [['Enter', 'К созвездию'], ['V', 'Картина']]) : secId === 'info' ? (this.infoFocus ? [['←→', 'Вкладка'], ['↑↓', 'Прокрутка'], ['Esc', 'Назад']] : [['Enter', 'Читать']]) : secId === 'skills' ? (ui.skillHints ? ui.skillHints(this, k) : [['Enter', 'Подробнее']]) : secId === 'outfits' ? ui.outfitHints(this, k) : [];
+          const deep = (secId === 'eidolons' && this.starFocus) || (secId === 'info' && this.infoFocus) || (secId === 'skills' && this.skillFocus) || (secId === 'outfits' && this.outfitFocus) || (secId === 'traces' && this.trFocus);
+          ui.hints((deep ? [['Q/E', 'Персонаж']] : [['Q/E', 'Персонаж'], ['↑↓', 'Раздел']]).concat(hint), lx, HGT - 18);
+          if (this.asm) ui.hit(ui.left, 0, ui.vw, HGT, () => E.skipAsm(this, g));
         },
         drawFav(c, k) {
-          const on = g.isFav(k), y = FAV_Y, label = on ? 'В избранном' : 'В избранное';
-          c.fillStyle = 'rgba(154,166,208,0.3)'; c.fillRect(16, y - 10, 162, 1);
-          c.fillStyle = on ? 'rgba(242,220,154,0.25)' : 'rgba(10,12,40,0.6)'; c.beginPath(); c.arc(34, y + 13, 15, 0, Math.PI * 2); c.fill();
+          const lx = ui.left + 12, on = g.isFav(k), y = FAV_Y, label = on ? 'В избранном' : 'В избранное';
+          c.fillStyle = 'rgba(154,166,208,0.3)'; c.fillRect(lx + 4, y - 10, 162, 1);
+          c.fillStyle = on ? 'rgba(242,220,154,0.25)' : 'rgba(10,12,40,0.6)'; c.beginPath(); c.arc(lx + 22, y + 13, 15, 0, Math.PI * 2); c.fill();
           c.strokeStyle = on ? C.brassHi : 'rgba(154,166,208,0.5)'; c.lineWidth = 1; c.stroke();
-          ui.favStar(c, 34, y + 14, 9, on);
-          ui.text(label, 56, y + 6, { size: 13, col: on ? C.gold : C.cream });
-          ui.keycap(62 + ui.measure(label, 13), y + 7, 'F');
-          ui.hit(12, y - 4, 170, 34, () => this.toggleFav());
+          ui.favStar(c, lx + 22, y + 14, 9, on);
+          ui.text(label, lx + 44, y + 6, { size: 13, col: on ? C.gold : C.cream });
+          ui.keycap(lx + 50 + ui.measure(label, 13), y + 7, 'F');
+          ui.hit(lx, y - 4, 170, 34, () => this.toggleFav());
         },
         drawListBtn(c) {
-          const y = LIST_Y, label = 'Все персонажи';
-          c.fillStyle = 'rgba(10,12,40,0.6)'; c.beginPath(); c.arc(34, y + 13, 15, 0, Math.PI * 2); c.fill();
+          const lx = ui.left + 12, y = LIST_Y, label = 'Все персонажи';
+          c.fillStyle = 'rgba(10,12,40,0.6)'; c.beginPath(); c.arc(lx + 22, y + 13, 15, 0, Math.PI * 2); c.fill();
           c.strokeStyle = 'rgba(154,166,208,0.5)'; c.lineWidth = 1; c.stroke();
-          G.menuIcon(c, 'team', 24, y + 3, 20, '#c8cce4');
-          ui.text(label, 56, y + 6, { size: 13, col: C.cream });
-          ui.keycap(62 + ui.measure(label, 13), y + 7, 'L');
-          ui.hit(12, y - 4, 170, 34, () => ui.openCharList(this));
+          G.menuIcon(c, 'team', lx + 12, y + 3, 20, '#c8cce4');
+          ui.text(label, lx + 44, y + 6, { size: 13, col: C.cream });
+          ui.keycap(lx + 50 + ui.measure(label, 13), y + 7, 'L');
+          ui.hit(lx, y - 4, 170, 34, () => ui.openCharList(this));
         },
         toggleFav() {
           const on = g.toggleFav(this.k);
@@ -530,13 +592,14 @@
           ui.ascGems(c, px + 22 + lvlW + ui.measure('/' + H.ascCap(asc), 11), py + 83, asc, { r: 3.5, step: 9 });
           ui.text(r.exp + '/' + H.expToNext(r.lvl), px + pw - 12, py + 89, { size: 9, align: 'right', col: C.sub });
           ui.rail(px + 12, py + 100, pw - 24, r.exp / H.expToNext(r.lvl));
-          (kit.path === 'elation' ? STAT_ROWS.map(x => x[0] === 'breakE' ? ['elation', 'Радость'] : x) : STAT_ROWS).forEach(([key, name], i) => {
+          STAT_ROWS.forEach(([key, name], i) => {
             const y = py + 112 + i * 19;
             if (i % 2 === 0) { c.fillStyle = 'rgba(255,255,255,0.04)'; c.fillRect(px + 8, y - 2, pw - 16, 19); }
             G.statIcon(c, key, px + 12, y + 1, 12, '#c8d0f0');
             ui.text(name, px + 30, y, { size: 11, col: C.sub });
             ui.text(ui.statValue(st, key, r, kit), px + pw - 12, y, { size: 12, bold: true, align: 'right' });
           });
+          ui.button(px + 12, py + 234, pw - 24, 22, 'Подробнее', () => ui.openCharStats(k), { size: 11 });
           const cone = r.cone ? s.inv.cones.find(x => x.uid === r.cone) : null;
           const cy = py + 272;
           c.fillStyle = 'rgba(242,220,154,0.35)'; c.fillRect(px + 10, cy - 6, pw - 20, 1);
@@ -570,12 +633,13 @@
               { label: 'Сделать лидером', disabled: !inParty || s.party[0] === k, fn: () => { s.party = [k, ...s.party.filter(x => x !== k)]; ui.sfx('confirm'); } },
               { label: 'Сменить конус', fn: () => ui.openConePick(k) },
               { label: 'Повысить уровень', disabled: !!s.roster[k].guest, fn: () => ui.openLevelUp(k) },
-              { label: 'Авто-реликвии', fn: () => { g.autoEquip(k); ui.sfx('confirm'); ui.toast('Реликвии подобраны автоматически.'); } }
+              { label: 'Авто-реликвии', fn: () => { g.autoEquip(k); ui.sfx('confirm'); ui.toast('Реликвии подобраны автоматически.'); } },
+              { label: 'Характеристики', fn: () => ui.openCharStats(k) }
             ];
           };
           ui.push({
             draw() {
-              const a = acts(), x = 440, y = 250;
+              const a = acts(), x = ui.right - 200, y = 250;
               ui.win(x, y, 192, 32 + a.length * 24, { title: 'Действия' });
               ui.list(x + 6, y + 16, 180, a.map(it => ({ label: it.label, disabled: it.disabled })), this.sel, { rowH: 24, size: 11, onClick: i => { this.sel = i; this.key('ok'); } });
             },
@@ -637,7 +701,7 @@
         },
         panelSkills(c, px, py, pw, ph, kitId, kit) {
           ui.text('Способности', px + 12, py + 12, { size: 14, bold: true, serif: true, col: C.gold });
-          const view = { x: px + 12, y: py + 34, w: pw - 24, h: ph - 44 };
+          const view = { x: px + 12, y: py + 34, w: pw - 24, h: ph - 76 };
           let rows = this.skillRows(kitId, kit, view.x, view.w);
           if (rows.reduce((a, r) => a + r.h, 0) > view.h) { view.w -= SCROLL_GAP; rows = this.skillRows(kitId, kit, view.x, view.w); }
           const sc = this.skillSc, n = Math.ceil(rows.reduce((a, r) => a + r.h, 0) / INFO_ROW), vis = Math.floor(view.h / INFO_ROW);
@@ -647,19 +711,26 @@
           ui.wheelZone(px, view.y, pw, view.h, d => { sc.top += d * 2; });
           c.save(); c.beginPath(); c.rect(view.x - 4, view.y, view.w + 8, view.h); c.clip();
           let y = view.y - sc.top * INFO_ROW;
-          for (const r of rows) { if (y + r.h > view.y && y < view.y + view.h) r.draw(y); y += r.h; }
+          for (const r of rows) {
+            if (y + r.h > view.y && y < view.y + view.h) {
+              r.draw(y);
+              if (r.node && y >= view.y && y + r.h <= view.y + view.h && ui.openSkillFocus) ui.hit(view.x - 2, y, view.w + 4, r.h, () => ui.openSkillFocus(this, r.node, r.sub || 0));
+            }
+            y += r.h;
+          }
           c.restore();
+          ui.button(px + 12, py + ph - 38, pw - 24, 24, 'Подробнее · Enter', () => { if (ui.openSkillFocus) ui.openSkillFocus(this); }, { size: 11, bold: true, active: true });
         },
         skillRows(kitId, kit, x, w) {
           const rows = [];
           const lvOf = id => (H.TRACES && H.TRACES[kitId] && g.state.roster[this.k] ? { lv: g.traceLevel(this.k, id), up: g.traceNode(this.k, id).up || 0 } : null);
-          const lvTag = (id, yy) => { const L = lvOf(id); if (L) ui.text('ур. ' + L.lv, x + w, yy, { size: 10, bold: true, align: 'right', col: L.up ? C.cyan : C.gold }); };
+          const lvTag = (id, yy) => { const L = lvOf(id); if (L) ui.text('ур. ' + L.lv + (L.up ? '/' + ((id === 'basic' ? 6 : 10) + L.up) + ' (+' + L.up + ')' : ''), x + w, yy, { size: 10, bold: true, align: 'right', col: L.up ? C.cyan : C.gold }); };
           const gap = h => rows.push({ h, draw() {} });
-          const lines = (text, size, step, o = {}) => ui.wrap(text, w - (o.inset || 0), size).forEach(l => rows.push({ h: step, draw: y => ui.text(l, x, y, { size, bold: o.bold, col: o.col }) }));
-          const head = (text, col) => { lines(text, 11, 13, { bold: true, col, inset: 10 }); gap(1); };
+          const lines = (text, size, step, o = {}) => ui.wrap(text, w - (o.inset || 0), size).forEach((l, i) => rows.push({ h: step, node: !i ? o.node : null, sub: o.sub || 0, draw: y => ui.text(l, x, y, { size, bold: o.bold, col: o.col }) }));
+          const head = (text, col, node, sub) => { lines(text, 11, 13, { bold: true, col, inset: 10, node, sub }); gap(1); };
           ui.abilityRows(kit, kitId, lvOf).forEach(r => {
             const names = ui.wrap(r.name, w - 60, 11);
-            rows.push({ h: 15 + (names.length - 1) * 13, draw: y => {
+            rows.push({ h: 15 + (names.length - 1) * 13, node: r.id, draw: y => {
               ui.keycap(x, y, r.key);
               lvTag(r.id, y + 2);
               names.forEach((l, i) => ui.text(l, x + 28, y + 1 + i * 13, { size: 11, bold: true, col: C.cream }));
@@ -667,18 +738,19 @@
             lines(r.line, 10, 12, { col: C.sub });
             gap(5);
           });
-          rows.push({ h: 14, draw: y => { ui.text('Талант', x, y, { size: 11, bold: true, col: C.gold }); lvTag('talent', y); } });
-          lines(kit.talent, 10, 12); gap(4);
-          if (kit.showEnhanced) { head('Усиление: ' + kit.enhanced.short, C.gold); lines(kit.enhanced.text, 10, 12); gap(4); }
-          if (kit.elSkill) { head('Навык Радости: ' + kit.elSkill.name, '#ff9ae0'); lines(kit.elSkill.text, 10, 12); gap(4); }
-          head('Техника: ' + kit.tech.name, C.cyan);
+          const tLv = lvOf('talent'), bLv = lvOf('basic'), sLv = lvOf('skill');
+          rows.push({ h: 14, node: 'talent', draw: y => { ui.text('Талант', x, y, { size: 11, bold: true, col: C.gold }); lvTag('talent', y); } });
+          lines(H.traceScaleText ? H.traceScaleText(kitId, 'talent', tLv ? tLv.lv : 1, kit.talent) : kit.talent, 10, 12); gap(4);
+          if (kit.showEnhanced) { const eUseSkill = kit.enhSkill || kitId === 'hook' || kitId === 'theherta'; const eLv = eUseSkill ? sLv : bLv; head('Усиление: ' + kit.enhanced.short, C.gold, eUseSkill ? 'skill' : 'basic', 1); lines(H.traceScaleText ? H.traceScaleText(kitId, eUseSkill ? 'skill' : 'enhanced', eLv ? eLv.lv : 1, kit.enhanced.text) : kit.enhanced.text, 10, 12); gap(4); }
+          if (kit.elSkill) { head('Навык Радости: ' + kit.elSkill.name, '#ff9ae0', 'skill', 1); lines(H.traceScaleText ? H.traceScaleText(kitId, 'skill', sLv ? sLv.lv : 1, kit.elSkill.text) : kit.elSkill.text, 10, 12); gap(4); }
+          head('Техника: ' + kit.tech.name, C.cyan, 'tech', 0);
           lines(kit.tech.text, 10, 12); gap(4);
-          rows.push({ h: 14, draw: y => ui.text('Контакт', x, y, { size: 11, bold: true, col: C.gold }) });
+          rows.push({ h: 14, node: 'contact', draw: y => ui.text('Контакт', x, y, { size: 11, bold: true, col: C.gold }) });
           kit.contact.forEach(ct => lines('· ' + ct.name + ' (' + TAG_NAME[ct.tag] + ')', 10, 12, { col: C.cream }));
           const fus = Object.entries(H.FUSIONS).filter(([, f]) => f.members.includes(kitId));
           if (fus.length) {
             gap(4);
-            rows.push({ h: 14, draw: y => ui.text('Слияния', x, y, { size: 11, bold: true, col: C.pink }) });
+            rows.push({ h: 14, node: 'fusions', draw: y => ui.text('Слияния', x, y, { size: 11, bold: true, col: C.pink }) });
             fus.forEach(([id, f]) => { const known = g.state.bank.fusions.includes(id); lines('· ' + (known ? f.name : '??? с ' + H.CHARS[f.members.find(m => m !== kitId)].name), 10, 12, { col: known ? C.cream : C.dim }); });
           }
           return rows;
@@ -835,6 +907,7 @@
           if (code === 'KeyF') { this.toggleFav(); return; }
           if (code === 'KeyL') { ui.openCharList(this); return; }
           if (code === 'KeyU' && !g.state.roster[this.k].guest) { ui.openLevelUp(this.k); return; }
+          if (secId === 'details' && code === 'KeyD') { ui.openCharStats(this.k); return; }
           if (secId === 'eidolons' && code === 'KeyV' && H.Eidolons && H.Eidolons.has(this.k)) { ui.openEidolonView(this.k); return; }
           if (secId === 'eidolons' && this.starFocus && kk === 'ok' && this.k === 'trail') { const sh = (H.TRACES[g.kitOf('trail')] || {}).shadow; if (sh && this.star === g.state.roster.trail.eid) ui.useShadowFlow(sh); return; }
           if (secId === 'eidolons' && this.starFocus && ['left', 'right', 'up', 'down', 'back'].includes(kk)) {
@@ -855,6 +928,7 @@
           }
           if (secId === 'outfits' && this.outfitFocus) { ui.outfitKey(this, kk, code); return; }
           if (secId === 'traces' && this.trFocus) { ui.tracesKey(this, kk, code, this.k); return; }
+          if (secId === 'skills' && this.skillFocus && ui.skillsKey) { ui.skillsKey(this, kk, code, this.k); return; }
           if (secId === 'relics' && this.slotFocus) {
             if (['left', 'right', 'up', 'down'].includes(kk)) { this.moveSlot(kk); ui.sfx('select'); return; }
             if (kk === 'ok') { ui.openRelicPick(this.k, this.slot); return; }
@@ -872,6 +946,7 @@
             if (secId === 'details') this.openActions();
             else if (secId === 'traces') { this.trFocus = true; ui.sfx('confirm'); }
             else if (secId === 'relics') { this.slotFocus = true; ui.sfx('confirm'); }
+            else if (secId === 'skills' && ui.openSkillFocus) { ui.openSkillFocus(this); }
             else if (secId === 'eidolons' && !this.starFocus) { this.starFocus = true; ui.sfx('confirm'); }
             else if (secId === 'info') { this.infoFocus = true; ui.sfx('confirm'); }
             else if (secId === 'outfits') { this.outfitFocus = true; ui.sfx('confirm'); }
@@ -883,11 +958,124 @@
       if (ui.traceBackNotice) ui.traceBackNotice();
     },
 
+    openCharStats(startKey) {
+      const ui = this, g = this.game, STEP = 18;
+      const fmtFlat = (k, v) => k === 'spd' && Math.round(v * 10) % 10 ? String(Math.round(v * 10) / 10).replace('.', ',') : String(Math.round(v));
+      this.push({
+        charStats: true, k: startKey || ui.rosterKeys()[0], sc: { top: 0 }, helpKey: null,
+        switchChar(d) {
+          const list = ui.rosterKeys(), i = list.indexOf(this.k);
+          this.k = list[(i + d + list.length) % list.length];
+          this.sc.top = 0;
+          const prev = ui.screens[ui.screens.length - 2];
+          if (prev && prev.switchChar) prev.k = this.k;
+          ui.sfx('select');
+        },
+        toggleHelp(key) {
+          this.helpKey = this.helpKey === key ? null : key;
+          ui.sfx('select');
+        },
+        buildRows(c, k, vx, vw) {
+          const s = g.state, r = s.roster[k] || { lvl: 1, eid: 0 }, kitId = g.kitOf(k), kit = H.CHARS[kitId];
+          const st = g.charStats(k), base = g.baseStats(kitId, r.lvl, r.eid, g.statAsc ? g.statAsc(k) : undefined);
+          const rows = [], valX = vx + vw - 76;
+          CHAR_STAT_SECTIONS.forEach(([secTitle, items], si) => {
+            if (si > 0) rows.push({ h: 6, draw() {} });
+            rows.push({ h: 22, draw: y => ui.text(secTitle, vx + 4, y + 4, { size: 12, bold: true, serif: true, col: C.gold }) });
+            items.forEach(([key, label, fmt, hasHelp], i) => {
+              let text = '', plus = '';
+              if (fmt === 'base') {
+                const bVal = base[key], dVal = key === 'spd' ? Math.round((st.spd - bVal) * 10) / 10 : Math.round(st[key] - bVal);
+                text = fmtFlat(key, bVal);
+                plus = dVal ? (dVal > 0 ? '+' : '−') + fmtFlat(key, Math.abs(dVal)) : '';
+              } else if (fmt === 'energy') text = String(kit.energy || 0);
+              else if (fmt === 'err') text = pct(1 + (st.err || 0));
+              else text = pct(st[key] || 0);
+              rows.push({
+                h: 22, key, hasHelp: !!hasHelp,
+                draw: (y, clipTop, clipBot) => {
+                  const on = this.helpKey === key;
+                  if (on) { c.fillStyle = 'rgba(242,220,154,0.14)'; c.fillRect(vx, y, vw, 20); }
+                  else if (i % 2 === 0) { c.fillStyle = 'rgba(255,255,255,0.06)'; c.fillRect(vx, y, vw, 20); }
+                  G.statIcon(c, key, vx + 6, y + 4, 12, '#d8e0ff');
+                  ui.text(label, vx + 24, y + 4, { size: 11, col: C.cream });
+                  ui.text(text, valX, y + 4, { size: 12, bold: true, align: 'right', col: C.cream });
+                  if (plus) ui.text(plus, valX + 5, y + 4, { size: 12, bold: true, col: plus[0] === '−' ? C.bad : C.cyan });
+                  if (hasHelp) {
+                    const qx = vx + vw - 12, qy = y + 10;
+                    c.fillStyle = on ? C.brassHi : 'rgba(10,14,40,0.85)';
+                    c.beginPath(); c.arc(qx, qy, 7, 0, Math.PI * 2); c.fill();
+                    c.strokeStyle = on ? '#1a1208' : 'rgba(200,208,240,0.65)'; c.lineWidth = 1; c.stroke();
+                    ui.text('?', qx, y + 4, { size: 10, bold: true, align: 'center', col: on ? '#1a1208' : C.cream });
+                    if (y >= clipTop - 10 && y + 20 <= clipBot + 10) ui.hit(vx, y, vw, 20, () => this.toggleHelp(key));
+                  }
+                }
+              });
+              if (hasHelp && this.helpKey === key && CHAR_STAT_HELP[key]) {
+                const lines = ui.wrap(CHAR_STAT_HELP[key], vw - 36, 10), bh = lines.length * 13 + 8;
+                rows.push({
+                  h: bh + 2,
+                  draw: y => {
+                    c.fillStyle = 'rgba(8,10,30,0.82)'; c.fillRect(vx + 16, y, vw - 20, bh);
+                    c.fillStyle = C.brassHi; c.fillRect(vx + 16, y, 2, bh);
+                    lines.forEach((l, li) => ui.text(l, vx + 24, y + 4 + li * 13, { size: 10, col: C.sub }));
+                  }
+                });
+              }
+            });
+          });
+          return rows;
+        },
+        draw(c) {
+          const s = g.state, k = this.k, r = s.roster[k] || { lvl: 1, eid: 0 }, kitId = g.kitOf(k), kit = H.CHARS[kitId];
+          const wx = 70, wy = 24, ww = 500, wh = 420;
+          ui.win(wx, wy, ww, wh, { title: 'Характеристики' });
+          ui.closeBtn(wx + ww - 30, wy + 8, () => ui.pop());
+          G.elemIcon(c, kit.elem, wx + ww - 48, wy + 19, 8);
+          ui.text((k === 'trail' ? s.name : kit.name) + ' · Ур. ' + r.lvl, wx + ww - 62, wy + 13, { size: 11, align: 'right', col: C.sub });
+          c.fillStyle = 'rgba(242,220,154,0.35)'; c.fillRect(wx + 14, wy + 34, ww - 28, 1);
+          const vx = wx + 14, vy = wy + 40, vw = ww - 42, vh = wh - 50;
+          const rows = this.buildRows(c, k, vx, vw), totalH = rows.reduce((a, row) => a + row.h, 0);
+          const n = Math.ceil(totalH / STEP), vis = Math.floor(vh / STEP), sc = this.sc;
+          sc.top = Math.max(0, Math.min(Math.round(sc.top), Math.max(0, n - vis)));
+          this.vis = vis;
+          if (n > vis) ui.scrollBar(vx + vw + 4, vy, vh, sc, n, vis);
+          ui.wheelZone(wx, vy, ww, vh, d => { sc.top += d * 2; });
+          c.save(); c.beginPath(); c.rect(vx - 2, vy, vw + 4, vh); c.clip();
+          let y = vy - sc.top * STEP;
+          for (const row of rows) {
+            if (y + row.h > vy && y < vy + vh) row.draw(y, vy, vy + vh);
+            y += row.h;
+          }
+          c.restore();
+          ui.hints([['↑↓', 'Прокрутка'], ['I', 'Справка (?)'], ['Q/E', 'Персонаж'], ['Esc', 'Закрыть']], W / 2, 458, { align: 'center' });
+        },
+        key(kk, code) {
+          const vis = this.vis || 16;
+          if (kk === 'up') { this.sc.top -= 2; return; }
+          if (kk === 'down') { this.sc.top += 2; return; }
+          if (code === 'PageUp') { this.sc.top -= Math.max(1, vis - 2); return; }
+          if (code === 'PageDown') { this.sc.top += Math.max(1, vis - 2); return; }
+          if (code === 'KeyQ' || kk === 'left') { this.switchChar(-1); return; }
+          if (code === 'KeyE' || kk === 'right') { this.switchChar(1); return; }
+          if (code === 'KeyI' || kk === 'ok') {
+            const idx = CHAR_HELP_KEYS.indexOf(this.helpKey);
+            this.helpKey = idx < 0 ? CHAR_HELP_KEYS[0] : idx + 1 < CHAR_HELP_KEYS.length ? CHAR_HELP_KEYS[idx + 1] : null;
+            ui.sfx('select');
+            return;
+          }
+          if (kk === 'back') ui.pop();
+        }
+      });
+    },
+
     abilityRows(kit, kitId, lvOf) {
       const row = (id, key, kind, ab, extra) => {
         const L = lvOf ? lvOf(id) : null, shown = L && ab.fx ? H.traceScaleAb(ab, id, L.lv, kitId) : ab;
-        const target = TARGET_NAME[ab.target] || '', desc = ab.text || this.describeFx(shown);
-        return { id, key, kind, ab, shown, name: ab.name, lv: L ? L.lv : null, up: L ? L.up || 0 : 0, target, desc, extra, line: ab.text ? kind + ' · ' + ab.text + extra : kind + ' · ' + target + ' · ' + desc + extra };
+        const target = TARGET_NAME[ab.target] || '';
+        const scaledText = ab.text ? (L && H.traceScaleText ? H.traceScaleText(kitId, id, L.lv, ab.text) : ab.text) : '';
+        const desc = scaledText || this.describeFx(shown);
+        return { id, key, kind, ab, shown, name: ab.name, lv: L ? L.lv : null, up: L ? L.up || 0 : 0, target, desc, extra, line: scaledText ? kind + ' · ' + scaledText + extra : kind + ' · ' + target + ' · ' + desc + extra };
       };
       return [
         row('basic', 'Q', 'Атака', kit.basic, ' · +1 очко'),
@@ -897,6 +1085,7 @@
     },
 
     describeFx(ab) {
+      if (H.traceDescribeFx) return H.traceDescribeFx(ab);
       return ab.fx.map(f => {
         if (f.k === 'dmg') return 'урон ' + Math.round(f.m * 100) + '%' + (f.holy ? ' (нечисти ' + Math.round((f.m + f.holy) * 100) + '%)' : '') + (f.adj ? ' (соседним ' + Math.round(f.adj * 100) + '%)' : '') + (f.hits ? ' ×' + f.hits : '') + (f.plusDef ? ' +' + Math.round(f.plusDef * 100) + '% защ.' : '') + (f.chant ? ', +' + Math.round(T.chantDmg * 100) + '% за Напев' : '') + (f.luck ? ', +' + Math.round(f.luck * 100) + '% за Удачу' : '') + (f.anyTough ? ', по любой стойкости' : '');
         if (f.k === 'swing') return 'урон ' + Math.round(f.m * 100) + '% +' + Math.round(f.def * 100) + '% защ., только по неподвижной цели';
@@ -1016,14 +1205,18 @@
           const s = g.state, list = cands();
           ui.win(60, 40, 520, 400, { title: (sl.kind === 'planar' ? 'Украшения: ' : 'Реликвии: ') + (sl.full || sl.name) });
           const used = uid => Object.entries(s.roster).find(([, rr]) => Object.values(rr.relics).includes(uid));
-          ui.list(72, 60, 290, list.map(rel => { const u = used(rel.uid); return { label: ui.relicLabel(rel).main, right: '+' + rel.lvl + (u ? ' · ' + ui.shortName(u[0]) : ''), icon: (cc, x, y) => G.itemIcon(cc, 'relic:' + rel.slot, x, y - 9, 18, rel.set), iconW: 22, col: u ? C.sub : C.cream }; }), this.sel, { rowH: 22, max: 15, size: 11, onClick: i => { if (this.sel === i) this.key('ok'); else this.sel = i; } });
+          ui.list(72, 60, 290, list.map(rel => { const u = used(rel.uid), tag = rel.lock ? '🔒 ' : rel.trash ? '🗑 ' : ''; return { label: ui.relicLabel(rel).main, right: tag + '+' + rel.lvl + (u ? ' · ' + ui.shortName(u[0]) : ''), icon: (cc, x, y) => G.itemIcon(cc, 'relic:' + rel.slot, x, y - 9, 18, rel.set), iconW: 22, col: u ? C.sub : C.cream }; }), this.sel, { rowH: 22, max: 15, size: 11, onClick: i => { if (this.sel === i) this.key('ok'); else this.sel = i; } });
           if (!list.length) ui.wrap(sl.kind === 'planar' ? 'Нет украшений. Их дают награды погружения в Виртуальной вселенной (Офис Герты на станции).' : 'Нет реликвий для этого слота.', 270, 12).forEach((l, i) => ui.text(l, 80, 70 + i * 16, { col: C.dim }));
           const cur = list[this.sel];
           if (cur) {
             const set = H.RELIC_SETS[cur.set];
             G.rarityCell(c, 380, 64, 56, 56, 4);
             G.itemIcon(c, 'relic:' + cur.slot, 384, 68, 48, cur.set);
-            ui.wrap(set.pieces ? set.pieces[cur.slot] : set.name, 120, 11).slice(0, 3).forEach((l, i) => ui.text(l, 444, 66 + i * 13, { size: 11, bold: true, col: C.gold }));
+            G.lockIcon(c, 534, 66, !!cur.lock, { badge: true, r: 7 });
+            ui.hit(530, 62, 18, 18, () => { g.toggleRelicLock(cur.uid); ui.sfx('select'); });
+            G.trashIcon(c, 554, 66, !!cur.trash, { badge: true, r: 7 });
+            ui.hit(550, 62, 18, 18, () => { g.toggleRelicTrash(cur.uid); ui.sfx('select'); });
+            ui.wrap(set.pieces ? set.pieces[cur.slot] : set.name, 88, 11).slice(0, 3).forEach((l, i) => ui.text(l, 444, 66 + i * 13, { size: 11, bold: true, col: C.gold }));
             ui.text('+' + cur.lvl, 444, 106, { size: 11 });
             ui.text(ui.relicLabel(cur).main, 380, 130, { size: 13, bold: true });
             cur.subs.forEach(([key, v], i) => ui.text('· ' + H.STAT_NAMES[key] + ' ' + ui.fmtStat(key, v), 382, 152 + i * 16, { size: 11, col: C.sub }));
@@ -1037,13 +1230,15 @@
               ui.text('Расщепить: 150 кредитов, ' + g.salvageValue(cur) + ' Обломков', 380, 270, { size: 10, col: C.dim });
             }
           }
-          ui.hints([['Enter', 'Надеть'], ['X', 'Расщепить'], ['Esc', 'Назад']], W / 2, 414, { align: 'center' });
+          ui.hints([['Enter', 'Надеть'], ['L', 'Замок'], ['V', 'Выброс'], ['X', 'Расщепить'], ['Esc', 'Назад']], W / 2, 414, { align: 'center' });
         },
         key(kk, code) {
           const list = cands();
           if (ui.listNav(this, kk, list.length)) return;
           if (kk === 'ok' && list[this.sel]) { g.equipRelic(k, list[this.sel].uid); ui.sfx('confirm'); ui.screens.pop(); return; }
-          if (code === 'KeyX' && list[this.sel]) { if (g.sellRelic(list[this.sel].uid)) { ui.sfx('chest'); this.sel = Math.max(0, this.sel - 1); } else { ui.sfx('deny'); ui.toast('Сначала снимите реликвию с персонажа.'); } return; }
+          if (code === 'KeyL' && list[this.sel]) { g.toggleRelicLock(list[this.sel].uid); ui.sfx('select'); return; }
+          if (code === 'KeyV' && list[this.sel]) { g.toggleRelicTrash(list[this.sel].uid); ui.sfx('select'); return; }
+          if (code === 'KeyX' && list[this.sel]) { const r = list[this.sel]; if (g.sellRelic(r.uid)) { ui.sfx('chest'); this.sel = Math.max(0, this.sel - 1); } else { ui.sfx('deny'); ui.toast(r.lock ? 'Реликвия заблокирована.' : 'Сначала снимите реликвию с персонажа.'); } return; }
           if (kk === 'back') ui.pop();
         }
       });
@@ -1275,10 +1470,10 @@
       });
     },
 
-    invEntries(tab) {
+    invEntries(tab, scr) {
       const s = this.game.state, id = INV_TABS[tab].id;
       if (id === 'cones') return s.inv.cones.map(cn => ({ kind: 'cone', cn, d: H.CONES[cn.id] }));
-      if (id === 'relics') return s.inv.relics.slice().sort((a, b) => b.lvl - a.lvl).map(rel => ({ kind: 'relic', rel }));
+      if (id === 'relics') { this.game.ensureRelics(); const base = scr ? this.game.filterRelics(s.inv.relics, scr.filter, scr.slotKey) : s.inv.relics.slice(); return (scr ? this.game.sortRelics(base, scr.sortKey || 'lvl', scr.sortDir || -1) : base.sort((a, b) => b.lvl - a.lvl)).map(rel => ({ kind: 'relic', rel })); }
       const MAT = ['path', 'foe', 'echo', 'asc', 'tracks', 'shadow', 'syn'], LINES = Object.keys(H.TRACE_PATH_LINES || {}).concat(Object.keys(H.TRACE_FOE_LINES || {}));
       const rank = d => MAT.indexOf(d.mat) * 1000 + Math.max(0, LINES.indexOf(d.line)) * 10 + (d.tier || 0);
       const list = Object.entries(s.inv.items).filter(([iid]) => H.ITEMS[iid].kind === id || (id === 'mat' && H.ITEMS[iid].kind === 'synmat')).map(([iid, n]) => ({ kind: 'item', id: iid, n, d: H.ITEMS[iid] }));
@@ -1288,29 +1483,42 @@
     openInventory(tab) {
       const ui = this, g = this.game;
       this.push({
-        full: true, tab: tab || 0,
+        full: true, tab: tab || 0, slotKey: 'all', filter: H.relicMakeFilter(), sortKey: 'lvl', sortDir: -1, sortOpen: false,
         draw(c) {
           const s = g.state;
           ui.fullBg(c, false);
-          c.fillStyle = 'rgba(4,6,20,0.45)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(4,6,20,0.45)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.plate(12, 10, 'Инвентарь');
           ui.closeBtn(W - 32, 10, () => ui.pop());
           INV_TABS.forEach((t, i) => {
             const x = 118 + i * 80, on = i === this.tab;
             ui.button(x, 8, 76, 24, t.label, () => { this.tab = i; this.sel = 0; ui.sfx('select'); }, { active: on, size: 10, icon: t.icon });
           });
-          const list = ui.invEntries(this.tab), cols = 6, cw = 64, chh = 74, gx = 16, gy = 48;
+          const isRel = INV_TABS[this.tab].id === 'relics';
+          const list = ui.invEntries(this.tab, this), cols = 6, cw = 64, chh = isRel ? 64 : 74, gx = 16, gy = isRel ? 64 : 48;
+          if (isRel) {
+            ui.text('Количество: ' + s.inv.relics.length + '/' + H.RELIC_CRAFT.invCap, 434, 41, { size: 9, align: 'right', col: C.sub });
+            ui.drawRelicSlotBar(c, 10, 34, 344, this.slotKey, k => { this.slotKey = k; this.sel = 0; ui.sfx('select'); });
+          }
           ui.win(gx - 6, gy - 8, cols * (cw + 4) + 10, 5 * chh + 12, { alpha: 0.85, corners: false });
           const start = Math.max(0, Math.floor(this.sel / cols) - 3) * cols;
           list.slice(start, start + cols * 5).forEach((e, j) => {
             const i = start + j, x = gx + (j % cols) * (cw + 4), y = gy + Math.floor(j / cols) * chh, on = i === this.sel;
-            if (e.kind === 'cone') { G.drawConeCard(c, e.cn.id, x + 10, y + 2, 44, 62, { info: false }); ui.text('S' + (e.cn.sup || 1), x + 52, y + 50, { size: 9, bold: true, align: 'right', col: C.gold }); ui.text('ур.' + g.coneLvlOf(e.cn, Object.values(s.roster).find(r => r.cone === e.cn.uid)).lvl, x + 12, y + 50, { size: 9, bold: true, col: C.cream }); }
-            else if (e.kind === 'relic') { G.rarityCell(c, x + 4, y + 4, 56, 56, 4); G.itemIcon(c, 'relic:' + e.rel.slot, x + 12, y + 10, 40, e.rel.set); G.slotBadge(c, e.rel.slot, x + 6, y + 44); ui.text('+' + e.rel.lvl, x + 56, y + 46, { size: 10, bold: true, align: 'right', col: C.gold }); }
+            if (e.kind === 'cone') { G.drawConeCard(c, e.cn.id, x + 10, y + 2, 44, 62, { info: false }); G.supBadge(c, x + 12, y + 4, e.cn.sup || 1, 5); if (e.cn.lock) G.lockIcon(c, x + 40, y + 36, true, { badge: true, r: 5 }); ui.text('S' + (e.cn.sup || 1), x + 52, y + 50, { size: 9, bold: true, align: 'right', col: C.gold }); ui.text('ур.' + g.coneLvlOf(e.cn, Object.values(s.roster).find(r => r.cone === e.cn.uid)).lvl, x + 12, y + 50, { size: 9, bold: true, col: C.cream }); }
+            else if (e.kind === 'relic') { ui.drawRelicCardCell(c, e.rel, x + 4, y + 2, 56, 56, { selected: on, wornBy: g.relicWornBy(e.rel.uid) }); }
             else { G.rarityCell(c, x + 4, y + 4, 56, 56, e.d.rar || 2); G.itemIcon(c, e.id, x + 12, y + 8, 40); ui.text('×' + e.n, x + 57, y + 45, { size: 10, bold: true, align: 'right' }); }
             if (on) { c.strokeStyle = C.brassHi; c.lineWidth = 2; c.strokeRect(x + 2, y + 1, cw - 4, chh - 8); c.lineWidth = 1; }
             ui.hit(x, y, cw, chh - 6, () => { if (this.sel === i) this.key('ok'); else this.sel = i; });
           });
           if (!list.length) ui.text('Здесь пока пусто.', gx + 200, gy + 150, { align: 'center', col: C.dim });
+          if (isRel) {
+            const by = gy + 5 * chh + 6, fOn = !H.relicFilterEmpty(this.filter), sDef = H.RELIC_CRAFT.sorts.find(x => x.key === this.sortKey) || H.RELIC_CRAFT.sorts[0];
+            ui.button(gx - 6, by, 28, 22, '', () => ui.openRelicFilterDrawer(this.filter, { onReset: () => { this.filter = H.relicMakeFilter(); this.sel = 0; } }), { active: fOn });
+            G.filterIcon(c, gx + 1, by + 4, fOn ? C.gold : C.cream);
+            ui.button(gx + 26, by, 106, 22, sDef.label, () => { const idx = H.RELIC_CRAFT.sorts.findIndex(x => x.key === this.sortKey); this.sortKey = H.RELIC_CRAFT.sorts[(idx + 1) % H.RELIC_CRAFT.sorts.length].key; this.sel = 0; ui.sfx('select'); }, { size: 9 });
+            ui.button(gx + 135, by, 24, 22, this.sortDir < 0 ? '↓' : '↑', () => { this.sortDir = -this.sortDir; this.sel = 0; ui.sfx('select'); }, { size: 10 });
+            ui.button(gx + 286, by, 128, 22, 'Разобрать · R', () => ui.openRelicSalvage(), { size: 10, icon: 'synth', active: true });
+          }
           const px = 440, py = 40, pw = 192;
           ui.win(px, py, pw, 386, { alpha: 0.9 });
           const e = list[this.sel];
@@ -1321,7 +1529,7 @@
           mx += ui.money(mx, fy, 'credits', s.credits) + 14;
           mx += ui.powerChip(mx, fy) + 14;
           ui.money(mx, fy, 'tp', s.tp + '/' + T.tpMax);
-          ui.hints([['Q/E', 'Раздел'], ['←↑↓→', 'Выбор'], ['Enter', 'Использовать']].concat(INV_TABS[this.tab].id === 'relics' ? [['X', 'Расщепить'], ['R', 'Лишнее']] : INV_TABS[this.tab].id === 'cones' ? [['U', 'Улучшить'], ['V', 'Подробнее']] : []), 16, HGT - 18);
+          ui.hints([['Q/E', 'Раздел'], ['←↑↓→', 'Выбор'], ['Enter', 'Использовать']].concat(INV_TABS[this.tab].id === 'relics' ? [['Z/C', 'Слот'], ['F', 'Фильтр'], ['L', 'Замок'], ['V', 'Выброс'], ['R', 'Разобрать']] : INV_TABS[this.tab].id === 'cones' ? [['U', 'Улучшить'], ['V', 'Подробнее'], ['L', 'Замок'], ['R', 'Разобрать']] : []), 16, HGT - 18);
         },
         detail(c, e, px, py, pw) {
           const s = g.state;
@@ -1340,7 +1548,9 @@
             else ui.text(d.note || (d.kind === 'key' ? 'Ключевой предмет сюжета.' : ''), px + 12, py + 350, { size: 10, col: C.dim });
           } else if (e.kind === 'cone') {
             const d = e.d, holder = Object.entries(s.roster).find(([, r]) => r.cone === e.cn.uid), st = g.coneStatsOf(e.cn), cl = g.coneLvlOf(e.cn, holder && holder[1]);
-            G.drawConeCard(c, e.cn.id, px + pw / 2 - 45, py + 14, 90, 126, { sup: e.cn.sup || 1 });
+            G.drawConeCard(c, e.cn.id, px + pw / 2 - 45, py + 14, 90, 126, { sup: e.cn.sup || 1, supBadge: true });
+            G.lockIcon(c, px + pw - 24, py + 14, !!e.cn.lock, { badge: true, r: 7 });
+            ui.hit(px + pw - 28, py + 10, 22, 22, () => { g.toggleConeLock(e.cn.uid); ui.sfx('select'); });
             ui.hit(px + pw / 2 - 45, py + 14, 90, 126, () => ui.openConeView(e.cn.id, e.cn.uid));
             const nm = ui.wrap(d.name, pw - 24, 12).slice(0, 2);
             nm.forEach((l, i) => ui.text(l, px + pw / 2, py + 146 + i * 15, { align: 'center', size: 12, bold: true, serif: true, col: C.gold }));
@@ -1353,10 +1563,13 @@
             if (d.skill) { ui.text(ui.fitText(d.skill, 10, pw - 24, true), px + 12, y, { size: 10, bold: true, col: C.gold }); y += 13; }
             ui.coneLines(e.cn.id, e.cn.sup, pw - 24, 10, Math.max(1, Math.floor((py + 262 - y) / 13))).forEach((l, i) => ui.richText(l, px + 12, y + i * 13, { size: 10, col: C.sub }));
             ui.text(holder ? 'Надет: ' + ui.shortName(holder[0]) : 'Не надет', px + 12, py + 266, { size: 11, col: holder ? C.ok : C.dim });
-            ui.button(px + 12, py + 284, pw - 24, 24, 'Улучшить · U', () => ui.openConeUp(e.cn.uid), { size: 11, icon: 'cones', active: true });
-            ui.button(px + 12, py + 312, pw - 24, 24, 'Подробнее · V', () => ui.openConeView(e.cn.id, e.cn.uid), { size: 11, icon: 'cones' });
-            ui.button(px + 12, py + 344, pw - 24, 26, 'Надеть на…', () => ui.openConeTarget(e.cn.uid), { size: 12, icon: 'chars' });
+            ui.button(px + 12, py + 280, pw - 24, 22, 'Улучшить · U', () => ui.openConeUp(e.cn.uid), { size: 11, icon: 'cones', active: true });
+            ui.button(px + 12, py + 305, pw - 24, 22, 'Подробнее · V', () => ui.openConeView(e.cn.id, e.cn.uid), { size: 11, icon: 'cones' });
+            ui.button(px + 12, py + 330, pw - 24, 22, 'Надеть на…', () => ui.openConeTarget(e.cn.uid), { size: 11, icon: 'chars' });
+            ui.button(px + 12, py + 355, pw - 24, 22, 'Разобрать · R', () => ui.openConeSalvage(), { size: 11, icon: 'synth' });
           } else {
+            ui.drawRelicDetailPane(c, e.rel, px, py, pw, 386, { inInventory: true, wornBy: g.relicWornBy(e.rel.uid), onToggleLock: () => { g.toggleRelicLock(e.rel.uid); ui.sfx('select'); }, onToggleTrash: () => { g.toggleRelicTrash(e.rel.uid); ui.sfx('select'); } });
+            if (e.rel) return;
             const rel = e.rel, used = Object.entries(s.roster).find(([, rr]) => Object.values(rr.relics).includes(rel.uid)), set = H.RELIC_SETS[rel.set], slot = H.RELIC_SLOTS.find(x => x.key === rel.slot);
             G.rarityCell(c, px + pw / 2 - 36, py + 16, 72, 72, 4);
             G.itemIcon(c, 'relic:' + rel.slot, px + pw / 2 - 32, py + 20, 64, rel.set);
@@ -1370,7 +1583,17 @@
           }
         },
         key(k, code) {
-          const list = ui.invEntries(this.tab), n = list.length;
+          const list = ui.invEntries(this.tab, this), n = list.length, isRel = INV_TABS[this.tab].id === 'relics';
+          if (isRel && (code === 'KeyZ' || code === 'KeyC')) {
+            const tabs = H.RELIC_CRAFT.slotTabs, idx = Math.max(0, tabs.findIndex(x => x.key === this.slotKey));
+            this.slotKey = tabs[(idx + (code === 'KeyC' ? 1 : tabs.length - 1)) % tabs.length].key;
+            this.sel = 0; ui.sfx('select'); return;
+          }
+          if (isRel && code === 'KeyF') { ui.openRelicFilterDrawer(this.filter, { onReset: () => { this.filter = H.relicMakeFilter(); this.sel = 0; } }); return; }
+          if (isRel && code === 'KeyS') { const idx = H.RELIC_CRAFT.sorts.findIndex(x => x.key === this.sortKey); this.sortKey = H.RELIC_CRAFT.sorts[(idx + 1) % H.RELIC_CRAFT.sorts.length].key; this.sel = 0; ui.sfx('select'); return; }
+          if (isRel && code === 'KeyD') { this.sortDir = -this.sortDir; this.sel = 0; ui.sfx('select'); return; }
+          if (code === 'KeyR' && isRel) { ui.openRelicSalvage(); return; }
+          if (code === 'KeyR' && INV_TABS[this.tab].id === 'cones') { ui.openConeSalvage(); return; }
           if (code === 'KeyQ') { this.tab = (this.tab + INV_TABS.length - 1) % INV_TABS.length; this.sel = 0; ui.sfx('select'); return; }
           if (code === 'KeyE') { this.tab = (this.tab + 1) % INV_TABS.length; this.sel = 0; ui.sfx('select'); return; }
           if (k === 'back') { ui.pop(); return; }
@@ -1387,8 +1610,10 @@
           }
           if (code === 'KeyV' && e && e.kind === 'cone') { ui.openConeView(e.cn.id, e.cn.uid); return; }
           if (code === 'KeyU' && e && e.kind === 'cone') { ui.openConeUp(e.cn.uid); return; }
-          if (code === 'KeyR' && INV_TABS[this.tab].id === 'relics') { ui.openSalvage(); return; }
-          if (code === 'KeyX' && e && e.kind === 'relic') { const v = g.salvageValue(e.rel); if (g.sellRelic(e.rel.uid)) { ui.sfx('chest'); ui.toast('Реликвия расщеплена: +150 кредитов, +' + v + ' Обломков Реликвии.'); this.sel = Math.max(0, this.sel - 1); } else { ui.sfx('deny'); ui.toast('Сначала снимите реликвию с персонажа.'); } }
+          if (code === 'KeyL' && e && e.kind === 'relic') { g.toggleRelicLock(e.rel.uid); ui.sfx('select'); return; }
+          if (code === 'KeyV' && e && e.kind === 'relic') { g.toggleRelicTrash(e.rel.uid); ui.sfx('select'); return; }
+          if (code === 'KeyL' && e && e.kind === 'cone') { g.toggleConeLock(e.cn.uid); ui.sfx('select'); return; }
+          if (code === 'KeyX' && e && e.kind === 'relic') { const v = g.salvageValue(e.rel); if (g.sellRelic(e.rel.uid)) { ui.sfx('chest'); ui.toast('Реликвия расщеплена: +150 кредитов, +' + v + ' Обломков Реликвии.'); this.sel = Math.max(0, this.sel - 1); } else { ui.sfx('deny'); ui.toast(e.rel.lock ? 'Реликвия заблокирована.' : 'Сначала снимите реликвию с персонажа.'); } }
         }
       });
     },
@@ -1414,7 +1639,7 @@
         draw(c) {
           const d = H.CONES[id], s = g.state, cn = own(), holder = cn ? Object.keys(s.roster).find(k => s.roster[k].cone === cn.uid) : null;
           ui.fullBg(c, false);
-          c.fillStyle = 'rgba(4,6,20,0.55)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(4,6,20,0.55)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           if (this.art) {
             G.drawConeCard(c, id, W / 2 - 163, 4, 326, 454, { info: false });
             ui.text(d.name, W / 2, 461, { align: 'center', size: 12, bold: true, serif: true, col: C.gold, shadow: true });
@@ -1427,7 +1652,11 @@
           G.drawConeCard(c, id, 24, 48, 166, 230, { sup: this.view });
           ui.hit(24, 48, 166, 230, () => this.key(null, 'Tab'));
           ui.text('Tab: весь арт', 107, 284, { align: 'center', size: 10, col: C.dim });
-          if (cn && !o.debug) ui.button(24, 304, 166, 26, 'Улучшить · U', () => ui.openConeUp(cn.uid, { only: true }), { size: 12, icon: 'cones', active: true });
+          if (cn && !o.debug) {
+            ui.button(24, 304, 166, 26, 'Улучшить · U', () => ui.openConeUp(cn.uid, { only: true }), { size: 12, icon: 'cones', active: true });
+            G.lockIcon(c, 594, 54, !!cn.lock, { badge: true, r: 8 });
+            ui.hit(590, 50, 24, 24, () => { g.toggleConeLock(cn.uid); ui.sfx('select'); });
+          }
           ui.win(206, 44, 414, 392, { alpha: 0.9 });
           let y = 56;
           ui.wrap(d.name, TW, 16).slice(0, 2).forEach(l => { ui.text(l, TX, y, { size: 16, bold: true, serif: true, col: C.gold }); y += 20; });
@@ -1478,6 +1707,7 @@
         key(k, code) {
           if (code === 'Tab') { this.art = !this.art; ui.sfx('select'); return; }
           if (code === 'KeyU' && own() && !o.debug && !this.art) { ui.openConeUp(own().uid, { only: true }); return; }
+          if (code === 'KeyL' && own() && !o.debug && !this.art) { g.toggleConeLock(own().uid); ui.sfx('select'); return; }
           if (k === 'back') { if (this.art && !o.art) this.art = false; else ui.pop(); return; }
           if (this.art) return;
           if (k === 'left' || k === 'right') { this.view = Math.max(1, Math.min(5, this.view + (k === 'left' ? -1 : 1))); ui.sfx('select'); }
@@ -2654,79 +2884,120 @@
 
     openBank(close) {
       const ui = this, g = this.game;
-      const tabs = ['Враги', 'Слияния', 'Слухи', 'Прыжки', 'Сюжет'];
       this.push({
-        tab: 0, sc: { top: 0 },
+        full: true, tab: 0, sc: { top: 0 },
         setTab(i) { this.tab = i; this.sel = 0; this.sc = { top: 0 }; },
         rows() {
           const s = g.state;
           if (this.tab === 0) return Object.entries(H.ENEMIES).filter(([id]) => s.bank.enemies[id]).map(([id, d]) => ({ id, d, label: d.name, right: '×' + s.bank.enemies[id].kills, icon: (cc, ix, iy) => G.foeIcon(cc, d, ix, iy - 9, 18), iconW: 22 }));
-          if (this.tab === 1) return Object.entries(H.FUSIONS).map(([id, f]) => ({ id, f, label: s.bank.fusions.includes(id) ? f.name : '???', right: f.members.map(m => H.CHARS[m].name.split(' ')[0]).join(' + ') }));
-          if (this.tab === 2) return H.RUMORS.map(r => ({ r, label: s.flags[r.id] ? r.title : '???', right: s.flags[r.id] ? 'правда' : '—' }));
-          if (this.tab === 4) return g.recapLog().map((x, i) => ({ x, label: x.title, right: String(i + 1) }));
+          if (this.tab === 1) return Object.entries(H.FUSIONS).map(([id, f]) => ({ id, f, label: s.bank.fusions.includes(id) ? f.name : '???', col: s.bank.fusions.includes(id) ? C.cream : C.dim, right: f.members.map(m => H.CHARS[m].name.split(' ')[0]).join(' + '), icon: (cc, ix, iy) => G.menuIcon(cc, 'fusions', ix + 1, iy - 8, 16), iconW: 20 }));
+          if (this.tab === 2) return H.RUMORS.map(r => ({ r, label: s.flags[r.id] ? r.title : '???', col: s.flags[r.id] ? C.cream : C.dim, right: s.flags[r.id] ? 'правда' : '—', rcol: s.flags[r.id] ? C.ok : C.dim, icon: (cc, ix, iy) => G.menuIcon(cc, 'chat', ix + 1, iy - 8, 16), iconW: 20 }));
+          if (this.tab === 4) return g.recapLog().map((x, i) => ({ x, label: x.title, right: String(i + 1), icon: (cc, ix, iy) => G.menuIcon(cc, 'archive', ix + 1, iy - 8, 16), iconW: 20 }));
           return s.warpLog.map(e => ({ e, label: warpName(e), col: RAR_TXT[e.rar], right: '★'.repeat(e.rar), rcol: G.RARITY[e.rar], icon: (cc, ix, iy) => warpIcon(cc, e, ix, iy - 8, 16, g), iconW: 22 }));
         },
+        stats() {
+          const s = g.state;
+          if (this.tab === 0) return 'Изучено: ' + Object.keys(s.bank.enemies).filter(id => H.ENEMIES[id]).length + ' / ' + Object.keys(H.ENEMIES).length;
+          if (this.tab === 1) return 'Открыто: ' + Object.keys(H.FUSIONS).filter(id => s.bank.fusions.includes(id)).length + ' / ' + Object.keys(H.FUSIONS).length;
+          if (this.tab === 2) return 'В силе: ' + H.RUMORS.filter(r => s.flags[r.id]).length + ' / ' + H.RUMORS.length;
+          if (this.tab === 3) return 'Записей: ' + s.warpLog.length;
+          return 'Записей: ' + g.recapLog().length;
+        },
         draw(c) {
-          ui.win(20, 30, 600, 420, { title: 'Архив Экспресса' });
-          ui.closeBtn(20 + 600 - 30, 30 + 8, () => this.key('back'));
-          tabs.forEach((t, i) => ui.button(34 + i * 100, 48, 96, 22, t, () => this.setTab(i), { active: this.tab === i, size: 11 }));
+          ui.fullBg(c, false);
+          c.fillStyle = 'rgba(4,6,20,0.45)'; c.fillRect(ui.left, 0, ui.vw, HGT);
+          ui.plate(12, 10, 'Архив Экспресса');
+          BANK_TABS.forEach((t, i) => {
+            const on = i === this.tab;
+            ui.button(158 + i * 89, 8, 85, 24, t.label, () => { this.setTab(i); ui.sfx('select'); }, { active: on, size: 10, icon: t.icon });
+          });
+          ui.closeBtn(W - 32, 10, () => this.key('back'));
+          const curTab = BANK_TABS[this.tab];
+          ui.win(20, 42, 324, 390, { alpha: 0.85, corners: false });
+          G.menuIcon(c, curTab.icon, 32, 50, 18);
+          ui.text(curTab.label, 56, 53, { size: 12, bold: true, serif: true, col: C.gold });
+          ui.text(this.stats(), 332, 54, { size: 11, align: 'right', col: C.sub });
+          c.fillStyle = C.brassDk; c.fillRect(32, 73, 300, 1);
           const rows = this.rows();
+          if (this.sel >= rows.length) this.sel = Math.max(0, rows.length - 1);
           ui.list(32, 80, 300, rows, this.sel, { rowH: 20, max: 17, size: 11, scroll: this.sc, onClick: i => { this.sel = i; } });
+          if (!rows.length) ui.text('Записей пока нет.', 182, 232, { align: 'center', col: C.dim });
+          ui.win(352, 42, 268, 390, { alpha: 0.9 });
           const r = rows[this.sel];
-          c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(342, 80, 264, 358);
-          if (!r) { ui.text('Пусто.', 356, 94, { col: C.dim }); return; }
-          if (this.tab === 0) {
+          if (!r) {
+            G.menuIcon(c, curTab.icon, 470, 186, 32);
+            const emptyMsg = this.tab === 0 ? 'Встреченные в боях противники появятся здесь.' : this.tab === 3 ? 'Сделайте Прыжок, чтобы увидеть историю.' : 'Записей в этом разделе пока нет.';
+            ui.wrap(emptyMsg, 220, 11).forEach((l, i) => ui.text(l, 486, 232 + i * 15, { align: 'center', col: C.dim, size: 11 }));
+          } else if (this.tab === 0) {
             const b = g.state.bank.enemies[r.id], d = r.d;
-            ui.platform(c, 474, 206, 60);
-            G.drawEnemy(c, d, 474, 208, d.boss ? 120 : d.elite ? 116 : 110, { t: ui.t });
-            G.foeIcon(c, d, 352, 88, 32);
-            ui.wrap(d.name, 236, 11).slice(0, 2).forEach((l, i) => ui.text(l, 474, 214 + i * 12, { align: 'center', bold: true, col: C.gold, size: 11 }));
-            ui.text('Уязвимости:', 356, 238, { size: 11 });
-            d.weak.forEach((e, i) => G.elemIcon(c, e, 442 + i * 20, 245, 7));
-            ui.text('Встречен: ' + b.seen + '   Побед: ' + b.kills, 356, 262, { size: 11, col: '#c8d8ff' });
-            ui.text(d.boss ? 'Босс' : d.elite ? 'Элитный враг' : 'Обычный враг', 356, 280, { size: 11, col: '#c8d8ff' });
+            ui.platform(c, 486, 178, 60);
+            G.drawEnemy(c, d, 486, 180, d.boss ? 120 : d.elite ? 116 : 110, { t: ui.t });
+            G.foeIcon(c, d, 366, 56, 32);
+            ui.text(d.boss ? 'Босс' : d.elite ? 'Элитный враг' : 'Обычный враг', 606, 64, { size: 10, align: 'right', col: d.boss ? C.gold : d.elite ? '#cfa2ff' : C.sub });
+            ui.wrap(d.name, 240, 12).slice(0, 2).forEach((l, i) => ui.text(l, 486, 190 + i * 14, { align: 'center', bold: true, serif: true, col: C.gold, size: 12 }));
+            c.fillStyle = C.brassDk; c.fillRect(366, 222, 240, 1);
+            ui.text('Уязвимости:', 366, 232, { size: 11, col: C.sub });
+            d.weak.forEach((e, i) => G.elemIcon(c, e, 454 + i * 20, 239, 7));
+            ui.text('Встречен: ' + b.seen, 366, 256, { size: 11, col: '#c8d8ff' });
+            ui.text('Побед: ' + b.kills, 606, 256, { size: 11, align: 'right', col: '#c8d8ff' });
             const fam = H.CONTACT[d.fam];
             if (fam) {
-              ui.text('Контакт: ' + fam.name, 356, 300, { size: 11, col: C.gold });
+              ui.text('Контакт: ' + fam.name, 366, 280, { size: 11, col: C.gold });
               const known = Object.entries(b.contacts || {});
-              ui.wrap(known.length ? 'Исходы: ' + known.map(([m, n]) => ({ eager: 'интерес', happy: 'радость', scared: 'страх', angry: 'злость' }[m] || m) + '×' + n).join(', ') : 'Настроения ещё не изучены.', 240, 11).forEach((l, i) => ui.text(l, 356, 318 + i * 14, { size: 11, col: C.sub }));
-              if (known.length) ui.wrap('Подсказка: ' + Object.entries(fam.react).filter(([, v]) => v === 'eager' || v === 'happy').map(([t2]) => TAG_NAME[t2]).join(', '), 240, 11).forEach((l, i) => ui.text(l, 356, 350 + i * 14, { size: 11, col: C.ok }));
-            } else ui.text('На контакт не идёт.', 356, 300, { size: 11, col: C.bad });
+              ui.wrap(known.length ? 'Исходы: ' + known.map(([m, n]) => ({ eager: 'интерес', happy: 'радость', scared: 'страх', angry: 'злость' }[m] || m) + '×' + n).join(', ') : 'Настроения ещё не изучены.', 240, 11).forEach((l, i) => ui.text(l, 366, 300 + i * 14, { size: 11, col: C.sub }));
+              if (known.length) ui.wrap('Подсказка: ' + Object.entries(fam.react).filter(([, v]) => v === 'eager' || v === 'happy').map(([t2]) => TAG_NAME[t2]).join(', '), 240, 11).forEach((l, i) => ui.text(l, 366, 336 + i * 14, { size: 11, col: C.ok }));
+            } else ui.text('На контакт не идёт.', 366, 280, { size: 11, col: C.bad });
           } else if (this.tab === 1) {
             const f = r.f, known = g.state.bank.fusions.includes(r.id);
-            const n = f.members.length, gap = n > 2 ? 10 : 32, cs = Math.min(72, Math.floor((236 - gap * (n - 1)) / n));
-            const cx0 = 474 - (n * cs + (n - 1) * gap) / 2, cy = 96 + (72 - cs);
+            const n = f.members.length, gap = n > 2 ? 10 : 28, cs = Math.min(68, Math.floor((236 - gap * (n - 1)) / n));
+            const cx0 = 486 - (n * cs + (n - 1) * gap) / 2, cy = 62 + (68 - cs);
             f.members.forEach((m, i) => ui.portraitCard(c, G.lookOf(m, g), cx0 + i * (cs + gap), cy, cs, { elem: H.CHARS[m].elem }));
             const who = { 2: 'обоих', 3: 'всех троих', 4: 'всех четверых' }[n] || 'всех';
-            ui.wrap(known ? f.name : '??? — не открыто', 236, 13).slice(0, 2).forEach((l, i) => ui.text(l, 474, 184 + i * 16, { align: 'center', bold: true, serif: true, col: C.gold }));
-            ui.wrap(known ? f.text : 'Возьмите ' + who + ' в команду, накопите им энергию и нажмите R в бою.', 236, 11).forEach((l, i) => ui.text(l, 356, 216 + i * 14, { size: 11 }));
+            ui.wrap(known ? f.name : '??? — не открыто', 240, 13).slice(0, 2).forEach((l, i) => ui.text(l, 486, 146 + i * 16, { align: 'center', bold: true, serif: true, size: 13, col: known ? C.gold : C.dim }));
+            ui.text('Участники: ' + f.members.map(m => H.CHARS[m].name).join(', '), 486, 182, { align: 'center', size: 10, col: C.sub });
+            c.fillStyle = C.brassDk; c.fillRect(366, 200, 240, 1);
+            ui.wrap(known ? f.text : 'Возьмите ' + who + ' в команду, накопите им энергию и нажмите R в бою.', 240, 11).forEach((l, i) => ui.text(l, 366, 212 + i * 15, { size: 11, col: known ? C.cream : C.sub }));
           } else if (this.tab === 2) {
-            if (g.state.flags[r.r.id]) { ui.wrap('«' + r.r.text + '»', 236, 11).forEach((l, i) => ui.text(l, 356, 96 + i * 14, { size: 11, col: '#fff0c0' })); ui.wrap(r.r.effect, 236, 11).forEach((l, i) => ui.text(l, 356, 200 + i * 14, { size: 11, col: C.ok })); }
-            else ui.text('Этот слух ещё не распущен.', 356, 96, { size: 11, col: C.dim });
+            const on = !!g.state.flags[r.r.id];
+            G.menuIcon(c, 'chat', 366, 58, 28);
+            ui.text(on ? 'Слух подтверждён' : 'Слух не проверен', 402, 60, { size: 10, col: on ? C.ok : C.dim });
+            ui.wrap(on ? r.r.title : 'Неизвестный слух', 200, 13).slice(0, 2).forEach((l, i) => ui.text(l, 402, 74 + i * 15, { size: 13, bold: true, serif: true, col: on ? C.gold : C.dim }));
+            c.fillStyle = C.brassDk; c.fillRect(366, 108, 240, 1);
+            if (on) {
+              ui.wrap('«' + r.r.text + '»', 240, 11).forEach((l, i) => ui.text(l, 366, 120 + i * 15, { size: 11, col: '#fff0c0' }));
+              c.fillStyle = C.brassDk; c.fillRect(366, 206, 240, 1);
+              ui.text('Эффект в мире:', 366, 218, { size: 11, col: C.sub });
+              ui.wrap(r.r.effect, 240, 11).forEach((l, i) => ui.text(l, 366, 236 + i * 15, { size: 11, col: C.ok }));
+            } else ui.wrap('Этот слух ещё не распущен. Поговорите со сплетниками в мире, чтобы узнать подробности.', 240, 11).forEach((l, i) => ui.text(l, 366, 120 + i * 15, { size: 11, col: C.dim }));
           } else if (this.tab === 4) {
-            G.menuIcon(c, 'mission', 352, 88, 32);
-            ui.text('Запись ' + r.right, 394, 90, { size: 10, col: C.sub });
-            ui.wrap(r.x.title, 200, 13).slice(0, 2).forEach((l, i) => ui.text(l, 394, 103 + i * 15, { size: 13, bold: true, serif: true, col: C.gold }));
-            c.fillStyle = C.brassDk; c.fillRect(352, 136, 244, 1);
-            ui.wrap(r.x.text, 240, 11).forEach((l, i) => ui.text(l, 354, 146 + i * 14, { size: 11 }));
+            G.menuIcon(c, 'archive', 366, 58, 28);
+            ui.text('Запись ' + r.right, 402, 60, { size: 10, col: C.sub });
+            ui.wrap(r.x.title, 200, 13).slice(0, 2).forEach((l, i) => ui.text(l, 402, 74 + i * 15, { size: 13, bold: true, serif: true, col: C.gold }));
+            c.fillStyle = C.brassDk; c.fillRect(366, 108, 240, 1);
+            ui.wrap(r.x.text, 240, 11).forEach((l, i) => ui.text(l, 366, 120 + i * 15, { size: 11 }));
           } else {
             const e = r.e, [note, ncol] = warpNote(e);
-            if (e.kind === 'char') ui.portraitCard(c, G.lookOf(e.id, g), 438, 94, 72, { elem: H.CHARS[e.id].elem, border: G.RARITY[e.rar] });
-            else G.drawConeCard(c, e.id, 444, 92, 60, 84);
-            ui.wrap(warpName(e), 236, 13).slice(0, 2).forEach((l, i) => ui.text(l, 474, 184 + i * 16, { align: 'center', bold: true, serif: true, size: 13, col: RAR_TXT[e.rar] }));
-            ui.text('★'.repeat(e.rar), 474, 220, { align: 'center', col: G.RARITY[e.rar] });
+            if (e.kind === 'char') ui.portraitCard(c, G.lookOf(e.id, g), 450, 62, 72, { elem: H.CHARS[e.id].elem, border: G.RARITY[e.rar] });
+            else G.drawConeCard(c, e.id, 456, 60, 60, 84);
+            ui.wrap(warpName(e), 240, 13).slice(0, 2).forEach((l, i) => ui.text(l, 486, 154 + i * 16, { align: 'center', bold: true, serif: true, size: 13, col: RAR_TXT[e.rar] }));
+            ui.text('★'.repeat(e.rar), 486, 190, { align: 'center', col: G.RARITY[e.rar] });
+            c.fillStyle = C.brassDk; c.fillRect(366, 210, 240, 1);
             [['Прыжок №', String(e.n)], ['Итог', note, ncol], ['Гарант', warpPity(e)], ['Время', warpWhen(e)]].forEach(([k2, v, vc], i) => {
-              ui.text(k2, 360, 248 + i * 20, { size: 11, col: C.sub });
-              ui.text(v, 592, 248 + i * 20, { size: 11, align: 'right', col: vc || C.cream });
+              ui.text(k2, 366, 224 + i * 22, { size: 11, col: C.sub });
+              ui.text(v, 606, 224 + i * 22, { size: 11, align: 'right', col: vc || C.cream });
             });
-            ui.hints([['Enter', 'Вся история']], 360, 420);
+            ui.button(366, 392, 240, 26, 'Вся история · Enter', () => ui.openWarpHistory(e.ban), { size: 11, icon: 'warp', active: true });
           }
+          const hints = [['Q/E', 'Раздел'], ['←→', 'Раздел'], ['↑↓', 'Выбор']];
+          if (this.tab === 3 && rows.length) hints.push(['Enter', 'Вся история']);
+          hints.push(['Esc', 'Закрыть']);
+          ui.hints(hints, 20, HGT - 18);
         },
-        key(k) {
-          const rows = this.rows();
+        key(k, code) {
+          const rows = this.rows(), n = BANK_TABS.length;
           if (ui.listNav(this, k, rows.length)) return;
-          if (k === 'left') { this.setTab((this.tab + tabs.length - 1) % tabs.length); ui.sfx('select'); }
-          if (k === 'right') { this.setTab((this.tab + 1) % tabs.length); ui.sfx('select'); }
+          if (k === 'left' || code === 'KeyQ') { this.setTab((this.tab + n - 1) % n); ui.sfx('select'); return; }
+          if (k === 'right' || code === 'KeyE') { this.setTab((this.tab + 1) % n); ui.sfx('select'); return; }
           if (k === 'ok' && this.tab === 3 && rows.length) { ui.openWarpHistory(rows[this.sel].e.ban); return; }
           if (k === 'back' || (k === 'ok' && !rows.length)) { ui.screens.pop(); ui.sfx('cancel'); if (close) close(); }
         }

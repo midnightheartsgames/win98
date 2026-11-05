@@ -97,7 +97,8 @@
         const top = this.top();
         if (top && (top.bugReport || top.bugList || top.bugCrash)) {
           try {
-            this.ctx.setTransform(this.canvas.width / W, 0, 0, this.canvas.height / HGT, 0, 0);
+            const sx = this.canvas.width / this.vw, sy = this.canvas.height / HGT;
+            this.ctx.setTransform(sx, 0, 0, sy, this.ox() * sx, 0);
             top.draw(this.ctx);
           } catch (inner) {}
         }
@@ -218,12 +219,14 @@
             ui.hints([['Enter', 'Закрыть'], ['Esc', 'Закрыть']], W / 2, BOX.y + BOX.h - 22, { align: 'center' });
             return;
           }
-          const tx = 78, ty = 72, tw = 192, th = 144;
+          const tx = 78, ty = 72, tw = 192, th = 144, sh = d.shot && d.shot.width ? Math.round(tw * d.shot.height / d.shot.width) : th;
           c.fillStyle = '#000';
           c.fillRect(tx - 2, ty - 2, tw + 4, th + 4);
           c.fillStyle = C.brassDk;
           c.fillRect(tx - 1, ty - 1, tw + 2, th + 2);
-          c.drawImage(d.shot, tx, ty, tw, th);
+          c.fillStyle = '#000';
+          c.fillRect(tx, ty, tw, th);
+          c.drawImage(d.shot, tx, ty + Math.floor((th - sh) / 2), tw, sh);
           ui.text('Где', 286, 70, { size: 11, col: C.sub });
           ui.wrap(d.info.summary, 270, 11).slice(0, 6).forEach((line, i) => ui.text(line, 286, 86 + i * 15, { size: 11, col: C.cream }));
           if (d.info.state && d.info.state.cheats) ui.text('Использовались F7/F8 — это попадёт в отчёт', 286, 182, { size: 10, col: C.gold });
@@ -260,7 +263,7 @@
       if (typeof document === 'undefined' || !this.canvas.getBoundingClientRect || !this.root.getBoundingClientRect || !this.root.appendChild) return;
       const cr = this.canvas.getBoundingClientRect();
       const rr = this.root.getBoundingClientRect();
-      const k = cr.width / W || 1;
+      const kx = cr.width / this.vw || 1, ky = cr.height / HGT || 1;
       const el = document.createElement(multiline ? 'textarea' : 'input');
       if (!multiline) el.type = 'text';
       el.className = 'hsr-bug-input';
@@ -268,11 +271,11 @@
       el.maxLength = multiline ? 4000 : 200;
       el.placeholder = multiline ? 'Что делали, что ожидали увидеть. Ctrl+Enter — готово' : 'Коротко: что пошло не так. Enter — готово';
       Object.assign(el.style, {
-        left: Math.round(cr.left - rr.left + ROWS.x * k) + 'px',
-        top: Math.round(cr.top - rr.top + rowY * k) + 'px',
-        width: Math.round(ROWS.w * k) + 'px',
-        height: Math.round((multiline ? 110 : ROWS.h) * k) + 'px',
-        fontSize: Math.max(12, Math.round(12 * k)) + 'px'
+        left: Math.round(cr.left - rr.left + (ROWS.x + this.ox()) * kx) + 'px',
+        top: Math.round(cr.top - rr.top + rowY * ky) + 'px',
+        width: Math.round(ROWS.w * kx) + 'px',
+        height: Math.round((multiline ? 110 : ROWS.h) * ky) + 'px',
+        fontSize: Math.max(12, Math.round(12 * ky)) + 'px'
       });
       let finished = false;
       const finish = () => {

@@ -1128,16 +1128,37 @@
     ctx.fillStyle = G.dark(col, 0.45); ctx.fillRect(x, y, w, h);
     ctx.fillStyle = col; ctx.fillRect(x + 1, y + 1, w - 2, h - 2);
     ctx.fillStyle = '#0a0c18'; ctx.fillRect(x + 2, y + 2, w - 4, h - 4);
-    const aw = w - 6, ah = h - 6;
+    const aw = w - 6, ah = h - 6, hasLvl = opts.lvl != null;
     const art = coneArt(id, aw, ah);
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(art, x + 3, y + 3, aw, ah);
     ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.fillRect(x + 3, y + 3, aw, 1); ctx.fillRect(x + 3, y + 3, 1, ah);
     if (opts.info !== false && w >= 40) {
-      ctx.fillStyle = 'rgba(6,8,20,0.72)'; ctx.fillRect(x + 3, y + h - 3 - 11, aw, 11);
-      for (let i = 0; i < rar; i++) { const px = x + 6 + i * 6, py = y + h - 8.5; ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(px, py - 3); ctx.lineTo(px + 2.5, py); ctx.lineTo(px, py + 3); ctx.lineTo(px - 2.5, py); ctx.fill(); }
-      if (d) G.pathIcon(ctx, d.path, x + w - 16, y + 5, 11, '#f2dc9a');
-      if (opts.sup) { ctx.font = 'bold 10px Tahoma, Arial, sans-serif'; ctx.textAlign = 'right'; ctx.textBaseline = 'top'; ctx.fillStyle = '#000'; ctx.fillText('S' + opts.sup, x + w - 5, y + h - 14); ctx.fillStyle = '#ffe8a0'; ctx.fillText('S' + opts.sup, x + w - 6, y + h - 15); }
+      if (hasLvl) {
+        ctx.fillStyle = 'rgba(6,8,20,0.82)'; ctx.fillRect(x + 3, y + h - 14, aw, 11);
+        ctx.font = 'bold 8px Tahoma, Arial, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillStyle = '#f1ead8'; ctx.fillText('ур. ' + opts.lvl, x + w / 2, y + h - 13);
+        const span = (rar - 1) * 6, sx0 = x + w / 2 - span / 2, py = y + h - 17.5;
+        for (let i = 0; i < rar; i++) {
+          const px = sx0 + i * 6;
+          ctx.fillStyle = 'rgba(0,0,0,0.8)'; ctx.beginPath(); ctx.moveTo(px, py - 2.5); ctx.lineTo(px + 2.5, py + 1); ctx.lineTo(px, py + 4); ctx.lineTo(px - 2.5, py + 1); ctx.fill();
+          ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(px, py - 3); ctx.lineTo(px + 2.5, py); ctx.lineTo(px, py + 3); ctx.lineTo(px - 2.5, py); ctx.fill();
+        }
+      } else {
+        ctx.fillStyle = 'rgba(6,8,20,0.72)'; ctx.fillRect(x + 3, y + h - 3 - 11, aw, 11);
+        for (let i = 0; i < rar; i++) { const px = x + 6 + i * 6, py = y + h - 8.5; ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(px, py - 3); ctx.lineTo(px + 2.5, py); ctx.lineTo(px, py + 3); ctx.lineTo(px - 2.5, py); ctx.fill(); }
+      }
+      if (d) G.pathIcon(ctx, d.path, x + w - 15, y + 4, 11, '#f2dc9a');
+      if (opts.supBadge && G.supBadge) G.supBadge(ctx, x + 4, y + 12, opts.sup || 1, 5.5);
+      else if (opts.sup) { ctx.font = 'bold 10px Tahoma, Arial, sans-serif'; ctx.textAlign = 'right'; ctx.textBaseline = 'top'; ctx.fillStyle = '#000'; ctx.fillText('S' + opts.sup, x + w - 5, y + h - 14); ctx.fillStyle = '#ffe8a0'; ctx.fillText('S' + opts.sup, x + w - 6, y + h - 15); }
+      if (opts.lock && G.lockIcon) G.lockIcon(ctx, x + w - 15, y + h - (hasLvl ? 30 : 26), true, { badge: true, r: 5.5 });
+    }
+    if (opts.selected) {
+      ctx.strokeStyle = '#f4f0e4';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, w, h);
+      ctx.lineWidth = 1;
+      if (G.minusBadge) G.minusBadge(ctx, x - 3, y - 3, 5.5);
     }
     ctx.restore();
   }

@@ -446,9 +446,12 @@
     skip() { if (!this.fade) this.fade = 0.001; }
 
     render() {
-      const cv = buf.cv || (buf.cv = G.mkCanvas(LW, LH)), g = cv.getContext('2d');
+      const rw = this.ui && this.ui.wide && this.ui.wide() ? 427 : LW, ox = (rw - LW) >> 1;
+      const cv = buf.cv && buf.cv.width === rw ? buf.cv : (buf.cv = G.mkCanvas(rw, LH)), g = cv.getContext('2d');
+      g._wide = rw > LW;
       g.save();
       g.imageSmoothingEnabled = false;
+      if (ox) g.translate(ox, 0);
       const S = H.Cine.stage(g, this.game, this.T);
       S.t = Math.min(this.t, this.def.d); S.d = this.def.d;
       this.def.act(S, this.P);
@@ -463,18 +466,18 @@
       c.save();
       c.globalAlpha = this.fade > 0 ? 1 - cl(this.fade / SKILL_FADE) : 1;
       c.imageSmoothingEnabled = false;
-      c.drawImage(cv, 0, 0, W, HGT);
-      c.fillStyle = '#000000'; c.fillRect(0, 0, W, BAR * 2); c.fillRect(0, HGT - BAR * 2, W, BAR * 2);
-      c.fillStyle = rgba(P.col, 0.7); c.fillRect(0, BAR * 2 - 1, W, 1); c.fillRect(0, HGT - BAR * 2, W, 1);
+      c.drawImage(cv, ui.left, 0, ui.vw, HGT);
+      c.fillStyle = '#000000'; c.fillRect(ui.left, 0, ui.vw, BAR * 2); c.fillRect(ui.left, HGT - BAR * 2, ui.vw, BAR * 2);
+      c.fillStyle = rgba(P.col, 0.7); c.fillRect(ui.left, BAR * 2 - 1, ui.vw, 1); c.fillRect(ui.left, HGT - BAR * 2, ui.vw, 1);
       const k = eOut(cl(this.t / 0.25));
       c.globalAlpha *= k;
-      ui.text('НАВЫК', 14 - (1 - k) * 60, 14, { size: 10, bold: true, col: G.light(P.col, 0.3) });
-      ui.text(P.name, 14 - (1 - k) * 60, 28, { size: 14, bold: true, serif: true, col: C.gold });
-      ui.text(P.u.name, W - 14, HGT - BAR * 2 + 16, { align: 'right', size: 11, bold: true, col: C.cream });
+      ui.text('НАВЫК', ui.left + 14 - (1 - k) * 60, 14, { size: 10, bold: true, col: G.light(P.col, 0.3) });
+      ui.text(P.name, ui.left + 14 - (1 - k) * 60, 28, { size: 14, bold: true, serif: true, col: C.gold });
+      ui.text(P.u.name, ui.right - 14, HGT - BAR * 2 + 16, { align: 'right', size: 11, bold: true, col: C.cream });
       c.restore();
       if (!this.fade) {
-        ui.hints([['Esc', 'Пропустить']], W - 12, 20, { align: 'right' });
-        ui.hit(0, 0, W, HGT, () => this.skip());
+        ui.hints([['Esc', 'Пропустить']], ui.right - 12, 20, { align: 'right' });
+        ui.hit(ui.left, 0, ui.vw, HGT, () => this.skip());
       }
     }
   }

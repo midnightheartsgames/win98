@@ -1,7 +1,7 @@
 (function (H) {
   'use strict';
   const G = H.Gfx, T = H.TUNING;
-  const W = 640, HGT = 480, TS = 32;
+  const W = 640, WIDE_W = 854, HGT = 480, TS = 32;
   const FONT = '"MS Sans Serif", Tahoma, Arial, sans-serif';
   const SCROLL_W = 10;
   const SERIF = 'Georgia, "Times New Roman", serif';
@@ -48,6 +48,10 @@
     { id: '1280', tag: '1280', w: 1280 },
     { id: 'window', tag: 'Окно', w: 0 }
   ];
+  const ASPECTS = [
+    { id: '4:3', tag: '4:3' },
+    { id: '16:9', tag: '16:9' }
+  ];
   const KEYMAP = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', Enter: 'ok', Space: 'ok', NumpadEnter: 'ok', Escape: 'back', Backspace: 'back' };
   const GLOW_NAME = { starlight: ['Неугасаемый звёздный свет', 'звёздного света'], embers: ['Неугасаемый пепел', 'пепла'] };
   const HUD_CARD = { h: 46, step: 50, barW: 35, fill: 0.9, energy: '#f2b632', energyText: '#ffe0a0' };
@@ -62,7 +66,9 @@
       root.appendChild(this.canvas);
       this.ctx = this.canvas.getContext('2d');
       this.ctx.imageSmoothingEnabled = false;
-      this.options = Object.assign({ sfx: 0.6, music: 0.35, battleSpeed: 1, textSpeed: 2, res: '640', ultCine: 'on', fusionCine: 'on', skinCine: 'first' }, lsGet(OPT_KEY, {}));
+      const fillRect0 = this.ctx.fillRect.bind(this.ctx);
+      this.ctx.fillRect = (x, y, w, h) => fillRect0(x === 0 && w === W ? this.left : x, y, x === 0 && w === W ? this.vw : w, h);
+      this.options = Object.assign({ sfx: 0.6, music: 0.35, battleSpeed: 1, textSpeed: 2, res: '640', aspect: '4:3', ultCine: 'on', fusionCine: 'on', skinCine: 'first' }, lsGet(OPT_KEY, {}));
       mirrorAllSaves();
       this.applyRes();
       this.audio = new H.Audio();
@@ -101,18 +107,33 @@
 
     active() { return !this.opts.isActive || this.opts.isActive(); }
 
+    wide() { return this.options.aspect === '16:9'; }
+
+    get vw() { return this.wide() ? WIDE_W : W; }
+
+    ox() { return (this.vw - W) / 2; }
+
+    get left() { return -this.ox(); }
+
+    get right() { return W + this.ox(); }
+
     resPreset() { return RES.find(r => r.id === this.options.res) || RES[0]; }
 
     resScale() {
-      const p = this.resPreset();
+      const p = this.resPreset(), vw = this.vw;
       if (p.w) return p.w / W;
       const r = this.canvas.getBoundingClientRect(), dpr = globalThis.devicePixelRatio || 1;
-      if (!r.width || !r.height) return this.canvas.width / W;
-      return Math.max(0.5, Math.min(4, Math.min(r.width / W, r.height / HGT) * dpr));
+      if (!r.width || !r.height) return this.canvas.height / HGT;
+      return Math.max(0.5, Math.min(4, Math.min(r.width / vw, r.height / HGT) * dpr));
     }
 
     applyRes() {
-      const k = this.resScale(), w = Math.round(W * k), h = Math.round(HGT * k);
+      const wide = this.wide(), cn = 'hsr98-canvas' + (wide ? ' hsr98-wide' : '');
+      if (this.canvas.className !== cn) {
+        this.canvas.className = cn;
+        if (this.opts.onAspect) this.opts.onAspect(wide);
+      }
+      const k = this.resScale(), w = Math.round(this.vw * k), h = Math.round(HGT * k);
       if (this.canvas.width !== w || this.canvas.height !== h) { this.canvas.width = w; this.canvas.height = h; }
     }
 
@@ -166,7 +187,7 @@
 
     pointer(e) {
       const r = this.canvas.getBoundingClientRect();
-      return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * HGT / r.height };
+      return { x: (e.clientX - r.left) * this.vw / r.width - this.ox(), y: (e.clientY - r.top) * HGT / r.height };
     }
 
     click(e) {
@@ -179,7 +200,10 @@
       if (this.dlg || (this.game && this.game.pending && ['say', 'tut'].includes(this.game.pending.type))) this.handleKey('ok', 'Enter', e);
     }
 
-    hit(x, y, w, h, fn) { this.hits.push({ x, y, w, h, fn }); }
+    hit(x, y, w, h, fn) {
+      if (x === 0 && y === 0 && w === W && h === HGT) { x = this.left; w = this.vw; }
+      this.hits.push({ x, y, w, h, fn });
+    }
 
     wheelZone(x, y, w, h, fn) { this.wheels.push({ x, y, w, h, fn }); }
 
@@ -453,11 +477,11 @@
     }
 
     render() {
-      const c = this.ctx;
+      const c = this.ctx, sx = this.canvas.width / this.vw, sy = this.canvas.height / HGT;
       this.hits = [];
       this.wheels = [];
       c.save();
-      c.setTransform(this.canvas.width / W, 0, 0, this.canvas.height / HGT, 0, 0);
+      c.setTransform(sx, 0, 0, sy, this.ox() * sx, 0);
       c.imageSmoothingEnabled = false;
       const full = this.screens.map(s => !!s.full).lastIndexOf(true);
       if (full < 0) {
@@ -465,12 +489,12 @@
         else if (this.mode === 'field') this.drawField(c);
         else if (this.mode === 'battle') this.drawBattle(c);
         else if (this.mode === 'credits') this.drawCredits(c);
-        if (this.game && this.game.cg && this.mode === 'field') G.drawCG(c, this.game.cg, W, HGT, this.t, this.game);
+        if (this.game && this.game.cg && this.mode === 'field') { c.save(); c.translate(this.left, 0); G.drawCG(c, this.game.cg, this.vw, HGT, this.t, this.game); c.restore(); }
         if (this.dlg && this.mode !== 'battle') this.drawDialog(c);
       }
       this.screens.forEach((s, i) => {
         if (i < full) return;
-        if (i > Math.max(0, full) && !s.full) { c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(0, 0, W, HGT); }
+        if (i > Math.max(0, full) && !s.full) { c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(this.left, 0, this.vw, HGT); }
         if (s === this.top()) { this.hits = []; this.wheels = []; }
         s.draw(c, s === this.top());
       });
@@ -763,35 +787,36 @@
     }
 
     drawTitle(c) {
-      H.TitleScene.draw(c, W, HGT, this.t);
-      const lg = c.createRadialGradient(130, 80, 20, 130, 80, 180);
+      const lx = this.left, rx = this.right, vw = this.vw, ox = this.ox();
+      H.TitleScene.draw(c, vw, HGT, this.t, lx);
+      const lg = c.createRadialGradient(lx + 130, 80, 20, lx + 130, 80, 180);
       lg.addColorStop(0, 'rgba(2,3,14,0.55)'); lg.addColorStop(1, 'rgba(2,3,14,0)');
-      c.fillStyle = lg; c.fillRect(0, 0, 320, 260);
-      const mg = c.createLinearGradient(W - 180, 0, W, 0);
+      c.fillStyle = lg; c.fillRect(lx, 0, 320, 260);
+      const mg = c.createLinearGradient(rx - 180, 0, rx, 0);
       mg.addColorStop(0, 'rgba(2,3,14,0)'); mg.addColorStop(1, 'rgba(2,3,14,0.55)');
-      c.fillStyle = mg; c.fillRect(W - 180, 0, 180, HGT);
+      c.fillStyle = mg; c.fillRect(rx - 180, 0, 180, HGT);
       const bg = c.createRadialGradient(0, 0, 10, 0, 0, 210);
       bg.addColorStop(0, 'rgba(2,3,14,0.62)'); bg.addColorStop(1, 'rgba(2,3,14,0)');
       c.save(); c.translate(W / 2 - 40, HGT - 84); c.scale(1, 0.42); c.fillStyle = bg; c.fillRect(-210, -210, 420, 420); c.restore();
       if (H.BRAND.standalone) {
-        this.text('STAR RAIL', 36, 44, { size: 40, bold: true, serif: true, col: '#e8d098' });
-        this.text('98', 36 + this.measure('STAR RAIL', 40, true, true) + 10, 38, { size: 46, bold: true, serif: true, col: '#ffb040' });
-        this.text(H.BRAND.edition, 40, 100, { size: 11, col: '#b8c4ea' });
+        this.text('STAR RAIL', lx + 36, 44, { size: 40, bold: true, serif: true, col: '#e8d098' });
+        this.text('98', lx + 36 + this.measure('STAR RAIL', 40, true, true) + 10, 38, { size: 46, bold: true, serif: true, col: '#ffb040' });
+        this.text(H.BRAND.edition, lx + 40, 100, { size: 11, col: '#b8c4ea' });
       } else {
-        this.text('HONKAI', 36, 34, { size: 40, bold: true, serif: true, col: '#e8d098' });
-        this.text('STAR RAIL', 38, 78, { size: 29, bold: true, serif: true, col: '#ffffff' });
-        this.text('98', 210, 72, { size: 34, bold: true, serif: true, col: '#ffb040' });
-        this.text('Издание «Ярило-VI» · PC CD-ROM', 40, 114, { size: 11, col: '#b8c4ea' });
+        this.text('HONKAI', lx + 36, 34, { size: 40, bold: true, serif: true, col: '#e8d098' });
+        this.text('STAR RAIL', lx + 38, 78, { size: 29, bold: true, serif: true, col: '#ffffff' });
+        this.text('98', lx + 210, 72, { size: 34, bold: true, serif: true, col: '#ffb040' });
+        this.text('Издание «Ярило-VI» · PC CD-ROM', lx + 40, 114, { size: 11, col: '#b8c4ea' });
       }
       const items = this.titleItems();
-      const x0 = W - 132, y0 = 40;
+      const x0 = rx - 132, y0 = 40;
       items.forEach((it, i) => {
         const y = y0 + i * 56, on = i === this.titleSel;
-        if (on) { const gr = c.createLinearGradient(x0 - 20, 0, W, 0); gr.addColorStop(0, 'rgba(242,220,154,0)'); gr.addColorStop(1, 'rgba(242,220,154,0.28)'); c.fillStyle = gr; c.fillRect(x0 - 20, y - 4, W - x0 + 20, 50); }
+        if (on) { const gr = c.createLinearGradient(x0 - 20, 0, rx, 0); gr.addColorStop(0, 'rgba(242,220,154,0)'); gr.addColorStop(1, 'rgba(242,220,154,0.28)'); c.fillStyle = gr; c.fillRect(x0 - 20, y - 4, rx - x0 + 20, 50); }
         G.menuIcon(c, it.icon, x0 + 46, y, 28, it.disabled ? '#5a5a70' : on ? '#fff4c8' : '#d8dcf0');
         if (it.badge) this.text(it.badge, x0 + 78, y - 2, { size: 9, bold: true, col: C.gold });
         this.text(it.label, x0 + 60, y + 30, { align: 'center', size: 11, bold: on, col: it.disabled ? C.dim : on ? C.gold : '#e8ecf8' });
-        this.hit(x0 - 10, y - 4, W - x0 + 10, 50, () => { this.titleSel = i; it.fn(); });
+        this.hit(x0 - 10, y - 4, rx - x0 + 10, 50, () => { this.titleSel = i; it.fn(); });
       });
       const cur = items[this.titleSel] || items[0];
       const blink = 0.65 + 0.35 * Math.sin(this.t * 3);
@@ -805,29 +830,29 @@
       this.diamond(px + 16, py + 12, 5, cur.disabled ? '#5a5a70' : C.brassHi, '#1a1208');
       this.text(note, px + pw / 2 + 8, py + 5, { align: 'center', size: 12, col: cur.disabled ? C.dim : cur.noteCol || C.cream });
       this.hit(px, HGT - 112, pw, 72, () => cur.fn());
-      this.text(H.BRAND.disc, 10, HGT - 16, { size: 9, col: '#7080a8' });
-      this.hints([['↑↓', 'Выбор'], ['Enter', 'Подтвердить']], W - 10, HGT - 18, { align: 'right' });
+      this.text(H.BRAND.disc, lx + 10, HGT - 16, { size: 9, col: '#7080a8' });
+      this.hints([['↑↓', 'Выбор'], ['Enter', 'Подтвердить']], rx - 10, HGT - 18, { align: 'right' });
     }
 
     camera() {
-      const g = this.game, p = g.player, m = g.map;
+      const g = this.game, p = g.player, m = g.map, ox = this.ox(), vw = this.vw;
       const mw = m.w * TS, mh = m.h * TS;
       let cx = p.fx * TS + 16 - W / 2, cy = p.fy * TS + 16 - HGT / 2;
-      cx = mw <= W ? (mw - W) / 2 : Math.max(0, Math.min(mw - W, cx));
+      cx = mw <= vw ? (mw - W) / 2 : Math.max(ox, Math.min(mw - W - ox, cx));
       cy = mh <= HGT ? (mh - HGT) / 2 : Math.max(0, Math.min(mh - HGT, cy));
       return [Math.round(cx), Math.round(cy)];
     }
 
     drawWorld(c) {
-      const g = this.game, m = g.map, th = m.def.theme;
+      const g = this.game, m = g.map, th = m.def.theme, ox = this.ox(), lx = this.left, rx = this.right, vw = this.vw;
       const [cx, cy] = this.camera();
       if (m.def.car) m.outside = g.expressWorld().id;
-      G.drawMap(c, m, cx, cy, this.t, W, HGT);
+      c.save(); c.translate(lx, 0); G.drawMap(c, m, cx - ox, cy, this.t, vw, HGT); c.restore();
       const draws = [], L = G.mapLayer(m);
       for (const s of L.sprites || []) {
         if (s.if && !g.cond(s.if)) continue;
         const sx = s.x * TS - cx, sy = s.y * TS - cy;
-        if (sx > W + 32 || sy > HGT + 32 || sx + s.w * TS < -32 || sy + s.h * TS < -32) continue;
+        if (sx > rx + 32 || sy > HGT + 32 || sx + s.w * TS < lx - 32 || sy + s.h * TS < -32) continue;
         draws.push({ y: s.sort, fn: () => H.Train.drawSprite(c, s, sx, sy, this.t) });
       }
       if (g.tram && m.def.tram && H.Jarilo) {
@@ -838,7 +863,7 @@
         if (!g.visible(e)) continue;
         const fl = e.kind === 'enemy' || (e.kind === 'npc' && e.fx != null);
         const ex = (fl ? e.fx : e.x) * TS - cx, ey = (fl ? e.fy : e.y) * TS - cy;
-        if (ex < -64 || ey < -64 || ex > W + 32 || ey > HGT + 32) continue;
+        if (ex < lx - 64 || ey < -64 || ex > rx + 32 || ey > HGT + 32) continue;
         draws.push({ y: (fl ? e.fy : e.y), fn: () => this.drawEnt(c, e, ex, ey) });
       }
       const p = g.player;
@@ -863,7 +888,7 @@
       for (const d of draws) d.fn();
       if (pet) this.drawPetSay(c, pet, pet.fx * TS - cx, pet.fy * TS - cy);
       for (const pa of this.particles) if (pa.field) { c.fillStyle = pa.col; c.fillRect(pa.x - cx, pa.y - cy, 3, 3); }
-      if (L.deco) H.Train.drawFx(c, L, m, cx, cy, this.t, W, HGT, x => g.cond(x));
+      if (L.deco) { c.save(); c.translate(lx, 0); H.Train.drawFx(c, L, m, cx - ox, cy, this.t, vw, HGT, x => g.cond(x)); c.restore(); }
       const fd = g.findieTarget && g.findieTarget();
       if (fd) {
         const px = g.player.fx * TS - cx + 16, py = g.player.fy * TS - cy - 30, a = Math.atan2(fd.y - g.player.fy, fd.x - g.player.fx), hot = Math.max(0, 1 - fd.dist / 18);
@@ -879,7 +904,7 @@
       }
       const bl = g.barkLine && g.barkLine();
       if (bl) {
-        const w = Math.min(380, this.measure(bl.text, 10, false) + 12), bx = Math.max(4, Math.min(W - w - 4, bl.x * TS - cx + 16 - w / 2)), by = bl.y * TS - cy - 34;
+        const w = Math.min(380, this.measure(bl.text, 10, false) + 12), bx = Math.max(lx + 4, Math.min(rx - w - 4, bl.x * TS - cx + 16 - w / 2)), by = bl.y * TS - cy - 34;
         c.fillStyle = 'rgba(250,246,236,0.94)'; c.fillRect(bx, by, w, 15);
         c.strokeStyle = 'rgba(60,44,30,0.85)'; c.lineWidth = 1; c.strokeRect(bx + 0.5, by + 0.5, w - 1, 14);
         c.fillStyle = 'rgba(250,246,236,0.94)'; c.beginPath(); c.moveTo(bl.x * TS - cx + 12, by + 15); c.lineTo(bl.x * TS - cx + 20, by + 15); c.lineTo(bl.x * TS - cx + 16, by + 20); c.fill();
@@ -887,12 +912,12 @@
       }
       if (th === 'snow' || th === 'hill' || th === 'ice' || th === 'rivet') {
         c.fillStyle = 'rgba(255,255,255,0.85)';
-        for (let i = 0; i < 70; i++) { const sx = (G.hash(i, 1, 1) * W + this.t * (20 + G.hash(i, 2, 2) * 30)) % W, sy = (G.hash(1, i, 3) * HGT + this.t * (40 + G.hash(i, 3, 3) * 50)) % HGT; c.fillRect(sx, sy, 2, 2); }
+        for (let i = 0; i < 70; i++) { const sx = lx + (G.hash(i, 1, 1) * vw + this.t * (20 + G.hash(i, 2, 2) * 30)) % vw, sy = (G.hash(1, i, 3) * HGT + this.t * (40 + G.hash(i, 3, 3) * 50)) % HGT; c.fillRect(sx, sy, 2, 2); }
       }
       if (th === 'mine' || th === 'under') {
-        const gr = c.createRadialGradient(W / 2, HGT / 2, 120, W / 2, HGT / 2, 380);
+        const gr = c.createRadialGradient(W / 2, HGT / 2, 120, W / 2, HGT / 2, 380 + ox);
         gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,0.6)');
-        c.fillStyle = gr; c.fillRect(0, 0, W, HGT);
+        c.fillStyle = gr; c.fillRect(lx, 0, vw, HGT);
       }
     }
 
@@ -944,7 +969,7 @@
             c.fillStyle = 'rgba(14,6,30,0.82)'; c.fillRect(x + 16 - w / 2, ly, w, 13);
             c.strokeStyle = 'rgba(200,150,255,0.8)'; c.strokeRect(x + 16.5 - w / 2, ly + 0.5, w - 1, 12);
             this.text(e.def.label, x + 16, ly + 1, { align: 'center', size: 10, bold: true, col: '#e8d0ff' });
-          } else if (e.def.script && Math.hypot(e.x - g.player.x, e.y - g.player.y) < 2.5) this.diamond(x + 16, y - (e.def.obj === 'portrait' ? 38 : 24) - (e.def.lift || 0) + Math.sin(this.t * 4) * 2, 4, C.brassHi, '#1a1208');
+          } else if (e.def.script && !g.entAt(e.x, e.y - 1, o => o.ch === e.ch) && (Math.hypot(e.x - g.player.x, e.y - g.player.y) < 2.5 || g.entAt(e.x, e.y + 1, o => o.ch === e.ch && Math.hypot(o.x - g.player.x, o.y - g.player.y) < 2.5))) this.diamond(x + 16, y - (e.def.obj === 'portrait' ? 38 : 24) - (e.def.lift || 0) + Math.sin(this.t * 4) * 2, 4, C.brassHi, '#1a1208');
           break;
         }
         case 'portal': this.drawSuPortal(c, e, x, y); break;
@@ -1002,21 +1027,21 @@
     objPhase(e) { return e.x * 1.7 + e.y * 2.9; }
 
     drawHudMission(c) {
-      const g = this.game, s = g.state, tm = g.missionTracked();
+      const g = this.game, s = g.state, tm = g.missionTracked(), lx = this.left;
       if (!tm) {
         if (g.missionsState().track === 'none' || !s.obj) return;
         const obj = this.wrap(s.obj, 200, 11);
-        c.fillStyle = 'rgba(4,6,20,0.55)'; c.fillRect(6, 30, 214, 8 + obj.length * 13);
-        this.diamond(13, 37, 3.5, C.brassHi);
-        obj.forEach((l, i) => this.text(l, 21, 31 + i * 13, { size: 11, col: '#ffe8b0' }));
+        c.fillStyle = 'rgba(4,6,20,0.55)'; c.fillRect(lx + 6, 30, 214, 8 + obj.length * 13);
+        this.diamond(lx + 13, 37, 3.5, C.brassHi);
+        obj.forEach((l, i) => this.text(l, lx + 21, 31 + i * 13, { size: 11, col: '#ffe8b0' }));
         return;
       }
       const ty = H.MISSION_TYPES[tm.type], lines = this.wrap(tm.text || '', 196, 11).slice(0, 3);
-      c.fillStyle = 'rgba(4,6,20,0.62)'; c.fillRect(6, 30, 214, 22 + lines.length * 13);
-      c.fillStyle = ty.col; c.fillRect(6, 30, 2, 22 + lines.length * 13);
-      G.menuIcon(c, ty.icon, 11, 32, 14, ty.col);
-      this.text(this.clipText ? this.clipText(tm.name, 190, 10, true) : tm.name, 28, 33, { size: 10, bold: true, col: ty.col });
-      lines.forEach((l, i) => this.text(l, 14, 48 + i * 13, { size: 11, col: '#ffe8b0' }));
+      c.fillStyle = 'rgba(4,6,20,0.62)'; c.fillRect(lx + 6, 30, 214, 22 + lines.length * 13);
+      c.fillStyle = ty.col; c.fillRect(lx + 6, 30, 2, 22 + lines.length * 13);
+      G.menuIcon(c, ty.icon, lx + 11, 32, 14, ty.col);
+      this.text(this.clipText ? this.clipText(tm.name, 190, 10, true) : tm.name, lx + 28, 33, { size: 10, bold: true, col: ty.col });
+      lines.forEach((l, i) => this.text(l, lx + 14, 48 + i * 13, { size: 11, col: '#ffe8b0' }));
     }
 
     drawMapBanner(c) {
@@ -1034,23 +1059,23 @@
     }
 
     drawHud(c) {
-      const g = this.game, s = g.state;
+      const g = this.game, s = g.state, lx = this.left, rx = this.right;
       this.drawMapBanner(c);
-      if (s.su) this.drawNetChip(c, 10 + this.drawSuHudTop(c), 6);
+      if (s.su) this.drawNetChip(c, lx + 10 + this.drawSuHudTop(c), 6);
       else {
         const place = g.map.def.name.split(': ').pop();
         const pw = this.measure(place, 11, true) + 34;
-        c.fillStyle = 'rgba(4,6,20,0.78)'; c.fillRect(6, 6, pw, 20);
-        c.fillStyle = C.brass; c.fillRect(6, 25, pw, 1);
-        G.menuIcon(c, 'nav', 9, 8, 16, C.brassHi);
-        this.text(place, 28, 10, { size: 11, bold: true, col: C.cream });
-        this.drawNetChip(c, 10 + pw, 6);
+        c.fillStyle = 'rgba(4,6,20,0.78)'; c.fillRect(lx + 6, 6, pw, 20);
+        c.fillStyle = C.brass; c.fillRect(lx + 6, 25, pw, 1);
+        G.menuIcon(c, 'nav', lx + 9, 8, 16, C.brassHi);
+        this.text(place, lx + 28, 10, { size: 11, bold: true, col: C.cream });
+        this.drawNetChip(c, lx + 10 + pw, 6);
         this.drawHudMission(c);
       }
       const step = Math.max(0, this.t - (this.hudEnT == null ? this.t : this.hudEnT));
       this.hudEnT = this.t;
       s.party.slice(0, 4).forEach((k, i) => {
-        const x = W - 132, y = 8 + i * HUD_CARD.step, h = HUD_CARD.h, lead = i === 0;
+        const x = rx - 132, y = 8 + i * HUD_CARD.step, h = HUD_CARD.h, lead = i === 0;
         const r = s.roster[k], kit = g.kitOf(k), st = s.su ? g.suHpOf(k) : { cur: r.hp == null ? g.charStats(k).hp : r.hp, max: g.charStats(k).hp }, hp = st.cur;
         c.fillStyle = lead ? 'rgba(40,32,12,0.82)' : 'rgba(4,6,20,0.72)'; c.fillRect(x, y, 126, h);
         c.fillStyle = lead ? C.brassHi : 'rgba(154,166,208,0.5)'; c.fillRect(x, y, 2, h);
@@ -1065,7 +1090,7 @@
         if (s.pendingTechs.includes(kit)) this.diamond(x + 116, y + 9, 4, C.cyan, '#08202a');
       });
       this.drawMinimap(c);
-      const bx = W - 170, by = HGT - 52;
+      const bx = rx - 170, by = HGT - 52;
       c.fillStyle = 'rgba(4,6,20,0.78)'; c.fillRect(bx, by, 164, 46);
       c.fillStyle = C.brass; c.fillRect(bx, by, 164, 1);
       this.text('Техника', bx + 8, by + 6, { size: 10, col: C.sub });
@@ -1151,7 +1176,7 @@
     }
 
     drawSkipping(c) {
-      const label = 'Сцена пропускается', w = Math.round(this.measure(label, 11, true) + 34), x = W - w - 12, y = 12;
+      const label = 'Сцена пропускается', w = Math.round(this.measure(label, 11, true) + 34), x = this.right - w - 12, y = 12;
       c.fillStyle = 'rgba(4,6,20,0.82)'; c.fillRect(x, y, w, 20);
       c.fillStyle = C.brass; c.fillRect(x, y, w, 1); c.fillRect(x, y + 19, w, 1);
       for (let i = 0; i < 2; i++) {
@@ -1171,7 +1196,7 @@
         sel: 0,
         draw(c) {
           const w = 480, h = 150 + lines.length * 17, x = W / 2 - w / 2, y = Math.round(HGT / 2 - h / 2 - 30);
-          c.fillStyle = 'rgba(2,3,12,0.6)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.6)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(x, y, w, h, { title: 'Пропуск сцены' });
           G.menuIcon(c, 'mission', x + 18, y + 18, 32);
           ui.text('Краткое содержание', x + 60, y + 18, { size: 10, col: C.sub });
@@ -1227,12 +1252,12 @@
         draw(c) {
           const lines = ui.wrap(p.text, 400, 12);
           const h = 62 + lines.length * 16, x = W / 2 - 240, y = HGT / 2 - h / 2;
-          c.fillStyle = 'rgba(0,0,0,0.45)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(0,0,0,0.45)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(x, y, 480, h, { title: 'Подсказка' });
           G.menuIcon(c, 'guide', x + 16, y + 20, 32);
           lines.forEach((l, i) => ui.text(l, x + 60, y + 22 + i * 16));
           ui.hints([['Enter', 'Понятно']], W / 2, y + h - 22, { align: 'center' });
-          ui.hit(0, 0, W, HGT, () => this.key('ok'));
+          ui.hit(ui.left, 0, ui.vw, HGT, () => this.key('ok'));
         },
         key(k) { if (k === 'ok' || k === 'back') { ui.screens.pop(); ui.sfx('confirm'); ui.finishPending(); } }
       });
@@ -1251,7 +1276,7 @@
         case 'magflow': return this.openMagflow(p.id, ok => this.finishPending(!!ok));
         case 'carts': return this.openCarts(p.id, ok => this.finishPending(!!ok));
         case 'nav': return this.openStarMap(close);
-        case 'databank': return this.openBank(close);
+        case 'databank': return p.section === 'books' ? this.openBookshelf(close, p.world, p.series) : this.openBank(close, p.section, p.entry);
         case 'book': return this.openBook(p.book, close);
         case 'doc': return this.openDoc(p.doc, close);
         case 'anchor': return this.openAnchor(p.anchor, close);
@@ -1272,7 +1297,7 @@
       const opts = [{ name: 'Келус', gender: 'm' }, { name: 'Стелла', gender: 'f' }];
       this.push({
         draw(c) {
-          c.fillStyle = 'rgba(2,3,12,0.7)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.7)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(W / 2 - 220, 60, 440, 350, { title: 'Выбор сосуда' });
           opts.forEach((o, i) => {
             const x = W / 2 - 200 + i * 210, y = 84, on = i === this.sel;
@@ -1323,7 +1348,7 @@
       const slots = mode === 'load' ? [1, 2, 3, 'auto'] : [1, 2, 3];
       this.push({
         draw(c) {
-          c.fillStyle = 'rgba(2,3,12,0.6)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.6)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           const h = 54 + slots.length * 62;
           ui.win(W / 2 - 230, 70, 460, h, { title: mode === 'load' ? 'Карта памяти — загрузка' : 'Карта памяти — сохранение' });
           ui.closeBtn(W / 2 + 230 - 30, 70 + 8, () => this.key('back'));
@@ -1367,7 +1392,7 @@
       };
       this.push({
         draw(c) {
-          c.fillStyle = 'rgba(2,3,12,0.6)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.6)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(W / 2 - 190, 130, 380, 164, { title: 'Перенос сохранений' });
           ui.closeBtn(W / 2 + 190 - 30, 130 + 8, () => this.key('back'));
           ui.text('Все блоки карты памяти — одним файлом', W / 2, 150, { align: 'center', size: 11, col: C.sub });
@@ -1414,7 +1439,8 @@
         { label: 'Сцены слияний', k: 'fusionCine', presets: H.Fusions ? H.Fusions.MODES : [{ id: 'off', tag: 'Выкл.' }], cur: () => ui.options.fusionCine || 'on', set: setCine('fusionCine'), fmt: () => '' },
         { label: 'Сцены навыков облика', k: 'skinCine', presets: H.Ults ? H.Ults.MODES : [{ id: 'off', tag: 'Выкл.' }], cur: () => ui.options.skinCine || 'first', set: setCine('skinCine'), fmt: () => '' },
         { label: 'Скорость текста', k: 'textSpeed', step: 1, max: 5, min: 1, fmt: v => '×' + v },
-        { label: 'Разрешение', k: 'res', presets: RES, cur: () => ui.resPreset().id, set: id => setRes(id), fmt: () => ui.canvas.width + '×' + ui.canvas.height }
+        { label: 'Разрешение', k: 'res', presets: RES, cur: () => ui.resPreset().id, set: id => setRes(id), fmt: () => ui.canvas.width + '×' + ui.canvas.height },
+        { label: 'Формат экрана', k: 'aspect', presets: ASPECTS, cur: () => ui.wide() ? '16:9' : '4:3', set: id => setAspect(id), fmt: () => ui.wide() ? 'Широкий' : 'Обычный' }
       ].concat(ui.game && ui.game.coneSupMode ? [{ label: 'Наложение конусов', k: 'coneSup', presets: [{ id: 'auto', tag: 'Авто' }, { id: 'manual', tag: 'Вручную' }], cur: () => ui.game.coneSupMode(), set: id => { if (ui.game.coneSupMode() !== id) { ui.game.setConeSup(id); ui.sfx('select'); } }, fmt: () => '' }] : []).concat(globalThis.Net98 ? [{ label: 'Эфирная связь', k: 'net', open: () => ui.openNetLink(), fmt: () => '' }] : []);
       const setCine = k => id => {
         if (ui.options[k] === id) return;
@@ -1425,6 +1451,13 @@
       const setRes = id => {
         if (ui.options.res === id) return;
         ui.options.res = id;
+        ui.applyRes();
+        lsSet(OPT_KEY, ui.options);
+        ui.sfx('select');
+      };
+      const setAspect = id => {
+        if ((ui.options.aspect || '4:3') === id) return;
+        ui.options.aspect = id;
         ui.applyRes();
         lsSet(OPT_KEY, ui.options);
         ui.sfx('select');
@@ -1442,21 +1475,23 @@
       };
       this.push({
         draw(c) {
-          const list = rows(), x = W / 2 - 200, h = 66 + list.length * 34, y = Math.round((HGT - h) / 2);
+          this.pause = true;
+          if (ui.mode === 'battle') { c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(ui.left, 0, ui.vw, HGT); }
+          const list = rows(), step = list.length > 9 ? 31 : 34, x = W / 2 - 200, h = 64 + list.length * step, y = Math.round((HGT - h) / 2);
           ui.win(x, y, 400, h, { title: 'Настройки' });
           ui.closeBtn(x + 400 - 30, y + 8, () => this.key('back'));
           G.menuIcon(c, 'settings', x + 18, y + 30, 32);
           list.forEach((r, i) => {
-            const yy = y + 36 + i * 34, on = i === this.sel, v = ui.options[r.k];
-            if (on) { c.fillStyle = 'rgba(242,220,154,0.15)'; c.fillRect(x + 60, yy - 3, 324, 30); ui.cursor(x + 62, yy + 6); }
+            const yy = y + 34 + i * step, on = i === this.sel, v = ui.options[r.k];
+            if (on) { c.fillStyle = 'rgba(242,220,154,0.15)'; c.fillRect(x + 60, yy - 3, 324, step - 4); ui.cursor(x + 62, yy + 6); }
             ui.text(r.label, x + 76, yy, { bold: on, col: on ? C.gold : C.cream });
-            ui.hit(x + 60, yy - 3, 324, 30, () => { this.sel = i; if (r.open) r.open(); });
+            ui.hit(x + 60, yy - 3, 324, step - 4, () => { this.sel = i; if (r.open) r.open(); });
             if (r.presets) presetStrip(r, x + 76, yy + 14, r.fmt(v) ? 220 : 300, on, id => { this.sel = i; r.set(id); });
             else if (r.open) ui.text(ui.netStateText(), x + 76, yy + 13, { size: 10, col: C.sub });
             else ui.rail(x + 76, yy + 20, 220, (v - r.min) / (r.max - r.min));
             ui.text(r.fmt(v), x + 376, yy + 12, { align: 'right', size: 11, col: C.sub });
           });
-          ui.hints([['←→', 'Изменить'], ['Esc', 'Готово']], W / 2, y + h - 24, { align: 'center' });
+          ui.hints([['←→', 'Изменить'], ['Esc', 'Готово']], W / 2, y + h - 22, { align: 'center' });
         },
         key(k) {
           const r = rows();
@@ -1495,13 +1530,13 @@
     }
 
     drawCredits(c) {
-      G.drawCG(c, 'express', W, HGT, this.t);
-      c.fillStyle = 'rgba(0,0,0,0.55)'; c.fillRect(0, 0, W, HGT);
+      c.save(); c.translate(this.left, 0); G.drawCG(c, 'express', this.vw, HGT, this.t); c.restore();
+      c.fillStyle = 'rgba(0,0,0,0.55)'; c.fillRect(this.left, 0, this.vw, HGT);
       const lines = [...H.BRAND.credits, 'Контакт, Слияния и Слухи — Persona 2', 'Тема главного меню — HOYO-MiX (MIDI-переложение)', 'Боевые темы — HOYO-MiX (MIDI-переложения)', '', 'Программирование, графика, музыка:', H.BRAND.makers, '', 'Звёздный экспресс: Химико, Вельт, Март 7, Дань Хэн, Пом-Пом', 'Белобог: Броня, Зеле, Гепард, Сервал, Наташа, Хук, Сампо', '', 'Спасибо за игру!', '', 'Следующая остановка — Лофу Сяньчжоу...'];
       const y0 = HGT - this.creditsT * 30;
       lines.forEach((l, i) => this.text(l, W / 2, y0 + i * 26, { align: 'center', size: i === 0 ? 22 : 13, bold: i === 0, serif: i === 0, col: i === 0 ? C.gold : C.cream }));
       if (y0 + lines.length * 26 < 0) this.endCredits();
-      this.hit(0, 0, W, HGT, () => this.endCredits());
+      this.hit(this.left, 0, this.vw, HGT, () => this.endCredits());
     }
 
     endCredits() {
@@ -1512,6 +1547,6 @@
     }
   }
 
-  Object.assign(H, { UI, UI_CONST: { W, HGT, TS, C, GLOW_NAME, FONT, SERIF, lsGet, lsSet, SAVE_KEY, OPT_KEY, SAVE_SLOTS, SAVE_DIR, saveFileName, mirrorSave } });
+  Object.assign(H, { UI, UI_CONST: { W, WIDE_W, HGT, TS, C, RES, ASPECTS, GLOW_NAME, FONT, SERIF, lsGet, lsSet, SAVE_KEY, OPT_KEY, SAVE_SLOTS, SAVE_DIR, saveFileName, mirrorSave } });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

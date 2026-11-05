@@ -238,22 +238,23 @@
     return cv;
   }
 
-  function spaceCanvas() {
-    let cv = art.get('space');
+  function spaceCanvas(vw) {
+    const w = vw || W, ox = (w - W) / 2, key = 'space|' + w;
+    let cv = art.get(key);
     if (cv) return cv;
-    cv = G.mkCanvas(W, HGT);
-    const g = cv.getContext('2d'), R = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(x, y, w, h); };
-    const gr = g.createLinearGradient(0, 0, W, HGT);
+    cv = G.mkCanvas(w, HGT);
+    const g = cv.getContext('2d'), R = (x, y, rw, rh, col) => { g.fillStyle = col; g.fillRect(x, y, rw, rh); };
+    const gr = g.createLinearGradient(0, 0, w, HGT);
     gr.addColorStop(0, '#03050f'); gr.addColorStop(0.55, '#081030'); gr.addColorStop(1, '#0c1a40');
-    g.fillStyle = gr; g.fillRect(0, 0, W, HGT);
-    for (let y = 0; y < HGT; y += 2) for (let x = 0; x < W; x += 2) {
-      const band = 1 - Math.abs((x * 0.62 + y) - 470) / 170;
+    g.fillStyle = gr; g.fillRect(0, 0, w, HGT);
+    for (let y = 0; y < HGT; y += 2) for (let x = 0; x < w; x += 2) {
+      const band = 1 - Math.abs(((x - ox) * 0.62 + y) - 470) / 170;
       if (band <= 0) continue;
       const v = fbm(x / 70, y / 70, 5) * band + (BAYER[((y >> 1) & 3) * 4 + ((x >> 1) & 3)] / 16 - 0.5) * 0.18;
       if (v > 0.5) R(x, y, 2, 2, v > 0.66 ? '#243468' : v > 0.58 ? '#1a2854' : '#121c44');
     }
     for (let i = 0; i < 220; i++) {
-      const x = Math.floor(G.hash(i, 1, 7) * W), y = Math.floor(G.hash(i, 2, 7) * HGT), h = G.hash(i, 3, 7);
+      const x = Math.floor(G.hash(i, 1, 7) * w), y = Math.floor(G.hash(i, 2, 7) * HGT), h = G.hash(i, 3, 7);
       R(x, y, 1, 1, h < 0.7 ? '#8a94c0' : h < 0.9 ? '#e8ecff' : '#ffe0a0');
       if (h > 0.97) { R(x - 1, y, 3, 1, '#c8d0ff'); R(x, y - 1, 1, 3, '#c8d0ff'); }
     }
@@ -265,16 +266,16 @@
         R(Math.round(x), Math.round(y), 2, 2, col);
       }
     };
-    dots(322, 250, 300, 190, -0.12, 7, '#4a3e26');
-    dots(322, 190, 180, 120, 0.2, 6, '#3e3420');
-    dots(150, 292, 96, 96, 0, 8, '#2e2818');
-    g.strokeStyle = '#6a5328'; g.lineWidth = 1; g.strokeRect(8.5, 8.5, W - 17, HGT - 17);
-    g.strokeStyle = '#2a2214'; g.strokeRect(11.5, 11.5, W - 23, HGT - 23);
-    for (const [x, y] of [[8, 8], [W - 8, 8], [8, HGT - 8], [W - 8, HGT - 8]]) {
+    dots(322 + ox, 250, 300, 190, -0.12, 7, '#4a3e26');
+    dots(322 + ox, 190, 180, 120, 0.2, 6, '#3e3420');
+    dots(150 + ox, 292, 96, 96, 0, 8, '#2e2818');
+    g.strokeStyle = '#6a5328'; g.lineWidth = 1; g.strokeRect(8.5, 8.5, w - 17, HGT - 17);
+    g.strokeStyle = '#2a2214'; g.strokeRect(11.5, 11.5, w - 23, HGT - 23);
+    for (const [x, y] of [[8, 8], [w - 8, 8], [8, HGT - 8], [w - 8, HGT - 8]]) {
       g.strokeStyle = '#8a6c34'; g.beginPath(); g.arc(x, y, 14, 0, Math.PI * 2); g.stroke();
       g.strokeStyle = '#4a3a1c'; g.beginPath(); g.arc(x, y, 9, 0, Math.PI * 2); g.stroke();
     }
-    art.set('space', cv);
+    art.set(key, cv);
     return cv;
   }
 
@@ -760,7 +761,7 @@
           if (pick) pick(w); else ui.openNav(null, { world: w });
         },
         draw(c) {
-          c.drawImage(spaceCanvas(), 0, 0);
+          c.drawImage(spaceCanvas(ui.vw), ui.left, 0);
           const here = g.currentWorld(), park = g.expressWorld(), goal = g.objTarget(), goalWorld = goal && (g.areaOf(goal.map) || {}).world;
           const pos = w => WORLD_POS[w.id];
           for (let i = 0; i + 1 < worlds.length; i++) {
@@ -847,7 +848,7 @@
 
     minimapDocks() {
       const w = MINIMAP.w, h = MINIMAP.h;
-      return [{ x: 10, y: HGT - h - 14, w, h, from: -1 }, { x: W - w - 10, y: HGT - 52 - h - 14, w, h, from: 1 }];
+      return [{ x: this.left + 10, y: HGT - h - 14, w, h, from: -1 }, { x: this.right - w - 10, y: HGT - 52 - h - 14, w, h, from: 1 }];
     },
 
     playerScreenBox() {

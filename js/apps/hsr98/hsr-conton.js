@@ -28,11 +28,11 @@
       pinkLook: { skin: '#feebd7', hair: '#f2d494', hairHi: '#fff0c8', eye: '#2e9a4a', eye2: '#7ad88a', bangs: 'sweep', sides: 'long', back: 'flow', crown: 'smooth', gloss: true, body: 'f', coat: 'heartcorset', top: '#fbf6f8', trim: '#c5883d', inner: '#fbf6f8', bow: '#e8508e', cuffCol: '#ff7ab8', lower: '#e26396', low: 'skirt', skirtLen: 9, petti: '#f5ced2', gloves: '#f2e0ec', shoes: '#d8a848', acc: ['heartbow:#ff7ab8', 'heartchoker:#e8508e', 'longgloves', 'heartcuff:#ff7ab8', 'stockings:#f8f2f6', 'stockbow:#ff7ab8', 'ruffle3:#f5ced2', 'wingheel:#fbf6f8', 'heartwand:#ff9ac8'] },
       lanternLook: { skin: '#feebd7', hair: '#e8c483', hairHi: '#f8e4b0', eye: '#2e9a4a', eye2: '#7ad88a', bangs: 'sweep', sides: 'jaw', back: 'short', crown: 'smooth', gloss: true, body: 'f', coat: 'suit', top: '#2a9a4a', trim: '#1e6a34', inner: '#16161c', neon: '#1e6a34', neon2: '#1e6a34', collar: 'high', neck: '#16161c', lower: '#2a9a4a', low: 'pants', shoes: '#16161c', gloves: '#f4f4f8', acc: ['domino:#2a9a4a', 'yoke:#16161c', 'lantern', 'ankle:#16161c'] },
       basic: { name: 'Подзатыльник', target: 'single', text: 'физический урон 90%.', fx: [{ k: 'dmg', m: 0.9, e: 'phys' }] },
-      skill: { name: 'Превращение', target: 'self', keepTurn: true, text: 'Розовая Защитница до конца боя, Кокон-сердце себе. Ход продолжается.', fx: [{ k: 'amTransform' }, { k: 'shield', m: T.amCocoon, flat: T.amCocoonFlat, turns: T.amCocoonTurns, cocoon: true }] },
+      skill: { name: 'Превращение', target: 'self', keepTurn: true, text: 'Розовая Защитница до конца боя, Кокон-сердце себе (45% защиты). Ход продолжается.', fx: [{ k: 'amTransform' }, { k: 'shield', m: T.amCocoon, flat: T.amCocoonFlat, turns: T.amCocoonTurns, cocoon: true }] },
       pbasic: { name: 'Сердечный… луч!', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       pskill: { name: 'Кокон-сердце', target: 'ally', text: 'щит 45% защиты Аманды на 3 хода. Лопнув от удара, бьёт всех врагов ветром на 60% защиты.', fx: [{ k: 'shield', m: T.amCocoon, flat: T.amCocoonFlat, turns: T.amCocoonTurns, cocoon: true }] },
       ult: { name: 'Любовь восторжествует', target: 'allies', text: 'превращение, Кокон-сердце всем на 2 хода. Поза: Аманда притягивает удары, защита +30%.', fx: [{ k: 'amTransform' }, { k: 'shield', who: 'allies', m: T.amUltCocoon, flat: T.amUltFlat, turns: T.amUltTurns, cocoon: true }, { k: 'taunt', turns: T.amPoseTurns, who: 'self' }, { k: 'buff', s: 'defP', v: T.amPoseDef, turns: T.amPoseTurns, who: 'self', name: POSE }] },
-      talent: 'Бой начинает в обычной форме. При HP союзника ниже 30% превращается и даёт ему Кокон.',
+      talent: 'Бой начинает в обычной форме. При HP союзника ниже 30% превращается и даёт Кокон (45%).',
       tech: { name: 'Звонок с работы', text: 'Аманда приходит в бой уже Розовой Защитницей, с Коконом-сердцем на себе.', fx: 'amandaTech' },
       contact: [{ name: 'Блин блинский!', tag: 'joke' }, { name: 'Земля под моей юрисдикцией', tag: 'threat' }]
     },
@@ -44,7 +44,7 @@
       basic: { name: 'Ретро-бластер', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Арест!', target: 'single', text: 'квантовый урон 160%. Сигнатура и Оковы на 2 действия цели. Гиноиды ходят сразу.', fx: [{ k: 'dmg', m: 1.6 }, { k: 'arrest' }] },
       ult: { name: 'Excelsior!', target: 'all', text: 'урон 120% всем, Оковы каждому на 1 действие. Отряд из пяти: 2 хода гиноиды бьют всех.', fx: [{ k: 'dmg', m: 1.2 }, { k: 'shackleAll', n: 1 }, { k: 'squad' }] },
-      talent: 'Гиноиды ходят на шкале и бьют цель с Сигнатурой. Раз за бой капсула спасает Таллею от смерти.',
+      talent: 'Гиноиды ходят на шкале и бьют цель с Сигнатурой (70%). Раз за бой капсула спасает Таллею.',
       tech: { name: 'Маскировочный костюм', text: 'Враг с наибольшим HP начинает бой с Сигнатурой и Оковами, гиноиды ходят первыми.', fx: 'talleahTech' },
       contact: [{ name: 'Арестовать во имя правосудия', tag: 'threat' }, { name: 'Гостеприимство Авии', tag: 'kind' }]
     }

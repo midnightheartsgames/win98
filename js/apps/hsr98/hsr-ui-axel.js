@@ -11,7 +11,7 @@
     sky.addColorStop(0, '#3a7ad0'); sky.addColorStop(1, '#bfe2f6');
     c.fillStyle = sky; c.fillRect(x, y, w, h);
     c.fillStyle = '#ffffff';
-    for (let i = 0; i < 5; i++) { const cx = x + 30 + i * 92 + G.hash(i, 1, 41) * 30, cy = y + 14 + G.hash(i, 2, 41) * 20; c.beginPath(); c.ellipse(cx, cy, 24, 6, 0, 0, Math.PI * 2); c.fill(); c.beginPath(); c.ellipse(cx - 8, cy - 4, 10, 5, 0, 0, Math.PI * 2); c.fill(); }
+    for (let i = 0; i < Math.ceil(w / 88); i++) { const cx = x + 30 + i * 92 + G.hash(i, 1, 41) * 30, cy = y + 14 + G.hash(i, 2, 41) * 20; if (cx > x + w - 20) continue; c.beginPath(); c.ellipse(cx, cy, 24, 6, 0, 0, Math.PI * 2); c.fill(); c.beginPath(); c.ellipse(cx - 8, cy - 4, 10, 5, 0, 0, Math.PI * 2); c.fill(); }
     const bx = x + w - 120, by = y + 34;
     c.save(); c.globalAlpha = 0.9;
     const cl = c.createRadialGradient(bx, by, 4, bx, by, 34);
@@ -70,7 +70,8 @@
     },
 
     konosubaPage(c, scr) {
-      const g = this.game, hx = PX + 4, hy = PY + 4, hw = PW - 8, hh = 96;
+      const g = this.game, eb = this.eventBox ? this.eventBox() : { px: PX, py: PY, pw: PW, wide: false };
+      const hx = eb.px + 4, hy = eb.py + 4, hw = eb.pw - 8, hh = 96;
       header(c, this, hx, hy, hw, hh);
       const MS = H.KONOSUBA.MILESTONES, n = MS.length, sy = hy + hh + 8;
       if (!g.ksOpen()) {
@@ -89,11 +90,16 @@
         c.fillStyle = on ? C.brassHi : '#3a4070'; c.fillRect(hx, y, 3, ROW - 6);
         this.text(m.name, hx + 12, y + 6, { size: 12, bold: true, col: on ? C.gold : C.cream });
         this.text(m.text[0].toUpperCase() + m.text.slice(1), hx + 12, y + 24, { size: 10, col: C.sub });
-        let rx = hx + 214;
+        let rx = hx + (eb.wide ? 310 : 214);
         if (m.char) { G.rarityCell(c, rx, y + 6, 40, 40, 4); G.drawPortrait(c, G.lookOf(m.char, g), rx + 2, y + 8, 36); rx += 44; }
         for (const [id, cnt] of giveList(m)) { this.rewardCell(c, id, cnt, rx, y + 6, 40); rx += 44; }
         if (got) this.stamp(hx + hw - 40, y + 26, 'ЕСТЬ');
-        else if (ready) this.badge(hx + hw - 14, y + 10);
+        else if (ready) {
+          if (eb.wide) this.button(hx + hw - 110, y + 12, 98, 28, 'Получить', () => this.ksPick(scr, i), { active: on, bold: true });
+          else this.badge(hx + hw - 14, y + 10);
+        } else if (eb.wide) {
+          this.text('В процессе', hx + hw - 16, y + 20, { align: 'right', size: 10, col: C.dim });
+        }
         this.hit(hx, y, hw, ROW - 6, () => this.ksPick(scr, i));
       });
     },

@@ -1,8 +1,8 @@
 (function (H) {
   'use strict';
   const proto = H.Game.prototype, baseAlerts = proto.alerts, baseInteract = proto.interact, baseLoadMap = proto.loadMap, baseBook = proto.bookPages;
-  const CARS = ['express', 'express_cabin', 'express_party'];
-  const GUEST_SCRIPTS = new Set(['exp_guestbook', 'exp_photowall', 'exp_books', 'exp_futon', 'exp_tv', 'exp_march_bed', 'exp_march_desk', 'exp_mirror', 'exp_rest', 'exp_trolley', 'exp_lounge', 'exp_drinks', 'exp_counter', 'exp_arcade', 'exp_coatroom', 'exp_staircase', 'exp_door_himeko', 'exp_door_welt', 'exp_car_door']);
+  const CARS = ['express', 'express_cabin', 'express_party', 'express_room'];
+  const GUEST_SCRIPTS = new Set(['exp_guestbook', 'exp_photowall', 'exp_books', 'exp_futon', 'exp_tv', 'exp_march_bed', 'exp_march_desk', 'exp_mirror', 'exp_rest', 'exp_trolley', 'exp_lounge', 'exp_drinks', 'exp_counter', 'exp_arcade', 'exp_coatroom', 'exp_staircase', 'exp_door_himeko', 'exp_door_welt', 'exp_himeko_coffee', 'exp_himeko_charts', 'exp_himeko_bed', 'exp_himeko_case', 'exp_welt_shelf', 'exp_welt_desk', 'exp_welt_cane', 'exp_welt_projector', 'exp_car_door', 'rm_bed_prop', 'rm_desk_prop', 'rm_bath_prop', 'rm_fridge_prop', 'rm_bar_prop', 'rm_pc_prop', 'rm_vitrine_prop']);
   const NOT_TOUCHED = new Set(['enemy', 'trigger', 'exit', 'marvel', 'span', 'rbridge', 'gbridge']);
   const FACE_BACK = { up: 'down', down: 'up', left: 'right', right: 'left' };
   const GUEST_TALK = {
@@ -43,11 +43,11 @@
 
   H.netExpressFlags = () => {
     if (flagNames) return flagNames;
-    const out = new Set();
+    const out = new Set(['room_open']);
     const add = expr => {
       for (const part of String(expr || '').split(/[|&]/)) {
         const t = part.trim().replace(/^!/, '');
-        if (t && t[0] !== '?' && t[0] !== '$') out.add(t);
+        if (t && t[0] !== '?' && t[0] !== '$' && t[0] !== '%') out.add(t);
       }
     };
     for (const id of CARS) for (const mk of Object.values(H.MAPS[id].marks)) { add(mk.if); add(mk.always); }
@@ -64,6 +64,7 @@
     const g = new H.Game({ state: Object.assign(H.Game.newState(), { name: home.state.name, gender: home.state.gender, mcPath: home.state.mcPath, map: 'express', anchors: ['express:0'] }) });
     const s = g.state;
     for (const f of ex.flags || []) if (names.has(f)) s.flags[f] = true;
+    if (g.applyNetRoom) g.applyNetRoom(ex.room);
     for (const r of ex.roster || []) {
       if (!Array.isArray(r) || (r[0] !== 'trail' && !own(H.CHARS, r[0]))) continue;
       const outfit = H.OUTFITS && own(H.OUTFITS, r[3]) ? r[3] : null;
@@ -152,11 +153,13 @@
 
     netExpress() {
       const s = this.state, party = s.party.filter(k => !H.labOnly(k));
-      return {
+      const out = {
         flags: H.netExpressFlags().filter(f => s.flags[f]), party,
         roster: Object.keys(s.roster).filter(k => !H.labOnly(k)).map(k => [k, s.roster[k].lvl, s.roster[k].eid, this.outfitOf ? this.outfitOf(k) || null : null]),
         record: s.record, lead: this.netCardRef(party[0])
       };
+      if (this.netRoom) { const rm = this.netRoom(); if (rm) out.room = rm; }
+      return out;
     },
 
     netGift(gift) {

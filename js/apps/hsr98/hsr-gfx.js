@@ -23,10 +23,10 @@
     return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
   }
 
-  function perspectiveFloor(g, tex, w, h, hz, fog) {
+  function perspectiveFloor(g, tex, w, h, hz, fog, hiCam) {
     const tw = tex.width, th = tex.height, src = tex.getContext('2d').getImageData(0, 0, tw, th).data;
     const y0 = Math.ceil(hz), img = g.getImageData(0, y0, w, h - y0), d = img.data;
-    const F = 300, cam = 0.8, fr = parseInt(fog.slice(1, 3), 16), fg = parseInt(fog.slice(3, 5), 16), fb = parseInt(fog.slice(5, 7), 16);
+    const F = hiCam ? 260 : 300, cam = hiCam ? 1.25 : 0.8, fr = parseInt(fog.slice(1, 3), 16), fg = parseInt(fog.slice(3, 5), 16), fb = parseInt(fog.slice(5, 7), 16);
     for (let y = y0; y < h; y++) {
       const dy = Math.max(0.5, y - hz), dist = cam * F / dy, v = Math.floor(dist * 16) % th;
       const f = Math.min(1, Math.max(0, (dist - 4) / 26)), shade = 1 - Math.min(0.25, (y - hz) / (h - hz) * 0.25);
@@ -39,8 +39,8 @@
     g.putImageData(img, 0, y0);
   }
 
-  function bgCanvas(id, w, h) {
-    const key = 'bg|' + id + '|' + w + 'x' + h;
+  function bgCanvas(id, w, h, hiCam) {
+    const key = 'bg|' + id + '|' + w + 'x' + h + (hiCam ? '|hi' : '');
     let c = cache.get(key);
     if (c) return c;
     c = mkCanvas(w, h);
@@ -54,7 +54,7 @@
       stellaron: ['#02040c', '#0a1a3a', '#1a3a5a', '#80ffff'], express: ['#140a08', '#3a2418', '#6a2a2a', '#ffd070'],
       memory: ['#02030e', '#121a44', '#1c2a5a', '#9ad8ff'], meadow: ['#4a90d8', '#c4e6f6', '#7ab84a', '#ffe890'], lf_port: ['#3c7fd0', '#c2e4f8', '#7c8694', '#ffb060'], lf_ship: ['#081830', '#1e4a7a', '#2e4a66', '#58d8c0'], lf_night: ['#0e1234', '#28367c', '#3e4464', '#ffc878'], lf_seat: ['#140e30', '#4a3a90', '#3a3258', '#e0b458'], lf_div: ['#241a60', '#6a58c8', '#2e3a80', '#58f0e0'], lf_art: ['#2a3a78', '#7a9ae0', '#2a4a6a', '#ffd060'], lf_alch: ['#4a84a4', '#b4d4dc', '#8e989c', '#ff9a50'], lf_mist: ['#0c2a24', '#2e6a50', '#34463f', '#7affa0'], lf_sea: ['#2a5a84', '#a4c4d8', '#7c8c98', '#7affc8'], lf_roots: ['#040806', '#1e3a20', '#2e3020', '#d8f080'], lf_dusk: ['#1a1e48', '#7a5a70', '#4a4e6a', '#ffc060']
     }[id] || ['#000', '#223', '#445', '#8cf'];
-    const hz = h * 0.55;
+    const hz = Math.round(h * (hiCam ? 0.39 : 0.55));
     const sky = g.createLinearGradient(0, 0, 0, hz);
     sky.addColorStop(0, P[0]); sky.addColorStop(1, P[1]);
     g.fillStyle = sky; g.fillRect(0, 0, w, hz);
@@ -88,11 +88,12 @@
       g.beginPath(); g.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); g.lineTo(x + Math.cos(a + 2.2) * r * 0.5, y + Math.sin(a + 2.2) * r * 0.5); g.lineTo(x + Math.cos(a + 3.4) * r, y + Math.sin(a + 3.4) * r); g.lineTo(x + Math.cos(a + 5) * r * 0.4, y + Math.sin(a + 5) * r * 0.4); g.closePath(); g.fill();
     }
     const tex = G.floorTexture && id !== 'sim' && id !== 'stellaron' && id !== 'memory' ? G.floorTexture(id) : null;
-    if (tex) perspectiveFloor(g, tex, w, h, hz, P[1]);
+    if (tex) perspectiveFloor(g, tex, w, h, hz, P[1], hiCam);
     else {
       g.strokeStyle = P[3] + '40'; g.lineWidth = 1;
-      for (let i = -12; i <= 12; i++) { g.beginPath(); g.moveTo(w / 2 + i * 12, hz); g.lineTo(w / 2 + i * 90, h); g.stroke(); }
-      for (let i = 0; i < 8; i++) { const yy = hz + Math.pow(i / 8, 1.8) * (h - hz); g.beginPath(); g.moveTo(0, yy); g.lineTo(w, yy); g.stroke(); }
+      const rows = hiCam ? 11 : 8;
+      for (let i = -14; i <= 14; i++) { g.beginPath(); g.moveTo(w / 2 + i * (hiCam ? 18 : 12), hz); g.lineTo(w / 2 + i * 90, h); g.stroke(); }
+      for (let i = 0; i < rows; i++) { const yy = hz + Math.pow(i / rows, hiCam ? 1.55 : 1.8) * (h - hz); g.beginPath(); g.moveTo(0, yy); g.lineTo(w, yy); g.stroke(); }
     }
     if (id === 'snow' || id === 'hill' || id === 'ice') for (let i = 0; i < 90; i++) { g.fillStyle = 'rgba(255,255,255,0.8)'; g.fillRect(hash(i, 11, 3) * w, hash(11, i, 4) * h, 2, 2); }
     cache.set(key, c);

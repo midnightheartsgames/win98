@@ -1227,7 +1227,7 @@
       up: { 3: { ult: 2, basic: 1 }, 5: { skill: 2, talent: 2 } }
     },
     miyabi: {
-      own: true, cost: 5, mats: ['hunt', 'ancient', 'echo_doom'], eidFx: true,
+      own: true, cost: 5, mats: ['hunt', 'ancient', 'echo_doom'], eidFx: true, scaled: { buff: ['v'] },
       bonus: [
         ['Мороз и вьюга', 'Если в отряде есть Янаги или союзник Пути Гармонии или Небытия, урон Симоцуки повышается на 30%. Хаос в отряде даёт Мияби 2 Опавшего инея.', null],
         ['Ясный лёд', 'После Хаоса в отряде следующий Симоцуки пробивает 30% сопротивления льду.', null],
@@ -1517,7 +1517,7 @@
       up: { 3: { skill: 2, basic: 1 }, 5: { ult: 2, talent: 2 } }
     },
     darkness: {
-      own: true, cost: 5, mats: ['pres', 'legion', 'echo_doom'], eidFx: true,
+      own: true, cost: 5, mats: ['pres', 'legion', 'echo_doom'], eidFx: true, scaled: { buff: ['v'] },
       bonus: [
         ['Сладкая боль', 'Первый удар каждого действия врага по Даркнесс восстанавливает ей 2% макс. HP.', 's1'],
         ['Дом Дастинесс', 'Под Прикрытием Даркнесс получает за союзников на 30% меньше урона.', 's1'],
@@ -1546,7 +1546,7 @@
       up: { 3: { ult: 2, talent: 2 }, 5: { skill: 2, basic: 1 } }
     },
     yu: {
-      own: true, cost: 5, mats: ['hunt', 'core', 'echo_lament'], eidFx: true,
+      own: true, cost: 5, mats: ['hunt', 'core', 'echo_lament'], eidFx: true, scaled: { debuff: ['v'] },
       bonus: [
         ['Храбрость', 'Ю наносит пробитым врагам на 20% больше урона.', null],
         ['Полная колода', 'Первое пробитие каждой Персоной даёт Ю ещё 10 энергии.', null],
@@ -1575,7 +1575,7 @@
       up: { 3: { skill: 2, talent: 2 }, 5: { ult: 2, basic: 1 } }
     },
     yosuke: {
-      own: true, cost: 4, mats: ['nihil', 'core', 'echo_lament'], eidFx: true,
+      own: true, cost: 4, mats: ['nihil', 'core', 'echo_lament'], eidFx: true, scaled: { debuff: ['v'] },
       bonus: [
         ['Сукукадзя', 'Гарула даёт Ёсуке +10% скорости на 2 хода.', null],
         ['Ветер Дзирайи', 'Атака Ёсуке накладывает Порыв ветра на 2 хода.', null],
@@ -1691,7 +1691,7 @@
       up: { 3: { ult: 2, talent: 2 }, 5: { skill: 2, basic: 1 } }
     },
     rise: {
-      own: true, cost: 5, mats: ['harm', 'core', 'echo_lament'], eidFx: true,
+      own: true, cost: 5, mats: ['harm', 'core', 'echo_lament'], eidFx: true, scaled: { buff: ['v'] },
       bonus: [
         ['Скан слабостей', 'Враг, Проанализированный Рисе, получает ещё +10% урона.', null],
         ['Рисетт', 'Третий глаз даёт отряду +15% крит. урона на 2 хода.', null],
@@ -1749,7 +1749,7 @@
       up: { 3: { skill: 2, talent: 2 }, 5: { ult: 2, basic: 1 } }
     },
     amanda: {
-      own: true, cost: 5, mats: ['pres', 'silver', 'echo_lament'], eidFx: true,
+      own: true, cost: 5, mats: ['pres', 'silver', 'echo_lament'], eidFx: true, scaled: { buff: ['v'] },
       bonus: [
         ['Бог-О-Бог', 'Превращение в Розовую Защитницу даёт Аманде 30 энергии.', 's1'],
         ['Вожатая лагеря', 'Кокон-сердце снимает с союзника одно ослабление.', 's1'],

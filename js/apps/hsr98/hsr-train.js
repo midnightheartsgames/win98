@@ -35,6 +35,11 @@
       roof: '#090c12', roofHi: '#151b26', trim: C.gold, trimDk: C.goldDk,
       high: ['#23303e', '#2e3e50', '#17202b'], low: ['#1e2834', '#293646', '#121921'],
       dark: ['#2a313b', '#3a434f', '#1a1f26'], tint: 'rgba(120,200,255,0.05)', glow: '#5ad8ff'
+    },
+    room: {
+      roof: '#0b0c14', roofHi: '#181a28', trim: '#d2ac64', trimDk: '#7a5828',
+      high: ['#d8ceb8', '#ece4d0', '#b4a68e'], low: ['#7a5234', '#966844', '#563820'],
+      dark: ['#c69c68', '#d6b07c', '#a87e4e'], tint: 'rgba(255,215,155,0.04)'
     }
   };
 
@@ -263,8 +268,23 @@
       P(2, 3, 12, 6, '#ffffff'); P(2, 8, 12, 1, '#c8d4e0'); P(1, 11, 30, 17, '#2a3a6a'); P(1, 11, 30, 2, '#3a4e88'); P(1, 27, 30, 1, '#1a2448');
       for (let x = 4; x < 30; x += 6) P(x, 14, 1, 12, '#34477a');
     } },
-    bed: { w: 2, h: 2, up: 12, draw(P) {
+    bed: { w: 2, h: 2, up: 12, draw(P, v) {
       P.shadow(16, 30, 16, 2);
+      if (v === 'himeko') {
+        P(0, -12, 32, 14, C.woodDk); P(0, -12, 32, 2, C.gold); P(2, -9, 28, 9, '#7a1c24'); P(0, 2, 2, 28, C.wood); P(30, 2, 2, 28, C.wood);
+        P(2, 2, 28, 26, '#f6efe4'); P(2, 10, 28, 18, '#8a222a'); P(2, 10, 28, 2, C.goldHi); P(2, 27, 28, 2, '#521218'); P(0, 29, 32, 2, C.woodDk);
+        P(5, 3, 10, 6, '#fff8ee'); P(5, 8, 10, 1, C.gold); P(17, 3, 10, 6, '#fff8ee'); P(17, 8, 10, 1, C.gold);
+        P(8, 16, 16, 8, '#6a1820'); P(8, 16, 16, 1, C.gold);
+        return;
+      }
+      if (v === 'welt') {
+        P(0, -12, 32, 14, C.wood); P(0, -12, 32, 2, C.woodHi); P(2, -9, 28, 9, '#24324c'); P(0, 2, 2, 28, C.woodDk); P(30, 2, 2, 28, C.woodDk);
+        P(2, 2, 28, 26, '#e8eef4'); P(2, 10, 28, 18, '#2c3e5e'); P(2, 10, 28, 2, '#4a648c'); P(2, 27, 28, 2, '#1a2438'); P(0, 29, 32, 2, C.woodDk);
+        for (let x = 6; x < 28; x += 6) P(x, 12, 1, 15, '#3b5278');
+        for (let y = 15; y < 26; y += 5) P(2, y, 28, 1, '#3b5278');
+        P(5, 3, 12, 6, '#ffffff'); P(5, 8, 12, 1, '#b8c6d8'); P(20, 4, 6, 4, '#3a2a1c'); P(21, 5, 4, 2, '#d8d0c0');
+        return;
+      }
       P(0, -12, 32, 14, '#f4d8e4'); P(0, -12, 32, 2, '#ffffff'); P(2, -9, 28, 9, C.pink); P(0, 2, 2, 28, '#e8c0d0'); P(30, 2, 2, 28, '#e8c0d0');
       P(2, 2, 28, 26, '#ffffff'); P(2, 10, 28, 18, '#f6b8d0'); P(2, 10, 28, 2, '#ffd4e4'); P(2, 27, 28, 2, C.pinkDk); P(0, 29, 32, 2, '#b06888');
       P(4, 3, 9, 6, '#ffffff'); P(5, 0, 2, 4, '#ffffff'); P(10, 0, 2, 4, '#ffffff'); P.dot(6, 1, C.pink); P.dot(11, 1, C.pink); P.dot(7, 5, '#3a2a30'); P.dot(10, 5, '#3a2a30');
@@ -390,7 +410,402 @@
         P(Math.round(cx + Math.cos(a) * 25), Math.round(cy + Math.sin(a) * 15 - lift - 9), 1, 9, C.goldDk);
         P(Math.round(cx + Math.cos(a) * 25), Math.round(cy + Math.sin(a) * 15 - lift - 10), 2, 1, C.gold);
       }
-    } }
+    } },
+    rm_clutter: { w: 2, h: 1, up: 10, draw(P, v) {
+      P.shadow(16, 14, 14, 2);
+      P.box(1, 0, 14, 4, 9, '#c89a62', '#a67844', '#e0b67e');
+      P(7, 0, 2, 13, '#d8c498'); P(3, 6, 6, 3, '#f4eedc'); P(4, 7, 4, 1, '#8a3030');
+      P.box(15, -4, 15, 5, 12, '#b88852', '#946636', '#d4a66e');
+      P(21, -4, 2, 17, '#c8382e'); P(17, 3, 5, 2, '#f4eedc');
+      if (v === 'tall') { P.box(5, -8, 12, 3, 8, '#d4a870', '#b0824c', '#ecd098'); P(10, -8, 2, 11, '#d8c498'); }
+    } },
+    rm_bed: { w: 3, h: 2, up: 12, draw(P) {
+      P.shadow(24, 30, 23, 2);
+      P(1, -11, 46, 14, '#3a404a'); P(2, -10, 44, 12, '#4c525e');
+      P(1, -11, 46, 1, C.gold); P(1, -11, 1, 14, C.goldDk); P(46, -11, 1, 14, C.goldDk);
+      for (const x of [13, 24, 35]) P(x, -10, 1, 12, C.goldDk);
+      P(1, 2, 46, 26, C.woodDk); P(2, 2, 44, 24, '#f4f0e6'); P(2, 2, 44, 2, '#ffffff');
+      P(2, 10, 44, 16, '#34302c'); P(2, 10, 44, 2, '#4a443e'); P(2, 12, 44, 1, C.gold);
+      P(1, 26, 46, 4, C.wood); P(1, 26, 46, 1, C.gold); P(2, 30, 3, 2, C.woodDk); P(43, 30, 3, 2, C.woodDk);
+    } },
+    rm_pillow: { w: 3, h: 1, up: 8, z: 1.2, draw(P, v) {
+      for (const ox of [5, 27]) {
+        P(ox, -3, 15, 8, '#f4f0e6'); P(ox + 3, -3, 5, 8, '#3a3632'); P(ox + 2, -3, 1, 8, '#d89a34'); P(ox + 8, -3, 2, 8, '#d89a34');
+      }
+      if (v === 'blue') {
+        for (const ox of [5, 27]) { P(ox, -3, 15, 8, '#dcecf8'); P(ox + 3, -3, 5, 8, '#4a7ab8'); P(ox + 8, -3, 2, 8, '#90c8f0'); }
+      } else if (v === 'bear') {
+        P.oval(24, 2, 5, 4, '#9a6234'); P.oval(24, -3, 4, 3, '#b07442'); P.dot(21, -6, '#9a6234'); P.dot(27, -6, '#9a6234');
+        P.oval(24, -2, 2, 1, '#e8cfa8'); P.dot(23, -4, '#1a1410'); P.dot(25, -4, '#1a1410'); P(22, 0, 4, 1, '#c8382e');
+      } else if (v === 'diting') {
+        P.oval(24, 1, 5, 4, '#e8e2d4'); P.oval(24, -3, 4, 3, '#f4f0e6'); P(20, -6, 2, 3, '#d4a048'); P(26, -6, 2, 3, '#d4a048');
+        P(22, -3, 4, 1, '#38c8b0'); P(22, 0, 4, 2, '#c8382e');
+      } else if (v === 'wubbaboo') {
+        P.oval(24, 0, 5, 5, '#f2f6ff'); P.oval(24, -1, 4, 4, '#ffffff');
+        P.dot(22, -1, '#202840'); P.dot(26, -1, '#202840'); P.oval(24, 1, 1, 1, '#70b8ff'); P.dot(24, -6, '#90d8ff');
+      }
+    } },
+    rm_nstand: { w: 1, h: 1, up: 10, draw(P, v) {
+      P.shadow(8, 14, 6, 2);
+      P.box(2, 2, 12, 3, 9, C.woodHi, C.wood, C.gold);
+      P(4, 7, 8, 5, C.woodDk); P(7, 9, 2, 1, C.goldHi);
+      if (v === 'lamp') {
+        P(6, -1, 4, 4, C.gold); P.tri([3, -1, 13, -1, 11, -7, 5, -7], '#ffe6a8'); P(5, -6, 6, 4, '#fff6d8');
+      } else if (v === 'alarm') {
+        P.oval(8, -1, 4, 4, '#c8382e'); P.oval(8, -1, 3, 3, '#fff8e8'); P.dot(6, -5, C.goldHi); P.dot(10, -5, C.goldHi); P(8, -3, 1, 2, '#2a2018');
+      } else if (v === 'book') {
+        P(4, -1, 8, 4, '#203868'); P(4, -1, 8, 1, C.goldHi); P(5, 0, 6, 2, '#4a78c0'); P(10, 2, 3, 2, '#f4eedc');
+      }
+    }, lights: v => v === 'lamp' ? [[8, -4, 22, '#ffd890', 0.32]] : [] },
+    rm_desk: { w: 2, h: 1, up: 12, draw(P, v) {
+      P.shadow(16, 14, 15, 2);
+      P.box(1, 1, 30, 4, 9, C.woodHi, C.wood, C.gold);
+      P(3, 6, 9, 7, C.woodDk); P(20, 6, 9, 7, C.woodDk); P(7, 9, 2, 1, C.gold); P(24, 9, 2, 1, C.gold);
+      if (v === 'notes') {
+        P(5, -1, 9, 4, '#f4eedc'); P(6, 0, 7, 1, '#5a6a8a'); P(6, 2, 5, 1, '#5a6a8a'); P(16, -2, 6, 4, '#2a3a68'); P(24, -5, 3, 6, C.gold);
+      } else if (v === 'globe') {
+        P(7, -1, 8, 3, '#f4eedc'); P.ring(22, -4, 5, 5, C.goldHi); P.oval(22, -4, 3, 3, '#2a6ab8'); P(21, 1, 3, 2, C.goldDk);
+      } else if (v === 'camera') {
+        P(6, -3, 8, 5, '#f0a8c8'); P(6, -3, 8, 1, '#ffffff'); P.oval(10, -1, 2, 2, '#2a3048');
+        P(18, -1, 5, 4, '#ffffff'); P(19, 0, 3, 2, '#7ab0e0'); P(24, 0, 5, 4, '#ffffff'); P(25, 1, 3, 2, '#f0a050');
+      }
+    } },
+    rm_bsofa: { w: 3, h: 1, up: 8, draw(P, v) {
+      P.shadow(24, 14, 22, 2);
+      P(1, -5, 46, 8, '#384668'); P(1, -5, 46, 2, '#506490'); P(1, -5, 46, 1, C.gold);
+      P(2, 2, 44, 8, '#e6dcc8'); P(3, 2, 42, 1, '#fff8ea'); P(16, 2, 1, 7, '#c4b69e'); P(31, 2, 1, 7, '#c4b69e');
+      P(0, -1, 4, 11, '#384668'); P(44, -1, 4, 11, '#384668'); P(2, 10, 44, 2, C.woodDk);
+      if (v === 'plaid') {
+        P(32, -4, 10, 12, '#b8322c'); P(34, -4, 2, 12, C.goldHi); P(32, 2, 10, 2, C.goldHi);
+      } else if (v === 'cat') {
+        P.oval(12, 2, 5, 4, '#f0a8c8'); P.tri([8, 0, 10, -4, 12, 0], '#f0a8c8'); P.tri([12, 0, 14, -4, 16, 0], '#f0a8c8');
+        P.oval(36, 2, 5, 4, '#7cd8c8'); P.dot(11, 2, '#2a1a20'); P.dot(13, 2, '#2a1a20');
+      } else if (v === 'poms') {
+        for (const cx of [11, 37]) { P.oval(cx, 2, 5, 4, '#f4eedc'); P(cx - 5, 0, 2, 5, '#2a2634'); P(cx + 4, 0, 2, 5, '#2a2634'); P(cx - 2, -2, 5, 2, '#c8382e'); }
+      }
+    } },
+    rm_wallart: { w: 2, h: 1, up: 16, z: 0.2, draw(P, v) {
+      P(2, -14, 28, 16, C.gold); P(3, -13, 26, 14, '#141c34');
+      if (v === 'serval') {
+        P(3, -13, 26, 14, '#2a1438'); P.line(6, -2, 24, -11, '#ff50a0', 2); P.line(8, -11, 22, -2, '#60e0ff'); P.oval(16, -6, 4, 4, '#ffe060');
+      } else if (v === 'museum') {
+        P(3, -13, 26, 14, '#4a3628'); P.oval(16, -6, 6, 5, '#d8b46a'); P.oval(16, -7, 3, 3, '#f4e4b8');
+      } else if (v === 'luofu') {
+        P(3, -13, 26, 14, '#e8dec4'); P.oval(12, -8, 3, 3, '#c8382e'); P.line(6, -2, 26, -9, '#2a3438', 2); P.oval(20, -6, 4, 3, '#389888');
+      } else {
+        for (let i = 0; i < 10; i++) P.dot(5 + i * 2, -11 + (i * 3) % 10, '#ffffff');
+        P.line(5, -3, 26, -10, C.goldHi); P.oval(18, -7, 3, 3, '#4aa0ff');
+      }
+    } },
+    rm_sill: { w: 1, h: 1, up: 12, z: 0.2, draw(P, v) {
+      P(4, -2, 8, 5, '#d8d0c0'); P(3, -3, 10, 2, C.gold);
+      if (v === 'snow') {
+        P(4, -9, 8, 7, 'rgba(180,230,255,0.45)'); P(7, -7, 2, 5, '#4a9a6a'); P.oval(8, -8, 2, 2, '#ffffff');
+      } else if (v === 'bonsai') {
+        P.line(7, -3, 9, -8, C.woodDk, 2); P.oval(6, -8, 4, 2, '#e8b038'); P.oval(11, -9, 4, 2, '#f4c850');
+      } else {
+        P.oval(8, -6, 5, 4, C.leaf); P.oval(6, -7, 3, 2, C.leafHi); P.oval(10, -5, 3, 2, C.leafDk);
+      }
+    } },
+    rm_bench: { w: 2, h: 1, up: 6, draw(P, v) {
+      P.shadow(16, 13, 14, 2);
+      P.box(2, 3, 28, 4, 5, '#4c525e', C.wood, C.gold);
+      if (v === 'boots') {
+        P(6, 0, 4, 4, '#2a2630'); P(11, 0, 4, 4, '#2a2630'); P(19, 1, 8, 3, '#c8382e');
+      } else if (v === 'chest') {
+        P.box(8, -2, 16, 3, 4, '#8a5a34', '#5a381e', C.goldHi); P(15, 0, 2, 3, C.goldHi);
+      } else if (v === 'tray') {
+        P(7, 1, 18, 2, C.goldHi); P(10, -2, 4, 3, '#ffffff'); P(17, -3, 5, 4, '#d89a34');
+      }
+    } },
+    rm_tub: { w: 3, h: 2, up: 10, draw(P, v) {
+      P.shadow(24, 30, 22, 2);
+      P.oval(24, 14, 22, 12, '#c8d4de'); P.oval(24, 12, 22, 11, '#ffffff');
+      P.oval(24, 12, 19, 8, '#7ad8e8'); P.oval(22, 11, 14, 5, '#a8ecfa');
+      P(2, 12, 44, 2, C.gold); P(4, 23, 4, 4, C.goldHi); P(40, 23, 4, 4, C.goldHi);
+      P(42, 0, 3, 10, C.goldHi); P(39, 0, 4, 2, C.goldHi);
+      for (const [bx, by] of [[12, 10], [16, 13], [30, 9], [34, 12]]) P.oval(bx, by, 3, 2, '#ffffff');
+      if (v === 'duck') {
+        P.oval(22, 11, 4, 3, '#ffd838'); P.oval(25, 8, 3, 2, '#ffe868'); P(27, 8, 2, 1, '#ff7820'); P.dot(25, 7, '#1a1410');
+      } else if (v === 'pom') {
+        P.oval(23, 11, 4, 3, '#f4eedc'); P(20, 6, 6, 4, '#c8382e'); P(20, 9, 6, 1, C.goldHi);
+      } else if (v === 'salts') {
+        P.oval(24, 12, 18, 7, '#d888e8'); P.oval(22, 11, 12, 4, '#f4b8ff');
+      }
+    }, lights: () => [[24, 10, 28, '#90e8ff', 0.25]] },
+    rm_vanity: { w: 2, h: 1, up: 16, draw(P, v) {
+      P.shadow(16, 14, 14, 2);
+      P.box(2, 2, 28, 4, 8, '#eef4f8', '#5a6878', C.gold);
+      P.oval(16, 4, 6, 2, '#90d8f0'); P(15, 0, 2, 3, C.goldHi);
+      P(5, -14, 22, 14, C.gold); P(6, -13, 20, 12, '#8ab8d8'); P.line(8, -3, 18, -11, '#d8f0ff', 2);
+      if (v === 'mugs') {
+        P(5, 0, 3, 3, '#ff80a0'); P(24, 0, 3, 3, '#60b8ff');
+      } else if (v === 'lotions') {
+        P(4, -1, 2, 4, '#58d8c0'); P(7, 0, 2, 3, '#f0a8c8'); P(24, -1, 3, 4, '#ffd060');
+      } else if (v === 'candle') {
+        P(5, 0, 3, 3, '#f4eedc'); P.dot(6, -1, '#ff9830'); P(23, 0, 4, 3, '#88d8b0');
+      }
+    }, lights: () => [[16, -8, 22, '#d8f4ff', 0.25]] },
+    rm_shower: { w: 1, h: 1, up: 18, draw(P) {
+      P(1, -16, 14, 30, 'rgba(170,225,245,0.38)');
+      P(1, -16, 14, 2, C.gold); P(1, 12, 14, 2, C.gold); P(1, -16, 1, 30, C.gold); P(14, -16, 1, 30, C.gold);
+      P(7, -14, 2, 18, C.goldHi); P(5, -14, 6, 2, C.goldHi);
+    } },
+    rm_towel: { w: 1, h: 1, up: 14, draw(P, v) {
+      P(2, -10, 12, 1, C.goldHi); P(2, -4, 12, 1, C.goldHi);
+      const col = v === 'red' ? '#c8382e' : v === 'blue' ? '#4a88d8' : '#f4f0e6';
+      P(4, -10, 8, 12, col); P(4, -1, 8, 2, C.gold);
+    } },
+    rm_bathmat: { w: 2, h: 1, up: 0, z: -10, draw(P, v) {
+      const col = v === 'paw' ? '#e8c090' : v === 'wave' ? '#68b8d8' : '#eef4fa';
+      P.oval(16, 8, 13, 6, C.goldDk); P.oval(16, 8, 12, 5, col);
+      if (v === 'paw') { P.oval(16, 9, 4, 3, '#7a4e28'); for (const x of [11, 14, 18, 21]) P.dot(x, 5, '#7a4e28'); }
+    } },
+    rm_stairs: { w: 2, h: 2, up: 8, z: -10, draw(P) {
+      P(0, -4, 32, 34, '#2a1a12');
+      for (let i = 0; i < 7; i++) {
+        P(2, i * 4, 28, 3, i % 2 ? '#8a5a34' : '#744828');
+        P(2, i * 4, 28, 1, C.gold);
+      }
+      P(0, -6, 32, 2, C.goldHi); P(0, -6, 2, 36, C.gold); P(30, -6, 2, 36, C.gold);
+    } },
+    rm_mat: { w: 2, h: 1, up: 0, z: -10, draw(P, v) {
+      const col = v === 'pom' ? '#384668' : v === 'trash' ? '#4a525a' : '#8a2824';
+      P(2, 2, 28, 12, C.gold); P(3, 3, 26, 10, col);
+      if (v === 'pom') { P.oval(16, 8, 4, 3, '#f4eedc'); P(13, 4, 6, 2, '#c8382e'); }
+      else if (v === 'trash') { P(13, 4, 6, 7, '#b8c4d0'); P(12, 4, 8, 1, '#e4ecf4'); }
+      else { P.oval(16, 8, 5, 3, C.goldHi); }
+    } },
+    rm_coat: { w: 2, h: 1, up: 16, draw(P, v) {
+      P.shadow(16, 14, 14, 2);
+      P.box(2, 6, 28, 3, 5, C.woodHi, C.wood, C.gold);
+      P(5, -14, 2, 20, C.wood); P(25, -14, 2, 20, C.wood); P(4, -12, 24, 2, C.gold);
+      P(8, -10, 5, 11, '#2c3e68'); P(15, -10, 5, 10, '#c8382e');
+      if (v === 'hats') { P.oval(10, -13, 4, 2, '#c8382e'); P.oval(20, -13, 4, 2, '#d8b46a'); }
+      else if (v === 'umb') { P(21, -9, 2, 13, '#f0a8c8'); P(20, -10, 4, 2, C.goldHi); }
+      else if (v === 'bags') { P.box(19, 1, 6, 3, 4, '#d89a34', '#9a6418', C.goldHi); }
+    } },
+    rm_screen: { w: 2, h: 1, up: 16, draw(P, v) {
+      P.shadow(16, 14, 15, 2);
+      const bg = v === 'silk' ? '#e8dec4' : v === 'glass' ? '#5a98b8' : '#7a4e2d';
+      for (let i = 0; i < 3; i++) {
+        const x = 1 + i * 10;
+        P(x, -14, 10, 28, C.goldDk); P(x + 1, -13, 8, 26, bg);
+        P(x + 2, -9, 6, 1, C.goldHi); P(x + 2, 3, 6, 1, C.goldHi);
+      }
+    } },
+    rm_hplant: { w: 1, h: 1, up: 18, draw(P, v) {
+      P.shadow(8, 14, 6, 2);
+      P.box(3, 5, 10, 3, 6, C.navyHi, C.navy, C.gold);
+      if (v === 'bamboo') {
+        for (const x of [5, 8, 10]) { P(x, -14, 2, 19, '#5cbc56'); P(x, -8, 2, 1, '#1a5a2a'); P.oval(x + 1, -14, 3, 2, '#78e070'); }
+      } else if (v === 'ficus') {
+        P(7, -4, 2, 9, C.wood); P.oval(8, -9, 6, 6, C.leaf); P.oval(6, -11, 4, 3, C.leafHi);
+      } else {
+        P(7, -4, 2, 9, C.wood);
+        for (const [dx, dy] of [[-6, -10], [6, -10], [-4, -15], [4, -15], [0, -16]]) P.line(8, -4, 8 + dx, dy, C.leafHi, 2);
+      }
+    } },
+    rm_board: { w: 2, h: 1, up: 14, draw(P) {
+      P(1, -12, 30, 16, C.woodDk); P(2, -11, 28, 14, '#c89a62'); P(1, -12, 30, 1, C.gold);
+      P(4, -9, 8, 6, '#fff8e6'); P(5, -8, 6, 1, '#c8382e');
+      P(14, -9, 7, 9, '#e6f4ff'); P(22, -8, 6, 6, '#ffe898');
+      P.oval(9, -1, 3, 3, '#c8382e'); P.dot(9, -1, C.goldHi);
+    } },
+    rm_fridge: { w: 1, h: 1, up: 18, draw(P, v) {
+      P.shadow(8, 14, 7, 2);
+      P(1, -16, 14, 30, '#dce4ec'); P(2, -15, 12, 28, '#f0f6fc');
+      P(1, -4, 14, 1, '#9aa8b8'); P(12, -12, 1, 6, C.gold); P(12, -1, 1, 8, C.gold);
+      if (v === 'stickers') {
+        P.oval(6, -10, 3, 3, '#c8382e'); P(5, -1, 4, 4, '#ffd848'); P.dot(9, -7, '#4aa0ff');
+      } else if (v === 'notes') {
+        P(4, -12, 5, 4, '#ff90b8'); P(5, -7, 6, 4, '#80e0a0'); P(4, 1, 5, 4, '#ffe070');
+      } else if (v === 'ice') {
+        P(4, -11, 6, 5, '#2a3848'); P(5, -10, 4, 3, '#70d8ff');
+      }
+    } },
+    rm_minibar: { w: 3, h: 1, up: 12, draw(P, v) {
+      P.shadow(24, 14, 23, 2);
+      P.box(0, 0, 48, 4, 10, '#4a3628', '#2a2038', C.gold);
+      for (let x = 8; x < 44; x += 12) P(x, 5, 1, 7, C.goldDk);
+      P(4, -8, 8, 8, C.chrome); P(5, -7, 6, 5, '#3a2010');
+      const col = v === 'tea' ? '#68c888' : v === 'soda' ? '#ff6080' : v === 'juice' ? '#ffa830' : '#60c8ff';
+      for (const x of [18, 25, 32, 39]) { P(x, -6, 4, 6, col); P(x, -7, 4, 1, '#ffffff'); }
+    } },
+    rm_candy: { w: 1, h: 1, up: 16, draw(P) {
+      P.shadow(8, 14, 6, 2);
+      P(3, 1, 10, 12, '#c8382e'); P(3, 1, 10, 1, C.goldHi); P(6, 6, 4, 4, C.gold);
+      P.oval(8, -6, 6, 6, '#d8f0ff');
+      for (const [x, y, c] of [[5, -5, '#ff5080'], [8, -4, '#ffe040'], [10, -6, '#50d890'], [7, -8, '#60a8ff'], [9, -3, '#c870ff']]) P.oval(x, y, 2, 2, c);
+      P(5, -13, 6, 2, C.goldHi);
+    } },
+    rm_buffet: { w: 2, h: 1, up: 16, draw(P, v) {
+      P.shadow(16, 14, 15, 2);
+      P.box(1, -14, 30, 16, 12, C.woodHi, C.wood, C.gold);
+      P(3, -12, 26, 11, '#261810'); P(3, -6, 26, 1, C.gold);
+      const col = v === 'porcelain' ? '#70c8e8' : v === 'snacks' ? '#ff9848' : '#f4d890';
+      for (const x of [5, 13, 21]) { P.oval(x + 2, -9, 3, 2, col); P.oval(x + 2, -3, 3, 2, '#ffffff'); }
+    } },
+    rm_island: { w: 3, h: 1, up: 8, draw(P, v) {
+      P.shadow(24, 14, 22, 2);
+      P.box(2, 0, 44, 5, 9, '#f4eee2', '#384668', C.gold);
+      for (const x of [10, 24, 38]) { P.oval(x, 13, 4, 2, C.coral); P(x - 1, 10, 2, 3, C.goldDk); }
+      if (v === 'cake') {
+        P.oval(24, 1, 6, 3, '#ffffff'); P.oval(24, -1, 5, 2, '#ff80a8'); P.dot(24, -3, '#c82020');
+      } else if (v === 'hotpot') {
+        P.oval(24, 1, 7, 3, C.goldHi); P.oval(24, 0, 5, 2, '#e04028');
+      } else if (v === 'pizza') {
+        P.oval(24, 1, 6, 3, '#e8a840'); P.oval(24, 1, 5, 2, '#d83828'); P.dot(22, 1, '#ffe880'); P.dot(26, 1, '#ffe880');
+      } else {
+        P(14, -2, 5, 3, '#ffffff'); P(28, -3, 6, 4, C.goldHi);
+      }
+    } },
+    rm_pcdesk: { w: 2, h: 1, up: 14, draw(P, v) {
+      P.shadow(16, 14, 15, 2);
+      P.box(1, 2, 30, 4, 8, '#2c3244', '#1c202c', '#5ad8ff');
+      P(5, -10, 14, 11, '#d8d4c8'); P(6, -9, 12, 8, v === 'aether' ? '#3a2068' : v === 'silver' ? '#ff40a0' : '#008080');
+      P(8, -7, 8, 4, '#ffffff'); P(21, -7, 7, 9, '#3a4052'); P(23, -5, 3, 1, '#50ff90');
+      P(6, 3, 12, 2, '#d8d4c8');
+    }, lights: () => [[12, -4, 24, '#5ad8ff', 0.3, true]] },
+    rm_arcade: { w: 2, h: 1, up: 18, draw(P, v) {
+      P.shadow(16, 14, 15, 2);
+      const c1 = v === 'fight' ? '#c83040' : v === 'race' ? '#e89020' : '#3a2a7a';
+      for (const ox of [1, 17]) {
+        P(ox, -16, 14, 28, c1); P(ox, -16, 14, 3, '#ffd060');
+        P(ox + 2, -12, 10, 8, '#0c1020'); P(ox + 3, -11, 8, 6, ox < 10 ? '#40d0ff' : '#ff60b0');
+        P(ox + 1, -3, 12, 3, C.gold); P.dot(ox + 4, -2, '#ff3030'); P.dot(ox + 9, -2, '#50ff80');
+      }
+    }, lights: () => [[16, -8, 28, '#ff70c8', 0.3, true]] },
+    rm_bgshelf: { w: 2, h: 1, up: 16, draw(P, v) {
+      P.shadow(16, 14, 15, 2);
+      P.box(1, -14, 30, 16, 12, C.woodHi, C.wood, C.gold);
+      P(3, -12, 26, 12, '#1e2436'); P(3, -6, 26, 1, C.gold);
+      const c = v === 'chess' ? '#d8b46a' : v === 'cards' ? '#e04868' : '#48d8a8';
+      for (let x = 5; x < 26; x += 5) { P(x, -11, 4, 4, c); P(x, -4, 4, 4, '#f4eedc'); }
+    } },
+    rm_beans: { w: 2, h: 1, up: 6, draw(P, v) {
+      P.oval(16, 9, 15, 5, '#2a2244'); P.oval(16, 9, 13, 4, '#443668');
+      const c1 = v === 'trotter' ? '#f4eedc' : '#ff6888', c2 = v === 'trio' ? '#58d890' : '#58a8ff';
+      P.oval(8, 5, 6, 5, c1); P.oval(7, 4, 4, 3, '#ffffff');
+      P.oval(24, 5, 6, 5, c2); P.oval(23, 4, 4, 3, '#ffffff');
+    } },
+    rm_neon: { w: 2, h: 1, up: 16, z: 0.2, draw(P, v) {
+      P(2, -13, 28, 12, '#121024'); P(2, -13, 28, 1, '#5ad8ff'); P(2, -2, 28, 1, '#ff60b8');
+      if (v === 'wolf') {
+        P.tri([8, -4, 16, -12, 24, -4], '#ff60b8'); P.dot(13, -7, '#5ad8ff'); P.dot(19, -7, '#5ad8ff');
+      } else if (v === 'star') {
+        P.oval(16, -7, 5, 4, '#ffe060'); P.line(6, -7, 26, -7, '#5ad8ff');
+      } else {
+        P.oval(16, -7, 7, 4, '#5ad8ff'); P.dot(12, -7, '#ffd860'); P.dot(20, -7, '#ff60b8');
+      }
+    }, lights: () => [[16, -7, 26, '#60d8ff', 0.32, true]] },
+    rm_stand: { w: 3, h: 1, up: 20, draw(P) {
+      P.shadow(24, 14, 23, 2);
+      P(0, -18, 48, 22, '#1e2844'); P(2, -16, 44, 18, '#6890b8');
+      P(0, -18, 48, 2, C.gold); P(0, -18, 2, 32, C.goldDk); P(46, -18, 2, 32, C.goldDk); P(15, -16, 2, 20, '#1e2844'); P(31, -16, 2, 20, '#1e2844');
+      P(17, -7, 14, 2, '#ffe898');
+      P.box(0, 2, 48, 3, 9, '#5a4636', '#243050', C.gold);
+      for (const cx of [8, 24, 40]) { P.oval(cx, 2, 5, 2, '#2a2832'); P(cx - 5, 1, 10, 1, C.goldHi); }
+    }, lights: () => [[24, -6, 32, '#ffe8a0', 0.28]] },
+    rm_trophy: { w: 3, h: 1, up: 20, z: 0.3, draw(P, v) {
+      if (v === 'trash_king') {
+        P(4, -12, 8, 12, '#9aa6b4'); P(5, -12, 3, 12, '#dce4ec'); P(3, -14, 10, 2, '#c8d2de');
+        P(19, -15, 10, 4, '#e06028'); P(17, -13, 14, 2, C.goldHi);
+        P.oval(40, -5, 4, 5, '#c8d0dc'); P(38, -2, 4, 4, C.gold);
+      } else if (v === 'express_model') {
+        P(17, -14, 14, 4, '#1c2846'); P(16, -12, 16, 2, C.goldHi);
+        P(5, -7, 6, 8, '#c8382e'); P(37, -8, 6, 9, '#4aa0ff');
+      } else if (v === 'geomarrow') {
+        P.tri([4, 1, 8, -11, 12, 1], '#ff8830'); P.tri([7, 1, 10, -8, 13, 1], '#ffd060');
+        P.oval(24, -12, 5, 3, '#70c8ff'); P.oval(40, -5, 4, 5, '#8a96a8');
+      } else if (v === 'star_skiff') {
+        P.tri([16, -12, 24, -16, 32, -12], '#38b8a8'); P(18, -12, 12, 2, C.goldHi);
+        P.oval(8, -5, 4, 4, '#e8b850'); P.oval(40, -5, 4, 4, '#c8382e');
+      } else if (v === 'pixel_heart') {
+        P(37, -9, 6, 6, '#ffe060'); P(39, -11, 2, 10, '#ffe060'); P(36, -7, 8, 2, '#2a2832');
+        P.oval(8, -6, 4, 4, '#9a68e8'); P(18, -13, 12, 3, C.goldHi);
+      } else if (v === 'herta_curio') {
+        P.ring(8, -6, 5, 5, C.goldHi); P.oval(8, -6, 2, 2, '#60d8ff');
+        P.oval(24, -12, 4, 4, '#d870ff'); P.oval(40, -5, 4, 4, '#50e0a0');
+      } else if (v === 'trotter_gold') {
+        P.oval(24, -4, 6, 5, C.goldHi); P.oval(22, -6, 3, 2, '#fff8c8'); P(20, -8, 8, 2, '#c8382e');
+        P(5, -8, 6, 9, '#b8c4d0'); P.oval(40, -5, 4, 4, '#60b8ff');
+      } else if (v === 'svarog_hand') {
+        P(5, -11, 6, 12, '#7a8494'); P(6, -9, 4, 3, '#ff4040');
+        P(19, -13, 10, 3, '#d89a34'); P.oval(40, -5, 4, 4, '#c8d4e0');
+      } else if (v === 'arbor_leaf') {
+        P.oval(24, -5, 5, 6, '#38c8a8'); P.oval(24, -5, 3, 4, C.goldHi);
+        P(5, -9, 6, 10, '#c8382e'); P.oval(40, -6, 4, 4, '#ffe070');
+      }
+    } },
+    rm_vitrines: { w: 2, h: 1, up: 14, draw(P, v) {
+      P.shadow(16, 14, 14, 2);
+      P.box(2, 2, 28, 3, 8, '#384668', '#1e2844', C.gold);
+      P(3, -10, 26, 12, 'rgba(180,225,255,0.32)'); P(3, -10, 26, 1, C.goldHi);
+      const c = v === 'medals' ? C.goldHi : v === 'scrolls' ? '#58d8a8' : '#70b8ff';
+      for (const x of [7, 15, 23]) { P(x, -6, 4, 6, c); P(x, -1, 4, 2, C.goldDk); }
+    } },
+    cdoor_shut: { w: 1, h: 2, up: 0, z: -0.2, draw(P, v) {
+      LAYER.cdoor(P, v);
+    } },
+    hm_siphon: { w: 1, h: 1, up: 14, draw(P) {
+      P.shadow(8, 15, 7, 2);
+      P.box(1, 2, 14, 3, 10, '#6a2824', '#421614', C.gold);
+      P(3, 8, 10, 5, '#32100e'); P(7, 10, 2, 1, C.goldHi);
+      P(4, -9, 1, 11, C.goldDk); P(3, 1, 7, 1, C.gold);
+      P.oval(6, -1, 2, 2, '#d8f0ff'); P(5, 0, 3, 1, '#ff9838'); P.dot(6, 0, '#fff0a0');
+      P.oval(6, -7, 3, 3, '#d8f0ff'); P(4, -7, 5, 2, '#2a1208'); P.dot(5, -9, '#ffffff');
+      P(11, -3, 3, 4, '#8a3028'); P(11, -4, 3, 1, C.goldHi);
+    }, lights: () => [[6, -2, 16, '#ffa848', 0.28, true]] },
+    hm_chart: { w: 2, h: 1, up: 12, draw(P) {
+      P.shadow(16, 15, 15, 2);
+      P.box(1, 1, 30, 4, 9, '#6a2824', '#421614', C.gold);
+      P(3, 6, 9, 7, '#32100e'); P(20, 6, 9, 7, '#32100e'); P(7, 9, 2, 1, C.gold); P(24, 9, 2, 1, C.gold);
+      P(3, -1, 13, 5, '#142442'); P(3, -1, 13, 1, C.gold);
+      P.line(5, 2, 9, 0, C.goldHi); P.line(9, 0, 14, 2, C.goldHi);
+      P.dot(5, 2, '#ffffff'); P.dot(9, 0, '#ffffff'); P.dot(14, 2, '#ffffff');
+      P(18, -2, 7, 5, '#8a242c'); P(19, -1, 5, 3, '#f6efe4');
+      P.oval(27, 0, 2, 2, '#ffe8f0'); P.dot(27, 0, '#ffffff');
+    }, lights: () => [[16, -2, 20, '#ffd890', 0.24]] },
+    hm_case: { w: 1, h: 1, up: 10, draw(P) {
+      P.shadow(8, 15, 7, 2);
+      P.box(1, 2, 14, 4, 8, '#f4efe6', '#d8cfc0', C.gold);
+      P(1, 5, 14, 1, C.gold); P(6, 5, 4, 2, C.goldHi);
+      P(2, -5, 12, 7, '#ece6da'); P(2, -5, 12, 1, C.gold); P(3, -4, 10, 5, '#5a161c');
+      P.oval(6, -2, 2, 2, C.goldHi); P(10, -3, 2, 3, '#70c8ff');
+    } },
+    wl_mecha: { w: 1, h: 1, up: 18, draw(P) {
+      P.shadow(8, 15, 7, 2);
+      P.box(1, -15, 14, 18, 12, C.woodHi, C.wood, C.gold);
+      P(2, -13, 12, 14, '#182236'); P(2, -5, 12, 1, C.gold); P(2, 1, 12, 1, C.gold);
+      P(6, -12, 4, 3, '#e8eef6'); P(5, -13, 6, 1, '#d83830'); P(7, -12, 2, 1, '#60e8ff');
+      P(5, -9, 6, 4, '#d83830'); P(4, -9, 2, 3, '#e8eef6'); P(10, -9, 2, 3, '#e8eef6'); P(6, -8, 4, 1, C.goldHi);
+      P.oval(5, -2, 2, 2, '#9aa8b8'); P.oval(10, -2, 2, 2, '#9aa8b8');
+      P(4, 3, 5, 4, C.gold); P(5, 4, 3, 2, '#c85040');
+    } },
+    wl_desk: { w: 2, h: 1, up: 12, draw(P) {
+      P.shadow(16, 15, 15, 2);
+      P.box(1, 1, 30, 4, 9, C.woodHi, C.wood, C.gold);
+      P(3, 6, 9, 7, C.woodDk); P(20, 6, 9, 7, C.woodDk); P(7, 9, 2, 1, C.gold); P(24, 9, 2, 1, C.gold);
+      P(3, -3, 14, 6, '#2a3448'); P(4, -2, 12, 4, '#d8f4ff');
+      P(6, -1, 4, 2, '#4a6890'); P(11, -1, 3, 2, '#d83830');
+      P(19, -1, 6, 4, '#2c3e5e'); P(20, 0, 4, 2, '#f4eedc'); P(26, -4, 2, 5, C.goldHi);
+    }, lights: () => [[10, 0, 22, '#90d8ff', 0.28]] },
+    wl_cane: { w: 1, h: 1, up: 14, draw(P) {
+      P.shadow(8, 15, 6, 2);
+      P.box(2, 2, 12, 3, 9, C.woodHi, C.wood, C.gold);
+      P(4, 7, 8, 5, C.woodDk); P(7, 9, 2, 1, C.gold);
+      P(4, 0, 5, 2, '#1c2434'); P(5, 0, 1, 1, '#90c8ff'); P(7, 0, 1, 1, '#90c8ff');
+      P(11, -10, 2, 22, '#241c34'); P(11, -10, 1, 22, C.gold);
+      P.oval(12, -11, 2, 2, C.goldHi); P.dot(12, -11, '#b878ff');
+    }, lights: () => [[12, -11, 14, '#a878ff', 0.24, true]] },
+    wl_chess: { w: 1, h: 1, up: 10, draw(P) {
+      P.shadow(8, 15, 7, 2);
+      P.box(1, 2, 14, 3, 9, C.woodHi, C.wood, C.gold);
+      for (let y = 0; y < 3; y++) for (let x = 0; x < 4; x++) P(3 + x * 2, 2 + y, 2, 1, (x + y) % 2 ? '#f4eedc' : '#2a2434');
+      P(4, 0, 1, 2, '#f4eedc'); P(7, 1, 1, 2, '#2a2434'); P(9, 0, 1, 2, C.goldHi);
+      P(11, 1, 3, 3, '#2a3854'); P.dot(12, 1, '#70d8ff');
+    }, lights: () => [[12, 0, 16, '#60c8ff', 0.24, true]] }
   };
 
   const LAYER = {
@@ -479,6 +894,7 @@
     const r = i => hash(e.x * 13 + i, e.y * 7 + i * 3, 51);
     const pal = CARS[car] || CARS.parlor;
     if (car === 'lab' && (kind === 'floor' || kind === 'floor5')) { labFloor(P, kind, pal, e, r); return; }
+    if (car === 'room') { roomFloor(P, kind, pal, e, r); return; }
     switch (kind) {
       case 'floor2': {
         P(0, 0, U, U, '#d8d1c3');
@@ -539,6 +955,46 @@
     if (r(1) > 0.55) for (let y = 4; y < 12; y += 3) for (let x = 4; x < 12; x += 3) P.dot(x + (y % 2), y, '#333b46');
   }
 
+  function roomFloor(P, kind, pal, e, r) {
+    if (kind === 'floor2') {
+      P(0, 0, U, U, '#dce8f0');
+      for (let y = 0; y < U; y += 8) for (let x = 0; x < U; x += 8) {
+        P(x, y, 7, 7, ((x + y) / 8 + e.x + e.y) % 2 ? '#e8f2f8' : '#c8dce8');
+        P(x + 7, y, 1, 8, '#9ab4c4'); P(x, y + 7, 8, 1, '#9ab4c4');
+      }
+      return;
+    }
+    if (kind === 'floor3') {
+      P(0, 0, U, U, '#2c3858'); P.dither(0, 0, U, U, '#344266', (e.x + e.y) & 1);
+      if (e.edgeU) P(0, 0, U, 2, pal.trim);
+      if (e.edgeD) P(0, U - 2, U, 2, pal.trim);
+      return;
+    }
+    if (kind === 'floor4') {
+      for (let y = 0; y < U; y += 8) for (let x = 0; x < U; x += 8) P(x, y, 8, 8, ((x + y) / 8 + e.x + e.y) % 2 ? '#3e4c66' : '#d8d2c4');
+      return;
+    }
+    if (kind === 'floor5') {
+      P(0, 0, U, U, '#221e38'); P.dither(0, 0, U, U, '#2a2444', (e.x + e.y) & 1);
+      if (e.edgeU) P(0, 0, U, 1, '#5ad8ff');
+      if (e.edgeD) P(0, U - 1, U, 1, '#ff60b8');
+      return;
+    }
+    if (kind === 'stairs') {
+      for (let y = 0; y < U; y += 4) { P(0, y, U, 4, '#8a5a34'); P(0, y, U, 1, pal.trim); P(0, y + 3, U, 1, '#4a2c18'); }
+      return;
+    }
+    const [b, hi, dk] = pal.dark;
+    P(0, 0, U, U, b);
+    for (let y = 0; y < U; y += 4) {
+      P(0, y, U, 1, (y / 4 + e.y) % 2 ? hi : b);
+      P(0, y + 3, U, 1, dk);
+      const jx = ((e.x * 7 + e.y * 3 + y) * 5) % 14 + 1;
+      P(jx, y, 1, 4, dk);
+    }
+    if (r(2) > 0.5) P(2, 5, 10, 1, hi);
+  }
+
   function buildLayer(map) {
     const def = map.def, car = def.car, pal = CARS[car] || CARS.parlor;
     const cv = G.mkCanvas(map.w * U, map.h * U), g = cv.getContext('2d');
@@ -554,7 +1010,7 @@
       if (!wall(x, y)) return null;
       if (y + 1 >= map.h) return 'roof';
       if (!wall(x, y + 1)) return 'low';
-      if (y + 2 < map.h && !wall(x, y + 2) && ((inside(x - 1, y) && wall(x - 1, y)) || (inside(x + 1, y) && wall(x + 1, y)))) return 'high';
+      if (y + 2 < map.h && !wall(x, y + 2) && (car === 'room' || (inside(x - 1, y) && wall(x - 1, y)) || (inside(x + 1, y) && wall(x + 1, y)))) return 'high';
       return 'roof';
     };
     const floorKind = (x, y) => {
@@ -641,9 +1097,9 @@
         glass.push({ x: x * U + gx0, y: y * U, w: gx1 - gx0, h: 10 });
       }
     }
-    for (const [k, x, y, v] of def.decor || []) {
+    for (const [k, x, y, v, cond] of def.decor || []) {
       if (k === 'lantern') { overs.push({ k: v, x: x * U, y: y * U }); continue; }
-      if (LAYER[k]) {
+      if (LAYER[k] && !cond) {
         LAYER[k](pen(g, x * U, y * U), v);
         for (const l of (LAYER_LIGHT[k] || (() => []))(v)) lights.push(light(x, y, l));
         continue;
@@ -652,8 +1108,8 @@
       if (!d) continue;
       const [w, h] = d.size ? d.size(v) : [d.w, d.h];
       const cvs = sprite(w * U, h * U, d.up, P => d.draw(P, v));
-      sprites.push({ k, x, y, w, h, up: d.up, cv: cvs, sort: y + h - 1 });
-      for (const l of d.lights ? d.lights(v) : []) lights.push(light(x, y, l));
+      sprites.push({ k, x, y, w, h, up: d.up, cv: cvs, sort: y + h - 1 + (d.z || 0), if: cond });
+      for (const l of d.lights ? d.lights(v) : []) lights.push(Object.assign(light(x, y, l), cond ? { if: cond } : null));
     }
     return { cv, anims: [], th: def.theme, deco: true, car, glass, lights, sprites, overs };
   }
@@ -791,15 +1247,15 @@
     for (let i = 0; i < w / 20; i++) P.dot(Math.floor(hash(i, 5, 87) * w), h - 22 + Math.floor(hash(i, 6, 87) * 18), ['#ffffff', '#ffe060', '#ff9ab8'][i % 3]);
   }
 
-  function drawWindows(ctx, L, map, cx, cy, t) {
+  function drawWindows(ctx, L, map, cx, cy, t, vw) {
     if (!L.glass.length) return;
     const pano = panorama(L.outside || map.outside || 'herta', map.w * U + 320, map.h * U);
     const was = ctx.imageSmoothingEnabled;
     ctx.imageSmoothingEnabled = false;
-    const shift = Math.round(cx * 0.375);
+    const shift = Math.round(cx * 0.375), maxX = (vw || 640) + 40;
     for (const gl of L.glass) {
       const sx = gl.x * 2 - cx, sy = gl.y * 2 - cy;
-      if (sx > 680 || sy > 520 || sx + gl.w * 2 < -40 || sy + gl.h * 2 < -40) continue;
+      if (sx > maxX || sy > 520 || sx + gl.w * 2 < -40 || sy + gl.h * 2 < -40) continue;
       const u = Math.max(0, Math.min(pano.width - gl.w, gl.x + 300 - shift));
       ctx.drawImage(pano, u, gl.y, gl.w, gl.h, sx, sy, gl.w * 2, gl.h * 2);
       ctx.fillStyle = 'rgba(160,200,255,0.07)';

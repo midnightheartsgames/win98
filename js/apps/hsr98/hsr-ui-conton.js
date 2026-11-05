@@ -25,7 +25,9 @@
       return bt.cc;
     },
 
-    gynoidPos() { return { x: GYN_AT.x, y: GYN_AT.y - GYN_AT.s * 0.55 }; },
+    gynAt() { return this.wide() ? { x: 254, y: 248, s: 118 } : GYN_AT; },
+
+    gynoidPos() { const g = this.gynAt(); return { x: g.x, y: g.y - g.s * 0.55 }; },
 
     contonEvent(e) {
       const bt = this.bt, cc = this.ccUi();
@@ -244,7 +246,7 @@
     },
 
     drawGynoids(c, g, lay, b) {
-      const { x, y, s } = GYN_AT, bt = this.bt, lunge = (bt.lunge.get(g.u) || 0) * 24;
+      const { x, y, s } = this.gynAt(), bt = this.bt, lunge = (bt.lunge.get(g.u) || 0) * 24;
       c.save();
       c.globalAlpha = g.a;
       if (g.u.flags.squad > 0) for (const [dx, dy, k] of SQUAD) this.gynoidFigure(c, x + dx, y + dy, s * k, g.t + dx, 0.85);
@@ -286,7 +288,7 @@
       const away = u.dAway === undefined ? u.flags.away : u.dAway;
       if (away === 'portal') this.portalRing(c, x + size / 2, y + size / 2, size * 0.36, 0.9);
       if (away === 'capsule') { c.fillStyle = 'rgba(6,16,44,0.55)'; c.fillRect(x, y, size, size); this.capsuleGlyph(c, x + size / 2, y + size / 2, size / 40); }
-      if (u.id === 'gynoids' && u.flags.squad > 0) for (let i = 0; i < 5; i++) this.gynoidIcon(c, x + size + 4 + i * 11, y + size / 2 - 6, 12);
+      if (u.id === 'gynoids' && u.flags.squad > 0) for (let i = 0; i < 5; i++) this.gynoidIcon(c, this.wide() ? x + i * 8 : x + size + 4 + i * 11, this.wide() ? y - 13 : y + size / 2 - 6, this.wide() ? 10 : 12);
     },
 
     contonRailFx(c) {

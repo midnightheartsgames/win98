@@ -440,7 +440,7 @@
   const breakBase = lvl => 10 + 4 * lvl;
   const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
-  const VERSION = '1.8';
+  const VERSION = '1.9';
   const BUILD_VERSION = globalThis.Win98Build && /^\d/.test(globalThis.Win98Build.version || '') ? globalThis.Win98Build.version : VERSION;
   const EDITION = globalThis.Hsr98Standalone === 'apk' ? 'Издание «Портативное» · Android APK' : globalThis.Hsr98Standalone === 'pc' ? 'Издание «Ярило-VI» · ПК' : 'Издание «Ярило-VI»';
   const BRAND = globalThis.Hsr98Standalone ? {

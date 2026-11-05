@@ -554,7 +554,7 @@
 
     drawFhHud(c, b) {
       const bt = this.bt, F = b.fh, used = F.before + F.cyc, left = Math.max(0, F.budget - used);
-      const x = 66, y = 8, w = 128, h = 34, flash = bt.fhCyc && bt.fhCyc.t > 0 ? bt.fhCyc.t / 1.4 : 0;
+      const x = this.wide() ? this.left + 8 : 66, y = 8, w = 128, h = 34, flash = bt.fhCyc && bt.fhCyc.t > 0 ? bt.fhCyc.t / 1.4 : 0;
       if (bt.fhCyc && bt.fhCyc.t > 0) bt.fhCyc.t = Math.max(0, bt.fhCyc.t - 1 / 60);
       c.fillStyle = 'rgba(4,8,26,0.78)'; c.fillRect(x, y, w, h);
       c.fillStyle = 'rgba(122,200,255,' + (0.5 + 0.5 * flash) + ')'; c.fillRect(x, y, w, 1); c.fillRect(x, y + h - 1, w, 1);

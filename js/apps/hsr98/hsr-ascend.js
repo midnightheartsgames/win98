@@ -235,9 +235,18 @@
     },
 
     coneFix(cn) {
+      if (!cn) return null;
       if (cn.lvl == null) { const holder = Object.values(this.state.roster).find(r => r.cone === cn.uid); cn.lvl = holder ? holder.lvl : 1; cn.asc = H.ascPhase(cn.lvl); cn.exp = 0; }
       if (cn.exp == null) cn.exp = 0;
+      if (cn.lock == null) cn.lock = false;
       return cn;
+    },
+
+    toggleConeLock(uid) {
+      const cn = this.coneOf(uid);
+      if (!cn) return false;
+      cn.lock = !cn.lock;
+      return cn.lock;
     },
 
     coneNeed(cn, lvl) { return A.coneExp[H.CONES[cn.id].rarity][Math.min(lvl, H.MAX_LVL - 1) - 1]; },
@@ -272,11 +281,11 @@
 
     coneWorn(uid) { return Object.values(this.state.roster).some(r => r.cone === uid); },
 
-    coneCopies(cn) { return this.state.inv.cones.filter(x => x.id === cn.id && x.uid !== cn.uid && !this.coneWorn(x.uid)).sort((a, b) => (a.lvl || 1) - (b.lvl || 1) || (a.sup || 1) - (b.sup || 1)); },
+    coneCopies(cn) { return this.state.inv.cones.filter(x => x.id === cn.id && x.uid !== cn.uid && !this.coneWorn(x.uid) && !x.lock).sort((a, b) => (a.lvl || 1) - (b.lvl || 1) || (a.sup || 1) - (b.sup || 1)); },
 
     coneMerge(cn, donor) {
       const s = this.state;
-      if (!cn || !donor || cn === donor || cn.id !== donor.id || this.coneWorn(donor.uid)) return null;
+      if (!cn || !donor || cn === donor || cn.id !== donor.id || this.coneWorn(donor.uid) || donor.lock) return null;
       const to = (cn.sup || 1) + (donor.sup || 1);
       if (to > 5) return null;
       cn.sup = to;
@@ -284,7 +293,7 @@
       return { sup: to };
     },
 
-    coneFree(cn) { return this.state.inv.cones.filter(x => x.uid !== cn.uid && !this.coneWorn(x.uid)); },
+    coneFree(cn) { return this.state.inv.cones.filter(x => x.uid !== cn.uid && !this.coneWorn(x.uid) && !x.lock); },
 
     coneFeedExp(uids) {
       const s = this.state;
@@ -300,7 +309,7 @@
       const s = this.state;
       this.coneFix(cn);
       if (cn.lvl >= H.ascCap(cn.asc)) return null;
-      if (feed.some(uid => uid === cn.uid || this.coneWorn(uid) || !s.inv.cones.some(x => x.uid === uid))) return null;
+      if (feed.some(uid => uid === cn.uid || this.coneWorn(uid) || !s.inv.cones.some(x => x.uid === uid && !x.lock))) return null;
       let gain = this.coneFeedExp(feed);
       for (const b of this.coneBooks()) { const n = picks[b.id] || 0; if (n < 0 || n > b.have) return null; gain += n * b.exp; }
       const cost = this.coneCredits(gain);
@@ -311,6 +320,164 @@
       const from = cn.lvl;
       this.coneAddExp(cn, gain);
       return { from, to: cn.lvl, gain, cost };
+    },
+
+    coneIsEnhanced(cn) {
+      if (!cn) return false;
+      return (cn.lvl == null ? 1 : cn.lvl) > 1 || (cn.exp || 0) > 0 || (cn.asc || 0) > 0 || (cn.sup || 1) > 1;
+    },
+
+    coneInvestedExp(cn) {
+      if (!cn) return 0;
+      let exp = cn.exp || 0;
+      const lvl = cn.lvl == null ? 1 : cn.lvl;
+      for (let l = 1; l < lvl; l++) exp += this.coneNeed(cn, l);
+      return exp;
+    },
+
+    coneSalvageable(cn, opts = {}) {
+      const d = cn && H.CONES[cn.id];
+      if (!d || (d.rarity !== 3 && d.rarity !== 4) || this.coneWorn(cn.uid)) return false;
+      const incEnh = typeof opts === 'boolean' ? opts : !!(opts && opts.includeEnhanced);
+      if (!incEnh && this.coneIsEnhanced(cn)) return false;
+      return true;
+    },
+
+    coneCanSalvage(cn, opts = {}) {
+      return this.coneSalvageable(cn, opts) && !cn.lock;
+    },
+
+    coneSalvageableTotal(opts = {}) {
+      return this.state.inv.cones.filter(cn => this.coneCanSalvage(cn, opts)).length;
+    },
+
+    sortCones(list, sortKey = 'rarity', dir = 1, opts = {}) {
+      const s = this.state, idxMap = new Map();
+      s.inv.cones.forEach((x, i) => idxMap.set(x.uid, i));
+      const valOf = cn => {
+        const d = H.CONES[cn.id];
+        if (sortKey === 'lvl') return this.coneLvlOf(cn, Object.values(s.roster).find(r => r.cone === cn.uid)).lvl;
+        if (sortKey === 'atk' || sortKey === 'def' || sortKey === 'hp') return this.coneStatsOf(cn)[sortKey];
+        if (sortKey === 'uid') return typeof cn.uid === 'number' ? cn.uid : (idxMap.get(cn.uid) || 0);
+        return d ? d.rarity : 0;
+      };
+      return list.slice().sort((a, b) => {
+        const da = H.CONES[a.id], db = H.CONES[b.id];
+        if (sortKey === 'name') {
+          const cmp = (da ? da.name : '').localeCompare(db ? db.name : '', 'ru');
+          if (cmp) return cmp * dir;
+        } else {
+          const diff = valOf(a) - valOf(b);
+          if (diff) return diff * dir;
+        }
+        if (opts.salvage && !!a.lock !== !!b.lock) return a.lock ? 1 : -1;
+        if (da && db && da.rarity !== db.rarity) return (da.rarity - db.rarity) * dir;
+        if (a.id !== b.id) return a.id.localeCompare(b.id);
+        return (idxMap.get(a.uid) || 0) - (idxMap.get(b.uid) || 0);
+      });
+    },
+
+    coneSalvageList(sortKey = 'rarity', dir = 1, opts = {}) {
+      if (sortKey && typeof sortKey === 'object') {
+        opts = sortKey;
+        dir = opts.sortDir || opts.dir || 1;
+        sortKey = opts.sortKey || 'rarity';
+      }
+      const incEnh = typeof opts === 'boolean' ? opts : !!(opts && opts.includeEnhanced);
+      const raw = this.state.inv.cones.filter(cn => this.coneSalvageable(cn, { includeEnhanced: incEnh }));
+      return this.sortCones(raw, sortKey, dir, { salvage: true });
+    },
+
+    coneManageLock(mode) {
+      const s = this.state;
+      let changed = 0;
+      if (mode === 'unlock4') {
+        for (const cn of s.inv.cones) {
+          const d = H.CONES[cn.id];
+          if (d && d.rarity === 4 && cn.lock) { cn.lock = false; changed++; }
+        }
+        return changed;
+      }
+      if (mode === 'lock4_down') {
+        for (const cn of s.inv.cones) {
+          const d = H.CONES[cn.id];
+          if (d && d.rarity <= 4 && !cn.lock) { cn.lock = true; changed++; }
+        }
+        return changed;
+      }
+      if (mode === 'unlock4_extra') {
+        const groups = {};
+        s.inv.cones.forEach((cn, idx) => {
+          const d = H.CONES[cn.id];
+          if (!d || d.rarity !== 4) return;
+          (groups[cn.id] || (groups[cn.id] = [])).push({ cn, idx });
+        });
+        for (const items of Object.values(groups)) {
+          items.sort((a, b) => {
+            const wa = this.coneWorn(a.cn.uid) ? 0 : 1, wb = this.coneWorn(b.cn.uid) ? 0 : 1;
+            if (wa !== wb) return wa - wb;
+            const la = ((a.cn.lvl || 1) > 1 || (a.cn.exp || 0) > 0 || (a.cn.asc || 0) > 0) ? 0 : 1;
+            const lb = ((b.cn.lvl || 1) > 1 || (b.cn.exp || 0) > 0 || (b.cn.asc || 0) > 0) ? 0 : 1;
+            if (la !== lb) return la - lb;
+            const sa = a.cn.sup || 1, sb = b.cn.sup || 1;
+            if (sa !== sb) return sb - sa;
+            const ka = a.cn.lock ? 0 : 1, kb = b.cn.lock ? 0 : 1;
+            if (ka !== kb) return ka - kb;
+            return a.idx - b.idx;
+          });
+          let kept = 0;
+          for (const { cn } of items) {
+            if (kept < 5) {
+              if (!cn.lock) { cn.lock = true; changed++; }
+              kept += (cn.sup || 1);
+            } else if (this.coneSalvageable(cn) && cn.lock) {
+              cn.lock = false;
+              changed++;
+            }
+          }
+        }
+        return changed;
+      }
+      return 0;
+    },
+
+    coneSalvagePreview(uids) {
+      const s = this.state, seen = new Set(), valid = [], totals = {};
+      let hasRare4 = false, hasEnhanced = false, maxLvl = 1;
+      for (const uid of (uids || [])) {
+        if (seen.has(uid) || valid.length >= A.coneSalvageCap) continue;
+        seen.add(uid);
+        const cn = s.inv.cones.find(x => x.uid === uid);
+        if (!cn || !this.coneCanSalvage(cn, { includeEnhanced: true })) continue;
+        const d = H.CONES[cn.id], y = A.coneSalvageYield[d.rarity];
+        if (!y) continue;
+        valid.push(uid);
+        const lv = cn.lvl || 1, sup = Math.max(1, cn.sup || 1);
+        if (d.rarity >= 4) hasRare4 = true;
+        if (this.coneIsEnhanced(cn)) hasEnhanced = true;
+        if (lv > maxLvl) maxLvl = lv;
+        totals[y.id] = (totals[y.id] || 0) + y.count * sup;
+        const invExp = this.coneInvestedExp(cn);
+        if (invExp > 0) {
+          let refund = Math.floor(invExp * 0.8);
+          if (lv > 1 && refund < 500) refund = 500;
+          for (const id of ['aether3', 'aether2', 'aether1']) {
+            const e = H.ITEMS[id].coneExp, n = Math.floor(refund / e);
+            if (n > 0) { totals[id] = (totals[id] || 0) + n; refund -= n * e; }
+          }
+        }
+      }
+      const items = AETHER.filter(id => totals[id] > 0).map(id => ({ id, count: totals[id], name: H.ITEMS[id].name, rar: H.ITEMS[id].rar }));
+      return { uids: valid, count: valid.length, hasRare4, hasEnhanced, maxLvl, items };
+    },
+
+    coneSalvage(uids) {
+      const p = this.coneSalvagePreview(uids);
+      if (!p.count) return null;
+      const drop = new Set(p.uids), s = this.state;
+      s.inv.cones = s.inv.cones.filter(x => !drop.has(x.uid));
+      for (const it of p.items) s.inv.items[it.id] = (s.inv.items[it.id] || 0) + it.count;
+      return p;
     },
 
     coneAscCost(cn, at) {

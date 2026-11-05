@@ -59,7 +59,7 @@ const sentOf = op => live().sent.filter(m => m.op === op);
 const HOST = '711111111';
 const friendRow = (uid, name, o) => Object.assign({ uid, name, gender: 'f', tl: 40, avatar: { k: 'kafka', o: null, lvl: 60, eid: 0 }, on: true, status: { c: 'express' }, ago: 0, fav: false, sign: 'Pink', show: [], merits: [], expr: true }, o);
 const snapshot = o => Object.assign({ op: 'friends', list: [friendRow(HOST, 'Kaia')], in: [], out: [], blocks: [], recent: [], settings: { reqs: 'all', guests: 'friends' }, max: 100, favMax: 3 }, o);
-const express = o => Object.assign({ flags: ['doom', 'ending', 'asta_met', 'not_a_real_flag'], party: ['trail', 'march'], roster: [['trail', 50, 0, null], ['march', 50, 0, null], ['kafka', 70, 2, null], ['clara', 44, 0, null], ['__proto__', 1, 1, null], ['nobody', 1, 1, null]], record: 'menu', lead: { k: 'kafka', o: null, lvl: 70, eid: 2 } }, o);
+const express = o => Object.assign({ flags: ['doom', 'ending', 'asta_met', 'room_open', 'himeko_room_open', 'welt_room_open', 'not_a_real_flag'], party: ['trail', 'march'], roster: [['trail', 50, 0, null], ['march', 50, 0, null], ['kafka', 70, 2, null], ['clara', 44, 0, null], ['__proto__', 1, 1, null], ['nobody', 1, 1, null]], record: 'menu', lead: { k: 'kafka', o: null, lvl: 70, eid: 2 }, room: { b: ['bed_1', 'gal_1'], s: { pillow: 'bear' }, t: ['trash_king', 'express_model', 'trotter_gold'] } }, o);
 const visitMsg = o => Object.assign({ op: 'visit', uid: HOST, name: 'Kaia', gender: 'f', sign: 'Pink Lavender', on: false, express: express(), book: [], peers: [] }, o);
 
 (async () => {
@@ -218,9 +218,26 @@ const visitMsg = o => Object.assign({ op: 'visit', uid: HOST, name: 'Kaia', gend
     assert.equal(g.pending.type, 'say', 'and talks as usual');
     g.script = null; g.pending = null; ui.dlg = null;
 
+    assert.ok(stand(ent(e => e.def && e.def.script === 'exp_staircase')));
+    frame(2);
+    assert.equal(g.map.id, 'express_room', 'a guest can climb the stairs to the host room');
+    assert.ok(g.cond('%rm_built_bed_1') && g.cond('%rm_slot_pillow_bear') && g.cond('%rm_stand_1_trash_king'), 'the host room decor and trophies appear');
+    assert.ok(stand(ent(e => e.def && e.def.script === 'rm_bed_prop')));
+    assert.ok(g.script || g.pending, 'allowed room props can be inspected');
+    g.script = null; g.pending = null; ui.dlg = null;
+    assert.ok(stand(ent(e => e.def && e.def.script === 'rm_board_prop')));
+    assert.ok(!g.busy(), 'the host renovation board refuses guests');
+
     g.loadMap('express_cabin', 'l');
     assert.ok(stand(ent(e => e.def && e.def.script === 'exp_march_bed')));
     assert.ok(g.script || g.pending, 'allowed things can be looked at');
+    g.script = null; g.pending = null; ui.dlg = null;
+    assert.ok(!g.blocked(27, 8) && !g.blocked(34, 8), 'unlocked Himeko and Welt rooms are open for guests');
+    assert.ok(stand(ent(e => e.def && e.def.script === 'exp_himeko_charts')));
+    assert.ok(g.script || g.pending, 'guests can inspect Himeko navigation table');
+    g.script = null; g.pending = null; ui.dlg = null;
+    assert.ok(stand(ent(e => e.def && e.def.script === 'exp_welt_desk')));
+    assert.ok(g.script || g.pending, 'guests can inspect Welt storyboard desk');
     g.script = null; g.pending = null; ui.dlg = null;
     assert.ok(stand(ent(e => e.def && e.def.script === 'exp_databank')));
     assert.ok(!g.busy(), 'the data bank refuses');

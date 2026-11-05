@@ -25,6 +25,16 @@
     return c;
   }
 
+  function bgLayer(g, key, fn, pan) {
+    const wide = !!g._wide, w = wide ? 427 : LW, ox = wide ? 53 : 0;
+    const c = layer(key + (wide ? '|w' : ''), w, LH, (cg) => {
+      cg._wide = wide;
+      if (ox) cg.translate(ox, 0);
+      fn(cg, w, LH);
+    });
+    g.drawImage(c, -(pan || 0) - ox, 0);
+  }
+
   function rgba(hex, a) {
     const n = parseInt(hex.slice(1), 16);
     return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + cl(a).toFixed(3) + ')';
@@ -33,13 +43,16 @@
     const gr = g.createLinearGradient(0, y0, 0, y1);
     for (const [o, c] of stops) gr.addColorStop(o, c);
     g.fillStyle = gr;
-    g.fillRect(x || 0, y0, w || LW, y1 - y0);
+    const wide = g._wide && x == null && w == null;
+    g.fillRect(wide ? -60 : (x || 0), y0, wide ? LW + 120 : (w || LW), y1 - y0);
   }
   function hgrad(g, x0, x1, y0, y1, stops) {
-    const gr = g.createLinearGradient(x0, 0, x1, 0);
+    const wide = g._wide && x0 <= 0 && x1 >= LW;
+    const a = wide ? Math.min(x0, -60) : x0, b = wide ? Math.max(x1, LW + 60) : x1;
+    const gr = g.createLinearGradient(a, 0, b, 0);
     for (const [o, c] of stops) gr.addColorStop(o, c);
     g.fillStyle = gr;
-    g.fillRect(x0, y0, x1 - x0, y1 - y0);
+    g.fillRect(a, y0, b - a, y1 - y0);
   }
   function glow(g, x, y, r, hex, a) {
     if (r <= 0 || a <= 0) return;
@@ -50,27 +63,48 @@
   }
   function lighter(g, fn) { g.save(); g.globalCompositeOperation = 'lighter'; fn(); g.restore(); }
   function poly(g, col, pts) {
-    g.fillStyle = col; g.beginPath(); g.moveTo(pts[0], pts[1]);
-    for (let i = 2; i < pts.length; i += 2) g.lineTo(pts[i], pts[i + 1]);
+    let p = pts;
+    if (g._wide && pts.length >= 6) {
+      let minX = Infinity, maxX = -Infinity;
+      for (let i = 0; i < pts.length; i += 2) { if (pts[i] < minX) minX = pts[i]; if (pts[i] > maxX) maxX = pts[i]; }
+      if (minX <= 0 && maxX >= LW) {
+        p = pts.slice();
+        for (let i = 0; i < p.length; i += 2) {
+          if (p[i] <= 0) p[i] -= 60;
+          else if (p[i] >= LW) p[i] += 60;
+        }
+      }
+    }
+    g.fillStyle = col; g.beginPath(); g.moveTo(p[0], p[1]);
+    for (let i = 2; i < p.length; i += 2) g.lineTo(p[i], p[i + 1]);
     g.closePath(); g.fill();
   }
-  function rect(g, col, x, y, w, h) { g.fillStyle = col; g.fillRect(x, y, w, h); }
+  function rect(g, col, x, y, w, h) {
+    g.fillStyle = col;
+    if (g._wide && x <= 0 && x + w >= LW) g.fillRect(Math.min(x, -60), y, Math.max(w, LW + 120), h);
+    else g.fillRect(x, y, w, h);
+  }
   function ell(g, col, x, y, rx, ry, rot) { if (rx <= 0 || ry <= 0) return; g.fillStyle = col; g.beginPath(); g.ellipse(x, y, rx, ry, rot || 0, 0, Math.PI * 2); g.fill(); }
-  function line(g, col, w, x0, y0, x1, y1) { g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); }
+  function line(g, col, w, x0, y0, x1, y1) {
+    if (g._wide && x0 <= 0 && x1 >= LW) { x0 = Math.min(x0, -60); x1 = Math.max(x1, LW + 60); }
+    g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke();
+  }
   function ring(g, col, w, x, y, r) { if (r <= 0) return; g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.stroke(); }
   function stars(g, t, n, seed, a, h, dx) {
-    for (let i = 0; i < n; i++) {
+    const span = g._wide ? LW + 120 : LW, x0 = g._wide ? -60 : 0, cnt = g._wide ? Math.round(n * 1.35) : n;
+    for (let i = 0; i < cnt; i++) {
       const tw = 0.6 + 0.4 * Math.sin(t * (1 + hx(i, seed, 4) * 3) + i);
-      const x = ((hx(i, seed, 2) * LW - (dx || 0) * (0.4 + hx(i, seed, 6))) % LW + LW) % LW, y = hx(seed, i, 3) * (h || LH);
+      const x = ((hx(i, seed, 2) * span - (dx || 0) * (0.4 + hx(i, seed, 6))) % span + span) % span + x0, y = hx(seed, i, 3) * (h || LH);
       g.fillStyle = rgba(hx(i, seed, 5) > 0.8 ? '#ffe8c0' : '#e8f0ff', a * tw * (0.35 + 0.65 * hx(i, seed, 1)));
       g.fillRect(Math.floor(x), Math.floor(y), hx(i, seed, 7) > 0.93 ? 2 : 1, 1);
     }
   }
   function snowfall(g, t, n, seed, o = {}) {
     const sp = o.speed || 30, wind = o.wind || 8, a = o.a || 0.9, h = o.h || LH;
-    for (let i = 0; i < n; i++) {
+    const span = g._wide ? LW + 120 : LW, x0 = g._wide ? -60 : 0, cnt = g._wide ? Math.round(n * 1.35) : n;
+    for (let i = 0; i < cnt; i++) {
       const k = 0.5 + hx(i, seed, 1);
-      const x = ((hx(i, seed, 2) * LW + t * wind * k + Math.sin(t * 1.3 + i) * 3) % LW + LW) % LW;
+      const x = ((hx(i, seed, 2) * span + t * wind * k + Math.sin(t * 1.3 + i) * 3) % span + span) % span + x0;
       const y = ((hx(seed, i, 3) * h + t * sp * k) % h + h) % h;
       g.fillStyle = rgba('#ffffff', a * (0.4 + 0.6 * hx(i, seed, 4)));
       const s = k > 1.2 ? 2 : 1;
@@ -79,6 +113,7 @@
     }
   }
   function embers(g, t, n, seed, x0, x1, y0, col) {
+    if (g._wide && x0 <= 0 && x1 >= LW) { x0 = -60; x1 = LW + 60; }
     lighter(g, () => {
       for (let i = 0; i < n; i++) {
         const life = 1.4 + hx(i, seed, 1) * 1.8, ph = ((t + hx(i, seed, 2) * life) % life) / life;
@@ -113,9 +148,10 @@
     });
   }
   function hStreaks(g, t, n, seed, speed, col, a, y0, y1) {
+    const span = g._wide ? LW + 200 : LW + 80, off = g._wide ? 100 : 40;
     for (let i = 0; i < n; i++) {
       const y = lerp(y0 || 0, y1 || LH, hx(i, seed, 1)), len = 10 + hx(i, seed, 2) * 40;
-      const x = ((hx(i, seed, 3) * (LW + 80) - t * speed * (0.6 + hx(i, seed, 4))) % (LW + 80) + LW + 80) % (LW + 80) - 40;
+      const x = ((hx(i, seed, 3) * span - t * speed * (0.6 + hx(i, seed, 4))) % span + span) % span - off;
       line(g, rgba(col || '#c8d8ff', (a || 0.6) * (0.3 + 0.7 * hx(i, seed, 5))), 1, x, y, x + len, y);
     }
   }
@@ -135,9 +171,11 @@
   }
   function flash(g, hex, a) { if (a > 0) rect(g, rgba(hex, a), 0, 0, LW, LH); }
   function vignette(g, a, col) {
-    const gr = g.createRadialGradient(LW / 2, LH / 2, LH * 0.3, LW / 2, LH / 2, LW * 0.72);
+    const gr = g.createRadialGradient(LW / 2, LH / 2, LH * 0.3, LW / 2, LH / 2, LW * (g._wide ? 0.9 : 0.72));
     gr.addColorStop(0, rgba(col || '#000000', 0)); gr.addColorStop(1, rgba(col || '#000000', a));
-    g.fillStyle = gr; g.fillRect(0, 0, LW, LH);
+    g.fillStyle = gr;
+    if (g._wide) g.fillRect(-60, 0, LW + 120, LH);
+    else g.fillRect(0, 0, LW, LH);
   }
   function hexShield(g, x, y, r, a, t, col) {
     if (a <= 0) return;
@@ -175,12 +213,12 @@
     black(g) { rect(g, '#000000', 0, 0, LW, LH); },
 
     space(g, t, o = {}) {
-      g.drawImage(layer('space|' + (o.tint || ''), LW, LH, (c) => {
+      bgLayer(g, 'space|' + (o.tint || ''), (c) => {
         vgrad(c, 0, LH, [[0, '#02030c'], [0.55, o.tint === 'jarilo' ? '#0c1830' : '#0a0f2c'], [1, o.tint === 'jarilo' ? '#1a2a48' : '#1c1238']]);
         glow(c, 70, 60, 130, '#4a2a8a', 0.32);
         glow(c, 250, 170, 150, '#1a4a8a', 0.28);
         glow(c, 190, 90, 90, '#6a3aa0', 0.18);
-      }), 0, 0);
+      });
       stars(g, t, 170, 7, 1, LH, (o.drift || 0) * t);
       if (o.planet) planet(g, o.planet.x, o.planet.y, o.planet.r, o.planet.kind || 'jarilo', t);
       if (o.station) hertaStation(g, o.station.x, o.station.y, o.station.s || 1, t, o.station.hit);
@@ -188,7 +226,7 @@
 
     station(g, t, o = {}) {
       const kind = o.kind || 'hall';
-      g.drawImage(layer('station|' + kind, LW, LH, c => stationRoom(c, kind)), -(o.pan || 0), 0);
+      bgLayer(g, 'station|' + kind, c => stationRoom(c, kind), o.pan);
       if (kind === 'hall' || kind === 'platform') lighter(g, () => { for (let i = 0; i < 5; i++) glow(g, 32 + i * 64 - (o.pan || 0), 24, 22, '#b8d8ff', 0.18); });
       if (kind === 'vault') {
         stellaron(g, 160 - (o.pan || 0), 96, 10, t, o.orb == null ? 1 : o.orb);
@@ -204,7 +242,7 @@
     },
 
     parlor(g, t, o = {}) {
-      g.drawImage(layer('parlor', LW, LH, parlorRoom), 0, 0);
+      bgLayer(g, 'parlor', parlorRoom);
       g.save();
       for (const wx of [18, 118, 218]) {
         g.save(); g.beginPath(); g.rect(wx + 4, 30, 76, 92); g.clip();
@@ -220,7 +258,7 @@
     },
 
     snow(g, t, o = {}) {
-      g.drawImage(layer('snow|' + (o.wall ? 'w' : '') + (o.ruins ? 'r' : '') + (o.storm ? 's' : ''), LW, LH, c => snowField(c, o)), 0, 0);
+      bgLayer(g, 'snow|' + (o.wall ? 'w' : '') + (o.ruins ? 'r' : '') + (o.storm ? 's' : ''), c => snowField(c, o));
       if (o.wall) lighter(g, () => { glow(g, 232, 132, 16, '#ffc860', 0.4 + 0.1 * Math.sin(t * 2)); });
       snowfall(g, t, o.storm ? 260 : 120, 4, { speed: o.storm ? 60 : 24, wind: o.storm ? 90 : 10, streak: !!o.storm });
       if (o.storm) flash(g, '#dfe8f4', 0.18 + 0.06 * Math.sin(t * 1.7));
@@ -228,7 +266,7 @@
 
     city(g, t, o = {}) {
       const mode = o.night ? 'n' : o.sun ? 's' : 'd';
-      g.drawImage(layer('city|' + mode + (o.monument ? 'm' : '') + (o.fort ? 'f' : ''), LW, LH, c => cityStreet(c, mode, o)), -(o.pan || 0), 0);
+      bgLayer(g, 'city|' + mode + (o.monument ? 'm' : '') + (o.fort ? 'f' : ''), c => cityStreet(c, mode, o), o.pan);
       if (o.night) lighter(g, () => { for (const x of [40, 132, 228, 300]) glow(g, x - (o.pan || 0), 150, 26, '#ffcf70', 0.5 + 0.06 * Math.sin(t * 3 + x)); });
       if (o.monument) lighter(g, () => glow(g, 160 - (o.pan || 0), 150, 40, '#7ad8ff', 0.25 + 0.05 * Math.sin(t * 2)));
       if (o.sun) { lighter(g, () => { glow(g, 250, 40, 130, '#fff0c0', 0.5); for (let i = 0; i < 6; i++) { g.save(); g.translate(250, 40); g.rotate(0.9 + i * 0.22 + Math.sin(t * 0.5) * 0.02); rect(g, rgba('#fff4d0', 0.08), 0, -3, 320, 6); g.restore(); } }); }
@@ -236,18 +274,18 @@
     },
 
     fort(g, t, o = {}) {
-      g.drawImage(layer('fort', LW, LH, fortHall), 0, 0);
+      bgLayer(g, 'fort', fortHall);
       lighter(g, () => { glow(g, 160, 40, 70, '#ffe8b0', 0.3); for (let i = 0; i < 8; i++) { const ph = (t * 0.1 + hx(i, 2, 8)) % 1; g.fillStyle = rgba('#fff0c8', 0.5 * (1 - ph)); g.fillRect(120 + hx(i, 3, 8) * 80, 30 + ph * 110, 1, 1); } });
       if (o.voice) lighter(g, () => { for (let i = 0; i < 3; i++) { const ph = (t * 0.4 + i / 3) % 1; ring(g, rgba('#7ad8ff', 0.4 * (1 - ph)), 1, o.voice[0], o.voice[1], 10 + ph * 60); } });
     },
 
     hotel(g, t, o = {}) {
-      g.drawImage(layer('hotel|' + (o.night ? 'n' : 'd'), LW, LH, c => hotelLobby(c, o.night)), 0, 0);
+      bgLayer(g, 'hotel|' + (o.night ? 'n' : 'd'), c => hotelLobby(c, o.night));
       lighter(g, () => glow(g, 160, 26, 60, '#ffd890', o.night ? 0.25 : 0.45));
     },
 
     alley(g, t, o = {}) {
-      g.drawImage(layer('alley', LW, LH, alleyWay), 0, 0);
+      bgLayer(g, 'alley', alleyWay);
       lighter(g, () => {
         glow(g, 160, 110, 70 + Math.sin(t * 2) * 6, '#b03aff', 0.35);
         for (let i = 0; i < 12; i++) {
@@ -260,7 +298,7 @@
 
     under(g, t, o = {}) {
       const kind = o.kind || 'town';
-      g.drawImage(layer('under|' + kind, LW, LH, c => underworld(c, kind)), 0, 0);
+      bgLayer(g, 'under|' + kind, c => underworld(c, kind));
       lighter(g, () => {
         if (kind === 'town') for (let i = 0; i < 9; i++) glow(g, 20 + i * 36, 70 + (i % 3) * 22, 12, '#ffb050', 0.45 + 0.08 * Math.sin(t * 2 + i));
         else glow(g, 150, 40, 70, '#ffc070', 0.45 + 0.05 * Math.sin(t * 7));
@@ -269,14 +307,14 @@
     },
 
     mine(g, t) {
-      g.drawImage(layer('mine', LW, LH, mineCave), 0, 0);
+      bgLayer(g, 'mine', mineCave);
       lighter(g, () => { glow(g, 165, 110, 70 + Math.sin(t * 1.5) * 5, '#40c8ff', 0.4); glow(g, 40, 70, 20, '#ffb050', 0.4); glow(g, 280, 64, 20, '#ffb050', 0.4); });
       for (let i = 0; i < 20; i++) { const ph = (t * 0.2 + hx(i, 1, 13)) % 1; g.fillStyle = rgba('#c8f0ff', 0.4 * (1 - ph)); g.fillRect(120 + hx(i, 2, 13) * 90, 150 - ph * 90, 1, 1); }
     },
 
     rivet(g, t, o = {}) {
       const kind = o.kind || 'ruins';
-      g.drawImage(layer('rivet|' + kind, LW, LH, c => rivetTown(c, kind)), 0, 0);
+      bgLayer(g, 'rivet|' + kind, c => rivetTown(c, kind));
       if (kind === 'factory') lighter(g, () => { glow(g, 250, 150, 80, '#ff7a30', 0.45 + 0.08 * Math.sin(t * 5)); for (let i = 0; i < 5; i++) glow(g, 30 + i * 22, 90 + (i % 2) * 8, 4, '#ff3a2a', 0.6 * (0.5 + 0.5 * Math.sin(t * 3 + i))); });
       else {
         const lamps = kind === 'orphan' ? [[40, 66], [86, 70], [134, 72], [182, 72], [230, 70], [278, 66]] : [[118, 70], [138, 72], [158, 73], [178, 73], [198, 72], [218, 70]];
@@ -290,18 +328,18 @@
     },
 
     workshop(g, t) {
-      g.drawImage(layer('workshop', LW, LH, workshopRoom), 0, 0);
+      bgLayer(g, 'workshop', workshopRoom);
       lighter(g, () => { glow(g, 110, 34, 70, '#ffd08a', 0.45 + 0.04 * Math.sin(t * 6)); glow(g, 262, 120, 16, '#ff5a3a', 0.4 + 0.3 * Math.sin(t * 2)); });
     },
 
     front(g, t) {
-      g.drawImage(layer('front', LW, LH, frontLine), 0, 0);
+      bgLayer(g, 'front', frontLine);
       lighter(g, () => { glow(g, 160, 60, 140, '#c03a8a', 0.18 + 0.05 * Math.sin(t)); });
       snowfall(g, t, 140, 31, { speed: 40, wind: 40, streak: true });
     },
 
     hill(g, t, o = {}) {
-      g.drawImage(layer('hill|' + (o.summit ? 's' : 'p'), LW, LH, c => hillSlope(c, o.summit)), 0, 0);
+      bgLayer(g, 'hill|' + (o.summit ? 's' : 'p'), c => hillSlope(c, o.summit));
       if (o.summit) stellaron(g, 160, 44, 12, t, 1);
       snowfall(g, t, o.summit ? 180 : 240, 41, { speed: 50, wind: 110, streak: true, a: 0.8 });
       flash(g, '#d8e4f4', 0.1);
@@ -347,7 +385,7 @@
   }
 
   function stationRoom(g, kind) {
-    const dark = kind === 'vault';
+    const dark = kind === 'vault', L0 = g._wide ? -56 : 0, R0 = g._wide ? LW + 56 : LW;
     vgrad(g, 0, LH, dark ? [[0, '#07060e'], [0.6, '#14102a'], [1, '#0a0a14']] : [[0, '#161c30'], [0.55, '#2a3352'], [1, '#141828']]);
     if (kind !== 'vault') {
       rect(g, '#0a0e1c', 20, 40, 280, 70);
@@ -356,14 +394,14 @@
       for (let i = 0; i <= 7; i++) rect(g, '#b8964e', 18 + i * 40, 38, 4, 74);
       rect(g, '#d8b868', 16, 36, 288, 4); rect(g, '#8a6e3a', 16, 110, 288, 4);
     }
-    poly(g, dark ? '#0e0c18' : '#20263c', [0, 0, 40, 26, 40, 150, 0, 190]);
-    poly(g, dark ? '#0e0c18' : '#20263c', [LW, 0, 280, 26, 280, 150, LW, 190]);
+    poly(g, dark ? '#0e0c18' : '#20263c', [L0, 0, 40, 26, 40, 150, L0, 190]);
+    poly(g, dark ? '#0e0c18' : '#20263c', [R0, 0, 280, 26, 280, 150, R0, 190]);
     rect(g, dark ? '#1a1628' : '#3a4262', 0, 0, LW, 20);
-    for (let i = 0; i < 5; i++) rect(g, dark ? '#4a3a8a' : '#d8e8ff', 16 + i * 64, 18, 32, 2);
+    for (let i = (g._wide ? -1 : 0); i < (g._wide ? 6 : 5); i++) rect(g, dark ? '#4a3a8a' : '#d8e8ff', 16 + i * 64, 18, 32, 2);
     vgrad(g, 150, LH, dark ? [[0, '#16122a'], [1, '#08060e']] : [[0, '#3a4262'], [1, '#161a2a']]);
     g.strokeStyle = dark ? 'rgba(160,90,255,0.25)' : 'rgba(216,184,104,0.35)'; g.lineWidth = 1;
     for (let i = -8; i <= 8; i++) { g.beginPath(); g.moveTo(160 + i * 12, 150); g.lineTo(160 + i * 60, LH); g.stroke(); }
-    for (let i = 1; i < 6; i++) { const y = 150 + Math.pow(i / 6, 1.7) * 90; g.beginPath(); g.moveTo(0, y); g.lineTo(LW, y); g.stroke(); }
+    for (let i = 1; i < 6; i++) { const y = 150 + Math.pow(i / 6, 1.7) * 90; g.beginPath(); g.moveTo(L0, y); g.lineTo(R0, y); g.stroke(); }
     if (kind === 'hall') {
       for (const x of [60, 240]) { rect(g, '#141a2a', x, 70, 26, 80); rect(g, '#5af0ff', x + 4, 74, 18, 2); rect(g, '#b8964e', x - 2, 68, 30, 3); }
     }
@@ -383,7 +421,7 @@
       rect(g, '#120e20', 140, 110, 40, 60); poly(g, '#221a3a', [128, 170, 192, 170, 200, 186, 120, 186]);
       for (let i = 0; i < 3; i++) { g.strokeStyle = '#6a4aff'; g.lineWidth = 1; g.beginPath(); g.ellipse(160, 96, 26 + i * 8, 7 + i * 2, 0, 0, Math.PI * 2); g.stroke(); }
     }
-    if (kind === 'platform') { rect(g, '#6a7088', 0, 148, LW, 4); for (let x = 0; x < LW; x += 16) rect(g, '#6a7088', x, 136, 2, 12); rect(g, '#2a2e3a', 0, 206, LW, 6); rect(g, '#8a8e9a', 0, 204, LW, 2); rect(g, '#8a8e9a', 0, 228, LW, 2); }
+    if (kind === 'platform') { rect(g, '#6a7088', 0, 148, LW, 4); for (let x = L0; x < R0; x += 16) rect(g, '#6a7088', x, 136, 2, 12); rect(g, '#2a2e3a', 0, 206, LW, 6); rect(g, '#8a8e9a', 0, 204, LW, 2); rect(g, '#8a8e9a', 0, 228, LW, 2); }
   }
 
   function parlorRoom(g) {
@@ -394,7 +432,7 @@
       ell(g, '#7a5424', wx + 42, 30, 42, 10);
     }
     rect(g, '#4a2016', 0, 126, LW, 34); rect(g, '#b8904a', 0, 126, LW, 2); rect(g, '#b8904a', 0, 158, LW, 1);
-    for (let x = 6; x < LW; x += 40) rect(g, '#5a2a1c', x, 132, 28, 20);
+    for (let x = (g._wide ? -34 : 6); x < (g._wide ? LW + 46 : LW); x += 40) rect(g, '#5a2a1c', x, 132, 28, 20);
     for (const sx of [24, 128, 224]) { rect(g, '#e8dcc4', sx, 118, 72, 22); rect(g, '#c8b894', sx, 132, 72, 8); rect(g, '#f4ecdc', sx + 2, 112, 68, 8); }
     for (const x of [104, 204]) { rect(g, '#b8904a', x - 1, 50, 2, 20); ell(g, '#ffe0a0', x, 58, 4, 5); }
     vgrad(g, 160, LH, [[0, '#6a1a22'], [1, '#3a0c12']]);
@@ -404,23 +442,24 @@
   }
 
   function snowField(g, o) {
+    const L0 = g._wide ? -60 : 0, R0 = g._wide ? LW + 60 : LW;
     vgrad(g, 0, 150, o.storm ? [[0, '#6a7890'], [1, '#c4d0de']] : [[0, '#7890b0'], [0.7, '#c8d6e6'], [1, '#e4ecf4']]);
     for (let layerI = 0; layerI < 3; layerI++) {
       const base = 110 + layerI * 14, col = ['#9aaac4', '#aebcd2', '#c4d0e0'][layerI];
-      g.fillStyle = col; g.beginPath(); g.moveTo(0, 160);
-      for (let x = 0; x <= LW; x += 10) g.lineTo(x, base - hx(x, layerI, 5) * (40 - layerI * 10) - Math.sin(x * 0.02 + layerI) * 10);
-      g.lineTo(LW, 160); g.fill();
+      g.fillStyle = col; g.beginPath(); g.moveTo(L0, 160);
+      for (let x = L0; x <= R0; x += 10) g.lineTo(x, base - hx(x + 120, layerI, 5) * (40 - layerI * 10) - Math.sin(x * 0.02 + layerI) * 10);
+      g.lineTo(R0, 160); g.fill();
     }
     if (o.wall) {
-      rect(g, '#5a6478', 150, 104, 170, 40); rect(g, '#6a7488', 150, 100, 170, 6);
-      for (let x = 150; x < LW; x += 12) rect(g, '#5a6478', x, 96, 6, 6);
+      rect(g, '#5a6478', 150, 104, R0 - 150, 40); rect(g, '#6a7488', 150, 100, R0 - 150, 6);
+      for (let x = 150; x < R0; x += 12) rect(g, '#5a6478', x, 96, 6, 6);
       for (const tx of [170, 280]) { rect(g, '#4a5468', tx, 80, 20, 64); poly(g, '#3a4458', [tx - 3, 80, tx + 10, 66, tx + 23, 80]); }
       rect(g, '#2a3040', 222, 118, 20, 26); ell(g, '#2a3040', 232, 118, 10, 8);
       for (let i = 0; i < 8; i++) rect(g, '#ffd880', 158 + i * 19, 112, 2, 3);
       for (let i = 0; i < 4; i++) { poly(g, '#7a8498', [190 + i * 30, 100, 200 + i * 30, 84, 210 + i * 30, 100]); }
     }
     vgrad(g, 140, LH, [[0, '#dce6f0'], [1, '#f4f8fc']]);
-    for (let i = 0; i < 14; i++) ell(g, 'rgba(160,184,214,0.35)', hx(i, 3, 7) * LW, 150 + hx(i, 4, 7) * 80, 20 + hx(i, 5, 7) * 40, 3 + hx(i, 6, 7) * 5);
+    for (let i = 0; i < 14; i++) ell(g, 'rgba(160,184,214,0.35)', L0 + hx(i, 3, 7) * (R0 - L0), 150 + hx(i, 4, 7) * 80, 20 + hx(i, 5, 7) * 40, 3 + hx(i, 6, 7) * 5);
     if (o.ruins) for (let i = 0; i < 4; i++) { const x = 20 + i * 80, y = 170 + (i % 2) * 20; poly(g, '#6a6070', [x, y, x + 20, y - 14, x + 40, y]); poly(g, '#f4f8fc', [x + 4, y - 2, x + 20, y - 12, x + 36, y - 2, x + 30, y - 6, x + 10, y - 6]); }
   }
 
@@ -443,8 +482,8 @@
     vgrad(g, 0, 170, mode === 'n' ? [[0, '#060a18'], [1, '#1a2440']] : mode === 's' ? [[0, '#f0b070'], [0.6, '#f8d8a0'], [1, '#fff0d0']] : [[0, '#5a6a88'], [1, '#aab8cc']]);
     if (o.fort) { const c = mode === 'n' ? '#1a2238' : '#4a5470'; rect(g, c, 120, 40, 80, 130); poly(g, c, [112, 40, 160, 6, 208, 40]); rect(g, G.shade(c, -0.2), 150, 70, 20, 100); for (let i = 0; i < 6; i++) rect(g, '#ffd880', 128 + i * 12, 60, 3, 6); }
     const pal = mode === 'n' ? ['#1c2438', '#242c44', '#1a2032', '#2a3048'] : mode === 's' ? ['#9a7a64', '#b08a6a', '#8a6a58', '#a8826a'] : ['#6a7890', '#7a8498', '#5e6a80', '#8a90a4'];
-    let x = -6;
-    for (let i = 0; x < LW + 10; i++) {
+    let x = g._wide ? -62 : -6;
+    for (let i = 0; x < (g._wide ? LW + 62 : LW + 10); i++) {
       const w = 34 + Math.floor(hx(i, 1, 21) * 24), h = 60 + Math.floor(hx(i, 2, 21) * 70);
       if (!(o.fort && x > 100 && x < 200)) building(g, x, w, h, pal[i % 4], mode, 12 + hx(i, 3, 21) * 12);
       x += w + 4;
@@ -467,7 +506,7 @@
     rect(g, '#2a2e48', 0, 0, LW, 30);
     ell(g, '#3a3050', 160, 60, 40, 46); rect(g, '#f0e0b0', 132, 30, 56, 70); ell(g, '#f0e0b0', 160, 32, 28, 14);
     for (let i = 0; i < 4; i++) rect(g, '#6a5a3a', 136 + i * 14, 34, 2, 66); rect(g, '#6a5a3a', 132, 60, 56, 2);
-    for (const px of [30, 80, 240, 290]) { rect(g, '#d8d0bc', px - 9, 20, 18, 150); rect(g, '#b8ae98', px + 3, 20, 6, 150); rect(g, '#d8b060', px - 12, 18, 24, 5); rect(g, '#d8b060', px - 12, 166, 24, 5); }
+    for (const px of (g._wide ? [-20, 30, 80, 240, 290, 340] : [30, 80, 240, 290])) { rect(g, '#d8d0bc', px - 9, 20, 18, 150); rect(g, '#b8ae98', px + 3, 20, 6, 150); rect(g, '#d8b060', px - 12, 18, 24, 5); rect(g, '#d8b060', px - 12, 166, 24, 5); }
     for (const bx of [55, 265]) { poly(g, '#2e5ab0', [bx - 12, 30, bx + 12, 30, bx + 12, 110, bx, 118, bx - 12, 110]); poly(g, '#e8c060', [bx - 6, 58, bx + 6, 58, bx + 6, 76, bx, 82, bx - 6, 76]); rect(g, '#f0f4ff', bx - 12, 30, 24, 3); }
     vgrad(g, 150, LH, [[0, '#4a4e6a'], [1, '#22243a']]);
     poly(g, '#2e5ab0', [146, 150, 174, 150, 220, LH, 100, LH]); poly(g, '#d8b060', [146, 150, 148, 150, 104, LH, 100, LH]); poly(g, '#d8b060', [172, 150, 174, 150, 220, LH, 216, LH]);
@@ -477,7 +516,7 @@
 
   function hotelLobby(g, night) {
     vgrad(g, 0, LH, night ? [[0, '#140c10'], [1, '#2a1a16']] : [[0, '#3a2418'], [1, '#5a3a24']]);
-    for (let x = 0; x < LW; x += 32) { rect(g, night ? '#2a1a14' : '#6a4428', x + 2, 40, 28, 110); rect(g, night ? '#3a261c' : '#8a5a34', x + 4, 44, 24, 50); }
+    for (let x = (g._wide ? -64 : 0); x < (g._wide ? LW + 64 : LW); x += 32) { rect(g, night ? '#2a1a14' : '#6a4428', x + 2, 40, 28, 110); rect(g, night ? '#3a261c' : '#8a5a34', x + 4, 44, 24, 50); }
     rect(g, '#c8a060', 0, 38, LW, 2); rect(g, '#c8a060', 0, 150, LW, 2);
     for (const wx of [40, 250]) { rect(g, night ? '#1a2a4a' : '#8ab0d0', wx, 52, 30, 50); rect(g, '#c8a060', wx + 14, 52, 2, 50); rect(g, '#c8a060', wx, 76, 30, 2); }
     poly(g, night ? '#2a1a14' : '#5a3a24', [100, 150, 150, 70, 170, 70, 124, 150]);
@@ -489,9 +528,10 @@
   }
 
   function alleyWay(g) {
+    const L0 = g._wide ? -56 : 0, R0 = g._wide ? LW + 56 : LW;
     vgrad(g, 0, LH, [[0, '#1a0620'], [0.5, '#3a0a3a'], [1, '#0a0410']]);
-    poly(g, '#140a1c', [0, 0, 110, 60, 110, 170, 0, LH]);
-    poly(g, '#140a1c', [LW, 0, 210, 60, 210, 170, LW, LH]);
+    poly(g, '#140a1c', [L0, 0, 110, 60, 110, 170, L0, LH]);
+    poly(g, '#140a1c', [R0, 0, 210, 60, 210, 170, R0, LH]);
     for (let i = 0; i < 5; i++) { rect(g, '#2a1430', 10 + i * 18, 60 + i * 10, 8, 14); rect(g, '#2a1430', 300 - i * 18, 60 + i * 10, 8, 14); }
     vgrad(g, 170, LH, [[0, '#1a0c20'], [1, '#08040c']]);
     poly(g, '#221028', [110, 170, 210, 170, LW, LH, 0, LH]);
@@ -502,9 +542,10 @@
   }
 
   function underworld(g, kind) {
+    const L0 = g._wide ? -48 : 0, R0 = g._wide ? LW + 48 : LW;
     if (kind === 'clinic' || kind === 'hotel') {
       vgrad(g, 0, LH, [[0, '#1a0e08'], [1, '#3a2414']]);
-      for (let x = 0; x < LW; x += 24) { rect(g, '#4a2e1a', x, 30, 22, 130); rect(g, '#3a2212', x + 20, 30, 2, 130); }
+      for (let x = L0; x < R0; x += 24) { rect(g, '#4a2e1a', x, 30, 22, 130); rect(g, '#3a2212', x + 20, 30, 2, 130); }
       rect(g, '#2a1a0e', 0, 0, LW, 30); rect(g, '#6a4a2a', 0, 28, LW, 3);
       if (kind === 'clinic') {
         for (let s = 0; s < 3; s++) { rect(g, '#6a4a2a', 20, 60 + s * 26, 70, 3); for (let i = 0; i < 6; i++) rect(g, ['#8ac8a0', '#e8e0c8', '#c86a4a', '#6aa0d8'][(i + s) % 4], 24 + i * 11, 50 + s * 26, 6, 10); }
@@ -516,27 +557,28 @@
         rect(g, '#6a4a2a', 60, 40, 60, 16); rect(g, '#f0d8a0', 66, 44, 48, 8);
       }
       vgrad(g, 160, LH, [[0, '#4a2e1a'], [1, '#2a180c']]);
-      for (let x = 0; x < LW; x += 20) rect(g, '#3a2212', x, 160, 1, 80);
+      for (let x = L0; x < R0; x += 20) rect(g, '#3a2212', x, 160, 1, 80);
       ell(g, '#ffd890', 150, 40, 6, 4); rect(g, '#2a1a0e', 149, 30, 2, 8);
       return;
     }
     vgrad(g, 0, LH, [[0, '#0c0604'], [0.5, '#2a1a10'], [1, '#3a2414']]);
-    for (let i = 0; i < 24; i++) { const x = i * 14 - 6, h = 16 + hx(i, 1, 41) * 40; poly(g, i % 2 ? '#1a100a' : '#221610', [x, 0, x + 18, 0, x + 12, h, x + 4, h * 0.8]); }
-    for (const [y, c] of [[34, '#5a4a3a'], [46, '#4a3a2c']]) { rect(g, c, 0, y, LW, 6); rect(g, G.shade(c, 0.3), 0, y, LW, 1); for (let x = 20; x < LW; x += 60) rect(g, G.shade(c, -0.3), x, y - 1, 4, 8); }
-    for (let i = 0; i < 9; i++) {
-      const x = i * 36 - 4, h = 40 + hx(i, 2, 43) * 40, y = 170 - h, c = ['#5a3a24', '#4a3020', '#6a4a2e'][i % 3];
+    for (let i = (g._wide ? -4 : 0); i < (g._wide ? 28 : 24); i++) { const x = i * 14 - 6, h = 16 + hx(i + 8, 1, 41) * 40; poly(g, i % 2 ? '#1a100a' : '#221610', [x, 0, x + 18, 0, x + 12, h, x + 4, h * 0.8]); }
+    for (const [y, c] of [[34, '#5a4a3a'], [46, '#4a3a2c']]) { rect(g, c, 0, y, LW, 6); rect(g, G.shade(c, 0.3), 0, y, LW, 1); for (let x = L0 + 20; x < R0; x += 60) rect(g, G.shade(c, -0.3), x, y - 1, 4, 8); }
+    for (let i = (g._wide ? -2 : 0); i < (g._wide ? 11 : 9); i++) {
+      const x = i * 36 - 4, h = 40 + hx(i + 4, 2, 43) * 40, y = 170 - h, c = ['#5a3a24', '#4a3020', '#6a4a2e'][(i + 9) % 3];
       rect(g, c, x, y, 32, h); poly(g, G.shade(c, -0.3), [x - 2, y, x + 16, y - 10, x + 34, y]);
       rect(g, '#ffb050', x + 6, y + 10, 6, 7); rect(g, '#ffb050', x + 20, y + 10, 6, 7); rect(g, '#2a1a0e', x + 12, y + h - 18, 8, 18);
     }
     vgrad(g, 170, LH, [[0, '#4a3020'], [1, '#2a1a0e']]);
     for (let i = 0; i < 30; i++) rect(g, 'rgba(0,0,0,0.2)', hx(i, 1, 44) * LW, 174 + hx(i, 2, 44) * 60, 10, 2);
-    g.strokeStyle = '#2a1a0e'; g.lineWidth = 1; g.beginPath(); g.moveTo(0, 62); for (let x = 0; x <= LW; x += 36) g.quadraticCurveTo(x + 18, 76, x + 36, 62); g.stroke();
+    g.strokeStyle = '#2a1a0e'; g.lineWidth = 1; g.beginPath(); g.moveTo(L0, 62); for (let x = L0; x <= R0; x += 36) g.quadraticCurveTo(x + 18, 76, x + 36, 62); g.stroke();
   }
 
   function mineCave(g) {
+    const L0 = g._wide ? -56 : 0, R0 = g._wide ? LW + 56 : LW;
     vgrad(g, 0, LH, [[0, '#050404'], [0.5, '#141014'], [1, '#221a1c']]);
-    for (let i = 0; i < 30; i++) { const x = hx(i, 1, 51) * LW, y = hx(i, 2, 51) * 120; poly(g, i % 2 ? '#1a1418' : '#221a20', [x, y, x + 30, y + 10, x + 20, y + 40, x - 10, y + 30]); }
-    poly(g, '#100c10', [0, 0, 70, 0, 50, 240, 0, 240]); poly(g, '#100c10', [LW, 0, 250, 0, 270, 240, LW, 240]);
+    for (let i = 0; i < 30; i++) { const x = L0 + hx(i, 1, 51) * (R0 - L0), y = hx(i, 2, 51) * 120; poly(g, i % 2 ? '#1a1418' : '#221a20', [x, y, x + 30, y + 10, x + 20, y + 40, x - 10, y + 30]); }
+    poly(g, '#100c10', [L0, 0, 70, 0, 50, 240, L0, 240]); poly(g, '#100c10', [R0, 0, 250, 0, 270, 240, R0, 240]);
     for (let s = 0; s < 4; s++) line(g, 'rgba(90,70,60,0.5)', 1, 0, 60 + s * 30, LW, 50 + s * 34);
     for (const [x, y, s] of [[150, 100, 1], [175, 92, 1.3], [190, 112, 0.9], [138, 118, 0.8], [165, 124, 1.1]]) { poly(g, '#3aa8e0', [x, y - 20 * s, x + 7 * s, y, x, y + 8 * s, x - 7 * s, y]); poly(g, '#c8f4ff', [x, y - 20 * s, x + 2 * s, y - 4 * s, x - 2 * s, y - 2 * s]); }
     vgrad(g, 160, LH, [[0, '#2a2024'], [1, '#141014']]);
@@ -546,44 +588,45 @@
   }
 
   function rivetTown(g, kind) {
+    const L0 = g._wide ? -56 : 0, R0 = g._wide ? LW + 56 : LW;
     if (kind === 'factory') {
       vgrad(g, 0, LH, [[0, '#0a0a0e'], [0.6, '#1a1618'], [1, '#2a2020']]);
-      for (let i = 0; i < 5; i++) { const x = 30 + i * 70, r = 18 + (i % 2) * 10; ring(g, '#3a3a44', 5, x, 50 + (i % 2) * 14, r); for (let k = 0; k < 10; k++) { const a = k / 10 * Math.PI * 2; rect(g, '#3a3a44', x + Math.cos(a) * (r + 4) - 2, 50 + (i % 2) * 14 + Math.sin(a) * (r + 4) - 2, 4, 4); } }
+      for (let i = (g._wide ? -1 : 0); i < (g._wide ? 6 : 5); i++) { const x = 30 + i * 70, r = 18 + ((i + 4) % 2) * 10; ring(g, '#3a3a44', 5, x, 50 + ((i + 4) % 2) * 14, r); for (let k = 0; k < 10; k++) { const a = k / 10 * Math.PI * 2; rect(g, '#3a3a44', x + Math.cos(a) * (r + 4) - 2, 50 + ((i + 4) % 2) * 14 + Math.sin(a) * (r + 4) - 2, 4, 4); } }
       for (const y of [96, 112]) { rect(g, '#4a3a34', 0, y, LW, 6); rect(g, '#6a5a4a', 0, y, LW, 1); }
       rect(g, '#2a2224', 200, 100, 110, 80); rect(g, '#ff7a30', 222, 130, 66, 36); rect(g, '#ffd080', 230, 138, 50, 20);
       vgrad(g, 170, LH, [[0, '#3a3034'], [1, '#18141a']]);
-      for (let x = 0; x < LW; x += 24) rect(g, '#2a2226', x, 170, 1, 70);
+      for (let x = L0; x < R0; x += 24) rect(g, '#2a2226', x, 170, 1, 70);
       return;
     }
     if (kind === 'orphan') {
       vgrad(g, 0, LH, [[0, '#0c1020'], [0.5, '#1a2236'], [1, '#2a3042']]);
       rect(g, '#3a3440', 0, 20, LW, 64); rect(g, '#2a2630', 0, 80, LW, 6);
-      for (let i = 0; i < 7; i++) {
+      for (let i = (g._wide ? -1 : 0); i < (g._wide ? 8 : 7); i++) {
         const x = 18 + i * 44;
-        rect(g, '#1a1418', x, 30, 26, 36); rect(g, i % 3 === 1 ? '#3a4a6a' : '#ffb45a', x + 3, 33, 20, 30); rect(g, '#1a1418', x + 12, 33, 2, 30); rect(g, '#1a1418', x + 3, 47, 20, 2);
+        rect(g, '#1a1418', x, 30, 26, 36); rect(g, (i + 3) % 3 === 1 ? '#3a4a6a' : '#ffb45a', x + 3, 33, 20, 30); rect(g, '#1a1418', x + 12, 33, 2, 30); rect(g, '#1a1418', x + 3, 47, 20, 2);
         rect(g, '#c4cede', x - 2, 66, 30, 3);
       }
-      g.strokeStyle = '#2a2420'; g.lineWidth = 1; g.beginPath(); g.moveTo(10, 62); for (let x = 10; x <= 310; x += 4) g.lineTo(x, 62 + Math.sin((x - 10) / 48 * Math.PI) * 8); g.stroke();
+      g.strokeStyle = '#2a2420'; g.lineWidth = 1; g.beginPath(); g.moveTo(L0 + 10, 62); for (let x = L0 + 10; x <= R0 - 10; x += 4) g.lineTo(x, 62 + Math.sin((x - 10) / 48 * Math.PI) * 8); g.stroke();
       vgrad(g, 86, LH, [[0, '#4a4e5c'], [1, '#2a2c36']]);
       for (let r = 0; r < 4; r++) { g.strokeStyle = r % 2 ? '#6a5a5a' : '#5a6a7a'; g.lineWidth = 2; g.beginPath(); g.ellipse(160, 220, 70 + r * 26, 30 + r * 12, 0, Math.PI, Math.PI * 2); g.stroke(); }
       line(g, '#4a4e58', 3, 40, 200, 58, 120); line(g, '#4a4e58', 3, 76, 200, 58, 120); rect(g, '#5a5e68', 50, 118, 40, 4); line(g, '#2a2c34', 1, 62, 122, 62, 170); line(g, '#2a2c34', 1, 78, 122, 78, 170); rect(g, '#8a5a3a', 58, 170, 24, 4);
       line(g, '#b83a32', 5, 236, 120, 290, 196); line(g, '#2a5aa8', 5, 246, 126, 300, 200); rect(g, '#4a4e58', 226, 114, 4, 80); rect(g, '#4a4e58', 240, 114, 4, 80);
       for (const [x, y] of [[120, 176], [148, 182], [176, 176]]) { rect(g, '#5a4030', x, y, 26, 20); rect(g, '#7a5a40', x, y, 26, 2); line(g, '#3a2a20', 1, x, y, x + 26, y + 20); }
       ell(g, '#e8eef6', 160, 160, 8, 9); ell(g, '#c8d0dc', 156, 158, 3, 3); ell(g, '#c8d0dc', 164, 158, 3, 3); rect(g, '#ffb030', 158, 162, 4, 2); poly(g, '#e8eef6', [146, 158, 152, 150, 156, 162]); poly(g, '#e8eef6', [174, 158, 168, 150, 164, 162]);
-      for (let i = 0; i < 40; i++) rect(g, '#c4cede', hx(i, 1, 91) * LW, 86 + hx(i, 2, 91) * 150, 2, 1);
+      for (let i = 0; i < 40; i++) rect(g, '#c4cede', L0 + hx(i, 1, 91) * (R0 - L0), 86 + hx(i, 2, 91) * 150, 2, 1);
       return;
     }
     vgrad(g, 0, LH, [[0, '#060a16'], [0.45, '#141c32'], [1, '#222838']]);
-    for (let i = 0; i < 60; i++) rect(g, '#8a98c0', hx(i, 1, 93) * LW, hx(i, 2, 93) * 60, 1, 1);
-    for (let i = 0; i < 9; i++) { const x = i * 40 - 10, h = 40 + hx(i, 3, 93) * 50; poly(g, '#1a1e2c', [x, 140, x + 20, 140 - h, x + 44, 140 - h + 10, x + 54, 140]); poly(g, '#8a96ac', [x + 20 - h * 0.12, 140 - h * 0.88, x + 20, 140 - h, x + 34, 140 - h + 6, x + 30, 140 - h + 9, x + 24, 140 - h + 5, x + 19, 140 - h * 0.86]); }
+    for (let i = 0; i < 60; i++) rect(g, '#8a98c0', L0 + hx(i, 1, 93) * (R0 - L0), hx(i, 2, 93) * 60, 1, 1);
+    for (let i = (g._wide ? -2 : 0); i < (g._wide ? 11 : 9); i++) { const x = i * 40 - 10, h = 40 + hx(i + 4, 3, 93) * 50; poly(g, '#1a1e2c', [x, 140, x + 20, 140 - h, x + 44, 140 - h + 10, x + 54, 140]); poly(g, '#8a96ac', [x + 20 - h * 0.12, 140 - h * 0.88, x + 20, 140 - h, x + 34, 140 - h + 6, x + 30, 140 - h + 9, x + 24, 140 - h + 5, x + 19, 140 - h * 0.86]); }
     rect(g, '#2a2430', 110, 18, 116, 50); poly(g, '#1a1620', [104, 20, 168, 2, 232, 20]); rect(g, '#c4cede', 104, 18, 128, 3);
     for (let r = 0; r < 3; r++) for (let k = 0; k < 7; k++) { const lit = hx(r, k, 94) > 0.3; rect(g, lit ? '#ffb45a' : '#3a4a6a', 116 + k * 15, 24 + r * 14, 7, 9); if (lit) rect(g, '#ffe0a0', 116 + k * 15, 24 + r * 14, 7, 2); }
     poly(g, '#3a3440', [100, 68, 236, 68, 244, 80, 92, 80]); rect(g, '#c4cede', 92, 78, 152, 2);
     g.strokeStyle = '#1a1418'; g.lineWidth = 1; g.beginPath(); g.moveTo(100, 66); for (let x = 100; x <= 236; x += 4) g.lineTo(x, 66 + Math.sin((x - 100) / 20 * Math.PI) * 3 + 4); g.stroke();
-    for (let i = 0; i < 6; i++) {
-      const x = i * 60 - 20, h = 70 + hx(i, 5, 95) * 40, w = 50;
+    for (let i = (g._wide ? -1 : 0); i < (g._wide ? 7 : 6); i++) {
+      const x = i * 60 - 20, h = 70 + hx(i + 4, 5, 95) * 40, w = 50;
       rect(g, '#2a2a36', x, 230 - h, w, h); poly(g, '#1e1e2a', [x - 4, 230 - h, x + w / 2, 214 - h, x + w + 4, 230 - h]); rect(g, '#c4cede', x - 4, 228 - h, w + 8, 3);
-      for (let r = 0; r < 4; r++) for (let k = 0; k < 3; k++) { const lit = hx(i * 7 + r, k, 96) > 0.6; rect(g, lit ? '#ffb45a' : '#242c40', x + 6 + k * 15, 240 - h + r * 18, 8, 11); }
+      for (let r = 0; r < 4; r++) for (let k = 0; k < 3; k++) { const lit = hx((i + 4) * 7 + r, k, 96) > 0.6; rect(g, lit ? '#ffb45a' : '#242c40', x + 6 + k * 15, 240 - h + r * 18, 8, 11); }
     }
     rect(g, '#3a3034', 0, 168, LW, 7); rect(g, '#6a5a4e', 0, 168, LW, 1); rect(g, '#2a2224', 0, 182, LW, 4);
     for (const x of [40, 150, 260]) line(g, '#1a1a20', 1, x, 168, x + 30, 120);
@@ -593,8 +636,9 @@
   }
 
   function workshopRoom(g) {
+    const L0 = g._wide ? -56 : 0, R0 = g._wide ? LW + 56 : LW;
     vgrad(g, 0, LH, [[0, '#1c1814'], [1, '#3a2c20']]);
-    for (let x = 0; x < LW; x += 28) { rect(g, '#4a3a2a', x, 24, 26, 136); rect(g, '#3a2c20', x + 26, 24, 2, 136); }
+    for (let x = L0; x < R0; x += 28) { rect(g, '#4a3a2a', x, 24, 26, 136); rect(g, '#3a2c20', x + 26, 24, 2, 136); }
     rect(g, '#2a2018', 0, 0, LW, 24); rect(g, '#8a7050', 0, 22, LW, 2);
     rect(g, '#5a6a8a', 20, 40, 60, 44); rect(g, '#c8a060', 20, 40, 60, 2); for (let i = 0; i < 4; i++) rect(g, '#e8e0d0', 26 + i * 13, 50, 9, 26);
     ring(g, '#2a2a30', 4, 150, 64, 14); for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2; rect(g, '#2a2a30', 150 + Math.cos(a) * 17 - 2, 64 + Math.sin(a) * 17 - 2, 4, 4); }
@@ -605,23 +649,24 @@
     rect(g, '#6a4a2e', 30, 126, 170, 12); rect(g, '#8a6a44', 30, 126, 170, 2); rect(g, '#4a3420', 36, 138, 6, 30); rect(g, '#4a3420', 188, 138, 6, 30);
     for (const [x, w, c] of [[44, 18, '#8a8e9a'], [70, 12, '#c8a060'], [90, 26, '#5a6a7a'], [124, 10, '#d85a3a'], [150, 30, '#6a7a8a']]) rect(g, c, x, 118, w, 8);
     vgrad(g, 160, LH, [[0, '#4a3a2c'], [1, '#261c14']]);
-    for (let x = 0; x < LW; x += 22) rect(g, '#3a2c20', x, 160, 1, 80);
+    for (let x = L0; x < R0; x += 22) rect(g, '#3a2c20', x, 160, 1, 80);
     ell(g, '#5a2a24', 160, 206, 90, 16);
     rect(g, '#2a2018', 108, 24, 4, 8); ell(g, '#ffe0a0', 110, 34, 6, 4);
   }
 
   function frontLine(g) {
     vgrad(g, 0, 150, [[0, '#2a2438'], [0.6, '#5a5068'], [1, '#8a8aa0']]);
-    for (let i = 0; i < 10; i++) { const x = i * 34; poly(g, '#3a3450', [x, 150, x + 17, 110 - hx(i, 1, 71) * 30, x + 34, 150]); }
+    for (let i = (g._wide ? -2 : 0); i < (g._wide ? 12 : 10); i++) { const x = i * 34; poly(g, '#3a3450', [x, 150, x + 17, 110 - hx(i + 4, 1, 71) * 30, x + 34, 150]); }
     rect(g, '#4a5064', 0, 96, LW, 70); rect(g, '#5a6074', 0, 92, LW, 6);
-    for (let x = 0; x < LW; x += 14) rect(g, '#4a5064', x, 84, 8, 8);
+    for (let x = (g._wide ? -56 : 0); x < (g._wide ? LW + 56 : LW); x += 14) rect(g, '#4a5064', x, 84, 8, 8);
     rect(g, '#2a2e3c', 130, 110, 60, 56); ell(g, '#2a2e3c', 160, 110, 30, 18); rect(g, '#6a7080', 136, 116, 48, 50); for (let x = 140; x < 184; x += 8) rect(g, '#3a4050', x, 116, 2, 50);
     for (const bx of [60, 260]) { rect(g, '#2a2a34', bx, 60, 2, 50); poly(g, '#2e5ab0', [bx + 2, 60, bx + 26, 64, bx + 22, 72, bx + 26, 80, bx + 2, 84]); rect(g, '#f0f4ff', bx + 6, 66, 12, 2); }
     vgrad(g, 166, LH, [[0, '#d8e0ea'], [1, '#aab4c4']]);
-    for (let i = 0; i < 8; i++) poly(g, '#b8e0f4', [20 + i * 40, LH, 26 + i * 40, 200 - hx(i, 2, 72) * 20, 32 + i * 40, LH]);
+    for (let i = (g._wide ? -2 : 0); i < (g._wide ? 10 : 8); i++) poly(g, '#b8e0f4', [20 + i * 40, LH, 26 + i * 40, 200 - hx(i + 4, 2, 72) * 20, 32 + i * 40, LH]);
   }
 
   function hillSlope(g, summit) {
+    const L0 = g._wide ? -64 : 0, R0 = g._wide ? LW + 64 : LW;
     vgrad(g, 0, LH, [[0, '#101830'], [0.5, '#3a4a6a'], [1, '#9aaac4']]);
     if (summit) {
       vgrad(g, 150, LH, [[0, '#5a6a88'], [1, '#2a3450']]);
@@ -629,7 +674,7 @@
       poly(g, '#4a4e5e', [20, 190, 300, 190, 280, 170, 40, 170]); rect(g, '#d8b060', 40, 170, 240, 2);
       return;
     }
-    for (let l = 0; l < 3; l++) { g.fillStyle = ['#2a3450', '#4a5878', '#7a8aa8'][l]; g.beginPath(); g.moveTo(0, LH); for (let x = 0; x <= LW; x += 16) g.lineTo(x, 100 + l * 30 - hx(x, l, 83) * 40 + (x / LW) * 30); g.lineTo(LW, LH); g.fill(); }
+    for (let l = 0; l < 3; l++) { g.fillStyle = ['#2a3450', '#4a5878', '#7a8aa8'][l]; g.beginPath(); g.moveTo(L0, LH); for (let x = L0; x <= R0; x += 16) g.lineTo(x, 100 + l * 30 - hx(x + 128, l, 83) * 40 + (x / LW) * 30); g.lineTo(R0, LH); g.fill(); }
     for (let i = 0; i < 3; i++) { const x = 50 + i * 100, y = 190 - (i % 2) * 20; rect(g, 'rgba(180,230,255,0.45)', x - 14, y - 44, 30, 46); rect(g, 'rgba(255,255,255,0.5)', x - 14, y - 44, 30, 2); poly(g, 'rgba(40,20,70,0.7)', [x - 6, y - 36, x + 6, y - 36, x + 8, y - 6, x + 2, y, x - 4, y, x - 8, y - 6]); }
     vgrad(g, 196, LH, [[0, '#c8d4e4'], [1, '#8a98b0']]);
   }
@@ -647,8 +692,8 @@
 
   function amberWall(g, t, k) {
     lighter(g, () => glow(g, 160, 110, 160, '#ffa030', 0.45 * k));
-    for (let r = 0; r < 6; r++) for (let c = 0; c < 9; c++) {
-      const x = c * 38 - (r % 2) * 19, y = 20 + r * 36, sh = 0.4 + hx(c, r, 93) * 0.5;
+    for (let r = 0; r < 6; r++) for (let c = (g._wide ? -2 : 0); c < (g._wide ? 11 : 9); c++) {
+      const x = c * 38 - (r % 2) * 19, y = 20 + r * 36, sh = 0.4 + hx(c + 4, r, 93) * 0.5;
       poly(g, rgba(sh > 0.7 ? '#ffd070' : '#c88a30', 0.55 * k), [x, y, x + 34, y, x + 38, y + 16, x + 34, y + 32, x, y + 32, x - 4, y + 16]);
       rect(g, rgba('#fff0c0', 0.3 * k * (0.5 + 0.5 * Math.sin(t * 2 + c + r))), x + 4, y + 3, 26, 1);
     }
@@ -829,9 +874,12 @@
       },
       bg(name, t, o) { BG[name](g, t, o || {}); },
       soft(name, t, o, dim) {
-        const tmp = softBuf.cv || (softBuf.cv = G.mkCanvas(LW / 2, LH / 2)), tg = tmp.getContext('2d');
-        tg.save(); tg.scale(0.5, 0.5); BG[name](tg, t, o || {}); tg.restore();
-        g.save(); g.imageSmoothingEnabled = true; g.drawImage(tmp, 0, 0, LW, LH); g.restore();
+        const wide = !!g._wide, cw = wide ? 427 : LW, ox = wide ? 53 : 0, tw = Math.ceil(cw / 2);
+        if (!softBuf.cv || softBuf.cv.width !== tw) softBuf.cv = G.mkCanvas(tw, LH / 2);
+        const tmp = softBuf.cv, tg = tmp.getContext('2d');
+        tg._wide = wide;
+        tg.save(); tg.scale(0.5, 0.5); if (ox) tg.translate(ox, 0); BG[name](tg, t, o || {}); tg.restore();
+        g.save(); g.imageSmoothingEnabled = true; g.drawImage(tmp, -ox, 0, cw, LH); g.restore();
         if (dim) rect(g, rgba('#000000', dim), 0, 0, LW, LH);
       },
       cam(x, y, z, fn) { g.save(); g.translate(LW / 2, LH / 2); g.scale(z, z); g.translate(-x, -y); fn(); g.restore(); },
@@ -871,10 +919,11 @@
   }
 
   function dither(g) {
-    const img = g.getImageData(0, 0, LW, LH), d = img.data;
-    for (let y = 0, i = 0; y < LH; y++) {
+    const w = g.canvas ? g.canvas.width : LW, h = g.canvas ? g.canvas.height : LH;
+    const img = g.getImageData(0, 0, w, h), d = img.data;
+    for (let y = 0, i = 0; y < h; y++) {
       const row = (y & 3) << 2;
-      for (let x = 0; x < LW; x++, i += 4) {
+      for (let x = 0; x < w; x++, i += 4) {
         const b = BAYER[row | (x & 3)] * 0.5 - 4;
         const r = d[i] + b, gg = d[i + 1] + b, bb = d[i + 2] + b;
         d[i] = r < 0 ? 0 : r > 255 ? 248 : (r >> 3) << 3;
@@ -1033,9 +1082,13 @@
     }
 
     draw(c) {
-      const g = this.g, s = this.shot(), ui = this.ui;
+      const s = this.shot(), ui = this.ui, rw = ui && ui.wide && ui.wide() ? 427 : LW, ox = (rw - LW) >> 1;
+      if (this.cv.width !== rw) { this.cv.width = rw; this.g = this.cv.getContext('2d'); }
+      const g = this.g;
+      g._wide = rw > LW;
       g.save();
       g.imageSmoothingEnabled = false;
+      if (ox) g.translate(ox, 0);
       const S = stage(g, this.game, this.T);
       S.t = Math.min(this.t, s.d); S.d = s.d; S.i = this.i;
       s.draw(S);
@@ -1047,11 +1100,11 @@
       dither(g);
       const was = c.imageSmoothingEnabled;
       c.imageSmoothingEnabled = false;
-      c.drawImage(this.cv, 0, 0, W, HGT);
+      c.drawImage(this.cv, ui.left, 0, ui.vw, HGT);
       c.imageSmoothingEnabled = was;
       c.fillStyle = '#000000';
-      c.fillRect(0, 0, W, BAR * 2);
-      c.fillRect(0, HGT - BAR * 2, W, BAR * 2);
+      c.fillRect(ui.left, 0, ui.vw, BAR * 2);
+      c.fillRect(ui.left, HGT - BAR * 2, ui.vw, BAR * 2);
       const sb = this.sub();
       if (sb) {
         const a = cl(sb.age / 0.15);
@@ -1061,9 +1114,9 @@
         lines.forEach((l, j) => ui.text(l, W / 2, y0 + 13 + j * 16, { align: 'center', size: 13, col: C.cream }));
         c.globalAlpha = 1;
       }
-      ui.hints([['Enter', 'Дальше'], ['Esc', 'Пропустить']], W - 12, 20, { align: 'right' });
-      ui.hit(0, 0, W, HGT, () => this.key('ok'));
-      if (this.fadeOut > 0) { c.fillStyle = 'rgba(0,0,0,' + cl(this.fadeOut / 0.45).toFixed(3) + ')'; c.fillRect(0, 0, W, HGT); }
+      ui.hints([['Enter', 'Дальше'], ['Esc', 'Пропустить']], ui.right - 12, 20, { align: 'right' });
+      ui.hit(ui.left, 0, ui.vw, HGT, () => this.key('ok'));
+      if (this.fadeOut > 0) { c.fillStyle = 'rgba(0,0,0,' + cl(this.fadeOut / 0.45).toFixed(3) + ')'; c.fillRect(ui.left, 0, ui.vw, HGT); }
     }
   }
 

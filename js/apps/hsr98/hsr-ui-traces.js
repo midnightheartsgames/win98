@@ -74,7 +74,9 @@
         c.strokeStyle = ready ? 'rgba(122,224,240,' + (0.5 + 0.5 * pulse) + ')' : on ? C.brassHi : '#6a70a0'; c.lineWidth = 2; c.stroke(); c.lineWidth = 1;
         if (n.kind === 'tech') G.menuIcon(c, 'guide', p.x - 7, p.y - 7, 14, C.cream);
         else {
-          this.text(String(st.cur + (st.up || 0)), p.x, p.y - 7, { align: 'center', size: 13, bold: true, serif: true, col: st.up ? C.cyan : on ? C.gold : C.cream });
+          const up = st.up || 0, eff = st.cur + up, max = n.max + up;
+          this.text(String(eff), p.x, p.y - 9, { align: 'center', size: 12, bold: true, serif: true, col: up ? C.cyan : on ? C.gold : C.cream });
+          this.text(eff + '/' + max, p.x, p.y + 2, { align: 'center', size: 8, bold: true, col: up ? C.cyan : C.sub });
         }
         this.text(ABIL_NAME[n.id], p.x, p.y + r + 2, { align: 'center', size: 9, col: sel ? C.gold : C.sub });
       } else if (n.kind === 'bonus') {
@@ -132,9 +134,14 @@
       this.wrap(this.traceTitle(k, n), pw - 24, 12).slice(0, 2).forEach(l => { this.text(l, px + 12, y, { size: 12, bold: true, col: C.cream }); y += 15; });
       if (n.kind === 'ability') {
         const cap = H.traceAbilityCap(id, g.ascOf ? H.TRACE_PHASE_LVL[g.ascOf(k)] : r.lvl);
-        this.text('Уровень ' + st.cur + ' / ' + n.max + (st.up ? ' (+' + st.up + ')' : '') + ' · потолок ' + cap, px + 12, y, { size: 10, col: st.up ? C.cyan : C.sub }); y += 16;
+        const up = st.up || 0, eff = st.cur + up, max = n.max + up, effCap = cap + up;
+        this.text('Уровень ' + eff + ' / ' + max + (up ? ' (+' + up + ')' : '') + ' · потолок ' + effCap, px + 12, y, { size: 10, col: up ? C.cyan : C.sub }); y += 16;
         const kab = KIT_AB[id] && H.CHARS[kit][KIT_AB[id]];
-        if (kab && kab.fx && !kab.text) {
+        if (H.traceDescribeAb) {
+          const now = g.fill(H.traceDescribeAb(kit, id, eff));
+          this.wrap('Сейчас: ' + now, pw - 24, 10).slice(0, st.cur < n.max ? 3 : 4).forEach(l => { this.text(l, px + 12, y, { size: 10, col: '#c8d0f0' }); y += 12; });
+          if (st.cur < n.max) this.wrap('Ур. ' + (eff + 1) + ': ' + g.fill(H.traceDescribeAb(kit, id, eff + 1)), pw - 24, 10).slice(0, 3).forEach(l => { this.text(l, px + 12, y, { size: 10, col: C.ok }); y += 12; });
+        } else if (kab && kab.fx && !kab.text) {
           const now = this.describeFx(H.traceScaleAb(kab, id, st.cur + (st.up || 0), kit));
           this.wrap('Сейчас: ' + now, pw - 24, 10).slice(0, 3).forEach(l => { this.text(l, px + 12, y, { size: 10, col: '#c8d0f0' }); y += 12; });
           if (st.cur < n.max) this.wrap('Ур. ' + (st.cur + 1 + (st.up || 0)) + ': ' + this.describeFx(H.traceScaleAb(kab, id, st.cur + 1 + (st.up || 0), kit)), pw - 24, 10).slice(0, 3).forEach(l => { this.text(l, px + 12, y, { size: 10, col: C.ok }); y += 12; });

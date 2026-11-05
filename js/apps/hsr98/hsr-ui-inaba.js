@@ -89,7 +89,7 @@
     },
 
     drawPersonaModes(c, u) {
-      const P = H.INABA.PERSONAS, sel = u.flags.skillSel | 0, lock = !!u.flags.personaLock, w = 128, x = W - 8 - w, y = 248;
+      const P = H.INABA.PERSONAS, sel = u.flags.skillSel | 0, lock = !!u.flags.personaLock, w = 128, x = this.right - 8 - w, y = this.wide() ? 272 : 248;
       c.fillStyle = 'rgba(4,6,20,0.82)'; c.fillRect(x, y, w, 56);
       c.fillStyle = 'rgba(255,216,80,0.6)'; c.fillRect(x, y, w, 1);
       this.text('Персона', x + 6, y + 3, { size: 9, bold: true, col: '#ffd850' });

@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const path = require('path');
 const DIR = path.join(__dirname, '../js/apps/hsr98');
 const H = require(path.join(DIR, 'hsr-core.js'));
-for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-lab-kits', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-ascend-data', 'hsr-traces', 'hsr-ascend', 'hsr-phone', 'hsr-phone-pix', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-lab-info', 'hsr-express', 'hsr-net', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-lab', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-luofu-foes', 'hsr-luofu-field', 'hsr-luofu-maps', 'hsr-luofu-story', 'hsr-luofu-story2', 'hsr-luofu-life', 'hsr-conductor', 'hsr-coatroom', 'hsr-guide-data', 'hsr-guide', 'hsr-domain', 'hsr-cw-data', 'hsr-cw', 'hsr-cw-battle', 'hsr-cw-bonds', 'hsr-cw-items', 'hsr-cw-kits', 'hsr-cw-special', 'hsr-cw-strats', 'hsr-cw-affixes', 'hsr-cw-envs', 'hsr-cw-foes', 'hsr-cw-meta', 'hsr-cw-perks', 'hsr-cw-goals', 'hsr-hd-data', 'hsr-hd-math', 'hsr-hd-arena', 'hsr-hd-heroes', 'hsr-hd-foes', 'hsr-hd-shop', 'hsr-hd', 'hsr-hd-net', 'hsr-hd-simver', 'hsr-hd-lead', 'hsr-range', 'hsr-pf-data', 'hsr-pf-battle', 'hsr-pf', 'hsr-pf-story']) require(path.join(DIR, f + '.js'));
+for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-lab-kits', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-ascend-data', 'hsr-traces', 'hsr-ascend', 'hsr-phone', 'hsr-phone-pix', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-lab-info', 'hsr-express', 'hsr-net', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-lab', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-luofu-foes', 'hsr-luofu-field', 'hsr-luofu-maps', 'hsr-luofu-story', 'hsr-luofu-story2', 'hsr-luofu-life', 'hsr-conductor', 'hsr-coatroom', 'hsr-room-data', 'hsr-room', 'hsr-guide-data', 'hsr-guide', 'hsr-domain', 'hsr-cw-data', 'hsr-cw', 'hsr-cw-battle', 'hsr-cw-bonds', 'hsr-cw-items', 'hsr-cw-kits', 'hsr-cw-special', 'hsr-cw-strats', 'hsr-cw-affixes', 'hsr-cw-envs', 'hsr-cw-foes', 'hsr-cw-meta', 'hsr-cw-perks', 'hsr-cw-goals', 'hsr-hd-data', 'hsr-hd-math', 'hsr-hd-arena', 'hsr-hd-heroes', 'hsr-hd-foes', 'hsr-hd-shop', 'hsr-hd', 'hsr-hd-net', 'hsr-hd-simver', 'hsr-hd-lead', 'hsr-range', 'hsr-pf-data', 'hsr-pf-battle', 'hsr-pf', 'hsr-pf-story', 'hsr-tutorial-data', 'hsr-tutorial']) require(path.join(DIR, f + '.js'));
 
 let checks = 0;
 const CCC_LATER = new Set();
@@ -355,7 +355,7 @@ for (const [id, m] of Object.entries(H.MAPS)) {
   for (const [ch, list] of Object.entries(marks)) for (const [x, y] of list) ok(seen.has(x + ',' + y), 'reachable ' + id + ' ' + ch + ' @' + x + ',' + y);
 }
 
-const UIS = new Set(['pf', 'book', 'synth', 'name', 'shop', 'rumor', 'warp', 'calyx', 'nav', 'databank', 'su', 'su_shop', 'fh', 'fh_shop', 'doc', 'ksboard', 'ksrate', 'kslearn', 'kscard', 'ksreport', 'tlrewards', 'hackjade', 'hackdebug', 'lfchat', 'abacus', 'mutare', 'cw', 'hd', 'labwarp', 'range', 'coatroom', 'phono']);
+const UIS = new Set(['pf', 'book', 'synth', 'name', 'shop', 'rumor', 'warp', 'calyx', 'nav', 'databank', 'su', 'su_shop', 'fh', 'fh_shop', 'doc', 'ksboard', 'ksrate', 'kslearn', 'kscard', 'ksreport', 'tlrewards', 'hackjade', 'hackdebug', 'lfchat', 'abacus', 'mutare', 'cw', 'hd', 'labwarp', 'range', 'coatroom', 'phono', 'roomevent', 'roomstand']);
 for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCRIPTS))) {
   const labels = new Set(steps.filter(s => typeof s === 'string' && s[0] === '#').map(s => s.slice(1)));
   for (const st of steps) {
@@ -538,7 +538,7 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   st.roster.march = { lvl: 10, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
   let day = Date.UTC(2026, 9, 13, 12);
   const g = new H.Game({ state: st, seed: 3, clock: () => day });
-  eq(H.EXPRESS_AREAS.map(a => a.map).join(), 'express,express_cabin,express_party,express_lab', 'the Express has three cars and a secret one');
+  eq(H.EXPRESS_AREAS.map(a => a.map).join(), 'express,express_cabin,express_party,express_room,express_lab', 'the Express has four cars and a secret one');
   ok(H.EXPRESS_AREAS.every(a => g.areaOf(a.map).area === a && g.areaOf(a.map).world === g.expressWorld()), 'every car is an Express area of the parked world');
   eq(g.routeExit('express', 'express_cabin'), 'r', 'the Sleeping car is behind the right door of the Parlor car');
   eq(g.routeExit('express', 'express_party'), 'l', 'the Party car is down the stairs on the left');
@@ -559,6 +559,64 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
     g.resume(); while (g.script) g.resume();
   }
   ok(g.blocked(27, 8) && g.blocked(34, 8), 'Himeko and Welt keep their doors shut');
+  {
+    const cg = new H.Game({ state: H.newState(), seed: 5 });
+    for (const f of ['intro', 'doom', 'express_intro', 'pc_rewards_done', 'ending']) cg.state.flags[f] = true;
+    cg.setTrailLevel(18);
+    cg.chatSync();
+    if (cg.state.chats.th.pc_skilled) { cg.chatAuto('pc_skilled'); cg.chatSync(); }
+    ok(cg.state.chats.th.pc_cabins_msg, 'Pom-Pom sends a message about the sleeping car inspection');
+    cg.chatAuto('pc_cabins_msg');
+    eq(cg.state.quests.pc_cabins, 'talk', 'the cabin inspection quest starts at Pom-Pom');
+    cg.loadMap('express', 'v');
+    cg.runScript('pompom_talk');
+    while (cg.script) cg.resume(0);
+    eq(cg.state.quests.pc_cabins, 'keys', 'Pom-Pom asks the Trailblazer to get access from Himeko and Welt');
+    cg.runScript('himeko_talk');
+    while (cg.script) cg.resume(0);
+    ok(cg.state.flags.pc_cabins_hm_key && cg.state.quests.pc_cabins === 'keys', 'Himeko hands over her ventilation service card');
+    cg.runScript('welt_talk');
+    while (cg.script) cg.resume(0);
+    ok(cg.state.flags.pc_cabins_wl_key && cg.state.quests.pc_cabins === 'inspect', 'Welt releases the gravitational lock and advances the quest');
+    cg.loadMap('express_cabin', 'v');
+    for (const [x, flag] of [[27, 'himeko_room_open'], [34, 'welt_room_open']]) {
+      cg.placePlayer(x, 9); cg.player.dir = 'up';
+      ok(cg.interact(), 'interacting with the compartment door unlocks it at ' + x);
+      while (cg.script) cg.resume(0);
+      ok(cg.state.flags[flag] && !cg.blocked(x, 8) && !cg.blocked(x, 7), 'the doorway is now open and walkable at ' + x);
+    }
+    cg.placePlayer(25, 4); cg.player.dir = 'up';
+    ok(cg.interact(), 'inspecting Himeko coffee siphon during the quest');
+    while (cg.script) cg.resume(0);
+    ok(cg.state.flags.pc_cabins_hm, 'Himeko siphon inspection is recorded');
+    cg.placePlayer(32, 4); cg.player.dir = 'up';
+    ok(cg.interact(), 'inspecting Welt Arahato shelf during the quest');
+    while (cg.script) cg.resume(0);
+    ok(cg.state.flags.pc_cabins_wl && cg.state.quests.pc_cabins === 'report', 'both compartments are inspected and ready to report');
+    cg.placePlayer(27, 4); cg.player.dir = 'up';
+    ok(cg.interact(), 'inspecting Himeko navigation desk');
+    while (cg.script) cg.resume(0);
+    ok(cg.state.flags.doc_exp_himeko_nav, 'Himeko navigation notes unlock in the Databank');
+    cg.placePlayer(34, 4); cg.player.dir = 'up';
+    ok(cg.interact(), 'inspecting Welt storyboard light-table');
+    while (cg.script) cg.resume(0);
+    ok(cg.state.flags.doc_exp_welt_arahato, 'Welt Arahato production diary unlocks in the Databank');
+    for (const [x, y, dir] of [[29, 5, 'up'], [29, 6, 'right'], [36, 5, 'up'], [33, 6, 'left']]) {
+      cg.placePlayer(x, y); cg.player.dir = dir;
+      ok(cg.interact() && cg.pending, 'compartment furniture prop is interactive at ' + x + ',' + y);
+      while (cg.script) cg.resume(0);
+    }
+    cg.state.roster.trail.hp = 10;
+    cg.placePlayer(25, 4); cg.player.dir = 'up';
+    cg.interact();
+    while (cg.script) cg.resume(0);
+    eq(cg.state.roster.trail.hp, null, 'drinking Himeko Blend #38 restores party HP');
+    const jade0 = cg.state.jade;
+    cg.loadMap('express', 'v');
+    cg.runScript('pompom_talk');
+    while (cg.script) cg.resume(0);
+    ok(cg.state.flags.pc_cabins_done && cg.state.quests.pc_cabins === 'done' && cg.state.jade === jade0 + 40, 'reporting back to Pom-Pom completes pc_cabins and grants rewards');
+  }
   g.loadMap('express_party', 'v');
   eq(g.map.ents.filter(e => e.def && e.def.visit).length, 0, 'nobody visits the Party car before the roster grows');
   for (const k of ['serval', 'natasha', 'asta', 'arlan']) g.debugChar(k, 20, 0);
@@ -568,6 +626,11 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   g.placePlayer(vis[0].x, vis[0].y + 1); g.player.dir = 'up';
   ok(g.interact() && g.pending.type === 'say' && g.pending.spk === vis[0].def.who && g.pending.text.length > 10, 'a visitor says one of their own lines');
   g.resume();
+  const arc = g.map.ents.find(e => e.ch === 'k');
+  ok(arc && arc.x === 37 && arc.y === 3 && H.MAPS.express_party.decor.some(d => d[0] === 'arcade' && d[1] === 37 && d[2] === 3), 'the arcade stands in the top-right corner of the Party car');
+  g.placePlayer(37, 4); g.player.dir = 'up';
+  ok(g.interact() && g.pending && g.pending.type === 'say' && /аркадный автомат/.test(g.pending.text), 'the arcade can be inspected from the front');
+  while (g.script || g.pending) g.resume();
   const today = g.visitors().join();
   const seen = new Set([today]);
   for (let i = 1; i < 6; i++) { day += 86400000; seen.add(g.visitors().join()); }
@@ -603,11 +666,19 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   g.resume(); while (g.script) g.resume();
   const lab = H.expressArea('express_lab');
   ok(lab.hidden && !H.DESTINATIONS.some(d => d.map === 'express_lab'), 'the Test car is hidden from the navigation list and has no teleport');
-  const atLabDoor = () => { g.loadMap('express_party', 'v'); const d = g.map.ents.find(e => e.ch === 'h'); g.placePlayer(d.x + 1, d.y); g.player.dir = 'left'; };
+  const atLabDoor = (y = 8) => { g.loadMap('express_party', 'v'); g.placePlayer(1, y); g.player.dir = 'left'; };
   const finish = () => { let n = 0; while ((g.script || g.pending) && n++ < 200) g.resume(); };
-  atLabDoor();
-  ok(g.interact() && /вагон/.test(g.pending.text), 'without Shift the left door of the Party car is the usual closed door');
-  finish();
+  g.loadMap('express_cabin', 'v');
+  for (const y of [9, 10]) {
+    g.placePlayer(42, y); g.player.dir = 'right';
+    ok(g.interact() && /вагон/.test(g.pending.text), 'the Sleeping car end door can be inspected from row ' + y);
+    finish();
+  }
+  for (const y of [7, 8]) {
+    atLabDoor(y);
+    ok(g.interact() && /вагон/.test(g.pending.text), 'without Shift the left door of the Party car is the usual closed door at row ' + y);
+    finish();
+  }
   eq(g.map.id, 'express_party', 'a plain look at the door does not open it');
   g.state.party = ['march', 'trail'];
   atLabDoor(); g.interact({ shift: true }); finish();
@@ -6293,7 +6364,9 @@ function trInfo(g) {
   const g = new H.Game({ seed: 4, clock: () => now });
   const ver = H.MAIL.filter(m => !m.need);
   eq(g.mailbox().length, ver.length, 'a new game gets the version letters');
-  ok(ver.length === 12 && ver.filter(m => !['v14_conton', 'v14_hares', 'v16_traces', 'v16_guide', 'v16_elation'].includes(m.id)).every(m => m.give.jade === 300), 'seven version letters with 300 jade each, the Кон-Тон letter, the Cunning Hares letter and the three patch letters');
+  ok(ver.length === 13 && ver.filter(m => !['v14_conton', 'v14_hares', 'v16_traces', 'v16_guide', 'v16_elation', 'v19_update'].includes(m.id)).every(m => m.give.jade === 300), 'seven version letters with 300 jade each, the 1.9 letter with 600 jade, the Кон-Тон letter, the Cunning Hares letter and the three patch letters');
+  const v19m = H.MAIL.find(m => m.id === 'v19_update');
+  ok(v19m && v19m.give && v19m.give.jade === 600 && v19m.text.every(l => !/[—–]/.test(l)) && ['Комната Первопроходца', 'Плановый обход проводника', 'Базой данных и книгами', 'Тактическая тренировка', 'Способностях', 'Разбор Реликвий', 'Разбор Световых конусов', '16:9', '600 звёздного нефрита'].every(s => v19m.text.join(' ').includes(s)), 'the 1.9 update letter brings 600 jade and describes all new features and fixes');
   ok(H.MAIL.find(m => m.id === 'v16_guide').give.items.remains === 300 && H.SYN_MATS.every(id => H.MAIL.find(m => m.id === 'v16_guide').give.items[id] > 0), 'the guide patch letter brings Relic Remains and every synthesis material');
   ok(H.MAIL.find(m => m.id === 'v16_traces').give.items.dest1 === 3 && H.MAIL.find(m => m.id === 'v16_traces').give.items.artifex1 === 3, 'the Traces patch letter brings three of every 2-star material');
   ok(H.MAIL.find(m => m.id === 'v16_fives').give.items.spass === 10, 'the 1.6 letter brings ten Special Passes');
@@ -6377,9 +6450,9 @@ function trInfo(g) {
   ok(!g.ownsOutfit('march_spring'), 'Nascent Spring waits in the 1.5 letter');
   g.readMail('v16_outfits');
   const claimed = g.claimAllMail();
-  ok(claimed.length === 54 && g.state.jade === jm + 2100 && !g.alerts().mail, 'claim all takes the other letters and clears the alert (' + claimed.length + ')');
+  ok(claimed.length === 55 && g.state.jade === jm + 2700 && !g.alerts().mail, 'claim all takes the other letters and clears the alert (' + claimed.length + ')');
   ok(g.ownsOutfit('march_spring') && !g.outfitOf('march'), 'the 1.5 letter adds Nascent Spring to the collection without putting it on');
-  eq(g.deleteReadMail(), 16, 'read and claimed letters can be deleted');
+  eq(g.deleteReadMail(), 17, 'read and claimed letters can be deleted');
   eq(g.mailbox().length, 0, 'the mailbox is empty after deleting');
   const back = new H.Game({ state: g.serialize(), clock: () => now });
   ok(!back.mailbox().length && back.cometAllGot() && back.state.will.length === H.TRAIL_WILL.length, 'events and mail survive a save');
@@ -6391,7 +6464,7 @@ function trInfo(g) {
 
 {
   const P = H.POM_OUTFITS, g = new H.Game({ seed: 9 });
-  eq(Object.keys(P).join(), 'uniform,pajamas', 'the coatroom holds the conductor uniform and the pajamas');
+  eq(Object.keys(P).join(), 'uniform,pajamas,chef', 'the coatroom holds the conductor uniform, the pajamas and the chef outfit');
   ok(P.uniform.rarity === 5 && P.pajamas.rarity === 4 && P.pajamas.name === 'Пижама «Сладких снов!»' && P.uniform.name === 'Униформа проводника «Торжественный алый!»', 'costumes keep the official names and stars');
   ok(Object.values(P).every(o => o.text && !/—/.test(o.text + (o.wear || []).join('') + (o.greet || []).join('')) && o.wear.length), 'costume texts are clean and every costume has a line for the coatroom');
   ok(g.pomWorn() === 'uniform' && g.pomOwns('uniform') && !g.pomOwns('pajamas') && !g.pomWear('pajamas'), 'a new game has only the uniform');
@@ -7227,7 +7300,7 @@ function trInfo(g) {
     localStorage: { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) },
     requestAnimationFrame: () => 1
   });
-  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-hd-art', 'hsr-relic-art', 'hsr-splash-pix', 'hsr-splash', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-luofu', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-luofu-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-lab-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-phono', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-coatroom', 'hsr-ui-debug', 'hsr-ui-music-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-lab', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-levelup', 'hsr-ui-coneup', 'hsr-ui-phone', 'hsr-ui-profile', 'hsr-ui-net', 'hsr-ui-friends', 'hsr-ui-visit', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-table', 'hsr-ui-hd-debug', 'hsr-ui-luofu', 'hsr-pf-art', 'hsr-ui-pf', 'hsr-ui-pf-team', 'hsr-ui-pf-battle', 'hsr-foe-lore', 'hsr-details', 'hsr-ui-details']) require(path.join(DIR, f + '.js'));
+  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-hd-art', 'hsr-relic-art', 'hsr-splash-pix', 'hsr-splash', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-luofu', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-luofu-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-lab-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-phono', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-coatroom', 'hsr-ui-room', 'hsr-ui-debug', 'hsr-ui-music-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-lab', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-levelup', 'hsr-ui-coneup', 'hsr-ui-phone', 'hsr-ui-profile', 'hsr-ui-net', 'hsr-ui-friends', 'hsr-ui-visit', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-table', 'hsr-ui-hd-debug', 'hsr-ui-luofu', 'hsr-pf-art', 'hsr-ui-pf', 'hsr-ui-pf-team', 'hsr-ui-pf-battle', 'hsr-foe-lore', 'hsr-details', 'hsr-ui-details', 'hsr-databank', 'hsr-ui-databank', 'hsr-skills-info', 'hsr-ui-tutorial']) require(path.join(DIR, f + '.js'));
   const G = H.Gfx;
   const lum = hex => { const n = parseInt(hex.slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255); };
   for (const id of heroIds()) {
@@ -7284,6 +7357,13 @@ function trInfo(g) {
     ok(lamp, 'title 3D: the locomotive headlamp shines');
     ok(planet, 'title 3D: Jarilo-VI is lit ice-blue on its upper limb');
     ok(T.CARS.length === 4 && T.CARS[0].loco, 'title 3D: locomotive plus three cars from the Warp models');
+    H.WarpKit.platLight(R, { col: [255, 204, 80] }, 0);
+    R.look([-2.45, 1.0, 4.2], [-2.45, 1.0, -0.5], 72);
+    H.WarpKit.platDraw(R, -2.45);
+    for (const [label, wx] of [['leading locomotive', 1.8], ['arrival car', -2.45], ['trailing car', -6.8]]) {
+      const p = R.project([wx, 1.2, -0.25]);
+      ok(p && R.zb[Math.round(p[1]) * 320 + Math.round(p[0])] > 0.1, 'Warp platform 3D: draws the ' + label);
+    }
   }
   ok(G.trailLook('f').back === 'layer' && G.trailLook('m').back === 'wolf', 'Stelle and Caelus differ');
   ok(G.isMale(G.trailLook('m')) && !G.isMale(G.trailLook('f')), 'Caelus uses the male body, Stelle the female one');
@@ -8504,11 +8584,13 @@ function trInfo(g) {
     key('Escape'); frame();
     key('ArrowDown'); frame(); eq(ph.rail, 1, 'down moves to Friends');
     eq(ui.phoneRail()[1].icon, 'friends', 'Friends sit above the settings gear');
-    key('ArrowDown'); frame(); eq(ph.rail, 2, 'and further down to the settings gear');
+    key('ArrowDown'); frame(); eq(ph.rail, 2, 'down moves to Tutorial');
+    eq(ui.phoneRail()[2].icon, 'guide', 'Tutorial sits above the settings gear');
+    key('ArrowDown'); frame(); eq(ph.rail, 3, 'and further down to the settings gear');
     key('Enter'); frame(); ok(ui.top() !== ph && !ui.top().full, 'the gear opens the settings');
     key('Escape'); frame();
     key('ArrowLeft'); frame(); ok(ph.rail === -1 && ph.sel === 2, 'left returns to the tile grid');
-    ph.sel = 0; key('ArrowLeft'); frame(); ok(ph.rail === 2 && ph.from === 2, 'left from the first column wraps to the side panel');
+    ph.sel = 0; key('ArrowLeft'); frame(); ok(ph.rail === 3 && ph.from === 2, 'left from the first column wraps to the side panel');
     key('ArrowRight'); frame(); ok(ph.rail === -1 && ph.sel === 0, 'right from the panel wraps to the first column');
     ph.sel = 7; key('Enter'); frame(); ok(ui.top() !== ph && ui.top().full && ui.top().act === 0, 'the Guide tile opens the Interastral Guide');
     ui.screens = [ph]; frame();
@@ -8518,19 +8600,19 @@ function trInfo(g) {
     ok(ui.top() !== ph && ui.top().ev, 'the Events tile opens the events');
     ui.screens = [ph]; ph.sel = 11; key('Enter'); frame();
     ok(ui.top() !== ph && ui.top().full && ui.top().focus, 'the last tile opens Messages');
-    ui.screens = [ph]; ph.sel = 2; key('ArrowRight'); ph.rail = ph.railSel = 2; key('ArrowDown'); frame();
-    eq(ph.rail, 3, 'Save sits right under the settings gear');
+    ui.screens = [ph]; ph.sel = 2; key('ArrowRight'); ph.rail = ph.railSel = 3; key('ArrowDown'); frame();
+    eq(ph.rail, 4, 'Save sits right under the settings gear');
     const near = ui.canSaveHere, realSaves = ui.openSaves, savesAsked = [];
     ui.openSaves = function (mode, done) { savesAsked.push(mode); return realSaves.call(this, mode, done); };
     ui.canSaveHere = () => false; ui.toasts = []; key('Enter'); frame();
     ok(ui.top() === ph && ui.toasts.some(t => String(t.text || t).includes('у якоря пространства')), 'Save in the rail is off away from an anchor and says why');
     ui.canSaveHere = () => true; key('Enter'); frame();
     ok(ui.top() !== ph && savesAsked.pop() === 'save', 'Save in the rail opens the memory card');
-    ui.screens = [ph]; ui.canSaveHere = near; key('ArrowDown'); frame(); eq(ph.rail, 4, 'Load sits under Save');
+    ui.screens = [ph]; ui.canSaveHere = near; key('ArrowDown'); frame(); eq(ph.rail, 5, 'Load sits under Save');
     key('Enter'); frame(); ok(ui.top() !== ph && savesAsked.pop() === 'load', 'Load in the rail opens the memory card');
     ui.openSaves = realSaves;
     ui.screens = [ph]; key('ArrowDown'); key('ArrowDown'); frame();
-    eq(ph.rail, 6, 'the exit to the title closes the rail');
+    eq(ph.rail, 7, 'the exit to the title closes the rail');
     key('Enter'); frame();
     ok(ui.top() !== ph && !ui.top().full, 'the exit asks before leaving to the title');
     key('Escape'); frame();
@@ -8593,6 +8675,25 @@ function trInfo(g) {
     texts = spy();
     ok(texts.some(t => /^ур\. \d+$/.test(t)), 'the abilities section shows the ability levels');
     cs.sec = 0; frame();
+    texts = spy();
+    ok(texts.includes('HP') && texts.includes('Сила атаки') && texts.includes('Защита') && texts.includes('Скорость') && texts.includes('Крит. шанс') && texts.includes('Крит. урон'), 'the Details panel shows the six primary stats');
+    ok(!texts.includes('Эфф. пробития') && !texts.includes('Энергия') && texts.includes('Подробнее'), 'Break Effect and Energy are removed from the main Details panel and replaced by the More button');
+    key('KeyD'); frame();
+    const stScr = ui.top();
+    ok(stScr && stScr.charStats && stScr.k === 'march', 'pressing D on Details opens the full Character Stats modal');
+    texts = spy();
+    ok(texts.includes('Характеристики') && texts.includes('Базовые характеристики') && texts.includes('Продвинутые характеристики'), 'the Character Stats modal shows Base and Advanced sections');
+    ok(texts.includes('Эффект пробития') && texts.includes('Бонус исцеления') && texts.includes('Максимальная энергия') && texts.includes('Скорость восстановления энергии') && texts.includes('Шанс попадания эффектов') && texts.includes('Сопротивление эффектам') && texts.includes('Радость'), 'the Advanced section lists all nine advanced stats');
+    ok(texts.some(t => /^\+\d+$/.test(t)), 'the Base section shows the cyan bonus breakdown next to the base stat when a trace or gear bonus is active');
+    key('KeyI'); frame();
+    eq(stScr.helpKey, 'spd', 'pressing I opens the first stat help explanation');
+    texts = spy();
+    ok(texts.some(t => t.includes('интервал между ходами')), 'the inline stat help explanation is rendered beneath the stat row');
+    stScr.sc.top = 20; frame();
+    texts = spy();
+    ok(texts.includes('Тип урона') && texts.includes('Бонус лед. урона') && texts.includes('Бонус мним. сопр.'), 'scrolling down in Character Stats shows the Damage Type section with elemental damage and resistance bonuses');
+    key('Escape'); frame();
+    eq(ui.top(), cs, 'Esc closes Character Stats back to the character screen');
     key('Enter'); frame();
     const acts = ui.top();
     ok(acts !== cs, 'Enter opens the actions');
@@ -8669,11 +8770,12 @@ function trInfo(g) {
     Object.assign(s.inv.items, { hunt1: 20, erud1: 4 });
     ui.screens = []; ui.openSynth(); frame();
     const sy = ui.top();
-    eq(ui.synthTabs.map(t => t.label).join('|'), 'Расходные предметы|Синтез материалов|Обмен материалами|Реликвии', 'Synthesis has the four tabs of the original');
+    eq(ui.synthTabs.map(t => t.label).join('|'), 'Расходные предметы|Синтез материалов|Обмен материалами|Реликвии|Разбор Реликвий|Разбор Световых конусов', 'Synthesis and Salvage has the six tabs');
     key('KeyQ'); frame(); ok(sy.tab === 0 && !ui.synthLock(0), 'Q moves left to the consumables tab');
-    key('KeyQ'); frame(); eq(sy.tab, 3, 'Q wraps around to the relics tab');
+    key('KeyQ'); frame(); eq(sy.tab, 5, 'Q wraps around to the cone salvage tab');
+    key('KeyQ'); key('KeyQ'); frame(); eq(sy.tab, 3, 'Q reaches the relics tab');
     key('Enter'); frame(); ok(ui.top() === sy && s.inv.items.hunt1 === 20, 'Enter on the relics tab spends nothing');
-    key('KeyE'); key('KeyE'); frame(); eq(sy.tab, 1, 'E comes back to the material tab');
+    key('KeyE'); key('KeyE'); key('KeyE'); key('KeyE'); frame(); eq(sy.tab, 1, 'E comes back to the material tab');
     sy.sel = ui.synthRows(1).findIndex(r => r.from === 'hunt1'); frame();
     eq(sy.maxNow(), 6, 'the slider stops at what the stock allows');
     key('KeyD'); key('KeyD'); frame(); eq(sy.qty, 3, 'D raises the quantity');
@@ -9188,7 +9290,7 @@ function trInfo(g) {
     ui.screens = []; ui.openMenu(); frame();
     ok(texts.includes('Снабжение') && !texts.includes('Управление'), 'the phone shows Supply where Controls was');
     ok(texts.includes('Путеводитель') && texts.includes('Синтез') && !texts.includes('Сохранить') && !texts.includes('Загрузить'), 'the phone shows the Guide and Synthesis where Save and Load were');
-    const ph = ui.top(); ph.rail = ph.railSel = 5; texts.length = 0; frame();
+    const ph = ui.top(); ph.rail = ph.railSel = 6; texts.length = 0; frame();
     ok(texts.includes('Управление: клавиши поля, боя и карты'), 'Controls moved to the right rail under Settings');
     ph.key('ok'); frame();
     ok(ui.screens.length === 2, 'the rail opens Controls');
@@ -10833,6 +10935,65 @@ function trInfo(g) {
     ui.canvas.getBoundingClientRect = rect;
     key('ArrowLeft'); key('ArrowLeft'); key('ArrowLeft'); key('ArrowLeft'); frame();
     ok(ui.options.res === '640' && ui.canvas.width === 640 && st === ui.top(), 'Left walks back to the original resolution');
+    eq(ui.options.aspect, '4:3', 'the aspect ratio starts at 4:3');
+    ok(!ui.wide() && ui.vw === 640 && ui.left === 0 && ui.right === 640, '4:3 uses the 640 virtual width');
+    const aspects = [];
+    ui.opts.onAspect = w => aspects.push(w);
+    key('ArrowDown'); key('ArrowRight'); frame();
+    ok(ui.options.aspect === '16:9' && ui.wide() && ui.vw === 854 && ui.left === -107 && ui.right === 747, '16:9 expands the virtual viewport to 854 (−107..747)');
+    ok(ui.canvas.width === 854 && ui.canvas.height === 480 && ui.canvas.className.includes('hsr98-wide') && aspects[0] === true, '16:9 at 480p renders into an 854×480 buffer and marks the canvas');
+    eq(JSON.parse(store.get('hsr98.options')).aspect, '16:9', 'the aspect ratio preset is saved with the options');
+    ui.options.res = '800'; ui.applyRes();
+    ok(ui.canvas.width === 1068 && ui.canvas.height === 600, '16:9 at 600p renders into a 1068×600 buffer');
+    ui.options.res = '1280'; ui.applyRes();
+    ok(ui.canvas.width === 1708 && ui.canvas.height === 960, '16:9 at 960p renders into a 1708×960 buffer');
+    ui.options.res = '640'; ui.applyRes();
+    const docksW = ui.minimapDocks();
+    ok(docksW[0].x < 0 && docksW[1].x + docksW[1].w > 640, 'field HUD docks anchor to the 16:9 edges');
+    ui.screens = [];
+    const keepMode = ui.mode;
+    ui.mode = 'title'; frame();
+    ui.mode = 'field'; frame();
+    ui.mode = keepMode;
+    const pullRes = [{ kind: 'char', id: 'serval', name: 'Сервал', rar: 4, res: 'new' }, { kind: 'cone', id: 'arrows', name: 'Стрелы', rar: 3 }];
+    for (const [Cls, ban] of [[H.WarpShow, 'ev'], [H.SignalShow, 'sig'], [H.ConveneShow, 'conv'], [H.ExplosionShow, 'guild'], [H.MidnightShow, 'mid'], [H.SpotlightShow, 'con']]) {
+      const sh = new Cls(ui, pullRes, { ban });
+      ui.hits = []; sh.draw(ui.ctx);
+      ok(ui.hits.some(h => h.x + h.w > 700), Cls.name + ' anchors the skip button to the 16:9 right edge');
+      eq(sh.R.w, 427, Cls.name + ' renders a 427×240 widescreen buffer in 16:9');
+      sh.begin([0, 1]); sh.tick(1.8); ui.hits = []; sh.draw(ui.ctx);
+      eq(sh.R.w, 427, Cls.name + ' keeps a 427×240 widescreen buffer during character reveal in 16:9');
+      sh.toRack(); sh.tick(0.5); ui.hits = []; sh.draw(ui.ctx);
+      if (Cls === H.SpotlightShow) ok(ui.hits.some(h => h.w === 100 && h.x === ui.left + (53 + 74) * 2), 'SpotlightShow aligns the photo wall hitboxes with 1:1 square pixels in 16:9');
+    }
+    eq(H.WarpIntro.render(ui.game, pullRes[0], 0.5, false, true).width, 427, 'WarpIntro renders a 427×240 canvas in 16:9');
+    {
+      const fid = Object.keys(H.FUSIONS)[0], sc = { kind: 0, id: 'march', aim: 0, cut: 0, ban: 0, res: 0, stage: 1, gen: null, out: 0 };
+      eq(ui.debugSceneFrame('ult', 'march', sc).width, 427, 'debugSceneFrame renders a 427×240 ult preview in 16:9');
+      eq(ui.debugSceneFrame('fus', fid, sc).width, 427, 'debugSceneFrame renders a 427×240 fusion preview in 16:9');
+      eq(ui.debugSceneFrame('warp', 'march', sc).width, 427, 'debugSceneFrame renders a 427×240 warp preview in 16:9');
+      eq(ui.debugSceneFrame('eid', 'march', sc).width, 854, 'debugSceneFrame renders an 854×480 eidolon preview in 16:9');
+      const drawn = [];
+      const origDraw = ui.ctx.drawImage;
+      ui.ctx.drawImage = function (img, dx, dy, dw, dh) { drawn.push([dw, dh]); return origDraw.apply(this, arguments); };
+      ui.debugScenePreview(ui.ctx, { sc: { kind: 1, id: fid, aim: 0, cut: 0, ban: 0, res: 0, stage: 1, gen: null, out: 0 } }, 314, 42);
+      ui.debugAhaPreview(ui.ctx, { aha: { i: 0, p: 2 } }, 314, 42);
+      ui.ctx.drawImage = origDraw;
+      ok(drawn.some(([w, h]) => w === 288 && h === 162) && drawn.filter(([w, h]) => w === 288 && h === 162).length >= 2, 'debugScenePreview and debugAhaPreview use a 288×162 (16:9) frame in widescreen');
+      ui.openChars(); frame();
+      const stripHits = ui.hits.filter(h => h.w === 36 && h.h === 46 && h.y === 4);
+      eq(stripHits.length, Math.min(10, ui.rosterKeys().length), 'openChars shows up to 10 characters in the top strip in 16:9');
+      eq(stripHits[0].x, Math.round(320 - stripHits.length * 36 / 2), 'openChars centers the top character strip in 16:9');
+      ok(ui.hits.some(h => h.w === 170 && h.h === 34 && h.x === ui.left + 12), 'openChars anchors the left section menu to the 16:9 left edge');
+      ok(ui.hits.some(h => h.w === 168 && h.h === 26 && h.x === ui.right - 8 - 192 + 12), 'openChars anchors the right details panel to the 16:9 right edge');
+      ok(ui.hits.some(h => h.w === 22 && h.h === 22 && h.x === ui.right - 32 && h.y === 10), 'openChars anchors the close button to the 16:9 right edge');
+      ui.pop();
+    }
+    ui.openSettings(); frame();
+    for (let i = 0; i < 8; i++) key('ArrowDown');
+    key('ArrowLeft'); frame();
+    ok(ui.options.aspect === '4:3' && !ui.wide() && ui.canvas.width === 640 && !ui.canvas.className.includes('hsr98-wide') && aspects[1] === false, 'Left returns to 4:3');
+    delete ui.opts.onAspect;
     ui.screens = [];
   }
   {
@@ -10851,7 +11012,7 @@ function trInfo(g) {
     const st2 = ui.top();
     clickAll(phoneHits); frame();
     ok(ui.screens.length === 2 && ui.top() === st2, 'clicks on the phone under Settings do not stack more windows');
-    Object.assign(ui.options, { res: '640', ultCine: 'on', fusionCine: 'on', skinCine: 'first' }); ui.applyRes(); ui.screens = [];
+    Object.assign(ui.options, { res: '640', aspect: '4:3', ultCine: 'on', fusionCine: 'on', skinCine: 'first' }); ui.applyRes(); ui.screens = [];
   }
   ui.openGuide(); frame(); ui.screens = [];
   {
@@ -11063,12 +11224,19 @@ function trInfo(g) {
   {
     const s = game.state, keep = s.warpLog;
     s.warpLog = Array.from({ length: 40 }, (_, i) => ({ kind: 'cone', id: Object.keys(H.CONES)[0], rar: 3, ban: 'std', n: i + 1, at: Date.now(), pity: 1 }));
-    ui.openBank(null); const bank = ui.top(); bank.setTab(3); frame();
+    ui.openBank(null); const bank = ui.top();
+    ok(bank.full === true, 'Express Archive is a full-screen standalone menu');
+    bank.setTab(3); frame();
+    eq(ui.hits.filter(h => h.y === 8 && h.h === 24).length, 5, 'Express Archive renders five top section buttons');
     ok(ui.hits.some(h => h.x === 322 && h.w === 10) && ui.wheels.some(w => w.x === 32 && w.y === 80), 'the Express Archive list has a scroll bar');
     bank.sel = 39; frame();
     eq(bank.sc.top, 40 - 17, 'the archive list follows the cursor');
     key('ArrowRight'); frame();
     eq(bank.sc.top, 0, 'switching the tab resets the scroll');
+    key('KeyE'); frame();
+    eq(bank.tab, 0, 'KeyE cycles to the next Express Archive section');
+    key('KeyQ'); frame();
+    eq(bank.tab, 4, 'KeyQ cycles to the previous Express Archive section');
     s.warpLog = keep; ui.screens = [];
   }
   {
@@ -18729,7 +18897,7 @@ console.log(log.join('\n'));
 }
 
 {
-  eq(H.VERSION, '1.8', 'Version: the game says 1.8');
+  eq(H.VERSION, '1.9', 'Version: the game says 1.9');
   const letter = H.MAIL.find(m => m.id === 'v17_growth');
   ok(letter.give.skin === 'nexttoyou' && letter.give.credits > 0 && letter.give.items.aether3 > 0 && letter.need === 'express_intro', 'Version: the letter brings the wallpaper and a stock');
   ok(Object.keys(letter.give.items).every(id => H.ITEMS[id]), 'Version: every item of the letter exists');
@@ -19218,7 +19386,1059 @@ console.log(log.join('\n'));
   const auto = fresh(['tribbie', 'jingliu', 'march', 'theherta'], ['reaver:20', 'trampler:20', 'eliminator:20'], 13);
   auto.runAuto(3000);
   ok(auto.over, 'Tribbie: an auto battle ends');
+  {
+    const noop = () => {}, G = H.Gfx;
+    const wroot = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
+    const wui = new H.UI(wroot, { onExit: noop });
+    wui.running = false;
+    wui.newGame();
+    wui.game.startBattle({ enemies: ['reaver:10', 'trampler:10', 'baryon:10'] });
+    wui.startBattleUI({ bg: 'station', music: 'battle' });
+    wui.options.aspect = '4:3';
+    wui.applyRes();
+    const pos43 = wui.allyPos(wui.game.battle.allies[0]);
+    const foe43 = [...wui.enemyLayout().values()][0];
+    const tc43 = wui.turnCell(0);
+    wui.render();
+    wui.options.aspect = '16:9';
+    wui.applyRes();
+    const pos169 = wui.allyPos(wui.game.battle.allies[0]);
+    const foe169 = [...wui.enemyLayout().values()][0];
+    const tc169 = wui.turnCell(0);
+    const tc169Next = wui.turnCell(1);
+    ok(pos169.x < 180 && pos169.y < 360 && pos43.y >= 400, '16:9 battle places allies on the left field while 4:3 keeps bottom cards');
+    ok(foe169.x > foe43.x && pos169.x < foe169.x - 160, '16:9 battle shifts enemies to the right side opposite allies');
+    ok(tc169.y > 420 && tc169.size === 52 && tc169Next.size === 42 && tc169Next.x > tc169.x && wui.turnOrder(10).length === 10 && wui.turnCell(9).x + wui.turnCell(9).size <= 560 && tc43.x < 20 && tc43.y < 50, '16:9 battle places 10 larger turn order cells horizontally at bottom center while 4:3 stays top-left vertical');
+    ok(G.bgCanvas('station', 854, 480, true) !== G.bgCanvas('station', 854, 480, false), '16:9 battle uses the raised-camera background');
+    wui.render();
+    wui.bt.sub = { type: 'pause', sel: 0 };
+    const setIdx = wui.subOptions().findIndex(o => o.label === 'Настройки');
+    ok(setIdx >= 0, 'battle pause menu has the Settings item');
+    wui.bt.sub.sel = setIdx;
+    wui.subKey('ok');
+    wui.render();
+    ok(wui.screens.length === 1 && wui.top().pause === true, 'Settings opens over the battle from the pause menu');
+    wui.top().key('back');
+  }
   log.push('tribbie ok');
+}
+
+{
+  const g = new H.Game({ seed: 108 }), s = g.state;
+  g.setConeSup('manual');
+  const c3a = g.addCone('arrows'), c3b = g.addCone('amber'), c4a = g.addCone('postop'), c5a = g.addCone('night');
+  ok(c3a.lock === false && c3b.lock === false && c4a.lock === true && c5a.lock === true, 'Cone salvage: 4★ and 5★ cones auto-lock while 3★ stay unlocked');
+  ok(g.coneSalvageable(c3a) && g.coneSalvageable(c4a) && !g.coneSalvageable(c5a), 'Cone salvage: 3★ and 4★ level 1 S1 cones are salvageable, 5★ is not');
+  ok(g.coneCanSalvage(c3a) && !g.coneCanSalvage(c4a), 'Cone salvage: locked cones cannot be selected until unlocked');
+  ok(!g.coneFree(c3a).some(x => x.uid === c4a.uid), 'Cone salvage: locked cones are excluded from enhancement fodder');
+  const c4b = g.addCone('postop');
+  ok(!g.coneCopies(c4a).some(x => x.uid === c4b.uid) && !g.coneMerge(c4a, c4b), 'Cone salvage: locked donor copies cannot be superimposed');
+  g.toggleConeLock(c4b.uid);
+  ok(c4b.lock === false && g.coneCopies(c4a).some(x => x.uid === c4b.uid), 'Cone salvage: unlocking a copy makes it available for superimposition');
+  const c3lvl = g.addCone('arrows'); c3lvl.lvl = 5;
+  const c3sup = g.addCone('arrows'); c3sup.sup = 2;
+  g.addChar('seele', 20);
+  const c3worn = g.addCone('arrows'); g.equipCone('seele', c3worn.uid);
+  ok(!g.coneSalvageable(c3lvl) && !g.coneSalvageable(c3sup) && !g.coneSalvageable(c3worn), 'Cone salvage: leveled, superimposed and equipped cones are excluded from the default salvage list');
+  ok(g.coneSalvageable(c3lvl, { includeEnhanced: true }) && g.coneSalvageable(c3sup, { includeEnhanced: true }) && !g.coneSalvageable(c3worn, { includeEnhanced: true }), 'Cone salvage: includeEnhanced allows leveled and superimposed cones while keeping equipped cones excluded');
+
+  const g2 = new H.Game({ seed: 109 }), s2 = g2.state;
+  for (let i = 0; i < 7; i++) g2.addCone('arrows');
+  eq(s2.inv.cones.filter(x => x.id === 'arrows').map(x => x.sup).join(), '5,1,1', 'Cone salvage: auto superimpose keeps extra copies beyond S5 at S1 for salvage');
+
+  const g3 = new H.Game({ seed: 110 }), s3 = g3.state;
+  g3.setConeSup('manual');
+  for (let i = 0; i < 7; i++) g3.addCone('postop');
+  const s3c = g3.addCone('swordplay'); s3c.sup = 3;
+  for (let i = 0; i < 4; i++) g3.addCone('swordplay');
+  g3.coneManageLock('unlock4_extra');
+  const postopCones = s3.inv.cones.filter(x => x.id === 'postop');
+  eq(postopCones.filter(x => x.lock).length, 5, 'Lock manage: unlock4_extra keeps 5 copies of a 4★ S1 cone locked for S5');
+  eq(postopCones.filter(x => !x.lock).length, 2, 'Lock manage: unlock4_extra unlocks the 2 excess copies');
+  const swordCones = s3.inv.cones.filter(x => x.id === 'swordplay');
+  ok(s3c.lock && swordCones.filter(x => x.lock).reduce((a, x) => a + x.sup, 0) === 5 && swordCones.filter(x => !x.lock).length === 2, 'Lock manage: unlock4_extra counts S3 as 3 toward S5 and unlocks the remaining 2 S1 copies');
+  g3.coneManageLock('unlock4');
+  ok(postopCones.every(x => !x.lock) && swordCones.every(x => !x.lock), 'Lock manage: unlock4 unlocks all 4★ cones');
+  g3.coneManageLock('lock4_down');
+  ok(s3.inv.cones.every(x => x.lock), 'Lock manage: lock4_down locks all 4★ and lower cones');
+
+  const g4 = new H.Game({ seed: 111 }), s4 = g4.state;
+  g4.setConeSup('manual');
+  const u3a = g4.addCone('arrows'), u3b = g4.addCone('amber'), u4a = g4.addCone('postop');
+  g4.toggleConeLock(u4a.uid);
+  for (const k of ['rarity', 'lvl', 'name', 'atk', 'def', 'hp', 'uid']) {
+    const asc = g4.coneSalvageList(k, 1), desc = g4.coneSalvageList(k, -1);
+    ok(asc.length === 3 && desc.length === 3, 'Cone sort: ' + k + ' returns all salvageable cones');
+  }
+  const prev = g4.coneSalvagePreview([u3a.uid, u3b.uid, u4a.uid]);
+  ok(prev.count === 3 && prev.hasRare4 && prev.items.length === 2, 'Cone salvage preview: counts 3★ and 4★ yields');
+  eq(prev.items.map(x => x.id + ':' + x.count).join(','), 'aether1:2,aether2:3', 'Cone salvage preview: 2× 3★ gives 2 aether1 and 1× 4★ gives 3 aether2');
+  const res = g4.coneSalvage([u3a.uid, u3b.uid, u4a.uid]);
+  ok(res && s4.inv.cones.length === 0 && s4.inv.items.aether1 === 2 && s4.inv.items.aether2 === 3, 'Cone salvage: removes cones and grants aether1 and aether2');
+
+  const noop = () => {}, texts = [];
+  const root = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
+  const ui = new H.UI(root, { onExit: noop });
+  ui.running = false;
+  ui.newGame();
+  const text0 = ui.text;
+  ui.text = function (str, ...rest) { texts.push(String(str)); return text0.call(this, str, ...rest); };
+  const ug = ui.game, us = ug.state;
+  ug.setConeSup('manual');
+  us.inv.cones = [];
+  delete us.inv.items.aether1;
+  delete us.inv.items.aether2;
+  const sc1 = ug.addCone('arrows'), sc2 = ug.addCone('amber');
+  for (let i = 0; i < 6; i++) ug.addCone('postop');
+  ui.openInventory(4); ui.render();
+  ok(texts.some(t => /Разобрать/.test(t)), 'Inventory cones tab shows the Salvage action');
+  ui.top().key(null, 'KeyR');
+  texts.length = 0; ui.render();
+  const salv = ui.top();
+  ok(salv && texts.includes('Разобрать Световой конус') && texts.includes('Выберите предмет для разбора'), 'Salvage UI opens from Inventory with empty left pane');
+  salv.key(null, 'KeyA');
+  texts.length = 0; ui.render();
+  eq(salv.picked.size, 2, 'Salvage UI: Select All picks the 2 unlocked 3★ cones and skips locked 4★ cones');
+  ok(texts.includes('Результат') && texts.includes('2'), 'Salvage UI: shows result preview and selected count');
+  salv.key(null, 'KeyM');
+  texts.length = 0; ui.render();
+  const lm = ui.top();
+  ok(lm !== salv && texts.includes('Управление блокировкой') && texts.includes('Лишние копии Световых конусов 4★'), 'Lock management modal opens over Salvage UI');
+  lm.key('ok');
+  ui.render();
+  ok(ui.top() === salv && us.inv.cones.filter(x => x.id === 'postop' && !x.lock).length === 1, 'Lock management modal unlocks the 6th 4★ copy on confirm');
+  salv.key(null, 'KeyA');
+  eq(salv.picked.size, 3, 'Salvage UI: Select All now picks the 2× 3★ cones and the 1 unlocked excess 4★ cone');
+  salv.key(null, 'KeyX');
+  texts.length = 0; ui.render();
+  const cf = ui.top();
+  ok(cf !== salv && texts.includes('Подтверждение разборки'), 'Salvage confirmation modal opens');
+  cf.key('ok');
+  ui.render();
+  ok(ui.top() === salv && salv.picked.size === 0 && us.inv.items.aether1 === 2 && us.inv.items.aether2 === 3 && us.inv.cones.length === 5, 'Salvage confirmation salvages the 3 cones and leaves the 5 locked 4★ copies');
+  const enhCone = ug.addCone('arrows');
+  enhCone.lvl = 10;
+  ui.render();
+  eq(salv.list().length, 5, 'Salvage UI: leveled cone is hidden while includeEnhanced is off');
+  salv.key(null, 'KeyE');
+  texts.length = 0; ui.render();
+  ok(salv.includeEnhanced && salv.list().some(x => x.uid === enhCone.uid) && texts.includes('Включать усиленные конусы'), 'Salvage UI: KeyE toggles includeEnhanced and lists the leveled cone');
+  salv.togglePick(enhCone);
+  const enhPrev = ug.coneSalvagePreview([...salv.picked]);
+  ok(enhPrev.hasEnhanced && enhPrev.maxLvl === 10 && enhPrev.items.some(it => it.id === 'aether1' && it.count > 1), 'Salvage UI: enhanced cone preview reports hasEnhanced and refunds extra aether');
+  salv.key(null, 'KeyE');
+  ok(!salv.includeEnhanced && salv.picked.size === 0, 'Salvage UI: turning off includeEnhanced unpicks enhanced cones');
+  log.push('cone salvage ok');
+}
+
+{
+  const g = new H.Game({ seed: 201 }), s = g.state;
+  s.inv.relics = [];
+  s.inv.items.remains = 0;
+  s.credits = 0;
+  const r0 = g.makeRelic('musketeer', H.CAVERN_SLOTS[0], 0, 1);
+  const rEnh = g.makeRelic('musketeer', H.CAVERN_SLOTS[1], 6, 18);
+  const rWorn = g.makeRelic('knight', H.CAVERN_SLOTS[2], 0, 1);
+  g.equipRelic(s.party[0], rWorn.uid);
+  ok(r0.lock === false && r0.trash === false, 'Relic salvage: new relics initialize with lock=false and trash=false');
+  g.toggleRelicLock(r0.uid);
+  ok(r0.lock === true && r0.trash === false, 'Relic salvage: toggleRelicLock enables lock');
+  g.toggleRelicTrash(r0.uid);
+  ok(r0.lock === false && r0.trash === true, 'Relic salvage: toggleRelicTrash enables trash and clears lock');
+  g.toggleRelicLock(r0.uid);
+  ok(r0.lock === true && r0.trash === false, 'Relic salvage: toggleRelicLock clears trash');
+  ok(!g.sellRelic(r0.uid) && !g.salvagePreview(15).list.some(x => x.uid === r0.uid), 'Relic salvage: locked relics cannot be sold or mass-salvaged');
+  g.toggleRelicLock(r0.uid);
+  ok(g.relicSalvageable(r0, false) && !g.relicSalvageable(rEnh, false) && g.relicSalvageable(rEnh, true) && !g.relicSalvageable(rWorn, true), 'Relic salvage: includeEnhanced controls leveled relics while equipped relics are always excluded');
+
+  const rBadMain = g.makeRelic('genius', H.CAVERN_SLOTS[2], 0, 1);
+  rBadMain.main = 'defP';
+  rBadMain.subs = [['hpF', 20], ['defF', 12]];
+  const rGoodMainBadSubs = g.makeRelic('genius', H.CAVERN_SLOTS[2], 0, 1);
+  rGoodMainBadSubs.main = 'critR';
+  rGoodMainBadSubs.subs = [['hpF', 20], ['defF', 12]];
+  const rDoubleCrit = g.makeRelic('genius', H.CAVERN_SLOTS[2], 0, 1);
+  rDoubleCrit.main = 'defP';
+  rDoubleCrit.subs = [['critR', 0.03], ['critD', 0.06]];
+  ok(!g.relicMainMatched(rBadMain) && g.relicMainMatched(rGoodMainBadSubs), 'Smart discard: detects whether main stat matches recommended characters of the set');
+  eq(g.relicUsefulSubCount(rBadMain), 0, 'Smart discard: counts 0 useful substats on flat HP/DEF for genius set');
+  ok(g.relicProtectedFromDiscard(rDoubleCrit) && !g.relicProtectedFromDiscard(rBadMain), 'Smart discard: protects double-crit relics from discard');
+  const candsProt = g.relicSmartDiscardCandidates({ unmatchedMain: true, maxUsefulSubs: 0, protect: true, includeEnhanced: false });
+  ok(candsProt.includes(rBadMain.uid) && candsProt.includes(rGoodMainBadSubs.uid) && !candsProt.includes(rDoubleCrit.uid), 'Smart discard: finds unmatched main or 0 useful subs while respecting protection');
+  const candsUnprot = g.relicSmartDiscardCandidates({ unmatchedMain: true, maxUsefulSubs: null, protect: false, includeEnhanced: false });
+  ok(candsUnprot.includes(rDoubleCrit.uid), 'Smart discard: disabling protection includes double-crit relic with unmatched main');
+  const markedUids = g.relicApplySmartDiscard({ unmatchedMain: true, maxUsefulSubs: 0, protect: true, includeEnhanced: false });
+  ok(markedUids.includes(rBadMain.uid) && rBadMain.trash === true && !rDoubleCrit.trash, 'Smart discard: marks matching candidates as trash');
+
+  const f = H.relicMakeFilter({ sets: ['genius'], mains: ['defP'] });
+  const fList = g.filterRelics(s.inv.relics, f, 'body');
+  ok(fList.length === 2 && fList.every(x => x.set === 'genius' && x.main === 'defP'), 'Relic filter: filters by slot, set and main stat');
+  eq(g.relicBatchFilterAction(fList, 'lock'), 2, 'Relic filter batch action: locks all filtered relics');
+  ok(rBadMain.lock && rDoubleCrit.lock && !rBadMain.trash, 'Relic filter batch action: locking clears trash flag');
+  eq(g.relicBatchFilterAction(fList, 'trash'), 2, 'Relic filter batch action: marks all filtered relics as trash');
+  ok(rBadMain.trash && rDoubleCrit.trash && !rBadMain.lock, 'Relic filter batch action: trashing clears lock flag');
+  g.toggleRelicTrash(rDoubleCrit.uid);
+  for (let i = 0; i < 5; i++) ok(g.saveRelicFilterTpl('Шаблон ' + i, f), 'Filter templates: saves up to 5 templates');
+  ok(!g.saveRelicFilterTpl('Шестой', f), 'Filter templates: rejects 6th template beyond cap');
+  g.deleteRelicFilterTpl(s.relicFilterTpls[0].id);
+  eq(s.relicFilterTpls.length, 4, 'Filter templates: deletes template by id');
+
+  const qpTrash = g.relicQuickPick(g.relicSalvageList({ includeEnhanced: false }), { trashOnly: true, maxTier: null });
+  ok(qpTrash.includes(rBadMain.uid) && !qpTrash.includes(rDoubleCrit.uid), 'Quick pick: trashOnly selects only trash-marked relics');
+  const qpTier = g.relicQuickPick(g.relicSalvageList({ includeEnhanced: true }), { trashOnly: false, maxTier: 2 });
+  ok(qpTier.includes(rDoubleCrit.uid) && !qpTier.includes(rBadMain.uid) && !qpTier.includes(rEnh.uid), 'Quick pick: maxTier=2 selects unenhanced non-trash relics and skips trash or +6 relics');
+
+  const prev = g.relicSalvagePreview([rBadMain.uid, rEnh.uid], true);
+  ok(prev.count === 2 && prev.remains === (10 + 10 + 6 * 4) && prev.credits === 300 && prev.hasEnhanced && prev.hasTrash, 'Relic salvage preview: computes Remains, credits, hasEnhanced and hasTrash');
+  const res = g.relicSalvage([rBadMain.uid, rEnh.uid], true);
+  ok(res && s.inv.items.remains === 44 && s.credits === 300 && !g.relicOf(rBadMain.uid) && !g.relicOf(rEnh.uid), 'Relic salvage: removes relics and grants Remains and credits');
+
+  const noop = () => {}, texts = [];
+  const root = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
+  const ui = new H.UI(root, { onExit: noop });
+  ui.running = false;
+  ui.newGame();
+  const text0 = ui.text;
+  ui.text = function (str, ...rest) { texts.push(String(str)); return text0.call(this, str, ...rest); };
+  const ug = ui.game, us = ug.state;
+  us.inv.relics = [];
+  us.inv.items.remains = 0;
+  us.credits = 0;
+  const ur1 = ug.makeRelic('genius', H.CAVERN_SLOTS[2], 0, 1); ur1.main = 'defP'; ur1.subs = [['hpF', 15], ['defF', 10]];
+  const ur2 = ug.makeRelic('musketeer', H.CAVERN_SLOTS[0], 0, 1);
+  const ur3 = ug.makeRelic('musketeer', H.CAVERN_SLOTS[1], 6, 18);
+  ui.openInventory(5);
+  texts.length = 0; ui.render();
+  ok(texts.some(t => /Количество: 3\/3000/.test(t)) && texts.some(t => /Разобрать/.test(t)), 'Inventory relics tab shows 3/3000 counter and Salvage button');
+  ui.top().key(null, 'KeyR');
+  texts.length = 0; ui.render();
+  const rsalv = ui.top();
+  ok(rsalv && rsalv.lvl === 6 && texts.includes('Разбор Реликвий') && texts.includes('Выберите предмет для разбора'), 'Relic salvage screen opens from Inventory with empty left pane');
+  eq(rsalv.list().length, 2, 'Relic salvage screen hides enhanced relics when includeEnhanced is off');
+  rsalv.key(null, 'KeyE');
+  eq(rsalv.list().length, 3, 'Relic salvage screen shows enhanced relics when includeEnhanced is toggled on');
+  rsalv.key(null, 'KeyE');
+  rsalv.key(null, 'KeyM');
+  texts.length = 0; ui.render();
+  const sm = ui.top();
+  ok(sm !== rsalv && texts.some(t => /Реликвии на выброс/.test(t)), 'Smart discard modal opens over Relic salvage screen');
+  sm.key('ok');
+  texts.length = 0; ui.render();
+  ok(ui.top() === rsalv && ur1.trash === true && rsalv.picked.has(ur1.uid), 'Smart discard marks unmatched relic as trash and selects it for salvage');
+  rsalv.picked.clear();
+  rsalv.key(null, 'KeyA');
+  texts.length = 0; ui.render();
+  const qs = ui.top();
+  ok(qs !== rsalv && texts.includes('Быстрый выбор'), 'Quick select modal opens over Relic salvage screen');
+  qs.key('ok');
+  ui.render();
+  ok(ui.top() === rsalv && rsalv.picked.has(ur1.uid) && rsalv.picked.size === 1, 'Quick select picks all trash-marked relics on confirm');
+  rsalv.key(null, 'KeyF');
+  texts.length = 0; ui.render();
+  const fd = ui.top();
+  ok(fd !== rsalv && texts.includes('Характеристики') && texts.includes('Быстрое действие'), 'Filter drawer opens over Relic salvage screen');
+  fd.key('back');
+  ui.render();
+  rsalv.key(null, 'KeyX');
+  texts.length = 0; ui.render();
+  const rcf = ui.top();
+  ok(rcf !== rsalv && texts.includes('Подтверждение разборки'), 'Relic salvage confirmation modal opens');
+  rcf.key('ok');
+  ui.render();
+  ok(ui.top() === rsalv && rsalv.picked.size === 0 && us.inv.items.remains === 10 && us.credits === 150 && us.inv.relics.length === 2, 'Confirming relic salvage removes the selected relic and grants Remains and credits');
+  ui.screens = [];
+  ui.openSynth(null, 'relicSalvage');
+  texts.length = 0; ui.render();
+  const syn = ui.top();
+  ok(syn && syn.tab === 4 && texts.includes('Синтез и Разборка') && texts.includes('Разбор Реликвий') && texts.includes('Правила'), 'Synthesis and Salvage opens directly on Relic Salvage tab with rules button');
+  eq(syn.relicSalvage.list().length, 1, 'Embedded relic salvage lists remaining +0 relic');
+  syn.key(null, 'KeyT');
+  eq(syn.relicSalvage.list().length, 2, 'KeyT toggles includeEnhanced inside Synthesis Relic Salvage tab');
+  syn.key(null, 'KeyT');
+  syn.key('ok');
+  syn.key(null, 'KeyX');
+  texts.length = 0; ui.render();
+  ok(ui.top() !== syn && texts.includes('Подтверждение разборки'), 'Embedded relic salvage opens confirmation modal');
+  ui.top().key('ok');
+  ui.render();
+  ok(ui.top() === syn && us.inv.items.remains === 20 && us.inv.relics.length === 1, 'Embedded relic salvage grants Remains and stays on Synthesis screen');
+  syn.key(null, 'KeyE');
+  texts.length = 0; ui.render();
+  ok(syn.tab === 5 && texts.includes('Синтез и Разборка') && texts.includes('Разбор Световых конусов'), 'KeyE switches from Relic Salvage to Light Cone Salvage tab inside Synthesis');
+  ug.setConeSup('manual');
+  const c0 = ug.addCone('arrows');
+  const cEnh = ug.addCone('cornucopia'); cEnh.lvl = 5;
+  ui.render();
+  ok(syn.coneSalvage.list().some(x => x.uid === c0.uid) && !syn.coneSalvage.list().some(x => x.uid === cEnh.uid), 'Embedded cone salvage hides enhanced cones by default');
+  syn.key(null, 'KeyT');
+  ok(syn.coneSalvage.list().some(x => x.uid === cEnh.uid), 'KeyT toggles includeEnhanced inside Synthesis Cone Salvage tab');
+  syn.key(null, 'KeyT');
+  syn.key(null, 'KeyA');
+  ok(syn.coneSalvage.picked.has(c0.uid), 'KeyA selects all unlocked 3★ cones in embedded cone salvage');
+  const aetherBefore = us.inv.items.aether1 || 0;
+  syn.key(null, 'KeyX');
+  ui.render();
+  ok(ui.top() !== syn, 'Embedded cone salvage opens confirmation modal');
+  ui.top().key('ok');
+  ui.render();
+  ok(ui.top() === syn && !ug.coneOf(c0.uid) && (us.inv.items.aether1 || 0) > aetherBefore, 'Embedded cone salvage removes cone and grants Sparse Aether');
+  log.push('relic salvage ok');
+}
+
+{
+  const noop = () => {}, texts = [];
+  const root = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
+  const ui = new H.UI(root, { onExit: noop });
+  ui.running = false;
+  ui.newGame();
+  const text0 = ui.text;
+  ui.text = function (str, ...rest) { texts.push(String(str)); return text0.call(this, str, ...rest); };
+  ui.options.aspect = '16:9';
+  ui.applyRes();
+  ok(ui.wide() && ui.vw === 854 && ui.left === -107 && ui.right === 747, '16:9 mode sets wide viewport bounds');
+
+  const g = ui.game;
+  g.state.flags.express_intro = true;
+  g.state.shop.intro = true;
+
+  ui.screens = [];
+  ui.openProfile();
+  texts.length = 0; ui.render();
+  const prof = ui.top();
+  const pStops = ui.profileStops(prof.tab);
+  ok(prof && prof.tab === 1 && pStops[0].x < 0 && pStops[5].x > 380 && ui.hits.some(h => h.x === 600 && h.y === 10), '16:9 profile uses widescreen card, showcase and tab stops');
+  ok(texts.includes('Профиль Первопроходца') && texts.includes('Сменить') && texts.includes('К персонажу (V)'), '16:9 profile Characters tab renders showcase hero detail actions');
+  prof.key(null, 'KeyQ');
+  texts.length = 0; ui.render();
+  ok(prof.tab === 0 && texts.includes('Боевые заслуги') && texts.includes('Зал забвения') && texts.includes('Прыжков'), '16:9 profile Battle Records tab renders all 8 merit rows');
+  prof.key(null, 'KeyE');
+  prof.key(null, 'KeyE');
+  texts.length = 0; ui.render();
+  ok(prof.tab === 2 && texts.includes('Коллекции') && texts.includes('Враги в Архиве') && texts.some(t => /%$/.test(t)), '16:9 profile Collections tab renders all 8 collection rows with percentages');
+
+  ui.screens = [];
+  ui.openSupply('pass');
+  texts.length = 0; ui.render();
+  const sup = ui.top();
+  ok(sup && ui.hits.some(h => h.x < -80 && h.w === 158) && texts.includes('Пропуск снабжения'), '16:9 Supply renders left sidebar at widescreen edge and Express Supply Pass section');
+  sup.sec = 1;
+  texts.length = 0; ui.render();
+  const sg = ui.supplyGrid();
+  ok(sg.x === 73 && sg.w === 124 && ui.hits.some(h => h.x === 73 && h.w === 124), '16:9 Supply Embers Exchange uses wider 5-column product grid');
+  sup.sec = 2;
+  const arcs = [];
+  const arc0 = ui.ctx.arc;
+  ui.ctx.arc = function (ax, ay, ar, a0, a1, ...rest) { arcs.push([ar, a0, a1]); return arc0.call(this, ax, ay, ar, a0, a1, ...rest); };
+  texts.length = 0; ui.render();
+  ui.ctx.arc = arc0;
+  ok(texts.includes('Витрина моды') && ui.hits.some(h => h.x === 481 && h.w === 238) && arcs.some(([ar, a0, a1]) => ar === 18 && a0 === Math.PI && a1 === -Math.PI / 2) && !arcs.some(([, a0, a1]) => a0 === Math.PI && a1 === 0), '16:9 Supply Outfit Shop renders wider showcase and right outfit cards with quarter-circle top-left arch');
+  ui.openOutfitGrid(sup);
+  texts.length = 0; ui.render();
+  ok(texts.includes('Все наряды') && ui.hits.filter(h => h.w === 132 && h.h === 162).length >= 5, '16:9 All Outfits modal renders 5x2 wardrobe grid');
+  ui.top().key('back');
+  sup.sec = 3;
+  texts.length = 0; ui.render();
+  const cg = ui.contractGrid();
+  ok(cg.x === 73 && cg.w === 156 && ui.hits.some(h => h.x === 73 && h.w === 156), '16:9 Supply Contracts uses wider 4-column contract grid');
+  sup.sec = 4;
+  texts.length = 0; ui.render();
+  ok(texts.includes('Привычки') && ui.hits.some(h => h.x === 83 && h.w === 324), '16:9 Supply Pets renders wide stage and bottom panels');
+
+  ui.screens = [];
+  ui.openEvents('comet');
+  texts.length = 0; ui.render();
+  const ev = ui.top(), eb = ui.eventBox();
+  ok(eb.wide && eb.lx === -95 && eb.px === 112 && eb.pw === 623 && texts.includes('Подарок кометы'), '16:9 Events uses widescreen sidebar and Comet Gift page');
+  ev.setTab(1);
+  texts.length = 0; ui.render();
+  ok(texts.includes('Воля Первопроходца') && ui.hits.filter(h => h.w === 104 && h.h === 124).length === 4, '16:9 Trailblazer Will renders wider station cards and page switch buttons');
+  ev.setTab(2);
+  texts.length = 0; ui.render();
+  ok(texts.includes(H.BRAND.event) && ui.hits.some(h => h.x === eb.px + 4 && h.w === eb.pw - 8), '16:9 KonoSuba event page spans full widescreen panel');
+  ev.setTab(3);
+  texts.length = 0; ui.render();
+  ok(texts.includes('Четыре дня Кон-Тона') && ui.hits.filter(h => h.h === 230 && h.w > 130).length === 4, '16:9 Conton 4-day event renders wider day columns');
+
+  ui.screens = [];
+  ui.openMail();
+  const guideIdx = g.mailbox().findIndex(x => x.m.id === 'v16_guide');
+  if (guideIdx >= 0) ui.top().sel = guideIdx;
+  texts.length = 0; ui.render();
+  const mb = ui.mailBox();
+  ok(mb.wide && mb.mx === -95 && mb.mw === 272 && mb.lx === 186 && mb.lw === 549, '16:9 Mail uses widescreen list and letter panes');
+  ok(ui.wheels.some(w => w.x === -95 && w.w === 272) && ui.wheels.some(w => w.x >= 186), '16:9 Mail registers wheel zones on wide list and letter panes');
+  ok(texts.some(t => /^1–6 из /.test(t)), '16:9 Mail displays up to 6 attachment slots at once');
+
+  ok(Array.isArray(H.DB_AEONS) && H.DB_AEONS.length === 19, 'Data Bank defines 19 Aeon entries including intro');
+  ok(Array.isArray(H.DB_FACTIONS) && H.DB_FACTIONS.length >= 30, 'Data Bank defines Factions encyclopedia entries');
+  ok(Array.isArray(H.DB_TERMS) && H.DB_TERMS.length >= 40, 'Data Bank defines Terms encyclopedia entries');
+  ok(Array.isArray(H.BOOK_WORLDS) && H.BOOK_WORLDS.length === 5, 'Bookshelf defines 5 book worlds');
+  const allDocIds = Object.keys(H.DOCS);
+  const seriesDocIds = new Set();
+  for (const sr of H.BOOK_SERIES) for (const v of sr.vols) seriesDocIds.add(v.id);
+  ok(allDocIds.length >= 150 && allDocIds.every(id => seriesDocIds.has(id)), 'Every H.DOCS entry is mapped to a BOOK_SERIES volume');
+  for (const sec of ['aeons', 'factions', 'terms']) {
+    const arr = sec === 'aeons' ? H.DB_AEONS : sec === 'factions' ? H.DB_FACTIONS : H.DB_TERMS;
+    for (const e of arr) {
+      for (const r of (e.related || [])) {
+        ok(!!H.DB.findEntry(r), 'Related link ' + r + ' from ' + e.id + ' resolves to a valid Data Bank entry');
+      }
+    }
+  }
+
+  const pItems = ui.phoneMenuItems();
+  ok(pItems.some(it => it.label === 'Книги'), 'Phone overflow menu exposes Книги item');
+
+  ui.screens = [];
+  ui.openMenu(0);
+  texts.length = 0; ui.render();
+  ok(texts.includes('База данных') && texts.includes('и книги'), 'Phone grid renders renamed База данных (и книги) tile');
+
+  g.state.flags.station_done = true;
+  g.state.flags.cocolia_done = true;
+  g.state.flags.lf_arrived = true;
+  g.state.flags.su_intro = true;
+  g.state.bank.enemies.void_ranger = { seen: 3, kills: 3, contacts: {} };
+  g.state.bank.enemies.cocolia = { seen: 1, kills: 1, contacts: {} };
+
+  ui.screens = [];
+  ui.openBank(null);
+  const bk = ui.top();
+  texts.length = 0; ui.render();
+  ok(bk.mode === 'hub' && texts.includes('База данных') && texts.includes('Эоны') && texts.includes('Фракции') && texts.includes('Термины') && texts.includes('Световые конусы') && texts.includes('Противники') && texts.includes('Персонажи') && texts.includes('Реликвии'), 'Data Bank opens in Astrolabe Hub mode with all 7 golden nodes');
+
+  bk.openSection('aeons', 'aeon_akivili');
+  texts.length = 0; ui.render();
+  ok(bk.mode === 'sec' && bk.sec === 'aeons' && texts.some(t => t.includes('Акивили (Освоение)')) && texts.some(t => t.includes('Адриан Спенсер-Смит')) && texts.includes('Связанные записи'), 'Aeons encyclopedia view renders title, quote attribution and related entries');
+
+  bk.key(null, 'Digit1');
+  texts.length = 0; ui.render();
+  ok(bk.sec === 'factions' && bk.backStack.length === 1 && texts.some(t => t.includes('Звёздный экспресс (Освоение)')), 'Clicking or pressing Digit1 on a related pill jumps across sections to Astral Express faction');
+
+  bk.key('back');
+  texts.length = 0; ui.render();
+  ok(bk.sec === 'aeons' && bk.backStack.length === 0 && bk.secItems()[bk.sel].id === 'aeon_akivili', 'Back from cross-referenced entry pops backStack to previous Aeon entry');
+
+  bk.openSection('terms', 'term_stellaron');
+  texts.length = 0; ui.render();
+  ok(bk.sec === 'terms' && texts.some(t => t.includes('Стелларон (объект)')), 'Terms section opens specific entry with category suffix');
+
+  bk.openSection('foes', 'void_ranger');
+  bk.key(null, 'KeyF');
+  texts.length = 0; ui.render();
+  ok(bk.sec === 'foes' && texts.some(t => t.includes('Фильтр: Легион')) && texts.includes('Описание') && texts.includes('Боевые данные'), 'Foes section renders faction filter and enemy tabs');
+
+  bk.openSection('cones');
+  texts.length = 0; ui.render();
+  ok(bk.sec === 'cones' && texts.some(t => t.includes('Фильтр: Все')) && texts.some(t => t.includes('Наложение: I')), 'Light Cones section renders path filter and superimposition rank');
+
+  bk.openSection('chars', 'march');
+  texts.length = 0; ui.render();
+  ok(bk.sec === 'chars' && texts.includes('Досье') && texts.includes('Истории') && texts.some(t => t.includes('Март 7')), 'Characters section renders roster and character dossier');
+
+  bk.openSection('relics');
+  texts.length = 0; ui.render();
+  ok(bk.sec === 'relics' && texts.includes('Голова') && texts.includes('Руки') && texts.includes('Тело') && texts.includes('Ноги'), 'Relics section renders 4 relic slots and set effects');
+
+  bk.setTab(1);
+  texts.length = 0; ui.render();
+  ok(bk.mode === 'tabs' && bk.tab === 1 && texts.includes('Враги') && texts.includes('Слияния') && texts.includes('Сюжет'), 'Chronicles mode preserves 5 legacy tabs (Враги, Слияния, Слухи, Прыжки, Сюжет)');
+
+  ui.screens = [];
+  g.script = null; g.pending = null; g.scriptQueue = [];
+  H.SCRIPTS._test_doc_step = [{ ui: 'doc', doc: 'mn_issue205' }];
+  g.runScript('_test_doc_step');
+  delete H.SCRIPTS._test_doc_step;
+  ok(g.state.flags.doc_mn_issue205 === true, 'Script step { ui: "doc" } records doc_<id> flag in state');
+  g.pending = null; g.script = null;
+
+  ui.screens = [];
+  ui.openBookshelf(null, 'jarilo', 'sr_jr_weekly');
+  const bs = ui.top();
+  texts.length = 0; ui.render();
+  ok(bs && bs.world().id === 'jarilo' && texts.includes('Книги') && texts.includes('Ярило-VI') && texts.some(t => t.includes('Еженедельник шахтёра')) && texts.includes('Собрано: 1/3'), 'Bookshelf opens Jarilo-VI tab and shows 1/3 progress for Miner Weekly series');
+
+  g.state.flags.doc_mn_issue192 = true;
+  bs.key('ok');
+  const docScr = ui.top();
+  texts.length = 0; ui.render();
+  ok(docScr !== bs && docScr.docId === 'mn_issue205' && texts.some(t => t.includes('Еженедельник шахтёра')), 'Pressing Enter in Bookshelf opens reader for collected volume');
+  docScr.key(null, 'KeyE');
+  texts.length = 0; ui.render();
+  ok(ui.top().docId === 'mn_issue192', 'Pressing KeyE inside multi-volume reader switches to next collected volume');
+  ui.top().key('back');
+
+  bs.key(null, 'KeyF');
+  texts.length = 0; ui.render();
+  ok(bs.filterIdx === 1 && texts.some(t => t.includes('Собранные')), 'KeyF cycles Bookshelf filter to Collected');
+
+  ui.screens = [];
+  g.script = null; g.pending = null; g.scriptQueue = [];
+  g.runScript('exp_books');
+  while (g.pending && g.pending.type === 'say') g.resume();
+  ok(g.pending && g.pending.type === 'ui' && g.pending.ui === 'databank' && g.pending.section === 'books', 'exp_books script reaches { ui: "databank", section: "books" } step');
+  ui.openUi(g.pending);
+  texts.length = 0; ui.render();
+  ok(texts.includes('Книги'), 'Express bookshelf interaction (exp_books) opens Bookshelf UI at the end of dialogue');
+
+  ui.screens = [];
+  const rail = ui.phoneRail();
+  eq(rail[2].label, 'Обучение', 'Tutorial sits at index 2 on the phone rail');
+  eq(rail[2].icon, 'guide', 'Tutorial uses the lightbulb (guide) icon');
+  eq(rail[3].label, 'Настройки', 'Settings gear sits directly below Tutorial');
+  eq(rail[6].label, 'Управление', 'Controls sits on the phone rail');
+  eq(rail[6].icon, 'gamepad', 'Controls uses the gamepad icon');
+
+  ok(Array.isArray(H.TUTORIAL_CATS) && H.TUTORIAL_CATS.length === 6, '6 tutorial categories defined');
+  ok(Array.isArray(H.TUTORIAL_ENTRIES) && H.TUTORIAL_ENTRIES.length >= 25, '25+ tutorial encyclopedia entries defined');
+  ok(Array.isArray(H.TRAINING_GROUPS) && H.TRAINING_GROUPS.length === 3, '3 tactical training groups defined');
+  eq(H.TRAINING_TRIALS.length, 15, '15 tactical training trials defined');
+
+  ui.openTutorial();
+  const tutScr = ui.top();
+  texts.length = 0; ui.render();
+  ok(tutScr && tutScr.tutorialScreen && tutScr.mode === 0 && texts.includes('Обучение') && texts.includes('Все'), 'openTutorial opens Encyclopedia mode on All category');
+  ok(g.isTutorialRead(H.TUTORIAL_ENTRIES[0].id), 'Viewing an entry marks it read');
+
+  tutScr.key('right');
+  texts.length = 0; ui.render();
+  eq(tutScr.page, 1, 'Right arrow advances multi-page tutorial entry');
+  tutScr.key('left');
+  eq(tutScr.page, 0, 'Left arrow returns to first page');
+
+  tutScr.key(null, 'KeyE');
+  texts.length = 0; ui.render();
+  ok(tutScr.cat === 1 && texts.includes('Бой'), 'KeyE switches tutorial category to Combat');
+
+  tutScr.setCat(0);
+  tutScr.query = 'Сундук';
+  texts.length = 0; ui.render();
+  const foundChest = g.tutorialEntries('all', tutScr.query);
+  ok(foundChest.length >= 1 && foundChest[0].id === 'adv_chest' && texts.includes('Сундук'), 'Tutorial search filters entries by title and content');
+  tutScr.key('back');
+  eq(tutScr.query, '', 'Esc clears active tutorial search query first');
+
+  tutScr.key(null, 'KeyT');
+  texts.length = 0; ui.render();
+  ok(tutScr.mode === 1 && texts.includes('Тактическая тренировка') && texts.includes('Начать испытание'), 'KeyT jumps from linked tutorial article to Tactical Training');
+
+  const jadeBefore = g.state.jade;
+  const creditsBefore = g.state.credits;
+  for (const tr of H.TRAINING_TRIALS) {
+    const b = g.startTutorialTrial(tr.id);
+    ok(b && b.opts && b.opts.tutorial && b.opts.tutorial.id === tr.id, 'Trial starts battle: ' + tr.id);
+    b.start();
+    b.drain();
+    const step0 = g.tutorialStepOf(b);
+    ok(step0 && step0.total >= 1 && step0.step && step0.step.text, 'Coach step active at start of ' + tr.id);
+    let guard = 0;
+    while (!b.over && guard++ < 40) {
+      b.autoStep();
+      b.drain();
+    }
+    ok(b.over && b.result && b.result.win, 'Guided trial battle won via coached steps: ' + tr.id);
+    const endRes = g.endBattle();
+    ok(endRes && endRes.win && endRes.tutorial && endRes.tutorial.firstWin, 'First clear of trial grants reward: ' + tr.id);
+    ok(g.isTrialDone(tr.id) && g.isTrialClaimed(tr.id), 'Trial marked done and claimed: ' + tr.id);
+  }
+  eq(g.state.jade - jadeBefore, 15 * 30, 'All 15 tactical training trials award 30 Stellar Jade each (450 total)');
+  ok(g.state.credits > creditsBefore, 'Tactical training trials award credits');
+  ok(!g.tutorialAlert(), 'Completing all trials clears the tutorial alert badge');
+
+  const jadeAfterAll = g.state.jade;
+  const bRepeat = g.startTutorialTrial('tr_sp');
+  bRepeat.start(); bRepeat.drain();
+  let guard2 = 0;
+  while (!bRepeat.over && guard2++ < 20) { bRepeat.autoStep(); bRepeat.drain(); }
+  const repRes = g.endBattle();
+  ok(repRes && repRes.win && repRes.tutorial && !repRes.tutorial.firstWin && g.state.jade === jadeAfterAll, 'Repeating a completed trial does not grant duplicate rewards');
+}
+
+{
+  const SI = H.SkillsInfo;
+  ok(SI && SI.DATA && SI.DATA.trail && SI.DATA.trail_p, 'H.SkillsInfo is loaded with Stage 1 curated data for Trailblazer (trail and trail_p)');
+  const sg = new H.Game({ fresh: true, seed: 98 });
+  const b1 = SI.buildNode(sg, 'trail', 'trail', 'basic', 1).forms[0];
+  const b6 = SI.buildNode(sg, 'trail', 'trail', 'basic', 6).forms[0];
+  ok(b1.title === 'Прощальный удар' && b1.tag === 'Одиночная атака' && b1.full.includes('50%') && b6.full.includes('100%'), 'Trailblazer Destruction basic attack scales dynamically from 50% (Lv.1) to 100% (Lv.6)');
+  const sk1 = SI.buildNode(sg, 'trail', 'trail', 'skill', 1).forms[0];
+  const sk10 = SI.buildNode(sg, 'trail', 'trail', 'skill', 10).forms[0];
+  ok(sk1.full.includes('62,5%') && sk1.full.includes('25%') && sk10.full.includes('125%') && sk10.full.includes('50%'), 'Trailblazer Destruction skill scales dynamically from 62,5%/25% (Lv.1) to 125%/50% (Lv.10)');
+  const u1 = SI.buildNode(sg, 'trail', 'trail', 'ult', 1).forms[0];
+  const u10 = SI.buildNode(sg, 'trail', 'trail', 'ult', 10).forms[0];
+  ok(u1.full.includes('180%') && u1.full.includes('108%') && u10.full.includes('270%') && u10.full.includes('162%'), 'Trailblazer Destruction ultimate scales dynamically from 180%/108% (Lv.1) to 270%/162% (Lv.10)');
+  const tl1 = SI.buildNode(sg, 'trail', 'trail', 'talent', 1).forms[0];
+  const tl10 = SI.buildNode(sg, 'trail', 'trail', 'talent', 10).forms[0];
+  ok(tl1.full.includes('10%') && tl10.full.includes('20%'), 'Trailblazer Destruction talent scales dynamically from +10% (Lv.1) to +20% (Lv.10)');
+  const pbNode = SI.buildNode(sg, 'trail', 'trail_p', 'basic', 6);
+  const pbE6 = pbNode.forms[1];
+  ok(pbNode.forms.length === 2 && pbE6.title === 'Ледокол: Магма' && pbE6.tag === 'Взрывная атака' && pbE6.full.includes('90%') && pbE6.full.includes('45%'), 'Trailblazer Preservation basic node exposes sub-mode 2 (Magma Shatter) with scaled blast multipliers');
+  for (const id of Object.keys(H.CHARS)) {
+    for (const nodeId of SI.ORDER) {
+      const node = SI.buildNode(sg, id === 'trail_p' ? 'trail' : id, id, nodeId);
+      ok(node && Array.isArray(node.forms) && node.forms.length > 0 && node.forms[0].title && node.forms[0].full && node.forms[0].short, 'SkillsInfo.buildNode succeeds for ' + id + ':' + nodeId);
+    }
+  }
+  const noop = () => {}, texts = [];
+  const root = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
+  const ui = new H.UI(root, { onExit: noop });
+  ui.running = false;
+  ui.newGame();
+  const text0 = ui.text;
+  ui.text = function (str, ...rest) { texts.push(String(str)); return text0.call(this, str, ...rest); };
+  ui.openChars('trail');
+  const cs = ui.top();
+  cs.sec = 3;
+  texts.length = 0; ui.render();
+  ok(texts.includes('Способности') && texts.includes('Подробнее · Enter') && !cs.skillFocus, 'Abilities section renders the More · Enter button in summary mode');
+  cs.key('ok');
+  texts.length = 0; ui.render();
+  ok(cs.skillFocus && cs.skillNode === 'basic' && texts.includes('Базовая атака') && texts.includes('Прощальный удар') && texts.includes('[Одиночная атака]') && texts.includes('Краткое описание'), 'Pressing Enter opens the detailed Abilities view on Basic Attack with category badge, type tag, and Brief toggle');
+  cs.key(null, 'Digit2');
+  texts.length = 0; ui.render();
+  ok(cs.skillNode === 'skill' && texts.includes('Навык') && texts.includes('Хоум-ран в упокой') && texts.includes('[Взрывная атака]'), 'Digit2 switches to Skill node in the constellation wheel');
+  cs.key(null, 'Digit3');
+  texts.length = 0; ui.render();
+  ok(cs.skillNode === 'ult' && texts.includes('Сверхспособность') && texts.includes('Звёздный туз') && texts.includes('Затраты энергии'), 'Digit3 switches to Ultimate node and shows Energy strip');
+  cs.key(null, 'BracketRight');
+  texts.length = 0; ui.render();
+  ok(cs.skillLvPreview === 2 && texts.some(t => t.includes('Предпросмотр: Ур. 2/')), 'BracketRight steps level preview up on leveled abilities');
+  cs.key(null, 'Tab');
+  texts.length = 0; ui.render();
+  ok(cs.skillBrief === true, 'Tab toggles Brief Description mode');
+  cs.key(null, 'Tab');
+  cs.key(null, 'Digit6');
+  texts.length = 0; ui.render();
+  ok(cs.skillNode === 'contact' && texts.includes('Контакт · Переговоры') && texts.some(t => t.includes('Заглянуть в мусорку')), 'Digit6 switches to Contact node with negotiation options and family reaction matrix');
+  cs.key(null, 'Digit7');
+  texts.length = 0; ui.render();
+  ok(cs.skillNode === 'fusions' && texts.some(t => t.includes('Фото на память')), 'Digit7 switches to Fusions node with partner breakdown');
+  cs.key(null, 'Digit1');
+  cs.key(null, 'KeyP');
+  texts.length = 0; ui.render();
+  ok(cs.skillKitOverride === 'trail_p' && texts.some(t => t.includes('Сохранение')) && texts.some(t => t.includes('2. Ледокол: Магма')), 'KeyP switches Trailblazer Path preview to Preservation and displays sub-mode pills');
+  cs.key(null, 'KeyZ');
+  texts.length = 0; ui.render();
+  ok(cs.skillSub === 1 && texts.includes('Ледокол: Магма'), 'KeyZ switches to the enhanced basic attack sub-mode (Magma Shatter)');
+  cs.key('back');
+  ok(!cs.skillFocus && ui.top() === cs, 'Esc exits detailed Abilities view back to the character screen');
+
+  const stage2Ids = ['march', 'danheng', 'himeko', 'welt', 'natasha', 'serval', 'asta', 'arlan', 'herta', 'gepard'];
+  for (const id of stage2Ids) {
+    const entry = SI.DATA[id];
+    ok(entry && entry.basic && entry.skill && entry.ult && entry.talent && entry.tech && entry.contact && entry.fusions, 'Stage 2 curated SKILLS_INFO complete for ' + id);
+  }
+  const mBasic3 = SI.buildNode(sg, 'march', 'march', 'basic', 3).forms[0];
+  ok(mBasic3.title === 'Ледяной выстрел' && mBasic3.full.includes('70%'), 'March 7th Basic Lv.3 scales to 70%');
+  const mUlt6 = SI.buildNode(sg, 'march', 'march', 'ult', 6).forms[0];
+  const mUlt10 = SI.buildNode(sg, 'march', 'march', 'ult', 10).forms[0];
+  ok(mUlt6.title === 'Ледяной дождь' && mUlt6.full.includes('120%') && mUlt10.full.includes('150%') && mUlt6.full.includes('50%') && mUlt6.extras.some(e => e.title.includes('Память о тебе')), 'March 7th Ult scales from 120% (Lv.6) to 150% (Lv.10) with E1 extra Память о тебе');
+  const mTech = SI.buildNode(sg, 'march', 'march', 'tech', 1).forms[0];
+  ok(mTech.title === 'Застывший миг' && mTech.full.includes('100%') && mTech.full.includes('50%'), 'March 7th Technique describes 100% base chance Freeze and 50% Ice DMG');
+  const mTal1 = SI.buildNode(sg, 'march', 'march', 'talent', 1).forms[0];
+  const mTal10 = SI.buildNode(sg, 'march', 'march', 'talent', 10).forms[0];
+  ok(mTal1.full.includes('25%') && mTal10.full.includes('50%'), 'March 7th Talent scales from 25% (Lv.1) to 50% (Lv.10)');
+  const dhUlt10 = SI.buildNode(sg, 'danheng', 'danheng', 'ult', 10).forms[0];
+  const dhTal10 = SI.buildNode(sg, 'danheng', 'danheng', 'talent', 10).forms[0];
+  ok(dhUlt10.full.includes('400%') && dhUlt10.full.includes('120%') && dhTal10.full.includes('36%'), 'Dan Heng Ult and Talent scale accurately at Lv.10');
+  const hiTal10 = SI.buildNode(sg, 'himeko', 'himeko', 'talent', 10).forms[0];
+  ok(hiTal10.full.includes('140%'), 'Himeko Victory Rush scales to 140% at Lv.10');
+  const weSk10 = SI.buildNode(sg, 'welt', 'welt', 'skill', 10).forms[0];
+  const weTal10 = SI.buildNode(sg, 'welt', 'welt', 'talent', 10).forms[0];
+  ok(weSk10.full.includes('72%') && weTal10.full.includes('60%'), 'Welt Skill and Talent scale to 72% and 60% at Lv.10');
+  const naTal10 = SI.buildNode(sg, 'natasha', 'natasha', 'talent', 10).forms[0];
+  ok(naTal10.full.includes('50%'), 'Natasha Talent scales to 50% at Lv.10');
+  const seTal10 = SI.buildNode(sg, 'serval', 'serval', 'talent', 10).forms[0];
+  ok(seTal10.full.includes('72%'), 'Serval Galvanochords scales to 72% at Lv.10');
+  const asTal10 = SI.buildNode(sg, 'asta', 'asta', 'talent', 10).forms[0];
+  ok(asTal10.full.includes('14%') && asTal10.full.includes('+70%'), 'Asta Astrometry scales to 14% per stack (+70% max) at Lv.10');
+  const arSk10 = SI.buildNode(sg, 'arlan', 'arlan', 'skill', 10).forms[0];
+  const arTal10 = SI.buildNode(sg, 'arlan', 'arlan', 'talent', 10).forms[0];
+  ok(arSk10.stats[0][1].includes('15%') && arSk10.full.includes('240%') && arTal10.full.includes('+72%'), 'Arlan Skill displays 15% Max HP cost and Talent scales to +72% at Lv.10');
+  const heTal10 = SI.buildNode(sg, 'herta', 'herta', 'talent', 10).forms[0];
+  ok(heTal10.full.includes('40%'), 'Herta Fine, I Will Do It Myself scales to 40% at Lv.10');
+  const geUlt10 = SI.buildNode(sg, 'gepard', 'gepard', 'ult', 10).forms[0];
+  const geTal10 = SI.buildNode(sg, 'gepard', 'gepard', 'talent', 10).forms[0];
+  ok(geUlt10.full.includes('45%') && geTal10.full.includes('50%'), 'Gepard Ult and Talent scale to 45% DEF and 50% HP at Lv.10');
+
+  const stage3Ids = ['bronya', 'seele', 'sampo', 'hook', 'pela', 'ruanmei', 'kafka', 'silverwolf', 'blade', 'bailu'];
+  for (const id of stage3Ids) {
+    const entry = SI.DATA[id];
+    ok(entry && entry.basic && entry.skill && entry.ult && entry.talent && entry.tech && entry.contact && entry.fusions, 'Stage 3 curated SKILLS_INFO complete for ' + id);
+  }
+  const brSk10 = SI.buildNode(sg, 'bronya', 'bronya', 'skill', 10).forms[0];
+  const brUlt10 = SI.buildNode(sg, 'bronya', 'bronya', 'ult', 10).forms[0];
+  const brTal10 = SI.buildNode(sg, 'bronya', 'bronya', 'talent', 10).forms[0];
+  ok(brSk10.full.includes('66%') && brUlt10.full.includes('55%') && brUlt10.full.includes('30%') && brTal10.full.includes('30%'), 'Bronya Skill, Ult and Talent scale accurately at Lv.10');
+  const seeSk10 = SI.buildNode(sg, 'seele', 'seele', 'skill', 10).forms[0];
+  const seeUlt10 = SI.buildNode(sg, 'seele', 'seele', 'ult', 10).forms[0];
+  const seeTal10 = SI.buildNode(sg, 'seele', 'seele', 'talent', 10).forms[0];
+  ok(seeSk10.full.includes('220%') && seeUlt10.full.includes('425%') && seeTal10.full.includes('80%'), 'Seele Skill, Ult and Resurgence Talent scale accurately at Lv.10');
+  const saSk10 = SI.buildNode(sg, 'sampo', 'sampo', 'skill', 10).forms[0];
+  const saUlt10 = SI.buildNode(sg, 'sampo', 'sampo', 'ult', 10).forms[0];
+  const saTal10 = SI.buildNode(sg, 'sampo', 'sampo', 'talent', 10).forms[0];
+  ok(saSk10.full.includes('56%') && saUlt10.full.includes('160%') && saUlt10.full.includes('30%') && saTal10.full.includes('52%'), 'Sampo Skill, Ult and Wind Shear Talent scale accurately at Lv.10');
+  const hkSkForms = SI.buildNode(sg, 'hook', 'hook', 'skill', 10).forms;
+  const hkTal10 = SI.buildNode(sg, 'hook', 'hook', 'talent', 10).forms[0];
+  ok(hkSkForms.length === 2 && hkSkForms[0].title === 'Запомни Хук!' && hkSkForms[0].full.includes('240%') && hkSkForms[1].title === 'Хук в ярости!' && hkSkForms[1].full.includes('280%') && hkSkForms[1].full.includes('80%') && hkTal10.full.includes('100%'), 'Hook Skill has 2 sub-modes (regular + enhanced) and Talent scales to 100% at Lv.10');
+  const peSk10 = SI.buildNode(sg, 'pela', 'pela', 'skill', 10).forms[0];
+  const peUlt10 = SI.buildNode(sg, 'pela', 'pela', 'ult', 10).forms[0];
+  const peTal10 = SI.buildNode(sg, 'pela', 'pela', 'talent', 10).forms[0];
+  ok(peSk10.full.includes('210%') && peUlt10.full.includes('40%') && peTal10.full.includes('10 ед.'), 'Pela Skill, Ult DEF shred and Talent energy scale accurately at Lv.10');
+  const rmSk10 = SI.buildNode(sg, 'ruanmei', 'ruanmei', 'skill', 10).forms[0];
+  const rmUlt10 = SI.buildNode(sg, 'ruanmei', 'ruanmei', 'ult', 10).forms[0];
+  const rmTal10 = SI.buildNode(sg, 'ruanmei', 'ruanmei', 'talent', 10).forms[0];
+  ok(rmSk10.full.includes('32%') && rmUlt10.full.includes('25%') && rmUlt10.full.includes('60%') && rmTal10.full.includes('120%'), 'Ruan Mei Skill, Ult and Talent scale accurately at Lv.10');
+  const kfSk10 = SI.buildNode(sg, 'kafka', 'kafka', 'skill', 10).forms[0];
+  const kfUlt10 = SI.buildNode(sg, 'kafka', 'kafka', 'ult', 10).forms[0];
+  const kfTal10 = SI.buildNode(sg, 'kafka', 'kafka', 'talent', 10).forms[0];
+  ok(kfSk10.full.includes('160%') && kfSk10.full.includes('75%') && kfUlt10.full.includes('90%') && kfTal10.full.includes('140%'), 'Kafka Skill, Ult and Talent scale accurately at Lv.10');
+  const swSk10 = SI.buildNode(sg, 'silverwolf', 'silverwolf', 'skill', 10).forms[0];
+  const swUlt10 = SI.buildNode(sg, 'silverwolf', 'silverwolf', 'ult', 10).forms[0];
+  const swTal10 = SI.buildNode(sg, 'silverwolf', 'silverwolf', 'talent', 10).forms[0];
+  ok(swSk10.full.includes('196%') && swUlt10.full.includes('45%') && swUlt10.full.includes('380%') && swTal10.full.includes('10%'), 'Silver Wolf Skill, Ult and Bugs Talent scale accurately at Lv.10');
+  const blBaForms = SI.buildNode(sg, 'blade', 'blade', 'basic', 6).forms;
+  const blUlt10 = SI.buildNode(sg, 'blade', 'blade', 'ult', 10).forms[0];
+  const blTal10 = SI.buildNode(sg, 'blade', 'blade', 'talent', 10).forms[0];
+  ok(blBaForms.length === 2 && blBaForms[1].title === 'Частокол мечей' && blBaForms[1].full.includes('40%') && blBaForms[1].full.includes('100%') && blUlt10.full.includes('100%') && blTal10.full.includes('110%'), 'Blade Basic has 2 sub-modes (Осколочный меч + Частокол мечей) and Ult/Talent scale accurately');
+  const baSk10 = SI.buildNode(sg, 'bailu', 'bailu', 'skill', 10).forms[0];
+  const baUlt10 = SI.buildNode(sg, 'bailu', 'bailu', 'ult', 10).forms[0];
+  const baTal10 = SI.buildNode(sg, 'bailu', 'bailu', 'talent', 10).forms[0];
+  ok(baSk10.full.includes('11,7%') && baUlt10.full.includes('13,5%') && baTal10.full.includes('5,4%') && baTal10.full.includes('18%'), 'Bailu Skill, Ult and Invigoration/Revive Talent scale accurately at Lv.10');
+
+  const stage4Ids = ['yanqing', 'clara', 'lynx', 'luka', 'sushang', 'xueyi', 'tingyun', 'hanya', 'qingque', 'yukong'];
+  for (const id of stage4Ids) {
+    const entry = SI.DATA[id];
+    ok(entry && entry.basic && entry.skill && entry.ult && entry.talent && entry.tech && entry.contact && entry.fusions, 'Stage 4 curated SKILLS_INFO complete for ' + id);
+  }
+  const yqSk10 = SI.buildNode(sg, 'yanqing', 'yanqing', 'skill', 10).forms[0];
+  const yqUlt10 = SI.buildNode(sg, 'yanqing', 'yanqing', 'ult', 10).forms[0];
+  const yqTal10 = SI.buildNode(sg, 'yanqing', 'yanqing', 'talent', 10).forms[0];
+  ok(yqSk10.full.includes('220%') && yqUlt10.full.includes('50%') && yqUlt10.full.includes('350%') && yqTal10.full.includes('20%') && yqTal10.full.includes('30%') && yqTal10.full.includes('60%'), 'Yanqing Skill, Ult and Soulsteel Sync Talent scale accurately at Lv.10');
+  const clSk10 = SI.buildNode(sg, 'clara', 'clara', 'skill', 10).forms[0];
+  const clUlt10 = SI.buildNode(sg, 'clara', 'clara', 'ult', 10).forms[0];
+  const clTal10 = SI.buildNode(sg, 'clara', 'clara', 'talent', 10).forms[0];
+  ok(clSk10.full.includes('120%') && clUlt10.full.includes('25%') && clUlt10.full.includes('260%') && clTal10.full.includes('160%'), 'Clara Skill, Ult and Svarog Counter Talent scale accurately at Lv.10');
+  const lxBa6 = SI.buildNode(sg, 'lynx', 'lynx', 'basic', 6).forms[0];
+  const lxSk10 = SI.buildNode(sg, 'lynx', 'lynx', 'skill', 10).forms[0];
+  const lxUlt10 = SI.buildNode(sg, 'lynx', 'lynx', 'ult', 10).forms[0];
+  const lxTal10 = SI.buildNode(sg, 'lynx', 'lynx', 'talent', 10).forms[0];
+  ok(lxBa6.full.includes('50%') && lxSk10.full.includes('7,5%') && lxSk10.full.includes('12%') && lxUlt10.full.includes('14%') && lxTal10.full.includes('3,6%') && lxTal10.full.includes('4,8%'), 'Lynx Basic, Skill, Ult and HoT Talent scale accurately');
+  const luBaForms = SI.buildNode(sg, 'luka', 'luka', 'basic', 6).forms;
+  const luSk10 = SI.buildNode(sg, 'luka', 'luka', 'skill', 10).forms[0];
+  const luUlt10 = SI.buildNode(sg, 'luka', 'luka', 'ult', 10).forms[0];
+  const luTal10 = SI.buildNode(sg, 'luka', 'luka', 'talent', 10).forms[0];
+  ok(luBaForms.length === 2 && luBaForms[1].title === 'Раскалывающий небеса кулак' && luBaForms[1].full.includes('20%') && luBaForms[1].full.includes('80%') && luSk10.full.includes('338%') && luUlt10.full.includes('330%') && luTal10.full.includes('85%'), 'Luka Basic has 2 sub-modes and Skill/Ult/Talent scale accurately at Lv.10');
+  const suSk10 = SI.buildNode(sg, 'sushang', 'sushang', 'skill', 10).forms[0];
+  const suUlt10 = SI.buildNode(sg, 'sushang', 'sushang', 'ult', 10).forms[0];
+  const suTal10 = SI.buildNode(sg, 'sushang', 'sushang', 'talent', 10).forms[0];
+  ok(suSk10.full.includes('200%') && suSk10.full.includes('100%') && suUlt10.full.includes('320%') && suUlt10.full.includes('30%') && suTal10.full.includes('20%'), 'Sushang Skill, Ult and Riposte Talent scale accurately at Lv.10');
+  const xuSk10 = SI.buildNode(sg, 'xueyi', 'xueyi', 'skill', 10).forms[0];
+  const xuUlt10 = SI.buildNode(sg, 'xueyi', 'xueyi', 'ult', 10).forms[0];
+  const xuTal10 = SI.buildNode(sg, 'xueyi', 'xueyi', 'talent', 10).forms[0];
+  ok(xuSk10.full.includes('140%') && xuUlt10.full.includes('250%') && xuUlt10.full.includes('60%') && xuTal10.full.includes('90%'), 'Xueyi Skill, Ult and Karma Talent scale accurately at Lv.10');
+  const tySk10 = SI.buildNode(sg, 'tingyun', 'tingyun', 'skill', 10).forms[0];
+  const tyUlt10 = SI.buildNode(sg, 'tingyun', 'tingyun', 'ult', 10).forms[0];
+  const tyTal10 = SI.buildNode(sg, 'tingyun', 'tingyun', 'talent', 10).forms[0];
+  ok(tySk10.full.includes('50%') && tySk10.full.includes('25%') && tySk10.full.includes('40%') && tyUlt10.full.includes('50%') && tyTal10.full.includes('60%'), 'Tingyun Skill, Ult and Talent scale accurately at Lv.10');
+  const haSk10 = SI.buildNode(sg, 'hanya', 'hanya', 'skill', 10).forms[0];
+  const haUlt10 = SI.buildNode(sg, 'hanya', 'hanya', 'ult', 10).forms[0];
+  const haTal10 = SI.buildNode(sg, 'hanya', 'hanya', 'talent', 10).forms[0];
+  ok(haSk10.full.includes('240%') && haUlt10.full.includes('20%') && haUlt10.full.includes('60%') && haTal10.full.includes('30%'), 'Hanya Skill, Ult and Sanction Talent scale accurately at Lv.10');
+  const qqBaForms = SI.buildNode(sg, 'qingque', 'qingque', 'basic', 6).forms;
+  const qqSk10 = SI.buildNode(sg, 'qingque', 'qingque', 'skill', 10).forms[0];
+  const qqUlt10 = SI.buildNode(sg, 'qingque', 'qingque', 'ult', 10).forms[0];
+  const qqTal10 = SI.buildNode(sg, 'qingque', 'qingque', 'talent', 10).forms[0];
+  ok(qqBaForms.length === 2 && qqBaForms[1].title === 'Вишенка на торте!' && qqBaForms[1].full.includes('240%') && qqSk10.full.includes('28%') && qqUlt10.full.includes('200%') && qqTal10.full.includes('72%'), 'Qingque Basic has 2 sub-modes and Skill/Ult/Hidden Hand Talent scale accurately');
+  const ykBaForms = SI.buildNode(sg, 'yukong', 'yukong', 'basic', 6).forms;
+  const ykSk10 = SI.buildNode(sg, 'yukong', 'yukong', 'skill', 10).forms[0];
+  const ykUlt10 = SI.buildNode(sg, 'yukong', 'yukong', 'ult', 10).forms[0];
+  const ykTal10 = SI.buildNode(sg, 'yukong', 'yukong', 'talent', 10).forms[0];
+  ok(ykBaForms.length === 2 && ykBaForms[1].title === 'Семь слоёв, одна стрела' && ykBaForms[1].full.includes('80%') && ykSk10.full.includes('80%') && ykUlt10.full.includes('28%') && ykUlt10.full.includes('65%') && ykUlt10.full.includes('380%') && ykTal10.full.includes('80%'), 'Yukong Basic has 2 sub-modes (Стрелок + Семь слоёв, одна стрела) and Skill/Ult/Talent scale accurately');
+
+  const stage5Ids = ['guinaifen', 'jingyuan', 'luocha', 'imbibitor', 'fuxuan', 'jingliu', 'topaz', 'huohuo', 'argenti', 'ratio'];
+  for (const id of stage5Ids) {
+    const entry = SI.DATA[id];
+    ok(entry && entry.basic && entry.skill && entry.ult && entry.talent && entry.tech && entry.contact, 'Stage 5 curated SKILLS_INFO complete for ' + id);
+  }
+  const gnSk10 = SI.buildNode(sg, 'guinaifen', 'guinaifen', 'skill', 10).forms[0];
+  const gnUlt10 = SI.buildNode(sg, 'guinaifen', 'guinaifen', 'ult', 10).forms[0];
+  const gnTal10 = SI.buildNode(sg, 'guinaifen', 'guinaifen', 'talent', 10).forms[0];
+  ok(gnSk10.full.includes('120%') && gnSk10.full.includes('75%') && gnUlt10.full.includes('92%') && gnTal10.full.includes('7%'), 'Guinaifen Skill, Ult and Firekiss Talent scale accurately at Lv.10');
+  const jySk10 = SI.buildNode(sg, 'jingyuan', 'jingyuan', 'skill', 10).forms[0];
+  const jyUlt10 = SI.buildNode(sg, 'jingyuan', 'jingyuan', 'ult', 10).forms[0];
+  const jyTal10 = SI.buildNode(sg, 'jingyuan', 'jingyuan', 'talent', 10).forms[0];
+  ok(jySk10.full.includes('100%') && jyUlt10.full.includes('200%') && jyTal10.full.includes('66%'), 'Jing Yuan Skill, Ult and Lightning-Lord Talent scale accurately at Lv.10');
+  const lcSk10 = SI.buildNode(sg, 'luocha', 'luocha', 'skill', 10).forms[0];
+  const lcUlt10 = SI.buildNode(sg, 'luocha', 'luocha', 'ult', 10).forms[0];
+  const lcTal10 = SI.buildNode(sg, 'luocha', 'luocha', 'talent', 10).forms[0];
+  ok(lcSk10.full.includes('60%') && lcUlt10.full.includes('200%') && lcTal10.full.includes('18%'), 'Luocha Skill, Ult and Cycle of Life Talent scale accurately at Lv.10');
+  const ilBaForms = SI.buildNode(sg, 'imbibitor', 'imbibitor', 'basic', 6).forms;
+  const ilSk10 = SI.buildNode(sg, 'imbibitor', 'imbibitor', 'skill', 10).forms[0];
+  const ilUlt10 = SI.buildNode(sg, 'imbibitor', 'imbibitor', 'ult', 10).forms[0];
+  const ilTal10 = SI.buildNode(sg, 'imbibitor', 'imbibitor', 'talent', 10).forms[0];
+  ok(ilBaForms.length === 4 && ilBaForms[1].title === 'Превосходство' && ilBaForms[1].full.includes('260%') && ilBaForms[2].title === 'Божественное копьё' && ilBaForms[2].full.includes('380%') && ilBaForms[3].title === 'Стремительный прыжок' && ilBaForms[3].full.includes('500%') && ilSk10.full.includes('12%') && ilUlt10.full.includes('300%') && ilTal10.full.includes('10%'), 'Imbibitor Lunae Basic has 4 sub-modes and Skill/Ult/Talent scale accurately');
+  const fxBa6 = SI.buildNode(sg, 'fuxuan', 'fuxuan', 'basic', 6).forms[0];
+  const fxSk10 = SI.buildNode(sg, 'fuxuan', 'fuxuan', 'skill', 10).forms[0];
+  const fxUlt10 = SI.buildNode(sg, 'fuxuan', 'fuxuan', 'ult', 10).forms[0];
+  const fxTal10 = SI.buildNode(sg, 'fuxuan', 'fuxuan', 'talent', 10).forms[0];
+  ok(fxBa6.full.includes('50%') && fxSk10.full.includes('6%') && fxSk10.full.includes('12%') && fxUlt10.full.includes('100%') && fxTal10.full.includes('18%') && fxTal10.full.includes('90%'), 'Fu Xuan Basic, Skill, Ult and Talent scale accurately');
+  const jlSkForms = SI.buildNode(sg, 'jingliu', 'jingliu', 'skill', 10).forms;
+  const jlUlt10 = SI.buildNode(sg, 'jingliu', 'jingliu', 'ult', 10).forms[0];
+  const jlTal10 = SI.buildNode(sg, 'jingliu', 'jingliu', 'talent', 10).forms[0];
+  ok(jlSkForms.length === 2 && jlSkForms[0].full.includes('200%') && jlSkForms[1].title === 'Луна на застывшей реке' && jlSkForms[1].full.includes('250%') && jlSkForms[1].full.includes('125%') && jlUlt10.full.includes('300%') && jlTal10.full.includes('50%') && jlTal10.full.includes('180%'), 'Jingliu Skill has 2 sub-modes (Непостижимая Зарница + Луна на застывшей реке) and Ult/Talent scale accurately');
+  const tzBa6 = SI.buildNode(sg, 'topaz', 'topaz', 'basic', 6).forms[0];
+  const tzSk10 = SI.buildNode(sg, 'topaz', 'topaz', 'skill', 10).forms[0];
+  const tzUlt10 = SI.buildNode(sg, 'topaz', 'topaz', 'ult', 10).forms[0];
+  const tzTal10 = SI.buildNode(sg, 'topaz', 'topaz', 'talent', 10).forms[0];
+  ok(tzBa6.full.includes('100%') && tzSk10.full.includes('50%') && tzSk10.full.includes('150%') && tzUlt10.full.includes('150%') && tzUlt10.full.includes('25%') && tzTal10.full.includes('150%'), 'Topaz Basic, Skill, Ult and Numby Talent scale accurately');
+  const hhSk10 = SI.buildNode(sg, 'huohuo', 'huohuo', 'skill', 10).forms[0];
+  const hhUlt10 = SI.buildNode(sg, 'huohuo', 'huohuo', 'ult', 10).forms[0];
+  const hhTal10 = SI.buildNode(sg, 'huohuo', 'huohuo', 'talent', 10).forms[0];
+  ok(hhSk10.full.includes('21%') && hhSk10.full.includes('16,8%') && hhUlt10.full.includes('20%') && hhUlt10.full.includes('40%') && hhTal10.full.includes('4,5%'), 'Huohuo Skill, Ult and Sacrificed Life Talent scale accurately at Lv.10');
+  const agUltForms = SI.buildNode(sg, 'argenti', 'argenti', 'ult', 10).forms;
+  const agSk10 = SI.buildNode(sg, 'argenti', 'argenti', 'skill', 10).forms[0];
+  const agTal10 = SI.buildNode(sg, 'argenti', 'argenti', 'talent', 10).forms[0];
+  ok(agUltForms.length === 2 && agUltForms[0].full.includes('160%') && agUltForms[1].title === 'Возложенное в «моём» саду величие' && agUltForms[1].full.includes('280%') && agUltForms[1].full.includes('95%') && agSk10.full.includes('120%') && agTal10.full.includes('2,5%'), 'Argenti Ult has 2 sub-modes (90 and 180 energy) and Skill/Apotheosis Talent scale accurately');
+  const raSk10 = SI.buildNode(sg, 'ratio', 'ratio', 'skill', 10).forms[0];
+  const raUlt10 = SI.buildNode(sg, 'ratio', 'ratio', 'ult', 10).forms[0];
+  const raTal10 = SI.buildNode(sg, 'ratio', 'ratio', 'talent', 10).forms[0];
+  ok(raSk10.full.includes('150%') && raUlt10.full.includes('240%') && raTal10.full.includes('270%'), 'Dr. Ratio Skill, Ult and Follow-up Talent scale accurately at Lv.10');
+
+  const stage6Ids = ['theherta', 'tribbie', 'miyabi', 'yanagi', 'phrolova', 'scar', 'kazuma', 'aqua', 'megumin', 'darkness'];
+  for (const id of stage6Ids) {
+    ok(SI.DATA[id] && SI.DATA[id].basic && (SI.DATA[id].skill || SI.DATA[id].skills) && SI.DATA[id].ult && SI.DATA[id].talent && SI.DATA[id].tech && SI.DATA[id].contact, 'Stage 6 SKILLS_INFO has complete curated entry for ' + id);
+    sg.addChar(id, 80);
+    for (const nid of SI.ORDER) {
+      const n = SI.buildNode(sg, id, id, nid, null);
+      ok(n && n.forms && n.forms.length >= 1, id + ' builds node ' + nid);
+      for (const f of n.forms) {
+        ok(f.title && f.tag && f.full && f.short && f.full.length > f.short.length, id + ' ' + nid + ' form ' + f.subId + ' has rich full & short text');
+      }
+    }
+  }
+  const thSkForms = SI.buildNode(sg, 'theherta', 'theherta', 'skill', 10).forms;
+  eq(thSkForms.length, 2, 'The Herta Skill node exposes 2 sub-forms (Открытие разума + У меня появилась безумная идея)');
+  ok(thSkForms[0].full.includes('70%') && thSkForms[1].full.includes('80%') && thSkForms[1].full.includes('40%'), 'The Herta normal and enhanced skills scale accurately at Lv.10');
+  const trSk10 = SI.buildNode(sg, 'tribbie', 'tribbie', 'skill', 10).forms[0];
+  const trUlt10 = SI.buildNode(sg, 'tribbie', 'tribbie', 'ult', 10).forms[0];
+  const trTal10 = SI.buildNode(sg, 'tribbie', 'tribbie', 'talent', 10).forms[0];
+  ok(trSk10.full.includes('24%') && trUlt10.full.includes('30%') && trUlt10.full.includes('12%') && trTal10.full.includes('18%'), 'Tribbie Skill, Ult Zone and Follow-up Talent scale accurately at Lv.10');
+  const miyBForms = SI.buildNode(sg, 'miyabi', 'miyabi', 'basic', 6).forms;
+  eq(miyBForms.length, 4, 'Miyabi Basic node exposes 4 sub-forms (Кадзахана + Симоцуки I/II/III)');
+  ok(miyBForms[1].pill.includes('Симоцуки I') && miyBForms[3].pill.includes('Симоцуки III') && miyBForms[3].full.includes('440%'), 'Miyabi Shimotsuki sub-mode pills and Lv.6 scaling work accurately');
+  const ynBForms = SI.buildNode(sg, 'yanagi', 'yanagi', 'basic', 6).forms;
+  eq(ynBForms.length, 2, 'Yanagi Basic node exposes 2 sub-forms (Цукуёми кагура + Синрабансё)');
+  const phUForms = SI.buildNode(sg, 'phrolova', 'phrolova', 'ult', 10).forms;
+  eq(phUForms.length, 2, 'Phrolova Ult node exposes 2 sub-forms (Вальс покинутых глубин + Знак Гекате)');
+  const scBForms = SI.buildNode(sg, 'scar', 'scar', 'basic', 6).forms;
+  const scSForms = SI.buildNode(sg, 'scar', 'scar', 'skill', 10).forms;
+  ok(scBForms.length === 2 && scSForms.length === 2, 'Scar Basic and Skill nodes each expose 2 sub-forms (normal + Nightmare form)');
+  const kzSForms = SI.buildNode(sg, 'kazuma', 'kazuma', 'skill', 10).forms;
+  eq(kzSForms.length, 4, 'Kazuma Skill node exposes 4 sub-forms (Кража, Связывание, Иссушающее касание + Камень, ножницы, бумага!)');
+  const dkBForms = SI.buildNode(sg, 'darkness', 'darkness', 'basic', 6).forms;
+  eq(dkBForms.length, 2, 'Darkness Basic node exposes 2 sub-forms (Боковой удар + Случайно попала!)');
+
+  const stage7Ids = ['yu', 'yosuke', 'chie', 'yukiko', 'kanji', 'rise', 'makoto', 'amanda', 'talleah', 'billy', 'nicole', 'anby'];
+  for (const id of stage7Ids) {
+    ok(SI.DATA[id] && SI.DATA[id].basic && (SI.DATA[id].skill || SI.DATA[id].skills) && SI.DATA[id].ult && SI.DATA[id].talent && SI.DATA[id].tech && SI.DATA[id].contact, 'Stage 7 SKILLS_INFO has complete curated entry for ' + id);
+    sg.addChar(id, 80);
+    for (const nid of SI.ORDER) {
+      const n = SI.buildNode(sg, id, id, nid, null);
+      ok(n && n.forms && n.forms.length >= 1, id + ' builds node ' + nid);
+      for (const f of n.forms) {
+        ok(f.title && f.tag && f.full && f.short && f.full.length > f.short.length, id + ' ' + nid + ' form ' + f.subId + ' has rich full & short text');
+      }
+    }
+  }
+  ok(Object.keys(H.CHARS).every(id => !!SI.DATA[id]), 'All 64 character kits in H.CHARS have complete curated SKILLS_INFO entries');
+  const yuSForms = SI.buildNode(sg, 'yu', 'yu', 'skill', 10).forms;
+  eq(yuSForms.length, 3, 'Yu Narukami Skill node exposes 3 Persona sub-forms (Изанаги, Джек Фрост, Ёсицунэ)');
+  ok(yuSForms[0].full.includes('220%') && yuSForms[1].full.includes('130%') && yuSForms[2].full.includes('45%'), 'Yu Narukami 3 Persona skills scale accurately at Lv.10');
+  const amBForms = SI.buildNode(sg, 'amanda', 'amanda', 'basic', 6).forms;
+  const amSForms = SI.buildNode(sg, 'amanda', 'amanda', 'skill', 10).forms;
+  ok(amBForms.length === 2 && amSForms.length === 2 && amBForms[1].title === 'Сердечный… луч!' && amSForms[1].title === 'Кокон-сердце', 'Amanda Basic and Skill nodes each expose 2 sub-forms (Normal + Pink Defender)');
+  const mkUlt10 = SI.buildNode(sg, 'makoto', 'makoto', 'ult', 10).forms[0];
+  ok(mkUlt10.full.includes('320%') && mkUlt10.full.includes('40%'), 'Makoto Ult heist shot scales to 320% + 40% per Блестяшка at Lv.10');
+  const tlTal10 = SI.buildNode(sg, 'talleah', 'talleah', 'talent', 10).forms[0];
+  ok(tlTal10.full.includes('70%'), 'Talleah Gynoids Talent scales to 70% at Lv.10');
+  const blyTal10 = SI.buildNode(sg, 'billy', 'billy', 'talent', 10).forms[0];
+  ok(blyTal10.full.includes('25%') && blyTal10.full.includes('+50%'), 'Billy Steady Shot Talent scales to 25% per stack (+50% max) at Lv.10');
+  const ncBForms = SI.buildNode(sg, 'nicole', 'nicole', 'basic', 6).forms;
+  ok(ncBForms.length === 2 && ncBForms[1].title === 'Творю что хочу' && ncBForms[1].full.includes('110%') && ncBForms[1].full.includes('45%'), 'Nicole Basic node exposes 2 sub-forms with accurate Lv.6 scaling');
+  const anBForms = SI.buildNode(sg, 'anby', 'anby', 'basic', 6).forms;
+  const anSk10 = SI.buildNode(sg, 'anby', 'anby', 'skill', 10).forms[0];
+  const anUlt10 = SI.buildNode(sg, 'anby', 'anby', 'ult', 10).forms[0];
+  ok(anBForms.length === 2 && anBForms[1].title === 'Гром' && anBForms[1].full.includes('240%') && anSk10.full.includes('64%') && anUlt10.full.includes('360%'), 'Anby Basic has 2 sub-forms (Турборазряд + Гром) and Skill/Ult scale accurately');
+
+  ui.screens = [];
+  ui.openBank(null);
+  const bkSkills = ui.top();
+  bkSkills.openSection('chars', 'yu');
+  bkSkills.subTab = 3;
+  texts.length = 0; ui.render();
+  ok(texts.some(t => t.includes('Изанаги: Зиодайн')) && texts.some(t => t.includes('Джек Фрост: Буфула')), 'Data Bank character Skills tab renders rich H.SkillsInfo forms including Yu Personas');
+
+  for (const [kitId, kit] of Object.entries(H.CHARS)) {
+    const b1 = H.traceDescribeAb(kitId, 'basic', 1), b6 = H.traceDescribeAb(kitId, 'basic', 6), b7 = H.traceDescribeAb(kitId, 'basic', 7);
+    ok(b1 && b1 !== b6 && b6 !== b7, kitId + ' basic attack description scales across Lv.1 -> Lv.6 -> Lv.7');
+    if (kitId !== 'megumin') {
+      const s1 = H.traceDescribeAb(kitId, 'skill', 1), s10 = H.traceDescribeAb(kitId, 'skill', 10), s12 = H.traceDescribeAb(kitId, 'skill', 12);
+      ok(s1 && s1 !== s10 && s10 !== s12, kitId + ' skill description scales across Lv.1 -> Lv.10 -> Lv.12');
+    }
+    const u1 = H.traceDescribeAb(kitId, 'ult', 1), u10 = H.traceDescribeAb(kitId, 'ult', 10), u12 = H.traceDescribeAb(kitId, 'ult', 12);
+    ok(u1 && u1 !== u10 && u10 !== u12, kitId + ' ultimate description scales across Lv.1 -> Lv.10 -> Lv.12');
+    const t1 = H.traceDescribeAb(kitId, 'talent', 1), t10 = H.traceDescribeAb(kitId, 'talent', 10), t12 = H.traceDescribeAb(kitId, 'talent', 12);
+    ok(t1 && t1 !== t10 && t10 !== t12, kitId + ' talent description scales across Lv.1 -> Lv.10 -> Lv.12');
+  }
+
+  ui.game.debugChar('tribbie', 4, 0);
+  ui.game.fillTraces('tribbie', 'reset');
+  ui.screens = []; ui.openChars('tribbie');
+  let trCs = ui.top(); trCs.sec = 1; trCs.trSel = 'skill';
+  texts.length = 0; ui.render();
+  ok(texts.includes('1/10') && texts.includes('Уровень 1 / 10 · потолок 1'), 'Tribbie Lv.4 E0 Traces shows 1/10 badge and cap 1');
+  ok(texts.some(t => t.includes('12%')) && texts.some(t => t.includes('13,2%')) && !texts.some(t => t.includes('24%')), 'Tribbie Lv.1 Skill shows 12% current and 13,2% Lv.2 preview instead of static Lv.10 24%');
+
+  ui.game.debugChar('tribbie', 80, 6);
+  ui.game.fillTraces('tribbie', 'all');
+  texts.length = 0; ui.render();
+  ok(texts.includes('7/7') && texts.includes('12/12') && texts.includes('Уровень 12 / 12 (+2) · потолок 12') && texts.some(t => t.includes('26,4%')), 'Tribbie Lv.80 E6 Traces shows 7/7 and 12/12 badges, level 12 / 12 (+2) · cap 12, and 26,4% at Lv.12');
+
+  ui.game.debugChar('arlan', 60, 6);
+  ui.game.state.roster.arlan.asc = 5;
+  ui.game.state.roster.arlan.tr = { arlan: H.tracePreset('arlan', 61, false) };
+  ui.screens = []; ui.openChars('arlan');
+  trCs = ui.top(); trCs.sec = 1; trCs.trSel = 'skill';
+  texts.length = 0; ui.render();
+  ok(texts.includes('6/7') && texts.includes('10/12') && texts.includes('Уровень 10 / 12 (+2) · потолок 10') && texts.some(t => t.includes('240%')) && texts.some(t => t.includes('252%')), 'Arlan Lv.60 Phase 5 E6 shows 6/7 for Basic, 10/12 for Skill/Ult/Talent, and Уровень 10 / 12 (+2) · потолок 10');
+  trCs.trSel = 'basic';
+  texts.length = 0; ui.render();
+  ok(texts.includes('Уровень 6 / 7 (+1) · потолок 6') && texts.some(t => t.includes('100%')) && texts.some(t => t.includes('110%')), 'Arlan Lv.60 Phase 5 E6 Basic Attack shows Уровень 6 / 7 (+1) · потолок 6 and 100% -> 110%');
+  ui.game.state.roster.arlan.lvl = 80;
+  ui.game.state.roster.arlan.asc = 6;
+  ui.game.fillTraces('arlan', 'all');
+  texts.length = 0; ui.render();
+  ok(texts.includes('7/7') && texts.includes('12/12') && texts.includes('Уровень 7 / 7 (+1) · потолок 7'), 'Arlan Lv.80 Phase 6 E6 Basic Attack reaches 7 / 7 (+1) · потолок 7');
+  trCs.sec = 3;
+  texts.length = 0; ui.render();
+  ok(texts.includes('ур. 7/7 (+1)') && texts.includes('ур. 12/12 (+2)'), 'Abilities menu list shows ур. 7/7 (+1) and ур. 12/12 (+2) with Eidolons');
+
+  ok(Math.abs(H.traceScaleAb(H.CHARS.miyabi.ult, 'ult', 1, 'miyabi').fx[2].v - 0.18) < 1e-3 && Math.abs(H.traceScaleAb(H.CHARS.miyabi.ult, 'ult', 12, 'miyabi').fx[2].v - 0.324) < 1e-3, 'Miyabi ult iceP buff scales in combat from Lv.1 to Lv.12');
+  ok(Math.abs(H.traceScaleAb(H.CHARS.darkness.skill, 'skill', 1, 'darkness').fx[1].v - 0.15) < 1e-3 && Math.abs(H.traceScaleAb(H.CHARS.darkness.skill, 'skill', 12, 'darkness').fx[1].v - 0.33) < 1e-3, 'Darkness skill DR buff scales in combat from Lv.1 to Lv.12');
+  ok(Math.abs(H.traceScaleAb(H.CHARS.yu.skills[0], 'skill', 1, 'yu').fx[1].v - 0.075) < 1e-3, 'Yu Zio defDown debuff scales with skill level in combat');
+  ok(Math.abs(H.traceScaleAb(H.CHARS.yosuke.skill, 'skill', 1, 'yosuke').fx[1].v - -0.06) < 1e-3, 'Yosuke Garula spdP debuff scales with skill level in combat');
+  ok(Math.abs(H.traceScaleAb(H.CHARS.rise.ult, 'ult', 1, 'rise').fx[1].v - 0.144) < 1e-3, 'Rise ult dmgP/spdP buffs scale with ult level in combat');
+  ok(Math.abs(H.traceScaleAb(H.CHARS.amanda.ult, 'ult', 1, 'amanda').fx[3].v - 0.18) < 1e-3, 'Amanda ult defP buff scales with ult level in combat');
+
+  {
+    eq(H.ROOM_ZONES.length, 6, 'Cosmic Home Decor has 6 room zones');
+    eq(H.ROOM_BUILDS.length, 30, 'Cosmic Home Decor has 30 build steps (5 per zone)');
+    eq(H.ROOM_BUILDS.reduce((a, b) => a + b.cost, 0), 368000, 'Total Express Fund build cost is 368000');
+    eq(H.ROOM_SLOTS.length, 25, 'Cosmic Home Decor has 25 custom decor slots');
+    eq(H.ROOM_TROPHIES.length, 9, 'Curio Gallery has 9 trophies');
+    eq(H.ROOM_LOGS.length, 12, 'Duty log has 12 crew meeting entries');
+    eq(H.ROOM_REWARDS.chars.length, 12, 'Character selector offers 12 four-star characters from Herta Station, Belobog and Luofu');
+    const allRoomText = JSON.stringify([H.ROOM_ZONES, H.ROOM_BUILDS, H.ROOM_SLOTS, H.ROOM_TROPHIES, H.ROOM_LOGS]);
+    ok(!/Пенакон|Часик|Грёз|Сладк|Авантюрин|Зарянк|Воскресень|Миш[аи]|Галлахер/i.test(allRoomText), 'No Penacony references in room data');
+
+    const rg = new H.Game({ seed: 17 });
+    rg.state.flags.doom = true;
+    rg.state.flags.express_intro = true;
+    ok(!rg.roomOpen() && rg.roomEarlyReady(), 'Before Jarilo-VI ending, room is locked and Early Access is available after doom');
+    ok(rg.roomStartEarly() && rg.roomOpen() && rg.state.quests.room_home === 'clean', 'Early Access opens the room and starts room_home at clean');
+
+    const rg2 = new H.Game({ seed: 18 });
+    rg2.state.flags.doom = true;
+    rg2.state.flags.express_intro = true;
+    rg2.state.flags.ending = true;
+    rg2.missionTick();
+    eq(rg2.state.quests.room_home, 'talk', 'Jarilo-VI ending automatically starts room_home mission at talk');
+    rg2.loadMap('express_party', 'v');
+    rg2.runScript('exp_staircase');
+    while (rg2.pending) rg2.resume(0);
+    eq(rg2.map.id, 'express_room', 'Staircase in Party Car leads upstairs to express_room');
+    ok(rg2.state.flags.room_open && rg2.state.quests.room_home === 'clean', 'Going upstairs sets room_open and advances quest to clean');
+
+    rg2.runScript('rm_pom_talk');
+    while (rg2.pending) rg2.resume(0);
+    eq(rg2.state.quests.room_home, 'build', 'Talking to Pom-Pom upstairs advances quest to build');
+    eq(rg2.room().fund, 20000, 'Act I grants 20000 Express Fund');
+    ok(rg2.buildRoomItem('bed_1') && rg2.roomStars() === 1 && rg2.room().fund === 16000, 'Building bed_1 spends 4000 Fund and gives 1 star');
+    eq(rg2.state.quests.room_home, 'duty', 'Building first item advances quest to duty');
+    ok(rg2.roomSlotUnlocked('pillow') && rg2.setRoomDecor('pillow', 'bear') && rg2.cond('%rm_slot_pillow_bear'), 'Custom pillow variant can be placed once bed_1 is built');
+
+    const sh = rg2.startRoomDuty('march');
+    ok(sh && sh.partner === 'march' && sh.turn === 1 && sh.maxTurns === 4 && sh.hand.length === 3, 'Duty shift starts with 4 turns and 3 cards');
+    for (let t = 0; t < 4; t++) {
+      const res = rg2.playRoomDutyCard(0);
+      ok(res && (t < 3 ? !res.done : res.done), 'Duty card turn ' + (t + 1) + ' progresses shift');
+    }
+    ok(rg2.room().shifts === 1 && rg2.room().logs === 1 && rg2.room().fund > 16000, 'Completing 4-turn duty shift awards Express Fund and unlocks a log entry');
+    eq(rg2.state.quests.room_home, 'renovate', 'Completing first duty shift advances quest to renovate');
+
+    rg2.room().fund = 500000;
+    for (const b of H.ROOM_BUILDS.slice(1, 15)) ok(rg2.buildRoomItem(b.id), 'Build step ' + b.id);
+    eq(rg2.roomStars(), 15, '15 stars reached');
+    eq(rg2.state.quests.room_home, 'inspect', 'Reaching 15 stars advances quest to inspect');
+    ok(rg2.roomCharReady(), '10+ stars unlocks the 4-star character selector');
+    delete rg2.state.roster.serval;
+    const chGot = rg2.claimRoomChar('serval');
+    ok(chGot && rg2.state.roster.serval && rg2.room().charGot === 'serval' && !rg2.roomCharReady(), 'Claiming Serval from the room selector adds her to roster once');
+
+    const fBeforeInspect = rg2.room().fund;
+    rg2.runScript('rm_pom_talk');
+    while (rg2.pending) rg2.resume(0);
+    eq(rg2.state.quests.room_home, 'finish', 'Himeko and Welt inspection advances quest to finish');
+    eq(rg2.room().fund, fBeforeInspect + 30000, 'Act II inspection grants 30000 Express Fund');
+
+    for (const b of H.ROOM_BUILDS.slice(15)) ok(rg2.buildRoomItem(b.id), 'Build remaining step ' + b.id);
+    eq(rg2.roomStars(), 30, 'All 30 stars built');
+    eq(rg2.state.quests.room_home, 'party', 'Reaching 30 stars advances quest to party');
+
+    ok(rg2.setRoomStand(0, 'svarog_hand') && rg2.cond('%rm_stand_1_svarog_hand'), 'Exhibition stand 1 displays Svarog hand trophy');
+    ok(rg2.setRoomStand(1, 'svarog_hand') && rg2.room().stands[0] === 'express_model' && rg2.room().stands[1] === 'svarog_hand', 'Placing same trophy on stand 2 swaps it cleanly with stand 1');
+
+    rg2.runScript('rm_pom_talk');
+    while (rg2.pending) rg2.resume(0);
+    ok(rg2.state.flags.room_done && rg2.state.quests.room_home === 'done' && rg2.pomOwns('chef'), 'Housewarming finale sets room_done, finishes room_home and grants Pom-Pom chef outfit');
+    ok(rg2.bookPages('photos').some(p => p.ok && p.text.includes('Новоселье в комнате Первопроходца')), 'Housewarming photo is unlocked on March 7th photo wall');
+
+    const claimedEv = rg2.claimEvent('cosmic_home');
+    ok(claimedEv.length > 0 && rg2.room().starGot.length === 6, 'All star and log milestones can be claimed');
+
+    rg2.runScript('rm_bed_prop');
+    let sawCredits = false;
+    while (rg2.pending) {
+      if (rg2.pending.type === 'choice' && rg2.pending.options.some(o => (o.label || o[0]).includes('уснуть всерьёз'))) rg2.resume(1);
+      else {
+        if (rg2.pending.type === 'credits') sawCredits = true;
+        rg2.resume(0);
+      }
+    }
+    ok(sawCredits && rg2.state.flags.room_slept_credits, 'Sleeping in the Trailblazer bed triggers the fake-ending credits gag');
+
+    ui.game = rg2;
+    ui.screens = [];
+    ok(H.EVENT_TABS.some(e => e.id === 'cosmic_home' && e.icon === 'cosmic_home') && H.Gfx.ITEM_ART.cosmic_home && H.Gfx.itemCanvas('cosmic_home', null, 32) !== H.Gfx.itemCanvas('jade', null, 32), 'Cosmic Home event tab uses its own unique icon');
+    ui.openEvents('cosmic_home');
+    texts.length = 0; ui.render();
+    ok(texts.some(t => t.includes('Идеи декора для космического дома')) && texts.some(t => t.includes('30/30★')), 'Events screen renders Cosmic Home Decor tab');
+    ui.screens = [];
+    ui.openRoomEvent('hub');
+    texts.length = 0; ui.render();
+    ok(texts.some(t => t.includes('План обустройства')) && texts.some(t => t.includes('Чек-лист обустройства')), 'Room event hub screen renders');
+    for (const mode of ['checklist', 'decor', 'duty', 'log', 'rewards', 'charpick', 'rules']) {
+      ui.top().mode = mode;
+      texts.length = 0; ui.render();
+      ok(texts.length > 3, 'Room event sub-screen ' + mode + ' renders cleanly');
+    }
+    ui.screens = [];
+    ui.openRoomStand(0);
+    texts.length = 0; ui.render();
+    ok(texts.some(t => t.includes('Выставочные стенды')) && texts.some(t => t.includes('Коллекция диковинок')), 'Room exhibition stand screen renders');
+    ui.screens = [];
+  }
 }
 
 console.log('hsr98: ' + checks + ' checks passed in ' + ((Date.now() - t0) / 1000).toFixed(1) + 's');

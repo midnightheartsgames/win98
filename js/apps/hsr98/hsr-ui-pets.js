@@ -338,11 +338,11 @@
     },
 
     drawPetSupply(c, scr) {
-      const g = this.game, s = g.state, ids = Object.keys(H.PETS);
+      const g = this.game, s = g.state, ids = Object.keys(H.PETS), wide = !!(this.wide && this.wide());
       if (scr.psel >= ids.length) scr.psel = ids.length - 1;
       const id = ids[scr.psel], d = H.PETS[id], own = g.ownsPet(id), out = g.petOut() === id;
-      this.supplyPill(W - 154, 10, 'jade', s.jade);
-      let tx = 170;
+      this.supplyPill(this.right - 154, 10, 'jade', s.jade);
+      let tx = wide ? 73 : 170;
       ids.forEach((pid, i) => {
         const on = i === scr.psel, label = H.PETS[pid].name, w = Math.round(this.measure(label, 11, true) + 40);
         c.fillStyle = '#000'; c.fillRect(tx - 1, 39, w + 2, 24);
@@ -353,7 +353,7 @@
         tx += w + 4;
       });
       if (ids.length > 1) this.keycap(tx + 4, 45, '←→');
-      const { x, y, w, h } = STAGE;
+      const { x, y, w, h } = wide ? { x: 73, y: STAGE.y, w: 660, h: STAGE.h } : STAGE;
       c.fillStyle = '#000'; c.fillRect(x - 2, y - 2, w + 4, h + 4);
       this.drawPetStage(c, id, x, y, w, h);
       const plate = d.kind + (own ? (out ? ' · гуляет с отрядом' : ' · ждёт на Экспрессе') : '');
@@ -361,10 +361,10 @@
       this.text(d.name, x + 16, y + 14, { size: 18, bold: true, serif: true, col: '#fff8f0' });
       c.fillStyle = 'rgba(30,20,40,0.72)'; c.fillRect(x + 8, y + 38, this.measure(plate, 10) + 12, 15);
       this.text(plate, x + 14, y + 40, { size: 10, col: own ? '#9ae8a0' : '#ffcf80' });
-      const lw = 248, py = PANEL.y, ph = PANEL.h;
+      const lw = wide ? 344 : 248, py = PANEL.y, ph = PANEL.h;
       this.win(x, py, lw, ph, { alpha: 0.88 });
       let ty = py + 10;
-      this.wrap(d.text, lw - 24, 10).slice(0, 8).forEach(l => { this.text(l, x + 12, ty, { size: 10, col: '#c8d0f0' }); ty += 12; });
+      this.wrap(d.text, lw - 24, wide ? 11 : 10).slice(0, 8).forEach(l => { this.text(l, x + 12, ty, { size: wide ? 11 : 10, col: '#c8d0f0' }); ty += wide ? 13 : 12; });
       if (own) {
         const st = g.petStats(id);
         this.text('Пройдено вместе: ' + fmt(st.steps) + ' шаг.', x + 12, py + ph - 62, { size: 10, col: C.sub });
@@ -382,10 +382,10 @@
       let hy = py + 33;
       for (const hb of d.habits) {
         this.diamond(rx + 16, hy + 6, 3, C.brassHi, '#1a1208');
-        this.wrap(hb, rw - 36, 10).slice(0, 2).forEach(l => { this.text(l, rx + 24, hy, { size: 10, col: '#e0e4f4' }); hy += 12; });
+        this.wrap(hb, rw - 36, wide ? 11 : 10).slice(0, 2).forEach(l => { this.text(l, rx + 24, hy, { size: wide ? 11 : 10, col: '#e0e4f4' }); hy += wide ? 13 : 12; });
         hy += 4;
       }
-      this.hints([['Tab', 'Раздел'], ['Enter', !own ? 'Купить' : out ? 'Оставить' : 'Взять с собой'], ['Esc', 'Назад']].concat(ids.length > 1 ? [['←→', 'Питомец']] : []), 170, HGT - 18);
+      this.hints([['Tab', 'Раздел'], ['Enter', !own ? 'Купить' : out ? 'Оставить' : 'Взять с собой'], ['Esc', 'Назад']].concat(ids.length > 1 ? [['←→', 'Питомец']] : []), wide ? 73 : 170, HGT - 18);
     },
 
     petPick(scr, i) {

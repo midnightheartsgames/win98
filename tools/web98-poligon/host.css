@@ -1,0 +1,50 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #5e6570;
+}
+
+.pg-frame {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pg-host-loading {
+  margin: 40px auto;
+  color: #d4d6da;
+  font: 12px Tahoma, Verdana, sans-serif;
+  text-align: center;
+}
+
+.web-gif {
+  display: inline-block;
+  vertical-align: -3px;
+  line-height: 0;
+  flex-shrink: 0;
+}
+
+.web-gif svg {
+  width: 100%;
+  height: 100%;
+}
+
+.pg-host-note {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
+  padding: 6px 10px;
+  background: #ffffe1;
+  border: 1px solid #000000;
+  color: #000000;
+  font: 11px Tahoma, Verdana, Arial, sans-serif;
+  z-index: 20;
+}
+
+.pg-host-note a {
+  color: #0000ff;
+}

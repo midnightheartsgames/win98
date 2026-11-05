@@ -127,6 +127,7 @@
   const CURVE = {
     basic: [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1],
     skill: [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8125, 0.875, 0.9375, 1, 1.05, 1.1],
+    talent: [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8125, 0.875, 0.9375, 1, 1.05, 1.1],
     ult: [0.6, 0.64, 0.68, 0.72, 0.76, 0.8, 0.85, 0.9, 0.95, 1, 1.04, 1.08],
     support: [0.6667, 0.7083, 0.75, 0.7917, 0.8333, 0.8667, 0.9, 0.9333, 0.9667, 1, 1.0333, 1.0667]
   };
@@ -167,6 +168,96 @@
       })
     }));
     return cache.get(key);
+  }
+
+  const fmtPct = v => String(Math.round(v * 1000) / 10).replace('.', ',') + '%';
+  const fmtScaledNum = v => String(Math.round(v * 10) / 10).replace('.', ',');
+  const SKIP_BEFORE_RE = /(?:тратит|отнимает|становится|ниже|при ≤|≤|(?<!крит\.\s)(?:с шансом|шансом|базовый шанс|шанс Четвёрки)|по пробитым|Выигрыш\s*\(|Озноб\s*\(скорость|берёт|пропускает|ход Счетовода на|задерживает[^\d.%]*?на)\s*[+−-]?\s*$/i;
+  const SKIP_AFTER_RE = /^(?:\s*провал|\s*добить|\s*макс\.\s*HP\s*(?:цели|союзников)|\s*HP\s*союзников|\s*энергии|\s*за каждое ослабление цели\)\s*бьёт)/i;
+
+  function scaleAbilityText(kit, which, lv, text) {
+    if (!text || !H.TUNING.trLevels) return text || '';
+    const w = which === 'enhanced' ? 'basic' : which;
+    if (!REF[w]) return text;
+    const c = H.CHARS && H.CHARS[kit];
+    const ab = c && (which === 'enhanced' ? c.enhanced : w !== 'talent' ? c[w] : null);
+    const own = kitRatio(kit, w, lv);
+    const sup = !!(ab && ab.fx && ab.fx.length && ab.fx.every(f => SUPPORT_FX.has(f.k) || f.k === 'cleanse' || f.k === 'cleanseAll' || f.k === 'invig' || f.k === 'taunt' || f.k === 'cover' || f.k === 'ecstasy'));
+    const r = own != null ? own : traceRatio(w === 'talent' ? 'skill' : w, lv, sup);
+    const rs = own != null ? own : traceRatio(w === 'talent' ? 'skill' : w, lv, true);
+    if (Math.abs(r - 1) < 1e-4 && Math.abs(rs - 1) < 1e-4) return text;
+    let out = String(text).replace(/(\d+(?:,\d+)?)%/g, (m, num, idx, str) => {
+      const before = str.slice(Math.max(0, idx - 42), idx);
+      const after = str.slice(idx + m.length, idx + m.length + 34);
+      if (SKIP_BEFORE_RE.test(before) || SKIP_AFTER_RE.test(after)) return m;
+      const val = parseFloat(num.replace(',', '.')) * r;
+      return fmtScaledNum(val) + '%';
+    });
+    out = out.replace(/(%\s*(?:[а-яА-ЯёЁa-zA-Z.]+\s*){0,3}\+\s*)(\d+)(?!\s*(?:%|ход|х\.|раз|срабатыван|Вдохновен|Юмор|уров|стак|заряд|очк|энерг|Сизиг|Вол|Блестяш|Чешу|Талисман|Знамен|Усилител|Цвет|Апофеоз))/g, (m, pre, num) => pre + Math.max(1, Math.round(+num * rs)));
+    out = out.replace(/(\+)(\d+)(\s*HP\b)/g, (m, p1, num, p2) => p1 + Math.max(1, Math.round(+num * rs)) + p2);
+    return out;
+  }
+
+  function describeFx(ab) {
+    if (!ab || !Array.isArray(ab.fx)) return '';
+    const tn = H.TUNING;
+    return ab.fx.map(f => {
+      if (f.k === 'dmg') return 'урон ' + fmtPct(f.m) + (f.holy ? ' (нечисти ' + fmtPct(f.m + f.holy) + ')' : '') + (f.hpM ? ' +' + fmtPct(f.hpM) + ' HP' : '') + (f.adj ? ' (соседним ' + fmtPct(f.adj) + ')' : '') + (f.hits ? ' ×' + f.hits : '') + (f.plusDef ? ' +' + fmtPct(f.plusDef) + ' защ.' : '') + (f.vsSlow ? ' (замедленным +' + fmtPct(f.vsSlow) + ')' : '') + (f.vsHalf ? ' (при HP ≥50% +' + fmtPct(f.vsHalf) + ')' : '') + (f.chant ? ', +' + Math.round(tn.chantDmg * 100) + '% за Напев' : '') + (f.luck ? ', +' + Math.round(tn.luck * 100) + '% за Удачу' : '') + (f.anyTough ? ', по любой стойкости' : '');
+      if (f.k === 'swing') return 'урон ' + fmtPct(f.m) + ' +' + fmtPct(f.def) + ' защ., только по неподвижной цели';
+      if (f.k === 'chant') return 'Напев +1 (до ' + tn.chantMax + '), без урона';
+      if (f.k === 'collapse') return 'потом ' + tn.collapseTurns + ' хода без сил';
+      if (f.k === 'wet') return 'враги мокнут: лёд их заморозит';
+      if (f.k === 'cover') return 'Прикрытие ' + f.turns + ' х.: берёт ' + Math.round(tn.coverShare * 100) + '% урона союзников';
+      if (f.k === 'ecstasy') return 'Восторг +' + f.v;
+      if (f.k === 'heist') return 'снимает все усиления и щиты, срывает заряд, добыча';
+      if (f.k === 'purge') return 'по нечисти снимает усиление';
+      if (f.k === 'heal') return 'лечение ' + fmtPct(f.m) + ' HP' + (f.flat ? ' +' + Math.round(f.flat) : '') + (f.bounce ? ', ещё ' + f.bounce + ' отскока самому раненому' : '');
+      if (f.k === 'hot') return 'регенерация ' + fmtPct(f.m) + ' HP' + (f.flat ? ' +' + Math.round(f.flat) : '') + ' (' + f.turns + ' х.)';
+      if (f.k === 'invig') return 'Оживление ' + f.turns + ' х.';
+      if (f.k === 'sync') return 'Единение души и стали';
+      if (f.k === 'yanqingUlt') return 'крит +60%, крит. урон +' + fmtPct(f.m || 0.5);
+      if (f.k === 'svarogMarked') return 'по врагам с Меткой ещё ' + fmtPct(f.m);
+      if (f.k === 'svMark') return 'Метки Сварога';
+      if (f.k === 'promise') return 'Сварог: ' + f.v + ' усиленных ответа (+' + fmtPct(1.6 * (f.m || 1)) + ')';
+      if (f.k === 'shield') return 'щит ' + fmtPct(f.m) + ' защ.' + (f.flat ? ' +' + Math.round(f.flat) : '');
+      if (f.k === 'buff') {
+        if (f.quiet) return '';
+        const sv = typeof f.v === 'number' ? ' ' + (f.s === 'spd' ? '+' + Math.round(f.v) : (f.v >= 0 ? '+' : '') + fmtPct(f.v)) : '';
+        return (f.name || 'усиление') + sv + ' (' + f.turns + ' х.)';
+      }
+      if (f.k === 'debuff') {
+        const dv = typeof f.v === 'number' ? ' −' + fmtPct(Math.abs(f.v)) : '';
+        return (f.name || 'ослабление') + dv;
+      }
+      if (f.k === 'freeze') return 'заморозка ' + Math.round(f.chance * 100) + '%';
+      if (f.k === 'dot') return H.DOT_NAME[f.type] + (f.m ? ' ' + fmtPct(f.m) : '');
+      if (f.k === 'taunt') return 'провокация';
+      if (f.k === 'advance') return 'ход раньше';
+      if (f.k === 'bloom') return 'Цветение (' + fmtPct(f.m || 0.5) + ' пробития)';
+      if (f.k === 'polarity') return 'Полярный хаос ' + fmtPct(f.m);
+      if (f.k === 'drain') return 'передача энергии (' + fmtPct(f.m) + ')';
+      return '';
+    }).filter(Boolean).join(', ');
+  }
+
+  function describeAbility(kitId, id, lv) {
+    const c = H.CHARS && H.CHARS[kitId];
+    if (!c) return '';
+    if (id === 'talent') return scaleAbilityText(kitId, 'talent', lv, c.talent);
+    if (id === 'skill' && c.skills && c.skillText) {
+      const sText = scaleAbilityText(kitId, 'skill', lv, c.skillText);
+      const sub = c.skills.map(sk => {
+        const sAb = scaleAb(sk, 'skill', lv, kitId);
+        const d = sk.text ? scaleAbilityText(kitId, 'skill', lv, sk.text) : describeFx(sAb);
+        return sk.name + ': ' + d;
+      }).join('; ');
+      return sText !== c.skillText ? sText : sub + '. ' + sText;
+    }
+    const ab = id === 'enhanced' ? c.enhanced : c[id];
+    if (!ab) return '';
+    if (ab.text) return scaleAbilityText(kitId, id, lv, ab.text);
+    const scaled = scaleAb(ab, id === 'enhanced' ? 'basic' : id, lv, kitId);
+    return describeFx(scaled);
   }
 
   const freshTrace = () => ({ lv: { basic: 1, skill: 1, ult: 1, talent: 1 }, on: [] });
@@ -233,7 +324,7 @@
   if (H.MAIL && !H.MAIL.some(m => m.id === MAIL.id)) H.MAIL.push(MAIL);
 
   H.TRACE_FX = H.TRACE_FX || {};
-  Object.assign(H, { traceRatio, traceKitRatio: kitRatio, traceScaleAb: scaleAb, traceEidUp: eidUp, tracePreset: preset, TRACE_LOOT: LOOT, TRACE_CALYX_PATH: CALYX_PATH, TRACE_CALYX_FOE: CALYX_FOE, TRACE_ECHO_N: ECHO_N, TRACE_ECHO_LIMIT: ECHO_LIMIT, TRACE_FIRST_CLEAR: FIRST_CLEAR, TRACE_FOE_OF_FAMILY: FOE_OF_FAMILY });
+  Object.assign(H, { traceRatio, traceKitRatio: kitRatio, traceScaleAb: scaleAb, traceScaleText: scaleAbilityText, traceDescribeFx: describeFx, traceDescribeAb: describeAbility, traceEidUp: eidUp, tracePreset: preset, TRACE_LOOT: LOOT, TRACE_CALYX_PATH: CALYX_PATH, TRACE_CALYX_FOE: CALYX_FOE, TRACE_ECHO_N: ECHO_N, TRACE_ECHO_LIMIT: ECHO_LIMIT, TRACE_FIRST_CLEAR: FIRST_CLEAR, TRACE_FOE_OF_FAMILY: FOE_OF_FAMILY });
 
   Object.assign(H.Game.prototype, {
     traceOf(key, kitId) {

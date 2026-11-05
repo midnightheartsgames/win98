@@ -17,20 +17,21 @@
     c.fillStyle = TRUSS;
     c.fillRect(bx, by + 10, bw, 2); c.fillRect(bx, by + 22, bw, 2);
     for (let x = bx; x < bx + bw; x += 16) { c.beginPath(); c.moveTo(x, by + 12); c.lineTo(x + 8, by + 22); c.lineTo(x + 10, by + 22); c.lineTo(x + 2, by + 12); c.fill(); }
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; bx + 40 + i * 66 < bx + bw - 16; i++) {
       const lx = bx + 40 + i * 66, on = 0.6 + 0.4 * Math.sin(t * 2 + i);
       c.fillStyle = '#1a1c2a'; c.fillRect(lx - 4, by + 24, 8, 6);
       c.fillStyle = 'rgba(255,236,190,' + on.toFixed(2) + ')'; c.fillRect(lx - 2, by + 30, 4, 2);
     }
-    c.fillStyle = '#16143a'; c.fillRect(bx + 150, by + 40, 310, 30);
-    c.fillStyle = '#2c2a6a'; c.fillRect(bx + 150, by + 40, 310, 2);
-    ui.text('КОН-ТОН × КЕЙП-СИТИ', bx + 305, by + 46, { align: 'center', size: 14, bold: true, serif: true, col: '#f2d8ff' });
+    const sx = Math.round(bx + bw / 2 - 155);
+    c.fillStyle = '#16143a'; c.fillRect(sx, by + 40, 310, 30);
+    c.fillStyle = '#2c2a6a'; c.fillRect(sx, by + 40, 310, 2);
+    ui.text('КОН-ТОН × КЕЙП-СИТИ', bx + bw / 2, by + 46, { align: 'center', size: 14, bold: true, serif: true, col: '#f2d8ff' });
   }
 
   function crowd(c, bx, by, bw, bh, t, rows) {
     for (let r = 0; r < rows; r++) {
       const y0 = by + bh - 28 + r * 12;
-      for (let i = 0; i < 34; i++) {
+      for (let i = 0; bx + 6 + i * 18 < bx + bw - 6; i++) {
         const x = bx + 6 + i * 18 + (r % 2) * 9, sway = Math.sin(t * 2.4 + i * 0.7 + r) * 2;
         c.fillStyle = r ? '#0a0818' : '#120e24';
         c.beginPath(); c.arc(x + sway * 0.4, y0, 6, 0, Math.PI * 2); c.fill();
@@ -243,22 +244,27 @@
 
     contonPage(c, scr) {
       const g = this.game, t = this.t, D = H.CONTON_BANNER.DAYS, cd = g.conDays();
-      const hx = PX + 4, hy = PY + 4, hw = PW - 8, hh = 96;
+      const eb = this.eventBox ? this.eventBox() : { px: PX, py: PY, pw: PW, wide: false };
+      const hx = eb.px + 4, hy = eb.py + 4, hw = eb.pw - 8, hh = 96;
       hallBack(this, c, hx, hy - 30, hw, hh + 30, t);
       c.fillStyle = 'rgba(6,6,24,0.6)'; c.fillRect(hx, hy, hw, hh);
       this.text('Четыре дня Кон-Тона', hx + 14, hy + 54, { size: 18, bold: true, serif: true, col: '#ffe8f4' });
       this.text('Заходите в игру четыре разных дня. Каждый день конвента даёт бейджи.', hx + 14, hy + 78, { size: 10, col: C.cream });
-      const sy = hy + hh + 10, cw = (hw - 18) / 4;
+      const sy = hy + hh + 10, gap = eb.wide ? 8 : 3, cw = (hw - 8 - gap * 3) / 4;
       D.forEach(([day, n], i) => {
-        const x = hx + 4 + i * (cw + 3), y = sy, open = i < cd.days, got = !!cd.got[i], sel = scr.pick === i;
+        const x = hx + 4 + i * (cw + gap), y = sy, open = i < cd.days, got = !!cd.got[i], sel = scr.pick === i;
         c.fillStyle = sel ? '#3a2a5a' : '#1c1838'; c.fillRect(x, y, cw, 230);
         c.strokeStyle = sel ? C.brassHi : '#4a3a70'; c.strokeRect(x + 0.5, y + 0.5, cw - 1, 229);
         c.fillStyle = ['#e0304a', '#ff6aa8', '#4a90e0', '#8a7aff'][i]; c.fillRect(x + 1, y + 1, cw - 2, 22);
         this.text(day, x + cw / 2, y + 5, { align: 'center', size: 11, bold: true, col: '#fff' });
         this.text('День ' + (i + 1), x + cw / 2, y + 32, { align: 'center', size: 10, col: C.sub });
-        this.rewardCell(c, 'badge', n, x + cw / 2 - 24, y + 56, 48);
-        this.text(got ? 'Получено' : open ? 'Можно забрать' : 'Ещё не наступил', x + cw / 2, y + 116, { align: 'center', size: 10, bold: open && !got, col: got ? C.ok : open ? C.gold : C.dim });
+        const cs = eb.wide ? 56 : 48;
+        this.rewardCell(c, 'badge', n, x + cw / 2 - cs / 2, y + 54, cs);
+        this.text(got ? 'Получено' : open ? 'Можно забрать' : 'Ещё не наступил', x + cw / 2, y + (eb.wide ? 122 : 116), { align: 'center', size: 10, bold: open && !got, col: got ? C.ok : open ? C.gold : C.dim });
         if (got) this.stamp(x + cw / 2, y + 160, 'БЫЛ');
+        else if (eb.wide && open) {
+          this.button(x + 14, y + 188, cw - 28, 26, 'Получить', () => this.conDayPick(scr, i), { active: sel, bold: true });
+        }
         this.hit(x, y, cw, 230, () => this.conDayPick(scr, i));
       });
       this.text('Вход: ' + cd.days + ' из ' + D.length + ' · новый день в 04:00', hx + hw / 2, sy + 244, { align: 'center', size: 10, col: C.sub });

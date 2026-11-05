@@ -263,14 +263,14 @@
     },
 
     drawVisitHud(c) {
-      const g = this.game, n = globalThis.Net98, place = g.map.def.name.split(': ').pop(), title = 'В гостях: ' + g.guest.name, pw = Math.max(this.measure(place, 11, true), this.measure(title, 10)) + 18;
+      const g = this.game, n = globalThis.Net98, place = g.map.def.name.split(': ').pop(), title = 'В гостях: ' + g.guest.name, pw = Math.max(this.measure(place, 11, true), this.measure(title, 10)) + 18, lx = this.left, rx = this.right;
       this.drawMapBanner(c);
-      c.fillStyle = 'rgba(4,6,20,0.78)'; c.fillRect(6, 6, pw, 34);
-      c.fillStyle = C.brass; c.fillRect(6, 39, pw, 1);
-      this.text(place, 14, 9, { size: 11, bold: true, col: C.cream });
-      this.text(title, 14, 24, { size: 10, col: C.gold });
-      this.drawNetChip(c, 10 + pw, 6);
-      this.hints([['T', 'Фраза'], ['Esc', 'Меню']], W - 10, HGT - 18, { align: 'right' });
+      c.fillStyle = 'rgba(4,6,20,0.78)'; c.fillRect(lx + 6, 6, pw, 34);
+      c.fillStyle = C.brass; c.fillRect(lx + 6, 39, pw, 1);
+      this.text(place, lx + 14, 9, { size: 11, bold: true, col: C.cream });
+      this.text(title, lx + 14, 24, { size: 10, col: C.gold });
+      this.drawNetChip(c, lx + 10 + pw, 6);
+      this.hints([['T', 'Фраза'], ['Esc', 'Меню']], rx - 10, HGT - 18, { align: 'right' });
       if (n.state !== 'online') {
         const text = 'Связь потеряна, пробуем снова', w = this.measure(text, 12, true) + 24;
         c.fillStyle = 'rgba(40,6,6,0.88)'; c.fillRect(W / 2 - w / 2, 46, w, 20);

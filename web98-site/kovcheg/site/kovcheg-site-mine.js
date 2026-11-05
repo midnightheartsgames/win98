@@ -33,12 +33,13 @@
       const chars = {};
       for (const [key, r] of Object.entries(st.roster)) {
         const id = key === 'trail' ? (st.mcPath === 'trail_p' ? 'trail_p' : 'trail') : key;
-        if (!H.CHARS[id] || !r) continue;
+        if (!H.CHARS[id] || !r || H.labOnly(id)) continue;
         const tr = r.tr && r.tr[id] && r.tr[id].lv;
-        chars[id] = { lvl: Math.max(1, Math.min(99, parseInt(r.lvl, 10) || 1)), eid: Math.max(0, Math.min(6, parseInt(r.eid, 10) || 0)), skill: tr ? Math.max(0, Math.min(15, parseInt(tr.skill, 10) || 0)) : 0 };
+        const worn = r.cone != null ? ((st.inv && st.inv.cones) || []).find(c => c && c.uid === r.cone) : null;
+        chars[id] = { lvl: Math.max(1, Math.min(99, parseInt(r.lvl, 10) || 1)), eid: Math.max(0, Math.min(6, parseInt(r.eid, 10) || 0)), skill: tr ? Math.max(0, Math.min(15, parseInt(tr.skill, 10) || 0)) : 0, asc: Math.max(0, Math.min(6, parseInt(r.asc, 10) || 0)), coneLvl: worn ? Math.max(1, Math.min(99, parseInt(worn.lvl, 10) || 1)) : 0 };
       }
       if (!Object.keys(chars).length) return { error: 'В сохранении нет ни одного персонажа.' };
-      const cones = [...new Set(((st.inv && st.inv.cones) || []).map(c => c && c.id).filter(id => H.CONES[id]))];
+      const cones = [...new Set(((st.inv && st.inv.cones) || []).map(c => c && c.id).filter(id => H.CONES[id] && !H.labOnly(id)))];
       const sum = d.summary || {};
       return {
         file: String(file || '').slice(0, 40),
@@ -159,7 +160,7 @@
         const mine = ids.filter(id => this.primaryCol(id) === col.id);
         if (!mine.length) return '';
         const place = this.placement('hall', 'sig', col.id);
-        return `<tr><td class="kv-team-label">${this.esc(col.name)}</td><td>${mine.map(id => `<span class="kv-mine-chip">${this.charChip(id)}<span class="kv-small">ур. ${crew.chars[id].lvl}${crew.chars[id].eid ? ', Э' + crew.chars[id].eid : ''}${crew.chars[id].skill ? ', навык ' + crew.chars[id].skill : ''}${place[id] ? ', ' + this.tierName(place[id]) : ''}</span></span>`).join('')}</td></tr>`;
+        return `<tr><td class="kv-team-label">${this.esc(col.name)}</td><td>${mine.map(id => `<span class="kv-mine-chip">${this.charChip(id)}<span class="kv-small">ур. ${crew.chars[id].lvl}${crew.chars[id].eid ? ', Э' + crew.chars[id].eid : ''}${crew.chars[id].asc ? ', фаза ' + crew.chars[id].asc : ''}${crew.chars[id].skill ? ', навык ' + crew.chars[id].skill : ''}${crew.chars[id].coneLvl ? ', конус ур. ' + crew.chars[id].coneLvl : ''}${place[id] ? ', ' + this.tierName(place[id]) : ''}</span></span>`).join('')}</td></tr>`;
       }).join('');
       const block = mode => {
         const p = this.crewPicks(crew, mode);

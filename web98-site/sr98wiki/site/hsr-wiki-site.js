@@ -5,6 +5,7 @@
   const EDITS_KEY = 'win98_astralwiki_edits_v1';
   const TALK_KEY = 'win98_astralwiki_talk_v1';
   const SPOILER_KEY = 'win98_astralwiki_spoilers_v1';
+  const SPOILER_DESC = 'Описание скрыто: это спойлер сюжета. Включить спойлеры можно в шапке страницы.';
   const HITS_KEY = 'win98_astralwiki_hits_v1';
   const CHECKS_KEY = 'win98_astralwiki_checks_v1';
   const SAVE_KEY = 'win98_hsr98_save_v3';
@@ -31,7 +32,7 @@
     ['station', 'Станция «Герта» и Общество гениев', ['herta', 'asta', 'arlan', 'ruanmei']],
     ['hunters', 'Охотники за Стелларонами', ['kafka', 'silverwolf', 'blade']],
     ['jarilo', 'Ярило-VI', ['bronya', 'seele', 'gepard', 'serval', 'pela', 'natasha', 'sampo', 'hook', 'clara', 'lynx', 'luka']],
-    ['luofu', 'Сяньчжоу «Лофу»', ['bailu', 'yanqing', 'sushang', 'xueyi', 'hanya', 'tingyun', 'qingque', 'yukong', 'guinaifen']],
+    ['luofu', 'Лофу Сяньчжоу', ['bailu', 'yanqing', 'sushang', 'xueyi', 'hanya', 'tingyun', 'qingque', 'yukong', 'guinaifen']],
     ['guests', 'Гости Междумирья', null]
   ];
 
@@ -41,7 +42,8 @@
     ['j_', 'Ярило-VI: Надмирье и Снежные равнины', 'Надмирье'],
     ['u_', 'Ярило-VI: Подземье', 'Подземье'],
     ['su_', 'Виртуальная вселенная', 'Виртуальная вселенная'],
-    ['ax_', 'Королевство Белзерг: Аксель', 'Белзерг']
+    ['ax_', 'Королевство Белзерг: Аксель', 'Белзерг'],
+    ['lf_', 'Лофу Сяньчжоу', 'Лофу']
   ];
 
   const DOC_KINDS = [
@@ -919,7 +921,7 @@
         <td>
           <div class="hwk-welcome">
             <div class="hwk-welcome-h">Добро пожаловать в АстралВики '98!</div>
-            <p class="hwk-p">Мы собираем всё, что известно о мире <b>Star Rail 98</b> (версия 1.6): устройство Вселенной, фракции и миры, судьбы ${characterIds().length} персонажей, ${mapIds().length} карт с отметками сундуков и записок, тексты всех ${docIds().length} документов и решения загадок. Любой читатель может дополнить статью или оставить реплику в обсуждении.</p>
+            <p class="hwk-p">Мы собираем всё, что известно о мире <b>Star Rail 98</b> (версия 1.8): устройство Вселенной, фракции и миры, судьбы ${characterIds().length} персонажей, ${mapIds().length} карт с отметками сундуков и записок, тексты всех ${docIds().length} документов и решения загадок. Любой читатель может дополнить статью или оставить реплику в обсуждении.</p>
             <p class="hwk-small">Сейчас в Архиве <b>${total}</b> статей. Сайт игры: ${A('http://hsr.hoyoverse.com', 'Star Rail 98')}. Замеры урона и сборки: ${A('http://www.kovcheg98.ru/hsr98/', '«Ковчег»')}.</p>
           </div>
 
@@ -1673,7 +1675,7 @@
         <table class="hwk-table">
           ${items.map(([qid, q], i) => `<tr${alt(i)}>
             <td width="30%"><b>${A(`${HOST}/quest?id=${qid}`, esc(q.name))}</b>${q.giver ? `<br><span class="hwk-small">выдаёт: ${esc(q.giver)}</span>` : ''}</td>
-            <td>${esc(q.desc || '')}</td>
+            <td>${esc(q.spoiler && !spoilersOpen() ? SPOILER_DESC : q.desc || '')}</td>
             <td width="22%" class="hwk-small">${areaName(q)}</td>
           </tr>`).join('')}
         </table>`;
@@ -1712,7 +1714,8 @@
     const q = h.QUESTS && h.QUESTS[id];
     const item = tm || q;
     const rawSteps = item.steps;
-    const steps = Array.isArray(rawSteps)
+    const hidden = item.spoiler && !spoilersOpen();
+    const steps = hidden ? [] : Array.isArray(rawSteps)
       ? rawSteps
       : (rawSteps && typeof rawSteps === 'object'
         ? Object.entries(rawSteps).map(([k, v]) => Object.assign({ key: k }, typeof v === 'object' ? v : { text: String(v) }))
@@ -1728,7 +1731,7 @@
       ${doneInSave ? `<p class="hwk-done">■ В вашем сохранении (${esc(sv.name || 'Первопроходец')}) эта миссия уже выполнена.</p>` : ''}
       <table class="hwk-cols"><tr>
         <td>
-          <p class="hwk-lead">${esc(item.desc || 'Сюжетное поручение Первопроходца.')}</p>
+          <p class="hwk-lead">${esc(hidden ? SPOILER_DESC : item.desc || 'Сюжетное поручение Первопроходца.')}</p>
           ${steps.length ? `<h2 class="hwk-h2">Что нужно сделать</h2>
             <p class="hwk-small">Отмечайте пройденные шаги галочкой. Отметки хранятся в вашем браузере.</p>
             <table class="hwk-check">
@@ -1740,7 +1743,7 @@
                   <td>${esc(st.text || st.title || `Шаг ${i + 1}`)}${mapId && h.MAPS[mapId] ? `<br><span class="hwk-small">Где: ${A(`${HOST}/atlas?map=${mapId}`, esc(h.MAPS[mapId].name))}</span>` : ''}</td>
                 </tr>`;
               }).join('')}
-            </table>` : '<p class="hwk-small">Эта миссия проходит одним событием, без отдельных шагов.</p>'}
+            </table>` : hidden ? '' : '<p class="hwk-small">Эта миссия проходит одним событием, без отдельных шагов.</p>'}
         </td>
         <td class="hwk-gap"></td>
         <td class="hwk-side">
@@ -1805,7 +1808,15 @@
     const KIND_NAMES = { food: 'Еда и лекарства', key: 'Ключевые предметы', exp: 'Материалы опыта', other: 'Прочее' };
     return `
       ${head('Каталог предметов: конусы, реликвии, слияния, наряды')}
-      ${jumpbar([['a-cones', `Конусы (${cones.length})`], ['a-relics', `Реликвии (${relics.length})`], ['a-fus', `Слияния (${fusions.length})`], ['a-out', `Наряды (${outfits.length + pets.length})`], ['a-items', `Предметы (${items.length})`]])}
+      ${jumpbar([['a-up', 'Возвышение'], ['a-cones', `Конусы (${cones.length})`], ['a-relics', `Реликвии (${relics.length})`], ['a-fus', `Слияния (${fusions.length})`], ['a-out', `Наряды (${outfits.length + pets.length})`], ['a-items', `Предметы (${items.length})`]])}
+
+      ${h.ASC ? `${section('a-up', 'Возвышение героев и конусов')}
+      <p class="hwk-p">С версии 1.7 у героя и у конуса есть предел уровня. Дойдя до него, они проходят Возвышение: нужны материалы, кредиты и Уровень Освоения. Опыт из боёв дальше предела сгорает. Герой получает прибавку к характеристикам на самом Возвышении, а первое, третье и пятое Возвышения приносят по Звёздному пропуску.</p>
+      <table class="hwk-table">
+        <tr><th>Возвышение</th><th>Предел уровня</th><th>Уровень Освоения</th></tr>
+        ${[0, 1, 2, 3, 4, 5].map(p => `<tr><td>${p + 1}</td><td>${h.ascCap(p)} &gt; ${h.ascCap(p + 1)}</td><td>${h.ASC.tl[p + 1]}</td></tr>`).join('')}
+      </table>
+      <p class="hwk-p">Опыт конусу дают Бутоны эфира и лишние конусы. Материалы героя падают в Застойных тенях и с врагов, у каждого героя своя Тень: она указана на экране Возвышения.</p>` : ''}
 
       ${section('a-cones', `Световые конусы (${cones.length})`)}
       <p class="hwk-p">У каждого конуса есть своя статья в Зале конусов: картина, история с таблички, умение на всех наложениях и места, где конус можно получить. Нажмите на название.</p>
@@ -1997,9 +2008,9 @@
       <p class="hwk-cone-skill">${coneEffectHtml(id)}</p>
       <p class="hwk-small">Числа через косую черту: значения на наложениях S1/S2/S3/S4/S5. Копия того же конуса сливается с первым экземпляром, у которого наложение ниже S5. Умение работает, только если конус надет на героя Пути ${esc(pathName)}. Герою другого Пути конус даёт лишь HP, атаку и защиту.</p>
 
-      ${section('c-stats', 'Характеристики по уровню владельца')}
+      ${section('c-stats', 'Характеристики по уровню конуса')}
       <table class="hwk-table hwk-cone-stats">
-        <tr><th>Уровень героя</th>${CONE_LEVELS.map(l => `<th>${l}</th>`).join('')}</tr>
+        <tr><th>Уровень конуса</th>${CONE_LEVELS.map(l => `<th>${l}</th>`).join('')}</tr>
         ${[['hp', 'HP'], ['atk', 'Атака'], ['def', 'Защита']].map(([k, n], i) => `<tr${alt(i)}><td><b>${n}</b></td>${CONE_LEVELS.map(l => `<td class="hwk-num">${h.coneStats(id, l)[k]}</td>`).join('')}</tr>`).join('')}
       </table>
 
@@ -2059,7 +2070,7 @@
         <tr><td class="hwk-tag-k">Вид</td><td>${esc(o.kind || 'Особый наряд')}</td></tr>
         <tr><td class="hwk-tag-k">Цена</td><td><b>${o.price}</b> звёздного нефрита</td></tr>
         ${o.giftNote ? `<tr><td class="hwk-tag-k">Даром</td><td>${esc(o.giftNote)}</td></tr>` : ''}
-        <tr><td class="hwk-tag-k">Катсцены</td><td>${o.cuts ? 'свои: абсолютная техника, Навык, Слияния, прыжок' : 'обычные, меняется только облик'}</td></tr>
+        <tr><td class="hwk-tag-k">Катсцены</td><td>${o.cuts ? 'свои: абсолютная техника, Навык, Слияния, прыжок; своя картина эйдолонов' : 'обычные, меняется только облик'}</td></tr>
         <tr><td class="hwk-tag-k">В бою</td><td>характеристик не меняет</td></tr>
       </table>
     </div>`;

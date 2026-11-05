@@ -2576,6 +2576,7 @@
 
   function pomArt(p, L, q) {
     if (L.coat === 'pajamas') return pomPajamas(p, L, q);
+    if (L.coat === 'chef') return pomChef(p, L, q);
     const fine = q < 1.3, lw = Math.max(0.9, q * 0.95);
     const FUR = L.hair, FURs = mix(FUR, '#9c8ea4', 0.3), DK = L.ear, DKh = mix(DK, '#9a98b4', 0.3);
     const RED = L.top, REDs = dark(RED, 0.34), REDh = light(RED, 0.16);
@@ -2783,6 +2784,58 @@
     p.ell(RUF, 22.8, 50.4, 6.4, 6);
     for (const [dx, dy] of [[-4.2, -2.4], [-1.2, -4.8], [3, -4], [4.8, -0.6], [-4.8, 1.4]]) p.ell(RUF, 22.8 + dx, 50.4 + dy, 2.2, 2);
     if (fine) p.ell(RUFs, 24.8, 53.2, 2.6, 1.5);
+  }
+
+  function pomChef(p, L, q) {
+    const fine = q < 1.3, lw = Math.max(0.9, q * 0.95), M = pomMirror, line = (col, pts, w) => pomLine(p, col, pts, w);
+    const WT = L.top, WTs = '#d6d2c8', WTh = '#ffffff';
+    const AP = L.apron, APs = dark(AP, 0.3), APh = light(AP, 0.18);
+    const SC = L.scarf, SCs = dark(SC, 0.28);
+    const GOLD = L.trim, GOLDs = mix(GOLD, '#6a3a14', 0.4), GOLDh = light(GOLD, 0.55);
+    const CAP = L.cap, CAPs = '#d8d6e2', RUF = L.beard, RUFs = '#d4d0dc';
+
+    pomLimbs(p, L);
+
+    p.poly(WT, [36, 62.6, 64, 62.6, 67, 72, 68.4, 86, 67, 90, 33, 90, 31.6, 86, 33, 72]);
+    p.poly(WTs, [58, 63.4, 64, 62.6, 67, 72, 68.4, 86, 67, 90, 59.4, 90, 61, 76]);
+    p.poly(AP, [39, 71, 61, 71, 63, 89.6, 37, 89.6]);
+    p.poly(APs, [56, 71, 61, 71, 63, 89.6, 57.4, 89.6]);
+    p.poly(APh, [40, 72, 43, 72, 41.8, 88, 38.6, 88]);
+    p.rect(GOLD, 38.6, 70.4, 22.8, 1.6);
+    p.poly(WT, [44, 76, 56, 76, 55.4, 84.4, 50, 86, 44.6, 84.4]);
+    p.rect(GOLD, 44, 76, 12, 1.2);
+    for (const y of [66.2, 69]) { p.ell(GOLD, 45.4, y, 1.1, 1.1); p.ell(GOLD, 54.6, y, 1.1, 1.1); }
+
+    for (const s of [-1, 1]) {
+      p.poly(s < 0 ? WT : WTs, M(s, [37.4, 63.4, 32.8, 65.8, 28.6, 77, 28.8, 81.4, 36, 81.4, 38.4, 71.4]));
+      p.poly(AP, M(s, [28, 79.4, 36.6, 79.4, 37, 83.2, 27.6, 83.2]));
+      p.ell('#f6f2ea', s < 0 ? 32 : 68, 86.6, 3.8, 2.8);
+    }
+
+    p.ell('#5a3620', 72, 73, 1.6, 8, -0.35);
+    p.ell('#b8c2d0', 75.4, 65.4, 5.2, 3.8, -0.35);
+    p.ell('#eef4fc', 74.8, 64.8, 3.8, 2.5, -0.35);
+
+    p.ell(RUFs, 50, 63.4, 13.4, 5.2);
+    p.ell(RUF, 50, 62.4, 12.6, 4.4);
+    p.poly(SCs, [41, 63.6, 59, 63.6, 55.6, 72.8, 50, 69.6, 44.4, 72.8]);
+    p.poly(SC, [41.6, 63, 58.4, 63, 55, 71.4, 50, 68.4, 45, 71.4]);
+    p.ell(GOLDs, 50, 66.2, 2.4, 2.4); p.ell(GOLD, 50, 65.8, 2.1, 2.1);
+    if (fine) p.ell(GOLDh, 49.4, 65.2, 0.8, 0.6);
+
+    pomFace(p, L, q);
+
+    p.ell(CAPs, 36, 17, 10, 9.5); p.ell(CAPs, 64, 17, 10, 9.5); p.ell(CAPs, 50, 12.6, 13.5, 11);
+    p.ell(CAP, 35.6, 16.2, 9.6, 9); p.ell(CAP, 63.6, 16.2, 9.6, 9); p.ell(CAP, 49.6, 11.8, 13, 10.6);
+    p.ell(WTh, 44, 8.6, 6, 4);
+    p.poly(CAP, [30.4, 18, 69.6, 18, 68.2, 37.6, 31.8, 37.6]);
+    p.poly(CAPs, [61.4, 18, 69.6, 18, 68.2, 37.6, 60.6, 37.6]);
+    if (fine) for (const x of [38, 44, 50, 56, 62]) line(CAPs, [x, 18.6, x + (x - 50) * 0.06, 30], 0.7);
+    p.poly(AP, [30.8, 31.6, 69.2, 31.6, 69.8, 38.2, 30.2, 38.2]);
+    p.poly(APs, [61, 31.6, 69.2, 31.6, 69.8, 38.2, 61.2, 38.2]);
+    p.rect(GOLD, 30.2, 36.8, 39.6, 2);
+    p.ell(GOLDs, 50, 34.8, 3.8, 3.8); p.ell(GOLD, 50, 34.4, 3.4, 3.4);
+    p.ell('#fff4d8', 50, 34.4, 2, 2);
   }
 
   function bustSvarog(p) {
@@ -5751,8 +5804,59 @@
     R(1, 6, 3, 3, RUF); R(1, 8, 3, 1, RUFs);
   }
 
+  function spritePomChef(draw, L, dir, frame) {
+    const side = dir === 'left' || dir === 'right', flip = dir === 'left', back = dir === 'up';
+    const R = (x, y, w, h, col) => draw(flip ? 17 - x - w : x, y, w, h, col);
+    const WT = L.top, WTs = '#d6d2c8', AP = L.apron, APs = dark(AP, 0.3), SC = L.scarf;
+    const GOLD = L.trim, DK = L.ear, DKs = mix(DK, '#0c0a12', 0.3), FUR = L.hair, FURs = mix(FUR, '#9c8ea4', 0.3), IN = mix(FUR, '#d4c6bc', 0.45);
+    const CAP = L.cap, CAPs = '#d8d6e2', INK = '#1c1622', PAW = '#f6f2ea';
+    const l1 = frame === 1 ? 1 : 0, l3 = frame === 3 ? 1 : 0;
+    if (!side) {
+      R(3, 22, 11, 1, 'rgba(0,0,0,0.25)');
+      for (const s of [-1, 1]) {
+        const X = (x, w) => (s < 0 ? x : 17 - x - w);
+        R(X(2, 2), 7, 2, 5, DK); R(X(1, 3), 12, 3, 6, DK); R(X(1, 3), 18, 3, 2, DK); R(X(1, 2), 20, 2, 1, DK);
+        if (!back) { R(X(3, 1), 7, 1, 6, IN); R(X(3, 1), 18, 1, 2, IN); }
+      }
+      R(6, 19, 2, 2 - l1, back ? DKs : DK); R(9, 19, 2, 2 - l3, back ? DK : DKs);
+      R(6, 21 - l1, 2, 1, PAW); R(9, 21 - l3, 2, 1, PAW);
+      R(4, 13, 9, 6, WT); R(12, 13, 1, 6, WTs);
+      R(3, 13, 1, 4, WT); R(13, 13, 1, 4, WTs); R(3, 17, 1, 1, AP); R(13, 17, 1, 1, APs); R(3, 18, 1, 1, PAW); R(13, 18, 1, 1, PAW);
+      if (back) {
+        R(4, 16, 9, 1, AP); R(8, 16, 1, 3, APs);
+        R(4, 7, 9, 4, DK); R(5, 11, 7, 1, FURs); R(5, 12, 7, 1, SC);
+        R(4, 0, 9, 2, CAP); R(3, 1, 11, 3, CAP); R(5, 4, 7, 2, CAP); R(11, 1, 2, 4, CAPs);
+        R(4, 5, 9, 1, AP); R(4, 6, 9, 1, GOLD);
+        return;
+      }
+      R(5, 15, 7, 4, AP); R(11, 15, 1, 4, APs); R(5, 15, 7, 1, GOLD); R(7, 17, 3, 2, WT);
+      R(4, 7, 9, 5, FUR); R(5, 12, 7, 1, SC); R(7, 13, 3, 1, SC); R(8, 12, 1, 1, GOLD);
+      R(7, 7, 3, 1, DK); R(8, 8, 1, 1, DK);
+      R(5, 8, 2, 1, INK); R(10, 8, 2, 1, INK);
+      R(5, 9, 2, 2, L.eye); R(10, 9, 2, 2, L.eye); R(5, 9, 1, 1, '#ffffff'); R(10, 9, 1, 1, '#ffffff'); R(6, 10, 1, 1, '#1c3c94'); R(11, 10, 1, 1, '#1c3c94');
+      R(4, 10, 1, 1, '#f4a0aa'); R(12, 10, 1, 1, '#f4a0aa'); R(8, 11, 1, 1, '#c4848c');
+      R(4, 0, 9, 2, CAP); R(3, 1, 11, 3, CAP); R(5, 4, 7, 1, CAP); R(11, 1, 2, 4, CAPs);
+      R(4, 5, 9, 1, AP); R(4, 6, 9, 1, GOLD); R(8, 5, 1, 2, GOLD);
+      return;
+    }
+    R(3, 22, 10, 1, 'rgba(0,0,0,0.25)');
+    R(4, 7, 2, 6, DK); R(3, 13, 2, 5, DK); R(2, 18, 3, 2, DK); R(1, 20, 2, 1, DK); R(4, 18, 1, 2, IN);
+    R(8, 19, 2, 2 - l3, DKs); R(6, 19, 2, 2 - l1, DK);
+    R(8, 21 - l3, 3, 1, PAW); R(6, 21 - l1, 3, 1, PAW);
+    R(5, 13, 7, 6, WT); R(5, 13, 2, 6, WTs);
+    R(7, 15, 5, 4, AP); R(7, 15, 5, 1, GOLD); R(9, 17, 2, 2, WT);
+    R(7, 14, 2, 3, WT); R(7, 17, 2, 1, AP); R(7, 18, 2, 1, PAW);
+    R(5, 7, 7, 5, FUR); R(5, 7, 2, 1, DK); R(6, 8, 1, 3, IN); R(6, 12, 6, 1, SC); R(10, 13, 2, 1, SC); R(11, 12, 1, 1, GOLD);
+    R(9, 7, 2, 1, DK);
+    R(9, 8, 2, 1, INK); R(10, 9, 1, 2, L.eye); R(10, 9, 1, 1, '#ffffff');
+    R(11, 10, 1, 1, '#f4a0aa');
+    R(5, 0, 7, 2, CAP); R(4, 1, 9, 3, CAP); R(5, 4, 7, 1, CAP); R(4, 1, 2, 4, CAPs);
+    R(5, 5, 8, 1, AP); R(5, 6, 8, 1, GOLD); R(10, 5, 2, 2, GOLD);
+  }
+
   function spritePom(draw, L, dir, frame) {
     if (L.coat === 'pajamas') return spritePomPajamas(draw, L, dir, frame);
+    if (L.coat === 'chef') return spritePomChef(draw, L, dir, frame);
     const side = dir === 'left' || dir === 'right', flip = dir === 'left', back = dir === 'up';
     const R = (x, y, w, h, col) => draw(flip ? 17 - x - w : x, y, w, h, col);
     const RED = L.top, REDs = dark(RED, 0.34), GOLD = L.trim, DK = L.ear, DKs = mix(DK, '#0c0a12', 0.3), FUR = L.hair, FURs = mix(FUR, '#9c8ea4', 0.3);

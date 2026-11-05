@@ -2716,3 +2716,109 @@ In addition to an arsenal ranging from brass knuckles, crowbars and TT pistols t
   categories: ['1997 Video Games', '1999 Video Games', 'Driving Games', 'Action Games']
 }, ['gtann', 'gta90', 'grandtheftauto']);
 
+window.interpediaReg('serioussam', 'games', {
+  title: 'Serious Sam 98: Первая встреча',
+  hatnote: 'Статья портала «Игры» — о трёхмерном шутере студии Croteam в каталоге [[steam|Steam]] нашей системы.',
+  infobox: {
+    title: 'Serious Sam 98: Первая встреча',
+    badgeText: '3D-шутер от первого лица',
+    fields: [
+      { label: 'Разработчик', value: 'Croteam (Загреб, Хорватия)' },
+      { label: 'Жанр', value: '3D-шутер от первого лица (FPS)' },
+      { label: 'Дистрибутив в системе', value: '[[steam|Steam]] (Setup_SeriousSam.exe, 14,8 МБ, C:\\Games\\SeriousSam\\SAM.EXE)' },
+      { label: 'Место действия', value: 'Древний Египет (Хатшепсут, Долина Царей, Карнак, Луксор, Великая пирамида)' },
+      { label: 'Арсенал и враги', value: '10 видов оружия (до пушки SBC), 9 типов монстров и босс Угх-Зан III' },
+      { label: 'Бортовой компьютер', value: 'Нейроимплант NETRICSA v2.04' }
+    ]
+  },
+  lead: `<strong>Serious Sam 98: Первая встреча</strong> (англ. <em>Serious Sam: The First Encounter</em>) — скоростной трёхмерный шутер от первого лица, созданный хорватской студией <em>Croteam</em> из Загреба и доступный в каталоге [[steam|Steam]] для [[win98clone|нашей системы]] (установочный пакет <code>Setup_SeriousSam.exe</code> объёмом 14,8 МБ, исполняемый файл <code>C:\\Games\\SeriousSam\\SAM.EXE</code>). В отличие от камерных коридорных боевиков конца 1990-х годов, где игрок крадётся по тёмным вентиляционным шахтам и бережёт каждую обойму, <em>Serious Sam 98</em> выбрасывает героя под ослепительное солнце Древнего Египта на гигантские открытые дворы храмов, где на него одновременно бегут десятки и сотни монстров инопланетного завоевателя Ментала, а единственная рабочая тактика — непрерывный огонь при движении спиной вперёд.`,
+  sections: [
+    { id: 'story_timelock', title: 'Сэм «Крутой» Стоун, Сириус и Ключ к Вечности', content: `По сюжету игры в начале XXII века человечество обнаруживает в египетских песках артефакты вымершей высокоразвитой цивилизации с планеты Сириус, но вскоре сталкивается с беспощадной ордой космического тирана Ментала (<em>Mental</em>), уничтожающего одну звёздную систему за другой. Когда оборона Земли рушится, последние учёные приводят в действие древний механизм в храме Хатшепсут — «Ключ к Вечности» (<em>Time-Lock</em>) — и отправляют в XIV век до нашей эры одного бойца: ветерана Сэма «Крутого» Стоуна (<em>Sam "Serious" Stone</em>) в белой футболке с бомбой, синих джинсах и красных кедах.
+
+Задача Стоуна — пройти с боем от святилища в Дейр-эль-Бахри через Долину Царей, Карнак и Луксор к Великой пирамиде в Гизе, запустить древний маяк в храме в оазисе и вызвать на орбиту боевой корабль сирианцев <em>SSS Centerprice</em>, чтобы добраться до самого Ментала. В голову Сэма вживлён тактический нейрокомпьютер <strong>NETRICSA</strong> (<em>NEural TRanslator Implanted in Cerebral Cortex for Serious Action</em>): по нажатию клавиши он выводит на экран зелёные сводки о каждом новом виде противника, тактические подсказки по уязвимым местам, исторические справки о египетских династиях и входящие радиоперехваты.` },
+    { id: 'egypt_campaigns', title: 'Пять уровней Древнего Египта и архитектура арен', content: `Кампания <em>Serious Sam 98</em> ведёт игрока через пять масштабных зон Древнего Египта, залитых жёлтым полуденным светом и вечерними тенями среди обелисков, пилонов и колоннад с иероглифами:
+<ul>
+<li><strong>Храм Хатшепсут (Hatshepsut Temple):</strong> террасный заупокойный комплекс у отвесных скал Дейр-эль-Бахри, где Стоун подбирает армейский нож, револьверы и дробовик, впервые слышит далёкий крик безголовых камикадзе со стороны барханов и спускается во внутренние залы с каменными прессами и бассейнами.</li>
+<li><strong>Песчаный каньон и Гробница Рамзеса III (Sand Canyon / Tomb of Ramses III):</strong> узкие ущелья в скалах Фиванского некрополя, залитые лавой подземные чертоги и многоколонный гипостильный двор, где со стен спрыгивают костяные клиры, а в тупиках спрятаны секретные аптечки и боеприпасы.</li>
+<li><strong>Карнак (Karnak):</strong> ночной храмовый комплекс Амона-Ра с аллеей сфинксов, гигантскими обелисками, священным озером и четырьмя стихийными печатями (Воды, Земли, Огня и Воздуха), открывающими врата к святилищу.</li>
+<li><strong>Луксор (Luxor):</strong> широкие городские дворы, крыши и песчаные площади, где игрока запирают между башнями под перекрёстным огнём биомеханоидов и стадами разъяренных быков-оборотней, пока он ищет золотые крылья скарабея.</li>
+<li><strong>Великая пирамида (The Great Pyramid):</strong> финальный марш через гигантский песчаный плац к подножию пирамиды Хеопса, где в пыльной буре под грохот сирианского крейсера в небе разворачивается схватка с четырёхруким титаном Угх-Заном III.</li>
+</ul>` },
+    { id: 'arsenal', title: 'Десять стволов: от револьверов Schofield до корабельной пушки SBC', content: `Боевая механика <em>Serious Sam 98</em> не требует перезарядки после каждого выстрела у тяжёлого оружия и поощряет мгновенное переключение между десятью стволами под конкретную волну врагов:
+<ul>
+<li><strong>Армейский нож и парные револьверы Schofield .45:</strong> базовое вооружение с бесконечным боезапасом для добивания одиночных гнааров и ракетчиков на первых минутах уровня.</li>
+<li><strong>Помповый дробовик и двуствольный обрез (Double-Barrel Coach Gun):</strong> двустволка в упор кладёт скелета с одного дуплета и остаётся главным рабочим инструментом в тесных залах гробниц.</li>
+<li><strong>Пистолет-пулемёт Томпсона (M1A1 Thompson) и шестиствольный пулемёт XM214-A Minigun:</strong> скорострельная пара под общий запас патронов калибра 5,56 мм; раскрученный миниган выкашивает шеренгу камикадзе и сбивает гарпий на подлёте, но мгновенно сжигает ленту в 500 патронов.</li>
+<li><strong>Ракетомёт XPML21 и гранатомёт MK III:</strong> тяжёлая артиллерия для уничтожения шагающих биомеханоидов; у гранатомёта зажатие спускового крючка регулирует дальность навесного броска рикошетящей гранаты.</li>
+<li><strong>Четырёхствольный импульсный лазер XL2 и пушка SBC (Serious Bomb Cannon):</strong> вершина арсенала. Переносная чугунная пушка SBC стреляет огромными железными ядрами с урановым сердечником: при зажатии кнопки ядро разгоняется до максимальной скорости, катится сквозь строй врагов, сбивая быков и скелетов как кегли, и взрывается в конце пути.</li>
+</ul>` },
+    { id: 'bestiary', title: 'Бестиарий Ментала: безголовые камикадзе, клиры и колдун Угх-Зан III', content: `Каждый из девяти рядовых противников в <em>Serious Sam 98</em> отличается собственным звуковым сигналом и траекторией атаки, поэтому опытный игрок определяет состав толпы на слух ещё до того, как повернёт камеру:
+<ul>
+<li><strong>Безголовые солдаты (Beheaded Rocketeer / Firecracker) и Камикадзе (Beheaded Kamikaze):</strong> оживлённые магией Ментала пехотинцы в рваных тельняшках. Знаменитый <em>Безголовый камикадзе</em> бежит с двумя бомбами в поднятых руках и непрерывно орёт <em>«АААААА!»</em> (хотя головы у него нет); один точный выстрел в толпу камикадзе запускает цепную детонацию.</li>
+<li><strong>Гнаары (Gnaar) и Гарпии (Scythian Witch-Harpy):</strong> одноглазые фиолетовые и зелёные зубастые твари, атакующие врукопашную, и крылатые девы с Сириуса, пикирующие с неба и осыпающие площадь магическими перьями.</li>
+<li><strong>Скелеты с Клира (Kleer Skeleton) и Быки-оборотни (Sirian Werebull):</strong> рогатые костяные скакуны с планеты Клир, чей сухой перестук копыт за спиной заставляет мгновенно прыгать в сторону от летящих на цепях чугунных шаров, и тяжёлые сирианские быки, с разгону подбрасывающие Сэма на рога.</li>
+<li><strong>Биомеханоиды (Bio-mechanoid), Арахноиды и Лавовые големы:</strong> двуногие кибернетические шагоходы (малые синие с лазерами и огромные красные с парными ракетомётами), скорпионоподобные стрелки с пулемётами и огненные великаны, отрывающие от земли раскалённые глыбы.</li>
+<li><strong>Угх-Зан III (Ugh-Zan III, The Vicious Warlock):</strong> финальный босс высотой с двадцатиэтажный дом — древний четырёхрукий чародей-титан, вооружённый ракетными батареями и энергетическими пушками. Обычное оружие лишь слегка ранит его регенерирующую плоть: чтобы повергнуть гиганта внутри Великой пирамиды, Сэму нужно заманить его в центр зала под ионный луч зависшего в небе сирианского линкора.</li>
+</ul>` }
+  ],
+  seeAlso: ['doom', 'quake', 'dukenukem3d', 'unreal', 'steam', 'voodoo2'],
+  references: [
+    'Croteam. Serious Sam: The First Encounter — руководство пользователя и база данных NETRICSA v2.04 (1999–2000).',
+    'Страница и дистрибутив Serious Sam 98 в каталоге Steam (Setup_SeriousSam.exe, C:\\Games\\SeriousSam\\SAM.EXE).'
+  ],
+  links: [['http://www.steampowered.com', 'Каталог Steam: Serious Sam 98'], ['http://www.igromania98.ru', 'Журнал «Игромания»: обзоры 3D-шутеров'], ['http://forum.games98.com', 'Форум GamerZone: тактика прохождения Великой пирамиды']],
+  categories: ['Игры 1999 года', '3D-шутеры', 'Компьютерные игры', 'Научная фантастика']
+}, {
+  title: 'Serious Sam 98: The First Encounter',
+  hatnote: 'An article from the "Games" portal covering Croteam\'s wide-open 3D shooter in our system\'s [[steam|Steam]] catalog.',
+  infobox: {
+    title: 'Serious Sam 98: The First Encounter',
+    badgeText: 'First-Person Shooter',
+    fields: [
+      { label: 'Developer', value: 'Croteam (Zagreb, Croatia)' },
+      { label: 'Genre', value: 'First-person shooter (FPS)' },
+      { label: 'System package', value: '[[steam|Steam]] (Setup_SeriousSam.exe, 14.8 MB, C:\\Games\\SeriousSam\\SAM.EXE)' },
+      { label: 'Setting', value: 'Ancient Egypt (Hatshepsut, Valley of the Kings, Karnak, Luxor, Great Pyramid)' },
+      { label: 'Arsenal & foes', value: '10 weapons (up to the SBC cannon), 9 monster types and boss Ugh-Zan III' },
+      { label: 'Tactical computer', value: 'NETRICSA v2.04 neural implant' }
+    ]
+  },
+  lead: `<strong>Serious Sam 98: The First Encounter</strong> is a high-speed 3D first-person shooter developed by the Croatian studio <em>Croteam</em> in Zagreb and distributed through the [[steam|Steam]] catalog inside [[win98clone|our system]] (installer <code>Setup_SeriousSam.exe</code> at 14.8 MB, executable <code>C:\\Games\\SeriousSam\\SAM.EXE</code>). Rejecting the cramped, dimly lit ventilation shafts and careful ammo rationing of late-1990s tactical shooters, <em>Serious Sam 98</em> drops the player into the blazing sunlight of Ancient Egypt across vast temple courtyards where dozens and hundreds of alien creatures charge at once—and where survival depends on backpedaling at full sprint while holding down the trigger.`,
+  sections: [
+    { id: 'story_timelock', title: 'Sam "Serious" Stone, Sirius and the Time-Lock', content: `In the early 22nd century, humanity uncovers relics of an advanced civilization from the star Sirius buried beneath the Egyptian desert, only to awaken the relentless armada of the extraterrestrial warlord <em>Mental</em>. As Earth's defenses collapse, scientists activate an ancient Sirian portal inside the Temple of Hatshepsut—the <em>Time-Lock</em>—and send a single veteran back to 1378 BC: Sam "Serious" Stone, dressed in his trademark white bomb-logo T-shirt, blue jeans and red sneakers.
+
+Stone's mission is to fight his way from the cliffs of Deir el-Bahari through the Valley of the Kings, Karnak and Luxor to the Great Pyramid at Giza, realign the Sirian transmitter array and summon the starship <em>SSS Centerprice</em> into orbit before Mental's lieutenants rewrite human history. Hardwired into Sam's cerebral cortex is <strong>NETRICSA</strong> (<em>NEural TRanslator Implanted in Cerebral Cortex for Serious Action</em>), an onboard tactical database that pops up green HUD briefings on every newly encountered species, weak-spot combat tips, archaeological notes on Pharaonic monuments and intercepted radio messages.` },
+    { id: 'egypt_campaigns', title: 'Five Egyptian zones and open-courtyard arena combat', content: `The campaign of <em>Serious Sam 98</em> spans five monumental regions of Ancient Egypt bathed in golden desert sunlight and torchlit hypostyle shadows:
+<ul>
+<li><strong>Hatshepsut Temple:</strong> the terraced mortuary complex beneath the limestone cliffs of Deir el-Bahari, where Sam collects his combat knife, revolvers and shotgun, hears the distant scream of his first Beheaded Kamikaze across the dunes and descends into trapped subterranean chambers.</li>
+<li><strong>Sand Canyon and Tomb of Ramses III:</strong> narrow Theban canyon passes, lava-flooded burial vaults and pillared courtyards where Kleer skeletons leap from high ledges and secret ammo caches wait behind false hieroglyph panels.</li>
+<li><strong>Karnak:</strong> a nighttime sanctuary of Amun-Ra lined with ram-headed sphinxes, towering obelisks, a sacred lake and four elemental seals (Water, Earth, Fire and Air) that unlock the inner temple gates.</li>
+<li><strong>Luxor:</strong> sprawling sand plazas, rooftops and walled courtyards where the player is locked between sandstone pylons under crossfire from Bio-mechanoids and stampeding herds of Sirian Werebulls while hunting for pieces of the golden scarab.</li>
+<li><strong>The Great Pyramid:</strong> a final sprint across an immense desert basin toward the base of Khufu's pyramid, culminating in a dust-storm showdown against the four-armed titan Ugh-Zan III beneath the hovering hull of the Sirian cruiser.</li>
+</ul>` },
+    { id: 'arsenal', title: 'Ten weapons: from Schofield revolvers to the SBC portable cannon', content: `Combat in <em>Serious Sam 98</em> dispenses with magazine-reload pauses on heavy weapons and rewards rapid switching across ten weapons tailored to specific monster waves:
+<ul>
+<li><strong>Military Knife and dual Schofield .45 revolvers:</strong> infinite-ammo backup sidearms for picking off stray Gnaars and Beheaded Rocketeers in the opening minutes.</li>
+<li><strong>Pump-Action Shotgun and Double-Barrel Coach Gun:</strong> a point-blank blast from the twin-barrel coach gun drops a charging Kleer skeleton in one trigger pull, making it the workhorse weapon inside tight tomb corridors.</li>
+<li><strong>M1A1 Thompson Submachine Gun and XM214-A Minigun:</strong> sharing 5.56 mm ammunition, the Thompson handles medium packs while the six-barrel rotary minigun shreds entire ranks of screaming Kamikazes and diving Harpies at the cost of burning through a 500-round belt in seconds.</li>
+<li><strong>XPML21 Rocket Launcher and MK III Grenade Launcher:</strong> heavy ordnance built to dismantle towering Bio-mechanoids; holding down the fire button on the MK III charges the spring mechanism to lob bouncing grenades across an entire courtyard.</li>
+<li><strong>XL2 Lasergun and the SBC Portable Cannon:</strong> a four-barrel green pulse laser paired with the ultimate crowd-clearer—a handheld cast-iron naval cannon that fires depleted-uranium iron cannonballs. Charged to full power, a single cannonball bowls straight through a column of Werebulls and skeletons like bowling pins before detonating.</li>
+</ul>` },
+    { id: 'bestiary', title: 'Mental\'s bestiary: screaming Kamikazes, Kleers and Ugh-Zan III', content: `Each of the nine enemy classes in <em>Serious Sam 98</em> announces itself with an unmistakable audio cue and attack pattern, allowing veterans to read a battlefield by ear before turning around:
+<ul>
+<li><strong>Beheaded Rocketeers, Firecrackers and Beheaded Kamikazes:</strong> reanimated soldiers in striped shirts carrying blaster rifles or twin bombs. The <em>Beheaded Kamikaze</em> sprints across the sand with a bomb in each hand while screaming an unbroken <em>"AAAAAA!"</em> at the top of his non-existent lungs; shooting one in a tight cluster triggers a chain explosion.</li>
+<li><strong>Gnaars and Scythian Witch-Harpies:</strong> one-eyed purple and green melee beasts that charge in packs, paired with winged Sirian harpies that swoop down from temple roofs firing barrages of razor feathers.</li>
+<li><strong>Kleer Skeletons and Sirian Werebulls:</strong> horned skeletal quadrupeds from the planet Kleer whose clattering hooves behind the player demand an instant sidestep away from their twin chain-balls, alongside armored Werebulls that lower their horns and toss Sam skyward at full gallop.</li>
+<li><strong>Bio-mechanoids, Arachnoids and Lava Golems:</strong> bipedal cybernetic walkers (blue minor units with pulse lasers and towering red major walkers firing twin salvos of seeking rockets), scorpion-bodied chaingunners and molten rock giants that hurl flaming boulders.</li>
+<li><strong>Ugh-Zan III, The Vicious Warlock:</strong> a twenty-story, four-armed ancient warlock armed with shoulder rocket pods and energy cannons. Conventional weapons barely outpace his regeneration; inside the Great Pyramid, Sam must kite the colossus across the chamber floor to align him beneath the orbital ion beam of the <em>SSS Centerprice</em>.</li>
+</ul>` }
+  ],
+  seeAlso: ['doom', 'quake', 'dukenukem3d', 'unreal', 'steam', 'voodoo2'],
+  references: [
+    'Croteam. Serious Sam: The First Encounter — Player\'s Manual and NETRICSA v2.04 Tactical Database (1999–2000).',
+    'Serious Sam 98 store page and distribution package in the Steam catalog (Setup_SeriousSam.exe, C:\\Games\\SeriousSam\\SAM.EXE).'
+  ],
+  links: [['http://www.steampowered.com', 'Steam Catalog: Serious Sam 98'], ['http://www.igromania98.ru', 'Igromania Magazine: 3D Shooter Reviews'], ['http://forum.games98.com', 'GamerZone Forum: Great Pyramid Boss Tactics']],
+  categories: ['1999 Video Games', 'First-Person Shooters', 'Video Games', 'Science Fiction']
+}, ['samstone', 'croteam']);
+

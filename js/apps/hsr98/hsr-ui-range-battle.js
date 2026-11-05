@@ -31,7 +31,7 @@
     },
 
     rangeHud(c, b) {
-      const R = b.opts.range, st = b.rangeStat, cyc = Math.min(RG.cycleOf(b.clock || 0), R.cycles), x = W - 108, y = 42 + 22 + b.allies.length * 22, w = 100, h = 44, limit = R.cycles < RG.TUN.maxCycles;
+      const R = b.opts.range, st = b.rangeStat, cyc = Math.min(RG.cycleOf(b.clock || 0), R.cycles), w = 100, h = 44, x = this.wide() ? this.left + 8 : W - 108, y = this.wide() ? 8 : 42 + 22 + b.allies.length * 22, limit = R.cycles < RG.TUN.maxCycles;
       c.fillStyle = 'rgba(14,6,28,0.82)'; c.fillRect(x, y, w, h);
       c.fillStyle = 'rgba(255,122,216,0.7)'; c.fillRect(x, y, w, 1); c.fillRect(x, y + h - 1, w, 1);
       this.text('ПОЛИГОН', x + 6, y + 4, { size: 9, bold: true, col: '#ff7ad8' });
@@ -296,7 +296,8 @@
       { label: 'Завершить и показать итог', fn: () => { b.flee(); this.pullEvents(); } },
       { label: 'В таблицу', fn: () => this.rangeToTable() },
       { label: 'Панель Полигона', right: 'Tab', fn: () => { bt.sub = { type: 'range', sel: 0, skill: 0 }; } },
-      { label: 'Авто-бой: ' + (bt.auto || bt.rangeResume ? 'вкл' : 'выкл'), fn: () => { if (bt.rangeResume) bt.rangeResume = false; else bt.auto = !bt.auto; } }
+      { label: 'Авто-бой: ' + (bt.auto || bt.rangeResume ? 'вкл' : 'выкл'), fn: () => { if (bt.rangeResume) bt.rangeResume = false; else bt.auto = !bt.auto; } },
+      { label: 'Настройки', fn: () => this.openSettings() }
     ];
   };
 

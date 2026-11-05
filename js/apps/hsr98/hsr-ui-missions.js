@@ -91,7 +91,7 @@
         },
         draw(c) {
           ui.fullBg(c);
-          c.fillStyle = 'rgba(3,4,16,0.6)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(3,4,16,0.6)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.drawMissionHeader(c, this);
           const cur = this.cur();
           ui.drawMissionList(c, this, cur);

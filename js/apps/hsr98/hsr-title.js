@@ -331,11 +331,12 @@
     drawDust(R, Sc, t);
   }
 
-  let raster = null;
-  function draw(ctx, w, h, t) {
-    raster = raster || new R3.Raster(LW, LH);
-    render(raster, t);
-    raster.finish(ctx, 0, 0, w, h);
+  let raster = null, rasterW = null;
+  function draw(ctx, w, h, t, x = 0) {
+    const rw = w > h * 1.5 ? 427 : LW;
+    const r = rw === LW ? (raster || (raster = new R3.Raster(LW, LH))) : (rasterW || (rasterW = new R3.Raster(427, LH)));
+    render(r, t);
+    r.finish(ctx, x, 0, w, h);
   }
 
   H.TitleScene = { draw, render, scene, CARS, lamp: t => lampAt(scene(), t) };

@@ -26,10 +26,10 @@
       base: { hp: 144, atk: 70, def: 63, spd: 103 },
       look: { skin: '#fae0d4', hair: '#f2a0b2', hairHi: '#ffc8d4', eye: '#8ac83a', eye2: '#c4e878', bangs: 'sidepart', sides: 'long', back: 'twinwave', crown: 'smooth', gloss: true, body: 'f', coat: 'gyaru', top: '#1e1e24', inner: '#f4f4f6', trim: '#f4f4f6', collar: 'bare', lower: '#26262e', low: 'shorts', shoes: '#1c1c22', bootsTo: 'calf', cuff: '#f4f4f6', acc: ['twintails', 'tiebows:#1c1c22', 'hairclip:#e8c030', 'earring:#e0b030', 'choker:#1c1c22', 'detsleeves:#1e1e24', 'furhem:#f2f0ec', 'ringbelt:#2a2a30', 'bunnybag:#a8d23a', 'stocking1:#22222a', 'rips:#fae0d4', 'garter2:#2a2a30', 'socks:#22222a', 'boots:#1c1c22', 'mechcase:#2e2e34'] },
       basic: { name: 'Коварное комбо', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
-      enhanced: { name: 'Творю что хочу', target: 'blast', text: 'квантовый урон по площади, продлевает поле на ход.', fx: [{ k: 'dmg', m: T.caseHit, adj: T.caseAdj }, { k: 'caseShot' }] },
+      enhanced: { name: 'Творю что хочу', target: 'blast', text: 'квантовый урон 110% по площади, продлевает поле на ход.', fx: [{ k: 'dmg', m: T.caseHit, adj: T.caseAdj }, { k: 'caseShot' }] },
       skill: { name: 'Сахарная пуля с начинкой', target: 'blast', text: 'Энергетическое поле на 2 хода Николь: защита врагов −' + Math.round(T.fieldDef * 100) + '%, все враги считаются соседями цели. Урон по площади.', fx: [{ k: 'field', turns: T.fieldTurns }, { k: 'dmg', m: T.nicoleSkill, adj: T.nicoleSkillAdj }, { k: 'caseLoad' }] },
       ult: { name: 'Эфирная граната', target: 'all', text: 'поле на 2 хода, квантовый урон ' + Math.round(T.nicoleUlt * 100) + '% всем. Союзникам +10 энергии, следующему в очереди ещё +20.', fx: [{ k: 'field', turns: T.fieldTurns }, { k: 'dmg', m: T.nicoleUlt }, { k: 'nicoleEnergy' }, { k: 'caseLoad' }] },
-      talent: 'После навыка и абс. техники 2 базовые атаки бьют по площади и продлевают поле на ход.',
+      talent: 'После навыка и ульты 2 базовые атаки бьют по площади (110%) и продлевают поле на ход.',
       link: { name: 'У хитрого зайца три норы', text: 'Со следом враги в поле получают квантовый урон +' + Math.round(T.fieldQuant * 100) + '%.' },
       tech: { name: 'Шкатулка с сюрпризом', text: 'Бой начинается с энергетическим полем на 1 ход.', fx: 'nicoleTech' },
       contact: [{ name: 'Предложить сделку', tag: 'bribe' }, { name: 'Резвая зайка', tag: 'cute' }]
@@ -42,7 +42,7 @@
       enhanced: { name: 'Гром', target: 'single', text: 'урон молнией ' + Math.round(T.thunder * 100) + '%, сильный удар по стойкости. Серия обнуляется.', fx: [{ k: 'dmg', m: T.thunder, tough: 25 }, { k: 'seriesReset' }] },
       skill: { name: 'Удар молнии', target: 'single', text: 'урон молнией ' + Math.round(T.anbySkill * 100) + '%. После Серии 3 стойкость +64%. Серия обнуляется.', fx: [{ k: 'dmg', m: T.anbySkill, tough: 25, volt: true }, { k: 'seriesReset' }] },
       ult: { name: 'Овердрайв', target: 'single', text: 'урон молнией ' + Math.round(T.anbyUlt * 100) + '% и огромный удар по стойкости. Серия сразу 3.', fx: [{ k: 'dmg', m: T.anbyUlt, tough: 45 }, { k: 'seriesFull' }] },
-      talent: 'Серия 1-2-3, затем «Гром». Пока Энби в отряде, любое пробитие открывает Цепочку атак.',
+      talent: 'Серия 1-2-3, затем «Гром». С Энби любое пробитие открывает Цепочку атак (120%).',
       link: { name: 'Параллельный контур', text: 'Со следом союзник, ударивший Цепочкой атак, получает +10 энергии.' },
       tech: { name: 'Разрядная дуга', text: 'Удар молнией по всем врагам в начале боя.', fx: 'anbyTech' },
       contact: [{ name: 'Пересказать фильм', tag: 'weird' }, { name: 'Цель определена', tag: 'silent' }]

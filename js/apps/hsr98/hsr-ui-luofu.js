@@ -418,7 +418,7 @@
       base.drawDamageBoard.call(this, c, b);
       const a = b.lf && b.lf.assist;
       if (!a) return;
-      const v = b.lfGauge || 0, x = 8, y = 334, w = 176, full = v >= a.max, on = full && this.lfBlink();
+      const v = b.lfGauge || 0, x = this.wide() ? this.left + 8 : 8, y = this.wide() ? 8 : 334, w = 176, full = v >= a.max, on = full && this.lfBlink();
       c.fillStyle = 'rgba(4,6,20,0.78)'; c.fillRect(x, y, w, 30);
       c.strokeStyle = on ? JADE : 'rgba(242,220,154,0.5)'; c.strokeRect(x + 0.5, y + 0.5, w - 1, 29);
       this.text('G  ' + a.name, x + 6, y + 3, { size: 10, bold: true, col: full ? JADE : '#f2dc9a' });

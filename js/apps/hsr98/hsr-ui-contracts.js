@@ -4,6 +4,7 @@
   const { W, HGT, C } = H.UI_CONST;
   const fmt = H.fmt;
   const GRID = { x: 170, y: 70, cols: 4, w: 108, h: 150, gap: 8 };
+  const WIDE_GRID = { x: 73, y: 70, cols: 4, w: 156, h: 150, gap: 12 };
   const ART = { w: 48, h: 34 };
   const TAGS = { left: '#f0b040', version: '#e8602a', week: 'rgba(30,30,40,0.85)', none: '#c83434' };
   const LOOKS = {
@@ -96,8 +97,12 @@
       this.text(t, x + s - 2, y + s - 11, { size: 9, bold: true, align: 'right' });
     },
 
+    contractGrid() {
+      return this.wide && this.wide() ? WIDE_GRID : GRID;
+    },
+
     contractCard(c, v, x, y, on) {
-      const { w, h } = GRID, ct = v.c, foot = 24;
+      const { w, h } = this.contractGrid(), wide = !!(this.wide && this.wide()), ct = v.c, foot = 24;
       if (on) { c.fillStyle = C.brassHi; c.fillRect(x - 2, y - 2, w + 4, h + 4); }
       c.fillStyle = '#000'; c.fillRect(x - 1, y - 1, w + 2, h + 2);
       G.rarityCell(c, x, y, w, h - foot, ct.rar);
@@ -105,7 +110,7 @@
       gl.addColorStop(0, 'rgba(255,255,255,0.24)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
       c.fillStyle = gl; c.fillRect(x, y, w, h - foot);
       drawChest(c, ct.look, x + w / 2, y + 22, 2);
-      const big = this.wrap(ct.name, w - 8, 9, true), ns = big.length > 3 ? 8 : 9, lines = (ns === 9 ? big : this.wrap(ct.name, w - 6, 8, true)).slice(0, 4), lh = ns + 1;
+      const baseSz = wide ? 10 : 9, big = this.wrap(ct.name, w - 8, baseSz, true), ns = big.length > 3 ? baseSz - 1 : baseSz, lines = (ns === baseSz ? big : this.wrap(ct.name, w - 6, ns, true)).slice(0, 4), lh = ns + 1;
       const ny = y + h - foot - 14 - lines.length * lh;
       const band = c.createLinearGradient(0, ny - 8, 0, ny + 4);
       band.addColorStop(0, 'rgba(8,8,24,0)'); band.addColorStop(1, 'rgba(8,8,24,0.55)');
@@ -125,31 +130,36 @@
     },
 
     drawContracts(c, scr) {
-      const g = this.game, list = g.contractList();
+      const g = this.game, list = g.contractList(), gr = this.contractGrid();
       if (scr.csel >= list.length) scr.csel = list.length - 1;
-      this.supplyPill(W - 154, 10, 'jade', g.state.jade);
-      this.text('Контракты Герты', 170, 44, { size: 14, bold: true, serif: true, col: C.gold });
-      this.text('Оплата звёздным нефритом', 170 + this.measure('Контракты Герты', 14, true, true) + 12, 48, { size: 10, col: C.sub });
+      this.supplyPill(this.right - 154, 10, 'jade', g.state.jade);
+      this.text('Контракты Герты', gr.x, 44, { size: 14, bold: true, serif: true, col: C.gold });
+      this.text('Оплата звёздным нефритом', gr.x + this.measure('Контракты Герты', 14, true, true) + 12, 48, { size: 10, col: C.sub });
       list.forEach((v, i) => {
-        const x = GRID.x + (i % GRID.cols) * (GRID.w + GRID.gap), y = GRID.y + Math.floor(i / GRID.cols) * (GRID.h + GRID.gap);
+        const x = gr.x + (i % gr.cols) * (gr.w + gr.gap), y = gr.y + Math.floor(i / gr.cols) * (gr.h + 8);
         this.contractCard(c, v, x, y, i === scr.csel);
-        this.hit(x, y, GRID.w, GRID.h, () => { if (scr.csel === i) this.contractAct(scr); else { scr.csel = i; this.sfx('select'); } });
+        this.hit(x, y, gr.w, gr.h, () => { if (scr.csel === i) this.contractAct(scr); else { scr.csel = i; this.sfx('select'); } });
       });
       const v = list[scr.csel];
       if (v) this.contractInfo(c, scr, v);
-      this.hints([['←↑↓→', 'Контракт'], ['Tab', 'Раздел'], ['Enter', 'Купить'], ['Esc', 'Назад']], 170, HGT - 18);
+      this.hints([['←↑↓→', 'Контракт'], ['Tab', 'Раздел'], ['Enter', 'Купить'], ['Esc', 'Назад']], gr.x, HGT - 18);
     },
 
     contractInfo(c, scr, v) {
-      const x = 166, y = 390, w = 462, h = 66, ct = v.c;
+      const wide = !!(this.wide && this.wide()), x = wide ? 73 : 166, y = 390, w = wide ? 660 : 462, h = 66, ct = v.c;
       this.win(x, y, w, h, { alpha: 0.9, corners: false });
-      this.text(this.clip(ct.name, 196, 11, true), x + 10, y + 7, { size: 11, bold: true, col: C.gold });
+      this.text(this.clip(ct.name, wide ? 380 : 196, wide ? 12 : 11, true), x + 10, y + 7, { size: wide ? 12 : 11, bold: true, col: C.gold });
       let lx = x + 10;
-      for (const l of H.contractLots(ct.give)) { this.lotCell(c, l, lx, y + 24, 34); lx += 38; }
+      const lots = H.contractLots(ct.give);
+      for (const l of lots) { this.lotCell(c, l, lx, y + 24, 34); lx += 38; }
       if (ct.pick) {
         if (lx > x + 10) { this.text('+', lx + 2, y + 33, { size: 14, bold: true, col: C.brassHi }); lx += 16; }
         this.text('на выбор', lx, y + 26, { size: 10, col: C.sub });
         this.text(ct.pick + ' из ' + ct.from.length, lx, y + 40, { size: 12, bold: true, col: C.cream });
+        lx += 70;
+      }
+      if (wide) {
+        this.wrap(ct.text, x + w - 260 - lx, 10).slice(0, 2).forEach((line, i) => this.text(line, lx + 8, y + 28 + i * 13, { size: 10, col: '#c8d0f0' }));
       }
       const rx = x + w - 10;
       const note = ct.period ? (ct.period === 'version' ? 'До конца версии: ' : 'До новой недели: ') + timeLeft(v.ends - this.game.now()) : 'Один раз за игру';

@@ -1397,7 +1397,7 @@
   FX.kanji = {
     start(b, u) { if (b.hasBonus(u, 'a6')) u.buffs.push({ s: 'atkP', v: 0.2, turns: 999, cond: 'stitch', name: 'Номер один' }); },
     stitchLong(b, u) { return b.hasBonus(u, 'a2') ? 1 : 0; },
-    stitchUp(b, u) { return (b.hasBonus(u, 'a4') ? 0.1 : 0) + (b.eidOn(u, 6) ? 0.3 : 0); },
+    stitchUp(b, u) { return (b.traceRatio ? b.traceRatio('skill', abLv(b, u, 'skill')) - 1 : 0) * 0.4 + (b.hasBonus(u, 'a4') ? 0.1 : 0) + (b.eidOn(u, 6) ? 0.3 : 0); },
     dmg(b, u, tgt, o) { return o.kind === 'ult' && b.eidOn(u, 1) ? 0.3 : 0; },
     stitched(b, u, t, p) {
       for (const e of [t, p]) {
@@ -1455,7 +1455,7 @@
   };
 
   FX.talleah = {
-    sigUp(b, u) { return b.hasBonus(u, 'a2') ? 0.1 : 0; },
+    sigUp(b, u) { return (b.traceRatio ? b.traceRatio('skill', abLv(b, u, 'skill')) - 1 : 0) * 0.2 + (b.hasBonus(u, 'a2') ? 0.1 : 0); },
     gynoidHit(b, u) { if (b.hasBonus(u, 'a4')) b.gainEnergy(u, 5); },
     dmg(b, u, tgt, o) {
       let v = 0;

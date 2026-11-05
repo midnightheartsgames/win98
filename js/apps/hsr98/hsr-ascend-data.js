@@ -7,6 +7,18 @@
     heroCredit: 10,
     coneCredit: 2,
     coneFodder: { 3: 500, 4: 12000, 5: 60000 },
+    coneSalvageYield: { 3: { id: 'aether1', count: 1 }, 4: { id: 'aether2', count: 3 } },
+    coneSalvageCap: 500,
+    coneInvCap: 1500,
+    coneSorts: [
+      { id: 'rarity', label: 'Редкость' },
+      { id: 'lvl', label: 'Уровень' },
+      { id: 'name', label: 'Название' },
+      { id: 'atk', label: 'Сила атаки' },
+      { id: 'def', label: 'Защита' },
+      { id: 'hp', label: 'HP' },
+      { id: 'uid', label: 'Время получения' }
+    ],
     heroCost: {
       4: [
         { cr: 3200, foe: [1, 4], boss: 0 },

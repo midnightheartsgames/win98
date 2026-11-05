@@ -320,17 +320,18 @@
     return V;
   }
 
-  function shade(c, view) {
+  function shade(c, view, ui) {
     if (view) return;
-    let gr = c.createLinearGradient(0, 0, 210, 0);
+    const x0 = ui && ui.left || 0, vw = ui && ui.vw || W;
+    let gr = c.createLinearGradient(x0, 0, x0 + 210, 0);
     gr.addColorStop(0, 'rgba(4,6,22,0.86)'); gr.addColorStop(0.7, 'rgba(4,6,22,0.5)'); gr.addColorStop(1, 'rgba(4,6,22,0)');
-    c.fillStyle = gr; c.fillRect(0, 0, 210, HGT);
+    c.fillStyle = gr; c.fillRect(x0, 0, 210, HGT);
     gr = c.createLinearGradient(0, 0, 0, 58);
     gr.addColorStop(0, 'rgba(4,6,22,0.82)'); gr.addColorStop(1, 'rgba(4,6,22,0)');
-    c.fillStyle = gr; c.fillRect(0, 0, W, 58);
+    c.fillStyle = gr; c.fillRect(x0, 0, vw, 58);
     gr = c.createLinearGradient(0, HGT - 40, 0, HGT);
     gr.addColorStop(0, 'rgba(4,6,22,0)'); gr.addColorStop(1, 'rgba(4,6,22,0.8)');
-    c.fillStyle = gr; c.fillRect(0, HGT - 40, W, 40);
+    c.fillStyle = gr; c.fillRect(x0, HGT - 40, vw, 40);
   }
 
   const closedLooks = new WeakMap();
@@ -536,16 +537,17 @@
         draw(c) {
           const k = this.k, r = g.state.roster[k], kit = H.CHARS[g.kitOf(k)], sc = sceneOf(keyOf(k, g));
           syncAsm(this, g, k);
+          ui.fullBg(c, false);
           const V = scene(ui, c, k, r.eid, this.asm);
           const name = k === 'trail' ? g.state.name : kit.name, cap = name + ' · ' + sc.title;
           const w = Math.max(250, Math.round(ui.measure(cap, 13, true, true) + 40)), x = Math.round(W / 2 - w / 2), y = HGT - 54;
           ui.win(x, y, w, 40, { alpha: 0.82 });
           ui.text(cap, W / 2, y + 7, { align: 'center', size: 13, bold: true, serif: true, col: C.gold });
           ui.text('Эйдолоны ' + V.shown + ' / 6 · ' + stageName(V.shown), W / 2, y + 24, { align: 'center', size: 10, col: C.sub });
-          if (this.asm) ui.hit(0, 0, W, HGT, () => skipAsm(this, g));
+          if (this.asm) ui.hit(ui.left, 0, ui.vw, HGT, () => skipAsm(this, g));
           else {
-            ui.hints([['Q/E', 'Персонаж'], ['Esc', 'Назад']], W - 12, 12, { align: 'right' });
-            ui.hit(0, 0, W, HGT, () => ui.pop());
+            ui.hints([['Q/E', 'Персонаж'], ['Esc', 'Назад']], ui.right - 12, 12, { align: 'right' });
+            ui.hit(ui.left, 0, ui.vw, HGT, () => ui.pop());
           }
         },
         key(kk, code) {

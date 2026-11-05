@@ -26,31 +26,34 @@
     boss: 'Последний бой мира. Поражение завершит погружение'
   };
   const PATH_SLOTS = Object.keys(SU.PATHS);
-  let simCache = null;
+  const simCache = new Map();
 
-  function simCanvas() {
-    if (simCache) return simCache;
-    const cv = G.mkCanvas(W, HGT), g = cv.getContext('2d');
+  function simCanvas(vw, hiCam) {
+    const w = vw || W, key = w + (hiCam ? '|hi' : ''), hz = hiCam ? 188 : 330;
+    if (simCache.has(key)) return simCache.get(key);
+
+
+    const cv = G.mkCanvas(w, HGT), g = cv.getContext('2d');
     const gr = g.createLinearGradient(0, 0, 0, HGT);
     gr.addColorStop(0, '#04020a'); gr.addColorStop(0.55, '#130a2c'); gr.addColorStop(1, '#251450');
-    g.fillStyle = gr; g.fillRect(0, 0, W, HGT);
+    g.fillStyle = gr; g.fillRect(0, 0, w, HGT);
     for (let i = 0; i < 4; i++) {
-      const x = G.hash(i, 3, 11) * W, y = G.hash(i, 4, 12) * HGT * 0.6, r = 80 + G.hash(i, 5, 13) * 140;
+      const x = G.hash(i, 3, 11) * w, y = G.hash(i, 4, 12) * HGT * 0.6, r = 80 + G.hash(i, 5, 13) * 140;
       const n = g.createRadialGradient(x, y, 0, x, y, r);
       n.addColorStop(0, i % 2 ? 'rgba(200,144,255,0.16)' : 'rgba(80,224,255,0.12)'); n.addColorStop(1, 'rgba(0,0,0,0)');
       g.fillStyle = n; g.fillRect(x - r, y - r, r * 2, r * 2);
     }
-    for (let i = 0; i < 240; i++) { g.fillStyle = 'rgba(230,220,255,' + (0.15 + 0.7 * G.hash(i, 7, 14)).toFixed(2) + ')'; g.fillRect(Math.floor(G.hash(i, 8, 15) * W), Math.floor(G.hash(9, i, 16) * HGT * 0.8), G.hash(i, 10, 17) > 0.97 ? 2 : 1, 1); }
+    for (let i = 0; i < 240; i++) { g.fillStyle = 'rgba(230,220,255,' + (0.15 + 0.7 * G.hash(i, 7, 14)).toFixed(2) + ')'; g.fillRect(Math.floor(G.hash(i, 8, 15) * w), Math.floor(G.hash(9, i, 16) * HGT * 0.8), G.hash(i, 10, 17) > 0.97 ? 2 : 1, 1); }
     g.strokeStyle = 'rgba(80,224,255,0.13)'; g.lineWidth = 1;
-    for (let i = 0; i < 9; i++) { const y = 330 + Math.pow(i / 8, 1.8) * 150; g.beginPath(); g.moveTo(0, Math.round(y) + 0.5); g.lineTo(W, Math.round(y) + 0.5); g.stroke(); }
-    for (let i = -10; i <= 10; i++) { g.beginPath(); g.moveTo(W / 2 + i * 14, 330); g.lineTo(W / 2 + i * 90, HGT); g.stroke(); }
-    for (let y = 0; y < HGT; y += 3) { g.fillStyle = 'rgba(0,0,0,0.12)'; g.fillRect(0, y, W, 1); }
-    simCache = cv;
+    for (let i = 0; i < (hiCam ? 12 : 9); i++) { const y = hz + Math.pow(i / (hiCam ? 11 : 8), hiCam ? 1.55 : 1.8) * (HGT - hz); g.beginPath(); g.moveTo(0, Math.round(y) + 0.5); g.lineTo(w, Math.round(y) + 0.5); g.stroke(); }
+    for (let i = -14; i <= 14; i++) { g.beginPath(); g.moveTo(w / 2 + i * (hiCam ? 18 : 14), hz); g.lineTo(w / 2 + i * 90, HGT); g.stroke(); }
+    for (let y = 0; y < HGT; y += 3) { g.fillStyle = 'rgba(0,0,0,0.12)'; g.fillRect(0, y, w, 1); }
+    simCache.set(key, cv);
     return cv;
   }
 
   Object.assign(H.UI.prototype, {
-    suBackdrop(c) { c.drawImage(simCanvas(), 0, 0); },
+    suBackdrop(c, hiCam) { c.drawImage(simCanvas(this.vw, hiCam), this.left, 0); },
 
     suFrameBox(x, y, w, h, col) {
       const c = this.ctx;
@@ -634,25 +637,25 @@
     },
 
     drawSuHudTop(c) {
-      const g = this.game, su = g.state.su, L = this.suPlaceLabel();
+      const g = this.game, su = g.state.su, L = this.suPlaceLabel(), lx = this.left;
       const w = Math.max(this.measure(L.world, 11, true), this.measure(L.domain, 12, true)) + 40;
-      c.fillStyle = 'rgba(8,4,22,0.8)'; c.fillRect(6, 6, w, 34);
-      c.fillStyle = L.col; c.fillRect(6, 6, 3, 34); c.fillRect(6, 39, w, 1);
-      this.text(L.world, 16, 8, { size: 10, col: C.sub });
-      this.text(L.domain, 16, 21, { size: 12, bold: true, col: L.col });
+      c.fillStyle = 'rgba(8,4,22,0.8)'; c.fillRect(lx + 6, 6, w, 34);
+      c.fillStyle = L.col; c.fillRect(lx + 6, 6, 3, 34); c.fillRect(lx + 6, 39, w, 1);
+      this.text(L.world, lx + 16, 8, { size: 10, col: C.sub });
+      this.text(L.domain, lx + 16, 21, { size: 12, bold: true, col: L.col });
       const hint = this.wrap(this.suHint(), 200, 11);
-      c.fillStyle = 'rgba(8,4,22,0.6)'; c.fillRect(6, 44, 214, 8 + hint.length * 13);
-      this.diamond(13, 51, 3.5, SIM.violet);
-      hint.forEach((l, i) => this.text(l, 21, 45 + i * 13, { size: 11, col: '#f0e0ff' }));
+      c.fillStyle = 'rgba(8,4,22,0.6)'; c.fillRect(lx + 6, 44, 214, 8 + hint.length * 13);
+      this.diamond(lx + 13, 51, 3.5, SIM.violet);
+      hint.forEach((l, i) => this.text(l, lx + 21, 45 + i * 13, { size: 11, col: '#f0e0ff' }));
       const y = 52 + hint.length * 13, own = su.bless.filter(b => blessDef(b.id).path === su.path).length;
-      c.fillStyle = 'rgba(8,4,22,0.72)'; c.fillRect(6, y, 214, 22);
-      let x = 12;
+      c.fillStyle = 'rgba(8,4,22,0.72)'; c.fillRect(lx + 6, y, 214, 22);
+      let x = lx + 12;
       x += this.money(x, y + 4, 'frag', String(su.frag), { col: SIM.cyan, size: 14 }) + 6;
       G.pathIcon(c, su.path, x, y + 3, 14, pathCol(su.path)); x += 17;
       this.text(String(su.bless.length), x, y + 4, { size: 11, bold: true }); x += this.measure(String(su.bless.length), 11, true) + 8;
       G.curioIcon(c, 'c_box', x, y + 2, 16); x += 18;
       this.text(String(su.curios.length), x, y + 4, { size: 11, bold: true }); x += this.measure(String(su.curios.length), 11, true) + 8;
-      this.text(own >= 3 ? 'Резонанс ✓' : 'Резонанс ' + own + '/3', 214, y + 5, { align: 'right', size: 10, bold: own >= 3, col: own >= 3 ? C.gold : C.sub });
+      this.text(own >= 3 ? 'Резонанс ✓' : 'Резонанс ' + own + '/3', lx + 214, y + 5, { align: 'right', size: 10, bold: own >= 3, col: own >= 3 ? C.gold : C.sub });
       return w;
     },
 
@@ -687,7 +690,7 @@
         const path = sc.name.slice(8), P = SU.PATHS[path];
         if (!P) return;
         const col = pathCol(path), k = 0.5 + 0.5 * Math.sin(this.t * 1.5);
-        c.fillStyle = 'rgba(2,1,8,0.55)'; c.fillRect(0, 0, W, HGT);
+        c.fillStyle = 'rgba(2,1,8,0.55)'; c.fillRect(this.left, 0, this.vw, HGT);
         const gl = c.createRadialGradient(W / 2, 140, 10, W / 2, 140, 170);
         gl.addColorStop(0, 'rgba(255,240,210,' + (0.18 + 0.1 * k).toFixed(3) + ')'); gl.addColorStop(1, 'rgba(0,0,0,0)');
         c.fillStyle = gl; c.fillRect(W / 2 - 170, 0, 340, 320);
@@ -735,7 +738,7 @@
 
     drawSuResult(c, out) {
       const g = this.game, su = g.state.su;
-      c.fillStyle = 'rgba(4,2,12,0.66)'; c.fillRect(0, 0, W, HGT);
+      c.fillStyle = 'rgba(4,2,12,0.66)'; c.fillRect(this.left, 0, this.vw, HGT);
       if (out.lost) {
         this.win(W / 2 - 190, 140, 380, 170, { title: 'Поражение', border: '#d86060', top: '#2a0e22', bottom: '#0a0410' });
         this.text(out.suFail ? 'Симуляция выбросила команду.' : 'Тест прерван. Герта недовольна.', W / 2, 166, { align: 'center', serif: true, size: 14 });
@@ -751,7 +754,7 @@
         this.text('Здоровье и энергия остаются такими до зоны отдыха.', W / 2, 220, { align: 'center', size: 10, col: C.sub });
       }
       this.hints([['Enter', 'Продолжить']], W / 2, 282, { align: 'center' });
-      this.hit(0, 0, W, HGT, () => this.closeResult());
+      this.hit(this.left, 0, this.vw, HGT, () => this.closeResult());
     },
 
     suLoseOptions(out) {

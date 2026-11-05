@@ -490,7 +490,7 @@
         loopShow(preview.show, ui.t);
         return preview.show.render();
       }
-      if (kind === 'warp') { const outfit = sceneOutfit(S, kind, id); return H.WarpIntro.render(g, { id, rar: H.CHARS[id].rarity, outfit }, ui.t % H.WarpIntro.length(id, g, outfit), WARP_BANS[S.ban][0] === 'std'); }
+      if (kind === 'warp') { const outfit = sceneOutfit(S, kind, id); return H.WarpIntro.render(g, { id, rar: H.CHARS[id].rarity, outfit }, ui.t % H.WarpIntro.length(id, g, outfit), WARP_BANS[S.ban][0] === 'std', !!(ui.wide && ui.wide())); }
       if (kind === 'conv') {
         const key = 'conv|' + id;
         if (preview.key !== key) { preview.key = key; preview.show = new H.ConveneShow(ui, [{ kind: 'char', id, rar: H.CHARS[id].rarity, name: H.CHARS[id].name, res: 'new' }], { ban: 'conv' }); preview.show.begin([0]); }
@@ -521,21 +521,25 @@
         preview.show.rt = ui.t % preview.show.length(preview.show.item());
         return preview.show.render();
       }
-      const cv = preview.eid || (preview.eid = G.mkCanvas(W, HGT)), pc = cv.getContext('2d');
+      const ew = ui.vw || W, cv = preview.eid && preview.eid.width === ew ? preview.eid : (preview.eid = G.mkCanvas(ew, HGT)), pc = cv.getContext('2d');
+      pc.save();
+      if (ui.left) pc.translate(-ui.left, 0);
       H.Eidolons.scene(ui, pc, id, EID_STAGES[S.stage], null, sceneOutfit(S, 'eid', id));
+      pc.restore();
       return cv;
     },
 
     debugScenePreview(c, st, x, y) {
       const ui = this, S = st.sc, kind = sceneKind(st), { id } = sceneAt(st);
       if (kind === 'aha') { ui.debugAhaPreview(c, st, x, y); return; }
-      const px = x + Math.round((316 - PV.w) / 2), py = y + 12;
-      c.fillStyle = '#000000'; c.fillRect(px - 1, py - 1, PV.w + 2, PV.h + 2);
+      const wide = !!(ui.wide && ui.wide()), pw = wide ? 288 : PV.w, ph = wide ? 162 : PV.h;
+      const px = x + Math.round((316 - pw) / 2), py = y + 12 + Math.round((PV.h - ph) / 2);
+      c.fillStyle = '#000000'; c.fillRect(px - 1, py - 1, pw + 2, ph + 2);
       const frame = ui.debugSceneFrame(kind, id, S), was = c.imageSmoothingEnabled;
       c.imageSmoothingEnabled = kind === 'eid';
-      c.drawImage(frame, px, py, PV.w, PV.h);
+      c.drawImage(frame, px, py, pw, ph);
       c.imageSmoothingEnabled = was;
-      c.strokeStyle = C.brass; c.strokeRect(px - 0.5, py - 0.5, PV.w + 1, PV.h + 1);
+      c.strokeStyle = C.brass; c.strokeRect(px - 0.5, py - 0.5, pw + 1, ph + 1);
     },
 
     debugSceneNotes(st) {
@@ -683,8 +687,8 @@
           ui.win(x, y, w, 40, { alpha: 0.82 });
           ui.text(cap, W / 2, y + 7, { align: 'center', size: 13, bold: true, serif: true, col: C.gold });
           ui.text(sub, W / 2, y + 24, { align: 'center', size: 10, col: C.sub });
-          if (this.asm) { ui.hints([['Любая клавиша', 'Пропустить']], W - 12, 12, { align: 'right' }); ui.hit(0, 0, W, HGT, () => { this.asm = null; }); }
-          else ui.hints([['←→', 'Стадия'], ['Q/E', 'Персонаж'], ['Enter', 'Сборка'], ['Esc', 'В меню']], W - 12, 12, { align: 'right' });
+          if (this.asm) { ui.hints([['Любая клавиша', 'Пропустить']], ui.right - 12, 12, { align: 'right' }); ui.hit(ui.left, 0, ui.vw, HGT, () => { this.asm = null; }); }
+          else ui.hints([['←→', 'Стадия'], ['Q/E', 'Персонаж'], ['Enter', 'Сборка'], ['Esc', 'В меню']], ui.right - 12, 12, { align: 'right' });
         },
         key(k, code) {
           if (this.asm) { this.asm = null; return; }
@@ -712,7 +716,7 @@
           const f = ui.debugForm(st), n = f.rows.length + f.acts.length, TB = tabsOf(ui), tab = TB[st.tab].id;
           st.row = Math.min(st.row, n - 1);
           ui.fullBg(c, false);
-          c.fillStyle = 'rgba(4,6,20,0.6)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(4,6,20,0.6)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.plate(12, 10, 'Отладка');
           const tw = Math.floor((W - 148) / TB.length);
           TB.forEach((t, i) => ui.button(108 + i * tw, 8, tw - 4, 24, t.label, () => this.setTab(i), { active: i === st.tab, size: 11, icon: tw >= 80 ? t.icon : null }));

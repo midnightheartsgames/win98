@@ -38,7 +38,7 @@ window.interpediaReg('igromania', 'project', {
 </table>` },
     { id: 'demos', title: 'Игры, патчи и ролики', content: `На странице 3 собран список, а на страницах 4–23 лежат 20 демоверсий. Для каждой указаны разработчик, издатель, жанр, системные требования и снимки экрана. Все они ставятся с диска своим мастером установки из папки <code>D:\\demo</code> и запускаются после установки.
 
-Кроме Burnout: Championship Drag Racing, NHL ’98 и EA Sports World Cup 98, на диске лежат демоверсии семнадцати игр, которые не продаются в [[steam|Steam]]: LucasQuest 98, Fallout 98, [[halflife|Half-Life 98]], Midnight Glide, Heroes of Might and Magic 98, Tekken 98, S.T.A.L.K.E.R. 98: Тень Чернобыля, Minecraft 98, Sam & Max: Moai Better Blues, Star Wars: Knights of the Old Republic 98, XIII, Devil May Cry 98, «Корованы», Dragon Age: Origins 98, Max Payne, Fallout: Запорожье и Half-Life 2. У каждой в названии стоит пометка Demo, а цена в каталоге — «DEMO».
+Кроме Burnout: Championship Drag Racing, NHL ’98 и EA Sports World Cup 98, на диске лежат демоверсии семнадцати игр, которые не продаются в [[steam|Steam]]: LucasQuest 98, Fallout 98, [[halflife|Half-Life 98]], Midnight Glide, Heroes of Might and Magic 98, Tekken 98, S.T.A.L.K.E.R. 98: Тень Чернобыля, Minecraft 98, Sam & Max: Moai Better Blues, Star Wars: Knights of the Old Republic 98, XIII, Devil May Cry 98, [[korovany|«Корованы»]], Dragon Age: Origins 98, Max Payne, [[falloutzp|Fallout: Запорожье]] и Half-Life 2. У каждой в названии стоит пометка Demo, а цена в каталоге — «DEMO».
 
 В разделе патчей 24 файла: от обновления The Summoning до Jedi Knight: Dark Forces II. В нём есть патчи для Fallout, [[unreal|Unreal]] и Wing Commander: Prophecy с поддержкой [[voodoo|Voodoo]]. Шесть роликов показывают Ultima: Ascension, Heretic II, Metro City, Alien vs Predator, Turok 2 и Blackstone Chronicles; в списке они помечены как AVI (Cinepak).` },
     { id: 'soft', title: 'Раздел «Вооружаемся»', content: `Страница «Программы для Интернет» делится на две части. В первой — браузеры: Netscape Communicator 4.05 и Microslop Internet Explorer 4.01 в русской и английской версиях ([[netscape|Netscape]], [[ie5|Internet Explorer]]). Во второй — ConnectionPal Professional, Net.Medic, [[icq|ICQ]] 98a, [[mirc|mIRC]] 5.41 для RusNet, DALnet и EFnet, The Bat! ([[outlook|почтовые клиенты]]) и WinDownload 4.01.
@@ -55,7 +55,7 @@ window.interpediaReg('igromania', 'project', {
 
 Согласно правилам проекта, игры в системе покупаются и скачиваются через [[steam|Steam]]; исключение сделано для двадцати демоверсий с диска «Игромании», которые ставятся с диска. Если такая игра не установлена, система отсылает игрока не в Steam, а к диску D:. Подробнее — в статье [[win98clone|о проекте]].` }
   ],
-  seeAlso: ['cdrom', 'winamp', 'halflife', 'fallout2', 'directx', 'steam', 'win98clone', 'clippy'],
+  seeAlso: ['cdrom', 'winamp', 'halflife', 'fallout2', 'falloutzp', 'korovany', 'directx', 'steam', 'win98clone', 'clippy'],
   references: [
     'Журнал «Игромания». — М., 1997–1999 (выпуски № 9 (12), сентябрь 1998, и № 11, ноябрь 1998).',
     'Компакт-диск журнала «Игромания» № 9 (12), сентябрь 1998: оболочка igroman.exe, страницы 1–30.',
@@ -104,7 +104,7 @@ The header colour marks the section: red for the agreement and contents, blue fo
 </table>` },
     { id: 'demos', title: 'Games, patches and videos', content: `Page 3 holds the list, and pages 4–23 hold 20 demos. Each lists the developer, publisher, genre, system requirements and screenshots. All of them install from the <code>D:\\demo</code> folder with their own setup wizard and run after installation.
 
-Besides Burnout: Championship Drag Racing, NHL ’98 and EA Sports World Cup 98, the disc carries demos of seventeen games that are not sold on [[steam|Steam]]: LucasQuest 98, Fallout 98, [[halflife|Half-Life 98]], Midnight Glide, Heroes of Might and Magic 98, Tekken 98, S.T.A.L.K.E.R. 98: Тень Чернобыля, Minecraft 98, Sam & Max: Moai Better Blues, Star Wars: Knights of the Old Republic 98, XIII, Devil May Cry 98, Korovany, Dragon Age: Origins 98, Max Payne, Fallout: Запорожье and Half-Life 2. Each title carries the Demo mark, and the catalog price reads "DEMO".
+Besides Burnout: Championship Drag Racing, NHL ’98 and EA Sports World Cup 98, the disc carries demos of seventeen games that are not sold on [[steam|Steam]]: LucasQuest 98, Fallout 98, [[halflife|Half-Life 98]], Midnight Glide, Heroes of Might and Magic 98, Tekken 98, S.T.A.L.K.E.R. 98: Тень Чернобыля, Minecraft 98, Sam & Max: Moai Better Blues, Star Wars: Knights of the Old Republic 98, XIII, Devil May Cry 98, [[korovany|Korovany]], Dragon Age: Origins 98, Max Payne, [[falloutzp|Fallout: Запорожье]] and Half-Life 2. Each title carries the Demo mark, and the catalog price reads "DEMO".
 
 The patch section has 24 files, from the update for The Summoning to Jedi Knight: Dark Forces II. It includes patches for Fallout, [[unreal|Unreal]] and Wing Commander: Prophecy with [[voodoo|Voodoo]] support. Six videos show Ultima: Ascension, Heretic II, Metro City, Alien vs Predator, Turok 2 and Blackstone Chronicles; the list labels them AVI (Cinepak).` },
     { id: 'soft', title: 'The "Arming Up" section', content: `The "Internet programs" page has two parts. The first holds browsers: Netscape Communicator 4.05 and Microslop Internet Explorer 4.01 in Russian and English versions ([[netscape|Netscape]], [[ie5|Internet Explorer]]). The second holds ConnectionPal Professional, Net.Medic, [[icq|ICQ]] 98a, [[mirc|mIRC]] 5.41 for RusNet, DALnet and EFnet, The Bat! ([[outlook|mail clients]]) and WinDownload 4.01.
@@ -121,7 +121,7 @@ The site belongs to the [[webring|retro web ring]] and has a visitor counter.` }
 
 By the project’s rules, games in the system are bought and downloaded through [[steam|Steam]]; the twenty demos from the Igromania disc are the exception and install from the disc. When such a game is not installed, the system points the player to drive D:, not to Steam. See the article [[win98clone|about the project]].` }
   ],
-  seeAlso: ['cdrom', 'winamp', 'halflife', 'fallout2', 'directx', 'steam', 'win98clone', 'clippy'],
+  seeAlso: ['cdrom', 'winamp', 'halflife', 'fallout2', 'falloutzp', 'korovany', 'directx', 'steam', 'win98clone', 'clippy'],
   references: [
     'Igromania magazine. Moscow, 1997–1999 (issues No. 9 (12), September 1998, and No. 11, November 1998).',
     'Igromania CD No. 9 (12), September 1998: the igroman.exe shell, pages 1–30.',
@@ -599,3 +599,82 @@ In its bottom line the site states that the games belong to their owners and tha
   links: [['http://www.emuland98.ru', 'Emu-Land'], ['http://www.retro-web.net', 'Retro-Web Portal'], ['http://www.cheatcc.com', 'Cheat Code Central']],
   categories: ['Our Project', 'Computer Games', 'Software', 'Cyberculture']
 });
+
+window.interpediaReg('ferrum', 'project', {
+  title: '«Железный цех» и «Полигон 3D»',
+  hatnote: 'Статья портала «Наш проект» — об аппаратной лаборатории www.ferrum98.ru и видеостудии низкополигональных клипов www.poligon3d.ru в нашей системе.',
+  infobox: {
+    title: 'Железный цех / Полигон',
+    badgeText: 'Железо и 3D-клипы',
+    fields: [
+      { label: 'Адреса', value: 'http://www.ferrum98.ru и http://www.poligon3d.ru' },
+      { label: 'Тематика', value: 'испытания комплектующих, разгон, 3D-реконструкция видеоклипов' },
+      { label: 'Тестовый стенд', value: 'Intel 440BX, [[celeron300a|Celeron 300A]] (450 МГц), Riva TNT 16 МБ / [[voodoo2|Voodoo2 SLI]]' },
+      { label: 'Движок «Полигона»', value: 'Рендерер P3D (512×384, WebGL) с синхронизацией по звуковой дорожке' },
+      { label: 'Курс прайс-листа', value: '20,60 руб. за у.е. (Савёловский и Митинский радиорынки)' },
+      { label: 'Связанные ресурсы', value: '[[kovcheg|Ковчег 98]], архив драйверов и прайс-лист Б-14' }
+    ]
+  },
+  lead: `<strong>«Железный цех»</strong> (<code>http://www.ferrum98.ru</code>) и <strong>«Полигон»</strong> (<code>http://www.poligon3d.ru</code>) — два технических узла в сети [[win98clone|нашей системы]], посвящённых аппаратной части домашнего компьютера и прикладной трёхмерной графике конца 1990-х годов. Первый работает как независимая лаборатория по испытанию процессоров, материнских плат на чипсете Intel 440BX, 3D-ускорителей и звуковых карт с интерактивным стендом замера кадровой частоты и живым прайс-листом московских радиорынков. Второй узел пересобирает известные музыкальные видеоклипы кадр за кадром в реальном времени из низкополигональных сцен и синхронизирует их с оригинальной звуковой дорожкой [[mp3format|MP3]].`,
+  sections: [
+    { id: 'ferrum_lab', title: '«Железный цех» (www.ferrum98.ru): рубрики и контакт Б21', content: `Портал «Железный цех» открывается сводкой дежурного инженера и разделён на пять рубрик: <code>Процессоры (CPU)</code>, <code>3D-видео (3D)</code>, <code>Платы и память (MB/RAM)</code>, <code>Диски и звук (HDD/SND)</code> и <code>Защита (SEC)</code>. Статьи написаны языком практиков, которые сами паяют переходники и проверяют стабильность системы четырёхчасовым прогоном <code>timedemo 1</code> в [[quake|Quake II]] при открытом корпусе.
+
+Центральный материал рубрики процессоров посвящён разгону [[overclocking|Intel Celeron 300A]] на ядре Mendocino (0,25 мкм) со 128 КБ кэша второго уровня, работающего на полной частоте ядра. Лаборатория подробно разбирает маркировку малайзийских кристаллов серии <code>SL32A</code> и приводит схему изоляции контакта <code>B21</code> (<code>BSEL#</code>) в разъёме Slot 1 при помощи капли лака для ногтей или узкой полоски скотча: после этого платы ABIT BH6 и ASUS P2B на чипсете Intel 440BX распознают процессор как рассчитанный на системную шину 100 МГц и запускают его на частоте 450 МГц, где он обходит штатный [[pentium|Pentium II]] 400 при втрое меньшей цене.` },
+    { id: 'voodoo_cih', title: 'Битва 3D-ускорителей и перемычка против вируса CIH', content: `В разделе видеокарт разбирается противостояние осени 1998 года после выставки COMDEX в Лас-Вегасе: анонс [[voodoo2|3dfx Voodoo3]] (чип Avenger с частотой 166–183 МГц и покупкой завода STB Systems в Мексике) против 32-битного конвейера NVIDIA Riva TNT 16 МБ и ATI Rage 128 GL. Авторы указывают на ахиллесову пяту архитектуры 3dfx — упорный отказ от 32-битного цвета (<code>True Color</code>) и аппаратный потолок размера текстур в 256×256 точек, из-за которого небо и стены в новых движках приходится резать на мелкую плитку.
+
+Отдельная техническая памятка на странице <code>/jumpers</code> («Карта джамперов BIOS») создана в ответ на эпидемию вируса <code>Win95.CIH v1.4</code> («Чернобыль»), который активируется 26-го числа каждого месяца и стирает загрузочный блок микросхемы Flash ROM (Intel 28F001BX-T или Winbond W29EE011). На интерактивной схеме плат ASUS P2B и ABIT BH6 пользователь видит жёлтую колодку перемычки <code>JP1 / J12</code> возле микросхемы BIOS и южного моста PIIX4E: перестановка шунта из положения <code>1-2 (+12V Flash Enable)</code> в защищённое положение <code>2-3 (+5V Write Protect)</code> аппаратно разрывает линию программирования и спасает материнскую плату даже при заражении системы.` },
+    { id: 'bench_prices', title: 'Интерактивный стенд FPS и прайс-лист Савёловского рынка', content: `На странице <code>/bench</code> встроен интерактивный стенд сравнения производительности: читатель выбирает в списках модель процессора, видеокарту (от S3 Trio3D до связки из двух Voodoo2 по 12 МБ в режиме SLI), разрешение экрана (640×480, 800×600 или 1024×768) и глубину цвета (16 или 32 бита), после чего скрипт рассчитывает среднюю и минимальную частоту кадров в тестовой сцене <code>demo1.dm2</code> и выводит вердикт о пригодности сборки для сетевых матчей.
+
+Страница <code>/prices</code> воспроизводит розничный прайс-лист павильона Б-14 на Савёловском рынке и ряда В-08 на Митинском радиорынке при внутреннем курсе 20 рублей 60 копеек за условную единицу и гарантии 6 месяцев по стикеру продавца. Позиции разделены по категориям с указанием цен в у.е. и рублях — от процессора Celeron 300A OEM за 74 у.е. (1 524 руб.) и планки памяти 64 МБ PC100 SEC Hyundai (7 нс) за 86 у.е. до жёсткого диска Quantum Fireball EX 6,4 ГБ и звуковой карты [[soundblaster|Creative Sound Blaster Live! Value]] на чипе EMU10K1.` },
+    { id: 'poligon3d', title: '«Полигон» (www.poligon3d.ru): клипы, собранные заново из треугольников', content: `Сестринский проект <strong>«Полигон»</strong> открывается подзаголовком <em>«Музыкальные клипы, собранные заново из полигонов»</em>. Вместо тяжёлых и размытых видеороликов формата AVI или QuickTime, которые не помещаются на модемной линии, редакция «Полигона» переводит видеоряд известных песен на язык чистой трёхмерной геометрии: декорации, автомобили, коридоры, прожекторы и фигуры музыкантов строятся в реальном времени прямо в окне браузера на холсте разрешением 512×384 точки при помощи движка <code>P3D.Renderer</code>.
+
+Над рейдером расположены экранные индикаторы <code>REC</code> с бегущим таймкодом, живой счётчик треугольников в кадре (<code>POLYS</code>) и индикатор частоты кадров (<code>FPS</code>). Под экраном тянется цветная шкала времени, разбитая на монтажные склейки и съёмочные площадки: кнопки быстрой перемотки переносят камеру непосредственно к нужному плану клипа, а в правой колонке публикуются очерк «История оригинала» и список «Знаете ли вы?» с кнопками привязки к конкретной секунде звуковой дорожки.` }
+  ],
+  seeAlso: ['overclocking', 'voodoo2', 'pentium', 'soundblaster', 'mp3format', 'win98clone', 'kovcheg'],
+  references: [
+    '«Железный цех»: аппаратная лаборатория, обзор железа и прайс-лист Савёловского рынка (www.ferrum98.ru), ноябрь 1998.',
+    'Инструкция по защите Flash BIOS от вируса Win95.CIH (Чернобыль): карта перемычек JP1/J12 (www.ferrum98.ru/jumpers).',
+    '«Полигон»: музыкальные клипы, собранные заново из полигонов (www.poligon3d.ru).'
+  ],
+  links: [['http://www.ferrum98.ru', 'Лаборатория «Железный цех» (www.ferrum98.ru)'], ['http://www.poligon3d.ru', 'Видеостудия «Полигон» (www.poligon3d.ru)'], ['http://www.kovcheg98.ru', 'Портал «Ковчег 98»']],
+  categories: ['Наш проект', 'Компьютерное железо', 'Сайты', 'Мультимедиа']
+}, {
+  title: 'Ferrum 98 Hardware Lab and Poligon 3D',
+  hatnote: 'An article from the "Our Project" portal covering the www.ferrum98.ru hardware test bench and the www.poligon3d.ru real-time low-poly music video studio in our system.',
+  infobox: {
+    title: 'Ferrum 98 / Poligon 3D',
+    badgeText: 'Hardware Lab & 3D Videos',
+    fields: [
+      { label: 'Addresses', value: 'http://www.ferrum98.ru and http://www.poligon3d.ru' },
+      { label: 'Focus', value: 'hardware benchmarks, overclocking, real-time 3D music video reconstruction' },
+      { label: 'Test bench', value: 'Intel 440BX, [[celeron300a|Celeron 300A]] (450 MHz), Riva TNT 16 MB / [[voodoo2|Voodoo2 SLI]]' },
+      { label: 'Poligon engine', value: 'P3D Renderer (512×384 WebGL) synced to MP3 audio' },
+      { label: 'Price list rate', value: '20.60 RUB per USD (Savelyovsky and Mitino radio markets)' },
+      { label: 'Related portals', value: '[[kovcheg|Kovcheg 98]], driver archive and Pavilion B-14 price sheet' }
+    ]
+  },
+  lead: `<strong>Ferrum 98</strong> ("The Iron Workshop", <code>http://www.ferrum98.ru</code>) and <strong>Poligon</strong> (<code>http://www.poligon3d.ru</code>) are two technical web portals inside [[win98clone|our system]] dedicated to late-1990s PC hardware engineering and real-time 3D graphics. Ferrum 98 operates as an independent test lab covering processors, Intel 440BX motherboards, 3D accelerators and sound cards, complete with an interactive frame-rate calculator and a live street price sheet from Moscow's electronics markets. Poligon reconstructs famous music videos shot for shot out of real-time low-poly 3D geometry synchronized to original [[mp3format|MP3]] audio tracks.`,
+  sections: [
+    { id: 'ferrum_lab', title: 'Ferrum 98 (www.ferrum98.ru): test benches and Slot 1 pin B21', content: `The Ferrum 98 portal opens with a duty engineer's bulletin and divides its coverage into five departments: <code>Processors (CPU)</code>, <code>3D Video (3D)</code>, <code>Boards & Memory (MB/RAM)</code>, <code>Disks & Sound (HDD/SND)</code> and <code>Security (SEC)</code>. Every review is written from the perspective of hands-on builders who solder their own fan headers and validate stability with a four-hour <code>timedemo 1</code> loop in [[quake|Quake II]] with the case side panel off.
+
+The flagship processor guide dissects the [[overclocking|Intel Celeron 300A]] on the 0.25-micron Mendocino core with 128 KB of full-speed on-die L2 cache. The lab explains how to identify Malaysian <code>SL32A</code> steppings and illustrates how insulating pin <code>B21</code> (<code>BSEL#</code>) on the Slot 1 edge connector with a drop of nail polish or a sliver of tape tricks ABIT BH6 and ASUS P2B motherboards into selecting the 100 MHz front-side bus—pushing the budget chip to 450 MHz, where it outperforms a stock [[pentium|Pentium II]] 400 at a third of the price.` },
+    { id: 'voodoo_cih', title: 'The 3D accelerator war and the CIH BIOS protection jumper', content: `In the graphics department, the lab examines the autumn 1998 showdown following COMDEX in Las Vegas: the announcement of the [[voodoo2|3dfx Voodoo3]] (the 166–183 MHz Avenger chip and the acquisition of STB Systems' Juarez factory) against the 32-bit pipelines of the NVIDIA Riva TNT 16 MB and ATI Rage 128 GL. The editors pinpoint the architectural ceiling of the 3dfx design—its refusal to support 32-bit <code>True Color</code> rendering and its hardware limit of 256×256-pixel textures, which forces modern engines to slice skies and walls into small tiles.
+
+A dedicated technical reference at <code>/jumpers</code> ("BIOS Jumper Map") addresses the outbreak of the <code>Win95.CIH v1.4</code> ("Chernobyl") virus, which triggers on the 26th of each month and overwrites the boot block of Flash ROM chips (Intel 28F001BX-T or Winbond W29EE011). An interactive motherboard diagram for the ASUS P2B and ABIT BH6 highlights the yellow <code>JP1 / J12</code> header beside the BIOS socket and the PIIX4E southbridge: moving the jumper cap from pins <code>1-2 (+12V Flash Enable)</code> to pins <code>2-3 (+5V Write Protect)</code> physically severs the programming voltage line and saves the board even if the operating system is infected.` },
+    { id: 'bench_prices', title: 'Interactive FPS calculator and the Savelyovsky market price sheet', content: `The <code>/bench</code> page hosts an interactive performance stand where readers pick a processor, a graphics card (from a budget S3 Trio3D up to dual 12 MB Voodoo2 boards in SLI), a screen resolution (640×480, 800×600 or 1024×768) and a color depth (16-bit or 32-bit). The script computes both average and minimum frame rates in the <code>demo1.dm2</code> crusher scene and prints a hardware verdict for multiplayer matches.
+
+The <code>/prices</code> section reproduces the retail price list from Pavilion B-14 at Moscow's Savelyovsky market and Row V-08 at the Mitino radio market at an internal exchange rate of 20.60 rubles per US dollar with a six-month seller-sticker warranty. Listings quote both USD and ruble prices across every component tier—from an OEM Celeron 300A at $74 (1,524 RUB) and a 64 MB PC100 SEC Hyundai 7 ns DIMM at $86 to a 6.4 GB Quantum Fireball EX hard drive and a [[soundblaster|Creative Sound Blaster Live! Value]] card powered by the EMU10K1 DSP.` },
+    { id: 'poligon3d', title: 'Poligon (www.poligon3d.ru): music videos rebuilt out of triangles', content: `The sister site <strong>Poligon</strong> carries the motto <em>"Music videos reassembled from polygons."</em> Instead of blurry, multi-megabyte AVI or QuickTime files that choke a dial-up line, Poligon translates the visual staging of iconic songs into pure real-time 3D geometry: stages, cars, corridors, spotlights and band members are rendered live inside a 512×384 WebGL viewport by the custom <code>P3D.Renderer</code> engine.
+
+Above the viewport sit a blinking <code>REC</code> timecode display, a live triangle counter (<code>POLYS</code>) and a real-time frame-rate readout (<code>FPS</code>). Beneath the screen runs a color-coded timeline segmented by camera cuts and shooting locations: location buttons jump the camera directly to any set piece in the video, while the right-hand column pairs a production history essay ("History of the Original") with a "Did You Know?" trivia list whose timestamp buttons seek the audio and 3D scene to the exact second under discussion.` }
+  ],
+  seeAlso: ['overclocking', 'voodoo2', 'pentium', 'soundblaster', 'mp3format', 'win98clone', 'kovcheg'],
+  references: [
+    'Ferrum 98: hardware test lab, component reviews and Savelyovsky price sheet (www.ferrum98.ru), November 1998.',
+    'Flash BIOS protection guide against Win95.CIH (Chernobyl): JP1/J12 jumper map (www.ferrum98.ru/jumpers).',
+    'Poligon: music videos reassembled from polygons (www.poligon3d.ru).'
+  ],
+  links: [['http://www.ferrum98.ru', 'Ferrum 98 Hardware Lab (www.ferrum98.ru)'], ['http://www.poligon3d.ru', 'Poligon 3D Video Studio (www.poligon3d.ru)'], ['http://www.kovcheg98.ru', 'Kovcheg 98 Portal']],
+  categories: ['Our Project', 'Computer Hardware', 'Websites', 'Multimedia']
+}, ['ferrum98', 'poligon3d', 'poligon']);
+

@@ -1478,3 +1478,175 @@ At the other extreme are <em>script kiddies</em>, teenagers who download point-a
   categories: ['Cyberculture', 'Computer Magazines', 'Computer Security', '1999']
 }, ['xakep98', 'phreaking']);
 
+window.interpediaReg('xfiles', 'culture', {
+  title: '«Секретные материалы» и архив «X-Files ’98»',
+  hatnote: 'Статья портала «Культура» — о телесериале Криса Картера, культуре уфологии 1990-х и сетевом архиве www.xfiles98.ru.',
+  infobox: {
+    title: 'Секретные материалы / The X-Files',
+    badgeText: 'Телесериал и архив аномалий',
+    fields: [
+      { label: 'Создатель', value: 'Крис Картер (телесериал Fox, с 10 сентября 1993 года)' },
+      { label: 'Главные герои', value: 'спецагенты ФБР Фокс Малдер (Дэвид Духовны) и Дана Скалли (Джиллиан Андерсон)' },
+      { label: 'Показ в России', value: 'телеканал ОРТ («Секретные материалы») и РЕН ТВ' },
+      { label: 'Полнометражный фильм', value: '«Секретные материалы: Борьба за будущее» (лето 1998)' },
+      { label: 'Компьютерная игра', value: 'The X-Files Game (HyperBole Studios / Fox Interactive, 7 [[cdrom|CD-ROM]], 1998)' },
+      { label: 'Архив в системе', value: 'http://www.xfiles98.ru (досье аномалий 1998 года и код 1947-URALS)' }
+    ]
+  },
+  lead: `<strong>«Секретные материалы»</strong> (англ. <em>The X-Files</em>) — американский научно-фантастический и детективный телесериал сценариста Криса Картера, выходящий на канале Fox с 10 сентября 1993 года и ставший главным культурным феноменом конспирологии и сетевого фольклора 1990-х годов. История двух специальных агентов ФБР — верующего в паранормальные явления оксфордского психолога Фокса Малдера (Дэвид Духовны) и врача-патологоанатома Даны Скалли (Джиллиан Андерсон), проверяющей каждую версию строгим научным методом, — соединила правительственный заговор времён Розуэльского инцидента 1947 года с расследованием локальных чудовищ, генетических мутантов и техногенных аномалий. В [[win98clone|нашей системе]] атмосфера сериала и российской уфологии конца десятилетия воплощена на сайте <strong>«Архив непознанного X-Files ’98»</strong> (<code>http://www.xfiles98.ru</code>).`,
+  sections: [
+    { id: 'mulder_scully', title: 'Подвал ФБР, Курильщик и «Одинокие стрелки»', content: `В подвальном кабинете штаб-квартиры ФБР в Вашингтоне под плакатом с летающей тарелкой и надписью <em>«I Want to Believe»</em> («Я хочу верить») Малдер разбирает архив нераскрытых дел с индексом «X». Его личный мотив — похищение младшей сестры Саманты в ноябре 1973 года; руководство бюро направляет к нему Дану Скалли, рассчитывая, что её медицинские заключения дискредитируют работу отдела. Вместо этого между напарниками возникает прочный союз, где интуиция Малдера и лабораторный скептицизм Скалли взаимно дополняют друг друга.
+
+Драматургия сериала делится на две линии. Первая — сквозная «мифология» (<em>Mytharc</em>): тайный международный <strong>Синдикат</strong> в лице молчаливого <em>Курильщика</em> (Уильям Б. Дэвис), <em>Человека с хорошим маникюром</em> и двойного агента Алекса Крайчека скрывает подготовку инопланетной колонизации Земли при помощи инопланетного вируса «чёрного масла» (<em>Purity</em>) и гибридных клонов, а заместитель директора Уолтер Скиннер балансирует между приказами сверху и защитой своих подчинённых. Вторая линия — отдельные серии «монстров недели» (<em>Monster of the Week</em>): от живущего в вентиляции мутанта Юджина Виктора Тумса до искусственного интеллекта в умном доме и лесных паразитов. Начиная с первого сезона, сериал одним из первых на телевидении вывел на экран субкультуру хакеров и сетевых исследователей в лице троицы <strong>«Одиноких стрелков»</strong> (Байерс, Фрохики и Лэнгли), издающих самиздатовский бюллетень <em>The Magic Bullet</em>.` },
+    { id: 'ort_game98', title: 'Свист Марка Сноу на ОРТ и игра на семи CD-ROM (1998)', content: `В России премьера «Секретных материалов» на канале ОРТ превратила вечерние эфиры в ритуал, а тревожная тема композитора Марка Сноу со свистящим эхом синтезатора <em>Proteus</em> стала самой узнаваемой мелодией десятилетия — её ставили на заставки [[win98se|Win 98]] и переписывали в формате [[mp3format|MP3]] и MIDI. Летом 1998 года между пятым и шестым сезонами на экраны вышел полнометражный кинофильм <em>«Секретные материалы: Борьба за будущее»</em> (<em>Fight the Future</em>), где Малдер и Скалли от взрыва правительственного здания в Далласе и кукурузных полей в пустыне с пчелиными куполами добираются до гигантского корабля пришельцев во льдах Антарктиды.
+
+В том же июне 1998 года студия <em>HyperBole Studios</em> и <em>Fox Interactive</em> выпустили интерактивный кинодетектив <strong>The X-Files Game</strong> на семи дисках [[cdrom|CD-ROM]] (или одном экспериментальном DVD). Игрок управлял полевым агентом ФБР Крейгом Уиллмором из отделения в Сиэтле, которому заместитель директора Скиннер поручил разыскать бесследно пропавших в штате Вашингтон Малдера и Скалли. Построенная на движке <em>VirtualCinema</em>, игра комбинировала панорамные фотографии складов, мотелей и моргов с живым видео при участии всех актёров основного состава, позволяла выбирать тон допроса (вежливый, деловой или жёсткий), снимать отпечатки пальцев, искать улики в ультрафиолетовом свете и проверять базу данных ФБР с рабочего ноутбука.` },
+    { id: 'xfiles98_site', title: 'Архив «X-Files ’98» (www.xfiles98.ru): взгляд уфолога и взгляд скептика', content: `Внутри [[win98clone|нашей системы]] работает русскоязычный портал <strong>«Архив непознанного X-Files ’98»</strong> (<code>http://www.xfiles98.ru</code>), оформленный в тёмно-зелёных тонах закрытого терминала под девизом <em>«Независимый архив аномальных явлений • 1993–1998»</em>. Главная особенность архива — двойная экспертиза в духе тандема Малдера и Скалли: под каждым досье с протоколом очевидцев стоят две вкладки — <strong>«Взгляд уфолога»</strong> и <strong>«Взгляд скептика»</strong>, позволяющие пользователю самому проголосовать, что перед ним: контакт, природное явление или мистификация:
+<ul>
+<li><strong>Дело #98-UFO-04 (Огни над рекой Сылвой, Пермская область, 14.08.1998):</strong> три туриста в районе деревни Молёбка («М-ский треугольник») в 02:15 ночи наблюдали бесшумный изумрудный шар диаметром 12 метров над водой; стрелки компасов вращались, часы «Командирские» отстали на 42 минуты, а плёнка «Свема ФН-64» в фотоаппарате «Зенит-Е» оказалась засвечена полосами. Уфолог связывает случай с тектоническим разломом зоны, скептик — с коронным разрядом на высоковольтной ЛЭП в тумане и негерметичной крышкой старой камеры.</li>
+<li><strong>Дело #98-SKY-11 (Светящиеся объекты над Юго-Западом Москвы, 03.11.1998):</strong> десятки жителей Коньково, Ясенево и проспекта Вернадского в 19:40 видели бесшумный строй ярких оранжевых огней, погасших по очереди. Скептик объясняет их солнечными бликами от зеркальных антенн новой спутниковой группировки связи <em>Iridium</em> на высоте 780 км.</li>
+<li><strong>Дело #98-NET-33 (Голос в модемном шуме, АТС-134, 21.11.1998):</strong> при ночном дозвоне на скорости 33,6 кбит/с поверх треска рукопожатия протокола V.34 на 11 секунд прорезалась отчётливая мужская речь с перечислением двузначных чисел. Версия исследователя — «электронный голосовой феномен» (ЭГФ) или номерная радиостанция; ответ связиста — перекрёстная наводка на старой декадно-шаговой АТС и приём на телефонную лапшу гармоники мощного КВ-передатчика.</li>
+<li><strong>Дело #98-FLD-07 (Круги на пшеничном поле под Тверью, 09.07.1998):</strong> три правильных круга диаметром 18, 9 и 9 метров у деревни Мошки, где колосья уложены по часовой стрелке без излома стеблей. Скептик указывает на колею мотоцикла «Урал» у лесополосы и технологию приминания злаков доской на верёвке вокруг вбитого колышка.</li>
+</ul>` },
+    { id: 'secret_1947', title: 'Закрытый сектор «Досье 1947-URALS» и сигнал на частоте водорода', content: `В нижней части портала <code>www.xfiles98.ru</code> расположен заблокированный терминал <strong>«Закрытый сектор: Досье 1947-URALS»</strong>, требующий ввода кодового слова доступа. Архив открывается при вводе классических паролей уфологической культуры — <code>ROSWELL</code>, <code>AREA51</code>, <code>MULDER</code> или <code>SCULLY</code>.
+
+Внутри рассекреченного экрана хранится сводка о радиоперехвате августа 1998 года на уральской станции «Зима»: приёмник зафиксировал узкополосный импульсный сигнал длительностью 74 секунды на частоте нейтрального водорода <strong>1420 МГц</strong> (длина волны 21 см, которую радиоастрономы программы SETI считают универсальным маяком для межзвёздной связи) с интервалами, кратными простым числам <code>2 — 3 — 5 — 7 — 11 — 13 — 17</code>. Скептическое примечание дежурного радиоинженера тут же добавляет, что на гармонике той же частоты фонит неисправный гетеродин старого метеорологического локатора в соседнем районе.` }
+  ],
+  seeAlso: ['fidonet', 'cyberpunk', 'cdrom', 'mp3format', 'win98clone'],
+  references: [
+    'Крис Картер. Телесериал «Секретные материалы» (The X-Files), сезоны 1–6 (Fox, 1993–1999).',
+    'The X-Files Game: руководство полевого агента ФБР. HyperBole Studios / Fox Interactive, 1998.',
+    'Архив непознанного «X-Files ’98»: картотека наблюдений #98-UFO-04, #98-SKY-11, #98-NET-33, #98-FLD-07 и досье 1947-URALS (www.xfiles98.ru).'
+  ],
+  links: [['http://www.xfiles98.ru', 'Архив непознанного «X-Files ’98» (www.xfiles98.ru)'], ['http://www.kovcheg98.ru', 'Портал «Ковчег 98»']],
+  categories: ['Киберкультура', 'Телесериалы', 'Научная фантастика', 'Сайты', '1998 год']
+}, {
+  title: 'The X-Files and the X-Files \'98 Anomaly Archive',
+  hatnote: 'An article from the "Culture" portal covering Chris Carter\'s sci-fi television phenomenon, 1990s UFO lore and the in-system www.xfiles98.ru case file portal.',
+  infobox: {
+    title: 'The X-Files',
+    badgeText: 'TV Series & Anomaly Archive',
+    fields: [
+      { label: 'Creator', value: 'Chris Carter (Fox network, premiered September 10, 1993)' },
+      { label: 'Lead characters', value: 'FBI Special Agents Fox Mulder (David Duchovny) and Dana Scully (Gillian Anderson)' },
+      { label: 'Russian broadcast', value: 'ORT Public Russian Television ("Sekretnye Materialy") and REN TV' },
+      { label: 'Feature film', value: 'The X-Files: Fight the Future (summer 1998)' },
+      { label: 'Video game', value: 'The X-Files Game (HyperBole Studios / Fox Interactive, 7 [[cdrom|CD-ROMs]], 1998)' },
+      { label: 'System archive', value: 'http://www.xfiles98.ru (1998 anomaly files and dossier 1947-URALS)' }
+    ]
+  },
+  lead: `<strong>The X-Files</strong> (broadcast in Russia as <em>«Секретные материалы»</em>, "Secret Files") is an American science-fiction mystery television series created by Chris Carter that premiered on the Fox network on September 10, 1993, and grew into the defining pop-culture touchstone of 1990s conspiracy lore and early Web fandom. Pairing Oxford-educated FBI profiler Fox Mulder (David Duchovny), a believer in extraterrestrial visitation, with medical doctor Dana Scully (Gillian Anderson), a forensic skeptic grounded in hard physical evidence, the series wove an overarching shadow-government conspiracy dating back to the 1947 Roswell incident together with standalone investigations of genetic mutants and backwoods monsters. Inside [[win98clone|our system]], the spirit of the series and late-1990s post-Soviet ufology lives on at the <strong>X-Files '98 Unexplained Archive</strong> (<code>http://www.xfiles98.ru</code>).`,
+  sections: [
+    { id: 'mulder_scully', title: 'The FBI basement office, the Cigarette Smoking Man and the Lone Gunmen', content: `Working out of a cramped basement office at FBI headquarters in Washington, D.C., beneath a poster of a flying saucer bearing the caption <em>"I Want to Believe,"</em> Mulder investigates unsolved cases filed under the "X" designation. Driven by the November 1973 abduction of his younger sister Samantha, Mulder is assigned Dana Scully by superiors hoping her medical training will debunk his work; instead, the two forge an unshakable partnership balancing intuitive leaps against laboratory analysis.
+
+The show alternates between two narrative modes. Its serialized "mythology" arc (<em>Mytharc</em>) pits the agents against the <strong>Syndicate</strong>—a cabal represented by the silent <em>Cigarette Smoking Man</em> (William B. Davis), the <em>Well-Manicured Man</em> and turncoat operative Alex Krycek—who conceal an impending alien colonization of Earth mediated by the prehistoric "black oil" virus (<em>Purity</em>) and alien-human hybrids, while Assistant Director Walter Skinner walks a tightrope between bureaucracy and loyalty to his agents. Standalone "Monster of the Week" episodes tackle contortionist mutant Eugene Victor Tooms, rogue building AI and lethal spores. From its first season onward, the series also brought underground hacker and phreaker culture onto network television through the <strong>Lone Gunmen</strong> (Byers, Frohike and Langly), publishers of the paranoid newsletter <em>The Magic Bullet</em>.` },
+    { id: 'ort_game98', title: 'Mark Snow\'s whistling theme and the seven-CD game of 1998', content: `Across Russia and the post-Soviet space, late-night broadcasts of <em>The X-Files</em> on ORT turned composer Mark Snow's eerie whistling synthesizer theme into an instant sonic signature of the decade, traded as [[mp3format|MP3]] and MIDI files and loaded into [[win98se|Win 98]] desktop themes. In the summer of 1998, between the fifth and sixth television seasons, the theatrical feature <em>The X-Files: Fight the Future</em> sent Mulder and Scully from a bombed federal building in Dallas and beehive domes in the desert to a buried alien spacecraft beneath the Antarctic ice sheet.
+
+That same June 1998, <em>HyperBole Studios</em> and <em>Fox Interactive</em> released <strong>The X-Files Game</strong> across seven [[cdrom|CD-ROM]] discs. Casting the player as Seattle FBI field agent Craig Willmore assigned by Assistant Director Skinner to track down a missing Mulder and Scully across Washington State, the game used HyperBole's <em>VirtualCinema</em> engine to blend panoramic crime-scene photography with full-motion video starring the television cast, letting players choose interrogation attitudes, dust for fingerprints, sweep warehouses with an ultraviolet lamp and query FBI databases on a field laptop.` },
+    { id: 'xfiles98_site', title: 'The X-Files \'98 Archive (www.xfiles98.ru): Believer versus Skeptic', content: `Inside [[win98clone|our system]], the Russian-language portal <strong>X-Files '98: Archive of the Unexplained</strong> (<code>http://www.xfiles98.ru</code>) presents a phosphor-green dossier terminal under the banner <em>"Independent Archive of Anomalous Phenomena • 1993–1998."</em> Echoing the Mulder-and-Scully dynamic, every case file pairs eyewitness logs with two switchable analysis tabs—<strong>"Ufologist's View"</strong> and <strong>"Skeptic's View"</strong>—followed by a reader poll asking whether the case represents genuine contact, a natural phenomenon or a hoax:
+<ul>
+<li><strong>Case #98-UFO-04 (Lights over the Sylva River, Perm Oblast, August 14, 1998):</strong> at 02:15 AM near the village of Molebka (the "M-Triangle" zone), three campers watched a silent 12-meter emerald sphere hover above the water while compass needles spun, a mechanical Komandirskie watch lost 42 minutes and a roll of Svema FN-64 film in a Zenit-E camera came back fogged with vertical bands. The ufologist cites deep tectonic fault emissions; the skeptic points to corona discharge along high-voltage power lines in river fog and a light leak in an aging camera back.</li>
+<li><strong>Case #98-SKY-11 (Luminous objects over Southwest Moscow, November 3, 1998):</strong> residents across Konkovo, Yasenevo and Vernadsky Avenue reported a silent formation of bright orange lights at 19:40 that flared and winked out one by one. The skeptic identifies them as twilight solar reflections ("Iridium flares") off the silver-coated main mission antennas of the newly launched <em>Iridium</em> satellite constellation orbiting at 780 km.</li>
+<li><strong>Case #98-NET-33 (Voice in the modem static, PBX-134, November 21, 1998):</strong> during a 03:33 AM dial-up session at 33.6 kbps, eleven seconds of distinct male speech reciting two-digit numbers cut through the V.34 carrier hiss. The believer invokes Electronic Voice Phenomena (EVP) or a military numbers station; the telecom engineer explains it as inductive crosstalk on an aging rotary exchange picking up a shortwave harmonic on unshielded apartment phone wire.</li>
+<li><strong>Case #98-FLD-07 (Wheat circles near Tver, July 9, 1998):</strong> three geometric circles (18, 9 and 9 meters wide) discovered at dawn outside the village of Moshki with stalks swirled clockwise without snapping. The skeptic notes Ural motorcycle tire tracks along the treeline and explains how two pranksters flatten green wheat using a wooden plank, a length of rope and a center stake.</li>
+</ul>` },
+    { id: 'secret_1947', title: 'Classified Sector 1947-URALS and the 1420 MHz hydrogen-line signal', content: `At the bottom of <code>www.xfiles98.ru</code> sits a locked terminal panel titled <strong>"Classified Sector: Dossier 1947-URALS,"</strong> which prompts the visitor for an access code. Entering classic passwords from 1990s UFO lore—<code>ROSWELL</code>, <code>AREA51</code>, <code>MULDER</code> or <code>SCULLY</code>—decrypts the file.
+
+The unlocked dossier reveals an August 1998 intercept logged at the Ural receiving station "Zima": a 74-second narrowband pulsed transmission on the neutral hydrogen line at <strong>1420 MHz</strong> (the 21 cm wavelength favored by SETI radio astronomers as a universal interstellar calling channel) spaced in prime-number intervals of <code>2 — 3 — 5 — 7 — 11 — 13 — 17</code>. True to form, the duty radio engineer's footnote remarks that the exact same harmonic matches a drifting local oscillator inside a faulty weather radar thirty kilometers away.` }
+  ],
+  seeAlso: ['fidonet', 'cyberpunk', 'cdrom', 'mp3format', 'win98clone'],
+  references: [
+    'Chris Carter. The X-Files television series, Seasons 1–6 (Fox Network, 1993–1999).',
+    'The X-Files Game: FBI Field Agent Manual. HyperBole Studios / Fox Interactive, 1998.',
+    'X-Files \'98 Archive of the Unexplained: Case Files #98-UFO-04, #98-SKY-11, #98-NET-33, #98-FLD-07 and Dossier 1947-URALS (www.xfiles98.ru).'
+  ],
+  links: [['http://www.xfiles98.ru', 'X-Files \'98 Anomaly Archive (www.xfiles98.ru)'], ['http://www.kovcheg98.ru', 'Kovcheg 98 Portal']],
+  categories: ['Cyberculture', 'Television Series', 'Science Fiction', 'Websites', '1998']
+}, ['xfiles98', 'truthisoutthere', 'ufo98']);
+
+window.interpediaReg('kish', 'culture', {
+  title: '«Король и Шут» и сайт «Трактир КиШ ’99»',
+  hatnote: 'Статья портала «Культура» — о петербургской панк-рок-группе, прорыве с «Акустическим альбомом» 1999 года и фан-портале www.kish99.ru.',
+  infobox: {
+    title: 'Король и Шут',
+    badgeText: 'Хоррор-панк-группа и фан-сайт',
+    fields: [
+      { label: 'Город и годы', value: 'Ленинград / Санкт-Петербург (основана в 1988, название «Король и Шут» с 1990)' },
+      { label: 'Жанр', value: 'хоррор-панк, фолк-панк, панк-рок' },
+      { label: 'Лидеры и вокалисты', value: 'Михаил «Горшок» Горшенёв и Андрей «Князь» Князев' },
+      { label: 'Состав 1999 года', value: 'Горшок, Князь, Балу (бас), Поручик (барабаны), Яков Цвиркунов (гитара), Мария Нефёдова (скрипка)' },
+      { label: 'Ключевые альбомы', value: '«Камнем по голове» (1996), «Акустический альбом» (1999), «Ели мясо мужики» (1999)' },
+      { label: 'Фан-сайт в системе', value: 'http://www.kish99.ru («Трактир КиШ ’99», веб-мастер Илья «Скоморох» Крылов, ЛЭТИ)' }
+    ]
+  },
+  lead: `<strong>«Король и Шут»</strong> (сокращённо <strong>«КиШ»</strong>) — петербургская панк-рок-группа, соединившая скоростной гитарный драйв со скрипкой и короткими сюжетными балладами в духе страшных фольклорных сказок, готических баллад и балаганного театра. Созданная школьными друзьями Михаилом «Горшком» Горшенёвым, Александром «Балу» Балуновым и Александром «Поручиком» Щиголевым при участии художника и автора текстов Андрея «Князя» Князева, группа прошла путь от подвальных концертов в петербургском клубе «Там-Там» до аншлагов во Дворце спорта «Юбилейный» и статуса хедлайнера фестиваля «Нашествие» в декабре 1999 года. В [[win98clone|нашей системе]] творчеству группы посвящён неофициальный фан-сайт <strong>«Трактир „Король и Шут"»</strong> (<code>http://www.kish99.ru</code>) с интерактивной музыкальной доской и гитарными аккордами.`,
+  sections: [
+    { id: 'tamtam_history', title: 'От ленинградской «Конторы» и училища реставраторов до клуба «Там-Там»', content: `История группы началась в 1988 году в Ленинграде, когда одноклассники Михаил Горшенёв, Александр Балунов и Александр Щиголев собрали школьный проект «Контора». В 1989 году в ленинградском реставрационном училище на улице Стойкости Горшок познакомился с Андреем Князевым, который приносил на репетиции тетради со сказочными сюжетами и собственными рисунками чертей, колдунов, трактирщиков и лесных разбойников. В 1990 году музыканты выбрали название <strong>«Король и Шут»</strong>, а их фирменной чертой стало двухголосие двух фронтменов: демонический, надрывный баритон Горшка и чистый повествовательный тенор Князя, разыгрывающих каждую песню как мини-спектакль по ролям.
+
+Первой настоящей сценой для группы стал открытый Всеволодом Гаккелем на Васильевском острове альтернативный клуб <strong>«Там-Там»</strong>, за которым последовали питерские площадки «Полигон» и «Гора». В 1996 году на студии «Мелодия» был записан первый официальный электрический альбом <em>«Камнем по голове»</em> («Лесник», «Дурак и молния», «Сапоги мертвеца»), по мотивам которого на Пятом канале питерского телевидения сняли получасовой малобюджетный фильм с четырьмя постановочными клипами. Спустя год вышел второй номерной диск <em>«Будь как дома, Путник!»</em> (переизданный как <em>«Король и Шут»</em>).` },
+    { id: 'breakthrough_1999', title: 'Прорыв 1999 года: «Акустический альбом», «Спартак» и «Юбилейный»', content: `Переломным для группы стал <strong>1999 год</strong>. Весной фирма «ОРТ-Рекордз» выпустила записанный на студии «Мелодия» на Васильевском острове <em>«Акустический альбом»</em> (рабочее название — «Любовь негодяя»), в записи которого приняли участие певица Марина Капуро и скрипачка <strong>Мария «Маша» Нефёдова</strong>, сразу после сессий вошедшая в постоянный состав коллектива. Баллады <em>«Кукла колдуна»</em> и <em>«Прыгну со скалы»</em> зазвучали в дневном эфире «Нашего радио» и вывели группу далеко за пределы панк-андеграунда.
+
+16 июня 1999 года в петербургском клубе «Спартак» на улице Лабутина прошёл большой электрический концерт, записанный на многоканальный пульт и снятый режиссёром Богданом Дробязко на четыре камеры: смонтированный видеоклип и концертный альбом <em>«Ели мясо мужики»</em> попали в ежедневную ротацию телеканала «MTV Россия». В октябре 1999 года «Король и Шут» впервые самостоятельно собрали многотысячный Дворец спорта «Юбилейный» в Санкт-Петербурге, 10 декабря закрыли первый день фестиваля «Нашествие» в московском ДК имени Горбунова, а в конце декабря засели в студии на Фонтанке с гитаристом Яковом Цвиркуновым за запись нового электрического альбома <em>«Герои и злодеи»</em>.` },
+    { id: 'tavern_site', title: 'Фан-сайт «Трактир КиШ ’99» (www.kish99.ru) и музыкальная доска', content: `В сети [[win98clone|нашей системы]] с марта 1999 года работает неофициальный петербургский портал <strong>«Трактир „Король и Шут"»</strong> (<code>http://www.kish99.ru</code>, последнее обновление от 24 декабря 1999 года), который поддерживает студент ЛЭТИ Илья «Скоморох» Крылов (<em>FidoNet 2:5030/712.44</em>). На главной странице висит интерактивная деревянная вывеска — <strong>«Музыкальная доска Трактира»</strong> со встроенным синтезатором мелодий на восемь главных песен группы:
+<ul>
+<li><strong>«Лесник»</strong> (<em>«Будь как дома, путник, я ни в чём не откажу...»</em>) и <strong>«Дурак и молния»</strong> — визитные карточки раннего репертуара о лесном хозяине, подкармливающем волков, и сельском чудаке, ловящем грозовые разряды руками.</li>
+<li><strong>«Кукла колдуна»</strong> и <strong>«Прыгну со скалы»</strong> — главные радиохиты 1999 года из «Акустического альбома».</li>
+<li><strong>«Ели мясо мужики»</strong> — застольная баллада о ревнивом конюхе и гостях, узнающих в разгар пира, чем именно их угостил хозяин.</li>
+<li><strong>«Охотник»</strong>, <strong>«Сапоги мертвеца»</strong> и <strong>«Мотоцикл»</strong> — скоростные боевики, звучащие на каждом концерте в «Спартаке» и «Полигоне».</li>
+</ul>
+При нажатии на любую табличку над доской загорается строка <em>«ИГРАЕТ В ТРАКТИРЕ»</em>, и встроенный звуковой движок исполняет узнаваемый гитарно-скрипичный рифф с вокальной линией.` },
+    { id: 'chords_folklore', title: 'Дворовые аккорды (Am, C, Dm, E) и гостевая книга панков', content: `Отдельный раздел «Трактира» (<code>Тексты и аккорды</code>) объясняет, почему песни «Короля и Шута» к концу 1999 года вытеснили старый репертуар на студенческих кухнях, в электричках и в походах у костра: драматические гармонии Князя и Горшка идеально ложатся на базовые открытые гитарные аккорды (<code>Am — F — C — G — E</code> и <code>Dm — Am — E</code>) при игре переменным боем с глушением ладонью. На сайте выложены выверенные по кассетам аппликатуры, схема гитарного вступления к «Леснику» (перебор на первой и второй струнах: лады <code>5-5-7-8-7-5</code>) и полные тексты песен с разделением куплетов и припевов.
+
+В рубрике «Альбомы» собрана дискография с трек-листами от магнитоальбома <em>«Истинный убийца»</em> (1993) до свежего концертника <em>«Ели мясо мужики»</em>, работает голосование «Лучшая песня 1999 года» и открыта живая «Гостевая книга Трактира», где слушатели из Петербурга, Москвы, Екатеринбурга и Новосибирска обсуждают сольную скрипку Маши Нефёдовой, ищут записи в формате [[mp3format|MP3]] (128 кбит/с) для [[winamp|Winamp]] и договариваются о встрече у касс «Юбилейного».` }
+  ],
+  seeAlso: ['mp3format', 'winamp', 'fidonet', 'soundblaster', 'win98clone'],
+  references: [
+    '«Трактир „Король и Шут"»: неофициальный петербургский фан-сайт группы (www.kish99.ru), ред. И. Крылов, 24.12.1999.',
+    'Дискография группы «Король и Шут»: «Камнем по голове» (1996), «Акустический альбом» (ОРТ-Рекордз, 1999), «Ели мясо мужики» (1999).'
+  ],
+  links: [['http://www.kish99.ru', 'Фан-сайт «Трактир „Король и Шут"» (www.kish99.ru)'], ['http://www.kovcheg98.ru', 'Портал «Ковчег 98»'], ['http://www.mp3.com', 'Архив MP3.com']],
+  categories: ['Русский рок', 'Музыка', 'Киберкультура', 'Сайты', '1999 год']
+}, {
+  title: 'Korol i Shut and the KiSh \'99 Tavern Fan Site',
+  hatnote: 'An article from the "Culture" portal covering the St. Petersburg horror-punk band, their 1999 Acoustic Album breakthrough and the www.kish99.ru fan portal.',
+  infobox: {
+    title: 'Korol i Shut',
+    badgeText: 'Horror-Punk Band & Fan Portal',
+    fields: [
+      { label: 'Origin & years', value: 'Leningrad / St. Petersburg (formed 1988, named Korol i Shut in 1990)' },
+      { label: 'Genre', value: 'horror punk, folk punk, punk rock' },
+      { label: 'Frontmen', value: 'Mikhail "Gorshok" Gorshenyov and Andrei "Knyaz" Knyazev' },
+      { label: '1999 lineup', value: 'Gorshok, Knyaz, Balu (bass), Poruchik (drums), Yakov Tsvirkunov (guitar), Maria Nefyodova (violin)' },
+      { label: 'Key albums', value: 'Kamnem po Golove (1996), Acoustic Album (1999), Yeli Myaso Muzhiki (1999)' },
+      { label: 'System fan site', value: 'http://www.kish99.ru ("KiSh \'99 Tavern", webmaster Ilya "Skomorokh" Krylov, LETI)' }
+    ]
+  },
+  lead: `<strong>Korol i Shut</strong> (Russian: <em>«Король и Шут»</em>, "The King and the Jester," abbreviated <strong>KiSh</strong>) is a St. Petersburg punk-rock band that fuses fast distorted guitar riffs and folk violin melodies with theatrical storytelling rooted in Slavic fairy tales, Gothic ballads and dark tavern fables. Founded by schoolmates Mikhail "Gorshok" Gorshenyov, Alexander "Balu" Balunov and Alexander "Poruchik" Shchigolev together with lyricist and illustrator Andrei "Knyaz" Knyazev, the band rose from sweat-soaked underground gigs at St. Petersburg's Tam-Tam club to selling out the Yubileyny Sports Palace and headlining the Nashestvie festival in December 1999. Inside [[win98clone|our system]], their music and fan community gather at the unofficial portal <strong>The Korol i Shut Tavern</strong> (<code>http://www.kish99.ru</code>), complete with an interactive eight-song jukebox board and campfire guitar chord sheets.`,
+  sections: [
+    { id: 'tamtam_history', title: 'From Leningrad\'s "Kontora" and the restoration school to the Tam-Tam club', content: `The band began in 1988 in Leningrad when high-school classmates Mikhail Gorshenyov, Alexander Balunov and Alexander Shchigolev formed a garage project called <em>Kontora</em> ("The Office"). In 1989, while studying at the Leningrad Restoration School on Stoikosti Street, Gorshok met fellow apprentice Andrei Knyazev, who filled notebooks with eerie fairy-tale lyrics and ink drawings of warlocks, forest spirits, highwaymen and grinning jesters. Adopting the name <strong>Korol i Shut</strong> in 1990, the group built its sound around the interplay of two contrasting lead vocalists: Gorshok's gravelly, manic baritone and Knyaz's clear narrative tenor, acting out each song like a three-minute stage play.
+
+The band cut its teeth at Vsevolod Gakkel's legendary alternative club <strong>Tam-Tam</strong> on Vasilyevsky Island, followed by St. Petersburg rock venues Poligon and Gora. In 1996 they recorded their first full-length studio album, <em>Kamnem po Golove</em> ("With a Stone to the Head," featuring "Lesnik," "Durak i Molniya" and "Sapogi Mertvetsa"), at the Melodiya studio, inspiring a half-hour low-budget television special with four staged music videos on Petersburg's Channel Five. Their second studio album, <em>Bud' kak Doma, Putnik!</em> ("Make Yourself at Home, Traveler!"), followed in 1997.` },
+    { id: 'breakthrough_1999', title: 'The 1999 breakthrough: Acoustic Album, Club Spartak and Yubileyny', content: `<strong>1999</strong> marked the band's nationwide breakthrough. That spring ORT-Records released the <em>Acoustic Album</em> (recorded at Melodiya on Vasilyevsky Island under the working title "Love of a Scoundrel"), featuring guest vocals by Marina Kapuro and violin arrangements by <strong>Maria "Masha" Nefyodova</strong>, who immediately joined the permanent lineup. Driven by the radio singles <em>"Kukla Kolduna"</em> ("The Sorcerer's Puppet") and <em>"Prygnu so Skaly"</em> ("I'll Jump Off a Cliff") on Nashe Radio, the album carried Korol i Shut far beyond the punk underground.
+
+On June 16, 1999, the band played a packed electric show at St. Petersburg's Club Spartak on Labutina Street, captured on multitrack audio and filmed on four cameras by director Bogdan Drobyazko: the resulting live video and concert album <em>Yeli Myaso Muzhiki</em> ("The Men Were Eating Meat") entered heavy daily rotation on MTV Russia. In October 1999 Korol i Shut headlined their first arena concert at St. Petersburg's Yubileyny Sports Palace, closed out the opening night of the Nashestvie festival at Moscow's Gorbunov Palace of Culture on December 10, and spent late December in the Fontanka studio with guitarist Yakov Tsvirkunov recording their next electric album, <em>Geroi i Zlodei</em> ("Heroes and Villains").` },
+    { id: 'tavern_site', title: 'The KiSh \'99 Tavern site (www.kish99.ru) and the interactive jukebox board', content: `Launched in March 1999 inside [[win98clone|our system]] and last updated on December 24, 1999, the unofficial St. Petersburg fan site <strong>The Korol i Shut Tavern</strong> (<code>http://www.kish99.ru</code>) is maintained by LETI engineering student Ilya "Skomorokh" Krylov (<em>FidoNet 2:5030/712.44</em>). Centerpiece of the home page is the interactive <strong>Tavern Jukebox Board</strong>, a carved wooden menu wired to a built-in Web Audio synthesizer that plays eight signature songs:
+<ul>
+<li><strong>"Lesnik" ("The Forester")</strong> and <strong>"Durak i Molniya" ("The Fool and the Lightning"):</strong> early crowd favorites about a friendly woodsman who feeds travelers to his wolves and a village simpleton trying to catch lightning bolts in his bare hands.</li>
+<li><strong>"Kukla Kolduna" ("The Sorcerer's Puppet")</strong> and <strong>"Prygnu so Skaly" ("I'll Jump Off a Cliff"):</strong> the two 1999 acoustic radio anthems.</li>
+<li><strong>"Yeli Myaso Muzhiki" ("The Men Were Eating Meat"):</strong> the macabre tavern feast ballad made famous by the June 1999 Club Spartak concert film.</li>
+<li><strong>"Okhotnik" ("The Hunter"), "Sapogi Mertvetsa" ("Dead Man's Boots")</strong> and <strong>"Mototsikl" ("The Motorcycle"):</strong> high-tempo punk staples from the club circuit.</li>
+</ul>
+Clicking any wooden plaque lights up the <em>"NOW PLAYING IN THE TAVERN"</em> banner and triggers the synthesized guitar-and-violin arrangement.` },
+    { id: 'chords_folklore', title: 'Courtyard guitar chords (Am, C, Dm, E) and the punk guestbook', content: `The site's <code>Lyrics & Chords</code> section illustrates why Korol i Shut songs have taken over student dormitories, commuter trains and courtyard benches by late 1999: Knyaz and Gorshok's minor-key melodies map naturally onto open six-string acoustic guitar shapes (<code>Am — F — C — G — E</code> and <code>Dm — Am — E</code>) played with palm-muted punk strumming. The page provides cassette-transcribed chord charts, the single-string intro tab for "Lesnik" on the first and second strings (frets <code>5-5-7-8-7-5</code>) and complete lyrics with verse and chorus cues.
+
+Rounding out the portal are an annotated album discography from the 1993 tape <em>Istinny Ubiytsa</em> ("The True Killer") through <em>Yeli Myaso Muzhiki</em>, a reader poll for "Best Song of 1999" and an active Tavern Guestbook where fans from St. Petersburg, Moscow, Yekaterinburg and Novosibirsk debate Masha Nefyodova's violin solos, trade 128 kbps [[mp3format|MP3]] rips for [[winamp|Winamp]] and arrange meetups outside the Yubileyny ticket windows.` }
+  ],
+  seeAlso: ['mp3format', 'winamp', 'fidonet', 'soundblaster', 'win98clone'],
+  references: [
+    'The Korol i Shut Tavern: unofficial St. Petersburg fan portal (www.kish99.ru), ed. I. Krylov, December 24, 1999.',
+    'Korol i Shut discography: Kamnem po Golove (1996), Acoustic Album (ORT-Records, 1999), Yeli Myaso Muzhiki (1999).'
+  ],
+  links: [['http://www.kish99.ru', 'The Korol i Shut Tavern Fan Site (www.kish99.ru)'], ['http://www.kovcheg98.ru', 'Kovcheg 98 Portal'], ['http://www.mp3.com', 'MP3.com Archive']],
+  categories: ['Russian Rock', 'Music', 'Cyberculture', 'Websites', '1999']
+}, ['korolishut', 'kish99']);
+

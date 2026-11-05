@@ -76,6 +76,7 @@
     "build:web98-sr98": "node tools/web98-sr98.cjs",
     "build:web98-kovcheg": "node tools/web98-kovcheg.cjs",
     "build:web98-astralwiki98": "node tools/web98-astralwiki98.cjs",
+    "build:web98-clips": "node tools/web98-clips.cjs",
     "test:kotor98": "node tests/kotor98.test.js",
     "test:gta90": "node tests/gta90.test.js",
     "test:hl2": "node tests/hl2.test.js",

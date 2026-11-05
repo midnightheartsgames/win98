@@ -719,7 +719,7 @@
         ell(c, x, y, rx, ry, r) { if (c === '#000000') cut(() => p.ell('#000', x, y, rx, ry, r)); else p.ell(c, x, y, rx, ry, r); },
         rect(c, x, y, w, h) { p.rect(c, x, y, w, h); }
       });
-      art(pp, col);
+      art(pp, col, g);
       g.restore();
     }, false);
   }
@@ -1211,6 +1211,25 @@
     merry(p, c) { p.poly(c, [1, 15, 5, 4.5, 11.5, 11]); p.ell(c, 11, 3, 1.4, 1.4); p.ell(c, 14, 6.5, 1.2, 1.2); p.ell(c, 8.5, 1.5, 1, 1); p.rect(c, 13, 1, 1.6, 1.6); }
   };
 
+  for (const e of Object.keys(ELEM_ART)) {
+    const drawElem = (g, c, x, y, sc) => {
+      if (!g) return;
+      g.save(); g.translate(x, y); g.scale(sc, sc);
+      ELEM_ART[e](emblemPen(g), { c, lo: c, mid: c, dk: null, hi: c, deep: c }, 0);
+      g.restore();
+    };
+    STAT_ART[e + 'P'] = (p, c, g) => {
+      drawElem(g, c, 0, 0, 12.4 / 32);
+      p.poly('#000000', [9, 16, 9, 9.2, 16, 9.2, 16, 16]);
+      p.poly(c, [9.8, 12.4, 12.6, 9.6, 15.4, 12.4, 14.3, 13.4, 12.6, 11.7, 10.9, 13.4]);
+      p.poly(c, [9.8, 15.2, 12.6, 12.4, 15.4, 15.2, 14.3, 16, 12.6, 14.5, 10.9, 16]);
+    };
+    STAT_ART[e + 'Res'] = (p, c, g) => {
+      p.ell(c, 8, 8, 7.4, 7.4); p.ell('#000000', 8, 8, 5.8, 5.8);
+      drawElem(g, c, 3, 3, 10 / 32);
+    };
+  }
+
   function statIcon(ctx, stat, x, y, size, col) {
     const s = size || 12;
     ctx.drawImage(glyph('stat', stat, STAT_ART, s, col || '#c8d0f0'), Math.round(x), Math.round(y));
@@ -1227,6 +1246,26 @@
     team(p, c) { p.ell(G.dark(c, 0.3), 8, 11, 4, 4.4); p.poly(G.dark(c, 0.3), [1, 26, 2.5, 19, 6, 17, 10, 17, 13, 20, 13, 26]); p.ell(G.dark(c, 0.3), 24, 11, 4, 4.4); p.poly(G.dark(c, 0.3), [19, 26, 19, 20, 22, 17, 26, 17, 29.5, 19, 31, 26]); p.ell(c, 16, 10, 5, 5.4); p.poly(c, [7, 28, 8.5, 20, 12.5, 17.5, 19.5, 17.5, 23.5, 20, 25, 28]); },
     bag(p, c) { p.poly(c, [6, 12, 9, 7, 23, 7, 26, 12, 27, 28, 5, 28]); p.poly(G.dark(c, 0.3), [5, 16, 27, 16, 27, 18, 5, 18]); p.rect(G.dark(c, 0.35), 12, 3, 8, 5); p.rect(c, 13.5, 4.5, 5, 3); p.rect('#e8c060', 14.5, 19, 3, 3); p.poly(G.light(c, 0.25), [7, 12, 9.5, 8.5, 12, 8.5, 9.5, 12]); },
     archive(p, c) { p.poly(G.dark(c, 0.4), [6, 6, 26, 6, 26, 28, 6, 28]); p.poly(c, [5, 4, 24, 4, 24, 26, 5, 26]); p.rect(G.light(c, 0.2), 5, 4, 2.6, 22); star4(p, '#fff0b0', 15.5, 15, 6, 1.4); p.ell('#fff0b0', 15.5, 15, 1.4, 1.4); },
+    foes(p, c) {
+      const d = G.dark(c, 0.4), l = G.light(c, 0.35);
+      p.poly(d, [4, 27, 6.5, 29, 28, 7.5, 29, 3, 24.5, 4]);
+      p.poly(c, [27.5, 29, 30, 27, 8.5, 5.5, 4, 3, 5, 7.5]);
+      p.poly(d, [4, 21, 11, 28, 9.5, 29.5, 2.5, 22.5]);
+      p.poly(d, [28, 21, 21, 28, 22.5, 29.5, 29.5, 22.5]);
+      p.poly(d, [16, 6, 24, 12, 21.5, 23, 16, 27.5, 10.5, 23, 8, 12]);
+      p.poly(c, [16, 8, 22, 12.6, 20, 21.4, 16, 25, 12, 21.4, 10, 12.6]);
+      p.poly(l, [16, 8, 16, 25, 12, 21.4, 10, 12.6]);
+      p.poly('#10142a', [11.5, 14, 15.2, 15.8, 12, 17.2]);
+      p.poly('#10142a', [20.5, 14, 16.8, 15.8, 20, 17.2]);
+    },
+    fusions(p, c) {
+      const d = G.dark(c, 0.38), l = G.light(c, 0.35);
+      p.ell(d, 11.5, 12.5, 8, 8); p.ell('#10142a', 11.5, 12.5, 5.4, 5.4);
+      p.ell(c, 20.5, 19.5, 8, 8); p.ell('#10142a', 20.5, 19.5, 5.4, 5.4);
+      star4(p, c, 11.5, 12.5, 8.5, 2.1);
+      star4(p, l, 20.5, 19.5, 8.5, 2.1);
+      p.poly('#fff0b0', [16, 12, 20, 16, 16, 20, 12, 16]);
+    },
     mtrail(p, c) { p.ell(G.dark(c, 0.4), 16, 16, 13, 13); p.ell(c, 16, 16, 11, 11); p.ell(G.dark(c, 0.45), 16, 16, 7.4, 7.4); star4(p, '#fff6d8', 16, 16, 10, 2.6); p.ell(c, 16, 16, 2.4, 2.4); },
     mcomp(p, c) { p.poly(G.dark(c, 0.4), [16, 2, 29, 16, 16, 30, 3, 16]); p.poly(c, [16, 4.6, 26.4, 16, 16, 27.4, 5.6, 16]); p.ell('#fff0ff', 12.6, 14, 3, 3); p.ell('#fff0ff', 19.4, 14, 3, 3); p.poly('#fff0ff', [10, 15, 22, 15, 16, 22]); },
     madv(p, c) { p.ell(G.dark(c, 0.4), 16, 16, 13, 13); p.ell(c, 16, 16, 11, 11); p.ell(G.dark(c, 0.5), 16, 16, 8, 8); p.poly('#ffffff', [16, 6, 18.4, 16, 16, 26, 13.6, 16]); p.poly(c, [16, 16, 18.4, 16, 16, 26, 13.6, 16]); p.ell('#ffffff', 16, 16, 1.6, 1.6); },
@@ -1239,6 +1278,54 @@
     load(p, c) { p.poly(c, [6, 3, 22, 3, 26, 7, 26, 29, 6, 29]); p.rect(G.dark(c, 0.4), 9, 19, 14, 10); for (let i = 0; i < 4; i++) p.rect('#e8c060', 10.5 + i * 3.2, 23, 1.8, 6); p.poly('#f2eee2', [16, 5.5, 22, 11.5, 18.4, 11.5, 18.4, 16, 13.6, 16, 13.6, 11.5, 10, 11.5]); },
     settings(p, c) { for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; p.ell(c, 16 + Math.cos(a) * 10, 16 + Math.sin(a) * 10, 3, 3); } p.ell(c, 16, 16, 10, 10); p.ell('#10142a', 16, 16, 4, 4); },
     guide(p, c) { p.ell(c, 16, 12, 8.5, 8.5); p.poly(c, [11, 16, 21, 16, 20, 23, 12, 23]); p.rect(G.dark(c, 0.35), 12, 23, 8, 2); p.rect(G.dark(c, 0.35), 13, 26, 6, 2); p.ell('#ffffff', 13.5, 9, 2.2, 2.6); },
+    gamepad(p, c) {
+      p.poly(G.dark(c, 0.38), [6, 10, 26, 10, 30, 19, 27, 27, 22, 27, 19, 21, 13, 21, 10, 27, 5, 27, 2, 19]);
+      p.poly(c, [7, 11, 25, 11, 28.5, 19, 26, 25.5, 22.5, 25.5, 19.5, 19.8, 12.5, 19.8, 9.5, 25.5, 6, 25.5, 3.5, 19]);
+      p.rect('#10142a', 9.2, 14.5, 5.6, 2); p.rect('#10142a', 11, 12.7, 2, 5.6);
+      p.ell('#10142a', 22.8, 14.2, 1.5, 1.5); p.ell('#10142a', 20, 16.8, 1.5, 1.5);
+      p.ell('#ffffff', 22.8, 13.9, 0.9, 0.9); p.ell('#e8c060', 20, 16.5, 0.9, 0.9);
+      p.rect(G.dark(c, 0.45), 14.8, 13.5, 2.4, 1.3);
+    },
+    tut_book(p, c) {
+      p.rect(G.dark(c, 0.38), 6, 4, 20, 24); p.rect(c, 7, 5, 18, 22); p.rect(G.dark(c, 0.45), 7, 5, 3.2, 22);
+      p.poly('#10142a', [12, 5, 17, 5, 17, 13, 14.5, 11, 12, 13]);
+      star4(p, '#10142a', 17.5, 17.5, 5.2, 1.5);
+    },
+    tut_train(p, c) {
+      p.poly(G.dark(c, 0.38), [16, 3, 27, 7.5, 25.5, 19.5, 16, 29, 6.5, 19.5, 5, 7.5]);
+      p.poly(c, [16, 5, 25, 8.8, 23.8, 18.8, 16, 27, 8.2, 18.8, 7, 8.8]);
+      p.rect('#10142a', 14.7, 7.5, 2.6, 15.5); p.rect('#10142a', 10.5, 11.5, 11, 2.4);
+    },
+    tut_all(p, c) {
+      p.rect(c, 5, 5, 9.5, 9.5); p.rect(c, 5, 17.5, 9.5, 9.5); p.rect(c, 17.5, 17.5, 9.5, 9.5);
+      p.poly(c, [22.2, 4, 28, 9.8, 22.2, 15.5, 16.5, 9.8]);
+    },
+    tut_combat(p, c) {
+      p.poly(G.dark(c, 0.35), [16, 3, 27, 7.5, 25, 19, 16, 28, 7, 19, 5, 7.5]);
+      p.poly(c, [16, 5.2, 24.8, 9, 23.2, 18.2, 16, 25.8, 8.8, 18.2, 7.2, 9]);
+      p.poly('#10142a', [16, 7.5, 18.2, 11, 17.3, 20.5, 14.7, 20.5, 13.8, 11]);
+      p.rect('#10142a', 11.5, 15, 9, 2.2);
+    },
+    tut_adv(p, c) {
+      p.ell(c, 16, 15, 9.5, 9.5); p.ell('#10142a', 16, 15, 6.8, 6.8);
+      p.ell(c, 16, 15, 20, 4.5); p.ell(c, 16, 15, 3.8, 3.8);
+      star4(p, c, 16, 5, 4.5, 1.3);
+    },
+    tut_sys(p, c) {
+      p.poly(c, [16, 3, 28, 15, 16, 29, 4, 15]);
+      p.poly('#10142a', [16, 7.2, 24, 15, 16, 24.5, 8, 15]);
+      p.poly(c, [16, 10.5, 20.5, 15, 16, 20.5, 11.5, 15]);
+    },
+    tut_modes(p, c) {
+      p.poly(c, [16, 4, 28, 26, 4, 26]);
+      p.poly('#10142a', [16, 9, 24, 24, 8, 24]);
+      p.poly(c, [16, 13.5, 20.5, 22, 11.5, 22]);
+    },
+    tut_special(p, c) {
+      p.poly(c, [9, 6, 23, 6, 29, 13, 16, 27, 3, 13]);
+      p.poly('#10142a', [10.8, 8.5, 21.2, 8.5, 25.5, 13.2, 16, 23.5, 6.5, 13.2]);
+      star4(p, c, 16, 14, 5.5, 1.6);
+    },
     phone(p, c) {
       p.rect(c, 9, 3, 14, 26);
       p.rect('#10142a', 11, 6, 10, 18);
@@ -1313,6 +1400,21 @@
       p.poly(c, [10, 8, 12, 3, 20, 3, 22, 8]); star4(p, '#fff0b0', 26, 5, 3, 0.8);
     },
     relic(p, c) { p.poly(c, [5, 7, 12, 4, 16, 8, 20, 4, 27, 7, 25, 17, 24, 28, 8, 28, 7, 17]); p.poly(G.dark(c, 0.3), [16, 8, 20, 4, 27, 7, 25, 17, 24, 28, 16, 28]); p.ell('#f0e090', 16, 15, 3, 3.6); },
+    rsalv(p, c) {
+      p.poly(c, [4, 7, 11, 4, 14, 8, 11, 17, 13, 27, 7, 27, 6, 17]);
+      p.poly(G.dark(c, 0.25), [18, 5, 22, 4, 28, 7, 26, 16, 19, 21, 16, 13]);
+      p.poly('#f0e090', [15, 3, 17.5, 3, 14.5, 29, 12, 29]);
+      p.poly('#7ae0f0', [23, 20, 27, 23, 23, 26, 19, 23]);
+      p.poly('#fff0b0', [26, 25, 29, 27.5, 26, 30, 23, 27.5]);
+    },
+    csalv(p, c) {
+      p.poly(G.dark(c, 0.35), [6, 4, 21, 6, 15, 27, 4, 25]);
+      p.poly(c, [4, 3, 19, 5, 13, 26, 3, 24]);
+      p.poly('#10142a', [6.5, 6.5, 16.5, 7.8, 12, 22.5, 5.2, 21.2]);
+      p.poly('#f0e090', [19, 3, 21.2, 3, 13.2, 28, 11, 28]);
+      p.poly('#7ae0f0', [23, 9, 28, 13, 23, 17, 18, 13]);
+      p.poly('#fff0b0', [24, 19, 29, 23, 24, 27, 19, 23]);
+    },
     events(p, c) {
       p.rect(G.dark(c, 0.4), 6, 8, 22, 21);
       p.rect(c, 4, 6, 22, 21);
@@ -2350,6 +2452,154 @@
     blit(ctx, sized('item|' + id, s, art, true), x, y, s);
   }
 
-  Object.assign(G, { CURIO_ART, SU_EVENT_ART, curioIcon, suEventIcon, RARITY, RARITY_BG, SET_COL, ITEM_ART, MAT_ART, RELIC_ART, RELIC_PIECE, iconHelp: { fine, halo, rays, hole, star4, glint, gem, shade3, slab, thick }, itemCanvas, itemIcon, itemSilhouette, slotBadge, rarityCell, pathIcon, pathShapes, elemIcon, statIcon, menuIcon, mapIcon, MENU_ART, MAP_ART, STAT_ART, PATH_ART, ELEM_ART, star4 });
+  const ROMAN_SUP = ['', 'I', 'II', 'III', 'IV', 'V'];
+
+  function supBadge(ctx, x, y, sup = 1, r = 6) {
+    const v = Math.max(1, Math.min(5, sup || 1)), gold = v >= 5, cx = Math.round(x + r), cy = Math.round(y + r);
+    ctx.save();
+    ctx.fillStyle = gold ? '#d8a848' : 'rgba(8,10,24,0.88)';
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = gold ? '#ffe8a0' : 'rgba(190,200,235,0.5)';
+    ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = gold ? '#1a1206' : '#f1ead8';
+    ctx.font = 'bold 8px Tahoma, Arial, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(ROMAN_SUP[v], cx, cy + 0.5);
+    ctx.restore();
+  }
+
+  function lockIcon(ctx, x, y, locked = true, opts = {}) {
+    x = Math.round(x); y = Math.round(y);
+    ctx.save();
+    if (opts.badge) {
+      const r = opts.r || 6, cx = x + r, cy = y + r;
+      ctx.fillStyle = 'rgba(6,8,20,0.88)';
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = locked ? 'rgba(242,220,154,0.6)' : 'rgba(154,166,208,0.4)';
+      ctx.lineWidth = 1; ctx.stroke();
+      x = cx - 4; y = cy - 5;
+    }
+    const col = opts.col || (locked ? (opts.badge ? '#f1ead8' : '#f2dc9a') : '#8a94b8');
+    ctx.strokeStyle = col; ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    if (locked) {
+      ctx.arc(x + 4, y + 3.5, 2.5, Math.PI, 0, false);
+      ctx.lineTo(x + 6.5, y + 5.5);
+      ctx.moveTo(x + 1.5, y + 3.5);
+      ctx.lineTo(x + 1.5, y + 5.5);
+    } else {
+      ctx.arc(x + 5.5, y + 3, 2.3, Math.PI, 0, false);
+      ctx.moveTo(x + 3.2, y + 3);
+      ctx.lineTo(x + 3.2, y + 5.5);
+    }
+    ctx.stroke();
+    if (locked) {
+      ctx.fillStyle = col;
+      ctx.fillRect(x + 0.5, y + 5, 7, 5.5);
+      ctx.fillStyle = '#0a0c18';
+      ctx.fillRect(x + 3.5, y + 6.8, 1.2, 2.2);
+    } else {
+      ctx.strokeRect(x + 1, y + 5.5, 6, 4.5);
+    }
+    ctx.restore();
+  }
+
+  function lockGearIcon(ctx, x, y) {
+    x = Math.round(x); y = Math.round(y);
+    lockIcon(ctx, x, y, true, { col: '#181c2c' });
+    ctx.save();
+    const gx = x + 9, gy = y + 9;
+    ctx.fillStyle = '#181c2c';
+    ctx.beginPath(); ctx.arc(gx, gy, 3.2, 0, Math.PI * 2); ctx.fill();
+    for (let i = 0; i < 6; i++) {
+      const a = i * Math.PI / 3;
+      ctx.fillRect(Math.round(gx + Math.cos(a) * 3.3 - 0.8), Math.round(gy + Math.sin(a) * 3.3 - 0.8), 1.6, 1.6);
+    }
+    ctx.fillStyle = '#e8e4d8';
+    ctx.beginPath(); ctx.arc(gx, gy, 1.2, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function minusBadge(ctx, x, y, r = 6) {
+    const cx = Math.round(x + r), cy = Math.round(y + r);
+    ctx.save();
+    ctx.fillStyle = '#f4f0e4';
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#111842';
+    ctx.lineWidth = 1.2; ctx.stroke();
+    ctx.fillStyle = '#181c30';
+    ctx.fillRect(cx - 3, cy - 1, 6, 2);
+    ctx.restore();
+  }
+
+  function trashIcon(ctx, x, y, active = true, opts = {}) {
+    x = Math.round(x); y = Math.round(y);
+    ctx.save();
+    if (opts.badge) {
+      const r = opts.r || 6, cx = x + r, cy = y + r;
+      ctx.fillStyle = active ? 'rgba(42,10,16,0.92)' : 'rgba(6,8,20,0.88)';
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = active ? 'rgba(255,106,106,0.75)' : 'rgba(154,166,208,0.4)';
+      ctx.lineWidth = 1; ctx.stroke();
+      x = cx - 4; y = cy - 5;
+    }
+    const col = opts.col || (active ? '#ff6b6b' : '#8a94b8');
+    ctx.fillStyle = col;
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 1.2;
+    ctx.fillRect(x + 2.5, y + 0.5, 3, 1.2);
+    ctx.fillRect(x + 0.5, y + 1.7, 7, 1.3);
+    if (active) {
+      ctx.fillRect(x + 1.2, y + 3.4, 5.6, 5.8);
+      ctx.fillStyle = '#18080c';
+      ctx.fillRect(x + 2.6, y + 4.4, 1, 3.8);
+      ctx.fillRect(x + 4.4, y + 4.4, 1, 3.8);
+    } else {
+      ctx.strokeRect(x + 1.4, y + 3.5, 5.2, 5.4);
+      ctx.fillRect(x + 2.7, y + 4.6, 0.9, 3.2);
+      ctx.fillRect(x + 4.4, y + 4.6, 0.9, 3.2);
+    }
+    ctx.restore();
+  }
+
+  function filterIcon(ctx, x, y, col = '#f1ead8') {
+    x = Math.round(x); y = Math.round(y);
+    ctx.save();
+    ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.moveTo(x + 1, y + 2);
+    ctx.lineTo(x + 11, y + 2);
+    ctx.lineTo(x + 7.2, y + 6.4);
+    ctx.lineTo(x + 7.2, y + 10.5);
+    ctx.lineTo(x + 4.8, y + 9.3);
+    ctx.lineTo(x + 4.8, y + 6.4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function slotTabIcon(ctx, slotKey, x, y, col = '#f1ead8') {
+    x = Math.round(x); y = Math.round(y);
+    if (!slotKey || slotKey === 'all') {
+      ctx.save();
+      ctx.fillStyle = col;
+      ctx.fillRect(x + 1, y + 1, 5, 5);
+      ctx.fillRect(x + 1, y + 8, 5, 5);
+      ctx.fillRect(x + 8, y + 8, 5, 5);
+      ctx.beginPath();
+      ctx.moveTo(x + 10.5, y + 0.5);
+      ctx.lineTo(x + 13.5, y + 3.5);
+      ctx.lineTo(x + 10.5, y + 6.5);
+      ctx.lineTo(x + 7.5, y + 3.5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+      return;
+    }
+    if (!RELIC_ART[slotKey]) return;
+    blit(ctx, sized('slotTab|' + slotKey + '|' + col, 14, p => RELIC_ART[slotKey](p, col, 'none')), x, y, 14);
+  }
+
+  Object.assign(G, { CURIO_ART, SU_EVENT_ART, curioIcon, suEventIcon, RARITY, RARITY_BG, SET_COL, ITEM_ART, MAT_ART, RELIC_ART, RELIC_PIECE, iconHelp: { fine, halo, rays, hole, star4, glint, gem, shade3, slab, thick }, itemCanvas, itemIcon, itemSilhouette, slotBadge, rarityCell, pathIcon, pathShapes, elemIcon, statIcon, menuIcon, mapIcon, MENU_ART, MAP_ART, STAT_ART, PATH_ART, ELEM_ART, star4, ROMAN_SUP, supBadge, lockIcon, lockGearIcon, minusBadge, trashIcon, filterIcon, slotTabIcon });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

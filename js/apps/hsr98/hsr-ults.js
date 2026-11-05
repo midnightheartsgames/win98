@@ -1031,9 +1031,12 @@
     skip() { if (!this.fade) this.fade = 0.001; }
 
     render() {
-      const cv = buf.cv || (buf.cv = G.mkCanvas(LW, LH)), g = cv.getContext('2d'), b = this.beat;
+      const rw = this.ui && this.ui.wide && this.ui.wide() ? 427 : LW, ox = (rw - LW) >> 1;
+      const cv = buf.cv && buf.cv.width === rw ? buf.cv : (buf.cv = G.mkCanvas(rw, LH)), g = cv.getContext('2d'), b = this.beat;
+      g._wide = rw > LW;
       g.save();
       g.imageSmoothingEnabled = false;
+      if (ox) g.translate(ox, 0);
       const S = H.Cine.stage(g, this.game, this.T);
       S.t = Math.min(this.t, b.d); S.d = b.d;
       if (b.id === 'in') cutIn(S, this.P, this.def);
@@ -1052,19 +1055,19 @@
       c.save();
       c.globalAlpha = this.fade > 0 ? 1 - cl(this.fade / FADE) : 1;
       c.imageSmoothingEnabled = false;
-      c.drawImage(cv, 0, 0, W, HGT);
-      c.fillStyle = '#000000'; c.fillRect(0, 0, W, BAR * 2); c.fillRect(0, HGT - BAR * 2, W, BAR * 2);
-      c.fillStyle = rgba(P.col, 0.7); c.fillRect(0, BAR * 2 - 1, W, 1); c.fillRect(0, HGT - BAR * 2, W, 1);
+      c.drawImage(cv, ui.left, 0, ui.vw, HGT);
+      c.fillStyle = '#000000'; c.fillRect(ui.left, 0, ui.vw, BAR * 2); c.fillRect(ui.left, HGT - BAR * 2, ui.vw, BAR * 2);
+      c.fillStyle = rgba(P.col, 0.7); c.fillRect(ui.left, BAR * 2 - 1, ui.vw, 1); c.fillRect(ui.left, HGT - BAR * 2, ui.vw, 1);
       if (b.id === 'in') {
-        const k = eOut(cl((t - 0.1) / 0.3)), right = this.def.side === 'l', x = right ? W - 28 : 28, al = right ? 'right' : 'left', off = (1 - k) * (right ? 180 : -180);
+        const k = eOut(cl((t - 0.1) / 0.3)), right = this.def.side === 'l', x = right ? ui.right - 28 : ui.left + 28, al = right ? 'right' : 'left', off = (1 - k) * (right ? 180 : -180);
         c.globalAlpha *= k;
         ui.text('АБСОЛЮТНАЯ ТЕХНИКА', x + off, HGT - 54, { align: al, size: 10, bold: true, col: G.light(P.col, 0.3) });
         ui.text(P.name, x + off, HGT - 40, { align: al, size: 20, bold: true, serif: true, col: C.gold });
         const nw = ui.measure(P.u.name, 12, true);
-        ui.text(P.u.name, 14, 20, { size: 12, bold: true, col: C.cream });
-        for (let i = 0; i < P.rar; i++) ui.diamond(14 + nw + 12 + i * 11, 27, 4, P.rar >= 5 ? C.gold : '#c0a0ff');
+        ui.text(P.u.name, ui.left + 14, 20, { size: 12, bold: true, col: C.cream });
+        for (let i = 0; i < P.rar; i++) ui.diamond(ui.left + 14 + nw + 12 + i * 11, 27, 4, P.rar >= 5 ? C.gold : '#c0a0ff');
       } else {
-        ui.text(P.name, 14, 22, { size: 11, bold: true, serif: true, col: C.gold });
+        ui.text(P.name, ui.left + 14, 22, { size: 11, bold: true, serif: true, col: C.gold });
         if (b.id === 'act' && this.def.line && t > 0.1) {
           c.globalAlpha *= cl((t - 0.1) / 0.15);
           ui.text(P.u.name, W / 2, HGT - BAR * 2 + 10, { align: 'center', size: 11, bold: true, serif: true, col: C.gold });
@@ -1073,8 +1076,8 @@
       }
       c.restore();
       if (!this.fade) {
-        ui.hints([['Esc', 'Пропустить']], W - 12, 20, { align: 'right' });
-        ui.hit(0, 0, W, HGT, () => this.skip());
+        ui.hints([['Esc', 'Пропустить']], ui.right - 12, 20, { align: 'right' });
+        ui.hit(ui.left, 0, ui.vw, HGT, () => this.skip());
       }
     }
   }

@@ -44,6 +44,7 @@ body.tk-on .tk-restore { display: none; }
 .tk-close { margin: 0 4px 4px; height: 30px; }
 @media (orientation: portrait) {
   body.tk-on #game { height: 75vw; margin-top: calc(40px + env(safe-area-inset-top)); }
+  body.tk-on:has(.hsr98-wide) #game { height: 56.25vw; }
   .tk-top { width: auto; }
   .tk-sr { right: max(12px, env(safe-area-inset-right)); }
 }

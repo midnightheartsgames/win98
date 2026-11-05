@@ -167,7 +167,7 @@
     constructor(ui, res, opts = {}) {
       this.ui = ui; this.res = res; this.game = ui.game; this.ban = opts.ban || 'mid';
       this.best = Math.max(...res.map(r => r.rar));
-      this.R = new R3.Raster(LW, LH);
+      this.R = new R3.Raster(ui && ui.wide && ui.wide() ? 427 : LW, LH);
       this.phase = 'cine'; this.t = 0; this.cue = 0; this.rt = 0;
       this.queue = []; this.cur = -1; this.seen = new Set(); this.fade = 0; this.done = false; this.hop = 0; this.rc = [];
       this.cues = this.cueList();
@@ -287,8 +287,8 @@
     }
 
     screenRect(R) {
-      const a = R.project([-0.48, 1.32, 0.36]), b = R.project([0.48, 0.66, 0.36]);
-      return a && b ? [a[0], a[1], b[0] - a[0], b[1] - a[1]] : null;
+      const a = R.project([-0.48, 1.32, 0.36]), b = R.project([0.48, 0.66, 0.36]), ox = (R.w - LW) >> 1;
+      return a && b ? [a[0] - ox, a[1], b[0] - a[0], b[1] - a[1]] : null;
     }
 
     silhouette(g, R, t, T, a) {
@@ -362,8 +362,8 @@
       const k = sm(t / 1.6), rise = seg(t, 1.1, 1.5);
       this.velvetRoom(R, [0, lerp(1.5, 1.35, k), lerp(2.6, -0.8, k)], [0, lerp(1.2, 0.95, k), -3], 50, T, rise);
       R.bake();
-      const p = this.R.project([0, 1.2, -4.6]);
-      if (p) igor(g, p[0], p[1], this.R.fl / p[2] * 0.011);
+      const p = this.R.project([0, 1.2, -4.6]), ox = (this.R.w - LW) >> 1;
+      if (p) igor(g, p[0] - ox, p[1], this.R.fl / p[2] * 0.011);
       for (let i = 0; i < 20; i++) { const ph = (T * 0.2 + hx(i, 1, 71)) % 1; rect(g, rgba('#9ab4ff', Math.sin(Math.PI * ph) * 0.6), Math.round(hx(i, 2, 71) * LW), Math.round(LH - ph * LH), 1, 1); }
       K.vignette(g, 0.5);
       K.flash(g, RHOT[this.best], seg(t, 1.35, 1.6));
@@ -371,7 +371,7 @@
 
     velvetBack(g, T) {
       vgrad(g, 0, LH, [[0, '#04051a'], [0.6, '#0c1450'], [1, '#1a2a8a']]);
-      for (let x = 0; x < LW; x += 20) { rect(g, 'rgba(0,0,0,0.25)', x, 0, 6, LH); rect(g, 'rgba(120,150,255,0.06)', x + 6, 0, 2, LH); }
+      for (let x = (g._wide ? -60 : 0); x < (g._wide ? LW + 60 : LW); x += 20) { rect(g, 'rgba(0,0,0,0.25)', x, 0, 6, LH); rect(g, 'rgba(120,150,255,0.06)', x + 6, 0, 2, LH); }
       lighter(g, () => glow(g, CX, LH + 10, 160, '#3a5ae0', 0.4));
       for (let i = 0; i < 24; i++) { const ph = (T * 0.25 + hx(i, 1, 73)) % 1; rect(g, rgba('#b4c8ff', Math.sin(Math.PI * ph) * 0.7), Math.round(hx(i, 2, 73) * LW), Math.round(LH - ph * LH), 1, 1); }
     }
@@ -446,15 +446,16 @@
     }
 
     rackBg(g, T) {
+      const x0 = g._wide ? -56 : 0, x1 = g._wide ? LW + 56 : LW;
       vgrad(g, 0, LH, [[0, '#0a0e3a'], [1, '#1a2470']]);
-      for (let y = 0; y < LH; y += 4) for (let x = (y / 4) % 2 ? 2 : 0; x < LW; x += 4) rect(g, 'rgba(255,255,255,0.025)', x, y, 1, 1);
+      for (let y = 0; y < LH; y += 4) for (let x = x0 + ((y / 4) % 2 ? 2 : 0); x < x1; x += 4) rect(g, 'rgba(255,255,255,0.025)', x, y, 1, 1);
       lighter(g, () => glow(g, CX, CY, 180, '#3a5ae0', 0.25));
       for (let i = 0; i < 16; i++) { const ph = (T * 0.2 + hx(i, 1, 83)) % 1; rect(g, rgba('#b4c8ff', Math.sin(Math.PI * ph) * 0.6), Math.round(hx(i, 2, 83) * LW), Math.round(hx(i, 3, 83) * LH), 1, 1); }
     }
 
     studio(g, T, fog) {
       vgrad(g, 0, LH, [[0, '#5a4a18'], [0.55, '#b89a3a'], [1, '#d8c070']]);
-      for (let i = 0; i < 5; i++) { const x = 20 + i * 70; rect(g, '#2a2410', x, 0, 4, 34); rect(g, '#2a2410', x - 8, 30, 20, 8); lighter(g, () => poly(g, rgba('#fff4c0', 0.08), [x - 6, 38, x + 10, 38, x + 40, LH, x - 36, LH])); }
+      for (let i = (g._wide ? -1 : 0); i < (g._wide ? 6 : 5); i++) { const x = 20 + i * 70; rect(g, '#2a2410', x, 0, 4, 34); rect(g, '#2a2410', x - 8, 30, 20, 8); lighter(g, () => poly(g, rgba('#fff4c0', 0.08), [x - 6, 38, x + 10, 38, x + 40, LH, x - 36, LH])); }
       g.save(); g.translate(CX, 214); g.scale(1, 0.28);
       for (let r = 6; r >= 1; r--) ell(g, r % 2 ? '#b82428' : '#141012', 0, 0, r * 34, r * 34);
       g.restore();
@@ -533,9 +534,9 @@
     roadBack(g, T) {
       vgrad(g, 0, 150, [[0, '#9ab4c8'], [1, '#d8dcd0']]);
       rect(g, '#6a8a4a', 0, 120, LW, 40);
-      for (let i = 0; i < 9; i++) rect(g, '#5a7a3a', i * 40 + ((T * 6) % 40), 128 + (i % 3) * 8, 26, 2);
+      for (let i = (g._wide ? -2 : 0); i < (g._wide ? 11 : 9); i++) rect(g, '#5a7a3a', i * 40 + ((T * 6) % 40), 128 + ((i + 3) % 3) * 8, 26, 2);
       rect(g, '#8a8a86', 0, 160, LW, 80); rect(g, '#f2f0e8', 0, 196, LW, 3);
-      for (let i = 0; i < 4; i++) { const x = 30 + i * 80; rect(g, '#4a3a2a', x, 70, 3, 92); line(g, '#3a3a40', 1, x, 74, x + 80, 78); }
+      for (let i = (g._wide ? -1 : 0); i < (g._wide ? 5 : 4); i++) { const x = 30 + i * 80; rect(g, '#4a3a2a', x, 70, 3, 92); line(g, '#3a3a40', 1, x, 74, x + 80, 78); }
     }
 
     yosukeBike(g, t, T, look) {
@@ -813,7 +814,7 @@
 
     kanjiShop(g, t, T, look) {
       vgrad(g, 0, LH, [[0, '#1a1018'], [1, '#3a2418']]);
-      for (let i = 0; i < 6; i++) { const x = i * 54; rect(g, '#2a1a14', x, 20, 50, 110); for (let j = 0; j < 4; j++) rect(g, ['#c8243a', '#3a6ac8', '#e8d070', '#f2ece0', '#6ac87a'][(i + j) % 5], x + 3, 26 + j * 26, 44, 20); }
+      for (let i = (g._wide ? -1 : 0); i < (g._wide ? 7 : 6); i++) { const x = i * 54; rect(g, '#2a1a14', x, 20, 50, 110); for (let j = 0; j < 4; j++) rect(g, ['#c8243a', '#3a6ac8', '#e8d070', '#f2ece0', '#6ac87a'][(i + j + 5) % 5], x + 3, 26 + j * 26, 44, 20); }
       lighter(g, () => glow(g, 180, 60, 60, '#ffd890', 0.4));
       rect(g, '#5a3a26', 0, 170, LW, 70);
       this.bust(g, look, 112, LH + 10, 128, 1.4);
@@ -878,7 +879,7 @@
       vgrad(g, 0, LH, [[0, '#0a0418'], [1, '#2a0a2a']]);
       lighter(g, () => { for (const [x, a] of [[60, 0.4], [160, -0.1], [260, -0.4]]) poly(g, rgba(tint || '#ff9ad8', 0.14), [x - 8, 0, x + 8, 0, x + 60 + a * 80, 200, x - 60 + a * 80, 200]); });
       rect(g, '#1a0a1e', 0, 196, LW, 44); rect(g, '#ff6ab0', 0, 196, LW, 2);
-      for (let i = 0; i < 26; i++) { const x = 6 + i * 12, y = 226 + Math.sin(T * 6 + i) * 4; line(g, i % 3 ? '#ff8ac8' : '#7ae0ff', 2, x, y, x + Math.sin(T * 6 + i) * 4, y - 10); }
+      for (let i = (g._wide ? -5 : 0); i < (g._wide ? 31 : 26); i++) { const x = 6 + i * 12, y = 226 + Math.sin(T * 6 + i) * 4; line(g, (i + 9) % 3 ? '#ff8ac8' : '#7ae0ff', 2, x, y, x + Math.sin(T * 6 + i) * 4, y - 10); }
     }
 
     tofuShop(g, T) {
@@ -934,7 +935,7 @@
 
     riseScan(g, t, T, look) {
       vgrad(g, 0, LH, [[0, '#04061a'], [1, '#140a2a']]);
-      for (let x = 0; x < LW; x += 16) rect(g, rgba('#ff6ab0', 0.12), x, 0, 1, LH);
+      for (let x = (g._wide ? -64 : 0); x < (g._wide ? LW + 64 : LW); x += 16) rect(g, rgba('#ff6ab0', 0.12), x, 0, 1, LH);
       for (let y = 0; y < LH; y += 16) rect(g, rgba('#ff6ab0', 0.12), 0, y, LW, 1);
       this.shade(g, 110, 190, 2.4, T, 1, 5);
       const k = eOut(seg(t, 0, 0.3));
@@ -1041,7 +1042,12 @@
     }
 
     paint() {
+      const rw = this.ui && this.ui.wide && this.ui.wide() ? 427 : LW, ox = (rw - LW) >> 1;
+      if (this.R.w !== rw) this.R = new R3.Raster(rw, LH);
       const R = this.R, g = R.g, T = this.t + this.rt;
+      g._wide = rw > LW;
+      g.save();
+      if (ox) g.translate(ox, 0);
       if (this.phase === 'cine') {
         const [n, t] = this.shot();
         if (n === 'clock') this.clock(g, t, T);
@@ -1057,6 +1063,7 @@
         else if (t < CARD + CRUSH) this.crushShot(g, r, t - CARD, T);
         else this.poseShot(g, r, t - CARD - CRUSH, T);
       } else this.rackBg(g, T);
+      g.restore();
       H.Cine.dither(g);
       return R.cv;
     }
@@ -1064,18 +1071,18 @@
     render() { return this.paint(); }
 
     draw(c) {
-      const cv = this.paint(), was = c.imageSmoothingEnabled;
+      const ui = this.ui, cv = this.paint(), was = c.imageSmoothingEnabled;
       c.imageSmoothingEnabled = false;
-      c.drawImage(cv, 0, 0, W, HGT);
+      c.drawImage(cv, ui.left, 0, ui.vw, HGT);
       c.imageSmoothingEnabled = was;
       if (this.phase === 'cine') this.cineOverlay(c);
       else if (this.phase === 'reveal') this.revealOverlay(c);
       else this.rackOverlay(c);
-      if (this.fade > 0) { c.fillStyle = 'rgba(255,255,255,' + this.fade.toFixed(3) + ')'; c.fillRect(0, 0, W, HGT); }
+      if (this.fade > 0) { c.fillStyle = 'rgba(255,255,255,' + this.fade.toFixed(3) + ')'; c.fillRect(ui.left, 0, ui.vw, HGT); }
     }
 
     skipButton(c, label) {
-      const ui = this.ui, w = ui.measure(label, 10) + 44, x = W - w - 10, y = 10;
+      const ui = this.ui, w = ui.measure(label, 10) + 44, x = ui.right - w - 10, y = 10;
       c.fillStyle = 'rgba(4,6,26,0.6)'; c.fillRect(x, y, w, 20);
       c.strokeStyle = 'rgba(150,170,255,0.7)'; c.strokeRect(x + 0.5, y + 0.5, w - 1, 19);
       const kw = ui.keycap(x + 6, y + 4, 'Esc');
@@ -1085,14 +1092,14 @@
 
     cineOverlay(c) {
       this.skipButton(c, this.res.length > 1 ? 'К итогам' : 'Пропустить');
-      this.ui.hints([['Enter', 'Пропустить ролик']], 12, HGT - 20, { col: 'rgba(200,210,240,0.8)' });
+      this.ui.hints([['Enter', 'Пропустить ролик']], this.ui.left + 12, HGT - 20, { col: 'rgba(200,210,240,0.8)' });
     }
 
     plate(c, r, a) {
       if (a <= 0) return;
       const ui = this.ui, ch = r.kind === 'char', d = ch ? H.CHARS[r.id] : H.CONES[r.id], name = ch ? d.fullName || d.name : r.name, V = H.VELVET;
       const ar = V.arcanaOf(ch ? r.id : d && d.sig, ch ? null : r.id);
-      const x0 = Math.round(30 - 50 * (1 - eOut(a))), y = 372;
+      const x0 = ui.left + Math.round(30 - 50 * (1 - eOut(a))), y = 372;
       c.save(); c.globalAlpha = cl(a);
       const gr = c.createLinearGradient(x0 - 30, 0, x0 + 360, 0);
       gr.addColorStop(0, 'rgba(4,6,26,0.85)'); gr.addColorStop(0.7, 'rgba(4,6,26,0.5)'); gr.addColorStop(1, 'rgba(4,6,26,0)');
@@ -1121,7 +1128,7 @@
       if (a <= 0) return;
       const ui = this.ui;
       c.save(); c.globalAlpha = cl(a);
-      ui.resultTag(W - 196, 50, r, [['Новый персонаж!', C.ok], ['присоединился к экипажу', C.cream]]);
+      ui.resultTag(ui.right - 196, 50, r, [['Новый персонаж!', C.ok], ['присоединился к экипажу', C.cream]]);
       c.restore();
     }
 
@@ -1140,9 +1147,9 @@
         } else this.plate(c, r, seg(t, 0.6, 0.9));
         this.resultTag(c, r, seg(t, L - 0.4, L - 0.1));
       }
-      if (this.res.length > 1) ui.plate(12, 10, (this.cur + 1) + ' / ' + this.res.length);
+      if (this.res.length > 1) ui.plate(ui.left + 12, 10, (this.cur + 1) + ' / ' + this.res.length);
       this.skipButton(c, this.res.length > 1 ? 'К итогам' : 'Закрыть');
-      ui.hints([['Enter', this.rt < this.intro() ? 'Показать' : this.queue.length || this.res.length > 1 ? 'Далее' : 'Готово']], 12, HGT - 20);
+      ui.hints([['Enter', this.rt < this.intro() ? 'Показать' : this.queue.length || this.res.length > 1 ? 'Далее' : 'Готово']], ui.left + 12, HGT - 20);
     }
 
     rackOverlay(c) {

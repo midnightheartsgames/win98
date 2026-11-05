@@ -5,6 +5,7 @@
   const fmt = H.fmt;
   const MEDAL = 100;
   const BOX = { x: 366, y: 122, w: 260, h: 176 };
+  const WIDE_BOX = { x: 356, y: 118, w: 360, h: 184 };
   let medalCv = null;
 
   function paintMedal(g, s) {
@@ -84,42 +85,44 @@
     passMedal: drawMedal,
 
     drawPassSupply(c, scr) {
-      const g = this.game, s = g.state, P = H.PASS, owed = g.passOwed(), active = g.passActive();
-      this.supplyPill(W - 154, 10, 'jade', s.jade);
-      const halo = c.createRadialGradient(262, 210, 10, 262, 210, 150);
+      const g = this.game, s = g.state, P = H.PASS, owed = g.passOwed(), active = g.passActive(), wide = !!(this.wide && this.wide());
+      const box = wide ? WIDE_BOX : BOX, mcx = wide ? 216 : 262, ms = wide ? 220 : 200;
+      this.supplyPill(this.right - 154, 10, 'jade', s.jade);
+      const halo = c.createRadialGradient(mcx, 210, 10, mcx, 210, wide ? 170 : 150);
       halo.addColorStop(0, 'rgba(255,214,150,0.22)'); halo.addColorStop(1, 'rgba(255,214,150,0)');
-      c.fillStyle = halo; c.fillRect(160, 60, 220, 300);
-      drawMedal(c, 162, 104, 200);
+      c.fillStyle = halo; c.fillRect(mcx - 120, 60, 240, 300);
+      drawMedal(c, mcx - ms / 2, wide ? 94 : 104, ms);
       const state = !active ? 'Пропуск не активен' : g.passClaimedToday() ? 'Сегодня награда уже получена' : 'Награда за сегодня ждёт';
-      c.fillStyle = 'rgba(20,14,10,0.78)'; c.fillRect(176, 318, 172, 18);
-      this.text(state, 262, 321, { size: 10, align: 'center', col: active ? C.cream : C.sub });
-      this.text(active ? (owed ? 'Осталось ' + owed + ' дн.' : 'Сегодня последний день') : 'Купите пропуск, чтобы начать', 262, 342, { size: active ? 14 : 11, bold: active, align: 'center', col: active ? '#fff8ec' : C.dim });
-      if (s.pass && s.pass.got) this.text('Получено по пропуску: ' + fmt(s.pass.got) + ' нефрита', 262, 364, { size: 9, align: 'center', col: C.sub });
-      const rx = 382, ry = 44;
+      const sw = wide ? 204 : 172;
+      c.fillStyle = 'rgba(20,14,10,0.78)'; c.fillRect(mcx - sw / 2, 318, sw, 18);
+      this.text(state, mcx, 321, { size: 10, align: 'center', col: active ? C.cream : C.sub });
+      this.text(active ? (owed ? 'Осталось ' + owed + ' дн.' : 'Сегодня последний день') : 'Купите пропуск, чтобы начать', mcx, 342, { size: active ? 14 : 11, bold: active, align: 'center', col: active ? '#fff8ec' : C.dim });
+      if (s.pass && s.pass.got) this.text('Получено по пропуску: ' + fmt(s.pass.got) + ' нефрита', mcx, 364, { size: 9, align: 'center', col: C.sub });
+      const rx = box.x + 16, ry = 44;
       c.strokeStyle = 'rgba(242,220,154,0.55)'; c.lineWidth = 1; c.beginPath(); c.arc(rx, ry + 8, 9, 0, Math.PI * 2); c.stroke();
       c.fillStyle = '#e8c060'; c.beginPath(); c.arc(rx, ry + 8, 7, 0, Math.PI * 2); c.fill();
       this.text('i', rx, ry + 2, { size: 11, bold: true, serif: true, align: 'center', col: '#2a1a08', shadow: false });
       this.text('Правила', rx + 14, ry + 2, { size: 12, col: C.cream });
       this.hit(rx - 10, ry - 2, 80, 22, () => this.openPassRules());
-      this.text('Пропуск снабжения', BOX.x + BOX.w / 2, 70, { size: 20, bold: true, serif: true, align: 'center', col: C.gold });
-      this.text('экспресса', BOX.x + BOX.w / 2, 94, { size: 20, bold: true, serif: true, align: 'center', col: C.gold });
-      this.win(BOX.x, BOX.y, BOX.w, BOX.h, { alpha: 0.82, corners: false });
-      c.strokeStyle = 'rgba(242,220,154,0.35)'; c.setLineDash([3, 3]); c.beginPath(); c.moveTo(BOX.x + BOX.w / 2 + 0.5, BOX.y + 12); c.lineTo(BOX.x + BOX.w / 2 + 0.5, BOX.y + BOX.h - 12); c.stroke(); c.setLineDash([]);
+      this.text('Пропуск снабжения', box.x + box.w / 2, 70, { size: 20, bold: true, serif: true, align: 'center', col: C.gold });
+      this.text('экспресса', box.x + box.w / 2, 94, { size: 20, bold: true, serif: true, align: 'center', col: C.gold });
+      this.win(box.x, box.y, box.w, box.h, { alpha: 0.82, corners: false });
+      c.strokeStyle = 'rgba(242,220,154,0.35)'; c.setLineDash([3, 3]); c.beginPath(); c.moveTo(box.x + box.w / 2 + 0.5, box.y + 12); c.lineTo(box.x + box.w / 2 + 0.5, box.y + box.h - 12); c.stroke(); c.setLineDash([]);
       const col = (x, head, n, foot) => {
-        const cx = x + BOX.w / 4;
-        this.wrap(head, BOX.w / 2 - 16, 10).slice(0, 2).forEach((l, i) => this.text(l, cx, BOX.y + 12 + i * 12, { size: 10, align: 'center', col: C.cream }));
-        const orb = c.createRadialGradient(cx, BOX.y + 78, 4, cx, BOX.y + 78, 34);
+        const cx = x + box.w / 4;
+        this.wrap(head, box.w / 2 - 16, 10).slice(0, 2).forEach((l, i) => this.text(l, cx, box.y + 12 + i * 12, { size: 10, align: 'center', col: C.cream }));
+        const orb = c.createRadialGradient(cx, box.y + 78, 4, cx, box.y + 78, 34);
         orb.addColorStop(0, 'rgba(30,26,60,0.95)'); orb.addColorStop(1, 'rgba(10,8,24,0.95)');
-        c.fillStyle = orb; c.beginPath(); c.arc(cx, BOX.y + 78, 33, 0, Math.PI * 2); c.fill();
-        c.strokeStyle = C.brass; c.beginPath(); c.arc(cx, BOX.y + 78, 33.5, 0, Math.PI * 2); c.stroke();
-        G.itemIcon(c, 'jade', cx - 24, BOX.y + 54, 48);
-        this.text(fmt(n), cx, BOX.y + 116, { size: 22, bold: true, align: 'center', col: '#fff8ec' });
-        foot.forEach((f, i) => this.text(f, cx, BOX.y + 144 + i * 13, { size: 10, align: 'center', col: i ? C.gold : C.sub }));
+        c.fillStyle = orb; c.beginPath(); c.arc(cx, box.y + 78, 33, 0, Math.PI * 2); c.fill();
+        c.strokeStyle = C.brass; c.beginPath(); c.arc(cx, box.y + 78, 33.5, 0, Math.PI * 2); c.stroke();
+        G.itemIcon(c, 'jade', cx - 24, box.y + 54, 48);
+        this.text(fmt(n), cx, box.y + 116, { size: 22, bold: true, align: 'center', col: '#fff8ec' });
+        foot.forEach((f, i) => this.text(f, cx, box.y + 144 + i * 13, { size: 10, align: 'center', col: i ? C.gold : C.sub }));
       };
-      col(BOX.x, 'После приобретения вы получите', P.now, ['Звёздный нефрит']);
-      col(BOX.x + BOX.w / 2, 'Ежедневные награды на ' + P.days + ' дней', P.daily, ['Всего за ' + P.days + ' дней', fmt(P.daily * P.days) + ' нефрита']);
+      col(box.x, 'После приобретения вы получите', P.now, ['Звёздный нефрит']);
+      col(box.x + box.w / 2, 'Ежедневные награды на ' + P.days + ' дней', P.daily, ['Всего за ' + P.days + ' дней', fmt(P.daily * P.days) + ' нефрита']);
       const can = g.passCanBuy(), label = (active ? 'Обновить: ' : 'Купить: ') + P.priceText;
-      const bx = BOX.x + 20, by = 314, bw = BOX.w - 40, bh = 30;
+      const bx = box.x + (wide ? 40 : 20), by = 314, bw = box.w - (wide ? 80 : 40), bh = 30;
       c.fillStyle = '#000'; c.beginPath(); c.arc(bx + bh / 2, by + bh / 2, bh / 2 + 1, Math.PI / 2, Math.PI * 1.5); c.arc(bx + bw - bh / 2, by + bh / 2, bh / 2 + 1, -Math.PI / 2, Math.PI / 2); c.fill();
       const pill = c.createLinearGradient(0, by, 0, by + bh);
       if (can) { pill.addColorStop(0, '#fff2b0'); pill.addColorStop(0.5, '#f4c84a'); pill.addColorStop(1, '#c8902a'); } else { pill.addColorStop(0, '#3a3c50'); pill.addColorStop(1, '#22243a'); }
@@ -128,7 +131,7 @@
       this.text(can ? label : 'Не больше ' + P.max + ' дней', bx + bw / 2, by + 8, { size: 13, bold: true, align: 'center', col: can ? '#2a1a08' : '#6a6e88', shadow: false });
       this.hit(bx, by, bw, bh, () => this.passBuy());
       this.text(can ? 'Оплата картой через Steam' : 'Пропуск уже действует ' + g.passLeft() + ' дн.', bx + bw / 2, by + bh + 6, { size: 9, align: 'center', col: C.dim });
-      this.hints([['Enter', active ? 'Обновить' : 'Купить'], ['R', 'Правила'], ['Tab', 'Раздел'], ['Esc', 'Назад']], 170, HGT - 18);
+      this.hints([['Enter', active ? 'Обновить' : 'Купить'], ['R', 'Правила'], ['Tab', 'Раздел'], ['Esc', 'Назад']], wide ? 73 : 170, HGT - 18);
     },
 
     passSupplyKey(scr, k, code) {

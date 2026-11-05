@@ -322,13 +322,13 @@
     poly(g, '#2a1a1a', [154, 106, 160, 92, 166, 92, 166, 80, 172, 80, 172, 92, 178, 92, 184, 106]);
     rect(g, '#2a1a1a', 166, 70, 6, 12); poly(g, '#2a1a1a', [164, 70, 169, 62, 174, 70]);
     poly(g, '#3a3a22', [0, 168, LW, 160, LW, LH, 0, LH]);
-    for (let i = 0; i < 70; i++) { const gx = hx(i, 2, 71) * LW, gy = 168 + hx(i, 3, 71) * 70, sw = Math.sin(T * 2 + i) * 1.5; line(g, '#5a6a3a', 1, gx, gy, gx + 1 + sw, gy - 5); }
+    for (let i = 0; i < 70; i++) { const gx = (g._wide ? -54 : 0) + hx(i, 2, 71) * (g._wide ? 428 : LW), gy = 168 + hx(i, 3, 71) * 70, sw = Math.sin(T * 2 + i) * 1.5; line(g, '#5a6a3a', 1, gx, gy, gx + 1 + sw, gy - 5); }
     if (glowCol) lighter(g, () => glow(g, 160, 150, 90, glowCol, 0.25));
   }
 
   function guildBack(g, T) {
     vgrad(g, 0, LH, [[0, '#2a1a10'], [0.6, '#3a2416'], [1, '#1a100a']]);
-    for (let x = 0; x < LW; x += 22) { rect(g, '#22160c', x, 0, 2, 170); rect(g, rgba('#ffd8a0', 0.05), x + 2, 0, 1, 170); }
+    for (let x = (g._wide ? -66 : 0); x < (g._wide ? LW + 66 : LW); x += 22) { rect(g, '#22160c', x, 0, 2, 170); rect(g, rgba('#ffd8a0', 0.05), x + 2, 0, 1, 170); }
     rect(g, '#1c1008', 0, 20, LW, 6);
     for (const lx of [50, 270]) { line(g, '#1a1008', 1, lx, 26, lx, 40); ell(g, '#e8b040', lx, 46, 6, 7); lighter(g, () => glow(g, lx, 46, 30 + 3 * Math.sin(T * 7 + lx), '#ffb040', 0.45)); }
     poly(g, '#3a2414', [0, 172, LW, 172, LW, LH, 0, LH]);
@@ -642,7 +642,7 @@
 
   function stableBack(g, T, warm) {
     vgrad(g, 0, LH, [[0, '#120e0c'], [0.65, '#241a12'], [1, '#30241a']]);
-    for (let x = 0; x < LW; x += 22) { rect(g, '#33251a', x, 0, 20, 172); rect(g, '#1e160e', x + 20, 0, 2, 172); }
+    for (let x = (g._wide ? -66 : 0); x < (g._wide ? LW + 66 : LW); x += 22) { rect(g, '#33251a', x, 0, 20, 172); rect(g, '#1e160e', x + 20, 0, 2, 172); }
     rect(g, '#4a3420', 0, 22, LW, 8); rect(g, '#4a3420', 0, 116, LW, 6);
     rect(g, '#0a1024', 226, 40, 50, 40);
     for (let i = 0; i < 9; i++) { const ph = (T * 0.4 + i / 9) % 1; rect(g, rgba('#e8f0ff', 0.8), Math.round(230 + hx(i, 3, 71) * 42), Math.round(42 + ph * 36), 1, 1); }
@@ -670,12 +670,12 @@
     }
     poly(g, '#6a9a4a', [0, 150, 80, 142, 170, 150, 260, 140, LW, 146, LW, 168, 0, 168]);
     vgrad(g, 160, LH, [[0, '#5a8a3a'], [1, '#3a6a2a']]);
-    for (let i = 0; i < 50; i++) { const gx = hx(i, 2, 77) * LW, gy = 172 + hx(i, 3, 77) * 66; line(g, '#4a7a2a', 1, gx, gy, gx + 1 + Math.sin(T * 2 + i), gy - 4); }
+    for (let i = 0; i < 50; i++) { const gx = (g._wide ? -54 : 0) + hx(i, 2, 77) * (g._wide ? 428 : LW), gy = 172 + hx(i, 3, 77) * 66; line(g, '#4a7a2a', 1, gx, gy, gx + 1 + Math.sin(T * 2 + i), gy - 4); }
   }
 
   function cabbageField(g, T) {
     plainBack(g, T, true);
-    for (let r = 0; r < 4; r++) for (let i = 0; i < 10; i++) cabbage(g, 8 + i * 34 + (r % 2) * 17, 176 + r * 18, 0.8 + r * 0.15, 0);
+    for (let r = 0; r < 4; r++) for (let i = (g._wide ? -2 : 0); i < (g._wide ? 12 : 10); i++) cabbage(g, 8 + i * 34 + (r % 2) * 17, 176 + r * 18, 0.8 + r * 0.15, 0);
   }
 
   function lakeBack(g, T, clean) {
@@ -685,7 +685,8 @@
     poly(g, '#2a5a3a', [0, 128, 70, 120, 150, 126, 230, 118, LW, 124, LW, 132, 0, 132]);
     const top = G.mix('#5a6a3a', '#4aa0d8', clean), deep = G.mix('#2a3a1a', '#1a5a9a', clean);
     vgrad(g, 130, LH, [[0, top], [1, deep]]);
-    for (let i = 0; i < 16; i++) rect(g, rgba('#e8f8ff', (0.15 + 0.35 * clean) * (0.5 + 0.5 * Math.sin(T * 2 + i))), Math.round((hx(i, 2, 33) * LW + T * 8) % LW), 136 + Math.floor(hx(i, 3, 33) * 100), 6 + Math.floor(hx(i, 4, 33) * 10), 1);
+    const span = g._wide ? 428 : LW, x0 = g._wide ? -54 : 0;
+    for (let i = 0; i < 16; i++) rect(g, rgba('#e8f8ff', (0.15 + 0.35 * clean) * (0.5 + 0.5 * Math.sin(T * 2 + i))), x0 + Math.round((hx(i, 2, 33) * span + T * 8) % span), 136 + Math.floor(hx(i, 3, 33) * 100), 6 + Math.floor(hx(i, 4, 33) * 10), 1);
     return top;
   }
 
@@ -696,7 +697,7 @@
       this.pass = (B && B.pass) || 'mana';
       this.best = Math.max(...res.map(r => r.rar));
       this.score = score(res);
-      this.R = new R3.Raster(LW, LH);
+      this.R = new R3.Raster(ui && ui.wide && ui.wide() ? 427 : LW, LH);
       this.phase = 'cine'; this.t = 0; this.cue = 0; this.rt = 0;
       this.queue = []; this.cur = -1; this.seen = new Set(); this.fade = 0; this.done = false; this.hop = 0; this.rc = [];
       this.cues = this.cueList();
@@ -821,8 +822,8 @@
     }
 
     spot2d(R, p, hw) {
-      const a = R.project(p), b = R.project([p[0], p[1] + hw, p[2]]);
-      return a && b ? { x: a[0], y: a[1], h: a[1] - b[1] } : null;
+      const a = R.project(p), b = R.project([p[0], p[1] + hw, p[2]]), ox = (R.w - LW) >> 1;
+      return a && b ? { x: a[0] - ox, y: a[1], h: a[1] - b[1] } : null;
     }
 
     person(g, look, sp, o = {}) {
@@ -948,7 +949,7 @@
       if (hz) R.haze(hz[1] - 50, hz[1] + 30, '#ff9a5a', 0.35 * (1 - k * 0.5));
       const top = R.project([c[0], c[1] + 9, c[2]]);
       R.bake();
-      const bp = R.project(c);
+      const bp0 = R.project(c), bp = bp0 ? [bp0[0] - ((R.w - LW) >> 1), bp0[1], bp0[2]] : null;
       if (bp && top) {
         const rise = seg(t, 0.3, 1.7), stem = bp[1] - (bp[1] - top[1]) * rise;
         for (let i = 0; i < 14; i++) {
@@ -960,7 +961,7 @@
       if (bp && this.best === 5) lighter(g, () => { const q = seg(t, 0.3, 1.4), rr = 20 + q * 160; RAINBOW.forEach((h, i) => ring(g, rgba(h, 0.25 * (1 - q)), 2, bp[0], bp[1], rr + i * 3)); });
       const pass = seg(t, 0.55, 0.95);
       for (let i = 0; i < 80; i++) {
-        const gx = hx(i, 2, 55) * LW, gy = 196 + hx(i, 3, 55) * 44, bend = pass > 0 && pass < 1 ? Math.sin(pass * Math.PI) * 6 : 0;
+        const gx = (g._wide ? -54 : 0) + hx(i, 2, 55) * (g._wide ? 428 : LW), gy = 196 + hx(i, 3, 55) * 44, bend = pass > 0 && pass < 1 ? Math.sin(pass * Math.PI) * 6 : 0;
         line(g, i % 3 ? '#3a5a22' : '#4e7a2a', 1, gx, gy, gx + 1 + bend + Math.sin(T * 3 + i) * 0.8, gy - 6 - hx(i, 4, 55) * 4);
       }
       K.sparks(g, T, bp ? bp[0] : CX, bp ? bp[1] : 90, 20, 3, '#ffb050', 120);
@@ -3135,14 +3136,19 @@
       lighter(g, () => glow(g, dx, dy - 90, 70, '#ffe8a0', 0.25 * sh));
     }
     rackBg(g, T) {
+      const x0 = g._wide ? -45 : 8, w0 = g._wide ? 410 : LW - 16;
       vgrad(g, 0, LH, [[0, '#2c1c12'], [1, '#120a06']]);
-      rect(g, '#5a3a20', 8, 22, LW - 16, LH - 34); rect(g, '#b4885a', 12, 26, LW - 24, LH - 42);
-      for (let i = 0; i < 420; i++) rect(g, i % 3 ? 'rgba(96,62,30,0.32)' : 'rgba(244,214,168,0.22)', 12 + (i * 73) % (LW - 24), 26 + (i * 131) % (LH - 42), 1, 1);
+      rect(g, '#5a3a20', x0, 22, w0, LH - 34); rect(g, '#b4885a', x0 + 4, 26, w0 - 8, LH - 42);
+      for (let i = 0; i < 420; i++) rect(g, i % 3 ? 'rgba(96,62,30,0.32)' : 'rgba(244,214,168,0.22)', x0 + 4 + (i * 73) % (w0 - 8), 26 + (i * 131) % (LH - 42), 1, 1);
     }
 
     paint() {
+      const rw = this.ui && this.ui.wide && this.ui.wide() ? 427 : LW, ox = (rw - LW) >> 1;
+      if (this.R.w !== rw) this.R = new R3.Raster(rw, LH);
       const R = this.R, g = R.g, T = this.t + this.rt;
+      g._wide = rw > LW;
       g.save();
+      if (ox) g.translate(ox, 0);
       if (this.phase === 'cine') {
         const [n, t] = this.shot();
         if (n === 'hill') this.hill(R, g, t, T);
@@ -3165,18 +3171,18 @@
     render() { return this.paint(); }
 
     draw(c) {
-      const cv = this.paint(), was = c.imageSmoothingEnabled;
+      const ui = this.ui, cv = this.paint(), was = c.imageSmoothingEnabled;
       c.imageSmoothingEnabled = false;
-      c.drawImage(cv, 0, 0, W, HGT);
+      c.drawImage(cv, ui.left, 0, ui.vw, HGT);
       c.imageSmoothingEnabled = was;
       if (this.phase === 'cine') this.cineOverlay(c);
       else if (this.phase === 'reveal') this.revealOverlay(c);
       else this.rackOverlay(c);
-      if (this.fade > 0) { c.fillStyle = 'rgba(255,255,255,' + this.fade.toFixed(3) + ')'; c.fillRect(0, 0, W, HGT); }
+      if (this.fade > 0) { c.fillStyle = 'rgba(255,255,255,' + this.fade.toFixed(3) + ')'; c.fillRect(ui.left, 0, ui.vw, HGT); }
     }
 
     skipButton(c, label) {
-      const ui = this.ui, w = ui.measure(label, 10) + 44, x = W - w - 10, y = 10;
+      const ui = this.ui, w = ui.measure(label, 10) + 44, x = ui.right - w - 10, y = 10;
       c.fillStyle = 'rgba(20,6,8,0.6)'; c.fillRect(x, y, w, 20);
       c.strokeStyle = 'rgba(255,170,150,0.7)'; c.strokeRect(x + 0.5, y + 0.5, w - 1, 19);
       const kw = ui.keycap(x + 6, y + 4, 'Esc');
@@ -3199,7 +3205,7 @@
       if (n === 'beam') this.subtitle(c, 'Мегумин: «Взрыв!»', seg(t, 0, 0.15));
       if (n === 'score') this.subtitle(c, 'Казума: «' + (this.best === 5 ? 'Сто очков! Идеальный взрыв.' : this.best === 4 ? 'Хороший взрыв. ' + this.score + ' очков.' : 'Так себе. ' + this.score + ' очков.') + '»', seg(t, 0.4, 0.7));
       this.skipButton(c, this.res.length > 1 ? 'К итогам' : 'Пропустить');
-      this.ui.hints([['Enter', 'Пропустить ролик']], 12, HGT - 20, { col: 'rgba(240,220,210,0.8)' });
+      this.ui.hints([['Enter', 'Пропустить ролик']], this.ui.left + 12, HGT - 20, { col: 'rgba(240,220,210,0.8)' });
     }
 
     sparkRow(c, x, y, n, col, s) {
@@ -3216,7 +3222,7 @@
     plate(c, r, a) {
       if (a <= 0) return;
       const ui = this.ui, ch = r.kind === 'char', d = ch ? H.CHARS[r.id] : H.CONES[r.id], path = d && d.path, name = ch ? d.fullName || d.name : r.name;
-      const x0 = Math.round(36 - 50 * (1 - eOut(a))), y = 178;
+      const x0 = ui.left + Math.round(36 - 50 * (1 - eOut(a))), y = 178;
       c.save(); c.globalAlpha = cl(a);
       const gr = c.createLinearGradient(x0 - 36, 0, x0 + 334, 0);
       gr.addColorStop(0, 'rgba(20,6,8,0.8)'); gr.addColorStop(0.7, 'rgba(20,6,8,0.45)'); gr.addColorStop(1, 'rgba(20,6,8,0)');
@@ -3240,7 +3246,7 @@
       if (a <= 0) return;
       const ui = this.ui;
       c.save(); c.globalAlpha = cl(a);
-      ui.resultTag(W - 196, HGT - 108, r, [['Новый персонаж!', C.ok], ['вступает в отряд', C.cream]]);
+      ui.resultTag(ui.right - 196, HGT - 108, r, [['Новый персонаж!', C.ok], ['вступает в отряд', C.cream]]);
       c.restore();
     }
 
@@ -3255,9 +3261,9 @@
         } else this.plate(c, r, seg(t, 0.55, 0.9));
         this.resultTag(c, r, seg(t, L - 0.4, L - 0.1));
       }
-      if (this.res.length > 1) ui.plate(12, 10, (this.cur + 1) + ' / ' + this.res.length);
+      if (this.res.length > 1) ui.plate(ui.left + 12, 10, (this.cur + 1) + ' / ' + this.res.length);
       this.skipButton(c, this.res.length > 1 ? 'К итогам' : 'Закрыть');
-      ui.hints([['Enter', this.rt < this.intro() ? 'Показать' : this.queue.length || this.res.length > 1 ? 'Далее' : 'Готово']], 12, HGT - 20);
+      ui.hints([['Enter', this.rt < this.intro() ? 'Показать' : this.queue.length || this.res.length > 1 ? 'Далее' : 'Готово']], ui.left + 12, HGT - 20);
     }
 
     note(c, r, x, y, w, h, rot) {

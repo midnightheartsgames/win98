@@ -236,14 +236,14 @@
   }
 
   const bgCanvas0 = G.bgCanvas;
-  G.bgCanvas = function (id, w, h) {
-    if (id !== 'pf') return bgCanvas0(id, w, h);
-    const key = 'bg|' + w + '|' + h;
+  G.bgCanvas = function (id, w, h, hiCam) {
+    if (id !== 'pf') return bgCanvas0(id, w, h, hiCam);
+    const key = 'bg|' + w + '|' + h + (hiCam ? '|hi' : '');
     let out = cache.get(key);
     if (out) return out;
     out = G.mkCanvas(w, h);
-    const g = out.getContext('2d'), lw = Math.max(1, Math.round(w / 2)), lh = Math.max(1, Math.round(h / 2)), hz = Math.round(lh * 0.55), over = G.mkCanvas(lw, lh), o = over.getContext('2d');
-    g.drawImage(bgCanvas0('lf_night', w, h), 0, 0);
+    const kf = hiCam ? 0.39 : 0.55, g = out.getContext('2d'), lw = Math.max(1, Math.round(w / 2)), lh = Math.max(1, Math.round(h / 2)), hz = Math.round(lh * kf), over = G.mkCanvas(lw, lh), o = over.getContext('2d');
+    g.drawImage(bgCanvas0('lf_night', w, h, hiCam), 0, 0);
     paintBattleSky(o, lw, hz);
     paintRibbons(o, lw, hz);
     paintPavilion(o, lw, hz);
@@ -251,9 +251,9 @@
     paintTree(o, lw, hz);
     g.imageSmoothingEnabled = false;
     g.drawImage(over, 0, 0, w, h);
-    const sheen = g.createLinearGradient(0, h * 0.55, 0, h);
+    const sheen = g.createLinearGradient(0, h * kf, 0, h);
     sheen.addColorStop(0, 'rgba(90,130,230,0.2)'); sheen.addColorStop(1, 'rgba(6,10,44,0.45)');
-    g.fillStyle = sheen; g.fillRect(0, h * 0.55, w, h * 0.45);
+    g.fillStyle = sheen; g.fillRect(0, h * kf, w, h * (1 - kf));
     cache.set(key, out);
     return out;
   };
