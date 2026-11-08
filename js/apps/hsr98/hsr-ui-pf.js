@@ -40,12 +40,13 @@
       nameLines.forEach((l, i) => ui.text(l, b.x + b.w - 14, b.y + 12 + i * 18, { align: 'right', size: 15, bold: true, serif: true, col: C.gold }));
       ui.text('Нелепость: ' + p.whim, b.x + b.w - 14, infoY - 4, { align: 'right', size: 10, col: C.cream });
       ui.text('До смены сезона ' + p.days + ' дн.', b.x + b.w - 14, infoY + 10, { align: 'right', size: 10, col: C.sub });
+      const sw = b.w > 400 ? 128 : 67, sstep = b.w > 400 ? 136 : 71;
       p.stages.forEach((st, i) => {
-        const x = b.x + 14 + i * 71, y = b.y + 78;
-        c.fillStyle = 'rgba(4,6,30,0.75)'; c.fillRect(x, y, 67, 44);
-        c.strokeStyle = st.open ? '#7ac8ff' : '#3a4a78'; c.lineWidth = 1; c.strokeRect(x + 0.5, y + 0.5, 66, 43);
-        ui.text(String(st.n).padStart(2, '0'), x + 33, y + 4, { align: 'center', size: 13, bold: true, serif: true, col: st.open ? '#e8f0ff' : C.dim });
-        for (let k = 0; k < 3; k++) ui.fhStar(x + 15 + k * 18, y + 32, 6, st.stars > k);
+        const x = b.x + 14 + i * sstep, y = b.y + 78;
+        c.fillStyle = 'rgba(4,6,30,0.75)'; c.fillRect(x, y, sw, 44);
+        c.strokeStyle = st.open ? '#7ac8ff' : '#3a4a78'; c.lineWidth = 1; c.strokeRect(x + 0.5, y + 0.5, sw - 1, 43);
+        ui.text(String(st.n).padStart(2, '0'), x + sw / 2, y + 4, { align: 'center', size: 13, bold: true, serif: true, col: st.open ? '#e8f0ff' : C.dim });
+        for (let k = 0; k < 3; k++) ui.fhStar(x + sw / 2 + (k - 1) * 18, y + 32, 6, st.stars > k);
       });
       ui.text('Награды за истории', b.x + 14, b.y + 134, { size: 11, bold: true, col: C.cream });
       p.tiers.forEach((tr, i) => {
@@ -54,8 +55,9 @@
         c.strokeStyle = col; c.lineWidth = 1; c.strokeRect(x + 0.5, y + 0.5, 31, 31);
         ui.text(tr.got ? '✓' : String(tr.need), x + 16, y + 9, { align: 'center', size: 11, bold: true, col });
       });
-      ui.fhStar(b.x + 256, b.y + 170, 12, p.stars > 0);
-      ui.text(p.stars + ' / ' + p.total, b.x + 256, b.y + 188, { align: 'center', size: 16, bold: true, serif: true, col: C.gold });
+      const sx = b.x + (b.w > 400 ? 310 : 256);
+      ui.fhStar(sx, b.y + 170, 12, p.stars > 0);
+      ui.text(p.stars + ' / ' + p.total, sx, b.y + 188, { align: 'center', size: 16, bold: true, serif: true, col: C.gold });
       const fic = p.fictions.filter(f => f.got).length;
       ui.text('Награды за вымысел: ' + fic + ' из ' + p.fictions.length, b.x + 14, b.y + 232, { size: 10, col: C.cream });
       ui.text(p.due ? 'Можно забрать: ' + p.due : 'Новых наград нет', b.x + 14, b.y + 248, { size: 10, col: p.due ? C.gold : C.sub });

@@ -170,10 +170,10 @@
     return cache.get(key);
   }
 
-  const fmtPct = v => String(Math.round(v * 1000) / 10).replace('.', ',') + '%';
-  const fmtScaledNum = v => String(Math.round(v * 10) / 10).replace('.', ',');
-  const SKIP_BEFORE_RE = /(?:тратит|отнимает|становится|ниже|при ≤|≤|(?<!крит\.\s)(?:с шансом|шансом|базовый шанс|шанс Четвёрки)|по пробитым|Выигрыш\s*\(|Озноб\s*\(скорость|берёт|пропускает|ход Счетовода на|задерживает[^\d.%]*?на)\s*[+−-]?\s*$/i;
-  const SKIP_AFTER_RE = /^(?:\s*провал|\s*добить|\s*макс\.\s*HP\s*(?:цели|союзников)|\s*HP\s*союзников|\s*энергии|\s*за каждое ослабление цели\)\s*бьёт)/i;
+  const fmtPct = v => String(Math.round(v * 1000) / 10).replace('.', H.isEn && H.isEn() ? '.' : ',') + '%';
+  const fmtScaledNum = v => String(Math.round(v * 10) / 10).replace('.', H.isEn && H.isEn() ? '.' : ',');
+  const SKIP_BEFORE_RE = /(?:тратит|отнимает|становится|ниже|при ≤|≤|(?<!крит\.\s)(?:с шансом|шансом|базовый шанс|шанс Четвёрки)|по пробитым|Выигрыш\s*\(|Озноб\s*\(скорость|берёт|пропускает|ход Счетовода на|задерживает[^\d.%]*?на|consumes|loses|becomes|below|at ≤|(?<!crit\s)(?:with a|base chance|chance to|chance of)|against broken|Jackpot\s*\(|Chill\s*\(SPD|absorbs|takes|skips|Numby's action by|delays[^\d.%]*?by)\s*[+−-]?\s*$/i;
+  const SKIP_AFTER_RE = /^(?:\s*провал|\s*добить|\s*макс\.\s*HP\s*(?:цели|союзников)|\s*HP\s*союзников|\s*энергии|\s*за каждое ослабление цели\)\s*бьёт|\s*misfire|\s*chance|\s*of target's Max HP|\s*of allies' Max HP|\s*of allies' HP|\s*Energy|\s*per debuff)/i;
 
   function scaleAbilityText(kit, which, lv, text) {
     if (!text || !H.TUNING.trLevels) return text || '';
@@ -186,7 +186,7 @@
     const r = own != null ? own : traceRatio(w === 'talent' ? 'skill' : w, lv, sup);
     const rs = own != null ? own : traceRatio(w === 'talent' ? 'skill' : w, lv, true);
     if (Math.abs(r - 1) < 1e-4 && Math.abs(rs - 1) < 1e-4) return text;
-    let out = String(text).replace(/(\d+(?:,\d+)?)%/g, (m, num, idx, str) => {
+    let out = String(text).replace(/(\d+(?:[.,]\d+)?)%/g, (m, num, idx, str) => {
       const before = str.slice(Math.max(0, idx - 42), idx);
       const after = str.slice(idx + m.length, idx + m.length + 34);
       if (SKIP_BEFORE_RE.test(before) || SKIP_AFTER_RE.test(after)) return m;

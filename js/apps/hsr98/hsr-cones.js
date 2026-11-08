@@ -1137,7 +1137,7 @@
       if (hasLvl) {
         ctx.fillStyle = 'rgba(6,8,20,0.82)'; ctx.fillRect(x + 3, y + h - 14, aw, 11);
         ctx.font = 'bold 8px Tahoma, Arial, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-        ctx.fillStyle = '#f1ead8'; ctx.fillText('ур. ' + opts.lvl, x + w / 2, y + h - 13);
+        ctx.fillStyle = '#f1ead8'; ctx.fillText((H.isEn && H.isEn() ? 'Lv. ' : 'ур. ') + opts.lvl, x + w / 2, y + h - 13);
         const span = (rar - 1) * 6, sx0 = x + w / 2 - span / 2, py = y + h - 17.5;
         for (let i = 0; i < rar; i++) {
           const px = sx0 + i * 6;

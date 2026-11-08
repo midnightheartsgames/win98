@@ -41,7 +41,7 @@
 
   function newState() {
     return {
-      v: 1, trv: 1, xpv: 1, name: 'Келус', gender: 'm', mcPath: 'trail',
+      v: 1, trv: 1, xpv: 1, name: H.isEn && H.isEn() ? 'Caelus' : 'Келус', gender: 'm', mcPath: 'trail',
       roster: { trail: { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 } },
       party: ['trail'],
       inv: { items: {}, cones: [], relics: [] }, uid: 1,
@@ -49,7 +49,7 @@
       flags: {}, map: 'hs_base', x: null, y: null, dir: 'down',
       anchors: [], lastAnchor: null, opened: {}, broken: {},
       rumors: [], bank: { enemies: {}, fusions: [] }, pity: { five: 0, four: 0 }, pityEv: { five: 0, four: 0 }, pityCone: { five: 0, four: 0, guar5: false, guar4: false }, pitySig: { five: 0, four: 0, guar5: false, guar4: false }, pityAmp: { five: 0, four: 0, guar5: false, guar4: false }, pityConv: { five: 0, four: 0, guar5: false, guar4: false }, pityForge: { five: 0, four: 0, guar5: false, guar4: false }, pityGuild: { five: 0, four: 0, guar5: false, guar4: false }, pityWiz: { five: 0, four: 0, guar5: false, guar4: false }, pityMid: { five: 0, four: 0, guar5: false, guar4: false }, pityCon: { five: 0, four: 0, guar5: false, guar4: false }, pityAlley: { five: 0, four: 0, guar5: false, guar4: false }, pityComp: { five: 0, four: 0, guar5: false, guar4: false },
-      time: 0, obj: 'Прийти в себя', recaps: [], nextAtk: 0, nextCrit: 0, pendingTechs: [], warpLog: [], warpN: 0, warpNEv: 0, warpNCone: 0, warpNSig: 0, warpNAmp: 0, warpNConv: 0, warpNForge: 0, warpNGuild: 0, warpNWiz: 0, warpNMid: 0, warpNComp: 0, warpNCon: 0, warpNAlley: 0, conStar: 'makoto', alleyStar: 'makoto', warpBatch: 0, warpBan: null, evStar: 'ruanmei', coneStar: 'ruanmei', sigStar: 'miyabi', ampStar: 'miyabi', convStar: 'phrolova', forgeStar: 'phrolova', guildStar: 'aqua', wizStar: 'aqua', echoClaims: 0,
+      time: 0, obj: H.isEn && H.isEn() ? 'Wake up' : 'Прийти в себя', recaps: [], nextAtk: 0, nextCrit: 0, pendingTechs: [], warpLog: [], warpN: 0, warpNEv: 0, warpNCone: 0, warpNSig: 0, warpNAmp: 0, warpNConv: 0, warpNForge: 0, warpNGuild: 0, warpNWiz: 0, warpNMid: 0, warpNComp: 0, warpNCon: 0, warpNAlley: 0, conStar: 'makoto', alleyStar: 'makoto', warpBatch: 0, warpBan: null, evStar: 'ruanmei', coneStar: 'ruanmei', sigStar: 'miyabi', ampStar: 'miyabi', convStar: 'phrolova', forgeStar: 'phrolova', guildStar: 'aqua', wizStar: 'aqua', echoClaims: 0,
       comet: { start: null, done: null, got: [] }, will: [], mail: {}, record: null,
       quests: {}, missions: { done: {}, track: null, seen: {} }, su: null, suPaths: [], suClaims: [], squads: [], squad: 0
     };
@@ -168,7 +168,7 @@
   function restoreFestivalObjective(s, f) {
     const reached = FESTIVAL_STAGES.findIndex(([cond]) => cond.split('&').every(k => f[k]));
     if (reached < 0) return;
-    const savedStage = FESTIVAL_STAGES.findIndex(([, name]) => scriptObjective(name) === s.obj);
+    const savedStage = FESTIVAL_STAGES.findIndex(([, name]) => scriptObjective(name) === s.obj || (H.objAlt && scriptObjective(name) === H.objAlt(s.obj)));
     if (savedStage > reached) s.obj = scriptObjective(FESTIVAL_STAGES[reached][1]);
   }
 
@@ -221,7 +221,7 @@
       objIndex = new Map();
       for (const steps of Object.values(H.SCRIPTS)) for (const st of steps) if (st && st.obj && st.at) objIndex.set(st.obj, st.at);
     }
-    return objIndex.get(text) || null;
+    return objIndex.get(text) || (H.objAlt && H.objAlt(text) ? objIndex.get(H.objAlt(text)) : null) || null;
   }
 
   function scriptEntries(steps) {
@@ -280,6 +280,7 @@
       if (this.fixOutfitTiers) this.fixOutfitTiers(!!opts.state && !opts.state.otv);
       if (this.fixAscension) this.fixAscension(!!opts.state && !opts.state.asv);
       if (this.pfRefresh) this.pfRefresh();
+      if (H.syncSaveLang) H.syncSaveLang(this.state);
       this.mailSync();
       this.pending = null;
       this.script = null;
@@ -2265,6 +2266,7 @@
     }
   }
 
-  Object.assign(H, { Game, GLOW, charGlow, cond, newState, mapLayout, scriptEntries, dayKey, MAX_LVL, TL_MAX, TL_QUEST_EXP, SQUADS, ATTACK_TECHS });
+  const resetGameCaches = () => { objIndex = null; recapIndex = null; layouts.clear(); };
+  Object.assign(H, { Game, GLOW, charGlow, cond, newState, mapLayout, scriptEntries, dayKey, MAX_LVL, TL_MAX, TL_QUEST_EXP, SQUADS, ATTACK_TECHS, resetGameCaches });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

@@ -57,27 +57,28 @@
 
   Object.assign(H.UI.prototype, {
     contonBanner(c, bx, by, bw, bh, ban, star, pick, chan) {
-      const g = this.game, t = this.t;
+      const g = this.game, t = this.t, wide = bw > 640;
       if (!this.conFx || this.conFx.star !== star) { if (this.conFx) this.sfx('lever'); this.conFx = { star, t0: t }; }
       c.save(); c.beginPath(); c.rect(bx, by, bw, bh); c.clip();
       hallBack(this, c, bx, by, bw, bh, t);
       if (ban === 'alley') this.alleyScene(c, bx, by, bw, bh, star, pick);
       else this.stageScene(c, bx, by, bw, bh, star, pick);
       c.restore();
-      this.conPlate(c, bx, by, ban, star);
-      this.conChannels(c, bx + bw - 182, by + 8, ban, chan);
-      this.conProgram(c, bx + bw - 140, by + 34, ban, star);
-      if (ban === 'con') { this.conVisitor(c, bx + 12, by + bh - 96); this.conQueue(c, bx + 150, by + bh - 20, ban); }
+      this.conPlate(c, bx, by, bw, ban, star);
+      this.conChannels(c, bx + bw - (wide ? 214 : 182), by + 8, ban, chan);
+      this.conProgram(c, bx + bw - (wide ? 172 : 140), by + 34, bw, ban, star);
+      if (ban === 'con') { this.conVisitor(c, bx + 12, by + bh - 96); this.conQueue(c, bx + (wide ? 200 : 150), by + bh - 20, ban); }
       if (!g.conRegistered()) this.conDesk(c, bx, by, bw, bh);
     },
 
     stageScene(c, bx, by, bw, bh, star, pick) {
-      const t = this.t, B = H.BANNERS.con, ids = Object.keys(B.stars), feet = by + bh - 40;
-      c.fillStyle = '#1c1838'; c.beginPath(); c.ellipse(bx + 305, feet + 4, 190, 22, 0, 0, Math.PI * 2); c.fill();
-      c.fillStyle = '#2a2450'; c.fillRect(bx + 115, feet + 4, 380, 3);
+      const t = this.t, B = H.BANNERS.con, ids = Object.keys(B.stars), feet = by + bh - 40, wide = bw > 640;
+      const scx = bx + Math.round(bw / 2) + (wide ? 0 : 5), srw = wide ? 230 : 190, sstep = wide ? 126 : 100;
+      c.fillStyle = '#1c1838'; c.beginPath(); c.ellipse(scx, feet + 4, srw, 22, 0, 0, Math.PI * 2); c.fill();
+      c.fillStyle = '#2a2450'; c.fillRect(scx - srw, feet + 4, srw * 2, 3);
       const fx = this.conFx, k = Math.min(1, (t - fx.t0) / 0.4);
       ids.forEach(id => {
-        const x = bx + 205 + SPOTS[id] * 100, lit = id === star, S = B.stars[id];
+        const x = scx - sstep + SPOTS[id] * sstep, lit = id === star, S = B.stars[id];
         if (lit) beam(c, x, by + 32, feet, rgba(S.col, 0.55), 0.5 + 0.5 * k);
         c.save();
         c.globalAlpha = lit ? 1 : 0.5;
@@ -96,18 +97,19 @@
     },
 
     alleyScene(c, bx, by, bw, bh, star, pick) {
-      const g = this.game, t = this.t, B = H.BANNERS.alley, S = B.stars[star], ids = Object.keys(B.stars);
-      const floor = by + bh - 60;
-      for (let i = 0; i < 5; i++) {
+      const g = this.game, t = this.t, B = H.BANNERS.alley, S = B.stars[star], ids = Object.keys(B.stars), wide = bw > 640;
+      const floor = by + bh - 60, ox = wide ? 92 : 0, tw = wide ? 440 : 370;
+      const nLights = Math.ceil((bw - 90) / 110);
+      for (let i = 0; i < nLights; i++) {
         const lx = bx + 90 + i * 110;
         c.fillStyle = 'rgba(255,236,190,0.08)'; c.beginPath(); c.moveTo(lx - 6, by + 30); c.lineTo(lx + 6, by + 30); c.lineTo(lx + 44, floor); c.lineTo(lx - 44, floor); c.fill();
       }
       c.fillStyle = '#1a1430'; c.fillRect(bx, floor, bw, bh - (floor - by));
-      G.drawBust(c, lookFor(star, true), bx + 214, floor - 118 + Math.sin(t * 3) * 2, 1.5);
-      c.fillStyle = '#5a3a2a'; c.fillRect(bx + 120, floor - 22, 370, 10);
-      c.fillStyle = '#3a241a'; c.fillRect(bx + 120, floor - 12, 370, 34);
-      c.fillStyle = '#e8e0f0'; c.fillRect(bx + 120, floor - 24, 370, 3);
-      const ex = bx + 280, ey = by + 78;
+      G.drawBust(c, lookFor(star, true), bx + 214 + ox, floor - 118 + Math.sin(t * 3) * 2, 1.5);
+      c.fillStyle = '#5a3a2a'; c.fillRect(bx + 120 + ox, floor - 22, tw, 10);
+      c.fillStyle = '#3a241a'; c.fillRect(bx + 120 + ox, floor - 12, tw, 34);
+      c.fillStyle = '#e8e0f0'; c.fillRect(bx + 120 + ox, floor - 24, tw, 3);
+      const ex = bx + 280 + ox, ey = by + 78;
       c.strokeStyle = '#6a4a2a'; c.lineWidth = 3; c.beginPath(); c.moveTo(ex + 40, ey); c.lineTo(ex + 10, floor - 22); c.moveTo(ex + 40, ey); c.lineTo(ex + 70, floor - 22); c.stroke(); c.lineWidth = 1;
       c.fillStyle = rgba(S.col, 0.35); c.fillRect(ex - 6, ey - 6, 92, 128);
       G.drawConeCard(c, S.cone, ex, ey, 80, 116, { info: false });
@@ -116,22 +118,23 @@
       this.text('75%', 0, -7, { align: 'center', size: 12, bold: true, col: '#c8243a', shadow: false });
       c.restore();
       S.four.forEach((f, i) => {
-        const sx = bx + 130 + (i === 2 ? 270 : i * 64), sy = floor - 92;
+        const sx = bx + 130 + ox + (i === 2 ? (wide ? 330 : 270) : i * (wide ? 74 : 64)), sy = floor - 92;
         c.fillStyle = '#2a2a3a'; c.fillRect(sx + 20, sy + 60, 4, 30);
         G.drawConeCard(c, f.slice(5), sx, sy, 44, 62, { info: false });
       });
+      const pw = wide ? 156 : 112;
       ids.forEach((id, i) => {
         const on = id === star, x = bx + 18, y = by + 140 + i * 30;
-        c.fillStyle = on ? rgba(B.stars[id].col, 0.8) : 'rgba(10,10,30,0.7)'; c.fillRect(x, y, 112, 24);
+        c.fillStyle = on ? rgba(B.stars[id].col, 0.8) : 'rgba(10,10,30,0.7)'; c.fillRect(x, y, pw, 24);
         G.drawPortrait(c, G.lookOf(id, g), x + 3, y + 2, 20);
-        this.text(this.fitText(H.CONES[B.stars[id].cone].name, 9, 82, on), x + 27, y + 7, { size: 9, bold: on, col: on ? '#fff' : C.sub });
-        this.hit(x, y, 112, 24, () => pick(id));
+        this.text(this.fitText(H.CONES[B.stars[id].cone].name, 9, pw - 30, on), x + 27, y + 7, { size: 9, bold: on, col: on ? '#fff' : C.sub });
+        this.hit(x, y, pw, 24, () => pick(id));
       });
       crowd(c, bx, by, bw, bh, t, 1);
     },
 
-    conPlate(c, bx, by, ban, star) {
-      const S = H.BANNERS[ban].stars[star], ch = H.CHARS[star], x = bx + 12, y = by + 36, w = 134;
+    conPlate(c, bx, by, bw, ban, star) {
+      const S = H.BANNERS[ban].stars[star], ch = H.CHARS[star], x = bx + 12, y = by + 36, w = bw > 640 ? 178 : 134;
       c.fillStyle = 'rgba(6,6,24,0.86)'; c.fillRect(x, y, w, 92);
       c.fillStyle = S.col; c.fillRect(x, y, 3, 92);
       let ts = 16;
@@ -160,8 +163,8 @@
       });
     },
 
-    conProgram(c, x, y, ban, star) {
-      const g = this.game, B = g.bannerOf(ban), S = H.BANNERS[ban].stars[star], alley = ban === 'alley', w = 128, h = 176;
+    conProgram(c, x, y, bw, ban, star) {
+      const g = this.game, B = g.bannerOf(ban), S = H.BANNERS[ban].stars[star], alley = ban === 'alley', wide = bw > 640, w = wide ? 160 : 128, h = 176;
       c.fillStyle = '#1a1420'; c.fillRect(x + 3, y + 3, w, h);
       c.fillStyle = PAPER; c.fillRect(x, y, w, h);
       c.fillStyle = '#c8243a'; c.fillRect(x, y, w, 20);
@@ -176,7 +179,7 @@
       lines.forEach(l => this.wrap(l, w - 12, 9).forEach(s => { this.text(s, x + 6, yy, { size: 9, col: INK, shadow: false }); yy += 11; }));
       yy += 4;
       S.four.forEach((f, i) => {
-        const fx = x + 8 + i * 40, fy = yy;
+        const fx = x + 8 + i * (wide ? 48 : 40), fy = yy;
         c.fillStyle = G.RARITY[4]; c.fillRect(fx - 1, fy - 1, 34, 34);
         if (f.startsWith('cone:')) { c.fillStyle = '#1a1430'; c.fillRect(fx, fy, 32, 32); G.drawConeCard(c, f.slice(5), fx + 5, fy + 1, 22, 30, { info: false }); }
         else G.drawPortrait(c, G.lookOf(f, g), fx, fy, 32);
@@ -213,7 +216,7 @@
     },
 
     conDesk(c, bx, by, bw, bh) {
-      const g = this.game, x = bx + 130, y = by + 34, w = 340, h = 222;
+      const g = this.game, w = 340, h = 222, x = bx + Math.round((bw - w) / 2), y = by + 34;
       c.fillStyle = 'rgba(2,2,14,0.74)'; c.fillRect(bx, by, bw, bh);
       c.fillStyle = '#2a1e3a'; c.fillRect(x, y, w, h);
       c.strokeStyle = '#ff9ac8'; c.lineWidth = 2; c.strokeRect(x + 3, y + 3, w - 6, h - 6); c.lineWidth = 1;

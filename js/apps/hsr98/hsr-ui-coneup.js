@@ -465,7 +465,8 @@
           ui.openConeSalvageConfirm(this, prev);
         },
         drawLeft(c, cn) {
-          const px = 12, py = 36, pw = 192, ph = 384;
+          const sb = ui.salvageBox ? ui.salvageBox() : { px: 12, pw: 192 };
+          const px = sb.px, py = 36, pw = sb.pw, ph = 384;
           ui.win(px, py, pw, ph, { alpha: 0.9, corners: false });
           if (!cn) {
             c.strokeStyle = 'rgba(154,166,208,0.35)';
@@ -530,8 +531,9 @@
           loreLines.slice(0, maxLore).forEach((l, i) => ui.text(l, px + 9, y + i * 11, { size: 9, col: C.dim }));
         },
         drawSortPopup(c) {
-          const mx = 212, my = 426 - sorts.length * 26 - 6, mw = 138, mh = sorts.length * 26 + 4;
-          ui.hit(0, 0, W, HGT, () => { this.sortMenu = false; });
+          const sb = ui.salvageBox ? ui.salvageBox() : { gx: 212 };
+          const mx = sb.gx, my = 426 - sorts.length * 26 - 6, mw = 138, mh = sorts.length * 26 + 4;
+          ui.hit(ui.left, 0, ui.vw, HGT, () => { this.sortMenu = false; });
           c.fillStyle = 'rgba(6,8,20,0.96)'; c.fillRect(mx, my, mw, mh);
           c.strokeStyle = C.brass; c.strokeRect(mx + 0.5, my + 0.5, mw - 1, mh - 1);
           sorts.forEach((s, i) => {
@@ -551,13 +553,14 @@
     },
 
     drawConeSalvageBody(c, st, opts = {}) {
-      const ui = this, g = this.game, COLS = 7, CW = 58, CH = 66, VIS = 5, sorts = H.ASC.coneSorts;
+      const ui = this, g = this.game, sb = ui.salvageBox ? ui.salvageBox() : { px: 12, pw: 192, gx: 212, gw: 416, cols: 7, rx: W };
+      const COLS = sb.cols, CW = 58, CH = 66, VIS = 5, sorts = H.ASC.coneSorts;
       st.syncPicked();
       const all = st.list(), rows = Math.ceil(all.length / COLS);
       if (st.sel >= all.length) st.sel = Math.max(0, all.length - 1);
       const focusCn = st.focusUid != null ? g.coneOf(st.focusUid) : null;
       st.drawLeft(c, focusCn);
-      const gx = 212, gy = 56, gw = 416, gh = 334;
+      const gx = sb.gx, gy = 56, gw = sb.gw, gh = 334;
       ui.text('Количество: ' + g.state.inv.cones.length + '/' + H.ASC.coneInvCap, gx, 38, { size: 10, col: C.cream });
       ui.text('Можно разобрать ' + g.coneSalvageableTotal({ includeEnhanced: st.includeEnhanced }), gx + 114, 38, { size: 10, col: C.sub });
       ui.text('Включать усиленные конусы', gx + gw - 34, 39, { size: 9, align: 'right', col: st.includeEnhanced ? C.gold : C.sub });
@@ -586,7 +589,7 @@
       ui.text(String(prev.count), gx + w0, 400, { size: 11, bold: true, col: '#e69c3a' });
       ui.text(' / ' + H.ASC.coneSalvageCap, gx + w0 + ui.measure(String(prev.count), 11, true), 400, { size: 11, col: C.cream });
       if (prev.items.length) {
-        const rx0 = W - 12 - prev.items.length * 36;
+        const rx0 = sb.rx - 12 - prev.items.length * 36;
         ui.text('Результат', rx0 - 6, 400, { size: 11, align: 'right', col: C.sub });
         prev.items.forEach((it, idx) => {
           const ix = rx0 + idx * 36, iy = 390;
@@ -615,15 +618,15 @@
       if (allOn) ui.text('✓', cbx + 7, cby + 1, { size: 11, bold: true, align: 'center', col: '#18140a' });
       ui.text('Выбрать всё', cbx + 19, cby + 1, { size: 11, col: C.cream });
       ui.hit(cbx - 2, 426, 96, 24, () => st.toggleAll());
-      ui.button(W - 144, 426, 132, 24, 'Разобрать', () => st.act(), { size: 11, icon: 'synth', active: prev.count > 0, disabled: prev.count === 0 });
+      ui.button(sb.rx - 144, 426, 132, 24, 'Разобрать', () => st.act(), { size: 11, icon: 'synth', active: prev.count > 0, disabled: prev.count === 0 });
       const enhKey = opts.inSynth ? 'T' : 'E';
       const baseHints = [['←↑↓→', 'Выбор'], ['Enter', 'Отметить'], ['L', 'Замок'], [enhKey, 'Усиленные'], ['A', 'Выбрать всё'], ['M', 'Блокировка'], ['S/D', 'Сортировка'], ['X', 'Разобрать']];
-      ui.hints(opts.inSynth ? [['Q/E', 'Раздел']].concat(baseHints) : baseHints.concat([['Esc', 'Назад']]), 12, HGT - 16);
+      ui.hints(opts.inSynth ? [['Q/E', 'Раздел']].concat(baseHints) : baseHints.concat([['Esc', 'Назад']]), sb.px, HGT - 16);
       if (st.sortMenu) st.drawSortPopup(c);
     },
 
     coneSalvageKey(st, kk, code, opts = {}) {
-      const ui = this, g = this.game, COLS = 7, sorts = H.ASC.coneSorts;
+      const ui = this, g = this.game, COLS = ui.salvageBox ? ui.salvageBox().cols : 7, sorts = H.ASC.coneSorts;
       if (st.sortMenu) {
         const idx = sorts.findIndex(s => s.id === st.sortKey);
         if (kk === 'up' || kk === 'down') {
@@ -672,13 +675,14 @@
     openConeSalvage() {
       const ui = this, st = ui.makeConeSalvageState();
       st.draw = function (c) {
+        const rx = ui.right;
         ui.fullBg(c, false);
         c.fillStyle = 'rgba(4,6,20,0.6)'; c.fillRect(ui.left, 0, ui.vw, HGT);
-        G.menuIcon(c, 'bag', 14, 9, 20, C.gold);
-        ui.text('Инвентарь', 38, 6, { size: 9, col: C.sub });
-        ui.text('Разобрать Световой конус', 38, 16, { size: 13, bold: true, serif: true, col: C.gold });
-        ui.button(W - 118, 8, 80, 22, 'Правила', () => ui.openConeSalvageRules(), { size: 10, icon: 'info' });
-        ui.closeBtn(W - 32, 8, () => ui.pop());
+        G.menuIcon(c, 'bag', ui.left + 14, 9, 20, C.gold);
+        ui.text('Инвентарь', ui.left + 38, 6, { size: 9, col: C.sub });
+        ui.text('Разобрать Световой конус', ui.left + 38, 16, { size: 13, bold: true, serif: true, col: C.gold });
+        ui.button(rx - 118, 8, 80, 22, 'Правила', () => ui.openConeSalvageRules(), { size: 10, icon: 'info' });
+        ui.closeBtn(rx - 32, 8, () => ui.pop());
         ui.drawConeSalvageBody(c, this, { inSynth: false });
       };
       st.key = function (kk, code) {
@@ -706,7 +710,7 @@
         },
         draw(c) {
           const x = 80, y = 108, w = 480, h = 248;
-          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(x, y, w, h, { title: 'Управление блокировкой' });
           ui.closeBtn(x + w - 28, y + 6, () => ui.pop());
           ui.text('• Разблокировать всё', x + 16, y + 36, { size: 11, bold: true, col: C.gold });
@@ -757,7 +761,7 @@
       return this.push({
         draw(c) {
           const x = W / 2 - 220, y = 96, w = 440, h = 272;
-          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(x, y, w, h, { title: 'Правила разборки Световых конусов' });
           ui.closeBtn(x + w - 28, y + 6, () => ui.pop());
           let ry = y + 32;
@@ -780,7 +784,7 @@
         sel: 0,
         draw(c) {
           const x = W / 2 - 190, y = 128, w = 380, h = 214;
-          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(x, y, w, h, { title: 'Подтверждение разборки' });
           ui.text('Выбрано Световых конусов: ' + prev.count, W / 2, y + 28, { align: 'center', size: 12, bold: true, col: C.cream });
           if (prev.hasRare4 && prev.hasEnhanced) ui.text('Внимание: выбраны конусы 4★ и усиленные конусы (до ур. ' + prev.maxLvl + ')!', W / 2, y + 46, { align: 'center', size: 10, bold: true, col: C.bad });

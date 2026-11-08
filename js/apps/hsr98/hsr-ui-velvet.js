@@ -41,14 +41,15 @@
     },
 
     midnightBanner(c, bx, by, bw, bh, ban, star, pick, chan) {
-      const g = this.game, t = this.t, V = H.VELVET, B = H.BANNERS[ban], S = B.stars[star], comp = ban === 'comp';
+      const g = this.game, t = this.t, V = H.VELVET, B = H.BANNERS[ban], S = B.stars[star], comp = ban === 'comp', wide = bw > 640;
       const pity = g.pityOf(ban), BB = g.bannerOf(ban), pity5 = BB.pity5 || T.pity5, left = pity5 - pity.five;
       c.save(); c.beginPath(); c.rect(bx, by, bw, bh); c.clip();
       const sky = c.createLinearGradient(0, by, 0, by + bh);
       sky.addColorStop(0, '#04061a'); sky.addColorStop(0.7, '#0e1640'); sky.addColorStop(1, '#1a1a2a');
       c.fillStyle = sky; c.fillRect(bx, by, bw, bh);
       c.fillStyle = '#080a1c';
-      for (let i = 0; i < 9; i++) { const hx = bx + i * 70 - 10, hh = 40 + G.hash(i, 3, 9) * 50; c.fillRect(hx, by + bh - 70 - hh, 62, hh + 70); if (G.hash(i, 4, 9) > 0.4) { c.fillStyle = 'rgba(255,214,120,0.55)'; c.fillRect(hx + 12, by + bh - 60 - hh * 0.6, 6, 6); c.fillStyle = '#080a1c'; } }
+      const nH = Math.ceil((bw + 20) / 70);
+      for (let i = 0; i < nH; i++) { const hx = bx + i * 70 - 10, hh = 40 + G.hash(i, 3, 9) * 50; c.fillRect(hx, by + bh - 70 - hh, 62, hh + 70); if (G.hash(i, 4, 9) > 0.4) { c.fillStyle = 'rgba(255,214,120,0.55)'; c.fillRect(hx + 12, by + bh - 60 - hh * 0.6, 6, 6); c.fillStyle = '#080a1c'; } }
       c.fillStyle = 'rgba(150,170,230,0.35)';
       for (let i = 0; i < 70; i++) { const rx = bx + ((G.hash(i, 7, 1) * bw + t * 30) % bw), ry = by + ((G.hash(7, i, 2) * bh + t * 260 + i * 13) % bh); c.fillRect(rx, ry, 1, 6); }
       const fog = Math.min(1, pity.five / pity5), fh = 26 + fog * 90;
@@ -56,7 +57,7 @@
       fg.addColorStop(0, 'rgba(' + FOG + ',0)'); fg.addColorStop(1, 'rgba(' + FOG + ',' + (0.25 + fog * 0.4).toFixed(2) + ')');
       c.fillStyle = fg; c.fillRect(bx, by + bh - fh, bw, fh);
 
-      const cx = bx + 250, cardW = 132, cardH = 214, cy = by + 30;
+      const cx = bx + (wide ? 316 : 250), cardW = 132, cardH = 214, cy = by + 30;
       c.fillStyle = 'rgba(58,90,224,' + (0.18 + 0.06 * Math.sin(t * 2)).toFixed(2) + ')';
       c.fillRect(cx - cardW / 2 - 8, cy - 8, cardW + 16, cardH + 16);
       if (comp) {
@@ -68,28 +69,29 @@
       }
       c.restore();
 
-      const lx = bx + 16, ly = by + 14, lw = 118;
+      const lx = bx + 16, ly = by + 14, lw = wide ? 156 : 118;
       c.fillStyle = '#f2ece0'; c.fillRect(lx, ly, lw, 100);
       c.fillStyle = '#c8243a'; c.fillRect(lx, ly, lw, 18);
       this.text('ПРОГНОЗ · ИНАБА', lx + lw / 2, ly + 4, { align: 'center', size: 9, bold: true, col: '#fff', shadow: false });
-      c.fillStyle = '#8a8478'; for (let i = 0; i < 6; i++) c.fillRect(lx + 10 + i * 19, ly - 3, 3, 6);
+      const nRings = Math.floor((lw - 14) / 19);
+      c.fillStyle = '#8a8478'; for (let i = 0; i < nRings; i++) c.fillRect(lx + 10 + i * 19, ly - 3, 3, 6);
       const w = weatherOf(left);
-      this.text(String(left), lx + 40, ly + 26, { align: 'center', size: 34, bold: true, serif: true, col: left <= 6 ? '#b88a10' : '#2a2430', shadow: false });
-      weatherIcon(c, w[2], lx + 92, ly + 42, t);
+      this.text(String(left), lx + Math.round(lw * 0.34), ly + 26, { align: 'center', size: 34, bold: true, serif: true, col: left <= 6 ? '#b88a10' : '#2a2430', shadow: false });
+      weatherIcon(c, w[2], lx + lw - 26, ly + 42, t);
       this.text('дней до тумана', lx + lw / 2, ly + 68, { align: 'center', size: 10, col: '#4a4250', shadow: false });
       this.text(w[1] + ' · до 4★: ' + (T.pity4 - pity.four), lx + lw / 2, ly + 84, { align: 'center', size: 9, col: '#6a6270', shadow: false });
       glasses(c, lx + 26, ly + 124, !!pity.guar5, t);
       const five = comp ? '«' + H.CONES[S.cone].name + '»' : H.CHARS[star].name;
       this.wrap(pity.guar5 ? 'Очки надеты: следующий 5★ точно ' + five : '5★: ' + Math.round(BB.featRate * 100) + '% на ' + five + '. Промах наденет очки.', lw - 50, 9).slice(0, 3).forEach((l, i) => this.text(l, lx + 50, ly + 110 + i * 11, { size: 9, bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.sub }));
 
-      const ix = bx + 340, rw = 170;
+      const ix = bx + (wide ? 426 : 340), rw = wide ? 304 : 170, cbw = wide ? 88 : 68;
       c.fillStyle = 'rgba(4,6,26,0.85)'; c.fillRect(ix - 8, by + 8, rw + 16, bh - 16);
       c.fillStyle = 'rgba(4,6,26,0.62)'; c.fillRect(lx - 4, ly + 104, lw + 8, 48);
       [['mid', 'Канал'], ['comp', 'Компендиум']].forEach(([id, label], i) => {
-        const on = id === ban, tx = ix + i * 72;
-        c.fillStyle = on ? VELVET_HI : 'rgba(20,24,60,0.85)'; c.fillRect(tx, by + 12, 68, 16);
-        this.text(label, tx + 34, by + 14, { align: 'center', size: 9, bold: on, col: on ? '#fff' : C.sub, shadow: false });
-        this.hit(tx, by + 12, 68, 16, () => chan(id));
+        const on = id === ban, tx = ix + i * (cbw + 4);
+        c.fillStyle = on ? VELVET_HI : 'rgba(20,24,60,0.85)'; c.fillRect(tx, by + 12, cbw, 16);
+        this.text(label, tx + cbw / 2, by + 14, { align: 'center', size: 9, bold: on, col: on ? '#fff' : C.sub, shadow: false });
+        this.hit(tx, by + 12, cbw, 16, () => chan(id));
       });
       let ts = 22;
       while (ts > 11 && Math.max(...S.title.map(x => this.measure(x, ts, true, true))) > rw) ts--;
@@ -107,8 +109,9 @@
         this.text('★★★★★ · ' + H.PATHS[ch.path].name + ' · ' + V.arcanaName(S.arcana), ix, y + 14, { size: 9, col: G.RARITY[5] });
       }
       y += 34;
+      const fstep = wide ? 56 : 42;
       S.four.forEach((fid, i) => {
-        const mx = ix + 16 + i * 42, my = y + 16;
+        const mx = ix + 16 + i * fstep, my = y + 16;
         c.fillStyle = '#05070e'; c.beginPath(); c.arc(mx, my, 17, 0, Math.PI * 2); c.fill();
         if (fid.startsWith('cone:')) G.drawConeCard(c, fid.slice(5), mx - 11, my - 15, 22, 30, { info: false });
         else { c.save(); c.beginPath(); c.arc(mx, my, 15, 0, Math.PI * 2); c.clip(); c.fillStyle = '#1a2250'; c.fillRect(mx - 15, my - 15, 30, 30); G.drawPortrait(c, G.lookOf(fid, g), mx - 15, my - 15, 30); c.restore(); }
@@ -131,7 +134,7 @@
     },
 
     velvetContract(c, bx, by, bw, bh) {
-      const g = this.game, V = H.VELVET, x = bx + 150, y = by + 40, w = 300, h = 200;
+      const g = this.game, V = H.VELVET, w = 300, h = 200, x = bx + Math.round((bw - w) / 2), y = by + 40;
       c.fillStyle = 'rgba(2,4,16,0.72)'; c.fillRect(bx, by, bw, bh);
       c.fillStyle = '#efe6cc'; c.fillRect(x, y, w, h);
       c.strokeStyle = VELVET; c.lineWidth = 3; c.strokeRect(x + 6, y + 6, w - 12, h - 12); c.lineWidth = 1;

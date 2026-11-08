@@ -40,6 +40,12 @@
   }
 
   Object.assign(H.UI.prototype, {
+    chatBox() {
+      const wide = this.wide(), lx = this.left + 12, rx = this.right, lw = wide ? 248 : LW;
+      const cx = lx + lw + 8, cw = rx - 12 - cx, bub = wide ? 348 : BUB;
+      return { wide, lx, ly: LY, lw, lh: LH, cx, cy: CY, cw, ch: CH, bub, rx };
+    },
+
     openChats(who) {
       const ui = this, g = this.game;
       g.chatSync();
@@ -84,18 +90,19 @@
           if (this.wait <= 0) this.reveal();
         },
         draw(c) {
+          const b = ui.chatBox();
           ui.fullBg(c, false);
-          ui.plate(12, 10, 'Сообщения');
+          ui.plate(b.lx, 10, 'Сообщения');
           const L = list();
-          ui.text('Контактов: ' + L.length, 118, 13, { size: 11, col: C.sub });
-          ui.closeBtn(W - 32, 10, () => this.key('back'));
-          ui.chatList(c, this, L);
-          ui.chatPane(c, this);
+          ui.text('Контактов: ' + L.length, b.lx + 106, 13, { size: 11, col: C.sub });
+          ui.closeBtn(b.rx - 32, 10, () => this.key('back'));
+          ui.chatList(c, this, L, b);
+          ui.chatPane(c, this, b);
           const v = this.thread() && g.chatView(this.thread());
           const keys = this.focus === 'list' ? [['↑↓', 'Контакт'], ['Enter', 'Открыть'], ['Esc', 'Назад']]
             : v && v.wait ? [['↑↓', 'Ответ'], ['Enter', 'Отправить'], ['PgUp', 'История'], ['←', 'Контакты']]
               : [['Enter', 'Дальше'], ['↑↓', 'Прокрутка'], ['←', 'Контакты'], ['Esc', 'Назад']];
-          ui.hints(keys, 12, HGT - 18);
+          ui.hints(keys, b.lx, HGT - 18);
         },
         key(k, code) {
           if (code === 'PageUp' || code === 'PageDown') { this.scroll += code === 'PageUp' ? 120 : -120; return; }
@@ -119,18 +126,19 @@
       return s;
     },
 
-    chatList(c, s, L) {
-      this.win(LX, LY, LW, LH, { top: '#121848', bottom: '#060924' });
+    chatList(c, s, L, b = this.chatBox()) {
+      const { lx, ly, lw, lh } = b;
+      this.win(lx, ly, lw, lh, { top: '#121848', bottom: '#060924' });
       if (!L.length) {
-        G.menuIcon(c, 'chat', LX + LW / 2 - 20, LY + 140, 40, C.dim);
-        this.wrap('Пока никто не написал. Сообщения приходят после важных событий и раз в день.', LW - 40, 11).forEach((l, i) => this.text(l, LX + LW / 2, LY + 192 + i * 14, { align: 'center', size: 11, col: C.sub }));
+        G.menuIcon(c, 'chat', lx + lw / 2 - 20, ly + 140, 40, C.dim);
+        this.wrap('Пока никто не написал. Сообщения приходят после важных событий и раз в день.', lw - 40, 11).forEach((l, i) => this.text(l, lx + lw / 2, ly + 192 + i * 14, { align: 'center', size: 11, col: C.sub }));
         return;
       }
       s.cur();
       s.top = Math.max(0, Math.min(s.top, s.sel, L.length - ROWS));
       if (s.sel >= s.top + ROWS) s.top = s.sel - ROWS + 1;
       L.slice(s.top, s.top + ROWS).forEach((ct, j) => {
-        const i = s.top + j, y = LY + 8 + j * ROW, on = i === s.sel, x = LX + 8, w = LW - 16;
+        const i = s.top + j, y = ly + 8 + j * ROW, on = i === s.sel, x = lx + 8, w = lw - 16;
         c.fillStyle = on ? (s.focus === 'list' ? 'rgba(242,220,154,0.24)' : 'rgba(242,220,154,0.12)') : j % 2 ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.15)';
         c.fillRect(x, y, w, ROW - 4);
         if (on) { c.fillStyle = C.brassHi; c.fillRect(x, y, 2, ROW - 4); }
@@ -140,8 +148,9 @@
         if (ct.open) this.badge(x + w - 9, y + 12);
         this.hit(x, y, w, ROW - 4, () => { s.pickContact(i); s.enter(); });
       });
-      if (s.top > 0) this.diamond(LX + LW / 2, LY + 5, 3, C.brassHi);
-      if (s.top + ROWS < L.length) this.diamond(LX + LW / 2, LY + LH - 6, 3, C.brassHi);
+      if (s.top > 0) this.diamond(lx + lw / 2, ly + 5, 3, C.brassHi);
+      if (s.top + ROWS < L.length) this.diamond(lx + lw / 2, ly + lh - 6, 3, C.brassHi);
+      this.wheelZone(lx, ly, lw, lh, d => s.pickContact(s.sel + (d > 0 ? 1 : -1)));
     },
 
     chatFit(str, w, size) {
@@ -151,8 +160,8 @@
       return t.trimEnd() + '...';
     },
 
-    chatItems(ct, s) {
-      const g = this.game, items = [];
+    chatItems(ct, s, b = this.chatBox()) {
+      const g = this.game, items = [], bub = b.bub;
       let last = null;
       ct.threads.forEach(id => {
         const v = g.chatView(id);
@@ -163,7 +172,7 @@
           if (line.quest || line.give) { items.push({ kind: 'sys', h: 24, line }); last = null; return; }
           const me = line.who === '@', first = last !== line.who;
           let w, h, rows = null;
-          if (line.text) { rows = this.wrap(line.text, BUB - 16, 11); w = Math.max(...rows.map(r => this.measure(r, 11))) + 16; h = rows.length * 14 + 10; }
+          if (line.text) { rows = this.wrap(line.text, bub - 16, 11); w = Math.max(...rows.map(r => this.measure(r, 11))) + 16; h = rows.length * 14 + 10; }
           else if (line.sticker) { w = 68; h = 68; }
           else { w = 156; h = 132; }
           const lift = first && !me ? 10 : 0;
@@ -176,59 +185,61 @@
       return items;
     },
 
-    chatPane(c, s) {
-      const g = this.game, ct = s.cur();
-      this.win(CX, CY, CW, CH, { top: '#141a4c', bottom: '#070a26' });
+    chatPane(c, s, b = this.chatBox()) {
+      const g = this.game, ct = s.cur(), { cx, cy, cw, ch } = b;
+      this.win(cx, cy, cw, ch, { top: '#141a4c', bottom: '#070a26' });
       if (!ct) {
-        G.menuIcon(c, 'chat', CX + CW / 2 - 24, 190, 48, C.dim);
-        this.text('Сообщений нет', CX + CW / 2, 250, { align: 'center', size: 14, bold: true, serif: true, col: C.cream });
+        G.menuIcon(c, 'chat', cx + cw / 2 - 24, 190, 48, C.dim);
+        this.text('Сообщений нет', cx + cw / 2, 250, { align: 'center', size: 14, bold: true, serif: true, col: C.cream });
         return;
       }
-      this.text(nameOf(ct.who, this.game), CX + 16, CY + 12, { size: 15, bold: true, serif: true, col: C.gold });
-      this.text(this.chatFit(signOf(ct.who, this.game), CW - 40, 10), CX + 16, CY + 32, { size: 10, col: C.sub });
-      c.fillStyle = 'rgba(201,164,92,0.45)'; c.fillRect(CX + 10, CY + 48, CW - 20, 1);
+      this.text(nameOf(ct.who, this.game), cx + 16, cy + 12, { size: 15, bold: true, serif: true, col: C.gold });
+      this.text(this.chatFit(signOf(ct.who, this.game), cw - 40, 10), cx + 16, cy + 32, { size: 10, col: C.sub });
+      c.fillStyle = 'rgba(201,164,92,0.45)'; c.fillRect(cx + 10, cy + 48, cw - 20, 1);
       const id = g.chatCurrent(ct.who), v = g.chatView(id);
       const opts = v.wait || [], foot = opts.length ? 26 + opts.length * 28 : 26;
-      const top = CY + 54, bottom = CY + CH - 8 - foot, area = bottom - top;
-      const items = this.chatItems(ct, s);
+      const top = cy + 54, bottom = cy + ch - 8 - foot, area = bottom - top;
+      const items = this.chatItems(ct, s, b);
       const total = items.reduce((a, it) => a + it.h + (it.gap || 4), 0) + 6;
       const maxScroll = Math.max(0, total - area);
       s.scroll = Math.max(0, Math.min(s.scroll, maxScroll));
       let y = total <= area ? top + 4 : top - maxScroll + s.scroll + 4;
       c.save();
-      c.beginPath(); c.rect(CX + 4, top, CW - 8, area); c.clip();
+      c.beginPath(); c.rect(cx + 4, top, cw - 8, area); c.clip();
       for (const it of items) {
         y += it.gap || 4;
-        if (y + it.h >= top - 4 && y <= bottom + 4) this.chatItem(c, it, y);
+        if (y + it.h >= top - 4 && y <= bottom + 4) this.chatItem(c, it, y, b);
         y += it.h;
       }
       c.restore();
       if (maxScroll > 0) {
-        if (s.scroll < maxScroll) { this.diamond(CX + CW - 14, top + 6, 4, C.brassHi); this.hit(CX + CW - 24, top, 20, 16, () => { s.scroll += 120; }); }
-        if (s.scroll > 0) { this.diamond(CX + CW - 14, bottom - 6, 4, C.brassHi); this.hit(CX + CW - 24, bottom - 16, 20, 16, () => { s.scroll = 0; }); }
+        if (s.scroll < maxScroll) { this.diamond(cx + cw - 14, top + 6, 4, C.brassHi); this.hit(cx + cw - 24, top, 20, 16, () => { s.scroll += 120; }); }
+        if (s.scroll > 0) { this.diamond(cx + cw - 14, bottom - 6, 4, C.brassHi); this.hit(cx + cw - 24, bottom - 16, 20, 16, () => { s.scroll = 0; }); }
       }
-      this.hit(CX + 4, top, CW - 30, area, () => { if (s.focus !== 'chat') s.enter(); else if (v.next) s.reveal(); });
+      this.hit(cx + 4, top, cw - 30, area, () => { if (s.focus !== 'chat') s.enter(); else if (v.next) s.reveal(); });
+      this.wheelZone(cx, top, cw, area, d => { s.scroll = Math.max(0, Math.min(maxScroll, s.scroll + (d > 0 ? -40 : 40))); });
       const fy = bottom + 6;
-      c.fillStyle = 'rgba(201,164,92,0.3)'; c.fillRect(CX + 10, fy - 2, CW - 20, 1);
+      c.fillStyle = 'rgba(201,164,92,0.3)'; c.fillRect(cx + 10, fy - 2, cw - 20, 1);
       if (opts.length) {
-        this.text('Ответ', CX + 16, fy + 4, { size: 10, bold: true, col: C.sub });
-        opts.forEach((o, i) => this.button(CX + 14, fy + 20 + i * 28, CW - 28, 24, this.chatFit(o, CW - 48, 11), () => { s.focus = 'chat'; s.reply(i); }, { active: s.focus === 'chat' && i === s.rsel, size: 11 }));
+        this.text('Ответ', cx + 16, fy + 4, { size: 10, bold: true, col: C.sub });
+        opts.forEach((o, i) => this.button(cx + 14, fy + 20 + i * 28, cw - 28, 24, this.chatFit(o, cw - 48, 11), () => { s.focus = 'chat'; s.reply(i); }, { active: s.focus === 'chat' && i === s.rsel, size: 11 }));
       } else {
         const msg = v.next ? (s.focus === 'chat' ? 'печатает...' : 'Новое сообщение. Enter, чтобы открыть') : 'Новых сообщений нет';
-        this.text(msg, CX + CW / 2, fy + 6, { align: 'center', size: 10, col: v.next ? C.cream : C.dim });
+        this.text(msg, cx + cw / 2, fy + 6, { align: 'center', size: 10, col: v.next ? C.cream : C.dim });
       }
     },
 
-    chatItem(c, it, y) {
+    chatItem(c, it, y, b = this.chatBox()) {
+      const { cx, cw } = b;
       if (it.kind === 'date') {
-        const w = this.measure(it.text, 9, true) + 18, x = Math.round(CX + CW / 2 - w / 2);
+        const w = this.measure(it.text, 9, true) + 18, x = Math.round(cx + cw / 2 - w / 2);
         c.fillStyle = 'rgba(4,6,20,0.7)'; c.fillRect(x, y + 3, w, 15);
         c.fillStyle = 'rgba(154,166,208,0.35)'; c.fillRect(x, y + 3, w, 1);
-        this.text(it.text, CX + CW / 2, y + 5, { align: 'center', size: 9, bold: true, col: C.sub });
+        this.text(it.text, cx + cw / 2, y + 5, { align: 'center', size: 9, bold: true, col: C.sub });
         return;
       }
-      if (it.kind === 'sys') { this.chatSys(c, it.line, y); return; }
-      const ax = it.me ? CX + CW - 14 - AV : CX + 12;
+      if (it.kind === 'sys') { this.chatSys(c, it.line, y, b); return; }
+      const ax = it.me ? cx + cw - 14 - AV : cx + 12;
       const bx = it.me ? ax - 8 - it.w : ax + AV + 8;
       if (it.first) {
         this.circlePortrait(c, lookOf(it.who, null, this.game), ax, y, AV, it.me ? C.brassHi : '#5a64a0');
@@ -257,10 +268,10 @@
       else { c.fillRect(x - 2, y + 5, 2, 4); c.fillRect(x - 4, y + 6, 2, 2); }
     },
 
-    chatSys(c, line, y) {
+    chatSys(c, line, y, b = this.chatBox()) {
       const quest = line.quest && H.QUESTS[line.quest];
       const text = quest ? 'Принято поручение: «' + quest.name + '»' : 'Получено: звёздный нефрит ×' + line.give.jade;
-      const w = this.measure(text, 10, true) + 36, x = Math.round(CX + CW / 2 - w / 2);
+      const w = this.measure(text, 10, true) + 36, x = Math.round(b.cx + b.cw / 2 - w / 2);
       c.fillStyle = quest ? 'rgba(40,16,60,0.85)' : 'rgba(40,32,12,0.85)'; c.fillRect(x, y + 2, w, 20);
       c.fillStyle = quest ? '#b07af0' : C.brass; c.fillRect(x, y + 2, w, 1); c.fillRect(x, y + 21, w, 1);
       if (quest) G.menuIcon(c, 'mission', x + 6, y + 4, 16, '#e0c8ff');

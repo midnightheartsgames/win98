@@ -163,13 +163,23 @@
       return 'Не в сети, ' + agoText((row.ago || 0) + (performance.now() - (row.seenAt || performance.now())));
     },
 
+    friendBox() {
+      const wide = this.wide();
+      return {
+        wide,
+        lx: wide ? this.left + 12 : LIST_X,
+        rx: wide ? this.right - 12 : W - 12,
+        lw: wide ? this.vw - 24 : LIST_W
+      };
+    },
+
     friendList() {
       const n = globalThis.Net98, F = n.friends;
       return [SOLO].concat(F ? sortRows(F.list, this.friendSort || 0) : []);
     },
 
     drawFriendRow(c, row, x, y, w, on, o = {}) {
-      const ui = this, h = ROW_H - 3, elem = row.avatar && own(H.CHARS, row.avatar.k) ? H.CHARS[row.avatar.k].elem : 'phys', tint = (H.ELEMENTS[elem] || H.ELEMENTS.phys).col;
+      const ui = this, wide = ui.wide(), h = ROW_H - 3, elem = row.avatar && own(H.CHARS, row.avatar.k) ? H.CHARS[row.avatar.k].elem : 'phys', tint = (H.ELEMENTS[elem] || H.ELEMENTS.phys).col;
       c.fillStyle = row.on ? '#1a2048' : '#10132c'; c.fillRect(x, y, w, h);
       const wash = c.createLinearGradient(x, 0, x + w * 0.7, 0);
       wash.addColorStop(0, tint); wash.addColorStop(1, 'rgba(0,0,0,0)');
@@ -183,10 +193,12 @@
       c.fillStyle = 'rgba(4,6,20,0.85)'; c.fillRect(x + 12, y + 42, 32, 12);
       ui.text(String(row.tl || 0), x + 28, y + 42, { size: 10, bold: true, align: 'center', col: C.gold });
       if (row.fav) ui.text('★', x + 6, y + 40, { size: 12, bold: true, col: '#ffd471' });
-      const tx = x + 56, right = o.right == null ? 196 : o.right, maxW = w - right - 60, name = clean(row.name, 16);
+      const defRight = wide ? 140 : 196, tx = x + 56, right = o.right == null ? defRight : o.right, maxW = w - right - 60, name = clean(row.name, 16);
       ui.text(name, tx, y + 4, { size: 13, bold: true, serif: true, col: C.gold });
       let cx = tx + ui.measure(name, 13, true, true) + 8;
-      for (const chip of chipsOf(row)) {
+      const chips = chipsOf(row);
+      if (wide && !row.solo && row.uid) chips.push('UID ' + row.uid);
+      for (const chip of chips) {
         const cw = ui.measure(chip, 9, true) + 8;
         if (cx + cw > tx + maxW) break;
         c.fillStyle = '#2a2458'; c.fillRect(cx, y + 5, cw, 13);
@@ -203,8 +215,9 @@
         ui.text(ui.fitText(statusText(row.status), 10, maxW - tw - 6), tx + tw + 6, y + 39, { size: 10, col: '#a8f0b0' });
       } else ui.text(agoText((row.ago || 0) + (performance.now() - (row.seenAt || performance.now()))), tx, y + 39, { size: 10, col: C.dim });
       if (o.heroes !== false) {
+        const hOff = wide ? 132 : 188, hStep = wide ? 43 : 42;
         (row.show || []).slice(0, 3).forEach((ref, i) => {
-          const hx = x + w - 188 + i * 42, slot = ui.cardSlot(ref, row.gender, row.name);
+          const hx = x + w - hOff + i * hStep, slot = ui.cardSlot(ref, row.gender, row.name);
           c.fillStyle = 'rgba(4,6,20,0.6)'; c.fillRect(hx, y + 4, 38, 50);
           if (!slot) return;
           G.rarityCell(c, hx, y + 4, 38, 50, slot.rarity);
@@ -256,60 +269,71 @@
           else if (it.id === 'recent') { n.send('req', { uid: it.row.uid }); ui.toast('Запрос отправлен: ' + clean(it.row.name, 12)); ui.sfx('confirm'); }
         },
         draw(c) {
-          const F = n.friends;
-          c.fillStyle = '#07060f'; c.fillRect(0, 0, W, HGT);
-          c.fillStyle = ui.dither(); c.fillRect(0, 0, W, HGT);
-          G.menuIcon(c, 'friends', 12, 6, 24, C.brassHi);
-          ui.plate(40, 8, 'Друзья');
-          ['Мои друзья', 'Добавить'].forEach((t, i) => ui.button(150 + i * 96, 8, 92, 22, t, () => this.setTab(i), { size: 10, active: i === this.tab }));
-          ui.text('Мои друзья: ' + (F ? F.list.length : 0) + '/' + (F ? F.max : 100), W - 44, 12, { size: 11, align: 'right', col: C.cream });
-          ui.closeBtn(W - 32, 8, () => this.key('back'));
+          const F = n.friends, { wide, lx, rx } = ui.friendBox();
+          c.fillStyle = '#07060f'; c.fillRect(ui.left, 0, ui.vw, HGT);
+          c.fillStyle = ui.dither(); c.fillRect(ui.left, 0, ui.vw, HGT);
+          G.menuIcon(c, 'friends', lx, 6, 24, C.brassHi);
+          ui.plate(lx + 28, 8, 'Друзья');
+          const tabX = wide ? lx + 128 : 150, tabW = wide ? 104 : 92, tabStep = wide ? 110 : 96;
+          ['Мои друзья', 'Добавить'].forEach((t, i) => ui.button(tabX + i * tabStep, 8, tabW, 22, t, () => this.setTab(i), { size: 10, active: i === this.tab }));
+          ui.text('Мои друзья: ' + (F ? F.list.length : 0) + '/' + (F ? F.max : 100), rx - 32, 12, { size: 11, align: 'right', col: C.cream });
+          ui.closeBtn(rx - 20, 8, () => this.key('back'));
           if (this.tab === 0) this.drawMine(c, F); else this.drawAdd(c, F);
-          ui.text('UID ' + n.uid(), 14, HGT - 42, { size: 11, bold: true, col: C.gold });
-          ui.netBars(c, 120, HGT - 32);
-          if (n.state === 'online') ui.text(n.rtt == null ? 'На связи' : Math.round(n.rtt) + ' мс', 146, HGT - 42, { size: 10, col: C.sub });
-          ui.hints(this.tab === 0 ? [['↑↓', 'Выбор'], ['Enter', 'Действия'], ['G', 'В гости'], ['F', 'Избранное'], ['V', 'Профиль'], ['Q E', 'Вкладка'], ['Esc', 'Назад']] : [['↑↓', 'Выбор'], ['Enter', 'Нажать'], ['Q E', 'Вкладка'], ['Esc', 'Назад']], 14, HGT - 18);
+          ui.text('UID ' + n.uid(), lx + 2, HGT - 42, { size: 11, bold: true, col: C.gold });
+          ui.netBars(c, lx + 108, HGT - 32);
+          if (n.state === 'online') ui.text(n.rtt == null ? 'На связи' : Math.round(n.rtt) + ' мс', lx + 134, HGT - 42, { size: 10, col: C.sub });
+          ui.hints(this.tab === 0 ? [['↑↓', 'Выбор'], ['Enter', 'Действия'], ['G', 'В гости'], ['F', 'Избранное'], ['V', 'Профиль'], ['Q E', 'Вкладка'], ['Esc', 'Назад']] : [['↑↓', 'Выбор'], ['Enter', 'Нажать'], ['Q E', 'Вкладка'], ['Esc', 'Назад']], lx + 2, HGT - 18);
         },
         drawMine(c, F) {
-          const list = this.rows(), inv = invites()[0];
+          const { wide, lx, rx, lw } = ui.friendBox(), rw = lw - 8, list = this.rows(), inv = invites()[0];
           if (this.sel >= list.length) this.sel = list.length - 1;
           if (this.sel < this.top) this.top = this.sel;
           if (this.sel >= this.top + ROWS) this.top = this.sel - ROWS + 1;
           if (inv) this.drawInvite(c, inv);
-          else ui.text('★ Избранные ' + (F ? F.list.filter(r => r.fav).length : 0) + '/' + (F ? F.favMax : 3) + ' (F отметить)', 14, 34, { size: 10, col: '#e8c060' });
+          else ui.text('★ Избранные ' + (F ? F.list.filter(r => r.fav).length : 0) + '/' + (F ? F.favMax : 3) + ' (F отметить)', lx + 2, 34, { size: 10, col: '#e8c060' });
+          const visitOff = wide ? 210 : 262, rightPad = wide ? 216 : 266;
           list.slice(this.top, this.top + ROWS).forEach((row, k) => {
             const i = this.top + k, y = LIST_Y + k * ROW_H;
-            ui.drawFriendRow(c, row, LIST_X, y, LIST_W - 8, i === this.sel, row.solo ? {} : { right: 266 });
-            ui.hit(LIST_X, y, LIST_W - 8, ROW_H - 3, () => { if (this.sel === i) ui.openFriendMenu(row); else { this.sel = i; ui.sfx('select'); } });
-            if (!row.solo) ui.button(LIST_X + LIST_W - 8 - 262, y + 33, 68, 20, 'В гости', () => { this.sel = i; ui.visitGo(row); }, { size: 10 });
+            ui.drawFriendRow(c, row, lx, y, rw, i === this.sel, row.solo ? {} : { right: rightPad });
+            ui.hit(lx, y, rw, ROW_H - 3, () => { if (this.sel === i) ui.openFriendMenu(row); else { this.sel = i; ui.sfx('select'); } });
+            if (!row.solo) ui.button(lx + rw - visitOff, y + 33, 68, 20, 'В гости', () => { this.sel = i; ui.visitGo(row); }, { size: 10 });
           });
           if (list.length > ROWS) {
             const th = Math.max(20, ROWS * ROW_H * ROWS / list.length), ty = LIST_Y + (ROWS * ROW_H - th) * this.top / Math.max(1, list.length - ROWS);
-            c.fillStyle = '#1a1c34'; c.fillRect(W - 16, LIST_Y, 4, ROWS * ROW_H - 3);
-            c.fillStyle = C.brass; c.fillRect(W - 16, ty, 4, th);
+            c.fillStyle = '#1a1c34'; c.fillRect(rx - 4, LIST_Y, 4, ROWS * ROW_H - 3);
+            c.fillStyle = C.brass; c.fillRect(rx - 4, ty, 4, th);
           }
-          ui.wheelZone(LIST_X, LIST_Y, LIST_W, ROWS * ROW_H, d => { this.sel = Math.max(0, Math.min(list.length - 1, this.sel + d)); });
+          ui.wheelZone(lx, LIST_Y, lw, ROWS * ROW_H, d => { this.sel = Math.max(0, Math.min(list.length - 1, this.sel + d)); });
           if (n.state !== 'online') this.drawLink(c);
           else if (F && !F.list.length) {
             ui.text('Поделитесь своим UID: вкладка «Добавить».', W / 2, LIST_Y + ROW_H + 18, { align: 'center', size: 12, col: C.sub });
           }
           const by = LIST_Y + ROWS * ROW_H + 4, reqs = F ? F.in.length : 0, sort = ui.friendSort || 0;
-          ui.button(12, by, 176, 24, 'O: сортировка: ' + SORTS[sort].label, () => this.cycleSort(), { size: 10 });
-          ui.button(194, by, 92, 24, 'C: связь', () => this.key(null, 'KeyC'), { size: 10 });
-          ui.button(292, by, 158, 24, 'B: чёрный список', () => this.key(null, 'KeyB'), { size: 10 });
-          ui.button(456, by, 160, 24, 'R: запросы' + (reqs ? ' ' + reqs : ''), () => this.key(null, 'KeyR'), { size: 10, active: reqs > 0 });
-          if (reqs) ui.badge(610, by + 4);
+          if (wide) {
+            ui.button(lx, by, 232, 24, 'O: сортировка: ' + SORTS[sort].label, () => this.cycleSort(), { size: 10 });
+            ui.button(lx + 240, by, 148, 24, 'C: связь', () => this.key(null, 'KeyC'), { size: 10 });
+            ui.button(lx + 396, by, 214, 24, 'B: чёрный список', () => this.key(null, 'KeyB'), { size: 10 });
+            ui.button(lx + 618, by, 204, 24, 'R: запросы' + (reqs ? ' ' + reqs : ''), () => this.key(null, 'KeyR'), { size: 10, active: reqs > 0 });
+            if (reqs) ui.badge(lx + 816, by + 4);
+          } else {
+            ui.button(12, by, 176, 24, 'O: сортировка: ' + SORTS[sort].label, () => this.cycleSort(), { size: 10 });
+            ui.button(194, by, 92, 24, 'C: связь', () => this.key(null, 'KeyC'), { size: 10 });
+            ui.button(292, by, 158, 24, 'B: чёрный список', () => this.key(null, 'KeyB'), { size: 10 });
+            ui.button(456, by, 160, 24, 'R: запросы' + (reqs ? ' ' + reqs : ''), () => this.key(null, 'KeyR'), { size: 10, active: reqs > 0 });
+            if (reqs) ui.badge(610, by + 4);
+          }
         },
         drawInvite(c, inv) {
+          const { lx, rx, lw } = ui.friendBox();
           const text = clean(inv.name, 12) + (inv.kind === 'visit' ? ' зовёт в гости' : ' зовёт: Рубеж Экспресса');
-          c.fillStyle = 'rgba(30,106,48,0.5)'; c.fillRect(12, 30, W - 24, 18);
-          ui.text(text, 18, 33, { size: 11, bold: true, col: '#d8ffd8' });
-          ui.button(W - 196, 30, 88, 18, 'Y: Принять', () => this.key(null, 'KeyY'), { size: 9, bold: true });
-          ui.button(W - 104, 30, 88, 18, 'N: Отказать', () => this.key(null, 'KeyN'), { size: 9 });
+          c.fillStyle = 'rgba(30,106,48,0.5)'; c.fillRect(lx, 30, lw, 18);
+          ui.text(text, lx + 6, 33, { size: 11, bold: true, col: '#d8ffd8' });
+          ui.button(rx - 184, 30, 88, 18, 'Y: Принять', () => this.key(null, 'KeyY'), { size: 9, bold: true });
+          ui.button(rx - 92, 30, 88, 18, 'N: Отказать', () => this.key(null, 'KeyN'), { size: 9 });
         },
         drawLink(c) {
-          const y = LIST_Y + ROW_H + 10, text = LINK_TEXT[n.state] || 'Нет связи с Экспрессом';
-          ui.win(LIST_X + 90, y, LIST_W - 188, 120, {});
+          const y = LIST_Y + ROW_H + 10, text = LINK_TEXT[n.state] || 'Нет связи с Экспрессом', bw = ui.wide() ? 460 : LIST_W - 188;
+          ui.win(W / 2 - bw / 2, y, bw, 120, {});
           ui.text(text, W / 2, y + 24, { align: 'center', size: 13, bold: true, col: C.cream });
           if (n.state === 'connecting' || n.state === 'banned') return;
           if (n.state === 'modem') {
@@ -320,10 +344,43 @@
           const label = n.state === 'outdated' ? (globalThis.Hsr98Standalone === 'apk' && ui.openUpdate ? 'Обновления' : '') : n.state === 'replaced' ? 'Подключиться здесь' : n.state === 'off' ? 'Подключиться' : 'Повторить';
           if (label) ui.button(W / 2 - 90, y + 62, 180, 28, label, linkAct, { bold: true, active: true });
         },
-        drawAdd(c, F) {
-          const items = addItems(), f = n.found;
+        drawAdd(c) {
+          const { wide, lx } = ui.friendBox(), items = addItems(), f = n.found;
           if (this.addSel >= items.length) this.addSel = items.length - 1;
           const onItem = id => items[this.addSel] && items[this.addSel].id === id;
+          const recent = items.filter(it => it.id === 'recent'), base = items.length - recent.length;
+          if (wide) {
+            const lw = 396, rx0 = 313, rw = 422;
+            ui.win(lx, 36, lw, 130, { title: 'Ваш UID' });
+            ui.text(n.uid(), lx + 20, 62, { size: 26, bold: true, serif: true, col: C.gold });
+            ui.button(lx + 248, 62, 128, 28, 'Копировать', () => { this.addSel = 0; this.addAct(items[0]); }, { size: 11, active: onItem('copy') });
+            ui.text(this.note || 'Передайте его другу: так он пришлёт запрос.', lx + 20, 108, { size: 10, col: this.note ? '#8fe08a' : C.sub });
+            ui.text('Совместный режим Рубежа и визиты на Экспресс.', lx + 20, 126, { size: 10, col: C.dim });
+            ui.win(lx, 176, lw, 238, { title: 'Найти по UID' });
+            ui.button(lx + 20, 206, 132, 28, 'Ввести UID', () => { this.addSel = 1; ui.openFriendFind(); }, { size: 11, active: onItem('enter') });
+            if (!f) ui.text('Девять цифр, первая 7.', lx + 166, 213, { size: 11, col: C.sub });
+            else if (!f.ok) ui.text('Такого Первопроходца нет.', lx + 166, 213, { size: 11, bold: true, col: '#ff9a8a' });
+            else {
+              c.fillStyle = 'rgba(255,255,255,0.03)'; c.fillRect(lx + 18, 248, lw - 36, 146);
+              ui.circlePortrait(c, ui.cardLook(f.stub.avatar, f.stub.gender), lx + 32, 264, 48, C.brass);
+              ui.text(clean(f.stub.name, 12), lx + 92, 266, { size: 14, bold: true, serif: true, col: C.gold });
+              ui.text('Ур. Освоения ' + (f.stub.tl || 0) + ' · UID ' + f.uid, lx + 92, 286, { size: 10, col: C.sub });
+              const say = { self: 'Это вы.', friend: 'Уже в друзьях.', out: 'Запрос уже отправлен.', blocked: 'В вашем чёрном списке.' }[f.rel] || (!f.open && f.rel === 'none' ? 'Не принимает запросы.' : '');
+              if (say) ui.text(say, lx + 92, 314, { size: 11, col: C.cream });
+              else ui.button(lx + 92, 312, 188, 26, f.rel === 'in' ? 'Принять запрос' : 'Отправить запрос', () => { this.addSel = items.findIndex(it => it.id === 'send'); this.addAct(items[this.addSel]); }, { size: 11, bold: true, active: onItem('send') });
+            }
+            ui.win(rx0, 36, rw, 378, { title: 'Недавно вместе' });
+            if (!recent.length) ui.text('Здесь появятся те, с кем вы сидели за столом Рубежа.', rx0 + rw / 2, 210, { align: 'center', size: 11, col: C.dim });
+            recent.slice(0, 8).forEach((it, k) => {
+              const r = it.row, y = 66 + k * 38, i = base + k, on = this.addSel === i;
+              c.fillStyle = on ? 'rgba(242,220,154,0.15)' : 'rgba(255,255,255,0.03)'; c.fillRect(rx0 + 12, y, rw - 24, 34);
+              ui.circlePortrait(c, ui.cardLook(r.avatar, r.gender), rx0 + 18, y + 4, 26, C.brass);
+              ui.text(clean(r.name, 12), rx0 + 52, y + 9, { size: 12, bold: on, col: on ? C.gold : C.cream });
+              ui.text('Ур. ' + (r.tl || 0), rx0 + 190, y + 10, { size: 10, col: C.sub });
+              ui.button(rx0 + rw - 134, y + 5, 116, 24, 'В друзья', () => { this.addSel = i; this.addAct(it); }, { size: 10, active: on });
+            });
+            return;
+          }
           ui.win(12, 36, W - 24, 78, { title: 'Ваш UID' });
           ui.text(n.uid(), 34, 58, { size: 24, bold: true, serif: true, col: C.gold });
           ui.button(216, 60, 110, 26, 'Копировать', () => { this.addSel = 0; this.addAct(items[0]); }, { size: 11, active: onItem('copy') });
@@ -341,7 +398,6 @@
             else ui.button(216, 180, 176, 24, f.rel === 'in' ? 'Принять запрос' : 'Отправить запрос', () => { this.addSel = items.findIndex(it => it.id === 'send'); this.addAct(items[this.addSel]); }, { size: 11, bold: true, active: onItem('send') });
           }
           ui.win(12, 222, W - 24, 192, { title: 'Недавно вместе' });
-          const recent = items.filter(it => it.id === 'recent'), base = items.length - recent.length;
           if (!recent.length) ui.text('Здесь появятся те, с кем вы сидели за столом Рубежа.', W / 2, 300, { align: 'center', size: 11, col: C.dim });
           recent.slice(0, 5).forEach((it, k) => {
             const r = it.row, y = 246 + k * 32, i = base + k, on = this.addSel === i;
@@ -427,7 +483,7 @@
         friendMenu: true, confirm: null, items,
         draw(c) {
           const list = items(), h = 62 + list.length * 28, y = Math.round((HGT - h) / 2);
-          c.fillStyle = 'rgba(2,3,14,0.6)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,14,0.6)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(X, y, WID, h, { title: clean(row.name, 12) });
           list.forEach((it, i) => {
             const yy = y + 28 + i * 28, on = i === this.sel, bad = it.id === 'del' || it.id === 'block';
@@ -461,14 +517,14 @@
           ui.sfx(second || this.col ? 'cancel' : 'confirm');
         },
         draw(c) {
-          const L = this.lists();
+          const { wide, lx, rx } = ui.friendBox(), L = this.lists();
           if (this.sel >= L[this.col].length) this.sel = Math.max(0, L[this.col].length - 1);
-          c.fillStyle = '#07060f'; c.fillRect(0, 0, W, HGT);
-          c.fillStyle = ui.dither(); c.fillRect(0, 0, W, HGT);
-          ui.plate(14, 8, 'Запросы');
-          ui.closeBtn(W - 32, 8, () => ui.pop());
+          c.fillStyle = '#07060f'; c.fillRect(ui.left, 0, ui.vw, HGT);
+          c.fillStyle = ui.dither(); c.fillRect(ui.left, 0, ui.vw, HGT);
+          ui.plate(lx + 2, 8, 'Запросы');
+          ui.closeBtn(rx - 20, 8, () => ui.pop());
           ['Входящие', 'Исходящие'].forEach((title, col) => {
-            const x = 12 + col * 312, w = 304;
+            const x = lx + col * (wide ? 420 : 312), w = wide ? 410 : 304;
             ui.win(x, 38, w, 396, { title: title + ' ' + L[col].length });
             if (!L[col].length) ui.text(col ? 'Вы никого не звали.' : 'Запросов нет.', x + w / 2, 80, { align: 'center', size: 11, col: C.dim });
             L[col].slice(0, 8).forEach((it, i) => {
@@ -476,14 +532,14 @@
               c.fillStyle = on ? 'rgba(242,220,154,0.15)' : 'rgba(255,255,255,0.03)'; c.fillRect(x + 8, y, w - 16, 42);
               ui.circlePortrait(c, ui.cardLook(it.avatar, it.gender), x + 12, y + 4, 34, C.brass);
               ui.text(clean(it.name, 12), x + 52, y + 5, { size: 12, bold: true, col: on ? C.gold : C.cream });
-              ui.text('Ур. ' + (it.tl || 0), x + 52, y + 22, { size: 10, col: C.sub });
+              ui.text(wide && it.uid ? 'Ур. ' + (it.tl || 0) + ' · UID ' + it.uid : 'Ур. ' + (it.tl || 0), x + 52, y + 22, { size: 10, col: C.sub });
               if (col === 0) {
                 ui.button(x + w - 158, y + 8, 72, 26, 'Принять', () => { this.col = 0; this.sel = i; this.act(false); }, { size: 10, bold: true, active: on });
                 ui.button(x + w - 82, y + 8, 68, 26, 'Отказать', () => { this.col = 0; this.sel = i; this.act(true); }, { size: 10 });
               } else ui.button(x + w - 90, y + 8, 76, 26, 'Отменить', () => { this.col = 1; this.sel = i; this.act(false); }, { size: 10, active: on });
             });
           });
-          ui.hints([['←→', 'Столбец'], ['↑↓', 'Выбор'], ['Enter', 'Принять или отменить'], ['X', 'Отказать'], ['Esc', 'Назад']], 14, HGT - 18);
+          ui.hints([['←→', 'Столбец'], ['↑↓', 'Выбор'], ['Enter', 'Принять или отменить'], ['X', 'Отказать'], ['Esc', 'Назад']], lx + 2, HGT - 18);
         },
         key(k, code) {
           const L = this.lists();
@@ -502,9 +558,9 @@
         friendBlocks: true,
         list() { return n.friends ? n.friends.blocks : []; },
         draw(c) {
-          const list = this.list(), x = 150, w = 340, h = 360, y = 60;
+          const list = this.list(), wide = ui.wide(), w = wide ? 440 : 340, x = W / 2 - w / 2, h = 360, y = 60;
           if (this.sel >= list.length) this.sel = Math.max(0, list.length - 1);
-          c.fillStyle = 'rgba(2,3,14,0.7)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,14,0.7)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(x, y, w, h, { title: 'Чёрный список ' + list.length });
           ui.wrap('Заблокированный не видит вас в сети, не шлёт запросы и приглашения и не заходит в гости.', w - 40, 10).slice(0, 2).forEach((line, i) => ui.text(line, x + 20, y + 26 + i * 13, { size: 10, col: C.sub }));
           if (!list.length) ui.text('Список пуст.', x + w / 2, y + 90, { align: 'center', size: 11, col: C.dim });

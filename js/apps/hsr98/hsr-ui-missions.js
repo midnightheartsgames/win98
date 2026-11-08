@@ -51,6 +51,13 @@
       return () => this.openNav(null, m.id === 'main' ? { area: m.map, goal: true } : { area: m.map, quest: m.id });
     },
 
+    missionBox() {
+      const wide = this.wide(), lx = this.left + 16, rx = this.right;
+      const list = { x: this.left + 26, y: LIST.y, w: wide ? 304 : LIST.w, h: LIST.h };
+      const cx = list.x + list.w + 22, cw = rx - 16 - cx;
+      return { wide, lx, rx, list, cx, cw };
+    },
+
     openMission() {
       const ui = this, g = this.game;
       const s = this.push({
@@ -90,13 +97,14 @@
           fn();
         },
         draw(c) {
+          const b = ui.missionBox();
           ui.fullBg(c);
           c.fillStyle = 'rgba(3,4,16,0.6)'; c.fillRect(ui.left, 0, ui.vw, HGT);
-          ui.drawMissionHeader(c, this);
+          ui.drawMissionHeader(c, this, b);
           const cur = this.cur();
-          ui.drawMissionList(c, this, cur);
-          ui.drawMissionCard(c, this, cur);
-          ui.hints([['↑↓', 'Выбор'], ['Q E', 'Раздел'], ['Enter', 'Отслеживать'], ['M', 'Перейти'], ['Esc', 'Назад']], 16, HGT - 20);
+          ui.drawMissionList(c, this, cur, b);
+          ui.drawMissionCard(c, this, cur, b);
+          ui.hints([['↑↓', 'Выбор'], ['Q E', 'Раздел'], ['Enter', 'Отслеживать'], ['M', 'Перейти'], ['Esc', 'Назад']], b.lx, HGT - 20);
         },
         key(k, code) {
           if (k === 'back') { ui.pop(); return; }
@@ -113,12 +121,12 @@
       return s;
     },
 
-    drawMissionHeader(c, s) {
-      const g = this.game, tab = TABS[s.tab];
-      G.menuIcon(c, 'mission', 16, 12, 34, C.brassHi);
-      this.text('Миссии', 58, 12, { size: 11, col: C.sub });
-      this.text(tab.label, 58, 26, { size: 17, bold: true, serif: true, col: C.cream });
-      const list = g.missionList(), cx = W / 2 + 64;
+    drawMissionHeader(c, s, b = this.missionBox()) {
+      const g = this.game, tab = TABS[s.tab], { lx, rx, wide } = b;
+      G.menuIcon(c, 'mission', lx, 12, 34, C.brassHi);
+      this.text('Миссии', lx + 42, 12, { size: 11, col: C.sub });
+      this.text(tab.label, lx + 42, 26, { size: 17, bold: true, serif: true, col: C.cream });
+      const list = g.missionList(), cx = wide ? W / 2 : W / 2 + 64;
       TABS.forEach((t, i) => {
         const x = cx + (i - 1.5) * 54, y = 30, on = i === s.tab, ty = typeOf(t.id), col = ty ? ty.col : t.col;
         c.fillStyle = on ? 'rgba(241,234,216,0.92)' : 'rgba(10,14,40,0.75)';
@@ -129,12 +137,12 @@
         if (list.some(m => m.isNew && (t.id === 'all' || m.type === t.id))) this.badge(x + 15, y - 14);
         this.hit(x - 20, y - 20, 40, 40, () => s.setTab(i));
       });
-      this.closeBtn(W - 36, 16, () => s.key('back'));
-      c.fillStyle = 'rgba(201,164,92,0.45)'; c.fillRect(16, 62, W - 32, 1);
+      this.closeBtn(rx - 36, 16, () => s.key('back'));
+      c.fillStyle = 'rgba(201,164,92,0.45)'; c.fillRect(lx, 62, rx - 16 - lx, 1);
     },
 
-    drawMissionList(c, s, cur) {
-      const g = this.game, rows = s.rows(), { x, y, w, h } = LIST, tr = g.missionTracked();
+    drawMissionList(c, s, cur, b = this.missionBox()) {
+      const g = this.game, rows = s.rows(), { x, y, w, h } = b.list, tr = g.missionTracked();
       const total = rows.length ? rows[rows.length - 1].y + rows[rows.length - 1].h : 0;
       if (cur) {
         if (cur.y < s.scroll) s.scroll = Math.max(0, cur.y - 26);
@@ -188,6 +196,7 @@
       c.restore();
       if (s.scroll > 0) this.diamond(x + w / 2, y - 3, 3, C.brassHi);
       if (s.scroll < total - h) this.diamond(x + w / 2, y + h + 3, 3, C.brassHi);
+      this.wheelZone(x, y, w, h, d => s.move(d > 0 ? 1 : -1));
     },
 
     missionNewTag(c, x, y) {
@@ -205,8 +214,8 @@
       return s.trimEnd() + '...';
     },
 
-    drawMissionCard(c, s, cur) {
-      const g = this.game, x = 284, w = W - 16 - x;
+    drawMissionCard(c, s, cur, b = this.missionBox()) {
+      const g = this.game, x = b.cx, w = b.cw;
       if (!cur) return;
       const m = cur.m, ty = typeOf(m.type), tr = g.missionTracked();
       g.seeMission(m.id);
@@ -230,13 +239,13 @@
       c.fillStyle = 'rgba(201,164,92,0.35)'; c.fillRect(x, ry - 8, w, 1);
       this.diamond(x + w, ry - 7.5, 2.5, C.brass);
       this.text('Награды', x, ry, { size: 12, bold: true, col: C.sub });
-      this.drawMissionRewards(c, m, x, ry + 18);
+      this.drawMissionRewards(c, m, x, ry + 18, b);
       const tracked = tr && tr.id === m.id, go = this.missionGo(m), bw = Math.floor((w - 10) / 2), by = HGT - 56;
       this.button(x, by, bw, 28, tracked ? 'Не отслеживать' : 'Отслеживать', () => s.track(), { icon: 'nav', size: 11, active: !tracked });
       this.button(x + bw + 10, by, bw, 28, 'Перейти', () => s.go(), { icon: 'nav', size: 12, bold: true, disabled: !go });
     },
 
-    drawMissionRewards(c, m, x, y) {
+    drawMissionRewards(c, m, x, y, b = this.missionBox()) {
       const g = this.game, r = m.reward || {}, cells = [];
       if (m.joins) cells.push(['char', m.joins]);
       if (r.jade) cells.push(['item', 'jade', r.jade]);
@@ -245,7 +254,7 @@
       if (r.credits) cells.push(['item', 'credits', r.credits]);
       if (r.outfit && H.OUTFITS && H.OUTFITS[r.outfit]) cells.push(['outfit', r.outfit]);
       if (!cells.length) { this.text('Без награды', x, y + 12, { size: 11, col: C.dim }); return; }
-      cells.slice(0, 7).forEach((cl, i) => {
+      cells.slice(0, b.wide ? 10 : 7).forEach((cl, i) => {
         const cx = x + i * 46;
         if (cl[0] === 'item') this.rewardCell(c, cl[1], cl[2], cx, y, 40);
         else if (cl[0] === 'cone') { G.rarityCell(c, cx, y, 40, 40, (H.CONES[cl[1]] || {}).rarity || 3); G.drawConeCard(c, cl[1], cx + 6, y + 2, 28, 36, { info: false }); }

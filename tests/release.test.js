@@ -116,7 +116,7 @@ check('the next version follows both channels', () => {
   assert.equal(nextVersion({ stable: { version: '1.3' }, test: { version: '1.3.1' } }), '1.4');
   const { nextSr98Version, VERSION_PATTERN } = require('../tools/release.cjs');
   assert.equal(nextSr98Version({ stable: { version: '1.6.5' }, test: { version: '1.6.5.1' } }, '1.6'), '1.6.6');
-  assert.ok(VERSION_PATTERN.test('1.3.1') && !VERSION_PATTERN.test('1.3.1.1'));
+  assert.ok(VERSION_PATTERN.test('1.3.1') && VERSION_PATTERN.test('1.5.1.1') && !VERSION_PATTERN.test('1.5.1.1.1'));
 });
 
 check('news files become items with dates, leads, lists and pictures for their products', () => {

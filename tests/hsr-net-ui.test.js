@@ -1130,7 +1130,7 @@ const openLink = () => {
 
     assert.equal(g.state.flags.express_intro, undefined, 'a new game has not met the Express');
     const rail = ui.phoneRail();
-    assert.deepEqual(rail.slice(0, 3).map(r => r.icon), ['mail', 'friends', 'settings'], 'Friends sit above the gear');
+    assert.deepEqual(rail.slice(0, 4).map(r => r.icon), ['mail', 'friends', 'guide', 'settings'], 'Friends sit under mail');
     assert.equal(rail[1].disabled, true, 'closed before the Express');
     assert.equal(rail[1].alert, 'friends');
     const menu0 = ui.phoneMenuItems();
@@ -1473,6 +1473,29 @@ const openLink = () => {
     const c1 = sockets.length;
     key('Enter');
     assert.equal(sockets.length, c1 + 1, 'the button connects again');
+    live().open();
+    live().hear({ op: 'me', uid: Net.uid(), table: null });
+    live().hear(snap({ list: [friend('711111111', 'Bob', { on: true })], in: [stub('744444444', 'Inny')], out: [stub('755555555', 'Outy')], blocks: [stub('766666666', 'Bad')], recent: [Object.assign(stub('733333333', 'Rec'), { at: 5 })] }));
+    ui.options.aspect = '16:9';
+    const fb = ui.friendBox();
+    assert.ok(fb.wide && fb.lx === ui.left + 12 && fb.rx === ui.right - 12 && fb.lw === ui.vw - 24, '16:9 friends box spans the widescreen viewport');
+    text = texts();
+    assert.ok(text.includes('UID 711111111'), '16:9 friend rows show the UID chip');
+    assert.ok(ui.hits.some(h => h.x === fb.lx && h.w === fb.lw - 8), '16:9 friend row hitbox spans the wide list');
+    assert.ok(ui.hits.some(h => h.x === fb.rx - 20 && h.y === 8), '16:9 close button sits at the right widescreen margin');
+    key('KeyE');
+    text = texts();
+    assert.ok(text.includes('Совместный режим Рубежа') && text.includes('Rec'), '16:9 Add tab renders the two-column UID and recent layout');
+    key('KeyQ');
+    key('KeyR');
+    text = texts();
+    assert.ok(ui.top().friendRequests && text.includes('Ур. 40 · UID 744444444'), '16:9 friend requests show the sender UID in the wider column');
+    key('Escape');
+    key('KeyB');
+    text = texts();
+    assert.ok(ui.top().friendBlocks && text.includes('Bad · 766666666'), '16:9 block list renders cleanly');
+    key('Escape');
+    ui.options.aspect = '4:3';
     live().drop();
     Net.disconnect('off');
     ui.screens = [];

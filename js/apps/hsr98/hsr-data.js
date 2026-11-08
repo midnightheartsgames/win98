@@ -959,7 +959,7 @@
 
   const supOf = sup => Math.min(5, Math.max(1, Math.round(sup || 1)));
   const coneParam = (id, n, sup) => CONES[id].p[supOf(sup) - 1][n - 1];
-  const coneNum = v => String(Math.round(v * 1000) / 1000).replace('.', ',');
+  const coneNum = v => String(Math.round(v * 1000) / 1000).replace('.', H.isEn && H.isEn() ? '.' : ',');
   function coneSegs(id, sup) {
     const d = CONES[id];
     if (!d.tpl) return [{ t: d.text }];
@@ -980,7 +980,7 @@
   const coneK = (lvl, asc) => 1 + 0.15 * (lvl - 1) + CONE_ADD[asc];
   const coneStatsAt = (id, lvl, asc) => { const s = CONES[id].stats, k = coneK(lvl, asc); return { hp: Math.floor(s.hp * k), atk: Math.floor(s.atk * k), def: Math.floor(s.def * k) }; };
   const coneStats = (id, lvl) => coneStatsAt(id, lvl || 1, H.ascPhase(lvl || 1));
-  const coneInit = map => { for (const id of Object.keys(map)) if (map[id].tpl) map[id].text = coneText(id, 1); };
+  const coneInit = map => { for (const id of Object.getOwnPropertyNames(map)) if (map[id] && map[id].tpl) map[id].text = coneText(id, 1); };
   coneInit(CONES);
 
   Object.assign(H, { coneParam, coneSegs, coneText, coneLegacyMul, coneStats, coneStatsAt, coneInit });

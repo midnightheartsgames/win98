@@ -27,7 +27,8 @@
 
   Object.assign(UP, {
     wrapRichTutorial(text, maxW, size, bold = false) {
-      const words = parseRichWords(String(text || ''));
+      const s = H.isEn && H.isEn() && H.tr ? H.tr(String(text || '')) : String(text || '');
+      const words = parseRichWords(s);
       const lines = [];
       let cur = [], curW = 0;
       const spW = this.measure(' ', size, bold);
@@ -377,7 +378,7 @@
       c.strokeRect(rx + 0.5, ry + 0.5, rw - 1, rhCard - 1);
 
       ui.text(tr.title, rx + rw / 2, ry + 10, { align: 'center', size: 13, bold: true, col: '#ffffff' });
-      const adv = tr.badge.includes('Продвинутая');
+      const adv = tr.badge.includes('Продвинутая') || tr.badge.includes('Advanced');
       c.fillStyle = adv ? 'rgba(42,118,122,0.55)' : 'rgba(56,64,88,0.55)';
       c.fillRect(rx + rw / 2 - 76, ry + 27, 152, 14);
       ui.text(tr.badge, rx + rw / 2, ry + 29, { align: 'center', size: 9, col: adv ? '#7ef0e8' : '#a8b0c8', shadow: false });

@@ -13,7 +13,7 @@ const REMOTE_SITE = '/srv/www/site/web98';
 const REMOTE_INCOMING = 'release-incoming';
 const PUBLIC_URL = 'https://pennygachi.men/web98/update';
 const RELEASE_FILE = 'resources/app/release.json';
-const VERSION_PATTERN = /^\d+\.\d+(\.\d+)?$/;
+const VERSION_PATTERN = /^\d+\.\d+(\.\d+){0,2}$/;
 const WORK = path.join(ROOT, 'dist', 'release');
 const BLOBS = path.join(WORK, 'blobs');
 const PACKED_CACHE = path.join(WORK, 'packed.json');
@@ -189,7 +189,7 @@ function notesJson(product, dir, extra) {
   const versions = [];
   if (fs.existsSync(dir)) {
     for (const name of fs.readdirSync(dir)) {
-      const m = /^(\d+\.\d+(?:\.\d+)?)\.md$/.exec(name);
+      const m = /^(\d+\.\d+(?:\.\d+){0,2})\.md$/.exec(name);
       if (!m) continue;
       const n = parseNotes(fs.readFileSync(path.join(dir, name), 'utf8'), name);
       versions.push({ version: m[1], build: n.build, date: n.date, title: n.title, summary: n.summary, sections: n.sections, fixed: n.fixed });

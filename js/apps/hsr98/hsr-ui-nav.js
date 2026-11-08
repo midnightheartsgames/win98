@@ -12,12 +12,15 @@
   const ZOOMS = [4, 6, 8, 10, 12, 16];
   const VIEW = { x: 12, y: 54, w: 428, h: 358 };
   const PANEL = { x: 450, y: 52, w: 180, h: 362 };
+  const WIDE_VIEW = { x: -95, y: 54, w: 576, h: 358 };
+  const WIDE_PANEL = { x: 491, y: 52, w: 244, h: 362 };
   const LIST = { top: 48, bottom: 8, bar: 14 };
   const WALK = new Set(['floor', 'floor2', 'floor3', 'floor4', 'floor5', 'road', 'rail', 'bridge', 'door', 'stairs']);
   const PROPS = new Set(['tree', 'crate', 'pipe', 'console', 'lamp', 'fence', 'statue', 'table', 'crystal', 'shelf', 'block']);
   const BLOCKS = new Set(['house', 'window', 'housedoor', 'gate']);
   const KIND_LABEL = { anchor: 'Якорь пространства', landing: 'Точка высадки', exit: 'Проход', shop: 'Лавка', rumor: 'Торговец слухами', warp: 'Терминал', calyx: 'Терминал', nav: 'Терминал', goal: 'Миссия Освоения', quest: 'Миссия' };
   const WORLD_POS = { herta: [150, 292], jarilo: [322, 166], belzerg: [492, 120], luofu: [500, 312] };
+  const WORLD_POS_WIDE = { herta: [86, 292], jarilo: [298, 166], belzerg: [524, 120], luofu: [544, 312] };
   const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
   const DIR_ANGLE = { up: 0, right: Math.PI / 2, down: Math.PI, left: -Math.PI / 2 };
 
@@ -266,9 +269,9 @@
         R(Math.round(x), Math.round(y), 2, 2, col);
       }
     };
-    dots(322 + ox, 250, 300, 190, -0.12, 7, '#4a3e26');
-    dots(322 + ox, 190, 180, 120, 0.2, 6, '#3e3420');
-    dots(150 + ox, 292, 96, 96, 0, 8, '#2e2818');
+    dots(322 + ox, 250, w > W ? 360 : 300, 190, -0.12, 7, '#4a3e26');
+    dots((w > W ? 298 : 322) + ox, 190, w > W ? 210 : 180, 120, 0.2, 6, '#3e3420');
+    dots((w > W ? 86 : 150) + ox, 292, 96, 96, 0, 8, '#2e2818');
     g.strokeStyle = '#6a5328'; g.lineWidth = 1; g.strokeRect(8.5, 8.5, w - 17, HGT - 17);
     g.strokeStyle = '#2a2214'; g.strokeRect(11.5, 11.5, w - 23, HGT - 23);
     for (const [x, y] of [[8, 8], [w - 8, 8], [8, HGT - 8], [w - 8, HGT - 8]]) {
@@ -307,10 +310,21 @@
   }
 
   Object.assign(H.UI.prototype, {
+    navBox() {
+      const wide = this.wide();
+      return {
+        wide,
+        lx: wide ? this.left + 12 : 12,
+        rx: wide ? this.right - 12 : W - 10,
+        view: wide ? WIDE_VIEW : VIEW,
+        panel: wide ? WIDE_PANEL : PANEL
+      };
+    },
+
     navFit(id) {
-      const L = H.mapLayout(id);
+      const L = H.mapLayout(id), v = this.navBox().view;
       let best = 0;
-      ZOOMS.forEach((z, i) => { if (L.w * z <= VIEW.w - 20 && L.h * z <= VIEW.h - 20) best = i; });
+      ZOOMS.forEach((z, i) => { if (L.w * z <= v.w - 20 && L.h * z <= v.h - 20) best = i; });
       return best;
     },
 
@@ -354,16 +368,17 @@
     navBackdrop(c) {
       const gr = c.createLinearGradient(0, 0, 0, HGT);
       gr.addColorStop(0, '#10153c'); gr.addColorStop(1, '#05071a');
-      c.fillStyle = gr; c.fillRect(0, 0, W, HGT);
-      c.fillStyle = this.dither(); c.fillRect(0, 0, W, HGT);
+      c.fillStyle = gr; c.fillRect(this.left, 0, this.vw, HGT);
+      c.fillStyle = this.dither(); c.fillRect(this.left, 0, this.vw, HGT);
     },
 
     navHeader(c, sub, title) {
-      G.menuIcon(c, 'nav', 12, 9, 28, C.brassHi);
-      this.text(sub, 46, 9, { size: 10, col: C.sub });
-      this.text(title, 46, 21, { size: 17, bold: true, serif: true, col: C.gold });
-      const x0 = 46 + this.measure(title, 17, true, true) + 14;
-      if (x0 < 420) { c.fillStyle = 'rgba(201,164,92,0.55)'; c.fillRect(x0, 33, 440 - x0, 1); this.diamond(440, 33.5, 3, C.brass); }
+      const { lx, view: v } = this.navBox(), tx = lx + 34, end = v.x + v.w;
+      G.menuIcon(c, 'nav', lx, 9, 28, C.brassHi);
+      this.text(sub, tx, 9, { size: 10, col: C.sub });
+      this.text(title, tx, 21, { size: 17, bold: true, serif: true, col: C.gold });
+      const x0 = tx + this.measure(title, 17, true, true) + 14;
+      if (x0 < end - 20) { c.fillStyle = 'rgba(201,164,92,0.55)'; c.fillRect(x0, 33, end - x0, 1); this.diamond(end, 33.5, 3, C.brass); }
     },
 
     compass(c, x, y) {
@@ -393,7 +408,7 @@
     },
 
     drawChart(c, s, pts) {
-      const g = this.game, v = VIEW, area = this.navArea(s.area), open = area && g.areaOpen(area);
+      const g = this.game, v = this.navBox().view, area = this.navArea(s.area), open = area && g.areaOpen(area);
       this.navFrame(c, v.x, v.y, v.w, v.h);
       this.paperRect(c, v.x, v.y, v.w, v.h);
       c.save(); c.beginPath(); c.rect(v.x, v.y, v.w, v.h); c.clip();
@@ -458,19 +473,20 @@
     navCounters(c, id) {
       const g = this.game, area = this.navArea(id);
       if (!area || !g.areaOpen(area)) return;
+      const { wide, panel: p } = this.navBox(), pw = wide ? 96 : 70, gap = wide ? 8 : 6, x0 = wide ? p.x : 452;
       const ch = g.chestCount(id), anchors = H.mapLayout(id).anchors, on = anchors.filter(a => g.state.anchors.includes(a.key)).length;
       const pill = (x, icon, text, done) => {
-        c.fillStyle = 'rgba(0,0,0,0.4)'; c.fillRect(x, 12, 70, 22);
-        c.fillStyle = done ? C.ok : C.brass; c.fillRect(x, 33, 70, 1);
+        c.fillStyle = 'rgba(0,0,0,0.4)'; c.fillRect(x, 12, pw, 22);
+        c.fillStyle = done ? C.ok : C.brass; c.fillRect(x, 33, pw, 1);
         G.mapIcon(c, icon, x + 4, 15, 16);
         this.text(text, x + 24, 16, { size: 11, bold: true, col: done ? C.ok : C.cream });
       };
-      pill(452, 'chest', ch.total ? ch.got + ' / ' + ch.total : '—', ch.total > 0 && ch.got === ch.total);
-      pill(528, on ? 'anchor' : 'anchorOff', anchors.length ? on + ' / ' + anchors.length : '—', anchors.length > 0 && on === anchors.length);
+      pill(x0, 'chest', ch.total ? ch.got + ' / ' + ch.total : '—', ch.total > 0 && ch.got === ch.total);
+      pill(x0 + pw + gap, on ? 'anchor' : 'anchorOff', anchors.length ? on + ' / ' + anchors.length : '—', anchors.length > 0 && on === anchors.length);
     },
 
     navListLayout(s) {
-      const g = this.game, p = PANEL, rows = this.navRows(s.world), goal = g.objTarget(), qt = g.questTarget();
+      const g = this.game, p = this.navBox().panel, rows = this.navRows(s.world), goal = g.objTarget(), qt = g.questTarget();
       const tight = rows.length > 10, y0 = p.y + LIST.top, view = p.h - LIST.top - LIST.bottom;
       const measure = inset => rows.map(r => {
         if (r.head) return { head: r.head, h: tight ? 18 : 22 };
@@ -506,7 +522,7 @@
     },
 
     navList(c, s) {
-      const g = this.game, p = PANEL, qt = g.questTarget(), L = this.navListLayout(s), tight = L.tight, w = p.w - L.inset;
+      const g = this.game, p = this.navBox().panel, qt = g.questTarget(), L = this.navListLayout(s), tight = L.tight, w = p.w - L.inset;
       this.button(p.x + 10, p.y + 12, p.w - 20, 26, 'Звёздный путь', () => s.key(null, 'Tab'), { icon: 'warp' });
       for (const r of L.shown) {
         const y = r.y;
@@ -546,7 +562,7 @@
     },
 
     navDetail(c, s, pt) {
-      const g = this.game, p = PANEL, area = this.navArea(pt.map);
+      const g = this.game, p = this.navBox().panel, area = this.navArea(pt.map);
       c.fillStyle = '#04061a'; c.fillRect(p.x + 6, p.y + 8, p.w - 12, 44);
       c.fillStyle = C.brass; c.fillRect(p.x + 6, p.y + 51, p.w - 12, 1);
       G.mapIcon(c, pt.kind === 'quest' ? this.questIcon(pt.quest) : iconOf(pt), p.x + 12, p.y + 22, 16);
@@ -619,15 +635,15 @@
     },
 
     navBottom(c, s) {
-      const y = 424;
-      this.button(12, y, 20, 20, '−', () => s.zoomBy(-1), { size: 13, bold: true });
-      this.rail(40, y + 10, 104, s.zoom / (ZOOMS.length - 1));
-      this.button(152, y, 20, 20, '+', () => s.zoomBy(1), { size: 13, bold: true });
-      let x = 190;
+      const { wide, lx } = this.navBox(), y = 424, rw = wide ? 140 : 104, step = wide ? 30 : 22;
+      this.button(lx, y, 20, 20, '−', () => s.zoomBy(-1), { size: 13, bold: true });
+      this.rail(lx + 28, y + 10, rw, s.zoom / (ZOOMS.length - 1));
+      this.button(lx + 36 + rw, y, 20, 20, '+', () => s.zoomBy(1), { size: 13, bold: true });
+      let x = lx + 74 + rw;
       for (const [icon, label] of [['anchor', 'Якорь'], ['landing', 'Высадка'], ['exit', 'Проход'], ['goal', 'Цель'], ['quest', 'Миссия'], ['player', 'Вы']]) {
         G.mapIcon(this.ctx, icon, x, y + 4, 12);
         this.text(label, x + 15, y + 4, { size: 10, col: C.sub });
-        x += 22 + this.measure(label, 10);
+        x += step + this.measure(label, 10);
       }
     },
 
@@ -635,7 +651,7 @@
       const ui = this, g = this.game;
       const here = g.areaOf(g.map.id), target = opts.area && g.areaOf(opts.area);
       const s = {
-        full: true, close, detail: false, sel: -1, zoom: 0, px: 0, py: 0, scale: 0, snap: true, action: null, sc: { top: 0 },
+        full: true, close, detail: false, sel: -1, zoom: 0, px: 0, py: 0, scale: 0, snap: true, action: null, sc: { top: 0 }, wide: ui.wide(),
         world: opts.world || (target ? target.world : here ? here.world : g.currentWorld()),
         area: g.map.id,
         points() { const a = ui.navArea(this.area); return a && g.areaOpen(a) ? g.navPoints(this.area) : []; },
@@ -666,17 +682,18 @@
           return [L.w / 2, L.h / 2];
         },
         tick(dt) {
-          const L = H.mapLayout(this.area), cell = ZOOMS[this.zoom], cw = L.w * cell, ch = L.h * cell, [fx, fy] = this.focus();
-          const tx = cw <= VIEW.w ? (VIEW.w - cw) / 2 : clamp(VIEW.w / 2 - fx * cell, VIEW.w - cw, 0);
-          const ty = ch <= VIEW.h ? (VIEW.h - ch) / 2 : clamp(VIEW.h / 2 - fy * cell, VIEW.h - ch, 0);
+          if (this.wide !== ui.wide()) { this.wide = ui.wide(); this.zoom = ui.navFit(this.area); this.snap = true; }
+          const v = ui.navBox().view, L = H.mapLayout(this.area), cell = ZOOMS[this.zoom], cw = L.w * cell, ch = L.h * cell, [fx, fy] = this.focus();
+          const tx = cw <= v.w ? (v.w - cw) / 2 : clamp(v.w / 2 - fx * cell, v.w - cw, 0);
+          const ty = ch <= v.h ? (v.h - ch) / 2 : clamp(v.h / 2 - fy * cell, v.h - ch, 0);
           if (this.snap || !this.scale) { this.px = tx; this.py = ty; this.scale = cell; this.snap = false; return; }
           const k = Math.min(1, dt * 12), was = this.scale;
           const scale = Math.abs(cell - was) < 0.01 ? cell : Math.exp(Math.log(was) + (Math.log(cell) - Math.log(was)) * k);
           const mid = (off, view, t) => (view / 2 - off) / t;
-          const mx = mid(this.px, VIEW.w, was), my = mid(this.py, VIEW.h, was);
-          const nx = mx + (mid(tx, VIEW.w, cell) - mx) * k, ny = my + (mid(ty, VIEW.h, cell) - my) * k;
+          const mx = mid(this.px, v.w, was), my = mid(this.py, v.h, was);
+          const nx = mx + (mid(tx, v.w, cell) - mx) * k, ny = my + (mid(ty, v.h, cell) - my) * k;
           this.scale = scale;
-          this.px = VIEW.w / 2 - nx * scale; this.py = VIEW.h / 2 - ny * scale;
+          this.px = v.w / 2 - nx * scale; this.py = v.h / 2 - ny * scale;
         },
         cycle(d) {
           const pts = this.points();
@@ -704,20 +721,20 @@
         },
         exit() { ui.screens.pop(); ui.sfx('cancel'); if (this.close) this.close(); },
         draw(c) {
-          const pts = this.points();
+          const { wide, lx, rx, panel: p } = ui.navBox(), pts = this.points();
           if (this.sel >= pts.length) { this.sel = -1; this.detail = false; }
           ui.navBackdrop(c);
           ui.navHeader(c, 'Навигация', this.world.name);
           ui.navCounters(c, this.area);
-          ui.closeBtn(W - 32, 12, () => this.exit());
+          ui.closeBtn(wide ? rx - 20 : W - 32, 12, () => this.exit());
           ui.drawChart(c, this, pts);
-          ui.win(PANEL.x, PANEL.y, PANEL.w, PANEL.h, { top: '#161c4a', bottom: '#080b24' });
+          ui.win(p.x, p.y, p.w, p.h, { top: '#161c4a', bottom: '#080b24' });
           this.action = null;
           if (this.detail && pts[this.sel]) ui.navDetail(c, this, pts[this.sel]);
           else { this.detail = false; ui.navList(c, this); }
           ui.navBottom(c, this);
-          if (this.detail) ui.hints([['←→', 'метка']].concat(this.action ? [['Enter', this.action.label]] : [], [['Esc', 'к списку']]), 12, HGT - 20);
-          else ui.hints([['↑↓', 'зона'], ['←→', 'метка'], ['Enter', 'подробно'], ['Q E', 'масштаб'], ['Tab', 'Звёздный путь'], ['Esc', 'закрыть']], 12, HGT - 20);
+          if (this.detail) ui.hints([['←→', 'метка']].concat(this.action ? [['Enter', this.action.label]] : [], [['Esc', 'к списку']]), lx, HGT - 20);
+          else ui.hints([['↑↓', 'зона'], ['←→', 'метка'], ['Enter', 'подробно'], ['Q E', 'масштаб'], ['Tab', 'Звёздный путь'], ['Esc', 'закрыть']], lx, HGT - 20);
         },
         key(k, code) {
           if (code === 'KeyQ' || code === 'Minus' || code === 'NumpadSubtract') return this.zoomBy(-1);
@@ -761,9 +778,10 @@
           if (pick) pick(w); else ui.openNav(null, { world: w });
         },
         draw(c) {
+          const wide = ui.wide(), hx = wide ? ui.left + 22 : 22;
           c.drawImage(spaceCanvas(ui.vw), ui.left, 0);
           const here = g.currentWorld(), park = g.expressWorld(), goal = g.objTarget(), goalWorld = goal && (g.areaOf(goal.map) || {}).world;
-          const pos = w => WORLD_POS[w.id];
+          const pos = w => (wide ? WORLD_POS_WIDE : WORLD_POS)[w.id];
           for (let i = 0; i + 1 < worlds.length; i++) {
             const a = worlds[i], b = worlds[i + 1], pts = bezier(pos(a), pos(b), 0.22, 32).slice(5, 28);
             if (g.worldOpen(b)) drawRail(c, pts, C.brass, '#4a3a1c');
@@ -813,21 +831,21 @@
             }
             ui.hit(x - R - 8, y - R - 8, (R + 8) * 2, (R + 8) * 2 + 40, () => { if (this.sel === i) this.choose(i); else { this.sel = i; ui.sfx('select'); } });
           });
-          G.menuIcon(c, 'nav', 22, 20, 28, C.brassHi);
-          ui.text('Навигация', 56, 20, { size: 10, col: C.sub });
-          ui.text('Звёздный путь', 56, 32, { size: 17, bold: true, serif: true, col: C.gold });
-          ui.closeBtn(W - 42, 22, () => this.exit());
-          const w = worlds[this.sel], open = g.worldOpen(w), bx = W / 2 - 170, by = HGT - 92;
-          ui.win(bx, by, 340, 50, { alpha: 0.9 });
+          G.menuIcon(c, 'nav', hx, 20, 28, C.brassHi);
+          ui.text('Навигация', hx + 34, 20, { size: 10, col: C.sub });
+          ui.text('Звёздный путь', hx + 34, 32, { size: 17, bold: true, serif: true, col: C.gold });
+          ui.closeBtn((wide ? ui.right : W) - 42, 22, () => this.exit());
+          const w = worlds[this.sel], open = g.worldOpen(w), bw = wide ? 420 : 340, bx = W / 2 - bw / 2, by = HGT - 92;
+          ui.win(bx, by, bw, 50, { alpha: 0.9 });
           if (open) {
             const areas = w.groups.flatMap(gr => gr.areas), known = areas.filter(a => g.areaOpen(a));
             let got = 0, total = 0, an = 0, anT = 0;
             for (const a of known) { const cc = g.chestCount(a.map); got += cc.got; total += cc.total; const L = H.mapLayout(a.map); anT += L.anchors.length; an += L.anchors.filter(x => g.state.anchors.includes(x.key)).length; }
             ui.text(w.name, bx + 14, by + 9, { size: 13, bold: true, serif: true, col: C.gold });
-            ui.text(w === here ? 'Вы здесь' : w === park ? 'Здесь стоит Экспресс' : '', bx + 326, by + 11, { size: 10, col: C.cyan, align: 'right' });
+            ui.text(w === here ? 'Вы здесь' : w === park ? 'Здесь стоит Экспресс' : '', bx + bw - 14, by + 11, { size: 10, col: C.cyan, align: 'right' });
             let x = bx + 14;
-            ui.text('Зоны ' + known.length + '/' + areas.length, x, by + 30, { size: 11, col: C.cream }); x += 76;
-            G.mapIcon(c, 'anchor', x, by + 28, 14); ui.text(an + '/' + anT, x + 17, by + 30, { size: 11, col: C.cream }); x += 56;
+            ui.text('Зоны ' + known.length + '/' + areas.length, x, by + 30, { size: 11, col: C.cream }); x += wide ? 96 : 76;
+            G.mapIcon(c, 'anchor', x, by + 28, 14); ui.text(an + '/' + anT, x + 17, by + 30, { size: 11, col: C.cream }); x += wide ? 72 : 56;
             G.mapIcon(c, 'chest', x, by + 28, 14); ui.text(got + '/' + total, x + 17, by + 30, { size: 11, col: C.cream });
           } else {
             ui.text(w.name, bx + 14, by + 9, { size: 13, bold: true, serif: true, col: C.dim });

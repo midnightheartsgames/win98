@@ -82,7 +82,7 @@
   const TARGET_NAME = { single: 'одна цель', blast: 'цель и соседи', all: 'все враги', bounce: 'отскоки', ally: 'союзник', allies: 'все союзники', self: 'на себя' };
   const TAG_NAME = { joke: 'шутка', cute: 'милота', threat: 'угроза', science: 'наука', kind: 'доброта', sing: 'музыка', bribe: 'выгода', silent: 'молчание', weird: 'странное' };
   const EIDOLON_NUM = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-  const pct = v => String(Math.round(v * 1000) / 10).replace('.', ',') + '%';
+  const pct = v => String(Math.round(v * 1000) / 10).replace('.', H.isEn && H.isEn() ? '.' : ',') + '%';
   const RAR_TXT = { 3: '#b8c4e8', 4: '#cfa2ff', 5: '#ffd45a' };
   const RAR_ROW = { 4: 'rgba(190,120,255,0.13)', 5: 'rgba(255,196,70,0.16)' };
   const WARP_FILTERS = [['Все', 3], ['4★ и выше', 4], ['Только 5★', 5]];
@@ -332,7 +332,7 @@
           c.fillStyle = gl; c.fillRect(0, 60, 318, 420);
           ui.platform(c, 160, 452, 92);
           G.drawFigure(c, look, 160, 456, 3);
-          ui.text(H.CHARS[kit].name === 'Первопроходец' ? s.name : H.CHARS[kit].name, 20, 20, { size: 20, bold: true, serif: true, col: C.gold });
+          ui.text(kit.startsWith('trail') ? s.name : H.CHARS[kit].name, 20, 20, { size: 20, bold: true, serif: true, col: C.gold });
           G.pathIcon(c, H.CHARS[kit].path, 20, 46, 14);
           ui.text(H.PATHS[H.CHARS[kit].path].name + ' · лидер команды', 38, 47, { size: 11, col: C.sub });
           ui.drawPhone(c, this);
@@ -851,7 +851,7 @@
             field('Также зовут', inf && inf.aka);
             field('Фракция', inf && inf.faction);
             field('Родина', inf && inf.home);
-            field('Путь и стихия', H.PATHS[kit.path].name + ', ' + H.ELEMENTS[kit.elem].name.toLowerCase());
+            field('Путь и стихия', H.PATHS[kit.path].name + ', ' + (H.isEn && H.isEn() ? H.ELEMENTS[kit.elem].name : H.ELEMENTS[kit.elem].name.toLowerCase()));
             if (!inf) { gap(); add('Досье ещё не составлено.', { col: C.dim }); return rows; }
             head('О персонаже'); body(inf.about);
             if (inf.intro) {
@@ -960,7 +960,7 @@
 
     openCharStats(startKey) {
       const ui = this, g = this.game, STEP = 18;
-      const fmtFlat = (k, v) => k === 'spd' && Math.round(v * 10) % 10 ? String(Math.round(v * 10) / 10).replace('.', ',') : String(Math.round(v));
+      const fmtFlat = (k, v) => k === 'spd' && Math.round(v * 10) % 10 ? String(Math.round(v * 10) / 10).replace('.', H.isEn && H.isEn() ? '.' : ',') : String(Math.round(v));
       this.push({
         charStats: true, k: startKey || ui.rosterKeys()[0], sc: { top: 0 }, helpKey: null,
         switchChar(d) {
@@ -1621,7 +1621,7 @@
     coneSegsFor(id, sup) {
       const d = H.CONES[id];
       if (d.tpl) return H.coneSegs(id, sup);
-      return (sup || 1) > 1 ? [{ t: d.text }, { t: ' Сила на S' + sup + ': ×' + String(H.coneLegacyMul(sup)).replace('.', ','), hot: true }] : [{ t: d.text }];
+      return (sup || 1) > 1 ? [{ t: d.text }, { t: H.isEn && H.isEn() ? ' Power at S' + sup + ': ×' + H.coneLegacyMul(sup) : ' Сила на S' + sup + ': ×' + String(H.coneLegacyMul(sup)).replace('.', ','), hot: true }] : [{ t: d.text }];
     },
 
     coneLines(id, sup, w, size, max) {
@@ -1755,9 +1755,14 @@
       });
     },
 
+    warpBox() {
+      const wide = this.wide();
+      return { wide, lx: this.left + 12, rx: this.right, bx: wide ? this.left + 20 : 20, by: 44, bw: wide ? this.vw - 40 : 600, bh: 290, fy: 346 };
+    },
+
     bannerTabs(cur, pick, keys = true) {
       const c = this.ctx;
-      const g = this.game, step = 34, x0 = W - 140 - BANNER_TABS.length * step;
+      const g = this.game, step = 34, x0 = this.wide() ? Math.round((W - BANNER_TABS.length * step) / 2) : W - 140 - BANNER_TABS.length * step;
       if (keys) { this.keycap(x0 - 14, 14, 'Q'); this.keycap(x0 + BANNER_TABS.length * step + 1, 14, 'E'); }
       BANNER_TABS.forEach(([id], i) => {
         const x = x0 + i * step;
@@ -1768,13 +1773,15 @@
     },
 
     standardBanner(c, bx, by, bw, bh) {
-      const B = H.BANNERS.std;
+      const B = H.BANNERS.std, wide = bw > 640;
       const pg = c.createLinearGradient(bx, by, bx + bw, by + bh);
       pg.addColorStop(0, '#2a1a4a'); pg.addColorStop(0.6, '#4a2a6a'); pg.addColorStop(1, '#8a4a5a');
       c.fillStyle = pg; c.fillRect(bx, by, bw, bh);
-      for (let i = 0; i < 12; i++) { c.fillStyle = 'rgba(255,230,160,' + (0.06 + 0.05 * (i % 3)) + ')'; c.beginPath(); c.moveTo(bx + bw * 0.62, by); c.lineTo(bx + i * 60, by + bh); c.lineTo(bx + i * 60 + 24, by + bh); c.fill(); }
+      const rstep = Math.round(bw / 10);
+      for (let i = 0; i < 12; i++) { c.fillStyle = 'rgba(255,230,160,' + (0.06 + 0.05 * (i % 3)) + ')'; c.beginPath(); c.moveTo(bx + bw * 0.62, by); c.lineTo(bx + i * rstep, by + bh); c.lineTo(bx + i * rstep + 24, by + bh); c.fill(); }
       for (let i = 0; i < 90; i++) { c.fillStyle = 'rgba(255,255,255,' + G.hash(i, 2, 2) + ')'; c.fillRect(bx + G.hash(i, 3, 3) * bw, by + G.hash(3, i, 4) * bh, 1, 1); }
-      const slots = B.featured.map((id, i) => ({ id, x: bx + 262 + i * 47, back: i % 2 === 1 }));
+      const fx0 = bx + (wide ? 326 : 262), fstep = wide ? 82 : 47;
+      const slots = B.featured.map((id, i) => ({ id, x: fx0 + i * fstep, back: i % 2 === 1 }));
       c.save(); c.beginPath(); c.rect(bx, by, bw, bh); c.clip();
       [...slots.filter(o => o.back), ...slots.filter(o => !o.back)].forEach(({ id, x, back }) => {
         const feet = by + bh - (back ? 34 : 12);
@@ -1785,16 +1792,17 @@
       this.text('Путь', bx + 22, by + 24, { size: 14, col: '#f0d8ff' });
       this.text('Первопроходцев', bx + 22, by + 40, { size: 26, bold: true, serif: true, col: '#fff4d8' });
       this.text('Стандартный прыжок · постоянный', bx + 24, by + 74, { size: 11, col: '#e0c8f0' });
-      this.wrap('Гарантия 5★ за ' + T.pity5 + ' прыжков, 4★ за ' + T.pity4 + '. Тратит звёздные пропуски.', 210, 11).forEach((l, i) => this.text(l, bx + 24, by + 96 + i * 14, { size: 11, col: C.cream }));
+      this.wrap('Гарантия 5★ за ' + T.pity5 + ' прыжков, 4★ за ' + T.pity4 + '. Тратит звёздные пропуски.', wide ? 260 : 210, 11).forEach((l, i) => this.text(l, bx + 24, by + 96 + i * 14, { size: 11, col: C.cream }));
       B.featured.forEach((id, i) => {
         const y = by + 134 + i * 21;
         G.elemIcon(c, H.CHARS[id].elem, bx + 32, y + 6, 7);
         this.text(H.CHARS[id].name, bx + 46, y, { size: 12, bold: true, col: '#ffe6a8' });
-        this.text('★★★★★', bx + 232, y + 1, { size: 10, align: 'right', col: G.RARITY[5] });
+        this.text('★★★★★', bx + (wide ? 276 : 232), y + 1, { size: 10, align: 'right', col: G.RARITY[5] });
       });
     },
 
     ruanBackdrop(c, bx, by, bw, bh, mx, my, t) {
+      const ox = bw > 640 ? 44 : 0;
       const bg = c.createLinearGradient(0, by, 0, by + bh);
       bg.addColorStop(0, '#0a1a28'); bg.addColorStop(0.55, '#14384a'); bg.addColorStop(1, '#2a5a64');
       c.fillStyle = bg; c.fillRect(bx, by, bw, bh);
@@ -1811,22 +1819,24 @@
       c.strokeStyle = '#05101a'; c.lineWidth = 6; c.beginPath(); c.arc(mx, my, mr + 2, 0, Math.PI * 2); c.stroke();
       c.strokeStyle = C.brass; c.lineWidth = 2; c.beginPath(); c.arc(mx, my, mr + 2, 0, Math.PI * 2); c.stroke(); c.lineWidth = 1;
       const branch = (pts, w) => { c.strokeStyle = '#2a1a16'; c.lineWidth = w; c.lineCap = 'round'; c.beginPath(); c.moveTo(pts[0], pts[1]); c.bezierCurveTo(pts[2], pts[3], pts[4], pts[5], pts[6], pts[7]); c.stroke(); };
-      branch([bx + 244, by + 8, bx + 302, by + 40, bx + 342, by + 30, bx + 402, by + 62], 6);
-      branch([bx + 312, by + 36, bx + 332, by + 70, bx + 320, by + 96, bx + 334, by + 124], 3);
-      branch([bx + 382, by + 52, bx + 412, by + 40, bx + 452, by + 46, bx + 482, by + 28], 3);
+      branch([bx + 244 + ox, by + 8, bx + 302 + ox, by + 40, bx + 342 + ox, by + 30, bx + 402 + ox, by + 62], 6);
+      branch([bx + 312 + ox, by + 36, bx + 332 + ox, by + 70, bx + 320 + ox, by + 96, bx + 334 + ox, by + 124], 3);
+      branch([bx + 382 + ox, by + 52, bx + 412 + ox, by + 40, bx + 452 + ox, by + 46, bx + 482 + ox, by + 28], 3);
       c.lineWidth = 1; c.lineCap = 'butt';
       const blossom = (x, y, r, col) => {
         for (let i = 0; i < 5; i++) { const a = i * Math.PI * 0.4 - 0.3; c.fillStyle = col; c.beginPath(); c.arc(x + Math.cos(a) * r, y + Math.sin(a) * r, r * 0.8, 0, Math.PI * 2); c.fill(); }
         c.fillStyle = '#f0c040'; c.fillRect(Math.round(x) - 1, Math.round(y) - 1, 2, 2);
       };
-      [[bx + 282, by + 30, 4, '#fbf6ee'], [bx + 334, by + 38, 5, '#f6d4de'], [bx + 386, by + 58, 4, '#fbf6ee'], [bx + 326, by + 82, 4, '#f6d4de'], [bx + 338, by + 118, 3, '#fbf6ee'], [bx + 434, by + 42, 4, '#fbf6ee'], [bx + 476, by + 30, 3, '#f6d4de']].forEach(b => blossom(...b));
+      [[bx + 282 + ox, by + 30, 4, '#fbf6ee'], [bx + 334 + ox, by + 38, 5, '#f6d4de'], [bx + 386 + ox, by + 58, 4, '#fbf6ee'], [bx + 326 + ox, by + 82, 4, '#f6d4de'], [bx + 338 + ox, by + 118, 3, '#fbf6ee'], [bx + 434 + ox, by + 42, 4, '#fbf6ee'], [bx + 476 + ox, by + 30, 3, '#f6d4de']].forEach(b => blossom(...b));
+      const pSpan = bw - 330 - ox;
       for (let i = 0; i < 14; i++) {
-        const px = bx + 262 + G.hash(i, 11, 3) * 270 + Math.sin(t * 0.8 + i) * 8, py = by + ((G.hash(i, 12, 4) * bh + t * (10 + G.hash(i, 13, 5) * 12)) % bh);
+        const px = bx + 262 + ox + G.hash(i, 11, 3) * pSpan + Math.sin(t * 0.8 + i) * 8, py = by + ((G.hash(i, 12, 4) * bh + t * (10 + G.hash(i, 13, 5) * 12)) % bh);
         c.fillStyle = i % 3 ? 'rgba(251,246,238,0.85)' : 'rgba(246,196,212,0.85)'; c.fillRect(Math.round(px), Math.round(py), 2, 2);
       }
     },
 
     seeleBackdrop(c, bx, by, bw, bh, mx, my, t) {
+      const ox = bw > 640 ? 44 : 0;
       const bg = c.createLinearGradient(0, by, 0, by + bh);
       bg.addColorStop(0, '#0c0618'); bg.addColorStop(0.55, '#2a1240'); bg.addColorStop(1, '#5a2050');
       c.fillStyle = bg; c.fillRect(bx, by, bw, bh);
@@ -1840,15 +1850,15 @@
       c.lineWidth = 1; c.lineCap = 'butt';
       const ground = by + bh - 40;
       [[0, 46, 70], [40, 30, 96], [66, 54, 58], [112, 26, 120], [134, 60, 76], [186, 34, 104], [214, 48, 64], [256, 40, 90]].forEach(([dx, w, h], i) => {
-        const x = bx + 252 + dx + (i > 3 ? 120 : 0), top = ground + 40 - h;
+        const x = bx + 252 + ox + dx + (i > 3 ? (bw > 640 ? 210 : 120) : 0), top = ground + 40 - h;
         c.fillStyle = '#140a22'; c.fillRect(x, top, w, h);
         c.fillStyle = '#1e1030'; c.fillRect(x + w - 6, top, 6, h);
         for (let k = 0; k < 6; k++) if (G.hash(i, k, 7) > 0.55) { c.fillStyle = G.hash(k, i, 9) > 0.5 ? '#e8a040' : '#c070e0'; c.fillRect(x + 4 + Math.floor(G.hash(i, k, 8) * (w - 10)), top + 6 + k * 9, 3, 2); }
       });
-      c.fillStyle = '#100818'; c.fillRect(bx + 240, ground + 36, bw - 240, 4);
+      c.fillStyle = '#100818'; c.fillRect(bx + 240 + ox, ground + 36, bw - 240 - ox, 4);
       c.strokeStyle = '#3a2050'; c.lineWidth = 3;
-      c.beginPath(); c.moveTo(bx + 244, by + 210); c.lineTo(bx + 300, by + 210); c.lineTo(bx + 300, by + 150); c.lineTo(bx + 360, by + 150); c.stroke();
-      c.beginPath(); c.moveTo(bx + 600, by + 196); c.lineTo(bx + 540, by + 196); c.lineTo(bx + 540, by + 236); c.stroke();
+      c.beginPath(); c.moveTo(bx + 244 + ox, by + 210); c.lineTo(bx + 300 + ox, by + 210); c.lineTo(bx + 300 + ox, by + 150); c.lineTo(bx + 360 + ox, by + 150); c.stroke();
+      c.beginPath(); c.moveTo(bx + bw, by + 196); c.lineTo(bx + bw - 60, by + 196); c.lineTo(bx + bw - 60, by + 236); c.stroke();
       c.lineWidth = 1;
       const fly = (x, y, s, ph, col) => {
         const f = 0.35 + 0.65 * Math.abs(Math.sin(t * 5 + ph)), w = 5 * s * f, h = 4 * s;
@@ -1857,17 +1867,19 @@
         c.beginPath(); c.moveTo(x, y); c.lineTo(x + w, y - h); c.lineTo(x + w * 0.8, y + h * 0.4); c.closePath(); c.fill();
         c.fillStyle = '#fbf2ff'; c.fillRect(Math.round(x), Math.round(y - 1), 1, 2);
       };
+      const pSpan = bw - 310 - ox;
       for (let i = 0; i < 12; i++) {
-        const x = bx + 262 + G.hash(i, 21, 3) * 270 + Math.sin(t * 0.7 + i * 1.7) * 14, y = by + 20 + ((G.hash(i, 22, 4) * (bh - 60) - t * (6 + G.hash(i, 23, 5) * 8)) % (bh - 60) + bh - 60) % (bh - 60);
+        const x = bx + 262 + ox + G.hash(i, 21, 3) * pSpan + Math.sin(t * 0.7 + i * 1.7) * 14, y = by + 20 + ((G.hash(i, 22, 4) * (bh - 60) - t * (6 + G.hash(i, 23, 5) * 8)) % (bh - 60) + bh - 60) % (bh - 60);
         fly(x, y, 0.8 + G.hash(i, 24, 6) * 0.9, i, i % 3 ? 'rgba(200,160,255,0.85)' : 'rgba(255,170,220,0.85)');
       }
       for (let i = 0; i < 18; i++) {
-        const px = bx + 250 + G.hash(i, 31, 3) * 290, py = by + ((G.hash(i, 32, 4) * bh + t * (8 + G.hash(i, 33, 5) * 10)) % bh);
+        const px = bx + 250 + ox + G.hash(i, 31, 3) * pSpan, py = by + ((G.hash(i, 32, 4) * bh + t * (8 + G.hash(i, 33, 5) * 10)) % bh);
         c.fillStyle = i % 2 ? 'rgba(232,210,255,0.8)' : 'rgba(160,110,240,0.8)'; c.fillRect(Math.round(px), Math.round(py), 1, 2);
       }
     },
 
     kafkaBackdrop(c, bx, by, bw, bh, mx, my, t) {
+      const ox = bw > 640 ? 44 : 0, sx0 = bx + 244 + ox, sw0 = bw - 244 - ox;
       const bg = c.createLinearGradient(0, by, 0, by + bh);
       bg.addColorStop(0, '#12040e'); bg.addColorStop(0.6, '#36102a'); bg.addColorStop(1, '#5a1a36');
       c.fillStyle = bg; c.fillRect(bx, by, bw, bh);
@@ -1884,17 +1896,18 @@
         }
         c.fillStyle = '#d8b050'; c.fillRect(Math.min(x0, x0 + dir * 70), by + 128, 70, 3);
       };
-      drape(bx + 250, 1); drape(bx + bw - 6, -1);
-      c.fillStyle = '#3a0818'; c.fillRect(bx + 244, by, bw - 244, 14);
-      for (let i = 0; i < 18; i++) { c.fillStyle = i % 2 ? '#7a1630' : '#9a2040'; c.beginPath(); c.arc(bx + 252 + i * 20, by + 14, 10, 0, Math.PI); c.fill(); }
+      drape(sx0 + 6, 1); drape(bx + bw - 6, -1);
+      c.fillStyle = '#3a0818'; c.fillRect(sx0, by, sw0, 14);
+      const nScallops = Math.ceil(sw0 / 20);
+      for (let i = 0; i < nScallops; i++) { c.fillStyle = i % 2 ? '#7a1630' : '#9a2040'; c.beginPath(); c.arc(sx0 + 8 + i * 20, by + 14, 10, 0, Math.PI); c.fill(); }
       c.strokeStyle = 'rgba(240,220,255,0.35)'; c.lineWidth = 1;
       for (let i = 0; i < 5; i++) {
-        const x0 = bx + 300 + i * 56, sw = Math.sin(t * 1.3 + i * 1.7) * 6;
+        const x0 = sx0 + 56 + i * Math.round((sw0 - 112) / 4), sw = Math.sin(t * 1.3 + i * 1.7) * 6;
         c.beginPath(); c.moveTo(x0, by + 14); c.quadraticCurveTo(x0 + sw, by + 60, mx + (i - 2) * 16, by + 96 + Math.abs(i - 2) * 10); c.stroke();
       }
-      c.fillStyle = '#1a0610'; c.fillRect(bx + 244, by + bh - 18, bw - 244, 18);
-      c.fillStyle = '#d8b050'; c.fillRect(bx + 244, by + bh - 18, bw - 244, 2);
-      for (let i = 0; i < 9; i++) { const lx = bx + 270 + i * 38; c.fillStyle = 'rgba(255,224,160,' + (0.5 + 0.3 * Math.sin(t * 3 + i)).toFixed(2) + ')'; c.fillRect(lx, by + bh - 14, 6, 3); }
+      c.fillStyle = '#1a0610'; c.fillRect(sx0, by + bh - 18, sw0, 18);
+      c.fillStyle = '#d8b050'; c.fillRect(sx0, by + bh - 18, sw0, 2);
+      for (let i = 0; i < 9; i++) { const lx = sx0 + 26 + i * Math.round((sw0 - 52) / 8); c.fillStyle = 'rgba(255,224,160,' + (0.5 + 0.3 * Math.sin(t * 3 + i)).toFixed(2) + ')'; c.fillRect(lx, by + bh - 14, 6, 3); }
       const note = (x, y, s, a) => {
         c.fillStyle = 'rgba(255,190,230,' + a.toFixed(2) + ')';
         c.beginPath(); c.ellipse(x, y, 3 * s, 2.2 * s, -0.4, 0, Math.PI * 2); c.fill();
@@ -1902,12 +1915,12 @@
         c.fillRect(Math.round(x + 2 * s), Math.round(y - 12 * s), Math.round(5 * s), 1);
       };
       for (let i = 0; i < 9; i++) {
-        const ph = (t * 0.12 + G.hash(i, 41, 3)) % 1, x = bx + 268 + G.hash(i, 42, 4) * 300 + Math.sin(t + i) * 8, y = by + bh - 30 - ph * (bh - 40);
+        const ph = (t * 0.12 + G.hash(i, 41, 3)) % 1, x = sx0 + 24 + G.hash(i, 42, 4) * (sw0 - 56) + Math.sin(t + i) * 8, y = by + bh - 30 - ph * (bh - 40);
         note(x, y, 0.8 + G.hash(i, 43, 5) * 0.6, 0.75 * Math.sin(ph * Math.PI));
       }
       for (let i = 0; i < 3; i++) {
         if ((t * 0.9 + i * 0.37) % 2.2 > 0.14) continue;
-        let x = bx + 300 + G.hash(Math.floor(t * 3), i, 9) * 260, y = by + 20;
+        let x = sx0 + 56 + G.hash(Math.floor(t * 3), i, 9) * (sw0 - 96), y = by + 20;
         c.strokeStyle = 'rgba(220,160,255,0.85)'; c.lineWidth = 2; c.beginPath(); c.moveTo(x, y);
         for (let k = 0; k < 6; k++) { x += (G.hash(k, i, Math.floor(t * 7)) - 0.5) * 30; y += 20; c.lineTo(x, y); }
         c.stroke(); c.lineWidth = 1;
@@ -1915,13 +1928,14 @@
     },
 
     wolfBackdrop(c, bx, by, bw, bh, mx, my, t) {
+      const ox = bw > 640 ? 44 : 0, sx0 = bx + 244 + ox, sw0 = bw - 244 - ox;
       const bg = c.createLinearGradient(0, by, 0, by + bh);
       bg.addColorStop(0, '#04061a'); bg.addColorStop(0.55, '#0c1640'); bg.addColorStop(1, '#1a1048');
       c.fillStyle = bg; c.fillRect(bx, by, bw, bh);
       const hy = by + 170, vx = mx;
       c.strokeStyle = 'rgba(120,150,255,0.35)';
       for (let i = -12; i <= 12; i++) { c.beginPath(); c.moveTo(vx + i * 6, hy); c.lineTo(vx + i * 60, by + bh); c.stroke(); }
-      for (let i = 0; i < 7; i++) { const k = ((i + (t * 0.6) % 1) / 7), y = hy + (by + bh - hy) * k * k; c.strokeStyle = 'rgba(140,170,255,' + (0.15 + 0.4 * k).toFixed(2) + ')'; c.beginPath(); c.moveTo(bx + 244, Math.round(y) + 0.5); c.lineTo(bx + bw, Math.round(y) + 0.5); c.stroke(); }
+      for (let i = 0; i < 7; i++) { const k = ((i + (t * 0.6) % 1) / 7), y = hy + (by + bh - hy) * k * k; c.strokeStyle = 'rgba(140,170,255,' + (0.15 + 0.4 * k).toFixed(2) + ')'; c.beginPath(); c.moveTo(sx0, Math.round(y) + 0.5); c.lineTo(bx + bw, Math.round(y) + 0.5); c.stroke(); }
       const ring = c.createRadialGradient(mx, my, 20, mx, my, 120);
       ring.addColorStop(0, 'rgba(120,110,255,0.3)'); ring.addColorStop(1, 'rgba(120,110,255,0)');
       c.fillStyle = ring; c.fillRect(mx - 120, my - 120, 240, 240);
@@ -1935,18 +1949,19 @@
         c.fillStyle = '#e8ecff'; c.font = 'bold 7px Tahoma, Arial, sans-serif'; c.textBaseline = 'top'; c.textAlign = 'left'; c.fillText(title, x + 3, y + 1);
         for (let r = 0; r < Math.floor((h - 12) / 6); r++) { c.fillStyle = 'rgba(160,200,255,' + (0.3 + 0.4 * G.hash(r, k, 5)).toFixed(2) + ')'; c.fillRect(x + 4, y + 12 + r * 6, Math.round((w - 10) * (0.3 + 0.7 * G.hash(r, k, Math.floor(t * 2)))), 2); }
       };
-      win(bx + 258, by + 22 + Math.round(Math.sin(t * 0.8) * 3), 70, 46, 'ИЗМЕНИТЬ?', 1);
-      win(bx + 488, by + 150 + Math.round(Math.sin(t * 0.7 + 2) * 3), 62, 40, 'БАН', 2);
-      win(bx + 270, by + 168 + Math.round(Math.sin(t * 0.9 + 4) * 3), 54, 34, 'БАГ.EXE', 3);
+      win(sx0 + 14, by + 22 + Math.round(Math.sin(t * 0.8) * 3), 70, 46, 'ИЗМЕНИТЬ?', 1);
+      win(bx + bw - 112, by + 150 + Math.round(Math.sin(t * 0.7 + 2) * 3), 62, 40, 'БАН', 2);
+      win(sx0 + 26, by + 168 + Math.round(Math.sin(t * 0.9 + 4) * 3), 54, 34, 'БАГ.EXE', 3);
       for (let i = 0; i < 14; i++) {
-        const gx = bx + 250 + Math.floor(G.hash(i, Math.floor(t * 4), 7) * 330), gy = by + Math.floor(G.hash(Math.floor(t * 4), i, 8) * (bh - 20));
+        const gx = sx0 + 6 + Math.floor(G.hash(i, Math.floor(t * 4), 7) * (sw0 - 26)), gy = by + Math.floor(G.hash(Math.floor(t * 4), i, 8) * (bh - 20));
         if (G.hash(i, Math.floor(t * 4), 9) > 0.55) continue;
         c.fillStyle = i % 3 ? 'rgba(122,106,240,0.6)' : 'rgba(80,220,255,0.6)'; c.fillRect(gx, gy, 6 + Math.floor(G.hash(i, 3, 2) * 30), 2);
       }
-      for (let i = 0; i < 24; i++) { const px = bx + 250 + G.hash(i, 51, 3) * 340, py = by + ((G.hash(i, 52, 4) * bh + t * (14 + G.hash(i, 53, 5) * 20)) % bh); c.fillStyle = i % 2 ? 'rgba(160,200,255,0.8)' : 'rgba(200,170,255,0.7)'; c.fillRect(Math.round(px), Math.round(py), 1, 3); }
+      for (let i = 0; i < 24; i++) { const px = sx0 + 6 + G.hash(i, 51, 3) * (sw0 - 16), py = by + ((G.hash(i, 52, 4) * bh + t * (14 + G.hash(i, 53, 5) * 20)) % bh); c.fillStyle = i % 2 ? 'rgba(160,200,255,0.8)' : 'rgba(200,170,255,0.7)'; c.fillRect(Math.round(px), Math.round(py), 1, 3); }
     },
 
     bladeBackdrop(c, bx, by, bw, bh, mx, my, t) {
+      const ox = bw > 640 ? 44 : 0, sx0 = bx + 244 + ox, sw0 = bw - 244 - ox;
       const bg = c.createLinearGradient(0, by, 0, by + bh);
       bg.addColorStop(0, '#0a0408'); bg.addColorStop(0.6, '#2a0a10'); bg.addColorStop(1, '#4a1414');
       c.fillStyle = bg; c.fillRect(bx, by, bw, bh);
@@ -1957,18 +1972,20 @@
       c.fillStyle = '#e04a36'; c.beginPath(); c.arc(mx + 22, my - 42, 50, 0, Math.PI * 2); c.fill();
       c.fillStyle = 'rgba(80,10,14,0.35)'; for (const [dx, dy, r] of [[10, -20, 9], [44, -50, 6], [-6, -60, 5], [36, -8, 4]]) { c.beginPath(); c.arc(mx + 30 + dx - 30, my - 34 + dy + 20, r, 0, Math.PI * 2); c.fill(); }
       const ground = by + bh - 34;
-      c.fillStyle = '#140608'; c.beginPath(); c.moveTo(bx + 244, ground + 6); for (let x = 0; x <= bw - 244; x += 24) c.lineTo(bx + 244 + x, ground - 4 + Math.round(G.hash(x, 7, 3) * 10)); c.lineTo(bx + bw, by + bh); c.lineTo(bx + 244, by + bh); c.fill();
-      for (let i = 0; i < 13; i++) {
-        const x = bx + 262 + i * 26 + Math.round(G.hash(i, 1, 61) * 10), h = 34 + Math.round(G.hash(i, 2, 61) * 40), tilt = (G.hash(i, 3, 61) - 0.5) * 0.5, base = ground + 4 + Math.round(G.hash(i, 4, 61) * 10);
+      c.fillStyle = '#140608'; c.beginPath(); c.moveTo(sx0, ground + 6); for (let x = 0; x <= sw0; x += 24) c.lineTo(sx0 + x, ground - 4 + Math.round(G.hash(x, 7, 3) * 10)); c.lineTo(bx + bw, by + bh); c.lineTo(sx0, by + bh); c.fill();
+      const nSwords = Math.floor((sw0 - 20) / 26);
+      for (let i = 0; i < nSwords; i++) {
+        const x = sx0 + 18 + i * 26 + Math.round(G.hash(i, 1, 61) * 10), h = 34 + Math.round(G.hash(i, 2, 61) * 40), tilt = (G.hash(i, 3, 61) - 0.5) * 0.5, base = ground + 4 + Math.round(G.hash(i, 4, 61) * 10);
         c.save(); c.translate(x, base); c.rotate(tilt);
         c.fillStyle = '#4a4650'; c.fillRect(-2, -h, 4, h); c.fillStyle = '#8a8690'; c.fillRect(-2, -h, 1, h);
         c.fillStyle = '#1a1418'; c.fillRect(-7, -h - 3, 14, 3); c.fillStyle = '#2a2026'; c.fillRect(-2, -h - 14, 4, 11);
         if (i % 3 === 1) { c.fillStyle = '#c8302a'; c.fillRect(-1, -h - 10, 2, 14 + Math.round(Math.sin(t * 2 + i) * 2)); }
         c.restore();
       }
+      const pSpan = sw0 - 16;
       for (let i = 0; i < 26; i++) {
         const ph = (t * (0.05 + G.hash(i, 71, 2) * 0.05) + G.hash(i, 72, 3)) % 1;
-        const px = bx + 250 + ((G.hash(i, 73, 4) * 340 - ph * 120) % 340 + 340) % 340, py = by + ph * bh;
+        const px = sx0 + 6 + ((G.hash(i, 73, 4) * pSpan - ph * 120) % pSpan + pSpan) % pSpan, py = by + ph * bh;
         c.fillStyle = i % 3 ? 'rgba(255,120,90,0.75)' : 'rgba(255,220,200,0.6)'; c.fillRect(Math.round(px), Math.round(py), 2, 1);
       }
     },
@@ -1981,8 +1998,8 @@
     },
 
     eventBanner(c, bx, by, bw, bh, id, pick, chan) {
-      const S = H.BANNERS.ev.stars[id], star = H.CHARS[id], P = EV_STYLE[id] || EV_STYLE.ruanmei, t = this.t;
-      const mx = bx + 420, my = by + 118, feet = by + bh - 10;
+      const S = H.BANNERS.ev.stars[id], star = H.CHARS[id], P = EV_STYLE[id] || EV_STYLE.ruanmei, t = this.t, wide = bw > 640;
+      const mx = bx + (wide ? 526 : 420), my = by + 118, feet = by + bh - 10, lw = wide ? 260 : 214, starX = bx + (wide ? 278 : 232);
       this.eventBackdrop(id, c, bx, by, bw, bh, mx, my, t);
       c.fillStyle = P.glow; c.beginPath(); c.ellipse(mx, feet, 70, 10, 0, 0, Math.PI * 2); c.fill();
       c.save(); c.beginPath(); c.rect(bx, by, bw, bh); c.clip();
@@ -1993,23 +2010,23 @@
       this.text(S.title[1], bx + 22, by + 72, { size: 22, bold: true, serif: true, col: P.title });
       G.elemIcon(c, star.elem, bx + 32, by + 118, 7);
       this.text(star.name, bx + 46, by + 111, { size: 14, bold: true, col: '#ffe6a8' });
-      this.text('★★★★★', bx + 232, by + 113, { size: 10, align: 'right', col: G.RARITY[5] });
+      this.text('★★★★★', starX, by + 113, { size: 10, align: 'right', col: G.RARITY[5] });
       G.pathIcon(c, star.path, bx + 45, by + 129, 12, P.sub);
       this.text(H.PATHS[star.path].name + ' · ' + H.ELEMENTS[star.elem].name, bx + 60, by + 129, { size: 10, col: P.sub });
-      this.wrap('Любой 5★ из этого прыжка: только ' + star.name + '.', 214, 11).forEach((l, i) => this.text(l, bx + 24, by + 150 + i * 14, { size: 11, col: C.cream }));
+      this.wrap('Любой 5★ из этого прыжка: только ' + star.name + '.', lw, 11).forEach((l, i) => this.text(l, bx + 24, by + 150 + i * 14, { size: 11, col: C.cream }));
       S.four.forEach((fid, i) => {
         const y = by + 190 + i * 26;
         this.portraitCard(c, G.lookOf(fid, this.game), bx + 26, y, 22, { elem: H.CHARS[fid].elem, border: G.RARITY[4] });
         this.text(H.CHARS[fid].name, bx + 56, y + 4, { size: 12, bold: true, col: P.four });
-        this.text('★★★★', bx + 232, y + 6, { size: 10, align: 'right', col: G.RARITY[4] });
+        this.text('★★★★', starX, y + 6, { size: 10, align: 'right', col: G.RARITY[4] });
       });
       this.text('Любой 4★: один из этих троих.', bx + 24, by + 270, { size: 10, col: P.sub });
       this.evPicker(c, bx + bw - 62, by + 12, id, pick);
     },
 
     coneBanner(c, bx, by, bw, bh, id, pick, chan) {
-      const S = H.BANNERS.cone.stars[id], cd = H.CONES[S.cone], ch = H.CHARS[id], P = EV_STYLE[id] || EV_STYLE.ruanmei, t = this.t;
-      const mx = bx + 420, my = by + 118;
+      const S = H.BANNERS.cone.stars[id], cd = H.CONES[S.cone], ch = H.CHARS[id], P = EV_STYLE[id] || EV_STYLE.ruanmei, t = this.t, wide = bw > 640;
+      const mx = bx + (wide ? 526 : 420), my = by + 118, lw = wide ? 260 : 214, starX = bx + (wide ? 278 : 232);
       this.eventBackdrop(id, c, bx, by, bw, bh, mx, my, t);
       c.fillStyle = 'rgba(4,4,14,0.38)'; c.fillRect(bx, by, bw, bh);
       const glow = c.createRadialGradient(mx, my + 10, 10, mx, my + 10, 150);
@@ -2028,17 +2045,17 @@
       if (S.title[1]) this.text(S.title[1], bx + 22, by + 68, { size: 22, bold: true, serif: true, col: P.title });
       G.pathIcon(c, cd.path, bx + 24, by + 100, 14, '#f2dc9a');
       this.text('Световой конус · ' + H.PATHS[cd.path].name, bx + 44, by + 101, { size: 11, bold: true, col: '#ffe6a8' });
-      this.text('★★★★★', bx + 232, by + 102, { size: 10, align: 'right', col: G.RARITY[5] });
+      this.text('★★★★★', starX, by + 102, { size: 10, align: 'right', col: G.RARITY[5] });
       this.portraitCard(c, G.lookOf(id, this.game), bx + 26, by + 120, 22, { elem: ch.elem, border: G.RARITY[5] });
       this.text('Раскрывает силу героя: ' + ch.name, bx + 56, by + 126, { size: 10, col: P.sub });
-      this.wrap(cd.text, 214, 10).slice(0, 4).forEach((l, i) => this.text(l, bx + 24, by + 150 + i * 12, { size: 10, col: C.cream }));
+      this.wrap(cd.text, lw, 10).slice(0, 4).forEach((l, i) => this.text(l, bx + 24, by + 150 + i * 12, { size: 10, col: C.cream }));
       S.four.forEach((pid, i) => {
         const fid = pid.slice(5), y = by + 204 + i * 22;
         G.drawConeCard(c, fid, bx + 30, y, 14, 20, { info: false });
         let name = H.CONES[fid].name;
-        while (name.length > 3 && this.measure(name, 11, true) > 144) name = name.slice(0, -2) + '…';
+        while (name.length > 3 && this.measure(name, 11, true) > (wide ? 190 : 144)) name = name.slice(0, -2) + '…';
         this.text(name, bx + 52, y + 3, { size: 11, bold: true, col: P.four });
-        this.text('★★★★', bx + 232, y + 4, { size: 10, align: 'right', col: G.RARITY[4] });
+        this.text('★★★★', starX, y + 4, { size: 10, align: 'right', col: G.RARITY[4] });
       });
       this.text('75%: 4★ из этих трёх конусов.', bx + 24, by + 272, { size: 10, col: P.sub });
       this.evPicker(c, bx + bw - 62, by + 12, id, pick, 'cone');
@@ -2091,7 +2108,7 @@
     },
 
     signalBanner(c, bx, by, bw, bh, ban, star, pick, chan) {
-      const g = this.game, t = this.t, amp = ban === 'amp', B = H.BANNERS[ban], S = B.stars[star], ch = H.CHARS[star];
+      const g = this.game, t = this.t, amp = ban === 'amp', B = H.BANNERS[ban], S = B.stars[star], ch = H.CHARS[star], wide = bw > 640;
       const bg = c.createLinearGradient(0, by, 0, by + bh);
       bg.addColorStop(0, '#16171e'); bg.addColorStop(0.7, '#22232c'); bg.addColorStop(1, '#0c0c12');
       c.fillStyle = bg; c.fillRect(bx, by, bw, bh);
@@ -2100,32 +2117,35 @@
       c.save(); c.translate(bx + 30, by + bh - 6); c.rotate(-Math.PI / 2);
       this.text('ПОИСК', 0, -26, { size: 40, bold: true, serif: true, col: 'rgba(255,255,255,0.06)', shadow: false });
       c.restore();
+      const cw = wide ? 136 : 108;
       SIG_CHANNELS.forEach(([id, label, sub], i) => {
         const y = by + 20 + i * 54, on = id === ban;
-        c.fillStyle = on ? '#e8e040' : 'rgba(6,6,12,0.75)'; c.fillRect(bx + 44, y, 108, 44);
-        c.strokeStyle = on ? '#1a1a08' : 'rgba(232,224,64,0.4)'; c.strokeRect(bx + 44.5, y + 0.5, 107, 43);
+        c.fillStyle = on ? '#e8e040' : 'rgba(6,6,12,0.75)'; c.fillRect(bx + 44, y, cw, 44);
+        c.strokeStyle = on ? '#1a1a08' : 'rgba(232,224,64,0.4)'; c.strokeRect(bx + 44.5, y + 0.5, cw - 1, 43);
         G.itemIcon(c, 'tape', bx + 48, y + 6, 16);
-        this.wrap(label, 80, 10).slice(0, 2).forEach((l, k) => this.text(l, bx + 68, y + 4 + k * 12, { size: 10, bold: true, col: on ? '#14140a' : C.cream, shadow: !on }));
+        this.wrap(label, cw - 28, 10).slice(0, 2).forEach((l, k) => this.text(l, bx + 68, y + 4 + k * 12, { size: 10, bold: true, col: on ? '#14140a' : C.cream, shadow: !on }));
         this.text(sub, bx + 50, y + 29, { size: 9, col: on ? '#3a3a14' : C.sub, shadow: !on });
-        this.hit(bx + 44, y, 108, 44, () => chan(id));
+        this.hit(bx + 44, y, cw, 44, () => chan(id));
       });
-      this.text('Tab: канал', bx + 98, by + 132, { size: 9, align: 'center', col: C.dim });
+      this.text('Tab: канал', bx + 44 + cw / 2, by + 132, { size: 9, align: 'center', col: C.dim });
       const ft = (fx, fy, fw, fh) => {
         if (amp) G.drawConeCard(c, S.cone, fx + fw / 2 - 40, fy + 6, 80, fh - 12, { info: false });
         else { c.fillStyle = 'rgba(120,200,255,0.12)'; c.fillRect(fx, fy, fw, fh); G.drawFigure(c, G.lookOf(star, g), fx + fw / 2, fy + G.FIG_FOOT * 2 + 2, 2); }
         c.fillStyle = 'rgba(160,220,255,' + (0.04 + 0.03 * Math.sin(t * 9)).toFixed(3) + ')'; c.fillRect(fx, fy + ((t * 40) % fh), fw, 6);
       };
-      this.crt(c, bx + 236, by + 14, 150, 170, { lit: true, knobs: true }, ft);
-      this.crt(c, bx + 168, by + 40, 66, 56, { wood: true }, (fx, fy, fw, fh) => {
+      const cx0 = bx + (wide ? 202 : 168), sw0 = wide ? 76 : 66, mx0 = bx + (wide ? 284 : 236), mw0 = wide ? 176 : 150;
+      this.crt(c, mx0, by + 14, mw0, 170, { lit: true, knobs: true }, ft);
+      this.crt(c, cx0, by + 40, sw0, 56, { wood: true }, (fx, fy, fw, fh) => {
         for (let i = 0; i < 160; i++) { c.fillStyle = 'rgba(255,255,255,' + G.hash(i, Math.floor(t * 12), 3).toFixed(2) + ')'; c.fillRect(fx + G.hash(i, 1, Math.floor(t * 12)) * fw, fy + G.hash(Math.floor(t * 12), i, 2) * fh, 1, 1); }
       });
-      this.crt(c, bx + 168, by + 100, 66, 56, {}, (fx, fy, fw, fh) => {
+      this.crt(c, cx0, by + 100, sw0, 56, {}, (fx, fy, fw, fh) => {
         c.fillStyle = '#e8e040'; c.fillRect(fx + 4, fy + fh / 2 - 9, fw - 8, 18);
         this.text('СИГНАЛ', fx + fw / 2, fy + fh / 2 - 7, { size: 11, bold: true, serif: true, align: 'center', col: '#14140a', shadow: false });
       });
+      const ax0 = bx + (wide ? 200 : 166), astep = wide ? 88 : 76, aw = wide ? 84 : 72;
       S.four.forEach((fid, i) => {
-        const x = bx + 166 + i * 76, y = by + 190;
-        this.crt(c, x, y, 72, 62, { wood: i === 1, led: RANK_COL[4] }, (fx, fy, fw, fh) => {
+        const x = ax0 + i * astep, y = by + 190;
+        this.crt(c, x, y, aw, 62, { wood: i === 1, led: RANK_COL[4] }, (fx, fy, fw, fh) => {
           c.fillStyle = 'rgba(160,80,240,0.25)'; c.fillRect(fx, fy, fw, fh);
           if (fid.startsWith('cone:')) G.drawConeCard(c, fid.slice(5), fx + fw / 2 - 14, fy + 3, 28, fh - 6, { info: false });
           else G.drawPortrait(c, G.lookOf(fid, g), fx + fw / 2 - (fh - 4) / 2, fy + 2, fh - 4);
@@ -2133,17 +2153,17 @@
         this.rankBadge(x + 2, y + 2, 4, 12);
       });
       if (!amp && S.four.every(id => H.CHARS[id] && H.CHARS[id].faction === 'hares')) {
-        const px = bx + 166, pw = 3 * 76 - 4, py = by + 257;
+        const px = ax0, pw = 2 * astep + aw, py = by + 257;
         c.fillStyle = 'rgba(6,6,12,0.8)'; c.fillRect(px, py, pw, 14);
         c.strokeStyle = 'rgba(232,224,64,0.5)'; c.strokeRect(px + 0.5, py + 0.5, pw - 1, 13);
         this.text('Агентство «Хитрые зайцы»', px + pw / 2, py + 2, { size: 9, bold: true, align: 'center', col: '#e8e040', shadow: false });
       }
-      this.crt(c, bx + 100, by + 196, 34, 56, { led: '#ffb030' }, (fx, fy, fw, fh) => { c.fillStyle = RANK_COL[5]; c.fillRect(fx, fy, fw, fh); this.text('S', fx + fw / 2, fy + fh / 2 - 10, { size: 18, bold: true, serif: true, align: 'center', col: '#1a1004', shadow: false }); });
-      const ix = bx + 404, rw = 128;
+      this.crt(c, bx + (wide ? 128 : 100), by + 196, 34, 56, { led: '#ffb030' }, (fx, fy, fw, fh) => { c.fillStyle = RANK_COL[5]; c.fillRect(fx, fy, fw, fh); this.text('S', fx + fw / 2, fy + fh / 2 - 10, { size: 18, bold: true, serif: true, align: 'center', col: '#1a1004', shadow: false }); });
+      const ix = bx + (wide ? 482 : 404), rw = wide ? 256 : 128;
       const kw = this.measure(B.name, 9, true) + 12;
       c.fillStyle = '#e8e040'; c.fillRect(ix, by + 16, kw, 14);
       this.text(B.name, ix + 6, by + 17, { size: 9, bold: true, col: '#14140a', shadow: false });
-      const ts = Math.max(...S.title.map(t => this.measure(t, 20, true, true))) > 128 ? 16 : 20;
+      const ts = Math.max(...S.title.map(t => this.measure(t, 20, true, true))) > rw ? 16 : 20;
       this.text(S.title[0], ix, by + 36, { size: ts, bold: true, serif: true, col: '#fff4d8' });
       this.text(S.title[1], ix, by + 36 + ts + 4, { size: ts, bold: true, serif: true, col: '#fff4d8' });
       this.rankBadge(ix, by + 90, 5, 14);
@@ -2250,7 +2270,8 @@
       for (let i = 0; i < 50; i++) { c.fillStyle = 'rgba(255,255,255,' + (0.3 + 0.5 * G.hash(i, 51, 2)).toFixed(2) + ')'; c.fillRect(sx + G.hash(i, 52, 3) * sw, by + G.hash(i, 53, 4) * bh * 0.5, 1, 1); }
       const cx = sx + sw / 2, ground = by + bh - 30;
       c.fillStyle = '#0c0608';
-      for (let i = 0; i < 6; i++) {
+      const nHuts = Math.ceil(sw / 56);
+      for (let i = 0; i < nHuts; i++) {
         const hx = sx + 10 + i * 56 + (i % 2) * 10, hw = 40 + (i % 3) * 8, hh = 34 + (i % 2) * 14;
         c.beginPath(); c.moveTo(hx, ground); c.lineTo(hx, ground - hh); c.lineTo(hx + hw / 2, ground - hh - 18); c.lineTo(hx + hw, ground - hh); c.lineTo(hx + hw, ground); c.fill();
         if (i % 2) { c.fillStyle = 'rgba(255,150,60,' + (0.5 + 0.3 * Math.sin(t * 7 + i)).toFixed(2) + ')'; c.fillRect(hx + hw / 2 - 3, ground - hh + 10, 6, 6); c.fillStyle = '#0c0608'; }
@@ -2304,9 +2325,9 @@
     },
 
     conveneBanner(c, bx, by, bw, bh, ban, star, pick, chan) {
-      const g = this.game, t = this.t, forge = ban === 'forge', B = H.BANNERS[ban], S = B.stars[star], ch = H.CHARS[star], pity = g.pityOf(ban);
+      const g = this.game, t = this.t, forge = ban === 'forge', B = H.BANNERS[ban], S = B.stars[star], ch = H.CHARS[star], pity = g.pityOf(ban), wide = bw > 640;
       c.fillStyle = '#05070e'; c.fillRect(bx, by, bw, bh);
-      const sx = bx + 74, sw = 316;
+      const sx = bx + 74, sw = wide ? 426 : 316;
       c.save(); c.beginPath(); c.rect(sx, by, sw, bh); c.clip();
       if (forge) this.forgeStage(c, sx, by, sw, bh, t, S.cone, star === 'scar');
       else {
@@ -2318,8 +2339,8 @@
       c.restore();
       c.strokeStyle = 'rgba(201,164,92,0.6)'; c.strokeRect(sx + 0.5, by + 0.5, sw - 1, bh - 1);
       this.tideGauge(c, bx + 18, by + 44, 186, ban);
-      const ix = bx + 398, rw = 132;
-      CONV_CHANNELS.forEach(([id, label], i) => this.button(ix + i * 66, by + 10, 64, 18, label, () => chan(id), { active: id === ban, size: 10 }));
+      const ix = sx + sw + 8, rw = bx + bw - 70 - ix, cbw = wide ? 92 : 64;
+      CONV_CHANNELS.forEach(([id, label], i) => this.button(ix + i * (cbw + 2), by + 10, cbw, 18, label, () => chan(id), { active: id === ban, size: 10 }));
       const kw = Math.min(rw - 28, this.measure(B.name, 9, true) + 12);
       c.fillStyle = '#c8243a'; c.fillRect(ix, by + 34, kw, 14);
       this.text(B.name, ix + 6, by + 35, { size: 9, bold: true, col: '#fff0f0', shadow: false });
@@ -2340,8 +2361,9 @@
         this.text('★★★★★ · ' + H.PATHS[ch.path].name, ix, y + 14, { size: 9, col: G.RARITY[5] }); G.pathIcon(c, ch.path, ix + this.measure('★★★★★ · ' + H.PATHS[ch.path].name, 9) + 3, y + 13, 11, G.RARITY[5]);
       }
       y += 34;
+      const fstep = wide ? 64 : 44;
       S.four.forEach((fid, i) => {
-        const mx = ix + 18 + i * 44, my = y + 16, cone = fid.startsWith('cone:');
+        const mx = ix + 18 + i * fstep, my = y + 16, cone = fid.startsWith('cone:');
         c.fillStyle = '#05070e'; c.beginPath(); c.arc(mx, my, 17, 0, Math.PI * 2); c.fill();
         c.save(); c.beginPath(); c.arc(mx, my, 15, 0, Math.PI * 2); c.clip();
         c.fillStyle = '#2a1a3a'; c.fillRect(mx - 15, my - 15, 30, 30);
@@ -2350,7 +2372,7 @@
         c.restore();
         c.strokeStyle = G.RARITY[4]; c.lineWidth = 2; c.beginPath(); c.arc(mx, my, 16, 0, Math.PI * 2); c.stroke(); c.lineWidth = 1;
         const nm = cone ? H.CONES[fid.slice(5)].name : H.CHARS[fid].name;
-        this.text(this.fitText(nm, 8, 42), mx, my + 19, { size: 8, align: 'center', col: '#e8d4ff' });
+        this.text(this.fitText(nm, 8, fstep - 2), mx, my + 19, { size: 8, align: 'center', col: '#e8d4ff' });
       });
       y += 50;
       const rules = forge
@@ -2384,11 +2406,11 @@
     },
 
     wizBanner(c, bx, by, bw, bh, star, pick, chan) {
-      const g = this.game, t = this.t, B = H.BANNERS.wiz, S = B.stars[star], cd = H.CONES[S.cone], ch = H.CHARS[star], pity = g.pityOf('wiz');
+      const g = this.game, t = this.t, B = H.BANNERS.wiz, S = B.stars[star], cd = H.CONES[S.cone], ch = H.CHARS[star], pity = g.pityOf('wiz'), wide = bw > 640;
       const wall = c.createLinearGradient(0, by, 0, by + bh);
       wall.addColorStop(0, '#1e1626'); wall.addColorStop(1, '#0c0810');
       c.fillStyle = wall; c.fillRect(bx, by, bw, bh);
-      const sx = bx + 74, sw = 316, cy = by + 12, chh = bh - 24;
+      const sx = bx + 74, sw = wide ? 426 : 316, cy = by + 12, chh = bh - 24;
       c.fillStyle = '#2a1e30'; c.fillRect(sx, cy, sw, chh);
       for (let x = sx; x < sx + sw; x += 18) { c.fillStyle = 'rgba(0,0,0,0.25)'; c.fillRect(x, cy, 1, chh); }
       const glowA = 0.18 + 0.06 * Math.sin(t * 2);
@@ -2396,10 +2418,11 @@
       lamp.addColorStop(0, 'rgba(255,214,150,' + glowA.toFixed(2) + ')'); lamp.addColorStop(1, 'rgba(0,0,0,0)');
       c.fillStyle = lamp; c.fillRect(sx, cy, sw, chh);
       const BOTTLE = ['#6ad0c0', '#d86aa8', '#8a8af0', '#e8c860', '#7ad86a', '#e87a5a'];
+      const nBot = Math.floor((sw - 22) / 21);
       [cy + 44, cy + 96].forEach((py, row) => {
         c.fillStyle = '#5a3a24'; c.fillRect(sx + 6, py, sw - 12, 5);
         c.fillStyle = '#3a2416'; c.fillRect(sx + 6, py + 5, sw - 12, 2);
-        for (let i = 0; i < 14; i++) {
+        for (let i = 0; i < nBot; i++) {
           const x = sx + 14 + i * 21 + (row ? 8 : 0), kind = (i * 7 + row * 3) % 5, col = BOTTLE[(i + row * 2) % BOTTLE.length];
           if (kind === 0) { c.fillStyle = col; c.fillRect(x, py - 14, 9, 14); c.fillRect(x + 3, py - 18, 3, 4); c.fillStyle = 'rgba(255,255,255,0.35)'; c.fillRect(x + 1, py - 12, 2, 8); }
           else if (kind === 1) { c.fillStyle = col; c.beginPath(); c.arc(x + 5, py - 6, 6, 0, Math.PI * 2); c.fill(); c.fillRect(x + 3, py - 16, 4, 5); c.fillStyle = 'rgba(255,255,255,0.4)'; c.fillRect(x + 2, py - 9, 2, 2); }
@@ -2415,14 +2438,14 @@
       c.fillStyle = '#4a2e1a'; c.fillRect(sx, ky, sw, 58);
       c.fillStyle = '#6a4428'; c.fillRect(sx, ky, sw, 6);
       c.fillStyle = 'rgba(0,0,0,0.3)'; for (let x = sx + 20; x < sx + sw; x += 40) c.fillRect(x, ky + 8, 1, 50);
-      const cw = 86, chh2 = 120, cx0 = sx + 122, cy0 = ky - chh2 + 22, bob = Math.round(Math.sin(t * 1.4) * 2);
+      const cw = 86, chh2 = 120, cx0 = sx + Math.round((sw - cw) / 2) + 7, cy0 = ky - chh2 + 22, bob = Math.round(Math.sin(t * 1.4) * 2);
       c.fillStyle = 'rgba(0,0,0,0.4)'; c.beginPath(); c.ellipse(cx0 + cw / 2, ky + 24, 52, 7, 0, 0, Math.PI * 2); c.fill();
       c.fillStyle = '#8a6a3a'; c.fillRect(cx0 + cw / 2 - 30, ky + 14, 60, 8);
       const halo = c.createRadialGradient(cx0 + cw / 2, cy0 + chh2 / 2, 10, cx0 + cw / 2, cy0 + chh2 / 2, 90);
       halo.addColorStop(0, 'rgba(255,214,110,0.35)'); halo.addColorStop(1, 'rgba(0,0,0,0)');
       c.fillStyle = halo; c.fillRect(cx0 - 50, cy0 - 40, cw + 100, chh2 + 80);
       G.drawConeCard(c, S.cone, cx0, cy0 + bob, cw, chh2);
-      const tx = sx + 8, ty = ky - 64;
+      const tx = sx + (wide ? 22 : 8), ty = ky - 64;
       c.save(); c.translate(tx + 52, ty); c.rotate(-0.05);
       c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(-49, 3, 104, 66);
       c.fillStyle = '#f2e8cc'; c.fillRect(-52, 0, 104, 66);
@@ -2437,7 +2460,7 @@
       }
       this.manaGauge(c, bx, by, 'wiz');
       this.guildChannels(sx + sw - 140, by + bh - 34, 'wiz', chan);
-      const ix = bx + 398, rw = 132;
+      const ix = sx + sw + 8, rw = bx + bw - 70 - ix;
       const kw = Math.min(rw, this.measure(B.name, 9, true) + 12);
       c.fillStyle = '#5a2a6a'; c.fillRect(ix, by + 14, kw, 14);
       this.text(B.name, ix + 6, by + 15, { size: 9, bold: true, col: '#f8eaff', shadow: false });
@@ -2464,12 +2487,12 @@
     },
 
     guildBanner(c, bx, by, bw, bh, star, pick, chan) {
-      const g = this.game, t = this.t, B = H.BANNERS.guild, S = B.stars[star], ch = H.CHARS[star], pity = g.pityOf('guild'), tint = POSTER_TINT[star] || C.gold;
+      const g = this.game, t = this.t, B = H.BANNERS.guild, S = B.stars[star], ch = H.CHARS[star], pity = g.pityOf('guild'), tint = POSTER_TINT[star] || C.gold, wide = bw > 640;
       const wall = c.createLinearGradient(0, by, 0, by + bh);
       wall.addColorStop(0, '#2c1c12'); wall.addColorStop(1, '#120a06');
       c.fillStyle = wall; c.fillRect(bx, by, bw, bh);
       for (let x = bx + 6; x < bx + bw; x += 24) { c.fillStyle = 'rgba(0,0,0,0.28)'; c.fillRect(x, by, 1, bh); c.fillStyle = 'rgba(255,214,160,0.05)'; c.fillRect(x + 1, by, 1, bh); }
-      const sx = bx + 74, sw = 316, cy = by + 12, chh = bh - 24;
+      const sx = bx + 74, sw = wide ? 426 : 316, cy = by + 12, chh = bh - 24;
       c.fillStyle = '#4a2e18'; c.fillRect(sx - 5, cy - 5, sw + 10, chh + 10);
       c.fillStyle = '#6a4224'; c.fillRect(sx - 3, cy - 3, sw + 6, chh + 6);
       c.fillStyle = '#b4885a'; c.fillRect(sx, cy, sw, chh);
@@ -2483,7 +2506,7 @@
         c.fillStyle = '#b83030'; c.beginPath(); c.arc(26, 4, 3, 0, Math.PI * 2); c.fill();
         c.restore();
       });
-      const px0 = sx + 138, py0 = cy + 14, pw = 166, ph = 208, sway = 0.015 * Math.sin(t * 0.9);
+      const px0 = sx + (wide ? 196 : 138), py0 = cy + 14, pw = 166, ph = 208, sway = 0.015 * Math.sin(t * 0.9);
       c.save(); c.translate(px0 + pw / 2, py0); c.rotate(sway); c.translate(-(px0 + pw / 2), -py0);
       c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(px0 + 4, py0 + 5, pw, ph);
       c.fillStyle = '#f2e8cc'; c.fillRect(px0, py0, pw, ph);
@@ -2506,12 +2529,13 @@
       }
       c.restore();
       c.fillStyle = '#c83030'; c.beginPath(); c.arc(px0 + 10, py0 + 6, 3.5, 0, Math.PI * 2); c.arc(px0 + pw - 10, py0 + 6, 3.5, 0, Math.PI * 2); c.fill();
-      c.fillStyle = 'rgba(0,0,0,0.35)'; c.beginPath(); c.ellipse(sx + 72, by + bh - 12, 44, 7, 0, 0, Math.PI * 2); c.fill();
-      G.drawFigure(c, G.lookOf(star, g), sx + 72, by + bh - 10, 2.6);
+      const figX = sx + (wide ? 96 : 72);
+      c.fillStyle = 'rgba(0,0,0,0.35)'; c.beginPath(); c.ellipse(figX, by + bh - 12, 44, 7, 0, 0, Math.PI * 2); c.fill();
+      G.drawFigure(c, G.lookOf(star, g), figX, by + bh - 10, 2.6);
       c.restore();
       this.manaGauge(c, bx, by, 'guild');
-      this.guildChannels(bx + 74 + 316 - 140, by + bh - 34, 'guild', chan);
-      const ix = bx + 398, rw = 132;
+      this.guildChannels(sx + sw - 140, by + bh - 34, 'guild', chan);
+      const ix = sx + sw + 8, rw = bx + bw - 70 - ix;
       const kw = Math.min(rw, this.measure(B.name, 9, true) + 12);
       c.fillStyle = '#b02a2a'; c.fillRect(ix, by + 14, kw, 14);
       this.text(B.name, ix + 6, by + 15, { size: 9, bold: true, col: '#fff0f0', shadow: false });
@@ -2582,12 +2606,12 @@
           if (!this.show && con && ui.audio.wantedSong !== 'cccLobby') ui.audio.song('cccLobby');
           if (!this.show && !con && ui.audio.wantedSong === 'cccLobby') ui.audio.stopSong();
           if (this.show) { this.show.draw(c); return; }
+          const wb = ui.warpBox(), { bx, by, bw, bh, fy } = wb;
           ui.fullBg(c, false);
-          ui.plate(12, 10, BANNER_TABS.find(b => b[0] === tabOf(this.ban))[1]);
+          ui.plate(wb.lx, 10, BANNER_TABS.find(b => b[0] === tabOf(this.ban))[1]);
           ui.bannerTabs(this.ban, id => this.setBan(id));
-          ui.button(W - 118, 10, 82, 22, 'История', () => ui.openWarpHistory(this.ban), { icon: 'archive', size: 11 });
-          ui.closeBtn(W - 32, 10, () => this.key('back'));
-          const bx = 20, by = 44, bw = 600, bh = 290;
+          ui.button(wb.rx - 118, 10, 82, 22, 'История', () => ui.openWarpHistory(this.ban), { icon: 'archive', size: 11 });
+          ui.closeBtn(wb.rx - 32, 10, () => this.key('back'));
           c.fillStyle = '#000'; c.fillRect(bx - 2, by - 2, bw + 4, bh + 4);
           if (this.ban === 'ev') ui.eventBanner(c, bx, by, bw, bh, g.evStar(), id => this.setStar(id), id => this.setChan(id));
           else if (cone) ui.coneBanner(c, bx, by, bw, bh, g.coneStar(), id => this.setStar(id), id => this.setChan(id));
@@ -2599,24 +2623,24 @@
           else if (con) ui.contonBanner(c, bx, by, bw, bh, this.ban, g.starOf(this.ban), id => this.setStar(id), id => this.setChan(id));
           else ui.standardBanner(c, bx, by, bw, bh);
           c.strokeStyle = C.brass; c.lineWidth = 2; c.strokeRect(bx + 1, by + 1, bw - 2, bh - 2); c.lineWidth = 1;
-          const fy = 346, special = this.ban !== 'std';
-          ui.win(20, fy, 600, 110, { alpha: 0.9 });
-          let mx = 36;
+          const special = this.ban !== 'std', prx = bx + bw - 16, pbw = wb.wide ? 210 : 180, pbx1 = wb.wide ? W / 2 - pbw - 16 : 120, pbx2 = wb.wide ? W / 2 + 16 : 340;
+          ui.win(bx, fy, bw, 110, { alpha: 0.9 });
+          let mx = bx + 16;
           mx += ui.money(mx, fy + 16, B.pass, TICKETS[this.ban][1] + (s.inv.items[B.pass] || 0), { size: 20 }) + 18;
           ui.money(mx, fy + 16, 'jade', 'Нефрит ' + H.fmt(s.jade), { size: 20 });
-          ui.text(sig ? 'До S: ' + ((B.pity5 || T.pity5) - pity.five) + ' · до A: ' + (T.pity4 - pity.four) : 'До 5★: ' + ((B.pity5 || T.pity5) - pity.five) + ' · до 4★: ' + (T.pity4 - pity.four), 604, fy + 18, { size: 11, align: 'right', col: C.sub });
-          if (sig) ui.text(pity.guar5 ? 'Следующий S точно ' + (this.ban === 'amp' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name) : 'S: ' + Math.round(B.featRate * 100) + '% на ' + (this.ban === 'amp' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name), 604, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
-          if (cone) ui.text(pity.guar5 ? 'Следующий 5★ точно «' + H.CONES[B.cone].name + '»' : '5★: 75% на «' + H.CONES[B.cone].name + '»', 604, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
-          if (this.ban === 'conv') ui.text(pity.guar5 ? 'Следующий 5★ точно ' + H.CHARS[B.five].name : '5★: ' + Math.round(B.featRate * 100) + '% шанс, что это ' + H.CHARS[B.five].name, 604, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
-          if (this.ban === 'forge') ui.text('5★: всегда «' + H.CONES[B.cone].name + '»', 604, fy + 32, { size: 10, align: 'right', col: C.dim });
-          if (mid) ui.text(pity.guar5 ? 'Следующий 5★ точно ' + (this.ban === 'comp' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name) : '5★: ' + Math.round(B.featRate * 100) + '% на ' + (this.ban === 'comp' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name), 604, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
-          if (con) ui.text(pity.guar5 ? 'Следующая 5★ точно ' + (this.ban === 'alley' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name) : '5★: ' + Math.round(B.featRate * 100) + '% на ' + (this.ban === 'alley' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name), 604, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
-          if (this.ban === 'wiz') ui.text(pity.guar5 ? 'Следующий 5★ точно «' + H.CONES[B.cone].name + '»' : '5★: ' + Math.round(B.featRate * 100) + '% на «' + H.CONES[B.cone].name + '»', 604, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
-          else if (guild) ui.text(pity.guar5 ? 'Следующий 5★ точно ' + H.CHARS[B.five].name : '5★: ' + Math.round(B.featRate * 100) + '% ' + H.CHARS[B.five].name + ' · ' + Math.round((1 - B.featRate) * T.guildParty * 100) + '% отряд · ' + Math.round((1 - B.featRate) * (1 - T.guildParty) * 100) + '% стандарт', 604, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
-          ui.button(120, fy + 48, 180, 34, sig ? 'Поиск ×1' : conv ? 'Призыв ×1' : this.ban === 'wiz' || this.ban === 'alley' ? 'Купить ×1' : con ? 'На сцену ×1' : guild ? 'Набор ×1' : 'Прыжок ×1', () => { this.sel = 0; this.pull(1); }, { active: this.sel === 0, bold: true, icon: 'warp' });
-          ui.button(340, fy + 48, 180, 34, sig ? 'Поиск ×10' : conv ? 'Призыв ×10' : this.ban === 'wiz' || this.ban === 'alley' ? 'Купить ×10' : con ? 'На сцену ×10' : guild ? 'Набор ×10' : 'Прыжок ×10', () => { this.sel = 1; this.pull(10); }, { active: this.sel === 1, bold: true, icon: 'warp' });
+          ui.text(sig ? 'До S: ' + ((B.pity5 || T.pity5) - pity.five) + ' · до A: ' + (T.pity4 - pity.four) : 'До 5★: ' + ((B.pity5 || T.pity5) - pity.five) + ' · до 4★: ' + (T.pity4 - pity.four), prx, fy + 18, { size: 11, align: 'right', col: C.sub });
+          if (sig) ui.text(pity.guar5 ? 'Следующий S точно ' + (this.ban === 'amp' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name) : 'S: ' + Math.round(B.featRate * 100) + '% на ' + (this.ban === 'amp' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name), prx, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
+          if (cone) ui.text(pity.guar5 ? 'Следующий 5★ точно «' + H.CONES[B.cone].name + '»' : '5★: 75% на «' + H.CONES[B.cone].name + '»', prx, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
+          if (this.ban === 'conv') ui.text(pity.guar5 ? 'Следующий 5★ точно ' + H.CHARS[B.five].name : '5★: ' + Math.round(B.featRate * 100) + '% шанс, что это ' + H.CHARS[B.five].name, prx, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
+          if (this.ban === 'forge') ui.text('5★: всегда «' + H.CONES[B.cone].name + '»', prx, fy + 32, { size: 10, align: 'right', col: C.dim });
+          if (mid) ui.text(pity.guar5 ? 'Следующий 5★ точно ' + (this.ban === 'comp' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name) : '5★: ' + Math.round(B.featRate * 100) + '% на ' + (this.ban === 'comp' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name), prx, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
+          if (con) ui.text(pity.guar5 ? 'Следующая 5★ точно ' + (this.ban === 'alley' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name) : '5★: ' + Math.round(B.featRate * 100) + '% на ' + (this.ban === 'alley' ? '«' + H.CONES[B.cone].name + '»' : H.CHARS[B.five].name), prx, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
+          if (this.ban === 'wiz') ui.text(pity.guar5 ? 'Следующий 5★ точно «' + H.CONES[B.cone].name + '»' : '5★: ' + Math.round(B.featRate * 100) + '% на «' + H.CONES[B.cone].name + '»', prx, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
+          else if (guild) ui.text(pity.guar5 ? 'Следующий 5★ точно ' + H.CHARS[B.five].name : '5★: ' + Math.round(B.featRate * 100) + '% ' + H.CHARS[B.five].name + ' · ' + Math.round((1 - B.featRate) * T.guildParty * 100) + '% отряд · ' + Math.round((1 - B.featRate) * (1 - T.guildParty) * 100) + '% стандарт', prx, fy + 32, { size: 10, align: 'right', bold: !!pity.guar5, col: pity.guar5 ? C.gold : C.dim });
+          ui.button(pbx1, fy + 48, pbw, 34, sig ? 'Поиск ×1' : conv ? 'Призыв ×1' : this.ban === 'wiz' || this.ban === 'alley' ? 'Купить ×1' : con ? 'На сцену ×1' : guild ? 'Набор ×1' : 'Прыжок ×1', () => { this.sel = 0; this.pull(1); }, { active: this.sel === 0, bold: true, icon: 'warp' });
+          ui.button(pbx2, fy + 48, pbw, 34, sig ? 'Поиск ×10' : conv ? 'Призыв ×10' : this.ban === 'wiz' || this.ban === 'alley' ? 'Купить ×10' : con ? 'На сцену ×10' : guild ? 'Набор ×10' : 'Прыжок ×10', () => { this.sel = 1; this.pull(10); }, { active: this.sel === 1, bold: true, icon: 'warp' });
           ui.text(con ? '1 прыжок = 1 бейдж или ' + T.warpCost + ' нефрита · свой гарант у сцены и Аллеи' : mid ? '1 прыжок = 1 бархатный ключ или ' + T.warpCost + ' нефрита · свой гарант у канала и Компендиума' : this.ban === 'wiz' ? '1 покупка = 1 манатит высшей пробы или ' + T.warpCost + ' нефрита · гарант общий для трёх конусов' : guild ? '1 набор = 1 манатит высшей пробы или ' + T.warpCost + ' нефрита · гарант общий для всего отряда' : sig ? '1 поиск = 1 шифрокопия или ' + T.warpCost + ' нефрита · свой гарант у каждого канала' : this.ban === 'conv' ? '1 призыв = 1 сияющий прилив или ' + T.warpCost + ' нефрита · гарант общий для обоих резонаторов' : this.ban === 'forge' ? '1 призыв = 1 кующий прилив или ' + T.warpCost + ' нефрита · свой гарант: 5★ за ' + T.conePity5 : cone ? '1 прыжок = 1 особый пропуск или ' + T.warpCost + ' нефрита · свой гарант: 5★ за ' + T.conePity5 + ', промах 75% даёт гарант' : special ? '1 прыжок = 1 особый пропуск или ' + T.warpCost + ' нефрита · гарант общий для всех героев события' : '1 прыжок = 1 пропуск или ' + T.warpCost + ' нефрита', W / 2, fy + 90, { align: 'center', size: 10, col: C.dim });
-          ui.hints(con ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'alley' ? 'Принт' : 'Героиня'], ['←→', 'Выбор'], ['Enter', g.conRegistered() ? 'Прыжок' : 'Регистрация'], ['H', 'История'], ['Esc', 'Назад']] : mid ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'comp' ? 'Конус' : 'Герой'], ['←→', 'Выбор'], ['Enter', g.contractSigned() ? 'Прыжок' : 'Подписать'], ['H', 'История'], ['Esc', 'Назад']] : guild ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'wiz' ? 'Конус' : 'Героиня'], ['←→', 'Выбор'], ['Enter', 'Набор'], ['H', 'История'], ['Esc', 'Назад']] : sig ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'amp' ? 'Конус' : 'Агент'], ['←→', 'Выбор'], ['Enter', 'Поиск'], ['H', 'История'], ['Esc', 'Назад']] : conv ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'forge' ? 'Конус' : 'Резонатор'], ['←→', 'Выбор'], ['Enter', 'Призыв'], ['H', 'История'], ['Esc', 'Назад']] : special ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', cone ? 'Конус' : 'Герой'], ['←→', 'Выбор'], ['Enter', 'Прыжок'], ['H', 'История']].concat(cone ? [['V', 'Конус']] : [], [['Esc', 'Назад']]) : [['Q/E', 'Баннер'], ['←→', 'Выбор'], ['Enter', 'Прыжок'], ['H', 'История'], ['Esc', 'Назад']], 12, HGT - 18);
+          ui.hints(con ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'alley' ? 'Принт' : 'Героиня'], ['←→', 'Выбор'], ['Enter', g.conRegistered() ? 'Прыжок' : 'Регистрация'], ['H', 'История'], ['Esc', 'Назад']] : mid ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'comp' ? 'Конус' : 'Герой'], ['←→', 'Выбор'], ['Enter', g.contractSigned() ? 'Прыжок' : 'Подписать'], ['H', 'История'], ['Esc', 'Назад']] : guild ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'wiz' ? 'Конус' : 'Героиня'], ['←→', 'Выбор'], ['Enter', 'Набор'], ['H', 'История'], ['Esc', 'Назад']] : sig ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'amp' ? 'Конус' : 'Агент'], ['←→', 'Выбор'], ['Enter', 'Поиск'], ['H', 'История'], ['Esc', 'Назад']] : conv ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', this.ban === 'forge' ? 'Конус' : 'Резонатор'], ['←→', 'Выбор'], ['Enter', 'Призыв'], ['H', 'История'], ['Esc', 'Назад']] : special ? [['Q/E', 'Баннер'], ['Tab', 'Канал'], ['↑↓', cone ? 'Конус' : 'Герой'], ['←→', 'Выбор'], ['Enter', 'Прыжок'], ['H', 'История']].concat(cone ? [['V', 'Конус']] : [], [['Esc', 'Назад']]) : [['Q/E', 'Баннер'], ['←→', 'Выбор'], ['Enter', 'Прыжок'], ['H', 'История'], ['Esc', 'Назад']], wb.lx, HGT - 18);
         },
         start(res) { if (conBan(this.ban)) ui.audio.stopSong(0); if (conBan(this.ban) && H.SpotlightShow) { this.show = new H.SpotlightShow(ui, res, { ban: this.ban }); ui.audio.song('ccc', H.SPOT_FILM_AT); return; } this.show = signalBan(this.ban) && H.SignalShow ? new H.SignalShow(ui, res, { ban: this.ban }) : conveneBan(this.ban) && H.ConveneShow ? new H.ConveneShow(ui, res, { ban: this.ban }) : guildBan(this.ban) && H.ExplosionShow ? new H.ExplosionShow(ui, res, { ban: this.ban }) : midBan(this.ban) && H.MidnightShow ? new H.MidnightShow(ui, res, { ban: this.ban }) : new H.WarpShow(ui, res, { ban: this.ban }); if (signalBan(this.ban) && H.SignalShow) ui.audio.song('signal'); if (midBan(this.ban) && H.MidnightShow) ui.audio.song('aria'); },
         pull(n) {
@@ -2653,31 +2677,34 @@
         setBan(id) { if (id === tabOf(this.ban)) return; this.ban = id; this.page = 0; ui.sfx('select'); },
         turn(d) { const p = Math.max(0, Math.min(this.pages() - 1, this.page + d)); if (p !== this.page) { this.page = p; ui.sfx('select'); } },
         draw(c) {
-          const st = g.warpStats(this.ban), pity = g.pityOf(this.ban);
+          const st = g.warpStats(this.ban), pity = g.pityOf(this.ban), wb = ui.warpBox(), { bx, bw } = wb, rx = bx + bw - 16;
           ui.fullBg(c, false);
-          ui.plate(12, 10, signalBan(this.ban) ? 'История поиска' : conveneBan(this.ban) ? 'История призыва' : guildBan(this.ban) ? 'История набора' : 'История прыжков');
+          ui.plate(wb.lx, 10, signalBan(this.ban) ? 'История поиска' : conveneBan(this.ban) ? 'История призыва' : guildBan(this.ban) ? 'История набора' : 'История прыжков');
           if (BANNER_TABS.some(b => b[0] === tabOf(this.ban))) ui.bannerTabs(this.ban, id => this.setBan(id), false);
-          ui.closeBtn(W - 32, 10, () => this.key('back'));
-          ui.win(20, 42, 600, 76);
-          ui.text('Прыжков на баннере', 36, 52, { size: 10, col: C.sub });
-          ui.text(H.fmt(st.total), 36, 66, { size: 26, bold: true, serif: true, col: C.gold });
+          ui.closeBtn(wb.rx - 32, 10, () => this.key('back'));
+          ui.win(bx, 42, bw, 76);
+          ui.text('Прыжков на баннере', bx + 16, 52, { size: 10, col: C.sub });
+          ui.text(H.fmt(st.total), bx + 16, 66, { size: 26, bold: true, serif: true, col: C.gold });
+          const rlx = bx + (wb.wide ? 168 : 130), rw0 = wb.wide ? 280 : 180;
           [[5, pity.five, g.bannerOf(this.ban).pity5 || T.pity5, 62], [4, pity.four, T.pity4, 92]].forEach(([rar, cur, max, y]) => {
-            ui.text('До ' + (signalBan(this.ban) ? RANK[rar] : rar + '★'), 150, y - 7, { size: 11, bold: true, col: RAR_TXT[rar] });
-            ui.rail(196, y, 180, cur / max, G.RARITY[rar]);
-            ui.text('осталось ' + (max - cur), 388, y - 7, { size: 11, col: C.cream });
+            ui.text('До ' + (signalBan(this.ban) ? RANK[rar] : rar + '★'), rlx, y - 7, { size: 11, bold: true, col: RAR_TXT[rar] });
+            ui.rail(rlx + 46, y, rw0, cur / max, G.RARITY[rar]);
+            ui.text('осталось ' + (max - cur), rlx + 58 + rw0, y - 7, { size: 11, col: C.cream });
           });
-          ui.text('Выпало 5★: ' + st.five + '   4★: ' + st.four, 604, 52, { size: 11, bold: true, align: 'right', col: C.cream });
-          ui.text('Последний 5★', 604, 74, { size: 10, align: 'right', col: C.sub });
-          ui.text(st.last5 ? ui.fitText(warpName(st.last5) + (st.last5.pity ? ', на ' + st.last5.pity + '-м' : ''), 11, 170, true) : 'ещё не выпадал', 604, 88, { size: 11, bold: !!st.last5, align: 'right', col: st.last5 ? RAR_TXT[5] : C.dim });
-          ui.win(20, 126, 600, 318);
-          WARP_FILTERS.forEach(([label], i) => ui.button(34 + i * 104, 138, 98, 20, label, () => this.setFilter(i), { active: this.filter === i, size: 11 }));
+          ui.text('Выпало 5★: ' + st.five + '   4★: ' + st.four, rx, 52, { size: 11, bold: true, align: 'right', col: C.cream });
+          ui.text('Последний 5★', rx, 74, { size: 10, align: 'right', col: C.sub });
+          ui.text(st.last5 ? ui.fitText(warpName(st.last5) + (st.last5.pity ? ', на ' + st.last5.pity + '-м' : ''), 11, wb.wide ? 260 : 170, true) : 'ещё не выпадал', rx, 88, { size: 11, bold: !!st.last5, align: 'right', col: st.last5 ? RAR_TXT[5] : C.dim });
+          ui.win(bx, 126, bw, 318);
+          WARP_FILTERS.forEach(([label], i) => ui.button(bx + 14 + i * 104, 138, 98, 20, label, () => this.setFilter(i), { active: this.filter === i, size: 11 }));
           const rows = this.rows(), pages = this.pages(), page = Math.min(this.page, pages - 1);
-          ui.button(474, 138, 20, 20, '◀', () => this.turn(-1), { disabled: page === 0, size: 10 });
-          ui.text('Стр. ' + (page + 1) + ' из ' + pages, 540, 142, { size: 11, align: 'center', col: C.cream });
-          ui.button(586, 138, 20, 20, '▶', () => this.turn(1), { disabled: page >= pages - 1, size: 10 });
-          const cols = [['№', 64, 'right'], ['Предмет', 98], ['Редкость', 296], ['Итог', 360], ['Гарант', 520, 'right'], ['Время', 604, 'right']];
+          ui.button(rx - 130, 138, 20, 20, '◀', () => this.turn(-1), { disabled: page === 0, size: 10 });
+          ui.text('Стр. ' + (page + 1) + ' из ' + pages, rx - 64, 142, { size: 11, align: 'center', col: C.cream });
+          ui.button(rx - 18, 138, 20, 20, '▶', () => this.turn(1), { disabled: page >= pages - 1, size: 10 });
+          const cNo = bx + 44, cIcon = bx + 52, cName = bx + 78, cRar = bx + (wb.wide ? 350 : 276), cNote = bx + (wb.wide ? 436 : 340), cPity = rx - (wb.wide ? 110 : 84);
+          const cols = [['№', cNo, 'right'], ['Предмет', cName], ['Редкость', cRar], ['Итог', cNote], ['Гарант', cPity, 'right'], ['Время', rx, 'right']];
           cols.forEach(([t, x, align]) => ui.text(t, x, 166, { size: 10, align: align || 'left', col: C.dim }));
-          c.fillStyle = 'rgba(201,164,92,0.45)'; c.fillRect(32, 180, 576, 1);
+          c.fillStyle = 'rgba(201,164,92,0.45)'; c.fillRect(bx + 12, 180, bw - 24, 1);
+          ui.wheelZone(bx, 160, bw, 280, d => this.turn(d));
           if (!rows.length) {
             const none = !g.warpLogOf(this.ban).some(mine(this.ban));
             G.menuIcon(c, 'warp', W / 2 - 16, 250, 32, none ? C.brassHi : C.dim);
@@ -2686,20 +2713,20 @@
           }
           rows.slice(page * PER, page * PER + PER).forEach((e, i, list) => {
             const y = 184 + i * 25, rar = e.rar;
-            if (RAR_ROW[rar]) { c.fillStyle = RAR_ROW[rar]; c.fillRect(30, y, 580, 24); c.fillStyle = G.RARITY[rar]; c.fillRect(30, y, 2, 24); }
-            else if (i % 2) { c.fillStyle = 'rgba(255,255,255,0.03)'; c.fillRect(30, y, 580, 24); }
-            ui.text(String(e.n), 64, y + 6, { size: 10, align: 'right', col: C.sub });
-            warpIcon(c, e, 72, y + 2, 20, g);
-            ui.text(warpName(e), 98, y + 5, { size: 12, bold: rar >= 4, col: RAR_TXT[rar] });
-            if (signalBan(e.ban)) ui.rankBadge(296, y + 5, rar, 13); else ui.text('★'.repeat(rar), 296, y + 6, { size: 10, col: G.RARITY[rar] });
+            if (RAR_ROW[rar]) { c.fillStyle = RAR_ROW[rar]; c.fillRect(bx + 10, y, bw - 20, 24); c.fillStyle = G.RARITY[rar]; c.fillRect(bx + 10, y, 2, 24); }
+            else if (i % 2) { c.fillStyle = 'rgba(255,255,255,0.03)'; c.fillRect(bx + 10, y, bw - 20, 24); }
+            ui.text(String(e.n), cNo, y + 6, { size: 10, align: 'right', col: C.sub });
+            warpIcon(c, e, cIcon, y + 2, 20, g);
+            ui.text(warpName(e), cName, y + 5, { size: 12, bold: rar >= 4, col: RAR_TXT[rar] });
+            if (signalBan(e.ban)) ui.rankBadge(cRar, y + 5, rar, 13); else ui.text('★'.repeat(rar), cRar, y + 6, { size: 10, col: G.RARITY[rar] });
             const [note, ncol] = warpNote(e);
-            ui.text(note, 360, y + 6, { size: 11, col: rar >= 4 || e.res === 'new' ? ncol : C.sub });
-            ui.text(warpPity(e), 520, y + 6, { size: 11, align: 'right', bold: rar >= 4, col: rar >= 4 ? RAR_TXT[rar] : C.dim });
-            ui.text(warpWhen(e), 604, y + 6, { size: 10, align: 'right', col: C.sub });
+            ui.text(note, cNote, y + 6, { size: 11, col: rar >= 4 || e.res === 'new' ? ncol : C.sub });
+            ui.text(warpPity(e), cPity, y + 6, { size: 11, align: 'right', bold: rar >= 4, col: rar >= 4 ? RAR_TXT[rar] : C.dim });
+            ui.text(warpWhen(e), rx, y + 6, { size: 10, align: 'right', col: C.sub });
             const nx = list[i + 1];
-            if (nx && nx.batch !== e.batch) { c.fillStyle = 'rgba(201,164,92,0.3)'; c.fillRect(36, y + 24, 568, 1); }
+            if (nx && nx.batch !== e.batch) { c.fillStyle = 'rgba(201,164,92,0.3)'; c.fillRect(bx + 16, y + 24, bw - 32, 1); }
           });
-          ui.hints(this.ban === 'lab' ? [['←→', 'Страница'], ['Q/E', 'Редкость'], ['Esc', 'Назад']] : [['←→', 'Страница'], ['Q/E', 'Редкость'], ['Tab', 'Баннер'], ['Esc', 'Назад']], 12, HGT - 18);
+          ui.hints(this.ban === 'lab' ? [['←→', 'Страница'], ['Q/E', 'Редкость'], ['Esc', 'Назад']] : [['←→', 'Страница'], ['Q/E', 'Редкость'], ['Tab', 'Баннер'], ['Esc', 'Назад']], wb.lx, HGT - 18);
         },
         key(k, code) {
           if (k === 'left' || k === 'right') { this.turn(k === 'left' ? -1 : 1); return; }

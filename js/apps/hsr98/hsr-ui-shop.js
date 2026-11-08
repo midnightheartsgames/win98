@@ -971,8 +971,8 @@
       });
     },
 
-    wardrobeCard(c, id, x, y, on, shown) {
-      const { cw: w, ch: h } = this.wide && this.wide() ? WIDE_WARDROBE : WARDROBE, o = H.OUTFITS[id], g = this.game, own = g.ownsOutfit(id), foot = 24, strip = 26;
+    wardrobeCard(c, id, x, y, on, shown, cw, ch) {
+      const d = this.wide && this.wide() ? WIDE_WARDROBE : WARDROBE, w = cw || d.cw, h = ch || d.ch, o = H.OUTFITS[id], g = this.game, own = g.ownsOutfit(id), foot = 24, strip = 26;
       if (on) { c.fillStyle = C.brassHi; c.fillRect(x - 2, y - 2, w + 4, h + 4); }
       c.fillStyle = '#000'; c.fillRect(x - 1, y - 1, w + 2, h + 2);
       G.rarityCell(c, x, y, w, h - foot - strip, o.rarity);

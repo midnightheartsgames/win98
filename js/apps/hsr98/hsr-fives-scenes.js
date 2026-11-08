@@ -722,9 +722,10 @@
       if (Math.floor(t * 1.5) % 6 === 0) { c.strokeStyle = 'rgba(220,200,255,0.6)'; c.lineWidth = 2; c.beginPath(); let x = mx + 120, y = by; c.moveTo(x, y); for (let i = 0; i < 6; i++) { x += (G.hash(i, Math.floor(t), 5) - 0.5) * 40; y += 30; c.lineTo(x, y); } c.stroke(); c.lineWidth = 1; }
     },
     luocha(c, bx, by, bw, bh, mx, my, t) {
+      const ox = bw > 640 ? 44 : 0;
       scaled(c, bx, by, bw, bh, g => { vgrad(g, 0, LH, [[0, '#04100e'], [0.6, '#0e2a24'], [1, '#1a3a30']]); K.stars(g, t, 50, 97, 0.5, 120); irisField(g, t, 170, 70, 0.9); F.coffin(g, (mx - bx) * LW / bw + 80, 214, 70, 130); });
       radial(c, mx + 130, my - 50, 70, 'rgba(240,210,110,0.3)');
-      dots(c, 20, 41, bx + 240, by, bw - 240, bh, 'rgba(248,232,160,0.7)', t, 0.05);
+      dots(c, 20, 41, bx + 240 + ox, by, bw - 240 - ox, bh, 'rgba(248,232,160,0.7)', t, 0.05);
     },
     imbibitor(c, bx, by, bw, bh, mx, my, t) {
       scaled(c, bx, by, bw, bh, g => { vgrad(g, 0, LH, [[0, '#020a12'], [0.5, '#0a2a36'], [1, '#0e4a52']]); bigMoon(g, (mx - bx) * LW / bw + 70, 50, 26, 0.7); for (let i = 0; i < 10; i++) { const y = 170 + i * 7; line(g, rgba('#7ae8e0', 0.12 + 0.05 * Math.sin(t * 2 + i)), 1, 0, y, LW, y + Math.sin(t + i) * 2); } waterDragon(g, 120, 210, 330, 60, 1, 0.35, t, 50); });
@@ -736,10 +737,11 @@
       scaled(c, bx, by, bw, bh, g => { vgrad(g, 0, LH, [[0, '#02040e'], [0.6, '#0a1430'], [1, '#1a2a50']]); bigMoon(g, (mx - bx) * LW / bw, 90, 64, 0.85); vgrad(g, 196, LH, [[0, '#a8c8ec'], [1, '#5a7aa8']]); K.snowfall(g, t, 40, 25, { speed: 16, wind: 5, a: 0.7 }); });
     },
     topaz(c, bx, by, bw, bh, mx, my, t) {
+      const ox = bw > 640 ? 44 : 0, nBld = Math.ceil((bw - 240 - ox) / 30);
       grad(c, bx, by, bw, bh, [[0, '#2a1006'], [0.6, '#8a4a10'], [1, '#e8a040']]);
       radial(c, mx + 60, my + 40, 140, 'rgba(255,190,80,0.45)');
-      for (let i = 0; i < 12; i++) { const x = bx + 240 + i * 30, h = 70 + G.hash(i, 3, 7) * 120; c.fillStyle = '#3a1a08'; c.fillRect(x, by + bh - h, 24, h); for (let k = 0; k < 8; k++) { c.fillStyle = (i + k) % 3 ? '#5a3010' : '#ffd890'; c.fillRect(x + 4, by + bh - h + 8 + k * 14, 16, 4); } }
-      for (let i = 0; i < 22; i++) { const ph = (t * 0.25 + G.hash(i, 9, 2)) % 1, x = bx + 250 + G.hash(i, 9, 3) * (bw - 250), y = by + ph * bh; c.fillStyle = '#8a5a10'; c.beginPath(); c.ellipse(x, y + 1, 4, 3.5, 0, 0, Math.PI * 2); c.fill(); c.fillStyle = '#ffd060'; c.beginPath(); c.ellipse(x, y, 4, 3.5, 0, 0, Math.PI * 2); c.fill(); }
+      for (let i = 0; i < nBld; i++) { const x = bx + 240 + ox + i * 30, h = 70 + G.hash(i, 3, 7) * 120; c.fillStyle = '#3a1a08'; c.fillRect(x, by + bh - h, 24, h); for (let k = 0; k < 8; k++) { c.fillStyle = (i + k) % 3 ? '#5a3010' : '#ffd890'; c.fillRect(x + 4, by + bh - h + 8 + k * 14, 16, 4); } }
+      for (let i = 0; i < 22; i++) { const ph = (t * 0.25 + G.hash(i, 9, 2)) % 1, x = bx + 250 + ox + G.hash(i, 9, 3) * (bw - 250 - ox), y = by + ph * bh; c.fillStyle = '#8a5a10'; c.beginPath(); c.ellipse(x, y + 1, 4, 3.5, 0, 0, Math.PI * 2); c.fill(); c.fillStyle = '#ffd060'; c.beginPath(); c.ellipse(x, y, 4, 3.5, 0, 0, Math.PI * 2); c.fill(); }
     },
     huohuo(c, bx, by, bw, bh, mx, my, t) {
       scaled(c, bx, by, bw, bh, g => { vgrad(g, 0, LH, [[0, '#06140e'], [0.6, '#123a2a'], [1, '#2a5a40']]); for (let i = 0; i < 9; i++) F.lanternR(g, 18 + i * 36, 14, 0.9, t, i, i % 3 !== 1); for (let i = 0; i < 6; i++) talisman(g, 150 + i * 28, 60 + Math.sin(t * 1.5 + i) * 8 + (i % 2) * 30, Math.sin(t + i) * 0.3, 0.7, 1.2); tailSpirit(g, (mx - bx) * LW / bw + 70, 236, 1.4, t, 0.55); });

@@ -9129,11 +9129,11 @@
     if (!tr) return [];
     const out = [];
     const kw = {
-      basic: ['базов', 'обычн', 'атак'],
-      skill: ['навык'],
-      ult: ['абсолютн', 'сверхспособн'],
-      talent: ['талант', 'бонус-атак', 'контратак', 'щит'],
-      tech: ['начале боя', 'техник']
+      basic: ['базов', 'обычн', 'атак', 'basic atk', 'basic attack'],
+      skill: ['навык', 'skill'],
+      ult: ['абсолютн', 'сверхспособн', 'ultimate'],
+      talent: ['талант', 'бонус-атак', 'контратак', 'щит', 'talent', 'follow-up', 'counter', 'shield'],
+      tech: ['начале боя', 'техник', 'start of battle', 'entering battle', 'technique']
     }[kind] || [];
     (tr.bonus || []).forEach((b, i) => {
       if (!b || !b[1]) return;
@@ -9417,8 +9417,10 @@
   }
 
   function parseRichSegments(text) {
+    text = H.isEn && H.isEn() && H.tr ? H.tr(text) : String(text || '');
+    const termList = H.isEn && H.isEn() && H.EN && H.EN.SKILL_TERMS ? H.EN.SKILL_TERMS : SKILL_TERMS;
     const terms = [];
-    for (const entry of SKILL_TERMS) {
+    for (const entry of termList) {
       for (const m of entry.match) terms.push({ word: m, entry });
     }
     terms.sort((a, b) => b.word.length - a.word.length);
@@ -9538,6 +9540,8 @@
     CATS: SKILL_CATS,
     ORDER: NODE_ORDER,
     TERMS: SKILL_TERMS,
+    TAG_LABELS,
+    TARGET_TAGS,
     DATA: SKILLS_INFO,
     buildNode,
     contactMatrix,
@@ -9582,7 +9586,7 @@
       const kitId = k === 'trail' && s.skillKitOverride ? s.skillKitOverride : g.kitOf(k);
       const kit = H.CHARS[kitId];
       const nodeId = s.skillNode || 'basic';
-      const node = buildNode(g, k, kitId, nodeId, s.skillLvPreview);
+      const node = H.SkillsInfo.buildNode(g, k, kitId, nodeId, s.skillLvPreview);
       const forms = node.forms;
       const subIdx = Math.max(0, Math.min(s.skillSub || 0, forms.length - 1));
       s.skillSub = subIdx;
@@ -9836,16 +9840,11 @@
       c.fillStyle = 'rgba(242, 220, 154, 0.28)';
       c.fillRect(rx + 10, ry + 65, rw - 20, 1);
 
-      const tabW = Math.floor((rw - 24) / 2);
-      this.button(rx + 10, ry + 70, tabW, 18, 'Характеристики', () => {
+      this.button(rx + 10, ry + 70, rw - 20, 18, 'Назад', () => {
         s.skillFocus = false;
-        s.sec = 0;
-        this.sfx('select');
-      }, { size: 10 });
-      this.button(rx + 14 + tabW, ry + 70, tabW, 18, 'Умения', () => {
-        s.skillFocus = false;
+        s.skillLvPreview = null;
         this.sfx('cancel');
-      }, { size: 10, active: true });
+      }, { size: 10 });
 
       const wcx = rx + Math.round(rw / 2), wcy = ry + 182;
       c.save();
@@ -9966,7 +9965,7 @@
       const g = this.game;
       const kitId = k === 'trail' && s.skillKitOverride ? s.skillKitOverride : g.kitOf(k);
       const nodeId = s.skillNode || 'basic';
-      const node = buildNode(g, k, kitId, nodeId, s.skillLvPreview);
+      const node = H.SkillsInfo.buildNode(g, k, kitId, nodeId, s.skillLvPreview);
       const forms = node.forms;
 
       if (code === 'KeyQ') { s.skillKitOverride = null; s.switchChar(-1); return; }

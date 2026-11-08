@@ -7300,7 +7300,7 @@ function trInfo(g) {
     localStorage: { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) },
     requestAnimationFrame: () => 1
   });
-  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-hd-art', 'hsr-relic-art', 'hsr-splash-pix', 'hsr-splash', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-luofu', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-luofu-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-lab-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-phono', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-coatroom', 'hsr-ui-room', 'hsr-ui-debug', 'hsr-ui-music-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-lab', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-levelup', 'hsr-ui-coneup', 'hsr-ui-phone', 'hsr-ui-profile', 'hsr-ui-net', 'hsr-ui-friends', 'hsr-ui-visit', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-table', 'hsr-ui-hd-debug', 'hsr-ui-luofu', 'hsr-pf-art', 'hsr-ui-pf', 'hsr-ui-pf-team', 'hsr-ui-pf-battle', 'hsr-foe-lore', 'hsr-details', 'hsr-ui-details', 'hsr-databank', 'hsr-ui-databank', 'hsr-skills-info', 'hsr-ui-tutorial']) require(path.join(DIR, f + '.js'));
+  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-hd-art', 'hsr-relic-art', 'hsr-splash-pix', 'hsr-splash', 'hsr-cones', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-luofu', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-luofu-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-lab-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-phono', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-coatroom', 'hsr-ui-room', 'hsr-ui-debug', 'hsr-ui-music-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-lab', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-levelup', 'hsr-ui-coneup', 'hsr-ui-phone', 'hsr-ui-profile', 'hsr-ui-net', 'hsr-ui-friends', 'hsr-ui-visit', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-table', 'hsr-ui-hd-debug', 'hsr-ui-luofu', 'hsr-pf-art', 'hsr-ui-pf', 'hsr-ui-pf-team', 'hsr-ui-pf-battle', 'hsr-foe-lore', 'hsr-details', 'hsr-ui-details', 'hsr-databank', 'hsr-ui-databank', 'hsr-skills-info', 'hsr-ui-tutorial', 'hsr-i18n', 'hsr-en-ui', 'hsr-en-combat', 'hsr-en-traces', 'hsr-en-skills', 'hsr-en-databank', 'hsr-en-world', 'hsr-en-modes']) require(path.join(DIR, f + '.js'));
   const G = H.Gfx;
   const lum = hex => { const n = parseInt(hex.slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255); };
   for (const id of heroIds()) {
@@ -7882,6 +7882,14 @@ function trInfo(g) {
       ui.openMenu(); frame(); key('Tab'); frame();
       ui.top().sel = ui.phoneMenuItems().findIndex(it => it.label === 'Наряды'); key('Enter'); frame();
       ok(ui.top().wardId !== undefined && ui.top().mine !== undefined && ui.top().list, 'Wardrobe: the phone menu opens it');
+      ui.options.aspect = '16:9';
+      ui.top().sel = 0; texts.length = 0; frame();
+      const wb = ui.wardrobeBox(), wCards = ui.hits.filter(h => h.w === wb.cw && h.h === wb.ch);
+      ok(wb.wide && wb.cols === 4 && wb.px === ui.left + 12 && wCards.length === 8, 'Wardrobe 16:9: 4x2 grid and left showcase span the widescreen viewport');
+      ok(wCards.every((a, i) => wCards.every((b, j) => i === j || a.x + a.w <= b.x || b.x + b.w <= a.x || a.y + a.h <= b.y || b.y + b.h <= a.y)), 'Wardrobe 16:9: outfit cards never overlap');
+      key('ArrowDown'); frame();
+      eq(ui.top().sel, 4, 'Wardrobe 16:9: Down arrow moves by 4 columns');
+      ui.options.aspect = '4:3';
       ui.screens = []; ls.outfits = outKeep; ls.jade = jadeKeep; delete mr.outfit; ls.flags.express_intro = flagWas; ls.shop.intro = introWas;
     }
     {
@@ -7904,6 +7912,10 @@ function trInfo(g) {
       ui.screens = []; ui.openMenu(); frame(); key('Tab'); frame();
       ui.top().sel = ui.phoneMenuItems().findIndex(it => it.label === 'Украшения для смартфона'); key('Enter'); frame();
       ok(ui.top().phoneDecor, 'Skin: the phone menu opens the screen');
+      ui.options.aspect = '16:9';
+      texts.length = 0; frame();
+      ok(texts.includes('Оформление') && texts.includes('Обои для смартфона') && ui.hits.some(h => h.w === 80 && h.h === 112 && h.x === ui.left + 24) && ui.hits.some(h => h.x === 491 && h.w === 228 && h.h === 30), 'Skin 16:9: three-panel gallery, preview and inspector layout');
+      ui.options.aspect = '4:3';
       ui.screens = []; ls.phoneSkin = skinWas; ls.phoneSkins = skinsWas;
     }
     {
@@ -11574,6 +11586,14 @@ function trInfo(g) {
       for (let i = 0; i < 40; i++) ui.wheel({ clientX: 540, clientY: 200, deltaY: -120, preventDefault: noop });
       frame();
       eq(longNav.sc.top, 0, 'the wheel returns to the top of the list');
+      ui.options.aspect = '16:9';
+      frame(2);
+      const nb = ui.navBox();
+      ok(nb.wide && nb.view.x === ui.left + 12 && nb.view.w === 576 && nb.panel.x === 491 && nb.panel.w === 244 && longNav.wide, 'Navigation 16:9: chart and zone panel expand across the widescreen viewport');
+      key('Tab'); frame();
+      ok(ui.hits.some(h => h.x === ui.right - 42 && h.y === 22), 'Star Map 16:9: close button and world nodes adapt to widescreen');
+      key('Escape'); frame();
+      ui.options.aspect = '4:3';
       key('Escape'); frame();
       key('Escape'); frame(2); ui.screens = [];
       game.state.party = lead;
@@ -19993,7 +20013,7 @@ console.log(log.join('\n'));
   ok(texts.includes('Способности') && texts.includes('Подробнее · Enter') && !cs.skillFocus, 'Abilities section renders the More · Enter button in summary mode');
   cs.key('ok');
   texts.length = 0; ui.render();
-  ok(cs.skillFocus && cs.skillNode === 'basic' && texts.includes('Базовая атака') && texts.includes('Прощальный удар') && texts.includes('[Одиночная атака]') && texts.includes('Краткое описание'), 'Pressing Enter opens the detailed Abilities view on Basic Attack with category badge, type tag, and Brief toggle');
+  ok(cs.skillFocus && cs.skillNode === 'basic' && texts.includes('Базовая атака') && texts.includes('Прощальный удар') && texts.includes('[Одиночная атака]') && texts.includes('Краткое описание') && texts.includes('Назад') && !texts.includes('Характеристики') && !texts.includes('Умения'), 'Pressing Enter opens the detailed Abilities view on Basic Attack with category badge, type tag, Brief toggle, and Back button');
   cs.key(null, 'Digit2');
   texts.length = 0; ui.render();
   ok(cs.skillNode === 'skill' && texts.includes('Навык') && texts.includes('Хоум-ран в упокой') && texts.includes('[Взрывная атака]'), 'Digit2 switches to Skill node in the constellation wheel');
@@ -20020,6 +20040,11 @@ console.log(log.join('\n'));
   cs.key(null, 'KeyZ');
   texts.length = 0; ui.render();
   ok(cs.skillSub === 1 && texts.includes('Ледокол: Магма'), 'KeyZ switches to the enhanced basic attack sub-mode (Magma Shatter)');
+  const backBtn = ui.hits.find(h => h.y === 126 && h.w === 228 && h.h === 18);
+  ok(backBtn, 'Detailed Abilities view renders the Back button hit area in the right pane');
+  backBtn.fn();
+  ok(!cs.skillFocus && cs.skillLvPreview === null && ui.top() === cs, 'Clicking Back button exits detailed Abilities view back to the character screen');
+  cs.key('ok');
   cs.key('back');
   ok(!cs.skillFocus && ui.top() === cs, 'Esc exits detailed Abilities view back to the character screen');
 
@@ -20438,6 +20463,143 @@ console.log(log.join('\n'));
     texts.length = 0; ui.render();
     ok(texts.some(t => t.includes('Выставочные стенды')) && texts.some(t => t.includes('Коллекция диковинок')), 'Room exhibition stand screen renders');
     ui.screens = [];
+
+    rg2.state.flags.su_open = true;
+    rg2.state.flags.pf_open = true;
+    ui.options.aspect = '16:9';
+    ui.applyRes();
+    const cb = ui.chatBox();
+    ok(cb.wide && cb.lx === -95 && cb.lw === 248 && cb.cx === 161 && cb.cw === 574 && cb.bub === 348, '16:9 Chat uses widescreen contact pane, chat pane and bubble width');
+    ui.openChats();
+    texts.length = 0; ui.render();
+    ok(texts.includes('Сообщения') && ui.wheels.some(w => w.x === -95 && w.w === 248) && ui.wheels.some(w => w.x === 161 && w.w === 574), '16:9 Chat renders and registers wheel zones on wide contact and message panes');
+
+    const msb = ui.missionBox();
+    ok(msb.wide && msb.list.x === -81 && msb.list.w === 304 && msb.cx === 245 && msb.cw === 486, '16:9 Missions uses widescreen mission tree and details card');
+    ui.screens = [];
+    ui.openMission();
+    texts.length = 0; ui.render();
+    ok(texts.includes('Миссии') && ui.wheels.some(w => w.x === -81 && w.w === 304) && ui.hits.some(h => h.x === 245 && h.w === 238), '16:9 Missions renders wide tree, wheel zone and action buttons');
+
+    const syb = ui.synthBox(), slb = ui.salvageBox();
+    ok(syb.wide && syb.grid.cols === 4 && syb.grid.wx === -95 && syb.grid.ww === 280 && syb.panel.x === 195 && syb.panel.w === 540, '16:9 Synthesis uses 4-column recipe grid and 540px synthesis panel');
+    ok(slb.wide && slb.cols === 10 && slb.px === -95 && slb.pw === 236 && slb.gx === 149 && slb.gw === 586, '16:9 Salvage uses 10-column inventory grid and widescreen detail pane');
+    for (let st = 0; st < 6; st++) {
+      ui.screens = [];
+      ui.openSynth(st);
+      texts.length = 0; ui.render();
+      ok(texts.includes('Синтез и Разборка'), '16:9 Synthesis tab ' + st + ' renders cleanly');
+      if (st === 4) {
+        ui.openRelicFilterDrawer(ui.top().relicSalvage);
+        texts.length = 0; ui.render();
+        ok(texts.includes('Характеристики') && texts.includes('Статус') && ui.hits.some(h => h.x === ui.right - 248 && h.w === 248), '16:9 Relic Filter drawer anchors to widescreen right edge');
+      }
+    }
+
+    const wb = ui.warpBox();
+    ok(wb.wide && wb.bx === -87 && wb.bw === 814, '16:9 Warp uses 814px banner frame');
+    ui.screens = [];
+    ui.openWarp('std');
+    const warpScr = ui.top();
+    for (const banId of ['std', 'ev', 'cone', 'sig', 'conv', 'wiz', 'guild', 'mid', 'con']) {
+      warpScr.setBan(banId);
+      texts.length = 0; ui.render();
+      ok(texts.includes('История'), '16:9 Warp banner ' + banId + ' renders cleanly');
+    }
+    ui.openWarpHistory('std');
+    texts.length = 0; ui.render();
+    ok(texts.includes('История прыжков'), '16:9 Warp history modal renders cleanly');
+    ui.screens = [];
+    ui.openLabWarp();
+    texts.length = 0; ui.render();
+    ok(texts.includes('История'), '16:9 Lab Warp screen renders cleanly');
+
+    const gb = ui.guideBox();
+    ok(gb.wide && gb.body.x === -87 && gb.body.w === 814 && gb.card.cols === 3 && gb.day.cards.vis === 5 && gb.stage.w === 502, '16:9 Interastral Guide uses 814px paper body, 3-col chapter grid, 5 daily cards and 502px stage');
+    for (const tid of ['trail', 'index', 'daily', 'cosmic', 'treasure']) {
+      ui.screens = [];
+      ui.openIpg(tid);
+      texts.length = 0; ui.render();
+      ok(texts.includes('Межзвёздный путеводитель'), '16:9 Interastral Guide tab ' + tid + ' renders cleanly');
+      if (tid === 'daily') {
+        ok(ui.hits.filter(h => h.w === gb.day.cards.w && h.h === gb.day.cards.h).length === 5, '16:9 Daily Training displays all 5 task cards simultaneously');
+      }
+      if (tid === 'treasure') {
+        ui.top().tsel = 1;
+        texts.length = 0; ui.render();
+        ok(texts.includes('Чистый вымысел'), '16:9 Interastral Guide Pure Fiction stage renders cleanly');
+      }
+    }
+    ui.screens = [];
+
+    eq(H.getLang(), 'ru', 'Default language is Russian');
+    ok(!H.isEn(), 'isEn is false in Russian mode');
+    ui.setLang('en');
+    eq(H.getLang(), 'en', 'setLang switches active language to English');
+    ok(H.isEn(), 'isEn is true in English mode');
+    eq(ui.options.lang, 'en', 'ui.options.lang persists English');
+    eq(H.CHARS.march.name, 'March 7th', 'March 7th character name localized to English');
+    eq(H.CHARS.march.skill.name, 'The Power of Cuteness', 'March 7th skill name localized to English');
+    eq(H.PATHS.destruction.name, 'Destruction', 'Path name localized to English');
+    eq(H.ELEMENTS.quant.name, 'Quantum', 'Element name localized to English');
+    ok(Object.values(H.CHARS).every(c => !/[А-Яа-яЁё]/.test(c.name)), 'Every character name in H.CHARS is free of Cyrillic in English mode');
+    let trCyr = 0, trLongEid = 0, trBadDash = 0;
+    for (const tr of Object.values(H.TRACES)) {
+      for (const b of tr.bonus || []) {
+        if (/[А-Яа-яЁё]/.test(b[0]) || /[А-Яа-яЁё]/.test(b[1])) trCyr++;
+        if (/[—–]/.test(b[1])) trBadDash++;
+      }
+      for (const e of tr.eid || []) {
+        if (/[А-Яа-яЁё]/.test(e[0]) || /[А-Яа-яЁё]/.test(e[1])) trCyr++;
+        if (e[0].length > 28) trLongEid++;
+        if (/[—–]/.test(e[1])) trBadDash++;
+      }
+    }
+    eq(trCyr, 0, 'H.TRACES has zero Cyrillic in English mode');
+    eq(trLongEid, 0, 'Every Eidolon title in H.TRACES fits <= 28 chars');
+    eq(trBadDash, 0, 'H.TRACES descriptions avoid em/en dashes that breaktrace Highlight');
+    const mNode = H.SkillsInfo.buildNode(rg2, 'march', 'march', 'skill', 1);
+    eq(mNode.forms[0].title, 'The Power of Cuteness', 'SkillsInfo.buildNode returns English skill title');
+    ok(!/[А-Яа-яЁё]/.test(H.traceDescribeAb('march', 'skill', 1)), 'traceDescribeAb returns English formula summary');
+    const bEn = new H.Battle({ party: [{ key: 'march', charId: 'march', lvl: 30, stats: rg2.baseStats('march', 30, 0), energy: 0 }], enemies: ['reaver:30'], lvl: 30, seed: 42 });
+    bEn.start();
+    const dMod = H.BD.model(bEn, bEn.allies[0], rg2);
+    ok(dMod && dMod.name === 'March 7th' && dMod.stats && Array.isArray(dMod.stats.all) && dMod.stats.all.every(r => !/[А-Яа-яЁё]/.test(r.label)), 'Battle Details model returns English character name and stat rows');
+    rg2.state.name = 'Первопроходец';
+    rg2.state.obj = 'Осмотреть вагон';
+    H.syncSaveLang(rg2.state);
+    eq(rg2.state.name, 'Trailblazer', 'syncSaveLang translates default Trailblazer name to English');
+    ok(!/[А-Яа-яЁё]/.test(rg2.state.obj), 'syncSaveLang translates active objective to English');
+
+    const drawn = [];
+    const fillText0 = ui.ctx.fillText;
+    ui.ctx.fillText = function (s) { drawn.push(String(s)); };
+    ui.openSettings();
+    drawn.length = 0; ui.render();
+    ok(drawn.includes('Settings') && drawn.includes('Language') && drawn.includes('English') && drawn.includes('EN') && drawn.includes('4:3') && drawn.includes('16:9'), 'Settings modal renders in English with Language selector and aspect ratio options intact');
+    ui.screens = [];
+    ui.openMenu();
+    drawn.length = 0; ui.render();
+    ok(drawn.includes('Characters') && drawn.includes('Data Bank'), 'Phone menu renders English labels');
+    ui.screens = [];
+    rg2.state.roster.march = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    ui.openChars('march');
+    drawn.length = 0; ui.render();
+    ok(drawn.includes('March 7th') && drawn.includes('Traces') && drawn.includes('Eidolons'), 'Characters screen renders in English');
+    ui.top().sec = 1;
+    ui.top().trSel = 'a2';
+    drawn.length = 0; ui.render();
+    ok(drawn.includes('Purify'), 'Traces tab renders English bonus trace names');
+    ui.screens = [];
+    ui.ctx.fillText = fillText0;
+
+    ui.setLang('ru');
+    eq(H.getLang(), 'ru', 'setLang switches back to Russian');
+    eq(H.CHARS.march.name, 'Март 7', 'March 7th character name restored to Russian');
+    eq(H.PATHS.destruction.name, 'Разрушение', 'Path name restored to Russian');
+    H.syncSaveLang(rg2.state);
+    eq(rg2.state.name, 'Первопроходец', 'syncSaveLang restores default Russian Trailblazer name');
+    eq(rg2.state.obj, 'Осмотреть вагон', 'syncSaveLang restores Russian active objective');
   }
 }
 

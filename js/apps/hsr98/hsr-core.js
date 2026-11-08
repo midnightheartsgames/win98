@@ -438,7 +438,7 @@
   const charExp = (n, lvl) => Math.round(n * expToNext(lvl) / tlExpToNext(lvl));
   const enemyExp = (lvl, mult) => Math.round((20 + 8 * lvl) * (mult || 1));
   const breakBase = lvl => 10 + 4 * lvl;
-  const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, H.isEn && H.isEn() ? ',' : ' ');
 
   const VERSION = '1.9';
   const BUILD_VERSION = globalThis.Win98Build && /^\d/.test(globalThis.Win98Build.version || '') ? globalThis.Win98Build.version : VERSION;
@@ -466,6 +466,7 @@
   const labHide = (table, key, value) => { Object.defineProperty(table, key, { value, enumerable: false, writable: true, configurable: true }); };
   const labPut = (table, key, value, owner = key) => { if (labHidden.has(owner)) labHide(table, key, value); else table[key] = value; };
 
+  Object.assign(H, { isEn: H.isEn || (() => false), getLang: H.getLang || (() => 'ru'), setLang: H.setLang || (() => 'ru'), t: H.t || ((ru, en) => (H.isEn && H.isEn() ? en : ru)), tr: H.tr || (s => String(s ?? '')), buffName: H.buffName || (s => String(s ?? '')), objAlt: H.objAlt || (() => null) });
   Object.assign(H, { LAB_TESTING, labOnly, labHide, labPut });
   Object.assign(H, { clamp, lerp, makeRandom, ELEMENTS, ELEMENT_KEYS, PATHS, BREAK_EFFECT, TUNING, grow, statAt, ascCap, ascPhase, ascGrow, CHAR_EXP, expToNext, tlExpToNext, charExp, enemyExp, breakBase, fmt, VERSION, BUILD_VERSION, BRAND });
   if (typeof module !== 'undefined') module.exports = H;

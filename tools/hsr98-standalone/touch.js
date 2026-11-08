@@ -37,10 +37,15 @@
   };
   const latched = new Set();
 
+  function tr(text) {
+    const h = window.Hsr98;
+    return h && h.isEn && h.isEn() && h.tr && text ? h.tr(text) : text;
+  }
+
   function el(tag, cls, text) {
     const e = document.createElement(tag);
     if (cls) e.className = cls;
-    if (text) e.textContent = text;
+    if (text) { e.dataset.ru = text; e.textContent = tr(text); }
     return e;
   }
 
@@ -158,11 +163,13 @@
   }
 
   function fillQuick() {
-    const m = modeNow();
-    if (m === quickMode) return;
-    quickMode = m;
+    const lang = window.Hsr98 && window.Hsr98.getLang ? window.Hsr98.getLang() : 'ru';
+    const m = modeNow(), keyMode = m + ':' + lang;
+    if (keyMode === quickMode) return;
+    quickMode = keyMode;
     quick.textContent = '';
     QUICK[m].forEach(([code, cap, label, latch]) => quick.appendChild(key(code, cap, label, latch)));
+    ui.querySelectorAll('[data-ru]').forEach(n => { n.textContent = tr(n.dataset.ru); });
     sync();
   }
 

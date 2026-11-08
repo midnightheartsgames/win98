@@ -69,6 +69,7 @@
       const fillRect0 = this.ctx.fillRect.bind(this.ctx);
       this.ctx.fillRect = (x, y, w, h) => fillRect0(x === 0 && w === W ? this.left : x, y, x === 0 && w === W ? this.vw : w, h);
       this.options = Object.assign({ sfx: 0.6, music: 0.35, battleSpeed: 1, textSpeed: 2, res: '640', aspect: '4:3', ultCine: 'on', fusionCine: 'on', skinCine: 'first' }, lsGet(OPT_KEY, {}));
+      if (H.syncUiLang) H.syncUiLang(this);
       mirrorAllSaves();
       this.applyRes();
       this.audio = new H.Audio();
@@ -153,6 +154,14 @@
     }
 
     sfx(id) { this.audio.sfx(id); }
+
+    setLang(lang) {
+      const next = lang === 'en' ? 'en' : 'ru';
+      this.options.lang = next;
+      lsSet(OPT_KEY, this.options);
+      if (H.setLang) H.setLang(next, { game: this.game, ui: this });
+      this.sfx('select');
+    }
 
     frame(now) {
       if (!this.running) return;
@@ -251,7 +260,7 @@
 
     writeSave(slot) {
       if (!this.game || this.game.battle) return false;
-      const data = { date: new Date().toLocaleString('ru-RU'), summary: this.game.summary(), state: this.game.serialize() };
+      const data = { date: new Date().toLocaleString(H.isEn && H.isEn() ? 'en-US' : 'ru-RU'), summary: this.game.summary(), state: this.game.serialize() };
       if (!lsSet(SAVE_KEY + slot, data)) return false;
       mirrorSave(slot, data, false);
       return true;
@@ -313,7 +322,7 @@
       this.banner = { text: this.game.map.def.name, t: 2.6 };
     }
 
-    toast(text) { this.toasts.push({ text, t: 3.4 }); if (this.toasts.length > 4) this.toasts.shift(); }
+    toast(text) { const s = H.isEn && H.isEn() && H.tr ? H.tr(text) : text; this.toasts.push({ text: s, t: 3.4 }); if (this.toasts.length > 4) this.toasts.shift(); }
 
     debugJade() {
       if (!this.game || this.mode === 'title') { this.sfx('deny'); return false; }
@@ -386,7 +395,7 @@
         if (!this.dlg || this.dlg.src !== p) {
           const sp = H.SPEAKERS[p.spk] || { name: p.spk };
           const name = p.name != null ? p.name : p.spk === '@' || p.spk === 'trail' ? g.state.name : sp.name;
-          this.dlg = { src: p, spk: p.spk, name, text: p.text, shown: 0, age: 0 };
+          this.dlg = { src: p, spk: p.spk, name: H.isEn && H.isEn() && H.tr ? H.tr(name) : name, text: H.isEn && H.isEn() && H.tr ? H.tr(p.text) : p.text, shown: 0, age: 0 };
         }
         this.dlg.age += dt;
         const before = Math.floor(this.dlg.shown);
@@ -512,15 +521,16 @@
       this.font(o.size || 12, o.bold, o.serif);
       c.textAlign = o.align || 'left';
       c.textBaseline = 'top';
-      if (o.shadow !== false) { c.fillStyle = 'rgba(0,0,0,0.85)'; c.fillText(str, x + 1, y + 1); }
+      const s = H.isEn && H.isEn() && H.tr ? H.tr(str) : str;
+      if (o.shadow !== false) { c.fillStyle = 'rgba(0,0,0,0.85)'; c.fillText(s, x + 1, y + 1); }
       c.fillStyle = o.col || C.cream;
-      c.fillText(str, x, y);
+      c.fillText(s, x, y);
     }
 
-    measure(str, size, bold, serif) { this.font(size || 12, bold, serif); return this.ctx.measureText(str).width; }
+    measure(str, size, bold, serif) { const s = H.isEn && H.isEn() && H.tr ? H.tr(str) : str; this.font(size || 12, bold, serif); return this.ctx.measureText(s).width; }
 
     clip(str, maxW, size, bold, serif) {
-      let s = String(str);
+      let s = String(H.isEn && H.isEn() && H.tr ? H.tr(str) : str);
       if (this.measure(s, size, bold, serif) <= maxW) return s;
       while (s.length > 1 && this.measure(s + '…', size, bold, serif) > maxW) s = s.slice(0, -1);
       return s.trimEnd() + '…';
@@ -528,7 +538,7 @@
 
     wrap(str, maxW, size, bold, serif) {
       this.font(size || 12, bold, serif);
-      const words = String(str).split(' '), lines = [];
+      const words = String(H.isEn && H.isEn() && H.tr ? H.tr(str) : str).split(' '), lines = [];
       let cur = '';
       for (const w of words) {
         const t = cur ? cur + ' ' + w : w;
@@ -541,7 +551,7 @@
     richWrap(segs, maxW, size) {
       this.font(size || 12);
       const words = [[]];
-      for (const s of segs) String(s.t).split(' ').forEach((part, i) => { if (i) words.push([]); if (part) words[words.length - 1].push({ t: part, hot: !!s.hot }); });
+      for (const s of segs) String(H.isEn && H.isEn() && H.tr ? H.tr(s.t) : s.t).split(' ').forEach((part, i) => { if (i) words.push([]); if (part) words[words.length - 1].push({ t: part, hot: !!s.hot }); });
       const lines = [];
       let cur = [], curW = '';
       for (const w of words.filter(x => x.length)) {
@@ -809,6 +819,14 @@
         this.text('Издание «Ярило-VI» · PC CD-ROM', lx + 40, 114, { size: 11, col: '#b8c4ea' });
       }
       const items = this.titleItems();
+      const lbx = lx + 40, lby = 134, lbw = 68, lbh = 18, enOn = !!(H.isEn && H.isEn());
+      c.fillStyle = 'rgba(6,8,24,0.78)'; c.fillRect(lbx, lby, lbw, lbh);
+      c.strokeStyle = C.brass; c.strokeRect(lbx + 0.5, lby + 0.5, lbw - 1, lbh - 1);
+      c.fillStyle = !enOn ? C.brass : 'transparent'; c.fillRect(lbx + 1, lby + 1, 33, lbh - 2);
+      c.fillStyle = enOn ? C.brass : 'transparent'; c.fillRect(lbx + 34, lby + 1, 33, lbh - 2);
+      this.text('RU', lbx + 17, lby + 3, { align: 'center', size: 10, bold: !enOn, shadow: enOn, col: !enOn ? C.ink2 : C.sub });
+      this.text('EN', lbx + 50, lby + 3, { align: 'center', size: 10, bold: enOn, shadow: !enOn, col: enOn ? C.ink2 : C.sub });
+      this.hit(lbx, lby, lbw, lbh, () => this.setLang(enOn ? 'ru' : 'en'));
       const x0 = rx - 132, y0 = 40;
       items.forEach((it, i) => {
         const y = y0 + i * 56, on = i === this.titleSel;
@@ -1294,7 +1312,7 @@
 
     openName() {
       const ui = this;
-      const opts = [{ name: 'Келус', gender: 'm' }, { name: 'Стелла', gender: 'f' }];
+      const opts = [{ name: H.isEn && H.isEn() ? 'Caelus' : 'Келус', gender: 'm' }, { name: H.isEn && H.isEn() ? 'Stelle' : 'Стелла', gender: 'f' }];
       this.push({
         draw(c) {
           c.fillStyle = 'rgba(2,3,12,0.7)'; c.fillRect(ui.left, 0, ui.vw, HGT);
@@ -1441,7 +1459,7 @@
         { label: 'Скорость текста', k: 'textSpeed', step: 1, max: 5, min: 1, fmt: v => '×' + v },
         { label: 'Разрешение', k: 'res', presets: RES, cur: () => ui.resPreset().id, set: id => setRes(id), fmt: () => ui.canvas.width + '×' + ui.canvas.height },
         { label: 'Формат экрана', k: 'aspect', presets: ASPECTS, cur: () => ui.wide() ? '16:9' : '4:3', set: id => setAspect(id), fmt: () => ui.wide() ? 'Широкий' : 'Обычный' }
-      ].concat(ui.game && ui.game.coneSupMode ? [{ label: 'Наложение конусов', k: 'coneSup', presets: [{ id: 'auto', tag: 'Авто' }, { id: 'manual', tag: 'Вручную' }], cur: () => ui.game.coneSupMode(), set: id => { if (ui.game.coneSupMode() !== id) { ui.game.setConeSup(id); ui.sfx('select'); } }, fmt: () => '' }] : []).concat(globalThis.Net98 ? [{ label: 'Эфирная связь', k: 'net', open: () => ui.openNetLink(), fmt: () => '' }] : []);
+      ].concat(ui.game && ui.game.coneSupMode ? [{ label: 'Наложение конусов', k: 'coneSup', presets: [{ id: 'auto', tag: 'Авто' }, { id: 'manual', tag: 'Вручную' }], cur: () => ui.game.coneSupMode(), set: id => { if (ui.game.coneSupMode() !== id) { ui.game.setConeSup(id); ui.sfx('select'); } }, fmt: () => '' }] : []).concat(globalThis.Net98 ? [{ label: 'Эфирная связь', k: 'net', open: () => ui.openNetLink(), fmt: () => '' }] : []).concat([{ label: 'Язык', k: 'lang', presets: [{ id: 'ru', tag: 'Русский' }, { id: 'en', tag: 'English' }], cur: () => (H.getLang ? H.getLang() : 'ru'), set: id => ui.setLang(id), fmt: () => (H.isEn && H.isEn() ? 'EN' : 'RU') }]);
       const setCine = k => id => {
         if (ui.options[k] === id) return;
         ui.options[k] = id;
@@ -1477,7 +1495,7 @@
         draw(c) {
           this.pause = true;
           if (ui.mode === 'battle') { c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(ui.left, 0, ui.vw, HGT); }
-          const list = rows(), step = list.length > 9 ? 31 : 34, x = W / 2 - 200, h = 64 + list.length * step, y = Math.round((HGT - h) / 2);
+          const list = rows(), step = list.length > 11 ? 28 : list.length > 10 ? 29 : list.length > 9 ? 31 : 34, x = W / 2 - 200, h = 64 + list.length * step, y = Math.round((HGT - h) / 2);
           ui.win(x, y, 400, h, { title: 'Настройки' });
           ui.closeBtn(x + 400 - 30, y + 8, () => this.key('back'));
           G.menuIcon(c, 'settings', x + 18, y + 30, 32);

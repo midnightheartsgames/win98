@@ -507,6 +507,7 @@
     },
 
     bdSegs(text) {
+      text = H.isEn && H.isEn() && H.tr ? H.tr(text) : String(text || '');
       const out = [], re = /([+−]?\d(?:[\d,]|\u00a0(?=\d))*%?)/g;
       let at = 0, m;
       while ((m = re.exec(text))) {

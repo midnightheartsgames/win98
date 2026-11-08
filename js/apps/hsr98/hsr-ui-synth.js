@@ -21,6 +21,22 @@
   Object.assign(H.UI.prototype, {
     synthTabs: TABS,
 
+    synthBox() {
+      const wide = this.wide(), lx = this.left + 12, rx = this.right;
+      const gw = wide ? 280 : 214;
+      const grid = { x: lx + (wide ? 8 : 6), y: GRID.y, cw: GRID.cw, ch: GRID.ch, gap: GRID.gap, cols: wide ? 4 : GRID.cols, rows: GRID.rows, wx: lx, wy: 44, ww: gw, wh: 404 };
+      const px = wide ? lx + gw + 10 : PANEL.x, pw = wide ? rx - 12 - px : PANEL.w;
+      const panel = { x: px, y: PANEL.y, w: pw, h: PANEL.h, mid: Math.round(px + pw / 2) };
+      const slider = { x: px + 68, y: SLIDER.y, w: pw - 152 };
+      return { wide, lx, rx, grid, panel, slider };
+    },
+
+    salvageBox() {
+      const wide = this.wide(), px = this.left + 12, rx = this.right, pw = wide ? 236 : 192;
+      const gx = px + pw + 8, gw = rx - 12 - gx, cols = wide ? 10 : 7;
+      return { wide, px, pw, gx, gw, cols, rx };
+    },
+
     synthLock(tab) {
       const id = TABS[tab].id;
       return id === 'relic' && !this.game.relicCraftOpen() ? 'с уровня Освоения ' + H.RELIC_CRAFT.tl + ' или после знакомства с Залом забвения' : null;
@@ -60,11 +76,11 @@
     },
 
     synthHeader(c, scr) {
-      const ui = this, g = this.game, t = TABS[scr.tab], inv = g.state.inv.items;
-      G.menuIcon(c, 'synth', 10, 6, 26, C.brassHi);
-      ui.text('Синтез и Разборка', 42, 6, { size: 9, col: C.brass });
-      ui.text(ui.fitText(t.label, 13, 170, true), 42, 18, { size: 13, bold: true, serif: true, col: C.gold });
-      const x0 = TAB_ROW.mid - (TABS.length - 1) * TAB_ROW.step / 2;
+      const ui = this, g = this.game, t = TABS[scr.tab], inv = g.state.inv.items, b = ui.synthBox();
+      G.menuIcon(c, 'synth', ui.left + 10, 6, 26, C.brassHi);
+      ui.text('Синтез и Разборка', ui.left + 42, 6, { size: 9, col: C.brass });
+      ui.text(ui.fitText(t.label, 13, b.wide ? 240 : 170, true), ui.left + 42, 18, { size: 13, bold: true, serif: true, col: C.gold });
+      const mid = b.wide ? W / 2 : TAB_ROW.mid, x0 = mid - (TABS.length - 1) * TAB_ROW.step / 2;
       const qx = x0 - TAB_ROW.r - 20, ex = x0 + (TABS.length - 1) * TAB_ROW.step + TAB_ROW.r + 6;
       ui.keycap(qx, TAB_ROW.y - 6, 'Q');
       ui.hit(qx - 2, TAB_ROW.y - 9, 18, 18, () => scr.setTab(scr.tab - 1));
@@ -80,14 +96,15 @@
         ui.hit(cx - TAB_ROW.r, cy - TAB_ROW.r, TAB_ROW.r * 2, TAB_ROW.r * 2, () => scr.setTab(i));
       });
       if (ui.synthLock(scr.tab)) return;
+      const rx = b.rx;
       if (t.id === 'relic') {
-        ui.money(474, 11, 'remains', inv.remains || 0);
-        ui.money(544, 11, 'resin', inv.resin || 0);
+        ui.money(rx - 166, 11, 'remains', inv.remains || 0);
+        ui.money(rx - 96, 11, 'resin', inv.resin || 0);
       } else if (t.id === 'relicSalvage') {
-        ui.button(458, 8, 72, 22, 'Правила', () => ui.openRelicSalvageRules(), { size: 9, icon: 'info' });
-        ui.money(536, 11, 'remains', inv.remains || 0);
+        ui.button(rx - 182, 8, 72, 22, 'Правила', () => ui.openRelicSalvageRules(), { size: 9, icon: 'info' });
+        ui.money(rx - 104, 11, 'remains', inv.remains || 0);
       } else if (t.id === 'coneSalvage') {
-        ui.button(520, 8, 80, 22, 'Правила', () => ui.openConeSalvageRules(), { size: 10, icon: 'info' });
+        ui.button(rx - 120, 8, 80, 22, 'Правила', () => ui.openConeSalvageRules(), { size: 10, icon: 'info' });
       }
     },
 
@@ -102,27 +119,27 @@
       if (on) { c.strokeStyle = C.brassHi; c.lineWidth = 2; c.strokeRect(x - 1, y - 1, GRID.cw + 2, GRID.ch); c.lineWidth = 1; }
     },
 
-    synthGrid(c, scr, rows) {
-      const ui = this, nRows = Math.ceil(rows.length / GRID.cols);
-      ui.win(12, 44, 214, 404, { alpha: 0.88, corners: false });
-      const top = ui.listTop(scr.sc, Math.floor(scr.sel / GRID.cols), nRows, GRID.rows);
-      rows.slice(top * GRID.cols, (top + GRID.rows) * GRID.cols).forEach((r, j) => {
-        const i = top * GRID.cols + j, x = GRID.x + (j % GRID.cols) * (GRID.cw + GRID.gap), y = GRID.y + Math.floor(j / GRID.cols) * (GRID.ch + 4);
+    synthGrid(c, scr, rows, b = this.synthBox()) {
+      const ui = this, gr = b.grid, nRows = Math.ceil(rows.length / gr.cols);
+      ui.win(gr.wx, gr.wy, gr.ww, gr.wh, { alpha: 0.88, corners: false });
+      const top = ui.listTop(scr.sc, Math.floor(scr.sel / gr.cols), nRows, gr.rows);
+      rows.slice(top * gr.cols, (top + gr.rows) * gr.cols).forEach((r, j) => {
+        const i = top * gr.cols + j, x = gr.x + (j % gr.cols) * (gr.cw + gr.gap), y = gr.y + Math.floor(j / gr.cols) * (gr.ch + 4);
         ui.synthCell(c, r.to, r.have, x, y, i === scr.sel, r.known === false);
-        ui.hit(x, y, GRID.cw, GRID.ch, () => scr.pick(i));
+        ui.hit(x, y, gr.cw, gr.ch, () => scr.pick(i));
       });
-      if (!rows.length) ui.wrap(scr.filter ? 'Сейчас синтезировать нечего. F показывает всё.' : 'Пусто.', 180, 10).forEach((l, i) => ui.text(l, 119, 200 + i * 14, { align: 'center', size: 10, col: C.dim }));
-      if (nRows > GRID.rows) ui.scrollBar(210, GRID.y, GRID.rows * (GRID.ch + 4) - 4, scr.sc, nRows, GRID.rows);
-      ui.wheelZone(12, 44, 214, 360, d => { scr.sc.top += d; });
-      ui.button(20, 414, 120, 22, scr.filter ? 'Фильтр: можно' : 'Фильтр: все', () => scr.toggleFilter(), { size: 10, active: scr.filter });
+      if (!rows.length) ui.wrap(scr.filter ? 'Сейчас синтезировать нечего. F показывает всё.' : 'Пусто.', gr.ww - 34, 10).forEach((l, i) => ui.text(l, gr.wx + gr.ww / 2, 200 + i * 14, { align: 'center', size: 10, col: C.dim }));
+      if (nRows > gr.rows) ui.scrollBar(gr.wx + gr.ww - 16, gr.y, gr.rows * (gr.ch + 4) - 4, scr.sc, nRows, gr.rows);
+      ui.wheelZone(gr.wx, gr.wy, gr.ww, 360, d => { scr.sc.top += d; });
+      ui.button(gr.wx + 8, 414, 120, 22, scr.filter ? 'Фильтр: можно' : 'Фильтр: все', () => scr.toggleFilter(), { size: 10, active: scr.filter });
     },
 
-    synthMedal(c, id, cx, cy, r, o = {}) {
+    synthMedal(c, id, cx, cy, r, o = {}, p = this.synthBox().panel) {
       const it = H.ITEMS[id];
       if (o.lines !== false) {
         c.strokeStyle = 'rgba(201,164,92,0.35)'; c.lineWidth = 1;
-        c.beginPath(); c.moveTo(PANEL.x + 18, cy + 0.5); c.lineTo(cx - r - 12, cy + 0.5); c.moveTo(cx + r + 12, cy + 0.5); c.lineTo(PANEL.x + PANEL.w - 18, cy + 0.5); c.stroke();
-        for (const sx of [PANEL.x + 40, PANEL.x + PANEL.w - 40]) { c.beginPath(); c.arc(sx, cy + 0.5, 9, 0, Math.PI * 2); c.stroke(); this.diamond(sx, cy + 0.5, 2.5, C.brass); }
+        c.beginPath(); c.moveTo(p.x + 18, cy + 0.5); c.lineTo(cx - r - 12, cy + 0.5); c.moveTo(cx + r + 12, cy + 0.5); c.lineTo(p.x + p.w - 18, cy + 0.5); c.stroke();
+        for (const sx of [p.x + 40, p.x + p.w - 40]) { c.beginPath(); c.arc(sx, cy + 0.5, 9, 0, Math.PI * 2); c.stroke(); this.diamond(sx, cy + 0.5, 2.5, C.brass); }
       }
       c.fillStyle = '#010208'; c.beginPath(); c.arc(cx, cy, r + 6, 0, Math.PI * 2); c.fill();
       const ring = c.createLinearGradient(cx, cy - r, cx, cy + r);
@@ -136,10 +153,10 @@
       if (o.sil) G.itemSilhouette(c, id, cx - s / 2, cy - s / 2, s); else G.itemIcon(c, id, cx - s / 2, cy - s / 2, s);
     },
 
-    synthFoodTop(c, r) {
-      const ui = this, it = H.ITEMS[r.to], x = 372, w = PANEL.x + PANEL.w - 16 - x;
-      ui.synthMedal(c, r.to, 316, 126, 40, { lines: false, sil: !r.known });
-      ui.text('В наличии: ' + r.have, 316, 176, { align: 'center', size: 11, col: C.sub });
+    synthFoodTop(c, r, b = this.synthBox()) {
+      const ui = this, p = b.panel, it = H.ITEMS[r.to], mx = p.x + (b.wide ? 96 : 80), x = p.x + (b.wide ? 168 : 136), w = p.x + p.w - 16 - x;
+      ui.synthMedal(c, r.to, mx, 126, 40, { lines: false, sil: !r.known }, p);
+      ui.text('В наличии: ' + r.have, mx, 176, { align: 'center', size: 11, col: C.sub });
       ui.text(ui.fitText(it.name, 15, w, true), x, 58, { size: 15, bold: true, serif: true, col: C.gold });
       c.fillStyle = C.brassDk; c.fillRect(x, 80, w, 1);
       ui.text('Эффект', x, 88, { size: 11, col: C.sub });
@@ -147,11 +164,11 @@
       if (!r.known) ui.text('Рецепт не изучен', x, 166, { size: 11, bold: true, col: C.bad });
     },
 
-    synthDivider(c, y, label) {
+    synthDivider(c, y, label, p = this.synthBox().panel) {
       const ui = this, tw = ui.measure(label, 11) / 2 + 14;
-      c.fillStyle = C.brassDk; c.fillRect(PANEL.x + 18, y + 6, PANEL.mid - tw - PANEL.x - 18, 1); c.fillRect(PANEL.mid + tw, y + 6, PANEL.x + PANEL.w - 18 - PANEL.mid - tw, 1);
-      ui.diamond(PANEL.mid - tw, y + 6.5, 3, C.brass, '#1a1208'); ui.diamond(PANEL.mid + tw, y + 6.5, 3, C.brass, '#1a1208');
-      ui.text(label, PANEL.mid, y, { align: 'center', size: 11, col: C.cream });
+      c.fillStyle = C.brassDk; c.fillRect(p.x + 18, y + 6, p.mid - tw - p.x - 18, 1); c.fillRect(p.mid + tw, y + 6, p.x + p.w - 18 - p.mid - tw, 1);
+      ui.diamond(p.mid - tw, y + 6.5, 3, C.brass, '#1a1208'); ui.diamond(p.mid + tw, y + 6.5, 3, C.brass, '#1a1208');
+      ui.text(label, p.mid, y, { align: 'center', size: 11, col: C.cream });
     },
 
     synthNeedCell(c, id, have, need, x, y) {
@@ -161,90 +178,92 @@
       this.text(have + '/' + need, x + 23, y + 50, { align: 'center', size: 12, bold: true, col: have >= need ? C.ok : C.bad });
     },
 
-    synthPlaque(c, y, label) {
-      const x = PANEL.x + 16, w = PANEL.w - 32;
+    synthPlaque(c, y, label, p = this.synthBox().panel) {
+      const x = p.x + 16, w = p.w - 32;
       const gr = c.createLinearGradient(x, y, x, y + 22);
       gr.addColorStop(0, '#f0d898'); gr.addColorStop(1, '#b89048');
       c.fillStyle = '#1a1208'; c.fillRect(x - 1, y - 1, w + 2, 24);
       c.fillStyle = gr; c.fillRect(x, y, w, 22);
-      this.text(label, PANEL.mid, y + 5, { align: 'center', size: 11, bold: true, col: '#20140c', shadow: false });
+      this.text(label, p.mid, y + 5, { align: 'center', size: 11, bold: true, col: '#20140c', shadow: false });
     },
 
-    synthSlider(c, scr, max) {
-      const ui = this;
-      ui.text('Количество: ' + scr.qty, PANEL.mid, 304, { align: 'center', size: 11, col: C.cream });
-      ui.button(PANEL.x + 16, 322, 30, 18, '−', () => scr.setQty(scr.qty - 1), { size: 12, bold: true, disabled: scr.qty <= 1 });
-      ui.text('1', SLIDER.x - 12, 325, { align: 'center', size: 11, col: C.sub });
-      ui.rail(SLIDER.x, SLIDER.y, SLIDER.w, max > 1 ? (scr.qty - 1) / (max - 1) : 1);
-      ui.text(String(max), SLIDER.x + SLIDER.w + 16, 325, { align: 'center', size: 11, col: C.sub });
-      ui.button(PANEL.x + PANEL.w - 46, 322, 30, 18, '+', () => scr.setQty(scr.qty + 1), { size: 12, bold: true, disabled: scr.qty >= max });
-      ui.hit(SLIDER.x - 6, 322, SLIDER.w + 12, 18, (b, p) => {
-        const set = q => scr.setQty(Math.round(1 + Math.max(0, Math.min(1, (q.x - SLIDER.x) / SLIDER.w)) * (max - 1)));
-        if (p) { set(p); ui.drag = { move: set }; }
+    synthSlider(c, scr, max, b = this.synthBox()) {
+      const ui = this, p = b.panel, sl = b.slider;
+      ui.text('Количество: ' + scr.qty, p.mid, 304, { align: 'center', size: 11, col: C.cream });
+      ui.button(p.x + 16, 322, 30, 18, '−', () => scr.setQty(scr.qty - 1), { size: 12, bold: true, disabled: scr.qty <= 1 });
+      ui.text('1', sl.x - 12, 325, { align: 'center', size: 11, col: C.sub });
+      ui.rail(sl.x, sl.y, sl.w, max > 1 ? (scr.qty - 1) / (max - 1) : 1);
+      ui.text(String(max), sl.x + sl.w + 16, 325, { align: 'center', size: 11, col: C.sub });
+      ui.button(p.x + p.w - 46, 322, 30, 18, '+', () => scr.setQty(scr.qty + 1), { size: 12, bold: true, disabled: scr.qty >= max });
+      ui.hit(sl.x - 6, 322, sl.w + 12, 18, (btn, pt) => {
+        const set = q => scr.setQty(Math.round(1 + Math.max(0, Math.min(1, (q.x - sl.x) / sl.w)) * (max - 1)));
+        if (pt) { set(pt); ui.drag = { move: set }; }
       });
     },
 
-    synthPanel(c, scr, r) {
-      const ui = this, g = this.game, inv = g.state.inv.items, id = TABS[scr.tab].id;
-      ui.win(PANEL.x, PANEL.y, PANEL.w, PANEL.h, { alpha: 0.82 });
+    synthPanel(c, scr, r, b = this.synthBox()) {
+      const ui = this, g = this.game, inv = g.state.inv.items, id = TABS[scr.tab].id, p = b.panel;
+      ui.win(p.x, p.y, p.w, p.h, { alpha: 0.82 });
       if (!r) return;
       const it = H.ITEMS[r.to], src = scr.srcFor(r), max = ui.synthMax(scr.tab, r, src), needs = ui.synthNeeds(scr.tab, r, src);
-      if (id === 'food') ui.synthFoodTop(c, r);
+      if (id === 'food') ui.synthFoodTop(c, r, b);
       else {
-        ui.text(ui.fitText(it.name, 16, PANEL.w - 40, true), PANEL.mid, 56, { align: 'center', size: 16, bold: true, serif: true, col: C.gold });
-        ui.text('В наличии: ' + (inv[r.to] || 0), PANEL.mid, 78, { align: 'center', size: 11, col: C.sub });
-        ui.synthMedal(c, r.to, PANEL.mid, 146, 46);
+        ui.text(ui.fitText(it.name, 16, p.w - 40, true), p.mid, 56, { align: 'center', size: 16, bold: true, serif: true, col: C.gold });
+        ui.text('В наличии: ' + (inv[r.to] || 0), p.mid, 78, { align: 'center', size: 11, col: C.sub });
+        ui.synthMedal(c, r.to, p.mid, 146, 46, {}, p);
       }
-      ui.synthDivider(c, 210, 'Необходимые материалы');
+      ui.synthDivider(c, 210, 'Необходимые материалы', p);
       if (needs.length) {
-        const x0 = PANEL.mid - (needs.length * 46 + (needs.length - 1) * 22) / 2;
+        const x0 = p.mid - (needs.length * 46 + (needs.length - 1) * 22) / 2;
         needs.forEach(([m, n], i) => ui.synthNeedCell(c, m, inv[m] || 0, n * scr.qty, x0 + i * 68, 230));
-        if (id === 'swap') ui.hit(PANEL.mid - 23, 230, 46, 46, () => scr.openPicker());
+        if (id === 'swap') ui.hit(p.mid - 23, 230, 46, 46, () => scr.openPicker());
       } else {
-        const x = PANEL.mid - 23, y = 230;
+        const x = p.mid - 23, y = 230;
         c.fillStyle = 'rgba(255,255,255,0.05)'; c.fillRect(x, y, 46, 46);
         c.strokeStyle = C.brassDk; c.setLineDash([3, 3]); c.strokeRect(x + 0.5, y + 0.5, 45, 45); c.setLineDash([]);
         c.fillStyle = C.brassHi; c.fillRect(x + 22, y + 13, 2, 20); c.fillRect(x + 13, y + 22, 20, 2);
         ui.hit(x, y, 46, 46, () => scr.openPicker());
       }
-      if (max >= 1) ui.synthSlider(c, scr, max);
-      else ui.synthPlaque(c, 322, id === 'swap' && !src ? 'Пожалуйста, добавьте материалы' : r.known === false ? 'Рецепт не изучен' : 'Не хватает материалов');
+      if (max >= 1) ui.synthSlider(c, scr, max, b);
+      else ui.synthPlaque(c, 322, id === 'swap' && !src ? 'Пожалуйста, добавьте материалы' : r.known === false ? 'Рецепт не изучен' : 'Не хватает материалов', p);
       if (id === 'swap') {
-        ui.button(PANEL.x + 16, 366, 172, 26, 'Автодобавление', () => scr.autoAdd(), { size: 11 });
-        ui.button(PANEL.x + PANEL.w - 188, 366, 172, 26, 'Синтезировать', () => scr.key('ok'), { size: 11, icon: 'synth', disabled: max < 1 });
-      } else ui.button(PANEL.mid - 100, 366, 200, 26, 'Синтезировать', () => scr.key('ok'), { size: 11, icon: 'synth', disabled: max < 1 });
+        const bw = b.wide ? 210 : 172;
+        ui.button(p.x + 16, 366, bw, 26, 'Автодобавление', () => scr.autoAdd(), { size: 11 });
+        ui.button(p.x + p.w - 16 - bw, 366, bw, 26, 'Синтезировать', () => scr.key('ok'), { size: 11, icon: 'synth', disabled: max < 1 });
+      } else ui.button(p.mid - 100, 366, 200, 26, 'Синтезировать', () => scr.key('ok'), { size: 11, icon: 'synth', disabled: max < 1 });
       const lack = needs.find(([m, n]) => (inv[m] || 0) < n * scr.qty);
       const where = r.known === false ? H.recipeWhere(r.to) : id === 'food' ? (lack ? H.ITEMS[lack[0]].name + ': ' + ui.traceSource(lack[0]) : '') : 'Где взять: ' + ui.traceSource(r.to);
-      ui.wrap(where, PANEL.w - 40, 9).slice(0, 2).forEach((l, i) => ui.text(l, PANEL.x + 20, 404 + i * 12, { size: 9, col: C.dim }));
+      ui.wrap(where, p.w - 40, 9).slice(0, 2).forEach((l, i) => ui.text(l, p.x + 20, 404 + i * 12, { size: 9, col: C.dim }));
     },
 
     relicSets() { return H.CAVERN_SETS.concat(H.PLANAR_SETS); },
 
     relicSlots(set) { return H.RELIC_SETS[set].planar ? H.PLANAR_SLOTS : H.CAVERN_SLOTS; },
 
-    relicCellPos(i) {
-      const nc = H.CAVERN_SETS.length, planar = i >= nc, j = planar ? i - nc : i;
-      return { x: GRID.x + (j % GRID.cols) * (GRID.cw + GRID.gap), y: (planar ? RELIC_GRID.planarY : RELIC_GRID.cavernY) + Math.floor(j / GRID.cols) * RELIC_GRID.pitch };
+    relicCellPos(i, b = this.synthBox()) {
+      const gr = b.grid, nc = H.CAVERN_SETS.length, planar = i >= nc, j = planar ? i - nc : i;
+      const py = b.wide ? 286 : RELIC_GRID.planarY;
+      return { x: gr.x + (j % gr.cols) * (gr.cw + gr.gap), y: (planar ? py : RELIC_GRID.cavernY) + Math.floor(j / gr.cols) * RELIC_GRID.pitch };
     },
 
-    relicHeader(c, y, label) {
-      c.fillStyle = 'rgba(255,255,255,0.1)'; c.fillRect(20, y, 198, 16);
-      this.diamond(28, y + 8, 3.5, '#e8a040', '#1a1208');
-      this.text(label, 38, y + 2, { size: 11, col: C.cream });
+    relicHeader(c, y, label, gr = this.synthBox().grid) {
+      c.fillStyle = 'rgba(255,255,255,0.1)'; c.fillRect(gr.wx + 8, y, gr.ww - 16, 16);
+      this.diamond(gr.wx + 16, y + 8, 3.5, '#e8a040', '#1a1208');
+      this.text(label, gr.wx + 26, y + 2, { size: 11, col: C.cream });
     },
 
-    synthRelicGrid(c, scr) {
-      const ui = this, sets = ui.relicSets();
-      ui.win(12, 44, 214, 404, { alpha: 0.88, corners: false });
-      ui.relicHeader(c, RELIC_GRID.cavernY - 20, 'Пещерные реликвии');
-      ui.relicHeader(c, RELIC_GRID.planarY - 20, 'Планарные украшения');
+    synthRelicGrid(c, scr, b = this.synthBox()) {
+      const ui = this, sets = ui.relicSets(), gr = b.grid, py = b.wide ? 286 : RELIC_GRID.planarY;
+      ui.win(gr.wx, gr.wy, gr.ww, gr.wh, { alpha: 0.88, corners: false });
+      ui.relicHeader(c, RELIC_GRID.cavernY - 20, 'Пещерные реликвии', gr);
+      ui.relicHeader(c, py - 20, 'Планарные украшения', gr);
       sets.forEach((set, i) => {
-        const { x, y } = ui.relicCellPos(i), slot = ui.relicSlots(set)[0].key, on = i === scr.rsel;
-        G.rarityCell(c, x, y, GRID.cw, RELIC_GRID.ch, 4);
+        const { x, y } = ui.relicCellPos(i, b), slot = ui.relicSlots(set)[0].key, on = i === scr.rsel;
+        G.rarityCell(c, x, y, gr.cw, RELIC_GRID.ch, 4);
         G.itemIcon(c, 'relic:' + slot, x + 9, y + 3, 40, set);
-        ui.text('★★★★', x + GRID.cw / 2, y + RELIC_GRID.ch - 13, { align: 'center', size: 8, col: '#ffe08a' });
-        if (on) { c.strokeStyle = scr.rfocus === 'grid' ? C.brassHi : C.brass; c.lineWidth = 2; c.strokeRect(x - 1, y - 1, GRID.cw + 2, RELIC_GRID.ch + 2); c.lineWidth = 1; }
-        ui.hit(x, y, GRID.cw, RELIC_GRID.ch, () => { if (scr.rsel !== i) { scr.rsel = i; scr.rslot = 0; ui.sfx('select'); } scr.rfocus = 'grid'; });
+        ui.text('★★★★', x + gr.cw / 2, y + RELIC_GRID.ch - 13, { align: 'center', size: 8, col: '#ffe08a' });
+        if (on) { c.strokeStyle = scr.rfocus === 'grid' ? C.brassHi : C.brass; c.lineWidth = 2; c.strokeRect(x - 1, y - 1, gr.cw + 2, RELIC_GRID.ch + 2); c.lineWidth = 1; }
+        ui.hit(x, y, gr.cw, RELIC_GRID.ch, () => { if (scr.rsel !== i) { scr.rsel = i; scr.rslot = 0; ui.sfx('select'); } scr.rfocus = 'grid'; });
       });
     },
 
@@ -261,20 +280,20 @@
       G.itemIcon(c, 'relic:' + slot, cx - s / 2, cy - s / 2, s, set);
     },
 
-    synthRelicPanel(c, scr) {
-      const ui = this, g = this.game, inv = g.state.inv.items, set = ui.relicSets()[scr.rsel], def = H.RELIC_SETS[set], slots = ui.relicSlots(set);
+    synthRelicPanel(c, scr, b = this.synthBox()) {
+      const ui = this, g = this.game, inv = g.state.inv.items, set = ui.relicSets()[scr.rsel], def = H.RELIC_SETS[set], slots = ui.relicSlots(set), p = b.panel;
       scr.rslot = Math.min(scr.rslot, slots.length - 1);
-      ui.win(PANEL.x, PANEL.y, PANEL.w, PANEL.h, { alpha: 0.82 });
-      ui.relicMedal(c, set, slots[scr.rslot].key, 316, 124, 40);
-      const x = 372, w = PANEL.x + PANEL.w - 16 - x;
+      ui.win(p.x, p.y, p.w, p.h, { alpha: 0.82 });
+      ui.relicMedal(c, set, slots[scr.rslot].key, p.x + (b.wide ? 96 : 80), 124, 40);
+      const x = p.x + (b.wide ? 168 : 136), w = p.x + p.w - 16 - x;
       ui.text(ui.fitText(def.name, 15, w, true), x, 58, { size: 15, bold: true, serif: true, col: C.gold });
       c.fillStyle = C.brassDk; c.fillRect(x, 80, w, 1);
       const lines = def.planar ? ui.wrap(def.text || def.short, w, 10) : ui.wrap('2 шт.: ' + ui.setBonusText(set, 2) + '.', w, 10).concat(ui.wrap('4 шт.: ' + ui.setBonusText(set, 4) + '.', w, 10));
       lines.slice(0, 6).forEach((l, i) => ui.text(l, x, 88 + i * 13, { size: 10, col: C.cream }));
-      ui.synthDivider(c, 190, 'Выберите предмет для синтеза');
-      const x0 = PANEL.mid - (slots.length - 1) * 40;
+      ui.synthDivider(c, 190, 'Выберите предмет для синтеза', p);
+      const step = b.wide ? 96 : 80, x0 = p.mid - (slots.length - 1) * (step / 2);
       slots.forEach((sl, i) => {
-        const cx = x0 + i * 80, cy = 236, on = i === scr.rslot, focus = on && scr.rfocus === 'slot';
+        const cx = x0 + i * step, cy = 236, on = i === scr.rslot, focus = on && scr.rfocus === 'slot';
         c.fillStyle = '#010208'; c.beginPath(); c.arc(cx, cy, 25, 0, Math.PI * 2); c.fill();
         const bg = c.createRadialGradient(cx, cy - 8, 3, cx, cy, 24);
         bg.addColorStop(0, '#5a5c80'); bg.addColorStop(1, '#1a1c34');
@@ -285,14 +304,14 @@
         ui.hit(cx - 25, cy - 25, 50, 64, () => { if (scr.rslot === i && scr.rfocus === 'slot') ui.openRelicCraft(scr); else { scr.rslot = i; scr.rfocus = 'slot'; ui.sfx('select'); } });
       });
       const have = inv.remains || 0, can = have >= H.RELIC_CRAFT.cost;
-      ui.text('Стоимость: ' + H.RELIC_CRAFT.cost + ' Обломков Реликвии', PANEL.mid, 296, { align: 'center', size: 11, col: can ? C.cream : C.bad });
-      ui.text('Основную характеристику выбирает Самомоделирующаяся смола.', PANEL.mid, 312, { align: 'center', size: 9, col: C.dim });
-      ui.button(PANEL.mid - 100, 332, 200, 26, 'Синтезировать', () => ui.openRelicCraft(scr), { size: 11, icon: 'synth', disabled: !can });
+      ui.text('Стоимость: ' + H.RELIC_CRAFT.cost + ' Обломков Реликвии', p.mid, 296, { align: 'center', size: 11, col: can ? C.cream : C.bad });
+      ui.text('Основную характеристику выбирает Самомоделирующаяся смола.', p.mid, 312, { align: 'center', size: 9, col: C.dim });
+      ui.button(p.mid - 100, 332, 200, 26, 'Синтезировать', () => ui.openRelicCraft(scr), { size: 11, icon: 'synth', disabled: !can });
       const left = g.resinLeft(), ok = left > 0 && have >= H.RELIC_CRAFT.resinCost;
-      ui.button(PANEL.x + 16, 372, 230, 22, 'Смола за ' + H.RELIC_CRAFT.resinCost + ' Обломков', () => scr.buyResin(), { size: 10, disabled: !ok });
-      ui.text('В этом часу: ' + left + '/' + H.RELIC_CRAFT.resinHour, PANEL.x + PANEL.w - 16, 377, { align: 'right', size: 10, col: left ? C.sub : C.bad });
-      ui.wrap('Обломки дают расщеплённые реликвии в разделе «Разбор Реликвий».', 224, 9).slice(0, 2).forEach((l, i) => ui.text(l, PANEL.x + 16, 404 + i * 12, { size: 9, col: C.dim }));
-      ui.button(PANEL.x + PANEL.w - 144, 404, 128, 22, 'Разбор Реликвий', () => scr.setTab(4), { size: 10, icon: 'rsalv' });
+      ui.button(p.x + 16, 372, 230, 22, 'Смола за ' + H.RELIC_CRAFT.resinCost + ' Обломков', () => scr.buyResin(), { size: 10, disabled: !ok });
+      ui.text('В этом часу: ' + left + '/' + H.RELIC_CRAFT.resinHour, p.x + p.w - 16, 377, { align: 'right', size: 10, col: left ? C.sub : C.bad });
+      ui.wrap('Обломки дают расщеплённые реликвии в разделе «Разбор Реликвий».', p.w - 168, 9).slice(0, 2).forEach((l, i) => ui.text(l, p.x + 16, 404 + i * 12, { size: 9, col: C.dim }));
+      ui.button(p.x + p.w - 144, 404, 128, 22, 'Разбор Реликвий', () => scr.setTab(4), { size: 10, icon: 'rsalv' });
     },
 
     openRelicCraft(scr) {
@@ -303,7 +322,7 @@
         sel: scr.useResin && (g.state.inv.items.resin || 0) > 0 ? 1 : 0, sc: { top: 0 },
         draw(c) {
           const inv = g.state.inv.items, vis = 8, rh = 20, x = W / 2 - 180, h = 134 + Math.min(vis, rows.length) * rh;
-          c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(x, 60, 360, h, { title: 'Синтез реликвии' });
           G.rarityCell(c, x + 16, 76, 40, 40, 4); G.itemIcon(c, 'relic:' + slot.key, x + 18, 78, 36, set);
           ui.text(ui.fitText(name, 12, 280, true), x + 66, 80, { size: 12, bold: true, col: C.gold });
@@ -628,8 +647,8 @@
           ui.openRelicSalvageConfirm(this, prev);
         },
         drawSortPopup(c) {
-          const mx = 354, my = 426 - sorts.length * 26 - 6, mw = 136, mh = sorts.length * 26 + 4;
-          ui.hit(0, 0, W, HGT, () => { this.sortMenu = false; });
+          const sb = ui.salvageBox(), mx = sb.gx + 142, my = 426 - sorts.length * 26 - 6, mw = 136, mh = sorts.length * 26 + 4;
+          ui.hit(ui.left, 0, ui.vw, HGT, () => { this.sortMenu = false; });
           c.fillStyle = 'rgba(6,8,20,0.96)'; c.fillRect(mx, my, mw, mh);
           c.strokeStyle = C.brass; c.strokeRect(mx + 0.5, my + 0.5, mw - 1, mh - 1);
           sorts.forEach((s, i) => {
@@ -649,12 +668,12 @@
     },
 
     drawRelicSalvageBody(c, st, opts = {}) {
-      const ui = this, g = this.game, COLS = 7, CW = 58, CH = 60, VIS = 5, sorts = H.RELIC_CRAFT.sorts;
+      const ui = this, g = this.game, sb = ui.salvageBox(), COLS = sb.cols, CW = 58, CH = 60, VIS = 5, sorts = H.RELIC_CRAFT.sorts;
       st.syncPicked();
       const all = st.list(), rows = Math.ceil(all.length / COLS);
       if (st.sel >= all.length) st.sel = Math.max(0, all.length - 1);
       const focusRel = st.focusUid != null ? g.relicOf(st.focusUid) : null;
-      ui.drawRelicDetailPane(c, focusRel, 12, 36, 192, 384, {
+      ui.drawRelicDetailPane(c, focusRel, sb.px, 36, sb.pw, 384, {
         onToggleLock: focusRel ? () => {
           const locked = g.toggleRelicLock(focusRel.uid);
           if (locked) st.picked.delete(focusRel.uid);
@@ -665,7 +684,7 @@
           ui.sfx('select');
         } : null
       });
-      const gx = 212, gy = 84, gw = 416, gh = 308;
+      const gx = sb.gx, gy = 84, gw = sb.gw, gh = 308;
       ui.text('Количество: ' + g.state.inv.relics.length + '/' + H.RELIC_CRAFT.invCap, gx, 38, { size: 10, col: C.cream });
       ui.text('Можно разобрать ' + g.relicSalvageableTotal({ includeEnhanced: st.includeEnhanced }), gx + 114, 38, { size: 10, col: C.sub });
       ui.text('Включать усиленные Реликвии', gx + gw - 34, 39, { size: 9, align: 'right', col: st.includeEnhanced ? C.gold : C.sub });
@@ -695,7 +714,7 @@
       ui.text(String(prev.count), gx + w0, 402, { size: 11, bold: true, col: '#e69c3a' });
       ui.text(' / ' + H.RELIC_CRAFT.salvageCap, gx + w0 + ui.measure(String(prev.count), 11, true), 402, { size: 11, col: C.cream });
       if (prev.items.length) {
-        const rx0 = W - 12 - prev.items.length * 46;
+        const rx0 = sb.rx - 12 - prev.items.length * 46;
         ui.text('Результат', rx0 - 6, 402, { size: 10, align: 'right', col: C.sub });
         prev.items.forEach((it, idx) => {
           const ix = rx0 + idx * 46, iy = 392;
@@ -715,19 +734,20 @@
       if (hasFilter) { c.fillStyle = '#e69c3a'; c.beginPath(); c.arc(gx + 21, 430, 3, 0, Math.PI * 2); c.fill(); }
       ui.hit(gx, 426, 26, 24, () => { ui.openRelicFilterDrawer(st); ui.sfx('select'); });
       ui.button(gx + 30, 426, 108, 24, 'Умный выброс', () => { ui.openRelicSmartDiscard(st); ui.sfx('select'); }, { size: 10 });
-      const curSort = (sorts.find(s => s.id === st.sortKey) || sorts[0]).label;
-      ui.button(gx + 142, 426, 78, 24, ui.fitText(curSort, 9, 58) + ' ▾', () => { st.sortMenu = !st.sortMenu; ui.sfx('select'); }, { size: 9, active: st.sortMenu });
-      ui.button(gx + 222, 426, 26, 24, st.sortDir === 1 ? '1↓' : '1↑', () => { st.sortDir = -st.sortDir; ui.sfx('select'); }, { size: 9 });
-      ui.button(gx + 252, 426, 86, 24, 'Быстрый выбор', () => { ui.openRelicQuickSelect(st); ui.sfx('select'); }, { size: 10 });
-      ui.button(gx + 342, 426, 74, 24, 'Разобрать', () => st.act(), { size: 10, active: prev.count > 0, disabled: prev.count === 0 });
+      const curSort = (sorts.find(s => s.id === st.sortKey) || sorts[0]).label, sw = sb.wide ? 96 : 78;
+      ui.button(gx + 142, 426, sw, 24, ui.fitText(curSort, 9, sw - 20) + ' ▾', () => { st.sortMenu = !st.sortMenu; ui.sfx('select'); }, { size: 9, active: st.sortMenu });
+      ui.button(gx + 144 + sw, 426, 26, 24, st.sortDir === 1 ? '1↓' : '1↑', () => { st.sortDir = -st.sortDir; ui.sfx('select'); }, { size: 9 });
+      const actW = sb.wide ? 96 : 74, qkW = sb.wide ? 110 : 86, actX = gx + gw - actW, qkX = actX - (sb.wide ? 6 : 4) - qkW;
+      ui.button(qkX, 426, qkW, 24, 'Быстрый выбор', () => { ui.openRelicQuickSelect(st); ui.sfx('select'); }, { size: 10 });
+      ui.button(actX, 426, actW, 24, 'Разобрать', () => st.act(), { size: 10, active: prev.count > 0, disabled: prev.count === 0 });
       const enhKey = opts.inSynth ? 'T' : 'E';
       const baseHints = [['←↑↓→', 'Выбор'], ['Enter', 'Отметить'], ['Z/C', 'Слот'], ['L/V', 'Замок/Выброс'], [enhKey, 'Усиленные'], ['F', 'Фильтр'], ['M', 'Выброс'], ['A', 'Быстрый выбор'], ['X', 'Разобрать']];
-      ui.hints(opts.inSynth ? [['Q/E', 'Раздел']].concat(baseHints) : baseHints, 12, HGT - 16);
+      ui.hints(opts.inSynth ? [['Q/E', 'Раздел']].concat(baseHints) : baseHints, sb.px, HGT - 16);
       if (st.sortMenu) st.drawSortPopup(c);
     },
 
     relicSalvageKey(st, kk, code, opts = {}) {
-      const ui = this, g = this.game, COLS = 7, sorts = H.RELIC_CRAFT.sorts;
+      const ui = this, g = this.game, COLS = ui.salvageBox().cols, sorts = H.RELIC_CRAFT.sorts;
       if (st.sortMenu) {
         const idx = sorts.findIndex(s => s.id === st.sortKey);
         if (kk === 'up' || kk === 'down') {
@@ -782,14 +802,15 @@
     openRelicSalvage(initFilter) {
       const ui = this, g = this.game, st = ui.makeRelicSalvageState(initFilter);
       st.draw = function (c) {
+        const rx = ui.right;
         ui.fullBg(c, false);
         c.fillStyle = 'rgba(4,6,20,0.6)'; c.fillRect(ui.left, 0, ui.vw, HGT);
-        G.menuIcon(c, 'bag', 14, 9, 20, C.gold);
-        ui.text('Инвентарь', 38, 6, { size: 9, col: C.sub });
-        ui.text('Разбор Реликвий', 38, 16, { size: 13, bold: true, serif: true, col: C.gold });
-        ui.button(404, 8, 78, 22, 'Правила', () => ui.openRelicSalvageRules(), { size: 10, icon: 'info' });
-        ui.money(490, 9, 'remains', g.state.inv.items.remains || 0);
-        ui.closeBtn(W - 32, 8, () => ui.pop());
+        G.menuIcon(c, 'bag', ui.left + 14, 9, 20, C.gold);
+        ui.text('Инвентарь', ui.left + 38, 6, { size: 9, col: C.sub });
+        ui.text('Разбор Реликвий', ui.left + 38, 16, { size: 13, bold: true, serif: true, col: C.gold });
+        ui.button(rx - 236, 8, 78, 22, 'Правила', () => ui.openRelicSalvageRules(), { size: 10, icon: 'info' });
+        ui.money(rx - 150, 9, 'remains', g.state.inv.items.remains || 0);
+        ui.closeBtn(rx - 32, 8, () => ui.pop());
         ui.drawRelicSalvageBody(c, this, { inSynth: false });
       };
       st.key = function (kk, code) {
@@ -1014,11 +1035,11 @@
             host.draw(c);
             ui.hits.length = hitsAt;
           }
-          const dx = 392, dy = 0, dw = W - dx, dh = HGT;
+          const dw = 248, dx = ui.right - dw, dy = 0, dh = HGT;
           c.fillStyle = 'rgba(2,3,14,0.45)';
-          c.fillRect(0, 0, dx, HGT);
-          ui.hit(0, 0, dx, HGT, () => { ui.pop(); ui.sfx('cancel'); });
-          const gr = c.createLinearGradient(dx, 0, W, 0);
+          c.fillRect(ui.left, 0, dx - ui.left, HGT);
+          ui.hit(ui.left, 0, dx - ui.left, HGT, () => { ui.pop(); ui.sfx('cancel'); });
+          const gr = c.createLinearGradient(dx, 0, dx + dw, 0);
           gr.addColorStop(0, 'rgba(8,10,30,0.98)');
           gr.addColorStop(1, 'rgba(14,18,46,0.98)');
           c.fillStyle = gr;
@@ -1130,7 +1151,7 @@
         },
         draw(c) {
           const x = W / 2 - 190, y = 64, w = 380, h = 340, vis = 9, rh = 26;
-          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(x, y, w, h, { title });
           ui.closeBtn(x + w - 28, y + 6, () => ui.pop());
           const top = ui.listTop(this.sc, this.sel, items.length, vis);
@@ -1165,7 +1186,7 @@
         sel: 0,
         draw(c) {
           const tpls = g.state.relicFilterTpls, x = W / 2 - 170, y = 110, w = 340, h = 230;
-          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(x, y, w, h, { title: 'Шаблоны фильтров (' + tpls.length + '/' + H.RELIC_CRAFT.tplCap + ')' });
           ui.closeBtn(x + w - 28, y + 6, () => ui.pop());
           if (!tpls.length) {
@@ -1227,7 +1248,7 @@
       return this.push({
         draw(c) {
           const x = W / 2 - 220, y = 96, w = 440, h = 272;
-          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(x, y, w, h, { title: 'Правила разборки Реликвий' });
           ui.closeBtn(x + w - 28, y + 6, () => ui.pop());
           let ry = y + 32;
@@ -1250,7 +1271,7 @@
         sel: 0,
         draw(c) {
           const x = W / 2 - 190, y = 128, w = 380, h = 214;
-          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.66)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(x, y, w, h, { title: 'Подтверждение разборки' });
           ui.text('Выбрано Реликвий: ' + prev.count, W / 2, y + 28, { align: 'center', size: 12, bold: true, col: C.cream });
           if (prev.hasEnhanced) ui.text('Внимание: среди выбранных есть усиленные Реликвии (до +' + prev.maxLvl + ')!', W / 2, y + 46, { align: 'center', size: 10, bold: true, col: C.bad });
@@ -1293,7 +1314,7 @@
       this.push({
         sel: Math.max(0, list.indexOf(scr.src)), sc: { top: 0 },
         draw(c) {
-          c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           const x = W / 2 - 160, vis = 6, rh = 44, h = 64 + Math.min(vis, list.length) * rh;
           ui.win(x, 100, 320, h, { title: 'Выберите материал' });
           ui.text('Два таких дают один «' + ui.fitText(H.ITEMS[r.to].name, 10, 150) + '»', W / 2, 116, { align: 'center', size: 10, col: C.sub });
@@ -1391,28 +1412,28 @@
           this.src = best; this.qty = 1; ui.sfx('confirm');
         },
         draw(c) {
-          const id = TABS[this.tab].id;
+          const id = TABS[this.tab].id, b = ui.synthBox();
           ui.fullBg(c, false);
           c.fillStyle = 'rgba(4,6,20,0.5)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.synthHeader(c, this);
-          ui.closeBtn(W - 32, 8, () => this.key('back'));
+          ui.closeBtn(b.rx - 32, 8, () => this.key('back'));
           const lock = ui.synthLock(this.tab);
-          if (lock) { ui.synthLockedBody(c, lock); ui.hints([['Q/E', 'Раздел'], ['Esc', 'Назад']], 12, HGT - 18); return; }
+          if (lock) { ui.synthLockedBody(c, lock); ui.hints([['Q/E', 'Раздел'], ['Esc', 'Назад']], b.lx, HGT - 18); return; }
           if (id === 'relicSalvage') { ui.drawRelicSalvageBody(c, this.relicSalvage, { inSynth: true }); return; }
           if (id === 'coneSalvage') { ui.drawConeSalvageBody(c, this.coneSalvage, { inSynth: true }); return; }
           if (id === 'relic') {
-            ui.synthRelicGrid(c, this);
-            ui.synthRelicPanel(c, this);
-            ui.hints(this.rfocus === 'slot' ? [['Q/E', 'Раздел'], ['←→', 'Слот'], ['Enter', 'Синтез'], ['R', 'Смола'], ['Esc', 'К наборам']] : [['Q/E', 'Раздел'], ['←↑↓→', 'Набор'], ['Enter', 'Слоты'], ['R', 'Смола'], ['Esc', 'Назад']], 12, HGT - 18);
+            ui.synthRelicGrid(c, this, b);
+            ui.synthRelicPanel(c, this, b);
+            ui.hints(this.rfocus === 'slot' ? [['Q/E', 'Раздел'], ['←→', 'Слот'], ['Enter', 'Синтез'], ['R', 'Смола'], ['Esc', 'К наборам']] : [['Q/E', 'Раздел'], ['←↑↓→', 'Набор'], ['Enter', 'Слоты'], ['R', 'Смола'], ['Esc', 'Назад']], b.lx, HGT - 18);
             return;
           }
           const rows = this.rows();
           this.sel = Math.max(0, Math.min(this.sel, rows.length - 1));
           this.qty = Math.max(1, Math.min(this.qty, Math.max(1, this.maxNow())));
-          ui.synthGrid(c, this, rows);
-          ui.synthPanel(c, this, rows[this.sel]);
+          ui.synthGrid(c, this, rows, b);
+          ui.synthPanel(c, this, rows[this.sel], b);
           const swap = id === 'swap';
-          ui.hints([['Q/E', 'Раздел'], ['←↑↓→', 'Выбор'], ['A/D', 'Количество'], ['Enter', swap && !this.srcFor(rows[this.sel] || {}) ? 'Добавить' : 'Синтез']].concat(swap ? [['Tab', 'Материал'], ['R', 'Авто']] : [], [['F', 'Фильтр'], ['Esc', 'Назад']]), 12, HGT - 18);
+          ui.hints([['Q/E', 'Раздел'], ['←↑↓→', 'Выбор'], ['A/D', 'Количество'], ['Enter', swap && !this.srcFor(rows[this.sel] || {}) ? 'Добавить' : 'Синтез']].concat(swap ? [['Tab', 'Материал'], ['R', 'Авто']] : [], [['F', 'Фильтр'], ['Esc', 'Назад']]), b.lx, HGT - 18);
         },
         key(k, code) {
           const id = TABS[this.tab].id;
@@ -1430,9 +1451,9 @@
           const swap = id === 'swap';
           if (swap && code === 'Tab') { this.openPicker(); return; }
           if (swap && code === 'KeyR') { this.autoAdd(); return; }
-          const rows = this.rows(), n = rows.length;
+          const rows = this.rows(), n = rows.length, cols = ui.synthBox().grid.cols;
           if (!n) return;
-          const mv = { left: -1, right: 1, up: -GRID.cols, down: GRID.cols }[k];
+          const mv = { left: -1, right: 1, up: -cols, down: cols }[k];
           if (mv) { this.pick(Math.max(0, Math.min(n - 1, this.sel + mv))); return; }
           if (k !== 'ok') return;
           const r = rows[this.sel], src = this.srcFor(r);

@@ -6,6 +6,22 @@
   function mkCanvas(w, h) {
     const c = document.createElement('canvas');
     c.width = w; c.height = h;
+    const getCtx = c.getContext && c.getContext.bind(c);
+    if (getCtx) {
+      c.getContext = function (type, opts) {
+        const ctx = getCtx(type, opts);
+        if (ctx && type === '2d' && !ctx._i18nWrapped && ctx.fillText && ctx.measureText) {
+          ctx._i18nWrapped = true;
+          const ft = ctx.fillText.bind(ctx), mt = ctx.measureText.bind(ctx);
+          ctx.fillText = (s, x, y, mw) => {
+            const t = H.isEn && H.isEn() && H.tr ? H.tr(s) : s;
+            return mw === undefined ? ft(t, x, y) : ft(t, x, y, mw);
+          };
+          ctx.measureText = s => mt(H.isEn && H.isEn() && H.tr ? H.tr(s) : s);
+        }
+        return ctx;
+      };
+    }
     return c;
   }
 

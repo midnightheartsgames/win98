@@ -11,8 +11,9 @@
   const pct = v => String(Math.round(Math.abs(v) * 1000) / 10).replace('.', ',') + '%';
   const num = v => String(Math.round(Math.abs(v) * 10) / 10).replace('.', ',');
   const sign = v => (v < 0 ? '−' : '+');
-  const stem = e => H.ELEMENTS[e].name.slice(0, -2).toLowerCase();
-  const adj = e => H.ELEMENTS[e].name.toLowerCase();
+  const ELEM_RU = { phys: 'Физический', fire: 'Огненный', ice: 'Ледяной', elec: 'Электрический', wind: 'Ветряной', quant: 'Квантовый', imag: 'Мнимый' };
+  const stem = e => (ELEM_RU[e] || H.ELEMENTS[e].name).slice(0, -2).toLowerCase();
+  const adj = e => (ELEM_RU[e] || H.ELEMENTS[e].name).toLowerCase();
   const gen = e => stem(e) + 'ого';
   const dat = e => stem(e) + 'ому';
   const nameOf = u => (u ? u.name : '');

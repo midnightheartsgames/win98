@@ -60,7 +60,7 @@
       return n.title;
     },
 
-    traceStatText(n) { return (H.STAT_NAMES[n.stat] || n.stat) + ' +' + (n.stat === 'spd' ? n.value : String(Math.round(n.value * 1000) / 10).replace('.', ',') + '%'); },
+    traceStatText(n) { return (H.STAT_NAMES[n.stat] || n.stat) + ' +' + (n.stat === 'spd' ? n.value : String(Math.round(n.value * 1000) / 10).replace('.', H.isEn && H.isEn() ? '.' : ',') + '%'); },
 
     drawTraceNode(c, k, n, p, st, sel, focus, flash) {
       const on = st.cur > 0 && n.kind !== 'ability' ? true : n.kind === 'ability' ? st.cur > 1 || st.why === 'max' : n.kind === 'tech';

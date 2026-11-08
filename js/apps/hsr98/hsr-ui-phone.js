@@ -52,8 +52,13 @@
       return ids.filter(id => !mine || g.ownsOutfit(id)).map((id, i) => ({ id, i })).sort((a, b) => rank(a.id) - rank(b.id) || a.i - b.i).map(x => x.id);
     },
 
+    wardrobeBox() {
+      if (!this.wide()) return { wide: false, lx: 12, rx: W - 12, px: 12, pw: 212, gx: 236, gy: 46, cols: 3, rows: 2, cw: 120, ch: 162, gap: 10 };
+      return { wide: true, lx: this.left + 12, rx: this.right - 12, px: this.left + 12, pw: 256, gx: 177, gy: 46, cols: 4, rows: 2, cw: 128, ch: 162, gap: 10 };
+    },
+
     openWardrobe() {
-      const ui = this, g = this.game, COLS = 3, ROWS = 2, CW = 120, CH = 162, GAP = 10, GX = 236, GY = 46;
+      const ui = this, g = this.game;
       return this.push({
         full: true, sc: { top: 0 }, mine: !!ui.wardMine, wardId: null, order: null,
         list() { if (!this.order) this.order = ui.wardrobeList(this.mine); return this.order; },
@@ -78,39 +83,43 @@
           ui.toast(who + ': надет наряд «' + o.name + '».');
         },
         draw(c) {
-          const s = g.state, list = this.list();
+          const s = g.state, list = this.list(), { wide, lx, rx, gx, gy, cols, rows: vrows, cw, ch, gap } = ui.wardrobeBox();
           ui.fullBg(c, false);
           c.fillStyle = 'rgba(4,6,20,0.45)'; c.fillRect(ui.left, 0, ui.vw, HGT);
-          ui.plate(12, 10, 'Наряды');
-          ui.closeBtn(W - 32, 10, () => this.key('back'));
+          ui.plate(lx, 10, 'Наряды');
+          ui.closeBtn(rx - 20, 10, () => this.key('back'));
           const owned = Object.keys(H.OUTFITS).filter(id => g.ownsOutfit(id)).length;
-          ui.text('В коллекции: ' + owned + ' из ' + Object.keys(H.OUTFITS).length, 104, 15, { size: 11, bold: true, col: C.gold });
-          ui.money(W - 150, 15, 'jade', s.jade);
-          ui.button(GX, 12, 62, 24, 'Все', () => this.setMine(false), { size: 11, active: !this.mine });
-          ui.button(GX + 66, 12, 62, 24, 'Мои', () => this.setMine(true), { size: 11, active: this.mine });
-          ui.keycap(GX + 134, 17, 'F');
+          ui.text('В коллекции: ' + owned + ' из ' + Object.keys(H.OUTFITS).length, lx + 92, 15, { size: 11, bold: true, col: C.gold });
+          ui.money(rx - 138, 15, 'jade', s.jade);
+          ui.button(gx, 12, 62, 24, 'Все', () => this.setMine(false), { size: 11, active: !this.mine });
+          ui.button(gx + 66, 12, 62, 24, 'Мои', () => this.setMine(true), { size: 11, active: this.mine });
+          ui.keycap(gx + 134, 17, 'F');
           if (this.sel >= list.length) this.sel = Math.max(0, list.length - 1);
-          const rows = Math.ceil(list.length / COLS), top = ui.listTop(this.sc, Math.floor(this.sel / COLS), rows, ROWS);
-          ui.wheelZone(GX, GY, COLS * (CW + GAP), ROWS * (CH + GAP), d => { this.sc.top += d; });
-          list.slice(top * COLS, (top + ROWS) * COLS).forEach((id, j) => {
-            const i = top * COLS + j, x = GX + (j % COLS) * (CW + GAP), y = GY + Math.floor(j / COLS) * (CH + GAP);
-            ui.wardrobeCard(c, id, x, y, i === this.sel, false);
-            ui.hit(x, y, CW, CH, () => { if (this.sel === i) this.act(); else { this.sel = i; ui.sfx('select'); } });
+          const rows = Math.ceil(list.length / cols), top = ui.listTop(this.sc, Math.floor(this.sel / cols), rows, vrows), gw = cols * (cw + gap) - gap, gh = vrows * (ch + gap) - gap;
+          if (wide) {
+            c.fillStyle = 'rgba(8,12,34,0.62)'; c.fillRect(gx - 6, gy - 6, gw + 22, gh + 12);
+            c.strokeStyle = 'rgba(201,164,92,0.45)'; c.strokeRect(gx - 5.5, gy - 5.5, gw + 21, gh + 11);
+          }
+          ui.wheelZone(gx, gy, cols * (cw + gap), vrows * (ch + gap), d => { this.sc.top += d; });
+          list.slice(top * cols, (top + vrows) * cols).forEach((id, j) => {
+            const i = top * cols + j, x = gx + (j % cols) * (cw + gap), y = gy + Math.floor(j / cols) * (ch + gap);
+            ui.wardrobeCard(c, id, x, y, i === this.sel, false, cw, ch);
+            ui.hit(x, y, cw, ch, () => { if (this.sel === i) this.act(); else { this.sel = i; ui.sfx('select'); } });
           });
-          if (rows > ROWS) ui.scrollBar(GX + COLS * (CW + GAP) + 2, GY, ROWS * (CH + GAP) - GAP, this.sc, rows, ROWS);
-          if (!list.length) ui.text('Нарядов пока нет. Они продаются в Снабжении.', GX + 190, 200, { align: 'center', col: C.dim });
+          if (rows > vrows) ui.scrollBar(gx + cols * (cw + gap) - (wide ? 6 : 0) + 2, gy, gh, this.sc, rows, vrows);
+          if (!list.length) ui.text('Нарядов пока нет. Они продаются в Снабжении.', gx + Math.round(gw / 2), 200, { align: 'center', col: C.dim });
           this.drawPreview(c, list[this.sel]);
-          ui.hints([['←↑↓→', 'Наряд'], ['Enter', 'Надеть или снять'], ['F', 'Все или мои'], ['V', 'Катсцены'], ['Esc', 'Назад']], 14, HGT - 18);
+          ui.hints([['←↑↓→', 'Наряд'], ['Enter', 'Надеть или снять'], ['F', 'Все или мои'], ['V', 'Катсцены'], ['Esc', 'Назад']], lx + 2, HGT - 18);
         },
         drawPreview(c, id) {
-          const x = 12, y = 44, w = 212, h = 286;
+          const { wide, px: x, pw: w } = ui.wardrobeBox(), y = 44, h = 286;
           c.fillStyle = '#000'; c.fillRect(x - 2, y - 2, w + 4, h + 4);
           if (!id) return;
           const o = H.OUTFITS[id], ch = H.CHARS[o.char], own = g.ownsOutfit(id), worn = g.outfitOf(o.char) === id, inCrew = !!g.state.roster[o.char], who = o.char === 'trail' ? g.state.name : ch.name;
           c.save(); c.beginPath(); c.rect(x, y, w, h); c.clip();
           c.imageSmoothingEnabled = false;
-          c.drawImage(H.outfitShowcase(id), x, y, w, h);
-          ui.platform(c, x + w / 2, y + h - 20, 72);
+          c.drawImage(H.outfitShowcase(id, wide), x, y, w, h);
+          ui.platform(c, x + w / 2, y + h - 20, wide ? 82 : 72);
           G.drawFigure(c, H.outfitLook(id, g.state.gender), x + w / 2, y + h - 16, 2.5);
           c.restore();
           c.strokeStyle = C.brass; c.lineWidth = 2; c.strokeRect(x + 1, y + 1, w - 2, h - 2); c.lineWidth = 1;
@@ -123,13 +132,13 @@
           if (o.cuts) { ui.button(x + w - 74, y + 6, 68, 20, 'Катсцены', () => ui.openOutfitCuts(id), { size: 9 }); }
         },
         key(k, code) {
-          const list = this.list(), n = list.length;
+          const list = this.list(), n = list.length, { cols } = ui.wardrobeBox();
           if (k === 'back') { ui.pop(); return; }
           if (code === 'KeyF') { this.setMine(!this.mine); return; }
           if (code === 'KeyV') { const id = list[this.sel]; if (id && H.OUTFITS[id].cuts) ui.openOutfitCuts(id); else ui.sfx('deny'); return; }
           if (k === 'ok') { this.act(); return; }
-          const to = k === 'left' ? this.sel - 1 : k === 'right' ? this.sel + 1 : k === 'up' ? this.sel - COLS : k === 'down' ? Math.min(n - 1, this.sel + COLS) : this.sel;
-          if (to !== this.sel && to >= 0 && to < n && !(k === 'down' && Math.floor(to / COLS) === Math.floor(this.sel / COLS))) { this.sel = to; ui.sfx('select'); }
+          const to = k === 'left' ? this.sel - 1 : k === 'right' ? this.sel + 1 : k === 'up' ? this.sel - cols : k === 'down' ? Math.min(n - 1, this.sel + cols) : this.sel;
+          if (to !== this.sel && to >= 0 && to < n && !(k === 'down' && Math.floor(to / cols) === Math.floor(this.sel / cols))) { this.sel = to; ui.sfx('select'); }
         }
       });
     },
@@ -166,7 +175,7 @@
     },
 
     openPhoneDecor() {
-      const ui = this, g = this.game, ids = Object.keys(H.PHONE_SKINS), COLS = 3, CW = 68, CH = 96;
+      const ui = this, g = this.game, ids = Object.keys(H.PHONE_SKINS), COLS = 3;
       const fake = { sel: -1, rail: -1, railSel: 0 };
       return this.push({
         full: true, phoneDecor: true,
@@ -179,34 +188,56 @@
           ui.toast('Обои установлены: «' + skin.name + '».');
         },
         draw(c) {
+          const wide = ui.wide(), lx = wide ? ui.left + 12 : 12, rx = wide ? ui.right - 12 : W - 12;
           const cur = g.phoneSkinId(), id = ids[this.sel], skin = H.PHONE_SKINS[id], own = g.ownsSkin(id), used = cur === id;
           ui.fullBg(c, false);
           c.fillStyle = 'rgba(4,6,20,0.45)'; c.fillRect(ui.left, 0, ui.vw, HGT);
-          ui.plate(12, 10, 'Украшения для смартфона');
-          ui.text('Обои для смартфона', 16, 36, { size: 12, bold: true, col: C.cream });
-          ui.closeBtn(W - 32, 10, () => this.key('back'));
+          ui.plate(lx, 10, 'Украшения для смартфона');
+          ui.closeBtn(rx - 20, 10, () => this.key('back'));
+          if (wide) {
+            const ownedCount = ids.filter(sid => g.ownsSkin(sid)).length;
+            ui.text('В коллекции: ' + ownedCount + ' из ' + ids.length, lx + 216, 15, { size: 11, bold: true, col: C.gold });
+            ui.win(lx, 40, 276, 398, { title: 'Обои для смартфона' });
+          } else ui.text('Обои для смартфона', 16, 36, { size: 12, bold: true, col: C.cream });
+          const cw = wide ? 80 : 68, ch = wide ? 112 : 96, gx = wide ? lx + 12 : 12, gy = wide ? 70 : 56, gapX = wide ? 6 : 4, gapY = wide ? 8 : 6;
           ids.forEach((sid, i) => {
-            const x = 12 + (i % COLS) * (CW + 4), y = 56 + Math.floor(i / COLS) * (CH + 6), s0 = H.PHONE_SKINS[sid], on = i === this.sel, has = g.ownsSkin(sid);
-            if (on) { c.fillStyle = C.brassHi; c.fillRect(x - 2, y - 2, CW + 4, CH + 4); }
-            ui.phoneThumb(c, sid, x, y, CW, CH);
-            if (!has) { c.fillStyle = 'rgba(4,6,20,0.6)'; c.fillRect(x, y, CW, CH); ui.domainLock(c, x + CW / 2, y + CH / 2 - 8, C.cream); }
-            const nameLines = ui.wrap(s0.name, CW - 4, 9).slice(0, 2), nameBand = 5 + nameLines.length * 11;
-            c.fillStyle = 'rgba(4,6,20,0.8)'; c.fillRect(x, y + CH - nameBand, CW, nameBand);
-            nameLines.forEach((line, n) => ui.text(line, x + CW / 2, y + CH - nameBand + 3 + n * 11, { size: 9, align: 'center', col: on ? C.gold : C.cream }));
-            if (cur === sid) { c.fillStyle = 'rgba(120,20,16,0.9)'; c.fillRect(x, y, CW, 13); ui.text('Используется', x + CW / 2, y + 2, { size: 8, bold: true, align: 'center', col: C.cream }); }
-            ui.hit(x, y, CW, CH, () => { if (this.sel === i) this.act(); else { this.sel = i; ui.sfx('select'); } });
+            const x = gx + (i % COLS) * (cw + gapX), y = gy + Math.floor(i / COLS) * (ch + gapY), s0 = H.PHONE_SKINS[sid], on = i === this.sel, has = g.ownsSkin(sid);
+            if (on) { c.fillStyle = C.brassHi; c.fillRect(x - 2, y - 2, cw + 4, ch + 4); }
+            ui.phoneThumb(c, sid, x, y, cw, ch);
+            if (!has) { c.fillStyle = 'rgba(4,6,20,0.6)'; c.fillRect(x, y, cw, ch); ui.domainLock(c, x + cw / 2, y + ch / 2 - 8, C.cream); }
+            const nameLines = ui.wrap(s0.name, cw - 4, 9).slice(0, 2), nameBand = 5 + nameLines.length * 11;
+            c.fillStyle = 'rgba(4,6,20,0.8)'; c.fillRect(x, y + ch - nameBand, cw, nameBand);
+            nameLines.forEach((line, n) => ui.text(line, x + cw / 2, y + ch - nameBand + 3 + n * 11, { size: 9, align: 'center', col: on ? C.gold : C.cream }));
+            if (cur === sid) { c.fillStyle = 'rgba(120,20,16,0.9)'; c.fillRect(x, y, cw, 13); ui.text('Используется', x + cw / 2, y + 2, { size: 8, bold: true, align: 'center', col: C.cream }); }
+            ui.hit(x, y, cw, ch, () => { if (this.sel === i) this.act(); else { this.sel = i; ui.sfx('select'); } });
           });
+          const sc = wide ? 0.82 : 0.8, px = wide ? 200 : 232, py = wide ? 42 : 40;
           c.save();
-          c.translate(232 - 318 * 0.8, 40 - 8 * 0.8);
-          c.scale(0.8, 0.8);
+          c.translate(px - 318 * sc, py - 8 * sc);
+          c.scale(sc, sc);
           ui.drawPhone(c, fake, { preview: true, skin: own ? skin : H.PHONE_SKINS[id] });
           c.restore();
-          const x = 492, wid = 136;
-          ui.wrap(skin.name, wid, 14, true, true).slice(0, 2).forEach((l, i) => ui.text(l, x, 60 + i * 18, { size: 14, bold: true, serif: true, col: C.gold }));
-          ui.wrap(skin.quote, wid, 10).slice(0, 9).forEach((l, i) => ui.text(l, x, 104 + i * 13, { size: 10, col: '#c8d0f0' }));
-          if (!own && skin.how) ui.wrap(skin.how, wid, 10).slice(0, 3).forEach((l, i) => ui.text(l, x, 236 + i * 13, { size: 10, col: C.bad }));
-          ui.button(x, 380, wid, 30, used ? 'Используется' : own ? 'Установить' : 'Не получено', () => this.act(), { size: 12, bold: true, active: own && !used, disabled: used || !own });
-          ui.hints([['←↑↓→', 'Обои'], ['Enter', 'Установить'], ['Esc', 'Назад']], 14, HGT - 18);
+          if (wide) {
+            const ix = 475, iw = 260, x = ix + 16, wid = iw - 32;
+            ui.win(ix, 40, iw, 398, { title: 'Оформление' });
+            ui.wrap(skin.name, wid, 15, true, true).slice(0, 2).forEach((l, i) => ui.text(l, x, 72 + i * 19, { size: 15, bold: true, serif: true, col: C.gold }));
+            ui.text('★'.repeat(skin.rar || 4) + ' Тема смартфона', x, 112, { size: 10, col: G.RARITY[skin.rar || 4] });
+            c.fillStyle = 'rgba(201,164,92,0.45)'; c.fillRect(x, 130, wid, 1); ui.diamond(x + wid / 2, 130.5, 3, C.brass);
+            ui.wrap(skin.quote, wid, 11).slice(0, 8).forEach((l, i) => ui.text(l, x, 142 + i * 15, { size: 11, col: '#c8d0f0' }));
+            c.fillStyle = 'rgba(4,6,20,0.45)'; c.fillRect(x, 280, wid, 68);
+            c.strokeStyle = 'rgba(201,164,92,0.3)'; c.strokeRect(x + 0.5, 280.5, wid - 1, 67);
+            ui.text(own ? 'Статус' : 'Способ получения', x + 10, 288, { size: 10, bold: true, col: C.sub });
+            const srcText = !own && skin.how ? skin.how : used ? 'Установлено на вашем смартфоне.' : 'В вашей коллекции украшений.';
+            ui.wrap(srcText, wid - 20, 10).slice(0, 3).forEach((l, i) => ui.text(l, x + 10, 305 + i * 13, { size: 10, col: own ? C.cream : C.bad }));
+            ui.button(x, 392, wid, 30, used ? 'Используется' : own ? 'Установить' : 'Не получено', () => this.act(), { size: 12, bold: true, active: own && !used, disabled: used || !own });
+          } else {
+            const x = 492, wid = 136;
+            ui.wrap(skin.name, wid, 14, true, true).slice(0, 2).forEach((l, i) => ui.text(l, x, 60 + i * 18, { size: 14, bold: true, serif: true, col: C.gold }));
+            ui.wrap(skin.quote, wid, 10).slice(0, 9).forEach((l, i) => ui.text(l, x, 104 + i * 13, { size: 10, col: '#c8d0f0' }));
+            if (!own && skin.how) ui.wrap(skin.how, wid, 10).slice(0, 3).forEach((l, i) => ui.text(l, x, 236 + i * 13, { size: 10, col: C.bad }));
+            ui.button(x, 380, wid, 30, used ? 'Используется' : own ? 'Установить' : 'Не получено', () => this.act(), { size: 12, bold: true, active: own && !used, disabled: used || !own });
+          }
+          ui.hints([['←↑↓→', 'Обои'], ['Enter', 'Установить'], ['Esc', 'Назад']], lx + 2, HGT - 18);
         },
         key(k) {
           const n = ids.length;

@@ -573,6 +573,11 @@
     },
 
     renderSite(url) {
+      const H = Hsr();
+      const wantEn = typeof window !== 'undefined' && window.i18n && typeof window.i18n.getLanguage === 'function' && window.i18n.getLanguage() === 'en';
+      const prevLang = H && H.getLang ? H.getLang() : 'ru';
+      if (H && H.setLang && prevLang !== (wantEn ? 'en' : 'ru')) H.setLang(wantEn ? 'en' : 'ru');
+      try {
       const route = this.parseUrl(url);
       const here = NAV_OF[route.view] || route.view;
       const body = {
@@ -590,7 +595,7 @@
         guestbook: () => this.renderGuestbook(),
         missing: () => this.renderMissing()
       }[route.view]();
-      return `
+      const html = `
         <div class="hsrs-page">
           <table class="hsrs-frame" cellspacing="0" cellpadding="0">
             <tr><td>${this.renderHeader()}</td></tr>
@@ -599,6 +604,10 @@
             <tr><td>${this.renderFooter()}</td></tr>
           </table>
         </div>`;
+      return wantEn && H && H.tr ? html.replace(/>([^<>]+)</g, (m, txt) => '>' + H.tr(txt) + '<') : html;
+      } finally {
+        if (H && H.setLang && prevLang !== (wantEn ? 'en' : 'ru')) H.setLang(prevLang);
+      }
     },
 
     primaryAction() {

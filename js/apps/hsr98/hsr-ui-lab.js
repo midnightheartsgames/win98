@@ -46,7 +46,7 @@
       for (let i = 0; i < 18; i++) {
         const ph = (this.t * (0.04 + G.hash(i, 5, 41) * 0.05) + G.hash(i, 6, 41)) % 1;
         c.fillStyle = i % 2 ? 'rgba(255,236,190,0.85)' : 'rgba(255,190,110,0.8)';
-        c.fillRect(Math.round(G.hash(i, 7, 41) * W), Math.round(ph * 320), 2, 2);
+        c.fillRect(this.left + Math.round(G.hash(i, 7, 41) * this.vw), Math.round(ph * 320), 2, 2);
       }
     },
 
@@ -69,14 +69,14 @@
       }
       c.fillStyle = 'rgba(0,0,0,0.14)';
       for (let y = by; y < by + bh; y += 3) c.fillRect(bx, y, bw, 1);
-      const shade = c.createLinearGradient(bx, 0, bx + 300, 0);
+      const sw = bw > 640 ? 350 : 300, shade = c.createLinearGradient(bx, 0, bx + sw, 0);
       shade.addColorStop(0, 'rgba(8,4,20,0.72)'); shade.addColorStop(0.75, 'rgba(8,4,20,0.5)'); shade.addColorStop(1, 'rgba(8,4,20,0)');
-      c.fillStyle = shade; c.fillRect(bx, by, 300, bh);
+      c.fillStyle = shade; c.fillRect(bx, by, sw, bh);
     },
 
     labBanner(c, bx, by, bw, bh, id, pick) {
-      const g = this.game, S = H.BANNERS.lab.stars[id], ch = H.CHARS[id], cd = H.CONES[S.cone], P = STYLE[id] || STYLE.theherta, t = this.t, r = g.state.roster[id];
-      const feet = by + bh - 10, mx = bx + 452, cx = bx + 256, cy = by + 62, cw = 104, chh = 146;
+      const g = this.game, S = H.BANNERS.lab.stars[id], ch = H.CHARS[id], cd = H.CONES[S.cone], P = STYLE[id] || STYLE.theherta, t = this.t, r = g.state.roster[id], wide = bw > 640;
+      const feet = by + bh - 10, mx = bx + (wide ? 566 : 452), cx = bx + (wide ? 326 : 256), cy = by + 62, cw = 104, chh = 146, starX = bx + (wide ? 276 : 226), lw = wide ? 264 : 214;
       const sup = g.state.inv.cones.filter(x => x.id === S.cone).reduce((a, x) => Math.max(a, x.sup || 1), 0);
       this.labBackdrop(c, id, bx, by, bw, bh, t);
       c.fillStyle = 'rgba(255,255,255,0.16)'; c.beginPath(); c.ellipse(mx, feet, 70, 10, 0, 0, Math.PI * 2); c.fill();
@@ -90,16 +90,16 @@
       this.text(S.title[1], bx + 22, by + 56, { size: 20, bold: true, serif: true, col: P.title });
       G.elemIcon(c, ch.elem, bx + 32, by + 100, 7);
       this.text(ch.name, bx + 46, by + 93, { size: 14, bold: true, col: '#ffe6a8' });
-      this.text('★★★★★', bx + 226, by + 95, { size: 10, align: 'right', col: G.RARITY[5] });
+      this.text('★★★★★', starX, by + 95, { size: 10, align: 'right', col: G.RARITY[5] });
       G.pathIcon(c, ch.path, bx + 45, by + 111, 12, P.sub);
       this.text(H.PATHS[ch.path].name + ' · ' + H.ELEMENTS[ch.elem].name + (r ? ' · эйдолон ' + r.eid : ' · нет в экипаже'), bx + 60, by + 111, { size: 10, col: P.sub });
       G.pathIcon(c, cd.path, bx + 24, by + 134, 14, '#f2dc9a');
-      this.text(this.fitText(cd.name, 12, 180, true), bx + 44, by + 134, { size: 12, bold: true, col: '#ffe6a8' });
-      this.text('★★★★★', bx + 226, by + 151, { size: 10, align: 'right', col: G.RARITY[5] });
+      this.text(this.fitText(cd.name, 12, wide ? 230 : 180, true), bx + 44, by + 134, { size: 12, bold: true, col: '#ffe6a8' });
+      this.text('★★★★★', starX, by + 151, { size: 10, align: 'right', col: G.RARITY[5] });
       this.text('Световой конус' + (sup ? ' · S' + sup : ' · нет'), bx + 44, by + 151, { size: 10, col: P.sub });
       const rows = ['5★: только эта пара, строго по очереди.', '3★ и 4★: статисты, в сохранение не идут.'];
       if (r && r.eid >= 6 && sup >= 5) rows.push('Эйдолоны и наложения открыты, дальше только копии.');
-      rows.forEach((l, i) => this.wrap(l, 214, 10).forEach((s, j) => this.text(s, bx + 24, by + 186 + i * 28 + j * 12, { size: 10, col: C.cream })));
+      rows.forEach((l, i) => this.wrap(l, lw, 10).forEach((s, j) => this.text(s, bx + 24, by + 186 + i * 28 + j * 12, { size: 10, col: C.cream })));
       this.evPicker(c, bx + bw - 62, by + 12, id, pick, 'lab');
     },
 
@@ -120,23 +120,28 @@
         draw(c) {
           if (this.show) { this.show.draw(c); return; }
           const id = g.starOf('lab'), pity = g.pityOf('lab'), next = g.labNext(id), n = have();
+          const wb = ui.warpBox ? ui.warpBox() : { wide: false, lx: 12, rx: W, bx: 20, by: 44, bw: 600, bh: 290, fy: 346 };
+          const { bx, by, bw, bh, fy } = wb, y = fy + 48, rx = bx + bw - 16;
           ui.fullBg(c, false);
-          ui.plate(12, 10, 'Секретный прыжок');
-          ui.button(W - 118, 10, 82, 22, 'История', () => ui.openWarpHistory('lab'), { icon: 'archive', size: 11 });
-          ui.closeBtn(W - 32, 10, () => this.key('back'));
-          const bx = 20, by = 44, bw = 600, bh = 290, fy = 346, y = fy + 48;
+          ui.plate(wb.lx, 10, 'Секретный прыжок');
+          ui.button(wb.rx - 118, 10, 82, 22, 'История', () => ui.openWarpHistory('lab'), { icon: 'archive', size: 11 });
+          ui.closeBtn(wb.rx - 32, 10, () => this.key('back'));
           c.fillStyle = '#000'; c.fillRect(bx - 2, by - 2, bw + 4, bh + 4);
           ui.labBanner(c, bx, by, bw, bh, id, pick => this.setStar(pick));
           c.strokeStyle = C.brass; c.lineWidth = 2; c.strokeRect(bx + 1, by + 1, bw - 2, bh - 2); c.lineWidth = 1;
-          ui.win(20, fy, 600, 110, { alpha: 0.9 });
-          ui.money(36, fy + 12, 'lpass', 'Секретные пропуски ' + H.fmt(n), { size: 20 });
-          ui.text('До 5★: ' + (T.labPity5 - pity.five) + ' · до 4★: ' + (T.pity4 - pity.four), 604, fy + 12, { size: 11, align: 'right', col: C.sub });
-          ui.text(ui.fitText('Следующий 5★: ' + next.name, 10, 300, true), 604, fy + 27, { size: 10, align: 'right', bold: true, col: C.gold });
-          ui.text('Выдать', 36, fy + 36, { size: 9, col: C.sub });
-          T.labGrants.forEach((v, i) => ui.button(GRANT_X[i], y, GRANT_W[i], 34, '+' + v, () => { this.sel = i; this.act(i); }, { active: this.sel === i, bold: true, size: 11 }));
-          PULLS.forEach((v, i) => ui.button(PULL_X[i], y, PULL_W, 34, 'Прыжок ×' + v, () => { this.sel = BTN_GRANT + i; this.act(BTN_GRANT + i); }, { active: this.sel === BTN_GRANT + i, disabled: n < v, bold: true, icon: 'warp' }));
+          ui.win(bx, fy, bw, 110, { alpha: 0.9 });
+          ui.money(bx + 16, fy + 12, 'lpass', 'Секретные пропуски ' + H.fmt(n), { size: 20 });
+          ui.text('До 5★: ' + (T.labPity5 - pity.five) + ' · до 4★: ' + (T.pity4 - pity.four), rx, fy + 12, { size: 11, align: 'right', col: C.sub });
+          ui.text(ui.fitText('Следующий 5★: ' + next.name, 10, wb.wide ? 420 : 300, true), rx, fy + 27, { size: 10, align: 'right', bold: true, col: C.gold });
+          ui.text('Выдать', bx + 16, fy + 36, { size: 9, col: C.sub });
+          T.labGrants.forEach((v, i) => ui.button(bx - 20 + GRANT_X[i], y, GRANT_W[i], 34, '+' + v, () => { this.sel = i; this.act(i); }, { active: this.sel === i, bold: true, size: 11 }));
+          const pw = wb.wide ? 230 : PULL_W;
+          PULLS.forEach((v, i) => {
+            const px = wb.wide ? (rx - 2 * pw - 14 + i * (pw + 14)) : PULL_X[i];
+            ui.button(px, y, pw, 34, 'Прыжок ×' + v, () => { this.sel = BTN_GRANT + i; this.act(BTN_GRANT + i); }, { active: this.sel === BTN_GRANT + i, disabled: n < v, bold: true, icon: 'warp' });
+          });
           ui.text('1 прыжок = 1 секретный пропуск · нефрит не принимается', W / 2, fy + 90, { align: 'center', size: 10, col: C.dim });
-          ui.hints([['↑↓', 'Героиня'], ['←→', 'Выбор'], ['Enter', 'Действие'], ['G', 'Выдать +10'], ['H', 'История'], ['V', 'Конус'], ['Esc', 'Назад']], 12, HGT - 18);
+          ui.hints([['↑↓', 'Героиня'], ['←→', 'Выбор'], ['Enter', 'Действие'], ['G', 'Выдать +10'], ['H', 'История'], ['V', 'Конус'], ['Esc', 'Назад']], wb.lx, HGT - 18);
         },
         key(k, code) {
           if (this.show) { if (code === 'Enter' || code === 'NumpadEnter') this.show.enter(); else if (code === 'Escape') this.show.skip(); else if (this.show.key) this.show.key(k); this.endShow(); return; }

@@ -4,19 +4,25 @@
   const { W, HGT, C } = H.UI_CONST;
 
   const PAPER = { bg: '#e6dec8', line: '#d8cfb6', card: '#f4efe2', ink: '#2a2418', sub: '#7a705c', dark: '#2a2418', bar: '#b8ae98', lock: '#3a3628' };
-  const BODY = { x: 24, y: 64, w: 592, h: 378 };
-  const TAB = { x: 44, y: 38, w: 62, h: 26, step: 66 };
-  const ACT = { x: 40, y: 80, w: 264, h: 64, gap: 8 };
-  const CARD = { x: 320, y: 80, w: 140, h: 96, gx: 8, gy: 10, cols: 2 };
-  const IDX = { x: 40, y: 80, cw: 236, ch: 40, gap: 5, rx: 292, rh: 50, vis: 5 };
-  const DAY = { mx: 76, my: 108, bx: 136, bw: 448, by: 98, cards: { x: 40, y: 180, w: 136, h: 214, gap: 8, vis: 4 } };
   const PAGE = { x: 36, y: 46, w: 568, h: 396, rows: 10, rh: 22 };
 
   Object.assign(H.UI.prototype, {
+    guideBox() {
+      const wide = this.wide();
+      const body = { x: wide ? this.left + 20 : 24, y: 64, w: wide ? this.vw - 40 : 592, h: 378 };
+      const tab = { x: body.x + 20, y: 38, w: wide ? 72 : 62, h: 26, step: wide ? 78 : 66 };
+      const act = { x: body.x + 16, y: 80, w: wide ? 296 : 264, h: 64, gap: 8 };
+      const card = { x: wide ? 243 : 320, y: 80, w: wide ? 150 : 140, h: 96, gx: wide ? 10 : 8, gy: 10, cols: wide ? 3 : 2 };
+      const idx = { x: body.x + 16, y: 80, cw: wide ? 268 : 236, ch: 40, gap: 5, rx: wide ? 213 : 292, rh: 50, vis: 5 };
+      const day = { mx: body.x + 52, my: 108, bx: body.x + 112, bw: body.w - 144, by: 98, cards: { x: body.x + 16, y: 180, w: wide ? 148 : 136, h: 214, gap: wide ? 10 : 8, vis: wide ? 5 : 4 } };
+      const stage = { x: idx.rx, y: 80, w: body.x + body.w - 12 - idx.rx, h: 354 };
+      return { wide, body, tab, act, card, idx, day, stage };
+    },
+
     guideLock(i) { return H.GUIDE_SECTIONS[i].open(this.game); },
 
     guidePaper(c) {
-      const { x, y, w, h } = BODY;
+      const { x, y, w, h } = this.guideBox().body;
       c.fillStyle = '#010208'; c.fillRect(x - 3, y - 3, w + 6, h + 6);
       c.fillStyle = C.brass; c.fillRect(x - 2, y - 2, w + 4, h + 4);
       c.fillStyle = PAPER.bg; c.fillRect(x, y, w, h);
@@ -30,7 +36,7 @@
     },
 
     guideTabs(c, scr) {
-      const ui = this, al = this.game.alerts();
+      const ui = this, al = this.game.alerts(), TAB = this.guideBox().tab;
       H.GUIDE_SECTIONS.forEach((sec, i) => {
         const x = TAB.x + i * TAB.step, on = i === scr.tab, locked = !!ui.guideLock(i);
         c.fillStyle = '#010208'; c.fillRect(x - 1, TAB.y - 1, TAB.w + 2, TAB.h + (on ? 4 : 1));
@@ -46,20 +52,21 @@
     },
 
     guideHeader(c, scr) {
-      const ui = this;
-      G.menuIcon(c, 'ipg', 10, 6, 28, C.brassHi);
-      ui.text('Межзвёздный путеводитель', 44, 5, { size: 10, col: C.brass });
-      ui.text(H.GUIDE_SECTIONS[scr.tab].label, 44, 18, { size: 14, bold: true, serif: true, col: C.gold });
-      ui.button(W - 140, 8, 100, 22, 'Правила', () => ui.openGuideRules(scr.tab), { size: 11, icon: 'info' });
-      ui.closeBtn(W - 32, 10, () => scr.key('back'));
+      const ui = this, lx = ui.left + 10, rx = ui.right;
+      G.menuIcon(c, 'ipg', lx, 6, 28, C.brassHi);
+      ui.text('Межзвёздный путеводитель', lx + 34, 5, { size: 10, col: C.brass });
+      ui.text(H.GUIDE_SECTIONS[scr.tab].label, lx + 34, 18, { size: 14, bold: true, serif: true, col: C.gold });
+      ui.button(rx - 140, 8, 100, 22, 'Правила', () => ui.openGuideRules(scr.tab), { size: 11, icon: 'info' });
+      ui.closeBtn(rx - 32, 10, () => scr.key('back'));
     },
 
     guideLockedBody(c, why) {
+      const BODY = this.guideBox().body;
       this.text('Раздел откроется ' + why + '.', BODY.x + BODY.w / 2, BODY.y + BODY.h / 2 - 8, { align: 'center', size: 13, bold: true, serif: true, col: PAPER.ink, shadow: false });
     },
 
     guideActRow(c, a, x, y, on) {
-      const ui = this;
+      const ui = this, ACT = this.guideBox().act;
       c.fillStyle = 'rgba(0,0,0,0.25)'; c.fillRect(x + 2, y + 2, ACT.w, ACT.h);
       c.fillStyle = on ? PAPER.dark : PAPER.card; c.fillRect(x, y, ACT.w, ACT.h);
       c.fillStyle = on ? C.brassHi : PAPER.bar; c.fillRect(x, y, 4, ACT.h);
@@ -85,7 +92,7 @@
     },
 
     guideCard(c, p, x, y, on) {
-      const ui = this;
+      const ui = this, CARD = this.guideBox().card;
       c.fillStyle = 'rgba(0,0,0,0.3)'; c.fillRect(x + 3, y + 3, CARD.w, CARD.h);
       c.fillStyle = '#ffffff'; c.fillRect(x - 2, y - 2, CARD.w + 4, CARD.h + 4);
       if (p.started) {
@@ -105,16 +112,16 @@
     },
 
     guideTrail(c, scr) {
-      const ui = this, acts = this.game.guideActs();
+      const ui = this, acts = this.game.guideActs(), { body: BODY, act: ACT, card: CARD } = this.guideBox();
       scr.act = Math.max(0, Math.min(scr.act, acts.length - 1));
       acts.forEach((a, i) => {
         const y = ACT.y + i * (ACT.h + ACT.gap);
         ui.guideActRow(c, a, ACT.x, y, i === scr.act);
         ui.hit(ACT.x, y, ACT.w, ACT.h, () => { if (scr.act !== i) { scr.act = i; scr.card = 0; ui.sfx('select'); } scr.focus = 'list'; });
       });
-      const a = acts[scr.act];
+      const a = acts[scr.act], rcx = CARD.x + Math.round((BODY.x + BODY.w - 16 - CARD.x) / 2);
       if (!a.open || !a.parts.length) {
-        ui.wrap('Экспресс ещё не прокладывал сюда путь. Глава появится, когда Освоение дойдёт до этого мира.', 260, 11).forEach((l, i) => ui.text(l, CARD.x + 144, BODY.y + 150 + i * 16, { align: 'center', size: 11, col: PAPER.sub, shadow: false }));
+        ui.wrap('Экспресс ещё не прокладывал сюда путь. Глава появится, когда Освоение дойдёт до этого мира.', 280, 11).forEach((l, i) => ui.text(l, rcx, BODY.y + 150 + i * 16, { align: 'center', size: 11, col: PAPER.sub, shadow: false }));
         return;
       }
       scr.card = Math.max(0, Math.min(scr.card, a.parts.length - 1));
@@ -126,7 +133,7 @@
     },
 
     guideTrailKey(scr, k) {
-      const ui = this, acts = this.game.guideActs(), a = acts[scr.act], n = a.open ? a.parts.length : 0;
+      const ui = this, acts = this.game.guideActs(), a = acts[scr.act], n = a.open ? a.parts.length : 0, CARD = this.guideBox().card;
       if (scr.focus === 'list') {
         if (k === 'up' || k === 'down') { scr.act = (scr.act + (k === 'up' ? acts.length - 1 : 1)) % acts.length; scr.card = 0; ui.sfx('select'); return true; }
         if ((k === 'right' || k === 'ok') && n) { scr.focus = 'cards'; scr.card = 0; ui.sfx('select'); return true; }
@@ -147,16 +154,17 @@
         sel: 0, sc: { top: 0 },
         draw(c) {
           const st = g.chapterState(ch), list = st.list, cur = list.findIndex(m => !m.done);
-          c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(0, 0, W, HGT);
-          ui.win(PAGE.x, PAGE.y, PAGE.w, PAGE.h, { title: chap.label });
-          c.fillStyle = '#ffffff'; c.fillRect(PAGE.x + 14, PAGE.y + 20, 228, 158);
-          if (st.started) ui.guidePhoto(c, ch, PAGE.x + 18, PAGE.y + 24, 220, 150);
-          else { c.fillStyle = PAPER.lock; c.fillRect(PAGE.x + 18, PAGE.y + 24, 220, 150); ui.guidePadlock(c, PAGE.x + 128, PAGE.y + 96, '#8a8068'); }
-          ui.text(part, PAGE.x + 16, PAGE.y + 190, { size: 11, col: C.sub });
-          ui.wrap(chap.name, 228, 14).slice(0, 3).forEach((l, i) => ui.text(l, PAGE.x + 16, PAGE.y + 206 + i * 18, { size: 14, bold: true, serif: true, col: C.gold }));
-          ui.text('Миссии: ' + st.done + ' / ' + st.total, PAGE.x + 16, PAGE.y + 266, { size: 11, col: C.cream });
-          if (st.finished) ui.text('Завершено', PAGE.x + 16, PAGE.y + 284, { size: 11, bold: true, col: C.ok });
-          const lx = PAGE.x + 258, lw = PAGE.w - 274, top = ui.listTop(this.sc, this.sel, list.length, PAGE.rows);
+          const pw = ui.wide() ? 700 : PAGE.w, px = ui.wide() ? Math.round((W - pw) / 2) : PAGE.x;
+          c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(ui.left, 0, ui.vw, HGT);
+          ui.win(px, PAGE.y, pw, PAGE.h, { title: chap.label });
+          c.fillStyle = '#ffffff'; c.fillRect(px + 14, PAGE.y + 20, 228, 158);
+          if (st.started) ui.guidePhoto(c, ch, px + 18, PAGE.y + 24, 220, 150);
+          else { c.fillStyle = PAPER.lock; c.fillRect(px + 18, PAGE.y + 24, 220, 150); ui.guidePadlock(c, px + 128, PAGE.y + 96, '#8a8068'); }
+          ui.text(part, px + 16, PAGE.y + 190, { size: 11, col: C.sub });
+          ui.wrap(chap.name, 228, 14).slice(0, 3).forEach((l, i) => ui.text(l, px + 16, PAGE.y + 206 + i * 18, { size: 14, bold: true, serif: true, col: C.gold }));
+          ui.text('Миссии: ' + st.done + ' / ' + st.total, px + 16, PAGE.y + 266, { size: 11, col: C.cream });
+          if (st.finished) ui.text('Завершено', px + 16, PAGE.y + 284, { size: 11, bold: true, col: C.ok });
+          const lx = px + 258, lw = pw - 274, top = ui.listTop(this.sc, this.sel, list.length, PAGE.rows);
           list.slice(top, top + PAGE.rows).forEach((m, j) => {
             const i = top + j, y = PAGE.y + 20 + j * PAGE.rh, on = i === this.sel, known = m.done || i === cur;
             c.fillStyle = on ? 'rgba(242,220,154,0.18)' : 'rgba(255,255,255,0.03)'; c.fillRect(lx, y, lw, PAGE.rh - 2);
@@ -165,7 +173,7 @@
             ui.text(known ? ui.fitText(m.name, 11, lw - 34) : '???', lx + 24, y + 4, { size: 11, col: known ? C.cream : C.dim });
             ui.hit(lx, y, lw, PAGE.rh - 2, () => { this.sel = i; });
           });
-          if (list.length > PAGE.rows) ui.scrollBar(PAGE.x + PAGE.w - 14, PAGE.y + 20, PAGE.rows * PAGE.rh - 2, this.sc, list.length, PAGE.rows);
+          if (list.length > PAGE.rows) ui.scrollBar(px + pw - 14, PAGE.y + 20, PAGE.rows * PAGE.rh - 2, this.sc, list.length, PAGE.rows);
           const m = list[this.sel], dy = PAGE.y + 20 + PAGE.rows * PAGE.rh + 8;
           c.fillStyle = C.brassDk; c.fillRect(lx, dy - 4, lw, 1);
           if (m) {
@@ -237,7 +245,7 @@
     },
 
     guideIndexRow(c, cat, r, x, y, w, on) {
-      const ui = this, g = this.game, quick = r.kind === 'calyx' && g.domainCoupons(r.id) > 0, tk = r.forTarget && g.guideTarget();
+      const ui = this, g = this.game, IDX = this.guideBox().idx, quick = r.kind === 'calyx' && g.domainCoupons(r.id) > 0, tk = r.forTarget && g.guideTarget();
       c.fillStyle = 'rgba(0,0,0,0.2)'; c.fillRect(x + 2, y + 2, w, IDX.rh);
       c.fillStyle = on ? '#fbf6e8' : PAPER.card; c.fillRect(x, y, w, IDX.rh);
       c.fillStyle = r.open ? cat.col : PAPER.bar; c.fillRect(x, y, 4, IDX.rh);
@@ -272,8 +280,8 @@
     },
 
     guideIndex(c, scr) {
-      const ui = this, g = this.game, cats = H.GUIDE_INDEX;
-      ui.powerChip(420, 12, { sep: ' / ' });
+      const ui = this, g = this.game, cats = H.GUIDE_INDEX, { body: BODY, idx: IDX, wide } = this.guideBox();
+      ui.powerChip(wide ? ui.right - 260 : 420, 12, { sep: ' / ' });
       scr.cat = Math.max(0, Math.min(scr.cat, cats.length - 1));
       cats.forEach((cat, i) => {
         const y = IDX.y + i * (IDX.ch + IDX.gap), on = i === scr.cat && scr.focus !== 'pick';
@@ -283,7 +291,7 @@
         if (on) { c.fillStyle = '#3a3426'; c.beginPath(); c.arc(IDX.x + 24, y + IDX.ch / 2, 14, 0, Math.PI * 2); c.fill(); }
         G.menuIcon(c, cat.icon, IDX.x + 13, y + IDX.ch / 2 - 11, 22, cat.col);
         ui.text(cat.label, IDX.x + 46, y + 5, { size: 13, bold: true, col: on ? C.gold : PAPER.ink, shadow: on });
-        const tk = cat.id === 'target' && g.guideTarget(), sub = tk ? H.CHARS[g.kitOf(tk)].name === 'Первопроходец' ? g.state.name : H.CHARS[g.kitOf(tk)].name : cat.sub;
+        const tk = cat.id === 'target' && g.guideTarget(), sub = tk ? g.kitOf(tk).startsWith('trail') ? g.state.name : H.CHARS[g.kitOf(tk)].name : cat.sub;
         ui.text(ui.fitText(sub, 10, IDX.cw - 54), IDX.x + 46, y + 22, { size: 10, col: on ? C.brass : PAPER.sub, shadow: on });
         ui.hit(IDX.x, y, IDX.cw, IDX.ch, () => { if (scr.cat !== i) { scr.cat = i; scr.row = 0; scr.isc = { top: 0 }; ui.sfx('select'); } scr.focus = 'list'; });
       });
@@ -346,7 +354,7 @@
     },
 
     guideTargetButton(c, scr) {
-      const ui = this, g = this.game, key = g.guideTarget(), y = IDX.y + H.GUIDE_INDEX.length * (IDX.ch + IDX.gap) + 2, w = IDX.cw, x = IDX.x, h = 28, on = scr.focus === 'pick';
+      const ui = this, g = this.game, IDX = this.guideBox().idx, key = g.guideTarget(), y = IDX.y + H.GUIDE_INDEX.length * (IDX.ch + IDX.gap) + 2, w = IDX.cw, x = IDX.x, h = 28, on = scr.focus === 'pick';
       const done = key && !g.targetNeeds(key).length, blink = done && Math.sin(ui.t * 5) > 0;
       c.fillStyle = 'rgba(0,0,0,0.25)'; c.fillRect(x + 2, y + 2, w, h);
       c.fillStyle = on ? PAPER.dark : blink ? '#f4e2a8' : PAPER.card; c.fillRect(x, y, w, h);
@@ -395,13 +403,13 @@
     },
 
     guideTargetPanel(c, scr, rx, rw) {
-      const ui = this, g = this.game, key = g.guideTarget();
+      const ui = this, g = this.game, IDX = this.guideBox().idx, key = g.guideTarget();
       if (!key) {
         ui.wrap('Выберите героя, которого хотите развить. Путеводитель посчитает, каких материалов ему не хватает, и подскажет, где их взять.', rw - 40, 11).forEach((l, i) => ui.text(l, rx + rw / 2, IDX.y + 60 + i * 16, { align: 'center', size: 11, col: PAPER.sub, shadow: false }));
         ui.button(rx + rw / 2 - 90, IDX.y + 130, 180, 26, 'Выбрать героя', () => ui.openGuideTargetPick(scr), { size: 11, icon: 'chars' });
         return;
       }
-      const kit = g.kitOf(key), name = H.CHARS[kit].name === 'Первопроходец' ? g.state.name : H.CHARS[kit].name, items = ui.guideTargetItems(key), r = g.state.roster[key], own = g.guideOwned(key);
+      const kit = g.kitOf(key), name = kit.startsWith('trail') ? g.state.name : H.CHARS[kit].name, items = ui.guideTargetItems(key), r = g.state.roster[key], own = g.guideOwned(key);
       c.fillStyle = PAPER.dark; c.fillRect(rx, IDX.y, rw, 24);
       c.fillStyle = C.brassHi; c.fillRect(rx, IDX.y + 23, rw, 1);
       ui.text(ui.fitText('Развитие: ' + name + (own ? ', ур. ' + r.lvl : ' · Прыжок'), 12, rw - 96, true), rx + 10, IDX.y + 5, { size: 12, bold: true, col: C.gold });
@@ -496,7 +504,7 @@
         sel: Math.max(0, at), sc: { top: 0 },
         draw(c) {
           const x0 = W / 2 - (COLS * CW) / 2, y0 = 92;
-          c.fillStyle = 'rgba(2,3,12,0.6)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.6)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           ui.win(x0 - 16, 64, COLS * CW + 32, VIS * CH + 60, { title: 'Сменить цель развития' });
           const rows = Math.ceil(list.length / COLS), top = ui.listTop(this.sc, Math.floor(this.sel / COLS), rows, VIS);
           list.slice(top * COLS, (top + VIS) * COLS).forEach((k, j) => {
@@ -505,7 +513,7 @@
             if (!own) { c.save(); c.globalAlpha = 0.6; }
             ui.portraitCard(c, G.lookOf(kit, g), x + 10, y, 52, { elem: H.CHARS[kit].elem });
             if (!own) c.restore();
-            const nm = H.CHARS[kit].name === 'Первопроходец' ? g.state.name : H.CHARS[kit].name;
+            const nm = kit.startsWith('trail') ? g.state.name : H.CHARS[kit].name;
             ui.text(ui.fitText(nm, 9, CW - 4), x + CW / 2, y + 56, { align: 'center', size: 9, bold: on, col: on ? C.gold : own ? C.cream : C.sub });
             const info = g.guideWarpInfo(k);
             if (warp || (!own && info)) { c.fillStyle = own ? '#a8803a' : info.tag === 'Прыжок' ? '#6a3ab8' : '#3a5a9a'; c.fillRect(x + 10, y + 40, 52, 11); ui.text(info.tag, x + 36, y + 40, { align: 'center', size: 8, bold: true, col: '#fff6e0', shadow: false }); }
@@ -529,7 +537,7 @@
     },
 
     guideSideRow(c, x, y, title, status, on, open, i, scr, field) {
-      const ui = this;
+      const ui = this, IDX = this.guideBox().idx;
       c.fillStyle = 'rgba(0,0,0,0.25)'; c.fillRect(x + 2, y + 2, IDX.cw, 56);
       c.fillStyle = on ? PAPER.dark : PAPER.card; c.fillRect(x, y, IDX.cw, 56);
       c.fillStyle = on ? C.brassHi : PAPER.bar; c.fillRect(x, y, 4, 56);
@@ -539,10 +547,10 @@
     },
 
     guideStage(c, draw) {
-      const x = 292, y = 80, w = 308, h = 354;
+      const { x, y, w, h } = this.guideBox().stage;
       c.fillStyle = '#010208'; c.fillRect(x - 2, y - 2, w + 4, h + 4);
       c.save(); c.beginPath(); c.rect(x, y, w, h); c.clip();
-      c.translate(x - 170, y - 60);
+      c.translate(x - (w > 470 ? 90 : 170), y - 60);
       draw(c);
       c.restore();
       c.fillStyle = 'rgba(4,4,16,0.35)'; c.fillRect(x, y, w, h);
@@ -561,7 +569,7 @@
     },
 
     guideCosmicView(c, scr) {
-      const ui = this, list = this.game.guideCosmic();
+      const ui = this, ACT = this.guideBox().act, list = this.game.guideCosmic();
       scr.wsel = Math.max(0, Math.min(scr.wsel, list.length - 1));
       list.forEach((r, i) => ui.guideSideRow(c, ACT.x, ACT.y + i * 64, r.w.title, r.w.name + ' · ' + (!r.open ? 'закрыт' : r.first ? 'первая награда ×3' : 'пройден'), i === scr.wsel, r.open, i, scr, 'wsel'));
       const r = list[scr.wsel], b = ui.guideStage(c, cc => ui.suBackdrop(cc));
@@ -583,7 +591,7 @@
     },
 
     guideTreasureView(c, scr) {
-      const ui = this, g = this.game, t = g.guideTreasure(), done = t.stars >= t.total, fiction = g.guidePf();
+      const ui = this, g = this.game, ACT = this.guideBox().act, t = g.guideTreasure(), done = t.stars >= t.total, fiction = g.guidePf();
       ui.guideSideRow(c, ACT.x, ACT.y, 'Зал забвения', (done ? '✓ ' : '') + '★ ' + t.stars + ' / ' + t.total, scr.tsel === 0, t.open, 0, scr, 'tsel');
       ui.guideSideRow(c, ACT.x, ACT.y + 64, 'Чистый вымысел', fiction.open ? (fiction.stars >= fiction.total ? '✓ ' : '') + '★ ' + fiction.stars + ' / ' + fiction.total : 'Закрыт', scr.tsel === 1, fiction.open, 1, scr, 'tsel');
       if (scr.tsel === 1) { ui.guidePfView(c, fiction); return; }
@@ -593,8 +601,9 @@
       ui.text('★', b.x + b.w / 2 - 34, b.y + 70, { align: 'center', size: 28, bold: true, col: '#ffd060' });
       ui.text(t.stars + ' / ' + t.total, b.x + b.w / 2 + 14, b.y + 76, { align: 'center', size: 20, bold: true, serif: true, col: C.cream });
       ui.text('Награды за звёзды', b.x + 14, b.y + 120, { size: 11, bold: true, col: C.cream });
+      const cols = b.w > 400 ? 10 : 8, step = b.w > 400 ? 44 : 36;
       t.tiers.forEach((tr, i) => {
-        const tx = b.x + 18 + (i % 8) * 36, ty = b.y + 142 + Math.floor(i / 8) * 36, col = tr.got ? '#6a8a6a' : tr.ready ? '#ffd060' : '#4a4e68';
+        const tx = b.x + 18 + (i % cols) * step, ty = b.y + 142 + Math.floor(i / cols) * 36, col = tr.got ? '#6a8a6a' : tr.ready ? '#ffd060' : '#4a4e68';
         c.fillStyle = '#010208'; c.fillRect(tx - 1, ty - 1, 30, 30);
         c.fillStyle = tr.ready && !tr.got ? 'rgba(255,208,96,' + (0.35 + 0.25 * Math.sin(ui.t * 5)) + ')' : 'rgba(255,255,255,0.08)'; c.fillRect(tx, ty, 28, 28);
         c.strokeStyle = col; c.strokeRect(tx + 0.5, ty + 0.5, 27, 27);
@@ -662,7 +671,7 @@
     },
 
     guideDailyView(c, scr) {
-      const ui = this, g = this.game, d = g.dailySync(), steps = g.dailySteps(), tasks = g.dailyTasks();
+      const ui = this, g = this.game, { body: BODY, day: DAY } = this.guideBox(), d = g.dailySync(), steps = g.dailySteps(), tasks = g.dailyTasks();
       const mx = DAY.mx, my = DAY.my, x0 = DAY.bx, x1 = DAY.bx + DAY.bw;
       c.fillStyle = '#010208'; c.beginPath(); c.arc(mx, my, 32, 0, Math.PI * 2); c.fill();
       c.fillStyle = C.brass; c.beginPath(); c.arc(mx, my, 31, 0, Math.PI * 2); c.fill();
@@ -740,7 +749,7 @@
       const ui = this, R = H.GUIDE_RULES, sec = H.GUIDE_SECTIONS[tab];
       this.push({
         draw(c) {
-          c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(ui.left, 0, ui.vw, HGT);
           const x = 70, y = 56, w = 500, h = 368;
           ui.win(x, y, w, h, { title: 'Правила' });
           let ly = y + 20;
@@ -753,7 +762,7 @@
           ly += 20;
           ui.wrap(R[sec.id] || 'Раздел появится в следующем обновлении Путеводителя.', w - 40, 11).forEach((l, i) => ui.text(l, x + 20, ly + i * 14, { size: 11, col: C.cream }));
           ui.hints([['Enter', 'Закрыть']], W / 2, y + h + 8, { align: 'center' });
-          ui.hit(0, 0, W, HGT, () => this.key('ok'));
+          ui.hit(ui.left, 0, ui.vw, HGT, () => this.key('ok'));
         },
         key(k) { if (k === 'ok' || k === 'back') ui.pop(); }
       });
@@ -788,7 +797,7 @@
           if (!lock && S[this.tab].id === 'daily') hints.push(['←→', 'Задача'], ['↑↓', 'Шкала'], ['Enter', 'Получить'], ['F', 'Всё']);
           if (!lock && S[this.tab].id === 'cosmic') hints.push(['↑↓', 'Мир'], ['Enter', 'Перейти']);
           if (!lock && S[this.tab].id === 'treasure') hints.push(['↑↓', 'Режим'], ['Enter', 'Перейти'], ['B', 'Лавка'], ['F', 'Награды']);
-          ui.hints(hints.concat([['Esc', 'Закрыть']]), 12, HGT - 18);
+          ui.hints(hints.concat([['Esc', 'Закрыть']]), ui.left + 12, HGT - 18);
         },
         key(k, code) {
           if (code === 'KeyQ' || code === 'KeyE') { this.setTab(this.tab + (code === 'KeyQ' ? -1 : 1)); return; }
