@@ -584,10 +584,12 @@
       const set = r.w.set && H.RELIC_SETS[r.w.set];
       ui.text(set ? 'Украшения: ' + set.name : 'Украшения: случайный планарный набор', b.x + 14, b.y + 214, { size: 10, col: '#80e0ff' });
       ui.text(r.first ? 'Первое прохождение бесплатно' : 'Повтор: ' + r.cost + ' энергии освоения', b.x + 14, b.y + 232, { size: 10, col: C.sub });
-      const claims = this.game.suClaims().length, paths = this.game.suPaths().length;
-      ui.text('Открытые Пути: ' + paths + ' из ' + Object.keys(H.SU.PATHS).length + (claims ? ' · награды ждут: ' + claims : ''), b.x + 14, b.y + 250, { size: 10, col: claims ? C.gold : C.sub });
-      if (!r.open) { ui.guidePadlock(c, b.x + b.w / 2, b.y + 292, '#8a7aa8'); ui.text('Сначала пройдите прошлый мир', b.x + b.w / 2, b.y + 312, { align: 'center', size: 11, col: '#c8b8e8' }); return; }
-      ui.guideGoBig(c, b.x + 40, b.y + b.h - 40, b.w - 80, 'Перейти к испытанию', () => ui.guideEnter(r), true);
+      const claims = this.game.suClaims().length, paths = this.game.suPaths().length, bonds = this.game.state.inv.items.herta_bond || 0;
+      ui.text('Открытые Пути: ' + paths + ' из ' + Object.keys(H.SU.PATHS).length + (claims ? ' · награды ждут: ' + claims : ''), b.x + 14, b.y + 248, { size: 10, col: claims ? C.gold : C.sub });
+      ui.text('Облигации Герты: ' + bonds + ' · Магазин Герты (B)', b.x + 14, b.y + 264, { size: 10, col: '#c890ff' });
+      if (!r.open) { ui.guidePadlock(c, b.x + b.w / 2, b.y + 296, '#8a7aa8'); ui.text('Сначала пройдите прошлый мир', b.x + b.w / 2, b.y + 316, { align: 'center', size: 11, col: '#c8b8e8' }); return; }
+      ui.guideHertaShopBtn(c, b);
+      ui.guideGoBig(c, b.x + 60, b.y + b.h - 40, b.w - 80, 'Перейти к испытанию', () => ui.guideEnter(r), true);
     },
 
     guideTreasureView(c, scr) {
@@ -626,9 +628,18 @@
       ui.hit(b.x + 19, b.y + b.h - 42, 30, 30, () => ui.openFhShop(() => {}));
     },
 
-    guideCosmicKey(scr, k) {
+    guideHertaShopBtn(c, b) {
+      const ui = this;
+      c.fillStyle = '#010208'; c.beginPath(); c.arc(b.x + 34, b.y + b.h - 27, 15, 0, Math.PI * 2); c.fill();
+      c.fillStyle = '#e6dec8'; c.beginPath(); c.arc(b.x + 34, b.y + b.h - 27, 13, 0, Math.PI * 2); c.fill();
+      G.menuIcon(c, 'shop', b.x + 23, b.y + b.h - 38, 22, PAPER.ink);
+      ui.hit(b.x + 19, b.y + b.h - 42, 30, 30, () => ui.openHertaShop(() => {}));
+    },
+
+    guideCosmicKey(scr, k, code) {
       const ui = this, list = this.game.guideCosmic();
       if (k === 'up' || k === 'down') { scr.wsel = (scr.wsel + (k === 'up' ? list.length - 1 : 1)) % list.length; ui.sfx('select'); return true; }
+      if (code === 'KeyB') { ui.openHertaShop(() => {}); return true; }
       if (k === 'ok') { ui.guideEnter(list[scr.wsel]); return true; }
       return false;
     },
@@ -795,7 +806,7 @@
           if (!lock && S[this.tab].id === 'index' && this.focus === 'rows') hints.push(['F', 'Купон']);
           if (!lock && S[this.tab].id === 'index' && this.focus === 'rows' && H.GUIDE_INDEX[this.cat].id !== 'target') hints.push(['L', 'Испытание']);
           if (!lock && S[this.tab].id === 'daily') hints.push(['←→', 'Задача'], ['↑↓', 'Шкала'], ['Enter', 'Получить'], ['F', 'Всё']);
-          if (!lock && S[this.tab].id === 'cosmic') hints.push(['↑↓', 'Мир'], ['Enter', 'Перейти']);
+          if (!lock && S[this.tab].id === 'cosmic') hints.push(['↑↓', 'Мир'], ['Enter', 'Перейти'], ['B', 'Магазин Герты']);
           if (!lock && S[this.tab].id === 'treasure') hints.push(['↑↓', 'Режим'], ['Enter', 'Перейти'], ['B', 'Лавка'], ['F', 'Награды']);
           ui.hints(hints.concat([['Esc', 'Закрыть']]), ui.left + 12, HGT - 18);
         },
@@ -805,7 +816,7 @@
           if (!ui.guideLock(this.tab) && S[this.tab].id === 'trail' && ui.guideTrailKey(this, k)) return;
           if (!ui.guideLock(this.tab) && S[this.tab].id === 'index' && ui.guideIndexKey(this, k, code)) return;
           if (!ui.guideLock(this.tab) && S[this.tab].id === 'daily' && ui.guideDailyKey(this, k, code)) return;
-          if (!ui.guideLock(this.tab) && S[this.tab].id === 'cosmic' && ui.guideCosmicKey(this, k)) return;
+          if (!ui.guideLock(this.tab) && S[this.tab].id === 'cosmic' && ui.guideCosmicKey(this, k, code)) return;
           if (!ui.guideLock(this.tab) && S[this.tab].id === 'treasure' && ui.guideTreasureKey(this, k, code)) return;
           if (k === 'back') ui.pop();
         }

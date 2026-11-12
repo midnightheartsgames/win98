@@ -51,7 +51,7 @@
       rumors: [], bank: { enemies: {}, fusions: [] }, pity: { five: 0, four: 0 }, pityEv: { five: 0, four: 0 }, pityCone: { five: 0, four: 0, guar5: false, guar4: false }, pitySig: { five: 0, four: 0, guar5: false, guar4: false }, pityAmp: { five: 0, four: 0, guar5: false, guar4: false }, pityConv: { five: 0, four: 0, guar5: false, guar4: false }, pityForge: { five: 0, four: 0, guar5: false, guar4: false }, pityGuild: { five: 0, four: 0, guar5: false, guar4: false }, pityWiz: { five: 0, four: 0, guar5: false, guar4: false }, pityMid: { five: 0, four: 0, guar5: false, guar4: false }, pityCon: { five: 0, four: 0, guar5: false, guar4: false }, pityAlley: { five: 0, four: 0, guar5: false, guar4: false }, pityComp: { five: 0, four: 0, guar5: false, guar4: false },
       time: 0, obj: H.isEn && H.isEn() ? 'Wake up' : 'Прийти в себя', recaps: [], nextAtk: 0, nextCrit: 0, pendingTechs: [], warpLog: [], warpN: 0, warpNEv: 0, warpNCone: 0, warpNSig: 0, warpNAmp: 0, warpNConv: 0, warpNForge: 0, warpNGuild: 0, warpNWiz: 0, warpNMid: 0, warpNComp: 0, warpNCon: 0, warpNAlley: 0, conStar: 'makoto', alleyStar: 'makoto', warpBatch: 0, warpBan: null, evStar: 'ruanmei', coneStar: 'ruanmei', sigStar: 'miyabi', ampStar: 'miyabi', convStar: 'phrolova', forgeStar: 'phrolova', guildStar: 'aqua', wizStar: 'aqua', echoClaims: 0,
       comet: { start: null, done: null, got: [] }, will: [], mail: {}, record: null,
-      quests: {}, missions: { done: {}, track: null, seen: {} }, su: null, suPaths: [], suClaims: [], squads: [], squad: 0
+      quests: {}, missions: { done: {}, track: null, seen: {} }, su: null, suPaths: [], suClaims: [], hertaShop: { bought: {}, score: 0, worldBonds: [], pathBonds: [] }, squads: [], squad: 0
     };
   }
 
@@ -279,6 +279,7 @@
       if (this.fixTraces) this.fixTraces(!!opts.state && !opts.state.trv);
       if (this.fixOutfitTiers) this.fixOutfitTiers(!!opts.state && !opts.state.otv);
       if (this.fixAscension) this.fixAscension(!!opts.state && !opts.state.asv);
+      if (this.fixHertaBonds) this.fixHertaBonds();
       if (this.pfRefresh) this.pfRefresh();
       if (H.syncSaveLang) H.syncSaveLang(this.state);
       this.mailSync();
@@ -1169,8 +1170,8 @@
 
     charStats(key) {
       const s = this.state, r = s.roster[key], kitId = this.kitOf(key), c = H.CHARS[kitId];
-      const st = this.baseStats(kitId, r.lvl, r.eid, this.statAsc ? this.statAsc(key) : undefined);
-      const pct = { hpP: 0, atkP: 0, defP: 0 }, flat = { hpF: 0, atkF: 0, defF: 0 };
+      const st = this.baseStats(kitId, r.lvl, r.eid, this.statAsc ? this.statAsc(key) : undefined), baseSpd = st.spd;
+      const pct = { hpP: 0, atkP: 0, defP: 0, spdP: 0 }, flat = { hpF: 0, atkF: 0, defF: 0 };
       const addStat = (k, v) => {
         if (k in pct) pct[k] += v;
         else if (k in flat) flat[k] += v;
@@ -1195,7 +1196,7 @@
       st.hp = Math.round(st.hp * (1 + pct.hpP) + flat.hpF);
       st.atk = Math.round(st.atk * (1 + pct.atkP) + flat.atkF);
       st.def = Math.round(st.def * (1 + pct.defP) + flat.defF);
-      st.spd = Math.round((st.spd + (st.spdF || 0)) * 10) / 10;
+      st.spd = Math.round((st.spd + baseSpd * pct.spdP + (st.spdF || 0)) * 10) / 10;
       return st;
     }
 

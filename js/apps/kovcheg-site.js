@@ -665,6 +665,8 @@ class KovchegSite {
       if (kind === 'cone' && x === cid) out.push(`${shop.name} за ${price} кредитов`);
     }
     if (H.CONES[cid] && H.CONES[cid].shop) out.push('Пассаж Световых конусов в Зале забвения');
+    if (H.CONES[cid] && H.CONES[cid].herta) out.push('Магазин Герты в Виртуальной вселенной');
+    if (((H.SUPPLY && H.SUPPLY.starlight) || []).some(r => r.cone === cid)) out.push('Магазин Звёздного света');
     return [...new Set(out)];
   }
 

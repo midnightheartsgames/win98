@@ -9,7 +9,7 @@
     openConeUp(uid, o = {}) {
       const ui = this, g = this.game;
       return this.push({
-        full: true, coneUid: uid, picks: {}, slot: 0, fx: null, target: null, quick: g.upQuick('cone'), tab: 1, feed: [], supSel: 0, supSc: { top: 0 },
+        full: true, coneUid: uid, picks: {}, slot: 0, fx: null, target: null, quick: g.upQuick('cone'), tab: (typeof o === 'number' ? o : o.tab) || 1, feed: [], supSel: 0, supSc: { top: 0 },
         cone() { return g.coneFix(g.coneOf(this.coneUid)); },
         list() { return o.only ? [this.coneUid] : g.state.inv.cones.map(x => x.uid); },
         holder() { return Object.keys(g.state.roster).find(k => g.state.roster[k].cone === this.coneUid) || null; },
@@ -164,8 +164,24 @@
           }
           ui.text(d.skill || 'Эффект', lx, y + 74, { size: 12, bold: true, serif: true, col: C.gold });
           ui.coneLines(cn.id, have, w - 28, 11, 6).forEach((l, i) => ui.richText(l, lx, y + 92 + i * 14, { size: 11, col: C.cream }));
+          if (d.herta) {
+            const cnt = g.state.inv.items.herta_sup || 0, ry2 = y + 196;
+            ui.text('Спецзаказ Герты', lx, ry2 - 18, { size: 12, bold: true, col: C.gold });
+            c.fillStyle = 'rgba(200,144,255,0.12)'; c.fillRect(lx - 4, ry2, w - 20, 52);
+            c.strokeStyle = 'rgba(200,144,255,0.45)'; c.strokeRect(lx - 3.5, ry2 + 0.5, w - 21, 51);
+            G.rarityCell(c, lx + 2, ry2 + 6, 40, 40, 5);
+            G.itemIcon(c, 'herta_sup', lx + 6, ry2 + 10, 32);
+            ui.text('Наложитель (спецзаказ)', lx + 50, ry2 + 8, { size: 11, bold: true, col: C.cream });
+            ui.text('В наличии: ' + cnt + (have < 5 ? ' · S' + have + ' → S' + (have + 1) : ' · предел S5'), lx + 50, ry2 + 26, { size: 10, col: cnt > 0 ? C.ok : C.sub });
+            if (have < 5) {
+              ui.button(lx, ry2 + 64, w - 28, 26, cnt > 0 ? 'Наложить до S' + (have + 1) : 'Открыть Магазин Герты', () => this.supAct(), { size: 11, active: cnt > 0, bold: true });
+            } else ui.text('Достигнут максимальный уровень наложения S5.', lx, ry2 + 70, { size: 11, bold: true, col: C.ok });
+            const hNote = have >= 5 ? 'Все 5 уровней наложения этого конуса открыты.' : cnt > 0 ? 'Один «Наложитель (спецзаказ)» повышает наложение конуса Герты на 1 уровень.' : 'Продаётся в Магазине Герты (Виртуальная вселенная) за 2 облигации Герты.';
+            ui.wrap(hNote, w - 28, 10).slice(0, 3).forEach((l, i) => ui.text(l, lx, y + h - 46 + i * 12, { size: 10, col: C.sub }));
+            return;
+          }
           const copies = g.coneCopies(cn), vis = 5, ry = y + 200;
-          ui.text('Копии этого конуса', lx, ry - 18, { size: 12, bold: true, serif: true, col: C.gold });
+          ui.text('Копии этого конуса', lx, ry - 18, { size: 12, bold: true, col: C.gold });
           if (this.supSel >= copies.length) this.supSel = Math.max(0, copies.length - 1);
           const top = copies.length > vis ? ui.listTop(this.supSc, this.supSel, copies.length, vis) : 0;
           copies.slice(top, top + vis).forEach((x, j) => {
@@ -181,7 +197,14 @@
           ui.wrap(note, w - 28, 10).slice(0, 2).forEach((l, i) => ui.text(l, lx, y + h - 40 + i * 12, { size: 10, col: C.sub }));
         },
         supAct() {
-          const cn = this.cone(), x = g.coneCopies(cn)[this.supSel];
+          const cn = this.cone(), d = H.CONES[cn.id];
+          if (d && d.herta) {
+            if ((cn.sup || 1) >= 5) { ui.sfx('deny'); ui.toast('Выше S5 наложить нельзя.'); return; }
+            if (!(g.state.inv.items.herta_sup > 0)) { ui.openHertaShop(() => {}); return; }
+            ui.openHertaSupConfirm(cn);
+            return;
+          }
+          const x = g.coneCopies(cn)[this.supSel];
           if (!x) { ui.sfx('deny'); return; }
           if ((cn.sup || 1) + (x.sup || 1) > 5) { ui.sfx('deny'); ui.toast('Выше S5 наложить нельзя.'); return; }
           ui.openConeMerge(cn, x);
@@ -308,6 +331,36 @@
           if (this.sel === 1) { ui.pop(); return; }
           ui.screens.pop();
           if (g.coneMerge(cn, donor)) { ui.sfx('chest'); ui.toast('Наложение: теперь S' + cn.sup + '.'); } else ui.sfx('deny');
+        }
+      });
+    },
+
+    openHertaSupConfirm(cn) {
+      const ui = this, g = this.game, next = Math.min(5, (cn.sup || 1) + 1);
+      this.push({
+        sel: 0,
+        draw(c) {
+          const x = W / 2 - 190, y = 110, w = 380, h = 244;
+          c.fillStyle = 'rgba(2,3,12,0.6)'; c.fillRect(0, 0, W, HGT);
+          ui.win(x, y, w, h, { title: 'Наложение (спецзаказ)' });
+          G.drawConeCard(c, cn.id, x + 18, y + 24, 60, 84, { sup: cn.sup || 1 });
+          ui.text('+', x + 90, y + 56, { size: 18, bold: true, col: C.gold });
+          G.rarityCell(c, x + 112, y + 40, 52, 52, 5);
+          G.itemIcon(c, 'herta_sup', x + 116, y + 44, 44);
+          ui.text('→', x + 180, y + 56, { size: 18, bold: true, col: C.gold });
+          ui.text('S' + next, x + 210, y + 52, { size: 26, bold: true, serif: true, col: C.gold });
+          ui.text('Наложитель (спецзаказ) ×1 будет потрачен', x + 18, y + 114, { size: 10, col: C.sub });
+          ui.coneLines(cn.id, next, w - 36, 11, 4).forEach((l, i) => ui.richText(l, x + 18, y + 132 + i * 14, { size: 11, col: C.cream }));
+          ui.button(x + 30, y + h - 40, 140, 28, 'Наложить', () => { this.sel = 0; this.key('ok'); }, { size: 12, active: this.sel === 0 });
+          ui.button(x + w - 170, y + h - 40, 140, 28, 'Отмена', () => { this.sel = 1; this.key('ok'); }, { size: 12, active: this.sel === 1 });
+        },
+        key(kk) {
+          if (kk === 'left' || kk === 'right') { this.sel = 1 - this.sel; ui.sfx('select'); return; }
+          if (kk === 'back') { ui.pop(); return; }
+          if (kk !== 'ok') return;
+          if (this.sel === 1) { ui.pop(); return; }
+          ui.screens.pop();
+          if (g.coneHertaSup(cn)) { ui.sfx('chest'); ui.toast('Наложение: теперь S' + cn.sup + '.'); } else ui.sfx('deny');
         }
       });
     },

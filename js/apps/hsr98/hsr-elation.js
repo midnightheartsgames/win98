@@ -167,7 +167,7 @@
       const merry = 1 + sv(src, 'merry');
       const critM = crit ? 1 + sv(src, 'critD') : 1;
       const K = 200 + 10 * src.lvl;
-      const chun = H.coneP(src, 'chunchun', 3);
+      const chun = H.coneP(src, 'chunchun', 3) + (this.elSkillActor === src ? H.coneP(src, 'getaway', 2) : 0);
       const tdef = defOf(tgt) * (1 - clamp(sv(tgt, 'defDown') + this.haresDef(tgt), 0, 1)) * (1 - clamp(sv(src, 'defIgnore') + sv(src, 'elDefIgnore') + chun + (o.defIgnore || 0), 0, 1));
       const defM = K / (tdef + K);
       let res = 0;
@@ -182,8 +182,12 @@
     },
 
     elSkillRun(u, sk) {
+      const shroom = H.coneP(u, 'shroomy', 2);
+      if (shroom) for (const t of this.living) this.addBuff(t, { s: 'elVuln', v: shroom, turns: H.coneP(u, 'shroomy', 3), name: 'Грибочки', debuff: true });
       const run = H.ELATION_RUN[sk.run || 'fx'];
+      this.elSkillActor = u;
       if (run) run(this, u, sk);
+      this.elSkillActor = null;
       const luck = H.coneP(u, 'goodluck', 1);
       if (luck && alive(u)) {
         u.flags.goodluck = Math.min(2, (u.flags.goodluck || 0) + 1);

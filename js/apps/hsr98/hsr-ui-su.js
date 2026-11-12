@@ -173,13 +173,23 @@
           ui.wrap(set ? '2 предмета: ' + set.text : 'Запечатывающая космос станция, Живой Вонвак или Замершее Салсотто. Сфера и вязь одного набора.', 330, 11).slice(0, 3).forEach((l, i) => ui.text(l, 278, 286 + i * 14, { size: 11, col: '#d8d0ec' }));
           const note = !x.open ? (w.needText || 'Сначала пройдите учебный тест Герты.') : x.first ? 'Первая награда бесплатна. Повторные стоят ' + SU.TUN.power + ' энергии освоения.' : 'Награда спишет ' + SU.TUN.power + ' энергии освоения. Без неё награда подождёт у машины.';
           ui.wrap(note, 330, 11).slice(0, 2).forEach((l, i) => ui.text(l, 278, 336 + i * 14, { size: 11, col: !x.open ? C.bad : C.sub }));
-          const claims = g.suClaims();
+          const claims = g.suClaims(), bonds = s.inv.items.herta_bond || 0, hScore = (s.hertaShop && s.hertaShop.score) || 0;
           if (claims.length) {
-            ui.suFrameBox(16, 388, 608, 40, '#e8c060');
-            ui.text('Ожидают награды: ' + claims.length + ' (' + claims.map(cl => worldDef(cl.world).name).join(', ') + ')', 28, 400, { size: 11, bold: true, col: C.gold });
-            ui.button(456, 395, 158, 26, 'Забрать · ' + SU.TUN.power + ' энергии', claim, { size: 11 });
+            ui.suFrameBox(16, 388, 426, 40, '#e8c060');
+            ui.text('Ждут награды: ' + claims.length + ' (' + claims.map(cl => worldDef(cl.world).name).join(', ') + ')', 26, 401, { size: 10, bold: true, col: C.gold });
+            ui.button(284, 395, 150, 26, 'Забрать · ' + SU.TUN.power + ' эн.', claim, { size: 10 });
+            ui.suFrameBox(448, 388, 176, 40, SIM.violet);
+            G.itemIcon(c, 'herta_bond', 456, 398, 20);
+            ui.text(String(bonds), 480, 401, { size: 12, bold: true, col: C.gold });
+            ui.button(504, 395, 112, 26, 'Магазин · B', () => ui.openHertaShop(() => {}), { size: 10, bold: true });
+          } else {
+            ui.suFrameBox(16, 388, 608, 40, SIM.violet);
+            G.itemIcon(c, 'herta_bond', 26, 398, 20);
+            ui.text('Облигации Герты: ' + bonds, 52, 401, { size: 11, bold: true, col: C.gold });
+            ui.text('Очки симуляции: ' + H.fmt(hScore) + ' / ' + H.fmt(H.HERTA_BOND_SCORE || 2000), 214, 401, { size: 11, col: SIM.cyan });
+            ui.button(446, 395, 168, 26, 'Магазин Герты · B', () => ui.openHertaShop(() => {}), { size: 11, bold: true });
           }
-          ui.hints([['↑↓', 'Мир'], ['Enter', 'Выбрать Путь'], ...(claims.length ? [['C', 'Забрать награду']] : []), ['Esc', 'Выйти']], W / 2, HGT - 22, { align: 'center' });
+          ui.hints([['↑↓', 'Мир'], ['Enter', 'Выбрать Путь'], ['B', 'Магазин Герты'], ...(claims.length ? [['C', 'Забрать награду']] : []), ['Esc', 'Выйти']], W / 2, HGT - 22, { align: 'center' });
         },
         drawPaths(c) {
           const cx = W / 2, cy = 190, rx = 200, ry = 112, sel = PATH_SLOTS[this.psel], P = SU.PATHS[sel], open = pathOk(sel);
@@ -243,6 +253,7 @@
           if (this.step === 0) {
             const list = worlds();
             if (k === 'up' || k === 'down') { this.wsel = (this.wsel + (k === 'up' ? list.length - 1 : 1)) % list.length; ui.sfx('select'); return; }
+            if (code === 'KeyB') { ui.openHertaShop(() => {}); return; }
             if (code === 'KeyC' && g.suClaims().length) { claim(); return; }
             if (k === 'back') { leave(); return; }
             if (k === 'ok') {
@@ -504,21 +515,31 @@
           curios.slice(0, 10).forEach((cu, i) => G.curioIcon(c, cu.id, 38 + i * 26, sy + 112, 24));
           ui.suFrameBox(324, 90, 292, 300, win ? '#e8c060' : '#6a3a4a');
           ui.text('Награда', 338, 102, { size: 11, bold: true, col: C.cream });
-          if (!win) ui.wrap('Награды нет. Благословения и диковины исчезли вместе с симуляцией. Мир можно пройти снова.', 262, 12).forEach((l, i) => ui.text(l, 338, 130 + i * 16, { size: 12, col: '#e4dcf4' }));
-          else {
+          if (!win) {
+            ui.wrap('Награды нет. Благословения и диковины исчезли вместе с симуляцией. Мир можно пройти снова.', 262, 12).forEach((l, i) => ui.text(l, 338, 130 + i * 16, { size: 12, col: '#e4dcf4' }));
+            if (res.bonds) ui.rewardCell(c, 'herta_bond', res.bonds, 338, 206, 46);
+          } else {
             ui.rewardCell(c, 'jade', res.jade, 338, 126, 50);
             ui.rewardCell(c, 'credits', res.credits, 394, 126, 50);
             if (res.tracks) ui.rewardCell(c, 'tracks', res.tracks, 450, 126, 50);
+            if (res.bonds) ui.rewardCell(c, 'herta_bond', res.bonds, res.tracks ? 506 : 450, 126, 50);
             res.sets.forEach((st, i) => H.PLANAR_SLOTS.forEach((sl, j) => {
               const x = 338 + (i * 2 + j) * 56, y = 192;
               G.rarityCell(c, x, y, 50, 50, 4); G.itemIcon(c, 'relic:' + sl.key, x + 4, y + 4, 42, st.set);
             }));
             const names = [...new Set(res.sets.map(st => H.RELIC_SETS[st.set].name))];
             names.forEach((n, i) => ui.text(n, 338, 250 + i * 15, { size: 11, bold: true, col: SIM.cyan }));
-            if (res.first) ui.stamp(560, 140, 'Первое ×3');
-            if (res.pending) ui.wrap('Не хватило энергии освоения. Награда ждёт у машины Виртуальной вселенной: нужно ' + SU.TUN.power + '.', 262, 11).forEach((l, i) => ui.text(l, 338, 300 + i * 14, { size: 11, col: C.bad }));
-            else if (!res.first) ui.text('Списано ' + res.power + ' энергии освоения.', 338, 300, { size: 11, col: C.sub });
-            else ui.text('Награда получена. Украшения в инвентаре.', 338, 300, { size: 11, col: C.ok });
+            if (res.first) ui.stamp(568, 110, 'Первое ×3');
+            if (res.pending) ui.wrap('Не хватило энергии освоения. Награда ждёт у машины Виртуальной вселенной: нужно ' + SU.TUN.power + '.', 262, 10).forEach((l, i) => ui.text(l, 338, 294 + i * 13, { size: 10, col: C.bad }));
+            else if (!res.first) ui.text('Списано ' + res.power + ' энергии освоения.', 338, 296, { size: 11, col: C.sub });
+            else ui.text('Награда получена. Украшения в инвентаре.', 338, 296, { size: 11, col: C.ok });
+          }
+          if (res.scoreGain != null) {
+            const cap = H.HERTA_BOND_SCORE || 2000, cur = res.scoreNow || 0;
+            ui.text('Очки симуляции: +' + H.fmt(res.scoreGain), 338, 336, { size: 10, col: SIM.cyan });
+            ui.text(H.fmt(cur) + ' / ' + H.fmt(cap), 602, 336, { align: 'right', size: 10, col: C.cream });
+            ui.bar(338, 351, 264, 6, Math.min(1, cur / cap), SIM.cyan);
+            if (res.bonds) ui.text('Облигации Герты: +' + res.bonds, 338, 364, { size: 10, bold: true, col: C.gold });
           }
           ui.button(W / 2 - 110, 404, 220, 30, 'Вернуться в офис Герты', back, { active: true, bold: true });
           ui.hints([['Enter', 'Продолжить']], W / 2, HGT - 22, { align: 'center' });
@@ -760,6 +781,190 @@
     suLoseOptions(out) {
       if (out.suFail) return [{ label: 'Завершить погружение', fn: () => this.game.giveUpBattle() }];
       return [{ label: 'Повторить бой', fn: () => this.game.retryBattle() }];
+    },
+
+    openUi_herta_shop() { return this.openHertaShop(() => this.finishPending()); },
+
+    openHertaShop(close = () => {}) {
+      const ui = this, g = this.game;
+      const leave = () => { ui.screens.pop(); ui.sfx('cancel'); close(); };
+      const maxQty = e => {
+        if (!e || e.kind === 'cone') return 1;
+        const bonds = g.state.inv.items.herta_bond || 0, canAfford = Math.floor(bonds / e.price);
+        const stockCap = e.left == null ? 99 : e.left;
+        return Math.max(1, Math.min(stockCap, Math.max(1, canAfford)));
+      };
+      this.push({
+        full: true, sel: 0, view: 1, qty: 1,
+        pick(i) {
+          const list = g.hertaShopList();
+          if (!list.length) return;
+          this.sel = (i + list.length) % list.length;
+          this.qty = 1;
+          ui.sfx('select');
+        },
+        stepQty(d) {
+          const e = g.hertaShopList()[this.sel];
+          if (!e) return;
+          if (e.kind === 'cone') {
+            const to = Math.max(1, Math.min(5, this.view + d));
+            if (to !== this.view) { this.view = to; ui.sfx('select'); }
+            return;
+          }
+          if (e.soldOut) { ui.sfx('deny'); return; }
+          const cap = maxQty(e), to = Math.max(1, Math.min(cap, this.qty + d));
+          if (to !== this.qty) { this.qty = to; ui.sfx('select'); } else ui.sfx('deny');
+        },
+        buyNow() {
+          const e = g.hertaShopList()[this.sel];
+          if (!e) return;
+          if (e.soldOut) { ui.sfx('deny'); ui.toast(e.kind === 'cone' ? 'Этот световой конус уже выкуплен.' : 'Запас этого товара исчерпан.'); return; }
+          const n = e.kind === 'cone' ? 1 : this.qty, need = e.price * n, have = g.state.inv.items.herta_bond || 0;
+          if (have < need) { ui.sfx('deny'); ui.toast('Не хватает облигаций Герты: нужно ' + need + '.'); return; }
+          const res = g.buyHertaShop(e.key, n);
+          if (!res) { ui.sfx('deny'); return; }
+          ui.sfx(e.kind === 'cone' ? 'star4' : 'chest');
+          ui.toast('Получено: ' + e.name + (res.qty > 1 ? ' ×' + res.qty : ''));
+          this.qty = 1;
+        },
+        draw(c) {
+          const s = g.state, list = g.hertaShopList();
+          if (this.sel >= list.length) this.sel = Math.max(0, list.length - 1);
+          const e = list[this.sel], bonds = s.inv.items.herta_bond || 0;
+          const hs = g.hertaShopState ? g.hertaShopState() : (s.hertaShop || { score: 0 });
+          const cap = H.HERTA_BOND_SCORE || 2000;
+          ui.suBackdrop(c, true);
+          ui.plate(12, 10, 'Магазин Герты');
+          ui.suFrameBox(182, 8, 256, 28, 'rgba(80,224,255,0.45)');
+          ui.text('Очки симуляции', 192, 12, { size: 9, col: C.sub });
+          ui.text(H.fmt(hs.score || 0) + ' / ' + H.fmt(cap), 428, 12, { align: 'right', size: 9, bold: true, col: SIM.cyan });
+          ui.bar(192, 25, 236, 5, Math.min(1, (hs.score || 0) / cap), SIM.cyan);
+          ui.suFrameBox(446, 8, 152, 28, SIM.violet);
+          G.itemIcon(c, 'herta_bond', 454, 12, 20);
+          ui.text('Облигации:', 478, 15, { size: 10, col: C.sub });
+          ui.text(String(bonds), 590, 14, { align: 'right', size: 13, bold: true, col: C.gold });
+          ui.closeBtn(W - 32, 10, leave);
+
+          ui.suFrameBox(16, 44, 208, 288, e && e.soldOut ? '#4a6a58' : SIM.violet);
+          const px = 120, py = 232;
+          const gl = c.createRadialGradient(px, py - 58, 8, px, py - 58, 92);
+          gl.addColorStop(0, e && e.kind === 'cone' ? 'rgba(232,176,64,0.28)' : 'rgba(80,224,255,0.24)');
+          gl.addColorStop(0.55, 'rgba(200,144,255,0.14)');
+          gl.addColorStop(1, 'rgba(0,0,0,0)');
+          c.fillStyle = gl; c.fillRect(22, 52, 196, 204);
+          c.strokeStyle = SIM.cyan; c.globalAlpha = 0.55;
+          c.beginPath(); c.ellipse(px, py, 68, 13, 0, 0, Math.PI * 2); c.stroke();
+          c.strokeStyle = SIM.violet; c.globalAlpha = 0.4;
+          c.beginPath(); c.ellipse(px, py + 4, 52, 8, 0, 0, Math.PI * 2); c.stroke();
+          c.globalAlpha = 1;
+          const bob = Math.sin(ui.t * 2.4) * 3;
+          if (e) {
+            if (e.kind === 'cone') {
+              G.drawConeCard(c, e.id, px - 58, Math.round(62 + bob), 116, 162, { sup: this.view });
+              ui.hit(px - 58, 60, 116, 166, () => ui.openConeView(e.id));
+              ui.text('Нажмите V — полный осмотр', px, 250, { align: 'center', size: 9, col: C.sub });
+            } else {
+              G.rarityCell(c, px - 42, Math.round(98 + bob), 84, 84, e.rar || 5);
+              G.itemIcon(c, e.id, px - 36, Math.round(104 + bob), 72);
+              ui.text(e.id === 'herta_sup' ? 'Спецзаказ станции «Герта»' : 'Пропуск Звёздного экспресса', px, 250, { align: 'center', size: 9, col: C.sub });
+            }
+            const tagCol = e.soldOut ? C.ok : e.left != null ? SIM.cyan : C.gold;
+            const tagTxt = e.soldOut ? (e.kind === 'cone' ? '✓ В коллекции' : '✓ Запас выкуплен') : e.left != null ? 'Осталось в витрине: ' + e.left + ' / ' + e.limit : 'Обмен без ограничения';
+            c.fillStyle = 'rgba(0,0,0,0.45)'; c.fillRect(28, 270, 184, 22);
+            ui.text(tagTxt, px, 275, { align: 'center', size: 10, bold: true, col: tagCol });
+            ui.text('У вас сейчас: ' + e.have, px, 302, { align: 'center', size: 10, col: C.cream });
+          }
+
+          const rx = 234, ry = 44, rw = 390, rh = 288;
+          ui.suFrameBox(rx, ry, rw, rh, SIM.line);
+          if (e) {
+            let y = ry + 12;
+            ui.wrap(e.name, rw - 28, 15).slice(0, 2).forEach(l => { ui.text(l, rx + 14, y, { size: 15, bold: true, serif: true, col: C.gold }); y += 18; });
+            if (e.kind === 'cone') {
+              const d = H.CONES[e.id], st1 = H.coneStatsAt(e.id, 1, 0), st80 = H.coneStatsAt(e.id, H.MAX_LVL, 6);
+              G.pathIcon(c, d.path, rx + 14, y + 1, 13);
+              ui.text(H.PATHS[d.path].name + ' · ' + '★'.repeat(d.rarity), rx + 31, y + 1, { size: 11, col: G.RARITY[d.rarity] });
+              for (let i = 1; i <= 5; i++) {
+                const bx = rx + rw - 178 + (i - 1) * 33, on = i === this.view;
+                c.fillStyle = on ? SIM.violet : 'rgba(0,0,0,0.45)'; c.fillRect(bx, y - 2, 29, 17);
+                ui.text('S' + i, bx + 14.5, y + 1, { align: 'center', size: 9, bold: true, col: on ? '#120824' : C.cream });
+                ui.hit(bx, y - 2, 29, 17, () => { this.view = i; ui.sfx('select'); });
+              }
+              y += 21;
+              c.fillStyle = 'rgba(0,0,0,0.34)'; c.fillRect(rx + 14, y, rw - 28, 20);
+              ui.text('Ур. 1→80:  HP ' + st1.hp + '→' + st80.hp + '  ·  Атк ' + st1.atk + '→' + st80.atk + '  ·  Защ ' + st1.def + '→' + st80.def, rx + 20, y + 4, { size: 10, col: '#d8e4ff' });
+              y += 26;
+              ui.text(d.skill || 'Эффект', rx + 14, y, { size: 11, bold: true, serif: true, col: SIM.cyan });
+              y += 15;
+              ui.coneLines(e.id, this.view, rw - 28, 10, 7).forEach(l => { ui.richText(l, rx + 14, y, { size: 10, col: C.cream }); y += 13; });
+              ui.text('Накладывается до S5 предметом «Наложитель (спецзаказ)».', rx + 14, ry + rh - 58, { size: 9, col: C.sub });
+            } else {
+              ui.text('★'.repeat(e.rar || 5) + ' · Диковинный обмен Герты', rx + 14, y + 2, { size: 11, col: G.RARITY[e.rar || 5] });
+              y += 24;
+              ui.wrap(e.text, rw - 28, 11).slice(0, 6).forEach((l, i) => ui.text(l, rx + 14, y + i * 15, { size: 11, col: '#e4dcf4' }));
+              if (e.id === 'herta_sup') {
+                const targets = g.hertaSupTargets ? g.hertaSupTargets().length : 0;
+                ui.text(targets ? 'Подходящих конусов Герты ниже S5 у вас: ' + targets : 'Подходит ко всем 5★ конусам из Магазина Герты.', rx + 14, ry + rh - 92, { size: 10, col: targets ? C.ok : C.sub });
+              }
+              if (!e.soldOut) {
+                const qy = ry + rh - 68, capQ = maxQty(e);
+                ui.text('Количество к обмену:', rx + 14, qy + 5, { size: 11, col: C.sub });
+                ui.button(rx + 188, qy, 24, 22, '−', () => this.stepQty(-1), { disabled: this.qty <= 1, size: 12 });
+                ui.text('×' + this.qty, rx + 236, qy + 4, { align: 'center', size: 12, bold: true, col: C.cream });
+                ui.button(rx + 260, qy, 24, 22, '+', () => this.stepQty(1), { disabled: this.qty >= capQ, size: 12 });
+                ui.button(rx + 290, qy, 56, 22, 'Макс', () => { this.qty = capQ; ui.sfx('select'); }, { disabled: this.qty >= capQ, size: 10 });
+              }
+            }
+            const qty = e.kind === 'cone' ? 1 : this.qty, cost = e.price * qty, canBuy = !e.soldOut && bonds >= cost;
+            c.fillStyle = 'rgba(200,144,255,0.28)'; c.fillRect(rx + 14, ry + rh - 42, rw - 28, 1);
+            G.itemIcon(c, 'herta_bond', rx + 14, ry + rh - 33, 22);
+            ui.text('Цена: ' + cost + ' облиг.', rx + 42, ry + rh - 28, { size: 12, bold: true, col: e.soldOut ? C.dim : bonds >= cost ? C.gold : C.bad });
+            const btnTxt = e.soldOut ? (e.kind === 'cone' ? 'Уже в коллекции' : 'Запас выкуплен') : bonds < cost ? 'Не хватает облигаций' : 'Обменять · Enter';
+            ui.button(rx + rw - 186, ry + rh - 35, 172, 26, btnTxt, () => this.buyNow(), { active: canBuy, disabled: !canBuy, bold: true, size: 11 });
+          }
+
+          const railY = 340, sw = 65, sh = 104, gap = 3, x0 = 16;
+          list.forEach((it, i) => {
+            const x = x0 + i * (sw + gap), on = i === this.sel;
+            c.fillStyle = on ? 'rgba(130,80,220,0.45)' : 'rgba(8,4,22,0.86)';
+            c.fillRect(x, railY, sw, sh);
+            c.strokeStyle = on ? C.gold : it.soldOut ? '#3c5c4a' : 'rgba(200,144,255,0.4)';
+            c.lineWidth = on ? 2 : 1;
+            c.strokeRect(x + 0.5, railY + 0.5, sw - 1, sh - 1);
+            c.lineWidth = 1;
+            if (it.kind === 'cone') {
+              G.drawConeCard(c, it.id, x + 10, railY + 5, 45, 63, { info: false });
+              G.pathIcon(c, it.path, x + 4, railY + 70, 12, '#f2dc9a');
+              ui.text(H.PATHS[it.path].name.slice(0, 6) + '.', x + 18, railY + 71, { size: 8, col: C.sub });
+            } else {
+              G.rarityCell(c, x + 12, railY + 12, 41, 41, it.rar || 5);
+              G.itemIcon(c, it.id, x + 15, railY + 15, 35);
+              ui.text(it.left != null ? it.left + '/' + it.limit : '∞', x + sw / 2, railY + 70, { align: 'center', size: 9, col: it.soldOut ? C.ok : SIM.cyan });
+            }
+            if (it.soldOut) ui.text('✓ Куплено', x + sw / 2, railY + 87, { align: 'center', size: 9, bold: true, col: C.ok });
+            else {
+              G.itemIcon(c, 'herta_bond', x + 12, railY + 85, 14);
+              ui.text(String(it.price), x + 30, railY + 87, { size: 10, bold: true, col: bonds >= it.price ? C.gold : C.bad });
+            }
+            ui.hit(x, railY, sw, sh, () => { if (this.sel === i) this.buyNow(); else this.pick(i); });
+          });
+
+          const hints = [['←→', 'Витрина']];
+          if (e && e.kind === 'cone') hints.push(['↑↓ / 1-5', 'S1-S5'], ['V', 'Подробнее']);
+          else if (e && !e.soldOut) hints.push(['↑↓', 'Кол-во']);
+          hints.push(['Enter', 'Обменять'], ['Esc', 'Уйти']);
+          ui.hints(hints, W / 2, HGT - 18, { align: 'center' });
+        },
+        key(k, code) {
+          if (k === 'left' || k === 'right') { this.pick(this.sel + (k === 'left' ? -1 : 1)); return; }
+          if (k === 'up' || k === 'down') { this.stepQty(k === 'up' ? 1 : -1); return; }
+          const e = g.hertaShopList()[this.sel];
+          if (e && e.kind === 'cone' && /^Digit[1-5]$/.test(code)) { this.view = +code.slice(5); ui.sfx('select'); return; }
+          if (e && e.kind === 'cone' && code === 'KeyV') { ui.openConeView(e.id); return; }
+          if (k === 'ok') { this.buyNow(); return; }
+          if (k === 'back') leave();
+        }
+      });
     }
   });
 

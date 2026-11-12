@@ -247,4 +247,136 @@
 #### `timeflower`: Если бы время было цветком (5★, Гармония, Трибби) — готово 01.11.2026
 > Tribbie (small girl with a short bright-red bob and a little side tuft, pointed elf ears, a black headband with white flowers with blue centers, cream dress with gold embroidery and red ribbons, a golden cloud pendant, two small golden wings, one black armored gauntlet) lies asleep on her back among scattered letters and sealed envelopes, eyes closed, soft smile, warm stripes of morning sunlight across her. At the top corner a second red-haired girl leans in with a red pen, her face half hidden by hair; at the lower corner a third red-haired girl with a flower crown is seen from behind, sorting envelopes. Around them an inkwell, a red wax seal and a feather. Tender, sleepy mood. Palette of warm cream, gold and vivid red with soft sunlight.
 
-Промпты следующих конусов добавляются на их этапах.
+### Стандартные 5★, Магазин Герты и 4★
+
+#### `irreplaceable`: Что-то незаменимое (5★, Разрушение)
+> Clara from Honkai: Star Rail huddled safely beneath the giant metal arms and glowing red optic of Svarog inside a snowy Belobog ruin, warm amber light contrasting with drifting snow.
+
+#### `inname`: Во имя мира (5★, Небытие)
+> Welt Yang from Honkai: Star Rail raising his cane before a fracturing gravitational black hole and golden accretion ring amid floating debris in deep space.
+
+#### `sleepdead`: Мертвецкий сон (5★, Охота)
+> Yanqing from Honkai: Star Rail resting calmly on floating ice-blue flying swords high among pale clouds and starlight.
+
+#### `timewaits`: Время никого не ждёт (5★, Изобилие)
+> Bailu from Honkai: Star Rail surrounded by glowing turquoise water ripples, lotus blossoms, and a warm healing pearl in an ancient Luofu pavilion.
+
+#### `aeonfall`: О падении Эона (5★, Разрушение)
+> A colossal shattered solar halo and falling cosmic monoliths engulfed in molten amber fire as a distant Aeon silhouette fractures across space.
+
+#### `cruising`: Круиз по галактике (5★, Охота)
+> A radiant cyan-and-white starlight arrow streaking across orbital rings and deep blue nebulae of the Stellar Sea.
+
+#### `texture`: Материя памяти (5★, Сохранение)
+> A multifaceted lavender-and-cyan memory crystal suspended in a dark violet void, surrounded by floating geometric shards.
+
+#### `solitary`: Одинокое исцеление (5★, Небытие)
+> A glass apothecary flask filled with glowing violet-magenta elixir on a dark stone table as luminous spores drift upward into starry darkness.
+
+#### `calculus`: Беспрерывные вычисления (5★, Эрудиция)
+> Interlocking golden astrolabe rings and a glowing cyan Erudition gear core rotating in deep cosmic blue.
+
+#### `curtain`: Не падёт занавес памяти (5★, Память)
+> Crimson velvet stage curtains tied with golden cords parting onto a starry violet cosmos and a floating diamond prism of Remembrance.
+
+#### `elationbless`: Переполненная благословением Радость (5★, Радость)
+> An ornate golden chalice overflowing with rose-magenta nectar beneath laughing comedy and tragedy masks and falling colourful confetti.
+
+#### `dayone`: Первый день моей новой жизни (4★, Сохранение)
+> March 7th from Honkai: Star Rail smiling brightly with her instant camera framed by pastel pink-and-blue crystal light.
+
+#### `silence`: Остаётся лишь тишина (4★, Охота)
+> Dan Heng from Honkai: Star Rail standing in quiet bamboo shadow with his Cloud-Piercer spear gleaming in cool teal light.
+
+#### `moles`: Кроты приветствуют тебя (4★, Разрушение)
+> Hook from Honkai: Star Rail cheering beside the Moles treasure box in a warm lamplit Boulder Town hideout.
+
+#### `birthself`: Зарождение себя (4★, Эрудиция)
+> Herta puppet from Honkai: Star Rail gazing at an earlier mirror reflection of herself inside an ornate brass frame with puppet strings above.
+
+#### `shared`: Общие чувства (4★, Изобилие)
+> Natasha from Honkai: Star Rail tending gently to young Clara in a sunlit Underworld clinic.
+
+#### `eyesprey`: Взгляд жертвы (4★, Небытие)
+> Sampo Koski from Honkai: Star Rail smirking through falling Belobog snow with twin curved daggers glinting emerald.
+
+#### `landau`: Выбор Ландау (4★, Сохранение)
+> Gepard and young Lynx Landau standing together in Belobog snow beneath the Landau family shield.
+
+#### `planetary`: Свидание со звёздами (4★, Гармония)
+> Asta from Honkai: Star Rail looking through a brass telescope toward an aligned ringed planet and bright blue moon.
+
+#### `secretvow`: Тайная клятва (4★, Разрушение)
+> Arlan from Honkai: Star Rail gripping his heavy greatsword amid crackles of violet lightning.
+
+#### `clamor`: Пусть мир не стихает (4★, Эрудиция)
+> Serval Landau on stage under cyan spotlights striking an electric guitar chord with sparks flying.
+
+#### `perfecttime`: Идеальное время (4★, Изобилие)
+> Luocha walking calmly under falling pale blossoms while holding a glowing golden abundance talisman.
+
+#### `pearls`: Решимость блестит подобно жемчужинам пота (4★, Небытие)
+> Luka from Honkai: Star Rail throwing a fiery punch in the Boulder Town ring as beads of sweat catch the arena lights.
+
+#### `subscribe`: Больше подписок! (4★, Охота)
+> Guinaifen and Sushang posing enthusiastically in front of a bright red-and-gold livestream banner.
+
+#### `dancedance`: Танцуй! Танцуй! Танцуй! (4★, Гармония)
+> Hook and Clara spinning happily beneath a glittering disco ball and colourful party lights.
+
+#### `promise`: Хранящееся в сердце обещание (4★, Разрушение)
+> A vintage leather travel trunk and brass pocket watch surrounded by iridescent memory bubbles in a starry dreamscape.
+
+#### `concert`: Концерт для двоих (4★, Сохранение)
+> Two winged performers playing a grand piano duet under a warm golden spotlight and floating musical staves.
+
+#### `choreo`: Безграничный танец (4★, Небытие)
+> Two dancers in violet and crimson locked in a dramatic tango inside a ring of red roses.
+
+#### `charmony`: После затишья Гармонии (4★, Эрудиция)
+> A tall stained-glass cathedral arch with a golden halo and drifting white dove feathers.
+
+#### `poised`: Расцвет юности (4★, Гармония)
+> March 7th practising twin blades amid drifting pink blossom petals and blooming roses.
+
+#### `shadowed`: Скрытый в ночной тени (4★, Охота)
+> A lone cloaked ranger silhouette beneath a crescent moon on a dark rooftop with a flash of steel.
+
+#### `montage`: Монтаж грёз (4★, Изобилие)
+> Spinning vintage film reels and glowing celluloid strips framing a cinema projector beam in a violet dream studio.
+
+#### `greetings`: Привет от гениев (4★, Память)
+> The Herta and Ruan Mei exchanging a quiet greeting beneath cosmic stars and a glowing cyan orbital ring.
+
+#### `nextpage`: Следующая страница истории (4★, Память)
+> An open ancient storybook releasing a spiral of glowing pink-and-gold memory motes and a floating quill.
+
+#### `getaway`: Короткий отпуск (4★, Радость)
+> A sunny seaside beach at golden hour with a striped parasol, turquoise waves, and an iced tropical drink.
+
+#### `whatreal`: Что есть реальность? (4★, Изобилие)
+> A warm amber glass with a crystal ice cube on a dark wooden bar counter beside a brass token.
+
+#### `dreamville`: Приключения Грёзавиля (4★, Гармония)
+> A cheerful cartoon clock character tipping a top hat among fluffy clouds and golden stars.
+
+#### `finalvictor`: Единственный победитель (4★, Охота)
+> Dr. Ratio and Topaz across a velvet gaming table with a spinning revolver cylinder and glowing chips.
+
+#### `flamesafar`: Вдали от огня (4★, Разрушение)
+> Silver molten-winged mecha armour with a glowing teal visor standing amid rising orange flames.
+
+#### `forewoven`: Плетение нитей судьбы (4★, Сохранение)
+> A black cat with golden eyes sitting at the centre of glowing golden threads of fate in deep space.
+
+#### `cosmosfell`: День падения вселенной (4★, Эрудиция)
+> Fiery meteors streaking down across a dark crimson sky onto shattered city silhouettes.
+
+#### `showtime`: Шоу начинается (4★, Небытие)
+> A smiling theatrical mask and top hat framed by red velvet curtains and golden marquee lights.
+
+#### `blink`: Скорая победа (4★, Память)
+> A radiant golden laurel crown bursting with speed lines and starlight against a deep blue sky.
+
+#### `shroomy`: Приключения грибочков (4★, Радость)
+> A plump red-capped spotted mushroom adventurer smiling in a bioluminescent forest glade.

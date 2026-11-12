@@ -293,7 +293,7 @@
       return { sup: to };
     },
 
-    coneFree(cn) { return this.state.inv.cones.filter(x => x.uid !== cn.uid && !this.coneWorn(x.uid) && !x.lock); },
+    coneFree(cn) { return this.state.inv.cones.filter(x => x.uid !== cn.uid && !this.coneWorn(x.uid) && !x.lock && !(H.CONES[x.id] && H.CONES[x.id].herta)); },
 
     coneFeedExp(uids) {
       const s = this.state;
@@ -309,7 +309,7 @@
       const s = this.state;
       this.coneFix(cn);
       if (cn.lvl >= H.ascCap(cn.asc)) return null;
-      if (feed.some(uid => uid === cn.uid || this.coneWorn(uid) || !s.inv.cones.some(x => x.uid === uid && !x.lock))) return null;
+      if (feed.some(uid => uid === cn.uid || this.coneWorn(uid) || !s.inv.cones.some(x => x.uid === uid && !x.lock && !(H.CONES[x.id] && H.CONES[x.id].herta)))) return null;
       let gain = this.coneFeedExp(feed);
       for (const b of this.coneBooks()) { const n = picks[b.id] || 0; if (n < 0 || n > b.have) return null; gain += n * b.exp; }
       const cost = this.coneCredits(gain);

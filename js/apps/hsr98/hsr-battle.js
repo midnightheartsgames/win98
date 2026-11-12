@@ -18,7 +18,7 @@
   }
   const shieldAtk = u => { const k = u.shield > 0 ? bsum(u, 'atkShield') : 0; return k ? Math.min(u.shield * k, u.base.atk * bsum(u, 'atkShieldCap')) / u.base.atk : 0; };
   const setOn = (u, k) => !!(u.sets && u.sets[k]);
-  const atkOf = u => Math.max(1, u.base.atk * (1 + bsum(u, 'atkP') + (setOn(u, 'station') && spdOf(u) >= 120 ? 0.12 : 0) + shieldAtk(u)));
+  const atkOf = u => Math.max(1, u.base.atk * (1 + bsum(u, 'atkP') + (setOn(u, 'station') && spdOf(u) >= 120 ? 0.12 : 0) + shieldAtk(u) + (coneP(u, 'showtime', 4) && sv(u, 'ehr') >= coneP(u, 'showtime', 4) - 1e-9 ? coneP(u, 'showtime', 5) : 0)));
   const defOf = u => Math.max(0, u.base.def * (1 + bsum(u, 'defP')));
   const spdOf = u => Math.max(10, u.base.spd * (1 + bsum(u, 'spdP')) + bsum(u, 'spd'));
   const alive = u => u && !u.dead && !u.gone;
@@ -121,6 +121,7 @@
       for (const a of this.allies) if (coneP(a, 'moment', 1)) a.buffs.push({ s: 'aggro', v: coneP(a, 'moment', 1) - 1, turns: 999, name: 'Вердикт', perm: true });
       for (const a of this.allies) if (coneP(a, 'amber', 3)) a.buffs.push({ s: 'defP', v: coneP(a, 'amber', 3), turns: 999, cond: 'hp50', name: 'Стазис' });
       this.mirrorWave();
+      if (this.stdStart) this.stdStart();
       for (const a of this.allies) a.av = AV / spdOf(a);
       if (this.opts.hpStart && this.enemies[0]) this.enemies[0].hp = Math.round(this.enemies[0].maxHp * this.opts.hpStart);
       for (const b of this.opts.allyBuff || []) for (const a of this.allies) a.buffs.push(Object.assign({}, b));
@@ -462,6 +463,7 @@
       t.weak = t.data.weak.concat(e);
       t.implant = { e, turns: T.implantTurns + ((this.kitFx && this.kitFx(src, 'implantTurns')) || 0) };
       this.push({ t: 'implant', u: t, e, text: 'Уязвимость: ' + H.ELEMENTS[e].name });
+      if (this.stdDebuff && src && src.side === 'ally') this.stdDebuff(src, t);
       return true;
     }
 
@@ -492,12 +494,14 @@
     hpLost(u, v) {
       if (u.charId === 'blade' && v > 0) u.flags.tally = tallyOf(u, v);
       if (v > 0 && this.kitFx) this.kitFx(u, 'hpLost', v);
+      if (v > 0 && this.stdHpLost) this.stdHpLost(u, v);
     }
 
     hurtMark(u) {
       this.foursHurt(u);
       if (u.charId === 'blade') this.gainShuhu(u, 1);
       if (coneP(u, 'unreachable', 3) && alive(u)) this.addBuff(u, { s: 'dmgP', v: coneP(u, 'unreachable', 3), turns: 99, name: 'Недоступная сторона' }, true);
+      if (this.stdHurt) this.stdHurt(u);
     }
 
     sentence(u) {
@@ -629,6 +633,7 @@
 
     summonTurn(h) {
       if (h.aha) { this.ahaTurn(h); return; }
+      if (this.stdSummonTurn) this.stdSummonTurn(h);
       if (h.id !== 'hecate') { if (!this.fivesSummon(h)) this.contonSummon(h); return; }
       const u = h.owner, m = u && u.flags.maestro;
       if (!alive(u) || !m) { this.hecateLeave(h); return; }
@@ -973,6 +978,7 @@
       const i = u.buffs.findIndex(x => x.name === nb.name && x.s === nb.s);
       if (i >= 0) u.buffs[i] = nb; else u.buffs.push(nb);
       if (!quiet) this.push({ t: 'status', u, text: nb.name, debuff: !!nb.debuff });
+      if (nb.debuff && u.side === 'enemy' && this.stdDebuff) { const dsrc = nb.src || (this.acting && this.acting.side === 'ally' ? this.acting : null); if (dsrc) this.stdDebuff(dsrc, u); }
     }
 
     breakDmg(src, tgt, m) { return H.breakBase(src.lvl) * (1 + sv(src, 'breakE')) * (0.5 + tgt.maxTough / 40) * m; }
@@ -1025,6 +1031,7 @@
       tgt.frozenSrc = src;
       this.push({ t: 'status', u: tgt, text: 'Заморозка', col: '#8adfff', debuff: true });
       if (this.su && src && src.side === 'ally') this.bless('freeze', { src, tgt });
+      if (this.stdDebuff && src && src.side === 'ally' && tgt.side === 'enemy') this.stdDebuff(src, tgt);
       return true;
     }
 
@@ -1043,6 +1050,7 @@
       } else tgt.dots.push({ type, dmg, turns, src, stacks: 1 });
       this.push({ t: 'status', u: tgt, text: DOT_NAME[type], col: H.ELEMENTS[DOT_ELEM[type]].col, debuff: true });
       if (this.kitFx && src && src.side === 'ally' && tgt.side === 'enemy') for (const w of this.allies) if (alive(w)) this.kitFx(w, 'teamAnomaly', src, tgt, type);
+      if (this.stdDebuff && src && src.side === 'ally' && tgt.side === 'enemy') this.stdDebuff(src, tgt);
     }
 
     giveShield(u, v, turns) {
@@ -1060,11 +1068,13 @@
       if (src && this.kitFx) m += this.kitFx(src, 'healBonus', u) || 0;
       if (src && this.acting === src && (this.actKind === 'skill' || this.actKind === 'ult')) m += coneP(src, 'cornucopia', 1);
       if (src && this.acting === src && this.actKind === 'ult') m += coneP(src, 'postop', 2);
+      if (src && coneP(src, 'perfecttime', 2)) m += Math.min(coneP(src, 'perfecttime', 3), sv(src, 'res') * coneP(src, 'perfecttime', 2));
       const amt = Math.round(v * m);
       const before = u.hp;
       u.hp = Math.min(u.maxHp, u.hp + amt);
       this.push({ t: 'heal', u, v: u.hp - before, hp: u.hp });
       const got = u.hp - before;
+      if (src && src.side === 'ally' && coneP(src, 'timewaits', 3) && amt > 0) src.flags.timewaitsRec = (src.flags.timewaitsRec || 0) + amt;
       if (src && src.side === 'ally' && this.kitFx) this.kitFx(src, 'healed', u, amt, got);
       const hg = src ? coneP(src, 'hagoromo', 3) : 0;
       if (hg) this.addBuff(u, { s: 'res', v: hg, turns: 2, name: 'Искусство не продаётся' }, true);
@@ -1094,6 +1104,7 @@
       bonus += this.haresDmg(src, tgt, o);
       bonus += this.fivesDmg(src, tgt, o);
       bonus += this.axelConeDmg(src);
+      if (this.stdDmg) bonus += this.stdDmg(src, tgt, o);
       if (tgt.hp >= tgt.maxHp * 0.5) bonus += bsum(src, 'vsHigh');
       { const w = src.owner || src; if (w.cone && coneP(w, 'masquerade', 2) && this.summons.some(h => h.owner === w && alive(h))) bonus += coneP(w, 'masquerade', 2); }
       if (src.cone && tgt.side !== src.side) bonus += coneP(src, 'goodnight', 1) * Math.min(coneP(src, 'goodnight', 2), this.debuffCount(tgt));
@@ -1101,18 +1112,18 @@
       const nightSt = coneP(src, 'night', 2) ? clamp(Math.floor((spdOf(src) - 100) / coneP(src, 'night', 2)), 0, coneP(src, 'night', 5)) : 0;
       if (['basic', 'skill', 'enhanced'].includes(o.kind)) bonus += coneP(src, 'night', 3) * nightSt + coneP(src, 'collapsing', 1);
       if ((o.kind === 'ult' || o.kind === 'follow') && setOn(src, 'salsotto') && sv(src, 'critR') >= 0.5 - 1e-9) bonus += 0.15;
-      const critM = crit ? 1 + sv(src, 'critD') + (o.kind === 'ult' ? coneP(src, 'night', 4) * nightSt : 0) + this.fivesCritD(src, tgt, o) : 1;
+      const critM = crit ? 1 + sv(src, 'critD') + (o.kind === 'ult' ? coneP(src, 'night', 4) * nightSt : 0) + this.fivesCritD(src, tgt, o) + (this.stdCritD ? this.stdCritD(src, tgt, o) : 0) : 1;
       const K = 200 + 10 * src.lvl;
       const tdef = defOf(tgt) * (1 - clamp(sv(tgt, 'defDown') + this.haresDef(tgt), 0, 1)) * (o.kind === 'follow' ? 1 - clamp(sv(src, 'followDefIgnore'), 0, 1) : 1) * (1 - clamp(bsum(src, 'defIgnore') + (o.defIgnore || 0), 0, 1));
       const defM = K / (tdef + K);
-      let res = 0;
+      let res = tgt.side === 'ally' ? sv(tgt, 'allRes') : 0;
       if (tgt.side === 'enemy') res = tgt.weak.includes(e) ? 0 : tgt.resist.includes(e) ? T.resistRes : T.defaultRes;
       res -= sv(src, 'resPen') + (o.resPen || 0);
       if (tgt.side === 'enemy') res -= bsum(tgt, 'resDown') + bsum(tgt, e + 'ResDown');
       const resM = 1 - clamp(res, -1, 0.9);
       const vuln = 1 + sv(tgt, 'vuln') + sv(tgt, e + 'Vuln') + (o.isDot ? sv(tgt, 'dotVuln') : 0) + this.fivesVuln(src, tgt, o);
       const brokenM = tgt.side === 'enemy' && !tgt.broken && !o.broken ? T.unbrokenMult : 1;
-      const dr = (1 - clamp(sv(tgt, 'dr'), 0, 0.9)) * (1 - clamp(sv(src, 'dmgDealtDown'), 0, 0.9)) * (tgt.charId === 'aqua' && unholy(src) ? 1 - T.unholyDr : 1);
+      const dr = (1 - clamp(sv(tgt, 'dr'), 0, 0.9)) * (1 - clamp(sv(src, 'dmgDealtDown'), 0, 0.9)) * (tgt.charId === 'aqua' && unholy(src) ? 1 - T.unholyDr : 1) * (tgt.shield > 0 && coneP(tgt, 'texture', 5) ? 1 - coneP(tgt, 'texture', 5) : 1);
       return Math.max(1, Math.round(base * bonus * critM * defM * resM * vuln * brokenM * dr));
     }
 
@@ -1120,7 +1131,8 @@
       if (!alive(tgt)) return 0;
       const e = o.e || src.elem;
       let crit = false;
-      if (!o.isDot && o.fixed == null && o.raw == null) crit = !!o.alwaysCrit || this.rng() < clamp(sv(src, 'critR') + (o.kind === 'follow' ? bsum(src, 'followCritR') : 0) + (coneP(src, 'rain', 4) && this.debuffCount(tgt) >= coneP(src, 'rain', 4) ? coneP(src, 'rain', 5) : 0) + bsum(tgt, 'critTaken') + (this.traceCrit ? this.traceCrit(src, tgt, o) : 0), 0, 1);
+      if (!o.isDot && o.fixed == null && o.raw == null) crit = !!o.alwaysCrit || this.rng() < clamp(sv(src, 'critR') + (o.kind === 'follow' ? bsum(src, 'followCritR') : 0) + (coneP(src, 'rain', 4) && this.debuffCount(tgt) >= coneP(src, 'rain', 4) ? coneP(src, 'rain', 5) : 0) + bsum(tgt, 'critTaken') + (this.traceCrit ? this.traceCrit(src, tgt, o) : 0) + (this.stdCritR ? this.stdCritR(src, tgt, o) : 0), 0, 1);
+      if (crit && !o.isDot && o.fixed == null && o.raw == null && src && src.flags) src.flags.actAnyCrit = true;
       let dmg = o.raw != null ? Math.max(1, Math.round(o.raw)) : this.dmgCalc(src, tgt, mult, o, crit);
       if (tgt.side === 'enemy' && tgt.data && tgt.data.proto) dmg = this.protoGuard(src, tgt, dmg, o);
       if (tgt.side === 'ally' && src.side === 'enemy' && !o.isDot && dmg > 1) {
@@ -1141,6 +1153,7 @@
       }
       const before = tgt.hp;
       tgt.hp = Math.max(0, tgt.hp - dmg);
+      if (tgt.side === 'ally' && before > tgt.hp && this.stdHpLost) this.stdHpLost(tgt, before - tgt.hp);
       if (tgt.side === 'enemy' && before > tgt.maxHp * 0.5 && tgt.hp <= tgt.maxHp * 0.5 && tgt.hp > 0) this.crossed.add(tgt);
       this.push({ t: 'dmg', u: tgt, src, v: dmg + absorbed, crit, e, hp: tgt.hp, shield: tgt.shield, label: o.label, dot: !!o.isDot, el: !!o.elation });
       const critTough = crit && src.charId === 'chie' && !tgt.weak.includes(e) && !o.anyTough;
@@ -1185,6 +1198,7 @@
       if (this.kitFx && src && src.side === 'ally' && !o.isDot && tgt.side === 'enemy') for (const w of this.allies) if (alive(w)) this.kitFx(w, 'teamHit', src, tgt, o);
       const mark = this.kitFx && tgt.side === 'enemy' && src.side === 'ally' && !o.isDot && !o.mark && alive(tgt) && tgt.buffs.find(b => b.s === 'mark');
       if (mark && alive(mark.src)) this.kitFx(mark.src, 'markHit', tgt, o);
+      if (this.stdHit) this.stdHit(src, tgt, o, dmg + absorbed, crit);
       return dmg + absorbed;
     }
 
@@ -1220,6 +1234,7 @@
         if (coneP(src, 'geniuses', 2)) this.addBuff(src, { s: 'critD', v: coneP(src, 'geniuses', 2), turns: coneP(src, 'geniuses', 3), name: 'У каждого своя роль' });
       }
       if (this.memo) this.memo(tgt.side === 'ally' ? 'down' : 'kill', { u: tgt, src });
+      if (tgt.side === 'enemy' && this.stdKill) this.stdKill(src, tgt);
       if (tgt.elys) { delete tgt.elys; this.scarAura(); }
       if (tgt.side === 'ally') for (const h of this.summons.slice()) if (h.owner === tgt) { if (h.id === 'hecate') this.hecateLeave(h); else if (!this.fivesLeave(h)) this.contonLeave(h); }
       if (tgt.side === 'ally' && tgt.charId === 'scar') this.scarAura();
@@ -1254,6 +1269,7 @@
       if (this.echoBreak) this.echoBreak(tgt);
       tgt.broken = true;
       tgt.tough = 0;
+      if (tgt.side === 'enemy' && this.stdBreak) this.stdBreak(src, tgt);
       if (tgt.side === 'enemy') for (const a of this.livingAllies) if (coneP(a, 'milkyway', 1)) this.addBuff(a, { s: 'dmgP', v: coneP(a, 'milkyway', 1), turns: 1, name: 'Рой метеоритов: пробитие' }, true);
       for (const a of this.allies) if (a.swallowed && a.swallowed.by === tgt) this.release(a);
       this.inabaBreak(src, tgt);
@@ -1322,6 +1338,7 @@
     }
 
     startTurn(u) {
+      if (this.stdAnyTurn) this.stdAnyTurn(u);
       if (u.side === 'enemy' && u.elys && --u.elys.rounds <= 0) { delete u.elys; this.push({ t: 'elysEnd', u }); this.scarAura(); }
       if (u.side === 'enemy' && u.flags.bindImm > 0 && !u.flags.bound) u.flags.bindImm--;
       if (u.side === 'enemy' && u.broken) {
@@ -1333,6 +1350,7 @@
       }
       if (u.side === 'ally') {
         if (this.memo) this.memo('turn', { u });
+        if (this.stdTurn) this.stdTurn(u);
         if (u.charId === 'march') u.flags.counters = 2 + (this.eidOn && this.eidOn(u, 4) ? 1 : 0);
         if (this.kitFx) for (const a of this.allies) if (alive(a)) this.kitFx(a, 'allyTurn', u);
         if (u.charId === 'kafka') u.flags.trill = true;
@@ -1409,6 +1427,7 @@
     endTurn(u) {
       if (!u) return;
       if (this.memo) this.memo('endTurn', { u });
+      if (this.stdEndTurn) this.stdEndTurn(u);
       if (this.elEnd) this.elEnd(u);
       if (this.su && u.side === 'ally' && alive(u)) this.bless('turnEnd', { u });
       for (const b of u.buffs) { if (b.skip) { b.skip = 0; continue; } b.turns--; }
@@ -1675,6 +1694,7 @@
       this.actKind = kind;
       const R = this.resolveTargets(actor, ab, target);
       this.push({ t: 'act', u: actor, name: R.revive ? 'Воскрешение' : ab.name, kind, lv: ab.lv });
+      if (this.stdBeforeAct) this.stdBeforeAct(actor, ab, kind, R);
       const hitSet = new Set();
       const toughOf = main => this.toughFor(kind, main);
       if (R.revive) {
@@ -1834,6 +1854,7 @@
             const cost = Math.round(actor.maxHp * f.hpP);
             actor.hp = Math.max(1, actor.hp - cost);
             this.push({ t: 'dmg', u: actor, src: actor, v: cost, e: 'elec', hp: actor.hp, shield: actor.shield, label: 'Цена' });
+            if (cost > 0 && this.stdHpLost) this.stdHpLost(actor, cost);
             break;
           }
           case 'extendDots':
@@ -2249,6 +2270,7 @@
       this.contonAfter(u, kind, hits);
       this.haresAfter(u, kind, hits);
       this.fivesAfter(u, kind, hits);
+      if (this.stdAfter) this.stdAfter(u, kind, hits);
       if (this.su && kind !== 'contact') this.bless('act', { u, kind, hits });
       if (u.flags.advanceAfter) { u.flags.pendingAdvance = (u.flags.pendingAdvance || 0) + u.flags.advanceAfter; u.flags.advanceAfter = 0; }
     }
@@ -2475,6 +2497,7 @@
         if (u.flags.heirUlt % 2 === 1 && this.sp < T.spMax) { this.sp++; this.push({ t: 'status', u, text: 'Преемница: +1 очко навыка' }); }
       }
       this.fivesUlt(u);
+      if (this.stdUlt && !this.over) this.stdUlt(u, ab);
       if (!this.over) this.cadenzaNext();
       if (coneP(u, 'mirror', 2) && !this.over) {
         for (const a of this.livingAllies) this.addBuff(a, { s: 'dmgP', v: coneP(u, 'mirror', 2), turns: coneP(u, 'mirror', 3), name: 'Аромат сливы в моих костях' });

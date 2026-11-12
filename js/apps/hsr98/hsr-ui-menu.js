@@ -1543,6 +1543,8 @@
             ui.wrap(d.text, pw - 24, 11).forEach((l, i) => ui.text(l, px + 12, py + 176 + i * 15, { size: 11 }));
             if (d.kind === 'mat' || d.kind === 'synmat') ui.wrap('Где взять: ' + ui.traceSource(e.id), pw - 24, 10).slice(0, 4).forEach((l, i) => ui.text(l, px + 12, py + 290 + i * 13, { size: 10, col: C.sub }));
             if (d.mat === 'shadow') ui.button(px + 12, py + 344, pw - 24, 26, 'Активировать Эйдолон', () => ui.useShadowFlow(e.id), { size: 12, icon: 'warp' });
+            else if (e.id === 'herta_sup') ui.button(px + 12, py + 344, pw - 24, 26, 'Наложить конус Герты', () => ui.useHertaSupFlow(), { size: 12, icon: 'cones' });
+            else if (e.id === 'herta_bond') ui.button(px + 12, py + 344, pw - 24, 26, 'Магазин Герты', () => ui.openHertaBondShop(), { size: 12, icon: 'shop' });
             else if (d.kind === 'mat' || d.kind === 'synmat') ui.button(px + 12, py + 344, pw - 24, 26, 'Синтез', () => ui.openSynth(null, d.kind === 'synmat' ? 0 : 1), { size: 12, icon: 'synth' });
             else if (d.use) ui.button(px + 12, py + 344, pw - 24, 26, 'Использовать', () => ui.useItemFlow(e.id), { size: 12, icon: 'bag' });
             else ui.text(d.note || (d.kind === 'key' ? 'Ключевой предмет сюжета.' : ''), px + 12, py + 350, { size: 10, col: C.dim });
@@ -1604,7 +1606,7 @@
           if (k === 'down') { this.sel = Math.min(n - 1, this.sel + 6); ui.sfx('select'); }
           const e = list[this.sel];
           if (k === 'ok' && e) {
-            if (e.kind === 'item') { if (e.d.mat === 'shadow') ui.useShadowFlow(e.id); else if (e.d.kind === 'mat' || e.d.kind === 'synmat') ui.openSynth(null, e.d.kind === 'synmat' ? 0 : 1); else if (e.d.use) ui.useItemFlow(e.id); else ui.sfx('deny'); }
+            if (e.kind === 'item') { if (e.d.mat === 'shadow') ui.useShadowFlow(e.id); else if (e.id === 'herta_sup') ui.useHertaSupFlow(); else if (e.id === 'herta_bond') ui.openHertaBondShop(); else if (e.d.kind === 'mat' || e.d.kind === 'synmat') ui.openSynth(null, e.d.kind === 'synmat' ? 0 : 1); else if (e.d.use) ui.useItemFlow(e.id); else ui.sfx('deny'); }
             else if (e.kind === 'cone') ui.openConeTarget(e.cn.uid);
             else ui.sfx('deny');
           }
@@ -1730,6 +1732,52 @@
           if (ui.listNav(this, k, list.length)) return;
           if (k === 'ok') { g.equipCone(list[this.sel], uid); ui.sfx('confirm'); ui.screens.pop(); ui.toast('Конус надет: ' + ui.shortName(list[this.sel])); }
           if (k === 'back') ui.pop();
+        }
+      });
+    },
+
+    openHertaBondShop() {
+      const g = this.game;
+      if (!g.state.flags.su_open) { this.sfx('deny'); this.toast('Сначала откройте Виртуальную вселенную у Герты.'); return; }
+      this.openHertaShop(() => {});
+    },
+
+    useHertaSupFlow() {
+      const ui = this, g = this.game, list = g.hertaSupTargets ? g.hertaSupTargets() : [];
+      if (!(g.state.inv.items.herta_sup > 0)) { ui.sfx('deny'); return; }
+      if (!list.length) {
+        const hasAny = g.state.inv.cones.some(c => H.CONES[c.id] && H.CONES[c.id].herta);
+        ui.sfx('deny');
+        ui.toast(hasAny ? 'Все ваши конусы Герты уже на S5.' : 'У вас пока нет световых конусов из Магазина Герты.');
+        return;
+      }
+      this.push({
+        sel: 0,
+        draw() {
+          const cur = g.hertaSupTargets();
+          if (!cur.length) return;
+          const n = Math.min(8, cur.length), h = 64 + n * 30;
+          ui.win(W / 2 - 200, 70, 400, h, { title: 'Наложитель (спецзаказ) — конус' });
+          ui.list(W / 2 - 188, 92, 376, cur.map(cn => {
+            const d = H.CONES[cn.id], hk = Object.keys(g.state.roster).find(k => g.state.roster[k].cone === cn.uid);
+            return {
+              label: d.name + (hk ? ' (' + ui.shortName(hk) + ')' : ''),
+              right: 'S' + (cn.sup || 1) + ' → S' + ((cn.sup || 1) + 1),
+              rcol: C.gold,
+              icon: (cc, x, y) => G.drawConeCard(cc, cn.id, x + 2, y - 11, 16, 22, { info: false }),
+              iconW: 24
+            };
+          }), this.sel, { rowH: 30, max: 8, onClick: i => { if (this.sel === i) this.key('ok'); else this.sel = i; } });
+        },
+        key(k) {
+          const cur = g.hertaSupTargets();
+          if (ui.listNav(this, k, cur.length)) return;
+          if (k === 'back') { ui.pop(); return; }
+          if (k === 'ok' && cur[this.sel]) {
+            const cn = cur[this.sel];
+            ui.screens.pop();
+            ui.openHertaSupConfirm(cn);
+          }
         }
       });
     },

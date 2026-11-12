@@ -353,7 +353,7 @@
         case 'enhance': { const n = this.suEnhanceRandom(st.n || 1); if (n) this.toast('Усилено благословений: ' + n); return false; }
         case 'unlock': {
           const paths = this.suPaths();
-          if (!paths.includes(st.path)) { paths.push(st.path); this.toast('Открыт Путь «' + SU.PATHS[st.path].name + '» в Виртуальной вселенной'); }
+          if (!paths.includes(st.path)) { paths.push(st.path); if (this.suUnlockPathBond) this.suUnlockPathBond(st.path); this.toast('Открыт Путь «' + SU.PATHS[st.path].name + '» в Виртуальной вселенной'); }
           return false;
         }
         case 'bank': if (su.frag >= st.n) { su.frag -= st.n; su.bank += st.n * 2; } return false;
@@ -427,6 +427,7 @@
         if (first && w.id >= 3) res.tracks = 1;
         this.give({ jade: res.jade, credits: res.credits, ornament: res.sets.map(x => ({ set: x.set, rl: x.rl })), items: res.tracks ? { tracks: res.tracks } : null });
       }
+      if (this.suAwardRun) Object.assign(res, this.suAwardRun(su, true, first));
       su.result = res;
       this.pending = { type: 'ui', ui: 'su_end', res };
     },
@@ -435,6 +436,7 @@
       const su = this.state.su;
       if (!su) return false;
       su.result = { world: su.world, win: false, first: false, jade: 0, credits: 0, sets: [], frag: su.frag, bless: su.bless.length, curios: su.curios.length };
+      if (this.suAwardRun) Object.assign(su.result, this.suAwardRun(su, false, false));
       this.battleCtx = null;
       this.pending = { type: 'ui', ui: 'su_end', res: su.result };
       return true;

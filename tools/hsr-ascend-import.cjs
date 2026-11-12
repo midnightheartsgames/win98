@@ -35,7 +35,7 @@ const LINE_OF = id => {
 };
 const TIER_OF = id => +id % 10;
 const PATH_ITEM = id => +id >= 110100 && +id < 110300;
-const CONE_LINE_OVERRIDE = { masquerade: 'core', sword_rumor: 'legion', goodluck: 'legion', sneering: 'legion', cccgorilla: 'silver', cccbadge: 'silver', cccstandee: 'silver' };
+const CONE_LINE_OVERRIDE = { masquerade: 'core', sword_rumor: 'legion', goodluck: 'legion', sneering: 'legion', cccgorilla: 'silver', cccbadge: 'silver', cccstandee: 'silver', promise: 'ancient', concert: 'silver', choreo: 'ancient', charmony: 'silver', poised: 'artifex', montage: 'core', greetings: 'core', nextpage: 'scion', getaway: 'ancient', whatreal: 'ancient', dreamville: 'ancient', finalvictor: 'silver', flamesafar: 'legion', forewoven: 'core', cosmosfell: 'legion', shroomy: 'scion' };
 const OWN_CONE_HERO = {
   shrine: 'miyabi', weaver: 'yanagi', lethe: 'phrolova', lullaby: 'scar', chunchunmaru: 'kazuma', hagoromo: 'aqua', manastaff: 'megumin', adamantite: 'darkness', truth: 'yu', thread: 'kanji',
   junesday: 'yosuke', dragontrial: 'chie', amagiinn: 'yukiko', affection: 'rise', cccletter: 'makoto', cccmagic: 'amanda', cccpratia: 'talleah', starlight: 'billy', vault: 'nicole', battery: 'anby'
@@ -147,9 +147,24 @@ function gameData() {
   const dir = path.join(ROOT, 'js/apps/hsr98');
   const Hg = require(path.join(dir, 'hsr-core.js'));
   const line = fs.readFileSync(path.join(ROOT, 'tests/hsr98.test.js'), 'utf8').split('\n').find(l => l.startsWith("for (const f of ['hsr-data'"));
-  for (const f of line.match(/\[(.*?)\]/)[1].split(',').map(x => x.trim().replace(/'/g, ''))) if (f !== 'hsr-ascend-data') require(path.join(dir, f + '.js'));
+  for (const f of line.match(/\[(.*?)\]/)[1].split(',').map(x => x.trim().replace(/'/g, ''))) if (f !== 'hsr-ascend-data' || fs.existsSync(DATA)) require(path.join(dir, f + '.js'));
   return Hg;
 }
+
+const CONE_SALVAGE_SRC = [
+  "    coneSalvageYield: { 3: { id: 'aether1', count: 1 }, 4: { id: 'aether2', count: 3 } },",
+  '    coneSalvageCap: 500,',
+  '    coneInvCap: 1500,',
+  '    coneSorts: [',
+  "      { id: 'rarity', label: 'Редкость' },",
+  "      { id: 'lvl', label: 'Уровень' },",
+  "      { id: 'name', label: 'Название' },",
+  "      { id: 'atk', label: 'Сила атаки' },",
+  "      { id: 'def', label: 'Защита' },",
+  "      { id: 'hp', label: 'HP' },",
+  "      { id: 'uid', label: 'Время получения' }",
+  '    ],'
+].join('\n') + '\n';
 
 function write(ex) {
   const Hg = gameData();
@@ -163,6 +178,7 @@ function write(ex) {
     + '    heroCredit: 10,\n'
     + '    coneCredit: 2,\n'
     + '    coneFodder: ' + js(ex.coneFodder) + ',\n'
+    + CONE_SALVAGE_SRC
     + '    heroCost: {\n' + cost(ex.heroCost) + '\n    },\n'
     + '    coneCost: {\n' + cost(ex.coneCost) + '\n    },\n'
     + '    coneExp: {\n' + exp + '\n    },\n'

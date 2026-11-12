@@ -1947,6 +1947,9 @@
         if (row.cone === id) out.push(`<b>Зал забвения, «${esc(sh.name)}»</b>: ${row.price} ед. «${esc(passName(sh.cur))}».`);
       }
     }
+    for (const row of h.HERTA_SHOP || []) {
+      if (row.cone === id) out.push(`<b>Виртуальная вселенная, «Магазин Герты»</b>: ${row.price} ед. «${esc(passName('herta_bond'))}»${row.limit ? `, ${row.limit} шт.` : ''}.`);
+    }
     for (const [lvl, row] of Object.entries(h.TL_REWARDS || {})) {
       if (row && row.cone === id) out.push(`<b>Пом-Пом, награды Уровня Освоения</b>: выдаётся на ${lvl} уровне.`);
     }
