@@ -741,7 +741,7 @@
       paint(g, t, X) {
         vgrad(g, 0, LH, [[0, '#70c8f0'], [1, '#c8f0ff']]);
         ell(g, '#ffd040', 270, 70, 24, 24); for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2 + t * 0.5; line(g, '#ffd040', 4, 270 + Math.cos(a) * 30, 70 + Math.sin(a) * 30, 270 + Math.cos(a) * 40, 70 + Math.sin(a) * 40); }
-        const word = 'УРОК ДЛЯ ЮНЫХ СТРАЖЕЙ', cols = ['#e8303a', '#2a7ad8', '#3aa848', '#e8a020'];
+        const word = wordOf('УРОК ДЛЯ ЮНЫХ СТРАЖЕЙ'), cols = ['#e8303a', '#2a7ad8', '#3aa848', '#e8a020'];
         rect(g, '#ffffff', 8, 6, 250, 28); let x = 14;
         for (let i = 0; i < word.length; i++) { const ch = word[i], y = 10 + Math.sin(t * 4 + i * 0.6) * 1.5; caption(g, ch, x, y, { size: 18, col: cols[i % 4], shadow: false }); x += textWidth(g, ch, 18) + 1; }
         rect(g, '#5ac85a', 0, 170, LW, 70);
@@ -1407,12 +1407,15 @@
     }
   ];
 
-  function flap(g, x, y, s, t, flip) {
-    const n = s.length;
+  const isEn = () => !!(H.isEn && H.isEn());
+  const wordOf = s => isEn() && H.tr ? H.tr(s) : s;
+
+  function flap(g, x, y, s0, t, flip) {
+    const s = wordOf(s0), n = s.length, letters = isEn() ? 'ABCDEFGHIJKLMNOPQRS' : 'АБВГДЕЖЗИКЛМНОПРСТУ';
     for (let i = 0; i < n; i++) {
       const cx = x + i * 13, spin = flip > 0 && hx(i, Math.floor(t * 12), 98) < flip;
       rect(g, '#14141a', cx, y, 12, 18); rect(g, '#000000', cx, y + 8, 12, 1);
-      const ch = spin ? 'АБВГДЕЖЗИКЛМНОПРСТУ'[Math.floor(hx(i, Math.floor(t * 20), 99) * 19)] : s[i];
+      const ch = spin ? letters[Math.floor(hx(i, Math.floor(t * 20), 99) * 19)] : s[i];
       caption(g, ch, cx + 6, y + 1, { size: 14, align: 'center', col: '#f2e8a0', shadow: false });
     }
   }
@@ -1911,7 +1914,7 @@
     }
   ];
 
-  function typed(s, k) { return s.slice(0, Math.floor(Math.max(0, Math.min(1, k)) * s.length)); }
+  function typed(s0, k) { const s = wordOf(s0); return s.slice(0, Math.floor(Math.max(0, Math.min(1, k)) * s.length)); }
 
   function phone(g, x, y, w, h, col) {
     rect(g, '#1a1a22', x, y, w, h); rect(g, col || '#6ad0ff', x + 3, y + 5, w - 6, h - 12); rect(g, '#3a3a44', x + w / 2 - 4, y + h - 5, 8, 2);

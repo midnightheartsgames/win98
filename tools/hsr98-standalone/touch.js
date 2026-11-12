@@ -37,9 +37,17 @@
   };
   const latched = new Set();
 
+  const LABEL_EN = {
+    'Удар': 'Attack', 'Шаг': 'Walk', 'Шагом': 'Walk', 'Быстрее': 'Faster', 'Рёв': 'Roar', 'Ульта': 'Ult',
+    'Лавка': 'Shop', 'Возврат': 'Recall', 'Стоять': 'Hold', 'Фразы': 'Emotes', 'Фраза': 'Emote', 'Пауза': 'Pause',
+    'Новый': 'New', 'Меню отладки': 'Debug Menu', '+нефрит': '+Jade', 'Клавиши': 'Keys', 'Баг': 'Bug',
+    'Скрыть': 'Hide', 'Пульт': 'Pad'
+  };
+
   function tr(text) {
     const h = window.Hsr98;
-    return h && h.isEn && h.isEn() && h.tr && text ? h.tr(text) : text;
+    if (!(h && h.isEn && h.isEn() && text)) return text;
+    return LABEL_EN[text] || (h.tr ? h.tr(text) : text);
   }
 
   function el(tag, cls, text) {

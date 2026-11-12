@@ -307,3 +307,316 @@ window.SR98_NEWS = [
     ]
   }
 ];
+
+(() => {
+  const EN = {
+    v19: {
+      tag: 'Patch', title: 'Patch 1.9: The Trailblazer\'s Room, a new Data Bank and 16:9',
+      lead: 'The Trailblazer\'s private quarters and Himeko\'s and Welt\'s compartments have opened on the Express\'s second floor, the Data Bank has been redrawn as an astrolabe with a bookshelf, the phone has a Tutorial with Tactical Training, and the whole game can switch to 16:9 widescreen.',
+      body: [
+        'Above the Party Car there is now your own two-story room: a hallway, a living room with an arcade machine and curio shelves, a bedroom, a bathroom with a rubber duck and a work area with a terminal. In the "Decor Ideas for a Space Home" event, the crew takes train duty shifts, builds up the Express Fund and furnishes six zones step by step.',
+        'At 10★ event rating you can choose a 4★ character ("Frost and Flame"), and for all 30 steps Pom-Pom gets the chef outfit "Grilled by the Conductor!". The "Conductor\'s Scheduled Rounds" mission opens Himeko\'s and Welt\'s compartments in the Sleeper Car, and Ether Link guests can drop by there too.',
+        'The Data Bank has a new astrolabe main screen with seven nodes: Aeons, Factions, Terms, Light Cones, Enemies, Characters and Relics. There are 19 new articles on the Aeons, over 30 on factions and 40 on terms with linked cross-references, a "Chronicle" mode and a separate "Books" screen with over 150 volumes from five worlds.',
+        'The phone\'s side panel has a new "Tutorial" section: a searchable guide in six categories and 15 "Tactical Training" battles in the Simulator that award up to 450 Stellar Jade.',
+        'The "Abilities" screen now shows a skill wheel with sub-mode tabs, level previews, the Contact negotiation matrix and Fusions, and Trace percentages are recalculated for the current level for all 64 heroes. The Trace trees and Eidolons of the guests from Axel, Inaba and Con-Ton were reworked, as were those of the Trailblazer (Destruction), March 7th and Dan Heng. The G key opens a detailed breakdown of stats and Type bonuses.',
+        'Light Cones (3★ and 4★) and relics can be salvaged right from the Inventory and the "Synthesis and Salvage" tab. There is now automatic locking of 4★ and 5★ cones, "Discard" marks, "Smart Discard" and up to five filter templates for relics.',
+        'The display settings have a new 16:9 widescreen format (854×480): the battlefield, a ten-turn action queue, character menus, the profile, Supply, Events, Mail, Warps and cutscenes all rearrange for the wide screen.'
+      ]
+    },
+    v18: {
+      tag: 'Update', title: 'Version 1.8: The Xianzhou Luofu',
+      lead: 'The Express arrives at the Xianzhou Luofu. Act II is open: 12 missions and 5 side missions about how the Stellaron Hunters call the crew to a ship-world where the Ambrosial Arbor is about to awaken.',
+      body: [
+        'The chapter starts after the Jarilo-VI finale: sit on the couch in the Parlor Car and Pom-Pom calls a navigation meeting. The map has sixteen new places: Cloudford, Starskiff Haven, the Exalting Sanctum, the Divination, Artisanship and Alchemy Commissions, Scalegorge Waterscape and Aurum Alley.',
+        'The Exalting Sanctum opens a new challenge, Pure Fiction: two teams each clear one node, enemies arrive in waves, and a full season can award up to 800 Stellar Jade and 600 Jade Feathers.',
+        'Pom-Pom\'s Dressing Room has opened in the Party Car, the "Proving Grounds" terminal works in the Test Car, and battles have a new "Battle Details" button (C key).'
+      ]
+    },
+    v17n: {
+      tag: 'Patch', title: 'Patch 1.7: The Ether Link',
+      lead: 'Every Trailblazer now has their own UID. The game has friends, visits to someone else\'s Express and Express Frontier for two, three and four players.',
+      body: [
+        'Silver Wolf has connected the Express to the Ether Link. The link turns on only after you agree: until then the game sends nothing online. The terms are on the same screen, and the link settings let you delete all your data.',
+        'The phone menu has "Friends", with a new icon above the settings gear. Friends are added by UID: nine digits shown in the profile. The list shows who is online and what they are doing, with favorites, requests and a blocklist.',
+        'You can visit a friend\'s Express even when they are offline: the crew, outfits and record there are theirs. Guests see each other and talk with ready-made phrases, and the guestbook lets you leave a wish or your own text up to 40 characters.',
+        'A visit of 30 seconds or more gives the guest and the host 2,000 Credits each. No more than three gifts a day, and one pair gets it once a day. If the host was offline, they get theirs on the next login.',
+        'Express Frontier now has a "2–4 PLAYERS" button. A table is gathered by code, by inviting a friend or opened to everyone. Everyone rolls their own Paths, heroes don\'t repeat at a table, the base and turrets are shared, and gold from enemies is split evenly.',
+        'At the table there is a field marker (G), ready-made phrases (V) and a shared pause (P). At an open table everyone has three pauses of up to two minutes; at a private one, a single pause of up to ten minutes and no score. A dropped connection doesn\'t kick you out: your hero stands and fights alone, and you can rejoin the table at any time.',
+        'All editions play together if they have the same Frontier version: Star Rail 98 on PC, on phones and on the site, and Honkai: Star Rail 98 in Win 98. In Win 98 the link is switched on with a modem through the "Ether Link" provider, and online friends show up in "Network Neighborhood" as computers.'
+      ]
+    },
+    v17g: {
+      tag: 'Patch', title: 'Patch 1.7: Ascension and a new phone',
+      lead: 'Heroes and cones now grow through Ascension, cones have their own level, and the phone got a menu, a profile and wallpapers.',
+      body: [
+        'There is a separate "Level Up" screen: the U key in "Characters". EXP books now cost Credits, and the normal and quick modes are switched with T.',
+        'From level 20 and every 10 levels after, a hero hits a cap and goes through Ascension. It costs materials and Credits and unlocks with Trailblaze Level: 15, 20, 30, 40, 50 and 60. Each Ascension noticeably raises stats, and the first, third and fifth bring a Star Rail Pass.',
+        'Light Cones now have their own level and six Ascensions. Cones get EXP from Ether Buds from the new Calyx and from spare cones if you don\'t mind. Superimposition can happen automatically or by hand; you choose in the settings.',
+        'Hero progress is kept: old saves get a phase by level, and a cone on a hero gets that hero\'s level. No hero and no cone loses any stats.',
+        'The Simulator has six new Stagnant Shadows, and the Base Zone got a "Quantum" Shadow. Ascension materials drop there and from enemies.',
+        'The phone has a new "…" button. Behind it are the Trailblazer\'s profile with a stage, showcase, records and collections, phone decorations, all outfits with quick wearing, and promo codes.',
+        'The "Forever by Your Side" wallpaper and supplies for the first Ascensions arrive by Mail.'
+      ]
+    },
+    v17p: {
+      tag: 'Patch', title: 'Patch 1.7: Promo codes',
+      lead: 'You can enter promo codes on the phone. Gifts arrive by Mail, and the first two codes are in this news.',
+      body: [
+        'The phone menu, behind the "…" button, has a "Promo Code" item. It opens after you get to know the Express.',
+        'Type the code on the keyboard or with the mouse on the on-screen grid. The keyboard layout doesn\'t matter; codes use Latin letters. Case, spaces and hyphens don\'t matter either.',
+        'The gift arrives as a letter in Mail. Each code works once per save. The right side of the screen shows which codes you have already entered.',
+        'Two codes for everyone: STARRAILGIFT gives 50 Stellar Jade and 10,000 Credits, POMPOM98 gives 60 Stellar Jade and a fuel canister.',
+        'One more code is hidden on the Express itself. You\'ll have to find it yourself.'
+      ]
+    },
+    v16h: {
+      tag: 'Patch', title: 'Patch 1.6: "Crimson Lesson", the first 5★ outfit',
+      lead: 'Himeko now has an outfit with its own cutscenes. It costs 1680 Stellar Jade, and you can watch every cutscene before buying.',
+      body: [
+        '"Crimson Lesson" is the first 5★ outfit. It is a Valkyrie battle suit from the world Welt came from: crimson armor, black fur on the shoulder and a two-handed sword.',
+        'The Ultimate plays under an eclipse above the rails. The sword opens like a wing, Himeko slashes a cross in a leap and finishes with a wave of fire from above.',
+        'The "Molten Detonation" Skill got its own short cutscene: a dash with a trail of fire and a cross slash. It plays on the first Skill in a battle; the settings let you show it on every Skill or turn it off.',
+        'In the "Express Singularity" Fusion, Welt\'s singularity covers the sun and Himeko rings it with a crown of fire. Welt recognizes the armor.',
+        'In the Standard and event Warps the outfit has its own reveal: a hall with rows of empty armor and the crimson armor in the middle. On other banners the outfit replaces the last frame of Himeko\'s sequence.',
+        'In the Outfit Shop a 5★ outfit has a "Cutscenes" button (V key) that shows all of its cutscenes in a row. If you bought "Crimson Lesson" while it cost 840, you keep it with its cutscenes at no extra cost.'
+      ]
+    },
+    v16o: {
+      tag: 'Patch', title: 'Patch 1.6: 4★ and 5★ outfits',
+      lead: 'An outfit\'s class now depends not on the hero\'s class but on what the outfit itself changes.',
+      body: [
+        'A 4★ outfit changes only the hero. You see it in battle, on the map, on the phone, in menus, in Ultimate and Fusion inserts and in Warp scenes, but the cutscenes themselves stay the same. Such an outfit costs 840 Stellar Jade.',
+        'A 5★ outfit changes the hero the same way and brings its own cutscenes: the Ultimate, the Skill, each of the hero\'s Fusions and the Warp. It costs 1680 Stellar Jade. Outfits give no power: damage, targets and durations stay the same.',
+        'For now every outfit in the Outfit Shop is 4★. The first 5★ outfit will be Himeko\'s "Crimson Lesson", and its cutscenes are already being staged.',
+        'Seven outfits dropped from 1680 to 840: "Crimson Demon Apprentice", "Plum Blossom Letter", "Failed Idol Debut", "Dustiness Bride", "Beach Goddess", "Noble Bloom" and "Chocola Cosplay". If you already own one, 840 Stellar Jade was refunded for each; the details are in Supply. "Spring\'s Birth" was a gift and "Crimson Lesson" will become 5★ again, so there is no refund for them.',
+        'The Ultimate inserts of Makoto, Talleah, Billy, Nicole and Anby now show the outfit being worn. Scenes no longer mix up outfits if you change one mid-game.'
+      ]
+    },
+    v16d: {
+      tag: 'Patch', title: 'Patch 1.6: Fuel coupons and challenge series',
+      lead: 'The Express Simulator can now run challenges in series, and Pom-Pom hands out Fuel coupons: with them, Calyx and Stagnant Shadow materials arrive without a fight.',
+      body: [
+        'The screens for Calyxes, Stagnant Shadows, Caverns of Corrosion and Echoes of War have been redrawn. On the left are difficulties and a description; on the right, possible enemies with their Weaknesses, drops, a "Quick Trailblaze Power recovery" toggle and a "Number of challenges" slider.',
+        'A Calyx runs up to 24 waves in one battle: 10 Power and a reward per wave. If the team falls, cleared waves still count. A Stagnant Shadow can be run up to eight times in a row and a Cavern of Corrosion up to six: the reward arrives after every win, and the next battle starts by itself three seconds later.',
+        'The quick recovery toggle takes missing Power from the reserve. It doesn\'t touch Express fuel or Stellar Jade.',
+        'A Fuel coupon together with Power gives the materials at once, without a fight: one coupon per 10 Power, and a Stagnant Shadow takes three. Up to ten attempts at a time. Caverns of Corrosion and Echoes of War don\'t accept coupons, and hero EXP and enemy drops come only from a real battle.',
+        'Coupons work from the challenge window, from the Survival Index and straight from a hero\'s "Traces". If a material is needed for a build target, quick claiming stops once there is enough.',
+        'The build target is now visible everywhere: a bust on Index rows, a "Change build target" button and an icon in the hero list. You can also set as the target a hero from the current event Warp who is not yet in the crew. The "Recommended Traces only" switch keeps only the Skill, Ultimate, Talent and bonus abilities in the calculation.',
+        'Pom-Pom has already mailed you the first 100 Fuel coupons.'
+      ]
+    },
+    v16c: {
+      tag: 'Patch', title: 'Patch 1.6: Light Cones like the original',
+      lead: 'All Light Cones were remade: new paintings, names, passives and stories. Every cone now has its own screen.',
+      body: [
+        'The cone screen opens with V in the inventory, when choosing a cone, in shops and in the cone Warp. It shows the painting, Superimposition S1–S5, stats at the hero\'s level, the passive and the story. Left and right arrows preview any Superimposition, and Tab shows the whole painting.',
+        'Forty cones from the Standard Warp, the Forgotten Hall and event Warps got the original names, stats and passives, such as Collapsing Sky, Post-Op Conversation and Past Self in Mirror. Passive numbers at each Superimposition come from the table, as in the original.',
+        'The guests\' cones were redrawn from scenes of their lives and got new names. Section 6: "100% Melon" for Miyabi and "Moon That Shines Upon the Stars" for Yanagi. Cunning Hares: "Starlight Knights Never Lose", "How to Buy the Sun" and "Untitled Track". Solaris-3: "A Seat by the Window" for Phrolova and "Tale of the Black Lamb" for Scar.',
+        'Axel: "It Was a Tractor" for Kazuma, "Encore Performance" for Aqua, "Today\'s Explosion" for Megumin and "Prayer for a Friend" for Darkness. Inaba: "The Tastiest Omelet" for Yu and "Just Rise" for Rise; the other four names stayed. The Con-Ton cones kept their names and got new paintings.',
+        'Cones you already have stay with the same Superimposition. If a cone is equipped, its new passive works from the first battle.'
+      ]
+    },
+    v16e: {
+      tag: 'Patch', title: 'Patch 1.6: The Path of Elation',
+      lead: 'The game has a ninth Path, Elation, the Path of the Aeon Aha. The first to walk it is Kazuma from Axel.',
+      body: [
+        'Elation heroes\' abilities and the team\'s blunders build up Humor. While there is Humor, Aha stands on the action bar. Its turn is called Aha Instant: Elation heroes use their Elation Skill, and the more Humor, the stronger the hit. Elation DMG depends on the hero\'s level and the Elation stat, not on ATK.',
+        'After the Instant, Humor becomes the hero\'s True Hit for two of their turns. While the Hit lasts, Kazuma\'s Steal, Bind and Grand Steal add Elation DMG.',
+        'Kazuma\'s Elation Skill is "Rock, Paper, Scissors!": a hit on all enemies and six rounds against random targets. Kazuma wins a round half the time, and three times out of four with the "High Luck" Trace.',
+        'Kazuma no longer has Luck. Trace levels are kept, and Effect Hit Rate nodes became Elation nodes. His cone "It Was a Tractor" is now an Elation cone.',
+        'New: the Bud of Elation in the Interastral Guide, and the cones "Today\'s Good Luck" (4★) and "Sneering" (3★) in the Standard Warp. The enemy mood "Joy" in Contact was renamed "Contentment" so it isn\'t confused with the Path.'
+      ]
+    },
+    v16w: {
+      tag: 'Patch', title: 'Patch 1.6: Trailblazer\'s Will up to level 70',
+      lead: 'The permanent "Trailblazer\'s Will" event grew with Trailblaze Level: four more stations, from level 45 to 70, wait on the event\'s second page.',
+      body: [
+        'The first page stays the same: Trailblaze Levels 5, 15, 25 and 35. Flip to the second with the arrows in the event\'s corner or with PgUp and PgDn.',
+        'At levels 45 and 55 you get 10 Star Rail Passes and 800 Stellar Jade each, and at level 65, 10 passes and 1000 Jade.',
+        'The last station, level 70, gives 10 passes and a special Trailblazer outfit, "Lord of the Trash Kingdom": a ribbed bin, a lid for a helmet and a trusty bat. If you already bought the outfit in the Outfit Shop, you get 840 Stellar Jade back instead.',
+        'If you are already above level 45, you can claim the rewards right away: the event opens on the page with the first unclaimed station.'
+      ]
+    },
+    v16g: {
+      tag: 'Patch', title: 'Patch 1.6: The Interastral Guide and Synthesis',
+      lead: 'The Trailblazer\'s phone has two new tiles. The Interastral Guide suggests where to spend Trailblaze Power, and Synthesis cooks food, processes materials and creates relics.',
+      body: [
+        'The Interstellar Peace Corporation\'s Interastral Guide has five sections. Daily Training refreshes every hour: tasks give activity points, and 100, 200, 300, 400 and 500 points award Stellar Jade, Trailblaze EXP, Credits and materials.',
+        'The Survival Index lists Calyxes, Stagnant Shadows, Caverns of Corrosion, Echoes of War and Simulated Universe worlds. Pick a hero as your build target and the guide counts the missing materials, tells you where to get them and shows the relic sets players recommend. The "Enter" button moves the team to the entrance.',
+        'Cosmic Strife shows the Simulated Universe worlds, Treasures Lightward shows the Forgotten Hall, and Trailblazing Experience keeps the Trailblaze chapters you have completed with snapshots from the Express photo wall.',
+        'Synthesis replaced the old Omni-Synthesizer screen. Consumables are cooked from ten synthesis materials: they drop from broken crates and enemies and are sold in shops. A recipe unlocks when a dish first lands in your bag, or it can be bought in a shop.',
+        'Relics are no longer sold but salvaged: the same Credits plus Relic Remains on top. A hundred Remains give a relic of any set and slot, and Self-Modeling Resin picks the main stat. Caverns of Corrosion and Stagnant Shadows drop their own set pairs.',
+        'Items were redrawn after the original. Every relic set has its own items: the wanderer\'s hairpin, the knight\'s ring, the smith\'s cast leg, the thief\'s steel hook. Planar spheres show their world, and Trace materials, synthesis materials, Echoes of War, consumables and EXP books got their own art. A recipe ticket shows its dish, and a relic in the inventory shows its slot icon in the corner. Relic sets and EXP books carry their official names. Books give 1000, 5000 and 20,000 EXP, and a hero\'s road to level 80 grew by the same amount, so leveling goes at the same pace.',
+        'Saving and loading is now in the phone\'s right panel, under the settings gear. 300 Relic Remains and synthesis materials are waiting in your mail.'
+      ]
+    },
+    v16t: {
+      tag: 'Patch', title: 'Patch 1.6: Traces, Eidolons and upgrade materials',
+      lead: 'Heroes now have Traces: ability levels, bonus abilities and stat boosts. Eidolons switch to the original effects, and upgrades need materials from battles, Calyxes and Echoes of War.',
+      body: [
+        'In the "Characters" menu, the "Light Cone" section gave way to "Traces". Cones are still changed in "Details": click the card or use "Actions". Traces raise the levels of the Basic ATK, Skill, Ultimate and Talent, unlock three bonus abilities and ten stat boosts. The cap depends on hero level: at 30 the Skill goes up to level 3, at 70 up to level 10, and the last two boosts wait for levels 75 and 80.',
+        'The materials are the same as in the original. Enemy materials drop after battle: Fragmentum cores, Antimatter Legion trophies, Silvermane insignia and automaton parts. Path materials grow in Crimson Calyxes, including two new ones on Herta Space Station: the Bud of Destruction in the Storage Zone and the Bud of Preservation in the Supply Zone. Rare materials come from Echoes of War, whose rewards refresh every hour. Tracks of Destiny are given by Pom-Pom for Trailblaze Levels and sold in "Supply".',
+        'The Express Simulator has two new Echoes of War: "Destruction\'s Beginning" with Phantylia the Undying and "Old Wormhole Nightmares" with Scarabaz from the Isolated Zone.',
+        'The Omni-Synthesizer in the Party Car works now: it turns three materials into one material of the next tier and trades two unneeded ones for one you need.',
+        'Eidolons get the original effects: the third and fifth raise ability levels, and the others change the hero\'s moves. Heroes are moved over one at a time, and until then the others\' Eidolons boost base stats as before. The Trailblazer unlocks Eidolons with Shadows of Destruction and Preservation.',
+        'The Traces of heroes already in the crew are unlocked up to their level cap, and materials were credited for what you had done. 20,000 Credits and three of each material are waiting in your mail.'
+      ]
+    },
+    v16: {
+      tag: 'Update', title: 'Version 1.6: nine 5★ heroes in the event Warp',
+      lead: 'Nine 5★ heroes from the original\'s 1.x versions have arrived in the event Warp: six from the Xianzhou Luofu and three guests from the Corporation, the Knights of Beauty and the Intelligentsia Guild. Each has their own banner and signature Light Cone.',
+      body: [
+        'From the Xianzhou Luofu came General Jing Yuan (Erudition, Lightning), Luocha (Abundance, Imaginary), Dan Heng • Imbibitor Lunae (Destruction, Imaginary), Fu Xuan (Preservation, Quantum), Jingliu (Destruction, Ice) and Huohuo (Abundance, Wind). From the Interstellar Peace Corporation came Topaz & Numby (The Hunt, Fire), from the Knights of Beauty Argenti (Erudition, Physical), and from the Intelligentsia Guild Dr. Ratio (The Hunt, Imaginary).',
+        'The banners carry the original names: "Swirl of Heavenly Spear", "Laic Pursuit", "Epochal Spectrum", "Foreseen, Foreknown, Foretold", "Gentle Eclipse of the Moon", "Sunset Clause", "Bloom in Gloom", "Thorns of Scented Crown" and "Panta Rhei". Any 5★ from the chosen banner is always its hero, and the 4★ trio is taken from the banner\'s first run in the original. Huohuo brings Dan Heng along, and he drops from a Warp for the first time.',
+        'Their cones wait in the event Light Cone Warp: Before Dawn, Echoes of the Coffin, Brighter Than the Sun, She Already Shut Her Eyes, I Shall Be My Own Sword, Worrisome, Blissful, Night of Fright, An Instant Before A Gaze and Baptism of Pure Thought.',
+        'Every hero has their own trick. Jing Yuan\'s Lightning-Lord acts on his own and strikes more often the more hits have been stored. Luocha heals an ally by himself when they drop to half HP. Imbibitor Lunae puts up to three Skill Points into one attack ahead of time. Fu Xuan takes part of the allies\' damage. Jingliu feeds on the team\'s HP. Numby hits the debtor and rushes to every follow-up attack on it. Huohuo gives the team Energy. Argenti chooses between a small and a big Ultimate. Ratio counts the debuffs on the target.',
+        'New Fusions: "High-Cloud Quintet" (Jing Yuan and Jingliu), "The General and His Sword" (Jing Yuan and Yanqing), "Divination Commission" (Fu Xuan and Qingque), "Vidyadhara" (Imbibitor Lunae and Bailu) and "Ten-Lords Commission" (Huohuo and Hanya).',
+        'There are now fourteen banner heroes, so the selection column on the right scrolls with the arrows, the mouse wheel and the ↑/↓ keys.',
+        '10 special Star Rail Passes and 300 Stellar Jade are waiting in your mail.'
+      ]
+    },
+    v15: {
+      tag: 'Update', title: 'Version 1.5: Supply, the Outfit Shop and Conductor Pom-Pom',
+      lead: 'The phone has a new "Supply" section with a Shop and an Outfit Shop, the interface is easier to use, and Pom-Pom now not only sells goods but also hands out rewards for Trailblaze Level.',
+      body: [
+        'The "Supply" tile took the place of "Management" on the phone. The section opens after you get to know the Express, like the Star Warp. There is still no real money in the game: everything is bought with what the game itself gives.',
+        'Duplicates in the Star Warp are no longer lost. A duplicate 4★ or 5★ hero gives an Eidolon and 8 or 40 Undying Starlight, or 20 or 100 if all six Eidolons are already unlocked. A 4★ or 5★ Light Cone gives 8 or 40 Starlight, and a 3★ cone gives 20 Undying Embers. Old saves receive Starlight and Embers for all past Warps.',
+        'The Shop sells, for Starlight, special and Star Rail Passes for 20, the 5★ cones Night on the Milky Way, But the Battle Isn\'t Over and Moment of Victory for 600, and a pair of 4★ heroes for 140. For Embers it sells passes for 90 instead of 160, Adventure Logs, Traveler\'s Guides and Credits. Limits and the hero pair refresh every hour.',
+        'The Outfit Shop sells outfits for Stellar Jade: "Spring\'s Birth" for March 7th, "Crimson Demon Apprentice" for Megumin, "Plum Blossom Letter" for Ruan Mei, "Failed Idol Debut" for Welt, "Dustiness Bride" for Darkness, "Beach Goddess" for Aqua and "Noble Bloom" for Miyabi at 1680, and "Trendy Bunny" for Nicole and "Tracksuit" for Kazuma at 840. Kazuma gives his tracksuit away for free after the "Party Swap" story.',
+        'Outfits are put on in the new "Outfits" section of the character menu. The hero wears it everywhere: on the phone, on the map, in battle, in Ultimates, Fusions and scenes. The "All outfits" button shows the whole collection at once.',
+        'Interface fixes. "Management" moved to the phone\'s right panel, under settings. "Team" now has 12 teams: numbered tabs at the top, and Tab opens an overview of all teams. The hero selection window scrolls with the wheel and a scrollbar, and long names fit on the cards.',
+        'You can mark favorite heroes with a star on the character screen (F key). They come first in the hero strip, in team selection and in every other list.',
+        'Pom-Pom was redrawn and now looks like the other heroes. You can talk to Pom-Pom on the Express: Pom-Pom tells stories about the Express passengers, still sells goods and hands out Conductor Rewards.',
+        'Trailblaze Level is now a separate level for the whole crew. It grows to 70 through victories and missions, and heroes now grow to level 80. For every Trailblaze Level Pom-Pom hands out a ticket with a reward: passes, Jade, Credits, materials and relics.',
+        'New adventure missions wait on the Express: "Conductor Rewards", "Don\'t Forget Home", "In Search of a Record" and "Old Friends, New Acquaintances".',
+        'The "Spring\'s Birth" outfit for March 7th and 300 Stellar Jade are waiting in your mail.'
+      ]
+    },
+    jarilo: {
+      tag: 'Update', title: 'Jarilo-VI like the original: eleven areas and the Pillars of Creation',
+      lead: 'Belobog and the Underworld were rebuilt after the original game\'s maps. The chapter goes mission by mission, and after the credits the sequel "Awakening from the Winter Sleep" opens.',
+      body: [
+        'The Overworld now consists of the Outlying Snow Plains, the Administrative District with its cable car station, Backwater Pass, the Silvermane Guard Restricted Zone, the Corridor of Fading Echoes, Everwinter Hill and the Pillars of Creation. The district has the Flower Shop, the Neverwinter Workshop, the Goethe Hotel, Qlipoth Fort and the Belobog History and Culture Museum.',
+        'The Underworld: Boulder Town with Natasha\'s clinic, the Fight Club and the Grand Hotel, the Great Mine and the Drifters\' Shelter, Rivet Town with the orphanage hill, and the two-level Robot Settlement. All names come from the official localization.',
+        'The chapter\'s twenty-two missions take place on their own maps: hide-and-seek with the Moles, the Great Mine\'s carts, the Magflow Connector, gear bridges, the district curfew, three waves with the Engine of Creation, the Path space, the ceremony at the Monument and the farewell to Belobog.',
+        'After the credits Bronya invites the crew to the Sun Festival. Three "Market of the Future" missions introduce Topaz of the Interstellar Peace Corporation, lead to the Great Mine and the outskirts of Rivet Town, and then to the Pillars of Creation, where the people of Belobog are restoring the Engine of Creation.',
+        'Old saves carry over by themselves: the player stands on a free spot of the new map, completed steps count, and opened chests stay open.'
+      ]
+    },
+    v14: {
+      tag: 'Update', title: 'Version 1.4: nine new heroes and Herta Space Station like the original',
+      lead: 'Nine 4★ heroes from Jarilo-VI and the Xianzhou Luofu have arrived in the Star Warp, Herta Space Station was rebuilt after the original game, and a door from the Party Car opened onto the Con-Ton convention.',
+      body: [
+        'From Belobog came Lynx (Abundance, Quantum) and Luka (Nihility, Physical). From the Xianzhou Luofu flew in Sushang (The Hunt, Physical), Xueyi (Destruction, Quantum), Tingyun (Harmony, Lightning), Hanya (Harmony, Physical), Qingque (Erudition, Quantum), Yukong (Harmony, Imaginary) and Guinaifen (Nihility, Fire).',
+        'All nine are in the "Stellar Warp" Standard Warp, in Signal Search and in the 4★ trios of event Warps: Xueyi and Sushang with Ruan Mei, Hanya and Yukong with Seele, Luka and Guinaifen with Kafka, Qingque and Tingyun with Silver Wolf, and Lynx with Blade.',
+        'Each has their own trick in battle. Lynx gives an ally Survival Response and draws hits to a Destruction or Preservation fighter. Luka builds up Fighting Will and unleashes it in a flurry of punches. Sushang finishes off broken enemies with Sword Stance. Xueyi breaks Toughness of any Weakness and builds up Karma.',
+        'Tingyun gives an ally Energy and Benediction. Hanya puts a Burden on an enemy, and every two hits on it return a Skill Point. Qingque draws jade tiles and with four of a suit enters Hidden Hand. Yukong draws Roaring Bowstrings for the whole team. Guinaifen turns others\' Burn into Firekiss.',
+        'New Fusions: "The Landaus Together" for Lynx, Gepard and Serval, "Boxing Lesson" for Luka and Hook, "To a Round of Applause" for Sushang and Guinaifen, "Judge Sisters" for Hanya and Xueyi, "Heavenly Fleet" for Yukong and Tingyun, and "Betting on the Show" for Qingque and Guinaifen.',
+        'Herta Space Station was rebuilt like the original. Five zones and Herta\'s Office, 15 Anchors and a Space Elevator with zone selection. The prologue goes in the same order as in the original game, and Kafka fights alongside you.',
+        'In the curio storage the exhibits stand by wing, and the Rating Gun rates the team\'s heroes again. Herta\'s puppets and little robots are scattered around the station, every zone has puzzles and a strong enemy, and beyond the three-story Isolated Zone Ruan Mei\'s mission opens.',
+        'The "KonoSuba x SR98: Party Swap" event takes the Express to the Kingdom of Belzerg. In the town of Axel, the Trailblazer swaps parties with Satou Kazuma for a day: leading Aqua, Megumin and Darkness into battle, taking Adventurers\' Guild quests and descending into Keele\'s Dungeon. In the finale the Prototype Destroyer waits at the south gate, and instead of credits the "KONOSUBA 3 - Ending" clip plays.',
+        'The event opens after the Jarilo-VI chapter, with early access in the "Events" tab. For the finale Kazuma joins the crew for free.',
+        'A gadget with lights that someone left in the Party Car opened a door between worlds. Behind it is Con-Ton, the biggest convention on the whole northwest coast. The Star Warp has a new "Con-Ton" tab, and three 5★ heroines perform on the main stage: Makoto Mine (The Hunt, Imaginary), Amanda Miller (Preservation, Wind) and Talleah of Avia (Remembrance, Quantum).',
+        'Makoto steals part of an enemy\'s turn and slips into a portal to return with a precise crit. Amanda turns into the Pink Protector without spending a turn and covers allies with a Heart Cocoon that bursts in wind across all enemies. Talleah puts Shackles on enemies and leads a squad of gynoids into battle, and if she falls, the gynoids carry her to a restoring capsule.',
+        'A Warp on the main stage costs a Con-Ton badge or 160 Stellar Jade. The chosen heroine drops 50% of the time, and a 5★ comes by the 60th Warp at the latest. Artists\' Alley sells the heroines\' Light Cones for the same badges: "With Love, Makoto", "Real Magic" and "Violet Skies of Pratia". The chosen cone drops 75% of the time, and a 5★ comes within 50 purchases. They say Kazuma sometimes sneaks onto the stage too.',
+        'New Fusions: "Three\'s a Party", "Mexican Standoff", "She Started It!" and "Shut Your Trap". The first badge is given at the registration desk, the "Four Days of Con-Ton" event in the "Events" tab gives 10 more, and the letter "Cosplay Convention Crisis" with 10 badges is in your mail.',
+        'The TV in Herta\'s office picked up a new channel. In Signal Search, both banners of the Exclusive Channel now feature A-rank agents from the Cunning Hares, an agency for delicate jobs: Billy Kid (Erudition, Physical), Nicole Demara (Nihility, Quantum) and Anby Demara (The Hunt, Lightning). Dan Heng no longer drops from Signal Search.',
+        'Billy shoots from one knee and hits harder with every consecutive Basic ATK. Nicole sets up an energy field: enemy DEF drops and an area attack hits everyone. Anby strikes with "Thunder" after three hits, and while she is in the team every break opens a Chain Attack: the chosen ally immediately hits the broken enemy.',
+        'The featured A-rank agent drops 50% of the time, and a miss gives a guarantee. The W-Engine Channel has their W-Engines: "Starlight Knights Never Lose", "How to Buy the Sun" and "Untitled Track". New Fusions: "Cunning Hares on the Job", "Starlight Knight Main Theme" and "A Katana as Collateral". The letter "Cunning Hares on the Line" with 10 Encrypted Master Tapes is in your mail.',
+        '10 Star Rail Passes and 300 Stellar Jade are waiting in your mail.'
+      ]
+    },
+    v13: {
+      tag: 'Update', title: 'Version 1.3: Signal Search, Section 6, Convene, the Guild and the Midnight Channel',
+      lead: 'Herta\'s old TV picked up a strange channel, a tide came in from the sea, a recruitment notice appeared on the bulletin board, and at midnight a strange silhouette showed on a switched-off screen. Now Warps can call Section 6 agents, the conductor Phrolova, Scar, Kazuma\'s party and the Investigation Team from Inaba.',
+      body: [
+        'The Star Warp has a new "Signal Search" tab. Two S-rank agents from Section 6 wait on the Exclusive Channel: Miyabi (The Hunt, Ice) and Yanagi (Nihility, Lightning). The W-Engine Channel has their Light Cones "100% Melon" and "Moon That Shines Upon the Stars".',
+        'A search needs Encrypted Master Tapes, cassettes with a recorded signal. Without them one search costs 160 Stellar Jade. Each channel has its own guarantee: an S-rank signal comes within 60 searches on the Exclusive Channel and within 50 on the W-Engine Channel.',
+        'On the Exclusive Channel the chosen agent drops with a 50% chance. If someone else drops, the next S-rank signal is guaranteed to be the chosen one. Search ranks are shown with letters: S, A and B.',
+        'Signal Search has its own style. Instead of a train, a stack of old TVs lights up, a phone dial spins on the screen, and each agent steps onto the stage under the spotlights.',
+        'Miyabi builds up Frost and releases it in a single Shimotsuki strike. The charge level is chosen with the up and down arrows. Her ice applies Frostburn, and at three stacks the enemy suffers Frostbite.',
+        'Yanagi switches between the Jougen and Kagen stances and hits an enemy\'s anomalies without removing them. While she is in the team, a second anomaly of a different type causes Disorder: the old ones explode at once. Together they have the "Section 6" Fusion.',
+        'Next to it a "Convene" tab opened. Two guests wait on the Resonator Channel: Phrolova (Remembrance, Quantum) and Scar (Destruction, Fire). The Weapon Channel has their Light Cones "A Seat by the Window" and "Tale of the Black Lamb".',
+        'A Convene needs Radiant Tides, or Forging Tides on the Weapon Channel. Without them one Convene costs 160 Stellar Jade. The guarantee is shared between both guests: a 5★ comes within 60 Convenes, and 50% of the time it is the chosen guest. On the Weapon Channel a 5★ comes within 50 Convenes and is always the chosen cone.',
+        'Convene has its own style. A tide coin falls into a whirlpool, a comet flies toward a cloud funnel, and the comet\'s color hints at the rarity. Phrolova and Scar have their own entrance scenes.',
+        'Phrolova is the first heroine of the Path of Remembrance. She writes notes and summons Hecate, who acts on her own in battle and plays melodies. Scar sets up Elysium: his seals burst from hits by two different allies, and in his Aberrant Nightmare form he pays for hits with his own HP. Together they have the "Dissonance" Fusion.',
+        'New companion missions: "Static on the Frequency" and "Hollow Huntress". The first starts with a message from Herta after arriving on Jarilo-VI, the second after the chapter finale.',
+        'Last came the "Guild" tab: a party recruitment notice hangs on the Adventurers\' Guild bulletin board. Three 5★ heroines wait: Aqua (Abundance, Ice), Megumin (Erudition, Fire) and Darkness (Preservation, Physical). Kazuma (Nihility, Wind) asks to join every recruitment too, the only 4★ with a guarantee.',
+        'Recruitment needs high-grade manatite. Without it one recruitment costs 160 Stellar Jade. A 5★ comes within 60 recruitments, and 50% of the time it is the chosen heroine. If another party member drops, the next 5★ is guaranteed to be the chosen one.',
+        'The Guild\'s second channel is called "Wiz\'s Shop". It sells the heroines\' signature Light Cones: "Encore Performance" for Aqua, "Today\'s Explosion" for Megumin and "Prayer for a Friend" for Darkness, and the only 4★ with a guarantee here is "It Was a Tractor" for Kazuma. You pay with the same manatite, a 5★ comes within 50 purchases, the chosen cone drops 75% of the time, and a miss gives another heroine\'s cone or a Standard cone. The Shop has its own guarantee.',
+        'Recruitment has its own style. Megumin puts manatite into her staff and casts a spell on the hill by the old castle, the beam\'s color hints at the rarity, and Kazuma rates the explosion. He gets the items with Steal right out of the smoke and pins the results on the quest board.',
+        'Kazuma\'s party is strong only together. Darkness hits only enemies that stand still, Megumin lies exhausted after Explosion, Aqua sometimes messes up and cries, and Kazuma gets Luck from the others\' misses. They have three Fusions for three and four.',
+        'One more tab, the "Midnight Channel", catches a broadcast from the fog. Three 5★ heroes from the Inaba Investigation Team wait on the Exclusive Channel: Yu Narukami (The Hunt, Lightning), Kanji Tatsumi (Destruction, Physical) and Rise Kujikawa (Harmony, Imaginary). Three 4★ ask to join every Warp: Yosuke (Nihility, Wind), Chie (Destruction, Ice) and Yukiko (Abundance, Fire).',
+        'A Warp needs velvet keys. Without them one Warp costs 160 Stellar Jade. A 5★ comes within 60 Warps, and 50% of the time it is the chosen hero. If a Standard Warp hero drops, the next 5★ is guaranteed to be the chosen one. Yosuke, Chie and Yukiko share 50% of all 4★. Before the first Warp the Velvet Room offers you a contract, and gives a key for signing it.',
+        'The cone channel has "The Tastiest Omelet" for Yu, "Stitch by Stitch" for Kanji and "Just Rise" for Rise. A 5★ cone comes within 50 Warps, and the chosen one drops 75% of the time. Three new 4★ cones drop there too: "Every Day at Junes" for Yosuke, "Trial of the Dragon" for Chie and "Amagi Inn" for Yukiko.',
+        'The Warp has its own style. The clock strikes midnight, a hand reaches into the screen, and you fall through the fog into the Velvet Room, where Igor lays out Tarot cards. The hero\'s card flips, flares with blue fire, and the hero steps into the spotlight.',
+        'The Investigation Team hits weaknesses. Whoever breaks an enemy with their attack or Skill gets "One More!", one extra action. If all enemies are broken, an All-Out Attack can be launched instead. Yu switches Personas with the up and down arrows, Kanji stitches two enemies together, and Rise analyzes an enemy and shows in advance whom it will hit.',
+        'New Fusions: "Partners" for Yu and Yosuke, "Childhood Friends" for Chie and Yukiko, "The Emperor on the Line" for Kanji and Rise, and "I Am Thou" for Yu and the Trailblazer.',
+        'Sampo in Belobog sells a new rumor, "Midnight Channel". With it, the broadcast screen in the Parlor Car catches the channel once a day and gives a velvet key, 10 in total.',
+        '10 Encrypted Master Tapes, 10 Radiant and 5 Forging Tides, 10 manatite, 10 velvet keys and 300 Stellar Jade are waiting in your mail.'
+      ]
+    },
+    v12: {
+      tag: 'Update', title: 'Version 1.2: new heroes, the Simulated Universe and Messages',
+      lead: 'Three new companions, hero selection in the event Warp, Herta\'s machine with four worlds and chatting with friends right on the phone.',
+      body: [
+        'Three new 5★ heroes arrived in the "Stellar Warp" Standard Warp: Bailu (Abundance, Lightning), Yanqing (The Hunt, Ice) and Clara (Destruction, Physical), who comes into battle together with Svarog.',
+        'The event Warp now lets you choose a hero: Ruan Mei ("Floral Triptych") or Seele ("Butterfly on Swordtip"). Every 5★ from this Warp is the chosen hero, and the guarantee is shared between both. You can switch the hero at any time.',
+        'Next to it the event Light Cone Warp opened: "Past Self in Mirror" for Ruan Mei and "In the Night" for Seele. It has its own guarantee.',
+        'New Fusions: "Guests from the Luofu" for Yanqing and Bailu, and "Children of the Underworld" for Clara and Hook.',
+        'Every hero from a Warp now appears with a short scene of their own: first the sign of their Path, then the hero catches the ticket. Every hero has an Eidolon painting that comes together piece by piece with each copy.',
+        'Dialogue scenes can be skipped with Tab: the game shows a short recap. All recaps are collected in the Archive, in the "Story" tab.',
+        'Herta Space Station got the Master Control Zone and Herta\'s Office. Wen Shiqi from the Procurement Department and Culinary Genius No. 123 trade in the zone, and after the battle with the Doomsday Beast, Asta and Arlan move there.',
+        'The Simulated Universe machine stands in the office. First Herta messages you and asks you to take the initial test, and after it four worlds open. Each world is built from the Trailblazer\'s memories and opens when its master is defeated in the story: Gepard, Svarog or Cocolia.',
+        'A run goes zone by zone: battles, elites, events, trades, encounters and rest. Victories give blessings of seven Paths and Curios. Three blessings of your Path unlock Path Resonance, which you trigger in battle with F.',
+        'Relics now have two new slots: Planar Sphere and Link Rope. The "Space Sealing Station", "Sprightly Vonwacq" and "Inert Salsotto" sets are given only by the Simulated Universe. The first clear of a world gives triple rewards, and a repeat costs 40 Trailblaze Power.',
+        'The phone has a new "Messages" section with chats from the Express crew, Herta Space Station and friends from Jarilo-VI. Story messages arrive after important events, and once a day someone writes just because.',
+        'Replies are chosen from several options, and the conversation goes its own way. March sends photos, Pom-Pom and Hook reply with stickers, and Herta sometimes turns on an auto-reply. Every daily chat gives 5 Stellar Jade.',
+        'The "To the credits" button moved to the phone\'s right panel, under settings.',
+        '300 Stellar Jade for your first Warps are waiting in your mail.'
+      ]
+    },
+    v11: {
+      tag: 'Update', title: 'Version 1.1: events, mail and Ruan Mei',
+      lead: 'The phone has Events and Mail, and Ruan Mei is waiting at the Warp terminal.',
+      body: [
+        'The "Events" section opens after Herta Space Station. "Comet\'s Gift" opens a new gift with special passes every hour: 1, 1, 2, 1, 1, 1 and 3, 10 in total over seven hours. Five hours after the last gift the cycle starts again, and unclaimed gifts don\'t expire.',
+        '"Trailblazer\'s Will" stays forever: at Trailblaze Levels 5, 15, 25 and 35 you get 10 passes each, plus 800 Stellar Jade each at 25 and 35.',
+        'Mail is on the phone\'s side panel, next to the settings. Letters with gifts are marked with a Jade icon.',
+        'The "Floral Triptych" event Warp: every 5★ from it is Ruan Mei (Harmony, Ice), and every 4★ is March 7th, Herta or Asta.',
+        'The settings have a new "Resolution" option: 640, 800, 1024, 1280 or "Window". The picture stays 640×480, but text and lines become sharper.'
+      ]
+    },
+    rumors: {
+      tag: 'Developers', title: 'Writer\'s notes: rumors that come true',
+      lead: 'Why Sampo sells gossip, and what happens if all of Belobog believes it.',
+      body: [
+        'Belobog lives behind a wall, and news travels by word of mouth. We decided that in a city like that a rumor can come true if the right person starts it. That person, of course, is Sampo.',
+        'You can buy a rumor from Sampo. Until you buy it, it\'s just gossip. Once you do, the world changes: the shopkeeper gets the "A Trail of Bygone Blood" cone, a golden Warp Trotter runs around the Snow Plains, and Pom-Pom gives a discount to everyone who praises the hat.',
+        'Rumors cost Credits, and you can\'t buy them all at once. Choose the ones that help your team.'
+      ]
+    },
+    battle: {
+      tag: 'Developers', title: 'How battle works',
+      lead: 'The action bar, shared Skill Points and Weakness Break: a short breakdown from the battle team.',
+      body: [
+        'The action bar runs along the left side of the battle screen. The higher a hero\'s SPD, the more often they act. It can be shifted: some Skills let an ally act sooner, and broken enemies get pushed back.',
+        'Skill Points are shared by the whole team, up to five. A Basic ATK gives one point and a Skill spends one. That\'s why someone on the team uses Basic ATKs so another can use their Skill.',
+        'The Ultimate builds Energy from hits and damage taken. When the ring glows, press the hero\'s number and they strike out of turn, even in the middle of an enemy\'s turn.',
+        'Every enemy has Type Weaknesses and a Toughness bar. Hit it with the right Type and Toughness drops. When it runs out, the enemy is broken: it loses its turn and suffers the Type\'s effect, such as Freeze or Burn.',
+        'You can also talk to enemies. Contact finds an approach to an enemy, and a pleased enemy may even hand over an item and leave. This doesn\'t work on bosses. Two heroes with the right bond can use a Fusion, a joint strike, when both have their Ultimate ready.'
+      ]
+    },
+    v10: {
+      tag: 'Update', title: 'The Astral Express departs',
+      lead: 'Version 1.0 is out. The game is free.',
+      body: [
+        'The Trailblazer wakes up on Herta Space Station with a Stellaron in their chest. March 7th and Dan Heng take them aboard the Astral Express, and the Express heads for the icy planet Jarilo-VI, where the city of Belobog has lived behind a wall for seven hundred years.',
+        'Version 1.0 has Herta Space Station, Belobog and the Underworld, the Great Mine, Rivet Town and Everwinter Hill. The story goes up to the battle with Cocolia and the Express\'s departure.',
+        'The game is free, with no sign-up and no paid purchases.',
+        'May this journey lead us starward!'
+      ]
+    }
+  };
+  for (const n of window.SR98_NEWS) if (EN[n.id]) n.en = EN[n.id];
+})();

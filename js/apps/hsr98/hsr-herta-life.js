@@ -1254,6 +1254,7 @@
     const [score, acc] = RATE[id] || [50, H.CHARS[id] ? H.CHARS[id].name : 'цель'], out = [];
     if (score == null) out.push('|«Оценка невозможна!» Глаз прокручивается три раза и вдруг распахивается ещё сильнее, а через пару секунд устало закрывается.');
     else if (id === 'silverwolf') out.push('|Оценивающий пистолет оценил Серебряного Волка: «110 очков!» Голос прозвучал странно, механически.');
+    else if (H.isEn && H.isEn()) out.push('|The Rating Gun looked at ' + (H.CHARS[id] ? H.CHARS[id].name : 'the target') + ' and announced: "' + (typeof score === 'string' ? score.replace(/очков/g, 'points') : score + (score === 1 ? ' point' : ' points') + '!') + '"');
     else if (typeof score === 'string') out.push('|Оценивающий пистолет взглянул на ' + acc + ' и объявил: «' + score + '»');
     else out.push('|Оценивающий пистолет взглянул на ' + acc + ' и объявил: «' + points(score) + '!»');
     if (id === 'clara') out.push('|Позже он добавил: «26 очков!»');

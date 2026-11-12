@@ -21,6 +21,7 @@ const GZIP_LIMIT = 64 * 1048576;
 const NO_GZIP = /\.(jpe?g|png|gif|webp|mp3|mp4|m4a|ogg|webm|avi|mkv|zip|7z|gz|apk|woff2?)$/i;
 const FORBIDDEN_NAMES = /\b(Microsoft|MICROSOFT|Windows|WINDOWS)\b/;
 const FIXED_TITLE = 'Исправлено по отчётам игроков';
+const FIXED_TITLE_EN = 'Fixed from player reports';
 const BSDTAR = fs.existsSync('C:\\Windows\\System32\\tar.exe') ? 'C:\\Windows\\System32\\tar.exe' : 'tar';
 
 const PRODUCTS = {
@@ -148,11 +149,11 @@ function parseNotes(md, file) {
     if (!line.trim()) continue;
     if (line.startsWith('# ')) { out.title = line.slice(2).trim(); continue; }
     if (line.startsWith('## ')) { section = { title: line.slice(3).trim(), items: [] }; out.sections.push(section); continue; }
-    const meta = /^(Кратко|Сборка|Дата):\s*(.*)$/.exec(line);
+    const meta = /^(Кратко|Сборка|Дата|Summary|Build|Date):\s*(.*)$/.exec(line);
     if (meta && !section) {
-      if (meta[1] === 'Кратко') out.summary = meta[2].trim();
-      if (meta[1] === 'Сборка') out.build = meta[2].trim();
-      if (meta[1] === 'Дата') out.date = meta[2].trim();
+      if (meta[1] === 'Кратко' || meta[1] === 'Summary') out.summary = meta[2].trim();
+      if (meta[1] === 'Сборка' || meta[1] === 'Build') out.build = meta[2].trim();
+      if (meta[1] === 'Дата' || meta[1] === 'Date') out.date = meta[2].trim();
       continue;
     }
     if (!section) throw new Error(file + ': text before the first "## " section: ' + line);
@@ -162,7 +163,7 @@ function parseNotes(md, file) {
   }
   if (!out.title) throw new Error(file + ': the first line must be "# Заголовок"');
   if (!out.summary) throw new Error(file + ': add a line "Кратко: ..."');
-  const fixedSection = out.sections.find(s => s.title === FIXED_TITLE);
+  const fixedSection = out.sections.find(s => s.title === FIXED_TITLE || s.title === FIXED_TITLE_EN);
   if (fixedSection) {
     out.sections = out.sections.filter(s => s !== fixedSection);
     out.fixed = fixedSection.items.map(item => {
@@ -173,11 +174,11 @@ function parseNotes(md, file) {
   return out;
 }
 
-function versionMd(notes, version, build, date, fixed) {
-  const lines = ['# ' + notes.title, '', 'Кратко: ' + notes.summary, 'Сборка: ' + build, 'Дата: ' + date, ''];
+function versionMd(notes, version, build, date, fixed, en) {
+  const lines = ['# ' + notes.title, '', (en ? 'Summary: ' : 'Кратко: ') + notes.summary, (en ? 'Build: ' : 'Сборка: ') + build, (en ? 'Date: ' : 'Дата: ') + date, ''];
   for (const s of notes.sections) lines.push('## ' + s.title, ...s.items.map(i => '- ' + i), '');
   const all = notes.fixed.concat(fixed);
-  if (all.length) lines.push('## ' + FIXED_TITLE, ...all.map(f => '- ' + (f.id ? f.id + ': ' : '') + f.text), '');
+  if (all.length) lines.push('## ' + (en ? FIXED_TITLE_EN : FIXED_TITLE), ...all.map(f => '- ' + (f.id ? f.id + ': ' : '') + f.text), '');
   return lines.join('\n');
 }
 
@@ -192,12 +193,19 @@ function notesJson(product, dir, extra) {
       const m = /^(\d+\.\d+(?:\.\d+){0,2})\.md$/.exec(name);
       if (!m) continue;
       const n = parseNotes(fs.readFileSync(path.join(dir, name), 'utf8'), name);
-      versions.push({ version: m[1], build: n.build, date: n.date, title: n.title, summary: n.summary, sections: n.sections, fixed: n.fixed });
+      const entry = { version: m[1], build: n.build, date: n.date, title: n.title, summary: n.summary, sections: n.sections, fixed: n.fixed };
+      const enFile = path.join(dir, m[1] + '.en.md');
+      if (fs.existsSync(enFile)) entry.en = notesEn(parseNotes(fs.readFileSync(enFile, 'utf8'), m[1] + '.en.md'));
+      versions.push(entry);
     }
   }
   if (extra) versions.push(extra);
   versions.sort((a, b) => compareVersions(b.version, a.version));
   return { format: 'win98-notes', v: 1, product, versions };
+}
+
+function notesEn(n, fixed) {
+  return { title: n.title, summary: n.summary, sections: n.sections, fixed: n.fixed.concat(fixed || []) };
 }
 
 function siteNews() {
@@ -208,7 +216,9 @@ function siteNews() {
   return (ctx.window.SR98_NEWS || []).map(n => {
     checkNames(JSON.stringify(n), 'web98-site/sr98/news.js');
     const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(n.date || '');
-    return { id: 'site-' + n.id, date: m ? m[3] + '-' + m[2] + '-' + m[1] : '', dateText: n.date, tag: n.tag || '', title: n.title, lead: n.lead || '', body: (n.body || []).slice(), image: '' };
+    const item = { id: 'site-' + n.id, date: m ? m[3] + '-' + m[2] + '-' + m[1] : '', dateText: n.date, tag: n.tag || '', title: n.title, lead: n.lead || '', body: (n.body || []).slice(), image: '' };
+    if (n.en) item.en = { tag: n.en.tag || '', title: n.en.title, lead: n.en.lead || '', body: (n.en.body || []).slice() };
+    return item;
   });
 }
 
@@ -575,6 +585,8 @@ async function releaseSr98(args) {
   const nextFile = path.join(p.notes, 'next.md');
   if (!fs.existsSync(nextFile)) throw new Error('Write ' + path.relative(ROOT, nextFile) + ' first (what is new, for players)');
   const notes = parseNotes(fs.readFileSync(nextFile, 'utf8'), 'releases/sr98/next.md');
+  const nextEnFile = path.join(p.notes, 'next.en.md');
+  const notesEnNext = fs.existsSync(nextEnFile) ? parseNotes(fs.readFileSync(nextEnFile, 'utf8'), 'releases/sr98/next.en.md') : null;
   const news = newsJson(product);
   const ptrs = await pointers(product);
   const { gameVersion, checkVersion } = require('./hsr98-standalone.cjs');
@@ -607,6 +619,7 @@ async function releaseSr98(args) {
   const date = isoDate(now).split('-').reverse().join('.');
   const fixed = fixedReports(product);
   const entry = { version, build: '', date, title: notes.title, summary: notes.summary, sections: notes.sections, fixed: notes.fixed.concat(fixed) };
+  if (notesEnNext) entry.en = notesEn(notesEnNext, fixed);
   const out = path.join(WORK, 'out-' + product + '-' + version);
   fs.rmSync(out, { recursive: true, force: true });
   const apkName = 'StarRail98-' + version + '.apk';
@@ -638,7 +651,11 @@ async function releaseSr98(args) {
   await upload(product, out, metaFiles, pointerName, manifest ? manifest.files.map(f => blobPath(f[2])) : []);
   fs.writeFileSync(path.join(p.notes, version + '.md'), versionMd(notes, version, '', date, fixed));
   fs.rmSync(nextFile);
-  console.log('Notes: releases/sr98/' + version + '.md (next.md removed). Upload web98-site/sr98 (play/) as usual.');
+  if (notesEnNext) {
+    fs.writeFileSync(path.join(p.notes, version + '.en.md'), versionMd(notesEnNext, version, '', date, fixed, true));
+    fs.rmSync(nextEnFile);
+  }
+  console.log('Notes: releases/sr98/' + version + '.md' + (notesEnNext ? ' and ' + version + '.en.md' : '') + ' (next removed). Upload web98-site/sr98 (play/) as usual.');
   if (channel === 'stable') await markFixed(product, version, entry.fixed.map(f => f.id).filter(Boolean));
   await verify(product, channel);
 }

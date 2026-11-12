@@ -3,6 +3,7 @@
 
   const CYR_RE = /[\u0400-\u04FF]/;
   const NUM_RE = /[+−-]?\d+(?:[.,]\d+)?%?/g;
+  const DECIMAL_COMMA_RE = /(\d),(?!\d{3}(?!\d))(\d)/g;
   const CACHE = new Map();
   const OBJ_RU_TO_EN = new Map();
   const OBJ_EN_TO_RU = new Map();
@@ -41,13 +42,13 @@
     const ruNums = [];
     const tplKey = k.replace(NUM_RE, m => {
       const idx = ruNums.length;
-      ruNums.push(m.replace(/(\d),(\d)/g, '$1.$2'));
+      ruNums.push(m.replace(DECIMAL_COMMA_RE, '$1.$2'));
       return '{' + idx + '}';
     });
     if (!ruNums.length || H.EN.TPL[tplKey] !== undefined) return;
     const enNums = [];
     v.replace(NUM_RE, m => {
-      enNums.push(m.replace(/(\d),(\d)/g, '$1.$2'));
+      enNums.push(m.replace(DECIMAL_COMMA_RE, '$1.$2'));
       return m;
     });
     if (ruNums.length !== enNums.length) return;
@@ -55,7 +56,7 @@
       let idx = 0;
       H.EN.TPL[tplKey] = v.replace(NUM_RE, () => '{' + (idx++) + '}');
     } else if (new Set(ruNums).size === ruNums.length && enNums.every(n => ruNums.includes(n))) {
-      H.EN.TPL[tplKey] = v.replace(NUM_RE, m => '{' + ruNums.indexOf(m.replace(/(\d),(\d)/g, '$1.$2')) + '}');
+      H.EN.TPL[tplKey] = v.replace(NUM_RE, m => '{' + ruNums.indexOf(m.replace(DECIMAL_COMMA_RE, '$1.$2')) + '}');
     }
   }
 
@@ -139,6 +140,20 @@
     const dict = H.EN.DICT;
     if (dict[s] !== undefined) return dict[s];
 
+    if (s.includes('|') && s[0] !== '{') {
+      const pipeIdx = s.indexOf('|');
+      const head = s.slice(0, pipeIdx);
+      const body = s.slice(pipeIdx + 1);
+      if (body && !head.includes('{') && (head.length <= 2 || /^[a-z0-9_@?]+$/i.test(head) || head.includes('='))) {
+        const eq = head.indexOf('=');
+        const nextHead = eq < 0 ? head : head.slice(0, eq + 1) + tr(head.slice(eq + 1));
+        const nextBody = CYR_RE.test(body) ? tr(body) : body;
+        if (!CYR_RE.test(nextBody) && (eq < 0 || !CYR_RE.test(nextHead))) {
+          return nextHead + '|' + nextBody;
+        }
+      }
+    }
+
     if (s.includes('{')) {
       const resolved = resolveGenderTemplate(s);
       if (resolved !== s) {
@@ -162,7 +177,7 @@
       const nums = [];
       const tplKey = s.replace(NUM_RE, m => {
         const idx = nums.length;
-        nums.push(m.replace(/(\d),(\d)/g, '$1.$2'));
+        nums.push(m.replace(DECIMAL_COMMA_RE, '$1.$2'));
         return '{' + idx + '}';
       });
       if (nums.length && H.EN.TPL[tplKey] !== undefined) {
@@ -193,20 +208,6 @@
       if (!CYR_RE.test(inner)) return prefixFmt[1] + inner;
     }
 
-    if (s.includes('|') && s[0] !== '{') {
-      const pipeIdx = s.indexOf('|');
-      const head = s.slice(0, pipeIdx);
-      const body = s.slice(pipeIdx + 1);
-      if (body && !head.includes('{') && (head.length <= 2 || /^[a-z0-9_@?]+$/i.test(head) || head.includes('='))) {
-        const eq = head.indexOf('=');
-        const nextHead = eq < 0 ? head : head.slice(0, eq + 1) + tr(head.slice(eq + 1));
-        const nextBody = CYR_RE.test(body) ? tr(body) : body;
-        if (!CYR_RE.test(nextBody) && (eq < 0 || !CYR_RE.test(nextHead))) {
-          return nextHead + '|' + nextBody;
-        }
-      }
-    }
-
     const bullet = s.match(/^([•·▶◆★☆✦✧✓✗▲▼+-]\s+|\d+[.)]\s+)([\s\S]+)$/);
     if (bullet) {
       const inner = tr(bullet[2]);
@@ -216,7 +217,7 @@
     for (const [re, rep] of H.EN.PATTERNS) {
       if (re.test(s)) {
         const next = typeof rep === 'function' ? s.replace(re, rep) : s.replace(re, rep);
-        if (next !== s) return CYR_RE.test(next) ? tr(next) : next.replace(/(\d),(\d)/g, '$1.$2');
+        if (next !== s) return CYR_RE.test(next) ? tr(next) : next.replace(DECIMAL_COMMA_RE, '$1.$2');
       }
     }
 
@@ -275,7 +276,7 @@
     }
     const m = str.match(/^(\s*)([\s\S]*?)(\s*)$/);
     const core = m ? m[2] : str;
-    const res = ((m ? m[1] : '') + (H.EN.DICT[core] !== undefined ? H.EN.DICT[core] : trCore(core)) + (m ? m[3] : '')).replace(/(\d),(\d)/g, '$1.$2');
+    const res = ((m ? m[1] : '') + (H.EN.DICT[core] !== undefined ? H.EN.DICT[core] : trCore(core)) + (m ? m[3] : '')).replace(DECIMAL_COMMA_RE, '$1.$2');
     if (CACHE.size > 25000) CACHE.clear();
     CACHE.set(str, res);
     return res;
@@ -517,7 +518,7 @@
   }
 
   const DATA_TABLES = [
-    'ELEMENTS', 'PATHS', 'STAT_NAMES', 'DOT_NAME',
+    'ELEMENTS', 'PATHS', 'STAT_NAMES', 'DOT_NAME', 'BREAK_EFFECT',
     'CHARS', 'CONES', 'RELIC_SETS', 'RELIC_SLOTS', 'CAVERN_SLOTS', 'PLANAR_SLOTS',
     'ITEMS', 'ENEMIES', 'FUSIONS', 'UNHOLY', 'CONTACT',
     'INABA', 'FOURS', 'CONTON', 'HARES', 'FIVES', 'LAB', 'ENCOUNTERS',
@@ -742,7 +743,7 @@
         if (typeof fn0 === 'function') {
           H.BD[fnName] = function () {
             const s = fn0.apply(this, arguments);
-            return isEn() && typeof s === 'string' ? tr(s).replace(/(\d),(\d)/g, '$1.$2') : s;
+            return isEn() && typeof s === 'string' ? tr(s).replace(DECIMAL_COMMA_RE, '$1.$2') : s;
           };
         }
       }
@@ -754,7 +755,7 @@
           return {
             name: r.name ? tr(r.name) : r.name,
             tag: r.tag ? tr(r.tag) : r.tag,
-            text: r.text ? tr(r.text).replace(/(\d),(\d)/g, '$1.$2') : r.text,
+            text: r.text ? tr(r.text).replace(DECIMAL_COMMA_RE, '$1.$2') : r.text,
             warn: r.warn ? tr(r.warn) : r.warn
           };
         };
@@ -766,8 +767,8 @@
           if (!Array.isArray(out[g])) continue;
           for (const item of out[g]) {
             if (item.name) item.name = tr(item.name);
-            if (item.text) item.text = tr(item.text).replace(/(\d),(\d)/g, '$1.$2');
-            if (item.right) item.right = tr(item.right).replace(/(\d),(\d)/g, '$1.$2');
+            if (item.text) item.text = tr(item.text).replace(DECIMAL_COMMA_RE, '$1.$2');
+            if (item.right) item.right = tr(item.right).replace(DECIMAL_COMMA_RE, '$1.$2');
           }
         }
         return out;
@@ -775,8 +776,8 @@
       const trStatRow = r => {
         if (!r) return r;
         if (r.label) r.label = tr(r.label);
-        if (typeof r.text === 'string') r.text = r.text.replace(/(\d),(\d)/g, '$1.$2');
-        if (typeof r.plus === 'string') r.plus = r.plus.replace(/(\d),(\d)/g, '$1.$2');
+        if (typeof r.text === 'string') r.text = r.text.replace(DECIMAL_COMMA_RE, '$1.$2');
+        if (typeof r.plus === 'string') r.plus = r.plus.replace(DECIMAL_COMMA_RE, '$1.$2');
         return r;
       };
       if (typeof statuses0 === 'function') {
@@ -830,7 +831,7 @@
       if (typeof pct0 === 'function') {
         H.BD.pct = function () {
           const s = pct0.apply(this, arguments);
-          return isEn() && typeof s === 'string' ? s.replace(/(\d),(\d)/g, '$1.$2') : s;
+          return isEn() && typeof s === 'string' ? s.replace(DECIMAL_COMMA_RE, '$1.$2') : s;
         };
       }
     }
@@ -851,7 +852,8 @@
     addEnDict,
     addEnPatterns,
     addEnWords,
-    addEnOverlay
+    addEnOverlay,
+    EN_DATA_TABLES: DATA_TABLES
   });
 
   if (typeof module !== 'undefined') module.exports = H;

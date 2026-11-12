@@ -108,6 +108,31 @@ check('release notes parse into sections, keep fixed reports and round-trip thro
   assert.doesNotThrow(() => checkNames('Microslop Win 98, окна и windows-подобные рамки', 'x'));
 });
 
+check('English notes sit next to the Russian ones and reach notes.json and the site news', () => {
+  const fs = require('fs');
+  const os = require('os');
+  const path = require('path');
+  const { parseNotes, versionMd, notesJson, newsJson } = require('../tools/release.cjs');
+  const en = parseNotes('# Big patch\n\nSummary: new things.\n\n## New\n- A thing.\n\n## Fixed from player reports\n- BR-261027-7K3Q: The dialog shows again.\n', 'next.en.md');
+  assert.equal(en.summary, 'new things.');
+  assert.deepEqual(en.sections.map(s => s.title), ['New']);
+  assert.deepEqual(en.fixed, [{ id: 'BR-261027-7K3Q', text: 'The dialog shows again.' }]);
+  const saved = versionMd(en, '1.9.2', '', '12.11.2026', [], true);
+  assert.ok(saved.includes('Summary: new things.') && saved.includes('Date: 12.11.2026') && saved.includes('## Fixed from player reports'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'notes-en-'));
+  fs.writeFileSync(path.join(dir, '1.9.2.md'), '# Большой патч\n\nКратко: новое.\n\n## Новое\n- Вещь.\n');
+  fs.writeFileSync(path.join(dir, '1.9.2.en.md'), saved);
+  fs.writeFileSync(path.join(dir, '1.9.1.md'), '# Старый\n\nКратко: старое.\n\n## Новое\n- Было.\n');
+  const notes = notesJson('sr98', dir);
+  assert.deepEqual(notes.versions.map(v => v.version), ['1.9.2', '1.9.1']);
+  assert.equal(notes.versions[0].en.title, 'Big patch');
+  assert.equal(notes.versions[0].title, 'Большой патч');
+  assert.equal(notes.versions[1].en, undefined);
+  fs.rmSync(dir, { recursive: true, force: true });
+  const site = newsJson('sr98').json.items.filter(n => n.id.startsWith('site-'));
+  assert.ok(site.length > 0 && site.every(n => n.en && n.en.title && n.en.body.length === n.body.length && !/[А-Яа-яЁё]/.test(n.en.title + n.en.lead + n.en.body.join(' '))), 'every site news item has a full English version');
+});
+
 check('the next version follows both channels', () => {
   const { nextVersion } = require('../tools/release.cjs');
   assert.equal(nextVersion({}), '1.0');
@@ -133,7 +158,7 @@ check('SR98 news come from the site news.js that the site itself loads', () => {
   const { newsJson } = require('../tools/release.cjs');
   const html = fs.readFileSync(path.join(root, 'web98-site/sr98/index.html'), 'utf8');
   assert.ok(html.indexOf('src="news.js') > 0 && html.indexOf('src="news.js') < html.indexOf('src="site.js'), 'news.js loads before site.js');
-  assert.match(fs.readFileSync(path.join(root, 'web98-site/sr98/site.js'), 'utf8'), /const NEWS = window\.SR98_NEWS \|\| \[\];/);
+  assert.match(fs.readFileSync(path.join(root, 'web98-site/sr98/site.js'), 'utf8'), /const NEWS = \(window\.SR98_NEWS \|\| \[\]\)\.map\(n => \(LANG === 'en' && n\.en \? Object\.assign\(\{\}, n, n\.en\) : n\)\);/);
   const items = newsJson('sr98').json.items.filter(i => i.id.startsWith('site-'));
   assert.ok(items.length >= 10);
   for (const i of items) {
