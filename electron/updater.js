@@ -351,6 +351,8 @@ function createUpdater(opts) {
           else fs.rmSync(dst, { force: true });
         }
       } else {
+        const previous = fs.existsSync(dst) ? dst : fs.existsSync(saved) ? saved : null;
+        const mode = previous && process.platform !== 'win32' ? fs.statSync(previous).mode & 0o777 : null;
         if (!fs.existsSync(saved) && !meta.added.includes(op.path)) {
           if (fs.existsSync(dst)) await moveFile(dst, saved);
           else { meta.added.push(op.path); writeJsonAtomic(metaFile(journal.from), meta); }
@@ -358,6 +360,7 @@ function createUpdater(opts) {
         const tmp = dst + '.update-new';
         fs.mkdirSync(path.dirname(dst), { recursive: true });
         fs.copyFileSync(path.join(stagingDir, op.sha), tmp);
+        if (mode !== null) fs.chmodSync(tmp, mode);
         await moveFile(tmp, dst);
       }
       if (o.onProgress) o.onProgress({ done: i + 1, total: journal.ops.length, file: op.path });

@@ -13,6 +13,10 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const versionArg = process.argv.indexOf('--version');
 const version = versionArg > 0 ? process.argv[versionArg + 1] : 'dev';
 if (version !== 'dev' && !VERSION_PATTERN.test(version || '')) throw new Error('--version must look like 1.15 or 1.15.1');
+const platformArg = process.argv.indexOf('--platform');
+const platform = platformArg > 0 ? process.argv[platformArg + 1] : 'win32';
+if (!['win32', 'linux'].includes(platform)) throw new Error('--platform is win32 or linux');
+const linux = platform === 'linux';
 
 const git = args => execFileSync('git', args, { cwd: root }).toString().trim();
 const now = new Date();
@@ -31,10 +35,10 @@ const [appPath] = await packager({
   dir: root,
   out: path.join(root, 'dist'),
   name: 'Win98',
-  executableName: 'Win98',
-  platform: 'win32',
+  executableName: linux ? 'win98' : 'Win98',
+  platform,
   arch: 'x64',
-  icon: path.join(root, 'electron', 'icon.ico'),
+  icon: path.join(root, 'electron', linux ? 'icon.png' : 'icon.ico'),
   asar: false,
   prune: false,
   overwrite: true,
@@ -47,14 +51,14 @@ const [appPath] = await packager({
 
 const electronVersion = require('electron/package.json').version;
 const release = await writeRelease(appPath, {
-  product: 'win98',
+  product: linux ? 'win98-linux' : 'win98',
   version: stamp.version,
   build: stamp.build,
   date: isoDate(now),
   commit: stamp.commit,
   dirty: stamp.dirty,
-  runtime: 'electron-' + electronVersion + '-win32-x64'
+  runtime: 'electron-' + electronVersion + '-' + platform + '-x64'
 });
 
-console.log(`Built: ${path.join(appPath, 'Win98.exe')}`);
+console.log(`Built: ${path.join(appPath, linux ? 'win98' : 'Win98.exe')}`);
 console.log(`Version ${displayVersion(release)}, ${release.files.length} files in release.json`);

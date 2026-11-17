@@ -26,13 +26,13 @@ function unityAndroid() {
 
 function findTools() {
   const unity = unityAndroid();
-  const sdk = [process.env.ANDROID_HOME, process.env.ANDROID_SDK_ROOT, unity && path.join(unity, 'SDK')].find(d => d && fs.existsSync(path.join(d, 'build-tools')));
-  if (!sdk) throw new Error('Android SDK not found: set ANDROID_HOME');
+  const sdk = [process.env.ANDROID_HOME, process.env.ANDROID_SDK_ROOT, path.join(os.homedir(), 'Android', 'Sdk'), unity && path.join(unity, 'SDK')].find(d => d && fs.existsSync(path.join(d, 'build-tools')));
+  if (!sdk) throw new Error('Android SDK not found: install it into ~/Android/Sdk or set ANDROID_HOME');
   const bt = path.join(sdk, 'build-tools', newest(path.join(sdk, 'build-tools')));
   const platform = fs.readdirSync(path.join(sdk, 'platforms')).filter(p => /^android-\d+$/.test(p) && fs.existsSync(path.join(sdk, 'platforms', p, 'android.jar'))).sort((a, b) => a.slice(8) - b.slice(8)).pop();
   if (!platform) throw new Error('no android-N platform with android.jar in ' + sdk);
   const androidJar = path.join(sdk, 'platforms', platform, 'android.jar');
-  const jdk = [process.env.JAVA_HOME, unity && path.join(unity, 'OpenJDK')].find(d => d && fs.existsSync(path.join(d, 'bin', 'javac' + exe)));
+  const jdk = [process.env.JAVA_HOME, path.join(os.homedir(), 'Android', 'jdk'), unity && path.join(unity, 'OpenJDK')].find(d => d && fs.existsSync(path.join(d, 'bin', 'javac' + exe)));
   const bin = n => jdk ? path.join(jdk, 'bin', n + exe) : n;
   const t = {
     aapt2: path.join(bt, 'aapt2' + exe), aapt: path.join(bt, 'aapt' + exe), zipalign: path.join(bt, 'zipalign' + exe),
@@ -49,6 +49,9 @@ const run = (cmd, args, opts = {}) => execFileSync(cmd, args, { stdio: ['ignore'
 function keystore(t, key) {
   const ks = key.file;
   if (!fs.existsSync(ks)) {
+    if (process.env.APK_NEW_KEYSTORE !== '1') {
+      throw new Error('No keystore ' + ks + '. Phones with the old APK accept updates only with the same key: restore it, or set APK_NEW_KEYSTORE=1 to create a new one, and players will have to remove the app and lose its saves.');
+    }
     fs.mkdirSync(path.dirname(ks), { recursive: true });
     run(t.keytool, ['-genkeypair', '-keystore', ks, '-alias', key.alias, '-keyalg', 'RSA', '-keysize', '2048', '-validity', '10000',
       '-storepass', key.pass, '-keypass', key.pass, '-dname', key.dname]);

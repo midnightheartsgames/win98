@@ -7,10 +7,16 @@ const { execFileSync, spawn, spawnSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const KEY_FILE = process.env.WIN98_RELEASE_KEY || path.join(os.homedir(), '.win98-release.key');
-const SSH_HOST = process.env.WIN98_RELEASE_HOST || 'mini-pc';
-const REMOTE_DIR = '/srv/www/site/web98/update';
-const REMOTE_SITE = '/srv/www/site/web98';
-const REMOTE_INCOMING = 'release-incoming';
+const FTP_HOST = process.env.WIN98_FTP_HOST || 'user896926.web-3.cloud4box.ru';
+const FTP_PIN = 'sha256//2jy1fMo/P68ze79RLZ+ieb7Q9Qp01yoE4LWx3m7wDCI=';
+const FTP_NETRC = process.env.WIN98_FTP_NETRC || path.join(os.homedir(), '.netrc');
+const FTP_SITE = '/www/pennygachi.men';
+const FTP_UPDATE = FTP_SITE + '/update';
+const FULL_ARCHIVES = {
+  win98: { name: 'Win98.zip', tar: ['-a', '-c', '-f'] },
+  'win98-linux': { name: 'Win98-linux.tar.gz', tar: ['-z', '-c', '-f'] }
+};
+const CURL = process.platform === 'win32' ? 'curl.exe' : 'curl';
 const PUBLIC_URL = 'https://pennygachi.men/web98/update';
 const RELEASE_FILE = 'resources/app/release.json';
 const VERSION_PATTERN = /^\d+\.\d+(\.\d+){0,2}$/;
@@ -22,7 +28,7 @@ const NO_GZIP = /\.(jpe?g|png|gif|webp|mp3|mp4|m4a|ogg|webm|avi|mkv|zip|7z|gz|ap
 const FORBIDDEN_NAMES = /\b(Microsoft|MICROSOFT|Windows|WINDOWS)\b/;
 const FIXED_TITLE = 'Исправлено по отчётам игроков';
 const FIXED_TITLE_EN = 'Fixed from player reports';
-const BSDTAR = fs.existsSync('C:\\Windows\\System32\\tar.exe') ? 'C:\\Windows\\System32\\tar.exe' : 'tar';
+const BSDTAR = process.platform === 'win32' ? 'C:\\Windows\\System32\\tar.exe' : 'bsdtar';
 
 const PRODUCTS = {
   win98: {
@@ -34,6 +40,10 @@ const PRODUCTS = {
       build: "fetch('build.json').then(r => r.json())",
       what: 'the desktop'
     }
+  },
+  'win98-linux': {
+    dist: path.join(ROOT, 'dist', 'Win98-linux-x64'), exe: 'win98', channels: [], notes: path.join(ROOT, 'releases', 'win98'),
+    smoke: null
   },
   sr98: {
     dist: path.join(ROOT, 'dist', 'StarRail98-win32-x64'), exe: 'StarRail98.exe', channels: ['sr98-web', 'sr98-apk', 'sr98-pc'], notes: path.join(ROOT, 'releases', 'sr98'),
@@ -255,7 +265,7 @@ function newsJson(product) {
       flush();
       if (!item.title || !item.date) throw new Error('releases/news/' + name + ': needs "# Заголовок" and "Дата: ДД.ММ.ГГГГ"');
       item.lead = item.body.shift() || '';
-      if (products.includes(product)) items.push(item);
+      if (products.includes(product === 'win98-linux' ? 'win98' : product)) items.push(item);
     }
   }
   if (product === 'sr98') items.push(...siteNews());
@@ -297,66 +307,113 @@ async function manifestFor(product, release) {
   return Object.assign({ format: 'win98-manifest', v: 1 }, meta, { files });
 }
 
-function ssh(script, opts = {}) {
-  return execFileSync('ssh', ['-o', 'BatchMode=yes', SSH_HOST, 'bash -s'], Object.assign({ input: 'set -e\n' + script, encoding: 'utf8', maxBuffer: 256 * 1048576 }, opts));
+const ftpUrl = remote => 'ftp://' + FTP_HOST + remote.split('/').map(encodeURIComponent).join('/');
+const curlQuote = s => '"' + String(s).replace(/\\/g, '/').replace(/"/g, '\\"') + '"';
+
+function curl(args, opts = {}) {
+  if (!fs.existsSync(FTP_NETRC)) throw new Error('No FTP login: put "machine ' + FTP_HOST + ' login ... password ..." into ' + FTP_NETRC);
+  const base = ['--silent', '--show-error', '--fail', '--ssl-reqd', '--insecure', '--pinnedpubkey', FTP_PIN, '--netrc-file', FTP_NETRC, '--connect-timeout', '30', '--retry', '3'];
+  const r = spawnSync(CURL, base.concat(args), Object.assign({ encoding: 'buffer', maxBuffer: 1024 * 1048576 }, opts));
+  if (r.error) throw r.error;
+  return { status: r.status, out: r.stdout, err: r.stderr ? r.stderr.toString('utf8').trim() : '' };
 }
 
-function scp(localFile, remote) {
-  const r = spawnSync('scp', ['-o', 'BatchMode=yes', '-q', path.basename(localFile), SSH_HOST + ':' + remote], { cwd: path.dirname(localFile), stdio: 'inherit' });
-  if (r.status !== 0) throw new Error('scp failed for ' + localFile);
+function curlOk(args, what) {
+  const r = curl(args);
+  if (r.status !== 0) throw new Error('FTP ' + what + ' failed (curl ' + r.status + '): ' + r.err);
+  return r.out;
+}
+
+function curlConfig(lines, what) {
+  const file = path.join(WORK, 'curl-' + process.pid + '.txt');
+  fs.mkdirSync(WORK, { recursive: true });
+  fs.writeFileSync(file, lines.join('\n') + '\n');
+  try {
+    return curlOk(['--config', file], what);
+  } finally {
+    fs.rmSync(file, { force: true });
+  }
+}
+
+function parseList(text) {
+  const entries = [];
+  for (const line of text.split(/\r?\n/)) {
+    const m = /^([-dl])\S*\s+\d+\s+\S+\s+\S+\s+(\d+)\s+\S+\s+\S+\s+\S+\s+(.+)$/.exec(line);
+    if (m && m[3] !== '.' && m[3] !== '..') entries.push({ name: m[3], size: Number(m[2]), dir: m[1] === 'd' });
+  }
+  return entries;
+}
+
+function ftpList(dir) {
+  const r = curl([ftpUrl(dir + '/')]);
+  if (r.status === 9) return [];
+  if (r.status !== 0) throw new Error('FTP list ' + dir + ' failed (curl ' + r.status + '): ' + r.err);
+  return parseList(r.out.toString('utf8'));
+}
+
+function ftpRead(file) {
+  return curlOk([ftpUrl(file)], 'read ' + file);
+}
+
+function ftpPut(pairs, what) {
+  if (!pairs.length) return;
+  const lines = ['ftp-create-dirs'];
+  for (const [local, remote] of pairs) lines.push('upload-file = ' + curlQuote(local), 'url = ' + curlQuote(ftpUrl(remote)));
+  curlConfig(lines, what);
+}
+
+function ftpCommands(commands, what) {
+  for (let i = 0; i < commands.length; i += 200) {
+    const lines = commands.slice(i, i + 200).map(c => 'quote = ' + curlQuote(c));
+    lines.push('list-only', 'output = ' + curlQuote(process.platform === 'win32' ? 'NUL' : '/dev/null'), 'url = ' + curlQuote(ftpUrl(FTP_SITE + '/')));
+    curlConfig(lines, what);
+  }
+}
+
+function ftpRename(from, to) {
+  ftpCommands(['RNFR ' + from, 'RNTO ' + to], 'rename ' + from);
+}
+
+function remoteNames(dir, pattern) {
+  return ftpList(dir).filter(e => !e.dir && pattern.test(e.name)).map(e => e.name);
 }
 
 function remoteBlobs() {
-  const out = ssh('mkdir -p ' + REMOTE_DIR + '/blobs\ncd ' + REMOTE_DIR + '/blobs && find . -type f -name "*.bin" -printf "%P\\n"');
-  return new Set(out.split('\n').map(s => s.trim()).filter(Boolean));
-}
-
-function tarFiles(tarFile, cwd, names) {
-  const list = tarFile + '.list';
-  fs.writeFileSync(list, names.join('\n') + '\n');
-  execFileSync(BSDTAR, ['-c', '-f', tarFile, '-C', cwd, '-T', list], { stdio: 'inherit' });
-  fs.rmSync(list, { force: true });
+  const dirs = ftpList(FTP_UPDATE + '/blobs').filter(e => e.dir).map(e => e.name);
+  const sizes = new Map();
+  if (!dirs.length) return sizes;
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'release-blobs-'));
+  try {
+    const lines = [];
+    for (const d of dirs) lines.push('url = ' + curlQuote(ftpUrl(FTP_UPDATE + '/blobs/' + d + '/')), 'output = ' + curlQuote(path.join(tmp, d + '.txt')));
+    curlConfig(lines, 'blob list');
+    for (const d of dirs) {
+      for (const e of parseList(fs.readFileSync(path.join(tmp, d + '.txt'), 'utf8'))) if (!e.dir && e.name.endsWith('.bin')) sizes.set(d + '/' + e.name, e.size);
+    }
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+  return sizes;
 }
 
 async function upload(product, metaDir, metaFiles, pointerName, blobs) {
   const have = remoteBlobs();
   const unique = [...new Set(blobs)];
-  const missing = unique.filter(b => !have.has(b));
-  const upDir = path.join(WORK, 'upload');
-  fs.rmSync(upDir, { recursive: true, force: true });
-  fs.mkdirSync(upDir, { recursive: true });
-  const sums = [];
-  for (const b of missing) sums.push((await hashFile(path.join(BLOBS, b))) + '  blobs/' + b);
-  for (const f of metaFiles) sums.push((await hashFile(path.join(metaDir, f))) + '  ' + f);
-  fs.writeFileSync(path.join(metaDir, 'sums.txt'), sums.join('\n') + '\n');
-  const bytes = missing.reduce((s, b) => s + fs.statSync(path.join(BLOBS, b)).size, 0);
+  const sizeOf = b => fs.statSync(path.join(BLOBS, b)).size;
+  const missing = unique.filter(b => have.get(b) !== sizeOf(b));
+  const bytes = missing.reduce((s, b) => s + sizeOf(b), 0);
   console.log('Upload: ' + missing.length + ' new blobs (' + mb(bytes) + '), ' + (unique.length - missing.length) + ' already on the server, ' + metaFiles.length + ' text files');
-  ssh('mkdir -p ~/' + REMOTE_INCOMING + ' && rm -rf ~/' + REMOTE_INCOMING + '/x ~/' + REMOTE_INCOMING + '/*.tar');
+  ftpPut(missing.map(b => [path.join(BLOBS, b), FTP_UPDATE + '/blobs/' + b]), 'blob upload');
   if (missing.length) {
-    const blobTar = path.join(upDir, 'blobs.tar');
-    tarFiles(blobTar, WORK, missing.map(b => 'blobs/' + b));
-    scp(blobTar, REMOTE_INCOMING + '/');
+    const now = remoteBlobs();
+    const bad = missing.filter(b => now.get(b) !== sizeOf(b));
+    if (bad.length) throw new Error(bad.length + ' blobs did not arrive whole, first ' + bad[0] + '. Run the release again: it uploads only what is missing.');
   }
-  const metaTar = path.join(upDir, 'meta.tar');
-  tarFiles(metaTar, metaDir, metaFiles.concat('sums.txt'));
-  scp(metaTar, REMOTE_INCOMING + '/');
-  const moves = metaFiles.filter(f => f !== pointerName && f !== pointerName + '.sig');
-  ssh([
-    'cd ~/' + REMOTE_INCOMING,
-    'mkdir x',
-    missing.length ? 'tar -xf blobs.tar -C x' : 'true',
-    'tar -xf meta.tar -C x',
-    'cd x',
-    'sha256sum -c --quiet sums.txt',
-    'U=' + REMOTE_DIR,
-    '[ -d blobs ] && find blobs -type f -name "*.bin" | while read -r f; do mkdir -p "$U/$(dirname "$f")"; chmod 664 "$f"; mv -n "$f" "$U/$f"; done',
-    ...moves.map(f => 'mkdir -p "$U/$(dirname "' + f + '")" && chmod 664 "' + f + '" && mv -f "' + f + '" "$U/' + f + '"'),
-    'chmod 664 "' + pointerName + '.sig" "' + pointerName + '"',
-    'mv -f "' + pointerName + '.sig" "$U/' + pointerName + '.sig"',
-    'mv -f "' + pointerName + '" "$U/' + pointerName + '"',
-    'cd .. && rm -rf x blobs.tar meta.tar'
-  ].join('\n'));
-  fs.rmSync(upDir, { recursive: true, force: true });
+  const pointerFiles = [pointerName + '.sig', pointerName];
+  const rest = metaFiles.filter(f => !pointerFiles.includes(f));
+  ftpPut(rest.map(f => [path.join(metaDir, f), FTP_UPDATE + '/' + f]), 'text upload');
+  ftpPut(pointerFiles.map(f => [path.join(metaDir, f), FTP_UPDATE + '/' + f + '.new']), 'pointer upload');
+  for (const f of pointerFiles) ftpRename(FTP_UPDATE + '/' + f + '.new', FTP_UPDATE + '/' + f);
 }
 
 async function getPublic(url) {
@@ -385,13 +442,16 @@ function nextVersion(ptrs) {
 }
 
 function smokeTest(product) {
-  const p = PRODUCTS[product];
+  const p = Object.assign({}, PRODUCTS[product], { smoke: PRODUCTS[product].smoke || PRODUCTS.win98.smoke });
   const exe = path.join(p.dist, p.exe);
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'release-smoke-'));
   const port = 9600 + Math.floor(Math.random() * 300);
   const env = Object.assign({}, process.env);
   delete env.ELECTRON_RUN_AS_NODE;
-  const child = spawn(exe, ['--remote-debugging-port=' + port, '--user-data-dir=' + profile], { env, stdio: 'ignore' });
+  const exeArgs = ['--remote-debugging-port=' + port, '--user-data-dir=' + profile];
+  const onWin = process.platform === 'win32';
+  const wine = !onWin && exe.endsWith('.exe');
+  const child = onWin ? spawn(exe, exeArgs, { env, stdio: 'ignore' }) : spawn(wine ? 'wine' : exe, (wine ? [exe] : []).concat(exeArgs), { env, stdio: 'ignore', detached: true });
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const stop = async () => {
     try {
@@ -401,7 +461,11 @@ function smokeTest(product) {
       ws.send(JSON.stringify({ id: 1, method: 'Browser.close' }));
       await sleep(1500);
     } catch (err) {}
-    spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+    if (onWin) spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+    else {
+      try { process.kill(-child.pid, 'SIGKILL'); } catch (err) {}
+      if (wine) spawnSync('wineserver', ['-k'], { stdio: 'ignore' });
+    }
     await sleep(500);
     try { fs.rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 500 }); } catch (err) {}
   };
@@ -503,69 +567,79 @@ function checkArenaVersion() {
 
 async function releaseWin98(args) {
   checkArenaVersion();
-  const product = 'win98';
-  const p = PRODUCTS[product];
+  const products = args['no-linux'] ? ['win98'] : ['win98', 'win98-linux'];
   const key = loadKey();
   const channel = args.channel || 'test';
   if (!['test', 'stable'].includes(channel)) throw new Error('--channel is test or stable');
   const git = gitState();
   if (git.dirty && !(args.dirty && channel === 'test')) throw new Error('Uncommitted changes. Commit first, or use --dirty for the test channel.');
-  const nextFile = path.join(p.notes, 'next.md');
+  const notesDir = PRODUCTS.win98.notes;
+  const nextFile = path.join(notesDir, 'next.md');
   if (!fs.existsSync(nextFile)) throw new Error('Write ' + path.relative(ROOT, nextFile) + ' first (what is new, for players)');
   const notes = parseNotes(fs.readFileSync(nextFile, 'utf8'), 'releases/win98/next.md');
-  const news = newsJson(product);
-  const ptrs = await pointers(product);
-  const version = args.version || nextVersion(ptrs);
+  const ptrsOf = {};
+  for (const product of products) ptrsOf[product] = await pointers(product);
+  const version = args.version || nextVersion(ptrsOf.win98);
   if (!VERSION_PATTERN.test(version)) throw new Error('version must look like 1.15 or 1.15.1');
-  for (const ptr of [ptrs.stable, ptrs.test]) if (ptr && compareVersions(version, ptr.version) <= 0) throw new Error('version ' + version + ' is not newer than ' + ptr.channel + ' ' + ptr.version);
-  console.log('Win 98 ' + version + ' → channel ' + channel + (git.dirty ? ' (dirty)' : ''));
-
-  if (!args['skip-build']) {
-    const r = spawnSync(process.execPath, [path.join(__dirname, 'build-exe.mjs'), '--version', version], { cwd: ROOT, stdio: 'inherit' });
-    if (r.status !== 0) throw new Error('build:exe failed');
+  for (const product of products) {
+    for (const ptr of [ptrsOf[product].stable, ptrsOf[product].test]) if (ptr && compareVersions(version, ptr.version) <= 0) throw new Error(product + ' version ' + version + ' is not newer than ' + ptr.channel + ' ' + ptr.version);
   }
-  const release = readJson(path.join(p.dist, RELEASE_FILE), null);
-  if (!release || release.version !== version) throw new Error('dist has no release.json for ' + version);
+  console.log('Win 98 ' + version + ' (' + products.join(', ') + ') → channel ' + channel + (git.dirty ? ' (dirty)' : ''));
 
-  if (!args['no-smoke']) {
-    console.log('Smoke test: ' + p.exe + ' with a temporary profile');
-    const smoke = await smokeTest(product);
-    if (!smoke.build || smoke.build.version !== version) throw new Error('smoke test: build.json says ' + JSON.stringify(smoke.build));
-    if (smoke.errors.length && !args['ignore-errors']) throw new Error('smoke test: exceptions:\n' + smoke.errors.join('\n'));
-    console.log('  desktop loaded, ' + smoke.errors.length + ' exceptions');
+  const releases = {};
+  for (const product of products) {
+    const p = PRODUCTS[product];
+    if (!args['skip-build']) {
+      const extra = product === 'win98-linux' ? ['--platform', 'linux'] : [];
+      const r = spawnSync(process.execPath, [path.join(__dirname, 'build-exe.mjs'), '--version', version].concat(extra), { cwd: ROOT, stdio: 'inherit' });
+      if (r.status !== 0) throw new Error('build:exe failed for ' + product);
+    }
+    const release = readJson(path.join(p.dist, RELEASE_FILE), null);
+    if (!release || release.version !== version) throw new Error(path.relative(ROOT, p.dist) + ' has no release.json for ' + version);
+    releases[product] = release;
+    if (!args['no-smoke']) {
+      console.log('Smoke test: ' + p.exe + ' with a temporary profile');
+      const smoke = await smokeTest(product);
+      if (!smoke.build || smoke.build.version !== version) throw new Error('smoke test: build.json says ' + JSON.stringify(smoke.build));
+      if (smoke.errors.length && !args['ignore-errors']) throw new Error('smoke test: exceptions:\n' + smoke.errors.join('\n'));
+      console.log('  desktop loaded, ' + smoke.errors.length + ' exceptions');
+    }
   }
 
-  console.log('Blobs and manifest');
-  const manifest = await manifestFor(product, release);
-  const fixed = fixedReports(product);
-  const date = release.date.split('-').reverse().join('.');
-  const entry = { version, build: release.build, date, title: notes.title, summary: notes.summary, sections: notes.sections, fixed: notes.fixed.concat(fixed) };
-  const notesAll = notesJson(product, p.notes, entry);
-
-  const out = path.join(WORK, 'out-' + product + '-' + version);
-  fs.rmSync(out, { recursive: true, force: true });
-  const metaFiles = [];
-  metaFiles.push(...writeSigned(out, product + '/manifest-' + version + '.json', manifest, key));
-  metaFiles.push(...writeSigned(out, product + '/notes.json', notesAll, key));
-  metaFiles.push(...writeSigned(out, product + '/news.json', news.json, key));
-  for (const img of news.images) {
-    fs.mkdirSync(path.join(out, product, 'news'), { recursive: true });
-    fs.copyFileSync(img, path.join(out, product, 'news', path.basename(img)));
-    metaFiles.push(product + '/news/' + path.basename(img));
+  const fixed = fixedReports('win98');
+  const first = releases.win98;
+  const date = first.date.split('-').reverse().join('.');
+  const entry = { version, build: first.build, date, title: notes.title, summary: notes.summary, sections: notes.sections, fixed: notes.fixed.concat(fixed) };
+  for (const product of products) {
+    console.log('Blobs and manifest: ' + product);
+    const release = releases[product];
+    const manifest = await manifestFor(product, release);
+    const news = newsJson(product);
+    const out = path.join(WORK, 'out-' + product + '-' + version);
+    fs.rmSync(out, { recursive: true, force: true });
+    const metaFiles = [];
+    metaFiles.push(...writeSigned(out, product + '/manifest-' + version + '.json', manifest, key));
+    metaFiles.push(...writeSigned(out, product + '/notes.json', notesJson(product, notesDir, entry), key));
+    metaFiles.push(...writeSigned(out, product + '/news.json', news.json, key));
+    for (const img of news.images) {
+      fs.mkdirSync(path.join(out, product, 'news'), { recursive: true });
+      fs.copyFileSync(img, path.join(out, product, 'news', path.basename(img)));
+      metaFiles.push(product + '/news/' + path.basename(img));
+    }
+    const ptrs = ptrsOf[product];
+    const old = ptrs[channel] || ptrs.stable || ptrs.test;
+    let full = old && old.full ? old.full : null;
+    if (args.full) full = await uploadFull(product, version);
+    const pointer = { format: 'win98-update', v: 1, product, channel, version, build: release.build, date: release.date, commit: release.commit, manifest: 'manifest-' + version + '.json', blobs: '../blobs/', runtime: release.runtime, full };
+    const pointerName = product + '/' + channel + '.json';
+    metaFiles.push(...writeSigned(out, pointerName, pointer, key));
+    await upload(product, out, metaFiles, pointerName, manifest.files.map(f => blobPath(f[2])));
   }
-  const old = ptrs[channel] || ptrs.stable || ptrs.test;
-  let full = old && old.full ? old.full : null;
-  if (args.full) full = await uploadFull(product, version);
-  const pointer = { format: 'win98-update', v: 1, product, channel, version, build: release.build, date: release.date, commit: release.commit, manifest: 'manifest-' + version + '.json', blobs: '../blobs/', runtime: release.runtime, full };
-  const pointerName = product + '/' + channel + '.json';
-  metaFiles.push(...writeSigned(out, pointerName, pointer, key));
-
-  await upload(product, out, metaFiles, pointerName, manifest.files.map(f => blobPath(f[2])));
-  fs.writeFileSync(path.join(p.notes, version + '.md'), versionMd(notes, version, release.build, date, fixed));
+  fs.writeFileSync(path.join(notesDir, version + '.md'), versionMd(notes, version, first.build, date, fixed));
   fs.rmSync(nextFile);
   console.log('Notes: releases/win98/' + version + '.md (next.md removed)');
-  if (channel === 'stable') await markFixed(product, displayVersion(release), entry.fixed.map(f => f.id).filter(Boolean));
-  await verify(product, channel);
+  if (channel === 'stable') await markFixed('win98', displayVersion(first), entry.fixed.map(f => f.id).filter(Boolean));
+  for (const product of products) await verify(product, channel);
 }
 
 function nextSr98Version(ptrs, base) {
@@ -928,15 +1002,19 @@ async function verifyParohod(channel) {
 
 async function uploadFull(product, version) {
   const p = PRODUCTS[product];
-  const zip = path.join(ROOT, 'dist', 'Win98.new.zip');
-  fs.rmSync(zip, { force: true });
-  console.log('Full archive: ' + path.basename(zip));
-  execFileSync(BSDTAR, ['-a', '-c', '-f', zip, path.basename(p.dist)], { cwd: path.dirname(p.dist), stdio: 'inherit' });
-  const bytes = fs.statSync(zip).size;
-  scp(zip, REMOTE_INCOMING + '/');
-  ssh('chmod 644 ~/' + REMOTE_INCOMING + '/Win98.new.zip && mv -f ~/' + REMOTE_INCOMING + '/Win98.new.zip ' + REMOTE_SITE + '/Win98.zip');
-  fs.renameSync(zip, path.join(ROOT, 'dist', 'Win98.zip'));
-  return { url: '../../Win98.zip', version, bytes };
+  const archive = FULL_ARCHIVES[product];
+  const remote = FTP_SITE + '/files/' + archive.name;
+  const local = path.join(ROOT, 'dist', 'new-' + archive.name);
+  fs.rmSync(local, { force: true });
+  console.log('Full archive: ' + archive.name);
+  execFileSync(BSDTAR, archive.tar.concat([local, path.basename(p.dist)]), { cwd: path.dirname(p.dist), stdio: 'inherit' });
+  const bytes = fs.statSync(local).size;
+  ftpPut([[local, remote + '.new']], 'full archive upload');
+  const sent = ftpList(path.posix.dirname(remote)).find(e => e.name === archive.name + '.new');
+  if (!sent || sent.size !== bytes) throw new Error(archive.name + ' did not arrive whole: ' + (sent ? sent.size : 0) + ' of ' + bytes + ' bytes');
+  ftpRename(remote + '.new', remote);
+  fs.renameSync(local, path.join(ROOT, 'dist', archive.name));
+  return { url: '../../../files/' + archive.name, version, bytes };
 }
 
 async function promote(product, version) {
@@ -950,10 +1028,16 @@ async function promote(product, version) {
   const pointerName = product + '/stable.json';
   const files = writeSigned(out, pointerName, pointer, key);
   await upload(product, out, files, pointerName, []);
-  const notes = await getSignedPublic(product + '/notes.json');
-  const entry = notes && notes.versions.find(v => v.version === version);
-  await markFixed(product, displayVersion(pointer), entry ? entry.fixed.map(f => f.id).filter(Boolean) : []);
+  if (product !== 'win98-linux') {
+    const notes = await getSignedPublic(product + '/notes.json');
+    const entry = notes && notes.versions.find(v => v.version === version);
+    await markFixed(product, displayVersion(pointer), entry ? entry.fixed.map(f => f.id).filter(Boolean) : []);
+  }
   await verify(product, 'stable');
+  if (product === 'win98') {
+    const linux = await pointers('win98-linux');
+    if (linux.test && linux.test.version === version) await promote('win98-linux', version);
+  }
 }
 
 async function verify(product, channel) {
@@ -994,7 +1078,8 @@ async function status() {
     const games = p ? Object.entries(p.games).map(([id, g]) => id + ' ' + g.version).join(', ') : '';
     console.log('parohod98 ' + ch.padEnd(7) + (p ? (p.apk ? 'apk ' + p.apk.versionName + '  ' : '') + (games || 'no games') + '  ' + p.date + '  ' + p.commit : '—'));
   }
-  console.log(ssh('cd ' + REMOTE_DIR + ' && du -sh . blobs 2>/dev/null | tr "\\t" " "; echo "$(find blobs -type f | wc -l) blobs"').trim());
+  const blobs = [...remoteBlobs().values()];
+  console.log('blobs: ' + blobs.length + ' files, ' + mb(blobs.reduce((s, n) => s + n, 0)));
 }
 
 async function gc(args) {
@@ -1004,45 +1089,45 @@ async function gc(args) {
   for (const product of Object.keys(PRODUCTS)) {
     const ptrs = await pointers(product);
     const live = [ptrs.stable, ptrs.test].filter(Boolean).map(p => p.manifest);
-    const names = ssh('cd ' + REMOTE_DIR + ' && ls ' + product + '/ 2>/dev/null | grep -E "^manifest-.*\\.json$" || true').split('\n').filter(Boolean)
+    const names = remoteNames(FTP_UPDATE + '/' + product, /^manifest-.*\.json$/)
       .sort((a, b) => compareVersions(b.replace(/^manifest-|\.json$/g, ''), a.replace(/^manifest-|\.json$/g, '')));
     const kept = names.filter((n, i) => i < keep || live.includes(n));
     for (const n of names.filter(n => !kept.includes(n))) dropFiles.push(product + '/' + n, product + '/' + n + '.sig');
     const liveApk = [ptrs.stable, ptrs.test].filter(p => p && p.apk).map(p => p.apk.url);
-    const apks = ssh('cd ' + REMOTE_DIR + ' && ls ' + product + '/ 2>/dev/null | grep -E "^StarRail98-.*\\.apk$" || true').split('\n').filter(Boolean)
+    const apks = remoteNames(FTP_UPDATE + '/' + product, /^StarRail98-.*\.apk$/)
       .sort((a, b) => compareVersions(b.replace(/^StarRail98-|\.apk$/g, ''), a.replace(/^StarRail98-|\.apk$/g, '')));
     for (const n of apks.filter((n, i) => i >= keep && !liveApk.includes(n))) dropFiles.push(product + '/' + n);
     for (const n of kept) {
-      const m = JSON.parse(ssh('cat ' + REMOTE_DIR + '/' + product + '/' + n));
+      const m = JSON.parse(ftpRead(FTP_UPDATE + '/' + product + '/' + n).toString('utf8'));
       for (const f of m.files) referenced.add(blobPath(f[2]));
     }
   }
   const pp = await pointers(PAROHOD.product);
   const liveLauncher = [pp.stable, pp.test].filter(p => p && p.apk).map(p => p.apk.url);
-  const launcherApks = ssh('cd ' + REMOTE_DIR + ' && ls ' + PAROHOD.product + '/ 2>/dev/null | grep -E "^Parohod98-[0-9.]+\\.apk$" || true').split('\n').filter(Boolean)
+  const launcherApks = remoteNames(FTP_UPDATE + '/' + PAROHOD.product, /^Parohod98-[0-9.]+\.apk$/)
     .sort((a, b) => compareVersions(b.replace(/^Parohod98-|\.apk$/g, ''), a.replace(/^Parohod98-|\.apk$/g, '')));
   for (const n of launcherApks.filter((n, i) => i >= keep && !liveLauncher.includes(n))) dropFiles.push(PAROHOD.product + '/' + n);
   const liveGames = [pp.stable, pp.test].filter(Boolean).flatMap(p => Object.entries(p.games));
   for (const [, g] of liveGames) for (const sha of [g.icon].concat(g.shots.map(s => s.sha256))) referenced.add(blobPath(sha));
   for (const id of [...new Set(liveGames.map(([id]) => id))]) {
     const live = liveGames.filter(([gid]) => gid === id).map(([, g]) => path.posix.basename(g.manifest));
-    const names = ssh('cd ' + REMOTE_DIR + ' && ls ' + PAROHOD.product + '/' + id + '/ 2>/dev/null | grep -E "^manifest-.*\\.json$" || true').split('\n').filter(Boolean)
+    const names = remoteNames(FTP_UPDATE + '/' + PAROHOD.product + '/' + id, /^manifest-.*\.json$/)
       .sort((a, b) => compareVersions(b.replace(/^manifest-|\.json$/g, ''), a.replace(/^manifest-|\.json$/g, '')));
     const kept = names.filter((n, i) => i < keep || live.includes(n));
     for (const n of names.filter(n => !kept.includes(n))) dropFiles.push(PAROHOD.product + '/' + id + '/' + n, PAROHOD.product + '/' + id + '/' + n + '.sig');
     for (const n of kept) {
-      const m = JSON.parse(ssh('cat ' + REMOTE_DIR + '/' + PAROHOD.product + '/' + id + '/' + n));
+      const m = JSON.parse(ftpRead(FTP_UPDATE + '/' + PAROHOD.product + '/' + id + '/' + n).toString('utf8'));
       for (const f of m.files) referenced.add(blobPath(f[2]));
     }
   }
-  const unused = [...remoteBlobs()].filter(b => !referenced.has(b));
+  const unused = [...remoteBlobs().keys()].filter(b => !referenced.has(b));
   console.log('Unused blobs: ' + unused.length + ', old manifests and APKs: ' + dropFiles.length);
   if (!args.yes) {
     console.log('Nothing deleted. Run again with --yes to delete them.');
     return;
   }
   const list = unused.map(b => 'blobs/' + b).concat(dropFiles);
-  if (list.length) ssh('cd ' + REMOTE_DIR + '\nxargs -r rm -f <<"EOF"\n' + list.join('\n') + '\nEOF');
+  ftpCommands(list.map(f => 'DELE ' + FTP_UPDATE + '/' + f), 'delete');
   console.log('Deleted ' + list.length + ' files');
 }
 
@@ -1076,8 +1161,12 @@ function keygen(force) {
 }
 
 async function ping() {
-  const remote = execFileSync('ssh', ['-o', 'BatchMode=yes', SSH_HOST, 'test -w ' + REMOTE_DIR + ' && df -h --output=avail ' + REMOTE_DIR + ' | tail -1'], { encoding: 'utf8' }).trim();
-  console.log('ssh ' + SSH_HOST + ': ' + REMOTE_DIR + ' writable, free ' + remote);
+  const probe = path.join(WORK, 'ping.json');
+  fs.mkdirSync(WORK, { recursive: true });
+  fs.writeFileSync(probe, JSON.stringify({ ok: true }) + '\n');
+  ftpPut([[probe, FTP_UPDATE + '/ping.json']], 'ping upload');
+  fs.rmSync(probe, { force: true });
+  console.log('ftp ' + FTP_HOST + ': ' + FTP_UPDATE + ' writable, ' + ftpList(FTP_UPDATE).length + ' entries');
   const res = await fetch(PUBLIC_URL + '/ping.json', { cache: 'no-store' });
   console.log('GET ' + PUBLIC_URL + '/ping.json: ' + res.status + ', cf-cache-status ' + res.headers.get('cf-cache-status'));
   if (!res.ok) process.exitCode = 1;
@@ -1085,7 +1174,7 @@ async function ping() {
 
 const USAGE = [
   'npm run release -- <command>',
-  '  win98 [--channel test|stable] [--version 1.N] [--full] [--dirty] [--skip-build] [--no-smoke] [--ignore-errors]',
+  '  win98 [--channel test|stable] [--version 1.N] [--full] [--no-linux] [--dirty] [--skip-build] [--no-smoke] [--ignore-errors]',
   '  news [win98|sr98]',
   '  sr98 [--channel test|stable] [--version 1.6.N] [--full] [--no-pc] [--dirty] [--no-smoke] [--ignore-errors]',
   '  parohod98 [--channel test|stable] [--version 1.N] [--dirty]',
@@ -1105,7 +1194,8 @@ async function main(argv) {
   if (cmd === 'ping') return ping();
   if (cmd === 'win98') return releaseWin98(args);
   if (cmd === 'sr98') return releaseSr98(args);
-  if (cmd === 'news') return uploadNews(a1 || 'win98');
+  if (cmd === 'news' && (a1 || 'win98') === 'win98') return uploadNews('win98').then(() => uploadNews('win98-linux'));
+  if (cmd === 'news') return uploadNews(a1);
   if (cmd === 'parohod98' && a1 === 'games') return releaseParohodGames(args, args._.slice(2));
   if (cmd === 'parohod98' && !a1) return releaseParohodApk(args);
   if (cmd === 'promote' && a1 === PAROHOD.product && a2 && args._[3]) return promoteParohod(a2, args._[3]);

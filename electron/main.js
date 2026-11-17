@@ -4,7 +4,9 @@ const server = require('../server');
 const { createLauncherHost } = require('./launcher-host');
 
 const PREFERRED_PORT = 39898;
-const ICON_PATH = path.join(__dirname, 'icon.ico');
+const LINUX = process.platform === 'linux';
+const PRODUCT = LINUX ? 'win98-linux' : 'win98';
+const ICON_PATH = path.join(__dirname, LINUX ? 'icon.png' : 'icon.ico');
 const PRELOAD_PATH = path.join(__dirname, 'preload.js');
 const LAUNCHER_PRELOAD = path.join(__dirname, 'launcher-preload.js');
 const UPDATE_URL = process.env.WIN98_UPDATE_URL || 'https://pennygachi.men/web98/update/';
@@ -238,7 +240,7 @@ if (!app.requestSingleInstanceLock()) {
     answerSystem();
     host = createLauncherHost({
       app, ipcMain, shell, net,
-      product: 'win98',
+      product: PRODUCT,
       installDir: INSTALL_DIR,
       updateUrl: UPDATE_URL,
       dev: DEV,
@@ -252,6 +254,7 @@ if (!app.requestSingleInstanceLock()) {
         port: launcherInfo.port,
         portBusy: launcherInfo.port !== PREFERRED_PORT,
         downloadPage: DOWNLOAD_PAGE,
+        linux: LINUX,
         recovered: launcherInfo.recovered || null,
         after: launcherInfo.after || null,
         autoUpdate: !!launcherInfo.autoUpdate

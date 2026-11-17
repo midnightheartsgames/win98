@@ -92,7 +92,7 @@ Players and the developer send bug reports with F10 (Ctrl+F10 in every program) 
 
 When the user asks to look at a report ("разбери BR-261027-7K3Q", "разбери последний баг", "разбери новые баги"):
 
-run node tools/bugs.cjs pull first (it needs the token in %USERPROFILE%\.win98-bugs.json);
+run node tools/bugs.cjs pull first (it needs the token in ~/.win98-bugs.json);
 read bugreports/<id>/report.md and look at shot.png, shot-marked.png (the player's red frames) and shot-window.png when present;
 check the HEAD line in report.md: if files changed after the build, first check whether the bug is already fixed;
 reproduce with node tools/bugs.cjs repro <id> --headless and read repro.png and repro.log; it loads the report's save (and the live HSR state) on port 8091 without touching the user's own saves;
@@ -112,12 +112,12 @@ LAUNCHER.md describes the whole system. Win98.exe opens a Win 98 launcher (elect
 When the user asks for a release ("выпусти обновление", "сделай выпуск Win 98", "выпусти SR98"):
 
 write releases/win98/next.md or releases/sr98/next.md for players from the commits since the last release (the pointer keeps its commit): "# Title", "Кратко: ...", "## Новое" and "## Исправлено" with "- " items, grouped by game or program, Microslop and Win naming; show it to the user before releasing;
-npm run release -- win98 or npm run release -- sr98 builds, checks the launch, uploads over ssh (Host mini-pc) and verifies through Cloudflare; the default channel is test;
+npm run release -- win98 or npm run release -- sr98 builds, checks the launch (npm run release -- win98 builds and publishes both Win98.exe and the Linux version, product win98-linux, with one version and one set of notes; --no-linux skips Linux), uploads over FTPS to the cloud4box hosting (login in ~/.netrc, see SITE.md) and verifies through Cloudflare; the default channel is test;
 the test channel is checked by the user (five clicks on the version number in the launcher settings, five taps on the version in the APK screen); only after that npm run release -- promote <win98|sr98> <version> moves it to stable. Stable releases need a committed tree and the user's go-ahead, never publish to stable on your own;
 --full also uploads the full archive for new players (Win98.zip or StarRail98-PC-<version>.zip);
 npm run release -- status shows what is published, verify checks a channel from outside, gc deletes unused files (only with --yes).
 
-The signing key is %USERPROFILE%\.win98-release.key and the APK key is %USERPROFILE%\.android\hsr98.keystore; neither goes into git, and losing them means existing installs stop getting updates. Never reuse a published file name: Cloudflare keeps old copies. SR98 news for the launcher come from web98-site/sr98/news.js (the site loads the same file); Win 98 news are releases/news/*.md.
+The signing key is ~/.win98-release.key and the APK key is ~/.android/hsr98.keystore (%USERPROFILE% on Win); neither goes into git, and losing them means existing installs stop getting updates. Releases run on Linux: exe builds use wine for the exe metadata and the launch check, and the APK build refuses to create a missing keystore unless APK_NEW_KEYSTORE=1. Never reuse a published file name: Cloudflare keeps old copies. SR98 news for the launcher come from web98-site/sr98/news.js (the site loads the same file); Win 98 news are releases/news/*.md.
 
 Android Launcher (Пароход 98)
 

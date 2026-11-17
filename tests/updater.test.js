@@ -150,6 +150,17 @@ check('1.0 → 1.1: plan, download with gzip blobs, apply, backup, latest afterw
   assert.deepEqual(await updater.scanLocal(), []);
 });
 
+check('a replaced file keeps the permissions of the old one, so Linux binaries stay executable', async srv => {
+  if (process.platform === 'win32') return;
+  const { dir, updater } = await fresh(srv);
+  fs.chmodSync(path.join(dir, 'resources/app/index.html'), 0o755);
+  const c = await updater.check();
+  await updater.download(c);
+  await updater.apply(c);
+  assert.equal(fs.statSync(path.join(dir, 'resources/app/index.html')).mode & 0o777, 0o755);
+  assert.equal(read(dir, 'resources/app/index.html').toString(), V11.files['resources/app/index.html']);
+});
+
 check('a dropped connection resumes with Range and If-Range', async srv => {
   const { dir, updater } = await fresh(srv);
   const c = await updater.check();

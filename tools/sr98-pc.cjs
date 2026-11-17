@@ -10,7 +10,7 @@ const APP = path.join(ROOT, 'dist', 'sr98-pc-app');
 const OUT = path.join(ROOT, 'dist');
 const NAME = 'StarRail98';
 const ZIP = path.join(OUT, 'StarRail98-PC.zip');
-const BSDTAR = fs.existsSync('C:\\Windows\\System32\\tar.exe') ? 'C:\\Windows\\System32\\tar.exe' : 'tar';
+const BSDTAR = process.platform === 'win32' ? 'C:\\Windows\\System32\\tar.exe' : 'bsdtar';
 
 function pngIco(pngFile, icoFile) {
   const png = fs.readFileSync(pngFile);

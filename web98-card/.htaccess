@@ -1,0 +1,9 @@
+DirectoryIndex index.html
+Options -Indexes
+AddDefaultCharset utf-8
+AddType application/vnd.android.package-archive .apk
+
+RewriteEngine On
+RewriteRule ^web98/update/(.*)$ update/$1 [L]
+RewriteRule ^web98/Win98\.zip$ https://%{HTTP_HOST}/files/Win98.zip [R=301,L]
+RewriteRule ^web98/?(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
