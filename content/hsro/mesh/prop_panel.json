@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_panel",
+ "kind": "static",
+ "verts": 114,
+ "tris": 88,
+ "bounds": [
+  -0.38999998569488525,
+  0.0,
+  -0.20000000298023224,
+  0.38999998569488525,
+  1.676543951034546,
+  0.20000000298023224
+ ],
+ "bin": "mesh/prop_panel.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 114,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1368,
+   "count": 114,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 2736,
+   "count": 114,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 3648,
+   "count": 264,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

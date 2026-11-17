@@ -1,0 +1,119 @@
+{
+ "format": 1,
+ "id": "boss_culture",
+ "kind": "skinned",
+ "verts": 1190,
+ "tris": 2001,
+ "bounds": [
+  -2.0065057277679443,
+  0.3100000023841858,
+  -2.066749095916748,
+  1.8999998569488525,
+  3.0420000553131104,
+  2.285715341567993
+ ],
+ "bin": "mesh/boss_culture.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 1190,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 14280,
+   "count": 1190,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 28560,
+   "count": 1190,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 38080,
+   "count": 1190,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 42840,
+   "count": 1190,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 52360,
+   "count": 6003,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 64368,
+   "count": 2310,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 73608,
+   "count": 924,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 77304,
+   "count": 770,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 80384,
+   "count": 1232,
+   "type": "f"
+  }
+ },
+ "tex": "tex/boss_culture.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "body",
+  "bulb",
+  "t0.a",
+  "t0.b",
+  "t1.a",
+  "t1.b",
+  "t2.a",
+  "t2.b",
+  "t3.a",
+  "t3.b"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  1,
+  3,
+  1,
+  5,
+  1,
+  7,
+  1,
+  9
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

@@ -314,13 +314,13 @@
             ui.button(lx + 240, by, 148, 24, 'C: связь', () => this.key(null, 'KeyC'), { size: 10 });
             ui.button(lx + 396, by, 214, 24, 'B: чёрный список', () => this.key(null, 'KeyB'), { size: 10 });
             ui.button(lx + 618, by, 204, 24, 'R: запросы' + (reqs ? ' ' + reqs : ''), () => this.key(null, 'KeyR'), { size: 10, active: reqs > 0 });
-            if (reqs) ui.badge(lx + 816, by + 4);
+            if (reqs) ui.newMark(lx + 816, by + 4);
           } else {
             ui.button(12, by, 176, 24, 'O: сортировка: ' + SORTS[sort].label, () => this.cycleSort(), { size: 10 });
             ui.button(194, by, 92, 24, 'C: связь', () => this.key(null, 'KeyC'), { size: 10 });
             ui.button(292, by, 158, 24, 'B: чёрный список', () => this.key(null, 'KeyB'), { size: 10 });
             ui.button(456, by, 160, 24, 'R: запросы' + (reqs ? ' ' + reqs : ''), () => this.key(null, 'KeyR'), { size: 10, active: reqs > 0 });
-            if (reqs) ui.badge(610, by + 4);
+            if (reqs) ui.newMark(610, by + 4);
           }
         },
         drawInvite(c, inv) {

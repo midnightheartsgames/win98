@@ -30,7 +30,7 @@
       basic: { name: 'Подзатыльник', target: 'single', text: 'физический урон 90%.', fx: [{ k: 'dmg', m: 0.9, e: 'phys' }] },
       skill: { name: 'Превращение', target: 'self', keepTurn: true, text: 'Розовая Защитница до конца боя, Кокон-сердце себе (45% защиты). Ход продолжается.', fx: [{ k: 'amTransform' }, { k: 'shield', m: T.amCocoon, flat: T.amCocoonFlat, turns: T.amCocoonTurns, cocoon: true }] },
       pbasic: { name: 'Сердечный… луч!', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
-      pskill: { name: 'Кокон-сердце', target: 'ally', text: 'щит 45% защиты Аманды на 3 хода. Лопнув от удара, бьёт всех врагов ветром на 60% защиты.', fx: [{ k: 'shield', m: T.amCocoon, flat: T.amCocoonFlat, turns: T.amCocoonTurns, cocoon: true }] },
+      pskill: { name: 'Кокон-сердце', cut: 'pink', target: 'ally', text: 'щит 45% защиты Аманды на 3 хода. Лопнув от удара, бьёт всех врагов ветром на 60% защиты.', fx: [{ k: 'shield', m: T.amCocoon, flat: T.amCocoonFlat, turns: T.amCocoonTurns, cocoon: true }] },
       ult: { name: 'Любовь восторжествует', target: 'allies', text: 'превращение, Кокон-сердце всем на 2 хода. Поза: Аманда притягивает удары, защита +30%.', fx: [{ k: 'amTransform' }, { k: 'shield', who: 'allies', m: T.amUltCocoon, flat: T.amUltFlat, turns: T.amUltTurns, cocoon: true }, { k: 'taunt', turns: T.amPoseTurns, who: 'self' }, { k: 'buff', s: 'defP', v: T.amPoseDef, turns: T.amPoseTurns, who: 'self', name: POSE }] },
       talent: 'Бой начинает в обычной форме. При HP союзника ниже 30% превращается и даёт Кокон (45%).',
       tech: { name: 'Звонок с работы', text: 'Аманда приходит в бой уже Розовой Защитницей, с Коконом-сердцем на себе.', fx: 'amandaTech' },
@@ -245,7 +245,7 @@
         if (!foes.length || !by) continue;
         const prev = this.acting;
         this.acting = by;
-        this.push({ t: 'act', u: by, name: 'Кокон лопнул!', kind: 'follow', burst: at });
+        this.push({ t: 'act', u: by, name: 'Кокон лопнул!', kind: 'follow', fid: 'cocoon', burst: at });
         for (const e of foes) if (alive(e)) this.hit(by, e, T.amBurst * (this.traceTalent ? this.traceTalent(by) : 1), { stat: 'def', e: 'wind', tough: T.amBurstTough, kind: 'follow', label: 'Кокон-сердце' });
         if (this.kitFx) this.kitFx(by, 'popped', at);
         const mg = coneK(by, 'cccmagic', 3);
@@ -261,7 +261,7 @@
       if (!am) return;
       const prev = this.acting;
       this.acting = am;
-      this.push({ t: 'act', u: am, name: 'Зов Защитницы', kind: 'follow', call: true });
+      this.push({ t: 'act', u: am, name: 'Зов Защитницы', kind: 'follow', fid: 'guardian', call: true });
       this.transform(am);
       this.cocoon(am, tgt, T.amCocoon * (this.traceTalent ? this.traceTalent(am) : 1), T.amCocoonFlat * (this.traceTalent ? this.traceTalent(am) : 1), T.amCocoonTurns);
       this.acting = prev;
@@ -322,7 +322,7 @@
       this.acting = u;
       this.hitThisAction = new Set();
       this.actSerial = (this.actSerial || 0) + 1;
-      this.push({ t: 'act', u, name: 'Самая большая блестяшка', kind: 'follow', heist: true });
+      this.push({ t: 'act', u, name: 'Самая большая блестяшка', kind: 'follow', fid: 'heist', heist: true });
       if (letter) u.buffs.push({ s: 'defIgnore', v: letter, turns: 999, name: 'Я найду тебя: защита' });
       const hp0 = t.hp + t.shield;
       const dealt = this.hit(u, t, (T.mkHeist + T.mkHeistPer * n) * ((this.kitFx && this.kitFx(u, 'heistM')) || 1), { kind: 'ult', e: 'imag', tough: 30, alwaysCrit: true, defIgnore: (this.kitFx && this.kitFx(u, 'heistDef')) || 0, label: 'Самая большая блестяшка' });

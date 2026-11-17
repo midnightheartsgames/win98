@@ -1,0 +1,96 @@
+{
+ "format": 1,
+ "id": "part_hair4",
+ "kind": "part",
+ "verts": 173,
+ "tris": 224,
+ "bounds": [
+  -0.18792608380317688,
+  1.3777047395706177,
+  -0.13235989212989807,
+  0.18792608380317688,
+  1.7928600311279297,
+  0.14619998633861542
+ ],
+ "bin": "mesh/part_hair4.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 173,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 2076,
+   "count": 173,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 4152,
+   "count": 173,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 5536,
+   "count": 173,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 6228,
+   "count": 173,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 7612,
+   "count": 672,
+   "type": "H"
+  }
+ },
+ "tex": "tex/hero_hair.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "spine",
+  "chest",
+  "neck",
+  "head",
+  "upperarm.L",
+  "forearm.L",
+  "hand.L",
+  "upperarm.R",
+  "forearm.R",
+  "hand.R",
+  "thigh.L",
+  "shin.L",
+  "foot.L",
+  "thigh.R",
+  "shin.R",
+  "foot.R",
+  "tail.1",
+  "tail.2",
+  "tail.3"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  2,
+  3,
+  2,
+  5,
+  6,
+  2,
+  8,
+  9,
+  0,
+  11,
+  12,
+  0,
+  14,
+  15,
+  0,
+  17,
+  18
+ ],
+ "fps": 15,
+ "clips": {}
+}

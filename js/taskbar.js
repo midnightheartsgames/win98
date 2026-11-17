@@ -548,6 +548,11 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['catniss']}</div>
                   <div class="start-menu-item-text">Catniss</div>
                 </div>` : ''}
+                ${(window.gameManager && window.gameManager.isInstalled('hsro')) ? `
+                <div class="start-menu-item" data-action="hsro">
+                  <div class="start-menu-item-icon">${Icons['hsro']}</div>
+                  <div class="start-menu-item-text">Star Rail Online</div>
+                </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('kirill98')) ? `
                 <div class="start-menu-item" data-action="kirill98">
                   <div class="start-menu-item-icon">${Icons['kirill98']}</div>
@@ -1256,6 +1261,13 @@ class Taskbar {
           window.gameManager.showOnCd('korovany_demo');
         } else if (window.appKorovany) {
           window.appKorovany.open();
+        }
+        break;
+      case 'hsro':
+        if (window.gameManager && !window.gameManager.isInstalled('hsro')) {
+          window.gameManager.showInSteam('hsro');
+        } else if (window.appHsro) {
+          window.appHsro.open();
         }
         break;
       case 'kirill98':

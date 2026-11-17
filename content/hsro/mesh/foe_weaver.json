@@ -1,0 +1,115 @@
+{
+ "format": 1,
+ "id": "foe_weaver",
+ "kind": "skinned",
+ "verts": 817,
+ "tris": 782,
+ "bounds": [
+  -0.5142695903778076,
+  0.18000000715255737,
+  -0.28012004494667053,
+  0.5142695903778076,
+  1.659999966621399,
+  0.2816585600376129
+ ],
+ "bin": "mesh/foe_weaver.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 817,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 9804,
+   "count": 817,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 19608,
+   "count": 817,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 26144,
+   "count": 817,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 29412,
+   "count": 817,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 35948,
+   "count": 2346,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 40640,
+   "count": 1890,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 48200,
+   "count": 756,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 51224,
+   "count": 630,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 53744,
+   "count": 1008,
+   "type": "f"
+  }
+ },
+ "tex": "tex/foe_weaver.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "body",
+  "head",
+  "arm.L",
+  "fore.L",
+  "arm.R",
+  "fore.R",
+  "leg.L",
+  "leg.R"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  1,
+  3,
+  1,
+  5,
+  0,
+  0
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

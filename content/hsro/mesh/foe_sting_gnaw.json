@@ -1,0 +1,117 @@
+{
+ "format": 1,
+ "id": "foe_sting_gnaw",
+ "kind": "skinned",
+ "verts": 768,
+ "tris": 952,
+ "bounds": [
+  -0.6875,
+  0.5,
+  -0.5874999761581421,
+  0.6875,
+  1.9375,
+  0.9612131714820862
+ ],
+ "bin": "mesh/foe_sting_gnaw.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 768,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 9216,
+   "count": 768,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 18432,
+   "count": 768,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 24576,
+   "count": 768,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 27648,
+   "count": 768,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 33792,
+   "count": 2856,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 39504,
+   "count": 2100,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 47904,
+   "count": 840,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 51264,
+   "count": 700,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 54064,
+   "count": 1120,
+   "type": "f"
+  }
+ },
+ "tex": "tex/foe_sting_gnaw.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "head",
+  "abd.1",
+  "abd.2",
+  "wing.L1",
+  "wing.L2",
+  "claw.L",
+  "wing.R1",
+  "wing.R2",
+  "claw.R"
+ ],
+ "parents": [
+  -1,
+  0,
+  0,
+  2,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

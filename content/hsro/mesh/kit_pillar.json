@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "kit_pillar",
+ "kind": "static",
+ "verts": 120,
+ "tris": 60,
+ "bounds": [
+  -0.46000000834465027,
+  0.0,
+  -0.46000000834465027,
+  0.46000000834465027,
+  4.0,
+  0.46000000834465027
+ ],
+ "bin": "mesh/kit_pillar.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 120,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1440,
+   "count": 120,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 2880,
+   "count": 120,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 3840,
+   "count": 180,
+   "type": "H"
+  }
+ },
+ "tex": "tex/kit_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

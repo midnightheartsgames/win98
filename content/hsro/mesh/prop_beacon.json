@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_beacon",
+ "kind": "static",
+ "verts": 264,
+ "tris": 348,
+ "bounds": [
+  -0.550000011920929,
+  0.0,
+  -0.5230810642242432,
+  0.550000011920929,
+  2.5299999713897705,
+  0.5230810642242432
+ ],
+ "bin": "mesh/prop_beacon.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 264,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 3168,
+   "count": 264,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 6336,
+   "count": 264,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 8448,
+   "count": 1044,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_terminal",
+ "kind": "static",
+ "verts": 124,
+ "tris": 132,
+ "bounds": [
+  -0.5,
+  0.0,
+  -0.4000000059604645,
+  0.5,
+  1.9299999475479126,
+  0.4000000059604645
+ ],
+ "bin": "mesh/prop_terminal.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 124,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1488,
+   "count": 124,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 2976,
+   "count": 124,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 3968,
+   "count": 396,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

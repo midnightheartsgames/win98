@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_curio",
+ "kind": "static",
+ "verts": 118,
+ "tris": 90,
+ "bounds": [
+  -0.4000000059604645,
+  0.0,
+  -0.4000000059604645,
+  0.4000000059604645,
+  1.3799999952316284,
+  0.4000000059604645
+ ],
+ "bin": "mesh/prop_curio.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 118,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1416,
+   "count": 118,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 2832,
+   "count": 118,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 3776,
+   "count": 270,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

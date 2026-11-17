@@ -58,6 +58,7 @@
     game('dao98_demo', ['dao98_*'], { id: 'game_dao98' }),
     game('avatar98', ['avatar98-*']),
     game('kotor98_demo', ['kotor98_*'], { id: 'game_kotor98' }),
+    game('hsro', ['hsro.*'], { ru: 'Star Rail Online: герои и настройки', en: 'Star Rail Online: heroes and settings', icon: 'joystick' }),
     game('gta90', ['gta90_*']),
     game('hl2_demo', ['hl2_2000_*'], { id: 'game_hl2' }),
     game('maxpayne_demo', ['mp98_*'], { id: 'game_maxpayne' }),

@@ -1,6 +1,6 @@
 (function (H) {
   'use strict';
-  const HD = H.HD, N = HD.N, TS = 32;
+  const HD = H.HD, N = HD.N, TUN = HD.TUN, TS = 32;
   const FNV = 2166136261, HASH_EVERY = 300, THINK_EVERY = 5;
   const GOLDEN_MID = [3, 6, 12, 14, 17, 19];
   const GOLDEN_DIFF = ['normal', 'hard', 'easy'];
@@ -91,9 +91,9 @@
     if (A.phase === 'break' && rng() < 0.05) cmd({ t: 'early' });
     let foe = null, best = Infinity;
     for (const f of A.foes()) { const d = N.hypot(f.x - h.x, f.y - h.y); if (d < best) { best = d; foe = f; } }
-    const K = HD.KITS[h.key], roll = rng.int(16);
+    const roll = rng.int(16);
     if (roll < 7) {
-      const slot = rng.pick(['q', 'e', 'r']), spec = K[slot];
+      const slot = rng.pick(['q', 'e', 'r']), spec = A.pieceOf(h, slot);
       if (spec && spec.aim === 'ally') cmd({ t: 'cast', slot, id: rng.pick(A.units.filter(u => !u.dead && u.side === 'ally')).uid });
       else if (foe) cmd({ t: 'cast', slot, id: foe.uid, x: foe.x, y: foe.y });
       else cmd({ t: 'cast', slot });
@@ -221,7 +221,8 @@
     restore: c => (Number.isInteger(c.i) && c.i >= 0 && c.i < 3 ? { i: c.i } : null),
     away: c => ({ on: !!c.on }),
     refresh: c => (Number.isInteger(c.i) && c.i >= 0 && c.i < 3 ? { i: c.i } : null),
-    take: c => (Number.isInteger(c.i) && c.i >= 0 && c.i < 3 ? { i: c.i } : null)
+    take: c => (Number.isInteger(c.i) && c.i >= 0 && c.i < 3 ? { i: c.i } : null),
+    roll: c => (['refresh', 'take', 'sel'].includes(c.a) && Number.isInteger(c.i) && c.i >= 0 && c.i < 3 ? { a: c.a, i: c.i } : null)
   };
 
   function netClean(c, seats) {
@@ -232,9 +233,9 @@
 
   class NetSession {
     constructor(o) {
-      Object.assign(this, { code: o.code, seed: o.seed, diff: o.diff, seat: o.seat, ticks: o.ticks, turnMs: o.turnMs, names: o.names, send: o.send, onHash: o.onHash, clock: o.clock });
+      Object.assign(this, { mode: o.mode === 'custom' ? 'custom' : 'std', code: o.code, seed: o.seed, diff: o.diff, seat: o.seat, ticks: o.ticks, turnMs: o.turnMs, names: o.names, send: o.send, onHash: o.onHash, clock: o.clock });
       this.count = o.names.length;
-      this.draftTurns = Math.round(NET.draftMs / o.turnMs);
+      this.draftTurns = Math.round(NET.draftMs * (this.mode === 'custom' ? 1 + TUN.custom.rollStart.length : 1) / o.turnMs);
       this.onAck = null;
       this.threats = HD.rollThreats(o.seed);
       this.resyncs = 0;
@@ -242,8 +243,9 @@
     }
 
     restart() {
-      this.drafts = this.names.map((_, p) => HD.newRun({ seed: this.seed + p, diff: this.diff, threats: this.threats }));
+      this.drafts = this.names.map((_, p) => HD.newRun({ seed: this.seed + p, diff: this.diff, threats: this.threats, mode: this.mode }));
       this.takes = this.names.map(() => null);
+      this.shells = this.names.map(() => null);
       this.awayAtStart = [];
       this.pending = new Map();
       this.n = 0; this.last = 0; this.left = 0; this.acc = 0;
@@ -268,28 +270,61 @@
 
     draftLeft() { return Math.round(Math.max(0, this.draftTurns - this.n) * this.turnMs / 10) / 100; }
 
-    taken() { return this.takes.filter(Boolean); }
+    taken() { return this.shells.filter(Boolean); }
+
+    takenPieces(p) { return HD.takenOf(this.drafts.map(R => R.players[0]), p); }
 
     take(p, i) {
-      const card = this.drafts[p].draft.cards[i];
-      this.takes[p] = card.hero;
-      this.drafts[p].draft.pick = i;
+      const R = this.drafts[p], card = R.draft.cards[i];
+      this.shells[p] = card.hero;
+      R.draft.pick = i;
       const taken = this.taken();
-      this.drafts.forEach((R, q) => {
-        if (this.takes[q]) return;
-        for (const c of R.draft.cards) if (c.hero === card.hero) HD.draftSwap(R, c, taken);
+      this.drafts.forEach((R2, q) => {
+        if (this.shells[q]) return;
+        for (const c of R2.draft.cards) if (c.hero === card.hero) HD.draftSwap(R2, c, taken);
       });
+      if (this.mode !== 'custom') { this.takes[p] = card.hero; return; }
+      const P = R.players[0];
+      P.hero = card.hero;
+      P.rollQ = TUN.custom.rollStart.slice();
+      HD.rollNext(R.seed, 0, P, this.takenPieces(p));
+    }
+
+    takeRoll(p, i) {
+      const R = this.drafts[p], P = R.players[0];
+      if (!HD.rollTake(P, i)) return;
+      HD.rollNext(R.seed, 0, P, this.takenPieces(p));
+      this.drafts.forEach((R2, q) => { if (q !== p && R2.players[0].roll) HD.rollSwap(R2.seed, 0, R2.players[0], this.takenPieces(q)); });
+      if (!P.roll) this.takes[p] = P.hero;
     }
 
     draftCmd(c) {
       if (c.t === 'away') { this.awayAtStart[c.p] = c.on; return; }
       if (this.takes[c.p]) return;
-      if (c.t === 'refresh') HD.draftRefresh(this.drafts[c.p], c.i, this.taken());
+      const R = this.drafts[c.p], P = R.players[0];
+      if (this.mode === 'custom' && P.hero) {
+        if (c.t === 'refresh') HD.rollRefresh(R.seed, 0, P, c.i, this.takenPieces(c.p));
+        if (c.t === 'take') this.takeRoll(c.p, c.i);
+        return;
+      }
+      if (c.t === 'refresh') HD.draftRefresh(R, c.i, this.taken());
       if (c.t === 'take') this.take(c.p, c.i);
     }
 
+    finishDrafts() {
+      this.drafts.forEach((R, p) => {
+        if (!this.shells[p]) this.take(p, 0);
+        const P = R.players[0];
+        while (this.mode === 'custom' && P.roll) this.takeRoll(p, P.roll.sel || 0);
+      });
+    }
+
     startArena() {
-      this.run = HD.newRun({ seed: this.seed, diff: this.diff, threats: this.threats, heroes: this.takes });
+      this.run = HD.newRun({ seed: this.seed, diff: this.diff, threats: this.threats, heroes: this.takes, mode: this.mode === 'custom' ? 'custom' : null });
+      if (this.mode === 'custom') {
+        this.run.players.forEach((P, i) => { const D = this.drafts[i].players[0]; Object.assign(P, { kit: Object.assign({}, D.kit), abil: Object.assign({}, D.abil), gifts: [], roll: null, rollQ: [], rollN: D.rollN }); });
+        this.run.phase = 'break'; this.run.draft = null;
+      }
       this.A = new HD.Arena({ run: this.run });
       this.A.cmd = c => this.send(c);
       this.awayAtStart.forEach((on, p) => { if (on) this.A.queue.push({ t: 'away', on: true, p }); });
@@ -312,7 +347,7 @@
       for (const raw of cmds) { const c = netClean(raw, this.count); if (c) this.draftCmd(c); }
       if (this.takes.every(Boolean)) { this.startArena(); return; }
       if (this.n < this.draftTurns) return;
-      this.takes.forEach((hero, p) => { if (!hero) this.take(p, 0); });
+      this.finishDrafts();
       this.startArena();
     }
 

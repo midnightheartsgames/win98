@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_podium",
+ "kind": "static",
+ "verts": 272,
+ "tris": 252,
+ "bounds": [
+  -1.149999976158142,
+  0.0,
+  -1.149999976158142,
+  1.149999976158142,
+  0.1720000058412552,
+  1.149999976158142
+ ],
+ "bin": "mesh/prop_podium.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 272,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 3264,
+   "count": 272,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 6528,
+   "count": 272,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 8704,
+   "count": 756,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

@@ -7,7 +7,7 @@ const RECIPES = require('./steam-shots-recipes.cjs');
 const ROOT = path.join(__dirname, '..');
 const STEAM_SHOTS = path.join(ROOT, 'content', 'steam');
 const DEMO_SHOTS = path.join(ROOT, 'content', 'igromania', 'demos');
-const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+const EDGE = process.env.SHOTS_BROWSER || (process.platform === 'win32' ? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' : '/usr/bin/chromium');
 const SHOT_W = 640;
 const SHOT_H = 480;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -59,7 +59,7 @@ async function launch() {
       bws.send(JSON.stringify({ id: 1, method: 'Browser.close' }));
       await sleep(300);
     } catch (e) { }
-    try { spawnSync('taskkill', ['/PID', String(edge.pid), '/T', '/F'], { stdio: 'ignore' }); } catch (e) { }
+    try { if (process.platform === 'win32') spawnSync('taskkill', ['/PID', String(edge.pid), '/T', '/F'], { stdio: 'ignore' }); else edge.kill('SIGKILL'); } catch (e) { }
     server.kill();
   };
   let target = null;

@@ -15,6 +15,7 @@
     "test:release": "node tests/release.test.js",
     "test:bugreport": "node tests/bugreport.test.js && node tests/bug-receiver.test.js && node tests/bugs-inbox.test.js",
     "test:kirill98": "node tests/kirill98.test.js",
+    "test:hsro": "node tests/hsro.test.js",
     "test:aayla98": "node tests/aayla98.test.js",
     "test:heroes98": "node tests/heroes98.test.js",
     "test:bliss": "node tests/bliss.test.js",

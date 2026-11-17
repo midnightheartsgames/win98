@@ -1,0 +1,96 @@
+{
+ "format": 1,
+ "id": "part_cap_guard",
+ "kind": "part",
+ "verts": 120,
+ "tris": 102,
+ "bounds": [
+  -0.13500000536441803,
+  1.6815999746322632,
+  -0.17545658349990845,
+  0.13500000536441803,
+  1.809999942779541,
+  0.13500000536441803
+ ],
+ "bin": "mesh/part_cap_guard.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 120,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1440,
+   "count": 120,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 2880,
+   "count": 120,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 3840,
+   "count": 120,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 4320,
+   "count": 120,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 5280,
+   "count": 306,
+   "type": "H"
+  }
+ },
+ "tex": "tex/npc_extras.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "spine",
+  "chest",
+  "neck",
+  "head",
+  "upperarm.L",
+  "forearm.L",
+  "hand.L",
+  "upperarm.R",
+  "forearm.R",
+  "hand.R",
+  "thigh.L",
+  "shin.L",
+  "foot.L",
+  "thigh.R",
+  "shin.R",
+  "foot.R",
+  "tail.1",
+  "tail.2",
+  "tail.3"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  2,
+  3,
+  2,
+  5,
+  6,
+  2,
+  8,
+  9,
+  0,
+  11,
+  12,
+  0,
+  14,
+  15,
+  0,
+  17,
+  18
+ ],
+ "fps": 15,
+ "clips": {}
+}

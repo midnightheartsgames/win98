@@ -10,6 +10,7 @@ for (const f of mods.slice(0, mods.indexOf('hsr-gfx'))) if (f !== 'hsr-core') re
 const HD = H.HD, TUN = HD.TUN, TS = 32;
 
 const args = Object.fromEntries(process.argv.slice(2).map(a => a.replace(/^--/, '').split('=')));
+const CUSTOM = args.mode === 'custom';
 const RUNS = +(args.runs || 40), DIFF = args.diff || 'normal', WAVES = +(args.waves || HD.WAVES.length);
 const HEROES = args.hero ? args.hero.split(',') : Object.keys(HD.HEROES);
 for (const [k, v] of Object.entries(args)) if (typeof TUN[k] === 'number') TUN[k] = +v; else if (Array.isArray(TUN[k])) TUN[k] = v.split(',').map(Number);
@@ -17,6 +18,33 @@ if (WAVES < HD.WAVES.length) HD.WAVES.length = WAVES;
 for (const [k, v] of Object.entries(args)) if (k.startsWith('amp_') && HD.HEROES[k.slice(4)]) HD.HEROES[k.slice(4)].amp = +v;
 for (const [k, v] of Object.entries(args)) if (k.startsWith('hamp_') && HD.HEROES[k.slice(5)]) HD.HEROES[k.slice(5)].ampHard = +v;
 for (const [k, v] of Object.entries(args)) if (k.startsWith('coop_') && TUN.coop[k.slice(5)]) TUN.coop[k.slice(5)] = v.split(',').map(Number);
+for (const [k, v] of Object.entries(args)) if (k.startsWith('cust_') && typeof TUN.custom[k.slice(5)] === 'number') TUN.custom[k.slice(5)] = +v;
+for (const [k, v] of Object.entries(args)) if (k.startsWith('camp_') && HD.HEROES[k.slice(5)]) TUN.custom.amp[k.slice(5)] = +v;
+for (const [k, v] of Object.entries(args)) if (k.startsWith('champ_') && HD.HEROES[k.slice(6)]) TUN.custom.ampHard[k.slice(6)] = +v;
+for (const [k, v] of Object.entries(args)) if (k.startsWith('cheal_') && HD.HEROES[k.slice(6)]) TUN.custom.heal[k.slice(6)] = +v;
+for (const [k, v] of Object.entries(args)) if (k.startsWith('shell_') && HD.HEROES[k.slice(6)]) TUN.custom.shell[k.slice(6)] = +v;
+for (const [k, v] of Object.entries(args)) if (k.startsWith('part_')) TUN.custom.part[k.slice(5).replace('-', '.')] = +v;
+const PREFER = {};
+const BUILD = args.build ? (([shell, kit, gifts]) => { const [q, e, t, r] = kit.split(','); return { shell, kit: { q, e, t, r }, gifts: gifts.split(',') }; })(args.build.split('/')) : null;
+if (args.healdiag) {
+  const heal0 = HD.Arena.prototype.heal;
+  HD.Arena.prototype.heal = function (src, tgt, amt) {
+    const v = heal0.call(this, src, tgt, amt);
+    if (src && src.kind === 'hero' && tgt) { const k = (this.from || 'hero') + '>' + (tgt === src ? 'self' : tgt.kind); (this.healTo = this.healTo || {})[k] = ((this.healTo || {})[k] || 0) + v; }
+    return v;
+  };
+}
+if (args.prefer) {
+  const rows = fs.readFileSync(args.prefer, 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l)), all = rows.filter(r => r.won).length / rows.length, by = {};
+  for (const r of rows) for (const id of Object.values(r.kit || {}).concat(r.gifts || [])) if (id) (by[id] = by[id] || []).push(r.won ? 1 : 0);
+  for (const [id, l] of Object.entries(by)) PREFER[id] = l.reduce((a, b) => a + b, 0) / l.length - all;
+}
+const choose = (cards, rng) => {
+  if (args.pick !== 'greedy') return rng.int(cards.length);
+  let best = 0;
+  cards.forEach((c, i) => { if ((PREFER[c.id] || 0) > (PREFER[cards[best].id] || 0)) best = i; });
+  return best;
+};
 for (const [k, v] of Object.entries(args)) { const m = /^d_(\w+?)_(\w+)$/.exec(k); if (m && HD.DIFFS[m[1]] && typeof HD.DIFFS[m[1]][m[2]] === 'number') HD.DIFFS[m[1]][m[2]] = +v; }
 for (const [k, v] of Object.entries(args)) { const m = /^(hpK|dmgK)_(\w+)$/.exec(k); if (m && (HD.THREATS[m[2]] || HD.FOES[m[2]])) (HD.THREATS[m[2]] || HD.FOES[m[2]])[m[1]] = +v; }
 
@@ -39,8 +67,8 @@ const CONES = {
 const PIECES = ['head', 'hands', 'body', 'feet'], PLANAR = ['sphere', 'rope'];
 
 function buildSteps(h) {
-  const C = H.CHARS[h.key], [c4, c5] = CONES[h.key];
-  const set = PATH_SET[C.path] || ELEM_SET[C.elem], planar = SUPPORT[C.path] ? 'vonwacq' : 'station';
+  const C = H.CHARS[h.key], gear = h.kit ? HD.PIECES[h.kit.r || h.kit.q].kit : h.key, [c4, c5] = CONES[gear];
+  const set = h.kit ? ELEM_SET[C.elem] : PATH_SET[C.path] || ELEM_SET[C.elem], planar = !h.kit && SUPPORT[C.path] ? 'vonwacq' : 'station';
   const relic = (st, slot) => ({ cost: HD.RELIC.price, slot: true, done: () => h.items.some(it => it && it.id === 'relic' && it.slot === slot), cmd: { t: 'buy', id: 'relic', set: st, slot } });
   const ups = lvl => ({ each: true, lvl });
   const cone = id => ({ cost: HD.CONE_PRICE[H.CONES[id].rarity], done: () => !!h.cone && (h.cone.id === id || (id === c4 && h.cone.id === c5)), cmd: { t: 'buy', id: 'cone', cone: id } });
@@ -91,7 +119,7 @@ const ALLY = { bronya: 'buff', march: 'shield', natasha: 'heal', bailu: 'heal', 
 function think(A, B, p = 0) {
   const h = A.hero, foes = A.foes();
   if (h.dead) { if (A.phase === 'wave' && A.base.hp < A.base.hpMax * 0.5) A.cmd({ t: 'buyback' }); return; }
-  for (const s of ['r'].concat(HD.HEROES[h.key].order, ['q', 'e', 't'])) if (A.canUp(h, s)) { A.cmd({ t: 'up', slot: s }); break; }
+  for (const s of ['r'].concat(h.kit ? ['q', 'e', 't'] : HD.HEROES[h.key].order, ['q', 'e', 't'])) if (A.canUp(h, s)) { A.cmd({ t: 'up', slot: s }); break; }
   const pk = A.needPick(h);
   if (pk) A.cmd({ t: 'pick', i: PICK[pk] });
   if (A.nearShop(h)) shopping(A, h);
@@ -128,15 +156,16 @@ function think(A, B, p = 0) {
   const pool = foes.filter(f => threat[lane] > 0 ? laneOf(f) === lane : f.pig);
   const tgt = pool.sort((a, b) => A.gap(a, A.base) - A.gap(b, A.base))[0] || foes[0];
   if (tgt && (h.forced !== tgt.uid || B.reT-- <= 0)) { A.cmd({ t: 'attack', id: tgt.uid }); B.reT = 15; }
-  const K = HD.KITS[h.key];
   for (const s of ['r', 'q', 'e']) {
-    const k = K[s];
+    const k = A.pieceOf(h, s);
+    if (!k) continue;
+    const kit = A.kitOf(h, s), part = HD.PIECES[h.kit ? h.kit[s] : h.key + '.' + s].part;
     if (!h.abil[s] || A.cdLeft(h, s) > 0 || h.en < A.costOf(h, s)) continue;
     if (k.aim === 'ally') {
-      const kind = ALLY[h.key], range = k.range || 300, close = foes.some(f => Math.hypot(f.x - h.x, f.y - h.y) < 300);
+      const kind = ALLY[kit], range = k.range || 300, close = foes.some(f => Math.hypot(f.x - h.x, f.y - h.y) < 300);
       if (kind === 'heal') {
         const v = A.units.filter(x => !x.dead && x.side === 'ally' && x.hp < x.hpMax * 0.8 && A.gap(h, x) <= range).sort((a, b) => a.hp / a.hpMax - b.hp / b.hpMax)[0];
-        if (v) A.cmd({ t: 'cast', slot: s, id: v.uid }); else if (h.key === 'bailu' && close) A.cmd({ t: 'cast', slot: s });
+        if (v) A.cmd({ t: 'cast', slot: s, id: v.uid }); else if (kit === 'bailu' && close) A.cmd({ t: 'cast', slot: s });
       } else if (kind === 'shield') {
         const hurt = foes.some(f => A.gap(f, A.base) < 120);
         if (hurt && A.gap(h, A.base) <= range) A.cmd({ t: 'cast', slot: s, id: A.base.uid }); else if (close) A.cmd({ t: 'cast', slot: s, id: h.uid });
@@ -144,7 +173,7 @@ function think(A, B, p = 0) {
       continue;
     }
     if (k.aim === 'self') {
-      const c = (SELF[h.key] || {})[s] || { r: 200, n: 1 };
+      const c = (SELF[kit] || {})[part] || { r: 200, n: 1 };
       if (c.heal) { if (h.hp < h.hpMax * 0.7 || A.base.hp < A.base.hpMax * 0.9) A.cmd({ t: 'cast', slot: s }); continue; }
       const around = foes.filter(f => Math.hypot(f.x - h.x, f.y - h.y) < c.r);
       if ((around.length >= c.n || around.some(f => f.elite || f.kind === 'boss')) && (!c.hp || h.hp > h.hpMax * c.hp)) A.cmd({ t: 'cast', slot: s });
@@ -173,13 +202,29 @@ if (DIAG) {
 
 function play(hero, seed) {
   const g = new H.Game({ fresh: true, seed });
-  g.hdNew({ hero, diff: DIFF, seed, threats: args.threats ? args.threats.split(',') : null });
+  const pick = H.makeRandom((seed * 31 + 3) >>> 0);
+  if (CUSTOM) {
+    const run = g.hdNew({ diff: DIFF, seed, mode: 'custom', threats: args.threats ? args.threats.split(',') : null });
+    if (BUILD) { run.draft.cards[0].hero = BUILD.shell; g.hdTake(0); } else { run.draft.cards[0].hero = hero; g.hdTake(0); }
+    const force = R => { const id = BUILD.kit[R.slot]; if (id) R.cards[0].id = id; };
+    if (BUILD) while (run.phase === 'draft') { force(run.players[0].roll); g.hdRollTake(0); }
+    while (run.phase === 'draft') g.hdRollTake(choose(run.players[0].roll.cards, pick));
+    if (args.with && HD.PIECES[args.with] && !Object.values(run.players[0].kit).includes(args.with)) {
+      const P = HD.PIECES[args.with], slot = P.kind === 'act' ? 'q' : P.kind === 'pas' ? 't' : 'r';
+      run.players[0].kit[slot] = args.with; run.players[0].abil[slot] = Math.max(1, run.players[0].abil[slot]);
+      run.players[0].rollQ = run.players[0].rollQ.filter(x => x !== slot);
+      g.forced = slot;
+    }
+  } else g.hdNew({ hero, diff: DIFF, seed, threats: args.threats ? args.threats.split(',') : null });
   const A = g.hdArena(), B = { reT: 0 }, out = { lvl10: 0, waveLen: [], boss: 0, steps: 0, ms: 0 };
   let ws = 0;
   const live = {};
   out.bosses = {};
   const t0 = process.hrtime.bigint();
   for (let i = 0; i < TUN.hz * 60 * 40 && !A.over; i++) {
+    if (A.hero.roll && A.hero.roll.slot === g.forced) A.hero.roll = null;
+    if (BUILD && A.hero.roll) { const R = A.hero.roll, id = R.slot === 'g' ? BUILD.gifts[A.hero.gifts.length] : BUILD.kit[R.slot]; if (id) R.cards[0].id = id; A.rollCmd(A.hero, { a: 'take', i: 0 }); }
+    if (A.hero.roll && !BUILD) A.rollCmd(A.hero, { a: 'take', i: choose(A.hero.roll.cards, pick) });
     if (i % 6 === 0) think(A, B);
     A.step(); out.steps++;
     for (const e of A.events) {
@@ -198,7 +243,7 @@ function play(hero, seed) {
   const rel = A.hero.items.filter(it => it && it.id === 'relic');
   out.up = rel.length ? avg(rel.map(it => 3 * (it.up || 0))) : 0;
   out.sup = A.hero.cone ? A.hero.cone.sup : 0;
-  return Object.assign(out, sum, { won: A.over === 'win', timeAll: A.time });
+  return Object.assign(out, sum, { won: A.over === 'win', timeAll: A.time, dmgFrom: A.dmgFrom, healTo: A.healTo || {}, baseEnd: A.base.hp / A.base.hpMax });
 }
 
 const SUPPORT_HEROES = Object.keys(HD.HEROES).filter(id => SUPPORT[H.CHARS[id].path]);
@@ -265,7 +310,8 @@ if (args.crew) {
 const rows = [], ALL_RES = [];
 for (const hero of HEROES) {
   const res = [];
-  for (let r = 0; r < RUNS; r++) res.push(play(hero, 1000 + r * 37));
+  const salt = CUSTOM ? 100003 * (Object.keys(HD.HEROES).indexOf(hero) + 1) : 0;
+  for (let r = 0; r < RUNS; r++) res.push(play(hero, 1000 + r * 37 + salt));
   ALL_RES.push(...res);
   const wins = res.filter(x => x.won);
   rows.push({
@@ -284,6 +330,16 @@ for (const hero of HEROES) {
   });
 }
 console.table(rows);
+if (CUSTOM && ALL_RES.length) {
+  const all = ALL_RES.filter(x => x.won).length / ALL_RES.length, by = {};
+  for (const x of ALL_RES) for (const id of Object.values(x.build.kit || {}).concat(x.build.gifts || [])) (by[id] = by[id] || []).push(x.won ? 1 : 0);
+  const list = Object.entries(by).map(([id, l]) => ({ id, runs: l.length, win: Math.round(100 * avg(l)) + '%', delta: Math.round(100 * (avg(l) - all)) }));
+  list.sort((a, b) => b.delta - a.delta);
+  console.log('custom: ' + ALL_RES.length + ' runs, win ' + Math.round(100 * all) + '%');
+  console.table(list.slice(0, 15));
+  console.table(list.slice(-15));
+  if (args.out) fs.appendFileSync(args.out, ALL_RES.map(x => JSON.stringify({ won: x.won, wave: x.wave, shell: x.hero, kit: x.build.kit, gifts: x.build.gifts, diff: x.diff, time: x.time, stars: x.stars, cleared: x.cleared, deaths: x.deaths, baseEnd: x.baseEnd, healTo: x.healTo, dmg: x.dmgFrom })).join('\n') + '\n');
+}
 if (DIAG) { const B = {}; for (const x of ALL_RES) for (const [k, t] of Object.entries(x.bosses)) (B[k] = B[k] || []).push(t); console.table(Object.entries(B).map(([k, l]) => ({ boss: k, fights: l.length, sec: Math.round(avg(l)) }))); }
 if (DIAG) console.table(Object.keys(DIAG).filter(k => k.startsWith('wave')).sort().map(k => { const r = DIAG[k]; return { k, runs: r.n, base: Math.round(100 * r.d / r.n) + '%', lvl: (r.lvl / r.n).toFixed(1), len: Math.round(r.len / r.n), gold: Math.round(r.gold / r.n) }; }));
 if (DIAG) console.table(Object.entries(DIAG).filter(([k]) => !k.startsWith('wave')).sort((p, q) => q[1].d - p[1].d).slice(0, 30).map(([k, r]) => ({ k, hits: r.n, dmg: Math.round(r.d / RUNS) })));

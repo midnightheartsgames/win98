@@ -113,7 +113,7 @@
       this.diff = HD.DIFFS[run.diff] || HD.DIFFS.normal;
       this.threats = run.threats;
       this.wave = run.wave;
-      this.uid = 0; this.tick = 0; this.time = 0;
+      this.uid = 0; this.tick = 0; this.time = 0; this.from = null; this.dmgFrom = {}; this.healFrom = {};
       this.units = []; this.shots = []; this.areas = []; this.events = []; this.queue = [];
       this.rng = H.makeRandom((run.seed * 7919 + run.wave * 104729) >>> 0);
       this.fxRng = H.makeRandom((run.seed * 6151 + run.wave * 1543 + 5) >>> 0);
@@ -142,8 +142,10 @@
 
     addHero(p, i) {
       const at = this.spawnAt(i);
-      const hero = this.add({ side: 'ally', kind: 'hero', key: p.hero, x: at.x, y: at.y, r: 11, aggro: H.PATHS[H.CHARS[p.hero].path].aggro, cd: { q: 0, e: 0, r: 0 }, atkCd: 0, still: 1, lossAcc: 0, voiceT: -99, recallCd: 0, recall: 0, respawn: 0, moveDir: null, path: null, standAt: null, hold: false, sel: null, forced: null, tal: {} });
+      const hero = this.add({ side: 'ally', kind: 'hero', key: p.hero, x: at.x, y: at.y, r: 11, aggro: H.PATHS[H.CHARS[p.hero].path].aggro, cd: { q: 0, e: 0, r: 0 }, atkCd: 0, still: 1, lossAcc: 0, voiceT: -99, recallCd: 0, recall: 0, respawn: 0, moveDir: null, path: null, standAt: null, hold: false, sel: null, forced: null, tal: {}, tals: {} });
       Object.assign(hero, { lvl: p.lvl, exp: p.exp, pts: p.pts, abil: Object.assign({ q: 0, e: 0, t: 0, r: 0 }, p.abil), picks: Object.assign({}, p.picks), gold: p.gold, items: p.items.map(it => (it ? Object.assign({}, it) : null)), cone: p.cone, deaths: p.deaths, bought: !!p.buyback, pl: i, away: false, vote: false, cmdT: 0, st: Object.assign({ kills: 0, dmg: 0, heal: 0, gold: 0 }, p.st) });
+      if (p.kit) Object.assign(hero, { kit: Object.assign({}, p.kit), gifts: (p.gifts || []).slice(), roll: p.roll ? JSON.parse(JSON.stringify(p.roll)) : null, rollQ: (p.rollQ || []).slice(), rollN: p.rollN || 0 });
+      for (const M of baseMods(hero)) if (M.hd) hero.tals[M.hd] = {};
       if (hero.cone) hero.cone = Object.assign({}, hero.cone);
       if (HD.equip) HD.equip(this, hero, true); else this.heroStatsApply(hero, true);
       return hero;
@@ -210,13 +212,69 @@
 
     cmd(c) { this.queue.push(Object.assign({ p: 0 }, c)); }
 
-    mods(h) { return h.mods || [HD.KITS[h.key]]; }
+    mods(h) { return h.mods || baseMods(h); }
 
-    each(h, name, ...args) { for (const M of this.mods(h)) if (M && M[name]) M[name](this, h, ...args); }
+    via(M, fn) {
+      const was = this.from;
+      this.from = M.hd || (M.eq ? 'eq' : was);
+      const v = fn();
+      this.from = was;
+      return v;
+    }
 
-    fold(h, name, base, ...args) { let v = base; for (const M of this.mods(h)) if (M && M[name]) v = M.add ? v + M[name](this, h, ...args) : v * M[name](this, h, ...args); return v; }
+    each(h, name, ...args) {
+      for (const M of this.mods(h)) {
+        if (!M || !M[name]) continue;
+        const was = this.from;
+        this.from = M.hd || (M.eq ? 'eq' : was);
+        M[name](this, h, ...args);
+        this.from = was;
+      }
+    }
 
-    plus(h, name, ...args) { let v = 0; for (const M of this.mods(h)) if (M && M[name]) v += M[name](this, h, ...args); return v; }
+    fold(h, name, base, ...args) {
+      let v = base;
+      for (const M of this.mods(h)) {
+        if (!M || !M[name]) continue;
+        const was = this.from;
+        this.from = M.hd || (M.eq ? 'eq' : was);
+        const r = M[name](this, h, ...args);
+        this.from = was;
+        v = M.add ? v + r : v * r;
+      }
+      return v;
+    }
+
+    plus(h, name, ...args) {
+      let v = 0;
+      for (const M of this.mods(h)) {
+        if (!M || !M[name]) continue;
+        const was = this.from;
+        this.from = M.hd || (M.eq ? 'eq' : was);
+        v += M[name](this, h, ...args);
+        this.from = was;
+      }
+      return v;
+    }
+
+    pieceOf(h, slot) { const P = HD.PIECES[pieceIdOf(h, slot)]; return P ? P.spec : null; }
+
+    kitOf(h, slot) { const P = HD.PIECES[pieceIdOf(h, slot)]; return P ? P.kit : null; }
+
+    talent(h, name, ...args) {
+      const kit = this.kitOf(h, 't'), K = kit && HD.KITS[kit], l = h.abil && h.abil.t;
+      if (!K || !K.t || !K.t[name] || !l) return;
+      const was = this.from;
+      this.from = kit + '.t';
+      K.t[name](this, h, this.lvlK('t', l), ...args);
+      this.from = was;
+    }
+
+    credit(o, v, heal) {
+      const kind = o && o.kind, part = kind === 'q' || kind === 'e' || kind === 't' || kind === 'r' ? kind : o && o.basic ? 'basic' : kind || 'misc';
+      const key = this.from && this.from.includes('.') ? this.from : (this.from || 'hero') + '.' + part, map = heal ? this.healFrom : this.dmgFrom;
+      map[key] = (map[key] || 0) + v;
+    }
 
     sum(u, k) { let v = 0; for (const f of u.fx) if (f.k === k) v += f.v * (f.stacks || 1); return v; }
     has(u, k) { return u.fx.some(f => f.k === k); }
@@ -237,6 +295,7 @@
         return old;
       }
       const n = Object.assign({ tickT: 1 }, f);
+      if ((f.k === 'dot' || f.k === 'hot') && n.from == null) n.from = this.from;
       if (f.max) n.stacks = 1;
       u.fx.push(n);
       return n;
@@ -389,21 +448,23 @@
 
     rift(key) { const r = this.M.rifts[key]; return { x: r[0] * TS + 16, y: r[1] * TS + 16 }; }
 
-    say(u, label) {
-      const info = H.INFO && H.INFO[u.key];
+    say(u, label, who) {
+      const info = H.INFO && H.INFO[who || u.key];
       if (!info || !info.battle) return;
       const list = info.battle.filter(l => l.t === label && !l.need);
       if (!list.length) return;
       u.voiceT = this.time;
-      this.emit({ t: 'say', uid: u.uid, text: list[this.fxRng.int(list.length)].text });
+      const e = { t: 'say', uid: u.uid, text: list[this.fxRng.int(list.length)].text };
+      if (who && who !== u.key) e.who = who;
+      this.emit(e);
     }
 
     hit(src, tgt, o) {
       if (!tgt || tgt.dead || tgt.invuln) return 0;
       let amt = o.amt != null ? o.amt : o.m * this.atkOf(src);
-      const type = o.type || (src && src.atkType) || 'weapon', elem = o.elem || (src && src.elem) || 'phys';
-      let crit = false;
       const hero = src && src.kind === 'hero';
+      const type = o.type || (src && src.atkType) || 'weapon', elem = (hero && src.kit ? src.elem : o.elem) || (src && src.elem) || 'phys';
+      let crit = false;
       if (src && !o.noCrit) {
         amt *= 1 + this.sum(src, 'dmg') + (o.kind ? this.sum(src, 'dmg_' + o.kind) : 0) + this.sum(src, 'dmgE_' + elem) + (tgt.brokenT > 0 ? this.sum(src, 'dmgBroken') : 0);
         const cc = TUN.critC + this.sum(src, 'crit') + (o.crit || 0) + (hero ? this.plus(src, 'critBonus', tgt, o) : 0);
@@ -412,7 +473,8 @@
       }
       if (hero && o.kind !== 'break' && o.kind !== 'redirect') for (const M of this.mods(src)) if (M && M.dmgMul && M.eq) amt *= M.dmgMul(this, src, tgt, o);
       this.lastCrit = crit;
-      if (src && src.kind === 'hero') { const HR = HD.HEROES[src.key]; amt *= (HR.amp || 1) * (this.diff === HD.DIFFS.hard && HR.ampHard || 1); }
+      if (hero && src.kit) amt *= customPart(this.from);
+      if (hero) amt *= src.kit ? customAmp(this.from, this.diff === HD.DIFFS.hard, src.key) : (HD.HEROES[src.key].amp || 1) * (this.diff === HD.DIFFS.hard && HD.HEROES[src.key].ampHard || 1);
       amt *= HD.ATK_ARMOR[type][this.armorType(tgt)];
       amt *= armorMul(this.armorOf(tgt) * (1 - (o.pen || 0) - (src ? this.sum(src, 'pen') : 0) - (hero ? this.plus(src, 'penBonus', tgt, o) : 0)));
       const weak = (tgt.weak && tgt.weak.includes(elem)) || tgt.fx.some(f => f.k === 'weakAdd' && (f.elem === elem || (f.elems && f.elems.includes(elem))));
@@ -433,6 +495,7 @@
         this.stats.dmg += dealt + absorbed;
         const who = this.heroOf(src);
         if (who) who.st.dmg += dealt + absorbed;
+        this.credit(o, dealt + absorbed);
       }
       this.emit({ t: 'num', x: tgt.x, y: tgt.y - (tgt.r || 20) - 14, v: dealt + absorbed, crit, kind: o.kind === 'dot' ? 'dot' : absorbed && !dealt ? 'shield' : 'dmg', elem, uid: tgt.uid, ally: tgt.side === 'ally' });
       if (tgt.kind === 'hero') {
@@ -462,10 +525,11 @@
 
     heal(src, tgt, amt) {
       if (!tgt || tgt.dead) return 0;
-      const mul = src && src.kind === 'hero' ? this.fold(src, 'healMul', 1, tgt) : 1;
+      const kitNow = this.from ? this.from.split('.')[0] : null;
+      const mul = src && src.kind === 'hero' ? this.fold(src, 'healMul', 1, tgt) * (src.kit ? (TUN.custom.heal[kitNow] != null ? TUN.custom.heal[kitNow] : 1) * customPart(this.from) * (tgt.kind === 'base' || tgt.kind === 'turret' ? TUN.custom.baseHeal : 1) : 1) : 1;
       const v = Math.max(0, Math.min(tgt.hpMax - tgt.hp, amt * mul * (1 + (src ? this.sum(src, 'healP') : 0) + this.sum(tgt, 'healIn'))));
       tgt.hp += v;
-      if (src && src.kind === 'hero') { this.stats.heal += v; src.st.heal += v; if (v > 0) this.each(src, 'onHeal', tgt, v); }
+      if (src && src.kind === 'hero') { this.stats.heal += v; src.st.heal += v; if (v > 0) { this.credit(null, v, true); this.each(src, 'onHeal', tgt, v); } }
       if (v >= 1) this.emit({ t: 'num', x: tgt.x, y: tgt.y - (tgt.r || 20) - 14, v: Math.round(v), kind: 'heal', uid: tgt.uid });
       return v;
     }
@@ -483,11 +547,11 @@
       if (elem === 'imag') this.addFx(f, { n: eff, k: 'slow', v: TUN.imprisonSlow, t: 4 });
       this.emit({ t: 'break', uid: f.uid, x: f.x, y: f.y, text: eff });
       this.hit(src, f, { amt: base, type: 'magic', elem, kind: 'break', noCrit: true, noTough: true });
-      if (src && src.kind === 'hero') { const K = HD.KITS[src.key], t = src.abil && src.abil.t; if (K && K.t && K.t.onBreak && t) K.t.onBreak(this, src, this.lvlK('t', t), f); }
+      if (src && src.kind === 'hero') this.talent(src, 'onBreak', f);
       for (const h of this.heroes) if (!h.dead && !f.dead) this.each(h, 'onAnyBreak', f, src);
     }
 
-    later(t, fn) { (this.timers = this.timers || []).push({ t, fn }); }
+    later(t, fn) { (this.timers = this.timers || []).push({ t, fn, from: this.from }); }
 
     cancelAct(u) {
       if (!u.act) return;
@@ -537,8 +601,7 @@
       }
       if (killer && src.kind === 'hero') {
         killer.en = Math.min(killer.enMax, killer.en + TUN.enKill);
-        const K = HD.KITS[killer.key];
-        if (K && K.t && K.t.onKill && killer.abil.t) K.t.onKill(this, killer, this.lvlK('t', killer.abil.t), u, o);
+        this.talent(killer, 'onKill', u, o);
         this.each(killer, 'onKill', u, o);
       }
       for (const hh of this.heroes) this.each(hh, 'onFoeDie', u, src, o);
@@ -557,7 +620,7 @@
       h.exp += Math.round(v);
       while (h.lvl < 20 && h.exp >= expNext(h.lvl)) {
         h.exp -= expNext(h.lvl); h.lvl++;
-        if (h.lvl !== 10 && h.lvl !== 20) h.pts++;
+        if (h.kit || (h.lvl !== 10 && h.lvl !== 20)) h.pts++;
         this.heroStatsApply(h, false);
         this.emit({ t: 'level', lvl: h.lvl, p: h.pl });
       }
@@ -566,7 +629,7 @@
 
     lvlK(slot, l) { return slot === 'r' ? TUN.ultLvl[l - 1] : TUN.abilLvl[l - 1]; }
 
-    canUp(h, slot) { return h.pts > 0 && h.abil[slot] < abilCap(slot, h.lvl); }
+    canUp(h, slot) { return h.pts > 0 && !!this.pieceOf(h, slot) && h.abil[slot] < abilCap(slot, h.lvl); }
 
     up(h, slot) {
       if (!this.canUp(h, slot)) return false;
@@ -584,11 +647,32 @@
       return a;
     }
 
-    charges(h, slot) { const K = HD.KITS[h.key][slot]; return K && K.charges ? K.charges(h) : 1; }
+    charges(h, slot) { const K = this.pieceOf(h, slot); return K && K.charges ? K.charges(h) : 1; }
 
-    cdLeft(h, slot) { const K = HD.KITS[h.key][slot]; return Math.max(0, h.cd[slot] - (this.charges(h, slot) - 1) * K.cd); }
+    cdOf(h, slot) { const K = this.pieceOf(h, slot); return h.kit ? HD.pieceCd(h.kit[slot]) : K.cd; }
 
-    needPick(h) { return [10, 20].find(l => h.lvl >= l && h.picks[l] == null) || 0; }
+    cdLeft(h, slot) { return Math.max(0, h.cd[slot] - (this.charges(h, slot) - 1) * this.cdOf(h, slot)); }
+
+    needPick(h) { return h.kit ? 0 : [10, 20].find(l => h.lvl >= l && h.picks[l] == null) || 0; }
+
+    rollTaken(h) { return h.kit ? HD.takenOf(this.heroes, this.heroes.indexOf(h)) : []; }
+
+    rollCmd(h, c) {
+      if (!h.roll) return false;
+      const p = this.heroes.indexOf(h), n = h.roll.cards.length, i = Number.isInteger(c.i) && c.i >= 0 && c.i < n ? c.i : h.roll.sel;
+      if (c.a === 'sel') { h.roll.sel = i; return true; }
+      if (c.a === 'refresh') { const ok = HD.rollRefresh(this.run.seed, p, h, i, this.rollTaken(h)); if (!ok) this.emit({ t: 'deny', why: '' }); return ok; }
+      if (c.a !== 'take') return false;
+      const got = HD.rollTake(h, i);
+      if (!got) return false;
+      if (HD.equip) HD.equip(this, h, false);
+      for (const M of baseMods(h)) if (M.hd && !h.tals[M.hd]) h.tals[M.hd] = {};
+      if (got.slot !== 'g') h.cd[got.slot] = 0;
+      this.emit({ t: 'took', slot: got.slot, id: got.id, p });
+      HD.rollNext(this.run.seed, p, h, this.rollTaken(h));
+      this.heroes.forEach((o, q) => { if (o !== h && o.roll && HD.rollSwap(this.run.seed, q, o, this.rollTaken(o))) this.emit({ t: 'swap', p: q }); });
+      return true;
+    }
 
     pick(h, lvl, i) {
       const K = HD.KITS[h.key], list = lvl === 10 ? K.tr : K.ei;
@@ -599,7 +683,7 @@
       return true;
     }
 
-    costOf(h, slot) { const K = HD.KITS[h.key][slot]; return slot === 'r' ? H.CHARS[h.key].energy : K.cost; }
+    costOf(h, slot) { return slot === 'r' ? H.CHARS[this.kitOf(h, slot)].energy : this.pieceOf(h, slot).cost; }
 
     resolveAim(h, K, aim) {
       aim = aim || {};
@@ -632,8 +716,9 @@
     }
 
     cast(h, slot, aim) {
-      const K = HD.KITS[h.key] && HD.KITS[h.key][slot], l = h.abil[slot];
+      const K = this.pieceOf(h, slot), l = h.abil[slot];
       const no = why => { this.emit({ t: 'deny', slot, why }); return false; };
+      if (!K && h.kit && !h.dead) return no(slot === 'r' ? 'Абсолютная техника выпадет после ' + TUN.custom.at.r + '-й волны' : 'Талант выпадет после ' + TUN.custom.at.t + '-й волны');
       if (!K || h.dead) return no('');
       if (!l) return no('Способность не изучена');
       if (this.stunned(h)) return no('Герой оглушён');
@@ -644,22 +729,26 @@
       if (!a) return no('Нет цели рядом');
       this.each(h, 'preCast', slot);
       this.caster = h;
+      const was = this.from;
+      this.from = pieceIdOf(h, slot);
       const res = K.cast(this, h, this.lvlK(slot, l), a, l);
+      this.from = was;
       this.caster = null;
       if (res === false) return no('');
       this.each(h, 'onCast', slot, a);
+      if (slot !== 'r') h.lastCast = slot;
       h.en -= cost;
-      h.cd[slot] = Math.max(0, h.cd[slot]) + K.cd;
+      h.cd[slot] = Math.max(0, h.cd[slot]) + this.cdOf(h, slot);
       h.recall = 0; h.still = 0;
       this.emit({ t: 'cast', slot, uid: h.uid, x: a.x, y: a.y });
-      if (slot === 'r' || (this.time - h.voiceT >= TUN.voiceGap && this.fxRng() < TUN.voiceChance)) this.say(h, ROLE_LINE[slot]);
+      if (slot === 'r' || (this.time - h.voiceT >= TUN.voiceGap && this.fxRng() < TUN.voiceChance)) { const P = h.kit && HD.PIECES[h.kit[slot]]; this.say(h, ROLE_LINE[P ? P.part : slot], P ? P.kit : null); }
       return true;
     }
 
-    addArea(a) { const o = Object.assign({ t: 0, delay: 0, tickT: 0, age: 0, hitDone: false }, a); this.areas.push(o); return o; }
+    addArea(a) { const o = Object.assign({ t: 0, delay: 0, tickT: 0, age: 0, hitDone: false, from: this.from }, a); this.areas.push(o); return o; }
 
     shoot(src, tgt, o) {
-      this.shots.push({ x: src.x, y: src.y - (src.kind === 'turret' ? 20 : 14), tgt: tgt.uid, src: src.uid, srcU: src, o, elem: o.elem || src.elem || 'phys', spd: TUN.projSpd, kind: src.kind });
+      this.shots.push({ x: src.x, y: src.y - (src.kind === 'turret' ? 20 : 14), tgt: tgt.uid, src: src.uid, srcU: src, o, elem: o.elem || src.elem || 'phys', spd: TUN.projSpd, kind: src.kind, from: this.from });
     }
 
     basicAttack(u, t) {
@@ -673,10 +762,15 @@
         if (u.range >= TUN.shootFrom) this.shoot(u, t, o); else { const d = this.hit(u, t, o); if (o.after) o.after(this, t, d); this.emit({ t: 'swing', uid: u.uid, x: t.x, y: t.y }); }
         return;
       }
-      const K = HD.KITS[u.key];
-      if (K && K.basic) { K.basic(this, u, t, o); return; }
-      if (u.melee) { this.hit(u, t, o); u.en = Math.min(u.enMax, u.en + TUN.enHit); this.emit({ t: 'swing', uid: u.uid, x: t.x, y: t.y, elem: u.elem }); }
-      else this.shoot(u, t, o);
+      for (const M of this.mods(u)) if (M && M.basicSwap && this.via(M, () => M.basicSwap(this, u, t, o))) return;
+      this.each(u, 'basicPre', t, o);
+      if (u.melee) {
+        const d = this.hit(u, t, o);
+        u.en = Math.min(u.enMax, u.en + TUN.enHit);
+        this.each(u, 'basicPost', t, o);
+        if (o.after) o.after(this, t, d);
+        this.emit({ t: 'swing', uid: u.uid, x: t.x, y: t.y, elem: u.elem });
+      } else this.shoot(u, t, o);
     }
 
     inRange(u, t) { return this.gap(u, t) <= u.range; }
@@ -720,6 +814,7 @@
           case 'cast': this.cast(h, c.slot, c); break;
           case 'up': this.up(h, c.slot); break;
           case 'pick': this.pick(h, c.lvl || this.needPick(h), c.i); break;
+          case 'roll': this.rollCmd(h, c); break;
           case 'use': if (HD.useItem) HD.useItem(this, h, c.i, c); break;
           case 'buy': if (HD.buyItem) HD.buyItem(this, h, c.id, c); break;
           case 'upgrade': if (HD.upgrade) HD.upgrade(this, h, c.i); break;
@@ -756,11 +851,12 @@
 
     earlyVotes() {
       const need = this.activeHeroes();
-      return { n: need.filter(h => h.vote).length, of: need.length };
+      return { n: need.filter(h => h.vote && !h.roll).length, of: need.length };
     }
 
     early(by) {
       if (this.phase !== 'break') return false;
+      if (by.roll) { this.emit({ t: 'deny', why: 'Сначала возьмите способность', p: this.heroes.indexOf(by) }); return false; }
       if (this.heroes.length > 1) {
         by.vote = true;
         const v = this.earlyVotes();
@@ -789,7 +885,7 @@
       if (this.timers && this.timers.length) {
         const due = this.timers.filter(tm => tm.t <= 0);
         this.timers = this.timers.filter(tm => tm.t > 0);
-        for (const tm of due) tm.fn();
+        for (const tm of due) { const was = this.from; this.from = tm.from; tm.fn(); this.from = was; }
       }
       for (const u of this.units) {
         if (u.dead) continue;
@@ -799,8 +895,11 @@
             f.tickT -= DT;
             if (f.tickT <= 0) {
               f.tickT += 1;
+              const was = this.from;
+              this.from = f.from;
               if (f.k === 'dot') this.hit(f.src, u, { amt: f.dps, type: 'magic', elem: f.elem, kind: 'dot', noCrit: true, noTough: true });
               else this.heal(f.src, u, f.hps);
+              this.from = was;
             }
           }
         }
@@ -1031,10 +1130,12 @@
         if (!t) continue;
         const ty = t.y - (t.rect ? 0 : 12), dx = t.x - s.x, dy = ty - s.y, d = N.hypot(dx, dy), st = s.spd * DT;
         if (d <= st + 6) {
-          const src = s.srcU;
+          const src = s.srcU, was = this.from;
+          this.from = s.from;
           const dealt = this.hit(src, t, s.o);
           if (s.o.basic && src && src.kind === 'hero') src.en = Math.min(src.enMax, src.en + TUN.enHit);
           if (s.o.after) s.o.after(this, t, dealt);
+          this.from = was;
           continue;
         }
         s.x += dx / d * st; s.y += dy / d * st; s.ang = N.atan2(dy, dx);
@@ -1045,7 +1146,9 @@
 
     updateAreas() {
       const keep = [];
+      const was = this.from;
       for (const a of this.areas) {
+        this.from = a.from;
         a.age += DT;
         if (a.follow != null) { const f = this.units.find(u => u.uid === a.follow); if (f && !f.dead) { a.x = f.x; a.y = f.y; } else if (a.followOnly) continue; }
         if (a.delay > 0) {
@@ -1062,6 +1165,7 @@
         a.t -= DT;
         if (a.t > 0) keep.push(a);
       }
+      this.from = was;
       this.areas = keep;
     }
 
@@ -1094,7 +1198,7 @@
       if (u.pig) { u.spd = TUN.pigSpd; u.hpMax = u.hp = Math.round(s.hpMax * this.coopHp(false)); u.pigHits = 0; u.goal = o.goal; }
       else {
         const T = HD.THREATS[HD.FOE_THREAT[id]], late = this.wave >= TUN.lateFrom && !boss;
-        u.hpMax = u.hp = Math.round(u.hpMax * (T && !boss ? T.hpK : 1) * (late ? TUN.lateHp : 1) * (o.big ? f.bigHpK || 1 : 1) * this.coopHp(boss));
+        u.hpMax = u.hp = Math.round(u.hpMax * (T && !boss ? T.hpK : 1) * (late ? TUN.lateHp : 1) * (o.big ? f.bigHpK || 1 : 1) * this.coopHp(boss) * (this.run.mode === 'custom' && this.wave >= TUN.custom.hpFrom ? TUN.custom.hp : 1));
         u.dmg *= (T && !boss ? T.dmgK : 1) * (late ? TUN.lateDmg : 1);
       }
       this.collide(u);
@@ -1108,7 +1212,10 @@
       for (const k of Object.keys(this.glow)) if (this.glow[k] > 0) this.glow[k] -= DT;
       if (this.phase === 'break') {
         this.breakT -= DT;
-        if (this.breakT <= 0) this.startWave();
+        if (this.breakT <= 0) {
+          for (const h of this.heroes) while (h.roll) this.rollCmd(h, { a: 'take' });
+          this.startWave();
+        }
         return;
       }
       if (this.phase !== 'wave') return;
@@ -1144,6 +1251,9 @@
       this.areas = this.areas.filter(a => a.side === 'foe' && !a.warn);
       this.emit({ t: 'break', n: this.wave });
       for (const hh of this.heroes) { for (const it of hh.items) if (it && HD.DEVICES[it.id] && HD.DEVICES[it.id].charges) it.ch = HD.DEVICES[it.id].charges; this.each(hh, 'onBreakStart'); }
+      const rolls = this.run.mode === 'custom' && TUN.custom.rolls[w];
+      if (rolls && this.heroes.length > 1) this.breakT += TUN.custom.netRollT * rolls.length;
+      if (rolls) this.heroes.forEach((hh, p) => { hh.rollQ = (hh.rollQ || []).concat(rolls); HD.rollNext(this.run.seed, p, hh, this.rollTaken(hh)); if (hh.roll) this.emit({ t: 'roll', p, slot: hh.roll.slot }); });
       if (this.onBreak) this.onBreak(this);
     }
 
@@ -1151,6 +1261,7 @@
       const keep = it => { const c = Object.assign({}, it); delete c.at; delete c.phase; delete c.cdT; return c; };
       run.players.forEach((p, i) => {
         const h = this.heroes[i];
+        if (h.kit) Object.assign(p, { kit: Object.assign({}, h.kit), gifts: h.gifts.slice(), roll: h.roll ? JSON.parse(JSON.stringify(h.roll)) : null, rollQ: (h.rollQ || []).slice(), rollN: h.rollN || 0 });
         Object.assign(p, { hero: h.key, lvl: h.lvl, exp: h.exp, pts: h.pts, abil: Object.assign({}, h.abil), picks: Object.assign({}, h.picks), gold: h.gold, items: h.items.map(it => (it ? keep(it) : null)), cone: h.cone ? keep(h.cone) : null, deaths: h.deaths, buyback: h.bought, st: Object.assign({}, h.st) });
       });
       run.base.hp = Math.max(0, Math.round(this.base.hp));
@@ -1183,9 +1294,45 @@
     }
   }
 
-  const tr = (u, i) => u.picks[10] === i, ei = (u, i) => u.picks[20] === i;
+  const pieceIdOf = (h, slot) => (h.kit ? h.kit[slot] : h.key + '.' + slot);
+  const partSlot = (u, kit, part) => {
+    if (!u.kit) return u.key === kit ? part : null;
+    for (const s of Object.keys(u.kit)) if (u.kit[s] === kit + '.' + part) return s;
+    return null;
+  };
+  const partLvl = (u, kit, part) => { const s = partSlot(u, kit, part); return s && u.abil ? u.abil[s] || 0 : 0; };
+  const gift = (u, kit, kind, i) => (u.gifts ? u.gifts.includes(kit + '.' + kind + i) : u.key === kit && !!u.picks && u.picks[kind === 'tr' ? 10 : 20] === i);
+  const customPart = from => (from && TUN.custom.part[from]) || 1;
+  const customAmp = (from, hard, shell) => {
+    const kit = from ? from.split('.')[0] : null, C = TUN.custom, HR = HD.HEROES[kit], body = C.shell[shell] || 1;
+    if (!HR) return C.ampBasic * body;
+    const base = C.amp[kit] != null ? C.amp[kit] : HR.amp || 1;
+    return base * body * (hard ? (C.ampHard[kit] != null ? C.ampHard[kit] : HR.ampHard || 1) : 1);
+  };
+  const hasPiece = (u, id) => (u.kit ? Object.values(u.kit).includes(id) : u.key === id.split('.')[0]);
+  const after = (A, o, fn) => {
+    const prev = o.after, from = A.from;
+    o.after = (A2, v, d) => {
+      if (prev) prev(A2, v, d);
+      const was = A2.from;
+      A2.from = from;
+      fn(A2, v, d);
+      A2.from = was;
+    };
+  };
+  function baseMods(h) {
+    const list = [], shell = HD.SHELLS && HD.SHELLS[h.key];
+    if (shell) list.push(shell);
+    if (!h.kit) { list.push(HD.KITS[h.key]); return list; }
+    for (const slot of Object.keys(h.kit)) {
+      const P = h.kit[slot] && HD.PIECES[h.kit[slot]];
+      if (P && !list.includes(HD.KITS[P.kit])) list.push(HD.KITS[P.kit]);
+    }
+    for (const id of h.gifts || []) if (HD.CUSTOM && HD.CUSTOM.SPARE_MODS[id]) list.push(HD.CUSTOM.SPARE_MODS[id]);
+    return list;
+  }
   const DEBUFF = new Set(['slow', 'dot', 'vuln', 'elemVuln', 'stun', 'weakAdd', 'weaken', 'dotVuln']);
   const debuffs = u => u.fx.filter(f => f.deb || DEBUFF.has(f.k));
-  Object.assign(HD, { tr, ei, debuffs, Arena, gridOf, astar, heroAttrs, heroStats, foeStats, armorMul, expNext, abilCap, DT });
+  Object.assign(HD, { gift, hasPiece, partSlot, partLvl, after, baseMods, debuffs, Arena, gridOf, astar, heroAttrs, heroStats, foeStats, armorMul, expNext, abilCap, DT });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

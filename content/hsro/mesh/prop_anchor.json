@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_anchor",
+ "kind": "static",
+ "verts": 371,
+ "tris": 434,
+ "bounds": [
+  -0.6499999761581421,
+  0.0,
+  -0.6499999761581421,
+  0.6499999761581421,
+  2.549999952316284,
+  0.6499999761581421
+ ],
+ "bin": "mesh/prop_anchor.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 371,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 4452,
+   "count": 371,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 8904,
+   "count": 371,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 11872,
+   "count": 1302,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

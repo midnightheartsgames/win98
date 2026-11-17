@@ -20,7 +20,7 @@
   const PROV = 'Жертвенность жизни';
   const APO = 'Апофеоз';
   const FOLLY = 'Недальновидность мудрецов';
-  const COGITO = 'Я мыслю - я существую';
+  const COGITO = 'Я мыслю, следовательно, я существую';
   const OWN = ['basic', 'skill', 'ult', 'enhanced'];
 
   const KITS = {
@@ -54,7 +54,7 @@
       dracore: [
         { name: 'Превосходство', tier: 1, target: 'single', energy: 30, text: 'стоит 1 очко навыка. 3 удара, всего 260%.', fx: [{ k: 'ilStrike', hits: 3, m: 2.6, tough: 20 }] },
         { name: 'Божественное копьё', tier: 2, target: 'blast', energy: 35, text: 'стоит 2 очка навыка. 5 ударов, всего 380%, с 4-го удара соседям 60%.', fx: [{ k: 'ilStrike', hits: 5, m: 3.8, adj: 0.6, adjFrom: 4, tough: 30, adjTough: 10, roar: true }] },
-        { name: 'Стремительный прыжок', tier: 3, target: 'blast', energy: 40, text: 'стоит 3 очка навыка. 7 ударов, всего 500%, с 4-го удара соседям 180%.', fx: [{ k: 'ilStrike', hits: 7, m: 5.0, adj: 1.8, adjFrom: 4, tough: 40, adjTough: 20, roar: true }] }
+        { name: 'Стремительный прыжок', tier: 3, cut: 'leap', target: 'blast', energy: 40, text: 'стоит 3 очка навыка. 7 ударов, всего 500%, с 4-го удара соседям 180%.', fx: [{ k: 'ilStrike', hits: 7, m: 5.0, adj: 1.8, adjFrom: 4, tough: 40, adjTough: 20, roar: true }] }
       ],
       skill: { name: 'Освобождение драконьей силы', target: 'self', keepTurn: true, noSp: true, text: 'усиливает атаку до 3 раз без конца хода. С 4-го удара копья и прыжка крит. урон +12% (до 4).', fx: [{ k: 'dracore' }] },
       ult: { name: 'Уносящие лазурные воды', target: 'blast', text: '3 удара: цели 300%, соседям 140%. +2 Чешуи дракона, они заменяют очки навыка.', fx: [{ k: 'ilStrike', hits: 3, m: 3.0, adj: 1.4, adjFrom: 1, tough: 30, adjTough: 20 }, { k: 'scales', v: 2 }] },
@@ -79,7 +79,7 @@
       look: { mood: 'flat', skin: '#f8e6e2', hair: '#e2e8f2', hairHi: '#ffffff', hairSh: '#a8b4cc', tips: '#8aa8e0', tipsFade: true, eye: '#c8303a', eye2: '#f07a7a', bangs: 'eye', bangsR: true, sides: 'long', back: 'long', crown: 'smooth', gloss: true, body: 'f', coat: 'bodice', neck: '#16161e', top: '#22306a', trim: '#c8ccd8', inner: '#22306a', collar: 'high', lower: '#e8eef8', hem: '#b8c8e8', low: 'skirt', skirtLen: 7, legs: '#f8e6e2', shoes: '#16161e', gloves: '#4a3a34', detAt: 0.22, band: '#c8ccd8', cuff: '#c8ccd8', tailsTo: 'ankle', tailsLining: '#2a2a6a', acc: ['blindfold:#16161e', 'lunarbodice:#22306a', 'detsleeves:#4a5ad8', 'tails:#3a3a8a', 'thighboots:#16161e', 'kneeplate:#c8ccd8', 'pauldronr:#c8ccd8', 'hairorn:#c8ccd8'] },
       basic: { name: 'Лунное сияние', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Непостижимая Зарница', target: 'single', text: 'урон 200%, +1 Сизигия. Со следом следующий ход на 10% раньше.', fx: [{ k: 'dmg', m: 2.0 }, { k: 'syzygy', v: 1 }, { k: 'advance', v: 0.1, who: 'self', trace: 'a4' }] },
-      moon: { name: 'Луна на застывшей реке', target: 'blast', text: 'без очка навыка. Цели 250%, соседям 125%. −1 Сизигия.', fx: [{ k: 'jlDrain' }, { k: 'dmg', m: 2.5, adj: 1.25, tough: 20, adjTough: 10 }, { k: 'syzygy', v: -1 }] },
+      moon: { name: 'Луна на застывшей реке', cut: 'moon', target: 'blast', text: 'без очка навыка. Цели 250%, соседям 125%. −1 Сизигия.', fx: [{ k: 'jlDrain' }, { k: 'dmg', m: 2.5, adj: 1.25, tough: 20, adjTough: 10 }, { k: 'syzygy', v: -1 }] },
       ult: { name: 'Стремительные цветы, мимолётные звёздные сны', short: 'Стремительные цветы', target: 'blast', text: 'цели 300%, соседям 150%. +1 Сизигия.', fx: [{ k: 'jlDrain' }, { k: 'dmg', m: 3.0, adj: 1.5, tough: 30, adjTough: 20 }, { k: 'syzygy', v: 1 }] },
       talent: 'На 2 Сизигиях ходит сразу, крит. шанс +50%, навык усилен. Атаки забирают 4% HP у отряда.',
       tech: { name: 'Сокровенная природа', text: 'Заморозка всех врагов на 1 ход, +15 энергии и 1 Сизигия.', fx: 'jlTech' },
@@ -123,7 +123,7 @@
       name: 'Доктор Рацио', short: 'Рацио', path: 'hunt', elem: 'imag', rarity: 5, energy: 140, faction: 'guild',
       base: { hp: 143, atk: 106, def: 56, spd: 103 },
       look: { mood: 'calm', skin: '#f4dccb', hair: '#3a2c6c', hairHi: '#5e4ea0', eye: '#c86a2a', eye2: '#f0b060', bangs: 'eye', sides: 'jaw', back: 'short', crown: 'wavy', gloss: true, jaw: 'v', body: 'tall', sex: 'm', coat: 'jacket', top: '#1e1c24', trim: '#1e1c24', inner: '#1e1c24', collar: 'v', lower: '#2a2668', low: 'pants', shoes: '#d8b048', gloves: '#1e1c24', acc: ['laurel:#d8b048', 'racape:#262a2c', 'ratoga:#3a48c0', 'rasandal:#d8b048', 'barefoot'] },
-      basic: { name: 'Знание - сила', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
+      basic: { name: 'Знание есть сила', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Интеллектуальная помощь', target: 'single', text: 'урон 150%. Шанс бонус-атаки 40% и +20% за каждое ослабление цели.', fx: [{ k: 'summation' }, { k: 'dmg', m: 1.5 }, { k: 'inference' }, { k: 'cogito' }] },
       ult: { name: 'Силлогистический парадокс', target: 'single', text: 'урон 240% и Недальновидность мудрецов: 2 атаки союзников по цели вызовут бонус-атаку.', fx: [{ k: 'dmg', m: 2.4, tough: 30 }, { k: 'folly' }] },
       talent: 'Бонус-атака 270%. Со следами каждое ослабление цели добавляет крит и урон.',
@@ -539,7 +539,7 @@
       const lc = mate(this, 'luocha');
       if (lc && alive(a) && a.hp <= a.maxHp * T.lcAuto && !(lc.flags.lcCd > 0)) {
         lc.flags.lcCd = T.lcCd;
-        this.push({ t: 'act', u: lc, name: 'Молитва цветка бездны', kind: 'auto' });
+        this.push({ t: 'act', u: lc, name: 'Молитва цветка бездны', kind: 'auto', fid: 'abyss' });
         this.abyssPrayer(lc, a);
         this.gainEnergy(lc, T.energySkill);
       }
@@ -617,7 +617,7 @@
       const t = alive(job.t) ? job.t : this.rng.pick(this.living);
       const prev = this.acting;
       this.acting = by;
-      this.push({ t: 'act', u: by, name: job.name, kind: 'follow' });
+      this.push({ t: 'act', u: by, name: job.name, kind: 'follow', fid: 'cogito' });
       this.hit(by, t, T.raFollow * (by.charId === 'ratio' && this.traceTalent ? this.traceTalent(by) : 1), { e: 'imag', tough: 10, kind: 'follow', label: COGITO });
       this.gainEnergy(by, 5);
       if (this.kitFx && alive(t)) this.kitFx(by, 'cogitoHit', t);
@@ -809,7 +809,7 @@
       if (!t) { h.av = AV / spdOf(h); return; }
       this.hitThisAction = new Set();
       this.actSerial = (this.actSerial || 0) + 1;
-      this.push({ t: 'act', u: h, name: h.flags.wind > 0 ? NUMBY + ': ' + WIND : NUMBY, kind: 'summon' });
+      this.push({ t: 'act', u: h, name: h.flags.wind > 0 ? NUMBY + ': ' + WIND : NUMBY, kind: 'summon', fid: 'numby' });
       if (this.kitFx) this.kitFx(tz, 'numbyTurn');
       this.numbyHit(tz, h, t, 'talent');
       if (this.su) this.bless('follow', { u: tz, hits: [t] });

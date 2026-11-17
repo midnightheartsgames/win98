@@ -190,7 +190,36 @@
       onHit(A, u, t, o) { if (o.kind === 'dot') return; const n = A.unitsIn(circle(u.x, u.y, 260), 'foe').filter(f => (f.weak && f.weak.includes(u.elem)) || f.fx.some(x => x.k === 'weakAdd' && x.elem === u.elem)).length; if (n >= 2) A.addFx(u, { n: 'Стратагема', k: 'critD', v: this.V.b, t: 6 }); } },
     showtime: { v: { a: [1, 0.06], b: [4, 0.8], c: [5, 0.2] }, tpl: 'Атака по врагу с ослаблением даёт «Трюк» на 4 с, до 3: урон +{a}; при шансе эффекта от {b} урон атаки +{c}.',
       onHit(A, u, t, o) { if (o.kind !== 'dot' && HD.debuffs(t).length) A.addFx(u, { n: 'Трюк', k: 'dmg', v: this.V.a, t: 4, max: 3 }); },
-      tick(A, u) { if (A.sum(u, 'ehr') >= this.V.b) A.addFx(u, { n: 'Трюк: атака', k: 'atk', v: this.V.c, t: 0.5 }); } }
+      tick(A, u) { if (A.sum(u, 'ehr') >= this.V.b) A.addFx(u, { n: 'Трюк: атака', k: 'atk', v: this.V.c, t: 0.5 }); } },
+    warmth: { v: { a: [1, 0.16], b: [2, 0.02] }, tpl: 'Макс. НР +{a}; Атака или Навык лечат союзников в 400 на {b} их макс. НР, раз в 2 с.', st: [['hpP', 'a']],
+      mend(A, u) { if (A.time - (u.tal.warmAt || -9) < 2) return; u.tal.warmAt = A.time; for (const v of allies(A, u, 400)) A.heal(u, v, v.hpMax * this.V.b); },
+      onCast(A, u, slot) { if (slot === 'q') this.mend(A, u); },
+      onHit(A, u, t, o) { if (o.basic) this.mend(A, u); } },
+    meetagain: { v: { a: [1, 0.48] }, tpl: 'Атака или Навык наносят поражённому врагу доп. урон {a} урона атаки, раз в 1,5 с.',
+      onHit(A, u, t, o) { if ((o.basic || o.kind === 'q') && !t.dead && A.time - (u.tal.meetAt || -9) >= 1.5) { u.tal.meetAt = A.time; A.hit(u, t, { m: this.V.a, kind: 'extra', noTough: true }); } } },
+    thisisme: { v: { a: [1, 0.16], b: [2, 0.6] }, tpl: 'Броня +{a}; урон Абсолютной техники +{b} за каждые 100 брони героя.', st: [['armorP', 'a']],
+      dmgMul(A, u, t, o) { return o.kind === 'r' ? 1 + this.V.b * A.armorOf(u) / 100 : 1; } },
+    todarkness: { v: { a: [1, 0.12], b: [2, 0.16] }, tpl: 'Шанс крита +{a}; крит. попадание с шансом {b} снимает с врага одно усиление.', st: [['crit', 'a']],
+      onHit(A, u, t, o) { if (!A.lastCrit || t.dead || o.kind === 'dot') return; const i = t.fx.findIndex(f => !f.deb && !f.guard && f.k !== 'dot'); if (i >= 0 && A.rng() < this.V.b) t.fx.splice(i, 1); } },
+    carvemoon: { v: { a: [1, 0.1], b: [2, 0.12], c: [3, 0.06] }, tpl: 'В начале волны и после Навыка союзники в 400 получают случайный эффект: урон атаки +{a}, крит. урон +{b} или восстановление энергии +{c}; эффект не повторяется подряд.',
+      roll(A, u) { const kinds = ['atk', 'critD', 'enRegenP'].filter(k => k !== u.tal.carve); u.tal.carve = kinds[Math.min(kinds.length - 1, Math.floor(A.rng() * kinds.length))]; },
+      onWave(A, u) { this.roll(A, u); },
+      onCast(A, u, slot) { if (slot === 'q') this.roll(A, u); },
+      tick(A, u) { const k = u.tal.carve; if (!k) return; const v = k === 'atk' ? this.V.a : k === 'critD' ? this.V.b : this.V.c, n = k === 'atk' ? 'Секрет: атака' : k === 'critD' ? 'Секрет: крит. урон' : 'Секрет: энергия'; for (const w of allies(A, u, 400)) A.addFx(w, { n, k, v, t: 0.5 }); } },
+    nowhere: { v: { a: [1, 0.24], b: [2, 0.12] }, tpl: 'Урон атаки +{a}; добивание лечит героя на {b} урона атаки.', st: [['atk', 'a']],
+      onKill(A, u) { A.heal(u, u, A.atkOf(u) * this.V.b); } },
+    peaceful: { v: { a: [1, 0.32] }, tpl: 'Урон героя до +{a}: чем больше энергии требует его Абсолютная техника, тем выше прибавка.',
+      tick(A, u) { const en = Math.min(160, (H.CHARS[u.key] && H.CHARS[u.key].energy) || 0); if (en > 0) A.addFx(u, { n: 'Шторм приближается', k: 'dmg', v: this.V.a * en / 160, t: 0.5 }); } },
+    journey: { v: { a: [1, 0.12], b: [2, 0.12] }, tpl: 'Щиты героя прочнее на {a}; союзники в 400 со щитом наносят урон +{b} (не складывается).', st: [['shieldP', 'a']],
+      tick(A, u) { for (const v of allies(A, u, 400)) if (v.fx.some(f => f.k === 'shield' && f.v > 0)) A.addFx(v, { n: 'Сладкий сон', k: 'dmg', v: this.V.b, t: 0.5 }); } },
+    morrow: { v: { a: [1, 0.12], b: [3, 0.12] }, tpl: 'Исходящее лечение +{a}; союзники в 400 с НР от 50% наносят урон +{b} (не складывается).', st: [['healP', 'a']],
+      tick(A, u) { for (const v of allies(A, u, 400)) if (v.hp >= v.hpMax * 0.5) A.addFx(v, { n: 'Прощание', k: 'dmg', v: this.V.b, t: 0.5 }); } },
+    pursuit: { v: { a: [1, 0.16] }, tpl: 'Союзники в 400 получают эффект пробития +{a} (не складывается).',
+      tick(A, u) { for (const v of allies(A, u, 400)) A.addFx(v, { n: 'Паника', k: 'breakEff', v: this.V.a, t: 0.5 }); } },
+    wheat: { v: { a: [1, 0.12], b: [2, 0.24] }, tpl: 'Шанс крита +{a}; урон Абсолютной техники и бонус-атак +{b}.', st: [['crit', 'a'], ['dmg_r', 'b'], ['dmg_bonus', 'b']] },
+    thermae: { v: { a: [1, 0.16], b: [3, 0.1] }, tpl: 'Урон +{a}; атака вешает на врага «Слабость»: получаемый урон +{b} на 4 с (не складывается).', st: [['dmg', 'a']],
+      onHit(A, u, t, o) { if (o.kind === 'dot' || o.kind === 'break' || t.dead) return; if (A.rng() < A.chance(u, t, 1)) A.addFx(t, { n: 'Слабость', k: 'vuln', v: this.V.b, t: 4, deb: true }); } },
+    seeyou: { v: { a: [1, 0.24], b: [2, 0.24] }, tpl: 'Крит. урон +{a}; урон Навыка и бонус-атак +{b}.', st: [['critD', 'a'], ['dmg_q', 'b'], ['dmg_bonus', 'b']] }
   };
 
   function coneVals(id, sup) {
@@ -267,7 +296,7 @@
       E.mods.push(M);
     }
     h.eq = E;
-    h.mods = [HD.KITS[h.key]].concat(E.mods);
+    h.mods = HD.baseMods(h).concat(E.mods);
     A.heroStatsApply(h, !!fresh);
     h.fx = h.fx.filter(f => !f.eq);
     E.fx.forEach(([k, v], i) => h.fx.push({ n: 'eq' + i + k, k, v, t: Infinity, eq: true, tickT: 1 }));
@@ -300,7 +329,7 @@
     if (id === 'cone') {
       const C = H.CONES[o.cone];
       if (!C || !CONES[o.cone]) return deny(A, '');
-      if (C.path !== H.CHARS[h.key].path) return deny(A, 'Конус чужого Пути');
+      if (!conePaths(h).includes(C.path)) return deny(A, 'Конус чужого Пути');
       if (h.cone && h.cone.id === o.cone) return deny(A, 'Этот конус уже в ячейке');
       const cost = HD.CONE_PRICE[C.rarity], back = h.cone ? sellValue(A, h.cone) : 0;
       if (h.gold + back < cost) return deny(A, 'Мало золота');
@@ -473,7 +502,12 @@
   const devName = id => HD.DEVICES[id].name || H.ITEMS[id].name;
   const itemName = it => (it.id === 'relic' ? H.RELIC_SETS[it.set].pieces[it.slot] : HD.DEVICES[it.id] ? devName(it.id) : H.ITEMS[it.id].name);
   const conesFor = path => Object.keys(CONES).filter(id => H.CONES[id].path === path).sort((a, b) => H.CONES[a].rarity - H.CONES[b].rarity);
+  const conePaths = h => {
+    const list = [H.CHARS[h.key].path];
+    for (const id of Object.values(h.kit || {})) if (id && HD.PIECES[id] && !list.includes(HD.PIECES[id].path)) list.push(HD.PIECES[id].path);
+    return list;
+  };
 
-  Object.assign(HD, { CONE_MODE: CONES, SET_MODS, equip, grantItem, buyItem, sellItem, useItem, upgrade, upgradeCost, sellValue, coneVals, coneText, coneStats, relicCount, setInfo, relicText, itemName, devName, conesFor, SLOT_KINDS });
+  Object.assign(HD, { conePaths, CONE_MODE: CONES, SET_MODS, equip, grantItem, buyItem, sellItem, useItem, upgrade, upgradeCost, sellValue, coneVals, coneText, coneStats, relicCount, setInfo, relicText, itemName, devName, conesFor, SLOT_KINDS });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

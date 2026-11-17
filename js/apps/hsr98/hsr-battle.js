@@ -377,7 +377,7 @@
       const adj = strong ? this.adjacent(this.living, foe) : [];
       if (strong) clara.flags.promise--;
       this.acting = clara;
-      this.push({ t: 'act', u: clara, name: strong ? 'Сварог: Обещание' : 'Ответный удар Сварога', kind: 'follow' });
+      this.push({ t: 'act', u: clara, name: strong ? 'Сварог: Обещание' : 'Ответный удар Сварога', kind: 'follow', fid: strong ? 'svarogP' : 'svarog' });
       const m = 1.6 * (this.traceTalent ? this.traceTalent(clara) : 1) + (strong ? (clara.flags.promiseM != null ? clara.flags.promiseM : 1) : 0);
       this.hit(clara, foe, m, { tough: strong ? 20 : 10, e: 'phys', label: 'Сварог', kind: 'follow' });
       this.svMark(foe);
@@ -402,7 +402,7 @@
       k.flags.trill = false;
       const prev = this.acting;
       this.acting = k;
-      this.push({ t: 'act', u: k, name: 'Жестокая нежность', kind: 'follow' });
+      this.push({ t: 'act', u: k, name: 'Жестокая нежность', kind: 'follow', fid: 'gentle' });
       this.hit(k, t, T.kafkaFollow * (this.traceTalent ? this.traceTalent(k) : 1), { e: 'elec', tough: 10, kind: 'follow', label: 'Жестокая нежность' });
       if (alive(t)) this.kafkaShock(k, t, 1 + ((this.kitFx && this.kitFx(k, 'dotChance', 'follow', { type: 'shock' })) || 0));
       if (this.kitFx && alive(t)) this.kitFx(k, 'follow', t);
@@ -533,7 +533,7 @@
       this.push({ t: 'shuhu', u: b, v: 0, add: 0 });
       const prev = this.acting;
       this.acting = b;
-      this.push({ t: 'act', u: b, name: 'Дар Шуху', kind: 'follow' });
+      this.push({ t: 'act', u: b, name: 'Дар Шуху', kind: 'follow', fid: 'shuhu' });
       const hits = this.living.slice();
       const tt = this.traceTalent ? this.traceTalent(b) : 1, extraHp = (this.kitFx && this.kitFx(b, 'shuhuHp')) || 0;
       for (const e of hits) this.hit(b, e, T.shuhuAtk * tt, { e: 'wind', tough: 10, kind: 'follow', hpM: T.shuhuHp * tt + extraHp, label: 'Дар Шуху' });
@@ -726,7 +726,7 @@
       if (!alive(scar)) return;
       const prev = this.acting;
       this.acting = scar;
-      this.push({ t: 'act', u: scar, name: 'Разрыв Элизиума', kind: 'follow' });
+      this.push({ t: 'act', u: scar, name: 'Разрыв Элизиума', kind: 'follow', fid: 'elysium' });
       const lull = coneP(scar, 'lullaby', 2), m = this.elysMul(scar, e.embers);
       const o = { label: 'Разрыв Элизиума', kind: 'follow', extraBonus: lull, defIgnore: (this.kitFx && this.kitFx(scar, 'burstDef')) || 0 };
       const adj = this.adjacent(this.living, t);
@@ -981,7 +981,7 @@
       if (nb.debuff && u.side === 'enemy' && this.stdDebuff) { const dsrc = nb.src || (this.acting && this.acting.side === 'ally' ? this.acting : null); if (dsrc) this.stdDebuff(dsrc, u); }
     }
 
-    breakDmg(src, tgt, m) { return H.breakBase(src.lvl) * (1 + sv(src, 'breakE')) * (0.5 + tgt.maxTough / 40) * m; }
+    breakDmg(src, tgt, m) { return H.breakBase(src.lvl) * (1 + sv(src, 'breakE')) * (1 + sv(src, 'breakDmgP')) * (0.5 + tgt.maxTough / 40) * m; }
 
     rebloom(u, mark) {
       u.buffs = u.buffs.filter(b => b !== mark);
@@ -1088,7 +1088,7 @@
     dmgCalc(src, tgt, mult, o, crit) {
       if (o.elation && this.elationDmg) return this.elationDmg(src, tgt, mult, o, crit);
       const e = o.e || src.elem;
-      const base = o.fixed != null ? o.fixed : mult * (o.stat === 'def' ? defOf(src) : o.stat === 'hp' ? src.maxHp : atkOf(src)) + (o.plusDef || 0) * defOf(src) + (o.hpM || 0) * src.maxHp + (o.tallyM ? o.tallyM * tallyOf(src, o.tallyPlus) : 0);
+      const base = o.fixed != null ? o.fixed : mult * (o.stat === 'def' ? defOf(src) : o.stat === 'hp' ? src.maxHp : atkOf(src)) + (o.plusDef || 0) * defOf(src) + (o.hpM || 0) * src.maxHp + (o.tallyM ? o.tallyM * tallyOf(src, o.tallyPlus) : 0) + (this.stdBase ? this.stdBase(src, tgt, o) : 0);
       let bonus = 1 + sv(src, 'dmgP') + sv(src, e + 'P') + (o.kind === 'ult' ? sv(src, 'ultP') : 0) + (o.extraBonus || 0);
       if (o.dot) bonus += sv(src, 'dotP');
       if (o.kind === 'follow') bonus += sv(src, 'followP');
@@ -1280,7 +1280,7 @@
       const bb = H.breakBase(src.lvl) * (1 + sv(src, 'breakE'));
       this.push({ t: 'break', u: tgt, e, text: 'ПРОБИТИЕ! ' + H.BREAK_EFFECT[e] });
       if (this.su && src.side === 'ally') this.bless('break', { src, tgt, e, dmg: bb * coef * (0.5 + tgt.maxTough / 40) });
-      this.hit(src, tgt, 0, { fixed: bb * coef * (0.5 + tgt.maxTough / 40), e, isDot: true, label: 'Пробитие' });
+      this.hit(src, tgt, 0, { fixed: bb * coef * (1 + sv(src, 'breakDmgP')) * (0.5 + tgt.maxTough / 40), e, isDot: true, label: 'Пробитие' });
       if (!alive(tgt)) return;
       const ruan = this.allies.find(a => a.charId === 'ruanmei' && alive(a));
       if (ruan && src.side === 'ally') {
@@ -1631,7 +1631,7 @@
           if (!shieldedBefore.has(a) || !alive(u) || !(march.flags.counters > 0) || this.over) continue;
           march.flags.counters--;
           this.acting = march;
-          this.push({ t: 'act', u: march, name: 'Контратака', kind: 'follow' });
+          this.push({ t: 'act', u: march, name: 'Контратака', kind: 'follow', fid: 'girlpower' });
           this.hit(march, u, 0.5 * (this.traceTalent ? this.traceTalent(march) : 1), { tough: 10, e: 'ice', kind: 'follow', plusDef: this.eidOn && this.eidOn(march, 4) ? 0.3 : 0 });
           this.gainEnergy(march, 5);
           if (this.su) this.bless('follow', { u: march, hits: [u] });
@@ -1693,7 +1693,7 @@
       this.actSerial = (this.actSerial || 0) + 1;
       this.actKind = kind;
       const R = this.resolveTargets(actor, ab, target);
-      this.push({ t: 'act', u: actor, name: R.revive ? 'Воскрешение' : ab.name, kind, lv: ab.lv });
+      this.push({ t: 'act', u: actor, name: R.revive ? 'Воскрешение' : ab.name, kind, lv: ab.lv, cut: ab.cut });
       if (this.stdBeforeAct) this.stdBeforeAct(actor, ab, kind, R);
       const hitSet = new Set();
       const toughOf = main => this.toughFor(kind, main);
@@ -1767,7 +1767,7 @@
             const list = f.who === 'allies' ? this.livingAllies : f.who && f.who.startsWith('member:') ? this.allies.filter(a => a.charId === f.who.slice(7) && alive(a)) : [R.ally || actor];
             const cm = f.cocoon ? (1 + 0.2 * coneFx(src, 'cccmagic')) * (1 + ((this.kitFx && this.kitFx(src, 'cocoonUp')) || 0)) : 1;
             const sTurns = f.turns + ((this.kitFx && this.kitFx(src, 'shieldTurns', kind)) || 0);
-            for (const a of list) { this.giveShield(a, (defOf(src) * f.m + f.flat * H.grow(src.lvl)) * cm, sTurns); if (f.cocoon && alive(a) && a.shield > 0) { a.flags.cocoon = src; if (this.kitFx) this.kitFx(src, 'cocooned', a); } }
+            for (const a of list) { this.giveShield(a, (defOf(src) * f.m + f.flat * H.grow(src.lvl)) * cm * (1 + sv(src, 'shieldOut')), sTurns); if (f.cocoon && alive(a) && a.shield > 0) { a.flags.cocoon = src; if (this.kitFx) this.kitFx(src, 'cocooned', a); } }
             break;
           }
           case 'taunt': {
@@ -2179,7 +2179,7 @@
           }
           case 'shield': {
             const list = f.who === 'allies' ? this.livingAllies : [R.ally || actor];
-            for (const a of list) if (alive(a)) row(a).shield += Math.round((defOf(src) * f.m + f.flat * H.grow(src.lvl)) * (1 + sv(a, 'shieldP')));
+            for (const a of list) if (alive(a)) row(a).shield += Math.round((defOf(src) * f.m + f.flat * H.grow(src.lvl)) * (1 + sv(src, 'shieldOut')) * (1 + sv(a, 'shieldP')));
             break;
           }
           default: this.foursPreview(f, src, actor, R, addHit, k); this.fivesPreview(f, src, actor, R, addHit, k);
@@ -2201,7 +2201,7 @@
         r.toughAfter = Math.max(0, t.tough - r.tough);
         r.breaks = !t.broken && r.tough > 0 && r.toughAfter <= 0;
         if (r.breaks) {
-          const fixed = H.breakBase(r.src.lvl) * (1 + sv(r.src, 'breakE')) * H.ELEMENTS[r.breakE].coef * (0.5 + t.maxTough / 40);
+          const fixed = H.breakBase(r.src.lvl) * (1 + sv(r.src, 'breakE')) * (1 + sv(r.src, 'breakDmgP')) * H.ELEMENTS[r.breakE].coef * (0.5 + t.maxTough / 40);
           const bd = this.dmgCalc(r.src, t, 0, { fixed, e: r.breakE, isDot: true, broken: true }, false);
           r.lo += bd; r.hi += bd;
         }
@@ -2257,7 +2257,7 @@
       if (u.charId === 'yanqing' && u.flags.sync && attacked && kind !== 'fusion') {
         const t = hits.find(alive);
         if (t && this.rng.chance(u.flags.syncChance != null ? u.flags.syncChance : 0.5)) {
-          this.push({ t: 'act', u, name: 'Ледяной клинок', kind: 'follow' });
+          this.push({ t: 'act', u, name: 'Ледяной клинок', kind: 'follow', fid: 'soulsteel' });
           this.hit(u, t, 0.5 * (this.traceTalent ? this.traceTalent(u) : 1), { e: 'ice', tough: 5, label: 'Клинок', kind: 'follow' });
           this.tryFreeze(u, t, 0.65);
           this.gainEnergy(u, 10);
@@ -2292,7 +2292,7 @@
         if (herta && this.crossed.size && this.living.length) {
           this.crossed = new Set();
           this.acting = herta;
-          this.push({ t: 'act', u: herta, name: 'Кукла Герты', kind: 'follow' });
+          this.push({ t: 'act', u: herta, name: 'Кукла Герты', kind: 'follow', fid: 'doll' });
           const hits = this.living.slice();
           for (const e of hits) this.hit(herta, e, 0.4 * (this.traceTalent ? this.traceTalent(herta) : 1), { e: 'ice', tough: 5, kind: 'follow' });
           this.gainEnergy(herta, 5);
@@ -2306,7 +2306,7 @@
         if (him && (him.flags.charges || 0) >= 3 && this.living.length) {
           him.flags.charges = 0;
           this.acting = him;
-          this.push({ t: 'act', u: him, name: 'Победный порыв', kind: 'follow' });
+          this.push({ t: 'act', u: him, name: 'Победный порыв', kind: 'follow', fid: 'victory' });
           const hits = this.living.slice();
           for (const e of hits) this.hit(him, e, 1.4 * (this.traceTalent ? this.traceTalent(him) : 1), { e: 'fire', tough: 10, kind: 'follow' });
           this.gainEnergy(him, 10);

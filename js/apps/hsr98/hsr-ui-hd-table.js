@@ -97,7 +97,7 @@
     netBegin(T) {
       const n = globalThis.Net98;
       this.netSession = new HD.NetSession({
-        code: T.code, seed: T.seed, diff: T.diff, seat: n.seat, ticks: T.ticks, turnMs: T.turnMs, names: seatsOf(T).map(x => cleanName(x.name)), clock: () => performance.now(),
+        mode: T.mode, code: T.code, seed: T.seed, diff: T.diff, seat: n.seat, ticks: T.ticks, turnMs: T.turnMs, names: seatsOf(T).map(x => cleanName(x.name)), clock: () => performance.now(),
         send: c => n.send('cmd', { c }), onHash: (tick, h) => n.send('hash', { n: tick, h })
       });
       this.netSession.waitLog = !!this.netResume;
@@ -140,7 +140,7 @@
 
     netReplay(T) {
       const names = Array.from({ length: T.count }, (_, i) => 'Место ' + (i + 1));
-      const s = new HD.NetSession({ code: T.code, seed: T.seed, diff: T.diff, seat: T.seat, ticks: T.ticks, turnMs: T.turnMs, names, clock: () => performance.now(), send: () => false, onHash() {} });
+      const s = new HD.NetSession({ mode: T.mode, code: T.code, seed: T.seed, diff: T.diff, seat: T.seat, ticks: T.ticks, turnMs: T.turnMs, names, clock: () => performance.now(), send: () => false, onHash() {} });
       s.feedLog({ turns: T.turns, upto: T.turn });
       while (!s.A && s.n < s.last) s.nextTurn();
       while (s.A && s.A.tick < T.tick && !s.A.over) s.stepOne(true);
@@ -225,7 +225,7 @@
         const T = n.table;
         if (!T) return [{ id: 'new', label: 'Создать стол' }, { id: 'join', label: 'Войти по коду' }, { id: 'list', label: 'Открытые столы' }, { id: 'back', label: 'Назад' }];
         const call = seatsOf(T).length < T.seats.length ? [{ id: 'call', label: 'Позвать друга' }] : [];
-        if (T.host === n.seat) return [{ id: 'start', label: 'Начать партию' }, { id: 'diff', label: 'Сложность: ' + HD.DIFFS[T.diff].name }, { id: 'open', label: 'Открыт для всех: ' + (T.open ? 'да' : 'нет') }].concat(call, { id: 'back', label: 'Покинуть стол' });
+        if (T.host === n.seat) return [{ id: 'start', label: 'Начать партию' }, { id: 'diff', label: 'Сложность: ' + HD.DIFFS[T.diff].name }, { id: 'mode', label: 'Режим: ' + (T.mode === 'custom' ? 'Сборка' : 'Рубеж') }, { id: 'open', label: 'Открыт для всех: ' + (T.open ? 'да' : 'нет') }].concat(call, { id: 'back', label: 'Покинуть стол' });
         const me = T.seats[n.seat];
         return [{ id: 'ready', label: me && me.ready ? 'Я не готов' : 'Готов' }].concat(call, { id: 'back', label: 'Покинуть стол' });
       };
@@ -241,6 +241,7 @@
         if (id === 'ready') { n.send('tableReady', { on: !(T.seats[n.seat] && T.seats[n.seat].ready) }); ui.sfx('select'); return; }
         if (id === 'diff') { n.send('tableSet', { diff: diffs[(diffs.indexOf(T.diff) + 1) % diffs.length] }); ui.sfx('select'); return; }
         if (id === 'open') { n.send('tableSet', { open: !T.open }); ui.sfx('select'); return; }
+        if (id === 'mode') { n.send('tableSet', { mode: T.mode === 'custom' ? 'std' : 'custom' }); ui.sfx('select'); return; }
         if (id === 'back') {
           if (T) { n.send('tableLeave'); ui.sfx('cancel'); return; }
           ui.pop();
@@ -275,7 +276,7 @@
             ui.text('СТОЛ', mx, y + 16, { size: 12, col: CRT.mid, shadow: false });
             ui.text(T.code.split('').join(' '), mx + 46, y + 10, { size: 20, bold: true, col: CRT.hi, shadow: false });
             const host = T.seats[T.host];
-            [['СЛОЖНОСТЬ', HD.DIFFS[T.diff].name], ['ОТКРЫТЫЙ', T.open ? 'да' : 'нет'], ['ХОЗЯИН', host ? cleanName(host.name) : ''], ['ВЕРСИЯ', T.ver || H.BUILD_VERSION]].forEach(([a, b], i) => {
+            [['СЛОЖНОСТЬ', HD.DIFFS[T.diff].name], ['РЕЖИМ', T.mode === 'custom' ? 'Сборка' : 'Рубеж'], ['ОТКРЫТЫЙ', T.open ? 'да' : 'нет'], ['ХОЗЯИН', host ? cleanName(host.name) : ''], ['ВЕРСИЯ', T.ver || H.BUILD_VERSION]].forEach(([a, b], i) => {
               ui.text(a, x + 300, my + i * 20, { size: 11, col: CRT.mid, shadow: false });
               ui.text(b, x + 396, my + i * 20, { size: 11, bold: true, col: CRT.hi, shadow: false });
             });
@@ -384,7 +385,7 @@
             const i = this.top + k, yy = y + 60 + k * 25, on = i === this.sel, same = t.sim === HD.SIM, col = !same ? CRT.dim : on ? CRT.hi : CRT.fg;
             if (on) { c.fillStyle = 'rgba(90,255,122,0.16)'; c.fillRect(x + 12, yy - 3, w - 24, 22); }
             ui.text((on ? '> ' : '  ') + ui.clip(cleanName(t.host), 170, 12, on), x + 14, yy, { size: 12, bold: on, col, shadow: false });
-            ui.text(HD.DIFFS[t.diff] ? HD.DIFFS[t.diff].name : t.diff, x + 220, yy, { size: 11, col, shadow: false });
+            ui.text((HD.DIFFS[t.diff] ? HD.DIFFS[t.diff].name : t.diff) + (t.mode === 'custom' ? ' · Сборка' : ''), x + 220, yy, { size: 11, col, shadow: false });
             ui.text(t.seats + '/4', x + 350, yy, { size: 11, bold: true, col, shadow: false });
             ui.text(same ? String(t.ver || '') : 'другая', x + 420, yy, { size: 11, col, shadow: false });
             ui.hit(x + 12, yy - 3, w - 24, 22, () => { if (this.sel === i) this.sit(t); else { this.sel = i; ui.sfx('select'); } });

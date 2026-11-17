@@ -139,7 +139,7 @@
           c.fillStyle = a.col; c.fillRect(x + 4, y + n - 12, 6, 6);
           if (!on) { c.fillStyle = 'rgba(2,3,12,0.35)'; c.fillRect(x, y, n, n); }
           c.strokeStyle = on ? C.brassHi : C.brassDk; c.lineWidth = on ? 2 : 1; c.strokeRect(x - 0.5, y - 0.5, n + 1, n + 1); c.lineWidth = 1;
-          if (rows.some(r => r.fresh)) ui.badge(x + n - 4, y + 4);
+          if (rows.some(r => r.fresh)) ui.newMark(x + n - 4, y + 4);
           ui.text(ui.clip(a.name, SHELF.step - 4, 10, on), x + n / 2, SHELF.y + n + SHELF.lift + 9, { align: 'center', size: 10, bold: on, col: on ? C.gold : C.sub });
           ui.hit(x, y, n, n + 20, () => { if (this.album !== i) { this.album = i; this.home(); ui.sfx('select'); } });
         });

@@ -192,11 +192,11 @@
     }
   });
 
-  for (const name of ['ultCineOn', 'fusionCineOn', 'skinCineOn']) {
+  for (const name of ['ultCineOn', 'fusionCineOn', 'skinCineOn', 'followCineOn']) {
     const base = UP[name];
-    UP[name] = function (x) {
+    UP[name] = function (...args) {
       if (inRange(this) && this.game.range().cond.cine === 'off') return false;
-      return base.call(this, x);
+      return base.apply(this, args);
     };
   }
 

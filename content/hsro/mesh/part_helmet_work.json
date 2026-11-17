@@ -1,0 +1,96 @@
+{
+ "format": 1,
+ "id": "part_helmet_work",
+ "kind": "part",
+ "verts": 115,
+ "tris": 140,
+ "bounds": [
+  -0.17000000178813934,
+  1.690000057220459,
+  -0.18000000715255737,
+  0.17000000178813934,
+  1.8300000429153442,
+  0.1599999964237213
+ ],
+ "bin": "mesh/part_helmet_work.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 115,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1380,
+   "count": 115,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 2760,
+   "count": 115,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 3680,
+   "count": 115,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 4140,
+   "count": 115,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 5060,
+   "count": 420,
+   "type": "H"
+  }
+ },
+ "tex": "tex/npc_extras.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "spine",
+  "chest",
+  "neck",
+  "head",
+  "upperarm.L",
+  "forearm.L",
+  "hand.L",
+  "upperarm.R",
+  "forearm.R",
+  "hand.R",
+  "thigh.L",
+  "shin.L",
+  "foot.L",
+  "thigh.R",
+  "shin.R",
+  "foot.R",
+  "tail.1",
+  "tail.2",
+  "tail.3"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  2,
+  3,
+  2,
+  5,
+  6,
+  2,
+  8,
+  9,
+  0,
+  11,
+  12,
+  0,
+  14,
+  15,
+  0,
+  17,
+  18
+ ],
+ "fps": 15,
+ "clips": {}
+}

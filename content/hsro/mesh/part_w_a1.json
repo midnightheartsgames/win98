@@ -1,0 +1,96 @@
+{
+ "format": 1,
+ "id": "part_w_a1",
+ "kind": "part",
+ "verts": 122,
+ "tris": 116,
+ "bounds": [
+  -0.32846397161483765,
+  0.7400000095367432,
+  -0.09490884840488434,
+  -0.20499999821186066,
+  1.2350000143051147,
+  0.03490884602069855
+ ],
+ "bin": "mesh/part_w_a1.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 122,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1464,
+   "count": 122,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 2928,
+   "count": 122,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 3904,
+   "count": 122,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 4392,
+   "count": 122,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 5368,
+   "count": 348,
+   "type": "H"
+  }
+ },
+ "tex": "tex/hero_weapons.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "spine",
+  "chest",
+  "neck",
+  "head",
+  "upperarm.L",
+  "forearm.L",
+  "hand.L",
+  "upperarm.R",
+  "forearm.R",
+  "hand.R",
+  "thigh.L",
+  "shin.L",
+  "foot.L",
+  "thigh.R",
+  "shin.R",
+  "foot.R",
+  "tail.1",
+  "tail.2",
+  "tail.3"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  2,
+  3,
+  2,
+  5,
+  6,
+  2,
+  8,
+  9,
+  0,
+  11,
+  12,
+  0,
+  14,
+  15,
+  0,
+  17,
+  18
+ ],
+ "fps": 15,
+ "clips": {}
+}

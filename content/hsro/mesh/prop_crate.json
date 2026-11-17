@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_crate",
+ "kind": "static",
+ "verts": 96,
+ "tris": 72,
+ "bounds": [
+  -0.5699999928474426,
+  -0.010000020265579224,
+  -0.5699999928474426,
+  0.5699999928474426,
+  0.9099999666213989,
+  0.5699999928474426
+ ],
+ "bin": "mesh/prop_crate.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 96,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1152,
+   "count": 96,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 2304,
+   "count": 96,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 3072,
+   "count": 216,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

@@ -1,0 +1,83 @@
+{
+ "format": 1,
+ "id": "npc_creature",
+ "kind": "skinned",
+ "verts": 396,
+ "tris": 642,
+ "bounds": [
+  -0.268105149269104,
+  0.009999999776482582,
+  -0.25,
+  0.2681051790714264,
+  0.688127875328064,
+  0.26559510827064514
+ ],
+ "bin": "mesh/npc_creature.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 396,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 4752,
+   "count": 396,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 9504,
+   "count": 396,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 12672,
+   "count": 396,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 14256,
+   "count": 396,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 17424,
+   "count": 1926,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 21276,
+   "count": 630,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 23796,
+   "count": 252,
+   "type": "f"
+  }
+ },
+ "tex": "tex/npc_creature.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "body",
+  "sprout"
+ ],
+ "parents": [
+  -1,
+  0,
+  1
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  }
+ }
+}

@@ -380,3 +380,45 @@
 
 #### `shroomy`: Приключения грибочков (4★, Радость)
 > A plump red-capped spotted mushroom adventurer smiling in a bioluminescent forest glade.
+
+#### `warmth`: Холодные ночи короче, когда ты рядом (4★, Изобилие)
+> A warm desk lamp and a steaming mug of hot chocolate beside a frosted window on a snowy night.
+
+#### `meetagain`: Мы ещё встретимся (4★, Небытие)
+> Two long crossed swords sparking above dark crimson hills under a dusky sky.
+
+#### `thisisme`: Это я! (4★, Сохранение)
+> An open blue diary with a pink pin badge and a quill on a soft pink background with sparkles.
+
+#### `todarkness`: Назад во тьму (4★, Охота)
+> A pale blade rising above dark night sea waves under a cold white moon.
+
+#### `carvemoon`: Вырезать луну и кроить облака (4★, Гармония)
+> A huge golden crescent moon over fluffy clouds with a thin carving chisel and a golden thread.
+
+#### `nowhere`: Бежать некуда (4★, Разрушение)
+> A dark silhouette holding a glowing orange blade in a narrow canyon lit by flames.
+
+#### `peaceful`: Сегодня тоже мирный день (4★, Эрудиция)
+> A tidy wooden desk with papers and a steaming cup by a window overlooking calm mountains.
+
+#### `journey`: Пусть твой путь всегда будет мирным (4★, Сохранение)
+> A soft pink sleeping creature on a fluffy cloud bed under a translucent dome full of stars.
+
+#### `morrow`: Пока не наступит послезавтра (4★, Изобилие)
+> Two small white and pink flowers on a green meadow at sunset with drifting seed fluff.
+
+#### `pursuit`: Гоняясь за ветром (4★, Гармония)
+> A colourful paper pinwheel spinning over a green meadow with white streaks of wind.
+
+#### `flowermem`: Цветы не забывают (4★, Память)
+> A five-petal pink flower with a golden heart glowing among sparks on a dusky violet background.
+
+#### `wheat`: Пшеничные мечты (4★, Эрудиция)
+> Ripe golden wheat stretching to the horizon under a pale sun in a glowing amber sky.
+
+#### `thermae`: Приключения в купальне (4★, Небытие)
+> A steaming turquoise hot spring in a stone bath with a yellow rubber duck and a folded towel.
+
+#### `seeyou`: Встреча в конце пути (4★, Охота)
+> Two long blades leaning toward each other under falling petals and a red twilight sun.

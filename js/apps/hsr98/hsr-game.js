@@ -275,6 +275,7 @@
       this.fixExpScale(!!opts.state && !opts.state.xpv);
       this.fixRecaps(!!opts.state && !Array.isArray(opts.state.recaps));
       if (this.fixMissions) this.fixMissions(!!opts.state && !opts.state.missions);
+      if (this.fixAtlas) this.fixAtlas(!!opts.state && !opts.state.atlas);
       if (this.fixConductor) this.fixConductor();
       if (this.fixTraces) this.fixTraces(!!opts.state && !opts.state.trv);
       if (this.fixOutfitTiers) this.fixOutfitTiers(!!opts.state && !opts.state.otv);
@@ -1903,7 +1904,7 @@
 
     mailNew(x) { return !x.st.read || !!(x.m.give && !x.st.got); }
 
-    alerts() { return { events: this.eventsOpen() && (this.eventReady('comet') || this.eventReady('will')), mail: this.mailbox().some(x => this.mailNew(x)), chat: this.chatAlert(), missions: !!(this.missionAlert && this.missionAlert()), chars: Object.keys(this.state.roster).some(k => this.eidNew(k) > 0) }; }
+    alerts() { return { events: this.eventsOpen() && (this.eventReady('comet') || this.eventReady('will')), mail: this.mailbox().some(x => this.mailNew(x)), mail_gift: this.mailbox().some(x => x.m.give && !x.st.got), chat: this.chatAlert(), missions: !!(this.missionAlert && this.missionAlert()), chars: Object.keys(this.state.roster).some(k => this.eidNew(k) > 0) }; }
 
     eidNew(key) {
       const r = this.state.roster[key];
@@ -2101,13 +2102,13 @@
       this.clampHp('trail');
     }
 
-    runScript(name) {
+    runScript(name, opts = {}) {
       const steps = H.SCRIPTS[name] || (H.SU && H.SU.SCRIPTS && H.SU.SCRIPTS[name]);
       if (!steps) return;
-      if (this.script) { this.scriptQueue.push(name); return; }
+      if (this.script) { if (!this.replay) this.scriptQueue.push(name); return; }
       const labels = {};
       steps.forEach((st, i) => { if (typeof st === 'string' && st[0] === '#') labels[st.slice(1)] = i; });
-      this.script = { name, steps, pc: 0, labels };
+      this.script = { name, steps, pc: opts.at || 0, labels };
       this.skipping = false;
       this.advanceScript();
     }
@@ -2125,6 +2126,7 @@
           continue;
         }
         const st = sc.steps[sc.pc++];
+        if (this.replay) { const r = this.replayStep(st, sc); if (r === 'next') continue; if (r === 'stop') return; }
         if (typeof st === 'string' || st.one) {
           const line = typeof st === 'string' ? st : st.one[Math.floor(this.rng() * st.one.length)];
           if (line[0] === '#' || this.skipping) continue;

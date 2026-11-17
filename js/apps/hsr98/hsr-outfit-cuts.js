@@ -1,10 +1,7 @@
 (function (H) {
   'use strict';
   const G = H.Gfx, K = H.Cine.Kit, ST = H.Ults.Stage;
-  const { W, HGT, C } = H.UI_CONST;
-  const { LW, LH, BAR, cl, lerp, eOut, eIn, seg, hx, rgba, vgrad, glow, lighter, poly, rect, ell, line, ring, flash, vignette } = K;
-  const SKILL_FADE = 0.2;
-  const buf = { cv: null };
+  const { LW, LH, BAR, lerp, eOut, eIn, seg, hx, rgba, vgrad, glow, lighter, poly, rect, ell, line, ring, flash, vignette } = K;
   const FLOOR = LH - BAR;
   const RED = '#c41e2a', DEEP = '#7a1018', EDGE = '#ff9a2a', HOT = '#fff0c8', SUIT = '#1c1a20';
   const SUN = { x: 236, y: 74, r: 22 };
@@ -419,73 +416,9 @@
     }
   };
 
-  class SkillShow {
-    constructor(ui, u, o = {}) {
-      this.ui = ui; this.game = ui.game; this.u = u;
-      const forced = o.outfit !== undefined, kit = H.CHARS[u.charId] || {}, el = H.ELEMENTS[u.elem] || H.ELEMENTS.phys;
-      this.outfit = forced ? o.outfit : H.wornOutfit(u.charId, this.game);
-      this.def = H.outfitCutOf(this.outfit, 'skill');
-      this.P = { u, id: u.charId, elem: u.elem, col: el.col, name: o.name || (kit.skill && kit.skill.name) || '', look: H.outfitLook(this.outfit, this.game.state.gender), foes: o.foes || [], bg: o.bg || 'station' };
-      this.beats = [{ id: 'act', d: this.def.d, sfx: this.def.sfx }];
-      this.i = 0; this.t = 0; this.T = 0; this.cue = 0; this.fade = 0; this.done = false;
-    }
-
-    get length() { return this.def.d + SKILL_FADE; }
-    get beat() { return this.beats[0]; }
-    get fading() { return this.fade > 0; }
-
-    tick(dt) {
-      if (this.done) return;
-      if (this.fade > 0) { this.fade += dt; if (this.fade >= SKILL_FADE) this.done = true; return; }
-      this.t += dt; this.T += dt;
-      const cues = this.def.sfx || [];
-      while (this.cue < cues.length && cues[this.cue][0] <= this.t) this.ui.sfx(cues[this.cue++][1]);
-      if (this.t >= this.def.d) this.fade = 0.001;
-    }
-
-    skip() { if (!this.fade) this.fade = 0.001; }
-
-    render() {
-      const rw = this.ui && this.ui.wide && this.ui.wide() ? 427 : LW, ox = (rw - LW) >> 1;
-      const cv = buf.cv && buf.cv.width === rw ? buf.cv : (buf.cv = G.mkCanvas(rw, LH)), g = cv.getContext('2d');
-      g._wide = rw > LW;
-      g.save();
-      g.imageSmoothingEnabled = false;
-      if (ox) g.translate(ox, 0);
-      const S = H.Cine.stage(g, this.game, this.T);
-      S.t = Math.min(this.t, this.def.d); S.d = this.def.d;
-      this.def.act(S, this.P);
-      g.restore();
-      if (this.t < 0.08) flash(g, '#ffffff', 0.6 * (1 - this.t / 0.08));
-      H.Cine.dither(g);
-      return cv;
-    }
-
-    draw(c) {
-      const ui = this.ui, P = this.P, cv = this.render();
-      c.save();
-      c.globalAlpha = this.fade > 0 ? 1 - cl(this.fade / SKILL_FADE) : 1;
-      c.imageSmoothingEnabled = false;
-      c.drawImage(cv, ui.left, 0, ui.vw, HGT);
-      c.fillStyle = '#000000'; c.fillRect(ui.left, 0, ui.vw, BAR * 2); c.fillRect(ui.left, HGT - BAR * 2, ui.vw, BAR * 2);
-      c.fillStyle = rgba(P.col, 0.7); c.fillRect(ui.left, BAR * 2 - 1, ui.vw, 1); c.fillRect(ui.left, HGT - BAR * 2, ui.vw, 1);
-      const k = eOut(cl(this.t / 0.25));
-      c.globalAlpha *= k;
-      ui.text('НАВЫК', ui.left + 14 - (1 - k) * 60, 14, { size: 10, bold: true, col: G.light(P.col, 0.3) });
-      ui.text(P.name, ui.left + 14 - (1 - k) * 60, 28, { size: 14, bold: true, serif: true, col: C.gold });
-      ui.text(P.u.name, ui.right - 14, HGT - BAR * 2 + 16, { align: 'right', size: 11, bold: true, col: C.cream });
-      c.restore();
-      if (!this.fade) {
-        ui.hints([['Esc', 'Пропустить']], ui.right - 12, 20, { align: 'right' });
-        ui.hit(ui.left, 0, ui.vw, HGT, () => this.skip());
-      }
-    }
-  }
-
   H.OUTFIT_CUTS = Object.assign(H.OUTFIT_CUTS || {}, {
     himeko_vermilion: { ult: ULT, skill: SKILL, fusions: { f_singularity: FUSION_SINGULARITY }, warp: WARP, eidolon: EIDOLON }
   });
-  H.SkillShow = SkillShow;
   H.OutfitCutArt = { blade, eclipse, sky, rails, slash, flameWave, unsheathed, emptySuit, cupMini, finale };
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

@@ -604,6 +604,7 @@
         ui.button(bkBtnX, 10, 88, 22, 'Книги ' + bk.got + '/' + bk.total, () => { ui.sfx('select'); ui.openBookshelf(null); }, { size: 9, icon: 'archive', active: bk.hasNew });
         if (bk.hasNew) drawStar4(c, bkBtnX + 84, 12, 4, '#ffe28a');
         ui.button(chBtnX, 10, 84, 22, 'Хроники', () => { this.setTab(0); ui.sfx('select'); }, { size: 9, icon: 'fusions' });
+        ui.button(bkBtnX - 92, 10, 88, 22, 'Атлас', () => this.openAtlasHere(null), { size: 9, icon: 'atlas', disabled: !g.atlasOpen(), active: g.atlasOpen() && g.atlasAlert() });
         ui.closeBtn(W - 32, 10, () => this.key('back'));
 
         ASTRO_NODES.forEach((nd, i) => {
@@ -638,7 +639,7 @@
           ui.button(bx, dockY + 3, 97, 22, it.label, () => { this.setTab(it.tab); ui.sfx('select'); }, { size: 9, icon: it.icon });
         });
 
-        ui.hints([['←→↑↓', 'Выбор раздела'], ['Enter', 'Открыть'], ['B', 'Книги'], ['H', 'Хроники'], ['Esc', 'Закрыть']], lx + 16, HGT - 18);
+        ui.hints([['←→↑↓', 'Выбор раздела'], ['Enter', 'Открыть'], ['T', 'Атлас'], ['B', 'Книги'], ['H', 'Хроники'], ['Esc', 'Закрыть']], lx + 16, HGT - 18);
       },
       drawSecHeader(c, title, got, total) {
         const lx = ui.left, rx = ui.right;
@@ -1145,6 +1146,7 @@
           ui.wrap(r.x.title, 200, 13).slice(0, 2).forEach((l, i) => ui.text(l, 402, 74 + i * 15, { size: 13, bold: true, serif: true, col: C.gold }));
           c.fillStyle = C.brassDk; c.fillRect(366, 108, 240, 1);
           ui.wrap(r.x.text, 240, 11).forEach((l, i) => ui.text(l, 366, 120 + i * 15, { size: 11 }));
+          ui.button(366, 392, 240, 26, 'Пересмотреть · Enter', () => this.openAtlasHere(r.x.id), { size: 11, icon: 'atlas', active: g.atlasOpen(), disabled: !g.atlasOpen() });
         } else {
           const e = r.e, [note, ncol] = warpNote(e);
           if (e.kind === 'char') ui.portraitCard(c, G.lookOf(e.id, g), 450, 62, 72, { elem: H.CHARS[e.id].elem, border: G.RARITY[e.rar] });
@@ -1160,8 +1162,13 @@
         }
         const hints = [['Q/E', 'Раздел'], ['←→', 'Раздел'], ['↑↓', 'Выбор'], ['H', 'Астролябия']];
         if (this._tab === 3 && rows.length) hints.push(['Enter', 'Вся история']);
+        if (this._tab === 4 && rows.length) hints.push(['Enter', 'Пересмотреть']);
         hints.push(['Esc', 'Закрыть']);
         ui.hints(hints, 20, HGT - 18);
+      },
+      openAtlasHere(beat) {
+        if (!g.atlasOpen()) { ui.toast('«Атлас» доступно после знакомства с Экспрессом.'); ui.sfx('deny'); return; }
+        ui.openAtlas(beat ? g.atlasBeatNode(beat) : null, beat);
       },
       draw(c) {
         if (this.mode === 'hub') return this.drawHub(c);
@@ -1174,6 +1181,7 @@
           if (k === 'right' || k === 'down') { this.hubSel = (this.hubSel + 1) % ASTRO_NODES.length; ui.sfx('move'); return; }
           if (k === 'left' || k === 'up') { this.hubSel = (this.hubSel + ASTRO_NODES.length - 1) % ASTRO_NODES.length; ui.sfx('move'); return; }
           if (code === 'KeyB') { ui.sfx('select'); ui.openBookshelf(null); return; }
+          if (code === 'KeyT') { this.openAtlasHere(null); return; }
           if (code === 'KeyH') { this.setTab(0); ui.sfx('select'); return; }
           if (k === 'ok') { ui.sfx('select'); this.openSection(ASTRO_NODES[this.hubSel].id, null, false); return; }
           if (k === 'back') { ui.screens.pop(); ui.sfx('cancel'); if (close) close(); return; }
@@ -1226,6 +1234,7 @@
         if (k === 'left' || code === 'KeyQ') { this.setTab((this._tab + n - 1) % n); ui.sfx('select'); return; }
         if (k === 'right' || code === 'KeyE') { this.setTab((this._tab + 1) % n); ui.sfx('select'); return; }
         if (k === 'ok' && this._tab === 3 && rows.length) { ui.openWarpHistory(rows[this.sel].e.ban); return; }
+        if (k === 'ok' && this._tab === 4 && rows.length) { this.openAtlasHere(rows[this.sel].x.id); return; }
         if (k === 'back' || (k === 'ok' && !rows.length)) { ui.screens.pop(); ui.sfx('cancel'); if (close) close(); }
       }
     };

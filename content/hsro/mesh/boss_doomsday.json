@@ -1,0 +1,135 @@
+{
+ "format": 1,
+ "id": "boss_doomsday",
+ "kind": "skinned",
+ "verts": 1656,
+ "tris": 2133,
+ "bounds": [
+  -2.5,
+  0.0,
+  -3.215866804122925,
+  2.5,
+  5.400000095367432,
+  5.199999809265137
+ ],
+ "bin": "mesh/boss_doomsday.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 1656,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 19872,
+   "count": 1656,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 39744,
+   "count": 1656,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 52992,
+   "count": 1656,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 59616,
+   "count": 1656,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 72864,
+   "count": 6399,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 85664,
+   "count": 2940,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 97424,
+   "count": 1176,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 102128,
+   "count": 980,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 106048,
+   "count": 1568,
+   "type": "f"
+  },
+  "clip:idle2": {
+   "offset": 112320,
+   "count": 2940,
+   "type": "f"
+  }
+ },
+ "tex": "tex/boss_doomsday.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "chest",
+  "neck",
+  "head",
+  "arm.L.u",
+  "arm.L.l",
+  "arm.R.u",
+  "arm.R.l",
+  "tail.1",
+  "tail.2",
+  "leg.L.u",
+  "leg.L.l",
+  "leg.R.u",
+  "leg.R.l"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  2,
+  1,
+  4,
+  1,
+  6,
+  0,
+  8,
+  0,
+  10,
+  0,
+  12
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  },
+  "idle2": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle2"
+  }
+ }
+}

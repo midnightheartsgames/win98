@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_rift",
+ "kind": "static",
+ "verts": 150,
+ "tris": 110,
+ "bounds": [
+  -1.0,
+  0.0,
+  -0.30000001192092896,
+  1.0,
+  2.919999837875366,
+  0.30000001192092896
+ ],
+ "bin": "mesh/prop_rift.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 150,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1800,
+   "count": 150,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 3600,
+   "count": 150,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 4800,
+   "count": 330,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

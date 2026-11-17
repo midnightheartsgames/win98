@@ -18,7 +18,7 @@
       base: { hp: 170, atk: 81, def: 82, spd: 95 },
       look: { skin: '#f7dcc9', hair: '#8c898c', eye: '#f0b83a', bangs: 'sweep', sides: 'feather', back: 'wolf', crown: 'smooth', gloss: true, jaw: 'v', body: 'slim', coat: 'split', coatLen: 23, top: '#27252b', coatLow: '#27252b', lining: '#e8b838', backLining: true, trim: '#e2b64a', inner: '#f3f1ec', collar: 'hood', lower: '#2a2830', low: 'pants', shoes: '#2c2a2e', gloves: '#1e1c22', sashSide: 'r', sashTo: 'knee', acc: ['feather', 'rolled:#8a8890', 'piping:#e8c040', 'shbuckle:#d8b050', 'goldcuff:#d8b050', 'armribbon:#e8c040', 'knifebelt:#3a383e', 'watch:#d8b050', 'sashtail:#e8c040', 'pantstripe:#7a3a30', 'soles:#e8e8ec'] },
       basic: { name: 'Ледокол', target: 'single', fx: [{ k: 'dmg', m: 1.0 }, { k: 'magma', v: 1 }] },
-      enhanced: { name: 'Ледокол: Магма', target: 'blast', fx: [{ k: 'dmg', m: 0.9, adj: 0.36, plusDef: 0.45, adjDef: 0.18 }] },
+      enhanced: { name: 'Ледокол: Магма', cut: 'magma', target: 'blast', fx: [{ k: 'dmg', m: 0.9, adj: 0.36, plusDef: 0.45, adjDef: 0.18 }] },
       skill: { name: 'Вечногорящий янтарь', target: 'self', fx: [{ k: 'buff', s: 'dr', v: 0.5, turns: 1, who: 'self', name: 'Янтарь' }, { k: 'taunt', turns: 1, who: 'self' }, { k: 'magma', v: 1 }] },
       ult: { name: 'Копьё пылающей войны', target: 'all', fx: [{ k: 'dmg', m: 1.0, plusDef: 1.5 }, { k: 'magma', v: 4 }] },
       talent: 'После любой способности даёт щит всем союзникам (6% защиты + 20). 4 заряда Магмы усиливают атаку.',
@@ -174,7 +174,7 @@
       look: { mood: 'smile', skin: '#f9e2d4', hair: '#d8cc58', eye: '#d89a20', eye2: '#f4d060', bangs: 'blunt', sides: 'short', back: 'twin', crown: 'smooth', gloss: true, body: 'small', coat: 'mid', coatLen: 9, coatFlare: 3, lining: '#3a2c26', top: '#4a3a32', trim: '#f1ede4', inner: '#e8b830', collar: 'fur', lower: '#2e2826', hem: '#e2b232', low: 'skirt', skirtLen: 7, shoes: '#22222a', gloves: '#22222a', acc: ['molehat', 'bow:#e8b020', 'molebadge:#d8b050', 'yoke:#e8b020', 'tiestripe:#e8b020', 'pouches:#e8b020', 'furcuffs:#f2ead8', 'kneepadr:#9aa0aa', 'socktop:#e8b020', 'boots:#22222a', 'bootband:#d85030'] },
       basic: { name: 'Ударь сильнее!', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skill: { name: 'Запомни Хук!', target: 'single', fx: [{ k: 'dmg', m: 2.4 }, { k: 'dot', type: 'burn', m: 0.35, turns: 2, chance: 1 }] },
-      enhanced: { name: 'Хук в ярости!', target: 'blast', fx: [{ k: 'dmg', m: 2.8, adj: 0.8 }, { k: 'dot', type: 'burn', m: 0.35, turns: 2, chance: 1 }] },
+      enhanced: { name: 'Хук в ярости!', cut: 'rage', target: 'blast', fx: [{ k: 'dmg', m: 2.8, adj: 0.8 }, { k: 'dot', type: 'burn', m: 0.35, turns: 2, chance: 1 }] },
       ult: { name: 'Смотри, туда!', target: 'single', fx: [{ k: 'dmg', m: 4.0 }, { k: 'hookEnhance' }] },
       talent: 'Атакуя горящего врага, наносит 100% доп. огненного урона и получает 5 энергии.',
       tech: { name: 'Хи-хи, ловушка!', text: 'Поджигает всех врагов в начале боя.', fx: 'burnAll' },
@@ -277,7 +277,7 @@
       charged: [
         { name: 'Симоцуки', lv: 1, target: 'single', fx: [{ k: 'dmg', m: 2.4, tough: 20, charged: true }] },
         { name: 'Симоцуки', lv: 2, target: 'blast', fx: [{ k: 'dmg', m: 3.2, adj: 1.2, tough: 25, charged: true }] },
-        { name: 'Симоцуки', lv: 3, target: 'blast', fx: [{ k: 'dmg', m: 4.4, adj: 1.8, tough: 30, charged: true }] }
+        { name: 'Симоцуки', lv: 3, cut: 'shimo3', target: 'blast', fx: [{ k: 'dmg', m: 4.4, adj: 1.8, tough: 30, charged: true }] }
       ],
       skill: { name: 'Хисэцу', target: 'blast', fx: [{ k: 'dmg', m: 1.8, adj: 0.6 }, { k: 'frost', v: 2 }] },
       ult: { name: 'Последний снег', target: 'all', fx: [{ k: 'dmg', m: 2.2 }, { k: 'frost', v: 3 }, { k: 'buff', s: 'iceP', v: 0.3, turns: 2, who: 'self', name: 'Последний снег' }] },
@@ -330,8 +330,8 @@
       basic: { name: 'Прицельная стрельба', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skills: [
         { name: 'Кража', target: 'single', punch: 3, elRider: 0.2, fx: [{ k: 'dmg', m: 1.2 }, { k: 'steal' }] },
-        { name: 'Связывание', target: 'single', punch: 3, elRider: 0.2, fx: [{ k: 'dmg', m: 0.6 }, { k: 'bind' }] },
-        { name: 'Иссушающее касание', target: 'ally', noSelf: true, punch: 3, fx: [{ k: 'drain', m: 0.8 }] }
+        { name: 'Связывание', cut: 'bind', target: 'single', punch: 3, elRider: 0.2, fx: [{ k: 'dmg', m: 0.6 }, { k: 'bind' }] },
+        { name: 'Иссушающее касание', cut: 'drain', target: 'ally', noSelf: true, punch: 3, fx: [{ k: 'drain', m: 0.8 }] }
       ],
       skillText: 'Кража снимает усиление и щит. Связывание: враг пропустит ход. Касание: энергия союзнику. Каждый режим: +3 Юмора.',
       ult: { name: 'Великая кража', target: 'single', punch: 5, ahaAdv: 0.15, elRider: 0.4, fx: [{ k: 'dmg', m: 3.0, tough: 30 }, { k: 'heist' }] },
@@ -367,7 +367,7 @@
       base: { hp: 186, atk: 70, def: 98, spd: 90 },
       look: { skin: '#fbe8de', hair: '#f6d870', hairHi: '#fff2b0', tips: '#f0a040', tipsFade: true, tipsAt: 58, eye: '#4a80d0', eye2: '#8ab8f0', bangs: 'wisp', sides: 'long', back: 'hightail', crown: 'smooth', gloss: true, body: 'tallf', coat: 'crusader', top: '#f8b030', trim: '#f0983a', inner: '#38363c', neck: '#38363c', collar: 'high', sleeve: '#38363c', plate: '#f2eef8', lower: '#3a383e', low: 'none', legs: '#38363c', shoes: '#e4e0ec', gloves: '#2a2a30', acc: ['xclips:#d02a3a', 'ribbonbow:#c82838', 'wingpad:#f4f2fa', 'platepad:#ece6f4', 'studbelt:#4a4044', 'gauntlets:#d07a34', 'greaves:#e8e4f0'] },
       basic: { name: 'Боковой удар', target: 'single', fx: [{ k: 'swing', m: 1.8, def: 1.0 }] },
-      enhanced: { name: 'Случайно попала!', target: 'blast', fx: [{ k: 'dmg', m: 1.8, plusDef: 1.0, adj: 0.9, adjDef: 0.5, ecst: true }, { k: 'ecstasySpend' }] },
+      enhanced: { name: 'Случайно попала!', cut: 'ecstasy', target: 'blast', fx: [{ k: 'dmg', m: 1.8, plusDef: 1.0, adj: 0.9, adjDef: 0.5, ecst: true }, { k: 'ecstasySpend' }] },
       skill: { name: 'Приманка', target: 'self', fx: [{ k: 'taunt', turns: 2, who: 'self' }, { k: 'buff', s: 'dr', v: 0.3, turns: 2, who: 'self', name: 'Приманка' }, { k: 'shield', m: 0.2, flat: 30, turns: 2, who: 'self' }] },
       ult: { name: 'Крестоносец прикроет', target: 'self', fx: [{ k: 'cover', turns: 2 }, { k: 'heal', m: 0.2, flat: 0, who: 'self' }, { k: 'ecstasy', v: 3 }, { k: 'taunt', turns: 2, who: 'self' }] },
       talent: 'Попадает только по неподвижным. Удары по ней копят Восторг, на 6 случайно попадёт (180%).',

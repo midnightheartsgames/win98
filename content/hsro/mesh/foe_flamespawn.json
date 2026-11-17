@@ -1,0 +1,107 @@
+{
+ "format": 1,
+ "id": "foe_flamespawn",
+ "kind": "skinned",
+ "verts": 411,
+ "tris": 522,
+ "bounds": [
+  -0.699999988079071,
+  0.25999999046325684,
+  -0.1599999964237213,
+  0.699999988079071,
+  1.7400000095367432,
+  0.1599999964237213
+ ],
+ "bin": "mesh/foe_flamespawn.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 411,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 4932,
+   "count": 411,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 9864,
+   "count": 411,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 13152,
+   "count": 411,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 14796,
+   "count": 411,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 18084,
+   "count": 1566,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 21216,
+   "count": 1050,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 25416,
+   "count": 420,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 27096,
+   "count": 350,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 28496,
+   "count": 560,
+   "type": "f"
+  }
+ },
+ "tex": "tex/foe_flamespawn.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "core",
+  "wing.L",
+  "wing.R",
+  "tail"
+ ],
+ "parents": [
+  -1,
+  0,
+  0,
+  0,
+  0
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

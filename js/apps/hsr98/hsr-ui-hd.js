@@ -1,6 +1,6 @@
 (function (H) {
   'use strict';
-  const G = H.Gfx, HD = H.HD;
+  const G = H.Gfx, HD = H.HD, TUN = HD.TUN;
   const { W, HGT, C } = H.UI_CONST;
   const K = { red: '#ff4a3a', redDk: '#5a1410', led: '#ff9a7a', rail: '#c9a45c' };
   const fmt = n => H.fmt(Math.round(n));
@@ -30,12 +30,13 @@
       const items = () => {
         const run = g.hdRun(), list = [];
         if (hub && hub.pick) {
-          for (const d of Object.keys(HD.DIFFS)) list.push({ id: 'd:' + d, diff: d, label: HD.DIFFS[d].name + (g.hdCanDiff(d) ? '' : ' (закрыта)') });
+          for (const d of Object.keys(HD.DIFFS)) list.push({ id: 'd:' + d, diff: d, label: HD.DIFFS[d].name + (g.hdCanDiff(d, hub.pick === 'custom' ? 'custom' : null) ? '' : ' (закрыта)') });
           list.push({ id: 'back', label: 'Назад' });
           return list;
         }
-        if (run) list.push({ id: 'go', label: run.phase === 'draft' ? 'Продолжить (выбор героя)' : 'Продолжить (волна ' + run.wave + ')' });
-        else list.push({ id: 'new', label: '1 ИГРОК: начать оборону' });
+        const tag = run && run.mode === 'custom' ? 'Сборка, ' : '';
+        if (run) list.push({ id: 'go', label: run.phase === 'draft' ? 'Продолжить (' + tag + (run.mode === 'custom' ? 'броски' : 'выбор героя') + ')' : 'Продолжить (' + tag + 'волна ' + run.wave + ')' });
+        else list.push({ id: 'new', label: '1 ИГРОК: начать оборону' }, { id: 'custom', label: '1 ИГРОК: СБОРКА' });
         const link = globalThis.Net98;
         if (link && link.me && link.me.table) list.push({ id: 'rejoin', label: 'Вернуться за стол' });
         list.push(link ? { id: 'coop', label: '2–4 ИГРОКА' } : { id: 'coop', label: '2–4 ИГРОКА: скоро', off: true });
@@ -47,18 +48,19 @@
         return list;
       };
       const act = (s, id) => {
-        if (id === 'go') { if (g.hdRun().phase === 'draft') ui.openHdDraft(); else ui.openHdArena(); return; }
-        if (id === 'new' || id === 'diff') { s.pick = id === 'new' ? 'start' : 'set'; s.back = s.sel; s.sel = Object.keys(HD.DIFFS).indexOf(pref()); return; }
+        if (id === 'go') { const R = g.hdRun(); if (R.phase !== 'draft') ui.openHdArena(); else if (R.mode === 'custom' && R.players[0].hero) ui.openHdRoll(); else ui.openHdDraft(); return; }
+        if (id === 'new' || id === 'diff' || id === 'custom') { s.pick = id === 'new' ? 'start' : id === 'custom' ? 'custom' : 'set'; s.back = s.sel; s.sel = Object.keys(HD.DIFFS).indexOf(pref()); return; }
         if (id === 'back') { s.pick = false; s.sel = s.back || 0; return; }
         if (id === 'rejoin') { ui.netRejoin(); return; }
         if (id === 'coop') { if (globalThis.Net98) ui.netOpenTable(); else ui.sfx('deny'); return; }
         if (id.startsWith('d:')) {
           const d = id.slice(2);
-          if (!g.hdCanDiff(d)) { ui.sfx('deny'); return; }
-          D.opts.diff = d;
-          const start = s.pick === 'start';
+          const mode = s.pick === 'custom' ? 'custom' : null;
+          if (!g.hdCanDiff(d, mode)) { ui.sfx('deny'); return; }
+          if (!mode) D.opts.diff = d;
+          const start = s.pick === 'start' || !!mode;
           s.pick = false; s.sel = s.back || 0;
-          if (start) { g.hdNew({ diff: d }); ui.openHdDraft(); } else ui.sfx('confirm');
+          if (start) { g.hdNew({ diff: d, mode }); ui.openHdDraft(); } else ui.sfx('confirm');
           return;
         }
         if (id === 'quit') {
@@ -202,7 +204,7 @@
         if (!g.hdTake(s.sel)) return;
         ui.sfx('confirm');
         ui.screens.splice(ui.screens.indexOf(s), 1);
-        ui.openHdArena();
+        if (g.hdRun().phase === 'draft') ui.openHdRoll(); else ui.openHdArena();
       };
       const refresh = (s, R) => {
         if (net) { if (!net.takes[net.seat] && R.draft.cards[s.sel].left > 0) net.send({ t: 'refresh', i: s.sel }); else ui.sfx('deny'); return; }
@@ -216,6 +218,8 @@
           if (ui.netSession !== net || !ui.screens.includes(this)) return;
           net.advance(dt);
           if (net.A) { ui.netRoute(); return; }
+          const mine = run().players[0];
+          if (net.mode === 'custom' && mine.hero && mine.roll && ui.top() === this) { ui.openHdRoll(null, net); return; }
           const now = run().draft.cards.map(cd => cd.hero);
           if (this.shown) now.forEach((id, i) => { if (id !== this.shown[i]) { this.roll[i] = 0.35; ui.sfx('shuffle'); } });
           this.shown = now;
@@ -268,10 +272,12 @@
           yy += 14;
           ui.text('Скорость ' + Math.round(st.spd) + ' · НР ' + fmt(st.hpMax), x + 12, yy, { size: 10, col: C.sub });
           yy += 16;
-          ui.wrap(d.role, CW - 24, 10).slice(0, 2).forEach(l => { ui.text(l, x + 12, yy, { size: 10, col: C.cream }); yy += 13; });
+          const role = R.mode === 'custom' ? [HD.ATTR_NAME[d.main], d.melee ? 'ближний бой' : 'дальний бой', HD.ARMOR_NAME[d.armor] + ' броня'].join(' · ') : d.role;
+          ui.wrap(role, CW - 24, 10).slice(0, 2).forEach(l => { ui.text(l, x + 12, yy, { size: 10, col: C.cream }); yy += 13; });
           yy += 4;
           const names = { q: k.skill.name, e: k.tech.name, t: 'Талант', r: k.ult.name };
-          for (const sl of ['q', 'e', 't', 'r']) {
+          if (R.mode === 'custom') ui.wrap('Оболочка: тело и числа без способностей. Навыки выпадут следом.', CW - 24, 10).forEach(l => { ui.text(l, x + 12, yy, { size: 10, col: C.sub }); yy += 13; });
+          else for (const sl of ['q', 'e', 't', 'r']) {
             ui.keycap(x + 12, yy, sl.toUpperCase());
             ui.text(ui.clip(names[sl], CW - 46, 10), x + 32, yy + 1, { size: 10, col: C.cream });
             yy += 16;
@@ -302,6 +308,148 @@
           if (code === 'KeyR') { refresh(this, R); return; }
           if (code === 'KeyC') { this.card = { tab: 0, top: 0 }; ui.sfx('select'); return; }
           if (k === 'ok' && R) take(this);
+        }
+      });
+    },
+
+    hdRollTitle(R, holder) {
+      if (R.slot === 'g') return 'Бросок таланта ' + (holder.gifts.length + 1) + ' из 2';
+      if (R.slot === 't') return 'Бросок Таланта';
+      if (R.slot === 'r') return 'Бросок Абсолютной техники';
+      return 'Бросок навыка ' + (R.slot === 'q' ? 1 : 2) + ' из 2';
+    },
+
+    hdPieceFrom(id) {
+      const P = HD.PIECES[id];
+      return { q: 'Навык', e: 'Техника', t: 'Талант', r: 'Абсолютная техника' }[P.part] + ' · ' + H.CHARS[P.kit].name;
+    },
+
+    hdPieceInfo(id, holder) {
+      const S = HD.CUSTOM.SPARE[id];
+      if (S) return { name: S.name, from: 'Запасной талант', text: S.text, kit: null };
+      const Gf = HD.GIFTS[id];
+      if (Gf) return { name: Gf.name, from: (Gf.kind === 'tr' ? 'След' : 'Эйдолон') + ' · ' + H.CHARS[Gf.kit].name, text: HD.pieceText(id), kit: Gf.kit, part: Gf.kind === 'tr' ? 't' : 'r', gift: true };
+      const P = HD.PIECES[id], lv = P.part === 'r' ? TUN.ultLvl[0] : TUN.abilLvl[0];
+      const cost = P.part === 't' ? '' : 'ЭН ' + (P.part === 'r' ? H.CHARS[P.kit].energy : P.spec.cost) + ' · ' + HD.pieceCd(id) + ' с';
+      const out = { name: HD.pieceName(id), from: this.hdPieceFrom(id), text: HD.pieceText(id, lv), alone: HD.pieceAlone(id), cost, kit: P.kit, part: P.part };
+      const scale = HD.pieceScale(id), shell = holder && (holder.hero || holder.key);
+      if (scale && shell) {
+        const st = holder.hpMax ? { hpMax: holder.hpMax, dmg: holder.dmg } : HD.heroStats(shell, 1);
+        out.scale = scale === 'hp' ? 'Опора: макс. НР ' + fmt(st.hpMax) : 'Опора: урон атаки ' + fmt(st.dmg);
+      }
+      const links = HD.pieceLinks(id);
+      if (links.length) {
+        const own = holder ? Object.values(holder.kit || {}) : [];
+        out.link = 'Связка: ' + links.map(l => this.hdPieceFrom(l)).join(', ');
+        out.linked = links.some(l => own.includes(l));
+      }
+      return out;
+    },
+
+    openHdRoll(arena, draftNet) {
+      const ui = this, g = this.game, STOP = [0.5, 0.8, 1.1], CW = 200, CH = 352, CY = 64;
+      const A = arena && arena.arena, net = (arena && arena.net) || draftNet || null;
+      const holder = () => (A ? A.heroes[arena.me] : net ? net.drafts[net.seat].players[0] : g.hdRun().players[0]);
+      const roll = () => holder().roll;
+      const done = s => {
+        if (!ui.screens.includes(s)) return;
+        ui.screens.splice(ui.screens.indexOf(s), 1);
+        if (!A && !net) { if (g.hdRun().phase === 'draft') ui.openHdRoll(); else ui.openHdArena(); }
+      };
+      const send = (a, i) => { if (A) A.cmd({ t: 'roll', a, i }); else net.send({ t: a, i }); };
+      const take = s => {
+        const R = roll();
+        if (!R) return;
+        if (net) { if (!s.sent) { s.sent = R; send('take', s.sel); ui.sfx('confirm'); } return; }
+        const ok = A ? A.rollCmd(holder(), { a: 'take', i: s.sel }) : !!g.hdRollTake(s.sel);
+        if (!ok) { ui.sfx('deny'); return; }
+        ui.sfx('confirm');
+        if (A) arena.drain();
+        if (roll() && (A || g.hdRun().phase === 'draft')) { s.age = 0; s.sel = 0; s.roll = [0, 0, 0]; return; }
+        done(s);
+      };
+      const refresh = s => {
+        if (net) { if (roll() && roll().cards[s.sel].left > 0 && !s.sent) { send('refresh', s.sel); s.roll[s.sel] = 0.35; ui.sfx('shuffle'); } else ui.sfx('deny'); return; }
+        const ok = A ? A.rollCmd(holder(), { a: 'refresh', i: s.sel }) : g.hdRollRefresh(s.sel);
+        if (ok) { s.roll[s.sel] = 0.35; ui.sfx('shuffle'); } else ui.sfx('deny');
+      };
+      return this.push({
+        full: true, hd: true, draft: true, sel: 0, age: 0, roll: [0, 0, 0],
+        tick(dt) {
+          this.age += dt; this.roll = this.roll.map(r => Math.max(0, r - dt));
+          if (draftNet && (ui.netSession !== draftNet || draftNet.A)) { done(this); return; }
+          if (net && this.sent && roll() !== this.sent) { this.sent = null; this.age = 0; this.sel = 0; this.roll = [0, 0, 0]; }
+          if (!roll()) done(this);
+        },
+        ready() { return this.age >= STOP[2]; },
+        draw(c) {
+          const R = roll(), who = holder(), shell = who.hero || who.key;
+          if (!R) return;
+          c.fillStyle = '#07060f'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = ui.dither(); c.fillRect(0, 0, W, HGT);
+          c.fillStyle = '#10142e'; c.fillRect(0, 0, W, 34);
+          c.fillStyle = C.brass; c.fillRect(0, 34, W, 1);
+          G.drawPortrait(c, G.lookOf(shell, g), 6, 4, 26);
+          ui.text(ui.clip('Сборка: ' + H.CHARS[shell].name, 230, 11, true), 38, 5, { size: 11, bold: true, col: C.gold });
+          let ix = 38;
+          for (const sl of ['q', 'e', 't', 'r']) {
+            const id = who.kit[sl];
+            c.fillStyle = '#05040c'; c.fillRect(ix, 19, 13, 13);
+            if (id) G.hdAbilIcon(c, G.lookOf(HD.PIECES[id].kit, g), HD.PIECES[id].part, H.CHARS[shell].elem, ix, 19, 13, HD.PIECES[id].kit);
+            else ui.text(sl === 't' ? '3' : sl === 'r' ? '5' : '·', ix + 6, 20, { align: 'center', size: 9, col: C.dim });
+            ix += 16;
+          }
+          ui.text('· таланты ' + (who.gifts || []).length + '/2', ix + 2, 20, { size: 9, col: C.sub });
+          ui.text(ui.hdRollTitle(R, who), W - 10, 11, { align: 'right', size: 11, bold: true, col: C.cream });
+          R.cards.forEach((cd, i) => this.drawCard(c, R, cd, i, who));
+          if (net) ui.text(A ? 'Партия не остановлена · перерыв ' + Math.ceil(Math.max(0, A.breakT)) + ' с' : 'Бросок за столом · осталось ' + Math.ceil(draftNet.draftLeft()) + ' с', W / 2, CY + CH + 8, { align: 'center', size: 10, bold: true, col: '#ffb0a0' });
+          ui.hints([['←→', 'Карточка'], ['R', 'Обновить'], ['Enter', 'Взять']], W / 2, HGT - 18, { align: 'center' });
+        },
+        drawCard(c, R, cd, i, who) {
+          const x = 12 + i * 208, on = i === this.sel, y = CY - (on ? 6 : 0), stop = this.age >= STOP[i];
+          ui.win(x, y, CW, CH, { border: on ? C.brassHi : '#3a3060', corners: on });
+          c.fillStyle = '#05040c'; c.fillRect(x + 70, y + 10, 60, 50);
+          c.strokeStyle = '#6a5328'; c.strokeRect(x + 70.5, y + 10.5, 59, 49);
+          if (!stop) {
+            const paths = HD.PATHS, spin = Math.floor(this.age * 14 + i * 3) % paths.length, off = (this.age * 14 % 1) * 40;
+            c.save(); c.beginPath(); c.rect(x + 71, y + 11, 58, 48); c.clip();
+            G.pathIcon(c, paths[spin], x + 80, y + 15 - off, 40, C.brassHi);
+            G.pathIcon(c, paths[(spin + 1) % paths.length], x + 80, y + 55 - off, 40, C.brassHi);
+            c.restore();
+            ui.hit(x, y, CW, CH, () => { this.sel = i; });
+            return;
+          }
+          G.pathIcon(c, cd.path, x + 80, y + 15, 40, C.brassHi);
+          ui.text(H.PATHS[cd.path].name, x + CW / 2, y + 64, { align: 'center', size: 11, bold: true, col: C.gold });
+          const info = ui.hdPieceInfo(cd.id, who), sc = this.roll[i] / 0.35;
+          c.save(); c.beginPath(); c.rect(x + 4, y + 80, CW - 8, 52); c.clip();
+          if (info.kit) G.hdAbilIcon(c, G.lookOf(info.kit, g), info.part, H.CHARS[who.hero || who.key].elem, x + 12, y + 84 - sc * 52, 44, info.kit);
+          c.restore();
+          let yy = y + 84;
+          ui.wrap(info.name, CW - 76, 11, true).slice(0, 3).forEach(l => { ui.text(l, x + 64, yy, { size: 11, bold: true, col: on ? C.gold : C.cream }); yy += 14; });
+          yy = y + 138;
+          ui.text(ui.clip(info.from, CW - 24, 10), x + 12, yy, { size: 10, col: C.sub });
+          yy += 16;
+          const body = ui.wrap(info.text, CW - 24, 10).map(t => [t, C.cream]).concat(info.alone ? ui.wrap(info.alone, CW - 24, 10).map(t => [t, C.sub]) : []);
+          body.slice(0, info.link || info.scale ? 8 : 10).forEach(([l, col]) => { ui.text(l, x + 12, yy, { size: 10, col }); yy += 13; });
+          if (info.scale) ui.text(info.scale, x + 12, y + CH - 74, { size: 10, col: C.sub });
+          if (info.link) {
+            ui.text(ui.clip(info.link, CW - 40, 10), x + 12, y + CH - 60, { size: 10, col: info.linked ? C.ok : C.sub });
+            c.fillStyle = info.linked ? '#86e39a' : '#2a2a3a'; c.beginPath(); c.arc(x + CW - 18, y + CH - 54, 5, 0, Math.PI * 2); c.fill();
+          }
+          if (info.cost) ui.text(info.cost, x + 12, y + CH - 44, { size: 10, col: '#ffe0a0' });
+          ui.text('Обновлений:', x + 12, y + CH - 22, { size: 10, col: C.sub });
+          for (let j = 0; j < 2; j++) { c.fillStyle = j < cd.left ? '#ffd471' : '#2a2a3a'; c.beginPath(); c.arc(x + 96 + j * 14, y + CH - 16, 5, 0, Math.PI * 2); c.fill(); }
+          ui.hit(x, y, CW, CH, () => { if (this.sel === i && this.ready()) take(this); else { this.sel = i; ui.sfx('select'); } });
+          ui.hit(x + 8, y + CH - 28, CW - 16, 24, () => { this.sel = i; if (this.ready()) refresh(this); });
+        },
+        key(k, code) {
+          if (k === 'back') { ui.sfx('deny'); return; }
+          if (!this.ready()) { if (k === 'ok') this.age = STOP[2]; return; }
+          const n = (roll() || { cards: [] }).cards.length || 1;
+          if (k === 'left' || k === 'right') { this.sel = (this.sel + (k === 'left' ? n - 1 : 1)) % n; if (A && net) send('sel', this.sel); ui.sfx('select'); return; }
+          if (code === 'KeyR') { refresh(this); return; }
+          if (k === 'ok') take(this);
         }
       });
     },
@@ -367,6 +515,8 @@
           c.fillStyle = ui.dither(); c.fillRect(0, 0, W, HGT);
           ui.plate(16, 12, 'Досье героев');
           ui.text('Числа 20-го уровня, все Следы и Эйдолоны', 196, 18, { size: 10, col: C.sub });
+          ui.keycap(W - 150, 14, 'F'); ui.text('Архив записей', W - 132, 15, { size: 10, bold: true, col: C.gold });
+          ui.hit(W - 154, 10, 142, 22, () => ui.openHdArchive());
           PATHS.forEach((path, i) => {
             const y = 44 + i * 58, on = i === this.p;
             c.fillStyle = on ? '#2e2410' : '#0e1230'; c.fillRect(14, y, 52, 52);
@@ -389,10 +539,84 @@
         },
         key(k, code) {
           const n = PATHS.length;
+          if (code === 'KeyF') { ui.openHdArchive(); return; }
           if (code === 'KeyQ' || code === 'KeyE') { this.p = (this.p + (code === 'KeyQ' ? n - 1 : 1)) % n; this.sel = 0; this.card.top = 0; ui.sfx('select'); return; }
           if (k === 'up' || k === 'down') { const m = HD.heroesOf(PATHS[this.p]).length; this.sel = (this.sel + (k === 'up' ? m - 1 : 1)) % m; this.card.top = 0; ui.sfx('select'); return; }
           if (k === 'left' || k === 'right') { this.card.tab = (this.card.tab + (k === 'left' ? 2 : 1)) % 3; this.card.top = 0; ui.sfx('select'); return; }
           if (code === 'PageDown' || code === 'PageUp') { this.card.top = Math.max(0, this.card.top + (code === 'PageUp' ? -6 : 6)); return; }
+          if (k === 'back' || k === 'ok') ui.pop();
+        }
+      });
+    },
+
+    hdNeedText(need) {
+      const PART = { q: 'Навык', e: 'Техника', t: 'Талант', r: 'Абсолютная техника' };
+      if (need === '*') return 'любая способность этой записи';
+      if (need.includes('+')) return need.split('+').map(p => PART[p]).join(' и ');
+      return need.split('').map(p => PART[p]).join(' или ');
+    },
+
+    openHdArchive() {
+      const ui = this, g = this.game, PATHS = HD.PATHS;
+      const TABS = [['act', 'Навыки'], ['pas', 'Таланты'], ['ult', 'Абсолютные техники'], ['gift', 'Следы и Эйдолоны']];
+      const listOf = (kind, path) => (kind === 'gift' ? Object.values(HD.GIFTS).filter(Gf => H.CHARS[Gf.kit].path === path).map(Gf => Gf.id) : Object.values(HD.PIECES).filter(P => P.kind === kind && P.path === path).map(P => P.id));
+      return this.push({
+        full: true, hd: true, archive: true, tab: 0, p: 0, sel: 0,
+        list() { return listOf(TABS[this.tab][0], PATHS[this.p]); },
+        draw(c) {
+          const won = g.hd().won || [];
+          c.fillStyle = '#06050e'; c.fillRect(0, 0, W, HGT);
+          c.fillStyle = ui.dither(); c.fillRect(0, 0, W, HGT);
+          ui.plate(16, 12, 'Архив записей');
+          TABS.forEach(([, name], i) => {
+            const on = i === this.tab, tx = 196 + i * 108;
+            ui.text(ui.clip(name, 104, 10, on), tx, 18, { size: 10, bold: on, col: on ? C.gold : C.sub });
+            if (on) { c.fillStyle = C.brassHi; c.fillRect(tx, 31, Math.min(104, ui.measure(name, 10, true)), 2); }
+            ui.hit(tx, 12, 104, 22, () => { this.tab = i; this.sel = 0; ui.sfx('select'); });
+          });
+          PATHS.forEach((path, i) => {
+            const y = 44 + i * 58, on = i === this.p;
+            c.fillStyle = on ? '#2e2410' : '#0e1230'; c.fillRect(14, y, 52, 52);
+            c.strokeStyle = on ? C.brassHi : '#2a3460'; c.strokeRect(14.5, y + 0.5, 51, 51);
+            G.pathIcon(c, path, 22, y + 4, 36, on ? C.brassHi : '#6a6a8a');
+            ui.text(ui.clip(H.PATHS[path].name, 50, 8), 40, y + 42, { align: 'center', size: 8, col: on ? C.gold : C.dim });
+            ui.hit(14, y, 52, 52, () => { this.p = i; this.sel = 0; ui.sfx('select'); });
+          });
+          const list = this.list();
+          if (this.sel >= list.length) this.sel = Math.max(0, list.length - 1);
+          list.forEach((id, i) => {
+            const y = 44 + i * 33, on = i === this.sel, info = ui.hdPieceInfo(id);
+            c.fillStyle = on ? 'rgba(242,220,154,0.16)' : 'rgba(10,14,40,0.8)'; c.fillRect(76, y, 180, 30);
+            if (on) { c.fillStyle = C.brassHi; c.fillRect(76, y, 3, 30); }
+            if (info.kit) G.drawPortrait(c, G.lookOf(info.kit, g), 82, y + 3, 24);
+            ui.text(ui.clip(info.name, 130, 10, true), 110, y + 3, { size: 10, bold: true, col: on ? C.gold : C.cream });
+            ui.text(ui.clip(H.CHARS[info.kit].name, 120, 9), 110, y + 16, { size: 9, col: C.sub });
+            if (won.includes(id)) ui.hdStars(c, 246, y + 15, 1, 5);
+            ui.hit(76, y, 180, 30, () => { this.sel = i; ui.sfx('select'); });
+          });
+          const id = list[this.sel];
+          if (id) this.drawCard(c, id, won.includes(id));
+          ui.hints([['Q E', 'Вид'], ['←→', 'Путь'], ['↑↓', 'Запись'], ['Esc', 'Назад']], W / 2, HGT - 18, { align: 'center' });
+        },
+        drawCard(c, id, star) {
+          const x = 266, w = W - x - 12, P = HD.PIECES[id], Gf = HD.GIFTS[id];
+          const info = P ? Object.assign(ui.hdPieceInfo(id), { text: HD.pieceText(id, P.part === 'r' ? TUN.ultLvl[2] : TUN.abilLvl[4]) }) : ui.hdPieceInfo(id);
+          ui.win(x, 40, w, HGT - 80, { title: info.name });
+          let y = 62;
+          const line = (t, o = {}) => { for (const l of ui.wrap(t, w - 28, o.size || 10, o.bold)) { ui.text(l, x + 14, y, Object.assign({ size: 10, col: C.cream }, o)); y += 13; } y += 4; };
+          line(info.from, { col: C.sub });
+          if (info.cost) line(info.cost, { col: '#ffe0a0' });
+          line((P ? 'На высшем уровне: ' : '') + info.text);
+          if (info.alone) line(info.alone, { col: C.sub });
+          if (info.link) line(info.link, { col: C.sub });
+          if (Gf) line('Нужно в сборке: ' + ui.hdNeedText(Gf.needs), { col: C.sub });
+          if (star) line('С этой записью вы побеждали в Сборке.', { col: C.ok });
+        },
+        key(k, code) {
+          const n = this.list().length || 1;
+          if (code === 'KeyQ' || code === 'KeyE') { this.tab = (this.tab + (code === 'KeyQ' ? TABS.length - 1 : 1)) % TABS.length; this.sel = 0; ui.sfx('select'); return; }
+          if (k === 'left' || k === 'right') { this.p = (this.p + (k === 'left' ? PATHS.length - 1 : 1)) % PATHS.length; this.sel = 0; ui.sfx('select'); return; }
+          if (k === 'up' || k === 'down') { this.sel = (this.sel + (k === 'up' ? n - 1 : 1)) % n; ui.sfx('select'); return; }
           if (k === 'back' || k === 'ok') ui.pop();
         }
       });
@@ -436,6 +660,12 @@
           'В перерыве Экспресс восстанавливает ' + Math.round(T.baseRegen * 100) + '% НР в секунду, а герой на площади всё НР и энергию за ' + T.plazaFull + ' с.',
           'Вылазка: добивание у разлома даёт +' + Math.round(T.raidGold * 100) + '% золота. «Чистая линия»: если ни один враг не дошёл до турели, золото за волну +' + Math.round(T.cleanBonus * 100) + '%.',
           'Продвижение: победа ' + fmt(M.ascWin.easy) + ', ' + fmt(M.ascWin.normal) + ' или ' + fmt(M.ascWin.hard) + ' очков. Недельные очки: ' + fmt(M.weekWave) + ' за волну, победа сразу ' + fmt(M.weekWin) + '.'
+        ]],
+        ['Сборка', [
+          'Оболочка задаёт тело героя: атрибуты, броню, бой, стихию и Путь. Своих способностей у неё нет.',
+          'Способности выпадают барабаном: два навыка в начале, Талант после ' + T.custom.at.t + '-й волны, Абсолютная техника после ' + T.custom.at.r + '-й, два таланта после ' + T.custom.at.g + '-й. У каждой карточки два обновления.',
+          'Весь урон идёт стихией оболочки. Способность работает и без своего героя, а связка с другой его способностью возвращает работу из его набора.',
+          'Таланты это Следы и Эйдолоны героев, чьи способности попали в сборку. Выбора на 10-м и 20-м уровне нет, вместо него очко развития.'
         ]],
         ['Экипаж', [
           'За столом от двух до четырёх игроков. Хозяин выбирает сложность, зовёт друзей и начинает партию, когда все нажали «Готов». Открытый стол виден всем в списке, закрытый только по коду.',
@@ -549,7 +779,10 @@
         if (o.crew) ui.text(ui.clip(r.crew.join(', '), 220, 10, true), x + 24 + dx, yy, { size: 10, bold: true, col, shadow: false });
         else {
           ui.text(ui.clip(r.name, o.wide ? 96 : 70, 10, true), x + 24 + dx, yy, { size: 10, bold: true, col, shadow: false });
-          if (o.wide) ui.text(ui.clip(H.CHARS[r.hero].name, 120, 10), x + 126 + dx, yy, { size: 10, col, shadow: false });
+          if (o.wide && r.build && r.build.kit) {
+            ui.text(ui.clip(H.CHARS[r.hero].name, 60, 10), x + 126 + dx, yy, { size: 10, col, shadow: false });
+            ['q', 'e', 't', 'r'].forEach((sl, j) => { const id = r.build.kit[sl]; if (id) G.hdAbilIcon(c, G.lookOf(HD.PIECES[id].kit, this.game), HD.PIECES[id].part, H.CHARS[r.hero].elem, x + 190 + j * 15 + dx, yy - 1, 13, HD.PIECES[id].kit); });
+          } else if (o.wide) ui.text(ui.clip(H.CHARS[r.hero].name, 120, 10), x + 126 + dx, yy, { size: 10, col, shadow: false });
         }
         ui.text('В' + r.wave, x + w - (o.wide ? 184 : 72) + dx, yy, { size: 10, bold: true, col, shadow: false });
         ui.text(mmss(r.time), x + w - (o.wide ? 144 : 40) + dx, yy, { size: 10, col, shadow: false });
@@ -562,7 +795,7 @@
       if (sum.crewRows) return this.openHdCrewResult(sum, { view });
       const ui = this, g = this.game;
       if (!view) { this.sfx(sum.win ? 'win' : 'lose'); this.audio.music('sim'); }
-      const M = sum.meta, recs = g.hdRecords(sum.diff);
+      const M = sum.meta, recs = sum.mode === 'custom' ? g.hdCustomRecords(sum.diff) : g.hdRecords(sum.diff);
       return this.push({
         full: true, hd: true, result: true, sum, view: !!view, age: 0,
         tick(dt) { this.age += dt; },
@@ -597,6 +830,15 @@
             if (it) { G.hdItemIcon(c, it, ix + 1, iy + 1, 24); if (it.up) ui.text('+' + it.up * 3, ix + 25, iy + 16, { align: 'right', size: 8, bold: true, col: '#ffd471' }); }
           });
           if (B.cone) { G.drawConeCard(c, B.cone.id, x + 112, y + 156, 40, 56, { info: false }); ui.text('S' + B.cone.sup, x + 160, y + 198, { size: 10, bold: true, col: '#ffd471' }); }
+          if (B.kit) {
+            ['q', 'e', 't', 'r'].forEach((sl, i) => {
+              const id = B.kit[sl], ix = x + 12 + i * 22, iy = y + 220;
+              c.fillStyle = '#0e1230'; c.fillRect(ix, iy, 20, 20);
+              if (id) G.hdAbilIcon(c, G.lookOf(HD.PIECES[id].kit, g), HD.PIECES[id].part, H.CHARS[sum.hero].elem, ix, iy, 20, HD.PIECES[id].kit);
+            });
+            (B.gifts || []).forEach((id, i) => ui.text(ui.clip(HD.pieceName(id), 90, 9), x + 104, y + 218 + i * 12, { size: 9, col: C.cream }));
+            return;
+          }
           const K2 = HD.KITS[sum.hero], tr = B.tr != null && K2.tr[B.tr], ei = B.ei != null && K2.ei[B.ei];
           ui.text(ui.clip('След: ' + (tr ? tr.name : 'нет'), w - 20, 9), x + 10, y + 220, { size: 9, col: tr ? C.cream : C.dim });
           ui.text(ui.clip('Эйдолон: ' + (ei ? ei.name : 'нет'), w - 20, 9), x + 10, y + 234, { size: 9, col: ei ? C.cream : C.dim });
@@ -604,6 +846,7 @@
         drawStats(c) {
           const x = 220, y = 130, w = 196;
           ui.win(x, y, w, 252, { title: 'Итог обороны' });
+          if (sum.byFrom) { this.drawShare(c, x, y, w); return; }
           const rows = [
             ['НР Экспресса', fmt(sum.base) + ' / ' + fmt(sum.baseMax)], ['Турели целы', sum.towers + ' из 3'], ['Время волн', mmss(sum.time)],
             ['Добивания', fmt(sum.kills)], ['Урон', fmt(sum.dmg)], ['Лечение', fmt(sum.heal)],
@@ -611,6 +854,18 @@
             ['Быстрейший босс', sum.bossMin == null ? 'нет' : mmss(sum.bossMin)]
           ];
           rows.forEach(([a, b], i) => { ui.text(a, x + 12, y + 20 + i * 22, { size: 10, col: C.sub }); ui.text(b, x + w - 12, y + 20 + i * 22, { align: 'right', size: 10, bold: true, col: C.cream }); });
+        },
+        drawShare(c, x, y, w) {
+          [['НР Экспресса', fmt(sum.base) + ' / ' + fmt(sum.baseMax)], ['Добивания', fmt(sum.kills)], ['Урон', fmt(sum.dmg)], ['Лечение', fmt(sum.heal)]].forEach(([a, b], i) => { ui.text(a, x + 12, y + 20 + i * 17, { size: 10, col: C.sub }); ui.text(b, x + w - 12, y + 20 + i * 17, { align: 'right', size: 10, bold: true, col: C.cream }); });
+          ui.text('Кто держал рубеж', x + 12, y + 94, { size: 10, bold: true, col: C.gold });
+          const rows = ui.hdShare(sum.byFrom), top = rows[0] ? rows[0].v : 1;
+          rows.slice(0, 6).forEach((r, i) => {
+            const yy = y + 110 + i * 22;
+            ui.text(ui.clip(r.name, 120, 9), x + 12, yy, { size: 9, col: C.cream });
+            ui.text(r.pct + '%', x + w - 12, yy, { align: 'right', size: 9, bold: true, col: '#ffd471' });
+            c.fillStyle = '#1a1c30'; c.fillRect(x + 12, yy + 12, w - 24, 4);
+            c.fillStyle = '#c9a45c'; c.fillRect(x + 12, yy + 12, Math.round((w - 24) * r.v / top), 4);
+          });
         },
         drawRecs(c) {
           const x = 428, y = 124, w = 196, h = 258;
@@ -629,6 +884,16 @@
       });
     },
 
+    hdShare(byFrom) {
+      const by = {};
+      for (const [key, v] of Object.entries(byFrom || {})) {
+        const kit = key.split('.')[0], name = kit === 'hero' ? 'Атака' : kit === 'eq' ? 'Снаряжение' : kit === 'spare' ? 'Запасные таланты' : H.CHARS[kit] ? H.CHARS[kit].name : kit;
+        by[name] = (by[name] || 0) + v;
+      }
+      const all = Object.values(by).reduce((a, b) => a + b, 0) || 1;
+      return Object.entries(by).map(([name, v]) => ({ name, v, pct: Math.round(100 * v / all) })).sort((a, b) => b.v - a.v);
+    },
+
     openHdRecords() {
       const ui = this, g = this.game, DIFF = Object.keys(HD.DIFFS), HEROES = [null].concat(Object.keys(HD.HEROES));
       return this.push({
@@ -638,10 +903,10 @@
           c.fillStyle = '#050608'; c.fillRect(0, 0, W, HGT);
           ui.hdCrt(c, 24, 24, W - 48, HGT - 80);
           ui.text('ТАБЛИЦА РЕКОРДОВ', W / 2, 36, { align: 'center', size: 16, bold: true, col: CRT.hi, shadow: false });
-          ['Один игрок', 'Экипаж'].forEach((t, i) => {
-            const on = i === this.tab, tx = 36 + i * 76;
-            ui.text((on ? '[' : '') + t + (on ? ']' : ''), tx + 36, 40, { align: 'center', size: 10, bold: on, col: on ? CRT.hi : CRT.mid, shadow: false });
-            ui.hit(tx, 34, 72, 18, () => this.setTab(i));
+          ['Один игрок', 'Экипаж', 'Сборка'].forEach((t, i) => {
+            const on = i === this.tab, tx = 30 + i * 62;
+            ui.text((on ? '[' : '') + t + (on ? ']' : ''), tx + 31, 40, { align: 'center', size: 10, bold: on, col: on ? CRT.hi : CRT.mid, shadow: false });
+            ui.hit(tx, 34, 60, 18, () => this.setTab(i));
           });
           DIFF.forEach((d, i) => {
             const tx = W / 2 - 150 + i * 100, on = i === this.d;
@@ -651,14 +916,15 @@
           const hero = HEROES[this.h];
           ui.text('Герой: ' + (hero ? H.CHARS[hero].name : 'все'), W / 2, 82, { align: 'center', size: 11, col: CRT.fg, shadow: false });
           const y = 108;
-          (this.tab ? [['№', 40], ['Экипаж', 60], ['Волна', W - 220], ['Время', W - 180], ['Звёзды', W - 140]] : [['№', 40], ['Ник', 60], ['Герой', 162], ['Волна', W - 220], ['Время', W - 180], ['Звёзды', W - 140]]).forEach(([t, x]) => ui.text(t, x, y, { size: 10, col: CRT.dim, shadow: false }));
+          (this.tab === 2 ? [['№', 40], ['Ник', 60], ['Оболочка и сборка', 162], ['Волна', W - 220], ['Время', W - 180], ['Звёзды', W - 140]] : this.tab ? [['№', 40], ['Экипаж', 60], ['Волна', W - 220], ['Время', W - 180], ['Звёзды', W - 140]] : [['№', 40], ['Ник', 60], ['Герой', 162], ['Волна', W - 220], ['Время', W - 180], ['Звёзды', W - 140]]).forEach(([t, x]) => ui.text(t, x, y, { size: 10, col: CRT.dim, shadow: false }));
           ui.text('Дата', W - 42, y, { align: 'right', size: 10, col: CRT.dim, shadow: false });
           c.fillStyle = CRT.dim; c.fillRect(36, y + 14, W - 72, 1);
-          ui.hdRecRows(c, this.tab ? g.hdCrewRecords(DIFF[this.d], hero) : g.hdRecords(DIFF[this.d], hero), 36, y + 22, W - 72, 16, { wide: true, rh: 18, crew: !!this.tab });
+          const list = this.tab === 2 ? g.hdCustomRecords(DIFF[this.d]).filter(r => !hero || r.hero === hero) : this.tab ? g.hdCrewRecords(DIFF[this.d], hero) : g.hdRecords(DIFF[this.d], hero);
+          ui.hdRecRows(c, list, 36, y + 22, W - 72, 16, { wide: true, rh: 18, crew: this.tab === 1 });
           ui.hints([['Q E', 'Таблица'], ['←→', 'Сложность'], ['↑↓', 'Герой'], ['Esc', 'Назад']], W / 2, HGT - 30, { align: 'center' });
         },
         key(k, code) {
-          if (code === 'KeyQ' || code === 'KeyE') { this.setTab(1 - this.tab); return; }
+          if (code === 'KeyQ' || code === 'KeyE') { this.setTab((this.tab + (code === 'KeyQ' ? 2 : 1)) % 3); return; }
           if (k === 'left' || k === 'right') { this.d = (this.d + (k === 'left' ? DIFF.length - 1 : 1)) % DIFF.length; ui.sfx('select'); return; }
           if (k === 'up' || k === 'down') { this.h = (this.h + (k === 'up' ? HEROES.length - 1 : 1)) % HEROES.length; ui.sfx('select'); return; }
           if (k === 'back' || k === 'ok') ui.pop();
@@ -761,23 +1027,23 @@
           ui.text('За каждое: ' + HD.META.trial.jade + ' нефрита и ' + HD.META.trial.asc + ' очков продвижения · выполнено ' + D.trials.done.length + ' из ' + T.length, W - 16, 20, { align: 'right', size: 10, col: C.sub });
           ui.text('Победа каждым героем', 20, 48, { size: 11, bold: true, col: C.gold });
           HEROS.forEach((t, i) => {
-            const x = 20 + (i % COLS) * 86, y = 66 + Math.floor(i / COLS) * 70, st = state(t), on = i === this.sel;
-            c.fillStyle = st === 'got' ? '#12201a' : st === 'ready' ? '#2e2208' : '#0e1230'; c.fillRect(x, y, 80, 64);
-            c.strokeStyle = on ? '#ffffff' : st === 'ready' ? '#ffd471' : '#2a3460'; c.lineWidth = on ? 2 : 1; c.strokeRect(x + 0.5, y + 0.5, 79, 63); c.lineWidth = 1;
-            G.drawBust(c, G.lookOf(t.hero, g), x + 20, y + 2, 0.6);
-            if (st === 'open') { c.fillStyle = 'rgba(4,4,12,0.55)'; c.fillRect(x + 1, y + 1, 78, 62); }
-            ui.text(ui.clip(H.CHARS[t.hero].name, 76, 9), x + 40, y + 50, { align: 'center', size: 9, col: st === 'open' ? C.dim : C.cream });
+            const x = 20 + (i % COLS) * 86, y = 64 + Math.floor(i / COLS) * 64, st = state(t), on = i === this.sel;
+            c.fillStyle = st === 'got' ? '#12201a' : st === 'ready' ? '#2e2208' : '#0e1230'; c.fillRect(x, y, 80, 60);
+            c.strokeStyle = on ? '#ffffff' : st === 'ready' ? '#ffd471' : '#2a3460'; c.lineWidth = on ? 2 : 1; c.strokeRect(x + 0.5, y + 0.5, 79, 59); c.lineWidth = 1;
+            c.save(); c.beginPath(); c.rect(x + 1, y + 1, 78, 44); c.clip(); G.drawBust(c, G.lookOf(t.hero, g), x + 20, y + 2, 0.6); c.restore();
+            if (st === 'open') { c.fillStyle = 'rgba(4,4,12,0.55)'; c.fillRect(x + 1, y + 1, 78, 58); }
+            ui.text(ui.clip(H.CHARS[t.hero].name, 76, 9), x + 40, y + 46, { align: 'center', size: 9, col: st === 'open' ? C.dim : C.cream });
             if (st !== 'open') ui.text(st === 'got' ? '✓' : '!', x + 72, y + 4, { align: 'right', size: 12, bold: true, col: st === 'got' ? C.ok : '#ffd471' });
             ui.hit(x, y, 80, 64, () => this.pick(i));
           });
-          const ly = 66 + Math.ceil(HEROS.length / COLS) * 70 + 8;
+          const ly = 64 + Math.ceil(HEROS.length / COLS) * 64 + 6;
           ui.text('Другие испытания', 20, ly, { size: 11, bold: true, col: C.gold });
           REST.forEach((t, j) => {
-            const i = HEROS.length + j, x = 20 + (j % 2) * 304, y = ly + 18 + Math.floor(j / 2) * 22, st = state(t), on = i === this.sel;
-            c.fillStyle = on ? 'rgba(242,220,154,0.16)' : 'rgba(10,14,40,0.8)'; c.fillRect(x, y, 296, 20);
-            ui.text(st === 'got' ? '✓' : st === 'ready' ? '!' : '·', x + 8, y + 4, { size: 11, bold: true, col: st === 'got' ? C.ok : st === 'ready' ? '#ffd471' : C.dim });
-            ui.text(ui.clip(t.name, 260, 10), x + 24, y + 4, { size: 10, col: st === 'open' ? C.sub : C.cream });
-            ui.hit(x, y, 296, 20, () => this.pick(i));
+            const i = HEROS.length + j, x = 20 + (j % 2) * 304, y = ly + 16 + Math.floor(j / 2) * 20, st = state(t), on = i === this.sel;
+            c.fillStyle = on ? 'rgba(242,220,154,0.16)' : 'rgba(10,14,40,0.8)'; c.fillRect(x, y, 296, 18);
+            ui.text(st === 'got' ? '✓' : st === 'ready' ? '!' : '·', x + 8, y + 3, { size: 11, bold: true, col: st === 'got' ? C.ok : st === 'ready' ? '#ffd471' : C.dim });
+            ui.text(ui.clip(t.name, 260, 10), x + 24, y + 3, { size: 10, col: st === 'open' ? C.sub : C.cream });
+            ui.hit(x, y, 296, 18, () => this.pick(i));
           });
           ui.hints([['←→↑↓', 'Выбор'], ['Enter', 'Забрать'], ['Esc', 'Назад']], W / 2, HGT - 20, { align: 'center' });
         },

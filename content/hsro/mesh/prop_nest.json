@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_nest",
+ "kind": "static",
+ "verts": 431,
+ "tris": 592,
+ "bounds": [
+  -0.9738128185272217,
+  -0.01926850900053978,
+  -0.8576112985610962,
+  0.9738128185272217,
+  1.1319999694824219,
+  0.8499999046325684
+ ],
+ "bin": "mesh/prop_nest.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 431,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 5172,
+   "count": 431,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 10344,
+   "count": 431,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 13792,
+   "count": 1776,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_nest.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

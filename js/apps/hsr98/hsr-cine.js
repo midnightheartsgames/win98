@@ -1031,6 +1031,21 @@
     return true;
   }
 
+  function frame(id, shot, t, game) {
+    const def = H.Cine.CINES[id];
+    if (!def || !def.shots.length) return null;
+    const i = shot == null ? Math.floor(def.shots.length / 2) : Math.max(0, Math.min(shot, def.shots.length - 1)), s = def.shots[i];
+    const cv = G.mkCanvas(LW, LH), g = cv.getContext('2d');
+    g.save();
+    g.imageSmoothingEnabled = false;
+    const S = stage(g, game, t == null ? s.d * 0.6 : t);
+    S.t = Math.min(t == null ? s.d * 0.6 : t, s.d); S.d = s.d; S.i = i;
+    s.draw(S);
+    g.restore();
+    dither(g);
+    return cv;
+  }
+
   class Player {
     constructor(ui, id) {
       this.ui = ui; this.game = ui.game; this.id = id;
@@ -1120,6 +1135,6 @@
     }
   }
 
-  H.Cine = { CINES: {}, STILLS, Player, still, Kit, closeup, two, stage, dither };
+  H.Cine = { CINES: {}, STILLS, Player, still, frame, Kit, closeup, two, stage, dither };
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

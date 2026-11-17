@@ -86,6 +86,10 @@
   const RAR_TXT = { 3: '#b8c4e8', 4: '#cfa2ff', 5: '#ffd45a' };
   const RAR_ROW = { 4: 'rgba(190,120,255,0.13)', 5: 'rgba(255,196,70,0.16)' };
   const WARP_FILTERS = [['Все', 3], ['4★ и выше', 4], ['Только 5★', 5]];
+  const RUMOR_SELLERS = {
+    sampo: { bust: 'sampo', title: 'Слухи: «скажи погромче, и это станет правдой»', paper: '#e8dfc6', head: '#c8b894', mast: '«БЕЛОБОГСКИЙ ВЕСТНИК»', ink: '#2a1e14', accent: '#6a3a1a', buy: '[Enter] Распустить слух', done: 'Слух уже стал правдой.', toast: 'Слух разошёлся по городу: ' },
+    qingque_sanctum: { bust: 'qingque', title: 'Предсказания: «произнеси вслух, и это сбудется»', paper: '#e2ead6', head: '#9cb88a', mast: 'ГАДАЛЬНАЯ БИРКА КОМИССИИ ПО ПРЕДСКАЗАНИЯМ', ink: '#1e2e22', accent: '#2a5a3a', buy: '[Enter] Произнести предсказание', done: 'Предсказание уже сбылось.', toast: 'Предсказание сбылось: ' }
+  };
   const BANNER_TABS = [['ev', 'Прыжок события'], ['sig', 'Поиск сигнала'], ['conv', 'Призыв'], ['guild', 'Гильдия'], ['mid', 'Полуночный канал'], ['con', 'Кон-Тон'], ['std', 'Стандартный']];
   const EV_CHANNELS = [['ev', 'Герой'], ['cone', 'Конус']];
   const CHANNELS = { ev: ['ev', 'cone'], sig: ['sig', 'amp'], conv: ['conv', 'forge'], guild: ['guild', 'wiz'], mid: ['mid', 'comp'], con: ['con', 'alley'] };
@@ -247,6 +251,7 @@
         { label: 'Друзья', icon: 'friends', alert: 'friends', disabled: !g.state.flags.express_intro, why: 'после знакомства с Экспрессом', fn: () => ui.openFriends(0) },
         { label: 'Обучение', icon: 'guide', alert: 'tutorial', fn: () => ui.openTutorial() },
         { label: 'Настройки', icon: 'settings', fn: () => ui.openSettings() },
+        { label: 'Атлас', icon: 'atlas', alert: 'atlas', disabled: !g.atlasOpen || !g.atlasOpen(), why: 'после знакомства с Экспрессом', fn: () => ui.openAtlas() },
         { label: 'Сохранить', icon: 'save', disabled: !!g.state.su || !near(), why: g.state.su ? 'вне Виртуальной вселенной: каждая зона сохраняется сама' : 'у якоря пространства или в городе', fn: () => ui.openSaves('save') },
         { label: 'Загрузить', icon: 'load', fn: () => ui.openSaves('load') },
         { label: 'Управление', icon: 'gamepad', fn: () => ui.openGuide() },
@@ -285,7 +290,7 @@
         G.menuIcon(c, t.icon, x + tw / 2 - 14, y + (t.sub ? 4 : 6), 28, t.disabled ? '#4c5070' : on ? '#fff0c0' : '#d8dcf0');
         ui.text(t.label, x + tw / 2, y + (t.sub ? 34 : 40), { align: 'center', size: t.label.length > 10 ? 10 : 11, bold: on, col: t.disabled ? C.dim : on ? C.gold : C.cream });
         if (t.sub) ui.text(t.sub, x + tw / 2, y + 46, { align: 'center', size: 8, col: t.disabled ? C.dim : on ? C.gold : C.sub });
-        if (t.alert && al[t.alert]) ui.badge(x + tw - 9, y + 9);
+        if (t.alert) ui.alertMark(al, t.alert, x + tw - 9, y + 9);
         ui.hit(x, y, tw, th, () => { scr.rail = -1; scr.sel = i; scr.key('ok'); });
       });
       const R = ui.phoneRail(), rx = dx + dw + 6, rw = W - 8 - rx;
@@ -298,8 +303,9 @@
         c.fillStyle = on ? 'rgba(242,220,154,0.2)' : 'rgba(255,255,255,0.04)'; c.fillRect(x, y, cw, ch);
         if (on) { c.strokeStyle = C.brassHi; c.lineWidth = 2; c.strokeRect(x + 1, y + 1, cw - 2, ch - 2); c.lineWidth = 1; }
         G.menuIcon(c, t.icon, x + (cw - 24) / 2, y + 5.5, 24, t.disabled ? '#4c5070' : on ? '#fff0c0' : '#d8dcf0');
-        if (t.alert && al[t.alert]) ui.badge(x + cw - 4, y + 5);
+        if (t.alert) ui.alertMark(al, t.alert, x + cw - 4, y + 5);
         ui.hit(x, y, cw, ch, () => { if (scr.rail < 0) scr.toRail(scr.sel); scr.rail = scr.railSel = i; scr.key('ok'); });
+        ui.iconTip(t.label, x, y, cw, ch, 'left');
       });
       const ry = dy + 54 + R.length * 40 + 10;
       for (let y = ry + 2; y < dy + dh - 16; y += 7) { c.fillStyle = 'rgba(106,83,40,0.35)'; c.fillRect(rx + rw / 2 - 6, y, 12, 2); }
@@ -312,9 +318,9 @@
       ui.powerChip(mx, fy + 4);
       const cur = scr.rail < 0 ? list[scr.sel] : null, rcur = scr.rail >= 0 ? R[scr.rail] : null;
       const unread = g.mailbox().filter(x => g.mailNew(x)).length;
-      const railNote = { friends: 'Друзья: список, запросы и приглашения', mail: 'Почта: ' + (unread ? 'новых писем ' + unread : 'новых писем нет'), guide: 'Обучение: справочник механик и тактическая тренировка', settings: 'Настройки: звук, скорость, разрешение', save: 'Сохранить: карта памяти, слоты 1-3', load: 'Загрузить: слоты и автосохранение', gamepad: 'Управление: клавиши поля, боя и карты', exit: 'В титры: выйти в главное меню' };
+      const railNote = { friends: 'Друзья: список, запросы и приглашения', mail: 'Почта: ' + (unread ? 'новых писем ' + unread : 'новых писем нет'), guide: 'Обучение: справочник механик и тактическая тренировка', settings: 'Настройки: звук, скорость, разрешение', atlas: 'Атлас: пересмотр сюжетов и Кинозал', save: 'Сохранить: карта памяти, слоты 1-3', load: 'Загрузить: слоты и автосохранение', gamepad: 'Управление: клавиши поля, боя и карты', exit: 'В титры: выйти в главное меню' };
       const off = (rcur || cur || {}).disabled;
-      const note = off ? 'Доступно ' + (rcur || cur).why : rcur ? railNote[rcur.icon] : 'F7: +' + T.debugJade + ' нефрита (отладка)';
+      const note = off ? 'Доступно ' + (rcur || cur).why : rcur ? railNote[rcur.icon] : '';
       ui.text(note, dx + dw / 2, fy + 21, { align: 'center', size: 9, col: off ? C.bad : rcur ? C.cream : C.dim });
       if (o.preview) ui.hits.length = hitsAt;
     },
@@ -1812,9 +1818,10 @@
       const c = this.ctx;
       const g = this.game, step = 34, x0 = this.wide() ? Math.round((W - BANNER_TABS.length * step) / 2) : W - 140 - BANNER_TABS.length * step;
       if (keys) { this.keycap(x0 - 14, 14, 'Q'); this.keycap(x0 + BANNER_TABS.length * step + 1, 14, 'E'); }
-      BANNER_TABS.forEach(([id], i) => {
+      BANNER_TABS.forEach(([id, label], i) => {
         const x = x0 + i * step;
         this.button(x, 10, 30, 22, '', () => pick(id), { active: tabOf(cur) === id });
+        this.iconTip(label, x, 10, 30, 22);
         if (id === 'ev') G.drawPortrait(c, G.lookOf(g.evStar(), g), x + 6, 12, 18);
         else G.itemIcon(c, H.BANNERS[id].pass, x + 6, 12, 18);
       });
@@ -2824,22 +2831,22 @@
     },
 
     openRumors(who, close) {
-      const ui = this, g = this.game;
+      const ui = this, g = this.game, V = RUMOR_SELLERS[who] || RUMOR_SELLERS.sampo;
       this.push({
         draw(c) {
           const list = g.rumorsFor(who), s = g.state;
-          G.drawBust(c, G.lookOf('sampo', g), 8, 300, 2);
-          ui.win(150, 30, 470, 420, { title: 'Слухи — «скажи погромче, и это станет правдой»' });
+          G.drawBust(c, G.lookOf(V.bust, g), 8, 300, 2);
+          ui.win(150, 30, 470, 420, { title: V.title });
           ui.money(470, 44, 'credits', s.credits);
           ui.list(162, 70, 446, list.map(r => ({ label: r.title, right: s.flags[r.id] ? 'уже ходит' : H.fmt(r.cost) + ' кр.', rcol: s.flags[r.id] ? C.ok : C.gold })), this.sel, { rowH: 24, onClick: i => { if (this.sel === i) this.key('ok'); else this.sel = i; } });
           const r = list[this.sel];
           if (r) {
-            c.fillStyle = '#e8dfc6'; c.fillRect(170, 270, 430, 150);
-            c.fillStyle = '#c8b894'; c.fillRect(170, 270, 430, 18);
-            ui.text('«БЕЛОБОГСКИЙ ВЕСТНИК»', 385, 273, { align: 'center', size: 11, bold: true, serif: true, col: '#3a2a1a', shadow: false });
-            ui.wrap('«' + r.text + '»', 410, 12).slice(0, 4).forEach((l, i) => ui.text(l, 182, 296 + i * 16, { col: '#2a1e14', shadow: false }));
+            c.fillStyle = V.paper; c.fillRect(170, 270, 430, 150);
+            c.fillStyle = V.head; c.fillRect(170, 270, 430, 18);
+            ui.text(V.mast, 385, 273, { align: 'center', size: 11, bold: true, serif: true, col: V.ink, shadow: false });
+            ui.wrap('«' + r.text + '»', 410, 12).slice(0, 4).forEach((l, i) => ui.text(l, 182, 296 + i * 16, { col: V.ink, shadow: false }));
             ui.wrap('Эффект: ' + r.effect, 410, 11).slice(0, 2).forEach((l, i) => ui.text(l, 182, 364 + i * 14, { size: 11, col: s.flags[r.id] ? '#2a7a3a' : '#5a4a3a', shadow: false }));
-            ui.text(s.flags[r.id] ? 'Слух уже стал правдой.' : '[Enter] Распустить слух', 182, 400, { size: 11, bold: true, col: '#6a3a1a', shadow: false });
+            ui.text(s.flags[r.id] ? V.done : V.buy, 182, 400, { size: 11, bold: true, col: V.accent, shadow: false });
           }
         },
         key(k) {
@@ -2847,7 +2854,7 @@
           if (ui.listNav(this, k, list.length)) return;
           if (k === 'ok' && list[this.sel]) {
             const r = list[this.sel];
-            if (g.buyRumor(r.id)) { ui.sfx('star4'); ui.toast('Слух разошёлся по городу: ' + r.effect); } else ui.sfx('deny');
+            if (g.buyRumor(r.id)) { ui.sfx('star4'); ui.toast(V.toast + r.effect); } else ui.sfx('deny');
           }
           if (k === 'back') { ui.screens.pop(); ui.sfx('cancel'); close(); }
         }

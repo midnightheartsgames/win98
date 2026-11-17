@@ -46,6 +46,7 @@
         G.menuIcon(c, sec.icon, x + TAB.w / 2 - 11, TAB.y + 3, 22, locked ? '#5a5e7a' : on ? C.gold : '#d8dcf0');
         if (al['guide_' + sec.id]) ui.badge(x + TAB.w - 6, TAB.y + 4);
         ui.hit(x, TAB.y, TAB.w, TAB.h, () => scr.setTab(i));
+        ui.iconTip(sec.label, x, TAB.y, TAB.w, TAB.h);
       });
       ui.keycap(TAB.x - 22, TAB.y + 7, 'Q');
       ui.keycap(TAB.x + H.GUIDE_SECTIONS.length * TAB.step + 2, TAB.y + 7, 'E');

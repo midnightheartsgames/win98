@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_capsule",
+ "kind": "static",
+ "verts": 101,
+ "tris": 108,
+ "bounds": [
+  -0.550000011920929,
+  0.0,
+  -1.149999976158142,
+  0.550000011920929,
+  0.7999999523162842,
+  1.149999976158142
+ ],
+ "bin": "mesh/prop_capsule.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 101,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1212,
+   "count": 101,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 2424,
+   "count": 101,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 3232,
+   "count": 324,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

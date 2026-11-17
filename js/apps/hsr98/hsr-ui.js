@@ -53,6 +53,27 @@
     { id: '16:9', tag: '16:9' }
   ];
   const KEYMAP = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', Enter: 'ok', Space: 'ok', NumpadEnter: 'ok', Escape: 'back', Backspace: 'back' };
+  const RU_LAYOUT_CODES = (() => {
+    const map = { 'ё': 'Backquote', 'х': 'BracketLeft', 'ъ': 'BracketRight', 'ж': 'Semicolon', 'э': 'Quote', 'б': 'Comma', 'ю': 'Period' };
+    const ru = 'йцукенгшщзфывапролдячсмить', en = 'qwertyuiopasdfghjklzxcvbnm';
+    for (let i = 0; i < ru.length; i++) map[ru[i]] = 'Key' + en[i].toUpperCase();
+    return map;
+  })();
+  const KEY_NAME_CODES = { ' ': 'Space', Spacebar: 'Space', Shift: 'ShiftLeft', Control: 'ControlLeft', Alt: 'AltLeft', Esc: 'Escape' };
+  const physicalCode = e => {
+    if (e.code && e.code !== 'Unidentified') return e.code;
+    const key = e.key || '', low = key.toLowerCase();
+    if (/^[a-z]$/.test(low)) return 'Key' + low.toUpperCase();
+    if (/^[0-9]$/.test(key)) return 'Digit' + key;
+    if (RU_LAYOUT_CODES[low]) return RU_LAYOUT_CODES[low];
+    if (KEY_NAME_CODES[key]) return KEY_NAME_CODES[key];
+    if (/^(Arrow\w+|Enter|Escape|Tab|Backspace|Delete|Home|End|PageUp|PageDown|F\d{1,2})$/.test(key)) return key;
+    const kc = e.keyCode || 0;
+    if (kc >= 65 && kc <= 90) return 'Key' + String.fromCharCode(kc);
+    if (kc >= 48 && kc <= 57) return 'Digit' + String.fromCharCode(kc);
+    return e.code || '';
+  };
+  const isShiftCode = code => code === 'ShiftLeft' || code === 'ShiftRight';
   const GLOW_NAME = { starlight: ['Неугасаемый звёздный свет', 'звёздного света'], embers: ['Неугасаемый пепел', 'пепла'] };
   const HUD_CARD = { h: 46, step: 50, barW: 35, fill: 0.9, energy: '#f2b632', energyText: '#ffe0a0' };
 
@@ -68,7 +89,7 @@
       this.ctx.imageSmoothingEnabled = false;
       const fillRect0 = this.ctx.fillRect.bind(this.ctx);
       this.ctx.fillRect = (x, y, w, h) => fillRect0(x === 0 && w === W ? this.left : x, y, x === 0 && w === W ? this.vw : w, h);
-      this.options = Object.assign({ sfx: 0.6, music: 0.35, battleSpeed: 1, textSpeed: 2, res: '640', aspect: '4:3', ultCine: 'on', fusionCine: 'on', skinCine: 'first' }, lsGet(OPT_KEY, {}));
+      this.options = Object.assign({ sfx: 0.6, music: 0.35, battleSpeed: 1, textSpeed: 2, res: '640', aspect: '4:3', ultCine: 'on', fusionCine: 'on', skinCine: 'first', followCine: 'on', bigText: typeof window !== 'undefined' && window.Sr98Android ? 'on' : 'off' }, lsGet(OPT_KEY, {}));
       if (H.syncUiLang) H.syncUiLang(this);
       mirrorAllSaves();
       this.applyRes();
@@ -141,7 +162,7 @@
     bind() {
       const on = (o, t, f, op) => { o.addEventListener(t, f, op); this.listeners.push([o, t, f]); };
       on(this.root, 'keydown', e => this.keydown(e));
-      on(this.root, 'keyup', e => { this.held = this.held.filter(k => k !== e.code); if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') this.walk = false; });
+      on(this.root, 'keyup', e => { const code = physicalCode(e); this.held = this.held.filter(k => k !== code); if (isShiftCode(code)) this.walk = false; });
       on(this.root, 'blur', () => { this.held = []; this.walk = false; });
       on(this.canvas, 'mousedown', e => this.click(e));
       on(this.canvas, 'wheel', e => this.wheel(e), { passive: false });
@@ -175,12 +196,12 @@
     keydown(e) {
       if (!this.active()) return;
       this.audio.init(); this.audio.resume();
-      const code = e.code;
+      const code = physicalCode(e);
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Tab', 'Backspace', 'F7', 'F8'].includes(code)) e.preventDefault();
       if ((code === 'F7' || code === 'F8') && (this.netSession || (this.game && this.game.guest))) { this.sfx('deny'); return; }
       if (code === 'F7') { if (!e.repeat) this.debugJade(); return; }
       if (code === 'F8') { if (!e.repeat) this.toggleDebug(); return; }
-      if (code === 'ShiftLeft' || code === 'ShiftRight') this.walk = true;
+      if (isShiftCode(code) || e.shiftKey) this.walk = true;
       const k = KEYMAP[code] || null;
       if (!this.held.includes(code)) this.held.push(code);
       if (e.repeat && !['up', 'down', 'left', 'right'].includes(k)) return;
@@ -352,7 +373,7 @@
       g.update(dt, blocked ? {} : { dir, walk: this.walk });
       this.drainGameEvents();
       this.syncPending(dt);
-      if (g.guest) return;
+      if (g.guest || g.replay) return;
       if (this.mode === 'field' && g.map) this.updateMinimap(dt);
       if (this.mode === 'field') this.updateChat(dt);
       if (this.mode === 'field' && this.passTick) this.passTick(dt);
@@ -373,7 +394,7 @@
         switch (e.t) {
           case 'toast': this.toast(e.text); break;
           case 'sfx': this.sfx(e.id === 'break' ? 'break_obj' : e.id); break;
-          case 'map': if (this.mode === 'field') { this.audio.music(e.music); this.banner = { text: e.name, t: 2.6 }; } break;
+          case 'map': if (this.mode === 'field') { this.audio.music(e.music); this.banner = { text: e.name, t: 2.6 }; } if (this.discCheck) this.discCheck(e.id); break;
           case 'music': this.audio.music(e.id); break;
           case 'obj': this.toast('Новое задание: ' + e.text); break;
           case 'quest': { const ty = H.MISSION_TYPES[e.type || 'comp']; this.toast(e.step === 'done' ? ty.one + ' выполнена: «' + e.name + '»' : ty.one + ' «' + e.name + '»: ' + e.text); this.sfx(e.step === 'done' ? 'star4' : 'confirm'); break; }
@@ -489,6 +510,7 @@
       const c = this.ctx, sx = this.canvas.width / this.vw, sy = this.canvas.height / HGT;
       this.hits = [];
       this.wheels = [];
+      this.tipNext = null;
       c.save();
       c.setTransform(sx, 0, 0, sy, this.ox() * sx, 0);
       c.imageSmoothingEnabled = false;
@@ -504,9 +526,10 @@
       this.screens.forEach((s, i) => {
         if (i < full) return;
         if (i > Math.max(0, full) && !s.full) { c.fillStyle = 'rgba(2,3,12,0.55)'; c.fillRect(this.left, 0, this.vw, HGT); }
-        if (s === this.top()) { this.hits = []; this.wheels = []; }
+        if (s === this.top()) { this.hits = []; this.wheels = []; this.tipNext = null; }
         s.draw(c, s === this.top());
       });
+      this.drawIconTip(c);
       if (this.game && this.game.skipping && this.mode === 'field') this.drawSkipping(c);
       if (this.mode === 'field') this.drawChatNotice(c);
       if (this.mode === 'field' && this.drawNetNotice) this.drawNetNotice(c);
@@ -514,7 +537,27 @@
       c.restore();
     }
 
-    font(size, bold, serif) { this.ctx.font = (bold ? 'bold ' : '') + size + 'px ' + (serif ? SERIF : FONT); }
+    textPx(size) { return this.options.bigText === 'on' && size < 12 ? Math.max(10, size + 1) : size; }
+
+    font(size, bold, serif) { this.ctx.font = (bold ? 'bold ' : '') + this.textPx(size) + 'px ' + (serif ? SERIF : FONT); }
+
+    iconTip(label, x, y, w, h, side) {
+      const m = this.mouse;
+      if (!m || m.x < x || m.x >= x + w || m.y < y || m.y >= y + h) return;
+      this.tipNext = { label, x: side === 'left' ? x - 6 : x + w / 2, y: side === 'left' ? y + h / 2 - 10 : y + h + 4, side };
+    }
+
+    drawIconTip(c) {
+      const tip = this.tipNext;
+      this.tipNext = null;
+      if (!tip) return;
+      const w = Math.round(this.measure(tip.label, 11, true) + 16), h = 20;
+      const x = Math.round(Math.max(this.left + 4, Math.min(this.right - w - 4, tip.side === 'left' ? tip.x - w : tip.x - w / 2))), y = Math.round(Math.min(HGT - h - 4, tip.y));
+      c.fillStyle = '#010208'; c.fillRect(x - 1, y - 1, w + 2, h + 2);
+      c.fillStyle = 'rgba(14,18,48,0.96)'; c.fillRect(x, y, w, h);
+      c.fillStyle = C.brass; c.fillRect(x, y, w, 1);
+      this.text(tip.label, x + w / 2, y + 4, { align: 'center', size: 11, bold: true, col: C.gold });
+    }
 
     text(str, x, y, o = {}) {
       const c = this.ctx;
@@ -678,6 +721,16 @@
       c.fillStyle = '#d82828'; c.beginPath(); c.arc(x, y, 6, 0, Math.PI * 2); c.fill();
       c.fillStyle = '#ff9a8a'; c.fillRect(x - 4, y - 3, 1, 3);
       c.fillStyle = '#ffffff'; c.fillRect(x - 1, y - 4, 2, 5); c.fillRect(x - 1, y + 2, 2, 2);
+    }
+
+    newMark(x, y) {
+      this.diamond(Math.round(x), Math.round(y), 5, C.brassHi, '#1a1208');
+    }
+
+    alertMark(al, key, x, y) {
+      if (!al[key]) return;
+      const claim = key === 'mail' ? al.mail_gift : !['missions', 'chat', 'atlas', 'friends'].includes(key);
+      if (claim) this.badge(x, y); else this.newMark(x, y);
     }
 
     button(x, y, w, h, label, fn, o = {}) {
@@ -1115,7 +1168,8 @@
       this.keycap(bx + 54, by + 5, 'E');
       for (let i = 0; i < T.tpMax; i++) this.diamond(bx + 88 + i * 15, by + 12, 5, i < s.tp ? C.cyan : '#1c2a44', '#081828');
       const hx = this.hints(s.su ? [['F', 'удар'], ['M', 'погружение']] : [['F', 'удар'], ['Esc', 'меню']], bx + 8, by + 27), al = g.alerts();
-      if (al.events || al.mail || al.chat) this.badge(hx - 4, by + 33);
+      if (al.events || al.mail_gift) this.badge(hx - 4, by + 33);
+      else if (al.mail || al.chat) this.newMark(hx - 4, by + 33);
       if (!g.busy() && !this.screens.length) {
         const [fx, fy] = g.front();
         const e = g.entAt(fx, fy, x => x.kind !== 'enemy' && x.kind !== 'trigger' && x.kind !== 'exit' && x.kind !== 'marvel' && x.kind !== 'span' && x.kind !== 'rbridge' && x.kind !== 'gbridge');
@@ -1455,10 +1509,12 @@
         { label: 'Скорость боя', k: 'battleSpeed', step: 0.5, max: 3, min: 1, fmt: v => '×' + v },
         { label: 'Сцены абсолютных техник', k: 'ultCine', presets: H.Ults ? H.Ults.MODES : [{ id: 'off', tag: 'Выкл.' }], cur: () => ui.options.ultCine || 'on', set: setCine('ultCine'), fmt: () => '' },
         { label: 'Сцены слияний', k: 'fusionCine', presets: H.Fusions ? H.Fusions.MODES : [{ id: 'off', tag: 'Выкл.' }], cur: () => ui.options.fusionCine || 'on', set: setCine('fusionCine'), fmt: () => '' },
-        { label: 'Сцены навыков облика', k: 'skinCine', presets: H.Ults ? H.Ults.MODES : [{ id: 'off', tag: 'Выкл.' }], cur: () => ui.options.skinCine || 'first', set: setCine('skinCine'), fmt: () => '' },
+        { label: 'Сцены навыков', k: 'skinCine', presets: H.Ults ? H.Ults.MODES : [{ id: 'off', tag: 'Выкл.' }], cur: () => ui.options.skinCine || 'first', set: setCine('skinCine'), fmt: () => '' },
+        { label: 'Врезки бонус-атак', k: 'followCine', presets: [{ id: 'on', tag: 'Всегда' }, { id: 'off', tag: 'Выкл.' }], cur: () => ui.options.followCine || 'on', set: setCine('followCine'), fmt: () => '' },
         { label: 'Скорость текста', k: 'textSpeed', step: 1, max: 5, min: 1, fmt: v => '×' + v },
         { label: 'Разрешение', k: 'res', presets: RES, cur: () => ui.resPreset().id, set: id => setRes(id), fmt: () => ui.canvas.width + '×' + ui.canvas.height },
-        { label: 'Формат экрана', k: 'aspect', presets: ASPECTS, cur: () => ui.wide() ? '16:9' : '4:3', set: id => setAspect(id), fmt: () => ui.wide() ? 'Широкий' : 'Обычный' }
+        { label: 'Формат экрана', k: 'aspect', presets: ASPECTS, cur: () => ui.wide() ? '16:9' : '4:3', set: id => setAspect(id), fmt: () => ui.wide() ? 'Широкий' : 'Обычный' },
+        { label: 'Размер текста', k: 'bigText', presets: [{ id: 'off', tag: 'Стандарт' }, { id: 'on', tag: 'Крупный' }], cur: () => ui.options.bigText === 'on' ? 'on' : 'off', set: setCine('bigText'), fmt: () => '' }
       ].concat(ui.game && ui.game.coneSupMode ? [{ label: 'Наложение конусов', k: 'coneSup', presets: [{ id: 'auto', tag: 'Авто' }, { id: 'manual', tag: 'Вручную' }], cur: () => ui.game.coneSupMode(), set: id => { if (ui.game.coneSupMode() !== id) { ui.game.setConeSup(id); ui.sfx('select'); } }, fmt: () => '' }] : []).concat(globalThis.Net98 ? [{ label: 'Эфирная связь', k: 'net', open: () => ui.openNetLink(), fmt: () => '' }] : []).concat([{ label: 'Язык', k: 'lang', presets: [{ id: 'ru', tag: 'Русский' }, { id: 'en', tag: 'English' }], cur: () => (H.getLang ? H.getLang() : 'ru'), set: id => ui.setLang(id), fmt: () => (H.isEn && H.isEn() ? 'EN' : 'RU') }]);
       const setCine = k => id => {
         if (ui.options[k] === id) return;

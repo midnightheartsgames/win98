@@ -34,7 +34,7 @@
       base: { hp: 163, atk: 79, def: 66, spd: 103 },
       look: { mood: 'serious', skin: '#f6dcc8', hair: '#d4283a', hairHi: '#f25a5a', eye: '#4a72e0', eye2: '#9ab8ff', bangs: 'swoop', sides: 'jaw', back: 'short', crown: 'swept', gloss: true, ahoge: true, jaw: 'v', body: 'lean', sex: 'm', coat: 'openvest', top: '#a8203a', lining: '#e8742a', trim: '#e8742a', inner: '#d8d4cc', collar: 'bare', lower: '#5a3a2c', low: 'pants', shoes: '#1e1c22', gloves: '#1e1c22', tailsLining: '#e8742a', tailsTo: 'knee', tailsOne: 'r', acc: ['keychoker:#1e1c22', 'earring:#c8ccd4', 'lavatee:#26222a', 'mecharm:#3a3c46', 'armbandr:#1e1c22', 'tails:#a8203a', 'hipbelt:#a8203a', 'shinL:#9a1c30', 'legR:#1e1c22', 'boots:#1e1c22'] },
       basic: { name: 'Прямой удар', target: 'single', fx: [{ k: 'dmg', m: 1.0 }, { k: 'will', v: 1 }] },
-      enhanced: { name: 'Раскалывающий небеса кулак', target: 'single', text: 'тратит 2 Воли: от 3 до 6 Прямых ударов по 20% и Восходящий апперкот 80%. Апперкот взрывает Кровотечение на 85%.', fx: [{ k: 'lukaFist' }] },
+      enhanced: { name: 'Раскалывающий небеса кулак', cut: 'fist', target: 'single', text: 'тратит 2 Воли: от 3 до 6 Прямых ударов по 20% и Восходящий апперкот 80%. Апперкот взрывает Кровотечение на 85%.', fx: [{ k: 'lukaFist' }] },
       skill: { name: 'Кровоточащий удар', target: 'single', text: 'урон 120%, Кровотечение на 3 хода: 24% макс. HP цели, не больше 338% атаки. Со следом снимает усиление.', fx: [{ k: 'dispel', trace: 'a2' }, { k: 'dmg', m: 1.2 }, { k: 'lukaBleed' }, { k: 'will', v: 1 }] },
       ult: { name: 'Решающий удар', target: 'single', text: '+2 Воли к битве. Получаемый целью урон +20% на 3 хода, затем урон 330%.', fx: [{ k: 'will', v: 2 }, { k: 'lukaMark' }, { k: 'dmg', m: 3.3 }] },
       talent: 'Атака и навык дают Волю (до 4). За 2 Воли: удары по 20% и апперкот 80%.',
@@ -90,7 +90,7 @@
       base: { hp: 139, atk: 89, def: 60, spd: 98 },
       look: { mood: 'lazy', skin: '#f9e2d6', hair: '#8a7c6e', hairHi: '#a89a8a', eye: '#4a983a', eye2: '#7ac858', bangs: 'sweep', sides: 'flick', back: 'tail', crown: 'smooth', gloss: true, body: 'petite', coat: 'bodice', top: '#2a8070', trim: '#d8b050', inner: '#2a8070', neck: '#1e1c22', collar: 'bare', lower: '#f0f0ee', hem: '#2a8070', low: 'skirt', skirtLen: 6, shoes: '#1e1c22', cuff: '#2a8a6a', acc: ['hairclip:#8ad8e8', 'bellsleeves:#1e1c22', 'peplum:#2a8070', 'frogknot:#c8303a', 'ankle:#1e1c22', 'anklecuff:#f2f2ee'] },
       basic: { name: 'Самостоятельная победа', target: 'single', text: 'сбрасывает кость самой бедной масти, квантовый урон 100%.', fx: [{ k: 'dmg', m: 1.0 }, { k: 'toss' }] },
-      enhanced: { name: 'Вишенка на торте!', target: 'blast', text: 'урон 240% (соседним 100%), Закрытый конг кончается.', fx: [{ k: 'dmg', m: 2.4, adj: 1.0, tough: 20, adjTough: 10 }, { k: 'kongEnd' }] },
+      enhanced: { name: 'Вишенка на торте!', cut: 'cherry', target: 'blast', text: 'урон 240% (соседним 100%), Закрытый конг кончается.', fx: [{ k: 'dmg', m: 2.4, adj: 1.0, tough: 20, adjTough: 10 }, { k: 'kongEnd' }] },
       skill: { name: 'Последняя кость', target: 'self', keepTurn: true, text: 'тянет 2 кости, урон +28% до конца хода (до 4 раз). Ход не кончается.', fx: [{ k: 'draw', v: 2 }] },
       ult: { name: 'Четыре закрытых Рыбы? Победа!', short: 'Четыре Рыбы? Победа!', target: 'all', text: 'квантовый урон 200% всем, рука из 4 костей одной масти: сразу Закрытый конг.', fx: [{ k: 'dmg', m: 2.0 }, { k: 'kong' }] },
       talent: 'В начале хода союзника тянет кость. 4 одной масти: Закрытый конг, атака +72%, удар сильнее.',
@@ -361,7 +361,7 @@
       this.setKarma(x, 0);
       const prev = this.acting;
       this.acting = x;
-      this.push({ t: 'act', u: x, name: 'Кармическое искупление', kind: 'follow' });
+      this.push({ t: 'act', u: x, name: 'Кармическое искупление', kind: 'follow', fid: 'karmic' });
       const hits = [], m = T.karmaHit * (this.traceTalent ? this.traceTalent(x) : 1), any = !!(this.kitFx && this.kitFx(x, 'karmaAny'));
       for (let i = 0; i < 3; i++) {
         const t = this.rng.pick(this.living);

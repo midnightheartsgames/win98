@@ -1,0 +1,117 @@
+{
+ "format": 1,
+ "id": "foe_sting_young",
+ "kind": "skinned",
+ "verts": 580,
+ "tris": 684,
+ "bounds": [
+  -0.550000011920929,
+  0.4000000059604645,
+  -0.4699999988079071,
+  0.550000011920929,
+  1.5499999523162842,
+  0.7689705491065979
+ ],
+ "bin": "mesh/foe_sting_young.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 580,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 6960,
+   "count": 580,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 13920,
+   "count": 580,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 18560,
+   "count": 580,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 20880,
+   "count": 580,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 25520,
+   "count": 2052,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 29624,
+   "count": 2100,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 38024,
+   "count": 840,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 41384,
+   "count": 700,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 44184,
+   "count": 1120,
+   "type": "f"
+  }
+ },
+ "tex": "tex/foe_sting_young.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "head",
+  "abd.1",
+  "abd.2",
+  "wing.L1",
+  "wing.L2",
+  "claw.L",
+  "wing.R1",
+  "wing.R2",
+  "claw.R"
+ ],
+ "parents": [
+  -1,
+  0,
+  0,
+  2,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

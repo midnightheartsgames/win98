@@ -9,6 +9,7 @@ const UID_PATTERN = /^7\d{8}$/;
 const SECRET_PATTERN = /^[0-9A-HJKMNP-TV-Z]{16}$/;
 const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTVWXYZ23456789';
 const DIFFS = ['easy', 'normal', 'hard'];
+const MODES = ['std', 'custom'];
 const OP_CONT = 0, OP_TEXT = 1, OP_BINARY = 2, OP_CLOSE = 8, OP_PING = 9, OP_PONG = 10;
 const PROTO = 1, SEATS = 4, MAX_STALL = 10000, HOUR = 3600000, PHRASES = 6, FIELD_MAX = 20000;
 const VISIT_PHRASES = 8, WISHES = 6, DAY = 86400000, DAY_SHIFT = 4 * HOUR, FACING = ['up', 'down', 'left', 'right'];
@@ -286,7 +287,7 @@ function createServer(config) {
 
   function tableView(t) {
     return {
-      op: 'table', code: t.code, open: t.open, diff: t.diff, state: t.state, host: t.host, sim: t.sim, ver: t.ver, seed: t.seed, n: t.n, turnMs: config.turnMs, ticks: config.turnTicks,
+      op: 'table', code: t.code, open: t.open, diff: t.diff, mode: t.mode, state: t.state, host: t.host, sim: t.sim, ver: t.ver, seed: t.seed, n: t.n, turnMs: config.turnMs, ticks: config.turnTicks,
       paused: t.paused ? { by: t.paused.by, left: Math.max(0, t.paused.until - now()), resume: t.paused.resume ? Math.max(0, t.paused.resume - now()) : null, count: t.seats.map(s => (s ? s.pauses : 0)), others: Math.max(0, t.paused.at + config.pauseOthers - now()) } : null,
       seats: t.seats.map(s => {
         if (!s) return null;
@@ -451,14 +452,14 @@ function createServer(config) {
         if (tables.size >= config.tablesMax) { fail('busy'); return; }
         let code = '';
         do { code = Array.from({ length: 4 }, () => CODE_ALPHABET[crypto.randomInt(CODE_ALPHABET.length)]).join(''); } while (tables.has(code));
-        const nt = { code, open: !!msg.open, diff: DIFFS.includes(msg.diff) ? msg.diff : 'normal', state: 'lobby', host: 0, sim: client.sim, ver: client.ver, seed: null, n: 0, sentN: 0, lastAt: now(), acc: 0, log: [], pending: [], paused: null, hashes: new Map(), seats: new Array(SEATS).fill(null) };
+        const nt = { code, open: !!msg.open, diff: DIFFS.includes(msg.diff) ? msg.diff : 'normal', mode: MODES.includes(msg.mode) ? msg.mode : 'std', state: 'lobby', host: 0, sim: client.sim, ver: client.ver, seed: null, n: 0, sentN: 0, lastAt: now(), acc: 0, log: [], pending: [], paused: null, hashes: new Map(), seats: new Array(SEATS).fill(null) };
         tables.set(code, nt);
         seatPlayer(nt, 0, client, msg.name);
         tablesChanged(nt);
         return;
       }
       case 'tableList':
-        say(client, { op: 'tables', list: Array.from(tables.values()).filter(x => x.open && x.state === 'lobby').map(x => ({ code: x.code, host: x.seats[x.host] ? x.seats[x.host].name : '', hostUid: x.seats[x.host] ? x.seats[x.host].uid : '', diff: x.diff, seats: x.seats.filter(Boolean).length, sim: x.sim, ver: x.ver })) });
+        say(client, { op: 'tables', list: Array.from(tables.values()).filter(x => x.open && x.state === 'lobby').map(x => ({ code: x.code, host: x.seats[x.host] ? x.seats[x.host].name : '', hostUid: x.seats[x.host] ? x.seats[x.host].uid : '', diff: x.diff, mode: x.mode, seats: x.seats.filter(Boolean).length, sim: x.sim, ver: x.ver })) });
         return;
       case 'tableJoin': {
         const nt = tables.get(String(msg.code || '').toUpperCase());
@@ -494,6 +495,7 @@ function createServer(config) {
       case 'tableSet':
         if (p !== t.host || t.state !== 'lobby') { fail('host'); return; }
         if (DIFFS.includes(msg.diff)) t.diff = msg.diff;
+        if (MODES.includes(msg.mode)) t.mode = msg.mode;
         if (msg.open != null) t.open = !!msg.open;
         tablesChanged(t);
         return;
@@ -997,7 +999,7 @@ function createServer(config) {
         if (!c || !c.social) { fail('offline'); return; }
         if (at - client.inviteAt < config.inviteGap) { fail('soon'); return; }
         client.inviteAt = at;
-        say(c, Object.assign({ op: 'invite', from: me.uid, name: stubOf(me).name, avatar: stubOf(me).avatar, gender: stubOf(me).gender }, home ? { kind: 'visit' } : { kind: 'table', code: t.code, diff: t.diff }));
+        say(c, Object.assign({ op: 'invite', from: me.uid, name: stubOf(me).name, avatar: stubOf(me).avatar, gender: stubOf(me).gender }, home ? { kind: 'visit' } : { kind: 'table', code: t.code, diff: t.diff, mode: t.mode }));
         say(client, { op: 'invited', uid: other.uid });
         return;
       }

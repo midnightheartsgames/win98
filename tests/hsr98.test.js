@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const path = require('path');
 const DIR = path.join(__dirname, '../js/apps/hsr98');
 const H = require(path.join(DIR, 'hsr-core.js'));
-for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-lab-kits', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-ascend-data', 'hsr-traces', 'hsr-ascend', 'hsr-phone', 'hsr-phone-pix', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-lab-info', 'hsr-express', 'hsr-net', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-std-cones', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-lab', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-luofu-foes', 'hsr-luofu-field', 'hsr-luofu-maps', 'hsr-luofu-story', 'hsr-luofu-story2', 'hsr-luofu-life', 'hsr-conductor', 'hsr-coatroom', 'hsr-room-data', 'hsr-room', 'hsr-guide-data', 'hsr-guide', 'hsr-domain', 'hsr-cw-data', 'hsr-cw', 'hsr-cw-battle', 'hsr-cw-bonds', 'hsr-cw-items', 'hsr-cw-kits', 'hsr-cw-special', 'hsr-cw-strats', 'hsr-cw-affixes', 'hsr-cw-envs', 'hsr-cw-foes', 'hsr-cw-meta', 'hsr-cw-perks', 'hsr-cw-goals', 'hsr-hd-data', 'hsr-hd-math', 'hsr-hd-arena', 'hsr-hd-heroes', 'hsr-hd-foes', 'hsr-hd-shop', 'hsr-hd', 'hsr-hd-net', 'hsr-hd-simver', 'hsr-hd-lead', 'hsr-range', 'hsr-pf-data', 'hsr-pf-battle', 'hsr-pf', 'hsr-pf-story', 'hsr-tutorial-data', 'hsr-tutorial']) require(path.join(DIR, f + '.js'));
+for (const f of ['hsr-data', 'hsr-battle', 'hsr-inaba', 'hsr-fours', 'hsr-conton', 'hsr-hares', 'hsr-fives', 'hsr-lab-kits', 'hsr-world', 'hsr-story', 'hsr-game', 'hsr-traces-data', 'hsr-ascend-data', 'hsr-traces', 'hsr-ascend', 'hsr-phone', 'hsr-phone-pix', 'hsr-synth', 'hsr-echoes', 'hsr-trace-fx', 'hsr-su-data', 'hsr-su-battle', 'hsr-su-story', 'hsr-su', 'hsr-chat', 'hsr-missions', 'hsr-shop', 'hsr-pets', 'hsr-pass', 'hsr-contracts', 'hsr-hook', 'hsr-section6', 'hsr-info', 'hsr-fours-info', 'hsr-conton-info', 'hsr-hares-info', 'hsr-fives-info', 'hsr-lab-info', 'hsr-express', 'hsr-net', 'hsr-herta', 'hsr-herta-life', 'hsr-seclusion', 'hsr-jarilo-story', 'hsr-jarilo-life', 'hsr-museum', 'hsr-boulder', 'hsr-rivet', 'hsr-settle', 'hsr-restricted', 'hsr-corridor', 'hsr-hill', 'hsr-pillars', 'hsr-memory', 'hsr-elation', 'hsr-std-cones', 'hsr-messenger', 'hsr-velvet', 'hsr-badge', 'hsr-lab', 'hsr-axel-maps', 'hsr-axel-story', 'hsr-luofu-foes', 'hsr-luofu-field', 'hsr-luofu-maps', 'hsr-luofu-story', 'hsr-luofu-story2', 'hsr-luofu-life', 'hsr-conductor', 'hsr-coatroom', 'hsr-room-data', 'hsr-room', 'hsr-guide-data', 'hsr-guide', 'hsr-atlas-data', 'hsr-atlas', 'hsr-domain', 'hsr-cw-data', 'hsr-cw', 'hsr-cw-battle', 'hsr-cw-bonds', 'hsr-cw-items', 'hsr-cw-kits', 'hsr-cw-special', 'hsr-cw-strats', 'hsr-cw-affixes', 'hsr-cw-envs', 'hsr-cw-foes', 'hsr-cw-meta', 'hsr-cw-perks', 'hsr-cw-goals', 'hsr-hd-data', 'hsr-hd-math', 'hsr-hd-arena', 'hsr-hd-heroes', 'hsr-hd-foes', 'hsr-hd-shop', 'hsr-hd', 'hsr-hd-net', 'hsr-hd-simver', 'hsr-hd-lead', 'hsr-range', 'hsr-pf-data', 'hsr-pf-battle', 'hsr-pf', 'hsr-pf-story', 'hsr-tutorial-data', 'hsr-tutorial']) require(path.join(DIR, f + '.js'));
 
 let checks = 0;
 const CCC_LATER = new Set();
@@ -356,6 +356,14 @@ for (const [id, m] of Object.entries(H.MAPS)) {
 }
 
 const UIS = new Set(['pf', 'herta_shop', 'book', 'synth', 'name', 'shop', 'rumor', 'warp', 'calyx', 'nav', 'databank', 'su', 'su_shop', 'fh', 'fh_shop', 'doc', 'ksboard', 'ksrate', 'kslearn', 'kscard', 'ksreport', 'tlrewards', 'hackjade', 'hackdebug', 'lfchat', 'abacus', 'mutare', 'cw', 'hd', 'labwarp', 'range', 'coatroom', 'phono', 'roomevent', 'roomstand']);
+{
+  const HYPHEN_DASH = /\p{Script=Cyrillic}[.,!?»…)]* - [\p{Script=Cyrillic}«]/u;
+  for (const f of require('fs').readdirSync(DIR).filter(f => f.endsWith('.js'))) {
+    const m = require('fs').readFileSync(path.join(DIR, f), 'utf8').match(HYPHEN_DASH);
+    ok(!m, 'no hyphen used as a dash in Russian text of ' + f + (m ? ': ' + m[0] : ''));
+  }
+}
+
 for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCRIPTS))) {
   const labels = new Set(steps.filter(s => typeof s === 'string' && s[0] === '#').map(s => s.slice(1)));
   for (const st of steps) {
@@ -724,7 +732,8 @@ for (const [name, steps] of Object.entries(Object.assign({}, H.SCRIPTS, H.SU.SCR
   g.placePlayer(wx, wy + 1); g.player.dir = 'up';
   ok(g.interact() && g.pending.spk === 'silverwolf', 'Silver Wolf can be talked to in the Test car');
   g.resume();
-  ok(g.pending && g.pending.type === 'choice' && g.pending.options.length === 11, 'she has ten topics and a goodbye');
+  ok(g.pending && g.pending.type === 'choice' && g.pending.options.length === 12, 'she has eleven topics and a goodbye');
+  ok(/Сборку/.test(g.pending.options[10][0]) && (() => { const st = H.SCRIPTS.lab_wolf, i = st.indexOf('#h11'); return i > 0 && st.slice(i + 1, i + 5).filter(x => typeof x === 'string' && x.startsWith('silverwolf|')).length >= 3; })(), 'Patchwork: Silver Wolf has a topic about Patchwork');
   ok(/Рубеж Экспресса/.test(g.pending.options[4][0]) && /Валютные войны/.test(g.pending.options[5][0]), 'two topics are about Express Frontier and Currency Wars');
   ok(/Полигон/.test(g.pending.options[6][0]), 'the seventh topic is about the Range');
   ok(/шестой терминал/.test(g.pending.options[7][0]), 'the eighth topic is about the secret warp');
@@ -1480,7 +1489,7 @@ const mkSpec = (id, lvl) => { const c = H.CHARS[id]; return { charId: id, lvl, s
       for (let i = 3; i < 6; i++) b.addBuff(t, { s: 'defDown', v: 0.0, turns: 9, name: 'Тест ' + i, debuff: true });
       b.sp = 3; b.act('skill', t);
       const ev = b.drain();
-      ok(ev.some(e => e.t === 'act' && e.u === ra && e.kind === 'follow' && e.name === 'Я мыслю - я существую'), 'with many debuffs the Skill always brings the follow-up');
+      ok(ev.some(e => e.t === 'act' && e.u === ra && e.kind === 'follow' && e.name === 'Я мыслю, следовательно, я существую'), 'with many debuffs the Skill always brings the follow-up');
     }
     ra.energy = ra.maxEnergy; b.ult(ra, t); b.drain();
     ok(t.buffs.some(x => x.name === 'Недальновидность мудрецов') && ra.flags.folly && ra.flags.folly.n === T.raFolly, 'Syllogistic Paradox puts Wiseman’s Folly on the target');
@@ -4377,10 +4386,10 @@ for (const [enc, party] of Object.entries(bossParties)) {
   weaken(f3, 2);
   r3.energy = 0;
   const ev3 = e1.ev.length;
-  e1.followQueue().push({ by: r3, t: f3, name: 'Я мыслю - я существую' });
+  e1.followQueue().push({ by: r3, t: f3, name: 'Я мыслю, следовательно, я существую' });
   e1.fivesFollow();
   ok(e1.ev.slice(ev3).filter(x => x.t === 'dmg' && x.label === 'Божественное в деталях').length === 2 && r3.energy >= 15, 'E2 adds hits per debuff and E4 adds Energy');
-  ok(near(e1.traceDmg(r3, f3, { label: 'Я мыслю - я существую' }), 0.5), 'E6 boosts the follow-up');
+  ok(near(e1.traceDmg(r3, f3, { label: 'Я мыслю, следовательно, я существую' }), 0.5), 'E6 boosts the follow-up');
   e1.useAbility(r3, e1.abilityFor(r3, 'ult').ab, f3, 'ult');
   eq(r3.flags.folly.n, 3, 'E6 adds a Wiseman\'s Folly charge');
 }
@@ -7300,7 +7309,7 @@ function trInfo(g) {
     localStorage: { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) },
     requestAnimationFrame: () => 1
   });
-  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-hd-art', 'hsr-relic-art', 'hsr-splash-pix', 'hsr-splash', 'hsr-cones', 'hsr-std-cones-art', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-luofu', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-luofu-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-lab-scenes', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-phono', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-coatroom', 'hsr-ui-room', 'hsr-ui-debug', 'hsr-ui-music-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-lab', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-levelup', 'hsr-ui-coneup', 'hsr-ui-phone', 'hsr-ui-profile', 'hsr-ui-net', 'hsr-ui-friends', 'hsr-ui-visit', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-table', 'hsr-ui-hd-debug', 'hsr-ui-luofu', 'hsr-pf-art', 'hsr-ui-pf', 'hsr-ui-pf-team', 'hsr-ui-pf-battle', 'hsr-foe-lore', 'hsr-details', 'hsr-ui-details', 'hsr-databank', 'hsr-ui-databank', 'hsr-skills-info', 'hsr-ui-tutorial', 'hsr-i18n', 'hsr-en-ui', 'hsr-en-combat', 'hsr-en-traces', 'hsr-en-skills', 'hsr-en-databank', 'hsr-en-world', 'hsr-en-modes']) require(path.join(DIR, f + '.js'));
+  for (const f of ['hsr-gfx', 'hsr-art', 'hsr-icons', 'hsr-cw-art', 'hsr-hd-art', 'hsr-relic-art', 'hsr-splash-pix', 'hsr-splash', 'hsr-cones', 'hsr-std-cones-art', 'hsr-tiles', 'hsr-foes', 'hsr-midi', 'hsr-audio', 'hsr-ui', 'hsr-train', 'hsr-station', 'hsr-jarilo', 'hsr-axel', 'hsr-luofu', 'hsr-magflow', 'hsr-carts', 'hsr-3d', 'hsr-pompom', 'hsr-warp', 'hsr-title', 'hsr-cine', 'hsr-cines', 'hsr-luofu-cines', 'hsr-ults', 'hsr-fusions', 'hsr-warp-intro', 'hsr-signal', 'hsr-signal-tv', 'hsr-convene', 'hsr-explosion', 'hsr-personas', 'hsr-midnight', 'hsr-spotlight', 'hsr-ui-menu', 'hsr-ui-velvet', 'hsr-eidolons', 'hsr-eidolon-scenes', 'hsr-inaba-scenes', 'hsr-fours-scenes', 'hsr-conton-scenes', 'hsr-hares-scenes', 'hsr-fives-scenes', 'hsr-lab-scenes', 'hsr-skill-cuts', 'hsr-outfit-cuts', 'hsr-ui-nav', 'hsr-ui-events', 'hsr-ui-axel', 'hsr-ui-badge', 'hsr-credits', 'hsr-ui-chat', 'hsr-ui-missions', 'hsr-ui-shop', 'hsr-ui-pets', 'hsr-ui-phono', 'hsr-ui-pass', 'hsr-ui-contracts', 'hsr-ui-conductor', 'hsr-ui-coatroom', 'hsr-ui-room', 'hsr-ui-debug', 'hsr-ui-music-debug', 'hsr-ui-battle', 'hsr-ui-inaba', 'hsr-ui-fours', 'hsr-ui-conton', 'hsr-ui-hares', 'hsr-ui-fives', 'hsr-ui-lab', 'hsr-ui-su', 'hsr-ui-memory', 'hsr-ui-elation', 'hsr-ui-traces', 'hsr-ui-levelup', 'hsr-ui-coneup', 'hsr-ui-phone', 'hsr-ui-profile', 'hsr-ui-net', 'hsr-ui-friends', 'hsr-ui-visit', 'hsr-ui-replay', 'hsr-ui-atlas', 'hsr-ui-cinema', 'hsr-ui-disc', 'hsr-ui-synth', 'hsr-ui-guide', 'hsr-ui-domain', 'hsr-ui-cw', 'hsr-ui-cw-board', 'hsr-ui-cw-battle', 'hsr-ui-cw-special', 'hsr-ui-cw-strats', 'hsr-ui-cw-envs', 'hsr-ui-cw-foes', 'hsr-ui-cw-meta', 'hsr-ui-cw-perks', 'hsr-ui-cw-goals', 'hsr-ui-cw-debug', 'hsr-ui-hd', 'hsr-ui-hd-arena', 'hsr-ui-hd-table', 'hsr-ui-hd-debug', 'hsr-ui-luofu', 'hsr-pf-art', 'hsr-ui-pf', 'hsr-ui-pf-team', 'hsr-ui-pf-battle', 'hsr-foe-lore', 'hsr-details', 'hsr-ui-details', 'hsr-databank', 'hsr-ui-databank', 'hsr-skills-info', 'hsr-ui-tutorial', 'hsr-i18n', 'hsr-en-ui', 'hsr-en-combat', 'hsr-en-traces', 'hsr-en-skills', 'hsr-en-databank', 'hsr-en-world', 'hsr-en-modes']) require(path.join(DIR, f + '.js'));
   const G = H.Gfx;
   const lum = hex => { const n = parseInt(hex.slice(1), 16); return 0.3 * (n >> 16) + 0.59 * ((n >> 8) & 255) + 0.11 * (n & 255); };
   for (const id of heroIds()) {
@@ -7626,6 +7635,22 @@ function trInfo(g) {
   eq(ui.mode, 'title', 'title screen draws');
   ui.newGame(); frame(10);
   eq(ui.mode, 'field', 'new game enters the field');
+  {
+    const rfp = (key, extra = {}) => ui.keydown(Object.assign({ code: '', key, repeat: false, preventDefault: noop }, extra));
+    ui.held = []; ui.walk = false;
+    rfp('ц');
+    eq(ui.heldDir(), 'up', 'a Russian layout key with an empty code still moves the hero, as LibreWolf sends it');
+    ui.held = [];
+    rfp('Ф');
+    eq(ui.heldDir(), 'left', 'a capital Russian letter maps to its physical key too');
+    ui.held = [];
+    rfp('Shift');
+    ok(ui.walk, 'Shift with an empty code still counts as held for the secret door');
+    ui.walk = false;
+    rfp('Unidentified', { code: 'Unidentified', keyCode: 68 });
+    eq(ui.heldDir(), 'right', 'the key code is the last fallback');
+    ui.held = []; ui.walk = false;
+  }
   {
     const g = ui.game, [home, alt] = ui.minimapDocks(), at0 = [g.player.x, g.player.y, g.player.dir], m0 = g.map.id;
     g.loadMap('u_camp', null, { silent: true });
@@ -8613,18 +8638,21 @@ function trInfo(g) {
     ui.screens = [ph]; ph.sel = 11; key('Enter'); frame();
     ok(ui.top() !== ph && ui.top().full && ui.top().focus, 'the last tile opens Messages');
     ui.screens = [ph]; ph.sel = 2; key('ArrowRight'); ph.rail = ph.railSel = 3; key('ArrowDown'); frame();
-    eq(ph.rail, 4, 'Save sits right under the settings gear');
+    eq(ph.rail, 4, 'the atlas book sits right under the settings gear');
+    eq(ui.phoneRail()[4].icon, 'atlas', 'the rail item under the gear is the atlas book');
+    key('ArrowDown'); frame();
+    eq(ph.rail, 5, 'Save sits under the atlas book');
     const near = ui.canSaveHere, realSaves = ui.openSaves, savesAsked = [];
     ui.openSaves = function (mode, done) { savesAsked.push(mode); return realSaves.call(this, mode, done); };
     ui.canSaveHere = () => false; ui.toasts = []; key('Enter'); frame();
     ok(ui.top() === ph && ui.toasts.some(t => String(t.text || t).includes('у якоря пространства')), 'Save in the rail is off away from an anchor and says why');
     ui.canSaveHere = () => true; key('Enter'); frame();
     ok(ui.top() !== ph && savesAsked.pop() === 'save', 'Save in the rail opens the memory card');
-    ui.screens = [ph]; ui.canSaveHere = near; key('ArrowDown'); frame(); eq(ph.rail, 5, 'Load sits under Save');
+    ui.screens = [ph]; ui.canSaveHere = near; key('ArrowDown'); frame(); eq(ph.rail, 6, 'Load sits under Save');
     key('Enter'); frame(); ok(ui.top() !== ph && savesAsked.pop() === 'load', 'Load in the rail opens the memory card');
     ui.openSaves = realSaves;
     ui.screens = [ph]; key('ArrowDown'); key('ArrowDown'); frame();
-    eq(ph.rail, 7, 'the exit to the title closes the rail');
+    eq(ph.rail, 8, 'the exit to the title closes the rail');
     key('Enter'); frame();
     ok(ui.top() !== ph && !ui.top().full, 'the exit asks before leaving to the title');
     key('Escape'); frame();
@@ -9302,7 +9330,7 @@ function trInfo(g) {
     ui.screens = []; ui.openMenu(); frame();
     ok(texts.includes('Снабжение') && !texts.includes('Управление'), 'the phone shows Supply where Controls was');
     ok(texts.includes('Путеводитель') && texts.includes('Синтез') && !texts.includes('Сохранить') && !texts.includes('Загрузить'), 'the phone shows the Guide and Synthesis where Save and Load were');
-    const ph = ui.top(); ph.rail = ph.railSel = 6; texts.length = 0; frame();
+    const ph = ui.top(); ph.rail = ph.railSel = 7; texts.length = 0; frame();
     ok(texts.includes('Управление: клавиши поля, боя и карты'), 'Controls moved to the right rail under Settings');
     ph.key('ok'); frame();
     ok(ui.screens.length === 2, 'the rail opens Controls');
@@ -9659,6 +9687,22 @@ function trInfo(g) {
     delete ui.badge;
     s2.sec = 4; frame();
     ok(s2.asm && s2.asm.from === 0 && s2.asm.to === 3 && s2.asm.shown() === 0, 'opening the Eidolons starts the assembly of the new pieces');
+    {
+      const opt0 = ui.options.bigText;
+      ui.options.bigText = 'off'; ui.font(9); const f0 = ui.ctx.font;
+      ui.options.bigText = 'on'; ui.font(9); const f1 = ui.ctx.font;
+      ok(f0.startsWith('9px') && f1.startsWith('10px') && ui.textPx(9) === 10 && ui.textPx(13) === 13, 'large text raises small sizes and keeps big ones');
+      ui.options.bigText = opt0;
+      ok(game.missionLevel({ map: 'hs_base' }) >= 5 && game.missionLevel({ map: 'express' }) === 0, 'the recommended level comes from the enemies on the mission map');
+      const saved = ui.screens; ui.screens = []; ui.openCinema(); frame();
+      const cin = ui.top(), heroes = ui.cinemaHeroes();
+      ok(heroes.length > 0 && heroes.every(k => game.state.roster[k]), 'the cinema lists only heroes the player has');
+      cin.play(); frame(3);
+      ok(ui.screens.length === 2, 'a clip opens from the cinema');
+      for (let i = 0; i < 400 && ui.screens.length > 1; i++) { ui.top().key('back', 'Escape'); frame(2); }
+      ok(ui.top() === cin, 'skipping the clip returns to the cinema');
+      ui.screens = saved;
+    }
     frame(20);
     const mid = s2.asm ? s2.asm.shown() : 3;
     ok(mid >= 1 && mid < 3, 'pieces are placed one by one (' + mid + ' after a second)');
@@ -10932,7 +10976,7 @@ function trInfo(g) {
     const st = ui.top();
     eq(ui.options.res, '640', 'the render starts at the original 640×480');
     ok(ui.canvas.width === 640 && ui.canvas.height === 480, 'the default render buffer is 640×480');
-    for (let i = 0; i < 7; i++) key('ArrowDown');
+    for (let i = 0; i < 8; i++) key('ArrowDown');
     key('ArrowRight'); frame();
     ok(ui.options.res === '800' && ui.canvas.width === 800 && ui.canvas.height === 600, 'the 800 preset renders into an 800×600 buffer');
     key('ArrowRight'); key('ArrowRight'); frame();
@@ -11002,7 +11046,7 @@ function trInfo(g) {
       ui.pop();
     }
     ui.openSettings(); frame();
-    for (let i = 0; i < 8; i++) key('ArrowDown');
+    for (let i = 0; i < 9; i++) key('ArrowDown');
     key('ArrowLeft'); frame();
     ok(ui.options.aspect === '4:3' && !ui.wide() && ui.canvas.width === 640 && !ui.canvas.className.includes('hsr98-wide') && aspects[1] === false, 'Left returns to 4:3');
     delete ui.opts.onAspect;
@@ -11682,7 +11726,7 @@ function trInfo(g) {
       s0.roster[o.char] = had || { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
       const keepOut = s0.roster[o.char].outfit;
       ui.bt.skinSeen.clear();
-      ok(!ui.skinCineOn(fake), 'no outfit Skill cutscene without the outfit');
+      eq(H.SkillCuts.keyOf(fake, undefined, game), H.SkillCuts.SHOWS[o.char] ? o.char : null, 'without the outfit the usual Skill cutscene of ' + o.char + ' is picked');
       if (!s0.outfits.includes(oid)) s0.outfits.push(oid);
       game.wearOutfit(o.char, oid);
       ok(ui.skinCineOn(fake) && !ui.skinCineOn(fake), 'the outfit Skill cutscene plays on the first Skill of the battle only');
@@ -11695,6 +11739,112 @@ function trInfo(g) {
       game.wearOutfit(o.char, null);
       if (had) { if (keepOut) s0.roster[o.char].outfit = keepOut; } else delete s0.roster[o.char];
       s0.outfits = owned;
+    }
+    {
+      const SC = H.SkillCuts, SOUNDS = new Set([...require('fs').readFileSync(path.join(DIR, 'hsr-audio.js'), 'utf8').matchAll(/case '([a-z0-9_]+)':/g)].map(m => m[1]));
+      const ultLines = new Set(Object.values(H.Ults.SHOWS).map(x => x.line)), seen = new Set();
+      const kitOf = id => H.CHARS[id] || H.LAB.KITS[id];
+      const unit = id => ({ charId: id, elem: kitOf(id).elem, name: kitOf(id).name, side: 'ally', kit: kitOf(id) });
+      const variant = (kit, cut) => [kit.enhanced, kit.pskill, kit.moon].concat(kit.skills || [], kit.charged || [], kit.dracore || []).find(x => x && x.cut === cut);
+      ok(H.SkillShow === SC.Show, 'the outfit and the usual Skill cutscenes share one player');
+      ok(['theherta', 'theherta.idea', 'tribbie'].every(k => SC.SHOWS[k] && !Object.keys(SC.SHOWS).includes(k)) && SC.FOLLOW.busy && !Object.keys(SC.FOLLOW).includes('busy'), 'Secret Warp cutscenes work in battle but stay out of public listings');
+      for (const key of Object.getOwnPropertyNames(SC.SHOWS)) {
+        const d = SC.SHOWS[key], [cid, cut] = key.split('.'), kit = kitOf(cid);
+        ok(kit && (kit.skill || kit.skills), 'Skill cutscene belongs to a character with a Skill: ' + key);
+        if (cut) ok(kit && variant(kit, cut), 'the Skill variant ' + key + ' is marked with cut in the kit');
+        ok(typeof d.act === 'function' && d.d >= 0.8 && d.d <= 1.1, 'the Skill cutscene of ' + key + ' lasts 0.8 to 1.1 s');
+        ok(d.sfx.length >= 2 && d.sfx.length <= 4 && d.sfx[0][0] <= 0.05 && d.sfx.every((x, i, a) => x[0] < d.d && SOUNDS.has(x[1]) && (!i || a[i - 1][0] <= x[0])), 'the Skill sounds of ' + key + ' are real, ordered and start at once');
+        ok(typeof d.line === 'string' && d.line.length >= 2 && d.line.length <= 20 && !/[—–]/.test(d.line), 'the Skill shout of ' + key + ' is up to 20 characters');
+        ok(!ultLines.has(d.line) && !seen.has(d.line), 'the Skill shout of ' + key + ' repeats no Ultimate line and no other shout');
+        seen.add(d.line);
+        const en = H.EN && H.EN.DICT[d.line];
+        ok(en && !/[А-Яа-яЁё]/.test(en) && en.length <= 24, 'the Skill shout of ' + key + ' has an English line up to 24 characters');
+        const mate = unit(cid === 'march' ? 'himeko' : 'march'), wide0 = Object.prototype.hasOwnProperty.call(ui, 'wide');
+        for (const wide of [false, true]) {
+          if (wide) ui.wide = () => true;
+          for (const [foes, allies] of [[lay, []], [lay.slice(0, 1), []], [[], []], [[], [mate]]]) {
+            const sh = new SC.Show(ui, unit(cid), { cut, strict: !!d.enhanced, line: true, foes, allies, bg: 'station', outfit: null });
+            let n = 0;
+            while (!sh.done && n++ < 60) { sh.tick(0.05); sh.draw(ui.ctx); }
+            ok(sh.def === d && sh.line === d.line && sh.done && sh.length <= 1.3, 'the Skill cutscene of ' + key + ' plays to the end with ' + foes.length + ' foes and ' + allies.length + ' allies' + (wide ? ' in 16:9' : ''));
+          }
+          if (wide && !wide0) delete ui.wide;
+        }
+      }
+      const him = unit('himeko'), q0 = ui.bt.queue;
+      ui.bt.skinSeen.clear(); ui.bt.skillLine.clear();
+      ok(ui.skinCineOn(him) && !ui.skinCineOn(him), 'the Skill cutscene plays on the first Skill of the battle only');
+      ui.options.skinCine = 'on';
+      ok(ui.skinCineOn(him) && ui.skinCineOn(him), 'the Skill cutscene can play on every Skill');
+      ui.options.skinCine = 'off';
+      ok(!ui.skinCineOn(him), 'the Skill cutscene can be turned off');
+      ui.options.skinCine = 'first';
+      ui.bt.skinSeen.clear();
+      ok(!ui.skinCineOn({ charId: 'nobody', side: 'ally' }), 'no Skill cutscene for a hero without one');
+      const enh = ['trail_p.magma', 'darkness.ecstasy', 'miyabi.shimo3', 'luka.fist', 'qingque.cherry', 'anby.thunder', 'imbibitor.leap'];
+      ok(enh.every(k => SC.SHOWS[k] && SC.SHOWS[k].enhanced) && Object.getOwnPropertyNames(SC.SHOWS).filter(k => SC.SHOWS[k].enhanced).length === enh.length, 'exactly the seven saved-up attacks get cutscenes');
+      const tp = unit('trail_p'), dk = unit('darkness');
+      ok(ui.skinCineOn(tp, 'magma', true) && !ui.skinCineOn(tp, 'magma', true), 'an enhanced attack cutscene plays once per battle by default');
+      ok(!ui.skinCineOn(dk, undefined, true) && !ui.skinCineOn(him, 'magma', true), 'an enhanced attack without its own record plays no Skill cutscene');
+      eq(new SC.Show(ui, tp, { cut: 'magma', strict: true, foes: lay }).P.label, 'УСИЛЕННАЯ АТАКА', 'enhanced attack cutscenes say so on the plate');
+      eq(new SC.Show(ui, him, { foes: lay }).P.label, 'НАВЫК', 'Skill cutscenes keep the Skill plate');
+      ui.bt.skinSeen.clear();
+      ok(!ui.skinCineOn(Object.assign({}, him, { side: 'enemy' })), 'enemies get no Skill cutscene');
+      ui.bt.queue = [];
+      const s1 = ui.makeSkillShow({ t: 'act', kind: 'skill', u: him, name: him.kit.skill.name }), s2 = ui.makeSkillShow({ t: 'act', kind: 'skill', u: him, name: him.kit.skill.name });
+      ok(s1.line === SC.SHOWS.himeko.line && s2.line === '', 'the shout sounds on the first Skill cutscene of the battle only');
+      const mate = unit('danheng');
+      ui.bt.queue = [{ t: 'shield', u: mate, v: 10 }, { t: 'heal', u: mate, v: 5 }, { t: 'status', u: { side: 'enemy' } }, { t: 'act', u: him }, { t: 'heal', u: him }];
+      const got = ui.cineAllies();
+      ok(got.length === 1 && got[0] === mate, 'Skill cutscenes see the allies the Skill helps');
+      ui.bt.queue = q0; ui.bt.skinSeen.clear(); ui.bt.skillLine.clear();
+      if (H.OUTFIT_CUTS.himeko_vermilion) ok(new SC.Show(ui, him, { line: true, foes: lay, outfit: 'himeko_vermilion' }).line === '', 'the outfit Skill cutscene has no shout');
+    }
+    {
+      const SC = H.SkillCuts, fsrc = ['hsr-battle', 'hsr-conton', 'hsr-fives', 'hsr-fours', 'hsr-inaba', 'hsr-lab-kits'].map(f => require('fs').readFileSync(path.join(DIR, f + '.js'), 'utf8')).join('\n');
+      const pushes = [...fsrc.matchAll(/push\(\{ t: 'act'[^\n]*?kind: '(follow|auto|summon)'[^\n]*?\}\)/g)].map(m => m[0]);
+      const follows = pushes.filter(x => /kind: 'follow'/.test(x));
+      ok(follows.length >= 14 && follows.every(x => /fid: /.test(x)), 'every follow-up event in battle carries an fid (' + follows.length + ')');
+      const fids = new Set([...fsrc.matchAll(/fid: (?:[a-z.]+ \? )?'([a-zA-Z]+)'(?: : '([a-zA-Z]+)')?/g)].flatMap(m => [m[1], m[2]]).filter(Boolean));
+      ok(['victory', 'girlpower', 'svarog', 'svarogP', 'numby', 'abyss', 'cogito', 'busy'].every(f => fids.has(f)), 'follow-up, summon and auto events name their cut-in keys');
+      for (const fid of Object.getOwnPropertyNames(SC.FOLLOW)) {
+        const def = SC.FOLLOW[fid];
+        ok(fids.has(fid), 'the cut-in ' + fid + ' belongs to a real battle event');
+        ok(H.CHARS[def.charId] && def.name && SC.MARKS[def.mark] && typeof def.act === 'function', 'the cut-in ' + fid + ' names its hero, attack and mark');
+        ok(H.EN.DICT[def.name] && H.EN.DICT[SC.MARKS[def.mark]], 'the cut-in ' + fid + ' has English texts');
+      }
+      ok(!SC.FOLLOW.cocoon && !SC.FOLLOW.guardian && !SC.FOLLOW.heist, 'Kon-Ton keeps its own cocoon burst, Guardian call and heist');
+      eq(ui.options.followCine, 'on', 'follow-up cut-ins are on by default');
+      const him = { charId: 'himeko', elem: 'fire', name: 'Химико', side: 'ally', kit: H.CHARS.himeko, idx: 0 };
+      const mar = { charId: 'march', elem: 'ice', name: 'Март 7', side: 'ally', kit: H.CHARS.march, idx: 1 };
+      const ev = (u, fid, name) => ({ t: 'act', u, name, kind: 'follow', fid });
+      ui.bt.fcuts = []; ui.bt.bannerT = 0; ui.bt.banner = null;
+      const e1 = ev(him, 'victory', 'Победный порыв');
+      ui.applyEvent(e1);
+      ok(e1.hold === SC.FOLLOW_D && ui.bt.fcuts.length === 1 && !ui.bt.banner, 'a follow-up shows its cut-in instead of the plate and holds ' + SC.FOLLOW_D + ' s');
+      const e2 = ev(mar, 'girlpower', 'Контратака'), e3 = ev(him, 'victory', 'Победный порыв'), e4 = ev(mar, 'girlpower', 'Контратака');
+      for (const e of [e2, e3, e4]) ui.applyEvent(e);
+      ok(e2.hold === SC.CHAIN_D && e3.hold === SC.CHAIN_D && ui.bt.fcuts.length === 3, 'chained follow-ups hold ' + SC.CHAIN_D + ' s and at most three cut-ins stay on screen');
+      ok(e1.hold + e2.hold + e3.hold < 3 * 0.55, 'three chained follow-ups are shorter than three plates were');
+      const wide0 = Object.prototype.hasOwnProperty.call(ui, 'wide');
+      for (const wide of [false, true]) {
+        if (wide) ui.wide = () => true;
+        ui.bt.fcuts = [];
+        ui.applyEvent(ev(him, 'victory', 'Победный порыв')); ui.applyEvent(ev(mar, 'girlpower', 'Контратака'));
+        let n = 0;
+        while (ui.bt.fcuts.length && n++ < 40) { for (const f of ui.bt.fcuts) f.t += 0.05; ui.bt.fcuts = ui.bt.fcuts.filter(f => f.t < f.life); SC.drawFollow(ui, ui.ctx, ui.bt.fcuts); }
+        ok(!ui.bt.fcuts.length, 'cut-ins play out and leave the field' + (wide ? ' in 16:9' : ''));
+        if (wide && !wide0) delete ui.wide;
+      }
+      ui.options.followCine = 'off';
+      const e5 = ev(him, 'victory', 'Победный порыв');
+      ui.applyEvent(e5);
+      ok(!e5.hold && ui.bt.banner && ui.bt.banner.name === 'Победный порыв' && !ui.bt.fcuts.length, 'with cut-ins off the follow-up shows the plate again');
+      ui.options.followCine = 'on';
+      const e6 = { t: 'act', u: him, name: 'Удар', kind: 'follow', fid: 'nothing' };
+      ui.applyEvent(e6);
+      ok(!e6.hold && ui.bt.banner.name === 'Удар', 'a follow-up without a cut-in keeps the plate');
+      ui.bt.fcuts = []; ui.bt.banner = null; ui.bt.bannerT = 0;
     }
     const FS = H.Fusions.SHOWS, allyFx = f => f.fx.some(x => ['heal', 'shield', 'invig'].includes(x.k) || (['advance', 'buff'].includes(x.k) && x.who === 'allies'));
     for (const id of Object.keys(H.FUSIONS)) {
@@ -11821,6 +11971,10 @@ function trInfo(g) {
     eq(ui.options.skinCine, 'on', 'Settings play the outfit Skill cutscenes on every Skill');
     key('ArrowRight'); frame();
     ok(ui.options.skinCine === 'first' && ui.options.fusionCine === 'on', 'the outfit Skill row goes back to the first Skill in a battle and leaves Fusions alone');
+    key('ArrowDown'); key('ArrowRight'); frame();
+    eq(ui.options.followCine, 'off', 'Settings turn the follow-up cut-ins off');
+    key('ArrowLeft'); frame();
+    ok(ui.options.followCine === 'on' && ui.options.skinCine === 'first', 'Settings turn the follow-up cut-ins back on and leave Skills alone');
     ui.screens = [];
     for (const x of b.living) x.hp = 1;
     ui.bt.auto = true;
@@ -12005,7 +12159,7 @@ function trInfo(g) {
     b.sp = 2; ui.bt.allyMode = { kind: 'skill', target: mg }; ui.bt.pick = 'skill';
     key('Space'); frame();
     ok(b.actions === acts + 1 && !mg.dead && b.sp === 0, 'two Skill Points bring Megumin back');
-    for (let i = 0; i < 40; i++) frame(1, 0.05);
+    for (let i = 0; i < 70; i++) frame(1, 0.05);
     ok(!ui.bt.fade.has(mg) && ui.turnOrder(16).some(o => o.u === mg), 'the revived Megumin returns to the turn order');
     for (const e of b.living) e.hp = Math.min(e.hp, 2000), e.maxHp = 2000;
     ui.bt.auto = true;
@@ -12552,18 +12706,23 @@ function trInfo(g) {
     key('Enter'); frame(); key('Escape'); frame();
     ok(ui.top() === hub2, 'Express Frontier: Esc leaves the history');
     const ids = hub2.items().map(it => it.id);
-    eq(ids.join(), 'new,coop,diff,dossier,recs,asc,week,trials,hist,rules,close', 'Express Frontier: the arcade screen lists the plan buttons in order');
+    eq(ids.join(), 'new,custom,coop,diff,dossier,recs,asc,week,trials,hist,rules,close', 'Express Frontier: the arcade screen lists the plan buttons in order');
     hub2.sel = 1; key('Enter'); frame();
-    ok(ui.top() === hub2 && !hub2.pick, 'Express Frontier: 2-4 PLAYERS is not active yet');
+    ok(hub2.pick === 'custom' && !hg.hdRun() && hub2.items().every(it => it.id === 'back' || it.id.startsWith('d:')), 'Patchwork: 1 PLAYER: PATCHWORK is open at once and asks for the difficulty');
+    hub2.pick = false;
     hub2.sel = 2; key('Enter'); frame();
+    ok(ui.top() === hub2 && !hub2.pick, 'Express Frontier: 2-4 PLAYERS is not active yet');
+    hub2.sel = 3; key('Enter'); frame();
     ok(hub2.pick === 'set', 'Express Frontier: Difficulty opens the picker without starting a run');
     hub2.sel = 0; key('Enter'); frame();
-    ok(!hub2.pick && hg.hd().opts.diff === 'easy' && !hg.hdRun() && /Тренировка/.test(hub2.items()[2].label), 'Express Frontier: the chosen difficulty becomes the default');
+    ok(!hub2.pick && hg.hd().opts.diff === 'easy' && !hg.hdRun() && /Тренировка/.test(hub2.items()[3].label), 'Express Frontier: the chosen difficulty becomes the default');
     key('KeyR'); frame(2);
     const rl = ui.top();
     ok(rl.rules, 'Express Frontier: R opens the rules');
     for (let i = 0; i < 9; i++) { key('ArrowDown'); frame(); }
-    eq(rl.sel, 0, 'Express Frontier: the rules have nine pages');
+    eq(rl.sel, 9, 'Patchwork: the rules have a Patchwork page');
+    key('ArrowDown'); frame();
+    eq(rl.sel, 0, 'Express Frontier: the rules have ten pages');
     key('KeyA'); frame();
     eq(hg.hd().opts.aim, 'cursor', 'Express Frontier: A switches aiming to the cursor');
     key('KeyA'); frame();
@@ -12579,6 +12738,50 @@ function trInfo(g) {
     ok(dinfo.lvl === 20 && dinfo.abil.r === 3 && Math.round(dinfo.hpMax) === Math.round(HD.heroStats(ds.hero(), 20).hpMax), 'Express Frontier: the dossier shows level 20 numbers');
     const tl = ui.hdCardLines(dinfo, 2, 260).map(l => l.t).join(' ');
     ok(HD.KITS[ds.hero()].tr.concat(HD.KITS[ds.hero()].ei).every(x => tl.includes(x.name)) && !/Предметы/.test(tl), 'Express Frontier: the dossier lists all four Traces and Eidolons');
+    key('KeyF'); frame(2);
+    const av = ui.top();
+    ok(av.archive && av.list().length === 6 && av.list().every(id => HD.PIECES[id].kind === 'act'), 'Patchwork: F in the dossier opens the record archive with the six skills of a Path');
+    key('KeyE'); key('KeyE'); key('KeyE'); frame(2);
+    ok(av.tab === 3 && av.list().length === 12 && av.list().every(id => HD.GIFTS[id]), 'Patchwork: the archive lists the Traces and Eidolons of the Path');
+    key('Escape'); frame();
+    {
+      const keepG = ui.game, keepS = ui.screens.slice();
+      const cg = new H.Game({ fresh: true, seed: 11 });
+      ui.game = cg; ui.screens = [];
+      cg.hdNew({ diff: 'normal', mode: 'custom', seed: 515, threats: ['legion', 'silvermane'] });
+      ui.openHdDraft(); frame(25);
+      key('Enter'); frame(2);
+      const P0 = cg.hdRun().players[0];
+      ok(ui.top().draft && P0.hero && P0.roll && P0.roll.slot === 'q', 'Patchwork: taking the shell opens the skill roll');
+      frame(25); key('KeyR'); frame(); key('Enter'); frame(2); frame(25); key('Enter'); frame(3);
+      const ca = ui.top(), CA = ca.arena;
+      ok(CA && CA.hero.kit.q && CA.hero.kit.e && cg.hdRun().phase === 'break', 'Patchwork: two skills lead to the defense');
+      const clearTo = w => { CA.wave = w; CA.phase = 'wave'; CA.sched = []; CA.clearWave(); frame(2); };
+      clearTo(3);
+      ok(ui.top() !== ca && ui.top().draft && CA.hero.roll && CA.hero.roll.slot === 't', 'Patchwork: the Talent roll opens over the defense');
+      frame(25); key('Enter'); frame(2);
+      ok(ui.top() === ca && CA.hero.kit.t, 'Patchwork: taking the Talent returns to the defense');
+      clearTo(7);
+      frame(25); key('Enter'); frame(2); frame(25); key('Enter'); frame(2);
+      ok(ui.top() === ca && CA.hero.gifts.length === 2, 'Patchwork: both talents are taken one after another');
+      const cinfo = ui.hdHeroInfo(CA.hero.key, CA, CA.hero);
+      ok(ui.hdCardLines(cinfo, 1, 260).map(l => l.t).join(' ').includes(HD.pieceName(CA.hero.kit.q)) && ui.hdCardLines(cinfo, 2, 260).some(l => l.t === 'Таланты'), 'Patchwork: the hero card shows the build and its talents');
+      const cf = CA.spawnFoe('antibaryon', 'n');
+      CA.hit(CA.hero, cf, { amt: 30, basic: true, kind: 'basic', noCrit: true, noTough: true });
+      const sum = cg.hdFinish(CA, true);
+      ok(sum.mode === 'custom' && sum.byFrom && sum.build.kit.q && sum.build.gifts.length === 2, 'Patchwork: the summary keeps the build and the damage by record');
+      ok(ui.hdShare(sum.byFrom).length > 0, 'Patchwork: the summary splits the damage by record');
+      ui.openHdResult(sum); frame(2);
+      ok(ui.top().result, 'Patchwork: the result screen draws the build');
+      ui.pop();
+      ui.openHdRecords(); key('KeyE'); key('KeyE'); frame(2);
+      ok(ui.top().recs && ui.top().tab === 2 && cg.hdCustomRecords('normal').filter(r => !r.solo).length === 1 && !cg.hdRecords('normal').some(r => r.mode), 'Patchwork: records keep their own tab');
+      ok(cg.hdCustomRecords('hard').filter(r => r.solo).length === 3, 'Patchwork: Leveling_Solo already holds Hard records of Patchwork');
+      ui.pop();
+      ok(H.tr && ui.setLang && (ui.setLang('en'), H.tr('1 ИГРОК: СБОРКА') === '1 PLAYER: PATCHWORK' && H.tr('Бросок навыка 2 из 2') === 'Skill roll 2 of 2'), 'Patchwork: the new lines have English');
+      ui.setLang('ru');
+      ui.game = keepG; ui.screens = keepS;
+    }
     key('Escape'); frame();
     hub2.sel = 0; key('Enter'); frame(); key('Enter'); frame(25); key('Enter'); frame(3);
     const ar4 = ui.top(), A4 = ar4.arena;
@@ -13700,6 +13903,54 @@ function trInfo(g) {
     const pf = new H.Battle({ party: [Object.assign(gf.fhSpecs(['asta'])[0], { cone: { id: 'pastfuture', fx: 'pastfuture', sup: 1 } }), gf.fhSpecs(['march'])[0]], waves: [['reaver:30']], lvl: 30, seed: 9 });
     pf.start(); pf.memo('after', { u: pf.allies[0], kind: 'skill' }); pf.memo('turn', { u: pf.allies[1] });
     ok(pf.allies[1].buffs.some(x => x.name === 'Бумажные змеи из прошлого' && Math.abs(x.v - 0.16) < 1e-9), 'Past and Future: the next ally deals +16% DMG');
+  }
+  {
+    const FH = H.FH, LF = FH.SERIES.find(S => S.id === 'luofu');
+    ok(LF && LF.stages.length === 10 && LF.stages.every((st, i) => st.n === 16 + i && st.i === i + 1 && st.turb && st.turb.fx.length), 'Forgotten Hall: the Luofu series has ten stages numbered after the Jarilo ones');
+    ok(LF.stages.every((st, i) => !i || st.lvl >= LF.stages[i - 1].lvl) && LF.stages.every(st => st.nodes.every(nd => nd.every(b => b.waves.every(w => w.every(id => H.ENEMIES[id]))))), 'Forgotten Hall: Luofu enemies exist and levels climb');
+    const ls = H.newState();
+    ls.flags.fh_met = true;
+    ls.roster.march = { lvl: 60, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+    const gl = new H.Game({ state: ls, seed: 3 });
+    ok(!gl.fhUnlocked(16) && !gl.fhSeriesOpen(LF), 'the Luofu series waits for the end of the Luofu story');
+    gl.state.flags.lf_phantylia_done = true;
+    ok(gl.fhUnlocked(16) && !gl.fhUnlocked(17) && gl.fhSeriesOpen(LF), 'after Phantylia the first Luofu stage opens');
+    ok(LF.stages.every(st => st.nodes.every((_, ni) => { const w = gl.fhWeak(st, ni); return w.length >= 1 && w.length <= 3; })), 'every Luofu node suggests weaknesses');
+    ok(gl.fhTiers('luofu').length === 10 && gl.fhTiers().length === 15, 'each series has its own star rewards');
+    for (const st of LF.stages) {
+      gl.fh().run = null; gl.battle = null;
+      gl.fh().st[st.n - 1] = { clear: true, stars: [false, false, false], best: 0 };
+      ok(gl.fhBegin(st.n), 'Luofu stage ' + st.i + ' begins');
+      const b = gl.fhFight();
+      ok(b && b.opts.fh && b.opts.lvl === st.lvl, 'Luofu stage ' + st.i + ' starts a battle at its level');
+      b.start(); b.runAuto(400);
+      ok(b.over || b.living.length > 0, 'Luofu stage ' + st.i + ' runs');
+    }
+    gl.fh().run = null; gl.battle = null;
+  }
+  {
+    const preds = H.RUMORS.filter(r => r.who === 'qingque_sanctum');
+    ok(preds.length === 4 && preds.every(r => r.id.startsWith('pred_') && r.effect && r.cost > 0), 'Qingque sells four Luofu predictions');
+    const ps = H.newState();
+    ps.credits = 10000;
+    const gp = new H.Game({ state: ps, seed: 5 });
+    gp.loadMap('lf_cloud', null, { silent: true });
+    const hidden = gp.map.ents.filter(e => (e.kind === 'chest' && e.def.if === 'pred_cache') || (e.kind === 'enemy' && e.def.if === 'pred_trotter'));
+    ok(hidden.length === 2 && hidden.every(e => !gp.visible(e)), 'the cache and the trotter on the Cloudford wait for a prediction');
+    ok(gp.buyRumor('pred_cache') && gp.buyRumor('pred_trotter') && hidden.every(e => gp.visible(e)), 'bought predictions come true on the Cloudford');
+    const e3 = gp.state.inv.items.exp3 || 0;
+    ok(gp.buyRumor('pred_hand') && gp.state.inv.items.exp3 === e3 + 2 && !gp.buyRumor('pred_hand'), 'a gift prediction pays once');
+  }
+  {
+    const ds = H.newState();
+    const gd = new H.Game({ state: ds, seed: 2 });
+    ok(gd.discOf('hs_base') === 1 && gd.discOf('j_plains') === 2 && gd.discOf('u_mine') === 2 && gd.discOf('lf_cloud') === 3 && gd.discOf('express') === 0, 'every world sits on its own disc');
+    ok(gd.discAdvance('hs_base') === 0 && gd.state.disc === 1, 'the first map only records the disc');
+    ok(gd.discAdvance('express') === 0 && gd.discAdvance('j_plains') === 1 && gd.state.disc === 2 && gd.discAdvance('hs_base') === 0, 'a new world swaps the disc once, going back does not');
+    const old = H.newState();
+    old.flags.jarilo_arrive = true; old.flags.lf_q1 = 'go';
+    const go = new H.Game({ state: old, seed: 2 });
+    ok(go.discAdvance('express') === 0 && go.state.disc === 3 && go.discAdvance('lf_cloud') === 0, 'an old save that reached Luofu never sees a swap again');
   }
   log.push('forgotten hall ok, stars ' + gf.fhTotal() + ', jade ' + gf.state.jade);
 }
@@ -17340,10 +17591,10 @@ console.log(log.join('\n'));
     ok(f1.hp < f1.hpMax && f2.hp < f2.hpMax, 'Express Frontier: Molten Detonation hits the circle');
     hm.cmd({ t: 'cast', slot: 'e', x: f1.x, y: f1.y }); steps(hm, 10);
     ok(f1.fx.some(f => f.k === 'elemVuln' && f.elem === 'fire'), 'Express Frontier: Incomplete Combustion makes enemies take more fire damage');
-    hk.tal.ch = 2;
+    hk.tals[hk.key].ch = 2;
     const pre = f2.hp;
     f1.tough = 1; f1.brokenT = 0; f2.brokenT = 3; hm.hit(hk, f1, { amt: 1, elem: 'fire', tough: 10, noCrit: true });
-    ok(hk.tal.ch === 0 && f2.hp < pre, 'Express Frontier: the third Talent charge sends a fire wave');
+    ok(hk.tals[hk.key].ch === 0 && f2.hp < pre, 'Express Frontier: the third Talent charge sends a fire wave');
     const weak = dummy(hm, 'baryon', PX + 160, PY - 20); weak.hp = 1;
     const en0 = hk.en = 500;
     hm.cmd({ t: 'cast', slot: 'r', x: f1.x, y: f1.y }); steps(hm, TUN.hz);
@@ -17470,9 +17721,9 @@ console.log(log.join('\n'));
       b1.hp = 1; m.A.hit(m.h, b1, { amt: 10, noCrit: true, noTough: true });
       ok(b1.dead && b2.hp < b2.hpMax, 'Express Frontier: a burning enemy explodes on death under Magma');
       const s = mk('himeko', { ei: 0 }), t0 = [0, 1, 2].map(i => dum(s.A, 150 + i * 10, i * 10));
-      s.h.tal.ch = 0;
+      s.h.tals[s.h.key].ch = 0;
       cast(s.A, 'q', { x: t0[1].x, y: t0[1].y }); for (let i = 0; i < 10; i++) s.A.step();
-      eq(s.h.tal.ch, 1, 'Express Frontier: Selfless gives a Talent charge for every three enemies hit by the Skill');
+      eq(s.h.tals[s.h.key].ch, 1, 'Express Frontier: Selfless gives a Talent charge for every three enemies hit by the Skill');
       const r = mk('himeko', { ei: 1 }), big = dum(r.A, 150, 0), log = spy(r.A);
       cast(r.A, 'r', { x: big.x, y: big.y }); for (let i = 0; i < 50; i++) r.A.step();
       eq(log.filter(x => x.t === big.uid && x.kind === 'r').length, 3, 'Express Frontier: Exploration! strikes twice more after the Ultimate');
@@ -17493,7 +17744,7 @@ console.log(log.join('\n'));
       d.A.hit(d.h, v1, { amt: 1, basic: true, kind: 'basic', noCrit: true });
       ok(log.some(x => x.t === v1.uid && x.kind === 'bonus'), 'Express Frontier: the Butterfly Vortex adds damage to hits on its target');
       v1.hp = 1; d.A.hit(d.h, v1, { amt: 10, noCrit: true, noTough: true });
-      eq(d.h.tal.vortex.uid, v2.uid, 'Express Frontier: the Vortex moves to the nearest enemy');
+      eq(d.h.tals[d.h.key].vortex.uid, v2.uid, 'Express Frontier: the Vortex moves to the nearest enemy');
     }
 
     {
@@ -17511,13 +17762,13 @@ console.log(log.join('\n'));
       t.h.hp = t.h.hpMax * 0.4;
       t.A.spendHp(t.h, t.h.hpMax * 0.1); t.A.spendHp(t.h, 0.0001);
       ok(around.hp === around.hpMax, 'Express Frontier: Shuhu needs five charges');
-      t.h.hp = t.h.hpMax; t.h.tal.ch = 4; t.h.tal.acc = 0;
+      t.h.hp = t.h.hpMax; t.h.tals[t.h.key].ch = 4; t.h.tals[t.h.key].acc = 0;
       t.A.spendHp(t.h, t.h.hpMax * 0.1);
-      ok(around.hp < around.hpMax && t.h.tal.ch === 0, 'Express Frontier: the fifth charge of Shuhu strikes around Blade');
+      ok(around.hp < around.hpMax && t.h.tals[t.h.key].ch === 0, 'Express Frontier: the fifth charge of Shuhu strikes around Blade');
       const r = mk('blade'), rf = dum(r.A, 40, 0);
-      r.h.tal.lost = r.h.hpMax * 0.5;
+      r.h.tals[r.h.key].lost = r.h.hpMax * 0.5;
       cast(r.A, 'r');
-      ok(Math.abs(r.h.hp - r.h.hpMax * 0.5) < 1 && rf.hp < rf.hpMax && r.h.tal.lost === 0, 'Express Frontier: Death Sentence sets HP to 50%, strikes and resets the tally');
+      ok(Math.abs(r.h.hp - r.h.hpMax * 0.5) < 1 && rf.hp < rf.hpMax && r.h.tals[r.h.key].lost === 0, 'Express Frontier: Death Sentence sets HP to 50%, strikes and resets the tally');
       const a0 = mk('blade', { tr: 0 }), af = dum(a0.A, 40, 0);
       cast(a0.A, 'q'); a0.h.hp = a0.h.hpMax * 0.4; const hpA = a0.h.hp;
       a0.A.basicAttack(a0.h, af); a0.A.step();
@@ -17526,10 +17777,10 @@ console.log(log.join('\n'));
       cast(a1.A, 'q'); bf.brokenT = 3; a1.h.hp = a1.h.hpMax * 0.5; const hpB = a1.h.hp;
       a1.A.basicAttack(a1.h, bf);
       ok(a1.h.hp > hpB, 'Express Frontier: Endless Deaths heals on a Forest of Swords hit against a broken enemy');
-      const dr0 = o => { const x = mk('blade', o), y = dum(x.A, 40, 0); x.h.tal.lost = x.h.hpMax * 0.6; cast(x.A, 'r'); return lost(y); };
+      const dr0 = o => { const x = mk('blade', o), y = dum(x.A, 40, 0); x.h.tals[x.h.key].lost = x.h.hpMax * 0.6; cast(x.A, 'r'); return lost(y); };
       ok(dr0({ ei: 0 }) > dr0({}) * 1.2, 'Express Frontier: Blade Cuts Burn Hotter adds the HP tally to the Ultimate');
       const e1 = mk('blade', { ei: 1 }), ef = dum(e1.A, 60, 0);
-      e1.h.tal.ch = 3; e1.h.tal.acc = 0; e1.A.spendHp(e1.h, e1.h.hpMax * 0.1);
+      e1.h.tals[e1.h.key].ch = 3; e1.h.tals[e1.h.key].acc = 0; e1.A.spendHp(e1.h, e1.h.hpMax * 0.1);
       ok(ef.hp < ef.hpMax, 'Express Frontier: Rebirth makes Shuhu strike at four charges');
     }
 
@@ -17552,7 +17803,7 @@ console.log(log.join('\n'));
       const side = dum(A, 200, 40);
       A.time += 2;
       A.hit(far, h, { amt: 50, type: 'divine', noCrit: true });
-      ok(A.sum(h, 'dr') > 0.3 && side.hp < side.hpMax && h.tal.promise === 1, 'Express Frontier: Promise lowers damage and turns a counter into a strike around the attacker');
+      ok(A.sum(h, 'dr') > 0.3 && side.hp < side.hpMax && h.tals[h.key].promise === 1, 'Express Frontier: Promise lowers damage and turns a counter into a strike around the attacker');
       const t0 = mk('clara', { tr: 0 }), a1 = dum(t0.A, 40, 0), a2 = dum(t0.A, 80, 0);
       t0.A.step(); t0.A.hit(a1, t0.h, { amt: 50, type: 'divine', noCrit: true });
       ok(a2.hp < a2.hpMax, 'Express Frontier: Revenge makes counters hit around the target');
@@ -17572,9 +17823,9 @@ console.log(log.join('\n'));
     {
       const { A, h } = mk('danheng'), a = dum(A, 60, 0), b = dum(A, 140, 0), log = spy(A);
       cast(A, 'q', { x: QX + 200, y: QY });
-      ok(lost(a) > lost(b) && a.fx.some(x => x.n === 'Пронзающая буря' && x.k === 'slow') && b.fx.some(x => x.k === 'slow') && h.tal.pen === 2, 'Express Frontier: Ethereal Dream pierces the line, slows and readies the Talent');
+      ok(lost(a) > lost(b) && a.fx.some(x => x.n === 'Пронзающая буря' && x.k === 'slow') && b.fx.some(x => x.k === 'slow') && h.tals[h.key].pen === 2, 'Express Frontier: Ethereal Dream pierces the line, slows and readies the Talent');
       A.basicAttack(h, a);
-      eq(h.tal.pen, 1, 'Express Frontier: the Talent spends one armor-piercing Attack');
+      eq(h.tals[h.key].pen, 1, 'Express Frontier: the Talent spends one armor-piercing Attack');
       cast(A, 'e');
       ok(A.sum(h, 'atk') > 0.39 && A.sum(h, 'mspd') > 0.19, 'Express Frontier: Gale raises attack and speed');
       const sl = dum(A, 0, 100), un = dum(A, 0, -100);
@@ -17600,13 +17851,13 @@ console.log(log.join('\n'));
     {
       const { A, h } = mk('topaz'), f = dum(A, 150, 0), log = spy(A);
       cast(A, 'q', { id: f.uid });
-      ok(f.fx.some(x => x.n === 'Справка о задолженности') && h.tal.debt === f.uid && log.some(x => x.t === f.uid && x.kind === 'bonus'), 'Express Frontier: Difficulty Paying marks a debtor and Numby strikes at once');
+      ok(f.fx.some(x => x.n === 'Справка о задолженности') && h.tals[h.key].debt === f.uid && log.some(x => x.t === f.uid && x.kind === 'bonus'), 'Express Frontier: Difficulty Paying marks a debtor and Numby strikes at once');
       ok(Math.abs(HD.KITS.topaz.dmgMul(A, h, f, { kind: 'bonus' }) - 1.5) < 1e-9 && HD.KITS.topaz.dmgMul(A, h, f, { kind: 'q' }) === 1, 'Express Frontier: bonus attacks deal 50% more to the debtor');
       log.length = 0;
       h.atkCd = 1e9;
       for (let i = 0; i < 9 * TUN.hz; i++) { h.atkCd = 1e9; A.step(); }
       near(log.filter(x => x.kind === 'bonus' && x.t === f.uid).length, 3, 1, 'Express Frontier: Numby strikes every 3 seconds');
-      cast(A, 'e'); h.en = 100; const en0 = h.en; h.tal.nT = 0; A.step();
+      cast(A, 'e'); h.en = 100; const en0 = h.en; h.tals[h.key].nT = 0; A.step();
       ok(h.en >= en0 + 14, 'Express Frontier: Turn a Profit gives energy for every Numby strike');
       h.en = 5000; cast(A, 'r'); log.length = 0;
       for (let i = 0; i < 6 * TUN.hz; i++) { h.atkCd = 1e9; A.step(); }
@@ -17615,7 +17866,7 @@ console.log(log.join('\n'));
       t0.A.basicAttack(t0.h, tf); for (let i = 0; i < 15; i++) t0.A.step();
       ok(tl.some(x => x.t === tf.uid && x.kind === 'bonus'), 'Express Frontier: Overdraft makes the Attack a bonus attack');
       const t1 = mk('topaz', { tr: 1 }), t1f = dum(t1.A, 150, 0);
-      cast(t1.A, 'r'); t1.h.en = 0; t1.h.tal.nT = 0; t1.A.step();
+      cast(t1.A, 'r'); t1.h.en = 0; t1.h.tals[t1.h.key].nT = 0; t1.A.step();
       ok(t1.h.en >= 10, 'Express Frontier: Technical Adjustment gives energy for Numby strikes in the Rise');
       const e0 = mk('topaz', { ei: 0 }), ef = dum(e0.A, 150, 0);
       cast(e0.A, 'q', { id: ef.uid });
@@ -17660,22 +17911,22 @@ console.log(log.join('\n'));
       for (let i = 0; i < 7 * TUN.hz; i++) { h.atkCd = 1e9; A.step(); }
       eq(log.filter(x => x.t === f.uid && x.kind === 'bonus').length, 3, 'Express Frontier: the Lightning-Lord strikes three times every 6 seconds');
       cast(A, 'q');
-      eq(h.tal.lord.hits, 5, 'Express Frontier: the Skill adds two strikes to the next salvo');
+      eq(h.tals[h.key].lord.hits, 5, 'Express Frontier: the Skill adds two strikes to the next salvo');
       log.length = 0;
       cast(A, 'e'); for (let i = 0; i < 3 * TUN.hz; i++) { h.atkCd = 1e9; A.step(); }
       eq(log.filter(x => x.t === f.uid && x.kind === 'bonus').length, 8, 'Express Frontier: the Technique fires the salvo at once with three more strikes');
       cast(A, 'r');
-      eq(h.tal.lord.hits, 6, 'Express Frontier: the Ultimate adds three strikes');
+      eq(h.tals[h.key].lord.hits, 6, 'Express Frontier: the Ultimate adds three strikes');
       const t1 = mk('jingyuan', { tr: 1 });
       cast(t1.A, 'q');
       ok(t1.A.sum(t1.h, 'crit') > 0.09, 'Express Frontier: War Marshal gives crit after the Skill');
       const e0 = mk('jingyuan', { ei: 0 }), main = dum(e0.A, 80, 0), side = dum(e0.A, 110, 0), l0 = spy(e0.A);
-      e0.h.tal.lord = { hits: 1, t: 0 };
+      e0.h.tals[e0.h.key].lord = { hits: 1, t: 0 };
       for (let i = 0; i < 3; i++) e0.A.step();
       const first = l0.find(x => x.kind === 'bonus'), sec = l0.filter(x => x.kind === 'bonus')[1];
       ok(first && sec && Math.abs(sec.v / first.v - 0.5) < 0.2, 'Express Frontier: Swing Crushes Rocks gives neighbours half of the strike');
       const e1 = mk('jingyuan', { ei: 1 }), only = dum(e1.A, 80, 0);
-      e1.h.tal.lord = { hits: 4, t: 0 };
+      e1.h.tals[e1.h.key].lord = { hits: 4, t: 0 };
       for (let i = 0; i < 30; i++) e1.A.step();
       eq(only.fx.find(x => x.n === 'Слава поражает врагов').stacks, 3, 'Express Frontier: Glory raises the damage on the target up to three times');
     }
@@ -17709,9 +17960,9 @@ console.log(log.join('\n'));
       cast(A, 'q', { id: f[0].uid });
       eq(new Set(log.filter(x => x.kind === 'q').map(x => x.t)).size, 4, 'Express Frontier: Meteor Storm bounces to new enemies');
       A.step();
-      ok(h.tal.ch === 4 && A.sum(h, 'atk') > 0.4, 'Express Frontier: every new target gives Asta a Charge');
+      ok(h.tals[h.key].ch === 4 && A.sum(h, 'atk') > 0.4, 'Express Frontier: every new target gives Asta a Charge');
       for (let i = 0; i < 3 * TUN.hz + 2; i++) A.step();
-      eq(h.tal.ch, 2, 'Express Frontier: two Charges fade every 3 seconds');
+      eq(h.tals[h.key].ch, 2, 'Express Frontier: two Charges fade every 3 seconds');
       log.length = 0;
       cast(A, 'e', { x: f[1].x, y: f[1].y }); for (let i = 0; i < 40; i++) A.step();
       eq(log.filter(x => x.kind === 'e' && x.t === f[1].uid).length, 3, 'Express Frontier: Skyfall strikes three times');
@@ -17806,7 +18057,7 @@ console.log(log.join('\n'));
       ok(p.x < px - 20 && p.fx.some(x => x.n === 'Гравитационное заточение' && x.k === 'stun'), 'Express Frontier: Synthetic Black Hole pulls enemies in and imprisons them');
       const e0 = mk('welt', { ei: 0 });
       cast(e0.A, 'r', { x: QX + 100, y: QY }); for (let i = 0; i < 3 * TUN.hz + 3; i++) e0.A.step();
-      eq(e0.h.tal.legacy, 2, 'Express Frontier: Legacy of Honor readies two extra strikes');
+      eq(e0.h.tals[e0.h.key].legacy, 2, 'Express Frontier: Legacy of Honor readies two extra strikes');
     }
 
     {
@@ -17864,7 +18115,7 @@ console.log(log.join('\n'));
       h.hp = h.hpMax * 0.4; A.step();
       ok(h.hp > h.hpMax * 0.8, 'Express Frontier: the self-heal charge of Fu Xuan restores most of the lost HP');
       cast(A, 'r');
-      ok(f.hp < f.hpMax && h.tal.heals >= 1, 'Express Frontier: Woes of Many Morphed to One hits and gives a heal charge');
+      ok(f.hp < f.hpMax && h.tals[h.key].heals >= 1, 'Express Frontier: Woes of Many Morphed to One hits and gives a heal charge');
       const e = mk('fuxuan'), tgt = e.A.turrets[2];
       e.h.hp = e.h.hpMax;
       cast(e.A, 'e', { x: tgt.x, y: tgt.y });
@@ -17915,27 +18166,27 @@ console.log(log.join('\n'));
     {
       const { A, h } = mk('luocha'), base = A.base;
       h.x = h.px = 29 * TS; h.y = h.py = 29.5 * TS; base.hp = 1000;
-      h.tal.auto = 1e9;
+      h.tals[h.key].auto = 1e9;
       cast(A, 'q', { id: base.uid });
-      ok(base.hp > 1000 && h.tal.fl === 1, 'Express Frontier: Prayer of Abyss Flower heals and adds a Flower');
+      ok(base.hp > 1000 && h.tals[h.key].fl === 1, 'Express Frontier: Prayer of Abyss Flower heals and adds a Flower');
       cast(A, 'e');
-      ok(h.tal.zone > A.time, 'Express Frontier: Mercy of a Fool opens the Zone');
+      ok(h.tals[h.key].zone > A.time, 'Express Frontier: Mercy of a Fool opens the Zone');
       const f = dummy(A, 'reaver', h.x + 40, h.y); f.hp = f.hpMax = 1e6;
       h.hp = h.hpMax * 0.5; const hp0 = h.hp;
       A.hit(h, f, { amt: 1, kind: 'basic', noCrit: true });
       ok(h.hp > hp0, 'Express Frontier: inside the Zone an attack heals the attacker');
-      h.tal.fl = 1; h.cd.r = 0;
+      h.tals[h.key].fl = 1; h.cd.r = 0;
       cast(A, 'r');
-      ok(f.hp < f.hpMax && h.tal.fl === 0, 'Express Frontier: Death Wish hits and the second Flower opens the Zone');
+      ok(f.hp < f.hpMax && h.tals[h.key].fl === 0, 'Express Frontier: Death Wish hits and the second Flower opens the Zone');
       const au = mk('luocha'); au.A.base.hp = 1000; au.h.x = au.h.px = 29 * TS; au.h.y = au.h.py = 29.5 * TS; au.A.step();
-      ok(au.A.base.hp > 1000 && au.h.tal.fl === 1, 'Express Frontier: the Talent of Luocha prays for an ally below half HP by itself');
+      ok(au.A.base.hp > 1000 && au.h.tals[au.h.key].fl === 1, 'Express Frontier: the Talent of Luocha prays for an ally below half HP by itself');
     }
   }
   {
     const MP = ['destruction', 'hunt', 'erudition', 'harmony', 'nihility', 'preservation', 'abundance'];
     const modeCones = Object.keys(H.CONES).filter(id => MP.includes(H.CONES[id].path));
-    eq(Object.keys(HD.CONE_MODE).length, 87, 'Express Frontier: the shop has 87 cones');
-    ok(modeCones.length === 96 && modeCones.filter(id => !HD.CONE_MODE[id]).sort().join() === HD.CONE_LATER.slice().sort().join(), 'Express Frontier: nine cones of the seven Paths wait for their heroes');
+    eq(Object.keys(HD.CONE_MODE).length, 100, 'Express Frontier: the shop has 100 cones');
+    ok(modeCones.length === 109 && modeCones.filter(id => !HD.CONE_MODE[id]).sort().join() === HD.CONE_LATER.slice().sort().join(), 'Express Frontier: nine cones of the seven Paths wait for their heroes');
     ok(Object.keys(HD.CONE_MODE).every(id => [1, 3, 5].every(sp => { const t = HD.coneText(id, sp); return t && !/NaN|undefined|\{|—/.test(t) && t.length * 6 < 1400; })), 'Express Frontier: every cone text has its numbers for S1, S3 and S5');
     ok(Object.keys(H.RELIC_SETS).length === 14 && Object.keys(H.RELIC_SETS).every(k => HD.RELIC.text2[k] && (H.RELIC_SETS[k].planar || (HD.RELIC.text4[k] && HD.RELIC.body[k] && HD.SET_MODS[k] && HD.SET_MODS[k].four))), 'Express Frontier: all 14 relic sets have 2-piece bonuses, cavern sets 4-piece bonuses and a body stat');
     eq(Object.keys(HD.DEVICES).length, 7, 'Express Frontier: the shop has seven devices');
@@ -18309,7 +18560,7 @@ console.log(log.join('\n'));
     ok(fin({ stats: { raid: 3100 } }).sum.meta.trials.includes('raid'), 'Express Frontier: 3 000 raid gold completes its trial');
     ok(fin({ diff: 'hard' }).sum.meta.trials.includes('hard3'), 'Express Frontier: three stars on Hard complete their trial');
     ok(!fin({ stats: { tfell: 1 } }).sum.meta.trials.includes('towers') && !fin({ deaths: 1 }).sum.meta.trials.includes('nodeath'), 'Express Frontier: a fallen turret or a death keeps those trials open');
-    eq(HD.TRIALS.length, Object.keys(HD.HEROES).length + 3 + 5 + 3, 'Express Frontier: trials cover every hero, every difficulty, five feats and three crew wins');
+    eq(HD.TRIALS.length, Object.keys(HD.HEROES).length + 3 + 5 + 3 + 4, 'Express Frontier: trials cover every hero, every difficulty, five feats, three crew wins and four Patchwork trials');
     ok(Object.keys(HD.META.asc).length === 30 && HD.META.week.length === 10 && HD.META.week[9][0] === 18000, 'Express Frontier: promotion has 30 rewarded levels and the week ten steps');
     ok(HD.SOLO.every(r => r.name === 'Leveling_Solo' && HD.DIFFS[r.diff] && HD.HEROES[r.hero]) && Object.keys(HD.DIFFS).every(d => HD.SOLO.some(r => r.diff === d)), 'Express Frontier: Leveling_Solo has records on every difficulty');
     const { A } = mkA('trail');
@@ -18865,7 +19116,7 @@ console.log(log.join('\n'));
   ok(!mer.find(r => r.id === 'cw').open && mer.find(r => r.id === 'cw').value === 'Не открыто', 'Merits: a closed mode says so');
   ps.flags.lab_cw = true; ps.flags.lab_hd = true; ps.flags.su_open = true; ps.flags.fh_met = true;
   const mer2 = pl.profileMerits();
-  ok(mer2.find(r => r.id === 'fh').value.endsWith('/ ' + H.FH.STAGES.length * 3 + ' ★'), 'Merits: the Hall counts its stars from the data');
+  ok(mer2.find(r => r.id === 'fh').value.endsWith('/ ' + H.FH.ALL.length * 3 + ' ★'), 'Merits: the Hall counts its stars from the data');
   ok(mer2.find(r => r.id === 'su').value.includes('/ ' + H.SU.WORLDS.length), 'Merits: the universe counts its worlds from the data');
   ok(mer2.find(r => r.id === 'cw').value.startsWith(H.CW.RANKS[0].name), 'Merits: the war row shows the best rank');
   eq(mer2.find(r => r.id === 'hd').value, 'Нет записей', 'Merits: an empty record is honest');
@@ -19552,6 +19803,145 @@ console.log(log.join('\n'));
 }
 
 {
+  const gs = new H.Game({ seed: 77 });
+  for (const k of ['natasha', 'march', 'pela', 'danheng', 'asta', 'arlan', 'himeko', 'phrolova']) gs.state.roster[k] = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+  const wearer = (key, cone, sup) => Object.assign(gs.fhSpecs([key])[0], { cone: { id: cone, fx: cone, sup: sup || 1 } });
+  const fight = (party, seed) => { const b = new H.Battle({ party, waves: [['reaver:30', 'reaver:30']], lvl: 30, seed: seed || 5 }); b.start(); return b; };
+  const NEW_FOURS = { warmth: 21028, meetagain: 21029, thisisme: 21030, todarkness: 21031, carvemoon: 21032, nowhere: 21033, peaceful: 21034, journey: 21053, morrow: 21055, pursuit: 21056, flowermem: 21057, wheat: 21060, thermae: 21061, seeyou: 21062 };
+  for (const [id, ref] of Object.entries(NEW_FOURS)) {
+    const c = H.CONES[id];
+    ok(c && c.rarity === 4 && c.ref === ref && c.fx === id && c.p.length === 5 && !/#\d/.test(c.text), id + ' is a full 4★ standard cone');
+    ok(H.WARP_POOL.four.includes('cone:' + id), id + ' drops from the standard 4★ pool');
+  }
+  const refs = new Set(Object.values(H.CONES).map(c => c.ref));
+  const gacha4 = [];
+  for (let r = 21000; r <= 21062; r++) if (![21049, 21059].includes(r)) gacha4.push(r);
+  eq(gacha4.filter(r => !refs.has(r)).join(), '', 'every non-event 4★ Light Cone is in the game');
+  eq([23000, 23002, 23003, 23004, 23005, 23012, 23013].filter(r => !refs.has(r)).join(), '', 'every standard 5★ Light Cone is in the game');
+
+  const wb = fight([wearer('natasha', 'warmth', 5), gs.fhSpecs(['march'])[0]]);
+  wb.allies[1].hp = 100;
+  wb.stdAfter(wb.allies[0], 'basic', []);
+  ok(wb.allies[1].hp >= 100 + Math.round(wb.allies[1].maxHp * 0.04) - 1, 'Warmth Shortens Cold Nights S5: Basic ATK heals every ally by 4% Max HP');
+
+  const mb = fight([wearer('pela', 'meetagain', 1)]);
+  const mHp = mb.enemies.map(e => e.hp);
+  mb.stdAfter(mb.allies[0], 'skill', [mb.enemies[0]]);
+  ok(mb.enemies[0].hp < mHp[0] && mb.enemies[1].hp === mHp[1], 'We Will Meet Again: Additional DMG hits an enemy the Skill struck');
+  const mHp2 = mb.enemies[0].hp;
+  mb.stdAfter(mb.allies[0], 'ult', [mb.enemies[0]]);
+  eq(mb.enemies[0].hp, mHp2, 'We Will Meet Again: Ultimate does not trigger it');
+
+  const tb = fight([wearer('march', 'thisisme', 1)]);
+  const tm = tb.allies[0], tt = tb.enemies[0];
+  tb.actSerial = 40;
+  const tAdd = tb.stdBase(tm, tt, { kind: 'ult' });
+  ok(tAdd > 0 && Math.abs(tAdd - 0.6 * H.battleStat.defOf(tm)) < 1e-6 && tb.stdBase(tm, tt, { kind: 'skill' }) === 0, 'This Is Me!: Ultimate adds 60% DEF to its damage');
+  tb.stdHit(tm, tt, { kind: 'ult' }, 10, false);
+  eq(tb.stdBase(tm, tt, { kind: 'ult' }), 0, 'This Is Me!: only once per enemy in one Ultimate');
+  tb.actSerial = 41;
+  ok(tb.stdBase(tm, tt, { kind: 'ult' }) > 0, 'This Is Me!: the next Ultimate counts again');
+
+  const db = fight([wearer('danheng', 'todarkness', 5)]);
+  db.rng.chance = () => true;
+  db.enemies[0].buffs.push({ s: 'atkP', v: 0.2, turns: 3, name: 'Ярость' }, { s: 'atkP', v: 0.1, turns: 3, name: 'Гнев' });
+  db.actSerial = 7;
+  db.stdHit(db.allies[0], db.enemies[0], { kind: 'basic' }, 10, true);
+  db.stdHit(db.allies[0], db.enemies[0], { kind: 'basic' }, 10, true);
+  eq(db.enemies[0].buffs.filter(b => b.s === 'atkP').length, 1, 'Return to Darkness: a CRIT Hit dispels one buff, once per attack');
+  db.stdHit(db.allies[0], db.enemies[0], { kind: 'basic' }, 10, false);
+  db.actSerial = 8;
+  db.stdHit(db.allies[0], db.enemies[0], { kind: 'basic' }, 10, false);
+  eq(db.enemies[0].buffs.filter(b => b.s === 'atkP').length, 1, 'Return to Darkness: no dispel without a CRIT Hit');
+
+  const cb = fight([wearer('asta', 'carvemoon', 1), gs.fhSpecs(['march'])[0]]);
+  const carve = u => u.buffs.filter(b => b.name === 'Секрет');
+  ok(cb.allies.every(a => carve(a).length === 1), 'Carve the Moon, Weave the Clouds: every ally gets one effect at battle start');
+  for (let i = 0; i < 6; i++) {
+    const before = carve(cb.allies[1])[0].s;
+    cb.stdTurn(cb.allies[0]);
+    const after = carve(cb.allies[1]);
+    ok(after.length === 1 && after[0].s !== before, 'Carve the Moon, Weave the Clouds: a new turn replaces the effect with a different one');
+  }
+  cb.allies[0].dead = true;
+  cb.stdAnyTurn();
+  ok(cb.allies.every(a => carve(a).length === 0), 'Carve the Moon, Weave the Clouds: the effect is removed when the wearer is down');
+
+  const nb = fight([wearer('arlan', 'nowhere', 5)]);
+  nb.allies[0].hp = 50;
+  nb.stdKill(nb.allies[0], nb.enemies[0]);
+  ok(nb.allies[0].hp > 50, 'Nowhere to Run: defeating an enemy restores HP');
+
+  const pb = fight([wearer('himeko', 'peaceful', 5)]);
+  const pBuff = pb.allies[0].buffs.find(b => b.name === 'Шторм приближается');
+  ok(pBuff && Math.abs(pBuff.v - 0.004 * Math.min(160, pb.allies[0].maxEnergy)) < 1e-9, 'Today Is Another Peaceful Day S5: DMG grows with Max Energy');
+
+  const jb = fight([wearer('march', 'journey', 1), gs.fhSpecs(['danheng'])[0]]);
+  const jd = jb.allies[1];
+  eq(jb.stdDmg(jd, jb.enemies[0], { kind: 'basic' }), 0, 'Journey, Forever Peaceful: no bonus without a shield');
+  jd.shield = 100;
+  ok(Math.abs(jb.stdDmg(jd, jb.enemies[0], { kind: 'basic' }) - 0.12) < 1e-9, 'Journey, Forever Peaceful: a shielded ally deals 12% more DMG');
+  const shieldOf = bonus => {
+    const sb = fight([gs.fhSpecs(['march'])[0], gs.fhSpecs(['danheng'])[0]]);
+    sb.allies[0].base.shieldOut = bonus;
+    sb.current = sb.allies[0];
+    sb.act('skill', sb.allies[1]);
+    return sb.allies[1].shield;
+  };
+  const sh0 = shieldOf(0), sh1 = shieldOf(H.coneParam('journey', 1, 1));
+  ok(sh0 > 0 && Math.abs(sh1 / sh0 - 1.12) < 0.01, 'Journey, Forever Peaceful: shields the wearer provides are 12% stronger');
+  const gj = new H.Game({ seed: 79 });
+  gj.state.roster.march = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+  gj.equipCone('march', gj.addCone('journey').uid);
+  ok(Math.abs(gj.charStats('march').shieldOut - 0.12) < 1e-9, 'Journey, Forever Peaceful: Shield Effect on the hero sheet');
+
+  const ob = fight([wearer('natasha', 'morrow', 1), gs.fhSpecs(['danheng'])[0]]);
+  const od = ob.allies[1];
+  ok(Math.abs(ob.stdDmg(od, ob.enemies[0], { kind: 'basic' }) - 0.12) < 1e-9, 'Unto Tomorrow\'s Morrow: an ally at 50% HP or more deals 12% more DMG');
+  od.hp = Math.floor(od.maxHp * 0.4);
+  eq(ob.stdDmg(od, ob.enemies[0], { kind: 'basic' }), 0, 'Unto Tomorrow\'s Morrow: no bonus below 50% HP');
+
+  const wb2 = fight([wearer('asta', 'pursuit', 1), gs.fhSpecs(['danheng'])[0]]);
+  ok(wb2.allies.every(a => a.buffs.some(b => b.s === 'breakDmgP' && Math.abs(b.v - 0.16) < 1e-9)), 'In Pursuit of the Wind: every ally gets Break DMG +16% at battle start');
+  const brk = wb2.breakDmg(wb2.allies[1], wb2.enemies[0], 1);
+  wb2.allies[1].buffs = wb2.allies[1].buffs.filter(b => b.s !== 'breakDmgP');
+  ok(Math.abs(brk / wb2.breakDmg(wb2.allies[1], wb2.enemies[0], 1) - 1.16) < 1e-9, 'In Pursuit of the Wind: Break DMG is 16% higher');
+
+  const fb = fight([wearer('phrolova', 'flowermem', 5)]);
+  const owner = fb.allies[0], memo = { side: 'ally', summon: true, owner, buffs: [], flags: {} };
+  ok(Math.abs(fb.stdCritD(memo, fb.enemies[0], {}) - 0.48) < 1e-9 && fb.stdCritD(owner, fb.enemies[0], {}) === 0, 'The Flower Remembers S5: only the memosprite gets the extra 48% CRIT DMG');
+
+  const xb = fight([wearer('pela', 'thermae', 1)]);
+  xb.rng.chance = () => true;
+  xb.stdAfter(xb.allies[0], 'basic', [xb.enemies[0], xb.enemies[1]]);
+  ok(xb.enemies.every(e => e.buffs.some(b => b.name === 'Слабость' && b.s === 'vuln' && Math.abs(b.v - 0.1) < 1e-9 && b.debuff)), 'Holiday Thermae Escapade: attacked enemies get Vulnerability +10%');
+  xb.stdAfter(xb.allies[0], 'basic', [xb.enemies[0]]);
+  eq(xb.enemies[0].buffs.filter(b => b.name === 'Слабость').length, 1, 'Holiday Thermae Escapade: Vulnerability does not stack');
+
+  const gw = new H.Game({ seed: 78 });
+  gw.state.roster.danheng = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+  const sd0 = gw.charStats('danheng'), sc = gw.addCone('seeyou');
+  gw.equipCone('danheng', sc.uid);
+  const sd1 = gw.charStats('danheng');
+  ok(Math.abs(sd1.critD - sd0.critD - 0.24) < 1e-9 && Math.abs((sd1.skillP || 0) - (sd0.skillP || 0) - 0.24) < 1e-9 && Math.abs((sd1.followP || 0) - (sd0.followP || 0) - 0.24) < 1e-9, 'See You at the End: CRIT DMG, Skill DMG and Follow-up DMG on the hero sheet');
+  gw.state.roster.himeko = { lvl: 30, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
+  const hw0 = gw.charStats('himeko'), hc = gw.addCone('wheat');
+  gw.equipCone('himeko', hc.uid);
+  const hw1 = gw.charStats('himeko');
+  ok(Math.abs(hw1.critR - hw0.critR - 0.12) < 1e-9 && Math.abs((hw1.ultP || 0) - (hw0.ultP || 0) - 0.24) < 1e-9 && Math.abs((hw1.followP || 0) - (hw0.followP || 0) - 0.24) < 1e-9, 'A Dream Scented in Wheat: CRIT Rate, Ultimate DMG and Follow-up DMG on the hero sheet');
+
+  for (const id of Object.keys(NEW_FOURS)) {
+    const path = H.CONES[id].path;
+    const key = { abundance: 'natasha', nihility: 'pela', preservation: 'march', hunt: 'danheng', harmony: 'asta', destruction: 'arlan', erudition: 'himeko', remembrance: 'phrolova' }[path];
+    const rb = new H.Battle({ party: [wearer(key, id, 5), gs.fhSpecs(['march'])[0], gs.fhSpecs(['danheng'])[0]], waves: [['reaver:30', 'reaver:30'], ['reaver:30']], lvl: 30, seed: 11 });
+    rb.start();
+    rb.runAuto(600);
+    ok(rb.over, id + ': an auto battle finishes');
+  }
+  log.push('standard fours ok');
+}
+
+{
   const g = new H.Game({ seed: 201 }), s = g.state;
   s.inv.relics = [];
   s.inv.items.remains = 0;
@@ -19906,8 +20296,10 @@ console.log(log.join('\n'));
   eq(rail[2].label, 'Обучение', 'Tutorial sits at index 2 on the phone rail');
   eq(rail[2].icon, 'guide', 'Tutorial uses the lightbulb (guide) icon');
   eq(rail[3].label, 'Настройки', 'Settings gear sits directly below Tutorial');
-  eq(rail[6].label, 'Управление', 'Controls sits on the phone rail');
-  eq(rail[6].icon, 'gamepad', 'Controls uses the gamepad icon');
+  eq(rail[4].label, 'Атлас', 'the atlas book sits directly below Settings');
+  eq(rail[4].icon, 'atlas', 'the atlas uses the book icon');
+  eq(rail[7].label, 'Управление', 'Controls sits on the phone rail');
+  eq(rail[7].icon, 'gamepad', 'Controls uses the gamepad icon');
 
   ok(Array.isArray(H.TUTORIAL_CATS) && H.TUTORIAL_CATS.length === 6, '6 tutorial categories defined');
   ok(Array.isArray(H.TUTORIAL_ENTRIES) && H.TUTORIAL_ENTRIES.length >= 25, '25+ tutorial encyclopedia entries defined');
@@ -20629,6 +21021,624 @@ console.log(log.join('\n'));
     H.syncSaveLang(rg2.state);
     eq(rg2.state.name, 'Первопроходец', 'syncSaveLang restores default Russian Trailblazer name');
     eq(rg2.state.obj, 'Осмотреть вагон', 'syncSaveLang restores Russian active objective');
+  }
+}
+
+{
+  const { execFileSync } = require('child_process');
+  const A = H.ATLAS, worlds = H.ATLAS_WORLDS;
+  const fresh = execFileSync(process.execPath, [path.join(__dirname, '../tools/hsr-atlas-map.cjs'), '--check'], { encoding: 'utf8' });
+  ok(/up to date/.test(fresh), 'hsr-atlas-data.js matches tools/hsr-atlas-map.cjs');
+
+  const missionIds = H.TRAIL_MISSIONS.map(m => m.id).concat(Object.keys(H.QUESTS).filter(id => H.QUESTS[id].ch));
+  for (const id of missionIds) ok(A.NODES[id], 'atlas node for mission ' + id);
+  eq(Object.keys(A.NODES).length, missionIds.length, 'every atlas node is a mission');
+  const chOf = id => (H.TRAIL_MISSIONS.find(m => m.id === id) || H.QUESTS[id]).ch;
+  const typeOf = id => H.TRAIL_MISSIONS.some(m => m.id === id) ? 'trail' : H.QUESTS[id].type || 'comp';
+  const worldOf = ch => (worlds.find(w => w.chapters.includes(ch)) || {}).id;
+  for (const ch of Object.keys(H.MISSION_CHAPTERS)) eq(worlds.filter(w => w.chapters.includes(ch)).length, 1, 'chapter ' + ch + ' sits in exactly one atlas world');
+  for (const act of H.GUIDE_ACTS) for (const [ch] of act.parts) eq(worldOf(ch), act.world, 'Guide act chapter ' + ch + ' and atlas agree on the world');
+
+  const recaps = [];
+  for (const steps of Object.values(H.SCRIPTS)) for (const st of steps) if (st && st.recap) recaps.push(st.recap);
+  const owner = new Map();
+  for (const [id, n] of Object.entries(A.NODES).concat(Object.entries(A.MEETS))) for (const b of n.beats) { ok(!owner.has(b), 'episode in one node only: ' + b); owner.set(b, id); }
+  eq(owner.size, recaps.length, 'every story point is an atlas episode');
+  for (const r of recaps) ok(owner.has(r), 'story point has a node: ' + r);
+
+  for (const [id, n] of Object.entries(A.NODES)) {
+    if (typeOf(id) === 'trail') { eq(n.after, null, 'trail node has no branch anchor ' + id); continue; }
+    if (n.after) ok(typeOf(n.after) === 'trail' && worldOf(chOf(n.after)) === worldOf(chOf(id)), 'branch anchor is a trail node of the same world ' + id);
+  }
+  for (const [id, m] of Object.entries(A.MEETS)) {
+    ok(worlds.some(w => w.id === m.world) && H.MAPS[m.map] && id === 'meet_' + m.map, 'meeting place ' + id);
+    if (m.after) ok(typeOf(m.after) === 'trail' && worldOf(chOf(m.after)) === m.world, 'meeting anchor is a trail node of the same world ' + id);
+    ok(m.beats.length > 0, 'meeting has episodes ' + id);
+  }
+  for (const [b, from] of Object.entries(A.BRANCH)) ok(owner.get(b) && owner.get(b) === owner.get(from) && b !== from, 'branch episode and its choice share a node ' + b);
+  for (const b of A.TEXT) ok(owner.has(b), 'text-only episode exists ' + b);
+  for (const [b, p] of Object.entries(A.PLACE)) ok(owner.has(b) && H.MAPS[p[0]], 'episode place is a real map ' + b);
+  for (const [id, n] of Object.entries(A.NODES)) if (n.thumb) ok(typeof n.thumb.cine === 'string' && (n.thumb.shot === undefined || Number.isFinite(n.thumb.shot)), 'node thumbnail names a cinematic ' + id);
+
+  const g0 = new H.Game();
+  ok(!g0.atlasOpen(), 'atlas is closed before meeting the Express');
+  ok(!g0.atlasAlert(), 'no atlas badge before meeting the Express');
+  eq(g0.atlasStatus('tb_chaos'), 'active', 'first prologue mission is in progress on a new game');
+  const far = g0.atlasNode('tb_galaxy');
+  ok(far.status === 'locked' && !far.near && !far.known, 'far mission stays unknown');
+  eq(far.need, 'Продолжайте Миссии Освоения.', 'far mission asks to keep going');
+  const next = g0.atlasNode('tb_storm');
+  ok(next.near && next.known, 'next prologue mission is known');
+  eq(next.need, 'Откроется после миссии «Хаос глубин».', 'next mission names the one before it');
+  for (const w of g0.atlasWorlds()) eq(w.meetsSeen, 0, 'no meetings on a new game in ' + w.id);
+  ok(g0.atlasNodes('herta').every(n => n.kind === 'mission'), 'unseen meetings are not listed');
+
+  const g1 = new H.Game();
+  for (const f of ['chaos', 'storm', 'moment', 'express_intro']) g1.state.flags[f] = true;
+  g1.missionTick();
+  ok(g1.atlasOpen(), 'atlas opens after meeting the Express');
+  for (const id of ['tb_chaos', 'tb_storm', 'tb_moment', 'tb_shadows']) eq(g1.atlasStatus(id), 'done', 'prologue mission done ' + id);
+  ok(g1.atlasNode('tb_chaos').fresh && g1.atlasAlert(), 'finished prologue missions are new in the atlas');
+  g1.state.recaps.push(A.MEETS.meet_hs_control.beats[0]);
+  const meet = g1.atlasNode('meet_hs_control');
+  ok(meet.visible && meet.status === 'active' && meet.got === 1, 'a meeting appears after its first episode');
+  ok(g1.atlasNodes('herta').some(n => n.id === 'meet_hs_control'), 'seen meeting is listed in its world');
+  eq(g1.atlasBeatNode(A.MEETS.meet_hs_control.beats[0]), 'meet_hs_control', 'episode finds its meeting');
+  for (const id of Object.keys(A.NODES).concat(Object.keys(A.MEETS))) g1.atlasMark(id);
+  ok(!g1.atlasAlert(), 'opening every node clears the atlas badge');
+  const restored = new H.Game({ state: g1.serialize() });
+  ok(!restored.atlasAlert() && restored.atlasState().seen.tb_chaos, 'atlas marks survive a save');
+
+  const oldSave = g1.serialize();
+  delete oldSave.atlas;
+  const migrated = new H.Game({ state: oldSave });
+  ok(!migrated.atlasAlert(), 'an old save gets no flood of atlas badges');
+  ok(migrated.atlasState().noted, 'an old save past the Express does not repeat the atlas notice');
+
+  if (afterJarilo) {
+    const gj = new H.Game({ state: afterJarilo });
+    const order = id => H.TRAIL_MISSIONS.findIndex(m => m.id === id);
+    for (const b of gj.state.recaps) {
+      const id = gj.atlasBeatNode(b);
+      if (!id || A.MEETS[id]) continue;
+      ok(gj.atlasStatus(id) !== 'locked', 'episode seen in the Jarilo walkthrough belongs to a reached mission: ' + b + ' (' + id + ')');
+    }
+    const jw = gj.atlasWorlds().find(w => w.id === 'jarilo');
+    ok(jw.open && jw.done >= H.TRAIL_MISSIONS.filter(m => ['winter', 'dawn'].includes(m.ch)).length, 'Jarilo acts are done after the walkthrough');
+    ok(jw.meetsTotal > 0 && gj.atlasNodes('jarilo').filter(n => n.kind === 'meet').length === jw.meetsSeen, 'Jarilo meetings stay hidden until their first episode');
+    ok(order('tb_galaxy') > order('tb_icy'), 'mission order sanity');
+    const mission = gj.atlasNode('tb_rot');
+    ok(mission.got > 0 && mission.got <= mission.total && mission.beats.some(b => b.state === 'seen'), 'a finished mission lists seen episodes');
+    ok(mission.cast.length > 0 && mission.cast.every(k => H.SPEAKERS[k]), 'mission cast comes from its speakers');
+  }
+}
+
+{
+  const A = H.ATLAS;
+  const allBeats = Object.values(A.NODES).concat(Object.values(A.MEETS)).flatMap(n => n.beats);
+  const homeAll = new H.Game({ seed: 5 });
+  homeAll.state.recaps = allBeats.slice();
+  for (const f of ['chaos', 'storm', 'moment', 'express_intro']) homeAll.state.flags[f] = true;
+  const playOut = (g, pick) => {
+    const cards = [], fights = [];
+    let n = 0, turn = 0;
+    if (!g.replayNext()) return { cards, fights, n };
+    while (n++ < 6000) {
+      if (g.battle) throw new Error('a replay started a real battle');
+      const p = g.pending;
+      if (p) {
+        if (p.type === 'replayCard') (p.kind === 'beat' ? cards : fights).push(p.kind === 'beat' ? p.id : p.enc);
+        if (p.type === 'choice') g.resume(pick(p.options.length, turn++)); else g.resume();
+        continue;
+      }
+      if (g.script) { g.advanceScript(); continue; }
+      if (!g.replayNext()) break;
+    }
+    return { cards, fights, n };
+  };
+  const rotate = (len, turn) => turn % len;
+  const before = JSON.stringify(homeAll.serialize());
+  let played = 0, battles = 0;
+  for (const id of Object.keys(A.NODES).concat(Object.keys(A.MEETS))) {
+    const g = H.replayGame(homeAll, id);
+    const beats = (A.NODES[id] || A.MEETS[id]).beats;
+    if (!beats.length) { eq(g, null, 'a node without episodes has nothing to replay ' + id); continue; }
+    const r = playOut(g, rotate);
+    ok(r.n < 6000 && g.replay.done, 'replay of ' + id + ' reaches its end');
+    for (const b of beats) ok(r.cards.includes(b), 'replay of ' + id + ' shows episode ' + b);
+    played += r.cards.length; battles += r.fights.length;
+  }
+  ok(played >= allBeats.length, 'every atlas episode can be replayed');
+  ok(battles > 20, 'replays meet battles and show them as cards');
+  eq(JSON.stringify(homeAll.serialize()), before, 'replays never touch the real game');
+  ok(Object.values(A.NODES).flatMap(n => n.beats).every(b => !A.TEXT.includes(b)) || A.TEXT.length <= 10, 'text-only episodes stay rare');
+
+  const g1 = H.replayGame(homeAll, 'tb_guard');
+  g1.replayNext();
+  eq(g1.pending && g1.pending.type, 'replayCard', 'a replay opens with the episode card');
+  eq(g1.pending.n, 1, 'the first card is episode 1');
+  for (const t of ['toast', 'quest', 'mission', 'autosave']) { g1.emit({ t }); }
+  ok(!g1.events.some(e => ['toast', 'quest', 'mission', 'autosave'].includes(e.t)), 'replay keeps rewards, missions and saves quiet');
+  g1.emit({ t: 'sfx', id: 'door' });
+  ok(g1.events.some(e => e.t === 'sfx'), 'replay keeps sounds');
+
+  for (const [b, from] of Object.entries(A.BRANCH)) {
+    const id = Object.keys(A.NODES).concat(Object.keys(A.MEETS)).find(k => (A.NODES[k] || A.MEETS[k]).beats.includes(b));
+    const home = new H.Game({ seed: 6 });
+    home.state.recaps = allBeats.filter(x => x !== b);
+    for (const f of ['chaos', 'storm', 'moment', 'express_intro']) home.state.flags[f] = true;
+    eq(home.atlasBeats([b])[0].state, 'branch', 'an unseen branch is offered as another choice ' + b);
+    let found = false;
+    for (let k = 0; k < 6 && !found; k++) {
+      const g = H.replayGame(home, id, b);
+      eq(g.replay.queue[0], from, 'branch replay starts at the episode with the choice ' + b);
+      playOut(g, (len, turn) => (turn === 0 ? k % len : len - 1));
+      found = g.replayFresh().includes(b);
+    }
+    ok(found, 'another answer in the replay reaches the branch ' + b);
+  }
+
+  const noop = () => {};
+  const root = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
+  const ui = new H.UI(root, { onExit: noop });
+  ui.running = false;
+  ui.newGame();
+  const frame = (n = 1, dt = 0.05) => { for (let i = 0; i < n; i++) { ui.update(dt); ui.render(); } };
+  const key = code => ui.keydown({ code, repeat: false, preventDefault: noop });
+  const home = ui.game;
+  home.script = null; home.pending = null; home.scriptQueue.length = 0; ui.dlg = null; ui.screens = [];
+  home.state.recaps = allBeats.filter(x => x !== 'Присяга стража');
+  for (const f of ['chaos', 'storm', 'moment', 'express_intro']) home.state.flags[f] = true;
+  const homeMap = home.map.id;
+  ok(ui.replayBegin('tb_guard'), 'the replay starts from the field');
+  ok(ui.game !== home && ui.game.replay && ui.replayHome === home, 'the replay runs in a temporary game');
+  eq(ui.writeSave('auto'), false, 'nothing is saved during a replay');
+  frame(2);
+  ok(ui.top() && ui.top().tick, 'the episode card is on screen');
+  frame(40);
+  ok(!ui.top() || !ui.top().tick, 'the episode card closes by itself');
+  let guard = 0;
+  while (ui.game.replay && guard++ < 400) {
+    const p = ui.game.pending;
+    if (p && p.type === 'say') key('Enter');
+    else if (ui.top() && ui.top().sel !== undefined && p && p.type === 'choice') key('Enter');
+    frame(3);
+  }
+  ok(ui.game === home && !ui.replayHome, 'the replay returns to the real game');
+  eq(home.map.id, homeMap, 'the real game stays where it was');
+  ok(home.state.recaps.includes('Присяга стража'), 'an episode first seen in a replay is now seen');
+
+  ok(ui.replayBegin('tb_guard'), 'a second replay starts');
+  frame(40);
+  key('Tab'); frame();
+  ok(ui.top() && ui.top().sel === 2, 'Tab opens the memory pause on "keep watching"');
+  key('ArrowLeft'); frame(); key('Enter'); frame();
+  ok(ui.game === home && !ui.replayHome, 'the pause leads back from the memory');
+  ok(ui.replayBegin('tb_guard'), 'a third replay starts');
+  ui.game.replay.fresh.push('Тестовый эпизод');
+  home.state.recaps = home.state.recaps.filter(x => x !== 'Тестовый эпизод');
+  ui.replayEnd({ quiet: true });
+  ok(home.state.recaps.includes('Тестовый эпизод'), 'leaving mid-scene keeps what was seen');
+  home.state.recaps = home.state.recaps.filter(x => x !== 'Тестовый эпизод');
+  home.state.flags.su_open = true;
+  home.state.su = { d: 0 };
+  ok(!ui.replayBegin('tb_guard'), 'no replay inside the Virtual Universe');
+  delete home.state.su;
+  home.guest = { uid: 1 };
+  ok(!ui.replayBegin('tb_guard'), 'no replay while visiting');
+  delete home.guest;
+}
+
+{
+  const A = H.ATLAS;
+  const allBeats = Object.values(A.NODES).concat(Object.values(A.MEETS)).flatMap(n => n.beats);
+  for (const [id, n] of Object.entries(A.NODES)) if (n.thumb) ok(H.Cine.CINES[n.thumb.cine], 'atlas thumbnail cinematic exists ' + id);
+
+  if (afterJarilo) {
+    const seq = afterJarilo.recaps;
+    let pairs = 0, wrong = 0;
+    for (const n of Object.values(A.NODES)) {
+      const b = n.beats.filter(x => seq.includes(x));
+      for (let i = 1; i < b.length; i++) { pairs++; if (seq.indexOf(b[i]) < seq.indexOf(b[i - 1])) wrong++; }
+    }
+    ok(pairs > 100 && wrong <= 5, 'atlas episodes follow the walkthrough order (' + wrong + ' of ' + pairs + ' pairs differ)');
+  }
+
+  const g0 = new H.Game({ seed: 7 });
+  eq(g0.atlasWorldNeed('jarilo'), 'Мир откроется после миссии «Неисчезающие тени».', 'a closed world names the mission that opens it');
+  const full = new H.Game({ seed: 8 });
+  full.state.recaps = allBeats.slice();
+  for (const m of H.TRAIL_MISSIONS) for (const f of String(m.done).split('|')[0].split('&')) if (f && f[0] !== '!') full.state.flags[f] = true;
+  for (const [id, q] of Object.entries(H.QUESTS)) if (q.ch) full.state.quests[id] = 'done';
+  full.missionTick();
+  for (const w of H.ATLAS_WORLDS) {
+    const L = full.atlasLayout(w.id), seen = new Set();
+    ok(L.nodes.length > 0 && L.lanes.length > 0, 'atlas layout has nodes ' + w.id);
+    for (const n of L.nodes) {
+      const p = L.pos[n.id];
+      ok(p && p.lane === n.lane, 'node placed on its lane ' + n.id);
+      ok(!seen.has(p.lane + ':' + p.col), 'nodes do not overlap ' + n.id);
+      seen.add(p.lane + ':' + p.col);
+      if (n.after && L.pos[n.after]) ok(p.col >= L.pos[n.after].col, 'branch starts at or after its anchor ' + n.id);
+    }
+    const trail = L.byLane.trail || [];
+    for (let i = 1; i < trail.length; i++) ok(L.pos[trail[i]].col > L.pos[trail[i - 1]].col, 'trail missions go left to right ' + trail[i]);
+    for (const ch of L.chapters) ok(L.pos[ch.first] && ch.from <= ch.to, 'chapter span ' + ch.ch);
+  }
+
+  const noop = () => {}, drawn = [];
+  const root = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
+  const ui = new H.UI(root, { onExit: noop });
+  ui.running = false;
+  ui.newGame();
+  const text0 = ui.text;
+  ui.text = function (str, ...rest) { drawn.push(String(str)); return text0.call(this, str, ...rest); };
+  const toast0 = ui.toast, toasts = [];
+  ui.toast = function (t) { toasts.push(t); return toast0.call(this, t); };
+  const frame = (n = 1, dt = 0.05) => { for (let i = 0; i < n; i++) { ui.update(dt); ui.render(); } };
+  const key = code => ui.keydown({ code, repeat: false, preventDefault: noop });
+  const home = ui.game;
+  home.script = null; home.pending = null; home.scriptQueue.length = 0; ui.dlg = null; ui.screens = [];
+  eq(ui.openAtlas(), null, 'the atlas stays closed before meeting the Express');
+  ok(toasts.includes('«Атлас» доступно после знакомства с Экспрессом.'), 'a closed atlas says when it opens');
+  for (const f of ['chaos', 'storm', 'moment', 'express_intro']) home.state.flags[f] = true;
+  home.missionTick();
+  home.state.recaps = H.ATLAS.NODES.tb_chaos.beats.concat(H.ATLAS.NODES.tb_storm.beats);
+  const scr = ui.openAtlas();
+  ok(scr && ui.top() === scr && scr.world === 'herta', 'the atlas opens on the station');
+  drawn.length = 0; frame(3);
+  ok(drawn.includes('Атлас переплетения судеб'), 'the atlas draws its title');
+  ok(!drawn.some(t => t.startsWith('Тишина галактики')), 'far missions keep their names hidden');
+  scr.select('tb_chaos');
+  key('ArrowRight'); frame();
+  eq(scr.sel, 'tb_storm', 'right moves along the Trailblaze lane');
+  key('ArrowLeft'); frame();
+  eq(scr.sel, 'tb_chaos', 'left moves back');
+  key('KeyE'); frame();
+  eq(scr.world, 'jarilo', 'E switches to the next world');
+  key('KeyE'); frame();
+  eq(scr.world, 'luofu', 'E again reaches the Luofu');
+  drawn.length = 0; frame();
+  ok(drawn.includes('Мир ещё не открыт') && drawn.includes('Продолжайте Миссии Освоения.'), 'a world not reached yet explains itself');
+  key('KeyQ'); key('KeyQ'); frame();
+  eq(scr.world, 'herta', 'Q switches back');
+  scr.select('tb_shadows');
+  scr.select('su_beta');
+  toasts.length = 0;
+  key('Enter'); frame();
+  ok(!ui.game.replay, 'a node with nothing seen does not start a replay');
+  scr.select('tb_chaos');
+  key('Tab'); frame();
+  eq(scr.focus, 'beats', 'Tab moves into the episode list');
+  key('ArrowDown'); frame();
+  eq(scr.beat, 1, 'down picks the next episode');
+  key('Escape'); frame();
+  eq(scr.focus, 'graph', 'Esc returns to the graph');
+  ok(ui.top() === scr, 'and the atlas stays open');
+  key('PageDown'); frame();
+  ok(scr.node().ch !== 'prologue' || scr.sel === 'tb_chaos', 'PgDn jumps to the next chapter when there is one');
+  scr.select('tb_storm');
+  key('Enter'); frame(3);
+  ok(ui.game.replay && ui.game.replay.node === 'tb_storm', 'Enter replays the selected mission');
+  let guard = 0;
+  while (ui.game.replay && guard++ < 400) {
+    const p = ui.game.pending;
+    if (p && p.type === 'say') key('Enter'); else if (ui.top() && p && p.type === 'choice') key('Enter');
+    frame(3);
+  }
+  ok(ui.game === home && ui.top() && ui.top().atlas && ui.top().sel === 'tb_storm', 'after the replay the atlas reopens on the same mission');
+  ui.screens = [];
+
+  const fg = full;
+  ui.game = fg;
+  fg.script = null; fg.pending = null;
+  for (const aspect of ['4:3', '16:9']) {
+    ui.options.aspect = aspect;
+    ui.screens = [];
+    const s2 = ui.openAtlas();
+    for (const w of H.ATLAS_WORLDS) {
+      s2.setWorld(w.id);
+      for (const n of fg.atlasNodes(w.id)) { s2.select(n.id, true); frame(1); }
+    }
+    ok(true, 'every atlas node draws in ' + aspect);
+  }
+  ui.options.aspect = '4:3';
+  ui.screens = [];
+  ui.game = home;
+  ui.text = text0;
+  ui.toast = toast0;
+}
+
+{
+  ok(typeof H.Gfx.MENU_ART.atlas === 'function', 'the atlas has its own book icon');
+  ok(H.TUTORIAL_ENTRIES.some(e => e.id === 'sys_atlas' && e.cat === 'sys' && e.pages.length === 2), 'the tutorial explains the atlas');
+  const noop = () => {}, toasts = [];
+  const root = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
+  const ui = new H.UI(root, { onExit: noop });
+  ui.running = false;
+  ui.newGame();
+  const toast0 = ui.toast;
+  ui.toast = function (t) { toasts.push(t); return toast0.call(this, t); };
+  const frame = (n = 1, dt = 0.05) => { for (let i = 0; i < n; i++) { ui.update(dt); ui.render(); } };
+  const key = code => ui.keydown({ code, repeat: false, preventDefault: noop });
+  const g = ui.game;
+  g.script = null; g.pending = null; g.scriptQueue.length = 0; ui.dlg = null; ui.screens = []; ui.toasts = [];
+  const book = () => ui.phoneRail().find(r => r.icon === 'atlas');
+  ok(book().disabled && book().why === 'после знакомства с Экспрессом', 'the atlas book waits for the Express');
+  frame(3);
+  ok(!ui.screens.length, 'no atlas notice before the Express');
+  for (const f of ['chaos', 'storm', 'moment', 'express_intro']) g.state.flags[f] = true;
+  g.missionTick();
+  g.state.recaps = H.ATLAS.NODES.tb_chaos.beats.slice();
+  ok(!book().disabled, 'the atlas book opens after the Express');
+  ok(g.alerts().atlas, 'finished prologue missions light the atlas badge');
+  frame(1);
+  ok(!ui.screens.length || !g.atlasState().noted, 'the notice waits while toasts are on screen');
+  for (let i = 0; i < 6 && !g.atlasState().noted; i++) { ui.screens = []; ui.toasts = []; frame(1); }
+  ok(ui.top() && !ui.top().atlas && g.atlasState().noted, 'the atlas notice appears once');
+  key('Enter'); frame();
+  ok(ui.top() && ui.top().atlas, 'the notice button opens the atlas');
+  key('Escape'); frame(3);
+  ok(!ui.screens.length, 'the notice does not come back');
+  ui.openMenu(); frame();
+  const ph = ui.top();
+  ph.sel = 2; key('ArrowRight'); ph.rail = ph.railSel = 3; key('ArrowDown'); frame();
+  eq(ph.rail, 4, 'down from the gear reaches the book');
+  key('Enter'); frame();
+  ok(ui.top() && ui.top().atlas, 'the book opens the atlas from the phone');
+  ui.screens = [];
+
+  for (const id of Object.keys(H.ATLAS.NODES).concat(Object.keys(H.ATLAS.MEETS))) g.atlasMark(id);
+  ok(!g.alerts().atlas, 'the badge goes out when everything was opened');
+
+  ui.openBank(null); frame();
+  const bank = ui.top();
+  eq(bank.mode, 'hub', 'the Database opens on the hub');
+  key('KeyT'); frame();
+  ok(ui.top() && ui.top().atlas, 'T in the Database hub opens the atlas');
+  key('Escape'); frame();
+  eq(ui.top(), bank, 'closing the atlas returns to the Database');
+  bank.setTab(4); bank.mode = 'tabs'; bank.sel = 0; frame();
+  const beat = g.recapLog()[0].id;
+  key('Enter'); frame();
+  const at = ui.top();
+  ok(at && at.atlas && at.sel === g.atlasBeatNode(beat) && at.focus === 'beats' && at.node().beats[at.beat].id === beat, 'Enter on a story record opens the atlas on its episode');
+  ui.screens = [];
+  ui.toast = toast0;
+}
+
+{
+  const A = H.ATLAS;
+  const noop = () => {}, toasts = [];
+  const root = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
+  const ui = new H.UI(root, { onExit: noop });
+  ui.running = false;
+  ui.newGame();
+  const toast0 = ui.toast;
+  ui.toast = function (t) { toasts.push(t); return toast0.call(this, t); };
+  const frame = (n = 1, dt = 0.05) => { for (let i = 0; i < n; i++) { ui.update(dt); ui.render(); } };
+  const key = code => ui.keydown({ code, repeat: false, preventDefault: noop });
+  const home = ui.game;
+  home.script = null; home.pending = null; home.scriptQueue.length = 0; ui.dlg = null; ui.screens = [];
+  for (const f of ['chaos', 'storm', 'moment', 'express_intro']) home.state.flags[f] = true;
+  home.state.flags.events_note = true;
+  home.atlasState().noted = true;
+  home.state.recaps = Object.values(A.NODES).concat(Object.values(A.MEETS)).flatMap(n => n.beats);
+  const homeMusic = home.mapMusic(home.map.def), homeMap = home.map.id;
+
+  ok(ui.replayBegin('tb_icy'), 'a replay with a cinematic starts');
+  let cines = 0, guard = 0, stillOn = false;
+  while (ui.game.replay && guard++ < 600) {
+    const top = ui.top(), p = ui.game.pending;
+    if (top && top.show) { cines++; key('Escape'); frame(15); stillOn = stillOn || !!ui.game.replay; continue; }
+    if (p && p.type === 'say') key('Enter'); else if (top && p && p.type === 'choice') key('Enter');
+    frame(3);
+  }
+  ok(cines > 0, 'the replay plays its cinematic');
+  ok(stillOn, 'Esc on the cinematic skips only the cinematic, the memory goes on');
+  ok(ui.game === home && home.map.id === homeMap, 'the memory ends where the player stood');
+  eq(ui.audio.wanted, homeMusic, 'the field music comes back after the memory');
+
+  const inv = { kind: 'visit', from: 77, name: 'Гость', avatar: null, gender: 'f' };
+  ui.netNote = { inv, age: 0, t: 0.5 };
+  ok(ui.replayBegin('tb_guard'), 'a replay starts with an invitation waiting');
+  frame(60);
+  ok(ui.netNote && ui.netNote.inv === inv, 'an invitation waits while the memory plays');
+  toasts.length = 0;
+  ui.netInviteAccept(inv);
+  ok(ui.game.replay && toasts.includes('Сначала закончите воспоминание'), 'an invitation cannot pull the player out of a memory');
+  ui.drawNetNotice(ui.ctx);
+  ui.replayEnd({ quiet: true });
+  ok(ui.netNote && ui.netNote.inv === inv, 'the invitation is still there after the memory');
+  ui.netNote = null;
+  ui.screens = [];
+  ui.toast = toast0;
+}
+
+{
+  const A = H.ATLAS, noop = () => {}, drawn = [];
+  const root = { classList: { add: noop }, set innerHTML(v) { this.html = v; }, appendChild: noop, addEventListener: noop, removeEventListener: noop, focus: noop };
+  const ui = new H.UI(root, { onExit: noop });
+  ui.running = false;
+  ui.newGame();
+  const g = ui.game;
+  g.script = null; g.pending = null; g.scriptQueue.length = 0; ui.dlg = null; ui.screens = [];
+  for (const f of ['chaos', 'storm', 'moment', 'express_intro']) g.state.flags[f] = true;
+  g.missionTick();
+  g.atlasState().noted = true;
+  g.state.recaps = A.NODES.tb_chaos.beats.concat(A.NODES.tb_moment.beats.slice(0, 2), A.MEETS.meet_hs_control.beats.slice(0, 2));
+  const text0 = ui.text;
+  ui.text = function (str, ...rest) { drawn.push(H.tr(String(str))); return text0.call(this, str, ...rest); };
+  ui.setLang('en');
+  g.events.length = 0;
+  ui.toasts = [];
+  const frame = (n = 1) => { for (let i = 0; i < n; i++) { ui.update(0.05); ui.render(); } };
+  const s = ui.openAtlas('tb_moment');
+  const cyr = /[\u0400-\u04FF]/;
+  const check = what => { drawn.length = 0; frame(2); const ru = drawn.filter(t => cyr.test(t)); ok(!ru.length, 'atlas in English: ' + what + (ru.length ? ' (' + ru.slice(0, 3).join(' | ') + ')' : '')); };
+  check('mission panel');
+  s.select('tb_shadows'); check('locked mission');
+  s.select('meet_hs_control'); s.focus = 'beats'; check('meeting and episode list');
+  s.focus = 'graph'; s.setWorld('luofu'); check('closed world');
+  ui.screens = [];
+  ui.replayBegin('tb_chaos');
+  check('episode card');
+  ui.replayEnd({ quiet: true });
+  ui.setLang('ru');
+  ui.text = text0;
+  ui.screens = [];
+}
+{
+  const HD = H.HD, TUN = HD.TUN;
+  const P = Object.values(HD.PIECES), GF = Object.values(HD.GIFTS);
+  eq(P.length, 84, 'Patchwork: 84 abilities are cut from the 21 kits');
+  eq(GF.length, 84, 'Patchwork: 84 Traces and Eidolons are offered as talents');
+  ok(P.every(x => x.spec && HD.KITS[x.kit].text[x.part] && HD.PATHS.includes(x.path)), 'Patchwork: every ability keeps its spec, text and Path');
+  ok(GF.every(x => typeof x.needs === 'string' && x.name && x.text), 'Patchwork: every talent has a need');
+  const g = new H.Game({ fresh: true, seed: 3 });
+  const run = g.hdNew({ diff: 'normal', mode: 'custom', seed: 77, threats: ['legion', 'silvermane'] });
+  ok(run.mode === 'custom' && run.phase === 'draft' && run.draft.cards.length === 3 && !run.players[0].hero, 'Patchwork: a run starts with the shell roll');
+  run.draft.cards[0].hero = 'gepard';
+  ok(g.hdTake(0) && run.players[0].hero === 'gepard' && run.phase === 'draft', 'Patchwork: the taken hero becomes the shell and the run stays in the rolls');
+  const P0 = run.players[0], R1 = P0.roll;
+  ok(R1 && R1.slot === 'q' && R1.cards.length === 3 && new Set(R1.cards.map(c => c.path)).size === 3, 'Patchwork: the first skill roll shows three Paths');
+  ok(R1.cards.every(c => HD.PIECES[c.id].kind === 'act' && HD.PIECES[c.id].path === c.path && c.left === 2), 'Patchwork: skill cards show active abilities of their Path with two refreshes');
+  const before = R1.cards[1].id;
+  ok(g.hdRollRefresh(1) && R1.cards[1].id !== before && R1.cards[1].seen.length === 2 && R1.cards[1].left === 1, 'Patchwork: a refresh shows a new ability of the same Path');
+  const first = g.hdRollTake(0);
+  ok(first && first.slot === 'q' && P0.kit.q === first.id && P0.abil.q === 1, 'Patchwork: the first skill lands in Q on level 1');
+  ok(P0.roll && P0.roll.slot === 'e' && P0.roll.cards.every(c => c.id !== first.id), 'Patchwork: the second roll never shows the taken skill');
+  g.hdRollTake(1);
+  ok(run.phase === 'break' && P0.kit.e && P0.abil.e === 1 && !P0.kit.t && !P0.kit.r, 'Patchwork: two skills end the start rolls');
+  const A = g.hdArena(), h = A.hero;
+  ok(h.kit && h.key === 'gepard' && h.elem === 'ice' && A.mods(h).some(M => M.hd === HD.PIECES[P0.kit.q].kit), 'Patchwork: the arena hero has the shell and the kits of its abilities');
+  const ev0 = A.events.length;
+  ok(!A.cast(h, 'r') && A.events.slice(ev0).some(e => e.t === 'deny' && /5-й волны/.test(e.why)), 'Patchwork: an empty Ultimate tells when it comes');
+  ok(!A.canUp(h, 't'), 'Patchwork: an empty slot takes no points');
+  const clear = w => { A.wave = w; A.phase = 'wave'; A.sched = []; A.clearWave(); };
+  clear(3);
+  ok(h.roll && h.roll.slot === 't' && h.roll.cards.every(c => HD.PIECES[c.id].kind === 'pas'), 'Patchwork: after wave 3 the Talent roll opens');
+  A.rollCmd(h, { a: 'take', i: 0 });
+  ok(h.kit.t && h.abil.t === 1 && !h.roll, 'Patchwork: the Talent lands on level 1');
+  clear(5);
+  ok(h.roll && h.roll.slot === 'r' && h.roll.cards.every(c => HD.PIECES[c.id].kind === 'ult'), 'Patchwork: after wave 5 the Ultimate roll opens');
+  A.rollCmd(h, { a: 'take', i: 2 });
+  ok(h.kit.r && h.abil.r === 1 && A.costOf(h, 'r') === H.CHARS[HD.PIECES[h.kit.r].kit].energy, 'Patchwork: the Ultimate costs the energy of its record');
+  clear(7);
+  ok(h.roll && h.roll.slot === 'g' && h.roll.cards.length === 3, 'Patchwork: after wave 7 the talent roll opens');
+  const pool = HD.giftPool(h, []);
+  ok(h.roll.cards.every(c => pool.includes(c.id) || HD.CUSTOM.SPARE[c.id]), 'Patchwork: talent cards come from the records in the build');
+  const g1 = h.roll.cards[0].id;
+  A.rollCmd(h, { a: 'take', i: 0 });
+  ok(h.gifts[0] === g1 && h.roll && h.roll.slot === 'g' && h.roll.cards.every(c => c.id !== g1), 'Patchwork: the second talent roll follows and never repeats the first');
+  A.breakT = HD.DT / 2;
+  A.step();
+  ok(!h.roll && h.gifts.length === 2 && A.phase === 'wave', 'Patchwork: the end of the break takes the selected card');
+  ok(A.needPick(h) === 0, 'Patchwork: there is no Trace choice on levels 10 and 20');
+  h.lvl = 9; h.exp = 0; const pts = h.pts;
+  A.giveExp(h, HD.expNext(9));
+  ok(h.lvl === 10 && h.pts === pts + 1, 'Patchwork: level 10 gives a point');
+  const R2 = A.toRun(JSON.parse(JSON.stringify(run)));
+  ok(R2.players[0].kit.r === h.kit.r && R2.players[0].gifts.length === 2, 'Patchwork: the build is saved with the run');
+  const B2 = new HD.Arena({ run: R2 });
+  ok(B2.hero.kit.t === h.kit.t && B2.hero.gifts.join() === h.gifts.join() && B2.hero.abil.r === 1, 'Patchwork: a loaded run keeps the build');
+
+  const mk = (shell, kit, gifts) => {
+    const g2 = new H.Game({ fresh: true, seed: 5 });
+    const r = g2.hdNew({ diff: 'normal', mode: 'custom', seed: 91, threats: ['legion', 'silvermane'] });
+    Object.assign(r.players[0], { hero: shell, kit: Object.assign({ q: null, e: null, t: null, r: null }, kit), abil: { q: 5, e: 5, t: kit.t ? 5 : 0, r: kit.r ? 3 : 0 }, gifts: gifts || [], roll: null, rollQ: [] });
+    r.phase = 'break';
+    const B = g2.hdArena(), u = B.hero;
+    B.phase = 'wave';
+    u.en = u.enMax = 2000;
+    const f = B.spawnFoe('antibaryon', 'n');
+    f.x = f.px = u.x + 50; f.y = f.py = u.y; f.hp = f.hpMax = 1e7;
+    return { B, u, f };
+  };
+  const run2 = (B, n) => { for (let i = 0; i < n; i++) B.step(); };
+  {
+    const { B, u, f } = mk('gepard', { q: 'himeko.q' });
+    B.events.length = 0;
+    B.cast(u, 'q', { x: f.x, y: f.y });
+    run2(B, 20);
+    const nums = B.events.filter(e => e.t === 'num' && e.uid === f.uid);
+    ok(nums.length && nums.every(e => e.elem === 'ice'), 'Patchwork: an ability hits with the element of the shell');
+    ok(B.dmgFrom['himeko.q'] > 0, 'Patchwork: the damage is credited to its ability');
+  }
+  {
+    const { B, u } = mk('kafka', { q: 'jingyuan.q' });
+    B.cast(u, 'q');
+    run2(B, 60);
+    ok(B.dmgFrom['jingyuan.q'] > 0, 'Patchwork: without the Talent of Jing Yuan his Skill still calls the Lightning-Lord for one salvo, credited to the Skill');
+  }
+  {
+    const { B, u } = mk('kafka', { q: 'jingyuan.q', t: 'jingyuan.t' });
+    const L0 = (B.hero.tals.jingyuan.lord || { hits: 3 }).hits;
+    B.cast(u, 'q');
+    ok(u.tals.jingyuan.lord.hits === Math.min(10, L0 + 2), 'Patchwork: with the Talent the Skill feeds the lasting Lightning-Lord');
+  }
+  {
+    const { B, u } = mk('himeko', { e: 'topaz.e' });
+    B.cast(u, 'e');
+    run2(B, 120);
+    ok(B.dmgFrom['topaz.bonus'] > 0, 'Patchwork: Topaz Technique brings Numby for a while without her Talent');
+  }
+  {
+    const { B, u, f } = mk('himeko', { r: 'clara.r' });
+    B.cast(u, 'r');
+    B.hit(f, u, { amt: 10, noCrit: true });
+    ok(B.dmgFrom['clara.bonus'] > 0, 'Patchwork: Clara Ultimate makes Svarog answer without her Talent');
+  }
+  {
+    const { B, u, f } = mk('himeko', { q: 'silverwolf.q' });
+    B.cast(u, 'q', { id: f.uid });
+    ok(f.fx.some(x => x.k === 'weakAdd' && x.elem === 'fire'), 'Patchwork: Silver Wolf brings the weakness to the element of the shell');
+  }
+  {
+    const { B, u } = mk('himeko', { q: 'natasha.q' });
+    ok(B.cdOf(u, 'q') === TUN.custom.cd['natasha.q'] && B.cdOf(u, 'q') > HD.KITS.natasha.q.cd, 'Patchwork: Natasha Skill has a longer cooldown in a build');
+    const t = B.turrets[0];
+    t.hp = 1; B.heal(u, t, 100);
+    const t2 = B.turrets[1]; t2.hp = 1;
+    const plain = new H.Game({ fresh: true, seed: 5 }); plain.hdNew({ hero: 'natasha', seed: 91, threats: ['legion', 'silvermane'] });
+    const PA = plain.hdArena(); PA.turrets[0].hp = 1; PA.heal(PA.hero, PA.turrets[0], 100);
+    ok(Math.round(t.hp - 1) < Math.round(PA.turrets[0].hp - 1), 'Patchwork: a build hero heals structures weaker than the usual hero');
+  }
+  {
+    const { B, u } = mk('himeko', { q: 'blade.q' });
+    const hp0 = u.hp; B.cast(u, 'q');
+    ok(Math.abs((hp0 - u.hp) - hp0 * TUN.custom.bladeAlone) < 2, 'Patchwork: without Blade Talent Hellscape costs less HP');
+  }
+  {
+    const { B, u, f } = mk('himeko', { e: 'welt.e' });
+    f.x = f.px = u.x + 40; B.cast(u, 'e');
+    ok(f.hp < f.hpMax, 'Patchwork: Gravitational Imprisonment also hits in a build');
+  }
+  {
+    const { u } = mk('gepard', { q: 'trail.e' });
+    ok(!HD.giftPool(u, []).some(id => id.startsWith('trail.')), 'Patchwork: a lone Technique of the Trailblazer opens none of his talents');
+    const { u: u2 } = mk('gepard', { q: 'trail.e', r: 'trail.r' });
+    const pool2 = HD.giftPool(u2, []);
+    ok(pool2.includes('trail.tr0') && pool2.includes('trail.ei0') && !pool2.includes('trail.tr1'), 'Patchwork: the Ultimate opens the talents that need it');
+    u.rollN = 0;
+    const roll = HD.makeRoll(91, 0, u, 'g', []);
+    ok(roll.cards.length === 3 && roll.cards.every(c => HD.CUSTOM.SPARE[c.id]), 'Patchwork: spare talents fill the roll when the pool is empty');
+  }
+  {
+    eq(HD.SOLO_CUSTOM.length, 8, 'Patchwork: Leveling_Solo has eight builds');
+    ok(HD.SOLO_CUSTOM.every(r => r.wave === 20 && ['q', 'e', 't', 'r'].every(s => HD.PIECES[r.build.kit[s]] && HD.CUSTOM.KIND_OF[s] === HD.PIECES[r.build.kit[s]].kind) && r.build.gifts.length === 2 && r.build.gifts.every(id => HD.giftPool({ kit: r.build.kit, gifts: [] }, []).includes(id))), 'Patchwork: every Leveling_Solo build is legal');
+    const T = id => HD.TRIALS.find(t => t.id === id), win = (hero, kit) => ({ win: true, mode: 'custom', hero, build: { kit, gifts: [] } });
+    ok(HD.TRIALS.filter(t => t.kind === 'custom').length === 4, 'Patchwork: four trials');
+    ok(HD.trialDone(T('cust_win'), win('gepard', { q: 'kafka.e', e: 'himeko.q', t: 'clara.t', r: 'welt.r' })) && !HD.trialDone(T('cust_win'), { win: true, hero: 'gepard' }), 'Patchwork: a usual win does not count as a Patchwork win');
+    ok(HD.trialDone(T('cust_paths'), win('gepard', { q: 'kafka.e', e: 'himeko.q', t: 'clara.t', r: 'bronya.r' })) && !HD.trialDone(T('cust_paths'), win('gepard', { q: 'kafka.e', e: 'kafka.q', t: 'clara.t', r: 'bronya.r' })), 'Patchwork: five Paths needs the shell and four abilities from different Paths');
+    ok(HD.trialDone(T('cust_full'), win('topaz', { q: 'jingyuan.q', e: 'jingyuan.e', t: 'jingyuan.t', r: 'jingyuan.r' })), 'Patchwork: a full record of one hero');
+    ok(HD.trialDone(T('cust_foreign'), win('topaz', { q: 'jingyuan.q', e: 'jingyuan.e', t: 'jingyuan.t', r: 'jingyuan.r' })) && !HD.trialDone(T('cust_foreign'), win('kafka', { q: 'kafka.q', e: 'himeko.q', t: 'clara.t', r: 'welt.r' })), 'Patchwork: a foreign body has no ability of its shell');
+  }
+  {
+    const g3 = new H.Game({ fresh: true, seed: 3 });
+    g3.hdNew({ hero: 'trail', seed: 77, threats: ['legion', 'silvermane'] });
+    const A3 = g3.hdArena();
+    ok(!A3.hero.kit && HD.hasPiece(A3.hero, 'trail.q') && A3.needPick(A3.hero) === 0 && A3.pieceOf(A3.hero, 'r') === HD.KITS.trail.r, 'Patchwork: a usual run keeps the whole kit of its hero');
   }
 }
 

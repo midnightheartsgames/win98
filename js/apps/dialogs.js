@@ -2281,6 +2281,18 @@ class AppDialogs {
       } else if (window.appKorovany) window.appKorovany.open();
       return;
     }
+    if (cmd === 'hsro' || cmd === 'hsro.exe' || cmd === 'starrailonline' || val === 'star rail online') {
+      if (window.gameManager && !window.gameManager.isInstalled('hsro')) {
+        window.winManager.openDialog({
+          title: 'Star Rail Online',
+          icon: 'error',
+          message: isRu
+            ? 'Игра «Star Rail Online» не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'hsro\');">Steam</a>'
+            : 'Game Star Rail Online is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'hsro\');">Steam</a>'
+        });
+      } else if (window.appHsro) window.appHsro.open();
+      return;
+    }
     if (cmd === 'kirill98' || cmd === 'kirill98.exe' || cmd === 'kirillthegame' || cmd === 'kirillgame' || val === 'kirill the game') {
       if (window.gameManager && !window.gameManager.isInstalled('kirill98')) {
         window.winManager.openDialog({

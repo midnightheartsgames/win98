@@ -117,7 +117,7 @@
       const cwOn = !!f.lab_cw, rank = cwOn ? this.cwRankBest() : null, hdOn = !!f.lab_hd, wave = hdOn ? this.hd().recs.reduce((a, r) => Math.max(a, r.wave || 0), 0) : 0, pfOn = !!f.pf_open;
       const closed = 'Не открыто';
       return [
-        { id: 'fh', label: 'Зал забвения', open: this.fhOpen(), value: this.fhOpen() ? this.fhTotal() + ' / ' + H.FH.STAGES.length * 3 + ' ★' : closed },
+        { id: 'fh', label: 'Зал забвения', open: this.fhOpen(), value: this.fhOpen() ? this.fhTotal('all') + ' / ' + H.FH.ALL.length * 3 + ' ★' : closed },
         { id: 'pf', label: 'Чистый вымысел', open: pfOn, value: pfOn ? 'Звёзд в сезоне ' + this.pfStarTotal() + ' / 12' : closed },
         { id: 'su', label: 'Виртуальная вселенная', open: !!f.su_open, value: f.su_open ? 'Миров: ' + cleared + ' / ' + worlds.length : closed },
         { id: 'cw', label: 'Валютные войны', open: cwOn, value: cwOn ? H.CW.RANKS[rank.tier].name + ' ' + rank.sub : closed },

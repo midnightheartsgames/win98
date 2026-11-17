@@ -1,0 +1,131 @@
+{
+ "format": 1,
+ "id": "foe_distorter",
+ "kind": "skinned",
+ "verts": 922,
+ "tris": 902,
+ "bounds": [
+  -0.7063334584236145,
+  0.0,
+  -0.29280000925064087,
+  0.7063334584236145,
+  2.3410210609436035,
+  0.2731093168258667
+ ],
+ "bin": "mesh/foe_distorter.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 922,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 11064,
+   "count": 922,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 22128,
+   "count": 922,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 29504,
+   "count": 922,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 33192,
+   "count": 922,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 40568,
+   "count": 2706,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 45980,
+   "count": 3570,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 60260,
+   "count": 1428,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 65972,
+   "count": 1190,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 70732,
+   "count": 1904,
+   "type": "f"
+  }
+ },
+ "tex": "tex/foe_distorter.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "spine",
+  "chest",
+  "neck",
+  "head",
+  "upperarm.L",
+  "forearm.L",
+  "hand.L",
+  "upperarm.R",
+  "forearm.R",
+  "hand.R",
+  "thigh.L",
+  "shin.L",
+  "foot.L",
+  "thigh.R",
+  "shin.R",
+  "foot.R"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  2,
+  3,
+  2,
+  5,
+  6,
+  2,
+  8,
+  9,
+  0,
+  11,
+  12,
+  0,
+  14,
+  15
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

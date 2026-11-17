@@ -35,7 +35,7 @@ const LINE_OF = id => {
 };
 const TIER_OF = id => +id % 10;
 const PATH_ITEM = id => +id >= 110100 && +id < 110300;
-const CONE_LINE_OVERRIDE = { masquerade: 'core', sword_rumor: 'legion', goodluck: 'legion', sneering: 'legion', cccgorilla: 'silver', cccbadge: 'silver', cccstandee: 'silver', promise: 'ancient', concert: 'silver', choreo: 'ancient', charmony: 'silver', poised: 'artifex', montage: 'core', greetings: 'core', nextpage: 'scion', getaway: 'ancient', whatreal: 'ancient', dreamville: 'ancient', finalvictor: 'silver', flamesafar: 'legion', forewoven: 'core', cosmosfell: 'legion', shroomy: 'scion' };
+const CONE_LINE_OVERRIDE = { masquerade: 'core', sword_rumor: 'legion', goodluck: 'legion', sneering: 'legion', cccgorilla: 'silver', cccbadge: 'silver', cccstandee: 'silver', promise: 'ancient', concert: 'silver', choreo: 'ancient', charmony: 'silver', poised: 'artifex', montage: 'core', greetings: 'core', nextpage: 'scion', getaway: 'ancient', whatreal: 'ancient', dreamville: 'ancient', finalvictor: 'silver', flamesafar: 'legion', forewoven: 'core', cosmosfell: 'legion', shroomy: 'scion', journey: 'silver', morrow: 'legion', pursuit: 'scion', flowermem: 'scion', wheat: 'artifex', thermae: 'legion', seeyou: 'ancient' };
 const OWN_CONE_HERO = {
   shrine: 'miyabi', weaver: 'yanagi', lethe: 'phrolova', lullaby: 'scar', chunchunmaru: 'kazuma', hagoromo: 'aqua', manastaff: 'megumin', adamantite: 'darkness', truth: 'yu', thread: 'kanji',
   junesday: 'yosuke', dragontrial: 'chie', amagiinn: 'yukiko', affection: 'rise', cccletter: 'makoto', cccmagic: 'amanda', cccpratia: 'talleah', starlight: 'billy', vault: 'nicole', battery: 'anby'

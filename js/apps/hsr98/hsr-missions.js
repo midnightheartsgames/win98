@@ -81,7 +81,7 @@
     M('tb_ranks', 'dawn', 'Отставить разговоры в строю', 'fissures_intro', 'j_restricted', 'gepard',
       'Гепард согласен открыть ворота во Фрагментум. Монстры пойдут волнами, и стражам нужна помощь.',
       { jade: 40, items: { exp1: 2, exp3: 1 } }),
-    M('tb_stars', 'dawn', 'Звёзды - это замёрзшие игрушки', 'cor_done', 'j_fissures', 'bronya',
+    M('tb_stars', 'dawn', 'Звёзды как замёрзшие игрушки', 'cor_done', 'j_fissures', 'bronya',
       'Коридор исчезающего эха ведёт к Холму вечнозимья. Вокруг тишина Фрагментума, а впереди следы Брони и Коколии.',
       { jade: 40, items: { exp1: 2, exp3: 1 } }),
     M('tb_past', 'dawn', 'Пути в прошлое давно закрыты: А зори здесь...', 'dawn_done', 'j_everwinter', 'cocolia',
@@ -192,7 +192,18 @@
 
     seeMission(id) { const ms = this.missionsState(); if (ms.seen[id] === 0) ms.seen[id] = 1; },
 
-    missionAlert() { return this.missionList().some(m => m.isNew); }
+    missionAlert() { return this.missionList().some(m => m.isNew); },
+
+    missionLevel(m) {
+      const map = H.MAPS[m.target && m.target.map || m.map];
+      const lv = Object.values(map && map.enemies || {}).filter(e => e && e.lvl && (!e.if || this.cond(e.if))).map(e => e.lvl);
+      return lv.length ? Math.max(...lv) : 0;
+    },
+
+    partyLevel() {
+      const lv = this.state.party.map(k => this.state.roster[k] && this.state.roster[k].lvl || 0).filter(Boolean);
+      return lv.length ? Math.round(lv.reduce((a, v) => a + v, 0) / lv.length) : 0;
+    }
   });
 
   Object.assign(H, { MISSION_TYPES: TYPES, MISSION_TYPE_ORDER: TYPE_ORDER, MISSION_CHAPTERS: CHAPTERS, TRAIL_MISSIONS: TRAIL });

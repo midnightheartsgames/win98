@@ -659,6 +659,44 @@ module.exports = {
       { steps: ['await awLevel("A02_CafeRene"); awui.game.W.openDialog("rene"); await __shots.sleep(2200);'] }
     ]
   },
+  hsro: {
+    page: 'hsro.html',
+    ready: '!!(window.houi && houi.modelData && houi.modelData.hero_human_f && houi.modelData.boss_doomsday && houi.renderer.surfaceTex && houi.renderer.fxTex && houi.faces)',
+    size: [800, 600],
+    el: '#game',
+    timeout: 60000,
+    setup: [`localStorage.clear();
+    window.hoGo = async (zone, x, z, yaw, sheetOpts) => {
+      const ui = window.houi, sh = HO.newSheet(Object.assign({ id: 'shot', name: 'Мира', race: 'human', sex: 'f', path: 'erudition', level: 10, learnAll: true, created: 1, look: { face: 1, hair: 1, hairColor: 2, skin: 1 } }, sheetOpts || {}));
+      sh.gear.cone = { id: 'cone_e3', dur: 100 };
+      sh.at = { zone, x, z, yaw };
+      ui.store.save(sh);
+      ui.enterWorld('shot');
+      ui.loading = null;
+      await __shots.sleep(2600);
+      ui.loading = null;
+      return ui;
+    };`],
+    shots: [
+      { steps: [`const ui = await hoGo('base', 1.5, 24.5, 0); ui.cam.yaw = 0.25; ui.cam.dist = 6.5; ui.cam.pitch = 0.2; ui.world.step = () => { ui.world.events = []; }; ui.log = []; ui.floaters = []; await __shots.sleep(1200);`] },
+      { steps: [`const ui = await hoGo('echo', 2.5, 6, 0, { race: 'foxian', path: 'destruction', look: { face: 3, hair: 4, hairColor: 5, skin: 0, ears: 1, tail: 1 } }); const W = ui.world, me = ui.hero();
+        try { W.summonParty(me); } catch (e) { }
+        const boss = W.state.actors.find(a => a.kind === 'foe' && a.id === 'doomsday');
+        boss.phase2 = true; boss.state = 'fight'; boss.threat = { [me.uid]: 50 }; boss.x = 0; boss.z = -6; boss.yaw = Math.PI;
+        for (const id of ['antibaryon', 'antibaryon']) W.addFoe(id, { x: id === 'antibaryon' ? -6 + W.state.actors.length % 2 * 12 : 0, z: -2, yaw: Math.PI }, 8);
+        me.target = boss.uid;
+        W.step = () => { W.events = []; };
+        const party = W.state.actors.filter(a => a.companion);
+        party.forEach((c, i) => { c.x = me.x + (i ? 2.6 : -2.6); c.z = me.z + 1.2; c.yaw = 0; });
+        ui.prev = ui.snapshot();
+        ui.cam.yaw = 0.1; ui.cam.dist = 9; ui.cam.pitch = 0.32;
+        for (const [elem, k] of [['ice', 0.4], ['fire', 0.6], ['imag', 0.5]]) ui.effects.push({ from: (party[0] || me).uid, to: boss.uid, elem, col: Hsr98.ELEMENTS[elem].col, t: ui.time - k * 4, dur: 4 });
+        ui.effects.push({ shatter: true, uid: boss.uid, elem: 'ice', col: Hsr98.ELEMENTS.ice.col, t: ui.time - 0.3, dur: 4 });
+        ui.floaters = []; ui.log = [];
+        ui.banner = { text: 'Пробуждение! Зверь Судного дня встаёт во весь рост.', col: '#ff8060', t: ui.time };
+        await __shots.sleep(900);`] }
+    ]
+  },
   hsr98: {
     page: 'hsr98.html',
     ready: '!!(window.hsrui && window.Hsr98)',

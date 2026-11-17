@@ -1348,6 +1348,16 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
+        if (!gmInstalled.includes('hsro') && games.children['StarRailOnline']) {
+          delete games.children['StarRailOnline'];
+        } else if (gmInstalled.includes('hsro') && !games.children['StarRailOnline']) {
+          games.children['StarRailOnline'] = {
+            type: 'folder', name: 'StarRailOnline', icon: 'folder', children: {
+              'HSRO.EXE': { type: 'executable', name: 'HSRO.EXE', icon: 'hsro', app: 'hsro' },
+              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Star Rail Online\r\n==================================\r\nmiHoYo Shanghai (2003) - Win 98 Edition, 3D accelerated, 800x600\r\n\r\nМир станции «Герта» для одного героя и напарников. Сеть придёт позже.\r\nУправление: W A S D, мышь, 1-0, -, =. Клавиши меняются в настройках (Esc).\r\n' }
+            }
+          };
+        }
         if (!gmInstalled.includes('kirill98') && games.children['KirillTheGame']) {
           delete games.children['KirillTheGame'];
         } else if (gmInstalled.includes('kirill98') && !games.children['KirillTheGame']) {

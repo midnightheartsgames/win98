@@ -353,7 +353,7 @@
             ui.wrap(x.m.title, rw - 62, 11).slice(0, 2).forEach((l, k) => ui.text(l, rx + 40, y + 6 + k * 13, { size: 11, bold: !x.st.read, col: x.st.read ? C.sub : C.cream }));
             ui.text(dateOf(x.st.at), rx + 40, y + 35, { size: 9, col: C.dim });
             if (x.m.give && !x.st.got) G.itemIcon(c, 'jade', rx + rw - 24, y + 30, 18);
-            if (fresh && !x.st.read) ui.badge(rx + rw - 8, y + 8);
+            if (fresh && !x.st.read) ui.newMark(rx + rw - 8, y + 8);
             ui.hit(rx, y, rw, 52, () => this.select(i));
           });
           if (bar) ui.scrollBar(mx + mw - 16, 50, vis * MAIL_ROW - 4, this.sc, list.length, vis);

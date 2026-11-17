@@ -23,6 +23,7 @@
     projSpd: 520, chaseLimit: 400, heroPathLimit: 2400, shopR: 400, sell: 0.6,
     spawnGroup: [2, 4], spawnGap: [2, 3], riftGlow: 2, pigSpd: 195, pigFlee: 3, bigPigHp: 20, bigPigLife: 25, bigPigStep: 20, bigPigKill: 400,
     holdChase: 120, alarmT: 1.5, aimFresh: 3, resumeAtk: 0.1, maxNums: 40, maxParticles: 300,
+    custom: { netRollT: 10, cd: { 'bailu.q': 12, 'jingyuan.q': 9, 'natasha.q': 18 }, baseHeal: 0.35, bladeAlone: 0.15, weltPrison: 0.6, luochaZone: 9, part: { 'asta.e': 0.91, 'asta.q': 0.89, 'bailu.e': 1.16, 'bailu.q': 0.82, 'bailu.r': 1.08, 'bailu.t': 1.11, 'blade.e': 1.6, 'blade.q': 1.12, 'bronya.e': 1.09, 'bronya.q': 1.07, 'bronya.r': 1.08, 'clara.e': 1.09, 'clara.t': 0.87, 'danheng.q': 0.9, 'danheng.t': 1.14, 'fuxuan.e': 1.17, 'fuxuan.r': 0.92, 'fuxuan.t': 0.93, 'gepard.e': 1.1, 'gepard.q': 0.89, 'gepard.t': 1.08, 'herta.q': 0.9, 'himeko.e': 1.08, 'himeko.q': 0.84, 'himeko.r': 0.92, 'jingyuan.q': 0.7, 'jingyuan.t': 0.9, 'kafka.e': 0.9, 'kafka.q': 0.91, 'kafka.r': 0.92, 'kafka.t': 0.91, 'luocha.e': 1.14, 'luocha.q': 0.86, 'luocha.t': 0.88, 'march.t': 0.9, 'natasha.q': 0.81, 'ruanmei.q': 1.11, 'ruanmei.r': 1.14, 'seele.e': 1.17, 'seele.q': 0.91, 'seele.r': 0.94, 'silverwolf.e': 0.93, 'silverwolf.t': 1.11, 'trail.q': 1.07, 'trail.r': 0.92, 'welt.e': 1.12, 'welt.q': 0.85, 'welt.t': 1.16 }, amp: { asta: 1.04, bailu: 2.71, blade: 1.29, bronya: 1.38, clara: 0.33, danheng: 1.04, fuxuan: 0.92, gepard: 2.15, herta: 0.81, himeko: 0.94, jingyuan: 0.92, kafka: 0.92, luocha: 0.42, march: 0.97, natasha: 0.88, ruanmei: 2.41, seele: 1.01, silverwolf: 1.33, topaz: 0.45, trail: 0.91, welt: 1.57 }, ampHard: {}, heal: { bailu: 1.07, luocha: 0.82, natasha: 0.89 }, shell: { asta: 0.98, bailu: 1.18, blade: 0.94, bronya: 0.85, clara: 0.85, danheng: 0.92, fuxuan: 0.82, gepard: 1.03, herta: 1.13, himeko: 0.98, jingyuan: 1.25, kafka: 1.26, luocha: 0.99, march: 0.9, natasha: 1.11, ruanmei: 1.14, seele: 1.06, silverwolf: 0.94, topaz: 0.8, trail: 0.85, welt: 1.11 }, hp: 1, hpFrom: 8, ampBasic: 1, rollStart: ['q', 'e'], rolls: { 3: ['t'], 5: ['r'], 7: ['g', 'g'] }, at: { t: 3, r: 5, g: 7 }, tempNumby: 1.5, jySalvo: { q: 3, e: 6, r: 6 }, seeleCd: 12, svarog: 1.6 },
     coop: { hp: [1, 1.5, 2, 2.4], hpEnd: [1, 3, 6.8, 9.6], bossHp: [1, 1.6, 2.2, 2.8], bossEnd: [1, 3.3, 7.3, 10.8], span: 19, groups: [1, 1.25, 1.5, 1.75], gold: [1, 0.82, 0.7, 0.6], exp: [1, 0.85, 0.73, 0.63], idle: 60 }
   };
 
@@ -288,7 +289,11 @@
       { id: 'hard3', kind: 'run', name: 'Три звёзды на Тяжёлой' },
       { id: 'crew2', kind: 'run', name: 'Победа вдвоём' },
       { id: 'crew4', kind: 'run', name: 'Победа вчетвером' },
-      { id: 'crewstay', kind: 'run', name: 'Победа, и никто не вышел из-за стола' }
+      { id: 'crewstay', kind: 'run', name: 'Победа, и никто не вышел из-за стола' },
+      { id: 'cust_win', kind: 'custom', name: 'Сборка удержала рубеж' },
+      { id: 'cust_paths', kind: 'custom', name: 'Сборка: оболочка и способности с пяти Путей' },
+      { id: 'cust_full', kind: 'custom', name: 'Сборка: полная запись одного героя' },
+      { id: 'cust_foreign', kind: 'custom', name: 'Сборка: чужое тело' }
     ]);
   const SOLO_DATE = Date.UTC(2026, 9, 24, 12);
   const SOLO = [
@@ -296,7 +301,20 @@
     ['normal', 'silverwolf', 20, 1532, 3], ['normal', 'topaz', 20, 1597, 2], ['normal', 'herta', 20, 1660, 2], ['normal', 'gepard', 20, 1789, 1], ['normal', 'silverwolf', 18, 1402, 0], ['normal', 'bronya', 15, 1131, 0],
     ['hard', 'silverwolf', 20, 1714, 2], ['hard', 'fuxuan', 20, 1902, 1], ['hard', 'silverwolf', 19, 1655, 0], ['hard', 'luocha', 16, 1347, 0], ['hard', 'seele', 12, 902, 0]
   ].map(([diff, hero, wave, time, stars]) => ({ name: 'Leveling_Solo', hero, diff, wave, time, stars, date: SOLO_DATE, solo: true }));
+  const SOLO_CUSTOM = [
+    ['easy', 'silverwolf', 'kafka.e,welt.q,kafka.t,silverwolf.r', 'kafka.ei1,welt.tr1', 694, 3],
+    ['easy', 'herta', 'himeko.q,asta.q,himeko.t,herta.r', 'himeko.tr0,herta.ei0', 647, 3],
+    ['normal', 'topaz', 'jingyuan.q,jingyuan.e,jingyuan.t,jingyuan.r', 'jingyuan.tr0,jingyuan.ei1', 776, 2],
+    ['normal', 'gepard', 'blade.q,blade.e,blade.t,fuxuan.r', 'blade.tr1,blade.ei1', 904, 2],
+    ['normal', 'bailu', 'kafka.q,kafka.e,kafka.t,kafka.r', 'kafka.tr0,kafka.ei1', 762, 2],
+    ['hard', 'clara', 'welt.e,welt.q,clara.t,welt.r', 'welt.tr1,clara.tr0', 831, 2],
+    ['hard', 'trail', 'natasha.q,bronya.e,luocha.t,trail.r', 'trail.tr0,luocha.ei0', 1079, 2],
+    ['hard', 'kafka', 'silverwolf.q,ruanmei.e,ruanmei.t,ruanmei.r', 'ruanmei.tr0,ruanmei.ei1', 826, 2]
+  ].map(([diff, hero, kit, gifts, time, stars]) => {
+    const [q, e, t, r] = kit.split(',');
+    return { name: 'Leveling_Solo', hero, diff, wave: 20, time, stars, date: SOLO_DATE, solo: true, mode: 'custom', build: { kit: { q, e, t, r }, gifts: gifts.split(',') } };
+  });
 
-  H.HD = { TUN, ARMOR0, ATK_ARMOR, ATK_NAME, ARMOR_NAME, ATTR_NAME, ATTR_COL, PATHS, DIFFS, HEROES, FOES, THREATS, FOE_THREAT, WAVES, SUPPLIES, DEVICES, RELIC, CONE_PRICE, CONE_LATER, ROWS, RIFT_NAME, META, TRIALS, SOLO, perron, KITS: {}, FOE_AI: {} };
+  H.HD = { TUN, ARMOR0, ATK_ARMOR, ATK_NAME, ARMOR_NAME, ATTR_NAME, ATTR_COL, PATHS, DIFFS, HEROES, FOES, THREATS, FOE_THREAT, WAVES, SUPPLIES, DEVICES, RELIC, CONE_PRICE, CONE_LATER, ROWS, RIFT_NAME, META, TRIALS, SOLO, SOLO_CUSTOM, perron, KITS: {}, FOE_AI: {} };
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

@@ -1,0 +1,111 @@
+{
+ "format": 1,
+ "id": "foe_trotter",
+ "kind": "skinned",
+ "verts": 543,
+ "tris": 658,
+ "bounds": [
+  -0.3328000009059906,
+  0.0,
+  -0.5600000023841858,
+  0.3328000009059906,
+  0.875,
+  0.4788653552532196
+ ],
+ "bin": "mesh/foe_trotter.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 543,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 6516,
+   "count": 543,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 13032,
+   "count": 543,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 17376,
+   "count": 543,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 19548,
+   "count": 543,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 23892,
+   "count": 1974,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 27840,
+   "count": 1470,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 33720,
+   "count": 588,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 36072,
+   "count": 490,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 38032,
+   "count": 784,
+   "type": "f"
+  }
+ },
+ "tex": "tex/foe_trotter.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "head",
+  "tail",
+  "leg.fl",
+  "leg.fr",
+  "leg.bl",
+  "leg.br"
+ ],
+ "parents": [
+  -1,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

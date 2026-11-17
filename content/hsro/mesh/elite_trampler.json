@@ -1,0 +1,123 @@
+{
+ "format": 1,
+ "id": "elite_trampler",
+ "kind": "skinned",
+ "verts": 1091,
+ "tris": 1298,
+ "bounds": [
+  -0.689247727394104,
+  0.0,
+  -2.200000047683716,
+  0.689247727394104,
+  2.4000000953674316,
+  1.2799999713897705
+ ],
+ "bin": "mesh/elite_trampler.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 1091,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 13092,
+   "count": 1091,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 26184,
+   "count": 1091,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 34912,
+   "count": 1091,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 39276,
+   "count": 1091,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 48004,
+   "count": 3894,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 55792,
+   "count": 2730,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 66712,
+   "count": 1092,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 71080,
+   "count": 910,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 74720,
+   "count": 1456,
+   "type": "f"
+  }
+ },
+ "tex": "tex/elite_trampler.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "spine",
+  "neck",
+  "head",
+  "fl.u.L",
+  "fl.l.L",
+  "fl.u.R",
+  "fl.l.R",
+  "tail",
+  "bl.u.L",
+  "bl.l.L",
+  "bl.u.R",
+  "bl.l.R"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  2,
+  1,
+  4,
+  1,
+  6,
+  0,
+  0,
+  9,
+  0,
+  11
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

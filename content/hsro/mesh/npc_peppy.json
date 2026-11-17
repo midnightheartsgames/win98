@@ -1,0 +1,91 @@
+{
+ "format": 1,
+ "id": "npc_peppy",
+ "kind": "skinned",
+ "verts": 598,
+ "tris": 744,
+ "bounds": [
+  -0.17999997735023499,
+  0.0,
+  -0.5320000052452087,
+  0.17999999225139618,
+  0.7834121584892273,
+  0.4497582018375397
+ ],
+ "bin": "mesh/npc_peppy.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 598,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 7176,
+   "count": 598,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 14352,
+   "count": 598,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 19136,
+   "count": 598,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 21528,
+   "count": 598,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 26312,
+   "count": 2232,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 30776,
+   "count": 1470,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 36656,
+   "count": 588,
+   "type": "f"
+  }
+ },
+ "tex": "tex/npc_peppy.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "head",
+  "tail",
+  "leg.fl",
+  "leg.fr",
+  "leg.bl",
+  "leg.br"
+ ],
+ "parents": [
+  -1,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  }
+ }
+}

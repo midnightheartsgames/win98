@@ -1,0 +1,123 @@
+{
+ "format": 1,
+ "id": "boss_skaracabaz",
+ "kind": "skinned",
+ "verts": 831,
+ "tris": 1118,
+ "bounds": [
+  -2.799999952316284,
+  0.043669458478689194,
+  -2.1500000953674316,
+  2.799999952316284,
+  3.0,
+  3.0
+ ],
+ "bin": "mesh/boss_skaracabaz.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 831,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 9972,
+   "count": 831,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 19944,
+   "count": 831,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 26592,
+   "count": 831,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 29916,
+   "count": 831,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 36564,
+   "count": 3354,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 43272,
+   "count": 2730,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 54192,
+   "count": 1092,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 58560,
+   "count": 910,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 62200,
+   "count": 1456,
+   "type": "f"
+  }
+ },
+ "tex": "tex/boss_skaracabaz.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "head",
+  "abd",
+  "wing.L1",
+  "wing.R1",
+  "wing.L2",
+  "wing.R2",
+  "leg.L1",
+  "leg.R1",
+  "leg.L2",
+  "leg.R2",
+  "leg.L3",
+  "leg.R3"
+ ],
+ "parents": [
+  -1,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

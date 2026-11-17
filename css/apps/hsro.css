@@ -1,0 +1,4 @@
+.hsro { position: relative; width: 100%; height: 100%; overflow: hidden; background: #0b1430; outline: none; user-select: none; }
+.hsro canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; }
+.hsro .hsro-gl { image-rendering: auto; }
+.hsro .hsro-hud { cursor: default; }

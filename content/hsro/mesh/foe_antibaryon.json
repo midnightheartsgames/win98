@@ -1,0 +1,109 @@
+{
+ "format": 1,
+ "id": "foe_antibaryon",
+ "kind": "skinned",
+ "verts": 484,
+ "tris": 648,
+ "bounds": [
+  -0.4997867941856384,
+  0.30000001192092896,
+  -0.2599443793296814,
+  0.4997867941856384,
+  1.7200000286102295,
+  0.25
+ ],
+ "bin": "mesh/foe_antibaryon.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 484,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 5808,
+   "count": 484,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 11616,
+   "count": 484,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 15488,
+   "count": 484,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 17424,
+   "count": 484,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 21296,
+   "count": 1944,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 25184,
+   "count": 1260,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 30224,
+   "count": 504,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 32240,
+   "count": 420,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 33920,
+   "count": 672,
+   "type": "f"
+  }
+ },
+ "tex": "tex/foe_antibaryon.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "core",
+  "shell.1",
+  "shell.2",
+  "shell.3",
+  "shell.4"
+ ],
+ "parents": [
+  -1,
+  0,
+  0,
+  0,
+  0,
+  0
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

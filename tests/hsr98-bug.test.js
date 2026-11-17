@@ -129,6 +129,21 @@ assert.deepEqual([ui2.mode, ui2.game.map.id, ui2.game.player.x, ui2.game.player.
 assert.equal(ui2.bugLoad(null), false);
 console.log('✓ live state save and load');
 
+{
+  const home = ui.game, saved = JSON.stringify(home.serialize());
+  home.script = null; home.pending = null; ui.dlg = null; ui.screens = [];
+  home.state.recaps = H.ATLAS.NODES.tb_guard.beats.slice();
+  assert.equal(ui.replayBegin('tb_guard'), true, 'a replay starts for the report check');
+  const info = ui.bugInfo();
+  assert.match(info.summary, /Атлас: tb_guard \/ /, 'a report made in a replay names the atlas node');
+  assert.deepEqual(info.state.atlas.node, 'tb_guard');
+  assert.equal(JSON.stringify(ui.bugSave().state), JSON.stringify(home.serialize()), 'a report made in a replay attaches the real save');
+  ui.replayEnd({ quiet: true });
+  assert.equal(ui.game, home);
+  home.state.recaps = JSON.parse(saved).recaps;
+  console.log('✓ report during an atlas replay');
+}
+
 (async () => {
   const posts = [];
   let mode = 'online';

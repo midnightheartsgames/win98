@@ -1,0 +1,208 @@
+{
+ "format": 1,
+ "id": "hero_human_m",
+ "kind": "skinned",
+ "verts": 1038,
+ "tris": 988,
+ "bounds": [
+  -0.3096138834953308,
+  -0.001999999862164259,
+  -0.17000000178813934,
+  0.3096138834953308,
+  1.763200044631958,
+  0.15977749228477478
+ ],
+ "bin": "mesh/hero_human_m.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 1038,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 12456,
+   "count": 1038,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 24912,
+   "count": 1038,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 33216,
+   "count": 1038,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 37368,
+   "count": 1038,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 45672,
+   "count": 2964,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 51600,
+   "count": 4200,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 68400,
+   "count": 1680,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 75120,
+   "count": 1400,
+   "type": "f"
+  },
+  "clip:cast": {
+   "offset": 80720,
+   "count": 2100,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 89120,
+   "count": 2240,
+   "type": "f"
+  }
+ },
+ "tex": "tex/hero_human_m.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "spine",
+  "chest",
+  "neck",
+  "head",
+  "upperarm.L",
+  "forearm.L",
+  "hand.L",
+  "upperarm.R",
+  "forearm.R",
+  "hand.R",
+  "thigh.L",
+  "shin.L",
+  "foot.L",
+  "thigh.R",
+  "shin.R",
+  "foot.R",
+  "tail.1",
+  "tail.2",
+  "tail.3"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  2,
+  3,
+  2,
+  5,
+  6,
+  2,
+  8,
+  9,
+  0,
+  11,
+  12,
+  0,
+  14,
+  15,
+  0,
+  17,
+  18
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "cast": {
+   "frames": 15,
+   "loop": true,
+   "view": "clip:cast"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ },
+ "look": {
+  "skin": [
+   [
+    0,
+    0,
+    64,
+    64
+   ],
+   [
+    64,
+    0,
+    64,
+    64
+   ]
+  ],
+  "face": [
+   64,
+   0,
+   64,
+   64
+  ],
+  "faces": "tex/hero_faces.png",
+  "cells": [
+   [
+    0,
+    0,
+    64,
+    64
+   ],
+   [
+    64,
+    0,
+    64,
+    64
+   ],
+   [
+    128,
+    0,
+    64,
+    64
+   ],
+   [
+    192,
+    0,
+    64,
+    64
+   ],
+   [
+    0,
+    64,
+    64,
+    64
+   ],
+   [
+    64,
+    64,
+    64,
+    64
+   ]
+  ]
+ }
+}

@@ -494,6 +494,9 @@ class Desktop {
       if (window.gameManager.isInstalled('catniss')) {
         list.push({ id: 'catniss', title: 'Catniss', icon: 'catniss', action: () => window.appCatniss && window.appCatniss.open() });
       }
+      if (window.gameManager.isInstalled('hsro')) {
+        list.push({ id: 'hsro', title: 'Star Rail Online', icon: 'hsro', action: () => window.appHsro && window.appHsro.open() });
+      }
       if (window.gameManager.isInstalled('kirill98')) {
         list.push({ id: 'kirill98', title: 'Kirill The Game', icon: 'kirill98', action: () => window.appKirill98 && window.appKirill98.open() });
       }

@@ -1,0 +1,131 @@
+{
+ "format": 1,
+ "id": "foe_reaver",
+ "kind": "skinned",
+ "verts": 848,
+ "tris": 876,
+ "bounds": [
+  -0.40991249680519104,
+  0.0,
+  -0.8539999723434448,
+  0.40991249680519104,
+  2.391200065612793,
+  0.23205779492855072
+ ],
+ "bin": "mesh/foe_reaver.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 848,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 10176,
+   "count": 848,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 20352,
+   "count": 848,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 27136,
+   "count": 848,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 30528,
+   "count": 848,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 37312,
+   "count": 2628,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 42568,
+   "count": 3570,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 56848,
+   "count": 1428,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 62560,
+   "count": 1190,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 67320,
+   "count": 1904,
+   "type": "f"
+  }
+ },
+ "tex": "tex/foe_reaver.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "spine",
+  "chest",
+  "neck",
+  "head",
+  "upperarm.L",
+  "forearm.L",
+  "hand.L",
+  "upperarm.R",
+  "forearm.R",
+  "hand.R",
+  "thigh.L",
+  "shin.L",
+  "foot.L",
+  "thigh.R",
+  "shin.R",
+  "foot.R"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  2,
+  3,
+  2,
+  5,
+  6,
+  2,
+  8,
+  9,
+  0,
+  11,
+  12,
+  0,
+  14,
+  15
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

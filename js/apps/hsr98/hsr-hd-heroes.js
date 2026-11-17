@@ -1,13 +1,19 @@
 (function (H) {
   'use strict';
-  const HD = H.HD, TUN = HD.TUN, T = H.TUNING, DT = HD.DT, tr = HD.tr, ei = HD.ei, N = HD.N;
+  const HD = H.HD, TUN = HD.TUN, T = H.TUNING, DT = HD.DT, N = HD.N;
+  const tr = (u, kit, i) => HD.gift(u, kit, 'tr', i), ei = (u, kit, i) => HD.gift(u, kit, 'ei', i);
+  const tl = (u, kit) => HD.partLvl(u, kit, 't');
+  const has = (u, id) => HD.hasPiece(u, id);
+  const el = (u, e) => (u.kit ? u.elem : e);
+  const otherActive = (u, own) => ['q', 'e'].find(s => s !== own && u.kit && u.kit[s]) || null;
+  const st = (u, kit) => { const s = u.tals || (u.tals = {}); return s[kit] || (s[kit] = {}); };
   const ARC_Q = Math.PI * 2 / 3;
   const P = v => Math.round(v * 100) + '%';
   const ultType = (u, l) => (l >= 3 ? 'divine' : u.atkType);
   const closestTo = (list, x, y) => list.reduce((b, v) => (!b || N.hypot(v.x - x, v.y - y) < N.hypot(b.x - x, b.y - y) ? v : b), null);
   const circle = (x, y, r) => ({ shape: 'circle', x, y, r });
   const hpK = u => u.hpMax * TUN.hpDmgK;
-  const tk = (A, u) => (u.abil.t ? A.lvlK('t', u.abil.t) : 0);
+  const tk = (A, u, kit) => { const l = tl(u, kit); return l ? A.lvlK('t', l) : 0; };
   const near = (A, u, r) => A.unitsIn(circle(u.x, u.y, r), 'foe');
   const lineFrom = (u, x, y, len, w) => ({ shape: 'line', x: u.x, y: u.y, ang: N.atan2(y - u.y, x - u.x), len, w });
 
@@ -23,10 +29,10 @@
     q: {
       cost: 30, cd: 6, aim: 'point', range: 80,
       cast(A, u, k, aim) {
-        const arc = tr(u, 0) ? Math.PI : ARC_Q, ang = N.atan2(aim.y - u.y, aim.x - u.x), cone = { shape: 'cone', x: u.x, y: u.y, r: 80, ang, arc };
+        const arc = tr(u, 'trail', 0) ? Math.PI : ARC_Q, ang = N.atan2(aim.y - u.y, aim.x - u.x), cone = { shape: 'cone', x: u.x, y: u.y, r: 80, ang, arc };
         const hits = A.unitsIn(cone, 'foe'), main = closestTo(hits, aim.x, aim.y);
         for (const v of hits) {
-          A.hit(u, v, { m: (v === main ? 1.25 * (tr(u, 0) ? 1.25 : 1) : 0.5) * k * TUN.kQ, kind: 'q', tough: v === main ? T.toughSkill : T.toughSkill / 2 });
+          A.hit(u, v, { m: (v === main ? 1.25 * (tr(u, 'trail', 0) ? 1.25 : 1) : 0.5) * k * TUN.kQ, kind: 'q', tough: v === main ? T.toughSkill : T.toughSkill / 2 });
           A.push(v, u.x, u.y, 40);
         }
         A.emit({ t: 'fx', kind: 'arc', x: u.x, y: u.y, r: 80, ang, arc, elem: u.elem });
@@ -43,24 +49,24 @@
       }
     },
     t: {
-      buff(A, u, k) { A.addFx(u, { n: 'Талант', k: 'atk', v: 0.2 * k, t: 10, max: ei(u, 1) ? 4 : tr(u, 1) ? 3 : 2 }); },
+      buff(A, u, k) { A.addFx(u, { n: 'Талант', k: 'atk', v: 0.2 * k, t: 10, max: ei(u, 'trail', 1) ? 4 : tr(u, 'trail', 1) ? 3 : 2 }); },
       onBreak(A, u, k) { KITS.trail.t.buff(A, u, k); },
-      onKill(A, u, k) { if (ei(u, 1)) KITS.trail.t.buff(A, u, k); }
+      onKill(A, u, k) { if (ei(u, 'trail', 1)) KITS.trail.t.buff(A, u, k); }
     },
     r: {
       cd: 70, aim: 'point', range: 240,
       cast(A, u, k, aim, l) {
-        u.tal.rcut = 0;
+        st(u, 'trail').rcut = 0;
         A.dash(u, aim.x, aim.y, 240, 0);
-        burst(A, u, u.x, u.y, 96, 2.7 * k * TUN.kR * (tr(u, 0) ? 1.25 : 1), 1.62 * k * TUN.kR, { kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
+        burst(A, u, u.x, u.y, 96, 2.7 * k * TUN.kR * (tr(u, 'trail', 0) ? 1.25 : 1), 1.62 * k * TUN.kR, { kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
         A.emit({ t: 'fx', kind: 'boom', x: u.x, y: u.y, r: 96, elem: u.elem });
       }
     },
     tick(A, u) {
-      if (tr(u, 1) && u.abil.t) A.addFx(u, { n: 'Упорство', k: 'armor', v: 4 * u.abil.t, t: 0.5 });
-      if (u.tal.rcutPend) { u.cd.r = Math.max(0, u.cd.r - u.tal.rcutPend); u.tal.rcutPend = 0; }
+      if (tr(u, 'trail', 1) && tl(u, 'trail')) A.addFx(u, { n: 'Упорство', k: 'armor', v: 4 * tl(u, 'trail'), t: 0.5 });
+      if (st(u, 'trail').rcutPend) { u.cd.r = Math.max(0, u.cd.r - st(u, 'trail').rcutPend); st(u, 'trail').rcutPend = 0; }
     },
-    onKill(A, u, f, o) { if (ei(u, 0) && o && o.kind === 'r' && (u.tal.rcut || 0) < 30) { u.tal.rcut = (u.tal.rcut || 0) + 6; u.tal.rcutPend = (u.tal.rcutPend || 0) + 6; } },
+    onKill(A, u, f, o) { if (ei(u, 'trail', 0) && o && o.kind === 'r' && (st(u, 'trail').rcut || 0) < 30) { st(u, 'trail').rcut = (st(u, 'trail').rcut || 0) + 6; st(u, 'trail').rcutPend = (st(u, 'trail').rcutPend || 0) + 6; } },
     text: {
       q: k => 'Размах по дуге 120°: цель ' + P(1.25 * k * TUN.kQ) + ', остальные ' + P(0.5 * k * TUN.kQ) + ' урона атаки, отбрасывание.',
       e: k => 'За 3 с лечит героя и союзные постройки в 200 на ' + P(0.15 * k) + ' их НР.',
@@ -72,23 +78,24 @@
   };
 
   KITS.blade = {
-    basic(A, u, t, o) {
+    basicSwap(A, u, t, o) {
       const hell = u.fx.find(f => f.n === 'Адский пейзаж');
+      if (!hell) return false;
       u.en = Math.min(u.enMax, u.en + TUN.enHit);
-      if (!hell) { A.hit(u, t, o); A.emit({ t: 'swing', uid: u.uid, x: t.x, y: t.y, elem: u.elem }); return; }
-      const k = u.tal.hellK || 1;
-      if (!(tr(u, 0) && u.hp <= u.hpMax * 0.5)) A.spendHp(u, u.hp * 0.03);
+      const k = st(u, 'blade').hellK || 1;
+      if (!(tr(u, 'blade', 0) && u.hp <= u.hpMax * 0.5) && has(u, 'blade.t')) A.spendHp(u, u.hp * 0.03);
       const broken = t.brokenT > 0;
       A.hit(u, t, { amt: (0.4 * A.atkOf(u) + 1.0 * hpK(u)) * k, kind: 'basic', basic: true, tough: T.toughSkill });
       for (const v of A.unitsIn(circle(t.x, t.y, 64), 'foe')) if (v !== t) A.hit(u, v, { amt: (0.16 * A.atkOf(u) + 0.4 * hpK(u)) * k, kind: 'basic', tough: T.toughBasic });
-      if (tr(u, 1) && broken) A.heal(u, u, u.hpMax * 0.05);
+      if (tr(u, 'blade', 1) && broken) A.heal(u, u, u.hpMax * 0.05);
       A.emit({ t: 'fx', kind: 'ring', x: t.x, y: t.y, r: 64, elem: u.elem });
+      return true;
     },
     q: {
       cost: 0, cd: 18, aim: 'self',
       cast(A, u, k) {
-        A.spendHp(u, u.hp * 0.3);
-        u.tal.hellK = k;
+        A.spendHp(u, u.hp * (has(u, 'blade.t') ? 0.3 : TUN.custom.bladeAlone));
+        st(u, 'blade').hellK = k;
         A.addFx(u, { n: 'Адский пейзаж', k: 'dmg', v: 0.4 * k, t: 9 });
         A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 40, elem: u.elem });
       }
@@ -109,32 +116,32 @@
       cd: 60, aim: 'self',
       cast(A, u, k, aim, l) {
         if (u.hp > u.hpMax * 0.5) A.spendHp(u, u.hp - u.hpMax * 0.5); else A.heal(u, u, u.hpMax * 0.5 - u.hp);
-        const lost = Math.min(u.hpMax * 0.9, u.tal.lost || 0) * TUN.hpDmgK, atk = A.atkOf(u), hp = hpK(u), m = k * TUN.kR;
+        const lost = Math.min(u.hpMax * 0.9, st(u, 'blade').lost || 0) * TUN.hpDmgK, atk = A.atkOf(u), hp = hpK(u), m = k * TUN.kR;
         const hits = near(A, u, 96), main = closestTo(hits, u.x, u.y);
         for (const v of hits) {
-          const amt = v === main ? (0.4 * atk + 1.0 * hp + 1.0 * lost + (ei(u, 0) ? 1.5 * lost : 0)) * m : (0.16 * atk + 0.4 * hp + 0.4 * lost) * m;
+          const amt = v === main ? (0.4 * atk + 1.0 * hp + 1.0 * lost + (ei(u, 'blade', 0) ? 1.5 * lost : 0)) * m : (0.16 * atk + 0.4 * hp + 0.4 * lost) * m;
           A.hit(u, v, { amt, kind: 'r', tough: v === main ? T.toughUlt : T.toughUlt / 2, type: ultType(u, l) });
         }
-        u.tal.lost = 0;
+        st(u, 'blade').lost = 0;
         A.emit({ t: 'fx', kind: 'boom', x: u.x, y: u.y, r: 96, elem: u.elem });
       }
     },
     onLose(A, u, amt) {
-      u.tal.lost = Math.min(u.hpMax * 0.9, (u.tal.lost || 0) + amt);
-      u.tal.acc = (u.tal.acc || 0) + amt / (u.hpMax * 0.1);
-      while (u.tal.acc >= 1) { u.tal.acc -= 1; u.tal.ch = Math.min(5, (u.tal.ch || 0) + 1); }
-      const need = ei(u, 1) ? 4 : T.shuhuMax;
-      if (u.abil.t && u.tal.ch >= need && !u.tal.busy) {
-        u.tal.busy = true; u.tal.ch = 0;
-        const k = tk(A, u);
-        for (const v of near(A, u, 140)) A.hit(u, v, { amt: (T.shuhuAtk * A.atkOf(u) + (T.shuhuHp + (ei(u, 1) ? 0.5 : 0)) * hpK(u)) * k * TUN.kT, kind: 't', tough: T.toughBasic });
+      st(u, 'blade').lost = Math.min(u.hpMax * 0.9, (st(u, 'blade').lost || 0) + amt);
+      st(u, 'blade').acc = (st(u, 'blade').acc || 0) + amt / (u.hpMax * 0.1);
+      while (st(u, 'blade').acc >= 1) { st(u, 'blade').acc -= 1; st(u, 'blade').ch = Math.min(5, (st(u, 'blade').ch || 0) + 1); }
+      const need = ei(u, 'blade', 1) ? 4 : T.shuhuMax;
+      if (tl(u, 'blade') && st(u, 'blade').ch >= need && !st(u, 'blade').busy) {
+        st(u, 'blade').busy = true; st(u, 'blade').ch = 0;
+        const k = tk(A, u, 'blade');
+        for (const v of near(A, u, 140)) A.hit(u, v, { amt: (T.shuhuAtk * A.atkOf(u) + (T.shuhuHp + (ei(u, 'blade', 1) ? 0.5 : 0)) * hpK(u)) * k * TUN.kT, kind: 't', tough: T.toughBasic });
         A.heal(u, u, u.hpMax * T.shuhuHeal * k);
         A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 140, elem: u.elem });
         A.say(u, 'Талант');
-        u.tal.busy = false;
+        st(u, 'blade').busy = false;
       }
     },
-    tick(A, u) { if (tr(u, 0) && u.hp <= u.hpMax * 0.5) A.addFx(u, { n: 'Бесконечная жизнь', k: 'healIn', v: 0.5, t: 0.3 }); },
+    tick(A, u) { if (tr(u, 'blade', 0) && u.hp <= u.hpMax * 0.5) A.addFx(u, { n: 'Бесконечная жизнь', k: 'healIn', v: 0.5, t: 0.3 }); },
     text: {
       q: k => 'Тратит 30% текущего НР. 9 с: урон +' + P(0.4 * k) + ', Атака становится «Частоколом мечей»: ' + P(0.4 * k) + ' урона атаки и ' + P(1 * k * TUN.hpDmgK) + ' макс. НР, вокруг 64 слабее.',
       e: k => 'Тратит 20% текущего НР, рывок на 180 сквозь врагов: ' + P(0.4 * k * TUN.kE * TUN.hpDmgK) + ' макс. НР всем задетым.',
@@ -146,7 +153,7 @@
   };
 
   function svarog(A, u, f, big) {
-    const k = tk(A, u) || A.lvlK('t', 1), mul = 1.0 * k * TUN.kT * (tr(u, 0) ? 1.3 : 1) * (big ? 2 : 1), r = big ? 96 : tr(u, 0) ? 64 : 0;
+    const k = tk(A, u, 'clara') || A.lvlK('t', 1), mul = 1.0 * k * TUN.kT * (tr(u, 'clara', 0) ? 1.3 : 1) * (big ? 2 : 1), r = big ? 96 : tr(u, 'clara', 0) ? 64 : 0;
     const list = r ? A.unitsIn(circle(f.x, f.y, r), 'foe') : [f];
     if (!list.includes(f)) list.push(f);
     for (const v of list) A.hit(u, v, { m: mul, kind: 'bonus', tough: T.toughBasic / 2 });
@@ -179,24 +186,24 @@
       cast(A, u, k) {
         A.addFx(u, { n: 'Обещание', k: 'dr', v: 0.25 * k, t: 6 });
         A.addFx(u, { n: 'Обещание: внимание', k: 'aggroP', v: 3, t: 6 });
-        if (tr(u, 1)) A.addFx(u, { n: 'Под защитой', k: 'ccImmune', v: 1, t: 6 });
-        if (ei(u, 0)) A.addFx(u, { n: 'Крепкие объятия', k: 'atk', v: 0.3, t: 6 });
-        u.tal.promise = ei(u, 1) ? 3 : 2; u.tal.promiseT = A.time + 6;
+        if (tr(u, 'clara', 1)) A.addFx(u, { n: 'Под защитой', k: 'ccImmune', v: 1, t: 6 });
+        if (ei(u, 'clara', 0)) A.addFx(u, { n: 'Крепкие объятия', k: 'atk', v: 0.3, t: 6 });
+        st(u, 'clara').promise = ei(u, 'clara', 1) ? 3 : 2; st(u, 'clara').promiseT = A.time + 6;
         A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 96, elem: u.elem });
       }
     },
     counter(A, u, f) {
-      const last = (u.tal.cnt || (u.tal.cnt = {}))[f.uid] || -9;
+      const last = (st(u, 'clara').cnt || (st(u, 'clara').cnt = {}))[f.uid] || -9;
       if (A.time - last < 1) return;
-      u.tal.cnt[f.uid] = A.time;
+      st(u, 'clara').cnt[f.uid] = A.time;
       A.addFx(f, { n: 'Метка Сварога', k: 'mark', v: 1, t: 30 });
-      const big = u.tal.promise > 0 && A.time < u.tal.promiseT;
-      if (big) u.tal.promise--;
+      const big = st(u, 'clara').promise > 0 && A.time < st(u, 'clara').promiseT;
+      if (big) st(u, 'clara').promise--;
       svarog(A, u, f, big);
     },
-    onHurt(A, u, f) { if (u.abil.t && !f.dead) KITS.clara.counter(A, u, f); },
-    onAllyHurt(A, u, tgt, f) { if (ei(u, 1) && tgt.kind !== 'hero' && !f.dead && N.hypot(tgt.x - u.x, tgt.y - u.y) <= 300 && A.rng() < 0.5) KITS.clara.counter(A, u, f); },
-    tick(A, u) { if (u.abil.t) A.addFx(u, { n: 'Сварог рядом', k: 'dr', v: 0.1 * tk(A, u), t: 0.5 }); },
+    onHurt(A, u, f) { if (!f.dead && (tl(u, 'clara') || (!has(u, 'clara.t') && st(u, 'clara').promiseT > A.time))) KITS.clara.counter(A, u, f); },
+    onAllyHurt(A, u, tgt, f) { if (ei(u, 'clara', 1) && tgt.kind !== 'hero' && !f.dead && N.hypot(tgt.x - u.x, tgt.y - u.y) <= 300 && A.rng() < 0.5) KITS.clara.counter(A, u, f); },
+    tick(A, u) { if (tl(u, 'clara')) A.addFx(u, { n: 'Сварог рядом', k: 'dr', v: 0.1 * tk(A, u, 'clara'), t: 0.5 }); },
     text: {
       q: k => 'Сварог бьёт всех врагов в 160: ' + P(1.2 * k * TUN.kQ) + ', врагов с Меткой Сварога ещё на ' + P(1.2 * k * TUN.kQ) + '; Метки снимаются.',
       e: k => 'Удар по кругу 120: ' + P(0.6 * k * TUN.kE) + '; враги в 160 бьют только Клару 3 с.',
@@ -210,16 +217,16 @@
   KITS.seele = {
     resurge(A, u, k, t) {
       A.addFx(u, { n: 'Усиление', k: 'dmg', v: 0.4 * k, t });
-      if (tr(u, 0)) A.addFx(u, { n: 'Рваная рана', k: 'pen', v: 0.3, t });
+      if (tr(u, 'seele', 0)) A.addFx(u, { n: 'Рваная рана', k: 'pen', v: 0.3, t });
     },
     q: {
       cost: 30, cd: 7, aim: 'target', range: 200,
-      charges: u => (ei(u, 0) ? 2 : 1),
+      charges: u => (ei(u, 'seele', 0) ? 2 : 1),
       cast(A, u, k, aim) {
         const t = aim.t;
         A.dash(u, t.x, t.y, 200, u.r + t.r + 2);
         A.hit(u, t, { m: 2.2 * k * TUN.kQ, kind: 'q', tough: T.toughSkill });
-        const max = ei(u, 0) ? 2 : undefined;
+        const max = ei(u, 'seele', 0) ? 2 : undefined;
         A.addFx(u, { n: 'Ускорение', k: 'aspd', v: 0.25 * k, t: 6, max });
         A.addFx(u, { n: 'Ускорение: шаг', k: 'mspd', v: 0.25 * k, t: 6, max });
         A.emit({ t: 'fx', kind: 'slash', x: t.x, y: t.y, elem: u.elem });
@@ -229,14 +236,15 @@
       cost: 35, cd: 18, aim: 'self',
       cast(A, u, k) {
         A.addFx(u, { n: 'Призрачный шаг', k: 'invis', v: 1, t: 3 });
-        u.tal.ghostK = k;
+        st(u, 'seele').ghostK = k;
         for (const f of A.units) if (f.side === 'foe' && f.tgt === u.uid) f.tgt = null;
         A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 40, elem: u.elem });
       }
     },
     t: {
       onKill(A, u, k) {
-        if (A.time - (u.tal.resetAt || -9) >= 1.5) { u.tal.resetAt = A.time; u.cd.q = 0; }
+        const q = HD.partSlot(u, 'seele', 'q') || (u.lastCast && A.pieceOf(u, u.lastCast) && A.pieceOf(u, u.lastCast).cd <= TUN.custom.seeleCd ? u.lastCast : null);
+        if (q && A.time - (st(u, 'seele').resetAt || -9) >= 1.5) { st(u, 'seele').resetAt = A.time; u.cd[q] = 0; }
         KITS.seele.resurge(A, u, k, 4);
         A.say(u, 'Талант');
       }
@@ -248,23 +256,24 @@
         A.dash(u, t.x, t.y, 300, u.r + t.r + 2);
         const amt = 4.25 * k * TUN.kR * A.atkOf(u);
         A.hit(u, t, { amt, kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
-        KITS.seele.resurge(A, u, u.abil.t ? A.lvlK('t', u.abil.t) : k, 6);
-        if (ei(u, 1)) u.tal.vortex = { uid: t.uid, until: A.time + 8, amt: amt * 0.15 };
+        KITS.seele.resurge(A, u, tl(u, 'seele') ? A.lvlK('t', tl(u, 'seele')) : k, 6);
+        if (ei(u, 'seele', 1)) st(u, 'seele').vortex = { uid: t.uid, until: A.time + 8, amt: amt * 0.15 };
         A.emit({ t: 'fx', kind: 'slash', x: t.x, y: t.y, elem: u.elem, big: true });
       }
     },
     onHit(A, u, t, o) {
       const inv = u.fx.find(f => f.k === 'invis');
-      if (inv) { u.fx.splice(u.fx.indexOf(inv), 1); KITS.seele.resurge(A, u, u.tal.ghostK || 0.6, 4); }
-      if (tr(u, 1) && o.basic) u.cd.q = Math.max(0, u.cd.q - 0.6);
-      const vx = u.tal.vortex;
+      if (inv) { u.fx.splice(u.fx.indexOf(inv), 1); KITS.seele.resurge(A, u, st(u, 'seele').ghostK || 0.6, 4); }
+      const qs = HD.partSlot(u, 'seele', 'q');
+      if (tr(u, 'seele', 1) && o.basic && qs) u.cd[qs] = Math.max(0, u.cd[qs] - 0.6);
+      const vx = st(u, 'seele').vortex;
       if (vx && !o.vortex && vx.uid === t.uid && A.time < vx.until) A.hit(u, t, { amt: vx.amt, kind: 'bonus', noTough: true, vortex: true, noCrit: true });
     },
     onFoeDie(A, u, f) {
-      const vx = u.tal.vortex;
+      const vx = st(u, 'seele').vortex;
       if (!vx || vx.uid !== f.uid || A.time >= vx.until) return;
       const n = A.nearestFoe(f.x, f.y, 300, x => x !== f);
-      if (n) vx.uid = n.uid; else u.tal.vortex = null;
+      if (n) vx.uid = n.uid; else st(u, 'seele').vortex = null;
     },
     text: {
       q: k => 'Рывок к цели до 200 и удар ' + P(2.2 * k * TUN.kQ) + '; +' + P(0.25 * k) + ' скорости атаки и передвижения на 6 с.',
@@ -277,23 +286,18 @@
   };
 
   KITS.danheng = {
-    basic(A, u, t, o) {
-      if (u.tal.pen > 0) { u.tal.pen--; o.pen = 0.36 * (tk(A, u) || 0); }
-      A.hit(u, t, o);
-      u.en = Math.min(u.enMax, u.en + TUN.enHit);
-      if (tr(u, 1) && A.rng() < 0.5) A.addFx(u, { n: 'Тень отчаяния', k: 'aspd', v: 0.2, t: 6 });
-      A.emit({ t: 'swing', uid: u.uid, x: t.x, y: t.y, elem: u.elem });
-    },
+    basicPre(A, u, t, o) { if (st(u, 'danheng').pen > 0) { st(u, 'danheng').pen--; o.pen = 0.36 * (tk(A, u, 'danheng') || 0); } },
+    basicPost(A, u) { if (tr(u, 'danheng', 1) && A.rng() < 0.5) A.addFx(u, { n: 'Тень отчаяния', k: 'aspd', v: 0.2, t: 6 }); },
     q: {
       cost: 30, cd: 7, aim: 'point', range: 220,
       cast(A, u, k, aim) {
         const zone = lineFrom(u, aim.x, aim.y, 220, 40), hits = A.unitsIn(zone, 'foe').sort((a, b) => N.hypot(a.x - u.x, a.y - u.y) - N.hypot(b.x - u.x, b.y - u.y));
         hits.forEach((v, i) => {
           A.hit(u, v, { m: (i ? 0.5 : 2.6) * k * TUN.kQ, kind: 'q', tough: i ? T.toughSkill / 2 : T.toughSkill });
-          const slow = (ei(u, 1) ? 0.2 : 0.12) * k * (A.lastCrit ? 2 : 1);
-          A.addFx(v, { n: 'Пронзающая буря', k: 'slow', v: slow, t: 6, max: ei(u, 1) ? 3 : undefined });
+          const slow = (ei(u, 'danheng', 1) ? 0.2 : 0.12) * k * (A.lastCrit ? 2 : 1);
+          A.addFx(v, { n: 'Пронзающая буря', k: 'slow', v: slow, t: 6, max: ei(u, 'danheng', 1) ? 3 : undefined });
         });
-        if (u.abil.t) u.tal.pen = 2;
+        if (tl(u, 'danheng')) st(u, 'danheng').pen = 2;
         A.face(u, aim.x - u.x, aim.y - u.y);
         A.emit({ t: 'fx', kind: 'line', x: u.x, y: u.y, ang: zone.ang, len: 220, w: 40, elem: u.elem });
       }
@@ -303,7 +307,7 @@
       cast(A, u, k) {
         A.addFx(u, { n: 'Тихий ветер', k: 'atk', v: 0.4 * k, t: 9 });
         A.addFx(u, { n: 'Тихий ветер: шаг', k: 'mspd', v: 0.2 * k, t: 9 });
-        if (u.abil.t) u.tal.pen = 2;
+        if (tl(u, 'danheng')) st(u, 'danheng').pen = 2;
         A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 48, elem: u.elem });
       }
     },
@@ -318,13 +322,14 @@
           A.hit(u, v, { m: (4 + (slowed ? 1.2 : 0)) * k * TUN.kR, kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
           if (v.dead) kills++;
         }
-        if (ei(u, 0) && kills) u.tal.halfR = true;
+        if (ei(u, 'danheng', 0) && kills) st(u, 'danheng').halfR = true;
         A.face(u, aim.x - u.x, aim.y - u.y);
         A.emit({ t: 'fx', kind: 'line', x: u.x, y: u.y, ang: zone.ang, len: 320, w: 64, elem: u.elem, big: true });
       }
     },
-    dmgMul(A, u, t, o) { return tr(u, 0) && o.basic && t.fx.some(f => f.k === 'slow') ? 1.4 : 1; },
-    tick(A, u) { if (u.tal.halfR) { u.tal.halfR = false; u.cd.r /= 2; } },
+    dmgMul(A, u, t, o) { return tr(u, 'danheng', 0) && o.basic && t.fx.some(f => f.k === 'slow') ? 1.4 : 1; },
+    onCast(A, u, slot) { if (u.kit && slot !== 'r' && tl(u, 'danheng')) st(u, 'danheng').pen = 2; },
+    tick(A, u) { if (st(u, 'danheng').halfR) { st(u, 'danheng').halfR = false; u.cd.r /= 2; } },
     text: {
       q: k => 'Выпад по линии 220: первая цель ' + P(2.6 * k * TUN.kQ) + ', остальные ' + P(0.5 * k * TUN.kQ) + '; замедление ' + P(0.12 * k) + ' на 6 с, крит удваивает.',
       e: k => 'Урон атаки +' + P(0.4 * k) + ' и скорость передвижения +' + P(0.2 * k) + ' на 9 с.',
@@ -337,47 +342,48 @@
 
   function numbyHit(A, u, k, t, mul) {
     const rise = u.fx.some(f => f.n === 'Поразительный рост!');
-    const critD = (rise ? 0.25 : 0) + (ei(u, 0) ? A.sum(t, 'futures') : 0);
-    const list = ei(u, 1) && rise ? A.unitsIn(circle(t.x, t.y, 64), 'foe') : [t];
+    const critD = (rise ? 0.25 : 0) + (ei(u, 'topaz', 0) ? A.sum(t, 'futures') : 0);
+    const list = ei(u, 'topaz', 1) && rise ? A.unitsIn(circle(t.x, t.y, 64), 'foe') : [t];
     if (!list.includes(t)) list.push(t);
-    for (const v of list) A.hit(u, v, { m: 1.5 * k * mul * (rise ? 1 + A.sum(u, 'rise') : 1), kind: 'bonus', critD, tough: T.toughBasic, elem: 'fire' });
-    if (u.fx.some(f => f.n === 'Дотация')) u.en = Math.min(u.enMax, u.en + 15 * (u.tal.dotK || 1));
-    if (rise && tr(u, 1)) u.en = Math.min(u.enMax, u.en + 10);
-    if (ei(u, 0) && t.uid === u.tal.debt) A.addFx(t, { n: 'Рынок будущего', k: 'futures', v: 0.25, t: 15, max: 2 });
-    u.tal.numbyAt = { x: t.x, y: t.y, t: A.time };
-    A.emit({ t: 'fx', kind: 'numby', x: t.x, y: t.y, r: 20, elem: 'fire' });
+    for (const v of list) A.hit(u, v, { m: 1.5 * k * mul * (rise ? 1 + A.sum(u, 'rise') : 1), kind: 'bonus', critD, tough: T.toughBasic, elem: el(u, 'fire') });
+    if (u.fx.some(f => f.n === 'Дотация')) u.en = Math.min(u.enMax, u.en + 15 * (st(u, 'topaz').dotK || 1));
+    if (rise && tr(u, 'topaz', 1)) u.en = Math.min(u.enMax, u.en + 10);
+    if (ei(u, 'topaz', 0) && t.uid === st(u, 'topaz').debt) A.addFx(t, { n: 'Рынок будущего', k: 'futures', v: 0.25, t: 15, max: 2 });
+    st(u, 'topaz').numbyAt = { x: t.x, y: t.y, t: A.time };
+    A.emit({ t: 'fx', kind: 'numby', x: t.x, y: t.y, r: 20, elem: el(u, 'fire') });
   }
 
   KITS.topaz = {
-    basic(A, u, t, o) {
-      o.kind = tr(u, 0) ? 'bonus' : 'basic';
-      o.after = (A2, v) => { if (v.uid === u.tal.debt) u.tal.nT = (u.tal.nT == null ? 3 : u.tal.nT) - 0.75; };
-      A.shoot(u, t, o);
+    basicPre(A, u, t, o) {
+      o.kind = tr(u, 'topaz', 0) ? 'bonus' : 'basic';
+      HD.after(A, o, (A2, v) => { if (v.uid === st(u, 'topaz').debt) st(u, 'topaz').nT = (st(u, 'topaz').nT == null ? 3 : st(u, 'topaz').nT) - 0.75; });
     },
     q: {
       cost: 25, cd: 6, aim: 'target', range: 260,
       cast(A, u, k, aim) {
-        const t = aim.t, old = u.tal.debt != null ? A.byId(u.tal.debt) : null;
+        const t = aim.t, old = st(u, 'topaz').debt != null ? A.byId(st(u, 'topaz').debt) : null;
         if (old) old.fx = old.fx.filter(f => f.n !== 'Справка о задолженности');
         A.addFx(t, { n: 'Справка о задолженности', k: 'debt', v: 0.5 * k, t: 15 });
-        u.tal.debt = t.uid;
+        st(u, 'topaz').debt = t.uid;
         numbyHit(A, u, k, t, TUN.kQ);
       }
     },
     e: {
       cost: 0, cd: 20, aim: 'self',
       cast(A, u, k) {
-        u.tal.dotK = k;
+        st(u, 'topaz').dotK = k;
         A.addFx(u, { n: 'Дотация', k: 'aspd', v: 0.3 * k, t: 6 });
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 40, elem: 'fire' });
+        if (!has(u, 'topaz.t')) { const S = st(u, 'topaz'); S.tempUntil = Math.max(S.tempUntil || 0, A.time + 6); S.tempK = Math.max(S.tempK || 0, k); }
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 40, elem: el(u, 'fire') });
       }
     },
     t: {},
     r: {
       cd: 60, aim: 'self',
       cast(A, u, k) {
-        A.addFx(u, { n: 'Поразительный рост!', k: 'rise', v: 1.5 * k, t: ei(u, 1) ? 14 : 10 });
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 80, elem: 'fire' });
+        A.addFx(u, { n: 'Поразительный рост!', k: 'rise', v: 1.5 * k, t: ei(u, 'topaz', 1) ? 14 : 10 });
+        if (!has(u, 'topaz.t')) { const S = st(u, 'topaz'); S.tempUntil = Math.max(S.tempUntil || 0, A.time + (ei(u, 'topaz', 1) ? 14 : 10)); S.tempK = Math.max(S.tempK || 0, k); }
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 80, elem: el(u, 'fire') });
       }
     },
     dmgMul(A, u, t, o) {
@@ -386,15 +392,24 @@
       return d ? 1 + d.v : 1;
     },
     tick(A, u) {
-      if (!u.abil.t) return;
+      const S = st(u, 'topaz');
+      if (!has(u, 'topaz.t') && S.tempUntil > A.time) {
+        S.tempT = (S.tempT == null ? 0 : S.tempT) - DT;
+        if (S.tempT > 0) return;
+        const d = S.debt != null ? A.byId(S.debt) : null, t = d && d.fx.some(f => f.n === 'Справка о задолженности') ? d : A.nearestFoe(u.x, u.y, 420);
+        S.tempT = t ? TUN.custom.tempNumby : 0;
+        if (t) numbyHit(A, u, S.tempK || 1, t, TUN.kT);
+        return;
+      }
+      if (!tl(u, 'topaz')) return;
       const rise = u.fx.some(f => f.n === 'Поразительный рост!');
-      if (u.tal.nT == null) u.tal.nT = 3;
-      u.tal.nT -= DT * (rise ? 2 : 1);
-      if (u.tal.nT > 0) return;
-      const d = u.tal.debt != null ? A.byId(u.tal.debt) : null, t = d && d.fx.some(f => f.n === 'Справка о задолженности') ? d : A.nearestFoe(u.x, u.y, 420);
-      if (!t) { u.tal.nT = 0; return; }
-      u.tal.nT = 3;
-      numbyHit(A, u, tk(A, u), t, TUN.kT);
+      if (st(u, 'topaz').nT == null) st(u, 'topaz').nT = 3;
+      st(u, 'topaz').nT -= DT * (rise ? 2 : 1);
+      if (st(u, 'topaz').nT > 0) return;
+      const d = st(u, 'topaz').debt != null ? A.byId(st(u, 'topaz').debt) : null, t = d && d.fx.some(f => f.n === 'Справка о задолженности') ? d : A.nearestFoe(u.x, u.y, 420);
+      if (!t) { st(u, 'topaz').nT = 0; return; }
+      st(u, 'topaz').nT = 3;
+      numbyHit(A, u, tk(A, u, 'topaz'), t, TUN.kT);
     },
     text: {
       q: k => '«Справка о задолженности» на цель на 15 с: бонус-атаки по ней +' + P(0.5 * k) + '; Счетовод сразу бьёт её на ' + P(1.5 * k * TUN.kQ) + '.',
@@ -410,54 +425,54 @@
     q: {
       cost: 35, cd: 6, aim: 'point', range: 260,
       cast(A, u, k, aim) {
-        A.addArea({ shape: 'circle', x: aim.x, y: aim.y, r: 80, side: 'foe', delay: 0.25, kind: 'blast', elem: 'fire', onFire(A2, a) {
+        A.addArea({ shape: 'circle', x: aim.x, y: aim.y, r: 80, side: 'foe', delay: 0.25, kind: 'blast', elem: el(u, 'fire'), onFire(A2, a) {
           const hits = burst(A2, u, a.x, a.y, 80, 2 * k * TUN.kQ, 0.8 * k * TUN.kQ, { kind: 'q', tough: T.toughSkill });
-          if (ei(u, 0) && u.abil.t && hits.length >= 3) KITS.himeko.t.charge(A2, u, tk(A2, u), Math.floor(hits.length / 3));
-          A2.emit({ t: 'fx', kind: 'boom', x: a.x, y: a.y, r: 80, elem: 'fire' });
+          if (ei(u, 'himeko', 0) && tl(u, 'himeko') && hits.length >= 3) KITS.himeko.t.charge(A2, u, tk(A2, u, 'himeko'), Math.floor(hits.length / 3));
+          A2.emit({ t: 'fx', kind: 'boom', x: a.x, y: a.y, r: 80, elem: el(u, 'fire') });
         } });
-        A.emit({ t: 'fx', kind: 'throw', x: u.x, y: u.y, tx: aim.x, ty: aim.y, elem: 'fire' });
+        A.emit({ t: 'fx', kind: 'throw', x: u.x, y: u.y, tx: aim.x, ty: aim.y, elem: el(u, 'fire') });
       }
     },
     e: {
       cost: 30, cd: 18, aim: 'point', range: 260,
       cast(A, u, k, aim) {
-        A.addArea({ shape: 'circle', x: aim.x, y: aim.y, r: 160, side: 'foe', t: 6, every: 0.25, kind: 'zone', elem: 'fire', onTick(A2, a) {
-          for (const v of A2.unitsIn(a, 'foe')) A2.addFx(v, { n: 'Неполное сгорание', k: 'elemVuln', elem: 'fire', v: 0.2 * k, t: 0.5 });
+        A.addArea({ shape: 'circle', x: aim.x, y: aim.y, r: 160, side: 'foe', t: 6, every: 0.25, kind: 'zone', elem: el(u, 'fire'), onTick(A2, a) {
+          for (const v of A2.unitsIn(a, 'foe')) A2.addFx(v, { n: 'Неполное сгорание', k: 'elemVuln', elem: el(u, 'fire'), v: 0.2 * k, t: 0.5 });
         } });
       }
     },
     t: {
       charge(A, u, k, n) {
-        u.tal.ch = (u.tal.ch || 0) + n;
-        if (u.tal.ch < 3) return;
-        u.tal.ch = 0;
+        st(u, 'himeko').ch = (st(u, 'himeko').ch || 0) + n;
+        if (st(u, 'himeko').ch < 3) return;
+        st(u, 'himeko').ch = 0;
         for (const v of near(A, u, 220)) A.hit(u, v, { m: 1.4 * k * TUN.kT, kind: 't', tough: T.toughBasic });
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 220, elem: 'fire' });
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 220, elem: el(u, 'fire') });
         A.say(u, 'Талант');
       },
       onBreak(A, u, k) { KITS.himeko.t.charge(A, u, k, 1); },
-      onKill(A, u, k) { u.tal.kills = (u.tal.kills || 0) + 1; if (u.tal.kills % 5 === 0) KITS.himeko.t.charge(A, u, k, 1); }
+      onKill(A, u, k) { st(u, 'himeko').kills = (st(u, 'himeko').kills || 0) + 1; if (st(u, 'himeko').kills % 5 === 0) KITS.himeko.t.charge(A, u, k, 1); }
     },
     r: {
       cd: 65, aim: 'point', range: 300,
       cast(A, u, k, aim, l) {
-        const strike = (x, y, mul) => A.addArea({ shape: 'circle', x, y, r: 200, side: 'foe', delay: 0.5, kind: 'orbit', elem: 'fire', onFire(A2, a) {
+        const strike = (x, y, mul) => A.addArea({ shape: 'circle', x, y, r: 200, side: 'foe', delay: 0.5, kind: 'orbit', elem: el(u, 'fire'), onFire(A2, a) {
           for (const v of A2.unitsIn(a, 'foe')) { A2.hit(u, v, { m: 2.3 * k * TUN.kR * mul, kind: 'r', tough: mul < 1 ? 0 : T.toughUlt, type: ultType(u, l) }); if (v.dead) u.en = Math.min(u.enMax, u.en + 5); }
-          A2.emit({ t: 'fx', kind: 'boom', x: a.x, y: a.y, r: 200, elem: 'fire' });
+          A2.emit({ t: 'fx', kind: 'boom', x: a.x, y: a.y, r: 200, elem: el(u, 'fire') });
         } });
         strike(aim.x, aim.y, 1);
-        if (ei(u, 1)) for (let i = 1; i <= 2; i++) A.later(0.5 * i, () => strike(aim.x + (A.rng() - 0.5) * 120, aim.y + (A.rng() - 0.5) * 120, 0.4));
+        if (ei(u, 'himeko', 1)) for (let i = 1; i <= 2; i++) A.later(0.5 * i, () => strike(aim.x + (A.rng() - 0.5) * 120, aim.y + (A.rng() - 0.5) * 120, 0.4));
       }
     },
     burning: v => v.fx.some(f => f.k === 'dot' && f.n === 'Горение'),
     onHit(A, u, t, o) {
-      if (tr(u, 0) && o.kind !== 'dot' && o.kind !== 'break' && !t.dead && A.rng() < 0.5) A.addFx(t, { n: 'Горение', k: 'dot', v: 0, dps: 0.3 * A.atkOf(u), elem: 'fire', t: 6, src: u });
+      if (tr(u, 'himeko', 0) && o.kind !== 'dot' && o.kind !== 'break' && !t.dead && A.rng() < 0.5) A.addFx(t, { n: 'Горение', k: 'dot', v: 0, dps: 0.3 * A.atkOf(u), elem: el(u, 'fire'), t: 6, src: u });
     },
-    dmgMul(A, u, t) { return tr(u, 1) && KITS.himeko.burning(t) ? 1.2 : 1; },
+    dmgMul(A, u, t) { return tr(u, 'himeko', 1) && KITS.himeko.burning(t) ? 1.2 : 1; },
     onFoeDie(A, u, f) {
-      if (!tr(u, 1) || !KITS.himeko.burning(f)) return;
-      for (const v of A.unitsIn(circle(f.x, f.y, 64), 'foe')) A.hit(u, v, { m: 0.4, kind: 'bonus', noTough: true, elem: 'fire' });
-      A.emit({ t: 'fx', kind: 'boom', x: f.x, y: f.y, r: 64, elem: 'fire' });
+      if (!tr(u, 'himeko', 1) || !KITS.himeko.burning(f)) return;
+      for (const v of A.unitsIn(circle(f.x, f.y, 64), 'foe')) A.hit(u, v, { m: 0.4, kind: 'bonus', noTough: true, elem: el(u, 'fire') });
+      A.emit({ t: 'fx', kind: 'boom', x: f.x, y: f.y, r: 64, elem: el(u, 'fire') });
     },
     text: {
       q: k => 'Шар в точку, круг 80: центр ' + P(2 * k * TUN.kQ) + ', вокруг ' + P(0.8 * k * TUN.kQ) + '.',
@@ -473,8 +488,8 @@
     q: {
       cost: 30, cd: 5, aim: 'self',
       cast(A, u, k) {
-        for (const v of near(A, u, 140)) A.hit(u, v, { m: (1 + (v.hp >= v.hpMax * 0.5 ? 0.2 + (tr(u, 0) ? 0.25 : 0) : 0)) * k * TUN.kQ, kind: 'q', tough: T.toughSkill });
-        A.emit({ t: 'fx', kind: 'doll', x: u.x, y: u.y, r: 140, elem: 'ice' });
+        for (const v of near(A, u, 140)) A.hit(u, v, { m: (1 + (v.hp >= v.hpMax * 0.5 ? 0.2 + (tr(u, 'herta', 0) ? 0.25 : 0) : 0)) * k * TUN.kQ, kind: 'q', tough: T.toughSkill });
+        A.emit({ t: 'fx', kind: 'doll', x: u.x, y: u.y, r: 140, elem: el(u, 'ice') });
       }
     },
     e: {
@@ -483,7 +498,7 @@
         A.addFx(u, { n: 'Кукла на удачу', k: 'atk', v: 0.4 * k, t: 9 });
         A.addFx(u, { n: 'Кукла на удачу: стойкость', k: 'slowImmune', v: 1, t: 9 });
         u.fx = u.fx.filter(f => f.k !== 'slow');
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 40, elem: 'ice' });
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 40, elem: el(u, 'ice') });
       }
     },
     t: {},
@@ -492,21 +507,21 @@
       cast(A, u, k, aim, l) {
         for (const v of near(A, u, 260)) {
           const frozen = v.fx.some(f => f.n === 'Заморозка');
-          A.hit(u, v, { m: 2 * k * TUN.kR * (tr(u, 1) && frozen ? 1.2 : 1), kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
-          if (tr(u, 1) && !v.dead) A.addFx(v, { n: 'Заморозка', k: 'stun', v: 1, t: 1.5 });
+          A.hit(u, v, { m: 2 * k * TUN.kR * (tr(u, 'herta', 1) && frozen ? 1.2 : 1), kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
+          if (tr(u, 'herta', 1) && !v.dead) A.addFx(v, { n: 'Заморозка', k: 'stun', v: 1, t: 1.5 });
         }
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 260, elem: 'ice' });
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 260, elem: el(u, 'ice') });
       }
     },
     onFoeHurt(A, u, f, before) {
-      if (!u.abil.t || before < f.hpMax * 0.5 || f.hp >= f.hpMax * 0.5 || A.time - (u.tal.dollAt || -9) < 1 || N.hypot(f.x - u.x, f.y - u.y) > 300) return;
-      u.tal.dollAt = A.time;
-      for (const v of A.unitsIn(circle(f.x, f.y, 120), 'foe')) A.hit(u, v, { m: 0.4 * tk(A, u) * TUN.kT, kind: 't', tough: T.toughBasic });
-      if (ei(u, 1)) A.addFx(u, { n: 'Всегда в погоне за победой', k: 'crit', v: 0.03, t: 9999, max: 10 });
-      A.emit({ t: 'fx', kind: 'doll', x: f.x, y: f.y, r: 120, elem: 'ice' });
+      if (!tl(u, 'herta') || before < f.hpMax * 0.5 || f.hp >= f.hpMax * 0.5 || A.time - (st(u, 'herta').dollAt || -9) < 1 || N.hypot(f.x - u.x, f.y - u.y) > 300) return;
+      st(u, 'herta').dollAt = A.time;
+      for (const v of A.unitsIn(circle(f.x, f.y, 120), 'foe')) A.hit(u, v, { m: 0.4 * tk(A, u, 'herta') * TUN.kT, kind: 't', tough: T.toughBasic });
+      if (ei(u, 'herta', 1)) A.addFx(u, { n: 'Всегда в погоне за победой', k: 'crit', v: 0.03, t: 9999, max: 10 });
+      A.emit({ t: 'fx', kind: 'doll', x: f.x, y: f.y, r: 120, elem: el(u, 'ice') });
     },
     onHit(A, u, t, o) {
-      if (!ei(u, 0) || !o.basic || t.hp > t.hpMax * 0.5) return;
+      if (!ei(u, 'herta', 0) || !o.basic || t.hp > t.hpMax * 0.5) return;
       for (const v of A.unitsIn(circle(t.x, t.y, 64), 'foe')) A.hit(u, v, { m: 0.4, kind: 'bonus', noTough: true });
     },
     onWaveEnd(A, u) { u.fx = u.fx.filter(f => f.n !== 'Всегда в погоне за победой'); },
@@ -521,7 +536,7 @@
   };
 
   function salvo(A, u, k) {
-    const L = u.tal.lord, n = Math.min(10, L.hits), adj = ei(u, 0) ? 0.5 : 0.25, critD = tr(u, 0) && n >= 6 ? 0.25 : 0;
+    const L = st(u, 'jingyuan').lord, n = Math.min(10, L.hits), adj = ei(u, 'jingyuan', 0) ? 0.5 : 0.25, critD = tr(u, 'jingyuan', 0) && n >= 6 ? 0.25 : 0;
     L.hits = 3;
     L.t = 6 - 0.3 * Math.max(0, n - 3);
     L.busy = A.time + n * 0.18;
@@ -530,30 +545,32 @@
       const list = near(A, u, 260);
       if (!list.length) return;
       const t = list[A.rng.int(list.length)];
-      A.hit(u, t, { m: 0.66 * k * TUN.kT, kind: 'bonus', critD, tough: T.toughBasic, elem: 'elec' });
-      for (const v of A.unitsIn(circle(t.x, t.y, 72), 'foe')) if (v !== t) A.hit(u, v, { m: 0.66 * k * TUN.kT * adj, kind: 'bonus', noTough: true, elem: 'elec' });
-      if (ei(u, 1) && !t.dead) A.addFx(t, { n: 'Слава поражает врагов', k: 'vuln', v: 0.12, t: 3, max: 3 });
-      u.tal.lordAt = { x: t.x, y: t.y, t: A.time };
-      A.emit({ t: 'fx', kind: 'bolt', x: t.x, y: t.y, r: 30, elem: 'elec' });
+      A.hit(u, t, { m: 0.66 * k * TUN.kT, kind: 'bonus', critD, tough: T.toughBasic, elem: el(u, 'elec') });
+      for (const v of A.unitsIn(circle(t.x, t.y, 72), 'foe')) if (v !== t) A.hit(u, v, { m: 0.66 * k * TUN.kT * adj, kind: 'bonus', noTough: true, elem: el(u, 'elec') });
+      if (ei(u, 'jingyuan', 1) && !t.dead) A.addFx(t, { n: 'Слава поражает врагов', k: 'vuln', v: 0.12, t: 3, max: 3 });
+      st(u, 'jingyuan').lordAt = { x: t.x, y: t.y, t: A.time };
+      A.emit({ t: 'fx', kind: 'bolt', x: t.x, y: t.y, r: 30, elem: el(u, 'elec') });
     });
   }
 
   KITS.jingyuan = {
-    lord: u => u.tal.lord || (u.tal.lord = { hits: 3, t: 6 }),
+    lord: u => st(u, 'jingyuan').lord || (st(u, 'jingyuan').lord = { hits: 3, t: 6 }),
     q: {
       cost: 35, cd: 6, aim: 'self',
       cast(A, u, k) {
         for (const v of near(A, u, 140)) A.hit(u, v, { m: k * TUN.kQ, kind: 'q', tough: T.toughSkill });
-        const L = KITS.jingyuan.lord(u); L.hits = Math.min(10, L.hits + 2);
-        if (tr(u, 1)) A.addFx(u, { n: 'Военный маршал', k: 'crit', v: 0.1, t: 6 });
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 140, elem: 'elec' });
+        const L = KITS.jingyuan.lord(u);
+        if (has(u, 'jingyuan.t')) L.hits = Math.min(10, L.hits + 2); else { L.hits = TUN.custom.jySalvo.q; salvo(A, u, k); }
+        if (tr(u, 'jingyuan', 1)) A.addFx(u, { n: 'Военный маршал', k: 'crit', v: 0.1, t: 6 });
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 140, elem: el(u, 'elec') });
       }
     },
     e: {
       cost: 30, cd: 20, aim: 'self',
       cast(A, u, k) {
-        const L = KITS.jingyuan.lord(u); L.hits = Math.min(10, L.hits + 3);
-        salvo(A, u, tk(A, u) || k);
+        const L = KITS.jingyuan.lord(u);
+        L.hits = has(u, 'jingyuan.t') ? Math.min(10, L.hits + 3) : TUN.custom.jySalvo.e;
+        salvo(A, u, tk(A, u, 'jingyuan') || k);
       }
     },
     t: {},
@@ -561,18 +578,19 @@
       cd: 60, aim: 'self',
       cast(A, u, k, aim, l) {
         for (const v of near(A, u, 220)) A.hit(u, v, { m: 2 * k * TUN.kR, kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
-        const L = KITS.jingyuan.lord(u); L.hits = Math.min(10, L.hits + 3);
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 220, elem: 'elec' });
+        const L = KITS.jingyuan.lord(u);
+        if (has(u, 'jingyuan.t')) L.hits = Math.min(10, L.hits + 3); else { L.hits = TUN.custom.jySalvo.r; salvo(A, u, k); }
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 220, elem: el(u, 'elec') });
       }
     },
     tick(A, u) {
-      if (!u.abil.t) return;
+      if (!tl(u, 'jingyuan')) return;
       const L = KITS.jingyuan.lord(u);
       if (L.busy && A.time < L.busy) return;
       L.t -= DT;
       if (L.t > 0) return;
       if (!near(A, u, 260).length) { L.t = 0; return; }
-      salvo(A, u, tk(A, u));
+      salvo(A, u, tk(A, u, 'jingyuan'));
     },
     text: {
       q: k => 'Удар по кругу 140: ' + P(k * TUN.kQ) + '; Повелитель молний +2 удара в серии.',
@@ -595,25 +613,24 @@
   }
 
   KITS.bronya = {
-    basic(A, u, t, o) {
-      if (tr(u, 0)) o.crit = 1;
-      if (u.abil.t) { const cut = 0.9 * tk(A, u); u.cd.q = Math.max(0, u.cd.q - cut); u.cd.e = Math.max(0, u.cd.e - cut); }
-      A.shoot(u, t, o);
+    basicPre(A, u, t, o) {
+      if (tr(u, 'bronya', 0)) o.crit = 1;
+      if (tl(u, 'bronya')) { const cut = 0.9 * tk(A, u, 'bronya'); u.cd.q = Math.max(0, u.cd.q - cut); u.cd.e = Math.max(0, u.cd.e - cut); }
     },
     q: {
       cost: 35, cd: 12, aim: 'ally', range: 300,
       cast(A, u, k, aim) {
         const v = aim.t;
         if (v.kind === 'turret') A.addFx(v, { n: 'Боевой приказ', k: 'aspd', v: 0.5 * k, t: 3 });
-        else { cleanse(v); A.addFx(v, { n: 'Боевой приказ', k: 'dmg', v: 0.66 * k, t: 3 }); if (v === u) u.tal.resetE = true; }
-        if (ei(u, 0) && !u.tal.honed && A.rng() < 0.5) { u.tal.freeQ = true; u.tal.honed = true; } else u.tal.honed = false;
+        else { cleanse(v); A.addFx(v, { n: 'Боевой приказ', k: 'dmg', v: 0.66 * k, t: 3 }); if (v === u) st(u, 'bronya').resetE = HD.partSlot(u, 'bronya', 'e') || otherActive(u, HD.partSlot(u, 'bronya', 'q')); }
+        if (ei(u, 'bronya', 0) && !st(u, 'bronya').honed && A.rng() < 0.5) { st(u, 'bronya').freeQ = HD.partSlot(u, 'bronya', 'q'); st(u, 'bronya').honed = true; } else st(u, 'bronya').honed = false;
         A.emit({ t: 'fx', kind: 'ring', x: v.x, y: v.y, r: 30, elem: u.elem });
       }
     },
     e: {
       cost: 40, cd: 24, aim: 'point', range: 300,
       cast(A, u, k, aim) {
-        A.addArea({ shape: 'circle', x: aim.x, y: aim.y, r: 220, side: 'ally', t: 10, every: 0.25, kind: 'zone', elem: 'wind', onTick(A2, a) {
+        A.addArea({ shape: 'circle', x: aim.x, y: aim.y, r: 220, side: 'ally', t: 10, every: 0.25, kind: 'zone', elem: el(u, 'wind'), onTick(A2, a) {
           for (const v of A2.unitsIn(a, 'ally')) { A2.addFx(v, { n: 'Знамя командира', k: 'atk', v: 0.15 * k, t: 0.5 }); A2.addFx(v, { n: 'Знамя командира: темп', k: 'aspd', v: 0.1 * k, t: 0.5 }); }
         } });
       }
@@ -623,18 +640,18 @@
       cd: 60, aim: 'self',
       cast(A, u, k) {
         for (const v of allies(A, u.x, u.y, 300)) { A.addFx(v, { n: 'Марш Белобога', k: 'atk', v: 0.55 * k, t: 6 }); A.addFx(v, { n: 'Марш Белобога: крит', k: 'critD', v: 0.3 * k, t: 6 }); }
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 300, elem: 'wind' });
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 300, elem: el(u, 'wind') });
       }
     },
     tick(A, u) {
-      if (u.tal.resetE) { u.tal.resetE = false; u.cd.e = 0; }
-      if (u.tal.freeQ) { u.tal.freeQ = false; u.cd.q = 0; }
-      if (tr(u, 1)) aura(A, u, 400, { n: 'Военная мощь', k: 'dmg', v: 0.1 });
+      if (st(u, 'bronya').resetE) { u.cd[st(u, 'bronya').resetE] = 0; st(u, 'bronya').resetE = false; }
+      if (st(u, 'bronya').freeQ) { u.cd[st(u, 'bronya').freeQ] = 0; st(u, 'bronya').freeQ = false; }
+      if (tr(u, 'bronya', 1)) aura(A, u, 400, { n: 'Военная мощь', k: 'dmg', v: 0.1 });
     },
     onAllyAttack(A, u, src, t) {
-      if (!ei(u, 1) || src.kind !== 'turret' || t.dead || !(t.weak || []).includes('wind') || A.time - (u.tal.ambush || -9) < 3) return;
-      u.tal.ambush = A.time;
-      A.hit(u, t, { m: 0.8, kind: 'bonus', elem: 'wind', tough: T.toughBasic });
+      if (!ei(u, 'bronya', 1) || src.kind !== 'turret' || t.dead || !(t.weak || []).includes(el(u, 'wind')) || A.time - (st(u, 'bronya').ambush || -9) < 3) return;
+      st(u, 'bronya').ambush = A.time;
+      A.hit(u, t, { m: 0.8, kind: 'bonus', elem: el(u, 'wind'), tough: T.toughBasic });
     },
     text: {
       q: k => 'Союзник в 300 или сама Броня: снимает ослабления, +' + P(0.66 * k) + ' урона на 3 с, сбрасывает Технику; турель стреляет на ' + P(0.5 * k) + ' быстрее.',
@@ -648,17 +665,17 @@
 
   KITS.asta = {
     charge(A, u, t) {
-      if (!u.abil.t) return;
-      const seen = u.tal.seen || (u.tal.seen = new Set());
-      u.tal.lastHit = A.time;
+      if (!tl(u, 'asta')) return;
+      const seen = st(u, 'asta').seen || (st(u, 'asta').seen = new Set());
+      st(u, 'asta').lastHit = A.time;
       if (seen.has(t.uid)) return;
       seen.add(t.uid);
-      u.tal.ch = Math.min(5, (u.tal.ch || 0) + 1); u.tal.chT = A.time;
+      st(u, 'asta').ch = Math.min(5, (st(u, 'asta').ch || 0) + 1); st(u, 'asta').chT = A.time;
     },
     q: {
       cost: 30, cd: 5, aim: 'target', range: 260,
       cast(A, u, k, aim) {
-        bounce(A, u, aim.t, ei(u, 0) ? 7 : 5, 140, v => { A.hit(u, v, { m: 0.5 * k * TUN.kQ, kind: 'q', tough: T.toughBasic }); A.emit({ t: 'fx', kind: 'boom', x: v.x, y: v.y, r: 24, elem: 'fire' }); });
+        bounce(A, u, aim.t, ei(u, 'asta', 0) ? 7 : 5, 140, v => { A.hit(u, v, { m: 0.5 * k * TUN.kQ, kind: 'q', tough: T.toughBasic }); A.emit({ t: 'fx', kind: 'boom', x: v.x, y: v.y, r: 24, elem: el(u, 'fire') }); });
       }
     },
     e: {
@@ -666,7 +683,7 @@
       cast(A, u, k, aim) {
         for (let i = 0; i < 3; i++) A.later(0.5 * i, () => {
           for (const v of A.unitsIn(circle(aim.x, aim.y, 140), 'foe')) A.hit(u, v, { m: 0.6 * k * TUN.kE, kind: 'e', tough: TUN.toughTech / 3 });
-          A.emit({ t: 'fx', kind: 'boom', x: aim.x + (A.rng() - 0.5) * 60, y: aim.y + (A.rng() - 0.5) * 60, r: 50, elem: 'fire' });
+          A.emit({ t: 'fx', kind: 'boom', x: aim.x + (A.rng() - 0.5) * 60, y: aim.y + (A.rng() - 0.5) * 60, r: 50, elem: el(u, 'fire') });
         });
       }
     },
@@ -675,18 +692,18 @@
       cd: 55, aim: 'self',
       cast(A, u, k) {
         for (const v of allies(A, u.x, u.y, 300)) { A.addFx(v, { n: 'Астральное благословение', k: 'aspd', v: 0.5 * k, t: 6 }); A.addFx(v, { n: 'Астральное благословение: шаг', k: 'mspd', v: 0.3 * k, t: 6 }); }
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 300, elem: 'fire' });
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 300, elem: el(u, 'fire') });
       }
     },
     onHit(A, u, t, o) {
       if (o.kind === 'dot' || o.kind === 'break') return;
       KITS.asta.charge(A, u, t);
-      if (tr(u, 0) && o.basic && !t.dead && A.rng() < 0.8) A.addFx(t, { n: 'Горение', k: 'dot', v: 0, dps: 0.5 * A.atkOf(u) / 3, elem: 'fire', t: 9, src: u });
+      if (tr(u, 'asta', 0) && o.basic && !t.dead && A.rng() < 0.8) A.addFx(t, { n: 'Горение', k: 'dot', v: 0, dps: 0.5 * A.atkOf(u) / 3, elem: el(u, 'fire'), t: 9, src: u });
     },
     tick(A, u) {
-      if (u.tal.ch && A.time - u.tal.chT >= 3 && !(ei(u, 1) && A.time - (u.tal.lastHit || -9) < 3)) { u.tal.ch = Math.max(0, u.tal.ch - 2); u.tal.chT = A.time; }
-      if (u.tal.ch) aura(A, u, 300, { n: 'Заряд', k: 'atk', v: 0.14 * tk(A, u) * u.tal.ch });
-      if (tr(u, 1)) aura(A, u, 400, { n: 'Воспламенение', k: 'dmgE_fire', v: 0.18 });
+      if (st(u, 'asta').ch && A.time - st(u, 'asta').chT >= 3 && !(ei(u, 'asta', 1) && A.time - (st(u, 'asta').lastHit || -9) < 3)) { st(u, 'asta').ch = Math.max(0, st(u, 'asta').ch - 2); st(u, 'asta').chT = A.time; }
+      if (st(u, 'asta').ch) aura(A, u, 300, { n: 'Заряд', k: 'atk', v: 0.14 * tk(A, u, 'asta') * st(u, 'asta').ch });
+      if (tr(u, 'asta', 1)) aura(A, u, 400, { n: 'Воспламенение', k: 'dmgE_' + el(u, 'fire'), v: 0.18 });
     },
     text: {
       q: k => (5) + ' отскоков по ' + P(0.5 * k * TUN.kQ) + ' урона атаки.',
@@ -699,53 +716,53 @@
   };
 
   const overtone = (A, u, k, t) => {
-    const extra = tr(u, 1) ? Math.min(0.36, Math.max(0, Math.floor((A.sum(u, 'breakEff') - 1.2) / 0.1)) * 0.06) : 0;
+    const extra = tr(u, 'ruanmei', 1) ? Math.min(0.36, Math.max(0, Math.floor((A.sum(u, 'breakEff') - 1.2) / 0.1)) * 0.06) : 0;
     for (const v of allies(A, u.x, u.y, 300)) { A.addFx(v, { n: 'Обертон', k: 'dmg', v: 0.32 * k + extra, t }); A.addFx(v, { n: 'Обертон: стойкость', k: 'toughP', v: 0.5 * k, t }); }
   };
 
   KITS.ruanmei = {
     q: {
       cost: 40, cd: 18, aim: 'self',
-      cast(A, u, k) { overtone(A, u, k, 9); A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 300, elem: 'ice' }); }
+      cast(A, u, k) { overtone(A, u, k, 9); A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 300, elem: el(u, 'ice') }); }
     },
     e: {
       cost: 30, cd: 14, aim: 'point', range: 260,
       cast(A, u, k, aim) {
-        overtone(A, u, A.lvlK('q', Math.max(1, u.abil.q)), 6);
+        overtone(A, u, A.lvlK('q', Math.max(1, HD.partLvl(u, 'ruanmei', 'q'))), 6);
         for (const v of A.unitsIn(circle(aim.x, aim.y, 120), 'foe')) {
           A.addFx(v, { n: 'Шёлковая серенада', k: 'slow', v: 0.4 * k, t: 4 });
           A.hit(u, v, { amt: 1, kind: 'e', tough: TUN.toughTech, forceTough: true, noCrit: true });
         }
-        A.emit({ t: 'fx', kind: 'ring', x: aim.x, y: aim.y, r: 120, elem: 'ice' });
+        A.emit({ t: 'fx', kind: 'ring', x: aim.x, y: aim.y, r: 120, elem: el(u, 'ice') });
       }
     },
     t: {},
     r: {
       cd: 60, aim: 'point', range: 300,
       cast(A, u, k) {
-        const t = ei(u, 1) ? 11 : 8, x = u.x, y = u.y;
-        A.addArea({ shape: 'circle', x, y, r: 220, side: 'ally', t, every: 0.25, kind: 'zone', elem: 'ice', onTick(A2, a) {
+        const t = ei(u, 'ruanmei', 1) ? 11 : 8, x = u.x, y = u.y;
+        A.addArea({ shape: 'circle', x, y, r: 220, side: 'ally', t, every: 0.25, kind: 'zone', elem: el(u, 'ice'), onTick(A2, a) {
           for (const v of A2.unitsIn(a, 'ally')) A2.addFx(v, { n: 'Лепестки на воде', k: 'pen', v: 0.25, t: 0.5 });
           for (const f of A2.unitsIn(a, 'foe')) if (f.brokenT > 0) f.rmBloom = A2.time + 7;
         } });
-        A.emit({ t: 'fx', kind: 'ring', x, y, r: 220, elem: 'ice' });
+        A.emit({ t: 'fx', kind: 'ring', x, y, r: 220, elem: el(u, 'ice') });
       }
     },
     onAnyBreak(A, u, f) {
-      if (!u.abil.t) return;
-      const k = tk(A, u), mul = 1.2 * (ei(u, 1) ? 3 : 1);
-      A.hit(u, f, { amt: H.breakBase(f.lvl) * H.ELEMENTS.ice.coef * mul * k * (1 + A.sum(u, 'breakEff')), type: 'magic', elem: 'ice', kind: 'break', noCrit: true, noTough: true });
+      if (!tl(u, 'ruanmei')) return;
+      const k = tk(A, u, 'ruanmei'), mul = 1.2 * (ei(u, 'ruanmei', 1) ? 3 : 1);
+      A.hit(u, f, { amt: H.breakBase(f.lvl) * H.ELEMENTS.ice.coef * mul * k * (1 + A.sum(u, 'breakEff')), type: 'magic', elem: el(u, 'ice'), kind: 'break', noCrit: true, noTough: true });
     },
     onFoeRecover(A, u, f) {
       if (!f.rmBloom || A.time > f.rmBloom) return;
       f.rmBloom = 0;
       A.addFx(f, { n: 'Лепестки на воде: оцепенение', k: 'stun', v: 1, t: 1 });
-      A.hit(u, f, { amt: H.breakBase(f.lvl) * H.ELEMENTS.ice.coef * 0.6, type: 'magic', elem: 'ice', kind: 'break', noCrit: true, noTough: true });
+      A.hit(u, f, { amt: H.breakBase(f.lvl) * H.ELEMENTS.ice.coef * 0.6, type: 'magic', elem: el(u, 'ice'), kind: 'break', noCrit: true, noTough: true });
     },
     tick(A, u) {
-      if (u.abil.t) { const k = tk(A, u); aura(A, u, 400, { n: 'Струны', k: 'aspd', v: 0.1 * k }); aura(A, u, 400, { n: 'Струны: шаг', k: 'mspd', v: 0.1 * k }); }
-      if (tr(u, 0)) aura(A, u, 400, { n: 'Инертное дыхание', k: 'breakEff', v: 0.2 });
-      if (ei(u, 0)) aura(A, u, 400, { n: 'Прогулка вдоль тростника', k: 'dmgBroken', v: 0.4 });
+      if (tl(u, 'ruanmei')) { const k = tk(A, u, 'ruanmei'); aura(A, u, 400, { n: 'Струны', k: 'aspd', v: 0.1 * k }); aura(A, u, 400, { n: 'Струны: шаг', k: 'mspd', v: 0.1 * k }); }
+      if (tr(u, 'ruanmei', 0)) aura(A, u, 400, { n: 'Инертное дыхание', k: 'breakEff', v: 0.2 });
+      if (ei(u, 'ruanmei', 0)) aura(A, u, 400, { n: 'Прогулка вдоль тростника', k: 'dmgBroken', v: 0.4 });
     },
     text: {
       q: k => '«Обертон» на 9 с союзникам в 300: урон +' + P(0.32 * k) + ', урон по стойкости +' + P(0.5 * k) + '.',
@@ -758,37 +775,36 @@
   };
 
   function shock(A, u, v, k) {
-    const dps = (0.3 + (ei(u, 1) ? 1.56 : 0)) * k * A.atkOf(u);
-    A.addFx(v, { n: 'Шок', k: 'dot', v: 0, dps, elem: 'elec', t: ei(u, 1) ? 9 : 6, src: u, kafka: true });
+    const dps = (0.3 + (ei(u, 'kafka', 1) ? 1.56 : 0)) * k * A.atkOf(u);
+    A.addFx(v, { n: 'Шок', k: 'dot', v: 0, dps, elem: el(u, 'elec'), t: ei(u, 'kafka', 1) ? 9 : 6, src: u, kafka: true });
   }
   function detonate(A, u, v, all, mul) {
     for (const f of v.fx.slice()) if (f.k === 'dot' && (all || f.n === 'Шок') && !v.dead) A.hit(f.src || u, v, { amt: f.dps * mul, type: 'magic', elem: f.elem, kind: 'dot', noCrit: true, noTough: true });
   }
 
   KITS.kafka = {
-    basic(A, u, t, o) {
-      u.tal.n = (u.tal.n || 0) + 1;
-      if (u.abil.t && u.tal.n % 3 === 0) o.after = (A2, v) => {
+    basicPre(A, u, t, o) {
+      st(u, 'kafka').n = (st(u, 'kafka').n || 0) + 1;
+      if (tl(u, 'kafka') && st(u, 'kafka').n % 3 === 0) HD.after(A, o, (A2, v) => {
         if (v.dead) return;
-        const k = tk(A2, u);
+        const k = tk(A2, u, 'kafka');
         A2.hit(u, v, { m: 1.4 * k * TUN.kT, kind: 'bonus', tough: T.toughBasic });
-        if (!v.dead) { shock(A2, u, v, k); if (ei(u, 0)) A2.addFx(v, { n: 'Da Capo', k: 'dotVuln', v: 0.3, t: 6 }); }
-      };
-      A.shoot(u, t, o);
+        if (!v.dead) { shock(A2, u, v, k); if (ei(u, 'kafka', 0)) A2.addFx(v, { n: 'Da Capo', k: 'dotVuln', v: 0.3, t: 6 }); }
+      });
     },
     q: {
       cost: 35, cd: 6, aim: 'target', range: 260,
       cast(A, u, k, aim) {
         const t = aim.t, hits = A.unitsIn(circle(t.x, t.y, 72), 'foe');
         for (const v of hits) { A.hit(u, v, { m: (v === t ? 1.6 : 0.6) * k * TUN.kQ, kind: 'q', tough: v === t ? T.toughSkill : T.toughSkill / 2 }); detonate(A, u, v, true, 0.75); }
-        A.emit({ t: 'fx', kind: 'bolt', x: t.x, y: t.y, r: 72, elem: 'elec' });
+        A.emit({ t: 'fx', kind: 'bolt', x: t.x, y: t.y, r: 72, elem: el(u, 'elec') });
       }
     },
     e: {
       cost: 30, cd: 14, aim: 'point', range: 260,
       cast(A, u, k, aim) {
-        for (const v of A.unitsIn(circle(aim.x, aim.y, 160), 'foe')) { A.hit(u, v, { m: 0.5 * k * TUN.kE, kind: 'e', tough: TUN.toughTech }); if (!v.dead) shock(A, u, v, tk(A, u) || k); }
-        A.emit({ t: 'fx', kind: 'ring', x: aim.x, y: aim.y, r: 160, elem: 'elec' });
+        for (const v of A.unitsIn(circle(aim.x, aim.y, 160), 'foe')) { A.hit(u, v, { m: 0.5 * k * TUN.kE, kind: 'e', tough: TUN.toughTech }); if (!v.dead) shock(A, u, v, tk(A, u, 'kafka') || k); }
+        A.emit({ t: 'fx', kind: 'ring', x: aim.x, y: aim.y, r: 160, elem: el(u, 'elec') });
       }
     },
     t: {},
@@ -797,13 +813,13 @@
       cast(A, u, k, aim, l) {
         for (const v of near(A, u, 260)) {
           A.hit(u, v, { m: 0.8 * k * TUN.kR, kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
-          if (!v.dead) { shock(A, u, v, tk(A, u) || k); detonate(A, u, v, tr(u, 0), 1); }
+          if (!v.dead) { shock(A, u, v, tk(A, u, 'kafka') || k); detonate(A, u, v, tr(u, 'kafka', 0), 1); }
         }
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 260, elem: 'elec' });
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 260, elem: el(u, 'elec') });
       }
     },
     onFoeDie(A, u, f) {
-      if (!tr(u, 1)) return;
+      if (!tr(u, 'kafka', 1)) return;
       const s = f.fx.find(x => x.n === 'Шок' && x.kafka);
       const n = s && A.nearestFoe(f.x, f.y, 120, x => x !== f);
       if (n) A.addFx(n, Object.assign({}, s, { t: Math.max(1, s.t) }));
@@ -824,7 +840,7 @@
     { n: 'Баг: скорость', k: 'slow', v: 0.06 }
   ];
   function bug(A, u, v, k) {
-    const b = BUGS[A.rng.int(3)], t = tr(u, 0) ? 12 : 9;
+    const b = BUGS[A.rng.int(3)], t = tr(u, 'silverwolf', 0) ? 12 : 9;
     A.addFx(v, { n: b.n, k: b.k, v: b.armorP ? -b.armorP * v.armor * k : b.v * k, t, deb: true });
   }
 
@@ -836,9 +852,9 @@
         A.hit(u, t, { m: 1.96 * k * TUN.kQ, kind: 'q', tough: T.toughSkill });
         if (t.dead) return;
         const elems = A.heroes.length > 1 ? A.heroes.map(h => h.elem) : null;
-        A.addFx(t, { n: 'Разрешить изменения?', k: 'weakAdd', v: 0, elem: 'quant', elems, t: 6, deb: true });
-        A.addFx(t, { n: 'Разрешить изменения?: сопротивление', k: 'elemVuln', elem: 'quant', elems, v: 0.13 * k, t: 6 });
-        if (tr(u, 1) && HD.debuffs(t).length >= 3) A.addFx(t, { n: 'Примечание', k: 'armor', v: -0.15 * t.armor, t: 6, deb: true });
+        A.addFx(t, { n: 'Разрешить изменения?', k: 'weakAdd', v: 0, elem: el(u, 'quant'), elems, t: 6, deb: true });
+        A.addFx(t, { n: 'Разрешить изменения?: сопротивление', k: 'elemVuln', elem: el(u, 'quant'), elems, v: 0.13 * k, t: 6 });
+        if (tr(u, 'silverwolf', 1) && HD.debuffs(t).length >= 3) A.addFx(t, { n: 'Примечание', k: 'armor', v: -0.15 * t.armor, t: 6, deb: true });
       }
     },
     e: {
@@ -848,7 +864,7 @@
           A.hit(u, v, { m: 0.8 * k * TUN.kE, kind: 'e', tough: 20, forceTough: true });
           if (!v.dead) A.addFx(v, { n: 'Зависание', k: 'stun', v: 1, t: 0.8 });
         }
-        A.emit({ t: 'fx', kind: 'ring', x: aim.x, y: aim.y, r: 140, elem: 'quant' });
+        A.emit({ t: 'fx', kind: 'ring', x: aim.x, y: aim.y, r: 140, elem: el(u, 'quant') });
       }
     },
     t: {},
@@ -859,16 +875,16 @@
         A.hit(u, t, { m: 3.8 * k * TUN.kR, kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
         if (t.dead) return;
         A.addFx(t, { n: 'Пользователь забанен', k: 'armor', v: -0.45 * k * t.armor, t: 9, deb: true });
-        if (ei(u, 0)) { const n = Math.min(5, HD.debuffs(t).length); for (let i = 0; i < n && !t.dead; i++) A.hit(u, t, { m: 0.2, kind: 'bonus', noTough: true }); }
-        A.emit({ t: 'fx', kind: 'bolt', x: t.x, y: t.y, r: 40, elem: 'quant' });
+        if (ei(u, 'silverwolf', 0)) { const n = Math.min(5, HD.debuffs(t).length); for (let i = 0; i < n && !t.dead; i++) A.hit(u, t, { m: 0.2, kind: 'bonus', noTough: true }); }
+        A.emit({ t: 'fx', kind: 'bolt', x: t.x, y: t.y, r: 40, elem: el(u, 'quant') });
       }
     },
     onHit(A, u, t, o) {
-      if (!u.abil.t || t.dead || o.kind === 'dot' || o.kind === 'break' || o.kind === 'bonus') return;
-      if (A.rng() < A.chance(u, t, 0.72 * tk(A, u))) bug(A, u, t, 1);
+      if (!tl(u, 'silverwolf') || t.dead || o.kind === 'dot' || o.kind === 'break' || o.kind === 'bonus') return;
+      if (A.rng() < A.chance(u, t, 0.72 * tk(A, u, 'silverwolf'))) bug(A, u, t, 1);
     },
-    onAnyBreak(A, u, f) { if (tr(u, 0) && A.rng() < 0.65) bug(A, u, f, 1); },
-    dmgMul(A, u, t) { return ei(u, 1) ? 1 + Math.min(1, 0.2 * HD.debuffs(t).length) : 1; },
+    onAnyBreak(A, u, f) { if (tr(u, 'silverwolf', 0) && A.rng() < 0.65) bug(A, u, f, 1); },
+    dmgMul(A, u, t) { return ei(u, 'silverwolf', 1) ? 1 + Math.min(1, 0.2 * HD.debuffs(t).length) : 1; },
     text: {
       q: k => P(1.96 * k * TUN.kQ) + '; цель получает слабость к квантовому урону и +' + P(0.13 * k) + ' квантового урона по ней на 6 с; в кооперативе и к стихиям союзников.',
       e: k => 'Взлом по кругу 140 в точке: ' + P(0.8 * k * TUN.kE) + ', 20 стойкости без учёта слабости, враги зависают на 0,8 с.',
@@ -883,47 +899,44 @@
     q: {
       cost: 30, cd: 5, aim: 'target', range: 260,
       cast(A, u, k, aim) {
-        bounce(A, u, aim.t, ei(u, 1) ? 5 : 3, 140, v => {
+        bounce(A, u, aim.t, ei(u, 'welt', 1) ? 5 : 3, 140, v => {
           A.hit(u, v, { m: 0.72 * k * TUN.kQ, kind: 'q', tough: T.toughBasic });
           if (!v.dead && A.rng() < A.chance(u, v, 0.75)) A.addFx(v, { n: 'Гравитационное ядро', k: 'slow', v: 0.1, t: 6 });
-          if (u.tal.legacy > 0) { u.tal.legacy--; if (!v.dead) A.hit(u, v, { m: 0.8, kind: 'bonus', noTough: true }); }
-          A.emit({ t: 'fx', kind: 'boom', x: v.x, y: v.y, r: 22, elem: 'imag' });
+          if (st(u, 'welt').legacy > 0) { st(u, 'welt').legacy--; if (!v.dead) A.hit(u, v, { m: 0.8, kind: 'bonus', noTough: true }); }
+          A.emit({ t: 'fx', kind: 'boom', x: v.x, y: v.y, r: 22, elem: el(u, 'imag') });
         });
       }
     },
     e: {
       cost: 35, cd: 14, aim: 'self',
       cast(A, u, k) {
-        for (const v of near(A, u, 160)) { A.push(v, u.x, u.y, 64); A.addFx(v, { n: 'Гравитационная тюрьма', k: 'slow', v: 0.3 * k, t: 3 }); }
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 160, elem: 'imag' });
+        for (const v of near(A, u, 160)) { A.push(v, u.x, u.y, 64); A.addFx(v, { n: 'Гравитационная тюрьма', k: 'slow', v: 0.3 * k, t: 3 }); if (u.kit) A.hit(u, v, { m: TUN.custom.weltPrison * k * TUN.kE, kind: 'e', tough: TUN.toughTech }); }
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 160, elem: el(u, 'imag') });
       }
     },
     t: {},
     r: {
       cd: 60, aim: 'point', range: 300,
       cast(A, u, k, aim, l) {
-        A.addArea({ shape: 'circle', x: aim.x, y: aim.y, r: 180, side: 'foe', t: 3, every: 0.1, kind: 'zone', elem: 'imag', onTick(A2, a) {
+        A.addArea({ shape: 'circle', x: aim.x, y: aim.y, r: 180, side: 'foe', t: 3, every: 0.1, kind: 'zone', elem: el(u, 'imag'), onTick(A2, a) {
           for (const v of A2.unitsIn(a, 'foe')) { const d = N.hypot(v.x - a.x, v.y - a.y); if (d > 12) A2.push(v, 2 * v.x - a.x, 2 * v.y - a.y, Math.min(14, d - 10)); }
         } });
         A.later(3, () => {
           for (const v of A.unitsIn(circle(aim.x, aim.y, 180), 'foe')) {
             A.hit(u, v, { m: 1.5 * k * TUN.kR, kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
-            if (!v.dead) { A.addFx(v, { n: 'Гравитационное заточение', k: 'stun', v: 1, t: 2 }); if (tr(u, 0)) A.addFx(v, { n: 'Возмездие', k: 'vuln', v: 0.12, t: 6, deb: true }); }
+            if (!v.dead) { A.addFx(v, { n: 'Гравитационное заточение', k: 'stun', v: 1, t: 2 }); if (tr(u, 'welt', 0)) A.addFx(v, { n: 'Возмездие', k: 'vuln', v: 0.12, t: 6, deb: true }); }
           }
-          if (ei(u, 0)) u.tal.legacy = 2;
-          A.emit({ t: 'fx', kind: 'boom', x: aim.x, y: aim.y, r: 180, elem: 'imag' });
+          if (ei(u, 'welt', 0)) st(u, 'welt').legacy = 2;
+          A.emit({ t: 'fx', kind: 'boom', x: aim.x, y: aim.y, r: 180, elem: el(u, 'imag') });
         });
       }
     },
-    basic(A, u, t, o) {
-      if (u.tal.legacy > 0) { u.tal.legacy--; o.after = (A2, v) => { if (!v.dead) A2.hit(u, v, { m: 0.5, kind: 'bonus', noTough: true }); }; }
-      A.shoot(u, t, o);
-    },
+    basicPre(A, u, t, o) { if (st(u, 'welt').legacy > 0) { st(u, 'welt').legacy--; HD.after(A, o, (A2, v) => { if (!v.dead) A2.hit(u, v, { m: 0.5, kind: 'bonus', noTough: true }); }); } },
     onHit(A, u, t, o) {
-      if (!u.abil.t || t.dead || o.kind === 'bonus' || o.kind === 'dot' || o.kind === 'break' || !t.fx.some(f => f.k === 'slow')) return;
-      A.hit(u, t, { m: 0.6 * tk(A, u), kind: 'bonus', elem: 'imag', noTough: true });
+      if (!tl(u, 'welt') || t.dead || o.kind === 'bonus' || o.kind === 'dot' || o.kind === 'break' || !t.fx.some(f => f.k === 'slow')) return;
+      A.hit(u, t, { m: 0.6 * tk(A, u, 'welt'), kind: 'bonus', elem: el(u, 'imag'), noTough: true });
     },
-    dmgMul(A, u, t) { return tr(u, 1) && t.brokenT > 0 ? 1.2 : 1; },
+    dmgMul(A, u, t) { return tr(u, 'welt', 1) && t.brokenT > 0 ? 1.2 : 1; },
     text: {
       q: k => '3 отскока по ' + P(0.72 * k * TUN.kQ) + ', каждый с шансом 75% замедляет на 10% на 6 с.',
       e: k => 'Волна по кругу 160 вокруг Вельта: отбрасывает на 64 и замедляет на ' + P(0.3 * k) + ' на 3 с.',
@@ -938,7 +951,7 @@
   const wounded = (A, x, y, r, skip) => allies(A, x, y, r).filter(v => v.hp < v.hpMax && !(skip && skip.has(v.uid))).sort((a, b) => a.hp / a.hpMax - b.hp / b.hpMax);
 
   function marchShield(A, u, v, k, half) {
-    A.addFx(v, { n: 'Защитная дуга', k: 'shield', v: (0.19 * k * u.hpMax + 30) * (half ? 0.5 : 1), t: tr(u, 0) ? 12 : 9, by: 'march' });
+    A.addFx(v, { n: 'Защитная дуга', k: 'shield', v: (0.19 * k * u.hpMax + 30) * (half ? 0.5 : 1), t: tr(u, 'march', 0) ? 12 : 9, by: 'march' });
   }
 
   KITS.march = {
@@ -947,9 +960,9 @@
       cast(A, u, k, aim) {
         const v = aim.t;
         marchShield(A, u, v, k);
-        if (tr(u, 0)) for (const s of structures(A, v.x, v.y, 200)) if (s !== v) marchShield(A, u, s, k, true);
+        if (tr(u, 'march', 0)) for (const s of structures(A, v.x, v.y, 200)) if (s !== v) marchShield(A, u, s, k, true);
         if (v.hp >= v.hpMax * 0.3) for (const f of A.unitsIn(circle(v.x, v.y, 160), 'foe')) { A.addFx(f, { n: 'Защитная дуга: вызов', k: 'taunt', v: 1, t: 3, src: v }); f.tgt = v.uid; }
-        A.emit({ t: 'fx', kind: 'ring', x: v.x, y: v.y, r: 40, elem: 'ice' });
+        A.emit({ t: 'fx', kind: 'ring', x: v.x, y: v.y, r: 40, elem: el(u, 'ice') });
       }
     },
     e: {
@@ -961,7 +974,7 @@
           A.addFx(first, { n: 'Заморозка', k: 'stun', v: 1, t: 2 });
           for (const f of A.unitsIn(circle(first.x, first.y, 64), 'foe')) if (f !== first) A.addFx(f, { n: 'Заморозка', k: 'stun', v: 1, t: 1 });
         }
-        A.emit({ t: 'fx', kind: 'line', x: u.x, y: u.y, ang: zone.ang, len: 300, w: 32, elem: 'ice' });
+        A.emit({ t: 'fx', kind: 'line', x: u.x, y: u.y, ang: zone.ang, len: 300, w: 32, elem: el(u, 'ice') });
       }
     },
     t: {},
@@ -970,25 +983,25 @@
       cast(A, u, k, aim, l) {
         for (const v of A.unitsIn(circle(aim.x, aim.y, 180), 'foe')) {
           A.hit(u, v, { m: 1.5 * k * TUN.kR, kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
-          if (!v.dead && A.rng() < A.chance(u, v, 0.5 + (tr(u, 1) ? 0.15 : 0))) { A.addFx(v, { n: 'Заморозка', k: 'stun', v: 1, t: 1.5 }); if (tr(u, 1)) A.addFx(v, { n: 'Ледяные чары', k: 'vuln', v: 0.2, t: 1.5, deb: true }); }
+          if (!v.dead && A.rng() < A.chance(u, v, 0.5 + (tr(u, 'march', 1) ? 0.15 : 0))) { A.addFx(v, { n: 'Заморозка', k: 'stun', v: 1, t: 1.5 }); if (tr(u, 'march', 1)) A.addFx(v, { n: 'Ледяные чары', k: 'vuln', v: 0.2, t: 1.5, deb: true }); }
         }
-        A.emit({ t: 'fx', kind: 'boom', x: aim.x, y: aim.y, r: 180, elem: 'ice' });
+        A.emit({ t: 'fx', kind: 'boom', x: aim.x, y: aim.y, r: 180, elem: el(u, 'ice') });
       }
     },
     onAllyHurt(A, u, tgt, f) {
-      if (!u.abil.t || f.dead || !tgt.fx.some(x => x.k === 'shield' && x.by === 'march')) return;
-      const w = (u.tal.arrows || []).filter(t => A.time - t < 3);
-      if (w.length >= 2) { u.tal.arrows = w; return; }
-      w.push(A.time); u.tal.arrows = w;
-      A.shoot(u, f, { m: tk(A, u) * TUN.kT, kind: 'bonus', tough: T.toughBasic / 2, elem: 'ice' });
+      if (!tl(u, 'march') || f.dead || !(u.kit ? tgt === u || tgt.fx.some(x => x.k === 'shield') : tgt.fx.some(x => x.k === 'shield' && x.by === 'march'))) return;
+      const w = (st(u, 'march').arrows || []).filter(t => A.time - t < 3);
+      if (w.length >= 2) { st(u, 'march').arrows = w; return; }
+      w.push(A.time); st(u, 'march').arrows = w;
+      A.shoot(u, f, { m: tk(A, u, 'march') * TUN.kT, kind: 'bonus', tough: T.toughBasic / 2, elem: el(u, 'ice') });
     },
     tick(A, u) {
-      if (ei(u, 0) && (u.tal.memo == null || A.time - u.tal.memo >= 20)) {
+      if (ei(u, 'march', 0) && (st(u, 'march').memo == null || A.time - st(u, 'march').memo >= 20)) {
         const v = wounded(A, u.x, u.y, 400)[0];
-        if (v) { u.tal.memo = A.time; A.addFx(v, { n: 'Память об этом', k: 'shield', v: u.hpMax * 0.08, t: 9, by: 'march' }); }
+        if (v) { st(u, 'march').memo = A.time; A.addFx(v, { n: 'Память об этом', k: 'shield', v: u.hpMax * 0.08, t: 9, by: 'march' }); }
       }
-      if (ei(u, 1) && A.time - (u.tal.forever || 0) >= 3) {
-        u.tal.forever = A.time;
+      if (ei(u, 'march', 1) && A.time - (st(u, 'march').forever || 0) >= 3) {
+        st(u, 'march').forever = A.time;
         for (const v of allies(A, u.x, u.y, 2000)) if (v.fx.some(x => x.k === 'shield' && x.by === 'march')) A.heal(u, v, v.hpMax * 0.04);
       }
     },
@@ -1008,15 +1021,15 @@
       cast(A, u, k, aim) {
         const t = aim.t;
         A.hit(u, t, { m: 2 * k * TUN.kQ, kind: 'q', tough: T.toughSkill });
-        if (!t.dead && A.rng() < A.chance(u, t, 0.65)) { A.addFx(t, { n: 'Заморозка', k: 'stun', v: 1, t: 2 }); if (ei(u, 0)) A.addFx(t, { n: 'Затяжной холод', k: 'slow', v: 0.2, t: 5 }); }
-        A.emit({ t: 'fx', kind: 'slash', x: t.x, y: t.y, elem: 'ice' });
+        if (!t.dead && A.rng() < A.chance(u, t, 0.65)) { A.addFx(t, { n: 'Заморозка', k: 'stun', v: 1, t: 2 }); if (ei(u, 'gepard', 0)) A.addFx(t, { n: 'Затяжной холод', k: 'slow', v: 0.2, t: 5 }); }
+        A.emit({ t: 'fx', kind: 'slash', x: t.x, y: t.y, elem: el(u, 'ice') });
       }
     },
     e: {
       cost: 40, cd: 20, aim: 'self',
       cast(A, u, k) {
         for (const v of allies(A, u.x, u.y, 220)) A.addFx(v, { n: 'Щит Среброгривых', k: 'shield', v: 0.06 * k * u.hpMax + 30, t: 9 });
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 220, elem: 'ice' });
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 220, elem: el(u, 'ice') });
       }
     },
     t: {},
@@ -1025,22 +1038,22 @@
       cast(A, u, k) {
         for (const v of allies(A, u.x, u.y, 300)) A.addFx(v, { n: 'Несокрушимая стена', k: 'shield', v: 0.15 * k * u.hpMax + 60, t: 9 });
         for (const f of near(A, u, 200)) { A.addFx(f, { n: 'Несокрушимая стена: вызов', k: 'taunt', v: 1, t: 3, src: u }); f.tgt = u.uid; }
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 300, elem: 'ice' });
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 300, elem: el(u, 'ice') });
       }
     },
     saveAlly(A, u, v) {
-      if (v !== u || !u.abil.t || (u.tal.saves || 0) >= (ei(u, 1) ? 2 : 1)) return false;
-      u.tal.saves = (u.tal.saves || 0) + 1;
-      u.hp = u.hpMax * (ei(u, 1) ? 1 : 0.5 * tk(A, u));
-      if (ei(u, 1)) u.en = u.enMax;
+      if (v !== u || !tl(u, 'gepard') || (st(u, 'gepard').saves || 0) >= (ei(u, 'gepard', 1) ? 2 : 1)) return false;
+      st(u, 'gepard').saves = (st(u, 'gepard').saves || 0) + 1;
+      u.hp = u.hpMax * (ei(u, 'gepard', 1) ? 1 : 0.5 * tk(A, u, 'gepard'));
+      if (ei(u, 'gepard', 1)) u.en = u.enMax;
       A.emit({ t: 'msg', text: 'Гепард встаёт', x: u.x, y: u.y - 40 });
       A.say(u, 'Талант');
       return true;
     },
-    onWave(A, u) { u.tal.saves = 0; },
+    onWave(A, u) { st(u, 'gepard').saves = 0; },
     tick(A, u) {
-      if (tr(u, 0)) A.addFx(u, { n: 'Принципиальность', k: 'aggroP', v: 1, t: 0.5 });
-      if (tr(u, 1)) A.addFx(u, { n: 'Боевой дух', k: 'atkFlat', v: 0.35 * (u.armor0 + A.sum(u, 'armor')) * TUN.defDmgK, t: 0.5 });
+      if (tr(u, 'gepard', 0)) A.addFx(u, { n: 'Принципиальность', k: 'aggroP', v: 1, t: 0.5 });
+      if (tr(u, 'gepard', 1)) A.addFx(u, { n: 'Боевой дух', k: 'atkFlat', v: 0.35 * (u.armor0 + A.sum(u, 'armor')) * TUN.defDmgK, t: 0.5 });
     },
     text: {
       q: k => P(2 * k * TUN.kQ) + ' и шанс 65% заморозить на 2 с.',
@@ -1053,13 +1066,12 @@
   };
 
   function matrix(A, u, t) {
-    u.tal.matrix = Math.max(u.tal.matrix || 0, A.time + t);
-    if (tr(u, 1)) A.addFx(u, { n: 'Прорицание Люжэнь', k: 'ccImmune', v: 1, t, once: true });
-    A.addArea({ shape: 'circle', x: u.x, y: u.y, r: 320, follow: u.uid, side: 'ally', t, kind: 'zone', elem: 'quant' });
+    st(u, 'fuxuan').matrix = Math.max(st(u, 'fuxuan').matrix || 0, A.time + t);
+    if (tr(u, 'fuxuan', 1)) A.addFx(u, { n: 'Прорицание Люжэнь', k: 'ccImmune', v: 1, t, once: true });
+    A.addArea({ shape: 'circle', x: u.x, y: u.y, r: 320, follow: u.uid, side: 'ally', t, kind: 'zone', elem: el(u, 'quant') });
   }
 
   KITS.fuxuan = {
-    basic(A, u, t, o) { delete o.m; o.amt = A.atkOf(u) + 0.5 * hpK(u); A.shoot(u, t, o); },
     q: {
       cost: 40, cd: 20, aim: 'self',
       cast(A, u, k) {
@@ -1076,42 +1088,42 @@
           u.x = u.px = tx; u.y = u.py = ty; A.collide(u);
         }
         matrix(A, u, 6);
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 60, elem: 'quant' });
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 60, elem: el(u, 'quant') });
       }
     },
     t: {},
     r: {
       cd: 60, aim: 'self',
       cast(A, u, k, aim, l) {
-        const extra = ei(u, 1) ? 2 * (u.tal.truth || 0) * TUN.hpDmgK : 0;
+        const extra = ei(u, 'fuxuan', 1) ? 2 * (st(u, 'fuxuan').truth || 0) * TUN.hpDmgK : 0;
         for (const v of near(A, u, 240)) A.hit(u, v, { amt: (1 * hpK(u) * TUN.kR * k + extra) * (1 + A.sum(u, 'atk')), kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
-        u.tal.truth = 0;
-        u.tal.heals = Math.min(2, (u.tal.heals == null ? 1 : u.tal.heals) + 1);
-        for (const s of structures(A, u.x, u.y, 400)) A.heal(u, s, u.hpMax * (tr(u, 0) ? 0.15 : 0.05));
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 240, elem: 'quant' });
+        st(u, 'fuxuan').truth = 0;
+        st(u, 'fuxuan').heals = Math.min(2, (st(u, 'fuxuan').heals == null ? 1 : st(u, 'fuxuan').heals) + 1);
+        for (const s of structures(A, u.x, u.y, 400)) A.heal(u, s, u.hpMax * (tr(u, 'fuxuan', 0) ? 0.15 : 0.05));
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 240, elem: el(u, 'quant') });
       }
     },
     redirect(A, u, tgt, dealt) {
-      if (!(u.tal.matrix > A.time) || A.gap(u, tgt) > 320) return dealt;
+      if (!(st(u, 'fuxuan').matrix > A.time) || A.gap(u, tgt) > 320) return dealt;
       const part = Math.round(dealt * 0.65);
-      if (ei(u, 1)) u.tal.truth = Math.min(u.hpMax * 1.2, (u.tal.truth || 0) + part);
+      if (ei(u, 'fuxuan', 1)) st(u, 'fuxuan').truth = Math.min(u.hpMax * 1.2, (st(u, 'fuxuan').truth || 0) + part);
       A.hit(null, u, { amt: part, type: 'divine', kind: 'redirect', noCrit: true, noTough: true });
       return dealt - part;
     },
     saveAlly(A, u, v) {
-      if (!ei(u, 0) || v === u || v.kind === 'hero' || !(u.tal.matrix > A.time) || u.tal.omen) return false;
-      u.tal.omen = true;
+      if (!ei(u, 'fuxuan', 0) || v === u || v.kind === 'hero' || !(st(u, 'fuxuan').matrix > A.time) || st(u, 'fuxuan').omen) return false;
+      st(u, 'fuxuan').omen = true;
       v.hp = v.hpMax * 0.3;
       A.emit({ t: 'msg', text: 'Зловещее предзнаменование', x: v.x, y: v.y - 40 });
       return true;
     },
-    onWave(A, u) { u.tal.omen = false; u.tal.heals = Math.min(2, (u.tal.heals == null ? 0 : u.tal.heals) + 1); },
+    onWave(A, u) { st(u, 'fuxuan').omen = false; st(u, 'fuxuan').heals = Math.min(2, (st(u, 'fuxuan').heals == null ? 0 : st(u, 'fuxuan').heals) + 1); },
     tick(A, u) {
-      if (!u.abil.t) return;
-      const k = tk(A, u);
+      if (!tl(u, 'fuxuan')) return;
+      const k = tk(A, u, 'fuxuan');
       aura(A, u, 400, { n: 'Предвидение', k: 'dr', v: 0.18 * k });
-      if (u.tal.heals == null) u.tal.heals = 1;
-      if (u.tal.heals > 0 && u.hp <= u.hpMax * 0.5) { u.tal.heals--; A.heal(u, u, (u.hpMax - u.hp) * 0.9 * k); }
+      if (st(u, 'fuxuan').heals == null) st(u, 'fuxuan').heals = 1;
+      if (st(u, 'fuxuan').heals > 0 && u.hp <= u.hpMax * 0.5) { st(u, 'fuxuan').heals--; A.heal(u, u, (u.hpMax - u.hp) * 0.9 * k); }
     },
     text: {
       q: k => '«Матрица предвидения» на 12 с: 65% урона по союзникам в 320 уходит на Фу Сюань; союзники получают шанс крита +' + P(0.12 * k) + '.',
@@ -1124,27 +1136,25 @@
   };
 
   KITS.natasha = {
-    basic(A, u, t, o) {
-      if (ei(u, 1)) {
-        delete o.m; o.amt = A.atkOf(u) + 0.4 * hpK(u);
-        o.after = (A2, v) => { for (const f of A2.unitsIn(circle(v.x, v.y, 48), 'foe')) if (f !== v) A2.hit(u, f, { amt: o.amt, kind: 'bonus', noTough: true }); };
-      }
-      A.shoot(u, t, o);
+    basicPre(A, u, t, o) {
+      if (!ei(u, 'natasha', 1)) return;
+      delete o.m; o.amt = A.atkOf(u) + 0.4 * hpK(u);
+      HD.after(A, o, (A2, v) => { for (const f of A2.unitsIn(circle(v.x, v.y, 48), 'foe')) if (f !== v) A2.hit(u, f, { amt: o.amt, kind: 'bonus', noTough: true }); });
     },
     q: {
       cost: 30, cd: 8, aim: 'ally', range: 400,
       cast(A, u, k, aim) {
-        const v = aim.t, list = tr(u, 1) ? allies(A, v.x, v.y, 120) : [v];
+        const v = aim.t, list = tr(u, 'natasha', 1) ? allies(A, v.x, v.y, 120) : [v];
         A.heal(u, v, v.hpMax * 0.105 * k + 20);
-        for (const w of list) A.addFx(w, { n: 'Любовь и исцеление', k: 'hot', v: 0, hps: (w.hpMax * 0.072 * k + 10) / 3, src: u, t: tr(u, 1) ? 9 : 6 });
-        if (tr(u, 0)) { cleanse(v); A.addFx(v, { n: 'Успокоение', k: 'ccImmune', v: 1, t: 2 }); }
+        for (const w of list) A.addFx(w, { n: 'Любовь и исцеление', k: 'hot', v: 0, hps: (w.hpMax * 0.072 * k + 10) / 3, src: u, t: tr(u, 'natasha', 1) ? 9 : 6 });
+        if (tr(u, 'natasha', 0)) { cleanse(v); A.addFx(v, { n: 'Успокоение', k: 'ccImmune', v: 1, t: 2 }); }
         A.emit({ t: 'fx', kind: 'ring', x: v.x, y: v.y, r: 36, elem: 'heal' });
       }
     },
     e: {
       cost: 35, cd: 16, aim: 'point', range: 300,
       cast(A, u, k, aim) {
-        A.addArea({ shape: 'circle', x: aim.x, y: aim.y, r: 140, side: 'foe', t: 5, every: 0.25, kind: 'zone', elem: 'phys', onTick(A2, a) {
+        A.addArea({ shape: 'circle', x: aim.x, y: aim.y, r: 140, side: 'foe', t: 5, every: 0.25, kind: 'zone', elem: el(u, 'phys'), onTick(A2, a) {
           for (const f of A2.unitsIn(a, 'foe')) { A2.addFx(f, { n: 'Гипноз', k: 'weaken', v: 0.3 * k, t: 0.5 }); A2.addFx(f, { n: 'Гипноз: сон', k: 'slow', v: 0.2 * k, t: 0.5 }); }
         } });
       }
@@ -1155,12 +1165,12 @@
       cast(A, u, k) {
         for (const v of allies(A, u.x, u.y, 400)) {
           A.heal(u, v, v.hpMax * 0.138 * k + 30);
-          if (ei(u, 0) && (v.kind === 'base' || v.hp < v.hpMax * 0.3)) A.addFx(v, { n: 'Клиническое исследование', k: 'hot', v: 0, hps: u.hpMax * 0.06 / 3, src: u, t: 9 });
+          if (ei(u, 'natasha', 0) && (v.kind === 'base' || v.hp < v.hpMax * 0.3)) A.addFx(v, { n: 'Клиническое исследование', k: 'hot', v: 0, hps: u.hpMax * 0.06 / 3, src: u, t: 9 });
         }
         A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 400, elem: 'heal' });
       }
     },
-    healMul(A, u, tgt) { return u.abil.t && tgt.hp < tgt.hpMax * 0.3 ? 1 + 0.5 * tk(A, u) : 1; },
+    healMul(A, u, tgt) { return tl(u, 'natasha') && tgt.hp < tgt.hpMax * 0.3 ? 1 + 0.5 * tk(A, u, 'natasha') : 1; },
     text: {
       q: k => 'Союзник: ' + P(0.105 * k) + ' макс. НР + 20 и регенерация ' + P(0.072 * k) + ' + 10 за 3 с на 6 с.',
       e: k => 'Облако по кругу 140 на 5 с: враги наносят на ' + P(0.3 * k) + ' меньше урона и замедлены на ' + P(0.2 * k) + '.',
@@ -1171,7 +1181,7 @@
     ei: [{ name: 'Клиническое исследование', text: 'Абсолютная техника даёт союзникам с НР ниже 30% и базе регенерацию 6% макс. НР Наташи за 3 с на 9 с.' }, { name: 'Милосердие лекаря', text: 'Атака бьёт ещё на 40% макс. НР Наташи и задевает врагов в 48 вокруг цели.' }]
   };
 
-  function invig(A, u, v, t) { A.addFx(v, { n: 'Оживление', k: 'invig', v: 0, t, left: tr(u, 0) ? 3 : 2 }); }
+  function invig(A, u, v, t) { A.addFx(v, { n: 'Оживление', k: 'invig', v: 0, t, left: tr(u, 'bailu', 0) ? 3 : 2 }); }
 
   KITS.bailu = {
     q: {
@@ -1181,14 +1191,14 @@
         if (!first) {
           const f = A.nearestFoe(u.x, u.y, 260);
           if (!f) return false;
-          bounce(A, u, f, 3, 140, v => { A.hit(u, v, { m: 0.6 * k * TUN.kQ, kind: 'q', tough: T.toughBasic }); A.emit({ t: 'fx', kind: 'bolt', x: v.x, y: v.y, r: 24, elem: 'elec' }); });
+          bounce(A, u, f, 3, 140, v => { A.hit(u, v, { m: 0.6 * k * TUN.kQ, kind: 'q', tough: T.toughBasic }); A.emit({ t: 'fx', kind: 'bolt', x: v.x, y: v.y, r: 24, elem: el(u, 'elec') }); });
           return;
         }
         const done = new Set();
         let v = first, mul = 1;
         for (let i = 0; i < 3 && v; i++) {
           A.heal(u, v, (v.hpMax * 0.117 * k + 30) * mul);
-          if (ei(u, 0)) A.addFx(v, { n: 'Изгнание зла', k: 'dmg', v: 0.1, t: 6, max: 3 });
+          if (ei(u, 'bailu', 0)) A.addFx(v, { n: 'Изгнание зла', k: 'dmg', v: 0.1, t: 6, max: 3 });
           A.emit({ t: 'fx', kind: 'ring', x: v.x, y: v.y, r: 30, elem: 'heal' });
           done.add(v.uid); mul *= 0.85;
           v = wounded(A, v.x, v.y, 260, done)[0];
@@ -1204,25 +1214,25 @@
       cd: 50, aim: 'self',
       cast(A, u, k) {
         for (const v of allies(A, u.x, u.y, 400)) { A.heal(u, v, v.hpMax * 0.135 * k + 36); invig(A, u, v, 6); }
-        A.emit({ t: 'fx', kind: 'bolt', x: u.x, y: u.y, r: 400, elem: 'elec' });
+        A.emit({ t: 'fx', kind: 'bolt', x: u.x, y: u.y, r: 400, elem: el(u, 'elec') });
       }
     },
     onAllyHurt(A, u, tgt) {
-      if (!u.abil.t || tgt.dead) return;
+      if (!tl(u, 'bailu') || tgt.dead) return;
       const f = tgt.fx.find(x => x.k === 'invig');
       if (!f || f.left <= 0 || A.time - (f.at || -9) < 1) return;
       f.left--; f.at = A.time;
-      A.heal(u, tgt, tgt.hpMax * 0.036 * tk(A, u) + 10);
+      A.heal(u, tgt, tgt.hpMax * 0.036 * tk(A, u, 'bailu') + 10);
     },
     saveAlly(A, u, v) {
-      if (!u.abil.t || (u.tal.saved || 0) >= (ei(u, 1) ? 2 : 1)) return false;
-      u.tal.saved = (u.tal.saved || 0) + 1;
-      v.hp = v.hpMax * 0.18 * tk(A, u);
+      if (!tl(u, 'bailu') || (st(u, 'bailu').saved || 0) >= (ei(u, 'bailu', 1) ? 2 : 1)) return false;
+      st(u, 'bailu').saved = (st(u, 'bailu').saved || 0) + 1;
+      v.hp = v.hpMax * 0.18 * tk(A, u, 'bailu');
       A.emit({ t: 'msg', text: 'Байлу не даёт пасть', x: v.x, y: v.y - 40 });
       return true;
     },
-    onWave(A, u) { u.tal.saved = 0; },
-    tick(A, u) { if (tr(u, 1)) for (const v of allies(A, u.x, u.y, 2000)) if (v.fx.some(x => x.k === 'invig')) A.addFx(v, { n: 'Водное благословение', k: 'dr', v: 0.1, t: 0.5 }); },
+    onWave(A, u) { st(u, 'bailu').saved = 0; },
+    tick(A, u) { if (tr(u, 'bailu', 1)) for (const v of allies(A, u.x, u.y, 2000)) if (v.fx.some(x => x.k === 'invig')) A.addFx(v, { n: 'Водное благословение', k: 'dr', v: 0.1, t: 0.5 }); },
     text: {
       q: k => 'Лечит союзника на ' + P(0.117 * k) + ' макс. НР + 30 и отскакивает ещё на двух раненых, каждый раз на 15% слабее; без раненых молния бьёт трёх врагов по ' + P(0.6 * k * TUN.kQ) + '.',
       e: k => 'Оживление на 9 с себе и союзникам в 300.',
@@ -1234,17 +1244,17 @@
   };
 
   function luochaZone(A, u, t) {
-    u.tal.zone = Math.max(u.tal.zone || 0, A.time + t);
-    A.addArea({ shape: 'circle', x: u.x, y: u.y, r: 220, follow: u.uid, side: 'ally', t, kind: 'zone', elem: 'imag' });
-    A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 220, elem: 'imag' });
+    st(u, 'luocha').zone = Math.max(st(u, 'luocha').zone || 0, A.time + t);
+    A.addArea({ shape: 'circle', x: u.x, y: u.y, r: 220, follow: u.uid, side: 'ally', t, kind: 'zone', elem: el(u, 'imag') });
+    A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 220, elem: el(u, 'imag') });
   }
   function flower(A, u) {
-    u.tal.fl = (u.tal.fl || 0) + 1;
-    if (u.abil.t && u.tal.fl >= 2) { u.tal.fl = 0; luochaZone(A, u, 9); }
+    st(u, 'luocha').fl = (st(u, 'luocha').fl || 0) + 1;
+    if ((u.kit || tl(u, 'luocha')) && st(u, 'luocha').fl >= 2) { st(u, 'luocha').fl = 0; luochaZone(A, u, 9); }
   }
   function prayer(A, u, v, k) {
     A.heal(u, v, 0.25 * k * A.atkOf(u) * TUN.atkHealK);
-    if (tr(u, 0)) cleanse(v);
+    if (tr(u, 'luocha', 0)) cleanse(v);
     A.emit({ t: 'fx', kind: 'ring', x: v.x, y: v.y, r: 30, elem: 'heal' });
   }
 
@@ -1255,7 +1265,7 @@
     },
     e: {
       cost: 40, cd: 30, aim: 'self',
-      cast(A, u) { luochaZone(A, u, 6); }
+      cast(A, u) { luochaZone(A, u, has(u, 'luocha.t') ? 6 : TUN.custom.luochaZone); }
     },
     t: {},
     r: {
@@ -1267,23 +1277,23 @@
           A.hit(u, v, { m: 2 * k * TUN.kR, kind: 'r', tough: T.toughUlt, type: ultType(u, l) });
         }
         flower(A, u);
-        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 240, elem: 'imag' });
+        A.emit({ t: 'fx', kind: 'ring', x: u.x, y: u.y, r: 240, elem: el(u, 'imag') });
       }
     },
     onAllyAttack(A, u, src, t) {
-      if (!(u.tal.zone > A.time) || N.hypot(src.x - u.x, src.y - u.y) > 220) return;
-      const k = tk(A, u) || A.lvlK('t', 1);
+      if (!(st(u, 'luocha').zone > A.time) || N.hypot(src.x - u.x, src.y - u.y) > 220) return;
+      const k = tk(A, u, 'luocha') || A.lvlK('t', 1);
       A.heal(u, src, 0.06 * k * A.atkOf(u) * TUN.atkHealK + 10);
-      if (tr(u, 1)) for (const v of allies(A, u.x, u.y, 220)) if (v !== src) A.heal(u, v, 0.07 * A.atkOf(u) * TUN.atkHealK);
+      if (tr(u, 'luocha', 1)) for (const v of allies(A, u.x, u.y, 220)) if (v !== src) A.heal(u, v, 0.07 * A.atkOf(u) * TUN.atkHealK);
     },
     tick(A, u) {
-      if (u.abil.t && A.time - (u.tal.auto || -99) >= 9) {
+      if (tl(u, 'luocha') && A.time - (st(u, 'luocha').auto || -99) >= 9) {
         const v = allies(A, u.x, u.y, 400).find(x => x.hp < x.hpMax * 0.5);
-        if (v) { u.tal.auto = A.time; prayer(A, u, v, tk(A, u)); flower(A, u); }
+        if (v) { st(u, 'luocha').auto = A.time; prayer(A, u, v, tk(A, u, 'luocha')); flower(A, u); }
       }
-      if (u.tal.zone > A.time) {
-        if (ei(u, 0)) aura(A, u, 220, { n: 'Омовение живых', k: 'atk', v: 0.2 });
-        if (ei(u, 1)) for (const f of near(A, u, 220)) A.addFx(f, { n: 'Тяжесть короны', k: 'weaken', v: 0.12, t: 0.5 });
+      if (st(u, 'luocha').zone > A.time) {
+        if (ei(u, 'luocha', 0)) aura(A, u, 220, { n: 'Омовение живых', k: 'atk', v: 0.2 });
+        if (ei(u, 'luocha', 1)) for (const f of near(A, u, 220)) A.addFx(f, { n: 'Тяжесть короны', k: 'weaken', v: 0.12, t: 0.5 });
       }
     },
     text: {
@@ -1296,6 +1306,37 @@
     ei: [{ name: 'Омовение живых', text: 'В Зоне урон атаки союзников +20%.' }, { name: 'Тяжесть короны', text: 'В Зоне враги наносят на 12% меньше урона.' }]
   };
 
+  const SHELLS = {
+    fuxuan: { basicPre(A, u, t, o) { delete o.m; o.amt = A.atkOf(u) + 0.5 * hpK(u); } }
+  };
+
+  const NEEDS = {
+    trail: ['qr', 't', 'r', 't'], blade: ['q', 'q', 'r', 't'], clara: ['tr', 'r', 'r', 't'], seele: ['etr', 'q', 'q', 'r'],
+    danheng: ['*', '*', 'r', 'q'], topaz: ['*', 'r', 'q', 'r'], himeko: ['*', '*', 'q+t', 'r'], herta: ['q', 'r', '*', 't'],
+    jingyuan: ['*', 'q', '*', '*'], bronya: ['*', '*', 'q', '*'], asta: ['*', '*', 'q', 't'], ruanmei: ['*', 'qe', '*', 'r'],
+    kafka: ['r', 'tr', 't', 'etr'], silverwolf: ['t', 'q', 'r', '*'], welt: ['r', '*', 'r', 'q'], march: ['q', 'r', '*', 'q'],
+    gepard: ['*', '*', 'q', 't'], fuxuan: ['r', 'qe', 'qe', 'qe'], natasha: ['q', 'q', 'r', '*'], bailu: ['etr', 'etr', 'q', 't'],
+    luocha: ['qt', '*', '*', '*']
+  };
+  const PART_KIND = { q: 'act', e: 'act', t: 'pas', r: 'ult' };
+
+  function needsMet(need, owned) {
+    if (need === '*') return owned.length > 0;
+    if (need.includes('+')) return need.split('+').every(p => owned.includes(p));
+    return need.split('').some(p => owned.includes(p));
+  }
+
+  const PIECES = {}, GIFTS = {};
+  for (const kit of Object.keys(KITS)) {
+    KITS[kit].hd = kit;
+    for (const part of ['q', 'e', 't', 'r']) PIECES[kit + '.' + part] = { id: kit + '.' + part, kit, part, kind: PART_KIND[part], path: H.CHARS[kit].path, spec: KITS[kit][part] };
+    ['tr', 'ei'].forEach((kind, k) => KITS[kit][kind].forEach((g, i) => {
+      g.needs = NEEDS[kit][k * 2 + i];
+      GIFTS[kit + '.' + kind + i] = { id: kit + '.' + kind + i, kit, kind, i, needs: g.needs, name: g.name, text: g.text };
+    }));
+  }
+
   Object.assign(HD.KITS, KITS);
+  Object.assign(HD, { SHELLS, PIECES, GIFTS, needsMet });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

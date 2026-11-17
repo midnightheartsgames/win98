@@ -110,7 +110,7 @@
     easy: { q: 's', pl: [1, 2, 3], name: 'Простой режим', text: 'Сложность врагов −3.', take(g, run) { run.diffPlus = (run.diffPlus || 0) - 3; } },
     luckSpray: { q: 's', pl: [1, 2, 3], name: 'Спрей удачи', text: 'Урон счастливого удара отряда +25%.' },
     junk: { q: 's', pl: [1, 2], name: 'Безвредный мусор', text: '«Мусорный мешок» и 8 монет.', take(g, run) { items(g, run, 'trash'); gold(run, 8); } },
-    expWealth: { q: 's', pl: [1], name: 'Опыт - это богатство', text: 'Опыт из всех источников, кроме покупки, приходит монетами. +4 монеты.', take(g, run) { gold(run, 4); } },
+    expWealth: { q: 's', pl: [1], name: 'Опыт есть богатство', text: 'Опыт из всех источников, кроме покупки, приходит монетами. +4 монеты.', take(g, run) { gold(run, 4); } },
     contonFee: { q: 's', pl: [1, 2, 3], name: 'Гонорар Кон-Тона', text: 'Каждый «Выход на бис» связи «Кон-Тон» приносит 2 монеты, до 6 за бой.', after(g, run, rec, st, f) { if (f.so && f.so.encores) pay(rec, Math.min(6, f.so.encores * 2), 'Гонорар Кон-Тона'); } }
   };
 

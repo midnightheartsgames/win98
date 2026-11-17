@@ -212,10 +212,11 @@
       return x + list.length * 17;
     },
 
-    openFh(close) {
+    openFh(close, focus) {
       const ui = this, g = this.game;
       close = close || (() => {});
-      const firstOpen = () => { for (let n = 1; n <= 15; n++) if (!g.fhRec(n) || !g.fhRec(n).clear) return g.fhUnlocked(n) ? n : Math.max(1, n - 1); return 15; };
+      const firstOpen = S => { for (const st of S.stages) if (!g.fhRec(st.n) || !g.fhRec(st.n).clear) return g.fhUnlocked(st.n) || st.i === 1 ? st.n : st.n - 1; return S.stages[S.stages.length - 1].n; };
+      const focusSt = focus ? g.fhStage(focus) : null, ser0 = focusSt ? FH.SERIES.findIndex(S => S.id === focusSt.ser) : 0;
       const leave = () => { ui.screens.pop(); ui.sfx('cancel'); close(); };
       const claimAll = () => {
         const got = g.fhClaimAll();
@@ -223,35 +224,50 @@
         ui.sfx('chest'); ui.toast('Награды за звёзды: ' + got.join(', '));
       };
       this.push({
-        full: true, fh: true, sel: firstOpen(),
+        full: true, fh: true, ser: ser0, sel: focusSt ? focusSt.n : firstOpen(FH.SERIES[0]),
+        series() { return FH.SERIES[this.ser]; },
+        setSeries(i) {
+          if (i === this.ser) return;
+          this.ser = i; this.sel = firstOpen(this.series()); ui.sfx('select');
+        },
+        move(d) {
+          const S = this.series(), st = g.fhStage(this.sel), i = Math.max(1, Math.min(S.stages.length, st.i + d));
+          this.sel = S.stages[i - 1].n; ui.sfx('select');
+        },
         draw(c) {
+          const S = this.series();
           ui.fhBackdrop(c);
           ui.plate(12, 10, 'Зал забвения');
-          const S = FH.SERIES[0];
           ui.text(S.name, 150, 12, { size: 13, bold: true, serif: true, col: M.ice });
           ui.text(S.world, 150, 28, { size: 10, col: C.sub });
+          FH.SERIES.forEach((X, i) => {
+            const lock = !g.fhSeriesOpen(X);
+            ui.button(298 + i * 96, 10, 92, 22, X.world, () => this.setSeries(i), { size: 10, active: i === this.ser, disabled: lock && i !== this.ser });
+            ui.iconTip(lock ? 'Откроется ' + X.why : X.name, 298 + i * 96, 10, 92, 22);
+          });
           ui.fhStar(W - 132, 22, 7, true);
-          ui.text(g.fhTotal() + ' / 45', W - 120, 15, { size: 13, bold: true, col: M.star });
+          ui.text(g.fhTotal(S.id) + ' / ' + S.stages.length * 3, W - 120, 15, { size: 13, bold: true, col: M.star });
           this.drawMap(c);
           this.drawCard(c);
           this.drawTiers(c);
-          ui.hints([['←→↑↓', 'Этап'], ['Enter', 'Команда'], ['C', 'Забрать награды'], ['Esc', 'Выйти']], W / 2, HGT - 20, { align: 'center' });
+          ui.hints([['←→↑↓', 'Этап'], ['Q/E', 'Серия'], ['Enter', 'Команда'], ['C', 'Забрать награды'], ['Esc', 'Выйти']], W / 2, HGT - 20, { align: 'center' });
         },
         drawMap(c) {
-          const t = ui.t;
+          const t = ui.t, S = this.series(), list = S.stages;
           c.lineWidth = 2;
-          for (let n = 1; n < 15; n++) {
-            const a = nodePos(n), b = nodePos(n + 1), lit = g.fhRec(n) && g.fhRec(n).clear;
+          for (let k = 0; k < list.length - 1; k++) {
+            const a = nodePos(list[k].i), b = nodePos(list[k + 1].i), lit = g.fhRec(list[k].n) && g.fhRec(list[k].n).clear;
             c.strokeStyle = lit ? 'rgba(122,200,255,0.7)' : 'rgba(80,90,140,0.4)';
             c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
           }
           c.lineWidth = 1;
-          ['Белобог и окраины', 'Подземье', 'Холм вечнозимья'].forEach((l, i) => ui.text(l, 20, 318 - i * 104 - 46, { size: 10, bold: true, col: 'rgba(170,200,255,0.55)' }));
-          for (let n = 1; n <= 15; n++) {
-            const p = nodePos(n), on = n === this.sel, open = g.fhUnlocked(n), rec = g.fhRec(n);
+          S.regions.forEach((l, i) => ui.text(l, 20, 318 - i * 104 - 46, { size: 10, bold: true, col: 'rgba(170,200,255,0.55)' }));
+          if (!g.fhSeriesOpen(S)) ui.text('Серия откроется ' + S.why + '.', 200, 140, { align: 'center', size: 11, bold: true, col: C.sub });
+          for (const stg of list) {
+            const n = stg.n, p = nodePos(stg.i), on = n === this.sel, open = g.fhUnlocked(n), rec = g.fhRec(n);
             if (on) { const gl = c.createRadialGradient(p.x, p.y, 4, p.x, p.y, 34); gl.addColorStop(0, 'rgba(122,200,255,' + (0.35 + 0.15 * Math.sin(t * 4)) + ')'); gl.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = gl; c.fillRect(p.x - 34, p.y - 34, 68, 68); }
             ui.fhCrystal(p.x, p.y, on ? 20 : 17, !open ? '#1a1e36' : rec && rec.clear ? '#3a7ac8' : '#24346a', !open ? '#2a2e4a' : rec && rec.clear ? '#9ad8ff' : '#4a6ab0');
-            if (open) ui.text(ROMAN[n - 1], p.x, p.y - 7, { align: 'center', size: n > 9 ? 10 : 12, bold: true, serif: true, col: on ? '#ffffff' : M.ice });
+            if (open) ui.text(ROMAN[stg.i - 1], p.x, p.y - 7, { align: 'center', size: stg.i > 9 ? 10 : 12, bold: true, serif: true, col: on ? '#ffffff' : M.ice });
             else ui.lockGlyph(p.x - 5, p.y - 7, '#6a7090');
             for (let i = 0; i < 3; i++) ui.fhStar(p.x - 12 + i * 12, p.y + 27, 4.5, !!(rec && rec.stars[i]));
             ui.hit(p.x - 22, p.y - 22, 44, 56, () => { if (this.sel === n) this.key('ok'); else { this.sel = n; ui.sfx('select'); } });
@@ -261,7 +277,7 @@
           const st = g.fhStage(this.sel), rec = g.fhRec(this.sel), open = g.fhUnlocked(this.sel);
           const x = 420, y = 44, w = 208;
           ui.fhBox(x, y, w, 342);
-          ui.text('Этап ' + this.sel, x + 12, y + 10, { size: 16, bold: true, serif: true, col: C.gold });
+          ui.text('Этап ' + st.i, x + 12, y + 10, { size: 16, bold: true, serif: true, col: C.gold });
           ui.text('ур. ' + st.lvl + ' · ' + st.budget + ' циклов', x + w - 12, y + 14, { align: 'right', size: 10, col: C.sub });
           ui.wrap(KIND_TEXT[st.kind], w - 24, 10).forEach((l, i) => ui.text(l, x + 12, y + 32 + i * 12, { size: 10, col: '#c8d4f4' }));
           let cy = y + 62;
@@ -282,7 +298,7 @@
             });
             cy += 4;
           });
-          if (!open) ui.text('Сначала пройдите этап ' + (this.sel - 1) + '.', x + 12, y + 342 - 22, { size: 10, bold: true, col: C.bad });
+          if (!open) ui.wrap(st.i === 1 ? 'Серия откроется ' + FH.seriesOf(st).why + '.' : 'Сначала пройдите этап ' + (st.i - 1) + '.', w - 24, 10).forEach((l, i, a) => ui.text(l, x + 12, y + 342 - 10 - (a.length - i) * 12, { size: 10, bold: true, col: C.bad }));
           else if (!rec || !rec.clear) {
             const rw = FH.memoryReward(this.sel), cells = [['credits', rw.credits], ...Object.entries(rw.items)];
             ui.text('За первое прохождение', x + 12, y + 342 - 54, { size: 9, col: C.sub });
@@ -290,7 +306,7 @@
           } else ui.text('Пройден · лучший запас: ' + rec.best + ' циклов', x + 12, y + 342 - 22, { size: 10, col: C.ok });
         },
         drawTiers(c) {
-          const tiers = g.fhTiers(), x = 16, y = 396;
+          const S = this.series(), tiers = g.fhTiers(S.id), x = 16, y = 396;
           ui.text('Награды за звёзды: 200 нефрита, 5 000 кредитов и 80 нефритовых перьев за каждые 3', x, y - 2, { size: 10, col: C.sub });
           tiers.forEach((t, i) => {
             const cx = x + i * 40, cy = y + 14, ready = t.ready && !t.got;
@@ -300,16 +316,18 @@
             G.itemIcon(c, t.got ? 'jade' : 'jade', cx + 2, cy + 2, 18);
             ui.text(String(t.need), cx + 33, cy + 4, { align: 'right', size: 10, bold: true, col: ready ? '#1a1208' : C.cream, shadow: !ready });
             if (t.got) ui.text('✓', cx + 18, cy + 15, { align: 'center', size: 11, bold: true, col: C.ok });
-            ui.hit(cx, cy, 36, 30, () => { if (ready) { const got = g.fhClaim(t.i); ui.sfx('chest'); ui.toast('Награда за ' + t.need + ' звёзд: ' + got.join(', ')); } else ui.sfx('deny'); });
+            ui.hit(cx, cy, 36, 30, () => { if (ready) { const got = g.fhClaim(t.i, S.id); ui.sfx('chest'); ui.toast('Награда за ' + t.need + ' звёзд: ' + got.join(', ')); } else ui.sfx('deny'); });
           });
         },
         key(k, code) {
           if (code === 'KeyC') { claimAll(); return; }
           if (k === 'back') { leave(); return; }
-          if (k === 'left' || k === 'right') { this.sel = Math.max(1, Math.min(15, this.sel + (k === 'left' ? -1 : 1))); ui.sfx('select'); return; }
-          if (k === 'up' || k === 'down') { this.sel = Math.max(1, Math.min(15, this.sel + (k === 'up' ? 5 : -5))); ui.sfx('select'); return; }
+          if (code === 'KeyQ' || code === 'KeyE') { this.setSeries((this.ser + (code === 'KeyQ' ? FH.SERIES.length - 1 : 1)) % FH.SERIES.length); return; }
+          if (k === 'left' || k === 'right') { this.move(k === 'left' ? -1 : 1); return; }
+          if (k === 'up' || k === 'down') { this.move(k === 'up' ? 5 : -5); return; }
           if (k === 'ok') {
-            if (!g.fhUnlocked(this.sel)) { ui.sfx('deny'); ui.toast('Этап ' + this.sel + ' откроется после этапа ' + (this.sel - 1) + '.'); return; }
+            const st = g.fhStage(this.sel);
+            if (!g.fhUnlocked(this.sel)) { ui.sfx('deny'); ui.toast(st.i === 1 ? 'Серия откроется ' + FH.seriesOf(st).why + '.' : 'Этап ' + st.i + ' откроется после этапа ' + (st.i - 1) + '.'); return; }
             ui.sfx('confirm');
             ui.openFhTeam(this.sel, close);
           }
@@ -332,7 +350,7 @@
         full: true, fh: true, node: 0, sel: 0, btn: false, top: 0,
         draw(c) {
           ui.fhBackdrop(c);
-          ui.plate(12, 10, 'Этап ' + n + ' · Команда');
+          ui.plate(12, 10, 'Этап ' + st.i + ' · Команда');
           ui.wrap('Турбулентность памяти: ' + st.turb.text, 456, 10).slice(0, 2).forEach((l, i) => ui.text(l, 172, 8 + i * 12, { size: 10, col: '#c8d4f4' }));
           const nodes = st.nodes.length, pw = nodes > 1 ? 300 : 608;
           for (let ni = 0; ni < nodes; ni++) {
@@ -431,7 +449,7 @@
           const st = g.fhStage(run.n), node = st.nodes[run.node], left = st.budget - run.used, open = this.open();
           if (!open.includes(this.pick)) this.pick = open[0] || 0;
           ui.fhBackdrop(c);
-          ui.plate(12, 10, 'Этап ' + run.n + (st.nodes.length > 1 ? ' · Узел ' + (run.node + 1) + ' из ' + st.nodes.length : ''));
+          ui.plate(12, 10, 'Этап ' + st.i + (st.nodes.length > 1 ? ' · Узел ' + (run.node + 1) + ' из ' + st.nodes.length : ''));
           ui.fhBox(16, 40, 608, 58);
           ui.text('Циклы', 30, 50, { size: 11, bold: true, col: C.cream });
           const bx = 90, bw = 420;
@@ -465,14 +483,14 @@
     },
 
     openFhClear(info, close) {
-      const ui = this, g = this.game, st = g.fhStage(info.n);
-      const next = info.n < 15 && g.fhUnlocked(info.n + 1) ? info.n + 1 : null;
+      const ui = this, g = this.game, st = g.fhStage(info.n), S = FH.seriesOf(st);
+      const next = st.i < S.stages.length && g.fhUnlocked(info.n + 1) ? info.n + 1 : null;
       this.push({
         full: true, fh: true, t: 0, sel: next ? 0 : 1,
         tick(dt) { this.t += dt; },
         draw(c) {
           ui.fhBackdrop(c);
-          ui.text('ЭТАП ' + ROMAN[info.n - 1] + ' ПРОЙДЕН', W / 2, 54, { align: 'center', size: 28, bold: true, serif: true, col: M.ice });
+          ui.text('ЭТАП ' + ROMAN[st.i - 1] + ' ПРОЙДЕН', W / 2, 54, { align: 'center', size: 28, bold: true, serif: true, col: M.ice });
           ui.text('Осталось циклов: ' + info.left + ' из ' + st.budget + ' · павших: ' + info.down, W / 2, 92, { align: 'center', size: 12, col: C.sub });
           const goals = ['Осталось не меньше ' + st.goals[0] + ' циклов', 'Осталось не меньше ' + st.goals[1] + ' циклов', 'Пало не больше 1 персонажа'];
           goals.forEach((txt, i) => {
@@ -490,15 +508,15 @@
             const rw = FH.memoryReward(info.n), cells = [['credits', rw.credits], ...Object.entries(rw.items)];
             cells.forEach(([id, n], i) => ui.rewardCell(c, id, n, W / 2 - cells.length * 22 + i * 44, 254, 40));
           } else ui.text(info.first ? 'Этап пройден.' : 'Награда за этот этап уже получена. Новые звёзды идут в общий счёт.', W / 2, 270, { align: 'center', size: 11, col: C.sub });
-          ui.text('Всего звёзд: ' + g.fhTotal() + ' / 45', W / 2, 308, { align: 'center', size: 11, bold: true, col: M.star });
-          if (next) ui.button(W / 2 - 210, 360, 200, 30, 'Этап ' + next, () => this.go(0), { active: this.sel === 0, bold: true });
+          ui.text('Всего звёзд: ' + g.fhTotal(S.id) + ' / ' + S.stages.length * 3, W / 2, 308, { align: 'center', size: 11, bold: true, col: M.star });
+          if (next) ui.button(W / 2 - 210, 360, 200, 30, 'Этап ' + (st.i + 1), () => this.go(0), { active: this.sel === 0, bold: true });
           ui.button(next ? W / 2 + 10 : W / 2 - 100, 360, 200, 30, 'К Залу забвения', () => this.go(1), { active: this.sel === 1 });
           ui.hints([['←→', 'Выбор'], ['Enter', 'Дальше']], W / 2, HGT - 20, { align: 'center' });
         },
         go(i) {
           ui.screens = ui.screens.filter(s => !s.fh);
-          ui.openFh(close);
-          if (i === 0 && next) { ui.top().sel = next; ui.openFhTeam(next, close); }
+          ui.openFh(close, next || info.n);
+          if (i === 0 && next) ui.openFhTeam(next, close);
         },
         key(k) {
           if ((k === 'left' || k === 'right') && next) { this.sel = 1 - this.sel; ui.sfx('select'); }

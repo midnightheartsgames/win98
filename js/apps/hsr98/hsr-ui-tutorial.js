@@ -112,6 +112,12 @@
       c.drawImage(G.bgCanvas(bgId, w, h), x, y, w, h);
       c.fillStyle = 'rgba(8,10,22,0.28)';
       c.fillRect(x, y, w, h);
+      if (kind === 'atlas') {
+        G.menuIcon(c, 'atlas', x + w / 2 - 36, y + h / 2 - 40, 72, C.brassHi);
+        c.imageSmoothingEnabled = was;
+        c.restore();
+        return;
+      }
 
       const heroes = tr && tr.setup && tr.setup.party ? tr.setup.party.map(p => p.id) :
         kind === 'followup' ? ['march', 'herta'] :
@@ -267,7 +273,7 @@
         lines.forEach((ln, k) => {
           ui.text(ln, sx + 10, y + (lines.length > 1 ? 7 : 13) + k * 12, { size: 10, bold: on, col: on ? INK : C.cream, shadow: !on });
         });
-        if (!g.isTutorialRead(e.id)) ui.badge(sx + sw - 8, y + 8);
+        if (!g.isTutorialRead(e.id)) ui.newMark(sx + sw - 8, y + 8);
         ui.hit(sx, y, sw, rh, () => {
           if (scr.row !== i) { scr.row = i; scr.page = 0; ui.sfx('select'); }
         });

@@ -1038,7 +1038,7 @@
     act(b, u, kind) { if (kind === 'ult' && b.eidOn(u, 2) && b.living.length >= 3) b.addBuff(u, { s: 'atkP', v: 0.4, turns: 1, name: 'Смирение агата' }); }
   };
 
-  const COGITO_LABEL = 'Я мыслю - я существую';
+  const COGITO_LABEL = 'Я мыслю, следовательно, я существую';
 
   FX.ratio = {
     raStart(b, u) {

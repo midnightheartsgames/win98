@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_lift",
+ "kind": "static",
+ "verts": 256,
+ "tris": 192,
+ "bounds": [
+  -1.5,
+  0.0,
+  -1.5,
+  1.5,
+  3.5,
+  1.5
+ ],
+ "bin": "mesh/prop_lift.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 256,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 3072,
+   "count": 256,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 6144,
+   "count": 256,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 8192,
+   "count": 576,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

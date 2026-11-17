@@ -17,7 +17,7 @@
       const g = this.game, b = g.battle;
       this.mode = 'battle';
       this.screens = this.screens.filter(s => s.keep);
-      this.bt = { queue: [], cur: null, curT: 0, floats: [], shake: 0, bannerT: 0, banner: null, target: null, allyMode: null, sub: null, auto: this.bt && this.bt.autoSticky ? true : false, autoSticky: this.bt ? this.bt.autoSticky : false, flash: new Map(), lunge: new Map(), fade: new Map(), foes: b.enemies.slice(), intro: 0.8, bg: e.bg, boss: e.boss, big: null, result: null, msg: null, msgT: 0, pick: 'basic', charge: 0, pv: null, dmgBy: new Map(), ult: null, ultSeen: new Set(), fusionSeen: new Set(), skinSeen: new Set(), ward: b.ward ? Object.assign({}, b.ward) : null };
+      this.bt = { queue: [], cur: null, curT: 0, floats: [], shake: 0, bannerT: 0, banner: null, target: null, allyMode: null, sub: null, auto: this.bt && this.bt.autoSticky ? true : false, autoSticky: this.bt ? this.bt.autoSticky : false, flash: new Map(), lunge: new Map(), fade: new Map(), foes: b.enemies.slice(), intro: 0.8, bg: e.bg, boss: e.boss, big: null, result: null, msg: null, msgT: 0, pick: 'basic', charge: 0, pv: null, dmgBy: new Map(), ult: null, ultSeen: new Set(), fusionSeen: new Set(), skinSeen: new Set(), skillLine: new Set(), fcuts: [], ward: b.ward ? Object.assign({}, b.ward) : null };
       for (const u of [...b.allies, ...b.enemies]) { u.dHp = u.hp; u.dTough = u.tough; u.dShield = u.shield; }
       this.audio.music(e.music);
       this.sfx('warp');
@@ -83,6 +83,7 @@
       if (bt.bannerT > 0) bt.bannerT -= dt;
       if (bt.msgT > 0) bt.msgT -= dt;
       if (bt.big) { bt.big.t -= dt; if (bt.big.t <= 0) bt.big = null; }
+      if (bt.fcuts.length) { for (const f of bt.fcuts) f.t += dt * speed; bt.fcuts = bt.fcuts.filter(f => f.t < f.life); }
       this.inabaUpdate(dt);
       this.contonUpdate(dt);
       this.haresUpdate(dt);
@@ -110,7 +111,8 @@
         if (bt.queue[0].t === 'wave' && bt.foes.some(u => bt.fade.get(u) > 0)) return;
         const e = bt.queue.shift();
         if (e.t === 'act' && e.kind === 'ult' && this.ultCineOn(e.u)) { bt.ult = this.makeUltShow(e); return; }
-        if (e.t === 'act' && e.kind === 'skill' && this.skinCineOn(e.u)) { bt.ult = this.makeSkillShow(e); return; }
+        if (e.t === 'act' && e.kind === 'skill' && this.skinCineOn(e.u, e.cut)) { bt.ult = this.makeSkillShow(e); return; }
+        if (e.t === 'act' && e.kind === 'enhanced' && e.cut && this.skinCineOn(e.u, e.cut, true)) { bt.ult = this.makeSkillShow(e, true); return; }
         if (e.t === 'fusion' && this.fusionCineOn(e.id)) { bt.ult = this.makeFusionShow(e); return; }
         this.applyEvent(e);
         const d = e.hold || EV_TIME[e.t] || 0;
@@ -134,12 +136,17 @@
       return true;
     },
 
-    skinCineOn(u) {
+    skinCineOn(u, cut, strict) {
       const mode = this.options.skinCine || 'first', bt = this.bt;
-      if (mode === 'off' || !H.SkillShow || u.side !== 'ally' || !H.outfitCutOf(H.wornOutfit(u.charId, this.game), 'skill')) return false;
-      if (mode === 'first' && bt.skinSeen.has(u.charId)) return false;
-      bt.skinSeen.add(u.charId);
+      if (mode === 'off' || !H.SkillCuts || u.side !== 'ally') return false;
+      const key = strict ? H.SkillCuts.strictKey(u.charId, cut) : H.SkillCuts.keyOf(u, cut, this.game);
+      if (!key || (mode === 'first' && bt.skinSeen.has(key))) return false;
+      bt.skinSeen.add(key);
       return true;
+    },
+
+    followCineOn(e) {
+      return (this.options.followCine || 'on') !== 'off' && !!H.SkillCuts && !!e.fid && !!H.SkillCuts.FOLLOW[e.fid] && e.u.side === 'ally';
     },
 
     fusionCineOn(id) {
@@ -160,14 +167,25 @@
       return hit.filter(u => lay.has(u)).map(u => { const p = lay.get(u); return { u, x: p.x / 2, y: p.y / 2, s: p.s / 2 }; });
     },
 
+    cineAllies() {
+      const got = [];
+      for (const x of this.bt.queue) {
+        if (x.t === 'act' || x.t === 'turn') break;
+        if ((x.t === 'heal' || x.t === 'shield' || x.t === 'status' || x.t === 'revive') && x.u && x.u.side === 'ally' && !got.includes(x.u)) got.push(x.u);
+      }
+      return got;
+    },
+
     makeUltShow(e) {
       const bt = this.bt, b = this.game.battle || this.lastBattle;
       const allies = e.u.kit.ult.target === 'self' ? [e.u] : b.allies.filter(a => !a.dead);
       return new H.Ults.Show(this, e.u, { name: e.name, foes: this.cineFoes(), allies, bg: bt.bg });
     },
 
-    makeSkillShow(e) {
-      return new H.SkillShow(this, e.u, { name: e.name, foes: this.cineFoes(), bg: this.bt.bg });
+    makeSkillShow(e, strict) {
+      const bt = this.bt, key = strict ? H.SkillCuts.strictKey(e.u.charId, e.cut) : H.SkillCuts.keyOf(e.u, e.cut, this.game), line = !bt.skillLine.has(key);
+      bt.skillLine.add(key);
+      return new H.SkillCuts.Show(this, e.u, { name: e.name, cut: e.cut, strict, line, foes: this.cineFoes(), allies: this.cineAllies(), bg: bt.bg });
     },
 
     makeFusionShow(e) {
@@ -186,16 +204,18 @@
     applyEvent(e) {
       const bt = this.bt;
       switch (e.t) {
-        case 'act':
-          bt.banner = { name: e.name, who: e.u.name, side: e.u.side, kind: e.kind };
-          bt.bannerT = 1.2;
+        case 'act': {
+          const fcut = this.followCineOn(e);
+          if (!fcut) { bt.banner = { name: e.name, who: e.u.name, side: e.u.side, kind: e.kind }; bt.bannerT = 1.2; }
           bt.lunge.set(e.u, 0.35);
           if (e.kind === 'summon' && bt.hecate && bt.hecate.u === e.u) { bt.hecate.note = e.note; bt.hecate.noteT = 0.7; }
           this.contonAct(e);
           this.fivesAct(e);
           if (e.kind === 'res') { const P = H.SU.PATHS[this.game.battle.su.path]; bt.big = { text: 'РЕЗОНАНС ПУТИ', sub: P.name + ' · ' + P.aeon, col: P.col, t: 1.1 }; bt.shake = 8; }
           this.sfx(e.kind === 'ult' || e.kind === 'fusion' || e.kind === 'res' ? 'ult' : e.kind === 'contact' ? 'text' : 'swing');
+          if (fcut) e.hold = e.hold || H.SkillCuts.followCut(this, e).d;
           break;
+        }
         case 'dmg': {
           e.u.dHp = e.hp; e.u.dShield = e.shield;
           if (e.src && e.src.side === 'ally' && e.u.side === 'enemy') bt.dmgBy.set(e.src, (bt.dmgBy.get(e.src) || 0) + e.v);
@@ -565,6 +585,7 @@
         this.text(bt.banner.who, W / 2, y + 21, { align: 'center', size: 10, col: C.sub });
         c.globalAlpha = 1;
       }
+      if (bt.fcuts.length) H.SkillCuts.drawFollow(this, c, bt.fcuts);
       if (bt.msgT > 0 && bt.msg) {
         const lines = this.wrap(bt.msg, 380, 12), y = (boss ? 108 : 58) + (this.wide() ? 24 : 0);
         this.win(W / 2 - 210, y, 420, 16 + lines.length * 15, { border: bt.msgWarn ? '#ff8080' : C.brass, corners: false });
@@ -787,6 +808,7 @@
       if (!bt.dmgBy) return;
       const rows = b.allies.map(u => ({ u, v: bt.dmgBy.get(u) || 0 })).sort((a, z) => z.v - a.v || a.u.idx - z.u.idx);
       const top = Math.max(1, rows[0].v), total = rows.reduce((a, r) => a + r.v, 0);
+      if (!total) return;
       const w = 100, h = 22 + rows.length * 22, x = this.wide() ? this.left + 8 : this.right - w - 8, y = this.wide() ? HGT - h - 6 : 38;
       c.fillStyle = 'rgba(4,6,20,0.7)'; c.fillRect(x, y, w, h);
       c.fillStyle = 'rgba(242,220,154,0.6)'; c.fillRect(x, y, w, 1);

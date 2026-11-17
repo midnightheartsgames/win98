@@ -145,7 +145,7 @@
         this.circlePortrait(c, lookOf(ct.who, null, this.game), x + 6, y + 5, 36, on ? C.brassHi : '#5a64a0');
         this.text(nameOf(ct.who, this.game), x + 50, y + 7, { size: 12, bold: true, col: on ? C.gold : C.cream });
         this.text(this.chatFit(signOf(ct.who, this.game), w - 60, 9), x + 50, y + 25, { size: 9, col: C.dim });
-        if (ct.open) this.badge(x + w - 9, y + 12);
+        if (ct.open) this.newMark(x + w - 9, y + 12);
         this.hit(x, y, w, ROW - 4, () => { s.pickContact(i); s.enter(); });
       });
       if (s.top > 0) this.diamond(lx + lw / 2, ly + 5, 3, C.brassHi);

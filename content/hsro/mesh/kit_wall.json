@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "kit_wall",
+ "kind": "static",
+ "verts": 264,
+ "tris": 132,
+ "bounds": [
+  -2.0,
+  0.0,
+  -0.05999999865889549,
+  2.0,
+  4.0,
+  0.41999998688697815
+ ],
+ "bin": "mesh/kit_wall.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 264,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 3168,
+   "count": 264,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 6336,
+   "count": 264,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 8448,
+   "count": 396,
+   "type": "H"
+  }
+ },
+ "tex": "tex/kit_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

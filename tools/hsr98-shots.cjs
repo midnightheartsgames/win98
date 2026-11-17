@@ -10,6 +10,9 @@ const PF_SETUP = pfSetup(0), PF_SETUP2 = pfSetup(1);
 const PF_PLAY = "g.events.length = 0; hsrui.toasts = []; g.state.flags.pf_open = true; g.pf().tut = true; g.pf().seen[g.pfSeason().id] = true; const play = (n, a, b) => { g.pfBegin(n); g.pf().run.scores = [a, b]; g.pfFinish(); }; const later = () => { const t0 = g.now(); g.clock = () => t0 + 43 * 86400000; }; ";
 const SCENES = {
   title: 'hsrShots.title()',
+  atlas: "(() => { const g = hsrShots.fresh('j_belobog'); const A = Hsr98.ATLAS, ids = Object.keys(A.NODES); for (const m of Hsr98.TRAIL_MISSIONS.slice(0, 16)) g.missionsState().done[m.id] = 1; g.state.recaps = ids.filter(id => g.atlasStatus(id) === 'done').flatMap(id => A.NODES[id].beats); g.atlasState().noted = true; hsrui.openAtlas('tb_rot'); hsrShots.pump(30); return hsrShots.shot(); })()",
+  atlasmeet: "(() => { const g = hsrShots.fresh('u_boulder'); const A = Hsr98.ATLAS; for (const m of Hsr98.TRAIL_MISSIONS.slice(0, 12)) g.missionsState().done[m.id] = 1; g.state.quests.hook_foreman = 'done'; g.state.recaps = A.NODES.hook_foreman.beats.concat(A.MEETS.meet_u_boulder.beats.slice(0, 4)); g.atlasState().noted = true; const s = hsrui.openAtlas('hook_foreman'); s.focus = 'beats'; s.beat = 2; hsrShots.pump(30); return hsrShots.shot(); })()",
+  atlasreplay: "(() => { const g = hsrShots.fresh('j_restricted'); const A = Hsr98.ATLAS; g.state.recaps = A.NODES.tb_guard.beats.slice(); g.atlasState().noted = true; hsrui.replayBegin('tb_guard'); hsrShots.pump(8); return hsrShots.shot(); })()",
   hdterm: "(() => { const g = hsrShots.fresh('express_lab', ['trail']); Object.assign(g.state.flags, { lab_found: true, lab_sw: true }); g.loadMap('express_lab', null, { x: 25, y: 5, silent: true }); g.player.dir = 'up'; hsrShots.pump(30); return hsrShots.shot(); })()",
   rangeterm: "(() => { const g = hsrShots.fresh('express_lab', ['trail']); Object.assign(g.state.flags, { lab_found: true, lab_sw: true }); g.loadMap('express_lab', null, { x: 10, y: 6, silent: true }); g.player.dir = 'up'; hsrShots.pump(30); return hsrShots.shot(); })()",
   rangehub: "(() => { const g = hsrShots.fresh('express_lab', ['trail']); g.state.range = { waves: [[{ id: 'doomsday', lvl: 40 }, { id: 'reaver', lvl: 38 }, { id: 'eliminator', lvl: 38 }]] }; hsrui.openRangeTable(); hsrShots.pump(4); return hsrShots.shot(); })()",
@@ -147,6 +150,16 @@ const SCENES = {
   hdhubmeta: "(() => { hsrShots.hdMeta(); hsrShots.pump(4); return hsrShots.shot(); })()",
   hdalarm: "(() => { const s = hsrShots.hd('seele', 8); const A = s.arena, h = A.hero; h.x = h.px = 46 * 32; h.y = h.py = 10 * 32; A.phase = 'wave'; A.sched = [{ t: 1e9, done: false, ids: [], rift: 'n' }]; const u = A.spawnFoe('reaver', 'n'); u.x = u.px = 30 * 32; u.y = u.py = 30.5 * 32; hsrShots.pump(40); A.hit(u, A.base, { amt: 30, noCrit: true }); hsrShots.pump(4); return hsrShots.shot(); })()",
   hdturret: "(() => { const s = hsrShots.hd('trail', 8); const A = s.arena, h = A.hero, t = A.turrets[1]; A.hit(null, t, { amt: 1e9, type: 'divine', noCrit: true }); h.x = h.px = t.x + 40; h.y = h.py = t.y + 30; h.gold = 900; hsrShots.pump(70); return hsrShots.shot(); })()",
+  hdcust_shell: "(() => { const g = hsrShots.fresh('express_lab', ['trail']); g.hdNew({ diff: 'normal', mode: 'custom', seed: 4242, threats: ['legion', 'automaton'] }); hsrui.openHdHub(); hsrui.openHdDraft(); const s = hsrui.top(); s.age = 2; s.sel = 1; hsrShots.pump(1); return hsrShots.shot(); })()",
+  hdcust_roll: "(() => { const g = hsrShots.fresh('express_lab', ['trail']); const r = g.hdNew({ diff: 'normal', mode: 'custom', seed: 4242, threats: ['legion', 'automaton'] }); r.draft.cards[0].hero = 'gepard'; g.hdTake(0); r.players[0].roll.cards[0].id = 'jingyuan.q'; g.hdRollTake(0); hsrui.openHdHub(); hsrui.openHdRoll(); const s = hsrui.top(); s.age = 2; s.sel = 0; r.players[0].roll.cards[0].id = 'jingyuan.e'; hsrShots.pump(1); return hsrShots.shot(); })()",
+  hdcust_rollmid: "(() => { const c = hsrShots.hdCustom(false); c.A.wave = 3; c.A.phase = 'wave'; c.A.sched = []; c.A.clearWave(); hsrShots.pump(2); hsrui.top().age = 2; hsrShots.pump(1); return hsrShots.shot(); })()",
+  hdcust_gift: "(() => { const c = hsrShots.hdCustom(true); c.h.gifts = []; c.A.wave = 7; c.A.phase = 'wave'; c.A.sched = []; c.A.clearWave(); hsrShots.pump(2); hsrui.top().age = 2; hsrShots.pump(1); return hsrShots.shot(); })()",
+  hdcust_arena: "(() => { const c = hsrShots.hdCustom(false); hsrShots.pump(20); return hsrShots.shot(); })()",
+  hdcust_full: "(() => { const c = hsrShots.hdCustom(true); hsrShots.pump(20); hsrui.mouse = { x: 63, y: 404, t: hsrui.t }; hsrShots.pump(1); return hsrShots.shot(); })()",
+  hdcust_card: "(() => { const c = hsrShots.hdCustom(true); c.s.card = { tab: 1, top: 0 }; hsrShots.pump(4); return hsrShots.shot(); })()",
+  hdcust_win: "(() => { const c = hsrShots.hdCustom(true); Object.assign(c.A.dmgFrom, { 'kafka.e': 41200, 'kafka.dot': 22800, 'himeko.q': 61000, 'jingyuan.bonus': 52000, 'welt.r': 18800, 'hero.basic': 33100 }); c.A.over = 'win'; const sum = c.g.hdFinish(c.A); hsrui.screens = []; hsrui.openHdResult(sum); hsrui.top().age = 2; hsrShots.pump(2); return hsrShots.shot(); })()",
+  hdcust_records: "(() => { const c = hsrShots.hdCustom(true); c.A.over = 'win'; c.g.hdFinish(c.A); hsrui.screens = []; hsrui.openHdRecords(); const s = hsrui.top(); s.tab = 2; s.d = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  hdcust_archive: "(() => { hsrShots.fresh('express_lab', ['trail']); hsrui.openHdHub(); hsrui.openHdDossier(); hsrui.openHdArchive(); const s = hsrui.top(); s.p = 4; s.sel = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
   hdrecords: "(() => { hsrShots.hdMeta(); hsrui.openHdRecords(); hsrShots.pump(4); return hsrShots.shot(); })()",
   hddossier: "(() => { hsrShots.fresh('express_lab', ['trail']); hsrui.openHdHub(); hsrui.openHdDossier(); const s = hsrui.top(); s.p = 2; s.sel = 2; s.card.tab = 1; hsrShots.pump(4); return hsrShots.shot(); })()",
   hddossier2: "(() => { hsrShots.fresh('express_lab', ['trail']); hsrui.openHdHub(); hsrui.openHdDossier(); const s = hsrui.top(); s.p = 5; s.sel = 1; s.card.tab = 2; hsrShots.pump(4); return hsrShots.shot(); })()",
@@ -1254,6 +1267,24 @@ const PAGE = `(() => {
       pump(12);
       return shot();
     },
+    hdCustom(full) {
+      const g = fresh('express_lab', ['trail']), HD = Hsr98.HD;
+      Object.assign(g.state.flags, { lab_found: true, lab_sw: true });
+      const run = g.hdNew({ diff: 'normal', mode: 'custom', seed: 4242, threats: ['legion', 'automaton'] });
+      run.draft.cards[0].hero = 'gepard';
+      g.hdTake(0);
+      const P0 = run.players[0];
+      P0.roll.cards[0].id = 'kafka.e'; g.hdRollTake(0);
+      P0.roll.cards[0].id = 'himeko.q'; g.hdRollTake(0);
+      if (full) { Object.assign(P0.kit, { t: 'jingyuan.t', r: 'welt.r' }); P0.abil.t = 1; P0.abil.r = 1; P0.gifts = ['kafka.ei1', 'welt.tr1']; }
+      ui.openHdHub(); ui.openHdArena();
+      const s = ui.top(), A = s.arena, h = A.hero;
+      A.giveExp(h, [...Array(full ? 11 : 3).keys()].reduce((n, l) => n + HD.expNext(l + 1), 0));
+      for (const sl of ['q', 'e', 'q', 'e', 't', 'r', 'q', 'e', 't']) A.up(h, sl);
+      h.x = h.px = 29.5 * 32; h.y = h.py = 23 * 32;
+      A.events.length = 0;
+      return { g, s, A, h };
+    },
     hd(hero, lvl, threats) {
       const g = fresh('express_lab', ['trail']);
       Object.assign(g.state.flags, { lab_found: true, lab_sw: true });
@@ -1905,6 +1936,35 @@ const PAGE = `(() => {
       sh.draw(ui.ctx);
       return ui.canvas.toDataURL('image/png');
     },
+    skillShot(key, t, aim) {
+      const id = key.split('.')[0], cut = key.split('.')[1], party = [id === 'trail_p' ? 'trail' : id, ...['march', 'himeko', 'danheng', 'natasha'].filter(k => k !== id)].slice(0, 4);
+      const g = fresh('j_plains', party);
+      if (id === 'trail_p') g.state.mcPath = 'trail_p';
+      g.startBattle({ enemies: ['reaver:20', 'eliminator:20', 'flamespawn:20'], lvl: 20, bg: 'station', music: 'battle' });
+      ui.drainGameEvents();
+      pump(40);
+      const b = g.battle, u = b.allies[0], kit = H.CHARS[id], ab = (cut && [kit.enhanced, kit.pskill, kit.moon].concat(kit.skills || [], kit.charged || [], kit.dracore || []).find(a => a && a.cut === cut)) || kit.skill;
+      const lay = [...ui.enemyLayout()].map(([e, p]) => ({ u: e, x: p.x / 2, y: p.y / 2, s: p.s / 2 }));
+      const support = ['ally', 'allies', 'self'].includes(ab.target);
+      const foes = aim === 'none' || (!aim && support) ? [] : aim === 'one' || (!aim && ab.target === 'single') ? lay.slice(1, 2) : lay;
+      const allies = ab.target === 'ally' ? b.allies.slice(1, 2) : ab.target === 'allies' ? b.allies.slice(1) : [];
+      const sh = new H.SkillCuts.Show(ui, u, { cut, strict: !!H.SkillCuts.SHOWS[key].enhanced, name: ab.name, line: true, foes, allies, bg: 'station', outfit: null });
+      sh.t = t; sh.T = t;
+      ui.hits = [];
+      sh.draw(ui.ctx);
+      return ui.canvas.toDataURL('image/png');
+    },
+    followShot(fid, t) {
+      const SC = H.SkillCuts, def = SC.FOLLOW[fid], id = def.charId, party = [id, ...['march', 'himeko', 'danheng', 'natasha'].filter(k => k !== id)].slice(0, 4);
+      const g = fresh('j_plains', party);
+      g.startBattle({ enemies: ['reaver:20', 'eliminator:20', 'flamespawn:20'], lvl: 20, bg: 'station', music: 'battle' });
+      ui.drainGameEvents();
+      pump(40);
+      const u = g.battle.allies[0];
+      ui.bt.fcuts = [{ def, u, name: def.name, t, d: SC.FOLLOW_D, life: SC.FOLLOW_D + SC.LINGER, look: H.Gfx.lookOf(id, g) }];
+      ui.hits = [];
+      return shot();
+    },
     fusShot(id, beat, t, aim, outfit) {
       const f = H.FUSIONS[id], keys = f.members.map(k => k === 'trail_p' ? 'trail' : k), party = [...keys, ...['march', 'himeko', 'danheng', 'natasha'].filter(k => !keys.includes(k))].slice(0, 4);
       const g = fresh('j_plains', party);
@@ -2417,6 +2477,8 @@ async function main() {
     if (n.startsWith('nav_')) { const [map, kind] = n.slice(4).split('__'); return 'hsrShots.nav(' + JSON.stringify(map) + ',' + JSON.stringify(kind || null) + ')'; }
     if (n.startsWith('hud_')) return 'hsrShots.hudMap(' + JSON.stringify(n.slice(4)) + ", null, null, 'Прогуляться по Белобогу: заглянуть в мастерскую «Незимье» (юго-восток)')";
     if (n.startsWith('cine_')) { const m = n.match(/^cine_(c_[a-z0-9_]+?)_(\d+)_([\d.]+)(?:_([mf]))?$/); return m ? 'hsrShots.cine(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + JSON.stringify(m[4] || '') + ')' : null; }
+    if (n.startsWith('follow_')) { const m = n.match(/^follow_([a-zA-Z]+)_([\d.]+)$/); return m ? 'hsrShots.followShot(' + JSON.stringify(m[1]) + ',' + m[2] + ')' : null; }
+    if (n.startsWith('skill_')) { const m = n.match(/^skill_([a-z]+(?:_p)?(?:\.[a-z0-9]+)?)_([\d.]+)(?:_(all|one|none))?$/); return m ? 'hsrShots.skillShot(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + JSON.stringify(m[3] || '') + ')' : null; }
     if (n.startsWith('skin_')) { const m = n.match(/^skin_([a-z]+)_([\d.]+)(?:_(all|one|none))?$/); return m ? 'hsrShots.skinShot(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + JSON.stringify(m[3] || '') + ',' + JSON.stringify(process.env.OUTFIT || '') + ')' : null; }
     if (n.startsWith('ult_')) { const m = n.match(/^ult_([a-z]+(?:_p)?)_(\d)_([\d.]+)(?:_(all|one|none))?$/); return m ? 'hsrShots.ultShot(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + JSON.stringify(m[4] || '') + ',' + JSON.stringify(process.env.OUTFIT || '') + ')' : null; }
     if (n.startsWith('fus_')) { const m = n.match(/^fus_(f_[a-z0-9]+)_(\d)_([\d.]+)(?:_(all|one|none))?$/); return m ? 'hsrShots.fusShot(' + JSON.stringify(m[1]) + ',' + m[2] + ',' + m[3] + ',' + JSON.stringify(m[4] || '') + ',' + JSON.stringify(process.env.OUTFIT || '') + ')' : null; }

@@ -1,0 +1,96 @@
+{
+ "format": 1,
+ "id": "part_glasses",
+ "kind": "part",
+ "verts": 112,
+ "tris": 84,
+ "bounds": [
+  -0.09799999743700027,
+  1.63100004196167,
+  -0.1339999884366989,
+  0.09799999743700027,
+  1.6690000295639038,
+  -0.015000000596046448
+ ],
+ "bin": "mesh/part_glasses.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 112,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1344,
+   "count": 112,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 2688,
+   "count": 112,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 3584,
+   "count": 112,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 4032,
+   "count": 112,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 4928,
+   "count": 252,
+   "type": "H"
+  }
+ },
+ "tex": "tex/npc_extras.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "spine",
+  "chest",
+  "neck",
+  "head",
+  "upperarm.L",
+  "forearm.L",
+  "hand.L",
+  "upperarm.R",
+  "forearm.R",
+  "hand.R",
+  "thigh.L",
+  "shin.L",
+  "foot.L",
+  "thigh.R",
+  "shin.R",
+  "foot.R",
+  "tail.1",
+  "tail.2",
+  "tail.3"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  2,
+  3,
+  2,
+  5,
+  6,
+  2,
+  8,
+  9,
+  0,
+  11,
+  12,
+  0,
+  14,
+  15,
+  0,
+  17,
+  18
+ ],
+ "fps": 15,
+ "clips": {}
+}

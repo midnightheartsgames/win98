@@ -1,0 +1,85 @@
+{
+ "format": 1,
+ "id": "npc_robot",
+ "kind": "skinned",
+ "verts": 438,
+ "tris": 596,
+ "bounds": [
+  -0.3389711380004883,
+  0.07999999821186066,
+  -0.22499999403953552,
+  0.3389711380004883,
+  0.9350000023841858,
+  0.22499999403953552
+ ],
+ "bin": "mesh/npc_robot.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 438,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 5256,
+   "count": 438,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 10512,
+   "count": 438,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 14016,
+   "count": 438,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 15768,
+   "count": 438,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 19272,
+   "count": 1788,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 22848,
+   "count": 840,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 26208,
+   "count": 336,
+   "type": "f"
+  }
+ },
+ "tex": "tex/npc_robot.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "head",
+  "arm.L",
+  "arm.R"
+ ],
+ "parents": [
+  -1,
+  0,
+  0,
+  0
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  }
+ }
+}

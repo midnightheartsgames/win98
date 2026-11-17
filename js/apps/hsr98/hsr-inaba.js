@@ -21,8 +21,8 @@
       basic: { name: 'Удар катаной', target: 'single', fx: [{ k: 'dmg', m: 1.0 }] },
       skills: [
         { name: 'Изанаги: Зиодайн', persona: 0, target: 'single', text: 'электрический урон 220%, защита цели −15% на 2 хода.', fx: [{ k: 'dmg', m: 2.2 }, { k: 'debuff', s: 'defDown', v: 0.15, turns: 2, chance: 1, name: 'Ракунда' }] },
-        { name: 'Джек Фрост: Буфула', persona: 1, target: 'blast', text: 'ледяной урон 130% (соседним 60%), Заморозка с шансом 35%.', fx: [{ k: 'dmg', m: 1.3, adj: 0.6 }, { k: 'freeze', chance: 0.35 }] },
-        { name: 'Ёсицунэ: Хассо Тоби', persona: 2, target: 'bounce', text: 'физический урон 45% шесть раз по случайным врагам.', fx: [{ k: 'dmg', m: 0.45, hits: 6, tough: 5 }] }
+        { name: 'Джек Фрост: Буфула', cut: 'frost', persona: 1, target: 'blast', text: 'ледяной урон 130% (соседним 60%), Заморозка с шансом 35%.', fx: [{ k: 'dmg', m: 1.3, adj: 0.6 }, { k: 'freeze', chance: 0.35 }] },
+        { name: 'Ёсицунэ: Хассо Тоби', cut: 'yoshi', persona: 2, target: 'bounce', text: 'физический урон 45% шесть раз по случайным врагам.', fx: [{ k: 'dmg', m: 0.45, hits: 6, tough: 5 }] }
       ],
       ult: { name: 'Мириады истин', target: 'all', text: 'урон 160% всем, стойкость без учёта уязвимостей. Следующий навык бесплатно.', fx: [{ k: 'dmg', m: 1.6, tough: 25, anyTough: true }, { k: 'freeSkill' }] },
       talent: 'Первое пробитие Персоной даёт очко навыка. С Ю «Ещё раз!» у всех, атака отрядом +30%.',
@@ -267,7 +267,7 @@
       const t = pool.length ? pool.reduce((a, b) => (b.hp < a.hp ? b : a)) : alive(s.near) ? s.near : this.living[0];
       const prev = this.acting;
       this.acting = y;
-      this.push({ t: 'act', u: y, name: 'Атака Ёсуке', kind: 'follow' });
+      this.push({ t: 'act', u: y, name: 'Атака Ёсуке', kind: 'follow', fid: 'yosuke' });
       this.hit(y, t, T.yosukeStrike * (this.traceTalent ? this.traceTalent(y) : 1), { e: 'wind', tough: 10, kind: 'follow', alwaysCrit: true, label: 'Атака Ёсуке' });
       this.gainEnergy(y, 10);
       if (this.kitFx && alive(y)) this.kitFx(y, 'strikeHit', t);

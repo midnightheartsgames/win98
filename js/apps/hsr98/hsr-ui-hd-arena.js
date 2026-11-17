@@ -40,7 +40,7 @@
     hdHeroInfo(id, A, h, lvl) {
       const st = HD.heroStats(id, h ? h.lvl : lvl || 1);
       if (!h) return { id, lvl: lvl || 1, exp: 0, abil: lvl >= 20 ? { q: 5, e: 5, t: 5, r: 3 } : { q: 0, e: 0, t: 0, r: 0 }, picks: {}, dossier: lvl >= 20, items: [], hp: st.hpMax, hpMax: st.hpMax, en: 0, enMax: st.enMax, str: st.str, agi: st.agi, int: st.int, main: st.main, regen: st.regen, enRegen: st.enRegen, dmg: st.dmg, interval: st.bat / (1 + st.agi / 100), armor: st.armor, range: st.range, spd: st.spd, crit: TUN.critC, critD: TUN.critD };
-      return { id, lvl: h.lvl, exp: h.exp, abil: h.abil, picks: h.picks, items: h.items, cone: h.cone, hp: h.hp, hpMax: h.hpMax, en: h.en, enMax: h.enMax, str: h.str, agi: h.agi, int: h.int, main: h.main, regen: h.regen + A.sum(h, 'regen'), enRegen: h.enRegen, dmg: A.atkOf(h), interval: A.interval(h), armor: A.armorOf(h), range: h.range, spd: A.moveSpd(h), crit: TUN.critC + A.sum(h, 'crit'), critD: TUN.critD + A.sum(h, 'critD') };
+      return { id, kit: h.kit, gifts: h.gifts, lvl: h.lvl, exp: h.exp, abil: h.abil, picks: h.picks, items: h.items, cone: h.cone, hp: h.hp, hpMax: h.hpMax, en: h.en, enMax: h.enMax, str: h.str, agi: h.agi, int: h.int, main: h.main, regen: h.regen + A.sum(h, 'regen'), enRegen: h.enRegen, dmg: A.atkOf(h), interval: A.interval(h), armor: A.armorOf(h), range: h.range, spd: A.moveSpd(h), crit: TUN.critC + A.sum(h, 'crit'), critD: TUN.critD + A.sum(h, 'critD') };
     },
 
     hdCardLines(info, tab, w) {
@@ -58,6 +58,20 @@
         add('Атака: ' + HD.ATK_NAME[d.atk] + ', ' + (d.melee ? 'ближний' : 'дальний') + ' бой, дальность ' + info.range);
         add('Скорость ' + Math.round(info.spd) + ' · крит ' + Math.round(info.crit * 100) + '%, крит. урон +' + Math.round(info.critD * 100) + '%');
         add('Стихия: ' + H.ELEMENTS[k.elem].name + ' · Путь: ' + H.PATHS[k.path].name);
+      } else if (tab === 1 && info.kit) {
+        for (const sl of ['q', 'e', 't', 'r']) {
+          const id = info.kit[sl], max = sl === 'r' ? 3 : 5;
+          if (!id) { add(sl.toUpperCase() + ' · выпадет после ' + TUN.custom.at[sl] + '-й волны', { col: C.dim }); add(' '); continue; }
+          const P = HD.PIECES[id], l = info.abil[sl], lk = n => (P.part === 'r' ? TUN.ultLvl : TUN.abilLvl)[n - 1];
+          add(sl.toUpperCase() + ' · ' + HD.pieceName(id) + ' · ур. ' + l + '/' + max, { bold: true, col: C.gold });
+          add({ q: 'Навык', e: 'Техника', t: 'Талант', r: 'Абсолютная техника' }[P.part] + ' · ' + H.CHARS[P.kit].name + (P.part === 't' ? '' : ' · энергия ' + (P.part === 'r' ? H.CHARS[P.kit].energy : P.spec.cost) + ' · перезарядка ' + HD.pieceCd(id) + ' с'), { col: C.sub, size: 9 });
+          add('Сейчас: ' + HD.pieceText(id, lk(Math.max(1, l))));
+          if (l && l < max) add('Дальше: ' + HD.pieceText(id, lk(l + 1)), { col: C.sub });
+          if (HD.pieceAlone(id)) add(HD.pieceAlone(id), { col: C.sub, size: 9 });
+          const links = HD.pieceLinks(id);
+          if (links.length) add('Связка: ' + links.map(x => this.hdPieceFrom(x)).join(', ') + (links.some(x => Object.values(info.kit).includes(x)) ? ' · есть' : ' · нет'), { col: C.sub, size: 9 });
+          add(' ');
+        }
       } else if (tab === 1) {
         for (const sl of ['q', 'e', 't', 'r']) {
           const l = info.abil[sl], max = sl === 'r' ? 3 : 5, name = sl === 'q' ? k.skill.name : sl === 'e' ? k.tech.name : sl === 'r' ? k.ult.name : 'Талант';
@@ -70,7 +84,13 @@
           add(' ');
         }
       } else {
-        for (const [lvl, list, title] of [[10, K.tr, 'След, 10-й уровень'], [20, K.ei, 'Эйдолон, 20-й уровень']]) {
+        if (info.kit) {
+          add('Таланты', { bold: true, col: C.gold });
+          if (!(info.gifts || []).length) add('Выпадут после ' + TUN.custom.at.g + '-й волны', { col: C.sub });
+          for (const id of info.gifts || []) { const I = this.hdPieceInfo(id); add(I.name + ' · ' + I.from, { bold: true, col: C.ok }); add(I.text, { col: C.sub }); }
+          add(' ');
+        }
+        if (!info.kit) for (const [lvl, list, title] of [[10, K.tr, 'След, 10-й уровень'], [20, K.ei, 'Эйдолон, 20-й уровень']]) {
           add(title, { bold: true, col: C.gold });
           const p = info.picks[lvl];
           list.forEach((it, i) => { if (p == null || p === i) { add((p === i ? 'Выбран: ' : '') + it.name, { bold: true, col: p === i ? C.ok : C.cream }); add(it.text, { col: C.sub }); } });
@@ -142,6 +162,7 @@
           if (this.alarm) this.alarm.t -= dt;
           if (net) {
             net.advance(dt, () => this.drain());
+            if (h.roll && !A.over && ui.top() === this) ui.openHdRoll(this);
             lead.frame(performance.now() / 1000, dt, !ui.netPaused() && !net.catching && globalThis.Net98.state === 'online', net.acc / HD.DT);
             if (this.wantSel && (this.wantSel.t -= dt) <= 0) this.wantSel = null;
             for (const sl of Object.keys(this.slotLit)) this.slotLit[sl] -= dt;
@@ -155,6 +176,7 @@
             let n = 0;
             while (this.acc >= HD.DT && n < TUN.maxSteps * (this.speed || 1)) { A.step(); this.acc -= HD.DT; n++; this.drain(); if (A.over) break; }
             if (n >= TUN.maxSteps * (this.speed || 1)) this.acc = Math.min(this.acc, HD.DT);
+            if (h.roll && !A.over) { ui.openHdRoll(this); return; }
           }
           for (const x of this.nums) x.t -= dt;
           this.nums = this.nums.filter(x => x.t > 0);
@@ -206,7 +228,7 @@
                 break;
               }
               case 'gold': if (e.v >= 5) { this.nums.push({ x: e.x, y: e.y - 10, v: e.v, col: '#ffd471', gold: true, raid: e.raid, t: 1.1, age: 0 }); this.sound('coin'); } break;
-              case 'say': this.says = this.says.filter(x => x.uid !== e.uid); this.says.push({ uid: e.uid, text: g.fill ? g.fill(e.text) : e.text, t: 3.2 }); break;
+              case 'say': this.says = this.says.filter(x => x.uid !== e.uid); this.says.push({ uid: e.uid, who: e.who, text: g.fill ? g.fill(e.text) : e.text, t: 3.2 }); break;
               case 'wave': this.banner = { text: 'Волна ' + e.n, sub: e.boss ? 'Босс угрозы' : HD.waveLabel(A, e.n), t: 2.4 }; this.sound('horn'); if (!e.boss) ui.audio.music('battle'); break;
               case 'boss': this.banner = { text: e.name, sub: 'Босс выходит из разлома', t: 3, red: true }; ui.audio.music(e.music); this.sound('rumble'); break;
               case 'cleared': this.banner = { text: 'Волна ' + e.n + ' отбита', sub: e.clean ? 'Чистая линия: +10% золота' : 'Перерыв', t: 2.2 }; break;
@@ -544,7 +566,9 @@
             const u = A.units.find(x => x.uid === sy.uid);
             if (!u) continue;
             const p = P(u);
-            this.bubble(c, sy.text, p.x, Math.max(2, p.y - 78));
+            const by = Math.max(2, p.y - 78);
+            this.bubble(c, sy.text, p.x, by);
+            if (sy.who) { c.fillStyle = '#000000'; c.fillRect(p.x - 9, by - 17, 18, 18); G.drawPortrait(c, G.lookOf(sy.who, g), p.x - 8, by - 16, 16); }
           }
         },
         drawFlow(c, cx, cy) {
@@ -602,6 +626,7 @@
             c.fillStyle = done ? '#c9a45c' : cur ? (A.phase === 'wave' ? '#ff9a5a' : '#f2dc9a') : '#22243a';
             c.fillRect(x - 2, 7, 5, 5);
             if (boss) skull(c, x + 0.5, 9.5, cur ? '#ffffff' : '#ff5a4a');
+            if (A.run.mode === 'custom' && TUN.custom.rolls[i + 1]) { c.fillStyle = done ? '#6a5328' : '#ffd471'; c.fillRect(x, 2, 1, 1); c.fillRect(x - 1, 3, 3, 1); c.fillRect(x, 4, 1, 1); }
           }
           ui.text(ui.clip('Волна ' + A.wave + '/' + n + ' · ' + HD.waveLabel(A, A.wave), 190, 10, true), 136, 4, { size: 10, bold: true, col: C.gold });
           if (A.phase === 'break') {
@@ -676,20 +701,22 @@
           c.fillStyle = 'rgba(4,6,20,0.85)'; c.fillRect(6, PY + 44, 18, 12);
           ui.text(String(h.lvl), 15, PY + 44, { align: 'center', size: 10, bold: true, col: C.gold });
           ui.text(ui.clip(H.CHARS[h.key].name, 52, 9, true), 6, PY + 72, { size: 9, bold: true, col: C.cream });
-          ui.bar(62, PY + 10, 140, 7, h.hp / h.hpMax, '#86e39a');
-          ui.text('НР ' + fmt(h.hp) + '/' + fmt(h.hpMax), 64, PY + 19, { size: 9, col: C.cream });
-          ui.bar(62, PY + 33, 140, 5, h.en / h.enMax, '#f2b632');
-          ui.text('ЭН ' + fmt(h.en) + '/' + fmt(h.enMax), 64, PY + 40, { size: 9, col: '#ffe0a0' });
+          const bx = h.kit ? 74 : 62, bw = h.kit ? 128 : 140;
+          if (h.kit) this.drawGifts(c, 57, PY + 8);
+          ui.bar(bx, PY + 10, bw, 7, h.hp / h.hpMax, '#86e39a');
+          ui.text('НР ' + fmt(h.hp) + '/' + fmt(h.hpMax), bx + 2, PY + 19, { size: 9, col: C.cream });
+          ui.bar(bx, PY + 33, bw, 5, h.en / h.enMax, '#f2b632');
+          ui.text('ЭН ' + fmt(h.en) + '/' + fmt(h.enMax), bx + 2, PY + 40, { size: 9, col: '#ffe0a0' });
           const nx = HD.expNext(h.lvl);
-          c.fillStyle = '#1a1c30'; c.fillRect(62, PY + 52, 140, 2);
-          c.fillStyle = '#c890ff'; c.fillRect(62, PY + 52, Math.round(140 * (h.lvl >= 20 ? 1 : h.exp / nx)), 2);
-          let ax = 62;
+          c.fillStyle = '#1a1c30'; c.fillRect(bx, PY + 52, bw, 2);
+          c.fillStyle = '#c890ff'; c.fillRect(bx, PY + 52, Math.round(bw * (h.lvl >= 20 ? 1 : h.exp / nx)), 2);
+          let ax = bx;
           for (const at of ['str', 'agi', 'int']) {
             const txt = HD.ATTR_NAME[at] + ' ' + Math.round(h[at]);
             ui.text(txt, ax, PY + 58, { size: 9, bold: at === h.main, col: at === h.main ? HD.ATTR_COL[at] : C.sub });
             ax += ui.measure(txt, 9, at === h.main) + 6;
           }
-          if (h.pts) ui.text('Очки развития: ' + h.pts, 62, PY + 72, { size: 9, bold: true, col: '#ffe04a' });
+          if (h.pts) ui.text('Очки развития: ' + h.pts, bx, PY + 72, { size: 9, bold: true, col: '#ffe04a' });
           if (A.needPick(h)) ui.badge(52, PY + 10);
           ui.hit(5, PY + 7, 50, 50, () => { this.card = this.card ? null : { tab: 0, top: 0 }; });
           SLOTS.forEach((sl, i) => this.drawSlot(c, sl, 214 + i * 46, PY + 18));
@@ -701,17 +728,35 @@
           if (A.nearShop(h)) { ui.keycap(500, PY + 64, 'B'); ui.text('Лавка', 518, PY + 65, { size: 9, col: C.gold }); }
           if (h.hold) ui.text('X: стоит', 560, PY + 66, { size: 9, col: '#ffd471' });
         },
+        drawGifts(c, x, y) {
+          for (let i = 0; i < 2; i++) {
+            const id = h.gifts[i], yy = y + i * 16, Gf = id && HD.GIFTS[id];
+            c.fillStyle = '#000000'; c.fillRect(x - 1, yy - 1, 16, 16);
+            c.fillStyle = id ? '#2a2010' : '#10142e'; c.fillRect(x, yy, 14, 14);
+            if (Gf) G.drawPortrait(c, G.lookOf(Gf.kit, g), x + 1, yy + 1, 12);
+            ui.text(!id ? String(TUN.custom.at.g) : Gf ? (Gf.kind === 'tr' ? 'С' : 'Э') : '◆', x + 7, yy + 2, { align: 'center', size: 8, bold: true, col: id ? '#ffe04a' : C.dim });
+            const m = ui.mouse;
+            if (id && m && m.x >= x && m.x < x + 14 && m.y >= yy && m.y < yy + 14) this.gtip = { id, x };
+          }
+        },
         drawSlot(c, sl, x, y) {
-          const l = h.abil[sl], K = HD.KITS[h.key][sl], s = 40;
+          const l = h.abil[sl], K = A.pieceOf(h, sl), s = 40;
           c.fillStyle = '#000000'; c.fillRect(x - 1, y - 1, s + 2, s + 2);
           c.fillStyle = '#10142e'; c.fillRect(x, y, s, s);
-          G.hdAbilIcon(c, G.lookOf(h.key, g), sl, h.elem, x, y, s, h.key);
+          if (!K) {
+            ui.text(String(TUN.custom.at[sl] || ''), x + s / 2, y + 12, { align: 'center', size: 14, bold: true, col: C.dim });
+            ui.text(SLOT_KEY[sl], x + 3, y + s - 12, { size: 10, bold: true, col: C.dim });
+            ui.hit(x, y, s, s, () => { if (sl !== 't') this.cast(sl); });
+            return;
+          }
+          const kit = A.kitOf(h, sl), part = h.kit ? HD.PIECES[h.kit[sl]].part : sl;
+          G.hdAbilIcon(c, G.lookOf(kit, g), part, h.elem, x, y, s, kit);
           if (!l) { c.fillStyle = 'rgba(20,20,32,0.7)'; c.fillRect(x, y, s, s); }
           c.fillStyle = 'rgba(4,6,20,0.6)'; c.fillRect(x, y + s - 12, 12, 12);
           const cost = sl === 't' ? 0 : A.costOf(h, sl), cd = sl === 't' ? 0 : A.cdLeft(h, sl), ch = sl === 't' ? 1 : A.charges(h, sl);
           if (l && cost > h.en) { c.fillStyle = 'rgba(30,60,160,0.45)'; c.fillRect(x, y, s, s); }
-          if (cd > 0) { const k = Math.min(1, cd / K.cd); c.fillStyle = 'rgba(0,0,0,0.6)'; c.fillRect(x, y, s, Math.round(s * k)); ui.text(String(Math.ceil(cd)), x + s / 2, y + 13, { align: 'center', size: 12, bold: true, col: '#ffffff' }); }
-          if (ch > 1 && l) { const left = Math.min(ch, Math.floor((ch * K.cd - Math.max(0, h.cd[sl])) / K.cd + 1e-9)); ui.text('×' + left, x + s - 2, y + 2, { align: 'right', size: 9, bold: true, col: '#ffe04a' }); }
+          if (cd > 0) { const k = Math.min(1, cd / A.cdOf(h, sl)); c.fillStyle = 'rgba(0,0,0,0.6)'; c.fillRect(x, y, s, Math.round(s * k)); ui.text(String(Math.ceil(cd)), x + s / 2, y + 13, { align: 'center', size: 12, bold: true, col: '#ffffff' }); }
+          if (ch > 1 && l) { const cdn = A.cdOf(h, sl), left = Math.min(ch, Math.floor((ch * cdn - Math.max(0, h.cd[sl])) / cdn + 1e-9)); ui.text('×' + left, x + s - 2, y + 2, { align: 'right', size: 9, bold: true, col: '#ffe04a' }); }
           if (this.slotLit[sl] > 0) { c.strokeStyle = '#ffe04a'; c.lineWidth = 2; c.strokeRect(x + 1, y + 1, s - 2, s - 2); c.lineWidth = 1; }
           ui.text(SLOT_KEY[sl], x + 3, y + s - 12, { size: 10, bold: true, col: '#ffffff' });
           if (cost) ui.text(String(cost), x + s - 2, y + s - 12, { align: 'right', size: 9, col: '#ffe0a0' });
@@ -767,13 +812,20 @@
             ui.text(n.text, W / 2, y + 3, { align: 'center', size: 11, bold: true, col: '#ffe0a0' });
           });
           if (this.tip && !this.shop && !this.card) {
-            const { sl, x } = this.tip, K = HD.KITS[h.key], txt = K.text[sl](A.lvlK(sl, Math.max(1, h.abil[sl]))), lines = ui.wrap(txt, 228, 10), w = 240, y = PY - 24 - lines.length * 13 - 16 - lift;
+            const { sl, x } = this.tip, K = HD.KITS[A.kitOf(h, sl)], txt = h.kit ? HD.pieceText(h.kit[sl], A.lvlK(sl, Math.max(1, h.abil[sl]))) : K.text[sl](A.lvlK(sl, Math.max(1, h.abil[sl]))), lines = ui.wrap(txt, 228, 10), w = 240, y = PY - 24 - lines.length * 13 - 16 - lift;
             c.fillStyle = 'rgba(6,8,24,0.92)'; c.fillRect(Math.min(x, W - w - 4), y, w, lines.length * 13 + 20);
             c.strokeStyle = '#c9a45c'; c.strokeRect(Math.min(x, W - w - 4) + 0.5, y + 0.5, w - 1, lines.length * 13 + 19);
-            ui.text(SLOT_NAME[sl] + ': ' + ui.clip(abilName(h.key, sl), 140, 10, true), Math.min(x, W - w - 4) + 6, y + 3, { size: 10, bold: true, col: C.gold });
+            ui.text(SLOT_NAME[sl] + ': ' + ui.clip(h.kit ? HD.pieceName(h.kit[sl]) : abilName(h.key, sl), 140, 10, true), Math.min(x, W - w - 4) + 6, y + 3, { size: 10, bold: true, col: C.gold });
             lines.forEach((l, i) => ui.text(l, Math.min(x, W - w - 4) + 6, y + 17 + i * 13, { size: 10, col: C.cream }));
           }
-          this.tip = null;
+          if (this.gtip && !this.shop && !this.card) {
+            const I = ui.hdPieceInfo(this.gtip.id), lines = ui.wrap(I.text, 228, 10), w = 240, y = PY - 24 - lines.length * 13 - 16 - lift, x = 8;
+            c.fillStyle = 'rgba(6,8,24,0.92)'; c.fillRect(x, y, w, lines.length * 13 + 20);
+            c.strokeStyle = '#c9a45c'; c.strokeRect(x + 0.5, y + 0.5, w - 1, lines.length * 13 + 19);
+            ui.text(ui.clip(I.name + ' · ' + I.from, 228, 10, true), x + 6, y + 3, { size: 10, bold: true, col: C.gold });
+            lines.forEach((l, i) => ui.text(l, x + 6, y + 17 + i * 13, { size: 10, col: C.cream }));
+          }
+          this.tip = null; this.gtip = null;
         },
         drawPick(c) {
           const lvl = A.needPick(h), K = HD.KITS[h.key], list = lvl === 10 ? K.tr : K.ei, y = PY - 70;
@@ -788,13 +840,13 @@
           });
         },
         drawSummons(c, u, p) {
-          if (!u.abil.t) return;
-          if (u.key === 'topaz') {
-            const at = u.tal.numbyAt && A.time - u.tal.numbyAt.t < 0.5 ? { x: u.tal.numbyAt.x - this.cam.x, y: u.tal.numbyAt.y - this.cam.y } : { x: p.x + 22, y: p.y - 2 + Math.sin(ui.t * 6) * 2 };
+          const ts = u.tals || {};
+          if (HD.partLvl(u, 'topaz', 't')) {
+            const S = ts.topaz || {}, at = S.numbyAt && A.time - S.numbyAt.t < 0.5 ? { x: S.numbyAt.x - this.cam.x, y: S.numbyAt.y - this.cam.y } : { x: p.x + 22, y: p.y - 2 + Math.sin(ui.t * 6) * 2 };
             G.drawEnemy(c, foeData('trotter'), at.x, at.y + 4, 28, { t: ui.t, aura: false });
           }
-          if (u.key === 'jingyuan') {
-            const L = u.tal.lord, la = u.tal.lordAt && A.time - u.tal.lordAt.t < 0.25 ? { x: u.tal.lordAt.x - this.cam.x, y: u.tal.lordAt.y - this.cam.y - 10 } : null;
+          if (HD.partLvl(u, 'jingyuan', 't')) {
+            const S = ts.jingyuan || {}, L = S.lord, la = S.lordAt && A.time - S.lordAt.t < 0.25 ? { x: S.lordAt.x - this.cam.x, y: S.lordAt.y - this.cam.y - 10 } : null;
             G.hdLord(c, p.x - 26, p.y - 18, ui.t, L ? L.hits : 3, la);
             if (L) ui.text(String(Math.min(10, L.hits)), p.x - 26, p.y - 104, { align: 'center', size: 9, bold: true, col: '#d8b0ff' });
           }
@@ -805,7 +857,7 @@
             for (const set of Object.keys(H.RELIC_SETS)) for (const slot of Object.keys(H.RELIC_SETS[set].pieces)) out.push({ kind: 'relic', set, slot, price: HD.RELIC.price, name: H.RELIC_SETS[set].pieces[slot], sub: H.RELIC_SETS[set].name });
             return out;
           }
-          if (tab === 1) return HD.conesFor(H.CHARS[h.key].path).map(id => ({ kind: 'cone', id, price: HD.CONE_PRICE[H.CONES[id].rarity], name: H.CONES[id].name, sub: H.CONES[id].rarity + '★' }));
+          if (tab === 1) return HD.conePaths(h).flatMap(p => HD.conesFor(p)).map(id => ({ kind: 'cone', id, price: HD.CONE_PRICE[H.CONES[id].rarity], name: H.CONES[id].name, sub: H.CONES[id].rarity + '★' }));
           if (tab === 2) return Object.keys(HD.DEVICES).map(id => ({ kind: 'dev', id, price: HD.DEVICES[id].price, name: HD.devName(id), sub: 'устройство' }));
           return SUPPLY_IDS.map(id => ({ kind: 'sup', id, price: HD.SUPPLIES[id].price, name: H.ITEMS[id].name, sub: 'припас' }));
         },

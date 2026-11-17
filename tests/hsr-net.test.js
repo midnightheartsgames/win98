@@ -286,6 +286,37 @@ test('foes grow with the crew and stay the same alone', () => {
   for (const name of ['hp', 'hpEnd', 'bossHp', 'bossEnd', 'groups', 'gold', 'exp']) assert.equal(TUN.coop[name][0], 1, name + ' keeps solo as it was');
 });
 
+test('Patchwork at a table: rolls per seat, no repeats, rolls in the break, votes wait for picks', () => {
+  const s = new HD.NetSession({ mode: 'custom', code: 'X', seed: 500, diff: 'normal', seat: 0, ticks: 3, turnMs: 100, names: ['a', 'b'], send: () => true, clock: () => 0 });
+  let n = 0;
+  const turn = cmds => { s.feed({ n: ++n, c: cmds }); s.advance(0); };
+  const P0 = s.drafts[0].players[0], P1 = s.drafts[1].players[0];
+  assert.equal(s.draftTurns, Math.round(30000 * 3 / 100), 'three rolls get thirty seconds each');
+  s.drafts[1].draft.cards[0].hero = s.drafts[0].draft.cards[0].hero;
+  turn([{ t: 'take', p: 0, i: 0 }]);
+  assert.ok(P0.hero && P0.roll && P0.roll.slot === 'q', 'the shell opens the skill roll of the seat');
+  assert.notEqual(s.drafts[1].draft.cards[0].hero, P0.hero, 'nobody gets the same shell');
+  turn([{ t: 'take', p: 1, i: 0 }]);
+  P1.roll.cards[0].id = P0.roll.cards[0].id;
+  turn([{ t: 'take', p: 0, i: 0 }]);
+  assert.notEqual(P1.roll.cards[0].id, P0.kit.q, 'a taken ability leaves the cards of the others for free');
+  turn([{ t: 'take', p: 0, i: 1 }, { t: 'take', p: 1, i: 0 }, { t: 'take', p: 1, i: 1 }]);
+  const A = s.A;
+  assert.ok(A && A.run.mode === 'custom' && A.heroes.every(h => h.kit.q && h.kit.e), 'the arena starts with both builds');
+  assert.deepEqual(HD.netClean({ t: 'roll', p: 1, a: 'take', i: 2 }, 2), { t: 'roll', p: 1, a: 'take', i: 2 });
+  assert.equal(HD.netClean({ t: 'roll', p: 1, a: 'hack', i: 0 }, 2), null);
+  A.wave = 3; A.phase = 'wave'; A.sched = []; A.clearWave();
+  assert.ok(A.heroes.every(h => h.roll && h.roll.slot === 't'), 'both seats roll a Talent after wave 3');
+  assert.equal(A.breakT, A.diff.breakT + HD.TUN.custom.netRollT, 'the break is longer for the roll');
+  A.early(A.heroes[1]);
+  assert.ok(!A.heroes[1].vote, 'an open roll does not vote for an early wave');
+  A.heroes[1].roll.cards[0].id = A.heroes[0].roll.cards[0].id;
+  A.rollCmd(A.heroes[0], { a: 'take', i: 0 });
+  assert.notEqual(A.heroes[1].roll.cards[0].id, A.heroes[0].kit.t, 'a Talent taken in the break leaves the other cards');
+  A.breakT = HD.DT / 2; A.step();
+  assert.ok(A.heroes.every(h => !h.roll && h.kit.t), 'the end of the break takes the selected card');
+});
+
 test('support abilities reach living allies', () => {
   const pair = (who, other) => { const A = crewArena([who, other]), [u, v] = A.heroes; u.abil = { q: 1, e: 1, t: 1, r: 1 }; u.en = u.enMax = 1000; v.x = u.x + 40; v.y = u.y; v.px = v.x; v.py = v.y; return { A, u, v }; };
   {
@@ -324,11 +355,11 @@ test('support abilities reach living allies', () => {
     toWave(A);
     A.die(v, null, {});
     assert.ok(!v.dead && v.hp > 1, 'Bailu saves a falling ally');
-    assert.equal(u.tal.saved, 1);
+    assert.equal(u.tals[u.key].saved, 1);
   }
   {
     const { A, v } = pair('luocha', 'trail');
-    A.heroes[0].tal.zone = A.time + 5;
+    A.heroes[0].tals[A.heroes[0].key].zone = A.time + 5;
     v.hp = v.hpMax * 0.5;
     const hp0 = v.hp, f = toWave(A).spawnFoe('reaver', 'n');
     A.hit(v, f, { amt: 1, kind: 'basic', type: 'divine', noCrit: true });

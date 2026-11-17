@@ -203,6 +203,7 @@
     let summary = parts.join(' > ') + ' (x ' + state.pos[0] + ', y ' + state.pos[1] + ')';
     if (battle) summary += ', бой ' + (battle.enc || '') + ': волна ' + battle.wave + '/' + battle.waves + ', раунд ' + battle.round;
     if (state.script) summary += ', сценка ' + state.script.name + ', шаг ' + state.script.pc;
+    if (g.replay) { state.atlas = { node: g.replay.node, beat: g.replay.cur }; summary += ', Атлас: ' + g.replay.node + ' / ' + (g.replay.cur || '-'); }
     if (screens.length) summary += ', экран ' + screens[screens.length - 1];
     if (state.cheats) summary += ' [F7/F8]';
     if (state.lab) summary += ' [закрытый тест: ' + state.lab.join(', ') + ']';
@@ -210,7 +211,7 @@
   };
 
   UI.prototype.bugSave = function () {
-    const g = this.homeGame || this.game;
+    const g = this.homeGame || this.replayHome || this.game;
     if (!g) return null;
     const data = { date: new Date().toLocaleString('ru-RU'), summary: g.summary(), state: g.serialize() };
     if (this.netSession) data.table = this.netJournal();

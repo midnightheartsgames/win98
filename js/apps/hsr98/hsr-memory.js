@@ -122,9 +122,36 @@
   ];
   for (const st of STAGES) Object.assign(st, { budget: KINDS[st.kind].budget, goals: KINDS[st.kind].goals, rec: REC[st.n - 1] });
 
-  const SERIES = [{ id: 'vestiges', name: 'Наследие Возвышающейся цитадели', world: 'Ярило-VI', text: 'Воспоминания о Ярило-VI: Белобог, Подземье и Холм вечнозимья. Пятнадцать этапов, враги от уровня ' + STAGES[0].lvl + ' до ' + STAGES[14].lvl + '.', stages: STAGES }];
+  for (const st of STAGES) Object.assign(st, { i: st.n, ser: 'vestiges' });
 
-  const memoryReward = n => (n <= 5 ? { credits: 2500, items: { lucent: 20, exp2: 5 } } : { credits: 5000, items: { lucent: 40, exp3: 2, exp2: 3 } });
+  const TURB_LF = [
+    { text: 'Мнимый урон всех союзников +50%.', fx: [{ k: 'stat', s: 'imagP', v: 0.5 }] },
+    { text: 'Квантовый урон всех союзников +50%.', fx: [{ k: 'stat', s: 'quantP', v: 0.5 }] },
+    TURB[0], TURB[12], TURB[10], TURB[8], TURB[6], TURB[14], TURB[13], TURB[5]
+  ];
+  const LF_HP = [2.2, 2.4, 2.6, 3.4, 3.6, 3.4, 3.4, 3.6, 3.8, 4];
+  const LS = (i, lvl, kind, nodes) => ({ n: STAGES.length + i, i, ser: 'luofu', lvl, kind, nodes, hp: LF_HP[i - 1], atk: 1 + (i - 1) * TUN.atkRamp, turb: TURB_LF[i - 1], budget: KINDS[kind].budget, goals: KINDS[kind].goals });
+  const LUOFU = [
+    LS(1, 46, 'one', [[B([['mara', 'windspawn', 'mara', 'thunderspawn'], ['mara', 'shifter', 'mara']])]]),
+    LS(2, 47, 'one', [[B([['patroller', 'patroller', 'weaver', 'patroller'], ['dracolion', 'dragonfish', 'cloudtoad']])]]),
+    LS(3, 48, 'one', [[B([['alchemist', 'mara', 'ballista', 'mara'], ['lupus', 'ghound', 'lupus']], 'boss')]]),
+    LS(4, 49, 'pair', [[B([['lupus', 'ape', 'lupus']]), B([['dragonfish', 'aurumaton', 'dragonfish']])]]),
+    LS(5, 51, 'pair', [[B([['mara', 'ascended', 'mara']]), B([['cloudtoad', 'spectral', 'dracolion']])]]),
+    LS(6, 52, 'pair', [[B([['alchemist', 'shifter', 'ballista']]), B([['twig_wind', 'ebon', 'twig_leaf']], 'deer')]]),
+    LS(7, 54, 'nodes', [[B([['ghound', 'ballista', 'ghound', 'ballista'], ['lupus', 'ape']])], [B([['patroller', 'patroller', 'patroller'], ['dragonfish', 'aurumaton']])]]),
+    LS(8, 56, 'nodes', [[B([['mara', 'mara', 'mara', 'mara'], ['mara', 'ascended', 'mara']])], [B([['dracolion', 'cloudtoad', 'dragonfish'], ['spectral', 'aurumaton']])]]),
+    LS(9, 58, 'nodes', [[B([['alchemist', 'ballista', 'ballista', 'ghound'], ['ballista', 'danshu', 'alchemist']], 'boss')], [B([['lupus', 'ghound', 'lupus'], ['ape', 'shifter']])]]),
+    LS(10, 60, 'nodes', [[B([['mara', 'ascended', 'mara'], ['twig_bloom', 'ebon', 'twig_fruit']], 'deer')], [B([['ballista', 'alchemist', 'ballista'], ['shifter', 'danshu', 'ascended']], 'boss')]])
+  ];
+  const ALL = STAGES.concat(LUOFU);
+
+  const SERIES = [
+    { id: 'vestiges', name: 'Наследие Возвышающейся цитадели', world: 'Ярило-VI', text: 'Воспоминания о Ярило-VI: Белобог, Подземье и Холм вечнозимья. Пятнадцать этапов, враги от уровня ' + STAGES[0].lvl + ' до ' + STAGES[14].lvl + '.', stages: STAGES, regions: ['Белобог и окраины', 'Подземье', 'Холм вечнозимья'] },
+    { id: 'luofu', name: 'Эхо Небесной Дуги', world: 'Лофу Сяньчжоу', text: 'Воспоминания о Лофу Сяньчжоу: переправа, Комиссии и корни Древа амброзии. Десять этапов, враги от уровня ' + LUOFU[0].lvl + ' до ' + LUOFU[9].lvl + '.', stages: LUOFU, regions: ['Переправа и Комиссии', 'Корни Древа амброзии'], need: 'lf_phantylia_done', why: 'после победы над Фантилией на Лофу Сяньчжоу' }
+  ];
+  const seriesOf = st => SERIES.find(S => S.id === st.ser);
+
+  const memoryReward = n => ((ALL[n - 1] ? ALL[n - 1].i : n) <= 5 ? { credits: 2500, items: { lucent: 20, exp2: 5 } } : { credits: 5000, items: { lucent: 40, exp3: 2, exp2: 3 } });
   const INSIGNIA = { jade: 200, credits: 5000, items: { feather: 80 } };
 
   const SHOP = {
@@ -137,7 +164,7 @@
     ] }
   };
 
-  H.FH = { TUN, TURB, KINDS, STAGES, SERIES, SHOP, INSIGNIA, memoryReward, lvlOf };
+  H.FH = { TUN, TURB, KINDS, STAGES, LUOFU, ALL, SERIES, SHOP, INSIGNIA, memoryReward, lvlOf, seriesOf };
 
   const cp = (u, fx, n) => (u && u.cone ? H.coneP(u, fx, n) : 0);
   const hasDot = (u, types) => u.dots.some(d => types.includes(d.type));
@@ -270,17 +297,30 @@
 
     fhOpen() { return !!this.state.flags.fh_met; },
 
-    fhStage(n) { return STAGES[n - 1] || null; },
+    fhStage(n) { return ALL[n - 1] || null; },
+
+    fhSeriesOpen(S) { return this.fhOpen() && (!S.need || !!this.state.flags[S.need]); },
 
     fhRec(n) { return this.fh().st[n] || null; },
 
     fhStars(n) { const r = this.fhRec(n); return r ? r.stars.filter(Boolean).length : 0; },
 
-    fhTotal() { return STAGES.reduce((a, st) => a + this.fhStars(st.n), 0); },
+    fhTotal(sid = 'vestiges') { return (sid === 'all' ? ALL : SERIES.find(S => S.id === sid).stages).reduce((a, st) => a + this.fhStars(st.n), 0); },
 
-    fhUnlocked(n) { return n === 1 || !!(this.fhRec(n - 1) && this.fhRec(n - 1).clear); },
+    fhUnlocked(n) {
+      const st = this.fhStage(n);
+      if (!st) return false;
+      if (st.i === 1) { const S = seriesOf(st); return !S.need || !!this.state.flags[S.need]; }
+      return !!(this.fhRec(n - 1) && this.fhRec(n - 1).clear);
+    },
 
-    fhWeak(st, node) { return st.rec[node].slice(); },
+    fhWeak(st, node) {
+      if (st.rec) return st.rec[node].slice();
+      const count = {};
+      for (const b of st.nodes[node]) for (const w of b.waves) for (const id of w) for (const e of (H.ENEMIES[id] && H.ENEMIES[id].weak) || []) count[e] = (count[e] || 0) + 1;
+      const order = Object.keys(H.ELEMENTS);
+      return Object.keys(count).sort((a, b) => count[b] - count[a] || order.indexOf(a) - order.indexOf(b)).slice(0, 3);
+    },
 
     fhTeam(n, node) {
       const F = this.fh(), st = this.fhStage(n), saved = F.team[n] && F.team[n][node];
@@ -339,7 +379,7 @@
       return this.startBattle({
         waves: b.waves.map(w => w.map(id => id + ':' + st.lvl)), lvl: st.lvl, party: this.fhSpecs(keys), techs,
         noFlee: true, noContact: true, boss: false, bg: 'memory', music: b.music || 'order',
-        foeHp: TUN.hp[st.n - 1], foeAtk: 1 + (st.n - 1) * TUN.atkRamp, fh: { budget: st.budget, used: run.used, turb: st.turb, n: run.n, node: run.node, bi }
+        foeHp: st.hp != null ? st.hp : TUN.hp[st.n - 1], foeAtk: st.atk != null ? st.atk : 1 + (st.n - 1) * TUN.atkRamp, fh: { budget: st.budget, used: run.used, turb: st.turb, n: run.n, node: run.node, bi }
       });
     },
 
@@ -395,25 +435,27 @@
       return true;
     },
 
-    fhTiers() {
-      const F = this.fh(), total = this.fhTotal(), n = Math.floor(STAGES.length * 3 / TUN.insignia);
-      return Array.from({ length: n }, (_, i) => ({ i: i + 1, need: (i + 1) * TUN.insignia, ready: total >= (i + 1) * TUN.insignia, got: F.got.includes(i + 1) }));
+    fhTierKey(i, sid) { return sid === 'vestiges' ? i : sid + ':' + i; },
+
+    fhTiers(sid = 'vestiges') {
+      const F = this.fh(), S = SERIES.find(x => x.id === sid), total = this.fhTotal(sid), n = Math.floor(S.stages.length * 3 / TUN.insignia);
+      return Array.from({ length: n }, (_, i) => ({ i: i + 1, sid, need: (i + 1) * TUN.insignia, ready: total >= (i + 1) * TUN.insignia, got: F.got.includes(this.fhTierKey(i + 1, sid)) }));
     },
 
-    fhClaim(i) {
-      const t = this.fhTiers().find(x => x.i === i);
+    fhClaim(i, sid = 'vestiges') {
+      const t = this.fhTiers(sid).find(x => x.i === i);
       if (!t || !t.ready || t.got) return null;
-      this.fh().got.push(i);
+      this.fh().got.push(this.fhTierKey(i, sid));
       return this.give(INSIGNIA);
     },
 
     fhClaimAll() {
       const out = [];
-      for (const t of this.fhTiers()) if (t.ready && !t.got) out.push(...this.fhClaim(t.i));
+      for (const S of SERIES) for (const t of this.fhTiers(S.id)) if (t.ready && !t.got) out.push(...this.fhClaim(t.i, S.id));
       return out;
     },
 
-    fhAlert() { return this.fhOpen() && this.fhTiers().some(t => t.ready && !t.got); },
+    fhAlert() { return this.fhOpen() && SERIES.some(S => this.fhTiers(S.id).some(t => t.ready && !t.got)); },
 
     fhShopLeft() { const d = dayNum(this.now()); return (Math.floor(d / TUN.shopDays) + 1) * TUN.shopDays - d; },
 

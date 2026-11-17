@@ -47,6 +47,24 @@
       const pick = list[D.i], needA = 'нужна оборона';
       const upLabel = kind === 'relic' ? '+' + D.up * 3 : kind === 'cone' ? 'S' + (D.up + 1) : 'нет';
       const waveNow = A ? (A.jumpTo || A.wave) : run.wave;
+      const CSL = ['q', 'e', 't', 'r'], cslot = CSL[wrap(D.cs || 0, 4)], ckind = HD.CUSTOM.KIND_OF[cslot];
+      const cpool = Object.values(HD.PIECES).filter(P => P.kind === ckind), cpick = cpool[wrap(D.cp || 0, cpool.length)];
+      const customRows = h && h.kit ? [
+        { label: 'Ячейка Сборки', value: cslot.toUpperCase() + ': ' + (h.kit[cslot] ? HD.pieceName(h.kit[cslot]) : 'пусто'), step: k => { D.cs = wrap((D.cs || 0) + k, 4); D.cp = 0; } },
+        { label: 'Способность', value: ui.clip(HD.pieceName(cpick.id) + ' · ' + H.CHARS[cpick.kit].name, 150, 10), step: k => { D.cp = wrap((D.cp || 0) + k, cpool.length); } }
+      ] : [];
+      const customActs = h && h.kit ? [
+        { label: 'Поставить', icon: 'chars', fn: () => {
+          h.kit[cslot] = cpick.id; h.abil[cslot] = Math.max(1, h.abil[cslot] || 0); HD.equip(A, h);
+          for (const M of HD.baseMods(h)) if (M.hd && !h.tals[M.hd]) h.tals[M.hd] = {};
+          note(HD.pieceName(cpick.id) + ' в ' + cslot.toUpperCase());
+        } },
+        { label: 'Бросок сейчас', icon: 'warp', fn: () => {
+          if (h.roll) { note('бросок уже открыт', 'deny'); return; }
+          h.roll = HD.makeRoll(run.seed, 0, h, cslot, []);
+          note('бросок ' + cslot.toUpperCase());
+        } }
+      ] : [];
       return {
         rows: [
           { label: 'Золото', value: fmt(h ? h.gold : p.gold), step: k => { if (h) h.gold = Math.max(0, h.gold + k * 1000); else p.gold = Math.max(0, p.gold + k * 1000); } },
@@ -69,9 +87,11 @@
           { label: 'Выдать', value: KINDS[D.kind][1], step: k => { D.kind = wrap(D.kind + k, KINDS.length); D.i = 0; D.up = 0; } },
           { label: 'Что', value: ui.clip(pick.name, 150, 10), step: k => { D.i = wrap(D.i + k, list.length); } },
           { label: 'Улучшение', value: upLabel, step: k => { D.up = wrap(D.up + k, kind === 'relic' ? 6 : 5); } },
+          ...customRows,
           checkRow
         ],
         acts: [
+          ...customActs,
           { label: 'Выдать', icon: 'bag', fn: () => {
             if (!A) { note('откройте оборону', 'deny'); return; }
             const ok = kind === 'relic' ? HD.grantItem(A, h, 'relic', { set: pick.set, slot: pick.slot, up: D.up }) : kind === 'cone' ? HD.grantItem(A, h, 'cone', { cone: pick.id, sup: D.up + 1 }) : HD.grantItem(A, h, pick.id);
@@ -111,7 +131,7 @@
         ['Сложность', HD.DIFFS[run.diff].name],
         ['Угрозы', run.threats.map(t => HD.THREATS[t].name).join(', ')],
         ['Волна', (A ? A.wave : run.wave) + ' из ' + HD.WAVES.length + ' · ' + (A ? (A.phase === 'wave' ? 'волна' : 'перерыв') : run.phase)],
-        ['Герой', H.CHARS[p.hero].name + ', ур. ' + (A ? A.hero.lvl : p.lvl)],
+        [run.mode === 'custom' ? 'Оболочка' : 'Герой', H.CHARS[p.hero].name + ', ур. ' + (A ? A.hero.lvl : p.lvl)],
         ['Золото', fmt(A ? A.hero.gold : p.gold)],
         ['Экспресс', fmt(A ? A.base.hp : run.base.hp) + ' / ' + fmt(HD.DIFFS[run.diff].base)],
         ['Турели', String(A ? A.turrets.filter(t => !t.dead).length : run.towers.filter(v => v == null || v > 0).length) + ' из 3'],

@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "kit_floor",
+ "kind": "static",
+ "verts": 24,
+ "tris": 12,
+ "bounds": [
+  -2.0,
+  -0.10000000149011612,
+  -2.0,
+  2.0,
+  0.0,
+  2.0
+ ],
+ "bin": "mesh/kit_floor.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 24,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 288,
+   "count": 24,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 576,
+   "count": 24,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 768,
+   "count": 36,
+   "type": "H"
+  }
+ },
+ "tex": "tex/kit_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

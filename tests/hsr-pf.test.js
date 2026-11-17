@@ -618,7 +618,7 @@ const run = (b, onStep) => {
   const source = JSON.parse(fs.readFileSync(path.join(ROOT, 'content/hsr-pf/extract.json'), 'utf8'));
   const official = source.tutorials['Relentless Adversaries'].lines.map(l => l.ru);
   eq(PF.TUTORIAL.join('|'), official.join('|'), 'the lesson repeats the official lines');
-  eq(PF.QUOTE, source.quote.ru, 'the quote is official');
+  eq(PF.QUOTE, source.quote.ru.replace('», - ', '». '), 'the quote is official, with the attribution dash dropped');
   for (const line of ['Изменять членов отряда', 'Возвышать Световые конусы и Реликвии или повышать их уровни', 'Использовать любые расходные предметы в инвентаре', 'лишь 50% от энергии']) ok(source.rules.gen1.includes(line) && text.includes(line), 'official rule: ' + line);
 }
 

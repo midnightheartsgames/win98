@@ -26,10 +26,12 @@
     { id: 'guild', label: 'Набор в отряд: появление', icon: 'warp' },
     { id: 'mid', label: 'Полуночный канал: появление', icon: 'warp' },
     { id: 'con', label: 'Кон-Тон: появление', icon: 'warp' },
-    { id: 'skin', label: 'Навык облика', icon: 'chars' }
+    { id: 'skin', label: 'Навык облика', icon: 'chars' },
+    { id: 'skill', label: 'Навык', icon: 'chars' },
+    { id: 'follow', label: 'Бонус-атака', icon: 'chars' }
   ];
   const AIMS = [['auto', 'Как в бою'], ['all', 'Все враги'], ['one', 'Один враг'], ['none', 'Без врагов']];
-  const AIM_TEXT = { single: 'один враг', blast: 'враг и соседи', all: 'все враги', allies: 'вся команда', self: 'сам герой' };
+  const AIM_TEXT = { single: 'один враг', blast: 'враг и соседи', all: 'все враги', allies: 'вся команда', self: 'сам герой', ally: 'один союзник', bounce: 'отскоки по врагам' };
   const WARP_CUTS = [['full', 'Весь прыжок'], ['intro', 'Только появление']];
   const WARP_BANS = [['ev', 'Событийный'], ['std', 'Стандартный']];
   const WARP_RES = [['new', 'Новый персонаж'], ['eid', 'Эйдолон +1'], ['max', 'Все эйдолоны открыты']];
@@ -77,20 +79,27 @@
     if (kind === 'aha') return [];
     if (kind === 'fus') return Object.keys(H.FUSIONS).filter(k => H.Fusions.SHOWS[k]);
     if (kind === 'skin') return Object.keys(H.CHARS).filter(k => sceneOutfits('skin', k).length);
+    const shown = (tbl, owner) => Object.getOwnPropertyNames(tbl).filter(k => tbl.propertyIsEnumerable(k) || labHeroes().includes(owner(k)));
+    if (kind === 'skill') return H.SkillCuts ? shown(H.SkillCuts.SHOWS, skillChar) : [];
+    if (kind === 'follow') return H.SkillCuts ? shown(H.SkillCuts.FOLLOW, k => H.SkillCuts.FOLLOW[k].charId) : [];
     if (kind === 'sig' || kind === 'conv' || kind === 'guild' || kind === 'mid' || kind === 'con') return charIds();
     const has = kind === 'ult' ? H.Ults.SHOWS : kind === 'warp' ? H.WarpIntro.SHOWS : H.Eidolons.SCENES;
     return Object.keys(H.CHARS).concat(labHeroes()).filter(k => has[k]);
   }
   function sceneAt(st) { const ids = sceneIds(sceneKind(st)), i = Math.max(0, ids.indexOf(st.sc.id)); return { ids, i, id: ids[i] }; }
   const fusionKit = id => { const f = H.FUSIONS[id]; return { name: f.name, rarity: Math.max(...f.members.map(m => H.CHARS[m].rarity)), ult: { name: f.name, target: f.target } }; };
-  const sceneKit = (g, kind, id) => kind === 'fus' ? fusionKit(id) : H.CHARS[kind === 'eid' ? g.kitOf(id) : id];
-  const cineKind = kind => kind === 'ult' || kind === 'fus' || kind === 'skin';
+  const skillChar = id => id.split('.')[0];
+  const sceneChar = (g, kind, id) => kind === 'eid' ? g.kitOf(id) : kind === 'skill' ? skillChar(id) : kind === 'follow' ? H.SkillCuts.FOLLOW[id].charId : id;
+  const sceneKit = (g, kind, id) => kind === 'fus' ? fusionKit(id) : H.CHARS[sceneChar(g, kind, id)];
+  const skillAbility = (kit, id) => { const cut = id.split('.')[1]; return (cut && [kit.enhanced, kit.pskill, kit.moon].concat(kit.skills || [], kit.charged || [], kit.dracore || []).find(a => a && a.cut === cut)) || kit.skill; };
+  const cineKind = kind => kind === 'ult' || kind === 'fus' || kind === 'skin' || kind === 'skill';
   const CUT_OF_KIND = { ult: 'ult', skin: 'skill', fus: 'fusions', warp: 'warp', eid: 'eidolon' };
   const cutFits = (o, kind, id) => (kind === 'fus' ? H.FUSIONS[id].members.includes(H.OUTFITS[o].char) && H.outfitCutOf(o, 'fusions', id) : H.OUTFITS[o].char === id && H.outfitCutOf(o, CUT_OF_KIND[kind]));
   const sceneOutfits = (kind, id) => (kind === 'skin' ? [] : [null]).concat(CUT_OF_KIND[kind] && H.OUTFIT_CUTS ? Object.keys(H.OUTFIT_CUTS).filter(o => H.OUTFITS[o] && cutFits(o, kind, id)) : []);
   const sceneOutfit = (S, kind, id) => { const list = sceneOutfits(kind, id); return list[wrapIdx(S.out || 0, list.length)]; };
   function sceneName(g, kind, id) {
     const kit = sceneKit(g, kind, id);
+    if (kind === 'follow') return kit.name + ' · ' + H.SkillCuts.FOLLOW[id].name;
     return id.startsWith('trail') ? kit.name + ' · ' + H.PATHS[kit.path].name : kit.name;
   }
 
@@ -100,7 +109,7 @@
   }
 
   function showFoes(aim, target) {
-    const mode = aim !== 'auto' ? aim : target === 'allies' || target === 'self' ? 'none' : target === 'single' ? 'one' : 'all';
+    const mode = aim !== 'auto' ? aim : target === 'allies' || target === 'self' || target === 'ally' ? 'none' : target === 'single' ? 'one' : 'all';
     if (mode === 'none') return [];
     const s = 104, x0 = W / 2 + 34 - SHOW_FOES.length * s * 0.4;
     const list = SHOW_FOES.map((e, i) => ({ u: { data: H.ENEMIES[e] }, x: (x0 + s * 0.4 + i * s * 0.8) / 2, y: 145, s: s / 2 }));
@@ -123,7 +132,27 @@
     return new H.SkillShow(ui, showUnit(ui.game, id), { foes: showFoes(aim, H.CHARS[id].skill.target), bg: 'station', outfit });
   }
 
-  const makeCine = (ui, kind, id, aim, outfit) => (kind === 'fus' ? makeFus : kind === 'skin' ? makeSkin : makeUlt)(ui, id, aim, outfit);
+  function makeSkill(ui, id, aim) {
+    const g = ui.game, cid = skillChar(id), u = showUnit(g, cid), ab = skillAbility(H.CHARS[cid], id);
+    const allies = ab.target === 'ally' ? [showUnit(g, PARTNERS.find(k => k !== cid))] : ab.target === 'allies' ? PARTNERS.filter(k => k !== cid).slice(0, 3).map(k => showUnit(g, k)) : [];
+    return new H.SkillCuts.Show(ui, u, { cut: id.split('.')[1], strict: !!H.SkillCuts.SHOWS[id].enhanced, name: ab.name, line: true, foes: showFoes(aim, ab.target), allies, bg: 'station', outfit: null });
+  }
+
+  const followBuf = { cv: null };
+  function followFrame(ui, id) {
+    const SC = H.SkillCuts, def = SC.FOLLOW[id], kit = H.CHARS[def.charId], g = ui.game;
+    const cv = followBuf.cv || (followBuf.cv = G.mkCanvas(W, HGT)), c = cv.getContext('2d');
+    c.imageSmoothingEnabled = false;
+    c.drawImage(G.bgCanvas('station', W, HGT), 0, 0, cv.width, cv.height);
+    const u = showUnit(g, def.charId), loop = SC.FOLLOW_D + SC.LINGER + 0.5, t = ui.t % loop;
+    const cuts = [{ def, u, name: def.name, t, d: SC.FOLLOW_D, life: SC.FOLLOW_D + SC.LINGER, look: G.lookOf(def.charId, g) }].filter(x => x.t < x.life);
+    const ctx0 = ui.ctx;
+    ui.ctx = c;
+    try { SC.drawFollow(ui, c, cuts); } finally { ui.ctx = ctx0; }
+    return cv;
+  }
+
+  const makeCine = (ui, kind, id, aim, outfit) => (kind === 'fus' ? makeFus : kind === 'skin' ? makeSkin : kind === 'skill' ? makeSkill : makeUlt)(ui, id, aim, outfit);
 
   function makeWarp(ui, id, S) {
     const d = H.CHARS[id];
@@ -484,6 +513,7 @@
 
     debugSceneFrame(kind, id, S) {
       const ui = this, g = this.game;
+      if (kind === 'follow') return followFrame(ui, id);
       if (cineKind(kind)) {
         const oid = sceneOutfit(S, kind, id), key = kind + '|' + id + '|' + S.aim + '|' + oid;
         if (preview.key !== key) { preview.key = key; preview.show = makeCine(ui, kind, id, AIMS[S.aim][0], oid); }
@@ -544,6 +574,10 @@
 
     debugSceneNotes(st) {
       if (sceneKind(st) === 'aha') return this.debugAhaNotes(st);
+      if (sceneKind(st) === 'follow') {
+        const SC = H.SkillCuts, def = SC.FOLLOW[sceneAt(st).id];
+        return ['«' + def.name + '» · ' + (SC.FOLLOW_D + SC.LINGER).toFixed(1).replace('.', ',') + ' с', def.mark === 'counter' ? 'Контратака: полоса идёт справа, от врага.' : 'Бонус-атака: полоса идёт слева, от героя.', 'В цепочке врезка держится ' + SC.CHAIN_D.toFixed(1).replace('.', ',') + ' с.'];
+      }
       const g = this.game, S = st.sc, kind = sceneKind(st), { id } = sceneAt(st), kit = sceneKit(g, kind, id), sec = v => v.toFixed(1).replace('.', ',') + ' с';
       if (cineKind(kind)) {
         if (preview.key !== kind + '|' + id + '|' + S.aim) this.debugSceneFrame(kind, id, S);
@@ -551,8 +585,9 @@
           const f = H.FUSIONS[id], known = g.state.bank.fusions.includes(id);
           return ['«' + f.name + '» · ' + sec(preview.show.length), 'Пара: ' + f.members.map(k => showUnit(g, k).name).join(' + ') + '. Цель: ' + (AIM_TEXT[f.target] || f.target) + '.', known ? 'Слияние уже есть в Архиве.' : 'В Архиве его ещё нет. Просмотр не открывает.'];
         }
-        const ab = kind === 'skin' ? kit.skill : kit.ult;
-        return ['«' + ab.name + '» · ' + sec(preview.show.length), 'Цель в бою: ' + (AIM_TEXT[ab.target] || ab.target) + '.', 'Ролик идёт с игровыми звуками.'];
+        const ab = kind === 'skill' ? skillAbility(kit, id) : kind === 'skin' ? kit.skill : kit.ult;
+        const L = kind === 'skill' && preview.show.def.line, tail = L ? H.t('Выкрик при первом Навыке в бою: «' + L + '».', 'Shout on the first Skill of the battle: "' + H.tr(L) + '".') : 'Ролик идёт с игровыми звуками.';
+        return ['«' + ab.name + '» · ' + sec(preview.show.length), 'Цель в бою: ' + (AIM_TEXT[ab.target] || ab.target) + '.', tail];
       }
       if (kind === 'sig') {
         const L = this.debugSceneFrame(kind, id, S) && preview.show.length(preview.show.item());
@@ -608,7 +643,7 @@
             const f = H.FUSIONS[id], known = g.state.bank.fusions.includes(id);
             return { label: f.name, col: RAR_TXT[fusionKit(id).rarity], right: known ? 'в Архиве' : 'нет', rcol: known ? C.ok : C.dim, icon: (cc, ix, iy) => { G.drawPortrait(cc, G.lookOf(f.members[0], g), ix, iy - 9, 18); G.drawPortrait(cc, G.lookOf(f.members[1], g), ix + 12, iy - 9, 18); }, iconW: 34 };
           }
-          const kitId = kind === 'eid' ? g.kitOf(id) : id, d = H.CHARS[kitId], r = kind === 'eid' && g.state.roster[id];
+          const kitId = sceneChar(g, kind, id), d = H.CHARS[kitId], r = kind === 'eid' && g.state.roster[id];
           const right = kind === 'eid' ? (r ? 'E' + r.eid : 'нет') : '★'.repeat(d.rarity);
           return { label: sceneName(g, kind, id), col: RAR_TXT[d.rarity], right, rcol: kind === 'eid' ? (r ? C.ok : C.dim) : RAR_TXT[d.rarity], icon: (cc, ix, iy) => G.drawPortrait(cc, G.lookOf(kitId, g), ix, iy - 9, 18), iconW: 22 };
         }), i, opt(i, k => { st.sc.id = ids[k]; }));

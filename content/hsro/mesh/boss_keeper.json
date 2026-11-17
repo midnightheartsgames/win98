@@ -1,0 +1,119 @@
+{
+ "format": 1,
+ "id": "boss_keeper",
+ "kind": "skinned",
+ "verts": 1276,
+ "tris": 1600,
+ "bounds": [
+  -1.4849241971969604,
+  0.0,
+  -1.0,
+  1.4849241971969604,
+  3.2100000381469727,
+  0.8948275446891785
+ ],
+ "bin": "mesh/boss_keeper.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 1276,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 15312,
+   "count": 1276,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 30624,
+   "count": 1276,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 40832,
+   "count": 1276,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 45936,
+   "count": 1276,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 56144,
+   "count": 4800,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 65744,
+   "count": 2310,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 74984,
+   "count": 924,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 78680,
+   "count": 770,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 81760,
+   "count": 1232,
+   "type": "f"
+  }
+ },
+ "tex": "tex/boss_keeper.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "body",
+  "head",
+  "arm.L.u",
+  "arm.L.l",
+  "arm.R.u",
+  "arm.R.l",
+  "leg.L.u",
+  "leg.L.l",
+  "leg.R.u",
+  "leg.R.l"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  1,
+  3,
+  1,
+  5,
+  0,
+  7,
+  0,
+  9
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

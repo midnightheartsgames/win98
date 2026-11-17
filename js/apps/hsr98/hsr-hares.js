@@ -39,7 +39,7 @@
       base: { hp: 134, atk: 79, def: 54, spd: 108 },
       look: { skin: '#fae4d8', hair: '#e2e4ec', hairHi: '#ffffff', eye: '#d8702a', eye2: '#f4a860', bangs: 'wisp', sides: 'jaw', back: 'short', crown: 'smooth', gloss: true, body: 'petite', coat: 'volt', top: '#a6d63c', inner: '#1c1e22', trim: '#a6d63c', sleeve: '#22242a', collar: 'bare', lower: '#1c1c22', low: 'skirt', skirtLen: 7, shoes: '#a6d63c', gloves: '#1e2024', acc: ['headphones:#1e2024', 'choker:#1c1e22', 'stockings:#22242a', 'stockband:#d8402a', 'garter2:#2a2c32', 'tagbelt:#2a2c32', 'soles:#e8e8ee', 'voltblade:#30323a'] },
       basic: { name: 'Турборазряд', target: 'single', text: 'урон молнией 100%, +1 к Серии.', fx: [{ k: 'dmg', m: 1.0, tough: 10 }, { k: 'series' }] },
-      enhanced: { name: 'Гром', target: 'single', text: 'урон молнией ' + Math.round(T.thunder * 100) + '%, сильный удар по стойкости. Серия обнуляется.', fx: [{ k: 'dmg', m: T.thunder, tough: 25 }, { k: 'seriesReset' }] },
+      enhanced: { name: 'Гром', cut: 'thunder', target: 'single', text: 'урон молнией ' + Math.round(T.thunder * 100) + '%, сильный удар по стойкости. Серия обнуляется.', fx: [{ k: 'dmg', m: T.thunder, tough: 25 }, { k: 'seriesReset' }] },
       skill: { name: 'Удар молнии', target: 'single', text: 'урон молнией ' + Math.round(T.anbySkill * 100) + '%. После Серии 3 стойкость +64%. Серия обнуляется.', fx: [{ k: 'dmg', m: T.anbySkill, tough: 25, volt: true }, { k: 'seriesReset' }] },
       ult: { name: 'Овердрайв', target: 'single', text: 'урон молнией ' + Math.round(T.anbyUlt * 100) + '% и огромный удар по стойкости. Серия сразу 3.', fx: [{ k: 'dmg', m: T.anbyUlt, tough: 45 }, { k: 'seriesFull' }] },
       talent: 'Серия 1-2-3, затем «Гром». С Энби любое пробитие открывает Цепочку атак (120%).',

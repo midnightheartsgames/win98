@@ -1,0 +1,131 @@
+{
+ "format": 1,
+ "id": "foe_eliminator",
+ "kind": "skinned",
+ "verts": 920,
+ "tris": 908,
+ "bounds": [
+  -0.7075999975204468,
+  0.0,
+  -0.26840001344680786,
+  0.40564998984336853,
+  2.208199977874756,
+  0.3416000008583069
+ ],
+ "bin": "mesh/foe_eliminator.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 920,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 11040,
+   "count": 920,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 22080,
+   "count": 920,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 29440,
+   "count": 920,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 33120,
+   "count": 920,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 40480,
+   "count": 2724,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 45928,
+   "count": 3570,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 60208,
+   "count": 1428,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 65920,
+   "count": 1190,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 70680,
+   "count": 1904,
+   "type": "f"
+  }
+ },
+ "tex": "tex/foe_eliminator.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "spine",
+  "chest",
+  "neck",
+  "head",
+  "upperarm.L",
+  "forearm.L",
+  "hand.L",
+  "upperarm.R",
+  "forearm.R",
+  "hand.R",
+  "thigh.L",
+  "shin.L",
+  "foot.L",
+  "thigh.R",
+  "shin.R",
+  "foot.R"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  2,
+  3,
+  2,
+  5,
+  6,
+  2,
+  8,
+  9,
+  0,
+  11,
+  12,
+  0,
+  14,
+  15
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ }
+}

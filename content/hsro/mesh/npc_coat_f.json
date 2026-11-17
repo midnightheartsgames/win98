@@ -1,0 +1,234 @@
+{
+ "format": 1,
+ "id": "npc_coat_f",
+ "kind": "skinned",
+ "verts": 1050,
+ "tris": 1068,
+ "bounds": [
+  -0.3096138834953308,
+  -0.001999999862164259,
+  -0.19200000166893005,
+  0.3096138834953308,
+  1.763200044631958,
+  0.19200000166893005
+ ],
+ "bin": "mesh/npc_coat_f.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 1050,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 12600,
+   "count": 1050,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 25200,
+   "count": 1050,
+   "type": "f"
+  },
+  "joints": {
+   "offset": 33600,
+   "count": 1050,
+   "type": "B"
+  },
+  "weights": {
+   "offset": 37800,
+   "count": 1050,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 46200,
+   "count": 3204,
+   "type": "H"
+  },
+  "clip:idle": {
+   "offset": 52608,
+   "count": 4200,
+   "type": "f"
+  },
+  "clip:run": {
+   "offset": 69408,
+   "count": 1680,
+   "type": "f"
+  },
+  "clip:attack": {
+   "offset": 76128,
+   "count": 1400,
+   "type": "f"
+  },
+  "clip:cast": {
+   "offset": 81728,
+   "count": 2100,
+   "type": "f"
+  },
+  "clip:death": {
+   "offset": 90128,
+   "count": 2240,
+   "type": "f"
+  }
+ },
+ "tex": "tex/npc_coat_f.png",
+ "lightmap": null,
+ "bones": [
+  "root",
+  "spine",
+  "chest",
+  "neck",
+  "head",
+  "upperarm.L",
+  "forearm.L",
+  "hand.L",
+  "upperarm.R",
+  "forearm.R",
+  "hand.R",
+  "thigh.L",
+  "shin.L",
+  "foot.L",
+  "thigh.R",
+  "shin.R",
+  "foot.R",
+  "tail.1",
+  "tail.2",
+  "tail.3"
+ ],
+ "parents": [
+  -1,
+  0,
+  1,
+  2,
+  3,
+  2,
+  5,
+  6,
+  2,
+  8,
+  9,
+  0,
+  11,
+  12,
+  0,
+  14,
+  15,
+  0,
+  17,
+  18
+ ],
+ "fps": 15,
+ "clips": {
+  "idle": {
+   "frames": 30,
+   "loop": true,
+   "view": "clip:idle"
+  },
+  "run": {
+   "frames": 12,
+   "loop": true,
+   "view": "clip:run"
+  },
+  "attack": {
+   "frames": 10,
+   "loop": false,
+   "view": "clip:attack"
+  },
+  "cast": {
+   "frames": 15,
+   "loop": true,
+   "view": "clip:cast"
+  },
+  "death": {
+   "frames": 16,
+   "loop": false,
+   "view": "clip:death"
+  }
+ },
+ "look": {
+  "skin": [
+   [
+    0,
+    0,
+    64,
+    64
+   ],
+   [
+    64,
+    0,
+    64,
+    64
+   ],
+   [
+    192,
+    64,
+    64,
+    64
+   ]
+  ],
+  "coat": [
+   [
+    0,
+    64,
+    128,
+    96
+   ],
+   [
+    0,
+    224,
+    64,
+    32
+   ],
+   [
+    0,
+    160,
+    64,
+    32
+   ]
+  ],
+  "face": [
+   64,
+   0,
+   64,
+   64
+  ],
+  "faces": "tex/hero_faces.png",
+  "cells": [
+   [
+    0,
+    0,
+    64,
+    64
+   ],
+   [
+    64,
+    0,
+    64,
+    64
+   ],
+   [
+    128,
+    0,
+    64,
+    64
+   ],
+   [
+    192,
+    0,
+    64,
+    64
+   ],
+   [
+    0,
+    64,
+    64,
+    64
+   ],
+   [
+    64,
+    64,
+    64,
+    64
+   ]
+  ]
+ }
+}

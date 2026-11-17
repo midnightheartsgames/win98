@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_vendor",
+ "kind": "static",
+ "verts": 112,
+ "tris": 84,
+ "bounds": [
+  -0.550000011920929,
+  0.0,
+  -0.4000000059604645,
+  0.550000011920929,
+  2.18254017829895,
+  0.5476997494697571
+ ],
+ "bin": "mesh/prop_vendor.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 112,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1344,
+   "count": 112,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 2688,
+   "count": 112,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 3584,
+   "count": 252,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

@@ -532,7 +532,7 @@ test('a table: seats, code, list, version and limits', async () => {
   assert.match(code, /^[A-HJKMNP-TV-Z2-9]{4}$/);
   ps[3].send({ op: 'tableList' });
   const list = (await drain(ps[3])).find(m => m.op === 'tables').list;
-  assert.deepEqual(list, [{ code, host: 'P0', hostUid: '700000000', diff: 'hard', seats: 4, sim: 'aa', ver: '1.7' }]);
+  assert.deepEqual(list, [{ code, host: 'P0', hostUid: '700000000', diff: 'hard', mode: 'std', seats: 4, sim: 'aa', ver: '1.7' }]);
   const view = await (async () => { ps[1].send({ op: 'tableReady', on: true }); return lastTable(await drain(ps[1])); })();
   assert.equal(view.host, 0);
   assert.equal(view.seats[1].ready, true);
@@ -592,6 +592,11 @@ test('only the host starts, with everyone ready, and a bad seat does not break t
   const set = lastTable(await drain(host));
   assert.equal(set.diff, 'hard');
   assert.equal(set.open, true);
+  assert.equal(set.mode, 'std', 'a table starts as the usual Frontier');
+  host.send({ op: 'tableSet', mode: 'custom' });
+  assert.equal(lastTable(await drain(host)).mode, 'custom', 'the host switches the table to Patchwork');
+  host.send({ op: 'tableSet', mode: 'hack' });
+  assert.equal(lastTable(await drain(host)).mode, 'custom', 'an unknown mode is ignored');
   await drain(b);
   await drain(c);
   host.send({ op: 'tableKick', seat: 2 });

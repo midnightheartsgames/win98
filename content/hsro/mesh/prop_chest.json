@@ -1,0 +1,44 @@
+{
+ "format": 1,
+ "id": "prop_chest",
+ "kind": "static",
+ "verts": 117,
+ "tris": 120,
+ "bounds": [
+  -0.8299999833106995,
+  0.0,
+  -0.5499999523162842,
+  0.8299999833106995,
+  1.0,
+  0.5299999713897705
+ ],
+ "bin": "mesh/prop_chest.bin",
+ "views": {
+  "pos": {
+   "offset": 0,
+   "count": 117,
+   "type": "f"
+  },
+  "nor": {
+   "offset": 1404,
+   "count": 117,
+   "type": "f"
+  },
+  "uv": {
+   "offset": 2808,
+   "count": 117,
+   "type": "f"
+  },
+  "idx": {
+   "offset": 3744,
+   "count": 360,
+   "type": "H"
+  }
+ },
+ "tex": "tex/prop_station.png",
+ "lightmap": null,
+ "bones": [],
+ "parents": [],
+ "fps": 0,
+ "clips": {}
+}

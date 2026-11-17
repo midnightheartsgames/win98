@@ -2034,6 +2034,11 @@ class AppExplorer {
           window.gameManager.showOnCd('korovany_demo');
         } else if (window.appKorovany) window.appKorovany.open();
       }
+      else if (item.app === 'hsro' || item.name === 'HSRO.EXE') {
+        if (window.gameManager && !window.gameManager.isInstalled('hsro')) {
+          window.gameManager.showInSteam('hsro');
+        } else if (window.appHsro) window.appHsro.open();
+      }
       else if (item.app === 'kirill98' || item.name === 'KIRILL98.EXE') {
         if (window.gameManager && !window.gameManager.isInstalled('kirill98')) {
           window.gameManager.showInSteam('kirill98');

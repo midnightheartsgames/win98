@@ -134,7 +134,7 @@
         c.strokeStyle = on ? col : 'rgba(154,166,208,0.45)'; c.lineWidth = 2; c.stroke(); c.lineWidth = 1;
         G.menuIcon(c, ty ? ty.icon : t.icon, x - 13, y - 13, 26, on ? (ty ? ty.dim : '#3a3020') : col);
         if (on) { c.fillStyle = C.brassHi; c.fillRect(x - 22, y + 24, 44, 2); }
-        if (list.some(m => m.isNew && (t.id === 'all' || m.type === t.id))) this.badge(x + 15, y - 14);
+        if (list.some(m => m.isNew && (t.id === 'all' || m.type === t.id))) this.newMark(x + 15, y - 14);
         this.hit(x - 20, y - 20, 40, 40, () => s.setTab(i));
       });
       this.closeBtn(rx - 36, 16, () => s.key('back'));
@@ -239,6 +239,11 @@
       c.fillStyle = 'rgba(201,164,92,0.35)'; c.fillRect(x, ry - 8, w, 1);
       this.diamond(x + w, ry - 7.5, 2.5, C.brass);
       this.text('Награды', x, ry, { size: 12, bold: true, col: C.sub });
+      const rec = g.missionLevel(m);
+      if (rec) {
+        const team = g.partyLevel(), col = team >= rec ? C.ok : team >= rec - 4 ? C.gold : C.bad;
+        this.text('Рекомендуемый ур. ' + rec + ' · отряд ' + team, x + w, ry + 1, { size: 10, align: 'right', col });
+      }
       this.drawMissionRewards(c, m, x, ry + 18, b);
       const tracked = tr && tr.id === m.id, go = this.missionGo(m), bw = Math.floor((w - 10) / 2), by = HGT - 56;
       this.button(x, by, bw, 28, tracked ? 'Не отслеживать' : 'Отслеживать', () => s.track(), { icon: 'nav', size: 11, active: !tracked });

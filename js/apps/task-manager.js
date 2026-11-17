@@ -314,6 +314,9 @@ class AppTaskManager {
     if (idLower === 'app_korovany') {
       return { pid, imageName: 'korovany.exe', baseCpu: 34.0, mem: 96400, priority: 'Normal' };
     }
+    if (idLower === 'app_hsro') {
+      return { pid, imageName: 'hsro.exe', baseCpu: 26.0, mem: 142800, priority: 'Normal' };
+    }
     if (idLower === 'app_kirill98') {
       return { pid, imageName: 'kirill98.exe', baseCpu: 22.0, mem: 186400, priority: 'Normal' };
     }
