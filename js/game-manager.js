@@ -813,25 +813,6 @@ class GameManager {
         shots: ['За рулём «Волги»', 'Колесо обозрения в парке'],
         launch: () => window.appGtaNN && window.appGtaNN.open()
       },
-      legion: {
-        id: 'legion',
-        steam: true,
-        title: 'Legion Arena',
-        subtitle: 'Легионы Рима: тактическая стратегия',
-        developer: 'Slitherine Software (2005) / Win 98 Edition',
-        price: 18.99,
-        priceDisplay: '$18.99',
-        icon: 'legion',
-        setupExe: 'Setup_LegionArena.exe',
-        targetExe: 'ARENA.EXE',
-        folder: 'LegionArena',
-        fileSize: '690 MB (1 CD-ROM, 3D Accelerated)',
-        desc: 'Рим еще не велик, а вы, вождь покоренного латинского племени, ведете свое войско на службе Республики. Здесь все решает план: расставьте отряды, выберите каждому строй и приказ и смотрите, как сотни воинов исполняют ваш замысел. Очков приказов в бою мало, поэтому каждое вмешательство на счету. Полная римская кампания оригинала: 68 битв в 14 эпохах, от распрей в Лации, Кориолана и черной стражи латинов через Самнитские войны, Пирра и его слонов, Канны и Заму, Македонию, кимвров и Спартака до Алезии, Фарсала и Филипп. 25 видов войск от крестьян и велитов до гастатов, триариев, преторианцев, вспомогательной конницы и боевых слонов, а против них галльские фанатики, ветераны и знать. Отряды набираются опыта, учат навыки, получают оружие, броню и знамена и носят ваши цвета. Медали, милость богов, энциклопедия и быстрые битвы на Арене.',
-        genre: 'Тактическая стратегия',
-        tags: ['Древний Рим', 'Кампания', 'Реальное время', 'Развитие армии'],
-        shots: ['Легионеры в ближнем бою', 'Карта кампании'],
-        launch: () => window.appLegion && window.appLegion.open()
-      },
       homm1_demo: {
         id: 'homm1_demo',
         cdDemo: true,
@@ -850,44 +831,6 @@ class GameManager {
         tags: ['Фэнтези', 'Герои и магия', 'Замки', 'Тактический бой'],
         shots: ['Поход по долине Когтя', 'Осада замка и тактический бой'],
         launch: () => window.appHomm1 && window.appHomm1.open()
-      },
-      anotherwar: {
-        id: 'anotherwar',
-        steam: true,
-        title: 'Another War',
-        subtitle: 'Другая война: ролевая игра о Второй мировой',
-        developer: 'Mirage Interactive (2002) / Win 98 Edition',
-        price: 20.99,
-        priceDisplay: '$20.99',
-        icon: 'anotherwar',
-        setupExe: 'Setup_AnotherWar.exe',
-        targetExe: 'AW.EXE',
-        folder: 'AnotherWar',
-        fileSize: '600 MB (2 CD-ROM)',
-        desc: 'Оккупированная Франция. Наемник приезжает в городок Аннет по просьбе старого друга Пьера Доля. Тот оценивал для немецкого генерала награбленные древности, расшифровал какую-то карту и забрал ее себе. Один разговор в кафе, удар по голове, и вот вы уже в подвалах замка, а за соседней дверью пьяный немец Иоганн, ваш будущий напарник и летописец. Три героя, Силач, Вор и Интеллектуал, по-разному открывают одни и те же двери: кулаком, отмычкой или языком. Весь первый акт: рыночная площадь, кафе Рене, лавка букиниста, кладбище и церковь с тайным ходом, катакомбы и лес, где маневрируют немецкие патрули. Бой в реальном времени по правилам с кубиками, пауза в любой момент, особые навыки, уровни, торговля, дневник Иоганна и оригинальная озвучка.',
-        genre: 'Ролевая игра',
-        tags: ['Вторая мировая', 'Изометрия', 'Юмор', 'Диалоги'],
-        shots: ['Площадь Аннета ночью', 'Разговор с хозяином кафе'],
-        launch: () => window.appAnotherWar && window.appAnotherWar.open()
-      },
-      fallout: {
-        id: 'fallout',
-        steam: true,
-        title: 'Fallout',
-        subtitle: 'Постъядерная ролевая игра',
-        developer: 'Interplay Productions (1997)',
-        price: 19.99,
-        priceDisplay: '$19.99',
-        icon: 'fallout',
-        setupExe: 'Setup_Fallout.exe',
-        targetExe: 'FALLOUTW.EXE',
-        folder: 'Fallout',
-        fileSize: '590 MB (1 CD-ROM)',
-        desc: '2161 год. Восемьдесят четыре года назад мир сгорел в ядерной войне, а Убежище 13 с тех пор ни разу не открывало дверь. Теперь сломался водяной чип: без него очистители остановятся через 150 дней. Смотритель выбирает вас и отправляет в пустоши Южной Калифорнии искать замену. Шейди-Сэндс, Джанктаун, Хаб, Некрополь, Братство Стали, Собор Детей и база мутантов на Марипозе: у каждого места свои беды, и почти любую можно решить оружием, словом, кражей или наукой. Пошаговый бой с очками действия и прицельными выстрелами, система S.P.E.C.I.A.L., навыки, перки, карма и репутация, говорящие головы и концовка, которая подводит итог всем вашим поступкам. Версия 1.2 с роликами и музыкой: тексты, интерфейс и справка на русском или английском по языку системы, озвучка оригинальная английская; разрешение 640x480 или 800x600.',
-        genre: 'Ролевая игра',
-        tags: ['Постапокалипсис', 'Пошаговый бой', 'Изометрия', 'Выбор и последствия'],
-        shots: ['Караваны у ворот Хаба', 'Разговор с Арадешем'],
-        launch: () => window.appFallout && window.appFallout.open()
       },
       falloutzp_demo: {
         id: 'falloutzp_demo',
@@ -1891,31 +1834,10 @@ Street map of Riga based on OpenStreetMap data, (c) OpenStreetMap contributors, 
               readmeContent = `XIII Demo\r\n==================================\r\nUbisoft Paris (2000) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium II 350 MHz, 64 MB RAM, 3D accelerator with 16 MB (TNT2 / Voodoo3 / Rage 128), DirectX 7.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire   [Right Click] - Zoom\r\n[Space] - Jump   [C]/[Ctrl] - Crouch   [Shift] - Walk quietly   [E]/[F] - Use, pick locks, take a hostage\r\n[R] - Reload   [1-9] - Weapons   [Q] - Last weapon   [G] - Grenade   [H] - Medkit\r\n[Tab] - Objectives   [F5] - Quick save   [F9] - Quick load   [Esc] - Pause menu\r\n\r\nTen chapters from Brighton Beach to Plain Rock Penitentiary.\r\nEvery document you find is a piece of your past. Collect them all for the XX dossier.`;
             } else if (id === 'maxpayne_demo') {
               readmeContent = `Max Payne Demo\r\n==================================\r\nRemedy Entertainment (2001) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium II 450 MHz, 96 MB RAM, 3D accelerator with 16 MB (TNT2 / Voodoo3 / Rage 128), DirectX 7.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Aim   [Left Click] - Fire   [Right Click] - Bullet time / Shootdodge\r\n[Shift] - Bullet time   [Q] - Shootdodge   [Space] - Jump   [C]/[Ctrl] - Crouch   [Alt] - Walk\r\n[E]/[F] - Use   [R] - Reload   [H]/[Backspace] - Painkillers   [G] - Throw grenade or Molotov\r\n[1-5], [Wheel] - Weapons   [Tab] - Max's thoughts   [Enter] - Skip a line   [F5] - Quick save   [F9] - Quick load   [Esc] - Menu\r\n\r\nPart I: The American Dream. A tutorial, a prologue and nine chapters, from Roscoe Street Station to Aesir Plaza.\r\nKills refill the hourglass. Painkillers heal over time. Harder modes open after Part I.`;
-            } else if (id === 'legion') {
-              readmeContent = `Legion Arena
-==================================
-Slitherine Software (2005) - Win 98 Edition, 3D accelerated
-
-System requirements: Pentium III 700 MHz, 128 MB RAM, 3D accelerator with 32 MB (GeForce2 / Radeon), DirectX 8.
-
-Deployment:
-[Left drag] - Move a squad inside the deployment zone   [Right drag] - Turn it   [1/2/3] - Formation   [Enter] - Start the battle
-
-Battle:
-[Left Click] / [Drag a box] - Select squads   [Right Click] - Move / Attack   [Space] - Pause   [+]/[-] - Speed
-[G] - Signal   [R] - Rally   [H] - Halt   [C] - Charge   [X] - Pull cavalry out   [T] - Show terrain
-[W/A/S/D]/[Arrows] - Camera   [Q]/[E] - Turn   [Wheel] - Zoom   [Tab] - Next squad   [Home] - General   [Esc] - Menu
-
-The full Roman campaign: 68 battles in 14 eras, from the wars in Latium to Philippi, the Arena and the encyclopedia.
-Command points are scarce. Plan well, then let your men fight.`;
             } else if (id === 'homm1_demo') {
               readmeContent = `Heroes of Might and Magic 98 Demo\r\n==================================\r\nNew World Computing (1995) - 640x480, 256 colors\r\n\r\nAdventure Map Controls:\r\n[Left Click on tile] - Plan A* path; click same tile again or press [M] to march\r\n[Right Click on tile] - Inspect terrain, town, mine or monster stack\r\n[Arrow Keys] - Scroll Adventure Map camera\r\n[T] / [Double Click Town] - Open Town Screen\r\n[H] - Hero Sheet & Artifacts   [C] - Cast Adventure Spell   [D] - Dig for Ultimate Artifact\r\n[E] - End Day (7 days per week, weekly creature growth on Day 1)\r\n[F5] - Save Game   [F9] - Load Game\r\n\r\nTown Screen:\r\nClick Castle to build (1 structure per day), Tavern to hire heroes, Mage Guild to study spells,\r\nor creature dwellings to recruit troops. Shift-click army slots to split stacks.\r\n\r\nTactical Combat (7x5 grid):\r\n[Left Click] - Move or Attack   [C] - Cast Spell   [Space]/[D] - Defend   [A] - Auto-Combat   [R] - Retreat`;
-            } else if (id === 'fallout') {
-              readmeContent = 'Fallout: A Post-Nuclear Role-Playing Game\r\n==================================\r\nInterplay Productions (1997) - Win 98 Edition, version 1.2, 640x480, 256 colors\r\n\r\nSystem requirements: Pentium 90 MHz, 16 MB RAM, SVGA video card (640x480, 256 colors), DirectX 3.0a, 2x CD-ROM, mouse.\r\n\r\nControls:\r\n[Left Click] - Walk or act with the current cursor   [Right Click] - Switch the walk and action cursors\r\n[Hold Left Button] on an object - Action menu: look, talk, use, skill, rotate\r\n[A] - Attack   [Space] - End turn   [Enter] - End combat   [N] - Weapon mode   [B] - Swap hands   [M] - Cursor mode\r\n[I] - Inventory   [C] - Character   [P] - Pip-Boy   [Z] - Pip-Boy clock   [S] - Skilldex   [Tab] - Automap   [O]/[Esc] - Options\r\n[1-8] - Sneak, Lockpick, Steal, Traps, First Aid, Doctor, Science, Repair\r\n[Home] - Center on you   [,]/[.] - Turn   [/] - Time   [+]/[-] - Brightness   [F1] - Help\r\n[F4]/[Ctrl+S] - Save   [F5]/[Ctrl+L] - Load   [F6] - Quick save   [F7] - Quick load   [F10]/[Ctrl+Q] - Quit\r\n\r\nVault 13, 5 December 2161. The water chip has failed and the vault has water for 150 days.\r\nThe Overseer has chosen you to find a new one.';
             } else if (id === 'falloutzp_demo') {
               readmeContent = `Fallout: Запорожье Demo\r\n==================================\r\nObsidian Entertainment (2001) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium III 600 MHz, 128 MB RAM, 3D accelerator with 32 MB (GeForce2 / Radeon), DirectX 8.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire / Swing   [Right Click] - Aim   [Shift] - Walk   [Space] - Jump\r\n[Ctrl] - Sneak   [E] - Use, talk, open   [R] - Reload   [F] - First / third person   [H] - Holster   [G] - Throw grenade\r\n[V] - S.T.R.E.L.A. targeting   [Tab] - Pioneer-77   [T] - Wait   [L] - Pioneer light   [1-8] - Hotkeys   [Wheel] - Next weapon\r\n[F5] - Quick save   [F9] - Quick load   [Esc] - Menu\r\n\r\nZaporozhye, 1 September 2280. The courier of the Main Post Office was shot on the bridge and thrown into the Dnieper.\r\nVoznesenovsky district and the island of Khortytsia are open from the start. Danger grows with distance from Voznesenka.\r\n\r\nMap of Zaporozhye based on OpenStreetMap data, (c) OpenStreetMap contributors, ODbL. Heights: SRTM, NASA.`;
-            } else if (id === 'anotherwar') {
-              readmeContent = 'Другая война (Another War)\r\n==================================\r\nMirage Interactive (2002) - Win 98 Edition, 800x600\r\n\r\nСистемные требования: Pentium II 433 МГц, 128 MB RAM, видеокарта с 8 MB памяти, DirectX 8.1.\r\n\r\nУправление:\r\n[Левая кнопка] - идти, осмотреть, подобрать   [Правая кнопка] - говорить, использовать, открыть\r\n[D] - достать или спрятать оружие   [Ctrl]+[Левая кнопка] - прицельный выстрел   [Enter] - атаковать ближайшего врага\r\n[R] - перезарядить   [E] - починить оружие   [1-7] - предметы на поясе   [W] - шаг или бег\r\n[F1-F8] - выбрать особый навык   [Пробел] - применить навык   [Backspace] - отменить выбор\r\n[I] - снаряжение   [S] - параметры   [N] - дневник   [M] - карта   [O] - настройки   [H]/[F10] - помощь\r\n[Ctrl+S] - сохранить   [Ctrl+L] - загрузить   [F11] - быстрое сохранение   [F12] - быстрая загрузка\r\n[P] - пауза   [Пробел]/[Enter] - пропустить реплику в сценке   [Esc] - меню\r\n\r\nАкт I. Аннет, оккупированная Франция. Выберите героя: Силач, Вор или Интеллектуал.\r\nВыберитесь из подвалов вместе с Иоганном и найдите способ уехать из города.\r\nПродолжение следует: впереди Югославия.';
             } else if (id === 'korovany_demo') {
               readmeContent = 'Корованы Demo\r\n==================================\r\nДжва Года Софт (2000) - Win 98 Edition, 3D accelerated\r\n\r\nСистемные требования: Pentium II 300 МГц, 64 MB RAM, 3D-ускоритель с 8 MB памяти, DirectX 6.\r\n\r\nУправление:\r\n[W/A/S/D] - идти   [Shift] - бежать   [Пробел] - прыжок   [C] - пригнуться\r\n[Мышь] - смотреть   [Левая кнопка] - удар, выстрел   [Правая кнопка] - блок\r\nКуда смотрите, туда и бьёте: вверх - голова, прямо - корпус, вниз - ноги.\r\n[1/2/3] - оружие / лук / факел   [R] - убрать оружие   [E] - говорить, обыскать, поджечь\r\n[B] - перевязать рану   [H] - зелье   [V] - от первого лица\r\n[I] - инвентарь и протезы   [M] - карта   [J] - журнал   [T] - ждать   [Q] - приказы войску\r\n[F5/F9] - быстрое сохранение / загрузка   [Esc] - меню\r\n\r\nОтрубленная рука или нога кровоточит. Перевяжите её (B) или идите к знахарке, иначе умрёте.\r\nПротезы ставит мастер Деревяшкин в Развилках.\r\n\r\nПо письму Кирилла.';
             } else if (id === 'hsro') {

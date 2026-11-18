@@ -219,7 +219,7 @@ test('steampowered.com offers the client download, then setup, then launch', () 
 
 test('own Steam games are paid with distinct prices, Star Rail 98 is free', () => {
   const { gm } = createSystem();
-  const ownGames = ['doom', 'serioussam', 'lol', 'dota', 'avatar98', 'cop98', 'gta90', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201', 'ow98', 'diablo2', 'forza', 'gtann', 'legion', 'anotherwar', 'fallout'];
+  const ownGames = ['doom', 'serioussam', 'lol', 'dota', 'avatar98', 'cop98', 'gta90', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201', 'ow98', 'diablo2', 'forza', 'gtann'];
   const prices = ownGames.map(id => gm.catalog[id].price);
   assert.ok(prices.every(p => p > 0), 'every own game costs money');
   assert.equal(new Set(prices).size, prices.length, 'prices differ');
@@ -274,22 +274,22 @@ test('uninstall keeps the license', () => {
   assert.ok(!desktop.computeCurrentIcons().some(i => i.id === 'lol'));
 });
 
-test('Fallout is installed only through Steam and leaves nothing behind when removed', () => {
+test('GTA: Nizhny City is installed only through Steam and leaves nothing behind when removed', () => {
   const { gm, steam, vfs, desktop } = createSystem();
-  const folder = () => vfs.resolvePath(['My Computer', 'C:', 'Games', 'Fallout']);
-  const icon = () => desktop.computeCurrentIcons().some(i => i.id === 'fallout');
-  assert.equal(gm.isInstalled('fallout'), false, 'not preinstalled');
-  assert.equal(gm.ownsOnSteam('fallout'), false, 'not owned');
+  const folder = () => vfs.resolvePath(['My Computer', 'C:', 'Games', 'GTANN']);
+  const icon = () => desktop.computeCurrentIcons().some(i => i.id === 'gtann');
+  assert.equal(gm.isInstalled('gtann'), false, 'not preinstalled');
+  assert.equal(gm.ownsOnSteam('gtann'), false, 'not owned');
   assert.ok(!icon() && !folder(), 'no shortcut and no files before the purchase');
   gm.finishInstallation('steam');
-  gm.purchaseGame('fallout');
-  steam.startDownload('fallout');
+  gm.purchaseGame('gtann');
+  steam.startDownload('gtann');
   runDownloadToEnd(steam);
-  assert.equal(steam.getGameState('fallout'), 'installed');
-  assert.ok(folder() && folder().children['FALLOUTW.EXE'] && folder().children['README.TXT'], 'FALLOUTW.EXE and README.TXT in C:\\Games\\Fallout');
+  assert.equal(steam.getGameState('gtann'), 'installed');
+  assert.ok(folder() && folder().children['GTANN.EXE'] && folder().children['README.TXT'], 'GTANN.EXE and README.TXT in C:\\Games\\GTANN');
   assert.ok(icon(), 'desktop shortcut');
-  gm.uninstallGame('fallout');
-  assert.equal(steam.getGameState('fallout'), 'owned');
+  gm.uninstallGame('gtann');
+  assert.equal(steam.getGameState('gtann'), 'owned');
   assert.ok(!icon() && !folder(), 'shortcut and files removed');
 });
 

@@ -54,7 +54,7 @@ const server = http.createServer((req, res) => {
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
     const range = req.headers.range;
-    if (range && (ext === '.mp4' || ext === '.avi' || ext === '.mp3' || ext === '.wav' || ext === '.webm' || ext === '.mkv' || ext === '.dat')) {
+    if (range && (ext === '.mp4' || ext === '.avi' || ext === '.mp3' || ext === '.wav' || ext === '.webm' || ext === '.mkv')) {
       const parts = range.replace(/bytes=/, '').split('-');
       const start = parseInt(parts[0], 10);
       const end = parts[1] ? parseInt(parts[1], 10) : stats.size - 1;

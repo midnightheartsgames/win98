@@ -715,7 +715,7 @@ class AppDialogs {
             <tr><td>${key('F5')}</td><td>${L('На рабочем столе — обновить значки (в Блокноте — вставить время и дату, в QBasic — запустить программу).', 'On the desktop, refresh the icons (in Notepad, insert the time and date; in QBasic, run the program).')}</td></tr>
             <tr><td>${key('Ctrl+Alt+Del')}, ${key('Ctrl+Shift+Esc')}</td><td>${L('Открыть Диспетчер задач Win.', 'Open the Win Task Manager.')}</td></tr>
             <tr><td>${key('Print Screen')} / ${key('Alt+Print Screen')}</td><td>${L('Скопировать снимок экрана или активного окна в «Просмотр буфера обмена».', 'Copy a snapshot of the screen or the active window to the ClipBook Viewer.')}</td></tr>
-            <tr><td>${key('F10')} / ${key('Ctrl+F10')}</td><td>${L('Открыть «Сообщение об ошибке» (в Fallout и «Другой войне» — только ' + key('Ctrl+F10') + '). В Honkai: Star Rail 98 для этого служит ' + key('F9') + '.', 'Open Report a Problem (in Fallout and Another War only ' + key('Ctrl+F10') + '). In Honkai: Star Rail 98 the key is ' + key('F9') + '.')}</td></tr>
+            <tr><td>${key('F10')} / ${key('Ctrl+F10')}</td><td>${L('Открыть «Сообщение об ошибке». В Honkai: Star Rail 98 для этого служит ' + key('F9') + '.', 'Open Report a Problem. In Honkai: Star Rail 98 the key is ' + key('F9') + '.')}</td></tr>
             <tr><td>${key('Ctrl+S')}, ${key('Ctrl+C')}, ${key('Ctrl+V')}</td><td>${L('В программах с текстом и документами (Блокнот, WordPad): сохранить, скопировать и вставить.', 'In programs with text and documents (Notepad, WordPad): save, copy, and paste.')}</td></tr>
             <tr><td>${key('Shift')} ×5</td><td>${L('Предложить включить залипание клавиш (специальные возможности).', 'Offer to turn on StickyKeys (accessibility).')}</td></tr>
             <tr><td>${key('Ctrl+Alt+Shift+B')}</td><td>${L('Показать синий экран смерти (демонстрация); любая клавиша закрывает его.', 'Show the Blue Screen of Death (a demonstration); any key closes it.')}</td></tr>
@@ -1059,7 +1059,7 @@ class AppDialogs {
 
           <h3>${L('Вы нашли ошибку в системе или игре', 'You found a bug in the system or a game')}</h3>
           <ol>
-            <li>${L('Нажмите ' + key('F10') + ' (в любой программе работает ' + key('Ctrl+F10') + '; в Fallout и «Другой войне» ' + key('F10') + ' занята самой игрой, в Honkai: Star Rail 98 используйте ' + key('F9') + '). Откроется окно «Сообщение об ошибке» со снимком экрана и строкой «Где» (окно, адрес в Internet Explorer, папка в Проводнике, место в игре).', 'Press ' + key('F10') + ' (' + key('Ctrl+F10') + ' works in every program; in Fallout and Another War ' + key('F10') + ' belongs to the game itself, and in Honkai: Star Rail 98 use ' + key('F9') + '). The Report a Problem window opens with a screenshot and a Where line (the window, the address in Internet Explorer, the folder in Explorer, the place in the game).')}</li>
+            <li>${L('Нажмите ' + key('F10') + ' (в любой программе работает ' + key('Ctrl+F10') + '; в Honkai: Star Rail 98 используйте ' + key('F9') + '). Откроется окно «Сообщение об ошибке» со снимком экрана и строкой «Где» (окно, адрес в Internet Explorer, папка в Проводнике, место в игре).', 'Press ' + key('F10') + ' (' + key('Ctrl+F10') + ' works in every program; in Honkai: Star Rail 98 use ' + key('F9') + '). The Report a Problem window opens with a screenshot and a Where line (the window, the address in Internet Explorer, the folder in Explorer, the place in the game).')}</li>
             <li>${L('Напишите одну строку в поле «Что случилось?». Кнопка «Пометить» рисует красные рамки на снимке, «Скрыть» закрывает лишнее чёрным прямоугольником, «Показать данные» выводит всё, что будет отправлено; пароли и набранный текст в отчёт не попадают.', 'Write one line in the What happened? box. Mark draws red frames on the screenshot, Hide covers anything extra with a black rectangle, and Show Data lists exactly what will be sent; passwords and typed text never go into a report.')}</li>
             <li>${L('Нажмите «Отправить» (' + key('Ctrl+Enter') + '). Номер отчёта вида <code>BR-ГГММДД-XXXX</code> виден сразу. Без интернета отчёт сохраняется и уходит при следующем запуске, а кнопка «В файл...» сохраняет его для передачи вручную.', 'Click Send (' + key('Ctrl+Enter') + '). The report number, like <code>BR-YYMMDD-XXXX</code>, is shown at once. Without a connection the report is kept and sent at the next start, and Save to File... saves it for sending by hand.')}</li>
             <li>${L('Что стало с отчётом, показывает «Мои отчёты об ошибках» («Служебные» или <code>bugreport /list</code>); когда ошибка исправлена, в трее появляется значок. Если программа «выполнила недопустимую операцию», система сама предложит отправить отчёт.', 'My Problem Reports (System Tools or <code>bugreport /list</code>) shows what happened to a report; when the bug is fixed an icon appears in the tray. If a program performs an illegal operation the system offers to send a report itself.')}</li>
@@ -2015,18 +2015,6 @@ class AppDialogs {
       } else if (window.appStalker) window.appStalker.open();
       return;
     }
-    if (cmd === 'fallout' || cmd === 'fallout.exe' || cmd === 'falloutw' || cmd === 'falloutw.exe' || cmd === 'fallout1' || val === 'fallout 1' || cmd === 'фоллаут') {
-      if (window.gameManager && !window.gameManager.isInstalled('fallout')) {
-        window.winManager.openDialog({
-          title: 'Fallout',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Fallout не установлена.<br>Вы можете купить её в <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'fallout\');">Steam</a>'
-            : 'Game Fallout is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'fallout\');">Steam</a>'
-        });
-      } else if (window.appFallout) window.appFallout.open();
-      return;
-    }
     if (cmd === 'fallout2' || val === 'fallout 2' || cmd === 'fallout2.exe') {
       if (window.gameManager && !window.gameManager.isInstalled('fallout98_demo')) {
         window.gameManager.showOnCd('fallout98_demo');
@@ -2245,34 +2233,10 @@ class AppDialogs {
       } else if (window.appMaxPayne) window.appMaxPayne.open();
       return;
     }
-    if (cmd === 'legion' || cmd === 'arena' || cmd === 'arena.exe' || cmd === 'legion arena' || cmd === 'legionarena' || cmd === 'легионы рима' || cmd === 'легион' || cmd === 'арена') {
-      if (window.gameManager && !window.gameManager.isInstalled('legion')) {
-        window.winManager.openDialog({
-          title: 'Legion Arena',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Legion Arena не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'legion\');">Steam</a>'
-            : 'Game Legion Arena is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'legion\');">Steam</a>'
-        });
-      } else if (window.appLegion) window.appLegion.open();
-      return;
-    }
-    if (cmd === 'falloutzp' || cmd === 'falloutzp.exe' || cmd === 'fallout zp' || cmd === 'запорожье' || cmd === 'new vegas' || val === 'fallout: запорожье' || val === 'fallout запорожье') {
+    if (cmd === 'falloutzp' || cmd === 'falloutzp.exe' || cmd === 'fallout zp' || cmd === 'fallout' || cmd === 'фоллаут' || cmd === 'запорожье' || cmd === 'new vegas' || val === 'fallout: запорожье' || val === 'fallout запорожье') {
       if (window.gameManager && !window.gameManager.isInstalled('falloutzp_demo')) {
         window.gameManager.showOnCd('falloutzp_demo');
       } else if (window.appFalloutZP) window.appFalloutZP.open();
-      return;
-    }
-    if (cmd === 'anotherwar' || cmd === 'another war' || cmd === 'anotherwar.exe' || cmd === 'aw' || cmd === 'aw.exe' || cmd === 'другая война') {
-      if (window.gameManager && !window.gameManager.isInstalled('anotherwar')) {
-        window.winManager.openDialog({
-          title: 'Another War',
-          icon: 'error',
-          message: isRu
-            ? 'Игра Another War не установлена.<br>Вы можете загрузить её через <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'anotherwar\');">Steam</a>'
-            : 'Game Another War is not installed.<br>You can get it on <a href="#" onclick="window.gameManager&&window.gameManager.showInSteam(\'anotherwar\');">Steam</a>'
-        });
-      } else if (window.appAnotherWar) window.appAnotherWar.open();
       return;
     }
     if (cmd === 'korovany' || cmd === 'korovany.exe' || cmd === 'корованы' || cmd === 'kirill') {

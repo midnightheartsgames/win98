@@ -74,11 +74,7 @@ const EXE_EXCLUDED = [
   /^\/transcript[^/]*\.jsonl$/,
   /^\/techies\.txt$/,
   /^\/tsconfig\.json$/,
-  /^\/content\/music\/[^/]+\.mp4$/i,
-  /^\/content\/Legion Arena($|\/)/,
-  /^\/content\/Another War($|\/)/,
-  /^\/content\/Fallout\/(Manual|Extras|DATA\/SAVEGAME)($|\/)/,
-  /^\/content\/Fallout\/[^/]+\.(exe|dll|rtf|log|ini|cfg|ico|txt)$/i
+  /^\/content\/music\/[^/]+\.mp4$/i
 ];
 
 const pad = n => String(n).padStart(2, '0');

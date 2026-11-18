@@ -513,25 +513,10 @@ class Taskbar {
                   <div class="start-menu-item-icon">${Icons['gtann']}</div>
                   <div class="start-menu-item-text">GTA: Нижний Сити</div>
                 </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('legion')) ? `
-                <div class="start-menu-item" data-action="legion">
-                  <div class="start-menu-item-icon">${Icons['legion']}</div>
-                  <div class="start-menu-item-text">Legion Arena</div>
-                </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('homm1_demo')) ? `
                 <div class="start-menu-item" data-action="homm1_demo">
                   <div class="start-menu-item-icon">${Icons['homm1']}</div>
                   <div class="start-menu-item-text">Heroes of Might and Magic 98 Demo</div>
-                </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('anotherwar')) ? `
-                <div class="start-menu-item" data-action="anotherwar">
-                  <div class="start-menu-item-icon">${Icons['anotherwar']}</div>
-                  <div class="start-menu-item-text">Another War</div>
-                </div>` : ''}
-                ${(window.gameManager && window.gameManager.isInstalled('fallout')) ? `
-                <div class="start-menu-item" data-action="fallout">
-                  <div class="start-menu-item-icon">${Icons['fallout']}</div>
-                  <div class="start-menu-item-text">Fallout</div>
                 </div>` : ''}
                 ${(window.gameManager && window.gameManager.isInstalled('falloutzp_demo')) ? `
                 <div class="start-menu-item" data-action="falloutzp_demo">
@@ -1221,13 +1206,6 @@ class Taskbar {
           window.appGtaNN.open();
         }
         break;
-      case 'legion':
-        if (window.gameManager && !window.gameManager.isInstalled('legion')) {
-          window.gameManager.showInSteam('legion');
-        } else if (window.appLegion) {
-          window.appLegion.open();
-        }
-        break;
       case 'homm1_demo':
         if (window.gameManager && !window.gameManager.isInstalled('homm1_demo')) {
           window.gameManager.showOnCd('homm1_demo');
@@ -1235,25 +1213,11 @@ class Taskbar {
           window.appHomm1.open();
         }
         break;
-      case 'fallout':
-        if (window.gameManager && !window.gameManager.isInstalled('fallout')) {
-          window.gameManager.showInSteam('fallout');
-        } else if (window.appFallout) {
-          window.appFallout.open();
-        }
-        break;
       case 'falloutzp_demo':
         if (window.gameManager && !window.gameManager.isInstalled('falloutzp_demo')) {
           window.gameManager.showOnCd('falloutzp_demo');
         } else if (window.appFalloutZP) {
           window.appFalloutZP.open();
-        }
-        break;
-      case 'anotherwar':
-        if (window.gameManager && !window.gameManager.isInstalled('anotherwar')) {
-          window.gameManager.showInSteam('anotherwar');
-        } else if (window.appAnotherWar) {
-          window.appAnotherWar.open();
         }
         break;
       case 'korovany_demo':

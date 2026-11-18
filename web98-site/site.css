@@ -420,10 +420,6 @@ a {
   --level: #007a29;
 }
 
-.is-blue {
-  --level: #0047c8;
-}
-
 .game-level {
   display: flex;
   align-items: center;

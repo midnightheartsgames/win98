@@ -2009,11 +2009,6 @@ class AppExplorer {
           window.gameManager.showInSteam('gtann');
         } else if (window.appGtaNN) window.appGtaNN.open();
       }
-      else if (item.app === 'legion' || item.name === 'ARENA.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('legion')) {
-          window.gameManager.showInSteam('legion');
-        } else if (window.appLegion) window.appLegion.open();
-      }
       else if (item.app === 'homm1_demo' || item.name === 'HEROES.EXE') {
         if (window.gameManager && !window.gameManager.isInstalled('homm1_demo')) {
           window.gameManager.showOnCd('homm1_demo');
@@ -2023,11 +2018,6 @@ class AppExplorer {
         if (window.gameManager && !window.gameManager.isInstalled('falloutzp_demo')) {
           window.gameManager.showOnCd('falloutzp_demo');
         } else if (window.appFalloutZP) window.appFalloutZP.open();
-      }
-      else if (item.app === 'anotherwar' || item.name === 'AW.EXE') {
-        if (window.gameManager && !window.gameManager.isInstalled('anotherwar')) {
-          window.gameManager.showInSteam('anotherwar');
-        } else if (window.appAnotherWar) window.appAnotherWar.open();
       }
       else if (item.app === 'korovany_demo' || item.name === 'KOROVANY.EXE') {
         if (window.gameManager && !window.gameManager.isInstalled('korovany_demo')) {

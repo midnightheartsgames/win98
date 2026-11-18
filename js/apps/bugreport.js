@@ -3,7 +3,7 @@ class AppBugReport {
     this.WIN_ID = 'app_bugreport';
     this.MARKS_ID = 'app_bugreport_marks';
     this.LIST_ID = 'app_bugreport_list';
-    this.F10_OWNERS = ['app_fallout', 'app_anotherwar'];
+    this.F10_OWNERS = [];
     this.SENT_KEY = 'win98.bugs.sent';
     this.NOTICE_KEY = 'win98.bugs.notice';
     this.CHECKED_KEY = 'win98.bugs.checked';

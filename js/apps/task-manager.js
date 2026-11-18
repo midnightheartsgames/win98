@@ -299,14 +299,8 @@ class AppTaskManager {
     if (idLower === 'app_gtann') {
       return { pid, imageName: 'gtann.exe', baseCpu: 46.0, mem: 88400, priority: 'High' };
     }
-    if (idLower === 'app_legion') {
-      return { pid, imageName: 'arena.exe', baseCpu: 34.0, mem: 74200, priority: 'High' };
-    }
     if (idLower === 'app_falloutzp') {
       return { pid, imageName: 'falloutzp.exe', baseCpu: 38.0, mem: 88600, priority: 'High' };
-    }
-    if (idLower === 'app_anotherwar') {
-      return { pid, imageName: 'aw.exe', baseCpu: 26.0, mem: 61400, priority: 'Normal' };
     }
     if (idLower === 'app_korovany') {
       return { pid, imageName: 'korovany.exe', baseCpu: 34.0, mem: 96400, priority: 'Normal' };

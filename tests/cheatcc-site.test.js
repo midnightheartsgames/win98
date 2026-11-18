@@ -102,7 +102,6 @@ test('debug keys sit where the site says', () => {
     lol: ['js/apps/lol/lol-ui.js', "code === 'F7'"],
     ow98: ['js/apps/ow98/ow-ui.js', "e.code === 'F7'"],
     hsr98: ['js/apps/hsr98/hsr-ui.js', "code === 'F7'"],
-    legion: ['js/apps/legion/lg-ui.js', "e.code === 'F7'"],
     sims3: ['js/apps/sims3/s3-ui.js', "e.code === 'F7'"],
     forza: ['js/apps/forza/fz-ui.js', "e.code === 'F7'"],
     falloutzp: ['js/apps/falloutzp/zp-input.js', "has('F7')"],
@@ -114,7 +113,6 @@ test('debug keys sit where the site says', () => {
     assert.ok(read(file).includes(needle), `${id}: ${needle}`);
   });
   assert.ok(read('js/apps/hsr98/hsr-core.js').includes('debugJade: 1600'));
-  assert.ok(read('js/apps/legion/lg-ui.js').includes('L.Army.grant(p, 500, 500)'));
   assert.ok(read('js/apps/ow98/ow-ui.js').includes('this.profile.boxes += 5'));
 });
 

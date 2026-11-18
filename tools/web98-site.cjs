@@ -42,7 +42,6 @@ const demosNoun = n => plural(n, 'демоверсия', 'демоверсии',
 const LEVELS = {
   purple: { short: 'Готово, обновляется', long: 'Готово полностью, будет обновляться' },
   green: { short: 'Готово полностью', long: 'Полностью играбельно' },
-  blue: { short: 'Порт оригинала', long: 'Полноценный порт настоящей игры' },
   lime: { short: 'Готово на 80–95%', long: 'Почти готово, примерно на 80–95%' },
   yellow: { short: 'Готово на 40–70%', long: 'Играбельно, но есть недоделки, готово примерно на 40–70%' },
   orange: { short: 'Готово на 10–30%', long: 'Нужна крупная доработка, готово примерно на 10–30%' },
@@ -55,8 +54,7 @@ const READINESS = {
   orange: ['diablo2', 'gta90'],
   yellow: ['wolf3d', 'diablo', 'doom', 'lol', 'avatar98', 'cop98', 'ow98', 'gtann', 'dota', 'kirill98'],
   lime: ['serioussam', 'forza', 'quake3', 'bttf', 'catniss'],
-  green: ['stalker', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201'],
-  blue: ['legion', 'anotherwar', 'fallout']
+  green: ['stalker', 'sammax', 'sammax102', 'sammax103', 'sammax104', 'sammax105', 'sammax106', 'sammax201']
 };
 
 const levelOf = id => Object.keys(READINESS).find(level => READINESS[level].includes(id)) || null;

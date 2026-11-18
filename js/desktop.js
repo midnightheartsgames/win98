@@ -476,15 +476,6 @@ class Desktop {
       if (window.gameManager.isInstalled('gtann')) {
         list.push({ id: 'gtann', title: 'GTA: Нижний Сити', icon: 'gtann', action: () => window.appGtaNN && window.appGtaNN.open() });
       }
-      if (window.gameManager.isInstalled('legion')) {
-        list.push({ id: 'legion', title: 'Legion Arena', icon: 'legion', action: () => window.appLegion && window.appLegion.open() });
-      }
-      if (window.gameManager.isInstalled('anotherwar')) {
-        list.push({ id: 'anotherwar', title: 'Another War', icon: 'anotherwar', action: () => window.appAnotherWar && window.appAnotherWar.open() });
-      }
-      if (window.gameManager.isInstalled('fallout')) {
-        list.push({ id: 'fallout', title: 'Fallout', icon: 'fallout', action: () => window.appFallout && window.appFallout.open() });
-      }
       if (window.gameManager.isInstalled('falloutzp_demo')) {
         list.push({ id: 'falloutzp_demo', title: 'Fallout: Запорожье Demo', icon: 'falloutzp', action: () => window.appFalloutZP && window.appFalloutZP.open() });
       }

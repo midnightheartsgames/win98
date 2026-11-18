@@ -39,12 +39,10 @@ global.window = {
   gameManager: {
     catalog: {
       'half-life_demo': { title: 'Half-Life 98 Demo', cdDemo: true, priceDisplay: 'DEMO', launch: () => launched.push('half-life_demo') },
-      fallout: { title: 'Fallout', priceDisplay: '$19.99', launch: () => launched.push('fallout') },
       fallout98_demo: { title: 'Fallout 98 Demo', cdDemo: true, priceDisplay: 'DEMO', launch: () => launched.push('fallout98_demo') },
-      anotherwar: { title: 'Another War', priceDisplay: '$20.99', launch: () => launched.push('anotherwar') },
       bttf: { title: 'Back to the Future', priceDisplay: '$24.79', launch: () => launched.push('bttf') }
     },
-    installed: ['fallout'],
+    installed: [],
     isInstalled(id) { return this.installed.includes(id); },
     showInSteam(id) { steamCalls.push(id); return false; },
     showOnCd(id) { cdCalls.push(id); return false; }
@@ -258,14 +256,18 @@ test('clip page: player, ticket, stills, reviews, neighbours', () => {
   assert.ok(f2.html.includes('Fallout 98 Demo на диске «Игромании»'));
   f2.querySelectorAll('[data-wc-game]')[0].fire();
   assert.deepStrictEqual(cdCalls, ['half-life_demo', 'fallout98_demo']);
-  const anotherwar = open(base + '/clip?id=anotherwar').frame;
-  assert.ok(anotherwar.html.includes('Another War в Steam') && anotherwar.html.includes('продаётся в Steam за $20.99'));
-  anotherwar.querySelectorAll('[data-wc-game]')[0].fire();
-  assert.deepStrictEqual(steamCalls, ['anotherwar']);
-  const f1 = open(base + '/clip?id=fallout1').frame;
-  assert.ok(f1.html.includes('Запустить Fallout'));
-  f1.querySelectorAll('[data-wc-game]')[0].fire();
-  assert.deepStrictEqual(launched, ['fallout']);
+  const bttf = open(base + '/clip?id=bttf').frame;
+  assert.ok(bttf.html.includes('Back to the Future в Steam') && bttf.html.includes('продаётся в Steam за $24.79'));
+  bttf.querySelectorAll('[data-wc-game]')[0].fire();
+  assert.deepStrictEqual(steamCalls, ['bttf']);
+  window.gameManager.installed.push('bttf');
+  const bttfInstalled = open(base + '/clip?id=bttf').frame;
+  assert.ok(bttfInstalled.html.includes('Запустить Back to the Future'));
+  bttfInstalled.querySelectorAll('[data-wc-game]')[0].fire();
+  assert.deepStrictEqual(launched, ['bttf']);
+  window.gameManager.installed.length = 0;
+  const f1 = site.renderSite(base + '/clip?id=fallout1');
+  assert.ok(!f1.includes('data-wc-game'), 'the Fallout intro has no game button');
   const berserk = site.renderSite(base + '/clip?id=berserk');
   assert.ok(!berserk.includes('data-wc-game'), 'no Steam button without a game');
 });

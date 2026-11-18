@@ -1282,28 +1282,6 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
             }
           };
         }
-        if (!gmInstalled.includes('legion') && games.children['LegionArena']) {
-          delete games.children['LegionArena'];
-        } else if (gmInstalled.includes('legion') && !games.children['LegionArena']) {
-          games.children['LegionArena'] = {
-            type: 'folder', name: 'LegionArena', icon: 'folder', children: {
-              'ARENA.EXE': { type: 'executable', name: 'ARENA.EXE', icon: 'legion', app: 'legion' },
-              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Legion Arena\r\n==================================\r\nSlitherine Software (2005) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium III 700 MHz, 128 MB RAM, 3D accelerator with 32 MB (GeForce2 / Radeon), DirectX 8.\r\n\r\nDeployment:\r\n[Left drag] - Move a squad inside the deployment zone   [Right drag] - Turn it   [1/2/3] - Formation   [Enter] - Start the battle\r\n\r\nBattle:\r\n[Left Click] / [Drag a box] - Select squads   [Right Click] - Move / Attack   [Space] - Pause   [+]/[-] - Speed\r\n[G] - Signal   [R] - Rally   [H] - Halt   [C] - Charge   [X] - Pull cavalry out   [T] - Show terrain\r\n[W/A/S/D]/[Arrows] - Camera   [Q]/[E] - Turn   [Wheel] - Zoom   [Tab] - Next squad   [Home] - General   [Esc] - Menu\r\n\r\nTen battles of the Roman campaign, the Arena and the encyclopedia.\r\nCommand points are scarce. Plan well, then let your men fight.' },
-              'SAVE GAMES': { type: 'folder', name: 'SAVE GAMES', icon: 'folder', children: {} }
-            }
-          };
-        }
-        if (!gmInstalled.includes('fallout') && games.children['Fallout']) {
-          delete games.children['Fallout'];
-        } else if (gmInstalled.includes('fallout') && !games.children['Fallout']) {
-          games.children['Fallout'] = {
-            type: 'folder', name: 'Fallout', icon: 'folder', children: {
-              'FALLOUTW.EXE': { type: 'executable', name: 'FALLOUTW.EXE', icon: 'fallout', app: 'fallout' },
-              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Fallout: A Post-Nuclear Role-Playing Game\r\n==================================\r\nInterplay Productions (1997) - Win 98 Edition, version 1.2, 640x480, 256 colors\r\n\r\nSystem requirements: Pentium 90 MHz, 16 MB RAM, SVGA video card (640x480, 256 colors), DirectX 3.0a, 2x CD-ROM, mouse.\r\n\r\nControls:\r\n[Left Click] - Walk or act with the current cursor   [Right Click] - Switch the walk and action cursors\r\n[Hold Left Button] on an object - Action menu: look, talk, use, skill, rotate\r\n[A] - Attack   [Space] - End turn   [Enter] - End combat   [N] - Weapon mode   [B] - Swap hands   [M] - Cursor mode\r\n[I] - Inventory   [C] - Character   [P] - Pip-Boy   [Z] - Pip-Boy clock   [S] - Skilldex   [Tab] - Automap   [O]/[Esc] - Options\r\n[1-8] - Sneak, Lockpick, Steal, Traps, First Aid, Doctor, Science, Repair\r\n[Home] - Center on you   [,]/[.] - Turn   [/] - Time   [+]/[-] - Brightness   [F1] - Help\r\n[F4]/[Ctrl+S] - Save   [F5]/[Ctrl+L] - Load   [F6] - Quick save   [F7] - Quick load   [F10]/[Ctrl+Q] - Quit\r\n\r\nVault 13, 5 December 2161. The water chip has failed and the vault has water for 150 days.\r\nThe Overseer has chosen you to find a new one.' },
-              'DATA': { type: 'folder', name: 'DATA', icon: 'folder', children: { 'SAVEGAME': { type: 'folder', name: 'SAVEGAME', icon: 'folder', children: {} } } }
-            }
-          };
-        }
         if (!gmInstalled.includes('falloutzp_demo') && games.children['FalloutZP']) {
           delete games.children['FalloutZP'];
         } else if (gmInstalled.includes('falloutzp_demo') && !games.children['FalloutZP']) {
@@ -1312,17 +1290,6 @@ P.S. Мама, уроки сделаны на отлично! Можно я за
               'FALLOUTZP.EXE': { type: 'executable', name: 'FALLOUTZP.EXE', icon: 'falloutzp', app: 'falloutzp_demo' },
               'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Fallout: Запорожье\r\n==================================\r\nObsidian Entertainment (2001) - Win 98 Edition, 3D accelerated\r\n\r\nSystem requirements: Pentium III 600 MHz, 128 MB RAM, 3D accelerator with 32 MB (GeForce2 / Radeon), DirectX 8.\r\n\r\nControls:\r\n[W/A/S/D] - Move   [Mouse] - Look   [Left Click] - Fire / Swing   [Right Click] - Aim   [Shift] - Walk   [Space] - Jump\r\n[Ctrl] - Sneak   [E] - Use, talk, open   [R] - Reload   [F] - First / third person   [H] - Holster   [G] - Throw grenade\r\n[V] - S.T.R.E.L.A. targeting   [Tab] - Pioneer-77   [T] - Wait   [L] - Pioneer light   [1-8] - Hotkeys   [Wheel] - Next weapon\r\n[F5] - Quick save   [F9] - Quick load   [Esc] - Menu\r\n\r\nZaporozhye, 1 September 2280. The courier of the Main Post Office was shot on the bridge and thrown into the Dnieper.\r\nVoznesenovsky district and the island of Khortytsia are open from the start. Danger grows with distance from Voznesenka.\r\n\r\nMap of Zaporozhye based on OpenStreetMap data, (c) OpenStreetMap contributors, ODbL. Heights: SRTM, NASA.' },
               'SAVE': { type: 'folder', name: 'SAVE', icon: 'folder', children: {} }
-            }
-          };
-        }
-        if (!gmInstalled.includes('anotherwar') && games.children['AnotherWar']) {
-          delete games.children['AnotherWar'];
-        } else if (gmInstalled.includes('anotherwar') && !games.children['AnotherWar']) {
-          games.children['AnotherWar'] = {
-            type: 'folder', name: 'AnotherWar', icon: 'folder', children: {
-              'AW.EXE': { type: 'executable', name: 'AW.EXE', icon: 'anotherwar', app: 'anotherwar' },
-              'README.TXT': { type: 'file', name: 'README.TXT', icon: 'notepad', app: 'notepad', content: 'Другая война (Another War)\r\n==================================\r\nMirage Interactive (2002) - Win 98 Edition, 800x600\r\n\r\nСистемные требования: Pentium II 433 МГц, 128 MB RAM, видеокарта с 8 MB памяти, DirectX 8.1.\r\n\r\nУправление:\r\n[Левая кнопка] - идти, осмотреть, подобрать   [Правая кнопка] - говорить, использовать, открыть\r\n[D] - достать или спрятать оружие   [Ctrl]+[Левая кнопка] - прицельный выстрел   [Enter] - атаковать ближайшего врага\r\n[R] - перезарядить   [E] - починить оружие   [1-7] - предметы на поясе   [W] - шаг или бег\r\n[F1-F8] - выбрать особый навык   [Пробел] - применить навык   [Backspace] - отменить выбор\r\n[I] - снаряжение   [S] - параметры   [N] - дневник   [M] - карта   [O] - настройки   [H]/[F10] - помощь\r\n[Ctrl+S] - сохранить   [Ctrl+L] - загрузить   [F11] - быстрое сохранение   [F12] - быстрая загрузка\r\n[P] - пауза   [Пробел]/[Enter] - пропустить реплику в сценке   [Esc] - меню\r\n\r\nАкт I. Аннет, оккупированная Франция. Выберите героя: Силач, Вор или Интеллектуал.\r\nВыберитесь из подвалов вместе с Иоганном и найдите способ уехать из города.\r\nПродолжение следует: впереди Югославия.' },
-              'SAVEGAME': { type: 'folder', name: 'SAVEGAME', icon: 'folder', children: {} }
             }
           };
         }

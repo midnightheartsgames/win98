@@ -585,22 +585,6 @@ module.exports = {
       { steps: ['plBot(8, 50); await __shots.sleep(300);'] }
     ]
   },
-  legion: {
-    page: 'legion.html',
-    ready: '!!(window.lgui && window.Legion && lgui.screens)',
-    timeout: 90000,
-    setup: [`const L = Legion; const p = L.Army.newProfile('Легат', 1); p.glory = 3000; p.denarii = 900; lgui.profile = p; lgui.save();`],
-    shots: [
-      { steps: [`const L = Legion; lgui.go('field', { level: L.LEVELS[1] }); const f = lgui.screens.field;
-        await __shots.until(() => f.mode === 'deploy', 30000); f.startBattle();
-        const b = f.battle; const n = Math.round(50 / L.TICK); for (let i = 0; i < n && b.state === 'battle'; i++) { b.tick(); f.processEvents(); }
-        const mine = b.squads.filter(q => q.side === 0 && q.onField && q.alive > 0), foes = b.squads.filter(q => q.side === 1 && q.onField && q.alive > 0);
-        let best = null, bd = 1e9; for (const a of mine) for (const e of foes) { const d = Math.hypot((a.cx || a.ax) - (e.cx || e.ax), (a.cz || a.az) - (e.cz || e.az)); if (d < bd) { bd = d; best = [a, e]; } }
-        const c = f.renderer.cam; if (best) { c.tx = ((best[0].cx || best[0].ax) + (best[1].cx || best[1].ax)) / 2; c.tz = ((best[0].cz || best[0].az) + (best[1].cz || best[1].az)) / 2; } c.dist = 38;
-        await __shots.sleep(1500);`] },
-      { steps: [`lgui.go('campaign'); await __shots.sleep(1800); document.querySelectorAll('.lga-modal-back').forEach(e => e.remove()); await __shots.sleep(600);`] }
-    ]
-  },
   falloutzp_demo: {
     page: 'falloutzp.html',
     ready: '!!(window.zpui && zpui.r && zpui.r.env && zpui.mode !== "loading")',
@@ -618,45 +602,6 @@ module.exports = {
     shots: [
       { steps: ['await zpView(477.6, 167.7, 0.81, 0.12, 10, false);'] },
       { steps: ['await zpView(-332, -194, -0.49, 0.06, 18.4, false);'] }
-    ]
-  },
-  fallout: {
-    page: 'fallout.html?map=HUBENT&lang=ru',
-    ready: '!!(window.fogame && fogame.mode && fogame.mode.w && fogame.mode.w.map && !fogame.mode.busy)',
-    size: [640, 480],
-    el: '.fo-canvas',
-    timeout: 90000,
-    setup: [`window.foNoon = () => { const sc = fogame.play.sc; sc.time = Math.floor(sc.time / 864000) * 864000 + 864000 + 12 * 36000; };
-      window.foClean = () => { const p = fogame.play; p.log.length = 0; p.floats = []; };
-      window.foTalk = async (map, name) => {
-        const p = fogame.play;
-        await p.goto(p.w.mapIndex(map), -1, -1, -1);
-        foNoon();
-        const w = p.w;
-        const s = w.map.scriptList.find(x => x.name === name && x.self);
-        let t = -1;
-        for (let dir = 0; dir < 6 && t < 0; dir++) { const c = FO.hexStep(FO.hexStep(s.self.tile, dir), dir); if (c >= 0 && !w.blocker(c, s.self.elev, w.dude)) t = c; }
-        w.moveTo(w.dude, t, s.self.elev);
-        p.centerOn(w.dude.tile);
-        await w.preload(w.elev);
-        p.talk(s.self, true);
-        await __shots.sleep(3000);
-      };
-      foNoon(); await __shots.sleep(1500);`],
-    shots: [
-      { steps: ['foClean(); fogame.play.centerOn(fogame.play.w.dude.tile); await __shots.sleep(1500); foClean(); await __shots.sleep(300);'] },
-      { steps: ['await foTalk("SHADYW", "ARADESH");'] }
-    ]
-  },
-  anotherwar: {
-    page: 'anotherwar.html',
-    ready: '!!(window.awui && awui.game)',
-    setup: [`await awui.game.newGame({ cls: 'strongman', name: 'Зигмунт', stats: Object.assign({}, AW.Rules.CLASSES.strongman.base) });
-      await __shots.until(() => awui.game.W && !awui.game.assetsBusy, 60000);
-      window.awLevel = async id => { await awui.game.W.changeLevel(id); await __shots.until(() => !awui.game.assetsBusy, 60000); await __shots.sleep(2500); };`],
-    shots: [
-      { steps: ['await awLevel("A01_Rynek");'] },
-      { steps: ['await awLevel("A02_CafeRene"); awui.game.W.openDialog("rene"); await __shots.sleep(2200);'] }
     ]
   },
   hsro: {

@@ -17,8 +17,8 @@ const sha = text => crypto.createHash('sha256').update(text).digest('hex');
 const excluded = p => EXE_EXCLUDED.some(re => re.test(p));
 
 check('the exe build leaves out tmp, root test files, plans, release texts and dev folders', () => {
-  for (const p of ['/tmp', '/tmp/rom', '/soft.test.js', '/LAUNCHER.md', '/releases/win98/next.md', '/tools/release.cjs', '/tests/release.test.js', '/bugreports/x/report.json', '/content/Legion Arena/a.png']) assert.ok(excluded(p), p);
-  for (const p of ['/index.html', '/js/main.js', '/js/apps/hsr98/hsr-core.js', '/content/steam/hsr98-1.jpg', '/electron/main.js', '/server.js', '/content/Fallout/MASTER.DAT']) assert.ok(!excluded(p), p);
+  for (const p of ['/tmp', '/tmp/rom', '/soft.test.js', '/LAUNCHER.md', '/releases/win98/next.md', '/tools/release.cjs', '/tests/release.test.js', '/bugreports/x/report.json']) assert.ok(excluded(p), p);
+  for (const p of ['/index.html', '/js/main.js', '/js/apps/hsr98/hsr-core.js', '/content/steam/hsr98-1.jpg', '/electron/main.js', '/server.js']) assert.ok(!excluded(p), p);
 });
 
 check('build numbers are DDMMYYYY and versions show the build in brackets', () => {
