@@ -37,4 +37,18 @@
   });
 
   reopen.addEventListener('click', show);
+
+  const sizeText = bytes => bytes >= 1e9
+    ? (bytes / 1e9).toFixed(1).replace('.', ',') + '\u00a0ГБ'
+    : Math.round(bytes / 1e6) + '\u00a0МБ';
+
+  document.querySelectorAll('[data-size]').forEach(node => {
+    fetch('update/' + node.dataset.size + '/stable.json', { cache: 'no-store' })
+      .then(r => (r.ok ? r.json() : null))
+      .then(pointer => {
+        const bytes = pointer && pointer[node.dataset.part] && pointer[node.dataset.part].bytes;
+        if (bytes) node.textContent = node.dataset.kind + ', ' + sizeText(bytes);
+      })
+      .catch(() => {});
+  });
 })();
