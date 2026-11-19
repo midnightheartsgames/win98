@@ -1358,6 +1358,8 @@
         case 'su_shop': return this.openSuShop(p, close);
         case 'su_enhance': return this.openSuEnhance(p, close);
         case 'su_end': return this.openSuEnd(p);
+        case 'su_orn': return this.openSuOrn(p);
+        case 'su_form': return this.openSuForm(p);
         case 'fh': return this.openFh(close);
         case 'fh_shop': return this.openFhShop(close);
       }

@@ -471,9 +471,10 @@ test('universe pages cover every world and blessing path', () => {
   for (const [id, c] of Object.entries(K.CHARS)) if (c.su || c.cols.includes('dps')) assert.ok(H.SU.PATHS[c.su], 'SU path of ' + id);
   for (const w of H.SU.WORLDS) {
     const html = site.renderSite(base + '/hsr98/su?world=' + w.id);
+    if (w.soon) { assert.ok(!html.includes('su?world=' + w.id + '"'), 'a world still being built has no tab ' + w.id); continue; }
     assert.ok(html.includes(site.esc(w.title)) && html.includes(site.esc(w.bossName)), 'world ' + w.id);
     for (const p of Object.values(H.SU.PATHS)) assert.ok(html.includes(site.esc(p.buffText)), 'path ' + p.name);
-    if (w.set) assert.ok(html.includes(site.esc(H.RELIC_SETS[w.set].name)), 'planar set ' + w.id);
+    for (const set of w.sets) assert.ok(html.includes(site.esc(H.RELIC_SETS[set].name)), 'planar set ' + w.id);
   }
 });
 

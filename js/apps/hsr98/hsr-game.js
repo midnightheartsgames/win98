@@ -41,7 +41,7 @@
 
   function newState() {
     return {
-      v: 1, trv: 1, xpv: 1, name: H.isEn && H.isEn() ? 'Caelus' : 'Келус', gender: 'm', mcPath: 'trail',
+      v: 1, trv: 1, xpv: 1, suv: 1, name: H.isEn && H.isEn() ? 'Caelus' : 'Келус', gender: 'm', mcPath: 'trail',
       roster: { trail: { lvl: 1, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 } },
       party: ['trail'],
       inv: { items: {}, cones: [], relics: [] }, uid: 1,
@@ -268,6 +268,7 @@
       this.fixWarpLog();
       this.fixGlow(!!opts.state && !opts.state.shop);
       this.fixFlags();
+      if (this.fixSuWorlds) this.fixSuWorlds(!!opts.state && !opts.state.suv);
       this.fixStation(!!opts.state);
       this.fixJarilo(!!opts.state);
       this.fixStoryJoins();
@@ -968,7 +969,7 @@
         lvl: o.lvl || 1, boss: enc ? !!enc.boss : !!o.boss, noFlee: enc ? !!enc.noFlee : !!o.noFlee,
         ambush: o.ambush, leader: 0, techs, nextAtk: s.nextAtk, nextCrit: s.nextCrit,
         rumorKind: !!s.flags.rumor_kind, noContact: !!o.noContact || !!o.su,
-        su: o.su ? this.suBattleOpts() : null, foeHp: o.foeHp || 1, foeAtk: o.foeAtk || 1, fh: o.fh || null, endAt: enc ? enc.endAt || 0 : 0, hpStart: enc ? enc.hpStart || 0 : 0, allyBuff: enc ? enc.allyBuff || null : null, field: enc ? enc.field || null : null
+        su: o.su ? Object.assign(this.suBattleOpts(), typeof o.su === 'object' ? o.su : {}) : null, foeHp: o.foeHp || 1, foeAtk: o.foeAtk || 1, fh: o.fh || null, endAt: enc ? enc.endAt || 0 : 0, hpStart: enc ? enc.hpStart || 0 : 0, allyBuff: enc ? enc.allyBuff || null : null, field: enc ? enc.field || null : null
       };
       s.nextAtk = 0;
       s.nextCrit = 0;
@@ -2217,7 +2218,7 @@
         this.state.name = val.name;
         this.state.gender = val.gender;
       }
-      if (p && p.type === 'ui' && /^su_(bless|curio|end|enhance)$/.test(p.ui)) this.suResolve(p, val);
+      if (p && p.type === 'ui' && /^su_(bless|curio|end|enhance|orn|form)$/.test(p.ui)) this.suResolve(p, val);
       if (p && p.type === 'ui' && (p.ui === 'magflow' || p.ui === 'carts')) {
         if (val) this.state.flags[p.id] = true;
         else if (this.script) this.script.pc = p.fail && this.script.labels[p.fail] !== undefined ? this.script.labels[p.fail] : this.script.steps.length;

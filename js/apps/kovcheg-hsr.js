@@ -60,7 +60,7 @@ window.kovchegHsr = (() => {
     xueyi: { cols: ['dps'], build: 'brk', su: 'destruction', tags: ['brk', 'fua'] },
     tingyun: { cols: ['amp'], build: 'amp', tags: ['buff', 'energy'] },
     hanya: { cols: ['amp'], build: 'amp', tags: ['buff', 'debuff'] },
-    qingque: { cols: ['dps'], build: 'crit', su: 'hunt', tags: ['aoe'] },
+    qingque: { cols: ['dps'], build: 'crit', su: 'propagation', tags: ['aoe'] },
     yukong: { cols: ['amp'], build: 'amp', tags: ['buff'] },
     guinaifen: { cols: ['sub'], build: 'dot', su: 'nihility', tags: ['dot', 'debuff'] },
     makoto: { cols: ['dps'], build: 'crit', su: 'hunt', tags: ['delay'] },
@@ -76,7 +76,7 @@ window.kovchegHsr = (() => {
     jingliu: { cols: ['dps'], build: 'crit', su: 'destruction', tags: ['aoe', 'hp'] },
     topaz: { cols: ['dps', 'sub'], build: 'crit', su: 'hunt', tags: ['fua', 'summon'] },
     huohuo: { cols: ['sus'], build: 'heal', tags: ['heal', 'energy'] },
-    argenti: { cols: ['dps'], build: 'crit', su: 'elation', tags: ['aoe'] },
+    argenti: { cols: ['dps'], build: 'crit', su: 'erudition', tags: ['aoe'] },
     ratio: { cols: ['dps'], build: 'crit', su: 'hunt', tags: ['fua', 'debuff'] }
   };
 

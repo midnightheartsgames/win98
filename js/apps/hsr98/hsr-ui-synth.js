@@ -16,7 +16,7 @@
   const SLIDER = { x: 304, y: 331, w: 240 };
   const TAB_ROW = { mid: 334, step: 34, y: 19, r: 13 };
   const NEED = { mat: 3, swap: 2 };
-  const RELIC_GRID = { cavernY: 72, planarY: 334, pitch: 60, ch: 54 };
+  const RELIC_GRID = { cavernY: 72, pitch: 60, ch: 54 };
 
   Object.assign(H.UI.prototype, {
     synthTabs: TABS,
@@ -240,10 +240,17 @@
 
     relicSlots(set) { return H.RELIC_SETS[set].planar ? H.PLANAR_SLOTS : H.CAVERN_SLOTS; },
 
+    relicPlanar(i) { return i >= H.CAVERN_SETS.length; },
+
     relicCellPos(i, b = this.synthBox()) {
-      const gr = b.grid, nc = H.CAVERN_SETS.length, planar = i >= nc, j = planar ? i - nc : i;
-      const py = b.wide ? 286 : RELIC_GRID.planarY;
-      return { x: gr.x + (j % gr.cols) * (gr.cw + gr.gap), y: (planar ? py : RELIC_GRID.cavernY) + Math.floor(j / gr.cols) * RELIC_GRID.pitch };
+      const gr = b.grid, j = this.relicPlanar(i) ? i - H.CAVERN_SETS.length : i;
+      return { x: gr.x + (j % gr.cols) * (gr.cw + gr.gap), y: RELIC_GRID.cavernY + Math.floor(j / gr.cols) * RELIC_GRID.pitch };
+    },
+
+    relicSection(scr, planar) {
+      if (this.relicPlanar(scr.rsel) === planar) return;
+      scr.rsel = planar ? H.CAVERN_SETS.length : 0; scr.rslot = 0; scr.rfocus = 'grid';
+      this.sfx('select');
     },
 
     relicHeader(c, y, label, gr = this.synthBox().grid) {
@@ -253,11 +260,17 @@
     },
 
     synthRelicGrid(c, scr, b = this.synthBox()) {
-      const ui = this, sets = ui.relicSets(), gr = b.grid, py = b.wide ? 286 : RELIC_GRID.planarY;
+      const ui = this, sets = ui.relicSets(), gr = b.grid, planar = ui.relicPlanar(scr.rsel), tw = (gr.ww - 16) / 2;
       ui.win(gr.wx, gr.wy, gr.ww, gr.wh, { alpha: 0.88, corners: false });
-      ui.relicHeader(c, RELIC_GRID.cavernY - 20, 'Пещерные реликвии', gr);
-      ui.relicHeader(c, py - 20, 'Планарные украшения', gr);
+      [['Пещерные', false], ['Планарные', true]].forEach(([label, pl], i) => {
+        const x = gr.wx + 8 + i * tw, y = RELIC_GRID.cavernY - 22, on = pl === planar;
+        c.fillStyle = on ? 'rgba(232,160,64,0.32)' : 'rgba(255,255,255,0.08)'; c.fillRect(x, y, tw - 2, 18);
+        if (on) { c.fillStyle = '#e8a040'; c.fillRect(x, y + 16, tw - 2, 2); }
+        ui.text(label + ' · ' + (pl ? H.PLANAR_SETS.length : H.CAVERN_SETS.length), x + (tw - 2) / 2, y + 3, { align: 'center', size: 11, bold: on, col: on ? C.gold : C.cream });
+        ui.hit(x, y, tw - 2, 18, () => ui.relicSection(scr, pl));
+      });
       sets.forEach((set, i) => {
+        if (ui.relicPlanar(i) !== planar) return;
         const { x, y } = ui.relicCellPos(i, b), slot = ui.relicSlots(set)[0].key, on = i === scr.rsel;
         G.rarityCell(c, x, y, gr.cw, RELIC_GRID.ch, 4);
         G.itemIcon(c, 'relic:' + slot, x + 9, y + 3, 40, set);
@@ -1342,10 +1355,15 @@
     openUi_synth() { this.openSynth(() => this.finishPending()); },
 
     relicMove(scr, k) {
-      const n = this.relicSets().length, at = this.relicCellPos(scr.rsel);
-      if (k === 'left' || k === 'right') { scr.rsel = Math.max(0, Math.min(n - 1, scr.rsel + (k === 'left' ? -1 : 1))); return; }
+      const n = this.relicSets().length, at = this.relicCellPos(scr.rsel), planar = this.relicPlanar(scr.rsel), lo = planar ? H.CAVERN_SETS.length : 0, hi = planar ? n - 1 : H.CAVERN_SETS.length - 1;
+      if (k === 'left' || k === 'right') { scr.rsel = Math.max(lo, Math.min(hi, scr.rsel + (k === 'left' ? -1 : 1))); return; }
       const dir = k === 'up' ? -1 : 1, cand = [];
-      for (let i = 0; i < n; i++) { const p = this.relicCellPos(i); if ((p.y - at.y) * dir > 0) cand.push({ i, dy: Math.abs(p.y - at.y), dx: Math.abs(p.x - at.x) }); }
+      for (let i = lo; i <= hi; i++) { const p = this.relicCellPos(i); if ((p.y - at.y) * dir > 0) cand.push({ i, dy: Math.abs(p.y - at.y), dx: Math.abs(p.x - at.x) }); }
+      if (!cand.length && planar === (dir < 0)) {
+        const nc = H.CAVERN_SETS.length, cols = this.synthBox().grid.cols, col = (scr.rsel - lo) % cols;
+        scr.rsel = dir > 0 ? Math.min(n - 1, nc + col) : Math.min(nc - 1, Math.floor((nc - 1) / cols) * cols + col);
+        return;
+      }
       if (!cand.length) return;
       const dy = Math.min(...cand.map(o => o.dy));
       scr.rsel = cand.filter(o => o.dy === dy).sort((a, b) => a.dx - b.dx)[0].i;
@@ -1354,6 +1372,7 @@
     synthRelicKey(scr, k, code) {
       const ui = this, slots = ui.relicSlots(ui.relicSets()[scr.rsel]);
       if (code === 'KeyR') { scr.buyResin(); return true; }
+      if (code === 'Tab') { ui.relicSection(scr, !ui.relicPlanar(scr.rsel)); return true; }
       if (scr.rfocus === 'slot') {
         if (k === 'back' || k === 'up') { scr.rfocus = 'grid'; ui.sfx('cancel'); return true; }
         if (k === 'left' || k === 'right') { scr.rslot = (scr.rslot + (k === 'left' ? slots.length - 1 : 1)) % slots.length; ui.sfx('select'); return true; }
@@ -1424,7 +1443,7 @@
           if (id === 'relic') {
             ui.synthRelicGrid(c, this, b);
             ui.synthRelicPanel(c, this, b);
-            ui.hints(this.rfocus === 'slot' ? [['Q/E', 'Раздел'], ['←→', 'Слот'], ['Enter', 'Синтез'], ['R', 'Смола'], ['Esc', 'К наборам']] : [['Q/E', 'Раздел'], ['←↑↓→', 'Набор'], ['Enter', 'Слоты'], ['R', 'Смола'], ['Esc', 'Назад']], b.lx, HGT - 18);
+            ui.hints(this.rfocus === 'slot' ? [['Q/E', 'Раздел'], ['←→', 'Слот'], ['Enter', 'Синтез'], ['R', 'Смола'], ['Esc', 'К наборам']] : [['Q/E', 'Раздел'], ['Tab', 'Пещерные / планарные'], ['←↑↓→', 'Набор'], ['Enter', 'Слоты'], ['R', 'Смола'], ['Esc', 'Назад']], b.lx, HGT - 18);
             return;
           }
           const rows = this.rows();

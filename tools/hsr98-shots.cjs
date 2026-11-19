@@ -1099,6 +1099,7 @@ const SCENES = {
   guide_target_pick: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.state.power = 126; g.state.guide = { target: null }; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 0; hsrui.openGuideTargetPick(s); hsrShots.pump(2); return hsrShots.shot(); })()",
   guide_index_cavern: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { fled: true, mine_done: true, rivet_intro: true, rivet_done: true, fissures_intro: true, cor_done: true }); g.state.power = 126; hsrui.openIpg('index'); const s = hsrui.top(); s.cat = 5; s.focus = 'rows'; hsrShots.pump(2); return hsrShots.shot(); })()",
   guide_su: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { su_open: true, fh_met: true, su_clear_1: true }); g.state.suPaths = ['preservation', 'destruction', 'hunt']; hsrui.openIpg('cosmic'); hsrui.top().wsel = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
+  guide_su9: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { su_open: true, fh_met: true, su_clear_1: true, su_clear_2: true, su_clear_3: true, su_clear_3_2: true, first_gepard: true, first_svarog: true, first_cocolia2: true }); g.state.suPaths = Object.keys(Hsr98.SU.PATHS); Object.assign(g.suWeek(), { pts: 1400 }); g.suTree().pts = 270; hsrui.openIpg('cosmic'); hsrui.top().wsel = 2; hsrShots.pump(3); return hsrShots.shot(); })()",
   guide_su_locked: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { su_open: true, fh_met: true, su_clear_1: true }); g.state.suPaths = ['preservation', 'destruction', 'hunt']; hsrui.openIpg('cosmic'); hsrui.top().wsel = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
   guide_fh: "(() => { const g = hsrShots.fresh('express'); Object.assign(g.state.flags, { su_open: true, fh_met: true, su_clear_1: true }); g.state.suPaths = ['preservation', 'destruction', 'hunt']; const F = g.fh(); for (let n = 1; n <= 7; n++) F.st[n] = { clear: true, stars: [true, true, n < 6], best: 1 }; F.got = [1, 2, 3, 4]; hsrui.openIpg('treasure'); hsrShots.pump(2); return hsrShots.shot(); })()",
   guide_daily: "(() => { const g = hsrShots.fresh('express'); g.state.flags.su_open = true; delete g.state.daily; const d = g.dailySync(); d.prog.power = 70; d.prog.contact = 1; d.got.login = true; d.pts = 100; d.claimed = [0]; d.prog[d.pick[4]] = 1; hsrui.openIpg('daily'); const s = hsrui.top(); s.dcard = 1; hsrShots.pump(2); return hsrShots.shot(); })()",
@@ -1145,6 +1146,16 @@ const SCENES = {
   fhchat: "(() => { const g = hsrShots.fresh('express'); g.state.chats = null; for (let i = 0; i < 6; i++) for (const id of g.chatSync()) if (id !== 'fh_call') g.chatAuto(id, true); g.events.length = 0; hsrui.openChats('messenger'); hsrShots.pump(90); return hsrShots.shot(); })()",
   supathlock: 'hsrShots.suTerm(1, 2)',
   suteam: 'hsrShots.suTerm(2)',
+  sudiff: 'hsrShots.suTerm(0, null, 1)',
+  suorn: "(() => { const g = hsrShots.suKit(3, 'hunt', false); g.state.power = 120; g.state.inv.items.immersifier = 2; g.state.su.queue = [{ type: 'ui', ui: 'su_orn', left: 2, final: true }]; g.suFlush(); hsrui.openSuOrn(g.pending); hsrShots.pump(2); return hsrShots.shot(); })()",
+  suendorn: "(() => { const g = hsrShots.suKit(3, 'hunt', false); g.state.flags.su_clear_3 = true; g.state.power = 120; g.state.su.queue = [{ type: 'ui', ui: 'su_orn', left: 2, final: true }]; g.suFlush(); g.suExchange('power'); g.suExchange('power'); g.resume(); hsrui.openSuEnd(g.pending); hsrShots.pump(2); return hsrShots.shot(); })()",
+  sudifflock: 'hsrShots.suTerm(0, null, 3)',
+  suw5: "(() => { const g = hsrShots.suKit(0); for (const f of ['su_clear_3', 'su_clear_4']) g.state.flags[f] = true; g.state.quests.lf_q5 = 'done'; hsrui.openSuTerminal(() => {}); const s = hsrui.top(); s.wsel = 4; s.dsel = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  suw8: "(() => { const g = hsrShots.suKit(0); for (const f of ['su_clear_3', 'su_clear_4', 'su_clear_5', 'su_clear_6', 'su_clear_7']) g.state.flags[f] = true; Object.assign(g.state.quests, { lf_q5: 'done', lf_q9: 'done', lf_dh4: 'done' }); hsrui.openSuTerminal(() => {}); const s = hsrui.top(); s.wsel = 7; s.dsel = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  sudeer: "(() => { const g = hsrShots.suKit(0); for (const f of ['su_clear_3', 'su_clear_4', 'su_clear_5', 'su_clear_6']) g.state.flags[f] = true; Object.assign(g.state.quests, { lf_q5: 'done', lf_q9: 'done' }); for (const k of g.state.party) g.state.roster[k].lvl = 55; g.suStart(7, 'hunt', g.state.party); g.state.su.d = 11; g.suEnter('boss'); g.encounter(g.map.ents.find(e => e.kind === 'enemy' && e.ch === '1'), 'player'); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle; for (let i = 0; i < 400 && !(b.phase === 'input' && !hsrui.bt.queue.length && !hsrui.bt.cur) && !b.over; i++) hsrui.update(1 / 10); hsrShots.pump(20); return hsrShots.shot(); })()",
+  sudeath: "(() => { const g = hsrShots.suKit(0); for (let i = 3; i <= 8; i++) g.state.flags['su_clear_' + i] = true; Object.assign(g.state.quests, { lf_q5: 'done', lf_q9: 'done', lf_dh4: 'done', lf_q12: 'done' }); for (const k of g.state.party) g.state.roster[k].lvl = 55; g.suStart(9, 'hunt', g.state.party); g.state.su.d = 11; g.suEnter('boss'); g.encounter(g.map.ents.find(e => e.kind === 'enemy' && e.ch === '1'), 'player'); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle; for (let i = 0; i < 400 && !(b.phase === 'input' && !hsrui.bt.queue.length && !hsrui.bt.cur) && !b.over; i++) hsrui.update(1 / 10); const boss = b.enemies[0]; boss.flags.sunset = 2; hsrui.bt.auto = true; for (let i = 0; i < 4000 && !b.allies.some(x => x.dream) && !b.over; i++) hsrui.update(1 / 10); hsrui.bt.auto = false; hsrui.bt.autoSticky = false; for (let i = 0; i < 400 && (hsrui.bt.queue.length || hsrui.bt.cur); i++) hsrui.update(1 / 10); hsrShots.pump(20); return hsrShots.shot(); })()",
+  suw9: "(() => { const g = hsrShots.suKit(0); for (let i = 3; i <= 8; i++) g.state.flags['su_clear_' + i] = true; Object.assign(g.state.quests, { lf_q5: 'done', lf_q9: 'done', lf_dh4: 'done', lf_q12: 'done' }); hsrui.openSuTerminal(() => {}); const s = hsrui.top(); s.wsel = 8; s.dsel = 0; hsrShots.pump(2); return hsrShots.shot(); })()",
+  sukafka: "(() => { const g = hsrShots.suKit(0); for (const f of ['su_clear_3', 'su_clear_4']) g.state.flags[f] = true; g.state.quests.lf_q5 = 'done'; for (const k of g.state.party) g.state.roster[k].lvl = 50; g.suStart(5, 'hunt', g.state.party); g.state.su.d = 10; g.suEnter('boss'); g.encounter(g.map.ents.find(e => e.kind === 'enemy' && e.ch === '1'), 'player'); hsrui.drainGameEvents(); hsrui.bt.auto = false; const b = g.battle; for (let i = 0; i < 400 && !(b.phase === 'input' && !hsrui.bt.queue.length && !hsrui.bt.cur) && !b.over; i++) hsrui.update(1 / 10); hsrShots.pump(20); return hsrShots.shot(); })()",
   sufield: 'hsrShots.suField(0)',
   suportal: 'hsrShots.suField(1)',
   surespite: 'hsrShots.suField(2)',
@@ -1164,6 +1175,12 @@ const SCENES = {
   sures: 'hsrShots.suBattle(1)',
   sulose: 'hsrShots.suBattle(2)',
   suicons: 'hsrShots.suIcons()',
+  sugrowth: "(() => { const g = hsrShots.suKit(0); g.state.suWeek = Object.assign(g.suWeek(), { pts: 2240, got: [0, 1, 2] }); g.state.suTree = { pts: 640, got: ['atk1', 'atk2', 'def1', 'frag', 'reroll', 'res1'] }; const a = g.suArch(); a.cur.push('c_cheese', 'c_coin', 'c_wax_remembrance', 'c_eye', 'c_gown', 'c_entropy'); a.ev.push('stephen', 'lottery', 'sampo', 'merchant', 'legion'); a.bless.push(...Hsr98.SU.BLESSINGS.filter(b => b.path === 'hunt' || (b.path === 'remembrance' && b.rar < 3)).map(b => b.id)); a.paid.cur.push('c_cheese', 'c_coin'); a.paid.ev.push('stephen'); hsrui.openSuGrowth(0); hsrShots.pump(2); return hsrShots.shot(); })()",
+  sutree: "(() => { const g = hsrShots.suKit(0); g.state.suWeek = Object.assign(g.suWeek(), { pts: 2240, got: [0, 1, 2] }); g.state.suTree = { pts: 640, got: ['atk1', 'atk2', 'def1', 'frag', 'reroll', 'res1'] }; const a = g.suArch(); a.cur.push('c_cheese', 'c_coin', 'c_wax_remembrance', 'c_eye', 'c_gown', 'c_entropy'); a.ev.push('stephen', 'lottery', 'sampo', 'merchant', 'legion'); a.bless.push(...Hsr98.SU.BLESSINGS.filter(b => b.path === 'hunt' || (b.path === 'remembrance' && b.rar < 3)).map(b => b.id)); a.paid.cur.push('c_cheese', 'c_coin'); a.paid.ev.push('stephen'); hsrui.openSuGrowth(1); const s = hsrui.top(); s.br = 0; s.at = 3; hsrShots.pump(2); return hsrShots.shot(); })()",
+  suarch: "(() => { const g = hsrShots.suKit(0); g.state.suWeek = Object.assign(g.suWeek(), { pts: 2240, got: [0, 1, 2] }); g.state.suTree = { pts: 640, got: ['atk1', 'atk2', 'def1', 'frag', 'reroll', 'res1'] }; const a = g.suArch(); a.cur.push('c_cheese', 'c_coin', 'c_wax_remembrance', 'c_eye', 'c_gown', 'c_entropy'); a.ev.push('stephen', 'lottery', 'sampo', 'merchant', 'legion'); a.bless.push(...Hsr98.SU.BLESSINGS.filter(b => b.path === 'hunt' || (b.path === 'remembrance' && b.rar < 3)).map(b => b.id)); a.paid.cur.push('c_cheese', 'c_coin'); a.paid.ev.push('stephen'); hsrui.openSuGrowth(2); hsrShots.pump(2); return hsrShots.shot(); })()",
+  sutermgrowth: "(() => { const g = hsrShots.suKit(0); g.state.suWeek = Object.assign(g.suWeek(), { pts: 2240, got: [0, 1, 2] }); g.state.suTree = { pts: 640, got: ['atk1', 'atk2', 'def1', 'frag', 'reroll', 'res1'] }; const a = g.suArch(); a.cur.push('c_cheese', 'c_coin', 'c_wax_remembrance', 'c_eye', 'c_gown', 'c_entropy'); a.ev.push('stephen', 'lottery', 'sampo', 'merchant', 'legion'); a.bless.push(...Hsr98.SU.BLESSINGS.filter(b => b.path === 'hunt' || (b.path === 'remembrance' && b.rar < 3)).map(b => b.id)); a.paid.cur.push('c_cheese', 'c_coin'); a.paid.ev.push('stephen'); hsrui.openSuTerminal(() => {}); const s = hsrui.top(); s.wsel = 2; hsrShots.pump(2); return hsrShots.shot(); })()",
+  supathban: "(() => { const g = hsrShots.suKit(0); g.state.suBan = ['hunt', 'elation']; hsrui.openSuTerminal(() => {}); const s = hsrui.top(); s.wsel = 2; s.step = 1; s.psel = 4; hsrShots.pump(2); return hsrShots.shot(); })()",
+  suform: "(() => { const g = hsrShots.suKit(3, 'propagation', false); for (const id of ['pr_blade', 'pr_conj', 'pr_wing', 'pr_sporangium', 'pr_lytic']) g.suAddBless(id); g.suAddForm('fg_phenol'); g.state.su.queue = [{ type: 'ui', ui: 'su_form', opts: g.suFormOffer(), why: 'Благословений Пути: 8' }]; g.suFlush(); hsrui.drainGameEvents(); hsrui.banner = null; hsrui.toasts = []; hsrui.openSuForm(g.pending); hsrShots.pump(4); return hsrShots.shot(); })()",
   glyphs: 'hsrShots.glyphs()',
   questhud: 'hsrShots.quest(0)',
   questmission: 'hsrShots.quest(1)',
@@ -2091,7 +2108,7 @@ const PAGE = `(() => {
     },
     suKit(world, path, extra) {
       const g = fresh('hs_office', ['trail', 'march', 'danheng', 'natasha']);
-      for (const f of ['su_open', 'su_beta_done', 'su_clear_1', 'first_gepard']) g.state.flags[f] = true;
+      for (const f of ['su_open', 'su_beta_done', 'su_clear_1', 'su_clear_2', 'returned', 'first_gepard', 'time_done']) g.state.flags[f] = true;
       g.state.suPaths = Object.keys(H.SU.PATHS);
       if (world) {
         g.suStart(world, path || 'remembrance', g.state.party);
@@ -2107,17 +2124,18 @@ const PAGE = `(() => {
       }
       return g;
     },
-    suTerm(step, psel) {
+    suTerm(step, psel, dsel) {
       const g = this.suKit(0);
+      if (dsel) for (const f of ['first_doomsday', 'first_gepard', 'first_svarog', 'first_cocolia2', 'su_clear_3', 'su_clear_3_2']) g.state.flags[f] = true;
       g.state.suPaths = ['preservation', 'remembrance', 'elation', 'hunt'];
       g.state.suClaims = [{ world: 1, sets: [{ set: 'vonwacq', rl: 3 }] }];
       ui.openSuTerminal(() => {});
       const s = ui.top();
-      s.wsel = 1; s.step = step; s.psel = psel != null ? psel : 1;
+      s.wsel = 2; s.step = step; s.psel = psel != null ? psel : 1; if (dsel) s.dsel = dsel;
       pump(2); return shot();
     },
     suField(kind) {
-      const g = this.suKit(2);
+      const g = this.suKit(3);
       if (kind === 1) { g.state.su.dom.cleared = true; for (const e of g.map.ents) if (e.kind === 'enemy') e.dead = true; const p = g.map.ents.find(e => e.kind === 'portal' && e.def.slot === 1); g.placePlayer(p.x + 3, p.y); g.player.dir = 'left'; }
       else if (kind === 2) { g.suEnter('respite'); const h = g.map.ents.find(e => e.kind === 'npc'); g.placePlayer(h.x, h.y + 2); g.player.dir = 'up'; }
       else if (kind === 3) { g.state.su.d = 3; g.suEnter('event'); const f = g.map.ents.find(e => e.kind === 'su_frame'); g.placePlayer(f.x, f.y + 2); g.player.dir = 'up'; }
@@ -2126,20 +2144,20 @@ const PAGE = `(() => {
       pump(30); return shot();
     },
     suEvent() {
-      const g = this.suKit(2);
+      const g = this.suKit(3);
       Object.assign(g.state.su.dom, { type: 'event', layout: 'su_event', cleared: false, event: 'robot' });
       g.loadMap('su_event', 's', { silent: true });
       g.runScript('su_ev_robot');
       ui.toasts = []; pump(60); return shot();
     },
     suAeon() {
-      const g = this.suKit(2);
+      const g = this.suKit(3);
       g.state.suPaths = ['preservation', 'remembrance'];
       g.runScript('su_aeon_hunt');
       ui.toasts = []; pump(80); return shot();
     },
     suBless(two) {
-      const g = this.suKit(2);
+      const g = this.suKit(3);
       if (two) g.suAddCurio('c_dice');
       g.pending = { type: 'ui', ui: 'su_bless', opts: ['r_independence', 'h_victory', 'a_dew'], why: 'Победа в бою' };
       ui.toasts = []; pump(2);
@@ -2148,38 +2166,38 @@ const PAGE = `(() => {
       pump(2); return shot();
     },
     suCurio() {
-      const g = this.suKit(2);
+      const g = this.suKit(3);
       g.pending = { type: 'ui', ui: 'su_curio', opts: ['c_gown', 'c_fruit', 'c_coin'], why: 'Награда за элиту' };
       ui.toasts = []; pump(2); ui.top().sel = 1; pump(20); return shot();
     },
     suShop() {
-      const g = this.suKit(2);
+      const g = this.suKit(3);
       g.suEnter('respite');
       g.state.su.hp.danheng = 0;
       g.pending = { type: 'ui', ui: 'su_shop' };
       ui.toasts = []; ui.banner = null; pump(2); ui.top().sel = 1; pump(2); return shot();
     },
     suEnh() {
-      const g = this.suKit(2);
+      const g = this.suKit(3);
       g.state.su.frag = 420;
       g.pending = { type: 'ui', ui: 'su_enhance' };
       ui.toasts = []; pump(2); ui.top().sel = 1; pump(2); return shot();
     },
     suEnd(win) {
-      const g = this.suKit(2);
+      const g = this.suKit(3);
       for (const t of ['combat', 'event', 'elite', 'respite', 'combat']) g.state.su.log.push(t);
       if (win) g.suComplete(); else g.suFail();
       ui.toasts = []; pump(3); return shot();
     },
     suRun(tab) {
-      const g = this.suKit(2);
+      const g = this.suKit(3);
       g.state.su.log.push('event', 'combat', 'elite');
       g.state.su.d = 3;
       ui.openSuRun(); ui.top().tab = tab; ui.top().sel = 1;
       ui.toasts = []; pump(2); return shot();
     },
     suBattle(kind) {
-      const g = this.suKit(2);
+      const g = this.suKit(3);
       if (kind === 2) { for (const k of g.state.su.team) g.state.su.hp[k] = 1; g.state.su.dom.groups[1].lvl = 90; }
       g.encounter(g.map.ents.find(e => e.kind === 'enemy' && e.ch === '1'), kind === 2 ? 'enemy' : 'player');
       ui.drainGameEvents();

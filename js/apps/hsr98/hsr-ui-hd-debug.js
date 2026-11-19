@@ -8,7 +8,7 @@
   const fmt = n => H.fmt(Math.round(n));
 
   function goods(kind, hero) {
-    if (kind === 'relic') return Object.keys(H.RELIC_SETS).flatMap(set => Object.keys(H.RELIC_SETS[set].pieces).map(slot => ({ set, slot, name: H.RELIC_SETS[set].pieces[slot] })));
+    if (kind === 'relic') return Object.keys(H.HD.RELIC.text2).flatMap(set => Object.keys(H.RELIC_SETS[set].pieces).map(slot => ({ set, slot, name: H.RELIC_SETS[set].pieces[slot] })));
     if (kind === 'cone') return HD.conesFor(H.CHARS[hero].path).map(id => ({ id, name: H.CONES[id].name + ' · ' + H.CONES[id].rarity + '★' }));
     if (kind === 'dev') return Object.keys(HD.DEVICES).map(id => ({ id, name: HD.devName(id) }));
     return Object.keys(HD.SUPPLIES).map(id => ({ id, name: H.ITEMS[id].name }));

@@ -86,7 +86,7 @@
     renderSu(route) {
       const H = this.game(), K = this.hsrData(), R = this.bench();
       if (!H || !R) return `<h1 class="kv-h1">Виртуальная вселенная</h1><p class="kv-warn">${this.gif('warn')} Данные недоступны.</p>`;
-      const worlds = H.SU.WORLDS;
+      const worlds = H.SU.WORLDS.filter(x => !x.soon);
       const w = worlds.find(x => x.id === (parseInt(route.params.world, 10) || 1)) || worlds[0];
       const tabs = worlds.map(x => x.id === w.id ? `<td class="kv-tab kv-tab-on">${this.esc(x.name)}</td>` : `<td class="kv-tab">${this.link('/hsr98/su?world=' + x.id, this.esc(x.name))}</td>`).join('');
       const DOM = { combat: 'бой', elite: 'элита', respite: 'отдых', event: 'событие', trade: 'торговец', encounter: 'встреча', boss: 'босс' };
@@ -96,22 +96,31 @@
       for (const id of pool) for (const e of H.ENEMIES[id].weak) weakCount[e] = (weakCount[e] || 0) + 1;
       const weak = Object.entries(weakCount).sort((a, b) => b[1] - a[1]).map(([e, c]) => `${this.esc(this.elemName(e))} ${c}`).join(', ');
       const bossFoes = [...new Set(w.pools.boss.flatMap(b => b.waves.flat()))];
-      const set = w.set && H.RELIC_SETS[w.set];
+      const sets = w.sets.map(k => H.RELIC_SETS[k]);
       const sc = R.scores.su.sig;
       const top = (col, n) => Object.keys(sc[col]).sort((a, b) => sc[col][b] - sc[col][a]).slice(0, n);
       const paths = Object.entries(H.SU.PATHS).map(([id, p]) => {
         const who = Object.keys(K.CHARS).filter(c => K.CHARS[c].su === id);
         return `<tr><td><b>${this.esc(p.name)}</b><br><span class="kv-small">Эон: ${this.esc(p.aeon)}</span></td><td>${this.esc(p.buffText)}</td><td class="kv-small">${this.esc(p.res)}</td><td>${who.map(c => this.link('/hsr98/char?id=' + c, this.esc(this.cardName(c)))).join(', ') || '&nbsp;'}</td></tr>`;
       }).join('');
+      const ROM = ['I', 'II', 'III', 'IV', 'V'], pts = d => H.Game.prototype.suPtsMax.call(null, w, d);
+      const diffs = w.diff.map((row, i) => `<tr><td><b>${ROM[i]}</b></td><td>${row.lvl[0]}–${row.lvl[1]}</td><td>${row.eq}</td><td>${w.sets.length ? row.orn + '+' : '&nbsp;'}</td><td>${this.num(pts(i + 1))}</td></tr>`).join('');
+      const forms = Object.entries(H.SU.PATHS).map(([id, p]) => `<tr><td><b>${this.esc(p.name)}</b></td><td>${H.SU.FORMS.filter(f => f.path === id).map(f => this.esc(f.name.replace('Формирование резонанса: ', ''))).join(', ')}</td></tr>`).join('');
       return `
         <p class="kv-crumbs">${this.link('/hsr98/', 'Палуба HSR 98')} &gt; Виртуальная вселенная</p>
         <h1 class="kv-h1">Виртуальная вселенная</h1>
         <table class="kv-tabs" cellspacing="0" cellpadding="0"><tr>${tabs}</tr></table>
         <table class="kv-plate-big" width="100%" cellspacing="0" cellpadding="6">
           <tr><td><b>${this.esc(w.title)}.</b> ${this.esc(w.text)}<br>
-          Уровень врагов ${w.lvl}. ${w.needText ? this.esc(w.needText) : 'Открывается квестом Герты.'}<br>
-          Планарный набор за прохождение: ${set ? `<b>${this.esc(set.name)}</b> (${this.esc(set.text.replace(/\.$/, ''))})` : 'случайный'}.</td></tr>
+          Уровень врагов ${w.diff[0].lvl[0]}–${w.diff[0].lvl[1]}, сложностей ${w.diff.length}. ${w.mission ? 'Открывается после прошлого мира и миссии «' + this.esc(w.mission) + '».' : 'Открывается квестом Герты.'}<br>
+          Планарные наборы мира: ${sets.length ? sets.map(d => `<b>${this.esc(d.name)}</b> (${this.esc(d.text.replace(/\.$/, ''))})`).join('; ') : 'случайный'}.</td></tr>
         </table>
+        <h2 class="kv-h2">Сложности</h2>
+        <table class="kv-grid" cellspacing="0" cellpadding="3">
+          <tr><th>Сложность</th><th>Уровень врагов</th><th>Равновесие</th><th>Украшения, ур.</th><th>Очки недели за забег</th></tr>
+          ${diffs}
+        </table>
+        <p class="kv-small">Очки идут за каждую пройденную зону, даже если забег сорвался. С мира 3 забег приносит ещё очки способностей для древа: 15% от очков.</p>
         <h2 class="kv-h2">Маршрут</h2>
         <table class="kv-grid kv-route" width="100%" cellspacing="0" cellpadding="3"><tr>${plan}</tr></table>
         <p>Уязвимости обычных врагов и элиты этого мира (сколько врагов уязвимы): ${weak}.</p>
@@ -121,6 +130,12 @@
         <table class="kv-grid" width="100%" cellspacing="0" cellpadding="3">
           <tr><th>Путь</th><th>Благословение Эона</th><th>Резонанс</th><th>Каким бойцам берём</th></tr>
           ${paths}
+        </table>
+        <h2 class="kv-h2">Формации резонанса</h2>
+        <p>Три на Путь, выбор из них на 5-м, 8-м и 11-м благословении своего Пути. Когда открыты все девять Путей, два можно запретить в терминале.</p>
+        <table class="kv-grid" width="100%" cellspacing="0" cellpadding="3">
+          <tr><th>Путь</th><th>Формации</th></tr>
+          ${forms}
         </table>
         <h2 class="kv-h2">Сильнее всех во Вселенной по замеру</h2>
         <p>Урон: ${top('dps', 5).map(c => this.charChip(c)).join('')}</p>

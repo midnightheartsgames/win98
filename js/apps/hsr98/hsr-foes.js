@@ -1862,6 +1862,49 @@
     }
   }
 
+  Object.assign(ART, {
+    unto_death(p, f) {
+      const E = '#07050c', K = '#14101e', Kh = '#2a2238', Kl = '#41365a', M = '#ece8f8', Ms = '#b8b0d8', V = '#9a7ae0', Vh = '#d8c8ff', G2 = '#ffd8a0';
+      const w = f ? 1.6 : 0, mass = (pts, col) => glowing(p, E, 0.8, q => q.poly(col, pts));
+      ringBand(p, '#3a2e58', 50, 24, 25, 25, 3.4, -2.6, 0.9);
+      ringBand(p, M, 50, 24, 23, 23, 2.2, -2.5, 0.8);
+      ringBand(p, Vh, 50, 24, 23, 23, 0.8, -2.2, 0.4);
+      mass([38, 30, 50, 26, 62, 30, 70, 46, 76, 64, 82 + w, 80, 86, 95, 76, 90, 70, 96, 62, 89, 54, 97, 46, 89, 38, 97, 30, 90, 24, 95, 18 - w, 80, 24, 64, 30, 46], K);
+      p.poly(Kh, [50, 30, 62, 33, 68, 48, 72, 66, 76, 84, 66, 88, 58, 84, 54, 60]);
+      p.poly(Kl, [56, 36, 62, 42, 66, 58, 60, 52]);
+      for (const [x0, y0, x1, y1] of [[40, 44, 34, 88], [50, 40, 50, 92], [60, 44, 66, 88]]) curve(p, '#3e2e60', bez(x0, y0, (x0 + x1) / 2 + (f ? 1 : -1), (y0 + y1) / 2, x1, y1, 8), 0.9, 0.5);
+      seg(p, E, 36, 40, 22, 58 - w, 5.4, 3.6); seg(p, K, 36, 40, 22, 58 - w, 4, 2.4);
+      seg(p, E, 64, 40, 78, 58 + w, 5.4, 3.6); seg(p, K, 64, 40, 78, 58 + w, 4, 2.4);
+      for (const k of [-2, 0, 2]) { shard(p, Ms, M, 22 + k, 58 - w, 9, 1.75 + k * 0.08, 0.9); shard(p, Ms, M, 78 + k, 58 + w, 9, 1.4 - k * 0.08, 0.9); }
+      mass([38, 30, 40, 16, 50, 9, 60, 16, 62, 30, 50, 36], K);
+      p.poly(Kh, [50, 10, 59, 17, 60, 28, 54, 24]);
+      glowing(p, E, 0.7, q => q.ell(M, 50, 22, 7.4, 9));
+      p.ell(Ms, 51.6, 23.4, 5.4, 7.2);
+      p.poly(E, [44.6, 20, 48.6, 19.4, 48.4, 21.4, 45, 22]); p.poly(E, [51.4, 19.4, 55.4, 20, 55, 22, 51.6, 21.4]);
+      seg(p, '#5a4a80', 47, 22, 46.4, 29, 0.6, 0.3); seg(p, '#5a4a80', 53, 22, 53.6, 29, 0.6, 0.3);
+      p.poly(V, [46, 27.6, 54, 27.6, 52, 29, 48, 29]);
+      for (const [x, y, r] of [[30, 70, 1.2], [70, 74, 1], [50, 60, 1.4], [40, 84, 1], [62, 82, 1.2]]) { p.ell(Vh, x, y + w, r, r); p.ell(G2, x, y + w, r * 0.4, r * 0.4); }
+    },
+    sepulcher(p, f) {
+      const E = '#07050c', S = '#2a2438', Sh = '#463c5c', Sl = '#6a5e88', V = '#b8a8f0', Vh = '#f0ecff', C = '#8a8296';
+      const w = f ? 1 : 0, mass = (pts, col) => glowing(p, E, 0.8, q => q.poly(col, pts));
+      p.ell('rgba(20,10,40,0.6)', 50, 94, 20, 3.4);
+      mass([34, 92, 34, 44, 38, 34, 50, 28, 62, 34, 66, 44, 66, 92], S);
+      p.poly(Sh, [38, 90, 38, 45, 41, 37, 50, 32, 50, 90]);
+      p.poly(Sl, [40, 46, 43, 39, 50, 35, 50, 40, 44, 44]);
+      mass([42, 86, 42, 50, 50, 42, 58, 50, 58, 86], '#120e1c');
+      p.poly('#3a2a6a', [44, 84, 44, 51, 50, 45.6, 56, 51, 56, 84]);
+      glowing(p, '#3a2a6a', 1.2 + w * 0.4, q => q.ell(V, 50, 60, 5, 5));
+      p.ell('#3a2a6a', 52.6, 58.6, 4.4, 4.6);
+      p.ell(Vh, 49, 59.4, 1.2, 1.6);
+      seg(p, C, 36, 52, 64, 74, 1.8); seg(p, C, 64, 52, 36, 74, 1.8);
+      for (const t of [0.2, 0.4, 0.6, 0.8]) { p.ell('#5a5268', 36 + 28 * t, 52 + 22 * t, 1.4, 1); p.ell('#5a5268', 64 - 28 * t, 52 + 22 * t, 1.4, 1); }
+      p.rect(Sh, 32, 90, 36, 3); p.rect(Sl, 32, 90, 36, 1);
+      for (const [x, y] of [[28, 40], [72, 46], [30, 70], [70, 66]]) shard(p, V, Vh, x, y - w, 3.4, -1.2, 1);
+    }
+  });
+  Object.assign(META, { unto_death: { icon: [50, 22, 20], anim: true, float: true, aura: '210,200,255' }, sepulcher: { icon: [50, 56, 26], anim: true, aura: '180,160,255' } });
+
   Object.assign(G, { drawEnemy, fieldEnemy, foeIcon, foeCanvas, FOE_META: META, FOE_ART: ART, FOE_FAMILY: FAMILY, FOE_KIT: { bez, curve, seg, shard, leaf, crystal, glowing, ringBand }, foeId: idOf, svarogArt, SVAROG });
   if (typeof module !== 'undefined') module.exports = H;
 })(globalThis.Hsr98 = globalThis.Hsr98 || {});

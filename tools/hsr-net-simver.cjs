@@ -28,7 +28,7 @@ function simData(H) {
     chars: each(Object.keys(HD.HEROES), id => pick(H.CHARS[id], ['base', 'path', 'elem', 'energy'])),
     enemies: each(Object.keys(HD.FOES), id => H.ENEMIES[id]),
     cones: each(Object.keys(HD.CONE_MODE), id => pick(H.CONES[id], ['path', 'rarity', 'p'])),
-    relicSets: H.RELIC_SETS,
+    relicSets: pick(H.RELIC_SETS, Object.keys(HD.RELIC.text2)),
     relicSlots: H.RELIC_SLOTS.map(s => s.key),
     tiles: each(Object.keys(H.TILES), k => !!H.TILES[k].solid),
     paths: each(Object.keys(H.PATHS), k => H.PATHS[k].aggro),

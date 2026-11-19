@@ -70,7 +70,7 @@
     switch (rng.int(5)) {
       case 0:
       case 1: {
-        const set = rng.pick(Object.keys(H.RELIC_SETS));
+        const set = rng.pick(Object.keys(HD.RELIC.text2));
         return { t: 'buy', id: 'relic', set, slot: rng.pick(Object.keys(H.RELIC_SETS[set].pieces)) };
       }
       case 2: {
@@ -209,7 +209,7 @@
     pick: c => (Number.isInteger(c.i) && c.i >= 0 && c.i < 2 ? (c.lvl === 10 || c.lvl === 20 ? { i: c.i, lvl: c.lvl } : { i: c.i }) : null),
     use: c => (cell(c.i) ? Object.assign({ i: c.i }, aim(c)) : null),
     buy: c => {
-      if (c.id === 'relic') return own(H.RELIC_SETS, c.set) && own(H.RELIC_SETS[c.set].pieces, c.slot) ? { id: 'relic', set: c.set, slot: c.slot } : null;
+      if (c.id === 'relic') return own(HD.RELIC.text2, c.set) && own(H.RELIC_SETS[c.set].pieces, c.slot) ? { id: 'relic', set: c.set, slot: c.slot } : null;
       if (c.id === 'cone') return own(H.CONES, c.cone) ? { id: 'cone', cone: c.cone } : null;
       return own(HD.DEVICES, c.id) || own(HD.SUPPLIES, c.id) ? { id: c.id } : null;
     },

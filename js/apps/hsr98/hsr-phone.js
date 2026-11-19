@@ -114,12 +114,13 @@
     profileMerits() {
       const s = this.state, f = s.flags, bosses = Object.keys(H.ENCOUNTERS).filter(id => H.ENCOUNTERS[id].boss);
       const worlds = H.SU.WORLDS, cleared = worlds.filter(w => f['su_clear_' + w.id]).length;
+      const topDiff = worlds.reduce((m, w) => Math.max(m, ...w.diff.map((row, j) => (f['su_clear_' + w.id + (j ? '_' + (j + 1) : '')] ? j + 1 : 0))), 0);
       const cwOn = !!f.lab_cw, rank = cwOn ? this.cwRankBest() : null, hdOn = !!f.lab_hd, wave = hdOn ? this.hd().recs.reduce((a, r) => Math.max(a, r.wave || 0), 0) : 0, pfOn = !!f.pf_open;
       const closed = 'Не открыто';
       return [
         { id: 'fh', label: 'Зал забвения', open: this.fhOpen(), value: this.fhOpen() ? this.fhTotal('all') + ' / ' + H.FH.ALL.length * 3 + ' ★' : closed },
         { id: 'pf', label: 'Чистый вымысел', open: pfOn, value: pfOn ? 'Звёзд в сезоне ' + this.pfStarTotal() + ' / 12' : closed },
-        { id: 'su', label: 'Виртуальная вселенная', open: !!f.su_open, value: f.su_open ? 'Миров: ' + cleared + ' / ' + worlds.length : closed },
+        { id: 'su', label: 'Виртуальная вселенная', open: !!f.su_open, value: f.su_open ? 'Миров: ' + cleared + ' / ' + worlds.length + (topDiff > 1 ? ' · сл. ' + ['I', 'II', 'III', 'IV', 'V'][topDiff - 1] : '') : closed },
         { id: 'cw', label: 'Валютные войны', open: cwOn, value: cwOn ? H.CW.RANKS[rank.tier].name + ' ' + rank.sub : closed },
         { id: 'hd', label: 'Рубеж Экспресса', open: hdOn, value: hdOn ? (wave ? 'Волна ' + wave : 'Нет записей') : closed },
         { id: 'boss', label: 'Боссов побеждено', open: true, value: bosses.filter(id => f['first_' + id]).length + ' / ' + bosses.length },

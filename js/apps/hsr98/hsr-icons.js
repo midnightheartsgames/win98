@@ -162,6 +162,17 @@
       p.ell('#ff7ad8', 25, 8, 3.2, 3.2);
       p.ell('#ffc8ec', 24, 7, 1.2, 1.2);
     },
+    immersifier(p) {
+      p.poly('#06101c', [9, 3, 23, 3, 27, 9, 27, 25, 21, 30, 11, 30, 5, 25, 5, 9]);
+      p.poly('#1a3a5a', [10, 4.4, 22, 4.4, 25.6, 9.6, 25.6, 24.4, 20.4, 28.6, 11.6, 28.6, 6.4, 24.4, 6.4, 9.6]);
+      p.poly('#40c8e8', [10, 4.4, 22, 4.4, 25.6, 9.6, 6.4, 9.6]);
+      p.rect('#0a1626', 9, 12, 14, 12);
+      p.rect('#50e0ff', 10, 13, 12, 10);
+      p.rect('#b0f4ff', 10, 13, 12, 2.4);
+      star4(p, '#ffffff', 16, 18.6, 4.6, 1.1);
+      p.rect('#c890ff', 9, 25.4, 14, 1.4);
+      star4(p, '#ffffff', 25.6, 4.6, 2.6, 0.7);
+    },
     herta_bond(p) {
       p.poly('#080414', [2, 8, 26, 4, 30, 22, 6, 27]);
       p.poly('#221444', [3.2, 9, 25.2, 5.4, 28.6, 21, 6.8, 25.4]);
@@ -630,7 +641,7 @@
     salsotto(p) { p.ell('#ffd060', 16, 4.8, 2.8, 2.8); p.clipPoly([16, 0, 22, 0, 22, 10, 16, 10], () => p.ell('#3a2a4a', 16, 4.8, 2.8, 2.8)); }
   };
 
-  const SET_COL = { passerby: '#8e3a32', musketeer: '#8e6450', knight: '#d6d1c6', thief: '#2440a8', firesmith: '#d0402c', glacial: '#f6f0e6', thunder: '#4c2eb4', eagle: '#9c9eb6', genius: '#1ce4fa', wastelander: '#bca98d', champion: '#dcc492', station: '#c4d0e8', vonwacq: '#46b8a0', salsotto: '#e8963a' };
+  const SET_COL = { passerby: '#8e3a32', musketeer: '#8e6450', knight: '#d6d1c6', thief: '#2440a8', firesmith: '#d0402c', glacial: '#f6f0e6', thunder: '#4c2eb4', eagle: '#9c9eb6', genius: '#1ce4fa', wastelander: '#bca98d', champion: '#dcc492', station: '#c4d0e8', vonwacq: '#46b8a0', salsotto: '#e8963a', fleet: '#3aa88e', talia: '#d8904a', pancosmic: '#f4d070', celestial: '#4a70c8', belobog: '#8ab0e0', rutilant: '#d84a50', keel: '#c8a470', glamoth: '#6a7c6c', penacony: '#e08ae0', sigonia: '#a8987a', izumo: '#d8343a' };
 
   const RELIC_PIECE = {};
   const SIL = '#262a52';
@@ -938,6 +949,13 @@
       p.rect(c.c, 15.8, 12.4, 0.8, 3);
       p.fill(c.c, t ? 'M16.2 4 C18.6 7 19.2 9.6 18.4 11.2 C17.8 12.6 14.6 12.6 14 11.2 C13.2 9.6 14 7 16.2 4 Z' : 'M16.3 3 C19.2 6.6 20 9.6 19 11.6 C18.2 13 14.4 13 13.6 11.6 C12.6 9.6 13.4 6.6 16.3 3 Z');
       if (t > 1) { p.ell(null, 16.2, 10, 0.9, 1.4); p.rect(null, 15, 16.5, 0.8, 4); }
+    },
+    propagation(p, c, t) {
+      if (t) p.mirror(() => { p.fill(c.lo, 'M4 22 C2 16 4 9 9 6 C8 10 8.5 14 11 17 Z'); if (t > 1) p.fill(c.lo, 'M3 27 C5 25 8 24.5 10.5 25 C8 27 6 28.5 3 27 Z'); });
+      p.fill(c.c, 'M16 3 C21 6 23 11 22 16 C21 21 19 25 16 29.5 C13 25 11 21 10 16 C9 11 11 6 16 3 Z');
+      p.fill(null, t ? 'M16 8 C18.6 10 19.4 13 19 16 C18.6 19 17.6 21.5 16 24 C14.4 21.5 13.4 19 13 16 C12.6 13 13.4 10 16 8 Z' : 'M16 9 C18 11 18.6 13.5 18.3 16 C18 18.5 17.2 20.5 16 22.5 C14.8 20.5 14 18.5 13.7 16 C13.4 13.5 14 11 16 9 Z');
+      p.ell(c.c, 16, 15, t ? 1.8 : 2.2, t ? 2.6 : 3);
+      p.mirror(() => { p.fill(c.c, 'M10 13 C6 12 3.5 9 3 5 C6 6.5 8.5 8.5 11 11 Z'); p.fill(c.c, 'M10.5 19 C6.5 20 4 23 3.5 27 C6.5 25.5 9 23.5 11.5 21 Z'); });
     },
     elation(p, c, t) {
       if (t) { p.arc(c.lo, 16, 16, 14.4, 2.2, 115, 245); p.arc(c.lo, 16, 16, 14.4, 2.2, -65, 65); }

@@ -144,7 +144,7 @@
 
     guideIndexRows(cat) {
       if (cat === 'orn') {
-        return H.SU.WORLDS.filter(w => w.set).map(w => ({ kind: 'su', id: w.id, name: w.name + ': ' + w.title, cost: H.SU.TUN.power, open: this.suWorldOpen(w), why: 'Сначала пройдите прошлый мир.', set: w.set, place: this.guidePlace(this.guideSite('su')) }));
+        return H.SU.WORLDS.filter(w => w.sets.length && !w.soon).map(w => ({ kind: 'su', id: w.id, name: w.name + ': ' + w.title, cost: H.SU.TUN.power, open: this.suWorldOpen(w), why: 'Сначала пройдите прошлый мир.', set: w.sets[0], place: this.guidePlace(this.guideSite('su')) }));
       }
       return H.CALYX.filter(c => calyxKind(c) === cat).map(c => {
         const site = this.guideSite('calyx', c.id), path = c.owns && Object.values(H.TRACE_PATH_LINES || {}).find(l => l[0] === c.owns);
@@ -352,7 +352,7 @@
     },
 
     guideCosmic() {
-      return H.SU.WORLDS.map(w => ({ kind: 'su', id: w.id, w, name: w.name + ': ' + w.title, open: this.suWorldOpen(w), first: this.suFirst(w), rw: this.suReward(w, this.suFirst(w)), cost: H.SU.TUN.power, why: 'Сначала пройдите прошлый мир.' }));
+      return H.SU.WORLDS.filter(w => !w.soon).map(w => ({ kind: 'su', id: w.id, w, name: w.name + ': ' + w.title, open: this.suWorldOpen(w), first: this.suFirst(w), cleared: w.diff.filter((row, j) => !this.suFirst(w, j + 1)).length, rw: this.suFirst(w) ? this.suReward(w, true) : this.suOrnReward(w) || this.suReward(w, false), cost: H.SU.TUN.power, why: this.suNeedText(w) }));
     },
 
     guideTreasure() {

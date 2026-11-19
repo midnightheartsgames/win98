@@ -987,6 +987,7 @@
     const suPaths = h && h.SU && h.SU.PATHS ? Object.entries(h.SU.PATHS) : [];
     const blessings = (h && h.SU && h.SU.BLESSINGS) || [];
     const curios = (h && h.SU && h.SU.CURIOS) || [];
+    const forms = (h && h.SU && h.SU.FORMS) || [];
     return `
       ${head('Космология, Эоны и Системы мироздания')}
       <p class="hwk-lead">Трактаты Архива об устройстве Вселенной: Пути и Эоны, Стеллароны, Серебряная колея, сдвиги частот между мирами, Световые конусы. Ниже собран полный справочник Виртуальной вселенной.</p>
@@ -1000,7 +1001,7 @@
       </table>
 
       ${section('su', 'Справочник Виртуальной вселенной')}
-      ${jumpbar([['su-paths', 'Пути'], ['su-bless', `Благословения (${blessings.length})`], ['su-curios', `Диковины (${curios.length})`]])}
+      ${jumpbar([['su-paths', 'Пути'], ['su-bless', `Благословения (${blessings.length})`], ['su-forms', `Формации (${forms.length})`], ['su-curios', `Диковины (${curios.length})`]])}
       ${anchorTag('su-paths')}<h3 class="hwk-h3">Пути симуляции и их Резонанс</h3>
       <table class="hwk-table">
         <tr><th>Путь</th><th>Эон</th><th>Базовое усиление</th><th>Резонанс Пути (от 3 благословений)</th></tr>
@@ -1018,6 +1019,12 @@
         </table>`;
       }).join('')}
       ${topLink()}
+      ${anchorTag('su-forms')}<h3 class="hwk-h3">Формации резонанса</h3>
+      <p class="hwk-small">Формация меняет Резонанс Пути. Её выбирают из трёх на 5-м, 8-м и 11-м благословении Пути, по которому идёт погружение.</p>
+      <table class="hwk-table">
+        <tr><th width="18%">Путь</th><th width="28%">Формация</th><th>Эффект</th></tr>
+        ${forms.map((f, i) => `<tr${alt(i)}><td>${esc((h.SU.PATHS[f.path] || {}).name || f.path)}</td><td><b>${esc(f.name.replace('Формирование резонанса: ', ''))}</b></td><td>${esc(f.text)}</td></tr>`).join('')}
+      </table>
       ${anchorTag('su-curios')}<h3 class="hwk-h3">Диковины симуляции</h3>
       <table class="hwk-table">
         <tr><th width="30%">Диковина</th><th>Свойство</th></tr>

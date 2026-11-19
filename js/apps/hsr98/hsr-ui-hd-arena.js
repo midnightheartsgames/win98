@@ -854,7 +854,7 @@
         shopRows(tab) {
           if (tab === 0) {
             const out = [];
-            for (const set of Object.keys(H.RELIC_SETS)) for (const slot of Object.keys(H.RELIC_SETS[set].pieces)) out.push({ kind: 'relic', set, slot, price: HD.RELIC.price, name: H.RELIC_SETS[set].pieces[slot], sub: H.RELIC_SETS[set].name });
+            for (const set of Object.keys(HD.RELIC.text2)) for (const slot of Object.keys(H.RELIC_SETS[set].pieces)) out.push({ kind: 'relic', set, slot, price: HD.RELIC.price, name: H.RELIC_SETS[set].pieces[slot], sub: H.RELIC_SETS[set].name });
             return out;
           }
           if (tab === 1) return HD.conePaths(h).flatMap(p => HD.conesFor(p)).map(id => ({ kind: 'cone', id, price: HD.CONE_PRICE[H.CONES[id].rarity], name: H.CONES[id].name, sub: H.CONES[id].rarity + '★' }));

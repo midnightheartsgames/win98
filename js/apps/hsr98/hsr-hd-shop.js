@@ -360,7 +360,7 @@
   function grantItem(A, h, id, o = {}) {
     if (id === 'cone') { if (!CONES[o.cone]) return false; h.cone = { id: o.cone, sup: Math.max(1, Math.min(5, o.sup || 1)), paid: 0 }; equip(A, h); return true; }
     if (id === 'relic') {
-      if (!H.RELIC_SETS[o.set] || !H.RELIC_SETS[o.set].pieces[o.slot]) return false;
+      if (!HD.RELIC.text2[o.set] || !H.RELIC_SETS[o.set] || !H.RELIC_SETS[o.set].pieces[o.slot]) return false;
       h.items = h.items.map(it => (it && it.id === 'relic' && it.slot === o.slot ? null : it));
       const i = slotFree(h);
       if (i < 0) return false;

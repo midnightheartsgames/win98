@@ -8,6 +8,7 @@
   const blessDef = id => SU.BLESSINGS.find(b => b.id === id);
   const curioDef = id => SU.CURIOS.find(c => c.id === id);
   const worldDef = id => SU.WORLDS.find(w => w.id === id);
+  const DIFF_COL = ['#8ad8ff', '#a8e88a', '#f2d060', '#ff9a50', '#ff5a5a'];
   const pathCol = p => (SU.PATHS[p] ? SU.PATHS[p].col : '#c8d0e0');
   const stars = n => '★'.repeat(n);
   const SHOP_TEXT = {
@@ -87,17 +88,19 @@
     },
 
     suSetCells(c, w, sets, x, y, s) {
-      const list = w.set ? [w.set] : H.PLANAR_SETS;
-      if (!w.set) {
-        H.PLANAR_SETS.forEach((set, i) => { G.rarityCell(c, x + i * (s * 0.72), y + i * 3, s * 0.7, s * 0.7, 4); G.itemIcon(c, 'relic:sphere', x + i * (s * 0.72) + 2, y + i * 3 + 2, s * 0.7 - 4, set); });
+      const list = w.sets.length ? w.sets : H.PLANAR_SETS;
+      if (!w.sets.length) {
+        H.PLANAR_SETS.slice(0, 3).forEach((set, i) => { G.rarityCell(c, x + i * (s * 0.72), y + i * 3, s * 0.7, s * 0.7, 4); G.itemIcon(c, 'relic:sphere', x + i * (s * 0.72) + 2, y + i * 3 + 2, s * 0.7 - 4, set); });
         return x + 3 * s * 0.72 + 8;
       }
       let cx = x;
       for (const set of list) for (const sl of H.PLANAR_SLOTS) {
         G.rarityCell(c, cx, y, s, s, 4); G.itemIcon(c, 'relic:' + sl.key, cx + 3, y + 3, s - 6, set);
-        const label = '×' + sets, bw = Math.round(this.measure(label, 9, true) + 6);
-        c.fillStyle = '#0a0a10'; c.fillRect(cx + s - bw, y + s - 12, bw, 12);
-        this.text(label, cx + s - bw / 2, y + s - 11, { align: 'center', size: 9, bold: true, col: '#ffffff', shadow: false });
+        if (list.length === 1) {
+          const label = '×' + sets, bw = Math.round(this.measure(label, 9, true) + 6);
+          c.fillStyle = '#0a0a10'; c.fillRect(cx + s - bw, y + s - 12, bw, 12);
+          this.text(label, cx + s - bw / 2, y + s - 11, { align: 'center', size: 9, bold: true, col: '#ffffff', shadow: false });
+        }
         cx += s + 6;
       }
       return cx;
@@ -107,6 +110,10 @@
       const ui = this, g = this.game, s = g.state;
       const worlds = () => SU.WORLDS.map(w => ({ w, open: g.suWorldOpen(w), first: g.suFirst(w), rw: g.suReward(w, g.suFirst(w)) }));
       const firstOpen = Math.max(0, worlds().map(x => x.open && x.first).lastIndexOf(true));
+      const topDiff = w => { let d = 1; while (d < w.diff.length && g.suDiffOpen(w, d + 1)) d++; return d - 1; };
+      const last = s.suPick && SU.WORLDS.findIndex(w => w.id === s.suPick.world && g.suWorldOpen(w));
+      const wsel0 = last != null && last >= 0 ? last : firstOpen, w0 = SU.WORLDS[wsel0];
+      const dsel0 = last != null && last >= 0 && g.suDiffOpen(w0, s.suPick.diff) ? s.suPick.diff - 1 : topDiff(w0);
       const pathOk = p => g.suPaths().includes(p);
       const leave = () => { ui.screens.pop(); ui.sfx('cancel'); close(); };
       const claim = () => {
@@ -114,15 +121,20 @@
         if (!got) { ui.sfx('deny'); ui.toast('Нужно ' + SU.TUN.power + ' энергии освоения.'); if (g.powerInfo().cur < SU.TUN.power) ui.openPower(); return; }
         ui.sfx('chest'); ui.toast('Награда Виртуальной вселенной: ' + got.join(', '));
       };
+      const buyImm = () => {
+        if (g.suImm() >= SU.TUN.immMax) { ui.sfx('deny'); ui.toast('Больше ' + SU.TUN.immMax + ' ключей погружения не поместится.'); return; }
+        if (!g.suBuyImm()) { ui.sfx('deny'); ui.toast('Нужно ' + SU.TUN.power + ' энергии освоения.'); if (g.powerInfo().cur < SU.TUN.power) ui.openPower(); return; }
+        ui.sfx('chest'); ui.toast('Ключ погружения: ' + g.suImm() + ' / ' + SU.TUN.immMax);
+      };
       const start = scr => {
         const w = worlds()[scr.wsel].w, path = PATH_SLOTS[scr.psel];
         ui.screens = [];
         close();
-        if (!g.suStart(w.id, path, s.party)) { ui.sfx('deny'); ui.toast('Погружение не началось.'); return; }
+        if (!g.suStart(w.id, path, s.party, { diff: scr.dsel + 1 })) { ui.sfx('deny'); ui.toast('Погружение не началось.'); return; }
         ui.drainGameEvents();
       };
       this.push({
-        full: true, step: 0, wsel: firstOpen, psel: Math.max(0, PATH_SLOTS.findIndex(pathOk)), bsel: 1,
+        full: true, step: 0, wsel: wsel0, dsel: dsel0, psel: Math.max(0, PATH_SLOTS.findIndex(pathOk)), bsel: 1,
         draw(c) {
           ui.suBackdrop(c);
           ui.plate(12, 10, 'Виртуальная вселенная');
@@ -135,44 +147,64 @@
         drawWorlds(c) {
           const list = worlds();
           list.forEach((x, i) => {
-            const y = 48 + i * 84, on = i === this.wsel, w = x.w;
+            const y = 48 + i * 37, on = i === this.wsel, w = x.w, soon = !!w.soon;
             const bg = c.createLinearGradient(16, 0, 248, 0);
             bg.addColorStop(0, on ? 'rgba(120,70,200,0.62)' : 'rgba(20,10,44,0.82)'); bg.addColorStop(1, on ? 'rgba(40,20,90,0.5)' : 'rgba(8,4,22,0.7)');
-            c.fillStyle = '#010006'; c.fillRect(15, y - 1, 234, 78);
-            c.fillStyle = bg; c.fillRect(16, y, 232, 76);
-            c.fillStyle = on ? SIM.violet : x.open ? '#4a3a7a' : '#241c3a'; c.fillRect(16, y, 3, 76);
-            if (on) { c.strokeStyle = SIM.violet; c.strokeRect(16.5, y + 0.5, 231, 75); }
-            c.strokeStyle = x.open ? (on ? '#f4e8ff' : SIM.cyan) : '#3a2e5a'; c.lineWidth = 2; c.beginPath(); c.arc(48, y + 38, 20, 0, Math.PI * 2); c.stroke(); c.lineWidth = 1;
-            ui.text(String(w.id), 48, y + 25, { align: 'center', size: 24, bold: true, serif: true, col: x.open ? '#f4e8ff' : '#4a4060' });
-            ui.text(w.name, 78, y + 8, { size: 10, col: x.open ? C.sub : C.dim });
-            ui.text(w.title, 78, y + 21, { size: 13, bold: true, serif: true, col: x.open ? (on ? C.gold : C.cream) : C.dim });
-            ui.text('ур. ' + w.lvl, 240, y + 8, { align: 'right', size: 10, col: x.open ? C.sub : C.dim });
-            if (!x.open) { ui.lockGlyph(78, y + 44, '#8a7aa8'); ui.text('Закрыт', 94, y + 46, { size: 11, col: '#8a7aa8' }); }
-            else if (x.first) ui.text('Первая награда ×3', 78, y + 46, { size: 10, bold: true, col: C.gold });
-            else ui.text('Пройден · повтор за ' + SU.TUN.power + ' энергии', 78, y + 46, { size: 10, col: C.ok });
-            if (x.open && w.set) G.itemIcon(c, 'relic:sphere', 214, y + 34, 26, w.set);
-            ui.hit(16, y, 232, 76, () => { if (this.wsel === i) this.key('ok'); else { this.wsel = i; ui.sfx('select'); } });
+            c.fillStyle = '#010006'; c.fillRect(15, y - 1, 234, 36);
+            c.fillStyle = bg; c.fillRect(16, y, 232, 34);
+            c.fillStyle = on ? SIM.violet : x.open ? '#4a3a7a' : '#241c3a'; c.fillRect(16, y, 3, 34);
+            if (on) { c.strokeStyle = SIM.violet; c.strokeRect(16.5, y + 0.5, 231, 33); }
+            c.strokeStyle = x.open ? (on ? '#f4e8ff' : SIM.cyan) : '#3a2e5a'; c.lineWidth = 2; c.beginPath(); c.arc(36, y + 17, 12, 0, Math.PI * 2); c.stroke(); c.lineWidth = 1;
+            ui.text(String(w.id), 36, y + 9, { align: 'center', size: 14, bold: true, serif: true, col: x.open ? '#f4e8ff' : '#4a4060' });
+            let ts = 12;
+            while (ts > 9 && ui.measure(w.title, ts, true) > 160) ts--;
+            ui.text(w.title, 56, y + 4, { size: ts, bold: true, serif: true, col: x.open ? (on ? C.gold : C.cream) : C.dim });
+            if (soon) ui.text('Скоро', 56, y + 20, { size: 9, col: '#8a7aa8' });
+            else if (!x.open) { ui.lockGlyph(56, y + 17, '#8a7aa8'); ui.text('Закрыт', 70, y + 20, { size: 9, col: '#8a7aa8' }); }
+            else if (x.first) ui.text('Первая награда ×3', 56, y + 20, { size: 9, bold: true, col: C.gold });
+            else ui.text('Пройден · сложностей: ' + w.diff.filter((r, j) => !g.suFirst(w, j + 1)).length + ' из ' + w.diff.length, 56, y + 20, { size: 9, col: C.ok });
+            if (x.open && w.sets.length) G.itemIcon(c, 'relic:sphere', 222, y + 7, 20, w.sets[0]);
+            ui.hit(16, y, 232, 34, () => { if (this.wsel === i) this.key('ok'); else { this.wsel = i; ui.sfx('select'); } });
           });
-          const x = list[this.wsel], w = x.w;
+          const x = list[this.wsel], w = x.w, dn = this.dsel + 1, dOpen = g.suDiffOpen(w, dn), first = g.suFirst(w, dn), rw = g.suReward(w, first, dn), [la, lb] = g.suDiffLvl(w, dn);
           ui.suFrameBox(262, 48, 362, 328);
           ui.text(w.name + ' · ' + w.title, 278, 60, { size: 16, bold: true, serif: true, col: C.gold });
-          ui.wrap(w.text, 330, 12).slice(0, 3).forEach((l, i) => ui.text(l, 278, 86 + i * 15, { size: 12, col: '#e4dcf4' }));
-          const last = w.pools.boss[0].waves[w.pools.boss[0].waves.length - 1][0];
-          c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(276, 136, 334, 50);
-          G.foeIcon(c, H.ENEMIES[last], 282, 141, 40, { round: true });
-          ui.text('Зона босса', 330, 142, { size: 10, col: C.sub });
-          ui.text(w.bossName, 330, 156, { size: 12, bold: true, col: '#ffd0c8' });
-          ui.text('ур. ' + (w.lvl + Math.floor((w.plan.length - 1) * 0.4) + 2), 604, 142, { align: 'right', size: 10, col: C.sub });
-          ui.text(x.first ? 'Награда за первое прохождение' : 'Награда за прохождение', 278, 196, { size: 11, bold: true, col: C.cream });
-          ui.rewardCell(c, 'jade', x.rw.jade, 278, 214, 44);
-          ui.rewardCell(c, 'credits', x.rw.credits, 328, 214, 44);
-          ui.suSetCells(c, w, x.rw.sets, 386, 214, 44);
-          if (x.first && x.open) ui.stamp(566, 226, '×3');
-          const set = w.set && H.RELIC_SETS[w.set];
-          ui.text(set ? set.name : 'Случайный набор планарных украшений', 278, 268, { size: 12, bold: true, serif: true, col: SIM.cyan });
-          ui.wrap(set ? '2 предмета: ' + set.text : 'Запечатывающая космос станция, Живой Вонвак или Замершее Салсотто. Сфера и вязь одного набора.', 330, 11).slice(0, 3).forEach((l, i) => ui.text(l, 278, 286 + i * 14, { size: 11, col: '#d8d0ec' }));
-          const note = !x.open ? (w.needText || 'Сначала пройдите учебный тест Герты.') : x.first ? 'Первая награда бесплатна. Повторные стоят ' + SU.TUN.power + ' энергии освоения.' : 'Награда спишет ' + SU.TUN.power + ' энергии освоения. Без неё награда подождёт у машины.';
-          ui.wrap(note, 330, 11).slice(0, 2).forEach((l, i) => ui.text(l, 278, 336 + i * 14, { size: 11, col: !x.open ? C.bad : C.sub }));
+          ui.wrap(w.text, 330, 11).slice(0, 2).forEach((l, i) => ui.text(l, 278, 84 + i * 14, { size: 11, col: '#e4dcf4' }));
+          ui.text('Сложность', 278, 120, { size: 10, col: C.sub });
+          w.diff.forEach((row, i) => {
+            const cx = 344 + i * 34, on = i === this.dsel, op = g.suDiffOpen(w, i + 1), done = !g.suFirst(w, i + 1), heat = DIFF_COL[i];
+            c.fillStyle = on ? heat : 'rgba(10,6,24,0.85)'; c.fillRect(cx, 114, 30, 22);
+            c.strokeStyle = op ? heat : '#3a2e5a'; c.lineWidth = on ? 2 : 1; c.strokeRect(cx + 0.5, 114.5, 29, 21); c.lineWidth = 1;
+            ui.text(g.suRoman(i + 1), cx + 15, 118, { align: 'center', size: 11, bold: true, serif: true, col: on ? '#120a20' : op ? '#f4e8ff' : '#5a4a7a' });
+            if (done) { c.fillStyle = C.ok; c.fillRect(cx + 24, 116, 4, 4); }
+            ui.hit(cx, 114, 30, 22, () => { if (this.dsel !== i) { this.dsel = i; ui.sfx('select'); } });
+          });
+          ui.text('враги ур. ' + la + '–' + lb, 610, 120, { align: 'right', size: 10, col: dOpen ? C.cream : C.dim });
+          c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(276, 142, 334, 46);
+          if (w.soon) {
+            ui.text('Зона босса', 286, 148, { size: 10, col: C.sub });
+            ui.text(w.bossName, 286, 162, { size: 12, bold: true, col: '#ffd0c8' });
+            ui.wrap('Герта ещё собирает этот мир из записей Экспресса. Он откроется в одном из следующих обновлений.', 330, 11).slice(0, 3).forEach((l, i) => ui.text(l, 278, 204 + i * 14, { size: 11, col: '#8a7aa8' }));
+          } else {
+            const lastFoe = w.pools.boss[0].waves[w.pools.boss[0].waves.length - 1][0];
+            G.foeIcon(c, H.ENEMIES[lastFoe], 282, 145, 38, { round: true });
+            ui.text('Зона босса', 330, 148, { size: 10, col: C.sub });
+            ui.text(w.bossName, 330, 162, { size: 12, bold: true, col: '#ffd0c8' });
+            ui.text('ур. ' + lb, 604, 148, { align: 'right', size: 10, col: C.sub });
+            const orw = g.suOrnReward(w), cells = first ? rw : orw;
+            const head = first ? 'Награда за первое прохождение' : orw ? 'За каждый обмен у элиты и босса, до 3 за забег' : 'Повторное прохождение без награды';
+            ui.text(head + (first && w.sets.length > 1 && rw.sets ? ' · наборов: ' + rw.sets : ''), 278, 196, { size: 11, bold: true, col: C.cream });
+            if (cells) {
+              ui.rewardCell(c, 'jade', cells.jade, 278, 214, 44);
+              ui.rewardCell(c, 'credits', cells.credits, 328, 214, 44);
+              if (cells.sets) ui.suSetCells(c, w, cells.sets, 386, 214, 44);
+            }
+            if (first && dOpen && dn === 1) ui.stamp(566, 194, '×3');
+            if (w.sets.length) w.sets.forEach((k, i) => { const d = H.RELIC_SETS[k]; ui.text(d.name + (i ? '' : ' · ур. ' + w.diff[dn - 1].orn + '+'), 278, 266 + i * 30, { size: 11, bold: true, serif: true, col: SIM.cyan }); ui.text(d.short, 278, 281 + i * 30, { size: 10, col: '#d8d0ec' }); });
+            else { ui.text('Случайный набор планарных украшений · ур. ' + w.diff[dn - 1].orn + '+', 278, 268, { size: 12, bold: true, serif: true, col: SIM.cyan }); ui.text('Сфера и вязь одного случайного планарного набора.', 278, 286, { size: 11, col: '#d8d0ec' }); }
+            const note = !x.open ? g.suNeedText(w) : !dOpen ? g.suDiffNeed(w, dn) : !orw ? (first ? 'Первая награда бесплатна.' : 'Украшения в этом мире не выдаются.') : 'Обмен у элиты и босса: ' + SU.TUN.power + ' энергии освоения или ключ погружения.';
+            ui.wrap(note, 330, 11).slice(0, 2).forEach((l, i) => ui.text(l, 278, 336 + i * 14, { size: 11, col: !dOpen ? C.bad : C.sub }));
+          }
           const claims = g.suClaims(), bonds = s.inv.items.herta_bond || 0, hScore = (s.hertaShop && s.hertaShop.score) || 0;
           if (claims.length) {
             ui.suFrameBox(16, 388, 426, 40, '#e8c060');
@@ -183,13 +215,23 @@
             ui.text(String(bonds), 480, 401, { size: 12, bold: true, col: C.gold });
             ui.button(504, 395, 112, 26, 'Магазин · B', () => ui.openHertaShop(() => {}), { size: 10, bold: true });
           } else {
-            ui.suFrameBox(16, 388, 608, 40, SIM.violet);
-            G.itemIcon(c, 'herta_bond', 26, 398, 20);
-            ui.text('Облигации Герты: ' + bonds, 52, 401, { size: 11, bold: true, col: C.gold });
-            ui.text('Очки симуляции: ' + H.fmt(hScore) + ' / ' + H.fmt(H.HERTA_BOND_SCORE || 2000), 214, 401, { size: 11, col: SIM.cyan });
-            ui.button(446, 395, 168, 26, 'Магазин Герты · B', () => ui.openHertaShop(() => {}), { size: 11, bold: true });
+            ui.suFrameBox(16, 388, 222, 40, '#80e0ff');
+            G.itemIcon(c, 'immersifier', 22, 396, 24);
+            ui.text('Ключи погружения', 50, 393, { size: 10, col: C.sub });
+            ui.text(g.suImm() + ' / ' + SU.TUN.immMax, 50, 407, { size: 12, bold: true, col: C.cream });
+            ui.button(146, 395, 84, 26, SU.TUN.power + ' эн. · C', buyImm, { size: 10, disabled: g.suImm() >= SU.TUN.immMax });
+            const wk = g.suWeek(), hot = g.suWeekRows().some(r => r.ok) || g.suArchDue().jade > 0;
+            ui.suFrameBox(244, 388, 196, 40, hot ? C.gold : SIM.cyan);
+            ui.text('Развитие · R', 254, 393, { size: 11, bold: true, col: hot ? C.gold : C.cream });
+            ui.text('Неделя ' + H.fmt(wk.pts) + ' / ' + H.fmt(g.suWeekMax()) + ' · очки ' + H.fmt(g.suTree().pts), 254, 410, { size: 9, col: SIM.cyan });
+            ui.hit(244, 388, 196, 40, () => ui.openSuGrowth(0));
+            ui.suFrameBox(446, 388, 178, 40, SIM.violet);
+            G.itemIcon(c, 'herta_bond', 452, 398, 20);
+            ui.text(String(bonds), 476, 395, { size: 12, bold: true, col: C.gold });
+            ui.text(H.fmt(hScore) + ' / ' + H.fmt(H.HERTA_BOND_SCORE || 2000), 476, 411, { size: 9, col: SIM.cyan });
+            ui.button(540, 395, 76, 26, 'Магазин · B', () => ui.openHertaShop(() => {}), { size: 10, bold: true });
           }
-          ui.hints([['↑↓', 'Мир'], ['Enter', 'Выбрать Путь'], ['B', 'Магазин Герты'], ...(claims.length ? [['C', 'Забрать награду']] : []), ['Esc', 'Выйти']], W / 2, HGT - 22, { align: 'center' });
+          ui.hints([['↑↓', 'Мир'], ...(w.diff.length > 1 ? [['←→', 'Сложность']] : []), ['Enter', 'Выбрать Путь'], ['R', 'Развитие'], ['B', 'Магазин'], ['C', claims.length ? 'Забрать награду' : 'Купить ключ'], ['Esc', 'Выйти']], W / 2, HGT - 22, { align: 'center' });
         },
         drawPaths(c) {
           const cx = W / 2, cy = 190, rx = 200, ry = 112, sel = PATH_SLOTS[this.psel], P = SU.PATHS[sel], open = pathOk(sel);
@@ -201,6 +243,7 @@
             c.strokeStyle = ok ? col : '#3a3050'; c.lineWidth = on ? 3 : 2; c.stroke(); c.lineWidth = 1;
             if (ok) G.pathIcon(c, p, x - 14, y - 14, 28, col);
             else ui.text('?', x, y - 10, { align: 'center', size: 18, bold: true, col: '#4a4060' });
+            if (g.suCanBan() && g.suBans().includes(p)) { c.strokeStyle = '#ff5a5a'; c.lineWidth = 3; c.beginPath(); c.moveTo(x - 18, y - 18); c.lineTo(x + 18, y + 18); c.moveTo(x + 18, y - 18); c.lineTo(x - 18, y + 18); c.stroke(); c.lineWidth = 1; }
             ui.text(ok ? SU.PATHS[p].name : '???', x, y + 29, { align: 'center', size: 11, bold: on, col: ok ? (on ? C.gold : C.cream) : C.dim });
             ui.hit(x - 26, y - 26, 52, 64, () => { if (this.psel === i) this.key('ok'); else { this.psel = i; ui.sfx('select'); } });
           });
@@ -223,7 +266,7 @@
             ui.text('Путь «' + P.name + '» откроет встреча с Эоном ' + P.aeon + '.', 54, 368, { size: 12, bold: true, col: C.cream });
             ui.text('Где искать: ' + ui.suAeonWhere(sel) + '.', 54, 388, { size: 11, col: C.sub });
           }
-          ui.hints([['←→', 'Путь'], ['Enter', 'Команда'], ['Esc', 'Назад']], W / 2, HGT - 22, { align: 'center' });
+          ui.hints([['←→', 'Путь'], ['Enter', 'Команда'], ...(g.suCanBan() ? [['Z', 'Запрет (' + g.suBans().length + '/2)']] : []), ['Esc', 'Назад']], W / 2, HGT - 22, { align: 'center' });
         },
         drawTeam(c) {
           const w = worlds()[this.wsel].w, path = PATH_SLOTS[this.psel];
@@ -252,25 +295,36 @@
         key(k, code) {
           if (this.step === 0) {
             const list = worlds();
-            if (k === 'up' || k === 'down') { this.wsel = (this.wsel + (k === 'up' ? list.length - 1 : 1)) % list.length; ui.sfx('select'); return; }
+            if (k === 'up' || k === 'down') { this.wsel = (this.wsel + (k === 'up' ? list.length - 1 : 1)) % list.length; this.dsel = topDiff(list[this.wsel].w); ui.sfx('select'); return; }
+            if (k === 'left' || k === 'right') { const n = list[this.wsel].w.diff.length; if (n > 1) { this.dsel = (this.dsel + (k === 'left' ? n - 1 : 1)) % n; ui.sfx('select'); } return; }
             if (code === 'KeyB') { ui.openHertaShop(() => {}); return; }
-            if (code === 'KeyC' && g.suClaims().length) { claim(); return; }
+            if (code === 'KeyR') { ui.openSuGrowth(0); return; }
+            if (code === 'KeyC') { if (g.suClaims().length) claim(); else buyImm(); return; }
             if (k === 'back') { leave(); return; }
             if (k === 'ok') {
               const x = list[this.wsel];
-              if (!x.open) { ui.sfx('deny'); ui.toast(x.w.needText || 'Мир ещё закрыт.'); return; }
+              if (!x.open) { ui.sfx('deny'); ui.toast(g.suNeedText(x.w)); return; }
+              if (!g.suDiffOpen(x.w, this.dsel + 1)) { ui.sfx('deny'); ui.toast(g.suDiffNeed(x.w, this.dsel + 1)); return; }
               this.step = 1; ui.sfx('confirm');
             }
             return;
           }
           if (this.step === 1) {
             const n = PATH_SLOTS.length;
+            if (code === 'KeyZ') {
+              const p = PATH_SLOTS[this.psel];
+              if (!g.suCanBan()) { ui.sfx('deny'); ui.toast('Запрет Путей открывается, когда открыты все девять.'); return; }
+              if (!g.suToggleBan(p)) { ui.sfx('deny'); ui.toast('Запретить можно не больше двух Путей.'); return; }
+              ui.sfx('select');
+              return;
+            }
             if (k === 'left' || k === 'up') { this.psel = (this.psel + n - 1) % n; ui.sfx('select'); }
             if (k === 'right' || k === 'down') { this.psel = (this.psel + 1) % n; ui.sfx('select'); }
             if (k === 'back') { this.step = 0; ui.sfx('cancel'); }
             if (k === 'ok') {
               const p = PATH_SLOTS[this.psel];
               if (!pathOk(p)) { ui.sfx('deny'); ui.toast('Этот Путь ещё не открыт.'); return; }
+              if (g.suBans().includes(p) && g.suCanBan()) { ui.sfx('deny'); ui.toast('Этот Путь запрещён. Z снимает запрет.'); return; }
               this.step = 2; this.bsel = 1; ui.sfx('confirm');
             }
             return;
@@ -325,9 +379,14 @@
             ui.blessCard(c, id, x, 92, cw, 290, { on: i === this.sel, enh: enhOf(id), picked: this.picks.includes(i), note, noteHi: mine });
             ui.hit(x, 86, cw, 296, () => { if (this.sel === i) this.key('ok'); else { this.sel = i; ui.sfx('select'); } });
           });
-          ui.hints(two ? [['←→', 'Выбор'], ['Enter', 'Отметить'], ['Esc', 'Взять отмеченное']] : [['←→', 'Выбор'], ['Enter', 'Взять']], W / 2, HGT - 40, { align: 'center' });
+          const rr = su && su.rerolls > 0 ? [['R', 'Сменить выбор (' + su.rerolls + ')']] : [];
+          ui.hints((two ? [['←→', 'Выбор'], ['Enter', 'Отметить'], ['Esc', 'Взять отмеченное']] : [['←→', 'Выбор'], ['Enter', 'Взять']]).concat(rr), W / 2, HGT - 40, { align: 'center' });
         },
-        key(k) {
+        key(k, code) {
+          if (code === 'KeyR') {
+            if (!g.suReroll(p)) { ui.sfx('deny'); return; }
+            this.sel = 0; this.picks = []; ui.sfx('shuffle'); return;
+          }
           const n = p.opts.length;
           if (k === 'left' || k === 'up') { this.sel = (this.sel + n - 1) % n; ui.sfx('select'); }
           if (k === 'right' || k === 'down') { this.sel = (this.sel + 1) % n; ui.sfx('select'); }
@@ -374,6 +433,37 @@
             else if (!d.uses) ui.text('Работает до конца погружения', W / 2, 368, { align: 'center', size: 10, col: C.sub });
           }
           ui.hints([['←→', 'Выбор'], ['Enter', 'Взять']], W / 2, HGT - 40, { align: 'center' });
+        },
+        key(k) {
+          const n = p.opts.length;
+          if (k === 'left' || k === 'up') { this.sel = (this.sel + n - 1) % n; ui.sfx('select'); }
+          if (k === 'right' || k === 'down') { this.sel = (this.sel + 1) % n; ui.sfx('select'); }
+          if (k === 'ok') done(this.sel);
+        }
+      });
+    },
+
+    openSuForm(p) {
+      const ui = this, g = this.game, su = g.state.su, P = SU.PATHS[su.path];
+      const done = val => { ui.screens.pop(); ui.sfx('star4'); ui.finishPending(val); };
+      this.push({
+        sel: 0,
+        draw(c) {
+          c.fillStyle = 'rgba(4,2,12,0.74)'; c.fillRect(0, 0, W, HGT);
+          ui.plate(W / 2 - 100, 22, 'Формирование резонанса');
+          ui.text('Путь «' + P.name + '» · ' + (p.why || ''), W / 2, 50, { align: 'center', size: 11, col: C.sub });
+          const n = p.opts.length, cw = 186;
+          p.opts.forEach((id, i) => {
+            const f = SU.FORMS.find(x => x.id === id), x = W / 2 + (i - (n - 1) / 2) * (cw + 12) - cw / 2, y = 80, on = i === this.sel;
+            ui.suFrameBox(x, y, cw, 270, on ? pathCol(su.path) : '#3a3050');
+            if (on) { c.fillStyle = 'rgba(200,144,255,0.12)'; c.fillRect(x + 2, y + 2, cw - 4, 266); }
+            G.pathIcon(c, su.path, x + cw / 2 - 20, y + 14, 40, pathCol(su.path));
+            ui.wrap(f.name.replace('Формирование резонанса: ', ''), cw - 20, 13, true).slice(0, 2).forEach((l, k) => ui.text(l, x + cw / 2, y + 64 + k * 17, { align: 'center', size: 13, bold: true, serif: true, col: on ? C.gold : C.cream }));
+            ui.wrap(f.text, cw - 20, 11).slice(0, 9).forEach((l, k) => ui.text(l, x + 10, y + 104 + k * 15, { size: 11, col: '#e4dcf4' }));
+            ui.hit(x, y, cw, 270, () => { if (this.sel === i) this.key('ok'); else { this.sel = i; ui.sfx('select'); } });
+          });
+          ui.text('Уже действуют: ' + ((su.forms || []).length ? su.forms.map(id => SU.FORMS.find(x => x.id === id).name.replace('Формирование резонанса: ', '')).join(', ') : 'нет'), W / 2, 366, { align: 'center', size: 10, col: C.sub });
+          ui.hints([['←→', 'Выбор'], ['Enter', 'Взять']], W / 2, HGT - 22, { align: 'center' });
         },
         key(k) {
           const n = p.opts.length;
@@ -488,6 +578,54 @@
       });
     },
 
+    openSuOrn(p) {
+      const ui = this, g = this.game, su = g.state.su, w = worldDef(su.world), dm = w.diff[(su.diff || 1) - 1], rw = g.suOrnReward(w);
+      const done = () => { ui.screens.pop(); ui.sfx('confirm'); ui.finishPending(); };
+      const pay = kind => {
+        const got = g.suExchange(kind);
+        if (!got) {
+          ui.sfx('deny');
+          if (kind === 'imm') ui.toast('Ключей погружения нет. Их можно купить у машины в офисе Герты.');
+          else { ui.toast('Нужно ' + SU.TUN.power + ' энергии освоения.'); if (g.powerInfo().cur < SU.TUN.power) ui.openPower(); }
+          return;
+        }
+        ui.sfx('chest'); ui.toast('Устройство погружения: ' + got.join(', '));
+      };
+      this.push({
+        sel: 0,
+        draw(c) {
+          c.fillStyle = 'rgba(4,2,12,0.74)'; c.fillRect(0, 0, W, HGT);
+          ui.plate(W / 2 - 92, 22, 'Устройство погружения');
+          ui.text(p.final ? 'Босс повержен' : 'Элита повержена', W / 2, 50, { align: 'center', size: 11, col: C.sub });
+          ui.suFrameBox(90, 72, 460, 250, '#80e0ff');
+          ui.text('Обменов осталось: ' + p.left + ' из ' + (p.final ? SU.TUN.ornBoss : SU.TUN.ornElite), W / 2, 84, { align: 'center', size: 13, bold: true, col: p.left ? C.gold : C.dim });
+          w.sets.forEach((set, i) => {
+            const y = 108 + i * 64, d = H.RELIC_SETS[set];
+            H.PLANAR_SLOTS.forEach((sl, j) => { G.rarityCell(c, 106 + j * 52, y, 48, 48, 4); G.itemIcon(c, 'relic:' + sl.key, 110 + j * 52, y + 4, 40, set); });
+            ui.text(d.name, 216, y + 4, { size: 12, bold: true, serif: true, col: SIM.cyan });
+            ui.wrap(d.short, 316, 10).slice(0, 2).forEach((l, k) => ui.text(l, 216, y + 22 + k * 13, { size: 10, col: '#d8d0ec' }));
+          });
+          const ry = 108 + w.sets.length * 64;
+          ui.text('За обмен: сфера и вязь одного из наборов, ур. ' + dm.orn + '+', 106, ry + 2, { size: 11, col: C.cream });
+          ui.rewardCell(c, 'jade', rw.jade, 106, ry + 20, 40);
+          ui.rewardCell(c, 'credits', rw.credits, 152, ry + 20, 40);
+          const pw = g.powerInfo().cur, im = g.suImm(), btns = [
+            ['Обменять · ' + SU.TUN.power + ' энергии (' + pw + ')', () => pay('power'), p.left > 0 && pw >= SU.TUN.power],
+            ['Ключ погружения (' + im + ')', () => pay('imm'), p.left > 0 && im > 0],
+            [p.final ? 'Завершить погружение' : 'Дальше', done, true]
+          ];
+          btns.forEach(([label, fn, on], i) => ui.button(70 + i * 172, 340, 164, 30, label, () => { this.sel = i; fn(); }, { active: i === this.sel, disabled: !on, size: 10, bold: i === 2 }));
+          ui.wrap('Неиспользованные обмены пропадут, когда вы уйдёте из зоны.', 480, 10).forEach((l, i) => ui.text(l, W / 2, 384 + i * 13, { align: 'center', size: 10, col: C.sub }));
+          ui.hints([['←→', 'Выбор'], ['Enter', 'Подтвердить'], ['Esc', p.final ? 'Завершить' : 'Дальше']], W / 2, HGT - 22, { align: 'center' });
+        },
+        key(k) {
+          if (k === 'left' || k === 'right') { this.sel = (this.sel + (k === 'left' ? 2 : 1)) % 3; ui.sfx('select'); return; }
+          if (k === 'back') { done(); return; }
+          if (k === 'ok') { if (this.sel === 0) pay('power'); else if (this.sel === 1) pay('imm'); else done(); }
+        }
+      });
+    },
+
     openSuEnd(p) {
       const ui = this, g = this.game, res = p.res, w = worldDef(res.world);
       const su = g.state.su, log = su ? su.log.slice() : [], bless = su ? su.bless.slice() : [], curios = su ? su.curios.slice() : [];
@@ -507,9 +645,12 @@
             ui.text(dm.short, x, y + 13, { align: 'center', size: 9, col: C.sub });
           });
           const sy = 128 + Math.ceil(Math.max(1, log.length) / 6) * 40 + 8;
-          [['Пройдено зон', log.length + ' / ' + w.plan.length], ['Благословения', String(bless.length)], ['Диковины', String(curios.length)], ['Фрагменты', String(res.frag)]].forEach(([a, b], i) => {
-            ui.text(a, 38, sy + i * 20, { size: 11, col: C.sub });
-            ui.text(b, 292, sy + i * 20, { align: 'right', size: 12, bold: true, col: C.cream });
+          const rows = [['Пройдено зон', log.length + ' / ' + w.plan.length], ['Благословения', String(bless.length)], ['Диковины', String(curios.length)], ['Фрагменты', String(res.frag)]];
+          if (res.pts != null) rows.push(['Очки недели', '+' + H.fmt(res.week)], ['Способности', '+' + H.fmt(res.abil)]);
+          rows.forEach(([a, b], i) => {
+            const half = rows.length > 4, x = half && i >= 3 ? 170 : 38, r = half ? (i >= 3 ? 292 : 160) : 292, y = sy + (half ? i % 3 : i) * 20;
+            ui.text(a, x, y, { size: 11, col: C.sub });
+            ui.text(b, r, y, { align: 'right', size: 12, bold: true, col: C.cream });
           });
           bless.slice(0, 16).forEach((b, i) => { const d = blessDef(b.id); G.pathIcon(c, d.path, 38 + i * 17, sy + 90, 14, RAR_COL[d.rar]); });
           curios.slice(0, 10).forEach((cu, i) => G.curioIcon(c, cu.id, 38 + i * 26, sy + 112, 24));
@@ -519,20 +660,22 @@
             ui.wrap('Награды нет. Благословения и диковины исчезли вместе с симуляцией. Мир можно пройти снова.', 262, 12).forEach((l, i) => ui.text(l, 338, 130 + i * 16, { size: 12, col: '#e4dcf4' }));
             if (res.bonds) ui.rewardCell(c, 'herta_bond', res.bonds, 338, 206, 46);
           } else {
-            ui.rewardCell(c, 'jade', res.jade, 338, 126, 50);
-            ui.rewardCell(c, 'credits', res.credits, 394, 126, 50);
-            if (res.tracks) ui.rewardCell(c, 'tracks', res.tracks, 450, 126, 50);
-            if (res.bonds) ui.rewardCell(c, 'herta_bond', res.bonds, res.tracks ? 506 : 450, 126, 50);
-            res.sets.forEach((st, i) => H.PLANAR_SLOTS.forEach((sl, j) => {
+            const got = res.got || [], gotN = got.length;
+            if (res.first) {
+              ui.rewardCell(c, 'jade', res.jade, 338, 126, 50);
+              ui.rewardCell(c, 'credits', res.credits, 394, 126, 50);
+              if (res.tracks) ui.rewardCell(c, 'tracks', res.tracks, 450, 126, 50);
+            } else ui.wrap('Повторное прохождение: награда только за обмены.', 200, 11).forEach((l, i) => ui.text(l, 338, 126 + i * 15, { size: 11, col: C.sub }));
+            if (res.bonds) ui.rewardCell(c, 'herta_bond', res.bonds, res.tracks ? 506 : res.first ? 450 : 552, 126, 50);
+            if (gotN) ui.text('Обменов в устройстве погружения: ' + gotN + ' (+' + gotN * SU.TUN.jade + ' нефрита)', 338, 178, { size: 10, col: C.cream });
+            res.sets.concat(got).slice(0, 2).forEach((st, i) => H.PLANAR_SLOTS.forEach((sl, j) => {
               const x = 338 + (i * 2 + j) * 56, y = 192;
               G.rarityCell(c, x, y, 50, 50, 4); G.itemIcon(c, 'relic:' + sl.key, x + 4, y + 4, 42, st.set);
             }));
-            const names = [...new Set(res.sets.map(st => H.RELIC_SETS[st.set].name))];
+            const names = [...new Set(res.sets.concat(got).map(st => H.RELIC_SETS[st.set].name))].slice(0, 2);
             names.forEach((n, i) => ui.text(n, 338, 250 + i * 15, { size: 11, bold: true, col: SIM.cyan }));
             if (res.first) ui.stamp(568, 110, 'Первое ×3');
-            if (res.pending) ui.wrap('Не хватило энергии освоения. Награда ждёт у машины Виртуальной вселенной: нужно ' + SU.TUN.power + '.', 262, 10).forEach((l, i) => ui.text(l, 338, 294 + i * 13, { size: 10, col: C.bad }));
-            else if (!res.first) ui.text('Списано ' + res.power + ' энергии освоения.', 338, 296, { size: 11, col: C.sub });
-            else ui.text('Награда получена. Украшения в инвентаре.', 338, 296, { size: 11, col: C.ok });
+            if (res.first || gotN) ui.text('Награда получена. Украшения в инвентаре.', 338, 296, { size: 11, col: C.ok });
           }
           if (res.scoreGain != null) {
             const cap = H.HERTA_BOND_SCORE || 2000, cur = res.scoreNow || 0;
@@ -547,6 +690,169 @@
         key(k) { if (k === 'ok') back(); }
       });
       this.sfx(res.win ? 'win' : 'lose');
+    },
+
+    openSuGrowth(tab0) {
+      const ui = this, g = this.game, TUN = SU.TUN;
+      const TABS = ['Неделя', 'Древо', 'Архив'];
+      const cx = W / 2, cy = 214, gapX = 64, gapY = 36;
+      const DIRS = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+      const nodeAt = (br, i) => i === 0 ? null : SU.TREE.filter(n => n.br === br)[i - 1];
+      const posOf = (br, i) => [cx + DIRS[br][0] * gapX * i, cy + DIRS[br][1] * gapY * i];
+      const cells = rw => [...(rw.jade ? [['jade', rw.jade]] : []), ...(rw.credits ? [['credits', rw.credits]] : []), ...Object.entries(rw.items || {})];
+      const left = ms => { const h = Math.max(0, Math.floor(ms / 3600000)); return Math.floor(h / 24) + ' д ' + (h % 24) + ' ч'; };
+      const claimWeek = () => {
+        const got = g.suWeekClaim();
+        if (!got) { ui.sfx('deny'); ui.toast('Новых наград недели нет.'); return; }
+        ui.sfx('chest'); ui.toast('Награды недели: ' + got.join(', '));
+      };
+      const claimArch = () => {
+        const got = g.suArchClaim();
+        if (!got) { ui.sfx('deny'); ui.toast('В Архиве нечего забирать.'); return; }
+        ui.sfx('chest'); ui.toast('Архив: ' + got.join(', '));
+      };
+      this.push({
+        full: true, tab: tab0 || 0, br: 3, at: 1,
+        draw(c) {
+          ui.suBackdrop(c);
+          ui.plate(12, 10, 'Развитие');
+          TABS.forEach((t, i) => {
+            const x = 206 + i * 100, on = i === this.tab;
+            c.fillStyle = on ? 'rgba(200,144,255,0.35)' : 'rgba(8,4,22,0.7)'; c.fillRect(x, 12, 90, 20);
+            c.fillStyle = on ? SIM.violet : '#3a2e5a'; c.fillRect(x, 31, 90, 1);
+            ui.text(t, x + 45, 15, { align: 'center', size: 11, bold: on, col: on ? '#f4e8ff' : C.dim });
+            ui.hit(x, 12, 90, 20, () => { if (this.tab !== i) { this.tab = i; ui.sfx('select'); } });
+          });
+          if (this.tab === 0) this.drawWeek(c);
+          else if (this.tab === 1) this.drawTree(c);
+          else this.drawArch(c);
+        },
+        drawWeek(c) {
+          const wk = g.suWeek(), rows = g.suWeekRows(), max = g.suWeekMax(), eq = g.equilibriumLevel();
+          ui.text('Недельные очки', 24, 50, { size: 13, bold: true, serif: true, col: C.gold });
+          ui.text(H.fmt(wk.pts) + ' / ' + H.fmt(max), 616, 50, { align: 'right', size: 13, bold: true, col: C.cream });
+          ui.text('Равновесие ' + eq + ' · до сброса ' + left(g.suWeekLeft()), 24, 70, { size: 10, col: C.sub });
+          const x0 = 44, step = 61, ty = 112;
+          c.fillStyle = 'rgba(10,6,24,0.85)'; c.fillRect(x0, ty - 3, step * 9, 6);
+          c.fillStyle = SIM.cyan; c.fillRect(x0, ty - 3, Math.min(step * 9, step * 9 * Math.max(0, wk.pts - rows[0].at) / Math.max(1, max - rows[0].at)), 6);
+          rows.forEach((r, i) => {
+            const x = x0 + i * step, reached = wk.pts >= r.at;
+            ui.diamond(x, ty, 7, reached ? SIM.cyan : '#241c3a', reached ? '#f4e8ff' : '#5a4a7a');
+            ui.text(H.fmt(r.at), x, 88, { align: 'center', size: 9, col: reached ? C.cream : C.dim });
+            cells(r.rw).forEach(([id, n], j) => ui.rewardCell(c, id, n, x - 22, 128 + j * 48, 44));
+            if (r.got) { c.fillStyle = 'rgba(4,2,12,0.6)'; c.fillRect(x - 22, 128, 44, cells(r.rw).length * 48 - 4); ui.text('✓', x, 140, { align: 'center', size: 18, bold: true, col: C.ok }); }
+            else if (r.ok) { c.strokeStyle = C.gold; c.lineWidth = 2; c.strokeRect(x - 23, 127, 46, 46); c.lineWidth = 1; }
+          });
+          ui.suFrameBox(16, 236, 608, 140);
+          ui.text('Сколько очков даёт полный забег', 30, 248, { size: 11, bold: true, col: C.cream });
+          SU.WORLDS.forEach((w, i) => {
+            const x = 30 + (i % 3) * 200, y = 272 + Math.floor(i / 3) * 18, top = w.diff.length;
+            const open = g.suWorldOpen(w);
+            ui.text(w.name, x, y, { size: 10, col: open ? C.cream : C.dim });
+            ui.text(g.suRoman(1) + ' ' + H.fmt(g.suPtsMax(w, 1)) + (top > 1 ? ' · ' + g.suRoman(top) + ' ' + H.fmt(g.suPtsMax(w, top)) : ''), x + 182, y, { align: 'right', size: 10, col: open ? SIM.cyan : C.dim });
+          });
+          ui.wrap('Очки начисляются за каждую пройденную зону, даже если погружение прервано. Пороги и награды зависят от уровня Равновесия, неделя начинается в понедельник в 4:00.', 580, 10).slice(0, 2).forEach((l, i) => ui.text(l, 30, 334 + i * 14, { size: 10, col: C.sub }));
+          const any = rows.some(r => r.ok);
+          ui.button(W / 2 - 110, 392, 220, 30, 'Забрать награды', claimWeek, { active: any, bold: true, disabled: !any });
+          ui.hints([['Q E', 'Раздел'], ['Enter', 'Забрать'], ['Esc', 'Назад']], W / 2, HGT - 22, { align: 'center' });
+        },
+        drawTree(c) {
+          const t = g.suTree(), sel = nodeAt(this.br, this.at);
+          ui.text('Очки способностей: ' + H.fmt(t.pts), 24, 46, { size: 13, bold: true, serif: true, col: C.gold });
+          ui.text('Узлов: ' + t.got.length + ' / ' + SU.TREE.length, 616, 48, { align: 'right', size: 11, bold: true, col: C.cream });
+          SU.BRANCHES.forEach((name, br) => {
+            const [ex, ey] = posOf(br, 4);
+            c.strokeStyle = '#3a2e5a'; c.lineWidth = 3; c.beginPath(); c.moveTo(cx, cy); c.lineTo(ex, ey); c.stroke();
+            SU.TREE.filter(n => n.br === br).forEach((n, k) => {
+              if (!t.got.includes(n.id)) return;
+              const [ax, ay] = posOf(br, k), [bx, by] = posOf(br, k + 1);
+              c.strokeStyle = SIM.cyan; c.beginPath(); c.moveTo(ax, ay); c.lineTo(bx, by); c.stroke();
+            });
+            c.lineWidth = 1;
+            const vert = br === 0 || br === 2;
+            ui.text(name, vert ? ex + 22 : ex, vert ? ey - 6 : ey - 34, { align: vert ? 'left' : 'center', size: 10, bold: true, col: SIM.violet });
+          });
+          c.fillStyle = '#1a1036'; c.beginPath(); c.arc(cx, cy, 15, 0, Math.PI * 2); c.fill();
+          c.strokeStyle = SIM.violet; c.lineWidth = 2; c.stroke(); c.lineWidth = 1;
+          G.pathIcon(c, 'erudition', cx - 9, cy - 9, 18, SIM.violet);
+          SU.TREE.forEach(n => {
+            const k = SU.TREE.filter(x => x.br === n.br).indexOf(n) + 1, [x, y] = posOf(n.br, k), st = g.suTreeState(n.id), on = n === sel;
+            const ring = st === 'got' ? SIM.cyan : st === 'ready' ? C.gold : st === 'poor' ? '#8a7aa8' : '#3a2e5a';
+            c.fillStyle = st === 'got' ? '#14304a' : '#0c0620'; c.beginPath(); c.arc(x, y, 15, 0, Math.PI * 2); c.fill();
+            c.strokeStyle = on ? '#ffffff' : ring; c.lineWidth = on ? 3 : 2; c.stroke(); c.lineWidth = 1;
+            ui.text(n.mark, x, y - 6, { align: 'center', size: 9, bold: true, col: st === 'locked' ? '#5a4a7a' : '#f4e8ff', shadow: false });
+            ui.hit(x - 15, y - 15, 30, 30, () => { if (sel === n) this.key('ok'); else { this.br = n.br; this.at = k; ui.sfx('select'); } });
+          });
+          ui.suFrameBox(16, 380, 608, 58, sel && g.suTreeState(sel.id) === 'ready' ? C.gold : SIM.violet);
+          if (sel) {
+            const st = g.suTreeState(sel.id), need = g.suTreeNeed(sel.id);
+            ui.text(sel.name, 30, 386, { size: 12, bold: true, serif: true, col: C.gold });
+            ui.text(sel.text, 30, 403, { size: 11, col: '#e4dcf4' });
+            const note = st === 'got' ? 'Открыт' : st === 'locked' ? 'Сначала откройте «' + need.name + '»' : 'Цена: ' + H.fmt(sel.cost) + ' очков способностей';
+            ui.text(note, 30, 420, { size: 10, col: st === 'got' ? C.ok : st === 'ready' ? C.gold : st === 'locked' ? C.bad : C.sub });
+            if (st === 'ready' || st === 'poor') ui.button(486, 404, 130, 26, 'Открыть · ' + H.fmt(sel.cost), () => this.key('ok'), { disabled: st !== 'ready', bold: true, size: 10 });
+          }
+          ui.hints([['Q E', 'Раздел'], ['↑↓←→', 'Узел'], ['Enter', 'Открыть'], ['Esc', 'Назад']], W / 2, HGT - 22, { align: 'center' });
+        },
+        drawArch(c) {
+          const a = g.suArch(), due = g.suArchDue();
+          const cols = [[16, 'Диковины', a.cur.length + ' / ' + SU.CURIOS.length], [222, 'События', a.ev.length + ' / ' + Object.keys(SU.EVENTS).length], [428, 'Пути', Object.keys(SU.PATHS).filter(p => g.suArchPathDone(p)).length + ' / ' + Object.keys(SU.PATHS).length]];
+          cols.forEach(([x, name, n]) => {
+            ui.suFrameBox(x, 44, 196, 318);
+            ui.text(name, x + 12, 56, { size: 12, bold: true, serif: true, col: C.gold });
+            ui.text(n, x + 184, 56, { align: 'right', size: 11, bold: true, col: C.cream });
+          });
+          SU.CURIOS.forEach((d, i) => {
+            const x = 28 + (i % 5) * 36, y = 80 + Math.floor(i / 5) * 36, seen = a.cur.includes(d.id);
+            c.fillStyle = 'rgba(10,6,24,0.85)'; c.fillRect(x, y, 32, 32);
+            if (seen) G.curioIcon(c, d.id, x + 2, y + 2, 28);
+            else ui.text('?', x + 16, y + 9, { align: 'center', size: 13, bold: true, col: '#3a2e5a' });
+            if (seen && !a.paid.cur.includes(d.id)) { c.fillStyle = C.gold; c.fillRect(x + 25, y + 1, 6, 6); }
+          });
+          Object.entries(SU.EVENTS).forEach(([id, e], i) => {
+            const seen = a.ev.includes(id), y = 80 + i * 18;
+            ui.text(seen ? e.title : '???', 234, y, { size: 10, col: seen ? C.cream : '#5a4a7a' });
+            if (seen && !a.paid.ev.includes(id)) { c.fillStyle = C.gold; c.fillRect(404, y + 3, 6, 6); }
+          });
+          Object.keys(SU.PATHS).forEach((p, i) => {
+            const y = 80 + i * 30, n = SU.BLESSINGS.filter(b => b.path === p && a.bless.includes(b.id)).length, all = SU.BLESSINGS.filter(b => b.path === p).length;
+            G.pathIcon(c, p, 438, y, 20, n >= all ? SU.PATHS[p].col : '#5a4a7a');
+            ui.text(SU.PATHS[p].name, 464, y, { size: 10, col: C.cream });
+            ui.text(n + ' / ' + all, 612, y, { align: 'right', size: 10, bold: true, col: n >= all ? C.ok : C.sub });
+            ui.bar(464, y + 14, 148, 4, n / all, SU.PATHS[p].col);
+          });
+          ui.text('За новую диковину и событие ' + TUN.archCurio + ' нефрита, за все благословения Пути ' + TUN.archPath + '.', W / 2, 372, { align: 'center', size: 10, col: C.sub });
+          ui.button(W / 2 - 120, 392, 240, 30, due.jade ? 'Забрать · ' + H.fmt(due.jade) + ' нефрита' : 'Нечего забирать', claimArch, { active: !!due.jade, bold: true, disabled: !due.jade });
+          ui.hints([['Q E', 'Раздел'], ['Enter', 'Забрать'], ['Esc', 'Назад']], W / 2, HGT - 22, { align: 'center' });
+        },
+        move(k) {
+          const dir = { up: 0, right: 1, down: 2, left: 3 }[k];
+          if (dir == null) return;
+          if (this.at === 0) { this.br = dir; this.at = 1; }
+          else if (dir === this.br) this.at = Math.min(4, this.at + 1);
+          else if (dir === (this.br + 2) % 4) this.at -= 1;
+          else this.br = dir;
+          if (this.at === 0) { this.at = 1; this.br = dir; }
+          ui.sfx('select');
+        },
+        key(k, code) {
+          if (code === 'KeyQ' || code === 'KeyE') { this.tab = (this.tab + (code === 'KeyQ' ? TABS.length - 1 : 1)) % TABS.length; ui.sfx('select'); return; }
+          if (k === 'back') { ui.screens.pop(); ui.sfx('cancel'); return; }
+          if (this.tab === 0 && k === 'ok') claimWeek();
+          if (this.tab === 2 && k === 'ok') claimArch();
+          if (this.tab !== 1) return;
+          if (k === 'ok') {
+            const n = nodeAt(this.br, this.at), st = n && g.suTreeState(n.id);
+            if (!n) return;
+            if (st === 'got') { ui.sfx('deny'); ui.toast('Этот узел уже открыт.'); return; }
+            if (st === 'locked') { ui.sfx('deny'); ui.toast('Сначала откройте «' + g.suTreeNeed(n.id).name + '».'); return; }
+            if (!g.suTreeBuy(n.id)) { ui.sfx('deny'); ui.toast('Не хватает очков способностей.'); return; }
+            ui.sfx('star4'); ui.toast('Открыт узел «' + n.name + '»');
+            return;
+          }
+          this.move(k);
+        }
+      });
     },
 
     openSuRun() {
@@ -646,7 +952,7 @@
 
     suPlaceLabel() {
       const g = this.game, su = g.state.su, w = worldDef(su.world), dm = SU.DOMAINS[su.dom.type];
-      return { world: w.name + ' · зона ' + (su.d + 1) + '/' + w.plan.length, domain: dm.name, col: dm.col };
+      return { world: w.name + (w.diff.length > 1 ? ' · ' + g.suRoman(su.diff || 1) : '') + ' · зона ' + (su.d + 1) + '/' + w.plan.length, domain: dm.name, col: dm.col };
     },
 
     suHint() {

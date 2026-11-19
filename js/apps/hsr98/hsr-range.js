@@ -342,8 +342,9 @@
       for (const c of H.CALYX) {
         if ((c.pool || []).concat(c.elite || [], c.boss || [], c.adds || [], (c.waves || []).flat()).includes(id)) put(c.reward === 'echo' ? 'Эхо войны' : c.boss ? 'Застойная тень' : c.elite ? 'Пещера коррозии' : 'Чашелист');
       }
+      if (H.SU && H.SU.WORLDS.some(w => [...w.pools.normal, ...w.pools.elite, ...w.pools.boss.flatMap(b => b.waves)].flat().map(idOf).includes(id))) put('Виртуальная вселенная');
       if (!out.length && H.PF && H.PF.poolIds().has(id)) put('Чистый вымысел');
-      const called = !out.length && (Object.values(H.ENEMIES).some(d => (d.skills || []).some(s => s.summon && s.summon.includes(id))) || Object.values(H.ENCOUNTERS).some(e => e.lf && e.lf.deerPhase && e.lf.deerPhase.adds.includes(id)));
+      const called = !out.length && (!!(H.ENEMIES[id] && H.ENEMIES[id].summonOf) || Object.values(H.ENEMIES).some(d => (d.skills || []).some(s => s.summon && s.summon.includes(id))) || Object.values(H.ENCOUNTERS).some(e => e.lf && e.lf.deerPhase && e.lf.deerPhase.adds.includes(id)));
       return { text: out.length ? out.join(', ') : called ? 'Только как призыв' : 'Только в Валютных войнах', cwOnly: !out.length && !called };
     },
 

@@ -5,7 +5,7 @@
   const DOT_NAME = { burn: 'Горение', shock: 'Шок', bleed: 'Кровотечение', shear: 'Порыв ветра', entangle: 'Запутывание', erode: 'Паутинка' };
   const DOT_TYPES = Object.keys(DOT_ELEM);
 
-  const condOk = (u, c) => (c === 'shielded' ? u.shield > 0 : c === 'know' ? u.buffs.some(b => b.name === 'Знание') : c === 'hp80' ? u.hp >= u.maxHp * 0.8 : c === 'hp50' ? u.hp <= u.maxHp * 0.5 : c === 'invig' ? u.buffs.some(b => b.s === 'invig') : c === 'frozen' ? u.frozen > 0 || !!u.flags.dissoc : c === 'dissoc' ? !!u.flags.dissoc : c === 'nightmare' ? u.flags.nightmare > 0 : c === 'collapse' ? u.flags.collapse > 0 : c === 'stitch' ? !!u.flags.stitch : c === 'pink' ? !!u.flags.pink : c === 'chantFull' ? (u.flags.chant || 0) >= (u.flags.chantMax || T.chantMax) : true);
+  const condOk = (u, c) => (c === 'shielded' ? u.shield > 0 : c === 'know' ? u.buffs.some(b => b.name === 'Знание') : c === 'hp80' ? u.hp >= u.maxHp * 0.8 : c === 'hp50' ? u.hp <= u.maxHp * 0.5 : c === 'invig' ? u.buffs.some(b => b.s === 'invig') : c === 'frozen' ? u.frozen > 0 || !!u.flags.dissoc : c === 'dissoc' ? !!u.flags.dissoc : c === 'nightmare' ? u.flags.nightmare > 0 : c === 'collapse' ? u.flags.collapse > 0 : c === 'stitch' ? !!u.flags.stitch : c === 'pink' ? !!u.flags.pink : c === 'chantFull' ? (u.flags.chant || 0) >= (u.flags.chantMax || T.chantMax) : c === 'grit' ? u.flags.grit > 0 : c === 'gritLow' ? u.flags.grit > 0 && u.hp < u.maxHp * 0.5 : c === 'noUlt' ? !u.flags.ulted : typeof c === 'string' && c.includes('>=') ? statOk(u, c) : true);
   function sv(u, k) {
     let v = u.base[k] || 0;
     for (const b of u.buffs) if (b.s === k && (!b.cond || condOk(u, b.cond))) v += b.v;
@@ -18,7 +18,9 @@
   }
   const shieldAtk = u => { const k = u.shield > 0 ? bsum(u, 'atkShield') : 0; return k ? Math.min(u.shield * k, u.base.atk * bsum(u, 'atkShieldCap')) / u.base.atk : 0; };
   const setOn = (u, k) => !!(u.sets && u.sets[k]);
-  const atkOf = u => Math.max(1, u.base.atk * (1 + bsum(u, 'atkP') + (setOn(u, 'station') && spdOf(u) >= 120 ? 0.12 : 0) + shieldAtk(u) + (coneP(u, 'showtime', 4) && sv(u, 'ehr') >= coneP(u, 'showtime', 4) - 1e-9 ? coneP(u, 'showtime', 5) : 0)));
+  const statOk = (u, c) => { const [k, v] = c.split('>='); return (k === 'spd' ? spdOf(u) : sv(u, k)) >= +v - 1e-9; };
+  const panCosmic = u => (setOn(u, 'pancosmic') ? Math.min(0.25, 0.25 * sv(u, 'ehr')) : 0);
+  const atkOf = u => Math.max(1, u.base.atk * (1 + bsum(u, 'atkP') + (setOn(u, 'station') && spdOf(u) >= 120 ? 0.12 : 0) + panCosmic(u) + shieldAtk(u) + (coneP(u, 'showtime', 4) && sv(u, 'ehr') >= coneP(u, 'showtime', 4) - 1e-9 ? coneP(u, 'showtime', 5) : 0)));
   const defOf = u => Math.max(0, u.base.def * (1 + bsum(u, 'defP')));
   const spdOf = u => Math.max(10, u.base.spd * (1 + bsum(u, 'spdP')) + bsum(u, 'spd'));
   const alive = u => u && !u.dead && !u.gone;
@@ -126,6 +128,7 @@
       if (this.opts.hpStart && this.enemies[0]) this.enemies[0].hp = Math.round(this.enemies[0].maxHp * this.opts.hpStart);
       for (const b of this.opts.allyBuff || []) for (const a of this.allies) a.buffs.push(Object.assign({}, b));
       for (const a of this.livingAllies) if (setOn(a, 'vonwacq') && spdOf(a) >= 120) { this.advance(a, 0.4); this.push({ t: 'status', u: a, text: 'Живой Вонвак: ход раньше' }); }
+      this.planarStart();
       if (this.su) this.suStart();
       for (const a of this.allies) if (a.charId === 'himeko') a.flags.charges = 1;
       this.huntersStart();
@@ -973,7 +976,9 @@
       if (!alive(u)) return;
       if (b.debuff && u.side === 'ally' && this.kitFx && this.kitFx(u, 'blockDebuff', b)) { this.push({ t: 'status', u, text: 'Ослабление отражено' }); return; }
       if (b.debuff && u.side === 'ally' && u.flags.debuffBlock > 0 && u.buffs.some(x => x.s === 'survival')) { u.flags.debuffBlock--; this.push({ t: 'status', u, text: 'Ослабление отражено' }); return; }
+      if (b.debuff && u.side === 'ally' && u.flags.subdue > 0) { u.flags.subdue--; this.heal(u, u, u.maxHp * 0.1); this.push({ t: 'status', u, text: 'Подавление зла' }); return; }
       const nb = Object.assign({ turns: 1 }, b);
+      if (nb.debuff && u.side === 'enemy' && u.flags.river > 0) nb.turns *= 2;
       if (this.current === u || this.acting === u) nb.skip = 1;
       const i = u.buffs.findIndex(x => x.name === nb.name && x.s === nb.s);
       if (i >= 0) u.buffs[i] = nb; else u.buffs.push(nb);
@@ -981,7 +986,7 @@
       if (nb.debuff && u.side === 'enemy' && this.stdDebuff) { const dsrc = nb.src || (this.acting && this.acting.side === 'ally' ? this.acting : null); if (dsrc) this.stdDebuff(dsrc, u); }
     }
 
-    breakDmg(src, tgt, m) { return H.breakBase(src.lvl) * (1 + sv(src, 'breakE')) * (1 + sv(src, 'breakDmgP')) * (0.5 + tgt.maxTough / 40) * m; }
+    breakDmg(src, tgt, m) { return H.breakBase(src.lvl) * (1 + sv(src, 'breakE')) * (1 + sv(src, 'breakDmgP')) * (1 + sv(tgt, 'breakVuln')) * (0.5 + tgt.maxTough / 40) * m; }
 
     rebloom(u, mark) {
       u.buffs = u.buffs.filter(b => b !== mark);
@@ -1039,6 +1044,7 @@
       if (!alive(tgt)) return;
       const dotRes = tgt.side === 'ally' && this.kitFx ? this.kitFx(tgt, 'dotRes') : 0;
       if (dotRes && this.rng.chance(dotRes)) { this.resisted(src); return; }
+      if (tgt.side === 'enemy' && tgt.flags.river > 0) turns *= 2;
       if (!tgt.dots.some(d => d.type === type)) this.disorder(src, tgt, type);
       if (!alive(tgt)) return;
       const ex = tgt.dots.find(d => d.type === type);
@@ -1059,6 +1065,7 @@
       if (v >= u.shield) { u.shield = v; }
       u.shieldT = Math.max(u.shieldT, turns);
       this.push({ t: 'shield', u, v: u.shield });
+      if (this.su && this.suShieldGained) this.suShieldGained(u);
     }
 
     heal(src, u, v) {
@@ -1093,6 +1100,7 @@
       if (o.dot) bonus += sv(src, 'dotP');
       if (o.kind === 'follow') bonus += sv(src, 'followP');
       if (o.kind === 'skill') bonus += sv(src, 'skillP');
+      if (o.kind === 'basic' || o.kind === 'enhanced') bonus += sv(src, 'basicP');
       if (this.memoDmg) bonus += this.memoDmg(src, tgt, o);
       if (o.charged) bonus += sv(src, 'shimoP') + (tgt.buffs.some(b => b.name === 'Ледяной ожог') ? T.shimoVsBurn : 0);
       if (tgt.frozen && (o.kind === 'skill' || o.kind === 'ult')) bonus += sv(src, 'vsFrozen');
@@ -1112,16 +1120,17 @@
       const nightSt = coneP(src, 'night', 2) ? clamp(Math.floor((spdOf(src) - 100) / coneP(src, 'night', 2)), 0, coneP(src, 'night', 5)) : 0;
       if (['basic', 'skill', 'enhanced'].includes(o.kind)) bonus += coneP(src, 'night', 3) * nightSt + coneP(src, 'collapsing', 1);
       if ((o.kind === 'ult' || o.kind === 'follow') && setOn(src, 'salsotto') && sv(src, 'critR') >= 0.5 - 1e-9) bonus += 0.15;
+      if (src.side === 'ally') bonus += this.planarDmg(src, o);
       const critM = crit ? 1 + sv(src, 'critD') + (o.kind === 'ult' ? coneP(src, 'night', 4) * nightSt : 0) + this.fivesCritD(src, tgt, o) + (this.stdCritD ? this.stdCritD(src, tgt, o) : 0) : 1;
       const K = 200 + 10 * src.lvl;
       const tdef = defOf(tgt) * (1 - clamp(sv(tgt, 'defDown') + this.haresDef(tgt), 0, 1)) * (o.kind === 'follow' ? 1 - clamp(sv(src, 'followDefIgnore'), 0, 1) : 1) * (1 - clamp(bsum(src, 'defIgnore') + (o.defIgnore || 0), 0, 1));
       const defM = K / (tdef + K);
       let res = tgt.side === 'ally' ? sv(tgt, 'allRes') : 0;
       if (tgt.side === 'enemy') res = tgt.weak.includes(e) ? 0 : tgt.resist.includes(e) ? T.resistRes : T.defaultRes;
-      res -= sv(src, 'resPen') + (o.resPen || 0);
+      res -= sv(src, 'resPen') + (o.resPen || 0) + (o.kind === 'ult' ? sv(src, 'ultResPen') : 0);
       if (tgt.side === 'enemy') res -= bsum(tgt, 'resDown') + bsum(tgt, e + 'ResDown');
       const resM = 1 - clamp(res, -1, 0.9);
-      const vuln = 1 + sv(tgt, 'vuln') + sv(tgt, e + 'Vuln') + (o.isDot ? sv(tgt, 'dotVuln') : 0) + this.fivesVuln(src, tgt, o);
+      const vuln = 1 + sv(tgt, 'vuln') + (o.kind === 'follow' ? sv(tgt, 'followVuln') : 0) + sv(tgt, e + 'Vuln') + (o.isDot ? sv(tgt, 'dotVuln') : 0) + this.fivesVuln(src, tgt, o);
       const brokenM = tgt.side === 'enemy' && !tgt.broken && !o.broken ? T.unbrokenMult : 1;
       const dr = (1 - clamp(sv(tgt, 'dr'), 0, 0.9)) * (1 - clamp(sv(src, 'dmgDealtDown'), 0, 0.9)) * (tgt.charId === 'aqua' && unholy(src) ? 1 - T.unholyDr : 1) * (tgt.shield > 0 && coneP(tgt, 'texture', 5) ? 1 - coneP(tgt, 'texture', 5) : 1);
       return Math.max(1, Math.round(base * bonus * critM * defM * resM * vuln * brokenM * dr));
@@ -1144,6 +1153,7 @@
       }
       if (tgt.side === 'ally' && src.side === 'enemy' && !o.isDot && this.kitFx && this.kitFx(tgt, 'guard', src, o)) dmg = 0;
       let absorbed = 0;
+      if (tgt.shield > 0 && tgt.flags.amber && dmg > tgt.shield) { dmg = tgt.shield; tgt.flags.amber = false; this.push({ t: 'status', u: tgt, text: 'Янтарь' }); }
       if (tgt.shield > 0) {
         absorbed = Math.min(tgt.shield, dmg);
         tgt.shield -= absorbed;
@@ -1234,6 +1244,7 @@
         if (coneP(src, 'geniuses', 2)) this.addBuff(src, { s: 'critD', v: coneP(src, 'geniuses', 2), turns: coneP(src, 'geniuses', 3), name: 'У каждого своя роль' });
       }
       if (this.memo) this.memo(tgt.side === 'ally' ? 'down' : 'kill', { u: tgt, src });
+      if (tgt.side === 'enemy') this.planarKill();
       if (tgt.side === 'enemy' && this.stdKill) this.stdKill(src, tgt);
       if (tgt.elys) { delete tgt.elys; this.scarAura(); }
       if (tgt.side === 'ally') for (const h of this.summons.slice()) if (h.owner === tgt) { if (h.id === 'hecate') this.hecateLeave(h); else if (!this.fivesLeave(h)) this.contonLeave(h); }
@@ -1267,6 +1278,7 @@
 
     doBreak(src, tgt, e) {
       if (this.echoBreak) this.echoBreak(tgt);
+      if (this.su && this.suBreak) this.suBreak(tgt);
       tgt.broken = true;
       tgt.tough = 0;
       if (tgt.side === 'enemy' && this.stdBreak) this.stdBreak(src, tgt);
@@ -1316,7 +1328,7 @@
     }
 
     pickTarget(u) {
-      const all = this.livingAllies, list = all.filter(a => !a.swallowed && !a.caged && !a.flags.away);
+      const all = this.livingAllies.filter(a => !a.dream), list = all.filter(a => !a.swallowed && !a.caged && !a.flags.away);
       if (!list.length) return all.find(a => !a.flags.away) || null;
       if (u.lockTarget && alive(u.lockTarget) && !u.lockTarget.flags.away) return u.lockTarget;
       if (u.elys && alive(u.elys.by)) return u.elys.by;
@@ -1338,6 +1350,8 @@
     }
 
     startTurn(u) {
+      if (u.side === 'ally' && u.dream && this.suDreamTurn && this.suDreamTurn(u)) return 'skip';
+      if (u.side === 'enemy' && this.su && this.suFoeTurn) { this.suFoeTurn(u); if (!alive(u)) return 'dead'; }
       if (this.stdAnyTurn) this.stdAnyTurn(u);
       if (u.side === 'enemy' && u.elys && --u.elys.rounds <= 0) { delete u.elys; this.push({ t: 'elysEnd', u }); this.scarAura(); }
       if (u.side === 'enemy' && u.flags.bindImm > 0 && !u.flags.bound) u.flags.bindImm--;
@@ -1579,7 +1593,7 @@
         case 'blast': {
           if (this.wardTake(u, sk)) break;
           const t = this.pickTarget(u);
-          const adj = this.adjacent(this.livingAllies.filter(a => !a.flags.away), t);
+          const adj = this.adjacent(this.livingAllies.filter(a => !a.flags.away && !a.dream), t);
           hitOne(t, sk.m);
           for (const a of adj) hitOne(a, sk.m * 0.6);
           break;
@@ -1587,7 +1601,7 @@
         case 'all': {
           this.wardTake(u, sk, true);
           const lock = u.lockTarget;
-          for (const a of this.livingAllies.filter(x => !x.flags.away)) hitOne(a, sk.m * (lock === a && sk.lockBonus ? sk.lockBonus : 1));
+          for (const a of this.livingAllies.filter(x => !x.flags.away && !x.dream)) hitOne(a, sk.m * (lock === a && sk.lockBonus ? sk.lockBonus : 1));
           break;
         }
         case 'summon': {
@@ -1607,9 +1621,9 @@
           for (const e of this.living) { this.addBuff(e, { s: 'atkP', v: 0.2, turns: 2, name: 'Приказ' }); if (e !== u) this.advance(e, 0.2); }
           break;
         case 'self': break;
-        default: if (this.echoSkill) this.echoSkill(u, sk, hitOne);
+        default: if (!(this.suSkill && this.suSkill(u, sk)) && this.echoSkill) this.echoSkill(u, sk, hitOne);
       }
-      if (sk.t !== 'lock' && sk.t !== 'charge' && u.charging == null) u.lockTarget = null;
+      if (sk.t !== 'lock' && sk.t !== 'charge' && sk.t !== 'nightfall' && u.charging == null) u.lockTarget = null;
       for (const f of sk.fx || []) {
         if (f.self && this.echoSelfFx && this.echoSelfFx(u, f)) continue;
         if (f.k === 'shieldSelf') { u.shield = Math.round(u.maxHp * f.m); u.shieldT = 3; this.push({ t: 'shield', u, v: u.shield }); continue; }
@@ -2213,11 +2227,43 @@
       return out;
     }
 
+    planarStart() {
+      const team = this.livingAllies, aura = (name, s, v, who) => { for (const b of who) if (!b.buffs.some(x => x.name === name)) b.buffs.push({ s, v, turns: 999, name, perm: true }); };
+      for (const a of team) {
+        if (setOn(a, 'fleet') && spdOf(a) >= 120 - 1e-9) aura('Флот нестареющих', 'atkP', 0.08, team);
+        if (setOn(a, 'keel') && sv(a, 'res') >= 0.3 - 1e-9) aura('Сломанный киль', 'critD', 0.1, team);
+        if (setOn(a, 'penacony')) aura('Земля грёз Пенакония', 'dmgP', 0.1, team.filter(b => b !== a && b.elem === a.elem));
+        if (setOn(a, 'izumo') && team.some(b => b !== a && b.path === a.path)) aura('Мир Идзумо и Царство Такама', 'critR', 0.12, [a]);
+        if (setOn(a, 'talia')) a.buffs.push({ s: 'breakE', v: 0.2, turns: 999, name: 'Талия: край бандитов', cond: 'spd>=145', perm: true });
+        if (setOn(a, 'belobog')) a.buffs.push({ s: 'defP', v: 0.15, turns: 999, name: 'Белобог Архитекторов', cond: 'ehr>=0.5', perm: true });
+        if (setOn(a, 'celestial') && sv(a, 'critD') >= 1.2 - 1e-9) { aura('Небесный дифференциатор', 'critR', 0.6, [a]); a.flags.celestial = true; }
+      }
+    }
+
+    planarKill() {
+      for (const a of this.livingAllies) {
+        if (!setOn(a, 'sigonia')) continue;
+        a.flags.sigonia = Math.min(10, (a.flags.sigonia || 0) + 1);
+        const b = a.buffs.find(x => x.name === 'Бесплодная Сигония');
+        if (b) b.v = 0.04 * a.flags.sigonia;
+        else a.buffs.push({ s: 'critD', v: 0.04, turns: 999, name: 'Бесплодная Сигония', perm: true });
+      }
+    }
+
+    planarDmg(src, o) {
+      let v = 0;
+      if (setOn(src, 'rutilant') && ['basic', 'skill', 'enhanced'].includes(o.kind) && sv(src, 'critR') >= 0.7 - 1e-9) v += 0.2;
+      if (setOn(src, 'glamoth')) { const sp = spdOf(src); v += sp >= 160 - 1e-9 ? 0.18 : sp >= 135 - 1e-9 ? 0.12 : 0; }
+      return v;
+    }
+
     afterAction(u, kind, hitSet) {
       if (u.side !== 'ally' || !alive(u)) return;
       if (this.memo) this.memo('after', { u, kind });
       const hits = [...hitSet].filter(t => t.side === 'enemy');
       const attacked = hits.length > 0;
+      if (this.su && this.suSunset) this.suSunset(u, kind);
+      if (attacked && u.flags.celestial) { u.flags.celestial = false; u.buffs = u.buffs.filter(b => b.name !== 'Небесный дифференциатор'); }
       if (u.charId === 'danheng' && attacked && u.flags.wind) {
         u.flags.wind = false;
         u.buffs = u.buffs.filter(b => b.name !== 'Верхом на ветре');
@@ -2347,7 +2393,8 @@
       if (this.over) return;
       if (this.ccPops && this.ccPops.length) this.contonCleanup();
       if (this.over) return;
-      if (!this.livingAllies.length) { this.finish(false); return; }
+      if (this.su && this.suDreamCheck) this.suDreamCheck();
+      if (!this.livingAllies.length || this.livingAllies.every(a => a.dream)) { this.finish(false); return; }
       if (this.opts.endAt && this.wave === this.waves.length - 1) {
         const lead = this.enemies.find(e => e.id === this.waves[this.wave][0].split(':')[0]);
         if (lead && !lead.dead && lead.hp <= lead.maxHp * this.opts.endAt) { this.finish(true); return; }
@@ -2418,13 +2465,16 @@
       const paid = this.fivesPay(u, kind, k, ab);
       if (paid === false) return false;
       if (paid) { if (kind === 'skill' && ab.noSelf && target === u) target = this.livingAllies.find(a => a !== u) || u; }
-      else if (kind === 'skill') {
+      let spDelta = 0;
+      if (!paid && kind === 'skill') {
         const cost = this.skillCost(u, target);
         if (this.sp < cost || this.skillLocked(u)) return false;
         if (ab.noSelf && target === u) target = this.livingAllies.find(a => a !== u) || u;
         this.sp -= cost;
+        spDelta = -cost;
         u.flags.freeSkill = false;
-      } else this.sp = Math.min(T.spMax, this.sp + 1);
+      } else if (!paid) { const was = this.sp; this.sp = Math.min(T.spMax, this.sp + 1); spDelta = this.sp - was; }
+      if (spDelta && this.su && this.suSp) this.suSp(u, spDelta);
       if (u.kit.personas) u.flags.personaLock = true;
       if (k === 'enhanced' && u.charId === 'trail_p') u.flags.magma -= 4;
       if (k === 'enhanced' && ab.lv) { u.flags.frost -= 2 * ab.lv; u.flags.shimoLv = ab.lv; this.push({ t: 'frost', u, v: u.flags.frost, add: -2 * ab.lv }); }
@@ -2491,6 +2541,8 @@
       const { ab } = this.abilityFor(u, 'ult');
       u.energy = this.fivesSpend(u, ab);
       this.useAbility(u, ab, target, 'ult');
+      u.flags.ulted = true;
+      if (this.su && this.suVat && !this.over) this.suVat(u, ab, target);
       this.gainEnergy(u, T.energyUlt);
       if (coneP(u, 'butthebattle', 1) && ['ally', 'allies'].includes(ab.target) && !this.over) {
         u.flags.heirUlt = (u.flags.heirUlt || 0) + 1;

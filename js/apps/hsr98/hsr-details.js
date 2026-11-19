@@ -31,7 +31,9 @@
     elation: 'Радость', cwPow: 'Сила', cwLucky: 'Шанс счастливого удара',
     vsHigh: 'Урон по целям с HP от 50%', vsFrozen: 'Урон навыка и абсолютной техники по замороженным',
     tame: 'Крит. урон по этой цели', execCrit: 'Крит. урон бонус-атак по этой цели',
-    atkShieldCap: 'Прибавка атаки от щита не больше чем'
+    atkShieldCap: 'Прибавка атаки от щита не больше чем',
+    basicP: 'Урон базовой атаки', ultResPen: 'Пробивание сопротивления абсолютной техникой', sporeP: 'Урон от взрыва Спор', aftertasteP: 'Урон Послевкусием',
+    quakeDef: 'Прибавка к Дрожи от текущей защиты', followVuln: 'Получаемый урон бонус-атак', breakVuln: 'Получаемый урон пробития'
   };
   for (const e of Object.keys(H.ELEMENTS)) {
     STAT[e + 'P'] = H.ELEMENTS[e].name + ' урон';
@@ -42,7 +44,7 @@
   const ICON = { atkP: 'atk', defP: 'def', defDown: 'def', hpP: 'hp', spdP: 'spd', spd: 'spd', critR: 'critR', followCritR: 'critR', critD: 'critD', tame: 'critD', execCrit: 'critD', breakE: 'breakE', breakEff: 'breakE', toughIn: 'breakE', err: 'err', ehr: 'ehr', res: 'res', healP: 'healP', healIn: 'healP', dmgP: 'dmgP', ultP: 'dmgP', skillP: 'dmgP', followP: 'dmgP', dotP: 'dmgP', elation: 'elation' };
   for (const e of Object.keys(H.ELEMENTS)) ICON[e + 'P'] = 'dmgP';
 
-  const TAKEN = new Set(['vuln', 'dotVuln', 'critTaken', 'toughIn', 'tame', 'execCrit', 'dr']);
+  const TAKEN = new Set(['vuln', 'dotVuln', 'followVuln', 'breakVuln', 'critTaken', 'toughIn', 'tame', 'execCrit', 'dr']);
   for (const e of Object.keys(H.ELEMENTS)) TAKEN.add(e + 'Vuln');
   function hurts(x) {
     const d = STAT[x.s];
@@ -87,9 +89,11 @@
   };
 
   const COND = {
+    'spd>=145': 'Действует при скорости от 145.', 'ehr>=0.5': 'Действует при шансе эффекта от 50%.',
     shielded: 'Действует, пока есть щит.', know: 'Действует со Знанием.', hp80: 'Действует при HP от 80%.', hp50: 'Действует при HP до 50%.',
     invig: 'Действует с Оживлением.', frozen: 'Действует, пока цель заморожена.', dissoc: 'Действует при распаде.', nightmare: 'Действует в облике Кошмара.',
-    collapse: 'Действует, пока герой без сил.', stitch: 'Действует, пока цель сшита.', pink: 'Действует в розовом режиме.', chantFull: 'Действует при полном Напеве.'
+    collapse: 'Действует, пока герой без сил.', stitch: 'Действует, пока цель сшита.', pink: 'Действует в розовом режиме.', chantFull: 'Действует при полном Напеве.',
+    grit: 'Действует с Боевым духом.', gritLow: 'Действует с Боевым духом при HP ниже 50%.', noUlt: 'Действует до первой абсолютной техники героя.'
   };
 
   function statText(s, v) {
@@ -151,7 +155,7 @@
     };
   }
 
-  const TAG = { single: 'Одиночная атака', blast: 'Взрывная атака', all: 'Групповая атака', bounce: 'Отскок', havoc: 'Одиночная атака', summon: 'Призыв', rally: 'Поддержка', lock: 'Ослабление', charge: 'Усиление' };
+  const TAG = { single: 'Одиночная атака', blast: 'Взрывная атака', all: 'Групповая атака', bounce: 'Отскок', havoc: 'Одиночная атака', summon: 'Призыв', rally: 'Поддержка', lock: 'Ослабление', charge: 'Усиление', sunset: 'Ослабление', obituary: 'Усиление', nightfall: 'Усиление', dissolve: 'Групповая атака' };
   const WHO = { single: 'одной цели', blast: 'одной цели и соседним целям', all: 'всем целям' };
   const POWER = [[1, 'небольшой '], [2, ''], [Infinity, 'огромный ']];
   const turnsWord = n => (n % 10 === 1 && n % 100 !== 11 ? 'ход' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'хода' : 'ходов');
@@ -189,6 +193,10 @@
     else if (sk.m && sk.e && WHO[sk.t]) parts.push('Наносит ' + power(sk.m) + adj(sk.e) + ' урон ' + WHO[sk.t] + '.');
     if (sk.t === 'lock') parts.push('Выбирает цель для следующего удара.');
     if (sk.t === 'charge') parts.push('Заряжает удар.');
+    if (sk.t === 'sunset') parts.push('Включает «Заход солнца»: каждая обычная атака, навык и абсолютная техника героя дают уровень. На 3 уровне последний действовавший герой попадает в «Болезненный сон». Пробитие снимает статус.');
+    if (sk.t === 'obituary') parts.push('Урон +50% на 1 ход и ещё +12% до конца боя за каждое использование. Следующие Усыпальницы душ прочнее. Пробитие снимает прибавку на 1 ход.');
+    if (sk.t === 'nightfall') parts.push('«Наступление ночи»: выбирает 2 героев, которые ходят следующими, полностью восстанавливает энергию отряда, уязвимость защищена.');
+    if (sk.t === 'dissolve') parts.push('Отправляет выбранных героев в «Болезненный сон», каждого в свою Усыпальницу душ.');
     if (sk.t === 'rally') parts.push('Все враги получают «Приказ»: сила атаки +20% на 2 хода, остальные ходят на 20% раньше.');
     if (sk.t === 'summon' && sk.summon) parts.push('Призывает: ' + [...new Set(sk.summon)].map(id => (H.ENEMIES[id] ? H.ENEMIES[id].name : id)).join(', ') + '.' + (sk.max ? ' Не больше ' + sk.max + ' на поле.' : ''));
     if (sk.splash) parts.push('Соседние цели тоже получают урон.');
@@ -312,6 +320,7 @@
         add('other', { kind: 'set', name: sd.name, on, right: on ? 'действует' : '', text: sd.text + ' Сейчас: ' + (sd.cond.s === 'spd' ? 'скорость ' + num(cur) : 'шанс крита ' + pct(cur)) + '.' });
       }
       if (u.swallowed) add('debuff', { kind: 'swallow', name: 'Внутри жабы', turns: u.swallowed.turns, text: 'Пропускает ходы и получает урон, пока жаба не отпустит.' });
+      if (u.dream) add('debuff', { kind: 'dream', name: 'Болезненный сон', text: 'Заперт в Усыпальнице душ: пропускает ходы, пока её не разрушат. Эффекты не истекают.' });
       if (u.caged) add('other', { kind: 'caged', name: 'В клетке Аквы', text: 'Герой занят очищением воды.' });
     }
     for (const [id, fn] of KIT) {

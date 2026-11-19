@@ -1131,8 +1131,8 @@
 
     setCondLine(k, set, st) {
       const d = H.RELIC_SETS[set], c = d.cond, on = this.game.setCondOn(k, set, st);
-      const cur = c.s === 'spd' ? String(Math.floor(st.spd)) + ' / ' + c.v : pct(st.critR || 0) + ' / ' + Math.round(c.v * 100) + '%';
-      return [(c.s === 'spd' ? 'Скорость ' : 'Шанс крита ') + cur + (on ? ': доп. эффект действует' : ': доп. эффект не действует'), on ? C.ok : C.dim];
+      const cur = c.s === 'spd' ? String(Math.floor(st.spd)) + ' / ' + c.v : pct(st[c.s] || 0) + ' / ' + Math.round(c.v * 100) + '%';
+      return [H.STAT_NAMES[c.s] + ' ' + cur + (on ? ': доп. эффект действует' : ': доп. эффект не действует'), on ? C.ok : C.dim];
     },
 
     setRows(k) {

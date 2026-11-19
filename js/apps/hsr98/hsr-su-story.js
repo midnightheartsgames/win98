@@ -10,12 +10,12 @@
     bank: { kind: 'event', title: 'Банк времени', art: 'clock', script: 'su_ev_bank' },
     sea: { kind: 'event', title: 'Голос моря', art: 'shell', script: 'su_ev_sea' },
     puppet: { kind: 'event', title: 'Пыльная кукла', art: 'puppet', script: 'su_ev_puppet' },
-    sampo: { kind: 'event', title: 'Сапоги в сугробе', art: 'snow', worlds: [2, 3, 4], script: 'su_ev_sampo' },
-    tea: { kind: 'event', title: 'Чай на посту', art: 'tea', worlds: [2, 4], script: 'su_ev_tea' },
+    sampo: { kind: 'event', title: 'Сапоги в сугробе', art: 'snow', worlds: [3, 4, 6], script: 'su_ev_sampo' },
+    tea: { kind: 'event', title: 'Чай на посту', art: 'tea', worlds: [3, 6], script: 'su_ev_tea' },
     merchant: { kind: 'trade', title: 'Галактический торговец', art: 'merchant', script: 'su_ev_merchant' },
-    flea: { kind: 'trade', title: 'Лавка Лаудера', art: 'flea', worlds: [3, 4], script: 'su_ev_flea' },
+    flea: { kind: 'trade', title: 'Лавка Лаудера', art: 'flea', worlds: [4, 6], script: 'su_ev_flea' },
     tuner: { kind: 'trade', title: 'Мастерская Скрюллума', art: 'gear', script: 'su_ev_tuner' },
-    club: { kind: 'encounter', title: 'Бойцовский клуб', art: 'fist', worlds: [3, 4], script: 'su_ev_club' },
+    club: { kind: 'encounter', title: 'Бойцовский клуб', art: 'fist', worlds: [4, 6], script: 'su_ev_club' },
     trotter: { kind: 'encounter', title: 'Свинка-копилка пространства', art: 'trotter', script: 'su_ev_trotter' },
     legion: { kind: 'encounter', title: 'Зов Легиона', art: 'legion', script: 'su_ev_legion' }
   };
@@ -132,6 +132,28 @@
       { su: 'unlock', path: 'destruction' },
       'herta|Хотя постой. Благословения Разрушения тебе понравятся: чем меньше здоровья, тем злее отряд.',
       { su: 'bless', rar: 1, path: 'destruction', why: 'Благословение Разрушения' }
+    ],
+    su_aeon_propagation: [
+      '=Тайззиронт|Под ногами шуршит хитин. Из трещин между областями лезут крылья, лапы, жвала, тысячи их. Рой растёт быстрее, чем вы успеваете моргнуть, и каждое новое тело чуть сильнее прежнего.',
+      'herta|«Это запись. Тайззиронта давно нет, его Рой разбили. Но Вселенная помнит, как он размножался, и показывает тебе этот след».',
+      '=Тайззиронт|Рой поворачивается к вам одной тысячеглазой головой. Он не говорит. Он просто становится больше.',
+      { choice: [['«Он ещё жив?»', 'a'], ['«Как его остановить?»', 'a']] },
+      '#a',
+      'herta|«Нет. Остановили его давно и дорого. Не жалей его. Из этого Пути можно взять кое-что полезное: он копит силу из каждого простого удара».',
+      { su: 'unlock', path: 'propagation' },
+      'herta|Благословения Распространения любят базовые атаки и очки навыка. Трать их, и Споры сделают остальное.',
+      { su: 'bless', rar: 1, path: 'propagation', why: 'Благословение Распространения' }
+    ],
+    su_aeon_erudition: [
+      '=Нус|Области вокруг вдруг становятся прозрачными. Вы видите их код, каждую строчку и каждую ошибку в ней. Где-то над всем этим медленно поворачивается огромный механизм из света.',
+      'herta|«Только не это. Нус. Эон Эрудиции, тот, кто когда-то пригласил меня в Общество гениев. Он считает, а не смотрит».',
+      '=Нус|Механизм замирает на миг, будто сверяет вашу строку с чем-то. Потом снова поворачивается, уже без интереса.',
+      { choice: [['«Ты ему благодарна?»', 'a'], ['«Он нас заметил?»', 'a']] },
+      '#a',
+      'herta|«Он заметил ровно столько, сколько нужно для вычисления. Не обольщайся. Но Путь его записала. Пригодится тем, кто бьёт абсолютной техникой».',
+      { su: 'unlock', path: 'erudition' },
+      'herta|Благословения Эрудиции копят Мозг в кувшине. Заряди его, и абсолютная техника сработает дважды.',
+      { su: 'bless', rar: 1, path: 'erudition', why: 'Благословение Эрудиции' }
     ],
     su_aeon_nihility: [
       '=IX|Вас вдруг затягивает во тьму. Здесь кривизна пространства доходит до предела, и ничто, ни вещество, ни свет, не может вырваться. Вас поглощает чёрное море.',
@@ -380,7 +402,7 @@
     ]
   };
 
-  const AEONS = { 1: [{ path: 'elation', after: 'first' }], 2: [{ path: 'hunt', after: 'first' }, { path: 'abundance', after: 'elite' }], 3: [{ path: 'destruction', after: 'first' }], 4: [{ path: 'nihility', after: 'first' }] };
+  const AEONS = { 7: [{ path: 'propagation', after: 'first' }], 8: [{ path: 'erudition', after: 'first' }], 1: [{ path: 'elation', after: 'first' }], 3: [{ path: 'hunt', after: 'first' }, { path: 'abundance', after: 'elite' }], 4: [{ path: 'destruction', after: 'first' }], 6: [{ path: 'nihility', after: 'first' }] };
   for (const w of SU.WORLDS) w.aeons = AEONS[w.id] || [];
 
   Object.assign(SU, { EVENTS, SCRIPTS });

@@ -730,7 +730,9 @@
       c.fillStyle = 'rgba(4,6,20,0.72)'; c.fillRect(x - 8, y - 2, w + 16, 56);
       c.fillStyle = '#c85050'; c.fillRect(x - 8, y + 53, w + 16, 1);
       G.foeIcon(c, u.data, x - 50, y, 40);
-      this.text(u.name, W / 2, y, { align: 'center', size: 13, bold: true, serif: true, col: '#ffe0d0' });
+      let ns = 13;
+      while (ns > 9 && this.measure(u.name, ns, true, true) > w + 12) ns--;
+      this.text(u.name, W / 2, y + (13 - ns) / 2, { align: 'center', size: ns, bold: true, serif: true, col: '#ffe0d0' });
       const f = Math.max(0, u.dHp / u.maxHp);
       this.bar(x, y + 20, w, 9, f, '#d83c3c');
       if (u.dShield > 0) { c.fillStyle = 'rgba(140,200,255,0.9)'; c.fillRect(x, y + 20, Math.min(1, u.dShield / u.maxHp) * w, 3); }
@@ -1082,6 +1084,7 @@
         tx = this.contonCard(c, u, x, y, tags, tx);
         tx = this.haresCard(c, u, x, y, tags, tx);
         tx = this.fivesCard(c, u, x, y, tags, tx);
+        if (u.dream && !dead) { c.fillStyle = 'rgba(20,10,48,0.6)'; c.fillRect(x + 3, y + 3, 58, 58); this.text('Сон', x + 32, y + 25, { align: 'center', size: 10, bold: true, col: '#d8c8ff' }); }
         if (u.flags.collapse > 0 && !dead) { c.fillStyle = 'rgba(40,0,12,0.5)'; c.fillRect(x + 3, y + 3, 58, 58); this.text('Без сил', x + 32, y + 25, { align: 'center', size: 10, bold: true, col: '#ffb8b8' }); }
         if (u.charId === 'yanagi') this.moonGlyph(c, x + 12, y + 12, 6, u.dStance || u.flags.stance);
         if (tags.length) this.text(this.fitText(tags.slice(0, 2).join(' '), 9, x + 74 - tx), tx, y + 88, { size: 9, col: C.gold });

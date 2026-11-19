@@ -8,7 +8,8 @@ function plainBattle(H, o, n, team, grp) {
   g.script = null; g.pending = null; g.cg = null; g.events.length = 0;
   if (o.mcPath) g.state.mcPath = o.mcPath;
   for (const k of team) if (!g.state.roster[k]) g.debugChar(k, o.lvl || 60, 0, 0);
-  return new H.Battle({ party: g.fhSpecs(team), seed: 1 + n, waves: [grp.map(id => id + ':' + (o.foeLvl || 50))], lvl: o.foeLvl || 50, su: o.su || null });
+  const wave = grp.map(id => id + ':' + (o.foeLvl || 50));
+  return new H.Battle({ party: g.fhSpecs(team), seed: 1 + n, waves: o.su ? [wave, wave] : [wave], lvl: o.foeLvl || 50, su: o.su || null });
 }
 
 function modeGame(H, n, team) {
@@ -67,13 +68,16 @@ function audit(H, o = {}) {
     let b;
     try { b = o.make ? o.make(n, team) : plainBattle(H, o, n, team, grp); b.start(); } catch (e) { note(problems, 'start | ' + (o.mode || '') + ' | ' + team.join(',') + ' | ' + grp.join(','), String(e && e.message)); continue; }
     battles++;
-    for (let s = 0; s < (o.steps || 1500) && !b.over; s++) {
-      try { b.autoStep(); b.drain(); } catch (e) { note(problems, 'step | ' + team.join(',') + ' | ' + grp.join(','), String(e && e.message)); break; }
-      steps++;
-      if (b.phase !== 'input') continue;
+    const look = () => {
       for (const u of [...b.allies, ...b.enemies]) {
         try { check(b, u); } catch (e) { note(problems, 'model | ' + u.name, String(e && e.stack).split('\n').slice(0, 2).join(' ')); }
       }
+    };
+    if (b.phase === 'input') look();
+    for (let s = 0; s < (o.steps || 1500) && !b.over; s++) {
+      try { b.autoStep(); b.drain(); } catch (e) { note(problems, 'step | ' + team.join(',') + ' | ' + grp.join(','), String(e && e.message)); break; }
+      steps++;
+      if (b.phase === 'input') look();
     }
   }
   return { battles, steps, seen, problems, odd };

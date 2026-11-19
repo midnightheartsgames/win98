@@ -537,14 +537,14 @@
       });
     },
 
-    guideSideRow(c, x, y, title, status, on, open, i, scr, field) {
-      const ui = this, IDX = this.guideBox().idx;
-      c.fillStyle = 'rgba(0,0,0,0.25)'; c.fillRect(x + 2, y + 2, IDX.cw, 56);
-      c.fillStyle = on ? PAPER.dark : PAPER.card; c.fillRect(x, y, IDX.cw, 56);
-      c.fillStyle = on ? C.brassHi : PAPER.bar; c.fillRect(x, y, 4, 56);
-      ui.text(ui.fitText(title, 13, IDX.cw - 26, true), x + 16, y + 10, { size: 13, bold: true, col: !open ? '#9a9080' : on ? C.gold : PAPER.ink, shadow: on });
-      ui.text(status, x + 16, y + 32, { size: 11, col: on ? C.brass : PAPER.sub, shadow: on });
-      ui.hit(x, y, IDX.cw, 56, () => { if (scr[field] !== i) { scr[field] = i; ui.sfx('select'); } });
+    guideSideRow(c, x, y, title, status, on, open, i, scr, field, h = 56) {
+      const ui = this, IDX = this.guideBox().idx, tight = h < 48, ts = tight ? 12 : 13;
+      c.fillStyle = 'rgba(0,0,0,0.25)'; c.fillRect(x + 2, y + 2, IDX.cw, h);
+      c.fillStyle = on ? PAPER.dark : PAPER.card; c.fillRect(x, y, IDX.cw, h);
+      c.fillStyle = on ? C.brassHi : PAPER.bar; c.fillRect(x, y, 4, h);
+      ui.text(ui.fitText(title, ts, IDX.cw - 26, true), x + 16, y + (tight ? 4 : 10), { size: ts, bold: true, col: !open ? '#9a9080' : on ? C.gold : PAPER.ink, shadow: on });
+      ui.text(status, x + 16, y + (tight ? 19 : 32), { size: tight ? 10 : 11, col: on ? C.brass : PAPER.sub, shadow: on });
+      ui.hit(x, y, IDX.cw, h, () => { if (scr[field] !== i) { scr[field] = i; ui.sfx('select'); } });
     },
 
     guideStage(c, draw) {
@@ -572,23 +572,29 @@
     guideCosmicView(c, scr) {
       const ui = this, ACT = this.guideBox().act, list = this.game.guideCosmic();
       scr.wsel = Math.max(0, Math.min(scr.wsel, list.length - 1));
-      list.forEach((r, i) => ui.guideSideRow(c, ACT.x, ACT.y + i * 64, r.w.title, r.w.name + ' · ' + (!r.open ? 'закрыт' : r.first ? 'первая награда ×3' : 'пройден'), i === scr.wsel, r.open, i, scr, 'wsel'));
+      const step = Math.min(64, Math.floor(this.guideBox().stage.h / list.length));
+      list.forEach((r, i) => ui.guideSideRow(c, ACT.x, ACT.y + i * step, r.w.title, r.w.name + ' · ' + (!r.open ? 'закрыт' : r.first ? 'первая награда ×3' : 'сложностей: ' + r.cleared + ' из ' + r.w.diff.length), i === scr.wsel, r.open, i, scr, 'wsel', step - 6));
       const r = list[scr.wsel], b = ui.guideStage(c, cc => ui.suBackdrop(cc));
       ui.text(r.w.title, b.x + b.w - 14, b.y + 14, { align: 'right', size: 18, bold: true, serif: true, col: C.gold });
-      ui.text(r.w.name + ' · ур. ' + r.w.lvl, b.x + b.w - 14, b.y + 40, { align: 'right', size: 11, col: C.cream });
+      ui.text(r.w.name + ' · ур. ' + r.w.diff[0].lvl[0] + '–' + r.w.diff[r.w.diff.length - 1].lvl[1], b.x + b.w - 14, b.y + 40, { align: 'right', size: 11, col: C.cream });
       ui.wrap(r.w.text, b.w - 28, 10).slice(0, 3).forEach((l, i) => ui.text(l, b.x + 14, b.y + 64 + i * 13, { size: 10, col: '#e4dcf4' }));
       ui.text('Босс: ' + r.w.bossName, b.x + 14, b.y + 112, { size: 11, bold: true, col: '#ffd0c8' });
-      ui.text(r.first ? 'Награда за первое прохождение' : 'Награда за прохождение', b.x + 14, b.y + 140, { size: 11, bold: true, col: C.cream });
+      ui.text(r.first ? 'Награда за первое прохождение' : 'За каждый обмен у элиты и босса, до 3 за забег', b.x + 14, b.y + 140, { size: 11, bold: true, col: C.cream });
       ui.rewardCell(c, 'jade', r.rw.jade, b.x + 14, b.y + 158, 40);
       ui.rewardCell(c, 'credits', r.rw.credits, b.x + 60, b.y + 158, 40);
       ui.suSetCells(c, r.w, r.rw.sets, b.x + 112, b.y + 158, 40);
-      const set = r.w.set && H.RELIC_SETS[r.w.set];
-      ui.text(set ? 'Украшения: ' + set.name : 'Украшения: случайный планарный набор', b.x + 14, b.y + 214, { size: 10, col: '#80e0ff' });
-      ui.text(r.first ? 'Первое прохождение бесплатно' : 'Повтор: ' + r.cost + ' энергии освоения', b.x + 14, b.y + 232, { size: 10, col: C.sub });
+      const sets = r.w.sets.map(k => H.RELIC_SETS[k].name);
+      const fit = t => { let fs = 10; while (fs > 8 && ui.measure(t, fs) > b.w - 28) fs--; return fs; };
+      const ornLine = sets.length ? 'Украшения: ' + sets.join(', ') : 'Украшения: случайный планарный набор';
+      const payLine = r.first ? 'Первое прохождение бесплатно' : r.w.sets.length ? 'Обмен у элиты и босса: ' + r.cost + ' энергии освоения или ключ погружения.' : 'Повторное прохождение без награды';
+      ui.text(ornLine, b.x + 14, b.y + 214, { size: fit(ornLine), col: '#80e0ff' });
+      ui.text(payLine, b.x + 14, b.y + 232, { size: fit(payLine), col: C.sub });
       const claims = this.game.suClaims().length, paths = this.game.suPaths().length, bonds = this.game.state.inv.items.herta_bond || 0;
       ui.text('Открытые Пути: ' + paths + ' из ' + Object.keys(H.SU.PATHS).length + (claims ? ' · награды ждут: ' + claims : ''), b.x + 14, b.y + 248, { size: 10, col: claims ? C.gold : C.sub });
       ui.text('Облигации Герты: ' + bonds + ' · Магазин Герты (B)', b.x + 14, b.y + 264, { size: 10, col: '#c890ff' });
-      if (!r.open) { ui.guidePadlock(c, b.x + b.w / 2, b.y + 296, '#8a7aa8'); ui.text('Сначала пройдите прошлый мир', b.x + b.w / 2, b.y + 316, { align: 'center', size: 11, col: '#c8b8e8' }); return; }
+      const wk = this.game.suWeek();
+      ui.text('Неделя: ' + H.fmt(wk.pts) + ' / ' + H.fmt(this.game.suWeekMax()) + ' очков · очки способностей ' + H.fmt(this.game.suTree().pts), b.x + 14, b.y + 280, { size: 10, col: '#80e0ff' });
+      if (!r.open) { ui.guidePadlock(c, b.x + b.w / 2, b.y + 296, '#8a7aa8'); ui.text(r.why, b.x + b.w / 2, b.y + 316, { align: 'center', size: 11, col: '#c8b8e8' }); return; }
       ui.guideHertaShopBtn(c, b);
       ui.guideGoBig(c, b.x + 60, b.y + b.h - 40, b.w - 80, 'Перейти к испытанию', () => ui.guideEnter(r), true);
     },

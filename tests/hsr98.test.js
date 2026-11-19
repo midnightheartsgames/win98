@@ -289,7 +289,7 @@ for (const [id, f] of Object.entries(H.FUSIONS)) {
   const old = H.newState();
   delete old.trv;
   Object.assign(old, { tlGot: [19, 41], mcPath: 'trail_p' });
-  Object.assign(old.flags, { first_doomsday: true, first_cocolia2: true, ending: true, su_clear_3: true, rumor_echo: true });
+  Object.assign(old.flags, { first_doomsday: true, first_cocolia2: true, ending: true, su_clear_4: true, rumor_echo: true });
   const og = new H.Game({ state: old, seed: 3 });
   const oi = og.state.inv.items;
   ok(oi.shadow_dest === 1 && oi.hunt1 === 5 && oi.tracks === 2 && oi.echo_doom === 4 && oi.echo_lament === 2 && oi.shadow_pres === 2, 'an old save gets back pay for the rewards it already took');
@@ -305,11 +305,11 @@ for (const [id, e] of Object.entries(H.ENEMIES)) {
   ok(e.weak.length > 0 && e.weak.every(w => H.ELEMENTS[w]), 'enemy weak ' + id);
   ok(e.skills.length > 0, 'enemy skills ' + id);
   for (const s of e.skills) {
-    ok(['single', 'blast', 'all', 'self', 'summon', 'charge', 'lock', 'rally', 'havoc'].includes(s.t), 'enemy skill type ' + id + ' ' + s.n);
+    ok(['single', 'blast', 'all', 'self', 'summon', 'charge', 'lock', 'rally', 'havoc', 'sunset', 'obituary', 'nightfall', 'dissolve'].includes(s.t), 'enemy skill type ' + id + ' ' + s.n);
     if (s.next != null) ok(e.skills[s.next] && s.next !== e.skills.indexOf(s), 'enemy next ' + id);
     if (s.summon) ok(s.summon.every(x => H.ENEMIES[x]), 'summon ids ' + id);
   }
-  if (e.pat) ok(e.pat.every(i => e.skills[i] && e.skills[i].t !== 'charge' || e.skills[i].next != null), 'pattern ' + id);
+  if (e.pat) ok(e.pat.every(i => e.skills[i] && !['charge', 'nightfall'].includes(e.skills[i].t) || e.skills[i].next != null), 'pattern ' + id);
   ok(e.fam === 'boss' || (e.noContact && e.fam === 'lotus') || H.CONTACT[e.fam], 'contact family ' + id);
 }
 for (const pool of Object.values(H.WARP_POOL)) for (const p of pool) ok(p.startsWith('cone:') ? H.CONES[p.slice(5)] : H.CHARS[p], 'warp pool ' + p);
@@ -6184,8 +6184,8 @@ function trInfo(g) {
 
 {
   const g = new H.Game({ seed: 21 });
-  ok(H.PLANAR_SETS.join() === 'station,vonwacq,salsotto' && H.PLANAR_SLOTS.map(s => s.key).join() === 'sphere,rope', 'three planar sets and two planar slots');
-  ok(H.PLANAR_SETS.every(k => { const d = H.RELIC_SETS[k]; return d.pieces.sphere && d.pieces.rope && d.text && d.short && d.cond; }), 'every planar set names both pieces and its condition');
+  ok(H.PLANAR_SETS.length === 14 && H.PLANAR_SETS.slice(0, 3).join() === 'station,vonwacq,salsotto' && H.PLANAR_SLOTS.map(s => s.key).join() === 'sphere,rope', 'fourteen planar sets and two planar slots');
+  ok(H.PLANAR_SETS.every(k => { const d = H.RELIC_SETS[k]; return d.pieces.sphere && d.pieces.rope && d.text && d.short && (d.cond || ['pancosmic', 'penacony', 'sigonia', 'izumo'].includes(k)); }), 'every planar set names both pieces and its condition');
   for (const sl of H.RELIC_SLOTS) for (const m of sl.mains) ok(H.MAIN_VALUE[m] && H.STAT_NAMES[m], 'main stat has a value and a name ' + sl.key + ' ' + m);
   for (let i = 0; i < 300; i++) g.rollRelic(30);
   ok(g.state.inv.relics.every(r => H.CAVERN_SETS.includes(r.set) && H.CAVERN_SLOTS.some(s => s.key === r.slot)), 'cavern drops never roll planar sets or slots');
@@ -8972,7 +8972,7 @@ function trInfo(g) {
       const site = game.guideSite('calyx', cx.id), L = H.mapLayout(site.map);
       ok(L.marks[site.ch] && (site.sim || H.MAPS[site.map].marks[site.ch].calyx === cx.id), 'domain ' + cx.id + ' has a place to enter');
     }
-    ok(game.guideIndexRows('orn').length === 3 && game.guideIndexRows('orn').every(r => H.RELIC_SETS[r.set].planar), 'ornament extraction lists the Simulated Universe worlds with planar sets');
+    ok(game.guideIndexRows('orn').length === H.SU.WORLDS.filter(w => w.sets.length && !w.soon).length && game.guideIndexRows('orn').every(r => H.RELIC_SETS[r.set].planar), 'ornament extraction lists the Simulated Universe worlds with planar sets');
     Object.assign(s.flags, { express_intro: true });
     game.loadMap('express', 'v');
     const hunt = game.guideIndexRows('crimson').find(r => r.id === 'cx_hunt');
@@ -9246,7 +9246,7 @@ function trInfo(g) {
     Object.assign(s.flags, { su_open: true, fh_met: true, express_intro: true });
     ok(!ui.guideLock(cosmic) && !ui.guideLock(treasure), 'both open with their modes');
     const worlds = game.guideCosmic();
-    ok(worlds.length === H.SU.WORLDS.length && worlds.every(r => r.rw && r.rw.jade > 0), 'Cosmic Strife lists every world with its reward');
+    ok(worlds.length === H.SU.WORLDS.filter(w => !w.soon).length && worlds.every(r => r.rw && (r.rw.jade > 0 || (!r.first && !r.w.sets.length))), 'Cosmic Strife lists every built world with its reward');
     const t = game.guideTreasure();
     ok(t.total === 45 && t.tiers.length === 15 && t.shopLeft >= 1 && t.shopLeft <= 42 && t.echo <= t.echoMax, 'Treasures Lightward shows stars, tiers, the weekly Echo and the shop refresh');
     const fs0 = game.guideSite('fh');
@@ -12284,7 +12284,7 @@ function trInfo(g) {
     ok(H.TRACKS.sim && H.TRACKS.sim.mel.length === 32 && H.TRACKS.sim.bass.length === 16, 'the simulation plays its own music');
     const st = H.newState();
     Object.assign(st, { name: 'Стелла', gender: 'f', map: 'hs_office', x: null, y: null, power: 200 });
-    for (const f of ['intro', 'doom', 'express_intro', 'events_note', 'su_open', 'su_beta_done', 'su_clear_1', 'first_gepard']) st.flags[f] = true;
+    for (const f of ['intro', 'doom', 'express_intro', 'events_note', 'su_open', 'su_beta_done', 'su_clear_1', 'su_clear_2', 'returned', 'first_gepard', 'time_done']) st.flags[f] = true;
     for (const id of ['march', 'danheng', 'arlan', 'herta']) st.roster[id] = { lvl: 40, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
     st.roster.trail.lvl = 40;
     st.party = ['trail', 'march', 'danheng', 'arlan'];
@@ -12296,15 +12296,23 @@ function trInfo(g) {
     sg.runScript('su_terminal'); frame(2);
     const term = ui.top();
     ok(term && term.full && term.step === 0, 'the machine opens the Simulated Universe terminal');
-    eq(term.wsel, 1, 'the terminal starts on the first world that still pays the first-clear bonus');
+    eq(term.wsel, 2, 'the terminal starts on the first world that still pays the first-clear bonus');
     const j0 = sg.state.jade;
     key('KeyC'); frame();
     ok(!sg.suClaims().length && sg.state.jade === j0 + SU.TUN.jade && sg.state.power === 200 - SU.TUN.power, 'C at the terminal claims the waiting reward for 40 power');
+    key('KeyR'); frame();
+    const grow = ui.top();
+    ok(grow && grow !== term && grow.tab === 0 && grow.drawWeek, 'R at the terminal opens Growth on the week');
+    key('KeyE'); frame(); eq(grow.tab, 1, 'E switches Growth to the ability tree');
+    key('KeyE'); frame(); eq(grow.tab, 2, 'E switches Growth to the Archive');
+    key('KeyQ'); key('KeyQ'); key('KeyQ'); frame(); eq(grow.tab, 2, 'Q goes back around the tabs');
+    key('Escape'); frame();
+    ok(ui.top() === term, 'Esc closes Growth and returns to the terminal');
     key('ArrowDown'); key('ArrowDown'); frame(); key('Enter'); frame();
     eq(term.step, 0, 'a closed world cannot be entered');
     key('ArrowUp'); key('ArrowUp'); frame();
     key('Enter'); frame();
-    eq(term.step, 1, 'Enter on World 2 opens the choice of Path');
+    eq(term.step, 1, 'Enter on World 3 opens the choice of Path');
     key('ArrowRight'); frame(); eq(term.psel, 1, 'the Path ring moves to Remembrance');
     key('ArrowRight'); frame(); key('Enter'); frame();
     eq(term.step, 1, 'a Path without its Aeon cannot be chosen');
@@ -12314,9 +12322,9 @@ function trInfo(g) {
     ok(ui.top() && ui.top() !== term, 'the team button opens the team screen');
     key('Escape'); frame();
     key('ArrowRight'); key('Enter'); frame(3);
-    ok(sg.state.su && sg.state.su.world === 2 && sg.state.su.path === 'remembrance' && !ui.screens.length, 'the terminal starts World 2 on the Path of Remembrance');
+    ok(sg.state.su && sg.state.su.world === 3 && sg.state.su.path === 'remembrance' && !ui.screens.length, 'the terminal starts World 3 on the Path of Remembrance');
     eq(ui.audio.wanted, 'sim', 'the simulation music plays in the domain');
-    ok(/зона 1\/11/.test(ui.suPlaceLabel().world) && ui.suHint() === 'Победите стража зоны, и порталы откроются', 'the field shows the world, the zone number and what to do');
+    ok(/зона 1\/13/.test(ui.suPlaceLabel().world) && ui.suHint() === 'Победите стража зоны, и порталы откроются', 'the field shows the world, the zone number and what to do');
     key('KeyM'); frame();
     const run = ui.top();
     ok(run && run.items, 'M opens the run status');
@@ -13123,14 +13131,17 @@ function trInfo(g) {
 
 {
   const SU = H.SU, sb = H.battleStat;
-  const ONS = new Set(['stat', 'foe', 'spec', 'lethal', 'start', 'turn', 'turnEnd', 'act', 'hurt', 'heal', 'healGive', 'low', 'break', 'kill', 'freeze', 'follow', 'dot', 'foeTurn']);
-  const DOS = new Set(['shield', 'heal', 'energy', 'energyP', 'freezeAll', 'grit', 'critBoost', 'quake', 'quakeBack', 'lowHeal', 'hpDmg', 'dewCharge', 'dew', 'hitFreeze', 'dissocFrozen', 'dotPop', 'spread', 'delay', 'advance', 'healAllBuff', 'buff', 'buffPair', 'splash', 'hpToShield', 'foeHpCut', 'resFull', 'spCost', 'foeDebuff', 'aftertaste', 'vine', 'vineRelease', 'dotEcho', 'survive']);
-  eq(Object.keys(SU.PATHS).join(), 'preservation,remembrance,nihility,abundance,hunt,destruction,elation', 'the seven Paths of the 1.0 Simulated Universe');
-  eq(SU.BLESSINGS.length, 56, 'fifty-six blessings');
-  eq(new Set(SU.BLESSINGS.map(b => b.id)).size, 56, 'blessing ids are unique');
-  eq(new Set(SU.BLESSINGS.map(b => b.name)).size, 56, 'blessing names are unique');
+  const ONS = new Set(['stat', 'foe', 'spec', 'lethal', 'start', 'turn', 'turnEnd', 'act', 'hurt', 'heal', 'healGive', 'low', 'break', 'kill', 'freeze', 'follow', 'dot', 'foeTurn', 'sp', 'vat', 'shieldGive']);
+  const DOS = new Set(['shield', 'heal', 'energy', 'energyP', 'freezeAll', 'grit', 'critBoost', 'quake', 'quakeBack', 'lowHeal', 'hpDmg', 'dewCharge', 'dew', 'hitFreeze', 'dissocFrozen', 'dotPop', 'spread', 'delay', 'advance', 'healAllBuff', 'buff', 'buffPair', 'splash', 'hpToShield', 'foeHpCut', 'resFull', 'spCost', 'foeDebuff', 'aftertaste', 'vine', 'vineRelease', 'dotEcho', 'survive', 'hyper', 'shieldTrim', 'frozenHit', 'iceWeak', 'dissocHit', 'dissocBreak', 'dotWeaken', 'suspAll', 'susp', 'healEcho', 'glass', 'glassOff', 'dewTurn', 'advanceNext', 'stackBuff', 'dropBuff', 'borisin', 'skybreak', 'gritVuln', 'quasar', 'followDelay', 'spEnergy', 'spRefund', 'spGuard', 'sporeAll', 'sporeRand', 'sporeSpread', 'basicSplash', 'catalyst', 'scytheArm', 'scythe', 'nextAtk', 'energyStart', 'delayBroken', 'vatAdd', 'vatCrit']);
+  eq(Object.keys(SU.PATHS).join(), 'preservation,remembrance,nihility,abundance,hunt,destruction,elation,propagation,erudition', 'the nine Paths of the Simulated Universe');
+  eq(SU.PATHS.propagation.name + '|' + SU.PATHS.propagation.aeon + '|' + SU.PATHS.erudition.aeon, 'Распространение|Тайззиронт|Нус', 'the new Paths carry their official Russian names');
+  eq(SU.BLESSINGS.length, 108, 'twelve blessings on each of the nine Paths');
+  eq(new Set(SU.BLESSINGS.map(b => b.id)).size, 108, 'blessing ids are unique');
+  eq(new Set(SU.BLESSINGS.map(b => b.name)).size, 108, 'blessing names are unique');
+  eq(SU.FORMS.length, 27, 'three Resonance Formations for each Path');
   for (const p of Object.keys(SU.PATHS)) {
-    eq(SU.BLESSINGS.filter(b => b.path === p).map(b => b.rar).sort().join(''), '11122233', 'path ' + p + ' has three 1★, three 2★ and two 3★ blessings');
+    eq(SU.BLESSINGS.filter(b => b.path === p).map(b => b.rar).sort().join(''), '111122222333', 'path ' + p + ' has four 1★, five 2★ and three 3★ blessings');
+    eq(SU.FORMS.filter(f => f.path === p).length, 3, 'path ' + p + ' has three Formations');
     ok(SU.PATHS[p].res && SU.PATHS[p].buffText && SU.PATHS[p].gen && SU.PATHS[p].aeon, 'path ' + p + ' names its Aeon, buff and Resonance');
   }
   for (const b of SU.BLESSINGS) {
@@ -13138,10 +13149,39 @@ function trInfo(g) {
     for (const f of b.fx) ok(ONS.has(f.on) && (f.on === 'stat' || f.on === 'foe' || f.on === 'spec' || DOS.has(f.do)), 'blessing effect kind ' + b.id + ' ' + f.on + ' ' + f.do);
   }
   eq(new Set(SU.CURIOS.map(c => c.id)).size, SU.CURIOS.length, 'curio ids are unique');
-  ok(SU.CURIOS.filter(c => c.run && c.run.wax).length === 7 && SU.CURIOS.filter(c => c.bad).length === 2, 'curios include the seven sealing waxes and two bad clocks');
+  ok(SU.CURIOS.filter(c => c.run && c.run.wax).length === 9 && SU.CURIOS.filter(c => c.bad).length === 2, 'curios include the nine sealing waxes and two bad clocks');
   for (const c of SU.CURIOS) ok(c.name && c.text && (c.fx || c.run || c.instant), 'curio has an effect ' + c.id);
-  eq(SU.WORLDS.map(w => w.set).join(), ',station,vonwacq,salsotto', 'worlds 2, 3 and 4 drop Space Sealing Station, Sprightly Vonwacq and Inert Salsotto');
+  eq(SU.WORLDS.map(w => w.id).join(), '1,2,3,4,5,6,7,8,9', 'the Simulated Universe has nine worlds');
+  eq(SU.WORLDS.map(w => w.sets.join('+')).join(), ',,station+fleet,talia+vonwacq,pancosmic+celestial,belobog+salsotto,rutilant+keel,glamoth+penacony,sigonia+izumo', 'every world from 3 drops the two sets of the original');
+  eq(H.PLANAR_SETS.length, 14, 'fourteen Planar Ornament sets');
+  for (const k of H.PLANAR_SETS) {
+    const d = H.RELIC_SETS[k];
+    ok(d.name && d.text && d.short && Object.keys(d.bonus).every(x => H.STAT_NAMES[x]) && (!d.cond || H.STAT_NAMES[d.cond.s]), 'planar set ' + k + ' has its texts, bonus and condition');
+    ok(H.EN.DICT[d.name] && H.EN.DICT[d.text] && H.EN.DICT[d.short], 'planar set ' + k + ' has English texts');
+    ok(SU.WORLDS.filter(w => w.sets.includes(k)).length === 1, 'planar set ' + k + ' drops in exactly one world');
+  }
+  eq(SU.WORLDS.filter(w => w.soon).length, 0, 'all nine worlds are built');
+  ok(SU.WORLDS[8].pools.boss[0].waves[0].join() === 'unto_death' && SU.WORLDS[8].story === '?lf_q12=done' && SU.WORLDS[8].sets.join() === 'sigonia,izumo', 'World 9 has «Что-то к смерти», opens after the Luofu chapter and drops Sigonia and Izumo');
+  ok(H.EN.DICT[H.ENEMIES.sepulcher.name] && H.ENEMIES.unto_death.skills.every(k => H.EN.DICT[k.n]), 'the World 9 boss and its Sepulcher have English names');
+  ok(SU.WORLDS[6].pools.boss[0].waves[0].join() === 'ebon' && SU.WORLDS[6].pools.elite.map(g => g[0]).join() === 'ape,ascended,blazeout,stormbringer' && SU.WORLDS[6].story === '?lf_q9=done', 'World 7 has the Abundant Ebon Deer, the elites of the original and opens after «Ветвистые рога и спутанные корни»');
+  ok(SU.WORLDS[7].pools.boss[0].waves[0].join() === 'yanqing_b' && SU.WORLDS[7].pools.elite.map(g => g[0]).join() === 'aurumaton,spectral,decaying' && SU.WORLDS[7].story === '?lf_dh4=done', 'World 8 has Yanqing, the elites of the original and opens after «Вода стекается, земля унимается»');
+  ok(SU.WORLDS[1].pools.boss[0].waves[0].join() === 'direwolf,grizzly' && SU.WORLDS[1].pools.elite.map(g => g.join()).join() === 'searing,stormbringer', 'World 2 has the Grizzly and Direwolf as the boss and the Searing Prowler and Stormbringer as elites');
+  ok(SU.WORLDS[4].pools.boss[0].waves[0][0] === 'kafka_b' && SU.WORLDS[4].pools.elite.map(g => g[0]).join() === 'shifter,blazeout,guardian,trampler', 'World 5 has Kafka as the boss and the elites of the original');
+  eq(SU.WORLDS.filter(w => w.tracks).map(w => w.id).join(), '4,6', 'Tracks of Destiny come from the first clears of Svarog and Cocolia');
+  eq(SU.WORLDS.map(w => w.diff.length).join(), '1,1,5,5,4,4,4,4,4', 'difficulties follow the original: one in Worlds 1 and 2, five in 3 and 4, four from World 5');
   for (const w of SU.WORLDS) {
+    const top = w.diff[w.diff.length - 1];
+    ok(w.diff.every((r, i) => r.lvl[0] < r.lvl[1] && (i === 0 || (r.lvl[0] > w.diff[i - 1].lvl[0] && r.eq > w.diff[i - 1].eq && r.orn >= w.diff[i - 1].orn)) && r.atk > 0 && r.hp > 0 && r.orn <= 15), 'world ' + w.id + ' difficulties grow in level, Equilibrium and ornament level');
+    if (w.diff.length > 1) ok(top.lvl.join() === '81,90' && top.eq === 6 && w.diff[0].eq === 0, 'world ' + w.id + ' ends at enemies of level 81 to 90 and Equilibrium 6');
+    ok(w.diff.every(r => r.atk >= 0.5 && r.hp >= 0.5), 'world ' + w.id + ' never cuts enemies below half');
+  }
+  for (const w of SU.WORLDS) {
+    const g0 = new H.Game({ seed: 1 });
+    ok(w.story && (w.id === 1 || w.mission) && w.bossName && w.title && w.text, 'world ' + w.id + ' has its story condition, mission, boss and texts');
+    ok(H.EN.DICT[w.title] && H.EN.DICT[w.text] && H.EN.DICT[w.bossName], 'world ' + w.id + ' has English texts');
+    if (w.mission) ok(H.EN.DICT[w.mission] && /^Requires: World \d and the mission "/.test(H.tr(g0.suNeedText(w))) || w.soon, 'world ' + w.id + ' explains in English what opens it');
+    if (w.soon) continue;
+    eq(w.plan.length, w.id === 1 ? 7 : 13, 'world ' + w.id + ' has ' + (w.id === 1 ? 7 : 13) + ' domains');
     ok(w.plan[0][0] === 'combat' && w.plan[w.plan.length - 1].join() === 'boss', 'world ' + w.id + ' starts with a battle and ends with the boss');
     for (const step of w.plan) for (const t of step) ok(SU.DOMAINS[t] && SU.LAYOUTS[t].every(id => H.MAPS[id] && H.MAPS[id].su), 'domain type has layouts ' + t);
     for (const list of [w.pools.normal, w.pools.elite]) for (const g of list) ok(g.every(id => H.ENEMIES[id]), 'world ' + w.id + ' enemies exist ' + g.join());
@@ -13152,10 +13192,95 @@ function trInfo(g) {
   for (const p of Object.keys(SU.PATHS)) ok(SU.SCRIPTS['su_aeon_' + p] && SU.SCRIPTS['su_aeon_' + p].some(st => st && st.su === 'unlock' && st.path === p), 'Aeon meeting unlocks ' + p);
   for (const [id, e] of Object.entries(SU.EVENTS)) ok(['event', 'trade', 'encounter'].includes(e.kind) && SU.SCRIPTS[e.script] && SU.SCRIPTS[e.script].some(st => st && st.su === 'done'), 'event script ends the domain ' + id);
   for (const k of ['event', 'trade', 'encounter']) ok(Object.values(SU.EVENTS).filter(e => e.kind === k).length >= 3, 'at least three events of kind ' + k);
+  {
+    const old = H.newState();
+    delete old.suv;
+    Object.assign(old.flags, { su_open: true, su_beta_done: true, su_clear_1: true, su_clear_2: true, su_clear_3: true, su_clear_4: true, first_gepard: true, first_svarog: true, ending: true });
+    old.suClaims = [{ world: 2, sets: [{ set: 'station', rl: 6 }] }, { world: 4, sets: [{ set: 'salsotto', rl: 12 }] }];
+    old.hertaShop.worldBonds = [1, 2, 3, 4];
+    old.profile = { sign: '', bday: null, avatar: null, stage: null, show: null, comp: null, log: [{ at: 1, kind: 'su', id: 4 }, { at: 0, kind: 'su', id: 2 }] };
+    old.inv.items.herta_bond = 5;
+    const mg = new H.Game({ state: old, seed: 7 }), f = mg.state.flags;
+    eq(['1', '2', '3', '4', '5', '6'].filter(n => f['su_clear_' + n]).join(), '1,3,4,6', 'an old save moves Gepard to World 3, Svarog to World 4 and Cocolia to World 6');
+    eq(mg.state.suClaims.map(c => c.world).join(), '3,6', 'waiting rewards follow their worlds');
+    eq(mg.state.hertaShop.worldBonds.join(), '1,3,4,6', 'Herta bonds remember the moved worlds');
+    eq(mg.state.inv.items.herta_bond, 5, 'the move pays no Herta bonds twice');
+    eq(mg.state.profile.log.map(e => e.id).join(), '6,3', 'the profile log follows the moved worlds');
+    ok(mg.state.suv === 1 && SU.WORLDS.filter(w => mg.suWorldOpen(w)).map(w => w.id).join() === '1,3,4,6', 'every world the player cleared stays open, the new ones wait');
+    const again = new H.Game({ state: JSON.parse(JSON.stringify(mg.state)), seed: 7 });
+    eq(['1', '3', '4', '6'].filter(n => again.state.flags['su_clear_' + n]).length, 4, 'a migrated save is not moved twice');
+    const fresh = H.newState();
+    Object.assign(fresh.flags, { su_open: true, su_clear_1: true });
+    const fg = new H.Game({ state: fresh, seed: 7 });
+    ok(!fg.suWorldOpen(SU.WORLDS[2]) && fg.suNeedText(SU.WORLDS[2]) === 'Нужно: Мир 2 и миссия «Время не ждёт, мой друг».', 'World 3 names the world and the mission it waits for');
+    fg.state.flags.time_done = true; fg.state.flags.su_clear_2 = true;
+    ok(fg.suWorldOpen(SU.WORLDS[2]) && !fg.suWorldOpen(SU.WORLDS[3]), 'World 3 opens after World 2 and its mission, World 4 waits for World 3');
+    fg.state.flags.su_clear_3 = true;
+    ok(fg.suWorldOpen(SU.WORLDS[3]) && !fg.suWorldOpen(SU.WORLDS[5]), 'World 4 opens after World 3, World 6 waits for the Luofu mission');
+    fg.state.flags.su_clear_4 = true; fg.state.quests.lf_q5 = 'done';
+    ok(fg.suWorldOpen(SU.WORLDS[4]) && !fg.suWorldOpen(SU.WORLDS[5]), 'World 5 opens after World 4 and «Звёзд водоворот, прозрение грядёт», World 6 waits for World 5');
+    fg.state.flags.su_clear_5 = true;
+    ok(fg.suWorldOpen(SU.WORLDS[5]) && !fg.suWorldOpen(SU.WORLDS[6]), 'World 6 opens after World 5, World 7 waits for its Luofu mission');
+    ok(!fg.suStart(9, 'preservation', fg.state.party), 'World 9 waits for World 8 and the end of the Luofu chapter');
+    const W3 = SU.WORLDS[2];
+    fg.state.suPaths = ['preservation'];
+    ok(fg.suDiffOpen(W3, 1) && !fg.suDiffOpen(W3, 2) && fg.suDiffNeed(W3, 2) === 'Нужен уровень Равновесия 3.', 'difficulty II waits for Equilibrium 3');
+    ok(!fg.suStart(3, 'preservation', fg.state.party, { diff: 2 }), 'a closed difficulty cannot start');
+    for (const b of ['a', 'b', 'c']) fg.state.flags['first_' + b] = true;
+    ok(fg.suDiffOpen(W3, 2) && !fg.suDiffOpen(W3, 3) && fg.suDiffNeed(W3, 3) === 'Нужно пройти сложность II.', 'difficulty II opens at Equilibrium 3, III waits for II');
+    eq(H.tr('Нужен уровень Равновесия 3.'), 'Requires Equilibrium Level 3.', 'the Equilibrium hint has an English form');
+    const r2 = fg.suReward(W3, true, 2), r1 = fg.suReward(W3, true, 1);
+    ok(r2.jade === SU.TUN.diffJade && r2.credits === SU.TUN.diffCredits && r2.sets === 1 && r1.jade === SU.TUN.jade * 3, 'a first clear of a higher difficulty pays 30 Jade, the first difficulty keeps its ×3');
+    ok(fg.suStart(3, 'preservation', fg.state.party, { diff: 2 }) && fg.state.su.diff === 2, 'a run starts on difficulty II');
+    eq(fg.state.su.dom.lvl, W3.diff[1].lvl[0], 'the first domain has the lowest level of the difficulty');
+    eq(fg.state.suPick.diff, 2, 'the terminal remembers the chosen difficulty');
+    fg.state.su.d = W3.plan.length - 2;
+    fg.suEnter('boss');
+    eq(fg.state.su.dom.groups[1].lvl, W3.diff[1].lvl[1], 'the boss has the highest level of the difficulty');
+    const j0 = fg.state.jade;
+    fg.suComplete();
+    ok(fg.state.flags.su_clear_3_2 && fg.state.jade === j0 + SU.TUN.diffJade && fg.state.su.result.diff === 2 && fg.state.su.result.sets.every(x => x.rl >= W3.diff[1].orn && W3.sets.includes(x.set)), 'clearing difficulty II marks it, pays its reward and its ornament level');
+    ok(fg.suDiffOpen(W3, 3) === (fg.equilibriumLevel() >= 4) && !fg.suFirst(W3, 2) && fg.suFirst(W3, 3), 'difficulty III now waits only for Equilibrium');
+    fg.suExit();
+    ok(fg.suStart(3, 'preservation', fg.state.party, { diff: 1 }), 'difficulty I starts again');
+    const lv = [];
+    for (let i = 0; i < 6; i++) { if (i) fg.suEnter(W3.plan[i][0]); lv.push(fg.state.su.dom.lvl); }
+    ok(lv.every((x, i) => i === 0 || x >= lv[i - 1]) && lv[0] === W3.diff[0].lvl[0], 'enemy levels rise from domain to domain');
+    fg.state.su.d = 2; fg.state.su.log = ['combat', 'elite'];
+    fg.suEnter('elite');
+    ok(fg.state.su.dom.groups[1].bug && fg.state.su.dom.groups[1].elite, 'the second elite of a run is the Bug variant');
+    fg.suExit();
+    const W3o = SU.WORLDS[2];
+    fg.state.power = 100; fg.state.inv.items.immersifier = 0;
+    for (let i = 0; i < 2; i++) ok(fg.suBuyImm(), 'an Immersifier is bought for 40 power');
+    ok(fg.state.power === 20 && fg.suImm() === 2 && !fg.suBuyImm(), 'without 40 power no Immersifier is bought');
+    fg.state.power = 999; fg.state.inv.items.immersifier = SU.TUN.immMax;
+    ok(!fg.suBuyImm() && fg.state.power === 999, 'no more than six Immersifiers are held');
+    fg.state.inv.items.immersifier = 1; fg.state.power = 60;
+    ok(fg.suStart(3, 'preservation', fg.state.party, { diff: 1 }), 'a repeat run of World 3 starts');
+    const su3 = fg.state.su;
+    su3.queue = [{ type: 'ui', ui: 'su_orn', left: SU.TUN.ornElite }];
+    fg.suFlush();
+    ok(fg.pending && fg.pending.ui === 'su_orn' && fg.pending.left === 1, 'an elite opens one exchange');
+    const orn = () => fg.state.inv.relics.filter(r => H.PLANAR_SETS.includes(r.set));
+    const jx = fg.state.jade, rx = orn().length;
+    ok(fg.suExchange('power') && fg.state.power === 20 && fg.state.jade === jx + SU.TUN.jade && orn().length === rx + 2, 'an exchange takes 40 power and pays a sphere, a rope and 60 jade');
+    ok(orn().slice(-2).every(r => W3o.sets.includes(r.set) && r.lvl >= W3o.diff[0].orn), 'the exchange drops a set of the world at the level of the difficulty');
+    ok(!fg.suExchange('power'), 'an elite exchanges only once');
+    fg.resume();
+    su3.queue = [{ type: 'ui', ui: 'su_orn', left: SU.TUN.ornBoss, final: true }];
+    fg.suFlush();
+    ok(fg.suExchange('imm') && fg.suImm() === 0 && fg.pending.left === 1, 'an Immersifier pays for an exchange instead of power');
+    ok(!fg.suExchange('imm') && !fg.suExchange('power'), 'without power and Immersifiers nothing is exchanged');
+    fg.resume();
+    ok(fg.pending && fg.pending.ui === 'su_end' && fg.state.su.result.got.length === 2 && !fg.state.su.result.first && fg.state.su.result.jade === 0, 'the boss exchange ends the run, the summary lists both exchanges and pays nothing more');
+    fg.resume();
+    ok(!fg.state.su, 'the run ends after the summary');
+  }
 
   const G0 = new H.Game({ seed: 1 });
   const spec = id => ({ charId: id, key: id, lvl: 30, stats: G0.baseStats(id, 30, 0), hp: null, energy: 0 });
-  const fight = (bless, opt = {}) => new H.Battle({ party: (opt.party || ['march', 'himeko', 'natasha', 'danheng']).map(spec), enemies: opt.enemies || ['reaver:28', 'eliminator:28', 'flamespawn:28'], seed: opt.seed || 5, lvl: 28, su: { path: opt.path || 'preservation', bless: bless.map(id => ({ id, lvl: opt.lvl || 1 })), curios: (opt.curios || []).map(id => ({ id })) } });
+  const fight = (bless, opt = {}) => new H.Battle({ party: (opt.party || ['march', 'himeko', 'natasha', 'danheng']).map(spec), enemies: opt.enemies || ['reaver:28', 'eliminator:28', 'flamespawn:28'], seed: opt.seed || 5, lvl: 28, su: { path: opt.path || 'preservation', bless: bless.map(id => ({ id, lvl: opt.lvl || 1 })), curios: (opt.curios || []).map(id => ({ id })), forms: opt.forms || [] } });
   const ready = (bless, opt) => { const b = fight(bless, opt); b.suStart(); return b; };
   const pair = (id, opt) => [ready([], opt), ready([id], opt)];
   const dmg = (b, o, from) => (from === 'foe' ? b.dmgCalc(b.enemies[0], b.allies[0], 1, o, false) : b.dmgCalc(b.allies[0], b.enemies[0], o.fixed != null ? 0 : 1, o, false));
@@ -13243,6 +13368,101 @@ function trInfo(g) {
     tick.start();
     tick.runAuto(3);
     ok(tick.su.res.energy > 0, 'the Resonance gauge fills as units act');
+    const plSpec = (id, sets, stats) => Object.assign(spec(id), { sets: Object.fromEntries(sets.map(k => [k, true])), stats: Object.assign({}, spec(id).stats, stats || {}) });
+    const plBattle = (party, enemies) => { const b = new H.Battle({ party, enemies: enemies || ['reaver:28', 'eliminator:28'], seed: 3, lvl: 28 }); b.start(); return b; };
+    const hasBuff = (u, name) => u.buffs.find(x => x.name === name);
+    {
+      const b = plBattle([plSpec('march', ['fleet'], { spd: 125 }), spec('himeko'), spec('natasha')]);
+      ok(b.allies.every(a => hasBuff(a, 'Флот нестареющих') && hasBuff(a, 'Флот нестареющих').v === 0.08), 'Fleet of the Ageless at 120 SPD gives the whole team 8% ATK');
+      const slow = plBattle([plSpec('march', ['fleet'], { spd: 100 }), spec('himeko')]);
+      ok(!slow.allies.some(a => hasBuff(a, 'Флот нестареющих')), 'Fleet of the Ageless needs 120 SPD');
+      const keel = plBattle([plSpec('natasha', ['keel'], { res: 0.35 }), spec('himeko')]);
+      ok(keel.allies.every(a => hasBuff(a, 'Сломанный киль')), 'Broken Keel at 30% Effect RES raises the team CRIT DMG');
+      const pen = plBattle([plSpec('himeko', ['penacony']), spec('asta'), spec('march')]);
+      ok(hasBuff(pen.allies[1], 'Земля грёз Пенакония') && !hasBuff(pen.allies[0], 'Земля грёз Пенакония') && !hasBuff(pen.allies[2], 'Земля грёз Пенакония'), 'Penacony lifts only the other allies of its Type');
+      const izu = plBattle([plSpec('march', ['izumo']), spec('gepard'), spec('himeko')]);
+      ok(hasBuff(izu.allies[0], 'Мир Идзумо и Царство Такама'), 'Izumo needs another ally of the same Path and finds Gepard for March 7th');
+      const tal = plBattle([plSpec('march', ['talia'], { spd: 150 })]);
+      const ta = tal.allies[0], tb = hasBuff(ta, 'Талия: край бандитов');
+      ok(tb && tb.cond === 'spd>=145', 'Talia adds Break Effect behind the 145 SPD condition');
+      const bel = plBattle([plSpec('natasha', ['belobog'], { ehr: 0.6 })]);
+      ok(hasBuff(bel.allies[0], 'Белобог Архитекторов').cond === 'ehr>=0.5', 'Belobog adds DEF behind the 50% Effect Hit Rate condition');
+      const cel = plBattle([plSpec('himeko', ['celestial'], { critD: 1.3 })]);
+      ok(hasBuff(cel.allies[0], 'Небесный дифференциатор') && cel.allies[0].flags.celestial, 'Celestial Differentiator at 120% CRIT DMG starts the battle with +60% CRIT Rate');
+      cel.runAuto(60);
+      ok(!hasBuff(cel.allies[0], 'Небесный дифференциатор') && !cel.allies[0].flags.celestial, 'the Celestial CRIT Rate ends with the first attack');
+      const sig = plBattle([plSpec('himeko', ['sigonia'], { atk: 5000 })], ['reaver:5', 'eliminator:5', 'reaver:5']);
+      sig.runAuto(300);
+      const sb = hasBuff(sig.allies[0], 'Бесплодная Сигония');
+      ok(sb && Math.abs(sb.v - 0.04 * Math.min(10, sig.allies[0].flags.sigonia)) < 1e-9 && sig.allies[0].flags.sigonia >= 3, 'Sigonia adds 4% CRIT DMG for every defeated enemy');
+      const rut = plBattle([plSpec('himeko', ['rutilant'], { critR: 0.75 })]), rh = rut.allies[0];
+      ok(rut.planarDmg(rh, { kind: 'basic' }) === 0.2 && rut.planarDmg(rh, { kind: 'ult' }) === 0, 'Rutilant Arena adds 20% to Basic ATK and Skill only');
+      const gla = plBattle([plSpec('himeko', ['glamoth'], { spd: 165 })]);
+      eq(gla.planarDmg(gla.allies[0], { kind: 'ult' }), 0.18, 'Glamoth at 160 SPD adds 18% DMG');
+      const pc = plBattle([plSpec('natasha', ['pancosmic'], { ehr: 0.6 })]), base = plBattle([plSpec('natasha', [], { ehr: 0.6 })]);
+      ok(H.battleStat.atkOf(pc.allies[0]) > H.battleStat.atkOf(base.allies[0]) * 1.14, 'Pan-Cosmic turns Effect Hit Rate into ATK up to 25%');
+    }
+    {
+      const alive = H.battleStat.alive;
+      const b = new H.Battle({ party: ['march', 'himeko', 'natasha', 'danheng'].map(spec), enemies: ['unto_death:40'], seed: 11, lvl: 40, su: { path: 'preservation', bless: [], curios: [], complete: true } });
+      b.start();
+      const boss = b.enemies[0], [m, hi, na, dh] = b.allies, K = boss.data.skills;
+      ok(boss.name.endsWith('(исправный)'), 'the World 9 boss is the Complete variant');
+      b.suSkill(boss, K[0]);
+      eq(boss.flags.sunset, 0, 'Fading Radiance starts the Sunset');
+      b.suSunset(m, 'basic'); b.suSunset(hi, 'follow'); b.suSunset(hi, 'skill');
+      ok(boss.flags.sunset === 2 && !m.dream && !hi.dream, 'Basic ATK and Skills count toward the Sunset, follow-ups do not');
+      b.suSunset(na, 'ult');
+      const sep = b.enemies.find(e => e.id === 'sepulcher');
+      ok(na.dream && sep && sep.flags.holds === na && boss.flags.sunset == null, 'the third action ends the Sunset and traps the last actor in Morbid Dream inside a Sombrous Sepulcher');
+      ok(alive(na) && b.pickTarget(boss) !== na && b.startTurn(na) === 'skip', 'a dreaming hero is alive, cannot be targeted and skips its turns');
+      sep.hp = 0; sep.dead = true; b.cleanup();
+      ok(!na.dream && b.startTurn(na) !== 'skip', 'breaking the Sepulcher wakes the hero');
+      b.suSkill(boss, K[3]);
+      ok(boss.flags.obit === 1 && boss.buffs.some(x => x.name === 'Мучительная траурная речь') && boss.buffs.some(x => x.name === 'Колющая траурная речь' && Math.abs(x.v - 0.12) < 1e-9), 'Harrowing Obituary raises the damage and stacks');
+      for (const a of b.allies) a.energy = 0;
+      b.suSkill(boss, K[4]);
+      ok(boss.flags.night.length === 2 && boss.charging === 5 && boss.buffs.some(x => x.s === 'toughIn' && x.v === -1) && b.allies.every(a => a.energy === a.maxEnergy), 'Nightfall marks the two heroes who act next, protects the weakness and refills Energy');
+      const marked = boss.flags.night.slice();
+      b.suSkill(boss, K[5]);
+      ok(marked.every(a => a.dream) && !boss.buffs.some(x => x.s === 'toughIn'), 'Watery Dissolution traps the marked heroes and drops the protection');
+      eq(b.enemies.filter(e => e.id === 'sepulcher' && alive(e)).length, 2, 'every trapped hero gets its own Sepulcher');
+      ok(b.enemies.filter(e => e.id === 'sepulcher' && alive(e)).every(e => e.maxHp > sep.maxHp), 'Sepulchers summoned after an Obituary hold more HP');
+      b.suSkill(boss, K[0]); b.doBreak(m, boss, 'fire');
+      ok(boss.flags.sunset == null && !boss.buffs.some(x => x.name === 'Мучительная траурная речь') && boss.buffs.some(x => x.name === 'Колющая траурная речь'), 'a Weakness Break ends the Sunset and the Obituary, the stacks stay');
+      boss.hp = 0; boss.dead = true; b.cleanup();
+      ok(!b.allies.some(a => a.dream) && !b.living.some(e => e.id === 'sepulcher'), 'the boss falls and every Sepulcher with it');
+      const lose = new H.Battle({ party: ['march', 'himeko'].map(spec), enemies: ['unto_death:40'], seed: 12, lvl: 40, su: { path: 'preservation', bless: [], curios: [] } });
+      lose.start();
+      const lb = lose.enemies[0];
+      lose.suDreamOn(lb, lose.allies[0]);
+      lose.cleanup();
+      ok(!lose.over, 'one hero in Morbid Dream does not end the battle');
+      lose.allies[1].hp = 0; lose.allies[1].dead = true;
+      lose.cleanup();
+      ok(lose.over && !lose.result.win, 'the battle is lost when every hero is in Morbid Dream or down');
+    }
+    const mkSu = (extra, enemies) => new H.Battle({ party: ['march', 'himeko', 'natasha', 'danheng'].map(spec), enemies: enemies || ['direwolf:30', 'reaver:30'], seed: 9, lvl: 30, su: Object.assign({ path: 'preservation', bless: [], curios: [] }, extra) });
+    const plain = mkSu({}), bugged = mkSu({ bug: true }), whole = mkSu({ complete: true }, ['kafka_b:50', 'patroller:50']);
+    ok(whole.enemies[0].name.endsWith(' (исправный)') && !whole.enemies[1].name.includes('исправный'), 'a world boss is the Complete variant, its escort is not');
+    eq(H.tr('Охотники за Стелларонами: Кафка (исправный)'), 'Stellaron Hunter: Kafka (Complete)', 'the Complete name has an English form');
+    ok(bugged.enemies[0].name.endsWith(' (неисправный)') && !bugged.enemies[1].name.includes('неисправный'), 'a Bug elite carries its name, its escort does not');
+    ok(bugged.enemies[0].maxHp === Math.round(plain.enemies[0].maxHp * SU.TUN.bugHp) && bugged.enemies[0].base.atk > plain.enemies[0].base.atk, 'a Bug elite has more HP and ATK');
+    eq(H.tr('Автоматон-лютоволк (неисправный)'), 'Automaton Direwolf (Bug)', 'the Bug name has an English form');
+    const rage = mkSu({ berserk: 3 }, ['gepard_b:60']);
+    for (const a of rage.allies) a.base.atk = 1;
+    rage.start();
+    let guard = 0;
+    while (!rage.over && rage.suCycle() < 5 && guard++ < 400) rage.runAuto(1);
+    const rb = rage.enemies[0].buffs.find(b => b.name === 'Берсерк');
+    ok(rage.suCycle() >= 5 && rb && rb.s === 'dmgP' && Math.abs(rb.v - (rage.suCycle() - 2) * SU.TUN.berserk.dmg) < 1e-9, 'from the Berserk cycle on the enemy deals 40% more damage per cycle');
+    ok(rage.su.berserk.warned, 'the Berserk is announced before it starts');
+    const calm = mkSu({ berserk: 0 }, ['gepard_b:60']);
+    for (const a of calm.allies) a.base.atk = 1;
+    calm.start();
+    guard = 0;
+    while (!calm.over && calm.suCycle() < 5 && guard++ < 400) calm.runAuto(1);
+    ok(!calm.enemies[0].buffs.some(b => b.name === 'Берсерк'), 'ordinary fights never go Berserk');
     const all = fight(SU.BLESSINGS.map(b => b.id), { path: 'elation', lvl: 2, seed: 17, curios: ['c_automaton', 'c_parchment'] });
     all.start();
     all.runAuto(600);
@@ -13356,27 +13576,24 @@ function trInfo(g) {
 
     const p0 = g.state.power, j1 = g.state.jade, c1 = g.state.credits, r1 = planar(g).length;
     ok(!g.suStart(1, 'nihility', g.state.party), 'a closed Path cannot be chosen');
+    for (const k of g.state.party) g.state.roster[k].lvl = 16;
     ok(g.suStart(1, 'preservation', g.state.party), 'World 1 can be replayed after the quest');
     eq(playRun(g), null, 'the repeat run of World 1 is won');
     ok(g.suPaths().includes('elation'), 'Aha appears in the first free run of World 1 and opens Elation');
-    eq(g.state.power, p0 - 40, 'a repeat clear costs 40 Trailblaze Power');
-    eq(g.state.jade - j1, 60, 'a repeat clear pays 60 jade');
-    eq(g.state.credits - c1, 2000, 'a repeat clear pays 2000 credits');
-    eq(planar(g).length - r1, 2, 'a repeat clear gives one ornament set');
-
+    ok(g.state.power === p0 && g.state.jade === j1 && g.state.credits === c1 && planar(g).length === r1, 'a repeat clear of World 1 costs nothing and pays nothing, as World 1 has no Planar Ornaments');
+    ok(!g.suClaims().length, 'repeat clears no longer leave waiting rewards');
+    g.state.suClaims = [{ world: 1, sets: [{ set: 'station', rl: 3 }] }];
     g.state.power = 10;
     const j2 = g.state.jade;
-    ok(g.suStart(1, 'remembrance', g.state.party), 'a run on the Path of Remembrance starts');
-    eq(playRun(g), null, 'a third run of World 1 is won');
-    eq(g.state.jade, j2, 'without 40 power the reward waits');
-    eq(g.suClaims().length, 1, 'the reward waits at the terminal');
-    ok(!g.suClaim(0), 'the reward cannot be taken without power');
+    ok(!g.suClaim(0), 'an old waiting reward still needs 40 power');
     g.state.power = 60;
-    ok(g.suClaim(0) && g.state.jade === j2 + 60 && g.state.power === 20 && !g.suClaims().length, 'the waiting reward is claimed for 40 power');
+    ok(g.suClaim(0) && g.state.jade === j2 + 60 && g.state.power === 20 && !g.suClaims().length, 'an old waiting reward is still claimed for 40 power');
 
-    ok(!g.suWorldOpen(SU.WORLDS[1]), 'World 2 needs the Gepard fight in the story');
-    g.state.flags.first_gepard = true;
-    ok(g.suWorldOpen(SU.WORLDS[1]) && !g.suWorldOpen(SU.WORLDS[2]), 'World 2 opens after World 1 and Gepard, World 3 stays closed');
+    ok(!g.suWorldOpen(SU.WORLDS[1]) && !g.suWorldOpen(SU.WORLDS[2]), 'World 2 needs «Мы не умеем прощаться» and World 3 waits for World 2');
+    g.state.flags.returned = true;
+    ok(g.suWorldOpen(SU.WORLDS[1]) && !g.suWorldOpen(SU.WORLDS[2]), 'World 2 opens after World 1 and its mission');
+    g.state.flags.su_clear_2 = true; g.state.flags.time_done = true;
+    ok(g.suWorldOpen(SU.WORLDS[2]) && !g.suWorldOpen(SU.WORLDS[3]), 'World 3 opens after World 2 and the mission, World 4 waits for World 3');
 
     ok(g.suStart(1, 'preservation', g.state.party), 'a run to lose starts');
     for (const k of g.state.su.team) g.state.su.hp[k] = 1;
@@ -13415,12 +13632,146 @@ function trInfo(g) {
     }
   }
   {
-    const TEAMS = { 2: [['trail', 'march', 'danheng', 'natasha'], 17], 3: [['trail', 'march', 'natasha', 'hook'], 27], 4: [['trail', 'march', 'natasha', 'serval'], 37] };
+    const st = mkState(30);
+    for (const f of ['su_open', 'su_beta_done', 'returned', 'time_done']) st.flags[f] = true;
+    st.suPaths = Object.keys(SU.PATHS).filter(p => p !== 'erudition');
+    const g = new H.Game({ state: st, seed: 41 });
+    ok(!g.suCanBan() && !g.suToggleBan('hunt'), 'Path bans stay closed until all nine Paths are open');
+    g.state.suPaths.push('erudition');
+    ok(g.suToggleBan('hunt') && g.suToggleBan('elation') && !g.suToggleBan('nihility'), 'two Paths can be banned, not a third');
+    ok(g.suToggleBan('elation') && g.suBans().join() === 'hunt', 'banning a Path again lifts the ban');
+    ok(g.suStart(1, 'preservation', g.state.party), 'a run starts with a banned Path');
+    for (let i = 0; i < 20; i++) ok(g.suOffer({}).every(id => SU.BLESSINGS.find(b => b.id === id).path !== 'hunt'), 'a banned Path offers no blessings');
+    const su = g.state.su, forms = () => (su.queue || []).filter(q => q.ui === 'su_form');
+    su.queue = [];
+    const own = SU.BLESSINGS.filter(b => b.path === 'preservation').map(b => b.id);
+    for (const id of own.slice(0, 4)) g.suAddBless(id);
+    eq(forms().length, 0, 'no Formation before five blessings of the Path');
+    g.suAddBless(own[4]);
+    eq(forms().length, 1, 'the fifth blessing of the Path offers a Resonance Formation');
+    eq(forms()[0].opts.join(), 'fp_zero,fp_eutectic,fp_iso', 'the offer lists the three Formations of the Path');
+    ok(g.suAddForm('fp_iso') && !g.suAddForm('fp_iso') && !g.suAddForm('fh_aim'), 'a Formation is taken once and only from the own Path');
+    for (const id of own.slice(5, 8)) g.suAddBless(id);
+    eq(forms().length, 2, 'the eighth blessing offers the second Formation');
+    eq(g.suFormOffer().join(), 'fp_zero,fp_eutectic', 'a taken Formation is not offered again');
+    for (const id of own.slice(8, 11)) g.suAddBless(id);
+    eq(forms().length, 3, 'the eleventh blessing offers the third Formation');
+    eq(g.suBattleOpts().forms.join(), 'fp_iso', 'Formations go into the battle');
+  }
+  {
+    const iso = ready([], { forms: ['fp_iso'] }), plain = ready([]);
+    eq(iso.su.res.energy, Math.round(iso.su.res.max * 0.4), 'Изоморфная реакция starts the battle with 40% Resonance energy');
+    eq(plain.su.res.energy, 0, 'without a Formation Resonance starts empty');
+    eq(ready([], { path: 'hunt', forms: ['fh_aim'] }).su.res.max, plain.su.res.max * 2, 'Идеальный прицел doubles the Resonance energy cap');
+    const sp = ready(['pr_discharge'], { path: 'propagation' }), e = sp.enemies[0];
+    sp.suSp(sp.allies[0], -1);
+    ok(sp.enemies.every(x => x.flags.spores === 1), 'Выброс спор gives every enemy a Spore for a spent Skill Point');
+    sp.addSpores(e, 20);
+    eq(e.flags.spores, SU.TUN.sporeMax, 'an enemy holds no more Spores than the cap');
+    eq(ready(['pr_pustule'], { path: 'propagation', lvl: 2 }).sporeCap(), 9, 'the enhanced Грибковая пустула raises the cap to nine');
+    const hp = e.hp;
+    sp.hitThisAction = new Set();
+    sp.suSporeBurst(sp.allies[0], [e]);
+    ok(e.flags.spores === 0 && e.hp < hp, 'three or more Spores burst into damage on a hit');
+    const vb = ready(['er_gray'], { path: 'erudition', lvl: 2 }), hime = vb.allies[1];
+    eq(vb.su.vat, 1, 'the enhanced Серое вещество fills the Brain in a Vat at the start');
+    const sum = () => vb.enemies.reduce((t, x) => t + x.hp, 0), before = sum();
+    vb.hitThisAction = new Set();
+    vb.suVat(hime, vb.abilityFor(hime, 'ult').ab, vb.enemies[0]);
+    ok(vb.su.vat === 0 && sum() < before, 'a full Brain in a Vat casts the Ultimate once more');
+    const mid = sum();
+    vb.suVat(hime, vb.abilityFor(hime, 'ult').ab, vb.enemies[0]);
+    eq(sum(), mid, 'an empty Brain in a Vat does nothing');
+    const sy = ready([], { path: 'erudition' }), t0 = sy.enemies[0];
+    sy.su.syn = 2;
+    t0.flags.synapse = true;
+    const h0 = t0.hp;
+    sy.hitThisAction = new Set();
+    sy.suSynapse(sy.allies[0], [t0, sy.enemies[1]], 'basic');
+    ok(sy.su.syn === 1 && t0.hp < h0, 'Synaptic Resonance hits a marked enemy and spends one charge');
+  }
+  {
+    const W = id => SU.WORLDS.find(w => w.id === id), g0 = new H.Game({ seed: 3 });
+    eq([1, 2, 3, 4, 5, 6, 9].map(id => g0.suPtsMax(W(id), 1)).join(), '800,1200,1800,2200,2800,3200,3200', 'a full run of difficulty I is worth the points of the original');
+    eq([2, 3, 4, 5].map(d => g0.suPtsMax(W(3), d)).join() + '|' + [2, 3, 4].map(d => g0.suPtsMax(W(9), d)).join(), '3200,4600,6000,7500|4600,6000,7500', 'higher difficulties are worth more by their enemy levels');
+    eq(SU.TREE.length, 16, 'sixteen nodes in four branches of the ability tree');
+    ok(SU.TREE.every(n => n.cost >= 50 && n.cost <= 900 && n.text && n.mark), 'every tree node has a cost from 50 to 900, a text and a mark');
+    eq(SU.WEEK(0).length, 10, 'ten weekly thresholds');
+    eq(SU.WEEK(0).reduce((t, r) => t + (r.jade || 0), 0), 75, 'the weekly thresholds give 75 Stellar Jade');
+    ok(!SU.WEEK(0).some(r => r.items && r.items.immersifier) && SU.WEEK(4).some(r => r.items && r.items.immersifier), 'Immersifiers join the weekly rewards above Equilibrium 0');
+
+    const T0 = new Date(2026, 10, 18, 12).getTime();
+    const st = mkState(45);
+    for (const f of ['su_open', 'su_beta_done', 'returned', 'time_done', 'su_clear_1', 'su_clear_2']) st.flags[f] = true;
+    st.suPaths = Object.keys(SU.PATHS);
+    const g = new H.Game({ state: st, seed: 61 });
+    let now = T0;
+    g.clock = () => now;
+    eq(new Date(g.suWeek().key).getDay() + '|' + new Date(g.suWeek().key).getHours(), '1|4', 'the week starts on Monday at 4:00');
+    eq(g.suWeekMax(), 3500, 'Equilibrium 0 has ten steps of 350 points');
+    ok(g.suStart(3, 'hunt', g.state.party), 'World 3 starts for the weekly points');
+    eq(playRun(g), null, 'the World 3 run is won');
+    eq(g.suWeek().pts, 1800, 'a full World 3 run adds 1800 weekly points');
+    eq(g.suTree().pts, Math.round(1800 * SU.TUN.abilRate), 'a World 3 run gives ability points');
+    eq(g.suWeekRows().filter(r => r.ok).length, 5, 'five thresholds are ready');
+    const jade0 = g.state.jade, got = g.suWeekClaim();
+    ok(got && g.state.jade === jade0 + 40 && g.suWeekRows().filter(r => r.got).length === 5, 'claiming takes every ready threshold');
+    ok(!g.suWeekClaim(), 'a threshold is claimed once');
+    now = T0 + 7 * 86400000;
+    ok(g.suWeek().pts === 0 && !g.suWeek().got.length, 'a new week starts from zero');
+    now = T0;
+    g.suWeek().pts = 0;
+
+    ok(g.suStart(3, 'hunt', g.state.party), 'a second run starts');
+    const first = g.state.su.dom;
+    for (const e of g.map.ents.filter(x => x.kind === 'enemy')) e.dead = true;
+    first.cleared = true;
+    ok(g.suNext(0), 'the run moves to the second domain');
+    const share = g.state.su.pts;
+    eq(share, Math.round(1800 / 13), 'a cleared domain is worth its share of the run points');
+    g.suAbort(); suDrive(g);
+    eq(g.suWeek().pts, share, 'an abandoned run keeps the points of the cleared domains');
+
+    const tr = g.suTree();
+    tr.pts = 2000;
+    eq(g.suTreeState('atk2'), 'locked', 'a node needs the one before it');
+    ok(g.suTreeBuy('atk1') && g.suTreeBuy('atk2') && !g.suTreeBuy('atk2'), 'nodes open in order and once');
+    ok(g.suTreeBuy('frag') && g.suTreeBuy('reroll') && g.suTreeBuy('extra') && g.suTreeBuy('res1'), 'the reserve and Resonance nodes open');
+    eq(tr.pts, 2000 - 60 - 200 - 50 - 250 - 500 - 120, 'opening nodes spends ability points');
+    ok(g.suStart(3, 'hunt', g.state.party), 'a run starts with the tree');
+    const su = g.state.su;
+    eq(su.frag, SU.TUN.fragStart + 50, 'the tree adds 50 fragments at the start');
+    eq(g.suSpecStats('trail').atk, Math.round(g.charStats('trail').atk * 1.1), 'the attack nodes raise ATK in the run');
+    eq(su.rerolls, 1, 'one change of the blessing choice');
+    const p = { type: 'ui', ui: 'su_bless', opts: g.suOffer({}) };
+    ok(g.suReroll(p) && p.opts.length === 3 && su.rerolls === 0 && !g.suReroll(p), 'the blessing choice changes once');
+    for (const id of SU.BLESSINGS.filter(b => b.path === 'hunt').slice(0, 3).map(b => b.id)) g.suAddBless(id);
+    su.queue = [];
+    const e = g.map.ents.find(x => x.kind === 'enemy' && x.ch === '1');
+    g.encounter(e, 'player');
+    g.battle.start();
+    ok(g.battle.su.res.energy >= 20, 'the Resonance node starts the battle with 20 energy');
+    g.battle.runAuto(1500);
+    g.endBattle();
+    eq((su.queue || []).filter(q => q.ui === 'su_bless').length + (g.pending && g.pending.ui === 'su_bless' ? 1 : 0), 2, 'the first win of the run gives one more blessing');
+    g.suAbort(); suDrive(g);
+
+    const a = g.suArch();
+    ok(a.bless.length >= 3 && a.cur.length + a.ev.length > 0, 'the Archive keeps blessings, curios and events');
+    a.bless.push(...SU.BLESSINGS.filter(b => b.path === 'nihility').map(b => b.id));
+    const due = g.suArchDue(), j1 = g.state.jade;
+    eq(due.jade, due.cur.length * 30 + due.ev.length * 30 + due.paths.length * 380, 'the Archive pays 30 per curio and event and 380 per Path');
+    ok(due.paths.includes('nihility'), 'a Path with all twelve blessings counts');
+    ok(g.suArchClaim() && g.state.jade === j1 + due.jade && !g.suArchClaim(), 'the Archive pays once');
+  }
+  {
+    const TEAMS = { 2: [['trail', 'march', 'danheng', 'natasha'], 25], 3: [['trail', 'march', 'danheng', 'natasha'], 32], 4: [['trail', 'march', 'natasha', 'hook'], 32], 5: [['trail', 'march', 'natasha', 'serval'], 38], 6: [['trail', 'march', 'natasha', 'serval'], 38], 7: [['trail', 'march', 'natasha', 'serval'], 43], 8: [['trail', 'march', 'natasha', 'serval'], 45], 9: [['trail', 'himeko', 'asta', 'natasha'], 48] };
     for (const [wid, [team, lvl]] of Object.entries(TEAMS)) {
       let wins = 0;
-      for (let seed = 1; seed <= 4; seed++) {
+      for (let seed = 1; seed <= 6; seed++) {
         const st = mkState(lvl);
-        for (const f of ['su_open', 'su_beta_done', 'su_clear_1', 'su_clear_2', 'su_clear_3', 'first_gepard', 'first_svarog', 'ending']) st.flags[f] = true;
+        for (const f of ['su_open', 'su_beta_done', 'su_clear_1', 'su_clear_2', 'su_clear_3', 'su_clear_4', 'su_clear_5', 'su_clear_6', 'su_clear_7', 'su_clear_8', 'first_gepard', 'first_svarog', 'ending', 'time_done', 'returned']) st.flags[f] = true;
+        Object.assign(st.quests, { lf_q5: 'done', lf_q9: 'done', lf_dh4: 'done', lf_q12: 'done' });
         for (const id of team) st.roster[id] = { lvl, exp: 0, eid: 0, cone: null, relics: {}, hp: null, energy: 0 };
         st.party = team.slice();
         st.suPaths = Object.keys(SU.PATHS);
@@ -13428,8 +13779,8 @@ function trInfo(g) {
         ok(g.suStart(+wid, Object.keys(SU.PATHS)[seed % 7], team), 'World ' + wid + ' starts for the balance run');
         if (!playRun(g)) wins++;
       }
-      log.push('su world ' + wid + ' lvl ' + lvl + ' wins ' + wins + '/4');
-      ok(wins >= 3, 'World ' + wid + ' is won by the auto battle with a team of level ' + lvl);
+      log.push('su world ' + wid + ' lvl ' + lvl + ' wins ' + wins + '/6');
+      ok(wins >= 4, 'World ' + wid + ' is won by the auto battle with a team of level ' + lvl);
     }
   }
 }
@@ -18188,7 +18539,7 @@ console.log(log.join('\n'));
     eq(Object.keys(HD.CONE_MODE).length, 100, 'Express Frontier: the shop has 100 cones');
     ok(modeCones.length === 109 && modeCones.filter(id => !HD.CONE_MODE[id]).sort().join() === HD.CONE_LATER.slice().sort().join(), 'Express Frontier: nine cones of the seven Paths wait for their heroes');
     ok(Object.keys(HD.CONE_MODE).every(id => [1, 3, 5].every(sp => { const t = HD.coneText(id, sp); return t && !/NaN|undefined|\{|—/.test(t) && t.length * 6 < 1400; })), 'Express Frontier: every cone text has its numbers for S1, S3 and S5');
-    ok(Object.keys(H.RELIC_SETS).length === 14 && Object.keys(H.RELIC_SETS).every(k => HD.RELIC.text2[k] && (H.RELIC_SETS[k].planar || (HD.RELIC.text4[k] && HD.RELIC.body[k] && HD.SET_MODS[k] && HD.SET_MODS[k].four))), 'Express Frontier: all 14 relic sets have 2-piece bonuses, cavern sets 4-piece bonuses and a body stat');
+    ok(Object.keys(HD.RELIC.text2).length === 14 && Object.keys(HD.RELIC.text2).every(k => H.RELIC_SETS[k] && (H.RELIC_SETS[k].planar || (HD.RELIC.text4[k] && HD.RELIC.body[k] && HD.SET_MODS[k] && HD.SET_MODS[k].four))), 'Express Frontier: all 14 relic sets have 2-piece bonuses, cavern sets 4-piece bonuses and a body stat');
     eq(Object.keys(HD.DEVICES).length, 7, 'Express Frontier: the shop has seven devices');
     eq(Object.keys(HD.SUPPLIES).length, 6, 'Express Frontier: the shop has six supplies');
     ok(Object.values(HD.DEVICES).every(d => d.price > 0 && d.text && !/—/.test(d.text)) && Object.keys(HD.DEVICES).every(id => HD.devName(id)), 'Express Frontier: every device has a price, a name and a text');

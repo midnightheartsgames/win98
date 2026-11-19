@@ -5,26 +5,99 @@
   const curioDef = id => SU.CURIOS.find(c => c.id === id);
   const worldDef = id => SU.WORLDS.find(w => w.id === id);
   const FIGHTS = ['combat', 'elite', 'boss'];
+  const MOVED_WORLDS = [[4, 6], [3, 4], [2, 3]];
+  const prevWorld = w => SU.WORLDS.slice(0, SU.WORLDS.indexOf(w)).reverse().find(x => !x.soon) || null;
+  const clearKey = (w, d) => 'su_clear_' + w.id + (d > 1 ? '_' + d : '');
+  const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
+  const weekStart = ms => {
+    const d = new Date(ms);
+    d.setHours(4, 0, 0, 0);
+    d.setDate(d.getDate() - (d.getDay() + 6) % 7);
+    if (d.getTime() > ms) d.setDate(d.getDate() - 7);
+    return d.getTime();
+  };
+  const weekEnd = start => { const d = new Date(start); d.setDate(d.getDate() + 7); return d.getTime(); };
+  const domPts = (max, n, d) => Math.round(max * (d + 1) / n) - Math.round(max * d / n);
+  const domLvl = (w, d, i) => { const [a, b] = w.diff[d - 1].lvl, n = w.plan.length - 1; return a + Math.round((b - a) * Math.min(i, n) / n); };
 
   Object.assign(H.Game.prototype, {
     suRun() { return this.state.su || null; },
     suPaths() { return this.state.suPaths || (this.state.suPaths = []); },
     suWorld() { const su = this.suRun(); return su ? worldDef(su.world) : null; },
 
-    suWorldOpen(w) { return w.id === 1 ? !!this.state.flags.su_open : this.cond(w.need); },
-    suFirst(w) { return !this.state.flags['su_clear_' + w.id]; },
-    suReward(w, first) {
-      return { jade: TUN.jade * (first ? TUN.firstMult : 1), credits: TUN.credits * (first ? TUN.firstMult : 1), sets: first ? TUN.firstSets : 1, power: first ? 0 : TUN.power };
+    suWorldOpen(w) {
+      if (w.soon) return false;
+      if (!this.suFirst(w)) return true;
+      const prev = prevWorld(w);
+      return (!prev || !this.suFirst(prev)) && this.cond(w.story);
+    },
+    suNeedText(w) {
+      if (w.soon) return 'Мир ещё строится. Скоро.';
+      const prev = prevWorld(w);
+      if (!prev) return 'Сначала пройдите учебный тест Герты.';
+      return 'Нужно: ' + prev.name + ' и миссия «' + w.mission + '».';
+    },
+    fixSuWorlds(old) {
+      const s = this.state;
+      if (old) {
+        const f = s.flags, move = id => (MOVED_WORLDS.find(([a]) => a === id) || [0, id])[1];
+        for (const [a, b] of MOVED_WORLDS) if (f['su_clear_' + a]) { f['su_clear_' + b] = true; delete f['su_clear_' + a]; }
+        for (const c of s.suClaims || []) c.world = move(c.world);
+        if (s.su) s.su.world = move(s.su.world);
+        if (s.hertaShop && Array.isArray(s.hertaShop.worldBonds)) s.hertaShop.worldBonds = s.hertaShop.worldBonds.map(move);
+        if (s.profile && Array.isArray(s.profile.log)) for (const e of s.profile.log) if (e.kind === 'su') e.id = move(e.id);
+      }
+      s.suv = 1;
+    },
+    suFirst(w, d = 1) { return !this.state.flags[clearKey(w, d)]; },
+    suRoman(d) { return ROMAN[d - 1]; },
+    suDiffOpen(w, d) {
+      const row = w.diff[d - 1];
+      if (!row || !this.suWorldOpen(w)) return false;
+      return d === 1 || (!this.suFirst(w, d - 1) && this.suEq() >= row.eq);
+    },
+    suDiffNeed(w, d) {
+      const row = w.diff[d - 1];
+      if (!this.suWorldOpen(w)) return this.suNeedText(w);
+      if (d > 1 && this.suFirst(w, d - 1)) return 'Нужно пройти сложность ' + ROMAN[d - 2] + '.';
+      return 'Нужен уровень Равновесия ' + row.eq + '.';
+    },
+    suDiffLvl(w, d) { return w.diff[d - 1].lvl; },
+    suReward(w, first, d = 1) {
+      if (!first) return { jade: 0, credits: 0, sets: 0, power: 0 };
+      if (d > 1) return { jade: TUN.diffJade, credits: TUN.diffCredits, sets: 1, power: 0 };
+      return { jade: TUN.jade * TUN.firstMult, credits: TUN.credits * TUN.firstMult, sets: TUN.firstSets, power: 0 };
+    },
+    suOrnReward(w) { return w.sets.length ? { jade: TUN.jade, credits: TUN.credits, sets: 1, power: TUN.power } : null; },
+    suImm() { return this.state.inv.items.immersifier || 0; },
+    suBuyImm() {
+      const s = this.state;
+      if (s.power < TUN.power || this.suImm() >= TUN.immMax) return false;
+      s.power -= TUN.power;
+      s.inv.items.immersifier = this.suImm() + 1;
+      return true;
+    },
+    suExchange(pay) {
+      const s = this.state, su = s.su, p = this.pending;
+      if (!su || !p || p.ui !== 'su_orn' || p.left <= 0) return null;
+      if (pay === 'imm') { if (this.suImm() < 1) return null; s.inv.items.immersifier--; }
+      else { if (s.power < TUN.power) return null; s.power -= TUN.power; }
+      const w = worldDef(su.world), dm = w.diff[(su.diff || 1) - 1], got = { set: this.suDropSet(w), rl: Math.min(15, dm.orn + this.rng.int(3)) };
+      p.left--;
+      (su.ornGot = su.ornGot || []).push(got);
+      return this.give({ jade: TUN.jade, credits: TUN.credits, ornament: [got] });
     },
     suClaims() { return this.state.suClaims || (this.state.suClaims = []); },
 
     suStart(worldId, path, team, opts = {}) {
       const s = this.state, w = worldDef(worldId);
-      if (!w || this.suRun() || (!opts.tut && (!this.suWorldOpen(w) || !this.suPaths().includes(path)))) return false;
+      const diff = opts.diff || 1;
+      if (!w || this.suRun() || !w.diff[diff - 1] || (!opts.tut && (!this.suDiffOpen(w, diff) || !this.suPaths().includes(path)))) return false;
       const keys = [...new Set(team || s.party)].filter(k => s.roster[k]).slice(0, 4);
       if (!keys.length) return false;
       for (const k of Object.keys(s.broken)) if (k.startsWith('su')) delete s.broken[k];
-      s.su = { world: w.id, path, team: keys, hp: {}, en: {}, d: -1, dom: null, bless: [], curios: [], frag: TUN.fragStart, seen: [], tut: !!opts.tut, bank: 0, wins: 0, elites: 0, log: [], back: { map: this.map.id, x: this.player.x, y: this.player.y } };
+      if (!opts.tut) s.suPick = { world: w.id, diff };
+      s.su = { world: w.id, diff, path, team: keys, hp: {}, en: {}, d: -1, dom: null, bless: [], curios: [], frag: TUN.fragStart + (opts.tut ? 0 : this.suTreeSum('frag')), rerolls: opts.tut ? 0 : this.suTreeSum('reroll'), pts: 0, seen: [], tut: !!opts.tut, bank: 0, wins: 0, elites: 0, log: [], back: { map: this.map.id, x: this.player.x, y: this.player.y } };
       for (const k of keys) { s.su.hp[k] = null; s.su.en[k] = 0; }
       if (opts.tut) this.setQuest('su_beta', 'run');
       this.emit({ t: 'sfx', id: 'warp' });
@@ -35,16 +108,17 @@
     suEnter(type) {
       const s = this.state, su = s.su, w = worldDef(su.world), rng = this.rng;
       su.d++;
-      const d = su.d, lvl = w.lvl + Math.floor(d * 0.4), layouts = SU.LAYOUTS[type];
+      const d = su.d, lvl = domLvl(w, su.diff || 1, d), layouts = SU.LAYOUTS[type];
       const dom = { type, layout: layouts[rng.int(layouts.length)], lvl, groups: {}, done: {}, used: {}, cleared: false, next: [], event: null, final: false };
       const pick = list => list[rng.int(list.length)];
       if (type === 'combat') {
         dom.groups[1] = { g: pick(w.pools.normal).slice(), lvl };
         if (rng() < 0.65) dom.groups[2] = { g: pick(w.pools.normal).slice(), lvl, optional: true };
-      } else if (type === 'elite') dom.groups[1] = { g: pick(w.pools.elite).slice(), lvl: lvl + 1, elite: true };
-      else if (type === 'boss') { const b = pick(w.pools.boss); dom.groups[1] = { g: b.waves[0].slice(), waves: b.waves, lvl: lvl + 2, boss: true }; }
+      } else if (type === 'elite') dom.groups[1] = { g: pick(w.pools.elite).slice(), lvl, elite: true, bug: su.log.includes('elite') };
+      else if (type === 'boss') { const b = pick(w.pools.boss); dom.groups[1] = { g: b.waves[0].slice(), waves: b.waves, lvl, boss: true }; }
       else if (type === 'respite') { dom.cleared = true; dom.final = d === w.plan.length - 2; }
       else dom.event = su.tut && type === 'event' ? 'stephen' : this.suPickEvent(type);
+      if (dom.event) this.suArchNote('ev', dom.event);
       const nextPlan = w.plan[d + 1];
       if (nextPlan) { const opts = nextPlan.slice(); while (opts.length) dom.next.push(opts.splice(rng.int(opts.length), 1)[0]); dom.next = dom.next.slice(0, 3); }
       su.dom = dom;
@@ -82,6 +156,7 @@
     suNext(slot) {
       const type = this.suPortal(slot);
       if (!type || this.busy()) return false;
+      this.suDomDone();
       this.emit({ t: 'sfx', id: 'warp' });
       this.suEnter(type);
       return true;
@@ -107,7 +182,13 @@
       const st = this.charStats(k), su = this.state.su;
       let hpP = 0;
       for (const b of su.bless) { const d = blessDef(b.id); for (const f of d.fx) if (f.on === 'spec' && f.s === 'hpP') hpP += Array.isArray(f.v) ? f.v[b.lvl > 1 ? 1 : 0] : f.v; }
+      hpP += this.suTreeSum('hpP');
       if (hpP) st.hp = Math.round(st.hp * (1 + hpP));
+      const atkP = this.suTreeSum('atkP'), defP = this.suTreeSum('defP'), spdP = this.suTreeSum('spdP');
+      if (atkP) st.atk = Math.round(st.atk * (1 + atkP));
+      if (defP) st.def = Math.round(st.def * (1 + defP));
+      if (spdP) st.spd = Math.round(st.spd * (1 + spdP));
+      st.critR += this.suTreeSum('critR');
       return st;
     },
 
@@ -121,7 +202,7 @@
 
     suTeam() { const s = this.state, su = s.su; return su.team.filter(k => s.roster[k]).sort((a, b) => (s.party.indexOf(a) + 1 || 9) - (s.party.indexOf(b) + 1 || 9)); },
 
-    suBattleOpts() { const su = this.state.su; return { path: su.path, bless: su.bless.map(b => ({ id: b.id, lvl: b.lvl })), curios: su.curios.map(c => ({ id: c.id, broken: !!c.broken })) }; },
+    suBattleOpts() { const su = this.state.su; return { forms: (su.forms || []).slice(), path: su.path, bless: su.bless.map(b => ({ id: b.id, lvl: b.lvl })), curios: su.curios.map(c => ({ id: c.id, broken: !!c.broken })), resStart: su.tut ? 0 : this.suTreeSum('resStart'), enStart: su.tut ? 0 : this.suTreeSum('enStart') }; },
 
     suHpOf(k) { const su = this.state.su, st = this.suSpecStats(k), hp = su.hp[k]; return { cur: hp == null ? st.hp : Math.min(hp, st.hp), max: st.hp }; },
 
@@ -140,17 +221,18 @@
     suDowned() { const su = this.state.su; return su ? su.team.filter(k => this.suHpOf(k).cur <= 0) : []; },
 
     suEncounter(e, ambush) {
-      const g = e.def, su = this.state.su, w = worldDef(su.world);
-      const o = { su: true, ent: e, lvl: g.lvl, ambush, bg: 'sim', noFlee: true, boss: !!g.boss, music: g.boss ? w.music : g.elite ? 'boss' : 'battle', foeHp: g.boss ? w.bossHp : g.elite ? TUN.eliteHp : 1, foeAtk: g.boss ? w.bossAtk : g.elite ? w.atk * TUN.eliteAtk : w.atk, suHp: JSON.parse(JSON.stringify(su.hp)), suEn: JSON.parse(JSON.stringify(su.en)) };
+      const g = e.def, su = this.state.su, w = worldDef(su.world), dm = w.diff[(su.diff || 1) - 1], bug = !!g.bug;
+      const B = TUN.berserk, fight = { berserk: g.boss ? B.boss : g.elite ? B.elite : 0, bug, complete: !!g.boss, fullEn: !su.tut && !!(g.boss || g.elite) && this.suTreeSum('eliteEn') > 0 };
+      const o = { su: fight, ent: e, lvl: g.lvl, ambush, bg: 'sim', noFlee: true, boss: !!g.boss, music: g.boss ? w.music : g.elite ? 'boss' : 'battle', foeHp: (g.boss ? w.bossHp : g.elite ? TUN.eliteHp : 1) * dm.hp, foeAtk: (g.boss ? w.bossAtk : g.elite ? w.atk * TUN.eliteAtk : w.atk) * dm.atk, suHp: JSON.parse(JSON.stringify(su.hp)), suEn: JSON.parse(JSON.stringify(su.en)) };
       if (g.waves) o.waves = g.waves.map((wv, i) => wv.map(id => id + ':' + (g.lvl + (g.waves.length > 1 && i === 0 ? -2 : 0))));
       else o.enemies = g.g.map(id => id + ':' + g.lvl);
       return this.startBattle(o);
     },
 
     suFight(pool) {
-      const su = this.state.su, w = worldDef(su.world), dom = su.dom, list = w.pools[pool] || w.pools.elite;
+      const su = this.state.su, w = worldDef(su.world), dm = w.diff[(su.diff || 1) - 1], dom = su.dom, list = w.pools[pool] || w.pools.elite;
       const g = pool === 'trotter' ? ['trotter', 'trotter', 'trotter'] : pool === 'legion' ? ['trampler', 'reaver', 'eliminator'] : list[this.rng.int(list.length)];
-      return this.startBattle({ su: true, suFight: true, lvl: dom.lvl + 1, enemies: g.map(id => id + ':' + (dom.lvl + 1)), bg: 'sim', noFlee: true, music: 'boss', foeHp: pool === 'trotter' ? 1 : TUN.eliteHp, foeAtk: pool === 'trotter' ? w.atk : w.atk * TUN.eliteAtk, suHp: JSON.parse(JSON.stringify(su.hp)), suEn: JSON.parse(JSON.stringify(su.en)), fromScript: true });
+      return this.startBattle({ su: true, suFight: true, lvl: dom.lvl + 1, enemies: g.map(id => id + ':' + (dom.lvl + 1)), bg: 'sim', noFlee: true, music: 'boss', foeHp: (pool === 'trotter' ? 1 : TUN.eliteHp) * dm.hp, foeAtk: (pool === 'trotter' ? w.atk : w.atk * TUN.eliteAtk) * dm.atk, suHp: JSON.parse(JSON.stringify(su.hp)), suEn: JSON.parse(JSON.stringify(su.en)), fromScript: true });
     },
 
     suEndBattle(b, ctx, out) {
@@ -177,7 +259,12 @@
       const heal = this.suCurioRun('winHeal');
       if (heal) this.suHealTeam(heal);
       if (this.suDowned().length && this.suCurioRun('winRevive') && this.suUseCurio('winRevive')) { this.suReviveAll(true); this.toast('Плод инопланетного дерева воскресил павших.'); }
-      if (boss) { su.queue = []; this.suComplete(); return out; }
+      if (boss) {
+        su.queue = [];
+        if (!su.tut && worldDef(su.world).sets.length) { su.queue.push({ type: 'ui', ui: 'su_orn', left: TUN.ornBoss, final: true }); this.suFlush(); }
+        else this.suComplete();
+        return out;
+      }
       su.queue = su.queue || [];
       if (ctx.o.suFight) { this.suFlush(); return out; }
       const w = worldDef(su.world), aeon = su.tut ? (su.wins === 1 && !this.suPaths().includes('preservation') ? { path: 'preservation' } : null)
@@ -187,7 +274,9 @@
         su.elites++;
         su.queue.push({ type: 'ui', ui: 'su_bless', opts: [], rar: 3, why: 'Элита повержена' });
         su.queue.push({ type: 'ui', ui: 'su_curio', opts: [], why: 'Награда за элиту' });
+        if (!su.tut && w.sets.length) su.queue.push({ type: 'ui', ui: 'su_orn', left: TUN.ornElite });
       } else if (!aeon) su.queue.push({ type: 'ui', ui: 'su_bless', opts: [], why: 'Победа в бою' });
+      if (su.wins === 1 && !su.tut && this.suTreeSum('extraBless')) su.queue.push({ type: 'ui', ui: 'su_bless', opts: [], why: 'Древо способностей: ещё одно благословение' });
       this.suFlush();
       return out;
     },
@@ -199,13 +288,14 @@
       if (q.type === 'script') { this.runScript(q.name); return; }
       if (q.ui === 'su_bless' && !q.opts.length) q.opts = this.suOffer({ rar: q.rar });
       if (q.ui === 'su_curio' && !q.opts.length) q.opts = this.suCurioOffer();
-      if (!q.opts.length) { su.frag += 40; this.toast('Выбирать больше нечего: +40 фрагментов'); this.suFlush(); return; }
+      if ((q.ui === 'su_bless' || q.ui === 'su_curio') && !q.opts.length) { su.frag += 40; this.toast('Выбирать больше нечего: +40 фрагментов'); this.suFlush(); return; }
       this.pending = Object.assign({ type: 'ui' }, q);
     },
 
     suOffer(o = {}) {
       const su = this.state.su, paths = this.suPaths(), owned = new Set(su.bless.map(b => b.id)), rng = this.rng;
-      let pool = SU.BLESSINGS.filter(b => paths.includes(b.path) && !owned.has(b.id));
+      const banned = this.suCanBan() ? this.suBans().filter(p => p !== su.path) : [];
+      let pool = SU.BLESSINGS.filter(b => paths.includes(b.path) && !owned.has(b.id) && !banned.includes(b.path));
       if (o.path) { const own = pool.filter(b => b.path === o.path); if (own.length) pool = own; }
       const waxes = su.curios.filter(c => !c.broken && curioDef(c.id).run && curioDef(c.id).run.wax).map(c => curioDef(c.id).run.wax);
       const out = [], late = su.d >= Math.floor(worldDef(su.world).plan.length / 2);
@@ -241,7 +331,40 @@
       if (!d || su.bless.some(b => b.id === id)) return false;
       const before = this.suOwnCount();
       su.bless.push({ id, lvl: lvl || (d.rar === 1 && this.suCurioRun('enhanceOne') ? 2 : 1) });
+      this.suArchNote('bless', id);
       if (before < 3 && this.suOwnCount() >= 3) this.toast('Резонанс Пути открыт: «' + SU.PATHS[su.path].name + '». В бою он копит энергию, клавиша F.');
+      const now = this.suOwnCount();
+      if (TUN.formAt.some(n => before < n && now >= n)) {
+        const opts = this.suFormOffer();
+        if (opts.length) (su.queue = su.queue || []).push({ type: 'ui', ui: 'su_form', opts, why: 'Благословений Пути: ' + now });
+      }
+      return true;
+    },
+
+    suFormOffer() {
+      const su = this.state.su, had = su.forms || [];
+      return SU.FORMS.filter(f => f.path === su.path && !had.includes(f.id)).map(f => f.id);
+    },
+
+    suAddForm(id) {
+      const su = this.state.su, f = SU.FORMS.find(x => x.id === id);
+      if (!f || f.path !== su.path) return false;
+      su.forms = su.forms || [];
+      if (su.forms.includes(id)) return false;
+      su.forms.push(id);
+      this.toast(f.name);
+      return true;
+    },
+
+    suBans() { return this.state.suBan || (this.state.suBan = []); },
+    suCanBan() { return this.suPaths().length >= Object.keys(SU.PATHS).length; },
+    suToggleBan(path) {
+      const bans = this.suBans();
+      if (!this.suCanBan() || !SU.PATHS[path]) return false;
+      const i = bans.indexOf(path);
+      if (i >= 0) { bans.splice(i, 1); return true; }
+      if (bans.length >= 2) return false;
+      bans.push(path);
       return true;
     },
 
@@ -251,6 +374,7 @@
       const su = this.state.su, d = curioDef(id);
       if (!d || su.curios.some(c => c.id === id)) return false;
       su.curios.push({ id, uses: d.uses == null ? null : d.uses, broken: false });
+      this.suArchNote('cur', id);
       if (d.instant === 'blessRandom') { const n = 1 + this.rng.int(2); for (const b of this.suOffer({}).slice(0, n)) this.suAddBless(b); }
       if (d.instant === 'enhance2') this.suEnhanceRandom(2);
       if (d.instant === 'wax') { const b = this.suOffer({ path: d.path })[0]; if (b) this.suAddBless(b); }
@@ -320,7 +444,9 @@
         for (const i of picks) if (p.opts[i]) this.suAddBless(p.opts[i], p.enh ? 2 : 0);
       }
       if (p.ui === 'su_curio' && p.opts.length) this.suAddCurio(p.opts[val == null ? 0 : val] || p.opts[0]);
+      if (p.ui === 'su_form' && p.opts.length) this.suAddForm(p.opts[val == null ? 0 : val] || p.opts[0]);
       if (p.ui === 'su_end') { this.suExit(); return; }
+      if (p.ui === 'su_orn' && p.final) { this.pending = null; this.suComplete(); return; }
       if (p.back) { this.pending = p.back; return; }
       this.suFlush();
     },
@@ -410,24 +536,26 @@
       return false;
     },
 
+    suDropSet(w) {
+      const list = w.sets.length ? w.sets : H.PLANAR_SETS;
+      return list[this.rng.int(list.length)];
+    },
+
     suComplete(scripted) {
       const s = this.state, su = s.su, w = worldDef(su.world);
       if (su.tut && !scripted && H.SU.SCRIPTS.su_aeon_remembrance && !this.suPaths().includes('remembrance')) { this.runScript('su_aeon_remembrance'); return; }
-      const first = this.suFirst(w), rw = this.suReward(w, first), res = { world: w.id, first, win: true, jade: rw.jade, credits: rw.credits, sets: [], power: rw.power, pending: false, frag: su.frag, bless: su.bless.length, curios: su.curios.length };
-      for (let i = 0; i < rw.sets; i++) res.sets.push({ set: w.set || H.PLANAR_SETS[this.rng.int(H.PLANAR_SETS.length)], rl: Math.min(15, w.orn + this.rng.int(3)) });
-      s.flags['su_clear_' + w.id] = true;
-      if (first && this.profileNote) this.profileNote('su', w.id);
+      const dn = su.diff || 1, dm = w.diff[dn - 1], first = this.suFirst(w, dn), rw = this.suReward(w, first, dn), res = { world: w.id, diff: dn, first, win: true, jade: rw.jade, credits: rw.credits, sets: [], got: (su.ornGot || []).slice(), frag: su.frag, bless: su.bless.length, curios: su.curios.length };
+      for (let i = 0; i < rw.sets; i++) res.sets.push({ set: this.suDropSet(w), rl: Math.min(15, dm.orn + this.rng.int(3)) });
+      s.flags[clearKey(w, dn)] = true;
+      if (first && dn === 1 && this.profileNote) this.profileNote('su', w.id);
       if (su.tut) { s.flags.su_beta_run = true; this.setQuest('su_beta', 'report'); }
-      if (!first && s.power < rw.power) {
-        const claims = this.suClaims();
-        if (claims.length < 3) claims.push({ world: w.id, sets: res.sets });
-        res.pending = true;
-      } else {
-        if (!first) s.power -= rw.power;
-        if (first && w.id >= 3) res.tracks = 1;
+      if (first) {
+        if (dn === 1 && w.tracks) res.tracks = 1;
         this.give({ jade: res.jade, credits: res.credits, ornament: res.sets.map(x => ({ set: x.set, rl: x.rl })), items: res.tracks ? { tracks: res.tracks } : null });
       }
       if (this.suAwardRun) Object.assign(res, this.suAwardRun(su, true, first));
+      this.suDomDone();
+      Object.assign(res, this.suSettle(su));
       su.result = res;
       this.pending = { type: 'ui', ui: 'su_end', res };
     },
@@ -435,8 +563,9 @@
     suFail() {
       const su = this.state.su;
       if (!su) return false;
-      su.result = { world: su.world, win: false, first: false, jade: 0, credits: 0, sets: [], frag: su.frag, bless: su.bless.length, curios: su.curios.length };
+      su.result = { world: su.world, diff: su.diff || 1, win: false, first: false, jade: 0, credits: 0, sets: [], frag: su.frag, bless: su.bless.length, curios: su.curios.length };
       if (this.suAwardRun) Object.assign(su.result, this.suAwardRun(su, false, false));
+      Object.assign(su.result, this.suSettle(su));
       this.battleCtx = null;
       this.pending = { type: 'ui', ui: 'su_end', res: su.result };
       return true;
@@ -471,6 +600,125 @@
       s.power -= TUN.power;
       claims.splice(i, 1);
       return this.give({ jade: TUN.jade, credits: TUN.credits, ornament: c.sets.map(x => ({ set: x.set, rl: x.rl })) });
+    },
+
+    suPtsMax(w, d = 1) {
+      if (d === 1) return TUN.ptsWorld[w.id] || TUN.ptsTop;
+      const lo = w.diff[d - 1].lvl[0], row = TUN.ptsHigh.find(([at]) => lo >= at);
+      return row ? row[1] : TUN.ptsTop;
+    },
+
+    suDomDone() {
+      const su = this.state.su;
+      if (!su || su.tut || !su.dom || su.dom.counted) return 0;
+      const w = worldDef(su.world), n = domPts(this.suPtsMax(w, su.diff || 1), w.plan.length, su.d);
+      su.dom.counted = true;
+      su.pts = (su.pts || 0) + n;
+      return n;
+    },
+
+    suWeek() {
+      const s = this.state, key = weekStart(this.now());
+      if (!s.suWeek || s.suWeek.key !== key) s.suWeek = { key, pts: 0, got: [] };
+      return s.suWeek;
+    },
+
+    suWeekLeft() { return weekEnd(this.suWeek().key) - this.now(); },
+
+    suEq() { return this.equilibriumLevel ? this.equilibriumLevel() : 0; },
+
+    suWeekStep() { return TUN.weekStep[Math.min(TUN.weekStep.length - 1, this.suEq())]; },
+
+    suWeekMax() { return this.suWeekStep() * SU.WEEK(0).length; },
+
+    suWeekRows() {
+      const wk = this.suWeek(), step = this.suWeekStep();
+      return SU.WEEK(this.suEq()).map((rw, i) => ({ at: step * (i + 1), rw, got: wk.got.includes(i), ok: wk.pts >= step * (i + 1) && !wk.got.includes(i) }));
+    },
+
+    suWeekClaim() {
+      const wk = this.suWeek(), out = [];
+      this.suWeekRows().forEach((r, i) => { if (r.ok) { wk.got.push(i); out.push(...this.give(r.rw)); } });
+      return out.length ? out : null;
+    },
+
+    suTree() { return this.state.suTree || (this.state.suTree = { pts: 0, got: [] }); },
+
+    suTreeSum(key) {
+      const got = (this.state.suTree && this.state.suTree.got) || [];
+      return SU.TREE.reduce((sum, n) => sum + (got.includes(n.id) && n.fx[key] ? n.fx[key] : 0), 0);
+    },
+
+    suTreeNeed(id) {
+      const n = SU.TREE.find(x => x.id === id);
+      if (!n) return null;
+      const line = SU.TREE.filter(x => x.br === n.br);
+      return line[line.indexOf(n) - 1] || null;
+    },
+
+    suTreeState(id) {
+      const t = this.suTree(), n = SU.TREE.find(x => x.id === id);
+      if (!n) return 'none';
+      if (t.got.includes(id)) return 'got';
+      const need = this.suTreeNeed(id);
+      if (need && !t.got.includes(need.id)) return 'locked';
+      return t.pts >= n.cost ? 'ready' : 'poor';
+    },
+
+    suTreeBuy(id) {
+      if (this.suTreeState(id) !== 'ready') return false;
+      const t = this.suTree(), n = SU.TREE.find(x => x.id === id);
+      t.pts -= n.cost;
+      t.got.push(id);
+      return true;
+    },
+
+    suReroll(p) {
+      const su = this.state.su;
+      if (!su || !p || p.ui !== 'su_bless' || !(su.rerolls > 0)) return false;
+      const opts = this.suOffer({ rar: p.rar });
+      if (!opts.length) return false;
+      su.rerolls--;
+      p.opts = opts;
+      return true;
+    },
+
+    suSettle(su) {
+      if (su.tut) return {};
+      const wk = this.suWeek(), w = worldDef(su.world), pts = su.pts || 0;
+      const week = Math.max(0, Math.min(pts, this.suWeekMax() - wk.pts));
+      wk.pts += week;
+      const abil = w.id >= TUN.abilFrom ? Math.round(pts * TUN.abilRate) : 0;
+      this.suTree().pts += abil;
+      return { pts, week, weekNow: wk.pts, weekMax: this.suWeekMax(), abil };
+    },
+
+    suArch() { return this.state.suArch || (this.state.suArch = { cur: [], ev: [], bless: [], paid: { cur: [], ev: [], path: [] } }); },
+
+    suArchNote(kind, id) {
+      const list = this.suArch()[kind];
+      if (!list.includes(id)) list.push(id);
+    },
+
+    suArchPathDone(path) {
+      const got = this.suArch().bless;
+      return SU.BLESSINGS.filter(b => b.path === path).every(b => got.includes(b.id));
+    },
+
+    suArchDue() {
+      const a = this.suArch();
+      const cur = a.cur.filter(id => !a.paid.cur.includes(id)), ev = a.ev.filter(id => !a.paid.ev.includes(id));
+      const paths = Object.keys(SU.PATHS).filter(p => this.suArchPathDone(p) && !a.paid.path.includes(p));
+      return { cur, ev, paths, jade: cur.length * TUN.archCurio + ev.length * TUN.archEvent + paths.length * TUN.archPath };
+    },
+
+    suArchClaim() {
+      const a = this.suArch(), due = this.suArchDue();
+      if (!due.jade) return null;
+      a.paid.cur.push(...due.cur);
+      a.paid.ev.push(...due.ev);
+      a.paid.path.push(...due.paths);
+      return this.give({ jade: due.jade });
     },
 
     suUseObject(e) {

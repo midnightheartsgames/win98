@@ -26,7 +26,7 @@ const CFG = {
   hall: { stages: [11, 12, 13, 14, 15], failCycles: 30 },
   boss: { encs: ['gepard2', 'svarog2', 'cocolia2', 's6_mimic', 'rz_grizzly'], hp: 12, atk: 2, failCycles: 40 },
   survive: { encs: ['gepard2', 'svarog2', 'cocolia2', 's6_mimic', 'rz_grizzly'], hp: 6, atk: 4, core: ['danheng', 'pela', 'asta'] },
-  su: { world: 4, lvl: 33, hp: 3.5, atk: 3.5, seeds: 24 },
+  su: { world: 6, lvl: 33, hp: 3.5, atk: 3.5, seeds: 24 },
   start: { encs: ['gepard', 'bp_bronya', 'mine', 'svarog', 'cocolia1'], core: ['march', 'danheng', 'natasha'], susCore: ['danheng', 'arlan', 'herta'], spare: 'serval', hp: 4, atk: 2.5, failCycles: 60 },
   cores: [['danheng', 'march', 'natasha'], ['himeko', 'march', 'natasha'], ['yanqing', 'march', 'natasha']],
   susCores: [['danheng', 'asta', 'pela'], ['himeko', 'bronya', 'pela'], ['yanqing', 'tingyun', 'asta']],
@@ -168,7 +168,8 @@ function benchSu(team, pathId, cone, seeds) {
   for (let s = 1; s <= seeds; s++) {
     const g0 = makeGame(team, CFG.su.lvl, cone, CFG.relic);
     const st = g0.state;
-    for (const f of ['intro', 'asta_met', 'hs_power', 'arlan_met', 'doom', 'express_intro', 'events_note', 'su_open', 'su_beta_done', 'su_clear_1', 'su_clear_2', 'su_clear_3', 'first_gepard', 'first_svarog', 'ending']) st.flags[f] = true;
+    for (const f of ['intro', 'asta_met', 'hs_power', 'arlan_met', 'doom', 'express_intro', 'events_note', 'su_open', 'su_beta_done', 'su_clear_1', 'su_clear_2', 'su_clear_3', 'su_clear_4', 'su_clear_5', 'first_gepard', 'first_svarog', 'ending', 'time_done', 'returned']) st.flags[f] = true;
+    st.quests.lf_q5 = 'done';
     st.suPaths = Object.keys(H.SU.PATHS);
     Object.assign(st, { map: 'hs_office', x: null, y: null });
     const g = new H.Game({ state: st, seed: s * 31 + 4 });

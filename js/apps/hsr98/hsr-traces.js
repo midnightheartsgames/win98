@@ -455,7 +455,7 @@
         for (const [enc, id] of Object.entries(FIRST_CLEAR)) if (s.flags['first_' + enc]) { add(id, 2); s.flags['tr_first_' + enc] = true; }
         if (s.flags.rumor_echo) add('echo_doom', 2);
         add('shadow_pres', (s.mcPath === 'trail_p' || s.flags.ending ? 1 : 0) + (s.flags.ending ? 1 : 0));
-        for (const w of [3, 4]) if (s.flags['su_clear_' + w]) add('tracks', 1);
+        for (const w of H.SU ? H.SU.WORLDS : []) if (w.tracks && s.flags['su_clear_' + w.id]) add('tracks', 1);
         if (Object.keys(back).length) { this.give({ items: back }); s.trBack = back; }
       }
       s.trv = 1;
